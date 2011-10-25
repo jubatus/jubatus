@@ -1,0 +1,30 @@
+def options(opt):
+  pass
+
+def configure(conf):
+  pass
+
+def build(bld):
+  bld.shlib(
+    source = ['classifier.cpp', 'accessor.cpp'],
+    target = 'jubatus',
+    use = 'PFICOMMON'
+    )
+  
+  bld.program(
+    features = 'gtest',
+    source = 'accessor_test.cpp',
+    target = 'jubatus_accessor_client_test',
+    includes = '.',
+    use = 'PFICOMMON jubatus jubatus_classifier'
+    )
+
+  bld.program(
+    features = 'gtest',
+    source = 'classifier_test.cpp client_test_util.cpp',
+    target = 'jubatus_classifier_client_test',
+    includes = '.',
+    use = 'PFICOMMON jubatus jubatus_classifier'
+   )
+
+  bld.install_files('${PREFIX}/include/jubatus/client', 'classifier.hpp')

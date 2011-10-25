@@ -1,0 +1,14 @@
+import Options
+
+subdirs = 'common server client cmd jubakeeper jubavisor plugin'
+
+def options(opt):
+  opt.recurse(subdirs)
+
+def configure(conf):
+  conf.recurse(subdirs)
+
+def build(bld):
+  bld.recurse(subdirs)
+  bld.install_files('${PREFIX}/include', 'jubatus.hpp')
+  bld.install_files('${PREFIX}/include/jubatus', 'plugin.hpp')

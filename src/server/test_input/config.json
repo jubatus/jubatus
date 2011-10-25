@@ -1,0 +1,22 @@
+{
+  "method":"PA",
+  "storage":"local",
+  "converter":{
+    "string_types": {
+      "unigram":  { "method": "ngram", "char_num": "1" }
+    },
+    "string_rules":
+    [
+    { "key": "user/name", "type": "str",
+      "sample_weight": "bin", "global_weight": "bin" },
+    { "key": "user/text", "type": "unigram",
+      "sample_weight": "tf",  "global_weight": "bin" }
+  ],
+  "num_types": {},
+  "num_rules": [
+    { "key": "user/id",  "type": "str" },
+    { "key": "user/age", "type": "num" },
+    { "key": "user/age", "type": "log" }
+  ]
+}
+}

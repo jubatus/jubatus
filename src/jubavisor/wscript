@@ -1,0 +1,22 @@
+def options(opt):
+  pass
+
+def configure(conf): pass
+
+def build(bld):
+  if not bld.env.HAVE_ZOOKEEPER_H: return
+    
+  bld.program(
+    source = 'main.cpp jubavisor.cpp process.cpp',
+    target = 'jubavisor',
+    includes = '.',
+    use = 'PFICOMMON GLOG ZOOKEEPER_MT jubacommon'
+    )
+
+  bld.program(
+    features = 'gtest',
+    source = 'jubavisor.cpp jubavisor_test.cpp process.cpp',
+    target = 'jubavisor_test',
+    includes = '.',
+    use = 'PFICOMMON GLOG ZOOKEEPER_MT jubacommon'
+    )

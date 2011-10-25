@@ -1,0 +1,46 @@
+subdirs = 'fv_converter storage classifier'
+
+def options(opt):
+  opt.recurse(subdirs)
+
+def configure(conf):
+  conf.recurse(subdirs)
+
+def build(bld):
+  classifier_source = 'classifier_serv.cpp'
+  if bld.env.HAVE_ZOOKEEPER_H:
+    classifier_source +=  ' mixer.cpp'
+
+  bld.stlib(
+    source = classifier_source,
+    target = 'jubatus_classifier',
+    includes = '.',
+    use = 'PFICOMMON jubaconverter jubaclassifier jubastorage jubacommon MSGPACK GLOG'
+    )
+
+  bld.program(
+    source = 'classifier.cpp',
+    target = 'jubaclassifier',
+    includes = '.',
+    use = 'jubatus_classifier'
+    )
+
+  n = bld.path.get_bld().make_node('test_input')
+  n.mkdir()
+  bld(rule = 'cp ${SRC} ${TGT}',
+      source = bld.path.ant_glob('test_input/*'),
+      target = n)
+
+  bld.program(
+    features = 'gtest',
+    source = 'classifier_serv_test.cpp',
+    target = 'classifier_serv_test',
+    includes = '.',
+    use = 'jubatus_classifier'
+    )
+  bld.recurse(subdirs)
+
+  bld.install_files('${PREFIX}/include/jubatus/server',
+                    ['classifier_rpc.hpp',
+                     'diffv.hpp',
+                     ])
