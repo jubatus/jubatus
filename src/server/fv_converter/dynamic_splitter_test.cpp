@@ -26,7 +26,7 @@ using namespace jubatus;
 using namespace pfi::lang;
 
 TEST(dynamic_splitter, trivial) {
-  dynamic_splitter s("libsplitter_sample.so",
+  dynamic_splitter s(LIBSPLITTER_SAMPLE,
                      "create",
                      map<string, string>());
     vector<pair<size_t, size_t> > bounds;
@@ -49,7 +49,7 @@ TEST(dynamic_splitter, unknown_file) {
 
 TEST(dynamic_splitter, unknown_function) {
   EXPECT_THROW(
-      dynamic_splitter s("libsplitter_sample.so",
+      dynamic_splitter s(LIBSPLITTER_SAMPLE,
                          "unknown_function",
                          map<string, string>()),
       converter_exception);
