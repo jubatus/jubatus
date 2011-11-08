@@ -15,10 +15,6 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-// Integration Test of Client.
-// This test is not included in the unittest suite
-// because this needs jubatus servers running on localhost.
-
 #include <gtest/gtest.h>
 #include <cfloat>
 

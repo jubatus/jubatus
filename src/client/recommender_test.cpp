@@ -1,7 +1,3 @@
-// Integration Test of Client.
-// This test is not included in the unittest suite
-// because this needs jubatus servers running on localhost.
-
 #include <gtest/gtest.h>
 #include <cfloat>
 
@@ -12,9 +8,9 @@
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/concurrent/thread.h>
 
-#include "jubatus.hpp"
-#include "../../server/recommender_serv.hpp"
-#include "../../fv_converter/datum.hpp"
+#include "recommender.hpp"
+#include "../server/recommender_serv.hpp"
+#include "../server/fv_converter/datum.hpp"
 
 using namespace jubatus::client;
 using namespace std;
@@ -49,9 +45,9 @@ namespace {
     }
 
     static void run_in_thread(void* p){
-      jubatus::jubatus_recommender_serv srv_;
-      jubatus::r::jubatus_recommender_server srver_(1.0);
-      srv_.bind_all_methods(srver_);
+      jubatus::recommender::server srv_("/tmp");
+      jubatus::recommender::mprpc_server srver_(1.0);
+      srv_.bind_all_methods(srver_, "localhost", 9195);
       srver_.serv(9195, 2);
     };
     
@@ -61,26 +57,27 @@ namespace {
   
   TEST_F(recommender_test, rpc){
     
-    jubatus::recommender_config_data c;
-    c.distance_name = "euclid";
+    jubatus::recommender::config_data c;
     c.anchor_finder_name = "naive";
     c.anchor_builder_name = "random";
     c.all_anchor_num = 10000;
     c.anchor_num_per_data = 100;
 
     {
-      ASSERT_EQ(0, a_.set_config(c));
+      ASSERT_NO_THROW(a_.set_config(c));
       
-      jubatus::recommender_config_data d = a_.get_config();
-      ASSERT_EQ(c.distance_name, d.distance_name);
-      //    ASSERT_EQ(c.converter, d.converter);
-      //    ...
+      jubatus::recommender::config_data d = a_.get_config();
+      ASSERT_EQ(c.similarity_name, d.similarity_name);
+      ASSERT_EQ(c.anchor_finder_name, d.anchor_finder_name);
+      ASSERT_EQ(c.anchor_builder_name, d.anchor_builder_name);
+      ASSERT_EQ(c.all_anchor_num, d.all_anchor_num);
+      ASSERT_EQ(c.anchor_num_per_data, d.anchor_num_per_data);
     }
     {
       const size_t example_size = 1000;
       vector<pair<string, jubatus::datum> > data;
       make_random_data(data, example_size);
-      ASSERT_TRUE(a_.update_row(data));
+      ASSERT_NO_THROW(a_.update_row(data));
       
       {
         vector<string> labels;
@@ -90,11 +87,11 @@ namespace {
           for(it = data.begin(); it != data.end(); ++it){
             labels.push_back(it->first);
             datas.push_back(it->second);
-            jubatus::similar_result sr = a_.similar_row_from_data(it->second);
+            jubatus::recommender::similar_result sr =
+              a_.similar_row_from_data(it->second, 10);
           }
         }
       }
     }
   }
-
 };

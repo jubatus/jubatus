@@ -29,7 +29,7 @@ def build(bld):
 
   bld.program(
     features = 'gtest',
-    source = 'recommender.cpp',
+    source = 'recommender_test.cpp client_test_util.cpp',
     target = 'jubatus_recommender_client_test',
     includes = '.',
     use = 'PFICOMMON jubatus jubatus_recommender'
