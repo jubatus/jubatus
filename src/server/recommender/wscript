@@ -1,0 +1,30 @@
+def options(ctx): pass
+
+def configure(ctx): pass
+
+def build(bld):
+  bld.shlib(
+    source = '''
+    	 similarity_factory.cpp
+	 anchor_builder_factory.cpp
+	 anchor_finder_factory.cpp
+	 recommender.cpp
+	 recommender_builder.cpp
+	 anchor_builder_base.cpp
+	 anchor_builder_random.cpp
+	 anchor_finder_naive.cpp
+	 anchor_finder_knndecent.cpp
+	''',
+    target = 'jubarecommender',
+    name = 'jubarecommender',
+    includes = '.',
+    use = '')
+
+  bld.program(
+     features = 'gtest',
+     source = [
+         'recommender_test.cpp',
+     ],
+     target = "recommender_test",
+     includes = '.',
+     use = 'PFICOMMON recommender jubacommon')

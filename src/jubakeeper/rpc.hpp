@@ -40,6 +40,8 @@ MPRPC_PROC(load, result<int>(std::string, std::string, std::string));
 
 MPRPC_PROC(get_status, result<std::map<std::pair<std::string,int>, std::map<std::string,std::string> > >(std::string));
 
+  // FIXME!!! import recommender APIs here
+
 MPRPC_GEN(1,
 	  jubakeeper,
 	  lookup, lookup_cht,

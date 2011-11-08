@@ -1,4 +1,4 @@
-subdirs = 'fv_converter storage classifier'
+subdirs = 'fv_converter storage classifier recommender'
 
 def options(opt):
   opt.recurse(subdirs)
@@ -7,6 +7,8 @@ def configure(conf):
   conf.recurse(subdirs)
 
 def build(bld):
+
+  #classifier
   classifier_source = 'classifier_serv.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
     classifier_source +=  ' mixer.cpp'
@@ -25,12 +27,6 @@ def build(bld):
     use = 'jubatus_classifier'
     )
 
-  n = bld.path.get_bld().make_node('test_input')
-  n.mkdir()
-  bld(rule = 'cp ${SRC} ${TGT}',
-      source = bld.path.ant_glob('test_input/*'),
-      target = n)
-
   bld.program(
     features = 'gtest',
     source = 'classifier_serv_test.cpp',
@@ -38,6 +34,40 @@ def build(bld):
     includes = '.',
     use = 'jubatus_classifier'
     )
+
+  # recommender
+  recommender_source = 'recommender_serv.cpp'
+  if bld.env.HAVE_ZOOKEEPER_H:
+    recommender_source += ' mixer.cpp'
+
+  bld.stlib(
+    source = recommender_source,
+    target = 'jubatus_recommender',
+    includes = '.',
+    use = 'PFICOMMON jubaconverter jubarecommender jubacommon MSGPACK GLOG'
+    )
+
+  bld.program(
+    source = 'recommender.cpp',
+    target = 'jubarecommender',
+    includes = '.',
+    use = 'jubatus_recommender'
+    )
+
+  bld.program(
+    features = 'gtest',
+    source = 'recommender_rpc_test.cpp',
+    target = 'recommender_serv_test',
+    includes = '.',
+    use = 'jubatus_recommender'
+    )
+
+  n = bld.path.get_bld().make_node('test_input')
+  n.mkdir()
+  bld(rule = 'cp ${SRC} ${TGT}',
+      source = bld.path.ant_glob('test_input/*'),
+      target = n)
+
   bld.recurse(subdirs)
 
   bld.install_files('${PREFIX}/include/jubatus/server',

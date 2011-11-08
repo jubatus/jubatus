@@ -263,6 +263,7 @@ result<diffv> server::get_diff(int i){
     ret.count = mixer_->get_count();
 
     s->get_diff(ret.v);
+    return result<diffv>::ok(ret);
   }else{
     LOG(ERROR) << __func__ << " storage is not local_mixture: " << storage_->type;
     return result<diffv>::fail("bad storage type:"+storage_->type+" should be 'local_mixture'");
