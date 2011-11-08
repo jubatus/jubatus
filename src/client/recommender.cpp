@@ -55,129 +55,89 @@ public:
 
   void clear_row(const vector<string>& ids)
   {
-    // for (vector<connection_info>::const_iterator p = acc_.servers().begin();
-    //      p != acc_.servers().end(); ++p)
-    //   mprpc_client(p->first, p->second, timeout_).call_clear_row(ids);
+    check_throw(make_client().call_clear_row(name_, ids));
   }
 
 
   void update_row(const rows& dat)
   {
     if (dat.empty()) return;
+
+    // FIXME: use lookup_cht!
+    check_throw(make_client().call_update_row(name_, dat));
     
-    // TODO: group dat by nodes
-    for (size_t i = 0; i < dat.size(); ++i) {
-      vector<connection_info> nodes;
-      acc_.find_two(dat[i].first, nodes);
-      if(nodes.empty())
-        throw runtime_error("cannot find cht for " + dat[i].first);
+    // // TODO: group dat by nodes
+    // for (size_t i = 0; i < dat.size(); ++i) {
+    //   vector<connection_info> nodes;
+    //   acc_.find_two(dat[i].first, nodes);
+    //   if(nodes.empty())
+    //     throw runtime_error("cannot find cht for " + dat[i].first);
       
-      rows ds(1, dat[i]);
-      // for(size_t j = 0; j < nodes.size(); ++j)
-      //   mprpc_client(nodes[j].first, nodes[j].second, timeout_).call_update_row(ds);
-    }
+    //   rows ds(1, dat[i]);
+    //   // for(size_t j = 0; j < nodes.size(); ++j)
+    //   //   mprpc_client(nodes[j].first, nodes[j].second, timeout_).call_update_row(ds);
+    // }
   }
 
-  void build()
+  void build()    // only standalone mode.
   {
-    // only standalone mode.
-    
-    connection_info conn;
-    acc_.find_one(conn);
-    // mprpc_client(conn.first, conn.second, timeout_).call_build();
+    check_throw(make_client().call_build(name_));
   }
 
   datum complete_row_from_id(const string& id)
-{
-  std::vector<connection_info> nodes;
-  acc_.find_two(id, nodes);
-  if(nodes.empty()) throw runtime_error("no nodes to do RPC");
-  // size_t ix = rng_(nodes.size());
-  // return mprpc_client(nodes[ix].first, nodes[ix].second, timeout_).call_complete_row_from_id(id);
-  return datum();
-}
+  {
+    // FIXME: use lookup_cht
+    return return_or_throw(make_client().call_complete_row_from_id(name_,id));
+  }
 
-datum complete_row_from_data(const datum& dat)
-{
-  connection_info conn;
-  acc_.find_one(conn);
-  //  return mprpc_client(conn.first, conn.second, timeout_).call_complete_row_from_data(dat);
-  return datum();
-}
+  datum complete_row_from_data(const datum& dat)
+  {
+    // FIXME: use lookup_cht
+    return return_or_throw(make_client().call_complete_row_from_data(name_,dat));
+  }
 
-similar_result similar_row_from_id(const string& id, size_t ret_num)
-{
-  std::vector<connection_info> nodes;
-  acc_.find_two(id, nodes);
-  if(nodes.empty()) throw runtime_error("no nodes to do RPC");
-  //  size_t ix = rng_(nodes.size());
-  //  return mprpc_client(nodes[ix].first, nodes[ix].second, timeout_).call_similar_row_from_id(id, ret_num);
-  return similar_result();
-}
+  similar_result similar_row_from_id(const string& id, size_t ret_num)
+  {
+    // FIXME: use lookup_cht
+    return return_or_throw(make_client().call_similar_row_from_id(name_,id,ret_num));
+  }
+  
+  similar_result similar_row_from_data(const datum& dat, size_t ret_num)
+  {
+    // FIXME: use lookup_cht
+    return return_or_throw(make_client().call_similar_row_from_data(name_,dat,ret_num));
+  }
 
-similar_result similar_row_from_data(const datum& dat, size_t ret_num)
-{
-  connection_info conn;
-  acc_.find_one(conn);
-  //  return mprpc_client(conn.first, conn.second, timeout_).call_similar_row_from_data(dat, ret_num);
-  return similar_result();
-}
+  datum decode_row(const string& id)
+  {
+    // FIXME: use lookup_cht
+    return return_or_throw(make_client().call_decode_row(name_,id));
+  }
 
-datum decode_row(const string& id)
-{
-  std::vector<connection_info> nodes;
-  acc_.find_two(id, nodes);
-  if(nodes.empty()) throw runtime_error("no nodes to do RPC");
-  //  size_t ix = rng_(nodes.size());
-  //  return mprpc_client(nodes[ix].first, nodes[ix].second, timeout_).call_decode_row(id);
-  return datum();
-}
-
-rows get_all_rows()
-{
-  connection_info conn;
-  acc_.find_one(conn);
-  //  return mprpc_client(conn.first, conn.second, timeout_).call_get_all_rows();
-  return rows();
-}
-
-void save(const string& type, const string& id)
-{
-  /*
-  for (vector<connection_info>::const_iterator p = acc_.servers().begin();
-       p != acc_.servers().end(); ++p)
-    mprpc_client(p->first, p->second, timeout_).call_save(type, id);
-  */
-  assert(!"recommender::save() is not implemented");
-}
-
-void load(const string& type, const string& id)
-{
-  /*
-  for (vector<connection_info>::const_iterator p = acc_.servers().begin();
-       p != acc_.servers().end(); ++p)
-    mprpc_client(p->first, p->second, timeout_).call_load(type, id);
-  */
-  assert(!"recommender::load() is not implemented");
-}
-
+  rows get_all_rows()
+  {
+    return return_or_throw(make_client().call_get_all_rows(name_));
+  }
+  
   result<map<connection_info, map<string, string> > >
   get_status_fun(const connection_info& con) {
     return result<map<connection_info, map<string, string> > >();
   }
-
+  
   map<connection_info, map<string,string> > get_status() {
     return return_or_throw(make_client().call_get_status(name_));
   }
-
+  
   // FIXME
-  // void save(const string& type, const string& id) {
-  //   check_throw(make_client().call_save(name_, type, id));
-  // }
+  void save(const string& type, const string& id) {
+    assert(!"recommender::save() is not implemented");
+    //check_throw(make_client().call_save(name_, type, id));
+  }
 
-  // void load(const string& type, const string& id) {
-  //   check_throw(make_client().call_save(name_, type, id));
-  // }
+  void load(const string& type, const string& id) {
+    assert(!"recommender::load() is not implemented");
+    //check_throw(make_client().call_save(name_, type, id));
+  }
 
 private:
   mprpc_client make_client() {
