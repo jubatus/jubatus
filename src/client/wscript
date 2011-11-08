@@ -6,7 +6,7 @@ def configure(conf):
 
 def build(bld):
   bld.shlib(
-    source = ['classifier.cpp', 'accessor.cpp'],
+    source = ['classifier.cpp', 'accessor.cpp', 'recommender.cpp'],
     target = 'jubatus',
     use = 'PFICOMMON'
     )
@@ -27,4 +27,13 @@ def build(bld):
     use = 'PFICOMMON jubatus jubatus_classifier'
    )
 
+  bld.program(
+    features = 'gtest',
+    source = 'recommender.cpp',
+    target = 'jubatus_recommender_client_test',
+    includes = '.',
+    use = 'PFICOMMON jubatus jubatus_recommender'
+   )
+
   bld.install_files('${PREFIX}/include/jubatus/client', 'classifier.hpp')
+  bld.install_files('${PREFIX}/include/jubatus/client', 'recommender.hpp')
