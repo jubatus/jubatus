@@ -27,4 +27,4 @@ def build(bld):
      ],
      target = "recommender_test",
      includes = '.',
-     use = 'PFICOMMON recommender jubacommon')
+     use = 'PFICOMMON jubarecommender jubacommon')
