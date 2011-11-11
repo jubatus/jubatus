@@ -254,7 +254,7 @@ result<std::string> server::get_storage(int i){
   }
 }
 
-result<diffv> server::get_diff(int i){
+diffv server::get_diff(int i){
   diffv ret;
 #ifdef HAVE_ZOOKEEPER_H
   scoped_lock lk(rlock(m_));
@@ -263,15 +263,17 @@ result<diffv> server::get_diff(int i){
     ret.count = mixer_->get_count();
 
     s->get_diff(ret.v);
+    //    return result<diffv>::ok(ret);
   }else{
     LOG(ERROR) << __func__ << " storage is not local_mixture: " << storage_->type;
-    return result<diffv>::fail("bad storage type:"+storage_->type+" should be 'local_mixture'");
+    //    return result<diffv>::fail("bad storage type:"+storage_->type+" should be 'local_mixture'");
   }
 #endif
-  return result<diffv>::fail("running on standalone mode");
+  //  return result<diffv>::fail("running on standalone mode");
+  return ret;
 }
 
-result<int> server::put_diff(features3_t v){
+int server::put_diff(features3_t v){
   scoped_lock lk(wlock(m_));
 #ifdef HAVE_ZOOKEEPER_H
   try{
@@ -281,13 +283,14 @@ result<int> server::put_diff(features3_t v){
       DLOG(INFO) <<__func__;
     }else{
       LOG(ERROR) << __func__ << " storage is not local_mixture: " << storage_->type;
-      return result<int>::fail("bad storage type:"+storage_->type+" should be 'local_mixture'");
+      //return result<int>::fail("bad storage type:"+storage_->type+" should be 'local_mixture'");
     }
   }catch(const std::exception& e){
-    return result<int>::fail(e.what());
+    //return result<int>::fail(e.what());
   }
 #endif
-  return result<int>::fail("running on standalone mode");
+  //return result<int>::fail("running on standalone mode");
+  return 0;
 }
 
 val3_t mix_val3(const val3_t& lhs, const val3_t& rhs) {

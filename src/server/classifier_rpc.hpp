@@ -80,8 +80,9 @@ struct estimate_result
 typedef std::vector<estimate_result> estimate_results;
 
 MPRPC_PROC(get_storage, result<std::string>(int));
-MPRPC_PROC(get_diff, result<diffv>(int));
-MPRPC_PROC(put_diff, result<int>(storage::features3_t));
+
+MPRPC_PROC(get_diff, diffv(int));
+MPRPC_PROC(put_diff, int(storage::features3_t));
 
 // jubakeeper must have same API as these
 MPRPC_PROC(set_config, result<int>(std::string,config_data));
