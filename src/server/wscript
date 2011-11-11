@@ -1,4 +1,4 @@
-subdirs = 'fv_converter storage classifier recommender'
+subdirs = 'fv_converter storage classifier recommender regression'
 
 def options(opt):
   opt.recurse(subdirs)
