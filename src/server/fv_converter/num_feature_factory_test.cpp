@@ -45,7 +45,7 @@ TEST(num_feature_factory, dynamic) {
   param["path"] = "unknown_file_name";
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
 
-  param["path"] = "./libnum_feature_sample.so";
+  param["path"] = LIBNUM_FEATURE_SAMPLE;
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
 
   param["function"] = "create";

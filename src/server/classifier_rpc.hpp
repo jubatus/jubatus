@@ -28,7 +28,6 @@
 #include "../common/rpc_util.hpp"
 
 #include "./fv_converter/datum.hpp"
-#include "./storage/local_storage_mixture.hpp"
 #include "./fv_converter/converter_config.hpp"
 #include "diffv.hpp"
 
