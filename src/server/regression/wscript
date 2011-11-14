@@ -9,16 +9,25 @@ def build(bld):
         source = [
             'regression_base.cpp',
             'online_svr.cpp',
+            'regression_factory.cpp'
             ],
         target = 'jubaression',
         includes = '.',
         use = 'PFICOMMON jubacommon'
         )
 
-    bld.program(
-        features = 'gtest',
-        source = 'regression_test.cpp',
-        target = 'regression_test',
-        includes = '.',
-        use = 'jubaression jubastorage'
-        )
+    def make_test(s):
+        bld.program(
+            features = 'gtest',
+            source = s,
+            target = s[0: s.rfind('.')],
+            includes = '.',
+            use = 'jubaression jubastorage'
+            )
+
+    test_source = [
+        'regression_test.cpp',
+        'regression_factory_test.cpp',
+        ]
+    for s in test_source:
+        make_test(s)
