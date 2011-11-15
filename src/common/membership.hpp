@@ -45,4 +45,6 @@ namespace jubatus{
 
   bool push_cleanup(zk&, pfi::lang::function<void()>&);
 
+  void force_exit();
+
 }
