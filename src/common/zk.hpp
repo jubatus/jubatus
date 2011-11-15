@@ -34,7 +34,8 @@ namespace jubatus{
   // TODO: write zk mock and test them all?
   class zk{
   public:
-    zk(const std::string& hosts, int timeout = 1024, const std::string& logfile = "");
+    // timeout [ms]
+    zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
     ~zk();
 
     void create(const std::string& path, const std::string& payload = "", bool ephemeral = false);

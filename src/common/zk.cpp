@@ -44,7 +44,10 @@ namespace jubatus{
     }
     
     do{
-      zh_ = zookeeper_init(hosts.c_str(), NULL, timeout, 0, NULL, 0);
+      // FIXME?: this loop will call zookeeper_init many times till
+      // the state got ZOO_CONNECTING_STAT
+      // timeout is supposed to be ms??
+      zh_ = zookeeper_init(hosts.c_str(), NULL, timeout * 1000, 0, NULL, 0);
       if(zh_ == NULL){
 	perror("");
 	throw std::runtime_error("cannot init zk");

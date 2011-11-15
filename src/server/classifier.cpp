@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
   cmdline::parser p;
   p.add<int>("rpc-port", 'p', "port number", false, 9199);
   p.add<int>("thread", 'c', "thread number", false, 2);
-  p.add<int>("timeout", 't', "time out", false, 10);
+  p.add<int>("timeout", 't', "time out (sec)", false, 10);
   p.add<std::string>("storage", 'S', "storage type", false, "local");
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
   p.add<std::string>("name", 'n', "learning machine instance name", true);
