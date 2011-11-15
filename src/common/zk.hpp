@@ -71,18 +71,18 @@ namespace jubatus{
   };
 
   // TODO: write zk mock and test them all?
-  class zkmutex{
+  class zkmutex : public pfi::concurrent::lockable {
   public:
     zkmutex(pfi::lang::shared_ptr<zk,
                                   pfi::concurrent::threading_model::multi_thread>& z, const std::string& path):
       zk_(z),path_(path),has_lock_(false){};
-    ~zkmutex(){
+    virtual ~zkmutex(){
       this->unlock();
     }
     
-    void lock();
+    bool lock();
     bool try_lock();
-    void unlock();
+    bool unlock();
 
   private:
     pfi::lang::shared_ptr<zk, pfi::concurrent::threading_model::multi_thread> zk_;
