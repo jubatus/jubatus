@@ -60,6 +60,11 @@ namespace jubatus{
       build_existence_path(path, ip, port, path1); 
       z.create(path1, "", true);
     }
+
+    // set exit zlistener here
+    pfi::lang::function <void()> f = &force_exit;
+    z.push_cleanup(f);
+
     return true;
   }
 
@@ -82,6 +87,10 @@ namespace jubatus{
   bool push_cleanup(zk& z, pfi::lang::function<void()>& f){
     z.push_cleanup(f);
     return true;
+  }
+
+  void force_exit(){
+    exit(-1);
   }
 
 }
