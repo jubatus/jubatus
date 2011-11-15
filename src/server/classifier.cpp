@@ -89,8 +89,8 @@ int main(int argc, char *argv[])
     
     std::string zkcluster = (p.get<std::string>("zookeeper") == "")? "localhost:2181" : p.get<std::string>("zookeeper");
     
-    shared_ptr<jubatus::zk,
-               pfi::concurrent::threading_model::multi_thread> z(new jubatus::zk(zkcluster, timeout, logfile.c_str()));
+    shared_ptr<jubatus::zk, pfi::concurrent::threading_model::multi_thread>
+      z(new jubatus::zk(zkcluster, timeout, logfile.c_str()));
     st.reset(storage::storage_factory::create_storage(p.get<std::string>("storage")));
 
     vector<string> list;
@@ -112,8 +112,8 @@ int main(int argc, char *argv[])
     }
     register_actor(*z, name, self, port);
 
-    shared_ptr<mixer,
-               pfi::concurrent::threading_model::multi_thread> m(new mixer(z, name, &classifier::server::mix));
+    shared_ptr<mixer, pfi::concurrent::threading_model::multi_thread>
+      m(new mixer(z, name, &classifier::server::mix));
     classifier::server s(st, m, p.get<std::string>("tmpdir"));
     
     m->start();
