@@ -59,8 +59,8 @@ public:
 
   // msgpack only
   result<std::string> get_storage(int);
-  result<diffv> get_diff(int);
-  result<int> put_diff(storage::features3_t v);
+  diffv get_diff(int);
+  int put_diff(storage::features3_t v);
 
   //should be same in jubakeeper
   result<int> set_config(std::string, classifier::config_data);

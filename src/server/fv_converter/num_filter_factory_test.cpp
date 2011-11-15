@@ -65,7 +65,7 @@ TEST(num_filter_factory, create_dynamic) {
   EXPECT_THROW(f.create("dynamic", params),
                converter_exception);
 
-  params["path"] = "./libnum_filter_sample.so";
+  params["path"] = LIBNUM_FILTER_SAMPLE;
   EXPECT_THROW(f.create("dynamic", params),
                converter_exception);
 
