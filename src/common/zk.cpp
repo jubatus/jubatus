@@ -194,11 +194,9 @@ namespace jubatus{
 
     has_lock_ = ((path_ + "/" + list[0]) == seqfile_);
     if(not has_lock_){
-      //      DLOG(INFO) << "mine" << seqfile_;
-      //      DLOG(INFO) << "top " << path_ + "/" + list[0];
       zk_->remove(seqfile_);
     }
-    DLOG(INFO) << "got lock for " << path_ << " (" << seqfile_ << ") "; //"couldn't acquire lock of " << path_;
+    DLOG(INFO) << "got lock for " << path_ << " (" << seqfile_ << ") ";
     return has_lock_;
   };
   bool zkmutex::unlock(){

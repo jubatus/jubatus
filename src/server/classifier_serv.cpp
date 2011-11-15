@@ -122,7 +122,7 @@ result<int> server::train(string name, std::vector<std::pair<std::string, datum>
 result<std::vector<estimate_results> > server::classify(string name, std::vector<datum> data) {
   std::vector<estimate_results> ret;
   scoped_lock lk(rlock(m_));
-  DLOG(INFO) << __func__;
+
   if (!classifier_){
     LOG(ERROR) << __func__ << ": config is not set";
     return result<std::vector<estimate_results> >::fail("config_not_set");
