@@ -13,7 +13,7 @@ class storage_base;
 class regression_factory {
  public:
   regression_base* create_regression(const std::string& name,
-                                     storage::storage_base* storage);
+                                     storage::storage_base* storage) const;
 };
 
 }
