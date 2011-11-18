@@ -62,6 +62,20 @@ def build(bld):
     use = 'jubatus_recommender'
     )
 
+  bld.program(
+    source = 'regression_main.cpp mixer.cpp',
+    target = 'jubaregression',
+    includes = '.',
+    use = 'jubatus_regression jubaconverter jubastorage'
+    )
+
+  bld.program(
+    source = 'regression_test.cpp',
+    target = 'regression_test',
+    includes = '.',
+    use = 'jubatus_regression'
+    )
+
   n = bld.path.get_bld().make_node('test_input')
   n.mkdir()
   bld(rule = 'cp ${SRC} ${TGT}',

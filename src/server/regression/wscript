@@ -11,7 +11,7 @@ def build(bld):
             'online_svr.cpp',
             'regression_factory.cpp'
             ],
-        target = 'jubaression',
+        target = 'jubatus_regression',
         includes = '.',
         use = 'PFICOMMON jubacommon'
         )
@@ -22,7 +22,7 @@ def build(bld):
             source = s,
             target = s[0: s.rfind('.')],
             includes = '.',
-            use = 'jubaression jubastorage'
+            use = 'jubatus_regression jubastorage'
             )
 
     test_source = [
