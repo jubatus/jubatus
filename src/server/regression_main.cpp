@@ -57,10 +57,14 @@ using namespace pfi::concurrent::threading_model;
 
 int main(int argc, char* argv[]) {
   int timeout = 10;
+#ifdef HAVE_ZOOKEEPER_H
   std::string zkcluster = "localhost:2181";
   shared_ptr<jubatus::zk, multi_thread> z(new jubatus::zk(zkcluster, timeout, "log"));
 
   jubatus::server<jubatus::regression::model> serv(z, "test");
+#endif
+
+  jubatus::server<jubatus::regression::model> serv;
   serv.register_update<pair<float, jubatus::datum> >(
       "train", &jubatus::regression::train);
   serv.register_analysis<jubatus::datum, float>(

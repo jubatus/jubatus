@@ -62,8 +62,11 @@ def build(bld):
     use = 'jubatus_recommender'
     )
 
+  regression_source = 'regression_main.cpp'
+  if bld.env.HAVE_ZOOKEEPER_H:
+    regression_source += ' mixer.cpp'
   bld.program(
-    source = 'regression_main.cpp mixer.cpp',
+    source = regression_source,
     target = 'jubaregression',
     includes = '.',
     use = 'jubatus_regression jubaconverter jubastorage'
@@ -73,7 +76,7 @@ def build(bld):
     source = 'regression_test.cpp',
     target = 'regression_test',
     includes = '.',
-    use = 'jubatus_regression'
+    use = 'PFICOMMON'
     )
 
   n = bld.path.get_bld().make_node('test_input')
