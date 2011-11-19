@@ -28,7 +28,8 @@ rule token = parse
   | ';'         { print "; -> SEMICOLON"; SEMICOLON }
   | '<'         { LBRACE }
   | '>'         { RBRACE }
-  | '\"'         { QUOTE }
+  | '\"'        { QUOTE }
+  | "const"     { CONST }
   | "public:"   { PUBLIC } (* ignored by parser *)
   | "private:"  { PRIVATE } (* ignored by parser *)
   | include_sth as i { print i; INCLUDE(i) }
@@ -40,19 +41,16 @@ rule token = parse
   | literal as s { print ("s->"^s); LITERAL(s) }
 
   | '}'         {
-(*    print_int !depth; *)
-    if !depth = 1 then begin
-      print "}<= ";
-      RBRACE2
-    end else begin
-      RBRACE2
-    end
+(*    Printf.printf "!depth = %d\n" !depth; *)
+    decr depth;
+    print "}<= ";
+    RBRACE2
   }
 
   | '{'         {
-    print_int !depth;
-    incr depth;
-    if !depth = 1 then begin
+(*    print_int !depth; *)
+    if !depth = 0 then begin
+      incr depth;
       print "=>{";
       LBRACE2
     end else begin
@@ -72,12 +70,13 @@ rule token = parse
 and code d = parse
   | '{' { Buffer.add_char string_buffer '{';  code (d+1) lexbuf }
   | '}' {
-    decr depth;
     Buffer.add_char string_buffer '}'; 
+(*    Printf.printf "(%d, %d)\n" !depth d; *)
     if d = 0 then begin
-      (); (* print_endline ("code: " ^ (Buffer.contents string_buffer)); (); *)
-    end else
+      (); (* print_endline ("code: " ^ (Buffer.contents string_buffer)); ( *)
+    end else begin
       code (d-1) lexbuf
+    end
   }
   | eof { raise  (Lex_error "unterminated code") }
   | _   { Buffer.add_char string_buffer (Lexing.lexeme_char lexbuf 0);

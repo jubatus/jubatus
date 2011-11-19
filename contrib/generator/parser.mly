@@ -27,7 +27,7 @@ let parse_error s = print ("parse_error->"^s);;
 %token RBRACE2 LBRACE2
 %token EOF COMMENT
 %token QUOTE
-%token CLASS
+%token CLASS CONST
 %token PUBLIC PRIVATE
 %token <string> LITERAL
 %token <string> DECORATOR
@@ -81,6 +81,10 @@ member:   anytype LITERAL SEMICOLON   { ($1, $2) }
 declaration:
 	| DECORATOR declaration
 	    { print ">dec1"; let (t,n,arg,decs,c,b) = $2 in (t,n,arg, $1::decs, c, b) }
+	| anytype LITERAL LRBRACE RRBRACE CONST CODE SEMICOLON
+	    { print ">dec3"; ($1, $2, [], [], $6, true) }
+	| anytype LITERAL LRBRACE argv RRBRACE CONST CODE SEMICOLON
+	    { print ">dec4"; ($1, $2, $4, [], $7, true) }
 	| anytype LITERAL LRBRACE RRBRACE CODE SEMICOLON
 	    { print ">dec3"; ($1, $2, [], [], $5, false) }
 	| anytype LITERAL LRBRACE argv RRBRACE CODE SEMICOLON
