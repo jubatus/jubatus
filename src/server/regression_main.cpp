@@ -62,9 +62,10 @@ int main(int argc, char* argv[]) {
   shared_ptr<jubatus::zk, multi_thread> z(new jubatus::zk(zkcluster, timeout, "log"));
 
   jubatus::server<jubatus::regression::model> serv(z, "test");
+#else
+  jubatus::server<jubatus::regression::model> serv;
 #endif
 
-  jubatus::server<jubatus::regression::model> serv;
   serv.register_update<pair<float, jubatus::datum> >(
       "train", &jubatus::regression::train);
   serv.register_analysis<jubatus::datum, float>(
@@ -73,5 +74,5 @@ int main(int argc, char* argv[]) {
   serv.register_update<jubatus::regression::config_data>(
       "set_config", &jubatus::regression::set_config);
 
-  serv.serv(9199, 10.);
+  serv.serv(9199, timeout);
 }
