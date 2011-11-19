@@ -61,46 +61,38 @@ object (self)
 	  output <<< String.concat "\n" (List.map (Client_template.prototype2impl classname) prototypes); *)
     output <<< make_ns_end "client" name;
 *)
-(*
-  method generate_keeper =
-    print_endline ("=================== " ^ keeper_h);
-    output <<< make_file_begin "keeper" name;
-(*    output <<< Keeper_template.make_class_begin "jubakeeper";
-    output <<< String.concat "\n" (List.map (Keeper_template.prototype2string "jubakeeper") prototypes); 
-    output <<< Keeper_template.make_class_end "jubakeeper"; *)
-    output <<< make_file_end "keeper" name;
 
-    print_endline ("=================== " ^ keeper_c);
-    output <<< include_dq [keeper_h; front_rpc; back_rpc; ];
-    output <<< make_ns_begin "keeper" name;
+  method generate_server =
+    print_endline ("==" ^ server_c ^ "==");
+    output <<< include_b  includes;
+    output <<< include_dq ["server.hpp"; "../common/cmdline.h"];
+    let namespaces = [namespace; "server"] in
+    output <<< make_ns_begin namespaces;
+    List.iter (fun c -> output <<< Server_template.make_class c) classimpls;
+    output <<< make_ns_end namespaces;
+    output <<< Server_template.make_main ();
+
+  method generate_keeper =
+(*    output <<< make_file_begin "keeper" name;
+    output <<< Keeper_template.make_class_begin "jubakeeper";
+    output <<< String.concat "\n" (List.map (Keeper_template.prototype2string "jubakeeper") prototypes); 
+    output <<< Keeper_template.make_class_end "jubakeeper";
+    output <<< make_file_end "keeper" name;
+    print_endline ("==" ^ keeper_h ^ "==");
+    print_endline ("==" ^ keeper_c ^ "=="); *)
+(*    output <<< include_dq [keeper_h; front_rpc; back_rpc; ]; *)
+    output <<< make_ns_begin [namespace; "keeper"];
 (*    output <<< Keeper_template.constructor "jubakeeper";
     output <<< String.concat "\n" (List.map (Keeper_template.prototype2impl "jubakeeper") prototypes);
     output <<< Keeper_template.destructor "jubakeeper"; *)
-    output <<< make_ns_end "keeper" name;
-*)
-
-  method generate_server =
-    (*    print_endline ("=================== " ^ server_h); *)
-(*    output <<< make_file_begin [namespace; "server"; name]; *)
-(*    output <<< Server_template.make_class_begin classname;
-    output <<< String.concat "\n" (List.map (Server_template.prototype2string classname) server_prototypes);
-    output <<< Server_template.make_class_end classname; *)
-(*    output <<< make_file_end "server" name; *)
-
-    print_endline ("==" ^ server_c ^ "==");
-    output <<< include_b  includes;
-    output <<< include_dq ["server.hpp"];
-    let namespaces = [namespace; "server"] in
-    output <<< make_ns_begin namespaces;
-    output <<< Server_template.make_class (List.hd classimpls);
-    output <<< make_ns_end namespaces;
+    output <<< make_ns_end [namespace; "keeper"];
 
   method generate =
     output <- stdout;
 (*    self#generate_front_rpc;
     self#generate_back_rpc; 
     self#generate_client; *)
-(*    self#generate_keeper; *)
     self#generate_server;
+(*    self#generate_keeper; *)
 
 end;;

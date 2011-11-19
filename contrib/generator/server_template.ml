@@ -4,9 +4,6 @@ exception Not_class_impl
 (* used in client *)
 let make_class_begin classname =
   "class " ^ classname ^ "{\npublic:\n"
-  (* ^ "  " ^ classname ^ "(vector<connection_info> servers, string name, int timeout);\n" *)
-  (*:\  servers_(servers), name_(name), timeout_(timeout)*)
-  (*^ "  ~" ^ classname ^ "();\n" *);;
 
 (* used in client *)
 let make_class_end classname =
@@ -24,6 +21,7 @@ let prototype2impl (t,n,argvs,decorators,code,is_const) =
 let memberdecl (t,n) =
   Printf.sprintf "  %s %s;\n" (Stree.to_string t) n;;
 
+(* FIXME: filter bad functions included in 'funcs' that pretend to be constructor *)
 let make_class = function
   | Stree.ClassImpl(classname, funcs, members) ->
     make_class_begin classname
@@ -31,21 +29,13 @@ let make_class = function
     ^ "private:\n"
     ^ (String.concat "" (List.map memberdecl members))
     ^ make_class_end classname
-    ^ "";
-(*  | _ -> raise Not_class_impl;; *)
-
-(* output <<< Server_template.constructor name;
-      output <<< Server_template.destructor name; *)
-
-
+    ^ "";;
 (*
-let constructor classname =
-  classname^"::"^classname^"(vector<connection_info> servers, string name, int timeout)\n  \
-      :servers_(servers), name_(name), timeout_(timeout)\
-      {\n}";;
-
-let destructor classname = classname^"::~"^classname^"(){\n}";;
-
 let prototype2string _ _ = "prototype2string";;
 *)
 
+
+let make_main() =
+  "int main(int args, char** argv){\n"
+  ^ "  " 
+  ^ "}";;

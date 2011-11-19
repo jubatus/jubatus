@@ -54,6 +54,7 @@ FILES[] =
     generator
     util
     server_template
+    keeper_template
 
 PROGRAM = jenerator
 # OCAML_LIBS +=

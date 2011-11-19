@@ -37,10 +37,10 @@ let destructor classname = classname^"::~"^classname^"(){\n}";;
 (* FIXME: make this for keeper impl (currently for client) *)
 let generate_directive2 retval methname argv = function
   | "@broadcast" ->
-    (Client_template.return_statement retval) ^ "(make_client().call_" ^ methname ^ "("
+    "" (* Client_template.return_statement retval) ^ "(make_client().call_" ^ methname ^ "(" *)
     ^ (String.concat ", " argv) ^ "));";
   | "@random" ->
-    (Client_template.return_statement retval) ^ "(make_client().call_" ^ methname ^ "("
+    "" (* Client_template.return_statement retval) ^ "(make_client().call_" ^ methname ^ "(" *)
     ^ (String.concat ", " argv) ^ "));";
 (*  | "@cht" ->  "//cht!"; *)
   | _ -> raise Stree.Unkown_directive;;
