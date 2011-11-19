@@ -74,10 +74,8 @@ int main(int argc, char *argv[])
 
   else{
     int port = p.get<int>("rpc-port");
-    shared_ptr<jubatus::zk,
-               pfi::concurrent::threading_model::multi_thread> z(new jubatus::zk(p.get<std::string>("zookeeper")));
-    shared_ptr<mixer,
-               pfi::concurrent::threading_model::multi_thread> m(new mixer(z, name, &mixer::dummy));
+    shared_ptr<jubatus::zk> z(new jubatus::zk(p.get<std::string>("zookeeper")));
+    shared_ptr<mixer> m(new mixer(z, name, &mixer::dummy));
     recommender::server s(m, p.get<std::string>("tmpdir"));
     jubatus::cht c(*z, name);
 
