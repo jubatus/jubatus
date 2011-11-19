@@ -41,7 +41,6 @@ rule token = parse
 
   | '}'         {
 (*    print_int !depth; *)
-    decr depth;
     if !depth = 1 then begin
       print "}<= ";
       RBRACE2
@@ -51,6 +50,7 @@ rule token = parse
   }
 
   | '{'         {
+    print_int !depth;
     incr depth;
     if !depth = 1 then begin
       print "=>{";
@@ -72,6 +72,7 @@ rule token = parse
 and code d = parse
   | '{' { Buffer.add_char string_buffer '{';  code (d+1) lexbuf }
   | '}' {
+    decr depth;
     Buffer.add_char string_buffer '}'; 
     if d = 0 then begin
       (); (* print_endline ("code: " ^ (Buffer.contents string_buffer)); (); *)

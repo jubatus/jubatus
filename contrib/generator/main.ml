@@ -31,9 +31,8 @@ let _ =
     List.iter Stree.print_classimpl classimpls;
     Stree.print_all();
     print_endline "------------- generated code:";
-(*    List.iter print_endline includee; *)
-(*    let m = new Generator.jubatus_module "jupatus" (get_name source_file) includee classimpls in
-    m#generate *)
+(*    let m = new Generator.jubatus_module "jupatus" (get_name source_file) includee classimpls in *)
+(*    m#generate *)
     ()
   with
     | Parsing.Parse_error ->

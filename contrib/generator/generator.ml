@@ -11,13 +11,11 @@ let gen_mprpc_decl name prototypes =
   let names = List.map get_name prototypes in
   "MPRPC_GEN(1, " ^ (String.concat ", " (name :: names)) ^ "); ";;
 
-
-
 (* "jubatus" "sample" [prototype] => [source code filename] *)
 (* string -> string -> prototypes list -> string list *)
 
 (*
-class jubatus_module name_i classname_i include_i classimpl_i =
+class jubatus_module name_i modname_i include_i classimpls_i =
 object (self)
   val name = name_i
   val classname = classname_i
@@ -36,7 +34,7 @@ object (self)
   val server_h   = classname_i ^ "_server.hpp"
   val server_c   = classname_i ^ "_server.cpp"
 
-  method generate_front_rpc =
+(*  method generate_front_rpc =
     print_endline ("=================== " ^ front_rpc);
     output <<< make_file_begin "client" classname;
     output <<< (String.concat "" (List.map make_mprpc_decl prototypes));
@@ -109,6 +107,7 @@ object (self)
     self#generate_client;
     self#generate_keeper;
 (*    self#generate_server; *)
+*)
 
 end;;
 *)

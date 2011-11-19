@@ -40,3 +40,10 @@ private:
   vector<int> hogehoge;
   vector<map<int, string> > hogehoge;
 };
+
+
+class recommender {
+public:
+  int a(){};
+
+};
