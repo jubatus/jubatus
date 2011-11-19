@@ -22,8 +22,6 @@ object (self)
   val classimpls = classimpls_i
   val mutable output = stdout
 
-  val back_rpc  = name_i ^ "_back_rpc.hpp"
-  val front_rpc = name_i ^ "_front_rpc.hpp"
   val client_h  = name_i ^ "_client.hpp"
   val client_c  = name_i ^ "_client.cpp"
   val keeper_h  = name_i ^ "_keeper.hpp"
@@ -50,19 +48,19 @@ object (self)
     output <<< make_header_header;
     output <<< include_b ["vector"; "string"];
     output <<< make_ns_begin "client" name;
-(*    output <<< Client_template.make_class_begin classname;
-    output <<< String.concat "\n" (List.map (Client_template.prototype2string classname) prototypes);
-    output <<< Client_template.make_class_end classname; *)
+    (*    output <<< Client_template.make_class_begin classname;
+	  output <<< String.concat "\n" (List.map (Client_template.prototype2string classname) prototypes);
+	  output <<< Client_template.make_class_end classname; *)
     output <<< make_ns_end "client" name;
     print_endline ("=================== " ^ client_c);
     output <<< include_b ["pficommon/math/random.h"];
-    output <<< include_dq [client_h; front_rpc];
+    output <<< include_dq [client_h];
     output <<< make_ns_begin "client" name;
-(*    output <<< Client_template.constructor classname;
-    output <<< Client_template.destructor classname;
-    output <<< String.concat "\n" (List.map (Client_template.prototype2impl classname) prototypes); *)
+    (*    output <<< Client_template.constructor classname;
+	  output <<< Client_template.destructor classname;
+	  output <<< String.concat "\n" (List.map (Client_template.prototype2impl classname) prototypes); *)
     output <<< make_ns_end "client" name;
-*)  
+*)
 (*
   method generate_keeper =
     print_endline ("=================== " ^ keeper_h);
@@ -81,29 +79,28 @@ object (self)
     output <<< make_ns_end "keeper" name;
 *)
 
-(*
   method generate_server =
-(*    let add_first_argv (t,n,argv,dir) = (t, n, (( Stree.find_anytype "string")::argv ), dir) in
-    let server_prototypes = List.map add_first_argv prototypes in *)
-    print_endline ("=================== " ^ server_h);
-    output <<< make_file_begin "server" classname;
+    (*    print_endline ("=================== " ^ server_h); *)
+(*    output <<< make_file_begin [namespace; "server"; name]; *)
 (*    output <<< Server_template.make_class_begin classname;
     output <<< String.concat "\n" (List.map (Server_template.prototype2string classname) server_prototypes);
     output <<< Server_template.make_class_end classname; *)
-    output <<< make_file_end "server" classname;
-    print_endline ("=================== " ^ server_c);
-    output <<< include_dq [server_h; back_rpc ];
-    output <<< make_ns_begin "server" classname;
-(*    output <<< Server_template.constructor classname;
-    output <<< Server_template.destructor classname;
-    output <<< String.concat "\n" (List.map (Server_template.prototype2impl classname) server_prototypes); *)
-    output <<< make_ns_end "server" classname;
-    *)
+(*    output <<< make_file_end "server" name; *)
+
+    print_endline ("==" ^ server_c ^ "==");
+    output <<< include_b  includes;
+    output <<< include_dq ["server.hpp"];
+    let namespaces = [namespace; "server"] in
+    output <<< make_ns_begin namespaces;
+    output <<< Server_template.make_class (List.hd classimpls);
+    output <<< make_ns_end namespaces;
+
   method generate =
-    output <- stderr;
+    output <- stdout;
 (*    self#generate_front_rpc;
-    self#generate_back_rpc;
-    self#generate_client;
-    self#generate_keeper; *)
-(*    self#generate_server; *)
+    self#generate_back_rpc; 
+    self#generate_client; *)
+(*    self#generate_keeper; *)
+    self#generate_server;
+
 end;;

@@ -1,31 +1,44 @@
 
-(* used in client *)
-let make_class_begin modname =
-  "class " ^ modname ^ "{\npublic:\n"
-  ^ "  " ^ modname ^ "(vector<connection_info> servers, string name, int timeout);\n" (*:\  servers_(servers), name_(name), timeout_(timeout)*)
-  ^ "  ~" ^ modname ^ "();\n";;
+exception Not_class_impl
 
 (* used in client *)
-let make_class_end modname =
-  "private:\n"
-  ^ "  "^modname^"_client make_client() {\n"
-  ^ "    connection_info conn = servers_[rng_(servers_.size())];\n"
-  ^ "    return "^modname^"_client(conn.first, conn.second, timeout_);\n  };\n"
-  ^ "  template <typename T> inline T return_or_throw(const result<T>& res) {\n"
-  ^ "    if (!res.success) { throw std::runtime_error(res.error); }\n"
-  ^ "    else { return res.retval; }\n  \
-};\n"
-  ^ "  inline void check_throw(const result<int>& res) {\
-  if (!res.success) { \
-    throw std::runtime_error(res.error); \
-  } \
-};\n"
-  ^ "  vector<connection_info> servers_;\n"
-  ^ "  string name_;\n"
-  ^ "  int timeout_;\n"
-  ^ "  pfi::math::random::mtrand rng_;\n"
-  ^ "};\n";;
+let make_class_begin classname =
+  "class " ^ classname ^ "{\npublic:\n"
+  (* ^ "  " ^ classname ^ "(vector<connection_info> servers, string name, int timeout);\n" *)
+  (*:\  servers_(servers), name_(name), timeout_(timeout)*)
+  (*^ "  ~" ^ classname ^ "();\n" *);;
 
+(* used in client *)
+let make_class_end classname =
+  "}; // " ^ classname ;;
+
+let prototype2impl (t,n,argvs,decorators,code,is_const) =
+  let argvs_str =
+    String.concat ", " (List.map (fun (t,n)-> (Stree.to_string t) ^ " " ^ n) argvs) in
+  let const_statement = if is_const then "const" else "" in
+  let decorators = String.concat " " decorators in
+  
+  Printf.sprintf "  %s %s(%s) %s %s \n  %s;\n"
+    (Stree.to_string t) n (argvs_str) const_statement decorators code;;
+
+let memberdecl (t,n) =
+  Printf.sprintf "  %s %s;\n" (Stree.to_string t) n;;
+
+let make_class = function
+  | Stree.ClassImpl(classname, funcs, members) ->
+    make_class_begin classname
+    ^ (String.concat "\n" (List.map prototype2impl funcs))
+    ^ "private:\n"
+    ^ (String.concat "" (List.map memberdecl members))
+    ^ make_class_end classname
+    ^ "";
+(*  | _ -> raise Not_class_impl;; *)
+
+(* output <<< Server_template.constructor name;
+      output <<< Server_template.destructor name; *)
+
+
+(*
 let constructor classname =
   classname^"::"^classname^"(vector<connection_info> servers, string name, int timeout)\n  \
       :servers_(servers), name_(name), timeout_(timeout)\
@@ -33,7 +46,6 @@ let constructor classname =
 
 let destructor classname = classname^"::~"^classname^"(){\n}";;
 
-
 let prototype2string _ _ = "prototype2string";;
+*)
 
-let prototype2impl _ _ = "prototype2impl";;

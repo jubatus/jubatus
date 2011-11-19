@@ -53,6 +53,7 @@ FILES[] =
     stree
     generator
     util
+    server_template
 
 PROGRAM = jenerator
 # OCAML_LIBS +=

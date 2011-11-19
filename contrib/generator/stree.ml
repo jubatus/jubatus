@@ -4,7 +4,9 @@ type user_defined_type = Class of string
 			 | Namespace of string * user_defined_type  (* currently no namespace is implemented *)
 
 and  anytype = Void | Int | Char | Double
-	       | Other of user_defined_type
+	       | Other of user_defined_type * bool
+	       | Constructor
+	       | Destructor
 
 type decorator = string
 type prototype = anytype * string * ((anytype * string) list) * (decorator list) * string * bool (* is_const *)
@@ -33,19 +35,19 @@ let _ =
   ];;  
 
 let add_known_types name =
-  Hashtbl.replace known_types name (Other(Class(name)));;
+  Hashtbl.replace known_types name (Other(Class(name), false));;
 
-let make_template t argv =
-  let newtype = Other( Template(t, argv) ) in
+let make_template t argv is_ref =
+  let newtype = Other( Template(t, argv), is_ref ) in
   Hashtbl.replace known_types t newtype;
   newtype;;
 
-let make_anytype t =
+let make_anytype t is_ref =
   try
     Hashtbl.find known_types t
   with
       Not_found ->
-	let newtype = Other(Class(t)) in
+	let newtype = Other(Class(t), is_ref) in
 	Hashtbl.replace known_types t newtype;
 	newtype;;
 
@@ -61,7 +63,7 @@ let rec to_string = function
   | Int  -> "int";
   | Char -> "char";
   | Double -> "double";
-  | Other(ud) ->
+  | Other(ud, is_ref) ->
     let rec ud_type2string = function
       | Class(s) -> s;
       | Template(n, l) ->
@@ -69,7 +71,10 @@ let rec to_string = function
 	n ^ "<" ^ (String.concat ", " list) ^ "> " ;
       | Namespace(ns, ud) -> ns ^ "::" ^ (ud_type2string ud)
     in
-    ud_type2string ud
+    let ref_statement = if is_ref then "&" else "" in
+    (ud_type2string ud)^ref_statement;
+  | Destructor -> "";
+  | Constructor -> "";;
 
 let print_all()=
   print_string "\nknown types: ";

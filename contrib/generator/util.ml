@@ -5,11 +5,12 @@ let output_endline out_channel str =
 
 let (<<<) = output_endline;;
 
-let make_ns_begin c namespace =
-  "namespace " ^ namespace ^ " { namespace " ^ c ^ " {";;
+let make_ns_begin namespaces =
+  String.concat " " (List.map (fun namespace -> "namespace "^namespace^" {") namespaces);;
 
-let make_ns_end c namespace =
-  "}} // namespace " ^ namespace ^ "::" ^ c ;;
+let make_ns_end namespaces =
+  (String.concat "" (List.map (fun _-> "}") namespaces))
+  ^ " // " ^ (String.concat "::" namespaces);;
 
 let make_header_header =
   "#pragma once\
@@ -28,7 +29,7 @@ let make_file_begin c namespace =
   ^ "#include <vector>\n"
   ^ "#include <string>\n"
   ^ "using std::vector;\n"
-  ^ "using std::string;\n" ^ make_ns_begin c namespace;;
+  ^ "using std::string;\n" ^ make_ns_begin [c;namespace];;
 
 let make_file_end = make_ns_end;;
 

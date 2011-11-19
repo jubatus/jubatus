@@ -5,6 +5,15 @@
 class classifier {
 public:
 
+  classifier(shared_ptr<storage_base> &s, const std::string& base_path)
+  { // TODO:FIXME: need initialization syntax
+    storage_ = s;
+    base_path_ = base_path; 
+  };
+
+  ~classifier() {
+  };
+  
   //@broadcast
   int set_config(config_data c){
     try{
@@ -74,11 +83,10 @@ public:
     }catch(const std::exception& e){
       return result<int>::fail(e.what());
     }
-    
   };
   
-  //@broadcast 
-  void clear(){};
+  // //@broadcast 
+  // void clear(){};
   
   //@random
   void train(vector<pair<string, datum> > train_data){
@@ -102,17 +110,13 @@ public:
 	LOG(WARNING) << e.what();
 	continue;
       }
-      
     }
     return result<int>::ok(count);
-    
   };
   
   //@random
   vector< vector< pair< string, double > > > classify(vector<datum> data) const {
-
     std::vector<estimate_results> ret;
-    scoped_lock lk(rlock(m_));
     if (!classifier_){
       LOG(ERROR) << __func__ << ": config is not set";
       return result<std::vector<estimate_results> >::fail("config_not_set");
@@ -144,17 +148,12 @@ public:
     }
     return result<std::vector<estimate_results> >::ok(ret);
   };
-  // 
-  // 
   // haefasdfa ;;  // comment test
+
 private:
-  int a_;
   pfi::lang::shared_ptr<datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<classifier_base>       classifier_;
   pfi::lang::shared_ptr<storage::storage_base> storage_;
-
-  vector<int> hogehoge;
-  vector<map<int, string> > hogehoge;
 };
 
 

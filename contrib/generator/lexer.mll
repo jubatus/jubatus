@@ -18,6 +18,7 @@ let decorator = "//@" literal
 let comment   = "//" [^ '@' '\n'] [^'\n']*  '\n'
 let str = [^'@' '\n']
 let include_sth = "#include"
+let destructor = '~' literal
 (* [' ' '\t']+ "<" [^' ' '\n' '\t'] ">" *)
 
 rule token = parse
@@ -29,6 +30,8 @@ rule token = parse
   | '<'         { LBRACE }
   | '>'         { RBRACE }
   | '\"'        { QUOTE }
+  | '&'         { REFERENCE }
+  | destructor as d { DESTRUCTOR(d) }
   | "const"     { CONST }
   | "public:"   { PUBLIC } (* ignored by parser *)
   | "private:"  { PRIVATE } (* ignored by parser *)
@@ -37,10 +40,10 @@ rule token = parse
     print ("d-> "^d);
     DECORATOR( String.sub d 0 ((String.length d) - 1) )
   }
-  | comment     { token lexbuf }
+  | comment      { token lexbuf }
   | literal as s { print ("s->"^s); LITERAL(s) }
 
-  | '}'         {
+  | '}'          {
 (*    Printf.printf "!depth = %d\n" !depth; *)
     decr depth;
     print "}<= ";
@@ -59,7 +62,7 @@ rule token = parse
       code 0 lexbuf;
       let s = Buffer.contents string_buffer in
       Buffer.reset string_buffer;
-      print ("->"^s^"<-");
+      (* print ("->"^s^"<-"); *)
       CODE s
     end
   }
