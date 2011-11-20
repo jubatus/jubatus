@@ -72,20 +72,21 @@ int main(int argc, char *argv[])
     jubatus::cht c(*z, a.name);
 
     // get anchor graph from neighbor
-    vector<std::pair<string, int> > list;
-    c.find(a.eth, a.port, list);
-
-    // if(!list.empty()){
-    //   zkmutex zlk(z, ACTOR_BASE_PATH + "/" + name + "/master_lock");
-    //   while(not zlk.try_lock()){ ; }
-    //   recommender::mprpc_client c(list[0].first, list[0].second, p.get<int>("timeout"));
-    //   recommender::rows r = c.call_get_all_rows();
-    //   s.update_row(r);
-    // }
-
+    if(a.join){
+      vector<std::pair<string, int> > list;
+      c.find(a.eth, a.port, list);
+      
+      if(!list.empty()){
+	zkmutex zlk(z, ACTOR_BASE_PATH + "/" + a.name + "/master_lock");
+	while(not zlk.try_lock()){ ; }
+	recommender::mprpc_client cli(list[0].first, list[0].second, a.timeout);
+	result<recommender::rows> r = cli.call_get_all_rows(a.name);
+	s.update_row(a.name, r.retval);
+      }
+    }
     c.register_node(a.eth, a.port);
     register_actor(*z, a.name, a.eth, a.port);
-
+    
     m->start();
     LOG(INFO) << "starting in cluster mode.";
     return start(s, a);

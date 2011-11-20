@@ -69,25 +69,27 @@ int main(int argc, char *argv[])
     shared_ptr<jubatus::zk>  z(new jubatus::zk(a.z, a.timeout, logfile.c_str()));
     st.reset(storage::storage_factory::create_storage(storage));
 
-    vector<string> list;
-    string path = ACTOR_BASE_PATH + "/" + a.name + "/nodes";
-    z->list(path, list);
-    if(not list.empty()){
-      zkmutex zlk(z, ACTOR_BASE_PATH + "/" + a.name + "/master_lock");
-      while(not zlk.try_lock()){ ; }
-      size_t i = rand() % list.size();
-      string ip;
-      int port;
-      revert(list[i], ip, port);
-      classifier::mprpc_client c(ip, port, a.timeout);
-      result<string> s = c.call_get_storage(0);
-      if(s.success){
-	stringstream ss(s.retval);
-	st->load(ss);
+    if(a.join){
+      vector<string> list;
+      string path = ACTOR_BASE_PATH + "/" + a.name + "/nodes";
+      z->list(path, list);
+      if(not list.empty()){
+	zkmutex zlk(z, ACTOR_BASE_PATH + "/" + a.name + "/master_lock");
+	while(not zlk.try_lock()){ ; }
+	size_t i = rand() % list.size();
+	string ip;
+	int port;
+	revert(list[i], ip, port);
+	classifier::mprpc_client c(ip, port, a.timeout);
+	result<string> s = c.call_get_storage(0);
+	if(s.success){
+	  stringstream ss(s.retval);
+	  st->load(ss);
+	}
       }
     }
     register_actor(*z, a.name, a.eth, a.port);
-
+      
     shared_ptr<mixer>  m(new mixer(z, a.name, &classifier::server::mix));
     classifier::server s(st, m, a.tmpdir);
     
