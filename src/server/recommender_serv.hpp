@@ -41,8 +41,7 @@ class server
 {
 public:
 #ifdef HAVE_ZOOKEEPER_H
-  server(pfi::lang::shared_ptr<mixer,
-                               pfi::concurrent::threading_model::multi_thread>&,
+  server(pfi::lang::shared_ptr<mixer>&,
          const std::string& base_path = "/tmp");
 #endif
   server(const std::string& base_path = "/tmp");
@@ -77,15 +76,11 @@ private:
   void init();
 
   config_data config_;
-  pfi::lang::shared_ptr<recommender,
-                        pfi::concurrent::threading_model::multi_thread> recommender_;
-  pfi::lang::shared_ptr<recommender_builder,
-                        pfi::concurrent::threading_model::multi_thread> recommender_builder_;
-  pfi::lang::shared_ptr<datum_to_fv_converter,
-                        pfi::concurrent::threading_model::multi_thread> converter_;
+  pfi::lang::shared_ptr<recommender> recommender_;
+  pfi::lang::shared_ptr<recommender_builder> recommender_builder_;
+  pfi::lang::shared_ptr<datum_to_fv_converter> converter_;
 #ifdef HAVE_ZOOKEEPER_H
-  pfi::lang::shared_ptr<mixer,
-                        pfi::concurrent::threading_model::multi_thread> mixer_;
+  pfi::lang::shared_ptr<mixer> mixer_;
 #endif
 
   pfi::concurrent::rw_mutex m_;

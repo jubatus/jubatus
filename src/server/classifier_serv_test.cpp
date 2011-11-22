@@ -90,14 +90,12 @@ TEST(classifier_config_data, config2) {
 }
 
 jubatus::classifier::server* setup_serv(const char* stor = "local"){
-  shared_ptr<storage::storage_base,
-             pfi::concurrent::threading_model::multi_thread> s(storage::storage_factory::create_storage(stor));
+  shared_ptr<storage::storage_base> s(storage::storage_factory::create_storage(stor));
   return new jubatus::classifier::server(s);
 }
 
 TEST(serv, api_config) {
-  shared_ptr<jubatus::classifier::server,
-             pfi::concurrent::threading_model::multi_thread> serv(setup_serv());
+  shared_ptr<jubatus::classifier::server> serv(setup_serv());
   classifier::config_data to_set;
   result<classifier::config_data> to_get;
   load_config(to_set);
@@ -111,8 +109,7 @@ TEST(serv, api_config) {
 }
 
 TEST(serv, api_train){
-  shared_ptr<jubatus::classifier::server,
-             pfi::concurrent::threading_model::multi_thread> serv(setup_serv());
+  shared_ptr<jubatus::classifier::server> serv(setup_serv());
   const size_t example_size = 1000;
   classifier::config_data c;
   load_config(c);
@@ -125,8 +122,7 @@ TEST(serv, api_train){
 }
 
 void my_test(const char* meth, const char* stor){ //serv2, api_classify){
-  shared_ptr<jubatus::classifier::server,
-             pfi::concurrent::threading_model::multi_thread> serv(setup_serv(stor));
+  shared_ptr<jubatus::classifier::server> serv(setup_serv(stor));
   const size_t example_size = 1000;
   classifier::config_data c;
   c.method = meth;
@@ -248,8 +244,7 @@ TEST(mix_parameter, trivial) {
 
 TEST(save_load, trivial){
   const char* meth = "PA";
-  shared_ptr<storage::storage_base, pfi::concurrent::threading_model::multi_thread>
-    st(storage::storage_factory::create_storage("local"));
+  shared_ptr<storage::storage_base> st(storage::storage_factory::create_storage("local"));
   classifier::server serv(st, ".");
 
   std::vector<std::pair<std::string,int> > v;
@@ -279,8 +274,7 @@ TEST(save_load, trivial){
   ASSERT_TRUE(res_save.success);
   ASSERT_EQ(0, res_save.retval);
 
-  shared_ptr<storage::storage_base, pfi::concurrent::threading_model::multi_thread> s2
-    (storage::storage_factory::create_storage(string("local")));
+  shared_ptr<storage::storage_base> s2(storage::storage_factory::create_storage(string("local")));
 
   classifier::server serv2(s2, ".");
   result<int> res_load = serv2.load(NAME, "hoge", "huga");
