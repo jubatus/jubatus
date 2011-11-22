@@ -282,26 +282,3 @@ TEST(datum_to_fv_converter, register_num_filter) {
   EXPECT_EQ("/age+5@str$25", feature[1].first);
 }
 
-TEST(datum_to_fv_converter, revert) {
-  datum_to_fv_converter conv;
-  pair<string, string> expect;
-  conv.revert_feature("/name$doc1@str#bin/bin", expect);
-  EXPECT_EQ("/name", expect.first);
-  EXPECT_EQ("doc1", expect.second);
-}
-
-TEST(datum_to_fv_converter, revert_invalid_feature) {
-  datum_to_fv_converter conv;
-  pair<string, string> expect;
-  EXPECT_THROW(conv.revert_feature("/age$1@str", expect),
-               converter_exception);
-  
-  EXPECT_THROW(conv.revert_feature("/age$1#bin/bin", expect),
-               converter_exception);
-
-  EXPECT_THROW(conv.revert_feature("/age@str#bin/bin", expect),
-               converter_exception);
-
-  EXPECT_THROW(conv.revert_feature("/name$hoge@space#bin/bin", expect),
-               converter_exception);
-}
