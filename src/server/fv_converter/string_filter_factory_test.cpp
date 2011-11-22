@@ -55,7 +55,7 @@ TEST(string_filter_factory, dynamic) {
   p["path"] = "unknown_file_name";
   ASSERT_THROW(f.create("dynamic", p), converter_exception);
 
-  p["path"] = "./libfilter_sample.so";
+  p["path"] = LIBFILTER_SAMPLE;
   ASSERT_THROW(f.create("dynamic", p), converter_exception);
 
   p["function"] = "create";

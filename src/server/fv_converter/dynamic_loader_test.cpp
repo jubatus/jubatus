@@ -22,10 +22,10 @@
 namespace jubatus {
 
 TEST(dynamic_loader, trivial) {
-  dynamic_loader l("libsplitter_sample.so");
+  dynamic_loader l(LIBSPLITTER_SAMPLE);
   l.load_symbol("create");
   {
-    dynamic_loader l2("libsplitter_sample.so");
+    dynamic_loader l2(LIBSPLITTER_SAMPLE);
     // destroctor of l2 call dlclose, but you can use l
   }
   l.load_symbol("create");
@@ -36,7 +36,7 @@ TEST(dynamic_loader, unknown_so_file) {
 }
 
 TEST(dynamic_loader, unknown_function) {
-  dynamic_loader l("libsplitter_sample.so");
+  dynamic_loader l(LIBSPLITTER_SAMPLE);
   EXPECT_THROW(l.load_symbol("unknown"), converter_exception);
 }
 

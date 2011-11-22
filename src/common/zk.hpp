@@ -34,7 +34,8 @@ namespace jubatus{
   // TODO: write zk mock and test them all?
   class zk{
   public:
-    zk(const std::string& hosts, int timeout = 1024, const std::string& logfile = "");
+    // timeout [ms]
+    zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
     ~zk();
 
     void create(const std::string& path, const std::string& payload = "", bool ephemeral = false);
@@ -71,21 +72,20 @@ namespace jubatus{
   };
 
   // TODO: write zk mock and test them all?
-  class zkmutex{
+  class zkmutex : public pfi::concurrent::lockable {
   public:
-    zkmutex(pfi::lang::shared_ptr<zk,
-                                  pfi::concurrent::threading_model::multi_thread>& z, const std::string& path):
+    zkmutex(pfi::lang::shared_ptr<zk>& z, const std::string& path):
       zk_(z),path_(path),has_lock_(false){};
-    ~zkmutex(){
+    virtual ~zkmutex(){
       this->unlock();
     }
     
-    void lock();
+    bool lock();
     bool try_lock();
-    void unlock();
+    bool unlock();
 
   private:
-    pfi::lang::shared_ptr<zk, pfi::concurrent::threading_model::multi_thread> zk_;
+    pfi::lang::shared_ptr<zk> zk_;
     std::string path_;
     std::string seqfile_;
     bool has_lock_;

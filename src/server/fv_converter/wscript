@@ -11,6 +11,11 @@ def configure(conf):
     conf.check_cxx(lib = 're2', define_name = 'HAVE_RE2',
                    errmsg = 'not found (add "--disable-re2" option if not necessary)')
 
+  libpat = conf.env.cxxshlib_PATTERN
+  conf.define('LIBSPLITTER_SAMPLE', libpat % 'splitter_sample')
+  conf.define('LIBFILTER_SAMPLE', libpat % 'filter_sample')
+  conf.define('LIBNUM_FEATURE_SAMPLE', libpat % 'num_feature_sample')
+  conf.define('LIBNUM_FILTER_SAMPLE', libpat % 'num_filter_sample')
 
 def make_test(bld, use, src):
   bld.program(

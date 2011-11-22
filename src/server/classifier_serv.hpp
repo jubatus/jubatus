@@ -45,22 +45,19 @@ class server : pfi::lang::noncopyable
 {
 public:
 #ifdef HAVE_ZOOKEEPER_H
-  server(pfi::lang::shared_ptr<storage::storage_base,
-                               pfi::concurrent::threading_model::multi_thread>&,
-         pfi::lang::shared_ptr<mixer,
-                               pfi::concurrent::threading_model::multi_thread>&,
+  server(pfi::lang::shared_ptr<storage::storage_base>&,
+         pfi::lang::shared_ptr<mixer>&,
          const std::string& base_path = "/tmp");
 #endif
-  explicit server(pfi::lang::shared_ptr<storage::storage_base,
-                                        pfi::concurrent::threading_model::multi_thread>&,
+  explicit server(pfi::lang::shared_ptr<storage::storage_base>&,
                   const std::string& base_path = "/tmp");
 
   ~server();
 
   // msgpack only
   result<std::string> get_storage(int);
-  result<diffv> get_diff(int);
-  result<int> put_diff(storage::features3_t v);
+  diffv get_diff(int);
+  int put_diff(storage::features3_t v);
 
   //should be same in jubakeeper
   result<int> set_config(std::string, classifier::config_data);
@@ -80,15 +77,11 @@ private:
   void build_local_path_(std::string&, const std::string&, const std::string&);
 
   config_data config_;
-  pfi::lang::shared_ptr<datum_to_fv_converter,
-                        pfi::concurrent::threading_model::multi_thread> converter_;
-  pfi::lang::shared_ptr<classifier_base,
-                        pfi::concurrent::threading_model::multi_thread> classifier_;
-  pfi::lang::shared_ptr<storage::storage_base,
-                        pfi::concurrent::threading_model::multi_thread> storage_;
+  pfi::lang::shared_ptr<datum_to_fv_converter> converter_;
+  pfi::lang::shared_ptr<classifier_base> classifier_;
+  pfi::lang::shared_ptr<storage::storage_base> storage_;
 #ifdef HAVE_ZOOKEEPER_H
-  pfi::lang::shared_ptr<mixer,
-                        pfi::concurrent::threading_model::multi_thread> mixer_;
+  pfi::lang::shared_ptr<mixer> mixer_;
 #endif
 
   pfi::concurrent::rw_mutex m_;

@@ -32,8 +32,7 @@ namespace jubatus {
 namespace recommender {
 
 #ifdef HAVE_ZOOKEEPER_H
-  server::server(pfi::lang::shared_ptr<mixer,
-                                       pfi::concurrent::threading_model::multi_thread>& m, const std::string& base_path):
+  server::server(pfi::lang::shared_ptr<mixer>& m, const std::string& base_path):
   recommender_(new recommender()),
   mixer_(m), base_path_(base_path)
 {
@@ -115,10 +114,7 @@ server::~server(){
 
   ++build_cnt_;
 
-  shared_ptr<recommender,
-             pfi::concurrent::threading_model::multi_thread> new_recommender =
-    shared_ptr<recommender,
-               pfi::concurrent::threading_model::multi_thread>(new recommender());
+  shared_ptr<recommender> new_recommender(new recommender());
 
   recommender_builder_->build(*recommender_,
                               config_.all_anchor_num,
@@ -137,8 +133,7 @@ server::~server(){
 
   recommender_builder_.reset();
   recommender_.reset();
-  recommender_ = shared_ptr<recommender,
-                        pfi::concurrent::threading_model::multi_thread>(new recommender());
+  recommender_ = shared_ptr<recommender>(new recommender());
 
   clear_row_cnt_ = 0;
   update_row_cnt_ = 0;
@@ -192,17 +187,12 @@ void server::init()
   }
   */
 
-  recommender_ = shared_ptr<recommender,
-                            pfi::concurrent::threading_model::multi_thread>(new recommender());
-  recommender_builder_ = shared_ptr<recommender_builder,
-                                    pfi::concurrent::threading_model::multi_thread>
+  recommender_ = shared_ptr<recommender>(new recommender);
+  recommender_builder_ = shared_ptr<recommender_builder>
     (new recommender_builder
-     (config_.similarity_name,
-      config_.anchor_finder_name,
-      config_.anchor_builder_name));
+     (config_.similarity_name, config_.anchor_finder_name, config_.anchor_builder_name));
 
-  converter_ = shared_ptr<datum_to_fv_converter,
-                          pfi::concurrent::threading_model::multi_thread>(new datum_to_fv_converter());
+  converter_ = shared_ptr<datum_to_fv_converter>(new datum_to_fv_converter());
   initialize_converter(config_.converter, *converter_);
 }
 
@@ -327,8 +317,7 @@ int server::put_diff(recommender_data r){
 #ifdef HAVE_ZOOKEEPER_H
   pfi::concurrent::scoped_wlock lk(m_);
   recommender_builder_.reset();
-  shared_ptr<recommender,
-             pfi::concurrent::threading_model::multi_thread> tmp(new recommender(r));
+  shared_ptr<recommender> tmp(new recommender(r));
   recommender_.swap(tmp);
   if(mixer_)mixer_->clear();
 #endif
@@ -377,10 +366,7 @@ void server::mix(const std::vector<std::pair<std::string, int> >& servers){
     return;
   }
   
-  shared_ptr<recommender,
-             pfi::concurrent::threading_model::multi_thread> new_recommender =
-    shared_ptr<recommender,
-               pfi::concurrent::threading_model::multi_thread>(new recommender());
+  shared_ptr<recommender> new_recommender(new recommender());
   {
     pfi::concurrent::scoped_wlock lk(m_);    
     ++mix_cnt_;
