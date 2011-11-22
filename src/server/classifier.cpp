@@ -16,16 +16,11 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <string>
+#include <signal.h>
 
-#include <pficommon/lang/bind.h>
 #include <glog/logging.h>
 
-#include "server_util.hpp"
-
-#ifdef HAVE_ZOOKEEPER_H
-#  include "../common/zk.hpp"
-#  include "../common/membership.hpp"
-#endif
+#include "../common/membership.hpp"
 #include "./storage/storage_factory.hpp"
 #include "classifier_serv.hpp"
 #include "classifier_rpc.hpp"
@@ -37,10 +32,8 @@ using namespace jubatus;
 SET_PROGNAME("classifier");
 
 int start_all(classifier::server &s, const jubatus::server_argv& a){
-
   classifier::mprpc_server serv(a.timeout);
-  // run msgpack-rpc server
-  {
+  {  // run msgpack-rpc server
     s.bind_all_methods(serv, a.eth, a.port);
     if(!serv.serv(a.port, a.threadnum)){
       LOG(ERROR) << "failed starting server";
@@ -52,16 +45,16 @@ int start_all(classifier::server &s, const jubatus::server_argv& a){
 
 int main(int argc, char *argv[])
 {
+  signal(SIGPIPE, SIG_IGN);
   jubatus::server_argv a(argc, argv);
-  std::string logfile = a.tmpdir + "/" + PROGNAME + ".zklog";
-
   google::InitGoogleLogging(argv[0]);
   //  google::LogToStderr(); // only when debug
-  LOG(INFO) << a.boot_message(PROGNAME);
 
+  LOG(INFO) << a.boot_message(PROGNAME);
   shared_ptr<storage::storage_base> st;
   
 #ifdef HAVE_ZOOKEEPER_H
+  std::string logfile = a.tmpdir + "/" + PROGNAME + ".zklog";
 
   // running on multiple server mode
   if(a.z != "" and a.name != ""){
@@ -90,19 +83,18 @@ int main(int argc, char *argv[])
     }
     register_actor(*z, a.name, a.eth, a.port);
       
-    shared_ptr<mixer>  m(new mixer(z, a.name, &classifier::server::mix));
-    classifier::server s(st, m, a.tmpdir);
-    
+    shared_ptr<mixer>  m(new mixer(z, a.name));
+    classifier::server s(st, a, a.tmpdir);
+    s.set_mixer(m);
+
     m->start();
     return start_all(s, a);
   }
 #endif
 
-  // standalone mode with 
-  {
+  {  // standalone mode with 
     st.reset(storage::storage_factory::create_storage("local"));
-    classifier::server s(st, a.tmpdir);
+    classifier::server s(st, a, a.tmpdir);
     return start_all(s, a);
   }
-
 }

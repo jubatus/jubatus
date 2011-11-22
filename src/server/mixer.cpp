@@ -36,9 +36,9 @@ using namespace pfi::data;
 using pfi::lang::shared_ptr;
 
 mixer::mixer(pfi::lang::shared_ptr<jubatus::zk>& z, const std::string& name,
-             pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mix,
              unsigned int count_threshold, unsigned int tick_threshold)
-  :mix_(mix), zk_(z),name_(name), 
+  :
+  zk_(z),name_(name), 
   count_threshold_(count_threshold),
   counter_(0),
   tick_threshold_(tick_threshold),

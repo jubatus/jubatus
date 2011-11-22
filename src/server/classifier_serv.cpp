@@ -45,23 +45,12 @@ using namespace std;
 namespace jubatus {
 namespace classifier {
 
-server::server():
-  base_path_("/tmp")
+server::server(shared_ptr<storage_base> &s, const server_argv& a, const std::string& base_path):
+  jubatus_serv(a,base_path),
+  storage_(s)
 {
 }
 
-#ifdef HAVE_ZOOKEEPER_H
-server::server(shared_ptr<storage_base> &s,
-               shared_ptr<mixer> &m, const std::string& base_path):
-  storage_(s), mixer_(m), base_path_(base_path)
-{
-}
-#endif
-
-server::server(shared_ptr<storage_base> &s, const std::string& base_path):
-  storage_(s), base_path_(base_path)
-{
-}
 server::~server() {
 }
 
@@ -175,7 +164,7 @@ result<std::map<std::pair<std::string,int>, std::map<std::string,std::string> > 
     return result<std::map<std::pair<string,int>,std::map<std::string,std::string> > >::fail("no result");
   }else{
     std::map<std::pair<string,int>, std::map<std::string,std::string> > ret;
-    std::pair<string,int> __hoge__ = make_pair(host_,port_); //FIXME
+    std::pair<string,int> __hoge__ = make_pair(a_.eth, a_.port); //FIXME
     ret.insert(make_pair(__hoge__, ret0));
     return result<std::map<std::pair<string,int>,std::map<std::string,std::string> > >::ok(ret);
   }
@@ -350,8 +339,6 @@ void server::mix(const vector<pair<string, int> >& servers){
 }
 
 void server::bind_all_methods(mprpc_server& serv, const std::string& host, int port){
-  host_ = host;
-  port_ = port;
 
   serv.set_get_storage(bind(&server::get_storage, this, _1));
   serv.set_get_diff(bind(&server::get_diff, this, _1));
@@ -365,14 +352,6 @@ void server::bind_all_methods(mprpc_server& serv, const std::string& host, int p
   serv.set_load(bind(&server::load, this, _1, _2, _3));
   serv.set_get_status(bind(&server::get_status, this, _1));
   
-}
-
-void server::build_local_path_(std::string& out, const std::string& type, const std::string& id){
-  out = base_path_ + "/";
-  out += type;
-  out += "_";
-  out += id;
-  out += ".jc";
 }
 
 } // namespace classifier

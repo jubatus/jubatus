@@ -20,39 +20,25 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/lang/noncopyable.h>
-
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/concurrent/threading_model.h>
-
 #include "../common/rpc_util.hpp"
 #include "./classifier/classifier_base.hpp"
 #include "./fv_converter/datum_to_fv_converter.hpp"
 #include "./storage/storage_base.hpp"
 
 #include "classifier_rpc.hpp"
-
-#ifdef HAVE_ZOOKEEPER_H
-#  include "mixer.hpp"
-#endif
+#include "server_util.hpp"
 
 namespace jubatus{
 namespace classifier {
 
-class server : pfi::lang::noncopyable
+class server : public jubatus::jubatus_serv
 {
 public:
-#ifdef HAVE_ZOOKEEPER_H
-  server(pfi::lang::shared_ptr<storage::storage_base>&,
-         pfi::lang::shared_ptr<mixer>&,
-         const std::string& base_path = "/tmp");
-#endif
   explicit server(pfi::lang::shared_ptr<storage::storage_base>&,
+		  const server_argv&,
                   const std::string& base_path = "/tmp");
 
-  ~server();
+  virtual ~server();
 
   // msgpack only
   result<std::string> get_storage(int);
@@ -69,25 +55,15 @@ public:
   result<std::map<std::pair<std::string, int>, std::map<std::string, std::string> > > get_status(std::string);
 
   // internal use only
-  static void mix(const std::vector<std::pair<std::string, int> >&);
+  void mix(const std::vector<std::pair<std::string, int> >&);
   void bind_all_methods(mprpc_server&, const std::string& host, int port);
 
 private:
-  server();
-  void build_local_path_(std::string&, const std::string&, const std::string&);
 
   config_data config_;
   pfi::lang::shared_ptr<datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<classifier_base> classifier_;
   pfi::lang::shared_ptr<storage::storage_base> storage_;
-#ifdef HAVE_ZOOKEEPER_H
-  pfi::lang::shared_ptr<mixer> mixer_;
-#endif
-
-  pfi::concurrent::rw_mutex m_;
-  const std::string base_path_;
-  std::string host_;
-  int port_;
 };
 
 void mix_parameter(diffv& lhs, const diffv& rhs);

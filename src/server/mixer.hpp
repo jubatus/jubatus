@@ -21,9 +21,7 @@
 #include <string>
 #include "storage/storage_base.hpp"
 
-#ifdef HAVE_ZOOKEEPER_H
-#  include "../common/zk.hpp"
-#endif
+#include "../common/zk.hpp"
 
 #include <pficommon/concurrent/thread.h>
 #include <pficommon/concurrent/mutex.h>
@@ -45,7 +43,6 @@ namespace jubatus{
     void get_status(std::map<std::string,std::string>&);
 
     mixer(pfi::lang::shared_ptr<jubatus::zk>&, const std::string& name,
-          pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mix,
           unsigned int count_threashold = 1024, unsigned int tick_threshold = 16);
     virtual ~mixer();
 

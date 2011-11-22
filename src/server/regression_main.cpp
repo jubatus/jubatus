@@ -6,11 +6,8 @@
 #include "fv_converter/datum.hpp"
 #include "fv_converter/datum_to_fv_converter.hpp"
 #include "fv_converter/converter_config.hpp"
-#include "../common/zk.hpp"
 #include "regression/regression_factory.hpp"
 #include "storage/local_storage_mixture.hpp"
-
-#include <pficommon/text/json.h>
 
 namespace jubatus {
 namespace regression {
@@ -52,19 +49,10 @@ void set_config(model* m, const config_data& conf) {
 }
 
 using namespace std;
-using namespace pfi::lang;
-using namespace pfi::concurrent::threading_model;
 
 int main(int argc, char* argv[]) {
-  int timeout = 10;
-#ifdef HAVE_ZOOKEEPER_H
-  std::string zkcluster = "localhost:2181";
-  shared_ptr<jubatus::zk, multi_thread> z(new jubatus::zk(zkcluster, timeout, "log"));
-
-  jubatus::server<jubatus::regression::model> serv(z, "test");
-#else
-  jubatus::server<jubatus::regression::model> serv;
-#endif
+  jubatus::server_argv a(argc, argv);
+  jubatus::server<jubatus::regression::model> serv(a);
 
   serv.register_update<pair<float, jubatus::datum> >(
       "train", &jubatus::regression::train);
@@ -74,5 +62,5 @@ int main(int argc, char* argv[]) {
   serv.register_update<jubatus::regression::config_data>(
       "set_config", &jubatus::regression::set_config);
 
-  serv.serv(9199, timeout);
+  serv.serv(9199, a.timeout);
 }

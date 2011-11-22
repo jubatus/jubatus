@@ -21,6 +21,7 @@
 #include "mixer.hpp"
 #endif
 
+#include "server_util.hpp"
 #include "mix.hpp"
 
 namespace jubatus {
@@ -32,17 +33,23 @@ class server : public pfi::network::mprpc::rpc_server {
  public:
 
 #ifdef HAVE_ZOOKEEPER_H
-  typedef pfi::lang::shared_ptr<
-   jubatus::zk, pfi::concurrent::threading_model::multi_thread> zk_type;
-
-  server(zk_type zk, const std::string& name)
-      : pfi::network::mprpc::rpc_server(0.0),
-        mixer_(zk, name, &m) {}
+  typedef pfi::lang::shared_ptr<jubatus::zk> zk_type;
 #endif
 
-  server()
-      : pfi::network::mprpc::rpc_server(0.0) {}
-  
+  server(const server_argv& a)
+    : pfi::network::mprpc::rpc_server(0.0),
+      a_(a)
+  {
+#ifdef HAVE_ZOOKEEPER_H
+    if(! a.is_standalone()){
+      //   std::string zkcluster = "localhost:2181";
+      //   shared_ptr<jubatus::zk> z(new jubatus::zk(zkcluster, timeout, "log"));
+      //FIXME: initialize zk here
+      //mixer_.reset(new mixer(zk, a.name));
+    }
+#endif
+  };
+
 
   template <typename D>
   void register_update(std::string name,
@@ -75,7 +82,7 @@ class server : public pfi::network::mprpc::rpc_server {
           = pfi::lang::bind(m, &model, pfi::lang::_1);
       add("mix", f);
     }
-    mixer_.set_mixer_func(&mix<D>);
+    mixer_->set_mixer_func(&mix<D>);
   }
 #endif
 
@@ -122,8 +129,9 @@ class server : public pfi::network::mprpc::rpc_server {
  private:
   pfi::concurrent::rw_mutex mutex_;
   M model;
+  const server_argv a_;
 #ifdef HAVE_ZOOKEEPER_H
-  mixer mixer_;
+  pfi::lang::shared_ptr<mixer> mixer_;
 #endif
 };
 

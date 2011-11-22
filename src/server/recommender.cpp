@@ -49,15 +49,14 @@ int main(int argc, char *argv[])
 {
   signal(SIGPIPE, SIG_IGN);
   jubatus::server_argv a(argc, argv);
-
   google::InitGoogleLogging(argv[0]);  
   //  google::LogToStderr(); // only when debug
 
   LOG(INFO) << a.boot_message(PROGNAME);
 
-  bool is_standalone = (a.z == "");
-  if(is_standalone){
-    jubatus::recommender::server s(a.tmpdir);
+
+  if(a.is_standalone()){
+    jubatus::recommender::server s(a);
     LOG(INFO) << "starting in standalone mode.";
     int r = start(s, a);
     LOG(ERROR) << "come " << r << endl;
@@ -67,8 +66,9 @@ int main(int argc, char *argv[])
 
   else{
     shared_ptr<jubatus::zk> z(new jubatus::zk(a.z));
-    shared_ptr<mixer> m(new mixer(z, a.name, &mixer::dummy));
-    recommender::server s(m, a.tmpdir);
+    shared_ptr<mixer> m(new mixer(z, a.name));
+    recommender::server s(a);
+    s.set_mixer(m);
     jubatus::cht c(*z, a.name);
 
     // get anchor graph from neighbor

@@ -30,21 +30,15 @@
 #include "./fv_converter/datum_to_fv_converter.hpp"
 
 #include "recommender_rpc.hpp"
-#ifdef HAVE_ZOOKEEPER_H
-#  include "mixer.hpp"
-#endif
+#include "server_util.hpp"
 
 namespace jubatus {
 namespace recommender {
 
-class server
+class server : public jubatus::jubatus_serv
 {
 public:
-#ifdef HAVE_ZOOKEEPER_H
-  server(pfi::lang::shared_ptr<mixer>&,
-         const std::string& base_path = "/tmp");
-#endif
-  server(const std::string& base_path = "/tmp");
+  server(const server_argv&);
   ~server();
 
   result<int> set_config(std::string,config_data config);
@@ -71,22 +65,12 @@ public:
   void bind_all_methods(mprpc_server&, const std::string&, int);
 
 private:
-  server(){};
-
   void init();
 
   config_data config_;
   pfi::lang::shared_ptr<recommender> recommender_;
   pfi::lang::shared_ptr<recommender_builder> recommender_builder_;
   pfi::lang::shared_ptr<datum_to_fv_converter> converter_;
-#ifdef HAVE_ZOOKEEPER_H
-  pfi::lang::shared_ptr<mixer> mixer_;
-#endif
-
-  pfi::concurrent::rw_mutex m_;
-  const std::string base_path_;
-  std::string host_;
-  int port_;
 
   uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;

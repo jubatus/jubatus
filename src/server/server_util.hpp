@@ -19,38 +19,32 @@
 
 #include <string>
 #include <sstream>
-#include "../common/cmdline.h"
+
+#include <pficommon/lang/shared_ptr.h>
+#include <pficommon/lang/noncopyable.h>
+#include <pficommon/concurrent/lock.h>
+#include <pficommon/concurrent/rwmutex.h>
+
 #include "../common/util.hpp"
+
+#ifdef HAVE_ZOOKEEPER_H
+#  include "mixer.hpp"
+#endif
 
 static const std::string VERSION(JUBATUS_VERSION);
 
 #define SET_PROGNAME(s) \
   static const std::string PROGNAME(JUBATUS_APPNAME "_" s);
 
+
+namespace cmdline{
+class parser;
+}
+
 namespace jubatus {
 
 struct server_argv {
-  server_argv(int args, char** argv){
-    cmdline::parser p;
-    p.add<int>("rpc-port", 'p', "port number", false, 9199);
-    p.add<int>("thread", 'c', "thread number", false, 2);
-    p.add<int>("timeout", 't', "time out (sec)", false, 10);
-
-    p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
-    p.add<std::string>("name", 'n', "learning machine instance name", true);
-    p.add<std::string>("tmpdir", 'd', "directory to place plugins", false, "/tmp");
-    p.add("join",   'j', "join to the existing cluster");
-    p.parse_check(args, argv);
-
-    port = p.get<int>("rpc-port");
-    threadnum = p.get<int>("thread");
-    timeout = p.get<int>("timeout");
-    z = p.get<std::string>("zookeeper");
-    name = p.get<std::string>("name");
-    tmpdir = p.get<std::string>("tmpdir");
-    eth = jubatus::util::get_ip("eth0");
-    join = p.get<bool>("join");
-  };
+  server_argv(int args, char** argv);
   
   bool join;
   int port;
@@ -61,6 +55,10 @@ struct server_argv {
   std::string tmpdir;
   std::string eth;
 
+  bool is_standalone() const {
+    return (z == "");
+  };
+
   std::string boot_message(const std::string& progname) const {
     std::stringstream ret;
     ret << "starting " << progname << VERSION << " RPC server at " <<
@@ -70,4 +68,37 @@ struct server_argv {
 };
 
 
+class jubatus_serv : pfi::lang::noncopyable {
+public:
+
+  jubatus_serv(const server_argv& a, const std::string& base_path = "/tmp"):
+    a_(a), base_path_(base_path_)
+  {
+  };
+  virtual ~jubatus_serv(){};
+
+  void build_local_path_(std::string& out, const std::string& type, const std::string& id){
+    out = base_path_ + "/";
+    out += type;
+    out += "_";
+    out += id;
+    out += ".jc";
+  };
+
+  virtual void mix(const std::vector<std::pair<std::string,int> >&) = 0;
+
+#ifdef HAVE_ZOOKEEPER_H
+  void set_mixer(pfi::lang::shared_ptr<mixer>& m){
+    mixer_ = m;
+    mixer_->set_mixer_func(pfi::lang::bind(&jubatus_serv::mix, this, pfi::lang::_1));
+  };
+protected:
+  pfi::lang::shared_ptr<mixer> mixer_;
+#endif
+
+  pfi::concurrent::rw_mutex m_;
+  server_argv a_;
+  const std::string base_path_;
 };
+
+}; // end jubatus

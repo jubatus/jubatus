@@ -21,7 +21,7 @@ def build(bld):
     )
 
   bld.program(
-    source = 'classifier.cpp',
+    source = 'classifier.cpp server_util.cpp',
     target = 'jubaclassifier',
     includes = '.',
     use = 'jubatus_classifier'
@@ -48,7 +48,7 @@ def build(bld):
     )
 
   bld.program(
-    source = 'recommender.cpp',
+    source = 'recommender.cpp server_util.cpp',
     target = 'jubarecommender',
     includes = '.',
     use = 'jubatus_recommender'
@@ -62,7 +62,7 @@ def build(bld):
     use = 'jubatus_recommender'
     )
 
-  regression_source = 'regression_main.cpp'
+  regression_source = 'regression_main.cpp server_util.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
     regression_source += ' mixer.cpp'
   bld.program(

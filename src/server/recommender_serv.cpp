@@ -31,25 +31,16 @@ using std::string;
 namespace jubatus {
 namespace recommender {
 
-#ifdef HAVE_ZOOKEEPER_H
-  server::server(pfi::lang::shared_ptr<mixer>& m, const std::string& base_path):
-  recommender_(new recommender()),
-  mixer_(m), base_path_(base_path)
-{
-  mixer_->set_mixer_func(pfi::lang::bind(&server::mix, this, pfi::lang::_1));
-}
-#endif
-
-server::server(const std::string& base_path):
-  recommender_(new recommender()),
-  base_path_(base_path)
+server::server(const server_argv& a):
+  jubatus_serv(a, a.tmpdir),
+  recommender_(new recommender())
 {
 }
 
 server::~server(){
 }
 
-  result<int> server::set_config(std::string name,config_data config)
+result<int> server::set_config(std::string name,config_data config)
 {
   pfi::concurrent::scoped_wlock lk(m_);
   config_ = config;
@@ -159,7 +150,7 @@ result<std::map<std::pair<std::string, int>, std::map<std::string, std::string> 
     return result<std::map<std::pair<string,int>,std::map<std::string,std::string> > >::fail("no result");
   }else{
     std::map<std::pair<string,int>, std::map<std::string,std::string> > ret;
-    std::pair<string,int> __hoge__ = make_pair(host_,port_); //FIXME
+    std::pair<string,int> __hoge__ = make_pair(a_.eth,a_.port); //FIXME
     ret.insert(make_pair(__hoge__, ret0));
     return result<std::map<std::pair<string,int>,std::map<std::string,std::string> > >::ok(ret);
   }
@@ -332,8 +323,6 @@ void id(int& l, const int& r){
 }
 
 void server::bind_all_methods(mprpc_server& serv, const std::string& host, int port){
-  host_ = host;
-  port_ = port;
 
   serv.set_set_config(bind(&server::set_config, this, _1, _2));
   serv.set_get_config(bind(&server::get_config, this, _1));
@@ -390,7 +379,7 @@ void server::mix(const std::vector<std::pair<std::string, int> >& servers){
     DLOG(ERROR) << __func__ << ": failed to put diff to " << r << " servers.";
   }
 #endif
-  return ;
+  return;
 }
 
 } // namespace recommender
