@@ -39,7 +39,11 @@ using pfi::lang::lexical_cast;
 
 namespace {
 
-  
+  jubatus::server_argv make_server_argv(){
+    jubatus::server_argv  ret;
+    return ret;
+  }
+
   class recommender_test : public ::testing::Test {
   protected:
     
@@ -62,9 +66,10 @@ namespace {
     }
 
     static void run_in_thread(void* p){
-      jubatus::recommender::server srv_("/tmp");
+      jubatus::server_argv sa;
+      jubatus::recommender::server srv_(sa);
       jubatus::recommender::mprpc_server srver_(1.0);
-      srv_.bind_all_methods(srver_, "localhost", 9195);
+      srv_.bind_all_methods(srver_, "localhost", sa.port);
       srver_.serv(9195, 2);
     };
     

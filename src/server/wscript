@@ -9,7 +9,7 @@ def configure(conf):
 def build(bld):
 
   #classifier
-  classifier_source = 'classifier_serv.cpp'
+  classifier_source = 'classifier_serv.cpp server_util.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
     classifier_source +=  ' mixer.cpp'
 
@@ -21,7 +21,7 @@ def build(bld):
     )
 
   bld.program(
-    source = 'classifier.cpp server_util.cpp',
+    source = 'classifier.cpp',
     target = 'jubaclassifier',
     includes = '.',
     use = 'jubatus_classifier'
@@ -36,7 +36,7 @@ def build(bld):
     )
 
   # recommender
-  recommender_source = 'recommender_serv.cpp'
+  recommender_source = 'recommender_serv.cpp server_util.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
     recommender_source += ' mixer.cpp'
 

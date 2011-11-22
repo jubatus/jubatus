@@ -29,11 +29,9 @@
  }
 
 void make_random_data(vector<pair<string, datum> >& data, size_t size) {
-   for (size_t i = 0; i < size; ++i) {
-     pair<string, vector<double> > p = gen_random_data();
-     data.push_back(make_pair(p.first, convert_vector(p.second)));
-   }
- }
-  
-
+  for (size_t i = 0; i < size; ++i) {
+    pair<string, vector<double> > p = gen_random_data();
+    data.push_back(make_pair(p.first, convert_vector(p.second)));
+  }
+}
 

@@ -91,7 +91,8 @@ TEST(classifier_config_data, config2) {
 
 jubatus::classifier::server* setup_serv(const char* stor = "local"){
   shared_ptr<storage::storage_base> s(storage::storage_factory::create_storage(stor));
-  return new jubatus::classifier::server(s);
+  server_argv a;
+  return new jubatus::classifier::server(s, a);
 }
 
 TEST(serv, api_config) {
@@ -245,7 +246,8 @@ TEST(mix_parameter, trivial) {
 TEST(save_load, trivial){
   const char* meth = "PA";
   shared_ptr<storage::storage_base> st(storage::storage_factory::create_storage("local"));
-  classifier::server serv(st, ".");
+  server_argv a;
+  classifier::server serv(st, a);
 
   std::vector<std::pair<std::string,int> > v;
 
@@ -276,7 +278,7 @@ TEST(save_load, trivial){
 
   shared_ptr<storage::storage_base> s2(storage::storage_factory::create_storage(string("local")));
 
-  classifier::server serv2(s2, ".");
+  classifier::server serv2(s2, server_argv());
   result<int> res_load = serv2.load(NAME, "hoge", "huga");
   ASSERT_TRUE(res_load.success) << res_load.error;
   ASSERT_EQ(0, res_load.retval);

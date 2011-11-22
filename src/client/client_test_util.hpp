@@ -27,13 +27,15 @@ using std::pair;
 
 #include "../server/classifier_rpc.hpp"
 #include "../server/fv_converter/datum.hpp"
+#include "../server/server_util.hpp"
 
 using jubatus::datum;
 // using jubatus::estsimate_results;
 // using jubatus::estimate_result;
 
- datum convert_vector(const vector<double>& vec);
+datum convert_vector(const vector<double>& vec);
 
 void make_random_data(vector<pair<string, datum> >& data, size_t size);
+
   
 

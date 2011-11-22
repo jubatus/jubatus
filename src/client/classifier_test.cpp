@@ -66,10 +66,11 @@ namespace {
     }
 
     static void run_in_thread(void* p){
+      jubatus::server_argv sa;
       pfi::lang::shared_ptr<storage_base> st_(storage_factory::create_storage("local"));
-      jubatus::classifier::server srv_(st_);
+      jubatus::classifier::server srv_(st_, sa);
       jubatus::classifier::mprpc_server srver_(1.0);
-      srv_.bind_all_methods(srver_, "localhost", 9194);
+      srv_.bind_all_methods(srver_, "localhost", sa.port);
       srver_.serv(9194, 2);
     };
     

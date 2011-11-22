@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <functional>
+
 #include <pficommon/lang/function.h>
 #include <pficommon/network/mprpc.h>
 #include <pficommon/data/serialization.h>
@@ -14,21 +15,22 @@
 
 #include <glog/logging.h>
 
+#include "../common/exception.hpp"
 #include "../common/rpc_util.hpp"
 #include "../common/zk.hpp"
 
 #ifdef HAVE_ZOOKEEPER_H
 #include "mixer.hpp"
+#include "mix.hpp"
 #endif
 
 #include "server_util.hpp"
-#include "mix.hpp"
 
 namespace jubatus {
 
 void m(const std::vector<std::pair<std::string, int> >&) {}
 
-template <typename M>
+template <typename M, typename Diff>
 class server : public pfi::network::mprpc::rpc_server {
  public:
 
@@ -41,22 +43,20 @@ class server : public pfi::network::mprpc::rpc_server {
       a_(a)
   {
 #ifdef HAVE_ZOOKEEPER_H
+    mixer_running_ = false;
     if(! a.is_standalone()){
-      //   std::string zkcluster = "localhost:2181";
-      //   shared_ptr<jubatus::zk> z(new jubatus::zk(zkcluster, timeout, "log"));
-      //FIXME: initialize zk here
-      //mixer_.reset(new mixer(zk, a.name));
+      pfi::lang::shared_ptr<jubatus::zk> z(new jubatus::zk(a.z, a.timeout, "log"));
+      mixer_.reset(new mixer0<M, Diff>(z, a.name, a.interval_count, a.interval_sec));
     }
 #endif
   };
-
 
   template <typename D>
   void register_update(std::string name,
                        pfi::lang::function<void(M*, const D&)> u)
   {
     pfi::lang::function<result<int>(std::string, std::vector<D>)> f
-        = pfi::lang::bind(&server<M>::template update<D>, this, u, pfi::lang::_1, pfi::lang::_2);
+      = pfi::lang::bind(&server<M, Diff>::template update<D>, this, u, pfi::lang::_1, pfi::lang::_2);
     add(name, f);
   }
 
@@ -64,25 +64,30 @@ class server : public pfi::network::mprpc::rpc_server {
   void register_analysis(std::string name,
                          pfi::lang::function<R(const M*, const Q&)> q) {
     pfi::lang::function<result<std::vector<R> >(std::string, std::vector<Q>)> f
-        = pfi::lang::bind(&server<M>::template analysis<Q, R>, this, q, pfi::lang::_1, pfi::lang::_2);
+      = pfi::lang::bind(&server<M, Diff>::template analysis<Q, R>, this, q, pfi::lang::_1, pfi::lang::_2);
     add(name, f);
   }
 
 #ifdef HAVE_ZOOKEEPER_H
-  template <typename D>
-  void set_mixer(pfi::lang::function<D(const M*)> d,
-                 pfi::lang::function<int(M*, const D&)> m) {
-    {
-      pfi::lang::function<D()> f
-          = pfi::lang::bind(d, &model);
-      add("get_diff", f);
+  void start_mixer(pfi::lang::function<Diff(const M*)> get_diff, //get_diff
+                   pfi::lang::function<int(const M*, const Diff&, const Diff&, Diff&)> mix, //mix
+                   pfi::lang::function<int(M*, const Diff&)> put_diff //put_diff
+                   ) {
+    if(mixer_running_){ // TODO: check statically second call of start_mixer
+      throw std::runtime_error("can't start mixer twice.");
     }
-    {
-      pfi::lang::function<int(D)> f
-          = pfi::lang::bind(m, &model, pfi::lang::_1);
-      add("mix", f);
+    { //register to msgpack-RPC
+      pfi::lang::function<Diff()> f = pfi::lang::bind(get_diff, &model);
+      add(jubatus::GET_DIFF, f);
     }
-    mixer_->set_mixer_func(&mix<D>);
+    { //register to msgpack-RPC
+      pfi::lang::function<int(Diff)> f = pfi::lang::bind(put_diff, &model, pfi::lang::_1);
+      add(jubatus::PUT_DIFF, f);
+    }
+    //register to mixer0
+    mixer_->set_mixer_func(mix);
+    mixer_running_ = true;
+    mixer_->start();
   }
 #endif
 
@@ -101,11 +106,13 @@ class server : public pfi::network::mprpc::rpc_server {
         LOG(WARNING) << e.what();
       }
     }
+#ifdef HAVE_ZOOKEEPER_H
     try {
-      //mixer_.updated();
+      mixer_->updated();
     } catch(const std::exception& e) {
       LOG(WARNING) << e.what();
     }
+#endif
     return result<int>::ok(success);
   }
 
@@ -131,9 +138,9 @@ class server : public pfi::network::mprpc::rpc_server {
   M model;
   const server_argv a_;
 #ifdef HAVE_ZOOKEEPER_H
-  pfi::lang::shared_ptr<mixer> mixer_;
+  bool mixer_running_;
+  pfi::lang::shared_ptr<mixer0<M, Diff> > mixer_;
 #endif
 };
-
 
 }

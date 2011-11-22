@@ -114,9 +114,6 @@ void mixer::get_status(std::map<std::string,std::string>& out){
   out["count"] = pfi::lang::lexical_cast<std::string>(counter_);
   out["ticktime"] = pfi::lang::lexical_cast<std::string>(ticktime_); //since last mix
 }
-void mixer::dummy(const std::vector<std::pair<std::string,int> >&){}
-
-
 
 void mixer::mixer_loop(void* p){
   mixer * m = static_cast<mixer*>(p);

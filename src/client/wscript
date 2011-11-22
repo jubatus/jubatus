@@ -13,7 +13,7 @@ def build(bld):
   
   bld.program(
     features = 'gtest',
-    source = 'accessor_test.cpp',
+    source = 'accessor_test.cpp ../server/server_util.cpp',
     target = 'jubatus_accessor_client_test',
     includes = '.',
     use = 'PFICOMMON jubatus jubatus_classifier'
@@ -21,7 +21,7 @@ def build(bld):
 
   bld.program(
     features = 'gtest',
-    source = 'classifier_test.cpp client_test_util.cpp',
+    source = 'classifier_test.cpp client_test_util.cpp ../server/server_util.cpp',
     target = 'jubatus_classifier_client_test',
     includes = '.',
     use = 'PFICOMMON jubatus jubatus_classifier'
@@ -29,7 +29,7 @@ def build(bld):
 
   bld.program(
     features = 'gtest',
-    source = 'recommender_test.cpp client_test_util.cpp',
+    source = 'recommender_test.cpp client_test_util.cpp ../server/server_util.cpp',
     target = 'jubatus_recommender_client_test',
     includes = '.',
     use = 'PFICOMMON jubatus jubatus_recommender'

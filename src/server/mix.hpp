@@ -6,7 +6,7 @@
 namespace jubatus {
 
 template<typename D>
-void mix(std::vector<std::pair<std::string, int> > servers) {
+void do_mix(std::vector<std::pair<std::string, int> > servers) {
   int timeout = 10;
   pfi::network::mprpc::rpc_client center(servers[0].first, servers[0].second, timeout);
   for (size_t i = 0; i < servers.size(); ++i) {
@@ -17,5 +17,5 @@ void mix(std::vector<std::pair<std::string, int> > servers) {
     center.call<int(D)>("mix")(diff);
   }
 }
-
+  
 }
