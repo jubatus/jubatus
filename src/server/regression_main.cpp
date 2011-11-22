@@ -111,5 +111,5 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-  return serv.serv(9199, a.timeout);
+  return serv.serv(a.port, a.timeout);
 }

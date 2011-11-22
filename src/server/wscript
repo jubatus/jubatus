@@ -69,7 +69,17 @@ def build(bld):
     source = regression_source,
     target = 'jubaregression',
     includes = '.',
-    use = 'jubatus_regression jubaconverter jubastorage'
+    use = 'jubastorage jubaconverter jubatus_regression'
+    )
+
+  classifier_source = 'classifier_main.cpp server_util.cpp'
+  if bld.env.HAVE_ZOOKEEPER_H:
+    classifier_source += ' mixer.cpp'
+  bld.program(
+    source = classifier_source,
+    target = 'jubaclassifier',
+    includes = '.',
+    use = 'jubaconverter jubastorage jubaclassifier'
     )
 
   bld.program(

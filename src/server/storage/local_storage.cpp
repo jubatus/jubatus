@@ -154,7 +154,7 @@ void local_storage::update(const string &feature, const string& inc_class, const
   feature_row[class2id_.get_id(dec_class)].v1 -= v;
 }
 
-bool local_storage::save(std::ostream& os){
+bool local_storage::save(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << *this;
 

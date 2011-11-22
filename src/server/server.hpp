@@ -21,7 +21,6 @@
 
 #ifdef HAVE_ZOOKEEPER_H
 #include "mixer.hpp"
-#include "mix.hpp"
 #endif
 
 #include "server_util.hpp"

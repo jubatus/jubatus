@@ -196,7 +196,7 @@ void local_storage_mixture::set_average_and_clear_diff(const features3_t& averag
   tbl_diff_.clear();
 }
 
-bool local_storage_mixture::save(std::ostream& os){
+bool local_storage_mixture::save(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << *this;
   return true;
