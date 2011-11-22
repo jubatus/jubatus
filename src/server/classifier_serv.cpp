@@ -51,15 +51,14 @@ server::server():
 }
 
 #ifdef HAVE_ZOOKEEPER_H
-server::server(shared_ptr<storage_base, pfi::concurrent::threading_model::multi_thread> &s,
-               shared_ptr<mixer, pfi::concurrent::threading_model::multi_thread> &m, const std::string& base_path):
+server::server(shared_ptr<storage_base> &s,
+               shared_ptr<mixer> &m, const std::string& base_path):
   storage_(s), mixer_(m), base_path_(base_path)
 {
 }
 #endif
 
-server::server(shared_ptr<storage_base,
-                        pfi::concurrent::threading_model::multi_thread> &s, const std::string& base_path):
+server::server(shared_ptr<storage_base> &s, const std::string& base_path):
   storage_(s), base_path_(base_path)
 {
 }
@@ -70,8 +69,7 @@ result<int> server::set_config(string name, config_data config) {
   DLOG(INFO) << __func__;
 
   try{
-    shared_ptr<datum_to_fv_converter,pfi::concurrent::threading_model::multi_thread> converter
-      = shared_ptr<datum_to_fv_converter,pfi::concurrent::threading_model::multi_thread>(new datum_to_fv_converter());
+    shared_ptr<datum_to_fv_converter> converter(new datum_to_fv_converter);
     
     jubatus::initialize_converter(config.converter, *converter);
     
@@ -217,7 +215,7 @@ result<int> server::load(std::string name, std::string type, std::string id) {
   }
 
   try{
-    shared_ptr<storage::storage_base,pfi::concurrent::threading_model::multi_thread> s(storage::storage_factory::create_storage(storage_->type));
+    shared_ptr<storage::storage_base> s(storage::storage_factory::create_storage(storage_->type));
     
     if(!s){
       return result<int>::fail("cannot allocate memory for storage");

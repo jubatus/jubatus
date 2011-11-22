@@ -44,8 +44,7 @@ namespace jubatus{
     void start();
     void get_status(std::map<std::string,std::string>&);
 
-    mixer(pfi::lang::shared_ptr<jubatus::zk,
-                                pfi::concurrent::threading_model::multi_thread>&, const std::string& name,
+    mixer(pfi::lang::shared_ptr<jubatus::zk>&, const std::string& name,
           pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mix,
           unsigned int count_threashold = 1024, unsigned int tick_threshold = 16);
     virtual ~mixer();
@@ -66,8 +65,7 @@ namespace jubatus{
   private:  
     pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mix_;
 
-    pfi::lang::shared_ptr<jubatus::zk,
-                          pfi::concurrent::threading_model::multi_thread> zk_;
+    pfi::lang::shared_ptr<jubatus::zk> zk_;
     std::string name_;
 
     unsigned int count_threshold_;

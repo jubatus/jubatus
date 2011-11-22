@@ -50,7 +50,4 @@ struct result {
   }
 };
 
-
-
-
 } //namespace jubatus
