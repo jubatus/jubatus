@@ -282,3 +282,23 @@ TEST(datum_to_fv_converter, register_num_filter) {
   EXPECT_EQ("/age+5@str$25", feature[1].first);
 }
 
+TEST(datum_to_fv_converter, duplicate_key) {
+  datum_to_fv_converter conv;
+  datum datum;
+  datum.string_values_.push_back(make_pair("name", "john"));
+  datum.string_values_.push_back(make_pair("name", "mike"));
+
+  vector<splitter_weight_type> p;
+  p.push_back(splitter_weight_type(FREQ_BINARY, TERM_BINARY));
+  conv.register_string_rule("str",
+                            shared_ptr<key_matcher>(new match_all()),
+                            shared_ptr<word_splitter>(new without_split()),
+                            p);
+  
+  vector<pair<string, float> > fv;
+  conv.convert(datum, fv);
+
+  ASSERT_EQ(2u, fv.size());
+  EXPECT_EQ("name$john@str#bin/bin", fv[0].first);
+  EXPECT_EQ("name$mike@str#bin/bin", fv[1].first);
+}
