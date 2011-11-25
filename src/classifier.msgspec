@@ -1,0 +1,81 @@
+// IDL spec that won't work
+// see http://d.hatena.ne.jp/viver/20110406/p1
+
+namespace us.jubat
+namespace cpp jubatus
+
+
+message string_rule {
+  1: string key
+  2: string type
+  3: string sample_weight
+  4: string global_weight
+}
+
+message filter_rule {
+  1: string key
+  2: string type
+  3: string suffix
+}
+
+message num_rule {
+  1: string key
+  2: string type
+}
+
+typedef map<string, string> param_t
+
+message converter_config {
+  1: map<string, param_t> string_filter_types
+  2: list<filter_rule>    string_filter_rules
+  3: map<string, param_t> num_filter_types
+  4: list<filter_rule>    num_filter_rules
+  5: map<string, param_t> string_types
+  6: list<string_rule>    string_rules
+  7: map<string, param_t> num_types
+  8: list<num_rule>       num_rules
+}
+
+message config_data {
+  1: string method
+  2: converter_config converter
+}
+
+message estimate_result {
+  1: string label
+  2: double prob
+}
+
+typedef list<estimate_result> estimate_results
+
+
+message datum {
+ //TBF
+}
+
+message features3_t {
+ //TBF
+}
+
+exception config_not_set {
+  1: string message
+}
+
+// inheritance smaple
+exception config_not_set2 < config_not_set {
+  2: int errcode
+}
+
+service classifier_serv:1 {
+  int                set_config(1: config_data)  throws converter_exception
+  config_data        get_config()
+  bool               train(1: list<pair<string, datum>>) throws config_not_set, converter_exception
+  list<estimate_results>  classify(1: list<datum>)       throws config_not_set, converter_exception
+  bool               save(1: string, 2: string)          throws config_not_set, std::runtime_error
+  bool               load(1: string, 2: string)          throws config_not_set, std::runtime_error
+  map<string,string> get_status()
+
+  string             get_storage(int)      throws bad_storage_type
+  diffv              get_diff(int)         throws bad_storage_type
+  int                put_diff(features3_t) throws bad_storage_type
+}

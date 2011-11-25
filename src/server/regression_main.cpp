@@ -69,8 +69,8 @@ int put_diff(model*, const diffv&){  //FIXME
 using namespace std;
 
 int main(int argc, char* argv[]) {
-  const jubatus::server_argv a(argc, argv);
-  jubatus::server<jubatus::regression::model, jubatus::diffv> serv(a);
+  jubatus::server<jubatus::regression::model, jubatus::diffv>
+    serv(jubatus::server_argv(argc, argv));
 
   serv.register_update<pair<float, jubatus::datum> >(
       "train", &jubatus::regression::train);
@@ -100,5 +100,5 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-  return serv.serv(a.port, a.timeout);
+  return serv.start();
 }

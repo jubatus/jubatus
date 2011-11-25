@@ -5,9 +5,10 @@
 using jubatus::datum;
 using jubatus::regression::config_data;
 
+SET_PROGNAME("regression_keeper");
+
 int main(int args, char** argv){
-  jubatus::server_argv a(args, argv);
-  keeper k(a);
+  keeper k(jubatus::keeper_argv(args, argv));
   
   k.register_random_update<std::pair<float,datum> >("train");
   k.register_random_analysis<float, datum>("estimate");

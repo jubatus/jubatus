@@ -36,7 +36,6 @@ static const std::string VERSION(JUBATUS_VERSION);
 #define SET_PROGNAME(s) \
   static const std::string PROGNAME(JUBATUS_APPNAME "_" s);
 
-
 namespace cmdline{
 class parser;
 }
@@ -61,6 +60,25 @@ struct server_argv {
   bool is_standalone() const {
     return (z == "");
   };
+
+  std::string boot_message(const std::string& progname) const {
+    std::stringstream ret;
+    ret << "starting " << progname << VERSION << " RPC server at " <<
+      eth << ":" << port << " with timeout: " << timeout;
+    return ret.str();
+  };
+};
+
+
+struct keeper_argv {
+  keeper_argv(int args, char** argv);
+  keeper_argv();
+  
+  int port;
+  int timeout;
+  int threadnum;
+  std::string z;
+  std::string eth;
 
   std::string boot_message(const std::string& progname) const {
     std::stringstream ret;

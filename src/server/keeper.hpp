@@ -17,11 +17,11 @@ static const std::string ACTOR_BASE_PATH = "";
 class keeper : public pfi::network::mprpc::rpc_server {
  public:
   keeper() : pfi::network::mprpc::rpc_server(0.0) {}
-  keeper(const jubatus::server_argv& a) : pfi::network::mprpc::rpc_server(0.0), a_(a){
+  keeper(const jubatus::keeper_argv& a) : pfi::network::mprpc::rpc_server(a.timeout), a_(a){
   }
 
   int start(){
-    return this->serv(a_.port, a_.timeout);
+    return this->serv(a_.port, a_.threadnum);
   };
 
   template <typename Q>
@@ -121,7 +121,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
   }
 
   //zk zk_;
-  jubatus::server_argv a_;
+  jubatus::keeper_argv a_;
   pfi::math::random::mtrand rng_;
   pfi::concurrent::mutex mutex_;
   int timeout_;

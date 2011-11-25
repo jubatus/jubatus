@@ -38,7 +38,7 @@ class server : public pfi::network::mprpc::rpc_server {
 #endif
 
   server(const server_argv& a)
-    : pfi::network::mprpc::rpc_server(0.0),
+    : pfi::network::mprpc::rpc_server(a.timeout),
       a_(a)
   {
 #ifdef HAVE_ZOOKEEPER_H
@@ -48,6 +48,10 @@ class server : public pfi::network::mprpc::rpc_server {
       mixer_.reset(new mixer0<M, Diff>(z, a.name, a.interval_count, a.interval_sec));
     }
 #endif
+  };
+
+  int start(){
+    return this->serv(a_.port, a_.threadnum);
   };
 
   template <typename D>

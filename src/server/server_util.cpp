@@ -2,7 +2,7 @@
 #include "../common/cmdline.h"
 
 namespace jubatus {
-
+  
   server_argv::server_argv(int args, char** argv){
     cmdline::parser p;
     p.add<int>("rpc-port", 'p', "port number", false, 9199);
@@ -38,4 +38,25 @@ namespace jubatus {
   {
   };
 
-};
+  keeper_argv::keeper_argv(int args, char** argv){
+    cmdline::parser p;
+    p.add<int>("rpc-port", 'p', "port number", false, 9199);
+    p.add<int>("thread", 'c', "concurrency = thread number", false, 16);
+    p.add<int>("timeout", 't', "time out (sec)", false, 10);
+
+    p.add<std::string>("zookeeper", 'z', "zookeeper location", false, "localhost:2181");
+
+    p.parse_check(args, argv);
+
+    port = p.get<int>("rpc-port");
+    threadnum = p.get<int>("thread");
+    timeout = p.get<int>("timeout");
+    z = p.get<std::string>("zookeeper");
+    eth = jubatus::util::get_ip("eth0");
+  };
+
+  keeper_argv::keeper_argv():
+    port(9199), timeout(10), threadnum(16), z("localhost:2181"), eth("")
+  {
+  };
+}

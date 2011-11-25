@@ -206,5 +206,5 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-  return serv.serv(a.port, a.timeout);
+  return serv.start();
 }
