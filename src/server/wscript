@@ -6,25 +6,46 @@ def options(opt):
 def configure(conf):
   conf.recurse(subdirs)
 
-def build(bld):
 
-  #classifier
-  classifier_source = 'classifier_serv.cpp server_util.cpp'
-  if bld.env.HAVE_ZOOKEEPER_H:
-    classifier_source +=  ' mixer.cpp'
-
-  bld.stlib(
-    source = classifier_source,
-    target = 'jubatus_classifier',
+def make_ml_machine(bld, name, libraries = ''):
+  server_source = name + '_main.cpp'
+  bld.program(
+    source = server_source,
+    target = 'juba' + name,
     includes = '.',
-    use = 'PFICOMMON jubaconverter jubaclassifier jubastorage jubacommon MSGPACK GLOG'
+    use = libraries + ' jubaconverter jubatus_framework'
     )
 
+  if bld.env.HAVE_ZOOKEEPER_H:
+    keeper_source = name + '_keeper.cpp'
+    bld.program(
+      source = keeper_source,
+      target = 'juba' + name + '_keeper',
+      includes = '.',
+      use = 'jubatus_framework'
+      )
+
   bld.program(
-    source = 'classifier.cpp',
-    target = 'jubaclassifier',
+    source = name + '_test.cpp',
+    target = name + '_test',
     includes = '.',
-    use = 'jubatus_classifier'
+    use = libraries + ' PFICOMMON jubaconverter jubatus_framework'
+    )
+
+
+def build(bld):
+
+  #####################3
+  ### old code begins
+  #classifier
+  classifier_source = 'classifier_serv.cpp'
+  bld.stlib(
+    source = classifier_source,   target = 'jubatus_classifier',   includes = '.',
+    use = 'PFICOMMON jubaconverter jubaclassifier jubastorage jubacommon MSGPACK GLOG jubatus_framework'
+    )
+  bld.program(
+    source = 'classifier.cpp',   target = 'jubaclassifier',
+    includes = '.',   use = 'jubatus_classifier'
     )
 
   bld.program(
@@ -61,33 +82,26 @@ def build(bld):
     includes = '.',
     use = 'jubatus_recommender'
     )
+  ### old code end
+  ###############################
 
-  regression_source = 'regression_main.cpp server_util.cpp'
+  # new code starts
+  framework_source = 'server_util.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
-    regression_source += ' mixer.cpp'
-  bld.program(
-    source = regression_source,
-    target = 'jubaregression',
+    framework_source +=  ' mixer.cpp'
+
+  bld.shlib(
+    source = framework_source,
+    target = 'jubatus_framework',
     includes = '.',
-    use = 'jubastorage jubaconverter jubatus_regression'
+    use = 'PFICOMMON jubacommon MSGPACK GLOG'
     )
 
-  classifier_source = 'classifier_main.cpp server_util.cpp'
-  if bld.env.HAVE_ZOOKEEPER_H:
-    classifier_source += ' mixer.cpp'
-  bld.program(
-    source = classifier_source,
-    target = 'jubaclassifier',
-    includes = '.',
-    use = 'jubaconverter jubastorage jubaclassifier'
-    )
+  #new regression
+  make_ml_machine(bld, 'regression', 'jubastorage jubatus_regression')
 
-  bld.program(
-    source = 'regression_test.cpp',
-    target = 'regression_test',
-    includes = '.',
-    use = 'PFICOMMON'
-    )
+  #new classifier
+  make_ml_machine(bld, 'classifier', 'jubastorage jubaclassifier')
 
   n = bld.path.get_bld().make_node('test_input')
   n.mkdir()

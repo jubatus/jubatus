@@ -1,26 +1,15 @@
 #include <pficommon/lang/shared_ptr.h>
-#include <msgpack.hpp>
 
 #include "server.hpp"
+#include "regression_types.hpp"
+
 #include "regression/regression.hpp"
-#include "fv_converter/datum.hpp"
-#include "fv_converter/datum_to_fv_converter.hpp"
-#include "fv_converter/converter_config.hpp"
 #include "regression/regression_factory.hpp"
-#include "storage/local_storage_mixture.hpp"
-#include "diffv.hpp"
 
 SET_PROGNAME("regression");
 
 namespace jubatus {
 namespace regression {
-
-struct config_data {
-  std::string method;
-  jubatus::converter_config converter;
-
-  MSGPACK_DEFINE(method, converter);
-};
 
 struct model {
   datum_to_fv_converter conv;
