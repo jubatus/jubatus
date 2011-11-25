@@ -185,7 +185,7 @@ int main(int argc, char* argv[]) {
   serv.register_update<std::string>(
       "load", &jubatus::classifier::load);
 
-  // FIXME: we need bind 'get_status' API here.
+  // FIXME: we need bind 'get_status' and get_storage API here.
 
 #ifdef HAVE_ZOOKEEPER_H
   pfi::lang::function<jubatus::diffv(const jubatus::classifier::model*)> g(&jubatus::classifier::get_diff);
