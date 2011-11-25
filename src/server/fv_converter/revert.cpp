@@ -83,6 +83,7 @@ bool revert_string_value(const pair<string, float>& feature,
   
   string_value.first.swap(key);
   string_value.second.swap(value);
+  return true;
 }
 
 
