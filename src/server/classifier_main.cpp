@@ -194,7 +194,7 @@ int main(int argc, char* argv[]) {
                           const jubatus::diffv&,
                           jubatus::diffv&)>  m(&jubatus::classifier::mix);
   pfi::lang::function<int(jubatus::classifier::model*, const jubatus::diffv&)> p(&jubatus::classifier::put_diff);
-  serv.start_mixer(g, m, p);
+  serv.set_mixer(g, m, p);
 
 #endif
 

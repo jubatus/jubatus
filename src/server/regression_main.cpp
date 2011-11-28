@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
                           const jubatus::diffv&,
                           jubatus::diffv&)>  m(&jubatus::regression::mix);
   pfi::lang::function<int(jubatus::regression::model*, const jubatus::diffv&)> p(&jubatus::regression::put_diff);
-  serv.start_mixer(g, m, p);
+  serv.set_mixer(g, m, p);
 
 #endif
 
