@@ -49,7 +49,7 @@ struct server_argv {
     name = p.get<std::string>("name");
     tmpdir = p.get<std::string>("tmpdir");
     eth = jubatus::util::get_ip("eth0");
-    join = p.get<bool>("join");
+    join = p.exist("join");
   };
   
   bool join;
