@@ -36,6 +36,12 @@ C++ module. Output is a set of C++ files that is to be assembled to the Jubatus 
 server that does mix, keeper server to be the gateway and the client library (in multiple
 languages, if possible).
 
+- Input: 'xxx.cpp' which implements developer's application 
+- Output0: 'xxx.idl' which defines server-client interface in MsgPack-idl format
+- Output1: 'xxx_impl.(h|c)pp' which implements developer's application in server-side.
+- Output2: 'xxx_main.cpp' which includes 'main()'
+- Output3: 'xxx_keeper.cpp' -- keeper implementation includes 'main()'
+
 
 First goal and the following sequence
 =====================================

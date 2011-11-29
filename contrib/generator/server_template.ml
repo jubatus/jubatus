@@ -9,21 +9,21 @@ let make_class_begin classname =
 let make_class_end classname =
   "}; // " ^ classname ;;
 
-let prototype2impl (t,n,argvs,decorators,code,is_const) =
+let prototype2impl (t,n,argvs,decorators,is_const) =
   let argvs_str =
-    String.concat ", " (List.map (fun (t,n)-> (Stree.to_string t) ^ " " ^ n) argvs) in
+    String.concat ", " (List.map (fun t-> Stree.to_string t) argvs) in
   let const_statement = if is_const then "const" else "" in
   let decorators = String.concat " " decorators in
   
-  Printf.sprintf "  %s %s(%s) %s %s \n  %s;\n"
-    (Stree.to_string t) n (argvs_str) const_statement decorators code;;
+  Printf.sprintf "  %s %s(%s) %s %s;\n"
+    (Stree.to_string t) n (argvs_str) const_statement decorators;;
 
 let memberdecl (t,n) =
   Printf.sprintf "  %s %s;\n" (Stree.to_string t) n;;
 
 (* FIXME: filter bad functions included in 'funcs' that pretend to be constructor *)
 let make_class = function
-  | Stree.ClassImpl(classname, funcs, members) ->
+  | Stree.ClassDef(classname, funcs, members) ->
     make_class_begin classname
     ^ (String.concat "\n" (List.map prototype2impl funcs))
     ^ "private:\n"

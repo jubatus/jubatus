@@ -25,13 +25,14 @@ let _ =
   print_endline (source_file ^ " ===> " ^ output_file); *)
   let lexbuf = Lexing.from_channel (open_in source_file) in
   try
-    let (includee,classimpls) = Parser.input Lexer.token lexbuf in
+    let (typedefs,structdefs,classdefs) = Parser.input Lexer.token lexbuf in
     print_endline "------------- syntax tree:";
-    List.iter (fun s -> print_endline ("including => "^s) ) includee;
-    List.iter Stree.print_classimpl classimpls;
+    List.iter Stree.print_classimpl classdefs;
     Stree.print_all();
+    print_int (List.length structdefs);
     print_endline "------------- generated code:";
-    let m = new Generator.jubatus_module (get_name source_file) "jupatus" includee classimpls in
+    let m = new Generator.jubatus_module (get_name source_file)
+      "jupatus" (List.rev typedefs) (List.rev structdefs) (List.rev classdefs) in
     m#generate;
     ()
   with

@@ -55,6 +55,7 @@ FILES[] =
     util
     server_template
     keeper_template
+    idl_template
 
 PROGRAM = jenerator
 # OCAML_LIBS +=
@@ -62,5 +63,5 @@ PROGRAM = jenerator
 # OCAML_OTHER_LIBS +=
 # OCAML_LIB_FLAGS +=
 
-.DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES)) classifier.cpp
-	./$(PROGRAM) classifier.cpp
+.DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES)) classifier.hpp
+	./$(PROGRAM) classifier.hpp

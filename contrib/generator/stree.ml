@@ -1,7 +1,8 @@
 
 type user_defined_type = Class of string
+			 | Struct of string
 			 | Template  of string * (anytype list)
-			 | Namespace of string * user_defined_type  (* currently no namespace is implemented *)
+(*			 | Namespace of string * user_defined_type  currently no namespace is implemented *)
 
 and  anytype = Void | Int | Char | Double
 	       | Other of user_defined_type * bool
@@ -9,11 +10,13 @@ and  anytype = Void | Int | Char | Double
 	       | Destructor
 
 type decorator = string
-type prototype = anytype * string * ((anytype * string) list) * (decorator list) * string * bool (* is_const *)
+type prototype = anytype * string * (anytype list) * (decorator list) * bool (* is_const *)
 type member    = anytype * string (* static is not allowed, const is not implemented *)
 
 (* currently all members should be public, and 'public:' and 'private:' notations are ignored *)
-type class_impl = ClassImpl of string * (prototype list) * (member list)
+type class_def = ClassDef of string * (prototype list) * (member list)
+type struct_def = StructDef of string * (member list)
+type type_def = TypeDef of anytype * string
 
 exception Unkown_directive
 
@@ -66,10 +69,11 @@ let rec to_string = function
   | Other(ud, is_ref) ->
     let rec ud_type2string = function
       | Class(s) -> s;
+      | Struct(s) -> s;
       | Template(n, l) ->
 	let list = List.map to_string l in
 	n ^ "<" ^ (String.concat ", " list) ^ "> " ;
-      | Namespace(ns, ud) -> ns ^ "::" ^ (ud_type2string ud)
+(*      | Namespace(ns, ud) -> ns ^ "::" ^ (ud_type2string ud) *)
     in
     let ref_statement = if is_ref then "&" else "" in
     (ud_type2string ud)^ref_statement;
@@ -81,16 +85,16 @@ let print_all()=
   let p_ k _ = print_string (k ^ ", " ) in Hashtbl.iter p_ known_types;
   print_endline "";;
 
-let prototype2string (retval,funcname,argvs,decorators,code,is_const) =
+let prototype2string (retval,funcname,argvs,decorators,is_const) =
   let argvs_str =
-    String.concat ", " (List.map (fun (t,n)-> (to_string t) ^ " " ^ n) argvs) in
+    String.concat ", " (List.map (fun t-> to_string t) argvs) in
   let const_statement = if is_const then "const" else "" in
   let decorators = String.concat " " decorators in
-  Printf.sprintf "=> %s %s(%s)%s; with code of %d bytes %s" (* \033[34m escape sequence... for colored term*)
-    (to_string retval) funcname argvs_str const_statement (String.length code) decorators;;
+  Printf.sprintf "=> %s %s(%s)%s;  %s" (* \033[34m escape sequence... for colored term*)
+    (to_string retval) funcname argvs_str const_statement decorators;;
   
 let print_classimpl = function
-  | ClassImpl(name,funcs,members) ->
+  | ClassDef(name,funcs,members) ->
     print_endline ("classname => " ^ name ^ ":");
     print_endline "methods:";
     List.iter (Util.compose print_endline prototype2string) funcs;
