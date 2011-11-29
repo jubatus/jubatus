@@ -25,9 +25,9 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
 
-#include "./recommender/recommender.hpp"
-#include "./recommender/recommender_builder.hpp"
-#include "./fv_converter/datum_to_fv_converter.hpp"
+#include "../recommender/recommender.hpp"
+#include "../recommender/recommender_builder.hpp"
+#include "../fv_converter/datum_to_fv_converter.hpp"
 
 #include "recommender_rpc.hpp"
 #include "server_util.hpp"

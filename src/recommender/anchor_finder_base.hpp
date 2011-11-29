@@ -17,26 +17,33 @@
 
 #pragma once
 
-#include <map>
-#include <pficommon/lang/scoped_ptr.h>
-#include "num_feature.hpp"
-#include "dynamic_loader.hpp"
-#include "../../common/type.hpp"
+#include <vector>
+#include <string>
+#include <stdint.h>
+
+#include <pficommon/lang/shared_ptr.h>
+
+#include "../common/type.hpp"
+#include "recommender_type.hpp"
+#include "similarity_base.hpp"
 
 namespace jubatus {
+namespace recommender {
 
-class dynamic_num_feature : public num_feature {
- public:
-  dynamic_num_feature(const std::string& path,
-                      const std::string& function,
-                      const std::map<std::string, std::string>& params);
+class anchor_finder_base{
+public:
+  anchor_finder_base(similarity_base *dis) :dis_(dis) {};
+  virtual ~anchor_finder_base(){
+  };
 
-  void add_feature(const std::string& key, double value, sfv_t& ret_fv) const;
+  virtual void build_index(const std::vector<sfvi_t>& anchors) = 0;
+  virtual void find(const sfvi_t &fv, const std::vector<sfvi_t> &anchors, size_t ret_num, data2anchors_t&ret) const = 0;
+  virtual std::string name() const = 0;
+  std::string similarity_name() const { return dis_->name(); };
 
- private:
-  dynamic_loader loader_;
-  pfi::lang::scoped_ptr<num_feature> impl_;
+protected:
+  pfi::lang::shared_ptr<similarity_base> dis_;
 };
 
-
-}
+} // namespace recommender
+} // namespace jubatus

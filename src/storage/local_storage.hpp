@@ -21,7 +21,7 @@
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
 #include "storage_base.hpp"
-#include "../../common/key_manager.hpp"
+#include "../common/key_manager.hpp"
 
 namespace jubatus {
 namespace storage{

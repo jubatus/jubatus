@@ -17,7 +17,7 @@
 
 #include "client_test_util.hpp"
 #include <pficommon/lang/cast.h>
-#include "../server/classifier/classifier_test_util.hpp"
+#include "../classifier/classifier_test_util.hpp"
 
  datum convert_vector(const vector<double>& vec) {
    datum d;

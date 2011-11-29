@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "./storage/storage_type.hpp"
+#include "../storage/storage_type.hpp"
 #include <pficommon/network/mprpc.h>
 
 namespace jubatus {

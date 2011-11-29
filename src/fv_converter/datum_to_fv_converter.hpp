@@ -24,7 +24,7 @@
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/scoped_ptr.h>
 
-#include "../../common/type.hpp"
+#include "../common/type.hpp"
 
 namespace jubatus {
 

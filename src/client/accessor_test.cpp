@@ -31,8 +31,8 @@
 //#define private public
 #include "accessor.hpp"
 
-#include "../server/storage/storage_base.hpp"
-#include "../server/storage/storage_factory.hpp"
+#include "../storage/storage_base.hpp"
+#include "../storage/storage_factory.hpp"
 #include "../server/classifier_serv.hpp"
 
 #include "client_test_util.hpp"

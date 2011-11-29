@@ -26,10 +26,10 @@
 #include <pficommon/concurrent/thread.h>
 
 #include "classifier.hpp"
-#include "../server/storage/storage_base.hpp"
-#include "../server/storage/storage_factory.hpp"
+#include "../storage/storage_base.hpp"
+#include "../storage/storage_factory.hpp"
 #include "../server/classifier_serv.hpp"
-#include "../server/fv_converter/datum.hpp"
+#include "../fv_converter/datum.hpp"
 
 using namespace jubatus::client;
 using namespace jubatus::storage;

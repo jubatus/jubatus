@@ -23,7 +23,7 @@
 #include <cmath>
 #include <iostream>
 #include <stdint.h>
-#include "../../common/type.hpp"
+#include "../common/type.hpp"
 #include "../storage/storage_base.hpp"
 #include "classifier_type.hpp"
 

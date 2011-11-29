@@ -26,7 +26,7 @@ using std::vector;
 using std::pair;
 
 #include "../server/classifier_rpc.hpp"
-#include "../server/fv_converter/datum.hpp"
+#include "../fv_converter/datum.hpp"
 #include "../server/server_util.hpp"
 
 using jubatus::datum;

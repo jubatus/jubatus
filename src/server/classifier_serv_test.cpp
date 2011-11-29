@@ -27,9 +27,9 @@
 #ifdef HAVE_ZOOKEEPER_H
 #  include "mixer.hpp"
 #endif
-#include "./storage/storage_factory.hpp"
-#include "./classifier/classifier_test_util.hpp"
-#include "./storage/storage_type.hpp"
+#include "../storage/storage_factory.hpp"
+#include "../classifier/classifier_test_util.hpp"
+#include "../storage/storage_type.hpp"
 
 using namespace std;
 using namespace jubatus;

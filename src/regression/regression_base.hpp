@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../common/type.hpp"
+#include "../common/type.hpp"
 
 namespace jubatus {
 

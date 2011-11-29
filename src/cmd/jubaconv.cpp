@@ -17,10 +17,10 @@
 
 #include <pficommon/text/json.h>
 #include "../common/cmdline.h"
-#include "../server/fv_converter/datum_to_fv_converter.hpp"
-#include "../server/fv_converter/datum.hpp"
-#include "../server/fv_converter/json_converter.hpp"
-#include "../server/fv_converter/converter_config.hpp"
+#include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../fv_converter/datum.hpp"
+#include "../fv_converter/json_converter.hpp"
+#include "../fv_converter/converter_config.hpp"
 
 using namespace std;
 using namespace pfi::text::json;

@@ -27,7 +27,7 @@
 
 #include "recommender.hpp"
 #include "../server/recommender_serv.hpp"
-#include "../server/fv_converter/datum.hpp"
+#include "../fv_converter/datum.hpp"
 
 using namespace jubatus::client;
 using namespace std;

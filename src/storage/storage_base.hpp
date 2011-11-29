@@ -22,7 +22,7 @@
 #include <utility>
 #include <stdexcept>
 #include "storage_type.hpp"
-#include "../../common/type.hpp"
+#include "../common/type.hpp"
 
 #include <iostream>
 

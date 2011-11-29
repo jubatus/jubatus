@@ -18,8 +18,8 @@
 #pragma once
 
 #include <pficommon/data/unordered_map.h>
-#include "../../common/key_manager.hpp"
-#include "../../common/type.hpp"
+#include "../common/key_manager.hpp"
+#include "../common/type.hpp"
 
 
 namespace jubatus {

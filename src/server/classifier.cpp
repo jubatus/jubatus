@@ -21,7 +21,7 @@
 #include <glog/logging.h>
 
 #include "../common/membership.hpp"
-#include "./storage/storage_factory.hpp"
+#include "../storage/storage_factory.hpp"
 #include "classifier_serv.hpp"
 #include "classifier_rpc.hpp"
 

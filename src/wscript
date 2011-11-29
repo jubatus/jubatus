@@ -1,6 +1,9 @@
 import Options
 
-subdirs = 'common server client cmd jubakeeper jubavisor plugin'
+subdirs = '''
+common server client cmd jubakeeper jubavisor plugin
+classifier fv_converter recommender regression storage
+'''
 
 def options(opt):
   opt.recurse(subdirs)

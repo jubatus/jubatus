@@ -16,11 +16,11 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "classifier_serv.hpp"
-#include "./storage/storage_factory.hpp"
-#include "./storage/local_storage_mixture.hpp"
-#include "./classifier/classifier_factory.hpp"
-#include "./fv_converter/converter_config.hpp"
-#include "./fv_converter/exception.hpp"
+#include "../storage/storage_factory.hpp"
+#include "../storage/local_storage_mixture.hpp"
+#include "../classifier/classifier_factory.hpp"
+#include "../fv_converter/converter_config.hpp"
+#include "../fv_converter/exception.hpp"
 #include "map_fold_rpc.hpp"
 
 #include "../common/rpc_util.hpp"

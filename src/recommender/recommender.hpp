@@ -21,13 +21,13 @@
 #include <msgpack.hpp>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/lang/shared_ptr.h>
-#include "../../common/type.hpp"
+#include "../common/type.hpp"
 #include "recommender_type.hpp"
 
 #include "anchor_finder_base.hpp"
 #include "anchor_finder_factory.hpp"
 #include "similarity_factory.hpp"
-#include "../../server/recommender_rpc.hpp"
+#include "../server/recommender_rpc.hpp"
 
 namespace jubatus {
 namespace recommender {

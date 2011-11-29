@@ -17,7 +17,7 @@
 
 #include "mixer.hpp"
 
-#include "./storage/local_storage.hpp"
+#include "../storage/local_storage.hpp"
 #include "../common/membership.hpp"
 
 #include <time.h>

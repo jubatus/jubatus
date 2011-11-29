@@ -3,8 +3,8 @@
 #include "server.hpp"
 #include "regression_types.hpp"
 
-#include "regression/regression.hpp"
-#include "regression/regression_factory.hpp"
+#include "../regression/regression.hpp"
+#include "../regression/regression_factory.hpp"
 
 SET_PROGNAME("regression");
 

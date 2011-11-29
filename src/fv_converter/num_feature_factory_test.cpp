@@ -24,7 +24,7 @@
 #include "num_feature_factory.hpp"
 #include "num_feature.hpp"
 #include "exception.hpp"
-#include "../../common/type.hpp"
+#include "../common/type.hpp"
 
 using namespace std;
 using namespace jubatus;

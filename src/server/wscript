@@ -1,10 +1,8 @@
-subdirs = 'fv_converter storage classifier recommender regression'
-
 def options(opt):
-  opt.recurse(subdirs)
+  pass
 
 def configure(conf):
-  conf.recurse(subdirs)
+  pass
 
 
 def make_ml_machine(bld, name, libraries = ''):
@@ -108,8 +106,6 @@ def build(bld):
   bld(rule = 'cp ${SRC} ${TGT}',
       source = bld.path.ant_glob('test_input/*'),
       target = n)
-
-  bld.recurse(subdirs)
 
   bld.install_files('${PREFIX}/include/jubatus/server',
                     ['classifier_rpc.hpp',

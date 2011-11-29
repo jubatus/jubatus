@@ -27,8 +27,8 @@
 
 #include "../common/rpc_util.hpp"
 
-#include "./fv_converter/datum.hpp"
-#include "./fv_converter/converter_config.hpp"
+#include "../fv_converter/datum.hpp"
+#include "../fv_converter/converter_config.hpp"
 #include "diffv.hpp"
 
 namespace jubatus {

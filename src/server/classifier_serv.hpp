@@ -21,9 +21,9 @@
 #include <vector>
 
 #include "../common/rpc_util.hpp"
-#include "./classifier/classifier_base.hpp"
-#include "./fv_converter/datum_to_fv_converter.hpp"
-#include "./storage/storage_base.hpp"
+#include "../classifier/classifier_base.hpp"
+#include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../storage/storage_base.hpp"
 
 #include "classifier_rpc.hpp"
 #include "server_util.hpp"

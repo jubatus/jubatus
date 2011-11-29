@@ -1,8 +1,8 @@
 #include "client.hpp"
 #include <vector>
 #include <string>
-#include "fv_converter/datum.hpp"
-#include "fv_converter/converter_config.hpp"
+#include "../fv_converter/datum.hpp"
+#include "../fv_converter/converter_config.hpp"
 
 namespace jubatus {
 namespace regression {

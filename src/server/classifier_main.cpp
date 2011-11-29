@@ -4,10 +4,10 @@
 
 #include "server.hpp"
 #include "../common/exception.hpp"
-#include "fv_converter/datum_to_fv_converter.hpp"
-#include "classifier/classifier_factory.hpp"
-#include "classifier/classifier_base.hpp"
-#include "storage/local_storage_mixture.hpp"
+#include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../classifier/classifier_factory.hpp"
+#include "../classifier/classifier_base.hpp"
+#include "../storage/local_storage_mixture.hpp"
 #include "server_util.hpp"
 #include "diffv.hpp"
 

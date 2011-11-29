@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <string>
-#include "storage/storage_base.hpp"
+#include "../storage/storage_base.hpp"
 
 #include "../common/membership.hpp"
 

@@ -20,9 +20,9 @@
 #include <pficommon/lang/shared_ptr.h>
 
 #include "recommender_rpc.hpp"
-#include "./recommender/recommender.hpp"
-#include "./recommender/recommender_builder.hpp"
-#include "./recommender/anchor_builder_factory.hpp"
+#include "../recommender/recommender.hpp"
+#include "../recommender/recommender_builder.hpp"
+#include "../recommender/anchor_builder_factory.hpp"
 
 using namespace jubatus;
 using pfi::lang::scoped_ptr;

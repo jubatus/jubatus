@@ -17,25 +17,23 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
-#include <string>
-#include <cmath>
-#include <iostream>
-#include <stdint.h>
-#include "../../common/type.hpp"
+#include <pficommon/data/unordered_map.h>
+#include "../common/type.hpp"
 
 namespace jubatus {
 namespace recommender {
 
-class similarity_base{
+class anchor_builder_base{
 public:
-  virtual ~similarity_base(){};
+  virtual ~anchor_builder_base(){};
 
-  virtual float operator() (const sfvi_t& fv1, const sfvi_t& fv2) const = 0;
-  virtual std::string name() const = 0;
+  void build(const pfi::data::unordered_map<std::string, sfvi_t> originals, 
+             size_t anchor_num,
+             std::vector<std::string>& anchors);
 
-protected:
+  virtual void build(const std::vector<sfvi_t>& sfvs,
+                     size_t anchor_num,
+                     std::vector<size_t>& anchors) = 0; 
 };
 
 } // namespace recommender
