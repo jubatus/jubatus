@@ -31,3 +31,10 @@ def build(bld):
         ]
     for s in test_source:
         make_test(s)
+
+    bld.program(
+        source = 'regression_performance_test.cpp',
+        target = 'regression_performance_test',
+        includes = '.',
+        use = 'jubaression jubastorage'
+        )
