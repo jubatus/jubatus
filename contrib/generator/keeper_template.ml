@@ -1,61 +1,36 @@
 
-(* used in client *)
-let make_class_begin modname =
-  "class " ^ modname ^ "{\npublic:\n"
-  ^ "  " ^ modname ^ "(vector<connection_info> servers, string name, int timeout);\n" (*:\  servers_(servers), name_(name), timeout_(timeout)*)
-  ^ "  ~" ^ modname ^ "();\n";;
+let make_file_begin name =
+  "#include \"keeper.hpp\"\n"
+  ^Printf.sprintf "#include \"%s_types.hpp\"\n" name
+;;
 
-(* used in client *)
-let make_class_end modname =
-  "private:\n"
-  ^ "  "^modname^"_client make_client() {\n"
-  ^ "    connection_info conn = servers_[rng_(servers_.size())];\n"
-  ^ "    return "^modname^"_client(conn.first, conn.second, timeout_);\n  };\n"
-  ^ "  template <typename T> inline T return_or_throw(const result<T>& res) {\n"
-  ^ "    if (!res.success) { throw std::runtime_error(res.error); }\n"
-  ^ "    else { return res.retval; }\n  \
-};\n"
-  ^ "  inline void check_throw(const result<int>& res) {\
-  if (!res.success) { \
-    throw std::runtime_error(res.error); \
-  } \
-};\n"
-  ^ "  vector<connection_info> servers_;\n"
-  ^ "  string name_;\n"
-  ^ "  int timeout_;\n"
-  ^ "  pfi::math::random::mtrand rng_;\n"
-  ^ "};\n";;
+let make_file_end _ = "";;
 
-let constructor classname =
-  classname^"::"^classname^"(vector<connection_info> servers, string name, int timeout)\n  \
-      :servers_(servers), name_(name), timeout_(timeout)\
-      {\n}";;
+let generate_class_keeper clazz =
+  let Stree.ClassDef(_, prototypes, _) = clazz in
+  let prototype2register p =
+    let const2type = function
+      | true -> "update";
+      | false -> "analysis";
+    in
+    let decorators2str decorators =
+      let decorator2str str =
+	String.sub str 3 ((String.length str) - 3)
+      in
+      List.fold_left (fun  _ d -> decorator2str d) "" decorators
+    in
+    let (rettype, name, argtypes, decorators, is_const) = p in
+    Printf.sprintf "  k.register_%s_%s<%s, %s>(\"%s\");"
+	(decorators2str decorators) (const2type is_const) (Stree.to_string rettype)
+	(String.concat ", " (List.map Stree.to_string argtypes)) name
+  in
+  String.concat "\n" (List.map prototype2register prototypes);;
 
-let destructor classname = classname^"::~"^classname^"(){\n}";;
+(*  | _ -> raise Stree.Unkown_directive;; *)
+let make_main classdefs =
+  "int main(int args, char** argv){\n"
+  ^ "  keeper k(jubatus::keeper_argv(args, argv));\n"
+  ^ String.concat "\n" (List.map generate_class_keeper classdefs)
+  ^ "\n  k.start();"
+  ^ "\n}";;
 
-
-(* FIXME: make this for keeper impl (currently for client) *)
-let generate_directive2 retval methname argv = function
-  | "@broadcast" ->
-    "" (* Client_template.return_statement retval) ^ "(make_client().call_" ^ methname ^ "(" *)
-    ^ (String.concat ", " argv) ^ "));";
-  | "@random" ->
-    "" (* Client_template.return_statement retval) ^ "(make_client().call_" ^ methname ^ "(" *)
-    ^ (String.concat ", " argv) ^ "));";
-(*  | "@cht" ->  "//cht!"; *)
-  | _ -> raise Stree.Unkown_directive;;
-
-
-let prototype2string classname (t,name,list,dir) =
-  
-  "prototype2string";;
-
-
-let prototype2impl modname (t,name,list,decs) =
-  let arr = Array.mapi (fun i argv -> (Stree.to_string argv) ^ " arg" ^ string_of_int i) (Array.of_list list) in
-  let argv = "name_" :: (Array.to_list (Array.mapi (fun i _ -> "arg" ^ string_of_int i) (Array.of_list list))) in
-  "// " ^ (String.concat ", " decs) ^ "\n"
-  ^ (Stree.to_string t) ^ " " ^ modname ^ "::" ^ name ^ "("
-  ^ (String.concat ", " (Array.to_list arr)) ^ "){\n"
-  ^ (String.concat "\n" (List.map (generate_directive2 t name argv) decs)) ^ "\n"
-  ^ "}" ;;

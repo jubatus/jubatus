@@ -11,8 +11,10 @@ let gen_mprpc_decl name prototypes =
   let names = List.map get_name prototypes in
   "MPRPC_GEN(1, " ^ (String.concat ", " (name :: names)) ^ "); ";;
 
-(* "jubatus" "sample" [prototype] => [source code filename] *)
-(* string -> string -> prototypes list -> string list *)
+ (* temporary error: to be fixed  *)
+exception Multiple_argument_for_rpc
+exception Multiple_decorator
+exception Multiple_class
 
 class jubatus_module name_i namespace_i typedefs_i structdefs_i classdefs_i =
 object (self)
@@ -24,10 +26,22 @@ object (self)
   val mutable output = stdout
 
   val idlfile  = name_i ^ ".idl"
-  val server_h = name_i ^ "_impl.hpp"
   val server_c = name_i ^ "_impl.cpp"
-  val main_c   = name_i ^ "_main.cpp"
   val keeper_c = name_i ^ "_keeper.cpp"
+
+  method check_classdefs =
+    let check_classdef classdef =
+      let Stree.ClassDef(_,prototypes,_) = classdef in
+      let check_prototype p = 
+	let (_, _, argvs, decorators, _) = p in
+	if not (List.length argvs = 1) then raise Multiple_argument_for_rpc
+	else if not (List.length decorators = 1) then raise Multiple_decorator
+	else ()
+      in
+      List.iter check_prototype prototypes;
+    in
+    if not (List.length classdefs = 1) then raise Multiple_class
+    else List.iter check_classdef classdefs;
 
   method generate_idl =
     print_endline ("==" ^ idlfile ^ "==");
@@ -38,33 +52,24 @@ object (self)
     
   method generate_impl =
     print_endline ("==" ^ server_c ^ "==");
-(*    output <<< include_dq ["server.hpp"; "../common/cmdline.h"];
+(*    output <<< include_dq ["server.hpp"; "../common/cmdline.h"]; *)
     let namespaces = [namespace; "server"] in
     output <<< make_ns_begin namespaces;
-    List.iter (fun c -> output <<< Server_template.make_class c) classimpls;
+    List.iter (fun c -> output <<< Server_template.make_class c) classdefs;
     output <<< make_ns_end namespaces;
-    output <<< Server_template.make_main (); *)
+    output <<< Server_template.make_main classdefs;
 
   method generate_keeper =
-(*    output <<< make_file_begin "keeper" name;
-    output <<< Keeper_template.make_class_begin "jubakeeper";
-    output <<< String.concat "\n" (List.map (Keeper_template.prototype2string "jubakeeper") prototypes); 
-    output <<< Keeper_template.make_class_end "jubakeeper";
-    output <<< make_file_end "keeper" name;
-    print_endline ("==" ^ keeper_h ^ "==");
-    print_endline ("==" ^ keeper_c ^ "=="); *)
-(*    output <<< include_dq [keeper_h; front_rpc; back_rpc; ]; *)
-    output <<< make_ns_begin [namespace; "keeper"];
-(*    output <<< Keeper_template.constructor "jubakeeper";
-    output <<< String.concat "\n" (List.map (Keeper_template.prototype2impl "jubakeeper") prototypes);
-    output <<< Keeper_template.destructor "jubakeeper"; *)
-    output <<< make_ns_end [namespace; "keeper"];
+    print_endline ("==" ^ keeper_c ^ "==");
+    output <<< Keeper_template.make_file_begin name;
+    output <<< Keeper_template.make_main classdefs;
+    output <<< Keeper_template.make_file_end name;
 
   method generate =
+    self#check_classdefs;
     output <- stdout;
     self#generate_idl;
     self#generate_impl;
-(*    self#generate_server;
-    self#generate_keeper; *)
+    self#generate_keeper;
 
 end;;

@@ -56,7 +56,7 @@ public:
   int set_config(config_data c);
   
   //@random
-  config_data get_config() const;
+  config_data get_config(int) const;
   
   //@broadcast
   void save(std::string id) const;
