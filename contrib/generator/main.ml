@@ -19,10 +19,11 @@ let replace_suffix suffix filename =
   let base = String.sub filename 0 (String.length filename - 2) in
   base ^ "." ^ suffix;;
 
+let outdir  = ref ".";;
+
 let _ =
+  Arg.parse [("-o", Arg.Set_string(outdir), "output directory")] (fun _ -> ()) "usage:";
   let source_file = Sys.argv.(1) in
-(*  let output_file = replace_suffix "cpp" source_file in
-  print_endline (source_file ^ " ===> " ^ output_file); *)
   let lexbuf = Lexing.from_channel (open_in source_file) in
   try
     let (typedefs,structdefs,classdefs) = Parser.input Lexer.token lexbuf in
@@ -30,8 +31,7 @@ let _ =
     List.iter Stree.print_classimpl classdefs;
     Stree.print_all();
     print_int (List.length structdefs);
-    print_endline "------------- generated code:";
-    let m = new Generator.jubatus_module (get_name source_file)
+    let m = new Generator.jubatus_module (!outdir) (get_name source_file)
       "jupatus" (List.rev typedefs) (List.rev structdefs) (List.rev classdefs) in
     m#generate;
     ()

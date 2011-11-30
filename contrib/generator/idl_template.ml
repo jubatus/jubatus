@@ -38,7 +38,7 @@ let make_argv argvs =
   let rec make_argv_ str_list i = function
     | [] -> str_list ;
     | hd::tl ->
-      make_argv_ ((Printf.sprintf "%d: %s" i (to_idl_typestr hd)) :: str_list ) (i+1) tl
+      make_argv_ ((Printf.sprintf "%d: %s arg%d" i (to_idl_typestr hd) i) :: str_list ) (i+1) tl
   in
   let l = make_argv_ [] 0 argvs in
   String.concat ", " (List.rev l);;
