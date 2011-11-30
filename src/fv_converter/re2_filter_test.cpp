@@ -20,6 +20,7 @@
 
 using namespace std;
 using namespace jubatus;
+using namespace jubatus::fv_converter;
 
 TEST(re2_filter, trivial) {
   re2_filter f("a+", "AA");

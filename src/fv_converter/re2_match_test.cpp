@@ -22,6 +22,7 @@
 
 using namespace std;
 using namespace jubatus;
+using namespace jubatus::fv_converter;
 
 TEST(re2_match, trivial) {
   re2_match m(".*/hoge");

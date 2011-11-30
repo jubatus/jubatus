@@ -23,6 +23,7 @@
 
 using namespace std;
 using namespace jubatus;
+using namespace jubatus::fv_converter;
 
 TEST(libsvm_converter, trivial) {
   string line = "-1 1:100 2:-1.5";

@@ -19,6 +19,8 @@
 #include "dynamic_loader.hpp"
 #include "exception.hpp"
 
+using namespace jubatus::fv_converter;
+
 namespace jubatus {
 
 TEST(dynamic_loader, trivial) {

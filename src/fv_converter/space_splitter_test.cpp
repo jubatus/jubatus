@@ -21,6 +21,7 @@
 #include "space_splitter.hpp"
 
 using namespace jubatus;
+using namespace jubatus::fv_converter;
 using namespace std;
 
 static void TestSplit(const string& string,

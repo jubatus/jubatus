@@ -23,6 +23,7 @@
 #include "num_filter_impl.hpp"
 
 using namespace std;
+using namespace jubatus::fv_converter;
 using namespace pfi::lang;
 
 namespace jubatus {

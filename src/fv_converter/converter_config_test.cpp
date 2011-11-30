@@ -29,6 +29,7 @@
 
 using namespace std;
 using namespace jubatus;
+using namespace jubatus::fv_converter;
 using namespace pfi::text::json;
 
 TEST(converter_config, config) {

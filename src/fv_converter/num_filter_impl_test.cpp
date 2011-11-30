@@ -18,6 +18,8 @@
 #include <gtest/gtest.h>
 #include "num_filter_impl.hpp"
 
+using namespace jubatus::fv_converter;
+
 namespace jubatus {
 
 TEST(add_filter, trivial) {

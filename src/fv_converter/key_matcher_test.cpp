@@ -26,6 +26,7 @@
 
 using namespace std;
 using namespace jubatus;
+using namespace jubatus::fv_converter;
 
 TEST(fv_converter, key_matcher) {
   ASSERT_TRUE(exact_match("hoge").match("hoge"));

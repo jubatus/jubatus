@@ -28,6 +28,7 @@
 
 using namespace std;
 using namespace jubatus;
+using namespace jubatus::fv_converter;
 using namespace pfi::lang;
 
 TEST(num_feature_factory, trivial) {

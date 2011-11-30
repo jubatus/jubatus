@@ -25,6 +25,7 @@
 
 using namespace std;
 using namespace jubatus;
+using namespace jubatus::fv_converter;
 
 template <typename T>
 void make(const T& data, datum& datum) {

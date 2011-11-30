@@ -20,6 +20,7 @@
 #include "test_util.hpp"
 
 using namespace jubatus;
+using namespace jubatus::fv_converter;
 using namespace std;
 
 vector<pair<size_t, size_t> > make_pairs(int*xs) {

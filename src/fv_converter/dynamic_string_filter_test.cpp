@@ -22,6 +22,7 @@
 using namespace std;
 
 namespace jubatus {
+using namespace jubatus::fv_converter;
 
 TEST(dynamic_string_filter, trivial) {
   map<string, string> params;

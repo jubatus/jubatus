@@ -22,6 +22,7 @@
 
 
 using namespace std;
+using namespace jubatus::fv_converter;
 
 namespace jubatus {
 

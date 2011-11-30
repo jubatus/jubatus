@@ -26,6 +26,7 @@
 #endif
 
 using namespace jubatus;
+using namespace jubatus::fv_converter;
 using namespace std;
 using namespace pfi::lang;
 
