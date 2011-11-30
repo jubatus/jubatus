@@ -35,25 +35,6 @@ def build(bld):
 
   #####################3
   ### old code begins
-  #classifier
-  classifier_source = 'classifier_serv.cpp'
-  bld.stlib(
-    source = classifier_source,   target = 'jubatus_classifier',   includes = '.',
-    use = 'PFICOMMON jubaconverter jubaclassifier jubastorage jubacommon MSGPACK GLOG jubatus_framework'
-    )
-  bld.program(
-    source = 'classifier.cpp',   target = 'jubaclassifier',
-    includes = '.',   use = 'jubatus_classifier'
-    )
-
-  bld.program(
-    features = 'gtest',
-    source = 'classifier_serv_test.cpp',
-    target = 'classifier_serv_test',
-    includes = '.',
-    use = 'jubatus_classifier'
-    )
-
   # recommender
   recommender_source = 'recommender_serv.cpp server_util.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
@@ -96,10 +77,23 @@ def build(bld):
     )
 
   #new regression
-  make_ml_machine(bld, 'regression', 'jubastorage jubatus_regression')
+  #make_ml_machine(bld, 'regression', 'jubastorage jubatus_regression')
 
   #new classifier
-  make_ml_machine(bld, 'classifier', 'jubastorage jubaclassifier')
+  #make_ml_machine(bld, 'classifier', 'jubastorage jubaclassifier')
+
+  bld.program(
+    source = 'classifier_impl.cpp classifier_serv.cpp server_util.cpp mixer.cpp',
+    target = 'jubatus_classifier_new',
+    includes = '.',
+    use = 'PFICOMMON jubacommon MSGPACK GLOG MPIO jubaclassifier jubaconverter jubastorage MSGPACK-RPC'
+    )
+  bld.program(
+    source = 'classifier_keeper.cpp server_util.cpp',
+    target = 'jubatus_classifier_keeper_new',
+    includes = '.',
+    use = 'PFICOMMON jubacommon MSGPACK GLOG MSGPACK_RPC MPIO'
+    )
 
   n = bld.path.get_bld().make_node('test_input')
   n.mkdir()

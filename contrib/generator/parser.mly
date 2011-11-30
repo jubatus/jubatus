@@ -71,7 +71,7 @@ one_struct:
 	  print ">STRUCT LITERAL LBRACE2 exp SEMICOLON"; 
 	  set_classname $2;
 	  let (_,members) = $4 in
-	  Stree.StructDef($2, (List.rev members))
+	  Stree.StructDef($2, members)
 	}
 ;
 

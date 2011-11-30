@@ -21,6 +21,7 @@
 #include <vector>
 
 namespace jubatus {
+namespace fv_converter {
 
 using namespace std;
 
@@ -53,4 +54,5 @@ void space_splitter::split(const string& string,
   bounds.swap(ret_boundaries);
 }
 
+}
 }

@@ -23,6 +23,7 @@
 #include "dynamic_loader.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class dynamic_string_filter : public string_filter {
  public:
@@ -38,4 +39,5 @@ class dynamic_string_filter : public string_filter {
 };
 
 
+}
 }

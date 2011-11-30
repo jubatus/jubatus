@@ -26,6 +26,7 @@ using namespace std;
 using namespace pfi::lang;
 
 namespace jubatus {
+namespace fv_converter {
 
 void libsvm_converter::convert(const string& line, datum& ret_datum, string& ret_label) {
   string label;
@@ -51,4 +52,5 @@ void libsvm_converter::convert(const string& line, datum& ret_datum, string& ret
   ret_datum.num_values_.swap(num_values);
 }
 
+}
 }

@@ -20,8 +20,9 @@
 #include <map>
 
 using namespace std;
+using namespace jubatus::fv_converter;
 
-class my_num_filter : public jubatus::num_filter {
+class my_num_filter : public num_filter {
  public:
   double filter(double value) const {
     return value * 2;
@@ -30,7 +31,7 @@ class my_num_filter : public jubatus::num_filter {
 
 extern "C" {
 
-jubatus::num_filter* create(const map<string, string>& params) {
+num_filter* create(const map<string, string>& params) {
   return new my_num_filter();
 }
 

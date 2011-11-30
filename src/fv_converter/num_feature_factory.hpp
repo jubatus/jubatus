@@ -21,6 +21,7 @@
 #include <map>
 
 namespace jubatus {
+namespace fv_converter {
 
 class num_feature;
 
@@ -31,4 +32,5 @@ class num_feature_factory {
                       const param_t& params) const;
 };
 
+}
 }

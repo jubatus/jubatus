@@ -21,6 +21,7 @@
 #include <map>
 
 namespace jubatus {
+namespace fv_converter {
 
 class dynamic_loader {
  public:
@@ -43,5 +44,5 @@ T* load_object(const dynamic_loader& loader,
 }
 
 
-
+}
 }

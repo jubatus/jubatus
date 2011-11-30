@@ -21,6 +21,7 @@
 #include <map>
 
 namespace jubatus {
+namespace fv_converter {
 
 class num_filter;
 
@@ -30,4 +31,5 @@ class num_filter_factory {
                      const std::map<std::string, std::string>& params) const;
 };
 
+}
 }

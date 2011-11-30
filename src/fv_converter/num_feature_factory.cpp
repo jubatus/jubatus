@@ -24,6 +24,7 @@ using namespace std;
 
 
 namespace jubatus {
+namespace fv_converter {
 
 num_feature* create_dynamic_num_feature(const num_feature_factory::param_t& params) {
   const string& path = get_or_die(params, "path");
@@ -41,4 +42,5 @@ num_feature_factory::create(const string& name,
   }
 }
 
+}
 }

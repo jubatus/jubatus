@@ -23,6 +23,7 @@
 #include "dynamic_loader.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class dynamic_num_filter : public num_filter {
  public:
@@ -37,5 +38,5 @@ class dynamic_num_filter : public num_filter {
   pfi::lang::scoped_ptr<num_filter> impl_;
 };
 
-
+}
 }

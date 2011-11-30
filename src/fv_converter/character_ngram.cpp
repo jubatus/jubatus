@@ -18,6 +18,7 @@
 #include "character_ngram.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 using namespace std;
 
@@ -51,4 +52,5 @@ void character_ngram::split(const std::string& string,
 }
 
 
+}
 }

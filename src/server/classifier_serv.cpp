@@ -19,8 +19,9 @@
 #include "../storage/storage_factory.hpp"
 #include "../storage/local_storage_mixture.hpp"
 #include "../classifier/classifier_factory.hpp"
-#include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/exception.hpp"
+#include "../fv_converter/converter_config.hpp"
+#include "../fv_converter/datum.hpp"
 #include "map_fold_rpc.hpp"
 
 #include "../common/rpc_util.hpp"
@@ -42,55 +43,77 @@ using namespace pfi::lang;
 using pfi::concurrent::scoped_lock;
 using namespace std;
 
-namespace jubatus {
-namespace classifier {
+using jubatus::fv_converter::datum_to_fv_converter;
 
-server::server(shared_ptr<storage_base> &s, const server_argv& a, const std::string& base_path):
+namespace jubatus {
+namespace server {
+
+template <typename From, typename To>
+void convert(const From& from, To& to){
+  msgpack::sbuffer sbuf;
+  msgpack::pack(sbuf, from);
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+  msg.get().convert(&to);
+}
+
+
+classifier_serv::classifier_serv(int args, char** argv)
+  :jubatus_serv(server_argv(args,argv))
+{
+  //FIXME
+}
+
+classifier_serv::classifier_serv(shared_ptr<storage_base> &s, const server_argv& a, const std::string& base_path):
   jubatus_serv(a,base_path),
   storage_(s)
 {
 }
 
-server::~server() {
+classifier_serv::~classifier_serv() {
 }
 
-result<int> server::set_config(string name, config_data config) {
+int classifier_serv::set_config(config_data config) {
   DLOG(INFO) << __func__;
 
   try{
     shared_ptr<datum_to_fv_converter> converter(new datum_to_fv_converter);
     
-    jubatus::initialize_converter(config.converter, *converter);
     
     scoped_lock lk(wlock(m_));
-    config_ = config;
+    convert<jubatus::config_data, config_data>(config, config_);
+    fv_converter::converter_config c;
+    convert<jubatus::converter_config, fv_converter::converter_config>(config_.config, c);
+    fv_converter::initialize_converter(c, *converter);
     converter_ = converter;
     
     classifier_.reset(classifier_factory::create_classifier(config.method, storage_.get()));
-    return result<int>::ok(0);
+    return 0;
   }catch(const exception& e){
-    return result<int>::fail(e.what());
+    return -1;
   }
 }
 
-result<config_data> server::get_config(string name) {
+config_data classifier_serv::get_config(int) {
   scoped_lock lk(rlock(m_));
   DLOG(INFO) << __func__;
-  return result<config_data>::ok(config_);
+  return config_;
 }
 
-result<int> server::train(string name, std::vector<std::pair<std::string, datum> > data) {
+int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > data) {
   scoped_lock lk(wlock(m_));
   if (!classifier_){
     LOG(ERROR) << __func__ << ": config is not set";
-    return result<int>::fail("config_not_set");
+    return -1; //int::fail("config_not_set"); // 
   }
 
   int count = 0;
   for (size_t i = 0; i < data.size(); ++i) {
     sfv_t v;
+    fv_converter::datum d;
     try{
-      converter_->convert(data[i].second, v);
+      convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
+      converter_->convert(d, v);
       classifier_->train(v, data[i].first);
       count++; //FIXME: try..catch clause and return error
 
@@ -103,33 +126,38 @@ result<int> server::train(string name, std::vector<std::pair<std::string, datum>
     }
 
   }
-  return result<int>::ok(count);
+  return count;
 }
 
-result<std::vector<estimate_results> > server::classify(string name, std::vector<datum> data) {
-  std::vector<estimate_results> ret;
+std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector<jubatus::datum> data) {
+  std::vector<std::vector<estimate_result> > ret;
   scoped_lock lk(rlock(m_));
 
   if (!classifier_){
     LOG(ERROR) << __func__ << ": config is not set";
-    return result<std::vector<estimate_results> >::fail("config_not_set");
+    return ret;//std::vector<estimate_results> >::fail("config_not_set");
   }
 
   for (size_t i = 0; i < data.size(); ++i) {
     sfv_t v;
+    fv_converter::datum d;
     try{
-      converter_->convert(data[i], v);
+      convert<datum, fv_converter::datum>(data[i], d);
+      converter_->convert(d, v);
     
       classify_result scores;
       classifier_->classify_with_scores(v, scores);
 #ifdef HAVE_ZOOKEEPER_H
       if(!!mixer_) mixer_->accessed();
 #endif
-      estimate_results r;
+      vector<estimate_result> r;
       for (vector<classify_result_elem>::const_iterator p = scores.begin();
            p != scores.end(); ++p){
         if( isfinite(p->score) ){
-          r.push_back(estimate_result(p->label, p->score));
+          estimate_result e;
+          e.label = p->label;
+          e.prob = p->score;
+          r.push_back(e);
         }else{
           LOG(WARNING) << p->label << ":" << p->score;
         }
@@ -140,10 +168,11 @@ result<std::vector<estimate_results> > server::classify(string name, std::vector
       continue;
     }
   }
-  return result<std::vector<estimate_results> >::ok(ret);
+  return ret; //std::vector<estimate_results> >::ok(ret);
 }
 
-result<std::map<std::pair<std::string,int>, std::map<std::string,std::string> > > server::get_status(string name){
+std::map<std::pair<std::string,int>,
+         std::map<std::string,std::string> > classifier_serv::get_status(int){
   scoped_lock lk(rlock(m_));
 
   std::map<std::string,std::string> ret0;
@@ -159,73 +188,72 @@ result<std::map<std::pair<std::string,int>, std::map<std::string,std::string> > 
   
   util::get_machine_status(ret0);
   
-  
-  if(ret0.empty()){
-    return result<std::map<std::pair<string,int>,std::map<std::string,std::string> > >::fail("no result");
-  }else{
+  //  if(ret0.empty()){
+    //    return ret0; //std::map<std::pair<string,int>,std::map<std::string,std::string> > >::fail("no result");
+    //  }else{
     std::map<std::pair<string,int>, std::map<std::string,std::string> > ret;
     std::pair<string,int> __hoge__ = make_pair(a_.eth, a_.port); //FIXME
     ret.insert(make_pair(__hoge__, ret0));
-    return result<std::map<std::pair<string,int>,std::map<std::string,std::string> > >::ok(ret);
-  }
+    return ret;
+    //  }
 }
 
-result<int> server::save(string name, std::string type, std::string id) {
+int classifier_serv::save(std::string id) {
   scoped_lock lk(rlock(m_));  
 
-  std::string ofile;
-  bool ok = false;
-  build_local_path_(ofile, type, id);
+  //  std::string ofile;
+  //  bool ok = false;
+  // build_local_path_(ofile, type, id);
 
-  ofstream ofs(ofile.c_str(), std::ios::trunc|std::ios::binary);
-  if(!ofs){
-    return result<int>::fail(ofile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
-  }
-  try{
-    ok = storage_->save(ofs);
-    ofs.close();
-    LOG(INFO) << "saved to " << ofile;
-    return result<int>::ok(0);
-  }catch(const std::exception& e){
-    return result<int>::fail(e.what());
-  }
+  // ofstream ofs(ofile.c_str(), std::ios::trunc|std::ios::binary);
+  // if(!ofs){
+  //   return int>::fail(ofile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
+  // }
+  // try{
+  //   ok = storage_->save(ofs);
+  //   ofs.close();
+  //   LOG(INFO) << "saved to " << ofile;
+  return 0; //int>::ok(0);
+  // }catch(const std::exception& e){
+  //   return int>::fail(e.what());
+  // }
 }
 
-result<int> server::load(std::string name, std::string type, std::string id) {
+int classifier_serv::load(std::string id) {
   scoped_lock lk(wlock(m_));
 
   std::string ifile;
-  bool ok = false;
-  build_local_path_(ifile, type, id);
+  //bool ok = false;
+  // build_local_path_(ifile, type, id);
 
-  ifstream ifs(ifile.c_str(), std::ios::binary);
-  if(!ifs){
-    return result<int>::fail(ifile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
-  }
+  // ifstream ifs(ifile.c_str(), std::ios::binary);
+  // if(!ifs){
+  //   return result<int>::fail(ifile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
+  // }
 
-  try{
-    shared_ptr<storage::storage_base> s(storage::storage_factory::create_storage(storage_->type));
+  // try{
+  //   shared_ptr<storage::storage_base> s(storage::storage_factory::create_storage(storage_->type));
     
-    if(!s){
-      return result<int>::fail("cannot allocate memory for storage");
-    }
+  //   if(!s){
+  //     return result<int>::fail("cannot allocate memory for storage");
+  //   }
 
-    ok = s->load(ifs);
-    ifs.close();
+  //   ok = s->load(ifs);
+  //   ifs.close();
     
-    if(ok){
-      LOG(INFO) << "loaded from " << ifile;
-      storage_ = s;
-      classifier_.reset(classifier_factory::create_classifier(config_.method, storage_.get()));
-      return result<int>::ok(0);
-    }
-    return result<int>::fail("failed loading");
-  }catch(const std::exception& e){
-    return result<int>::fail(e.what());
-  }
+  //   if(ok){
+  //     LOG(INFO) << "loaded from " << ifile;
+  //     storage_ = s;
+  //     classifier_.reset(classifier_factory::create_classifier(config_.method, storage_.get()));
+  return 0;//result<int>::ok(0);
+  //   }
+  //   return result<int>::fail("failed loading");
+  // }catch(const std::exception& e){
+  //   return result<int>::fail(e.what());
+  // }
 }
 
-result<std::string> server::get_storage(int i){
+result<std::string> classifier_serv::get_storage(int i){
   scoped_lock lk(rlock(m_));
   if (storage_->type != "local_mixture"){
     LOG(ERROR) << __func__ << " storage is not local_mixture: " << storage_->type;
@@ -241,7 +269,7 @@ result<std::string> server::get_storage(int i){
   }
 }
 
-diffv server::get_diff(int i){
+diffv classifier_serv::get_diff(int i){
   diffv ret;
 #ifdef HAVE_ZOOKEEPER_H
   scoped_lock lk(rlock(m_));
@@ -259,7 +287,7 @@ diffv server::get_diff(int i){
   return ret;
 }
 
-int server::put_diff(features3_t v){
+int classifier_serv::put_diff(features3_t v){
   scoped_lock lk(wlock(m_));
 #ifdef HAVE_ZOOKEEPER_H
   try{
@@ -306,7 +334,7 @@ void mix_parameter(diffv& lhs, const diffv& rhs) {
 
 void do_nothing(int&, const int&) {}
 
-void server::mix(const vector<pair<string, int> >& servers){
+void classifier_serv::mix(const vector<pair<string, int> >& servers){
 #ifdef HAVE_ZOOKEEPER_H
   map_fold_rpc_sync<int, diffv> mfrpc(servers, 10.0, mix_parameter);
   diffv sum;
@@ -336,22 +364,6 @@ void server::mix(const vector<pair<string, int> >& servers){
     DLOG(ERROR) << __func__ << ": failed to put diff to " << r << " servers.";
   }
 #endif
-}
-
-void server::bind_all_methods(mprpc_server& serv, const std::string& host, int port){
-
-  serv.set_get_storage(bind(&server::get_storage, this, _1));
-  serv.set_get_diff(bind(&server::get_diff, this, _1));
-  serv.set_put_diff(bind(&server::put_diff, this, _1));
-
-  serv.set_set_config(bind(&server::set_config, this, _1, _2));
-  serv.set_get_config(bind(&server::get_config, this, _1));
-  serv.set_train(bind(&server::train, this, _1, _2));
-  serv.set_classify(bind(&server::classify, this, _1, _2));
-  serv.set_save(bind(&server::save, this, _1, _2, _3));
-  serv.set_load(bind(&server::load, this, _1, _2, _3));
-  serv.set_get_status(bind(&server::get_status, this, _1));
-  
 }
 
 } // namespace classifier

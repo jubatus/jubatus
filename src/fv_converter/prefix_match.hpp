@@ -23,6 +23,7 @@
 #include "key_matcher.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class prefix_match : public key_matcher {
  public:
@@ -37,4 +38,5 @@ class prefix_match : public key_matcher {
   const std::string prefix_;
 };
 
+}
 }

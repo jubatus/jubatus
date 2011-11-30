@@ -20,6 +20,7 @@
 #include <string>
 
 namespace jubatus {
+namespace fv_converter{
 
 class datum;
 
@@ -29,4 +30,5 @@ class libsvm_converter {
   static void convert(const std::string& line, datum& ret_datum, std::string& ret_label);
 };
 
+}
 }

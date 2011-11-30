@@ -22,8 +22,9 @@
 #include "word_splitter.hpp"
 
 using namespace std;
+using namespace jubatus::fv_converter;
 
-class my_splitter : public jubatus::word_splitter {
+class my_splitter : public word_splitter {
  public:
   void split(const std::string& str,
              std::vector<std::pair<size_t, size_t> >& bounds) {
@@ -43,7 +44,7 @@ class my_splitter : public jubatus::word_splitter {
 
 extern "C" {
 
-jubatus::word_splitter* create(const map<string, string>& params) {
+word_splitter* create(const map<string, string>& params) {
   return new my_splitter();
 }
 

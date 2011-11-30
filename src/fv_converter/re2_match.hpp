@@ -22,6 +22,7 @@
 #include "key_matcher.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class re2_match : public key_matcher {
  public:
@@ -35,4 +36,4 @@ class re2_match : public key_matcher {
   re2::RE2 re_;
 };
 
-}
+}}

@@ -25,48 +25,49 @@
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../storage/storage_base.hpp"
 
-#include "classifier_rpc.hpp"
+#include "classifier_types.hpp"
 #include "server_util.hpp"
+#include "diffv.hpp"
+
 
 namespace jubatus{
-namespace classifier {
+namespace server{
 
-class server : public jubatus::jubatus_serv
+class classifier_serv : public jubatus::jubatus_serv
 {
 public:
-  explicit server(pfi::lang::shared_ptr<storage::storage_base>&,
-		  const server_argv&,
-                  const std::string& base_path = "/tmp");
-
-  virtual ~server();
+  classifier_serv(int args, char** argv);
+  explicit classifier_serv(pfi::lang::shared_ptr<storage::storage_base>&,
+                           const server_argv&,
+                           const std::string& base_path = "/tmp");
+  
+  virtual ~classifier_serv();
 
   // msgpack only
   result<std::string> get_storage(int);
   diffv get_diff(int);
   int put_diff(storage::features3_t v);
 
-  //should be same in jubakeeper
-  result<int> set_config(std::string, classifier::config_data);
-  result<classifier::config_data> get_config(std::string);
-  result<int> train(std::string,std::vector<std::pair<std::string, datum> > data);
-  result<std::vector<estimate_results> > classify(std::string,std::vector<datum> data);
-  result<int> save(std::string, std::string, std::string);
-  result<int> load(std::string, std::string, std::string);
-  result<std::map<std::pair<std::string, int>, std::map<std::string, std::string> > > get_status(std::string);
+  int set_config(config_data);
+  config_data get_config(int );
+  int train(std::vector<std::pair<std::string, datum> > data);
+  std::vector<std::vector<estimate_result> > classify(std::vector<datum> data);
+  int save(std::string);
+  int load(std::string);
+  std::map<std::pair<std::string, int>, std::map<std::string, std::string> > get_status(int);
 
   // internal use only
   void mix(const std::vector<std::pair<std::string, int> >&);
-  void bind_all_methods(mprpc_server&, const std::string& host, int port);
+  //  void bind_all_methods(mprpc_server&, const std::string& host, int port);
 
 private:
 
   config_data config_;
-  pfi::lang::shared_ptr<datum_to_fv_converter> converter_;
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<classifier_base> classifier_;
   pfi::lang::shared_ptr<storage::storage_base> storage_;
 };
 
 void mix_parameter(diffv& lhs, const diffv& rhs);
-
-} // namespace classifier
+}
 } // namespace jubatus

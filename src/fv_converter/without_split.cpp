@@ -18,6 +18,7 @@
 #include "without_split.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 using namespace std;
 
@@ -26,5 +27,5 @@ void without_split::split(const std::string& str,
   ret_boundaries.push_back(make_pair(0, str.size()));
 }
 
-
+}
 }

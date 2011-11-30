@@ -20,6 +20,7 @@
 #include "word_splitter.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class space_splitter : public word_splitter {
  public:
@@ -27,4 +28,5 @@ class space_splitter : public word_splitter {
              std::vector<std::pair<size_t, size_t> >& ret_boundaries);
 };
 
+}
 }

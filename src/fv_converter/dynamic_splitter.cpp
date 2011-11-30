@@ -20,6 +20,7 @@
 using namespace std;
 
 namespace jubatus {
+namespace fv_converter {
 
 dynamic_splitter::dynamic_splitter(const std::string& path,
                                    const std::string& function,
@@ -33,4 +34,5 @@ void dynamic_splitter::split(const string& string,
   impl_->split(string, ret_boundaries);
 }
 
+}
 }

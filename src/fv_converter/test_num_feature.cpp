@@ -21,7 +21,7 @@
 
 using namespace std;
 
-class my_num_feature : public jubatus::num_feature {
+class my_num_feature : public jubatus::fv_converter::num_feature {
  public:
   void add_feature(const std::string& key, double value,
                    vector<pair<string, float> >& ret_fv) const {
@@ -31,7 +31,7 @@ class my_num_feature : public jubatus::num_feature {
 
 extern "C" {
 
-jubatus::num_feature* create(const map<string, string>& params) {
+jubatus::fv_converter::num_feature* create(const map<string, string>& params) {
   return new my_num_feature();
 }
 

@@ -21,6 +21,7 @@
 #include <vector>
 
 namespace jubatus {
+namespace fv_converter {
 
 using namespace std;
 
@@ -37,4 +38,5 @@ class StringSplitter {
                      vector<pair<size_t, size_t> >& ret_boundaries) = 0;
 };
 
+}
 }

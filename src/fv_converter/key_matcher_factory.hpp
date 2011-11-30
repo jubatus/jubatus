@@ -20,6 +20,7 @@
 #include <string>
 
 namespace jubatus {
+namespace fv_converter {
 
 class key_matcher;
 
@@ -28,4 +29,5 @@ class key_matcher_factory {
   key_matcher* create_matcher(const std::string& matcher);
 };
 
+}
 }

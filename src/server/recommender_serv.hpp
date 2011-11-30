@@ -50,12 +50,12 @@ public:
   result<int> clear(std::string);
   result<std::map<std::pair<std::string, int>, std::map<std::string, std::string> > > get_status(std::string);
 
-  result<datum> complete_row_from_id(std::string,std::string id);
-  result<datum> complete_row_from_data(std::string,datum dat);
+  result<fv_converter::datum> complete_row_from_id(std::string,std::string id);
+  result<fv_converter::datum> complete_row_from_data(std::string,fv_converter::datum dat);
   result<similar_result> similar_row_from_id(std::string,std::string id, size_t ret_num);
-  result<similar_result> similar_row_from_data(std::string,datum dat, size_t ret_num);
+  result<similar_result> similar_row_from_data(std::string,fv_converter::datum dat, size_t ret_num);
 
-  result<datum> decode_row(std::string,std::string id);
+  result<fv_converter::datum> decode_row(std::string,std::string id);
   result<rows> get_all_rows(std::string);
 
   recommender_diff_t get_diff(int);
@@ -70,7 +70,7 @@ private:
   config_data config_;
   pfi::lang::shared_ptr<recommender> recommender_;
   pfi::lang::shared_ptr<recommender_builder> recommender_builder_;
-  pfi::lang::shared_ptr<datum_to_fv_converter> converter_;
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
 
   uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;

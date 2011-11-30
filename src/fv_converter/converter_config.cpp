@@ -31,9 +31,11 @@
 #include "num_filter_factory.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 using namespace std;
 using namespace pfi::lang;
+using namespace jubatus::fv_converter;
 
 typedef shared_ptr<word_splitter> splitter_ptr;
 typedef shared_ptr<key_matcher> matcher_ptr;
@@ -225,4 +227,4 @@ void initialize_converter(const converter_config& config,
 }
 
 }
-
+}

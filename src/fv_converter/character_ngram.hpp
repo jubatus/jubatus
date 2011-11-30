@@ -23,6 +23,7 @@
 #include "word_splitter.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class character_ngram : public word_splitter {
  public:
@@ -35,4 +36,5 @@ class character_ngram : public word_splitter {
   const size_t length_;
 };
 
+}
 }

@@ -20,6 +20,7 @@
 #include <string>
 
 namespace jubatus {
+namespace fv_converter {
 
 class exact_match : public key_matcher {
  public:
@@ -33,4 +34,5 @@ class exact_match : public key_matcher {
   const std::string key_;
 };
 
+}
 }

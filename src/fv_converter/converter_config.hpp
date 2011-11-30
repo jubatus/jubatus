@@ -26,6 +26,7 @@
 #include <msgpack.hpp>
 
 namespace jubatus {
+namespace fv_converter {
 
 class datum_to_fv_converter;
 
@@ -115,4 +116,5 @@ struct converter_config {
 void initialize_converter(const converter_config& config,
                           datum_to_fv_converter& converter);
 
+}
 }

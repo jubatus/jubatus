@@ -24,6 +24,7 @@
 #include "../common/type.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class dynamic_num_feature : public num_feature {
  public:
@@ -38,5 +39,5 @@ class dynamic_num_feature : public num_feature {
   pfi::lang::scoped_ptr<num_feature> impl_;
 };
 
-
+}
 }

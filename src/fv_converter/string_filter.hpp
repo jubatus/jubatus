@@ -20,6 +20,7 @@
 #include <string>
 
 namespace jubatus {
+namespace fv_converter {
 
 class string_filter {
  public:
@@ -28,4 +29,4 @@ class string_filter {
 };
 
 }
-
+}

@@ -18,6 +18,7 @@
 #include "re2_match.hpp"
 #include "exception.hpp"
 
+using namespace jubatus::fv_converter;
 namespace jubatus {
 
 re2_match::re2_match(const std::string& regexp)

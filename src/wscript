@@ -1,7 +1,7 @@
 import Options
 
 subdirs = '''
-common server client cmd jubakeeper jubavisor plugin
+common server cmd jubavisor plugin
 classifier fv_converter recommender regression storage
 '''
 

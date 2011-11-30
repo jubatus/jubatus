@@ -27,12 +27,11 @@ let _ =
   let lexbuf = Lexing.from_channel (open_in source_file) in
   try
     let (typedefs,structdefs,classdefs) = Parser.input Lexer.token lexbuf in
-    print_endline "------------- syntax tree:";
-    List.iter Stree.print_classimpl classdefs;
-    Stree.print_all();
-    print_int (List.length structdefs);
+(*    List.iter Stree.print_classdef classdefs;
+    List.iter Stree.print_structdef structdefs;
+    Stree.print_known_types(); *)
     let m = new Generator.jubatus_module (!outdir) (get_name source_file)
-      "jupatus" (List.rev typedefs) (List.rev structdefs) (List.rev classdefs) in
+      "jubatus" (List.rev typedefs) (List.rev structdefs) (List.rev classdefs) in
     m#generate;
     ()
   with

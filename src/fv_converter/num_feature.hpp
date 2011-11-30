@@ -21,6 +21,7 @@
 #include <string>
 
 namespace jubatus {
+namespace fv_converter {
 
 class num_feature {
 public:
@@ -31,4 +32,5 @@ public:
                            std::vector<std::pair<std::string, float> >& ret_fv) const = 0;
 };
 
+}
 }

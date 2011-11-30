@@ -20,6 +20,7 @@
 using namespace std;
 
 namespace jubatus {
+namespace fv_converter {
 
 dynamic_num_filter::dynamic_num_filter(const std::string& path,
                                        const std::string& function,
@@ -32,4 +33,5 @@ double dynamic_num_filter::filter(double value) const {
   return impl_->filter(value);
 }
 
+}
 }

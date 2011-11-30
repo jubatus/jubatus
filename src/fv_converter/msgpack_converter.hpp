@@ -22,6 +22,7 @@ class object;
 }
 
 namespace jubatus {
+namespace fv_converter {
 
 class datum;
 
@@ -32,5 +33,4 @@ class msgpack_converter {
 };
 
 }
-
-
+}

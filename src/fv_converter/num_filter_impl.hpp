@@ -20,6 +20,7 @@
 #include "num_filter.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class add_filter : public num_filter {
  public:
@@ -35,4 +36,5 @@ class add_filter : public num_filter {
 };
 
 
+}
 }

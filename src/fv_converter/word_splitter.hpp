@@ -21,6 +21,7 @@
 #include <vector>
 
 namespace jubatus {
+namespace fv_converter {
 
 class word_splitter {
  public:
@@ -35,4 +36,5 @@ class word_splitter {
                      std::vector<std::pair<size_t, size_t> >& ret_boundaries) = 0;
 };
 
+}
 }

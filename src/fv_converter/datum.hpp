@@ -25,6 +25,7 @@
 #include <msgpack.hpp>
 
 namespace jubatus {
+namespace fv_converter {
 
 struct datum {
   typedef std::vector<std::pair<std::string, std::string> > sv_t;
@@ -56,4 +57,5 @@ struct datum {
   }
 };
 
+}
 }

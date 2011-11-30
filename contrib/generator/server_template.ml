@@ -2,11 +2,11 @@
 exception Not_class_impl
 
 let make_class_begin classname =
-  Printf.sprintf "class %s_impl : public rpc_server<%s_impl> \n{\n"
-    classname classname;;
+  Printf.sprintf "class %s_impl_ : public %s<%s_impl_> \n{\n"
+    classname classname classname;;
 
 let make_class_end classname =
-  Printf.sprintf "  shared_ptr<%s> p_;\n};\n" classname;;
+  Printf.sprintf "  pfi::lang::shared_ptr<%s_serv> p_;\n};\n" classname;;
 
 let prototype2impl (t,n,argvs,decorators,is_const) =
   let rec argvs_str str i = function
@@ -37,13 +37,20 @@ let memberdecl (t,n) =
 let make_class = function
   | Stree.ClassDef(classname, funcs, members) ->
     make_class_begin classname
+    ^ "public:\n"
+    ^ Printf.sprintf "  %s_impl_(int args, char** argv)\n" classname
+    ^ Printf.sprintf "    : p_(new %s_serv(args, argv)){};\n" classname
     ^ (String.concat "\n" (List.map prototype2impl funcs))
+    ^ "\n  int start(){return -1;}; // FIXME \n"
     ^ "\nprivate:\n"
     ^ (String.concat "" (List.map memberdecl members))
     ^ make_class_end classname
     ^ "";;
 
-let make_main _ =
+let make_main namespaces classdef =
+  let namespace = String.concat "::" namespaces in
+  let Stree.ClassDef(classname, _, _) = classdef in
   "int main(int args, char** argv){\n"
-  ^ Printf.sprintf "  run_server<%s>(args, argv);\n" "FIXME"
+  ^ Printf.sprintf "  return jubatus::run_server<%s::%s_impl_>(args, argv);\n"
+    namespace classname
   ^ "}";;

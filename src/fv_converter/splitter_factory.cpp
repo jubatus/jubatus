@@ -25,6 +25,7 @@
 #include "character_ngram.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 using namespace std;
 
@@ -55,5 +56,5 @@ word_splitter* splitter_factory::create(const std::string& name,
   }
 }
 
-
+}
 }

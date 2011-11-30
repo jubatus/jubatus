@@ -22,6 +22,7 @@
 #include "string_filter.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class string_filter_factory {
  public:
@@ -31,4 +32,5 @@ class string_filter_factory {
                         const param_t& params) const;
 };
 
+}
 }

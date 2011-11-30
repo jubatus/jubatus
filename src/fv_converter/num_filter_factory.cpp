@@ -25,6 +25,7 @@
 #include "dynamic_num_filter.hpp"
 
 using namespace std;
+using namespace jubatus::fv_converter;
 
 namespace jubatus {
 

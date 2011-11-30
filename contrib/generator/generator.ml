@@ -25,6 +25,7 @@ object (self)
   val structdefs = structdefs_i
   val classdefs = classdefs_i
   val mutable output = stdout
+  val mutable debugmode = false
 
   val idlfile  = name_i ^ ".idl"
   val server_c = name_i ^ "_impl.cpp"
@@ -56,28 +57,39 @@ object (self)
     output <<< "// this program is automatically generated. do not edit. ";
 (*    output <<< include_dq ["server.hpp"; "../common/cmdline.h"]; *)
     let namespaces = [namespace; "server"] in
+    output <<< include_dq [(name ^ "_server.hpp");
+			   "server_util.hpp";
+			   (name ^ "_serv.hpp")];
+    output <<< include_b ["pficommon/lang/shared_ptr.h"];
+    output <<< "\n";
     output <<< make_ns_begin namespaces;
     List.iter (fun c -> output <<< Server_template.make_class c) classdefs;
     output <<< make_ns_end namespaces;
-    output <<< Server_template.make_main classdefs;
+    output <<< Server_template.make_main namespaces (List.hd classdefs);
 
   method generate_keeper =
     print_endline ("==" ^ keeper_c ^ "==");
     output <<< "// this program is automatically generated. do not edit. ";
     output <<< Keeper_template.make_file_begin name;
+    output <<< make_using_ns [namespace];
     output <<< Keeper_template.make_main classdefs;
     output <<< Keeper_template.make_file_end name;
 
+  method set_output filename =
+    if debugmode then
+      output <- stdout
+    else
+      output <- open_out filename
+
   method generate =
     self#check_classdefs;
-(*    print_endline "------------- generated code:";
-    output <- stdout; *)
 
-    output <- open_out (String.concat "/" [outdir; idlfile]);
+(*    debugmode <- true; *)
+    self#set_output (String.concat "/" [outdir; idlfile]);
     self#generate_idl;
-    output <- open_out (String.concat "/" [outdir; server_c]);
+    self#set_output (String.concat "/" [outdir; server_c]);
     self#generate_impl;
-    output <- open_out (String.concat "/" [outdir; keeper_c]);
+    self#set_output (String.concat "/" [outdir; keeper_c]);
     self#generate_keeper;
 
 end;;

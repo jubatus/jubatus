@@ -10,8 +10,8 @@ let generate_class_keeper clazz =
   let Stree.ClassDef(_, prototypes, _) = clazz in
   let prototype2register p =
     let const2type = function
-      | true -> "update";
-      | false -> "analysis";
+      | true -> "analysis";
+      | false -> "update";
     in
     let decorators2str decorators =
       let decorator2str str =
@@ -19,9 +19,13 @@ let generate_class_keeper clazz =
       in
       List.fold_left (fun  _ d -> decorator2str d) "" decorators
     in
+    let make_rettype is_const rettype =
+      if is_const then (Stree.to_string rettype) ^ ", "
+      else ""
+    in
     let (rettype, name, argtypes, decorators, is_const) = p in
-    Printf.sprintf "  k.register_%s_%s<%s, %s>(\"%s\");"
-	(decorators2str decorators) (const2type is_const) (Stree.to_string rettype)
+    Printf.sprintf "  k.register_%s_%s<%s%s>(\"%s\");"
+	(decorators2str decorators) (const2type is_const) (make_rettype is_const  rettype)
 	(String.concat ", " (List.map Stree.to_string argtypes)) name
   in
   String.concat "\n" (List.map prototype2register prototypes);;

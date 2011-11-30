@@ -21,6 +21,7 @@
 #include "key_matcher.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class match_all : public key_matcher {
  public:
@@ -29,4 +30,5 @@ class match_all : public key_matcher {
   }
 };
 
+}
 }

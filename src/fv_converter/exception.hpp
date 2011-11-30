@@ -21,6 +21,7 @@
 #include <string>
 
 namespace jubatus {
+namespace fv_converter {
 
 class converter_exception : public std::exception {
  public:
@@ -31,4 +32,5 @@ class converter_exception : public std::exception {
   std::string msg;
 };
 
+}
 }

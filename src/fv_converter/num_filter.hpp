@@ -18,6 +18,7 @@
 #pragma once
 
 namespace jubatus {
+namespace fv_converter {
 
 class num_filter {
  public:
@@ -26,3 +27,5 @@ class num_filter {
 };
 
 }
+}
+

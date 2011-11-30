@@ -183,18 +183,18 @@ void server::init()
     (new recommender_builder
      (config_.similarity_name, config_.anchor_finder_name, config_.anchor_builder_name));
 
-  converter_ = shared_ptr<datum_to_fv_converter>(new datum_to_fv_converter());
-  initialize_converter(config_.converter, *converter_);
+  converter_ = shared_ptr<fv_converter::datum_to_fv_converter>(new fv_converter::datum_to_fv_converter());
+  fv_converter::initialize_converter(config_.converter, *converter_);
 }
 
-  result<datum> server::complete_row_from_id(std::string name,std::string id)
+  result<fv_converter::datum> server::complete_row_from_id(std::string name,std::string id)
 {
   pfi::concurrent::scoped_rlock lk(m_);
 
-  if (!recommender_) return result<datum>::fail("config_not_set");
+  if (!recommender_) return result<fv_converter::datum>::fail("config_not_set");
 
   sfv_t v;
-  datum ret;
+  fv_converter::datum ret;
   recommender_->complete_row(id, v);
   for (size_t i = 0; i < v.size(); ++i){
     ret.num_values_.push_back(v[i]);
@@ -203,24 +203,24 @@ void server::init()
 #ifdef HAVE_ZOOKEEPER_H
   if (mixer_) mixer_->accessed();
 #endif
-  return result<datum>::ok(ret);
+  return result<fv_converter::datum>::ok(ret);
 }
 
-  result<datum> server::complete_row_from_data(std::string name,datum dat)
+  result<fv_converter::datum> server::complete_row_from_data(std::string name,fv_converter::datum dat)
 {
   pfi::concurrent::scoped_rlock lk(m_);
 
-  if (!recommender_) return result<datum>::fail("config_not_set");
+  if (!recommender_) return result<fv_converter::datum>::fail("config_not_set");
 
   sfv_t u, v;
-  datum ret;
+  fv_converter::datum ret;
   converter_->convert(dat, u);
   recommender_->complete_row(u, v);
   // converter_->reverse(v, ret);
 #ifdef HAVE_ZOOKEEPER_H
   if(mixer_)mixer_->accessed();
 #endif
-  return result<datum>::ok(ret);
+  return result<fv_converter::datum>::ok(ret);
 }
 
   result<similar_result> server::similar_row_from_id(std::string name,std::string id, size_t ret_num)
@@ -238,7 +238,7 @@ void server::init()
   return result<similar_result>::ok(ret);
 }
 
-  result<similar_result> server::similar_row_from_data(std::string name,datum dat, size_t ret_num)
+  result<similar_result> server::similar_row_from_data(std::string name,fv_converter::datum dat, size_t ret_num)
 {
   pfi::concurrent::scoped_rlock lk(m_);
 
@@ -255,21 +255,21 @@ void server::init()
   return result<similar_result>::ok(ret);
 }
 
-  result<datum> server::decode_row(std::string name,std::string id)
+  result<fv_converter::datum> server::decode_row(std::string name,std::string id)
 {
   pfi::concurrent::scoped_rlock lk(m_);
 
-  if (!recommender_) return result<datum>::fail("config_not_set");
+  if (!recommender_) return result<fv_converter::datum>::fail("config_not_set");
 
   sfv_t v;
-  datum ret;
+  fv_converter::datum ret;
 
   recommender_->decode_row(id, v);
   for (size_t i = 0; i < v.size(); ++i){
     ret.num_values_.push_back(v[i]);
   }
   // converter_->reverse(v, ret);
-  return result<datum>::ok(ret);
+  return result<fv_converter::datum>::ok(ret);
 }
 
   result<rows> server::get_all_rows(std::string name)
@@ -286,7 +286,7 @@ void server::init()
 
   for (pfi::data::unordered_map<std::string, sfv_t>::iterator p = rs.begin();
        p != rs.end(); ++p) {
-    datum d;
+    fv_converter::datum d;
     // converter_->reverse(p->second, d);
     ret.push_back(make_pair(p->first, d));
   }

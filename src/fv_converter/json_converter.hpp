@@ -26,6 +26,7 @@ class json;
 }
 
 namespace jubatus {
+namespace fv_converter{
 
 class datum;
 
@@ -41,4 +42,4 @@ public:
 };
 
 }
-
+}

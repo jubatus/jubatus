@@ -24,6 +24,7 @@
 #include "datum.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 using namespace std;
 using namespace pfi::text::json;
@@ -113,4 +114,5 @@ void json_converter::convert(const json& json, datum& ret_datum) {
   iter_convert(json, path, ret_datum);
 }
 
+}
 }

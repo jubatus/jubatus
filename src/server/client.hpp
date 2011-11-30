@@ -1,45 +1,46 @@
-#pragma once
 
-#include <vector>
-#include <pficommon/network/mprpc.h>
-#include "../common/rpc_util.hpp"
-
-namespace jubatus {
-
-class client {
- public:
-  client(const std::string& host, int port, int timeout)
-      : client_(host, port, timeout) {}
-
-  template <typename R, typename A>
-  pfi::lang::function<result<std::vector<R> >(std::string, std::vector<A>)>
-  call_analyze(const std::string& name) {
-    return client_.call<result<std::vector<R> >(std::string, std::vector<A>)>(name);
-  }
-
-  template <typename R, typename A>
-  result<std::vector<R> > analyze(const std::string& func,
-                                  const std::string& name,
-                                  const std::vector<A>& data) {
-    return call_analyze<R, A>(func)(name, data);
-  }
-
-  template <typename A>
-  pfi::lang::function<result<int>(std::string, std::vector<A>)>
-  call_update(const std::string& name) {
-    return client_.call<result<int>(std::string, std::vector<A>)>(name);
-  }
-
-  template <typename A>
-  result<int> update(const std::string& func,
-                     const std::string& name,
-                     const std::vector<A>& data) {
-    return call_update<A>(func)(name, data);
-  }
+#include "classifier_types.hpp"
+#include <msgpack/rpc/client.h>
 
 
- private:
-  pfi::network::mprpc::rpc_client client_;
+namespace msgpack {
+
+namespace client {
+
+class classifier {
+public:
+  classifier(const std::string &host, uint64_t port)
+    : c_(host, port) {}
+
+    int32_t set_config(config_data arg0) {
+      return c_.call("set_config", arg0).get<int32_t >();
+    }
+
+    config_data get_config(int32_t arg0) {
+      return c_.call("get_config", arg0).get<config_data >();
+    }
+
+    int32_t save(std::string arg0) {
+      return c_.call("save", arg0).get<int32_t >();
+    }
+
+    int32_t load(std::string arg0) {
+      return c_.call("load", arg0).get<int32_t >();
+    }
+
+  int32_t train(std::vector<std::pair<std::string, datum> > arg0) {
+      return c_.call("train", arg0).get<int32_t >();
+    }
+
+    std::vector<std::vector<estimate_result > > classify(std::vector<datum > arg0) {
+      return c_.call("classify", arg0).get<std::vector<std::vector<estimate_result > > >();
+    }
+
+private:
+  msgpack::rpc::client c_;
 };
 
-}
+} // namespace client
+
+} // namespace msgpack
+

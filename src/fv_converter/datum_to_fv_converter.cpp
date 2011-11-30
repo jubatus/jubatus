@@ -33,6 +33,7 @@
 #include <iostream>
 
 namespace jubatus {
+namespace fv_converter {
 
 using namespace std;
 using namespace pfi::lang;
@@ -436,4 +437,5 @@ void datum_to_fv_converter::revert_feature(const string& feature,
   pimpl_->revert_feature(feature, expect);
 }
 
+}
 }

@@ -23,8 +23,9 @@
 using namespace std;
 
 namespace {
+using namespace jubatus::fv_converter;
 
-class my_filter : public jubatus::string_filter {
+class my_filter : public string_filter {
  public:
   void filter(const std::string& input, std::string& output) const {
     output = input;
@@ -39,7 +40,7 @@ class my_filter : public jubatus::string_filter {
 
 extern "C"{
 
-jubatus::string_filter* create(const map<string, string>& params) {
+string_filter* create(const map<string, string>& params) {
   return new my_filter();
 }
 

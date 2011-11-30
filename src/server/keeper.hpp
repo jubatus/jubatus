@@ -14,6 +14,8 @@
 
 static const std::string ACTOR_BASE_PATH = "";
 
+namespace jubatus {
+
 class keeper : public pfi::network::mprpc::rpc_server {
  public:
   keeper() : pfi::network::mprpc::rpc_server(0.0) {}
@@ -126,3 +128,5 @@ class keeper : public pfi::network::mprpc::rpc_server {
   pfi::concurrent::mutex mutex_;
   int timeout_;
 };
+
+}

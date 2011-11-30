@@ -22,6 +22,7 @@
 #include "datum.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 using namespace std;
 
@@ -90,4 +91,5 @@ void msgpack_converter::convert(const msgpack::object& object, datum& datum) {
   iter_convert(object, "", datum);
 }
 
+}
 }

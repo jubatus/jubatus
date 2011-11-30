@@ -41,7 +41,7 @@ namespace recommender {
 
 struct config_data
 {
-  explicit config_data(const jubatus::converter_config& c):
+  explicit config_data(const fv_converter::converter_config& c):
     converter(c)
   {};
 
@@ -67,7 +67,7 @@ struct config_data
   size_t all_anchor_num;
   size_t anchor_num_per_data;
 
-  jubatus::converter_config converter;
+  fv_converter::converter_config converter;
 };
 
 struct recommender_data
@@ -89,9 +89,9 @@ struct recommender_data
   std::vector<anchor2data_t> anchor2data;
 };
 
-// typedef std::vector<std::pair<std::string, datum> > raw_data;
+// typedef std::vector<std::pair<std::string, fv_converter::datum> > raw_data;
 typedef std::vector<std::pair<std::string, float> > similar_result;
-typedef std::vector<std::pair<std::string, datum> > rows;
+typedef std::vector<std::pair<std::string, fv_converter::datum> > rows;
 
 MPRPC_PROC(set_config, result<int>(std::string, config_data));
 MPRPC_PROC(get_config, result<config_data>(std::string));
@@ -103,11 +103,11 @@ MPRPC_PROC(build, result<int>(std::string));
 MPRPC_PROC(clear, result<int>(std::string));
 MPRPC_PROC(get_status, result<std::map<std::pair<std::string,int>, std::map<std::string, std::string> > >(std::string));
 
-MPRPC_PROC(complete_row_from_id,   result<datum>(std::string,std::string));
-MPRPC_PROC(complete_row_from_data, result<datum>(std::string,datum));
+MPRPC_PROC(complete_row_from_id,   result<fv_converter::datum>(std::string,std::string));
+MPRPC_PROC(complete_row_from_data, result<fv_converter::datum>(std::string,fv_converter::datum));
 MPRPC_PROC(similar_row_from_id,    result<similar_result>(std::string,std::string, size_t));
-MPRPC_PROC(similar_row_from_data,  result<similar_result>(std::string,datum, size_t));
-MPRPC_PROC(decode_row,   result<datum>(std::string,std::string));
+MPRPC_PROC(similar_row_from_data,  result<similar_result>(std::string,fv_converter::datum, size_t));
+MPRPC_PROC(decode_row,   result<fv_converter::datum>(std::string,std::string));
 MPRPC_PROC(get_all_rows, result<rows>(std::string));
 
 typedef std::vector<std::pair<std::string, sfv_t> >recommender_diff_t;

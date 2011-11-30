@@ -22,6 +22,7 @@
 #include "num_feature.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class num_value_feature : public num_feature {
 public:
@@ -46,4 +47,5 @@ public:
   }
 };
 
+}
 }

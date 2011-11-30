@@ -28,6 +28,8 @@
 # include "re2_match.hpp"
 #endif
 
+using namespace jubatus::fv_converter;
+
 namespace jubatus {
 
 key_matcher* key_matcher_factory::create_matcher(const std::string& matcher) {

@@ -20,6 +20,7 @@
 #include <pficommon/data/unordered_map.h>
 
 namespace jubatus {
+namespace fv_converter {
 
 template<class T>
 class counter {
@@ -69,4 +70,4 @@ class counter {
 };
 
 }
-
+}

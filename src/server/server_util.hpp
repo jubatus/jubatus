@@ -122,4 +122,10 @@ protected:
   const std::string base_path_;
 };
 
+template <class ServerClass>
+int run_server(int args, char** argv){
+  return ServerClass(args, argv).start();
+};
+
+
 }; // end jubatus

@@ -80,7 +80,7 @@ let rec to_string = function
   | Destructor -> "";
   | Constructor -> "";;
 
-let print_all()=
+let print_known_types()=
   print_string "\nknown types: ";
   let p_ k _ = print_string (k ^ ", " ) in Hashtbl.iter p_ known_types;
   print_endline "";;
@@ -93,13 +93,23 @@ let prototype2string (retval,funcname,argvs,decorators,is_const) =
   Printf.sprintf "=> %s %s(%s)%s;  %s" (* \033[34m escape sequence... for colored term*)
     (to_string retval) funcname argvs_str const_statement decorators;;
   
-let print_classimpl = function
+let print_classdef = function
   | ClassDef(name,funcs,members) ->
     print_endline ("classname => " ^ name ^ ":");
-    print_endline "methods:";
+    print_endline " methods:";
     List.iter (Util.compose print_endline prototype2string) funcs;
     let print_member (t,n) =
-      Printf.printf "=> %s %s;\n" (to_string t) n
+      Printf.printf "  => %s %s;\n" (to_string t) n
     in
-    print_endline "members:";
+    print_endline " members:";
     List.iter print_member members;;
+    
+let print_structdef = function
+  | StructDef(name, members) ->
+    print_endline ("structname => " ^ name ^ ":");
+    let print_member (t,n) =
+      Printf.printf "  => %s %s;\n" (to_string t) n
+    in
+    print_endline " members:";
+    List.iter print_member members;;
+

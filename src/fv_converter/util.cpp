@@ -22,6 +22,7 @@
 using namespace std;
 
 namespace jubatus {
+namespace fv_converter {
 
 const string& get_or_die(const map<string, string> & params,
                          const string& key) {
@@ -53,4 +54,5 @@ const int get_int_or_die(const map<string, string>& params,
   }
 }
 
+}
 }

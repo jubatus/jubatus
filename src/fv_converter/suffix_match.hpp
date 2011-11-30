@@ -21,6 +21,7 @@
 #include <pficommon/data/string/utility.h>
 
 namespace jubatus {
+namespace fv_converter {
 
 class suffix_match : public key_matcher {
  public:
@@ -35,4 +36,5 @@ class suffix_match : public key_matcher {
   const std::string suffix_;
 };
 
+}
 }

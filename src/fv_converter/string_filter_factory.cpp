@@ -28,6 +28,7 @@
 using namespace std;
 
 namespace jubatus {
+namespace fv_converter {
 
 #ifdef HAVE_RE2
 static
@@ -60,3 +61,5 @@ string_filter* string_filter_factory::create(const string& name,
 }
 
 }
+}
+

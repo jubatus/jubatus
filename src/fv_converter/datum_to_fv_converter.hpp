@@ -27,6 +27,7 @@
 #include "../common/type.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 enum frequency_weight_type {
   FREQ_BINARY, TERM_FREQUENCY, LOG_TERM_FREQUENCY
@@ -91,3 +92,4 @@ class datum_to_fv_converter {
 
 }
 
+}

@@ -22,6 +22,7 @@
 using namespace std;
 
 namespace jubatus {
+namespace fv_converter {
 
 void* dynamic_load(const string& path,
                    const string& function) {
@@ -42,4 +43,5 @@ void* dynamic_load(const string& path,
   return func;
 }
 
+}
 }

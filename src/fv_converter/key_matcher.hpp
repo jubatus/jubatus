@@ -20,6 +20,7 @@
 #include <string>
 
 namespace jubatus {
+namespace fv_converter {
 
 class key_matcher {
  public:
@@ -29,4 +30,5 @@ class key_matcher {
   virtual bool match(const std::string& key) = 0;
 };
 
+}
 }

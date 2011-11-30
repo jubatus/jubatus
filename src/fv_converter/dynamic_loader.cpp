@@ -21,6 +21,7 @@
 #include <iostream>
 
 namespace jubatus {
+namespace fv_converter {
 
 dynamic_loader::dynamic_loader(const std::string& path)
     : handle_(0) {
@@ -49,4 +50,5 @@ void* dynamic_loader::load_symbol(const std::string& name) const {
   return func;
 }
 
+}
 }

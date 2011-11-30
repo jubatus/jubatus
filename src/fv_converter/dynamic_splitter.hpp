@@ -23,6 +23,7 @@
 #include "dynamic_loader.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class dynamic_splitter : public word_splitter {
  public:
@@ -38,5 +39,5 @@ class dynamic_splitter : public word_splitter {
   pfi::lang::scoped_ptr<word_splitter> impl_;
 };
 
-
+}
 }

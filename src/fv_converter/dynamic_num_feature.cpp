@@ -20,6 +20,7 @@
 using namespace std;
 
 namespace jubatus {
+namespace fv_converter {
 
 dynamic_num_feature::dynamic_num_feature(const std::string& path,
                                          const std::string& function,
@@ -34,4 +35,5 @@ void dynamic_num_feature::add_feature(const string& key,
   impl_->add_feature(key, value, ret_fv);
 }
 
+}
 }

@@ -22,6 +22,7 @@
 #include "word_splitter.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 class without_split : public word_splitter {
  public:
@@ -29,4 +30,5 @@ class without_split : public word_splitter {
              std::vector<std::pair<size_t, size_t> >& ret_boundaries);
 };
 
+}
 }
