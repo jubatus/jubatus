@@ -74,7 +74,11 @@ void storage_base::bulk_update(const sfv_t& sfv, float step_width, const std::st
   }
 }
 
-
+void storage_base::get_diff(features3_t& v) const {
+  v.clear();
+}
+void storage_base::set_average_and_clear_diff(const features3_t&){
+}
 
 }
 }

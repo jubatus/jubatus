@@ -40,7 +40,7 @@ public:
   };
 
   diffv& operator/=(double d){
-    this->v /= d;
+       this->v /= d;
     return *this;
   };
 

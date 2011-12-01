@@ -46,10 +46,15 @@ message estimate_result {
 }
 
 service classifier :1 {
-  int set_config(0: config_data arg0) # //@broadcast 
-  config_data get_config(0: int arg0) # //@random 
-  int save(0: string arg0) # //@broadcast 
-  int load(0: string arg0) # //@broadcast 
-  int train(0: list<pair<string, datum> >  arg0) # //@random 
-  list<list<estimate_result> >  classify(0: list<datum>  arg0) # //@random 
+  int set_config(0: string name, 1: config_data arg0) # //@broadcast 
+  config_data get_config(0: string name, 1: int arg0) # //@random 
+  int train(0: string name, 1: list<pair<string, datum> >  arg0) # //@random 
+  list<list<estimate_result> >  classify(0: string name, 1: list<datum>  arg0) # //@random 
+
+  # automatically generated
+  int save(0: string name, 1: string arg0) # //@broadcast 
+  int load(0: string name, 1: string arg0) # //@broadcast 
+
+  string get_diff(0: int arg0)
+  int put_diff(0: string arg0)
 }

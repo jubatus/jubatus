@@ -108,7 +108,8 @@ namespace jubatus{
     };
     virtual ~mixer0(){};
 
-    void set_mixer_func(pfi::lang::function<int(const M*, const D&, const D&, D&)>& f){
+    void set_mixer_func(pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> f){
+    //    void set_mixer_func(pfi::lang::function<int(const M*, const D&, const D&, D&)>& f){
       pfi::concurrent::scoped_lock lk(m_);
       mixer_func_ = f;
     };
@@ -135,8 +136,7 @@ namespace jubatus{
       } //unlock
       std::vector<std::pair<std::string,int> > servers;
       jubatus::get_all_actors(*zk_, name_, servers);
-      //      mix_(servers);
-      // FIXME: do mix here using mixer_func_
+      mixer_func_(servers);
       DLOG(INFO) << "....mix done";
     };
 
@@ -146,7 +146,8 @@ namespace jubatus{
     };
     
   private:  
-    pfi::lang::function<int(const M*, const D&, const D&, D&)> mixer_func_;
+    //    pfi::lang::function<int(const M*, const D&, const D&, D&)> mixer_func_;
+    pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_func_;
 
     pfi::lang::shared_ptr<jubatus::zk> zk_;
     std::string name_;

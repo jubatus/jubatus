@@ -9,7 +9,6 @@
 #include "classifier_types.hpp"
 #include <msgpack/rpc/server.h>
 
-
 namespace jubatus {
 
 namespace server {
@@ -24,44 +23,58 @@ public:
       req.method().convert(&method);
 
       if (method == "set_config") {
-        msgpack::type::tuple<config_data > params;
+        msgpack::type::tuple<std::string, config_data > params;
         req.params().convert(&params);
-        req.result<int32_t>(static_cast<Impl*>(this)->set_config(params.get<0>()));
+        req.result<int32_t>(static_cast<Impl*>(this)->set_config(params.get<0>(), params.get<1>()));
         return;
       }
 
       if (method == "get_config") {
-        msgpack::type::tuple<int32_t > params;
+        msgpack::type::tuple<std::string, int32_t > params;
         req.params().convert(&params);
-        req.result<config_data>(static_cast<Impl*>(this)->get_config(params.get<0>()));
-        return;
-      }
-
-      if (method == "save") {
-        msgpack::type::tuple<std::string > params;
-        req.params().convert(&params);
-        req.result<int32_t>(static_cast<Impl*>(this)->save(params.get<0>()));
-        return;
-      }
-
-      if (method == "load") {
-        msgpack::type::tuple<std::string > params;
-        req.params().convert(&params);
-        req.result<int32_t>(static_cast<Impl*>(this)->load(params.get<0>()));
+        req.result<config_data>(static_cast<Impl*>(this)->get_config(params.get<0>(), params.get<1>()));
         return;
       }
 
       if (method == "train") {
-        msgpack::type::tuple<std::vector<std::pair<std::string, datum> > > params;
+        msgpack::type::tuple<std::string, std::vector<std::pair<std::string, datum> > > params;
         req.params().convert(&params);
-        req.result<int32_t>(static_cast<Impl*>(this)->train(params.get<0>()));
+        req.result<int32_t>(static_cast<Impl*>(this)->train(params.get<0>(), params.get<1>()));
         return;
       }
 
       if (method == "classify") {
-        msgpack::type::tuple<std::vector<datum > > params;
+        msgpack::type::tuple<std::string, std::vector<datum > > params;
         req.params().convert(&params);
-        req.result<std::vector<std::vector<estimate_result > > >(static_cast<Impl*>(this)->classify(params.get<0>()));
+        req.result<std::vector<std::vector<estimate_result > > >(static_cast<Impl*>(this)->classify(params.get<0>(), params.get<1>()));
+        return;
+      }
+
+      if (method == "save") {
+        msgpack::type::tuple<std::string, std::string > params;
+        req.params().convert(&params);
+        req.result<int32_t>(static_cast<Impl*>(this)->save(params.get<0>(), params.get<1>()));
+        return;
+      }
+
+      if (method == "load") {
+        msgpack::type::tuple<std::string, std::string > params;
+        req.params().convert(&params);
+        req.result<int32_t>(static_cast<Impl*>(this)->load(params.get<0>(), params.get<1>()));
+        return;
+      }
+
+      if (method == "get_diff") {
+        msgpack::type::tuple<int32_t > params;
+        req.params().convert(&params);
+        req.result<std::string>(static_cast<Impl*>(this)->get_diff(params.get<0>()));
+        return;
+      }
+
+      if (method == "put_diff") {
+        msgpack::type::tuple<std::string > params;
+        req.params().convert(&params);
+        req.result<int32_t>(static_cast<Impl*>(this)->put_diff(params.get<0>()));
         return;
       }
 

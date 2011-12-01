@@ -47,50 +47,6 @@ class server : public pfi::network::mprpc::rpc_server {
   {
   };
 
-  int start(){
-#ifdef HAVE_ZOOKEEPER_H
-    if(! a_.is_standalone()){
-      pfi::lang::shared_ptr<jubatus::zk> z(new jubatus::zk(a_.z, a_.timeout, "log"));
-
-      if( a_.join ){ // join to the existing cluster with -j option
-        join_to_cluster(z);
-      }
-
-      mixer_.reset(new mixer0<M, Diff>(z, a_.name, a_.interval_count, a_.interval_sec));
-      mixer_running_ = true;
-      mixer_->start();
-    }
-#endif
-    return this->serv(a_.port, a_.threadnum);
-  };
-
-  void join_to_cluster(pfi::lang::shared_ptr<jubatus::zk> z){
-    std::vector<std::string> list;
-    std::string path = ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
-    z->list(path, list);
-    if(not list.empty()){
-      zkmutex zlk(z, ACTOR_BASE_PATH + "/" + a_.name + "/master_lock");
-      while(not zlk.try_lock()){ ; }
-      size_t i = rand() % list.size();
-      std::string ip;
-      int port;
-      revert(list[i], ip, port);
-      pfi::network::mprpc::rpc_client c(ip, port, a_.timeout);
-      // typename pfi::lang::function<M()> f = c.call<M()>("get_storage");
-      // FIXME: if you use this code, M should be serializable
-      // classifier used serialized binary 'std::string', not local_storage
-      // how do we make this type pattern?
-      try{
-      // this->set_storage( f() );
-      }catch(std::exception& e){
-      // if(s.success){
-      //   stringstream ss(s.retval);
-      //   st->load(ss);
-      // }
-      }
-    }
-  };
-  
   template <typename D>
   void register_update(std::string name,
                        pfi::lang::function<void(M*, const D&)> u)
@@ -108,30 +64,6 @@ class server : public pfi::network::mprpc::rpc_server {
     add(name, f);
   }
 
-#ifdef HAVE_ZOOKEEPER_H
-  void set_mixer(pfi::lang::function<Diff(const M*)> get_diff, //get_diff
-                 pfi::lang::function<int(const M*, const Diff&, const Diff&, Diff&)> mix, //mix
-                 pfi::lang::function<int(M*, const Diff&)> put_diff //put_diff
-                 ) {
-    if(mixer_running_){ // TODO: check statically second call of start_mixer
-      throw std::runtime_error("can't start mixer twice.");
-    }
-    { //register to msgpack-RPC
-      pfi::lang::function<Diff()> f = pfi::lang::bind(get_diff, &model);
-      add(jubatus::GET_DIFF, f);
-    }
-    { //register to msgpack-RPC
-      pfi::lang::function<int(Diff)> f = pfi::lang::bind(put_diff, &model, pfi::lang::_1);
-      add(jubatus::PUT_DIFF, f);
-    }
-    { //register join < FIXME:
-      //      pfi::lang::function<M()> f(&get_storage);
-      //      add("get_storage", f);
-    }
-    //register to mixer0
-    mixer_->set_mixer_func(mix);
-  }
-#endif
 
  private:
   template <typename D>

@@ -30,8 +30,8 @@
 
 #include <pficommon/text/json.h>
 #include <pficommon/lang/bind.h>
+#include <pficommon/lang/function.h>
 
-#include <iostream>
 #include <glog/logging.h>
 
 #include <cmath> //for isfinite()
@@ -48,26 +48,23 @@ using jubatus::fv_converter::datum_to_fv_converter;
 namespace jubatus {
 namespace server {
 
-template <typename From, typename To>
-void convert(const From& from, To& to){
-  msgpack::sbuffer sbuf;
-  msgpack::pack(sbuf, from);
-  msgpack::unpacked msg;
-  msgpack::unpack(&msg, sbuf.data(), sbuf.size());
-  msg.get().convert(&to);
-}
-
 
 classifier_serv::classifier_serv(int args, char** argv)
-  :jubatus_serv(server_argv(args,argv))
+  :jubatus_serv<storage::storage_base,diffv>(server_argv(args,argv))
 {
-  //FIXME
-}
+  model_.reset(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
 
-classifier_serv::classifier_serv(shared_ptr<storage_base> &s, const server_argv& a, const std::string& base_path):
-  jubatus_serv(a,base_path),
-  storage_(s)
-{
+  function<diffv(const storage::storage_base*)>
+    getdiff(&classifier_serv::get_diff);
+
+  // FIXME: switch the function when set_config is done
+  // because mixing method differs btwn PA, CW, etc...
+  function<int(const storage::storage_base*, const diffv&, diffv&)>
+    reduce(&classifier_serv::reduce);
+  function<int(storage::storage_base*, const diffv&)>
+    putdiff(&classifier_serv::put_diff);
+
+  this->set_mixer(getdiff, reduce, putdiff);
 }
 
 classifier_serv::~classifier_serv() {
@@ -76,234 +73,119 @@ classifier_serv::~classifier_serv() {
 int classifier_serv::set_config(config_data config) {
   DLOG(INFO) << __func__;
 
-  try{
-    shared_ptr<datum_to_fv_converter> converter(new datum_to_fv_converter);
+  shared_ptr<datum_to_fv_converter> converter(new datum_to_fv_converter);
     
-    
-    scoped_lock lk(wlock(m_));
-    convert<jubatus::config_data, config_data>(config, config_);
-    fv_converter::converter_config c;
-    convert<jubatus::converter_config, fv_converter::converter_config>(config_.config, c);
-    fv_converter::initialize_converter(c, *converter);
-    converter_ = converter;
-    
-    classifier_.reset(classifier_factory::create_classifier(config.method, storage_.get()));
-    return 0;
-  }catch(const exception& e){
-    return -1;
-  }
+  convert<jubatus::config_data, config_data>(config, config_);
+  fv_converter::converter_config c;
+  convert<jubatus::converter_config, fv_converter::converter_config>(config_.config, c);
+  fv_converter::initialize_converter(c, *converter);
+  converter_ = converter;
+  
+  classifier_.reset(classifier_factory::create_classifier(config.method, this->model_.get()));
+  return 0;
 }
 
 config_data classifier_serv::get_config(int) {
-  scoped_lock lk(rlock(m_));
   DLOG(INFO) << __func__;
   return config_;
 }
 
 int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > data) {
-  scoped_lock lk(wlock(m_));
+
   if (!classifier_){
     LOG(ERROR) << __func__ << ": config is not set";
     return -1; //int::fail("config_not_set"); // 
   }
 
   int count = 0;
+  sfv_t v;
+  fv_converter::datum d;
+  
   for (size_t i = 0; i < data.size(); ++i) {
-    sfv_t v;
-    fv_converter::datum d;
-    try{
-      convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
-      converter_->convert(d, v);
-      classifier_->train(v, data[i].first);
-      count++; //FIXME: try..catch clause and return error
-
-#ifdef HAVE_ZOOKEEPER_H
-      if(!!mixer_) mixer_->updated();
-#endif
-    }catch(const std::exception& e){
-      LOG(WARNING) << e.what();
-      continue;
-    }
-
+    convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
+    converter_->convert(d, v);
+    classifier_->train(v, data[i].first);
+    count++;
   }
   return count;
 }
 
 std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector<jubatus::datum> data) {
   std::vector<std::vector<estimate_result> > ret;
-  scoped_lock lk(rlock(m_));
 
-  if (!classifier_){
-    LOG(ERROR) << __func__ << ": config is not set";
-    return ret;//std::vector<estimate_results> >::fail("config_not_set");
-  }
-
+  sfv_t v;
+  fv_converter::datum d;
   for (size_t i = 0; i < data.size(); ++i) {
-    sfv_t v;
-    fv_converter::datum d;
-    try{
-      convert<datum, fv_converter::datum>(data[i], d);
-      converter_->convert(d, v);
+
+    convert<datum, fv_converter::datum>(data[i], d);
+    converter_->convert(d, v);
     
-      classify_result scores;
-      classifier_->classify_with_scores(v, scores);
-#ifdef HAVE_ZOOKEEPER_H
-      if(!!mixer_) mixer_->accessed();
-#endif
-      vector<estimate_result> r;
-      for (vector<classify_result_elem>::const_iterator p = scores.begin();
-           p != scores.end(); ++p){
-        if( isfinite(p->score) ){
-          estimate_result e;
-          e.label = p->label;
-          e.prob = p->score;
-          r.push_back(e);
-        }else{
-          LOG(WARNING) << p->label << ":" << p->score;
-        }
+    classify_result scores;
+    classifier_->classify_with_scores(v, scores);
+    
+    vector<estimate_result> r;
+    for (vector<classify_result_elem>::const_iterator p = scores.begin();
+         p != scores.end(); ++p){
+      if( isfinite(p->score) ){
+        estimate_result e;
+        e.label = p->label;
+        e.prob = p->score;
+        r.push_back(e);
+      }else{
+        LOG(WARNING) << p->label << ":" << p->score;
       }
-      ret.push_back(r);
-    }catch(const std::exception& e){
-      LOG(WARNING) << e.what();
-      continue;
     }
+    ret.push_back(r);
   }
   return ret; //std::vector<estimate_results> >::ok(ret);
 }
 
+pfi::lang::shared_ptr<storage::storage_base> classifier_serv::before_load(){
+  return pfi::lang::shared_ptr<storage::storage_base>(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
+}
+// after load(..) called, users reset their own data
+void classifier_serv::after_load(){
+  classifier_.reset(classifier_factory::create_classifier(config_.method, model_.get()));
+};
+
 std::map<std::pair<std::string,int>,
          std::map<std::string,std::string> > classifier_serv::get_status(int){
-  scoped_lock lk(rlock(m_));
-
   std::map<std::string,std::string> ret0;
-  if (storage_){
-#ifdef HAVE_ZOOKEEPER_H
-    if (storage_->type == "local_mixture"){
+  if (model_){
+
+    if (model_->type == "local_mixture"){
       mixer_->get_status(ret0);
     }
-#endif
-    storage_->get_status(ret0);
-    ret0["storage"] = storage_->type;
+    //    model_->get_status(ret0); //FIXME
+    ret0["storage"] = model_->type;
   }
   
   util::get_machine_status(ret0);
   
-  //  if(ret0.empty()){
-    //    return ret0; //std::map<std::pair<string,int>,std::map<std::string,std::string> > >::fail("no result");
-    //  }else{
-    std::map<std::pair<string,int>, std::map<std::string,std::string> > ret;
-    std::pair<string,int> __hoge__ = make_pair(a_.eth, a_.port); //FIXME
-    ret.insert(make_pair(__hoge__, ret0));
-    return ret;
-    //  }
+  std::map<std::pair<string,int>, std::map<std::string,std::string> > ret;
+  std::pair<string,int> __hoge__ = make_pair(a_.eth, a_.port);
+  ret.insert(make_pair(__hoge__, ret0));
+  return ret;
 }
+  
 
-int classifier_serv::save(std::string id) {
-  scoped_lock lk(rlock(m_));  
-
-  //  std::string ofile;
-  //  bool ok = false;
-  // build_local_path_(ofile, type, id);
-
-  // ofstream ofs(ofile.c_str(), std::ios::trunc|std::ios::binary);
-  // if(!ofs){
-  //   return int>::fail(ofile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
-  // }
-  // try{
-  //   ok = storage_->save(ofs);
-  //   ofs.close();
-  //   LOG(INFO) << "saved to " << ofile;
-  return 0; //int>::ok(0);
-  // }catch(const std::exception& e){
-  //   return int>::fail(e.what());
-  // }
-}
-
-int classifier_serv::load(std::string id) {
-  scoped_lock lk(wlock(m_));
-
-  std::string ifile;
-  //bool ok = false;
-  // build_local_path_(ifile, type, id);
-
-  // ifstream ifs(ifile.c_str(), std::ios::binary);
-  // if(!ifs){
-  //   return result<int>::fail(ifile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
-  // }
-
-  // try{
-  //   shared_ptr<storage::storage_base> s(storage::storage_factory::create_storage(storage_->type));
-    
-  //   if(!s){
-  //     return result<int>::fail("cannot allocate memory for storage");
-  //   }
-
-  //   ok = s->load(ifs);
-  //   ifs.close();
-    
-  //   if(ok){
-  //     LOG(INFO) << "loaded from " << ifile;
-  //     storage_ = s;
-  //     classifier_.reset(classifier_factory::create_classifier(config_.method, storage_.get()));
-  return 0;//result<int>::ok(0);
-  //   }
-  //   return result<int>::fail("failed loading");
-  // }catch(const std::exception& e){
-  //   return result<int>::fail(e.what());
-  // }
-}
-
-result<std::string> classifier_serv::get_storage(int i){
-  scoped_lock lk(rlock(m_));
-  if (storage_->type != "local_mixture"){
-    LOG(ERROR) << __func__ << " storage is not local_mixture: " << storage_->type;
-    return result<std::string>::fail("bad storage type:"+storage_->type+" should be 'local_mixture'");
-  }
+std::string classifier_serv::get_storage(int i){
   stringstream ss;
-  try{
-    storage_->save(ss);
-    DLOG(INFO) << ss.str().size();
-    return result<std::string>::ok(ss.str());
-  }catch(const std::exception& e){
-    return result<std::string>::fail(e.what());
-  }
+
+  model_->save(ss);
+  DLOG(INFO) << ss.str().size();
+  return ss.str(); //result<std::string>::ok(ss.str());
 }
 
-diffv classifier_serv::get_diff(int i){
+diffv classifier_serv::get_diff(const storage::storage_base* model){
   diffv ret;
-#ifdef HAVE_ZOOKEEPER_H
-  scoped_lock lk(rlock(m_));
-  if (storage_->type == "local_mixture"){
-    local_storage_mixture * s = reinterpret_cast<local_storage_mixture*>(storage_.get());
-    ret.count = mixer_->get_count();
-
-    s->get_diff(ret.v);
-  }else{
-    LOG(ERROR) << __func__ << " storage is not local_mixture: " << storage_->type;
-    //    return result<diffv>::fail("bad storage type:"+storage_->type+" should be 'local_mixture'");
-  }
-#endif
-  //  return result<diffv>::fail("running on standalone mode");
+  ret.count = 1; //FIXME mixer_->get_count();
+  model->get_diff(ret.v);
   return ret;
 }
 
-int classifier_serv::put_diff(features3_t v){
-  scoped_lock lk(wlock(m_));
-#ifdef HAVE_ZOOKEEPER_H
-  try{
-    if (storage_->type == "local_mixture"){
-      local_storage_mixture * s = reinterpret_cast<local_storage_mixture*>(storage_.get());
-      s->set_average_and_clear_diff(v);
-      DLOG(INFO) <<__func__;
-    }else{
-      LOG(ERROR) << __func__ << " storage is not local_mixture: " << storage_->type;
-      //return result<int>::fail("bad storage type:"+storage_->type+" should be 'local_mixture'");
-    }
-  }catch(const std::exception& e){
-    //return result<int>::fail(e.what());
-  }
-#endif
-  //return result<int>::fail("running on standalone mode");
+int classifier_serv::put_diff(storage::storage_base* model, diffv v){
+  model->set_average_and_clear_diff(v.v);
   return 0;
 }
 
@@ -332,38 +214,9 @@ void mix_parameter(diffv& lhs, const diffv& rhs) {
   lhs.count += rhs.count;
 }
 
-void do_nothing(int&, const int&) {}
-
-void classifier_serv::mix(const vector<pair<string, int> >& servers){
-#ifdef HAVE_ZOOKEEPER_H
-  map_fold_rpc_sync<int, diffv> mfrpc(servers, 10.0, mix_parameter);
-  diffv sum;
-  
-  int r = mfrpc.call(GET_DIFF, 0, sum);
-
-  if(r>0){
-    DLOG(ERROR) << __func__ << ": failed to get diff from " << r << " servers.";
-  }
-
-  if(sum.v.empty()){
-    return;
-  }
-
-  // average <= sum / servers_.size()
-  float div = 1.f / static_cast<float>(sum.count);
-  for (size_t i = 0; i < sum.v.size(); ++i) {
-    feature_val3_t& f = sum.v[i].second;
-    for (size_t j = 0; j < f.size(); ++j) {
-      f[j].second.v1 *= div;
-    }
-  }
-
-  map_fold_rpc_sync<storage::features3_t, int> mfrpc2(servers, 10.0, do_nothing);
-  mfrpc2.call(PUT_DIFF, sum.v, (r=0));
-  if(r>0){
-    DLOG(ERROR) << __func__ << ": failed to put diff to " << r << " servers.";
-  }
-#endif
+int classifier_serv::reduce(const storage::storage_base*, const diffv& v, diffv& acc){
+  mix_parameter(acc, v);
+  return 0;
 }
 
 } // namespace classifier

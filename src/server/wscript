@@ -33,37 +33,6 @@ def make_ml_machine(bld, name, libraries = ''):
 
 def build(bld):
 
-  #####################3
-  ### old code begins
-  # recommender
-  recommender_source = 'recommender_serv.cpp server_util.cpp'
-  if bld.env.HAVE_ZOOKEEPER_H:
-    recommender_source += ' mixer.cpp'
-
-  bld.stlib(
-    source = recommender_source,
-    target = 'jubatus_recommender',
-    includes = '.',
-    use = 'PFICOMMON jubaconverter jubarecommender jubacommon MSGPACK GLOG'
-    )
-
-  bld.program(
-    source = 'recommender.cpp server_util.cpp',
-    target = 'jubarecommender',
-    includes = '.',
-    use = 'jubatus_recommender'
-    )
-
-  bld.program(
-    features = 'gtest',
-    source = 'recommender_rpc_test.cpp',
-    target = 'recommender_serv_test',
-    includes = '.',
-    use = 'jubatus_recommender'
-    )
-  ### old code end
-  ###############################
-
   # new code starts
   framework_source = 'server_util.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:

@@ -51,6 +51,9 @@ public:
 
   virtual void bulk_update(const sfv_t& sfv, float step_width, const std::string& inc_class, const std::string& dec_class);
 
+  virtual void get_diff(features3_t&) const ;
+  virtual void set_average_and_clear_diff(const features3_t&);
+
   std::string type;
 
 };

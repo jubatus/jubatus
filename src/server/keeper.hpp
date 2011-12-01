@@ -28,36 +28,36 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
   template <typename Q>
   void register_random_update(std::string name) {
-    pfi::lang::function<int(Q)> f =
-      pfi::lang::bind(&keeper::template random_proxy<int, Q>, this, name, pfi::lang::_1);
+    pfi::lang::function<int(std::string, Q)> f =
+      pfi::lang::bind(&keeper::template random_proxy<int, Q>, this, pfi::lang::_1, pfi::lang::_2);
     add(name, f);
   }
 
   template <typename R, typename Q>
   void register_random_analysis(std::string name) {
-    pfi::lang::function<R(Q)> f =
-      pfi::lang::bind(&keeper::template random_proxy<R, Q>, this, name, pfi::lang::_1);
+    pfi::lang::function<R(std::string, Q)> f =
+      pfi::lang::bind(&keeper::template random_proxy<R, Q>, this, pfi::lang::_1, pfi::lang::_2);
     add(name, f);
   }
 
   template <typename Q>
   void register_broadcast_update(std::string name) {
-    pfi::lang::function<std::vector<int>(Q)> f =
-      pfi::lang::bind(&keeper::template broadcast_proxy<int,Q>, this, name, pfi::lang::_1);
+    pfi::lang::function<std::vector<int>(std::string, Q)> f =
+      pfi::lang::bind(&keeper::template broadcast_proxy<int,Q>, this, pfi::lang::_1, pfi::lang::_2);
     add(name, f);
   }
 
   template <typename R, typename Q>
   void register_broadcast_analysis(std::string name) {
-    pfi::lang::function<std::vector<R>(Q)> f =
+    pfi::lang::function<std::vector<R>(std::string, Q)> f =
         pfi::lang::bind(&keeper::template broadcast_proxy<R, Q>, this, name, pfi::lang::_1);
     add(name, f);
   }
 
   template <typename R, typename Q>
-  void register_cht(std::string name, std::string key) {
-    pfi::lang::function<std::vector<R>(Q)> f =
-      pfi::lang::bind(&keeper::template broadcast_proxy<R, Q>, this, name, key, pfi::lang::_1);
+  void register_cht(std::string name) {
+    pfi::lang::function<std::vector<R>(std::string, std::string, Q)> f =
+      pfi::lang::bind(&keeper::template broadcast_proxy<R, Q>, this, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3);
     add(name, f);
   }
   

@@ -20,6 +20,8 @@
 #include <string>
 #include <sstream>
 
+#include <msgpack.hpp>
+
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/noncopyable.h>
 #include <pficommon/concurrent/lock.h>
@@ -88,39 +90,16 @@ struct keeper_argv {
   };
 };
 
+template <typename From, typename To>
+void convert(const From& from, To& to){
+  msgpack::sbuffer sbuf;
+  msgpack::pack(sbuf, from);
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+  msg.get().convert(&to);
+}
 
-class jubatus_serv : pfi::lang::noncopyable {
-public:
 
-  jubatus_serv(const server_argv& a, const std::string& base_path = "/tmp"):
-    a_(a), base_path_(base_path_)
-  {
-  };
-  virtual ~jubatus_serv(){};
-
-  void build_local_path_(std::string& out, const std::string& type, const std::string& id){
-    out = base_path_ + "/";
-    out += type;
-    out += "_";
-    out += id;
-    out += ".jc";
-  };
-
-  virtual void mix(const std::vector<std::pair<std::string,int> >&) = 0;
-
-#ifdef HAVE_ZOOKEEPER_H
-  void set_mixer(pfi::lang::shared_ptr<mixer>& m){
-    mixer_ = m;
-    mixer_->set_mixer_func(pfi::lang::bind(&jubatus_serv::mix, this, pfi::lang::_1));
-  };
-protected:
-  pfi::lang::shared_ptr<mixer> mixer_;
-#endif
-
-  pfi::concurrent::rw_mutex m_;
-  server_argv a_;
-  const std::string base_path_;
-};
 
 template <class ServerClass>
 int run_server(int args, char** argv){
