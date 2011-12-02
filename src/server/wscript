@@ -69,7 +69,7 @@ def build(bld):
     features = 'gtest',
     source = 'classifier_test.cpp',
     target = 'classifier_test',
-    use = 'MSGPACK-RPC',
+    use = 'MSGPACK-RPC PFICOMMON',
     )
 
   n = bld.path.get_bld().make_node('test_input')

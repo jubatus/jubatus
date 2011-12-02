@@ -32,6 +32,21 @@ using namespace pfi::data::serialization;
 
 namespace jubatus {
 
+TEST(local_storage_mixture, save_load){
+
+  local_storage_mixture st;
+  {
+    st.set3("a", "x", val3_t(1, 11, 111));
+    st.set3("a", "y", val3_t(2, 22, 222));
+    st.set3("a", "z", val3_t(3, 33, 333));
+    st.set3("b", "x", val3_t(12, 1212, 121212));
+    st.set3("b", "z", val3_t(45, 4545, 454545));
+  }
+  stringstream ss;
+  st.save(ss);
+  
+}
+
 TEST(local_storage_mixture, get_diff) {
   local_storage_mixture s;
 

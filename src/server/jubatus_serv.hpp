@@ -175,7 +175,8 @@ public:
       if(!s){
         //     return result<int>::fail("cannot allocate memory for storage");
       }
-      s->load(ifs);
+      ok = s->load(ifs);
+      int r = errno;
       ifs.close();
       
       if(ok){
@@ -183,12 +184,15 @@ public:
         model_ = s;
         this->after_load();
         return 0;//result<int>::ok(0);
+      }else{
+        LOG(ERROR) << strerror(errno);
+        return r; //result<int>::fail("failed loading");
       }
-      return -1; //result<int>::fail("failed loading");
     }catch(const std::exception& e){
+      ifs.close();
       //   return result<int>::fail(e.what());
     }
-    return -1;
+    return -1; //expected never reaching here.
   }
 
   std::string get_ipaddr()const{ return a_.eth; };

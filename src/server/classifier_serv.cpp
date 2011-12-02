@@ -19,16 +19,13 @@
 #include "../storage/storage_factory.hpp"
 #include "../storage/local_storage_mixture.hpp"
 #include "../classifier/classifier_factory.hpp"
-#include "../fv_converter/exception.hpp"
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
-#include "map_fold_rpc.hpp"
 
 #include "../common/rpc_util.hpp"
 #include "../common/exception.hpp"
 #include "../common/util.hpp"
 
-#include <pficommon/text/json.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/lang/function.h>
 
@@ -82,6 +79,9 @@ int classifier_serv::set_config(config_data config) {
   converter_ = converter;
   
   classifier_.reset(classifier_factory::create_classifier(config.method, this->model_.get()));
+
+  // FIXME: switch the function when set_config is done
+  // because mixing method differs btwn PA, CW, etc...
   return 0;
 }
 
@@ -107,6 +107,7 @@ int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > 
     classifier_->train(v, data[i].first);
     count++;
   }
+  // FIXME: send count incrementation to mixer
   return count;
 }
 
@@ -156,7 +157,6 @@ std::map<std::pair<std::string,int>,
     model_->get_status(ret0); //FIXME
     ret0["storage"] = model_->type;
   }
-  
   util::get_machine_status(ret0);
   
   std::map<std::pair<string,int>, std::map<std::string,std::string> > ret;
@@ -168,9 +168,7 @@ std::map<std::pair<std::string,int>,
 
 std::string classifier_serv::get_storage(int i){
   stringstream ss;
-
   model_->save(ss);
-  DLOG(INFO) << ss.str().size();
   return ss.str(); //result<std::string>::ok(ss.str());
 }
 
@@ -216,5 +214,5 @@ int classifier_serv::reduce(const storage::storage_base*, const diffv& v, diffv&
   return 0;
 }
 
-} // namespace classifier
+} // namespace server
 } // namespace jubatus
