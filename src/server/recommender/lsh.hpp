@@ -24,6 +24,7 @@ namespace recommender {
 
 class lsh : public recommender_base {
 public:
+  lsh(uint64_t base_num, uint64_t search_num);
   lsh();
   ~lsh();
 
@@ -37,7 +38,7 @@ private:
   typedef std::set<std::pair<float, std::string> > sorted_ids_t;
   void calc_lsh_values(const sfv_t& sfv, std::vector<float> values) const;
   void generate_column_base(const std::string& column, std::vector<float>& bases);
-  static void similar_row_using_lsh_value(float val, const sorted_ids_t& sorted_ids, pfi::data::unordered_map<std::string, float>& dists);
+  void similar_row_using_lsh_value(float val, const sorted_ids_t& sorted_ids, pfi::data::unordered_map<std::string, float>& dists) const;
 
   pfi::data::unordered_map<std::string, std::vector<float> > bases_; // bases for lsh
   std::vector<float> base_sq_norms_; // squared norm of bases
@@ -45,6 +46,7 @@ private:
   std::map<std::string, std::vector<float> > id2base_values_;
 
   uint64_t base_num_;
+  uint64_t search_num_;
 };
 
 } // namespace recommender

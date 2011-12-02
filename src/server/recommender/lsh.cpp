@@ -29,7 +29,13 @@ namespace recommender {
 static const uint64_t DEFAULT_BASE_NUM = 32; // should be in config
 static const uint64_t DEFAULT_SEARCH_NUM = 16; // shoud be config
 
-lsh::lsh() : base_num_(DEFAULT_BASE_NUM) {
+lsh::lsh(uint64_t base_num, uint64_t search_num)
+    : base_num_(base_num), search_num_(search_num) {
+  init();
+}
+
+lsh::lsh()
+    : base_num_(DEFAULT_BASE_NUM), search_num_(DEFAULT_SEARCH_NUM) {
   init();
 }
 
@@ -97,7 +103,7 @@ void lsh::calc_lsh_values(const sfv_t& sfv, vector<float> values) const{
   }
 }
 
-void lsh::similar_row_using_lsh_value(float val, const sorted_ids_t& sorted_ids, unordered_map<string, float>& ret){
+void lsh::similar_row_using_lsh_value(float val, const sorted_ids_t& sorted_ids, unordered_map<string, float>& ret) const{
   ret.clear();
   pair<float, string> val_name(val, "");
   const sorted_ids_t::const_iterator low_it = sorted_ids.lower_bound(val_name);
@@ -112,7 +118,7 @@ void lsh::similar_row_using_lsh_value(float val, const sorted_ids_t& sorted_ids,
   // backward
   {
     sorted_ids_t::const_iterator it = low_it;
-    for (size_t i = 0; i < DEFAULT_SEARCH_NUM && low_it != sorted_ids.begin(); ){
+    for (size_t i = 0; i < search_num_ && low_it != sorted_ids.begin(); ){
       --it;
       float dif = val - it->first;
       ret[it->second] += (2.f - dif * dif);
@@ -122,7 +128,7 @@ void lsh::similar_row_using_lsh_value(float val, const sorted_ids_t& sorted_ids,
   // forward
   {
     sorted_ids_t::const_iterator it = low_it;
-    for (size_t i = 0; i < DEFAULT_SEARCH_NUM && it != sorted_ids.end(); ++it){
+    for (size_t i = 0; i < search_num_ && it != sorted_ids.end(); ++it){
       float dif = val - it->first;
       ret[it->second] += (2.f - dif * dif);
     }
