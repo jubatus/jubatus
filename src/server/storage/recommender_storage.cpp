@@ -34,7 +34,7 @@ void recommender_storage::set(const std::string& row, const std::string& column,
 }
 
 void recommender_storage::set_row(const std::string& row, const std::vector<std::pair<std::string, float> >& columns) {
-  vector<pair<uint64_t, float> > v = tbl_[row];
+  vector<pair<uint64_t, float> >& v = tbl_[row];
   for (size_t i = 0; i < columns.size(); ++i){
     v.push_back(make_pair(column2id_.get_id(columns[i].first), columns[i].second));
   }
