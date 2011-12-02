@@ -51,8 +51,8 @@ def build(bld):
     'dynamic_num_feature.cpp',
     'dynamic_string_filter.cpp',
     'dynamic_num_filter.cpp',
-    'revert.cpp',
-    ]
+    'revert.cpp'
+      ]
   use = 'PFICOMMON MSGPACK DL'
 
   if bld.env.HAVE_RE2:
@@ -118,7 +118,7 @@ def build(bld):
       'num_filter_factory_test.cpp',
       'dynamic_loader_test.cpp',
       'counter_test.cpp',
-      'revert_test.cpp',
+      'revert_test.cpp'
       ]
   test_use = 'PFICOMMON MSGPACK jubaconverter'
 

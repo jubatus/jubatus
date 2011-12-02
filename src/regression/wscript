@@ -36,5 +36,6 @@ def build(bld):
         source = 'regression_performance_test.cpp',
         target = 'regression_performance_test',
         includes = '.',
-        use = 'jubaression jubastorage'
+        use = 'jubatus_regression jubastorage'
         )
+

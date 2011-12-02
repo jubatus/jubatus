@@ -83,6 +83,9 @@ class datum_to_fv_converter {
   void add_weight(const std::string& key,
                   float weight);
 
+  void revert_feature(const std::string& feature,
+                      std::pair<std::string, std::string>& expect) const;
+
  private:
   pfi::lang::scoped_ptr<datum_to_fv_converter_impl> pimpl_;
 };
