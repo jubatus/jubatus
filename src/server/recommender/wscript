@@ -13,7 +13,7 @@ def build(bld):
     target = 'jubarecommender_new',
     name = 'jubarecommender_new',
     include = '.',
-    use = '')
+    use = 'PFICOMMON jubastorage jubacommon')
 
   bld.shlib(
     source = '''
@@ -30,7 +30,7 @@ def build(bld):
     target = 'jubarecommender',
     name = 'jubarecommender',
     includes = '.',
-    use = '')
+    use = 'PFICOMMON jubastorage jubacommon')
 
   bld.program(
      features = 'gtest',

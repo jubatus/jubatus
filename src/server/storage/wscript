@@ -18,7 +18,7 @@ def make_tests(bld, srcs):
 
 def build(bld):
   cppfiles = ['storage_factory.cpp', 'storage_base.cpp', 'local_storage.cpp',
-              'local_storage_mixture.cpp']
+              'local_storage_mixture.cpp', 'recommender_storage.cpp']
   use = 'PFICOMMON jubacommon MSGPACK'
 
   bld.shlib(
