@@ -14,6 +14,8 @@ using namespace jubatus;
 using namespace jubatus::client;
 using namespace std;
 
+// FIXME: simple test accross network. needs unittestinization
+
 TEST(classifier, singlemode){
 
   char cwd[1024];

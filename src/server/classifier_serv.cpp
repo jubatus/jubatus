@@ -152,11 +152,8 @@ std::map<std::pair<std::string,int>,
          std::map<std::string,std::string> > classifier_serv::get_status(int){
   std::map<std::string,std::string> ret0;
   if (model_){
-
-    if (model_->type == "local_mixture"){
-      mixer_->get_status(ret0);
-    }
-    //    model_->get_status(ret0); //FIXME
+    //   mixer_->get_status(ret0);
+    model_->get_status(ret0); //FIXME
     ret0["storage"] = model_->type;
   }
   

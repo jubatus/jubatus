@@ -27,7 +27,8 @@ public:
   virtual ~jubatus_serv(){};
 
   virtual int start(msgpack::rpc::server::base * dispatcher){
-//#ifdef HAVE_ZOOKEEPER_H
+
+#ifdef HAVE_ZOOKEEPER_H
     if(! a_.is_standalone()){
       pfi::lang::shared_ptr<jubatus::zk> z(new jubatus::zk(a_.z, a_.timeout, "log"));
 
@@ -40,7 +41,8 @@ public:
         mixer_->start();
       }
     }
-//#endif
+#endif
+
     msgpack::rpc::server srv;
     srv.serve(dispatcher);
     srv.listen(a_.eth, a_.port);
@@ -59,11 +61,13 @@ public:
     out += ".jc";
   };
 
+  pfi::concurrent::rw_mutex& get_rw_mutex(){ return m_; };
+
   void set_mixer(pfi::lang::function<Diff(const M*)> get_diff, //get_diff
                  pfi::lang::function<int(const M*, const Diff&, Diff&)> reduce, //mix
                  pfi::lang::function<int(M*, const Diff&)> put_diff //put_diff
                  ) {
-//#ifdef HAVE_ZOOKEEPER_H
+#ifdef HAVE_ZOOKEEPER_H
     if( ! a_.is_standalone() ){
       get_diff_ = get_diff;
       reduce_ = reduce;
@@ -73,10 +77,10 @@ public:
       printf("asdafsd--\n");
       is_mixer_func_set_ = true;
     }
-      //#endif
+#endif
   };
 
-//#ifdef HAVE_ZOOKEEPER_H
+#ifdef HAVE_ZOOKEEPER_H
   void join_to_cluster(pfi::lang::shared_ptr<jubatus::zk> z){
     std::vector<std::string> list;
     std::string path = ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
@@ -103,8 +107,6 @@ public:
       }
     }
   };
-
-  pfi::concurrent::rw_mutex& get_rw_mutex(){ return m_; };
 
   std::string get_diff_impl(int){
     msgpack::sbuffer sbuf;
@@ -135,6 +137,7 @@ public:
       put_diff_fun(acc);
     }
   }
+#endif
 
   int save(std::string id) {
     std::string ofile;
@@ -193,13 +196,14 @@ public:
   int get_threadum()const{ return a_.threadnum; };
   
 protected:
+
+#ifdef HAVE_ZOOKEEPER_H
   pfi::lang::shared_ptr<mixer0<M, Diff> > mixer_;
   pfi::lang::function<Diff(const M*)> get_diff_;
   pfi::lang::function<int(const M*, const Diff&, Diff&)> reduce_;
   pfi::lang::function<int(M*, const Diff&)> put_diff_;
-  //#else
-  //protected:
-//#endif
+#endif
+
   bool is_mixer_func_set_;
   pfi::concurrent::rw_mutex m_;
   server_argv a_;

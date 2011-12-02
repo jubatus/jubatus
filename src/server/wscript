@@ -49,8 +49,11 @@ def build(bld):
   #new regression
 
   #new classifier
+  classifier_sources = 'classifier_impl.cpp classifier_serv.cpp server_util.cpp'
+  if bld.env.HAVE_ZOOKEEPER_H:
+    classifier_sources +=  ' mixer.cpp'
   bld.program(
-    source = 'classifier_impl.cpp classifier_serv.cpp server_util.cpp mixer.cpp',
+    source = classifier_sources,
     target = 'jubaclassifier',
     includes = '.',
     use = 'PFICOMMON jubacommon MSGPACK GLOG MPIO jubaclassifier jubaconverter jubastorage MSGPACK-RPC'

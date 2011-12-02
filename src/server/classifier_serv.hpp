@@ -39,9 +39,6 @@ public:
   classifier_serv(int args, char** argv);  
   virtual ~classifier_serv();
 
-  storage::storage_base* make_model(const server_argv&);
-
-  // msgpack only
   std::string get_storage(int);
   static diffv get_diff(const storage::storage_base*);
   static int put_diff(storage::storage_base*, diffv v);
