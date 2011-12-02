@@ -37,7 +37,7 @@ public:
   void get_all_row_ids(std::vector<std::string>& ids) const;
   void clear();
 
-protected:
+private:
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
@@ -45,7 +45,6 @@ protected:
       & MEMBER(column2id_);
   }
 
-private:
   key_manager column2id_;
   typedef std::vector<std::pair<uint64_t, float> > column_t;
   typedef pfi::data::unordered_map<std::string, column_t> tbl_t;
