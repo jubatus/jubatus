@@ -44,9 +44,10 @@ let make_argv argvs =
   String.concat ", " (List.rev l);;
 
 let prototype2string (t,n,argvs,decorators,_) =
-  let decorators = String.concat " " decorators in
   Printf.sprintf "  %s %s(%s) # %s \n"
-    (to_idl_typestr t) n (make_argv argvs) decorators;;
+    (to_idl_typestr t) n 
+    (make_argv argvs)
+    (String.concat " " decorators);;
 
 let make_service = function
   | Stree.ClassDef(classname, funcs, members) ->

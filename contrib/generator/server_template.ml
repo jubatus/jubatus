@@ -9,27 +9,40 @@ let make_class_end classname =
   Printf.sprintf "  pfi::lang::shared_ptr<%s_serv> p_;\n};\n" classname;;
 
 let prototype2impl (t,n,argvs,decorators,is_const) =
+  let do_routing = not (List.mem "//@fail_in_keeper" decorators) in
   let rec argvs_str str i = function
-    | [] -> str;
-    | hd::tl -> argvs_str (str ^ (Stree.to_string hd) ^ " arg" ^ (string_of_int i)) (i+1) tl
+    | [] -> String.concat ", " (List.rev str);
+    | hd::tl -> argvs_str (((Stree.to_string hd) ^ " arg" ^ (string_of_int i)) :: str) (i+1) tl
   in
-  let const_statement = if is_const then "const" else "" in
-  let decorators = String.concat " " decorators in
   let argvs_str2 n =
     let rec make_list l = function
       | 0 -> l
       | i -> make_list ((n-i)::l) (i-1)
     in
-    String.concat ", " (List.map (fun i-> "arg" ^ string_of_int i) (make_list [] n))
+    if do_routing then
+      String.concat ", " (List.map (fun i-> "arg" ^ string_of_int i) (make_list [] (n-1)))
+    else
+      String.concat ", " (List.map (fun i-> "arg" ^ string_of_int i) (make_list [] n))
   in
   let make_return_statement = function
     | Stree.Void -> "";
     | _ -> "return "
   in
-  Printf.sprintf "  %s %s(%s)%s %s\n  { %sp_->%s(%s); };\n"
-    (Stree.to_string t) n (argvs_str "" 0 argvs) const_statement decorators
-    (make_return_statement t) n (argvs_str2 (List.length argvs))
-;;
+  let make_lock_statement = function
+    | true -> "JRLOCK__(p_);";
+    | false -> "JWLOCK__(p_);"
+  in
+  let make_impl str = Printf.sprintf "  %s %s(%s) %s\n  { %s };\n"
+    (Stree.to_string t) n (argvs_str [] 0 argvs) (String.concat " " decorators) str
+  in
+  if do_routing then
+    make_impl (Printf.sprintf "%s %sp_->%s(%s);" (make_lock_statement is_const)
+		 (make_return_statement t) n (argvs_str2 (List.length argvs)))
+  else
+    Printf.sprintf "#ifdef HAVE_ZOOKEEPER_H\n%s#endif\n"
+      (make_impl (Printf.sprintf "%s %sp_->%s_impl(%s);" (make_lock_statement is_const)
+		    (make_return_statement t) n (argvs_str2 (List.length argvs))))
+
 
 let memberdecl (t,n) =
   Printf.sprintf "  %s %s;\n" (Stree.to_string t) n;;
@@ -41,7 +54,7 @@ let make_class = function
     ^ Printf.sprintf "  %s_impl_(int args, char** argv)\n" classname
     ^ Printf.sprintf "    : p_(new %s_serv(args, argv)){};\n" classname
     ^ (String.concat "\n" (List.map prototype2impl funcs))
-    ^ "\n  int start(){return -1;}; // FIXME \n"
+    ^ "\n  int run(){ return p_->start(this); };\n"
     ^ "\nprivate:\n"
     ^ (String.concat "" (List.map memberdecl members))
     ^ make_class_end classname

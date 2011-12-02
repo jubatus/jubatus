@@ -11,10 +11,7 @@ let gen_mprpc_decl name prototypes =
   let names = List.map get_name prototypes in
   "MPRPC_GEN(1, " ^ (String.concat ", " (name :: names)) ^ "); ";;
 
- (* temporary error: to be fixed  *)
-exception Multiple_argument_for_rpc
-exception Multiple_decorator
-exception Multiple_class
+
 
 class jubatus_module outdir_i name_i namespace_i typedefs_i structdefs_i classdefs_i =
 object (self)
@@ -31,29 +28,15 @@ object (self)
   val server_c = name_i ^ "_impl.cpp"
   val keeper_c = name_i ^ "_keeper.cpp"
 
-  method check_classdefs =
-    let check_classdef classdef =
-      let Stree.ClassDef(_,prototypes,_) = classdef in
-      let check_prototype p = 
-	let (_, _, argvs, decorators, _) = p in
-	if not (List.length argvs = 1) then raise Multiple_argument_for_rpc
-	else if not (List.length decorators = 1) then raise Multiple_decorator
-	else ()
-      in
-      List.iter check_prototype prototypes;
-    in
-    if not (List.length classdefs = 1) then raise Multiple_class
-    else List.iter check_classdef classdefs;
-
   method generate_idl =
-    print_endline ("==" ^ idlfile ^ "==");
+    print_endline ("generate ==> " ^ idlfile);
     output <<< "# this idl is automatically generated. do not edit. ";
     List.iter (fun t -> output <<< Idl_template.make_typedef t) typedefs;
     List.iter (fun m -> output <<< Idl_template.make_message m) structdefs;
     List.iter (fun c -> output <<< Idl_template.make_service c) classdefs;
     
   method generate_impl =
-    print_endline ("==" ^ server_c ^ "==");
+    print_endline ("generate ==> " ^ server_c);
     output <<< "// this program is automatically generated. do not edit. ";
 (*    output <<< include_dq ["server.hpp"; "../common/cmdline.h"]; *)
     let namespaces = [namespace; "server"] in
@@ -68,7 +51,7 @@ object (self)
     output <<< Server_template.make_main namespaces (List.hd classdefs);
 
   method generate_keeper =
-    print_endline ("==" ^ keeper_c ^ "==");
+    print_endline ("generate ==> " ^ keeper_c);
     output <<< "// this program is automatically generated. do not edit. ";
     output <<< Keeper_template.make_file_begin name;
     output <<< make_using_ns [namespace];
@@ -82,8 +65,6 @@ object (self)
       output <- open_out filename
 
   method generate =
-    self#check_classdefs;
-
 (*    debugmode <- true; *)
     self#set_output (String.concat "/" [outdir; idlfile]);
     self#generate_idl;

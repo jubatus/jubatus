@@ -58,14 +58,11 @@ public:
   //@random
   config_data get_config(int) const;
   
-  //@broadcast
-  int save(std::string id);
+  // //@broadcast
+  // int save(std::string id);
   
-  //@broadcast
-  int load(std::string id);
-  
-  // //@broadcast 
-  // int clear(){};
+  // //@broadcast
+  // int load(std::string id);
   
   //@random
   int train(std::vector<std::pair<std::string, datum> > train_data);
