@@ -45,6 +45,7 @@ class parser;
 namespace jubatus {
 
 struct server_argv {
+
   server_argv(int args, char** argv);
   server_argv();
   

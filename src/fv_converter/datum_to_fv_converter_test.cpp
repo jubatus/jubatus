@@ -283,26 +283,23 @@ TEST(datum_to_fv_converter, register_num_filter) {
   EXPECT_EQ("/age+5@str$25", feature[1].first);
 }
 
-TEST(datum_to_fv_converter, revert) {
+TEST(datum_to_fv_converter, duplicate_key) {
   datum_to_fv_converter conv;
-  pair<string, string> expect;
-  conv.revert_feature("/name$doc1@str#bin/bin", expect);
-  EXPECT_EQ("/name", expect.first);
-  EXPECT_EQ("doc1", expect.second);
-}
+  datum datum;
+  datum.string_values_.push_back(make_pair("name", "john"));
+  datum.string_values_.push_back(make_pair("name", "mike"));
 
-TEST(datum_to_fv_converter, revert_invalid_feature) {
-  datum_to_fv_converter conv;
-  pair<string, string> expect;
-  EXPECT_THROW(conv.revert_feature("/age$1@str", expect),
-               converter_exception);
+  vector<splitter_weight_type> p;
+  p.push_back(splitter_weight_type(FREQ_BINARY, TERM_BINARY));
+  conv.register_string_rule("str",
+                            shared_ptr<key_matcher>(new match_all()),
+                            shared_ptr<word_splitter>(new without_split()),
+                            p);
   
-  EXPECT_THROW(conv.revert_feature("/age$1#bin/bin", expect),
-               converter_exception);
+  vector<pair<string, float> > fv;
+  conv.convert(datum, fv);
 
-  EXPECT_THROW(conv.revert_feature("/age@str#bin/bin", expect),
-               converter_exception);
-
-  EXPECT_THROW(conv.revert_feature("/name$hoge@space#bin/bin", expect),
-               converter_exception);
+  ASSERT_EQ(2u, fv.size());
+  EXPECT_EQ("name$john@str#bin/bin", fv[0].first);
+  EXPECT_EQ("name$mike@str#bin/bin", fv[1].first);
 }
