@@ -58,12 +58,13 @@ def build(bld):
     includes = '.',
     use = 'PFICOMMON jubacommon MSGPACK GLOG MPIO jubaclassifier jubaconverter jubastorage MSGPACK-RPC'
     )
-  bld.program(
-    source = 'classifier_keeper.cpp server_util.cpp',
-    target = 'jubaclassifier_keeper',
-    includes = '.',
-    use = 'PFICOMMON jubacommon MSGPACK GLOG MSGPACK_RPC MPIO'
-    )
+  if bld.env.HAVE_ZOOKEEPER_H:
+    bld.program(
+      source = 'classifier_keeper.cpp server_util.cpp',
+      target = 'jubaclassifier_keeper',
+      includes = '.',
+      use = 'PFICOMMON jubacommon MSGPACK GLOG MSGPACK_RPC MPIO'
+      )
   bld.program(
     features = 'gtest',
     source = 'classifier_test.cpp',

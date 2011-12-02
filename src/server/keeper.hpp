@@ -8,7 +8,9 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/math/random.h>
-//#include "../../dev/src/common/zk.hpp"
+
+#include "../common/zk.hpp"
+#include "../common/membership.hpp"
 
 #include "server_util.hpp"
 
@@ -18,8 +20,13 @@ namespace jubatus {
 
 class keeper : public pfi::network::mprpc::rpc_server {
  public:
-  keeper() : pfi::network::mprpc::rpc_server(0.0) {}
-  keeper(const jubatus::keeper_argv& a) : pfi::network::mprpc::rpc_server(a.timeout), a_(a){
+  keeper(const jubatus::keeper_argv& a)
+    : pfi::network::mprpc::rpc_server(a.timeout),
+      a_(a),
+      zk_(a.z, a.timeout)
+  {
+    register_broadcast_analysis<int, std::string>("save");
+    register_broadcast_update<std::string>("load");
   }
 
   int start(){
@@ -68,7 +75,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
     get_members_(name, list);
     const std::pair<std::string, int>& c = list[rng_(list.size())];
 
-    return pfi::network::mprpc::rpc_client(c.first, c.second, timeout_).call<R(A)>(name)(arg);
+    return pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(A)>(name)(arg);
   }
 
   template <typename R, typename A>
@@ -79,7 +86,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
     std::vector<R> results;
     for (size_t i = 0; i < list.size(); ++i) {
       const std::pair<std::string, int>& c = list[i];
-      R res = pfi::network::mprpc::rpc_client(c.first, c.second, timeout_).call<R(A)>(name)(arg);
+      R res = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(A)>(name)(arg);
       results.push_back(res);
     }
     return results;
@@ -87,18 +94,17 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
   template <typename R, typename A> //FIXME
   std::vector<R> cht_proxy(const std::string& name, const std::string& key, const A& arg) {
-    // std::vector<std::pair<std::string, int> > list;
-    // get_members_(name, list);
+    std::vector<std::pair<std::string, int> > list;
+    get_members_(name, list);
 
     std::vector<R> results;
-    // for (size_t i = 0; i < list.size(); ++i) {
-    //   const std::pair<std::string, int>& c = list[i];
-    //   R res = pfi::network::mprpc::rpc_client(c.first, c.second, timeout_).call<R(A)>(name)(arg);
-    //   results.push_back(res);
-    // }
+    for (size_t i = 0; i < list.size(); ++i) {
+      const std::pair<std::string, int>& c = list[i];
+      R res = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(A)>(name)(arg);
+      results.push_back(res);
+    }
     return results;
   }
-
 
   void get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret){
     using namespace std;
@@ -108,7 +114,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
     {
       pfi::concurrent::scoped_lock lk(mutex_);
-      //zk_.list(path, list);
+      zk_.list(path, list);
     }
     vector<string>::const_iterator it;
 
@@ -117,16 +123,15 @@ class keeper : public pfi::network::mprpc::rpc_server {
     for(it = list.begin(); it!= list.end(); ++it){
       string ip;
       int port;
-      //jubatus::revert(*it, ip, port);
+      jubatus::revert(*it, ip, port);
       ret.push_back(make_pair(ip,port));
     }
   }
 
-  //zk zk_;
   jubatus::keeper_argv a_;
   pfi::math::random::mtrand rng_;
   pfi::concurrent::mutex mutex_;
-  int timeout_;
+  zk zk_;
 };
 
 }

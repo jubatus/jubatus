@@ -37,6 +37,5 @@ let make_file_begin c namespace =
 
 let make_file_end = make_ns_end;;
 
-
 let compose f g x = f (g x);;
 
