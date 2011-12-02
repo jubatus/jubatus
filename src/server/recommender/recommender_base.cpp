@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include "recommender_base.hpp"
+#include "../../common/vector_util.hpp"
 
 using namespace std;
 using namespace pfi::data;
@@ -30,26 +31,6 @@ recommender_base::recommender_base(){
 }
 
 recommender_base::~recommender_base(){
-}
-
-
-void recommender_base::sort_and_merge(sfv_t& sfv){
-  if (sfv.size() == 0) return;
-  sort(sfv.begin(), sfv.end());
-  sfv_t ret_sfv;
-  string prev = sfv[0].first;
-  float val = sfv[0].second;
-  for (size_t i = 1; i < sfv.size(); ++i){
-    if (sfv[i].first == prev){
-      val += sfv[i].second;
-    } else {
-      ret_sfv.push_back(make_pair(prev, val));
-      prev = sfv[i].first;
-      val = sfv[i].second;
-    }
-  }
-  ret_sfv.push_back(make_pair(prev, val));
-  sfv.swap(ret_sfv);
 }
 
 void recommender_base::similar_row(const std::string& id, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const{

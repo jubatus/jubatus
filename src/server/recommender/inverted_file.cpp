@@ -18,6 +18,7 @@
 #include <algorithm>
 #include "inverted_file.hpp"
 #include "../../common/exception.hpp"
+#include "../../common/vector_util.hpp"
 
 using namespace std;
 using namespace pfi::data;

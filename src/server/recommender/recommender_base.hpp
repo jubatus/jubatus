@@ -44,7 +44,6 @@ public:
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
 protected:
-  static void sort_and_merge(sfv_t& sfv);
   static const uint64_t complete_row_similar_num;
   storage::recommender_storage origs_;
 };
