@@ -5,6 +5,18 @@ def configure(ctx): pass
 def build(bld):
   bld.shlib(
     source = '''
+    	  recommender_base.cpp
+	  inverted_file.cpp
+	  lsh.cpp
+	  minhash.cpp
+	 ''',
+    target = 'jubarecommender_new',
+    name = 'jubarecommender_new',
+    include = '.',
+    use = '')
+
+  bld.shlib(
+    source = '''
     	 similarity_factory.cpp
 	 anchor_builder_factory.cpp
 	 anchor_finder_factory.cpp

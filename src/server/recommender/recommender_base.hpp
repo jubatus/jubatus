@@ -17,49 +17,36 @@
 
 #pragma once
 
+#include <vector>
 #include <pficommon/data/unordered_map.h>
-#include "../../common/key_manager.hpp"
+#include "../../common/type.hpp"
+#include "../storage/recommender_storage.hpp"
 #include "recommender_type.hpp"
+
 
 namespace jubatus {
 namespace recommender {
 
-class recommender;
-class similarity_base;
-class anchor_finder_base;
-class anchor_builder_base;
-
-
-class recommender_builder{
+class recommender_base{
 public:
-  recommender_builder(const std::string& similarity_name,
-		      const std::string& anchor_finder_name,
-		      const std::string& anchor_builder_name) :
-    similarity_name_(similarity_name),
-    anchor_finder_name_(anchor_finder_name),
-    anchor_builder_name_(anchor_builder_name) {}
+  recommender_base();
+  ~recommender_base();
 
-  ~recommender_builder();
+  virtual void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const = 0; // return similar row for query.
+  virtual void clear() = 0;
+  virtual void clear_row(const std::string& id) = 0;
+  virtual void update_row(const std::string& id, const sfv_diff_t& diff) = 0;
 
-  //void add_row(const std::string& id, const sfv_t& sfv);
-  void clear_row(const std::string& id);
-  void update_row(const std::string& id, const sfv_diff_t& diff);
+  void similar_row(const std::string& id, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  void complete_row(const std::string& id, sfv_t& ret) const;
+  void complete_row(const sfv_t& query, sfv_t& ret) const;
+  void decode_row(const std::string& id, sfv_t& ret) const; 
+  void get_all_row_ids(std::vector<std::string>& ids) const;
 
-  void get_diff(recommender_diff_t& ret) const;
-
-  void build(const recommender& base,
-             size_t all_anchor_num, 
-             size_t anchor_num_per_data,
-             recommender& r);
-
-private:
-  std::string similarity_name_;
-  std::string anchor_finder_name_;
-  std::string anchor_builder_name_;
-  key_manager feature2id_;
-
-  void canonalize_originals();
-  pfi::data::unordered_map<std::string, sfvi_t> originals_;
+protected:
+  static void sort_and_merge(sfv_t& sfv);
+  static const uint64_t complete_row_similar_num;
+  storage::recommender_storage origs_;
 };
 
 } // namespace recommender

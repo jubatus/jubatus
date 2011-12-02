@@ -17,47 +17,40 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <iostream>
-#include <stdint.h>
-#include <pficommon/data/unordered_map.h>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
+#include <pficommon/data/unordered_map.h>
+#include "../../common/key_manager.hpp"
 
 namespace jubatus {
+namespace storage{
 
-class key_manager {
+class recommender_storage {
 public:
-  enum {
-    NOTFOUND = 0xFFFFFFFFFFFFFFFFLLU
-  };
+  recommender_storage();
+  ~recommender_storage();
 
-  size_t size() const {
-    return key2id_.size();
-  }
-
-  uint64_t get_id(const std::string& key);
-  uint64_t get_id_const(const std::string& key) const;
-  const std::string& get_key(const uint64_t id) const;
-  void swap(key_manager& km);
+  void set(const std::string& row, const std::string& column, float val); 
+  void set_row(const std::string& row, const std::vector<std::pair<std::string, float> >& columns);
+  float get(const std::string& row, const std::string& column) const;
+  void get_row(const std::string& row, std::vector<std::pair<std::string, float> >& columns) const;
+  void get_all_row_ids(std::vector<std::string>& ids) const;
   void clear();
-
-  void init_by_id2key(const std::vector<std::string>& id2key);
-  std::vector<std::string> get_all_id2key() const;
 
 protected:
   friend class pfi::data::serialization::access;
-  template<class Ar>
+  template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(key2id_)
-      & MEMBER(id2key_);
+    ar & MEMBER(tbl_)
+      & MEMBER(column2id_);
   }
 
 private:
-  pfi::data::unordered_map<std::string, uint64_t> key2id_;
-  std::vector<std::string> id2key_;
-  const std::string vacant_;
+  key_manager column2id_;
+  typedef std::vector<std::pair<uint64_t, float> > column_t;
+  typedef pfi::data::unordered_map<std::string, column_t> tbl_t;
+  tbl_t tbl_;
 };
 
-} // jubatus
+}
+}

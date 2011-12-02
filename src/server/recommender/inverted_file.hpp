@@ -17,23 +17,24 @@
 
 #pragma once
 
-#include <exception>
-#include <stdexcept>
-#include <string>
+#include "recommender_base.hpp"
 
-namespace jubatus{
+namespace jubatus {
+namespace recommender {
 
-  class storage_not_set : std::exception {};
-  class config_not_set : std::exception {};
-  class unsupported_method : std::runtime_error {
-  public:
-    unsupported_method(const std::string& n): runtime_error(n) {}
-  };
+class inverted_file : public recommender_base {
+public:
+  inverted_file();
+  ~inverted_file();
 
-  class bad_storage_type : std::runtime_error {
-  public:
-    bad_storage_type(const std::string& n):runtime_error(n){};
-  };
+  void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  void clear();
+  void clear_row(const std::string& id);
+  void update_row(const std::string& id, const sfv_diff_t& diff);
 
+private:
+  storage::recommender_storage invs_;
+};
 
-}
+} // namespace recommender
+} // namespace jubatus

@@ -17,47 +17,35 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <iostream>
-#include <stdint.h>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
+#include "recommender_base.hpp"
 
 namespace jubatus {
+namespace recommender {
 
-class key_manager {
+class minhash : public recommender_base {
 public:
-  enum {
-    NOTFOUND = 0xFFFFFFFFFFFFFFFFLLU
-  };
+  minhash();
+  ~minhash();
 
-  size_t size() const {
-    return key2id_.size();
-  }
-
-  uint64_t get_id(const std::string& key);
-  uint64_t get_id_const(const std::string& key) const;
-  const std::string& get_key(const uint64_t id) const;
-  void swap(key_manager& km);
+  void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
   void clear();
-
-  void init_by_id2key(const std::vector<std::string>& id2key);
-  std::vector<std::string> get_all_id2key() const;
-
-protected:
-  friend class pfi::data::serialization::access;
-  template<class Ar>
-  void serialize(Ar& ar) {
-    ar & MEMBER(key2id_)
-      & MEMBER(id2key_);
-  }
+  void clear_row(const std::string& id);
+  void update_row(const std::string& id, const sfv_diff_t& diff);
 
 private:
-  pfi::data::unordered_map<std::string, uint64_t> key2id_;
-  std::vector<std::string> id2key_;
-  const std::string vacant_;
+  void calc_minhash_values(const sfv_t& sfv, std::vector<float>& values) const;
+
+  void converte2hash(const sfv_t& sfv, std::vector<uint64_t>& ids);
+  float calc_resemble(const std::pair<float, std::vector<uint64_t> >& ids1,
+                      const std::pair<float, std::vector<uint64_t> >& ids2);
+
+  static float calc_hash(uint64_t a, uint64_t b, float val);
+  static void hash_mix(uint64_t& a, uint64_t& b, uint64_t& c);
+
+  uint64_t bit_num_;
+  uint64_t hash_num_;
+  std::vector<std::vector<std::vector<uint64_t> > > minhash_list_; // minhash_list[k][hashval][id_list]
 };
 
-} // jubatus
+} // namespace recommender
+} // namespace jubatus

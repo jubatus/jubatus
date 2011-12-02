@@ -17,49 +17,34 @@
 
 #pragma once
 
-#include <pficommon/data/unordered_map.h>
-#include "../../common/key_manager.hpp"
-#include "recommender_type.hpp"
+#include "recommender_base.hpp"
 
 namespace jubatus {
 namespace recommender {
 
-class recommender;
-class similarity_base;
-class anchor_finder_base;
-class anchor_builder_base;
-
-
-class recommender_builder{
+class lsh : public recommender_base {
 public:
-  recommender_builder(const std::string& similarity_name,
-		      const std::string& anchor_finder_name,
-		      const std::string& anchor_builder_name) :
-    similarity_name_(similarity_name),
-    anchor_finder_name_(anchor_finder_name),
-    anchor_builder_name_(anchor_builder_name) {}
+  lsh();
+  ~lsh();
 
-  ~recommender_builder();
-
-  //void add_row(const std::string& id, const sfv_t& sfv);
+  void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  void clear();
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const sfv_diff_t& diff);
 
-  void get_diff(recommender_diff_t& ret) const;
-
-  void build(const recommender& base,
-             size_t all_anchor_num, 
-             size_t anchor_num_per_data,
-             recommender& r);
-
 private:
-  std::string similarity_name_;
-  std::string anchor_finder_name_;
-  std::string anchor_builder_name_;
-  key_manager feature2id_;
+  void init();
+  typedef std::set<std::pair<float, std::string> > sorted_ids_t;
+  void calc_lsh_values(const sfv_t& sfv, std::vector<float> values) const;
+  void generate_column_base(const std::string& column, std::vector<float>& bases);
+  static void similar_row_using_lsh_value(float val, const sorted_ids_t& sorted_ids, pfi::data::unordered_map<std::string, float>& dists);
 
-  void canonalize_originals();
-  pfi::data::unordered_map<std::string, sfvi_t> originals_;
+  pfi::data::unordered_map<std::string, std::vector<float> > bases_; // bases for lsh
+  std::vector<float> base_sq_norms_; // squared norm of bases
+  std::vector<sorted_ids_t> base2sorted_ids_; 
+  std::map<std::string, std::vector<float> > id2base_values_;
+
+  uint64_t base_num_;
 };
 
 } // namespace recommender
