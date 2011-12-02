@@ -24,7 +24,14 @@ using namespace pfi::data;
 namespace jubatus {
 namespace recommender {
 
-const uint64_t complete_row_similar_num = 7;
+const uint64_t recommender_base::complete_row_similar_num = 7;
+
+recommender_base::recommender_base(){
+}
+
+recommender_base::~recommender_base(){
+}
+
 
 void recommender_base::sort_and_merge(sfv_t& sfv){
   if (sfv.size() == 0) return;

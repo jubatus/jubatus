@@ -30,7 +30,7 @@ namespace recommender {
 class recommender_base{
 public:
   recommender_base();
-  ~recommender_base();
+  virtual ~recommender_base();
 
   virtual void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const = 0; // return similar row for query.
   virtual void clear() = 0;
