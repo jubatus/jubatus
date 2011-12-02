@@ -32,11 +32,15 @@ def build(bld):
     includes = '.',
     use = 'PFICOMMON jubastorage jubacommon')
 
-  bld.program(
-     features = 'gtest',
-     source = [
-         'recommender_test.cpp',
-     ],
-     target = "recommender_test",
-     includes = '.',
-     use = 'PFICOMMON jubarecommender jubacommon')
+  def make_test(s):
+    bld.program(
+      features = 'gtest',
+      source = s,
+      target = s[0:s.rfind('.')],
+      includes = '.',
+      use = 'PFICOMMON jubarecommender jubacommon jubarecommender_new')
+
+  map(make_test, [
+      'recommender_test.cpp',
+      'recommender_base_test.cpp',
+      ])
