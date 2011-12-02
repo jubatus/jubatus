@@ -110,8 +110,11 @@ namespace jubatus{
 
     void set_mixer_func(pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> f){
     //    void set_mixer_func(pfi::lang::function<int(const M*, const D&, const D&, D&)>& f){
-      pfi::concurrent::scoped_lock lk(m_);
-      mixer_func_ = f;
+     printf("asdafs==\n");
+     pfi::concurrent::scoped_lock lk(m_);
+     printf("asdafsd==\n");
+     mixer_func_ = f;
+     printf("asdafsd++\n");
     };
     int get_count()const {return counter_;} ; //FIXME: not thread-safe
     void try_mix(){

@@ -50,7 +50,7 @@ namespace server {
 
 
 classifier_serv::classifier_serv(int args, char** argv)
-  :jubatus_serv<storage::storage_base,diffv>(server_argv(args,argv))
+  :jubatus_serv<storage::storage_base,diffv>(args,argv)
 {
   model_.reset(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
 
@@ -64,7 +64,7 @@ classifier_serv::classifier_serv(int args, char** argv)
   function<int(storage::storage_base*, const diffv&)>
     putdiff(&classifier_serv::put_diff);
 
-  this->set_mixer(getdiff, reduce, putdiff);
+  set_mixer(getdiff, reduce, putdiff);
 }
 
 classifier_serv::~classifier_serv() {

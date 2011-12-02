@@ -103,7 +103,7 @@ void convert(const From& from, To& to){
 
 template <class ServerClass>
 int run_server(int args, char** argv){
-  return ServerClass(args, argv).start();
+  return ServerClass(args, argv).run();
 };
 
 

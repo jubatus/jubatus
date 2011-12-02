@@ -46,7 +46,7 @@ public:
   { JWLOCK__(p_);
     return p_->load(arg0); };
 
-  int start(){return p_->start();}; // FIXME 
+  int run(){ return p_->start(this); };
 
 private:
   pfi::lang::shared_ptr<classifier_serv> p_;

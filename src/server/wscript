@@ -71,6 +71,7 @@ def build(bld):
       target = n)
 
   bld.install_files('${PREFIX}/include/jubatus/server',
-                    ['classifier_rpc.hpp',
-                     'diffv.hpp',
+                    [
+                     'classifier_types.hpp',
+                     'client.hpp',
                      ])

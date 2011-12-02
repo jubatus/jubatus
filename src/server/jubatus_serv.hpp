@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <msgpack/rpc/server.h>
+
 #include <pficommon/lang/function.h>
 #include <pficommon/network/mprpc.h>
 
@@ -16,15 +18,15 @@ template <typename M, typename Diff>
 class jubatus_serv : pfi::lang::noncopyable {
 
 public:
-  jubatus_serv(const server_argv& a, const std::string& base_path = "/tmp"):
+  jubatus_serv(int args, char** argv, const std::string& base_path = "/tmp"):
     is_mixer_func_set_(false),
-    a_(a),
-    base_path_(base_path_)
+    a_(args, argv),
+    base_path_(a_.tmpdir)
   {
   };
   virtual ~jubatus_serv(){};
 
-  int start(){
+  virtual int start(msgpack::rpc::server::base * dispatcher){
 //#ifdef HAVE_ZOOKEEPER_H
     if(! a_.is_standalone()){
       pfi::lang::shared_ptr<jubatus::zk> z(new jubatus::zk(a_.z, a_.timeout, "log"));
@@ -39,8 +41,13 @@ public:
       }
     }
 //#endif
-    // return this->serv(a_.port, a_.threadnum); FIXME
-    return -1;
+    msgpack::rpc::server srv;
+    srv.serve(dispatcher);
+    srv.listen(a_.eth, a_.port);
+    { LOG(INFO) << a_.eth << " " << a_.port; }
+    srv.start(a_.threadnum);
+    pause();
+    return 0;
   };
 
 
@@ -57,12 +64,16 @@ public:
                  pfi::lang::function<int(M*, const Diff&)> put_diff //put_diff
                  ) {
 //#ifdef HAVE_ZOOKEEPER_H
-    get_diff_ = get_diff;
-    reduce_ = reduce;
-    put_diff_ = put_diff;
-    mixer_->set_mixer_func(pfi::lang::bind(&jubatus_serv<M,Diff>::do_mix, this, pfi::lang::_1));
-    is_mixer_func_set_ = true;
-//#endif
+    if( ! a_.is_standalone() ){
+      get_diff_ = get_diff;
+      reduce_ = reduce;
+      put_diff_ = put_diff;
+      printf("asdafsd--\n");
+      mixer_->set_mixer_func(pfi::lang::bind(&jubatus_serv<M,Diff>::do_mix, this, pfi::lang::_1));
+      printf("asdafsd--\n");
+      is_mixer_func_set_ = true;
+    }
+      //#endif
   };
 
 //#ifdef HAVE_ZOOKEEPER_H
@@ -177,6 +188,10 @@ public:
     return -1;
   }
 
+  std::string get_ipaddr()const{ return a_.eth; };
+  int get_port()const{ return a_.port; };
+  int get_threadum()const{ return a_.threadnum; };
+  
 protected:
   pfi::lang::shared_ptr<mixer0<M, Diff> > mixer_;
   pfi::lang::function<Diff(const M*)> get_diff_;

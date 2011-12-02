@@ -1,9 +1,9 @@
 
-#include "types.hpp"
+#include "classifier_types.hpp"
 #include <msgpack/rpc/client.h>
 
 
-namespace msgpack {
+namespace jubatus {
 
 namespace client {
 
@@ -20,7 +20,7 @@ public:
       return c_.call("get_config", name, arg0).get<config_data >();
     }
 
-    int32_t train(std::string name, std::vector<pair > arg0) {
+    int32_t train(std::string name, std::vector<std::pair<std::string, datum> > arg0) {
       return c_.call("train", name, arg0).get<int32_t >();
     }
 

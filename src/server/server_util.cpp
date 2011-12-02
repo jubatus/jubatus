@@ -10,12 +10,12 @@ namespace jubatus {
     p.add<int>("timeout", 't', "time out (sec)", false, 10);
 
     p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
-    p.add<std::string>("name", 'n', "learning machine instance name", true);
+    p.add<std::string>("name", 'n', "learning machine instance name", false);
     p.add<std::string>("tmpdir", 'd', "directory to place plugins", false, "/tmp");
-    p.add("join",    'j', "join to the existing cluster");
+    p.add("join", 'j', "join to the existing cluster");
 
-    p.add<int>("interval_sec", 's', "mix interval by seconds", 5);
-    p.add<int>("interval_count", 'i', "mix interval by update count", 1024);
+    p.add<int>("interval_sec", 's', "mix interval by seconds", false, 5);
+    p.add<int>("interval_count", 'i', "mix interval by update count", false, 1024);
 
     p.parse_check(args, argv);
 
@@ -26,7 +26,7 @@ namespace jubatus {
     name = p.get<std::string>("name");
     tmpdir = p.get<std::string>("tmpdir");
     eth = jubatus::util::get_ip("eth0");
-    join = p.get<bool>("join");
+    join = p.exist("join");
 
     interval_sec = p.get<int>("interval_sec");
     interval_count = p.get<int>("interval_count");
