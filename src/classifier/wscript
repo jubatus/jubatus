@@ -15,8 +15,8 @@ def build(bld):
 	nherd.cpp
         classifier_factory.cpp
 	''',
-    target = 'jubaclassifier',
-    name = 'jubaclassifier',
+    target = 'jubatus_classifier',
+    name = 'jubatus_classifier',
     includes = '.',
     use = 'PFICOMMON')
 
@@ -28,4 +28,4 @@ def build(bld):
      ],
      target = "classifier_test",
      includes = '.',
-     use = 'jubaclassifier jubastorage')
+     use = 'jubatus_classifier jubastorage')

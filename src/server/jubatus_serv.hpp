@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
 
 #include <msgpack/rpc/server.h>
 
@@ -107,6 +108,12 @@ public:
       }
     }
   };
+
+  std::string get_storage(int i){
+    std::stringstream ss;
+    model_->save(ss);
+    return ss.str(); //result<std::string>::ok(ss.str());
+  }
 
   std::string get_diff_impl(int){
     msgpack::sbuffer sbuf;

@@ -15,10 +15,10 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "classifier_serv.hpp"
+#include "regression_serv.hpp"
 #include "../storage/storage_factory.hpp"
 #include "../storage/local_storage_mixture.hpp"
-#include "../classifier/classifier_factory.hpp"
+#include "../regression/regression_factory.hpp"
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
 
@@ -45,29 +45,28 @@ using jubatus::fv_converter::datum_to_fv_converter;
 namespace jubatus {
 namespace server {
 
-
-classifier_serv::classifier_serv(int args, char** argv)
+regression_serv::regression_serv(int args, char** argv)
   :jubatus_serv<storage::storage_base,diffv>(args,argv)
 {
   model_.reset(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
 
   function<diffv(const storage::storage_base*)>
-    getdiff(&classifier_serv::get_diff);
+    getdiff(&regression_serv::get_diff);
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
   function<int(const storage::storage_base*, const diffv&, diffv&)>
-    reduce(&classifier_serv::reduce);
+    reduce(&regression_serv::reduce);
   function<int(storage::storage_base*, const diffv&)>
-    putdiff(&classifier_serv::put_diff);
+    putdiff(&regression_serv::put_diff);
 
   set_mixer(getdiff, reduce, putdiff);
 }
 
-classifier_serv::~classifier_serv() {
+regression_serv::~regression_serv() {
 }
 
-int classifier_serv::set_config(config_data config) {
+int regression_serv::set_config(config_data config) {
   DLOG(INFO) << __func__;
 
   shared_ptr<datum_to_fv_converter> converter(new datum_to_fv_converter);
@@ -77,22 +76,22 @@ int classifier_serv::set_config(config_data config) {
   convert<jubatus::converter_config, fv_converter::converter_config>(config_.config, c);
   fv_converter::initialize_converter(c, *converter);
   converter_ = converter;
-  
-  classifier_.reset(classifier_factory::create_classifier(config.method, this->model_.get()));
+
+  regression_.reset(regression_factory().create_regression(config_.method, this->model_.get()));
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
   return 0;
 }
 
-config_data classifier_serv::get_config(int) {
+config_data regression_serv::get_config(int) {
   DLOG(INFO) << __func__;
   return config_;
 }
 
-int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > data) {
+int regression_serv::train(std::vector<std::pair<float, jubatus::datum> > data) {
 
-  if (!classifier_){
+  if (!regression_){
     LOG(ERROR) << __func__ << ": config is not set";
     return -1; //int::fail("config_not_set"); // 
   }
@@ -104,53 +103,35 @@ int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > 
   for (size_t i = 0; i < data.size(); ++i) {
     convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
     converter_->convert(d, v);
-    classifier_->train(v, data[i].first);
+    regression_->train(v, data[i].first);
     count++;
   }
   // FIXME: send count incrementation to mixer
   return count;
 }
 
-std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector<jubatus::datum> data) {
-  std::vector<std::vector<estimate_result> > ret;
-
+std::vector<float > regression_serv::estimate(std::vector<jubatus::datum> data) {
+  std::vector<float> ret;
   sfv_t v;
   fv_converter::datum d;
   for (size_t i = 0; i < data.size(); ++i) {
-
     convert<datum, fv_converter::datum>(data[i], d);
     converter_->convert(d, v);
-    
-    classify_result scores;
-    classifier_->classify_with_scores(v, scores);
-    
-    vector<estimate_result> r;
-    for (vector<classify_result_elem>::const_iterator p = scores.begin();
-         p != scores.end(); ++p){
-      if( isfinite(p->score) ){
-        estimate_result e;
-        e.label = p->label;
-        e.prob = p->score;
-        r.push_back(e);
-      }else{
-        LOG(WARNING) << p->label << ":" << p->score;
-      }
-    }
-    ret.push_back(r);
+    ret.push_back(regression_->estimate(v));
   }
   return ret; //std::vector<estimate_results> >::ok(ret);
 }
 
-pfi::lang::shared_ptr<storage::storage_base> classifier_serv::before_load(){
+pfi::lang::shared_ptr<storage::storage_base> regression_serv::before_load(){
   return pfi::lang::shared_ptr<storage::storage_base>(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
 }
 // after load(..) called, users reset their own data
-void classifier_serv::after_load(){
-  classifier_.reset(classifier_factory::create_classifier(config_.method, model_.get()));
+void regression_serv::after_load(){
+  regression_.reset(regression_factory().create_regression(config_.method, model_.get()));
 };
 
 std::map<std::pair<std::string,int>,
-         std::map<std::string,std::string> > classifier_serv::get_status(int){
+         std::map<std::string,std::string> > regression_serv::get_status(int){
   std::map<std::string,std::string> ret0;
   if (model_){
     //   mixer_->get_status(ret0);
@@ -166,14 +147,14 @@ std::map<std::pair<std::string,int>,
 }
   
 
-diffv classifier_serv::get_diff(const storage::storage_base* model){
+diffv regression_serv::get_diff(const storage::storage_base* model){
   diffv ret;
   ret.count = 1; //FIXME mixer_->get_count();
   model->get_diff(ret.v);
   return ret;
 }
 
-int classifier_serv::put_diff(storage::storage_base* model, diffv v){
+int regression_serv::put_diff(storage::storage_base* model, diffv v){
   model->set_average_and_clear_diff(v.v);
   return 0;
 }
@@ -203,7 +184,7 @@ void mix_parameter(diffv& lhs, const diffv& rhs) {
   lhs.count += rhs.count;
 }
 
-int classifier_serv::reduce(const storage::storage_base*, const diffv& v, diffv& acc){
+int regression_serv::reduce(const storage::storage_base*, const diffv& v, diffv& acc){
   mix_parameter(acc, v);
   return 0;
 }

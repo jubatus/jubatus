@@ -1,9 +1,5 @@
 
 #include "gtest/gtest.h"
-#include <unistd.h>
-#include <sys/types.h>
-#include <signal.h>
-#include <wait.h>
 
 #include <string>
 #include <iostream>
@@ -12,11 +8,13 @@
 #include <pficommon/text/json.h>
 
 #include "diffv.hpp"
-#include "client.hpp"
+#include "classifier_client.hpp"
 #include "classifier_serv.hpp"
 #include "../storage/storage_type.hpp"
 #include "../classifier/classifier_test_util.hpp"
 #include "../fv_converter/converter_config.hpp"
+
+#include "test_util.hpp"
 
 using namespace pfi::lang;
 using namespace pfi::text::json;
@@ -64,38 +62,6 @@ void load_config(jubatus::config_data& c){
   convert<fv_converter::converter_config, converter_config>(cc, c.config);
 }
 
-
-pid_t fork_process(){
-  char cwd[1024];
-  getcwd(cwd, 1024);
-  string cmd(cwd);
-  pid_t child;
-  cmd += "/jubaclassifier";
-  child = fork();
-  if(child == 0){
-    const char *const argv[4] = {cmd.c_str(), "-d", ".", NULL};
-    int ret = execv(cmd.c_str(), (char **const) argv);
-    if(ret < 0){
-      perror("execl");
-      cout << cmd << " " << child << endl;
-    }
-  }else if( child < 0 ){
-    perror("--");
-    return -1;
-  }
-  usleep(10000);
-  return child;
-}
-
-void kill_process(pid_t child){
-  if(kill(child, SIGTERM) != 0){
-    perror("");
-    return;
-  }
-  int status = 0;
-  waitpid(child, &status, 0);
-}
-
 namespace {
 
   class classifier_test : public ::testing::Test {
@@ -103,7 +69,7 @@ namespace {
     pid_t child_;
 
     classifier_test(){
-      child_ = fork_process();
+      child_ = fork_process("classifier");
     };
     virtual ~classifier_test(){
       kill_process(child_);
@@ -111,7 +77,7 @@ namespace {
     virtual void restart_process(){
 
       kill_process(this->child_);
-      this->child_ = fork_process();
+      this->child_ = fork_process("classifier");
     };
   };
 

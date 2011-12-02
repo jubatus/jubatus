@@ -1,6 +1,5 @@
-# IDL for Jubatus Classifier
-
-# include "fv_converter.idl"
+# this idl is automatically generated. do not edit. 
+type param_t = map<string, string> 
 
 message string_rule {
   0: string key
@@ -20,47 +19,34 @@ message num_rule {
   1: string type
 }
 
-type param_t = map<string, string>
-
 message converter_config {
-  0: map<string, param_t> string_filter_types
-  1: list<filter_rule>    string_filter_rules
-  2: map<string, param_t> num_filter_types
-  3: list<filter_rule>    num_filter_rules
-  4: map<string, param_t> string_types
-  5: list<string_rule>    string_rules
-  6: map<string, param_t> num_types
-  7: list<num_rule>       num_rules
+  0: map<string, param_t>  string_filter_types
+  1: list<filter_rule>  string_filter_rules
+  2: map<string, param_t>  num_filter_types
+  3: list<filter_rule>  num_filter_rules
+  4: map<string, param_t>  string_types
+  5: list<string_rule>  string_rules
+  6: map<string, param_t>  num_types
+  7: list<num_rule>  num_rules
 }
 
 message config_data {
   0: string method
-  1: converter_config converter
+  1: converter_config config
 }
 
 message datum {
-  0: list<tuple<string, string>> sv
-  1: list<tuple<string, double>> nv
+  0: list<pair<string, string> >  sv
+  1: list<pair<string, double> >  nv
 }
 
-message estimate_result {
-  0: string label
-  1: double prob
-}
-
-exception config_not_set {
-  0: string message
-}
-
-service regression:1 {
-  config_data get_config()
-  void set_config(0: config_data conf)
-
-  void train(0: list<pair<float, datum>> data)
-  list<list<estimate_result>> estimate(0: list<datum> data)
-
-  bool save(0: string a, 1: string b)
-  bool load(0: string a, 1: string b)
-
-  map<string, string> get_status()
+service regression :1 {
+  int set_config(0: string arg0, 1: config_data arg1) # //@broadcast 
+  config_data get_config(0: string arg0, 1: int arg1) # //@random 
+  int train(0: string arg0, 1: list<pair<float, datum> >  arg1) # //@random 
+  list<float>  estimate(0: string arg0, 1: list<datum>  arg1) # //@random 
+  int save(0: string arg0, 1: string arg1) # //@broadcast 
+  int load(0: string arg0, 1: string arg1) # //@broadcast 
+  string get_diff(0: int arg0) # //@fail_in_keeper 
+  int put_diff(0: string arg0) # //@fail_in_keeper 
 }

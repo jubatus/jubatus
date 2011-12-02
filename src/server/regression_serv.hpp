@@ -21,11 +21,11 @@
 #include <vector>
 
 #include "../common/rpc_util.hpp"
-#include "../classifier/classifier_base.hpp"
+#include "../regression/regression_base.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../storage/storage_base.hpp"
 
-#include "classifier_types.hpp"
+#include "regression_types.hpp"
 #include "jubatus_serv.hpp"
 #include "diffv.hpp"
 
@@ -33,11 +33,11 @@
 namespace jubatus{
 namespace server{
 
-class classifier_serv : public jubatus_serv<storage::storage_base,diffv>
+class regression_serv : public jubatus_serv<storage::storage_base,diffv>
 {
 public:
-  classifier_serv(int args, char** argv);  
-  virtual ~classifier_serv();
+  regression_serv(int args, char** argv);  
+  virtual ~regression_serv();
 
   static diffv get_diff(const storage::storage_base*);
   static int put_diff(storage::storage_base*, diffv v);
@@ -45,8 +45,8 @@ public:
 
   int set_config(config_data);
   config_data get_config(int );
-  int train(std::vector<std::pair<std::string, datum> > data);
-  std::vector<std::vector<estimate_result> > classify(std::vector<datum> data);
+  int train(std::vector<std::pair<float, datum> > data);
+  std::vector<float> estimate(std::vector<datum> data);
 
   pfi::lang::shared_ptr<storage::storage_base> before_load();
   void after_load();
@@ -56,7 +56,7 @@ public:
 private:
   config_data config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  pfi::lang::shared_ptr<classifier_base> classifier_;
+  pfi::lang::shared_ptr<regression_base> regression_;
 
 };
 
