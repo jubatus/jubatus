@@ -45,23 +45,27 @@ def build(bld):
     use = 'PFICOMMON jubacommon MSGPACK GLOG'
     )
 
+  #new recommender
   #new regression
-  #make_ml_machine(bld, 'regression', 'jubastorage jubatus_regression')
 
   #new classifier
-  #make_ml_machine(bld, 'classifier', 'jubastorage jubaclassifier')
-
   bld.program(
     source = 'classifier_impl.cpp classifier_serv.cpp server_util.cpp mixer.cpp',
-    target = 'jubatus_classifier_new',
+    target = 'jubaclassifier',
     includes = '.',
     use = 'PFICOMMON jubacommon MSGPACK GLOG MPIO jubaclassifier jubaconverter jubastorage MSGPACK-RPC'
     )
   bld.program(
     source = 'classifier_keeper.cpp server_util.cpp',
-    target = 'jubatus_classifier_keeper_new',
+    target = 'jubaclassifier_keeper',
     includes = '.',
     use = 'PFICOMMON jubacommon MSGPACK GLOG MSGPACK_RPC MPIO'
+    )
+  bld.program(
+    features = 'gtest',
+    source = 'classifier_test.cpp',
+    target = 'classifier_test',
+    use = 'MSGPACK-RPC',
     )
 
   n = bld.path.get_bld().make_node('test_input')
