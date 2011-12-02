@@ -1,7 +1,4 @@
 {
-  "method":"PA",
-  "storage":"local",
-  "converter":{
     "string_types": {
       "unigram":  { "method": "ngram", "char_num": "1" }
     },
@@ -18,5 +15,4 @@
     { "key": "user/age", "type": "num" },
     { "key": "user/age", "type": "log" }
   ]
-}
 }

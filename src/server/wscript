@@ -1,66 +1,56 @@
-subdirs = 'fv_converter storage classifier recommender regression'
-
 def options(opt):
-  opt.recurse(subdirs)
+  pass
 
 def configure(conf):
-  conf.recurse(subdirs)
+  pass
+
+
+def build_one(bld, name, libraries = ''):
+  __sources = '%s_impl.cpp %s_serv.cpp server_util.cpp' % (name, name)
+  if bld.env.HAVE_ZOOKEEPER_H:
+    __sources +=  ' mixer.cpp'
+  bld.program(
+    source = __sources,
+    target = 'juba'+name,
+    includes = '.',
+    use = 'PFICOMMON jubacommon MSGPACK GLOG jubatus_%s MSGPACK-RPC %s' % (name, libraries)
+    )
+  if bld.env.HAVE_ZOOKEEPER_H:
+    bld.program(
+      source = '%s_keeper.cpp server_util.cpp' % name,
+      target = 'juba%s_keeper' % name,
+      includes = '.',
+      use = 'PFICOMMON jubacommon MSGPACK GLOG MSGPACK-RPC'
+      )
+  bld.program(
+    features = 'gtest',
+    source = '%s_test.cpp' % name,
+    target = '%s_test' % name,
+    use = 'MSGPACK-RPC PFICOMMON',
+    )
+
 
 def build(bld):
 
-  #classifier
-  classifier_source = 'classifier_serv.cpp'
+  # new code starts
+  framework_source = 'server_util.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
-    classifier_source +=  ' mixer.cpp'
+    framework_source +=  ' mixer.cpp'
 
-  bld.stlib(
-    source = classifier_source,
-    target = 'jubatus_classifier',
+  bld.shlib(
+    source = framework_source,
+    target = 'jubatus_framework',
     includes = '.',
-    use = 'PFICOMMON jubaconverter jubaclassifier jubastorage jubacommon MSGPACK GLOG'
+    use = 'PFICOMMON jubacommon MSGPACK GLOG'
     )
 
-  bld.program(
-    source = 'classifier.cpp',
-    target = 'jubaclassifier',
-    includes = '.',
-    use = 'jubatus_classifier'
-    )
+  #new recommender
 
-  bld.program(
-    features = 'gtest',
-    source = 'classifier_serv_test.cpp',
-    target = 'classifier_serv_test',
-    includes = '.',
-    use = 'jubatus_classifier'
-    )
+  #new classifier
+  build_one(bld, "classifier", 'jubaconverter jubastorage')
 
-  # recommender
-  recommender_source = 'recommender_serv.cpp'
-  if bld.env.HAVE_ZOOKEEPER_H:
-    recommender_source += ' mixer.cpp'
-
-  bld.stlib(
-    source = recommender_source,
-    target = 'jubatus_recommender',
-    includes = '.',
-    use = 'PFICOMMON jubaconverter jubarecommender jubacommon MSGPACK GLOG'
-    )
-
-  bld.program(
-    source = 'recommender.cpp',
-    target = 'jubarecommender',
-    includes = '.',
-    use = 'jubatus_recommender'
-    )
-
-  bld.program(
-    features = 'gtest',
-    source = 'recommender_rpc_test.cpp',
-    target = 'recommender_serv_test',
-    includes = '.',
-    use = 'jubatus_recommender'
-    )
+  #new regression
+  build_one(bld, "regression", 'jubaconverter jubastorage')
 
   n = bld.path.get_bld().make_node('test_input')
   n.mkdir()
@@ -68,9 +58,9 @@ def build(bld):
       source = bld.path.ant_glob('test_input/*'),
       target = n)
 
-  bld.recurse(subdirs)
-
-  bld.install_files('${PREFIX}/include/jubatus/server',
-                    ['classifier_rpc.hpp',
-                     'diffv.hpp',
-                     ])
+  bld.install_files('${PREFIX}/include/jubatus/client', [
+      'classifier_types.hpp',
+      'classifier_client.hpp',
+      'regression_types.hpp',
+      'regression_client.hpp'
+      ])

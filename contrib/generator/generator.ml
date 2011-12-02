@@ -11,88 +11,66 @@ let gen_mprpc_decl name prototypes =
   let names = List.map get_name prototypes in
   "MPRPC_GEN(1, " ^ (String.concat ", " (name :: names)) ^ "); ";;
 
-(* "jubatus" "sample" [prototype] => [source code filename] *)
-(* string -> string -> prototypes list -> string list *)
 
-class jubatus_module name_i namespace_i includes_i classimpls_i =
+
+class jubatus_module outdir_i name_i namespace_i typedefs_i structdefs_i classdefs_i =
 object (self)
+  val outdir = outdir_i
   val name = name_i
   val namespace = namespace_i
-  val includes = includes_i
-  val classimpls = classimpls_i
+  val typedefs = typedefs_i
+  val structdefs = structdefs_i
+  val classdefs = classdefs_i
   val mutable output = stdout
+  val mutable debugmode = false
 
-  val client_h  = name_i ^ "_client.hpp"
-  val client_c  = name_i ^ "_client.cpp"
-  val keeper_h  = name_i ^ "_keeper.hpp"
-  val keeper_c  = name_i ^ "_keeper.cpp"
-  val server_h  = name_i ^ "_server.hpp"
-  val server_c  = name_i ^ "_server.cpp"
+  val idlfile  = name_i ^ ".idl"
+  val server_c = name_i ^ "_impl.cpp"
+  val keeper_c = name_i ^ "_keeper.cpp"
 
-(*  method generate_front_rpc =
-    print_endline ("=================== " ^ front_rpc);
-    output <<< make_file_begin "client" classname;
-    output <<< (String.concat "" (List.map make_mprpc_decl prototypes));
-    output <<< gen_mprpc_decl classname prototypes;
-    output <<< make_file_end "client" classname; *)
-(*
-  method generate_back_rpc =
-    print_endline ("=================== " ^ back_rpc);
-    output <<< make_file_begin "server" classname;
-    output <<< (String.concat "" (List.map make_mprpc_decl prototypes));
-    output <<< gen_mprpc_decl classname prototypes;
-    output <<< make_file_end "server" classname;
-*)  
-(*  method generate_client = (* TODO: functor for multiple language generation *)
-    print_endline ("=================== " ^ client_h);
-    output <<< make_header_header;
-    output <<< include_b ["vector"; "string"];
-    output <<< make_ns_begin "client" name;
-    (*    output <<< Client_template.make_class_begin classname;
-	  output <<< String.concat "\n" (List.map (Client_template.prototype2string classname) prototypes);
-	  output <<< Client_template.make_class_end classname; *)
-    output <<< make_ns_end "client" name;
-    print_endline ("=================== " ^ client_c);
-    output <<< include_b ["pficommon/math/random.h"];
-    output <<< include_dq [client_h];
-    output <<< make_ns_begin "client" name;
-    (*    output <<< Client_template.constructor classname;
-	  output <<< Client_template.destructor classname;
-	  output <<< String.concat "\n" (List.map (Client_template.prototype2impl classname) prototypes); *)
-    output <<< make_ns_end "client" name;
-*)
-
-  method generate_server =
-    print_endline ("==" ^ server_c ^ "==");
-    output <<< include_b  includes;
-    output <<< include_dq ["server.hpp"; "../common/cmdline.h"];
+  method generate_idl =
+    print_endline ("generate ==> " ^ idlfile);
+    output <<< "# this idl is automatically generated. do not edit. ";
+    List.iter (fun t -> output <<< Idl_template.make_typedef t) typedefs;
+    List.iter (fun m -> output <<< Idl_template.make_message m) structdefs;
+    List.iter (fun c -> output <<< Idl_template.make_service c) classdefs;
+    
+  method generate_impl =
+    print_endline ("generate ==> " ^ server_c);
+    output <<< "// this program is automatically generated. do not edit. ";
+(*    output <<< include_dq ["server.hpp"; "../common/cmdline.h"]; *)
     let namespaces = [namespace; "server"] in
+    output <<< include_dq [(name ^ "_server.hpp");
+			   "server_util.hpp";
+			   (name ^ "_serv.hpp")];
+    output <<< include_b ["pficommon/lang/shared_ptr.h"];
+    output <<< "\n";
     output <<< make_ns_begin namespaces;
-    List.iter (fun c -> output <<< Server_template.make_class c) classimpls;
+    List.iter (fun c -> output <<< Server_template.make_class c) classdefs;
     output <<< make_ns_end namespaces;
-    output <<< Server_template.make_main ();
+    output <<< Server_template.make_main namespaces (List.hd classdefs);
 
   method generate_keeper =
-(*    output <<< make_file_begin "keeper" name;
-    output <<< Keeper_template.make_class_begin "jubakeeper";
-    output <<< String.concat "\n" (List.map (Keeper_template.prototype2string "jubakeeper") prototypes); 
-    output <<< Keeper_template.make_class_end "jubakeeper";
-    output <<< make_file_end "keeper" name;
-    print_endline ("==" ^ keeper_h ^ "==");
-    print_endline ("==" ^ keeper_c ^ "=="); *)
-(*    output <<< include_dq [keeper_h; front_rpc; back_rpc; ]; *)
-    output <<< make_ns_begin [namespace; "keeper"];
-(*    output <<< Keeper_template.constructor "jubakeeper";
-    output <<< String.concat "\n" (List.map (Keeper_template.prototype2impl "jubakeeper") prototypes);
-    output <<< Keeper_template.destructor "jubakeeper"; *)
-    output <<< make_ns_end [namespace; "keeper"];
+    print_endline ("generate ==> " ^ keeper_c);
+    output <<< "// this program is automatically generated. do not edit. ";
+    output <<< Keeper_template.make_file_begin name;
+    output <<< make_using_ns [namespace];
+    output <<< Keeper_template.make_main classdefs;
+    output <<< Keeper_template.make_file_end name;
+
+  method set_output filename =
+    if debugmode then
+      output <- stdout
+    else
+      output <- open_out filename
 
   method generate =
-    output <- stdout;
-(*    self#generate_front_rpc;
-    self#generate_back_rpc; 
-    self#generate_client; *)
-    self#generate_server;
-(*    self#generate_keeper; *)
+(*    debugmode <- true; *)
+    self#set_output (String.concat "/" [outdir; idlfile]);
+    self#generate_idl;
+    self#set_output (String.concat "/" [outdir; server_c]);
+    self#generate_impl;
+    self#set_output (String.concat "/" [outdir; keeper_c]);
+    self#generate_keeper;
 
 end;;

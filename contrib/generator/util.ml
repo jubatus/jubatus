@@ -5,8 +5,12 @@ let output_endline out_channel str =
 
 let (<<<) = output_endline;;
 
+let make_using_ns namespaces =
+  Printf.sprintf "using namespace %s;\n" (String.concat "::" namespaces);;
+
 let make_ns_begin namespaces =
-  String.concat " " (List.map (fun namespace -> "namespace "^namespace^" {") namespaces);;
+  String.concat " " (List.map (fun namespace -> "namespace "^namespace^" {") namespaces)
+  ^ "\n";;
 
 let make_ns_end namespaces =
   (String.concat "" (List.map (fun _-> "}") namespaces))
@@ -32,7 +36,6 @@ let make_file_begin c namespace =
   ^ "using std::string;\n" ^ make_ns_begin [c;namespace];;
 
 let make_file_end = make_ns_end;;
-
 
 let compose f g x = f (g x);;
 
