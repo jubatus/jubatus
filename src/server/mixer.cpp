@@ -17,7 +17,7 @@
 
 #include "mixer.hpp"
 
-#include "./storage/local_storage.hpp"
+#include "../storage/local_storage.hpp"
 #include "../common/membership.hpp"
 
 #include <time.h>
@@ -36,9 +36,9 @@ using namespace pfi::data;
 using pfi::lang::shared_ptr;
 
 mixer::mixer(pfi::lang::shared_ptr<jubatus::zk>& z, const std::string& name,
-             pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mix,
              unsigned int count_threshold, unsigned int tick_threshold)
-  :mix_(mix), zk_(z),name_(name), 
+  :
+  zk_(z),name_(name), 
   count_threshold_(count_threshold),
   counter_(0),
   tick_threshold_(tick_threshold),
@@ -114,9 +114,6 @@ void mixer::get_status(std::map<std::string,std::string>& out){
   out["count"] = pfi::lang::lexical_cast<std::string>(counter_);
   out["ticktime"] = pfi::lang::lexical_cast<std::string>(ticktime_); //since last mix
 }
-void mixer::dummy(const std::vector<std::pair<std::string,int> >&){}
-
-
 
 void mixer::mixer_loop(void* p){
   mixer * m = static_cast<mixer*>(p);

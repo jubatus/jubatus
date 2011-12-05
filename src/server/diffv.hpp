@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "./storage/storage_type.hpp"
+#include "../storage/storage_type.hpp"
 #include <pficommon/network/mprpc.h>
 
 namespace jubatus {
@@ -40,7 +40,7 @@ public:
   };
 
   diffv& operator/=(double d){
-    this->v /= d;
+       this->v /= d;
     return *this;
   };
 

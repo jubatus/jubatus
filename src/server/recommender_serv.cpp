@@ -31,25 +31,16 @@ using std::string;
 namespace jubatus {
 namespace recommender {
 
-#ifdef HAVE_ZOOKEEPER_H
-  server::server(pfi::lang::shared_ptr<mixer>& m, const std::string& base_path):
-  recommender_(new recommender()),
-  mixer_(m), base_path_(base_path)
-{
-  mixer_->set_mixer_func(pfi::lang::bind(&server::mix, this, pfi::lang::_1));
-}
-#endif
-
-server::server(const std::string& base_path):
-  recommender_(new recommender()),
-  base_path_(base_path)
+server::server(const server_argv& a):
+  jubatus_serv(a, a.tmpdir),
+  recommender_(new recommender())
 {
 }
 
 server::~server(){
 }
 
-  result<int> server::set_config(std::string name,config_data config)
+result<int> server::set_config(std::string name,config_data config)
 {
   pfi::concurrent::scoped_wlock lk(m_);
   config_ = config;
@@ -159,7 +150,7 @@ result<std::map<std::pair<std::string, int>, std::map<std::string, std::string> 
     return result<std::map<std::pair<string,int>,std::map<std::string,std::string> > >::fail("no result");
   }else{
     std::map<std::pair<string,int>, std::map<std::string,std::string> > ret;
-    std::pair<string,int> __hoge__ = make_pair(host_,port_); //FIXME
+    std::pair<string,int> __hoge__ = make_pair(a_.eth,a_.port); //FIXME
     ret.insert(make_pair(__hoge__, ret0));
     return result<std::map<std::pair<string,int>,std::map<std::string,std::string> > >::ok(ret);
   }
@@ -192,18 +183,18 @@ void server::init()
     (new recommender_builder
      (config_.similarity_name, config_.anchor_finder_name, config_.anchor_builder_name));
 
-  converter_ = shared_ptr<datum_to_fv_converter>(new datum_to_fv_converter());
-  initialize_converter(config_.converter, *converter_);
+  converter_ = shared_ptr<fv_converter::datum_to_fv_converter>(new fv_converter::datum_to_fv_converter());
+  fv_converter::initialize_converter(config_.converter, *converter_);
 }
 
-  result<datum> server::complete_row_from_id(std::string name,std::string id)
+  result<fv_converter::datum> server::complete_row_from_id(std::string name,std::string id)
 {
   pfi::concurrent::scoped_rlock lk(m_);
 
-  if (!recommender_) return result<datum>::fail("config_not_set");
+  if (!recommender_) return result<fv_converter::datum>::fail("config_not_set");
 
   sfv_t v;
-  datum ret;
+  fv_converter::datum ret;
   recommender_->complete_row(id, v);
   for (size_t i = 0; i < v.size(); ++i){
     ret.num_values_.push_back(v[i]);
@@ -212,24 +203,24 @@ void server::init()
 #ifdef HAVE_ZOOKEEPER_H
   if (mixer_) mixer_->accessed();
 #endif
-  return result<datum>::ok(ret);
+  return result<fv_converter::datum>::ok(ret);
 }
 
-  result<datum> server::complete_row_from_data(std::string name,datum dat)
+  result<fv_converter::datum> server::complete_row_from_data(std::string name,fv_converter::datum dat)
 {
   pfi::concurrent::scoped_rlock lk(m_);
 
-  if (!recommender_) return result<datum>::fail("config_not_set");
+  if (!recommender_) return result<fv_converter::datum>::fail("config_not_set");
 
   sfv_t u, v;
-  datum ret;
+  fv_converter::datum ret;
   converter_->convert(dat, u);
   recommender_->complete_row(u, v);
   // converter_->reverse(v, ret);
 #ifdef HAVE_ZOOKEEPER_H
   if(mixer_)mixer_->accessed();
 #endif
-  return result<datum>::ok(ret);
+  return result<fv_converter::datum>::ok(ret);
 }
 
   result<similar_result> server::similar_row_from_id(std::string name,std::string id, size_t ret_num)
@@ -247,7 +238,7 @@ void server::init()
   return result<similar_result>::ok(ret);
 }
 
-  result<similar_result> server::similar_row_from_data(std::string name,datum dat, size_t ret_num)
+  result<similar_result> server::similar_row_from_data(std::string name,fv_converter::datum dat, size_t ret_num)
 {
   pfi::concurrent::scoped_rlock lk(m_);
 
@@ -264,21 +255,21 @@ void server::init()
   return result<similar_result>::ok(ret);
 }
 
-  result<datum> server::decode_row(std::string name,std::string id)
+  result<fv_converter::datum> server::decode_row(std::string name,std::string id)
 {
   pfi::concurrent::scoped_rlock lk(m_);
 
-  if (!recommender_) return result<datum>::fail("config_not_set");
+  if (!recommender_) return result<fv_converter::datum>::fail("config_not_set");
 
   sfv_t v;
-  datum ret;
+  fv_converter::datum ret;
 
   recommender_->decode_row(id, v);
   for (size_t i = 0; i < v.size(); ++i){
     ret.num_values_.push_back(v[i]);
   }
   // converter_->reverse(v, ret);
-  return result<datum>::ok(ret);
+  return result<fv_converter::datum>::ok(ret);
 }
 
   result<rows> server::get_all_rows(std::string name)
@@ -295,7 +286,7 @@ void server::init()
 
   for (pfi::data::unordered_map<std::string, sfv_t>::iterator p = rs.begin();
        p != rs.end(); ++p) {
-    datum d;
+    fv_converter::datum d;
     // converter_->reverse(p->second, d);
     ret.push_back(make_pair(p->first, d));
   }
@@ -332,8 +323,6 @@ void id(int& l, const int& r){
 }
 
 void server::bind_all_methods(mprpc_server& serv, const std::string& host, int port){
-  host_ = host;
-  port_ = port;
 
   serv.set_set_config(bind(&server::set_config, this, _1, _2));
   serv.set_get_config(bind(&server::get_config, this, _1));
@@ -390,7 +379,7 @@ void server::mix(const std::vector<std::pair<std::string, int> >& servers){
     DLOG(ERROR) << __func__ << ": failed to put diff to " << r << " servers.";
   }
 #endif
-  return ;
+  return;
 }
 
 } // namespace recommender
