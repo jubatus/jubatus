@@ -23,6 +23,7 @@
 #include "../../common/type.hpp"
 
 namespace jubatus {
+namespace recommender {
 
 typedef sfv_t sfv_diff_t;
 typedef std::vector<std::pair<std::string, sfv_t> > recommender_diff_t;
@@ -30,4 +31,5 @@ typedef std::vector<std::pair<std::string, sfv_t> > recommender_diff_t;
 typedef std::vector<std::pair<size_t, float> > data2anchors_t;
 typedef std::vector<std::pair<std::string, float> > anchor2data_t;
 
+}
 }

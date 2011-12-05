@@ -30,13 +30,13 @@ recommender_storage::~recommender_storage(){
 }
 
 void recommender_storage::set(const std::string& row, const std::string& column, float val){
-  tbl_[row].push_back(make_pair(column2id_.get_id(column), val));
+  tbl_[row][column2id_.get_id(column)] = val;
 }
 
 void recommender_storage::set_row(const std::string& row, const std::vector<std::pair<std::string, float> >& columns) {
-  vector<pair<uint64_t, float> > v = tbl_[row];
+  column_t& v = tbl_[row];
   for (size_t i = 0; i < columns.size(); ++i){
-    v.push_back(make_pair(column2id_.get_id(columns[i].first), columns[i].second));
+    v[column2id_.get_id(columns[i].first)] = columns[i].second;
   }
 }
  
@@ -50,12 +50,12 @@ float recommender_storage::get(const std::string& row, const std::string& column
   if (id == key_manager::NOTFOUND){
     return 0.f;
   }
-  
-  const vector<pair<uint64_t, float> >& v = it->second;
-  for (size_t i = 0; i < v.size(); ++i){
-    if (v[i].first == id) return v[i].second;
+
+  column_t::const_iterator cit = it->second.find(id);
+  if (cit == it->second.end()){
+    return 0.f;
   }
-  return 0.f;
+  return cit->second;
 }
 
 void recommender_storage::get_row(const string& row, vector<pair<string, float> >& columns) const{
@@ -65,8 +65,8 @@ void recommender_storage::get_row(const string& row, vector<pair<string, float> 
     return;
   }
   const column_t& v = it->second;
-  for (size_t i = 0; i < v.size(); ++i){
-    columns.push_back(make_pair(column2id_.get_key(v[i].first), v[i].second));
+  for (column_t::const_iterator it = v.begin(); it != v.end(); ++it){
+    columns.push_back(make_pair(column2id_.get_key(it->first), it->second));
   }
 }
 
