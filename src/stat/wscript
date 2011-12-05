@@ -1,0 +1,23 @@
+def options(opt): pass
+def configure(conf): pass
+
+def build(bld):
+  bld.shlib(
+    source = [
+      'stat.cpp'
+      ],
+
+    target = 'jubatus_stat',
+    include = '.'
+    use = 'PFICOMMON'
+    )
+
+  bld.program(
+    features = 'gtest',
+    source = [
+      'stat_test.cpp'
+      ],
+    target = 'stat_test',
+    includes = '.',
+    use = 'jubatus_stat'
+    )
