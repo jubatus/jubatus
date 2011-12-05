@@ -50,12 +50,12 @@ TEST(recommender_storage, set_row) {
 
 TEST(recommender_storage, set) {
   recommender_storage s;
+  s.set("r1", "c1", 5.0);
+  // overwrite
   s.set("r1", "c1", 1.0);
   s.set("r2", "c2", 4.0);
   s.set("r1", "c2", 2.0);
   s.set("r2", "c3", 6.0);
-  // TODO when the value is overwritten
-  // s.set("r1", "c1", 5.0);
 
   EXPECT_EQ(1.0, s.get("r1", "c1"));
   EXPECT_EQ(4.0, s.get("r2", "c2"));
