@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 #include <iostream> 
 
+#include "../../common/type.hpp"
 #include "similarity_base.hpp"
 
 #include "similarity_factory.hpp"
