@@ -12,14 +12,8 @@ let print str = if !debugprint then print_endline str;;
 let includee = Hashtbl.create 20;;
 (* let _ = Hashtbl.replace includee "" "";; *)
 
-let do_include str =
-  Hashtbl.replace includee str str;;
-(*  Hashtbl.iter (fun k _ -> print_endline k) includee;; *)
-
-let get_includee() =
-  Hashtbl.fold (fun k _ l -> k::l) includee [];;
-
 let parse_error s = print ("parse_error->"^s);;
+
 %}
 
 %token VOID INT CHAR
@@ -30,9 +24,10 @@ let parse_error s = print ("parse_error->"^s);;
 %token RBRACE2 LBRACE2
 %token EOF COMMENT
 %token QUOTE
-%token CLASS CONST
+%token CLASS STRUCT CONST
 %token PUBLIC PRIVATE
 %token REFERENCE
+%token TYPEDEF
 %token <string> LITERAL
 %token <string> DECORATOR
 %token <string> CODE
@@ -40,34 +35,52 @@ let parse_error s = print ("parse_error->"^s);;
 %token <string> DESTRUCTOR
 
 %start input
-%type <(string list * Stree.class_impl list)> input
+%type <(Stree.type_def list * Stree.struct_def list * Stree.class_def list)> input
 
 %%
 
 input: 
-          exp0 { print "exp0";
-		 (*		 print_int (Hashtbl.length includee); List.iter print_endline (get_includee()); *)
-		 (get_includee(), $1) }
+          exp0 {
+	    match $1 with
+	      | `Typedef(t) -> ([t], [], []);
+	      | `Class(c) -> ([], [], [c]);
+	      | `Struct(s) -> ([], [s], []);
+	      | `Nothing -> ([], [], []);
+	  }
         | input exp0		{
-	  print "input exp0";
-	  let (includes, classes) = $1 in
-	  let classes0 = $2 in
-	  ( includes, (classes @ classes0)) }
+	  let (typedefs, structs, classes) = $1 in
+	  match $2 with
+	    | `Typedef(t) -> ((t::typedefs), structs, classes);
+	    | `Class(c) -> (typedefs, structs, (c :: classes));
+	    | `Struct(s) -> (typedefs, (s::structs), classes);
+	    | `Nothing -> $1
+	}
 ;
 
 exp0:
-	  one_class      { print ">hage"; [$1] }
-	| one_class exp0 { print ">one_class exp0"; $1 :: $2 }
-	| INCLUDE LBRACE LITERAL RBRACE exp0   { do_include $3; print ("including " ^ $3); $5 }
+	| typedef    { print ">typedef"; `Typedef($1) } /* FIXME: currently ignored */
+	| one_class  { print ">one_class"; `Class($1) }
+	| one_struct { print "> struct";   `Struct($1) }
+	| INCLUDE LBRACE LITERAL RBRACE   { print ("ignoring inclusion " ^ $3); `Nothing }
 ;
 
+typedef: TYPEDEF anytype LITERAL SEMICOLON { Stree.TypeDef($2, $3) }
+
+one_struct:
+        STRUCT LITERAL LBRACE2 exp SEMICOLON {
+	  print ">STRUCT LITERAL LBRACE2 exp SEMICOLON"; 
+	  set_classname $2;
+	  let (_,members) = $4 in
+	  Stree.StructDef($2, members)
+	}
+;
 
 one_class:
 	CLASS LITERAL LBRACE2 exp SEMICOLON {
 	  print ">CLASS LITERAL LBRACE2 exp SEMICOLON"; 
 	  set_classname $2;
 	  let (funcs,members) = $4 in
-	  Stree.ClassImpl($2, funcs, members)
+	  Stree.ClassDef($2, funcs, members)
 	}
 ;
 exp:
@@ -85,44 +98,23 @@ member:   anytype LITERAL SEMICOLON   { ($1, $2) }
 
 declaration:
 	| DECORATOR declaration
-	    { print ">dec1"; let (t,n,arg,decs,c,b) = $2 in (t,n,arg, $1::decs, c, b) }
-
-	  /* maybe constructor */
-	| LITERAL LRBRACE RRBRACE CODE SEMICOLON {
-	  print $1;
-	  (Stree.Constructor, $1, [], [], $4, false)
-	}
-	| LITERAL LRBRACE argv RRBRACE CODE SEMICOLON {
-	  print $1;
-	  (Stree.Constructor, $1, $3, [], $5, false)
-	}
-	  /* destructor */
-	| DESTRUCTOR LRBRACE RRBRACE CODE SEMICOLON {
-	  print $1;
-	  (Stree.Destructor, $1, [], [], $4, false)
-	}
-	| DESTRUCTOR LRBRACE argv RRBRACE CODE SEMICOLON {
-	  print $1;
-	  (Stree.Destructor, $1, $3, [], $5, false)
-	}
+	    { print ">dec1"; let (t,n,arg,decs,b) = $2 in (t,n,arg, $1::decs,b) }
 
 	  /* methods */
-	| anytype LITERAL LRBRACE RRBRACE CONST CODE SEMICOLON
-	    { print ">dec3"; ($1, $2, [], [], $6, true) }
-	| anytype LITERAL LRBRACE argv RRBRACE CONST CODE SEMICOLON
-	    { print ">dec4"; ($1, $2, $4, [], $7, true) }
-	| anytype LITERAL LRBRACE RRBRACE CODE SEMICOLON
-	    { print ">dec3"; ($1, $2, [], [], $5, false) }
-	| anytype LITERAL LRBRACE argv RRBRACE CODE SEMICOLON
-	    { print ">dec4"; ($1, $2, $4, [], $6, false) }
-;
-
-argv:    anytype LITERAL            { print ">anytype LITERAL"; [($1, (Stree.make_symbol $2))] }
-	|anytype LITERAL COMMA argv { print ">anytype LITERAL COMMA argv"; ($1, (Stree.make_symbol $2)) :: $4 }
+	| anytype LITERAL LRBRACE RRBRACE CONST SEMICOLON
+	    { print ">meth1"; ($1, $2, [], [],true) }
+	| anytype LITERAL LRBRACE anytypes RRBRACE CONST SEMICOLON
+	    { print ">meth2"; ($1, $2, (List.rev $4), [],true) }
+	| anytype LITERAL LRBRACE RRBRACE SEMICOLON
+	    { print ">meth3"; ($1, $2, [], [],false) }
+	| anytype LITERAL LRBRACE anytypes RRBRACE  SEMICOLON
+	    { print ">meth4"; ($1, $2, (List.rev $4), [],false) }
 ;
 
 anytypes:anytype                  { print ">anytypes"; [$1] }
 	|anytype COMMA anytypes   { $1 :: $3 }
+	|anytype LITERAL { [$1] }
+	|anytype LITERAL COMMA anytypes { $1 :: $4 }
 ;
 
 anytype: CONST anytype                  { print ">const "; $2 }
