@@ -46,7 +46,7 @@ private:
   }
 
   key_manager column2id_;
-  typedef std::vector<std::pair<uint64_t, float> > column_t;
+  typedef pfi::data::unordered_map<uint64_t, float> column_t;
   typedef pfi::data::unordered_map<std::string, column_t> tbl_t;
   tbl_t tbl_;
 };
