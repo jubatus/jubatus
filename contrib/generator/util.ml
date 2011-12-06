@@ -57,3 +57,10 @@ let make_file_end = make_ns_end;;
 
 let compose f g x = f (g x);;
 
+let add_index list =
+  let rec add_index_ i acc = function
+    | [] -> acc;
+    | hd::tl -> add_index_ (i+1) ((i, hd)::acc) tl
+  in
+  List.rev (add_index_ 0 [] list);;
+    

@@ -31,18 +31,23 @@ let replace_suffix suffix filename =
 let outdir  = ref ".";;
 
  (* temporary error: to be fixed  *)
-exception Multiple_argument_for_rpc
-exception Multiple_decorator
+exception Multiple_argument_for_rpc of string
+exception Multiple_decorator of string
 exception Multiple_class
+exception Wrong_cht_argv of string
 
 
 let check_classdefs classdefs =
   let check_classdef classdef =
     let Stree.ClassDef(_,prototypes,_) = classdef in
     let check_prototype p = 
-      let (_, _, argvs, decorators, _) = p in
-      if not (List.length argvs = 1) then raise Multiple_argument_for_rpc
-      else if not (List.length decorators = 1) then raise Multiple_decorator
+      let (_, n, argvs, decorators, _) = p in
+      if ((List.mem "//@cht" decorators) && not (List.length argvs = 2)) then
+	  raise (Wrong_cht_argv n)
+      else if (not (List.mem "//@cht" decorators) && not (List.length argvs = 1)) then
+	raise (Multiple_argument_for_rpc n)
+      else if  not (List.length decorators = 1) then
+	raise (Multiple_decorator n)
       else ()
     in
     List.iter check_prototype prototypes;

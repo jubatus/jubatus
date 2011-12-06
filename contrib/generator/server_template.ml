@@ -27,20 +27,25 @@ let make_class_end classname =
   Printf.sprintf "  pfi::lang::shared_ptr<%s_serv> p_;\n};\n" classname;;
 
 let prototype2impl (t,n,argvs,decorators,is_const) =
+(*  let is_cht = (List.mem "//@cht" decorators) in *)
   let do_routing = not (List.mem "//@fail_in_keeper" decorators) in
-  let rec argvs_str str i = function
-    | [] -> String.concat ", " (List.rev str);
-    | hd::tl -> argvs_str (((Stree.to_string hd) ^ " arg" ^ (string_of_int i)) :: str) (i+1) tl
+  let argvs_str =
+    String.concat ", "
+      (List.map (fun (i,argv)-> (Stree.to_string argv) ^ " arg" ^ string_of_int i)
+	 (Util.add_index argvs))
   in
-  let argvs_str2 n =
-    let rec make_list l = function
-      | 0 -> l
-      | i -> make_list ((n-i)::l) (i-1)
+  let argvs_str2 m =
+    let make_list b e =
+      let rec make_list_ l i =
+	if i = e then l
+	else make_list_ (i::l) (i+1)
+      in
+      List.rev (make_list_ [] b)
     in
     if do_routing then
-      String.concat ", " (List.map (fun i-> "arg" ^ string_of_int i) (make_list [] (n-1)))
+      String.concat ", " (List.map (fun i-> "arg" ^ string_of_int i) (make_list 1 m))
     else
-      String.concat ", " (List.map (fun i-> "arg" ^ string_of_int i) (make_list [] n))
+      String.concat ", " (List.map (fun i-> "arg" ^ string_of_int i) (make_list 0 m))
   in
   let make_return_statement = function
     | Stree.Void -> "";
@@ -51,15 +56,18 @@ let prototype2impl (t,n,argvs,decorators,is_const) =
     | false -> "JWLOCK__(p_);"
   in
   let make_impl str = Printf.sprintf "  %s %s(%s) %s\n  { %s };\n"
-    (Stree.to_string t) n (argvs_str [] 0 argvs) (String.concat " " decorators) str
+    (Stree.to_string t) n argvs_str
+    (String.concat " " decorators) str
   in
   if do_routing then
     make_impl (Printf.sprintf "%s %sp_->%s(%s);" (make_lock_statement is_const)
 		 (make_return_statement t) n (argvs_str2 (List.length argvs)))
   else
-    Printf.sprintf "#ifdef HAVE_ZOOKEEPER_H\n%s#endif\n"
+    Printf.sprintf "#ifdef HAVE_ZOOKEEPER_H\n%s#else\n%s#endif\n"
       (make_impl (Printf.sprintf "%s %sp_->%s_impl(%s);" (make_lock_statement is_const)
 		    (make_return_statement t) n (argvs_str2 (List.length argvs))))
+      (make_impl (Printf.sprintf "throw pfi::network::mprpc::method_not_found(\"%s\");"
+		    n))
 
 
 let memberdecl (t,n) =
