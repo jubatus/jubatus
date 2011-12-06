@@ -19,6 +19,7 @@
 
 #include <vector>
 #include <pficommon/data/unordered_map.h>
+#include <pficommon/lang/shared_ptr.h>
 #include "../common/type.hpp"
 #include "../storage/recommender_storage.hpp"
 #include "recommender_type.hpp"
@@ -29,7 +30,7 @@ namespace recommender {
 
 class recommender_base{
 public:
-  recommender_base();
+  recommender_base(pfi::lang::shared_ptr<storage::recommender_storage> storage);
   virtual ~recommender_base();
 
   virtual void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const = 0; // return similar row for query.
@@ -45,7 +46,7 @@ public:
 
 protected:
   static const uint64_t complete_row_similar_num;
-  storage::recommender_storage origs_;
+  pfi::lang::shared_ptr<storage::recommender_storage> origs_;
 };
 
 } // namespace recommender

@@ -15,27 +15,34 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <algorithm>
-
-#include "anchor_builder_random.hpp"
-
-using namespace std;
+#include "norm_l1.hpp"
 
 namespace jubatus {
-namespace recommender {
+namespace storage {
 
-void anchor_builder_random::build(const vector<sfvi_t>& sfvs,
-                                  size_t anchor_num,
-                                  vector<size_t>& anchors){
-  anchors.clear();
-  size_t choosed_num = min(anchor_num, sfvs.size());
-  for (size_t i = 0; i < sfvs.size(); ++i){
-    anchors.push_back(i);
-  }
-  random_shuffle(anchors.begin(), anchors.end());
-  anchors.resize(choosed_num);
+norm_l1::norm_l1(){
 }
 
-} // namespace recommender
-} // namespace jubatus
+norm_l1::~norm_l1(){
+}
 
+void norm_l1::clear(){
+  sq_norms_.clear();
+}
+
+void norm_l1::notify(const std::string& row, float old_val, float new_val){
+  float& v = sq_norms_[row];
+  v -= fabs(old_val);
+  v += fabs(new_val);
+}
+
+float norm_l1::calc_norm(const std::string& row) const{
+  pfi::data::unordered_map<std::string, float>::const_iterator it = sq_norms_.find(row);
+  if (it == sq_norms_.end()){
+    return 0.f;
+  }
+  return it->second;
+}
+
+}
+}

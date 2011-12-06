@@ -15,26 +15,32 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#include "recommender_factory.hpp"
+#include "recommender.hpp"
+#include "../common/exception.hpp"
+#include "../storage/norm_factory.hpp"
 
-#include "recommender_base.hpp"
+using namespace std;
 
 namespace jubatus {
 namespace recommender {
 
-class inverted_file : public recommender_base {
-public:
-  inverted_file();
-  ~inverted_file();
+recommender_base* create_recommender(const string& name, const string& norm_name){
+  pfi::lang::shared_ptr<storage::norm_base> norm_ptr(storage::create_norm(norm_name));
+  pfi::lang::shared_ptr<storage::recommender_storage> storage_ptr(new storage::recommender_storage(norm_ptr));
+  if (name == "inverted_index"){
+    return new inverted_index(storage_ptr);
+  } else if (name == "minhash"){
+    return new minhash(storage_ptr);
+  } else if (name == "lsh"){
+    return new lsh(storage_ptr);
+  } else {
+    throw std::runtime_error(string("unknown recommender :") + name);
+  }
+}
 
-  void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
-  void clear();
-  void clear_row(const std::string& id);
-  void update_row(const std::string& id, const sfv_diff_t& diff);
+}
+}
 
-private:
-  storage::recommender_storage invs_;
-};
 
-} // namespace recommender
-} // namespace jubatus
+

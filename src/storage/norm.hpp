@@ -15,19 +15,6 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
-
-#include <string>
-
-namespace jubatus {
-namespace recommender {
-
-class anchor_builder_base;
-
-class anchor_builder_factory {
-public:
-  static anchor_builder_base* create_anchor_builder(const std::string& name);
-};
-
-} // namespace recommender
-} // namespace jubatus
+#include "norm_l2.hpp"
+#include "norm_l1.hpp"
+#include "norm_none.hpp"

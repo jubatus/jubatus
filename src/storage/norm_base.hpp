@@ -17,19 +17,19 @@
 
 #pragma once
 
-#include "anchor_builder_base.hpp"
+#include <string>
 
 namespace jubatus {
-namespace recommender {
+namespace storage {
 
-class anchor_builder_random : public anchor_builder_base{
+class norm_base{
 public:
-  virtual ~anchor_builder_random(){};
-
-  virtual void build(const std::vector<sfvi_t>& sfvs,
-                     size_t anchor_num,
-                     std::vector<size_t>& anchors);
+  norm_base();
+  virtual ~norm_base(){} 
+  virtual void clear() = 0;
+  virtual void notify(const std::string& row, float old_val, float new_val) = 0;
+  virtual float calc_norm(const std::string& row) const = 0;
 };
 
-} // namespace recommender
-} // namespace jubatus
+}
+}

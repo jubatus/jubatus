@@ -22,6 +22,7 @@
 
 using namespace std;
 using namespace pfi::data;
+using namespace pfi::lang;
 
 namespace jubatus {
 namespace recommender {
@@ -29,13 +30,13 @@ namespace recommender {
 static const uint64_t DEFAULT_BASE_NUM = 32; // should be in config
 static const uint64_t DEFAULT_SEARCH_NUM = 16; // shoud be config
 
-lsh::lsh(uint64_t base_num, uint64_t search_num)
-    : base_num_(base_num), search_num_(search_num) {
+lsh::lsh(shared_ptr<storage::recommender_storage> storage, uint64_t base_num, uint64_t search_num)
+  : recommender_base(storage),base_num_(base_num), search_num_(search_num) {
   init();
 }
 
-lsh::lsh()
-    : base_num_(DEFAULT_BASE_NUM), search_num_(DEFAULT_SEARCH_NUM) {
+lsh::lsh(shared_ptr<storage::recommender_storage> storage)
+  : recommender_base(storage), base_num_(DEFAULT_BASE_NUM), search_num_(DEFAULT_SEARCH_NUM) {
   init();
 }
 
@@ -69,7 +70,7 @@ void lsh::similar_row(const sfv_t& query, vector<pair<string, float> > & ids, si
 }
 
 void lsh::clear(){
-  origs_.clear();
+  origs_->clear();
   bases_.clear();
   base_sq_norms_.clear();
   id2base_values_.clear();
@@ -153,7 +154,7 @@ void lsh::generate_column_base(const string& column, vector<float>& bases){
 }
 
 void lsh::update_row(const string& id, const sfv_diff_t& diff){
-  origs_.set_row(id, diff);
+  origs_->set_row(id, diff);
 
   // delete orig_values_
   vector<float>& base_values = id2base_values_[id];

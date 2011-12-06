@@ -17,34 +17,25 @@
 
 #pragma once
 
-#include <vector>
-#include <algorithm>
-#include <map>
 #include <string>
-#include <stdint.h>
-
-#include <msgpack.hpp>
-
-#include "anchor_finder_base.hpp"
+#include <cmath>
+#include <pficommon/data/unordered_map.h>
+#include "norm_base.hpp"
 
 namespace jubatus {
-namespace recommender {
+namespace storage {
 
-class similarity_base;
-
-class anchor_finder_naive :public anchor_finder_base{
+class norm_none : public norm_base{
 public:
-  anchor_finder_naive(similarity_base *dis) :anchor_finder_base(dis) {};
-  virtual ~anchor_finder_naive(){};
+  norm_none();
+  ~norm_none();
+  void clear();
+  void notify(const std::string& row, float old_val, float new_val);
+  float calc_norm(const std::string& row) const;
 
-  void build_index(const std::vector<sfvi_t>& anchors);
-  void find(const sfvi_t &fv, const std::vector<sfvi_t> &anchors, size_t ret_num, data2anchors_t &ret) const;
-  std::string name() const;
-
-  MSGPACK_DEFINE(dummy_);
 private:
-  int dummy_;
+  pfi::data::unordered_map<std::string, float> sq_norms_;
 };
 
-} // namespace recommender
-} // namespace jubatus
+}
+}

@@ -30,6 +30,9 @@
 namespace jubatus{
 namespace storage{
 
+typedef pfi::data::unordered_map<uint64_t, float> row_t;
+typedef pfi::data::unordered_map<std::string, row_t> tbl_t;
+
 typedef double val1_t;
 
 struct val2_t{

@@ -115,7 +115,7 @@ int recommender_serv::clear(int)
 }
 
 pfi::lang::shared_ptr<storage::recommender_storage> recommender_serv::before_load(){
-  return pfi::lang::shared_ptr<storage::recommender_storage>(new storage::recommender_storage);
+  return pfi::lang::shared_ptr<storage::recommender_storage>(new storage::recommender_storage());
 }
 void recommender_serv::after_load(){
   clear(0);

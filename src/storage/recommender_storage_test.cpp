@@ -7,21 +7,21 @@ namespace storage {
 
 using namespace std;
 
-TEST(recommender_storage, empty) {
-  recommender_storage s;
-  EXPECT_EQ(0.0, s.get("row", "column"));
+// TEST(recommender_storage, empty) {
+//   recommender_storage s();
+//   EXPECT_EQ(0.0, s.get("row", "column"));
 
-  vector<pair<string, float> > row;
-  s.get_row("row", row);
-  EXPECT_TRUE(row.empty());
+//   vector<pair<string, float> > row;
+//   s.get_row("row", row);
+//   EXPECT_TRUE(row.empty());
 
-  vector<string> ids;
-  s.get_all_row_ids(ids);
-  EXPECT_TRUE(ids.empty());
-}
+//   vector<string> ids;
+//   s.get_all_row_ids(ids);
+//   EXPECT_TRUE(ids.empty());
+// }
 
 TEST(recommender_storage, set_row) {
-  recommender_storage s;
+  recommender_storage s();
   vector<pair<string, float> > r1, r2;
   r1.push_back(make_pair("c1", 1.0));
   r1.push_back(make_pair("c2", 2.0));

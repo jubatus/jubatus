@@ -24,8 +24,8 @@ namespace recommender {
 
 class lsh : public recommender_base {
 public:
-  lsh(uint64_t base_num, uint64_t search_num);
-  lsh();
+  lsh(pfi::lang::shared_ptr<storage::recommender_storage> storage, uint64_t base_num, uint64_t search_num);
+  lsh(pfi::lang::shared_ptr<storage::recommender_storage> storage);
   ~lsh();
 
   void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;

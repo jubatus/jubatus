@@ -15,30 +15,18 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "anchor_builder_base.hpp"
+#pragma once
 
-using namespace std;
+#include <string>
+#include <cmath>
+#include <pficommon/lang/shared_ptr.h>
 
 namespace jubatus {
-namespace recommender {
+namespace storage {
 
-void anchor_builder_base::build(const pfi::data::unordered_map<string, sfvi_t> originals, 
-                                size_t anchor_num,
-                                vector<string>& anchors){
-  anchors.clear();
-  vector<string> ids;
-  vector<sfvi_t> sfvis;
-  for (pfi::data::unordered_map<string, sfvi_t>::const_iterator it = originals.begin(); it != originals.end(); ++it){
-    ids.push_back(it->first);
-    sfvis.push_back(it->second);
-  }
-  vector<size_t> anchor_inds;
-  build(sfvis, anchor_num, anchor_inds);
-  for (size_t i = 0; i < anchor_inds.size(); ++i){
-    anchors.push_back(ids[anchor_inds[i]]);
-  }
+class norm_base;
+
+norm_base* create_norm(const std::string& name);
+
 }
-
-
-} // namespace recommender
-} // namespace jubatus
+}

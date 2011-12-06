@@ -6,31 +6,15 @@ def build(bld):
   bld.shlib(
     source = '''
     	  recommender_base.cpp
-	  inverted_file.cpp
+	  inverted_index.cpp
 	  lsh.cpp
 	  minhash.cpp
+	  recommender_factory.cpp
 	 ''',
     target = 'jubatus_recommender',
     name = 'jubatus_recommender',
     include = '.',
     use = 'PFICOMMON jubastorage jubacommon')
-
-#  bld.shlib(
-#    source = '''
-#    	 similarity_factory.cpp
-#	 anchor_builder_factory.cpp
-#	 anchor_finder_factory.cpp
-#	 recommender.cpp
-#	 recommender_builder.cpp
-#	 anchor_builder_base.cpp
-#	 anchor_builder_random.cpp
-#	 anchor_finder_naive.cpp
-#	 anchor_finder_knndecent.cpp
-#	''',
- #   target = 'jubatusrecommender',
-  #  name = 'jubatusrecommender',
-   # includes = '.',
-    #use = 'PFICOMMON jubastorage jubacommon')
 
   def make_test(s):
     bld.program(
