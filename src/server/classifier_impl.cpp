@@ -10,8 +10,10 @@ namespace jubatus { namespace server {
 class classifier_impl_ : public classifier<classifier_impl_> 
 {
 public:
-  classifier_impl_(int args, char** argv)
-    : p_(new classifier_serv(args, argv)){};
+  classifier_impl_(const server_argv& a)
+    : classifier<classifier_impl_>(a.timeout),
+      p_(new classifier_serv(a))
+  {};
   int set_config(std::string& arg0, config_data arg1) //@broadcast
   { JWLOCK__(p_); return p_->set_config(arg1); };
 
@@ -40,7 +42,7 @@ public:
   { JWLOCK__(p_); return p_->put_diff_impl(arg0); };
 #endif
 
-  int run(){ return p_->start(this); };
+  int run(){ return p_->start(*this); };
 
 private:
   pfi::lang::shared_ptr<classifier_serv> p_;

@@ -1,3 +1,21 @@
+(*
+ Jubatus: Online machine learning framework for distributed environment
+ Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*)
 
 let make_service_begin service_name =
   Printf.sprintf "service %s :1 {\n" service_name;;
@@ -21,9 +39,12 @@ let rec to_idl_typestr = function
       | Stree.Template(v, l) when v = "map" or v = "std::map" -> (* FIXME! *)
 	let list = List.map to_idl_typestr l in
 	"map<" ^ (String.concat ", " list) ^ "> " ;
+      | Stree.Template(v, l) when v = "tuple" or v = "std::tuple" -> (* FIXME! *)
+	let list = List.map to_idl_typestr l in
+	"tuple<" ^ (String.concat ", " list) ^ "> " ;
       | Stree.Template(v, l) when v = "pair" or v = "std::pair" -> (* FIXME! *)
 	let list = List.map to_idl_typestr l in
-	"pair<" ^ (String.concat ", " list) ^ "> " ;
+	"tuple<" ^ (String.concat ", " list) ^ "> " ;
       | Stree.Template(n, l) ->
 	let list = List.map to_idl_typestr l in
 	n ^ "<" ^ (String.concat ", " list) ^ "> " ;
@@ -44,7 +65,7 @@ let make_argv argvs =
   String.concat ", " (List.rev l);;
 
 let prototype2string (t,n,argvs,decorators,_) =
-  Printf.sprintf "  %s %s(%s) # %s \n"
+  Printf.sprintf "  %s %s(%s) # %s\n"
     (to_idl_typestr t) n 
     (make_argv argvs)
     (String.concat " " decorators);;

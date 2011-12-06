@@ -83,8 +83,8 @@ public:
   
   MSGPACK_DEFINE(sv, nv);  
 
-  std::vector<std::pair<std::string, std::string> > sv;
-  std::vector<std::pair<std::string, double> > nv;
+  std::vector<std::pair<std::string, std::string > > sv;
+  std::vector<std::pair<std::string, double > > nv;
 };
 
 struct estimate_result {
@@ -97,7 +97,7 @@ public:
   double prob;
 };
 
-} // namespace msgpack
+} // namespace jubatus
 
 
 

@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <time.h>
 #include <pficommon/lang/cast.h>
 #include <pficommon/lang/scoped_ptr.h>
 #include "../common/cmdline.h"
@@ -39,15 +40,21 @@ void read_test_data(istream& in,
 
 void run_test(jubatus::regression_base& regression,
               const vector<labeled_data>& data) {
+  clock_t begin = clock();
   for (size_t i = 0; i < data.size(); ++i) {
     regression.train(data[i].fv, data[i].value);
   }
+  clock_t end = clock();
+  float train_time = static_cast<float>(end - begin) / CLOCKS_PER_SEC;
 
   vector<float> res;
+  begin = clock();
   for (size_t i = 0; i < data.size(); ++i) {
     float actual = regression.estimate(data[i].fv);
     res.push_back(actual);
   }
+  end = clock();
+  float test_time = static_cast<float>(end - begin) / CLOCKS_PER_SEC;
 
   float squared = 0;
   float sum = 0;
@@ -56,8 +63,11 @@ void run_test(jubatus::regression_base& regression,
     squared += d * d;
     sum += d;
   }
-  cout << '\t' << squared / res.size()
-       << '\t' << sum / res.size() << endl;
+  cout << "\tsqured: " << squared / res.size()
+       << "\tsum: " << sum / res.size()
+       << "\ttrain: " << train_time << "sec"
+       << "\tclassify: " << test_time << "sec"
+       << endl;
 }
 
 void run(const string& filename) {

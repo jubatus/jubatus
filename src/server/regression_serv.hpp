@@ -36,7 +36,7 @@ namespace server{
 class regression_serv : public jubatus_serv<storage::storage_base,diffv>
 {
 public:
-  regression_serv(int args, char** argv);  
+  regression_serv(const server_argv&);
   virtual ~regression_serv();
 
   static diffv get_diff(const storage::storage_base*);

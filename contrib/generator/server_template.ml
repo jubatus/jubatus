@@ -1,3 +1,21 @@
+(*
+ Jubatus: Online machine learning framework for distributed environment
+ Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*)
 
 exception Not_class_impl
 
@@ -51,10 +69,12 @@ let make_class = function
   | Stree.ClassDef(classname, funcs, members) ->
     make_class_begin classname
     ^ "public:\n"
-    ^ Printf.sprintf "  %s_impl_(int args, char** argv)\n" classname
-    ^ Printf.sprintf "    : p_(new %s_serv(args, argv)){};\n" classname
+    ^ Printf.sprintf "  %s_impl_(const server_argv& a)\n" classname
+    ^ Printf.sprintf "    : %s<%s_impl_>(a.timeout),\n" classname classname
+    ^ Printf.sprintf "      p_(new %s_serv(a))\n" classname
+    ^ Printf.sprintf "  {};\n"
     ^ (String.concat "\n" (List.map prototype2impl funcs))
-    ^ "\n  int run(){ return p_->start(this); };\n"
+    ^ "\n  int run(){ return p_->start(*this); };\n"
     ^ "\nprivate:\n"
     ^ (String.concat "" (List.map memberdecl members))
     ^ make_class_end classname

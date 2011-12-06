@@ -13,20 +13,20 @@ def build_one(bld, name, libraries = ''):
     source = __sources,
     target = 'juba'+name,
     includes = '.',
-    use = 'PFICOMMON jubacommon MSGPACK GLOG jubatus_%s MSGPACK-RPC %s' % (name, libraries)
+    use = 'PFICOMMON jubacommon MSGPACK GLOG jubatus_%s %s' % (name, libraries)
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
       source = '%s_keeper.cpp server_util.cpp' % name,
       target = 'juba%s_keeper' % name,
       includes = '.',
-      use = 'PFICOMMON jubacommon MSGPACK GLOG MSGPACK-RPC'
+      use = 'PFICOMMON jubacommon MSGPACK GLOG '
       )
   bld.program(
     features = 'gtest',
     source = '%s_test.cpp' % name,
     target = '%s_test' % name,
-    use = 'MSGPACK-RPC PFICOMMON',
+    use = 'PFICOMMON',
     )
 
 
