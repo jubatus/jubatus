@@ -37,6 +37,10 @@ public:
   void get_all_row_ids(std::vector<std::string>& ids) const;
   void clear();
 
+  bool save(std::ostream&);
+  bool load(std::istream&);
+  std::string type;
+
 private:
   friend class pfi::data::serialization::access;
   template <class Ar>

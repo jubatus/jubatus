@@ -78,10 +78,16 @@ class keeper : public pfi::network::mprpc::rpc_server {
     add(name, f);
   }
 
+  template <typename Q>
+  void register_cht_update(std::string name) {
+    pfi::lang::function<int(std::string, std::string, Q)> f =
+      pfi::lang::bind(&keeper::template cht_proxy<int, Q>, this, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3);
+    add(name, f);
+  }
   template <typename R, typename Q>
-  void register_cht(std::string name) {
-    pfi::lang::function<std::vector<R>(std::string, std::string, Q)> f =
-      pfi::lang::bind(&keeper::template broadcast_proxy<R, Q>, this, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3);
+  void register_cht_analysis(std::string name) {
+    pfi::lang::function<R(std::string, std::string, Q)> f =
+      pfi::lang::bind(&keeper::template cht_proxy<R, Q>, this, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3);
     add(name, f);
   }
   
@@ -114,13 +120,12 @@ class keeper : public pfi::network::mprpc::rpc_server {
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
-    std::vector<R> results;
+    R result;
     for (size_t i = 0; i < list.size(); ++i) {
       const std::pair<std::string, int>& c = list[i];
-      R res = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(A)>(name)(arg);
-      results.push_back(res);
+      R res = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(A)>(name)(key, arg);
     }
-    return results;
+    return result;
   }
 
   void get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret){

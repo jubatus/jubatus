@@ -82,6 +82,16 @@ void recommender_storage::clear() {
   tbl_.clear();
 }
 
+bool recommender_storage::save(std::ostream& os) {
+  pfi::data::serialization::binary_oarchive oa(os);
+  oa << *this;
+  return true;
+};
+bool recommender_storage::load(std::istream& is){
+  pfi::data::serialization::binary_iarchive ia(is);
+  ia >> *this;
+  return true;
+}
 
 }
 }

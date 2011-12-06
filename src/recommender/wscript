@@ -10,27 +10,27 @@ def build(bld):
 	  lsh.cpp
 	  minhash.cpp
 	 ''',
-    target = 'jubarecommender_new',
-    name = 'jubarecommender_new',
+    target = 'jubatus_recommender',
+    name = 'jubatus_recommender',
     include = '.',
     use = 'PFICOMMON jubastorage jubacommon')
 
-  bld.shlib(
-    source = '''
-    	 similarity_factory.cpp
-	 anchor_builder_factory.cpp
-	 anchor_finder_factory.cpp
-	 recommender.cpp
-	 recommender_builder.cpp
-	 anchor_builder_base.cpp
-	 anchor_builder_random.cpp
-	 anchor_finder_naive.cpp
-	 anchor_finder_knndecent.cpp
-	''',
-    target = 'jubarecommender',
-    name = 'jubarecommender',
-    includes = '.',
-    use = 'PFICOMMON jubastorage jubacommon')
+#  bld.shlib(
+#    source = '''
+#    	 similarity_factory.cpp
+#	 anchor_builder_factory.cpp
+#	 anchor_finder_factory.cpp
+#	 recommender.cpp
+#	 recommender_builder.cpp
+#	 anchor_builder_base.cpp
+#	 anchor_builder_random.cpp
+#	 anchor_finder_naive.cpp
+#	 anchor_finder_knndecent.cpp
+#	''',
+ #   target = 'jubatusrecommender',
+  #  name = 'jubatusrecommender',
+   # includes = '.',
+    #use = 'PFICOMMON jubastorage jubacommon')
 
   def make_test(s):
     bld.program(
@@ -38,9 +38,9 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'PFICOMMON jubarecommender jubacommon jubarecommender_new')
+      use = 'PFICOMMON jubatus_recommender jubacommon')
 
   map(make_test, [
-      'recommender_test.cpp',
+#      'recommender_test.cpp', # FIXME
       'recommender_base_test.cpp',
       ])
