@@ -36,7 +36,7 @@ namespace server{
 class classifier_serv : public jubatus_serv<storage::storage_base,diffv>
 {
 public:
-  classifier_serv(int args, char** argv);  
+  classifier_serv(const server_argv&);  
   virtual ~classifier_serv();
 
   static diffv get_diff(const storage::storage_base*);

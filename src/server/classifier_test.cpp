@@ -1,3 +1,20 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 
 #include "gtest/gtest.h"
 
@@ -83,7 +100,7 @@ namespace {
 
 TEST_F(classifier_test, simple){
   
-  classifier c("localhost", 9199);
+  classifier c("localhost", 9199, 10);
   {
     jubatus::config_data config;
     config.method = "PA";
@@ -114,7 +131,7 @@ TEST_F(classifier_test, config) {
 }
 
 TEST_F(classifier_test, api_config) {
-  classifier cli("localhost", 9199);
+  classifier cli("localhost", 9199, 10);
   config_data to_set;
   config_data to_get;
   load_config(to_set);
@@ -128,7 +145,7 @@ TEST_F(classifier_test, api_config) {
 }
 
 TEST_F(classifier_test, api_train){
-  classifier cli("localhost", 9199);
+  classifier cli("localhost", 9199, 10);
   const size_t example_size = 1000;
   config_data c;
   load_config(c);
@@ -141,7 +158,7 @@ TEST_F(classifier_test, api_train){
 }
 
 void my_test(const char* meth, const char* stor){ //serv2, api_classify){
-  classifier cli("localhost", 9199);
+  classifier cli("localhost", 9199, 10);
   const size_t example_size = 1000;
   config_data c;
   c.method = meth;
@@ -264,7 +281,7 @@ TEST_F(classifier_test, nherd){
 // }
 
 TEST_F(classifier_test, save_load){
-  classifier cli("localhost", 9199);
+  classifier cli("localhost", 9199, 10);
   const char* meth = "PA";
   std::vector<std::pair<std::string,int> > v;
 

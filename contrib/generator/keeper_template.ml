@@ -1,3 +1,21 @@
+(*
+ Jubatus: Online machine learning framework for distributed environment
+ Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+*)
 
 let make_file_begin name =
   "#include \"keeper.hpp\"\n"
@@ -15,6 +33,9 @@ let rec to_string = function
     let rec ud_type2string = function
       | Stree.Class(s) -> s;
       | Stree.Struct(s) -> s;
+      | Stree.Template(n, l) when (n = "tuple" or n = "std::tuple") && ((List.length l) = 2) ->
+	let list = List.map to_string l in
+	"std::pair<" ^ (String.concat ", " list) ^ "> " ;
       | Stree.Template(n, l) ->
 	let list = List.map to_string l in
 	n ^ "<" ^ (String.concat ", " list) ^ "> " ;
@@ -57,4 +78,3 @@ let make_main classdefs =
   ^ String.concat "\n" (List.map generate_class_keeper classdefs)
   ^ "\n  k.start();"
   ^ "\n}";;
-

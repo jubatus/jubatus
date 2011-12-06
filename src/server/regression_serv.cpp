@@ -45,8 +45,8 @@ using jubatus::fv_converter::datum_to_fv_converter;
 namespace jubatus {
 namespace server {
 
-regression_serv::regression_serv(int args, char** argv)
-  :jubatus_serv<storage::storage_base,diffv>(args,argv)
+regression_serv::regression_serv(const server_argv & a)
+  :jubatus_serv<storage::storage_base,diffv>(a)
 {
   model_.reset(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
 
