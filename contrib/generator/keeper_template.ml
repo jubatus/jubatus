@@ -78,4 +78,3 @@ let make_main classdefs =
   ^ String.concat "\n" (List.map generate_class_keeper classdefs)
   ^ "\n  k.start();"
   ^ "\n}";;
-

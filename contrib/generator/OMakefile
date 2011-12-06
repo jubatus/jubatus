@@ -65,6 +65,6 @@ PROGRAM = jenerator
 
 .DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES)) ../../src/server/classifier.hpp
 	./$(PROGRAM) ../../src/server/classifier.hpp
-	-diff classifier.idl ../../src/server/classifier.idl
-	-diff classifier_impl.cpp ../../src/server/classifier_impl.cpp
-	-diff classifier_keeper.cpp ../../src/server/classifier_keeper.cpp
+	diff classifier.idl ../../src/server/classifier.idl
+	diff classifier_impl.cpp ../../src/server/classifier_impl.cpp
+	diff classifier_keeper.cpp ../../src/server/classifier_keeper.cpp

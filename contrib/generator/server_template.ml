@@ -69,10 +69,12 @@ let make_class = function
   | Stree.ClassDef(classname, funcs, members) ->
     make_class_begin classname
     ^ "public:\n"
-    ^ Printf.sprintf "  %s_impl_(int args, char** argv)\n" classname
-    ^ Printf.sprintf "    : p_(new %s_serv(args, argv)){};\n" classname
+    ^ Printf.sprintf "  %s_impl_(const server_argv& a)\n" classname
+    ^ Printf.sprintf "    : %s<%s_impl_>(a.timeout),\n" classname classname
+    ^ Printf.sprintf "      p_(new %s_serv(a))\n" classname
+    ^ Printf.sprintf "  {};\n"
     ^ (String.concat "\n" (List.map prototype2impl funcs))
-    ^ "\n  int run(){ return p_->start(this); };\n"
+    ^ "\n  int run(){ return p_->start(*this); };\n"
     ^ "\nprivate:\n"
     ^ (String.concat "" (List.map memberdecl members))
     ^ make_class_end classname

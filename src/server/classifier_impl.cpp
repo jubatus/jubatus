@@ -11,7 +11,8 @@ class classifier_impl_ : public classifier<classifier_impl_>
 {
 public:
   classifier_impl_(const server_argv& a)
-    : classifier<classifier_impl_>(a.timeout), p_(new classifier_serv(a))
+    : classifier<classifier_impl_>(a.timeout),
+      p_(new classifier_serv(a))
   {};
   int set_config(std::string& arg0, config_data arg1) //@broadcast
   { JWLOCK__(p_); return p_->set_config(arg1); };
