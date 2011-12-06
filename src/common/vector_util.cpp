@@ -1,4 +1,5 @@
 #include "vector_util.hpp"
+#include <algorithm>
 
 namespace jubatus {
 
@@ -22,6 +23,5 @@ void sort_and_merge(sfv_t& sfv){
   ret_sfv.push_back(make_pair(*prev, val));
   sfv.swap(ret_sfv);
 }
-
 
 }

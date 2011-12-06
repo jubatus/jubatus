@@ -29,11 +29,12 @@ namespace jubatus{
   // this function does not seem pure, take care when calling from multiple threads
   std::string make_hash(const std::string& key){
     char * h = crypt(key.c_str(), SALT_BASE.c_str());
+    if (!h)
+      throw std::runtime_error("cannot call crypt funciton");
     std::string ret(h+SALT_BASE.size());
     for(size_t s = 0; s < ret.size(); ++s){
       if(ret[s] == '/') ret[s]='p';
     }
-    //free(h); don't know why this makes double free...
     //std::cout << key << " => " << ret << std::endl;
     return ret;
   };

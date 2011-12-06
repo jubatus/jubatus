@@ -19,11 +19,9 @@
 
 #include <vector>
 #include <string>
-#include "storage/storage_base.hpp"
+#include "../storage/storage_base.hpp"
 
-#ifdef HAVE_ZOOKEEPER_H
-#  include "../common/zk.hpp"
-#endif
+#include "../common/membership.hpp"
 
 #include <pficommon/concurrent/thread.h>
 #include <pficommon/concurrent/mutex.h>
@@ -34,8 +32,6 @@
 
 namespace jubatus{
 
-  class jubatus_classifier_serv;
-
   class mixer{
   public:
     void updated();
@@ -44,30 +40,24 @@ namespace jubatus{
     void start();
     void get_status(std::map<std::string,std::string>&);
 
-    mixer(pfi::lang::shared_ptr<jubatus::zk,
-                                pfi::concurrent::threading_model::multi_thread>&, const std::string& name,
-          pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mix,
+    mixer(pfi::lang::shared_ptr<jubatus::zk>&, const std::string& name,
           unsigned int count_threashold = 1024, unsigned int tick_threshold = 16);
     virtual ~mixer();
 
     void set_mixer_func(pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)>);
+    // void set_mixer_func2(pfi::lang::function<int(const D&, const D&, D&)>& f){
+    //   pfi::concurrent::scoped_lock lk(m_);
+    //   mixer_func_ = f;
+    // };
     int get_count()const;
     void try_mix();
 
     static void mixer_loop(void* p);
-    static void dummy(const std::vector<std::pair<std::string,int> >&);
-
-    // [server] -> ()
-    // (a -> b) -> (b -> b -> b) -> (b -> c) -> (c -> d) -> ()
-    template<typename A, typename B, typename C, typename D>
-    void mix(const std::vector<std::pair<std::string, int> >& servers) const ;
-
 
   private:  
     pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mix_;
 
-    pfi::lang::shared_ptr<jubatus::zk,
-                          pfi::concurrent::threading_model::multi_thread> zk_;
+    pfi::lang::shared_ptr<jubatus::zk> zk_;
     std::string name_;
 
     unsigned int count_threshold_;
@@ -78,10 +68,104 @@ namespace jubatus{
     pfi::concurrent::thread t_;
     pfi::concurrent::mutex m_;
     pfi::concurrent::condition c_;
+    //    pfi::lang::function<int(const D&, const D&, D&)> mixer_func_;
+  };
+  
+  template <typename M, typename D>
+  class mixer0{
+  public:
+    void updated(){
+      pfi::concurrent::scoped_lock lk(m_);
+      unsigned int new_ticktime = time(NULL);
+      ++counter_;
+      if(counter_ > count_threshold_ ||
+         new_ticktime - ticktime_ > tick_threshold_){
+        c_.notify(); // FIXME: need sync here?
+      }
+    };
+    void accessed(){};
+    void clear(){
+      pfi::concurrent::scoped_lock lk(m_);
+      counter_=0;
+      ticktime_ = time(NULL);
+    };
+    void start(){ t_.start(); };
+    void get_status(std::map<std::string,std::string>& out){
+      pfi::concurrent::scoped_lock lk(m_);
+      out["count"] = pfi::lang::lexical_cast<std::string>(counter_);
+      out["ticktime"] = pfi::lang::lexical_cast<std::string>(ticktime_); //since last mix
+    };
 
+    mixer0(pfi::lang::shared_ptr<jubatus::zk>& z, const std::string& name,
+           unsigned int count_threshold, unsigned int tick_threshold)
+      :zk_(z),name_(name), 
+       count_threshold_(count_threshold),
+       counter_(0),
+       tick_threshold_(tick_threshold),
+       ticktime_(time(NULL)),
+       t_(pfi::lang::bind(&mixer::mixer_loop, this))
+    {
+    };
+    virtual ~mixer0(){};
+
+    void set_mixer_func(pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> f){
+    //    void set_mixer_func(pfi::lang::function<int(const M*, const D&, const D&, D&)>& f){
+     printf("asdafs==\n");
+     pfi::concurrent::scoped_lock lk(m_);
+     printf("asdafsd==\n");
+     mixer_func_ = f;
+     printf("asdafsd++\n");
+    };
+    int get_count()const {return counter_;} ; //FIXME: not thread-safe
+    void try_mix(){
+      jubatus::zkmutex zklock(zk_, jubatus::ACTOR_BASE_PATH +"/" + name_ + "/master_lock");
+      {
+        pfi::concurrent::scoped_lock lk(m_);
+        
+        c_.wait(m_, 1);
+        unsigned int new_ticktime = time(NULL);
+        if( counter_ > count_threshold_ || new_ticktime - ticktime_ > tick_threshold_ ){
+          if(zklock.try_lock()){
+            DLOG(INFO) << "mix....";
+            counter_ = 0;
+            ticktime_ = new_ticktime;
+          }else{
+            return;
+          }
+        }else{
+          return;
+        }
+        
+      } //unlock
+      std::vector<std::pair<std::string,int> > servers;
+      jubatus::get_all_actors(*zk_, name_, servers);
+      mixer_func_(servers);
+      DLOG(INFO) << "....mix done";
+    };
+
+    static void mixer_loop(void* p){
+      mixer0 * m = static_cast<mixer*>(p);
+      while(true) m->try_mix();
+    };
+    
+  private:  
+    //    pfi::lang::function<int(const M*, const D&, const D&, D&)> mixer_func_;
+    pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_func_;
+
+    pfi::lang::shared_ptr<jubatus::zk> zk_;
+    std::string name_;
+
+    unsigned int count_threshold_;
+    unsigned int counter_;
+    unsigned int tick_threshold_;
+    unsigned int ticktime_;
+
+    pfi::concurrent::thread t_;
+    pfi::concurrent::mutex m_;
+    pfi::concurrent::condition c_;
+    //    pfi::lang::function<int(const D&, const D&, D&)> mixer_func_;
   };
 
   static const std::string GET_DIFF("get_diff");
   static const std::string PUT_DIFF("put_diff");
-
 }
