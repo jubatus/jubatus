@@ -52,7 +52,7 @@ public:
   int build(int);
   int clear(int);
 
-  pfi::lang::shared_ptr<int> before_load();
+  pfi::lang::shared_ptr<int> make_model();
   void after_load();
 
   datum complete_row_from_id(std::string id, int);
