@@ -10,7 +10,8 @@ using namespace pfi::system::time;
 namespace jubatus {
 
 stat::stat(size_t window_size)
-  : window_size_(window_size)
+  : window_size_(window_size),
+    type("stat")
 {
 }
 

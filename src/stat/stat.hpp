@@ -36,6 +36,8 @@ public:
   double entropy(const std::string &key);
   double moment(const std::string &key);
 
+  const std::string type; //messy
+
 private:
   template <class Archive>
   void serialize(Archive &ar) {
