@@ -15,21 +15,26 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "anchor_builder_factory.hpp"
-#include "anchor_builder_random.hpp"
-
-using namespace std;
+#include "norm_none.hpp"
 
 namespace jubatus {
-namespace recommender {
+namespace storage {
 
-anchor_builder_base* anchor_builder_factory::create_anchor_builder(const std::string& name){
-  if (name == "random"){
-    return static_cast<anchor_builder_base*>(new anchor_builder_random);
-  } else {
-    return NULL;
-  }
+norm_none::norm_none(){
 }
 
-} // namespace recommender
-} // namespace jubatus
+norm_none::~norm_none(){
+}
+
+void norm_none::clear(){
+}
+
+void norm_none::notify(const std::string& row, float old_val, float new_val){
+}
+
+float norm_none::calc_norm(const std::string& row) const{
+  return 0.f;
+}
+
+}
+}

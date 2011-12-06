@@ -17,32 +17,23 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
-#include <stdint.h>
-
-#include <pficommon/lang/shared_ptr.h>
-
-#include "../common/type.hpp"
-#include "recommender_type.hpp"
-#include "similarity_base.hpp"
+#include "recommender_base.hpp"
 
 namespace jubatus {
 namespace recommender {
 
-class anchor_finder_base{
+class inverted_index : public recommender_base {
 public:
-  anchor_finder_base(similarity_base *dis) :dis_(dis) {};
-  virtual ~anchor_finder_base(){
-  };
+  inverted_index(pfi::lang::shared_ptr<storage::recommender_storage> recommender_storage_ptr);
+  ~inverted_index();
 
-  virtual void build_index(const std::vector<sfvi_t>& anchors) = 0;
-  virtual void find(const sfvi_t &fv, const std::vector<sfvi_t> &anchors, size_t ret_num, data2anchors_t&ret) const = 0;
-  virtual std::string name() const = 0;
-  std::string similarity_name() const { return dis_->name(); };
+  void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  void clear();
+  void clear_row(const std::string& id);
+  void update_row(const std::string& id, const sfv_diff_t& diff);
 
-protected:
-  pfi::lang::shared_ptr<similarity_base> dis_;
+private:
+  storage::recommender_storage invs_;
 };
 
 } // namespace recommender

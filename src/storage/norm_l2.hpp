@@ -15,23 +15,27 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "similarity_factory.hpp"
-#include "similarity.hpp"
+#pragma once
 
-using namespace std;
+#include <string>
+#include <cmath>
+#include <pficommon/data/unordered_map.h>
+#include "norm_base.hpp"
 
 namespace jubatus {
-namespace recommender {
+namespace storage {
 
-similarity_base* similarity_factory::create_similarity(const std::string& name){
-  if (name == "cos"){
-    return static_cast<similarity_base*>(new similarity_cos);
-  } else if (name == "euclid"){
-    return static_cast<similarity_base*>(new similarity_euclid);
-  } else {
-    return NULL;
-  }
+class norm_l2 : public norm_base{
+public:
+  norm_l2();
+  ~norm_l2();
+  void clear();
+  void notify(const std::string& row, float old_val, float new_val);
+  float calc_norm(const std::string& row) const;
+
+private:
+  pfi::data::unordered_map<std::string, float> sq_norms_;
+};
+
 }
-
-} // namespace recommender
-} // namespace jubatus
+}

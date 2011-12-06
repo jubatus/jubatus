@@ -24,7 +24,7 @@ namespace recommender {
 
 class minhash : public recommender_base {
 public:
-  minhash();
+  minhash(pfi::lang::shared_ptr<storage::recommender_storage> recommender_storage_ptr);
   ~minhash();
 
   void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
@@ -40,8 +40,9 @@ private:
                       const std::pair<float, std::vector<uint64_t> >& ids2);
 
   static float calc_hash(uint64_t a, uint64_t b, float val);
-  static void hash_mix(uint64_t& a, uint64_t& b, uint64_t& c);
+  static void hash_mix64(uint64_t& a, uint64_t& b, uint64_t& c);
 
+  static const uint64_t hash_prime;
   uint64_t bit_num_;
   uint64_t hash_num_;
   std::vector<std::vector<std::vector<uint64_t> > > minhash_list_; // minhash_list[k][hashval][id_list]
