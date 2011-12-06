@@ -122,11 +122,11 @@ declaration:
 	| anytype LITERAL LRBRACE RRBRACE CONST SEMICOLON
 	    { print ">meth1"; ($1, $2, [], [],true) }
 	| anytype LITERAL LRBRACE anytypes RRBRACE CONST SEMICOLON
-	    { print ">meth2"; ($1, $2, (List.rev $4), [],true) }
+	    { print ">meth2"; ($1, $2, $4, [],true) }
 	| anytype LITERAL LRBRACE RRBRACE SEMICOLON
 	    { print ">meth3"; ($1, $2, [], [],false) }
 	| anytype LITERAL LRBRACE anytypes RRBRACE  SEMICOLON
-	    { print ">meth4"; ($1, $2, (List.rev $4), [],false) }
+	    { print ">meth4"; ($1, $2, $4, [],false) }
 ;
 
 anytypes:anytype                  { print ">anytypes"; [$1] }

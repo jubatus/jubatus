@@ -29,48 +29,47 @@
 #include "../recommender/recommender_builder.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 
-#include "recommender_rpc.hpp"
 #include "server_util.hpp"
+#include "jubatus_serv.hpp"
+#include "recommender_types.hpp"
 
 namespace jubatus {
-namespace recommender {
+namespace server {
 
-class server : public jubatus::jubatus_serv
+typedef std::vector<std::pair<std::string, datum> > rows;
+
+class recommender_serv : public jubatus_serv<int,int>
 {
 public:
-  server(const server_argv&);
-  ~server();
+  recommender_serv(const server_argv&);
+  ~recommender_serv();
 
-  result<int> set_config(std::string,config_data config);
-  result<config_data> get_config(std::string);
+  int set_config(config_data config);
+  config_data get_config(int);
 
-  result<int> clear_row(std::string,std::vector<std::string> ids);
-  result<int> update_row(std::string,rows dat);
-  result<int> build(std::string);
-  result<int> clear(std::string);
-  result<std::map<std::pair<std::string, int>, std::map<std::string, std::string> > > get_status(std::string);
+  int clear_row(std::string id, int);
+  int update_row(std::string id, datum dat);
+  int build(int);
+  int clear(int);
 
-  result<fv_converter::datum> complete_row_from_id(std::string,std::string id);
-  result<fv_converter::datum> complete_row_from_data(std::string,fv_converter::datum dat);
-  result<similar_result> similar_row_from_id(std::string,std::string id, size_t ret_num);
-  result<similar_result> similar_row_from_data(std::string,fv_converter::datum dat, size_t ret_num);
+  pfi::lang::shared_ptr<int> before_load();
+  void after_load();
 
-  result<fv_converter::datum> decode_row(std::string,std::string id);
-  result<rows> get_all_rows(std::string);
+  datum complete_row_from_id(std::string id, int);
+  datum complete_row_from_data(datum dat);
+  similar_result similar_row_from_id(std::string id, size_t ret_num);
+  similar_result similar_row_from_data(std::pair<datum, size_t>);
 
-  recommender_diff_t get_diff(int);
-  int put_diff(recommender_data); // diff demo nandemo ne-kedona!
-
-  void mix(const std::vector<std::pair<std::string, int> >&);
-  void bind_all_methods(mprpc_server&, const std::string&, int);
+  datum decode_row(std::string id, int);
+  rows get_all_rows(int);
 
 private:
   void init();
 
-  config_data config_;
-  pfi::lang::shared_ptr<recommender> recommender_;
-  pfi::lang::shared_ptr<recommender_builder> recommender_builder_;
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  //  config_data config_;
+  //  pfi::lang::shared_ptr<recommender::recommender> recommender_;
+  //  pfi::lang::shared_ptr<recommender_builder> recommender_builder_;
+  //  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
 
   uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;
