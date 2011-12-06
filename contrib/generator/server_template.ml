@@ -57,9 +57,11 @@ let prototype2impl (t,n,argvs,decorators,is_const) =
     make_impl (Printf.sprintf "%s %sp_->%s(%s);" (make_lock_statement is_const)
 		 (make_return_statement t) n (argvs_str2 (List.length argvs)))
   else
-    Printf.sprintf "#ifdef HAVE_ZOOKEEPER_H\n%s#endif\n"
+    Printf.sprintf "#ifdef HAVE_ZOOKEEPER_H\n%s#else\n%s#endif\n"
       (make_impl (Printf.sprintf "%s %sp_->%s_impl(%s);" (make_lock_statement is_const)
 		    (make_return_statement t) n (argvs_str2 (List.length argvs))))
+      (make_impl (Printf.sprintf "throw pfi::network::mprpc::method_not_found(\"%s\");"
+		    n))
 
 
 let memberdecl (t,n) =
