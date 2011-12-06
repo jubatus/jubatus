@@ -48,7 +48,7 @@ public:
   int train(std::vector<std::pair<float, datum> > data);
   std::vector<float> estimate(std::vector<datum> data);
 
-  pfi::lang::shared_ptr<storage::storage_base> before_load();
+  pfi::lang::shared_ptr<storage::storage_base> make_model();
   void after_load();
 
   std::map<std::pair<std::string, int>, std::map<std::string, std::string> > get_status(int);
