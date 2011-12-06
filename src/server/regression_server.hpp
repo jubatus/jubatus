@@ -7,7 +7,8 @@
 
 
 #include "regression_types.hpp"
-#include <msgpack/rpc/server.h>
+#include <pficommon/network/mprpc.h>
+#include <pficommon/lang/bind.h>
 
 
 namespace jubatus {
@@ -15,81 +16,24 @@ namespace jubatus {
 namespace server {
 
 template <class Impl>
-class regression : public msgpack::rpc::server::base {
+class regression : public pfi::network::mprpc::rpc_server {
 public:
+  regression(double timeout_sec): rpc_server(timeout_sec) {
 
-  void dispatch(msgpack::rpc::request req) {
-    try {
-      std::string method;
-      req.method().convert(&method);
-
-      if (method == "set_config") {
-        msgpack::type::tuple<std::string, config_data > params;
-        req.params().convert(&params);
-        req.result<int32_t>(static_cast<Impl*>(this)->set_config(params.get<0>(), params.get<1>()));
-        return;
-      }
-
-      if (method == "get_config") {
-        msgpack::type::tuple<std::string, int32_t > params;
-        req.params().convert(&params);
-        req.result<config_data>(static_cast<Impl*>(this)->get_config(params.get<0>(), params.get<1>()));
-        return;
-      }
-
-      if (method == "train") {
-        msgpack::type::tuple<std::string, std::vector<std::pair<float, datum> > > params;
-        req.params().convert(&params);
-        req.result<int32_t>(static_cast<Impl*>(this)->train(params.get<0>(), params.get<1>()));
-        return;
-      }
-
-      if (method == "estimate") {
-        msgpack::type::tuple<std::string, std::vector<datum > > params;
-        req.params().convert(&params);
-        req.result<std::vector<float > >(static_cast<Impl*>(this)->estimate(params.get<0>(), params.get<1>()));
-        return;
-      }
-
-      if (method == "save") {
-        msgpack::type::tuple<std::string, std::string > params;
-        req.params().convert(&params);
-        req.result<int32_t>(static_cast<Impl*>(this)->save(params.get<0>(), params.get<1>()));
-        return;
-      }
-
-      if (method == "load") {
-        msgpack::type::tuple<std::string, std::string > params;
-        req.params().convert(&params);
-        req.result<int32_t>(static_cast<Impl*>(this)->load(params.get<0>(), params.get<1>()));
-        return;
-      }
-
-      if (method == "get_diff") {
-        msgpack::type::tuple<int32_t > params;
-        req.params().convert(&params);
-        req.result<std::string>(static_cast<Impl*>(this)->get_diff(params.get<0>()));
-        return;
-      }
-
-      if (method == "put_diff") {
-        msgpack::type::tuple<std::string > params;
-        req.params().convert(&params);
-        req.result<int32_t>(static_cast<Impl*>(this)->put_diff(params.get<0>()));
-        return;
-      }
-
-    } catch (const msgpack::type_error& e) {
-      req.error(msgpack::rpc::ARGUMENT_ERROR);
-    } catch (const std::exception& e) {
-      req.error(std::string(e.what()));
-    }
+    rpc_server::add<int32_t(std::string, config_data) >("set_config", pfi::lang::bind(&Impl::set_config, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<config_data(std::string, int32_t) >("get_config", pfi::lang::bind(&Impl::get_config, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<int32_t(std::string, std::vector<std::pair<float, datum > >) >("train", pfi::lang::bind(&Impl::train, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<std::vector<float >(std::string, std::vector<datum >) >("estimate", pfi::lang::bind(&Impl::estimate, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<int32_t(std::string, std::string) >("save", pfi::lang::bind(&Impl::save, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<int32_t(std::string, std::string) >("load", pfi::lang::bind(&Impl::load, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<std::string(int32_t) >("get_diff", pfi::lang::bind(&Impl::get_diff, static_cast<Impl*>(this), pfi::lang::_1));
+    rpc_server::add<int32_t(std::string) >("put_diff", pfi::lang::bind(&Impl::put_diff, static_cast<Impl*>(this), pfi::lang::_1));
   }
 };
 
 } // namespace server
 
-} // namespace msgpack
+} // namespace jubatus
 
 
 

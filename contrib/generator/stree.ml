@@ -70,6 +70,9 @@ let rec to_string = function
     let rec ud_type2string = function
       | Class(s) -> s;
       | Struct(s) -> s;
+      | Template(n, l) when (n = "tuple" or n = "std::tuple") && ((List.length l) = 2) ->
+	let list = List.map to_string l in
+	"std::pair<" ^ (String.concat ", " list) ^ "> " ;
       | Template(n, l) ->
 	let list = List.map to_string l in
 	n ^ "<" ^ (String.concat ", " list) ^ "> " ;

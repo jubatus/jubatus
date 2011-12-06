@@ -39,8 +39,8 @@ struct config_data {
 };
 
 struct datum {
-  std::vector<std::pair<std::string, std::string> > sv;
-  std::vector<std::pair<std::string, double> > nv;
+  std::vector<std::tuple<std::string, std::string> > sv;
+  std::vector<std::tuple<std::string, double> > nv;
 };
 
 struct estimate_result {
@@ -65,7 +65,7 @@ public:
   // int load(std::string id);
   
   //@random
-  int train(std::vector<std::pair<std::string, datum> > train_data);
+  int train(std::vector<std::tuple<std::string, datum> > train_data);
   
   //@random
   std::vector< std::vector< estimate_result> > classify(std::vector<datum> data) const;

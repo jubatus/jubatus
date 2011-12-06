@@ -33,7 +33,7 @@ namespace {
 
 TEST_F(regression_test, small) {
 
-  client::regression c("localhost", 9199);
+  client::regression c("localhost", 9199, 10);
   
   cout << "set_config" << endl;
   config_data conf;

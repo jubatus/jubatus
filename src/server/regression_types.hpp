@@ -83,11 +83,11 @@ public:
   
   MSGPACK_DEFINE(sv, nv);  
 
-  std::vector<std::pair<std::string, std::string> > sv;
-  std::vector<std::pair<std::string, float> > nv;
+  std::vector<std::pair<std::string, std::string > > sv;
+  std::vector<std::pair<std::string, double > > nv;
 };
 
-} // namespace msgpack
+} // namespace jubatus
 
 
 

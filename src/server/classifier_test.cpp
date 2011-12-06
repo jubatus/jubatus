@@ -83,7 +83,7 @@ namespace {
 
 TEST_F(classifier_test, simple){
   
-  classifier c("localhost", 9199);
+  classifier c("localhost", 9199, 10);
   {
     jubatus::config_data config;
     config.method = "PA";
@@ -114,7 +114,7 @@ TEST_F(classifier_test, config) {
 }
 
 TEST_F(classifier_test, api_config) {
-  classifier cli("localhost", 9199);
+  classifier cli("localhost", 9199, 10);
   config_data to_set;
   config_data to_get;
   load_config(to_set);
@@ -128,7 +128,7 @@ TEST_F(classifier_test, api_config) {
 }
 
 TEST_F(classifier_test, api_train){
-  classifier cli("localhost", 9199);
+  classifier cli("localhost", 9199, 10);
   const size_t example_size = 1000;
   config_data c;
   load_config(c);
@@ -141,7 +141,7 @@ TEST_F(classifier_test, api_train){
 }
 
 void my_test(const char* meth, const char* stor){ //serv2, api_classify){
-  classifier cli("localhost", 9199);
+  classifier cli("localhost", 9199, 10);
   const size_t example_size = 1000;
   config_data c;
   c.method = meth;
@@ -264,7 +264,7 @@ TEST_F(classifier_test, nherd){
 // }
 
 TEST_F(classifier_test, save_load){
-  classifier cli("localhost", 9199);
+  classifier cli("localhost", 9199, 10);
   const char* meth = "PA";
   std::vector<std::pair<std::string,int> > v;
 

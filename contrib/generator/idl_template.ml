@@ -21,9 +21,12 @@ let rec to_idl_typestr = function
       | Stree.Template(v, l) when v = "map" or v = "std::map" -> (* FIXME! *)
 	let list = List.map to_idl_typestr l in
 	"map<" ^ (String.concat ", " list) ^ "> " ;
+      | Stree.Template(v, l) when v = "tuple" or v = "std::tuple" -> (* FIXME! *)
+	let list = List.map to_idl_typestr l in
+	"tuple<" ^ (String.concat ", " list) ^ "> " ;
       | Stree.Template(v, l) when v = "pair" or v = "std::pair" -> (* FIXME! *)
 	let list = List.map to_idl_typestr l in
-	"pair<" ^ (String.concat ", " list) ^ "> " ;
+	"tuple<" ^ (String.concat ", " list) ^ "> " ;
       | Stree.Template(n, l) ->
 	let list = List.map to_idl_typestr l in
 	n ^ "<" ^ (String.concat ", " list) ^ "> " ;
@@ -44,7 +47,7 @@ let make_argv argvs =
   String.concat ", " (List.rev l);;
 
 let prototype2string (t,n,argvs,decorators,_) =
-  Printf.sprintf "  %s %s(%s) # %s \n"
+  Printf.sprintf "  %s %s(%s) # %s\n"
     (to_idl_typestr t) n 
     (make_argv argvs)
     (String.concat " " decorators);;

@@ -3,8 +3,6 @@
 #include <iostream>
 #include <sstream>
 
-#include <msgpack/rpc/server.h>
-
 #include <pficommon/lang/function.h>
 #include <pficommon/network/mprpc.h>
 
@@ -19,15 +17,15 @@ template <typename M, typename Diff>
 class jubatus_serv : pfi::lang::noncopyable {
 
 public:
-  jubatus_serv(int args, char** argv, const std::string& base_path = "/tmp"):
+  jubatus_serv(const server_argv& a, const std::string& base_path = "/tmp"):
     is_mixer_func_set_(false),
-    a_(args, argv),
+    a_(a),
     base_path_(a_.tmpdir)
   {
   };
   virtual ~jubatus_serv(){};
 
-  virtual int start(msgpack::rpc::server::base * dispatcher){
+  virtual int start(pfi::network::mprpc::rpc_server& serv){
 
 #ifdef HAVE_ZOOKEEPER_H
     if(! a_.is_standalone()){
@@ -44,12 +42,8 @@ public:
     }
 #endif
 
-    msgpack::rpc::server srv;
-    srv.serve(dispatcher);
-    srv.listen(a_.eth, a_.port);
-    { LOG(INFO) << a_.eth << " " << a_.port; }
-    srv.start(a_.threadnum);
-    pause();
+    { LOG(INFO) << "running in port=" << a_.port; }
+    serv.serv(a_.port, a_.threadnum);
     return 0;
   };
 

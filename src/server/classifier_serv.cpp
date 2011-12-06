@@ -46,8 +46,8 @@ namespace jubatus {
 namespace server {
 
 
-classifier_serv::classifier_serv(int args, char** argv)
-  :jubatus_serv<storage::storage_base,diffv>(args,argv)
+classifier_serv::classifier_serv(const server_argv& a)
+  :jubatus_serv<storage::storage_base,diffv>(a)
 {
   model_.reset(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
 

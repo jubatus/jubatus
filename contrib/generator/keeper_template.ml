@@ -15,6 +15,9 @@ let rec to_string = function
     let rec ud_type2string = function
       | Stree.Class(s) -> s;
       | Stree.Struct(s) -> s;
+      | Stree.Template(n, l) when (n = "tuple" or n = "std::tuple") && ((List.length l) = 2) ->
+	let list = List.map to_string l in
+	"std::pair<" ^ (String.concat ", " list) ^ "> " ;
       | Stree.Template(n, l) ->
 	let list = List.map to_string l in
 	n ^ "<" ^ (String.concat ", " list) ^ "> " ;
