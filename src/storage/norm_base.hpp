@@ -24,7 +24,7 @@ namespace storage {
 
 class norm_base{
 public:
-  norm_base();
+  norm_base(){};
   virtual ~norm_base(){} 
   virtual void clear() = 0;
   virtual void notify(const std::string& row, float old_val, float new_val) = 0;

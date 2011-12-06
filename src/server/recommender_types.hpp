@@ -73,11 +73,9 @@ struct config_data {
 public:
 
   
-  MSGPACK_DEFINE(similarity_name, anchor_finder_name, anchor_builder_name, all_anchor_num, anchor_num_per_data, converter);  
+  MSGPACK_DEFINE(storage_norm_name, all_anchor_num, anchor_num_per_data, converter);  
 
-  std::string similarity_name;
-  std::string anchor_finder_name;
-  std::string anchor_builder_name;
+  std::string storage_norm_name;
   size_t all_anchor_num;
   size_t anchor_num_per_data;
   converter_config converter;

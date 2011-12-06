@@ -51,9 +51,7 @@ struct converter_config {
 
 struct config_data
 {
-  std::string similarity_name;
-  std::string anchor_finder_name;
-  std::string anchor_builder_name;
+  std::string storage_norm_name;
 
   size_t all_anchor_num;
   size_t anchor_num_per_data;

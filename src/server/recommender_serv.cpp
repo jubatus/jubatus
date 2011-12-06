@@ -22,6 +22,7 @@
 
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
+#include "../storage/norm_factory.hpp"
 
 #include "../common/exception.hpp"
 #include "../common/util.hpp"
@@ -114,9 +115,11 @@ int recommender_serv::clear(int)
   return 0;
 }
 
-pfi::lang::shared_ptr<storage::recommender_storage> recommender_serv::before_load(){
-  return pfi::lang::shared_ptr<storage::recommender_storage>(new storage::recommender_storage());
-}
+pfi::lang::shared_ptr<storage::recommender_storage> recommender_serv::make_model(){
+  pfi::lang::shared_ptr<storage::norm_base> norm =
+    pfi::lang::shared_ptr<storage::norm_base>(storage::create_norm(config_.storage_norm_name));
+  return pfi::lang::shared_ptr<storage::recommender_storage>(new storage::recommender_storage(norm));
+}  
 void recommender_serv::after_load(){
   clear(0);
   init();

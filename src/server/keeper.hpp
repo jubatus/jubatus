@@ -51,80 +51,85 @@ class keeper : public pfi::network::mprpc::rpc_server {
   };
 
   template <typename Q>
-  void register_random_update(std::string name) {
+  void register_random_update(std::string method_name) {
     pfi::lang::function<int(std::string, Q)> f =
-      pfi::lang::bind(&keeper::template random_proxy<int, Q>, this, pfi::lang::_1, pfi::lang::_2);
-    add(name, f);
+      pfi::lang::bind(&keeper::template random_proxy<int, Q>, this, method_name, pfi::lang::_1, pfi::lang::_2);
+    add(method_name, f);
   }
 
   template <typename R, typename Q>
-  void register_random_analysis(std::string name) {
+  void register_random_analysis(std::string method_name) {
     pfi::lang::function<R(std::string, Q)> f =
-      pfi::lang::bind(&keeper::template random_proxy<R, Q>, this, pfi::lang::_1, pfi::lang::_2);
-    add(name, f);
+      pfi::lang::bind(&keeper::template random_proxy<R, Q>, this, method_name, pfi::lang::_1, pfi::lang::_2);
+    add(method_name, f);
   }
 
   template <typename Q>
-  void register_broadcast_update(std::string name) {
-    pfi::lang::function<std::vector<int>(std::string, Q)> f =
-      pfi::lang::bind(&keeper::template broadcast_proxy<int,Q>, this, pfi::lang::_1, pfi::lang::_2);
-    add(name, f);
+  void register_broadcast_update(std::string method_name) {
+    pfi::lang::function<int(std::string, Q)> f =
+      pfi::lang::bind(&keeper::template broadcast_proxy<int,Q>, this, method_name, pfi::lang::_1, pfi::lang::_2);
+    add(method_name, f);
   }
 
   template <typename R, typename Q>
-  void register_broadcast_analysis(std::string name) {
-    pfi::lang::function<std::vector<R>(std::string, Q)> f =
-        pfi::lang::bind(&keeper::template broadcast_proxy<R, Q>, this, name, pfi::lang::_1);
-    add(name, f);
+  void register_broadcast_analysis(std::string method_name) {
+    pfi::lang::function<R(std::string, Q)> f =
+      pfi::lang::bind(&keeper::template broadcast_proxy<R, Q>, this, method_name, pfi::lang::_1, pfi::lang::_2);
+    add(method_name, f);
   }
 
   template <typename Q>
-  void register_cht_update(std::string name) {
+  void register_cht_update(std::string method_name) {
     pfi::lang::function<int(std::string, std::string, Q)> f =
-      pfi::lang::bind(&keeper::template cht_proxy<int, Q>, this, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3);
-    add(name, f);
+      pfi::lang::bind(&keeper::template cht_proxy<int, Q>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3);
+    add(method_name, f);
   }
   template <typename R, typename Q>
-  void register_cht_analysis(std::string name) {
+  void register_cht_analysis(std::string method_name) {
     pfi::lang::function<R(std::string, std::string, Q)> f =
-      pfi::lang::bind(&keeper::template cht_proxy<R, Q>, this, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3);
-    add(name, f);
+      pfi::lang::bind(&keeper::template cht_proxy<R, Q>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3);
+    add(method_name, f);
   }
   
  private:
   template <typename R, typename A>
-  R random_proxy(const std::string& name, const A& arg) {
+  R random_proxy(const std::string& method_name, const std::string& name, const A& arg) {
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
     const std::pair<std::string, int>& c = list[rng_(list.size())];
 
-    return pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(A)>(name)(arg);
+    pfi::lang::function<R(std::string, A)> f = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(std::string,A)>(method_name);
+    return f(name, arg);
   }
 
   template <typename R, typename A>
-  std::vector<R> broadcast_proxy(const std::string& name, const A& arg) {
+  // FIXME: modify return type
+  R broadcast_proxy(const std::string& method_name, const std::string& name, const A& arg) {
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
-    std::vector<R> results;
+    //    std::vector<R> results;
+    R res;
     for (size_t i = 0; i < list.size(); ++i) {
       const std::pair<std::string, int>& c = list[i];
-      R res = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(A)>(name)(arg);
-      results.push_back(res);
+      res = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(std::string,A)>(method_name)(name,arg);
+      //      results.push_back(res);
     }
-    return results;
+    //    return results;
+    return res;
   }
 
-  template <typename R, typename A> //FIXME
-  std::vector<R> cht_proxy(const std::string& name, const std::string& key, const A& arg) {
+  template <typename R, typename A>
+  R cht_proxy(const std::string& method_name, const std::string& name, const std::string& key, const A& arg) {
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
+    // FIXME: resolve name here
+
     R result;
-    for (size_t i = 0; i < list.size(); ++i) {
-      const std::pair<std::string, int>& c = list[i];
-      R res = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(A)>(name)(key, arg);
-    }
+    const std::pair<std::string, int>& c = list[0];
+    result = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).
+      call<R(std::string,std::string,A)>(method_name)(name, key, arg);
     return result;
   }
 
