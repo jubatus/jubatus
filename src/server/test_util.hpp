@@ -26,11 +26,13 @@
 #include <wait.h>
 #include <cstdio>
 
+#include <pficommon/lang/cast.h>
+
 using std::string;
 using std::cout;
 using std::endl;
 
-pid_t fork_process(const char* name){
+pid_t fork_process(const char* name, int port = 9199){
   char cwd[1024];
   getcwd(cwd, 1024);
   string cmd(cwd);
@@ -38,8 +40,9 @@ pid_t fork_process(const char* name){
   cmd += "/juba";
   cmd += name;
   child = fork();
+  string port_str = pfi::lang::lexical_cast<std::string>(port);
   if(child == 0){
-    const char *const argv[4] = {cmd.c_str(), "-d", ".", NULL};
+    const char *const argv[6] = {cmd.c_str(), "-p", port_str.c_str(), "-d", ".", NULL};
     int ret = execv(cmd.c_str(), (char **const) argv);
     if(ret < 0){
       perror("execl");

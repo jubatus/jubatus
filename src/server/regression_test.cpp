@@ -36,7 +36,7 @@ namespace {
     pid_t child_;
 
     regression_test(){
-      child_ = fork_process("regression");
+      child_ = fork_process("regression", 9198);
     };
     virtual ~regression_test(){
       kill_process(child_);
@@ -51,7 +51,7 @@ namespace {
 
 TEST_F(regression_test, small) {
 
-  client::regression c("localhost", 9199, 10);
+  client::regression c("localhost", 9198, 10);
   
   cout << "set_config" << endl;
   config_data conf;
