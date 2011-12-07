@@ -59,7 +59,7 @@ namespace common {
 
     const std::string& get_hosts()const;
     const std::string type() const;
-  private:
+  protected:
 
     zhandle_t * zh_;
     clientid_t * cid_;
