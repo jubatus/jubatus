@@ -25,3 +25,24 @@ int keeper::run(){
   return this->serv(a_.port, a_.threadnum);
 };
 
+void keeper::get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret){
+    using namespace std;
+    ret.clear();
+    vector<string> list;
+    string path = ACTOR_BASE_PATH + "/" + name + "/nodes";
+
+    {
+      pfi::concurrent::scoped_lock lk(mutex_);
+      zk_.list(path, list);
+    }
+    vector<string>::const_iterator it;
+
+    // FIXME:
+    // do you return all server list? it can be very large
+    for(it = list.begin(); it!= list.end(); ++it){
+      string ip;
+      int port;
+      jubatus::revert(*it, ip, port);
+      ret.push_back(make_pair(ip,port));
+    }
+  }

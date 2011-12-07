@@ -123,7 +123,6 @@ public:
 
   std::string get_diff_impl(int){
     msgpack::sbuffer sbuf;
-    scoped_lock lk(rlock(m_));
     msgpack::pack(sbuf, this->get_diff_(model_.get()));
     return std::string(sbuf.data(), sbuf.size());
   };
@@ -132,16 +131,21 @@ public:
     msgpack::unpack(&msg, d.c_str(), d.size());
     Diff diff;
     msg.get().convert(&diff);
-    scoped_lock lk(wlock(m_));
     return this->put_diff_(model_.get(), diff);
   };
   void do_mix(const std::vector<std::pair<std::string,int> >& v){
     if(not is_mixer_func_set_) return;
     Diff acc;
-    typename pfi::lang::function<std::string(int)> get_diff_fun;
+    std::string serialized_diff;
     for(size_t s = 0; s < v.size(); ++s ){
-      get_diff_fun = pfi::network::mprpc::rpc_client(v[s].first, v[s].second, a_.timeout).call<std::string(int)>("get_diff");
-      std::string serialized_diff = get_diff_fun(0);
+      try{
+        pfi::network::mprpc::rpc_client c(v[s].first, v[s].second, a_.timeout);
+        pfi::lang::function<std::string(int)> get_diff_fun = c.call<std::string(int)>("get_diff");
+        serialized_diff = get_diff_fun(0);
+      }catch(std::exception& e){
+        LOG(ERROR) << e.what();
+        continue;
+      }
       Diff diff;
       msgpack::unpacked msg;
       msgpack::unpack(&msg, serialized_diff.c_str(), serialized_diff.size());
@@ -149,15 +153,20 @@ public:
       scoped_lock lk(rlock(m_)); // model_ should not be in mix (reduce)?
       this->reduce_(model_.get(), diff, acc);
     }
-    DLOG(INFO) << __LINE__ ;
-    typename pfi::lang::function<int(std::string)> put_diff_fun;
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, acc);
-    std::string serialized_diff0(sbuf.data(), sbuf.size());
+    serialized_diff = std::string(sbuf.data(), sbuf.size());
     for(size_t s = 0; s < v.size(); ++s ){
-      put_diff_fun = pfi::network::mprpc::rpc_client(v[s].first, v[s].second, a_.timeout).call<int(std::string)>("put_diff");
-      put_diff_fun(serialized_diff0);
+      try{
+        pfi::network::mprpc::rpc_client c(v[s].first, v[s].second, a_.timeout);
+        pfi::lang::function<int(std::string)> put_diff_fun = c.call<int(std::string)>("put_diff");
+        put_diff_fun(serialized_diff);
+      }catch(std::exception& e){
+        LOG(ERROR) << e.what();
+        continue;
+      }
     }
+    DLOG(INFO) << "mixed with " << v.size() << " servers";
   }
 #endif
 
