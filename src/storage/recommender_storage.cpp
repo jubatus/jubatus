@@ -75,6 +75,10 @@ void recommender_storage::get_row(const string& row, vector<pair<string, float> 
   }
 }
 
+float recommender_storage::calc_norm(const std::string& row) const{
+  return norm_ptr_->calc_norm(row);
+}
+
 void recommender_storage::remove(const std::string& row, const std::string& column){
   tbl_t::iterator it = tbl_.find(row);
   if (it == tbl_.end()){

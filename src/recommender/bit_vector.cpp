@@ -15,15 +15,33 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
-
-#include <vector>
-#include <utility>
-#include <string>
-#include "../common/type.hpp"
+#include "bit_vector.hpp"
 
 namespace jubatus {
+namespace recommender {
 
-typedef sfv_t sfv_diff_t;
+static const uint64_t BLOCKSIZE = 64;
 
+bit_vector::bit_vector() : bit_num_(0) {}
+
+bit_vector::~bit_vector() {}
+
+void bit_vector::resize_and_clear(uint64_t bit_num){
+  bit_num_ = bit_num;
+  bits_.resize((bit_num + BLOCKSIZE - 1) / BLOCKSIZE, 0);
+}
+
+void bit_vector::set_bit(uint64_t pos){
+  bits_[pos / BLOCKSIZE] |= (1LLU << (pos % BLOCKSIZE));
+}
+
+uint64_t  bit_vector::calc_hamming_similarity(const bit_vector& bv) const{
+  uint64_t match_num = 0;
+  for (size_t i = 0; i < bits_.size() && i < bv.bits_.size(); ++i){
+    uint64_t all_num = ((i+1) * BLOCKSIZE > bit_num_) ?  (i+1) * BLOCKSIZE - bit_num_ : BLOCKSIZE;
+    match_num += all_num - pop_count(bits_[i] ^ bv.bits_[i]);
+  }
+  return match_num;
+}
+}
 }

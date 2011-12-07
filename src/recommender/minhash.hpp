@@ -18,6 +18,7 @@
 #pragma once
 
 #include "recommender_base.hpp"
+#include "bit_vector.hpp"
 
 namespace jubatus {
 namespace recommender {
@@ -33,19 +34,15 @@ public:
   void update_row(const std::string& id, const sfv_diff_t& diff);
 
 private:
-  void calc_minhash_values(const sfv_t& sfv, std::vector<float>& values) const;
 
-  void converte2hash(const sfv_t& sfv, std::vector<uint64_t>& ids);
-  float calc_resemble(const std::pair<float, std::vector<uint64_t> >& ids1,
-                      const std::pair<float, std::vector<uint64_t> >& ids2);
+  void calc_minhash_values(const sfv_t& sfv, bit_vector& bv) const;
 
   static float calc_hash(uint64_t a, uint64_t b, float val);
   static void hash_mix64(uint64_t& a, uint64_t& b, uint64_t& c);
 
   static const uint64_t hash_prime;
-  uint64_t bit_num_;
   uint64_t hash_num_;
-  std::vector<std::vector<std::vector<uint64_t> > > minhash_list_; // minhash_list[k][hashval][id_list]
+  pfi::data::unordered_map<std::string, bit_vector> row2minhashvals_;
 };
 
 } // namespace recommender

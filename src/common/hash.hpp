@@ -17,13 +17,21 @@
 
 #pragma once
 
-#include <vector>
-#include <utility>
 #include <string>
-#include "../common/type.hpp"
+#include <stdint.h>
 
-namespace jubatus {
+namespace jubatus{
 
-typedef sfv_t sfv_diff_t;
+class hash_util{
+public:
+  static uint64_t calc_string_hash(const std::string& s){
+    uint64_t hash = 14695981039346656037LLU;
+    for (size_t i = 0; i < s.size(); ++i){
+      hash *= 1099511628211LLU;
+      hash ^= s[i];
+    }
+    return hash;
+  }
+};
 
 }

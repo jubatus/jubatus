@@ -19,6 +19,7 @@
 #include <cmath>
 #include "lsh.hpp"
 #include "../common/exception.hpp"
+#include "../common/hash.hpp"
 
 using namespace std;
 using namespace pfi::data;
@@ -27,162 +28,103 @@ using namespace pfi::lang;
 namespace jubatus {
 namespace recommender {
 
-static const uint64_t DEFAULT_BASE_NUM = 32; // should be in config
-static const uint64_t DEFAULT_SEARCH_NUM = 16; // shoud be config
+static const uint64_t DEFAULT_BASE_NUM = 64; // should be in config
 
-lsh::lsh(shared_ptr<storage::recommender_storage> storage, uint64_t base_num, uint64_t search_num)
-  : recommender_base(storage),base_num_(base_num), search_num_(search_num) {
-  init();
+lsh::lsh(shared_ptr<storage::recommender_storage> storage, uint64_t base_num)
+  : recommender_base(storage),base_num_(base_num) {
 }
 
 lsh::lsh(shared_ptr<storage::recommender_storage> storage)
-  : recommender_base(storage), base_num_(DEFAULT_BASE_NUM), search_num_(DEFAULT_SEARCH_NUM) {
-  init();
+  : recommender_base(storage), base_num_(DEFAULT_BASE_NUM) {
 }
 
 lsh::~lsh(){
 }
 
-void lsh::init(){
-  base2sorted_ids_.resize(base_num_);
-  base_sq_norms_.resize(base_num_);
-}
-
 void lsh::similar_row(const sfv_t& query, vector<pair<string, float> > & ids, size_t ret_num) const{
   ids.clear();
-  unordered_map<string, float> scores;
-  vector<float> values;
-  calc_lsh_values(query, values);
+  if (base_num_ == 0) return;
+
+  bit_vector query_bv;
+  calc_lsh_values(query, query_bv);
   
-  for (size_t i = 0; i < values.size(); ++i){
-    similar_row_using_lsh_value(values[i], base2sorted_ids_[i], scores);
-  }
-  
-  vector<pair<float, string> > sorted_scores;
-  for (unordered_map<string, float>::const_iterator it = scores.begin(); it != scores.end(); ++it){
-    sorted_scores.push_back(make_pair(it->second, it->first));
+  vector<pair<uint64_t, string> > scores;
+  for (unordered_map<string, bit_vector>::const_iterator it = row2lshvals_.begin();
+       it != row2lshvals_.end(); ++it){
+    uint64_t match_num = query_bv.calc_hamming_similarity(it->second);
+    if (scores.size() < ret_num){
+      scores.push_back(make_pair(match_num, it->first));
+    } else if (scores.size() == ret_num){
+      make_heap(scores.begin(), scores.end());
+    } else {
+      if (match_num <= scores.front().first) continue;
+      pop_heap(scores.begin(), scores.end());
+      scores.back() = make_pair(match_num, it->first);
+      push_heap(scores.begin(), scores.end());
+    }
   }
 
-  sort(sorted_scores.rbegin(), sorted_scores.rend());
-  for (size_t i = 0; i < sorted_scores.size() && i < ret_num; ++i){
-    ids.push_back(make_pair(sorted_scores[i].second, sorted_scores[i].first));
+  sort(scores.rbegin(), scores.rend());
+  for (size_t i = 0; i < scores.size() && i < ret_num; ++i){
+    ids.push_back(make_pair(scores[i].second, (float)scores[i].first / base_num_));
   }
 }
 
 void lsh::clear(){
   origs_->clear();
-  bases_.clear();
-  base_sq_norms_.clear();
-  id2base_values_.clear();
-  init();
+  column2baseval_.clear();
+  row2lshvals_.clear();
 }
 
 void lsh::clear_row(const string& id){
-  throw unsupported_method("lsh::clear_row()");
+  origs_->remove_row(id);
+  row2lshvals_.erase(id);
 }
 
-void lsh::calc_lsh_values(const sfv_t& sfv, vector<float> values) const{
+void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const{
   // No values.clear() for update_row
+  vector<float> lsh_vals(base_num_);
   for (size_t i = 0; i < sfv.size(); ++i){
     const string& column = sfv[i].first;
     float val = sfv[i].second;
-    unordered_map<string, vector<float> >::const_iterator it = bases_.find(column);
-    if (it == bases_.end()){
+    unordered_map<string, vector<float> >::const_iterator it = column2baseval_.find(column);
+    if (it == column2baseval_.end()){
       continue;
     }
     const vector<float>& v = it->second;
     // assert(v.size() == base_num_);
     for (size_t j = 0; j < v.size(); ++j){
-      values[j] += v[j] * val;
+      lsh_vals[j] += v[j] * val;
     }  
   }
 
-  for (size_t i = 0; i < values.size(); ++i){
-    if (base_sq_norms_[i] != 0.f){
-      values[i] /= sqrt(base_sq_norms_[i]);
+  bv.resize_and_clear(base_num_);
+  for (size_t i = 0; i < lsh_vals.size(); ++i){
+    if (lsh_vals[i] >= 0.f){
+      bv.set_bit(i);
     }
   }
 }
 
-void lsh::similar_row_using_lsh_value(float val, const sorted_ids_t& sorted_ids, unordered_map<string, float>& ret) const{
-  ret.clear();
-  pair<float, string> val_name(val, "");
-  const sorted_ids_t::const_iterator low_it = sorted_ids.lower_bound(val_name);
-
-  // 2 cos(x, y) = |x|^2 + |y|^2 - |x - y|^2
-  // assume that |x|^2 = |y|^2 = 1 , and {ei} are orthonormal bases.
-  // |x - y|^2 \approx \sum_i |ei(x) - ei(y)|^2  where ei(x) is <ei, x> / |ei|
-  // 2
-
-
-
-  // backward
-  {
-    sorted_ids_t::const_iterator it = low_it;
-    for (size_t i = 0; i < search_num_ && low_it != sorted_ids.begin(); ){
-      --it;
-      float dif = val - it->first;
-      ret[it->second] += (2.f - dif * dif);
-    }
-  }
-
-  // forward
-  {
-    sorted_ids_t::const_iterator it = low_it;
-    for (size_t i = 0; i < search_num_ && it != sorted_ids.end(); ++it){
-      float dif = val - it->first;
-      ret[it->second] += (2.f - dif * dif);
-    }
-  }
-}
-
-void lsh::generate_column_base(const string& column, vector<float>& bases){
+void lsh::generate_column_base(const string& column){
   // should use more clever hash
-  {
-    unsigned int seed = 0;
-    for (size_t i = 0; i < column.size(); ++i){
-      seed += column[i];
-      seed *= 47;
-    }
-    srand(seed);
-  }
-  bases.resize(base_num_);
+  srand(hash_util::calc_string_hash(column));
+  vector<float>& baseval = column2baseval_[column];
+  baseval.resize(base_num_);
   for (uint64_t i = 0; i < base_num_; ++i){
-    bases[i] = (float) rand() / RAND_MAX; 
-    base_sq_norms_[i] += bases[i] * bases[i];
+    float v1 = (float)(rand()+1) / ((float)RAND_MAX + 1);
+    float v2 = (float)(rand()+1) / ((float)RAND_MAX + 1);
+    float z = sqrt(-2.f * log(v1)) * cos(2.f * M_PI * v2);
+    baseval[i] = z;
   }
 }
 
 void lsh::update_row(const string& id, const sfv_diff_t& diff){
   origs_->set_row(id, diff);
-
-  // delete orig_values_
-  vector<float>& base_values = id2base_values_[id];
-  if (base_values.size() == 0){
-    base_values.resize(base_num_);
-  } else {
-    for (size_t i = 0; i < base_values.size(); ++i){
-      sorted_ids_t::iterator it = base2sorted_ids_[i].find(make_pair(base_values[i], id));
-      //assert(it != base2values_and_ids_[i].end());
-      base2sorted_ids_[i].erase(it);
-    }
-  }
-
-  // generate new column base
-  for (size_t i = 0; i < diff.size(); ++i){
-    const string& column = diff[i].first;
-    if (bases_.find(column) == bases_.end()){
-      vector<float> v;
-      generate_column_base(column, v);
-      bases_[column] = v;
-    }
-  }
-
-  calc_lsh_values(diff, base_values);
-  
-  for (size_t i = 0; i < base_values.size(); ++i){
-    base2sorted_ids_[i].insert(make_pair(base_values[i], id));
-  }
+  bit_vector& bv = row2lshvals_[id];
+  sfv_t row;
+  origs_->get_row(id, row);
+  calc_lsh_values(row, bv);
 }
 
 } // namespace recommender

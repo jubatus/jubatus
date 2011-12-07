@@ -25,7 +25,7 @@ using namespace pfi::data;
 namespace jubatus {
 namespace recommender {
 
-const uint64_t recommender_base::complete_row_similar_num = 7;
+const uint64_t recommender_base::complete_row_similar_num_ = 7;
 
 recommender_base::recommender_base(pfi::lang::shared_ptr<storage::recommender_storage> storage) : 
   origs_(storage) {
@@ -60,17 +60,18 @@ void recommender_base::complete_row(const std::string& id, sfv_t& ret) const{
 void recommender_base::complete_row(const sfv_t& query, sfv_t& ret) const{
   ret.clear();
   vector<pair<string, float> > ids;
-  similar_row(query, ids, complete_row_similar_num);
+  similar_row(query, ids, complete_row_similar_num_);
   if (ids.size() == 0) return;
+
   for (size_t i = 0; i < ids.size(); ++i){
     sfv_t row;
     origs_->get_row(ids[i].first, row);
-    sort_and_merge(row);
     float ratio = ids[i].second;
     for (size_t j = 0; j < row.size(); ++j){
       ret.push_back(make_pair(row[j].first, row[j].second * ratio));
     }
   }
+  
   sort_and_merge(ret);
   for (size_t i = 0; i < ret.size(); ++i){
     ret[i].second /= ids.size();

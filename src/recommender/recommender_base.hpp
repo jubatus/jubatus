@@ -45,7 +45,7 @@ public:
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
 protected:
-  static const uint64_t complete_row_similar_num;
+  static const uint64_t complete_row_similar_num_;
   pfi::lang::shared_ptr<storage::recommender_storage> origs_;
 };
 

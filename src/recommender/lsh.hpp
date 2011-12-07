@@ -18,13 +18,14 @@
 #pragma once
 
 #include "recommender_base.hpp"
+#include "bit_vector.hpp"
 
 namespace jubatus {
 namespace recommender {
 
 class lsh : public recommender_base {
 public:
-  lsh(pfi::lang::shared_ptr<storage::recommender_storage> storage, uint64_t base_num, uint64_t search_num);
+  lsh(pfi::lang::shared_ptr<storage::recommender_storage> storage, uint64_t base_num);
   lsh(pfi::lang::shared_ptr<storage::recommender_storage> storage);
   ~lsh();
 
@@ -34,19 +35,14 @@ public:
   void update_row(const std::string& id, const sfv_diff_t& diff);
 
 private:
-  void init();
   typedef std::set<std::pair<float, std::string> > sorted_ids_t;
-  void calc_lsh_values(const sfv_t& sfv, std::vector<float> values) const;
-  void generate_column_base(const std::string& column, std::vector<float>& bases);
-  void similar_row_using_lsh_value(float val, const sorted_ids_t& sorted_ids, pfi::data::unordered_map<std::string, float>& dists) const;
+  void calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const;
+  void generate_column_base(const std::string& column);
 
-  pfi::data::unordered_map<std::string, std::vector<float> > bases_; // bases for lsh
-  std::vector<float> base_sq_norms_; // squared norm of bases
-  std::vector<sorted_ids_t> base2sorted_ids_; 
-  std::map<std::string, std::vector<float> > id2base_values_;
+  pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_; // bases for lsh
+  pfi::data::unordered_map<std::string, bit_vector > row2lshvals_;
 
   uint64_t base_num_;
-  uint64_t search_num_;
 };
 
 } // namespace recommender

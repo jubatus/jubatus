@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "recommender_storage.hpp"
 #include "../fv_converter/test_util.hpp"
+#include "norm.hpp"
 
 namespace jubatus {
 namespace storage {
@@ -21,7 +22,7 @@ using namespace std;
 // }
 
 TEST(recommender_storage, set_row) {
-  recommender_storage s();
+  recommender_storage s(pfi::lang::shared_ptr<norm_base>(new norm_none));
   vector<pair<string, float> > r1, r2;
   r1.push_back(make_pair("c1", 1.0));
   r1.push_back(make_pair("c2", 2.0));
@@ -49,7 +50,7 @@ TEST(recommender_storage, set_row) {
 }
 
 TEST(recommender_storage, set) {
-  recommender_storage s;
+  recommender_storage s(pfi::lang::shared_ptr<norm_base>(new norm_none));
   s.set("r1", "c1", 5.0);
   // overwrite
   s.set("r1", "c1", 1.0);
@@ -85,6 +86,8 @@ TEST(recommender_storage, set) {
   s.clear();
   EXPECT_EQ(0.0, s.get("r1", "c1"));
 }
+
+// (TODO) add test recommender_storage::calc_norm(const string& row)
 
 }
 }
