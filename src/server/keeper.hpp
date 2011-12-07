@@ -107,6 +107,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
     //    std::vector<R> results;
+    // FIXME: needs global lock here
     R res;
     for (size_t i = 0; i < list.size(); ++i) {
       const std::pair<std::string, int>& c = list[i];
@@ -127,10 +128,9 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
     // FIXME: resolve name here
 
-    R result;
     const std::pair<std::string, int>& c = list[0];
-    result = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).
-      call<R(std::string,std::string,A)>(method_name)(name, key, arg);
+    pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
+    R result = cli.call<R(std::string,std::string,A)>(method_name)(name, key, arg);
     return result;
   }
   void get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret);

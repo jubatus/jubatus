@@ -24,7 +24,7 @@ namespace jubatus {
   
   server_argv::server_argv(int args, char** argv){
     google::InitGoogleLogging(argv[0]);
-  //  google::LogToStderr(); // only when debug
+    // google::LogToStderr(); // only when debug
 
     cmdline::parser p;
     p.add<int>("rpc-port", 'p', "port number", false, 9199);
@@ -69,7 +69,7 @@ namespace jubatus {
 
   keeper_argv::keeper_argv(int args, char** argv){
     google::InitGoogleLogging(argv[0]);
-    google::LogToStderr(); // only when debug
+    //    google::LogToStderr(); // only when debug
 
     cmdline::parser p;
     p.add<int>("rpc-port", 'p', "port number", false, 9199);
