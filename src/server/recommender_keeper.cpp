@@ -3,6 +3,7 @@
 #include "recommender_types.hpp"
 
 using namespace jubatus;
+using namespace jubatus::server;
 
 int main(int args, char** argv){
   keeper k(jubatus::keeper_argv(args, argv));
@@ -20,6 +21,6 @@ int main(int args, char** argv){
   k.register_broadcast_analysis<std::vector<std::pair<std::string, datum> > , int>("get_all_rows");
   k.register_broadcast_analysis<int, std::string>("save");
   k.register_broadcast_update<std::string>("load");
-  k.start();
+  k.run();
 }
 

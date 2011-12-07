@@ -34,21 +34,13 @@
 static const std::string ACTOR_BASE_PATH = "";
 
 namespace jubatus {
+namespace server {
 
 class keeper : public pfi::network::mprpc::rpc_server {
  public:
-  keeper(const jubatus::keeper_argv& a)
-    : pfi::network::mprpc::rpc_server(a.timeout),
-      a_(a),
-      zk_(a.z, a.timeout)
-  {
-    register_broadcast_analysis<int, std::string>("save");
-    register_broadcast_update<std::string>("load");
-  }
-
-  int start(){
-    return this->serv(a_.port, a_.threadnum);
-  };
+  keeper(const jubatus::keeper_argv& a);
+  virtual ~keeper();
+  int run();
 
   template <typename Q>
   void register_random_update(std::string method_name) {
@@ -162,3 +154,4 @@ class keeper : public pfi::network::mprpc::rpc_server {
 };
 
 }
+} //namespace jubatus

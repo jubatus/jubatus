@@ -68,6 +68,20 @@ namespace jubatus{
     return true;
   }
 
+  bool register_keeper(zk& z, const std::string& ip, int port){
+    std::string path = JUBAKEEPER_BASE_PATH;
+    z.create(path, "");
+    {
+      std::string path1;
+      build_existence_path(path, ip, port, path1); 
+      z.create(path1, "", true);
+    }
+    // set exit zlistener here
+    pfi::lang::function <void()> f = &force_exit;
+    z.push_cleanup(f);
+    return true;
+  }
+
   // zk -> name -> list( (ip, rpc_port) )
   bool get_all_actors(zk& z, const std::string& name, std::vector<std::pair<std::string, int> >& ret){
     ret.clear();

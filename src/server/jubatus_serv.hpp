@@ -37,6 +37,9 @@ public:
   jubatus_serv(const server_argv& a, const std::string& base_path = "/tmp"):
     is_mixer_func_set_(false),
     a_(a),
+#ifdef HAVE_ZOOKEEPER_H
+    mixer_(new mixer0<M, Diff>(a_.name, a_.interval_count, a_.interval_sec)),
+#endif
     base_path_(a_.tmpdir)
   {
     //model_ = make_model(); //compiler warns
@@ -53,7 +56,8 @@ public:
         join_to_cluster(z);
       }
 
-      mixer_.reset(new mixer0<M, Diff>(z, a_.name, a_.interval_count, a_.interval_sec));
+      mixer_->set_zk(z);
+      register_actor(*z, a_.name, a_.eth, a_.port);
       if(is_mixer_func_set_){
         mixer_->start();
       }
@@ -61,8 +65,7 @@ public:
 #endif
 
     { LOG(INFO) << "running in port=" << a_.port; }
-    serv.serv(a_.port, a_.threadnum);
-    return 0;
+    return serv.serv(a_.port, a_.threadnum);
   };
 
 
@@ -135,17 +138,25 @@ public:
   void do_mix(const std::vector<std::pair<std::string,int> >& v){
     if(not is_mixer_func_set_) return;
     Diff acc;
-    typename pfi::lang::function<Diff(int)> get_diff_fun;
+    typename pfi::lang::function<std::string(int)> get_diff_fun;
     for(size_t s = 0; s < v.size(); ++s ){
-      get_diff_fun = pfi::network::mprpc::rpc_client(v[s].first, v[s].second, a_.timeout).call<Diff(int)>("get_diff");
-      Diff d = get_diff_fun(0);
+      get_diff_fun = pfi::network::mprpc::rpc_client(v[s].first, v[s].second, a_.timeout).call<std::string(int)>("get_diff");
+      std::string serialized_diff = get_diff_fun(0);
+      Diff diff;
+      msgpack::unpacked msg;
+      msgpack::unpack(&msg, serialized_diff.c_str(), serialized_diff.size());
+      msg.get().convert(&diff);
       scoped_lock lk(rlock(m_)); // model_ should not be in mix (reduce)?
-      this->reduce_(model_.get(), d, acc);
+      this->reduce_(model_.get(), diff, acc);
     }
-    typename pfi::lang::function<int(Diff)> put_diff_fun;
+    DLOG(INFO) << __LINE__ ;
+    typename pfi::lang::function<int(std::string)> put_diff_fun;
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, acc);
+    std::string serialized_diff0(sbuf.data(), sbuf.size());
     for(size_t s = 0; s < v.size(); ++s ){
-      put_diff_fun = pfi::network::mprpc::rpc_client(v[s].first, v[s].second, a_.timeout).call<int(Diff)>("put_diff");
-      put_diff_fun(acc);
+      put_diff_fun = pfi::network::mprpc::rpc_client(v[s].first, v[s].second, a_.timeout).call<int(std::string)>("put_diff");
+      put_diff_fun(serialized_diff0);
     }
   }
 #endif
@@ -206,6 +217,8 @@ public:
   int get_threadum()const{ return a_.threadnum; };
   
 protected:
+  bool is_mixer_func_set_;
+  server_argv a_;
 
 #ifdef HAVE_ZOOKEEPER_H
   pfi::lang::shared_ptr<mixer0<M, Diff> > mixer_;
@@ -214,9 +227,7 @@ protected:
   pfi::lang::function<int(M*, const Diff&)> put_diff_;
 #endif
 
-  bool is_mixer_func_set_;
   pfi::concurrent::rw_mutex m_;
-  server_argv a_;
   const std::string base_path_;
 
   pfi::lang::shared_ptr<M> model_;

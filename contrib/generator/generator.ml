@@ -73,6 +73,7 @@ object (self)
     output <<< "// this program is automatically generated. do not edit. ";
     output <<< Keeper_template.make_file_begin name;
     output <<< make_using_ns [namespace];
+    output <<< make_using_ns [namespace; "server"];
     output <<< Keeper_template.make_main classdefs;
     output <<< Keeper_template.make_file_end name;
 

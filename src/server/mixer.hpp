@@ -89,32 +89,39 @@ namespace jubatus{
       counter_=0;
       ticktime_ = time(NULL);
     };
-    void start(){ t_.start(); };
+
+    void set_zk(pfi::lang::shared_ptr<jubatus::zk>& z){
+      zk_ = z;
+    };
+    void start(){
+      if(!zk_) throw std::runtime_error("zk is not initialized.");
+      t_.start();
+    };
     void get_status(std::map<std::string,std::string>& out){
       pfi::concurrent::scoped_lock lk(m_);
       out["count"] = pfi::lang::lexical_cast<std::string>(counter_);
       out["ticktime"] = pfi::lang::lexical_cast<std::string>(ticktime_); //since last mix
     };
 
-    mixer0(pfi::lang::shared_ptr<jubatus::zk>& z, const std::string& name,
-           unsigned int count_threshold, unsigned int tick_threshold)
-      :zk_(z),name_(name), 
+    mixer0(const std::string& name, unsigned int count_threshold, unsigned int tick_threshold)
+      :name_(name), 
        count_threshold_(count_threshold),
        counter_(0),
        tick_threshold_(tick_threshold),
        ticktime_(time(NULL)),
-       t_(pfi::lang::bind(&mixer::mixer_loop, this))
+       t_(pfi::lang::bind(&(mixer0<M,D>::mixer_loop), this))
     {
     };
     virtual ~mixer0(){};
 
+    void mixer_loop(){
+      while(true)try_mix();
+    };
+
     void set_mixer_func(pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> f){
     //    void set_mixer_func(pfi::lang::function<int(const M*, const D&, const D&, D&)>& f){
-     printf("asdafs==\n");
      pfi::concurrent::scoped_lock lk(m_);
-     printf("asdafsd==\n");
      mixer_func_ = f;
-     printf("asdafsd++\n");
     };
     int get_count()const {return counter_;} ; //FIXME: not thread-safe
     void try_mix(){
@@ -143,13 +150,8 @@ namespace jubatus{
       DLOG(INFO) << "....mix done";
     };
 
-    static void mixer_loop(void* p){
-      mixer0 * m = static_cast<mixer*>(p);
-      while(true) m->try_mix();
-    };
-    
   private:  
-    //    pfi::lang::function<int(const M*, const D&, const D&, D&)> mixer_func_;
+
     pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_func_;
 
     pfi::lang::shared_ptr<jubatus::zk> zk_;
@@ -163,7 +165,6 @@ namespace jubatus{
     pfi::concurrent::thread t_;
     pfi::concurrent::mutex m_;
     pfi::concurrent::condition c_;
-    //    pfi::lang::function<int(const D&, const D&, D&)> mixer_func_;
   };
 
   static const std::string GET_DIFF("get_diff");
