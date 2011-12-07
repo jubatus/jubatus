@@ -32,45 +32,6 @@
 
 namespace jubatus{
 
-  class mixer{
-  public:
-    void updated();
-    void accessed();
-    void clear();
-    void start();
-    void get_status(std::map<std::string,std::string>&);
-
-    mixer(pfi::lang::shared_ptr<jubatus::zk>&, const std::string& name,
-          unsigned int count_threashold = 1024, unsigned int tick_threshold = 16);
-    virtual ~mixer();
-
-    void set_mixer_func(pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)>);
-    // void set_mixer_func2(pfi::lang::function<int(const D&, const D&, D&)>& f){
-    //   pfi::concurrent::scoped_lock lk(m_);
-    //   mixer_func_ = f;
-    // };
-    int get_count()const;
-    void try_mix();
-
-    static void mixer_loop(void* p);
-
-  private:  
-    pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mix_;
-
-    pfi::lang::shared_ptr<jubatus::zk> zk_;
-    std::string name_;
-
-    unsigned int count_threshold_;
-    unsigned int counter_;
-    unsigned int tick_threshold_;
-    unsigned int ticktime_;
-
-    pfi::concurrent::thread t_;
-    pfi::concurrent::mutex m_;
-    pfi::concurrent::condition c_;
-    //    pfi::lang::function<int(const D&, const D&, D&)> mixer_func_;
-  };
-  
   template <typename M, typename D>
   class mixer0{
   public:

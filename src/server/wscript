@@ -7,8 +7,8 @@ def configure(conf):
 
 def build_one(bld, name, libraries = ''):
   __sources = '%s_impl.cpp %s_serv.cpp server_util.cpp' % (name, name)
-  if bld.env.HAVE_ZOOKEEPER_H:
-    __sources +=  ' mixer.cpp'
+  #if bld.env.HAVE_ZOOKEEPER_H:
+  #  __sources +=  ' mixer.cpp'
   bld.program(
     source = __sources,
     target = 'juba'+name,
