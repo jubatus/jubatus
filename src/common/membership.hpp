@@ -40,6 +40,8 @@ namespace jubatus{
 
   // zk -> name -> ip -> port -> bool
   bool register_actor(zk&, const std::string&, const std::string&, int);
+  // zk -> name -> ip -> port -> bool
+  bool register_keeper(zk&, const std::string&, int);
   // zk -> name -> list( (ip, rpc_port) )
   bool get_all_actors(zk&, const std::string&, std::vector<std::pair<std::string, int> >&);
 
