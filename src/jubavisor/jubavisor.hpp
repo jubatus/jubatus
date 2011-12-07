@@ -24,7 +24,7 @@
 #include <pficommon/network/mprpc.h>
 #include <pficommon/concurrent/mutex.h>
 
-#include "../common/zk.hpp"
+#include "../common/lock_service.hpp"
 #include "process.hpp"
 
 namespace jubatus{
@@ -40,14 +40,13 @@ public:
   //  int ensure(std::string);
 
   void stop_all();
-  void die_if_deleted(int, int, std::string);
+  //  void die_if_deleted(int, int, std::string);
   
 private:
   int start_(const std::string&, unsigned int);
   //  int stop_(const std::string&, std::vector<process>&);
 
-  jubervisor();
-  zk zk_;
+  pfi::lang::shared_ptr<common::lock_service> zk_;
   std::string name_;
   int port_base_;
   std::queue<int> port_pool_;

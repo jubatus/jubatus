@@ -26,7 +26,7 @@
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/math/random.h>
 
-#include "../common/zk.hpp"
+#include "../common/lock_service.hpp"
 #include "../common/membership.hpp"
 
 #include "server_util.hpp"
@@ -138,7 +138,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
   jubatus::keeper_argv a_;
   pfi::math::random::mtrand rng_;
   pfi::concurrent::mutex mutex_;
-  zk zk_;
+  pfi::lang::shared_ptr<common::lock_service> zk_;
 };
 
 }

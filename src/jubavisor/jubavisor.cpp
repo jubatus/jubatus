@@ -24,25 +24,27 @@
 #include "../common/membership.hpp"
 
 using namespace jubatus;
+using namespace jubatus::common;
 using namespace pfi::lang;
 using pfi::concurrent::scoped_lock;
 
 jubervisor::jubervisor(const std::string& hosts, int port, int max,
                        const std::string& logfile):
-  zk_(hosts, 1024, logfile),
+  zk_(create_lock_service("zk", hosts, 1024, logfile)),
   port_base_(port),
   logfile_(logfile),
   max_children_(max)
 {
-  zk_.create(JUBATUS_BASE_PATH, "");
-  zk_.create(JUBAVISOR_BASE_PATH, "");
-  zk_.create(ACTOR_BASE_PATH, "");
+  zk_->create(JUBATUS_BASE_PATH, "");
+  zk_->create(JUBAVISOR_BASE_PATH, "");
+  zk_->create(ACTOR_BASE_PATH, "");
 
   name_ = build_loc_str(util::get_ip("eth0"), port);
   std::string path = JUBAVISOR_BASE_PATH + "/" + name_;
-  zk_.create(path, "", true);
-  pfi::lang::function<void(int,int,std::string)> f = bind(&jubervisor::die_if_deleted, this, _1, _2, _3);
-  zk_.bind_watcher(path, f);
+  zk_->create(path, "", true);
+  // FIXME: 
+  //  pfi::lang::function<void(int,int,std::string)> f = bind(&jubervisor::die_if_deleted, this, _1, _2, _3);
+  //  zk_->bind_watcher(path, f);
   DLOG(INFO) << path << " created.";
 
   for(unsigned int i=0;i<max_children_;++i){
@@ -50,13 +52,10 @@ jubervisor::jubervisor(const std::string& hosts, int port, int max,
   }
 
   pfi::lang::function<void()> h = bind(&jubervisor::stop_all, this);
-  jubatus::push_cleanup(zk_, h);
+  zk_->push_cleanup(h);
   pfi::lang::function<void()> g = bind(&exit, -1);
-  jubatus::push_cleanup(zk_, g);
+  zk_->push_cleanup(g);
 }
-jubervisor::jubervisor():
-  zk_("")
-{}
 jubervisor::~jubervisor(){
   stop_all();
 }
@@ -76,7 +75,7 @@ int jubervisor::start_(const std::string& str, unsigned int N){
   
   std::string name;
   {
-    process p(zk_.get_hosts());
+    process p(zk_->get_hosts());
     if(!p.set_names(str)){
       LOG(ERROR) << "cannot parse " << str;
       return -1;
@@ -101,7 +100,7 @@ int jubervisor::start_(const std::string& str, unsigned int N){
   }
   
   for(unsigned int n=0; n<N; ++n){
-    process p(zk_.get_hosts());
+    process p(zk_->get_hosts());
     p.set_names(str);
     it = children_.find(name);
 
@@ -120,7 +119,7 @@ int jubervisor::start_(const std::string& str, unsigned int N){
 
 int jubervisor::stop(std::string str, unsigned int N){
   DLOG(ERROR) << str;
-  process p(zk_.get_hosts());
+  process p(zk_->get_hosts());
   p.set_names(str);
   std::vector<process> v;
   {
@@ -163,19 +162,19 @@ void jubervisor::stop_all(){
   children_.clear();
 }
 
-void jubervisor::die_if_deleted(int type, int state, std::string path){
-  if(type == ZOO_DELETED_EVENT){
-    LOG(INFO) << "terminating: deleted " << path << " at lock service.";
-    this->stop_all();
-    exit(-1);
-  }
-}
+// void jubervisor::die_if_deleted(int type, int state, std::string path){
+//   if(type == ZOO_DELETED_EVENT){
+//     LOG(INFO) << "terminating: deleted " << path << " at lock service.";
+//     this->stop_all();
+//     exit(-1);
+//   }
+// }
 
   /*
 
 // jubatusctl ensure type/name[/storage]
 int jubervisor::ensure(std::string str){
-  process p(zk_.get_hosts());
+  process p(zk_->get_hosts());
   p.set_names(str);
 
   scoped_lock lk(m_);

@@ -23,6 +23,7 @@
 using namespace pfi::lang;
 
 namespace jubatus{
+namespace common{
 
   // "127.0.0.1" -> 9199 -> "127.0.0.1_9199"
   std::string build_loc_str(const std::string& ip, int port, unsigned int i){
@@ -48,7 +49,7 @@ namespace jubatus{
   }
 
   // zk -> name -> ip -> port -> bool
-  bool register_actor(zk& z, const std::string& name, const std::string& ip, int port){
+  bool register_actor(lock_service& z, const std::string& name, const std::string& ip, int port){
 
     std::string path = ACTOR_BASE_PATH + "/" + name;
     z.create(path, "");
@@ -68,7 +69,7 @@ namespace jubatus{
     return true;
   }
 
-  bool register_keeper(zk& z, const std::string& ip, int port){
+  bool register_keeper(lock_service& z, const std::string& ip, int port){
     std::string path = JUBAKEEPER_BASE_PATH;
     z.create(path, "");
     {
@@ -83,7 +84,7 @@ namespace jubatus{
   }
 
   // zk -> name -> list( (ip, rpc_port) )
-  bool get_all_actors(zk& z, const std::string& name, std::vector<std::pair<std::string, int> >& ret){
+  bool get_all_actors(lock_service& z, const std::string& name, std::vector<std::pair<std::string, int> >& ret){
     ret.clear();
     std::string path = ACTOR_BASE_PATH + "/" + name + "/nodes";
     std::vector<std::string> list;
@@ -98,7 +99,7 @@ namespace jubatus{
     return true;
   }
 
-  bool push_cleanup(zk& z, pfi::lang::function<void()>& f){
+  bool push_cleanup(lock_service& z, pfi::lang::function<void()>& f){
     z.push_cleanup(f);
     return true;
   }
@@ -106,5 +107,5 @@ namespace jubatus{
   void force_exit(){
     exit(-1);
   }
-
+}
 }

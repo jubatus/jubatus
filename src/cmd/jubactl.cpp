@@ -105,7 +105,7 @@ int main(int args, char** argv){
 int do_request(const string& cmd, const string& name, const string& ip_port, unsigned int n){
   string ip;
   int port;
-  jubatus::revert(ip_port, ip, port);
+  jubatus::common::revert(ip_port, ip, port);
   
   pfi::network::mprpc::rpc_client c(ip, port, 10);
   pfi::lang::function<int(string,unsigned int)> f = c.call<int(string,unsigned int)>(cmd);
@@ -122,18 +122,20 @@ int do_request(const string& cmd, const string& name, const string& ip_port, uns
 }
 
 void send2supervisor(const string& cmd, const string& name, const string& zkhosts, unsigned int N){
-  jubatus::zk z(zkhosts, 10, "/dev/null");
+  pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
+    (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+
   vector<string> list;
 
   if(cmd == "start"){ //FIXME: mess
     string path = name.substr(name.find_first_of("/")+1);
-    path = jubatus::ACTOR_BASE_PATH + "/" + path.substr(0, path.find_first_of("/"));
-    z.create(path);
+    path = jubatus::common::ACTOR_BASE_PATH + "/" + path.substr(0, path.find_first_of("/"));
+    ls_->create(path);
     path += "/nodes";
-    z.create(path);
+    ls_->create(path);
   }
 
-  z.list(jubatus::JUBAVISOR_BASE_PATH, list);
+  ls_->list(jubatus::common::JUBAVISOR_BASE_PATH, list);
 
   if(list.empty()){
     LOG(INFO) << "no server to " << cmd << " " << name;
@@ -154,9 +156,10 @@ void send2supervisor(const string& cmd, const string& name, const string& zkhost
 }
 
 void send2server(const string& cmd, const string& name, const string& zkhosts){
-  jubatus::zk z(zkhosts, 10, "/dev/null");
+  pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
+    (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
   vector<string> list;
-  z.list(jubatus::ACTOR_BASE_PATH, list);
+  ls_->list(jubatus::common::ACTOR_BASE_PATH, list);
   
   if(list.empty()){
     LOG(INFO) << "no server to " << cmd << " " << name;
@@ -165,7 +168,7 @@ void send2server(const string& cmd, const string& name, const string& zkhosts){
   for(it = list.begin(); it!= list.end(); ++it){
     string ip;
     int port;
-    jubatus::revert(*it, ip, port);
+    jubatus::common::revert(*it, ip, port);
     
     pfi::network::mprpc::rpc_client c(ip, port, 10);
     pfi::lang::function<int(string)> f = c.call<int(string)>(cmd);
@@ -181,7 +184,7 @@ void send2server(const string& cmd, const string& name, const string& zkhosts){
 }
 
 
-void show(jubatus::zk& z, const string& path, const string& name){
+void show(jubatus::common::lock_service& z, const string& path, const string& name){
   vector<string> list;
   z.list(path, list);
   cout << "\033[34mactive " << name << " members:\033[0m" << endl;
@@ -191,8 +194,9 @@ void show(jubatus::zk& z, const string& path, const string& name){
 }
 
 void status(const string& name, const string& zkhosts){
-  jubatus::zk z(zkhosts, 10, "/dev/null");
-  show(z, jubatus::JUBAKEEPER_BASE_PATH, "jubakeeper");
-  show(z, jubatus::JUBAVISOR_BASE_PATH, "jubavisor");
-  show(z, jubatus::ACTOR_BASE_PATH + "/" + name + "/nodes", name);
+  pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
+    (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+  show(*ls_, jubatus::common::JUBAKEEPER_BASE_PATH, "jubakeeper");
+  show(*ls_, jubatus::common::JUBAVISOR_BASE_PATH, "jubavisor");
+  show(*ls_, jubatus::common::ACTOR_BASE_PATH + "/" + name + "/nodes", name);
 }

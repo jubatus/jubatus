@@ -28,6 +28,7 @@ using std::vector;
 using std::string;
 
 namespace jubatus{
+namespace common{
   
   zk::zk(const std::string& hosts, int timeout, const std::string& logfile):
     zh_(NULL),
@@ -172,6 +173,9 @@ namespace jubatus{
   }
 
   const std::string& zk::get_hosts()const{ return hosts_; }
+  const std::string zk::type()const{
+    return std::string(typeid(*this).name());
+  }
 
   bool zkmutex::lock(){
     pfi::concurrent::scoped_lock lk(m_);
@@ -186,18 +190,18 @@ namespace jubatus{
     pfi::concurrent::scoped_lock lk(m_);
     if(has_lock_)return has_lock_;
     string prefix = path_ + "/lock_";
-    zk_->create_seq(prefix, seqfile_);
+    ls_.create_seq(prefix, seqfile_);
 
     if(seqfile_ == "") return false;
 
     vector<string> list;
-    zk_->list(path_, list);
+    ls_.list(path_, list);
 
     if(list.empty()) return false;
 
     has_lock_ = ((path_ + "/" + list[0]) == seqfile_);
     if(not has_lock_){
-      zk_->remove(seqfile_);
+      ls_.remove(seqfile_);
     }
     DLOG(INFO) << "got lock for " << path_ << " (" << seqfile_ << ") ";
     return has_lock_;
@@ -205,7 +209,7 @@ namespace jubatus{
   bool zkmutex::unlock(){
     pfi::concurrent::scoped_lock lk(m_);
     if(has_lock_){
-      zk_->remove(seqfile_);
+      ls_.remove(seqfile_);
     }
     return true;
   };
@@ -228,5 +232,5 @@ namespace jubatus{
     }
     
   }
-
+}
 }

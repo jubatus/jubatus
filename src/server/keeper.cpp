@@ -8,9 +8,9 @@ using namespace jubatus::server;
 keeper::keeper(const jubatus::keeper_argv& a)
   : pfi::network::mprpc::rpc_server(a.timeout),
     a_(a),
-    zk_(a.z, a.timeout)
+    zk_(common::create_lock_service("zk", a.z, a.timeout))
 {
-  if(!register_keeper(zk_, a_.eth, a_.port) ){
+  if(!register_keeper(*zk_, a_.eth, a_.port) ){
     throw membership_error("can't register to zookeeper.");
   }
   register_broadcast_analysis<int, std::string>("save");
@@ -33,7 +33,7 @@ void keeper::get_members_(const std::string& name, std::vector<std::pair<std::st
 
     {
       pfi::concurrent::scoped_lock lk(mutex_);
-      zk_.list(path, list);
+      zk_->list(path, list);
     }
     vector<string>::const_iterator it;
 
@@ -42,7 +42,7 @@ void keeper::get_members_(const std::string& name, std::vector<std::pair<std::st
     for(it = list.begin(); it!= list.end(); ++it){
       string ip;
       int port;
-      jubatus::revert(*it, ip, port);
+      common::revert(*it, ip, port);
       ret.push_back(make_pair(ip,port));
     }
   }
