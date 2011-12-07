@@ -12,6 +12,18 @@ lock_service* create_lock_service(const std::string& name,
   throw std::runtime_error(name);
 }
 
+
+lock_service_mutex::lock_service_mutex(lock_service& ls, const std::string& path):
+  path_(path){
+  {LOG(INFO) << ls.type();}
+  if(ls.type() == "zk"){
+    impl_ = reinterpret_cast<pfi::concurrent::lockable*>(new zkmutex(ls, path));
+  }else{
+    printf(ls.type().c_str());
+    throw -1;
+  }
+};
+
 bool lock_service_mutex::lock(){
   return impl_->lock();
 }

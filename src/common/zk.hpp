@@ -73,19 +73,20 @@ namespace common {
   };
 
   // TODO: write zk mock and test them all?
-  class zkmutex : public lock_service_mutex {
+  class zkmutex : public pfi::concurrent::lockable{
   public:
-    zkmutex(pfi::lang::shared_ptr<zk>& z, const std::string& path):
-      lock_service_mutex(reinterpret_cast<lock_service&>(*z), path), has_lock_(false)
+    zkmutex(lock_service& ls, const std::string& path):
+      zk_(reinterpret_cast<zk&>(ls)), path_(path), has_lock_(false)
     {};
-    virtual ~zkmutex(){};
+    virtual ~zkmutex(){ this->unlock(); };
     
     bool lock();
     bool try_lock();
     bool unlock();
     
   private:
-    
+    zk& zk_;
+    std::string path_;
     std::string seqfile_;
     bool has_lock_;
     pfi::concurrent::mutex m_;

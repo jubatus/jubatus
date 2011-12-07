@@ -1,4 +1,7 @@
 #include "keeper.hpp"
+
+#include <glog/logging.h>
+
 #include "../common/membership.hpp"
 #include "../common/exception.hpp"
 
@@ -29,8 +32,7 @@ void keeper::get_members_(const std::string& name, std::vector<std::pair<std::st
     using namespace std;
     ret.clear();
     vector<string> list;
-    string path = ACTOR_BASE_PATH + "/" + name + "/nodes";
-
+    string path = common::ACTOR_BASE_PATH + "/" + name + "/nodes";
     {
       pfi::concurrent::scoped_lock lk(mutex_);
       zk_->list(path, list);

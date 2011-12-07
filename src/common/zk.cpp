@@ -174,7 +174,7 @@ namespace common{
 
   const std::string& zk::get_hosts()const{ return hosts_; }
   const std::string zk::type()const{
-    return std::string(typeid(*this).name());
+    return "zk";
   }
 
   bool zkmutex::lock(){
@@ -190,18 +190,18 @@ namespace common{
     pfi::concurrent::scoped_lock lk(m_);
     if(has_lock_)return has_lock_;
     string prefix = path_ + "/lock_";
-    ls_.create_seq(prefix, seqfile_);
+    zk_.create_seq(prefix, seqfile_);
 
     if(seqfile_ == "") return false;
 
     vector<string> list;
-    ls_.list(path_, list);
+    zk_.list(path_, list);
 
     if(list.empty()) return false;
 
     has_lock_ = ((path_ + "/" + list[0]) == seqfile_);
     if(not has_lock_){
-      ls_.remove(seqfile_);
+      zk_.remove(seqfile_);
     }
     DLOG(INFO) << "got lock for " << path_ << " (" << seqfile_ << ") ";
     return has_lock_;
@@ -209,7 +209,7 @@ namespace common{
   bool zkmutex::unlock(){
     pfi::concurrent::scoped_lock lk(m_);
     if(has_lock_){
-      ls_.remove(seqfile_);
+      zk_.remove(seqfile_);
     }
     return true;
   };

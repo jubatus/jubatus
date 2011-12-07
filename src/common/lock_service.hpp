@@ -55,14 +55,11 @@ namespace common{
     virtual const std::string type() const = 0;
   };
 
-  // TODO: write lock_service mock and test them all?
   class lock_service_mutex : public pfi::concurrent::lockable {
   public:
-    lock_service_mutex(lock_service& ls, const std::string& path):
-      ls_(ls), path_(path){
-    };
+    lock_service_mutex(lock_service& ls, const std::string& path);
     virtual ~lock_service_mutex(){
-      this->unlock();
+      delete impl_;
     }
     
     bool lock();
@@ -70,11 +67,9 @@ namespace common{
     bool unlock();
 
   protected:
-    lock_service& ls_;
-    lock_service_mutex* impl_;
+    pfi::concurrent::lockable* impl_;
     std::string path_;
   };
-
 
   lock_service* create_lock_service(const std::string&,
                                     const std::string& hosts, const int timeout, const std::string& log = "/tmp/zklog");

@@ -31,8 +31,6 @@
 
 #include "server_util.hpp"
 
-static const std::string ACTOR_BASE_PATH = "";
-
 namespace jubatus {
 namespace server {
 
