@@ -39,6 +39,7 @@ public:
     a_(a),
     base_path_(a_.tmpdir)
   {
+    //model_ = make_model(); //compiler warns
   };
   virtual ~jubatus_serv(){};
 
@@ -84,9 +85,7 @@ public:
       get_diff_ = get_diff;
       reduce_ = reduce;
       put_diff_ = put_diff;
-      printf("asdafsd--\n");
       mixer_->set_mixer_func(pfi::lang::bind(&jubatus_serv<M,Diff>::do_mix, this, pfi::lang::_1));
-      printf("asdafsd--\n");
       is_mixer_func_set_ = true;
     }
 #endif
@@ -105,25 +104,18 @@ public:
       int port;
       revert(list[i], ip, port);
       pfi::network::mprpc::rpc_client c(ip, port, a_.timeout);
-      // typename pfi::lang::function<M()> f = c.call<M()>("get_storage");
-      // FIXME: if you use this code, M should be serializable
-      // classifier used serialized binary 'std::string', not local_storage
-      // how do we make this type pattern?
-      try{
-      // this->set_storage( f() );
-      }catch(std::exception& e){
-      // if(s.success){
-      //   stringstream ss(s.retval);
-      //   st->load(ss);
-      // }
-      }
+
+      typename pfi::lang::function<std::string()> f = c.call<std::string()>("get_storage");
+      std::stringstream ss( f() );
+      model_ = make_model();
+      model_->load(ss);
     }
   };
 
   std::string get_storage(int i){
     std::stringstream ss;
     model_->save(ss);
-    return ss.str(); //result<std::string>::ok(ss.str());
+    return ss.str();
   }
 
   std::string get_diff_impl(int){
@@ -141,6 +133,7 @@ public:
     return this->put_diff_(model_.get(), diff);
   };
   void do_mix(const std::vector<std::pair<std::string,int> >& v){
+    if(not is_mixer_func_set_) return;
     Diff acc;
     typename pfi::lang::function<Diff(int)> get_diff_fun;
     for(size_t s = 0; s < v.size(); ++s ){
@@ -163,19 +156,19 @@ public:
     
     std::ofstream ofs(ofile.c_str(), std::ios::trunc|std::ios::binary);
     if(!ofs){
-      //    return ::fail(ofile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
+      throw std::runtime_error(ofile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
     }
     try{
       model_->save(ofs);
       ofs.close();
       LOG(INFO) << "saved to " << ofile;
-      return 0; //int>::ok(0);
+      return 0;
     }catch(const std::exception& e){
       return -1;
     }
   }
 
-  virtual pfi::lang::shared_ptr<M> before_load() =0;
+  virtual pfi::lang::shared_ptr<M> make_model() =0;
   // after load( model_ was loaded from file ) called, users reset their own data
   virtual void after_load() =0;
 
@@ -185,14 +178,10 @@ public:
     build_local_path_(ifile, model_->type, id);
     
     std::ifstream ifs(ifile.c_str(), std::ios::binary);
-    if(!ifs){
-      //   return result<int>::fail(ifile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
-    }
+    if(!ifs)throw std::runtime_error(ifile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
     try{
-      pfi::lang::shared_ptr<M> s = this->before_load();
-      if(!s){
-        //     return result<int>::fail("cannot allocate memory for storage");
-      }
+      pfi::lang::shared_ptr<M> s = this->make_model();
+      if(!s)throw std::runtime_error("cannot allocate memory for storage");
       ok = s->load(ifs);
       int r = errno;
       ifs.close();
@@ -201,14 +190,13 @@ public:
         LOG(INFO) << "loaded from " << ifile;
         model_ = s;
         this->after_load();
-        return 0;//result<int>::ok(0);
+        return 0;
       }else{
         LOG(ERROR) << strerror(errno);
-        return r; //result<int>::fail("failed loading");
+        return r;
       }
     }catch(const std::exception& e){
       ifs.close();
-      //   return result<int>::fail(e.what());
     }
     return -1; //expected never reaching here.
   }

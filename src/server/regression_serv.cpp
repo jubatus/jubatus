@@ -48,13 +48,11 @@ namespace server {
 regression_serv::regression_serv(const server_argv & a)
   :jubatus_serv<storage::storage_base,diffv>(a)
 {
-  model_.reset(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
+  model_ = make_model();
 
   function<diffv(const storage::storage_base*)>
     getdiff(&regression_serv::get_diff);
 
-  // FIXME: switch the function when set_config is done
-  // because mixing method differs btwn PA, CW, etc...
   function<int(const storage::storage_base*, const diffv&, diffv&)>
     reduce(&regression_serv::reduce);
   function<int(storage::storage_base*, const diffv&)>
@@ -122,7 +120,7 @@ std::vector<float > regression_serv::estimate(std::vector<jubatus::datum> data) 
   return ret; //std::vector<estimate_results> >::ok(ret);
 }
 
-pfi::lang::shared_ptr<storage::storage_base> regression_serv::before_load(){
+pfi::lang::shared_ptr<storage::storage_base> regression_serv::make_model(){
   return pfi::lang::shared_ptr<storage::storage_base>(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
 }
 // after load(..) called, users reset their own data
