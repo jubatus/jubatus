@@ -74,7 +74,7 @@ namespace common {
   };
 
   // TODO: write zk mock and test them all?
-  class zkmutex : public pfi::concurrent::lockable{
+  class zkmutex : try_lockable{
   public:
     zkmutex(lock_service& ls, const std::string& path):
       zk_(reinterpret_cast<zk&>(ls)), path_(path), has_lock_(false)

@@ -55,7 +55,12 @@ namespace common{
     virtual const std::string type() const = 0;
   };
 
-  class lock_service_mutex : public pfi::concurrent::lockable {
+  class try_lockable : public pfi::concurrent::lockable{
+  public:
+    virtual bool try_lock() = 0;
+  };
+
+  class lock_service_mutex : public try_lockable {
   public:
     lock_service_mutex(lock_service& ls, const std::string& path);
     virtual ~lock_service_mutex(){
@@ -67,7 +72,7 @@ namespace common{
     bool unlock();
 
   protected:
-    pfi::concurrent::lockable* impl_;
+    try_lockable* impl_;
     std::string path_;
   };
 

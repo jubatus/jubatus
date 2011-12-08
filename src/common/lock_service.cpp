@@ -35,12 +35,11 @@ lock_service* create_lock_service(const std::string& name,
 
 lock_service_mutex::lock_service_mutex(lock_service& ls, const std::string& path):
   path_(path){
-  //{LOG(INFO) << ls.type();}
   if(ls.type() == "zk" or ls.type() == "cached_zk"){
-    impl_ = reinterpret_cast<pfi::concurrent::lockable*>(new zkmutex(ls, path));
+    impl_ = reinterpret_cast<try_lockable*>(new zkmutex(ls, path));
   }else{
-    printf(ls.type().c_str());
-    throw -1;
+    { LOG(ERROR) << "unknown lock_service: " << ls.type(); }
+    throw std::runtime_error(ls.type());
   }
 };
 
@@ -48,7 +47,7 @@ bool lock_service_mutex::lock(){
   return impl_->lock();
 }
 bool lock_service_mutex::try_lock(){
-  return impl_->lock();
+  return impl_->try_lock();
 }
 bool lock_service_mutex::unlock(){
   return impl_->unlock();
