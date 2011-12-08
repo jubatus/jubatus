@@ -19,8 +19,7 @@
 
 #include <pficommon/data/unordered_map.h>
 #include "../common/key_manager.hpp"
-#include "../common/type.hpp"
-
+#include "recommender_type.hpp"
 
 namespace jubatus {
 namespace recommender {
@@ -30,9 +29,6 @@ class similarity_base;
 class anchor_finder_base;
 class anchor_builder_base;
 
-typedef sfv_t sfv_diff_t;
-typedef std::vector<std::pair<std::string,sfv_t> > recommender_diff_t;
-  //typedef pfi::data::unordered_map<std::string, sfv_t> recommender_diff_t;
 
 class recommender_builder{
 public:

@@ -24,9 +24,10 @@
 
 #include <pficommon/lang/shared_ptr.h>
 
-#include "zk.hpp"
+#include "lock_service.hpp"
 
 namespace jubatus{
+namespace common{
 
   // using SHA-512. see crypt(2). recommended: glibc >= 2.7
   static const std::string SALT_BASE = "$6$jubatus$";
@@ -38,7 +39,7 @@ namespace jubatus{
 
   class cht{
   public:
-    cht(zk&, const std::string&);
+    cht(lock_service&, const std::string&);
     ~cht();
 
     // node :: ip_port
@@ -51,6 +52,7 @@ namespace jubatus{
 
   private:
     std::string name_;
-    pfi::lang::shared_ptr<zk> zk_;
+    pfi::lang::shared_ptr<lock_service> lock_service_;
   }; //cht  
-} //jubatu
+}
+}

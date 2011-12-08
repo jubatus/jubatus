@@ -5,26 +5,26 @@ def configure(ctx): pass
 def build(bld):
   bld.shlib(
     source = '''
-    	 similarity_factory.cpp
-	 anchor_builder_factory.cpp
-	 anchor_finder_factory.cpp
-	 recommender.cpp
-	 recommender_builder.cpp
-	 anchor_builder_base.cpp
-	 anchor_builder_random.cpp
-	 anchor_finder_naive.cpp
-	 anchor_finder_knndecent.cpp
-	''',
-    target = 'jubarecommender',
-    name = 'jubarecommender',
-    includes = '.',
-    use = 'PFICOMMON jubacommon')
+    	  recommender_base.cpp
+	  inverted_index.cpp
+	  lsh.cpp
+	  minhash.cpp
+	  recommender_factory.cpp
+	 ''',
+    target = 'jubatus_recommender',
+    name = 'jubatus_recommender',
+    include = '.',
+    use = 'PFICOMMON jubastorage jubacommon')
 
-  bld.program(
-     features = 'gtest',
-     source = [
-         'recommender_test.cpp',
-     ],
-     target = "recommender_test",
-     includes = '.',
-     use = 'PFICOMMON jubarecommender jubacommon')
+  def make_test(s):
+    bld.program(
+      features = 'gtest',
+      source = s,
+      target = s[0:s.rfind('.')],
+      includes = '.',
+      use = 'PFICOMMON jubatus_recommender jubacommon')
+
+  map(make_test, [
+#      'recommender_test.cpp', # FIXME
+      'recommender_base_test.cpp',
+      ])

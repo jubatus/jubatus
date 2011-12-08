@@ -21,28 +21,24 @@
 #include <vector>
 
 #include <pficommon/lang/shared_ptr.h>
-
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/concurrent/rwmutex.h>
-
-#include "../recommender/recommender.hpp"
-#include "../recommender/recommender_builder.hpp"
-#include "../fv_converter/datum_to_fv_converter.hpp"
-
 #include "server_util.hpp"
 #include "jubatus_serv.hpp"
 #include "recommender_types.hpp"
+#include "../storage/recommender_storage.hpp"
+
+#include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../recommender/recommender_base.hpp"
 
 namespace jubatus {
 namespace server {
 
 typedef std::vector<std::pair<std::string, datum> > rows;
 
-class recommender_serv : public jubatus_serv<int,int>
+class recommender_serv : public jubatus_serv<storage::recommender_storage,int>
 {
 public:
   recommender_serv(const server_argv&);
-  ~recommender_serv();
+  virtual ~recommender_serv();
 
   int set_config(config_data config);
   config_data get_config(int);
@@ -52,7 +48,7 @@ public:
   int build(int);
   int clear(int);
 
-  pfi::lang::shared_ptr<int> make_model();
+  pfi::lang::shared_ptr<storage::recommender_storage> make_model();
   void after_load();
 
   datum complete_row_from_id(std::string id, int);
@@ -66,10 +62,11 @@ public:
 private:
   void init();
 
-  //  config_data config_;
-  //  pfi::lang::shared_ptr<recommender::recommender> recommender_;
-  //  pfi::lang::shared_ptr<recommender_builder> recommender_builder_;
-  //  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  config_data config_;
+  pfi::lang::shared_ptr<jubatus::recommender::recommender_base> recommender_;
+  //  pfi::lang::shared_ptr<jubatus::recommender::recommender> recommender_;
+  //  pfi::lang::shared_ptr<jubatus::recommender::recommender_builder> recommender_builder_;
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
 
   uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;
@@ -77,5 +74,5 @@ private:
   uint64_t mix_cnt_;
 };
 
-} // namespace recommender
+} // namespace server
 } // namespace jubatus

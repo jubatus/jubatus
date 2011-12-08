@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 #include <iostream> 
 
+#include "../common/type.hpp"
 #include "similarity_base.hpp"
 
 #include "similarity_factory.hpp"
@@ -26,11 +27,12 @@
 #include "anchor_builder_factory.hpp"
 #include "recommender_builder.hpp"
 #include "recommender.hpp"
+#include "recommender_type.hpp"
 
 using namespace std;
 
 // generate sfv_diff_t.
-void init_sfv_diff(size_t i, jubatus::recommender::sfv_diff_t &sfv_diff) {
+void init_sfv_diff(size_t i, jubatus::sfv_diff_t &sfv_diff) {
 
   for (size_t j = 0; j < 10; ++j) {
     stringstream ss;
@@ -65,7 +67,7 @@ void similar_row_test(const char* similarity_name,
   jubatus::recommender::recommender_builder builder(similarity_name, anchor_finder_name, anchor_builder_name);
 
   for (size_t i = 0; i < 100; ++i) {
-    jubatus::recommender::sfv_diff_t sfv_diff;
+    jubatus::sfv_diff_t sfv_diff;
     init_sfv_diff(i, sfv_diff);
 
     stringstream ss;

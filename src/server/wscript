@@ -7,8 +7,8 @@ def configure(conf):
 
 def build_one(bld, name, libraries = ''):
   __sources = '%s_impl.cpp %s_serv.cpp server_util.cpp' % (name, name)
-  if bld.env.HAVE_ZOOKEEPER_H:
-    __sources +=  ' mixer.cpp'
+  #if bld.env.HAVE_ZOOKEEPER_H:
+  #  __sources +=  ' mixer.cpp'
   bld.program(
     source = __sources,
     target = 'juba'+name,
@@ -17,7 +17,7 @@ def build_one(bld, name, libraries = ''):
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
-      source = '%s_keeper.cpp server_util.cpp' % name,
+      source = '%s_keeper.cpp server_util.cpp keeper.cpp' % name,
       target = 'juba%s_keeper' % name,
       includes = '.',
       use = 'PFICOMMON jubacommon MSGPACK GLOG '
@@ -33,16 +33,16 @@ def build_one(bld, name, libraries = ''):
 def build(bld):
 
   # new code starts
-  framework_source = 'server_util.cpp'
-  if bld.env.HAVE_ZOOKEEPER_H:
-    framework_source +=  ' mixer.cpp'
+  #framework_source = 'server_util.cpp'
+  #if bld.env.HAVE_ZOOKEEPER_H:
+  #  framework_source +=  ' mixer.cpp'
 
-  bld.shlib(
-    source = framework_source,
-    target = 'jubatus_framework',
-    includes = '.',
-    use = 'PFICOMMON jubacommon MSGPACK GLOG'
-    )
+  #bld.shlib(
+  #  source = framework_source,
+  #  target = 'jubatus_framework',
+  #  includes = '.',
+  #  use = 'PFICOMMON jubacommon MSGPACK GLOG'
+  #  )
 
   #new classifier
   build_one(bld, "classifier", 'jubaconverter jubastorage')
@@ -51,7 +51,7 @@ def build(bld):
   build_one(bld, "regression", 'jubaconverter jubastorage')
 
   #new recommender
-  #  build_one(bld, "recommender", 'jubarecommender jubastorage')
+  build_one(bld, "recommender", 'jubaconverter jubastorage')
 
   #  build_one(bld, "stat")
 

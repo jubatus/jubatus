@@ -18,7 +18,8 @@ def make_tests(bld, srcs):
 
 def build(bld):
   cppfiles = ['storage_factory.cpp', 'storage_base.cpp', 'local_storage.cpp',
-              'local_storage_mixture.cpp']
+              'local_storage_mixture.cpp', 'recommender_storage.cpp',
+              'norm_none.cpp', 'norm_factory.cpp', 'norm_l1.cpp', 'norm_l2.cpp']
   use = 'PFICOMMON jubacommon MSGPACK'
 
   bld.shlib(
@@ -32,6 +33,7 @@ def build(bld):
       'storage_test.cpp',
       'storage_factory_test.cpp',
       'local_storage_mixture_test.cpp',
+      'recommender_storage_test.cpp',
       ])
 
   bld.install_files('${PREFIX}/include/jubatus/server/storage',

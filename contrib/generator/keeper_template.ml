@@ -63,10 +63,16 @@ let generate_class_keeper clazz =
       if is_const then (Stree.to_string rettype) ^ ", "
       else ""
     in
+    let make_argtypes argtypes decorators =
+      if List.mem "//@cht" decorators then
+	List.tl (List.tl argtypes)
+      else
+	List.tl argtypes
+    in
     let (rettype, name, argtypes, decorators, is_const) = p in
     Printf.sprintf "  k.register_%s_%s<%s%s>(\"%s\");"
       (decorators2str decorators) (const2type is_const) (make_rettype is_const rettype)
-      (String.concat ", " (List.map to_string (List.tl argtypes))) name
+      (String.concat ", " (List.map to_string (make_argtypes argtypes decorators))) name
   in
   let filter (_,_,_,decorators,_) = not (List.mem "//@fail_in_keeper" decorators) in
   String.concat "\n" (List.map prototype2register (List.filter filter prototypes));;
