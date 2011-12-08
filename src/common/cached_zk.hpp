@@ -18,6 +18,7 @@
 #pragma once
 
 #include <map>
+#include <set>
 #include "zk.hpp"
 
 namespace jubatus{
@@ -37,8 +38,14 @@ namespace common {
     //    bool read(const std::string& path, std::string& out);
     const std::string type() const;
 
+    void check_and_update(const std::string& path);
+    void clear_cache(const char* path);
+    static void update_cache(zhandle_t*, int, int, const char*, void*);
+    void reload_cache(const std::string& path);
+
   private:
-    std::map<std::string, std::vector<std::string> > list_cache_;
+    void list_(const std::string& path, std::set<std::string>& out);
+    std::map<std::string, std::set<std::string> > list_cache_;
 
   };
 }

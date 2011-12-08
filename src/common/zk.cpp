@@ -121,10 +121,13 @@ namespace common{
     int rc = zoo_wexists(zh_, path.c_str(), my_znode_watcher, fp, NULL);
     return (rc==ZOK);
   }
-
   void zk::list(const std::string& path, std::vector<std::string>& out){
-    struct String_vector s;
     scoped_lock lk(m_);
+    list_(path, out);
+  };
+
+  void zk::list_(const std::string& path, std::vector<std::string>& out){
+    struct String_vector s;
     int rc = zoo_get_children(zh_, path.c_str(), 0, &s);
     if(rc == ZOK){
       for(int i=0; i<s.count; ++i){
@@ -182,6 +185,7 @@ namespace common{
     LOG(ERROR) << "not implemented:" << __func__;
     while(!has_lock_){
       if(try_lock()) break;
+      sleep(1);
     }
     return true;
   };

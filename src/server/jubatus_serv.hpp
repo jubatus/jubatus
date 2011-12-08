@@ -50,7 +50,7 @@ public:
 
 #ifdef HAVE_ZOOKEEPER_H
     if(! a_.is_standalone()){
-      pfi::lang::shared_ptr<jubatus::common::lock_service> z(common::create_lock_service("zk", a_.z, a_.timeout, "log"));
+      pfi::lang::shared_ptr<jubatus::common::lock_service> z(common::create_lock_service("zk", a_.z, a_.timeout, "logfile_jubatus_serv"));
 
       if( a_.join ){ // join to the existing cluster with -j option
         join_to_cluster(z);

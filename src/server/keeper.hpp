@@ -19,6 +19,9 @@
 
 #include <string>
 #include <vector>
+
+#include <glog/logging.h>
+
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/network/mprpc.h>
@@ -95,6 +98,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
     //return pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(std::string,A)>(method_name)(name, arg);
 
     pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
+    //    {DLOG(INFO)<< "accssing to " << c.first << " " << c.second;}
     return cli.call<R(std::string,A)>(method_name)(name, arg);
   }
 

@@ -60,6 +60,7 @@ namespace common {
     const std::string& get_hosts()const;
     const std::string type() const;
   protected:
+    void list_(const std::string& path, std::vector<std::string>& out);
 
     zhandle_t * zh_;
     clientid_t * cid_;

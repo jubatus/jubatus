@@ -11,7 +11,8 @@ using namespace jubatus::server;
 keeper::keeper(const jubatus::keeper_argv& a)
   : pfi::network::mprpc::rpc_server(a.timeout),
     a_(a),
-    zk_(common::create_lock_service("zk", a.z, a.timeout))
+    zk_(common::create_lock_service("cached_zk", a.z, a.timeout))
+    //    zk_(common::create_lock_service("zk", a.z, a.timeout))
 {
   if(!register_keeper(*zk_, a_.eth, a_.port) ){
     throw membership_error("can't register to zookeeper.");
