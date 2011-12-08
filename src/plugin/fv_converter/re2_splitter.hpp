@@ -6,11 +6,11 @@
 #include <pficommon/lang/scoped_ptr.h>
 #include <map>
 
-#include "../../server/fv_converter/word_splitter.hpp"
+#include "../../fv_converter/word_splitter.hpp"
 
 namespace jubatus {
 
-class re2_splitter : jubatus::word_splitter {
+class re2_splitter : jubatus::fv_converter::word_splitter {
  public:
   re2_splitter(const std::string& regexp, int group, int end);
   void split(const std::string& str,
@@ -21,8 +21,8 @@ class re2_splitter : jubatus::word_splitter {
   int end_;
 };
 
-extern "C" {
-  jubatus::re2_splitter* create(const std::map<std::string, std::string>& args);
 }
 
+extern "C" {
+  jubatus::re2_splitter* create(const std::map<std::string, std::string>& args);
 }

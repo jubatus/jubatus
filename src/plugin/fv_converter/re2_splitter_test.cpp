@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "re2_splitter.hpp"
-#include "../../server/fv_converter/exception.hpp"
+#include "../../fv_converter/exception.hpp"
+
+using jubatus::fv_converter::converter_exception;
 
 namespace jubatus {
 

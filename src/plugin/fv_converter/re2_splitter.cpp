@@ -1,38 +1,39 @@
 #include <pficommon/lang/cast.h>
 #include <iostream>
-#include "../../server/fv_converter/exception.hpp"
+#include "../../fv_converter/exception.hpp"
 #include "re2_splitter.hpp"
 #include <map>
 
 using namespace std;
 using pfi::lang::lexical_cast;
+using jubatus::fv_converter::converter_exception;
 
 namespace jubatus {
 
 re2_splitter::re2_splitter(const string& regexp, int group, int end)
     : re_(regexp), group_(group), end_(end) {
   if (group < 0) {
-    throw jubatus::converter_exception("'group' must be positive");
+    throw converter_exception("'group' must be positive");
   }
   if (end < 0) {
-    throw jubatus::converter_exception("'end' must be positive");
+    throw converter_exception("'end' must be positive");
   }
   if (!re_.ok()) {
-    throw jubatus::converter_exception("invalid regular expression: " + regexp);
+    throw converter_exception("invalid regular expression: " + regexp);
   }
   if (group > re_.NumberOfCapturingGroups()) {
     string msg = "regexp '" + regexp + "' only contains "
         + lexical_cast<string>(re_.NumberOfCapturingGroups())
         + " groups, but 'group' is "
         + lexical_cast<string>(group);
-    throw jubatus::converter_exception(msg);
+    throw converter_exception(msg);
   }
   if (end > re_.NumberOfCapturingGroups()) {
     string msg = "regexp '" + regexp + "' only contains "
         + lexical_cast<string>(re_.NumberOfCapturingGroups())
         + " groups, but 'end' is "
         + lexical_cast<string>(end);
-    throw jubatus::converter_exception(msg);
+    throw converter_exception(msg);
   }
 }
 
@@ -64,7 +65,7 @@ static
 const string& get(const map<string, string>& args, const string& key) {
   map<string, string>::const_iterator it = args.find(key);
   if (it == args.end()) {
-    throw jubatus::converter_exception("not found: " + key);
+    throw converter_exception("not found: " + key);
   } else {
     return it->second;
   }
@@ -80,7 +81,7 @@ int get_int_with_default(const map<string, string>& args,
   try {
     return pfi::lang::lexical_cast<int>(s);
   } catch(const bad_cast&) {
-    throw jubatus::converter_exception("is not integer: " + key + " = " + s);
+    throw converter_exception("is not integer: " + key + " = " + s);
   }
 }
 
