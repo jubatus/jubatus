@@ -7,11 +7,10 @@
 using namespace std;
 using namespace pfi::system::time;
 
-namespace jubatus {
+namespace jubatus { namespace stat {
 
 stat::stat(size_t window_size)
-  : window_size_(window_size),
-    type("stat")
+  : type("stat"), window_size_(window_size)
 {
 }
 
@@ -86,4 +85,12 @@ double stat::moment(const std::string &key)
   assert(!"moment is underconstructions");
 }
 
+bool stat::save(std::ostream& os){
+  return true;
+}
+bool stat::load(std::istream& is){
+  return true;
+}
+
+}
 } // namespace jubatus
