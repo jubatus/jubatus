@@ -21,6 +21,7 @@
 using namespace std;
 
 namespace jubatus {
+namespace common {
 
 TEST(util, build_loc_str) {
   EXPECT_EQ("127.0.0.1_9199", build_loc_str("127.0.0.1", 9199));
@@ -41,5 +42,5 @@ TEST(util, revert) {
   EXPECT_EQ(9199, port);
 }
 
-
+}
 }
