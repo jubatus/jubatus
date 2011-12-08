@@ -1,24 +1,34 @@
 #include <gtest/gtest.h>
 
 #include "recommender_base.hpp"
+#include "../storage/recommender_storage.hpp"
+#include "../storage/norm_none.hpp"
+
+using namespace pfi::lang;
 
 namespace jubatus {
 namespace recommender {
 
 using namespace std;
 
+shared_ptr<storage::recommender_storage> make_storage() {
+  shared_ptr<storage::norm_base> n(new storage::norm_none());
+  return shared_ptr<storage::recommender_storage>(new storage::recommender_storage(n));
+}
+
 class recommender_impl : public recommender_base{
  public:
-  recommender_impl() {
+  recommender_impl()
+      : recommender_base(make_storage()) {
     // make mock
-    origs_.set("r1", "a1", 1.0);
-    origs_.set("r1", "a2", 1.0);
+    origs_->set("r1", "a1", 1.0);
+    origs_->set("r1", "a2", 1.0);
 
-    origs_.set("r2", "b1", 1.0);
-    origs_.set("r2", "b2", 1.0);
+    origs_->set("r2", "b1", 1.0);
+    origs_->set("r2", "b2", 1.0);
 
-    origs_.set("r3", "a1", 1.0);
-    origs_.set("r3", "b1", 1.0);
+    origs_->set("r3", "a1", 1.0);
+    origs_->set("r3", "b1", 1.0);
   }
 
   void similar_row(const sfv_t& query, vector<pair<string, float> > & ids, size_t ret_num) const{

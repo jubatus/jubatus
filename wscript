@@ -31,6 +31,7 @@ def configure(conf):
 
   conf.check_cxx(header_name = 'unistd.h')
   conf.check_cxx(header_name = 'signal.h')
+  conf.check_cxx(header_name = 'sys/wait.h')
 
   if not Options.options.disable_zookeeper:
     conf.check_cxx(header_name = 'c-client-src/zookeeper.h',

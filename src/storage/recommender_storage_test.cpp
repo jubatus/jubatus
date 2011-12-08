@@ -1,9 +1,17 @@
 #include <gtest/gtest.h>
 #include "recommender_storage.hpp"
 #include "../fv_converter/test_util.hpp"
+#include "norm_none.hpp"
+
+using namespace pfi::lang;
 
 namespace jubatus {
 namespace storage {
+
+shared_ptr<norm_base> make_norm() {
+  return shared_ptr<norm_base>(new norm_none());
+}
+
 
 using namespace std;
 
@@ -21,7 +29,7 @@ using namespace std;
 // }
 
 TEST(recommender_storage, set_row) {
-  recommender_storage s();
+  recommender_storage s(make_norm());
   vector<pair<string, float> > r1, r2;
   r1.push_back(make_pair("c1", 1.0));
   r1.push_back(make_pair("c2", 2.0));
@@ -49,7 +57,7 @@ TEST(recommender_storage, set_row) {
 }
 
 TEST(recommender_storage, set) {
-  recommender_storage s;
+  recommender_storage s(make_norm());
   s.set("r1", "c1", 5.0);
   // overwrite
   s.set("r1", "c1", 1.0);
