@@ -23,6 +23,8 @@
 
 #include "../common/membership.hpp"
 
+#include <glog/logging.h>
+
 #include <pficommon/concurrent/thread.h>
 #include <pficommon/concurrent/mutex.h>
 #include <pficommon/concurrent/condition.h>
@@ -51,7 +53,7 @@ namespace jubatus{
       ticktime_ = time(NULL);
     };
 
-    void set_zk(pfi::lang::shared_ptr<jubatus::zk>& z){
+    void set_zk(pfi::lang::shared_ptr<jubatus::common::lock_service>& z){
       zk_ = z;
     };
     void start(){
@@ -86,7 +88,7 @@ namespace jubatus{
     };
     int get_count()const {return counter_;} ; //FIXME: not thread-safe
     void try_mix(){
-      jubatus::zkmutex zklock(zk_, jubatus::ACTOR_BASE_PATH +"/" + name_ + "/master_lock");
+      jubatus::common::lock_service_mutex zklock(*zk_, common::ACTOR_BASE_PATH +"/" + name_ + "/master_lock");
       {
         pfi::concurrent::scoped_lock lk(m_);
         
@@ -106,7 +108,7 @@ namespace jubatus{
         
       } //unlock
       std::vector<std::pair<std::string,int> > servers;
-      jubatus::get_all_actors(*zk_, name_, servers);
+      common::get_all_actors(*zk_, name_, servers);
       mixer_func_(servers);
       DLOG(INFO) << "....mix done";
     };
@@ -115,7 +117,7 @@ namespace jubatus{
 
     pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_func_;
 
-    pfi::lang::shared_ptr<jubatus::zk> zk_;
+    pfi::lang::shared_ptr<jubatus::common::lock_service> zk_;
     std::string name_;
 
     unsigned int count_threshold_;

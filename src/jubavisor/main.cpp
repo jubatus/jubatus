@@ -18,6 +18,8 @@
 #include "jubavisor.hpp"
 
 #include <iostream>
+
+#include <glog/logging.h>
 #include <pficommon/lang/bind.h>
 #include <assert.h>
 

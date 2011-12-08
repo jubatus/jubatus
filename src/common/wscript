@@ -12,7 +12,7 @@ def configure(conf):
 def build(bld):
   src = 'util.cpp key_manager.cpp vector_util.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
-    src += ' zk.cpp membership.cpp cht.cpp'
+    src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp'
 
   bld.shlib(
     source = src,

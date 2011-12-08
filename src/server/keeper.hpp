@@ -19,6 +19,9 @@
 
 #include <string>
 #include <vector>
+
+#include <glog/logging.h>
+
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/network/mprpc.h>
@@ -26,12 +29,10 @@
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/math/random.h>
 
-#include "../common/zk.hpp"
+#include "../common/lock_service.hpp"
 #include "../common/membership.hpp"
 
 #include "server_util.hpp"
-
-static const std::string ACTOR_BASE_PATH = "";
 
 namespace jubatus {
 namespace server {
@@ -97,6 +98,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
     //return pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(std::string,A)>(method_name)(name, arg);
 
     pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
+    //    {DLOG(INFO)<< "accssing to " << c.first << " " << c.second;}
     return cli.call<R(std::string,A)>(method_name)(name, arg);
   }
 
@@ -138,7 +140,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
   jubatus::keeper_argv a_;
   pfi::math::random::mtrand rng_;
   pfi::concurrent::mutex mutex_;
-  zk zk_;
+  pfi::lang::shared_ptr<common::lock_service> zk_;
 };
 
 }

@@ -17,42 +17,36 @@
 
 #pragma once
 
-#include <string>
-#include <cstdlib>
-#include <vector>
 #include <map>
-
-#include <pficommon/lang/shared_ptr.h>
-
-#include "lock_service.hpp"
+#include <set>
+#include "zk.hpp"
 
 namespace jubatus{
-namespace common{
+namespace common {
+  // TODO: write zk mock and test them all?
 
-  // using SHA-512. see crypt(2). recommended: glibc >= 2.7
-  static const std::string SALT_BASE = "$6$jubatus$";
-
-  static const unsigned int NUM_VSERV = 8;
-  
-  // this function does not seem pure, take care when calling from multiple threads
-  std::string make_hash(const std::string& key);
-
-  class cht{
+  class cached_zk : zk {
   public:
-    cht(lock_service&, const std::string&);
-    ~cht();
+    // timeout [ms]
+    cached_zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
+    virtual ~cached_zk();
 
-    // node :: ip_port
-    // register_node :: node -> bool;
-    bool register_node(const std::string&, int);
+    void list(const std::string& path, std::vector<std::string>& out);
+    void hd_list(const std::string& path, std::string& out);
 
-    // find(hash)    :: key -> [node] where  hash(node0) <= hash(key) < hash(node1) < hash(node2) < ...
-    bool find(const std::string& host, int port, std::vector<std::pair<std::string,int> >&);
-    bool find(const std::string&, std::vector<std::pair<std::string,int> >&);
+    // TBD:
+    //    bool read(const std::string& path, std::string& out);
+    const std::string type() const;
+
+    void check_and_update(const std::string& path);
+    void clear_cache(const char* path);
+    static void update_cache(zhandle_t*, int, int, const char*, void*);
+    void reload_cache(const std::string& path);
 
   private:
-    std::string name_;
-    pfi::lang::shared_ptr<lock_service> lock_service_;
-  }; //cht  
+    void list_(const std::string& path, std::set<std::string>& out);
+    std::map<std::string, std::set<std::string> > list_cache_;
+
+  };
 }
 }

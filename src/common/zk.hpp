@@ -27,16 +27,17 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/threading_model.h>
 
+#include "lock_service.hpp"
 #include <c-client-src/zookeeper.h>
 
 namespace jubatus{
-
+namespace common {
   // TODO: write zk mock and test them all?
-  class zk{
+  class zk : lock_service{
   public:
     // timeout [ms]
     zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
-    ~zk();
+    virtual ~zk();
 
     void create(const std::string& path, const std::string& payload = "", bool ephemeral = false);
     void remove(const std::string& path);
@@ -57,8 +58,9 @@ namespace jubatus{
     void run_cleanup(); //int,int);
 
     const std::string& get_hosts()const;
-  private:
-    zk(){};
+    const std::string type() const;
+  protected:
+    void list_(const std::string& path, std::vector<std::string>& out);
 
     zhandle_t * zh_;
     clientid_t * cid_;
@@ -72,20 +74,19 @@ namespace jubatus{
   };
 
   // TODO: write zk mock and test them all?
-  class zkmutex : public pfi::concurrent::lockable {
+  class zkmutex : try_lockable{
   public:
-    zkmutex(pfi::lang::shared_ptr<zk>& z, const std::string& path):
-      zk_(z),path_(path),has_lock_(false){};
-    virtual ~zkmutex(){
-      this->unlock();
-    }
+    zkmutex(lock_service& ls, const std::string& path):
+      zk_(reinterpret_cast<zk&>(ls)), path_(path), has_lock_(false)
+    {};
+    virtual ~zkmutex(){ this->unlock(); };
     
     bool lock();
     bool try_lock();
     bool unlock();
-
+    
   private:
-    pfi::lang::shared_ptr<zk> zk_;
+    zk& zk_;
     std::string path_;
     std::string seqfile_;
     bool has_lock_;
@@ -93,4 +94,5 @@ namespace jubatus{
   };
 
   void mywatcher(zhandle_t*, int, int, const char*, void*);
+}
 }

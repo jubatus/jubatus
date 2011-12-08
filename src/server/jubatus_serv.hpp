@@ -50,7 +50,7 @@ public:
 
 #ifdef HAVE_ZOOKEEPER_H
     if(! a_.is_standalone()){
-      pfi::lang::shared_ptr<jubatus::zk> z(new jubatus::zk(a_.z, a_.timeout, "log"));
+      pfi::lang::shared_ptr<jubatus::common::lock_service> z(common::create_lock_service("zk", a_.z, a_.timeout, "logfile_jubatus_serv"));
 
       if( a_.join ){ // join to the existing cluster with -j option
         join_to_cluster(z);
@@ -95,17 +95,17 @@ public:
   };
 
 #ifdef HAVE_ZOOKEEPER_H
-  void join_to_cluster(pfi::lang::shared_ptr<jubatus::zk> z){
+  void join_to_cluster(pfi::lang::shared_ptr<jubatus::common::lock_service> z){
     std::vector<std::string> list;
-    std::string path = ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
+    std::string path = common::ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
     z->list(path, list);
     if(not list.empty()){
-      zkmutex zlk(z, ACTOR_BASE_PATH + "/" + a_.name + "/master_lock");
+      common::lock_service_mutex zlk(*z, common::ACTOR_BASE_PATH + "/" + a_.name + "/master_lock");
       while(not zlk.try_lock()){ ; }
       size_t i = rand() % list.size();
       std::string ip;
       int port;
-      revert(list[i], ip, port);
+      common::revert(list[i], ip, port);
       pfi::network::mprpc::rpc_client c(ip, port, a_.timeout);
 
       typename pfi::lang::function<std::string()> f = c.call<std::string()>("get_storage");
