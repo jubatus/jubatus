@@ -53,7 +53,7 @@ def build(bld):
   #new recommender
   build_one(bld, "recommender", 'jubaconverter jubastorage')
 
-  #  build_one(bld, "stat")
+  build_one(bld, "stat")
 
   n = bld.path.get_bld().make_node('test_input')
   n.mkdir()

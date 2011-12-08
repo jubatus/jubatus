@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 namespace jubatus {
+namespace stat {
 
 class stat_error : public std::exception {
 public:
@@ -36,6 +37,11 @@ public:
   double entropy(const std::string &key);
   double moment(const std::string &key);
 
+  const std::string type; //messy
+
+  bool save(std::ostream&);
+  bool load(std::istream&);
+
 private:
   template <class Archive>
   void serialize(Archive &ar) {
@@ -50,4 +56,5 @@ private:
   pfi::concurrent::rw_mutex m_;
 };
 
+}
 } // namespace jubatus

@@ -8,16 +8,16 @@ def build(bld):
       ],
 
     target = 'jubatus_stat',
-    include = '.'
+    include = '.',
     use = 'PFICOMMON'
     )
 
-  bld.program(
-    features = 'gtest',
-    source = [
-      'stat_test.cpp'
-      ],
-    target = 'stat_test',
-    includes = '.',
-    use = 'jubatus_stat'
-    )
+#  bld.program(
+#    features = 'gtest',
+#    source = [
+#      'stat_test.cpp'
+#      ],
+#    target = 'stat_test',
+#    includes = '.',
+#    use = 'jubatus_stat'
+#    )
