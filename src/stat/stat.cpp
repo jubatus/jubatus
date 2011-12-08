@@ -3,6 +3,7 @@
 #include <cassert>
 #include <algorithm>
 #include <pficommon/system/time_util.h>
+#include <pficommon/data/serialization.h>
 
 using namespace std;
 using namespace pfi::system::time;
@@ -86,9 +87,13 @@ double stat::moment(const std::string &key)
 }
 
 bool stat::save(std::ostream& os){
+  pfi::data::serialization::binary_oarchive oa(os);
+  oa << *this;
   return true;
 }
 bool stat::load(std::istream& is){
+  pfi::data::serialization::binary_iarchive ia(is);
+  ia >> *this;
   return true;
 }
 

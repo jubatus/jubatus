@@ -2,6 +2,8 @@
 
 #include <deque>
 #include <pficommon/concurrent/rwmutex.h>
+#include <pficommon/data/serialization.h>
+#include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
 #include <cstdlib>
 #include <stdint.h>
@@ -43,6 +45,7 @@ public:
   bool load(std::istream&);
 
 private:
+  friend class pfi::data::serialization::access;
   template <class Archive>
   void serialize(Archive &ar) {
     ar & window_size_ & window_;
