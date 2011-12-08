@@ -1,0 +1,66 @@
+# this idl is automatically generated. do not edit. 
+type param_t = map<string, string> 
+
+type similar_result = list<tuple<string, float> > 
+
+message string_rule {
+  0: string key
+  1: string type
+  2: string sample_weight
+  3: string global_weight
+}
+
+message filter_rule {
+  0: string key
+  1: string type
+  2: string suffix
+}
+
+message num_rule {
+  0: string key
+  1: string type
+}
+
+message converter_config {
+  0: map<string, param_t>  string_filter_types
+  1: list<filter_rule>  string_filter_rules
+  2: map<string, param_t>  num_filter_types
+  3: list<filter_rule>  num_filter_rules
+  4: map<string, param_t>  string_types
+  5: list<string_rule>  string_rules
+  6: map<string, param_t>  num_types
+  7: list<num_rule>  num_rules
+}
+
+message config_data {
+  0: string similarity_name
+  1: string anchor_finder_name
+  2: string anchor_builder_name
+  3: size_t all_anchor_num
+  4: size_t anchor_num_per_data
+  5: converter_config converter
+}
+
+message datum {
+  0: list<tuple<string, string> >  sv
+  1: list<tuple<string, double> >  nv
+}
+
+service recommender :1 {
+  int set_config(0: string arg0, 1: config_data arg1) # //@broadcast
+  config_data get_config(0: string arg0, 1: int arg1) # //@random
+  int clear_row(0: string arg0, 1: string arg1, 2: int arg2) # //@cht
+  int update_row(0: string arg0, 1: string arg1, 2: datum arg2) # //@cht
+  int build(0: string arg0, 1: int arg1) # //@broadcast
+  int clear(0: string arg0, 1: int arg1) # //@broadcast
+  datum complete_row_from_id(0: string arg0, 1: string arg1, 2: int arg2) # //@cht
+  datum complete_row_from_data(0: string arg0, 1: datum arg1) # //@random
+  similar_result similar_row_from_id(0: string arg0, 1: string arg1, 2: size_t arg2) # //@cht
+  similar_result similar_row_from_data(0: string arg0, 1: tuple<datum, size_t>  arg1) # //@random
+  datum decode_row(0: string arg0, 1: string arg1, 2: int arg2) # //@cht
+  list<tuple<string, datum> >  get_all_rows(0: string arg0, 1: int arg1) # //@broadcast
+  int save(0: string arg0, 1: string arg1) # //@broadcast
+  int load(0: string arg0, 1: string arg1) # //@broadcast
+  string get_diff(0: int arg0) # //@fail_in_keeper
+  int put_diff(0: string arg0) # //@fail_in_keeper
+}

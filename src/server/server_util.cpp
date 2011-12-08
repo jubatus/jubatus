@@ -17,13 +17,14 @@
 
 #include "server_util.hpp"
 #include "../common/cmdline.h"
+#include "../common/exception.hpp"
 #include <glog/logging.h>
 
 namespace jubatus {
   
   server_argv::server_argv(int args, char** argv){
     google::InitGoogleLogging(argv[0]);
-  //  google::LogToStderr(); // only when debug
+    // google::LogToStderr(); // only when debug
 
     cmdline::parser p;
     p.add<int>("rpc-port", 'p', "port number", false, 9199);
@@ -46,11 +47,16 @@ namespace jubatus {
     z = p.get<std::string>("zookeeper");
     name = p.get<std::string>("name");
     tmpdir = p.get<std::string>("tmpdir");
-    eth = "localhost"; //jubatus::util::get_ip("eth0");
+    //    eth = "localhost";
+    eth = jubatus::util::get_ip("eth0");
     join = p.exist("join");
 
     interval_sec = p.get<int>("interval_sec");
     interval_count = p.get<int>("interval_count");
+
+    if(z != "" and name == ""){
+      throw argv_error("can't start multinode mode without name specified");
+    }
     
     LOG(INFO) << boot_message(argv[0]);
   };
@@ -62,6 +68,9 @@ namespace jubatus {
   };
 
   keeper_argv::keeper_argv(int args, char** argv){
+    google::InitGoogleLogging(argv[0]);
+    //    google::LogToStderr(); // only when debug
+
     cmdline::parser p;
     p.add<int>("rpc-port", 'p', "port number", false, 9199);
     p.add<int>("thread", 'c', "concurrency = thread number", false, 16);

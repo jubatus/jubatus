@@ -20,145 +20,137 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/cast.h>
 
+#include "../fv_converter/converter_config.hpp"
+#include "../fv_converter/datum.hpp"
+#include "../storage/norm_factory.hpp"
+
 #include "../common/exception.hpp"
 #include "../common/util.hpp"
-
-#include "map_fold_rpc.hpp"
 
 using namespace pfi::lang;
 using std::string;
 
 namespace jubatus {
-namespace recommender {
+namespace server {
 
-server::server(const server_argv& a):
-  jubatus_serv(a, a.tmpdir),
-  recommender_(new recommender())
+recommender_serv::recommender_serv(const server_argv& a):
+  jubatus_serv<storage::recommender_storage,int>(a, a.tmpdir)
 {
 }
 
-server::~server(){
+recommender_serv::~recommender_serv(){
 }
 
-result<int> server::set_config(std::string name,config_data config)
+int recommender_serv::set_config(config_data config)
 {
-  pfi::concurrent::scoped_wlock lk(m_);
   config_ = config;
+  shared_ptr<fv_converter::datum_to_fv_converter> converter(new fv_converter::datum_to_fv_converter);
+  fv_converter::converter_config c;
+  convert<jubatus::converter_config, fv_converter::converter_config>(config.converter, c);
+  fv_converter::initialize_converter(c, *converter);
+  converter_ = converter;
 
-  clear(name);
-  try{
-    init();
-    return result<int>::ok(0);
-  }catch(std::exception & e){
-    LOG(ERROR) << e.what();
-    return result<int>::fail(e.what());
-  }
+  // recommender_builder_ = shared_ptr<recommender::recommender_builder>
+  //   (new recommender::recommender_builder(config.similarity_name,
+  //                                         config.anchor_finder_name,
+  //                                         config.anchor_builder_name));
+
+  clear(0);
+
+  init();
+  return 0;
 }
   
-  result<config_data> server::get_config(std::string name)
+config_data recommender_serv::get_config(int)
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-  return result<config_data>::ok(config_);
+  return config_;
 }
 
-  result<int> server::clear_row(std::string name,std::vector<std::string> ids)
+int recommender_serv::clear_row(std::string id, int)
 {
-  pfi::concurrent::scoped_wlock lk(m_);
-
-  if (!recommender_builder_) return result<int>::fail("config_not_set");
-
   ++clear_row_cnt_;
-
-  for (size_t i = 0; i < ids.size(); ++i)
-    recommender_builder_->clear_row(ids[i]);
-
-  return result<int>::ok(true);
+  //  recommender_builder_->clear_row(id);
+  return 0;
 }
 
-  result<int> server::update_row(std::string name,rows dat)
+int recommender_serv::update_row(std::string id,datum dat)
 {
-  pfi::concurrent::scoped_wlock lk(m_);
-
-  if (!converter_) return result<int>::fail("config_not_set");
-  if (!recommender_builder_) return result<int>::fail("config_not_set");
-
   ++update_row_cnt_;
-
-  for (size_t i = 0; i < dat.size(); ++i) {
-    sfv_t v;
-    converter_->convert(dat[i].second, v);
-    recommender_builder_->update_row(dat[i].first, v);
-#ifdef HAVE_ZOOKEEPER_H
-    if(mixer_)mixer_->updated();
-#endif
-  }
-
-  return result<int>::ok(true);
+  fv_converter::datum d;
+  convert<jubatus::datum, fv_converter::datum>(dat, d);
+  sfv_t v;
+  converter_->convert(d, v);
+  //  recommender_builder_->update_row(id, v);
+  return 0;
 }
 
-  result<int> server::build(std::string name)
+int recommender_serv::build(int)
 {
-  pfi::concurrent::scoped_wlock lk(m_);
-
-  if (!converter_) return result<int>::fail("config_not_set");
-  if (!recommender_builder_) return result<int>::fail("config_not_set");
-
   ++build_cnt_;
 
-  shared_ptr<recommender> new_recommender(new recommender());
+  //  shared_ptr<recommender::recommender> new_recommender(new recommender::recommender());
 
-  recommender_builder_->build(*recommender_,
-                              config_.all_anchor_num,
-                              config_.anchor_num_per_data,
-                              *new_recommender);
+  // recommender_builder_->build(*recommender_,
+  //                             config_.all_anchor_num,
+  //                             config_.anchor_num_per_data,
+  //                             *new_recommender);
+  
+  // recommender_.reset();
+  // recommender_.swap(new_recommender);
 
-  recommender_.reset();
-  recommender_.swap(new_recommender);
-
-  return result<int>::ok(true);
+  return 0;
 }
 
-  result<int> server::clear(std::string name)
+int recommender_serv::clear(int)
 {
-  pfi::concurrent::scoped_wlock lk(m_);
-
-  recommender_builder_.reset();
-  recommender_.reset();
-  recommender_ = shared_ptr<recommender>(new recommender());
+  // recommender_builder_.reset();
+  // recommender_.reset();
+  // recommender_ = shared_ptr<recommender::recommender>(new recommender::recommender());
 
   clear_row_cnt_ = 0;
   update_row_cnt_ = 0;
   build_cnt_ = 0;
   mix_cnt_ = 0;
 
-  return result<int>::ok(true);
+  return 0;
 }
 
-result<std::map<std::pair<std::string, int>, std::map<std::string, std::string> > > server::get_status(std::string name)
-{
-  pfi::concurrent::scoped_rlock lk(m_);
-
-  std::map<std::string, std::string> ret0;
-  util::get_machine_status(ret0);
-
-  ret0["clear_row_cnt"] = pfi::lang::lexical_cast<std::string>(clear_row_cnt_);
-  ret0["update_row_cnt"] = pfi::lang::lexical_cast<std::string>(update_row_cnt_);
-  ret0["build_cnt"] = pfi::lang::lexical_cast<std::string>(build_cnt_);
-  ret0["mix_cnt"] = pfi::lang::lexical_cast<std::string>(mix_cnt_);
-
-  if(ret0.empty()){
-    return result<std::map<std::pair<string,int>,std::map<std::string,std::string> > >::fail("no result");
-  }else{
-    std::map<std::pair<string,int>, std::map<std::string,std::string> > ret;
-    std::pair<string,int> __hoge__ = make_pair(a_.eth,a_.port); //FIXME
-    ret.insert(make_pair(__hoge__, ret0));
-    return result<std::map<std::pair<string,int>,std::map<std::string,std::string> > >::ok(ret);
-  }
+pfi::lang::shared_ptr<storage::recommender_storage> recommender_serv::make_model(){
+  pfi::lang::shared_ptr<storage::norm_base> norm =
+    pfi::lang::shared_ptr<storage::norm_base>(storage::create_norm(config_.storage_norm_name));
+  return pfi::lang::shared_ptr<storage::recommender_storage>(new storage::recommender_storage(norm));
+}  
+void recommender_serv::after_load(){
+  clear(0);
+  init();
 }
 
-void server::init()
+
+// std::map<std::pair<std::string, int>, std::map<std::string, std::string> > > recommender_serv::get_status(std::string name)
+// {
+//   pfi::concurrent::scoped_rlock lk(m_);
+
+//   std::map<std::string, std::string> ret0;
+//   util::get_machine_status(ret0);
+
+//   ret0["clear_row_cnt"] = pfi::lang::lexical_cast<std::string>(clear_row_cnt_);
+//   ret0["update_row_cnt"] = pfi::lang::lexical_cast<std::string>(update_row_cnt_);
+//   ret0["build_cnt"] = pfi::lang::lexical_cast<std::string>(build_cnt_);
+//   ret0["mix_cnt"] = pfi::lang::lexical_cast<std::string>(mix_cnt_);
+
+//   if(ret0.empty()){
+//     return std::map<std::pair<string,int>,std::map<std::string,std::string> > >::fail("no result");
+//   }else{
+//     std::map<std::pair<string,int>, std::map<std::string,std::string> > ret;
+//     std::pair<string,int> __hoge__ = make_pair(a_.eth,a_.port); //FIXME
+//     ret.insert(make_pair(__hoge__, ret0));
+//     return result<std::map<std::pair<string,int>,std::map<std::string,std::string> > >::ok(ret);
+//   }
+// }
+
+void recommender_serv::init()
 {
-  recommender_builder_.reset();
+  //  recommender_builder_.reset();
   recommender_.reset();
 
   /*
@@ -178,108 +170,82 @@ void server::init()
   }
   */
 
-  recommender_ = shared_ptr<recommender>(new recommender);
-  recommender_builder_ = shared_ptr<recommender_builder>
-    (new recommender_builder
-     (config_.similarity_name, config_.anchor_finder_name, config_.anchor_builder_name));
+  // recommender_ = shared_ptr<recommender::recommender>(new recommender::recommender);
+  // recommender_builder_ = shared_ptr<recommender::recommender_builder>
+  //   (new recommender::recommender_builder
+  //    (config_.similarity_name, config_.anchor_finder_name, config_.anchor_builder_name));
 
   converter_ = shared_ptr<fv_converter::datum_to_fv_converter>(new fv_converter::datum_to_fv_converter());
-  fv_converter::initialize_converter(config_.converter, *converter_);
+  fv_converter::converter_config c;
+  convert<jubatus::converter_config, fv_converter::converter_config>(config_.converter, c);
+  fv_converter::initialize_converter(c, *converter_);
 }
 
-  result<fv_converter::datum> server::complete_row_from_id(std::string name,std::string id)
+datum recommender_serv::complete_row_from_id(std::string id, int)
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-
-  if (!recommender_) return result<fv_converter::datum>::fail("config_not_set");
-
   sfv_t v;
   fv_converter::datum ret;
   recommender_->complete_row(id, v);
   for (size_t i = 0; i < v.size(); ++i){
     ret.num_values_.push_back(v[i]);
   }
-  // converter_->reverse(v, ret);
-#ifdef HAVE_ZOOKEEPER_H
-  if (mixer_) mixer_->accessed();
-#endif
-  return result<fv_converter::datum>::ok(ret);
+  datum ret0;
+  convert<fv_converter::datum, datum>(ret, ret0);
+  return ret0;
 }
 
-  result<fv_converter::datum> server::complete_row_from_data(std::string name,fv_converter::datum dat)
+datum recommender_serv::complete_row_from_data(datum dat)
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-
-  if (!recommender_) return result<fv_converter::datum>::fail("config_not_set");
-
+  fv_converter::datum d;
+  convert<jubatus::datum, fv_converter::datum>(dat, d);
   sfv_t u, v;
   fv_converter::datum ret;
-  converter_->convert(dat, u);
+  converter_->convert(d, u);
   recommender_->complete_row(u, v);
-  // converter_->reverse(v, ret);
-#ifdef HAVE_ZOOKEEPER_H
-  if(mixer_)mixer_->accessed();
-#endif
-  return result<fv_converter::datum>::ok(ret);
+
+  datum ret0;
+  convert<fv_converter::datum, datum>(ret, ret0);
+  return ret0;
 }
 
-  result<similar_result> server::similar_row_from_id(std::string name,std::string id, size_t ret_num)
+similar_result recommender_serv::similar_row_from_id(std::string id, size_t ret_num)
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-
-  if (!recommender_) return result<similar_result>::fail("config_not_set");
-
   similar_result ret;
-
-  recommender_->similar_row(id, ret, ret_num);
-#ifdef HAVE_ZOOKEEPER_H
-  if(mixer_)mixer_->accessed();
-#endif
-  return result<similar_result>::ok(ret);
+  //  recommender_->similar_row(id, ret, ret_num); FIXME
+  return ret;
 }
 
-  result<similar_result> server::similar_row_from_data(std::string name,fv_converter::datum dat, size_t ret_num)
+similar_result recommender_serv::similar_row_from_data(std::pair<datum, size_t> data)
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-
-  if (!recommender_) return result<similar_result>::fail("config_not_set");
-
   similar_result ret;
+  fv_converter::datum d;
+  convert<datum, fv_converter::datum>(data.first, d);
+
   sfv_t v;
-
-  converter_->convert(dat, v);
-  recommender_->similar_row(v, ret, ret_num);
-#ifdef HAVE_ZOOKEEPER_H
-  if(mixer_)mixer_->accessed();
-#endif
-  return result<similar_result>::ok(ret);
+  converter_->convert(d, v);
+  recommender_->similar_row(v, ret, data.second);
+  return ret;
 }
 
-  result<fv_converter::datum> server::decode_row(std::string name,std::string id)
+datum recommender_serv::decode_row(std::string id, int)
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-
-  if (!recommender_) return result<fv_converter::datum>::fail("config_not_set");
-
   sfv_t v;
   fv_converter::datum ret;
 
   recommender_->decode_row(id, v);
   for (size_t i = 0; i < v.size(); ++i){
-    ret.num_values_.push_back(v[i]);
-  }
-  // converter_->reverse(v, ret);
-  return result<fv_converter::datum>::ok(ret);
+    ret.num_values_.push_back(v[i]); //FIXME: invert the datum!!
+  } 
+  
+  datum ret0;
+  convert<fv_converter::datum, datum>(ret, ret0);
+  return ret0;
 }
 
-  result<rows> server::get_all_rows(std::string name)
+rows recommender_serv::get_all_rows(int)
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-
-  if (!recommender_) return result<rows>::fail("config_not_set");
-
   pfi::data::unordered_map<std::string, sfv_t> rs;
-  recommender_->get_all_rows(rs);
+  //  recommender_->get_all_rows(rs);
 
   rows ret;
   ret.reserve(rs.size());
@@ -287,100 +253,59 @@ void server::init()
   for (pfi::data::unordered_map<std::string, sfv_t>::iterator p = rs.begin();
        p != rs.end(); ++p) {
     fv_converter::datum d;
-    // converter_->reverse(p->second, d);
-    ret.push_back(make_pair(p->first, d));
+    // converter_->reverse(p->second, d); //FIXME
+    datum dat;
+    //    convert<fv_c
+    //    ret.push_back(make_pair(p->first, d));
   }
 
-  return result<rows>::ok(ret);
-}
-
-recommender_diff_t server::get_diff(int i){
-  pfi::concurrent::scoped_rlock lk(m_);
-  recommender_diff_t ret;  
-  if(!recommender_builder_) {
-    return ret;    //    throw config_not_set();
-  }
-  recommender_builder_->get_diff(ret);
   return ret;
 }
 
-int server::put_diff(recommender_data r){
-#ifdef HAVE_ZOOKEEPER_H
-  pfi::concurrent::scoped_wlock lk(m_);
-  recommender_builder_.reset();
-  shared_ptr<recommender> tmp(new recommender(r));
-  recommender_.swap(tmp);
-  if(mixer_)mixer_->clear();
-#endif
-  return 0;
-}
+// recommender_diff_t recommender_serv::get_diff(int i){
+//   pfi::concurrent::scoped_rlock lk(m_);
+//   recommender_diff_t ret;  
+//   if(!recommender_builder_) {
+//     return ret;    //    throw config_not_set();
+//   }
+//   recommender_builder_->get_diff(ret);
+//   return ret;
+// }
 
-void row_merger(recommender_diff_t& lhs, const recommender_diff_t& rhs){
-  lhs.insert(lhs.end(), rhs.begin(), rhs.end());
-}
+// int recommender_serv::put_diff(recommender_data r){
+// #ifdef HAVE_ZOOKEEPER_H
+//   pfi::concurrent::scoped_wlock lk(m_);
+//   recommender_builder_.reset();
+//   shared_ptr<recommender> tmp(new recommender(r));
+//   recommender_.swap(tmp);
+//   if(mixer_)mixer_->clear();
+// #endif
+//   return 0;
+// }
 
-void id(int& l, const int& r){
-}
+// void row_merger(recommender_diff_t& lhs, const recommender_diff_t& rhs){
+//   lhs.insert(lhs.end(), rhs.begin(), rhs.end());
+// }
 
-void server::bind_all_methods(mprpc_server& serv, const std::string& host, int port){
-
-  serv.set_set_config(bind(&server::set_config, this, _1, _2));
-  serv.set_get_config(bind(&server::get_config, this, _1));
-  serv.set_clear_row(bind(&server::clear_row, this, _1, _2));
-  serv.set_update_row(bind(&server::update_row, this, _1, _2));
-  serv.set_build(bind(&server::build, this, _1));
-  serv.set_clear(bind(&server::clear, this, _1));
-  serv.set_get_status(bind(&server::get_status, this, _1));
-  serv.set_complete_row_from_id(bind(&server::complete_row_from_id, this, _1, _2));
-  serv.set_complete_row_from_data(bind(&server::complete_row_from_data, this, _1, _2));
-  serv.set_similar_row_from_id(bind(&server::similar_row_from_id, this, _1, _2, _3));
-  serv.set_similar_row_from_data(bind(&server::similar_row_from_data, this, _1, _2, _3));
-  serv.set_decode_row(bind(&server::decode_row, this, _1, _2));
-  serv.set_get_all_rows(bind(&server::get_all_rows, this, _1));
-  serv.set_get_diff(bind(&server::get_diff, this, _1));
-  serv.set_put_diff(bind(&server::put_diff, this, _1));
-}
-
-void server::mix(const std::vector<std::pair<std::string, int> >& servers){
-#ifdef HAVE_ZOOKEEPER_H
-  map_fold_rpc_sync<int, recommender_diff_t > mfrpc(servers, 10.0, row_merger);
-  recommender_diff_t merged_updates;
-
-  int r = mfrpc.call(GET_DIFF, 0, merged_updates);
-  if(r>0){
-    DLOG(ERROR) << __func__ << ": failed to get diff from " << r << " servers.";
-  }
-
-  if(merged_updates.empty()){
-    return;
-  }
+// void id(int& l, const int& r){
+// }
   
-  shared_ptr<recommender> new_recommender(new recommender());
-  {
-    pfi::concurrent::scoped_wlock lk(m_);    
-    ++mix_cnt_;
-    recommender_diff_t::const_iterator it;
-    for(it = merged_updates.begin(); it != merged_updates.end(); ++it){
-      recommender_builder_->update_row(it->first, it->second);
-    }
+  // shared_ptr<recommender> new_recommender(new recommender());
+  // {
+  //   pfi::concurrent::scoped_wlock lk(m_);    
+  //   ++mix_cnt_;
+  //   recommender_diff_t::const_iterator it;
+  //   for(it = merged_updates.begin(); it != merged_updates.end(); ++it){
+  //     recommender_builder_->update_row(it->first, it->second);
+  //   }
 
-    recommender_builder_->build(*recommender_,
-                                config_.all_anchor_num,
-                                config_.anchor_num_per_data,
-                                *new_recommender);
-    recommender_.reset();
-    recommender_.swap(new_recommender);
-  }
-
-  map_fold_rpc_sync<recommender_data, int> mfrpc2(servers, 10.0, id);
-  mfrpc2.call(PUT_DIFF, recommender_->make_recommender_data(), (r=0));
-
-  if(r>0){
-    DLOG(ERROR) << __func__ << ": failed to put diff to " << r << " servers.";
-  }
-#endif
-  return;
-}
+  //   recommender_builder_->build(*recommender_,
+  //                               config_.all_anchor_num,
+  //                               config_.anchor_num_per_data,
+  //                               *new_recommender);
+  //   recommender_.reset();
+  //   recommender_.swap(new_recommender);
+  // }
 
 } // namespace recommender
 } // namespace jubatus

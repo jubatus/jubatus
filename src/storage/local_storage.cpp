@@ -157,35 +157,12 @@ void local_storage::update(const string &feature, const string& inc_class, const
 bool local_storage::save(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << *this;
-
-  // hbase-portable version
-  // std::map<string, std::map<string, val3_t> > out;
-  // id_features3_t::const_iterator cit;
-  // for( cit = tbl_.begin(); cit != tbl_.end(); ++cit){
-  //   std::map<string, val3_t> v;
-  //   for (id_feature_val3_t::const_iterator it = cit->second.begin(); it != cit->second.end(); ++it) {
-  //     v.insert(make_pair(class2id_.get_key(it->first), it->second));
-  //   }
-  //   out.insert(make_pair(cit->first, v));
-  // }
-  // os << pfi::text::json::to_json(out);
   return true;
 }
 
 bool local_storage::load(std::istream& is){
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> *this;
-
-  // hbase-portable version
-  // std::map<string, std::map<string, val3_t> > out;
-  // is >> pfi::text::json::via_json(out);
-  // std::map<string, std::map<string, val3_t> >::const_iterator cit;
-  // for( cit = out.begin(); cit != out.end(); ++cit){
-  //   std::map<string, val3_t>::const_iterator vit;
-  //   for (vit = cit->second.begin(); vit != cit->second.end(); ++vit) {
-  //     set3(cit->first, vit->first, vit->second);
-  //   }
-  // }
   return true;
 }
 

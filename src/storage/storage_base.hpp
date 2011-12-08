@@ -28,6 +28,7 @@
 
 namespace jubatus {
 namespace storage{
+
 class storage_base {
 public:
   virtual ~storage_base() {}

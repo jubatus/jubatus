@@ -49,7 +49,7 @@ namespace server {
 classifier_serv::classifier_serv(const server_argv& a)
   :jubatus_serv<storage::storage_base,diffv>(a)
 {
-  model_.reset(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
+  model_ = make_model();
 
   function<diffv(const storage::storage_base*)>
     getdiff(&classifier_serv::get_diff);
@@ -141,7 +141,7 @@ std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector
   return ret; //std::vector<estimate_results> >::ok(ret);
 }
 
-pfi::lang::shared_ptr<storage::storage_base> classifier_serv::before_load(){
+pfi::lang::shared_ptr<storage::storage_base> classifier_serv::make_model(){
   return pfi::lang::shared_ptr<storage::storage_base>(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
 }
 // after load(..) called, users reset their own data

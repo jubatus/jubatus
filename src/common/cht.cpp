@@ -18,6 +18,7 @@
 #include "cht.hpp"
 #include "membership.hpp"
 #include <stdlib.h>
+#include <glog/logging.h>
 
 #ifndef _XOPEN_SOURCE
 #define _XOPEN_SOURCE
@@ -25,6 +26,7 @@
 #include <unistd.h>
 
 namespace jubatus{
+namespace common{
 
   // this function does not seem pure, take care when calling from multiple threads
   std::string make_hash(const std::string& key){
@@ -40,13 +42,13 @@ namespace jubatus{
   };
 
 
-  cht::cht(zk& z, const std::string& name):
-    name_(name), zk_(&z)
+  cht::cht(lock_service& z, const std::string& name):
+    name_(name), lock_service_(&z)
   {
     std::string path = ACTOR_BASE_PATH + "/" + name_;
-    zk_->create(path, "");
+    lock_service_->create(path, "");
     path +=  "/cht";
-    zk_->create(path, "");
+    lock_service_->create(path, "");
   }
 
   cht::~cht(){}
@@ -58,7 +60,7 @@ namespace jubatus{
 
     for(unsigned int i=0; i<NUM_VSERV; ++i){
       std::string hashpath = path+"/"+make_hash(build_loc_str(ip, port, i));
-      zk_->create(hashpath, build_loc_str(ip,port), true);
+      lock_service_->create(hashpath, build_loc_str(ip,port), true);
       DLOG(INFO) << "created " << hashpath;
     }
     //TODO: watch your predecessor!
@@ -70,14 +72,14 @@ namespace jubatus{
     return find(build_loc_str(host, port), out);
   }
 
-  // find(hash)    :: zk -> key -> [node] where hash(node0) <= hash(key) < hash(node1)
+  // find(hash)    :: lock_service -> key -> [node] where hash(node0) <= hash(key) < hash(node1)
   bool cht::find(const std::string& key, std::vector<std::pair<std::string,int> >& out){
     out.clear();
     std::string path = ACTOR_BASE_PATH + "/" + name_ + "/cht";
     std::string hash = make_hash(key);
     std::vector<std::pair<std::string, int> > ret;
     std::vector<std::string> hlist;
-    zk_->list(path, hlist);
+    lock_service_->list(path, hlist);
 
     if(hlist.empty()) return false;
     std::sort(hlist.begin(), hlist.end());
@@ -88,7 +90,7 @@ namespace jubatus{
     for(int i=0; i<2; ++i){
       std::string ip;
       int port;
-      if(zk_->read(path + "/" + hlist[idx], loc)){
+      if(lock_service_->read(path + "/" + hlist[idx], loc)){
         revert(loc, ip, port);
         out.push_back(make_pair(ip,port));
       }else{
@@ -101,4 +103,4 @@ namespace jubatus{
   }
 
 }
-
+}

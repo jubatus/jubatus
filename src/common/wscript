@@ -10,9 +10,9 @@ def configure(conf):
   conf.check_cxx(header_name = 'netinet/in.h arpa/inet.h', mandatory = True)
 
 def build(bld):
-  src = 'util.cpp key_manager.cpp'
+  src = 'util.cpp key_manager.cpp vector_util.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
-    src += ' zk.cpp membership.cpp cht.cpp'
+    src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp'
 
   bld.shlib(
     source = src,
@@ -21,16 +21,22 @@ def build(bld):
     use = 'PFICOMMON GLOG ZOOKEEPER_MT CRYPT'
     )
 
-  test_src = 'key_manager_test.cpp util_test.cpp'
+  test_src = [
+    'key_manager_test.cpp',
+    'util_test.cpp',
+    'vector_util_test.cpp',
+    ]
   if bld.env.HAVE_ZOOKEEPER_H:
-    test_src += ' membership_test.cpp cht_test.cpp'
-
-  bld.program(
-    features = 'gtest',
-    source = test_src,
-    target = 'util_test',
-    includes = '.',
-    use = 'jubacommon'
-    )
+    test_src += ['membership_test.cpp', 'cht_test.cpp']
+    
+  def make_test(s):
+    bld.program(
+      features = 'gtest',
+      source = s,
+      target = s[0:s.rfind('.')],
+      includes = '.',
+      use = 'jubacommon'
+      )
+  map(make_test, test_src)
 
   bld.install_files('${PREFIX}/include/jubatus/common/', bld.path.ant_glob('*.hpp'))

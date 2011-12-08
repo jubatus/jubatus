@@ -3,6 +3,7 @@
 #include "classifier_types.hpp"
 
 using namespace jubatus;
+using namespace jubatus::server;
 
 int main(int args, char** argv){
   keeper k(jubatus::keeper_argv(args, argv));
@@ -12,6 +13,6 @@ int main(int args, char** argv){
   k.register_random_analysis<std::vector<std::vector<estimate_result> > , std::vector<datum> >("classify");
   k.register_broadcast_analysis<int, std::string>("save");
   k.register_broadcast_update<std::string>("load");
-  k.start();
+  k.run();
 }
 

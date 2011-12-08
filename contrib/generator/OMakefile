@@ -65,6 +65,6 @@ PROGRAM = jenerator
 
 .DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES)) ../../src/server/recommender.hpp
 	./$(PROGRAM) ../../src/server/recommender.hpp
-	diff recommender.idl ../../src/server/recommender.idl
-	diff recommender_impl.cpp ../../src/server/recommender_impl.cpp
-	diff recommender_keeper.cpp ../../src/server/recommender_keeper.cpp
+	-diff recommender.idl ../../src/server/recommender.idl
+	-diff recommender_impl.cpp ../../src/server/recommender_impl.cpp
+	-diff recommender_keeper.cpp ../../src/server/recommender_keeper.cpp

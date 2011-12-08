@@ -60,6 +60,11 @@ void key_manager::swap(key_manager& km){
   // no swap for vacant
 }
 
+void key_manager::clear() {
+  key2id_.clear();
+  id2key_.clear();
+}
+
 void key_manager::init_by_id2key(const std::vector<std::string>& id2key){
   key2id_.clear();
   id2key_.clear();
