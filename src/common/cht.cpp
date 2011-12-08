@@ -20,27 +20,17 @@
 #include <stdlib.h>
 #include <glog/logging.h>
 
-#ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE
-#endif
-#include <unistd.h>
+#include <pficommon/data/digest/md5.h>
+#include <sstream>
 
 namespace jubatus{
 namespace common{
 
-  // this function does not seem pure, take care when calling from multiple threads
   std::string make_hash(const std::string& key){
-    char * h = crypt(key.c_str(), SALT_BASE.c_str());
-    if (!h)
-      throw std::runtime_error("cannot call crypt funciton");
-    std::string ret(h+SALT_BASE.size());
-    for(size_t s = 0; s < ret.size(); ++s){
-      if(ret[s] == '/') ret[s]='p';
-    }
-    //std::cout << key << " => " << ret << std::endl;
-    return ret;
+    std::stringstream ss;
+    ss << pfi::data::digest::md5sum(key);
+    return ss.str();
   };
-
 
   cht::cht(lock_service& z, const std::string& name):
     name_(name), lock_service_(&z)
