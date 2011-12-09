@@ -53,6 +53,7 @@ public:
 
   bool save(std::ostream&);
   bool load(std::istream&);
+  std::string type()const;
 
 protected:
   //map_features3_t tbl_;

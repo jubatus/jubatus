@@ -185,7 +185,7 @@ public:
 
   int save(std::string id) {
     std::string ofile;
-    build_local_path_(ofile, model_->type, id);
+    build_local_path_(ofile, model_->type(), id);
     
     std::ofstream ofs(ofile.c_str(), std::ios::trunc|std::ios::binary);
     if(!ofs){
@@ -208,7 +208,7 @@ public:
   int load(std::string id) {
     std::string ifile;
     bool ok = false;
-    build_local_path_(ifile, model_->type, id);
+    build_local_path_(ifile, model_->type(), id);
     
     std::ifstream ifs(ifile.c_str(), std::ios::binary);
     if(!ifs)throw std::runtime_error(ifile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );

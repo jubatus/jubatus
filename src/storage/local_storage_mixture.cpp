@@ -36,7 +36,6 @@ void increase(val3_t& a, const val3_t& b){
 
 local_storage_mixture::local_storage_mixture() 
 { 
-  type = "local_mixture";
 }
 
 local_storage_mixture::~local_storage_mixture() 
@@ -206,6 +205,9 @@ bool local_storage_mixture::load(std::istream& is){
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> *this;
   return true;
+}
+std::string local_storage_mixture::type()const{
+  return "local_storage_mixture";
 }
 
 }
