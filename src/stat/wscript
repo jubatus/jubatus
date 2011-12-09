@@ -5,7 +5,7 @@ def build(bld):
   bld.shlib(
     source = [
       'stat.cpp',
-      'stat_server_impl.cpp',
+#      'stat_server_impl.cpp',
       ],
 
     target = 'jubatus_stat',

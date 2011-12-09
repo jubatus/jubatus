@@ -13,10 +13,6 @@ using namespace std;
 using namespace pfi::lang;
 using namespace jubatus::storage;
 
-shared_ptr<storage::recommender_storage> make_storage() {
-  shared_ptr<storage::norm_base> n(new storage::norm_none());
-  return shared_ptr<storage::recommender_storage>(new storage::recommender_storage(n));
-}
 
 class recommender_impl : public recommender_base{
  public:
