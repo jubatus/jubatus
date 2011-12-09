@@ -25,6 +25,7 @@
 
 #include "server_util.hpp"
 #include "mixer.hpp"
+#include "../common/cht.hpp"
 
 using namespace pfi::concurrent;
 
@@ -39,6 +40,7 @@ public:
     a_(a),
 #ifdef HAVE_ZOOKEEPER_H
     mixer_(new mixer0<M, Diff>(a_.name, a_.interval_count, a_.interval_sec)),
+    use_cht_(false),
 #endif
     base_path_(a_.tmpdir)
   {
@@ -50,14 +52,19 @@ public:
 
 #ifdef HAVE_ZOOKEEPER_H
     if(! a_.is_standalone()){
-      pfi::lang::shared_ptr<jubatus::common::lock_service> z(common::create_lock_service("zk", a_.z, a_.timeout, "logfile_jubatus_serv"));
+      zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>(common::create_lock_service("zk", a_.z, a_.timeout, "logfile_jubatus_serv"));
 
       if( a_.join ){ // join to the existing cluster with -j option
-        join_to_cluster(z);
+        join_to_cluster(zk_);
       }
 
-      mixer_->set_zk(z);
-      register_actor(*z, a_.name, a_.eth, a_.port);
+      if( use_cht_ ){
+        jubatus::common::cht ht(zk_, a_.name);
+        ht.register_node(a_.eth, a_.port);
+      }
+
+      mixer_->set_zk(zk_);
+      register_actor(*zk_, a_.name, a_.eth, a_.port);
       if(is_mixer_func_set_){
         mixer_->start();
       }
@@ -95,6 +102,10 @@ public:
   };
 
 #ifdef HAVE_ZOOKEEPER_H
+  void use_cht(){
+    use_cht_ = true;
+  };
+
   void join_to_cluster(pfi::lang::shared_ptr<jubatus::common::lock_service> z){
     std::vector<std::string> list;
     std::string path = common::ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
@@ -234,12 +245,16 @@ protected:
   pfi::lang::function<Diff(const M*)> get_diff_;
   pfi::lang::function<int(const M*, const Diff&, Diff&)> reduce_;
   pfi::lang::function<int(M*, const Diff&)> put_diff_;
+
+  pfi::lang::shared_ptr<jubatus::common::lock_service> zk_;
+  bool use_cht_;
 #endif
 
   pfi::concurrent::rw_mutex m_;
   const std::string base_path_;
 
   pfi::lang::shared_ptr<M> model_;
+
 };
 
 }}

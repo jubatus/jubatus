@@ -86,7 +86,7 @@ namespace {
     pid_t child_;
 
     classifier_test(){
-      child_ = fork_process("classifier");
+      child_ = fork_process("classifier", 9199);
     };
     virtual ~classifier_test(){
       kill_process(child_);

@@ -41,7 +41,7 @@ namespace common{
 
     // node :: ip_port
     // register_node :: node -> bool;
-    bool register_node(const std::string&, int);
+    void register_node(const std::string&, int);
 
     // find(hash)    :: key -> [node] where  hash(node0) <= hash(key) < hash(node1) < hash(node2) < ...
     bool find(const std::string& host, int port, std::vector<std::pair<std::string,int> >&);

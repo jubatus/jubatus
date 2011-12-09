@@ -40,8 +40,8 @@ namespace common{
   cht::~cht(){}
 
   // register_node :: node -> bool;
-  // creates /jubatus/actors/cht/<hash(ip_port)> with contents ip_port
-  bool cht::register_node(const std::string& ip, int port){
+  // creates /jubatus/actors/<name>/cht/<hash(ip_port)> with contents ip_port
+  void cht::register_node(const std::string& ip, int port){
     std::string path = ACTOR_BASE_PATH + "/" + name_ + "/cht";
 
     for(unsigned int i=0; i<NUM_VSERV; ++i){
@@ -49,9 +49,6 @@ namespace common{
       lock_service_->create(hashpath, build_loc_str(ip,port), true);
       DLOG(INFO) << "created " << hashpath;
     }
-    //TODO: watch your predecessor!
-    // if you find your predecessor dead, replicate all data you have to your successor
-    return true;
   }
   
   bool cht::find(const std::string& host, int port, std::vector<std::pair<std::string,int> >& out){
