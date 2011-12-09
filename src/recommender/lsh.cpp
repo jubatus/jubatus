@@ -34,7 +34,7 @@ static const uint64_t DEFAULT_BASE_NUM = 64; // should be in config
 lsh::lsh(uint64_t base_num){
 }
 
-lsh::lsh(){
+lsh::lsh() : base_num_(DEFAULT_BASE_NUM){
 }
 
 lsh::~lsh(){
@@ -61,7 +61,6 @@ void lsh::clear_row(const string& id){
 }
 
 void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const{
-  // No values.clear() for update_row
   vector<float> lsh_vals(base_num_);
   for (size_t i = 0; i < sfv.size(); ++i){
     const string& column = sfv[i].first;
@@ -71,6 +70,7 @@ void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const{
       continue;
     }
     const vector<float>& v = it->second;
+
     // assert(v.size() == base_num_);
     for (size_t j = 0; j < v.size(); ++j){
       lsh_vals[j] += v[j] * val;
@@ -87,6 +87,9 @@ void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const{
 
 void lsh::generate_column_base(const string& column){
   // should use more clever hash
+  if (column2baseval_.find(column) != column2baseval_.end()){
+    return;
+  }
   srand(hash_util::calc_string_hash(column));
   vector<float>& baseval = column2baseval_[column];
   baseval.resize(base_num_);
@@ -99,6 +102,9 @@ void lsh::generate_column_base(const string& column){
 }
 
 void lsh::update_row(const string& id, const sfv_diff_t& diff){
+  for (size_t i = 0; i < diff.size(); ++i){
+    generate_column_base(diff[i].first);
+  }
   orig_.set_row(id, diff);
   sfv_t row;
   orig_.get_row(id, row);

@@ -17,9 +17,10 @@
 
 #pragma once
 
-#include <pficommon/data/serialization.h>
 #include <vector>
 #include <stdint.h>
+#include <iostream>
+#include <pficommon/data/serialization.h>
 
 namespace jubatus {
 namespace storage {
@@ -47,6 +48,16 @@ public:
 
   uint64_t bit_num() const {
     return bit_num_;
+  }
+
+  void debug_print(std::ostream& os) const{
+    for (uint64_t i = 0; i < bit_num_; ++i){
+      if ((bits_[i / 64] >> (i % 64)) & 1LLU){
+        os << "1";
+      } else {
+        os << "0";
+      }
+    }
   }
 
 private:

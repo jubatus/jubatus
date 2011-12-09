@@ -60,10 +60,12 @@ void bit_index_storage::mix(const bit_table_t& diff){
 
 void bit_index_storage::similar_row_one(const bit_vector& x, const pair<string, bit_vector>& y, std::vector<std::pair<uint64_t, std::string> >& scores, uint64_t ret_num) const{
   uint64_t match_num = x.calc_hamming_similarity(y.second);
+
   if (scores.size() < ret_num){
     scores.push_back(make_pair(match_num, y.first));
-  } else if (scores.size() == ret_num){
-    make_heap(scores.begin(), scores.end());
+    if (scores.size() == ret_num){
+      make_heap(scores.begin(), scores.end());
+    }
   } else {
     if (match_num <= scores.front().first) return;
     pop_heap(scores.begin(), scores.end());
@@ -78,6 +80,7 @@ void bit_index_storage::similar_row(const bit_vector& bv, vector<pair<string, fl
   if (bit_num == 0){
     return;
   }
+
   vector<pair<uint64_t, string> > scores;
   for (bit_table_t::const_iterator it = bitvals_diff_.begin(); it != bitvals_diff_.end(); ++it){
     similar_row_one(bv, *it, scores, ret_num);

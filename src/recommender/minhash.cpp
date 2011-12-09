@@ -32,7 +32,7 @@ namespace recommender {
 
 const uint64_t minhash::hash_prime = 0xc3a5c85c97cb3127ULL;
 
-minhash::minhash(){
+minhash::minhash() : hash_num_ (64){
 }
 
 minhash::~minhash(){
