@@ -30,25 +30,56 @@ inverted_index_storage::~inverted_index_storage(){
 }
 
 void inverted_index_storage::set(const std::string& row, const std::string& column, float val){
-  inv_.set(row, column, val);
+  inv_diff_.set(row, column, val);
 }
  
 void inverted_index_storage::get_row(const std::string& row, std::vector<std::pair<std::string, float> >& columns) const{
-  inv_.get_row(row, columns);
+  inv_diff_.get_row(row, columns);
+  inv_.get_row_with_filter(row, columns);
 }
 
 void inverted_index_storage::remove(const std::string& row, const std::string& column){
-  inv_.remove(row, column);
+  inv_diff_.set(row, column, 0.f);
 }
 
 void inverted_index_storage::clear(){
   inv_.clear();
+  inv_diff_.clear();
 }
 
-void inverted_index_storage::get_diff(sparse_matrix_storage& sms) const{
+void inverted_index_storage::get_diff(sparse_matrix_storage& diff) const{
+  diff = inv_diff_;
 }
 
-void inverted_index_storage::set_mixed_and_clear_diff(sparse_matrix_storage& mixed) const{
+void inverted_index_storage::set_mixed_and_clear_diff(const sparse_matrix_storage& mixed_diff) {
+  vector<string> ids;
+  mixed_diff.get_all_row_ids(ids);
+  for (size_t i = 0; i < ids.size(); ++i){
+    const string& row = ids[i];
+    vector<pair<string, float> > columns;
+    get_row(row, columns);
+    for (size_t j = 0; j < columns.size(); ++j){
+      if (columns[j].second == 0.f){
+        inv_.remove(row, columns[j].first);
+      } else {
+        inv_.set(row, columns[j].first, columns[j].second);
+      }
+    }
+  }
+  inv_diff_.clear();
+}
+
+void inverted_index_storage::mix(const sparse_matrix_storage& diff){
+  vector<string> ids;
+  diff.get_all_row_ids(ids);
+  for (size_t i = 0; i < ids.size(); ++i){
+    const string& row = ids[i];
+    vector<pair<string, float> > columns;
+    get_row(row, columns);
+    for (size_t j = 0; j < columns.size(); ++j){
+      inv_.set(row, columns[j].first, columns[j].second);
+    }
+  }
 }
 
 bool inverted_index_storage::save(std::ostream& os){ 
@@ -67,6 +98,8 @@ bool inverted_index_storage::load(std::istream& is){
 std::string inverted_index_storage::name() const{
   return string("inverted_index_storage");
 }
+
+
 
 }
 }

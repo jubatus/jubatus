@@ -29,22 +29,47 @@ bit_index_storage::~bit_index_storage(){
 }
 
 void bit_index_storage::set_row(const string& row, const bit_vector& bv){
-  row2bitvals_[row] = bv;
+  bitvals_diff_[row] = bv;
 }
 
 void bit_index_storage::remove_row(const string& row){
-  row2bitvals_.erase(row);
+  bitvals_diff_[row] = bit_vector();
 }
 
 void bit_index_storage::clear(){
-  row2bitvals_.clear();
+  bitvals_.clear();
+  bitvals_diff_.clear();
 }
 
-void bit_index_storage::get_diff(sparse_matrix_storage& sms) const{
-  
+void bit_index_storage::get_diff(bit_table_t& diff) const{
+  diff = bitvals_diff_;
 }
 
-void bit_index_storage::set_mixed_and_clear_diff(sparse_matrix_storage& mixed) const{
+void bit_index_storage::set_mixed_and_clear_diff(const bit_table_t& mixed_diff) {
+  for (bit_table_t::const_iterator it = mixed_diff.begin(); it != mixed_diff.end(); ++it){
+    bitvals_[it->first] = it->second;
+  }
+  bitvals_diff_.clear();
+}
+
+void bit_index_storage::mix(const bit_table_t& diff){
+  for (bit_table_t::const_iterator it = diff.begin(); it != diff.end(); ++it){
+    bitvals_[it->first] = it->second;
+  }
+}
+
+void bit_index_storage::similar_row_one(const bit_vector& x, const pair<string, bit_vector>& y, std::vector<std::pair<uint64_t, std::string> >& scores, uint64_t ret_num) const{
+  uint64_t match_num = x.calc_hamming_similarity(y.second);
+  if (scores.size() < ret_num){
+    scores.push_back(make_pair(match_num, y.first));
+  } else if (scores.size() == ret_num){
+    make_heap(scores.begin(), scores.end());
+  } else {
+    if (match_num <= scores.front().first) return;
+    pop_heap(scores.begin(), scores.end());
+    scores.back() = make_pair(match_num, y.first);
+    push_heap(scores.begin(), scores.end());
+  }
 }
 
 void bit_index_storage::similar_row(const bit_vector& bv, vector<pair<string, float> >& ids, uint64_t ret_num) const {
@@ -54,20 +79,16 @@ void bit_index_storage::similar_row(const bit_vector& bv, vector<pair<string, fl
     return;
   }
   vector<pair<uint64_t, string> > scores;
-  for (unordered_map<string, bit_vector>::const_iterator it = row2bitvals_.begin();
-       it != row2bitvals_.end(); ++it){
-    uint64_t match_num = bv.calc_hamming_similarity(it->second);
-    if (scores.size() < ret_num){
-      scores.push_back(make_pair(match_num, it->first));
-    } else if (scores.size() == ret_num){
-      make_heap(scores.begin(), scores.end());
-    } else {
-      if (match_num <= scores.front().first) continue;
-      pop_heap(scores.begin(), scores.end());
-      scores.back() = make_pair(match_num, it->first);
-      push_heap(scores.begin(), scores.end());
-    }
+  for (bit_table_t::const_iterator it = bitvals_diff_.begin(); it != bitvals_diff_.end(); ++it){
+    similar_row_one(bv, *it, scores, ret_num);
   }
+  for (bit_table_t::const_iterator it = bitvals_.begin(); it != bitvals_.end(); ++it){
+    if (bitvals_diff_.find(it->first) != bitvals_diff_.end()) {
+      continue;
+    }
+    similar_row_one(bv, *it, scores, ret_num);
+  }
+
 
   sort(scores.rbegin(), scores.rend());
   for (size_t i = 0; i < scores.size() && i < ret_num; ++i){

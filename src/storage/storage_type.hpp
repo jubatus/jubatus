@@ -24,14 +24,15 @@
 #include <algorithm>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/serialization.h>
-
 #include <pficommon/network/mprpc.h>
+#include "bit_vector.hpp"
 
 namespace jubatus{
 namespace storage{
 
 typedef pfi::data::unordered_map<uint64_t, float> row_t;
 typedef pfi::data::unordered_map<std::string, row_t> tbl_t;
+typedef pfi::data::unordered_map<std::string, bit_vector> bit_table_t;
 
 typedef double val1_t;
 

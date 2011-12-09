@@ -37,9 +37,10 @@ public:
   void remove_row(const std::string& row);
   void clear();
 
-  void get_diff(sparse_matrix_storage& sms) const;
-  void set_mixed_and_clear_diff(sparse_matrix_storage& mixed) const;
-
+  void get_diff(bit_table_t& diff) const;
+  void set_mixed_and_clear_diff(const bit_table_t& mixed_diff);
+  void mix(const bit_table_t& diff);
+  
   void similar_row(const bit_vector& bv, std::vector<std::pair<std::string, float> >& ids, uint64_t ret_num) const;
   std::string name() const;
 
@@ -47,13 +48,16 @@ public:
   bool load(std::istream& is);
 
 private:
+  void similar_row_one(const bit_vector& x, const std::pair<std::string, bit_vector>& y, std::vector<std::pair<uint64_t, std::string> >& scores, uint64_t ret_num) const;
+
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(row2bitvals_);
+    ar & MEMBER(bitvals_) & MEMBER(bitvals_diff_);
   }
   
-  pfi::data::unordered_map<std::string, bit_vector> row2bitvals_;
+  bit_table_t bitvals_;
+  bit_table_t bitvals_diff_;
 };
 
 }

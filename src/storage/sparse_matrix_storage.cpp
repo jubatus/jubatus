@@ -17,8 +17,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <pficommon/data/unordered_set.h>
 #include "sparse_matrix_storage.hpp"
-#include "norm_base.hpp"
 
 using namespace std;
 
@@ -31,13 +31,19 @@ sparse_matrix_storage::sparse_matrix_storage() {
 sparse_matrix_storage::~sparse_matrix_storage(){
 }
 
-void sparse_matrix_storage::set(const std::string& row, const std::string& column, float val){
+sparse_matrix_storage& sparse_matrix_storage::operator = (const sparse_matrix_storage& sms){
+  tbl_ = sms.tbl_;
+  column2id_ = sms.column2id_;
+  return *this;
+}
+
+void sparse_matrix_storage::set(const string& row, const string& column, float val){
   float& v = tbl_[row][column2id_.get_id(column)];
   //norm_ptr_->notify(row, v, val);
   v = val;
 }
 
-void sparse_matrix_storage::set_row(const std::string& row, const std::vector<std::pair<std::string, float> >& columns) {
+void sparse_matrix_storage::set_row(const string& row, const vector<pair<string, float> >& columns) {
   row_t& row_v = tbl_[row];
   for (size_t i = 0; i < columns.size(); ++i){
     float & v = row_v[column2id_.get_id(columns[i].first)];
@@ -46,7 +52,7 @@ void sparse_matrix_storage::set_row(const std::string& row, const std::vector<st
   }
 }
  
-float sparse_matrix_storage::get(const std::string& row, const std::string& column) const {
+float sparse_matrix_storage::get(const string& row, const string& column) const {
   tbl_t::const_iterator it = tbl_.find(row);
   if (it == tbl_.end()){
     return 0.f;
@@ -76,7 +82,28 @@ void sparse_matrix_storage::get_row(const string& row, vector<pair<string, float
   }
 }
 
-float sparse_matrix_storage::calc_l2norm(const std::string& row) const{
+void sparse_matrix_storage::get_row_with_filter(const string& row, vector<pair<string, float> >& columns) const{
+  // no columns.clear();
+  tbl_t::const_iterator it = tbl_.find(row);
+  if (it == tbl_.end()){
+    return;
+  }
+  const row_t& row_v = it->second;
+  pfi::data::unordered_set<string> keys;
+  for (size_t i = 0; i < columns.size(); ++i){
+    keys.insert(columns[i].first);
+  }
+
+  for (row_t::const_iterator row_it = row_v.begin(); row_it != row_v.end(); ++row_it){
+    const string& key = column2id_.get_key(row_it->first);
+    if (keys.find(key) != keys.end()){
+      continue;
+    }
+    columns.push_back(make_pair(key, row_it->second));
+  }
+}
+
+float sparse_matrix_storage::calc_l2norm(const string& row) const{
 
   tbl_t::const_iterator it = tbl_.find(row);
   if (it == tbl_.end()){
@@ -90,7 +117,7 @@ float sparse_matrix_storage::calc_l2norm(const std::string& row) const{
   return sqrt(sq_norm);
 }
 
-void sparse_matrix_storage::remove(const std::string& row, const std::string& column){
+void sparse_matrix_storage::remove(const string& row, const string& column){
   tbl_t::iterator it = tbl_.find(row);
   if (it == tbl_.end()){
     return;
@@ -109,7 +136,7 @@ void sparse_matrix_storage::remove(const std::string& row, const std::string& co
   it->second.erase(cit);
 }
 
-void sparse_matrix_storage::remove_row(const std::string& row){
+void sparse_matrix_storage::remove_row(const string& row){
   tbl_t::iterator it = tbl_.find(row);
   if (it == tbl_.end()){
     return;
@@ -125,7 +152,7 @@ void sparse_matrix_storage::remove_row(const std::string& row){
 }
 
 
-void sparse_matrix_storage::get_all_row_ids(std::vector<string>& ids) const{
+void sparse_matrix_storage::get_all_row_ids(vector<string>& ids) const{
   ids.clear();
   for (tbl_t::const_iterator it = tbl_.begin(); it != tbl_.end(); ++it){
     ids.push_back(it->first);
@@ -138,13 +165,13 @@ void sparse_matrix_storage::clear() {
   //norm_ptr_->clear();
 }
 
-bool sparse_matrix_storage::save(std::ostream& os) {
+bool sparse_matrix_storage::save(ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << *this;
   return true;
 };
 
-bool sparse_matrix_storage::load(std::istream& is){
+bool sparse_matrix_storage::load(istream& is){
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> *this;
   return true;

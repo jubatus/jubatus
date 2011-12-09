@@ -39,8 +39,9 @@ public:
   void remove(const std::string& row, const std::string& column);
   void clear();
 
-  void get_diff(sparse_matrix_storage& sms) const;
-  void set_mixed_and_clear_diff(sparse_matrix_storage& mixed) const;
+  void get_diff(sparse_matrix_storage& diff) const;
+  void set_mixed_and_clear_diff(const sparse_matrix_storage& mixed_diff);
+  void mix(const sparse_matrix_storage& diff);
 
   std::string name() const;
 
@@ -55,6 +56,7 @@ private:
   }
   
   sparse_matrix_storage inv_;
+  sparse_matrix_storage inv_diff_;
 };
 
 }

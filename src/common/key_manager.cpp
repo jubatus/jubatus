@@ -24,6 +24,15 @@ namespace jubatus {
 
 typedef unordered_map<string, uint64_t>::const_iterator cit;
 
+key_manager::key_manager(){
+}
+
+key_manager& key_manager::operator = (const key_manager& km){
+  key2id_ = km.key2id_;
+  id2key_ = km.id2key_;
+  return *this;
+}
+
 uint64_t key_manager::get_id(const string& key)
 {
   cit it = key2id_.find(key);

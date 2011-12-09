@@ -29,6 +29,9 @@ namespace jubatus {
 
 class key_manager {
 public:
+  key_manager();
+  key_manager& operator = (const key_manager&);
+
   enum {
     NOTFOUND = 0xFFFFFFFFFFFFFFFFLLU
   };
