@@ -69,18 +69,21 @@ let prototype2impl (t,n,argvs,decorators,is_const) =
       (make_impl (Printf.sprintf "throw pfi::network::mprpc::method_not_found(\"%s\");"
 		    n))
 
-
 let memberdecl (t,n) =
   Printf.sprintf "  %s %s;\n" (Stree.to_string t) n;;
 
 let make_class = function
   | Stree.ClassDef(classname, funcs, members) ->
+    let use_cht =
+      if List.exists Stree.include_cht_api funcs then "  p_->use_cht(); "
+      else ""
+    in
     make_class_begin classname
     ^ "public:\n"
     ^ Printf.sprintf "  %s_impl_(const server_argv& a)\n" classname
     ^ Printf.sprintf "    : %s<%s_impl_>(a.timeout),\n" classname classname
     ^ Printf.sprintf "      p_(new %s_serv(a))\n" classname
-    ^ Printf.sprintf "  {};\n"
+    ^ Printf.sprintf "  {  %s  };\n" use_cht
     ^ (String.concat "\n" (List.map prototype2impl funcs))
     ^ "\n  int run(){ return p_->start(*this); };\n"
     ^ "\nprivate:\n"

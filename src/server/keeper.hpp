@@ -19,6 +19,9 @@
 
 #include <string>
 #include <vector>
+
+#include <glog/logging.h>
+
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/network/mprpc.h>
@@ -26,29 +29,20 @@
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/math/random.h>
 
-#include "../common/zk.hpp"
+#include "../common/lock_service.hpp"
 #include "../common/membership.hpp"
+#include "../common/cht.hpp"
 
 #include "server_util.hpp"
 
-static const std::string ACTOR_BASE_PATH = "";
-
 namespace jubatus {
+namespace server {
 
 class keeper : public pfi::network::mprpc::rpc_server {
  public:
-  keeper(const jubatus::keeper_argv& a)
-    : pfi::network::mprpc::rpc_server(a.timeout),
-      a_(a),
-      zk_(a.z, a.timeout)
-  {
-    register_broadcast_analysis<int, std::string>("save");
-    register_broadcast_update<std::string>("load");
-  }
-
-  int start(){
-    return this->serv(a_.port, a_.threadnum);
-  };
+  keeper(const jubatus::keeper_argv& a);
+  virtual ~keeper();
+  int run();
 
   template <typename Q>
   void register_random_update(std::string method_name) {
@@ -94,71 +88,66 @@ class keeper : public pfi::network::mprpc::rpc_server {
  private:
   template <typename R, typename A>
   R random_proxy(const std::string& method_name, const std::string& name, const A& arg) {
+    //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
     const std::pair<std::string, int>& c = list[rng_(list.size())];
+    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 
-    pfi::lang::function<R(std::string, A)> f = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(std::string,A)>(method_name);
-    return f(name, arg);
+    // this code didn't work: rpc_client instance cannot be desctucted so too much live connections generated
+    // and accept/read thread in pficommon server exhausted.
+    //return pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(std::string,A)>(method_name)(name, arg);
+
+    pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
+    //    {DLOG(INFO)<< "accssing to " << c.first << " " << c.second;}
+    return cli.call<R(std::string,A)>(method_name)(name, arg);
   }
 
   template <typename R, typename A>
   // FIXME: modify return type
   R broadcast_proxy(const std::string& method_name, const std::string& name, const A& arg) {
+    //    {LOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
-
     //    std::vector<R> results;
+    // FIXME: needs global lock here
     R res;
     for (size_t i = 0; i < list.size(); ++i) {
       const std::pair<std::string, int>& c = list[i];
-      res = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(std::string,A)>(method_name)(name,arg);
+      pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
+      res = cli.call<R(std::string,A)>(method_name)(name,arg);
       //      results.push_back(res);
     }
+    {LOG(INFO)<< __func__;}
     //    return results;
     return res;
   }
 
   template <typename R, typename A>
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& key, const A& arg) {
+    {LOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
-    get_members_(name, list);
+    jubatus::common::cht ht(zk_, name);
+    ht.find(key, list);
 
-    // FIXME: resolve name here
+    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 
     R result;
-    const std::pair<std::string, int>& c = list[0];
-    result = pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).
-      call<R(std::string,std::string,A)>(method_name)(name, key, arg);
+    for(size_t i=0; i<list.size(); ++i){
+      const std::pair<std::string, int>& c = list[i];
+      pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
+      result = cli.call<R(std::string,std::string,A)>(method_name)(name, key, arg);
+    }
     return result;
   }
-
-  void get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret){
-    using namespace std;
-    ret.clear();
-    vector<string> list;
-    string path = ACTOR_BASE_PATH + "/" + name + "/nodes";
-
-    {
-      pfi::concurrent::scoped_lock lk(mutex_);
-      zk_.list(path, list);
-    }
-    vector<string>::const_iterator it;
-
-    // FIXME:
-    // do you return all server list? it can be very large
-    for(it = list.begin(); it!= list.end(); ++it){
-      string ip;
-      int port;
-      jubatus::revert(*it, ip, port);
-      ret.push_back(make_pair(ip,port));
-    }
-  }
+  void get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret);
 
   jubatus::keeper_argv a_;
   pfi::math::random::mtrand rng_;
   pfi::concurrent::mutex mutex_;
-  zk zk_;
+  pfi::lang::shared_ptr<common::lock_service> zk_;
+
 };
 
 }
+} //namespace jubatus

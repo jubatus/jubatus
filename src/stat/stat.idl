@@ -1,12 +1,14 @@
 service stat {
-  void push(0: string key, 1: double val)
+  int push(0: string key, 1: double val)
 
   double sum(0: string key)
   double stddev(0: string key)
   double max(0: string key)
   double min(0: string key)
-  double entropy(0: string key)
 
-  double save(0: string id)
-  double load(0: string id)
+  double entropy()
+  double moment(0: string key, 1: int n, 2: double c)
+
+  int save(0: string id)
+  int load(0: string id)
 }

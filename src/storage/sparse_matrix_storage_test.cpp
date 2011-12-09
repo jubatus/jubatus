@@ -6,6 +6,7 @@
 namespace jubatus {
 namespace storage {
 
+
 using namespace std;
 
 // TEST(recommender_storage, empty) {

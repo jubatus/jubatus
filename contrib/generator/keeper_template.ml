@@ -82,5 +82,5 @@ let make_main classdefs =
   "int main(int args, char** argv){\n"
   ^ "  keeper k(jubatus::keeper_argv(args, argv));\n"
   ^ String.concat "\n" (List.map generate_class_keeper classdefs)
-  ^ "\n  k.start();"
+  ^ "\n  k.run();"
   ^ "\n}";;

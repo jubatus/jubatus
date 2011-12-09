@@ -88,6 +88,7 @@ class stub_storage : public storage_base {
     ia >> *this;
     return true;
   }
+  std::string type()const{ return "stub_storage"; };
 
 };
 }

@@ -21,6 +21,7 @@
 using namespace std;
 
 namespace jubatus {
+namespace common {
 
 TEST(cht, make_hash) {
   string hash = make_hash("hage");
@@ -28,4 +29,5 @@ TEST(cht, make_hash) {
   ASSERT_EQ(hash, hash2);
 }
 
+}
 }

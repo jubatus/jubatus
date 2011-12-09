@@ -21,9 +21,8 @@
 #include <iostream>
 
 #include <unistd.h>
-#include <sys/types.h>
 #include <signal.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <cstdio>
 
 #include <pficommon/lang/cast.h>

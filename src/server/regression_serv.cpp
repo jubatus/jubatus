@@ -134,7 +134,7 @@ std::map<std::pair<std::string,int>,
   if (model_){
     //   mixer_->get_status(ret0);
     model_->get_status(ret0); //FIXME
-    ret0["storage"] = model_->type;
+    ret0["storage"] = model_->type();
   }
   util::get_machine_status(ret0);
   

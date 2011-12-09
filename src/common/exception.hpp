@@ -35,5 +35,14 @@ namespace jubatus{
     bad_storage_type(const std::string& n):runtime_error(n){};
   };
 
+  class membership_error : std::runtime_error {
+  public:
+    membership_error(const std::string& n):runtime_error(n){};
+  };
+
+  class argv_error : std::runtime_error {
+  public:
+    argv_error(const std::string& n):runtime_error(n){};
+  };
 
 }

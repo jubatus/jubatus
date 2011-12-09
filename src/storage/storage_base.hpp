@@ -55,7 +55,7 @@ public:
   virtual void get_diff(features3_t&) const ;
   virtual void set_average_and_clear_diff(const features3_t&);
 
-  std::string type;
+  virtual std::string type() const = 0;
 
 };
 

@@ -1,6 +1,10 @@
 #include <gtest/gtest.h>
 #include "../storage/norm.hpp"
 #include "recommender_base.hpp"
+#include "../storage/recommender_storage.hpp"
+#include "../storage/norm_none.hpp"
+
+using namespace pfi::lang;
 
 namespace jubatus {
 namespace recommender {
@@ -8,6 +12,7 @@ namespace recommender {
 using namespace std;
 using namespace pfi::lang;
 using namespace jubatus::storage;
+
 
 class recommender_impl : public recommender_base{
  public:
