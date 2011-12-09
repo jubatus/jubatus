@@ -31,6 +31,7 @@
 
 #include "../common/lock_service.hpp"
 #include "../common/membership.hpp"
+#include "../common/cht.hpp"
 
 #include "server_util.hpp"
 
@@ -126,13 +127,17 @@ class keeper : public pfi::network::mprpc::rpc_server {
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& key, const A& arg) {
     {LOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
-    get_members_(name, list);
+    jubatus::common::cht ht(zk_, name);
+    ht.find(key, list);
 
-    // FIXME: resolve name here
+    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 
-    const std::pair<std::string, int>& c = list[0];
-    pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
-    R result = cli.call<R(std::string,std::string,A)>(method_name)(name, key, arg);
+    R result;
+    for(size_t i=0; i<list.size(); ++i){
+      const std::pair<std::string, int>& c = list[0];
+      pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
+      result = cli.call<R(std::string,std::string,A)>(method_name)(name, key, arg);
+    }
     return result;
   }
   void get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret);
@@ -141,6 +146,8 @@ class keeper : public pfi::network::mprpc::rpc_server {
   pfi::math::random::mtrand rng_;
   pfi::concurrent::mutex mutex_;
   pfi::lang::shared_ptr<common::lock_service> zk_;
+
+
 };
 
 }

@@ -65,7 +65,7 @@ namespace common{
     // set exit zlistener here
     pfi::lang::function <void()> f = &force_exit;
     z.push_cleanup(f);
-
+    
     return true;
   }
 

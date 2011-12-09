@@ -29,9 +29,6 @@
 namespace jubatus{
 namespace common{
 
-  // using SHA-512. see crypt(2). recommended: glibc >= 2.7
-  static const std::string SALT_BASE = "$6$jubatus$";
-
   static const unsigned int NUM_VSERV = 8;
   
   // this function does not seem pure, take care when calling from multiple threads
@@ -39,7 +36,7 @@ namespace common{
 
   class cht{
   public:
-    cht(lock_service&, const std::string&);
+    cht(pfi::lang::shared_ptr<lock_service>, const std::string&);
     ~cht();
 
     // node :: ip_port
@@ -49,6 +46,9 @@ namespace common{
     // find(hash)    :: key -> [node] where  hash(node0) <= hash(key) < hash(node1) < hash(node2) < ...
     bool find(const std::string& host, int port, std::vector<std::pair<std::string,int> >&);
     bool find(const std::string&, std::vector<std::pair<std::string,int> >&);
+
+    // run just once in starting up the process: creates <name>/cht directory.
+    static void setup_cht_dir(lock_service&, const std::string&);
 
   private:
     std::string name_;

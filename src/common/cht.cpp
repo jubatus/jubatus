@@ -32,13 +32,9 @@ namespace common{
     return ss.str();
   };
 
-  cht::cht(lock_service& z, const std::string& name):
-    name_(name), lock_service_(&z)
+  cht::cht(pfi::lang::shared_ptr<lock_service> z, const std::string& name):
+    name_(name), lock_service_(z)
   {
-    std::string path = ACTOR_BASE_PATH + "/" + name_;
-    lock_service_->create(path, "");
-    path +=  "/cht";
-    lock_service_->create(path, "");
   }
 
   cht::~cht(){}
@@ -84,12 +80,19 @@ namespace common{
         revert(loc, ip, port);
         out.push_back(make_pair(ip,port));
       }else{
-        // TODO: log output
+        // TODO: output log
       }
       idx++;
       idx %= hlist.size();
     }
     return !hlist.size();
+  }
+
+  void setup_cht_dir(lock_service& ls, const std::string name){
+    std::string path = ACTOR_BASE_PATH + "/" + name;
+    ls.create(path, "");
+    path +=  "/cht";
+    ls.create(path, "");
   }
 
 }
