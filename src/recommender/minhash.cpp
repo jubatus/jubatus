@@ -32,7 +32,7 @@ namespace recommender {
 
 const uint64_t minhash::hash_prime = 0xc3a5c85c97cb3127ULL;
 
-minhash::minhash(){
+minhash::minhash() : hash_num_ (64){
 }
 
 minhash::~minhash(){
@@ -113,8 +113,24 @@ float minhash::calc_hash(uint64_t a, uint64_t b, float val){
   return - log(r) / val;
 }
 
-string minhash::name() const{
+string minhash::type() const{
   return string("minhash");
+}
+bool minhash::save(std::ostream& os){
+  pfi::data::serialization::binary_oarchive oa(os);
+  oa << row2minhashvals_;
+  return true;
+}
+bool minhash::load(std::istream& is){
+  pfi::data::serialization::binary_iarchive ia(is);
+  ia >> row2minhashvals_;
+  return true;
+}
+storage::recommender_storage_base* minhash::get_storage(){
+  return reinterpret_cast<storage::recommender_storage_base*>(&row2minhashvals_);
+}
+const storage::recommender_storage_base* minhash::get_const_storage()const{
+  return reinterpret_cast<const storage::recommender_storage_base*>(&row2minhashvals_);
 }
 
 } // namespace recommender

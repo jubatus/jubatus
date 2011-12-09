@@ -13,7 +13,7 @@ public:
   recommender_impl_(const server_argv& a)
     : recommender<recommender_impl_>(a.timeout),
       p_(new recommender_serv(a))
-  {};
+  {    p_->use_cht();   };
   int set_config(std::string& arg0, config_data arg1) //@broadcast
   { JWLOCK__(p_); return p_->set_config(arg1); };
 
@@ -25,9 +25,6 @@ public:
 
   int update_row(std::string& arg0, std::string arg1, datum arg2) //@cht
   { JWLOCK__(p_); return p_->update_row(arg1, arg2); };
-
-  int build(std::string& arg0, int arg1) //@broadcast
-  { JWLOCK__(p_); return p_->build(arg1); };
 
   int clear(std::string& arg0, int arg1) //@broadcast
   { JWLOCK__(p_); return p_->clear(arg1); };
@@ -47,7 +44,7 @@ public:
   datum decode_row(std::string& arg0, std::string arg1, int arg2) //@cht
   { JRLOCK__(p_); return p_->decode_row(arg1, arg2); };
 
-  std::vector<std::pair<std::string, datum> >  get_all_rows(std::string& arg0, int arg1) //@broadcast
+  std::vector<std::string>  get_all_rows(std::string& arg0, int arg1) //@broadcast
   { JRLOCK__(p_); return p_->get_all_rows(arg1); };
 
   int save(std::string& arg0, std::string arg1) //@broadcast

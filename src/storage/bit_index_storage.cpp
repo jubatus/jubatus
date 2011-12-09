@@ -15,7 +15,10 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <iterator>
 #include "bit_index_storage.hpp"
+#include <pficommon/data/serialization.h>
+#include <pficommon/data/serialization/unordered_map.h>
 
 using namespace std;
 using namespace pfi::data;
@@ -41,29 +44,60 @@ void bit_index_storage::clear(){
   bitvals_diff_.clear();
 }
 
-void bit_index_storage::get_diff(bit_table_t& diff) const{
-  diff = bitvals_diff_;
+void bit_index_storage::get_diff(string& diff) const {
+  ostringstream os;
+  {
+    pfi::data::serialization::binary_oarchive bo(os);
+    bo << const_cast<bit_table_t&>(bitvals_diff_);
+  }
+  diff = os.str(); // TODO remove redudant copy
 }
 
-void bit_index_storage::set_mixed_and_clear_diff(const bit_table_t& mixed_diff) {
+void bit_index_storage::set_mixed_and_clear_diff(const string& mixed_diff_str) {
+  istringstream is(mixed_diff_str);
+  pfi::data::serialization::binary_iarchive bi(is);
+  bit_table_t mixed_diff;
+  bi >> mixed_diff;
   for (bit_table_t::const_iterator it = mixed_diff.begin(); it != mixed_diff.end(); ++it){
     bitvals_[it->first] = it->second;
   }
   bitvals_diff_.clear();
 }
 
-void bit_index_storage::mix(const bit_table_t& diff){
-  for (bit_table_t::const_iterator it = diff.begin(); it != diff.end(); ++it){
-    bitvals_[it->first] = it->second;
+void bit_index_storage::mix(const string& lhs, string& rhs) const{
+  bit_table_t lhs_diff;
+  {
+    istringstream is(lhs);
+    pfi::data::serialization::binary_iarchive bi(is);
+    bi >> lhs_diff;
   }
+  bit_table_t rhs_diff;
+  {
+    istringstream is(rhs);
+    pfi::data::serialization::binary_iarchive bi(is);
+    bi >> rhs_diff;
+  }
+
+  for (bit_table_t::const_iterator it = lhs_diff.begin(); it != lhs_diff.end(); ++it){
+    rhs_diff[it->first] = it->second;
+  }
+
+  ostringstream os;
+  {
+    pfi::data::serialization::binary_oarchive bo(os);
+    bo << rhs_diff;
+  }
+  rhs = os.str(); // TODO remove redudant copy
 }
 
 void bit_index_storage::similar_row_one(const bit_vector& x, const pair<string, bit_vector>& y, std::vector<std::pair<uint64_t, std::string> >& scores, uint64_t ret_num) const{
   uint64_t match_num = x.calc_hamming_similarity(y.second);
+
   if (scores.size() < ret_num){
     scores.push_back(make_pair(match_num, y.first));
-  } else if (scores.size() == ret_num){
-    make_heap(scores.begin(), scores.end());
+    if (scores.size() == ret_num){
+      make_heap(scores.begin(), scores.end());
+    }
   } else {
     if (match_num <= scores.front().first) return;
     pop_heap(scores.begin(), scores.end());
@@ -78,6 +112,7 @@ void bit_index_storage::similar_row(const bit_vector& bv, vector<pair<string, fl
   if (bit_num == 0){
     return;
   }
+
   vector<pair<uint64_t, string> > scores;
   for (bit_table_t::const_iterator it = bitvals_diff_.begin(); it != bitvals_diff_.end(); ++it){
     similar_row_one(bv, *it, scores, ret_num);

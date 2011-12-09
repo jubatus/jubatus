@@ -15,30 +15,21 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "recommender_factory.hpp"
-#include "recommender.hpp"
-#include "../common/exception.hpp"
-#include "../storage/norm_factory.hpp"
+#pragma once
 
-using namespace std;
+#include <string>
 
 namespace jubatus {
-namespace recommender {
+namespace storage{
 
-recommender_base* create_recommender(const string& name){
-  if (name == "inverted_index"){
-    return new inverted_index;
-  } else if (name == "minhash"){
-    return new minhash;
-  } else if (name == "lsh"){
-    return new lsh;
-  } else {
-    throw std::runtime_error(string("unknown recommender :") + name);
-  }
-}
+class recommender_storage_base {
+public:
+  virtual ~recommender_storage_base() {}
+
+  virtual void get_diff(std::string& diff) const = 0;
+  virtual void set_mixed_and_clear_diff(const std::string& mixed_diff) = 0;
+  virtual void mix(const std::string& lhs, std::string& rhs) const = 0;
+};
 
 }
 }
-
-
-

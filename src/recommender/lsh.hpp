@@ -33,7 +33,11 @@ public:
   void clear();
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const sfv_diff_t& diff);
-  std::string name() const;
+  std::string type() const;
+  bool save(std::ostream&);
+  bool load(std::istream&);
+  storage::recommender_storage_base* get_storage();
+  const storage::recommender_storage_base* get_const_storage() const;
 
 private:
   void calc_lsh_values(const sfv_t& sfv, storage::bit_vector& bv) const;

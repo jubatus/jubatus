@@ -16,8 +16,8 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <algorithm>
+#include <cmath>
 #include "inverted_index.hpp"
-#include "../storage/norm.hpp"
 #include "../common/exception.hpp"
 #include "../common/vector_util.hpp"
 
@@ -36,7 +36,7 @@ inverted_index::~inverted_index() {
 
 void inverted_index::similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const{
   ids.clear();
-  pfi::data::unordered_map<string, float> scores;
+
   float query_sq_norm = 0.f;
   for (size_t i = 0; i < query.size(); ++i){
     float val = query[i].second;
@@ -45,15 +45,8 @@ void inverted_index::similar_row(const sfv_t& query, std::vector<std::pair<std::
   float query_norm = sqrt(query_sq_norm);
   if (query_norm == 0.f) return;
 
-  for (size_t i = 0; i < query.size(); ++i){
-    const string& fid = query[i].first;
-    float val = query[i].second;
-    sfv_t column;
-    inv_.get_row(fid, column);
-    for (size_t j = 0; j < column.size(); ++j){
-      scores[column[j].first] += column[j].second * val;
-    }
-  }
+  pfi::data::unordered_map<string, float> scores;
+  inv_.calc_scores(query, scores);
   
   vector<pair<float, string> > sorted_scores;
   for (pfi::data::unordered_map<string, float>::const_iterator it = scores.begin(); it != scores.end(); ++it){
@@ -88,9 +81,26 @@ void inverted_index::update_row(const std::string& id, const sfv_diff_t& diff){
   }
 }
 
-string inverted_index::name() const {
+string inverted_index::type() const {
   return string("inverted_index");
 }
+bool inverted_index::save(std::ostream& os){
+  pfi::data::serialization::binary_oarchive oa(os);
+  oa << inv_;
+  return true;
+}
+bool inverted_index::load(std::istream& is){
+  pfi::data::serialization::binary_iarchive ia(is);
+  ia >> inv_;
+  return true;
+}
+storage::recommender_storage_base* inverted_index::get_storage(){
+  return reinterpret_cast<storage::recommender_storage_base*>(&inv_);
+}
+const storage::recommender_storage_base* inverted_index::get_const_storage()const{
+  return reinterpret_cast<const storage::recommender_storage_base*>(&inv_);
+}
+
 
 } // namespace recommender
 } // namespace jubatus

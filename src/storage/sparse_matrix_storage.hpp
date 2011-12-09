@@ -38,7 +38,6 @@ public:
 
   float get(const std::string& row, const std::string& column) const;
   void get_row(const std::string& row, std::vector<std::pair<std::string, float> >& columns) const;
-  void get_row_with_filter(const std::string& row, std::vector<std::pair<std::string, float> >& columns) const;
 
   float calc_l2norm(const std::string& row) const;
   void remove(const std::string& row, const std::string& column);

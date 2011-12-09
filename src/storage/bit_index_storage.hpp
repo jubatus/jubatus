@@ -24,11 +24,12 @@
 #include "storage_type.hpp"
 #include "sparse_matrix_storage.hpp"
 #include "bit_vector.hpp"
+#include "recommender_storage_base.hpp"
 
 namespace jubatus {
 namespace storage{
 
-class bit_index_storage {
+class bit_index_storage : public recommender_storage_base {
 public:
   bit_index_storage();
   ~bit_index_storage();
@@ -37,15 +38,16 @@ public:
   void remove_row(const std::string& row);
   void clear();
 
-  void get_diff(bit_table_t& diff) const;
-  void set_mixed_and_clear_diff(const bit_table_t& mixed_diff);
-  void mix(const bit_table_t& diff);
   
   void similar_row(const bit_vector& bv, std::vector<std::pair<std::string, float> >& ids, uint64_t ret_num) const;
   std::string name() const;
 
   bool save(std::ostream& os);
   bool load(std::istream& is);
+
+  void get_diff(std::string& diff) const;
+  void set_mixed_and_clear_diff(const std::string& mixed_diff);
+  void mix(const std::string& lhs, std::string& rhs) const;
 
 private:
   void similar_row_one(const bit_vector& x, const std::pair<std::string, bit_vector>& y, std::vector<std::pair<uint64_t, std::string> >& scores, uint64_t ret_num) const;
