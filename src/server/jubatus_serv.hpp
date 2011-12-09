@@ -59,7 +59,10 @@ public:
       }
 
       if( use_cht_ ){
+<<<<<<< HEAD
         jubatus::common::cht::setup_cht_dir(*zk_, a_.name);
+=======
+>>>>>>> origin/develop
         jubatus::common::cht ht(zk_, a_.name);
         ht.register_node(a_.eth, a_.port);
       }
