@@ -16,6 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <algorithm>
+#include <cmath>
 #include "sparse_matrix_storage.hpp"
 #include "norm_base.hpp"
 
@@ -69,17 +70,25 @@ void sparse_matrix_storage::get_row(const string& row, vector<pair<string, float
   if (it == tbl_.end()){
     return;
   }
-  const row_t& v = it->second;
-  for (row_t::const_iterator it = v.begin(); it != v.end(); ++it){
-    columns.push_back(make_pair(column2id_.get_key(it->first), it->second));
+  const row_t& row_v = it->second;
+  for (row_t::const_iterator row_it = row_v.begin(); row_it != row_v.end(); ++row_it){
+    columns.push_back(make_pair(column2id_.get_key(row_it->first), row_it->second));
   }
 }
 
-/*
-float sparse_matrix_storage::calc_norm(const std::string& row) const{
-  return norm_ptr_->calc_norm(row);
+float sparse_matrix_storage::calc_l2norm(const std::string& row) const{
+
+  tbl_t::const_iterator it = tbl_.find(row);
+  if (it == tbl_.end()){
+    return 0.f;
+  }
+  float sq_norm = 0.f;
+  const row_t& row_v = it->second;
+  for (row_t::const_iterator row_it = row_v.begin(); row_it != row_v.end(); ++row_it){
+    sq_norm += row_it->second * row_it->second;
+  }
+  return sqrt(sq_norm);
 }
-*/
 
 void sparse_matrix_storage::remove(const std::string& row, const std::string& column){
   tbl_t::iterator it = tbl_.find(row);

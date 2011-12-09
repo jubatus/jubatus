@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "recommender_local_storage.hpp"
+#include "sparse_matrix_storage.hpp"
 #include "../fv_converter/test_util.hpp"
 #include "norm.hpp"
 
@@ -21,11 +21,12 @@ using namespace std;
 //   EXPECT_TRUE(ids.empty());
 // }
 
-TEST(recommender_local_storage, set_row) {
-  recommender_local_storage s(pfi::lang::shared_ptr<norm_base>(new norm_none));
+TEST(sparse_matrix_storage, set_row) {
+  sparse_matrix_storage s;
   vector<pair<string, float> > r1, r2;
   r1.push_back(make_pair("c1", 1.0));
   r1.push_back(make_pair("c2", 2.0));
+
   s.set_row("r1", r1);
   r2.push_back(make_pair("c2", 4.0));
   r2.push_back(make_pair("c3", 5.0));
@@ -49,8 +50,8 @@ TEST(recommender_local_storage, set_row) {
   EXPECT_EQ("r2", ids[1]);
 }
 
-TEST(recommender_local_storage, set) {
-  recommender_local_storage s(pfi::lang::shared_ptr<norm_base>(new norm_none));
+TEST(sparse_matrix_storage, set) {
+  sparse_matrix_storage s;
   s.set("r1", "c1", 5.0);
   // overwrite
   s.set("r1", "c1", 1.0);
@@ -87,7 +88,7 @@ TEST(recommender_local_storage, set) {
   EXPECT_EQ(0.0, s.get("r1", "c1"));
 }
 
-// (TODO) add test recommender_local_storage::calc_norm(const string& row)
+// (TODO) add test sparse_matrix_storage::calc_norm(const string& row)
 
 }
 }

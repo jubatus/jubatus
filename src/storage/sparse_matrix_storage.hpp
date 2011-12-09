@@ -37,7 +37,7 @@ public:
   float get(const std::string& row, const std::string& column) const;
   void get_row(const std::string& row, std::vector<std::pair<std::string, float> >& columns) const;
 
-  float calc_norm(const std::string& row) const;
+  float calc_l2norm(const std::string& row) const;
   void remove(const std::string& row, const std::string& column);
   void remove_row(const std::string& row);
   void get_all_row_ids(std::vector<std::string>& ids) const;

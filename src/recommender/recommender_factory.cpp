@@ -27,11 +27,11 @@ namespace recommender {
 
 recommender_base* create_recommender(const string& name, const string& norm_name){
   if (name == "inverted_index"){
-    return new inverted_index();
+    return new inverted_index;
   } else if (name == "minhash"){
-    return new minhash();
+    return new minhash;
   } else if (name == "lsh"){
-    return new lsh();
+    return new lsh;
   } else {
     throw std::runtime_error(string("unknown recommender :") + name);
   }

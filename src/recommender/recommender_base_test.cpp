@@ -12,16 +12,16 @@ using namespace jubatus::storage;
 class recommender_impl : public recommender_base{
  public:
   recommender_impl() : 
-    recommender_base(shared_ptr<recommender_storage>(new recommender_storage (shared_ptr<norm_base>(new norm_none)))) {
+    recommender_base(){
     // make mock
-    origs_->set("r1", "a1", 1.0);
-    origs_->set("r1", "a2", 1.0);
+    orig_.set("r1", "a1", 1.0);
+    orig_.set("r1", "a2", 1.0);
 
-    origs_->set("r2", "b1", 1.0);
-    origs_->set("r2", "b2", 1.0);
+    orig_.set("r2", "b1", 1.0);
+    orig_.set("r2", "b2", 1.0);
 
-    origs_->set("r3", "a1", 1.0);
-    origs_->set("r3", "b1", 1.0);
+    orig_.set("r3", "a1", 1.0);
+    orig_.set("r3", "b1", 1.0);
   }
 
   void similar_row(const sfv_t& query, vector<pair<string, float> > & ids, size_t ret_num) const{
@@ -33,6 +33,9 @@ class recommender_impl : public recommender_base{
   void clear(){}
   void clear_row(const string& id){}
   void update_row(const string& id, const sfv_diff_t& diff){
+  }
+  string name() const{
+    return string("recommender_impl");
   }
 };
 
