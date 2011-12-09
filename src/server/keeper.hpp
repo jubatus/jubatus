@@ -147,7 +147,6 @@ class keeper : public pfi::network::mprpc::rpc_server {
   pfi::concurrent::mutex mutex_;
   pfi::lang::shared_ptr<common::lock_service> zk_;
 
-
 };
 
 }

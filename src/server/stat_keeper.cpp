@@ -3,6 +3,7 @@
 #include "stat_types.hpp"
 
 using namespace jubatus;
+
 using namespace jubatus::server;
 
 int main(int args, char** argv){

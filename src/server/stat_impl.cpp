@@ -13,7 +13,7 @@ public:
   stat_impl_(const server_argv& a)
     : stat<stat_impl_>(a.timeout),
       p_(new stat_serv(a))
-  {};
+  {    p_->use_cht();   };
   int push(std::string& arg0, std::string arg1, double arg2) //@cht
   { JWLOCK__(p_); return p_->push(arg1, arg2); };
 
