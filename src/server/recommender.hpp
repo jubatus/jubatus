@@ -51,7 +51,7 @@ struct converter_config {
 
 struct config_data
 {
-  std::string storage_type; // inverted_index|minhash|lsh
+  std::string method; // inverted_index|minhash|lsh
   converter_config converter;
 };
 

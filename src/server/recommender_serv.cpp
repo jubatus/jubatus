@@ -34,7 +34,7 @@ namespace server {
 recommender_serv::recommender_serv(const server_argv& a):
   jubatus_serv<recommender_base,std::string>(a, a.tmpdir)
 {
-  model_ = make_model();
+  //  model_ = make_model();
 
   function<std::string(const recommender_base*)>
     getdiff(&recommender_serv::get_diff);
@@ -97,7 +97,7 @@ int recommender_serv::clear(int)
 
 pfi::lang::shared_ptr<recommender_base> recommender_serv::make_model(){
   return pfi::lang::shared_ptr<recommender_base>
-    (jubatus::recommender::create_recommender(model_->type()));
+    (jubatus::recommender::create_recommender(config_.method));
 }  
 
 void recommender_serv::after_load(){

@@ -73,9 +73,9 @@ struct config_data {
 public:
 
   
-  MSGPACK_DEFINE(storage_type, converter);  
+  MSGPACK_DEFINE(method, converter);  
 
-  std::string storage_type;
+  std::string method;
   converter_config converter;
 };
 

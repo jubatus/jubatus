@@ -33,7 +33,7 @@ message converter_config {
 }
 
 message config_data {
-  0: string storage_type
+  0: string method
   1: converter_config converter
 }
 
