@@ -134,3 +134,5 @@ let print_structdef = function
     print_endline " members:";
     List.iter print_member members;;
 
+(* prototype -> bool *)
+let include_cht_api (_,_,_,decorators,_) = List.mem "//@cht" decorators;;

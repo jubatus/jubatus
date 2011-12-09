@@ -15,32 +15,50 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-#include "membership.hpp"
+
+#include "gtest/gtest.h"
+#include "stat_client.hpp"
+#include <vector>
+#include <string>
+#include "test_util.hpp"
 
 using namespace std;
+using namespace jubatus;
 
-namespace jubatus {
-namespace common {
+namespace {
 
-TEST(util, build_loc_str) {
-  EXPECT_EQ("127.0.0.1_9199", build_loc_str("127.0.0.1", 9199));
-}
+  class stat_test : public ::testing::Test {
+  protected:
+    pid_t child_;
 
-TEST(util, build_existence_path) {
-  string s;
-  EXPECT_TRUE(build_existence_path("/path/base", "127.0.0.1", 9199, s));
-  EXPECT_EQ("/path/base/127.0.0.1_9199", s);
-}
+    stat_test(){
+      child_ = fork_process("stat", 9197);
+    };
+    virtual ~stat_test(){
+      kill_process(child_);
+    };
+    virtual void restart_process(){
 
-TEST(util, revert) {
-  string name = "127.0.0.1_9199";
-  string ip;
-  int port;
-  ASSERT_TRUE(revert(name, ip, port));
-  EXPECT_EQ("127.0.0.1", ip);
-  EXPECT_EQ(9199, port);
-}
+      kill_process(this->child_);
+      this->child_ = fork_process("stat");
+    };
+  };
 
+
+TEST_F(stat_test, small) {
+
+  client::stat c("localhost", 9197, 10);
+  c.push("", "hoge", 12);
+  ASSERT_DOUBLE_EQ(12.0, c.sum("", "hoge", 0));
+
+  // FIXME: add more tests
+  //  ASSERT_DOUBLE_EQ(12.0, c.stddev("", "hoge", 0));
+  ASSERT_DOUBLE_EQ(12.0, c.max("", "hoge", 0));
+  ASSERT_DOUBLE_EQ(12.0, c.min("", "hoge", 0));
+
+  //  ASSERT_DOUBLE_EQ(12.0, c.entropy("", "hoge", 0));
+
+  ASSERT_EQ(0, c.save("", __func__));
+  ASSERT_EQ(0, c.load("", __func__));
 }
 }

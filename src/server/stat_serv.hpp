@@ -15,15 +15,31 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "map_fold_rpc.hpp"
+#pragma once
 
-using namespace jubatus;
-using namespace std;
+#include "../stat/stat.hpp"
+#include "jubatus_serv.hpp"
 
-map<std::string,int> get(int i){
-  return map<std::string,int>();
+namespace jubatus{
+namespace server{
+
+class stat_serv : public jubatus_serv<jubatus::stat::stat, int>
+{
+public:
+  stat_serv(const server_argv&);  
+  virtual ~stat_serv();
+
+  pfi::lang::shared_ptr<jubatus::stat::stat> make_model();
+  void after_load();
+
+  int push(const std::string& key, double value);
+  double sum(const std::string&, int) const ;
+  double stddev(const std::string&, int) const ;
+  double max(const std::string&, int) const ;
+  double min(const std::string&, int) const ;
+  double entropy(const std::string&, int) const ;
+  double moment(const std::string&, int) const;
+};
+
 }
-
-void fold(map<std::string, int>& m, map<std::string, int>& n){
-}
-
+} // namespace jubatus

@@ -6,6 +6,11 @@
 namespace jubatus {
 namespace storage {
 
+shared_ptr<norm_base> make_norm() {
+  return shared_ptr<norm_base>(new norm_none());
+}
+
+
 using namespace std;
 
 // TEST(recommender_storage, empty) {

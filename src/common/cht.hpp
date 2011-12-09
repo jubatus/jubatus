@@ -24,12 +24,10 @@
 
 #include <pficommon/lang/shared_ptr.h>
 
-#include "zk.hpp"
+#include "lock_service.hpp"
 
 namespace jubatus{
-
-  // using SHA-512. see crypt(2). recommended: glibc >= 2.7
-  static const std::string SALT_BASE = "$6$jubatus$";
+namespace common{
 
   static const unsigned int NUM_VSERV = 8;
   
@@ -38,19 +36,23 @@ namespace jubatus{
 
   class cht{
   public:
-    cht(zk&, const std::string&);
+    cht(pfi::lang::shared_ptr<lock_service>, const std::string&);
     ~cht();
 
     // node :: ip_port
     // register_node :: node -> bool;
-    bool register_node(const std::string&, int);
+    void register_node(const std::string&, int);
 
     // find(hash)    :: key -> [node] where  hash(node0) <= hash(key) < hash(node1) < hash(node2) < ...
     bool find(const std::string& host, int port, std::vector<std::pair<std::string,int> >&);
     bool find(const std::string&, std::vector<std::pair<std::string,int> >&);
 
+    // run just once in starting up the process: creates <name>/cht directory.
+    static void setup_cht_dir(lock_service&, const std::string&);
+
   private:
     std::string name_;
-    pfi::lang::shared_ptr<zk> zk_;
+    pfi::lang::shared_ptr<lock_service> lock_service_;
   }; //cht  
-} //jubatu
+}
+}

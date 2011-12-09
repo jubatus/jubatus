@@ -28,6 +28,7 @@ using std::vector;
 using std::string;
 
 namespace jubatus{
+namespace common{
   
   zk::zk(const std::string& hosts, int timeout, const std::string& logfile):
     zh_(NULL),
@@ -120,10 +121,13 @@ namespace jubatus{
     int rc = zoo_wexists(zh_, path.c_str(), my_znode_watcher, fp, NULL);
     return (rc==ZOK);
   }
-
   void zk::list(const std::string& path, std::vector<std::string>& out){
-    struct String_vector s;
     scoped_lock lk(m_);
+    list_(path, out);
+  };
+
+  void zk::list_(const std::string& path, std::vector<std::string>& out){
+    struct String_vector s;
     int rc = zoo_get_children(zh_, path.c_str(), 0, &s);
     if(rc == ZOK){
       for(int i=0; i<s.count; ++i){
@@ -172,12 +176,16 @@ namespace jubatus{
   }
 
   const std::string& zk::get_hosts()const{ return hosts_; }
+  const std::string zk::type()const{
+    return "zk";
+  }
 
   bool zkmutex::lock(){
     pfi::concurrent::scoped_lock lk(m_);
     LOG(ERROR) << "not implemented:" << __func__;
     while(!has_lock_){
       if(try_lock()) break;
+      sleep(1);
     }
     return true;
   };
@@ -186,18 +194,18 @@ namespace jubatus{
     pfi::concurrent::scoped_lock lk(m_);
     if(has_lock_)return has_lock_;
     string prefix = path_ + "/lock_";
-    zk_->create_seq(prefix, seqfile_);
+    zk_.create_seq(prefix, seqfile_);
 
     if(seqfile_ == "") return false;
 
     vector<string> list;
-    zk_->list(path_, list);
+    zk_.list(path_, list);
 
     if(list.empty()) return false;
 
     has_lock_ = ((path_ + "/" + list[0]) == seqfile_);
     if(not has_lock_){
-      zk_->remove(seqfile_);
+      zk_.remove(seqfile_);
     }
     DLOG(INFO) << "got lock for " << path_ << " (" << seqfile_ << ") ";
     return has_lock_;
@@ -205,7 +213,7 @@ namespace jubatus{
   bool zkmutex::unlock(){
     pfi::concurrent::scoped_lock lk(m_);
     if(has_lock_){
-      zk_->remove(seqfile_);
+      zk_.remove(seqfile_);
     }
     return true;
   };
@@ -228,5 +236,5 @@ namespace jubatus{
     }
     
   }
-
+}
 }
