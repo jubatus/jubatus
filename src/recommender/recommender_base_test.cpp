@@ -39,9 +39,18 @@ class recommender_impl : public recommender_base{
   void clear_row(const string& id){}
   void update_row(const string& id, const sfv_diff_t& diff){
   }
-  string name() const{
+  string type() const{
     return string("recommender_impl");
   }
+  bool save(std::ostream&){return true;};
+  bool load(std::istream&){return false;};
+  storage::recommender_storage_base* get_storage(){
+    return NULL;
+  }
+  const storage::recommender_storage_base* get_const_storage()const{
+    return NULL;
+  }
+
 };
 
 TEST(recommender_base, complete_row) {

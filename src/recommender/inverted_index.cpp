@@ -81,9 +81,26 @@ void inverted_index::update_row(const std::string& id, const sfv_diff_t& diff){
   }
 }
 
-string inverted_index::name() const {
+string inverted_index::type() const {
   return string("inverted_index");
 }
+bool inverted_index::save(std::ostream& os){
+  pfi::data::serialization::binary_oarchive oa(os);
+  oa << inv_;
+  return true;
+}
+bool inverted_index::load(std::istream& is){
+  pfi::data::serialization::binary_iarchive ia(is);
+  ia >> inv_;
+  return true;
+}
+storage::recommender_storage_base* inverted_index::get_storage(){
+  return reinterpret_cast<storage::recommender_storage_base*>(&inv_);
+}
+const storage::recommender_storage_base* inverted_index::get_const_storage()const{
+  return reinterpret_cast<const storage::recommender_storage_base*>(&inv_);
+}
+
 
 } // namespace recommender
 } // namespace jubatus

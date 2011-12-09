@@ -24,14 +24,13 @@ public:
     rpc_server::add<config_data(std::string, int32_t) >("get_config", pfi::lang::bind(&Impl::get_config, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, std::string, int32_t) >("clear_row", pfi::lang::bind(&Impl::clear_row, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
     rpc_server::add<int32_t(std::string, std::string, datum) >("update_row", pfi::lang::bind(&Impl::update_row, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
-    rpc_server::add<int32_t(std::string, int32_t) >("build", pfi::lang::bind(&Impl::build, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, int32_t) >("clear", pfi::lang::bind(&Impl::clear, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<datum(std::string, std::string, int32_t) >("complete_row_from_id", pfi::lang::bind(&Impl::complete_row_from_id, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
     rpc_server::add<datum(std::string, datum) >("complete_row_from_data", pfi::lang::bind(&Impl::complete_row_from_data, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<similar_result(std::string, std::string, size_t) >("similar_row_from_id", pfi::lang::bind(&Impl::similar_row_from_id, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
     rpc_server::add<similar_result(std::string, std::pair<datum, size_t >) >("similar_row_from_data", pfi::lang::bind(&Impl::similar_row_from_data, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<datum(std::string, std::string, int32_t) >("decode_row", pfi::lang::bind(&Impl::decode_row, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
-    rpc_server::add<std::vector<std::pair<std::string, datum > >(std::string, int32_t) >("get_all_rows", pfi::lang::bind(&Impl::get_all_rows, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<std::vector<std::string >(std::string, int32_t) >("get_all_rows", pfi::lang::bind(&Impl::get_all_rows, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, std::string) >("save", pfi::lang::bind(&Impl::save, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, std::string) >("load", pfi::lang::bind(&Impl::load, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<std::string(int32_t) >("get_diff", pfi::lang::bind(&Impl::get_diff, static_cast<Impl*>(this), pfi::lang::_1));

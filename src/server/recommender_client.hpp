@@ -28,10 +28,6 @@ public:
       return call<int32_t(std::string, std::string, datum)>("update_row")(arg0, arg1, arg2);
     }
 
-    int32_t build(std::string arg0, int32_t arg1) {
-      return call<int32_t(std::string, int32_t)>("build")(arg0, arg1);
-    }
-
     int32_t clear(std::string arg0, int32_t arg1) {
       return call<int32_t(std::string, int32_t)>("clear")(arg0, arg1);
     }
@@ -56,8 +52,8 @@ public:
       return call<datum(std::string, std::string, int32_t)>("decode_row")(arg0, arg1, arg2);
     }
 
-    std::vector<std::pair<std::string, datum > > get_all_rows(std::string arg0, int32_t arg1) {
-      return call<std::vector<std::pair<std::string, datum > >(std::string, int32_t)>("get_all_rows")(arg0, arg1);
+    std::vector<std::string > get_all_rows(std::string arg0, int32_t arg1) {
+      return call<std::vector<std::string >(std::string, int32_t)>("get_all_rows")(arg0, arg1);
     }
 
     int32_t save(std::string arg0, std::string arg1) {

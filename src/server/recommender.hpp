@@ -51,11 +51,7 @@ struct converter_config {
 
 struct config_data
 {
-  std::string storage_norm_name;
-
-  size_t all_anchor_num;
-  size_t anchor_num_per_data;
-
+  std::string storage_type; // inverted_index|minhash|lsh
   converter_config converter;
 };
 
@@ -84,9 +80,6 @@ public:
   int update_row(std::string id, datum);
 
   //@broadcast
-  int build(int);
-
-  //@broadcast
   int clear(int);
 
   //@cht
@@ -104,6 +97,6 @@ public:
 
   // for debug use;
   //@broadcast
-  std::vector<tuple<std::string, datum> > get_all_rows(int) const ;
+  std::vector<std::string> get_all_rows(int) const ;
 
 };

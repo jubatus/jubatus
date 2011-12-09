@@ -73,11 +73,9 @@ struct config_data {
 public:
 
   
-  MSGPACK_DEFINE(storage_norm_name, all_anchor_num, anchor_num_per_data, converter);  
+  MSGPACK_DEFINE(storage_type, converter);  
 
-  std::string storage_norm_name;
-  size_t all_anchor_num;
-  size_t anchor_num_per_data;
+  std::string storage_type;
   converter_config converter;
 };
 

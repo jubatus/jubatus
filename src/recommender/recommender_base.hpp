@@ -23,6 +23,7 @@
 #include "../common/type.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
 #include "recommender_type.hpp"
+#include "../storage/recommender_storage_base.hpp"
 
 namespace jubatus {
 namespace recommender {
@@ -36,12 +37,17 @@ public:
   virtual void clear() = 0;
   virtual void clear_row(const std::string& id) = 0;
   virtual void update_row(const std::string& id, const sfv_diff_t& diff) = 0;
-  virtual std::string name() const = 0;
+
+  virtual std::string type() const = 0;
+  virtual bool save(std::ostream&) = 0;
+  virtual bool load(std::istream&) = 0;
+  virtual storage::recommender_storage_base* get_storage() = 0;
+  virtual const storage::recommender_storage_base* get_const_storage() const = 0;
 
   void similar_row(const std::string& id, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
   void complete_row(const std::string& id, sfv_t& ret) const;
   void complete_row(const sfv_t& query, sfv_t& ret) const;
-  void decode_row(const std::string& id, sfv_t& ret) const; 
+  void decode_row(const std::string& id, sfv_t& ret) const;
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
 protected:

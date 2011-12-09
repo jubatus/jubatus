@@ -94,7 +94,7 @@ namespace {
     virtual void restart_process(){
 
       kill_process(this->child_);
-      this->child_ = fork_process("classifier");
+      this->child_ = fork_process("classifier", 9199);
     };
   };
 

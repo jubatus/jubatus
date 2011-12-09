@@ -113,9 +113,28 @@ void lsh::update_row(const string& id, const sfv_diff_t& diff){
   row2lshvals_.set_row(id, bv);
 }
 
-string lsh::name() const{
+string lsh::type() const{
   return string("lsh");
 }
+bool lsh::save(std::ostream& os){
+  pfi::data::serialization::binary_oarchive oa(os);
+  oa << column2baseval_;
+  oa << row2lshvals_;
+  return true;
+}
+bool lsh::load(std::istream& is){
+  pfi::data::serialization::binary_iarchive ia(is);
+  ia >> column2baseval_;
+  ia >> row2lshvals_;
+  return true;
+}
+storage::recommender_storage_base* lsh::get_storage(){
+  return reinterpret_cast<storage::recommender_storage_base*>(&row2lshvals_);
+}
+const storage::recommender_storage_base* lsh::get_const_storage()const{
+  return reinterpret_cast<const storage::recommender_storage_base*>(&row2lshvals_);
+}
+
 
 } // namespace recommender
 } // namespace jubatus

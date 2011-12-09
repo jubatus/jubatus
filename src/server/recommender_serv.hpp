@@ -29,12 +29,14 @@
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../recommender/recommender_base.hpp"
 
+using jubatus::recommender::recommender_base;
+
 namespace jubatus {
 namespace server {
 
-typedef std::vector<std::pair<std::string, datum> > rows;
+typedef std::vector<std::pair<std::string, jubatus::datum> > rows;
 
-class recommender_serv : public jubatus_serv<storage::inverted_index_storage, int>
+class recommender_serv : public jubatus_serv<recommender_base, std::string>
 {
 public:
   recommender_serv(const server_argv&);
@@ -45,10 +47,9 @@ public:
 
   int clear_row(std::string id, int);
   int update_row(std::string id, datum dat);
-  int build(int);
   int clear(int);
 
-  pfi::lang::shared_ptr<storage::inverted_index_storage> make_model();
+  pfi::lang::shared_ptr<recommender_base> make_model();
   void after_load();
 
   datum complete_row_from_id(std::string id, int);
@@ -57,15 +58,15 @@ public:
   similar_result similar_row_from_data(std::pair<datum, size_t>);
 
   datum decode_row(std::string id, int);
-  rows get_all_rows(int);
+  std::vector<std::string> get_all_rows(int);
 
+  static std::string get_diff(const recommender_base*);
+  static int put_diff(recommender_base*, std::string v);
+  static int reduce(const recommender_base*, const std::string&, std::string&);
+  
 private:
-  void init();
 
   config_data config_;
-  pfi::lang::shared_ptr<jubatus::recommender::recommender_base> recommender_;
-  //  pfi::lang::shared_ptr<jubatus::recommender::recommender> recommender_;
-  //  pfi::lang::shared_ptr<jubatus::recommender::recommender_builder> recommender_builder_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
 
   uint64_t clear_row_cnt_;
