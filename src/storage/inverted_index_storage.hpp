@@ -42,9 +42,9 @@ public:
 
   void calc_scores(const sfv_t& sfv, pfi::data::unordered_map<std::string, float>& scores) const;
 
-  void get_diff(sparse_matrix_storage& diff) const;
-  void set_mixed_and_clear_diff(const sparse_matrix_storage& mixed_diff);
-  void mix(const sparse_matrix_storage& diff);
+  void get_diff(std::string& diff_str) const;
+  void set_mixed_and_clear_diff(const std::string& mixed_diff);
+  void mix(const std::string& lhs_str, std::string& rhs_str) const;
 
   std::string name() const;
 

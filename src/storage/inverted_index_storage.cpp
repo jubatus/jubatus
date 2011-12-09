@@ -43,8 +43,8 @@ void inverted_index_storage::clear(){
   inv_diff_.clear();
 }
 
-void inverted_index_storage::get_diff(sparse_matrix_storage& diff) const{
-  diff.clear();
+void inverted_index_storage::get_diff(std::string& diff_str) const {
+  sparse_matrix_storage diff;
   for (tbl_t::const_iterator it = inv_diff_.begin(); it != inv_diff_.end(); ++it){
     vector<pair<string, float> > columns;
     for (row_t::const_iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2){
@@ -52,9 +52,21 @@ void inverted_index_storage::get_diff(sparse_matrix_storage& diff) const{
     }
     diff.set_row(it->first, columns);
   }
+
+  ostringstream os;
+  {
+    pfi::data::serialization::binary_oarchive bo(os);
+    bo << diff;
+  }
+  diff_str = os.str(); // TODO remove redudant copy
 }
 
-void inverted_index_storage::set_mixed_and_clear_diff(const sparse_matrix_storage& mixed_diff) {
+void inverted_index_storage::set_mixed_and_clear_diff(const string& mixed_diff_str){
+  istringstream is(mixed_diff_str);
+  pfi::data::serialization::binary_iarchive bi(is);
+  sparse_matrix_storage mixed_diff;
+  bi >> mixed_diff;
+
   vector<string> ids;
   mixed_diff.get_all_row_ids(ids);
   for (size_t i = 0; i < ids.size(); ++i){
@@ -73,18 +85,35 @@ void inverted_index_storage::set_mixed_and_clear_diff(const sparse_matrix_storag
   inv_diff_.clear();
 }
 
-void inverted_index_storage::mix(const sparse_matrix_storage& diff){
+void inverted_index_storage::mix(const string& lhs, string& rhs) const{
+  sparse_matrix_storage lhs_diff;
+  {
+    istringstream is(lhs);
+    pfi::data::serialization::binary_iarchive bi(is);
+    bi >> lhs_diff;
+  }
+  sparse_matrix_storage rhs_diff;
+  {
+    istringstream is(rhs);
+    pfi::data::serialization::binary_iarchive bi(is);
+    bi >> rhs_diff;
+  }
+
   vector<string> ids;
-  diff.get_all_row_ids(ids);
+  lhs_diff.get_all_row_ids(ids);
   for (size_t i = 0; i < ids.size(); ++i){
     const string& row = ids[i];
-    row_t& v = inv_[row];
     vector<pair<string, float> > columns;
-    diff.get_row(row, columns);
-    for (size_t j = 0; j < columns.size(); ++j){
-      v[column2id_.get_id(columns[j].first)] = columns[j].second;
-    }
+    lhs_diff.get_row(row, columns);
+    rhs_diff.set_row(row, columns);
   }
+
+  ostringstream os;
+  {
+    pfi::data::serialization::binary_oarchive bo(os);
+    bo << rhs_diff;
+  }
+  rhs = os.str(); // TODO remove redudant copy
 }
 
 bool inverted_index_storage::save(std::ostream& os){ 
