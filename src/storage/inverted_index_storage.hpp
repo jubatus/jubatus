@@ -44,6 +44,9 @@ public:
 
   std::string name() const;
 
+  bool save(std::ostream& os);
+  bool load(std::istream& is);
+
 private:
   friend class pfi::data::serialization::access;
   template <class Ar>

@@ -51,6 +51,19 @@ void inverted_index_storage::get_diff(sparse_matrix_storage& sms) const{
 void inverted_index_storage::set_mixed_and_clear_diff(sparse_matrix_storage& mixed) const{
 }
 
+bool inverted_index_storage::save(std::ostream& os){ 
+  pfi::data::serialization::binary_oarchive oa(os);
+  oa << *this;
+  return true;
+}
+
+bool inverted_index_storage::load(std::istream& is){
+  pfi::data::serialization::binary_iarchive ia(is);
+  ia >> *this;
+  return true;
+}
+
+
 std::string inverted_index_storage::name() const{
   return string("inverted_index_storage");
 }

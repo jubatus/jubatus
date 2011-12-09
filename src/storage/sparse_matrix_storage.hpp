@@ -45,7 +45,6 @@ public:
 
   bool save(std::ostream&);
   bool load(std::istream&);
-  std::string type;
 
 private:
   friend class pfi::data::serialization::access;
@@ -55,8 +54,8 @@ private:
       & MEMBER(column2id_);
   }
 
-  key_manager column2id_;
   tbl_t tbl_;
+  key_manager column2id_;
 };
 
 }

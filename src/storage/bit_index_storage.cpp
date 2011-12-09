@@ -75,6 +75,18 @@ void bit_index_storage::similar_row(const bit_vector& bv, vector<pair<string, fl
   }
 }
 
+bool bit_index_storage::save(std::ostream& os){
+  pfi::data::serialization::binary_oarchive oa(os);
+  oa << *this;
+  return true;
+}
+
+bool bit_index_storage::load(std::istream& is){
+  pfi::data::serialization::binary_iarchive ia(is);
+  ia >> *this;
+  return true;
+}
+
 string bit_index_storage::name() const{
   return string("bit_index_storage");
 }
