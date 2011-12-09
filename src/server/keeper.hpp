@@ -134,7 +134,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
     R result;
     for(size_t i=0; i<list.size(); ++i){
-      const std::pair<std::string, int>& c = list[0];
+      const std::pair<std::string, int>& c = list[i];
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
       result = cli.call<R(std::string,std::string,A)>(method_name)(name, key, arg);
     }

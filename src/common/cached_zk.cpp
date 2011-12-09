@@ -92,8 +92,10 @@ namespace common{
     scoped_lock lk(m_);
     if(path == NULL){
       list_cache_.clear();
+      znode_cache_.clear();
     }else{
       list_cache_.erase(std::string(path));
+      znode_cache_.erase(std::string(path));
     }
   }
 
@@ -114,9 +116,43 @@ namespace common{
       { LOG(INFO) << "ZOO_(DELETED|NOTWATCHING|SESSION)_EVENT: " << path;  }
       zk->clear_cache(path);
     }
-    // ZOO_CHANGED_EVENT => ignore
+    // ZOO_CHANGED_EVENT => ignore (FIXME, when read() cache going to be modified this needs fix)
     // ZOO_CREATED_EVENT => ignore
   }
+
+
+  bool cached_zk::read(const std::string& path, std::string& out){
+    
+    scoped_lock lk(m_);
+    std::map<std::string, std::string>::const_iterator it = znode_cache_.find(path);
+    if(it == znode_cache_.end()){
+      //first time. get list to create cache and set the watcher at the same time.
+      {DLOG(INFO) << "creating cache: " << path; }
+      if(read_(path, out)){
+        znode_cache_[path] = out;
+      }else{
+        znode_cache_.erase(path);
+        return false;
+      }
+      
+    }else{
+      //      {DLOG(INFO) << it->second.size() << " caches found: " << path; }
+      out = it->second;
+    }
+    return true;
+  }
+  bool zk::read_(const std::string& path, std::string& out){
+    char buf[1024];
+    int buflen = 1024;
+    int rc = zoo_wget(zh_, path.c_str(), cached_zk::update_cache, this, buf, &buflen, NULL);
+    if(rc == ZOK){
+      out = string(buf, buflen);
+      return buflen <= 1024;
+    }else{
+      LOG(ERROR) << zerror(rc);
+      return false;
+    }
+  };
   
 }
 }

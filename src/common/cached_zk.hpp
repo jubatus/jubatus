@@ -34,8 +34,9 @@ namespace common {
     void list(const std::string& path, std::vector<std::string>& out);
     void hd_list(const std::string& path, std::string& out);
 
-    // TBD:
-    //    bool read(const std::string& path, std::string& out);
+    // reads data (should be smaller than 1024B)
+    bool read(const std::string& path, std::string& out);
+
     const std::string type() const;
 
     void check_and_update(const std::string& path);
@@ -46,6 +47,7 @@ namespace common {
   private:
     void list_(const std::string& path, std::set<std::string>& out);
     std::map<std::string, std::set<std::string> > list_cache_;
+    std::map<std::string, std::string> znode_cache_;
 
   };
 }
