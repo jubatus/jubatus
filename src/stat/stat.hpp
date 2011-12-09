@@ -39,10 +39,9 @@ public:
   double entropy(const std::string &key);
   double moment(const std::string &key);
 
-  const std::string type; //messy
-
   bool save(std::ostream&);
   bool load(std::istream&);
+  std::string type()const;
 
 private:
   friend class pfi::data::serialization::access;

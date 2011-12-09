@@ -52,6 +52,7 @@ public:
 
   bool save(std::ostream& os);
   bool load(std::istream& is);
+  std::string type()const;
 private:
   friend class pfi::data::serialization::access;
   template<class Ar>

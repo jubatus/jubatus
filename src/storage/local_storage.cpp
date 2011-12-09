@@ -31,7 +31,6 @@ namespace storage{
 
 local_storage::local_storage()
 { 
-  type = "local";
 }
 
 local_storage::~local_storage() 
@@ -166,5 +165,8 @@ bool local_storage::load(std::istream& is){
   return true;
 }
 
+std::string local_storage::type()const{
+  return "local_storage";
+}
 }
 }

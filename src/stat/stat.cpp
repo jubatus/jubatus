@@ -11,7 +11,7 @@ using namespace pfi::system::time;
 namespace jubatus { namespace stat {
 
 stat::stat(size_t window_size)
-  : type("stat"), window_size_(window_size)
+  : window_size_(window_size)
 {
 }
 
@@ -96,6 +96,7 @@ bool stat::load(std::istream& is){
   ia >> *this;
   return true;
 }
+std::string stat::type()const{ return "stat"; };
 
 }
 } // namespace jubatus
