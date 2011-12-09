@@ -38,9 +38,7 @@ sparse_matrix_storage& sparse_matrix_storage::operator = (const sparse_matrix_st
 }
 
 void sparse_matrix_storage::set(const string& row, const string& column, float val){
-  float& v = tbl_[row][column2id_.get_id(column)];
-  //norm_ptr_->notify(row, v, val);
-  v = val;
+  tbl_[row][column2id_.get_id(column)] = val;
 }
 
 void sparse_matrix_storage::set_row(const string& row, const vector<pair<string, float> >& columns) {
@@ -79,27 +77,6 @@ void sparse_matrix_storage::get_row(const string& row, vector<pair<string, float
   const row_t& row_v = it->second;
   for (row_t::const_iterator row_it = row_v.begin(); row_it != row_v.end(); ++row_it){
     columns.push_back(make_pair(column2id_.get_key(row_it->first), row_it->second));
-  }
-}
-
-void sparse_matrix_storage::get_row_with_filter(const string& row, vector<pair<string, float> >& columns) const{
-  // no columns.clear();
-  tbl_t::const_iterator it = tbl_.find(row);
-  if (it == tbl_.end()){
-    return;
-  }
-  const row_t& row_v = it->second;
-  pfi::data::unordered_set<string> keys;
-  for (size_t i = 0; i < columns.size(); ++i){
-    keys.insert(columns[i].first);
-  }
-
-  for (row_t::const_iterator row_it = row_v.begin(); row_it != row_v.end(); ++row_it){
-    const string& key = column2id_.get_key(row_it->first);
-    if (keys.find(key) != keys.end()){
-      continue;
-    }
-    columns.push_back(make_pair(key, row_it->second));
   }
 }
 

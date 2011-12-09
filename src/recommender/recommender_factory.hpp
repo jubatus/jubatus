@@ -24,7 +24,7 @@ namespace recommender {
 
 class recommender_base;
 
-recommender_base* create_recommender(const std::string& name, const std::string& norm_name);
+recommender_base* create_recommender(const std::string& name);
 
 }
 }

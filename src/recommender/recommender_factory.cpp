@@ -25,7 +25,7 @@ using namespace std;
 namespace jubatus {
 namespace recommender {
 
-recommender_base* create_recommender(const string& name, const string& norm_name){
+recommender_base* create_recommender(const string& name){
   if (name == "inverted_index"){
     return new inverted_index;
   } else if (name == "minhash"){

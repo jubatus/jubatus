@@ -21,9 +21,11 @@
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
 #include "storage_type.hpp"
+#include "../common/type.hpp"
+#include "../common/key_manager.hpp"
 #include "index_storage.hpp"
 #include "sparse_matrix_storage.hpp"
-#include "../common/key_manager.hpp"
+
 
 namespace jubatus {
 namespace storage{
@@ -34,10 +36,11 @@ public:
   ~inverted_index_storage();
 
   void set(const std::string& row, const std::string& column, float val); 
-  void get_row(const std::string& row, std::vector<std::pair<std::string, float> >& columns) const;
 
   void remove(const std::string& row, const std::string& column);
   void clear();
+
+  void calc_scores(const sfv_t& sfv, pfi::data::unordered_map<std::string, float>& scores) const;
 
   void get_diff(sparse_matrix_storage& diff) const;
   void set_mixed_and_clear_diff(const sparse_matrix_storage& mixed_diff);
@@ -54,9 +57,13 @@ private:
   void serialize(Ar& ar) {
     MEMBER(inv_);
   }
+
+  void add_inp_scores(const std::string& row, float val, 
+                      pfi::data::unordered_map<uint64_t, float>& scores) const;
   
-  sparse_matrix_storage inv_;
-  sparse_matrix_storage inv_diff_;
+  tbl_t inv_;
+  tbl_t inv_diff_;
+  key_manager column2id_;
 };
 
 }
