@@ -28,12 +28,10 @@ using namespace pfi::lang;
 namespace jubatus {
 namespace recommender {
 
-inverted_index::inverted_index(shared_ptr<storage::recommender_storage> storage) : 
-  recommender_base(storage),
-  invs_(shared_ptr<storage::norm_base>(new storage::norm_none)){
+inverted_index::inverted_index() { 
 }
 
-inverted_index::~inverted_index(){
+inverted_index::~inverted_index() {
 }
 
 void inverted_index::similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const{
@@ -51,7 +49,7 @@ void inverted_index::similar_row(const sfv_t& query, std::vector<std::pair<std::
     const string& fid = query[i].first;
     float val = query[i].second;
     sfv_t column;
-    invs_.get_row(fid, column);
+    inv_.get_row(fid, column);
     for (size_t j = 0; j < column.size(); ++j){
       scores[column[j].first] += column[j].second * val;
     }
@@ -59,7 +57,7 @@ void inverted_index::similar_row(const sfv_t& query, std::vector<std::pair<std::
   
   vector<pair<float, string> > sorted_scores;
   for (pfi::data::unordered_map<string, float>::const_iterator it = scores.begin(); it != scores.end(); ++it){
-    float norm = origs_->calc_norm(it->first);
+    float norm = orig_.calc_norm(it->first);
     float normed_score = (norm != 0.f) ? it->second / norm / query_norm : 0.f;
     sorted_scores.push_back(make_pair(normed_score, it->first));
   }
@@ -70,24 +68,28 @@ void inverted_index::similar_row(const sfv_t& query, std::vector<std::pair<std::
 }
 
 void inverted_index::clear(){
-  origs_->clear();
-  invs_.clear();
+  orig_.clear();
+  inv_.clear();
 }
 
 void inverted_index::clear_row(const std::string& id){
   vector<pair<string, float> > columns;
-  origs_->get_row(id, columns);
+  orig_.get_row(id, columns);
   for (size_t i = 0; i < columns.size(); ++i){
-    invs_.remove(columns[i].first, id);
+    inv_.remove(columns[i].first, id);
   }
-  origs_->remove_row(id);
+  orig_.remove_row(id);
 }
 
 void inverted_index::update_row(const std::string& id, const sfv_diff_t& diff){
-  origs_->set_row(id, diff);
+  orig_.set_row(id, diff);
   for (size_t i = 0; i < diff.size(); ++i){
-    invs_.set(diff[i].first, id, diff[i].second);
+    inv_.set(diff[i].first, id, diff[i].second);
   }
+}
+
+string inverted_index::name() const {
+  return string("inverted_index");
 }
 
 } // namespace recommender

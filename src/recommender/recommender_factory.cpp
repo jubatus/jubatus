@@ -26,14 +26,12 @@ namespace jubatus {
 namespace recommender {
 
 recommender_base* create_recommender(const string& name, const string& norm_name){
-  pfi::lang::shared_ptr<storage::norm_base> norm_ptr(storage::create_norm(norm_name));
-  pfi::lang::shared_ptr<storage::recommender_storage> storage_ptr(new storage::recommender_storage(norm_ptr));
   if (name == "inverted_index"){
-    return new inverted_index(storage_ptr);
+    return new inverted_index();
   } else if (name == "minhash"){
-    return new minhash(storage_ptr);
+    return new minhash();
   } else if (name == "lsh"){
-    return new lsh(storage_ptr);
+    return new lsh();
   } else {
     throw std::runtime_error(string("unknown recommender :") + name);
   }

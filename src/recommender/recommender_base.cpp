@@ -27,8 +27,7 @@ namespace recommender {
 
 const uint64_t recommender_base::complete_row_similar_num_ = 7;
 
-recommender_base::recommender_base(pfi::lang::shared_ptr<storage::recommender_storage> storage) : 
-  origs_(storage) {
+recommender_base::recommender_base() { 
 }
 
 recommender_base::~recommender_base(){
@@ -37,23 +36,23 @@ recommender_base::~recommender_base(){
 void recommender_base::similar_row(const std::string& id, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const{
   ids.clear();
   sfv_t sfv;
-  origs_->get_row(id, sfv);
+  orig_.get_row(id, sfv);
   similar_row(sfv, ids, ret_num);
 }
 
 void recommender_base::decode_row(const std::string& id, sfv_t& ret) const{
   ret.clear();
-  origs_->get_row(id, ret);
+  orig_.get_row(id, ret);
 }
 
 void recommender_base::get_all_row_ids(std::vector<std::string>& ids) const{
-  origs_->get_all_row_ids(ids);
+  orig_.get_all_row_ids(ids);
 }
 
 void recommender_base::complete_row(const std::string& id, sfv_t& ret) const{
   ret.clear();
   sfv_t sfv;
-  origs_->get_row(id, sfv);
+  orig_.get_row(id, sfv);
   complete_row(sfv, ret);
 }
 
@@ -65,7 +64,7 @@ void recommender_base::complete_row(const sfv_t& query, sfv_t& ret) const{
 
   for (size_t i = 0; i < ids.size(); ++i){
     sfv_t row;
-    origs_->get_row(ids[i].first, row);
+    orig_.get_row(ids[i].first, row);
     float ratio = ids[i].second;
     for (size_t j = 0; j < row.size(); ++j){
       ret.push_back(make_pair(row[j].first, row[j].second * ratio));

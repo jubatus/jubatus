@@ -16,7 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <algorithm>
-#include "recommender_storage.hpp"
+#include "sparse_matrix_storage.hpp"
 #include "norm_base.hpp"
 
 using namespace std;
@@ -24,28 +24,28 @@ using namespace std;
 namespace jubatus {
 namespace storage {
 
-recommender_storage::recommender_storage(pfi::lang::shared_ptr<norm_base> norm_ptr) : norm_ptr_(norm_ptr){
+sparse_matrix_storage::sparse_matrix_storage() {
 }
 
-recommender_storage::~recommender_storage(){
+sparse_matrix_storage::~sparse_matrix_storage(){
 }
 
-void recommender_storage::set(const std::string& row, const std::string& column, float val){
+void sparse_matrix_storage::set(const std::string& row, const std::string& column, float val){
   float& v = tbl_[row][column2id_.get_id(column)];
-  norm_ptr_->notify(row, v, val);
+  //norm_ptr_->notify(row, v, val);
   v = val;
 }
 
-void recommender_storage::set_row(const std::string& row, const std::vector<std::pair<std::string, float> >& columns) {
+void sparse_matrix_storage::set_row(const std::string& row, const std::vector<std::pair<std::string, float> >& columns) {
   row_t& row_v = tbl_[row];
   for (size_t i = 0; i < columns.size(); ++i){
     float & v = row_v[column2id_.get_id(columns[i].first)];
-    norm_ptr_->notify(row, v, columns[i].second);
+    //norm_ptr_->notify(row, v, columns[i].second);
     v = columns[i].second;
   }
 }
  
-float recommender_storage::get(const std::string& row, const std::string& column) const {
+float sparse_matrix_storage::get(const std::string& row, const std::string& column) const {
   tbl_t::const_iterator it = tbl_.find(row);
   if (it == tbl_.end()){
     return 0.f;
@@ -63,7 +63,7 @@ float recommender_storage::get(const std::string& row, const std::string& column
   return cit->second;
 }
 
-void recommender_storage::get_row(const string& row, vector<pair<string, float> >& columns) const{
+void sparse_matrix_storage::get_row(const string& row, vector<pair<string, float> >& columns) const{
   columns.clear();
   tbl_t::const_iterator it = tbl_.find(row);
   if (it == tbl_.end()){
@@ -75,11 +75,13 @@ void recommender_storage::get_row(const string& row, vector<pair<string, float> 
   }
 }
 
-float recommender_storage::calc_norm(const std::string& row) const{
+/*
+float sparse_matrix_storage::calc_norm(const std::string& row) const{
   return norm_ptr_->calc_norm(row);
 }
+*/
 
-void recommender_storage::remove(const std::string& row, const std::string& column){
+void sparse_matrix_storage::remove(const std::string& row, const std::string& column){
   tbl_t::iterator it = tbl_.find(row);
   if (it == tbl_.end()){
     return;
@@ -94,43 +96,46 @@ void recommender_storage::remove(const std::string& row, const std::string& colu
   if (cit == it->second.end()){
     return;
   }
-  norm_ptr_->notify(row, cit->second, 0.f);
+  //norm_ptr_->notify(row, cit->second, 0.f);
   it->second.erase(cit);
 }
 
-void recommender_storage::remove_row(const std::string& row){
+void sparse_matrix_storage::remove_row(const std::string& row){
   tbl_t::iterator it = tbl_.find(row);
   if (it == tbl_.end()){
     return;
   }
 
+  /*
   for (row_t::const_iterator cit = it->second.begin(); cit != it->second.end(); ++cit){
     norm_ptr_->notify(row, cit->second, 0.f);
   }
+  */
 
   tbl_.erase(it);
 }
 
 
-void recommender_storage::get_all_row_ids(std::vector<string>& ids) const{
+void sparse_matrix_storage::get_all_row_ids(std::vector<string>& ids) const{
   ids.clear();
   for (tbl_t::const_iterator it = tbl_.begin(); it != tbl_.end(); ++it){
     ids.push_back(it->first);
   }
 }
 
-void recommender_storage::clear() {
+void sparse_matrix_storage::clear() {
   column2id_.clear();
   tbl_.clear();
-  norm_ptr_->clear();
+  //norm_ptr_->clear();
 }
 
-bool recommender_storage::save(std::ostream& os) {
+bool sparse_matrix_storage::save(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << *this;
   return true;
 };
-bool recommender_storage::load(std::istream& is){
+
+bool sparse_matrix_storage::load(std::istream& is){
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> *this;
   return true;

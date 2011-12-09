@@ -25,14 +25,14 @@
 using namespace std;
 using namespace pfi::data;
 using namespace pfi::lang;
+using namespace jubatus::storage;
 
 namespace jubatus {
 namespace recommender {
 
 const uint64_t minhash::hash_prime = 0xc3a5c85c97cb3127ULL;
 
-minhash::minhash(shared_ptr<storage::recommender_storage> storage) : 
-  recommender_base(storage) {
+minhash::minhash(){
 }
 
 minhash::~minhash(){
@@ -44,36 +44,17 @@ void minhash::similar_row(const sfv_t& query, vector<pair<string, float> > & ids
 
   bit_vector query_bv;
   calc_minhash_values(query, query_bv);
-  
-  vector<pair<uint64_t, string> > scores;
-  for (unordered_map<string, bit_vector>::const_iterator it = row2minhashvals_.begin();
-       it != row2minhashvals_.end(); ++it){
-    uint64_t match_num = query_bv.calc_hamming_similarity(it->second);
-    if (scores.size() < ret_num){
-      scores.push_back(make_pair(match_num, it->first));
-    } else if (scores.size() == ret_num){
-      make_heap(scores.begin(), scores.end());
-    } else {
-      if (match_num <= scores.front().first) continue;
-      pop_heap(scores.begin(), scores.end());
-      scores.back() = make_pair(match_num, it->first);
-      push_heap(scores.begin(), scores.end());
-    }
-  }
-
-  sort(scores.rbegin(), scores.rend());
-  for (size_t i = 0; i < scores.size() && i < ret_num; ++i){
-    ids.push_back(make_pair(scores[i].second, (float)scores[i].first / hash_num_));
-  }
+  row2minhashvals_.similar_row(query_bv, ids, ret_num);
 }
 
 void minhash::clear(){
-  origs_->clear();
+  orig_.clear();
+  row2minhashvals_.clear();
 }
 
 void minhash::clear_row(const string& id){
-  origs_->remove_row(id);
-  row2minhashvals_.erase(id);
+  orig_.remove_row(id);
+  row2minhashvals_.remove_row(id);
 }
 
 void minhash::calc_minhash_values(const sfv_t& sfv, bit_vector& bv) const{
@@ -100,11 +81,13 @@ void minhash::calc_minhash_values(const sfv_t& sfv, bit_vector& bv) const{
 }
 
 void minhash::update_row(const string& id, const sfv_diff_t& diff){
-  origs_->set_row(id, diff);
-  bit_vector& bv = row2minhashvals_[id];
+  orig_.set_row(id, diff);
+
   sfv_t row;
-  origs_->get_row(id, row);
+  orig_.get_row(id, row);
+  bit_vector bv;
   calc_minhash_values(row, bv);
+  row2minhashvals_.set_row(id, bv);
 }
 
 void minhash::hash_mix64(uint64_t& a, uint64_t& b, uint64_t& c) {
@@ -130,7 +113,9 @@ float minhash::calc_hash(uint64_t a, uint64_t b, float val){
   return - log(r) / val;
 }
 
-
+string minhash::name() const{
+  return string("minhash");
+}
 
 } // namespace recommender
 } // namespace jubatus

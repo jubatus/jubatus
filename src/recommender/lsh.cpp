@@ -24,18 +24,17 @@
 using namespace std;
 using namespace pfi::data;
 using namespace pfi::lang;
+using namespace jubatus::storage;
 
 namespace jubatus {
 namespace recommender {
 
 static const uint64_t DEFAULT_BASE_NUM = 64; // should be in config
 
-lsh::lsh(shared_ptr<storage::recommender_storage> storage, uint64_t base_num)
-  : recommender_base(storage),base_num_(base_num) {
+lsh::lsh(uint64_t base_num){
 }
 
-lsh::lsh(shared_ptr<storage::recommender_storage> storage)
-  : recommender_base(storage), base_num_(DEFAULT_BASE_NUM) {
+lsh::lsh(){
 }
 
 lsh::~lsh(){
@@ -47,38 +46,18 @@ void lsh::similar_row(const sfv_t& query, vector<pair<string, float> > & ids, si
 
   bit_vector query_bv;
   calc_lsh_values(query, query_bv);
-  
-  vector<pair<uint64_t, string> > scores;
-  for (unordered_map<string, bit_vector>::const_iterator it = row2lshvals_.begin();
-       it != row2lshvals_.end(); ++it){
-    uint64_t match_num = query_bv.calc_hamming_similarity(it->second);
-    if (scores.size() < ret_num){
-      scores.push_back(make_pair(match_num, it->first));
-    } else if (scores.size() == ret_num){
-      make_heap(scores.begin(), scores.end());
-    } else {
-      if (match_num <= scores.front().first) continue;
-      pop_heap(scores.begin(), scores.end());
-      scores.back() = make_pair(match_num, it->first);
-      push_heap(scores.begin(), scores.end());
-    }
-  }
-
-  sort(scores.rbegin(), scores.rend());
-  for (size_t i = 0; i < scores.size() && i < ret_num; ++i){
-    ids.push_back(make_pair(scores[i].second, (float)scores[i].first / base_num_));
-  }
+  row2lshvals_.similar_row(query_bv, ids, ret_num);
 }
 
 void lsh::clear(){
-  origs_->clear();
+  orig_.clear();
   column2baseval_.clear();
   row2lshvals_.clear();
 }
 
 void lsh::clear_row(const string& id){
-  origs_->remove_row(id);
-  row2lshvals_.erase(id);
+  orig_.remove_row(id);
+  row2lshvals_.remove_row(id);
 }
 
 void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const{
@@ -120,11 +99,16 @@ void lsh::generate_column_base(const string& column){
 }
 
 void lsh::update_row(const string& id, const sfv_diff_t& diff){
-  origs_->set_row(id, diff);
-  bit_vector& bv = row2lshvals_[id];
+  orig_.set_row(id, diff);
   sfv_t row;
-  origs_->get_row(id, row);
+  orig_.get_row(id, row);
+  bit_vector bv;
   calc_lsh_values(row, bv);
+  row2lshvals_.set_row(id, bv);
+}
+
+string lsh::name() const{
+  return string("lsh");
 }
 
 } // namespace recommender

@@ -18,31 +18,32 @@
 #pragma once
 
 #include "recommender_base.hpp"
-#include "bit_vector.hpp"
+#include "../storage/bit_index_storage.hpp"
 
 namespace jubatus {
 namespace recommender {
 
 class minhash : public recommender_base {
 public:
-  minhash(pfi::lang::shared_ptr<storage::recommender_storage> recommender_storage_ptr);
+  minhash();
   ~minhash();
 
   void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
   void clear();
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const sfv_diff_t& diff);
+  std::string name() const;
 
 private:
 
-  void calc_minhash_values(const sfv_t& sfv, bit_vector& bv) const;
+  void calc_minhash_values(const sfv_t& sfv, storage::bit_vector& bv) const;
 
   static float calc_hash(uint64_t a, uint64_t b, float val);
   static void hash_mix64(uint64_t& a, uint64_t& b, uint64_t& c);
 
   static const uint64_t hash_prime;
   uint64_t hash_num_;
-  pfi::data::unordered_map<std::string, bit_vector> row2minhashvals_;
+  storage::bit_index_storage row2minhashvals_;
 };
 
 } // namespace recommender

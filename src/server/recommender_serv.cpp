@@ -34,7 +34,7 @@ namespace jubatus {
 namespace server {
 
 recommender_serv::recommender_serv(const server_argv& a):
-  jubatus_serv<storage::recommender_storage,int>(a, a.tmpdir)
+  jubatus_serv<storage::inverted_index_storage,int>(a, a.tmpdir)
 {
 }
 
@@ -115,11 +115,10 @@ int recommender_serv::clear(int)
   return 0;
 }
 
-pfi::lang::shared_ptr<storage::recommender_storage> recommender_serv::make_model(){
-  pfi::lang::shared_ptr<storage::norm_base> norm =
-    pfi::lang::shared_ptr<storage::norm_base>(storage::create_norm(config_.storage_norm_name));
-  return pfi::lang::shared_ptr<storage::recommender_storage>(new storage::recommender_storage(norm));
+pfi::lang::shared_ptr<storage::inverted_index_storage> recommender_serv::make_model(){
+  return pfi::lang::shared_ptr<storage::inverted_index_storage>(new storage::inverted_index_storage);
 }  
+
 void recommender_serv::after_load(){
   clear(0);
   init();

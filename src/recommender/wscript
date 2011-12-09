@@ -9,7 +9,6 @@ def build(bld):
 	  inverted_index.cpp
 	  lsh.cpp
 	  minhash.cpp
-	  bit_vector.cpp
 	  recommender_factory.cpp
 	 ''',
     target = 'jubatus_recommender',

@@ -17,17 +17,48 @@
 
 #pragma once
 
+#include <pficommon/data/serialization.h>
 #include <vector>
-#include <pficommon/data/unordered_map.h>
-#include "../common/type.hpp"
-#include "../storage/recommender_storage.hpp"
-#include "recommender_type.hpp"
-
+#include <stdint.h>
 
 namespace jubatus {
-namespace recommender {
+namespace storage {
 
+class bit_vector {
+public:
+  bit_vector();
+  ~bit_vector();
 
+  void resize_and_clear(uint64_t bit_num);
+  void set_bit(uint64_t pos);
+  uint64_t calc_hamming_similarity(const bit_vector& bv) const;
 
-} // namespace recommender
-} // namespace jubatus
+  static uint64_t pop_count(uint64_t r){
+    r = (r & 0x5555555555555555ULL) +
+      ((r >> 1) & 0x5555555555555555ULL);
+    r = (r & 0x3333333333333333ULL) +
+      ((r >> 2) & 0x3333333333333333ULL);
+    r = (r + (r >> 4)) & 0x0f0f0f0f0f0f0f0fULL;
+    r = r + (r >>  8);
+    r = r + (r >> 16);
+    r = r + (r >> 32);
+    return (uint64_t)(r & 0x7f);
+  }
+
+  uint64_t bit_num() const {
+    return bit_num_;
+  }
+
+private:
+  friend class pfi::data::serialization::access;
+  template <class Ar>
+  void serialize(Ar& ar) {
+    ar & MEMBER(bits_)
+      & MEMBER(bit_num_);
+  }
+
+  std::vector<uint64_t> bits_;
+  uint64_t bit_num_;
+};
+}
+}

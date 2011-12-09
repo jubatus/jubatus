@@ -17,50 +17,5 @@
 
 #pragma once
 
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/lang/shared_ptr.h>
-#include "storage_type.hpp"
-#include "../common/key_manager.hpp"
-
-namespace jubatus {
-namespace storage{
-
-class norm_base;
-
-class recommender_storage {
-public:
-  recommender_storage(pfi::lang::shared_ptr<norm_base> norm_ptr);
-  ~recommender_storage();
-
-  void set(const std::string& row, const std::string& column, float val); 
-  void set_row(const std::string& row, const std::vector<std::pair<std::string, float> >& columns);
-  float get(const std::string& row, const std::string& column) const;
-  void get_row(const std::string& row, std::vector<std::pair<std::string, float> >& columns) const;
-  float calc_norm(const std::string& row) const;
-  
-  void remove(const std::string& row, const std::string& column);
-  void remove_row(const std::string& row);
-  void get_all_row_ids(std::vector<std::string>& ids) const;
-  void clear();
-
-  bool save(std::ostream&);
-  bool load(std::istream&);
-  std::string type;
-
-private:
-  friend class pfi::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & MEMBER(tbl_)
-      & MEMBER(column2id_);
-  }
-
-  key_manager column2id_;
-  tbl_t tbl_;
-  pfi::lang::shared_ptr<norm_base> norm_ptr_;
-};
-
-}
-}
+#include "bit_index_storage.hpp"
+#include "inverted_index_storage.hpp"

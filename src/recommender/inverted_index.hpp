@@ -18,22 +18,24 @@
 #pragma once
 
 #include "recommender_base.hpp"
+#include "../storage/recommender_storage.hpp"
 
 namespace jubatus {
 namespace recommender {
 
 class inverted_index : public recommender_base {
 public:
-  inverted_index(pfi::lang::shared_ptr<storage::recommender_storage> recommender_storage_ptr);
+  inverted_index();
   ~inverted_index();
 
   void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
   void clear();
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const sfv_diff_t& diff);
+  std::string name() const;
 
 private:
-  storage::recommender_storage invs_;
+  storage::inverted_index_storage inv_;
 };
 
 } // namespace recommender

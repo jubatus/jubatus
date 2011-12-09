@@ -15,38 +15,33 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
-
-#include <vector>
-#include <stdint.h>
+#include "bit_vector.hpp"
 
 namespace jubatus {
-namespace recommender {
+namespace storage {
 
-class bit_vector {
-public:
-  bit_vector();
-  ~bit_vector();
+static const uint64_t BLOCKSIZE = 64;
 
-  void resize_and_clear(uint64_t bit_num);
-  void set_bit(uint64_t pos);
-  uint64_t calc_hamming_similarity(const bit_vector& bv) const;
+bit_vector::bit_vector() : bit_num_(0) {}
 
-  static uint64_t pop_count(uint64_t r){
-    r = (r & 0x5555555555555555ULL) +
-      ((r >> 1) & 0x5555555555555555ULL);
-    r = (r & 0x3333333333333333ULL) +
-      ((r >> 2) & 0x3333333333333333ULL);
-    r = (r + (r >> 4)) & 0x0f0f0f0f0f0f0f0fULL;
-    r = r + (r >>  8);
-    r = r + (r >> 16);
-    r = r + (r >> 32);
-    return (uint64_t)(r & 0x7f);
+bit_vector::~bit_vector() {}
+
+void bit_vector::resize_and_clear(uint64_t bit_num){
+  bit_num_ = bit_num;
+  bits_.resize((bit_num + BLOCKSIZE - 1) / BLOCKSIZE, 0);
+}
+
+void bit_vector::set_bit(uint64_t pos){
+  bits_[pos / BLOCKSIZE] |= (1LLU << (pos % BLOCKSIZE));
+}
+
+uint64_t  bit_vector::calc_hamming_similarity(const bit_vector& bv) const{
+  uint64_t match_num = 0;
+  for (size_t i = 0; i < bits_.size() && i < bv.bits_.size(); ++i){
+    uint64_t all_num = ((i+1) * BLOCKSIZE > bit_num_) ?  (i+1) * BLOCKSIZE - bit_num_ : BLOCKSIZE;
+    match_num += all_num - pop_count(bits_[i] ^ bv.bits_[i]);
   }
-
-private:
-  std::vector<uint64_t> bits_;
-  uint64_t bit_num_;
-};
+  return match_num;
+}
 }
 }

@@ -34,7 +34,7 @@ namespace server {
 
 typedef std::vector<std::pair<std::string, datum> > rows;
 
-class recommender_serv : public jubatus_serv<storage::recommender_storage,int>
+class recommender_serv : public jubatus_serv<storage::inverted_index_storage, int>
 {
 public:
   recommender_serv(const server_argv&);
@@ -48,7 +48,7 @@ public:
   int build(int);
   int clear(int);
 
-  pfi::lang::shared_ptr<storage::recommender_storage> make_model();
+  pfi::lang::shared_ptr<storage::inverted_index_storage> make_model();
   void after_load();
 
   datum complete_row_from_id(std::string id, int);
