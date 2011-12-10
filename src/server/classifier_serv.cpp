@@ -174,6 +174,7 @@ diffv classifier_serv::get_diff(const storage::storage_base* model){
 }
 
 int classifier_serv::put_diff(storage::storage_base* model, diffv v){
+  v /= (double) v.count;
   model->set_average_and_clear_diff(v.v);
   return 0;
 }
