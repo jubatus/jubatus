@@ -30,13 +30,18 @@ stat_serv::~stat_serv() {
 }
 
 pfi::lang::shared_ptr<stat::stat> stat_serv::make_model(){
-  return pfi::lang::shared_ptr<stat::stat>(new stat::stat(1024)); //FIXME
+  return pfi::lang::shared_ptr<stat::stat>(new stat::stat(config_.window_size)); //FIXME
 }
 // after load(..) called, users reset their own data
 void stat_serv::after_load(){
   //  stat_.reset();
 };
 
+int stat_serv::set_config(const config_data& config){
+  config_ = config;
+  model_ = make_model();
+  return 0;
+}
 int stat_serv::push(const std::string& key, double value){
   model_->push(key,value);
   return 0;
@@ -54,10 +59,10 @@ double stat_serv::min(const std::string& key, int) const {
   return model_->min(key);
 }
 double stat_serv::entropy(const std::string& key, int) const {
-  return model_->entropy(key);
+  return model_->entropy();
 }
-double stat_serv::moment(const std::string& key, int) const{
-  return model_->moment(key);
+double stat_serv::moment(const std::string& key, std::pair<int,double> nc) const{
+  return model_->moment(key, nc.first, nc.second);
 }
 
 

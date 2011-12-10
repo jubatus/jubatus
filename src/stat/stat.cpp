@@ -26,7 +26,6 @@ stat::~stat()
 
 void stat::push(const std::string &key, double val)
 {
-  pfi::concurrent::scoped_wlock lk(m_);
 
   {
     clock_time ct = get_clock_time();
@@ -46,37 +45,27 @@ void stat::push(const std::string &key, double val)
 
 double stat::sum(const std::string &key)
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-
   return stats_[key].sum_;
 }
 
 double stat::stddev(const std::string &key)
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-
   stat_val &st = stats_[key];
   return sqrt(moment(key, 2, st.sum_ / st.n_));
 }
 
 double stat::max(const std::string &key)
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-
   return stats_[key].max_;
 }
 
 double stat::min(const std::string &key)
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-
   return stats_[key].min_;
 }
 
 double stat::entropy()
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-
   size_t total = 0;
   for (pfi::data::unordered_map<std::string, stat_val>::iterator p = stats_.begin();
        p != stats_.end(); ++p) {
@@ -93,8 +82,6 @@ double stat::entropy()
 
 double stat::moment(const std::string &key, int n, double c)
 {
-  pfi::concurrent::scoped_rlock lk(m_);
-
   if (n < 0) return -1;
 
   stat_val &st = stats_[key];

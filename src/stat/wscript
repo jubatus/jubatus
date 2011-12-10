@@ -3,16 +3,12 @@ def configure(conf): pass
 
 def build(bld):
   bld.shlib(
-    source = [
-      'stat.cpp',
-#      'stat_server_impl.cpp',
-      ],
-
+    source = ['stat.cpp'],
     target = 'jubatus_stat',
     include = '.',
     use = 'PFICOMMON'
     )
-
+  
 #  bld.program(
 #    features = 'gtest',
 #    source = [

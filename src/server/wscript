@@ -6,21 +6,19 @@ def configure(conf):
 
 
 def build_one(bld, name, libraries = ''):
-  __sources = '%s_impl.cpp %s_serv.cpp server_util.cpp' % (name, name)
-  #if bld.env.HAVE_ZOOKEEPER_H:
-  #  __sources +=  ' mixer.cpp'
+  __sources = '%s_impl.cpp %s_serv.cpp' % (name, name)
   bld.program(
     source = __sources,
     target = 'juba'+name,
     includes = '.',
-    use = 'PFICOMMON jubacommon MSGPACK GLOG jubatus_%s %s' % (name, libraries)
+    use = 'jubatus_framework jubatus_%s %s' % (name, libraries)
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
       source = '%s_keeper.cpp server_util.cpp keeper.cpp' % name,
       target = 'juba%s_keeper' % name,
       includes = '.',
-      use = 'PFICOMMON jubacommon MSGPACK GLOG '
+      use = 'jubatus_framework '
       )
   bld.program(
     features = 'gtest',
@@ -32,17 +30,16 @@ def build_one(bld, name, libraries = ''):
 
 def build(bld):
 
-  # new code starts
-  #framework_source = 'server_util.cpp'
+  framework_source = 'server_util.cpp'
   #if bld.env.HAVE_ZOOKEEPER_H:
   #  framework_source +=  ' mixer.cpp'
 
-  #bld.shlib(
-  #  source = framework_source,
-  #  target = 'jubatus_framework',
-  #  includes = '.',
-  #  use = 'PFICOMMON jubacommon MSGPACK GLOG'
-  #  )
+  bld.shlib(
+    source = framework_source,
+    target = 'jubatus_framework',
+    includes = '.',
+    use = 'PFICOMMON jubacommon MSGPACK GLOG'
+    )
 
   #new classifier
   build_one(bld, "classifier", 'jubaconverter jubastorage')
@@ -53,7 +50,7 @@ def build(bld):
   #new recommender
   build_one(bld, "recommender", 'jubaconverter jubastorage')
 
-  #build_one(bld, "stat")
+  build_one(bld, "stat")
 
   n = bld.path.get_bld().make_node('test_input')
   n.mkdir()
@@ -61,9 +58,18 @@ def build(bld):
       source = bld.path.ant_glob('test_input/*'),
       target = n)
 
+  bld.install_files('${PREFIX}/include/jubatus/server', [
+      'jubatus_serv.hpp',
+      'keeper.hpp',
+      'server_util.hpp'
+      ])
   bld.install_files('${PREFIX}/include/jubatus/client', [
       'classifier_types.hpp',
       'classifier_client.hpp',
       'regression_types.hpp',
-      'regression_client.hpp'
+      'regression_client.hpp',
+      'recommender_types.hpp',
+      'recommender_client.hpp'
+      'stat_types.hpp',
+      'stat_client.hpp'
       ])

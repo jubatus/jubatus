@@ -14,6 +14,9 @@ public:
     : stat<stat_impl_>(a.timeout),
       p_(new stat_serv(a))
   {    p_->use_cht();   };
+  int set_config(std::string& arg0, config_data arg1) //@broadcast
+  { JWLOCK__(p_); return p_->set_config(arg1); };
+
   int push(std::string& arg0, std::string arg1, double arg2) //@cht
   { JWLOCK__(p_); return p_->push(arg1, arg2); };
 
@@ -32,7 +35,7 @@ public:
   double entropy(std::string& arg0, std::string arg1, int arg2) //@cht
   { JRLOCK__(p_); return p_->entropy(arg1, arg2); };
 
-  double moment(std::string& arg0, std::string arg1, int arg2) //@cht
+  double moment(std::string& arg0, std::string arg1, std::pair<int, double>  arg2) //@cht
   { JRLOCK__(p_); return p_->moment(arg1, arg2); };
 
   int save(std::string& arg0, std::string arg1) //@broadcast

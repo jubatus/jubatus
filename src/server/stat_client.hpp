@@ -12,6 +12,10 @@ public:
   stat(const std::string &host, uint64_t port, double timeout_sec)
     : rpc_client(host, port, timeout_sec) {}
 
+    int32_t set_config(std::string arg0, config_data arg1) {
+      return call<int32_t(std::string, config_data)>("set_config")(arg0, arg1);
+    }
+
     int32_t push(std::string arg0, std::string arg1, double arg2) {
       return call<int32_t(std::string, std::string, double)>("push")(arg0, arg1, arg2);
     }
@@ -36,8 +40,8 @@ public:
       return call<double(std::string, std::string, int32_t)>("entropy")(arg0, arg1, arg2);
     }
 
-    double moment(std::string arg0, std::string arg1, int32_t arg2) {
-      return call<double(std::string, std::string, int32_t)>("moment")(arg0, arg1, arg2);
+    double moment(std::string arg0, std::string arg1, std::pair<int32_t, double > arg2) {
+      return call<double(std::string, std::string, std::pair<int32_t, double >)>("moment")(arg0, arg1, arg2);
     }
 
     int32_t save(std::string arg0, std::string arg1) {

@@ -19,6 +19,7 @@
 
 #include "../stat/stat.hpp"
 #include "jubatus_serv.hpp"
+#include "stat_types.hpp"
 
 namespace jubatus{
 namespace server{
@@ -32,13 +33,17 @@ public:
   pfi::lang::shared_ptr<jubatus::stat::stat> make_model();
   void after_load();
 
+  int set_config(const config_data&);
   int push(const std::string& key, double value);
   double sum(const std::string&, int) const ;
   double stddev(const std::string&, int) const ;
   double max(const std::string&, int) const ;
   double min(const std::string&, int) const ;
   double entropy(const std::string&, int) const ;
-  double moment(const std::string&, int) const;
+  double moment(const std::string&, std::pair<int, double>) const;
+
+private:
+  jubatus::config_data config_;
 };
 
 }
