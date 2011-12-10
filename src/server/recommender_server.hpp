@@ -33,8 +33,6 @@ public:
     rpc_server::add<std::vector<std::string >(std::string, int32_t) >("get_all_rows", pfi::lang::bind(&Impl::get_all_rows, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, std::string) >("save", pfi::lang::bind(&Impl::save, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, std::string) >("load", pfi::lang::bind(&Impl::load, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
-    rpc_server::add<std::string(int32_t) >("get_diff", pfi::lang::bind(&Impl::get_diff, static_cast<Impl*>(this), pfi::lang::_1));
-    rpc_server::add<int32_t(std::string) >("put_diff", pfi::lang::bind(&Impl::put_diff, static_cast<Impl*>(this), pfi::lang::_1));
   }
 };
 

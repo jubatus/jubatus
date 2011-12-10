@@ -59,15 +59,8 @@ let prototype2impl (t,n,argvs,decorators,is_const) =
     (Stree.to_string t) n argvs_str
     (String.concat " " decorators) str
   in
-  if do_routing then
-    make_impl (Printf.sprintf "%s %sp_->%s(%s);" (make_lock_statement is_const)
-		 (make_return_statement t) n (argvs_str2 (List.length argvs)))
-  else
-    Printf.sprintf "#ifdef HAVE_ZOOKEEPER_H\n%s#else\n%s#endif\n"
-      (make_impl (Printf.sprintf "%s %sp_->%s_impl(%s);" (make_lock_statement is_const)
-		    (make_return_statement t) n (argvs_str2 (List.length argvs))))
-      (make_impl (Printf.sprintf "throw pfi::network::mprpc::method_not_found(\"%s\");"
-		    n))
+  make_impl (Printf.sprintf "%s %sp_->%s(%s);" (make_lock_statement is_const)
+	       (make_return_statement t) n (argvs_str2 (List.length argvs)))
 
 let memberdecl (t,n) =
   Printf.sprintf "  %s %s;\n" (Stree.to_string t) n;;
@@ -86,6 +79,7 @@ let make_class = function
     ^ Printf.sprintf "  {  %s  };\n" use_cht
     ^ (String.concat "\n" (List.map prototype2impl funcs))
     ^ "\n  int run(){ return p_->start(*this); };\n"
+    ^ Printf.sprintf "\n  pfi::lang::shared_ptr<%s_serv> get_p(){ return p_; };\n" classname
     ^ "\nprivate:\n"
     ^ (String.concat "" (List.map memberdecl members))
     ^ make_class_end classname
@@ -95,6 +89,6 @@ let make_main namespaces classdef =
   let namespace = String.concat "::" namespaces in
   let Stree.ClassDef(classname, _, _) = classdef in
   "int main(int args, char** argv){\n"
-  ^ Printf.sprintf "  return jubatus::run_server<%s::%s_impl_>(args, argv);\n"
-    namespace classname
+  ^ Printf.sprintf "  return jubatus::run_server<%s::%s_impl_,%s::%s_serv>(args, argv);\n"
+    namespace classname namespace classname
   ^ "}";;

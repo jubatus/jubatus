@@ -9,6 +9,4 @@ service stat :1 {
   double moment(0: string arg0, 1: string arg1, 2: int arg2) # //@cht
   int save(0: string arg0, 1: string arg1) # //@broadcast
   int load(0: string arg0, 1: string arg1) # //@broadcast
-  string get_diff(0: int arg0) # //@fail_in_keeper
-  int put_diff(0: string arg0) # //@fail_in_keeper
 }

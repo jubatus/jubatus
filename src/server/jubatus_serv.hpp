@@ -136,6 +136,7 @@ public:
 
   std::string get_diff_impl(int){
     msgpack::sbuffer sbuf;
+    scoped_lock lk(rlock(m_));
     msgpack::pack(sbuf, this->get_diff_(model_.get()));
     return std::string(sbuf.data(), sbuf.size());
   };
@@ -144,6 +145,7 @@ public:
     msgpack::unpack(&msg, d.c_str(), d.size());
     Diff diff;
     msg.get().convert(&diff);
+    scoped_lock lk(wlock(m_));
     return this->put_diff_(model_.get(), diff);
   };
   void do_mix(const std::vector<std::pair<std::string,int> >& v){

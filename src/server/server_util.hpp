@@ -26,6 +26,7 @@
 #include <pficommon/lang/noncopyable.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
+#include <pficommon/lang/function.h>
 
 #include "../common/util.hpp"
 
@@ -102,10 +103,23 @@ void convert(const From& from, To& to){
 
 
 
-template <class ServerClass>
+template <class ImplServerClass, class UserServClass>
 int run_server(int args, char** argv){
-  return ServerClass(server_argv(args, argv)).run();
+  ImplServerClass impl_server(server_argv(args, argv));
+  pfi::network::mprpc::rpc_server& serv = impl_server;
+  serv.add<std::string(int)>
+    ("get_diff",
+     pfi::lang::bind(&UserServClass::get_diff_impl,
+		     impl_server.get_p().get(), pfi::lang::_1));
+  serv.add<int(std::string)>
+    ("put_diff",
+     pfi::lang::bind(&UserServClass::put_diff_impl,
+		     impl_server.get_p().get(), pfi::lang::_1));
+  serv.add<std::string(int)>
+    ("get_storage",
+     pfi::lang::bind(&UserServClass::get_storage,
+		     impl_server.get_p().get(), pfi::lang::_1));
+  return impl_server.run();
 };
-
 
 }; // end jubatus

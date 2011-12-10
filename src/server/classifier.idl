@@ -52,6 +52,4 @@ service classifier :1 {
   list<list<estimate_result> >  classify(0: string arg0, 1: list<datum>  arg1) # //@random
   int save(0: string arg0, 1: string arg1) # //@broadcast
   int load(0: string arg0, 1: string arg1) # //@broadcast
-  string get_diff(0: int arg0) # //@fail_in_keeper
-  int put_diff(0: string arg0) # //@fail_in_keeper
 }

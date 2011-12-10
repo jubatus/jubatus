@@ -99,21 +99,13 @@ let _ =
 
     let new_classdefs2 = List.map dope_routing new_classdefs1 in
 
-    let new_classdefs3 = List.map (add_method (Stree.Other(Stree.Class("std::string"), false),
-					       "get_diff", [Stree.Int], ["//@fail_in_keeper"], true)) new_classdefs2
-    in
-    let new_classdefs4 = List.map (add_method (Stree.Int, "put_diff",
-					       [Other(Stree.Class("std::string"), false)],
-					       ["//@fail_in_keeper"], false)) new_classdefs3
-    in
-    
-    List.iter Stree.print_classdef new_classdefs4;
+    List.iter Stree.print_classdef new_classdefs2;
 (*    List.iter Stree.print_structdef structdefs;
     Stree.print_known_types();
     let new_classdefs1 = classdefs in *)
 
     let m = new Generator.jubatus_module (!outdir) (get_name source_file)
-      "jubatus" (List.rev typedefs) (List.rev structdefs) (List.rev new_classdefs4) in
+      "jubatus" (List.rev typedefs) (List.rev structdefs) (List.rev new_classdefs2) in
     m#generate;
     ()
   with
