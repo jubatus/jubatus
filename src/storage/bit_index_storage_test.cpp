@@ -32,6 +32,41 @@ TEST(bit_index_storage, trivial) {
   EXPECT_FLOAT_EQ(1.0, ids[0].second);
   EXPECT_EQ("r3", ids[1].first);
   EXPECT_FLOAT_EQ(0.75, ids[1].second);
+
+  stringstream ss;
+  s.save(ss);
+  bit_index_storage t;
+  t.load(ss);
+  ids.clear();
+  t.similar_row(make_vector("1100"), ids, 2);
+  ASSERT_EQ(2u, ids.size());
+  EXPECT_EQ("r4", ids[0].first);
+
+  s.remove_row("r4");
+  ids.clear();
+  s.similar_row(make_vector("1100"), ids, 2);
+  EXPECT_NE("r4", ids[0].first);
+
+  s.clear();
+  ids.clear();
+  s.similar_row(make_vector("1100"), ids, 2);
+  EXPECT_TRUE(ids.empty());
+}
+
+TEST(bit_index_storage, diff) {
+  bit_index_storage s1, s2;
+  s1.set_row("r1", make_vector("0101"));
+  s1.set_row("r2", make_vector("1010"));
+  string d1;
+  s1.get_diff(d1);
+
+  s2.set_mixed_and_clear_diff(d1);
+  bit_vector v;
+  s2.get_row("r1", v);
+  EXPECT_TRUE(make_vector("0101") == v);
+  v.resize_and_clear(4);
+  s2.get_row("r2", v);
+  EXPECT_TRUE(make_vector("1010") == v);
 }
 
 TEST(bit_index_storage, mix) {
