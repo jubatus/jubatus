@@ -34,6 +34,7 @@ def build(bld):
       'storage_factory_test.cpp',
       'local_storage_mixture_test.cpp',
       'sparse_matrix_storage_test.cpp',
+      'bit_vector_test.cpp',
       ])
 
   bld.install_files('${PREFIX}/include/jubatus/server/storage',
