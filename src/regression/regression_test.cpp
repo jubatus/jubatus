@@ -62,7 +62,7 @@ TYPED_TEST_P(regression_test, random) {
     if (fabs(p.estimate(fv) - value) < 2.0)
       ++ok;
   }
-  EXPECT_GT(ok, 95u);
+  EXPECT_GT(ok, 90u);
 }
 
 REGISTER_TYPED_TEST_CASE_P(
