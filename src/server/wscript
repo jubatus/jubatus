@@ -69,7 +69,7 @@ def build(bld):
       'regression_types.hpp',
       'regression_client.hpp',
       'recommender_types.hpp',
-      'recommender_client.hpp'
+      'recommender_client.hpp',
       'stat_types.hpp',
       'stat_client.hpp'
       ])
