@@ -19,6 +19,7 @@
 #include "bit_index_storage.hpp"
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
+#include "fixed_size_heap.hpp"
 
 using namespace std;
 using namespace pfi::data;
@@ -33,6 +34,22 @@ bit_index_storage::~bit_index_storage(){
 
 void bit_index_storage::set_row(const string& row, const bit_vector& bv){
   bitvals_diff_[row] = bv;
+}
+
+void bit_index_storage::get_row(const string& row, bit_vector& bv) const {
+  {
+    bit_table_t::const_iterator it = bitvals_diff_.find(row);
+    if (it != bitvals_diff_.end()) {
+      bv = it->second;
+    }
+  }
+  {
+    bit_table_t::const_iterator it = bitvals_.find(row);
+    if (it != bitvals_.end()) {
+      bv = it->second;
+    }
+  }
+  bv = bit_vector();
 }
 
 void bit_index_storage::remove_row(const string& row){
@@ -90,20 +107,14 @@ void bit_index_storage::mix(const string& lhs, string& rhs) const{
   rhs = os.str(); // TODO remove redudant copy
 }
 
-void bit_index_storage::similar_row_one(const bit_vector& x, const pair<string, bit_vector>& y, std::vector<std::pair<uint64_t, std::string> >& scores, uint64_t ret_num) const{
-  uint64_t match_num = x.calc_hamming_similarity(y.second);
 
-  if (scores.size() < ret_num){
-    scores.push_back(make_pair(match_num, y.first));
-    if (scores.size() == ret_num){
-      make_heap(scores.begin(), scores.end());
-    }
-  } else {
-    if (match_num <= scores.front().first) return;
-    pop_heap(scores.begin(), scores.end());
-    scores.back() = make_pair(match_num, y.first);
-    push_heap(scores.begin(), scores.end());
-  }
+typedef fixed_size_heap<pair<uint64_t, string>, greater<pair<uint64_t, string> > > heap_type;
+
+static
+void similar_row_one(const bit_vector& x, const pair<string, bit_vector>& y,
+                     heap_type& heap) {
+  uint64_t match_num = x.calc_hamming_similarity(y.second);
+  heap.push(make_pair(match_num, y.first));
 }
 
 void bit_index_storage::similar_row(const bit_vector& bv, vector<pair<string, float> >& ids, uint64_t ret_num) const {
@@ -113,19 +124,20 @@ void bit_index_storage::similar_row(const bit_vector& bv, vector<pair<string, fl
     return;
   }
 
-  vector<pair<uint64_t, string> > scores;
+  heap_type heap(ret_num);
+
   for (bit_table_t::const_iterator it = bitvals_diff_.begin(); it != bitvals_diff_.end(); ++it){
-    similar_row_one(bv, *it, scores, ret_num);
+    similar_row_one(bv, *it, heap);
   }
   for (bit_table_t::const_iterator it = bitvals_.begin(); it != bitvals_.end(); ++it){
     if (bitvals_diff_.find(it->first) != bitvals_diff_.end()) {
       continue;
     }
-    similar_row_one(bv, *it, scores, ret_num);
+    similar_row_one(bv, *it, heap);
   }
 
-
-  sort(scores.rbegin(), scores.rend());
+  vector<pair<uint64_t, string> > scores;
+  heap.get_sorted(scores);
   for (size_t i = 0; i < scores.size() && i < ret_num; ++i){
     ids.push_back(make_pair(scores[i].second, (float)scores[i].first / bit_num));
   }
