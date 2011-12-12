@@ -26,6 +26,7 @@
 #include "server_util.hpp"
 #include "mixer.hpp"
 #include "../common/cht.hpp"
+#include "../common/exception.hpp"
 
 using namespace pfi::concurrent;
 
@@ -137,8 +138,12 @@ public:
   std::string get_diff_impl(int){
     msgpack::sbuffer sbuf;
     scoped_lock lk(rlock(m_));
-    msgpack::pack(sbuf, this->get_diff_(model_.get()));
-    return std::string(sbuf.data(), sbuf.size());
+    if(model_){
+      msgpack::pack(sbuf, this->get_diff_(model_.get()));
+      return std::string(sbuf.data(), sbuf.size());
+    }else{
+      throw config_not_set();
+    }
   };
     int put_diff_impl(std::string d){
     msgpack::unpacked msg;
@@ -146,10 +151,15 @@ public:
     Diff diff;
     msg.get().convert(&diff);
     scoped_lock lk(wlock(m_));
-    return this->put_diff_(model_.get(), diff);
+    if(model_){
+      return this->put_diff_(model_.get(), diff);
+    }else{
+      throw config_not_set();
+    }
   };
   void do_mix(const std::vector<std::pair<std::string,int> >& v){
     if(not is_mixer_func_set_) return;
+    if(not model_) return;
     Diff acc;
     std::string serialized_diff;
     for(size_t s = 0; s < v.size(); ++s ){
