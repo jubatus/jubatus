@@ -87,6 +87,7 @@ namespace common{
   
   // "/some/path" => "/some/path0000012"
   void zk::create_seq(const std::string& path, std::string& seqfile){
+    scoped_lock lk(m_);
     char path_buffer[path.size()+16];
     int rc = zoo_create(zh_, path.c_str(), NULL, 0, &ZOO_OPEN_ACL_UNSAFE,
                         ZOO_EPHEMERAL|ZOO_SEQUENCE, path_buffer, path.size()+16); 
@@ -100,6 +101,7 @@ namespace common{
   };
 
   void zk::remove(const std::string& path){
+    scoped_lock lk(m_);
     int rc = zoo_delete(zh_, path.c_str(), -1);
     if(rc != ZOK and rc != ZNONODE){
       LOG(ERROR) << path << ": removal failed - " << zerror(rc);
@@ -107,6 +109,7 @@ namespace common{
   };
   
   bool zk::exists(const std::string& path){
+    scoped_lock lk(m_);
     int rc = zoo_exists(zh_, path.c_str(), 0, NULL);
     return (rc==ZOK);
   }

@@ -90,7 +90,9 @@ class keeper : public pfi::network::mprpc::rpc_server {
   R random_proxy(const std::string& method_name, const std::string& name, const A& arg) {
     //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
+
     get_members_(name, list);
+
     const std::pair<std::string, int>& c = list[rng_(list.size())];
     if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 
@@ -108,6 +110,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
   R broadcast_proxy(const std::string& method_name, const std::string& name, const A& arg) {
     //    {LOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
+
     get_members_(name, list);
     //    std::vector<R> results;
     // FIXME: needs global lock here
@@ -125,11 +128,13 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
   template <typename R, typename A>
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& key, const A& arg) {
-    {LOG(INFO)<< __func__ << " " << method_name << " " << name;}
+    //    {LOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
-    jubatus::common::cht ht(zk_, name);
-    ht.find(key, list);
-
+    {
+      pfi::concurrent::scoped_lock lk(mutex_);
+      jubatus::common::cht ht(zk_, name);
+      ht.find(key, list);
+    }
     if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 
     R result;

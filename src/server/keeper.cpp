@@ -30,22 +30,23 @@ int keeper::run(){
 };
 
 void keeper::get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret){
-    using namespace std;
-    ret.clear();
-    vector<string> list;
-    string path = common::ACTOR_BASE_PATH + "/" + name + "/nodes";
-    {
-      pfi::concurrent::scoped_lock lk(mutex_);
-      zk_->list(path, list);
-    }
-    vector<string>::const_iterator it;
+  using namespace std;
+  ret.clear();
+  vector<string> list;
+  string path = common::ACTOR_BASE_PATH + "/" + name + "/nodes";
 
-    // FIXME:
-    // do you return all server list? it can be very large
-    for(it = list.begin(); it!= list.end(); ++it){
-      string ip;
-      int port;
-      common::revert(*it, ip, port);
-      ret.push_back(make_pair(ip,port));
-    }
+  {
+    pfi::concurrent::scoped_lock lk(mutex_);
+    zk_->list(path, list);
   }
+  vector<string>::const_iterator it;
+  
+  // FIXME:
+  // do you return all server list? it can be very large
+  for(it = list.begin(); it!= list.end(); ++it){
+    string ip;
+    int port;
+    common::revert(*it, ip, port);
+    ret.push_back(make_pair(ip,port));
+  }
+}
