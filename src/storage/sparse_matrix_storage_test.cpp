@@ -9,18 +9,18 @@ namespace storage {
 
 using namespace std;
 
-// TEST(recommender_storage, empty) {
-//   recommender_storage s();
-//   EXPECT_EQ(0.0, s.get("row", "column"));
+TEST(sparse_matrix_storage, empty) {
+  sparse_matrix_storage s;
+  EXPECT_EQ(0.0, s.get("row", "column"));
 
-//   vector<pair<string, float> > row;
-//   s.get_row("row", row);
-//   EXPECT_TRUE(row.empty());
+  vector<pair<string, float> > row;
+  s.get_row("row", row);
+  EXPECT_TRUE(row.empty());
 
-//   vector<string> ids;
-//   s.get_all_row_ids(ids);
-//   EXPECT_TRUE(ids.empty());
-// }
+  vector<string> ids;
+  s.get_all_row_ids(ids);
+  EXPECT_TRUE(ids.empty());
+}
 
 TEST(sparse_matrix_storage, set_row) {
   sparse_matrix_storage s;
