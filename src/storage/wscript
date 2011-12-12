@@ -35,6 +35,7 @@ def build(bld):
       'local_storage_mixture_test.cpp',
       'sparse_matrix_storage_test.cpp',
       'fixed_size_heap_test.cpp',
+#      'inverted_index_storage_test.cpp',
       'bit_vector_test.cpp',
       'bit_index_storage_test.cpp',
       ])

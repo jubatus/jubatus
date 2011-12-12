@@ -32,6 +32,31 @@ inverted_index_storage::~inverted_index_storage(){
 void inverted_index_storage::set(const std::string& row, const std::string& column, float val){
   inv_diff_[row][column2id_.get_id(column)] = val;
 }
+
+float inverted_index_storage::get(const string& row, const string& column) const {
+  uint64_t index = column2id_.get_id_const(column);
+  if (index == key_manager::NOTFOUND)
+    return 0.0;
+  {
+    tbl_t::const_iterator it = inv_diff_.find(row);
+    if (it != inv_diff_.end()) {
+      row_t::const_iterator it_row = it->second.find(index);
+      if (it_row != it->second.end()) {
+        return it_row->first;
+      }
+    }
+  }
+  {
+    tbl_t::const_iterator it = inv_.find(row);
+    if (it != inv_.end()) {
+      row_t::const_iterator it_row = it->second.find(index);
+      if (it_row != it->second.end()) {
+        return it_row->first;
+      }
+    }
+  }
+  return 0.0;
+}
  
 
 void inverted_index_storage::remove(const std::string& row, const std::string& column){
@@ -133,7 +158,6 @@ void inverted_index_storage::calc_scores(const sfv_t& query, pfi::data::unordere
   for (size_t i = 0; i < query.size(); ++i){
     const string& fid = query[i].first;
     float val = query[i].second;
-    sfv_t column;
     add_inp_scores(fid, val, i_scores);
   }
 
@@ -141,6 +165,7 @@ void inverted_index_storage::calc_scores(const sfv_t& query, pfi::data::unordere
        it != i_scores.end(); ++it){
     scores[column2id_.get_key(it->first)] += it->second;
   }
+  // TODO divide by norm?
 }
 
 void inverted_index_storage::add_inp_scores(const std::string& row, 
@@ -169,8 +194,6 @@ void inverted_index_storage::add_inp_scores(const std::string& row,
        it != i_scores.end(); ++it){
     scores[it->first] += it->second;
   }
-
-  
 }
 
 

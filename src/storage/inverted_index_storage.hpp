@@ -36,6 +36,7 @@ public:
   ~inverted_index_storage();
 
   void set(const std::string& row, const std::string& column, float val); 
+  float get(const std::string& row, const std::string& column) const;
 
   void remove(const std::string& row, const std::string& column);
   void clear();
