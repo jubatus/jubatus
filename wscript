@@ -41,7 +41,7 @@ def configure(conf):
   conf.check_cxx(header_name = 'errno.h')
   conf.check_cxx(header_name = 'string.h')
   conf.check_cxx(header_name = 'limits.h')
-  conf.check_cxx(header_name = 'net/if.h')
+  conf.check_cxx(header_name = 'sys/socket.h net/if.h')
   conf.check_cxx(header_name = 'sys/ioctl.h')
   conf.check_cxx(header_name = 'fcntl.h')
   conf.check_cxx(header_name = 'utility')
