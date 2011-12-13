@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 namespace jubatus {
 namespace storage {
 
