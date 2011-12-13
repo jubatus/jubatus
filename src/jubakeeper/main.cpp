@@ -61,7 +61,7 @@ int main(int argc, char* argv[]){
     serv.set_train(bind(&jubakeeper::train, &j, _1, _2));
     serv.set_classify(bind(&jubakeeper::classify, &j, _1, _2));
     serv.set_save(bind(&jubakeeper::save, &j, _1, _2, _3));
-    serv.set_load(bind(&jubakeeper::save, &j, _1, _2, _3));
+    serv.set_load(bind(&jubakeeper::load, &j, _1, _2, _3));
     serv.set_get_status(bind(&jubakeeper::get_status, &j, _1));
 
     if(!serv.serv(port, p.get<int>("thread"))){
