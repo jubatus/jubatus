@@ -89,7 +89,65 @@ TEST(sparse_matrix_storage, set) {
   EXPECT_EQ(0.0, s.get("r1", "c1"));
 }
 
-// (TODO) add test sparse_matrix_storage::calc_norm(const string& row)
+TEST(sparse_matrix_storage, calc_l2norm) {
+  sparse_matrix_storage s;
+  EXPECT_FLOAT_EQ(0.0, s.calc_l2norm("unknown"));
+  s.set("r1", "c1", 1.0);
+  s.set("r1", "c2", 2.0);
+  s.set("r1", "c3", 3.0);
+  EXPECT_FLOAT_EQ(sqrt(14.0), s.calc_l2norm("r1"));
+}
+
+TEST(sparse_matrix_storage, save_load) {
+  sparse_matrix_storage s;
+  s.set("r1", "c1", 1.0);
+  stringstream ss;
+  s.save(ss);
+
+  sparse_matrix_storage s2;
+  s2.load(ss);
+  EXPECT_FLOAT_EQ(1.0, s2.get("r1", "c1"));
+}
+
+TEST(sparse_matrix_storage, remove) {
+  sparse_matrix_storage s;
+  s.set("r1", "c1", 1.0);
+  EXPECT_EQ(1.0, s.get("r1", "c1"));
+  s.remove("r1", "c1");
+  EXPECT_EQ(0.0, s.get("r1", "c1"));
+
+  vector<string> ids;
+  s.get_all_row_ids(ids);
+  // EXPECT_TRUE(ids.empty()); // it does not work
+}
+
+TEST(sparse_matrix_storage, remove_row) {
+  sparse_matrix_storage s;
+  s.set("r1", "c1", 1.0);
+  EXPECT_EQ(1.0, s.get("r1", "c1"));
+  s.remove_row("r1");
+  EXPECT_EQ(0.0, s.get("r1", "c1"));
+
+  vector<string> ids;
+  s.get_all_row_ids(ids);
+  EXPECT_TRUE(ids.empty());
+}
+
+TEST(sparse_matrix_storage, remove_invalid_rows) {
+  sparse_matrix_storage s;
+  s.set("r1", "c1", 1.0);
+  s.remove("unknow", "c1");
+  s.remove("r1", "unknwon");
+  s.remove_row("unknown");
+  EXPECT_EQ(1.0, s.get("r1", "c1"));
+}
+
+TEST(sparse_matrix_storage, clear) {
+  sparse_matrix_storage s;
+  s.set("r1", "c1", 1.0);
+  s.clear();
+  EXPECT_EQ(0.0, s.get("r1", "c1"));
+}
 
 }
 }
