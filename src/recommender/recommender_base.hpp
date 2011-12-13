@@ -39,8 +39,6 @@ public:
   virtual void update_row(const std::string& id, const sfv_diff_t& diff) = 0;
 
   virtual std::string type() const = 0;
-  virtual bool save(std::ostream&) = 0;
-  virtual bool load(std::istream&) = 0;
   virtual storage::recommender_storage_base* get_storage() = 0;
   virtual const storage::recommender_storage_base* get_const_storage() const = 0;
 
@@ -50,7 +48,13 @@ public:
   void decode_row(const std::string& id, sfv_t& ret) const;
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
+  bool save(std::ostream&);
+  bool load(std::istream&);
+
 protected:
+  virtual bool save_impl(std::ostream&) = 0;
+  virtual bool load_impl(std::istream&) = 0;
+
   static const uint64_t complete_row_similar_num_;
   storage::sparse_matrix_storage orig_;
 };

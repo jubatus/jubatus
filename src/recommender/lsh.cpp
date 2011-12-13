@@ -93,13 +93,13 @@ void lsh::update_row(const string& id, const sfv_diff_t& diff){
 string lsh::type() const{
   return string("lsh");
 }
-bool lsh::save(std::ostream& os){
+bool lsh::save_impl(std::ostream& os){
   pfi::data::serialization::binary_oarchive oa(os);
   oa << column2baseval_;
   oa << row2lshvals_;
   return true;
 }
-bool lsh::load(std::istream& is){
+bool lsh::load_impl(std::istream& is){
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> column2baseval_;
   ia >> row2lshvals_;

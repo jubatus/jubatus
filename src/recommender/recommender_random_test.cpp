@@ -89,7 +89,7 @@ TYPED_TEST_P(recommender_random_test, random) {
 
   // Run the same test
   ids.clear();
-  r.similar_row(make_vec(1.0, 1.0, 1.0), ids, 10);
+  r2.similar_row(make_vec(1.0, 1.0, 1.0), ids, 10);
   ASSERT_EQ(10u, ids.size());
   correct = 0;
   for (size_t i = 0; i < ids.size(); ++i) {
@@ -99,8 +99,44 @@ TYPED_TEST_P(recommender_random_test, random) {
   EXPECT_GT(correct, 5u);
 }
 
+TYPED_TEST_P(recommender_random_test, save_load) {
+  TypeParam r;
+
+  // Generate random data
+  vector<float> mu(3);
+  for (size_t i = 0; i < 100; ++i) {
+    vector<double> v;
+    make_random(mu, 1.0, 3, v);
+    string row_name = "r1_" + lexical_cast<string>(i);
+    r.update_row(row_name, make_vec(v[0], v[1], v[2]));
+  }
+
+  vector<pair<string, float> > ids_before;
+  r.recommender_base::similar_row(string("r1_0"), ids_before, 10);
+  sfv_t comp_before;
+  r.complete_row("r1_0", comp_before);
+
+  stringstream ss;
+  r.save(ss);
+  TypeParam r2;
+  r2.load(ss);
+
+  vector<pair<string, float> > ids_after;
+  r2.recommender_base::similar_row(string("r1_0"), ids_after, 10);
+  sfv_t comp_after;
+  r2.complete_row("r1_0", comp_after);
+
+  vector<string> row_ids;
+  r2.get_all_row_ids(row_ids);
+  EXPECT_EQ(100u, row_ids.size())
+      << "You may forget to call recommener_base::save_base in save method.";
+
+  EXPECT_TRUE(ids_before == ids_after);
+  EXPECT_TRUE(comp_before == comp_after);
+}
+
 REGISTER_TYPED_TEST_CASE_P(recommender_random_test,
-                           trivial, random);
+                           trivial, random, save_load);
 
 typedef testing::Types<inverted_index, lsh, minhash> recommender_types;
 

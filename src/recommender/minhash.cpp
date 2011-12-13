@@ -116,12 +116,12 @@ float minhash::calc_hash(uint64_t a, uint64_t b, float val){
 string minhash::type() const{
   return string("minhash");
 }
-bool minhash::save(std::ostream& os){
+bool minhash::save_impl(std::ostream& os){
   pfi::data::serialization::binary_oarchive oa(os);
   oa << row2minhashvals_;
   return true;
 }
-bool minhash::load(std::istream& is){
+bool minhash::load_impl(std::istream& is){
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> row2minhashvals_;
   return true;

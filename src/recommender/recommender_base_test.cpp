@@ -42,8 +42,8 @@ class recommender_impl : public recommender_base{
   string type() const{
     return string("recommender_impl");
   }
-  bool save(std::ostream&){return true;};
-  bool load(std::istream&){return false;};
+  bool save_impl(std::ostream&){return true;};
+  bool load_impl(std::istream&){return true;};
   storage::recommender_storage_base* get_storage(){
     return NULL;
   }

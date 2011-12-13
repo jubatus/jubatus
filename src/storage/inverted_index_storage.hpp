@@ -56,7 +56,9 @@ private:
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    MEMBER(inv_);
+    ar & MEMBER(inv_)
+        & MEMBER(inv_diff_)
+        & MEMBER(column2id_);
   }
 
   void add_inp_scores(const std::string& row, float val, 
