@@ -26,6 +26,7 @@ namespace jubatus{
 
 NHERD::NHERD (storage::storage_base* storage) : classifier_base(storage) {
   classifier_base::use_covars_ = true;
+  set_C(0.1f);
 }
 
 void NHERD::train(const sfv_t& sfv, const string& label){

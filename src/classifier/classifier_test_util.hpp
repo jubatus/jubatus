@@ -24,36 +24,22 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
-
-static const double PI = 6 * std::asin(0.5);
-
-float rand_float() {
-  return rand() / float(RAND_MAX);
-
-}
-
-float rand_normal() {
-  float alpha = rand_float();
-  float beta = rand_float();
-  return std::sqrt(-2 * std::log(alpha)) * std::sin(2 * PI * beta);
-}
-
-float rand_normal(float mu, float sigma) {
-  return mu + rand_normal() * sigma;
-}
+#include <pficommon/math/random.h>
 
 void make_random(float mu, float sigma, size_t dim,
                  std::vector<double>& v) {
+  pfi::math::random::mtrand rand(0);
   for (size_t i = 0; i < dim; i++) {
-    float value = rand_normal(mu, sigma);
+    float value = rand.next_gaussian(mu, sigma);
     v.push_back(value);
   }
 }
 
 void make_random(const std::vector<float>& mus, float sigma, size_t dim,
                  std::vector<double>& v) {
+  pfi::math::random::mtrand rand(0);
   for (size_t i = 0; i < dim; i++) {
-    float value = rand_normal(mus[i % mus.size()], sigma);
+    float value = rand.next_gaussian(mus[i % mus.size()], sigma);
     v.push_back(value);
   }
 }

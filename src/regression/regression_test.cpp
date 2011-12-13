@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "regression.hpp"
 #include "../storage/local_storage.hpp"
-#include "../classifier/classifier_test_util.hpp"
+#include <pficommon/math/random.h>
 
 using namespace std;
 using namespace jubatus::storage;
@@ -34,13 +34,14 @@ TYPED_TEST_P(regression_test, random) {
   local_storage s;
   TypeParam p(&s);
 
+  pfi::math::random::mtrand rand(0);
   // learn with 1000 random data
   for (size_t i = 0; i < 1000; ++i) {
     sfv_t fv;
-    float f1 = rand_normal();
-    float f2 = rand_normal();
-    float f3 = rand_normal();
-    float value = f1 * 5 + f2 * 3 + f3 * 2 + rand_normal();
+    float f1 = rand.next_gaussian();
+    float f2 = rand.next_gaussian();
+    float f3 = rand.next_gaussian();
+    float value = f1 * 5 + f2 * 3 + f3 * 2 + rand.next_gaussian();
     
     fv.push_back(make_pair("f1", f1));
     fv.push_back(make_pair("f2", f2));
@@ -51,9 +52,9 @@ TYPED_TEST_P(regression_test, random) {
   size_t ok = 0;
   for (size_t i = 0; i < 100; ++i) {
     sfv_t fv;
-    float f1 = rand_normal();
-    float f2 = rand_normal();
-    float f3 = rand_normal();
+    float f1 = rand.next_gaussian();
+    float f2 = rand.next_gaussian();
+    float f3 = rand.next_gaussian();
     float value = f1 * 5 + f2 * 3 + f3 * 2;
 
     fv.push_back(make_pair("f1", f1));
