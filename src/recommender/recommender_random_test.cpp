@@ -128,8 +128,7 @@ TYPED_TEST_P(recommender_random_test, save_load) {
 
   vector<string> row_ids;
   r2.get_all_row_ids(row_ids);
-  EXPECT_EQ(100u, row_ids.size())
-      << "You may forget to call recommener_base::save_base in save method.";
+  EXPECT_EQ(100u, row_ids.size());
 
   EXPECT_TRUE(ids_before == ids_after);
   EXPECT_TRUE(comp_before == comp_after);
