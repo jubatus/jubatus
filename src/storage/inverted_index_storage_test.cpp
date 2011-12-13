@@ -9,16 +9,16 @@ using namespace std;
 TEST(inverted_index_storage, trivial) {
   inverted_index_storage s;
   // r1: (1, 1, 1, 0, 0)
-  s.set("r1", "c1", 1);
-  s.set("r1", "c2", 1);
-  s.set("r1", "c3", 1);
+  s.set("c1", "r1", 1);
+  s.set("c2", "r1", 1);
+  s.set("c3", "r1", 1);
   // r2: (1, 0, 1, 1, 0)
-  s.set("r2", "c1", 1);
-  s.set("r2", "c3", 1);
-  s.set("r2", "c4", 1);
+  s.set("c1", "r2", 1);
+  s.set("c3", "r2", 1);
+  s.set("c4", "r2", 1);
   // r3: (0, 1, 0, 0, 1)
-  s.set("r3", "c2", 1);
-  s.set("r3", "c5", 1);
+  s.set("c2", "r3", 1);
+  s.set("c5", "r3", 1);
   
   // v:  (1, 1, 0, 0, 0)
   sfv_t v;
@@ -37,18 +37,18 @@ TEST(inverted_index_storage, trivial) {
 TEST(inverted_index_storage, diff) {
   inverted_index_storage s;
   // r1: (1, 1, 0, 0, 0)
-  s.set("r1", "c1", 1);
-  s.set("r1", "c2", 1);
+  s.set("c1", "r1", 1);
+  s.set("c2", "r1", 1);
 
   string diff;
   s.get_diff(diff);
 
   inverted_index_storage t;
   t.set_mixed_and_clear_diff(diff);
-  EXPECT_EQ(1.0, t.get("r1", "c1"));
-  EXPECT_EQ(1.0, t.get("r1", "c2"));
-  EXPECT_EQ(0.0, t.get("r1", "c3"));
-  EXPECT_EQ(0.0, t.get("r2", "c1"));
+  EXPECT_EQ(1.0, t.get("c1", "r1"));
+  EXPECT_EQ(1.0, t.get("c2", "r1"));
+  EXPECT_EQ(0.0, t.get("c3", "r1"));
+  EXPECT_EQ(0.0, t.get("c1", "r2"));
 }
 
 }

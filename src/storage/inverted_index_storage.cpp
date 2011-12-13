@@ -42,7 +42,7 @@ float inverted_index_storage::get(const string& row, const string& column) const
     if (it != inv_diff_.end()) {
       row_t::const_iterator it_row = it->second.find(index);
       if (it_row != it->second.end()) {
-        return it_row->first;
+        return it_row->second;
       }
     }
   }
@@ -51,7 +51,7 @@ float inverted_index_storage::get(const string& row, const string& column) const
     if (it != inv_.end()) {
       row_t::const_iterator it_row = it->second.find(index);
       if (it_row != it->second.end()) {
-        return it_row->first;
+        return it_row->second;
       }
     }
   }
@@ -100,10 +100,11 @@ void inverted_index_storage::set_mixed_and_clear_diff(const string& mixed_diff_s
     vector<pair<string, float> > columns;
     mixed_diff.get_row(row, columns);
     for (size_t j = 0; j < columns.size(); ++j){
+      size_t id = column2id_.get_id(columns[j].first);
       if (columns[j].second == 0.f){
-        v.erase(column2id_.get_id(columns[j].first));
+        v.erase(id);
       } else {
-        v[column2id_.get_id(columns[j].first)] = columns[j].second;
+        v[id] = columns[j].second;
       }
     }
   }
