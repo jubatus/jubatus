@@ -104,11 +104,13 @@ public:
 #endif
   };
 
-#ifdef HAVE_ZOOKEEPER_H
   void use_cht(){
+#ifdef HAVE_ZOOKEEPER_H
     use_cht_ = true;
+#endif
   };
 
+#ifdef HAVE_ZOOKEEPER_H
   void join_to_cluster(pfi::lang::shared_ptr<jubatus::common::lock_service> z){
     std::vector<std::string> list;
     std::string path = common::ACTOR_BASE_PATH + "/" + a_.name + "/nodes";

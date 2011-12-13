@@ -106,6 +106,7 @@ void convert(const From& from, To& to){
 template <class ImplServerClass, class UserServClass>
 int run_server(int args, char** argv){
   ImplServerClass impl_server(server_argv(args, argv));
+#ifdef HAVE_ZOOKEEPER_H
   pfi::network::mprpc::rpc_server& serv = impl_server;
   serv.add<std::string(int)>
     ("get_diff",
@@ -119,6 +120,8 @@ int run_server(int args, char** argv){
     ("get_storage",
      pfi::lang::bind(&UserServClass::get_storage,
 		     impl_server.get_p().get(), pfi::lang::_1));
+#endif
+
   return impl_server.run();
 };
 
