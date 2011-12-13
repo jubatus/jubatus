@@ -46,7 +46,7 @@ private:
   pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_; // bases for lsh
   storage::bit_index_storage row2lshvals_;
 
-  uint64_t base_num_;
+  const uint64_t base_num_;
 };
 
 } // namespace recommender

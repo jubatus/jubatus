@@ -62,6 +62,11 @@ public:
     }
   }
 
+  void swap(bit_vector& v) {
+    bits_.swap(v.bits_);
+    std::swap(bit_num_, v.bit_num_);
+  }
+
 private:
   friend class pfi::data::serialization::access;
   template <class Ar>

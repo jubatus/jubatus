@@ -4,13 +4,14 @@ def configure(ctx): pass
 
 def build(bld):
   bld.shlib(
-    source = '''
-    	  recommender_base.cpp
-	  inverted_index.cpp
-	  lsh.cpp
-	  minhash.cpp
-	  recommender_factory.cpp
-	 ''',
+    source = [
+      'recommender_base.cpp',
+      'inverted_index.cpp',
+      'lsh.cpp',
+      'minhash.cpp',
+      'recommender_factory.cpp',
+      'lsh_util.cpp',
+      ],
     target = 'jubatus_recommender',
     name = 'jubatus_recommender',
     include = '.',

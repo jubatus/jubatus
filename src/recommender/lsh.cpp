@@ -20,6 +20,7 @@
 #include "lsh.hpp"
 #include "../common/exception.hpp"
 #include "../common/hash.hpp"
+#include "lsh_util.hpp"
 
 using namespace std;
 using namespace pfi::data;
@@ -31,7 +32,11 @@ namespace recommender {
 
 static const uint64_t DEFAULT_BASE_NUM = 64; // should be in config
 
-lsh::lsh(uint64_t base_num){
+lsh::lsh(uint64_t base_num)
+    : base_num_(base_num) {
+  if (base_num == 0) {
+    throw runtime_error("base_num == 0");
+  }
 }
 
 lsh::lsh() : base_num_(DEFAULT_BASE_NUM){
@@ -42,7 +47,6 @@ lsh::~lsh(){
 
 void lsh::similar_row(const sfv_t& query, vector<pair<string, float> > & ids, size_t ret_num) const{
   ids.clear();
-  if (base_num_ == 0) return;
 
   bit_vector query_bv;
   calc_lsh_values(query, query_bv);
@@ -61,44 +65,17 @@ void lsh::clear_row(const string& id){
 }
 
 void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const{
-  vector<float> lsh_vals(base_num_);
-  for (size_t i = 0; i < sfv.size(); ++i){
-    const string& column = sfv[i].first;
-    float val = sfv[i].second;
-    unordered_map<string, vector<float> >::const_iterator it = column2baseval_.find(column);
-    if (it == column2baseval_.end()){
-      continue;
-    }
-    const vector<float>& v = it->second;
-
-    // assert(v.size() == base_num_);
-    for (size_t j = 0; j < v.size(); ++j){
-      lsh_vals[j] += v[j] * val;
-    }  
-  }
-
-  bv.resize_and_clear(base_num_);
-  for (size_t i = 0; i < lsh_vals.size(); ++i){
-    if (lsh_vals[i] >= 0.f){
-      bv.set_bit(i);
-    }
-  }
+  vector<float> lsh_vals;
+  prod_invert_and_vector(column2baseval_, sfv, base_num_, lsh_vals);
+  set_bit_vector(lsh_vals, bv);
 }
 
 void lsh::generate_column_base(const string& column){
-  // should use more clever hash
-  if (column2baseval_.find(column) != column2baseval_.end()){
+  if (column2baseval_.count(column) == 0){
     return;
   }
   srand(hash_util::calc_string_hash(column));
-  vector<float>& baseval = column2baseval_[column];
-  baseval.resize(base_num_);
-  for (uint64_t i = 0; i < base_num_; ++i){
-    float v1 = (float)(rand()+1) / ((float)RAND_MAX + 1);
-    float v2 = (float)(rand()+1) / ((float)RAND_MAX + 1);
-    float z = sqrt(-2.f * log(v1)) * cos(2.f * M_PI * v2);
-    baseval[i] = z;
-  }
+  generate_random_vector(base_num_, column2baseval_[column]);
 }
 
 void lsh::update_row(const string& id, const sfv_diff_t& diff){
@@ -129,10 +106,10 @@ bool lsh::load(std::istream& is){
   return true;
 }
 storage::recommender_storage_base* lsh::get_storage(){
-  return reinterpret_cast<storage::recommender_storage_base*>(&row2lshvals_);
+  return &row2lshvals_;
 }
 const storage::recommender_storage_base* lsh::get_const_storage()const{
-  return reinterpret_cast<const storage::recommender_storage_base*>(&row2lshvals_);
+  return &row2lshvals_;
 }
 
 
