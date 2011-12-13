@@ -30,6 +30,8 @@ public:
   bit_vector();
   ~bit_vector();
 
+  bool operator==(const bit_vector& v) const;
+
   void resize_and_clear(uint64_t bit_num);
   void set_bit(uint64_t pos);
   uint64_t calc_hamming_similarity(const bit_vector& bv) const;

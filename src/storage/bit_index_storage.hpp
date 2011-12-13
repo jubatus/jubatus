@@ -35,6 +35,7 @@ public:
   ~bit_index_storage();
 
   void set_row(const std::string& row, const bit_vector& bv);
+  void get_row(const std::string& row, bit_vector& bv) const;
   void remove_row(const std::string& row);
   void clear();
 
@@ -50,8 +51,6 @@ public:
   void mix(const std::string& lhs, std::string& rhs) const;
 
 private:
-  void similar_row_one(const bit_vector& x, const std::pair<std::string, bit_vector>& y, std::vector<std::pair<uint64_t, std::string> >& scores, uint64_t ret_num) const;
-
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {

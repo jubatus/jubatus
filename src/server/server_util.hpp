@@ -27,6 +27,7 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/lang/function.h>
+#include <pficommon/network/mprpc.h>
 
 #include "../common/util.hpp"
 
@@ -120,8 +121,7 @@ int run_server(int args, char** argv){
     ("get_storage",
      pfi::lang::bind(&UserServClass::get_storage,
 		     impl_server.get_p().get(), pfi::lang::_1));
-#endif
-
+#endif // HAVE_ZOOKEEPER_H
   return impl_server.run();
 };
 
