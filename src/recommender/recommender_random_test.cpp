@@ -41,7 +41,7 @@ TYPED_TEST_P(recommender_random_test, trivial) {
   vector<pair<string, float> > ids;
   r.similar_row(make_vec("c1", "c2", "c3"), ids, 1);
   ASSERT_EQ(1u, ids.size());
-  //EXPECT_EQ("r1", ids[0].first);
+  EXPECT_EQ("r1", ids[0].first);
 }
 
 TYPED_TEST_P(recommender_random_test, random) {
@@ -60,12 +60,12 @@ TYPED_TEST_P(recommender_random_test, random) {
   }
 
   vector<float> mu2;
-  mu1.push_back(-1.0);
-  mu1.push_back(-1.0);
-  mu1.push_back(-1.0);
+  mu2.push_back(-1.0);
+  mu2.push_back(-1.0);
+  mu2.push_back(-1.0);
   for (size_t i = 0; i < 100; ++i) {
     vector<double> v;
-    make_random(mu1, 1.0, 3, v);
+    make_random(mu2, 1.0, 3, v);
     string row_name = "r2_" + lexical_cast<string>(i);
     r.update_row(row_name, make_vec(v[0], v[1], v[2]));
   }
@@ -79,7 +79,7 @@ TYPED_TEST_P(recommender_random_test, random) {
     if (ids[i].first[1] == '1')
       ++correct;
   }
-  //EXPECT_GT(correct, 5u);
+  EXPECT_GT(correct, 5u);
 
   // save the recommender
   stringstream oss;
@@ -96,13 +96,13 @@ TYPED_TEST_P(recommender_random_test, random) {
     if (ids[i].first[1] == '1')
       ++correct;
   }
-  //EXPECT_GT(correct, 5u);
+  EXPECT_GT(correct, 5u);
 }
 
 REGISTER_TYPED_TEST_CASE_P(recommender_random_test,
                            trivial, random);
 
-typedef testing::Types</*inverted_index, */lsh, minhash> recommender_types;
+typedef testing::Types<inverted_index, lsh, minhash> recommender_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(rt, recommender_random_test, recommender_types);
 

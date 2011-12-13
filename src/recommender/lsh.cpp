@@ -71,7 +71,7 @@ void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const{
 }
 
 void lsh::generate_column_base(const string& column){
-  if (column2baseval_.count(column) == 0){
+  if (column2baseval_.count(column) != 0){
     return;
   }
   srand(hash_util::calc_string_hash(column));
