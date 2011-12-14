@@ -201,9 +201,34 @@ TYPED_TEST_P(recommender_random_test, diff) {
   compare_recommenders(r, r2, false);
 }
 
+TYPED_TEST_P(recommender_random_test, mix) {
+  TypeParam r1, r2, expect;
+  vector<float> mu(10);
+  for (size_t i = 0; i < 100; ++i) {
+    vector<double> v;
+    make_random(mu, 1.0, 3, v);
+    sfv_t vec = make_vec(v[0], v[1], v[2]);
+    
+    string row = "r_" + lexical_cast<string>(i);
+    (i < 50 ? r1 : r2).update_row(row, vec);
+    expect.update_row(row, vec);
+  }
+
+  string diff1, diff2;
+  r1.get_storage()->get_diff(diff1);
+  r2.get_storage()->get_diff(diff2);
+
+  r1.get_storage()->mix(diff1, diff2);
+
+  TypeParam mixed;
+  mixed.get_storage()->set_mixed_and_clear_diff(diff2);
+
+  compare_recommenders(expect, mixed, false);
+}
+
 REGISTER_TYPED_TEST_CASE_P(recommender_random_test,
                            trivial, random, save_load, get_all_row_ids,
-                           diff);
+                           diff, mix);
 
 typedef testing::Types<inverted_index, lsh, minhash> recommender_types;
 
