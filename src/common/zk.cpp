@@ -44,7 +44,10 @@ namespace jubatus{
     }
     
     do{
-      zh_ = zookeeper_init(hosts.c_str(), NULL, timeout, 0, NULL, 0);
+      // FIXME?: this loop will call zookeeper_init many times till
+      // the state got ZOO_CONNECTING_STAT
+      // timeout is supposed to be ms??
+      zh_ = zookeeper_init(hosts.c_str(), NULL, timeout * 1000, 0, NULL, 0);
       if(zh_ == NULL){
 	perror("");
 	throw std::runtime_error("cannot init zk");
@@ -170,10 +173,13 @@ namespace jubatus{
 
   const std::string& zk::get_hosts()const{ return hosts_; }
 
-  void zkmutex::lock(){
+  bool zkmutex::lock(){
     pfi::concurrent::scoped_lock lk(m_);
     LOG(ERROR) << "not implemented:" << __func__;
-    assert(false);
+    while(!has_lock_){
+      if(try_lock()) break;
+    }
+    return true;
   };
 
   bool zkmutex::try_lock(){
@@ -181,22 +187,27 @@ namespace jubatus{
     if(has_lock_)return has_lock_;
     string prefix = path_ + "/lock_";
     zk_->create_seq(prefix, seqfile_);
-    
+
+    if(seqfile_ == "") return false;
+
     vector<string> list;
     zk_->list(path_, list);
+
+    if(list.empty()) return false;
+
     has_lock_ = ((path_ + "/" + list[0]) == seqfile_);
     if(not has_lock_){
-      //      DLOG(INFO) << "mine" << seqfile_;
-      //      DLOG(INFO) << "top " << path_ + "/" + list[0];
       zk_->remove(seqfile_);
     }
-    DLOG(INFO) << "got lock for " << path_ << " (" << seqfile_ << ") "; //"couldn't acquire lock of " << path_;
+    DLOG(INFO) << "got lock for " << path_ << " (" << seqfile_ << ") ";
     return has_lock_;
   };
-  void zkmutex::unlock(){
+  bool zkmutex::unlock(){
     pfi::concurrent::scoped_lock lk(m_);
-    if(has_lock_)
+    if(has_lock_){
       zk_->remove(seqfile_);
+    }
+    return true;
   };
 
   void mywatcher(zhandle_t* zh, int type, int state, const char* path, void* p){

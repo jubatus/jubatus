@@ -31,7 +31,7 @@ TEST(dynamic_num_feature, trivial) {
   map<string, string> params;
 
   {
-    dynamic_num_feature f("libnum_feature_sample.so",
+    dynamic_num_feature f(LIBNUM_FEATURE_SAMPLE,
                           "create",
                           params);
     sfv_t fv;

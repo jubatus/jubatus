@@ -26,7 +26,7 @@ namespace jubatus {
 TEST(dynamic_string_filter, trivial) {
   map<string, string> params;
 
-  dynamic_string_filter f("libfilter_sample.so",
+  dynamic_string_filter f(LIBFILTER_SAMPLE,
                           "create",
                           params);
   string out;
@@ -44,7 +44,7 @@ TEST(dynamic_string_filter, unknown_file) {
 
 TEST(dynamic_string_filter, unknown_function) {
   map<string, string> params;
-  EXPECT_THROW(dynamic_string_filter f("libfilter_sample.so",
+  EXPECT_THROW(dynamic_string_filter f(LIBFILTER_SAMPLE,
                                        "unknown_function",
                                        params),
                converter_exception);
