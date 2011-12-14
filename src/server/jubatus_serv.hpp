@@ -22,6 +22,7 @@
 
 #include <pficommon/lang/function.h>
 #include <pficommon/network/mprpc.h>
+#include <pficommon/system/time_util.h>
 
 #include "server_util.hpp"
 #include "mixer.hpp"
@@ -29,6 +30,8 @@
 #include "../common/exception.hpp"
 
 using namespace pfi::concurrent;
+using pfi::system::time::clock_time;
+using pfi::system::time::get_clock_time;
 
 namespace jubatus { namespace server {
 
@@ -163,10 +166,17 @@ public:
     }
   };
   void do_mix(const std::vector<std::pair<std::string,int> >& v){
-    if(not is_mixer_func_set_) return;
-    if(not model_) return;
+    if(not is_mixer_func_set_){
+      LOG(WARNING) << "cannot mix: mixer function is not set";
+      return;
+    }
+    if(not model_){
+      LOG(WARNING) << "cannot mix: model_ is not init.";
+      return;
+    }
     Diff acc;
     std::string serialized_diff;
+    clock_time start = get_clock_time();
     for(size_t s = 0; s < v.size(); ++s ){
       try{
         pfi::network::mprpc::rpc_client c(v[s].first, v[s].second, a_.timeout);
@@ -196,7 +206,9 @@ public:
         continue;
       }
     }
-    DLOG(INFO) << "mixed with " << v.size() << " servers";
+    clock_time end = get_clock_time();
+    DLOG(INFO) << "mixed with " << v.size() << " servers in " << (double)(end - start) << " secs.";
+    DLOG(INFO) << serialized_diff.size() << " bytes (serialized data) mixed.";
   }
 #endif
 
