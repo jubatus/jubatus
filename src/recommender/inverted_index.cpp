@@ -81,6 +81,10 @@ void inverted_index::update_row(const std::string& id, const sfv_diff_t& diff){
   }
 }
 
+void inverted_index::get_all_row_ids(std::vector<std::string>& ids) const{
+  inv_.get_all_column_ids(ids); // inv_.column = row
+}
+
 string inverted_index::type() const {
   return string("inverted_index");
 }
@@ -95,10 +99,10 @@ bool inverted_index::load_impl(std::istream& is){
   return true;
 }
 storage::recommender_storage_base* inverted_index::get_storage(){
-  return reinterpret_cast<storage::recommender_storage_base*>(&inv_);
+  return &inv_;
 }
 const storage::recommender_storage_base* inverted_index::get_const_storage()const{
-  return reinterpret_cast<const storage::recommender_storage_base*>(&inv_);
+  return &inv_;
 }
 
 

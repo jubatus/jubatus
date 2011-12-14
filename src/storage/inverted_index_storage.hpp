@@ -30,19 +30,18 @@
 namespace jubatus {
 namespace storage{
 
-class inverted_index_storage : recommender_storage_base{
+class inverted_index_storage : public recommender_storage_base{
 public:
   inverted_index_storage();
   ~inverted_index_storage();
 
   void set(const std::string& row, const std::string& column, float val); 
   float get(const std::string& row, const std::string& column) const;
-
   void remove(const std::string& row, const std::string& column);
   void clear();
+  void get_all_column_ids(std::vector<std::string>& ids) const;
 
   void calc_scores(const sfv_t& sfv, pfi::data::unordered_map<std::string, float>& scores) const;
-
   float calc_columnl2norm(const std::string& row) const;
   void get_diff(std::string& diff_str) const;
   void set_mixed_and_clear_diff(const std::string& mixed_diff);
@@ -54,6 +53,8 @@ public:
   bool load(std::istream& is);
 
 private:
+  float  get_from_tbl(const std::string& row, const std::string& column, const tbl_t& tbl, bool& exist) const;
+
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {

@@ -45,10 +45,6 @@ void recommender_base::decode_row(const std::string& id, sfv_t& ret) const{
   orig_.get_row(id, ret);
 }
 
-void recommender_base::get_all_row_ids(std::vector<std::string>& ids) const{
-  orig_.get_all_row_ids(ids);
-}
-
 void recommender_base::complete_row(const std::string& id, sfv_t& ret) const{
   ret.clear();
   sfv_t sfv;
