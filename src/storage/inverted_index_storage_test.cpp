@@ -34,11 +34,9 @@ TEST(inverted_index_storage, trivial) {
   EXPECT_EQ(1.0, scores["r2"]);
   EXPECT_EQ(1.0, scores["r3"]);
 
-  /*
   EXPECT_FLOAT_EQ(sqrt(3.0), s.calc_columnl2norm("r1"));
   EXPECT_FLOAT_EQ(sqrt(3.0), s.calc_columnl2norm("r2"));
   EXPECT_FLOAT_EQ(sqrt(2.0), s.calc_columnl2norm("r3"));
-  */
 
   stringstream ss;
   s.save(ss);
@@ -92,8 +90,8 @@ TEST(inverted_index_storage, mix) {
   s2.set_mixed_and_clear_diff(d1);
 
   // expected:
-  //  c1: (0, 2, 0)   (from s2)
-  //  c2: (0, 0, 1)   (from s1)
+  //  c1: (1, 2, 0)   = (1,1,0) << (0,2,0)
+  //  c2: (0, 0, 1)   = () << (0,0,1)
   EXPECT_EQ(1.0, s2.get("c1", "r1"));
   EXPECT_EQ(2.0, s2.get("c1", "r2"));
   EXPECT_EQ(0.0, s2.get("c1", "r3"));
