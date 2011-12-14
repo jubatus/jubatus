@@ -23,6 +23,22 @@ using namespace pfi::data;
 namespace jubatus {
 namespace storage {
 
+static
+void convert_diff(sparse_matrix_storage& storage, string& diff) {
+  ostringstream os;
+  pfi::data::serialization::binary_oarchive bo(os);
+  bo << storage; // TODO remove redudant copy
+  diff = os.str();
+}
+
+static
+void revert_diff(const string& diff, sparse_matrix_storage& storage) {
+  istringstream is(diff);
+  pfi::data::serialization::binary_iarchive bi(is);
+  bi >> storage;
+}
+
+
 inverted_index_storage::inverted_index_storage(){
 }
 
@@ -78,12 +94,7 @@ void inverted_index_storage::get_diff(std::string& diff_str) const {
     diff.set_row(it->first, columns);
   }
 
-  ostringstream os;
-  {
-    pfi::data::serialization::binary_oarchive bo(os);
-    bo << diff;
-  }
-  diff_str = os.str(); // TODO remove redudant copy
+  convert_diff(diff, diff_str);
 }
 
 void inverted_index_storage::set_mixed_and_clear_diff(const string& mixed_diff_str){
@@ -112,34 +123,22 @@ void inverted_index_storage::set_mixed_and_clear_diff(const string& mixed_diff_s
 }
 
 void inverted_index_storage::mix(const string& lhs, string& rhs) const{
-  sparse_matrix_storage lhs_diff;
-  {
-    istringstream is(lhs);
-    pfi::data::serialization::binary_iarchive bi(is);
-    bi >> lhs_diff;
-  }
-  sparse_matrix_storage rhs_diff;
-  {
-    istringstream is(rhs);
-    pfi::data::serialization::binary_iarchive bi(is);
-    bi >> rhs_diff;
-  }
+  sparse_matrix_storage lhs_diff, rhs_diff;
+  revert_diff(lhs, lhs_diff);
+  revert_diff(rhs, rhs_diff);
 
   vector<string> ids;
   lhs_diff.get_all_row_ids(ids);
   for (size_t i = 0; i < ids.size(); ++i){
     const string& row = ids[i];
-    vector<pair<string, float> > columns;
-    lhs_diff.get_row(row, columns);
-    rhs_diff.set_row(row, columns);
+    vector<pair<string, float> > lhs_columns, rhs_columns;
+    lhs_diff.get_row(row, lhs_columns);
+    rhs_diff.get_row(row, rhs_columns);
+    storage::detail::binop(rhs_columns, lhs_columns, plus<float>());
+    rhs_diff.set_row(row, rhs_columns);
   }
 
-  ostringstream os;
-  {
-    pfi::data::serialization::binary_oarchive bo(os);
-    bo << rhs_diff;
-  }
-  rhs = os.str(); // TODO remove redudant copy
+  convert_diff(rhs_diff, rhs);
 }
 
 bool inverted_index_storage::save(std::ostream& os){ 
