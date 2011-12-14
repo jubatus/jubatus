@@ -15,6 +15,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <cmath>
 #include "inverted_index_storage.hpp"
 
 
@@ -237,7 +238,7 @@ float inverted_index_storage::calc_columnl2norm(const std::string& row) const{
   if (it != column2norm_.end()){
     ret += it->second;
   }
-  return ret;
+  return sqrt(ret);
 }
 
 void inverted_index_storage::add_inp_scores(const std::string& row, 

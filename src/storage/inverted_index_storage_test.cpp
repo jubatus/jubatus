@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <cmath>
 #include "inverted_index_storage.hpp"
 
 namespace jubatus {
@@ -32,6 +33,12 @@ TEST(inverted_index_storage, trivial) {
   EXPECT_EQ(2.0, scores["r1"]);
   EXPECT_EQ(1.0, scores["r2"]);
   EXPECT_EQ(1.0, scores["r3"]);
+
+  /*
+  EXPECT_FLOAT_EQ(sqrt(3.0), s.calc_columnl2norm("r1"));
+  EXPECT_FLOAT_EQ(sqrt(3.0), s.calc_columnl2norm("r2"));
+  EXPECT_FLOAT_EQ(sqrt(2.0), s.calc_columnl2norm("r3"));
+  */
 }
 
 TEST(inverted_index_storage, diff) {
