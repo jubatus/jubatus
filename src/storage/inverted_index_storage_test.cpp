@@ -32,6 +32,18 @@ TEST(inverted_index_storage, trivial) {
   EXPECT_EQ(2.0, scores["r1"]);
   EXPECT_EQ(1.0, scores["r2"]);
   EXPECT_EQ(1.0, scores["r3"]);
+
+  stringstream ss;
+  s.save(ss);
+  inverted_index_storage s2;
+  s2.load(ss);
+  pfi::data::unordered_map<string, float> scores2;
+  s.calc_scores(v, scores2);
+  // expect to get same result
+  ASSERT_EQ(3u, scores2.size());
+  EXPECT_EQ(2.0, scores2["r1"]);
+  EXPECT_EQ(1.0, scores2["r2"]);
+  EXPECT_EQ(1.0, scores2["r3"]);
 }
 
 TEST(inverted_index_storage, diff) {
