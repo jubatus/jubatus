@@ -43,6 +43,7 @@ public:
 
   void calc_scores(const sfv_t& sfv, pfi::data::unordered_map<std::string, float>& scores) const;
 
+  float calc_columnl2norm(const std::string& row) const;
   void get_diff(std::string& diff_str) const;
   void set_mixed_and_clear_diff(const std::string& mixed_diff);
   void mix(const std::string& lhs_str, std::string& rhs_str) const;
@@ -57,8 +58,11 @@ private:
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(inv_)
-        & MEMBER(inv_diff_)
-        & MEMBER(column2id_);
+       & MEMBER(inv_diff_)
+       & MEMBER(column2norm_)
+       & MEMBER(column2norm_diff_)
+       & MEMBER(column2id_);
+
   }
 
   void add_inp_scores(const std::string& row, float val, 
@@ -66,6 +70,8 @@ private:
   
   tbl_t inv_;
   tbl_t inv_diff_;
+  map_float_t column2norm_;
+  map_float_t column2norm_diff_;
   key_manager column2id_;
 };
 

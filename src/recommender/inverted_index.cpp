@@ -50,7 +50,7 @@ void inverted_index::similar_row(const sfv_t& query, std::vector<std::pair<std::
   
   vector<pair<float, string> > sorted_scores;
   for (pfi::data::unordered_map<string, float>::const_iterator it = scores.begin(); it != scores.end(); ++it){
-    float norm = orig_.calc_l2norm(it->first);
+    float norm = inv_.calc_columnl2norm(it->first);
     float normed_score = (norm != 0.f) ? it->second / norm / query_norm : 0.f;
     sorted_scores.push_back(make_pair(normed_score, it->first));
   }
