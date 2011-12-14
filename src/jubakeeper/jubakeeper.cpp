@@ -89,7 +89,8 @@ result<int> jubakeeper::set_config(std::string name, classifier::config_data con
   try{
     get_members_(name, list);
     for(size_t i=0; i<list.size();++i){
-      classifier::mprpc_client(list[i].first, list[i].second, timeout_).call_set_config(name, config);
+      classifier::mprpc_client cli(list[i].first, list[i].second, timeout_);
+      cli.call_set_config(name, config);
     }
   }catch(const rpc_error& e){
     throw e; // TODO: check ZK and find is he really dead
@@ -104,8 +105,9 @@ result<classifier::config_data> jubakeeper::get_config(std::string name){
   classifier::config_data ret;
   try{
     for(size_t i=0; i<list.size();++i){
+      classifier::mprpc_client cli(list[i].first, list[i].second, timeout_);
       result<classifier::config_data> tmp;
-      tmp = classifier::mprpc_client(list[i].first, list[i].second, timeout_).call_get_config(name);
+      tmp = cli.call_get_config(name);
 
       // if(tmp.retval != ret)  // FIXME: do we check all configuration are the same?
       if(!tmp.success)continue;
@@ -125,7 +127,8 @@ result<int> jubakeeper::train(std::string name,std::vector<std::pair<std::string
   get_members_(name, list);
   connection_info c = list[rng_(list.size())];
   try{
-    return classifier::mprpc_client(c.first, c.second, timeout_).call_train(name, data);
+    classifier::mprpc_client cli(c.first, c.second, timeout_);
+    return cli.call_train(name, data);
 
   }catch(const rpc_error& e){
     throw e; // TODO: check ZK and find is he really dead, or retry?
@@ -140,8 +143,9 @@ result<std::vector<classifier::estimate_results> > jubakeeper::classify(std::str
   get_members_(name, list);
   connection_info c = list[rng_(list.size())];
   try{
-    return classifier::mprpc_client(c.first, c.second, timeout_).call_classify(name, data);
-
+    classifier::mprpc_client cli(c.first, c.second, timeout_);
+    return cli.call_classify(name, data);
+    
   }catch(const rpc_error& e){
     throw e; // TODO: check ZK and find is he really dead, or retry?
   }catch(const std::exception& e){  // only one error makes the request fail
@@ -155,7 +159,8 @@ result<int> jubakeeper::save(std::string name, std::string type, std::string id)
   try{
     get_members_(name, list);
     for(size_t i=0; i<list.size();++i){
-      result<int> r = classifier::mprpc_client(list[i].first, list[i].second, timeout_).call_save(name,type,id); 
+      classifier::mprpc_client cli(list[i].first, list[i].second, timeout_);
+      result<int> r = cli.call_save(name,type,id); 
       if(!r.success){
         return result<int>::fail(list[i].first+"_"+pfi::lang::lexical_cast<std::string>(list[i].second) + ": " + r.error);
       }
@@ -173,7 +178,8 @@ result<int> jubakeeper::load(std::string name, std::string type, std::string id)
   get_members_(name, list);
   try{
     for(size_t i=0; i<list.size();++i){
-      result<int> r = classifier::mprpc_client(list[i].first, list[i].second, timeout_).call_load(name,type,id); 
+      classifier::mprpc_client cli(list[i].first, list[i].second, timeout_);
+      result<int> r = cli.call_load(name,type,id); 
       if(!r.success){
         return result<int>::fail(list[i].first+"_"+pfi::lang::lexical_cast<std::string>(list[i].second) + ": " + r.error);
       }
@@ -192,7 +198,8 @@ result<std::map<connection_info, std::map<std::string, std::string> > >  jubakee
   try{
     result<std::map<std::pair<std::string,int>,std::map<std::string, std::string> > > tmp;
     for(size_t i=0; i<list.size();++i){
-      tmp = classifier::mprpc_client(list[i].first, list[i].second, timeout_).call_get_status(name);
+      classifier::mprpc_client cli(list[i].first, list[i].second, timeout_);
+      tmp = cli.call_get_status(name);
       
       if(tmp.success){ // FIXME: on get_status() we'd like to return both retval and error to client.
 	ret.insert(*(tmp.retval.begin())); //FIXME if tmp.retval is empty
