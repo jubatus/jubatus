@@ -99,10 +99,7 @@ TYPED_TEST_P(recommender_random_test, random) {
   EXPECT_GT(correct, 5u);
 }
 
-TYPED_TEST_P(recommender_random_test, save_load) {
-  TypeParam r;
-
-  // Generate random data
+void update_random(recommender_base& r) {
   vector<float> mu(3);
   for (size_t i = 0; i < 100; ++i) {
     vector<double> v;
@@ -110,32 +107,101 @@ TYPED_TEST_P(recommender_random_test, save_load) {
     string row_name = "r1_" + lexical_cast<string>(i);
     r.update_row(row_name, make_vec(v[0], v[1], v[2]));
   }
+}
 
-  vector<pair<string, float> > ids_before;
-  r.recommender_base::similar_row(string("r1_0"), ids_before, 10);
-  sfv_t comp_before;
-  r.complete_row("r1_0", comp_before);
+void compare_recommenders(recommender_base& r1,
+                          recommender_base& r2,
+                          bool compare_complete_row = true) {
+  // Get result before saving
+  vector<pair<string, float> > ids1;
+  r1.recommender_base::similar_row(string("r1_0"), ids1, 10);
+  sfv_t comp1;
+  r1.complete_row("r1_0", comp1);
 
+  // Get result from loaded data
+  vector<pair<string, float> > ids2;
+  r2.recommender_base::similar_row(string("r1_0"), ids2, 10);
+  sfv_t comp2;
+  r2.complete_row("r1_0", comp2);
+
+  // Compare two results
+  ASSERT_EQ(ids1.size(), ids2.size());
+  EXPECT_TRUE(ids1 == ids2);
+  if (compare_complete_row)
+    EXPECT_TRUE(comp1 == comp2);
+}
+
+TYPED_TEST_P(recommender_random_test, save_load) {
+  TypeParam r;
+
+  // Generate random data
+  update_random(r);
+
+  // save and load
   stringstream ss;
   r.save(ss);
   TypeParam r2;
   r2.load(ss);
 
-  vector<pair<string, float> > ids_after;
-  r2.recommender_base::similar_row(string("r1_0"), ids_after, 10);
-  sfv_t comp_after;
-  r2.complete_row("r1_0", comp_after);
-
   vector<string> row_ids;
   r2.get_all_row_ids(row_ids);
   EXPECT_EQ(100u, row_ids.size());
 
-  EXPECT_TRUE(ids_before == ids_after);
-  EXPECT_TRUE(comp_before == comp_after);
+  compare_recommenders(r, r2);
+}
+
+TYPED_TEST_P(recommender_random_test, get_all_row_ids) {
+  TypeParam r;
+  vector<string> expect_ids;
+  for (size_t i = 0; i < 100; ++i) {
+    string row_name = "r1_" + lexical_cast<string>(i);
+    expect_ids.push_back(row_name);
+  }
+  update_random(r);
+
+  // Get all ids
+  vector<string> ids;
+  r.get_all_row_ids(ids);
+
+  // Compare
+  sort(expect_ids.begin(), expect_ids.end());
+  sort(ids.begin(), ids.end());
+  ASSERT_EQ(100u, ids.size());
+  ASSERT_TRUE(expect_ids == ids);
+
+  /* TODO this test cannot be passed with current implementation
+  // Remove half rows
+  for (size_t i = 0; i < 50; ++i) {
+    string row_name = "r1_" + lexical_cast<string>(i);
+    r.clear_row(row_name);
+  }
+
+  // Get rest of ids
+  ids.clear();
+  r.get_all_row_ids(ids);
+  ASSERT_EQ(50u, ids.size());
+  expect_ids.erase(expect_ids.begin(), expect_ids.begin() + 50);
+  ASSERT_TRUE(expect_ids == ids);
+  */
+}
+
+TYPED_TEST_P(recommender_random_test, diff) {
+  TypeParam r;
+  update_random(r);
+
+  string diff;
+  r.get_storage()->get_diff(diff);
+
+  TypeParam r2;
+  r2.get_storage()->set_mixed_and_clear_diff(diff);
+  
+  // TODO this comparison cannot be passed
+  //compare_recommenders(r, r2, false);
 }
 
 REGISTER_TYPED_TEST_CASE_P(recommender_random_test,
-                           trivial, random, save_load);
+                           trivial, random, save_load, get_all_row_ids,
+                           diff);
 
 typedef testing::Types<inverted_index, lsh, minhash> recommender_types;
 
