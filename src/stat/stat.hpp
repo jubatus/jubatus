@@ -32,17 +32,17 @@ public:
 
   void push(const std::string &key, double val);
 
-  double sum(const std::string &key);
-  double stddev(const std::string &key);
-  double max(const std::string &key);
-  double min(const std::string &key);
+  double sum(const std::string &key) const;
+  double stddev(const std::string &key) const;
+  double max(const std::string &key) const;
+  double min(const std::string &key) const;
 
-  double entropy();
-  double moment(const std::string &key, int n, double c);
+  double entropy() const;
+  double moment(const std::string &key, int n, double c) const;
 
   bool save(std::ostream&);
   bool load(std::istream&);
-  std::string type()const;
+  std::string type() const;
 
 private:
   friend class pfi::data::serialization::access;

@@ -10,16 +10,16 @@ class stat{
   //@cht
   int push(std::string, double);
   //@cht
-  double sum(std::string,int);
+  double sum(std::string,int)const;
   //@cht
-  double stddev(std::string,int);
+  double stddev(std::string,int)const;
   //@cht
-  double max(std::string,int);
+  double max(std::string,int)const;
   //@cht
-  double min(std::string,int);
+  double min(std::string,int)const;
   //@cht
-  double entropy(std::string,int);
+  double entropy(std::string,int)const;
 
   //@cht
-  double moment(std::string,tuple<int, double>);
+  double moment(std::string,tuple<int, double>)const;
 };

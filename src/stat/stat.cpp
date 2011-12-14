@@ -43,37 +43,46 @@ void stat::push(const std::string &key, double val)
   }
 }
 
-double stat::sum(const std::string &key)const
+double stat::sum(const std::string &key) const
 {
-  pfi::data::unordered_map<std::string, stat_val>::const_iterator it = stats_.find(key);
-  return it->second.sum_;
+  pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.find(key);
+  if (p == stats_.end()) throw stat_error("sum: key " + key + " not found"); 
+  return p->second.sum_;
 }
 
-double stat::stddev(const std::string &key)
+double stat::stddev(const std::string &key) const
 {
-  stat_val &st = stats_[key];
+  pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.find(key);
+  if (p == stats_.end()) throw stat_error("stddev: key " + key + " not found");
+  const stat_val &st = p->second;
   return sqrt(moment(key, 2, st.sum_ / st.n_));
 }
 
-double stat::max(const std::string &key)
+double stat::max(const std::string &key) const
 {
-  return stats_[key].max_;
+  pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.find(key);
+  if (p == stats_.end()) throw stat_error("max: key " + key + " not found");
+  const stat_val &st = p->second;
+  return st.max_;
 }
 
-double stat::min(const std::string &key)
+double stat::min(const std::string &key) const
 {
-  return stats_[key].min_;
+  pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.find(key);
+  if (p == stats_.end()) throw stat_error("min: key " + key + " not found");
+  const stat_val &st = p->second;
+  return st.min_;
 }
 
-double stat::entropy()
+double stat::entropy() const
 {
   size_t total = 0;
-  for (pfi::data::unordered_map<std::string, stat_val>::iterator p = stats_.begin();
+  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.begin();
        p != stats_.end(); ++p) {
     total += p->second.n_;
   }
   double ret = 0;
-  for (pfi::data::unordered_map<std::string, stat_val>::iterator p = stats_.begin();
+  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.begin();
        p != stats_.end(); ++p) {
     double pr = p->second.n_ / (double)total;
     ret += pr * log(pr);
@@ -81,11 +90,13 @@ double stat::entropy()
   return ret;
 }
 
-double stat::moment(const std::string &key, int n, double c)
+double stat::moment(const std::string &key, int n, double c) const
 {
   if (n < 0) return -1;
 
-  stat_val &st = stats_[key];
+  pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.find(key);
+  if (p == stats_.end()) throw stat_error("min: key " + key + " not found");
+  const stat_val &st = p->second;
 
   if (n == 0) return st.n_;
 

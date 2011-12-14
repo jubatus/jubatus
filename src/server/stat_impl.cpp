@@ -21,22 +21,22 @@ public:
   { JWLOCK__(p_); return p_->push(arg1, arg2); };
 
   double sum(std::string& arg0, std::string arg1, int arg2) //@cht
-  { JWLOCK__(p_); return p_->sum(arg1, arg2); };
+  { JRLOCK__(p_); return p_->sum(arg1, arg2); };
 
   double stddev(std::string& arg0, std::string arg1, int arg2) //@cht
-  { JWLOCK__(p_); return p_->stddev(arg1, arg2); };
+  { JRLOCK__(p_); return p_->stddev(arg1, arg2); };
 
   double max(std::string& arg0, std::string arg1, int arg2) //@cht
-  { JWLOCK__(p_); return p_->max(arg1, arg2); };
+  { JRLOCK__(p_); return p_->max(arg1, arg2); };
 
   double min(std::string& arg0, std::string arg1, int arg2) //@cht
-  { JWLOCK__(p_); return p_->min(arg1, arg2); };
+  { JRLOCK__(p_); return p_->min(arg1, arg2); };
 
   double entropy(std::string& arg0, std::string arg1, int arg2) //@cht
-  { JWLOCK__(p_); return p_->entropy(arg1, arg2); };
+  { JRLOCK__(p_); return p_->entropy(arg1, arg2); };
 
   double moment(std::string& arg0, std::string arg1, std::pair<int, double>  arg2) //@cht
-  { JWLOCK__(p_); return p_->moment(arg1, arg2); };
+  { JRLOCK__(p_); return p_->moment(arg1, arg2); };
 
   int save(std::string& arg0, std::string arg1) //@broadcast
   { JRLOCK__(p_); return p_->save(arg1); };
