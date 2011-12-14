@@ -39,6 +39,13 @@ class recommender_impl : public recommender_base{
   void clear_row(const string& id){}
   void update_row(const string& id, const sfv_diff_t& diff){
   }
+  void get_all_row_ids(vector<string>& ids) const{
+    ids.clear();
+    ids.push_back("r1");
+    ids.push_back("r2");
+    ids.push_back("r3");
+
+  }
   string type() const{
     return string("recommender_impl");
   }

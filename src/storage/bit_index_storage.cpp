@@ -61,6 +61,18 @@ void bit_index_storage::clear(){
   bitvals_diff_.clear();
 }
 
+void bit_index_storage::get_all_row_ids(std::vector<std::string>& ids) const{
+  ids.clear();
+  for (bit_table_t::const_iterator it = bitvals_.begin(); it != bitvals_.end(); ++it){
+    ids.push_back(it->first);
+  }
+  for (bit_table_t::const_iterator it = bitvals_diff_.begin(); it != bitvals_diff_.end(); ++it){
+    if (bitvals_.find(it->first) == bitvals_.end()){
+      ids.push_back(it->first);
+    }
+  }
+}
+
 void bit_index_storage::get_diff(string& diff) const {
   ostringstream os;
   {

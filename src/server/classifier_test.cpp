@@ -42,6 +42,7 @@ using namespace jubatus::storage;
 using namespace std;
 
 static const string NAME = "test";
+static const int PORT = 65432;
 
 void make_small_data() {
   datum pos1;
@@ -86,7 +87,7 @@ namespace {
     pid_t child_;
 
     classifier_test(){
-      child_ = fork_process("classifier", 9199);
+      child_ = fork_process("classifier", PORT);
     };
     virtual ~classifier_test(){
       kill_process(child_);
@@ -94,13 +95,13 @@ namespace {
     virtual void restart_process(){
 
       kill_process(this->child_);
-      this->child_ = fork_process("classifier", 9199);
+      this->child_ = fork_process("classifier", PORT);
     };
   };
 
 TEST_F(classifier_test, simple){
   
-  classifier c("localhost", 9199, 10);
+  classifier c("localhost", PORT, 10);
   {
     jubatus::config_data config;
     config.method = "PA";
@@ -131,7 +132,7 @@ TEST_F(classifier_test, config) {
 }
 
 TEST_F(classifier_test, api_config) {
-  classifier cli("localhost", 9199, 10);
+  classifier cli("localhost", PORT, 10);
   config_data to_set;
   config_data to_get;
   load_config(to_set);
@@ -145,7 +146,7 @@ TEST_F(classifier_test, api_config) {
 }
 
 TEST_F(classifier_test, api_train){
-  classifier cli("localhost", 9199, 10);
+  classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
   config_data c;
   load_config(c);
@@ -158,7 +159,7 @@ TEST_F(classifier_test, api_train){
 }
 
 void my_test(const char* meth, const char* stor){ //serv2, api_classify){
-  classifier cli("localhost", 9199, 10);
+  classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
   config_data c;
   c.method = meth;
@@ -281,7 +282,7 @@ TEST_F(classifier_test, nherd){
 // }
 
 TEST_F(classifier_test, save_load){
-  classifier cli("localhost", 9199, 10);
+  classifier cli("localhost", PORT, 10);
   const char* meth = "PA";
   std::vector<std::pair<std::string,int> > v;
 

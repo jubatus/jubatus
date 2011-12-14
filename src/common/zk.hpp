@@ -28,7 +28,7 @@
 #include <pficommon/concurrent/threading_model.h>
 
 #include "lock_service.hpp"
-#include <c-client-src/zookeeper.h>
+#include ZOOKEEPER_HEADER
 
 namespace jubatus{
 namespace common {

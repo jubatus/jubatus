@@ -37,12 +37,12 @@ public:
 
   void set(const std::string& row, const std::string& column, float val); 
   float get(const std::string& row, const std::string& column) const;
-
   void remove(const std::string& row, const std::string& column);
   void clear();
+  void get_all_column_ids(std::vector<std::string>& ids) const;
 
   void calc_scores(const sfv_t& sfv, pfi::data::unordered_map<std::string, float>& scores) const;
-
+  float calc_columnl2norm(const std::string& row) const;
   void get_diff(std::string& diff_str) const;
   void set_mixed_and_clear_diff(const std::string& mixed_diff);
   void mix(const std::string& lhs_str, std::string& rhs_str) const;
@@ -53,12 +53,17 @@ public:
   bool load(std::istream& is);
 
 private:
+  float  get_from_tbl(const std::string& row, const std::string& column, const tbl_t& tbl, bool& exist) const;
+
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(inv_)
-        & MEMBER(inv_diff_)
-        & MEMBER(column2id_);
+       & MEMBER(inv_diff_)
+       & MEMBER(column2norm_)
+       & MEMBER(column2norm_diff_)
+       & MEMBER(column2id_);
+
   }
 
   void add_inp_scores(const std::string& row, float val, 
@@ -66,6 +71,8 @@ private:
   
   tbl_t inv_;
   tbl_t inv_diff_;
+  map_float_t column2norm_;
+  map_float_t column2norm_diff_;
   key_manager column2id_;
 };
 

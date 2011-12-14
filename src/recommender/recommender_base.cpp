@@ -25,7 +25,7 @@ using namespace pfi::data;
 namespace jubatus {
 namespace recommender {
 
-const uint64_t recommender_base::complete_row_similar_num_ = 7;
+const uint64_t recommender_base::complete_row_similar_num_ = 128;
 
 recommender_base::recommender_base() { 
 }
@@ -45,10 +45,6 @@ void recommender_base::decode_row(const std::string& id, sfv_t& ret) const{
   orig_.get_row(id, ret);
 }
 
-void recommender_base::get_all_row_ids(std::vector<std::string>& ids) const{
-  orig_.get_all_row_ids(ids);
-}
-
 void recommender_base::complete_row(const std::string& id, sfv_t& ret) const{
   ret.clear();
   sfv_t sfv;
@@ -62,18 +58,25 @@ void recommender_base::complete_row(const sfv_t& query, sfv_t& ret) const{
   similar_row(query, ids, complete_row_similar_num_);
   if (ids.size() == 0) return;
 
+  size_t exist_row_num = 0;
   for (size_t i = 0; i < ids.size(); ++i){
     sfv_t row;
     orig_.get_row(ids[i].first, row);
+    if (row.size() == 0){
+      continue;
+    } else {
+      ++exist_row_num;
+    }
     float ratio = ids[i].second;
     for (size_t j = 0; j < row.size(); ++j){
       ret.push_back(make_pair(row[j].first, row[j].second * ratio));
     }
   }
-  
-  sort_and_merge(ret);
+
+  if (exist_row_num == 0) return;
+    sort_and_merge(ret);
   for (size_t i = 0; i < ret.size(); ++i){
-    ret[i].second /= ids.size();
+    ret[i].second /= exist_row_num;
   }
 }
 
