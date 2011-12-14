@@ -9,6 +9,8 @@
 using namespace std;
 using jubatus::client::recommender;
 
+static const int PORT = 65433;
+
 namespace {
 
   class recommender_test : public ::testing::Test {
@@ -16,7 +18,7 @@ namespace {
     pid_t child_;
 
     recommender_test(){
-      child_ = fork_process("recommender", 9196);
+      child_ = fork_process("recommender", PORT);
     };
     virtual ~recommender_test(){
       kill_process(child_);
@@ -24,14 +26,14 @@ namespace {
     virtual void restart_process(){
 
       kill_process(this->child_);
-      this->child_ = fork_process("recommender", 9196);
+      this->child_ = fork_process("recommender", PORT);
     };
   };
 
 
 TEST_F(recommender_test, small) {
 
-  recommender c("localhost", 9196, 10);
+  recommender c("localhost", PORT, 10);
   
   jubatus::config_data conf;
   conf.method = "minhash";

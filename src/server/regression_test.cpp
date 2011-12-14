@@ -28,6 +28,7 @@
 using namespace std;
 using namespace jubatus;
 
+static const int PORT = 65434;
 
 namespace {
 
@@ -36,7 +37,7 @@ namespace {
     pid_t child_;
 
     regression_test(){
-      child_ = fork_process("regression", 9198);
+      child_ = fork_process("regression", PORT);
     };
     virtual ~regression_test(){
       kill_process(child_);
@@ -51,7 +52,7 @@ namespace {
 
 TEST_F(regression_test, small) {
 
-  client::regression c("localhost", 9198, 10);
+  client::regression c("localhost", PORT, 10);
   
   cout << "set_config" << endl;
   config_data conf;
