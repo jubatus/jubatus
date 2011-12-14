@@ -107,5 +107,12 @@ namespace common{
   void force_exit(){
     exit(-1);
   }
+
+  void prepare_jubatus(lock_service& ls){
+    ls.create(JUBATUS_BASE_PATH);
+    ls.create(JUBAVISOR_BASE_PATH);
+    ls.create(JUBAKEEPER_BASE_PATH);
+    ls.create(ACTOR_BASE_PATH);
+  }
 }
 }

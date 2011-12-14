@@ -33,6 +33,7 @@ namespace common{
     lock_service(){};
     virtual ~lock_service(){};
 
+    virtual void force_close() = 0;
     virtual void create(const std::string& path, const std::string& payload = "", bool ephemeral = false) = 0;
     virtual void remove(const std::string& path) = 0;
     virtual bool exists(const std::string& path) = 0;

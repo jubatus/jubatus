@@ -49,5 +49,7 @@ namespace common{
   bool push_cleanup(lock_service&, pfi::lang::function<void()>&);
 
   void force_exit();
+
+  void prepare_jubatus(lock_service& ls);
 }
 }

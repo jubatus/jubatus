@@ -33,12 +33,14 @@
 namespace jubatus{
 namespace common {
   // TODO: write zk mock and test them all?
+
   class zk : lock_service{
   public:
     // timeout [ms]
     zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
     virtual ~zk();
 
+    void force_close();
     void create(const std::string& path, const std::string& payload = "", bool ephemeral = false);
     void remove(const std::string& path);
     bool exists(const std::string& path);

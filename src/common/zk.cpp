@@ -61,12 +61,15 @@ namespace common{
   };
 
   zk::~zk(){
-    zookeeper_close(zh_);
+    force_close();
     if(logfilep_){
       fclose(logfilep_);
     }
   };
   
+  void zk::force_close(){
+    zookeeper_close(zh_);
+  }
   void zk::create(const std::string& path, const std::string& payload, bool ephemeral){
     scoped_lock lk(m_);
     int rc = zoo_create(zh_, path.c_str(), payload.c_str(), payload.length(),

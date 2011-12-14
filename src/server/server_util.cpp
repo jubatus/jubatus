@@ -16,9 +16,11 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "server_util.hpp"
+#include <glog/logging.h>
+
 #include "../common/cmdline.h"
 #include "../common/exception.hpp"
-#include <glog/logging.h>
+#include "../common/membership.hpp"
 
 namespace jubatus {
   
@@ -91,4 +93,32 @@ namespace jubatus {
     port(9199), timeout(10), threadnum(16), z("localhost:2181"), eth("")
   {
   };
+  
+  pfi::lang::shared_ptr<jubatus::common::lock_service> ls;
+
+  void atexit(void){
+    if(ls)
+      ls->force_close();
+  }
+
+  void exit_on_term(int){
+    exit(0);
+  }
+  void exit_on_term2(int, siginfo_t*, void*){
+    exit(0);
+  }
+
+  void set_exit_on_term(){
+    struct sigaction sigact;
+    sigact.sa_handler = exit_on_term;
+    sigact.sa_sigaction = exit_on_term2;
+    sigact.sa_flags = SA_RESTART;
+    if(sigaction(SIGTERM, &sigact, NULL) != 0)
+      throw std::runtime_error("can't set SIGTERM handler");
+    if(sigaction(SIGINT, &sigact, NULL) != 0)
+      throw std::runtime_error("can't set SIGINT handler");
+
+    ::atexit(jubatus::atexit);
+  }
+
 }

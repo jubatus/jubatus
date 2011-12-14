@@ -30,7 +30,7 @@ def build_one(bld, name, libraries = ''):
 
 def build(bld):
 
-  framework_source = 'server_util.cpp'
+  framework_source = 'server_util.cpp jubatus_serv.cpp'
   #if bld.env.HAVE_ZOOKEEPER_H:
   #  framework_source +=  ' mixer.cpp'
 

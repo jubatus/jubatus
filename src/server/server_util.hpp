@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <csignal>
 #include <string>
 #include <sstream>
 
@@ -102,10 +103,19 @@ void convert(const From& from, To& to){
   msg.get().convert(&to);
 }
 
+extern pfi::lang::shared_ptr<jubatus::common::lock_service> ls;
+void atexit(void);
+
+void exit_on_term(int);
+void exit_on_term2(int, siginfo_t*, void*);
+void set_exit_on_term();
 
 
 template <class ImplServerClass, class UserServClass>
 int run_server(int args, char** argv){
+
+  set_exit_on_term();
+
   ImplServerClass impl_server(server_argv(args, argv));
 #ifdef HAVE_ZOOKEEPER_H
   pfi::network::mprpc::rpc_server& serv = impl_server;

@@ -8,12 +8,16 @@
 using namespace jubatus;
 using namespace jubatus::server;
 
+pfi::lang::shared_ptr<jubatus::common::lock_service> ls;
+
 keeper::keeper(const jubatus::keeper_argv& a)
   : pfi::network::mprpc::rpc_server(a.timeout),
     a_(a),
     zk_(common::create_lock_service("cached_zk", a.z, a.timeout))
     //    zk_(common::create_lock_service("zk", a.z, a.timeout))
 {
+  ls = zk_;
+  jubatus::common::prepare_jubatus(*zk_);
   if(!register_keeper(*zk_, a_.eth, a_.port) ){
     throw membership_error("can't register to zookeeper.");
   }
@@ -26,6 +30,7 @@ keeper::~keeper(){
 
 int keeper::run(){
   { LOG(INFO) << "running in port=" << a_.port; }
+  set_exit_on_term();
   return this->serv(a_.port, a_.threadnum);
 };
 
