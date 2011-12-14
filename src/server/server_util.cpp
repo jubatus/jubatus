@@ -38,8 +38,8 @@ namespace jubatus {
     p.add<std::string>("tmpdir", 'd', "directory to place plugins", false, "/tmp");
     p.add("join", 'j', "join to the existing cluster");
 
-    p.add<int>("interval_sec", 's', "mix interval by seconds", false, 5);
-    p.add<int>("interval_count", 'i', "mix interval by update count", false, 1024);
+    p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
+    p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
 
     p.parse_check(args, argv);
 

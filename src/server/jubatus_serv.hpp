@@ -208,7 +208,7 @@ public:
     }
     clock_time end = get_clock_time();
     DLOG(INFO) << "mixed with " << v.size() << " servers in " << (double)(end - start) << " secs.";
-    DLOG(INFO) << serialized_diff.size() << " bytes (serialized data) mixed.";
+    DLOG(INFO) << serialized_diff.size() << " bytes (serialized data) has been put.";
   }
 #endif
 
@@ -266,10 +266,18 @@ public:
   std::string get_ipaddr()const{ return a_.eth; };
   int get_port()const{ return a_.port; };
   int get_threadum()const{ return a_.threadnum; };
+
+  unsigned int update_count(){
+#ifdef HAVE_ZOOKEEPER_H
+    update_count_ = mixer_->updated();
+#endif
+    return update_count_;
+  };
   
 protected:
   bool is_mixer_func_set_;
   server_argv a_;
+  unsigned int update_count_;
 
 #ifdef HAVE_ZOOKEEPER_H
   pfi::lang::shared_ptr<mixer0<M, Diff> > mixer_;

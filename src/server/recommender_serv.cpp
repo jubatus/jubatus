@@ -101,6 +101,7 @@ pfi::lang::shared_ptr<recommender_base> recommender_serv::make_model(){
 }  
 
 void recommender_serv::after_load(){
+  clear(0);
 }
 
 

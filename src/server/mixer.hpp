@@ -37,7 +37,7 @@ namespace jubatus{
   template <typename M, typename D>
   class mixer0{
   public:
-    void updated(){
+    unsigned int updated(){
       pfi::concurrent::scoped_lock lk(m_);
       unsigned int new_ticktime = time(NULL);
       ++counter_;
@@ -45,6 +45,7 @@ namespace jubatus{
          new_ticktime - ticktime_ > tick_threshold_){
         c_.notify(); // FIXME: need sync here?
       }
+      return counter_;
     };
     void accessed(){};
     void clear(){
@@ -72,6 +73,7 @@ namespace jubatus{
        counter_(0),
        tick_threshold_(tick_threshold),
        ticktime_(time(NULL)),
+       mix_count_(0),
        t_(pfi::lang::bind(&(mixer0<M,D>::mixer_loop), this))
     {
     };
@@ -110,7 +112,8 @@ namespace jubatus{
       std::vector<std::pair<std::string,int> > servers;
       common::get_all_actors(*zk_, name_, servers);
       mixer_func_(servers);
-      DLOG(INFO) << "....mix done";
+      mix_count_++;
+      DLOG(INFO) << ".... " << mix_count_ << "th mix done.";
     };
 
   private:  
@@ -124,6 +127,7 @@ namespace jubatus{
     unsigned int counter_;
     unsigned int tick_threshold_;
     unsigned int ticktime_;
+    unsigned int mix_count_;
 
     pfi::concurrent::thread t_;
     pfi::concurrent::mutex m_;
