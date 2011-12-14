@@ -94,6 +94,7 @@ namespace jubatus {
   {
   };
   
+#ifdef HAVE_ZOOKEEPER_H
   pfi::lang::shared_ptr<jubatus::common::lock_service> ls;
 
   void atexit(void){
@@ -120,5 +121,6 @@ namespace jubatus {
 
     ::atexit(jubatus::atexit);
   }
+#endif
 
 }

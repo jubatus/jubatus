@@ -103,18 +103,17 @@ void convert(const From& from, To& to){
   msg.get().convert(&to);
 }
 
+#ifdef HAVE_ZOOKEEPER_H
 extern pfi::lang::shared_ptr<jubatus::common::lock_service> ls;
 void atexit(void);
 
 void exit_on_term(int);
 void exit_on_term2(int, siginfo_t*, void*);
 void set_exit_on_term();
-
+#endif
 
 template <class ImplServerClass, class UserServClass>
 int run_server(int args, char** argv){
-
-  set_exit_on_term();
 
   ImplServerClass impl_server(server_argv(args, argv));
 #ifdef HAVE_ZOOKEEPER_H
@@ -131,6 +130,9 @@ int run_server(int args, char** argv){
     ("get_storage",
      pfi::lang::bind(&UserServClass::get_storage,
 		     impl_server.get_p().get(), pfi::lang::_1));
+
+  set_exit_on_term();
+
 #endif // HAVE_ZOOKEEPER_H
   return impl_server.run();
 };

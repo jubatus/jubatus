@@ -23,6 +23,7 @@ namespace server {
 stat_serv::stat_serv(const server_argv& a)
   :jubatus_serv<stat::stat,int>(a)
 {
+  config_.window_size = 1024; // default till users call set_config
   model_ = make_model();
 }
 
