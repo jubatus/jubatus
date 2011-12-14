@@ -90,6 +90,10 @@ void lsh::update_row(const string& id, const sfv_diff_t& diff){
   row2lshvals_.set_row(id, bv);
 }
 
+void lsh::get_all_row_ids(std::vector<std::string>& ids) const{
+  row2lshvals_.get_all_row_ids(ids);
+}
+
 string lsh::type() const{
   return string("lsh");
 }

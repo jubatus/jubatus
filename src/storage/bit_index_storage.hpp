@@ -38,6 +38,7 @@ public:
   void get_row(const std::string& row, bit_vector& bv) const;
   void remove_row(const std::string& row);
   void clear();
+  void get_all_row_ids(std::vector<std::string>& ids) const;
 
   void similar_row(const bit_vector& bv, std::vector<std::pair<std::string, float> >& ids, uint64_t ret_num) const;
   std::string name() const;

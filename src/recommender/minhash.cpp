@@ -90,6 +90,10 @@ void minhash::update_row(const string& id, const sfv_diff_t& diff){
   row2minhashvals_.set_row(id, bv);
 }
 
+void minhash::get_all_row_ids(std::vector<std::string>& ids) const{
+  row2minhashvals_.get_all_row_ids(ids);
+}
+
 void minhash::hash_mix64(uint64_t& a, uint64_t& b, uint64_t& c) {
   a -= b; a -= c; a ^= (c>>43);
   b -= c; b -= a; b ^= (a<<9);
