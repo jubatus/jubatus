@@ -43,9 +43,10 @@ void stat::push(const std::string &key, double val)
   }
 }
 
-double stat::sum(const std::string &key)
+double stat::sum(const std::string &key)const
 {
-  return stats_[key].sum_;
+  pfi::data::unordered_map<std::string, stat_val>::const_iterator it = stats_.find(key);
+  return it->second.sum_;
 }
 
 double stat::stddev(const std::string &key)
