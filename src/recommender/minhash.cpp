@@ -127,10 +127,10 @@ bool minhash::load_impl(std::istream& is){
   return true;
 }
 storage::recommender_storage_base* minhash::get_storage(){
-  return reinterpret_cast<storage::recommender_storage_base*>(&row2minhashvals_);
+  return &row2minhashvals_;
 }
 const storage::recommender_storage_base* minhash::get_const_storage()const{
-  return reinterpret_cast<const storage::recommender_storage_base*>(&row2minhashvals_);
+  return &row2minhashvals_;
 }
 
 } // namespace recommender

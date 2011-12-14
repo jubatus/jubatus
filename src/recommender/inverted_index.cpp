@@ -95,10 +95,10 @@ bool inverted_index::load_impl(std::istream& is){
   return true;
 }
 storage::recommender_storage_base* inverted_index::get_storage(){
-  return reinterpret_cast<storage::recommender_storage_base*>(&inv_);
+  return &inv_;
 }
 const storage::recommender_storage_base* inverted_index::get_const_storage()const{
-  return reinterpret_cast<const storage::recommender_storage_base*>(&inv_);
+  return &inv_;
 }
 
 

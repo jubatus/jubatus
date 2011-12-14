@@ -30,7 +30,7 @@
 namespace jubatus {
 namespace storage{
 
-class inverted_index_storage : recommender_storage_base{
+class inverted_index_storage : public recommender_storage_base{
 public:
   inverted_index_storage();
   ~inverted_index_storage();
