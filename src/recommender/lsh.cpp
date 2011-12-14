@@ -65,9 +65,17 @@ void lsh::clear_row(const string& id){
 }
 
 void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const{
+  const_cast<lsh*>(this)->generate_column_bases(sfv);
+
   vector<float> lsh_vals;
   prod_invert_and_vector(column2baseval_, sfv, base_num_, lsh_vals);
   set_bit_vector(lsh_vals, bv);
+}
+
+void lsh::generate_column_bases(const sfv_t& sfv){
+  for (size_t i = 0; i < sfv.size(); ++i){
+    generate_column_base(sfv[i].first);
+  }
 }
 
 void lsh::generate_column_base(const string& column){
@@ -79,9 +87,7 @@ void lsh::generate_column_base(const string& column){
 }
 
 void lsh::update_row(const string& id, const sfv_diff_t& diff){
-  for (size_t i = 0; i < diff.size(); ++i){
-    generate_column_base(diff[i].first);
-  }
+  generate_column_bases(diff);
   orig_.set_row(id, diff);
   sfv_t row;
   orig_.get_row(id, row);

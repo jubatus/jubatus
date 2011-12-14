@@ -112,15 +112,18 @@ void update_random(recommender_base& r) {
 void compare_recommenders(recommender_base& r1,
                           recommender_base& r2,
                           bool compare_complete_row = true) {
+  // make a query vector
+  sfv_t q = make_vec(0.5, 0.3, 1.0);
+  
   // Get result before saving
   vector<pair<string, float> > ids1;
-  r1.recommender_base::similar_row(string("r1_0"), ids1, 10);
+  r1.similar_row(q, ids1, 10);
   sfv_t comp1;
   r1.complete_row("r1_0", comp1);
 
   // Get result from loaded data
   vector<pair<string, float> > ids2;
-  r2.recommender_base::similar_row(string("r1_0"), ids2, 10);
+  r2.similar_row(q, ids2, 10);
   sfv_t comp2;
   r2.complete_row("r1_0", comp2);
 
@@ -195,8 +198,7 @@ TYPED_TEST_P(recommender_random_test, diff) {
   TypeParam r2;
   r2.get_storage()->set_mixed_and_clear_diff(diff);
   
-  // TODO this comparison cannot be passed
-  //compare_recommenders(r, r2, false);
+  compare_recommenders(r, r2, false);
 }
 
 REGISTER_TYPED_TEST_CASE_P(recommender_random_test,

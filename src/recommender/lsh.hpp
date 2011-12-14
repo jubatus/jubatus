@@ -44,6 +44,7 @@ private:
 
   void calc_lsh_values(const sfv_t& sfv, storage::bit_vector& bv) const;
   void generate_column_base(const std::string& column);
+  void generate_column_bases(const sfv_t& v);
   
   pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_; // bases for lsh
   storage::bit_index_storage row2lshvals_;
