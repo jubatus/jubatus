@@ -51,7 +51,7 @@ pid_t fork_process(const char* name, int port = 9199){
     perror("--");
     return -1;
   }
-  usleep(10000);
+  usleep(30000);
   return child;
 }
 

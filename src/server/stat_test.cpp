@@ -25,6 +25,8 @@
 using namespace std;
 using namespace jubatus;
 
+static const int PORT = 65435;
+
 namespace {
 
   class stat_test : public ::testing::Test {
@@ -32,7 +34,7 @@ namespace {
     pid_t child_;
 
     stat_test(){
-      child_ = fork_process("stat", 9197);
+      child_ = fork_process("stat", PORT);
     };
     virtual ~stat_test(){
       kill_process(child_);
@@ -47,7 +49,7 @@ namespace {
 
 TEST_F(stat_test, small) {
 
-  client::stat c("localhost", 9197, 10);
+  client::stat c("localhost", PORT, 10);
   c.push("", "hoge", 12);
   ASSERT_DOUBLE_EQ(12.0, c.sum("", "hoge", 0));
 
