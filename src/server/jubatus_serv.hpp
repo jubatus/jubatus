@@ -153,13 +153,14 @@ public:
       throw config_not_set();
     }
   };
-    int put_diff_impl(std::string d){
+  int put_diff_impl(std::string d){
     msgpack::unpacked msg;
     msgpack::unpack(&msg, d.c_str(), d.size());
     Diff diff;
     msg.get().convert(&diff);
     scoped_lock lk(wlock(m_));
     if(model_){
+      mixer_->clear();
       return this->put_diff_(model_.get(), diff);
     }else{
       throw config_not_set();
@@ -210,6 +211,8 @@ public:
     DLOG(INFO) << "mixed with " << v.size() << " servers in " << (double)(end - start) << " secs.";
     DLOG(INFO) << serialized_diff.size() << " bytes (serialized data) mixed.";
   }
+
+  void update_mixer(){ mixer_->updated(); };
 #endif
 
   int save(std::string id) {
@@ -294,4 +297,5 @@ protected:
   pfi::concurrent::scoped_lock lk(rlock((p)->get_rw_mutex()));
 
 #define JWLOCK__(p) \
-  pfi::concurrent::scoped_lock lk(wlock((p)->get_rw_mutex()));
+  pfi::concurrent::scoped_lock lk(wlock((p)->get_rw_mutex())); \
+  p_->update_mixer();
