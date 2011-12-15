@@ -36,28 +36,7 @@ inverted_index::~inverted_index() {
 
 void inverted_index::similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const{
   ids.clear();
-
-  float query_sq_norm = 0.f;
-  for (size_t i = 0; i < query.size(); ++i){
-    float val = query[i].second;
-    query_sq_norm += val * val;
-  }
-  float query_norm = sqrt(query_sq_norm);
-  if (query_norm == 0.f) return;
-
-  pfi::data::unordered_map<string, float> scores;
-  inv_.calc_scores(query, scores);
-  
-  vector<pair<float, string> > sorted_scores;
-  for (pfi::data::unordered_map<string, float>::const_iterator it = scores.begin(); it != scores.end(); ++it){
-    float norm = inv_.calc_columnl2norm(it->first);
-    float normed_score = (norm != 0.f) ? it->second / norm / query_norm : 0.f;
-    sorted_scores.push_back(make_pair(normed_score, it->first));
-  }
-  sort(sorted_scores.rbegin(), sorted_scores.rend());
-  for (size_t i = 0; i < sorted_scores.size() && i < ret_num; ++i){
-    ids.push_back(make_pair(sorted_scores[i].second, sorted_scores[i].first));
-  }
+  inv_.calc_scores(query, ids, ret_num);
 }
 
 void inverted_index::clear(){
