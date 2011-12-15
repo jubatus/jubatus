@@ -21,11 +21,11 @@
 #include <map>
 #include <pficommon/lang/scoped_ptr.h>
 
-#include "../../server/fv_converter/word_splitter.hpp"
+#include "../../fv_converter/word_splitter.hpp"
 
 namespace jubatus {
 
-class mecab_splitter : public word_splitter {
+class mecab_splitter : public fv_converter::word_splitter {
  public:
   mecab_splitter();
   mecab_splitter(const char* arg);

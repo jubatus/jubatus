@@ -23,12 +23,15 @@
 #include <pficommon/lang/scoped_ptr.h>
 
 #include "mecab_splitter.hpp"
-#include "../../server/fv_converter/test_util.hpp"
-#include "../../server/fv_converter/exception.hpp"
+#include "../../fv_converter/test_util.hpp"
+#include "../../fv_converter/exception.hpp"
 
 using namespace std;
 
 namespace jubatus {
+
+using fv_converter::word_splitter;
+using fv_converter::converter_exception;
 
 TEST(mecab_splitter, trivial) {
   mecab_splitter m;

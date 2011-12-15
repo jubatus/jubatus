@@ -19,11 +19,14 @@
 
 #include <pficommon/lang/scoped_ptr.h>
 #include "ux_splitter.hpp"
-#include "../../server/fv_converter/exception.hpp"
+#include "../../fv_converter/exception.hpp"
 
 using namespace std;
 
 namespace jubatus {
+
+using fv_converter::word_splitter;
+using fv_converter::converter_exception;
 
 TEST(ux_splitter, split) {
   vector<string> ks;
@@ -73,6 +76,5 @@ TEST(ux_splitter, create) {
   ASSERT_EQ(5u, bs[1].first);
   ASSERT_EQ(4u, bs[1].second);
 }
-
 
 }
