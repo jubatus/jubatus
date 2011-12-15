@@ -35,6 +35,7 @@ typedef pfi::data::unordered_map<uint64_t, float> row_t;
 typedef pfi::data::unordered_map<std::string, row_t> tbl_t;
 typedef pfi::data::unordered_map<std::string, bit_vector> bit_table_t;
 typedef pfi::data::unordered_map<std::string, float> map_float_t;
+typedef std::map<uint64_t, float> imap_float_t;
 
 typedef double val1_t;
 

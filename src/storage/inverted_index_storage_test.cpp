@@ -26,29 +26,31 @@ TEST(inverted_index_storage, trivial) {
   v.push_back(make_pair("c1", 1.0));
   v.push_back(make_pair("c2", 1.0));
 
-  pfi::data::unordered_map<string, float> scores;
-  s.calc_scores(v, scores);
+  vector<pair<string, float> > scores;
+  s.calc_scores(v, scores, 100);
 
   ASSERT_EQ(3u, scores.size());
-  EXPECT_EQ(2.0, scores["r1"]);
-  EXPECT_EQ(1.0, scores["r2"]);
-  EXPECT_EQ(1.0, scores["r3"]);
-
-  EXPECT_FLOAT_EQ(sqrt(3.0), s.calc_columnl2norm("r1"));
-  EXPECT_FLOAT_EQ(sqrt(3.0), s.calc_columnl2norm("r2"));
-  EXPECT_FLOAT_EQ(sqrt(2.0), s.calc_columnl2norm("r3"));
+  EXPECT_EQ(2.0, scores[0].second);
+  EXPECT_EQ("r1", scores[0].first);
+  EXPECT_EQ(1.0, scores[1].second);
+  EXPECT_EQ("r2", scores[1].first);
+  EXPECT_EQ(1.0, scores[2].second);
+  EXPECT_EQ("r3", scores[2].first);
 
   stringstream ss;
   s.save(ss);
   inverted_index_storage s2;
   s2.load(ss);
-  pfi::data::unordered_map<string, float> scores2;
-  s.calc_scores(v, scores2);
+  vector<pair<string, float> > scores2;
+  s.calc_scores(v, scores2, 100);
   // expect to get same result
   ASSERT_EQ(3u, scores2.size());
-  EXPECT_EQ(2.0, scores2["r1"]);
-  EXPECT_EQ(1.0, scores2["r2"]);
-  EXPECT_EQ(1.0, scores2["r3"]);
+  EXPECT_EQ(2.0, scores2[0].second);
+  EXPECT_EQ("r1", scores2[0].first);
+  EXPECT_EQ(1.0, scores2[1].second);
+  EXPECT_EQ("r2", scores2[1].first);
+  EXPECT_EQ(1.0, scores2[2].second);
+  EXPECT_EQ("r3", scores2[2].first);
 }
 
 TEST(inverted_index_storage, diff) {
