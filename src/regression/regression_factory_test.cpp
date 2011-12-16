@@ -11,8 +11,8 @@ namespace jubatus {
 TEST(regression_factory, trivial) {
   regression_factory f;
   storage::local_storage s;
-  pfi::lang::scoped_ptr<regression_base> r(f.create_regression("online_svr", &s));
-  EXPECT_EQ(typeid(*r), typeid(online_svr&));
+  pfi::lang::scoped_ptr<regression_base> r(f.create_regression("PA", &s));
+  EXPECT_EQ(typeid(*r), typeid(regression::PA&));
 }
 
 TEST(regression_factory, unknown) {

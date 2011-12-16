@@ -83,7 +83,7 @@ void run(const string& filename) {
   {
     jubatus::storage::local_storage s;
     pfi::lang::scoped_ptr<jubatus::regression_base>
-        r(f.create_regression("online_svr", &s));
+        r(f.create_regression("PA", &s));
     run_test(*r, data);
   }
 }

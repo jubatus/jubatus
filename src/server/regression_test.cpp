@@ -56,7 +56,7 @@ TEST_F(regression_test, small) {
   
   cout << "set_config" << endl;
   config_data conf;
-  conf.method = "online_svr";
+  conf.method = "PA";
   num_rule r = {"*", "num"};
   conf.config.num_rules.push_back(r);
   c.set_config("test", conf);

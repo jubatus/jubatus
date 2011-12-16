@@ -8,7 +8,7 @@ def build(bld):
     bld.shlib(
         source = [
             'regression_base.cpp',
-            'online_svr.cpp',
+            'pa.cpp',
             'regression_factory.cpp'
             ],
         target = 'jubatus_regression',

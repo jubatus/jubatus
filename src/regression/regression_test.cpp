@@ -30,18 +30,15 @@ TYPED_TEST_P(regression_test, trivial) {
   EXPECT_TRUE(p.estimate(fv) > 0.0);
 }
 
-TYPED_TEST_P(regression_test, random) {
-  local_storage s;
-  TypeParam p(&s);
-
+void random_test(regression_base& p, float x, float y) {
   pfi::math::random::mtrand rand(0);
   // learn with 1000 random data
   for (size_t i = 0; i < 1000; ++i) {
     sfv_t fv;
-    float f1 = rand.next_gaussian();
-    float f2 = rand.next_gaussian();
-    float f3 = rand.next_gaussian();
-    float value = f1 * 5 + f2 * 3 + f3 * 2 + rand.next_gaussian();
+    float f1 = rand.next_gaussian(x, x);
+    float f2 = rand.next_gaussian(x, x);
+    float f3 = rand.next_gaussian(x, x);
+    float value = y * (f1 * 5 + f2 * 3 + f3 * 2 + rand.next_gaussian() * x);
     
     fv.push_back(make_pair("f1", f1));
     fv.push_back(make_pair("f2", f2));
@@ -52,25 +49,45 @@ TYPED_TEST_P(regression_test, random) {
   size_t ok = 0;
   for (size_t i = 0; i < 100; ++i) {
     sfv_t fv;
-    float f1 = rand.next_gaussian();
-    float f2 = rand.next_gaussian();
-    float f3 = rand.next_gaussian();
-    float value = f1 * 5 + f2 * 3 + f3 * 2;
+    float f1 = rand.next_gaussian(x, x);
+    float f2 = rand.next_gaussian(x, x);
+    float f3 = rand.next_gaussian(x, x);
+    float value = y * (f1 * 5 + f2 * 3 + f3 * 2);
 
     fv.push_back(make_pair("f1", f1));
     fv.push_back(make_pair("f2", f2));
     fv.push_back(make_pair("f3", f3));
-    if (fabs(p.estimate(fv) - value) < 2.0)
+    if (fabs(p.estimate(fv) - value) < 2.0 * y * x)
       ++ok;
   }
   EXPECT_GT(ok, 90u);
 }
 
+TYPED_TEST_P(regression_test, random) {
+  {
+    local_storage s;
+    TypeParam p(&s);
+    random_test(p, 1, 1);
+  }
+  {
+    local_storage s;
+    TypeParam p(&s);
+    random_test(p, 1, 100);
+  }
+  {
+    local_storage s;
+    TypeParam p(&s);
+    random_test(p, 10000, 1);
+  }
+}
+
+
+
 REGISTER_TYPED_TEST_CASE_P(
     regression_test,
     trivial, random);
 
-typedef testing::Types<online_svr> regression_types;
+typedef testing::Types<regression::PA> regression_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(reg, regression_test, regression_types);
 
