@@ -27,7 +27,7 @@ public:
   diffv( int c, const storage::features3_t& w ):
     count(c), v(w)
   {};
-  diffv(){};
+  diffv(): count(0), v() {};
 
   int count;
   storage::features3_t v;
