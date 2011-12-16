@@ -304,6 +304,15 @@ protected:
 #define JRLOCK__(p) \
   pfi::concurrent::scoped_lock lk(rlock((p)->get_rw_mutex()));
 
+#ifdef HAVE_ZOOKEEPER_H
+
 #define JWLOCK__(p) \
   pfi::concurrent::scoped_lock lk(wlock((p)->get_rw_mutex())); \
   p_->update_mixer();
+
+#else
+
+#define JWLOCK__(p) \
+  pfi::concurrent::scoped_lock lk(wlock((p)->get_rw_mutex()));
+
+#endif
