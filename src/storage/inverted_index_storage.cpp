@@ -59,15 +59,8 @@ void inverted_index_storage::set(const std::string& row, const std::string& colu
   if (column_id == key_manager::NOTFOUND){
     column_id = column2id_.get_id(column);
   } else {
-    bool exist = false;
-    float val_in_inv = get_from_tbl(row, column_id, inv_, exist);
-    bool diff_exist = false;
-    float val_in_inv_diff = get_from_tbl(row, column_id, inv_diff_, diff_exist);
-    if (exist && !diff_exist){
-      column2norm_diff_[column_id] -= val_in_inv * val_in_inv;
-    } else if (diff_exist){
-      column2norm_diff_[column_id] -= val_in_inv_diff * val_in_inv_diff;
-    }
+    float cur_val = get(row, column);
+    column2norm_diff_[column_id] -= cur_val * cur_val;
   }
   inv_diff_[row][column_id] = val;
   column2norm_diff_[column_id] += val * val;
@@ -277,28 +270,29 @@ float inverted_index_storage::calc_columnl2norm(uint64_t column_id) const{
 void inverted_index_storage::add_inp_scores(const std::string& row, 
                                             float val, 
                                             pfi::data::unordered_map<uint64_t, float>& scores) const{
-  pfi::data::unordered_map<uint64_t, float> i_scores;
   tbl_t::const_iterator it_diff = inv_diff_.find(row);
   if (it_diff != inv_diff_.end()){
     const row_t& row_v = it_diff->second;
     for (row_t::const_iterator row_it = row_v.begin(); row_it != row_v.end(); ++row_it){
-      i_scores[row_it->first] = row_it->second * val;
+      scores[row_it->first] += row_it->second * val;
     }
   }
 
   tbl_t::const_iterator it = inv_.find(row);
   if (it != inv_.end()){
     const row_t& row_v = it->second;
-    for (row_t::const_iterator row_it = row_v.begin(); row_it != row_v.end(); ++row_it){
-      if (i_scores.find(row_it->first) == i_scores.end()){
-        i_scores[row_it->first] = row_it->second * val;
+    if (it_diff == inv_diff_.end()){
+      for (row_t::const_iterator row_it = row_v.begin(); row_it != row_v.end(); ++row_it){
+        scores[row_it->first] += row_it->second * val;
+      }
+    } else {
+      const row_t& row_diff_v = it_diff->second;
+      for (row_t::const_iterator row_it = row_v.begin(); row_it != row_v.end(); ++row_it){
+        if (row_diff_v.find(row_it->first) == row_diff_v.end()){
+          scores[row_it->first] += row_it->second * val;
+        }
       }
     }
-  }
-
-  for (pfi::data::unordered_map<uint64_t, float>::const_iterator it = i_scores.begin();
-       it != i_scores.end(); ++it){
-    scores[it->first] += it->second;
   }
 }
 
