@@ -30,6 +30,7 @@ public:
     rpc_server::add<double(std::string, std::string, std::pair<int32_t, double >) >("moment", pfi::lang::bind(&Impl::moment, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
     rpc_server::add<int32_t(std::string, std::string) >("save", pfi::lang::bind(&Impl::save, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, std::string) >("load", pfi::lang::bind(&Impl::load, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<std::map<std::string, std::map<std::string, std::string > >(std::string, int32_t) >("get_status", pfi::lang::bind(&Impl::get_status, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
   }
 };
 
