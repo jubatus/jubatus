@@ -116,27 +116,6 @@ public:
 #endif
   };
 
-#ifdef HAVE_ZOOKEEPER_H
-  void join_to_cluster(pfi::lang::shared_ptr<jubatus::common::lock_service> z){
-    std::vector<std::string> list;
-    std::string path = common::ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
-    z->list(path, list);
-    if(not list.empty()){
-      common::lock_service_mutex zlk(*z, common::ACTOR_BASE_PATH + "/" + a_.name + "/master_lock");
-      while(not zlk.try_lock()){ ; }
-      size_t i = rand() % list.size();
-      std::string ip;
-      int port;
-      common::revert(list[i], ip, port);
-      pfi::network::mprpc::rpc_client c(ip, port, a_.timeout);
-
-      typename pfi::lang::function<std::string()> f = c.call<std::string()>("get_storage");
-      std::stringstream ss( f() );
-      model_ = make_model();
-      model_->load(ss);
-    }
-  };
-
   std::map<std::string, std::map<std::string,std::string> > get_status(int) const {
     std::map<std::string, std::string> data;
     
@@ -166,6 +145,27 @@ public:
     ss << "_";
     ss << a_.port;
     return ss.str();
+  };
+
+#ifdef HAVE_ZOOKEEPER_H
+  void join_to_cluster(pfi::lang::shared_ptr<jubatus::common::lock_service> z){
+    std::vector<std::string> list;
+    std::string path = common::ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
+    z->list(path, list);
+    if(not list.empty()){
+      common::lock_service_mutex zlk(*z, common::ACTOR_BASE_PATH + "/" + a_.name + "/master_lock");
+      while(not zlk.try_lock()){ ; }
+      size_t i = rand() % list.size();
+      std::string ip;
+      int port;
+      common::revert(list[i], ip, port);
+      pfi::network::mprpc::rpc_client c(ip, port, a_.timeout);
+
+      typename pfi::lang::function<std::string()> f = c.call<std::string()>("get_storage");
+      std::stringstream ss( f() );
+      model_ = make_model();
+      model_->load(ss);
+    }
   };
   
   std::string get_storage(int i){
