@@ -10,36 +10,26 @@ def build_one(bld, name, libraries = ''):
   bld.program(
     source = __sources,
     target = 'juba'+name,
-    includes = '.',
+    includes = '. ../framework',
     use = 'jubatus_framework jubatus_%s %s' % (name, libraries)
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
-      source = '%s_keeper.cpp server_util.cpp keeper.cpp' % name,
+      source = '%s_keeper.cpp ' % name,
       target = 'juba%s_keeper' % name,
-      includes = '.',
+      includes = '. ../framework',
       use = 'jubatus_framework '
       )
   bld.program(
     features = 'gtest',
     source = '%s_test.cpp' % name,
     target = '%s_test' % name,
+    includes = '. ../framework',
     use = 'PFICOMMON',
     )
 
 
 def build(bld):
-
-  framework_source = 'server_util.cpp jubatus_serv.cpp'
-  #if bld.env.HAVE_ZOOKEEPER_H:
-  #  framework_source +=  ' mixer.cpp'
-
-  bld.shlib(
-    source = framework_source,
-    target = 'jubatus_framework',
-    includes = '.',
-    use = 'PFICOMMON jubacommon MSGPACK GLOG'
-    )
 
   #new classifier
   build_one(bld, "classifier", 'jubaconverter jubastorage')
