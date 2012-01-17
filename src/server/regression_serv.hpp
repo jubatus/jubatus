@@ -51,7 +51,7 @@ public:
   pfi::lang::shared_ptr<storage::storage_base> make_model();
   void after_load();
 
-  std::map<std::pair<std::string, int>, std::map<std::string, std::string> > get_status(int);
+  std::map<std::string, std::map<std::string, std::string> > get_status(int);
 
 private:
   config_data config_;

@@ -36,12 +36,8 @@ public:
       return call<int32_t(std::string, std::string)>("load")(arg0, arg1);
     }
 
-    std::string get_diff(int32_t arg0) {
-      return call<std::string(int32_t)>("get_diff")(arg0);
-    }
-
-    int32_t put_diff(std::string arg0) {
-      return call<int32_t(std::string)>("put_diff")(arg0);
+    std::map<std::string, std::map<std::string, std::string > > get_status(std::string arg0, int32_t arg1) {
+      return call<std::map<std::string, std::map<std::string, std::string > >(std::string, int32_t)>("get_status")(arg0, arg1);
     }
 
 private:

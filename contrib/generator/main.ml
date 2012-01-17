@@ -94,18 +94,26 @@ let _ =
 					       [Other(Stree.Class("std::string"), false)],
 					       ["//@broadcast"], false)) new_classdefs0
     in
+    let new_classdefs2 = List.map (add_method (Other(Stree.Template("std::map",
+								    [Other(Stree.Class("std::string"), false);
+								     Other(Stree.Template("std::map",
+											  [Other(Stree.Class("std::string"), false);
+											   Other(Stree.Class("std::string"), false)]), false)]), false),
+					       "get_status",
+					       [Stree.Int], ["//@broadcast"], true)) new_classdefs1
+    in
 
-    check_classdefs new_classdefs1;
+    check_classdefs new_classdefs2;
 
-    let new_classdefs2 = List.map dope_routing new_classdefs1 in
+    let new_classdefs3 = List.map dope_routing new_classdefs2 in
 
-    List.iter Stree.print_classdef new_classdefs2;
+    List.iter Stree.print_classdef new_classdefs3;
 (*    List.iter Stree.print_structdef structdefs;
     Stree.print_known_types();
     let new_classdefs1 = classdefs in *)
 
     let m = new Generator.jubatus_module (!outdir) (get_name source_file)
-      "jubatus" (List.rev typedefs) (List.rev structdefs) (List.rev new_classdefs2) in
+      "jubatus" (List.rev typedefs) (List.rev structdefs) (List.rev new_classdefs3) in
     m#generate;
     ()
   with

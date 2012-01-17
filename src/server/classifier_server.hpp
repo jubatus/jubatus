@@ -26,6 +26,7 @@ public:
     rpc_server::add<std::vector<std::vector<estimate_result > >(std::string, std::vector<datum >) >("classify", pfi::lang::bind(&Impl::classify, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, std::string) >("save", pfi::lang::bind(&Impl::save, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, std::string) >("load", pfi::lang::bind(&Impl::load, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<std::map<std::string, std::map<std::string, std::string > >(std::string, int32_t) >("get_status", pfi::lang::bind(&Impl::get_status, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
   }
 };
 

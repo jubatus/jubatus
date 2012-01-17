@@ -137,6 +137,37 @@ public:
     }
   };
 
+  std::map<std::string, std::map<std::string,std::string> > get_status(int) const {
+    std::map<std::string, std::string> data;
+    
+    data["timeout"] = pfi::lang::lexical_cast<std::string>(a_.timeout);
+    data["threadnum"] = pfi::lang::lexical_cast<std::string>(a_.threadnum);
+    data["tmpdir"] = a_.tmpdir;
+    data["interval_sec"] = pfi::lang::lexical_cast<std::string>(a_.interval_sec);
+    data["interval_count"] = pfi::lang::lexical_cast<std::string>(a_.interval_count);
+    data["is_standalone"] = pfi::lang::lexical_cast<std::string>(a_.is_standalone());
+    data["VERSION"] = JUBATUS_VERSION;
+    data["PROGNAME"] = JUBATUS_APPNAME;
+
+    data["update_count"] = pfi::lang::lexical_cast<std::string>(update_count_);
+
+#ifdef HAVE_ZOOKEEPER_H
+    data["zk"] = a_.z;
+    data["use_cht"] = pfi::lang::lexical_cast<std::string>(use_cht_);
+#endif
+
+    std::map<std::string, std::map<std::string,std::string> > ret;
+    ret[get_server_identifier()] = data;
+    return ret;
+  };
+  std::string get_server_identifier()const{
+    std::stringstream ss;
+    ss << a_.eth;
+    ss << "_";
+    ss << a_.port;
+    return ss.str();
+  };
+  
   std::string get_storage(int i){
     std::stringstream ss;
     model_->save(ss);

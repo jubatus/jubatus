@@ -128,8 +128,7 @@ void regression_serv::after_load(){
   regression_.reset(regression_factory().create_regression(config_.method, model_.get()));
 };
 
-std::map<std::pair<std::string,int>,
-         std::map<std::string,std::string> > regression_serv::get_status(int){
+std::map<std::string, std::map<std::string,std::string> > regression_serv::get_status(int){
   std::map<std::string,std::string> ret0;
   if (model_){
     //   mixer_->get_status(ret0);
@@ -138,9 +137,10 @@ std::map<std::pair<std::string,int>,
   }
   util::get_machine_status(ret0);
   
-  std::map<std::pair<string,int>, std::map<std::string,std::string> > ret;
-  std::pair<string,int> __hoge__ = make_pair(a_.eth, a_.port);
-  ret.insert(make_pair(__hoge__, ret0));
+  std::map<std::string, std::map<std::string,std::string> > ret =
+    jubatus_serv<storage::storage_base,diffv>::get_status(0);
+
+  ret[get_server_identifier()].insert(ret0.begin(), ret0.end());
   return ret;
 }
   

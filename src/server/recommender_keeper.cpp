@@ -21,6 +21,7 @@ int main(int args, char** argv){
   k.register_broadcast_analysis<std::vector<std::string> , int>("get_all_rows");
   k.register_broadcast_analysis<int, std::string>("save");
   k.register_broadcast_update<std::string>("load");
+  k.register_broadcast_analysis<std::map<std::string, std::map<std::string, std::string> > , int>("get_status");
   k.run();
 }
 

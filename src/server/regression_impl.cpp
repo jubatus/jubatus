@@ -32,6 +32,9 @@ public:
   int load(std::string& arg0, std::string arg1) //@broadcast
   { JWLOCK__(p_); return p_->load(arg1); };
 
+  std::map<std::string, std::map<std::string, std::string> >  get_status(std::string& arg0, int arg1) //@broadcast
+  { JRLOCK__(p_); return p_->get_status(arg1); };
+
   int run(){ return p_->start(*this); };
 
   pfi::lang::shared_ptr<regression_serv> get_p(){ return p_; };

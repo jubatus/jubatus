@@ -223,11 +223,9 @@ void my_test(const char* meth, const char* stor){ //serv2, api_classify){
   }
   EXPECT_GE(count, result.size()-10); //num of wrong classification should be less than 1%
 
-  // FIXME: write get_status
-  // map<pair<string, int>, map<string, string> > status = cli.get_status(NAME);
-  // ASSERT_TRUE(status.success);
-  // ASSERT_EQ(1u, status.retval.size());
-  // EXPECT_GE(status.retval.begin()->second.size(), 2u);
+  map<string, map<string, string> > status = cli.get_status(NAME, 0);
+  string count_str = status.begin()->second["update_count"];
+  EXPECT_EQ(atoi(count_str.c_str()), 2);
 }
 
 
@@ -281,6 +279,15 @@ TEST_F(classifier_test, nherd){
 //   EXPECT_FLOAT_EQ(1.0, sum.v[0].second[1].second.v2);
 // }
 
+TEST_F(classifier_test, get_status){
+  classifier cli("localhost", PORT, 10);
+  map<string,map<string,string> > status = cli.get_status(NAME, 0);
+  EXPECT_EQ(status.size(), 1u);
+  for(map<string,map<string,string> >::const_iterator it = status.begin();
+      it != status.end(); ++it){
+    EXPECT_GE(it->second.size(), 8u);
+  }
+}
 TEST_F(classifier_test, save_load){
   classifier cli("localhost", PORT, 10);
   const char* meth = "PA";
