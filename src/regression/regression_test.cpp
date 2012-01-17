@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "regression.hpp"
 #include "../storage/local_storage.hpp"
-#include "../regression/regression_test_util.hpp"
+#include "regression_test_util.hpp"
 #include <pficommon/math/random.h>
 
 using namespace std;
