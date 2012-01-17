@@ -11,9 +11,9 @@ def options(opt):
   opt.load('compiler_cxx')
   opt.load('unittest_gtest')
 
-  opt.add_option('--disable-zookeeper',
+  opt.add_option('--enable-zookeeper',
                  action='store_true', default=False, # dest='nozk',
-                 help='do not use ZooKeepr')
+                 help='use ZooKeeper')
   
   opt.recurse(subdirs)
 
@@ -41,7 +41,7 @@ def configure(conf):
   conf.check_cxx(header_name = 'arpa/inet.h')
   conf.check_cxx(header_name = 'dlfcn.h')
 
-  if not Options.options.disable_zookeeper:
+  if Options.options.enable_zookeeper:
     if (conf.check_cxx(header_name = 'c-client-src/zookeeper.h',
                            define_name = 'HAVE_ZOOKEEPER_H',
                            mandatory = False)):

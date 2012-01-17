@@ -1,8 +1,9 @@
 import Options
 
 subdirs = '''
-common server cmd jubavisor plugin stat
+common server plugin stat
 classifier fv_converter recommender regression storage
+cmd jubavisor
 '''
 
 def options(opt):
