@@ -16,6 +16,7 @@ using namespace pfi::lang;
 using namespace jubatus;
 using jubatus::client::recommender;
 
+static const string NAME = "test";
 static const int PORT = 65433;
 
 namespace {
@@ -37,6 +38,15 @@ namespace {
     };
   };
 
+TEST_F(recommender_test, get_status){
+  jubatus::client::recommender cli("localhost", PORT, 10);
+  map<string,map<string,string> > status = cli.get_status(NAME, 0);
+  EXPECT_EQ(status.size(), 1u);
+  for(map<string,map<string,string> >::const_iterator it = status.begin();
+      it != status.end(); ++it){
+    EXPECT_GE(it->second.size(), 8u);
+  }
+}
 
 TEST_F(recommender_test, small) {
 
@@ -46,20 +56,20 @@ TEST_F(recommender_test, small) {
   conf.method = "minhash";
   jubatus::num_rule r = {"*", "num"};
   conf.converter.num_rules.push_back(r);
-  c.set_config("test", conf);
+  c.set_config(NAME, conf);
 
   jubatus::datum d;
   d.nv.push_back(make_pair("f1", 1.0));
-  c.update_row("test", "key", d);
-  c.clear_row("test", "key", 0);
-  c.update_row("test", "key", d);
+  c.update_row(NAME, "key", d);
+  c.clear_row(NAME, "key", 0);
+  c.update_row(NAME, "key", d);
 
-  jubatus::datum d2 = c.complete_row_from_data("test", d);
-  jubatus::datum d3 = c.complete_row_from_id("test", "key", 0);
+  jubatus::datum d2 = c.complete_row_from_data(NAME, d);
+  jubatus::datum d3 = c.complete_row_from_id(NAME, "key", 0);
   //  cout << res.size() << endl;
 
-  c.save("test", "name");
-  c.load("test", "name");
+  c.save(NAME, "name");
+  c.load(NAME, "name");
 }
 
 sfv_diff_t make_vec(float v1, float v2, float v3) {
