@@ -33,15 +33,44 @@
 namespace jubatus{
 namespace server{
 
-class classifier_serv : public jubatus_serv<storage::storage_base,diffv>
+
+struct clsfer : public mixable<storage::storage_base, diffv>
+{
+
+  clsfer(){
+    function<diffv(const storage::storage_base*)>  getdiff(&clsfer::get_diff);
+
+  // // // FIXME: switch the function when set_config is done
+  // // // because mixing method differs btwn PA, CW, etc...
+    function<int(storage::storage_base*, const diffv&)>   putdiff(&clsfer::put_diff);
+    function<int(const storage::storage_base*, const diffv&, diffv&)>  reduce(&clsfer::reduce);
+    set_mixer(getdiff, reduce, putdiff);
+  };
+  static diffv get_diff(const storage::storage_base* model){
+    diffv ret;
+    ret.count = 1; //FIXME mixer_->get_count();
+    model->get_diff(ret.v);
+    return ret;
+  }
+  static int reduce(const storage::storage_base*, const diffv& v, diffv& acc);
+
+  static int put_diff(storage::storage_base* model, const diffv& v){
+    diffv diff = v;
+    diff /= (double) v.count;
+    model->set_average_and_clear_diff(diff.v);
+    return 0;
+  }
+
+  void clear(){};
+
+  pfi::lang::shared_ptr<classifier_base> classifier_;
+};
+
+class classifier_serv : public jubatus_serv
 {
 public:
   classifier_serv(const server_argv&);  
   virtual ~classifier_serv();
-
-  static diffv get_diff(const storage::storage_base*);
-  static int put_diff(storage::storage_base*, diffv v);
-  static int reduce(const storage::storage_base*, const diffv&, diffv&);
 
   int set_config(config_data);
   config_data get_config(int );
@@ -56,7 +85,7 @@ public:
 private:
   config_data config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  pfi::lang::shared_ptr<classifier_base> classifier_;
+  clsfer clsfer_;
 
 };
 

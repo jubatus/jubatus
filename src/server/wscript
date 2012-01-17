@@ -45,12 +45,12 @@ def build(bld):
   build_one(bld, "classifier", 'jubaconverter jubastorage')
 
   #new regression
-  build_one(bld, "regression", 'jubaconverter jubastorage')
+  #build_one(bld, "regression", 'jubaconverter jubastorage')
 
   #new recommender
-  build_one(bld, "recommender", 'jubaconverter jubastorage')
+  #build_one(bld, "recommender", 'jubaconverter jubastorage')
 
-  build_one(bld, "stat")
+  #build_one(bld, "stat")
 
   n = bld.path.get_bld().make_node('test_input')
   n.mkdir()

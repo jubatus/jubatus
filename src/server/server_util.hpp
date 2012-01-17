@@ -118,11 +118,11 @@ int run_server(int args, char** argv){
   ImplServerClass impl_server(server_argv(args, argv));
 #ifdef HAVE_ZOOKEEPER_H
   pfi::network::mprpc::rpc_server& serv = impl_server;
-  serv.add<std::string(int)>
+  serv.add<std::vector<std::string>(int)>
     ("get_diff",
      pfi::lang::bind(&UserServClass::get_diff_impl,
 		     impl_server.get_p().get(), pfi::lang::_1));
-  serv.add<int(std::string)>
+  serv.add<int(std::vector<std::string>)>
     ("put_diff",
      pfi::lang::bind(&UserServClass::put_diff_impl,
 		     impl_server.get_p().get(), pfi::lang::_1));
