@@ -46,6 +46,7 @@ public:
     mixer_(new mixer0<M, Diff>(a_.name, a_.interval_count, a_.interval_sec)),
     use_cht_(false),
 #endif
+    update_count_(0),
     base_path_(a_.tmpdir)
   {
     //model_ = make_model(); //compiler warns
@@ -243,8 +244,15 @@ public:
     DLOG(INFO) << serialized_diff.size() << " bytes (serialized data) has been put.";
   }
 
-  void update_mixer(){ mixer_->updated(); };
 #endif
+
+  void updated(){
+#ifdef HAVE_ZOOKEEPER_H
+    update_count_ = mixer_->updated();
+#else
+    update_count_++;
+#endif
+  };
 
   int save(std::string id) {
     std::string ofile;
@@ -301,13 +309,6 @@ public:
   int get_port()const{ return a_.port; };
   int get_threadum()const{ return a_.threadnum; };
 
-  unsigned int update_count(){
-#ifdef HAVE_ZOOKEEPER_H
-    update_count_ = mixer_->updated();
-#endif
-    return update_count_;
-  };
-  
 protected:
   bool is_mixer_func_set_;
   server_argv a_;
@@ -335,15 +336,6 @@ protected:
 #define JRLOCK__(p) \
   pfi::concurrent::scoped_lock lk(rlock((p)->get_rw_mutex()));
 
-#ifdef HAVE_ZOOKEEPER_H
-
 #define JWLOCK__(p) \
   pfi::concurrent::scoped_lock lk(wlock((p)->get_rw_mutex())); \
-  p_->update_mixer();
-
-#else
-
-#define JWLOCK__(p) \
-  pfi::concurrent::scoped_lock lk(wlock((p)->get_rw_mutex()));
-
-#endif
+  p_->updated();

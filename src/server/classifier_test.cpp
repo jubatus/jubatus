@@ -223,9 +223,6 @@ void my_test(const char* meth, const char* stor){ //serv2, api_classify){
   }
   EXPECT_GE(count, result.size()-10); //num of wrong classification should be less than 1%
 
-  map<string, map<string, string> > status = cli.get_status(NAME, 0);
-  string count_str = status.begin()->second["update_count"];
-  EXPECT_EQ(atoi(count_str.c_str()), 2);
 }
 
 
@@ -325,6 +322,9 @@ TEST_F(classifier_test, save_load){
   ASSERT_EQ(0, res_load);
 
   my_test("PA",    "local");
+  map<string, map<string, string> > status = cli.get_status(NAME, 0);
+  string count_str = status.begin()->second["update_count"];
+  EXPECT_EQ(5, atoi(count_str.c_str()));
 }
 
 }
