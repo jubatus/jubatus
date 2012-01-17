@@ -68,6 +68,13 @@ TEST_F(regression_test, small) {
   data.push_back(make_pair(10, d));
   c.train("test", data);
 
+  cout << "get_status" << endl;
+  map<string,map<string,string> > status = c.get_status("test", 0);
+  EXPECT_EQ(status.size(), 1u);
+  for(map<string,map<string,string> >::const_iterator it = status.begin();
+      it != status.end(); ++it){
+    EXPECT_GE(it->second.size(), 8u);
+  }
   cout << "estimate" << endl;
   vector<datum> test;
   test.push_back(d);
