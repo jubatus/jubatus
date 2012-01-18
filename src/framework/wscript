@@ -4,13 +4,11 @@ def options(opt):
 def configure(conf):
   pass
 
-
-
 def build(bld):
 
   framework_source = 'server_util.cpp jubatus_serv.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
-    framework_source +=  ' keeper.cpp'
+    framework_source +=  ' keeper.cpp mixer.cpp'
 
   bld.shlib(
     source = framework_source,
@@ -22,5 +20,7 @@ def build(bld):
   bld.install_files('${PREFIX}/include/jubatus/server', [
       'jubatus_serv.hpp',
       'keeper.hpp',
-      'server_util.hpp'
+      'server_util.hpp',
+      'mixable.hpp'
+      'framework.hpp'
       ])
