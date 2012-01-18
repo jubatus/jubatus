@@ -37,12 +37,13 @@ using pfi::concurrent::scoped_lock;
 using namespace std;
 
 using jubatus::fv_converter::datum_to_fv_converter;
+using jubatus::framework::convert;
 
 namespace jubatus {
 namespace server {
 
 
-classifier_serv::classifier_serv(const server_argv& a)
+classifier_serv::classifier_serv(const framework::server_argv& a)
   :framework::jubatus_serv(a)
 {
   clsfer_.set_model(make_model());

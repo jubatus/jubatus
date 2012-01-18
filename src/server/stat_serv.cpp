@@ -20,7 +20,7 @@
 namespace jubatus {
 namespace server {
 
-stat_serv::stat_serv(const server_argv& a)
+stat_serv::stat_serv(const framework::server_argv& a)
   :jubatus_serv(a)
 {
   config_.window_size = 1024; // default till users call set_config

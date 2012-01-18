@@ -77,7 +77,7 @@ void load_config(jubatus::config_data& c){
   ifstream ifs("./test_input/config.json");
   ifs >> via_json_with_default(cc);
   c.method = "PA";
-  convert<fv_converter::converter_config, converter_config>(cc, c.config);
+  framework::convert<fv_converter::converter_config, converter_config>(cc, c.config);
 }
 
 namespace {

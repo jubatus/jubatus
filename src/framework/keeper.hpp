@@ -40,7 +40,7 @@ namespace framework {
 
 class keeper : public pfi::network::mprpc::rpc_server {
  public:
-  keeper(const jubatus::keeper_argv& a);
+  keeper(const keeper_argv& a);
   virtual ~keeper();
   int run();
 
@@ -147,7 +147,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
   }
   void get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret);
 
-  jubatus::keeper_argv a_;
+  keeper_argv a_;
   pfi::math::random::mtrand rng_;
   pfi::concurrent::mutex mutex_;
   pfi::lang::shared_ptr<common::lock_service> zk_;

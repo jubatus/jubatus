@@ -8,9 +8,9 @@ def configure(conf):
 
 def build(bld):
 
-  framework_source = 'server_util.cpp jubatus_serv.cpp keeper.cpp'
-  #if bld.env.HAVE_ZOOKEEPER_H:
-  #  framework_source +=  ' mixer.cpp'
+  framework_source = 'server_util.cpp jubatus_serv.cpp'
+  if bld.env.HAVE_ZOOKEEPER_H:
+    framework_source +=  ' keeper.cpp'
 
   bld.shlib(
     source = framework_source,

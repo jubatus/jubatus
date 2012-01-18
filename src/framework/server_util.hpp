@@ -36,8 +36,6 @@
 #  include "mixer.hpp"
 #endif
 
-static const std::string VERSION(JUBATUS_VERSION);
-
 #define SET_PROGNAME(s) \
   static const std::string PROGNAME(JUBATUS_APPNAME "_" s);
 
@@ -45,7 +43,9 @@ namespace cmdline{
 class parser;
 }
 
-namespace jubatus {
+namespace jubatus { namespace framework {
+
+static const std::string VERSION(JUBATUS_VERSION);
 
 struct server_argv {
 
@@ -137,4 +137,4 @@ int run_server(int args, char** argv){
   return impl_server.run();
 };
 
-}; // end jubatus
+}}

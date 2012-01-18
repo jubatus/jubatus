@@ -27,7 +27,7 @@ namespace server{
 class stat_serv : public framework::jubatus_serv
 {
 public:
-  stat_serv(const server_argv&);
+  stat_serv(const framework::server_argv&);
   virtual ~stat_serv();
 
   void after_load();

@@ -4,13 +4,14 @@
 
 #include "../common/membership.hpp"
 #include "../common/exception.hpp"
+#include "server_util.hpp"
 
 using namespace jubatus;
 using namespace jubatus::framework;
 
 pfi::lang::shared_ptr<jubatus::common::lock_service> ls;
 
-keeper::keeper(const jubatus::keeper_argv& a)
+keeper::keeper(const keeper_argv& a)
   : pfi::network::mprpc::rpc_server(a.timeout),
     a_(a),
     zk_(common::create_lock_service("cached_zk", a.z, a.timeout))

@@ -65,7 +65,7 @@ struct clsfer : public jubatus::framework::mixable<storage::storage_base, diffv>
 class classifier_serv : public framework::jubatus_serv
 {
 public:
-  classifier_serv(const server_argv&);  
+  classifier_serv(const framework::server_argv&);  
   virtual ~classifier_serv();
 
   int set_config(config_data);

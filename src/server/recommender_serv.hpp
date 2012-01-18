@@ -61,10 +61,10 @@ struct rcmdr : public jubatus::framework::mixable<recommender_base, std::string>
 
 typedef std::vector<std::pair<std::string, jubatus::datum> > rows;
 
-class recommender_serv : public jubatus::framework::jubatus_serv
+class recommender_serv : public framework::jubatus_serv
 {
 public:
-  recommender_serv(const server_argv&);
+  recommender_serv(const framework::server_argv&);
   virtual ~recommender_serv();
 
   int set_config(config_data config);

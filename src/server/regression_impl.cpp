@@ -49,5 +49,5 @@ private:
 
 }} // jubatus::server
 int main(int args, char** argv){
-  return jubatus::run_server<jubatus::server::regression_impl_,jubatus::server::regression_serv>(args, argv);
+  return jubatus::framework::run_server<jubatus::server::regression_impl_,jubatus::server::regression_serv>(args, argv);
 }

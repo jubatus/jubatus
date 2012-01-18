@@ -27,11 +27,12 @@
 
 using namespace pfi::lang;
 using std::string;
+using jubatus::framework::convert;
 
 namespace jubatus {
 namespace server {
 
-recommender_serv::recommender_serv(const server_argv& a)
+recommender_serv::recommender_serv(const framework::server_argv& a)
   :jubatus_serv(a, a.tmpdir)
 {
   //  rcmdr_.set_model(make_model()); -> we'd have to make it safer

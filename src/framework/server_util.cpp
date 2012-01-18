@@ -22,7 +22,7 @@
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
 
-namespace jubatus {
+namespace jubatus { namespace framework {
 
   server_argv::server_argv(int args, char** argv){
     google::InitGoogleLogging(argv[0]);
@@ -123,4 +123,5 @@ namespace jubatus {
   }
 #endif
 
+}
 }

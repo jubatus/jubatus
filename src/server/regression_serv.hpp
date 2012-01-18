@@ -66,7 +66,7 @@ struct gresser : public jubatus::framework::mixable<storage::storage_base, diffv
 class regression_serv : public jubatus::framework::jubatus_serv
 {
 public:
-  regression_serv(const server_argv&);
+  regression_serv(const framework::server_argv&);
   virtual ~regression_serv();
 
   static diffv get_diff(const storage::storage_base*);

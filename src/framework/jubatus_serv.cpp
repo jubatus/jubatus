@@ -8,6 +8,7 @@ using pfi::lang::function;
 
 namespace jubatus { namespace framework {
 
+#ifdef HAVE_ZOOKEEPER_H
     void jubatus_serv::do_mix(const std::vector<std::pair<std::string,int> >& v){
       vector<string> accs;
       vector<string> serialized_diffs;
@@ -50,7 +51,8 @@ namespace jubatus { namespace framework {
       }
       DLOG(INFO) << s << " bytes (serialized data) has been put.";
     }
-    
+#endif
+
     int jubatus_serv::save(std::string id)  {
       std::string ofile;
       build_local_path_(ofile, "jubatus", id);

@@ -41,11 +41,12 @@ using pfi::concurrent::scoped_lock;
 using namespace std;
 
 using jubatus::fv_converter::datum_to_fv_converter;
+using jubatus::framework::convert;
 
 namespace jubatus {
 namespace server {
 
-regression_serv::regression_serv(const server_argv & a)
+regression_serv::regression_serv(const framework::server_argv & a)
   :jubatus_serv(a)
 {
   gresser_.set_model(make_model());

@@ -89,6 +89,6 @@ let make_main namespaces classdef =
   let namespace = String.concat "::" namespaces in
   let Stree.ClassDef(classname, _, _) = classdef in
   "int main(int args, char** argv){\n"
-  ^ Printf.sprintf "  return jubatus::run_server<%s::%s_impl_,%s::%s_serv>(args, argv);\n"
+  ^ Printf.sprintf "  return jubatus::framework::run_server<%s::%s_impl_,%s::%s_serv>(args, argv);\n"
     namespace classname namespace classname
   ^ "}";;
