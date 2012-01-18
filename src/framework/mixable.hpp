@@ -9,7 +9,7 @@
 using pfi::lang::function;
 
 namespace jubatus{
-namespace server{
+namespace framework{
 
 class mixable0 {
 public:

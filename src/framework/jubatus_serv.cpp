@@ -6,7 +6,7 @@ using std::string;
 using pfi::network::mprpc::rpc_client;
 using pfi::lang::function;
 
-namespace jubatus { namespace server {
+namespace jubatus { namespace framework {
 
     void jubatus_serv::do_mix(const std::vector<std::pair<std::string,int> >& v){
       vector<string> accs;

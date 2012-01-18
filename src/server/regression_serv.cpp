@@ -46,19 +46,16 @@ namespace jubatus {
 namespace server {
 
 regression_serv::regression_serv(const server_argv & a)
-  :jubatus_serv<storage::storage_base,diffv>(a)
+  :jubatus_serv(a)
 {
-  model_ = make_model();
+  // function<diffv(const storage::storage_base*)>
+  //   getdiff(&regression_serv::get_diff);
+  // function<int(const storage::storage_base*, const diffv&, diffv&)>
+  //   reduce(&regression_serv::reduce);
+  // function<int(storage::storage_base*, const diffv&)>
+  //   putdiff(&regression_serv::put_diff);
 
-  function<diffv(const storage::storage_base*)>
-    getdiff(&regression_serv::get_diff);
-
-  function<int(const storage::storage_base*, const diffv&, diffv&)>
-    reduce(&regression_serv::reduce);
-  function<int(storage::storage_base*, const diffv&)>
-    putdiff(&regression_serv::put_diff);
-
-  set_mixer(getdiff, reduce, putdiff);
+  // set_mixer(getdiff, reduce, putdiff);
 }
 
 regression_serv::~regression_serv() {
@@ -75,7 +72,7 @@ int regression_serv::set_config(config_data config) {
   fv_converter::initialize_converter(c, *converter);
   converter_ = converter;
 
-  regression_.reset(regression_factory().create_regression(config_.method, this->model_.get()));
+  //  regression_.reset(regression_factory().create_regression(config_.method, this->model_.get()));
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...

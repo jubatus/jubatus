@@ -34,7 +34,7 @@ using namespace pfi::concurrent;
 using pfi::system::time::clock_time;
 using pfi::system::time::get_clock_time;
 
-namespace jubatus { namespace server {
+namespace jubatus { namespace framework {
 
 class jubatus_serv : pfi::lang::noncopyable {
 
