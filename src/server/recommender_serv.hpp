@@ -85,10 +85,8 @@ public:
   datum decode_row(std::string id, int);
   std::vector<std::string> get_all_rows(int);
 
-  static std::string get_diff(const recommender_base*);
-  static int put_diff(recommender_base*, std::string v);
-  static int reduce(const recommender_base*, const std::string&, std::string&);
-  
+  std::map<std::string, std::map<std::string, std::string> > get_status(int);
+
 private:
 
   config_data config_;

@@ -166,25 +166,21 @@ std::vector<std::string> recommender_serv::get_all_rows(int)
 }
 
 
-// std::map<std::pair<std::string, int>, std::map<std::string, std::string> > > recommender_serv::get_status(std::string name)
-// {
-//   std::map<std::string, std::string> ret0;
-//   util::get_machine_status(ret0);
+std::map<std::string, std::map<std::string, std::string> > recommender_serv::get_status(int)
+{
+  std::map<std::string, std::string> ret0;
+  util::get_machine_status(ret0);
 
-//   ret0["clear_row_cnt"] = pfi::lang::lexical_cast<std::string>(clear_row_cnt_);
-//   ret0["update_row_cnt"] = pfi::lang::lexical_cast<std::string>(update_row_cnt_);
-//   ret0["build_cnt"] = pfi::lang::lexical_cast<std::string>(build_cnt_);
-//   ret0["mix_cnt"] = pfi::lang::lexical_cast<std::string>(mix_cnt_);
+  ret0["clear_row_cnt"] = pfi::lang::lexical_cast<std::string>(clear_row_cnt_);
+  ret0["update_row_cnt"] = pfi::lang::lexical_cast<std::string>(update_row_cnt_);
+  ret0["build_cnt"] = pfi::lang::lexical_cast<std::string>(build_cnt_);
+  ret0["mix_cnt"] = pfi::lang::lexical_cast<std::string>(mix_cnt_);
 
-//   if(ret0.empty()){
-//     return std::map<std::pair<string,int>,std::map<std::string,std::string> > >::fail("no result");
-//   }else{
-//     std::map<std::pair<string,int>, std::map<std::string,std::string> > ret;
-//     std::pair<string,int> __hoge__ = make_pair(a_.eth,a_.port); //FIXME
-//     ret.insert(make_pair(__hoge__, ret0));
-//     return result<std::map<std::pair<string,int>,std::map<std::string,std::string> > >::ok(ret);
-//   }
-// }
+  std::map<std::string, std::map<std::string,std::string> > ret = jubatus_serv::get_status(0);
+
+  ret[get_server_identifier()].insert(ret0.begin(), ret0.end());
+  return ret;
+}
 
 
 } // namespace recommender
