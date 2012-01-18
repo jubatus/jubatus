@@ -17,7 +17,6 @@
 
 #include "classifier_serv.hpp"
 #include "../storage/storage_factory.hpp"
-#include "../storage/local_storage_mixture.hpp"
 #include "../classifier/classifier_factory.hpp"
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
@@ -25,9 +24,6 @@
 #include "../common/rpc_util.hpp"
 #include "../common/exception.hpp"
 #include "../common/util.hpp"
-
-#include <pficommon/lang/bind.h>
-#include <pficommon/lang/function.h>
 
 #include <glog/logging.h>
 
