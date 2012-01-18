@@ -41,7 +41,7 @@ using namespace jubatus::client;
 using namespace jubatus::storage;
 using namespace std;
 
-static const string NAME = "test";
+static const string NAME = "classifier_test";
 static const int PORT = 65432;
 
 void make_small_data() {
