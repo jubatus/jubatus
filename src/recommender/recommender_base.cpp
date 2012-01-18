@@ -80,17 +80,15 @@ void recommender_base::complete_row(const sfv_t& query, sfv_t& ret) const{
   }
 }
 
-bool recommender_base::save(std::ostream& os) {
+void recommender_base::save(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << orig_;
   save_impl(os);
-  return true;
 }
-bool recommender_base::load(std::istream& is) {
+void recommender_base::load(std::istream& is) {
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> orig_;
   load_impl(is);
-  return true;
 }
 
 }

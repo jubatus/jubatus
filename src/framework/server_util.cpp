@@ -23,7 +23,7 @@
 #include "../common/membership.hpp"
 
 namespace jubatus {
-  
+
   server_argv::server_argv(int args, char** argv){
     google::InitGoogleLogging(argv[0]);
     google::LogToStderr(); // only when debug

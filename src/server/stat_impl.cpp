@@ -5,6 +5,10 @@
 #include <pficommon/lang/shared_ptr.h>
 
 
+using namespace jubatus;
+
+using namespace jubatus::framework;
+
 namespace jubatus { namespace server {
 
 class stat_impl_ : public stat<stat_impl_> 

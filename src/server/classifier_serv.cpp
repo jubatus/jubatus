@@ -17,7 +17,6 @@
 
 #include "classifier_serv.hpp"
 #include "../storage/storage_factory.hpp"
-#include "../storage/local_storage_mixture.hpp"
 #include "../classifier/classifier_factory.hpp"
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
@@ -25,9 +24,6 @@
 #include "../common/rpc_util.hpp"
 #include "../common/exception.hpp"
 #include "../common/util.hpp"
-
-#include <pficommon/lang/bind.h>
-#include <pficommon/lang/function.h>
 
 #include <glog/logging.h>
 
@@ -47,21 +43,10 @@ namespace server {
 
 
 classifier_serv::classifier_serv(const server_argv& a)
-  :jubatus_serv<storage::storage_base,diffv>(a)
+  :framework::jubatus_serv(a)
 {
-  model_ = make_model();
-
-  function<diffv(const storage::storage_base*)>
-    getdiff(&classifier_serv::get_diff);
-
-  // FIXME: switch the function when set_config is done
-  // because mixing method differs btwn PA, CW, etc...
-  function<int(const storage::storage_base*, const diffv&, diffv&)>
-    reduce(&classifier_serv::reduce);
-  function<int(storage::storage_base*, const diffv&)>
-    putdiff(&classifier_serv::put_diff);
-
-  set_mixer(getdiff, reduce, putdiff);
+  clsfer_.set_model(make_model());
+  register_mixable(framework::mixable_cast(&clsfer_));
 }
 
 classifier_serv::~classifier_serv() {
@@ -78,7 +63,7 @@ int classifier_serv::set_config(config_data config) {
   fv_converter::initialize_converter(c, *converter);
   converter_ = converter;
   
-  classifier_.reset(classifier_factory::create_classifier(config.method, this->model_.get()));
+  clsfer_.classifier_.reset(classifier_factory::create_classifier(config.method, clsfer_.get_model().get()));
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
@@ -92,7 +77,7 @@ config_data classifier_serv::get_config(int) {
 
 int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > data) {
 
-  if (!classifier_){
+  if (!clsfer_.classifier_){
     LOG(ERROR) << __func__ << ": config is not set";
     return -1; //int::fail("config_not_set"); // 
   }
@@ -104,7 +89,7 @@ int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > 
   for (size_t i = 0; i < data.size(); ++i) {
     convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
     converter_->convert(d, v);
-    classifier_->train(v, data[i].first);
+    clsfer_.classifier_->train(v, data[i].first);
     count++;
   }
   // FIXME: send count incrementation to mixer
@@ -122,7 +107,7 @@ std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector
     converter_->convert(d, v);
     
     classify_result scores;
-    classifier_->classify_with_scores(v, scores);
+    clsfer_.classifier_->classify_with_scores(v, scores);
     
     vector<estimate_result> r;
     for (vector<classify_result_elem>::const_iterator p = scores.begin();
@@ -143,41 +128,30 @@ std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector
 
 pfi::lang::shared_ptr<storage::storage_base> classifier_serv::make_model(){
   return pfi::lang::shared_ptr<storage::storage_base>(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
+
 }
 // after load(..) called, users reset their own data
 void classifier_serv::after_load(){
-  classifier_.reset(classifier_factory::create_classifier(config_.method, model_.get()));
+  //  classifier_.reset(classifier_factory::create_classifier(config_.method, model_.get()));
 };
 
 std::map<std::string, std::map<std::string,std::string> > classifier_serv::get_status(int){
   std::map<std::string,std::string> ret0;
-  if (model_){
-    //   mixer_->get_status(ret0);
-    model_->get_status(ret0); //FIXME
-    ret0["storage"] = model_->type();
-  }
+
+  //mixer_->get_status(ret0);
+  clsfer_.get_model()->get_status(ret0);
+  ret0["storage"] = clsfer_.get_model()->type();
+
   util::get_machine_status(ret0);
   
   std::map<std::string, std::map<std::string,std::string> > ret =
-    jubatus_serv<storage::storage_base,diffv>::get_status(0);
+    jubatus_serv::get_status(0);
 
   ret[get_server_identifier()].insert(ret0.begin(), ret0.end());
   return ret;
 }
   
 
-diffv classifier_serv::get_diff(const storage::storage_base* model){
-  diffv ret;
-  ret.count = 1; //FIXME mixer_->get_count();
-  model->get_diff(ret.v);
-  return ret;
-}
-
-int classifier_serv::put_diff(storage::storage_base* model, diffv v){
-  v /= (double) v.count;
-  model->set_average_and_clear_diff(v.v);
-  return 0;
-}
 
 val3_t mix_val3(const val3_t& lhs, const val3_t& rhs) {
   return val3_t(lhs.v1 + rhs.v1,
@@ -204,7 +178,7 @@ void mix_parameter(diffv& lhs, const diffv& rhs) {
   lhs.count += rhs.count;
 }
 
-int classifier_serv::reduce(const storage::storage_base*, const diffv& v, diffv& acc){
+int clsfer::reduce(const storage::storage_base*, const diffv& v, diffv& acc){
   mix_parameter(acc, v);
   return 0;
 }

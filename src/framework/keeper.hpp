@@ -36,7 +36,7 @@
 #include "server_util.hpp"
 
 namespace jubatus {
-namespace server {
+namespace framework {
 
 class keeper : public pfi::network::mprpc::rpc_server {
  public:

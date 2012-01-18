@@ -49,8 +49,8 @@ public:
   void decode_row(const std::string& id, sfv_t& ret) const;
 
 
-  bool save(std::ostream&);
-  bool load(std::istream&);
+  void save(std::ostream&);
+  void load(std::istream&);
 
 protected:
   virtual bool save_impl(std::ostream&) = 0;

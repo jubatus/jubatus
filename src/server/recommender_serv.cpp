@@ -31,19 +31,11 @@ using std::string;
 namespace jubatus {
 namespace server {
 
-recommender_serv::recommender_serv(const server_argv& a):
-  jubatus_serv<recommender_base,std::string>(a, a.tmpdir)
+recommender_serv::recommender_serv(const server_argv& a)
+  :jubatus_serv(a, a.tmpdir)
 {
-  //  model_ = make_model();
-
-  function<std::string(const recommender_base*)>
-    getdiff(&recommender_serv::get_diff);
-  function<int(const recommender_base*, const std::string&, std::string&)>
-    reduce(&recommender_serv::reduce);
-  function<int(recommender_base*, const std::string&)>
-    putdiff(&recommender_serv::put_diff);
-
-  set_mixer(getdiff, reduce, putdiff);
+  //  rcmdr_.set_model(make_model()); -> we'd have to make it safer
+  register_mixable(mixable_cast(&rcmdr_));
 }
 
 recommender_serv::~recommender_serv(){
@@ -57,8 +49,7 @@ int recommender_serv::set_config(config_data config)
   convert<jubatus::converter_config, fv_converter::converter_config>(config.converter, c);
   fv_converter::initialize_converter(c, *converter);
   converter_ = converter;
-
-  model_ = make_model();
+  rcmdr_.set_model(make_model());
   return 0;
 }
   
@@ -70,7 +61,7 @@ config_data recommender_serv::get_config(int)
 int recommender_serv::clear_row(std::string id, int)
 {
   ++clear_row_cnt_;
-  model_->clear_row(id);
+  rcmdr_.get_model()->clear_row(id);
   return 0;
 }
 
@@ -81,7 +72,7 @@ int recommender_serv::update_row(std::string id,datum dat)
   convert<jubatus::datum, fv_converter::datum>(dat, d);
   sfv_diff_t v;
   converter_->convert(d, v);
-  model_->update_row(id, v);
+  rcmdr_.get_model()->update_row(id, v);
   return 0;
 }
 
@@ -91,7 +82,7 @@ int recommender_serv::clear(int)
   update_row_cnt_ = 0;
   build_cnt_ = 0;
   mix_cnt_ = 0;
-  model_->clear();
+  rcmdr_.get_model()->clear();
   return 0;
 }
 
@@ -110,7 +101,7 @@ datum recommender_serv::complete_row_from_id(std::string id, int)
 {
   sfv_t v;
   fv_converter::datum ret;
-  model_->complete_row(id, v);
+  rcmdr_.get_model()->complete_row(id, v);
 
   fv_converter::revert_feature(v, ret);
 
@@ -126,7 +117,7 @@ datum recommender_serv::complete_row_from_data(datum dat)
   sfv_t u, v;
   fv_converter::datum ret;
   converter_->convert(d, u);
-  model_->complete_row(u, v);
+  rcmdr_.get_model()->complete_row(u, v);
 
   fv_converter::revert_feature(v, ret);
 
@@ -138,7 +129,7 @@ datum recommender_serv::complete_row_from_data(datum dat)
 similar_result recommender_serv::similar_row_from_id(std::string id, size_t ret_num)
 {
   similar_result ret;
-  model_->similar_row(id, ret, ret_num);
+  rcmdr_.get_model()->similar_row(id, ret, ret_num);
   return ret;
 }
 
@@ -150,7 +141,7 @@ similar_result recommender_serv::similar_row_from_data(std::pair<datum, size_t> 
 
   sfv_t v;
   converter_->convert(d, v);
-  model_->similar_row(v, ret, data.second);
+  rcmdr_.get_model()->similar_row(v, ret, data.second);
   return ret;
 }
 
@@ -159,7 +150,7 @@ datum recommender_serv::decode_row(std::string id, int)
   sfv_t v;
   fv_converter::datum ret;
 
-  model_->decode_row(id, v);
+  rcmdr_.get_model()->decode_row(id, v);
   fv_converter::revert_feature(v, ret);
   
   datum ret0;
@@ -170,25 +161,10 @@ datum recommender_serv::decode_row(std::string id, int)
 std::vector<std::string> recommender_serv::get_all_rows(int)
 {
   std::vector<std::string> ret;
-  model_->get_all_row_ids(ret);
+  rcmdr_.get_model()->get_all_row_ids(ret);
   return ret;
 }
 
-std::string recommender_serv::get_diff(const recommender_base* model){
-  std::string ret;
-  model->get_const_storage()->get_diff(ret);
-  return ret;
-}
-
-int recommender_serv::put_diff(recommender_base* model, std::string v){
-  model->get_storage()->set_mixed_and_clear_diff(v);
-  return 0;
-}
-
-int recommender_serv::reduce(const recommender_base* model, const std::string& v, std::string& acc){
-  model->get_const_storage()->mix(v, acc);
-  return 0;
-}
 
 // std::map<std::pair<std::string, int>, std::map<std::string, std::string> > > recommender_serv::get_status(std::string name)
 // {

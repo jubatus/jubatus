@@ -57,12 +57,14 @@ object (self)
     print_endline ("generate ==> " ^ server_c);
     output <<< "// this program is automatically generated. do not edit. ";
 (*    output <<< include_dq ["server.hpp"; "../common/cmdline.h"]; *)
-    let namespaces = [namespace; "server"] in
     output <<< include_dq [(name ^ "_server.hpp");
 			   "server_util.hpp";
 			   (name ^ "_serv.hpp")];
     output <<< include_b ["pficommon/lang/shared_ptr.h"];
     output <<< "\n";
+    output <<< make_using_ns [namespace]; (* FIXME *)
+    output <<< make_using_ns [namespace; "framework"]; (* FIXME *)
+    let namespaces = [namespace; "server"] in
     output <<< make_ns_begin namespaces;
     List.iter (fun c -> output <<< Server_template.make_class c) classdefs;
     output <<< make_ns_end namespaces;
@@ -73,7 +75,7 @@ object (self)
     output <<< "// this program is automatically generated. do not edit. ";
     output <<< Keeper_template.make_file_begin name;
     output <<< make_using_ns [namespace];
-    output <<< make_using_ns [namespace; "server"];
+    output <<< make_using_ns [namespace; "framework"];
     output <<< Keeper_template.make_main classdefs;
     output <<< Keeper_template.make_file_end name;
 

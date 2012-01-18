@@ -6,7 +6,7 @@
 #include "../common/exception.hpp"
 
 using namespace jubatus;
-using namespace jubatus::server;
+using namespace jubatus::framework;
 
 pfi::lang::shared_ptr<jubatus::common::lock_service> ls;
 
