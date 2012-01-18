@@ -170,7 +170,6 @@ std::vector<std::string> recommender_serv::get_all_rows(int)
 std::map<std::string, std::map<std::string, std::string> > recommender_serv::get_status(int)
 {
   std::map<std::string, std::string> ret0;
-  util::get_machine_status(ret0);
 
   ret0["clear_row_cnt"] = pfi::lang::lexical_cast<std::string>(clear_row_cnt_);
   ret0["update_row_cnt"] = pfi::lang::lexical_cast<std::string>(update_row_cnt_);

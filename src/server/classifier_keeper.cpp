@@ -7,7 +7,7 @@ using namespace jubatus;
 using namespace jubatus::framework;
 
 int main(int args, char** argv){
-  keeper k(jubatus::keeper_argv(args, argv));
+  keeper k(keeper_argv(args, argv));
   k.register_broadcast_update<config_data>("set_config");
   k.register_random_analysis<config_data, int>("get_config");
   k.register_random_update<std::vector<std::pair<std::string, datum> > >("train");

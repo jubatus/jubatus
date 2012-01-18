@@ -119,7 +119,7 @@ namespace jubatus { namespace framework {
     if(sigaction(SIGINT, &sigact, NULL) != 0)
       throw std::runtime_error("can't set SIGINT handler");
 
-    ::atexit(jubatus::atexit);
+    ::atexit(jubatus::framework::atexit);
   }
 #endif
 

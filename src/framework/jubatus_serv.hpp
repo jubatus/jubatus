@@ -105,7 +105,8 @@ public:
 
   std::map<std::string, std::map<std::string,std::string> > get_status(int) const {
     std::map<std::string, std::string> data;
-    
+    util::get_machine_status(data);
+
     data["timeout"] = pfi::lang::lexical_cast<std::string>(a_.timeout);
     data["threadnum"] = pfi::lang::lexical_cast<std::string>(a_.threadnum);
     data["tmpdir"] = a_.tmpdir;
@@ -118,6 +119,7 @@ public:
     data["update_count"] = pfi::lang::lexical_cast<std::string>(update_count_);
 
 #ifdef HAVE_ZOOKEEPER_H
+    mixer_->get_status(data);
     data["zk"] = a_.z;
     data["use_cht"] = pfi::lang::lexical_cast<std::string>(use_cht_);
 #endif

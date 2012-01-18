@@ -276,8 +276,10 @@ TEST_F(classifier_test, nherd){
 //   EXPECT_FLOAT_EQ(1.0, sum.v[0].second[1].second.v2);
 // }
 
+
 TEST_F(classifier_test, get_status){
   classifier cli("localhost", PORT, 10);
+
   map<string,map<string,string> > status = cli.get_status(NAME, 0);
   EXPECT_EQ(status.size(), 1u);
   for(map<string,map<string,string> >::const_iterator it = status.begin();
@@ -312,16 +314,12 @@ TEST_F(classifier_test, save_load){
   //   st->set3("b", "z", val3_t(45, 4545, 454545));
   // }
   int res_save = cli.save(NAME, "hoge");
-  //  ASSERT_TRUE(res_save.success);
   ASSERT_EQ(0, res_save);
 
   int res_load = cli.load(NAME, "hoge");
-  // classifier::server serv2(s2, server_argv());
-  // result<int> res_load = serv2.load(NAME, "hoge", "huga");
-  // ASSERT_TRUE(res_load.success) << res_load.error;
   ASSERT_EQ(0, res_load);
-
   my_test("PA",    "local");
+
   map<string, map<string, string> > status = cli.get_status(NAME, 0);
   string count_str = status.begin()->second["update_count"];
   EXPECT_EQ(5, atoi(count_str.c_str()));
