@@ -26,7 +26,11 @@ public:
 template <typename Model, typename Diff>
 class mixable : public mixable0 {
 public:
-  mixable(){};
+  mixable():
+    get_diff_fun_(&dummy_get_diff),
+    reduce_fun_(&dummy_reduce),
+    put_diff_fun_(&dummy_put_diff)
+  {};
   virtual ~mixable(){};
 
   virtual void clear() = 0;
@@ -77,6 +81,9 @@ public:
   };
   pfi::lang::shared_ptr<Model> get_model()const{return model_;};
 
+  static Diff dummy_get_diff(const Model*){ return Diff(); };
+  static int dummy_reduce(const Model*, const Diff&, Diff&){return -1;};
+  static int dummy_put_diff(Model*, const Diff&){return -1;};
 private:
   void unpack_(const std::string& buf, Diff& d) const {
     msgpack::unpacked msg;
