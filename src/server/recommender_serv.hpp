@@ -28,15 +28,40 @@
 
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../recommender/recommender_base.hpp"
+#include "../framework/mixable.hpp"
 
 using jubatus::recommender::recommender_base;
 
 namespace jubatus {
 namespace server {
 
+struct rcmdr : public jubatus::framework::mixable<recommender_base, std::string>{
+  rcmdr(){
+    function<std::string(const recommender_base*)> getdiff(&get_diff);
+    function<int(const recommender_base*, const std::string&, std::string&)> reduce(&rcmdr::reduce);
+    function<int(recommender_base*, const std::string&)> putdiff(&put_diff);
+    set_mixer(getdiff, reduce, putdiff);
+  }
+  static std::string get_diff(const recommender_base* model){
+    std::string ret;
+    model->get_const_storage()->get_diff(ret);
+    return ret;
+  }
+  static int put_diff(recommender_base* model, std::string v){
+    model->get_storage()->set_mixed_and_clear_diff(v);
+    return 0;
+  }
+  static int reduce(const recommender_base* model, const std::string& v, std::string& acc){
+    model->get_const_storage()->mix(v, acc);
+    return 0;
+  }
+  virtual ~rcmdr(){}
+  void clear(){}
+};
+
 typedef std::vector<std::pair<std::string, jubatus::datum> > rows;
 
-class recommender_serv : public jubatus_serv<recommender_base, std::string>
+class recommender_serv : public jubatus::framework::jubatus_serv
 {
 public:
   recommender_serv(const server_argv&);
@@ -68,6 +93,7 @@ private:
 
   config_data config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  rcmdr rcmdr_;
 
   uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;

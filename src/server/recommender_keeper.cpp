@@ -4,7 +4,7 @@
 
 using namespace jubatus;
 
-using namespace jubatus::server;
+using namespace jubatus::framework;
 
 int main(int args, char** argv){
   keeper k(jubatus::keeper_argv(args, argv));
