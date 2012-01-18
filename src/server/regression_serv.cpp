@@ -48,14 +48,8 @@ namespace server {
 regression_serv::regression_serv(const server_argv & a)
   :jubatus_serv(a)
 {
-  // function<diffv(const storage::storage_base*)>
-  //   getdiff(&regression_serv::get_diff);
-  // function<int(const storage::storage_base*, const diffv&, diffv&)>
-  //   reduce(&regression_serv::reduce);
-  // function<int(storage::storage_base*, const diffv&)>
-  //   putdiff(&regression_serv::put_diff);
-
-  // set_mixer(getdiff, reduce, putdiff);
+  gresser_.set_model(make_model());
+  register_mixable(framework::mixable_cast(&gresser_));
 }
 
 regression_serv::~regression_serv() {
@@ -72,7 +66,7 @@ int regression_serv::set_config(config_data config) {
   fv_converter::initialize_converter(c, *converter);
   converter_ = converter;
 
-  //  regression_.reset(regression_factory().create_regression(config_.method, this->model_.get()));
+  gresser_.regression_.reset(regression_factory().create_regression(config_.method, gresser_.get_model().get()));
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
@@ -86,7 +80,7 @@ config_data regression_serv::get_config(int) {
 
 int regression_serv::train(std::vector<std::pair<float, jubatus::datum> > data) {
 
-  if (!regression_){
+  if (!gresser_.regression_){
     LOG(ERROR) << __func__ << ": config is not set";
     return -1; //int::fail("config_not_set"); // 
   }
@@ -98,7 +92,7 @@ int regression_serv::train(std::vector<std::pair<float, jubatus::datum> > data) 
   for (size_t i = 0; i < data.size(); ++i) {
     convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
     converter_->convert(d, v);
-    regression_->train(v, data[i].first);
+    gresser_.regression_->train(v, data[i].first);
     count++;
   }
   // FIXME: send count incrementation to mixer
@@ -112,7 +106,7 @@ std::vector<float > regression_serv::estimate(std::vector<jubatus::datum> data) 
   for (size_t i = 0; i < data.size(); ++i) {
     convert<datum, fv_converter::datum>(data[i], d);
     converter_->convert(d, v);
-    ret.push_back(regression_->estimate(v));
+    ret.push_back(gresser_.regression_->estimate(v));
   }
   return ret; //std::vector<estimate_results> >::ok(ret);
 }
@@ -122,39 +116,25 @@ pfi::lang::shared_ptr<storage::storage_base> regression_serv::make_model(){
 }
 // after load(..) called, users reset their own data
 void regression_serv::after_load(){
-  regression_.reset(regression_factory().create_regression(config_.method, model_.get()));
+  //  regression_.reset(regression_factory().create_regression(config_.method, model_.get()));
 };
 
 std::map<std::string, std::map<std::string,std::string> > regression_serv::get_status(int){
   std::map<std::string,std::string> ret0;
-  if (model_){
+  //  if (model_){
     //   mixer_->get_status(ret0);
-    model_->get_status(ret0); //FIXME
-    ret0["storage"] = model_->type();
-  }
+    //model_->get_status(ret0); //FIXME
+  //    ret0["storage"] = model_->type();
+  //  }
   util::get_machine_status(ret0);
   
   std::map<std::string, std::map<std::string,std::string> > ret =
-    jubatus_serv<storage::storage_base,diffv>::get_status(0);
+    jubatus_serv::get_status(0);
 
   ret[get_server_identifier()].insert(ret0.begin(), ret0.end());
   return ret;
 }
   
-
-diffv regression_serv::get_diff(const storage::storage_base* model){
-  diffv ret;
-  ret.count = 1; //FIXME mixer_->get_count();
-  model->get_diff(ret.v);
-  return ret;
-}
-
-int regression_serv::put_diff(storage::storage_base* model, diffv v){
-  v /= (double) v.count;
-  model->set_average_and_clear_diff(v.v);
-  return 0;
-}
-
 val3_t mix_val3(const val3_t& lhs, const val3_t& rhs) {
   return val3_t(lhs.v1 + rhs.v1,
                 min(lhs.v2, rhs.v2),
@@ -180,7 +160,7 @@ void mix_parameter(diffv& lhs, const diffv& rhs) {
   lhs.count += rhs.count;
 }
 
-int regression_serv::reduce(const storage::storage_base*, const diffv& v, diffv& acc){
+int gresser::reduce(const storage::storage_base*, const diffv& v, diffv& acc){
   mix_parameter(acc, v);
   return 0;
 }
