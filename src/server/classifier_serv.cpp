@@ -138,7 +138,7 @@ void classifier_serv::after_load(){
 std::map<std::string, std::map<std::string,std::string> > classifier_serv::get_status(int){
   std::map<std::string,std::string> ret0;
 
-  //mixer_->get_status(ret0);
+  mixer_->get_status(ret0);
   clsfer_.get_model()->get_status(ret0);
   ret0["storage"] = clsfer_.get_model()->type();
 
