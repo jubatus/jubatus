@@ -9,12 +9,12 @@ def build(bld):
     use = 'PFICOMMON'
     )
   
-#  bld.program(
-#    features = 'gtest',
-#    source = [
-#      'stat_test.cpp'
-#      ],
-#    target = 'stat_test',
-#    includes = '.',
-#    use = 'jubatus_stat'
-#    )
+  bld.program(
+    features = 'gtest',
+    source = [
+      'stat_test.cpp'
+      ],
+    target = 'stat_test',
+    includes = '.',
+    use = 'jubatus_stat'
+    )
