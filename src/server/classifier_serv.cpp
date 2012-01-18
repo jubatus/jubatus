@@ -50,7 +50,7 @@ classifier_serv::classifier_serv(const server_argv& a)
   :framework::jubatus_serv(a)
 {
   clsfer_.set_model(make_model());
-  register_mixable(reinterpret_cast<framework::mixable0*>(&clsfer_));
+  register_mixable(framework::mixable_cast(&clsfer_));
 }
 
 classifier_serv::~classifier_serv() {
