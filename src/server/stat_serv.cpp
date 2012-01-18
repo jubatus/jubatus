@@ -21,18 +21,15 @@ namespace jubatus {
 namespace server {
 
 stat_serv::stat_serv(const server_argv& a)
-  :jubatus_serv<stat::stat,int>(a)
+  :jubatus_serv(a)
 {
   config_.window_size = 1024; // default till users call set_config
-  model_ = make_model();
+  stat_ =  pfi::lang::shared_ptr<stat::stat>(new stat::stat(config_.window_size)); //FIXME
 }
 
 stat_serv::~stat_serv() {
 }
 
-pfi::lang::shared_ptr<stat::stat> stat_serv::make_model(){
-  return pfi::lang::shared_ptr<stat::stat>(new stat::stat(config_.window_size)); //FIXME
-}
 // after load(..) called, users reset their own data
 void stat_serv::after_load(){
   //  stat_.reset();
@@ -40,30 +37,30 @@ void stat_serv::after_load(){
 
 int stat_serv::set_config(const config_data& config){
   config_ = config;
-  model_ = make_model();
+  stat_ =  pfi::lang::shared_ptr<stat::stat>(new stat::stat(config_.window_size)); //FIXME
   return 0;
 }
 int stat_serv::push(const std::string& key, double value){
-  model_->push(key,value);
+  stat_->push(key,value);
   return 0;
 }
 double stat_serv::sum(const std::string& key, int) const {
-  return model_->sum(key);
+  return stat_->sum(key);
 }
 double stat_serv::stddev(const std::string& key, int) const {
-  return model_->stddev(key);
+  return stat_->stddev(key);
 }
 double stat_serv::max(const std::string& key, int) const {
-  return model_->max(key);
+  return stat_->max(key);
 }
 double stat_serv::min(const std::string& key, int) const {
-  return model_->min(key);
+  return stat_->min(key);
 }
 double stat_serv::entropy(const std::string& key, int) const {
-  return model_->entropy();
+  return stat_->entropy();
 }
 double stat_serv::moment(const std::string& key, std::pair<int,double> nc) const{
-  return model_->moment(key, nc.first, nc.second);
+  return stat_->moment(key, nc.first, nc.second);
 }
 
 

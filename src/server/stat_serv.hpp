@@ -24,13 +24,12 @@
 namespace jubatus{
 namespace server{
 
-class stat_serv : public jubatus_serv<jubatus::stat::stat, int>
+class stat_serv : public framework::jubatus_serv
 {
 public:
-  stat_serv(const server_argv&);  
+  stat_serv(const server_argv&);
   virtual ~stat_serv();
 
-  pfi::lang::shared_ptr<jubatus::stat::stat> make_model();
   void after_load();
 
   int set_config(const config_data&);
@@ -44,6 +43,7 @@ public:
 
 private:
   jubatus::config_data config_;
+  pfi::lang::shared_ptr<jubatus::stat::stat> stat_;
 };
 
 }
