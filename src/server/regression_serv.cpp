@@ -121,11 +121,11 @@ void regression_serv::after_load(){
 
 std::map<std::string, std::map<std::string,std::string> > regression_serv::get_status(int){
   std::map<std::string,std::string> ret0;
-  //  if (model_){
-    //   mixer_->get_status(ret0);
-    //model_->get_status(ret0); //FIXME
-  //    ret0["storage"] = model_->type();
-  //  }
+
+  mixer_->get_status(ret0);
+  gresser_.get_model()->get_status(ret0); //FIXME
+  ret0["storage"] = gresser_.get_model()->type();
+
   util::get_machine_status(ret0);
   
   std::map<std::string, std::map<std::string,std::string> > ret =
