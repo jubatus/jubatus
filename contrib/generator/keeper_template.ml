@@ -80,7 +80,7 @@ let generate_class_keeper clazz =
 (*  | _ -> raise Stree.Unkown_directive;; *)
 let make_main classdefs =
   "int main(int args, char** argv){\n"
-  ^ "  keeper k(jubatus::keeper_argv(args, argv));\n"
+  ^ "  keeper k(keeper_argv(args, argv));\n"
   ^ String.concat "\n" (List.map generate_class_keeper classdefs)
   ^ "\n  k.run();"
   ^ "\n}";;
