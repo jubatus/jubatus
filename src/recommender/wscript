@@ -14,7 +14,7 @@ def build(bld):
       ],
     target = 'jubatus_recommender',
     name = 'jubatus_recommender',
-    include = '.',
+    includes = '.',
     use = 'PFICOMMON jubastorage jubacommon')
 
   def make_test(s):

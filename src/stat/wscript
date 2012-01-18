@@ -5,7 +5,7 @@ def build(bld):
   bld.shlib(
     source = ['stat.cpp'],
     target = 'jubatus_stat',
-    include = '.',
+    includes = '.',
     use = 'PFICOMMON'
     )
   
