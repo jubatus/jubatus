@@ -17,10 +17,10 @@ def build(bld):
     use = 'PFICOMMON jubacommon MSGPACK GLOG'
     )
 
-  bld.install_files('${PREFIX}/include/jubatus/server', [
+  bld.install_files('${PREFIX}/include/jubatus/framework', [
       'jubatus_serv.hpp',
       'keeper.hpp',
       'server_util.hpp',
-      'mixable.hpp'
-      'framework.hpp'
+      'mixable.hpp',
+      'mixer.hpp'
       ])

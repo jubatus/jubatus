@@ -1,10 +1,20 @@
 #include "jubatus_serv.hpp"
+#include "../common/util.hpp"
+#include "../common/cht.hpp"
+#include "../common/exception.hpp"
+#include "server_util.hpp"
+
 #include <fstream>
+#include <sstream>
+#include <pficommon/system/time_util.h>
 
 using std::vector;
 using std::string;
 using pfi::network::mprpc::rpc_client;
 using pfi::lang::function;
+
+using pfi::system::time::clock_time;
+using pfi::system::time::get_clock_time;
 
 namespace jubatus { namespace framework {
 

@@ -15,5 +15,6 @@ def configure(conf):
 
 def build(bld):
   bld.recurse(subdirs)
-  bld.install_files('${PREFIX}/include', 'jubatus.hpp')
-  bld.install_files('${PREFIX}/include/jubatus', 'plugin.hpp')
+#  bld.install_files('${PREFIX}/include', 'jubatus.hpp')
+  bld.install_files('${PREFIX}/include/jubatus',
+                    ['plugin.hpp', 'framework.hpp'])

@@ -17,22 +17,13 @@
 
 #pragma once
 
-#include <iostream>
-#include <sstream>
-
-#include <pficommon/lang/function.h>
 #include <pficommon/network/mprpc.h>
-#include <pficommon/system/time_util.h>
 
 #include "server_util.hpp"
 #include "mixer.hpp"
 #include "mixable.hpp"
-#include "../common/cht.hpp"
-#include "../common/exception.hpp"
 
 using namespace pfi::concurrent;
-using pfi::system::time::clock_time;
-using pfi::system::time::get_clock_time;
 
 namespace jubatus { namespace framework {
 

@@ -1,4 +1,5 @@
 #include "mixer.hpp"
+#include <pficommon/lang/bind.h>
 
 namespace jubatus{
 namespace framework{

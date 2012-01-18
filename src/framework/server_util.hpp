@@ -30,22 +30,15 @@
 #include <pficommon/lang/function.h>
 #include <pficommon/network/mprpc.h>
 
-#include "../common/util.hpp"
-
 #ifdef HAVE_ZOOKEEPER_H
-#  include "mixer.hpp"
+#  include "../common/lock_service.hpp"
 #endif
-
-#define SET_PROGNAME(s) \
-  static const std::string PROGNAME(JUBATUS_APPNAME "_" s);
 
 namespace cmdline{
 class parser;
 }
 
 namespace jubatus { namespace framework {
-
-static const std::string VERSION(JUBATUS_VERSION);
 
 struct server_argv {
 
@@ -66,13 +59,7 @@ struct server_argv {
   bool is_standalone() const {
     return (z == "");
   };
-
-  std::string boot_message(const std::string& progname) const {
-    std::stringstream ret;
-    ret << "starting " << progname << VERSION << " RPC server at " <<
-      eth << ":" << port << " with timeout: " << timeout;
-    return ret.str();
-  };
+  std::string boot_message(const std::string& progname) const;
 };
 
 
@@ -86,12 +73,7 @@ struct keeper_argv {
   std::string z;
   std::string eth;
 
-  std::string boot_message(const std::string& progname) const {
-    std::stringstream ret;
-    ret << "starting " << progname << VERSION << " RPC server at " <<
-      eth << ":" << port << " with timeout: " << timeout;
-    return ret.str();
-  };
+  std::string boot_message(const std::string& progname) const;
 };
 
 template <typename From, typename To>

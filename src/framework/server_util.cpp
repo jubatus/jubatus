@@ -18,11 +18,18 @@
 #include "server_util.hpp"
 #include <glog/logging.h>
 
+#include "../common/util.hpp"
 #include "../common/cmdline.h"
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
 
+#define SET_PROGNAME(s) \
+  static const std::string PROGNAME(JUBATUS_APPNAME "_" s);
+
+
 namespace jubatus { namespace framework {
+
+  static const std::string VERSION(JUBATUS_VERSION);
 
   server_argv::server_argv(int args, char** argv){
     google::InitGoogleLogging(argv[0]);
@@ -69,6 +76,13 @@ namespace jubatus { namespace framework {
   {
   };
 
+  std::string server_argv::boot_message(const std::string& progname) const {
+    std::stringstream ret;
+    ret << "starting " << progname << VERSION << " RPC server at " <<
+      eth << ":" << port << " with timeout: " << timeout;
+    return ret.str();
+  };
+
   keeper_argv::keeper_argv(int args, char** argv){
     google::InitGoogleLogging(argv[0]);
     google::LogToStderr(); // only when debug
@@ -93,6 +107,14 @@ namespace jubatus { namespace framework {
     port(9199), timeout(10), threadnum(16), z("localhost:2181"), eth("")
   {
   };
+
+  std::string keeper_argv::boot_message(const std::string& progname) const {
+    std::stringstream ret;
+    ret << "starting " << progname << VERSION << " RPC server at " <<
+      eth << ":" << port << " with timeout: " << timeout;
+    return ret.str();
+  };
+
   
 #ifdef HAVE_ZOOKEEPER_H
   pfi::lang::shared_ptr<jubatus::common::lock_service> ls;

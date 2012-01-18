@@ -30,7 +30,6 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/function.h>
-#include <pficommon/lang/bind.h>
 
 namespace jubatus{
 namespace framework{

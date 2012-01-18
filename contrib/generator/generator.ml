@@ -58,9 +58,9 @@ object (self)
     output <<< "// this program is automatically generated. do not edit. ";
 (*    output <<< include_dq ["server.hpp"; "../common/cmdline.h"]; *)
     output <<< include_dq [(name ^ "_server.hpp");
-			   "server_util.hpp";
 			   (name ^ "_serv.hpp")];
-    output <<< include_b ["pficommon/lang/shared_ptr.h"];
+    output <<< include_b ["pficommon/lang/shared_ptr.h";
+			  "jubatus/framework.hpp"];
     output <<< "\n";
     output <<< make_using_ns [namespace]; (* FIXME *)
     output <<< make_using_ns [namespace; "framework"]; (* FIXME *)

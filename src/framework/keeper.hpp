@@ -30,7 +30,6 @@
 #include <pficommon/math/random.h>
 
 #include "../common/lock_service.hpp"
-#include "../common/membership.hpp"
 #include "../common/cht.hpp"
 
 #include "server_util.hpp"

@@ -4,7 +4,7 @@ VERSION = '0.2.0-alpha'
 APPNAME = 'jubatus'
 
 top = '.'
-
+out = 'build'
 subdirs = 'src'
 
 def options(opt):
@@ -60,9 +60,14 @@ def configure(conf):
   # don't know why this does not work when put after conf.recurse
   conf.define('JUBATUS_VERSION', VERSION)
   conf.define('JUBATUS_APPNAME', APPNAME)
+#  conf.write_config_header('src/config.hpp')
 
   conf.recurse(subdirs)
 
 def build(bld):
+#  bld.install_files('${PREFIX}/include/jubatus', [
+#      'src/config.hpp',
+#      ])
+
   bld.recurse(subdirs)
 
