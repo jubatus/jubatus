@@ -66,8 +66,9 @@ TEST(datum_to_fv_converter, num_feature) {
   vector<pair<string, float> > expected;
   expected.push_back(make_pair("/val1@num", 1.1));
   expected.push_back(make_pair("/val1@log", log(1.1)));
-  expected.push_back(make_pair("/val2@num", 0.));
-  expected.push_back(make_pair("/val2@log", log(1.)));
+  // elements with zero are removed
+  //expected.push_back(make_pair("/val2@num", 0.));
+  //expected.push_back(make_pair("/val2@log", log(1.)));
 
   PairVectorEquals(expected, feature);
 }

@@ -14,6 +14,8 @@ class weight_manager {
   
   void update_weight(sfv_t& fv);
 
+  void add_weight(const std::string& key, float weight);
+
  private:
   double get_global_weight(const std::string& key) const;
 

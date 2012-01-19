@@ -13,6 +13,12 @@ weight_manager::weight_manager()
       document_frequencies_(),
       weights_() {}
 
+struct is_zero {
+  bool operator()(const pair<string, float>& p) {
+    return p.second == 0;
+  }
+};
+
 void weight_manager::update_weight(sfv_t& fv) {
   ++document_count_;
   for (sfv_t::const_iterator it = fv.begin(); it != fv.end(); ++it) {
@@ -23,6 +29,7 @@ void weight_manager::update_weight(sfv_t& fv) {
     double global_weight  = get_global_weight(it->first);
     it->second *= global_weight;
   }
+  fv.erase(remove_if(fv.begin(), fv.end(), is_zero()), fv.end());
 }
 
 
@@ -37,7 +44,10 @@ double weight_manager::get_global_weight(const string& key) const {
     return log(static_cast<double>(document_count_)
                / document_frequencies_[key]);
   } else if (type == "weight") {
-    weight_t::const_iterator wit = weights_.find(key);
+    p = key.find_last_of('#');
+    if (p == string::npos)
+      return 0;
+    weight_t::const_iterator wit = weights_.find(key.substr(0, p));
     if (wit != weights_.end()) {
       return wit->second;
     } else {
@@ -46,6 +56,10 @@ double weight_manager::get_global_weight(const string& key) const {
   } else {
     return 1;
   }
+}
+
+void weight_manager::add_weight(const std::string& key, float weight) {
+  weights_[key] = weight;
 }
 
 }

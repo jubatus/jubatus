@@ -29,6 +29,7 @@
 #include "string_filter.hpp"
 #include "num_filter.hpp"
 #include "exception.hpp"
+#include "weight_manager.hpp"
 
 #include <iostream>
 
@@ -111,13 +112,11 @@ class datum_to_fv_converter_impl {
   std::vector<string_feature_rule> string_rules_;
   std::vector<num_feature_rule> num_rules_;
   
-  size_t document_count_;
-  counter<std::string> document_frequencies_;
-  weight_t weights_;
+  weight_manager weights_;
 
  public:
   datum_to_fv_converter_impl() 
-      : document_count_(0), document_frequencies_(), weights_() {
+      : weights_() {
   }
 
   void clear_rules() {
@@ -156,24 +155,34 @@ class datum_to_fv_converter_impl {
 
   void add_weight(const std::string& key,
                   float weight) {
-    weights_[key] = weight;
+    weights_.add_weight(key, weight);
   }
 
   void convert(const datum& datum,
                sfv_t& ret_fv) {
-    ret_fv.clear();
-    
-    ++document_count_;
+    sfv_t fv;
+    convert_unweighted(datum, fv);
+    weights_.update_weight(fv);
+
+    fv.swap(ret_fv);
+  }
+
+  void convert_unweighted(const datum& datum, sfv_t& ret_fv) const {
+    sfv_t fv;
+
     vector<pair<string, string> > filtered_strings;
     filter_strings(datum.string_values_, filtered_strings);
-    convert_strings(datum.string_values_, ret_fv);
-    convert_strings(filtered_strings, ret_fv);
+    convert_strings(datum.string_values_, fv);
+    convert_strings(filtered_strings, fv);
 
     vector<pair<string, double> > filtered_nums;
     filter_nums(datum.num_values_, filtered_nums);
-    convert_nums(datum.num_values_, ret_fv);
-    convert_nums(filtered_nums, ret_fv);
+    convert_nums(datum.num_values_, fv);
+    convert_nums(filtered_nums, fv);
+
+    fv.swap(ret_fv);
   }
+
 
   void revert_feature(const string& feature,
                       pair<string, string>& expect) const {
@@ -206,27 +215,27 @@ class datum_to_fv_converter_impl {
  private:
 
   void filter_strings(const datum::sv_t& string_values,
-                      datum::sv_t& filtered_values) {
+                      datum::sv_t& filtered_values) const {
     for (size_t i = 0; i < string_filter_rules_.size(); ++i) {
       string_filter_rules_[i].filter(string_values, filtered_values);
     }
   }
 
   void filter_nums(const datum::nv_t& num_values,
-                   datum::nv_t& filtered_values) {
+                   datum::nv_t& filtered_values) const {
     for (size_t i = 0; i < num_filter_rules_.size(); ++i) {
       num_filter_rules_[i].filter(num_values, filtered_values);
     }
   }
 
   void convert_strings(const datum::sv_t& string_values,
-                      sfv_t& ret_fv) {
+                      sfv_t& ret_fv) const {
     for (size_t i = 0; i < string_rules_.size(); ++i) {
       convert_strings(string_rules_[i], string_values, ret_fv);
     }
   }
 
-  bool contains_idf(const string_feature_rule& s) {
+  bool contains_idf(const string_feature_rule& s) const {
     for (size_t i = 0; i < s.weights_.size(); ++i) {
       if (s.weights_[i].term_weight_type_ == IDF) {
         return true;
@@ -235,17 +244,14 @@ class datum_to_fv_converter_impl {
     return false;
   }
 
-  void convert_strings(string_feature_rule& splitter,
+  void convert_strings(const string_feature_rule& splitter,
                        const datum::sv_t& string_values,
-                       sfv_t& ret_fv) {
+                       sfv_t& ret_fv) const {
     for (size_t j = 0; j < string_values.size(); ++j)  {
       const string& key = string_values[j].first;
       const string& value = string_values[j].second;
       counter<string> counter;
       count_words(splitter, key, value, counter);
-      if (contains_idf(splitter)) {
-        update_document_frequencies(splitter.name_, key, counter);
-      }
       for (size_t i = 0; i < splitter.weights_.size(); ++i) {
         make_string_features(key, splitter.name_, splitter.weights_[i], counter, ret_fv);
       }
@@ -266,7 +272,7 @@ class datum_to_fv_converter_impl {
     return key + "$" + value + "@" + splitter;
   }
 
-  void count_words(string_feature_rule& splitter,
+  void count_words(const string_feature_rule& splitter,
                    const string& key,
                    const string& value,
                    counter<string>& counter) const {
@@ -302,33 +308,16 @@ class datum_to_fv_converter_impl {
     }
   }
 
-  double get_global_weight(const string& key, const string& splitter_name,
-      term_weight_type type, const std::string& word, string& name) const {
+  string get_global_weight_name(term_weight_type type) const {
     switch (type) {
       case TERM_BINARY:
-        name = "bin";
-        return 1.0;
-        break;
-      case IDF: {
-        string k = make_feature_key(key, word, splitter_name);
-        name = "idf";
-        return log(static_cast<double>(document_count_)
-                   / document_frequencies_[k]);
-        break;
-      }
-      case WITH_WEIGHT_FILE: {
-        name = "weight";
-        string k = make_feature_key(key, word, splitter_name);
-        weight_t::const_iterator wit = weights_.find(k);
-        if (wit != weights_.end()) {
-          return wit->second;
-        } else {
-          return 0;
-        }
-        break;
-      }
+        return "bin";
+      case IDF:
+        return "idf";
+      case WITH_WEIGHT_FILE:
+        return "weight";
       default:
-        return 0;
+        throw runtime_error("unknown global weight type");
     }
   }
 
@@ -339,13 +328,11 @@ class datum_to_fv_converter_impl {
                             sfv_t& ret_fv) const {
     for (counter<string>::const_iterator it = count.begin();
          it != count.end(); ++it) {
-      //string key = it->first;
       string sample_weight_name;
       double sample_weight = get_sample_weight(weight_type.freq_weight_type_, it->second, sample_weight_name);
       
-      string global_weight_name;
-      double global_weight = get_global_weight(key, splitter_name, weight_type.term_weight_type_, it->first, global_weight_name);
-      float v = sample_weight * global_weight;
+      string global_weight_name = get_global_weight_name(weight_type.term_weight_type_);
+      float v = sample_weight;
       if (v != 0.0) {
         string f = make_feature(key, it->first, splitter_name, sample_weight_name, global_weight_name);
         ret_fv.push_back(make_pair(f, v));
@@ -353,28 +340,17 @@ class datum_to_fv_converter_impl {
     }
   }
 
-  void update_document_frequencies(const string& splitter_name,
-                                   const string& key,
-                                   const counter<string>& count) {
-    for (counter<string>::const_iterator it = count.begin();
-         it != count.end(); it++) {
-      string k = make_feature_key(key, it->first, splitter_name);
-      ++document_frequencies_[k];
-    }
-  }
-
-
   void convert_nums(const datum::nv_t& num_values, 
-                    sfv_t& ret_fv) {
+                    sfv_t& ret_fv) const {
     for (size_t i = 0; i < num_values.size(); ++i) {
       convert_num(num_values[i].first, num_values[i].second, ret_fv);
     }
   }
 
   void convert_num(const string& key, double value,
-                   sfv_t& ret_fv) {
+                   sfv_t& ret_fv) const {
     for (size_t i = 0; i < num_rules_.size(); ++i) {
-      num_feature_rule& r = num_rules_[i];
+      const num_feature_rule& r = num_rules_[i];
       if (r.matcher_->match(key)) {
         string k = key + "@" + r.name_;
         r.feature_func_->add_feature(k, value, ret_fv);
