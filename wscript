@@ -14,6 +14,10 @@ def options(opt):
   opt.add_option('--enable-zookeeper',
                  action='store_true', default=False, # dest='nozk',
                  help='use ZooKeeper')
+
+  opt.add_option('--enable-gcov',
+                 action='store_true', default=False,
+                 dest='gcov', help='only for debug')
   
   opt.recurse(subdirs)
 
@@ -54,6 +58,11 @@ def configure(conf):
       conf.define('ZOOKEEPER_HEADER', 'zookeeper/zookeeper.h')
 
     conf.check_cxx(lib = 'zookeeper_mt', errmsg = 'ZK not found')
+
+  if Options.options.gcov:
+    conf.env.append_value('CXXFLAGS', '-fprofile-arcs')
+    conf.env.append_value('CXXFLAGS', '-ftest-coverage')
+    conf.env.append_value('LINKFLAGS', '-lgcov')
 
   conf.check_cxx(lib = 'dl')
 
