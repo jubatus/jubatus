@@ -1,8 +1,8 @@
 // this program is automatically generated. do not edit. 
 #include "regression_server.hpp"
-#include "server_util.hpp"
 #include "regression_serv.hpp"
 #include <pficommon/lang/shared_ptr.h>
+#include "../framework.hpp"
 
 
 using namespace jubatus;

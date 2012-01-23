@@ -22,6 +22,7 @@
 #include <iostream>
 #include <msgpack.hpp>
 #include "../common/exception.hpp"
+#include "../config.hpp"
 
 using pfi::lang::function;
 
