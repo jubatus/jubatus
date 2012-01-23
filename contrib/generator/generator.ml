@@ -31,7 +31,7 @@ let gen_mprpc_decl name prototypes =
 
 
 
-class jubatus_module outdir_i name_i namespace_i typedefs_i structdefs_i classdefs_i =
+class jubatus_module outdir_i name_i namespace_i typedefs_i structdefs_i classdefs_i internal_i =
 object (self)
   val outdir = outdir_i
   val name = name_i
@@ -39,6 +39,7 @@ object (self)
   val typedefs = typedefs_i
   val structdefs = structdefs_i
   val classdefs = classdefs_i
+  val internal = internal_i
   val mutable output = stdout
   val mutable debugmode = false
 
@@ -59,8 +60,11 @@ object (self)
 (*    output <<< include_dq ["server.hpp"; "../common/cmdline.h"]; *)
     output <<< include_dq [(name ^ "_server.hpp");
 			   (name ^ "_serv.hpp")];
-    output <<< include_b ["pficommon/lang/shared_ptr.h";
-			  "jubatus/framework.hpp"];
+    output <<< include_b ["pficommon/lang/shared_ptr.h"];
+    if internal then
+      output <<< include_dq ["../framework.hpp"]
+    else
+      output <<< include_b ["jubatus/framework.hpp"];
     output <<< "\n";
     output <<< make_using_ns [namespace]; (* FIXME *)
     output <<< make_using_ns [namespace; "framework"]; (* FIXME *)
@@ -73,7 +77,7 @@ object (self)
   method generate_keeper =
     print_endline ("generate ==> " ^ keeper_c);
     output <<< "// this program is automatically generated. do not edit. ";
-    output <<< Keeper_template.make_file_begin name;
+    output <<< Keeper_template.make_file_begin name internal;
     output <<< make_using_ns [namespace];
     output <<< make_using_ns [namespace; "framework"];
     output <<< Keeper_template.make_main classdefs;

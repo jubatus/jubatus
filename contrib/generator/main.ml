@@ -29,6 +29,7 @@ let replace_suffix suffix filename =
   base ^ "." ^ suffix;;
 
 let outdir  = ref ".";;
+let internal = ref false;;
 
  (* temporary error: to be fixed  *)
 exception Multiple_argument_for_rpc of string
@@ -80,7 +81,10 @@ let dope_routing classdef =
   ClassDef(name, (List.map dope_routing_ prototypes), members);;
 
 let _ =
-  Arg.parse [("-o", Arg.Set_string(outdir), "output directory")] (fun _ -> ()) "usage:";
+  Arg.parse [
+    ("-o", Arg.Set_string(outdir), "output directory");
+    ("-i", Arg.Set(internal), "internal include")
+  ] (fun _ -> ()) "usage:";
   let source_file = Sys.argv.(1) in
   let lexbuf = Lexing.from_channel (open_in source_file) in
   try
@@ -113,7 +117,9 @@ let _ =
     let new_classdefs1 = classdefs in *)
 
     let m = new Generator.jubatus_module (!outdir) (get_name source_file)
-      "jubatus" (List.rev typedefs) (List.rev structdefs) (List.rev new_classdefs3) in
+      "jubatus" (List.rev typedefs) (List.rev structdefs) (List.rev new_classdefs3)
+      (!internal)
+    in
     m#generate;
     ()
   with

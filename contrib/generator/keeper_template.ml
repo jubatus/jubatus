@@ -17,9 +17,14 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 *)
 
-let make_file_begin name =
-  "#include \"keeper.hpp\"\n"
-  ^Printf.sprintf "#include \"%s_types.hpp\"\n" name
+let make_file_begin name internal =
+  let keeper_include =
+    if internal then
+      "#include \"keeper.hpp\"\n"
+    else
+      "#include <jubatus/framework.hpp>\n"
+  in
+  keeper_include ^ Printf.sprintf "#include \"%s_types.hpp\"\n" name
 ;;
 
 let make_file_end _ = "";;
