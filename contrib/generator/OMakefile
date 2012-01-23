@@ -1,4 +1,4 @@
-.PHONY: all install clean test
+.PHONY: all install clean test uninstall
 
 clean:
 	rm -rf $(filter-proper-targets $(ls R, .))
@@ -72,3 +72,6 @@ test: $(PROGRAM)  ../../src/server/recommender.hpp
 	-diff recommender_keeper.cpp ../../src/server/recommender_keeper.cpp
 
 OCamlProgramInstall(install, /usr/local/bin, $(PROGRAM), $(FILES))
+
+uninstall:
+	-rm /usr/local/bin/$(PROGRAM)

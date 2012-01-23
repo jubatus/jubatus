@@ -12,3 +12,6 @@ parser.ml
 .omakedb*
 generor
 parser.mli
+jenerator
+*.idl
+*.cpp
