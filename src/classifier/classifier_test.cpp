@@ -40,6 +40,7 @@ TYPED_TEST_CASE_P(classifier_test);
 TYPED_TEST_P(classifier_test, trivial) {
   local_storage s;
   TypeParam p(&s);
+  ASSERT_NE(p.name(), "");
   sfv_t fv;
   fv.push_back(make_pair(string("f1"), 1.0));
   p.train(fv, string("label1")); 
