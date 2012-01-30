@@ -82,7 +82,7 @@ void load_config(jubatus::config_data& c){
 
 namespace {
 
-  class classifier_test : public ::testing::Test {
+  class classifier_test : public ::testing::TestWithParam<const char*> {
   protected:
     pid_t child_;
 
@@ -99,12 +99,12 @@ namespace {
     };
   };
 
-TEST_F(classifier_test, simple){
+TEST_P(classifier_test, simple){
   
   classifier c("localhost", PORT, 10);
   {
     jubatus::config_data config;
-    config.method = "PA";
+    config.method = GetParam();
     
     c.set_config("", config);
     c.get_config("", 0);
@@ -125,13 +125,13 @@ TEST_F(classifier_test, simple){
   }
 }
 
-TEST_F(classifier_test, config) {
+TEST_P(classifier_test, config) {
   jubatus::config_data c;
   load_config(c);
   SUCCEED();
 }
 
-TEST_F(classifier_test, api_config) {
+TEST_P(classifier_test, api_config) {
   classifier cli("localhost", PORT, 10);
   config_data to_set;
   config_data to_get;
@@ -145,7 +145,7 @@ TEST_F(classifier_test, api_config) {
   EXPECT_TRUE(to_set == to_get);
 }
 
-TEST_F(classifier_test, api_train){
+TEST_P(classifier_test, api_train){
   classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
   config_data c;
@@ -158,11 +158,11 @@ TEST_F(classifier_test, api_train){
   ASSERT_TRUE(res == data.size()); //.success);
 }
 
-void my_test(const char* meth, const char* stor){ //serv2, api_classify){
+void my_test(const char* method) {
   classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
   config_data c;
-  c.method = meth;
+  c.method = method;
   num_rule rule = { "*", "num" };
   c.config.num_rules.push_back(rule);
 
@@ -222,13 +222,16 @@ void my_test(const char* meth, const char* stor){ //serv2, api_classify){
     }
   }
   EXPECT_GE(count, result.size()-10); //num of wrong classification should be less than 1%
-
 }
 
-void duplicated_keys(const char* method){
+TEST_P(classifier_test, my_test) {
+  my_test(GetParam());
+}
+
+TEST_P(classifier_test, duplicated_keys){
   classifier cli("localhost", PORT, 10);
   config_data c;
-  c.method = method;
+  c.method = GetParam();
   num_rule rule = { "*", "num" };
   c.config.num_rules.push_back(rule);
 
@@ -264,31 +267,9 @@ void duplicated_keys(const char* method){
   }
 }
 
-TEST_F(classifier_test, pa){ //needs parameterized test if want more
-  this->restart_process();
-  my_test("PA",    "local");
-  duplicated_keys("PA");
-}
-TEST_F(classifier_test, pa1){
-  my_test("PA1",   "local");
-  duplicated_keys("PA1");
-}
-TEST_F(classifier_test, pa2){
-  my_test("PA2",   "local");
-  duplicated_keys("PA2");
-}
-TEST_F(classifier_test, cw){
-  my_test("CW",    "local");
-  duplicated_keys("CW");
-}
-TEST_F(classifier_test, arow){
-  my_test("AROW",  "local");
-  duplicated_keys("AROW");
-}
-TEST_F(classifier_test, nherd){
-  my_test("NHERD", "local");
-  duplicated_keys("NHERD");
-}
+INSTANTIATE_TEST_CASE_P(classifier_test_instance,
+                        classifier_test,
+                        testing::Values("PA", "PA1", "PA2", "CW", "AROW", "NHERD"));
 
   //FIXME: can't link classifier_serv
 // TEST(mix_parameter, trivial) {
@@ -321,7 +302,7 @@ TEST_F(classifier_test, nherd){
 // }
 
 
-TEST_F(classifier_test, get_status){
+TEST_P(classifier_test, get_status){
   classifier cli("localhost", PORT, 10);
 
   map<string,map<string,string> > status = cli.get_status(NAME, 0);
@@ -331,9 +312,9 @@ TEST_F(classifier_test, get_status){
     EXPECT_GE(it->second.size(), 8u);
   }
 }
-TEST_F(classifier_test, save_load){
+TEST_P(classifier_test, save_load){
   classifier cli("localhost", PORT, 10);
-  const char* meth = "PA";
+  const char* meth = GetParam();
   std::vector<std::pair<std::string,int> > v;
 
   const size_t example_size = 1000;
@@ -362,7 +343,7 @@ TEST_F(classifier_test, save_load){
 
   int res_load = cli.load(NAME, "hoge");
   ASSERT_EQ(0, res_load);
-  my_test("PA",    "local");
+  my_test(GetParam());
 
   map<string, map<string, string> > status = cli.get_status(NAME, 0);
   string count_str = status.begin()->second["update_count"];
