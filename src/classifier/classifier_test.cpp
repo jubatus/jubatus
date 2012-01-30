@@ -41,6 +41,8 @@ TYPED_TEST_P(classifier_test, trivial) {
   local_storage s;
   TypeParam p(&s);
   ASSERT_NE(p.name(), "");
+  p.set_C(1.0);
+  ASSERT_EQ(p.C(), 1.0);
   sfv_t fv;
   fv.push_back(make_pair(string("f1"), 1.0));
   p.train(fv, string("label1")); 
