@@ -24,6 +24,7 @@
 #include "../common/rpc_util.hpp"
 #include "../common/exception.hpp"
 #include "../common/util.hpp"
+#include "../common/vector_util.hpp"
 
 #include <glog/logging.h>
 
@@ -90,6 +91,7 @@ int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > 
   for (size_t i = 0; i < data.size(); ++i) {
     convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
     converter_->convert(d, v);
+    sort_and_merge(v);
     clsfer_.classifier_->train(v, data[i].first);
     count++;
   }

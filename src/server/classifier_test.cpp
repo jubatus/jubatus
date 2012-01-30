@@ -225,25 +225,69 @@ void my_test(const char* meth, const char* stor){ //serv2, api_classify){
 
 }
 
+void duplicated_keys(const char* method){
+  classifier cli("localhost", PORT, 10);
+  config_data c;
+  c.method = method;
+  num_rule rule = { "*", "num" };
+  c.config.num_rules.push_back(rule);
+
+  cli.set_config(NAME, c);
+
+  pfi::math::random::mtrand rand(0);
+  datum d;
+  for (size_t k = 0; k < 10; ++k) {
+    uint32_t dim = rand.next_int(100);
+    pair<string, double> feature = make_pair(lexical_cast<string>(dim), 1.0);
+    // add 100 duplicated values
+    for (size_t j = 0; j < 100; ++j)
+      d.nv.push_back(feature);
+  }
+  vector<pair<string, datum> > data;
+  data.push_back(make_pair("", d));
+  for (size_t i = 0; i < 100; ++i) {
+    data[0].first = i % 2 == 0 ? "P" : "N";
+    cli.train(NAME, data);
+  }
+
+  {
+    datum d;
+    for (size_t i = 0; i < 100; ++i) {
+      d.nv.push_back(make_pair(lexical_cast<string>(i), 1.0));
+    }
+    vector<datum> data;
+    data.push_back(d);
+    vector<vector<estimate_result> > result = cli.classify(NAME, data);
+    ASSERT_EQ(1u, result.size());
+    // if the classifier could not learn properly, it estimates scores of labels to NaN and returns no results.
+    ASSERT_EQ(2u, result[0].size());
+  }
+}
 
 TEST_F(classifier_test, pa){ //needs parameterized test if want more
   this->restart_process();
   my_test("PA",    "local");
+  duplicated_keys("PA");
 }
 TEST_F(classifier_test, pa1){
   my_test("PA1",   "local");
+  duplicated_keys("PA1");
 }
 TEST_F(classifier_test, pa2){
   my_test("PA2",   "local");
+  duplicated_keys("PA2");
 }
 TEST_F(classifier_test, cw){
-  //  my_test("CW",    "local");
+  my_test("CW",    "local");
+  duplicated_keys("CW");
 }
 TEST_F(classifier_test, arow){
   my_test("AROW",  "local");
+  duplicated_keys("AROW");
 }
 TEST_F(classifier_test, nherd){
   my_test("NHERD", "local");
+  duplicated_keys("NHERD");
 }
 
   //FIXME: can't link classifier_serv
