@@ -35,4 +35,6 @@
 
 #include <jubatus/client/classifier.hpp>
 #include <jubatus/client/recommender.hpp>
+#include <jubatus/client/stat.hpp>
+#include <jubatus/client/regression.hpp>
 

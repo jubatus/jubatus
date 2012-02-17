@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "server/fv_converter/word_splitter.hpp"
-#include "server/fv_converter/string_filter.hpp"
-#include "server/fv_converter/num_feature.hpp"
-#include "server/fv_converter/num_filter.hpp"
+#include <jubatus/fv_converter/word_splitter.hpp>
+#include <jubatus/fv_converter/string_filter.hpp>
+#include <jubatus/fv_converter/num_feature.hpp>
+#include <jubatus/fv_converter/num_filter.hpp>
