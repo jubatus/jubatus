@@ -1,0 +1,26 @@
+def options(opt):
+  pass
+
+def configure(conf):
+  pass
+
+def build(bld):
+
+  framework_source = 'server_util.cpp jubatus_serv.cpp'
+  if bld.env.HAVE_ZOOKEEPER_H:
+    framework_source +=  ' keeper.cpp mixer.cpp'
+
+  bld.shlib(
+    source = framework_source,
+    target = 'jubatus_framework',
+    includes = '.',
+    use = 'PFICOMMON jubacommon MSGPACK GLOG'
+    )
+
+  bld.install_files('${PREFIX}/include/jubatus/framework', [
+      'jubatus_serv.hpp',
+      'keeper.hpp',
+      'server_util.hpp',
+      'mixable.hpp',
+      'mixer.hpp'
+      ])

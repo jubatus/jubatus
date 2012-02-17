@@ -29,6 +29,9 @@ namespace jubatus {
 
 class key_manager {
 public:
+  key_manager();
+  key_manager& operator = (const key_manager&);
+
   enum {
     NOTFOUND = 0xFFFFFFFFFFFFFFFFLLU
   };
@@ -41,6 +44,7 @@ public:
   uint64_t get_id_const(const std::string& key) const;
   const std::string& get_key(const uint64_t id) const;
   void swap(key_manager& km);
+  void clear();
 
   void init_by_id2key(const std::vector<std::string>& id2key);
   std::vector<std::string> get_all_id2key() const;

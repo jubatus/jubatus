@@ -17,13 +17,14 @@
 
 #include <pficommon/text/json.h>
 #include "../common/cmdline.h"
-#include "../server/fv_converter/datum_to_fv_converter.hpp"
-#include "../server/fv_converter/datum.hpp"
-#include "../server/fv_converter/json_converter.hpp"
-#include "../server/fv_converter/converter_config.hpp"
+#include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../fv_converter/datum.hpp"
+#include "../fv_converter/json_converter.hpp"
+#include "../fv_converter/converter_config.hpp"
 
 using namespace std;
 using namespace pfi::text::json;
+using namespace jubatus::fv_converter;
 
 void show_invalid_type_error(const string& input_format,
                              const string& output_format) {
@@ -35,11 +36,11 @@ void output_json(const json& json) {
   json.pretty(cout, false);
 }
 
-void output_datum(const jubatus::datum& datum) {
+void output_datum(const datum& datum) {
   pfi::text::json::to_json(datum).pretty(cout, false);
 }
 
-int read_config(const string& conf_file, jubatus::converter_config& conf) {
+int read_config(const string& conf_file, converter_config& conf) {
   ifstream ifs(conf_file.c_str());
   if (!ifs) {
     cerr << "cannot open converter config file: "
@@ -50,17 +51,17 @@ int read_config(const string& conf_file, jubatus::converter_config& conf) {
   return 0;
 }
 
-void convert_datum(const jubatus::datum& datum,
+void convert_datum(const datum& datum,
                   jubatus::sfv_t& fv,
                   const string& conf_file) {
   if (conf_file == "") {
     cerr << "specify converter config with -c flag" << endl;
     exit(-1);
   }
-  jubatus::datum_to_fv_converter conv;
-  jubatus::converter_config conf;
+  datum_to_fv_converter conv;
+  converter_config conf;
   read_config(conf_file, conf);
-  jubatus::initialize_converter(conf, conv);
+  initialize_converter(conf, conv);
   conv.convert(datum, fv);
 }
 
@@ -79,7 +80,7 @@ void read_json(pfi::text::json::json& json) {
   }
 }
 
-void read_datum(jubatus::datum& datum) {
+void read_datum(datum& datum) {
   try {
     cin >> pfi::text::json::via_json(datum);
   } catch(const bad_cast& e) {
@@ -99,7 +100,7 @@ int main(int argc, char* argv[]) {
   p.parse_check(argc, argv);
 
   pfi::text::json::json json;
-  jubatus::datum datum;
+  datum datum;
   jubatus::sfv_t fv;
 
   bool proc = false;
@@ -124,7 +125,7 @@ int main(int argc, char* argv[]) {
     read_datum(datum);
     proc = true;
   } else if (proc) {
-    jubatus::json_converter::convert(json, datum);
+    json_converter::convert(json, datum);
   }
 
   if (output_format == "datum") {

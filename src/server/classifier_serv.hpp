@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,84 +20,71 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/lang/noncopyable.h>
-
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/concurrent/threading_model.h>
-
 #include "../common/rpc_util.hpp"
-#include "./classifier/classifier_base.hpp"
-#include "./fv_converter/datum_to_fv_converter.hpp"
-#include "./storage/storage_base.hpp"
+#include "../classifier/classifier_base.hpp"
+#include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../storage/storage_base.hpp"
 
-#include "classifier_rpc.hpp"
-
-#ifdef HAVE_ZOOKEEPER_H
-#  include "mixer.hpp"
-#endif
+#include "classifier_types.hpp"
+#include "jubatus_serv.hpp"
+#include "diffv.hpp"
 
 namespace jubatus{
-namespace classifier {
+namespace server{
 
-class server : pfi::lang::noncopyable
+// mixable object: It would be better if classifier object itself inherits framework::mixable<>
+struct clsfer : public jubatus::framework::mixable<storage::storage_base, diffv>
+{
+
+  clsfer(){
+    function<diffv(const storage::storage_base*)>  getdiff(&clsfer::get_diff);
+    function<int(const storage::storage_base*, const diffv&, diffv&)>  reduce(&clsfer::reduce);
+    function<int(storage::storage_base*, const diffv&)>   putdiff(&clsfer::put_diff);
+    set_mixer(getdiff, reduce, putdiff);
+  };
+  static diffv get_diff(const storage::storage_base* model){
+    diffv ret;
+    ret.count = 1; //FIXME mixer_->get_count();
+    model->get_diff(ret.v);
+    return ret;
+  }
+  static int reduce(const storage::storage_base*, const diffv& v, diffv& acc);
+
+  static int put_diff(storage::storage_base* model, const diffv& v){
+    diffv diff = v;
+    diff /= (double) v.count;
+    model->set_average_and_clear_diff(diff.v);
+    return 0;
+  }
+
+  void clear(){};
+
+  pfi::lang::shared_ptr<classifier_base> classifier_;
+};
+
+class classifier_serv : public framework::jubatus_serv
 {
 public:
-#ifdef HAVE_ZOOKEEPER_H
-  server(pfi::lang::shared_ptr<storage::storage_base,
-                               pfi::concurrent::threading_model::multi_thread>&,
-         pfi::lang::shared_ptr<mixer,
-                               pfi::concurrent::threading_model::multi_thread>&,
-         const std::string& base_path = "/tmp");
-#endif
-  explicit server(pfi::lang::shared_ptr<storage::storage_base,
-                                        pfi::concurrent::threading_model::multi_thread>&,
-                  const std::string& base_path = "/tmp");
+  classifier_serv(const framework::server_argv&);  
+  virtual ~classifier_serv();
 
-  ~server();
+  int set_config(config_data);
+  config_data get_config(int );
+  int train(std::vector<std::pair<std::string, datum> > data);
+  std::vector<std::vector<estimate_result> > classify(std::vector<datum> data);
 
-  // msgpack only
-  result<std::string> get_storage(int);
-  diffv get_diff(int);
-  int put_diff(storage::features3_t v);
+  pfi::lang::shared_ptr<storage::storage_base> make_model();
+  void after_load();
 
-  //should be same in jubakeeper
-  result<int> set_config(std::string, classifier::config_data);
-  result<classifier::config_data> get_config(std::string);
-  result<int> train(std::string,std::vector<std::pair<std::string, datum> > data);
-  result<std::vector<estimate_results> > classify(std::string,std::vector<datum> data);
-  result<int> save(std::string, std::string, std::string);
-  result<int> load(std::string, std::string, std::string);
-  result<std::map<std::pair<std::string, int>, std::map<std::string, std::string> > > get_status(std::string);
-
-  // internal use only
-  static void mix(const std::vector<std::pair<std::string, int> >&);
-  void bind_all_methods(mprpc_server&, const std::string& host, int port);
+  std::map<std::string, std::map<std::string, std::string> > get_status(int);
 
 private:
-  server();
-  void build_local_path_(std::string&, const std::string&, const std::string&);
-
   config_data config_;
-  pfi::lang::shared_ptr<datum_to_fv_converter,
-                        pfi::concurrent::threading_model::multi_thread> converter_;
-  pfi::lang::shared_ptr<classifier_base,
-                        pfi::concurrent::threading_model::multi_thread> classifier_;
-  pfi::lang::shared_ptr<storage::storage_base,
-                        pfi::concurrent::threading_model::multi_thread> storage_;
-#ifdef HAVE_ZOOKEEPER_H
-  pfi::lang::shared_ptr<mixer,
-                        pfi::concurrent::threading_model::multi_thread> mixer_;
-#endif
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  clsfer clsfer_;
 
-  pfi::concurrent::rw_mutex m_;
-  const std::string base_path_;
-  std::string host_;
-  int port_;
 };
 
 void mix_parameter(diffv& lhs, const diffv& rhs);
-
-} // namespace classifier
+}
 } // namespace jubatus

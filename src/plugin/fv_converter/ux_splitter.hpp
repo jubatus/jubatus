@@ -18,11 +18,11 @@
 #pragma once
 
 #include <ux/ux.hpp>
-#include "../../server/fv_converter/word_splitter.hpp"
+#include "../../fv_converter/word_splitter.hpp"
 
 namespace jubatus {
 
-class ux_splitter : public word_splitter {
+class ux_splitter : public fv_converter::word_splitter {
  public:
   ux_splitter(const std::vector<std::string>& keywords);
   ~ux_splitter();

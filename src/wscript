@@ -1,6 +1,11 @@
 import Options
 
-subdirs = 'common server client cmd jubakeeper jubavisor plugin'
+subdirs = '''
+common plugin stat
+classifier fv_converter recommender regression storage
+framework server
+cmd jubavisor
+'''
 
 def options(opt):
   opt.recurse(subdirs)
@@ -10,5 +15,6 @@ def configure(conf):
 
 def build(bld):
   bld.recurse(subdirs)
-  bld.install_files('${PREFIX}/include', 'jubatus.hpp')
-  bld.install_files('${PREFIX}/include/jubatus', 'plugin.hpp')
+#  bld.install_files('${PREFIX}/include', 'jubatus.hpp')
+  bld.install_files('${PREFIX}/include/jubatus',
+                    ['config.hpp', 'plugin.hpp', 'framework.hpp'])

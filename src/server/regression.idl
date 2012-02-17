@@ -1,0 +1,51 @@
+# this idl is automatically generated. do not edit. 
+type param_t = map<string, string> 
+
+message string_rule {
+  0: string key
+  1: string type
+  2: string sample_weight
+  3: string global_weight
+}
+
+message filter_rule {
+  0: string key
+  1: string type
+  2: string suffix
+}
+
+message num_rule {
+  0: string key
+  1: string type
+}
+
+message converter_config {
+  0: map<string, param_t>  string_filter_types
+  1: list<filter_rule>  string_filter_rules
+  2: map<string, param_t>  num_filter_types
+  3: list<filter_rule>  num_filter_rules
+  4: map<string, param_t>  string_types
+  5: list<string_rule>  string_rules
+  6: map<string, param_t>  num_types
+  7: list<num_rule>  num_rules
+}
+
+message config_data {
+  0: string method
+  1: converter_config config
+}
+
+message datum {
+  0: list<tuple<string, string> >  sv
+  1: list<tuple<string, double> >  nv
+}
+
+service regression :1 {
+  int set_config(0: string arg0, 1: config_data arg1) # //@broadcast
+  config_data get_config(0: string arg0, 1: int arg1) # //@random
+  int train(0: string arg0, 1: list<tuple<float, datum> >  arg1) # //@random
+  list<float>  estimate(0: string arg0, 1: list<datum>  arg1) # //@random
+  int save(0: string arg0, 1: string arg1) # //@broadcast
+  int load(0: string arg0, 1: string arg1) # //@broadcast
+  map<string, map<string, string> >  get_status(0: string arg0, 1: int arg1) # //@broadcast
+}

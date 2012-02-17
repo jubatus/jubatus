@@ -21,11 +21,15 @@
 using namespace std;
 
 namespace jubatus {
+namespace common {
 
 TEST(cht, make_hash) {
   string hash = make_hash("hage");
   string hash2 = make_hash("hage");
+  string hash3 = make_hash("hoge");
   ASSERT_EQ(hash, hash2);
+  ASSERT_NE(hash, hash3);
 }
 
+}
 }

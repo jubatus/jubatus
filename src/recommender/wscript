@@ -1,0 +1,32 @@
+def options(ctx): pass
+
+def configure(ctx): pass
+
+def build(bld):
+  bld.shlib(
+    source = [
+      'recommender_base.cpp',
+      'inverted_index.cpp',
+      'lsh.cpp',
+      'recommender_factory.cpp',
+      'lsh_util.cpp',
+      ],
+    target = 'jubatus_recommender',
+    name = 'jubatus_recommender',
+    includes = '.',
+    use = 'PFICOMMON jubastorage jubacommon')
+
+  def make_test(s):
+    bld.program(
+      features = 'gtest',
+      source = s,
+      target = s[0:s.rfind('.')],
+      includes = '.',
+      use = 'PFICOMMON jubatus_recommender jubacommon')
+
+  map(make_test, [
+#      'recommender_test.cpp', # FIXME
+      'recommender_base_test.cpp',
+      'recommender_random_test.cpp',
+      'lsh_util_test.cpp',
+      ])

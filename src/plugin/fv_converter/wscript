@@ -48,3 +48,11 @@ def build(bld):
       use = 'UX jubaconverter'
       )
     make_test(bld, 'ux_splitter', 'ux_splitter_test.cpp')
+
+  if bld.env.HAVE_RE2:
+    bld.shlib(
+      source = 're2_splitter.cpp',
+      target = 're2_splitter',
+      use = 'RE2 jubaconverter'
+      )
+    make_test(bld, 're2_splitter', 're2_splitter_test.cpp')

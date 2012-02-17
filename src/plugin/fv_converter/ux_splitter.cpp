@@ -21,12 +21,14 @@
 #include <vector>
 #include <map>
 #include <fstream>
-#include "../../server/fv_converter/util.hpp"
-#include "../../server/fv_converter/exception.hpp"
+#include "../../fv_converter/util.hpp"
+#include "../../fv_converter/exception.hpp"
 
 using namespace std;
 
 namespace jubatus {
+
+using fv_converter::converter_exception;
 
 ux_splitter::ux_splitter(const vector<string>& keywords) {
   vector<string> keys(keywords);
@@ -69,7 +71,7 @@ extern "C" {
 
 jubatus::ux_splitter*
 create(const map<string, string>& params) {
-  const string& path = jubatus::get_or_die(params, "dict_path");
+  const string& path = jubatus::fv_converter::get_or_die(params, "dict_path");
   vector<string> lines;
   jubatus::read_all_lines(path.c_str(), lines);
   
