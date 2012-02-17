@@ -1,29 +1,46 @@
-subdirs = 'fv_converter storage classifier'
-
 def options(opt):
-  opt.recurse(subdirs)
+  pass
 
 def configure(conf):
-  conf.recurse(subdirs)
+  pass
+
+
+def build_one(bld, name, libraries = ''):
+  __sources = '%s_impl.cpp %s_serv.cpp' % (name, name)
+  bld.program(
+    source = __sources,
+    target = 'juba'+name,
+    includes = '. ../framework',
+    use = 'jubatus_framework jubatus_%s %s' % (name, libraries)
+    )
+  if bld.env.HAVE_ZOOKEEPER_H:
+    bld.program(
+      source = '%s_keeper.cpp ' % name,
+      target = 'juba%s_keeper' % name,
+      includes = '. ../framework',
+      use = 'jubatus_framework '
+      )
+  bld.program(
+    features = 'gtest',
+    source = '%s_test.cpp' % name,
+    target = '%s_test' % name,
+    includes = '. ../framework',
+    use = 'PFICOMMON MSGPACK',
+    )
+
 
 def build(bld):
-  classifier_source = 'classifier_serv.cpp'
-  if bld.env.HAVE_ZOOKEEPER_H:
-    classifier_source +=  ' mixer.cpp'
 
-  bld.stlib(
-    source = classifier_source,
-    target = 'jubatus_classifier',
-    includes = '.',
-    use = 'PFICOMMON jubaconverter jubaclassifier jubastorage jubacommon MSGPACK GLOG'
-    )
+  #new classifier
+  build_one(bld, "classifier", 'jubaconverter jubastorage')
 
-  bld.program(
-    source = 'classifier.cpp',
-    target = 'jubaclassifier',
-    includes = '.',
-    use = 'jubatus_classifier'
-    )
+  #new regression
+  build_one(bld, "regression", 'jubaconverter jubastorage')
+
+  #new recommender
+  build_one(bld, "recommender", 'jubaconverter jubastorage')
+
+  build_one(bld, "stat")
 
   n = bld.path.get_bld().make_node('test_input')
   n.mkdir()
@@ -31,16 +48,13 @@ def build(bld):
       source = bld.path.ant_glob('test_input/*'),
       target = n)
 
-  bld.program(
-    features = 'gtest',
-    source = 'classifier_serv_test.cpp',
-    target = 'classifier_serv_test',
-    includes = '.',
-    use = 'jubatus_classifier'
-    )
-  bld.recurse(subdirs)
-
-  bld.install_files('${PREFIX}/include/jubatus/server',
-                    ['classifier_rpc.hpp',
-                     'diffv.hpp',
-                     ])
+  bld.install_files('${PREFIX}/include/jubatus/client', [
+      'classifier_types.hpp',
+      'classifier_client.hpp',
+      'regression_types.hpp',
+      'regression_client.hpp',
+      'recommender_types.hpp',
+      'recommender_client.hpp',
+      'stat_types.hpp',
+      'stat_client.hpp'
+      ])

@@ -19,11 +19,14 @@
 
 #include <pficommon/lang/scoped_ptr.h>
 #include "ux_splitter.hpp"
-#include "../../server/fv_converter/exception.hpp"
+#include "../../fv_converter/exception.hpp"
 
 using namespace std;
 
 namespace jubatus {
+
+using fv_converter::word_splitter;
+using fv_converter::converter_exception;
 
 TEST(ux_splitter, split) {
   vector<string> ks;
@@ -61,7 +64,7 @@ TEST(ux_splitter, create) {
   param["path"] = "unknown_file_name";
   ASSERT_THROW(create(param), converter_exception);
 
-  param["dict_path"] = "../../server/fv_converter/test_input/keywords";
+  param["dict_path"] = "../../fv_converter/test_input/keywords";
   pfi::lang::scoped_ptr<word_splitter> s(create(param));
 
   string d("hoge fuga");
@@ -73,6 +76,5 @@ TEST(ux_splitter, create) {
   ASSERT_EQ(5u, bs[1].first);
   ASSERT_EQ(4u, bs[1].second);
 }
-
 
 }

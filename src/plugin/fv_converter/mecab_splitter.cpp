@@ -17,12 +17,14 @@
 
 #include <map>
 #include "mecab_splitter.hpp"
-#include "../../server/fv_converter/exception.hpp"
-#include "../../server/fv_converter/util.hpp"
+#include "../../fv_converter/exception.hpp"
+#include "../../fv_converter/util.hpp"
 
 using namespace std;
 
 namespace jubatus {
+
+using fv_converter::converter_exception;
 
 static MeCab::Tagger* create_mecab_tagger(const char* arg) {
   MeCab::Tagger* t = MeCab::createTagger(arg);
@@ -69,7 +71,7 @@ void mecab_splitter::split(const string& string,
 extern "C" {
   jubatus::mecab_splitter*
   create(const std::map<std::string, std::string>& params) {
-    string param = jubatus::get_with_default(params, "arg", "");
+    string param = jubatus::fv_converter::get_with_default(params, "arg", "");
     return new jubatus::mecab_splitter(param.c_str());
   }
 }

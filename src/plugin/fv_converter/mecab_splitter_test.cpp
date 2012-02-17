@@ -23,12 +23,15 @@
 #include <pficommon/lang/scoped_ptr.h>
 
 #include "mecab_splitter.hpp"
-#include "../../server/fv_converter/test_util.hpp"
-#include "../../server/fv_converter/exception.hpp"
+#include "../../fv_converter/test_util.hpp"
+#include "../../fv_converter/exception.hpp"
 
 using namespace std;
 
 namespace jubatus {
+
+using fv_converter::word_splitter;
+using fv_converter::converter_exception;
 
 TEST(mecab_splitter, trivial) {
   mecab_splitter m;
@@ -45,8 +48,7 @@ TEST(mecab_splitter, trivial) {
 }
 
 TEST(mecab_splitter, illegal_argument) {
-  EXPECT_THROW(mecab_splitter("-h"), converter_exception);
-  EXPECT_THROW(mecab_splitter("-v"), converter_exception);
+  EXPECT_THROW(mecab_splitter("-r unknown_file"), converter_exception);
 }
 
 TEST(mecab_splitter_create, trivial) {
@@ -66,7 +68,7 @@ TEST(mecab_splitter_create, trivial) {
 
 TEST(mecab_splitter_create, illegal_argument) {
   map<string, string> param;
-  param["arg"] = "-h";
+  param["arg"] = "-r unknown_file";
   EXPECT_THROW(pfi::lang::scoped_ptr<word_splitter>(create(param)), 
                converter_exception);
 }

@@ -34,4 +34,5 @@
 //=============================================================//
 
 #include <jubatus/client/classifier.hpp>
+#include <jubatus/client/recommender.hpp>
 

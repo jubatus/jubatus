@@ -16,13 +16,14 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #pragma once
-#include "zk.hpp"
+#include "lock_service.hpp"
 
 #include <string>
 #include <vector>
 #include <map>
 
 namespace jubatus{
+namespace common{
 
   static const std::string JUBATUS_BASE_PATH = "/jubatus";
   static const std::string JUBAVISOR_BASE_PATH = "/jubatus/supervisors";
@@ -39,12 +40,16 @@ namespace jubatus{
   bool revert(const std::string&, std::string&, int&);
 
   // zk -> name -> ip -> port -> bool
-  bool register_actor(zk&, const std::string&, const std::string&, int);
+  bool register_actor(lock_service&, const std::string&, const std::string&, int);
+  // zk -> name -> ip -> port -> bool
+  bool register_keeper(lock_service&, const std::string&, int);
   // zk -> name -> list( (ip, rpc_port) )
-  bool get_all_actors(zk&, const std::string&, std::vector<std::pair<std::string, int> >&);
+  bool get_all_actors(lock_service&, const std::string&, std::vector<std::pair<std::string, int> >&);
 
-  bool push_cleanup(zk&, pfi::lang::function<void()>&);
+  bool push_cleanup(lock_service&, pfi::lang::function<void()>&);
 
   void force_exit();
 
+  void prepare_jubatus(lock_service& ls);
+}
 }
