@@ -37,18 +37,7 @@ def write_version(version_string, file):
     f.write(version_string)
     f.close()
 
-if __name__=='__main__':
-    indir = "../src/server/"
-    if len(sys.argv) > 1:
-        indir = sys.argv[1] + "/"
-    outdir = "jubatus-clients"
-    try: os.mkdir(outdir)
-    except: pass
-    langs = ["haskell", "cpp", "ruby", "java", "php", "py"]
-    servers = ["classifier", "regression", "recommender", "stat"]
-    comb = [ (s, l) for s in servers for l in langs ]
-    map(lambda (x,y): generate(x,y, indir, outdir), comb)
-
+def pack(outdir):
     version_string = get_version("../")
     write_version(version_string, outdir+'/VERSION')
 
@@ -57,3 +46,18 @@ if __name__=='__main__':
     tar.close()
 
     shutil.rmtree(outdir, True)
+
+if __name__=='__main__':
+    indir = "../src/server/"
+    if len(sys.argv) > 1:
+        indir = sys.argv[1] + "/"
+    outdir = "jubatus-clients"
+    try: os.mkdir(outdir)
+    except: pass
+    langs = ["haskell", "cpp", "ruby", "java", "php", "perl", "py"]
+#    langs = ["haskell", "py"]
+    servers = ["classifier", "regression", "recommender", "stat"]
+    comb = [ (s, l) for s in servers for l in langs ]
+    map(lambda (x,y): generate(x,y, indir, outdir), comb)
+
+    pack(outdir)
