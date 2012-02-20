@@ -2,7 +2,7 @@
 #include "recommender_server.hpp"
 #include "recommender_serv.hpp"
 #include <pficommon/lang/shared_ptr.h>
-#include "../framework.hpp"
+#include <jubatus/framework.hpp>
 
 
 using namespace jubatus;
@@ -50,6 +50,12 @@ public:
 
   std::vector<std::string>  get_all_rows(std::string& arg0, int arg1) //@broadcast
   { JRLOCK__(p_); return p_->get_all_rows(arg1); };
+
+  float similarity(std::string& arg0, std::pair<datum, datum>  arg1) //@random
+  { JRLOCK__(p_); return p_->similarity(arg1); };
+
+  float l2norm(std::string& arg0, datum arg1) //@random
+  { JRLOCK__(p_); return p_->l2norm(arg1); };
 
   int save(std::string& arg0, std::string arg1) //@broadcast
   { JRLOCK__(p_); return p_->save(arg1); };

@@ -166,6 +166,25 @@ std::vector<std::string> recommender_serv::get_all_rows(int)
   return ret;
 }
 
+float recommender_serv::similarity(const std::pair<datum, datum>& two){
+  fv_converter::datum d0, d1;
+  convert<datum, fv_converter::datum>(two.first, d0);
+  convert<datum, fv_converter::datum>(two.second, d1);
+
+  sfv_t v0, v1;
+  converter_->convert(d0, v0);
+  converter_->convert(d1, v1);
+  return recommender_base::calc_similality(v0, v1);
+}
+float recommender_serv::l2norm(const datum& q){
+  fv_converter::datum d0;
+  convert<datum, fv_converter::datum>(q, d0);
+
+  sfv_t v0;
+  converter_->convert(d0, v0);
+  return recommender_base::calc_l2norm(v0);
+
+}
 
 std::map<std::string, std::map<std::string, std::string> > recommender_serv::get_status(int)
 {
