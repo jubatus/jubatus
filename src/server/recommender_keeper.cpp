@@ -1,5 +1,5 @@
 // this program is automatically generated. do not edit. 
-#include <jubatus/framework.hpp>
+#include "keeper.hpp"
 #include "recommender_types.hpp"
 
 using namespace jubatus;

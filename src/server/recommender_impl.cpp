@@ -2,7 +2,7 @@
 #include "recommender_server.hpp"
 #include "recommender_serv.hpp"
 #include <pficommon/lang/shared_ptr.h>
-#include <jubatus/framework.hpp>
+#include "../framework.hpp"
 
 
 using namespace jubatus;
