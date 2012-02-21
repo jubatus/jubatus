@@ -54,8 +54,7 @@ if __name__=='__main__':
     outdir = "jubatus-clients"
     try: os.mkdir(outdir)
     except: pass
-    langs = ["haskell", "cpp", "ruby", "java", "php", "perl", "py"]
-#    langs = ["haskell", "py"]
+    langs = ["cpp", "ruby", "java", "php", "perl", "python"] # haskell is unavailable now
     servers = ["classifier", "regression", "recommender", "stat"]
     comb = [ (s, l) for s in servers for l in langs ]
     map(lambda (x,y): generate(x,y, indir, outdir), comb)
