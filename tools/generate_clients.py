@@ -21,6 +21,9 @@ def generate(idl, lang, indir, outdir0):
     if lang == "java":
         options.append("-p")
         options.append("jubatus")
+    if lang == "haskell":
+        os.mkdir(outdir+'/'+idl)
+        outdir = outdir+'/'+idl
 
     cmd = ["mpidl", lang, indir+idlfile, '-o', outdir] + options
     print cmd
@@ -54,7 +57,7 @@ if __name__=='__main__':
     outdir = "jubatus-clients"
     try: os.mkdir(outdir)
     except: pass
-    langs = ["cpp", "ruby", "java", "php", "perl", "python"] # haskell is unavailable now
+    langs = ["haskell", "cpp", "ruby", "java", "php", "perl", "python"]
     servers = ["classifier", "regression", "recommender", "stat"]
     comb = [ (s, l) for s in servers for l in langs ]
     map(lambda (x,y): generate(x,y, indir, outdir), comb)
