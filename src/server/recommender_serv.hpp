@@ -82,6 +82,9 @@ public:
   similar_result similar_row_from_id(std::string id, size_t ret_num);
   similar_result similar_row_from_data(std::pair<datum, size_t>);
 
+  float similarity(const std::pair<datum, datum>& two);
+  float l2norm(const datum& q);
+
   datum decode_row(std::string id, int);
   std::vector<std::string> get_all_rows(int);
 

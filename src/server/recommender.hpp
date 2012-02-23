@@ -99,4 +99,10 @@ public:
   //@broadcast
   std::vector<std::string> get_all_rows(int) const ;
 
+  //@random
+  float similarity(std::pair<datum, datum>) const ;
+
+  //@random
+  float l2norm(datum) const;
+
 };
