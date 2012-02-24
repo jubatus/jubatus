@@ -1,12 +1,13 @@
 
+subdirs = 'mprpc'
+
 def options(opt):
-  pass
+  opt.recurse(subdirs)
 
 def configure(conf):
-#  conf.check_cxx(lib = 'crypt', mandatory = True)
-#  conf.check_cxx(function_name = 'crypt', header_name = 'unistd.h', mandatory = True)
   conf.check_cxx(header_name = 'sys/socket.h net/if.h sys/ioctl.h', mandatory = True)
   conf.check_cxx(header_name = 'netinet/in.h arpa/inet.h', mandatory = True)
+  conf.recurse(subdirs)
 
 def build(bld):
   import Options
@@ -18,7 +19,7 @@ def build(bld):
     source = src,
     target = 'jubacommon',
     includes = '.',
-    use = 'PFICOMMON GLOG ZOOKEEPER_MT CRYPT'
+    use = 'PFICOMMON GLOG ZOOKEEPER_MT CRYPT jubacommon_mprpc'
     )
 
   test_src = [
@@ -43,3 +44,4 @@ def build(bld):
   map(make_test, test_src)
 
   bld.install_files('${PREFIX}/include/jubatus/common/', bld.path.ant_glob('*.hpp'))
+  bld.recurse(subdirs)

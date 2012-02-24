@@ -18,10 +18,13 @@
 #include "server_util.hpp"
 #include <glog/logging.h>
 
+#include <iostream>
+
 #include "../common/util.hpp"
 #include "../common/cmdline.h"
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
+
 
 #define SET_PROGNAME(s) \
   static const std::string PROGNAME(JUBATUS_APPNAME "_" s);
@@ -30,6 +33,10 @@
 namespace jubatus { namespace framework {
 
   static const std::string VERSION(JUBATUS_VERSION);
+
+  void print_version(const std::string& progname){
+    std::cout << "jubatus-" << VERSION << " (" << progname << ")" << std::endl;
+  }
 
   server_argv::server_argv(int args, char** argv){
     google::InitGoogleLogging(argv[0]);
@@ -48,7 +55,14 @@ namespace jubatus { namespace framework {
     p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
     p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
 
+    p.add("version", 'v', "version");
+
     p.parse_check(args, argv);
+
+    if( p.exist("version") ){
+      print_version(argv[0]);
+      exit(0);
+    }
 
     port = p.get<int>("rpc-port");
     threadnum = p.get<int>("thread");
@@ -93,8 +107,14 @@ namespace jubatus { namespace framework {
     p.add<int>("timeout", 't', "time out (sec)", false, 10);
 
     p.add<std::string>("zookeeper", 'z', "zookeeper location", false, "localhost:2181");
+    p.add("version", 'v', "version");
 
     p.parse_check(args, argv);
+
+    if( p.exist("version") ){
+      print_version(argv[0]);
+      exit(0);
+    }
 
     port = p.get<int>("rpc-port");
     threadnum = p.get<int>("thread");
