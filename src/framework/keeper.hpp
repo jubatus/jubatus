@@ -117,8 +117,12 @@ class keeper : public pfi::network::mprpc::rpc_server {
     get_members_(name, list);
     //    std::vector<R> results;
     // FIXME: needs global lock here
-    R res;
-    for (size_t i = 0; i < list.size(); ++i) {
+    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+
+    pfi::network::mprpc::rpc_client cli(list[0].first, list[0].second, a_.timeout);
+    R res = cli.call<R(std::string,A)>(method_name)(name,arg);
+
+    for (size_t i = 1; i < list.size(); ++i) {
       const std::pair<std::string, int>& c = list[i];
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
       try{
@@ -143,8 +147,10 @@ class keeper : public pfi::network::mprpc::rpc_server {
     }
     if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 
-    R result;
-    for(size_t i=0; i<list.size(); ++i){
+    pfi::network::mprpc::rpc_client cli(list[0].first, list[0].second, a_.timeout);
+    R result = cli.call<R(std::string,A)>(method_name)(name,arg);
+
+    for(size_t i=1; i<list.size(); ++i){
       const std::pair<std::string, int>& c = list[i];
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
       try{
