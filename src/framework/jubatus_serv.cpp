@@ -80,6 +80,8 @@ namespace jubatus { namespace framework {
 
     void jubatus_serv::register_mixable(mixable0* m){
 #ifdef HAVE_ZOOKEEPER_H
+      m->get_diff(); // #22 ensure m is good pointer at process startup
+
       mixables_.push_back(m);
 #endif
     };

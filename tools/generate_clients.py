@@ -6,9 +6,12 @@ import shutil
 
 def generate(idl, lang, indir, outdir0):
     outdir = outdir0 + '/' + lang
-    try: os.mkdir(outdir)
-    except: pass
-    print "generating %s.%s" % (idl, lang)
+    try:
+        os.mkdir(outdir)
+    except:
+        pass
+
+    print("generating {0}.{1}".format(idl, lang))
     idlfile = idl+".idl"
     options = []
     if lang == "cpp":
@@ -17,16 +20,19 @@ def generate(idl, lang, indir, outdir0):
         options.append("jubatus")
     if lang == "ruby":
         options.append("-m")
-        options.append("jubatus")
+        options.append("Jubatus")
     if lang == "java":
         options.append("-p")
         options.append("jubatus")
     if lang == "haskell":
-        os.mkdir(outdir+'/'+idl)
-        outdir = outdir+'/'+idl
+        try:
+            os.mkdir(outdir + '/' + idl)
+        except:
+            pass
+        outdir = outdir + '/' + idl
 
-    cmd = ["mpidl", lang, indir+idlfile, '-o', outdir] + options
-    print cmd
+    cmd = ["mpidl", lang, indir + idlfile, '-o', outdir] + options
+    print(cmd)
     subprocess.call(cmd)
 
 def get_version(path):
@@ -42,7 +48,7 @@ def write_version(version_string, file):
 
 def pack(outdir):
     version_string = get_version("../")
-    write_version(version_string, outdir+'/VERSION')
+    write_version(version_string, outdir + '/VERSION')
 
     tar = tarfile.open("jubatus-clients.tar.gz", "w:gz")
     tar.add(outdir)
@@ -59,7 +65,8 @@ if __name__=='__main__':
     except: pass
     langs = ["haskell", "cpp", "ruby", "java", "php", "perl", "python"]
     servers = ["classifier", "regression", "recommender", "stat"]
-    comb = [ (s, l) for s in servers for l in langs ]
-    map(lambda (x,y): generate(x,y, indir, outdir), comb)
+    comb = [(s, l) for s in servers for l in langs]
+    for x, y in comb:
+        generate(x,y, indir, outdir)
 
     pack(outdir)
