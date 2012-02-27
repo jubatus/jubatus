@@ -54,6 +54,8 @@ service recommender :1 {
   similar_result similar_row_from_data(0: string arg0, 1: tuple<datum, size_t>  arg1) # //@random
   datum decode_row(0: string arg0, 1: string arg1, 2: int arg2) # //@cht
   list<string>  get_all_rows(0: string arg0, 1: int arg1) # //@broadcast
+  float similarity(0: string arg0, 1: tuple<datum, datum>  arg1) # //@random
+  float l2norm(0: string arg0, 1: datum arg1) # //@random
   int save(0: string arg0, 1: string arg1) # //@broadcast
   int load(0: string arg0, 1: string arg1) # //@broadcast
   map<string, map<string, string> >  get_status(0: string arg0, 1: int arg1) # //@broadcast

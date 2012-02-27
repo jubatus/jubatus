@@ -18,7 +18,7 @@ def build_one(bld, name, libraries = ''):
       source = '%s_keeper.cpp ' % name,
       target = 'juba%s_keeper' % name,
       includes = '. ../framework',
-      use = 'PFICOMMON jubatus_framework '
+      use = 'PFICOMMON jubatus_framework jubacommon_mprpc'
       )
   bld.program(
     features = 'gtest',

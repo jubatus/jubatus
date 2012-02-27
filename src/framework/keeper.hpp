@@ -99,9 +99,13 @@ class keeper : public pfi::network::mprpc::rpc_server {
     // and accept/read thread in pficommon server exhausted.
     //return pfi::network::mprpc::rpc_client(c.first, c.second, a_.timeout).call<R(std::string,A)>(method_name)(name, arg);
 
-    pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
-    //    {DLOG(INFO)<< "accssing to " << c.first << " " << c.second;}
-    return cli.call<R(std::string,A)>(method_name)(name, arg);
+    try{
+      pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
+      return cli.call<R(std::string,A)>(method_name)(name, arg);
+    }catch(const std::exception& e){
+      LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
+      throw e;
+    }
   }
 
   template <typename R, typename A>
@@ -113,21 +117,28 @@ class keeper : public pfi::network::mprpc::rpc_server {
     get_members_(name, list);
     //    std::vector<R> results;
     // FIXME: needs global lock here
-    R res;
-    for (size_t i = 0; i < list.size(); ++i) {
+    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+
+    pfi::network::mprpc::rpc_client cli(list[0].first, list[0].second, a_.timeout);
+    R res = cli.call<R(std::string,A)>(method_name)(name,arg);
+
+    for (size_t i = 1; i < list.size(); ++i) {
       const std::pair<std::string, int>& c = list[i];
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
-      res = cli.call<R(std::string,A)>(method_name)(name,arg);
+      try{
+	res = cli.call<R(std::string,A)>(method_name)(name,arg);
+      }catch(const std::exception& e){
+	LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
+	continue;
+      }
       //      results.push_back(res);
     }
-    {LOG(INFO)<< __func__;}
-    //    return results;
     return res;
   }
 
   template <typename R, typename A>
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& key, const A& arg) {
-    //    {LOG(INFO)<< __func__ << " " << method_name << " " << name;}
+
     std::vector<std::pair<std::string, int> > list;
     {
       pfi::concurrent::scoped_lock lk(mutex_);
@@ -136,11 +147,18 @@ class keeper : public pfi::network::mprpc::rpc_server {
     }
     if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 
-    R result;
-    for(size_t i=0; i<list.size(); ++i){
+    pfi::network::mprpc::rpc_client cli(list[0].first, list[0].second, a_.timeout);
+    R result = cli.call<R(std::string,A)>(method_name)(name,arg);
+
+    for(size_t i=1; i<list.size(); ++i){
       const std::pair<std::string, int>& c = list[i];
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
-      result = cli.call<R(std::string,std::string,A)>(method_name)(name, key, arg);
+      try{
+	result = cli.call<R(std::string,std::string,A)>(method_name)(name, key, arg);
+      }catch(const std::exception& e){
+	LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
+	continue;
+      }
     }
     return result;
   }

@@ -56,6 +56,14 @@ public:
       return call<std::vector<std::string >(std::string, int32_t)>("get_all_rows")(arg0, arg1);
     }
 
+    float similarity(std::string arg0, std::pair<datum, datum > arg1) {
+      return call<float(std::string, std::pair<datum, datum >)>("similarity")(arg0, arg1);
+    }
+
+    float l2norm(std::string arg0, datum arg1) {
+      return call<float(std::string, datum)>("l2norm")(arg0, arg1);
+    }
+
     int32_t save(std::string arg0, std::string arg1) {
       return call<int32_t(std::string, std::string)>("save")(arg0, arg1);
     }
