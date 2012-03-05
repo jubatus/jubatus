@@ -20,6 +20,7 @@
 type user_defined_type = Class of string
 			 | Struct of string
 			 | Template  of string * (anytype list)
+			 | Enum of string
 (*			 | Namespace of string * user_defined_type  currently no namespace is implemented *)
 
 and  anytype = Void | Int | Char | Double
@@ -35,6 +36,7 @@ type member    = anytype * string (* static is not allowed, const is not impleme
 type class_def = ClassDef of string * (prototype list) * (member list)
 type struct_def = StructDef of string * (member list)
 type type_def = TypeDef of anytype * string
+type enum_def = EnumDef of string * string list
 
 exception Unkown_directive
 
@@ -94,6 +96,8 @@ let rec to_string = function
       | Template(n, l) ->
 	let list = List.map to_string l in
 	n ^ "<" ^ (String.concat ", " list) ^ "> " ;
+      | Enum(e) ->
+	e;
 (*      | Namespace(ns, ud) -> ns ^ "::" ^ (ud_type2string ud) *)
     in
     let ref_statement = if is_ref then "&" else "" in

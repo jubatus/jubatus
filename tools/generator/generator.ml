@@ -31,7 +31,9 @@ let gen_mprpc_decl name prototypes =
 
 
 
-class jubatus_module outdir_i name_i namespace_i typedefs_i structdefs_i classdefs_i internal_i =
+class jubatus_module outdir_i name_i namespace_i
+  typedefs_i structdefs_i classdefs_i enumdefs_i
+  internal_i =
 object (self)
   val outdir = outdir_i
   val name = name_i
@@ -39,6 +41,7 @@ object (self)
   val typedefs = typedefs_i
   val structdefs = structdefs_i
   val classdefs = classdefs_i
+  val enumdefs = enumdefs_i
   val internal = internal_i
   val mutable output = stdout
   val mutable debugmode = false
@@ -51,6 +54,7 @@ object (self)
     print_endline ("generate ==> " ^ idlfile);
     output <<< "# this idl is automatically generated. do not edit. ";
     List.iter (fun t -> output <<< Idl_template.make_typedef t) typedefs;
+    List.iter (fun e -> output <<< Idl_template.make_enum e) enumdefs;
     List.iter (fun m -> output <<< Idl_template.make_message m) structdefs;
     List.iter (fun c -> output <<< Idl_template.make_service c) classdefs;
     
