@@ -64,6 +64,12 @@ class counter {
   iterator end() {
     return data_.end();
   }
+
+  void add(const counter<T>& counts) {
+    for (const_iterator it = counts.begin(); it != counts.end(); ++it) {
+      (*this)[it->first] += it->second;
+    }
+  }
   
  private:
   pfi::data::unordered_map<T, unsigned> data_;
