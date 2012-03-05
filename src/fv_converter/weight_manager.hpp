@@ -34,9 +34,35 @@ class weight_manager {
 
   void add_weight(const std::string& key, float weight);
 
+  const keyword_weights& get_diff() const {
+    return diff_weights_;
+  }
+
+  void put_diff(const keyword_weights& diff) {
+    master_weights_.merge(diff);
+    diff_weights_.clear();
+  }
+
  private:
+  size_t get_document_count() const {
+    return diff_weights_.get_document_count()
+        + master_weights_.get_document_count();
+  }
+
+  size_t get_document_frequency(const std::string& key) const {
+    return diff_weights_.get_document_frequency(key)
+        + master_weights_.get_document_frequency(key);
+  }
+
+  double get_user_weight(const std::string& key) const {
+    return diff_weights_.get_user_weight(key)
+        + master_weights_.get_user_weight(key);
+  }
+
+
   double get_global_weight(const std::string& key) const;
 
+  keyword_weights diff_weights_;
   keyword_weights master_weights_;
 
 };

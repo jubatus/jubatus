@@ -10,18 +10,47 @@ namespace fv_converter {
 using namespace std;
 
 TEST(keyword_weights, trivial) {
-  keyword_weights m;
-  sfv_t fv;
+  keyword_weights m, m2;
+  {
+    sfv_t fv;
 
-  m.update_document_frequency(fv);
+    m.update_document_frequency(fv);
 
-  fv.push_back(make_pair("/title$this@space#bin/bin", 1.0));
-  fv.push_back(make_pair("/title$this@space#bin/idf", 1.0));
-  fv.push_back(make_pair("/age@bin", 1.0));
-  m.update_document_frequency(fv);
+    fv.push_back(make_pair("key1", 1.0));
+    fv.push_back(make_pair("key2", 1.0));
+    m.update_document_frequency(fv);
 
-  EXPECT_EQ(1u, m.get_document_frequency("/title$this@space#bin/bin"));
-  EXPECT_EQ(0u, m.get_document_frequency("unknown"));
+    m.add_weight("key3", 2.0);
+
+    EXPECT_EQ(2u, m.get_document_count());
+    EXPECT_EQ(1u, m.get_document_frequency("key1"));
+    EXPECT_EQ(0u, m.get_document_frequency("unknown"));
+  }
+
+  {
+    sfv_t fv;
+    m2.update_document_frequency(fv);
+
+    fv.push_back(make_pair("key1", 1.0));
+    fv.push_back(make_pair("key2", 1.0));
+    m2.update_document_frequency(fv);
+
+    m2.add_weight("key3", 3.0);
+  
+    m.merge(m2);
+
+    EXPECT_EQ(4u, m.get_document_count());
+    EXPECT_EQ(2u, m.get_document_frequency("key1"));
+    EXPECT_EQ(3.0, m.get_user_weight("key3"));
+    EXPECT_EQ(0u, m.get_document_frequency("unknown"));
+  }
+
+  {
+    m.clear();
+    EXPECT_EQ(0u, m.get_document_count());
+    EXPECT_EQ(0u, m.get_document_frequency("key1"));
+    EXPECT_EQ(0.0, m.get_user_weight("key3"));
+  }
 }
 
 }

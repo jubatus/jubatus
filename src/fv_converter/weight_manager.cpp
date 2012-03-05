@@ -26,7 +26,7 @@ namespace fv_converter {
 using namespace std;
 
 weight_manager::weight_manager()
-    : master_weights_() {}
+    : diff_weights_(), master_weights_() {}
 
 struct is_zero {
   bool operator()(const pair<string, float>& p) {
@@ -35,7 +35,7 @@ struct is_zero {
 };
 
 void weight_manager::update_weight(sfv_t& fv) {
-  master_weights_.update_document_frequency(fv);
+  diff_weights_.update_document_frequency(fv);
 
   for (sfv_t::iterator it = fv.begin(); it != fv.end(); ++it) {
     double global_weight  = get_global_weight(it->first);
@@ -53,22 +53,22 @@ double weight_manager::get_global_weight(const string& key) const {
   if (type == "bin") {
     return 1.0;
   } else if (type == "idf") {
-    double doc_count = master_weights_.get_document_count();
-    double doc_freq = master_weights_.get_document_frequency(key);
+    double doc_count = get_document_count();
+    double doc_freq = get_document_frequency(key);
     return log(doc_count / doc_freq);
   } else if (type == "weight") {
     p = key.find_last_of('#');
     if (p == string::npos)
       return 0;
     else
-      return master_weights_.get_user_weight(key.substr(0, p));
+      return get_user_weight(key.substr(0, p));
   } else {
     return 1;
   }
 }
 
 void weight_manager::add_weight(const std::string& key, float weight) {
-  master_weights_.add_weight(key, weight);
+  diff_weights_.add_weight(key, weight);
 }
 
 }

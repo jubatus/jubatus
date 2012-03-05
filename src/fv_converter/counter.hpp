@@ -65,6 +65,10 @@ class counter {
     return data_.end();
   }
 
+  void clear() {
+    data_.clear();
+  }
+
   void add(const counter<T>& counts) {
     for (const_iterator it = counts.begin(); it != counts.end(); ++it) {
       (*this)[it->first] += it->second;

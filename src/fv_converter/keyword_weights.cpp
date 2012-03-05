@@ -56,5 +56,19 @@ float keyword_weights::get_user_weight(const std::string& key) const {
   }
 }
 
+void keyword_weights::merge(const keyword_weights& w) {
+  document_count_ += w.document_count_;
+  document_frequencies_.add(w.document_frequencies_);
+  weight_t weights(w.weights_);
+  weights.insert(weights_.begin(), weights_.end());
+  weights_.swap(weights);
+}
+
+void keyword_weights::clear() {
+  document_count_ = 0;
+  document_frequencies_.clear();
+  weights_.clear();
+}
+
 }
 }

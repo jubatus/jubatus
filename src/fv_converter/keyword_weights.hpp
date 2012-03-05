@@ -43,6 +43,10 @@ class keyword_weights {
 
   float get_user_weight(const std::string& key) const;
 
+  void merge(const keyword_weights& w);
+
+  void clear();
+
  private:
   double get_global_weight(const std::string& key) const;
 
