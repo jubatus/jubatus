@@ -17,7 +17,7 @@
 
 #include <cmath>
 #include "../common/type.hpp"
-#include "weight_manager.hpp"
+#include "keyword_weights.hpp"
 #include "datum_to_fv_converter.hpp"
 
 namespace jubatus {
@@ -25,8 +25,10 @@ namespace fv_converter {
 
 using namespace std;
 
-weight_manager::weight_manager()
-    : master_weights_() {}
+keyword_weights::keyword_weights()
+    : document_count_(),
+      document_frequencies_(),
+      weights_() {}
 
 struct is_zero {
   bool operator()(const pair<string, float>& p) {
@@ -34,41 +36,24 @@ struct is_zero {
   }
 };
 
-void weight_manager::update_weight(sfv_t& fv) {
-  master_weights_.update_document_frequency(fv);
-
-  for (sfv_t::iterator it = fv.begin(); it != fv.end(); ++it) {
-    double global_weight  = get_global_weight(it->first);
-    it->second *= global_weight;
+void keyword_weights::update_document_frequency(const sfv_t& fv) {
+  ++document_count_;
+  for (sfv_t::const_iterator it = fv.begin(); it != fv.end(); ++it) {
+    ++document_frequencies_[it->first];
   }
-  fv.erase(remove_if(fv.begin(), fv.end(), is_zero()), fv.end());
 }
 
+void keyword_weights::add_weight(const std::string& key, float weight) {
+  weights_[key] = weight;
+}
 
-double weight_manager::get_global_weight(const string& key) const {
-  size_t p = key.find_last_of('/');
-  if (p == string::npos)
-    return 1.0;
-  string type = key.substr(p + 1);
-  if (type == "bin") {
-    return 1.0;
-  } else if (type == "idf") {
-    double doc_count = master_weights_.get_document_count();
-    double doc_freq = master_weights_.get_document_frequency(key);
-    return log(doc_count / doc_freq);
-  } else if (type == "weight") {
-    p = key.find_last_of('#');
-    if (p == string::npos)
-      return 0;
-    else
-      return master_weights_.get_user_weight(key.substr(0, p));
+float keyword_weights::get_user_weight(const std::string& key) const {
+  weight_t::const_iterator wit = weights_.find(key);
+  if (wit != weights_.end()) {
+    return wit->second;
   } else {
-    return 1;
+    return 0;
   }
-}
-
-void weight_manager::add_weight(const std::string& key, float weight) {
-  master_weights_.add_weight(key, weight);
 }
 
 }

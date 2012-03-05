@@ -21,23 +21,36 @@
 #include "counter.hpp"
 #include <pficommon/data/unordered_map.h>
 #include "../common/type.hpp"
-#include "keyword_weights.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
-class weight_manager {
+class keyword_weights {
  public:
-  weight_manager();
+  keyword_weights();
   
-  void update_weight(sfv_t& fv);
+  void update_document_frequency(const sfv_t& fv);
+
+  size_t get_document_frequency(const std::string& key) const {
+    return document_frequencies_[key];
+  }
+
+  size_t get_document_count() const {
+    return document_count_;
+  }
 
   void add_weight(const std::string& key, float weight);
+
+  float get_user_weight(const std::string& key) const;
 
  private:
   double get_global_weight(const std::string& key) const;
 
-  keyword_weights master_weights_;
+  size_t document_count_;
+  counter<std::string> document_frequencies_;
+  typedef pfi::data::unordered_map<std::string, float> weight_t;
+  weight_t weights_;
+
 
 };
 
