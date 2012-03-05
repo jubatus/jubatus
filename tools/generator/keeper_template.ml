@@ -44,6 +44,8 @@ let rec to_string = function
       | Stree.Template(n, l) ->
 	let list = List.map to_string l in
 	n ^ "<" ^ (String.concat ", " list) ^ "> " ;
+      | Stree.Enum(e)->
+	e
 (*      | Namespace(ns, ud) -> ns ^ "::" ^ (ud_type2string ud) *)
     in
     ud_type2string ud;

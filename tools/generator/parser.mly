@@ -46,6 +46,7 @@ let parse_error s = print ("parse_error->"^s);;
 %token PUBLIC PRIVATE
 %token REFERENCE
 %token TYPEDEF
+%token ENUM
 %token <string> LITERAL
 %token <string> DECORATOR
 %token <string> CODE
@@ -53,32 +54,35 @@ let parse_error s = print ("parse_error->"^s);;
 %token <string> DESTRUCTOR
 
 %start input
-%type <(Stree.type_def list * Stree.struct_def list * Stree.class_def list)> input
+%type <(Stree.type_def list * Stree.struct_def list * Stree.class_def list * Stree.enum_def list)> input
 
 %%
 
 input: 
           exp0 {
 	    match $1 with
-	      | `Typedef(t) -> ([t], [], []);
-	      | `Class(c) -> ([], [], [c]);
-	      | `Struct(s) -> ([], [s], []);
-	      | `Nothing -> ([], [], []);
+	      | `Typedef(t)-> ([t], [], [], []);
+	      | `Struct(s) -> ([], [s], [], []);
+	      | `Class(c)  -> ([], [], [c], []);
+	      | `Enum(e)   -> ([], [], [], [e]);
+	      | `Nothing   -> ([], [], [], []);
 	  }
         | input exp0		{
-	  let (typedefs, structs, classes) = $1 in
+	  let (typedefs, structs, classes, enums) = $1 in
 	  match $2 with
-	    | `Typedef(t) -> ((t::typedefs), structs, classes);
-	    | `Class(c) -> (typedefs, structs, (c :: classes));
-	    | `Struct(s) -> (typedefs, (s::structs), classes);
+	    | `Typedef(t)-> ((t::typedefs), structs, classes, enums);
+	    | `Class(c)  -> (typedefs, structs, (c :: classes),enums);
+	    | `Struct(s) -> (typedefs, (s::structs), classes, enums);
+	    | `Enum(e)   -> (typedefs, structs, classes, (e::enums));
 	    | `Nothing -> $1
 	}
 ;
 
 exp0:
-	| typedef    { print ">typedef"; `Typedef($1) } /* FIXME: currently ignored */
-	| one_class  { print ">one_class"; `Class($1) }
+	| typedef    { print ">typedef"; `Typedef($1) } /* ignored */
+	| one_class  { print "> class"; `Class($1) }
 	| one_struct { print "> struct";   `Struct($1) }
+	| one_enum   { print "> enum";   `Enum($1) }
 	| INCLUDE LBRACE LITERAL RBRACE   { print ("ignoring inclusion " ^ $3); `Nothing }
 ;
 
@@ -101,6 +105,24 @@ one_class:
 	  Stree.ClassDef($2, funcs, members)
 	}
 ;
+
+one_enum:
+        ENUM LITERAL LBRACE2 names SEMICOLON {
+	  print "> ENUM";
+	  Stree.EnumDef($2, $4)
+	}
+
+names:
+        LITERAL COMMA names {
+	  $1::$3
+	}
+	| LITERAL RBRACE2 {
+	  [$1]
+	}
+	| RBRACE2 {
+	  []
+	}
+
 exp:
 	  PUBLIC exp { $2 }
         | PRIVATE exp { $2 }

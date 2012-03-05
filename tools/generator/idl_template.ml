@@ -48,6 +48,8 @@ let rec to_idl_typestr = function
       | Stree.Template(n, l) ->
 	let list = List.map to_idl_typestr l in
 	n ^ "<" ^ (String.concat ", " list) ^ "> " ;
+      | Stree.Enum(e) ->
+	e
 (*      | Stree.Namespace(ns, ud) -> ns ^ "::" ^ (ud_type2string ud) *)
     in
     ud_type2string ud;
@@ -106,3 +108,5 @@ let make_message = function
 let make_typedef = function
   | Stree.TypeDef(t, name) ->
     Printf.sprintf "type %s = %s\n" name (to_idl_typestr t);;
+
+let make_enum _ = "";;

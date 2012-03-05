@@ -42,6 +42,7 @@ rule token = parse
   | "class"     { print "class>>"; CLASS }
   | "struct"    { print "struct>>>"; STRUCT }
   | "typedef"   { print"typedef>>>"; TYPEDEF }
+  | "enum"      { print "enum>>"; ENUM }
   | '('         { LRBRACE }
   | ')'         { RRBRACE }
   | ','         { COMMA }

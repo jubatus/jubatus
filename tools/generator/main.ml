@@ -88,23 +88,26 @@ let _ =
   let source_file = Sys.argv.(1) in
   let lexbuf = Lexing.from_channel (open_in source_file) in
   try
-    let (typedefs,structdefs,classdefs) = Parser.input Lexer.token lexbuf in
+    let (typedefs,structdefs,classdefs,enums) = Parser.input Lexer.token lexbuf in
 
-    let new_classdefs0 = List.map (add_method (Stree.Int, "save",
-					       [Other(Stree.Class("std::string"), false)],
-					       ["//@broadcast"], true)) classdefs
+    let new_classdefs0 = List.map
+      (add_method (Stree.Int, "save",
+		   [Other(Stree.Class("std::string"), false)],
+		   ["//@broadcast"], true)) classdefs
     in
-    let new_classdefs1 = List.map (add_method (Stree.Int, "load",
-					       [Other(Stree.Class("std::string"), false)],
-					       ["//@broadcast"], false)) new_classdefs0
+    let new_classdefs1 = List.map
+      (add_method (Stree.Int, "load",
+		   [Other(Stree.Class("std::string"), false)],
+		   ["//@broadcast"], false)) new_classdefs0
     in
-    let new_classdefs2 = List.map (add_method (Other(Stree.Template("std::map",
-								    [Other(Stree.Class("std::string"), false);
-								     Other(Stree.Template("std::map",
-											  [Other(Stree.Class("std::string"), false);
-											   Other(Stree.Class("std::string"), false)]), false)]), false),
-					       "get_status",
-					       [Stree.Int], ["//@broadcast"], true)) new_classdefs1
+    let new_classdefs2 = List.map
+      (add_method (Other(Stree.Template("std::map",
+					[Other(Stree.Class("std::string"), false);
+					 Other(Stree.Template("std::map",
+							      [Other(Stree.Class("std::string"), false);
+							       Other(Stree.Class("std::string"), false)]), false)]), false),
+		   "get_status",
+		   [Stree.Int], ["//@broadcast"], true)) new_classdefs1
     in
 
     check_classdefs new_classdefs2;
@@ -116,8 +119,9 @@ let _ =
     Stree.print_known_types();
     let new_classdefs1 = classdefs in *)
 
-    let m = new Generator.jubatus_module (!outdir) (get_name source_file)
-      "jubatus" (List.rev typedefs) (List.rev structdefs) (List.rev new_classdefs3)
+    let m = new Generator.jubatus_module
+      (!outdir) (get_name source_file) "jubatus"
+      (List.rev typedefs) (List.rev structdefs) (List.rev new_classdefs3) (List.rev enums)
       (!internal)
     in
     m#generate;
