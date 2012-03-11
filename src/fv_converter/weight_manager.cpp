@@ -34,16 +34,17 @@ struct is_zero {
   }
 };
 
-void weight_manager::update_weight(sfv_t& fv) {
+void weight_manager::update_weight(const sfv_t& fv) {
   diff_weights_.update_document_frequency(fv);
+}
 
+void weight_manager::get_weight(sfv_t& fv) const {
   for (sfv_t::iterator it = fv.begin(); it != fv.end(); ++it) {
     double global_weight  = get_global_weight(it->first);
     it->second *= global_weight;
   }
   fv.erase(remove_if(fv.begin(), fv.end(), is_zero()), fv.end());
 }
-
 
 double weight_manager::get_global_weight(const string& key) const {
   size_t p = key.find_last_of('/');

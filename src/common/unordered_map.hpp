@@ -16,36 +16,38 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #pragma once
+#include <msgpack.hpp>
+#include <pficommon/data/unordered_map.h>
 
-#include "../stat/stat.hpp"
-#include "jubatus_serv.hpp"
-#include "stat_types.hpp"
+// to make pfi::data::unordered_map serializable
 
-namespace jubatus{
-namespace server{
+namespace msgpack {
 
-class stat_serv : public framework::jubatus_serv
+template <typename K, typename V>
+inline pfi::data::unordered_map<K, V> operator>> (object o, pfi::data::unordered_map<K, V>& v)
 {
-public:
-  stat_serv(const framework::server_argv&);
-  virtual ~stat_serv();
-
-  void after_load();
-
-  bool set_config(const config_data&);
-  config_data get_config()const;
-  int push(const std::string& key, double value);
-  double sum(const std::string&) const ;
-  double stddev(const std::string&) const ;
-  double max(const std::string&) const ;
-  double min(const std::string&) const ;
-  double entropy(const std::string&) const ;
-  double moment(const std::string&, int, double) const;
-
-private:
-  jubatus::config_data config_;
-  pfi::lang::shared_ptr<jubatus::stat::stat> stat_;
-};
+  if(o.type != type::MAP){
+    throw type_error();
+  }
+  object_kv* const p_end = o.via.map.ptr + o.via.map.size;
+  for(object_kv* p = o.via.map.ptr; p != p_end; ++p) {
+    K key;
+    p->key.convert(&key);
+    p->val.convert(&v[key]);
+  }
+  return v;
+}
+  
+template <typename Stream, typename K, typename V>
+inline packer<Stream>& operator<< (packer<Stream>& o, const pfi::data::unordered_map<K,V>& v)
+{
+  o.pack_map(v.size());
+  for(typename std::tr1::unordered_map<K,V>::const_iterator it = v.begin();
+      it != v.end(); ++it) {
+    o.pack(it->first);
+    o.pack(it->second);
+  }
+  return o;
+}
 
 }
-} // namespace jubatus

@@ -1,22 +1,38 @@
-# this idl is automatically generated. do not edit. 
+# Jubatus: Online machine learning framework for distributed environment
+# Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 type param_t = map<string, string> 
 
 message string_rule {
   0: string key
-  1: string type
+  1: string t
   2: string sample_weight
   3: string global_weight
 }
 
 message filter_rule {
   0: string key
-  1: string type
+  1: string t
   2: string suffix
 }
 
 message num_rule {
   0: string key
-  1: string type
+  1: string t
 }
 
 message converter_config {
@@ -45,12 +61,26 @@ message estimate_result {
   1: double prob
 }
 
-service classifier :1 {
-  int set_config(0: string arg0, 1: config_data arg1) # //@broadcast
-  config_data get_config(0: string arg0, 1: int arg1) # //@random
-  int train(0: string arg0, 1: list<tuple<string, datum> >  arg1) # //@random
-  list<list<estimate_result> >  classify(0: string arg0, 1: list<datum>  arg1) # //@random
-  int save(0: string arg0, 1: string arg1) # //@broadcast
-  int load(0: string arg0, 1: string arg1) # //@broadcast
-  map<string, map<string, string> >  get_status(0: string arg0, 1: int arg1) # //@broadcast
+service classifier {
+
+  #@broadcast #@update #@all_and
+  bool set_config(0: string name, 1: config_data c) # //@broadcast
+
+  #@random #@analysis #@pass
+  config_data get_config(0: string name) # //@random
+
+  #@random #@update #@pass
+  int train(0: string name, 1: list<tuple<string, datum> > data) # //@random
+
+  #@random #@analysis #@pass
+  list<list<estimate_result> >  classify(0: string name, 1: list<datum> data) # //@random
+
+  #@broadcast #@update #@all_and
+  bool save(0: string name, 1: string arg1) # //@broadcast
+
+  #@broadcast #@update #@all_and
+  bool load(0: string name, 1: string arg1) # //@broadcast
+
+  #@broadcast #@analysis #@merge
+  map<string, map<string, string> >  get_status(0: string name) # //@broadcast
 }

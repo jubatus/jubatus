@@ -16,36 +16,46 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #pragma once
+#include <map>
+#include <vector>
 
-#include "../stat/stat.hpp"
-#include "jubatus_serv.hpp"
-#include "stat_types.hpp"
+namespace jubatus { namespace framework {
 
-namespace jubatus{
-namespace server{
 
-class stat_serv : public framework::jubatus_serv
+template <typename K, typename V>
+std::map<K,V> merge(std::map<K,V> lhs, std::map<K,V> rhs)
 {
-public:
-  stat_serv(const framework::server_argv&);
-  virtual ~stat_serv();
+  std::map<K,V> ret;
+  typename std::map<K,V>::const_iterator it;
+  for(it = lhs.begin(); it!=lhs.end(); ++it){
+    ret[it->first] = it->second;
+  }
+  for(it = rhs.begin(); it!=rhs.end(); ++it){
+    ret[it->first] = it->second;
+  }
+  return ret;
+}
 
-  void after_load();
+template <typename T>
+std::vector<T> concat(std::vector<T> lhs, std::vector<T> rhs)
+{
+  std::vector<T> ret = lhs;
+  ret.insert(ret.end(), rhs.begin(), rhs.end());
+  return ret;
+}
 
-  bool set_config(const config_data&);
-  config_data get_config()const;
-  int push(const std::string& key, double value);
-  double sum(const std::string&) const ;
-  double stddev(const std::string&) const ;
-  double max(const std::string&) const ;
-  double min(const std::string&) const ;
-  double entropy(const std::string&) const ;
-  double moment(const std::string&, int, double) const;
+template <typename T>
+T random(T lhs, T rhs){
+  return lhs; //TODO: make random? or left(change fun name)?
+}
 
-private:
-  jubatus::config_data config_;
-  pfi::lang::shared_ptr<jubatus::stat::stat> stat_;
+template <typename T>
+T add(T lhs, T rhs){
+  return lhs+rhs;
+}
+
+bool all_and(bool l, bool r){
+  return l&&r;
 };
 
-}
-} // namespace jubatus
+}}

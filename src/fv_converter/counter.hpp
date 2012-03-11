@@ -17,7 +17,10 @@
 
 #pragma once
 
+#include <pficommon/data/serialization.h>
+#include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
+#include "../common/unordered_map.hpp"
 
 namespace jubatus {
 namespace fv_converter {
@@ -74,7 +77,13 @@ class counter {
       (*this)[it->first] += it->second;
     }
   }
-  
+
+  MSGPACK_DEFINE(data_);
+  template <class Archiver>
+  void serialize(Archiver &ar) {
+    ar
+      & MEMBER(data_);
+  }  
  private:
   pfi::data::unordered_map<T, unsigned> data_;
 };

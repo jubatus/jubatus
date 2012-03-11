@@ -95,7 +95,7 @@ namespace jubatus { namespace framework {
 #endif
     };
 
-  std::map<std::string, std::map<std::string,std::string> > jubatus_serv::get_status(int) const {
+  std::map<std::string, std::map<std::string,std::string> > jubatus_serv::get_status() const {
     std::map<std::string, std::string> data;
     util::get_machine_status(data);
 
@@ -230,7 +230,7 @@ namespace jubatus { namespace framework {
     }
 #endif
 
-    int jubatus_serv::save(std::string id)  {
+    bool jubatus_serv::save(std::string id)  {
       std::string ofile;
       build_local_path_(ofile, "jubatus", id);
     
@@ -244,13 +244,14 @@ namespace jubatus { namespace framework {
         }
         ofs.close();
         LOG(INFO) << "saved to " << ofile;
-        return 0;
-      }catch(const std::exception& e){
-        return -1;
+        return true;
+      }catch(const std::runtime_error& e){
+        LOG(ERROR) << e.what();
+        throw e;
       }
     }
 
-    int jubatus_serv::load(std::string id) {
+    bool jubatus_serv::load(std::string id) {
       std::string ifile;
       build_local_path_(ifile, "jubatus", id);
     
@@ -263,11 +264,12 @@ namespace jubatus { namespace framework {
         }
         ifs.close();
         this->after_load();
-        return 0;
-      }catch(const std::exception& e){
+        return true;
+      }catch(const std::runtime_error& e){
         ifs.close();
+        LOG(ERROR) << e.what();
+        throw e;
       }
-      return -1; //expected never reaching here.
     }
 
 }}

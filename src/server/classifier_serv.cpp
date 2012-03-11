@@ -49,6 +49,11 @@ classifier_serv::classifier_serv(const framework::server_argv& a)
 {
   clsfer_.set_model(make_model());
   register_mixable(framework::mixable_cast(&clsfer_));
+
+  wm_.wm_ = pfi::lang::shared_ptr<fv_converter::weight_manager>(new weight_manager);
+  wm_.set_model(wm_.wm_);
+
+  register_mixable(framework::mixable_cast(&wm_));
 }
 
 classifier_serv::~classifier_serv() {
@@ -64,6 +69,8 @@ int classifier_serv::set_config(config_data config) {
   convert<jubatus::converter_config, fv_converter::converter_config>(config_.config, c);
   fv_converter::initialize_converter(c, *converter);
   converter_ = converter;
+
+  wm_.set_model(pfi::lang::shared_ptr<fv_converter::weight_manager>(new weight_manager));
   
   clsfer_.classifier_.reset(classifier_factory::create_classifier(config.method, clsfer_.get_model().get()));
 
@@ -72,7 +79,7 @@ int classifier_serv::set_config(config_data config) {
   return 0;
 }
 
-config_data classifier_serv::get_config(int) {
+config_data classifier_serv::get_config() {
   DLOG(INFO) << __func__;
   return config_;
 }
@@ -92,6 +99,10 @@ int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > 
     convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
     converter_->convert(d, v);
     sort_and_merge(v);
+
+    wm_.wm_->update_weight(v);
+    wm_.wm_->get_weight(v);
+
     clsfer_.classifier_->train(v, data[i].first);
     count++;
   }
@@ -99,7 +110,7 @@ int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > 
   return count;
 }
 
-std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector<jubatus::datum> data) {
+std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector<jubatus::datum> data) const {
   std::vector<std::vector<estimate_result> > ret;
 
   sfv_t v;
@@ -109,6 +120,8 @@ std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector
     convert<datum, fv_converter::datum>(data[i], d);
     converter_->convert(d, v);
     
+    wm_.wm_->get_weight(v);
+
     classify_result scores;
     clsfer_.classifier_->classify_with_scores(v, scores);
     
@@ -138,14 +151,14 @@ void classifier_serv::after_load(){
   //  classifier_.reset(classifier_factory::create_classifier(config_.method, model_.get()));
 };
 
-std::map<std::string, std::map<std::string,std::string> > classifier_serv::get_status(int){
+std::map<std::string, std::map<std::string,std::string> > classifier_serv::get_status(){
   std::map<std::string,std::string> ret0;
 
   clsfer_.get_model()->get_status(ret0);
   ret0["storage"] = clsfer_.get_model()->type();
 
   std::map<std::string, std::map<std::string,std::string> > ret =
-    jubatus_serv::get_status(0);
+    jubatus_serv::get_status();
 
   ret[get_server_identifier()].insert(ret0.begin(), ret0.end());
   return ret;

@@ -74,7 +74,7 @@ int regression_serv::set_config(config_data config) {
   return 0;
 }
 
-config_data regression_serv::get_config(int) {
+config_data regression_serv::get_config() {
   DLOG(INFO) << __func__;
   return config_;
 }
@@ -120,14 +120,14 @@ void regression_serv::after_load(){
   //  regression_.reset(regression_factory().create_regression(config_.method, model_.get()));
 };
 
-std::map<std::string, std::map<std::string,std::string> > regression_serv::get_status(int){
+std::map<std::string, std::map<std::string,std::string> > regression_serv::get_status(){
   std::map<std::string,std::string> ret0;
 
   gresser_.get_model()->get_status(ret0); //FIXME
   ret0["storage"] = gresser_.get_model()->type();
 
   std::map<std::string, std::map<std::string,std::string> > ret =
-    jubatus_serv::get_status(0);
+    jubatus_serv::get_status();
 
   ret[get_server_identifier()].insert(ret0.begin(), ret0.end());
   return ret;

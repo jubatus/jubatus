@@ -7,11 +7,12 @@ def configure(conf):
 
 def build_one(bld, name, libraries = ''):
   __sources = '%s_impl.cpp %s_serv.cpp' % (name, name)
+
   bld.program(
     source = __sources,
     target = 'juba'+name,
     includes = '. ../framework',
-    use = 'jubatus_framework jubatus_%s %s' % (name, libraries)
+    use = 'jubatus_framework jubacommon_mprpc jubatus_%s %s' % (name, libraries)
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
@@ -25,7 +26,7 @@ def build_one(bld, name, libraries = ''):
     source = '%s_test.cpp' % name,
     target = '%s_test' % name,
     includes = '. ../framework',
-    use = 'PFICOMMON MSGPACK',
+    use = 'PFICOMMON MSGPACK jubacommon_mprpc',
     )
 
 

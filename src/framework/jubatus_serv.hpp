@@ -39,7 +39,7 @@ public:
   pfi::concurrent::rw_mutex& get_rw_mutex(){ return m_; };
   void use_cht();
 
-  std::map<std::string, std::map<std::string,std::string> > get_status(int) const;
+  std::map<std::string, std::map<std::string,std::string> > get_status() const;
   std::string get_server_identifier()const;
 
 #ifdef HAVE_ZOOKEEPER_H
@@ -60,8 +60,8 @@ public:
 #endif
   };
 
-  int save(std::string id);
-  int load(std::string id);
+  bool save(std::string id);
+  bool load(std::string id);
 
   // after load( model_ was loaded from file ) called, users reset their own data
   // I'm afraid this function is useless

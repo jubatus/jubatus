@@ -74,14 +74,14 @@ public:
   static int reduce(const storage::storage_base*, const diffv&, diffv&);
 
   int set_config(config_data);
-  config_data get_config(int );
+  config_data get_config();
   int train(std::vector<std::pair<float, datum> > data);
   std::vector<float> estimate(std::vector<datum> data);
 
   pfi::lang::shared_ptr<storage::storage_base> make_model();
   void after_load();
 
-  std::map<std::string, std::map<std::string, std::string> > get_status(int);
+  std::map<std::string, std::map<std::string, std::string> > get_status();
 
 private:
   config_data config_;

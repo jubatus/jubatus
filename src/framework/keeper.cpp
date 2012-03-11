@@ -37,8 +37,6 @@ keeper::keeper(const keeper_argv& a)
   if(!register_keeper(*zk_, a_.eth, a_.port) ){
     throw membership_error("can't register to zookeeper.");
   }
-  register_broadcast_analysis<int, std::string>("save");
-  register_broadcast_update<std::string>("load");
 }
 
 keeper::~keeper(){
