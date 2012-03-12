@@ -50,32 +50,35 @@ namespace jubatus { namespace framework {
     int jubatus_serv::start(pfi::network::mprpc::rpc_server& serv){
 
 #ifdef HAVE_ZOOKEEPER_H
-    if(! a_.is_standalone()){
-      zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
-	(common::create_lock_service("zk", a_.z, a_.timeout, "logfile_jubatus_serv"));
-      ls = zk_;
-      jubatus::common::prepare_jubatus(*zk_);
-
-      if( a_.join ){ // join to the existing cluster with -j option
-        join_to_cluster(zk_);
+      if(! a_.is_standalone()){
+	zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
+	  (common::create_lock_service("zk", a_.z, a_.timeout, "logfile_jubatus_serv"));
+	ls = zk_;
+	jubatus::common::prepare_jubatus(*zk_);
+	
+	if( a_.join ){ // join to the existing cluster with -j option
+	  join_to_cluster(zk_);
+	}
+	
+	if( use_cht_ ){
+	  jubatus::common::cht::setup_cht_dir(*zk_, a_.name);
+	  jubatus::common::cht ht(zk_, a_.name);
+	  ht.register_node(a_.eth, a_.port);
+	}
+	
+	mixer_->set_zk(zk_);
+	register_actor(*zk_, a_.name, a_.eth, a_.port);
+	mixer_->start();
       }
-
-      if( use_cht_ ){
-
-        jubatus::common::cht::setup_cht_dir(*zk_, a_.name);
-        jubatus::common::cht ht(zk_, a_.name);
-        ht.register_node(a_.eth, a_.port);
-      }
-
-      mixer_->set_zk(zk_);
-      register_actor(*zk_, a_.name, a_.eth, a_.port);
-      mixer_->start();
-    }
 #endif
 
-    { LOG(INFO) << "running in port=" << a_.port; }
-    return serv.serv(a_.port, a_.threadnum);
-
+      if( serv.serv(a_.port, a_.threadnum) ){
+	LOG(INFO) << "running in port=" << a_.port;
+	return 0;
+      }else{
+	LOG(ERROR) << "failed starting server: any process using port " << a_.port << "?";
+	return -1;
+      }
     }
 
     void jubatus_serv::register_mixable(mixable0* m){
