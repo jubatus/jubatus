@@ -24,6 +24,7 @@
 #include "../classifier/classifier_base.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../storage/storage_base.hpp"
+#include "../common/shared_ptr.hpp"
 
 #include "classifier_types.hpp"
 #include "jubatus_serv.hpp"
@@ -74,7 +75,7 @@ public:
   int train(std::vector<std::pair<std::string, datum> > data);
   std::vector<std::vector<estimate_result> > classify(std::vector<datum> data)const;
 
-  pfi::lang::shared_ptr<storage::storage_base> make_model();
+  common::cshared_ptr<storage::storage_base> make_model();
   void after_load();
 
   std::map<std::string, std::map<std::string, std::string> > get_status();

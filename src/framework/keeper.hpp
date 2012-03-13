@@ -33,6 +33,7 @@
 #include "../common/cht.hpp"
 #include "../common/mprpc/rpc_client.hpp"
 #include "aggregators.hpp"
+#include "../common/shared_ptr.hpp"
 
 #include "server_util.hpp"
 #include <glog/logging.h>
@@ -260,7 +261,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
   keeper_argv a_;
   pfi::math::random::mtrand rng_;
   pfi::concurrent::mutex mutex_;
-  pfi::lang::shared_ptr<common::lock_service> zk_;
+  common::cshared_ptr<common::lock_service> zk_;
 
 };
 

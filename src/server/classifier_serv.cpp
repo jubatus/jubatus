@@ -142,8 +142,8 @@ std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector
   return ret; //std::vector<estimate_results> >::ok(ret);
 }
 
-pfi::lang::shared_ptr<storage::storage_base> classifier_serv::make_model(){
-  return pfi::lang::shared_ptr<storage::storage_base>(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
+common::cshared_ptr<storage::storage_base> classifier_serv::make_model(){
+  return common::cshared_ptr<storage::storage_base>(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
 
 }
 // after load(..) called, users reset their own data

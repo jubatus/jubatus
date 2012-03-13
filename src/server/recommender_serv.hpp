@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/lang/shared_ptr.h>
+#include "../common/shared_ptr.hpp"
 #include "server_util.hpp"
 #include "jubatus_serv.hpp"
 #include "recommender_types.hpp"
@@ -74,7 +74,7 @@ public:
   int update_row(std::string id, datum dat);
   int clear();
 
-  pfi::lang::shared_ptr<recommender_base> make_model();
+  common::cshared_ptr<recommender_base> make_model();
   void after_load();
 
   datum complete_row_from_id(std::string id);

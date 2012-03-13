@@ -51,7 +51,7 @@ namespace jubatus { namespace framework {
 
 #ifdef HAVE_ZOOKEEPER_H
       if(! a_.is_standalone()){
-	zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
+	zk_ = common::cshared_ptr<jubatus::common::lock_service>
 	  (common::create_lock_service("zk", a_.z, a_.timeout, "logfile_jubatus_serv"));
 	ls = zk_;
 	jubatus::common::prepare_jubatus(*zk_);
@@ -80,7 +80,7 @@ namespace jubatus { namespace framework {
 	return -1;
       }
     }
-
+    
     void jubatus_serv::register_mixable(mixable0* m){
 #ifdef HAVE_ZOOKEEPER_H
       try{
@@ -134,7 +134,7 @@ namespace jubatus { namespace framework {
 
     //here
 #ifdef HAVE_ZOOKEEPER_H
-    void jubatus_serv::join_to_cluster(pfi::lang::shared_ptr<jubatus::common::lock_service> z){
+    void jubatus_serv::join_to_cluster(common::cshared_ptr<jubatus::common::lock_service> z){
     std::vector<std::string> list;
     std::string path = common::ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
     z->list(path, list);
@@ -179,15 +179,17 @@ namespace jubatus { namespace framework {
   };
 
     int jubatus_serv::put_diff_impl(std::vector<std::string> unpacked){
-    scoped_lock lk(wlock(m_));
-    if(unpacked.size() != mixables_.size()){
-      //deserialization error
-    }
-    for(size_t i=0; i<mixables_.size(); ++i){
-      mixables_[i]->put_diff(unpacked[i]);
-    }
-    return 0;
-  };
+      scoped_lock lk(wlock(m_));
+      if(unpacked.size() != mixables_.size()){
+	//deserialization error
+	return -1;
+      }
+      for(size_t i=0; i<mixables_.size(); ++i){
+	mixables_[i]->put_diff(unpacked[i]);
+      }
+      mixer_->clear();
+      return 0;
+    };
 
     void jubatus_serv::do_mix(const std::vector<std::pair<std::string,int> >& v){
       vector<string> accs;

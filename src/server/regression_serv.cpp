@@ -112,8 +112,8 @@ std::vector<float > regression_serv::estimate(std::vector<jubatus::datum> data) 
   return ret; //std::vector<estimate_results> >::ok(ret);
 }
 
-pfi::lang::shared_ptr<storage::storage_base> regression_serv::make_model(){
-  return pfi::lang::shared_ptr<storage::storage_base>(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
+common::cshared_ptr<storage::storage_base> regression_serv::make_model(){
+  return common::cshared_ptr<storage::storage_base>(storage::storage_factory::create_storage((a_.is_standalone())?"local":"local_mixture"));
 }
 // after load(..) called, users reset their own data
 void regression_serv::after_load(){

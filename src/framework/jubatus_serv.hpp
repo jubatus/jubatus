@@ -23,6 +23,8 @@
 #include "mixer.hpp"
 #include "mixable.hpp"
 
+#include "../common/shared_ptr.hpp"
+
 using namespace pfi::concurrent;
 
 namespace jubatus { namespace framework {
@@ -43,7 +45,7 @@ public:
   std::string get_server_identifier()const;
 
 #ifdef HAVE_ZOOKEEPER_H
-  void join_to_cluster(pfi::lang::shared_ptr<jubatus::common::lock_service>);
+  void join_to_cluster(common::cshared_ptr<jubatus::common::lock_service>);
   
   std::string get_storage(int i);
 
@@ -84,10 +86,10 @@ protected:
   unsigned int update_count_;
 
   std::vector<mixable0*> mixables_;
-  pfi::lang::shared_ptr<mixer> mixer_;
+  common::cshared_ptr<mixer> mixer_;
 
 #ifdef HAVE_ZOOKEEPER_H
-  pfi::lang::shared_ptr<jubatus::common::lock_service> zk_;
+  common::cshared_ptr<jubatus::common::lock_service> zk_;
   bool use_cht_;
 #endif
 
