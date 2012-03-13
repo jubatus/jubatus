@@ -22,8 +22,7 @@
 #include <vector>
 #include <map>
 
-#include <pficommon/lang/shared_ptr.h>
-
+#include "shared_ptr.hpp"
 #include "lock_service.hpp"
 
 namespace jubatus{
@@ -36,7 +35,7 @@ namespace common{
 
   class cht{
   public:
-    cht(pfi::lang::shared_ptr<lock_service>, const std::string&);
+    cht(cshared_ptr<lock_service>, const std::string&);
     ~cht();
 
     // node :: ip_port
@@ -52,7 +51,7 @@ namespace common{
 
   private:
     std::string name_;
-    pfi::lang::shared_ptr<lock_service> lock_service_;
+    cshared_ptr<lock_service> lock_service_;
   }; //cht  
 }
 }

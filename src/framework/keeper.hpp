@@ -31,6 +31,7 @@
 
 #include "../common/lock_service.hpp"
 #include "../common/cht.hpp"
+#include "../common/shared_ptr.hpp"
 
 #include "server_util.hpp"
 
@@ -149,7 +150,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
   keeper_argv a_;
   pfi::math::random::mtrand rng_;
   pfi::concurrent::mutex mutex_;
-  pfi::lang::shared_ptr<common::lock_service> zk_;
+  common::cshared_ptr<common::lock_service> zk_;
 
 };
 
