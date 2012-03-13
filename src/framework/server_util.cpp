@@ -117,7 +117,7 @@ namespace jubatus { namespace framework {
 
   
 #ifdef HAVE_ZOOKEEPER_H
-  pfi::lang::shared_ptr<jubatus::common::lock_service> ls;
+    common::cshared_ptr<jubatus::common::lock_service> ls;
 
   void atexit(void){
     if(ls)

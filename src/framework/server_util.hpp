@@ -23,7 +23,7 @@
 
 #include <msgpack.hpp>
 
-#include <pficommon/lang/shared_ptr.h>
+#include "../common/shared_ptr.hpp"
 #include <pficommon/lang/noncopyable.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
@@ -86,7 +86,7 @@ void convert(const From& from, To& to){
 }
 
 #ifdef HAVE_ZOOKEEPER_H
-extern pfi::lang::shared_ptr<jubatus::common::lock_service> ls;
+extern jubatus::common::cshared_ptr<jubatus::common::lock_service> ls;
 void atexit(void);
 
 void exit_on_term(int);

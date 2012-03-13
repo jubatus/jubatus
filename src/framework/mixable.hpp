@@ -22,6 +22,7 @@
 #include <iostream>
 #include <msgpack.hpp>
 #include "../common/exception.hpp"
+#include "../common/shared_ptr.hpp"
 #include "../config.hpp"
 
 using pfi::lang::function;
@@ -52,7 +53,7 @@ public:
   virtual ~mixable(){};
 
   virtual void clear() = 0;
-  void set_model(pfi::lang::shared_ptr<Model> m){
+  void set_model(common::cshared_ptr<Model> m){
     model_ = m;
   }
 
@@ -97,7 +98,7 @@ public:
     reduce_fun_ = reduce_fun;
     put_diff_fun_ = put_diff_fun;
   };
-  pfi::lang::shared_ptr<Model> get_model()const{return model_;};
+  common::cshared_ptr<Model> get_model()const{return model_;};
 
   static Diff dummy_get_diff(const Model*){ return Diff(); };
   static int dummy_reduce(const Model*, const Diff&, Diff&){return -1;};
@@ -118,7 +119,7 @@ private:
   function<int(const Model*, const Diff&, Diff&)> reduce_fun_;
   function<int(Model*, const Diff&)> put_diff_fun_;
 
-  pfi::lang::shared_ptr<Model> model_;
+  common::cshared_ptr<Model> model_;
 
 };
 
