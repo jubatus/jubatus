@@ -20,8 +20,6 @@
 #include <pficommon/network/mprpc/exception.h>
 #include <pficommon/network/ipv4.h>
 
-#include <iostream>
-
 #include <glog/logging.h>
 
 #include "../exception.hpp"
@@ -29,10 +27,6 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
-
-// fixme: use picoev
-#include <sys/epoll.h>
-#include <sys/ioctl.h>
 
 using pfi::lang::shared_ptr;
 using pfi::network::mprpc::socket;
@@ -156,134 +150,6 @@ int async_sock::close(){
   return ::close(this->get());
 }
 
-//async_sock::
-  // void set_sending(){ state = SENDING; };
-  // void set_recving(){ state = RECVING; };
-  // void disconnected(){ state = CLOSED; };
-  // bool is_connecting()const{ return state == CONNECTING; };
-  // bool is_sending()const{ return state == SENDING; };
-  // bool is_recving()const{ return state == RECVING; };
-
-async_client::async_client(const std::string& host, uint16_t port, int timeout_sec):
-  host_(host),
-  port_(port),
-  timeout_sec_(timeout_sec),
-  start_(get_clock_time()),
-  epfd_(::epoll_create(64))
-{
-  connect_async();
-}
-
-async_client::~async_client(){
-  if(sock_)sock_->close();
-}
-
-void async_client::connect_async(){
-  sock_ = shared_ptr<async_sock>(new async_sock);
-  //LOG(ERROR) << "sock_->get() " << sock_->get(); 
-  int res = sock_->connect_async(host_, port_);
-  if(res != 0){
-    // TODO: error handling
-  }
-}
-
-void async_client::l(){
-    int r;
-    int e = -1;
-    socklen_t len = sizeof(int);
-    r = getsockopt(sock_->get(), SOL_SOCKET, SO_ERROR, &e, &len);
-    if(r!=0)perror("");
-}
-
-bool async_client::wait(){
-  // messssssy
-
-  struct epoll_event ev;
-  ev.events = EPOLLOUT | EPOLLIN | EPOLLONESHOT;
-  ev.data.fd = sock_->get();
-  int res = epoll_ctl(epfd_, EPOLL_CTL_ADD, ev.data.fd, &ev); // TODO: error check
-  if(res != 0){
-    // TODO: error handling
-    //LOG(ERROR) << res << " " << ev.data.fd << " " << epfd_ << " " << sock_->get();
-    
-    int r;
-    int e = -1;
-    socklen_t len = sizeof(int);
-    r = getsockopt(ev.data.fd, SOL_SOCKET, SO_ERROR, &e, &len);
-    if(r!=0)perror("");
-    else //LOG(ERROR) << e << "  " << len << " " << r;
-
-    perror("<<<<<<<<<");
-    //    ::close(epfd_);
-    return false;
-  }
-  res = ::epoll_wait(epfd_, &ev, 1, timeout_sec_);
-
-  //DLOG(INFO) << (ev.events & EPOLLOUT) << " connected?" << (ev.events & EPOLLIN);
-  return (ev.events & EPOLLOUT) || (ev.events & EPOLLIN);
-}
-
-void async_client::send_async(const std::string& method, const msgpack::sbuffer& sbuf){
-
-  start_ = get_clock_time();
-  //LOG(ERROR) << sock_->get();
-  if(!wait()){
-    //LOG(ERROR) << __func__;
-    perror("");
-    return; // TODO: erro handling
-  }
-  
-  do{
-    if(sock_->send_async(sbuf.data(), sbuf.size())){
-      return;
-    }
-    wait();
-    if((double)(get_clock_time() - start_) > timeout_sec_ ){
-      throw pfi::network::mprpc::rpc_timeout_error("");
-    }
-  }while(true);
-
-}
-
-void async_client::join(msgpack::object& o){
-
-  if(!wait()){
-    //LOG(ERROR) << __func__;
-    perror("");
-    //TODO: error handling
-  }
-
-  msgpack::sbuffer sbuf;
-
-  do{
-    int r = sock_->recv_async();
-    if(r < 0){
-      //throw r; TODO
-      //LOG(ERROR) << errno;
-      return;
-    }else if(r==0){
-      continue;
-    }
-
-    try{ // a bit slow but simple
-      o = sock_->get_obj();
-      return;
-    }catch(const msgpack::unpack_error& e){
-      //if(e.what() == "insufficient bytes"){ // gogogo...
-      //LOG(ERROR) << e.what();
-      continue;
-      //throw e;
-    }catch(const std::runtime_error& e){
-      //LOG(ERROR) << e.what();
-      throw e;
-    }
-
-    wait();  
-    if((double)(get_clock_time() - start_) > timeout_sec_ ){
-      throw pfi::network::mprpc::rpc_timeout_error("");
-    }
-  }while(true);
-}
 
 }
 }

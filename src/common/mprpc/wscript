@@ -9,7 +9,7 @@ def build(bld):
   bld.shlib(
     source = src,
     target = 'jubacommon_mprpc',
-    use = 'PFICOMMON GLOG ZOOKEEPER_MT CRYPT'
+    use = 'PFICOMMON GLOG ZOOKEEPER_MT EVENT'
     )
 
   bld.program(

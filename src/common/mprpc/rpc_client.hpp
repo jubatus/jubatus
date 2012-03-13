@@ -28,37 +28,21 @@
 #include <pficommon/system/time_util.h>
 #include "async_client.hpp"
 #include <glog/logging.h>
+#include <pficommon/data/unordered_map.h>
+
+extern "C"{
+struct event_base;
+}
 
 namespace jubatus { namespace common { namespace mprpc {
 
-class rpc_client {
-public:
-  rpc_client(const std::string& host, uint16_t port, int timeout_sec):
-    cli_(host, port, timeout_sec)
-  {};
-  ~rpc_client();
-  
-  template <typename Argv, typename Res> // TODO: make same interface with pficommon's rpc_client
-  Res call(const std::string&, const Argv& a);
-  
-private:
-  async_client cli_;
+class rpc_mclient;
+struct async_context {
+  rpc_mclient* c;
+  const msgpack::sbuffer* buf;
+  size_t rest;
+  std::vector<msgpack::object> ret;
 };
-
-template <typename Argv, typename Res>
-Res rpc_client::call(const std::string& method, const Argv& a){
-
-  msgpack::sbuffer sbuf;
-  msgpack::pack(sbuf, a);
-  cli_.send_async(method, a);
-
-  msgpack::object ret;
-  cli_.join(ret);
-  Res result;
-  ret.convert(&result);
-  return result;
-
-}
 
 class rpc_mclient {
 public:
@@ -92,21 +76,25 @@ public:
   template <typename Res>
   Res join_all(const pfi::lang::function<Res(Res,Res)>& reducer);
 
+  int readable_callback(int, int, async_context*);
+  int writable_callback(int, int, async_context*);
 private:
 
   template <typename Arr>
   void call_async_(const std::string&, const Arr& a);
 
   void connect_async_();
-  int join_some_(std::vector<msgpack::object>&, int);
+  void join_some_(async_context&);
 
   std::vector<std::pair<std::string, uint16_t> > hosts_;
   int timeout_sec_;
 
-  std::vector<pfi::lang::shared_ptr<async_sock> > clients_;
+  //std::vector<pfi::lang::shared_ptr<async_sock> > clients_;
+  pfi::data::unordered_map<int,pfi::lang::shared_ptr<async_sock> > clients_;
   pfi::system::time::clock_time start_;
 
-  int epfd_;
+  //int epfd_;
+  pfi::lang::shared_ptr<event_base> evbase_;
 };
 
 template <typename Arr>
@@ -150,27 +138,29 @@ template <typename Res>
 Res rpc_mclient::join_all(const pfi::lang::function<Res(Res,Res)>& reducer)
 {
 
-  std::vector<msgpack::object> ret;
-  int rest = join_some_(ret, clients_.size());
-  if(ret.size()==0){
+  async_context ctx;
+  ctx.c = this;
+  ctx.rest = clients_.size();
+  ctx.buf = NULL;
+  ctx.ret = std::vector<msgpack::object>();
+
+  join_some_(ctx);
+  if(ctx.ret.size()==0){
     throw std::runtime_error("no clients.");
   }
-  Res result = ret[0].as<Res>();
 
-  if(ret.size()>1){
-    for(size_t i=1;i<ret.size();++i){
-      result = reducer(result, ret[i].as<Res>());
-    }
+  Res result = ctx.ret[0].as<Res>();
+  for(size_t i=1;i<ctx.ret.size();++i){
+    result = reducer(result, ctx.ret[i].as<Res>());
   }
 
   do{
-
-    rest = join_some_(ret, rest);
-    for(size_t i=0;i<ret.size();++i){
-      result = reducer(result, ret[i].as<Res>());
+    join_some_(ctx);
+    for(size_t i=0;i<ctx.ret.size();++i){
+      result = reducer(result, ctx.ret[i].as<Res>());
     }
 
-  }while(rest>0);
+  }while(ctx.rest>0);
   
   return result;
 }
