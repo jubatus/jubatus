@@ -27,74 +27,141 @@
 #include <pficommon/lang/function.h>
 #include <pficommon/system/time_util.h>
 #include "async_client.hpp"
+#include <glog/logging.h>
+#include <pficommon/data/unordered_map.h>
+
+extern "C"{
+struct event_base;
+}
 
 namespace jubatus { namespace common { namespace mprpc {
 
-class rpc_client {
-public:
-  rpc_client(const std::string& host, uint16_t port, int timeout_sec):
-    cli_(host, port, timeout_sec)
-  {};
-  ~rpc_client();
-  
-  template <typename Argv, typename Res> // TODO: make same interface with pficommon's rpc_client
-  Res call(const std::string&, const Argv& a);
-  
-private:
-  async_client cli_;
+class rpc_mclient;
+struct async_context {
+  rpc_mclient* c;
+  const msgpack::sbuffer* buf;
+  size_t rest;
+  std::vector<msgpack::object> ret;
 };
-
-template <typename Argv, typename Res>
-Res rpc_client::call(const std::string& method, const Argv& a){
-
-  msgpack::sbuffer sbuf;
-  msgpack::pack(sbuf, a);
-  cli_.send_async(method, a);
-
-  msgpack::object ret;
-  cli_.join(ret);
-  Res result;
-  ret.convert(&result);
-  return result;
-
-}
 
 class rpc_mclient {
 public:
   rpc_mclient(const std::vector<std::pair<std::string, uint16_t> >& hosts,
               int timeout_sec);
+  rpc_mclient(const std::vector<std::pair<std::string, int> >& hosts,
+              int timeout_sec);
   ~rpc_mclient();
 
-  template <typename Argv, typename Res> // TODO: make same interface with pficommon's rpc_client
-  Res call(const std::string&, const Argv& a){ Res r; return r; };
+  // TODO: make same interface with pficommon's rpc_client
+  template <typename Res, typename Argv>
+  Res call(const std::string& m, const Argv& a,
+           const pfi::lang::function<Res(Res,Res)>& reducer){
+    call_async(m, a);
+    return join_all(reducer);
+  };
 
-  void send_async(const std::string&, const msgpack::sbuffer& buf);
+  void send_async(const msgpack::sbuffer& buf);
+
+  void call_async(const std::string&);
+
+  template <typename A0>
+  void call_async(const std::string&, const A0& a0);
+  template <typename A0, typename A1>
+  void call_async(const std::string&, const A0& a0, const A1& a1);
+  template <typename A0, typename A1, typename A2>
+  void call_async(const std::string&, const A0& a0, const A1& a1, const A2& a2);
+  template <typename A0, typename A1, typename A2, typename A3>
+  void call_async(const std::string&, const A0&, const A1&, const A2&, const A3&);
+
   template <typename Res>
   Res join_all(const pfi::lang::function<Res(Res,Res)>& reducer);
-      
+
+  int readable_callback(int, int, async_context*);
+  int writable_callback(int, int, async_context*);
 private:
+
+  template <typename Arr>
+  void call_async_(const std::string&, const Arr& a);
+
+  void connect_async_();
+  void join_some_(async_context&);
+
   std::vector<std::pair<std::string, uint16_t> > hosts_;
-  std::vector<async_client> clients_;
   int timeout_sec_;
+
+  //std::vector<pfi::lang::shared_ptr<async_sock> > clients_;
+  pfi::data::unordered_map<int,pfi::lang::shared_ptr<async_sock> > clients_;
+  pfi::system::time::clock_time start_;
+
+  //int epfd_;
+  pfi::lang::shared_ptr<event_base> evbase_;
 };
+
+template <typename Arr>
+void rpc_mclient::call_async_(const std::string& m, const Arr& argv)
+{
+  msgpack::sbuffer sbuf;
+  msgpack::type::tuple<uint8_t,uint32_t,std::string,Arr> rpc_request(0, 0xDEADBEEF, m, argv);
+  msgpack::pack(&sbuf, rpc_request);
+  send_async(sbuf);
+}
+
+void rpc_mclient::call_async(const std::string& m)
+{
+  call_async_(m, std::vector<int>());
+}
+
+template <typename A0>
+void rpc_mclient::call_async(const std::string& m, const A0& a0)
+{
+  call_async_(m, msgpack::type::tuple<A0>(a0));
+}
+
+template <typename A0, typename A1>
+void rpc_mclient::call_async(const std::string& m, const A0& a0, const A1& a1)
+{
+  call_async_(m, msgpack::type::tuple<A0, A1>(a0, a1));
+}
+template <typename A0, typename A1, typename A2>
+void rpc_mclient::call_async(const std::string& m, const A0& a0, const A1& a1, const A2& a2)
+{
+  call_async_(m, msgpack::type::tuple<A0, A1, A2>(a0, a1, a2));
+}
+template <typename A0, typename A1, typename A2, typename A3>
+void rpc_mclient::call_async(const std::string& m, const A0& a0, const A1& a1, const A2& a2, const A3& a3)
+{
+  call_async_(m, msgpack::type::tuple<A0, A1, A2, A3>(a0, a1, a2, a3));
+}
+
 
 template <typename Res>
 Res rpc_mclient::join_all(const pfi::lang::function<Res(Res,Res)>& reducer)
 {
-  Res result;
-  {
-    msgpack::object ret;
-    clients_[0].join(ret);
-    ret.convert(result);
+
+  async_context ctx;
+  ctx.c = this;
+  ctx.rest = clients_.size();
+  ctx.buf = NULL;
+  ctx.ret = std::vector<msgpack::object>();
+
+  join_some_(ctx);
+  if(ctx.ret.size()==0){
+    throw std::runtime_error("no clients.");
   }
 
-  for(size_t i=1; i<clients_.size(); ++i){
-    msgpack::object ret;
-    clients_[i].join(ret);
-    Res tmp;
-    ret.convert(tmp);
-    result = reducer(result, ret);
+  Res result = ctx.ret[0].as<Res>();
+  for(size_t i=1;i<ctx.ret.size();++i){
+    result = reducer(result, ctx.ret[i].as<Res>());
   }
+
+  do{
+    join_some_(ctx);
+    for(size_t i=0;i<ctx.ret.size();++i){
+      result = reducer(result, ctx.ret[i].as<Res>());
+    }
+
+  }while(ctx.rest>0);
+  
   return result;
 }
 

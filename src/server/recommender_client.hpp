@@ -12,68 +12,68 @@ public:
   recommender(const std::string &host, uint64_t port, double timeout_sec)
     : rpc_client(host, port, timeout_sec) {}
 
-    int32_t set_config(std::string arg0, config_data arg1) {
-      return call<int32_t(std::string, config_data)>("set_config")(arg0, arg1);
+    bool set_config(std::string name, config_data c) {
+      return call<bool(std::string, config_data)>("set_config")(name, c);
     }
 
-    config_data get_config(std::string arg0, int32_t arg1) {
-      return call<config_data(std::string, int32_t)>("get_config")(arg0, arg1);
+    config_data get_config(std::string name) {
+      return call<config_data(std::string)>("get_config")(name);
     }
 
-    int32_t clear_row(std::string arg0, std::string arg1, int32_t arg2) {
-      return call<int32_t(std::string, std::string, int32_t)>("clear_row")(arg0, arg1, arg2);
+    bool clear_row(std::string name, std::string id) {
+      return call<bool(std::string, std::string)>("clear_row")(name, id);
     }
 
-    int32_t update_row(std::string arg0, std::string arg1, datum arg2) {
-      return call<int32_t(std::string, std::string, datum)>("update_row")(arg0, arg1, arg2);
+    bool update_row(std::string name, std::string id, datum arg2) {
+      return call<bool(std::string, std::string, datum)>("update_row")(name, id, arg2);
     }
 
-    int32_t clear(std::string arg0, int32_t arg1) {
-      return call<int32_t(std::string, int32_t)>("clear")(arg0, arg1);
+    bool clear(std::string name) {
+      return call<bool(std::string)>("clear")(name);
     }
 
-    datum complete_row_from_id(std::string arg0, std::string arg1, int32_t arg2) {
-      return call<datum(std::string, std::string, int32_t)>("complete_row_from_id")(arg0, arg1, arg2);
+    datum complete_row_from_id(std::string name, std::string id) {
+      return call<datum(std::string, std::string)>("complete_row_from_id")(name, id);
     }
 
-    datum complete_row_from_data(std::string arg0, datum arg1) {
-      return call<datum(std::string, datum)>("complete_row_from_data")(arg0, arg1);
+    datum complete_row_from_data(std::string name, datum arg1) {
+      return call<datum(std::string, datum)>("complete_row_from_data")(name, arg1);
     }
 
-    similar_result similar_row_from_id(std::string arg0, std::string arg1, size_t arg2) {
-      return call<similar_result(std::string, std::string, size_t)>("similar_row_from_id")(arg0, arg1, arg2);
+    similar_result similar_row_from_id(std::string name, std::string id, uint32_t size) {
+      return call<similar_result(std::string, std::string, uint32_t)>("similar_row_from_id")(name, id, size);
     }
 
-    similar_result similar_row_from_data(std::string arg0, std::pair<datum, size_t > arg1) {
-      return call<similar_result(std::string, std::pair<datum, size_t >)>("similar_row_from_data")(arg0, arg1);
+    similar_result similar_row_from_data(std::string name, datum data, uint32_t size) {
+      return call<similar_result(std::string, datum, uint32_t)>("similar_row_from_data")(name, data, size);
     }
 
-    datum decode_row(std::string arg0, std::string arg1, int32_t arg2) {
-      return call<datum(std::string, std::string, int32_t)>("decode_row")(arg0, arg1, arg2);
+    datum decode_row(std::string name, std::string id) {
+      return call<datum(std::string, std::string)>("decode_row")(name, id);
     }
 
-    std::vector<std::string > get_all_rows(std::string arg0, int32_t arg1) {
-      return call<std::vector<std::string >(std::string, int32_t)>("get_all_rows")(arg0, arg1);
+    std::vector<std::string > get_all_rows(std::string name) {
+      return call<std::vector<std::string >(std::string)>("get_all_rows")(name);
     }
 
-    float similarity(std::string arg0, std::pair<datum, datum > arg1) {
-      return call<float(std::string, std::pair<datum, datum >)>("similarity")(arg0, arg1);
+    float similarity(std::string name, datum lhs, datum rhs) {
+      return call<float(std::string, datum, datum)>("similarity")(name, lhs, rhs);
     }
 
-    float l2norm(std::string arg0, datum arg1) {
-      return call<float(std::string, datum)>("l2norm")(arg0, arg1);
+    float l2norm(std::string name, datum arg1) {
+      return call<float(std::string, datum)>("l2norm")(name, arg1);
     }
 
-    int32_t save(std::string arg0, std::string arg1) {
-      return call<int32_t(std::string, std::string)>("save")(arg0, arg1);
+    bool save(std::string name, std::string arg1) {
+      return call<bool(std::string, std::string)>("save")(name, arg1);
     }
 
-    int32_t load(std::string arg0, std::string arg1) {
-      return call<int32_t(std::string, std::string)>("load")(arg0, arg1);
+    bool load(std::string name, std::string arg1) {
+      return call<bool(std::string, std::string)>("load")(name, arg1);
     }
 
-    std::map<std::string, std::map<std::string, std::string > > get_status(std::string arg0, int32_t arg1) {
-      return call<std::map<std::string, std::map<std::string, std::string > >(std::string, int32_t)>("get_status")(arg0, arg1);
+    std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
+      return call<std::map<std::string, std::map<std::string, std::string > >(std::string)>("get_status")(name);
     }
 
 private:

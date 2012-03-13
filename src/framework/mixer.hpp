@@ -28,7 +28,7 @@
 #include <pficommon/concurrent/mutex.h>
 #include <pficommon/concurrent/condition.h>
 #include <pficommon/concurrent/lock.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "../common/shared_ptr.hpp"
 #include <pficommon/lang/function.h>
 
 namespace jubatus{
@@ -44,7 +44,7 @@ namespace framework{
     void accessed(){};
     void clear();
 
-    void set_zk(pfi::lang::shared_ptr<jubatus::common::lock_service>& z){
+    void set_zk(common::cshared_ptr<jubatus::common::lock_service>& z){
       zk_ = z;
     };
     void start(){
@@ -65,7 +65,7 @@ namespace framework{
 
     pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_func_;
 
-    pfi::lang::shared_ptr<jubatus::common::lock_service> zk_;
+    common::cshared_ptr<jubatus::common::lock_service> zk_;
     std::string name_;
 
     unsigned int count_threshold_;

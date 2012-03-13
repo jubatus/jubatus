@@ -23,6 +23,8 @@
 #include "mixer.hpp"
 #include "mixable.hpp"
 
+#include "../common/shared_ptr.hpp"
+
 using namespace pfi::concurrent;
 
 namespace jubatus { namespace framework {
@@ -39,11 +41,11 @@ public:
   pfi::concurrent::rw_mutex& get_rw_mutex(){ return m_; };
   void use_cht();
 
-  std::map<std::string, std::map<std::string,std::string> > get_status(int) const;
+  std::map<std::string, std::map<std::string,std::string> > get_status() const;
   std::string get_server_identifier()const;
 
 #ifdef HAVE_ZOOKEEPER_H
-  void join_to_cluster(pfi::lang::shared_ptr<jubatus::common::lock_service>);
+  void join_to_cluster(common::cshared_ptr<jubatus::common::lock_service>);
   
   std::string get_storage(int i);
 
@@ -60,8 +62,8 @@ public:
 #endif
   };
 
-  int save(std::string id);
-  int load(std::string id);
+  bool save(std::string id);
+  bool load(std::string id);
 
   // after load( model_ was loaded from file ) called, users reset their own data
   // I'm afraid this function is useless
@@ -84,10 +86,10 @@ protected:
   unsigned int update_count_;
 
   std::vector<mixable0*> mixables_;
-  pfi::lang::shared_ptr<mixer> mixer_;
+  common::cshared_ptr<mixer> mixer_;
 
 #ifdef HAVE_ZOOKEEPER_H
-  pfi::lang::shared_ptr<jubatus::common::lock_service> zk_;
+  common::cshared_ptr<jubatus::common::lock_service> zk_;
   bool use_cht_;
 #endif
 

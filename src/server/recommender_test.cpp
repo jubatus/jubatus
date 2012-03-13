@@ -40,7 +40,7 @@ namespace {
 
 TEST_F(recommender_test, get_status){
   jubatus::client::recommender cli("localhost", PORT, 10);
-  map<string,map<string,string> > status = cli.get_status(NAME, 0);
+  map<string,map<string,string> > status = cli.get_status(NAME);
   EXPECT_EQ(status.size(), 1u);
   for(map<string,map<string,string> >::const_iterator it = status.begin();
       it != status.end(); ++it){
@@ -61,11 +61,11 @@ TEST_F(recommender_test, small) {
   jubatus::datum d;
   d.nv.push_back(make_pair("f1", 1.0));
   c.update_row(NAME, "key", d);
-  c.clear_row(NAME, "key", 0);
+  c.clear_row(NAME, "key");
   c.update_row(NAME, "key", d);
 
   jubatus::datum d2 = c.complete_row_from_data(NAME, d);
-  jubatus::datum d3 = c.complete_row_from_id(NAME, "key", 0);
+  jubatus::datum d3 = c.complete_row_from_id(NAME, "key");
   //  cout << res.size() << endl;
 
   c.save(NAME, "name");

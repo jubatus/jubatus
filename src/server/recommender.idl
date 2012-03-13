@@ -1,24 +1,40 @@
-# this idl is automatically generated. do not edit. 
+# Jubatus: Online machine learning framework for distributed environment
+# Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 type param_t = map<string, string> 
 
 type similar_result = list<tuple<string, float> > 
 
 message string_rule {
   0: string key
-  1: string type
+  1: string t
   2: string sample_weight
   3: string global_weight
 }
 
 message filter_rule {
   0: string key
-  1: string type
+  1: string t
   2: string suffix
 }
 
 message num_rule {
   0: string key
-  1: string type
+  1: string t
 }
 
 message converter_config {
@@ -42,21 +58,53 @@ message datum {
   1: list<tuple<string, double> >  nv
 }
 
-service recommender :1 {
-  int set_config(0: string arg0, 1: config_data arg1) # //@broadcast
-  config_data get_config(0: string arg0, 1: int arg1) # //@random
-  int clear_row(0: string arg0, 1: string arg1, 2: int arg2) # //@cht
-  int update_row(0: string arg0, 1: string arg1, 2: datum arg2) # //@cht
-  int clear(0: string arg0, 1: int arg1) # //@broadcast
-  datum complete_row_from_id(0: string arg0, 1: string arg1, 2: int arg2) # //@cht
-  datum complete_row_from_data(0: string arg0, 1: datum arg1) # //@random
-  similar_result similar_row_from_id(0: string arg0, 1: string arg1, 2: size_t arg2) # //@cht
-  similar_result similar_row_from_data(0: string arg0, 1: tuple<datum, size_t>  arg1) # //@random
-  datum decode_row(0: string arg0, 1: string arg1, 2: int arg2) # //@cht
-  list<string>  get_all_rows(0: string arg0, 1: int arg1) # //@broadcast
-  float similarity(0: string arg0, 1: tuple<datum, datum>  arg1) # //@random
-  float l2norm(0: string arg0, 1: datum arg1) # //@random
-  int save(0: string arg0, 1: string arg1) # //@broadcast
-  int load(0: string arg0, 1: string arg1) # //@broadcast
-  map<string, map<string, string> >  get_status(0: string arg0, 1: int arg1) # //@broadcast
+service recommender {
+
+  #@broadcast #@update #@all_and
+  bool set_config(0: string name, 1: config_data c) # //@broadcast
+
+  #@random #@analysis #@pass
+  config_data get_config(0: string name) # //@random
+
+  #@cht #@update #@all_and
+  bool clear_row(0: string name, 1: string id) # //@cht
+
+  #@cht #@update #@all_and
+  bool update_row(0: string name, 1: string id, 2: datum arg2) # //@cht
+
+  #@broadcast #@update #@all_and
+  bool clear(0: string name) # //@broadcast
+
+  #@cht #@analysis #@random
+  datum complete_row_from_id(0: string name, 1: string id) # //@cht
+
+  #@random #@analysis #@pass
+  datum complete_row_from_data(0: string name, 1: datum arg1) # //@random
+
+  #@cht #@analysis #@random
+  similar_result similar_row_from_id(0: string name, 1: string id, 2: uint size) # //@cht
+
+  #@random #@analysis #@pass
+  similar_result similar_row_from_data(0: string name, 1: datum data, 2: uint size) # //@random
+
+  #@cht #@analysis #@random
+  datum decode_row(0: string name, 1: string id) # //@cht
+
+  #@broadcast #@analysis #@concat
+  list<string>  get_all_rows(0: string name) # //@broadcast
+
+  #@random #@analysis #@random
+  float similarity(0: string name, 1: datum lhs, 2:datum rhs) # //@random
+
+  #@random #@analysis #@random
+  float l2norm(0: string name, 1: datum arg1) # //@random
+
+  #@broadcast #@update #@all_and
+  bool save(0: string name, 1: string arg1) # //@broadcast
+
+  #@broadcast #@update #@all_and
+  bool load(0: string name, 1: string arg1) # //@broadcast
+
+  #@broadcast #@analysis #@merge
+  map<string, map<string, string> >  get_status(0: string name) # //@broadcast
 }

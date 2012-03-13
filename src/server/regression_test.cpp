@@ -94,7 +94,7 @@ void my_test(const char* meth, const char* stor){
     }
   }
   vector<float> result = r.estimate(NAME, datas);
-//  ASSERT_TRUE(res.);
+
   ASSERT_EQ(example_size, result.size());
   ASSERT_EQ(data.size(), result.size());
 
@@ -135,7 +135,7 @@ TEST_F(regression_test, small) {
   c.train(NAME, data);
 
   cout << "get_status" << endl;
-  map<string,map<string,string> > status = c.get_status(NAME, 0);
+  map<string,map<string,string> > status = c.get_status(NAME);
   EXPECT_EQ(status.size(), 1u);
   for(map<string,map<string,string> >::const_iterator it = status.begin();
       it != status.end(); ++it){

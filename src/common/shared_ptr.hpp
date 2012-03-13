@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,42 +15,28 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-#include <string>
+#pragma once
 
-#include "counter.hpp"
+#include <pficommon/lang/shared_ptr.h>
+#include <pficommon/concurrent/threading_model.h>
 
+namespace jubatus  { namespace common {
 
-using namespace std;
-using namespace jubatus::fv_converter;
-
-namespace jubatus {
-
-TEST(counter, trivial) {
-  counter<string> c;
-  EXPECT_FALSE(c.contains("hoge"));
+// just a wrapper for threading_model::multi_thread
+template <typename T>
+struct cshared_ptr
+  : pfi::lang::shared_ptr<T, pfi::concurrent::threading_model::multi_thread>
+{
+public:
+  explicit cshared_ptr<T>(T* t):
+  pfi::lang::shared_ptr<T, pfi::concurrent::threading_model::multi_thread>(t)
+  {};
+  explicit cshared_ptr<T>():
+  pfi::lang::shared_ptr<T, pfi::concurrent::threading_model::multi_thread>()
+  {};
+  virtual ~cshared_ptr<T>(){};
   
-  EXPECT_EQ(0u, ((const counter<string>&)c)["hoge"]);
-  EXPECT_EQ(0u, c["hoge"]);
-  c["hoge"] = 1;
-  c["fuga"] = 2;
-  EXPECT_EQ(1u, c["hoge"]);
-  EXPECT_EQ(2u, c["fuga"]);
+};
+
 }
-
-TEST(counter, add) {
-  counter<string> x, y;
-  x["hoge"] = 1;
-  x["fuga"] = 2;
-
-  y["foo"] = 5;
-  y["hoge"] = 3;
-
-  x.add(y);
-
-  EXPECT_EQ(4u, x["hoge"]);
-  EXPECT_EQ(2u, x["fuga"]);
-  EXPECT_EQ(5u, x["foo"]);
-}
-
 }

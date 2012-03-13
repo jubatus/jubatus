@@ -107,7 +107,7 @@ TEST_P(classifier_test, simple){
     config.method = GetParam();
     
     c.set_config("", config);
-    c.get_config("", 0);
+    c.get_config("");
   }
   {
     datum d;
@@ -140,8 +140,7 @@ TEST_P(classifier_test, api_config) {
   //  ASSERT_(res_set.success) << res_set.error;
   ASSERT_EQ(0, res_set);
 
-  to_get = cli.get_config(NAME, 0);
-  //  ASSERT_TRUE(to_get.success);
+  EXPECT_NO_THROW(to_get = cli.get_config(NAME));
   EXPECT_TRUE(to_set == to_get);
 }
 
@@ -155,7 +154,7 @@ TEST_P(classifier_test, api_train){
   vector<pair<string, datum> > data;
   make_random_data(data, example_size);
   unsigned int res = cli.train(NAME, data);
-  ASSERT_TRUE(res == data.size()); //.success);
+  ASSERT_EQ(data.size(), res);
 }
 
 void my_test(const char* method) {
@@ -171,7 +170,7 @@ void my_test(const char* method) {
   vector<pair<string, datum> > data;
   make_random_data(data, example_size);
   unsigned int res = cli.train(NAME, data);
-  ASSERT_TRUE(res == data.size()); //.success);
+  ASSERT_EQ(data.size(), res);
 
   vector<string> labels;
   vector<datum>  datas;
@@ -305,7 +304,7 @@ INSTANTIATE_TEST_CASE_P(classifier_test_instance,
 TEST_P(classifier_test, get_status){
   classifier cli("localhost", PORT, 10);
 
-  map<string,map<string,string> > status = cli.get_status(NAME, 0);
+  map<string,map<string,string> > status = cli.get_status(NAME);
   EXPECT_EQ(status.size(), 1u);
   for(map<string,map<string,string> >::const_iterator it = status.begin();
       it != status.end(); ++it){
@@ -328,9 +327,9 @@ TEST_P(classifier_test, save_load){
   ASSERT_EQ(0, res_config);
   vector<pair<string, datum> > data;
   make_random_data(data, example_size);
-  int res_train = cli.train(NAME, data);
-  //  ASSERT_TRUE(res_train.success);
-  ASSERT_GT(res_train, 0);
+  unsigned int res_train = cli.train(NAME, data);
+
+  ASSERT_EQ(data.size(), res_train);
   // {
   //   st->set3("a", "x", val3_t(1, 11, 111));
   //   st->set3("a", "y", val3_t(2, 22, 222));
@@ -338,16 +337,16 @@ TEST_P(classifier_test, save_load){
   //   st->set3("b", "x", val3_t(12, 1212, 121212));
   //   st->set3("b", "z", val3_t(45, 4545, 454545));
   // }
-  int res_save = cli.save(NAME, "hoge");
-  ASSERT_EQ(0, res_save);
+  bool res_save = cli.save(NAME, "hoge");
+  ASSERT_EQ(true, res_save);
 
-  int res_load = cli.load(NAME, "hoge");
-  ASSERT_EQ(0, res_load);
+  bool res_load = cli.load(NAME, "hoge");
+  ASSERT_EQ(true, res_load);
   my_test(GetParam());
 
-  map<string, map<string, string> > status = cli.get_status(NAME, 0);
+  map<string, map<string, string> > status = cli.get_status(NAME);
   string count_str = status.begin()->second["update_count"];
-  EXPECT_EQ(5, atoi(count_str.c_str()));
+  EXPECT_EQ(6, atoi(count_str.c_str()));
 }
 
 }

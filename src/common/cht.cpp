@@ -32,7 +32,7 @@ namespace common{
     return ss.str();
   };
 
-  cht::cht(pfi::lang::shared_ptr<lock_service> z, const std::string& name):
+  cht::cht(cshared_ptr<lock_service> z, const std::string& name):
     name_(name), lock_service_(z)
   {
   }

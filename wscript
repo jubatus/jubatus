@@ -1,6 +1,6 @@
 import Options
 
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 APPNAME = 'jubatus'
 
 top = '.'
@@ -31,8 +31,11 @@ def configure(conf):
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
 
-  conf.check_cxx(lib = 'msgpack', libpath = '/usr/local/lib')
-  conf.check_cxx(lib = 'glog', libpath = '/usr/local/lib')
+  conf.check_cxx(lib = 'msgpack')
+  conf.check_cxx(lib = 'glog')
+
+  conf.check_cxx(lib = 'event')
+  conf.check_cxx(header_name = 'event.h')
   
   conf.check_cfg(package = 'pficommon', args = '--cflags --libs')
   conf.check_cxx(header_name = 'pficommon/network/mprpc.h')
