@@ -176,15 +176,17 @@ namespace jubatus { namespace framework {
   };
 
     int jubatus_serv::put_diff_impl(std::vector<std::string> unpacked){
-    scoped_lock lk(wlock(m_));
-    if(unpacked.size() != mixables_.size()){
-      //deserialization error
-    }
-    for(size_t i=0; i<mixables_.size(); ++i){
-      mixables_[i]->put_diff(unpacked[i]);
-    }
-    return 0;
-  };
+      scoped_lock lk(wlock(m_));
+      if(unpacked.size() != mixables_.size()){
+	//deserialization error
+	return -1;
+      }
+      for(size_t i=0; i<mixables_.size(); ++i){
+	mixables_[i]->put_diff(unpacked[i]);
+      }
+      mixer_->clear();
+      return 0;
+    };
 
     void jubatus_serv::do_mix(const std::vector<std::pair<std::string,int> >& v){
       vector<string> accs;
