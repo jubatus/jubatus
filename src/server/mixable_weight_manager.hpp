@@ -19,7 +19,7 @@
 
 #include "../fv_converter/weight_manager.hpp"
 #include "../framework/mixable.hpp"
-#include <pficommon/lang/shared_ptr.h>
+#include "../common/shared_ptr.hpp"
 
 namespace jubatus{
 namespace server{
@@ -51,7 +51,7 @@ struct mixable_weight_manager : public framework::mixable<weight_manager, keywor
   };
   void clear(){};
 
-  pfi::lang::shared_ptr<weight_manager> wm_;
+  common::cshared_ptr<weight_manager> wm_;
 };
 
 }}

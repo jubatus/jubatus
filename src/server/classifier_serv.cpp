@@ -25,6 +25,7 @@
 #include "../common/exception.hpp"
 #include "../common/util.hpp"
 #include "../common/vector_util.hpp"
+#include "../common/shared_ptr.hpp"
 
 #include <glog/logging.h>
 
@@ -50,7 +51,7 @@ classifier_serv::classifier_serv(const framework::server_argv& a)
   clsfer_.set_model(make_model());
   register_mixable(framework::mixable_cast(&clsfer_));
 
-  wm_.wm_ = pfi::lang::shared_ptr<fv_converter::weight_manager>(new weight_manager);
+  wm_.wm_ = common::cshared_ptr<fv_converter::weight_manager>(new weight_manager);
   wm_.set_model(wm_.wm_);
 
   register_mixable(framework::mixable_cast(&wm_));
@@ -70,7 +71,8 @@ int classifier_serv::set_config(config_data config) {
   fv_converter::initialize_converter(c, *converter);
   converter_ = converter;
 
-  wm_.set_model(pfi::lang::shared_ptr<fv_converter::weight_manager>(new weight_manager));
+  wm_.wm_ = common::cshared_ptr<fv_converter::weight_manager>(new weight_manager);
+  wm_.set_model(wm_.wm_);
   
   clsfer_.classifier_.reset(classifier_factory::create_classifier(config.method, clsfer_.get_model().get()));
 
