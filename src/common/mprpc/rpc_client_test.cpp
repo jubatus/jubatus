@@ -78,7 +78,7 @@ TEST(rpc_mclient, small)
 {
   fork_server(PORT0);
   fork_server(PORT1);
-  sleep(0.5);
+  usleep(500000);
 
   {
     test_mrpc_client cli0("localhost", PORT0, 3.0);
