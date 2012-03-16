@@ -47,8 +47,8 @@ bool set_socket_nonblock(int sock, bool on){
 }
 
 async_sock::async_sock():
-  pfi::network::mprpc::socket(::socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK|SOCK_CLOEXEC, 0)),
-  //pfi::network::mprpc::socket(::socket(AF_INET, SOCK_STREAM|SOCK_CLOEXEC, 0)),
+  //pfi::network::mprpc::socket(::socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK|SOCK_CLOEXEC, 0)),
+  pfi::network::mprpc::socket(::socket(AF_INET, SOCK_STREAM, 0)),
   state(CLOSED),
   progress(0)
 {
