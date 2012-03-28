@@ -99,6 +99,17 @@ namespace {
     };
   };
 
+TEST_P(classifier_test, set_config_exception){
+  classifier c("localhost", PORT, 10);
+  jubatus::config_data config;
+  config.method = "pa";
+  ASSERT_THROW(c.set_config("", config), std::exception);
+  config.method = "";
+  ASSERT_THROW(c.set_config("", config), std::exception);
+  config.method = "saitama";
+  ASSERT_THROW(c.set_config("", config), std::exception);
+}
+
 TEST_P(classifier_test, simple){
   
   classifier c("localhost", PORT, 10);

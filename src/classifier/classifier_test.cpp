@@ -24,6 +24,7 @@
 #include "classifier_factory.hpp"
 #include "classifier.hpp"
 #include "../storage/local_storage.hpp"
+#include "../common/exception.hpp"
 #include "classifier_test_util.hpp"
 
 using namespace std;
@@ -137,6 +138,15 @@ void InitClassifiers(vector<classifier_base*>& classifiers){
   for (size_t i = 0; i < classifiers.size(); ++i){
     classifiers[i]->set_C(1.0);
   }
+}
+
+
+TEST(classifier_factory, exception){
+  local_storage * p = new local_storage;
+  ASSERT_THROW(classifier_factory::create_classifier("pa", p), unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("", p), unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("saitama", p), unsupported_method);
+  delete p;
 }
 
 }
