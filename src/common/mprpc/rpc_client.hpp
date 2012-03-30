@@ -106,11 +106,6 @@ void rpc_mclient::call_async_(const std::string& m, const Arr& argv)
   send_async(sbuf);
 }
 
-void rpc_mclient::call_async(const std::string& m)
-{
-  call_async_(m, std::vector<int>());
-}
-
 template <typename A0>
 void rpc_mclient::call_async(const std::string& m, const A0& a0)
 {

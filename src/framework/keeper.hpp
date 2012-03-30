@@ -32,7 +32,6 @@
 #include "../common/lock_service.hpp"
 #include "../common/cht.hpp"
 #include "../common/mprpc/rpc_client.hpp"
-#include "aggregators.hpp"
 #include "../common/shared_ptr.hpp"
 
 #include "server_util.hpp"

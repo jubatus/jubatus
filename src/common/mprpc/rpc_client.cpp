@@ -54,6 +54,11 @@ rpc_mclient::~rpc_mclient(){
   evbase_.reset();
 }
 
+void rpc_mclient::call_async(const std::string& m)
+{
+  call_async_(m, std::vector<int>());
+}
+
 void rpc_mclient::connect_async_()
 {
   clients_.clear();
@@ -168,10 +173,8 @@ void rpc_mclient::send_async(const msgpack::sbuffer& buf)
   for(it=clients_.begin(); it!=clients_.end(); ++it){
     event_base_once(evbase_.get(), it->second->get(), EV_WRITE, &mprpc::writable_callback, &ctx, &timeout);
   }
-  exit(0);
   do{
-    
-    int r = event_base_loop(evbase_.get(), EVLOOP_ONCE);
+    event_base_loop(evbase_.get(), EVLOOP_ONCE);
   }while(ctx.rest>0);
 }
 

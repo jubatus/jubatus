@@ -100,11 +100,15 @@ let to_keeper_strings = function
 let generate_keeper s output strees =
   output <<< comment;
   
-  if s#internal then
-    output <<< "#include \"keeper.hpp\""
-  else
+  if s#internal then begin
+    output <<< "#include \"../framework/keeper.hpp\"";
+    output <<< "#include \"../framework/aggregators.hpp\""
+  end
+  else begin
     output <<< "#include <jubatus/framework.hpp>";
-
+    output <<< "#include <jubatus/framework/aggregators.hpp>"
+  end;
+  
   output <<< ("#include \""^s#basename^"_types.hpp\"");
   output <<< ("using namespace "^s#namespace^";");
   output <<< "using namespace jubatus::framework;";
@@ -225,11 +229,16 @@ let to_tmpl_strings = function
   | _ -> [];;
 
 let generate_server_tmpl_header s output strees =
-  output <<< "this is automatically generated template header please implement and edit.";
+  output <<< "// this is automatically generated template header please implement and edit.";
 
   output <<< "#pragma once";
-  output <<< "#include <jubatus/framework.hpp>";
+  if s#internal then
+    output <<< "#include \"../framework.hpp\""
+  else
+    output <<< "#include <jubatus/framework.hpp>";
+  output <<< ("#include \""^s#basename^"_types.hpp\"");
 
+  output <<< "using namespace jubatus::framework;\n";
   output <<< "namespace jubatus { namespace server { // do not change";
   output <<< ("class "^s#basename^"_serv : public jubatus_serv // do not change");
   output <<< "{";
@@ -241,10 +250,11 @@ let generate_server_tmpl_header s output strees =
     (List.flatten (List.map to_tmpl_strings
 		     (List.filter is_service strees)));
 
+  output <<< "  void after_load();";
   output <<< "";
   output <<< "private:";
   output <<< "  // add user data here like: pfi::lang::shared_ptr<some_type> some_;";
-  output <<< "}";
+  output <<< "};";
   output <<< "}} // namespace jubatus::server";;
 
 let to_impl_strings classname = function
@@ -273,9 +283,13 @@ let to_impl_strings classname = function
 
 
 let generate_server_tmpl_impl s output strees =
-  output <<< "this is automatically generated template header please implement and edit.\n";
+  output <<< "// this is automatically generated template header please implement and edit.\n";
 
   let classname = s#basename^"_serv" in
+  output <<< ("#include \""^classname^".hpp\"\n");
+
+  output <<< "using namespace jubatus::framework;\n";
+  output <<< "namespace jubatus { namespace server { // do not change";
 
   output <<< (classname^"::"^classname^"(const server_argv& a)");
   output <<< "  :framework::jubatus_serv(a)";
@@ -293,6 +307,8 @@ let generate_server_tmpl_impl s output strees =
 		     (List.filter is_service strees)));
 
   output <<< "";
+
+  output <<< ("void "^classname^"::after_load(){}");
 
   output <<< "}} // namespace jubatus::server";;
 

@@ -22,5 +22,6 @@ def build(bld):
       'keeper.hpp',
       'server_util.hpp',
       'mixable.hpp',
-      'mixer.hpp'
+      'mixer.hpp',
+      'aggregators.hpp'
       ])

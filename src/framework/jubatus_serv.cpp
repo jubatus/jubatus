@@ -235,6 +235,14 @@ namespace jubatus { namespace framework {
     }
 #endif
 
+    void jubatus_serv::updated(){
+#ifdef HAVE_ZOOKEEPER_H
+      update_count_ = mixer_->updated();
+#else
+      update_count_++;
+#endif
+    }
+
     bool jubatus_serv::save(std::string id)  {
       std::string ofile;
       build_local_path_(ofile, "jubatus", id);

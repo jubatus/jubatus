@@ -54,13 +54,8 @@ public:
   void do_mix(const std::vector<std::pair<std::string,int> >& v);
 #endif
 
-  void updated(){
-#ifdef HAVE_ZOOKEEPER_H
-    update_count_ = mixer_->updated();
-#else
-    update_count_++;
-#endif
-  };
+public:
+  void updated();
 
   bool save(std::string id);
   bool load(std::string id);
@@ -105,4 +100,4 @@ protected:
 
 #define JWLOCK__(p) \
   pfi::concurrent::scoped_lock lk(wlock((p)->get_rw_mutex())); \
-  p_->updated();
+  (p)->updated();
