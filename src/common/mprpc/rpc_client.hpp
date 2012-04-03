@@ -29,6 +29,7 @@
 #include "async_client.hpp"
 #include <glog/logging.h>
 #include <pficommon/data/unordered_map.h>
+#include <pficommon/lang/noncopyable.h>
 
 extern "C"{
 struct event_base;
@@ -44,7 +45,8 @@ struct async_context {
   std::vector<msgpack::object> ret;
 };
 
-class rpc_mclient {
+class rpc_mclient : pfi::lang::noncopyable
+{
 public:
   rpc_mclient(const std::vector<std::pair<std::string, uint16_t> >& hosts,
               int timeout_sec);
