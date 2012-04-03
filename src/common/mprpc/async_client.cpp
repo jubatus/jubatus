@@ -55,6 +55,7 @@ async_sock::async_sock():
   // FIXME: SOCK_NONBLOCK is linux only
   int fd = get();
   set_socket_nonblock(fd, true);
+  unpacker.reserve_buffer(4096);
 }
       
 async_sock::~async_sock(){
@@ -78,46 +79,27 @@ bool async_sock::send_async(const char* buf, size_t size){
 int async_sock::recv_async()
 {
   int fd = this->get();
-
-  /**
-  int nread = -1;
-  socklen_t len = sizeof(nread);
-  ioctl(fd, FIONREAD, &nread);
-  LOG(ERROR) << nread << " bytes to read";
-  if(getsockopt(fd, SOL_SOCKET, SO_ERROR, &nread, &len) != 0){
-    LOG(ERROR) << "broken: " << nread;
-  }else{
-    LOG(ERROR) << "not broken: " << nread;
+  if(unpacker.message_size() == 0){
+    unpacker.reset();
+    unpacker.reserve_buffer(4096);
+  }else if(unpacker.buffer_capacity() == 0){
+    //unpacker.expand_buffer(4096);
   }
-  **/
-
-  char buf[4096];
-  int r = ::read(fd, buf, 4096);
-  recv_buf.write(buf, r);
-
-  if(r < 0){
-    // char msg[1024];
-    // strerror_r(errno, msg, 1024);
-    return r;
-  }
+  int r = ::read(fd, unpacker.buffer(), unpacker.buffer_capacity());
+  // if(r < 0){
+  //   char msg[1024];
+  //   strerror_r(errno, msg, 1024);
+  //   cout << "errno:"<< errno <<  msg << endl;
+  // }
   if(r > 0){
-    progress += r;
+    unpacker.buffer_consumed(r);
   }
-
-  return progress;
+  return r;
 };
-
-msgpack::object async_sock::get_obj()const
-{
-  msgpack::unpacked msg;
-  msgpack::unpack(&msg, recv_buf.data(), recv_buf.size());
-  return msg.get();
-}
 
 int async_sock::connect_async(const std::string& host, uint16_t port){
   int res;
   int sock = this->get();
-  //LOG(ERROR) << "sock_->get() " << sock;
   
   std::vector<pfi::network::ipv4_address> ips = resolve(host, port);
   for (int i=0; i < (int)ips.size(); i++){
@@ -126,11 +108,9 @@ int async_sock::connect_async(const std::string& host, uint16_t port){
     addrin.sin_addr.s_addr = inet_addr(ips[i].to_string().c_str());
     addrin.sin_port = htons(port);
     
-    //DLOG(INFO) << "connecting to " << host << ":" << port << " fd:" << sock;
     res = ::connect(sock,(sockaddr*)&addrin,sizeof(addrin));
     if (res == -1){
       if (errno==EINPROGRESS){
-        //DLOG(INFO) << "EINPROGRESS";
         state = CONNECTING;
         return 0;
       }else{

@@ -37,9 +37,8 @@ public:
   bool send_async(const char* buf, size_t size);
 
   int recv_async();
-  msgpack::object get_obj()const;
   
-  template <typename T>  void salvage(T&);
+  template <typename T> bool salvage(T&);
 
   int connect_async(const std::string& host, uint16_t port);
   int close();
@@ -53,15 +52,19 @@ public:
 private:
   enum { CLOSED, CONNECTING, SENDING, RECVING } state;
   size_t progress;
-  msgpack::sbuffer recv_buf;
+  msgpack::unpacker unpacker;
 };
 
-template <typename T>  void async_sock::salvage(T& t)
+template <typename T>  bool async_sock::salvage(T& t)
 {
   msgpack::unpacked msg;
-  msgpack::unpack(&msg, recv_buf.data(), recv_buf.size());
-  const msgpack::object& o = msg.get();
-  o.convert(&t);
+  if(unpacker.next(&msg)){
+    msgpack::object o = msg.get();
+    std::auto_ptr<msgpack::zone> z = msg.zone();
+    o.convert(&t);
+    return true;
+  }
+  return false;
 };
 
 
