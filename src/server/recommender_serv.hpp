@@ -89,6 +89,7 @@ public:
   std::vector<std::string> get_all_rows();
 
   std::map<std::string, std::map<std::string, std::string> > get_status();
+  void check_set_config()const;
 
 private:
 

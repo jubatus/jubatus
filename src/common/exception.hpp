@@ -23,24 +23,29 @@
 
 namespace jubatus{
 
-  class storage_not_set : std::exception {};
-  class config_not_set : std::exception {};
-  class unsupported_method : std::runtime_error {
+  class storage_not_set : public std::exception {};
+
+  class config_not_set : public std::runtime_error {
+  public:
+    config_not_set(): runtime_error("config_not_set") {}
+  };
+
+  class unsupported_method : public std::runtime_error {
   public:
     unsupported_method(const std::string& n): runtime_error(n) {}
   };
 
-  class bad_storage_type : std::runtime_error {
+  class bad_storage_type : public std::runtime_error {
   public:
     bad_storage_type(const std::string& n):runtime_error(n){};
   };
 
-  class membership_error : std::runtime_error {
+  class membership_error : public std::runtime_error {
   public:
     membership_error(const std::string& n):runtime_error(n){};
   };
 
-  class argv_error : std::runtime_error {
+  class argv_error : public std::runtime_error {
   public:
     argv_error(const std::string& n):runtime_error(n){};
   };

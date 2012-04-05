@@ -99,15 +99,23 @@ namespace {
     };
   };
 
+ //todo: insert __LINE__ as original line number
+#define ASSERT_THROW2(statement__, type__, what__) \
+  try{ statement__; FAIL();         \
+  }catch(type__& __e__){ ASSERT_STREQ(what__, __e__.what()); }
+
 TEST_P(classifier_test, set_config_exception){
   classifier c("localhost", PORT, 10);
   jubatus::config_data config;
   config.method = "pa";
-  ASSERT_THROW(c.set_config("", config), std::exception);
+  ASSERT_THROW2(c.set_config("", config), std::exception, "pa");
+  //  ASSERT_THROW(c.set_config("", config), std::exception);
   config.method = "";
-  ASSERT_THROW(c.set_config("", config), std::exception);
+  ASSERT_THROW2(c.set_config("", config), std::exception, "");
+  //  ASSERT_THROW(c.set_config("", config), std::exception);
   config.method = "saitama";
-  ASSERT_THROW(c.set_config("", config), std::exception);
+  ASSERT_THROW2(c.set_config("", config), std::exception, "saitama");
+  //  ASSERT_THROW(c.set_config("", config), std::exception);
 }
 
 TEST_P(classifier_test, simple){
@@ -147,6 +155,7 @@ TEST_P(classifier_test, api_config) {
   config_data to_set;
   config_data to_get;
   load_config(to_set);
+
   int res_set = cli.set_config(NAME, to_set);
   //  ASSERT_(res_set.success) << res_set.error;
   ASSERT_EQ(0, res_set);
@@ -164,6 +173,26 @@ TEST_P(classifier_test, api_train){
 
   vector<pair<string, datum> > data;
   make_random_data(data, example_size);
+  unsigned int res = cli.train(NAME, data);
+  ASSERT_EQ(data.size(), res);
+}
+
+TEST_P(classifier_test, api_classify){
+  classifier cli("localhost", PORT, 10);
+  const size_t example_size = 1000;
+  config_data c;
+  load_config(c);
+
+  vector<datum>  datas; //for classify
+
+  vector<pair<string, datum> > data; //for train
+  make_random_data(data, example_size);
+
+  ASSERT_THROW2(cli.classify(NAME, datas), std::exception, "config_not_set");
+  ASSERT_THROW2(cli.train(NAME, data), std::exception, "config_not_set");
+
+  cli.set_config(NAME, c);
+
   unsigned int res = cli.train(NAME, data);
   ASSERT_EQ(data.size(), res);
 }

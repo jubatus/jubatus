@@ -83,15 +83,13 @@ int classifier_serv::set_config(config_data config) {
 
 config_data classifier_serv::get_config() {
   DLOG(INFO) << __func__;
+  check_set_config();
   return config_;
 }
 
 int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > data) {
 
-  if (!clsfer_.classifier_){
-    LOG(ERROR) << __func__ << ": config is not set";
-    return -1; //int::fail("config_not_set"); // 
-  }
+  check_set_config();
 
   int count = 0;
   sfv_t v;
@@ -114,6 +112,8 @@ int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > 
 
 std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector<jubatus::datum> data) const {
   std::vector<std::vector<estimate_result> > ret;
+
+  check_set_config();
 
   sfv_t v;
   fv_converter::datum d;
@@ -166,7 +166,12 @@ std::map<std::string, std::map<std::string,std::string> > classifier_serv::get_s
   return ret;
 }
   
-
+void classifier_serv::check_set_config()const
+{
+  if (!clsfer_.classifier_){
+    throw config_not_set();
+  }
+}
 
 val3_t mix_val3(const val3_t& lhs, const val3_t& rhs) {
   return val3_t(lhs.v1 + rhs.v1,

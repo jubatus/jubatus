@@ -80,6 +80,8 @@ public:
 
   std::map<std::string, std::map<std::string, std::string> > get_status();
 
+  void check_set_config()const;
+
 private:
   config_data config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
