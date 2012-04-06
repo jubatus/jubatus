@@ -30,21 +30,48 @@ more difficult it is, the less developers will come.
 Solution
 ========
 
-Simple C++ code parser and a bit complex C++ code generator. Input specification of C++ code is
-very simple and a subset of C++ language. Users can use the input C++ file as a simple internal
-C++ module. Output is a set of C++ files that is to be assembled to the Jubatus servers: main
-server that does mix, keeper server to be the gateway and the client library (in multiple
-languages, if possible).
+Simple msgpack-idl parser and a bit complex C++ code generator. Input specification of IDL is
+very simple and a extension of msgpack-idl. Users should annotate 3 decorators on each RPC-API
+of each services, which are about routing, R/W feature and aggregator.
 
-- Input: 'xxx.cpp' which implements developer's application 
-- Output0: 'xxx.idl' which defines server-client interface in MsgPack-idl format
-- Output1: 'xxx_impl.(h|c)pp' which implements developer's application in server-side including 'main()'
-- Output2: 'xxx_keeper.cpp' -- keeper implementation includes 'main()'
+- routing
 
+ - cht
+ - broadcast
+ - random
 
-First goal and the following sequence
-=====================================
+- R/W feature
 
-#. Replace current classifier and recommender with a generated-code.
-#. Make them composable.
-#. General framework
+ - update   - this does changes the server state, guarded by writer lock.
+ - analysis - does not change the server state, so that threads can work in parallel.
+
+ 
+
+Users can use the input jubatus-IDL file. Output is a set of C++ files that is to be assembled
+to the Jubatus servers: main server-kickstart program, keeper server to be the gateway and C++
+server template (different from C++ 'template').
+
+- Input: 'xxx.idl' which implements msgpack-idl based extended spec
+- Output0: 'xxx_impl.cpp' which implements developer's application in server-side including 'main()'
+- Output1: 'xxx_keeper.cpp' -- keeper implementation includes 'main()'
+- Output2: optional: 'xxx_serv.(h|c)pp' -- server template for users
+
+Reference
+=========
+
+- msgpack
+
+ - http://msgpack.org
+
+- msgpack-idl spec
+
+ - https://github.com/msgpack/msgpack-haskell/blob/master/msgpack-idl/Specification.md
+
+Things left
+===========
+
+- parse version number in service
+- other file inclusion
+- comment parsing ('#\n' cannot be parsed)
+- stop using polimorphic variant
+- other messy codes (refs, records instead of tuples, = and ==s)

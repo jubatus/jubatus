@@ -74,17 +74,14 @@ int regression_serv::set_config(config_data config) {
   return 0;
 }
 
-config_data regression_serv::get_config(int) {
-  DLOG(INFO) << __func__;
+config_data regression_serv::get_config() {
+  check_set_config();
   return config_;
 }
 
 int regression_serv::train(std::vector<std::pair<float, jubatus::datum> > data) {
 
-  if (!gresser_.regression_){
-    LOG(ERROR) << __func__ << ": config is not set";
-    return -1; //int::fail("config_not_set"); // 
-  }
+  check_set_config();
 
   int count = 0;
   sfv_t v;
@@ -101,6 +98,8 @@ int regression_serv::train(std::vector<std::pair<float, jubatus::datum> > data) 
 }
 
 std::vector<float > regression_serv::estimate(std::vector<jubatus::datum> data) {
+  check_set_config();
+
   std::vector<float> ret;
   sfv_t v;
   fv_converter::datum d;
@@ -120,17 +119,24 @@ void regression_serv::after_load(){
   //  regression_.reset(regression_factory().create_regression(config_.method, model_.get()));
 };
 
-std::map<std::string, std::map<std::string,std::string> > regression_serv::get_status(int){
+std::map<std::string, std::map<std::string,std::string> > regression_serv::get_status(){
   std::map<std::string,std::string> ret0;
 
   gresser_.get_model()->get_status(ret0); //FIXME
   ret0["storage"] = gresser_.get_model()->type();
 
   std::map<std::string, std::map<std::string,std::string> > ret =
-    jubatus_serv::get_status(0);
+    jubatus_serv::get_status();
 
   ret[get_server_identifier()].insert(ret0.begin(), ret0.end());
   return ret;
+}
+
+void regression_serv::check_set_config()const
+{
+  if(!gresser_.regression_){
+    throw config_not_set();
+  }
 }
   
 val3_t mix_val3(const val3_t& lhs, const val3_t& rhs) {

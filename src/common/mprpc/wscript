@@ -1,0 +1,23 @@
+
+def options(opt): pass
+
+def configure(conf): pass
+
+def build(bld):
+  src = 'rpc_client.cpp async_client.cpp'
+
+  bld.shlib(
+    source = src,
+    target = 'jubacommon_mprpc',
+    use = 'PFICOMMON GLOG ZOOKEEPER_MT EVENT'
+    )
+
+  bld.program(
+    features = 'gtest',
+    source = 'rpc_client_test.cpp',
+    target = 'rpc_client_test',
+    includes = '. ../framework',
+    use = 'PFICOMMON MSGPACK jubacommon_mprpc',
+    )
+
+  bld.install_files('${PREFIX}/include/jubatus/common/mprpc', bld.path.ant_glob('*.hpp'))

@@ -41,7 +41,7 @@ public:
   pfi::concurrent::rw_mutex& get_rw_mutex(){ return m_; };
   void use_cht();
 
-  std::map<std::string, std::map<std::string,std::string> > get_status(int) const;
+  std::map<std::string, std::map<std::string,std::string> > get_status() const;
   std::string get_server_identifier()const;
 
 #ifdef HAVE_ZOOKEEPER_H
@@ -54,16 +54,11 @@ public:
   void do_mix(const std::vector<std::pair<std::string,int> >& v);
 #endif
 
-  void updated(){
-#ifdef HAVE_ZOOKEEPER_H
-    update_count_ = mixer_->updated();
-#else
-    update_count_++;
-#endif
-  };
+public:
+  void updated();
 
-  int save(std::string id);
-  int load(std::string id);
+  bool save(std::string id);
+  bool load(std::string id);
 
   // after load( model_ was loaded from file ) called, users reset their own data
   // I'm afraid this function is useless
@@ -105,4 +100,4 @@ protected:
 
 #define JWLOCK__(p) \
   pfi::concurrent::scoped_lock lk(wlock((p)->get_rw_mutex())); \
-  p_->updated();
+  (p)->updated();

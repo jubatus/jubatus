@@ -26,9 +26,7 @@ namespace fv_converter {
 using namespace std;
 
 weight_manager::weight_manager()
-    : document_count_(),
-      document_frequencies_(),
-      weights_() {}
+    : diff_weights_(), master_weights_() {}
 
 struct is_zero {
   bool operator()(const pair<string, float>& p) {
@@ -36,19 +34,17 @@ struct is_zero {
   }
 };
 
-void weight_manager::update_weight(sfv_t& fv) {
-  ++document_count_;
-  for (sfv_t::const_iterator it = fv.begin(); it != fv.end(); ++it) {
-    ++document_frequencies_[it->first];
-  }
+void weight_manager::update_weight(const sfv_t& fv) {
+  diff_weights_.update_document_frequency(fv);
+}
 
+void weight_manager::get_weight(sfv_t& fv) const {
   for (sfv_t::iterator it = fv.begin(); it != fv.end(); ++it) {
     double global_weight  = get_global_weight(it->first);
     it->second *= global_weight;
   }
   fv.erase(remove_if(fv.begin(), fv.end(), is_zero()), fv.end());
 }
-
 
 double weight_manager::get_global_weight(const string& key) const {
   size_t p = key.find_last_of('/');
@@ -58,25 +54,22 @@ double weight_manager::get_global_weight(const string& key) const {
   if (type == "bin") {
     return 1.0;
   } else if (type == "idf") {
-    return log(static_cast<double>(document_count_)
-               / document_frequencies_[key]);
+    double doc_count = get_document_count();
+    double doc_freq = get_document_frequency(key);
+    return log(doc_count / doc_freq);
   } else if (type == "weight") {
     p = key.find_last_of('#');
     if (p == string::npos)
       return 0;
-    weight_t::const_iterator wit = weights_.find(key.substr(0, p));
-    if (wit != weights_.end()) {
-      return wit->second;
-    } else {
-      return 0;
-    }
+    else
+      return get_user_weight(key.substr(0, p));
   } else {
     return 1;
   }
 }
 
 void weight_manager::add_weight(const std::string& key, float weight) {
-  weights_[key] = weight;
+  diff_weights_.add_weight(key, weight);
 }
 
 }

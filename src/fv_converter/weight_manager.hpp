@@ -21,6 +21,7 @@
 #include "counter.hpp"
 #include <pficommon/data/unordered_map.h>
 #include "../common/type.hpp"
+#include "keyword_weights.hpp"
 
 namespace jubatus {
 namespace fv_converter {
@@ -29,17 +30,58 @@ class weight_manager {
  public:
   weight_manager();
   
-  void update_weight(sfv_t& fv);
+  void update_weight(const sfv_t& fv);
+  void get_weight(sfv_t& fv)const;
 
   void add_weight(const std::string& key, float weight);
 
+  const keyword_weights& get_diff() const {
+    return diff_weights_;
+  }
+
+  void put_diff(const keyword_weights& diff) {
+    master_weights_.merge(diff);
+    diff_weights_.clear();
+  }
+
+  void save(std::ostream& os){
+    pfi::data::serialization::binary_oarchive oa(os);
+    oa << diff_weights_;
+    oa << master_weights_;
+  }
+  void load(std::istream& is){
+    pfi::data::serialization::binary_iarchive ia(is);
+    ia >> diff_weights_;
+    ia >> master_weights_;
+  }
+
+  template <class Archiver>
+  void serialize(Archiver &ar) {
+    ar
+      & MEMBER(diff_weights_)
+      & MEMBER(master_weights_);
+  }
  private:
+  size_t get_document_count() const {
+    return diff_weights_.get_document_count()
+        + master_weights_.get_document_count();
+  }
+
+  size_t get_document_frequency(const std::string& key) const {
+    return diff_weights_.get_document_frequency(key)
+        + master_weights_.get_document_frequency(key);
+  }
+
+  double get_user_weight(const std::string& key) const {
+    return diff_weights_.get_user_weight(key)
+        + master_weights_.get_user_weight(key);
+  }
+
+
   double get_global_weight(const std::string& key) const;
 
-  size_t document_count_;
-  counter<std::string> document_frequencies_;
-  typedef pfi::data::unordered_map<std::string, float> weight_t;
-  weight_t weights_;
+  keyword_weights diff_weights_;
+  keyword_weights master_weights_;
 
 };
 

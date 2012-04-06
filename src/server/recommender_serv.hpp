@@ -68,24 +68,28 @@ public:
   virtual ~recommender_serv();
 
   int set_config(config_data config);
-  config_data get_config(int);
+  config_data get_config();
 
-  int clear_row(std::string id, int);
+  int clear_row(std::string id);
   int update_row(std::string id, datum dat);
-  int clear(int);
+  int clear();
 
   common::cshared_ptr<recommender_base> make_model();
   void after_load();
 
-  datum complete_row_from_id(std::string id, int);
+  datum complete_row_from_id(std::string id);
   datum complete_row_from_data(datum dat);
   similar_result similar_row_from_id(std::string id, size_t ret_num);
-  similar_result similar_row_from_data(std::pair<datum, size_t>);
+  similar_result similar_row_from_data(datum, size_t);
 
-  datum decode_row(std::string id, int);
-  std::vector<std::string> get_all_rows(int);
+  float similarity(const datum& , const datum&);
+  float l2norm(const datum& q);
 
-  std::map<std::string, std::map<std::string, std::string> > get_status(int);
+  datum decode_row(std::string id);
+  std::vector<std::string> get_all_rows();
+
+  std::map<std::string, std::map<std::string, std::string> > get_status();
+  void check_set_config()const;
 
 private:
 

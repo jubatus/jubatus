@@ -32,14 +32,15 @@ public:
 
   void after_load();
 
-  int set_config(const config_data&);
+  bool set_config(const config_data&);
+  config_data get_config()const;
   int push(const std::string& key, double value);
-  double sum(const std::string&, int) const ;
-  double stddev(const std::string&, int) const ;
-  double max(const std::string&, int) const ;
-  double min(const std::string&, int) const ;
-  double entropy(const std::string&, int) const ;
-  double moment(const std::string&, std::pair<int, double>) const;
+  double sum(const std::string&) const ;
+  double stddev(const std::string&) const ;
+  double max(const std::string&) const ;
+  double min(const std::string&) const ;
+  double entropy(const std::string&) const ;
+  double moment(const std::string&, int, double) const;
 
 private:
   jubatus::config_data config_;
