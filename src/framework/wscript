@@ -14,7 +14,7 @@ def build(bld):
     source = framework_source,
     target = 'jubatus_framework',
     includes = '.',
-    use = 'PFICOMMON jubacommon MSGPACK GLOG jubacommon_mprpc'
+    use = 'PFICOMMON jubacommon MSGPACK LIBGLOG jubacommon_mprpc'
     )
 
   bld.install_files('${PREFIX}/include/jubatus/framework', [

@@ -9,7 +9,7 @@ def build(bld):
     source = 'jubactl.cpp',
     target = 'jubactl',
     includes = '.',
-    use = 'MSGPACK PFICOMMON GLOG ZOOKEEPER_MT jubacommon'
+    use = 'MSGPACK PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon'
     )
 
   bld.program(

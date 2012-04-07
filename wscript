@@ -33,9 +33,10 @@ def configure(conf):
   conf.load('unittest_gtest')
 
   conf.check_cxx(lib = 'msgpack')
-  conf.check_cxx(lib = 'glog')
+  conf.check_cxx(lib = 'dl')
 
-  conf.check_cxx(lib = 'event')
+  conf.check_cfg(package = 'libglog', args = '--cflags --libs')
+  conf.check_cfg(package = 'libevent', args = '--cflags --libs')
   conf.check_cxx(header_name = 'event.h')
   
   conf.check_cfg(package = 'pficommon', args = '--cflags --libs')
@@ -74,9 +75,6 @@ def configure(conf):
     conf.env.append_value('CXXFLAGS', '-fprofile-arcs')
     conf.env.append_value('CXXFLAGS', '-ftest-coverage')
     conf.env.append_value('LINKFLAGS', '-lgcov')
-
-
-  conf.check_cxx(lib = 'dl')
 
   # don't know why this does not work when put after conf.recurse
   conf.define('JUBATUS_VERSION', VERSION)
