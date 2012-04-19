@@ -88,8 +88,8 @@ namespace jubatus { namespace framework {
       }catch(const jubatus::config_not_set& e){
       }
 
-      mixables_.push_back(m);
 #endif
+      mixables_.push_back(m);
     };
     
     void jubatus_serv::use_cht(){
