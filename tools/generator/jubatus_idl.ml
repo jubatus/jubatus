@@ -17,11 +17,24 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 *)
 
-let outdir  = ref ".";;
-let internal = ref false;;
-let namespace = ref "jubatus";;
-let default_template = ref false;;
-let debugmode = ref true;;
+let outdir  = ref "."
+let internal = ref false
+let namespace = ref "jubatus"
+let default_template = ref false
+
+let _ =
+  Arg.parse [
+    ("-o", Arg.Set_string(outdir), "output directory");
+    ("-i", Arg.Set(internal), "internal include"); (* for jubatus internal use *)
+    ("-n", Arg.Set_string(namespace), "namespace"); (* C++ namespace *)
+    ("-t", Arg.Set(default_template), "output default template xxx_serv file");
+  ] (fun _ -> ()) "usage:";;
+
+(* Now they are fixed, so remove the refs and make them non-writable!!! *)
+let outdir  = !outdir
+let internal = !internal
+let namespace = !namespace
+let default_template = !default_template
 
 let parse source_file = 
   let lexbuf = Lexing.from_channel (open_in source_file) in
@@ -39,6 +52,8 @@ let parse source_file =
       print_endline (Printexc.to_string exn);
       raise exn;;
 
+let debugmode = ref true
+
 let make_output filename =
   if !debugmode then stdout
   else begin
@@ -47,13 +62,6 @@ let make_output filename =
   end;;
 
 let _ =
-  Arg.parse [
-    ("-o", Arg.Set_string(outdir), "output directory");
-    ("-i", Arg.Set(internal), "internal include"); (* for jubatus internal use *)
-    ("-n", Arg.Set_string(namespace), "namespace"); (* C++ namespace *)
-    ("-t", Arg.Set(default_template), "output default template xxx_serv file");
-  ] (fun _ -> ()) "usage:";
-
   let source_file = Sys.argv.(1) in
 
   (* parse the idl *)
@@ -71,14 +79,14 @@ let _ =
   (* output -> xxx_keeper.cpp xxx_serv.hpp xxx_impl.cpp *)
 
   let basename = Util.get_basename source_file in
-  let s = new Generator.spec !namespace !internal source_file basename in
+  let s = new Generator.spec namespace internal source_file basename in
   debugmode := false;
 
   Generator.generate_keeper s (make_output (basename^"_keeper.cpp")) strees;
 
   Generator.generate_impl s (make_output (basename^"_impl.cpp")) strees;
   
-  if !default_template then begin
+  if default_template then begin
     Generator.generate_server_tmpl_header s (make_output (basename^"_serv.tmpl.hpp")) strees;
     Generator.generate_server_tmpl_impl s (make_output (basename^"_serv.tmpl.cpp")) strees
   end;;
