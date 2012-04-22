@@ -1,3 +1,4 @@
+#include <iostream>
 #include <gtest/gtest.h>
 #include "bit_index_storage.hpp"
 
@@ -64,6 +65,7 @@ TEST(bit_index_storage, diff) {
   bit_vector v;
   s2.get_row("r1", v);
   EXPECT_TRUE(make_vector("0101") == v);
+
   v.resize_and_clear(4);
   s2.get_row("r2", v);
   EXPECT_TRUE(make_vector("1010") == v);
@@ -95,6 +97,7 @@ TEST(bit_index_storage, mix) {
   s3.set_mixed_and_clear_diff(d2);
 
   // r1, r2 and r3 are overwritten by d2
+  // r4 is no longer retained
 
   bit_vector v;
   s3.get_row("r1", v);
@@ -104,7 +107,7 @@ TEST(bit_index_storage, mix) {
   s3.get_row("r3", v);
   EXPECT_TRUE(v == make_vector("1100"));
   s3.get_row("r4", v);
-  EXPECT_TRUE(v == make_vector("1111"));
+  EXPECT_TRUE(v == bit_vector());
 }
 
 }

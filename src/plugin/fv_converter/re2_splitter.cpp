@@ -27,13 +27,10 @@ using jubatus::fv_converter::converter_exception;
 
 namespace jubatus {
 
-re2_splitter::re2_splitter(const string& regexp, int group, int end)
-    : re_(regexp), group_(group), end_(end) {
+re2_splitter::re2_splitter(const string& regexp, int group)
+    : re_(regexp), group_(group) {
   if (group < 0) {
     throw converter_exception("'group' must be positive");
-  }
-  if (end < 0) {
-    throw converter_exception("'end' must be positive");
   }
   if (!re_.ok()) {
     throw converter_exception("invalid regular expression: " + regexp);
@@ -43,13 +40,6 @@ re2_splitter::re2_splitter(const string& regexp, int group, int end)
         + lexical_cast<string>(re_.NumberOfCapturingGroups())
         + " groups, but 'group' is "
         + lexical_cast<string>(group);
-    throw converter_exception(msg);
-  }
-  if (end > re_.NumberOfCapturingGroups()) {
-    string msg = "regexp '" + regexp + "' only contains "
-        + lexical_cast<string>(re_.NumberOfCapturingGroups())
-        + " groups, but 'end' is "
-        + lexical_cast<string>(end);
     throw converter_exception(msg);
   }
 }
@@ -66,7 +56,7 @@ void re2_splitter::split(const string& str,
     size_t pos = words[group_].begin() - input.begin();
     bounds.push_back(make_pair(pos, len));
 
-    size_t next = words[end_].end() - input.begin();
+    size_t next = words[group_].end() - input.begin();
     if (current == next) {
       // did not match
       current += 1;
@@ -106,7 +96,6 @@ extern "C" {
   jubatus::re2_splitter* create(const map<string, string>& args) {
     string pattern = get(args, "pattern");
     int group = get_int_with_default(args, "group", 0);
-    int end = get_int_with_default(args, "end", 0);
-    return new jubatus::re2_splitter(pattern, group, end);
+    return new jubatus::re2_splitter(pattern, group);
   }
 }
