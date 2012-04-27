@@ -32,6 +32,8 @@ recommender_base* create_recommender(const string& name){
     return new minhash;
   } else if (name == "lsh"){
     return new lsh;
+  } else if (name == "euclid_lsh") {
+    return new euclid_lsh;
   } else {
     throw unsupported_method(name);
   }

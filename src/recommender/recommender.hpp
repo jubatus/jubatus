@@ -19,4 +19,5 @@
 
 #include "inverted_index.hpp"
 #include "lsh.hpp"
-#include "minhash.hpp"
+
+#include "euclid_lsh.hpp"
