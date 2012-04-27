@@ -19,7 +19,9 @@ def make_tests(bld, srcs):
 def build(bld):
   cppfiles = ['storage_factory.cpp', 'storage_base.cpp', 'local_storage.cpp',
               'local_storage_mixture.cpp',
-	      'sparse_matrix_storage.cpp', 'inverted_index_storage.cpp', 'bit_vector.cpp', 'bit_index_storage.cpp']
+	      'sparse_matrix_storage.cpp', 'inverted_index_storage.cpp', 'bit_vector.cpp', 'bit_index_storage.cpp',
+              'lsh_vector.cpp',
+              'lsh_index_storage.cpp']
   use = 'PFICOMMON jubacommon MSGPACK'
 
   bld.shlib(
@@ -36,8 +38,8 @@ def build(bld):
       'sparse_matrix_storage_test.cpp',
       'fixed_size_heap_test.cpp',
       'inverted_index_storage_test.cpp',
-      'bit_vector_test.cpp',
-      'bit_index_storage_test.cpp',
+      'lsh_vector_test.cpp',
+      'lsh_index_storage_test.cpp',
       ])
 
   bld.install_files('${PREFIX}/include/jubatus/server/storage',

@@ -30,6 +30,8 @@ recommender_base* create_recommender(const string& name){
     return new inverted_index;
   } else if (name == "lsh"){
     return new lsh;
+  } else if (name == "euclid_lsh") {
+    return new euclid_lsh;
   } else {
     throw unsupported_method(name);
   }

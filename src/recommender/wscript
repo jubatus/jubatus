@@ -10,6 +10,7 @@ def build(bld):
       'lsh.cpp',
       'recommender_factory.cpp',
       'lsh_util.cpp',
+      'euclid_lsh.cpp',
       ],
     target = 'jubatus_recommender',
     name = 'jubatus_recommender',

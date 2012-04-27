@@ -19,3 +19,4 @@
 
 #include "inverted_index.hpp"
 #include "lsh.hpp"
+#include "euclid_lsh.hpp"
