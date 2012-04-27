@@ -19,7 +19,7 @@ def build(bld):
     source = src,
     target = 'jubacommon',
     includes = '.',
-    use = 'PFICOMMON GLOG ZOOKEEPER_MT CRYPT jubacommon_mprpc'
+    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon_mprpc'
     )
 
   test_src = [

@@ -25,11 +25,48 @@
 
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/system/time_util.h>
-
+#include <pficommon/network/mprpc/socket.h>
 
 namespace jubatus { namespace common { namespace mprpc {
 
-class async_sock;
+class async_sock : public pfi::network::mprpc::socket {
+public:
+  async_sock();
+  ~async_sock();
+  bool set_async(bool on);
+  bool send_async(const char* buf, size_t size);
+
+  int recv_async();
+  
+  template <typename T> bool salvage(T&);
+
+  int connect_async(const std::string& host, uint16_t port);
+  int close();
+
+  void set_sending(){ state = SENDING; };
+  void set_recving(){ state = RECVING; };
+  void disconnected(){ state = CLOSED; };
+  bool is_connecting()const{ return state == CONNECTING; };
+  bool is_sending()const{ return state == SENDING; };
+  bool is_recving()const{ return state == RECVING; };
+private:
+  enum { CLOSED, CONNECTING, SENDING, RECVING } state;
+  size_t progress;
+  msgpack::unpacker unpacker;
+};
+
+template <typename T>  bool async_sock::salvage(T& t)
+{
+  msgpack::unpacked msg;
+  if(unpacker.next(&msg)){
+    msgpack::object o = msg.get();
+    std::auto_ptr<msgpack::zone> z = msg.zone();
+    o.convert(&t);
+    return true;
+  }
+  return false;
+};
+
 
 class async_client {
 public:
@@ -40,6 +77,8 @@ public:
   void join(msgpack::object& o);
   
   void connect_async();
+
+  void l();
   
 private:
   bool wait();
@@ -49,6 +88,8 @@ private:
   int timeout_sec_;
   pfi::lang::shared_ptr<async_sock> sock_;
   pfi::system::time::clock_time start_;
+
+  int epfd_;
 };
 
 }

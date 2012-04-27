@@ -54,13 +54,16 @@ int recommender_serv::set_config(config_data config)
   return 0;
 }
   
-config_data recommender_serv::get_config(int)
+config_data recommender_serv::get_config()
 {
+  check_set_config();
   return config_;
 }
 
-int recommender_serv::clear_row(std::string id, int)
+int recommender_serv::clear_row(std::string id)
 {
+  check_set_config();
+
   ++clear_row_cnt_;
   rcmdr_.get_model()->clear_row(id);
   return 0;
@@ -68,6 +71,8 @@ int recommender_serv::clear_row(std::string id, int)
 
 int recommender_serv::update_row(std::string id,datum dat)
 {
+  check_set_config();
+
   ++update_row_cnt_;
   fv_converter::datum d;
   convert<jubatus::datum, fv_converter::datum>(dat, d);
@@ -77,8 +82,9 @@ int recommender_serv::update_row(std::string id,datum dat)
   return 0;
 }
 
-int recommender_serv::clear(int)
+int recommender_serv::clear()
 {
+  check_set_config();
   clear_row_cnt_ = 0;
   update_row_cnt_ = 0;
   build_cnt_ = 0;
@@ -87,19 +93,21 @@ int recommender_serv::clear(int)
   return 0;
 }
 
-pfi::lang::shared_ptr<recommender_base> recommender_serv::make_model(){
-  return pfi::lang::shared_ptr<recommender_base>
+common::cshared_ptr<recommender_base> recommender_serv::make_model(){
+  return common::cshared_ptr<recommender_base>
     (jubatus::recommender::create_recommender(config_.method));
 }  
 
 void recommender_serv::after_load(){
-  clear(0);
+  clear();
 }
 
 
 
-datum recommender_serv::complete_row_from_id(std::string id, int)
+datum recommender_serv::complete_row_from_id(std::string id)
 {
+  check_set_config();
+
   sfv_t v;
   fv_converter::datum ret;
   rcmdr_.get_model()->complete_row(id, v);
@@ -113,6 +121,8 @@ datum recommender_serv::complete_row_from_id(std::string id, int)
 
 datum recommender_serv::complete_row_from_data(datum dat)
 {
+  check_set_config();
+
   fv_converter::datum d;
   convert<jubatus::datum, fv_converter::datum>(dat, d);
   sfv_t u, v;
@@ -129,25 +139,31 @@ datum recommender_serv::complete_row_from_data(datum dat)
 
 similar_result recommender_serv::similar_row_from_id(std::string id, size_t ret_num)
 {
+  check_set_config();
+
   similar_result ret;
   rcmdr_.get_model()->similar_row(id, ret, ret_num);
   return ret;
 }
 
-similar_result recommender_serv::similar_row_from_data(std::pair<datum, size_t> data)
+similar_result recommender_serv::similar_row_from_data(datum data, size_t s)
 {
+  check_set_config();
+
   similar_result ret;
   fv_converter::datum d;
-  convert<datum, fv_converter::datum>(data.first, d);
+  convert<datum, fv_converter::datum>(data, d);
 
   sfv_t v;
   converter_->convert(d, v);
-  rcmdr_.get_model()->similar_row(v, ret, data.second);
+  rcmdr_.get_model()->similar_row(v, ret, s);
   return ret;
 }
 
-datum recommender_serv::decode_row(std::string id, int)
+datum recommender_serv::decode_row(std::string id)
 {
+  check_set_config();
+
   sfv_t v;
   fv_converter::datum ret;
 
@@ -159,17 +175,19 @@ datum recommender_serv::decode_row(std::string id, int)
   return ret0;
 }
 
-std::vector<std::string> recommender_serv::get_all_rows(int)
+std::vector<std::string> recommender_serv::get_all_rows()
 {
+  check_set_config();
+
   std::vector<std::string> ret;
   rcmdr_.get_model()->get_all_row_ids(ret);
   return ret;
 }
 
-float recommender_serv::similarity(const std::pair<datum, datum>& two){
+float recommender_serv::similarity(const datum& l, const datum& r){
   fv_converter::datum d0, d1;
-  convert<datum, fv_converter::datum>(two.first, d0);
-  convert<datum, fv_converter::datum>(two.second, d1);
+  convert<datum, fv_converter::datum>(l, d0);
+  convert<datum, fv_converter::datum>(r, d1);
 
   sfv_t v0, v1;
   converter_->convert(d0, v0);
@@ -186,7 +204,7 @@ float recommender_serv::l2norm(const datum& q){
 
 }
 
-std::map<std::string, std::map<std::string, std::string> > recommender_serv::get_status(int)
+std::map<std::string, std::map<std::string, std::string> > recommender_serv::get_status()
 {
   std::map<std::string, std::string> ret0;
 
@@ -195,10 +213,17 @@ std::map<std::string, std::map<std::string, std::string> > recommender_serv::get
   ret0["build_cnt"] = pfi::lang::lexical_cast<std::string>(build_cnt_);
   ret0["mix_cnt"] = pfi::lang::lexical_cast<std::string>(mix_cnt_);
 
-  std::map<std::string, std::map<std::string,std::string> > ret = jubatus_serv::get_status(0);
+  std::map<std::string, std::map<std::string,std::string> > ret = jubatus_serv::get_status();
 
   ret[get_server_identifier()].insert(ret0.begin(), ret0.end());
   return ret;
+}
+
+void recommender_serv::check_set_config()const
+{
+  if (!rcmdr_.get_model()){
+    throw config_not_set();
+  }
 }
 
 

@@ -28,6 +28,7 @@ clean:
 NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
 BYTE_ENABLED = $(not $(OCAMLOPT_EXISTS))
 
+# MENHIR_ENABLED =true
 
 # Various options
 
@@ -44,18 +45,21 @@ OCAMLCFLAGS   += -g
 # Workaround for the fact that ocamldep does not pay attention to .mll
 # and .mly files.
 #
-OCamlGeneratedFiles(parser.ml lexer.ml)
+OCamlGeneratedFiles(jdl_parser.ml jdl_lexer.ml)
 
 FILES[] =
-    main
-    lexer
-    parser
+    jubatus_idl
+    jdl_lexer
+    jdl_parser
+    validator
     stree
     generator
     util
-    server_template
-    keeper_template
-    idl_template
+
+#    idl
+#    server_template
+#    keeper_template
+#    idl_template
 
 PROGRAM = jenerator
 # OCAML_LIBS +=
@@ -65,9 +69,10 @@ PROGRAM = jenerator
 
 .DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
 
-test: $(PROGRAM)  ../../src/server/recommender.hpp
-	./$(PROGRAM) ../../src/server/recommender.hpp -i
-	-diff recommender.idl ../../src/server/recommender.idl
+
+test: $(PROGRAM)  small.idl
+#	./$(PROGRAM) small.idl
+	./$(PROGRAM) ../../src/server/recommender.idl -i
 	-diff recommender_impl.cpp ../../src/server/recommender_impl.cpp
 	-diff recommender_keeper.cpp ../../src/server/recommender_keeper.cpp
 

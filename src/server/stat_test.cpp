@@ -51,16 +51,16 @@ TEST_F(stat_test, small) {
 
   client::stat c("localhost", PORT, 10);
   c.push("", "hoge", 12);
-  ASSERT_DOUBLE_EQ(12.0, c.sum("", "hoge", 0));
+  ASSERT_DOUBLE_EQ(12.0, c.sum("", "hoge"));
 
   // FIXME: add more tests
-  //  ASSERT_DOUBLE_EQ(12.0, c.stddev("", "hoge", 0));
-  ASSERT_DOUBLE_EQ(12.0, c.max("", "hoge", 0));
-  ASSERT_DOUBLE_EQ(12.0, c.min("", "hoge", 0));
+  ASSERT_DOUBLE_EQ(.0, c.stddev("", "hoge"));
+  ASSERT_DOUBLE_EQ(12.0, c.max("", "hoge"));
+  ASSERT_DOUBLE_EQ(12.0, c.min("", "hoge"));
 
-  //  ASSERT_DOUBLE_EQ(12.0, c.entropy("", "hoge", 0));
+  ASSERT_DOUBLE_EQ(0., c.entropy("", "hoge"));
 
-  ASSERT_EQ(0, c.save("", __func__));
-  ASSERT_EQ(0, c.load("", __func__));
+  ASSERT_EQ(true, c.save("", __func__));
+  ASSERT_EQ(true, c.load("", __func__));
 }
 }

@@ -35,32 +35,35 @@ void stat_serv::after_load(){
   //  stat_.reset();
 };
 
-int stat_serv::set_config(const config_data& config){
+bool stat_serv::set_config(const config_data& config){
   config_ = config;
   stat_ =  pfi::lang::shared_ptr<stat::stat>(new stat::stat(config_.window_size)); //FIXME
   return 0;
+}
+config_data stat_serv::get_config()const{
+  return config_;
 }
 int stat_serv::push(const std::string& key, double value){
   stat_->push(key,value);
   return 0;
 }
-double stat_serv::sum(const std::string& key, int) const {
+double stat_serv::sum(const std::string& key) const {
   return stat_->sum(key);
 }
-double stat_serv::stddev(const std::string& key, int) const {
+double stat_serv::stddev(const std::string& key) const {
   return stat_->stddev(key);
 }
-double stat_serv::max(const std::string& key, int) const {
+double stat_serv::max(const std::string& key) const {
   return stat_->max(key);
 }
-double stat_serv::min(const std::string& key, int) const {
+double stat_serv::min(const std::string& key) const {
   return stat_->min(key);
 }
-double stat_serv::entropy(const std::string& key, int) const {
+double stat_serv::entropy(const std::string& key) const {
   return stat_->entropy();
 }
-double stat_serv::moment(const std::string& key, std::pair<int,double> nc) const{
-  return stat_->moment(key, nc.first, nc.second);
+double stat_serv::moment(const std::string& key, int n,double c) const{
+  return stat_->moment(key, n, c);
 }
 
 

@@ -31,7 +31,7 @@ class bit_vector;
 namespace recommender {
 
 
-void generate_random_vector(size_t dim, std::vector<float>&);
+void generate_random_vector(size_t dim, uint32_t seed, std::vector<float>& v);
 
 void set_bit_vector(const std::vector<float>& vec,
                     storage::bit_vector& bit_vec);

@@ -50,40 +50,46 @@ namespace jubatus { namespace framework {
     int jubatus_serv::start(pfi::network::mprpc::rpc_server& serv){
 
 #ifdef HAVE_ZOOKEEPER_H
-    if(! a_.is_standalone()){
-      zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
-	(common::create_lock_service("zk", a_.z, a_.timeout, "logfile_jubatus_serv"));
-      ls = zk_;
-      jubatus::common::prepare_jubatus(*zk_);
-
-      if( a_.join ){ // join to the existing cluster with -j option
-        join_to_cluster(zk_);
+      if(! a_.is_standalone()){
+	zk_ = common::cshared_ptr<jubatus::common::lock_service>
+	  (common::create_lock_service("zk", a_.z, a_.timeout, "logfile_jubatus_serv"));
+	ls = zk_;
+	jubatus::common::prepare_jubatus(*zk_);
+	
+	if( a_.join ){ // join to the existing cluster with -j option
+	  join_to_cluster(zk_);
+	}
+	
+	if( use_cht_ ){
+	  jubatus::common::cht::setup_cht_dir(*zk_, a_.name);
+	  jubatus::common::cht ht(zk_, a_.name);
+	  ht.register_node(a_.eth, a_.port);
+	}
+	
+	mixer_->set_zk(zk_);
+	register_actor(*zk_, a_.name, a_.eth, a_.port);
+	mixer_->start();
       }
-
-      if( use_cht_ ){
-
-        jubatus::common::cht::setup_cht_dir(*zk_, a_.name);
-        jubatus::common::cht ht(zk_, a_.name);
-        ht.register_node(a_.eth, a_.port);
-      }
-
-      mixer_->set_zk(zk_);
-      register_actor(*zk_, a_.name, a_.eth, a_.port);
-      mixer_->start();
-    }
 #endif
 
-    { LOG(INFO) << "running in port=" << a_.port; }
-    return serv.serv(a_.port, a_.threadnum);
-
+      if( serv.serv(a_.port, a_.threadnum) ){
+	LOG(INFO) << "running in port=" << a_.port;
+	return 0;
+      }else{
+	LOG(ERROR) << "failed starting server: any process using port " << a_.port << "?";
+	return -1;
+      }
     }
-
+    
     void jubatus_serv::register_mixable(mixable0* m){
 #ifdef HAVE_ZOOKEEPER_H
-      m->get_diff(); // #22 ensure m is good pointer at process startup
+      try{
+        m->get_diff(); // #22 ensure m is good pointer at process startup
+      }catch(const jubatus::config_not_set& e){
+      }
 
-      mixables_.push_back(m);
 #endif
+      mixables_.push_back(m);
     };
     
     void jubatus_serv::use_cht(){
@@ -92,7 +98,7 @@ namespace jubatus { namespace framework {
 #endif
     };
 
-  std::map<std::string, std::map<std::string,std::string> > jubatus_serv::get_status(int) const {
+  std::map<std::string, std::map<std::string,std::string> > jubatus_serv::get_status() const {
     std::map<std::string, std::string> data;
     util::get_machine_status(data);
 
@@ -128,7 +134,7 @@ namespace jubatus { namespace framework {
 
     //here
 #ifdef HAVE_ZOOKEEPER_H
-    void jubatus_serv::join_to_cluster(pfi::lang::shared_ptr<jubatus::common::lock_service> z){
+    void jubatus_serv::join_to_cluster(common::cshared_ptr<jubatus::common::lock_service> z){
     std::vector<std::string> list;
     std::string path = common::ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
     z->list(path, list);
@@ -173,15 +179,17 @@ namespace jubatus { namespace framework {
   };
 
     int jubatus_serv::put_diff_impl(std::vector<std::string> unpacked){
-    scoped_lock lk(wlock(m_));
-    if(unpacked.size() != mixables_.size()){
-      //deserialization error
-    }
-    for(size_t i=0; i<mixables_.size(); ++i){
-      mixables_[i]->put_diff(unpacked[i]);
-    }
-    return 0;
-  };
+      scoped_lock lk(wlock(m_));
+      if(unpacked.size() != mixables_.size()){
+	//deserialization error
+	return -1;
+      }
+      for(size_t i=0; i<mixables_.size(); ++i){
+	mixables_[i]->put_diff(unpacked[i]);
+      }
+      mixer_->clear();
+      return 0;
+    };
 
     void jubatus_serv::do_mix(const std::vector<std::pair<std::string,int> >& v){
       vector<string> accs;
@@ -227,7 +235,15 @@ namespace jubatus { namespace framework {
     }
 #endif
 
-    int jubatus_serv::save(std::string id)  {
+    void jubatus_serv::updated(){
+#ifdef HAVE_ZOOKEEPER_H
+      update_count_ = mixer_->updated();
+#else
+      update_count_++;
+#endif
+    }
+
+    bool jubatus_serv::save(std::string id)  {
       std::string ofile;
       build_local_path_(ofile, "jubatus", id);
     
@@ -241,13 +257,14 @@ namespace jubatus { namespace framework {
         }
         ofs.close();
         LOG(INFO) << "saved to " << ofile;
-        return 0;
-      }catch(const std::exception& e){
-        return -1;
+        return true;
+      }catch(const std::runtime_error& e){
+        LOG(ERROR) << e.what();
+        throw e;
       }
     }
 
-    int jubatus_serv::load(std::string id) {
+    bool jubatus_serv::load(std::string id) {
       std::string ifile;
       build_local_path_(ifile, "jubatus", id);
     
@@ -260,11 +277,12 @@ namespace jubatus { namespace framework {
         }
         ifs.close();
         this->after_load();
-        return 0;
-      }catch(const std::exception& e){
+        return true;
+      }catch(const std::runtime_error& e){
         ifs.close();
+        LOG(ERROR) << e.what();
+        throw e;
       }
-      return -1; //expected never reaching here.
     }
 
 }}

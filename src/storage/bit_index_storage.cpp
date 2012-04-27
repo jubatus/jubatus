@@ -41,12 +41,14 @@ void bit_index_storage::get_row(const string& row, bit_vector& bv) const {
     bit_table_t::const_iterator it = bitvals_diff_.find(row);
     if (it != bitvals_diff_.end()) {
       bv = it->second;
+      return;
     }
   }
   {
     bit_table_t::const_iterator it = bitvals_.find(row);
     if (it != bitvals_.end()) {
       bv = it->second;
+      return;
     }
   }
   bv = bit_vector();

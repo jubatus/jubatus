@@ -38,4 +38,19 @@ TEST(counter, trivial) {
   EXPECT_EQ(2u, c["fuga"]);
 }
 
+TEST(counter, add) {
+  counter<string> x, y;
+  x["hoge"] = 1;
+  x["fuga"] = 2;
+
+  y["foo"] = 5;
+  y["hoge"] = 3;
+
+  x.add(y);
+
+  EXPECT_EQ(4u, x["hoge"]);
+  EXPECT_EQ(2u, x["fuga"]);
+  EXPECT_EQ(5u, x["foo"]);
+}
+
 }

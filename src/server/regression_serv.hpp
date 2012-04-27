@@ -24,7 +24,7 @@
 #include "../regression/regression_base.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../storage/storage_base.hpp"
-
+#include "../common/shared_ptr.hpp"
 #include "regression_types.hpp"
 #include "jubatus_serv.hpp"
 #include "diffv.hpp"
@@ -74,14 +74,15 @@ public:
   static int reduce(const storage::storage_base*, const diffv&, diffv&);
 
   int set_config(config_data);
-  config_data get_config(int );
+  config_data get_config();
   int train(std::vector<std::pair<float, datum> > data);
   std::vector<float> estimate(std::vector<datum> data);
 
-  pfi::lang::shared_ptr<storage::storage_base> make_model();
+  common::cshared_ptr<storage::storage_base> make_model();
   void after_load();
 
-  std::map<std::string, std::map<std::string, std::string> > get_status(int);
+  std::map<std::string, std::map<std::string, std::string> > get_status();
+  void check_set_config()const;
 
 private:
   config_data config_;

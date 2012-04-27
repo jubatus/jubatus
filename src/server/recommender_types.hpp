@@ -24,10 +24,10 @@ struct string_rule {
 public:
 
   
-  MSGPACK_DEFINE(key, type, sample_weight, global_weight);  
+  MSGPACK_DEFINE(key, t, sample_weight, global_weight);  
 
   std::string key;
-  std::string type;
+  std::string t;
   std::string sample_weight;
   std::string global_weight;
 };
@@ -36,10 +36,10 @@ struct filter_rule {
 public:
 
   
-  MSGPACK_DEFINE(key, type, suffix);  
+  MSGPACK_DEFINE(key, t, suffix);  
 
   std::string key;
-  std::string type;
+  std::string t;
   std::string suffix;
 };
 
@@ -47,10 +47,10 @@ struct num_rule {
 public:
 
   
-  MSGPACK_DEFINE(key, type);  
+  MSGPACK_DEFINE(key, t);  
 
   std::string key;
-  std::string type;
+  std::string t;
 };
 
 struct converter_config {

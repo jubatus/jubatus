@@ -24,10 +24,12 @@
 #include "../classifier/classifier_base.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../storage/storage_base.hpp"
+#include "../common/shared_ptr.hpp"
 
 #include "classifier_types.hpp"
 #include "jubatus_serv.hpp"
 #include "diffv.hpp"
+#include "mixable_weight_manager.hpp"
 
 namespace jubatus{
 namespace server{
@@ -69,19 +71,22 @@ public:
   virtual ~classifier_serv();
 
   int set_config(config_data);
-  config_data get_config(int );
+  config_data get_config();
   int train(std::vector<std::pair<std::string, datum> > data);
-  std::vector<std::vector<estimate_result> > classify(std::vector<datum> data);
+  std::vector<std::vector<estimate_result> > classify(std::vector<datum> data)const;
 
-  pfi::lang::shared_ptr<storage::storage_base> make_model();
+  common::cshared_ptr<storage::storage_base> make_model();
   void after_load();
 
-  std::map<std::string, std::map<std::string, std::string> > get_status(int);
+  std::map<std::string, std::map<std::string, std::string> > get_status();
+
+  void check_set_config()const;
 
 private:
   config_data config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   clsfer clsfer_;
+  mixable_weight_manager wm_;
 
 };
 

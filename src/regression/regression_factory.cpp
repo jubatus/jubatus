@@ -18,6 +18,7 @@
 #include <stdexcept>
 #include "regression_factory.hpp"
 #include "regression.hpp"
+#include "../common/exception.hpp"
 
 namespace jubatus {
 
@@ -27,7 +28,7 @@ regression_factory::create_regression(const std::string& name,
   if (name == "PA") {
     return new regression::PA(storage);
   } else {
-    throw std::runtime_error("unknown regression type: " + name);
+    throw unsupported_method(name);
   }
 }
 

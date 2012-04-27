@@ -80,6 +80,18 @@ void load_config(jubatus::config_data& c){
   framework::convert<fv_converter::converter_config, converter_config>(cc, c.config);
 }
 
+string get_max_label(const vector<estimate_result>& result) {
+  string max_label = "";
+  double max_prob = 0;
+  for (size_t i = 0; i < result.size(); ++i) {
+    if (max_label == "" || result[i].prob > max_prob) {
+      max_label = result[i].label;
+      max_prob = result[i].prob;
+    }
+  }
+  return max_label;
+}
+
 namespace {
 
   class classifier_test : public ::testing::TestWithParam<const char*> {
@@ -99,6 +111,25 @@ namespace {
     };
   };
 
+ //todo: insert __LINE__ as original line number
+#define ASSERT_THROW2(statement__, type__, what__) \
+  try{ statement__; FAIL();         \
+  }catch(type__& __e__){ ASSERT_STREQ(what__, __e__.what()); }
+
+TEST_P(classifier_test, set_config_exception){
+  classifier c("localhost", PORT, 10);
+  jubatus::config_data config;
+  config.method = "pa";
+  ASSERT_THROW2(c.set_config("", config), std::exception, "pa");
+  //  ASSERT_THROW(c.set_config("", config), std::exception);
+  config.method = "";
+  ASSERT_THROW2(c.set_config("", config), std::exception, "");
+  //  ASSERT_THROW(c.set_config("", config), std::exception);
+  config.method = "saitama";
+  ASSERT_THROW2(c.set_config("", config), std::exception, "saitama");
+  //  ASSERT_THROW(c.set_config("", config), std::exception);
+}
+
 TEST_P(classifier_test, simple){
   
   classifier c("localhost", PORT, 10);
@@ -107,7 +138,7 @@ TEST_P(classifier_test, simple){
     config.method = GetParam();
     
     c.set_config("", config);
-    c.get_config("", 0);
+    c.get_config("");
   }
   {
     datum d;
@@ -136,12 +167,12 @@ TEST_P(classifier_test, api_config) {
   config_data to_set;
   config_data to_get;
   load_config(to_set);
+
   int res_set = cli.set_config(NAME, to_set);
   //  ASSERT_(res_set.success) << res_set.error;
   ASSERT_EQ(0, res_set);
 
-  to_get = cli.get_config(NAME, 0);
-  //  ASSERT_TRUE(to_get.success);
+  EXPECT_NO_THROW(to_get = cli.get_config(NAME));
   EXPECT_TRUE(to_set == to_get);
 }
 
@@ -155,7 +186,27 @@ TEST_P(classifier_test, api_train){
   vector<pair<string, datum> > data;
   make_random_data(data, example_size);
   unsigned int res = cli.train(NAME, data);
-  ASSERT_TRUE(res == data.size()); //.success);
+  ASSERT_EQ(data.size(), res);
+}
+
+TEST_P(classifier_test, api_classify){
+  classifier cli("localhost", PORT, 10);
+  const size_t example_size = 1000;
+  config_data c;
+  load_config(c);
+
+  vector<datum>  datas; //for classify
+
+  vector<pair<string, datum> > data; //for train
+  make_random_data(data, example_size);
+
+  ASSERT_THROW2(cli.classify(NAME, datas), std::exception, "config_not_set");
+  ASSERT_THROW2(cli.train(NAME, data), std::exception, "config_not_set");
+
+  cli.set_config(NAME, c);
+
+  unsigned int res = cli.train(NAME, data);
+  ASSERT_EQ(data.size(), res);
 }
 
 void my_test(const char* method) {
@@ -171,7 +222,7 @@ void my_test(const char* method) {
   vector<pair<string, datum> > data;
   make_random_data(data, example_size);
   unsigned int res = cli.train(NAME, data);
-  ASSERT_TRUE(res == data.size()); //.success);
+  ASSERT_EQ(data.size(), res);
 
   vector<string> labels;
   vector<datum>  datas;
@@ -305,7 +356,7 @@ INSTANTIATE_TEST_CASE_P(classifier_test_instance,
 TEST_P(classifier_test, get_status){
   classifier cli("localhost", PORT, 10);
 
-  map<string,map<string,string> > status = cli.get_status(NAME, 0);
+  map<string,map<string,string> > status = cli.get_status(NAME);
   EXPECT_EQ(status.size(), 1u);
   for(map<string,map<string,string> >::const_iterator it = status.begin();
       it != status.end(); ++it){
@@ -328,9 +379,9 @@ TEST_P(classifier_test, save_load){
   ASSERT_EQ(0, res_config);
   vector<pair<string, datum> > data;
   make_random_data(data, example_size);
-  int res_train = cli.train(NAME, data);
-  //  ASSERT_TRUE(res_train.success);
-  ASSERT_GT(res_train, 0);
+  unsigned int res_train = cli.train(NAME, data);
+
+  ASSERT_EQ(data.size(), res_train);
   // {
   //   st->set3("a", "x", val3_t(1, 11, 111));
   //   st->set3("a", "y", val3_t(2, 22, 222));
@@ -338,16 +389,74 @@ TEST_P(classifier_test, save_load){
   //   st->set3("b", "x", val3_t(12, 1212, 121212));
   //   st->set3("b", "z", val3_t(45, 4545, 454545));
   // }
-  int res_save = cli.save(NAME, "hoge");
-  ASSERT_EQ(0, res_save);
+  bool res_save = cli.save(NAME, "hoge");
+  ASSERT_EQ(true, res_save);
 
-  int res_load = cli.load(NAME, "hoge");
-  ASSERT_EQ(0, res_load);
+  bool res_load = cli.load(NAME, "hoge");
+  ASSERT_EQ(true, res_load);
   my_test(GetParam());
 
-  map<string, map<string, string> > status = cli.get_status(NAME, 0);
+  map<string, map<string, string> > status = cli.get_status(NAME);
   string count_str = status.begin()->second["update_count"];
-  EXPECT_EQ(5, atoi(count_str.c_str()));
+  EXPECT_EQ(6, atoi(count_str.c_str()));
+}
+
+string classify_and_get_label(classifier& cli, const datum& d) {
+  vector<datum> data;
+  data.push_back(d);
+  return get_max_label(cli.classify(NAME, data)[0]);
+}
+
+TEST_P(classifier_test, save_load_2){
+  classifier cli("localhost", PORT, 10);
+  std::vector<std::pair<std::string,int> > v;
+
+  // Setup
+  config_data c;
+  c.method = GetParam();
+  num_rule rule = { "*", "num" };
+  c.config.num_rules.push_back(rule);
+
+  int res_config = cli.set_config(NAME, c);
+  ASSERT_EQ(0, res_config);
+
+  // Test data
+  datum pos;
+  pos.nv.push_back(make_pair("value", 10.0));
+  datum neg;
+  neg.nv.push_back(make_pair("value", -10.0));
+
+  // Save empty state
+  ASSERT_TRUE(cli.save(NAME, "empty"));
+
+  // Train
+  vector<pair<string, datum> > data;
+  data.push_back(make_pair("pos", pos));
+  data.push_back(make_pair("neg", neg));
+  unsigned int res_train = cli.train(NAME, data);
+  ASSERT_EQ(data.size(), res_train);
+
+  // Now, the classifier can classify properly
+  ASSERT_EQ("pos", classify_and_get_label(cli, pos));
+  ASSERT_EQ("neg", classify_and_get_label(cli, neg));
+
+  // Save current state
+  ASSERT_TRUE(cli.save(NAME, "test"));
+
+  // Load empty
+  ASSERT_TRUE(cli.load(NAME, "empty"));
+
+  // And the classifier classify data improperly, but cannot expect results
+  string pos_max = classify_and_get_label(cli, pos);
+  string neg_max = classify_and_get_label(cli, neg);
+  ASSERT_TRUE(pos_max == neg_max);
+
+  // Reload server
+  ASSERT_TRUE(cli.load(NAME, "test"));
+
+  // The classifier works well
+  ASSERT_EQ("pos", classify_and_get_label(cli, pos));
+  ASSERT_EQ("neg", classify_and_get_label(cli, neg));
 }
 
 }
