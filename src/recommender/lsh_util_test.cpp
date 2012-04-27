@@ -13,14 +13,14 @@ using pfi::data::unordered_map;
 
 TEST(generate_random_vector, empty) {
   vector<float> v;
-  generate_random_vector(0, v);
+  generate_random_vector(0, 0, v);
   EXPECT_TRUE(v.empty());
 }
 
 TEST(generate_random_vector, trivial) {
   vector<float> v1, v2;
-  generate_random_vector(10, v1);
-  generate_random_vector(10, v2);
+  generate_random_vector(10, 0, v1);
+  generate_random_vector(10, 1, v2);
   EXPECT_EQ(10u, v1.size());
   EXPECT_NE(v1, v2);
 }

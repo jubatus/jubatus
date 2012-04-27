@@ -82,8 +82,8 @@ void lsh::generate_column_base(const string& column){
   if (column2baseval_.count(column) != 0){
     return;
   }
-  srand(hash_util::calc_string_hash(column));
-  generate_random_vector(base_num_, column2baseval_[column]);
+  const uint32_t seed = hash_util::calc_string_hash(column);
+  generate_random_vector(base_num_, seed, column2baseval_[column]);
 }
 
 void lsh::update_row(const string& id, const sfv_diff_t& diff){
