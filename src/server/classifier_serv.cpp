@@ -130,12 +130,11 @@ std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector
     vector<estimate_result> r;
     for (vector<classify_result_elem>::const_iterator p = scores.begin();
          p != scores.end(); ++p){
-      if( isfinite(p->score) ){
-        estimate_result e;
-        e.label = p->label;
-        e.prob = p->score;
-        r.push_back(e);
-      }else{
+      estimate_result e;
+      e.label = p->label;
+      e.prob = p->score;
+      r.push_back(e);
+      if( !isfinite(p->score) ){
         LOG(WARNING) << p->label << ":" << p->score;
       }
     }
