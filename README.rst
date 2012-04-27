@@ -6,15 +6,15 @@ The Jubatus library is a online machine learning framework which runs in distrib
 See http://jubat.us for details.
 
 LICENSE
-=======
+-------
 
 LGPL 2.1
 
 Update history
-==============
+--------------
 
 Release 0.2.2 2012/4/6
-======================
+~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
   - Simpler interfaces at classifier, regression and recommender
@@ -32,12 +32,12 @@ Bugfix
   - #30, #29, #22
 
 Release 0.2.1 2012/3/13
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Bugfix release: #28
 
 Release 0.2.0 2012/2/16
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 New Features
   - recommender
@@ -67,12 +67,12 @@ Bugfix
   - duplicate key entry in fv_converter breaks the parameter
 
 Release 0.1.1 2011/11/15
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Bugfix release
 
 Release 0.1.0 2011/10/26
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Hello Jubatus!
 
