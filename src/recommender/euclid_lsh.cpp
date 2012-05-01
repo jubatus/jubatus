@@ -62,7 +62,6 @@ euclid_lsh::euclid_lsh()
     : lsh_index_(DEFAULT_TABLE_NUM),
       bin_width_(DEFAULT_BIN_WIDTH) {
   initialize_shift(DEFAULT_LSH_NUM, DEFAULT_SEED);
-  LOG(INFO)<<"EUCLID LSH: k="<<DEFAULT_LSH_NUM<<", L="<<DEFAULT_TABLE_NUM<<", r="<<bin_width_;
 }
 
 euclid_lsh::euclid_lsh(uint64_t lsh_num,
