@@ -34,8 +34,6 @@ public:
   explicit lsh_index_storage(size_t num_tables);
   virtual ~lsh_index_storage();
 
-  float get_shift(size_t index) const;
-
   void set_row(const std::string& row, const lsh_vector& lv);
   void get_row(const std::string& row, lsh_vector& lv) const;
   void remove_row(const std::string& row);
