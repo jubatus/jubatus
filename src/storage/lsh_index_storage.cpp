@@ -17,6 +17,7 @@
 
 #include <sstream>
 #include <pficommon/data/serialization/unordered_map.h>
+#include <pficommon/data/unordered_map.h>
 #include "lsh_index_storage.hpp"
 
 using namespace std;
@@ -143,20 +144,24 @@ void lsh_index_storage::get_all_row_ids(vector<string>& ids) const {
 void lsh_index_storage::similar_row(const lsh_vector& lv,
                                     vector<pair<string, float> >& ids,
                                     uint64_t ret_num) const {
-  vector<pair<string, float> > ret;
-
+  pfi::data::unordered_map<string, float> cands;
   for (size_t i = 0; i < lsh_tables_.size(); ++i) {
     const lsh_vector query = nth_lsh_vector(lv, lsh_tables_.size(), i);
     const pair<lsh_table_t::const_iterator, lsh_table_t::const_iterator>
         range = lsh_tables_[i].equal_range(query);
     for (lsh_table_t::const_iterator it = range.first; it != range.second; ++it) {
-      const float score = get_score(it->second, lv);
-      ret.push_back(make_pair(it->second, score));
+      if (!cands.count(it->second)) {
+        const float score = get_score(it->second, lv);
+        cands[it->second] = score;
+      }
+    }
+    if (cands.size() >= 3 * ret_num) {
+      break;
     }
   }
 
-  sort(ret.begin(), ret.end());
-  ret.erase(unique(ret.begin(), ret.end(), equal_first()), ret.end());
+  vector<pair<string, float> > ret(cands.size());
+  copy(cands.begin(), cands.end(), ret.begin());
 
   sort(ret.begin(), ret.end(), greater_second());
   if (ret_num < ret.size()) {
