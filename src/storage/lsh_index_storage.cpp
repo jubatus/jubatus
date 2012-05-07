@@ -39,8 +39,15 @@ struct greater_second {
 };
 
 lsh_vector nth_lsh_vector(const lsh_vector& lv, size_t num_tables, size_t n) {
+  // TODO: Make correspondence of hash functions and tables configurable.
+
+  // duplication strategy
   const size_t cut_len = lv.size() / num_tables;
   return lv.cut(n * cut_len, cut_len);
+
+  // simple strategy
+  // const size_t len = lv.size() / num_tables;
+  // return lv.slice(len * n, len);
 }
 
 size_t calc_hamming_similarity(const lsh_vector& l, const lsh_vector& r) {
