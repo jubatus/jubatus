@@ -41,6 +41,10 @@ public:
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
   void similar_row(const lsh_vector& lv, std::vector<std::pair<std::string, float> >& ids, uint64_t ret_num) const;
+  void multi_probe_similar_row(const lsh_vector& lv,
+                               const std::vector<lsh_vector>& keys,
+                               std::vector<std::pair<std::string, float> >& ids,
+                               uint64_t ret_num) const;
   std::string name() const;
 
   bool save(std::ostream& os);
@@ -66,8 +70,6 @@ private:
         }
       }
     }
-
-    // ar & MEMBER(master_table_) & MEMBER(master_table_diff_) & MEMBER(lsh_tables_);
   }
 
   lsh_master_table_t::iterator remove_row_and_get_iterator(const std::string& row);
@@ -75,6 +77,15 @@ private:
   float get_score(const std::string& row, const lsh_vector& lv) const;
   void remove_model_row(const std::string& row);
   void set_mixed_row(const std::string& row, const lsh_vector& lv);
+
+  bool retrieve_hit_rows(const lsh_vector& base,
+                         const lsh_vector& key,
+                         pfi::data::unordered_map<std::string, float>& cands,
+                         uint64_t ret_num) const;
+  void get_sorted_similar_rows(
+      const pfi::data::unordered_map<std::string, float>& cands,
+      std::vector<std::pair<std::string, float> >& ids,
+      uint64_t ret_num) const;
 
   lsh_master_table_t master_table_;
   lsh_master_table_t master_table_diff_;

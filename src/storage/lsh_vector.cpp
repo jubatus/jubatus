@@ -69,7 +69,7 @@ size_t lsh_vector::size() const {
 }
 
 lsh_vector lsh_vector::slice(size_t from, size_t len) const {
-  if (from + len >= values_.size()) {
+  if (from + len > values_.size()) {
     throw out_of_range("slice range is out of size");
   }
 
