@@ -35,9 +35,9 @@ namespace recommender {
 namespace {
 
 const uint64_t DEFAULT_LSH_NUM = 64;  // should be in config
-const uint64_t DEFAULT_TABLE_NUM = 8;  // should be in config
+const uint64_t DEFAULT_TABLE_NUM = 4;  // should be in config
 const float DEFAULT_BIN_WIDTH = 100;  // should be in config
-const uint32_t DEFAULT_NUM_PROBE = 128;  // should be in config
+const uint32_t DEFAULT_NUM_PROBE = 64;  // should be in config
 const uint32_t DEFAULT_SEED = 1091;  // should be in config
 
 struct greater_second {
@@ -167,7 +167,7 @@ euclid_lsh::euclid_lsh()
     : lsh_index_(DEFAULT_TABLE_NUM),
       bin_width_(DEFAULT_BIN_WIDTH),
       num_probe_(DEFAULT_NUM_PROBE) {
-  initialize_shift(DEFAULT_LSH_NUM, DEFAULT_SEED);
+  initialize_shift(DEFAULT_LSH_NUM * DEFAULT_TABLE_NUM, DEFAULT_SEED);
 }
 
 euclid_lsh::euclid_lsh(uint64_t lsh_num,
@@ -178,7 +178,7 @@ euclid_lsh::euclid_lsh(uint64_t lsh_num,
     : lsh_index_(table_num),
       bin_width_(bin_width),
       num_probe_(num_probe) {
-  initialize_shift(lsh_num, seed);
+  initialize_shift(lsh_num * table_num, seed);
 }
 
 euclid_lsh::~euclid_lsh() {
