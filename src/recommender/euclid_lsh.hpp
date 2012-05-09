@@ -30,6 +30,7 @@ class euclid_lsh : public recommender_base {
   explicit euclid_lsh(uint64_t lsh_num,
                       uint64_t table_num,
                       float bin_width,
+                      uint32_t num_probe,
                       uint32_t seed);
   ~euclid_lsh();
 
@@ -52,6 +53,7 @@ class euclid_lsh : public recommender_base {
   storage::lsh_index_storage lsh_index_;
   std::vector<float> shift_;
   const float bin_width_;
+  const uint32_t num_probe_;
 };
 
 }
