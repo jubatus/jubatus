@@ -7,6 +7,7 @@ def build(bld):
     source = [
       'recommender_base.cpp',
       'inverted_index.cpp',
+      'minhash.cpp',
       'lsh.cpp',
       'recommender_factory.cpp',
       'lsh_util.cpp',

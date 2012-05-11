@@ -22,6 +22,7 @@ Improvements
     - Centrality computation
     - Shortest path search
 
+  - New neighbor-search algorithm for recommender: minhash
   - libevent support (very partially)
 
 Bugfix:

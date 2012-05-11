@@ -28,6 +28,8 @@ namespace recommender {
 recommender_base* create_recommender(const string& name){
   if (name == "inverted_index"){
     return new inverted_index;
+  } else if (name == "minhash"){
+    return new minhash;
   } else if (name == "lsh"){
     return new lsh;
   } else {
