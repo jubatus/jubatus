@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -155,21 +155,20 @@ int graph_serv::clear(){
   g_.get_model()->clear();
   return 0;
 }
-    /*
-std::map<std::string, std::map<std::string,std::string> > graph_serv::get_status(int)const
+
+std::map<std::string, std::map<std::string,std::string> > graph_serv::get_status()const
 {
   std::map<std::string,std::string> ret0;
 
   g_.get_model()->get_status(ret0);
 
   std::map<std::string, std::map<std::string,std::string> > ret =
-    jubatus_serv::get_status(0);
+    jubatus_serv::get_status();
 
   ret[get_server_identifier()].insert(ret0.begin(), ret0.end());
   return ret;
 }
 
-    */
 void graph_serv::after_load(){}
 }
 }

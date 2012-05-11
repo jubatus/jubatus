@@ -10,7 +10,7 @@ class graph_impl_ : public graph<graph_impl_>
 public:
   graph_impl_(const server_argv& a):
     graph<graph_impl_>(a.timeout),
-    p_(graph_serv(a))
+    p_(new graph_serv(a))
   { p_->use_cht();}
 
   int create_node(std::string name, std::string nid) //update cht

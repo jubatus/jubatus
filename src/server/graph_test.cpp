@@ -33,10 +33,10 @@ TEST_P(graph_test, simple){
   jubatus::node_id nid0 = "1";
   graph c("localhost", PORT, 10);
   {
-    c.clear("", 0);
-    c.create_node("", nid, 0);
+    c.clear("");
+    c.create_node("", nid);
     c.create_global_node("", nid);
-    c.create_node("", nid0, 0);
+    c.create_node("", nid0);
     c.create_global_node("", nid0);
     //    c.set_config("", config);
     //    c.get_config("", 0);
@@ -63,11 +63,11 @@ TEST_P(graph_test, simple){
   }
   {
     c.save("", "test");
-    c.clear("", 0);
+    c.clear("");
     c.load("", "test");
   }
   {
-    jubatus::node_info i = c.get_node("", nid, 0);
+    jubatus::node_info i = c.get_node("", nid);
     ASSERT_EQ(0u, i.in_edges.size());
     ASSERT_EQ(1u, i.out_edges.size());
     ASSERT_EQ("huga", i.p["hoge"]);
@@ -82,11 +82,11 @@ TEST_P(graph_test, simple){
   }
 
   {
-    c.get_status("", 0);
-    c.update_index("", 0);
+    c.get_status("");
+    c.update_index("");
   }    
   {
-    double cent = c.centrality("", std::make_pair(nid, 0));
+    double cent = c.centrality("", nid, 0);
     ASSERT_GT(0.0, cent);
   }
   {

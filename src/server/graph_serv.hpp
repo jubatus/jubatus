@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -92,10 +92,6 @@ public:
   node_info get_node(const std::string& nid) const; //analysis cht
 
   edge_info get_edge(const std::string& nid, const edge_id_t& e) const; //analysis cht
-
-  bool save(const std::string& arg1); //update broadcast
-
-  bool load(const std::string& arg1); //update broadcast
 
   std::map<std::string,std::map<std::string,std::string > > get_status() const; //analysis broadcast
 

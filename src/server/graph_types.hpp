@@ -1,5 +1,5 @@
 
-// This file is auto-generated from src/server/graph.idl
+// This file is auto-generated from graph.idl
 // *** DO NOT EDIT ***
 
 #ifndef GRAPH_TYPES_HPP_
@@ -64,7 +64,7 @@ public:
 
   node_id src;
   node_id tgt;
-  size_t max_hop;
+  uint32_t max_hop;
 };
 
 } // namespace jubatus
