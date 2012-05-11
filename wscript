@@ -79,6 +79,7 @@ def configure(conf):
   # don't know why this does not work when put after conf.recurse
   conf.define('JUBATUS_VERSION', VERSION)
   conf.define('JUBATUS_APPNAME', APPNAME)
+  conf.define('BUILD_DIR',  conf.bldnode.abspath())
   conf.write_config_header('src/config.hpp', remove=False)
 
   conf.recurse(subdirs)

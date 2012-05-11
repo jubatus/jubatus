@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,7 @@
 
 #include <string>
 #include <iostream>
+#include <limits>
 
 #include <pficommon/lang/cast.h>
 #include <pficommon/text/json.h>
@@ -457,6 +458,32 @@ TEST_P(classifier_test, save_load_2){
   // The classifier works well
   ASSERT_EQ("pos", classify_and_get_label(cli, pos));
   ASSERT_EQ("neg", classify_and_get_label(cli, neg));
+}
+
+TEST_P(classifier_test, nan){
+  classifier cli("localhost", PORT, 10);
+
+  // Setup
+  config_data c;
+  c.method = GetParam();
+  num_rule rule = { "*", "num" };
+  c.config.num_rules.push_back(rule);
+
+  int res_config = cli.set_config(NAME, c);
+  ASSERT_EQ(0, res_config);
+
+  datum d;
+  d.nv.push_back(make_pair("value", numeric_limits<float>::quiet_NaN()));
+  vector<pair<string, datum> > data;
+  data.push_back(make_pair("l1", d));
+  cli.train(NAME, data);
+
+  vector<datum> test;
+  test.push_back(d);
+  vector<vector<estimate_result> > result = cli.classify(NAME, test);
+  ASSERT_EQ(1u, result.size());
+  ASSERT_EQ(1u, result[0].size());
+  EXPECT_FALSE(isfinite(result[0][0].prob));
 }
 
 }
