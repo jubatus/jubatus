@@ -145,18 +145,10 @@ vector<lsh_vector> multi_probe_lsh(const sfv_t& query,
 lsh_vector lsh_function(const sfv_t& query,
                         const vector<float>& shift,
                         float bin_width) {
-  vector<float> hash(shift.size());
-  for (size_t i = 0; i < query.size(); ++i) {
-    const uint32_t seed = hash_util::calc_string_hash(query[i].first);
-    mtrand rnd(seed);
-    for (size_t j = 0; j < hash.size(); ++j) {
-      hash[j] += query[i].second * rnd.next_gaussian();
-    }
-  }
-
+  vector<float> hash = raw_lsh(query, shift, bin_width);
   lsh_vector lv(hash.size());
-  for (size_t j = 0; j < hash.size(); ++j) {
-    lv.set(j, floor((hash[j] + shift[j]) / bin_width));
+  for (size_t i = 0; i < hash.size(); ++i) {
+    lv.set(i, floor(hash[i]));
   }
   return lv;
 }
