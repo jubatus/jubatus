@@ -13,6 +13,20 @@ LGPL 2.1
 Update history
 --------------
 
+Release 0.3.0 2012/6/1
+----------------------
+
+Improvements
+  - Distributed Graph Processing
+
+    - Centrality computation
+    - Shortest path search
+
+  - libevent support (very partially)
+
+Bugfix:
+  - #19, #31, #37, #36, #34
+
 Release 0.2.2 2012/4/6
 ~~~~~~~~~~~~~~~~~~~~~~
 
