@@ -23,15 +23,15 @@ public:
   void update_edge(edge_id_t eid, const property& p);
   void remove_edge(edge_id_t eid);
   
-  double centerality(node_id_t id, centerality_type ct) const;
+  double centrality(node_id_t id, centrality_type ct) const;
   void shortest_path(node_id_t src, node_id_t tgt, 
                      uint64_t max_hop, std::vector<node_id_t>& ret) const;
   
   void get_node(node_id_t id, node_info& ret) const;
   void get_edge(edge_id_t eid, edge_info& ret) const;
 
-  void get_diff(std::string& diff);
-  void set_mixed_and_clear_diff(std::string& mixed);
+  void get_diff(std::string& diff)const;
+  void set_mixed_and_clear_diff(const std::string& mixed);
 
   std::string type() const;
 
@@ -43,6 +43,8 @@ public:
 private:
   bool save_imp(std::ostream& os);
   bool load_imp(std::istream& is);
+
+  static void remove_by_swap(std::vector<edge_id_t>& edges, edge_id_t eid);
 
   // =============================
   // improve me !
@@ -62,13 +64,14 @@ private:
   // centeralities
   double alpha_;
   pfi::data::unordered_map<node_id_t, eigen_vector_info> eigen_scores_;
-  void get_diff_eigen_score(eigen_vector_diff& diff);
+  void get_diff_eigen_score(eigen_vector_diff& diff)const;
   void set_mixed_and_clear_diff_eigen_score(eigen_vector_mixed& mixed);
   static void mix(const eigen_vector_diff& diff, eigen_vector_mixed& mixed);
 
   // shortest pathes
   spt_mixed spts_;
-  void get_diff_shortest_path_tree(spt_diff& diff);
+  void may_set_landmark(node_id_t id);
+  void get_diff_shortest_path_tree(spt_diff& diff)const;
   void set_mixed_and_clear_diff_shortest_path_tree(const spt_mixed& mixed);
   void update_spt();
   void update_spt_edges(spt_edges& se, node_id_t landmark, bool is_out);

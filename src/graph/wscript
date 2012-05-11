@@ -7,6 +7,7 @@ def build(bld):
     source = [
       'graph_base.cpp',
       'graph_wo_index.cpp',
+      'graph_factory.cpp'
       ],
     target = 'jubatus_graph',
     name = 'jubatus_graph',

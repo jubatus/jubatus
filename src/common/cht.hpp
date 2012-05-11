@@ -25,6 +25,8 @@
 #include "shared_ptr.hpp"
 #include "lock_service.hpp"
 
+#include <pficommon/lang/cast.h>
+
 namespace jubatus{
 namespace common{
 
@@ -41,6 +43,12 @@ namespace common{
     // node :: ip_port
     // register_node :: node -> bool;
     void register_node(const std::string&, int);
+    
+    template <typename T>
+    bool find(const T& t, std::vector<std::pair<std::string,int> > & ret){
+      std::string k = pfi::lang::lexical_cast<std::string>(t);
+      return find(k, ret);
+    };
 
     // find(hash)    :: key -> [node] where  hash(node0) <= hash(key) < hash(node1) < hash(node2) < ...
     bool find(const std::string& host, int port, std::vector<std::pair<std::string,int> >&);

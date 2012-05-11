@@ -1,0 +1,84 @@
+
+type centrality_type = int
+
+type node_id = string
+type edge_id_t = ulong
+
+type property = map<string, string> 
+
+message node_info {
+  0: property p
+  1: list<edge_id_t>  in_edges
+  2: list<edge_id_t>  out_edges
+}
+
+message edge_info {
+  0: property p
+  1: node_id src
+  2: node_id tgt
+}
+
+message edge_req {
+  0: edge_id_t id
+  1: edge_info info
+}
+
+message shortest_path_req {
+  0: node_id src
+  1: node_id tgt
+  2: uint max_hop
+}
+
+service graph {
+
+  #@cht #@update #@pass
+  int create_node(0: string name, 1: string nid) # //@cht
+
+  #@broadcast #@update #@all_and
+  int create_global_node(0: string name, 1: string nid) # //@broadcast
+
+  #@broadcast #@update #@all_and
+  int remove_global_node(0: string name, 1: string nid) # //@broadcast
+
+  #@cht #@update #@all_and
+  int update_node(0: string name, 1: string nid, 2: property p) # //@cht
+
+  #@cht #@update #@all_and
+  int remove_node(0: string name, 1: string nid) # //@cht
+
+  #@cht #@update #@all_and
+  int create_edge(0: string name, 1: string nid, 2: edge_req r) # //@cht
+
+  #@cht #@update #@all_and
+  int update_edge(0: string name, 1: string nid, 2: edge_req r) # //@cht
+
+  #@cht #@update #@all_and
+  int remove_edge(0: string name, 1: string nid, 2: edge_id_t e) # //@cht
+
+  #@random #@analysis #@random
+ double centrality(0: string name, 1: string nid, 2: centrality_type ct) # //@random
+
+  #@random #@analysis #@random
+  list<node_id>  shortest_path(0: string name, 1: shortest_path_req r) # //@random
+
+  #@broadcast #@update #@all_and
+  int update_index(0: string name) # //@broadcast
+
+  #@broadcast #@update #@all_and
+  int clear(0: string name) # //@broadcast
+
+  #@cht #@analysis #@random
+  node_info get_node(0: string name, 1: string nid) # //@cht
+
+  #@cht #@analysis #@random
+  edge_info get_edge(0: string name, 1: string nid, 2: edge_id_t e) # //@cht
+
+  #@broadcast #@update #@all_and
+  bool save(0: string name, 1: string arg1)
+
+  #@broadcast #@update #@all_and
+  bool load(0: string name, 1: string arg1)
+
+  #@broadcast #@analysis #@merge
+  map<string, map<string, string> >  get_status(0: string name)
+}
