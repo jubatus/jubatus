@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ recommender_base* create_recommender(const string& name){
   } else if (name == "lsh"){
     return new lsh;
   } else {
-    throw std::runtime_error(string("unknown recommender :") + name);
+    throw unsupported_method(name);
   }
 }
 

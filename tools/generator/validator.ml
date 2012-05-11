@@ -1,6 +1,6 @@
 (*
  Jubatus: Online machine learning framework for distributed environment
- Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+ Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,8 @@
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 *)
+
+open Stree
 
 (* ints in enum should not be dup *)
 let check_enum enum =
@@ -41,17 +43,17 @@ let make_decoration name dec =
   if List.length dec != 3 then raise Bad_decorators;
 
   let get_routing = function
-    | "#@random" -> `Random;
-    | "#@cht" -> `Cht;
-    | "#@broadcast" -> `Broadcast;
+    | "#@random" -> Random;
+    | "#@cht" -> Cht;
+    | "#@broadcast" -> Broadcast;
     | s ->
       raise (Wrong_routing ("unknown routing method ("^s^") on "^ name))
   in
   let routing = get_routing (List.nth dec 0) in
 
   let get_reqtype = function
-    | "#@update" -> `Update;
-    | "#@analysis" -> `Analysis;
+    | "#@update" -> Update;
+    | "#@analysis" -> Analysis;
     | s ->
       raise (Wrong_method ("unknown method ("^s^") on "^ name))
   in
@@ -64,7 +66,7 @@ exception Too_much_argv of string
 
 (* check they have valid decorators *)
 let check_method m =
-  let `Method(rettype, name, argv, decorators) = m in
+  let Method(rettype, name, argv, decorators) = m in
 
   (* To expand this, 
      use variadic template or add functions
@@ -73,29 +75,30 @@ let check_method m =
 
   (* first argument of every method must be string *)
   let gettype field =
-    let `Field(_, t, _) = field in t
+    let Field(_, t, _) = field in t (* FIXME: use record type here. *)
   in 
-  if gettype (List.nth argv 0) != `String then raise (Bad_first_argv name);
+  if gettype (List.nth argv 0) <> String then raise (Bad_first_argv name);
 
   (* return type of every method must not be void due to pficommon *)
-  if rettype == `Void then raise (Bad_rettype name);
+  if rettype = Void then raise (Bad_rettype name);
 
   let routing,reqtype,aggregator = make_decoration name decorators in
 
   (* if aggregator is not known... TODO. *)
   let known_aggregators = ["#@all_and"; "#@all_or"; "#@concat"; "#@merge"; "#@ignore"] in
+  (* FIXME: add pass , ramdom, ... *)
   if not (List.mem aggregator known_aggregators) then
       Printf.printf "warning: unknown aggregator %s specified at %s\n" aggregator name;
   
-  if routing == `Cht then
-    if gettype (List.nth argv 1) != `String then raise (Bad_cht_argv name);
+  if routing = Cht then
+    if gettype (List.nth argv 1) <> String then raise (Bad_cht_argv name);
 
   ();;
 
 let check_service methods =
   let s,l,g = List.fold_left
     (fun (save,load,get_status) meth ->
-      let `Method(rettype, name, argv, decorators) = meth in
+      let Method(rettype, name, argv, decorators) = meth in
       match name with
 	|"save" when not save ->
 	  (* TODO: check other features *)
@@ -117,11 +120,11 @@ let check_service methods =
 
 let check strees =
   let do_check = function
-    | `Typedef(n, t) -> ();
-    | `Enum(n, t)              -> check_enum t;
-    | `Message(n, fields)      -> check_msg fields;
-    | `Exception(n, fields, s) -> check_ex fields;
-    | `Service(_, methods)     -> check_service methods;
-    | _ -> ()
+    | Typedef(n, t) -> ();
+    | Enum(n, t)              -> check_enum t;
+    | Message(n, fields)      -> check_msg fields;
+    | Exception(n, fields, s) -> check_ex fields;
+    | Service(_, methods)     -> check_service methods
+(*    | _ -> () *)
   in
   List.iter do_check strees;;

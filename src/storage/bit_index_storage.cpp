@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -41,12 +41,14 @@ void bit_index_storage::get_row(const string& row, bit_vector& bv) const {
     bit_table_t::const_iterator it = bitvals_diff_.find(row);
     if (it != bitvals_diff_.end()) {
       bv = it->second;
+      return;
     }
   }
   {
     bit_table_t::const_iterator it = bitvals_.find(row);
     if (it != bitvals_.end()) {
       bv = it->second;
+      return;
     }
   }
   bv = bit_vector();

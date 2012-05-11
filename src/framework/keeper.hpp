@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,6 @@
 #include "../common/lock_service.hpp"
 #include "../common/cht.hpp"
 #include "../common/mprpc/rpc_client.hpp"
-#include "aggregators.hpp"
 #include "../common/shared_ptr.hpp"
 
 #include "server_util.hpp"

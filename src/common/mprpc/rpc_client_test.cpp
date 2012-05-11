@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -43,14 +43,15 @@ MPRPC_PROC(test_twice, int(int));
 MPRPC_PROC(add_all, int(int,int,int));
 MPRPC_PROC(various, string(int,float,double, strw));
 
-static bool test_bool(int i){ return i%2; };
+static bool test_bool(int i){  return i%2; };
 static int  test_twice(int i){ return i*2; };
 static int  add_all(int i, int j, int k){ return (i+j+k); };
 static string various(int i, float f, double d, strw s){
-  return ( pfi::lang::lexical_cast<string>(i)
-	   + pfi::lang::lexical_cast<string>(f)
-	   + pfi::lang::lexical_cast<string>(d)
-	   + s.key + s.value);
+  string ret =  pfi::lang::lexical_cast<string>(i)
+    + pfi::lang::lexical_cast<string>(f)
+    + pfi::lang::lexical_cast<string>(d)
+    + s.key + s.value;
+  return ret;
 }
 static string concat(string l,string r){ return (l+r); };
 
@@ -78,15 +79,13 @@ TEST(rpc_mclient, small)
 {
   fork_server(PORT0);
   fork_server(PORT1);
-  sleep(0.5);
-
+  usleep(500000);
   {
     test_mrpc_client cli0("localhost", PORT0, 3.0);
     test_mrpc_client cli1("localhost", PORT1, 3.0);
     EXPECT_EQ(true, cli0.call_test_bool(23));
     EXPECT_EQ(24, cli1.call_test_twice(12));
   }
-
   vector<pair<string,uint16_t> > clients;
   clients.push_back(make_pair(string("localhost"), PORT0));
   clients.push_back(make_pair("localhost", PORT1));
@@ -94,12 +93,14 @@ TEST(rpc_mclient, small)
   {
     cli.call_async("test_bool", 73684);
     EXPECT_FALSE(cli.join_all(function<bool(bool,bool)>(&jubatus::framework::all_and)));
-
+  }
+  {
     cli.call_async("test_twice", 73684);
     EXPECT_EQ(73684*4,
 	      cli.join_all(function<int(int,int)>(&jubatus::framework::add<int>)));
-
-    cli.call_async("test_add_all", 23,21,-234);
+  }
+  {
+    cli.call_async("add_all", 23,21,-234);
     EXPECT_EQ(2*(23+21-234),
 	      cli.join_all(function<int(int,int)>(&jubatus::framework::add<int>)));
   }
@@ -109,10 +110,9 @@ TEST(rpc_mclient, small)
     double d = 23e-234;
     strw s;
     s.key = "keykeykey";
-    s.value = "vvvvv";
+    s.value = "vvvvvddd";
     string ans = concat(various(i,f,d,s) , various(i,f,d,s));
     cli.call_async("various", i,f,d,s);
     EXPECT_EQ(ans, cli.join_all(function<string(string,string)>(&concat)));
   }
-  
 }

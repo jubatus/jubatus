@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -88,8 +88,8 @@ namespace jubatus { namespace framework {
       }catch(const jubatus::config_not_set& e){
       }
 
-      mixables_.push_back(m);
 #endif
+      mixables_.push_back(m);
     };
     
     void jubatus_serv::use_cht(){
@@ -234,6 +234,14 @@ namespace jubatus { namespace framework {
       DLOG(INFO) << s << " bytes (serialized data) has been put.";
     }
 #endif
+
+    void jubatus_serv::updated(){
+#ifdef HAVE_ZOOKEEPER_H
+      update_count_ = mixer_->updated();
+#else
+      update_count_++;
+#endif
+    }
 
     bool jubatus_serv::save(std::string id)  {
       std::string ofile;

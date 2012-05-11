@@ -132,7 +132,7 @@ def build(bld):
 
   make_tests(bld, test_use, test_source)
 
-  bld.install_files('${PREFIX}/include/jubatus/server/fv_converter',
+  bld.install_files('${PREFIX}/include/jubatus/fv_converter',
                     [ 'word_splitter.hpp',
                       'string_filter.hpp',
                       'num_feature.hpp',
@@ -140,5 +140,6 @@ def build(bld):
                       'datum_to_fv_converter.hpp',
                       'datum.hpp',
                       'converter_config.hpp',
-                      'json_converter.hpp'])
+                      'json_converter.hpp',
+                      'exception.hpp'])
 

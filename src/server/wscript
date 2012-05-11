@@ -43,6 +43,8 @@ def build(bld):
 
   build_one(bld, "stat")
 
+  build_one(bld, "graph")
+
   n = bld.path.get_bld().make_node('test_input')
   n.mkdir()
   bld(rule = 'cp ${SRC} ${TGT}',

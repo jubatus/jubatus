@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ class bit_vector;
 namespace recommender {
 
 
-void generate_random_vector(size_t dim, std::vector<float>&);
+void generate_random_vector(size_t dim, uint32_t seed, std::vector<float>& v);
 
 void set_bit_vector(const std::vector<float>& vec,
                     storage::bit_vector& bit_vec);

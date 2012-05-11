@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -83,15 +83,13 @@ int classifier_serv::set_config(config_data config) {
 
 config_data classifier_serv::get_config() {
   DLOG(INFO) << __func__;
+  check_set_config();
   return config_;
 }
 
 int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > data) {
 
-  if (!clsfer_.classifier_){
-    LOG(ERROR) << __func__ << ": config is not set";
-    return -1; //int::fail("config_not_set"); // 
-  }
+  check_set_config();
 
   int count = 0;
   sfv_t v;
@@ -115,6 +113,8 @@ int classifier_serv::train(std::vector<std::pair<std::string, jubatus::datum> > 
 std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector<jubatus::datum> data) const {
   std::vector<std::vector<estimate_result> > ret;
 
+  check_set_config();
+
   sfv_t v;
   fv_converter::datum d;
   for (size_t i = 0; i < data.size(); ++i) {
@@ -130,12 +130,11 @@ std::vector<std::vector<estimate_result> > classifier_serv::classify(std::vector
     vector<estimate_result> r;
     for (vector<classify_result_elem>::const_iterator p = scores.begin();
          p != scores.end(); ++p){
-      if( isfinite(p->score) ){
-        estimate_result e;
-        e.label = p->label;
-        e.prob = p->score;
-        r.push_back(e);
-      }else{
+      estimate_result e;
+      e.label = p->label;
+      e.prob = p->score;
+      r.push_back(e);
+      if( !isfinite(p->score) ){
         LOG(WARNING) << p->label << ":" << p->score;
       }
     }
@@ -166,7 +165,12 @@ std::map<std::string, std::map<std::string,std::string> > classifier_serv::get_s
   return ret;
 }
   
-
+void classifier_serv::check_set_config()const
+{
+  if (!clsfer_.classifier_){
+    throw config_not_set();
+  }
+}
 
 val3_t mix_val3(const val3_t& lhs, const val3_t& rhs) {
   return val3_t(lhs.v1 + rhs.v1,

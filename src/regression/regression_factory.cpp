@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,6 +18,7 @@
 #include <stdexcept>
 #include "regression_factory.hpp"
 #include "regression.hpp"
+#include "../common/exception.hpp"
 
 namespace jubatus {
 
@@ -27,7 +28,7 @@ regression_factory::create_regression(const std::string& name,
   if (name == "PA") {
     return new regression::PA(storage);
   } else {
-    throw std::runtime_error("unknown regression type: " + name);
+    throw unsupported_method(name);
   }
 }
 

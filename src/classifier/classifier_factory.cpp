@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,7 @@
 
 #include "classifier.hpp"
 #include "classifier_factory.hpp"
+#include "../common/exception.hpp"
 
 using namespace std;
 
@@ -38,7 +39,7 @@ classifier_base* classifier_factory::create_classifier(const std::string& name, 
   } else if (name == "NHERD"){
     return static_cast<classifier_base*>(new NHERD(storage));
   } else {
-    return NULL;
+    throw unsupported_method(name);
   }
 }
 

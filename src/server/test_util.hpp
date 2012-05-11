@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,11 +32,9 @@ using std::cout;
 using std::endl;
 
 pid_t fork_process(const char* name, int port = 9199){
-  char cwd[1024];
-  getcwd(cwd, 1024);
-  string cmd(cwd);
+  string cmd(BUILD_DIR);
   pid_t child;
-  cmd += "/juba";
+  cmd += "/src/server/juba";
   cmd += name;
   child = fork();
   string port_str = pfi::lang::lexical_cast<std::string>(port);

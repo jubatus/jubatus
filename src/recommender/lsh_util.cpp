@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <cmath>
+#include <pficommon/math/random.h>
 #include "lsh_util.hpp"
 #include "../storage/bit_vector.hpp"
 
@@ -26,14 +27,11 @@ using namespace std;
 using jubatus::storage::bit_vector;
 using pfi::data::unordered_map;
 
-void generate_random_vector(size_t dim, vector<float>& ret) {
-  // TODO use random number generator
+void generate_random_vector(size_t dim, uint32_t seed, vector<float>& ret) {
+  pfi::math::random::mtrand rnd(seed);
   vector<float> v(dim);
   for (uint64_t i = 0; i < dim; ++i){
-    float v1 = (float)(rand()+1) / ((float)RAND_MAX + 1);
-    float v2 = (float)(rand()+1) / ((float)RAND_MAX + 1);
-    float z = sqrt(-2.f * log(v1)) * cos(2.f * M_PI * v2);
-    v[i] = z;
+    v[i] = rnd.next_gaussian();
   }
   ret.swap(v);
 }

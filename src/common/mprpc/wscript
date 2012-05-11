@@ -9,7 +9,7 @@ def build(bld):
   bld.shlib(
     source = src,
     target = 'jubacommon_mprpc',
-    use = 'PFICOMMON GLOG ZOOKEEPER_MT EVENT'
+    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT LIBEVENT'
     )
 
   bld.program(
@@ -20,4 +20,4 @@ def build(bld):
     use = 'PFICOMMON MSGPACK jubacommon_mprpc',
     )
 
-  #bld.install_files('${PREFIX}/include/jubatus/common/', bld.path.ant_glob('*.hpp'))
+  bld.install_files('${PREFIX}/include/jubatus/common/mprpc', bld.path.ant_glob('*.hpp'))

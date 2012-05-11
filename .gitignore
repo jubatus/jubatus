@@ -12,3 +12,4 @@ Makefile
 cscope.*
 callgrind.*
 .unittest-gtest
+*.tar.gz

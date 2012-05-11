@@ -5,15 +5,17 @@
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
 #include "../common/type.hpp"
+#include <msgpack.hpp>
 
 namespace jubatus{
+namespace graph{
 
 typedef uint64_t node_id_t;
 typedef uint64_t edge_id_t;
 
 typedef std::map<std::string, std::string> property;
 
-enum centerality_type {
+enum centrality_type {
   EIGENSCORE = 0
 };
 
@@ -38,6 +40,8 @@ struct node_info{
   std::vector<edge_id_t> in_edges;
   std::vector<edge_id_t> out_edges;
 
+  MSGPACK_DEFINE(p, in_edges, out_edges);
+
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
@@ -52,6 +56,8 @@ struct edge_info{
   property p;
   node_id_t src;
   node_id_t tgt;
+
+  MSGPACK_DEFINE(p, src, tgt);
 
   friend class pfi::data::serialization::access;
   template <class Ar>
@@ -84,4 +90,5 @@ struct shortest_path_tree{
 typedef std::vector<shortest_path_tree> spt_mixed;
 typedef std::vector<shortest_path_tree> spt_diff;
 
+}
 }

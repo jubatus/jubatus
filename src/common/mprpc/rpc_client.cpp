@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,6 @@ rpc_mclient::rpc_mclient(const std::vector<std::pair<std::string, uint16_t> >& h
   hosts_(hosts),
   timeout_sec_(timeout_sec),
   start_(get_clock_time()),
-  //  epfd_(epoll_create(64))
   evbase_(::event_base_new())
 {
   connect_async_();
@@ -40,7 +39,6 @@ rpc_mclient::rpc_mclient(const std::vector<std::pair<std::string, int> >& hosts,
                          int timeout_sec):
   timeout_sec_(timeout_sec),
   start_(get_clock_time()),
-  //epfd_(epoll_create(64))
   evbase_(::event_base_new())
 {
   for(size_t i=0; i<hosts.size(); ++i){
@@ -50,8 +48,12 @@ rpc_mclient::rpc_mclient(const std::vector<std::pair<std::string, int> >& hosts,
 }
 
 rpc_mclient::~rpc_mclient(){
-  ::event_base_free(evbase_.get());
-  evbase_.reset();
+  ::event_base_free(evbase_);
+}
+
+void rpc_mclient::call_async(const std::string& m)
+{
+  call_async_(m, std::vector<int>());
 }
 
 void rpc_mclient::connect_async_()
@@ -61,8 +63,6 @@ void rpc_mclient::connect_async_()
     shared_ptr<async_sock> p(new async_sock);
     p->connect_async(hosts_[i].first, hosts_[i].second);
     clients_[p->get()] = p;
-    
-    //add_out(epfd_, p->get(), i);
   }
 }
 
@@ -71,55 +71,50 @@ static void readable_callback(int fd, short int events, void* arg){
   ctx->rest -= ctx->c->readable_callback(fd, events, ctx);
 }
 int rpc_mclient::readable_callback(int fd, int events, async_context* ctx){
+
   int done = 0;
   if(events & EV_READ){
-    
+
     int r = clients_[fd]->recv_async();
-    if(r <= 0 ){
-      LOG(ERROR) << errno;
+    if(r < 0 ){
       clients_[fd]->disconnected();
       clients_[fd]->close();
+      done++;
       return done;
     }
-    try{
-      typedef msgpack::type::tuple<uint8_t,uint32_t,msgpack::object,msgpack::object> response_t;
-      response_t res;
-      clients_[fd]->salvage<response_t>(res);
-      //LOG(INFO) << res.a2.type << " " <<res.a3.type << res.a2.is_nil() << " " <<res.a3.is_nil();
+
+    typedef msgpack::type::tuple<uint8_t,uint32_t,msgpack::object,msgpack::object> response_t;
+    response_t res;
+
+    if(clients_[fd]->salvage<response_t>(res)){
+      // cout << __FILE__ << " " << __LINE__ << ":"<< endl;
+      // cout << "\ta0: "<< int(res.a0) << endl;
+      // cout << "\ta2: "<< res.a2.type << " " << res.a2.is_nil() << " " << res.a2 << endl;
+      // cout << "\ta3: "<< res.a3.type << " " << res.a3.is_nil() << " " << res.a3 << endl;;
       ctx->rest--;
+      done++;
       if(res.a0 == 1){
 	if(res.a2.is_nil()){
 	  ctx->ret.push_back(res.a3);
-	}else if(res.a3.is_nil()){
-	  LOG(ERROR) << res.a2.type;
-	  std::string msg;
-	  res.a2.convert(&msg);
-	}else{
-	  LOG(ERROR) << "both a2 and a3 is not nil: "  << res.a2.type << " " <<res.a3.type;
+
+	  // }else{
+	  //   if(res.a3.is_nil()){
+	  //   std::string msg;
+	  //   res.a2.convert(&msg);
 	}
 	return done;
       }
-      //del(epfd_, clients_[idx]->get());
-      
-    }catch(const msgpack::unpack_error& e){
-      //if(e.what() == "insufficient bytes"){ // gogogo...
-      LOG(ERROR) << e.what() << " bytes read:" << r;
-      
-      //more to recieve      //mod_in(epfd_, clients_[idx]->get(), idx);
-      struct timeval timeout;
-      timeout.tv_sec = timeout_sec_;
-      timeout.tv_usec = 0;
-      event_base_once(evbase_.get(), fd, EV_READ, &mprpc::readable_callback, ctx, &timeout);
-  
-    }catch(const std::runtime_error& e){
-      LOG(ERROR) << e.what();
-    }catch(const std::exception& e){
-      LOG(ERROR) << e.what();
     }
+    else{	//more to recieve
+      register_fd_readable_(ctx);
+      return done;
+    }
+
   }else if(events & EV_TIMEOUT){
     clients_[fd]->disconnected();
     clients_[fd]->close();
     ctx->rest--;
+    done++;
   }
   return done;
 }
@@ -131,29 +126,44 @@ static void writable_callback(int fd, short int events, void* arg){
 int rpc_mclient::writable_callback(int fd, int events, async_context* ctx){
   int done = 0;
   if(events & EV_WRITE){
+
     if(clients_[fd]->is_connecting()){
       clients_[fd]->set_sending();
     }
     if(clients_[fd]->send_async(ctx->buf->data(), ctx->buf->size())){
       ctx->rest--;
+      done++;
       clients_[fd]->set_recving();
-      //event_base_once(evbase_.get(), fd, EV_READ, &readable_callback, ctx);
 
     }else{
-      struct timeval timeout;
-      timeout.tv_sec = timeout_sec_;
-      timeout.tv_usec = 0;
-      event_base_once(evbase_.get(), fd, EV_WRITE, &mprpc::writable_callback, ctx, &timeout);
+      register_fd_writable_(ctx);
     }
 
   }else if(events & EV_TIMEOUT){
     clients_[fd]->disconnected();
     clients_[fd]->close();
     ctx->rest--;
+    done++;
   }
   return done;
 }
 
+void rpc_mclient::register_fd_readable_(async_context* ctx){
+  register_all_fd_(EV_READ, &mprpc::readable_callback, ctx);
+}
+void rpc_mclient::register_fd_writable_(async_context* ctx){
+  register_all_fd_(EV_WRITE, &mprpc::writable_callback, ctx);
+}
+void rpc_mclient::register_all_fd_(int choice, void(*cb)(int, short, void*), async_context* ctx ) // choice = EV_READ or EV_WRITE
+{
+  struct timeval timeout;
+  timeout.tv_sec = timeout_sec_;
+  timeout.tv_usec = 0;
+  pfi::data::unordered_map<int,pfi::lang::shared_ptr<async_sock> >::iterator it;
+  for(it=clients_.begin(); it!=clients_.end(); ++it){
+    event_base_once(evbase_, it->second->get(), choice, cb, ctx, &timeout);
+  }
+}
 void rpc_mclient::send_async(const msgpack::sbuffer& buf)
 {
   async_context ctx;
@@ -161,17 +171,13 @@ void rpc_mclient::send_async(const msgpack::sbuffer& buf)
   ctx.rest = clients_.size();
   ctx.buf = &buf;
 
-  struct timeval timeout;
-  timeout.tv_sec = timeout_sec_;
-  timeout.tv_usec = 0;
-  pfi::data::unordered_map<int,pfi::lang::shared_ptr<async_sock> >::iterator it;
-  for(it=clients_.begin(); it!=clients_.end(); ++it){
-    event_base_once(evbase_.get(), it->second->get(), EV_WRITE, &mprpc::writable_callback, &ctx, &timeout);
-  }
-  exit(0);
+  register_fd_writable_(&ctx);
+
   do{
-    
-    int r = event_base_loop(evbase_.get(), EVLOOP_ONCE);
+    int r = event_base_loop(evbase_, EVLOOP_ONCE);
+    if( r != 0 ){
+      break;
+    }
   }while(ctx.rest>0);
 }
 
@@ -179,16 +185,7 @@ void rpc_mclient::send_async(const msgpack::sbuffer& buf)
 void rpc_mclient::join_some_(async_context& ctx)
 {
   ctx.ret.clear();
-
-  struct timeval timeout;
-  timeout.tv_sec = timeout_sec_;
-  timeout.tv_usec = 0;
-  pfi::data::unordered_map<int,pfi::lang::shared_ptr<async_sock> >::iterator it;
-  for(it=clients_.begin(); it!=clients_.end(); ++it){
-    event_base_once(evbase_.get(), it->second->get(), EV_READ, &mprpc::readable_callback, &ctx, &timeout);
-  }
-
-  event_base_loop(evbase_.get(), EVLOOP_ONCE);
+  event_base_loop(evbase_, EVLOOP_ONCE);
 }
 
 }
