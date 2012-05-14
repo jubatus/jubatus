@@ -19,6 +19,7 @@
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
 #include "lsh_index_storage.hpp"
+#include "lsh_util.hpp"
 
 using namespace std;
 
@@ -38,6 +39,11 @@ struct greater_second {
     return l.second > r.second;
   }
 };
+
+vector<float> nth_lsh_hash(const vector<float>& hash, size_t num_tables, size_t n) {
+  const size_t len = hash.size() / num_tables;
+  return vector<float>(hash.begin() + n * len, hash.begin() + (n + 1) * len);
+}
 
 lsh_vector nth_lsh_vector(const lsh_vector& lv, size_t num_tables, size_t n) {
   // TODO: Make correspondence of hash functions and tables configurable.
@@ -145,19 +151,31 @@ void lsh_index_storage::similar_row(const lsh_vector& lv,
                                     vector<pair<string, float> >& ids,
                                     uint64_t ret_num) const {
   pfi::data::unordered_map<string, float> cands;
-  retrieve_hit_rows(lv, lv, cands, ret_num);
+  for (size_t i = 0; i < lsh_tables_.size(); ++i) {
+    const lsh_vector key = nth_lsh_vector(lv, lsh_tables_.size(), i);
+    if (retrieve_hit_rows(lv, key, i, cands, ret_num)) {
+      break;
+    }
+  }
   get_sorted_similar_rows(cands, ids, ret_num);
 }
 
 void lsh_index_storage::multi_probe_similar_row(
-    const lsh_vector& lv,
-    const vector<lsh_vector>& keys,
-    vector<pair<string, float> >& ids,
+    const vector<float>& hash,
+    vector<pair<string, float> > & ids,
+    uint64_t probe_num,
     uint64_t ret_num) const {
   pfi::data::unordered_map<string, float> cands;
-  for (size_t i = 0; i < keys.size(); ++i) {
-    if (retrieve_hit_rows(lv, keys[i], cands, ret_num)) {
-      break;
+  lsh_vector base;
+  vector<lsh_vector> probe;
+  for (size_t i = 0; i < lsh_tables_.size(); ++i) {
+    const vector<float> part_hash = nth_lsh_hash(hash, lsh_tables_.size(), i);
+    generate_lsh_probe(part_hash, probe_num, base, probe);
+    for (size_t j = 0; j < probe.size(); ++j) {
+      if (retrieve_hit_rows(base, probe[j], i, cands, ret_num)) {
+        get_sorted_similar_rows(cands, ids, ret_num);
+        return;
+      }
     }
   }
   get_sorted_similar_rows(cands, ids, ret_num);
@@ -307,23 +325,18 @@ void lsh_index_storage::set_mixed_row(const std::string& row, const lsh_vector& 
 bool lsh_index_storage::retrieve_hit_rows(
     const lsh_vector& base,
     const lsh_vector& key,
+    size_t table_index,
     pfi::data::unordered_map<string, float>& cands,
     uint64_t ret_num) const {
-  for (size_t i = 0; i < lsh_tables_.size(); ++i) {
-    const lsh_vector query = nth_lsh_vector(key, lsh_tables_.size(), i);
-    const pair<lsh_table_t::const_iterator, lsh_table_t::const_iterator>
-        range = lsh_tables_[i].equal_range(query);
-    for (lsh_table_t::const_iterator it = range.first; it != range.second; ++it) {
-      if (!cands.count(it->second)) {
-        const float score = get_score(it->second, base);
-        cands[it->second] = score;
-      }
-    }
-    if (cands.size() >= 3 * ret_num) {
-      return true;
+  const pair<lsh_table_t::const_iterator, lsh_table_t::const_iterator>
+      range = lsh_tables_[table_index].equal_range(key);
+  for (lsh_table_t::const_iterator it = range.first; it != range.second; ++it) {
+    if (!cands.count(it->second)) {
+      const float score = get_score(it->second, base);
+      cands[it->second] = score;
     }
   }
-  return false;
+  return cands.size() >= 3 * ret_num;
 }
 
 void lsh_index_storage::get_sorted_similar_rows(

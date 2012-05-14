@@ -23,6 +23,7 @@
 #include <pficommon/math/random.h>
 #include "euclid_lsh.hpp"
 #include "../common/hash.hpp"
+#include "../storage/lsh_util.hpp"
 #include "../storage/lsh_vector.hpp"
 
 using namespace std;
@@ -46,9 +47,6 @@ struct greater_second {
   }
 };
 
-typedef pair<float, vector<int> > scored_diff_type;
-typedef priority_queue<scored_diff_type, vector<scored_diff_type>, greater<scored_diff_type> > pq_type;
-
 vector<float> raw_lsh(const sfv_t& query, const vector<float>& shift, float bin_width) {
   vector<float> hash(shift.size());
   for (size_t i = 0; i < query.size(); ++i) {
@@ -63,83 +61,6 @@ vector<float> raw_lsh(const sfv_t& query, const vector<float>& shift, float bin_
     hash[j] = (hash[j] + shift[j]) / bin_width;
   }
   return hash;
-}
-
-lsh_vector threshold(const vector<float>& hash) {
-  lsh_vector lv(hash.size());
-  for (size_t j = 0; j < hash.size(); ++j) {
-    lv.set(j, floor(hash[j]));
-  }
-  return lv;
-}
-
-void next_perturbations(const vector<pair<float, int> >& cands,
-                        pq_type& pq) {
-  vector<int> shifted = pq.top().second;
-  ++shifted.back();
-
-  vector<int> expanded = pq.top().second;
-  expanded.push_back(expanded.back() + 1);
-
-  const float score_base = pq.top().first;
-  pq.pop();
-
-  if ((size_t)shifted.back() < cands.size()) {
-    const float score_diff =
-        cands[shifted.back()].first - cands[shifted.back() - 1].first;
-    pq.push(make_pair(score_base + score_diff, shifted));
-  }
-
-  if ((size_t) expanded.back() < cands.size()) {
-    const float score_diff = cands[expanded.back()].first;
-    pq.push(make_pair(score_base + score_diff, expanded));
-  }
-}
-
-lsh_vector perturbe(const lsh_vector& src,
-                    const vector<int>& diff,
-                    const vector<pair<float, int> >& cands) {
-  lsh_vector ret(src);
-  for (size_t i = 0; i < diff.size(); ++i) {
-    const int d_idx = cands[diff[i]].second;
-    const int d = (d_idx >= 0) * 2 - 1;
-    const int idx = ((d_idx >= 0) - 1) ^ d_idx;
-    ret.set(idx, ret.get(idx) + d);
-  }
-  return ret;
-}
-
-vector<lsh_vector> multi_probe_lsh(const sfv_t& query,
-                                   const vector<float>& shift,
-                                   float bin_width,
-                                   size_t ret_num) {
-  const vector<float> hash = raw_lsh(query, shift, bin_width);
-  const lsh_vector orig = threshold(hash);
-
-  vector<pair<float, int> > cands(2 * hash.size());
-  for (int i = 0; (size_t)i < hash.size(); ++i) {
-    const float dist = hash[i] - orig.get(i);
-    cands[i * 2] = make_pair((1 - dist) * (1 - dist), i);
-    cands[i * 2 + 1] = make_pair(dist * dist, ~i);
-  }
-  sort(cands.begin(), cands.end());
-
-  pq_type pq;
-  {
-    vector<int> init(1);
-    pq.push(make_pair(cands[0].first, init));
-  }
-
-  vector<lsh_vector> ret(1, orig);
-  for (size_t i = 0; i < ret_num; ++i) {
-    if (pq.empty()) {
-      break;
-    }
-    ret.push_back(perturbe(orig, pq.top().second, cands));
-    next_perturbations(cands, pq);
-  }
-
-  return ret;
 }
 
 lsh_vector lsh_function(const sfv_t& query,
@@ -185,9 +106,8 @@ void euclid_lsh::similar_row(const sfv_t& query,
     const lsh_vector query_lv = lsh_function(query, shift_, bin_width_);
     lsh_index_.similar_row(query_lv, ids, ret_num);
   } else {
-    const vector<lsh_vector> lvs =
-        multi_probe_lsh(query, shift_, bin_width_, num_probe_);
-    lsh_index_.multi_probe_similar_row(lvs[0], lvs, ids, ret_num);
+    const vector<float> query_hash = raw_lsh(query, shift_, bin_width_);
+    lsh_index_.multi_probe_similar_row(query_hash, ids, num_probe_, ret_num);
   }
 }
 

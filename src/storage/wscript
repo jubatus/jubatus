@@ -21,6 +21,7 @@ def build(bld):
               'local_storage_mixture.cpp',
 	      'sparse_matrix_storage.cpp', 'inverted_index_storage.cpp', 'bit_vector.cpp', 'bit_index_storage.cpp',
               'lsh_vector.cpp',
+              'lsh_util.cpp',
               'lsh_index_storage.cpp']
   use = 'PFICOMMON jubacommon MSGPACK'
 
@@ -39,6 +40,7 @@ def build(bld):
       'fixed_size_heap_test.cpp',
       'inverted_index_storage_test.cpp',
       'lsh_vector_test.cpp',
+      'lsh_util_test.cpp',
       'lsh_index_storage_test.cpp',
       ])
 
