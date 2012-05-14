@@ -41,9 +41,9 @@ public:
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
   void similar_row(const lsh_vector& lv, std::vector<std::pair<std::string, float> >& ids, uint64_t ret_num) const;
-  void multi_probe_similar_row(const lsh_vector& lv,
-                               const std::vector<lsh_vector>& keys,
+  void multi_probe_similar_row(const std::vector<float>& hash,
                                std::vector<std::pair<std::string, float> >& ids,
+                               uint64_t probe_num,
                                uint64_t ret_num) const;
   std::string name() const;
 
@@ -80,6 +80,7 @@ private:
 
   bool retrieve_hit_rows(const lsh_vector& base,
                          const lsh_vector& key,
+                         size_t table_index,
                          pfi::data::unordered_map<std::string, float>& cands,
                          uint64_t ret_num) const;
   void get_sorted_similar_rows(
