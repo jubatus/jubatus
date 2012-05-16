@@ -147,37 +147,28 @@ void lsh_index_storage::get_all_row_ids(vector<string>& ids) const {
   ids.swap(ret);
 }
 
-void lsh_index_storage::similar_row(const lsh_vector& lv,
-                                    vector<pair<string, float> >& ids,
+void lsh_index_storage::similar_row(const vector<float>& hash,
+                                    vector<pair<string, float> > & ids,
+                                    uint64_t probe_num,
                                     uint64_t ret_num) const {
+  lsh_probe_generator gen(hash, lsh_tables_.size());
   pfi::data::unordered_map<string, float> cands;
+
   for (size_t i = 0; i < lsh_tables_.size(); ++i) {
-    const lsh_vector key = nth_lsh_vector(lv, lsh_tables_.size(), i);
-    if (retrieve_hit_rows(lv, key, i, cands, ret_num)) {
+    if (retrieve_hit_rows(hash, gen.base(i), i, cands, ret_num)) {
+      get_sorted_similar_rows(cands, ids, ret_num);
+      return;
+    }
+  }
+
+  gen.init();
+  for (size_t i = 0; i < probe_num; ++i) {
+    const pair<size_t, lsh_vector> p = gen.get_next_table_and_vector();
+    if (retrieve_hit_rows(hash, p.second, p.first, cands, ret_num)) {
       break;
     }
   }
-  get_sorted_similar_rows(cands, ids, ret_num);
-}
 
-void lsh_index_storage::multi_probe_similar_row(
-    const vector<float>& hash,
-    vector<pair<string, float> > & ids,
-    uint64_t probe_num,
-    uint64_t ret_num) const {
-  pfi::data::unordered_map<string, float> cands;
-  lsh_vector base;
-  vector<lsh_vector> probe;
-  for (size_t i = 0; i < lsh_tables_.size(); ++i) {
-    const vector<float> part_hash = nth_lsh_hash(hash, lsh_tables_.size(), i);
-    generate_lsh_probe(part_hash, probe_num, base, probe);
-    for (size_t j = 0; j < probe.size(); ++j) {
-      if (retrieve_hit_rows(base, probe[j], i, cands, ret_num)) {
-        get_sorted_similar_rows(cands, ids, ret_num);
-        return;
-      }
-    }
-  }
   get_sorted_similar_rows(cands, ids, ret_num);
 }
 
@@ -272,8 +263,8 @@ void lsh_index_storage::add_index(const string& row, const lsh_vector& lv) {
   }
 }
 
-float lsh_index_storage::get_score(const string& row, const lsh_vector& lv) const {
-  if (lv.size() == 0) return 0;
+float lsh_index_storage::get_score(const string& row, const vector<float>& hash) const {
+  if (hash.empty()) return 0;
 
   lsh_master_table_t::const_iterator it = master_table_diff_.find(row);
   if (it == master_table_diff_.end()) {
@@ -284,9 +275,21 @@ float lsh_index_storage::get_score(const string& row, const lsh_vector& lv) cons
   }
 
   const lsh_vector& target = it->second;
-  const size_t sim = calc_hamming_similarity(target, lv);
-
-  return static_cast<float>(sim) / lv.size();
+  if (hash.size() != target.size()) return 0;
+  float max_dist = 0;
+  for (size_t i = 0; i < hash.size(); ++i) {
+    const float diff = hash[i] - target.get(i);
+    float dist = 0;
+    if (diff < 0) {
+      dist = -diff;
+    } else if (diff > 1) {
+      dist = diff - 1;
+    }
+    if (max_dist < dist) {
+      max_dist = dist;
+    }
+  }
+  return -max_dist;
 }
 
 void lsh_index_storage::remove_model_row(const std::string& row) {
@@ -323,7 +326,7 @@ void lsh_index_storage::set_mixed_row(const std::string& row, const lsh_vector& 
 }
 
 bool lsh_index_storage::retrieve_hit_rows(
-    const lsh_vector& base,
+    const vector<float>& hash,
     const lsh_vector& key,
     size_t table_index,
     pfi::data::unordered_map<string, float>& cands,
@@ -332,11 +335,12 @@ bool lsh_index_storage::retrieve_hit_rows(
       range = lsh_tables_[table_index].equal_range(key);
   for (lsh_table_t::const_iterator it = range.first; it != range.second; ++it) {
     if (!cands.count(it->second)) {
-      const float score = get_score(it->second, base);
+      const float score = get_score(it->second, hash);
       cands[it->second] = score;
     }
   }
-  return cands.size() >= 3 * ret_num;
+  // return cands.size() >= ret_num;
+  return cands.size() >= max(ret_num, lsh_tables_.size() * 3);
 }
 
 void lsh_index_storage::get_sorted_similar_rows(

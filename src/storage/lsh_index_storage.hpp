@@ -40,11 +40,10 @@ public:
   void clear();
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
-  void similar_row(const lsh_vector& lv, std::vector<std::pair<std::string, float> >& ids, uint64_t ret_num) const;
-  void multi_probe_similar_row(const std::vector<float>& hash,
-                               std::vector<std::pair<std::string, float> >& ids,
-                               uint64_t probe_num,
-                               uint64_t ret_num) const;
+  void similar_row(const std::vector<float>& hash,
+                   std::vector<std::pair<std::string, float> >& ids,
+                   uint64_t probe_num,
+                   uint64_t ret_num) const;
   std::string name() const;
 
   bool save(std::ostream& os);
@@ -74,11 +73,11 @@ private:
 
   lsh_master_table_t::iterator remove_row_and_get_iterator(const std::string& row);
   void add_index(const std::string& row, const lsh_vector& lv);
-  float get_score(const std::string& row, const lsh_vector& lv) const;
+  float get_score(const std::string& row, const std::vector<float>& hash) const;
   void remove_model_row(const std::string& row);
   void set_mixed_row(const std::string& row, const lsh_vector& lv);
 
-  bool retrieve_hit_rows(const lsh_vector& base,
+  bool retrieve_hit_rows(const std::vector<float>& hash,
                          const lsh_vector& key,
                          size_t table_index,
                          pfi::data::unordered_map<std::string, float>& cands,

@@ -102,13 +102,8 @@ void euclid_lsh::similar_row(const sfv_t& query,
                              size_t ret_num) const {
   ids.clear();
 
-  if (num_probe_ == 1) {
-    const lsh_vector query_lv = lsh_function(query, shift_, bin_width_);
-    lsh_index_.similar_row(query_lv, ids, ret_num);
-  } else {
-    const vector<float> query_hash = raw_lsh(query, shift_, bin_width_);
-    lsh_index_.multi_probe_similar_row(query_hash, ids, num_probe_, ret_num);
-  }
+  const vector<float> query_hash = raw_lsh(query, shift_, bin_width_);
+  lsh_index_.similar_row(query_hash, ids, num_probe_, ret_num);
 }
 
 void euclid_lsh::clear() {

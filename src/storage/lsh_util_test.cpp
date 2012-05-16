@@ -30,44 +30,56 @@ vector<float> make_dv(const string& str) {
   return v;
 }
 
+void check_probe(size_t expect_table,
+                 const string& expect_vec,
+                 const pair<size_t, lsh_vector>& actual) {
+  EXPECT_EQ(expect_table, actual.first);
+  EXPECT_EQ(make_vector(expect_vec), actual.second);
 }
 
-TEST(generate_lsh_probe, empty) {
-  vector<float> hash;
-  lsh_vector key;
-  vector<lsh_vector> probe;
-
-  generate_lsh_probe(hash, 1, key, probe);
-  EXPECT_EQ(0u, key.size());
-  EXPECT_EQ(1u, probe.size());
-  EXPECT_EQ(make_vector(""), probe[0]);
 }
 
-TEST(generate_lsh_probe, one) {
-  vector<float> hash = make_dv("0.6");
-  lsh_vector key;
-  vector<lsh_vector> probe;
+TEST(lsh_probe_generator, empty) {
+  lsh_probe_generator gen(vector<float>(), 1);
+  EXPECT_EQ(make_vector(""), gen.base(0));
 
-  generate_lsh_probe(hash, 1, key, probe);
-  EXPECT_EQ(make_vector("0"), key);
-  EXPECT_EQ(2u, probe.size());
-  EXPECT_EQ(key, probe[0]);
-  EXPECT_EQ(make_vector("1"), probe[1]);
+  gen.init();
+  EXPECT_EQ(-1ul, gen.get_next_table_and_vector().first);
 }
 
-TEST(generate_lsh_probe, two) {
-  vector<float> hash = make_dv("-0.4 1.2");
-  lsh_vector key;
-  vector<lsh_vector> probe;
+TEST(lsh_probe_generator, one) {
+  lsh_probe_generator gen(make_dv("0.6"), 1);
+  EXPECT_EQ(make_vector("0"), gen.base(0));
 
-  generate_lsh_probe(hash, 4, key, probe);
-  EXPECT_EQ(make_vector("-1 1"), key);
-  EXPECT_EQ(5u, probe.size());
-  EXPECT_EQ(key, probe[0]);
-  EXPECT_EQ(make_vector("-1 0"), probe[1]);
-  EXPECT_EQ(make_vector("0 1"), probe[2]);
-  EXPECT_EQ(make_vector("0 0"), probe[3]);
-  EXPECT_EQ(make_vector("-2 1"), probe[4]);
+  gen.init();
+  check_probe(0u, "1", gen.get_next_table_and_vector());
+  check_probe(0u, "-1", gen.get_next_table_and_vector());
+}
+
+TEST(lsh_probe_generator, two) {
+  lsh_probe_generator gen(make_dv("-0.4 1.2"), 1);
+  EXPECT_EQ(make_vector("-1 1"), gen.base(0));
+
+  gen.init();
+  check_probe(0u, "-1 0", gen.get_next_table_and_vector());
+  check_probe(0u, "0 1", gen.get_next_table_and_vector());
+  check_probe(0u, "0 0", gen.get_next_table_and_vector());
+  check_probe(0u, "-2 1", gen.get_next_table_and_vector());
+}
+
+TEST(lsh_probe_generator, multiple_tables) {
+  lsh_probe_generator gen(make_dv("0.2 0.3 0.4 1.5 1.65 1.75"), 2);
+  EXPECT_EQ(make_vector("0 0 0"), gen.base(0));
+  EXPECT_EQ(make_vector("1 1 1"), gen.base(1));
+
+  gen.init();
+  check_probe(0u, "-1 0 0", gen.get_next_table_and_vector());
+  check_probe(1u, "1 1 2", gen.get_next_table_and_vector());
+  check_probe(0u, "0 -1 0", gen.get_next_table_and_vector());
+  check_probe(1u, "1 2 1", gen.get_next_table_and_vector());
+  check_probe(0u, "-1 -1 0", gen.get_next_table_and_vector());
+  check_probe(0u, "0 0 -1", gen.get_next_table_and_vector());
+  check_probe(1u, "1 2 2", gen.get_next_table_and_vector());
 }
 
 }
