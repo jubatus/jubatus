@@ -18,6 +18,15 @@ lsh_vector make_vector(const string& b) {
   return lsh_vector(v);
 }
 
+vector<float> make_raw_vector(const string& b) {
+  vector<float> v;
+  istringstream ss(b);
+  for (float x; ss >> x; ) {
+    v.push_back(x);
+  }
+  return v;
+}
+
 TEST(lsh_index_storage, name) {
   lsh_index_storage s(4);
   EXPECT_EQ("lsh_index_storage", s.name());
@@ -123,26 +132,41 @@ TEST(lsh_index_storage, get_all_row_ids) {
 }
 
 TEST(lsh_index_storage, similar_row) {
-  lsh_index_storage s(4);
-  s.set_row("r1", make_vector("1 2 3 5"));
-  s.set_row("r2", make_vector("1 2 3 4"));
-  s.set_row("r3", make_vector("1 2 4 5"));
-  s.set_row("r4", make_vector("1 2 2 4"));
-  s.set_row("r5", make_vector("1 2 4 5"));
+  lsh_index_storage s(2);
+  s.set_row("r1", make_vector("0 0 0 0"));
+  s.set_row("r2", make_vector("-1 1 0 1"));
+  s.set_row("r3", make_vector("1 1 1 2"));
+  s.set_row("r4", make_vector("0 2 0 2"));
+  s.set_row("r5", make_vector("-1 2 3 2"));
 
   vector<pair<string, float> > ids;
-  s.similar_row(make_vector("1 2 3 4"), ids, 3);
+  s.similar_row(make_raw_vector("0.125 1.75 1.25 2.375"), ids, 4, 4);
 
-  EXPECT_EQ("r2", ids[0].first);
-  EXPECT_EQ(1.0f, ids[0].second);
+  // 0 1 1 2  (base)
+  // -1 1 * * (probe 1)
+  // 0 2 * *  (probe 2)
+  // * * 0 2  (probe 3)
+  // -1 2 * * (probe 4)
 
-  sort(ids.begin(), ids.end());
+  // base    r3: -0.875
+  // probe 1 r2: -0.375
+  // probe 2 r4: -0.25
+  // probe 3 r4
+  // probe 4 r5: -1.75
 
-  EXPECT_EQ("r1", ids[0].first);
-  EXPECT_EQ(0.75f, ids[0].second);
+  EXPECT_EQ(4ul, ids.size());
 
-  EXPECT_EQ("r4", ids[2].first);
-  EXPECT_EQ(0.75f, ids[2].second);
+  EXPECT_EQ("r4", ids[0].first);
+  EXPECT_EQ(-0.25, ids[0].second);
+
+  EXPECT_EQ("r2", ids[1].first);
+  EXPECT_EQ(-0.375f, ids[1].second);
+
+  EXPECT_EQ("r3", ids[2].first);
+  EXPECT_EQ(-0.875f, ids[2].second);
+
+  EXPECT_EQ("r5", ids[3].first);
+  EXPECT_EQ(-1.75f, ids[3].second);
 }
 
 TEST(lsh_index_storage, get_and_set_diff) {

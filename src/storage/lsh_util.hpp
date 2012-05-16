@@ -17,16 +17,39 @@
 
 #pragma once
 
+#include <functional>
+#include <queue>
+#include <utility>
 #include <vector>
 #include "lsh_vector.hpp"
 
 namespace jubatus {
 namespace storage {
 
-void generate_lsh_probe(const std::vector<float>& hash,
-                        size_t num_probe,
-                        lsh_vector& key,
-                        std::vector<lsh_vector>& probe);
+class lsh_probe_generator {
+ public:
+  lsh_probe_generator(const std::vector<float>& hash,
+                      size_t num_hash_tables);
+
+  void init();
+
+  lsh_vector base_all() const;
+  const lsh_vector& base(size_t i) const { return base_[i]; }
+  std::pair<size_t, lsh_vector> get_next_table_and_vector();
+
+ private:
+  typedef std::pair<float, std::pair<size_t, std::vector<int> > > diff_type;
+  typedef std::priority_queue<diff_type,
+                              std::vector<diff_type>,
+                              std::greater<diff_type> > heap_type;
+
+  void next_perturbations();
+
+  std::vector<std::vector<float> > hash_;
+  std::vector<lsh_vector> base_;
+  std::vector<std::vector<std::pair<float, int> > > perturbation_sets_;
+  heap_type heap_;
+};
 
 }
 }
