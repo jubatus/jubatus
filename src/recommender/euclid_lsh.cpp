@@ -20,10 +20,7 @@
 #include <vector>
 #include <glog/logging.h>
 #include <pficommon/data/serialization.h>
-<<<<<<< Updated upstream
-=======
 #include <pficommon/lang/cast.h>
->>>>>>> Stashed changes
 #include <pficommon/math/random.h>
 #include "euclid_lsh.hpp"
 #include "../common/hash.hpp"
@@ -51,8 +48,6 @@ struct greater_second {
   }
 };
 
-<<<<<<< Updated upstream
-=======
 template<typename T>
 T get_param(const map<string, string>& config, const string& name, T default_value) {
   const map<string, string>::const_iterator it = config.find(name);
@@ -62,7 +57,6 @@ T get_param(const map<string, string>& config, const string& name, T default_val
   return pfi::lang::lexical_cast<T>(it->second);
 }
 
->>>>>>> Stashed changes
 vector<float> raw_lsh(const sfv_t& query, const vector<float>& shift, float bin_width) {
   vector<float> hash(shift.size());
   for (size_t i = 0; i < query.size(); ++i) {
@@ -99,8 +93,6 @@ euclid_lsh::euclid_lsh()
   initialize_shift(DEFAULT_LSH_NUM * DEFAULT_TABLE_NUM, DEFAULT_SEED);
 }
 
-<<<<<<< Updated upstream
-=======
 euclid_lsh::euclid_lsh(const std::map<std::string, std::string>& config)
     : lsh_index_(get_param(config, "table_num", DEFAULT_TABLE_NUM)),
       bin_width_(get_param(config, "bin_width", DEFAULT_BIN_WIDTH)),
@@ -115,7 +107,6 @@ euclid_lsh::euclid_lsh(const std::map<std::string, std::string>& config)
                    get_param(config, "seed", DEFAULT_SEED));
 }
 
->>>>>>> Stashed changes
 euclid_lsh::euclid_lsh(uint64_t lsh_num,
                        uint64_t table_num,
                        float bin_width,
@@ -187,10 +178,7 @@ bool euclid_lsh::load_impl(istream& is) {
 }
 
 void euclid_lsh::initialize_shift(size_t lsh_num, uint32_t seed) {
-<<<<<<< Updated upstream
-=======
   LOG(INFO) << "seed: " << seed;
->>>>>>> Stashed changes
   mtrand rnd(seed);
   shift_.reserve(lsh_num);
   for (size_t i = 0; i < lsh_num; ++i) {
