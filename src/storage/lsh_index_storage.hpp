@@ -46,6 +46,8 @@ public:
                    uint64_t ret_num) const;
   std::string name() const;
 
+  size_t table_num() const { return lsh_tables_.size(); }
+
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
