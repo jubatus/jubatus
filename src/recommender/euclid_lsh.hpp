@@ -18,6 +18,10 @@
 #pragma once
 
 #include <stdint.h>
+<<<<<<< Updated upstream
+=======
+#include <map>
+>>>>>>> Stashed changes
 #include "recommender_base.hpp"
 #include "../storage/lsh_index_storage.hpp"
 
@@ -27,11 +31,20 @@ namespace recommender {
 class euclid_lsh : public recommender_base {
  public:
   euclid_lsh();
+<<<<<<< Updated upstream
   explicit euclid_lsh(uint64_t lsh_num,
                       uint64_t table_num,
                       float bin_width,
                       uint32_t num_probe,
                       uint32_t seed);
+=======
+  explicit euclid_lsh(const std::map<std::string, std::string>& config);
+  euclid_lsh(uint64_t lsh_num,
+             uint64_t table_num,
+             float bin_width,
+             uint32_t num_probe,
+             uint32_t seed);
+>>>>>>> Stashed changes
   ~euclid_lsh();
 
   virtual void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> >& ids, size_t ret_num) const;
