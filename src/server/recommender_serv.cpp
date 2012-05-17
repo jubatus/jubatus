@@ -95,7 +95,7 @@ int recommender_serv::clear()
 
 common::cshared_ptr<recommender_base> recommender_serv::make_model(){
   return common::cshared_ptr<recommender_base>
-    (jubatus::recommender::create_recommender(config_.method));
+    (jubatus::recommender::create_recommender(config_.config));
 }  
 
 void recommender_serv::after_load(){

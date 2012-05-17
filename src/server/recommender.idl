@@ -49,7 +49,7 @@ message converter_config {
 }
 
 message config_data {
-  0: string method
+  0: param_t config
   1: converter_config converter
 }
 

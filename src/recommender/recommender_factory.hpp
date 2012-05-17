@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <map>
 #include <string>
 
 namespace jubatus {
@@ -24,7 +25,7 @@ namespace recommender {
 
 class recommender_base;
 
-recommender_base* create_recommender(const std::string& name);
+recommender_base* create_recommender(const std::map<std::string, std::string>& config);
 
 }
 }
