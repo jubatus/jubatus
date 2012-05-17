@@ -24,6 +24,7 @@
 #include "lsh_vector.hpp"
 #include "recommender_storage_base.hpp"
 #include "storage_type.hpp"
+#include "../common/key_manager.hpp"
 
 namespace jubatus {
 namespace storage{
@@ -82,16 +83,18 @@ private:
   bool retrieve_hit_rows(const std::vector<float>& hash,
                          const lsh_vector& key,
                          size_t table_index,
-                         pfi::data::unordered_map<std::string, float>& cands,
+                         pfi::data::unordered_map<uint64_t, float>& cands,
                          uint64_t ret_num) const;
   void get_sorted_similar_rows(
-      const pfi::data::unordered_map<std::string, float>& cands,
+      const pfi::data::unordered_map<uint64_t, float>& cands,
       std::vector<std::pair<std::string, float> >& ids,
       uint64_t ret_num) const;
 
   lsh_master_table_t master_table_;
   lsh_master_table_t master_table_diff_;
   std::vector<lsh_table_t> lsh_tables_;
+
+  key_manager key_manager_;
 };
 
 }
