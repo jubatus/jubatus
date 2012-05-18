@@ -21,7 +21,6 @@
 
 namespace jubatus { namespace framework {
 
-
 template <typename K, typename V>
 std::map<K,V> merge(std::map<K,V> lhs, std::map<K,V> rhs)
 {

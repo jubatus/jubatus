@@ -39,9 +39,15 @@ public:
   virtual void update_edge(edge_id_t eid, const property& p) = 0; // cht
   virtual void remove_edge(edge_id_t eid) = 0; // cht
   
-  virtual double centrality(node_id_t id, centrality_type ct) const = 0; // random
+  virtual void add_cenrality_query(const preset_query&) = 0; //broadcast
+  virtual void add_shortest_path_query(const preset_query&) = 0; //broadcast
+  virtual void remove_cenrality_query(const preset_query&) = 0; //broadcast
+  virtual void remove_shortest_path_query(const preset_query&) = 0; //broadcast
+
+  virtual double centrality(node_id_t id, centrality_type ct, const preset_query&) const = 0; // random
   virtual void shortest_path(node_id_t src, node_id_t tgt, 
-                             uint64_t max_hop, std::vector<node_id_t>& ret) const = 0; // random
+                             uint64_t max_hop, std::vector<node_id_t>& ret,
+			     const preset_query&) const = 0; // random
   
   virtual void get_node(node_id_t id, node_info& ret) const = 0; // cht
   virtual void get_edge(node_id_t id, edge_info& ret) const = 0; // cht

@@ -6,16 +6,18 @@ using namespace jubatus;
 using namespace jubatus::framework;
 int main(int args, char** argv){
   keeper k(keeper_argv(args,argv));
-  k.register_cht<int >("create_node", pfi::lang::function<int(int,int)>(&pass)); //update
-  k.register_broadcast<int, std::string >("create_global_node", pfi::lang::function<int(int,int)>(&all_and)); //update
-  k.register_broadcast<int, std::string >("remove_global_node", pfi::lang::function<int(int,int)>(&all_and)); //update
+  k.register_cht<std::string >("create_node", pfi::lang::function<std::string(std::string,std::string)>(&random<std::string >)); //update
+  k.register_cht<int >("remove_node", pfi::lang::function<int(int,int)>(&random<int >)); //update
   k.register_cht<int, property >("update_node", pfi::lang::function<int(int,int)>(&all_and)); //update
-  k.register_cht<int >("remove_node", pfi::lang::function<int(int,int)>(&all_and)); //update
-  k.register_cht<int, edge_req >("create_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
-  k.register_cht<int, edge_req >("update_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
+  k.register_cht<int, edge_info >("create_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
+  k.register_cht<int, edge_id_t, edge_info >("update_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
   k.register_cht<int, edge_id_t >("remove_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
-  k.register_random<double, std::string, centrality_type >("centrality"); //random analysis
-  k.register_random<std::vector<node_id >, shortest_path_req >("shortest_path"); //random analysis
+  k.register_random<double, std::string, centrality_type, preset_query >("centrality"); //pass analysis
+  k.register_broadcast<bool, preset_query >("add_cenrality_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+  k.register_broadcast<bool, preset_query >("add_shortest_path_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+  k.register_broadcast<bool, preset_query >("remove_cenrality_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+  k.register_broadcast<bool, preset_query >("remove_shortest_path_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+  k.register_random<std::vector<node_id >, shortest_path_req >("shortest_path"); //pass analysis
   k.register_broadcast<int >("update_index", pfi::lang::function<int(int,int)>(&all_and)); //update
   k.register_broadcast<int >("clear", pfi::lang::function<int(int,int)>(&all_and)); //update
   k.register_cht<node_info >("get_node", pfi::lang::function<node_info(node_info,node_info)>(&random<node_info >)); //analysis

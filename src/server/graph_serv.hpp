@@ -65,25 +65,31 @@ public:
   graph_serv(const framework::server_argv& a);
   virtual ~graph_serv();
 
-  int create_node(const std::string& nid); //update cht
-
-  int create_global_node(const std::string& nid); //update broadcast
-
-  int remove_global_node(const std::string& nid); //update broadcast
+  std::string create_node(const std::string& nid); //update cht
 
   int update_node(const std::string& nid, const property& p); //update cht
 
   int remove_node(const std::string& nid); //update cht
 
-  int create_edge(const std::string& nid, const edge_req& r); //update cht
+  int create_edge(const std::string& nid, const edge_info&); //update cht
 
-  int update_edge(const std::string& nid, const edge_req& r); //update cht
+  int update_edge(const std::string& nid, edge_id_t, const edge_info&); //update cht
 
   int remove_edge(const std::string& nid, const edge_id_t& e); //update cht
 
-  double centrality(const std::string& nid, const centrality_type& ct) const; //analysis random
+  double centrality(const std::string& nid, const centrality_type& ct,
+		    const preset_query& q) const; //analysis random
 
   std::vector<node_id > shortest_path(const shortest_path_req& r) const; //analysis random
+
+  bool add_cenrality_query(const preset_query& q); //update broadcast
+
+  bool add_shortest_path_query(const preset_query& q); //update broadcast
+
+  bool remove_cenrality_query(const preset_query& q); //update broadcast
+
+  bool remove_shortest_path_query(const preset_query& q); //update broadcast
+
 
   int update_index(); //update broadcast
 

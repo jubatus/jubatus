@@ -51,20 +51,21 @@ graph_serv::graph_serv(const framework::server_argv& a)
 graph_serv::~graph_serv()
 {}
 
-int graph_serv::create_node(const std::string& id){
-  g_.get_model()->create_node(n2i(id));
-  return 0;
+std::string graph_serv::create_node(const std::string& nid){
+  g_.get_model()->create_node(n2i(nid));
+  // TODO: global registration
+  return "TODO: somenewid";
 }
 
-int graph_serv::create_global_node(const std::string& id){
-  g_.get_model()->create_global_node(n2i(id));
-  return 0;
-}
+// int graph_serv::create_global_node(const std::string& id){
+//   g_.get_model()->create_global_node(n2i(id));
+//   return 0;
+// }
 
-int graph_serv::remove_global_node(const std::string& id){
-  g_.get_model()->remove_global_node(n2i(id));
-  return 0;
-}
+// int graph_serv::remove_global_node(const std::string& id){
+//   g_.get_model()->remove_global_node(n2i(id));
+//   return 0;
+// }
 
 int graph_serv::update_node(const std::string& id, const property& p)
 {
@@ -78,16 +79,18 @@ int graph_serv::remove_node(const std::string& id){
 }
 
   //@cht
-int graph_serv::create_edge(const std::string& id, const edge_req& req)
+int graph_serv::create_edge(const std::string& id, const edge_info& ei)
 { 
-  g_.get_model()->create_edge(req.id, n2i(req.info.src), n2i(req.info.tgt));
+  edge_id_t eid = 0; //some new id
+  g_.get_model()->create_edge(eid, n2i(ei.src), n2i(ei.tgt));
+  //g_.get_model()->update_edge(id, ei.p);
   return 0;
 }
 
   //@random
-int graph_serv::update_edge(const std::string&, const edge_req& req)
+int graph_serv::update_edge(const std::string&, edge_id_t eid, const edge_info& ei)
 {
-  g_.get_model()->update_edge(req.id, req.info.p);
+  g_.get_model()->update_edge(eid, ei.p);
   return 0;
 }
 
@@ -98,11 +101,14 @@ int graph_serv::remove_edge(const std::string&, const edge_id_t& id){
 }
 
 //@random
-double graph_serv::centrality(const std::string& id, const centrality_type& s) const 
+double graph_serv::centrality(const std::string& id, const centrality_type& s,
+			      const preset_query& q) const 
 { 
   if(s == 0){
+    jubatus::graph::preset_query q0;
     return g_.get_model()->centrality(n2i(id),
-				      jubatus::graph::EIGENSCORE);
+				      jubatus::graph::EIGENSCORE,
+				      q0);
   }else{
     std::stringstream msg;
     msg << "unknown centrality type: " << s;
@@ -115,12 +121,37 @@ double graph_serv::centrality(const std::string& id, const centrality_type& s) c
 std::vector<node_id> graph_serv::shortest_path(const shortest_path_req& req) const
 { 
   std::vector<jubatus::graph::node_id_t> ret0;
-  g_.get_model()->shortest_path(n2i(req.src), n2i(req.tgt), req.max_hop, ret0);
+  jubatus::graph::preset_query q;
+  g_.get_model()->shortest_path(n2i(req.src), n2i(req.tgt), req.max_hop, ret0, q);
   std::vector<node_id> ret;
   for(size_t i=0;i<ret0.size();++i){
     ret.push_back(i2n(ret0[i]));
   }
   return ret;
+}
+
+//update, broadcast
+bool graph_serv::add_cenrality_query(const preset_query& q)
+{
+  return false;
+}
+
+//update, broadcast
+bool graph_serv::add_shortest_path_query(const preset_query& q)
+{
+  return false;
+}
+
+//update, broadcast
+bool graph_serv::remove_cenrality_query(const preset_query& q)
+{
+  return false;
+}
+
+//update, broadcast
+bool graph_serv::remove_shortest_path_query(const preset_query& q)
+{
+  return false;
 }
 
 node_info graph_serv::get_node(const std::string& nid)const

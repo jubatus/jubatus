@@ -48,34 +48,39 @@ class keeper : public pfi::network::mprpc::rpc_server {
   int run();
 
   template <typename R>
-  void register_random(std::string method_name) {
+  void register_random(const std::string& method_name) {
     pfi::lang::function<R(std::string)> f = pfi::lang::bind(&keeper::template random_proxy<R>, this, method_name, pfi::lang::_1);
     add(method_name, f);
   }
   template <typename R, typename A0> //, typename A1, typename A2>
-  void register_random(std::string method_name) {
+  void register_random(const std::string& method_name) {
     pfi::lang::function<R(std::string,A0)> f = pfi::lang::bind(&keeper::template random_proxy<R,A0>, this, method_name, pfi::lang::_1, pfi::lang::_2);
     add(method_name, f);
   }
   template <typename R, typename A0, typename A1>//, typename A2>
-  void register_random(std::string method_name) {
+  void register_random(const std::string& method_name) {
     pfi::lang::function<R(std::string,A0,A1)> f = pfi::lang::bind(&keeper::template random_proxy<R,A0,A1>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3);
     add(method_name,f); 
   }
-  
-  template <typename R, typename A0>
-  void register_broadcast(std::string method_name,
-                          pfi::lang::function<R(R,R)> agg){//pfi::lang::function<R(R,R)>& agg) {
-    pfi::lang::function<R(std::string, A0)> f =
-      pfi::lang::bind(&keeper::template broadcast_proxy<R, A0>, this, method_name, pfi::lang::_1, pfi::lang::_2,
-                      agg);
-    add(method_name, f);
+  template <typename R, typename A0, typename A1, typename A2>
+  void register_random(const std::string& method_name) {
+    pfi::lang::function<R(std::string,A0,A1,A2)> f = pfi::lang::bind(&keeper::template random_proxy<R,A0,A1,A2>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3, pfi::lang::_4);
+    add(method_name,f); 
   }
+  
   template <typename R>
   void register_broadcast(std::string method_name,
                           pfi::lang::function<R(R,R)> agg){//pfi::lang::function<R(R,R)>& agg) {
     pfi::lang::function<R(std::string)> f =
       pfi::lang::bind(&keeper::template broadcast_proxy<R>, this, method_name, pfi::lang::_1, 
+                      agg);
+    add(method_name, f);
+  }
+  template <typename R, typename A0>
+  void register_broadcast(std::string method_name,
+                          pfi::lang::function<R(R,R)> agg){//pfi::lang::function<R(R,R)>& agg) {
+    pfi::lang::function<R(std::string, A0)> f =
+      pfi::lang::bind(&keeper::template broadcast_proxy<R, A0>, this, method_name, pfi::lang::_1, pfi::lang::_2,
                       agg);
     add(method_name, f);
   }
@@ -148,6 +153,23 @@ class keeper : public pfi::network::mprpc::rpc_server {
     try{
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
       return cli.call<R(std::string,A0,A1)>(method_name)(name, a0, a1);
+    }catch(const std::exception& e){
+      LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
+      throw e;
+    }
+  }
+  template <typename R, typename A0, typename A1, typename A2>
+  R random_proxy(const std::string& method_name, const std::string& name, const A0& a0, const A1& a1, const A2& a2){
+    std::vector<std::pair<std::string, int> > list;
+
+    get_members_(name, list);
+
+    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+    const std::pair<std::string, int>& c = list[rng_(list.size())];
+
+    try{
+      pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
+      return cli.call<R(std::string,A0,A1,A2)>(method_name)(name, a0, a1, a2);
     }catch(const std::exception& e){
       LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
       throw e;

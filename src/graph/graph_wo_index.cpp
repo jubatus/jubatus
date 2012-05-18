@@ -152,7 +152,17 @@ void graph_wo_index::remove_edge(edge_id_t eid){
   local_edges_.erase(it);
 }
   
-double graph_wo_index::centrality(node_id_t id, centrality_type ct) const{
+void graph_wo_index::add_cenrality_query(const preset_query&)
+{}
+void graph_wo_index::add_shortest_path_query(const preset_query&)
+{}
+void graph_wo_index::remove_cenrality_query(const preset_query&)
+{}
+void graph_wo_index::remove_shortest_path_query(const preset_query&)
+{}
+
+
+double graph_wo_index::centrality(node_id_t id, centrality_type ct, const preset_query&) const{
 
   if (ct == EIGENSCORE){
     unordered_map<node_id_t, eigen_vector_info>::const_iterator it = eigen_scores_.find(id);
@@ -169,7 +179,8 @@ double graph_wo_index::centrality(node_id_t id, centrality_type ct) const{
 }
 
 void graph_wo_index::shortest_path(node_id_t src, node_id_t tgt,
-                                   uint64_t max_hop, vector<node_id_t>& ret) const{
+                                   uint64_t max_hop, vector<node_id_t>& ret,
+				   const preset_query&) const{
   if (global_nodes_.count(src) == 0){
     throw runtime_error(string("graph_wo_index::shortest_path unknown id=")
                         + lexical_cast<string>(src));

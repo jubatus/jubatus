@@ -40,9 +40,15 @@ public:
   void update_edge(edge_id_t eid, const property& p);
   void remove_edge(edge_id_t eid);
   
-  double centrality(node_id_t id, centrality_type ct) const;
+  void add_cenrality_query(const preset_query&);
+  void add_shortest_path_query(const preset_query&);
+  void remove_cenrality_query(const preset_query&);
+  void remove_shortest_path_query(const preset_query&);
+
+  double centrality(node_id_t id, centrality_type ct, const preset_query&) const;
   void shortest_path(node_id_t src, node_id_t tgt, 
-                     uint64_t max_hop, std::vector<node_id_t>& ret) const;
+                     uint64_t max_hop, std::vector<node_id_t>& ret,
+		     const preset_query&) const;
   
   void get_node(node_id_t id, node_info& ret) const;
   void get_edge(edge_id_t eid, edge_info& ret) const;

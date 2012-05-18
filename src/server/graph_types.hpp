@@ -35,6 +35,16 @@ public:
   std::vector<edge_id_t > out_edges;
 };
 
+struct preset_query {
+public:
+
+  
+  MSGPACK_DEFINE(edge_query, node_query);  
+
+  std::vector<std::pair<std::string, std::string > > edge_query;
+  std::vector<std::pair<std::string, std::string > > node_query;
+};
+
 struct edge_info {
 public:
 
@@ -46,25 +56,16 @@ public:
   node_id tgt;
 };
 
-struct edge_req {
-public:
-
-  
-  MSGPACK_DEFINE(id, info);  
-
-  edge_id_t id;
-  edge_info info;
-};
-
 struct shortest_path_req {
 public:
 
   
-  MSGPACK_DEFINE(src, tgt, max_hop);  
+  MSGPACK_DEFINE(src, tgt, max_hop, q);  
 
   node_id src;
   node_id tgt;
   uint32_t max_hop;
+  preset_query q;
 };
 
 } // namespace jubatus
