@@ -48,6 +48,14 @@ struct greater_second {
   }
 };
 
+float calc_norm(const sfv_t& sfv) {
+  float sqnorm = 0;
+  for (size_t i = 0; i < sfv.size(); ++i) {
+    sqnorm += sfv[i].second * sfv[i].second;
+  }
+  return sqrt(sqnorm);
+}
+
 template<typename T>
 T get_param(const map<string, string>& config, const string& name, T default_value) {
   const map<string, string>::const_iterator it = config.find(name);
@@ -57,8 +65,8 @@ T get_param(const map<string, string>& config, const string& name, T default_val
   return pfi::lang::lexical_cast<T>(it->second);
 }
 
-vector<float> raw_lsh(const sfv_t& query, const vector<float>& shift, float bin_width) {
-  vector<float> hash(shift.size());
+vector<float> lsh_function(const sfv_t& query, size_t dimension, float bin_width) {
+  vector<float> hash(dimension);
   for (size_t i = 0; i < query.size(); ++i) {
     const uint32_t seed = hash_util::calc_string_hash(query[i].first);
     mtrand rnd(seed);
@@ -66,35 +74,25 @@ vector<float> raw_lsh(const sfv_t& query, const vector<float>& shift, float bin_
       hash[j] += query[i].second * rnd.next_gaussian();
     }
   }
-
-  for (size_t j = 0; j < hash.size(); ++j) {
-    hash[j] = (hash[j] + shift[j]) / bin_width;
+  for (size_t j = 0; j < dimension; ++j) {
+    hash[j] /= bin_width;
   }
   return hash;
-}
 
-lsh_vector lsh_function(const sfv_t& query,
-                        const vector<float>& shift,
-                        float bin_width) {
-  vector<float> hash = raw_lsh(query, shift, bin_width);
-  lsh_vector lv(hash.size());
-  for (size_t i = 0; i < hash.size(); ++i) {
-    lv.set(i, floor(hash[i]));
-  }
-  return lv;
 }
 
 }
 
 euclid_lsh::euclid_lsh()
-    : lsh_index_(DEFAULT_TABLE_NUM),
+    : lsh_index_(DEFAULT_LSH_NUM, DEFAULT_TABLE_NUM, DEFAULT_SEED),
       bin_width_(DEFAULT_BIN_WIDTH),
       num_probe_(DEFAULT_NUM_PROBE) {
-  initialize_shift(DEFAULT_LSH_NUM * DEFAULT_TABLE_NUM, DEFAULT_SEED);
 }
 
 euclid_lsh::euclid_lsh(const std::map<std::string, std::string>& config)
-    : lsh_index_(get_param(config, "table_num", DEFAULT_TABLE_NUM)),
+    : lsh_index_(get_param(config, "lsh_num", DEFAULT_LSH_NUM),
+                 get_param(config, "table_num", DEFAULT_TABLE_NUM),
+                 get_param(config, "seed", DEFAULT_SEED)),
       bin_width_(get_param(config, "bin_width", DEFAULT_BIN_WIDTH)),
       num_probe_(get_param(config, "probe_num", DEFAULT_NUM_PROBE)) {
   const uint64_t lsh_num = get_param(config, "lsh_num", DEFAULT_LSH_NUM);
@@ -102,20 +100,6 @@ euclid_lsh::euclid_lsh(const std::map<std::string, std::string>& config)
   LOG(INFO) << "table_num: " << lsh_index_.table_num();
   LOG(INFO) << "probe_num: " << num_probe_;
   LOG(INFO) << "bin_width: " << bin_width_;
-
-  initialize_shift(lsh_num * lsh_index_.table_num(),
-                   get_param(config, "seed", DEFAULT_SEED));
-}
-
-euclid_lsh::euclid_lsh(uint64_t lsh_num,
-                       uint64_t table_num,
-                       float bin_width,
-                       uint32_t num_probe,
-                       uint32_t seed)
-    : lsh_index_(table_num),
-      bin_width_(bin_width),
-      num_probe_(num_probe) {
-  initialize_shift(lsh_num * table_num, seed);
 }
 
 euclid_lsh::~euclid_lsh() {
@@ -126,8 +110,9 @@ void euclid_lsh::similar_row(const sfv_t& query,
                              size_t ret_num) const {
   ids.clear();
 
-  const vector<float> query_hash = raw_lsh(query, shift_, bin_width_);
-  lsh_index_.similar_row(query_hash, ids, num_probe_, ret_num);
+  const vector<float> hash = lsh_function(query, lsh_index_.all_lsh_num(), bin_width_);
+  const float norm = calc_norm(query);
+  lsh_index_.similar_row(hash, norm, num_probe_, ret_num, ids);
 }
 
 void euclid_lsh::clear() {
@@ -145,8 +130,9 @@ void euclid_lsh::update_row(const string& id, const sfv_diff_t& diff) {
   sfv_t row;
   orig_.get_row(id, row);
 
-  const lsh_vector lv = lsh_function(row, shift_, bin_width_);
-  lsh_index_.set_row(id, lv);
+  const vector<float> hash = lsh_function(row, lsh_index_.all_lsh_num(), bin_width_);
+  const float norm = calc_norm(row);
+  lsh_index_.set_row(id, hash, norm);
 }
 
 void euclid_lsh::get_all_row_ids(vector<string>& ids) const {
@@ -175,15 +161,6 @@ bool euclid_lsh::load_impl(istream& is) {
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> lsh_index_;
   return true;
-}
-
-void euclid_lsh::initialize_shift(size_t lsh_num, uint32_t seed) {
-  LOG(INFO) << "seed: " << seed;
-  mtrand rnd(seed);
-  shift_.reserve(lsh_num);
-  for (size_t i = 0; i < lsh_num; ++i) {
-    shift_.push_back(rnd.next_double(bin_width_));
-  }
 }
 
 }

@@ -15,24 +15,24 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <cmath>
 #include <sstream>
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
+#include <pficommon/data/unordered_set.h>
+#include <pficommon/math/random.h>
 #include "lsh_index_storage.hpp"
 #include "lsh_util.hpp"
 
 using namespace std;
+using pfi::data::unordered_map;
+using pfi::data::unordered_set;
+using pfi::math::random::mtrand;
 
 namespace jubatus {
 namespace storage {
 
 namespace {
-
-struct equal_first {
-  bool operator()(const pair<string, float>& l, const pair<string, float>& r) const {
-    return l.first == r.first;
-  }
-};
 
 struct greater_second {
   bool operator()(const pair<string, float>& l, const pair<string, float>& r) const {
@@ -40,34 +40,48 @@ struct greater_second {
   }
 };
 
-vector<float> nth_lsh_hash(const vector<float>& hash, size_t num_tables, size_t n) {
-  const size_t len = hash.size() / num_tables;
-  return vector<float>(hash.begin() + n * len, hash.begin() + (n + 1) * len);
-}
-
-lsh_vector nth_lsh_vector(const lsh_vector& lv, size_t num_tables, size_t n) {
-  // TODO: Make correspondence of hash functions and tables configurable.
-
-  // duplication strategy
-  // const size_t cut_len = lv.size() / num_tables;
-  // return lv.cut(n * cut_len, cut_len);
-
-  // simple strategy
-  const size_t len = lv.size() / num_tables;
-  return lv.slice(len * n, len);
-}
-
-size_t calc_hamming_similarity(const lsh_vector& l, const lsh_vector& r) {
-  if (l.size() != r.size()) return 0;
-
-  size_t count = 0;
-  for (size_t i = 0; i < l.size(); ++i) {
-    if (l.get(i) == r.get(i)) {
-      ++count;
+uint64_t hash_lv(const lsh_vector& lv) {
+  uint64_t hash = 14695981039346656037LLU;
+  for (size_t i = 0; i < lv.size(); ++i) {
+    for (int j = 0; j < 32; j += 8) {
+      hash *= 1099511628211LLU;
+      hash ^= ((uint32_t)lv.get(i) >> j) & 0xff;
     }
   }
+  return hash;
+}
 
-  return count;
+void initialize_shift(uint32_t seed, vector<float>& shift) {
+  mtrand rnd(seed);
+  for (size_t i = 0; i < shift.size(); ++i) {
+    shift[i] = rnd.next_double();
+  }
+}
+
+vector<float> shift_hash(const vector<float>& hash, const vector<float>& shift) {
+  vector<float> shifted(hash);
+  for (size_t i = 0; i < shifted.size(); ++i) {
+    shifted[i] += shift[i];
+  }
+  return shifted;
+}
+
+bit_vector binarize(const vector<float>& hash) {
+  bit_vector bv;
+  bv.resize_and_clear(hash.size());
+  for (size_t i = 0; i < hash.size(); ++i) {
+    if (hash[i] > 0) {
+      bv.set_bit(i);
+    }
+  }
+  return bv;
+}
+
+float calc_euclidean_distance(const lsh_entry& entry, const bit_vector& bv, float norm) {
+  const uint64_t hamm = bv.calc_hamming_similarity(entry.simhash_bv);
+  const float angle = (1 - float(hamm) / bv.bit_num()) * M_PI;
+  const float dot = entry.norm * norm * cos(angle);
+  return sqrt(norm * norm + entry.norm * entry.norm - 2 * dot);
 }
 
 lsh_master_table_t extract_diff(const string& serialized) {
@@ -90,86 +104,105 @@ string serialize_diff(const lsh_master_table_t& table) {
 lsh_index_storage::lsh_index_storage() {
 }
 
-lsh_index_storage::lsh_index_storage(size_t num_tables)
-    : lsh_tables_(num_tables) {
+lsh_index_storage::lsh_index_storage(size_t lsh_num, size_t table_num, uint32_t seed)
+    : shift_(lsh_num * table_num),
+      table_num_(table_num) {
+  initialize_shift(seed, shift_);
 }
 
 lsh_index_storage::~lsh_index_storage() {
 }
 
-void lsh_index_storage::set_row(const string& row, const lsh_vector& lv) {
-  lsh_master_table_t::iterator it = remove_row_and_get_iterator(row);
-  if (it == master_table_diff_.end()) {
-    master_table_diff_.insert(make_pair(row, lv));
-  } else {
-    it->second = lv;
-  }
-
-  add_index(row, lv);
-}
-
-void lsh_index_storage::get_row(const string& row, lsh_vector& lv) const {
-  lsh_master_table_t::const_iterator it = master_table_diff_.find(row);
-  if (it == master_table_diff_.end()) {
-    it = master_table_.find(row);
-    if (it == master_table_.end() || it->second.size() == 0) {
-      lv = lsh_vector();
-      return;
-    }
-  }
-  lv = it->second;
+void lsh_index_storage::set_row(const string& row, const vector<float>& hash, float norm) {
+  remove_row(row);
+  lsh_entry& entry = master_table_diff_[row];
+  make_entry(hash, norm, entry);
+  add_index(row, entry);
 }
 
 void lsh_index_storage::remove_row(const string& row) {
-  remove_row_and_get_iterator(row);
+  const uint64_t row_id = key_manager_.get_id_const(row);
+  if (row_id == key_manager::NOTFOUND) {
+    return;
+  }
+
+  lsh_master_table_t::iterator entry_it = master_table_diff_.find(row);
+  if (entry_it == master_table_diff_.end()) {
+    entry_it = master_table_.end();
+    master_table_diff_[row] = lsh_entry();
+  }
+  lsh_entry& entry = entry_it->second;
+
+  for (size_t i = 0; i < entry.lsh_hash.size(); ++i) {
+    pair<lsh_table_t::iterator, lsh_table_t::iterator> range =
+        lsh_table_.equal_range(entry.lsh_hash[i]);
+    for (lsh_table_t::iterator it = range.first; it != range.second; ++it) {
+      if (it->second == row_id) {
+        lsh_table_.erase(it);
+        break;
+      }
+    }
+  }
+  entry = lsh_entry();
 }
 
 void lsh_index_storage::clear() {
   master_table_.clear();
   master_table_diff_.clear();
-  for (size_t i = 0; i < lsh_tables_.size(); ++i) {
-    lsh_tables_[i].clear();
-  }
+  lsh_table_.clear();
+  key_manager_.clear();
 }
 
 void lsh_index_storage::get_all_row_ids(vector<string>& ids) const {
-  vector<string> ret;
+  const size_t size_upper_bound = master_table_.size() + master_table_diff_.size();
 
-  if (!lsh_tables_.empty()) {
-    const lsh_table_t& tbl = lsh_tables_.front();
-    ret.reserve(tbl.size());
+  unordered_set<std::string> id_set;
+  // equivalent to id_set.reserve(size_upper_bound) in C++11
+  id_set.rehash(ceil(size_upper_bound / id_set.max_load_factor()));
 
-    for (lsh_table_t::const_iterator it = tbl.begin(); it != tbl.end(); ++it) {
-      ret.push_back(key_manager_.get_key(it->second));
-    }
+  for (lsh_master_table_t::const_iterator it = master_table_.begin();
+       it != master_table_.end(); ++it) {
+    id_set.insert(it->first);
+  }
+  for (lsh_master_table_t::const_iterator it = master_table_diff_.begin();
+       it != master_table_diff_.end(); ++it) {
+    id_set.insert(it->first);
   }
 
+  vector<string> ret(id_set.size());
+  copy(id_set.begin(), id_set.end(), ret.begin());
   ids.swap(ret);
 }
 
 void lsh_index_storage::similar_row(const vector<float>& hash,
-                                    vector<pair<string, float> > & ids,
+                                    float norm,
                                     uint64_t probe_num,
-                                    uint64_t ret_num) const {
-  lsh_probe_generator gen(hash, lsh_tables_.size());
-  pfi::data::unordered_map<uint64_t, float> cands;
+                                    uint64_t ret_num,
+                                    vector<pair<string, float> >& ids) const {
+  const vector<float> shifted = shift_hash(hash, shift_);
+  const bit_vector bv = binarize(hash);
 
-  for (size_t i = 0; i < lsh_tables_.size(); ++i) {
-    if (retrieve_hit_rows(hash, gen.base(i), i, cands, ret_num)) {
-      get_sorted_similar_rows(cands, ids, ret_num);
+  lsh_probe_generator gen(shifted, table_num_);
+  unordered_set<uint64_t> cands;
+
+  for (uint64_t i = 0; i < table_num_; ++i) {
+    lsh_vector key = gen.base(i);
+    key.push_back(i);
+    if (retrieve_hit_rows(key, ret_num, cands)) {
+      get_sorted_similar_rows(cands, bv, norm, ret_num, ids);
       return;
     }
   }
 
   gen.init();
-  for (size_t i = 0; i < probe_num; ++i) {
-    const pair<size_t, lsh_vector> p = gen.get_next_table_and_vector();
-    if (retrieve_hit_rows(hash, p.second, p.first, cands, ret_num)) {
+  for (uint64_t i = 0; i < probe_num; ++i) {
+    pair<size_t, lsh_vector> p = gen.get_next_table_and_vector();
+    p.second.push_back(p.first);
+    if (retrieve_hit_rows(p.second, ret_num, cands)) {
       break;
     }
   }
-
-  get_sorted_similar_rows(cands, ids, ret_num);
+  get_sorted_similar_rows(cands, bv, norm, ret_num, ids);
 }
 
 string lsh_index_storage::name() const {
@@ -196,7 +229,7 @@ void lsh_index_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
   lsh_master_table_t diff = extract_diff(mixed_diff);
 
   for (lsh_master_table_t::const_iterator it = diff.begin(); it != diff.end(); ++it) {
-    if (it->second.size() == 0) {
+    if (it->second.lsh_hash.empty()) {
       remove_model_row(it->first);
     } else {
       set_mixed_row(it->first, it->second);
@@ -217,57 +250,99 @@ void lsh_index_storage::mix(const string& lhs, string& rhs) const {
   rhs = serialize_diff(diff_r);
 }
 
-lsh_master_table_t::iterator
-lsh_index_storage::remove_row_and_get_iterator(const string& row) {
+// private
+
+vector<float> lsh_index_storage::make_entry(const vector<float>& hash,
+                                            float norm,
+                                            lsh_entry& entry) const {
+  const vector<float> shifted = shift_hash(hash, shift_);
+  lsh_probe_generator gen(shifted, table_num_);
+
+  entry.lsh_hash.resize(table_num_);
+  for (uint64_t i = 0; i < table_num_; ++i) {
+    lsh_vector key = gen.base(i);
+    key.push_back(i);
+    entry.lsh_hash[i] = hash_lv(key);
+  }
+
+  entry.simhash_bv = binarize(hash);
+  entry.norm = norm;
+
+  return shifted;
+}
+
+void lsh_index_storage::add_index(const string& row, const lsh_entry& entry) {
+  const uint64_t row_id = key_manager_.get_id(row);
+  for (size_t i = 0; i < entry.lsh_hash.size(); ++i) {
+    lsh_table_.insert(make_pair(entry.lsh_hash[i], row_id));
+  }
+}
+
+void lsh_index_storage::remove_model_row(const std::string& row) {
+  const lsh_entry* entry = get_lsh_entry(row);
+  if (!entry) {
+    return;
+  }
+
   const uint64_t row_id = key_manager_.get_id_const(row);
-  if (row_id == key_manager::NOTFOUND) {
-    return master_table_diff_.end();
-  }
-
-  lsh_master_table_t::iterator it = master_table_diff_.find(row);
-  if (it == master_table_diff_.end()) {
-    it = master_table_.find(row);
-  }
-
-  for (size_t i = 0; i < lsh_tables_.size(); ++i) {
-    const lsh_vector query = nth_lsh_vector(it->second, lsh_tables_.size(), i);
-    const pair<lsh_table_t::iterator, lsh_table_t::iterator> range =
-        lsh_tables_[i].equal_range(query);
+  for (size_t i = 0; i < entry->lsh_hash.size(); ++i) {
+    const pair<lsh_table_t::iterator, lsh_table_t::iterator>
+        range = lsh_table_.equal_range(entry->lsh_hash[i]);
     for (lsh_table_t::iterator it = range.first; it != range.second; ++it) {
       if (it->second == row_id) {
-        lsh_tables_[i].erase(it);
+        lsh_table_.erase(it);
         break;
       }
     }
   }
-
-  master_table_diff_[row] = lsh_vector();
-
-  return it;
 }
 
-void lsh_index_storage::add_index(const string& row, const lsh_vector& lv) {
+void lsh_index_storage::set_mixed_row(const string& row, const lsh_entry& entry) {
   const uint64_t row_id = key_manager_.get_id(row);
-  for (size_t i = 0; i < lsh_tables_.size(); ++i ){
-    const lsh_vector query = nth_lsh_vector(lv, lsh_tables_.size(), i);
-    const pair<lsh_table_t::iterator, lsh_table_t::iterator> range =
-        lsh_tables_[i].equal_range(query);
-
-    lsh_table_t::iterator it = range.first;
-    for (; it != range.second; ++it) {
-      if (it->second == row_id) {
-        break;
-      }
-    }
-    if (it == range.second) {
-      lsh_tables_[i].insert(make_pair(query, row_id));
-    }
+  master_table_[row] = entry;
+  for (size_t i = 0; i < entry.lsh_hash.size(); ++i) {
+    lsh_table_.insert(make_pair(entry.lsh_hash[i], row_id));
   }
 }
 
-float lsh_index_storage::get_score(const string& row, const vector<float>& hash) const {
-  if (hash.empty()) return 0;
+bool lsh_index_storage::retrieve_hit_rows(const lsh_vector& key,
+                                          size_t ret_num,
+                                          unordered_set<uint64_t>& cands) const {
+  const size_t hash = hash_lv(key);
+  const pair<lsh_table_t::const_iterator, lsh_table_t::const_iterator>
+      range = lsh_table_.equal_range(hash);
 
+  for (lsh_table_t::const_iterator it = range.first; it != range.second; ++it) {
+    cands.insert(it->second);
+  }
+  return cands.size() >= max(ret_num, table_num_ * 3);
+}
+
+void lsh_index_storage::get_sorted_similar_rows(const unordered_set<uint64_t>& cands,
+                                                const bit_vector& query_simhash,
+                                                float query_norm,
+                                                uint64_t ret_num,
+                                                vector<pair<string, float> >& ids) const {
+  ids.clear();
+  ids.reserve(cands.size());
+  for (unordered_set<uint64_t>::const_iterator it = cands.begin();
+       it != cands.end(); ++it) {
+    const string& row = key_manager_.get_key(*it);
+    const lsh_entry* entry = get_lsh_entry(row);
+    if (!entry) {
+      continue;
+    }
+    const float dist = calc_euclidean_distance(*entry, query_simhash, query_norm);
+    ids.push_back(make_pair(row, -dist));
+  }
+  sort(ids.begin(), ids.end(), greater_second());
+
+  if (ids.size() > ret_num) {
+    ids.resize(ret_num);
+  }
+}
+
+const lsh_entry* lsh_index_storage::get_lsh_entry(const string& row) const {
   lsh_master_table_t::const_iterator it = master_table_diff_.find(row);
   if (it == master_table_diff_.end()) {
     it = master_table_.find(row);
@@ -275,101 +350,7 @@ float lsh_index_storage::get_score(const string& row, const vector<float>& hash)
       return 0;
     }
   }
-
-  const lsh_vector& target = it->second;
-  if (hash.size() != target.size()) return 0;
-  float max_dist = 0;
-  for (size_t i = 0; i < hash.size(); ++i) {
-    const float diff = hash[i] - target.get(i);
-    float dist = 0;
-    if (diff < 0) {
-      dist = -diff;
-    } else if (diff > 1) {
-      dist = diff - 1;
-    }
-    if (max_dist < dist) {
-      max_dist = dist;
-    }
-  }
-  return -max_dist;
-}
-
-void lsh_index_storage::remove_model_row(const std::string& row) {
-  const uint64_t row_id = key_manager_.get_id_const(row);
-  if (row_id == key_manager::NOTFOUND) {
-    return;
-  }
-
-  lsh_master_table_t::iterator it = master_table_.find(row);
-  lsh_vector lv;
-  if (it != master_table_.end()) {
-    lv = it->second;
-    master_table_.erase(it);
-  } else {
-    it = master_table_diff_.find(row);
-    lv = it->second;
-    master_table_diff_.erase(it);
-  }
-
-  for (size_t i = 0; i < lsh_tables_.size(); ++i ){
-    const lsh_vector query = nth_lsh_vector(lv, lsh_tables_.size(), i);
-    const pair<lsh_table_t::iterator, lsh_table_t::iterator> range =
-        lsh_tables_[i].equal_range(query);
-    for (lsh_table_t::iterator it = range.first; it != range.second; ++it) {
-      if (it->second == row_id) {
-        lsh_tables_[i].erase(it);
-        break;
-      }
-    }
-  }
-}
-
-void lsh_index_storage::set_mixed_row(const std::string& row, const lsh_vector& lv) {
-  // We assume that hash values of lv does not change at any time.
-  const uint64_t row_id = key_manager_.get_id(row);
-  master_table_[row] = lv;
-  for (size_t i = 0; i < lsh_tables_.size(); ++i) {
-    const lsh_vector query = nth_lsh_vector(lv, lsh_tables_.size(), i);
-    lsh_tables_[i].insert(make_pair(query, row_id));
-  }
-}
-
-bool lsh_index_storage::retrieve_hit_rows(
-    const vector<float>& hash,
-    const lsh_vector& key,
-    size_t table_index,
-    pfi::data::unordered_map<uint64_t, float>& cands,
-    uint64_t ret_num) const {
-  const pair<lsh_table_t::const_iterator, lsh_table_t::const_iterator>
-      range = lsh_tables_[table_index].equal_range(key);
-  for (lsh_table_t::const_iterator it = range.first; it != range.second; ++it) {
-    if (!cands.count(it->second)) {
-      const float score = get_score(key_manager_.get_key(it->second), hash);
-      cands[it->second] = score;
-    }
-  }
-  return cands.size() >= max(ret_num, lsh_tables_.size() * 3);
-}
-
-void lsh_index_storage::get_sorted_similar_rows(
-    const pfi::data::unordered_map<uint64_t, float>& cands,
-    vector<pair<string, float> >& ids,
-    uint64_t ret_num) const {
-  vector<pair<string, float> > ret(cands.size());
-  size_t i = 0;
-  for (pfi::data::unordered_map<uint64_t, float>::const_iterator it = cands.begin();
-       it != cands.end(); ++it) {
-    ret[i].first = key_manager_.get_key(it->first);
-    ret[i].second = it->second;
-    ++i;
-  }
-
-  sort(ret.begin(), ret.end(), greater_second());
-  if (ret_num < ret.size()) {
-    ret.resize(ret_num);
-  }
-
-  ids.swap(ret);
+  return &it->second;
 }
 
 }

@@ -29,11 +29,6 @@ class euclid_lsh : public recommender_base {
  public:
   euclid_lsh();
   explicit euclid_lsh(const std::map<std::string, std::string>& config);
-  euclid_lsh(uint64_t lsh_num,
-             uint64_t table_num,
-             float bin_width,
-             uint32_t num_probe,
-             uint32_t seed);
   ~euclid_lsh();
 
   virtual void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> >& ids, size_t ret_num) const;
@@ -50,10 +45,7 @@ class euclid_lsh : public recommender_base {
   virtual bool save_impl(std::ostream& os);
   virtual bool load_impl(std::istream& is);
 
-  void initialize_shift(size_t lsh_num, uint32_t seed);
-
   storage::lsh_index_storage lsh_index_;
-  std::vector<float> shift_;
   const float bin_width_;
   const uint32_t num_probe_;
 };

@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 #include <pficommon/data/unordered_map.h>
+#include <pficommon/data/unordered_set.h>
 #include "lsh_vector.hpp"
 #include "recommender_storage_base.hpp"
 #include "storage_type.hpp"
@@ -32,22 +33,24 @@ namespace storage{
 class lsh_index_storage : public recommender_storage_base {
 public:
   lsh_index_storage();
-  explicit lsh_index_storage(size_t num_tables);
+  lsh_index_storage(size_t lsh_num, size_t table_num, uint32_t seed);
   virtual ~lsh_index_storage();
 
-  void set_row(const std::string& row, const lsh_vector& lv);
-  void get_row(const std::string& row, lsh_vector& lv) const;
+  // hash is a randomly-projected and scaled hash values without shifting
+  void set_row(const std::string& row, const std::vector<float>& hash, float norm);
   void remove_row(const std::string& row);
   void clear();
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
   void similar_row(const std::vector<float>& hash,
-                   std::vector<std::pair<std::string, float> >& ids,
+                   float norm,
                    uint64_t probe_num,
-                   uint64_t ret_num) const;
+                   uint64_t ret_num,
+                   std::vector<std::pair<std::string, float> >& ids) const;
   std::string name() const;
 
-  size_t table_num() const { return lsh_tables_.size(); }
+  size_t table_num() const { return table_num_; }
+  size_t all_lsh_num() const { return shift_.size(); }
 
   bool save(std::ostream& os);
   bool load(std::istream& is);
@@ -57,10 +60,13 @@ public:
   virtual void mix(const std::string& lhs, std::string& rhs) const;
 
 private:
+  typedef pfi::data::unordered_multimap<uint64_t, uint64_t> lsh_table_t;
+
   friend class pfi::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(master_table_) & MEMBER(master_table_diff_);
+    ar & MEMBER(master_table_) & MEMBER(master_table_diff_)
+        & MEMBER(shift_) & MEMBER(table_num_);
 
     if (ar.is_read) {
       for (lsh_master_table_t::iterator it = master_table_diff_.begin(); it != master_table_.end(); ++it) {
@@ -74,26 +80,29 @@ private:
     }
   }
 
-  lsh_master_table_t::iterator remove_row_and_get_iterator(const std::string& row);
-  void add_index(const std::string& row, const lsh_vector& lv);
-  float get_score(const std::string& row, const std::vector<float>& hash) const;
+  std::vector<float> make_entry(const std::vector<float>&hash,
+                                float norm,
+                                lsh_entry& entry) const;
+  void add_index(const std::string& row, const lsh_entry& entry);
+  bool retrieve_hit_rows(const lsh_vector& key,
+                         size_t ret_num,
+                         pfi::data::unordered_set<uint64_t>& cands) const;
+  void get_sorted_similar_rows(const pfi::data::unordered_set<uint64_t>& cands,
+                               const bit_vector& query_simhash,
+                               float query_norm,
+                               uint64_t ret_num,
+                               std::vector<std::pair<std::string, float> >& ids) const;
+  const lsh_entry* get_lsh_entry(const std::string& row) const;
   void remove_model_row(const std::string& row);
-  void set_mixed_row(const std::string& row, const lsh_vector& lv);
-
-  bool retrieve_hit_rows(const std::vector<float>& hash,
-                         const lsh_vector& key,
-                         size_t table_index,
-                         pfi::data::unordered_map<uint64_t, float>& cands,
-                         uint64_t ret_num) const;
-  void get_sorted_similar_rows(
-      const pfi::data::unordered_map<uint64_t, float>& cands,
-      std::vector<std::pair<std::string, float> >& ids,
-      uint64_t ret_num) const;
+  void set_mixed_row(const std::string& row, const lsh_entry& entry);
 
   lsh_master_table_t master_table_;
   lsh_master_table_t master_table_diff_;
-  std::vector<lsh_table_t> lsh_tables_;
 
+  lsh_table_t lsh_table_;
+
+  std::vector<float> shift_;
+  uint64_t table_num_;
   key_manager key_manager_;
 };
 
