@@ -13,8 +13,8 @@ public:
     p_(new graph_serv(a))
   { p_->use_cht();}
 
-  std::string create_node(std::string name, std::string nid) //update cht
-  { JWLOCK__(p_); return p_->create_node(nid); }
+  std::string create_node(std::string name) //update random
+  { JWLOCK__(p_); return p_->create_node(); }
 
   int remove_node(std::string name, std::string nid) //update cht
   { JWLOCK__(p_); return p_->remove_node(nid); }

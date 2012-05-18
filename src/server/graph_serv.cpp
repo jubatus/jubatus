@@ -19,6 +19,7 @@
 #include "graph_types.hpp"
 
 #include "../graph/graph_factory.hpp"
+#include "../common/util.hpp"
 
 #include <pficommon/lang/cast.h>
 #include <sstream>
@@ -51,10 +52,13 @@ graph_serv::graph_serv(const framework::server_argv& a)
 graph_serv::~graph_serv()
 {}
 
-std::string graph_serv::create_node(const std::string& nid){
-  g_.get_model()->create_node(n2i(nid));
+std::string graph_serv::create_node(){
+  uint64_t nid = jubatus::util::new_uid();
+  // send true create_node_ to other machine,
+  // send true create_global_node to other machines.
+  //g_.get_model()->create_node(nid);
   // TODO: global registration
-  return "TODO: somenewid";
+  return pfi::lang::lexical_cast<std::string>(nid);
 }
 
 // int graph_serv::create_global_node(const std::string& id){
@@ -81,7 +85,7 @@ int graph_serv::remove_node(const std::string& id){
   //@cht
 int graph_serv::create_edge(const std::string& id, const edge_info& ei)
 { 
-  edge_id_t eid = 0; //some new id
+  edge_id_t eid = jubatus::util::new_uid();
   g_.get_model()->create_edge(eid, n2i(ei.src), n2i(ei.tgt));
   //g_.get_model()->update_edge(id, ei.p);
   return 0;

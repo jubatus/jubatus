@@ -48,9 +48,9 @@ message shortest_path_req {
 
 service graph {
 
-  # do global
-  #@cht #@update #@random
-  string create_node(0: string name, 1: string nid) # //@cht
+# do global; returns new nid
+  #@random #@update #@random
+  string create_node(0: string name) # //@cht
   # do global
   #@cht #@update #@random
   int remove_node(0: string name, 1: string nid) # //@cht

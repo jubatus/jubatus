@@ -6,7 +6,7 @@ using namespace jubatus;
 using namespace jubatus::framework;
 int main(int args, char** argv){
   keeper k(keeper_argv(args,argv));
-  k.register_cht<std::string >("create_node", pfi::lang::function<std::string(std::string,std::string)>(&random<std::string >)); //update
+  k.register_random<std::string >("create_node"); //random update
   k.register_cht<int >("remove_node", pfi::lang::function<int(int,int)>(&random<int >)); //update
   k.register_cht<int, property >("update_node", pfi::lang::function<int(int,int)>(&all_and)); //update
   k.register_cht<int, edge_info >("create_edge", pfi::lang::function<int(int,int)>(&all_and)); //update

@@ -65,7 +65,7 @@ public:
   graph_serv(const framework::server_argv& a);
   virtual ~graph_serv();
 
-  std::string create_node(const std::string& nid); //update cht
+  std::string create_node(); //update cht
 
   int update_node(const std::string& nid, const property& p); //update cht
 

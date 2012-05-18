@@ -20,6 +20,8 @@
 #include <vector>
 #include <map>
 
+#include <stdint.h>
+
 namespace jubatus{
 namespace util{
 
@@ -34,6 +36,14 @@ void append_env_path(const std::string& env_, const std::string& argv0);
 void append_server_path(const std::string& argv0);
 
 void get_machine_status(std::map<std::string, std::string>&);
+
+// globally unique uid
+uint64_t new_uid();
+
+#ifdef HAVE_ZOOKEEPER_H
+#else
+  extern uint64_t uid_counter;
+#endif
 
 } //util
 } //namespace jubatus

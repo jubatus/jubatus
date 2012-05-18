@@ -12,8 +12,8 @@ public:
   graph(const std::string &host, uint64_t port, double timeout_sec)
     : rpc_client(host, port, timeout_sec) {}
 
-    std::string create_node(std::string name, std::string nid) {
-      return call<std::string(std::string, std::string)>("create_node")(name, nid);
+    std::string create_node(std::string name) {
+      return call<std::string(std::string)>("create_node")(name);
     }
 
     int32_t remove_node(std::string name, std::string nid) {
