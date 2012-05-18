@@ -32,13 +32,11 @@ namespace jubatus{
     bool has_samespec(const process&) const ;
 
     const std::string& get_name() const { return name_; };
-    const std::string& get_type() const { return type_; };
-    const std::string& get_storage() const { return storage_; };
+    const std::string& get_server() const { return server_; };
     int get_rpc_port()const {return rpc_port_;};
   private:
-    std::string type_;
+    std::string server_;
     std::string name_;
-    std::string storage_;
     std::string zk_hosts_;
     std::string logfile_;
     int rpc_port_;
