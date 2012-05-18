@@ -36,9 +36,17 @@ typedef pfi::data::unordered_map<std::string, row_t> tbl_t;
 
 typedef pfi::data::unordered_map<std::string, bit_vector> bit_table_t;
 
-typedef pfi::data::unordered_map<std::string, lsh_vector> lsh_master_table_t;
-typedef pfi::data::unordered_map<std::string, float> lsh_norm_table_t;
-typedef pfi::data::unordered_multimap<lsh_vector, uint64_t> lsh_table_t;
+struct lsh_entry {
+  std::vector<uint64_t> lsh_hash;
+  bit_vector simhash_bv;
+  float norm;
+
+  template<typename Ar>
+  void serialize(Ar& ar) {
+    ar & MEMBER(lsh_hash) & MEMBER(simhash_bv) & MEMBER(norm);
+  }
+};
+typedef pfi::data::unordered_map<std::string, lsh_entry> lsh_master_table_t;
 
 typedef pfi::data::unordered_map<std::string, float> map_float_t;
 typedef std::map<uint64_t, float> imap_float_t;

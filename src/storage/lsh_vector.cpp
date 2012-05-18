@@ -58,6 +58,10 @@ void lsh_vector::set(size_t pos, int value) {
   values_[pos] = value;
 }
 
+void lsh_vector::push_back(int value) {
+  values_.push_back(value);
+}
+
 void lsh_vector::resize_and_clear(size_t sz) {
   values_.reserve(sz);
   values_.clear();

@@ -39,6 +39,7 @@ class lsh_vector {
 
   int  get(size_t pos) const;
   void set(size_t pos, int value);
+  void push_back(int value);
 
   void resize_and_clear(size_t sz);
   size_t size() const;
