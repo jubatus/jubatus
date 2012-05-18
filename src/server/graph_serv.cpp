@@ -56,20 +56,16 @@ std::string graph_serv::create_node(){
   uint64_t nid = jubatus::util::new_uid();
   // send true create_node_ to other machine,
   // send true create_global_node to other machines.
-  //g_.get_model()->create_node(nid);
+
   // TODO: global registration
+  std::vector<std::pair<std::string, int> > members;
+  get_members(members);
+  //g_.get_model()->create_node(nid);
+  // common::mprpc::multi_rsync r(members);
+  // r.call<bool>(agg);
   return pfi::lang::lexical_cast<std::string>(nid);
 }
 
-// int graph_serv::create_global_node(const std::string& id){
-//   g_.get_model()->create_global_node(n2i(id));
-//   return 0;
-// }
-
-// int graph_serv::remove_global_node(const std::string& id){
-//   g_.get_model()->remove_global_node(n2i(id));
-//   return 0;
-// }
 
 int graph_serv::update_node(const std::string& id, const property& p)
 {
@@ -79,6 +75,11 @@ int graph_serv::update_node(const std::string& id, const property& p)
 
 int graph_serv::remove_node(const std::string& id){
   g_.get_model()->remove_node(n2i(id));
+  std::vector<std::pair<std::string, int> > members;
+  get_members(members);
+  //g_.get_model()->create_node(nid);
+  // common::mprpc::multi_rsync r(members);
+  // r.call<bool>(agg);
   return 0;
 }
 
@@ -203,6 +204,18 @@ std::map<std::string, std::map<std::string,std::string> > graph_serv::get_status
   ret[get_server_identifier()].insert(ret0.begin(), ret0.end());
   return ret;
 }
+
+int graph_serv::create_global_node(const std::string& nid)
+{
+  g_.get_model()->create_global_node(n2i(nid));
+  return 0;
+} //update internal
+
+int graph_serv::remove_global_node(const std::string& nid)
+{
+  g_.get_model()->remove_global_node(n2i(nid));
+  return 0;
+} //update internal
 
 void graph_serv::after_load(){}
 }

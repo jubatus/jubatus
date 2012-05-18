@@ -285,4 +285,14 @@ namespace jubatus { namespace framework {
       }
     }
 
+    void jubatus_serv::get_members(std::vector<std::pair<std::string,int> >& ret)
+    {
+      ret.clear();
+#ifdef HAVE_ZOOKEEPER_H
+      common::get_all_actors(zk_, name, ret);
+      // TODO
+      // remove myself
+#endif
+    }
+
 }}

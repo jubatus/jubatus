@@ -67,6 +67,7 @@ public:
   std::string get_ipaddr()const{ return a_.eth; };
   int get_port()const{ return a_.port; };
   int get_threadum()const{ return a_.threadnum; };
+  void get_members(std::vector<std::pair<std::string,int> >&);
 
 protected:
   void build_local_path_(std::string& out, const std::string& type, const std::string& id){

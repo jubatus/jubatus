@@ -101,6 +101,10 @@ public:
 
   std::map<std::string,std::map<std::string,std::string > > get_status() const; //analysis broadcast
 
+  int create_global_node(const std::string& nid); //update internal
+
+  int remove_global_node(const std::string& nid); //update internal
+
   void after_load();
 
 private:

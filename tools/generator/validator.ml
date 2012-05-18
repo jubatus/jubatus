@@ -46,6 +46,7 @@ let make_decoration name dec =
     | "#@random" -> Random;
     | "#@cht" -> Cht;
     | "#@broadcast" -> Broadcast;
+    | "#@internal" -> Internal;
     | s ->
       raise (Wrong_routing ("unknown routing method ("^s^") on "^ name))
   in
@@ -85,7 +86,7 @@ let check_method m =
   let routing,reqtype,aggregator = make_decoration name decorators in
 
   (* if aggregator is not known... TODO. *)
-  let known_aggregators = ["#@all_and"; "#@all_or"; "#@concat"; "#@merge"; "#@ignore"] in
+  let known_aggregators = ["#@all_and"; "#@all_or"; "#@concat"; "#@merge"; "#@ignore"; "#@random"; "#@pass"] in
   (* FIXME: add pass , ramdom, ... *)
   if not (List.mem aggregator known_aggregators) then
       Printf.printf "warning: unknown aggregator %s specified at %s\n" aggregator name;

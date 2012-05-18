@@ -69,6 +69,12 @@ public:
 
   std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
   { JRLOCK__(p_); return p_->get_status(); }
+
+  int create_global_node(std::string name, std::string nid) //update internal
+  { JWLOCK__(p_); return p_->create_global_node(nid); }
+
+  int remove_global_node(std::string name, std::string nid) //update internal
+  { JWLOCK__(p_); return p_->remove_global_node(nid); }
   int run(){ return p_->start(*this); };
   pfi::lang::shared_ptr<graph_serv> get_p(){ return p_; };
 private:

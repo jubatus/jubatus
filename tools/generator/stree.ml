@@ -38,7 +38,7 @@ type stree = Typedef of string * decl_type
 	     | Exception of string * field_type list * string
 	     | Service of string * method_type list
 
-type routing_type = Random | Cht | Broadcast
+type routing_type = Random | Cht | Broadcast | Internal
 type reqtype = Update | Analysis
 
 let known_types = Hashtbl.create 256;;

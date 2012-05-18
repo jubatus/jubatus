@@ -80,6 +80,7 @@ let to_keeper_strings = function
 	  in
 	  Printf.sprintf "  k.register_%s<%s >(\"%s\", %s); //%s"
 	    routing (String.concat ", " (rettype::(List.tl argv_strs)))  name aggfunc rwtype
+	| "internal" -> ""; (* no code generated in keeper *)
 	| _ ->
 	  let aggfunc =
 	    let tmpl =
