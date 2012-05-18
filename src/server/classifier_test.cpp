@@ -121,13 +121,13 @@ TEST_P(classifier_test, set_config_exception){
   classifier c("localhost", PORT, 10);
   jubatus::config_data config;
   config.method = "pa";
-  ASSERT_THROW2(c.set_config("", config), std::exception, "pa");
+  ASSERT_THROW2(c.set_config("", config), std::exception, "unsupported method (pa)");
   //  ASSERT_THROW(c.set_config("", config), std::exception);
   config.method = "";
-  ASSERT_THROW2(c.set_config("", config), std::exception, "");
+  ASSERT_THROW2(c.set_config("", config), std::exception, "unsupported method ()");
   //  ASSERT_THROW(c.set_config("", config), std::exception);
   config.method = "saitama";
-  ASSERT_THROW2(c.set_config("", config), std::exception, "saitama");
+  ASSERT_THROW2(c.set_config("", config), std::exception, "unsupported method (saitama)");
   //  ASSERT_THROW(c.set_config("", config), std::exception);
 }
 
