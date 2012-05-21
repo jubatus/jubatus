@@ -68,6 +68,9 @@ public:
   int get_port()const{ return a_.port; };
   int get_threadum()const{ return a_.threadnum; };
 
+  std::vector<std::string> mix_agg(const std::vector<std::string>& lhs,
+   				   const std::vector<std::string>& rhs);
+    
 protected:
   void build_local_path_(std::string& out, const std::string& type, const std::string& id){
     out = base_path_ + "/";
