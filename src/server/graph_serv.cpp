@@ -65,7 +65,7 @@ std::string graph_serv::create_node(){
   std::string nid_str = pfi::lang::lexical_cast<std::string>(nid);
   common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
   c.call_async("create_global_node", a_.name, nid_str);
-  c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add));
+  c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
   
   return nid_str;
 }
@@ -86,7 +86,7 @@ int graph_serv::remove_node(const std::string& nid){
   
   common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
   c.call_async("remove_global_node", a_.name, nid);
-  c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add));
+  c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
   
   return 0;
 }
