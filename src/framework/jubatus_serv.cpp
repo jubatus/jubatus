@@ -289,12 +289,17 @@ namespace jubatus { namespace framework {
     {
       ret.clear();
 #ifdef HAVE_ZOOKEEPER_H
-      common::get_all_actors(zk_, name, ret);
-
+      common::get_all_actors(*zk_, a_.name, ret);
+      
       // remove myself
-      std::pair<std::string> self(s_.eth, a_.port);
-      ret.erase(self);
+      std::pair<std::string, int> self(a_.eth, a_.port);
+      for(std::vector<std::pair<std::string,int> >::iterator it = ret.begin(); it != ret.end(); it++){
+	if(it->first == a_.eth && it->second == a_.port){
+	  it = ret.erase(it);
+	  continue;
+	}
+      }
 #endif
     }
-
+    
 }}
