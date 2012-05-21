@@ -27,6 +27,8 @@ namespace graph {
 
 TEST(graph_wo_index, none){
   graph_wo_index g;
+  preset_query q;
+
   g.clear();
   ASSERT_EQ("graph_wo_index", g.type());
 
@@ -34,9 +36,9 @@ TEST(graph_wo_index, none){
   EXPECT_THROW(g.remove_global_node(7), runtime_error);
   EXPECT_THROW(g.update_edge(8, property()), runtime_error);
   EXPECT_THROW(g.remove_edge(8), runtime_error);
-  EXPECT_THROW(g.centrality(9, EIGENSCORE), runtime_error);
+  EXPECT_THROW(g.centrality(9, EIGENSCORE, q), runtime_error);
   vector<node_id_t> ret;
-  EXPECT_THROW(g.shortest_path(10, 11, 1000, ret), runtime_error);
+  EXPECT_THROW(g.shortest_path(10, 11, 1000, ret, q), runtime_error);
 
   {
     map<string, string> status;

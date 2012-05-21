@@ -55,17 +55,22 @@ graph_serv::~graph_serv()
 
 std::string graph_serv::create_node(){
   uint64_t nid = jubatus::util::new_uid();
+  std::string nid_str = pfi::lang::lexical_cast<std::string>(nid);
   // send true create_global_node to other machines.
   g_.get_model()->create_node(nid);
 
+  g_.get_model()->create_global_node(nid);
+
+#ifdef HAVE_ZOOKEEPER_H
+  // TODO: we need global locking
   // send true create_node_ to other machine,
   std::vector<std::pair<std::string, int> > members;
   get_members(members);
   
-  std::string nid_str = pfi::lang::lexical_cast<std::string>(nid);
   common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
   c.call_async("create_global_node", a_.name, nid_str);
   c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+#endif
   
   return nid_str;
 }
@@ -79,7 +84,10 @@ int graph_serv::update_node(const std::string& id, const property& p)
 
 int graph_serv::remove_node(const std::string& nid){
   g_.get_model()->remove_node(n2i(nid));
+  g_.get_model()->remove_global_node(n2i(nid));
 
+#ifdef HAVE_ZOOKEEPER_H
+  // TODO: we need global locking
   // send true remove_node_ to other machine,
   std::vector<std::pair<std::string, int> > members;
   get_members(members);
@@ -87,6 +95,7 @@ int graph_serv::remove_node(const std::string& nid){
   common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
   c.call_async("remove_global_node", a_.name, nid);
   c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+#endif
   
   return 0;
 }
@@ -96,7 +105,7 @@ int graph_serv::create_edge(const std::string& id, const edge_info& ei)
 { 
   edge_id_t eid = jubatus::util::new_uid();
   g_.get_model()->create_edge(eid, n2i(ei.src), n2i(ei.tgt));
-  //g_.get_model()->update_edge(id, ei.p);
+  g_.get_model()->update_edge(eid, ei.p);
   return 0;
 }
 

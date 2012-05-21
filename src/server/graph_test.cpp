@@ -34,9 +34,9 @@ TEST_P(graph_test, simple){
   graph c("localhost", PORT, 10);
   {
     c.clear("");
-    c.create_node("", nid);
+    nid = c.create_node("");
     c.create_global_node("", nid);
-    c.create_node("", nid0);
+    nid0 = c.create_node("");
     c.create_global_node("", nid0);
     //    c.set_config("", config);
     //    c.get_config("", 0);
@@ -51,15 +51,12 @@ TEST_P(graph_test, simple){
     c.update_node("", nid0, p);
     
     p["name"] = "edge_name_hoge";
-    jubatus::edge_req ereq;
-    ereq.id = eid;
-    ereq.info.src = nid;
-    ereq.info.tgt = nid0;
-    ereq.info.p = p;
-    c.create_edge("", nid, ereq);
-    c.create_edge("", nid0, ereq);
-    c.update_edge("", nid, ereq);
-    c.update_edge("", nid0, ereq);
+    jubatus::edge_info ei;
+    ei.src = nid;
+    ei.tgt = nid0;
+    ei.p = p;
+    c.create_edge("", nid, ei);
+    c.create_edge("", nid0, ei); //TODO: do we need this? release?
   }
   {
     c.save("", "test");
@@ -86,7 +83,8 @@ TEST_P(graph_test, simple){
     c.update_index("");
   }    
   {
-    double cent = c.centrality("", nid, 0);
+    jubatus::preset_query q;
+    double cent = c.centrality("", nid, 0, q);
     ASSERT_GT(0.0, cent);
   }
   {
@@ -103,6 +101,13 @@ TEST_P(graph_test, simple){
       std::vector<jubatus::node_id> path = c.shortest_path("", req);
       ASSERT_EQ(0u, path.size());
     }
+  }
+  {
+    jubatus::preset_query q;
+    c.add_cenrality_query("", q);
+    c.add_shortest_path_query("", q);
+    c.remove_cenrality_query("", q);
+    c.remove_shortest_path_query("", q);
   }
   
 }
