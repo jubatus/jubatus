@@ -57,14 +57,14 @@ namespace framework{
     void mixer_loop(){
       while(true)try_mix();
     };
-
+    
     int get_count()const {return counter_;} ; //FIXME: not thread-safe
     void try_mix();
-
+    
   private:  
-
+    
     pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_func_;
-
+    
     common::cshared_ptr<jubatus::common::lock_service> zk_;
     std::string name_;
 
