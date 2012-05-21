@@ -20,6 +20,7 @@
 
 #include "../graph/graph_factory.hpp"
 #include "../common/util.hpp"
+#include "../framework/aggregators.hpp"
 
 #include <pficommon/lang/cast.h>
 #include <sstream>
@@ -54,16 +55,19 @@ graph_serv::~graph_serv()
 
 std::string graph_serv::create_node(){
   uint64_t nid = jubatus::util::new_uid();
-  // send true create_node_ to other machine,
   // send true create_global_node to other machines.
+  g_.get_model()->create_node(nid);
 
-  // TODO: global registration
+  // send true create_node_ to other machine,
   std::vector<std::pair<std::string, int> > members;
   get_members(members);
-  //g_.get_model()->create_node(nid);
-  // common::mprpc::multi_rsync r(members);
-  // r.call<bool>(agg);
-  return pfi::lang::lexical_cast<std::string>(nid);
+  
+  std::string nid_str = pfi::lang::lexical_cast<std::string>(nid);
+  common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
+  c.call_async("create_global_node", a_.name, nid_str);
+  c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add));
+  
+  return nid_str;
 }
 
 
@@ -73,13 +77,17 @@ int graph_serv::update_node(const std::string& id, const property& p)
   return 0;
 }
 
-int graph_serv::remove_node(const std::string& id){
-  g_.get_model()->remove_node(n2i(id));
+int graph_serv::remove_node(const std::string& nid){
+  g_.get_model()->remove_node(n2i(nid));
+
+  // send true remove_node_ to other machine,
   std::vector<std::pair<std::string, int> > members;
   get_members(members);
-  //g_.get_model()->create_node(nid);
-  // common::mprpc::multi_rsync r(members);
-  // r.call<bool>(agg);
+  
+  common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
+  c.call_async("remove_global_node", a_.name, nid);
+  c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add));
+  
   return 0;
 }
 
@@ -136,27 +144,39 @@ std::vector<node_id> graph_serv::shortest_path(const shortest_path_req& req) con
 }
 
 //update, broadcast
-bool graph_serv::add_cenrality_query(const preset_query& q)
+bool graph_serv::add_cenrality_query(const preset_query& q0)
 {
-  return false;
+  jubatus::graph::preset_query q;
+  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0, q);
+  //g_.get_model()->add_cenrality_query(q);
+  return true;
 }
 
 //update, broadcast
-bool graph_serv::add_shortest_path_query(const preset_query& q)
+bool graph_serv::add_shortest_path_query(const preset_query& q0)
 {
-  return false;
+  jubatus::graph::preset_query q;
+  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0, q);
+  //g_.get_model()->add_shortest_path_query(q);
+  return true;
 }
 
 //update, broadcast
-bool graph_serv::remove_cenrality_query(const preset_query& q)
+bool graph_serv::remove_cenrality_query(const preset_query& q0)
 {
-  return false;
+  jubatus::graph::preset_query q;
+  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0, q);
+  //g_.get_model()->remove_centrality_query(q);
+  return true;
 }
 
 //update, broadcast
-bool graph_serv::remove_shortest_path_query(const preset_query& q)
+bool graph_serv::remove_shortest_path_query(const preset_query& q0)
 {
-  return false;
+  jubatus::graph::preset_query q;
+  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0, q);
+  //g_.get_model()->remove_shoretest_path_query(q);
+  return true;
 }
 
 node_info graph_serv::get_node(const std::string& nid)const
@@ -218,5 +238,5 @@ int graph_serv::remove_global_node(const std::string& nid)
 } //update internal
 
 void graph_serv::after_load(){}
-}
-}
+
+}}

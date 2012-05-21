@@ -290,8 +290,10 @@ namespace jubatus { namespace framework {
       ret.clear();
 #ifdef HAVE_ZOOKEEPER_H
       common::get_all_actors(zk_, name, ret);
-      // TODO
+
       // remove myself
+      std::pair<std::string> self(s_.eth, a_.port);
+      ret.erase(self);
 #endif
     }
 

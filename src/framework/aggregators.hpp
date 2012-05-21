@@ -48,8 +48,12 @@ T random(T lhs, T rhs){
   return lhs; //TODO: make random? or left(change fun name)?
 }
 
-template <typename T>
-T add(T lhs, T rhs){
+// template <typename T>
+// T add(T lhs, T rhs){
+//   return lhs+rhs;
+// }
+
+int add(int lhs, int rhs){
   return lhs+rhs;
 }
 
