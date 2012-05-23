@@ -91,6 +91,10 @@ struct preset_query {
   std::vector<std::pair<std::string, std::string> > edge_query;
   std::vector<std::pair<std::string, std::string> > node_query;
 
+  bool operator==(const preset_query& r) const {
+    return edge_query == r.edge_query && node_query == r.node_query;
+  }
+
   MSGPACK_DEFINE(edge_query, node_query);
   friend class pfi::data::serialization::access;
   template <class Ar>
@@ -119,6 +123,42 @@ struct shortest_path_tree{
 
 typedef std::vector<shortest_path_tree> spt_mixed;
 typedef std::vector<shortest_path_tree> spt_diff;
+
+typedef pfi::data::unordered_map<preset_query, eigen_vector_mixed> eigen_vector_query_mixed;
+typedef pfi::data::unordered_map<preset_query, eigen_vector_diff> eigen_vector_query_diff;
+
+typedef pfi::data::unordered_map<preset_query, spt_mixed> spt_query_mixed;
+typedef pfi::data::unordered_map<preset_query, spt_diff> spt_query_diff;
+
+}
+}
+
+namespace pfi {
+namespace data {
+
+template<> struct hash<jubatus::graph::preset_query> {
+  size_t operator()(const jubatus::graph::preset_query& p) const {
+    return update(p.node_query, update(p.edge_query, 14695981039346656037LLU));
+  }
+
+ private:
+  static size_t update(const std::vector<std::pair<std::string, std::string> >& q,
+                       size_t h) {
+    for (size_t i = 0; i < q.size(); ++i) {
+      h = update(q[i].first, h);
+      h = update(q[i].second, h);
+    }
+    return h;
+  }
+
+  static size_t update(const std::string& s, size_t h) {
+    for (size_t i = 0; i < s.size(); ++i) {
+      h *= 1099511628211LLU;
+      h ^= s[i];
+    }
+    return h * 1099511628211LLU;
+  }
+};
 
 }
 }

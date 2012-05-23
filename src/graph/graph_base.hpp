@@ -39,9 +39,9 @@ public:
   virtual void update_edge(edge_id_t eid, const property& p) = 0; // cht
   virtual void remove_edge(edge_id_t eid) = 0; // cht
   
-  virtual void add_cenrality_query(const preset_query&) = 0; //broadcast
+  virtual void add_centrality_query(const preset_query&) = 0; //broadcast
   virtual void add_shortest_path_query(const preset_query&) = 0; //broadcast
-  virtual void remove_cenrality_query(const preset_query&) = 0; //broadcast
+  virtual void remove_centrality_query(const preset_query&) = 0; //broadcast
   virtual void remove_shortest_path_query(const preset_query&) = 0; //broadcast
 
   virtual double centrality(node_id_t id, centrality_type ct, const preset_query&) const = 0; // random

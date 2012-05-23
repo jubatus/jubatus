@@ -40,9 +40,9 @@ public:
   void update_edge(edge_id_t eid, const property& p);
   void remove_edge(edge_id_t eid);
   
-  void add_cenrality_query(const preset_query&);
+  void add_centrality_query(const preset_query&);
   void add_shortest_path_query(const preset_query&);
-  void remove_cenrality_query(const preset_query&);
+  void remove_centrality_query(const preset_query&);
   void remove_shortest_path_query(const preset_query&);
 
   double centrality(node_id_t id, centrality_type ct, const preset_query&) const;
@@ -64,43 +64,38 @@ public:
   static void mix(const std::string& diff, std::string& mixed);
 
 private:
+  typedef pfi::data::unordered_map<node_id_t, node_info> node_info_map;
+  typedef pfi::data::unordered_map<edge_id_t, edge_info> edge_info_map;
+
   bool save_imp(std::ostream& os);
   bool load_imp(std::istream& is);
 
   static void remove_by_swap(std::vector<edge_id_t>& edges, edge_id_t eid);
 
-  // =============================
-  // improve me !
-  template <class T, class U> U get(const pfi::data::unordered_map<T, U>& m, const T t) const {
-    typename pfi::data::unordered_map<T, U>::const_iterator it = m.find(t);
-    if (it == m.end()){
-      return T();
-    } else {
-      return it->second;
-    }
-  }
-  
-  pfi::data::unordered_map<node_id_t, node_info> local_nodes_;
-  pfi::data::unordered_map<edge_id_t, edge_info> local_edges_;
+  node_info_map local_nodes_;
+  edge_info_map local_edges_;
   pfi::data::unordered_map<node_id_t, uint8_t> global_nodes_; // value is dummy for serialization
 
   // centeralities
   double alpha_;
-  pfi::data::unordered_map<node_id_t, eigen_vector_info> eigen_scores_;
-  void get_diff_eigen_score(eigen_vector_diff& diff)const;
-  void set_mixed_and_clear_diff_eigen_score(eigen_vector_mixed& mixed);
-  static void mix(const eigen_vector_diff& diff, eigen_vector_mixed& mixed);
+  eigen_vector_query_mixed eigen_scores_;
+  void get_diff_eigen_score(eigen_vector_query_diff& diff) const;
+  void set_mixed_and_clear_diff_eigen_score(eigen_vector_query_mixed& mixed);
+  static void mix(const eigen_vector_query_diff& diff,
+                  eigen_vector_query_mixed& mixed);
 
   // shortest pathes
-  spt_mixed spts_;
+  spt_query_mixed spts_;
   void may_set_landmark(node_id_t id);
-  void get_diff_shortest_path_tree(spt_diff& diff)const;
-  void set_mixed_and_clear_diff_shortest_path_tree(const spt_mixed& mixed);
+  void get_diff_shortest_path_tree(spt_query_diff& diff)const;
+  void set_mixed_and_clear_diff_shortest_path_tree(const spt_query_mixed& mixed);
   void update_spt();
-  void update_spt_edges(spt_edges& se, node_id_t landmark, bool is_out);
+  void update_spt_edges(const preset_query& query,
+                        spt_edges& se, node_id_t landmark, bool is_out);
+  bool is_node_matched_to_query(const preset_query& query, node_id_t id) const;
   static void mix_spt(const shortest_path_tree& diff,
                       shortest_path_tree& mixed);
-  static void mix(const spt_diff& diff, spt_mixed& mixed);
+  static void mix(const spt_query_diff& diff, spt_query_mixed& mixed);
 };
 
 }

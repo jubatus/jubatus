@@ -19,6 +19,7 @@
 #include <pficommon/lang/cast.h>
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/serialization.h>
+#include <pficommon/data/unordered_set.h>
 #include "graph_wo_index.hpp"
 
 using namespace std;
@@ -27,6 +28,32 @@ using namespace pfi::lang;
 
 namespace jubatus {
 namespace graph {
+
+namespace {
+
+bool is_matched_to_query(const vector<pair<string, string> >& query,
+                         const property& prop) {
+  for (size_t i = 0; i < query.size(); ++i) {
+    property::const_iterator it = prop.find(query[i].first);
+    if (it == prop.end() || it->second != query[i].second) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void normalize(eigen_vector_mixed& v) {
+  double sum = 0;
+  for (eigen_vector_mixed::const_iterator it = v.begin(); it != v.end(); ++it) {
+    sum += it->second.score;
+  }
+  const double normalizer = v.size() / sum;
+  for (eigen_vector_mixed::iterator it = v.begin(); it != v.end(); ++it) {
+    it->second.score *= normalizer;
+  }
+}
+
+}
 
 graph_wo_index::graph_wo_index() : alpha_(0.9){
   clear();
@@ -53,11 +80,16 @@ void graph_wo_index::create_node(node_id_t id){
 }
 
 void graph_wo_index::may_set_landmark(node_id_t id){
-  if (id>1) return;
-  if (spts_.size() == LANDMARK_NUM) return;
-  shortest_path_tree spt;
-  spt.landmark = id;
-  spts_.push_back(spt);
+  // Do we need it?
+  // if (id > 1) return;
+  for (spt_query_mixed::iterator it = spts_.begin(); it != spts_.end(); ++it) {
+    spt_mixed& mixed = it->second;
+    if (mixed.size() == LANDMARK_NUM) return;
+
+    shortest_path_tree spt;
+    spt.landmark = id;
+    mixed.push_back(spt);
+  }
 }
 
 void graph_wo_index::create_global_node(node_id_t id){
@@ -77,7 +109,7 @@ void graph_wo_index::remove_global_node(node_id_t id){
 }
 
 void graph_wo_index::update_node(node_id_t id, const property& p){
-  pfi::data::unordered_map<node_id_t, node_info>::iterator it = local_nodes_.find(id);
+  node_info_map::iterator it = local_nodes_.find(id);
   if (it == local_nodes_.end()){
     throw runtime_error(string("graph_wo_index::update_node unknown id=" ) 
                         + pfi::lang::lexical_cast<string>(id));
@@ -125,7 +157,7 @@ void graph_wo_index::create_edge(edge_id_t eid, node_id_t src, node_id_t tgt){
 }
 
 void graph_wo_index::update_edge(edge_id_t eid, const property& p){
-  pfi::data::unordered_map<edge_id_t, edge_info>::iterator it = local_edges_.find(eid);
+  edge_info_map::iterator it = local_edges_.find(eid);
   if (it == local_edges_.end()){
     throw runtime_error(string("graph_wo_index::update_edge unknown id =" ) 
                         + pfi::lang::lexical_cast<string>(eid));
@@ -134,7 +166,7 @@ void graph_wo_index::update_edge(edge_id_t eid, const property& p){
 }
 
 void graph_wo_index::remove_edge(edge_id_t eid){
-  pfi::data::unordered_map<edge_id_t, edge_info>::iterator it = local_edges_.find(eid);
+  edge_info_map::iterator it = local_edges_.find(eid);
   if (it == local_edges_.end()){
     throw runtime_error(string("graph_wo_index::remove_edge unknown id =" ) 
                         + pfi::lang::lexical_cast<string>(eid));
@@ -152,21 +184,30 @@ void graph_wo_index::remove_edge(edge_id_t eid){
   local_edges_.erase(it);
 }
   
-void graph_wo_index::add_cenrality_query(const preset_query&)
-{}
-void graph_wo_index::add_shortest_path_query(const preset_query&)
-{}
-void graph_wo_index::remove_cenrality_query(const preset_query&)
-{}
-void graph_wo_index::remove_shortest_path_query(const preset_query&)
-{}
+void graph_wo_index::add_centrality_query(const preset_query& query) {
+  eigen_scores_.insert(make_pair(query, eigen_vector_mixed()));
+}
 
+void graph_wo_index::add_shortest_path_query(const preset_query& query) {
+  spts_.insert(make_pair(query, spt_mixed()));
+}
 
-double graph_wo_index::centrality(node_id_t id, centrality_type ct, const preset_query&) const{
+void graph_wo_index::remove_centrality_query(const preset_query& query) {
+  eigen_scores_.erase(query);
+}
 
+void graph_wo_index::remove_shortest_path_query(const preset_query& query) {
+  spts_.erase(query);
+}
+
+double graph_wo_index::centrality(node_id_t id, centrality_type ct, const preset_query& query) const{
   if (ct == EIGENSCORE){
-    unordered_map<node_id_t, eigen_vector_info>::const_iterator it = eigen_scores_.find(id);
-    if (it == eigen_scores_.end()){
+    eigen_vector_query_mixed::const_iterator model_it = eigen_scores_.find(query);
+    if (model_it == eigen_scores_.end()) {
+      throw runtime_error(string("graph_wo_index::centrality unknown query"));
+    }
+    eigen_vector_mixed::const_iterator it = model_it->second.find(id);
+    if (it == model_it->second.end()){
       throw runtime_error(string("graph_wo_index::centrality unknown id=")
                           + lexical_cast<string>(id));
     }
@@ -180,7 +221,7 @@ double graph_wo_index::centrality(node_id_t id, centrality_type ct, const preset
 
 void graph_wo_index::shortest_path(node_id_t src, node_id_t tgt,
                                    uint64_t max_hop, vector<node_id_t>& ret,
-				   const preset_query&) const{
+				   const preset_query& query) const{
   if (global_nodes_.count(src) == 0){
     throw runtime_error(string("graph_wo_index::shortest_path unknown id=")
                         + lexical_cast<string>(src));
@@ -189,11 +230,16 @@ void graph_wo_index::shortest_path(node_id_t src, node_id_t tgt,
     throw runtime_error(string("graph_wo_index::shortest_path unknown id=")
                         + lexical_cast<string>(tgt));
   }
+  spt_query_mixed::const_iterator model_it = spts_.find(query);
+  if (model_it == spts_.end()) {
+    throw runtime_error("graph_wo_index::shortest_path unknown query");
+  }
+  const spt_mixed& mixed = model_it->second;
   ret.clear();
   uint64_t min_score = LONG_LONG_MAX;
   uint64_t ind = LONG_LONG_MAX;
-  for (uint64_t i = 0; i < spts_.size(); ++i){
-    const shortest_path_tree& spt = spts_[i];
+  for (uint64_t i = 0; i < mixed.size(); ++i){
+    const shortest_path_tree& spt = mixed[i];
     spt_edges::const_iterator src_it = spt.to_root.find(src);
     spt_edges::const_iterator tgt_it = spt.from_root.find(tgt);
     if (src_it == spt.to_root.end() ||tgt_it == spt.from_root.end()){
@@ -211,9 +257,9 @@ void graph_wo_index::shortest_path(node_id_t src, node_id_t tgt,
   }
 
   
-  const spt_edges& to_root = spts_[ind].to_root;
-  const spt_edges& from_root = spts_[ind].from_root;
-  uint64_t landmark = spts_[ind].landmark;
+  const spt_edges& to_root = mixed[ind].to_root;
+  const spt_edges& from_root = mixed[ind].from_root;
+  uint64_t landmark = mixed[ind].landmark;
 
 
   for (uint64_t cur = src; cur != landmark; ){
@@ -250,7 +296,7 @@ void graph_wo_index::shortest_path(node_id_t src, node_id_t tgt,
 }
   
 void graph_wo_index::get_node(node_id_t id, node_info& ret) const{
-  pfi::data::unordered_map<node_id_t, node_info>::const_iterator it = local_nodes_.find(id);
+  node_info_map::const_iterator it = local_nodes_.find(id);
   if (it == local_nodes_.end()){
     throw runtime_error(string("graph_wo_index::get_node unknown id=" ) 
                         + pfi::lang::lexical_cast<string>(id));
@@ -259,7 +305,7 @@ void graph_wo_index::get_node(node_id_t id, node_info& ret) const{
 }
 
 void graph_wo_index::get_edge(edge_id_t eid, edge_info& ret) const{
-  pfi::data::unordered_map<edge_id_t, edge_info>::const_iterator it = local_edges_.find(eid);
+  edge_info_map::const_iterator it = local_edges_.find(eid);
   if (it == local_edges_.end()){
     throw runtime_error(string("graph_wo_index::get_edge unknown id=" ) 
                         + pfi::lang::lexical_cast<string>(eid));
@@ -291,183 +337,190 @@ bool graph_wo_index::load_imp(istream& is){
   return true;
 }
 
-/*
-struct node_info{
-  property p;
-  vector<edge_id_t> in_edges;
-  vector<edge_id_t> out_edges;
-};
-
-struct edge_info{
-  property p;
-  node_id_t src;
-  node_id_t tgt;
-};
-*/
-
 void graph_wo_index::update_index(){
   update_spt();
 }
 
-void graph_wo_index::get_diff_eigen_score(eigen_vector_diff& diff) const {
+void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
   diff.clear(); // tmp_diff + swap is better ?
 
-  double dist = 0;
-  for (pfi::data::unordered_map<node_id_t, eigen_vector_info>::const_iterator it = eigen_scores_.begin();
-       it != eigen_scores_.end(); ++it){
-    if (it->second.out_degree_num == 0){
-      dist += it->second.score;
-    }
-  }
+  for (eigen_vector_query_mixed::const_iterator query_it = eigen_scores_.begin();
+       query_it != eigen_scores_.end(); ++query_it) {
+    const preset_query& query = query_it->first;
+    const eigen_vector_mixed& model = query_it->second;
 
-  uint64_t new_node_num = 0;
-  double dist_from_new_node = 0.0;
-  for (pfi::data::unordered_map<node_id_t, node_info>::const_iterator it = local_nodes_.begin(); it != local_nodes_.end(); ++it){
-    if (eigen_scores_.count(it->first) == 0){
-      dist_from_new_node += 1.0;
-      ++new_node_num;
-    }
-  }
-  dist += dist_from_new_node;
-  
-  if (eigen_scores_.size() + new_node_num > 0){
-    dist /= (eigen_scores_.size() + new_node_num);
-  }
-
-  for (pfi::data::unordered_map<node_id_t, node_info>::const_iterator it = local_nodes_.begin(); it != local_nodes_.end(); ++it){
-    const vector<edge_id_t>& in_edges = it->second.in_edges;
-    double score = 0.0;
-    for (size_t i = 0; i < in_edges.size(); ++i){
-      pfi::data::unordered_map<edge_id_t, edge_info>::const_iterator it0;
-      it0 = local_edges_.find(in_edges[i]);
-      if(it0 == local_edges_.end()){
-	continue;
-      }
-      pfi::data::unordered_map<node_id_t, eigen_vector_info>::const_iterator it1;      
-      it1 = eigen_scores_.find(it0->second.src);
-      if(it1 == eigen_scores_.end()){
-	continue;
-      }
-      if (it1->second.out_degree_num != 0){
-        // FIX ME !!!! it->second.score > 0 should indicate it->second.out_degree_num
-        score += it1->second.score / it1->second.out_degree_num;
-
+    double dist = 0;
+    for (eigen_vector_mixed::const_iterator it = model.begin();
+         it != model.end(); ++it) {
+      if (it->second.out_degree_num == 0) {
+        dist += it->second.score;
       }
     }
-    eigen_vector_info ei;
-    ei.score = alpha_ * score + 1 - alpha_ + alpha_ * dist;
-    ei.out_degree_num = it->second.out_edges.size();
-    diff[it->first] = ei;
+
+    uint64_t new_node_num = 0;
+    double dist_from_new_node = 0;
+    for (node_info_map::const_iterator node_it = local_nodes_.begin();
+         node_it != local_nodes_.end(); ++node_it) {
+      if (model.count(node_it->first) == 0) {
+        dist_from_new_node += 1.0;
+        ++new_node_num;
+      }
+    }
+    dist += dist_from_new_node;
+
+    if (model.size() + new_node_num > 0) {
+      dist /= (model.size() + new_node_num);
+    }
+
+    unordered_set<node_id_t> unmatched_nodes;
+    eigen_vector_diff& qdiff = diff[query];
+
+    for (node_info_map::const_iterator node_it = local_nodes_.begin();
+         node_it != local_nodes_.end(); ++node_it) {
+      if (unmatched_nodes.count(node_it->first)) {
+        continue;
+      }
+      if (!is_matched_to_query(query.node_query, node_it->second.p)) {
+        unmatched_nodes.insert(node_it->first);
+        continue;
+      }
+
+      const vector<edge_id_t>& in_edges = node_it->second.in_edges;
+      double score = 0;
+      for (size_t i = 0; i < in_edges.size(); ++i) {
+        if (unmatched_nodes.count(in_edges[i])) {
+          continue;
+        }
+        edge_info_map::const_iterator edge_it = local_edges_.find(in_edges[i]);
+        if (edge_it == local_edges_.end()) {
+          continue;
+        }
+
+        const node_id_t src = edge_it->second.src;
+        if (unmatched_nodes.count(src)) {
+          continue;
+        }
+        if (!is_matched_to_query(query.edge_query, edge_it->second.p)) {
+          continue;
+        }
+
+        eigen_vector_mixed::const_iterator it = model.find(edge_it->second.src);
+        if (it == model.end()) {
+          continue;
+        }
+        if (it->second.out_degree_num != 0) {
+          // FIX ME !!!! it->second.score > 0 should indicate it->second.out_degree_num
+          score += it->second.score / it->second.out_degree_num;
+        }
+      }
+      eigen_vector_info ei;
+      ei.score = alpha_ * score + 1 - alpha_ + alpha_ * dist;
+      ei.out_degree_num = node_it->second.out_edges.size();
+      qdiff[node_it->first] = ei;
+    }
   }
 }
 
-void graph_wo_index::set_mixed_and_clear_diff_eigen_score(eigen_vector_mixed& mixed){
+void graph_wo_index::set_mixed_and_clear_diff_eigen_score(eigen_vector_query_mixed& mixed){
   eigen_scores_ = mixed;
   if (eigen_scores_.size() == 0){
     return;
   }
 
   // normalize
-  double sum = 0.0;
-  for (pfi::data::unordered_map<node_id_t, eigen_vector_info>::const_iterator it = eigen_scores_.begin(); it != eigen_scores_.end(); ++it){
-    sum += it->second.score;
-  }
-  double normalizer = eigen_scores_.size() / sum;
-  for (pfi::data::unordered_map<node_id_t, eigen_vector_info>::iterator it = eigen_scores_.begin(); it != eigen_scores_.end(); ++it){
-    it->second.score *= normalizer;
+  for (eigen_vector_query_mixed::iterator model_it = eigen_scores_.begin();
+       model_it != eigen_scores_.end(); ++model_it) {
+    normalize(model_it->second);
   }
 }
 
-void graph_wo_index::update_spt_edges(spt_edges& se, node_id_t landmark, bool is_out){
+void graph_wo_index::update_spt_edges(const preset_query& query,
+                                      spt_edges& se, node_id_t landmark, bool is_out) {
   se[landmark] = make_pair(0, landmark);
+  for (node_info_map::const_iterator it = local_nodes_.begin();
+       it != local_nodes_.end(); ++it){
+    const vector<edge_id_t>& edges = is_out ? it->second.out_edges : it->second.in_edges;
 
-  if (is_out) {
-    for (pfi::data::unordered_map<node_id_t, node_info>::const_iterator it = local_nodes_.begin();
-         it != local_nodes_.end(); ++it){
-      
-      const vector<edge_id_t>& edges = it->second.out_edges;
-      for (vector<edge_id_t>::const_iterator it2 = edges.begin(); it2 != edges.end(); ++it2) {
-        node_id_t from = local_edges_[*it2].src;
-        node_id_t to = local_edges_[*it2].tgt;
-        
-        spt_edges::iterator tr_it = se.find(from);
-        if (tr_it != se.end()) {
-          uint64_t dist = tr_it->second.first + 1;
-          spt_edges::iterator tr_jt = se.find(to);
-          if (tr_jt != se.end()) {
-            if (dist < tr_jt->second.first) {
-              tr_jt->second.first = dist;
-              tr_jt->second.second = from;
-            }
+    for (size_t i = 0; i < edges.size(); ++i) {
+      edge_info& edge = local_edges_[edges[i]];
+      const node_id_t from = is_out ? edge.src : edge.tgt;
+      const node_id_t to = is_out ? edge.tgt : edge.src;
+
+      if (!is_matched_to_query(query.edge_query, edge.p) ||
+          !is_node_matched_to_query(query, from) ||
+          !is_node_matched_to_query(query, to)) {
+        continue;
+      }
+
+      spt_edges::iterator tr_it = se.find(from);
+      if (tr_it != se.end()) {
+        uint64_t dist = tr_it->second.first + 1;
+        spt_edges::iterator tr_jt = se.find(to);
+        if (tr_jt != se.end()) {
+          if (dist < tr_jt->second.first) {
+            tr_jt->second.first = dist;
+            tr_jt->second.second = from;
           }
-          else {
-            se.insert(make_pair(to, make_pair(dist, from)));
-          }
+        }
+        else {
+          se.insert(make_pair(to, make_pair(dist, from)));
         }
       }
     }
   }
-  else {
-    for (pfi::data::unordered_map<node_id_t, node_info>::const_iterator it = local_nodes_.begin();
-         it != local_nodes_.end(); ++it){
-      
-      const vector<edge_id_t>& edges = it->second.in_edges;
-      for (vector<edge_id_t>::const_iterator it2 = edges.begin(); it2 != edges.end(); ++it2) {
-        node_id_t from = local_edges_[*it2].src;
-        node_id_t to = local_edges_[*it2].tgt;
-        
-        spt_edges::iterator tr_it = se.find(to);
-        if (tr_it != se.end()) {
-          uint64_t dist = tr_it->second.first + 1;
-          spt_edges::iterator tr_jt = se.find(from);
-          if (tr_jt != se.end()) {
-            if (dist < tr_jt->second.first) {
-              tr_jt->second.first = dist;
-              tr_jt->second.second = to;
-            }
-          }
-          else {
-            se.insert(make_pair(from, make_pair(dist, to)));
-          }
-        }
-      }
-    }
+}
+
+bool graph_wo_index::is_node_matched_to_query(const preset_query& query,
+                                              node_id_t id) const {
+  node_info_map::const_iterator it = local_nodes_.find(id);
+  if (it == local_nodes_.end()) {
+    return true;
   }
+  return is_matched_to_query(query.node_query, it->second.p);
 }
 
 void graph_wo_index::update_spt(){
-  for (uint64_t i = 0; i < spts_.size(); ++i){
-    shortest_path_tree& spt = spts_[i];
-    update_spt_edges(spt.to_root, spt.landmark, false);
-    update_spt_edges(spt.from_root, spt.landmark, true);
+  for (spt_query_mixed::iterator it = spts_.begin(); it != spts_.end(); ++it) {
+    spt_mixed& mixed = it->second;
+    for (size_t i = 0; i < mixed.size(); ++i) {
+      shortest_path_tree& spt = mixed[i];
+      update_spt_edges(it->first, spt.to_root, spt.landmark, false);
+      update_spt_edges(it->first, spt.from_root, spt.landmark, true);
+    }
   }
 }
 
-void graph_wo_index::get_diff_shortest_path_tree(spt_diff& diff)const{
-  diff.clear();
-  diff.resize(spts_.size());
-  for (uint64_t i = 0; i < spts_.size(); ++i){
-    const shortest_path_tree& spt = spts_[i];
-    if (spt.landmark == LONG_LONG_MAX) continue;
-    for (pfi::data::unordered_map<node_id_t, node_info>::const_iterator it = local_nodes_.begin();
-         it != local_nodes_.end(); ++it){
-      node_id_t id = it->first;
-      diff[i].landmark = spt.landmark;
+void graph_wo_index::get_diff_shortest_path_tree(spt_query_diff& all_diff)const{
+  all_diff.clear();
 
-      spt_edges::const_iterator from_it = spt.from_root.find(id);
-      if (from_it != spt.from_root.end()){
-        diff[i].from_root[id] = from_it->second;
-      }
+  for (spt_query_mixed::const_iterator it = spts_.begin(); it != spts_.end(); ++it) {
+    const spt_mixed& mixed = it->second;
+    spt_diff& diff = all_diff[it->first];
+    diff.resize(mixed.size());
 
-      spt_edges::const_iterator to_it = spt.to_root.find(id);
-      if (to_it != spt.to_root.end()){
-        diff[i].to_root[id] = to_it->second;
+    for (uint64_t i = 0; i < mixed.size(); ++i){
+      const shortest_path_tree& spt = mixed[i];
+      if (spt.landmark == LONG_LONG_MAX) continue;
+      for (node_info_map::const_iterator it = local_nodes_.begin();
+           it != local_nodes_.end(); ++it){
+        node_id_t id = it->first;
+        diff[i].landmark = spt.landmark;
+
+        spt_edges::const_iterator from_it = spt.from_root.find(id);
+        if (from_it != spt.from_root.end()){
+          diff[i].from_root[id] = from_it->second;
+        }
+
+        spt_edges::const_iterator to_it = spt.to_root.find(id);
+        if (to_it != spt.to_root.end()){
+          diff[i].to_root[id] = to_it->second;
+        }
       }
     }
   }
 }
 
-void graph_wo_index::set_mixed_and_clear_diff_shortest_path_tree(const spt_mixed& mixed){
+void graph_wo_index::set_mixed_and_clear_diff_shortest_path_tree(const spt_query_mixed& mixed){
   spts_ = mixed;
 }
 
@@ -477,11 +530,11 @@ void graph_wo_index::get_diff(string& diff)const{
   ostringstream os;
   pfi::data::serialization::binary_oarchive oa(os);
 
-  eigen_vector_diff ev_diff;
+  eigen_vector_query_diff ev_diff;
   get_diff_eigen_score(ev_diff);
   oa << ev_diff;
 
-  spt_diff sdiff;
+  spt_query_diff sdiff;
   get_diff_shortest_path_tree(sdiff);
   oa << sdiff;
   diff = os.str();
@@ -491,11 +544,11 @@ void graph_wo_index::set_mixed_and_clear_diff(const string& mixed){
   istringstream is(mixed);
   pfi::data::serialization::binary_iarchive ia(is);
   
-  eigen_vector_mixed emixed;
+  eigen_vector_query_mixed emixed;
   ia >> emixed;
   set_mixed_and_clear_diff_eigen_score(emixed);
 
-  spt_mixed smixed;
+  spt_query_mixed smixed;
   ia >> smixed;
   set_mixed_and_clear_diff_shortest_path_tree(smixed);
 }
@@ -507,8 +560,8 @@ void graph_wo_index::get_status(map<string, string>& status) const {
 }
 
 void graph_wo_index::mix(const string& diff, string& mixed){
-  eigen_vector_diff ediff;
-  spt_diff sdiff;
+  eigen_vector_query_diff ediff;
+  spt_query_diff sdiff;
   {
     istringstream is_diff(diff);
     pfi::data::serialization::binary_iarchive ia(is_diff);
@@ -516,8 +569,8 @@ void graph_wo_index::mix(const string& diff, string& mixed){
     ia >> sdiff;
   }
   
-  eigen_vector_mixed emixed;
-  spt_mixed smixed;
+  eigen_vector_query_mixed emixed;
+  spt_query_mixed smixed;
   {
     istringstream is_mixed(mixed);
     pfi::data::serialization::binary_iarchive ia(is_mixed);
@@ -536,9 +589,15 @@ void graph_wo_index::mix(const string& diff, string& mixed){
   mixed = os.str();
 }
 
-void graph_wo_index::mix(const eigen_vector_diff& diff, eigen_vector_mixed& mixed){
-  for (eigen_vector_diff::const_iterator it = diff.begin(); it != diff.end(); ++it){
-    mixed[it->first] = it->second;
+void graph_wo_index::mix(const eigen_vector_query_diff& diff,
+                         eigen_vector_query_mixed& mixed){
+  for (eigen_vector_query_diff::const_iterator model_it = diff.begin();
+       model_it != diff.end(); ++model_it) {
+    eigen_vector_mixed& evm = mixed[model_it->first];
+    for (eigen_vector_diff::const_iterator it = model_it->second.begin();
+         it != model_it->second.end(); ++it) {
+      evm[it->first] = it->second;
+    }
   }
 }
 
@@ -552,26 +611,32 @@ void  graph_wo_index::mix_spt(const shortest_path_tree& diff, shortest_path_tree
   }
 }
 
-void graph_wo_index::mix(const spt_diff& diff, spt_mixed& mixed){
-  map<node_id_t, uint64_t> diff_landmark2ind;
-  for (uint64_t i = 0; i < diff.size(); ++i){
-    if (diff[i].landmark != LONG_LONG_MAX) {
-      diff_landmark2ind[diff[i].landmark] = i;
-    }
-  }
+void graph_wo_index::mix(const spt_query_diff& all_diff, spt_query_mixed& all_mixed){
+  for (spt_query_diff::const_iterator it = all_diff.begin();
+       it != all_diff.end(); ++it) {
+    const spt_diff& diff = it->second;
+    spt_mixed& mixed = all_mixed[it->first];
 
-  map<node_id_t, uint64_t> mixed_landmark2ind;
-  for (uint64_t i = 0; i < mixed.size(); ++i){
-    if (mixed[i].landmark != LONG_LONG_MAX) {
-      mixed_landmark2ind[mixed[i].landmark] = i;
+    map<node_id_t, uint64_t> diff_landmark2ind;
+    for (uint64_t i = 0; i < diff.size(); ++i){
+      if (diff[i].landmark != LONG_LONG_MAX) {
+        diff_landmark2ind[diff[i].landmark] = i;
+      }
     }
-  }
 
-  for (map<node_id_t, uint64_t>::const_iterator it = diff_landmark2ind.begin(); it != diff_landmark2ind.end(); ++it){
-    if (mixed_landmark2ind.find(it->first) != mixed_landmark2ind.end()){
-      mix_spt(diff[it->second], mixed[mixed_landmark2ind[it->first]]);
-    } else if (mixed.size() < LANDMARK_NUM){
-      mixed.push_back(diff[it->second]);
+    map<node_id_t, uint64_t> mixed_landmark2ind;
+    for (uint64_t i = 0; i < mixed.size(); ++i){
+      if (mixed[i].landmark != LONG_LONG_MAX) {
+        mixed_landmark2ind[mixed[i].landmark] = i;
+      }
+    }
+
+    for (map<node_id_t, uint64_t>::const_iterator it = diff_landmark2ind.begin(); it != diff_landmark2ind.end(); ++it){
+      if (mixed_landmark2ind.find(it->first) != mixed_landmark2ind.end()){
+        mix_spt(diff[it->second], mixed[mixed_landmark2ind[it->first]]);
+      } else if (mixed.size() < LANDMARK_NUM){
+        mixed.push_back(diff[it->second]);
+      }
     }
   }
 }
