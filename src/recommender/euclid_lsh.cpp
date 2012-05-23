@@ -78,7 +78,6 @@ vector<float> lsh_function(const sfv_t& query, size_t dimension, float bin_width
     hash[j] /= bin_width;
   }
   return hash;
-
 }
 
 }
@@ -103,6 +102,15 @@ euclid_lsh::euclid_lsh(const std::map<std::string, std::string>& config)
 }
 
 euclid_lsh::~euclid_lsh() {
+}
+
+void euclid_lsh::neighbor_row(const sfv_t& query,
+                             vector<pair<string, float> >& ids,
+                             size_t ret_num) const {
+  similar_row(query, ids, ret_num);
+  for (size_t i = 0; i < ids.size(); ++i) {
+    ids[i].second = -ids[i].second;
+  }
 }
 
 void euclid_lsh::similar_row(const sfv_t& query,
