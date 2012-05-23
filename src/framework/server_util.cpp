@@ -59,7 +59,6 @@ namespace jubatus { namespace framework {
 
     p.parse_check(args, argv);
 
-    std::cout<< "program name = " << jubatus::util::get_program_name() << std::endl;
     if( p.exist("version") ){
       print_version(jubatus::util::get_program_name());
       exit(0);
