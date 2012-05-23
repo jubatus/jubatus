@@ -59,14 +59,16 @@ namespace jubatus { namespace framework {
 
     p.parse_check(args, argv);
 
+    std::cout<< "program name = " << jubatus::util::get_program_name() << std::endl;
     if( p.exist("version") ){
-      print_version(argv[0]);
+      print_version(jubatus::util::get_program_name());
       exit(0);
     }
 
     port = p.get<int>("rpc-port");
     threadnum = p.get<int>("thread");
     timeout = p.get<int>("timeout");
+    program_name = jubatus::util::get_program_name();
     z = p.get<std::string>("zookeeper");
     name = p.get<std::string>("name");
     tmpdir = p.get<std::string>("tmpdir");
@@ -81,7 +83,7 @@ namespace jubatus { namespace framework {
       throw argv_error("can't start multinode mode without name specified");
     }
     
-    LOG(INFO) << boot_message(argv[0]);
+    LOG(INFO) << boot_message(jubatus::util::get_program_name());
   };
 
   server_argv::server_argv():
@@ -112,7 +114,7 @@ namespace jubatus { namespace framework {
     p.parse_check(args, argv);
 
     if( p.exist("version") ){
-      print_version(argv[0]);
+      print_version(jubatus::util::get_program_name());
       exit(0);
     }
 

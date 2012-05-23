@@ -53,8 +53,13 @@ int jubatus_serv::start(pfi::network::mprpc::rpc_server& serv){
 
 #ifdef HAVE_ZOOKEEPER_H
   if(! a_.is_standalone()){
+    std::string logfile = "/tmp/";
+    logfile += a_.program_name;
+    logfile += ".";
+    logfile += pfi::lang::lexical_cast<std::string>(getpid());
+    logfile += ".zklog";
     zk_ = common::cshared_ptr<jubatus::common::lock_service>
-      (common::create_lock_service("zk", a_.z, a_.timeout, "logfile_jubatus_serv"));
+      (common::create_lock_service("zk", a_.z, a_.timeout, logfile));
     ls = zk_;
     jubatus::common::prepare_jubatus(*zk_);
     
