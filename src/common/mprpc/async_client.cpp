@@ -53,40 +53,34 @@ async_sock::async_sock():
   progress(0)
 {
   // FIXME: SOCK_NONBLOCK is linux only
-  int fd = get();
-  set_socket_nonblock(fd, true);
+  set_socket_nonblock(this->get(), true);
   unpacker.reserve_buffer(4096);
 }
-      
+
 async_sock::~async_sock(){
   this->close();
 }
 
 bool async_sock::set_async(bool on){ return on; }
 
-bool async_sock::send_async(const char* buf, size_t size){
-  int fd = this->get();
-  int r = ::write(fd, buf+progress, size-progress);
+int async_sock::send_async(const char* buf, size_t size){
+  int r = ::write(this->get(), buf+progress, size-progress);
   if(r > 0){
     progress += r;
   }
-  if(progress == size){
-    progress = 0;
-    return true;
-  }
-  return size == progress;
-};
+
+  return r;
+}
 
 int async_sock::recv_async()
 {
-  int fd = this->get();
   if(unpacker.message_size() == 0){
     unpacker.reset();
     unpacker.reserve_buffer(4096);
   }else if(unpacker.buffer_capacity() == 0){
     //unpacker.expand_buffer(4096);
   }
-  int r = ::read(fd, unpacker.buffer(), unpacker.buffer_capacity());
+  int r = ::read(this->get(), unpacker.buffer(), unpacker.buffer_capacity());
   // if(r < 0){
   //   char msg[1024];
   //   strerror_r(errno, msg, 1024);
@@ -96,7 +90,7 @@ int async_sock::recv_async()
     unpacker.buffer_consumed(r);
   }
   return r;
-};
+}
 
 int async_sock::connect_async(const std::string& host, uint16_t port){
   int res;
@@ -123,12 +117,12 @@ int async_sock::connect_async(const std::string& host, uint16_t port){
       return 0;
     }
   }
-  ::close(sock);
+  this->close();
   return -1;
 }
 
-int async_sock::close(){
-  return ::close(this->get());
+bool async_sock::close(){
+  return pfi::network::mprpc::socket::close();
 }
 
 
