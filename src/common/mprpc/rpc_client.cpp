@@ -74,12 +74,12 @@ static void readable_callback(int fd, short int events, void* arg){
 int rpc_mclient::readable_callback(int fd, int events, async_context* ctx){
   int done = 0;
 
-  if(events & EV_READ){
+  if(events == EV_READ){
     pfi::lang::shared_ptr<async_sock> client = clients_[fd];
 
     int r = client->recv_async();
     if(r <= 0){
-      if (errno != EAGAIN) {
+      if (errno == EAGAIN) {
         register_fd_readable_(ctx);
       } else {
         client->disconnected();
@@ -123,7 +123,7 @@ static void writable_callback(int fd, short int events, void* arg){
 int rpc_mclient::writable_callback(int fd, int events, async_context* ctx){
   int done = 0;
 
-  if(events & EV_WRITE){
+  if(events == EV_WRITE){
     pfi::lang::shared_ptr<async_sock> client = clients_[fd];
 
     if(client->is_connecting()){
