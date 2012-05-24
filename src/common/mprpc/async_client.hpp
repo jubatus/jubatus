@@ -49,7 +49,7 @@ public:
   bool is_connecting()const{ return state == CONNECTING; }
   bool is_sending()const{ return state == SENDING; }
   bool is_recving()const{ return state == RECVING; }
-  size_t received() { return progress; }
+  size_t received()const{ return progress; }
   void reset_received() { progress = 0; }
 private:
   enum { CLOSED, CONNECTING, SENDING, RECVING } state;
