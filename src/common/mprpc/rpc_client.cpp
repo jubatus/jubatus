@@ -74,12 +74,12 @@ static void readable_callback(int fd, short int events, void* arg){
 int rpc_mclient::readable_callback(int fd, int events, async_context* ctx){
   int done = 0;
 
-  if(events & EV_READ){
+  if(events == EV_READ){
     pfi::lang::shared_ptr<async_sock> client = clients_[fd];
 
     int r = client->recv_async();
     if(r <= 0){
-      if (errno != EAGAIN) {
+      if (errno == EAGAIN) {
         register_fd_readable_(ctx);
       } else {
         client->disconnected();
@@ -100,11 +100,6 @@ int rpc_mclient::readable_callback(int fd, int events, async_context* ctx){
       if(res.a0 == 1){
         if(res.a2.is_nil()){
           ctx->ret.push_back(res.a3);
-
-          // }else{
-          //   if(res.a3.is_nil()){
-          //   std::string msg;
-          //   res.a2.convert(&msg);
         }
       }
     }
@@ -112,7 +107,7 @@ int rpc_mclient::readable_callback(int fd, int events, async_context* ctx){
       register_fd_readable_(ctx);
     }
 
-  }else if(events & EV_TIMEOUT){
+  }else if((events == EV_TIMEOUT) or (events == (EV_READ|EV_WRITE))){
     clients_[fd]->disconnected();
     done++;
   }
@@ -128,7 +123,7 @@ static void writable_callback(int fd, short int events, void* arg){
 int rpc_mclient::writable_callback(int fd, int events, async_context* ctx){
   int done = 0;
 
-  if(events & EV_WRITE){
+  if(events == EV_WRITE){
     pfi::lang::shared_ptr<async_sock> client = clients_[fd];
 
     if(client->is_connecting()){
@@ -149,7 +144,7 @@ int rpc_mclient::writable_callback(int fd, int events, async_context* ctx){
       register_fd_writable_(ctx);
     }
 
-  }else if(events & EV_TIMEOUT){
+  }else if((events == EV_TIMEOUT) or (events == (EV_READ|EV_WRITE))){
     clients_[fd]->disconnected();
     done++;
   }
