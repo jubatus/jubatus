@@ -27,6 +27,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 using pfi::lang::shared_ptr;
 using pfi::network::mprpc::socket;
@@ -64,7 +66,7 @@ async_sock::~async_sock(){
 bool async_sock::set_async(bool on){ return on; }
 
 int async_sock::send_async(const char* buf, size_t size){
-  int r = ::write(this->get(), buf+progress, size-progress);
+  int r = ::send(this->get(), buf+progress, size-progress, MSG_NOSIGNAL);
   if(r > 0){
     progress += r;
   }
