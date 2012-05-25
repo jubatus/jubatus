@@ -26,7 +26,20 @@ Improvements
   - libevent support (very partially)
 
 Bugfix:
-  - #19, #31, #37, #36, #34
+  - 
+
+Release 0.2.3 candidate
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Improvements
+  - Asynchronous call to multiple servers at once, both keeper and mix - common/mprpc
+  - Refactor generator
+  - Error message improve
+  - Timeout in unittest expanded
+  - #6 partially fixed
+
+Bugfix
+  - #34, #36, #37, #31, #19, and other small bugfix
 
 Release 0.2.2 2012/4/6
 ~~~~~~~~~~~~~~~~~~~~~~

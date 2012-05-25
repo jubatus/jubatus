@@ -59,6 +59,7 @@ async_sock::async_sock():
 }
       
 async_sock::~async_sock(){
+  this->close();
 }
 
 bool async_sock::set_async(bool on){ return on; }

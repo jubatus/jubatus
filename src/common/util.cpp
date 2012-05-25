@@ -38,6 +38,10 @@
 
 #include <unistd.h>
 
+#ifdef __APPLE__
+#include <libproc.h>
+#endif
+
 using std::string;
 using namespace pfi::lang;
 
@@ -61,6 +65,36 @@ string get_ip(const char* nic){
   string ret;
   get_ip(nic, ret);
   return ret;
+}
+
+std::string get_program_name()
+{
+  // WARNING: this code will only work on linux or OS X
+#ifdef __APPLE__
+  char path[PROC_PIDPATHINFO_MAXSIZE];
+  int ret = proc_pidpath(getpid(), path, PROC_PIDPATHINFO_MAXSIZE);
+#else
+  const char* exe_sym_path = "/proc/self/exe";
+  // when BSD: /proc/curproc/file
+  // when Solaris: /proc/self/path/a.out
+  // Unix: getexecname(3)
+  char path[PATH_MAX];
+  ssize_t ret = readlink(exe_sym_path, path, PATH_MAX);
+  if (ret != -1) {
+    if (ret == PATH_MAX)
+      throw std::runtime_error(std::string("Failed to get program name. Path size overed PATH_MAX."));
+    path[ret] = '\0';
+  }
+#endif
+  if (ret < 0) {
+    throw std::runtime_error(std::string("Failed to get program name: ") + strerror(errno));
+  }
+
+  // get basename
+  const char* last = strrchr(path, '/');
+  if (!last)
+    throw std::runtime_error(std::string("Failed to get program name from path: ") + path);
+  return std::string(last + 1);
 }
 
 //local server list should be like:

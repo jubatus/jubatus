@@ -69,6 +69,9 @@ public:
   int get_threadum()const{ return a_.threadnum; };
   void get_members(std::vector<std::pair<std::string,int> >&);
 
+  std::vector<std::string> mix_agg(const std::vector<std::string>& lhs,
+   				   const std::vector<std::string>& rhs);
+    
 protected:
   void build_local_path_(std::string& out, const std::string& type, const std::string& id){
     out = base_path_ + "/";

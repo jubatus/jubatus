@@ -39,3 +39,11 @@ TEST(common,util2){
   //  std::cout << env2 << std::endl;
   ASSERT_NE(env, env2);
 }
+
+TEST(common,util_get_program_name){
+  std::string path;
+  EXPECT_NO_THROW({
+    path = jubatus::util::get_program_name();
+  });
+  EXPECT_NE("", path);
+}
