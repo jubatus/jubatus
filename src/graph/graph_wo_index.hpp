@@ -92,6 +92,8 @@ private:
   void update_spt();
   void update_spt_edges(const preset_query& query,
                         spt_edges& se, node_id_t landmark, bool is_out);
+  void update_spt_node(const preset_query& query,
+                       const std::vector<edge_id_t>& edges, spt_edges& se, bool is_out);
   bool is_node_matched_to_query(const preset_query& query, node_id_t id) const;
   static void mix_spt(const shortest_path_tree& diff,
                       shortest_path_tree& mixed);
