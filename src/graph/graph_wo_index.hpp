@@ -29,6 +29,8 @@ public:
   graph_wo_index();
   ~graph_wo_index();
 
+  void alpha(double a);
+
   void clear();
   void create_node(node_id_t id);
   void create_global_node(node_id_t id);

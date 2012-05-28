@@ -57,6 +57,10 @@ void print_tree(const shortest_path_tree& spt, ostream& out) {
   out << "]" << endl;
 }
 
+bool is_empty_query(const preset_query& query) {
+  return query.node_query.empty() && query.edge_query.empty();
+}
+
 bool is_matched_to_query(const vector<pair<string, string> >& query,
                          const property& prop) {
   for (size_t i = 0; i < query.size(); ++i) {
@@ -86,6 +90,10 @@ graph_wo_index::graph_wo_index() : alpha_(0.9){
 }
 
 graph_wo_index::~graph_wo_index(){
+}
+
+void graph_wo_index::alpha(double a) {
+  alpha_ = a;
 }
 
 void graph_wo_index::clear(){
@@ -385,11 +393,17 @@ void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
       }
     }
 
+    unordered_set<node_id_t> unmatched_nodes;
+
     uint64_t new_node_num = 0;
     double dist_from_new_node = 0;
     for (node_info_map::const_iterator node_it = local_nodes_.begin();
          node_it != local_nodes_.end(); ++node_it) {
       if (model.count(node_it->first) == 0) {
+        if (!is_matched_to_query(query.node_query, node_it->second.p)) {
+          unmatched_nodes.insert(node_it->first);
+          continue;
+        }
         dist_from_new_node += 1.0;
         ++new_node_num;
       }
@@ -400,7 +414,6 @@ void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
       dist /= (model.size() + new_node_num);
     }
 
-    unordered_set<node_id_t> unmatched_nodes;
     eigen_vector_diff& qdiff = diff[query];
 
     for (node_info_map::const_iterator node_it = local_nodes_.begin();
@@ -441,9 +454,33 @@ void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
           score += it->second.score / it->second.out_degree_num;
         }
       }
+
       eigen_vector_info ei;
       ei.score = alpha_ * score + 1 - alpha_ + alpha_ * dist;
-      ei.out_degree_num = node_it->second.out_edges.size();
+
+      if (is_empty_query(query)) {
+        ei.out_degree_num = node_it->second.out_edges.size();
+      } else {
+        uint64_t out_degree = 0;
+        for (size_t i = 0; i < node_it->second.out_edges.size(); ++i) {
+          const edge_info_map::const_iterator edge_it =
+              local_edges_.find(node_it->second.out_edges[i]);
+          const edge_info& edge = edge_it->second;
+          if (unmatched_nodes.count(edge.tgt)) {
+            continue;
+          }
+          if (!is_node_matched_to_query(query, edge.tgt)) {
+            unmatched_nodes.insert(edge.tgt);
+            continue;
+          }
+          if (!is_matched_to_query(query.edge_query, edge.p)) {
+            continue;
+          }
+          ++out_degree;
+        }
+        ei.out_degree_num = out_degree;
+      }
+
       qdiff[node_it->first] = ei;
     }
   }

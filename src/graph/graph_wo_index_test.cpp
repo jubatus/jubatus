@@ -41,6 +41,16 @@ void mix_graphs(size_t count, vector<graph_wo_index>& gs) {
   }
 }
 
+void mix_graph(size_t count, graph_wo_index& g) {
+  string diff, mixed;
+  while (count-- > 0) {
+    mixed.clear();
+    g.get_diff(diff);
+    g.mix(diff, mixed);
+    g.set_mixed_and_clear_diff(mixed);
+  }
+}
+
 }
 
 TEST(graph_wo_index, none){
@@ -586,6 +596,227 @@ TEST(graph, shortest_path_node_query_failure_at_non_landmark_point) {
     vector<node_id_t> actual;
     g[i].shortest_path(1, 2, 5, actual, query);
     EXPECT_EQ(expect, actual);
+  }
+}
+
+TEST(graph, eigen_value_cycle_graph) {
+  // V = { 1, 2, 3, 4 }, E = { (1, 2), (2, 3), (3, 4), (4, 1) }
+
+  graph_wo_index g;
+  g.add_centrality_query(preset_query());
+
+  for (node_id_t i = 1; i <= 4u; ++i) {
+    g.create_global_node(i);
+    g.create_node(i);
+  }
+  for (node_id_t i = 1; i <= 4u; ++i) {
+    g.create_edge(i, i, i % 4 + 1);
+  }
+
+  for (int count = 0; count < 10; ++count) {
+    mix_graph(1, g);
+    for (node_id_t i = 1; i <= 4u; ++i) {
+      EXPECT_EQ(1, g.centrality(i, EIGENSCORE, preset_query()));
+    }
+  }
+}
+
+TEST(graph, eigen_value_one_way) {
+  // V = { 1, 2, 3, 4 }, E = { (1, 2), (2, 3), (3, 4) }
+
+  graph_wo_index g;
+  g.add_centrality_query(preset_query());
+  g.alpha(3/4.);
+
+  for (node_id_t i = 1; i <= 4u; ++i) {
+    g.create_global_node(i);
+    g.create_node(i);
+  }
+  for (node_id_t i = 1; i < 4u; ++i) {
+    g.create_edge(i, i, i + 1);
+  }
+
+  mix_graph(1, g);
+  for (node_id_t i = 1; i <= 4u; ++i) {
+    EXPECT_EQ(1, g.centrality(i, EIGENSCORE, preset_query()));
+  }
+
+  mix_graph(1, g);
+  EXPECT_EQ(7/16., g.centrality(1, EIGENSCORE, preset_query()));
+  EXPECT_EQ(19/16., g.centrality(2, EIGENSCORE, preset_query()));
+  EXPECT_EQ(19/16., g.centrality(3, EIGENSCORE, preset_query()));
+  EXPECT_EQ(19/16., g.centrality(4, EIGENSCORE, preset_query()));
+
+  mix_graph(1, g);
+  EXPECT_EQ(121/256., g.centrality(1, EIGENSCORE, preset_query()));
+  EXPECT_EQ(205/256., g.centrality(2, EIGENSCORE, preset_query()));
+  EXPECT_EQ(349/256., g.centrality(3, EIGENSCORE, preset_query()));
+  EXPECT_EQ(349/256., g.centrality(4, EIGENSCORE, preset_query()));
+
+  mix_graph(1, g);
+  EXPECT_EQ(2071/4096., g.centrality(1, EIGENSCORE, preset_query()));
+  EXPECT_EQ(3523/4096., g.centrality(2, EIGENSCORE, preset_query()));
+  EXPECT_EQ(4531/4096., g.centrality(3, EIGENSCORE, preset_query()));
+  EXPECT_EQ(6259/4096., g.centrality(4, EIGENSCORE, preset_query()));
+}
+
+TEST(graph, eigen_value_mix_cycle) {
+  // V = { 1, 2, 3, 4 }, V1 = { 1, 2 }, V2 = { 3, 4 },
+  // E = { (1, 2), (2, 3), (3, 4), (4, 1) }
+
+  vector<graph_wo_index> gs(2);
+  gs[0].add_centrality_query(preset_query());
+  gs[1].add_centrality_query(preset_query());
+
+  gs[0].create_node(1);
+  gs[0].create_node(2);
+  gs[1].create_node(3);
+  gs[1].create_node(4);
+
+  gs[0].create_edge(12, 1, 2);
+  gs[0].create_edge(23, 2, 3);
+  gs[1].create_edge(23, 2, 3);
+  gs[1].create_edge(34, 3, 4);
+  gs[0].create_edge(41, 4, 1);
+  gs[1].create_edge(41, 4, 1);
+
+  for (int count = 0; count < 10; ++count) {
+    mix_graphs(1, gs);
+
+    for (size_t i = 0; i < gs.size(); ++i) {
+      for (node_id_t j = 1; j <= 4u; ++j) {
+        EXPECT_EQ(1, gs[i].centrality(j, EIGENSCORE, preset_query()));
+      }
+    }
+  }
+}
+
+TEST(graph, eigen_value_mix_crossing_cycle) {
+  // V = { 1, 2, 3, 4 }, V1 = { 1, 2 }, V2 = { 3, 4 },
+  // E = { (1, 3), (3, 2), (2, 4), (4, 1) }
+
+  vector<graph_wo_index> gs(2);
+  gs[0].add_centrality_query(preset_query());
+  gs[1].add_centrality_query(preset_query());
+
+  gs[0].create_node(1);
+  gs[0].create_node(2);
+  gs[1].create_node(3);
+  gs[1].create_node(4);
+
+  for (size_t i = 0; i < gs.size(); ++i) {
+    gs[i].create_edge(13, 1, 3);
+    gs[i].create_edge(32, 3, 2);
+    gs[i].create_edge(24, 2, 4);
+    gs[i].create_edge(41, 4, 1);
+  }
+
+  for (int count = 0; count < 10; ++count) {
+    mix_graphs(1, gs);
+
+    for (size_t i = 0; i < gs.size(); ++i) {
+      for (node_id_t j = 1; j <= 4u; ++j) {
+        EXPECT_EQ(1, gs[i].centrality(j, EIGENSCORE, preset_query()));
+      }
+    }
+  }
+}
+
+TEST(graph, eigen_value_isolated_node) {
+  // V = { 1, 2, 3, 4 }, E = { (2, 3), (3, 4) }
+
+  graph_wo_index g;
+  g.add_centrality_query(preset_query());
+  g.alpha(3/4.);
+
+  for (node_id_t i = 1; i <= 4u; ++i) {
+    g.create_node(i);
+  }
+  g.create_edge(23, 2, 3);
+  g.create_edge(34, 3, 4);
+
+  mix_graph(1, g);
+  for (node_id_t i = 1; i <= 4u; ++i) {
+    EXPECT_EQ(1, g.centrality(i, EIGENSCORE, preset_query()));
+  }
+
+  mix_graph(1, g);
+  EXPECT_EQ(5/8., g.centrality(1, EIGENSCORE, preset_query()));
+  EXPECT_EQ(5/8., g.centrality(2, EIGENSCORE, preset_query()));
+  EXPECT_EQ(11/8., g.centrality(3, EIGENSCORE, preset_query()));
+  EXPECT_EQ(11/8., g.centrality(4, EIGENSCORE, preset_query()));
+
+  mix_graph(1, g);
+  EXPECT_EQ(5/8., g.centrality(1, EIGENSCORE, preset_query()));
+  EXPECT_EQ(5/8., g.centrality(2, EIGENSCORE, preset_query()));
+  EXPECT_EQ(35/32., g.centrality(3, EIGENSCORE, preset_query()));
+  EXPECT_EQ(53/32., g.centrality(4, EIGENSCORE, preset_query()));
+
+  mix_graph(1, g);
+  EXPECT_EQ(347/512., g.centrality(1, EIGENSCORE, preset_query()));
+  EXPECT_EQ(347/512., g.centrality(2, EIGENSCORE, preset_query()));
+  EXPECT_EQ(587/512., g.centrality(3, EIGENSCORE, preset_query()));
+  EXPECT_EQ(767/512., g.centrality(4, EIGENSCORE, preset_query()));
+}
+
+TEST(graph, eigen_value_edge_query_failure) {
+  // V = { 1, 2, 3, 4 }, V1 = { 1, 2 }, V2 = { 3, 4 },
+  // E = { (1, 2), (2, 3), (3, 4) }
+  // Edges (1, 2) and (3, 4) have a property { "aaa": "bbb" }.
+
+  preset_query query;
+  query.edge_query.push_back(make_pair("aaa", "bbb"));
+
+  map<string, string> prop;
+  prop["aaa"] = "bbb";
+
+  vector<graph_wo_index> gs(2);
+  for (size_t i = 0; i < gs.size(); ++i) {
+    gs[i].add_centrality_query(query);
+    gs[i].alpha(3/4.);
+  }
+
+  gs[0].create_node(1);
+  gs[0].create_node(2);
+  gs[1].create_node(3);
+  gs[1].create_node(4);
+
+  gs[0].create_edge(12, 1, 2);
+  gs[0].update_edge(12, prop);
+  gs[0].create_edge(23, 2, 3);
+  gs[1].create_edge(23, 2, 3);
+  gs[1].create_edge(34, 3, 4);
+  gs[1].update_edge(34, prop);
+
+  mix_graphs(1, gs);
+  for (size_t i = 0; i < gs.size(); ++i) {
+    for (node_id_t j = 1; j <= 4u; ++j) {
+      EXPECT_EQ(1, gs[i].centrality(j, EIGENSCORE, query));
+    }
+  }
+
+  mix_graphs(1, gs);
+  for (size_t i = 0; i < gs.size(); ++i) {
+    EXPECT_EQ(5/8., gs[i].centrality(1, EIGENSCORE, query));
+    EXPECT_EQ(11/8., gs[i].centrality(2, EIGENSCORE, query));
+    EXPECT_EQ(5/8., gs[i].centrality(3, EIGENSCORE, query));
+    EXPECT_EQ(11/8., gs[i].centrality(4, EIGENSCORE, query));
+  }
+
+  mix_graphs(1, gs);
+  for (size_t i = 0; i < gs.size(); ++i) {
+    EXPECT_EQ(49/64., gs[i].centrality(1, EIGENSCORE, query));
+    EXPECT_EQ(79/64., gs[i].centrality(2, EIGENSCORE, query));
+    EXPECT_EQ(49/64., gs[i].centrality(3, EIGENSCORE, query));
+    EXPECT_EQ(79/64., gs[i].centrality(4, EIGENSCORE, query));
+  }
+
+  mix_graphs(1, gs);
+  for (size_t i = 0; i < gs.size(); ++i) {
+    EXPECT_EQ(365/512., gs[i].centrality(1, EIGENSCORE, query));
+    EXPECT_EQ(659/512., gs[i].centrality(2, EIGENSCORE, query));
+    EXPECT_EQ(365/512., gs[i].centrality(3, EIGENSCORE, query));
+    EXPECT_EQ(659/512., gs[i].centrality(4, EIGENSCORE, query));
   }
 }
 
