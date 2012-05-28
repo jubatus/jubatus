@@ -45,5 +45,5 @@ TEST(common,util_get_program_name){
   EXPECT_NO_THROW({
     path = jubatus::util::get_program_name();
   });
-  EXPECT_NE("", path);
+  EXPECT_EQ(std::string("util_test"), path);
 }
