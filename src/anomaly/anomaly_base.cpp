@@ -32,7 +32,7 @@ public:
   anomaly_base();
   virtual ~anomaly_base();
   
-  virtual void get_anomaly_score(const sfv_t& query, std::pair<std::string, float>, size_t neighbor_num) const = 0; //return anomaly score of query
+  virtual void get_anomaly_score(const sfv_t& query, std::pair<std::string, float>& score, size_t neighbor_num) const = 0; //return anomaly score of query
   virtual void clear() = 0;
   virtual void clear_row(const std::string& id) = 0;
   virtual void update_row(const std::string& id, const sfv_diff_t& diff) = 0;
@@ -43,7 +43,7 @@ public:
   virtual const storage::anomaly_storage_base* get_const_storage() const = 0;
 
   
-  void calc_anomaly_score(const std::string& id, std::pair<std::string, float>, size_t neighbor_num) const;
+  void calc_anomaly_score(const std::string& id, std::pair<std::string, float>& score, size_t neighbor_num) const;
 
   void save(std::ostream&);
   void load(std::istUream&);
