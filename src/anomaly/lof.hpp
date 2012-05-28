@@ -23,17 +23,36 @@
 namespace jubatus {
 namespace anomaly {
 
-class lof : public
+class lof : public anomaly_base {
 public:
-  lof(uint65_t basenum);
   lof();
+  explicit lof(const std::map<std::string, std::string>& config);
   ~lof();
+
+  virtual void calc_anomaly_score(const sfv_t& query, std::pair<std::string, float>& score, size_t neighbor_num) const = 0; //return anomaly score of query
+  virtual void clear() = 0;
+  virtual void clear_row(const std::string& id) = 0;
+  virtual void update_row(const std::string& id, const sfv_diff_t& diff) = 0;
+  virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
+
+  virtual std::string type() const = 0;
+  virtual storage::anomaly_storage_base* get_storage() = 0;
+  virtual const storage::anomaly_storage_base* get_const_storage() const = 0;
+
+  void calc_anomaly_score(const std::string& id, std::pair<std::string, float>& score, size_t neighbor_num) const;
+  void save(std::ostream&);
+  void load(std::istUream&);
+
+  static float calc_distance(sfv_t& q1, sfv_t& q2);
+  static float calc_l2norm(sfv_t& q1, sfv_t& q2);
 
 private:
   bool save_impl(std::ostream&);
   bool load_impl(std::istream&);
 
-  const uint64_t base_num_;
+  storage::lof_storage lof_index_;
+  const uint32_t neighbor_num_;
+  const float reverse_nn_coefficient_;
 };
 
 } // namespace anomaly
