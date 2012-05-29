@@ -177,19 +177,6 @@ void get_machine_status(std::map<std::string, std::string>& ret){
 
 }
 
-#ifdef HAVE_ZOOKEEPER_H
-#else
-uint64_t uid_counter = 0u;
-#endif
-
-uint64_t new_uid(){
-#ifdef HAVE_ZOOKEEPER_H
-  return 0;
-#else
-  return __sync_add_and_fetch(&uid_counter,1);
-#endif
-}
-
 } //util
 } //jubatus
 

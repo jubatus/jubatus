@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,27 +16,25 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #pragma once
-#include <string>
-#include <vector>
-#include <map>
 
 #include <stdint.h>
 
-namespace jubatus{
-namespace util{
+namespace jubatus { namespace common {
 
-void get_ip(const char* nic, std::string& out);
-std::string get_ip(const char* nic);
-std::string get_program_name();
+class global_id_generator
+{
+public:
 
-std::string load(const std::string& file, std::vector< std::pair<std::string, int> >& s);
+  global_id_generator(bool);
+  ~global_id_generator();
 
-int daemonize();
+  uint64_t generate();
 
-void append_env_path(const std::string& env_, const std::string& argv0);
-void append_server_path(const std::string& argv0);
+private:
+  global_id_generator();
+  bool is_standalone_;
+  uint64_t counter_;
 
-void get_machine_status(std::map<std::string, std::string>&);
+};
 
-} //util
-} //namespace jubatus
+}}

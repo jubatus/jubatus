@@ -28,6 +28,9 @@ message node_info {
   2: list<edge_id_t>  out_edges
 }
 
+# query: { key => value }
+# matches if all keys exist on the property and all value are equal
+# or, empty list matches all node/edge with any property
 message preset_query {
   0: list<tuple<string, string> > edge_query
   1: list<tuple<string, string> > node_query

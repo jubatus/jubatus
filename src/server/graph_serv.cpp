@@ -44,7 +44,8 @@ inline uint64_t n2i(const node_id& id){
 }
 
 graph_serv::graph_serv(const framework::server_argv& a)
-  : jubatus_serv(a)
+  : jubatus_serv(a),
+    idgen_(a_.is_standalone())
 {
   common::cshared_ptr<jubatus::graph::graph_base> 
     g(jubatus::graph::create_graph("graph_wo_index"));
@@ -55,7 +56,7 @@ graph_serv::~graph_serv()
 {}
 
 std::string graph_serv::create_node(){
-  uint64_t nid = jubatus::util::new_uid();
+  uint64_t nid = idgen_.generate();
   std::string nid_str = pfi::lang::lexical_cast<std::string>(nid);
   // send true create_global_node to other machines.
   g_.get_model()->create_node(nid);
@@ -104,7 +105,7 @@ int graph_serv::remove_node(const std::string& nid){
   //@cht
 int graph_serv::create_edge(const std::string& id, const edge_info& ei)
 { 
-  edge_id_t eid = jubatus::util::new_uid();
+  edge_id_t eid = idgen_.generate();
   g_.get_model()->create_edge(eid, n2i(ei.src), n2i(ei.tgt));
   g_.get_model()->update_edge(eid, ei.p);
   return 0;

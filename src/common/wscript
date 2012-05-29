@@ -11,7 +11,7 @@ def configure(conf):
 
 def build(bld):
   import Options
-  src = 'util.cpp key_manager.cpp vector_util.cpp'
+  src = 'util.cpp key_manager.cpp vector_util.cpp global_id_generator.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
     src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp'
 

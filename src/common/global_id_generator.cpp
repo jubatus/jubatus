@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,28 +15,41 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
-#include <string>
-#include <vector>
-#include <map>
+#include "global_id_generator.hpp"
+#include <cassert>
 
-#include <stdint.h>
+namespace jubatus { namespace common {
 
-namespace jubatus{
-namespace util{
 
-void get_ip(const char* nic, std::string& out);
-std::string get_ip(const char* nic);
-std::string get_program_name();
+global_id_generator::global_id_generator():
+  is_standalone_(true),
+  counter_(0)
+{}
+global_id_generator::global_id_generator(bool is_standalone):
+  is_standalone_(is_standalone),
+  counter_(0)
+{}
 
-std::string load(const std::string& file, std::vector< std::pair<std::string, int> >& s);
+global_id_generator::~global_id_generator()
+{}
 
-int daemonize();
+uint64_t global_id_generator::generate()
+{
+  if(is_standalone_){
+    return __sync_fetch_and_add(&counter_, 1);
+  }else{
+#ifdef HAVE_ZOOKEEPER_H
 
-void append_env_path(const std::string& env_, const std::string& argv0);
-void append_server_path(const std::string& argv0);
+    // FIXME: to be implemented
+#error    
 
-void get_machine_status(std::map<std::string, std::string>&);
+#else
+    // never reaches here
+    assert(is_standalone_);
 
-} //util
-} //namespace jubatus
+#endif
+  }
+}
+
+
+}}
