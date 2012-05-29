@@ -40,16 +40,16 @@ public:
       return call<double(std::string, std::string, centrality_type, preset_query)>("centrality")(name, nid, ct, q);
     }
 
-    bool add_cenrality_query(std::string name, preset_query q) {
-      return call<bool(std::string, preset_query)>("add_cenrality_query")(name, q);
+    bool add_centrality_query(std::string name, preset_query q) {
+      return call<bool(std::string, preset_query)>("add_centrality_query")(name, q);
     }
 
     bool add_shortest_path_query(std::string name, preset_query q) {
       return call<bool(std::string, preset_query)>("add_shortest_path_query")(name, q);
     }
 
-    bool remove_cenrality_query(std::string name, preset_query q) {
-      return call<bool(std::string, preset_query)>("remove_cenrality_query")(name, q);
+    bool remove_centrality_query(std::string name, preset_query q) {
+      return call<bool(std::string, preset_query)>("remove_centrality_query")(name, q);
     }
 
     bool remove_shortest_path_query(std::string name, preset_query q) {

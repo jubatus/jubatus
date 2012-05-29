@@ -34,14 +34,14 @@ public:
   double centrality(std::string name, std::string nid, centrality_type ct, preset_query q) //analysis random
   { JRLOCK__(p_); return p_->centrality(nid, ct, q); }
 
-  bool add_cenrality_query(std::string name, preset_query q) //update broadcast
-  { JWLOCK__(p_); return p_->add_cenrality_query(q); }
+  bool add_centrality_query(std::string name, preset_query q) //update broadcast
+  { JWLOCK__(p_); return p_->add_centrality_query(q); }
 
   bool add_shortest_path_query(std::string name, preset_query q) //update broadcast
   { JWLOCK__(p_); return p_->add_shortest_path_query(q); }
 
-  bool remove_cenrality_query(std::string name, preset_query q) //update broadcast
-  { JWLOCK__(p_); return p_->remove_cenrality_query(q); }
+  bool remove_centrality_query(std::string name, preset_query q) //update broadcast
+  { JWLOCK__(p_); return p_->remove_centrality_query(q); }
 
   bool remove_shortest_path_query(std::string name, preset_query q) //update broadcast
   { JWLOCK__(p_); return p_->remove_shortest_path_query(q); }

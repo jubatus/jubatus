@@ -104,9 +104,9 @@ TEST_P(graph_test, simple){
   }
   {
     jubatus::preset_query q;
-    c.add_cenrality_query("", q);
+    c.add_centrality_query("", q);
     c.add_shortest_path_query("", q);
-    c.remove_cenrality_query("", q);
+    c.remove_centrality_query("", q);
     c.remove_shortest_path_query("", q);
   }
   

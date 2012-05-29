@@ -153,7 +153,7 @@ std::vector<node_id> graph_serv::shortest_path(const shortest_path_req& req) con
 }
 
 //update, broadcast
-bool graph_serv::add_cenrality_query(const preset_query& q0)
+bool graph_serv::add_centrality_query(const preset_query& q0)
 {
   jubatus::graph::preset_query q;
   framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0, q);
@@ -171,7 +171,7 @@ bool graph_serv::add_shortest_path_query(const preset_query& q0)
 }
 
 //update, broadcast
-bool graph_serv::remove_cenrality_query(const preset_query& q0)
+bool graph_serv::remove_centrality_query(const preset_query& q0)
 {
   jubatus::graph::preset_query q;
   framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0, q);

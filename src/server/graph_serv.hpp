@@ -82,11 +82,11 @@ public:
 
   std::vector<node_id > shortest_path(const shortest_path_req& r) const; //analysis random
 
-  bool add_cenrality_query(const preset_query& q); //update broadcast
+  bool add_centrality_query(const preset_query& q); //update broadcast
 
   bool add_shortest_path_query(const preset_query& q); //update broadcast
 
-  bool remove_cenrality_query(const preset_query& q); //update broadcast
+  bool remove_centrality_query(const preset_query& q); //update broadcast
 
   bool remove_shortest_path_query(const preset_query& q); //update broadcast
 

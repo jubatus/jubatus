@@ -13,9 +13,9 @@ int main(int args, char** argv){
   k.register_cht<int, edge_id_t, edge_info >("update_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
   k.register_cht<int, edge_id_t >("remove_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
   k.register_random<double, std::string, centrality_type, preset_query >("centrality"); //pass analysis
-  k.register_broadcast<bool, preset_query >("add_cenrality_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+  k.register_broadcast<bool, preset_query >("add_centrality_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_broadcast<bool, preset_query >("add_shortest_path_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
-  k.register_broadcast<bool, preset_query >("remove_cenrality_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+  k.register_broadcast<bool, preset_query >("remove_centrality_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_broadcast<bool, preset_query >("remove_shortest_path_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_random<std::vector<node_id >, shortest_path_req >("shortest_path"); //pass analysis
   k.register_broadcast<int >("update_index", pfi::lang::function<int(int,int)>(&all_and)); //update

@@ -72,11 +72,11 @@ service graph {
 		    2: centrality_type ct, 3: preset_query q) # //@random
 
   #@broadcast #@update #@all_and
-  bool add_cenrality_query(0: string name, 1: preset_query q)
+  bool add_centrality_query(0: string name, 1: preset_query q)
   #@broadcast #@update #@all_and
   bool add_shortest_path_query(0: string name, 1: preset_query q)
   #@broadcast #@update #@all_and
-  bool remove_cenrality_query(0: string name, 1: preset_query q)
+  bool remove_centrality_query(0: string name, 1: preset_query q)
   #@broadcast #@update #@all_and
   bool remove_shortest_path_query(0: string name, 1: preset_query q)
 
