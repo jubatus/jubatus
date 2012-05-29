@@ -137,3 +137,31 @@ TEST(rpc_mclient, small)
         cli.join_all(function<int(int,int)>(&jubatus::framework::add<int>)));
   }
 }
+
+TEST(rpc_mclient, socket_disconnection)
+{
+  vector<pair<string,uint16_t> > clients;
+
+  for (uint16_t port = kPortStart; port <= kPortStart + 2; port++) {
+    fork_server(port);
+    if (port == kPortStart)
+      clients.push_back(make_pair(string("localhost"), port + 1000));  // connection refused
+    else
+      clients.push_back(make_pair(string("localhost"), port));
+  }
+
+  const size_t kServerSize = clients.size();
+  usleep(500000);
+  {
+    test_mrpc_client cli0("localhost", PORT0, 3.0);
+    test_mrpc_client cli1("localhost", PORT1, 3.0);
+    EXPECT_EQ(true, cli0.call_test_bool(23));
+    EXPECT_EQ(24, cli1.call_test_twice(12));
+  }
+
+  jubatus::common::mprpc::rpc_mclient cli(clients, 3.0);
+  {
+    cli.call_async("test_bool", 73684);
+    EXPECT_FALSE(cli.join_all(function<bool(bool,bool)>(&jubatus::framework::all_and)));
+  }
+}

@@ -83,6 +83,7 @@ int rpc_mclient::readable_callback(int fd, int events, async_context* ctx){
         register_fd_readable_(ctx);
       } else {
         client->disconnected();
+        clients_.erase(fd);
         done++;
       }
       return done;
@@ -109,6 +110,7 @@ int rpc_mclient::readable_callback(int fd, int events, async_context* ctx){
 
   }else if((events == EV_TIMEOUT) or (events == (EV_READ|EV_WRITE))){
     clients_[fd]->disconnected();
+    clients_.erase(fd);
     done++;
   }
 
@@ -148,6 +150,9 @@ int rpc_mclient::writable_callback(int fd, int events, async_context* ctx){
     clients_[fd]->disconnected();
     done++;
   }
+
+  if (clients_[fd]->is_closed())
+    clients_.erase(fd);
 
   return done;
 }
