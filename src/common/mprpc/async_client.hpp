@@ -46,6 +46,7 @@ public:
   void set_sending(){ state = SENDING; }
   void set_recving(){ state = RECVING; }
   void disconnected(){ this->close(); state = CLOSED; }
+  bool is_closed()const{ return state == CLOSED; }
   bool is_connecting()const{ return state == CONNECTING; }
   bool is_sending()const{ return state == SENDING; }
   bool is_recving()const{ return state == RECVING; }
