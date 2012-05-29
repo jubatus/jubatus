@@ -23,18 +23,18 @@
 
 namespace jubatus { namespace server {
 
-struct graph0 : public framework::mixable<jubatus::graph::graph_base, std::string>
+struct mixable_graph : public framework::mixable<jubatus::graph::graph_base, std::string>
 {
   void clear(){
   };
 
-  graph0(){
+  mixable_graph(){
     function<std::string(const jubatus::graph::graph_base*)>
-      getdiff(&graph0::get_diff);
+      getdiff(&mixable_graph::get_diff);
     function<int(const jubatus::graph::graph_base*,const std::string&,std::string&)>
-      reduce(&graph0::reduce);
+      reduce(&mixable_graph::reduce);
     function<int(jubatus::graph::graph_base*, const std::string&)>
-      putdiff(&graph0::put_diff);
+      putdiff(&mixable_graph::put_diff);
     set_mixer(getdiff, reduce, putdiff);
   };
 
@@ -108,7 +108,7 @@ public:
   void after_load();
 
 private:
-  graph0 g_;
+  mixable_graph g_;
 };
 
 }
