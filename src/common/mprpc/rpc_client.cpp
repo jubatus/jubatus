@@ -67,8 +67,11 @@ void rpc_mclient::connect_async_()
 }
 
 static void readable_callback(int fd, short int events, void* arg){
-  async_context* ctx = reinterpret_cast<async_context*>(arg);
-  ctx->rest -= ctx->c->readable_callback(fd, events, ctx);
+  try {
+    async_context* ctx = static_cast<async_context*>(arg);
+    ctx->rest -= ctx->c->readable_callback(fd, events, ctx);
+  } catch (...) {
+  }
 }
 
 int rpc_mclient::readable_callback(int fd, int events, async_context* ctx){
@@ -118,8 +121,11 @@ int rpc_mclient::readable_callback(int fd, int events, async_context* ctx){
 }
 
 static void writable_callback(int fd, short int events, void* arg){
-  async_context* ctx = static_cast<async_context*>(arg);
-  ctx->rest -= ctx->c->writable_callback(fd, events, ctx);
+  try {
+    async_context* ctx = static_cast<async_context*>(arg);
+    ctx->rest -= ctx->c->writable_callback(fd, events, ctx);
+  } catch (...) {
+  }
 }
 
 int rpc_mclient::writable_callback(int fd, int events, async_context* ctx){
