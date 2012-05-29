@@ -1,0 +1,32 @@
+def options(ctx): pass
+
+def configure(ctx): pass
+
+def build(bld):
+  bld.shlib(
+    source = [
+      'anomaly_base.cpp',
+#      'inverted_index.cpp',
+      'lof.cpp',
+#      'recommender_factory.cpp',
+#      'lof_util.cpp',
+      ],
+    target = 'jubatus_anomaly',
+    name = 'jubatus_anomaly',
+    includes = '.',
+    use = 'PFICOMMON jubastorage jubacommon')
+
+  def make_test(s):
+    bld.program(
+      features = 'gtest',
+      source = s,
+      target = s[0:s.rfind('.')],
+      includes = '.',
+      use = 'PFICOMMON jubatus_anomaly jubacommon')
+
+  map(make_test, [
+#      'anomaly_test.cpp', # FIXME
+#      'anomaly_base_test.cpp',
+#      'anomaly_random_test.cpp',
+#      'lof_util_test.cpp',
+      ])

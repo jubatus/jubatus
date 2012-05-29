@@ -22,7 +22,7 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "../common/type.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
-//#include "anomaly_type.hpp"
+#include "anomaly_type.hpp"
 #include "../storage/anomaly_storage_base.hpp"
 
 namespace jubatus {
@@ -47,7 +47,7 @@ public:
   void calc_anomaly_score(const std::string& id, std::pair<std::string, float>& score, size_t neighbor_num) const;
 
   void save(std::ostream&);
-  void load(std::istUream&);
+  void load(std::istream&);
 
   static float calc_distance(sfv_t& q1, sfv_t& q2);
   static float calc_l2norm(sfv_t& q1, sfv_t& q2);
