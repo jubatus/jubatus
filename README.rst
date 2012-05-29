@@ -13,7 +13,7 @@ LGPL 2.1
 Update history
 --------------
 
-Release 0.3.0 2012/6/1
+Release 0.3.0 2012/7/1
 ----------------------
 
 Improvements
@@ -25,18 +25,10 @@ Improvements
   - New neighbor-search algorithm for recommender: minhash
   - libevent support (very partially)
 
-Bugfix:
-  - 
-
-Release 0.2.3 candidate
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Improvements
   - Asynchronous call to multiple servers at once, both keeper and mix - common/mprpc
   - Refactor generator
   - Error message improve
   - Timeout in unittest expanded
-  - #6 partially fixed
 
 Bugfix
   - #34, #36, #37, #31, #19, and other small bugfix
