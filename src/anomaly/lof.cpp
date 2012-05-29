@@ -36,15 +36,23 @@ namespace anomaly {
 
 namespace {
 
-
-const uint64_t DEFAULT_LSH_NUM = 64;  // should be in config
-const uint64_t DEFAULT_TABLE_NUM = 4;  // should be in config
+const uint32_t DEFAULT_LSH_NUM = 64;  // should be in config
+const uint32_t DEFAULT_TABLE_NUM = 4;  // should be in config
 const float DEFAULT_BIN_WIDTH = 100;  // should be in config
 const uint32_t DEFAULT_NUM_PROBE = 64;  // should be in config
 const uint32_t DEFAULT_SEED = 1091;  // should be in config
 
+const map<string, string>& DEFAULT_NN_CONFIG =  {
+  {"nn_", "euclid_lsh"},
+  {"lsh_num", "64"},
+  {"table_num", "4"},
+  {"bin_width", "100"},
+  {"num_probe", "64"},
+  {"seed", "1091"},
+};
+
 const uint32_t DEFAULT_NEIGHBOR_NUM = 10;  // should be in config
-const uint32_t DEFAULT_REVERSE_NN_COEFFICIENT = 3;  // should be in config
+const float DEFAULT_REVERSE_NN_COEFFICIENT = 3;  // should be in config
 
 struct greater_second {
   bool operator()(const pair<string, float>& l, const pair<string, float>& r) const {
@@ -60,7 +68,7 @@ float calc_norm(const sfv_t& sfv) {
   return sqrt(sqnorm);
 }
 
-template<typename T>
+template<typename T> 
 T get_param(const map<string, string>& config, const string& name, T default_value) {
   const map<string, string>::const_iterator it = config.find(name);
   if (it == config.end()) {
@@ -72,43 +80,37 @@ T get_param(const map<string, string>& config, const string& name, T default_val
 }
 
 lof::lof()
-  : lof_index_(DEFAULT_NEIGHBOR_NUM, DEFAULT_REVERSE_NN_COEFFICIENT, DEFAULT_LSH_NUM, DEFAULT_TABLE_NUM, DEFAULT_SEED),
-      bin_width_(DEFAULT_BIN_WIDTH),
-      num_probe_(DEFAULT_NUM_PROBE) {
+  : lof_index_(DEFAULT_NN_CONFIG),
+    neighbor_num_(DEFAULT_NEIGHBOR_NUM),
+    reverse_nn_coefficient_(DEFAULT_REVERSE_NN_COEFFICIENT) {
 }
 
 lof::lof(const std::map<std::string, std::string>& config)
-  : lof_index_(get_param(config, "neighbor_num", DEFAULT_NEIGHBOR_NUM),
-	       get_param(config. "reverse_nn_coefficient", DEFAULT_REVERSE_NN_COEFFICIENT),
-	       get_param(config, "lsh_num", DEFAULT_LSH_NUM),
-	       get_param(config, "table_num", DEFAULT_TABLE_NUM),
-	       get_param(config, "seed", DEFAULT_SEED)),
-    bin_width_(get_param(config, "bin_width", DEFAULT_BIN_WIDTH)),
-    num_probe_(get_param(config, "probe_num", DEFAULT_NUM_PROBE)) {
-  const uint64_t neighbor_num = get_param(config, "neighbor_num", DEFAULT_NEIGHBOR_NUM);
-  const float reverse_nn_coefficient = get_param(config. "reverse_nn_coefficient", DEFAULT_REVERSE_NN_COEFFICIENT);
+  : lof_index_(get_param(config, "nn_config", DEFAULT_NN_CONFIG)),
+    neighbor_num_(get_param(config, "neighbor_num", DEFAULT_NEIGHBOR_NUM)),
+  reverse_nn_coefficient_(get_param(config, "reverse_nn_coefficient", DEFAULT_REVERSE_NN_COEFFICIENT)) {
+  const uint32_t neighbor_num = get_param(config, "neighbor_num", DEFAULT_NEIGHBOR_NUM);
+  const float reverse_nn_coefficient = get_param(config, "reverse_nn_coefficient", DEFAULT_REVERSE_NN_COEFFICIENT);
   LOG(INFO) << "neighbor_num:" << neighbor_num;
-  LOF(INFO) << "reverse_nn_coefficient:" << reverse_nn_coefficient;
+  LOG(INFO) << "reverse_nn_coefficient:" << reverse_nn_coefficient;
 }
 
 lof::~lof() {
 }
 
 void lof::calc_anomaly_score(const sfv_t& query, std::pair<std::string, float>& score, size_t neighbor_num) const {
-  ids.clear();
+  std::pair<std::string, float> lrd_value_self;
+  lof_index_.calc_lrd(query, lrd_value_self, neighbor_num);
 
-  std::pair<std::string, float> lrd_self;
-  lof_index_.calc_lrd(query, neibor_num. lrd_self);
-
-  std::vector<std::string, float> lrds;
-  lof_index_.similar_row_lrds(query, neighbor_num, lrds);
+  std::map<std::string, float> neighbor_lrd_values;
+  lof_index_.similar_row_lrds(query, neighbor_lrd_values, neighbor_num);
   float average_neighbor_lrd = 0;
-  for (uint64_t i = 0; i < neighbor_num; ++i) {
-    average_neibor_lrd += neighbors[i].second / neighbor_num;
+  for (std::map<std::string, float>::const_iterator it = neighbor_lrd_values.begin(); it != neighbor_lrd_values.end(); ++it) {
+    average_neighbor_lrd += it->second / neighbor_num;
   }
 
-  ids.first = lrd_self.first;
-  ids.second = average_neigbor_lrd / lrd_self.first;
+  score.first = lrd_value_self.first;
+  score.second = average_neighbor_lrd / lrd_value_self.second;
 }
 
 
