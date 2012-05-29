@@ -45,7 +45,9 @@ jubatus_serv::jubatus_serv(const server_argv& a, const std::string& base_path):
 		   pfi::lang::bind(&jubatus_serv::do_mix, this, pfi::lang::_1))),
   use_cht_(false),
 #endif
+  idgen_(a_.is_standalone()),
   base_path_(a_.tmpdir)
+
 {
 };
 
@@ -67,6 +69,9 @@ int jubatus_serv::start(pfi::network::mprpc::rpc_server& serv){
     ls = zk_;
     jubatus::common::prepare_jubatus(*zk_);
     
+    std::string counter_path = common::ACTOR_BASE_PATH + "/" + a_.name;
+    idgen_.set_ls(zk_, counter_path);
+
     if( a_.join ){ // join to the existing cluster with -j option
       join_to_cluster(zk_);
     }
@@ -313,16 +318,24 @@ void jubatus_serv::get_members(std::vector<std::pair<std::string,int> >& ret)
   ret.clear();
 #ifdef HAVE_ZOOKEEPER_H
   common::get_all_actors(*zk_, a_.name, ret);
-  
-  // remove myself
-  std::pair<std::string, int> self(a_.eth, a_.port);
-  for(std::vector<std::pair<std::string,int> >::iterator it = ret.begin(); it != ret.end(); it++){
-    if(it->first == a_.eth && it->second == a_.port){
-      it = ret.erase(it);
-      continue;
+
+  if(ret.empty()){
+    return;
+  }
+  try{
+    // remove myself
+    for(std::vector<std::pair<std::string,int> >::iterator it = ret.begin(); it != ret.end(); it++){
+      if(it->first == a_.eth && it->second == a_.port){
+        it = ret.erase(it);
+        it--;
+        continue;
+      }
     }
+  }catch(...){
+    // eliminate the exception "no clients."
   }
 #endif
+
 }
 
 }}

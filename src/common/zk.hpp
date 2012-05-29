@@ -49,6 +49,7 @@ namespace common {
 
     // ephemeral only
     void create_seq(const std::string& path, std::string&);
+    uint64_t create_id(const std::string& path, uint32_t prefix = 0);
 
     void list(const std::string& path, std::vector<std::string>& out);
     void hd_list(const std::string& path, std::string& out);

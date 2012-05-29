@@ -16,7 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #pragma once
-#include "../common/global_id_generator.hpp"
+
 #include "../framework.hpp"
 #include "graph_types.hpp"
 #include "../graph/graph_base.hpp"
@@ -110,7 +110,6 @@ public:
 
 private:
   mixable_graph g_;
-  common::global_id_generator idgen_;
 };
 
 }

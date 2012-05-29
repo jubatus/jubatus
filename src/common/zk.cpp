@@ -103,6 +103,20 @@ namespace common{
     }
   };
 
+  uint64_t zk::create_id(const std::string& path, uint32_t prefix){
+    scoped_lock lk(m_);
+    struct Stat st;
+    int rc = zoo_set2(zh_, path.c_str(), "dummy", 6, -1, &st);
+
+    if(rc != ZOK){
+      LOG(ERROR) << path << " failed on zoo_set2 " << zerror(rc);
+      throw std::runtime_error("");
+    }
+    uint64_t ret = prefix;
+    ret <<= 32;
+    return (ret | st.version);
+  };
+
   void zk::remove(const std::string& path){
     scoped_lock lk(m_);
     int rc = zoo_delete(zh_, path.c_str(), -1);

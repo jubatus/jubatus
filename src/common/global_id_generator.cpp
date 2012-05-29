@@ -37,11 +37,12 @@ uint64_t global_id_generator::generate()
 {
   if(is_standalone_){
     return __sync_fetch_and_add(&counter_, 1);
+
   }else{
 #ifdef HAVE_ZOOKEEPER_H
 
     // FIXME: to be implemented
-#error    
+    return ls_->create_id(path_);
 
 #else
     // never reaches here
@@ -51,5 +52,14 @@ uint64_t global_id_generator::generate()
   }
 }
 
+#ifdef HAVE_ZOOKEEPER_H
+    void global_id_generator::set_ls(cshared_ptr<lock_service>& ls,
+                                     const std::string& path_prefix)
+{
+  path_ = path_prefix + "/id_generator";
+  ls_ = ls;
+  ls_->create(path_);
+}
+#endif
 
 }}

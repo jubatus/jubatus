@@ -24,6 +24,7 @@
 #include "mixable.hpp"
 
 #include "../common/shared_ptr.hpp"
+#include "../common/global_id_generator.hpp"
 
 using namespace pfi::concurrent;
 
@@ -91,6 +92,8 @@ protected:
   common::cshared_ptr<jubatus::common::lock_service> zk_;
   bool use_cht_;
 #endif
+
+  common::global_id_generator idgen_;
 
   pfi::concurrent::rw_mutex m_;
   const std::string base_path_;

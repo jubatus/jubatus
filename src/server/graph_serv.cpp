@@ -44,13 +44,13 @@ inline uint64_t n2i(const node_id& id){
 }
 
 graph_serv::graph_serv(const framework::server_argv& a)
-  : jubatus_serv(a),
-    idgen_(a_.is_standalone())
+  : jubatus_serv(a)
 {
   common::cshared_ptr<jubatus::graph::graph_base> 
     g(jubatus::graph::create_graph("graph_wo_index"));
   g_.set_model(g);
   register_mixable(mixable_cast(&g_));
+
 }
 graph_serv::~graph_serv()
 {}
@@ -69,9 +69,11 @@ std::string graph_serv::create_node(){
     std::vector<std::pair<std::string, int> > members;
     get_members(members);
     
-    common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
-    c.call_async("create_global_node", a_.name, nid_str);
-    c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+    if(not members.empty()){
+      common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
+      c.call_async("create_global_node", a_.name, nid_str);
+      c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+    }
   }
   
   return nid_str;
@@ -94,9 +96,11 @@ int graph_serv::remove_node(const std::string& nid){
     std::vector<std::pair<std::string, int> > members;
     get_members(members);
     
-    common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
-    c.call_async("remove_global_node", a_.name, nid);
-    c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+    if(not members.empty()){
+      common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
+      c.call_async("remove_global_node", a_.name, nid);
+      c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+    }
   }
   
   return 0;
