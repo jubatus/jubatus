@@ -139,9 +139,6 @@ void lof::clear_row(const string& id) {
 
   void lof::update_row(std::string& id, const sfv_diff_t& diff) {
   // hash value should be computed in lof_index_
-  // const vector<float> hash = lsh_function(row, lof_index_.all_lsh_num(), bin_width_);
-  // const float norm = calc_norm(row);
-  // lof_index_.set_row(id, hash, norm);
   lof_index_.update_row(id, diff);
 
   std::vector<std::pair<std::string, float> > distance_values;
