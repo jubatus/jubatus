@@ -37,7 +37,7 @@ public:
   virtual ~lof_storage();
 
   // same functions for recommender_storage
-  void set_row(const std::string& row, const std::vector<float>& hash, float norm);
+  void set_row(const std::string& row, float norm);
   void remove_row(const std::string& row);
   void clear();
   void get_all_row_ids(std::vector<std::string>& ids) const;
@@ -47,6 +47,7 @@ public:
   void calc_lrd(const sfv_t& query, std::pair<std::string, float>& lrd_value, size_t neighbor_num) const;
   void similar_row_lrds(const sfv_t& query, std::map<std::string, float>& neighbor_lrd_values, size_t neighbor_num) const;
   // for update
+
 
   void similar_row(const std::vector<float>& hash,
                     float norm,
@@ -68,6 +69,12 @@ public:
 private:
   uint32_t neighbor_num_;
   float reverse_nn_coefficient_;
+
+  friend class pfi::data::serialization::access;
+  template<class Ar>
+  void serialize(Ar& ar) {
+    
+  }
 
   // add anything you want
 };
