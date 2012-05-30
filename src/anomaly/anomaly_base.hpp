@@ -33,7 +33,7 @@ public:
   anomaly_base();
   virtual ~anomaly_base();
   
-  virtual void get_anomaly_score(const sfv_t& query, std::pair<std::string, float>& score, size_t neighbor_num) const = 0; //return anomaly score of query
+  virtual void calc_anomaly_score(const sfv_t& query, std::pair<std::string, float>& score, size_t neighbor_num) const = 0; //return anomaly score of query
   virtual void clear() = 0;
   virtual void clear_row(const std::string& id) = 0;
   virtual void update_row(const std::string& id, const sfv_diff_t& diff) = 0;
@@ -43,21 +43,20 @@ public:
   virtual storage::anomaly_storage_base* get_storage() = 0;
   virtual const storage::anomaly_storage_base* get_const_storage() const = 0;
 
-  
   void calc_anomaly_score(const std::string& id, std::pair<std::string, float>& score, size_t neighbor_num) const;
 
   void save(std::ostream&);
   void load(std::istream&);
 
-  static float calc_distance(sfv_t& q1, sfv_t& q2);
-  static float calc_l2norm(sfv_t& q1, sfv_t& q2);
+  // static float calc_distance(sfv_t& q1, sfv_t& q2);
+  // static float calc_l2norm(sfv_t& query);
 
 
 protected:
   virtual bool save_impl(std::ostream&) = 0;
   virtual bool load_impl(std::istream&) = 0;
 
-  //static const uint64_t complete_row_similar_num_;
+  static const uint32_t neighbor_num_;
   storage::sparse_matrix_storage orig_;
 };
 

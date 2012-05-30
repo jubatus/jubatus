@@ -36,20 +36,22 @@ namespace anomaly {
 
 namespace {
 
+/*
 const uint32_t DEFAULT_LSH_NUM = 64;  // should be in config
 const uint32_t DEFAULT_TABLE_NUM = 4;  // should be in config
 const float DEFAULT_BIN_WIDTH = 100;  // should be in config
 const uint32_t DEFAULT_NUM_PROBE = 64;  // should be in config
 const uint32_t DEFAULT_SEED = 1091;  // should be in config
 
-const map<string, string>& DEFAULT_NN_CONFIG =  {
-  {"nn_", "euclid_lsh"},
+const map<string, string> DEFAULT_NN_CONFIG = {
+  {"nn_method", "euclid_lsh"},
   {"lsh_num", "64"},
   {"table_num", "4"},
   {"bin_width", "100"},
   {"num_probe", "64"},
-  {"seed", "1091"},
+  {"seed", "1091"}
 };
+*/
 
 const uint32_t DEFAULT_NEIGHBOR_NUM = 10;  // should be in config
 const float DEFAULT_REVERSE_NN_COEFFICIENT = 3;  // should be in config
@@ -80,13 +82,13 @@ T get_param(const map<string, string>& config, const string& name, T default_val
 }
 
 lof::lof()
-  : lof_index_(DEFAULT_NN_CONFIG),
+  : lof_index_(),
     neighbor_num_(DEFAULT_NEIGHBOR_NUM),
     reverse_nn_coefficient_(DEFAULT_REVERSE_NN_COEFFICIENT) {
 }
 
 lof::lof(const std::map<std::string, std::string>& config)
-  : lof_index_(get_param(config, "nn_config", DEFAULT_NN_CONFIG)),
+  : lof_index_(config),
     neighbor_num_(get_param(config, "neighbor_num", DEFAULT_NEIGHBOR_NUM)),
   reverse_nn_coefficient_(get_param(config, "reverse_nn_coefficient", DEFAULT_REVERSE_NN_COEFFICIENT)) {
   const uint32_t neighbor_num = get_param(config, "neighbor_num", DEFAULT_NEIGHBOR_NUM);
@@ -104,6 +106,7 @@ void lof::calc_anomaly_score(const sfv_t& query, std::pair<std::string, float>& 
 
   std::map<std::string, float> neighbor_lrd_values;
   lof_index_.similar_row_lrds(query, neighbor_lrd_values, neighbor_num);
+  
   float average_neighbor_lrd = 0;
   for (std::map<std::string, float>::const_iterator it = neighbor_lrd_values.begin(); it != neighbor_lrd_values.end(); ++it) {
     average_neighbor_lrd += it->second / neighbor_num;
@@ -153,7 +156,7 @@ const storage::anomaly_storage_base* lof::get_const_storage() const {
 }
 
 bool lof::save_impl(ostream& os) {
-  pfi::data::serialization::binary_o archive oa(os);
+  pfi::data::serialization::binary_oarchive oa(os);
   oa << lof_index_;
   return true;
 }
