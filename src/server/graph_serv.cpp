@@ -25,6 +25,10 @@
 #include <pficommon/lang/cast.h>
 #include <sstream>
 
+#include <pficommon/system/time_util.h>
+using pfi::system::time::clock_time;
+using pfi::system::time::get_clock_time;
+
 namespace jubatus { namespace server {
 
 
@@ -75,7 +79,7 @@ std::string graph_serv::create_node(){
       c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
     }
   }
-  
+  //DLOG(INFO) << "new node created: " << nid_str;
   return nid_str;
 }
 
@@ -102,7 +106,7 @@ int graph_serv::remove_node(const std::string& nid){
       c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
     }
   }
-  
+  DLOG(INFO) << "node removed: " << nid;
   return 0;
 }
 
@@ -112,7 +116,8 @@ int graph_serv::create_edge(const std::string& id, const edge_info& ei)
   edge_id_t eid = idgen_.generate();
   g_.get_model()->create_edge(eid, n2i(ei.src), n2i(ei.tgt));
   g_.get_model()->update_edge(eid, ei.p);
-  return 0;
+  // DLOG(INFO) << "edge created (" << eid << ") " << ei.src << " => " << ei.tgt;
+  return eid;
 }
 
   //@random
@@ -216,10 +221,16 @@ edge_info graph_serv::get_edge(const std::string& nid, const edge_id_t& id)const
 
 //@broadcast
 int graph_serv::update_index(){
+  if(not a_.is_standalone()){
+    throw std::runtime_error("manual mix is available only in standalone mode.");
+  }
+  clock_time start = get_clock_time();
   g_.get_model()->update_index();
-  std::string diff;                                                                    
+  std::string diff;
   g_.get_model()->get_diff(diff);
   g_.get_model()->set_mixed_and_clear_diff(diff);
+  clock_time end = get_clock_time();
+  LOG(WARNING) << "mix done manually and locally; in " << (double)(end - start) << " secs.";
   return 0;
 }
 int graph_serv::clear(){

@@ -254,12 +254,12 @@ void jubatus_serv::do_mix(const std::vector<std::pair<std::string,int> >& v){
   }
 
   clock_time end = get_clock_time();
-  DLOG(INFO) << "mixed with " << v.size() << " servers in " << (double)(end - start) << " secs.";
   size_t s = 0;
   for(size_t i=0; i<accs.size(); ++i){
     s+=accs[i].size();
   }
-  DLOG(INFO) << s << " bytes (serialized data) has been put.";
+  DLOG(INFO) << "mixed with " << v.size() << " servers in " << (double)(end - start) << " secs, "
+             << s << " bytes (serialized data) has been put.";
 }
 #endif
 

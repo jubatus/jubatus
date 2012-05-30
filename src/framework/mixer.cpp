@@ -66,7 +66,7 @@ namespace framework{
       unsigned int new_ticktime = time(NULL);
       if( counter_ > count_threshold_ || new_ticktime - ticktime_ > tick_threshold_ ){
 	if(zklock.try_lock()){
-	  DLOG(INFO) << "mix....";
+	  DLOG(INFO) << "starting mix:";
 	  counter_ = 0;
 	  ticktime_ = new_ticktime;
 	}else{
