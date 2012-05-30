@@ -16,7 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <cmath>
-#include <queue>
+#include <string>
 #include <vector>
 #include <glog/logging.h>
 #include <pficommon/data/serialization.h>
@@ -100,12 +100,25 @@ lof::lof(const std::map<std::string, std::string>& config)
 lof::~lof() {
 }
 
-void lof::calc_anomaly_score(const sfv_t& query, std::pair<std::string, float>& score, size_t neighbor_num) const {
+void lof::calc_anomaly_score(const std::string& id, std::pair<std::string, float>& score, const size_t neighbor_num) {
+  std::pair<std::string, float> lrd_value_self;
+  lrd_value_self.first = id;
+  lrd_value_self.second = 0;
+  lof_index_.get_lrd(lrd_value_self);
+
+  lof::calc_anomaly_score(lrd_value_self, score, neighbor_num);
+}
+
+void lof::calc_anomaly_score(const sfv_t& query, std::pair<std::string, float>& score, const size_t neighbor_num) {
   std::pair<std::string, float> lrd_value_self;
   lof_index_.calc_lrd(query, lrd_value_self, neighbor_num);
 
+  lof::calc_anomaly_score(lrd_value_self, score, neighbor_num);
+}
+
+void lof::calc_anomaly_score(const std::pair<std::string, float>& lrd_value_self, std::pair<std::string, float>& score, const size_t neighbor_num) {
   std::map<std::string, float> neighbor_lrd_values;
-  lof_index_.similar_row_lrds(query, neighbor_lrd_values, neighbor_num);
+  lof_index_.similar_row_lrds(lrd_value_self.first, neighbor_lrd_values, neighbor_num);
   
   float average_neighbor_lrd = 0;
   for (std::map<std::string, float>::const_iterator it = neighbor_lrd_values.begin(); it != neighbor_lrd_values.end(); ++it) {
@@ -116,27 +129,33 @@ void lof::calc_anomaly_score(const sfv_t& query, std::pair<std::string, float>& 
   score.second = average_neighbor_lrd / lrd_value_self.second;
 }
 
-
 void lof::clear() {
-  orig_.clear();
   lof_index_.clear();
 }
 
 void lof::clear_row(const string& id) {
-  orig_.remove_row(id);
   lof_index_.remove_row(id);
 }
 
-void lof::update_row(const string& id, const sfv_diff_t& diff) {
-  orig_.set_row(id, diff);
-  sfv_t row;
-  orig_.get_row(id, row);
-
-  //hash value should be computed in lof_index_
+  void lof::update_row(std::string& id, const sfv_diff_t& diff) {
+  // hash value should be computed in lof_index_
   // const vector<float> hash = lsh_function(row, lof_index_.all_lsh_num(), bin_width_);
-  const float norm = calc_norm(row);
-  //lof_index_.set_row(id, hash, norm);
-  lof_index_.set_row(id, norm);
+  // const float norm = calc_norm(row);
+  // lof_index_.set_row(id, hash, norm);
+  lof_index_.update_row(id, diff);
+
+  std::vector<std::pair<std::string, float> > distance_values;
+  lof_index_.similar_row(id, distance_values, (size_t) neighbor_num_ * reverse_nn_coefficient_);
+  
+  for(std::vector<std::pair<std::string, float> >::const_iterator it = distance_values.begin(); it != distance_values.end(); ++it) {
+    std::pair<std::string, float> kdist_value;
+    kdist_value.first = it->first;
+    lof_index_.get_kdist(kdist_value);
+    kdist_value.second = std::max(kdist_value.second, it->second);
+    lof_index_.set_kdist(kdist_value);
+  }
+
+  // TODO: Implement Update
 }
 
 void lof::get_all_row_ids(vector<string>& ids) const {
