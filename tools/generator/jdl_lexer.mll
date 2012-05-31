@@ -60,11 +60,8 @@ rule token = parse
   | decorator as d { DECORATOR(d) }
   | digit as s { print s; INT( int_of_string s ) }
 
-(*  | include_sth as i { print i; INCLUDE(i) }
-  | decorator [' ']* '\n' as d {
-    print ("decorator-> "^d);
-    DECORATOR( String.sub d 0 ((String.length d) - 1) )
-  } *)
+(*  | include_sth as i { print i; INCLUDE(i) } *)
+
   | comment     { print "comment"; token lexbuf }
   | '\n'        { Lexing.new_line lexbuf; token lexbuf }
   | eof		{ print "eof."; EOF }

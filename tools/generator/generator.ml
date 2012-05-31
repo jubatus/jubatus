@@ -210,8 +210,8 @@ let generate_impl s output strees =
 
 let to_tmpl_strings = function
   | Service(_, methods) ->
-    let to_tmpl_string m =
-      let Method(rettype, name, argv, decorators) = m in
+
+    let to_tmpl_string (Method(rettype, name, argv, decorators)) =
       let routing,rwtype,_ = Validator.make_decoration decorators in
       let rettype = Util.decl_type2string rettype in
       let sorted_argv = List.sort
@@ -263,8 +263,8 @@ let generate_server_tmpl_header s output strees =
 
 let to_impl_strings classname = function
   | Service(_, methods) ->
-    let to_impl_string m =
-      let Method(rettype, name, argv, decorators) = m in
+    let to_impl_string (Method(rettype, name, argv, decorators)) =
+
       let routing,rwtype,_ = Validator.make_decoration decorators in
       let rettype = Util.decl_type2string rettype in
       let sorted_argv = List.sort

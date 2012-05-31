@@ -42,35 +42,10 @@ exception Method_not_found of string
 let rec make_decoration dec =
   match dec with
     | [(Routing(rt)) ; (Reqtype(rq)) ; (Aggtype(ag)) ] -> (rt, rq, ag)
-(*    | (Routing(rt))::tl ->
-      print_endline "reouting!" ; make_decoration tl;*)
-    | hd::tl ->
-      print_endline (Stree.decorator_to_string hd); make_decoration tl;
+(*  | hd::tl ->
+      print_endline (Stree.decorator_to_string hd); make_decoration tl; *)
     | _ -> raise Bad_decorators;;
-(*
-  let get_routing = function
-    | Routing(r) -> r
-    | _ ->
-      raise (Wrong_routing ("unknown routing method on "^ name))
-  in
-  let routing = get_routing (List.nth dec 0) in
 
-  let get_reqtype = function
-    | Reqtype(r) -> r;
-    | _ ->
-      raise ( Wrong_method ("unknown method on "^ name))
-  in
-  let reqtype = get_reqtype (List.nth dec 1) in
-
-  let get_aggregator = function
-    | Aggtype(r) -> r;
-    | _ ->
-      raise (Wrong_method ("unknown method on "^ name))
-  in
-
-  let aggregator = get_aggregator (List.nth dec 2) in
-  (routing, reqtype, aggregator);;    
-*)
 exception Too_much_argv of string
 
 (* check they have valid decorators *)
@@ -78,8 +53,7 @@ let check_method m =
   let Method(rettype, name, argv, decorators) = m in
 
   (* To expand this, 
-     use variadic template or add functions
-     in src/common/mprpc/rpc_client.hpp *)
+     use variadic template or add functions in src/common/mprpc/rpc_client.hpp *)
   if List.length argv > 4 then raise (Too_much_argv name);
 
   (* first argument of every method must be string *)
@@ -127,6 +101,5 @@ let check strees =
     | Message(n, fields)      -> check_msg fields;
     | Exception(n, fields, s) -> check_ex fields;
     | Service(_, methods)     -> check_service methods
-(*    | _ -> () *)
   in
   List.iter do_check strees;;

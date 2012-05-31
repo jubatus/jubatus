@@ -34,8 +34,7 @@ type routing_type = Random | Cht of int | Broadcast | Internal
 type reqtype = Update | Analysis
 
 (* known_aggregators =
-   ["#@all_and"; "#@all_or"; "#@concat"; "#@merge"; "#@ignore";"#@pass"] in
-  *)
+   ["#@all_and"; "#@all_or"; "#@concat"; "#@merge"; "#@ignore";"#@pass"] in  *)
 type aggtype = All_and | All_or | Concat | Merge | Ignore | Pass
 
 type decorator_type = Routing of routing_type
@@ -43,7 +42,6 @@ type decorator_type = Routing of routing_type
 		      | Aggtype of aggtype
 
 type method_type = Method of decl_type * string * ( field_type list) * (decorator_type list)
-(*[`Method of decl_type * string * (field_type list) * (string list)] *)
 
 type stree = Typedef of string * decl_type
 	     | Enum of string * (int * string) list
@@ -80,7 +78,7 @@ let make_decorator = function
   | "#@all_or"   -> Aggtype(All_or);
   | "#@concat"    -> Aggtype(Concat);
   | "#@merge"    -> Aggtype(Merge);
-  | "#@Ignore"    -> Aggtype(Ignore);
+  | "#@ignore"    -> Aggtype(Ignore);
   | "#@pass"      -> Aggtype(Pass);
   | other -> raise (Unknown_type other);;
 
