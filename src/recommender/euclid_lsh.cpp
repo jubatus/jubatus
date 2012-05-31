@@ -23,6 +23,7 @@
 #include <pficommon/lang/cast.h>
 #include <pficommon/math/random.h>
 #include "euclid_lsh.hpp"
+#include "../common/config_util.hpp"
 #include "../common/hash.hpp"
 #include "../storage/lsh_util.hpp"
 #include "../storage/lsh_vector.hpp"
@@ -56,15 +57,6 @@ float calc_norm(const sfv_t& sfv) {
   return sqrt(sqnorm);
 }
 
-template<typename T>
-T get_param(const map<string, string>& config, const string& name, T default_value) {
-  const map<string, string>::const_iterator it = config.find(name);
-  if (it == config.end()) {
-    return default_value;
-  }
-  return pfi::lang::lexical_cast<T>(it->second);
-}
-
 vector<float> lsh_function(const sfv_t& query, size_t dimension, float bin_width) {
   vector<float> hash(dimension);
   for (size_t i = 0; i < query.size(); ++i) {
@@ -94,11 +86,6 @@ euclid_lsh::euclid_lsh(const std::map<std::string, std::string>& config)
                  get_param(config, "seed", DEFAULT_SEED)),
       bin_width_(get_param(config, "bin_width", DEFAULT_BIN_WIDTH)),
       num_probe_(get_param(config, "probe_num", DEFAULT_NUM_PROBE)) {
-  const uint64_t lsh_num = get_param(config, "lsh_num", DEFAULT_LSH_NUM);
-  LOG(INFO) << "lsh_num:   " << lsh_num;
-  LOG(INFO) << "table_num: " << lsh_index_.table_num();
-  LOG(INFO) << "probe_num: " << num_probe_;
-  LOG(INFO) << "bin_width: " << bin_width_;
 }
 
 euclid_lsh::~euclid_lsh() {
