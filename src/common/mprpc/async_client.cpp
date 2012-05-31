@@ -29,7 +29,6 @@
 #include <errno.h>
 
 using pfi::lang::shared_ptr;
-using pfi::network::mprpc::socket;
 using pfi::system::time::clock_time;
 using pfi::system::time::get_clock_time;
 
