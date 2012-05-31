@@ -29,7 +29,7 @@ public:
   explicit lof(const std::map<std::string, std::string>& config);
   ~lof();
 
-  virtual float calc_anomaly_score(const sfv_t& query, const size_t neighbor_num); //return anomaly score of query
+  virtual float calc_anomaly_score(const sfv_t& query); //return anomaly score of query
 
   virtual void clear() = 0;
   virtual void clear_row(const std::string& id) = 0;
@@ -51,8 +51,6 @@ private:
   bool load_impl(std::istream&);
 
   storage::lof_storage lof_index_;
-  const uint32_t neighbor_num_;
-  const float reverse_nn_coefficient_;
 };
 
 } // namespace anomaly

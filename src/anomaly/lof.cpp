@@ -36,74 +36,27 @@ using pfi::math::random::mtrand;
 namespace jubatus {
 namespace anomaly {
 
-namespace {
-
-/*
-const uint32_t DEFAULT_LSH_NUM = 64;  // should be in config
-const uint32_t DEFAULT_TABLE_NUM = 4;  // should be in config
-const float DEFAULT_BIN_WIDTH = 100;  // should be in config
-const uint32_t DEFAULT_NUM_PROBE = 64;  // should be in config
-const uint32_t DEFAULT_SEED = 1091;  // should be in config
-
-const map<string, string> DEFAULT_NN_CONFIG = {
-  {"nn_method", "euclid_lsh"},
-  {"lsh_num", "64"},
-  {"table_num", "4"},
-  {"bin_width", "100"},
-  {"num_probe", "64"},
-  {"seed", "1091"}
-};
-*/
-
-const uint32_t DEFAULT_NEIGHBOR_NUM = 10;  // should be in config
-const float DEFAULT_REVERSE_NN_COEFFICIENT = 3;  // should be in config
-
-struct greater_second {
-  bool operator()(const pair<string, float>& l, const pair<string, float>& r) const {
-    return l.second > r.second;
-  }
-};
-
-float calc_norm(const sfv_t& sfv) {
-  float sqnorm = 0;
-  for (size_t i = 0; i < sfv.size(); ++i) {
-    sqnorm += sfv[i].second * sfv[i].second;
-  }
-  return sqrt(sqnorm);
-}
-
-}
-
-lof::lof()
-  : lof_index_(),
-    neighbor_num_(DEFAULT_NEIGHBOR_NUM),
-    reverse_nn_coefficient_(DEFAULT_REVERSE_NN_COEFFICIENT) {
+lof::lof() {
 }
 
 lof::lof(const map<string, string>& config)
-  : lof_index_(config),
-    neighbor_num_(get_param(config, "neighbor_num", DEFAULT_NEIGHBOR_NUM)),
-  reverse_nn_coefficient_(get_param(config, "reverse_nn_coefficient", DEFAULT_REVERSE_NN_COEFFICIENT)) {
-  const uint32_t neighbor_num = get_param(config, "neighbor_num", DEFAULT_NEIGHBOR_NUM);
-  const float reverse_nn_coefficient = get_param(config, "reverse_nn_coefficient", DEFAULT_REVERSE_NN_COEFFICIENT);
-  LOG(INFO) << "neighbor_num:" << neighbor_num;
-  LOG(INFO) << "reverse_nn_coefficient:" << reverse_nn_coefficient;
+    : lof_index_(config) {
 }
 
 lof::~lof() {
 }
 
-float lof::calc_anomaly_score(const sfv_t& query, const size_t neighbor_num) {
+float lof::calc_anomaly_score(const sfv_t& query) {
   unordered_map<string, float> neighbor_lrd;
-  const float lrd = lof_index_.collect_lrds(query, neighbor_lrd, neighbor_num);
+  const float lrd = lof_index_.collect_lrds(query, neighbor_lrd);
 
-  float average_neighbor_lrd = 0;
+  float sum_neighbor_lrd = 0;
   for (unordered_map<string, float>::const_iterator it = neighbor_lrd.begin();
        it != neighbor_lrd.end(); ++it) {
-    average_neighbor_lrd += it->second;
+    sum_neighbor_lrd += it->second;
   }
 
-  return average_neighbor_lrd / (neighbor_num * lrd);
+  return sum_neighbor_lrd / (neighbor_lrd.size() * lrd);
 }
 
 void lof::clear() {
@@ -114,18 +67,8 @@ void lof::clear_row(const string& id) {
   lof_index_.remove_row(id);
 }
 
-  void lof::update_row(string& id, const sfv_diff_t& diff) {
-  // hash value should be computed in lof_index_
+void lof::update_row(string& id, const sfv_diff_t& diff) {
   lof_index_.update_row(id, diff);
-
-  vector<pair<string, float> > distance_values;
-  lof_index_.similar_row(id, distance_values, (size_t) neighbor_num_ * reverse_nn_coefficient_);
-  
-  for(vector<pair<string, float> >::const_iterator it = distance_values.begin(); it != distance_values.end(); ++it) {
-    lof_index_.set_kdist(it->first, max(lof_index_.get_kdist(it->first), it->second));
-  }
-
-  // TODO: Implement Update
 }
 
 void lof::get_all_row_ids(vector<string>& ids) const {

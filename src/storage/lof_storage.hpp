@@ -22,7 +22,9 @@
 #include <vector>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
+#include <pficommon/lang/scoped_ptr.h>
 #include "../common/type.hpp"
+#include "../recommender/euclid_lsh.hpp"
 #include "anomaly_storage_base.hpp"
 #include "storage_type.hpp"
 
@@ -33,39 +35,30 @@ namespace storage{
 class lof_storage : public anomaly_storage_base {
 public:
   lof_storage();
-  lof_storage(const std::map<std::string, std::string>& config); // config contains parameters for the underlying nearest neighbor search
+
+  // config contains parameters for the underlying nearest neighbor search
+  explicit lof_storage(const std::map<std::string, std::string>& config);
+
   virtual ~lof_storage();
 
   // For Analyze
-  virtual void calc_lrd(const sfv_t& query, std::pair<std::string, float>& lrd_value, size_t neighbor_num); // calculate lrd value for an unseen instance coming in Analyze
-
-  virtual void similar_row_kdists(const std::string& row, std::map<std::string, float>& neighbor_lrd_values, size_t neighbor_num); // call similar_row and get_kdist iteratively for collectin kdist values of neighbors
-  virtual void similar_row_lrds(const std::string& row, std::map<std::string, float>& neighbor_lrd_values, size_t neighbor_num); // call similar_row and get_lrd iteratively for collecting lrd values of neighbors
+  // calculate lrd of query and lrd values of its neighbors
+  float collect_lrds(const sfv_t& query,
+                     pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
   
   // For Update
-  virtual void set_row(std::string& row, const sfv_t& query); // can be merged with update_row?
-  // virtual void decode_row(const std::string& row, sfv_t& corresponding_vector); // no need?
-  virtual void remove_row(const std::string& row);
-  virtual void clear();
-  virtual void get_all_row_ids(std::vector<std::string>& ids) const;
+  void remove_row(const std::string& row);
+  void clear();
+  void get_all_row_ids(std::vector<std::string>& ids) const;
+  void update_row(const std::string& row, const sfv_t& diff);
 
-  virtual void update_row(std::string& row, const sfv_t& diff);
-  virtual void similar_row(const std::string& row, std::vector<std::pair<std::string, float> >& ids, size_t neighbor_num) const; 
+  void update_all();  // Update kdists and lrds
 
-  virtual std::string name() const;
+  std::string name() const;
 
   // getter & setter & update for kdist and lrd values
-  virtual void get_kdist(std::pair<std::string, float>& kdist_value) const;
-  virtual void get_lrd(std::pair<std::string, float>& lrd_value) const;
-
-  virtual void set_kdist(const std::pair<std::string, float>& kdist_value);
-  virtual void set_lrd(const std::pair<std::string, float>& lrd_value);
-
-  virtual void update_all_kdist();
-  virtual void update_all_lrd();
-
-  virtual void update_lrd(const std::string& row);
-  virtual void update_kdist(const std::string& row);
+  float get_kdist(const std::string& row) const;
+  float get_lrd(const std::string& row) const;
 
   bool save(std::ostream& os);
   bool load(std::istream& is);
@@ -75,17 +68,66 @@ public:
   virtual void mix(const std::string& lhs, std::string& rhs) const;
 
 private:
-  uint32_t neighbor_num_; // k of k-nn (no need?)
-  float reverse_nn_coefficient_; // c of ck-nn as an approx. of k-reverse-nn (no need?)
-  // storage::lof_table_t lof_table_ ; // table for storing k-dist and lrd values
+  struct lof_entry {
+    float kdist;
+    float lrd;
+
+    template<typename Ar>
+    void serialize(Ar& ar) {
+      ar & MEMBER(kdist) & MEMBER(lrd);
+    }
+  };
+
+  typedef pfi::data::unordered_map<std::string, lof_entry> lof_table_t;
 
   friend class pfi::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
-    
+    ar & MEMBER(lof_table_)
+        & MEMBER(lof_table_diff_);
+
+    // pficommon lacks serialization of unordered_set
+    if (ar.is_read) {
+      update_queue_.clear();
+      uint64_t n = 0;
+      ar & n;
+      std::string e;
+      while (n-- > 0) {
+        ar & e;
+        update_queue_.insert(e);
+      }
+    } else {
+      uint64_t n = update_queue_.size();
+      ar & n;
+      for (pfi::data::unordered_set<std::string>::iterator it = update_queue_.begin();
+           it != update_queue_.end(); ++it) {
+        ar & const_cast<std::string&>(*it);
+      }
+    }
+
+    ar & MEMBER(neighbor_num_)
+        & MEMBER(reverse_nn_num_)
+        & MEMBER(nn_engine_);
   }
 
-  // add anything you want
+  void update_all_kdist();
+  void update_all_lrd();
+
+  void update_kdist(const std::string& row);
+  void update_lrd(const std::string& row);
+
+  void push_neighbors_to_update_queue(const std::string& row);
+  void push_neighbors_to_update_queue(const sfv_t& query);
+
+  lof_table_t lof_table_ ; // table for storing k-dist and lrd values
+  lof_table_t lof_table_diff_;
+
+  pfi::data::unordered_set<std::string> update_queue_;
+
+  uint32_t neighbor_num_; // k of k-nn
+  uint32_t reverse_nn_num_;  // ck of ck-nn as an approx. of k-reverse-nn
+
+  recommender::euclid_lsh nn_engine_;
 };
 
 }

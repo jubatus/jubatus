@@ -20,6 +20,8 @@ def build(bld):
   cppfiles = ['storage_factory.cpp', 'storage_base.cpp', 'local_storage.cpp',
               'local_storage_mixture.cpp',
 	      'sparse_matrix_storage.cpp', 'inverted_index_storage.cpp', 'bit_vector.cpp', 'bit_index_storage.cpp',
+              'lof_storage.cpp',
+              '../recommender/euclid_lsh.cpp', '../recommender/recommender_base.cpp',  # too awful
               'lsh_vector.cpp',
               'lsh_util.cpp',
               'lsh_index_storage.cpp']
