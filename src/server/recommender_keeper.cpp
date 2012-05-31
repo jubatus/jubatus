@@ -8,14 +8,14 @@ int main(int args, char** argv){
   keeper k(keeper_argv(args,argv));
   k.register_broadcast<bool, config_data >("set_config", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_random<config_data >("get_config"); //pass analysis
-  k.register_cht<bool >("clear_row", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
-  k.register_cht<bool, datum >("update_row", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+  k.register_cht<2, bool >("clear_row", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+  k.register_cht<2, bool, datum >("update_row", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_broadcast<bool >("clear", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
-  k.register_cht<datum >("complete_row_from_id", pfi::lang::function<datum(datum,datum)>(&pass<datum >)); //analysis
+  k.register_cht<2, datum >("complete_row_from_id", pfi::lang::function<datum(datum,datum)>(&pass<datum >)); //analysis
   k.register_random<datum, datum >("complete_row_from_data"); //pass analysis
-  k.register_cht<similar_result, unsigned int >("similar_row_from_id", pfi::lang::function<similar_result(similar_result,similar_result)>(&pass<similar_result >)); //analysis
+  k.register_cht<2, similar_result, unsigned int >("similar_row_from_id", pfi::lang::function<similar_result(similar_result,similar_result)>(&pass<similar_result >)); //analysis
   k.register_random<similar_result, datum, unsigned int >("similar_row_from_data"); //pass analysis
-  k.register_cht<datum >("decode_row", pfi::lang::function<datum(datum,datum)>(&pass<datum >)); //analysis
+  k.register_cht<2, datum >("decode_row", pfi::lang::function<datum(datum,datum)>(&pass<datum >)); //analysis
   k.register_broadcast<std::vector<std::string > >("get_all_rows", pfi::lang::function<std::vector<std::string >(std::vector<std::string >,std::vector<std::string >)>(&concat<std::string >)); //analysis
   k.register_random<float, datum, datum >("similarity"); //pass analysis
   k.register_random<float, datum >("l2norm"); //pass analysis

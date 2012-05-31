@@ -16,19 +16,19 @@ public:
   std::string create_node(std::string name) //update random
   { JWLOCK__(p_); return p_->create_node(); }
 
-  int remove_node(std::string name, std::string nid) //update cht
+  int remove_node(std::string name, std::string nid) //update cht(1)
   { JWLOCK__(p_); return p_->remove_node(nid); }
 
-  int update_node(std::string name, std::string nid, property p) //update cht
+  int update_node(std::string name, std::string nid, property p) //update cht(2)
   { JWLOCK__(p_); return p_->update_node(nid, p); }
 
-  int create_edge(std::string name, std::string nid, edge_info ei) //update cht
+  int create_edge(std::string name, std::string nid, edge_info ei) //update cht(2)
   { JWLOCK__(p_); return p_->create_edge(nid, ei); }
 
-  int update_edge(std::string name, std::string nid, edge_id_t eid, edge_info ei) //update cht
+  int update_edge(std::string name, std::string nid, edge_id_t eid, edge_info ei) //update cht(2)
   { JWLOCK__(p_); return p_->update_edge(nid, eid, ei); }
 
-  int remove_edge(std::string name, std::string nid, edge_id_t e) //update cht
+  int remove_edge(std::string name, std::string nid, edge_id_t e) //update cht(2)
   { JWLOCK__(p_); return p_->remove_edge(nid, e); }
 
   double centrality(std::string name, std::string nid, centrality_type ct, preset_query q) //analysis random
@@ -55,10 +55,10 @@ public:
   int clear(std::string name) //update broadcast
   { JWLOCK__(p_); return p_->clear(); }
 
-  node_info get_node(std::string name, std::string nid) //analysis cht
+  node_info get_node(std::string name, std::string nid) //analysis cht(2)
   { JRLOCK__(p_); return p_->get_node(nid); }
 
-  edge_info get_edge(std::string name, std::string nid, edge_id_t e) //analysis cht
+  edge_info get_edge(std::string name, std::string nid, edge_id_t e) //analysis cht(2)
   { JRLOCK__(p_); return p_->get_edge(nid, e); }
 
   bool save(std::string name, std::string arg1) //update broadcast
@@ -70,10 +70,10 @@ public:
   std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
   { JRLOCK__(p_); return p_->get_status(); }
 
-  int create_global_node(std::string name, std::string nid) //update internal
+  int create_global_node(std::string name, std::string nid) //update 
   { JWLOCK__(p_); return p_->create_global_node(nid); }
 
-  int remove_global_node(std::string name, std::string nid) //update internal
+  int remove_global_node(std::string name, std::string nid) //update 
   { JWLOCK__(p_); return p_->remove_global_node(nid); }
   int run(){ return p_->start(*this); };
   pfi::lang::shared_ptr<graph_serv> get_p(){ return p_; };

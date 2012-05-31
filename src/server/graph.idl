@@ -51,11 +51,10 @@ message shortest_path_req {
 
 service graph {
 
-# do global; returns new nid
-  #@random #@update #@random
+  #@random #@update #@pass
   string create_node(0: string name) # //@cht
-  # do global
-  #@cht #@update #@random
+
+  #@cht(1) #@update #@pass
   int remove_node(0: string name, 1: string nid) # //@cht
 
   #@cht #@update #@all_and
@@ -92,10 +91,10 @@ service graph {
   #@broadcast #@update #@all_and
   int clear(0: string name) # //@broadcast
 
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   node_info get_node(0: string name, 1: string nid) # //@cht
 
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   edge_info get_edge(0: string name, 1: string nid, 2: edge_id_t e) # //@cht
 
   #@broadcast #@update #@all_and

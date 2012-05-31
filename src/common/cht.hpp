@@ -45,14 +45,14 @@ namespace common{
     void register_node(const std::string&, int);
     
     template <typename T>
-    bool find(const T& t, std::vector<std::pair<std::string,int> > & ret){
+    bool find(const T& t, std::vector<std::pair<std::string,int> > & ret, size_t s){
       std::string k = pfi::lang::lexical_cast<std::string>(t);
-      return find(k, ret);
+      return find(k, ret, s);
     };
 
     // find(hash)    :: key -> [node] where  hash(node0) <= hash(key) < hash(node1) < hash(node2) < ...
-    bool find(const std::string& host, int port, std::vector<std::pair<std::string,int> >&);
-    bool find(const std::string&, std::vector<std::pair<std::string,int> >&);
+    bool find(const std::string& host, int port, std::vector<std::pair<std::string,int> >&, size_t);
+    bool find(const std::string&, std::vector<std::pair<std::string,int> >&, size_t);
 
     // run just once in starting up the process: creates <name>/cht directory.
     static void setup_cht_dir(lock_service&, const std::string&);

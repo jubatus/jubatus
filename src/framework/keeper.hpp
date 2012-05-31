@@ -86,22 +86,22 @@ class keeper : public pfi::network::mprpc::rpc_server {
   }
 
 
-  template <typename R>
+  template <int N, typename R>
   void register_cht(std::string method_name, pfi::lang::function<R(R,R)> agg) {
     pfi::lang::function<R(std::string, std::string)> f =
-      pfi::lang::bind(&keeper::template cht_proxy<R>, this, method_name, pfi::lang::_1, pfi::lang::_2, agg);
+      pfi::lang::bind(&keeper::template cht_proxy<N,R>, this, method_name, pfi::lang::_1, pfi::lang::_2, agg);
     add(method_name, f);
   }
-  template <typename R, typename A0>
+  template <int N, typename R, typename A0>
   void register_cht(std::string method_name, pfi::lang::function<R(R,R)> agg) {
     pfi::lang::function<R(std::string, std::string, A0)> f =
-      pfi::lang::bind(&keeper::template cht_proxy<R,A0>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3, agg);
+      pfi::lang::bind(&keeper::template cht_proxy<N,R,A0>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3, agg);
     add(method_name, f);
   }
-  template <typename R, typename A0, typename A1>
+  template <int N, typename R, typename A0, typename A1>
   void register_cht(std::string method_name, pfi::lang::function<R(R,R)> agg) {
     pfi::lang::function<R(std::string, std::string, A0, A1)> f =
-      pfi::lang::bind(&keeper::template cht_proxy<R, A0, A1>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3, pfi::lang::_4, agg);
+      pfi::lang::bind(&keeper::template cht_proxy<N,R, A0, A1>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3, pfi::lang::_4, agg);
     add(method_name, f);
   }
   
@@ -216,14 +216,14 @@ class keeper : public pfi::network::mprpc::rpc_server {
   }
 
 
-  template <typename R>
+  template <int N, typename R>
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& id,
               pfi::lang::function<R(R,R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
     {
       pfi::concurrent::scoped_lock lk(mutex_);
       jubatus::common::cht ht(zk_, name);
-      ht.find(id, list);
+      ht.find(id, list, N);
     }
     if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 
@@ -232,18 +232,18 @@ class keeper : public pfi::network::mprpc::rpc_server {
       c.call_async(method_name, name, id);
       return c.join_all<R>(agg);
     }catch(const std::exception& e){
-      LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
+      LOG(ERROR) << N << " " << e.what(); // << " from " << c.first << ":" << c.second;
       throw e;
     }
   }
-  template <typename R, typename A0>
+  template <int N, typename R, typename A0>
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& id, const A0& arg,
               pfi::lang::function<R(R,R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
     {
       pfi::concurrent::scoped_lock lk(mutex_);
       jubatus::common::cht ht(zk_, name);
-      ht.find(id, list);
+      ht.find(id, list, N);
     }
     if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 
@@ -256,14 +256,14 @@ class keeper : public pfi::network::mprpc::rpc_server {
       throw e;
     }
   }
-  template <typename R, typename A0, typename A1>
+  template <int N, typename R, typename A0, typename A1>
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& id, const A0& a0, const A1& a1,
               pfi::lang::function<R(R,R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
     {
       pfi::concurrent::scoped_lock lk(mutex_);
       jubatus::common::cht ht(zk_, name);
-      ht.find(id, list);
+      ht.find(id, list, N);
     }
     if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 

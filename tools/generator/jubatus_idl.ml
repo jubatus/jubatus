@@ -21,6 +21,7 @@ let outdir  = ref "."
 let internal = ref false
 let namespace = ref "jubatus"
 let default_template = ref false
+let debugmode = ref false
 
 let _ =
   Arg.parse [
@@ -28,6 +29,7 @@ let _ =
     ("-i", Arg.Set(internal), "internal include"); (* for jubatus internal use *)
     ("-n", Arg.Set_string(namespace), "namespace"); (* C++ namespace *)
     ("-t", Arg.Set(default_template), "output default template xxx_serv file");
+    ("-d", Arg.Set(debugmode),        "debug (verbose) mode");
   ] (fun _ -> ()) "usage:";;
 
 (* Now they are fixed, so remove the refs and make them non-writable!!! *)
@@ -35,6 +37,7 @@ let outdir  = !outdir
 let internal = !internal
 let namespace = !namespace
 let default_template = !default_template
+let debugmode = !debugmode
 
 let parse source_file = 
   let lexbuf = Lexing.from_channel (open_in source_file) in
@@ -52,10 +55,8 @@ let parse source_file =
       print_endline (Printexc.to_string exn);
       raise exn;;
 
-let debugmode = ref true
-
 let make_output filename =
-  if !debugmode then stdout
+  if debugmode then stdout
   else begin
     print_endline ("generate ==> " ^ filename);
     open_out filename
@@ -66,8 +67,6 @@ let _ =
 
   (* parse the idl *)
   let strees = parse source_file in
-
-  debugmode := false;
 
   (* validation
      - proper decorator ?

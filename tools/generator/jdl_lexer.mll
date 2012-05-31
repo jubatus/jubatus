@@ -20,16 +20,11 @@
 {
 open Jdl_parser
 
-let string_buffer = Buffer.create 80
 exception Lex_error of string
 
 let debugprint = ref false;;
 
 let print str =  if !debugprint then print_endline str;;
-
-let line = ref 1;;
-
-let inc_line() = incr line;;
 
 }
 

@@ -53,7 +53,7 @@ let parse_error s = print ("parse_error->"^s);;
 %%
 
 input: 
-     | input exp0 { print "adfsafsd"; $2::$1 }
+     | input exp0 { print "input exp0"; $2::$1 }
      | exp0  { print ">>newline"; [$1] }
 ;
    
@@ -75,7 +75,7 @@ a_type:
 	  Nullable($1)
 	}
 	| LITERAL {
-	  print ">anytype: LITERAL";
+	  print (">anytype: (LITERAL) " ^ $1);
 	  match $1 with
 	    | "void" -> Void;
 	    | "object" -> Object;
@@ -167,23 +167,23 @@ api_defs:
 ;
 api_def:
 	| decorators a_type LITERAL LRBRACE RRBRACE
-	    { Method($2, $3, [], $1) }
+	    { print $3; Method($2, $3, [], $1) }
 	| decorators a_type LITERAL LRBRACE cfields RRBRACE
-	    { Method($2, $3, $5, $1) }
+	    { print $3; Method($2, $3, $5, $1) }
 	| a_type LITERAL LRBRACE RRBRACE
-	    { Method($1, $2, [], []) }
+	    { print $2; Method($1, $2, [], []) }
 	| a_type LITERAL LRBRACE cfields RRBRACE
-	    { Method($1, $2, $4, []) }
+	    { print $2; Method($1, $2, $4, []) }
 
 decorators:
 	| DECORATOR
-	    { [ (Stree.make_decorator $1) ] }
-	| DECORATOR LBRACE INT RBRACE
-	    { [ (Stree.make_decorator_with_int $1 $3) ] }
+	    { print $1; [ (Stree.make_decorator $1) ] }
 	| DECORATOR decorators
-	    { (Stree.make_decorator $1)::$2 }
-	| DECORATOR LBRACE INT RBRACE decorators
-	    { (Stree.make_decorator_with_int $1 $3)::$5 }
+	    { print $1; (Stree.make_decorator $1)::$2 }
+	| DECORATOR LRBRACE INT RRBRACE
+	    { print $1; [ (Stree.make_decorator_with_int $1 $3) ] }
+	| DECORATOR LRBRACE INT RRBRACE decorators
+	    { print $1; (Stree.make_decorator_with_int $1 $3)::$5 }
 
 /* comma separated fields */
 cfields:

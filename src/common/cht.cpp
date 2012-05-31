@@ -51,12 +51,13 @@ namespace common{
     }
   }
   
-  bool cht::find(const std::string& host, int port, std::vector<std::pair<std::string,int> >& out){
-    return find(build_loc_str(host, port), out);
+  bool cht::find(const std::string& host, int port, std::vector<std::pair<std::string,int> >& out, size_t s){
+    return find(build_loc_str(host, port), out, s);
   }
 
+  // return at most n nodes, if theres nodes less than n, return size is also less than n.
   // find(hash)    :: lock_service -> key -> [node] where hash(node0) <= hash(key) < hash(node1)
-  bool cht::find(const std::string& key, std::vector<std::pair<std::string,int> >& out){
+  bool cht::find(const std::string& key, std::vector<std::pair<std::string,int> >& out, size_t n){
     out.clear();
     std::string path = ACTOR_BASE_PATH + "/" + name_ + "/cht";
     std::string hash = make_hash(key);
@@ -70,7 +71,7 @@ namespace common{
     std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(), hlist.end(), hash);
     size_t idx = int(node0 - hlist.begin()) % hlist.size();
     std::string loc;
-    for(int i=0; i<2; ++i){
+    for(size_t i=0; i<n; ++i){
       std::string ip;
       int port;
       if(lock_service_->read(path + "/" + hlist[idx], loc)){
