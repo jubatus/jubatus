@@ -75,28 +75,28 @@ service recommender {
   #@broadcast #@update #@all_and
   bool clear(0: string name) # //@broadcast
 
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   datum complete_row_from_id(0: string name, 1: string id) # //@cht
 
   #@random #@analysis #@pass
   datum complete_row_from_data(0: string name, 1: datum arg1) # //@random
 
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   similar_result similar_row_from_id(0: string name, 1: string id, 2: uint size) # //@cht
 
   #@random #@analysis #@pass
   similar_result similar_row_from_data(0: string name, 1: datum data, 2: uint size) # //@random
 
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   datum decode_row(0: string name, 1: string id) # //@cht
 
   #@broadcast #@analysis #@concat
   list<string>  get_all_rows(0: string name) # //@broadcast
 
-  #@random #@analysis #@random
+  #@random #@analysis #@pass
   float similarity(0: string name, 1: datum lhs, 2:datum rhs) # //@random
 
-  #@random #@analysis #@random
+  #@random #@analysis #@pass
   float l2norm(0: string name, 1: datum arg1) # //@random
 
   #@broadcast #@update #@all_and

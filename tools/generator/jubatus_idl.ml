@@ -24,7 +24,7 @@ let default_template = ref false
 
 let _ =
   Arg.parse [
-    ("-o", Arg.Set_string(outdir), "output directory");
+    ("-o", Arg.Set_string(outdir), "output directory"); (* FIXME: bug: ignored *)
     ("-i", Arg.Set(internal), "internal include"); (* for jubatus internal use *)
     ("-n", Arg.Set_string(namespace), "namespace"); (* C++ namespace *)
     ("-t", Arg.Set(default_template), "output default template xxx_serv file");
@@ -67,6 +67,8 @@ let _ =
   (* parse the idl *)
   let strees = parse source_file in
 
+  debugmode := false;
+
   (* validation
      - proper decorator ?
      - proper artument ?
@@ -80,7 +82,6 @@ let _ =
 
   let basename = Util.get_basename source_file in
   let s = new Generator.spec namespace internal source_file basename in
-  debugmode := false;
 
   Generator.generate_keeper s (make_output (basename^"_keeper.cpp")) strees;
 

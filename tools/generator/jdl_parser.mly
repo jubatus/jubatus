@@ -165,7 +165,7 @@ api_defs:
 	| api_def { [$1] }
 	| api_def api_defs { $1::$2 }
 ;
-api_def: /* TODO: implement inherit syntax */
+api_def:
 	| decorators a_type LITERAL LRBRACE RRBRACE
 	    { Method($2, $3, [], $1) }
 	| decorators a_type LITERAL LRBRACE cfields RRBRACE
@@ -176,8 +176,14 @@ api_def: /* TODO: implement inherit syntax */
 	    { Method($1, $2, $4, []) }
 
 decorators:
-	| DECORATOR { [$1] }
-	| DECORATOR decorators { $1::$2 }
+	| DECORATOR
+	    { [ (Stree.make_decorator $1) ] }
+	| DECORATOR LBRACE INT RBRACE
+	    { [ (Stree.make_decorator_with_int $1 $3) ] }
+	| DECORATOR decorators
+	    { (Stree.make_decorator $1)::$2 }
+	| DECORATOR LBRACE INT RBRACE decorators
+	    { (Stree.make_decorator_with_int $1 $3)::$5 }
 
 /* comma separated fields */
 cfields:

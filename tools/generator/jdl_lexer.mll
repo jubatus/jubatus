@@ -45,7 +45,7 @@ rule token = parse
   | "message" { print "message>"; MESSAGE }
   | "type" { print "typedef>"; TYPEDEF }
   | "enum" { print "enum>"   ; ENUM }
-  |  "service" { print "service>"; SERVICE }
+  | "service" { print "service>"; SERVICE }
   | literal as s { print ("literal->"^s); LITERAL(s) }
   | ','       { COMMA }
   | '<'       { LBRACE }

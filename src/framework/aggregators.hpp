@@ -49,6 +49,11 @@ T random(T lhs, T rhs){
 }
 
 template <typename T>
+T pass(T lhs, T rhs){
+  return lhs; //TODO:
+}
+
+template <typename T>
 T add(T lhs, T rhs){
   return lhs+rhs;
 }
