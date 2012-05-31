@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <map>
+#include <pficommon/data/serialization.h>
 #include "recommender_base.hpp"
 #include "../storage/lsh_index_storage.hpp"
 
@@ -39,16 +40,22 @@ class euclid_lsh : public recommender_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const;
 
   virtual std::string type() const;
-  virtual storage::recommender_storage_base* get_storage();
-  virtual const storage::recommender_storage_base* get_const_storage() const;
+  virtual storage::lsh_index_storage* get_storage();
+  virtual const storage::lsh_index_storage* get_const_storage() const;
 
  private:
+  friend class pfi::data::serialization::access;
+  template<typename Ar>
+  void serialize(Ar& ar) {
+    ar & MEMBER(lsh_index_) & MEMBER(bin_width_) & MEMBER(num_probe_);
+  }
+
   virtual bool save_impl(std::ostream& os);
   virtual bool load_impl(std::istream& is);
 
   storage::lsh_index_storage lsh_index_;
-  const float bin_width_;
-  const uint32_t num_probe_;
+  float bin_width_;
+  uint32_t num_probe_;
 };
 
 }
