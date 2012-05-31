@@ -162,11 +162,15 @@ void lsh_index_storage::get_all_row_ids(vector<string>& ids) const {
 
   for (lsh_master_table_t::const_iterator it = master_table_.begin();
        it != master_table_.end(); ++it) {
-    id_set.insert(it->first);
+    if (!it->second.lsh_hash.empty()) {
+      id_set.insert(it->first);
+    }
   }
   for (lsh_master_table_t::const_iterator it = master_table_diff_.begin();
        it != master_table_diff_.end(); ++it) {
-    id_set.insert(it->first);
+    if (!it->second.lsh_hash.empty()) {
+      id_set.insert(it->first);
+    }
   }
 
   vector<string> ret(id_set.size());
