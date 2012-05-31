@@ -53,7 +53,7 @@ TEST_F(recommender_test, small) {
   jubatus::client::recommender c("localhost", PORT, 10);
   
   jubatus::config_data conf;
-  conf.method = "lsh";
+  conf.config["name"] = "lsh";
   jubatus::num_rule r = {"*", "num"};
   conf.converter.num_rules.push_back(r);
   c.set_config(NAME, conf);
