@@ -30,6 +30,7 @@
 
 using namespace std;
 using namespace jubatus::storage;
+using pfi::data::unordered_map;
 using pfi::math::random::mtrand;
 
 namespace jubatus {
@@ -92,33 +93,17 @@ lof::lof(const map<string, string>& config)
 lof::~lof() {
 }
 
-float lof::calc_anomaly_score(const string& id, const size_t neighbor_num) {
-  pair<string, float> lrd_value_self;
-  lrd_value_self.first = id;
-  lrd_value_self.second = lof_index_.get_lrd(id);
-
-  return lof::calc_anomaly_score(lrd_value_self.first, lrd_value_self.second, neighbor_num);
-}
-
 float lof::calc_anomaly_score(const sfv_t& query, const size_t neighbor_num) {
-  pair<string, float> lrd_value_self;
-  lof_index_.calc_lrd(query, lrd_value_self, neighbor_num);
+  unordered_map<string, float> neighbor_lrd;
+  const float lrd = lof_index_.collect_lrds(query, neighbor_lrd, neighbor_num);
 
-  return lof::calc_anomaly_score(lrd_value_self.first, lrd_value_self.second, neighbor_num);
-}
-
-float lof::calc_anomaly_score(const string& row,
-                              const float lrd,
-                              const size_t neighbor_num) {
-  map<string, float> neighbor_lrd_values;
-  lof_index_.similar_row_lrds(row, neighbor_lrd_values, neighbor_num);
-  
   float average_neighbor_lrd = 0;
-  for (map<string, float>::const_iterator it = neighbor_lrd_values.begin(); it != neighbor_lrd_values.end(); ++it) {
-    average_neighbor_lrd += it->second / neighbor_num;
+  for (unordered_map<string, float>::const_iterator it = neighbor_lrd.begin();
+       it != neighbor_lrd.end(); ++it) {
+    average_neighbor_lrd += it->second;
   }
 
-  return average_neighbor_lrd / lrd;
+  return average_neighbor_lrd / (neighbor_num * lrd);
 }
 
 void lof::clear() {
