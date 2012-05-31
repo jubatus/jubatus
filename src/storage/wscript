@@ -41,6 +41,7 @@ def build(bld):
       'sparse_matrix_storage_test.cpp',
       'fixed_size_heap_test.cpp',
       'inverted_index_storage_test.cpp',
+      'lof_storage_test.cpp',
       'lsh_vector_test.cpp',
       'lsh_util_test.cpp',
       'lsh_index_storage_test.cpp',
