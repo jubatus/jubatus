@@ -87,7 +87,7 @@ lof::lof()
     reverse_nn_coefficient_(DEFAULT_REVERSE_NN_COEFFICIENT) {
 }
 
-lof::lof(const std::map<std::string, std::string>& config)
+lof::lof(const map<string, string>& config)
   : lof_index_(config),
     neighbor_num_(get_param(config, "neighbor_num", DEFAULT_NEIGHBOR_NUM)),
   reverse_nn_coefficient_(get_param(config, "reverse_nn_coefficient", DEFAULT_REVERSE_NN_COEFFICIENT)) {
@@ -100,33 +100,33 @@ lof::lof(const std::map<std::string, std::string>& config)
 lof::~lof() {
 }
 
-void lof::calc_anomaly_score(const std::string& id, std::pair<std::string, float>& score, const size_t neighbor_num) {
-  std::pair<std::string, float> lrd_value_self;
+float lof::calc_anomaly_score(const string& id, const size_t neighbor_num) {
+  pair<string, float> lrd_value_self;
   lrd_value_self.first = id;
-  lrd_value_self.second = 0;
-  lof_index_.get_lrd(lrd_value_self);
+  lrd_value_self.second = lof_index_.get_lrd(id);
 
-  lof::calc_anomaly_score(lrd_value_self, score, neighbor_num);
+  return lof::calc_anomaly_score(lrd_value_self.first, lrd_value_self.second, neighbor_num);
 }
 
-void lof::calc_anomaly_score(const sfv_t& query, std::pair<std::string, float>& score, const size_t neighbor_num) {
-  std::pair<std::string, float> lrd_value_self;
+float lof::calc_anomaly_score(const sfv_t& query, const size_t neighbor_num) {
+  pair<string, float> lrd_value_self;
   lof_index_.calc_lrd(query, lrd_value_self, neighbor_num);
 
-  lof::calc_anomaly_score(lrd_value_self, score, neighbor_num);
+  return lof::calc_anomaly_score(lrd_value_self.first, lrd_value_self.second, neighbor_num);
 }
 
-void lof::calc_anomaly_score(const std::pair<std::string, float>& lrd_value_self, std::pair<std::string, float>& score, const size_t neighbor_num) {
-  std::map<std::string, float> neighbor_lrd_values;
-  lof_index_.similar_row_lrds(lrd_value_self.first, neighbor_lrd_values, neighbor_num);
+float lof::calc_anomaly_score(const string& row,
+                              const float lrd,
+                              const size_t neighbor_num) {
+  map<string, float> neighbor_lrd_values;
+  lof_index_.similar_row_lrds(row, neighbor_lrd_values, neighbor_num);
   
   float average_neighbor_lrd = 0;
-  for (std::map<std::string, float>::const_iterator it = neighbor_lrd_values.begin(); it != neighbor_lrd_values.end(); ++it) {
+  for (map<string, float>::const_iterator it = neighbor_lrd_values.begin(); it != neighbor_lrd_values.end(); ++it) {
     average_neighbor_lrd += it->second / neighbor_num;
   }
 
-  score.first = lrd_value_self.first;
-  score.second = average_neighbor_lrd / lrd_value_self.second;
+  return average_neighbor_lrd / lrd;
 }
 
 void lof::clear() {
@@ -137,19 +137,15 @@ void lof::clear_row(const string& id) {
   lof_index_.remove_row(id);
 }
 
-  void lof::update_row(std::string& id, const sfv_diff_t& diff) {
+  void lof::update_row(string& id, const sfv_diff_t& diff) {
   // hash value should be computed in lof_index_
   lof_index_.update_row(id, diff);
 
-  std::vector<std::pair<std::string, float> > distance_values;
+  vector<pair<string, float> > distance_values;
   lof_index_.similar_row(id, distance_values, (size_t) neighbor_num_ * reverse_nn_coefficient_);
   
-  for(std::vector<std::pair<std::string, float> >::const_iterator it = distance_values.begin(); it != distance_values.end(); ++it) {
-    std::pair<std::string, float> kdist_value;
-    kdist_value.first = it->first;
-    lof_index_.get_kdist(kdist_value);
-    kdist_value.second = std::max(kdist_value.second, it->second);
-    lof_index_.set_kdist(kdist_value);
+  for(vector<pair<string, float> >::const_iterator it = distance_values.begin(); it != distance_values.end(); ++it) {
+    lof_index_.set_kdist(it->first, max(lof_index_.get_kdist(it->first), it->second));
   }
 
   // TODO: Implement Update
