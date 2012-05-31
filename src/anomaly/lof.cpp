@@ -24,6 +24,7 @@
 #include <pficommon/math/random.h>
 #include "lof.hpp"
 #include "../common/hash.hpp"
+#include "../common/config_util.hpp"
 #include "../storage/lsh_util.hpp"
 #include "../storage/lsh_vector.hpp"
 
@@ -68,15 +69,6 @@ float calc_norm(const sfv_t& sfv) {
     sqnorm += sfv[i].second * sfv[i].second;
   }
   return sqrt(sqnorm);
-}
-
-template<typename T> 
-T get_param(const map<string, string>& config, const string& name, T default_value) {
-  const map<string, string>::const_iterator it = config.find(name);
-  if (it == config.end()) {
-    return default_value;
-  }
-  return pfi::lang::lexical_cast<T>(it->second);
 }
 
 }
