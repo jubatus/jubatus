@@ -34,8 +34,8 @@ anomaly_base::anomaly_base() {
 anomaly_base::~anomaly_base() {
 }
 
-void anomaly_base::calc_anomaly_score(const sfv_t& query, std::pair<std::string, float>& score, size_t neighbor_num) const {
-  calc_anomaly_score(query, score, neighbor_num);
+float anomaly_base::calc_anomaly_score(const sfv_t& query, size_t neighbor_num) const {
+  return calc_anomaly_score(query, neighbor_num);
 }
 
   //void anomaly_base::decode_row(const std::string& id, sfv_t& ret) const{
