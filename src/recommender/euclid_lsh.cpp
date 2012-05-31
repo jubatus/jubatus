@@ -138,11 +138,11 @@ string euclid_lsh::type() const {
   return "euclid_lsh";
 }
 
-storage::recommender_storage_base* euclid_lsh::get_storage() {
+storage::lsh_index_storage* euclid_lsh::get_storage() {
   return &lsh_index_;
 }
 
-const storage::recommender_storage_base* euclid_lsh::get_const_storage() const {
+const storage::lsh_index_storage* euclid_lsh::get_const_storage() const {
   return &lsh_index_;
 }
 
