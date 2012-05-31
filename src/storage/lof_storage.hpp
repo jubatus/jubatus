@@ -110,6 +110,10 @@ private:
         & MEMBER(nn_engine_);
   }
 
+  static void deserialize_diff(const std::string& diff,
+                               lof_table_t& table,
+                               std::string& nn_diff);
+
   void update_all_kdist();
   void update_all_lrd();
 

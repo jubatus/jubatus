@@ -150,11 +150,25 @@ bool lof_storage::load(istream& is) {
 }
 
 void lof_storage::get_diff(string& diff) const {
-  diff = serialize_diff(const_cast<lof_table_t&>(lof_table_diff_));
+  ostringstream oss;
+  binary_oarchive bo(oss);
+  bo << const_cast<lof_table_t&>(lof_table_diff_);
+
+  string nn_diff;
+  nn_engine_.get_const_storage()->get_diff(nn_diff);
+  bo << nn_diff;
+
+  diff = oss.str();
 }
 
 void lof_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
-  deserialize_diff(mixed_diff, lof_table_diff_);
+  // Although the name contains "clear diff", this method actually creates
+  // a new diff, which will be mixed at the next time.
+
+  string nn_diff;
+  deserialize_diff(mixed_diff, lof_table_diff_, nn_diff);
+
+  nn_engine_.get_storage()->set_mixed_and_clear_diff(nn_diff);
 
   for (lof_table_t::const_iterator it = lof_table_diff_.begin();
        it != lof_table_diff_.end(); ++it) {
@@ -180,17 +194,34 @@ void lof_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
 
 void lof_storage::mix(const string& lhs, string& rhs) const {
   lof_table_t diff, mixed;
-  deserialize_diff(lhs, diff);
-  deserialize_diff(rhs, mixed);
+  string nn_diff, nn_mixed;
+
+  deserialize_diff(lhs, diff, nn_diff);
+  deserialize_diff(rhs, mixed, nn_mixed);
+
+  nn_engine_.get_const_storage()->mix(nn_diff, nn_mixed);
 
   for (lof_table_t::const_iterator it = diff.begin(); it != diff.end(); ++it) {
     mixed[it->first] = it->second;
   }
 
-  rhs = serialize_diff(mixed);
+  ostringstream oss;
+  binary_oarchive bo(oss);
+  bo << mixed << nn_mixed;
+
+  rhs = oss.str();
 }
 
 // private
+
+// static
+void lof_storage::deserialize_diff(const string& diff,
+                                   lof_table_t& table,
+                                   string& nn_diff) {
+  istringstream iss(diff);
+  binary_iarchive bi(iss);
+  bi >> table >> nn_diff;
+}
 
 void lof_storage::update_all_kdist() {
   for (unordered_set<string>::const_iterator it = update_queue_.begin();
