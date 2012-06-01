@@ -34,6 +34,7 @@ class lsh_index_storage : public recommender_storage_base {
 public:
   lsh_index_storage();
   lsh_index_storage(size_t lsh_num, size_t table_num, uint32_t seed);
+  lsh_index_storage(size_t table_num, const std::vector<float>& shift);
   virtual ~lsh_index_storage();
 
   // hash is a randomly-projected and scaled hash values without shifting
