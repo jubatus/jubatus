@@ -20,6 +20,8 @@
 
 #include "../graph/graph_factory.hpp"
 #include "../common/util.hpp"
+#include "../common/membership.hpp"
+
 #include "../framework/aggregators.hpp"
 
 #include <pficommon/lang/cast.h>
@@ -54,7 +56,6 @@ graph_serv::graph_serv(const framework::server_argv& a)
     g(jubatus::graph::create_graph("graph_wo_index"));
   g_.set_model(g);
   register_mixable(mixable_cast(&g_));
-
 }
 graph_serv::~graph_serv()
 {}
@@ -63,21 +64,48 @@ std::string graph_serv::create_node(){
   uint64_t nid = idgen_.generate();
   std::string nid_str = pfi::lang::lexical_cast<std::string>(nid);
   // send true create_global_node to other machines.
-  g_.get_model()->create_node(nid);
-
-  g_.get_model()->create_global_node(nid);
 
   if(not a_.is_standalone()){
-  // TODO: we need global locking
-  // send true create_node_ to other machine,
+    // TODO: we need global locking
+    {
+      common::cht ht(zk_, a_.name);
+      std::vector<std::pair<std::string, int> > nodes;
+      ht.find(nid_str, nodes, 2); //replication number of local_node
+      if(nodes.empty()){
+        throw std::runtime_error("fatal: no server found in cht: "+nid_str);
+      }
+
+      if(nodes[0].first == a_.eth && nodes[0].second == a_.port){
+        create_node_here(nid_str);
+      }else{
+        pfi::network::mprpc::rpc_client c(nodes[0].first, nodes[0].second, 5.0);
+        pfi::lang::function<int(std::string)> f = c.call<int(std::string)>("craete_node_here");
+        f(nid_str);
+      }
+      for(size_t i = 1; i < nodes.size(); ++i){
+        try{
+          if(nodes[i].first == a_.eth && nodes[i].second == a_.port){
+            create_node_here(nid_str);
+          }else{
+            pfi::network::mprpc::rpc_client c(nodes[i].first, nodes[i].second, 5.0);
+            pfi::lang::function<int(std::string)> f = c.call<int(std::string)>("craete_node_here");
+            f(nid_str);
+          }
+        }catch(const std::runtime_error& e){
+          LOG(INFO) << i << "th replica: " << nodes[i].first << ":" << nodes[i].second << " " << e.what();
+        }
+      }
+
+    }
     std::vector<std::pair<std::string, int> > members;
     get_members(members);
-    
     if(not members.empty()){
       common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
       c.call_async("create_global_node", a_.name, nid_str);
       c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
     }
+  }else{
+    create_node_here(nid_str);
   }
   //DLOG(INFO) << "new node created: " << nid_str;
   return nid_str;
@@ -86,6 +114,7 @@ std::string graph_serv::create_node(){
 
 int graph_serv::update_node(const std::string& id, const property& p)
 {
+  
   g_.get_model()->update_node(n2i(id), p);
   return 0;
 }
@@ -252,6 +281,13 @@ std::map<std::string, std::map<std::string,std::string> > graph_serv::get_status
   return ret;
 }
 
+int graph_serv::create_node_here(const std::string& nid)
+{
+  graph::node_id_t id = pfi::lang::lexical_cast<graph::node_id_t>(nid);
+  g_.get_model()->create_node(id);
+  g_.get_model()->create_global_node(id);
+  return 0;
+}
 int graph_serv::create_global_node(const std::string& nid)
 {
   g_.get_model()->create_global_node(n2i(nid));

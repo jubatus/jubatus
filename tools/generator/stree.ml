@@ -84,7 +84,8 @@ let make_decorator = function
 
 let make_decorator_with_int d i =
   match d with
-    | "#@cht" when 0 <= i && i < 2 -> Routing(Cht(i))
+    | "#@cht" when 0 <= i -> Routing(Cht(i))
+    | "#@cht" -> raise (Unknown_type "cht with negative i");
     | other -> raise (Unknown_type other);;
 
 let routing_to_string = function

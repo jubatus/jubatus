@@ -16,7 +16,7 @@ public:
   std::string create_node(std::string name) //update random
   { JWLOCK__(p_); return p_->create_node(); }
 
-  int remove_node(std::string name, std::string nid) //update cht(1)
+  int remove_node(std::string name, std::string nid) //update cht(2)
   { JWLOCK__(p_); return p_->remove_node(nid); }
 
   int update_node(std::string name, std::string nid, property p) //update cht(2)
@@ -69,6 +69,9 @@ public:
 
   std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
   { JRLOCK__(p_); return p_->get_status(); }
+
+  int create_node_here(std::string name, std::string nid) //update 
+  { JWLOCK__(p_); return p_->create_node_here(nid); }
 
   int create_global_node(std::string name, std::string nid) //update 
   { JWLOCK__(p_); return p_->create_global_node(nid); }

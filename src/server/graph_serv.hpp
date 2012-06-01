@@ -102,9 +102,10 @@ public:
 
   std::map<std::string,std::map<std::string,std::string > > get_status() const; //analysis broadcast
 
-  int create_global_node(const std::string& nid); //update internal
-
-  int remove_global_node(const std::string& nid); //update internal
+  // internal apis used between servers
+  int create_node_here(const std::string& nid);
+  int create_global_node(const std::string& nid);
+  int remove_global_node(const std::string& nid);
 
   void after_load();
 

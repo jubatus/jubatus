@@ -39,6 +39,7 @@ public:
     rpc_server::add<bool(std::string, std::string) >("save", pfi::lang::bind(&Impl::save, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<bool(std::string, std::string) >("load", pfi::lang::bind(&Impl::load, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string > >(std::string) >("get_status", pfi::lang::bind(&Impl::get_status, static_cast<Impl*>(this), pfi::lang::_1));
+    rpc_server::add<int32_t(std::string, std::string) >("create_node_here", pfi::lang::bind(&Impl::create_node_here, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, std::string) >("create_global_node", pfi::lang::bind(&Impl::create_global_node, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, std::string) >("remove_global_node", pfi::lang::bind(&Impl::remove_global_node, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
   }

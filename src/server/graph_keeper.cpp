@@ -7,7 +7,7 @@ using namespace jubatus::framework;
 int main(int args, char** argv){
   keeper k(keeper_argv(args,argv));
   k.register_random<std::string >("create_node"); //pass update
-  k.register_cht<1, int >("remove_node", pfi::lang::function<int(int,int)>(&pass<int >)); //update
+  k.register_cht<2, int >("remove_node", pfi::lang::function<int(int,int)>(&pass<int >)); //update
   k.register_cht<2, int, property >("update_node", pfi::lang::function<int(int,int)>(&all_and)); //update
   k.register_cht<2, int, edge_info >("create_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
   k.register_cht<2, int, edge_id_t, edge_info >("update_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
@@ -25,6 +25,7 @@ int main(int args, char** argv){
   k.register_broadcast<bool, std::string >("save", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_broadcast<bool, std::string >("load", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_broadcast<std::map<std::string,std::map<std::string,std::string > > >("get_status", pfi::lang::function<std::map<std::string,std::map<std::string,std::string > >(std::map<std::string,std::map<std::string,std::string > >,std::map<std::string,std::map<std::string,std::string > >)>(&merge<std::string,std::map<std::string,std::string > >)); //analysis
+
 
 
   k.run();

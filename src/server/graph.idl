@@ -54,13 +54,13 @@ service graph {
   #@random #@update #@pass
   string create_node(0: string name) # //@cht
 
-  #@cht(1) #@update #@pass
+  #@cht(2) #@update #@pass
   int remove_node(0: string name, 1: string nid) # //@cht
 
   #@cht #@update #@all_and
   int update_node(0: string name, 1: string nid, 2: property p) # //@cht
 
-  #@cht #@update #@all_and
+  #@cht(2) #@update #@all_and
   int create_edge(0: string name, 1: string nid, 2: edge_info ei) # //@cht
 
   #@cht #@update #@all_and
@@ -106,6 +106,8 @@ service graph {
   #@broadcast #@analysis #@merge
   map<string, map<string, string> >  get_status(0: string name)
 
+  #@internal #@update #@pass
+  int create_node_here(0: string name, 1: string nid)
   #@internal #@update #@pass
   int create_global_node(0: string name, 1: string nid)
   #@internal #@update #@pass
