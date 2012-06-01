@@ -166,5 +166,11 @@ namespace jubatus { namespace framework {
   }
 #endif
 
+  void ignore_sigpipe(){
+    // portable code for socket write(2) MSG_NOSIGNAL
+    if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+      throw std::runtime_error("can't ignore SIGPIPE");
+  }
+
 }
 }

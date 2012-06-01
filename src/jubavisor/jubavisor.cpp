@@ -17,6 +17,7 @@
 
 #include <pficommon/concurrent/lock.h>
 
+#include <csignal>
 #include <glog/logging.h>
 
 #include "jubavisor.hpp"
@@ -35,6 +36,10 @@ jubervisor::jubervisor(const std::string& hosts, int port, int max,
   logfile_(logfile),
   max_children_(max)
 {
+  // portable code for socket write(2) MSG_NOSIGNAL
+  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+    throw std::runtime_error("can't ignore SIGPIPE");
+
   zk_->create(JUBATUS_BASE_PATH, "");
   zk_->create(JUBAVISOR_BASE_PATH, "");
   zk_->create(ACTOR_BASE_PATH, "");

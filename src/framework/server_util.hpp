@@ -95,6 +95,8 @@ void exit_on_term2(int, siginfo_t*, void*);
 void set_exit_on_term();
 #endif
 
+void ignore_sigpipe();
+
 template <class ImplServerClass, class UserServClass>
 int run_server(int args, char** argv){
 
@@ -117,6 +119,7 @@ int run_server(int args, char** argv){
   set_exit_on_term();
 
 #endif // HAVE_ZOOKEEPER_H
+  ignore_sigpipe();
   return impl_server.run();
 };
 
