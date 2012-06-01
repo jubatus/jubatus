@@ -110,6 +110,11 @@ lsh_index_storage::lsh_index_storage(size_t lsh_num, size_t table_num, uint32_t 
   initialize_shift(seed, shift_);
 }
 
+lsh_index_storage::lsh_index_storage(size_t table_num, const vector<float>& shift)
+    : shift_(shift),
+      table_num_(table_num) {
+}
+
 lsh_index_storage::~lsh_index_storage() {
 }
 
@@ -235,7 +240,9 @@ void lsh_index_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
   for (lsh_master_table_t::const_iterator it = diff.begin(); it != diff.end(); ++it) {
     if (it->second.lsh_hash.empty()) {
       remove_model_row(it->first);
+      master_table_.erase(it->first);
     } else {
+      remove_model_row(it->first);
       set_mixed_row(it->first, it->second);
     }
   }
