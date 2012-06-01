@@ -24,7 +24,7 @@ Improvements
   - #6 partially fixed
 
 Bugfix
-  - #34, #36, #37, #31, #19, and other small bugfix
+  - #50, #5, #34, #36, #37, #31, #19, and other small bugfix
 
 Release 0.2.2 2012/4/6
 ~~~~~~~~~~~~~~~~~~~~~~
