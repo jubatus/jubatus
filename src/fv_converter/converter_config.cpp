@@ -18,6 +18,7 @@
 #include "converter_config.hpp"
 #include "datum_to_fv_converter.hpp"
 #include "splitter_factory.hpp"
+#include "key_matcher.hpp"
 #include "key_matcher_factory.hpp"
 #include "num_feature.hpp"
 #include "num_feature_impl.hpp"
