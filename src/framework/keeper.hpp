@@ -186,7 +186,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
       c.call_async(method_name, name, arg);
       std::cout << __LINE__ << " name:" << name << " method:" << method_name << std::endl;
       return c.join_all<R>(agg);
-    }catch(const std::runtime_error& e){
+    }catch(const std::exception& e){
       std::cout << __LINE__ << e.what() << std::endl;
       // LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
       throw e;

@@ -242,7 +242,7 @@ void jubatus_serv::do_mix(const std::vector<std::pair<std::string,int> >& v){
       accs = c.join_all<std::vector<std::string> >(f);
       c.call_async("put_diff", accs);
       c.join_all<int>(pfi::lang::function<int(int,int)>(&framework::add<int>));
-    }catch(const std::runtime_error & e){
+    }catch(const std::exception & e){
       LOG(WARNING) << e.what() << " : mix failed";
       return;
     }
