@@ -34,6 +34,7 @@ rpc_mclient::rpc_mclient(const std::vector<std::pair<std::string, uint16_t> >& h
   evbase_(::event_base_new())
 {
   connect_async_();
+  create_fd_event_();
 }
 
 rpc_mclient::rpc_mclient(const std::vector<std::pair<std::string, int> >& hosts,
@@ -46,6 +47,7 @@ rpc_mclient::rpc_mclient(const std::vector<std::pair<std::string, int> >& hosts,
     hosts_.push_back(hosts[i]);
   }
   connect_async_();
+  create_fd_event_();
 }
 
 rpc_mclient::~rpc_mclient(){
@@ -220,7 +222,6 @@ void rpc_mclient::send_async(const msgpack::sbuffer& buf)
   context_.rest = clients_.size();
   context_.buf = &buf;
 
-  create_fd_event_();
   register_fd_writable_();
 
   event_base_dispatch(evbase_);
