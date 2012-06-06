@@ -31,6 +31,12 @@
 using namespace std;
 
 using pfi::lang::function;
+using pfi::lang::shared_ptr;
+using pfi::concurrent::thread;
+using jubatus::common::mprpc::rpc_result;
+using jubatus::common::mprpc::rpc_error;
+using jubatus::common::mprpc::error_multi_rpc;
+using jubatus::exception::error_info_list_t;
 
 struct strw{
   string key;
@@ -72,21 +78,19 @@ static vector<string> concat_vector(const vector<string> lhs, const vector<strin
 
 MPRPC_GEN(1, test_mrpc, test_bool, test_twice, add_all, various, sum, vec);
 
-static void server_thread(unsigned u){
-  test_mrpc_server srv(3.0);
-  srv.set_test_bool(&test_bool);
-  srv.set_test_twice(&test_twice);
-  srv.set_add_all(&add_all);
-  srv.set_various(&various);
-  srv.set_sum(&sum);
-  srv.set_vec(&vec);
-  srv.serv(u, 10);
-}
+typedef shared_ptr<test_mrpc_server> server_ptr;
+typedef vector<server_ptr> server_list;
+typedef vector<shared_ptr<thread> > thread_list;
 
-static void fork_server(unsigned u){
-  pfi::concurrent::thread th(pfi::lang::bind(&server_thread, u));
-  th.start();
-  th.detach();
+static void server_thread(server_ptr srv, unsigned u)
+{
+  srv->set_test_bool(&test_bool);
+  srv->set_test_twice(&test_twice);
+  srv->set_add_all(&add_all);
+  srv->set_various(&various);
+  srv->set_sum(&sum);
+  srv->set_vec(&vec);
+  srv->serv(u, 10);
 }
 
 static const uint16_t PORT0 = 60023;
@@ -94,12 +98,88 @@ static const uint16_t PORT1 = 60024;
 static const uint16_t kPortStart = 60023;
 static const uint16_t kPortEnd = kPortStart + 10;
 
+TEST(rpc_mclient, no_client)
+{
+  vector<pair<string,uint16_t> > hosts;
+  jubatus::common::mprpc::rpc_mclient cli(hosts, 3.0);
+
+  // MUST USE with some hosts
+  ASSERT_THROW(cli.call("test", 1234, function<bool(bool,bool)>(&jubatus::framework::all_and)),
+      jubatus::common::mprpc::rpc_no_client);
+}
+
+TEST(rpc_mclient, no_result)
+{
+  vector<pair<string,uint16_t> > hosts;
+  hosts.push_back(make_pair(string("localhost"), kPortStart));
+  hosts.push_back(make_pair(string("localhost"), kPortStart + 1));
+
+  jubatus::common::mprpc::rpc_mclient cli(hosts, 3.0);
+  ASSERT_THROW(cli.call("test", 1234, function<bool(bool,bool)>(&jubatus::framework::all_and)),
+      jubatus::common::mprpc::rpc_no_result);
+}
+
+namespace {
+void timeout_server(pfi::network::mprpc::socket* server_socket)
+{
+  ::accept(server_socket->get(), NULL, NULL);
+
+  // wait socket shutdown
+  ::accept(server_socket->get(), NULL, NULL);
+}
+}
+
+TEST(rpc_mclient, error_multi_rpc)
+{
+  pfi::network::mprpc::socket server_socket;
+  server_socket.listen(kPortStart);
+  thread t(pfi::lang::bind(&timeout_server, &server_socket));
+  t.start();
+
+  vector<pair<string,uint16_t> > hosts;
+  hosts.push_back(make_pair(string("localhost"), kPortStart));
+  jubatus::common::mprpc::rpc_mclient cli(hosts, 1.0);
+
+  // error_multi_rpc
+  try {
+    cli.call("test", 1234, function<bool(bool,bool)>(&jubatus::framework::all_and));
+
+  } catch (jubatus::common::mprpc::rpc_no_result& e) {
+    const error_info_list_t& list = e.error_info();
+    bool has_error_multi_rpc = false;
+    for (error_info_list_t::const_iterator it = list.begin(), end = list.end();
+        it != end; ++it) {
+      if (error_multi_rpc* multi_error = dynamic_cast<error_multi_rpc*>(it->get())) {
+        has_error_multi_rpc = true;
+        std::vector<rpc_error> error_list = multi_error->value();
+        EXPECT_EQ(1, error_list.size());
+
+        EXPECT_EQ(string("localhost"), error_list[0].host());
+        EXPECT_EQ(kPortStart, error_list[0].port());
+
+        EXPECT_THROW(error_list[0].throw_exception(), jubatus::common::mprpc::rpc_timeout_error);
+      }
+    }
+
+    EXPECT_TRUE(has_error_multi_rpc);
+  }
+
+  server_socket.close();
+}
+
+
 TEST(rpc_mclient, small)
 {
   vector<pair<string,uint16_t> > clients;
+  server_list servers;
+  thread_list threads;
 
   for (uint16_t port = kPortStart; port <= kPortEnd; port++) {
-    fork_server(port);
+    server_ptr ser = server_ptr(new test_mrpc_server(3.0));
+    servers.push_back(ser);
+    threads.push_back(shared_ptr<thread>(new thread(pfi::lang::bind(&server_thread, ser, port))));
+    threads.back()->start();
+
     clients.push_back(make_pair(string("localhost"), port));
   }
   const size_t kServerSize = clients.size();
@@ -112,20 +192,19 @@ TEST(rpc_mclient, small)
   }
   jubatus::common::mprpc::rpc_mclient cli(clients, 3.0);
   {
-    cli.call_async("test_bool", 73684);
-    EXPECT_FALSE(cli.join_all(function<bool(bool,bool)>(&jubatus::framework::all_and)));
+    rpc_result<bool> r = cli.call("test_bool", 73684, function<bool(bool,bool)>(&jubatus::framework::all_and));
+    EXPECT_FALSE(*r);
   }
   {
     int ans = 73684*2 * kServerSize;
-    cli.call_async("test_twice", 73684);
-    EXPECT_EQ(ans,
-        cli.join_all(function<int(int,int)>(&jubatus::framework::add<int>)));
+    rpc_result<int> r = cli.call("test_twice", 73684, function<int(int,int)>(&jubatus::framework::add<int>));
+
+    EXPECT_EQ(ans, *r);
   }
   {
     int ans = kServerSize*(23+21-234);
-    cli.call_async("add_all", 23,21,-234);
-    EXPECT_EQ(ans,
-        cli.join_all(function<int(int,int)>(&jubatus::framework::add<int>)));
+    rpc_result<int> r = cli.call("add_all", 23,21,-234, function<int(int,int)>(&jubatus::framework::add<int>));
+    EXPECT_EQ(ans, *r);
   }
   {
     int i = 234;
@@ -138,50 +217,129 @@ TEST(rpc_mclient, small)
     for (size_t c = 0; c < kServerSize; c++) {
       ans = concat(ans, various(i,f,d,s));
     }
-    cli.call_async("various", i,f,d,s);
-    EXPECT_EQ(ans, cli.join_all(function<string(string,string)>(&concat)));
+    rpc_result<string> r = cli.call("various", i, f, d, s, function<string(string,string)>(&concat));
+    EXPECT_EQ(ans, *r);
   }
   {
     const int payload_count = 1024 * 1024;
     vector<int> hoge(payload_count, 10);
-    cli.call_async("sum", hoge);
     int ans = 10 * payload_count * kServerSize;
-    EXPECT_EQ(ans,
-        cli.join_all(function<int(int,int)>(&jubatus::framework::add<int>)));
+    rpc_result<int> r = cli.call("sum", hoge, function<int(int,int)>(&jubatus::framework::add<int>));
+    EXPECT_EQ(ans, *r);
   }
 
   {
-    cli.call_async("vec", string("a"), 200);
     pfi::lang::function<std::vector<std::string>
       (const std::vector<std::string>, const std::vector<std::string>)> f = &concat_vector;
-    vector<string> x = cli.join_all<vector<string> > (f);
-    EXPECT_EQ(200 * kServerSize, x.size());
+
+    rpc_result<vector<string> > r = cli.call("vec", string("a"), 200, f);
+    EXPECT_EQ(200 * kServerSize, r.value->size());
   }
+
+  { // server_error: method_not_found
+    //ASSERT_THROW(cli.call("undefined_method", 1, function<int(int,int)>(&jubatus::framework::add<int>)),
+    //  jubatus::common::mprpc::rpc_no_result);
+
+    try {
+      rpc_result<int> r = cli.call("undefined_method", 1, function<int(int,int)>(&jubatus::framework::add<int>));
+
+    } catch (jubatus::common::mprpc::rpc_no_result& e) {
+      const error_info_list_t& list = e.error_info();
+      bool has_error_multi_rpc = false;
+      // FIXME: support `error_multi_rpc* multi_error = jubatus_exception::find_first<error_multi_rpc>();' like format
+      for (error_info_list_t::const_iterator it = list.begin(), end = list.end();
+          it != end; ++it) {
+        if (error_multi_rpc* multi_error = dynamic_cast<error_multi_rpc*>(it->get())) {
+          has_error_multi_rpc = true;
+          std::vector<rpc_error> error_list = multi_error->value();
+
+          for (size_t i = 0; i < error_list.size(); i++) {
+            EXPECT_EQ(string("localhost"), error_list[i].host());
+            EXPECT_EQ(kPortStart + i, error_list[i].port());
+
+            ASSERT_THROW(error_list[i].throw_exception(), jubatus::common::mprpc::rpc_method_not_found);
+            // TODO: check exception error_info has jubatus::common::error_method("undefined_method")
+            //  but I checked using jubatus_exception::diagnostic_information manually.
+          }
+        }
+      }
+      EXPECT_TRUE(has_error_multi_rpc);
+    }
+  }
+
+  { // server_error: rpc_type_error
+    ASSERT_THROW(cli.call("sum", string("test"), function<int(int,int)>(&jubatus::framework::add<int>)),
+      jubatus::common::mprpc::rpc_no_result);
+
+    try {
+      cli.call("sum", string("test"), function<int(int,int)>(&jubatus::framework::add<int>));
+    } catch (jubatus::common::mprpc::rpc_no_result& e) {
+      cout << "rpc_no_result" << e.diagnostic_information(true) << endl;
+
+      const error_info_list_t& list = e.error_info();
+      bool has_error_multi_rpc = false;
+      // FIXME: support `error_multi_rpc* multi_error = jubatus_exception::find_first<error_multi_rpc>();' like format
+      for (error_info_list_t::const_iterator it = list.begin(), end = list.end();
+          it != end; ++it) {
+        if (error_multi_rpc* multi_error = dynamic_cast<error_multi_rpc*>(it->get())) {
+          has_error_multi_rpc = true;
+          std::vector<rpc_error> error_list = multi_error->value();
+
+          for (size_t i = 0; i < error_list.size(); i++) {
+            EXPECT_EQ(string("localhost"), error_list[i].host());
+            EXPECT_EQ(kPortStart + i, error_list[i].port());
+
+            ASSERT_THROW(error_list[i].throw_exception(), jubatus::common::mprpc::rpc_type_error);
+            // TODO: check exception error_info has jubatus::common::error_method("sum")
+            //  but I checked using jubatus_exception::diagnostic_information manually.
+          }
+        }
+      }
+      EXPECT_TRUE(has_error_multi_rpc);
+    }
+  }
+
+
+  for (size_t i = 0; i < servers.size(); i++)
+    servers[i]->stop();
 }
 
 TEST(rpc_mclient, socket_disconnection)
 {
-  vector<pair<string,uint16_t> > clients;
+  const int kInvalidPort = kPortStart + 1000;
 
-  for (uint16_t port = kPortStart; port <= kPortStart + 2; port++) {
-    fork_server(port);
-    if (port == kPortStart)
-      clients.push_back(make_pair(string("localhost"), port + 1000));  // connection refused
-    else
-      clients.push_back(make_pair(string("localhost"), port));
-  }
+  server_ptr ser(new test_mrpc_server(3.0));
+  thread th(pfi::lang::bind(&server_thread, ser, kPortStart));
+  th.start();
+
+  vector<pair<string,uint16_t> > clients;
+  clients.push_back(make_pair(string("localhost"), kPortStart));
+  clients.push_back(make_pair(string("localhost"), kInvalidPort));  // connection refused
 
   usleep(500000);
   {
-    test_mrpc_client cli0("localhost", PORT0, 3.0);
-    test_mrpc_client cli1("localhost", PORT1, 3.0);
+    test_mrpc_client cli0("localhost", kPortStart, 3.0);
+    test_mrpc_client cli1("localhost", kInvalidPort, 3.0);
     EXPECT_EQ(true, cli0.call_test_bool(23));
-    EXPECT_EQ(24, cli1.call_test_twice(12));
+    EXPECT_THROW(cli1.call_test_twice(12), pfi::network::mprpc::rpc_error);
   }
 
-  jubatus::common::mprpc::rpc_mclient cli(clients, 3.0);
+  jubatus::common::mprpc::rpc_mclient cli(clients, 1.0);
   {
-    cli.call_async("test_bool", 73684);
-    EXPECT_FALSE(cli.join_all(function<bool(bool,bool)>(&jubatus::framework::all_and)));
+    rpc_result<bool> r = cli.call("test_bool", 73684, function<bool(bool,bool)>(&jubatus::framework::all_and));
+    EXPECT_FALSE(*r);
+
+    EXPECT_TRUE(r.has_error());
+    ASSERT_EQ(1, r.error.size());
+
+    rpc_error& error = r.error.front();
+    EXPECT_EQ(string("localhost"), error.host());
+    EXPECT_EQ(kInvalidPort, error.port());
+
+    EXPECT_TRUE(error.has_exception());
+    EXPECT_THROW(error.throw_exception(), jubatus::common::mprpc::rpc_io_error);
   }
+
+  ser->stop();
 }
+
