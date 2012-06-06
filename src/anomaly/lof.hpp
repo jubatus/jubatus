@@ -29,7 +29,7 @@ public:
   explicit lof(const std::map<std::string, std::string>& config);
   ~lof();
 
-  virtual float calc_anomaly_score(const sfv_t& query); //return anomaly score of query
+  virtual float calc_anomaly_score(const sfv_t& query) const; //return anomaly score of query
 
   virtual void clear();
   virtual void clear_row(const std::string& id);
@@ -43,12 +43,12 @@ public:
   void save(std::ostream&);
   void load(std::istream&);
 
-  static float calc_distance(sfv_t& q1, sfv_t& q2);
-  static float calc_l2norm(sfv_t& q1, sfv_t& q2);
+  //  static float calc_distance(sfv_t& q1, sfv_t& q2);
+  //  static float calc_l2norm(sfv_t& q1, sfv_t& q2);
 
 private:
-  bool save_impl(std::ostream&);
-  bool load_impl(std::istream&);
+  virtual bool save_impl(std::ostream& os);
+  virtual bool load_impl(std::istream& is);
 
   storage::lof_storage lof_index_;
 };

@@ -46,7 +46,7 @@ lof::lof(const map<string, string>& config)
 lof::~lof() {
 }
 
-float lof::calc_anomaly_score(const sfv_t& query) {
+float lof::calc_anomaly_score(const sfv_t& query) const {
   unordered_map<string, float> neighbor_lrd;
   const float lrd = lof_index_.collect_lrds(query, neighbor_lrd);
 
