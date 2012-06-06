@@ -1,0 +1,96 @@
+# Jubatus: Online machine learning framework for distributed environment
+# Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+type param_t = map<string, string> 
+
+message string_rule {
+  0: string key
+  1: string t
+  2: string sample_weight
+  3: string global_weight
+}
+
+message filter_rule {
+  0: string key
+  1: string t
+  2: string suffix
+}
+
+message num_rule {
+  0: string key
+  1: string t
+}
+
+message converter_config {
+  0: map<string, param_t>  string_filter_types
+  1: list<filter_rule>  string_filter_rules
+  2: map<string, param_t>  num_filter_types
+  3: list<filter_rule>  num_filter_rules
+  4: map<string, param_t>  string_types
+  5: list<string_rule>  string_rules
+  6: map<string, param_t>  num_types
+  7: list<num_rule>  num_rules
+}
+
+message config_data {
+  0: param_t config
+  1: converter_config converter
+}
+
+message datum {
+  0: list<tuple<string, string> >  sv
+  1: list<tuple<string, double> >  nv
+}
+
+service anomaly {
+
+  #@broadcast #@update #@all_and
+  bool set_config(0: string name, 1: config_data c) # //@broadcast
+
+  #@random #@analysis #@pass
+  config_data get_config(0: string name) # //@random
+
+  #@cht #@update #@all_and
+  bool clear_row(0: string name, 1: string id) # //@cht
+
+  #@random #@update #@all_and
+  tuple<string, float> add(0: string name, 1: datum d) # //@random
+
+  #@cht #@update #@all_and
+  float update(0: string name, 1: string id, 2: datum d) # //@cht
+
+  #@broadcast #@update #@all_and
+  bool clear(0: string name) # //@broadcast
+
+  #@random #@analysis #@pass
+  float calc_score(0: string name, 1: datum d) # //@random
+
+  #@cht #@analysis #@random
+  datum decode_row(0: string name, 1: string id) # //@cht
+
+  #@broadcast #@analysis #@concat
+  list<string>  get_all_rows(0: string name) # //@broadcast
+
+  #@broadcast #@update #@all_and
+  bool save(0: string name, 1: string arg1) # //@broadcast
+
+  #@broadcast #@update #@all_and
+  bool load(0: string name, 1: string arg1) # //@broadcast
+
+  #@broadcast #@analysis #@merge
+  map<string, map<string, string> >  get_status(0: string name) # //@broadcast
+}
