@@ -192,8 +192,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
-      c.call_async(method_name, name);
-      return c.join_all<R>(agg);
+      return *(c.call(method_name, name, agg));
     }catch(const std::exception& e){
       LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
       throw;
@@ -210,10 +209,9 @@ class keeper : public pfi::network::mprpc::rpc_server {
       throw std::runtime_error(method_name + ": no worker serving");
 
     try{
-      jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
-      c.call_async(method_name, name, arg);
       std::cout << __LINE__ << " name:" << name << " method:" << method_name << std::endl;
-      return c.join_all<R>(agg);
+      jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
+      return *(c.call(method_name, name, arg, agg));
     }catch(const std::exception& e){
       std::cout << __LINE__ << e.what() << std::endl;
       // LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
@@ -236,8 +234,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
-      c.call_async(method_name, name, id);
-      return c.join_all<R>(agg);
+      return *(c.call(method_name, name, id, agg));
     }catch(const std::exception& e){
       LOG(ERROR) << N << " " << e.what(); // << " from " << c.first << ":" << c.second;
       throw;
@@ -257,8 +254,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
-      c.call_async(method_name, name, id, arg);
-      return c.join_all<R>(agg);
+      return *(c.call(method_name, name, id, arg, agg));
     }catch(const std::exception& e){
       LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
       throw;
@@ -278,8 +274,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
-      c.call_async(method_name, name, id, a0, a1);
-      return c.join_all<R>(agg);
+      return *(c.call(method_name, name, id, a0, a1, agg));
     }catch(const std::exception& e){
       LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
       throw;

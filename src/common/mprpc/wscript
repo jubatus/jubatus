@@ -17,7 +17,7 @@ def build(bld):
     source = 'rpc_client_test.cpp',
     target = 'rpc_client_test',
     includes = '. ../framework',
-    use = 'PFICOMMON MSGPACK jubacommon_mprpc',
+    use = 'PFICOMMON MSGPACK jubacommon jubacommon_mprpc',
     )
 
   bld.install_files('${PREFIX}/include/jubatus/common/mprpc', bld.path.ant_glob('*.hpp'))
