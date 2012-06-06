@@ -73,12 +73,9 @@ int async_sock::send_async(const char* buf, size_t size){
 
 int async_sock::recv_async()
 {
-  if(unpacker.message_size() == 0){
-    unpacker.reset();
+  if (unpacker.buffer_capacity() == 0)
     unpacker.reserve_buffer(4096);
-  }else if(unpacker.buffer_capacity() == 0){
-    //unpacker.expand_buffer(4096);
-  }
+
   int r = ::read(this->get(), unpacker.buffer(), unpacker.buffer_capacity());
   // if(r < 0){
   //   char msg[1024];

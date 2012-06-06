@@ -37,12 +37,20 @@
 namespace jubatus { namespace common { namespace mprpc {
 
 class rpc_mclient;
+
+struct rpc_response_t {
+  msgpack::type::tuple<uint8_t,uint32_t,msgpack::object,msgpack::object> response;
+  pfi::lang::shared_ptr<msgpack::zone> zone;
+
+  template<typename T> const T as() const { return response.a3.as<T>(); }
+};
+
 struct async_context {
   rpc_mclient* c;
   event_base* evbase;
   const msgpack::sbuffer* buf;
   size_t rest;
-  std::vector<msgpack::object> ret;
+  std::vector<rpc_response_t> ret;
 };
 
 struct socket_context {
