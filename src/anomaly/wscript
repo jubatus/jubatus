@@ -25,5 +25,4 @@ def build(bld):
 #      'anomaly_test.cpp', # FIXME
 #      'anomaly_base_test.cpp',
 #      'anomaly_random_test.cpp',
-#      'lof_util_test.cpp',
       ])
