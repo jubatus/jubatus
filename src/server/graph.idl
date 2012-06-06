@@ -1,0 +1,115 @@
+# Jubatus: Online machine learning framework for distributed environment
+# Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+type centrality_type = int
+
+type node_id = string
+type edge_id_t = ulong
+
+type property = map<string, string> 
+
+message node_info {
+  0: property p
+  1: list<edge_id_t>  in_edges
+  2: list<edge_id_t>  out_edges
+}
+
+# query: { key => value }
+# matches if all keys exist on the property and all value are equal
+# or, empty list matches all node/edge with any property
+message preset_query {
+  0: list<tuple<string, string> > edge_query
+  1: list<tuple<string, string> > node_query
+}
+
+message edge_info {
+  0: property p
+  1: node_id src
+  2: node_id tgt
+}
+
+message shortest_path_req {
+  0: node_id src
+  1: node_id tgt
+  2: uint max_hop
+  3: preset_query q
+}
+
+service graph {
+
+  #@random #@update #@pass
+  string create_node(0: string name) # //@cht
+
+  #@cht(2) #@update #@pass
+  int remove_node(0: string name, 1: string nid) # //@cht
+
+  #@cht #@update #@all_and
+  int update_node(0: string name, 1: string nid, 2: property p) # //@cht
+
+  #@cht(2) #@update #@all_and
+  int create_edge(0: string name, 1: string nid, 2: edge_info ei) # //@cht
+
+  #@cht #@update #@all_and
+  int update_edge(0: string name, 1: string nid, 2: edge_id_t eid, 3: edge_info ei) # //@cht
+
+  #@cht #@update #@all_and
+  int remove_edge(0: string name, 1: string nid, 2: edge_id_t e) # //@cht
+
+  #@random #@analysis #@pass
+  double centrality(0: string name, 1: string nid,
+		    2: centrality_type ct, 3: preset_query q) # //@random
+
+  #@broadcast #@update #@all_and
+  bool add_centrality_query(0: string name, 1: preset_query q)
+  #@broadcast #@update #@all_and
+  bool add_shortest_path_query(0: string name, 1: preset_query q)
+  #@broadcast #@update #@all_and
+  bool remove_centrality_query(0: string name, 1: preset_query q)
+  #@broadcast #@update #@all_and
+  bool remove_shortest_path_query(0: string name, 1: preset_query q)
+
+  #@random #@analysis #@pass
+  list<node_id>  shortest_path(0: string name, 1: shortest_path_req r) # //@random
+
+  #@broadcast #@update #@all_and
+  int update_index(0: string name) # //@broadcast
+
+  #@broadcast #@update #@all_and
+  int clear(0: string name) # //@broadcast
+
+  #@cht #@analysis #@pass
+  node_info get_node(0: string name, 1: string nid) # //@cht
+
+  #@cht #@analysis #@pass
+  edge_info get_edge(0: string name, 1: string nid, 2: edge_id_t e) # //@cht
+
+  #@broadcast #@update #@all_and
+  bool save(0: string name, 1: string arg1)
+
+  #@broadcast #@update #@all_and
+  bool load(0: string name, 1: string arg1)
+
+  #@broadcast #@analysis #@merge
+  map<string, map<string, string> >  get_status(0: string name)
+
+  #@internal #@update #@pass
+  int create_node_here(0: string name, 1: string nid)
+  #@internal #@update #@pass
+  int create_global_node(0: string name, 1: string nid)
+  #@internal #@update #@pass
+  int remove_global_node(0: string name, 1: string nid)
+}

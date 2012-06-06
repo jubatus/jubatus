@@ -1,3 +1,20 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 #pragma once
 
 #include <map>
@@ -5,15 +22,17 @@
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
 #include "../common/type.hpp"
+#include <msgpack.hpp>
 
 namespace jubatus{
+namespace graph{
 
 typedef uint64_t node_id_t;
 typedef uint64_t edge_id_t;
 
 typedef std::map<std::string, std::string> property;
 
-enum centerality_type {
+enum centrality_type {
   EIGENSCORE = 0
 };
 
@@ -38,6 +57,8 @@ struct node_info{
   std::vector<edge_id_t> in_edges;
   std::vector<edge_id_t> out_edges;
 
+  MSGPACK_DEFINE(p, in_edges, out_edges);
+
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
@@ -53,6 +74,8 @@ struct edge_info{
   node_id_t src;
   node_id_t tgt;
 
+  MSGPACK_DEFINE(p, src, tgt);
+
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
@@ -61,6 +84,23 @@ struct edge_info{
       & MEMBER(tgt);
   }
 
+};
+
+struct preset_query {
+  // all AND conditions
+  std::vector<std::pair<std::string, std::string> > edge_query;
+  std::vector<std::pair<std::string, std::string> > node_query;
+
+  bool operator==(const preset_query& r) const {
+    return edge_query == r.edge_query && node_query == r.node_query;
+  }
+
+  MSGPACK_DEFINE(edge_query, node_query);
+  friend class pfi::data::serialization::access;
+  template <class Ar>
+  void serialize(Ar& ar) {
+    ar & MEMBER(edge_query) & MEMBER(node_query);
+  }
 };
 
 const size_t LANDMARK_NUM = 5;
@@ -84,4 +124,41 @@ struct shortest_path_tree{
 typedef std::vector<shortest_path_tree> spt_mixed;
 typedef std::vector<shortest_path_tree> spt_diff;
 
+typedef pfi::data::unordered_map<preset_query, eigen_vector_mixed> eigen_vector_query_mixed;
+typedef pfi::data::unordered_map<preset_query, eigen_vector_diff> eigen_vector_query_diff;
+
+typedef pfi::data::unordered_map<preset_query, spt_mixed> spt_query_mixed;
+typedef pfi::data::unordered_map<preset_query, spt_diff> spt_query_diff;
+
+}
+}
+
+namespace pfi {
+namespace data {
+
+template<> struct hash<jubatus::graph::preset_query> {
+  size_t operator()(const jubatus::graph::preset_query& p) const {
+    return update(p.node_query, update(p.edge_query, 14695981039346656037LLU));
+  }
+
+ private:
+  static size_t update(const std::vector<std::pair<std::string, std::string> >& q,
+                       size_t h) {
+    for (size_t i = 0; i < q.size(); ++i) {
+      h = update(q[i].first, h);
+      h = update(q[i].second, h);
+    }
+    return h;
+  }
+
+  static size_t update(const std::string& s, size_t h) {
+    for (size_t i = 0; i < s.size(); ++i) {
+      h *= 1099511628211LLU;
+      h ^= s[i];
+    }
+    return h * 1099511628211LLU;
+  }
+};
+
+}
 }

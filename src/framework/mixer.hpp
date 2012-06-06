@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -57,14 +57,14 @@ namespace framework{
     void mixer_loop(){
       while(true)try_mix();
     };
-
+    
     int get_count()const {return counter_;} ; //FIXME: not thread-safe
     void try_mix();
-
+    
   private:  
-
+    
     pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_func_;
-
+    
     common::cshared_ptr<jubatus::common::lock_service> zk_;
     std::string name_;
 

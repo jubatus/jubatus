@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -49,6 +49,7 @@ namespace common {
 
     // ephemeral only
     void create_seq(const std::string& path, std::string&);
+    uint64_t create_id(const std::string& path, uint32_t prefix = 0);
 
     void list(const std::string& path, std::vector<std::string>& out);
     void hd_list(const std::string& path, std::string& out);

@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,19 +30,38 @@
 #include <glog/logging.h>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/lang/noncopyable.h>
+#include <pficommon/network/mprpc/exception.h>
 
-extern "C"{
-struct event_base;
-}
+#include <event.h>
 
 namespace jubatus { namespace common { namespace mprpc {
 
 class rpc_mclient;
 struct async_context {
   rpc_mclient* c;
+  event_base* evbase;
   const msgpack::sbuffer* buf;
   size_t rest;
   std::vector<msgpack::object> ret;
+};
+
+struct socket_context {
+  event ev_read;
+  event ev_write;
+  pfi::lang::shared_ptr<async_sock> socket;
+
+  socket_context(pfi::lang::shared_ptr<async_sock> s)
+    : socket(s)
+  {
+    memset(&ev_read, 0, sizeof(event));
+    memset(&ev_write, 0, sizeof(event));
+  }
+
+  socket_context()
+  {
+    memset(&ev_read, 0, sizeof(event));
+    memset(&ev_write, 0, sizeof(event));
+  }
 };
 
 class rpc_mclient : pfi::lang::noncopyable
@@ -59,7 +78,7 @@ public:
            const pfi::lang::function<Res(Res,Res)>& reducer){
     call_async(m, a);
     return join_all(reducer);
-  };
+  }
 
   void send_async(const msgpack::sbuffer& buf);
 
@@ -82,21 +101,26 @@ public:
 
 
 private:
-  void register_fd_readable_(async_context*);
-  void register_fd_writable_(async_context*);
-  void register_all_fd_(int, void(*)(int,short,void*), async_context*);
+  void create_fd_event_();
+  void register_fd_readable_();
+  void register_fd_writable_();
 
   template <typename Arr>
   void call_async_(const std::string&, const Arr& a);
 
   void connect_async_();
-  void join_some_(async_context&);
+  void join_some_();
 
   std::vector<std::pair<std::string, uint16_t> > hosts_;
   int timeout_sec_;
 
-  pfi::data::unordered_map<int,pfi::lang::shared_ptr<async_sock> > clients_;
+  typedef pfi::data::unordered_map<int, socket_context> socket_info_map_t;
+  socket_info_map_t clients_;
   pfi::system::time::clock_time start_;
+
+  // WARN: Don't move context_ address which is referenced
+  // by readable_callback and writable_callback.
+  async_context context_;
 
   event_base* evbase_;
 };
@@ -136,30 +160,25 @@ void rpc_mclient::call_async(const std::string& m, const A0& a0, const A1& a1, c
 template <typename Res>
 Res rpc_mclient::join_all(const pfi::lang::function<Res(Res,Res)>& reducer)
 {
-  async_context ctx;
-  ctx.c = this;
-  ctx.rest = clients_.size();
-  ctx.buf = NULL;
-  ctx.ret = std::vector<msgpack::object>();
+  if (clients_.empty())
+    throw pfi::network::mprpc::rpc_error("no clients.");
 
-  register_fd_readable_(&ctx);
-  join_some_(ctx);
+  context_ = async_context();
+  context_.c = this;
+  context_.evbase = evbase_;
+  context_.rest = clients_.size();
+  context_.buf = NULL;
 
-  if(ctx.ret.empty()){
-    throw std::runtime_error("no clients.");
+  register_fd_readable_();
+
+  join_some_();
+  if (context_.ret.empty())
+    throw pfi::network::mprpc::rpc_error("no results.");
+
+  Res result = context_.ret[0].as<Res>();
+  for(size_t i=1;i<context_.ret.size();++i){
+    result = reducer(result, context_.ret[i].as<Res>());
   }
-
-  Res result = ctx.ret[0].as<Res>();
-  for(size_t i=1;i<ctx.ret.size();++i){
-    result = reducer(result, ctx.ret[i].as<Res>());
-  }
-
-  do{
-    join_some_(ctx);
-    for(size_t i=0;i<ctx.ret.size();++i){
-      result = reducer(result, ctx.ret[i].as<Res>());
-    }
-  }while(ctx.rest>0);
 
   return result;
 }

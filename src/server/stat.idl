@@ -1,5 +1,5 @@
 # Jubatus: Online machine learning framework for distributed environment
-# Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+# Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -28,26 +28,26 @@ service stat {
   config_data get_config(0: string name) # #@random
 
   #@cht #@update #@all_and
-  bool push(0: string arg0, 1: string arg1, 2: double arg2) # #@cht
+  bool push(0: string arg0, 1: string key, 2: double v) # #@cht
 
-  #@cht #@analysis #@random
-  double sum(0: string arg0, 1: string arg1) # #@cht
-  #@cht #@analysis #@random
-  double stddev(0: string arg0, 1: string arg1) # #@cht
-  #@cht #@analysis #@random
-  double max(0: string arg0, 1: string arg1) # #@cht
-  #@cht #@analysis #@random
-  double min(0: string arg0, 1: string arg1) # #@cht
-  #@cht #@analysis #@random
-  double entropy(0: string arg0, 1: string arg1) # #@cht
-  #@cht #@analysis #@random
-  double moment(0: string arg0, 1: string arg1, 2: int n, 3: double c) # #@cht
-
-  #@broadcast #@update #@all_and
-  bool save(0: string name, 1: string arg1) # #@broadcast
+  #@cht #@analysis #@pass
+  double sum(0: string arg0, 1: string key) # #@cht
+  #@cht #@analysis #@pass
+  double stddev(0: string arg0, 1: string key) # #@cht
+  #@cht #@analysis #@pass
+  double max(0: string arg0, 1: string key) # #@cht
+  #@cht #@analysis #@pass
+  double min(0: string arg0, 1: string key) # #@cht
+  #@cht #@analysis #@pass
+  double entropy(0: string arg0, 1: string key) # #@cht
+  #@cht #@analysis #@pass
+  double moment(0: string arg0, 1: string key, 2: int n, 3: double c) # #@cht
 
   #@broadcast #@update #@all_and
-  bool load(0: string name, 1: string arg1) # //@broadcast
+  bool save(0: string name, 1: string id) # #@broadcast
+
+  #@broadcast #@update #@all_and
+  bool load(0: string name, 1: string id) # //@broadcast
 
   #@broadcast #@analysis #@merge
   map<string, map<string, string> >  get_status(0: string name) # //@broadcast

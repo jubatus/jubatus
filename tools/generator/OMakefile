@@ -71,10 +71,17 @@ PROGRAM = jenerator
 
 
 test: $(PROGRAM)  small.idl
-#	./$(PROGRAM) small.idl
-	./$(PROGRAM) ../../src/server/recommender.idl -i
-	-diff recommender_impl.cpp ../../src/server/recommender_impl.cpp
-	-diff recommender_keeper.cpp ../../src/server/recommender_keeper.cpp
+	./$(PROGRAM) small.idl -d
+#	./$(PROGRAM) ../../src/server/recommender.idl -i
+#	-diff recommender_impl.cpp ../../src/server/recommender_impl.cpp
+#	-diff recommender_keeper.cpp ../../src/server/recommender_keeper.cpp
+
+regenerate: $(PROGRAM)
+	./$(PROGRAM) ../../src/server/recommender.idl -i -o ../../src/server
+	./$(PROGRAM) ../../src/server/regression.idl  -i -o ../../src/server
+	./$(PROGRAM) ../../src/server/classifier.idl  -i -o ../../src/server
+	./$(PROGRAM) ../../src/server/stat.idl        -i -o ../../src/server
+	./$(PROGRAM) ../../src/server/graph.idl       -i -o ../../src/server
 
 OCamlProgramInstall(install, /usr/local/bin, $(PROGRAM), $(FILES))
 

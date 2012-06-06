@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,9 @@ namespace jubatus{
 
   class unsupported_method : public std::runtime_error {
   public:
-    unsupported_method(const std::string& n): runtime_error(n) {}
+    unsupported_method(const std::string& n):
+      runtime_error(std::string("unsupported method (") + n + ")")
+    {}
   };
 
   class bad_storage_type : public std::runtime_error {

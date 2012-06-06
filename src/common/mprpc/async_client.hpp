@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -34,21 +34,24 @@ public:
   async_sock();
   ~async_sock();
   bool set_async(bool on);
-  bool send_async(const char* buf, size_t size);
+  int send_async(const char* buf, size_t size);
 
   int recv_async();
   
   template <typename T> bool salvage(T&);
 
   int connect_async(const std::string& host, uint16_t port);
-  int close();
+  bool close();
 
-  void set_sending(){ state = SENDING; };
-  void set_recving(){ state = RECVING; };
-  void disconnected(){ state = CLOSED; };
-  bool is_connecting()const{ return state == CONNECTING; };
-  bool is_sending()const{ return state == SENDING; };
-  bool is_recving()const{ return state == RECVING; };
+  void set_sending(){ state = SENDING; }
+  void set_recving(){ state = RECVING; }
+  void disconnected(){ this->close(); state = CLOSED; }
+  bool is_closed()const{ return state == CLOSED; }
+  bool is_connecting()const{ return state == CONNECTING; }
+  bool is_sending()const{ return state == SENDING; }
+  bool is_recving()const{ return state == RECVING; }
+  size_t received()const{ return progress; }
+  void reset_received() { progress = 0; }
 private:
   enum { CLOSED, CONNECTING, SENDING, RECVING } state;
   size_t progress;
@@ -65,7 +68,7 @@ template <typename T>  bool async_sock::salvage(T& t)
     return true;
   }
   return false;
-};
+}
 
 
 class async_client {

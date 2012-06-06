@@ -1,6 +1,6 @@
 /*
  Jubatus: Online machine learning framework for distributed environment
- Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+ Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -53,7 +53,7 @@ let parse_error s = print ("parse_error->"^s);;
 %%
 
 input: 
-     | input exp0 { print "adfsafsd"; $2::$1 }
+     | input exp0 { print "input exp0"; $2::$1 }
      | exp0  { print ">>newline"; [$1] }
 ;
    
@@ -75,7 +75,7 @@ a_type:
 	  Nullable($1)
 	}
 	| LITERAL {
-	  print ">anytype: LITERAL";
+	  print (">anytype: (LITERAL) " ^ $1);
 	  match $1 with
 	    | "void" -> Void;
 	    | "object" -> Object;
@@ -165,19 +165,25 @@ api_defs:
 	| api_def { [$1] }
 	| api_def api_defs { $1::$2 }
 ;
-api_def: /* TODO: implement inherit syntax */
+api_def:
 	| decorators a_type LITERAL LRBRACE RRBRACE
-	    { Method($2, $3, [], $1) }
+	    { print $3; Method($2, $3, [], $1) }
 	| decorators a_type LITERAL LRBRACE cfields RRBRACE
-	    { Method($2, $3, $5, $1) }
+	    { print $3; Method($2, $3, $5, $1) }
 	| a_type LITERAL LRBRACE RRBRACE
-	    { Method($1, $2, [], []) }
+	    { print $2; Method($1, $2, [], []) }
 	| a_type LITERAL LRBRACE cfields RRBRACE
-	    { Method($1, $2, $4, []) }
+	    { print $2; Method($1, $2, $4, []) }
 
 decorators:
-	| DECORATOR { [$1] }
-	| DECORATOR decorators { $1::$2 }
+	| DECORATOR
+	    { print $1; [ (Stree.make_decorator $1) ] }
+	| DECORATOR decorators
+	    { print $1; (Stree.make_decorator $1)::$2 }
+	| DECORATOR LRBRACE INT RRBRACE
+	    { print $1; [ (Stree.make_decorator_with_int $1 $3) ] }
+	| DECORATOR LRBRACE INT RRBRACE decorators
+	    { print $1; (Stree.make_decorator_with_int $1 $3)::$5 }
 
 /* comma separated fields */
 cfields:

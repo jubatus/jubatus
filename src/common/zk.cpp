@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -101,6 +101,20 @@ namespace common{
     }else{
       seqfile = path_buffer;
     }
+  };
+
+  uint64_t zk::create_id(const std::string& path, uint32_t prefix){
+    scoped_lock lk(m_);
+    struct Stat st;
+    int rc = zoo_set2(zh_, path.c_str(), "dummy", 6, -1, &st);
+
+    if(rc != ZOK){
+      LOG(ERROR) << path << " failed on zoo_set2 " << zerror(rc);
+      throw std::runtime_error("");
+    }
+    uint64_t ret = prefix;
+    ret <<= 32;
+    return (ret | st.version);
   };
 
   void zk::remove(const std::string& path){

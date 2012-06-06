@@ -1,6 +1,6 @@
 (*
  Jubatus: Online machine learning framework for distributed environment
- Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+ Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -20,16 +20,11 @@
 {
 open Jdl_parser
 
-let string_buffer = Buffer.create 80
 exception Lex_error of string
 
 let debugprint = ref false;;
 
 let print str =  if !debugprint then print_endline str;;
-
-let line = ref 1;;
-
-let inc_line() = incr line;;
 
 }
 
@@ -45,7 +40,7 @@ rule token = parse
   | "message" { print "message>"; MESSAGE }
   | "type" { print "typedef>"; TYPEDEF }
   | "enum" { print "enum>"   ; ENUM }
-  |  "service" { print "service>"; SERVICE }
+  | "service" { print "service>"; SERVICE }
   | literal as s { print ("literal->"^s); LITERAL(s) }
   | ','       { COMMA }
   | '<'       { LBRACE }
@@ -60,11 +55,8 @@ rule token = parse
   | decorator as d { DECORATOR(d) }
   | digit as s { print s; INT( int_of_string s ) }
 
-(*  | include_sth as i { print i; INCLUDE(i) }
-  | decorator [' ']* '\n' as d {
-    print ("decorator-> "^d);
-    DECORATOR( String.sub d 0 ((String.length d) - 1) )
-  } *)
+(*  | include_sth as i { print i; INCLUDE(i) } *)
+
   | comment     { print "comment"; token lexbuf }
   | '\n'        { Lexing.new_line lexbuf; token lexbuf }
   | eof		{ print "eof."; EOF }

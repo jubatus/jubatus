@@ -28,10 +28,6 @@ exception ex < ex0 {
 
 service srvce {
 
-# random, cht, broadcast - routing style
-# update, analysis - read/write
-# all_and, all_or, concat, merge, ignore (other) - aggregator
-
   #@random #@update #@ignore
   int hello(1:string name)
 
@@ -40,6 +36,9 @@ service srvce {
 
   #@cht #@update #@all_or
   bool someupdate(1: string name, 2: string key, 3: int hage)
+
+  #@cht(1) #@analysis #@pass
+  bool someread0(1: string name, 2: string key)
 
   #@broadcast #@update #@all_and
   bool save(1:string name, 2: string id)

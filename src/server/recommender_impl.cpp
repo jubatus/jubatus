@@ -19,28 +19,28 @@ public:
   config_data get_config(std::string name) //analysis random
   { JRLOCK__(p_); return p_->get_config(); }
 
-  bool clear_row(std::string name, std::string id) //update cht
+  bool clear_row(std::string name, std::string id) //update cht(2)
   { JWLOCK__(p_); return p_->clear_row(id); }
 
-  bool update_row(std::string name, std::string id, datum arg2) //update cht
+  bool update_row(std::string name, std::string id, datum arg2) //update cht(2)
   { JWLOCK__(p_); return p_->update_row(id, arg2); }
 
   bool clear(std::string name) //update broadcast
   { JWLOCK__(p_); return p_->clear(); }
 
-  datum complete_row_from_id(std::string name, std::string id) //analysis cht
+  datum complete_row_from_id(std::string name, std::string id) //analysis cht(2)
   { JRLOCK__(p_); return p_->complete_row_from_id(id); }
 
   datum complete_row_from_data(std::string name, datum arg1) //analysis random
   { JRLOCK__(p_); return p_->complete_row_from_data(arg1); }
 
-  similar_result similar_row_from_id(std::string name, std::string id, unsigned int size) //analysis cht
+  similar_result similar_row_from_id(std::string name, std::string id, unsigned int size) //analysis cht(2)
   { JRLOCK__(p_); return p_->similar_row_from_id(id, size); }
 
   similar_result similar_row_from_data(std::string name, datum data, unsigned int size) //analysis random
   { JRLOCK__(p_); return p_->similar_row_from_data(data, size); }
 
-  datum decode_row(std::string name, std::string id) //analysis cht
+  datum decode_row(std::string name, std::string id) //analysis cht(2)
   { JRLOCK__(p_); return p_->decode_row(id); }
 
   std::vector<std::string > get_all_rows(std::string name) //analysis broadcast

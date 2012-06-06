@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@
 #include "mixable.hpp"
 
 #include "../common/shared_ptr.hpp"
+#include "../common/global_id_generator.hpp"
 
 using namespace pfi::concurrent;
 
@@ -67,7 +68,11 @@ public:
   std::string get_ipaddr()const{ return a_.eth; };
   int get_port()const{ return a_.port; };
   int get_threadum()const{ return a_.threadnum; };
+  void get_members(std::vector<std::pair<std::string,int> >&);
 
+  std::vector<std::string> mix_agg(const std::vector<std::string>& lhs,
+   				   const std::vector<std::string>& rhs);
+    
 protected:
   void build_local_path_(std::string& out, const std::string& type, const std::string& id){
     out = base_path_ + "/";
@@ -87,6 +92,8 @@ protected:
   common::cshared_ptr<jubatus::common::lock_service> zk_;
   bool use_cht_;
 #endif
+
+  common::global_id_generator idgen_;
 
   pfi::concurrent::rw_mutex m_;
   const std::string base_path_;

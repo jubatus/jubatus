@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -60,13 +60,14 @@ namespace jubatus { namespace framework {
     p.parse_check(args, argv);
 
     if( p.exist("version") ){
-      print_version(argv[0]);
+      print_version(jubatus::util::get_program_name());
       exit(0);
     }
 
     port = p.get<int>("rpc-port");
     threadnum = p.get<int>("thread");
     timeout = p.get<int>("timeout");
+    program_name = jubatus::util::get_program_name();
     z = p.get<std::string>("zookeeper");
     name = p.get<std::string>("name");
     tmpdir = p.get<std::string>("tmpdir");
@@ -81,7 +82,7 @@ namespace jubatus { namespace framework {
       throw argv_error("can't start multinode mode without name specified");
     }
     
-    LOG(INFO) << boot_message(argv[0]);
+    LOG(INFO) << boot_message(jubatus::util::get_program_name());
   };
 
   server_argv::server_argv():
@@ -112,7 +113,7 @@ namespace jubatus { namespace framework {
     p.parse_check(args, argv);
 
     if( p.exist("version") ){
-      print_version(argv[0]);
+      print_version(jubatus::util::get_program_name());
       exit(0);
     }
 
@@ -164,6 +165,12 @@ namespace jubatus { namespace framework {
     ::atexit(jubatus::framework::atexit);
   }
 #endif
+
+  void ignore_sigpipe(){
+    // portable code for socket write(2) MSG_NOSIGNAL
+    if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+      throw std::runtime_error("can't ignore SIGPIPE");
+  }
 
 }
 }

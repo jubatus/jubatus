@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,6 @@
 #include <vector>
 
 namespace jubatus { namespace framework {
-
 
 template <typename K, typename V>
 std::map<K,V> merge(std::map<K,V> lhs, std::map<K,V> rhs)
@@ -47,6 +46,11 @@ std::vector<T> concat(std::vector<T> lhs, std::vector<T> rhs)
 template <typename T>
 T random(T lhs, T rhs){
   return lhs; //TODO: make random? or left(change fun name)?
+}
+
+template <typename T>
+T pass(T lhs, T rhs){
+  return lhs; //TODO:
 }
 
 template <typename T>

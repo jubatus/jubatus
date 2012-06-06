@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -48,29 +48,26 @@ class keeper : public pfi::network::mprpc::rpc_server {
   int run();
 
   template <typename R>
-  void register_random(std::string method_name) {
+  void register_random(const std::string& method_name) {
     pfi::lang::function<R(std::string)> f = pfi::lang::bind(&keeper::template random_proxy<R>, this, method_name, pfi::lang::_1);
     add(method_name, f);
   }
   template <typename R, typename A0> //, typename A1, typename A2>
-  void register_random(std::string method_name) {
+  void register_random(const std::string& method_name) {
     pfi::lang::function<R(std::string,A0)> f = pfi::lang::bind(&keeper::template random_proxy<R,A0>, this, method_name, pfi::lang::_1, pfi::lang::_2);
     add(method_name, f);
   }
   template <typename R, typename A0, typename A1>//, typename A2>
-  void register_random(std::string method_name) {
+  void register_random(const std::string& method_name) {
     pfi::lang::function<R(std::string,A0,A1)> f = pfi::lang::bind(&keeper::template random_proxy<R,A0,A1>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3);
     add(method_name,f); 
   }
-  
-  template <typename R, typename A0>
-  void register_broadcast(std::string method_name,
-                          pfi::lang::function<R(R,R)> agg){//pfi::lang::function<R(R,R)>& agg) {
-    pfi::lang::function<R(std::string, A0)> f =
-      pfi::lang::bind(&keeper::template broadcast_proxy<R, A0>, this, method_name, pfi::lang::_1, pfi::lang::_2,
-                      agg);
-    add(method_name, f);
+  template <typename R, typename A0, typename A1, typename A2>
+  void register_random(const std::string& method_name) {
+    pfi::lang::function<R(std::string,A0,A1,A2)> f = pfi::lang::bind(&keeper::template random_proxy<R,A0,A1,A2>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3, pfi::lang::_4);
+    add(method_name,f); 
   }
+  
   template <typename R>
   void register_broadcast(std::string method_name,
                           pfi::lang::function<R(R,R)> agg){//pfi::lang::function<R(R,R)>& agg) {
@@ -79,24 +76,32 @@ class keeper : public pfi::network::mprpc::rpc_server {
                       agg);
     add(method_name, f);
   }
+  template <typename R, typename A0>
+  void register_broadcast(std::string method_name,
+                          pfi::lang::function<R(R,R)> agg){//pfi::lang::function<R(R,R)>& agg) {
+    pfi::lang::function<R(std::string, A0)> f =
+      pfi::lang::bind(&keeper::template broadcast_proxy<R, A0>, this, method_name, pfi::lang::_1, pfi::lang::_2,
+                      agg);
+    add(method_name, f);
+  }
 
 
-  template <typename R>
+  template <int N, typename R>
   void register_cht(std::string method_name, pfi::lang::function<R(R,R)> agg) {
     pfi::lang::function<R(std::string, std::string)> f =
-      pfi::lang::bind(&keeper::template cht_proxy<R>, this, method_name, pfi::lang::_1, pfi::lang::_2, agg);
+      pfi::lang::bind(&keeper::template cht_proxy<N,R>, this, method_name, pfi::lang::_1, pfi::lang::_2, agg);
     add(method_name, f);
   }
-  template <typename R, typename A0>
+  template <int N, typename R, typename A0>
   void register_cht(std::string method_name, pfi::lang::function<R(R,R)> agg) {
     pfi::lang::function<R(std::string, std::string, A0)> f =
-      pfi::lang::bind(&keeper::template cht_proxy<R,A0>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3, agg);
+      pfi::lang::bind(&keeper::template cht_proxy<N,R,A0>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3, agg);
     add(method_name, f);
   }
-  template <typename R, typename A0, typename A1>
+  template <int N, typename R, typename A0, typename A1>
   void register_cht(std::string method_name, pfi::lang::function<R(R,R)> agg) {
     pfi::lang::function<R(std::string, std::string, A0, A1)> f =
-      pfi::lang::bind(&keeper::template cht_proxy<R, A0, A1>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3, pfi::lang::_4, agg);
+      pfi::lang::bind(&keeper::template cht_proxy<N,R, A0, A1>, this, method_name, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3, pfi::lang::_4, agg);
     add(method_name, f);
   }
   
@@ -153,6 +158,23 @@ class keeper : public pfi::network::mprpc::rpc_server {
       throw e;
     }
   }
+  template <typename R, typename A0, typename A1, typename A2>
+  R random_proxy(const std::string& method_name, const std::string& name, const A0& a0, const A1& a1, const A2& a2){
+    std::vector<std::pair<std::string, int> > list;
+
+    get_members_(name, list);
+
+    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+    const std::pair<std::string, int>& c = list[rng_(list.size())];
+
+    try{
+      pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
+      return cli.call<R(std::string,A0,A1,A2)>(method_name)(name, a0, a1, a2);
+    }catch(const std::exception& e){
+      LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
+      throw e;
+    }
+  }
 
   template <typename R>
   R broadcast_proxy(const std::string& method_name, const std::string& name,
@@ -186,7 +208,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
       c.call_async(method_name, name, arg);
       std::cout << __LINE__ << " name:" << name << " method:" << method_name << std::endl;
       return c.join_all<R>(agg);
-    }catch(const std::runtime_error& e){
+    }catch(const std::exception& e){
       std::cout << __LINE__ << e.what() << std::endl;
       // LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
       throw e;
@@ -194,14 +216,14 @@ class keeper : public pfi::network::mprpc::rpc_server {
   }
 
 
-  template <typename R>
+  template <int N, typename R>
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& id,
               pfi::lang::function<R(R,R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
     {
       pfi::concurrent::scoped_lock lk(mutex_);
       jubatus::common::cht ht(zk_, name);
-      ht.find(id, list);
+      ht.find(id, list, N);
     }
     if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 
@@ -210,18 +232,18 @@ class keeper : public pfi::network::mprpc::rpc_server {
       c.call_async(method_name, name, id);
       return c.join_all<R>(agg);
     }catch(const std::exception& e){
-      LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
+      LOG(ERROR) << N << " " << e.what(); // << " from " << c.first << ":" << c.second;
       throw e;
     }
   }
-  template <typename R, typename A0>
+  template <int N, typename R, typename A0>
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& id, const A0& arg,
               pfi::lang::function<R(R,R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
     {
       pfi::concurrent::scoped_lock lk(mutex_);
       jubatus::common::cht ht(zk_, name);
-      ht.find(id, list);
+      ht.find(id, list, N);
     }
     if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 
@@ -234,14 +256,14 @@ class keeper : public pfi::network::mprpc::rpc_server {
       throw e;
     }
   }
-  template <typename R, typename A0, typename A1>
+  template <int N, typename R, typename A0, typename A1>
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& id, const A0& a0, const A1& a1,
               pfi::lang::function<R(R,R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
     {
       pfi::concurrent::scoped_lock lk(mutex_);
       jubatus::common::cht ht(zk_, name);
-      ht.find(id, list);
+      ht.find(id, list, N);
     }
     if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
 

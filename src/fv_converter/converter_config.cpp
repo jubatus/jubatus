@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,6 +18,7 @@
 #include "converter_config.hpp"
 #include "datum_to_fv_converter.hpp"
 #include "splitter_factory.hpp"
+#include "key_matcher.hpp"
 #include "key_matcher_factory.hpp"
 #include "num_feature.hpp"
 #include "num_feature_impl.hpp"

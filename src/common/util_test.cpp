@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -38,4 +38,12 @@ TEST(common,util2){
   //  std::cout << env << std::endl;
   //  std::cout << env2 << std::endl;
   ASSERT_NE(env, env2);
+}
+
+TEST(common,util_get_program_name){
+  std::string path;
+  EXPECT_NO_THROW({
+    path = jubatus::util::get_program_name();
+  });
+  EXPECT_EQ(std::string("util_test"), path);
 }
