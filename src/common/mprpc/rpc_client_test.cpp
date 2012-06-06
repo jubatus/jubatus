@@ -43,6 +43,7 @@ MPRPC_PROC(test_twice, int(int));
 MPRPC_PROC(add_all, int(int,int,int));
 MPRPC_PROC(various, string(int,float,double, strw));
 MPRPC_PROC(sum, int(vector<int>));
+MPRPC_PROC(vec, vector<string>(string, size_t));
 
 static bool test_bool(int i){  return i%2; }
 static int  test_twice(int i){ return i*2; }
@@ -54,14 +55,22 @@ static string various(int i, float f, double d, strw s){
     + s.key + s.value;
   return ret;
 }
+
 static int sum(vector<int> hoge){
   int sum = 0;
   for (size_t i = 0, size = hoge.size(); i < size; i++) sum += hoge[i];
   return sum;
 }
+static vector<string> vec(string s, size_t size){ return vector<string>(size, s); }
 static string concat(string l,string r){ return (l+r); };
+static vector<string> concat_vector(const vector<string> lhs, const vector<string> rhs)
+{
+  vector<string> res(lhs.begin(), lhs.end());
+  res.insert(res.end(), rhs.begin(), rhs.end());
+  return res;
+}
 
-MPRPC_GEN(1, test_mrpc, test_bool, test_twice, add_all, various, sum);
+MPRPC_GEN(1, test_mrpc, test_bool, test_twice, add_all, various, sum, vec);
 
 static void server_thread(unsigned u){
   test_mrpc_server srv(3.0);
@@ -70,6 +79,7 @@ static void server_thread(unsigned u){
   srv.set_add_all(&add_all);
   srv.set_various(&various);
   srv.set_sum(&sum);
+  srv.set_vec(&vec);
   srv.serv(u, 10);
 }
 
@@ -130,11 +140,19 @@ TEST(rpc_mclient, small)
     EXPECT_EQ(ans, cli.join_all(function<string(string,string)>(&concat)));
   }
   {
-    const int payload_count = 1024 * 1024 * 10;
-    vector<int> hoge(1, payload_count);
+    const int payload_count = 1024 * 1024;
+    vector<int> hoge(payload_count, 10);
     cli.call_async("sum", hoge);
-    EXPECT_EQ(payload_count * kServerSize,
+    EXPECT_EQ(10 * payload_count * kServerSize,
         cli.join_all(function<int(int,int)>(&jubatus::framework::add<int>)));
+  }
+
+  {
+    cli.call_async("vec", string("a"), 200);
+    pfi::lang::function<std::vector<std::string>
+      (const std::vector<std::string>, const std::vector<std::string>)> f = &concat_vector;
+    vector<string> x = cli.join_all<vector<string> > (f);
+    EXPECT_EQ(200 * kServerSize, x.size());
   }
 }
 

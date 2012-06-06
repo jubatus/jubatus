@@ -92,18 +92,18 @@ int rpc_mclient::readable_callback(int fd, int events, async_context* ctx){
       }
 
     } else {
-      typedef msgpack::type::tuple<uint8_t,uint32_t,msgpack::object,msgpack::object> response_t;
-      response_t res;
+      rpc_response_t res;
 
-      if(client->salvage<response_t>(res)){
-        // cout << __FILE__ << " " << __LINE__ << ":"<< endl;
-        // cout << "\ta0: "<< int(res.a0) << endl;
-        // cout << "\ta2: "<< res.a2.type << " " << res.a2.is_nil() << " " << res.a2 << endl;
-        // cout << "\ta3: "<< res.a3.type << " " << res.a3.is_nil() << " " << res.a3 << endl;;
+      if(client->salvage(res.response, res.zone)){
+        //cout << __FILE__ << " " << __LINE__ << ":"<< endl;
+        //cout << "\ta0: "<< int(res.response.a0) << endl;
+        //cout << "\ta2: "<< res.response.a2.type << " " << res.response.a2.is_nil() << " " << res.response.a2 << endl;
+        //cout << "\ta3: "<< res.response.a3.type << " " << res.response.a3.is_nil() << " " << res.response.a3 << endl;;
+
         done++;
-        if(res.a0 == 1){
-          if(res.a2.is_nil()){
-            ctx->ret.push_back(res.a3);
+        if(res.response.a0 == 1){
+          if(res.response.a2.is_nil()){
+            ctx->ret.push_back(res);
           }
         }
       }

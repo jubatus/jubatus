@@ -38,7 +38,7 @@ public:
 
   int recv_async();
   
-  template <typename T> bool salvage(T&);
+  template <typename T> bool salvage(T&, pfi::lang::shared_ptr<msgpack::zone>&);
 
   int connect_async(const std::string& host, uint16_t port);
   bool close();
@@ -58,12 +58,14 @@ private:
   msgpack::unpacker unpacker;
 };
 
-template <typename T>  bool async_sock::salvage(T& t)
+template <typename T>  bool async_sock::salvage(T& t, pfi::lang::shared_ptr<msgpack::zone>& ret_z)
 {
   msgpack::unpacked msg;
   if(unpacker.next(&msg)){
     msgpack::object o = msg.get();
     std::auto_ptr<msgpack::zone> z = msg.zone();
+    ret_z = pfi::lang::shared_ptr<msgpack::zone>(z.get());
+    z.release();
     o.convert(&t);
     return true;
   }
