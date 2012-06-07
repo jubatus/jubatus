@@ -7,11 +7,12 @@ def build(bld):
     source = [
       'anomaly_base.cpp',
       'lof.cpp',
+      'lof_storage.cpp',
       ],
     target = 'jubatus_anomaly',
     name = 'jubatus_anomaly',
     includes = '.',
-    use = 'PFICOMMON jubastorage jubacommon')
+    use = 'PFICOMMON jubastorage jubacommon jubatus_recommender')
 
   def make_test(s):
     bld.program(
@@ -25,4 +26,5 @@ def build(bld):
 #      'anomaly_test.cpp', # FIXME
 #      'anomaly_base_test.cpp',
 #      'anomaly_random_test.cpp',
+      'lof_storage_test.cpp',
       ])

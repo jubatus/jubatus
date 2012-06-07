@@ -26,7 +26,6 @@
 #include "../common/type.hpp"
 #include "../recommender/euclid_lsh.hpp"
 #include "anomaly_storage_base.hpp"
-#include "storage_type.hpp"
 
 
 namespace jubatus {

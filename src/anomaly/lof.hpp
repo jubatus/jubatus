@@ -18,7 +18,7 @@
 #pragma once
 
 #include "anomaly_base.hpp"
-#include "../storage/lof_storage.hpp"
+#include "lof_storage.hpp"
 
 namespace jubatus {
 namespace anomaly {
