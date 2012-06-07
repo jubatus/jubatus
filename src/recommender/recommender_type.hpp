@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <stdexcept>
 #include <vector>
 #include <utility>
 #include <string>
@@ -25,5 +26,11 @@
 namespace jubatus {
 
 typedef sfv_t sfv_diff_t;
+
+namespace recommender {
+
+struct unsupported_feature_error : std::exception {};
+
+}
 
 }

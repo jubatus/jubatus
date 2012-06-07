@@ -91,14 +91,6 @@ euclid_lsh::euclid_lsh(const std::map<std::string, std::string>& config)
 euclid_lsh::~euclid_lsh() {
 }
 
-void euclid_lsh::neighbor_row(const string& id,
-                              vector<pair<string, float> >& ids,
-                              size_t ret_num) const {
-  sfv_t query;
-  decode_row(id, query);
-  neighbor_row(query, ids, ret_num);
-}
-
 void euclid_lsh::neighbor_row(const sfv_t& query,
                              vector<pair<string, float> >& ids,
                              size_t ret_num) const {
