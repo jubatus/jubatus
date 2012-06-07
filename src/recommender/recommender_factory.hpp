@@ -26,6 +26,7 @@ namespace recommender {
 class recommender_base;
 
 recommender_base* create_recommender(const std::map<std::string, std::string>& config);
+recommender_base* create_recommender(const std::string& type);
 
 }
 }
