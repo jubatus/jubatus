@@ -29,6 +29,7 @@ recommender_base* create_recommender(const map<string, string>& config){
   const map<string, string>::const_iterator name_it = config.find("name");
   const string name = name_it == config.end() ? "" : name_it->second;
 
+  // TODO: Support config for all methods
   if (name == "inverted_index"){
     return new inverted_index;
   } else if (name == "minhash"){
@@ -37,6 +38,20 @@ recommender_base* create_recommender(const map<string, string>& config){
     return new lsh;
   } else if (name == "euclid_lsh") {
     return new euclid_lsh(config);
+  } else {
+    throw unsupported_method(name);
+  }
+}
+
+recommender_base* create_recommender(const string& name) {
+  if (name == "inverted_index"){
+    return new inverted_index;
+  } else if (name == "minhash"){
+    return new minhash;
+  } else if (name == "lsh"){
+    return new lsh;
+  } else if (name == "euclid_lsh") {
+    return new euclid_lsh;
   } else {
     throw unsupported_method(name);
   }
