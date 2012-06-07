@@ -33,7 +33,8 @@ public:
   recommender_base();
   virtual ~recommender_base();
 
-  virtual void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const = 0; // return similar row for query.
+  virtual void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const = 0; // return similar row for query with similarity scores.
+  virtual void neighbor_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const = 0; // return similar row for query with distance scores.
   virtual void clear() = 0;
   virtual void clear_row(const std::string& id) = 0;
   virtual void update_row(const std::string& id, const sfv_diff_t& diff) = 0;
@@ -44,10 +45,10 @@ public:
   virtual const storage::recommender_storage_base* get_const_storage() const = 0;
 
   void similar_row(const std::string& id, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  void neighbor_row(const std::string& id, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
   void complete_row(const std::string& id, sfv_t& ret) const;
   void complete_row(const sfv_t& query, sfv_t& ret) const;
   void decode_row(const std::string& id, sfv_t& ret) const;
-
 
   void save(std::ostream&);
   void load(std::istream&);

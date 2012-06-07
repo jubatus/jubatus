@@ -30,6 +30,7 @@ public:
   ~lsh();
 
   void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  void neighbor_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
   void clear();
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const sfv_diff_t& diff);

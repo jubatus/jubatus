@@ -41,6 +41,14 @@ void recommender_base::similar_row(const std::string& id, std::vector<std::pair<
   similar_row(sfv, ids, ret_num);
 }
 
+
+void recommender_base::neighbor_row(const string& id, vector<pair<string, float> >& ids, size_t ret_num) const {
+  ids.clear();
+  sfv_t sfv;
+  orig_.get_row(id, sfv);
+  neighbor_row(sfv, ids, ret_num);
+}
+
 void recommender_base::decode_row(const std::string& id, sfv_t& ret) const{
   ret.clear();
   orig_.get_row(id, ret);

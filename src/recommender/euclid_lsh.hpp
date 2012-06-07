@@ -28,13 +28,14 @@ namespace recommender {
 
 class euclid_lsh : public recommender_base {
  public:
+  using recommender_base::similar_row;
+  using recommender_base::neighbor_row;
+
   euclid_lsh();
   explicit euclid_lsh(const std::map<std::string, std::string>& config);
   ~euclid_lsh();
 
-  // TODO: neighbor_row should be recommender_base
-  void neighbor_row(const std::string& id, std::vector<std::pair<std::string, float> >& ids, size_t ret_num) const;
-  void neighbor_row(const sfv_t& query, std::vector<std::pair<std::string, float> >& ids, size_t ret_num) const;
+  virtual void neighbor_row(const sfv_t& query, std::vector<std::pair<std::string, float> >& ids, size_t ret_num) const;
   virtual void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> >& ids, size_t ret_num) const;
   virtual void clear();
   virtual void clear_row(const std::string& id);
