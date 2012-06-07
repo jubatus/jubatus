@@ -20,11 +20,13 @@
 #include <iosfwd>
 #include <string>
 #include <vector>
+#include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
 #include <pficommon/lang/scoped_ptr.h>
 #include "../common/type.hpp"
-#include "../recommender/euclid_lsh.hpp"
+#include "../recommender/recommender_base.hpp"
+#include "../recommender/recommender_factory.hpp"
 #include "anomaly_storage_base.hpp"
 
 
@@ -82,10 +84,9 @@ private:
   friend class pfi::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(lof_table_)
-        & MEMBER(lof_table_diff_);
+    ar & MEMBER(lof_table_) & MEMBER(lof_table_diff_);
 
-    // pficommon lacks serialization of unordered_set
+    // TODO: Move it to pficommon (serialization of unordered_set)
     if (ar.is_read) {
       update_queue_.clear();
       uint64_t n = 0;
@@ -104,14 +105,35 @@ private:
       }
     }
 
-    ar & MEMBER(neighbor_num_)
-        & MEMBER(reverse_nn_num_)
-        & MEMBER(nn_engine_);
+    ar & MEMBER(neighbor_num_) & MEMBER(reverse_nn_num_);
+
+    // TODO: Make it more efficient
+    if (ar.is_read) {
+      std::string name;
+      ar & name;
+      nn_engine_.reset(recommender::create_recommender(name));
+
+      std::string impl;
+      ar & impl;
+      std::istringstream iss(impl);
+      nn_engine_->load(iss);
+    } else {
+      std::string name = nn_engine_->type();
+      ar & name;
+
+      std::ostringstream oss;
+      nn_engine_->save(oss);
+      std::string str = oss.str();
+      ar & str;
+    }
   }
 
-  static void deserialize_diff(const std::string& diff,
-                               lof_table_t& table,
-                               std::string& nn_diff);
+  void serialize_diff(const lof_table_t& table,
+                      const std::string& nn_diff,
+                      std::ostream& out) const;
+  void deserialize_diff(const std::string& diff,
+                        lof_table_t& table,
+                        std::string& nn_diff) const;
 
   void update_all_kdist();
   void update_all_lrd();
@@ -130,7 +152,7 @@ private:
   uint32_t neighbor_num_; // k of k-nn
   uint32_t reverse_nn_num_;  // ck of ck-nn as an approx. of k-reverse-nn
 
-  recommender::euclid_lsh nn_engine_;
+  pfi::lang::scoped_ptr<recommender::recommender_base> nn_engine_;
 };
 
 }
