@@ -130,6 +130,73 @@ typedef pfi::data::unordered_map<preset_query, eigen_vector_diff> eigen_vector_q
 typedef pfi::data::unordered_map<preset_query, spt_mixed> spt_query_mixed;
 typedef pfi::data::unordered_map<preset_query, spt_diff> spt_query_diff;
 
+
+class graph_exception : public std::runtime_error
+{
+public:
+  graph_exception(const std::string& what) : runtime_error(what)
+  {}
+  
+};
+
+class unknown_graph : public graph_exception
+{
+public:
+  unknown_graph(const std::string& name) : graph_exception(name)
+  {}
+};
+
+class local_node_exists : public graph_exception
+{
+public:
+  local_node_exists(node_id_t id):graph_exception(__func__),
+                                  id_(id)
+  {}
+  node_id_t id_;
+};
+
+class global_node_exists : public graph_exception
+{
+public:
+  global_node_exists(node_id_t id):graph_exception(__func__),
+                                   id_(id)
+  {}
+  node_id_t id_;
+};
+
+class edge_exists : public graph_exception
+{
+public:
+  edge_exists(edge_id_t id):graph_exception(__func__), id_(id)
+  {}
+  edge_id_t id_;
+};
+
+class unknown_id : public graph_exception
+{
+public:
+  unknown_id(const std::string& type, uint64_t id):graph_exception(type), id_(id)
+  {}
+  uint64_t id_;
+};
+  
+class unknown_centrality_type : public graph_exception
+{
+public:
+  unknown_centrality_type(centrality_type t):graph_exception(__func__), t_(t)
+  {}
+  centrality_type t_;
+};
+
+class unknown_query : public graph_exception
+{
+public:
+  unknown_query(const preset_query& q):graph_exception(__func__), q_(q)
+  {}
+  virtual ~unknown_query() throw() {}// mmm...
+  preset_query q_;
+};
+
 }
 }
 
