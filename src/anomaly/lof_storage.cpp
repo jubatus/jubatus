@@ -137,6 +137,10 @@ bool lof_storage::load(istream& is) {
   return true;
 }
 
+void lof_storage::set_nn_engine(recommender::recommender_base* nn_engine) {
+  nn_engine_.reset(nn_engine);
+}
+
 void lof_storage::get_diff(string& diff) const {
   string nn_diff;
   nn_engine_->get_const_storage()->get_diff(nn_diff);
