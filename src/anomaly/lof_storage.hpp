@@ -64,6 +64,8 @@ public:
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
+  void set_nn_engine(recommender::recommender_base* nn_engine);  // just for test
+
   virtual void get_diff(std::string& diff) const;
   virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
   virtual void mix(const std::string& lhs, std::string& rhs) const;
