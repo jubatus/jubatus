@@ -23,7 +23,7 @@
 #include "../common/type.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
 #include "anomaly_type.hpp"
-#include "../storage/anomaly_storage_base.hpp"
+#include "anomaly_storage_base.hpp"
 
 namespace jubatus {
 namespace anomaly {
