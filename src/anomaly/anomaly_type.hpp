@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <exception>
 #include <vector>
 #include <utility>
 #include <string>
@@ -25,5 +26,11 @@
 namespace jubatus {
 
 typedef sfv_t sfv_diff_t;
+
+namespace anomaly {
+
+struct inconsistent_nearest_neighbor_engine_error : std::exception {};
+
+}
 
 }

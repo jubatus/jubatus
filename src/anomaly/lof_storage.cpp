@@ -19,6 +19,8 @@
 #include <sstream>
 #include <stdexcept>
 #include "../common/config_util.hpp"
+#include "../recommender/recommender_factory.hpp"
+#include "anomaly_type.hpp"
 #include "lof_storage.hpp"
 
 using namespace std;
@@ -35,32 +37,18 @@ namespace {
 const uint32_t DEFAULT_NEIGHBOR_NUM = 10;
 const uint32_t DEFAULT_REVERSE_NN_NUM = 30;
 
-template<typename T>
-void deserialize_diff(const string& diff, T& t) {
-  istringstream iss(diff);
-  binary_iarchive ia(iss);
-  ia >> t;
-}
-
-template<typename T>
-string serialize_diff(T& t) {
-  ostringstream oss;
-  binary_oarchive oa(oss);
-  oa << t;
-  return oss.str();
-}
-
 }
 
 lof_storage::lof_storage()
     : neighbor_num_(DEFAULT_NEIGHBOR_NUM),
-      reverse_nn_num_(DEFAULT_REVERSE_NN_NUM) {
+      reverse_nn_num_(DEFAULT_REVERSE_NN_NUM),
+      nn_engine_(recommender::create_recommender("euclid_lsh")) {
 }
 
 lof_storage::lof_storage(const map<string, string>& config)
     : neighbor_num_(get_param(config, "lof:neighbor_num", DEFAULT_NEIGHBOR_NUM)),
       reverse_nn_num_(get_param(config, "lof:reverse_nn_num", DEFAULT_REVERSE_NN_NUM)),
-      nn_engine_(config) {
+      nn_engine_(recommender::create_recommender(config)) {
 }
 
 lof_storage::~lof_storage() {
@@ -69,7 +57,7 @@ lof_storage::~lof_storage() {
 float lof_storage::collect_lrds(const sfv_t& query,
                                 unordered_map<string, float>& neighbor_lrd) const {
   vector<pair<string, float> > neighbors;
-  nn_engine_.neighbor_row(query, neighbors, neighbor_num_);
+  nn_engine_->neighbor_row(query, neighbors, neighbor_num_);
 
   // collect lrd values of the nearest neighbors
   neighbor_lrd.clear();
@@ -87,27 +75,27 @@ float lof_storage::collect_lrds(const sfv_t& query,
 
 void lof_storage::remove_row(const string& row) {
   lof_table_.erase(row);
-  nn_engine_.clear_row(row);
+  nn_engine_->clear_row(row);
 }
 
 void lof_storage::clear() {
   lof_table_.clear();
-  nn_engine_.clear();
+  nn_engine_->clear();
 }
 
 void lof_storage::get_all_row_ids(vector<string>& ids) const {
-  nn_engine_.get_all_row_ids(ids);
+  nn_engine_->get_all_row_ids(ids);
 }
 
 void lof_storage::update_row(const string& row, const sfv_t& diff) {
   sfv_t query;
-  nn_engine_.decode_row(row, query);
+  nn_engine_->decode_row(row, query);
 
   if (!query.empty()) {
     push_neighbors_to_update_queue(query);
   }
 
-  nn_engine_.update_row(row, diff);
+  nn_engine_->update_row(row, diff);
   push_neighbors_to_update_queue(row);
 }
 
@@ -150,13 +138,11 @@ bool lof_storage::load(istream& is) {
 }
 
 void lof_storage::get_diff(string& diff) const {
-  ostringstream oss;
-  binary_oarchive bo(oss);
-  bo << const_cast<lof_table_t&>(lof_table_diff_);
-
   string nn_diff;
-  nn_engine_.get_const_storage()->get_diff(nn_diff);
-  bo << nn_diff;
+  nn_engine_->get_const_storage()->get_diff(nn_diff);
+
+  ostringstream oss;
+  serialize_diff(lof_table_diff_, nn_diff, oss);
 
   diff = oss.str();
 }
@@ -168,7 +154,7 @@ void lof_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
   string nn_diff;
   deserialize_diff(mixed_diff, lof_table_diff_, nn_diff);
 
-  nn_engine_.get_storage()->set_mixed_and_clear_diff(nn_diff);
+  nn_engine_->get_storage()->set_mixed_and_clear_diff(nn_diff);
 
   for (lof_table_t::const_iterator it = lof_table_diff_.begin();
        it != lof_table_diff_.end(); ++it) {
@@ -199,28 +185,44 @@ void lof_storage::mix(const string& lhs, string& rhs) const {
   deserialize_diff(lhs, diff, nn_diff);
   deserialize_diff(rhs, mixed, nn_mixed);
 
-  nn_engine_.get_const_storage()->mix(nn_diff, nn_mixed);
+  nn_engine_->get_const_storage()->mix(nn_diff, nn_mixed);
 
   for (lof_table_t::const_iterator it = diff.begin(); it != diff.end(); ++it) {
     mixed[it->first] = it->second;
   }
 
   ostringstream oss;
-  binary_oarchive bo(oss);
-  bo << mixed << nn_mixed;
+  serialize_diff(mixed, nn_mixed, oss);
 
   rhs = oss.str();
 }
 
 // private
 
-// static
+void lof_storage::serialize_diff(const lof_table_t& table,
+                                 const string& nn_diff,
+                                 ostream& out) const {
+  binary_oarchive bo(out);
+  string name = nn_engine_->type();
+  bo << const_cast<lof_table_t&>(table)
+     << name
+     << const_cast<string&>(nn_diff);
+}
+
 void lof_storage::deserialize_diff(const string& diff,
                                    lof_table_t& table,
-                                   string& nn_diff) {
+                                   string& nn_diff) const {
+  string nn_engine_name;
+
   istringstream iss(diff);
   binary_iarchive bi(iss);
-  bi >> table >> nn_diff;
+  bi >> table >> nn_engine_name;
+
+  if (nn_engine_->type() != nn_engine_name) {
+    throw anomaly::inconsistent_nearest_neighbor_engine_error();
+  }
+
+  bi >> nn_diff;
 }
 
 void lof_storage::update_all_kdist() {
@@ -239,13 +241,13 @@ void lof_storage::update_all_lrd() {
 
 void lof_storage::update_kdist(const string& row) {
   vector<pair<string, float> > neighbors;
-  nn_engine_.neighbor_row(row, neighbors, neighbor_num_);
+  nn_engine_->neighbor_row(row, neighbors, neighbor_num_);
   lof_table_diff_[row].kdist = neighbors.back().second;
 }
 
 void lof_storage::update_lrd(const string& row) {
   vector<pair<string, float> > neighbors;
-  nn_engine_.neighbor_row(row, neighbors, neighbor_num_);
+  nn_engine_->neighbor_row(row, neighbors, neighbor_num_);
 
   float sum_reachability = 0;
   for (size_t i = 0; i < neighbors.size(); ++i) {
@@ -257,7 +259,7 @@ void lof_storage::update_lrd(const string& row) {
 
 void lof_storage::push_neighbors_to_update_queue(const string& row) {
   vector<pair<string, float> > neighbors;
-  nn_engine_.neighbor_row(row, neighbors, reverse_nn_num_);
+  nn_engine_->neighbor_row(row, neighbors, reverse_nn_num_);
 
   for (size_t i = 0; i < neighbors.size(); ++i) {
     update_queue_.insert(neighbors[i].first);
@@ -267,7 +269,7 @@ void lof_storage::push_neighbors_to_update_queue(const string& row) {
 
 void lof_storage::push_neighbors_to_update_queue(const sfv_t& query) {
   vector<pair<string, float> > neighbors;
-  nn_engine_.neighbor_row(query, neighbors, reverse_nn_num_);
+  nn_engine_->neighbor_row(query, neighbors, reverse_nn_num_);
 
   for (size_t i = 0; i < neighbors.size(); ++i) {
     update_queue_.insert(neighbors[i].first);
