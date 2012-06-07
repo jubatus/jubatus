@@ -21,6 +21,7 @@
 #include "../graph/graph_factory.hpp"
 #include "../common/util.hpp"
 #include "../common/membership.hpp"
+#include "graph_client.hpp"
 
 #include "../framework/aggregators.hpp"
 
@@ -33,6 +34,9 @@ using pfi::system::time::get_clock_time;
 
 namespace jubatus { namespace server {
 
+enum graph_serv_error {
+  NODE_ALREADY_EXISTS = 0xDEADBEEF
+};
 
 inline node_id uint642nodeid(uint64_t i){
   return pfi::lang::lexical_cast<node_id, uint64_t>(i);
@@ -64,9 +68,11 @@ std::string graph_serv::create_node(){
   uint64_t nid = idgen_.generate();
   std::string nid_str = pfi::lang::lexical_cast<std::string>(nid);
   // send true create_global_node to other machines.
+  //DLOG(INFO) << __func__ << " " << nid_str;
 
   if(not a_.is_standalone()){
-    // TODO: we need global locking
+    // we dont need global locking, because getting unique id from zk
+    // guarantees there'll be no data confliction
     {
       common::cht ht(zk_, a_.name);
       std::vector<std::pair<std::string, int> > nodes;
@@ -74,40 +80,46 @@ std::string graph_serv::create_node(){
       if(nodes.empty()){
         throw std::runtime_error("fatal: no server found in cht: "+nid_str);
       }
-
+      // this sequences MUST success, in case of failures the whole request should be canceled
       if(nodes[0].first == a_.eth && nodes[0].second == a_.port){
-        create_node_here(nid_str);
+        this->create_node_here(nid_str);
       }else{
-        pfi::network::mprpc::rpc_client c(nodes[0].first, nodes[0].second, 5.0);
-        pfi::lang::function<int(std::string)> f = c.call<int(std::string)>("craete_node_here");
-        f(nid_str);
+        client::graph c(nodes[0].first, nodes[0].second, 5.0);
+        c.create_node_here(a_.name, nid_str);
       }
+
       for(size_t i = 1; i < nodes.size(); ++i){
         try{
           if(nodes[i].first == a_.eth && nodes[i].second == a_.port){
-            create_node_here(nid_str);
+            this->create_node_here(nid_str);
           }else{
-            pfi::network::mprpc::rpc_client c(nodes[i].first, nodes[i].second, 5.0);
-            pfi::lang::function<int(std::string)> f = c.call<int(std::string)>("craete_node_here");
-            f(nid_str);
+            client::graph c(nodes[i].first, nodes[i].second, 5.0);
+            c.create_node_here(a_.name, nid_str);
           }
-        }catch(const std::runtime_error& e){
-          LOG(INFO) << i << "th replica: " << nodes[i].first << ":" << nodes[i].second << " " << e.what();
+        }catch(const graph::local_node_exists& e){ // pass through
+        }catch(const graph::global_node_exists& e){// pass through
+
+        }catch(const std::runtime_error& e){ // error !
+          LOG(INFO) << i+1 << "th replica: " << nodes[i].first << ":" << nodes[i].second << " " << e.what();
         }
       }
-
     }
     std::vector<std::pair<std::string, int> > members;
     get_members(members);
     if(not members.empty()){
       common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
       c.call_async("create_global_node", a_.name, nid_str);
-      c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+
+      try{
+        c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+      }catch(const std::runtime_error & e){ // no results?, pass through
+        DLOG(INFO) << __func__ << " " << e.what();
+      }
     }
   }else{
-    create_node_here(nid_str);
+    this->create_node_here(nid_str);
   }
-  //DLOG(INFO) << "new node created: " << nid_str;
+  DLOG(INFO) << "new node created: " << nid_str;
   return nid_str;
 }
 
@@ -124,8 +136,8 @@ int graph_serv::remove_node(const std::string& nid){
   g_.get_model()->remove_global_node(n2i(nid));
 
   if(not a_.is_standalone()){
-  // TODO: we need global locking
-  // send true remove_node_ to other machine,
+    // send true remove_node_ to other machine,
+    // if conflicts with create_node, users should re-run to ensure removal
     std::vector<std::pair<std::string, int> > members;
     get_members(members);
     
@@ -283,20 +295,43 @@ std::map<std::string, std::map<std::string,std::string> > graph_serv::get_status
 
 int graph_serv::create_node_here(const std::string& nid)
 {
-  graph::node_id_t id = pfi::lang::lexical_cast<graph::node_id_t>(nid);
-  g_.get_model()->create_node(id);
-  g_.get_model()->create_global_node(id);
+  try{
+    graph::node_id_t id = pfi::lang::lexical_cast<graph::node_id_t>(nid);
+    g_.get_model()->create_node(id);
+    g_.get_model()->create_global_node(id);
+    
+  }catch(const graph::local_node_exists& e){ //pass through
+  }catch(const graph::global_node_exists& e){//pass through
+  }catch(const std::runtime_error& e){
+    DLOG(INFO) << e.what() << " " << nid;
+    throw e;
+  }
+
   return 0;
 }
 int graph_serv::create_global_node(const std::string& nid)
 {
-  g_.get_model()->create_global_node(n2i(nid));
+  try{
+    g_.get_model()->create_global_node(n2i(nid));
+  }catch(const graph::local_node_exists& e){
+  }catch(const graph::global_node_exists& e){
+  }catch(const std::runtime_error& e){
+    DLOG(INFO) << e.what() << " " << nid;
+    throw e;
+  }
   return 0;
 } //update internal
 
 int graph_serv::remove_global_node(const std::string& nid)
 {
-  g_.get_model()->remove_global_node(n2i(nid));
+  try{
+    g_.get_model()->remove_global_node(n2i(nid));
+  }catch(const graph::local_node_exists& e){
+  }catch(const graph::global_node_exists& e){
+  }catch(const std::runtime_error& e){
+    DLOG(INFO) << e.what() << " " << nid;
+    throw e;
+  }
   return 0;
 } //update internal
 
