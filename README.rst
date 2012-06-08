@@ -24,6 +24,9 @@ Improvements
   - #6 partially fixed
 
 Bugfix
+  - jubactl doesn't work ver 0.2 and later
+  - jubavisor doesn't work on daemon mode
+  - Asynchronous mprpc client critical bug
   - #47, #50, #5, #34, #36, #37, #31, #19, and other small bugfix
 
 Release 0.2.2 2012/4/6
