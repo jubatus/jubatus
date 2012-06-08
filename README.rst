@@ -13,7 +13,7 @@ LGPL 2.1
 Update history
 --------------
 
-Release 0.2.3 candidate
+Release 0.2.3 2012/6/8
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
@@ -21,13 +21,12 @@ Improvements
   - Refactor generator
   - Error message improve
   - Timeout in unittest expanded
-  - #6 partially fixed
 
 Bugfix
-  - jubactl doesn't work ver 0.2 and later
-  - jubavisor doesn't work on daemon mode
+  - jubactl doesn't work ver 0.2 and later #13
+  - jubavisor doesn't work on daemon mode #5
   - Asynchronous mprpc client critical bug
-  - #47, #50, #5, #34, #36, #37, #31, #19, and other small bugfix
+  - #47, #50, #34, #36, #37, #31, #19, and other small bugfix
 
 Release 0.2.2 2012/4/6
 ~~~~~~~~~~~~~~~~~~~~~~
