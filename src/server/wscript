@@ -32,18 +32,13 @@ def build_one(bld, name, libraries = ''):
 
 def build(bld):
 
-  #new classifier
   build_one(bld, "classifier", 'jubaconverter jubastorage')
-
-  #new regression
   build_one(bld, "regression", 'jubaconverter jubastorage')
-
-  #new recommender
   build_one(bld, "recommender", 'jubaconverter jubastorage')
-
   build_one(bld, "stat")
-
   build_one(bld, "graph")
+
+  build_one(bld, "anomaly", 'jubaconverter jubastorage')
 
   n = bld.path.get_bld().make_node('test_input')
   n.mkdir()

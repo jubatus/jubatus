@@ -8,12 +8,12 @@ int main(int args, char** argv){
   keeper k(keeper_argv(args,argv));
   k.register_broadcast<bool, config_data >("set_config", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_random<config_data >("get_config"); //pass analysis
-  k.register_cht<bool >("clear_row", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
-  k.register_random<std::pair<std::string,float >, datum >("add"); //all_and update
-  k.register_cht<float, datum >("update", pfi::lang::function<float(float,float)>(&all_and)); //update
+  k.register_cht<2, bool >("clear_row", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+  k.register_random<std::pair<std::string,float >, datum >("add"); //pass update
+  k.register_cht<2, float, datum >("update", pfi::lang::function<float(float,float)>(&pass<float >)); //update
   k.register_broadcast<bool >("clear", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_random<float, datum >("calc_score"); //pass analysis
-  k.register_cht<datum >("decode_row", pfi::lang::function<datum(datum,datum)>(&random<datum >)); //analysis
+  k.register_cht<2, datum >("decode_row", pfi::lang::function<datum(datum,datum)>(&pass<datum >)); //analysis
   k.register_broadcast<std::vector<std::string > >("get_all_rows", pfi::lang::function<std::vector<std::string >(std::vector<std::string >,std::vector<std::string >)>(&concat<std::string >)); //analysis
   k.register_broadcast<bool, std::string >("save", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_broadcast<bool, std::string >("load", pfi::lang::function<bool(bool,bool)>(&all_and)); //update

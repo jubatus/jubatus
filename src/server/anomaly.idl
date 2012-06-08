@@ -67,10 +67,10 @@ service anomaly {
   #@cht #@update #@all_and
   bool clear_row(0: string name, 1: string id) # //@cht
 
-  #@random #@update #@all_and
+  #@random #@update #@pass
   tuple<string, float> add(0: string name, 1: datum d) # //@random
 
-  #@cht #@update #@all_and
+  #@cht #@update #@pass
   float update(0: string name, 1: string id, 2: datum d) # //@cht
 
   #@broadcast #@update #@all_and
@@ -79,7 +79,7 @@ service anomaly {
   #@random #@analysis #@pass
   float calc_score(0: string name, 1: datum d) # //@random
 
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   datum decode_row(0: string name, 1: string id) # //@cht
 
   #@broadcast #@analysis #@concat
