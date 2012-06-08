@@ -154,9 +154,37 @@ int graph_serv::remove_node(const std::string& nid){
 int graph_serv::create_edge(const std::string& id, const edge_info& ei)
 { 
   edge_id_t eid = idgen_.generate();
-  g_.get_model()->create_edge(eid, n2i(ei.src), n2i(ei.tgt));
-  g_.get_model()->update_edge(eid, ei.p);
-  // DLOG(INFO) << "edge created (" << eid << ") " << ei.src << " => " << ei.tgt;
+  //TODO: assert id==ei.src
+  
+  if(not a_.is_standalone()){
+    // we dont need global locking, because getting unique id from zk
+    // guarantees there'll be no data confliction
+    std::vector<std::pair<std::string, int> > nodes;
+    find_from_cht(ei.src, 2, nodes);
+    if(nodes.empty()){
+      throw std::runtime_error("fatal: no server found in cht: "+ei.src);
+    }
+    // TODO: assertion: nodes[0] should be myself
+    this->create_edge_here(eid, ei);
+    for(size_t i = 1; i < nodes.size(); ++i){
+      try{
+	if(nodes[i].first == a_.eth && nodes[i].second == a_.port){
+	}else{
+	  client::graph c(nodes[i].first, nodes[i].second, 5.0);
+	  c.create_edge_here(a_.name, eid, ei);
+	}
+      }catch(const graph::local_node_exists& e){ // pass through
+      }catch(const graph::global_node_exists& e){// pass through
+	
+      }catch(const std::runtime_error& e){ // error !
+	LOG(WARNING) << nodes[i].first << ":" << nodes[i].second << " " << e.what();
+      }
+    }
+  }else{
+    this->create_edge_here(eid, ei);
+  }
+
+  DLOG(INFO) << "edge created (" << eid << ") " << ei.src << " => " << ei.tgt;
   return eid;
 }
 
@@ -333,6 +361,18 @@ int graph_serv::remove_global_node(const std::string& nid)
   }
   return 0;
 } //update internal
+
+int graph_serv::create_edge_here(edge_id_t eid, const edge_info& ei)
+{
+  try{
+    g_.get_model()->create_edge(eid, n2i(ei.src), n2i(ei.tgt));
+    g_.get_model()->update_edge(eid, ei.p);
+  }catch(const graph::graph_exception& e){
+    DLOG(INFO) << e.what() << " " << eid;
+    throw e;
+  }
+  return 0;
+}
 
 void graph_serv::after_load(){}
 

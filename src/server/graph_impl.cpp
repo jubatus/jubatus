@@ -22,7 +22,7 @@ public:
   int update_node(std::string name, std::string nid, property p) //update cht(2)
   { JWLOCK__(p_); return p_->update_node(nid, p); }
 
-  int create_edge(std::string name, std::string nid, edge_info ei) //update cht(2)
+  int create_edge(std::string name, std::string nid, edge_info ei) //update cht(1)
   { JWLOCK__(p_); return p_->create_edge(nid, ei); }
 
   int update_edge(std::string name, std::string nid, edge_id_t eid, edge_info ei) //update cht(2)
@@ -78,6 +78,9 @@ public:
 
   int remove_global_node(std::string name, std::string nid) //update 
   { JWLOCK__(p_); return p_->remove_global_node(nid); }
+
+  int create_edge_here(std::string name, edge_id_t eid, edge_info ei) //update 
+  { JWLOCK__(p_); return p_->create_edge_here(eid, ei); }
   int run(){ return p_->start(*this); };
   pfi::lang::shared_ptr<graph_serv> get_p(){ return p_; };
 private:

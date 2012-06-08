@@ -107,6 +107,8 @@ public:
   int create_global_node(const std::string& nid);
   int remove_global_node(const std::string& nid);
 
+  int create_edge_here(edge_id_t eid, const edge_info& ei);
+
   void after_load();
 
 private:

@@ -100,6 +100,10 @@ public:
       return call<int32_t(std::string, std::string)>("remove_global_node")(name, nid);
     }
 
+    int32_t create_edge_here(std::string name, edge_id_t eid, edge_info ei) {
+      return call<int32_t(std::string, edge_id_t, edge_info)>("create_edge_here")(name, eid, ei);
+    }
+
 private:
 };
 

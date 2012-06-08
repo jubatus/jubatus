@@ -42,6 +42,7 @@ public:
     rpc_server::add<int32_t(std::string, std::string) >("create_node_here", pfi::lang::bind(&Impl::create_node_here, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, std::string) >("create_global_node", pfi::lang::bind(&Impl::create_global_node, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<int32_t(std::string, std::string) >("remove_global_node", pfi::lang::bind(&Impl::remove_global_node, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<int32_t(std::string, edge_id_t, edge_info) >("create_edge_here", pfi::lang::bind(&Impl::create_edge_here, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
   }
 };
 
