@@ -17,8 +17,16 @@
 
 #pragma once
 
-#include "inverted_index.hpp"
-#include "lsh.hpp"
-#include "euclid_lsh.hpp"
-#include "minhash.hpp"
-#include "recommender_mock.hpp"
+#include <string>
+#include <utility>
+#include <vector>
+#include "recommender_type.hpp"
+
+namespace jubatus {
+namespace recommender {
+
+sfv_t make_sfv(const std::string& repr);
+std::vector<std::pair<std::string, float> > make_ids(const std::string& repr);
+
+}
+}

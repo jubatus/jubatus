@@ -38,6 +38,8 @@ recommender_base* create_recommender(const map<string, string>& config){
     return new lsh;
   } else if (name == "euclid_lsh") {
     return new euclid_lsh(config);
+  } else if (name == "mock") {
+    return new recommender_mock;
   } else {
     throw unsupported_method(name);
   }
@@ -52,6 +54,8 @@ recommender_base* create_recommender(const string& name) {
     return new lsh;
   } else if (name == "euclid_lsh") {
     return new euclid_lsh;
+  } else if (name == "mock") {
+    return new recommender_mock;
   } else {
     throw unsupported_method(name);
   }
