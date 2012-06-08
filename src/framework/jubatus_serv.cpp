@@ -26,6 +26,7 @@
 #include <fstream>
 #include <sstream>
 #include <pficommon/system/time_util.h>
+#include <cassert>
 
 using std::vector;
 using std::string;
@@ -337,5 +338,21 @@ void jubatus_serv::get_members(std::vector<std::pair<std::string,int> >& ret)
 #endif
 
 }
+
+void jubatus_serv::find_from_cht(const std::string& key, size_t n,
+				 std::vector<std::pair<std::string,int> >& out)
+{
+  out.clear();
+#ifdef HAVE_ZOOKEEPER_H
+  common::cht ht(zk_, a_.name);
+  ht.find(key, out, n); //replication number of local_node
+#else
+  //cannot reach here, assertion!
+  assert(a_.is_standalone());
+  //out.push_back(make_pair(a_.eth, a_.port));
+#endif
+
+}
+
 
 }}

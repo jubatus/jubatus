@@ -74,9 +74,8 @@ std::string graph_serv::create_node(){
     // we dont need global locking, because getting unique id from zk
     // guarantees there'll be no data confliction
     {
-      common::cht ht(zk_, a_.name);
       std::vector<std::pair<std::string, int> > nodes;
-      ht.find(nid_str, nodes, 2); //replication number of local_node
+      find_from_cht(nid_str, 2, nodes);
       if(nodes.empty()){
         throw std::runtime_error("fatal: no server found in cht: "+nid_str);
       }
