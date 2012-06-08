@@ -14,7 +14,7 @@ Update history
 --------------
 
 Release 0.3.0 2012/7/1
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
   - Distributed Graph Processing
@@ -23,15 +23,21 @@ Improvements
     - Shortest path search
 
   - New neighbor-search algorithm for recommender: minhash
-  - libevent support (very partially)
 
+Release 0.2.3 2012/6/8
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Improvements
   - Asynchronous call to multiple servers at once, both keeper and mix - common/mprpc
   - Refactor generator
   - Error message improve
   - Timeout in unittest expanded
 
 Bugfix
-  - #47, #50, #5, #34, #36, #37, #31, #19, and other small bugfix
+  - jubactl doesn't work ver 0.2 and later #13
+  - jubavisor doesn't work on daemon mode #5
+  - Asynchronous mprpc client critical bug
+  - #47, #50, #34, #36, #37, #31, #19, and other small bugfix
 
 Release 0.2.2 2012/4/6
 ~~~~~~~~~~~~~~~~~~~~~~
