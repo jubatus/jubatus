@@ -9,7 +9,7 @@ namespace jubatus {
 using namespace std;
 
 TEST(re2_splitter, trivial) {
-  re2_splitter r("([0-9]+)", 1, 0);
+  re2_splitter r("([0-9]+)", 1);
 
   vector<pair<size_t, size_t> > bs;
   r.split("aaa012bbb12ccc", bs);
@@ -24,7 +24,7 @@ TEST(re2_splitter, trivial) {
 }
 
 TEST(re2_splitter, end) {
-  re2_splitter r("/([^/]+)/", 1, 1);
+  re2_splitter r("/([^/]+)/", 1);
   vector<pair<size_t, size_t> > bs;
   r.split("/hoge/fuga/foo/hogee", bs);
   ASSERT_EQ(3u, bs.size());
@@ -37,11 +37,9 @@ TEST(re2_splitter, end) {
 }
 
 TEST(re2_splitter, error) {
-  EXPECT_THROW(re2_splitter("[", 0, 0), converter_exception);
-  EXPECT_THROW(re2_splitter("(.+)", 2, 0), converter_exception);
-  EXPECT_THROW(re2_splitter("(.+)", -1, 0), converter_exception);
-  EXPECT_THROW(re2_splitter("(.+)", 0, 2), converter_exception);
-  EXPECT_THROW(re2_splitter("(.+)", 0, -1), converter_exception);
+  EXPECT_THROW(re2_splitter("[", 0), converter_exception);
+  EXPECT_THROW(re2_splitter("(.+)", 2), converter_exception);
+  EXPECT_THROW(re2_splitter("(.+)", -1), converter_exception);
 }
 
 TEST(re2_splitter, create_error) {
@@ -49,9 +47,6 @@ TEST(re2_splitter, create_error) {
   EXPECT_THROW(create(p), converter_exception);
   p["pattern"] = "(.+)";
   p["group"] = "a";
-  EXPECT_THROW(create(p), converter_exception);
-  p["group"] = "1";
-  p["end"] = "a";
   EXPECT_THROW(create(p), converter_exception);
 }
 

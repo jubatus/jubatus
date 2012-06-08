@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -43,9 +43,8 @@ void status(const string&, const string&);
 int main(int args, char** argv){
   cmdline::parser p;
   p.add<std::string>("cmd", 'c', "command to send servers(start|stop|save|load)", true);
-  p.add<std::string>("type", 't', "learning machine type", true);
+  p.add<std::string>("server", 's', "server exec file of learning machine (jubaclassifier, ...)", true);
   p.add<std::string>("name", 'n', "learning machine name", true);
-  p.add<std::string>("storage", 's', "storage type (available in classifier)", false);
   p.add<unsigned int>("num", 'N', "num of process in the whole cluster (one on each server when 0)", false);
   p.add<std::string>("zookeeper", 'z', "ZooKeeper location environment: 'ZK' is available instead", false);
   p.add("debug", 'd', "debug mode");
@@ -56,12 +55,7 @@ int main(int args, char** argv){
   }
 
   string cmd = p.get<std::string>("cmd");
-  string name = p.get<std::string>("type") + "/" + p.get<std::string>("name");
-
-  if(p.get<std::string>("storage").size() > 0){
-    name += "/";
-    name += p.get<std::string>("storage");
-  }
+  string name = p.get<std::string>("server") + "/" + p.get<std::string>("name");
 
   unsigned int N = p.get<unsigned int>("num");
 
@@ -83,15 +77,6 @@ int main(int args, char** argv){
   if(cmd == "status"){
     status(p.get<string>("name"), zk);
     return 0;
-  }
-
-  // a bit mess
-  if(p.get<std::string>("type") == "classifier" &&
-     (p.get<std::string>("storage") == "local" || p.get<std::string>("storage") == "") &&
-     cmd == "start" &&
-     N != 1 ){
-    cout << "standalone mode with multiple instances(N=" << N << ") is not available from " << PROGNAME << endl;
-    exit(1);
   }
 
   if(cmd == "start" or cmd == "stop"){

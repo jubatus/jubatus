@@ -71,10 +71,10 @@ PROGRAM = jenerator
 
 
 test: $(PROGRAM)  small.idl
-	./$(PROGRAM) small.idl
-#	-diff recommender.idl ../../src/server/recommender.idl
-#	-diff recommender_impl.cpp ../../src/server/recommender_impl.cpp
-#	-diff recommender_keeper.cpp ../../src/server/recommender_keeper.cpp
+#	./$(PROGRAM) small.idl
+	./$(PROGRAM) ../../src/server/recommender.idl -i
+	-diff recommender_impl.cpp ../../src/server/recommender_impl.cpp
+	-diff recommender_keeper.cpp ../../src/server/recommender_keeper.cpp
 
 OCamlProgramInstall(install, /usr/local/bin, $(PROGRAM), $(FILES))
 

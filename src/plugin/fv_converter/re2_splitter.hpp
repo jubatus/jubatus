@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,13 +29,12 @@ namespace jubatus {
 
 class re2_splitter : jubatus::fv_converter::word_splitter {
  public:
-  re2_splitter(const std::string& regexp, int group, int end);
+  re2_splitter(const std::string& regexp, int group);
   void split(const std::string& str,
              std::vector<std::pair<size_t, size_t> >& bounds);
  private:
   re2::RE2 re_;
   int group_;
-  int end_;
 };
 
 }

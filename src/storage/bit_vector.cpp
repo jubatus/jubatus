@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,8 @@ bit_vector::bit_vector() : bit_num_(0) {}
 bit_vector::~bit_vector() {}
 
 bool bit_vector::operator==(const bit_vector& v) const {
-  return equal(bits_.begin(), bits_.end(), v.bits_.begin());
+  return v.bit_num() == bit_num() &&
+      equal(bits_.begin(), bits_.end(), v.bits_.begin());
 }
 
 void bit_vector::resize_and_clear(uint64_t bit_num){

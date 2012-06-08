@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -43,25 +43,16 @@ process::process(const std::string& zkhosts, const std::string& logfile):
   zk_hosts_(zkhosts), logfile_(logfile){}
 process::~process(){}
 
-// str : "<type>/<name>[/<storage>]"
+// str : "<server>/<name>
 bool process::set_names(const std::string& str){
 
   if(str.find(" ",0) != std::string::npos){
     return false;
   }
-  type_ = str.substr(0, str.find_first_of("/"));
+  server_ = str.substr(0, str.find_first_of("/"));
   name_ = str.substr(str.find_first_of("/")+1);
 
-  if(name_.find("/",0) != std::string::npos){
-    storage_ = name_.substr(name_.find_first_of("/")+1);
-    name_ = name_.substr(0,name_.find_first_of("/"));
-  }else{
-    storage_="local";
-  }
-  if(storage_.find("/",0) != std::string::npos){
-    return false;
-  }
-  return true;
+  return !(server_.empty() || name_.empty());
 }
 
   // open file and connect fd to the new file handle
@@ -79,9 +70,9 @@ void redirect(const char* filename, int fd){
 
 bool process::spawn_link(int p){
   // TODO: set better path in installation or else
-  // set $PATH where you can find jubatus_classifier
-  std::string cmd = "juba" + type_; // + "_server";
-  LOG(INFO) << "forking " << cmd << " with port " << p << " and " << " (" << storage_ << ")";
+  // set $PATH where you can find jubatus servers
+  std::string cmd = server_;  // TODO: check cmd exits
+  LOG(INFO) << "forking " << cmd << " with port " << p;
 
   pid_ = fork();
   if(pid_ > 0){
@@ -95,22 +86,14 @@ bool process::spawn_link(int p){
     redirect("/dev/null", 2);
     util::append_env_path("LD_LIBRARY_PATH", "/usr/local/lib");
     //    setenv("LD_LIBRARY_PATH", "/usr/local/lib", true);
-    if(type_ == "classifier"){
-      if(storage_ == ""){
-        storage_ = "local_mixture";
-      }
-      
-      const char * const argv[12] =
-        { cmd.c_str(),
-          "-z", zk_hosts_.c_str(),
-          "-n", name_.c_str(),
-          "-S", storage_.c_str(),
-          "-p", lexical_cast<std::string,int>(p).c_str(),
-          NULL };
-      execvp(cmd.c_str(), (char* const*)argv );
-      perror(cmd.c_str());
-
-    }
+    const char * const argv[12] =
+      { cmd.c_str(),
+        "-z", zk_hosts_.c_str(),
+        "-n", name_.c_str(),
+        "-p", lexical_cast<std::string,int>(p).c_str(),
+        NULL };
+    execvp(cmd.c_str(), (char* const*)argv);
+    perror(cmd.c_str());  // execv only returns on error
 
   }else{
     perror("failed on forking new process");
@@ -146,8 +129,7 @@ bool process::kill(){
 
 bool process::has_samespec(const process& rhs) const {
   return ( get_name() == rhs.get_name() and
-           get_type() == rhs.get_type() and
-           get_storage() == rhs.get_storage() );
+           get_server() == rhs.get_server() );
 }
 
 }

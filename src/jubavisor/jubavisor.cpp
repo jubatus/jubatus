@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,7 @@
 
 #include <pficommon/concurrent/lock.h>
 
+#include <csignal>
 #include <glog/logging.h>
 
 #include "jubavisor.hpp"
@@ -35,6 +36,10 @@ jubervisor::jubervisor(const std::string& hosts, int port, int max,
   logfile_(logfile),
   max_children_(max)
 {
+  // portable code for socket write(2) MSG_NOSIGNAL
+  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+    throw std::runtime_error("can't ignore SIGPIPE");
+
   zk_->create(JUBATUS_BASE_PATH, "");
   zk_->create(JUBAVISOR_BASE_PATH, "");
   zk_->create(ACTOR_BASE_PATH, "");
@@ -61,10 +66,10 @@ jubervisor::~jubervisor(){
 }
 
 
-// str : "<type>/<name>[/<storage>]"
-// type : "classifier" ...
+// str : "<server>/<name>
+// server : "jubaclassifier" ...
 // name : any but ""
-// -> exec ./jubatus_<type> -n <name> -p <rpc_port> -z <zk>
+// -> exec ./<server> -n <name> -p <rpc_port> -z <zk>
 int jubervisor::start(std::string str, unsigned int N){
   scoped_lock lk(m_);
   LOG(INFO) << str << " " << N;
@@ -152,8 +157,7 @@ void jubervisor::stop_all(){
     for(size_t i = 0; i < it->second.size(); ++i){
       if(!it->second[i].kill()){
         LOG(ERROR) << "failed stopping process: name(" << it->second[i].get_name()
-                   << ") type(" << it->second[i].get_type()
-                   << ") storage(" << it->second[i].get_storage()
+                   << ") server(" << it->second[i].get_server()
                    << ") ";
         perror(__func__);
       }
@@ -162,36 +166,3 @@ void jubervisor::stop_all(){
   children_.clear();
 }
 
-// void jubervisor::die_if_deleted(int type, int state, std::string path){
-//   if(type == ZOO_DELETED_EVENT){
-//     LOG(INFO) << "terminating: deleted " << path << " at lock service.";
-//     this->stop_all();
-//     exit(-1);
-//   }
-// }
-
-  /*
-
-// jubatusctl ensure type/name[/storage]
-int jubervisor::ensure(std::string str){
-  process p(zk_->get_hosts());
-  p.set_names(str);
-
-  scoped_lock lk(m_);
-  std::map<std::string,process>::const_iterator it = children_.find(str);
-  if(it!=children_.end()){
-
-    if( p.has_samespec(it->second) ){
-      return 0;
-    }
-
-    // wrong spec, thus restart with new spec
-    int r = stop_(str, p);
-    if(!(r == 0 && p.kill())){ // FIXME: kill takes rather long time but can't release lock.
-      LOG(ERROR) << "failed stopping process";
-      return r;
-    }
-  }
-  return start_(str);
-}
-  */

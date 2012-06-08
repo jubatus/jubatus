@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -68,6 +68,9 @@ public:
   int get_port()const{ return a_.port; };
   int get_threadum()const{ return a_.threadnum; };
 
+  std::vector<std::string> mix_agg(const std::vector<std::string>& lhs,
+   				   const std::vector<std::string>& rhs);
+    
 protected:
   void build_local_path_(std::string& out, const std::string& type, const std::string& id){
     out = base_path_ + "/";

@@ -22,6 +22,19 @@ TEST(bit_vector, trivial) {
   //EXPECT_EQ(1u, v2.calc_hamming_similarity(v1)); // TODO this line is not work
 }
 
+TEST(bit_vector, longer_vs_shorter_inequality) {
+  bit_vector v1, v2;
+  v1.resize_and_clear(2);
+  v2.resize_and_clear(1);
+  EXPECT_FALSE(v1 == v2);
+}
+
+TEST(bit_vector, shorter_vs_longer_inequality) {
+  bit_vector v1, v2;
+  v1.resize_and_clear(1);
+  v2.resize_and_clear(2);
+  EXPECT_FALSE(v1 == v2);
+}
 
 }
 }

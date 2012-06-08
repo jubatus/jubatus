@@ -1,6 +1,6 @@
 /*
  Jubatus: Online machine learning framework for distributed environment
- Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+ Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 
 %{
 open Printf
+open Stree
 
 let _ = Parsing.set_trace false;;
 let debugprint = ref false;;
@@ -66,45 +67,45 @@ exp0:
 typedef:
 	| TYPEDEF LITERAL DEFINE a_type{
 	  let _ = Stree.add_known_types $2 in
-	  `Typedef($2, $4) }
+	  Typedef($2, $4) }
 ;
 
 a_type:
 	| a_type QUESTION {
-	  `Nullable($1)
+	  Nullable($1)
 	}
 	| LITERAL {
 	  print ">anytype: LITERAL";
 	  match $1 with
-	    | "void" -> `Void;
-	    | "object" -> `Object;
-	    | "bool"   -> `Bool;
-	    | "byte"   -> `Byte;
-	    | "short"  -> `Short;
-	    | "int" -> `Int;
-	    | "long" -> `Long;
-	    | "ubyte" -> `Ubyte;
-	    | "ushort" -> `Ushort;
-	    | "uint"   -> `Uint;
-	    | "ulong"  -> `Ulong;
-	    | "float"  -> `Float;
- 	    | "double" -> `Double
-	    | "raw"    -> `Raw;
-	    | "string" -> `String;
+	    | "void" -> Void;
+	    | "object" -> Object;
+	    | "bool"   -> Bool;
+	    | "byte"   -> Byte;
+	    | "short"  -> Short;
+	    | "int" -> Int;
+	    | "long" -> Long;
+	    | "ubyte" -> Ubyte;
+	    | "ushort" -> Ushort;
+	    | "uint"   -> Uint;
+	    | "ulong"  -> Ulong;
+	    | "float"  -> Float;
+ 	    | "double" -> Double
+	    | "raw"    -> Raw;
+	    | "string" -> String;
 	    | s when Stree.check_type s ->
-	      `Struct(s);
+	      Struct(s);
 	    | s ->
 	      print ("unknown type: " ^ s);
 	      raise (Stree.Unknown_type s)
 	}
 	| LITERAL LBRACE types RBRACE {
 	  match $1 with
-	    | "list" -> `List( (List.hd $3) );
+	    | "list" -> List( (List.hd $3) );
 	    | "map"  ->
 	      let left = List.hd $3 in
 	      let right = List.hd (List.tl $3) in
-	      `Map(left, right);
-	    | "tuple" -> `Tuple($3);
+	      Map(left, right);
+	    | "tuple" -> Tuple($3);
 	    (* user defined types?   hoge<hage, int> *)
 	    | s ->
 	      print ("unknown container: " ^ s);
@@ -119,7 +120,7 @@ types:
 enum:
 	| ENUM LITERAL LBRACE2 numbers RBRACE2 {
 	  Stree.add_known_types $2;
-	  `Enum($2, $4)
+	  Enum($2, $4)
 	}
 numbers:
 	| INT COLON LITERAL {
@@ -133,14 +134,14 @@ numbers:
 msg:
 	| MESSAGE LITERAL LBRACE2 fields RBRACE2 {
 	  Stree.add_known_types $2;
-	  `Message($2, $4)
+	  Message($2, $4)
 	}
 ex:
 	| EXCEPTION LITERAL LBRACE2 fields RBRACE2 {
-	  `Exception($2, $4, "")
+	  Exception($2, $4, "")
 	}
 	| EXCEPTION LITERAL LBRACE LITERAL LBRACE2 fields RBRACE2 {
-	  `Exception($2, $6, $4)
+	  Exception($2, $6, $4)
 	}
 
 fields:
@@ -149,16 +150,16 @@ fields:
 ;
 field:
 	| INT COLON a_type LITERAL {
-	  `Field($1, $3, $4)
+	  Field($1, $3, $4)
 	}
 /* default value is not yet implemented | INT COLON a_type LITERAL DEFINE INT {
-	  ($1, $3, $4, `) 
+	  ($1, $3, $4, ) 
 	} */
 ;
 service: /* TODO: implement version and new RPC-spec */
 	| SERVICE LITERAL LBRACE2 api_defs RBRACE2 {
 	  print (" service > "^$2);
-	  `Service($2, $4)
+	  Service($2, $4)
 	}
 api_defs:
 	| api_def { [$1] }
@@ -166,13 +167,13 @@ api_defs:
 ;
 api_def: /* TODO: implement inherit syntax */
 	| decorators a_type LITERAL LRBRACE RRBRACE
-	    { `Method($2, $3, [], $1) }
+	    { Method($2, $3, [], $1) }
 	| decorators a_type LITERAL LRBRACE cfields RRBRACE
-	    { `Method($2, $3, $5, $1) }
+	    { Method($2, $3, $5, $1) }
 	| a_type LITERAL LRBRACE RRBRACE
-	    { `Method($1, $2, [], []) }
+	    { Method($1, $2, [], []) }
 	| a_type LITERAL LRBRACE cfields RRBRACE
-	    { `Method($1, $2, $4, []) }
+	    { Method($1, $2, $4, []) }
 
 decorators:
 	| DECORATOR { [$1] }
@@ -185,7 +186,7 @@ cfields:
 
 /* TODO: include "hoge.rdl"
 	| INCLUDE LBRACE LITERAL RBRACE   {
-	  print ("ignoring inclusion " ^ $3); `Nothing
+	  print ("ignoring inclusion " ^ $3); Nothing
 	}
 */
 ;

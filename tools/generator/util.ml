@@ -1,6 +1,6 @@
 (*
  Jubatus: Online machine learning framework for distributed environment
- Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+ Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,8 @@
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 *)
+
+open Stree
 
 let output_endline out_channel str =
   output_string out_channel str;
@@ -71,77 +73,77 @@ let get_basename filename =
 
 (* in C++ *)
 let rec decl_type2string = function
-  | `Void    -> "void";
-  | `Object  -> "void*";
-  | `Bool    -> "bool";
-  | `Byte    -> "char";
-  | `Short   -> "short";
-  | `Int     -> "int";
-  | `Long    -> "long";
-  | `Ubyte   -> "unsigned char";
-  | `Ushort  -> "unsigned short";
-  | `Uint    -> "unsigned int";
-  | `Ulong   -> "unsigned long";
-  | `Float   -> "float";
-  | `Double  -> "double";
-  | `Raw     -> "char*";
-  | `String  -> "std::string";
-  | `Struct(s) -> s;
-  | `List(t)   -> "std::vector<"^(decl_type2string t)^" >";
-  | `Map(k,v)  -> "std::map<"^(decl_type2string k)^","^(decl_type2string v)^" >";
-  | `Tuple(ts) when List.length ts == 2 ->
-    "std::pair<"^(String.concat "," (List.map decl_type2string ts))^" >";
-  | `Tuple(ts) ->
-    "msgpack::type::tuple<"^(String.concat "," (List.map decl_type2string ts))^" >";
-  | `Nullable(t) -> "/* nullable */" ^(decl_type2string t);;
+  | Void    -> "void"
+  | Object  -> "void*"
+  | Bool    -> "bool"
+  | Byte    -> "char"
+  | Short   -> "short"
+  | Int     -> "int"
+  | Long    -> "long"
+  | Ubyte   -> "unsigned char"
+  | Ushort  -> "unsigned short"
+  | Uint    -> "unsigned int"
+  | Ulong   -> "unsigned long"
+  | Float   -> "float"
+  | Double  -> "double"
+  | Raw     -> "char*"
+  | String  -> "std::string"
+  | Struct s -> s
+  | List t   -> "std::vector<"^(decl_type2string t)^" >"
+  | Map(k,v)  -> "std::map<"^(decl_type2string k)^","^(decl_type2string v)^" >"
+  | Tuple ts when List.length ts == 2 ->
+    "std::pair<"^(String.concat "," (List.map decl_type2string ts))^" >"
+  | Tuple ts ->
+    "msgpack::type::tuple<"^(String.concat "," (List.map decl_type2string ts))^" >"
+  | Nullable t -> "/* nullable */" ^(decl_type2string t);;
 
 let rec decl_type2string_ref = function
-  | `Void    -> "void";
-  | `Object  -> "void*";
-  | `Bool    -> "bool";
-  | `Byte    -> "char";
-  | `Short   -> "short";
-  | `Int     -> "int";
-  | `Long    -> "long";
-  | `Ubyte   -> "unsigned char";
-  | `Ushort  -> "unsigned short";
-  | `Uint    -> "unsigned int";
-  | `Ulong   -> "unsigned long";
-  | `Float   -> "float";
-  | `Double  -> "double";
-  | `Raw     -> "char*";
-  | `String  -> "std::string&";
-  | `Struct(s) -> s ^ "&";
-  | `List(t)   -> "std::vector<"^(decl_type2string t)^" >&";
-  | `Map(k,v)  -> "std::map<"^(decl_type2string k)^","^(decl_type2string v)^" >&";
-  | `Tuple(ts) when List.length ts == 2 ->
-    "std::pair<"^(String.concat "," (List.map decl_type2string ts))^" >";
-  | `Tuple(ts) ->
-    "msgpack::type::tuple<"^(String.concat "," (List.map decl_type2string ts))^" >&";
-  | `Nullable(t) -> "/* nullable */" ^(decl_type2string t);;
+  | Void    -> "void"
+  | Object  -> "void*"
+  | Bool    -> "bool"
+  | Byte    -> "char"
+  | Short   -> "short"
+  | Int     -> "int"
+  | Long    -> "long"
+  | Ubyte   -> "unsigned char"
+  | Ushort  -> "unsigned short"
+  | Uint    -> "unsigned int"
+  | Ulong   -> "unsigned long"
+  | Float   -> "float"
+  | Double  -> "double"
+  | Raw     -> "char*"
+  | String  -> "std::string&"
+  | Struct s -> s ^ "&"
+  | List t   -> "std::vector<"^(decl_type2string t)^" >&"
+  | Map(k,v)  -> "std::map<"^(decl_type2string k)^","^(decl_type2string v)^" >&"
+  | Tuple ts when List.length ts == 2 ->
+    "std::pair<"^(String.concat "," (List.map decl_type2string ts))^" >"
+  | Tuple ts ->
+    "msgpack::type::tuple<"^(String.concat "," (List.map decl_type2string ts))^" >&"
+  | Nullable t -> "/* nullable */" ^(decl_type2string t);;
 
 
 let rec decl_type2string_const_ref = function
-  | `Void    -> "void";
-  | `Object  -> "const void*";
-  | `Bool    -> "bool";
-  | `Byte    -> "char";
-  | `Short   -> "short";
-  | `Int     -> "int";
-  | `Long    -> "long";
-  | `Ubyte   -> "unsigned char";
-  | `Ushort  -> "unsigned short";
-  | `Uint    -> "unsigned int";
-  | `Ulong   -> "unsigned long";
-  | `Float   -> "float";
-  | `Double  -> "double";
-  | `Raw     -> "const char*";
-  | `String  -> "const std::string&";
-  | `Struct(s) -> "const "^ s ^ "&";
-  | `List(t)   -> "const std::vector<"^(decl_type2string t)^" >&";
-  | `Map(k,v)  -> "const std::map<"^(decl_type2string k)^","^(decl_type2string v)^" >&";
-  | `Tuple(ts) when List.length ts == 2 ->
+  | Void    -> "void";
+  | Object  -> "const void*";
+  | Bool    -> "bool";
+  | Byte    -> "char";
+  | Short   -> "short";
+  | Int     -> "int";
+  | Long    -> "long";
+  | Ubyte   -> "unsigned char";
+  | Ushort  -> "unsigned short";
+  | Uint    -> "unsigned int";
+  | Ulong   -> "unsigned long";
+  | Float   -> "float";
+  | Double  -> "double";
+  | Raw     -> "const char*";
+  | String  -> "const std::string&";
+  | Struct(s) -> "const "^ s ^ "&";
+  | List(t)   -> "const std::vector<"^(decl_type2string t)^" >&";
+  | Map(k,v)  -> "const std::map<"^(decl_type2string k)^","^(decl_type2string v)^" >&";
+  | Tuple(ts) when List.length ts == 2 ->
     "std::pair<"^(String.concat "," (List.map decl_type2string ts))^" >";
-  | `Tuple(ts) ->
+  | Tuple(ts) ->
     "const msgpack::type::tuple<"^(String.concat "," (List.map decl_type2string ts))^" >&";
-  | `Nullable(t) -> "const /* nullable */" ^(decl_type2string t);;
+  | Nullable(t) -> "const /* nullable */" ^(decl_type2string t);;

@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -49,6 +49,7 @@ struct server_argv {
   int port;
   int timeout;
   int threadnum;
+  std::string program_name;
   std::string z;
   std::string name;
   std::string tmpdir;
@@ -94,6 +95,8 @@ void exit_on_term2(int, siginfo_t*, void*);
 void set_exit_on_term();
 #endif
 
+void ignore_sigpipe();
+
 template <class ImplServerClass, class UserServClass>
 int run_server(int args, char** argv){
 
@@ -116,6 +119,7 @@ int run_server(int args, char** argv){
   set_exit_on_term();
 
 #endif // HAVE_ZOOKEEPER_H
+  ignore_sigpipe();
   return impl_server.run();
 };
 

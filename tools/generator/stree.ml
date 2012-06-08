@@ -1,6 +1,6 @@
 (*
  Jubatus: Online machine learning framework for distributed environment
- Copyright (C) 2011,2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+ Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,28 +17,29 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 *)
 
-type decl_type = [ `Void | `Object | `Bool
-		 | `Byte | `Short  | `Int | `Long
-		 | `Ubyte | `Ushort | `Uint | `Ulong
-		 | `Float | `Double 
-		 | `Raw   | `String 
-		 | `Struct of string
-		 | `List of decl_type
-		 | `Map of decl_type * decl_type
-		 | `Tuple of decl_type list
-		 | `Nullable of decl_type
+type decl_type = Void | Object | Bool
+		 | Byte | Short | Int | Long 
+		 | Ubyte | Ushort | Uint | Ulong
+		 | Float | Double | Raw | String 
+		 | Struct of string
+		 | List of decl_type
+		 | Map of decl_type * decl_type
+		 | Tuple of decl_type list
+		 | Nullable of decl_type 
 (*		 | `Null *)
-		 ]
     
-type field_type = [`Field of int * decl_type * string ]
-type method_type = [`Method of decl_type * string * (field_type list) * (string list)]
+type field_type = Field of int * decl_type * string
+type method_type = Method of decl_type * string * ( field_type list) * (string list)
+(*[`Method of decl_type * string * (field_type list) * (string list)] *)
 
-type stree = [ `Typedef of string * decl_type
-	     | `Enum of string * (int * string) list
-	     | `Message of string * field_type list
-	     | `Exception of string * field_type list * string
-	     | `Service of string * method_type list
-	     ]
+type stree = Typedef of string * decl_type
+	     | Enum of string * (int * string) list
+	     | Message of string * field_type list
+	     | Exception of string * field_type list * string
+	     | Service of string * method_type list
+
+type routing_type = Random | Cht | Broadcast
+type reqtype = Update | Analysis
 
 let known_types = Hashtbl.create 256;;
 
