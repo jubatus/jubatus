@@ -19,13 +19,13 @@ public:
   config_data get_config(std::string name) //analysis random
   { JRLOCK__(p_); return p_->get_config(); }
 
-  bool clear_row(std::string name, std::string id) //update cht
+  bool clear_row(std::string name, std::string id) //update cht(2)
   { JWLOCK__(p_); return p_->clear_row(id); }
 
   std::pair<std::string,float > add(std::string name, datum d) //update random
   { JWLOCK__(p_); return p_->add(d); }
 
-  float update(std::string name, std::string id, datum d) //update cht
+  float update(std::string name, std::string id, datum d) //update cht(2)
   { JWLOCK__(p_); return p_->update(id, d); }
 
   bool clear(std::string name) //update broadcast
@@ -34,7 +34,7 @@ public:
   float calc_score(std::string name, datum d) //analysis random
   { JRLOCK__(p_); return p_->calc_score(d); }
 
-  datum decode_row(std::string name, std::string id) //analysis cht
+  datum decode_row(std::string name, std::string id) //analysis cht(2)
   { JRLOCK__(p_); return p_->decode_row(id); }
 
   std::vector<std::string > get_all_rows(std::string name) //analysis broadcast
