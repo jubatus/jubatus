@@ -104,17 +104,23 @@ string lof_storage::name() const {
 }
 
 float lof_storage::get_kdist(const string& row) const {
-  lof_table_t::const_iterator it = lof_table_.find(row);
-  if (it == lof_table_.end()) {
-    throw runtime_error("lof_storage::get_kdist: row \"" + row + "\" does not exist");
+  lof_table_t::const_iterator it = lof_table_diff_.find(row);
+  if (it == lof_table_diff_.end()) {
+    it = lof_table_.find(row);
+    if (it == lof_table_.end()) {
+      throw runtime_error("lof_storage::get_kdist: row \"" + row + "\" does not exist");
+    }
   }
   return it->second.kdist;
 }
 
 float lof_storage::get_lrd(const string& row) const {
-  lof_table_t::const_iterator it = lof_table_.find(row);
-  if (it == lof_table_.end()) {
-    throw runtime_error("lof_storage::get_lrd: row \"" + row + "\" does not exist");
+  lof_table_t::const_iterator it = lof_table_diff_.find(row);
+  if (it == lof_table_diff_.end()) {
+    it = lof_table_.find(row);
+    if (it == lof_table_.end()) {
+      throw runtime_error("lof_storage::get_lrd: row \"" + row + "\" does not exist");
+    }
   }
   return it->second.lrd;
 }
