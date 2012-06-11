@@ -20,7 +20,7 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'PFICOMMON jubatus_anomaly jubacommon')
+      use = 'PFICOMMON jubatus_anomaly jubacommon jubatus_recommender')
 
   map(make_test, [
 #      'anomaly_test.cpp', # FIXME
