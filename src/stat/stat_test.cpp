@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include "stat.hpp"
 #include <pficommon/math/random.h>
-#include <math.h>
 
 using namespace std;
 using namespace pfi::lang;
