@@ -217,14 +217,24 @@ class datum_to_fv_converter_impl {
   void filter_strings(const datum::sv_t& string_values,
                       datum::sv_t& filtered_values) const {
     for (size_t i = 0; i < string_filter_rules_.size(); ++i) {
-      string_filter_rules_[i].filter(string_values, filtered_values);
+      datum::sv_t update;
+      string_filter_rules_[i].filter(string_values, update);
+      string_filter_rules_[i].filter(filtered_values, update);
+
+      filtered_values.insert(filtered_values.end(),
+                             update.begin(), update.end());
     }
   }
 
   void filter_nums(const datum::nv_t& num_values,
                    datum::nv_t& filtered_values) const {
     for (size_t i = 0; i < num_filter_rules_.size(); ++i) {
-      num_filter_rules_[i].filter(num_values, filtered_values);
+      datum::nv_t update;
+      num_filter_rules_[i].filter(num_values, update);
+      num_filter_rules_[i].filter(filtered_values, update);
+
+      filtered_values.insert(filtered_values.end(),
+                             update.begin(), update.end());
     }
   }
 
