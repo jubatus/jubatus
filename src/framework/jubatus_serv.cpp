@@ -74,6 +74,7 @@ int jubatus_serv::start(pfi::network::mprpc::rpc_server& serv){
     idgen_.set_ls(zk_, counter_path);
 
     if( a_.join ){ // join to the existing cluster with -j option
+      LOG(INFO) << "joining to the cluseter " << a_.name;
       join_to_cluster(zk_);
     }
     
@@ -156,36 +157,46 @@ void jubatus_serv::join_to_cluster(common::cshared_ptr<jubatus::common::lock_ser
   std::vector<std::string> list;
   std::string path = common::ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
   z->list(path, list);
-  if(not list.empty()){
-    common::lock_service_mutex zlk(*z, common::ACTOR_BASE_PATH + "/" + a_.name + "/master_lock");
-    while(not zlk.try_lock()){ ; }
-
-    // if you're using even any cht, you should choose from cht. otherwise random.
-    size_t i = rand() % list.size();
-
-    std::string ip;
-    int port;
-    common::revert(list[i], ip, port);
-    pfi::network::mprpc::rpc_client c(ip, port, a_.timeout);
-    
-    pfi::lang::function<std::string(int)> f = c.call<std::string(int)>("get_storage");
-    std::string data = f(0);
-    LOG(INFO) << "join to cluster: " << data.size() << " bytes got from " << ip << " " << port;
-    std::stringstream ss( data );
-    
-    for(size_t i = 0;i<mixables_.size(); ++i){
-      mixables_[i]->clear();
-      mixables_[i]->load(ss);
-    }
-    DLOG(INFO) << "all data successfully loaded to " << mixables_.size() << " mixables.";
+  if(list.empty()){
+    throw not_found(" cluster to join");
   }
+  common::lock_service_mutex zlk(*z, common::ACTOR_BASE_PATH + "/" + a_.name + "/master_lock");
+  while(not zlk.try_lock()){ ; }
+  
+  std::string ip;
+  int port;
+  // if you're using even any cht, you should choose from cht. otherwise random.
+  if( use_cht_ ){
+    common::cht ht(z, a_.name);
+    std::pair<std::string, int> predecessor = ht.find_predecessor(a_.eth, a_.port);
+    ip = predecessor.first;
+    port = predecessor.second;
+    DLOG(INFO) << ip << " " << port;
+  }else{
+    size_t i = rand() % list.size();
+    common::revert(list[i], ip, port);
+  }
+  
+  pfi::network::mprpc::rpc_client c(ip, port, a_.timeout);
+  
+  pfi::lang::function<std::string()> f = c.call<std::string()>("get_storage");
+  std::string data = f();
+  LOG(INFO) << "join to cluster: " << data.size() << " bytes got from " << ip << " " << port;
+  std::stringstream ss( data );
+  
+  for(size_t i = 0;i<mixables_.size(); ++i){
+    mixables_[i]->clear();
+    mixables_[i]->load(ss);
+  }
+  DLOG(INFO) << "all data successfully loaded to " << mixables_.size() << " mixables.";
 };
 
-std::string jubatus_serv::get_storage(int i){
+std::string jubatus_serv::get_storage(){
   std::stringstream ss;
   for(size_t i=0; i<mixables_.size(); ++i){
     mixables_[i]->save(ss);
   }
+  LOG(INFO) << "new server has come. Sending back " << ss.str().size() << " bytes.";
   return ss.str();
 }
     

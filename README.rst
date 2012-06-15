@@ -13,6 +13,7 @@ LGPL 2.1
 Update history
 --------------
 
+<<<<<<< HEAD
 Release 0.3.0 2012/7/1
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -23,6 +24,9 @@ Improvements
     - Shortest path search
 
   - New neighbor-search algorithm for recommender: minhash
+
+Bugfix
+  - internal API get_storage implemented again (#21)
 
 Release 0.2.3 2012/6/8
 ~~~~~~~~~~~~~~~~~~~~~~~

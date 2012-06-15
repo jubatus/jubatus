@@ -28,12 +28,12 @@ public:
       return call<std::vector<std::vector<estimate_result > >(std::string, std::vector<datum >)>("classify")(name, data);
     }
 
-    bool save(std::string name, std::string arg1) {
-      return call<bool(std::string, std::string)>("save")(name, arg1);
+    bool save(std::string name, std::string id) {
+      return call<bool(std::string, std::string)>("save")(name, id);
     }
 
-    bool load(std::string name, std::string arg1) {
-      return call<bool(std::string, std::string)>("load")(name, arg1);
+    bool load(std::string name, std::string id) {
+      return call<bool(std::string, std::string)>("load")(name, id);
     }
 
     std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {

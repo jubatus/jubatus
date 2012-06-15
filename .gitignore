@@ -8,7 +8,6 @@ build/
 .waf3-*
 .lock-*
 .DS_Store
-Makefile
 cscope.*
 callgrind.*
 .unittest-gtest

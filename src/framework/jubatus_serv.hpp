@@ -48,7 +48,7 @@ public:
 #ifdef HAVE_ZOOKEEPER_H
   void join_to_cluster(common::cshared_ptr<jubatus::common::lock_service>);
   
-  std::string get_storage(int i);
+  std::string get_storage();
 
   std::vector<std::string> get_diff_impl(int);
   int put_diff_impl(std::vector<std::string> unpacked);

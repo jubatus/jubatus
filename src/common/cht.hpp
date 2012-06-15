@@ -54,10 +54,16 @@ namespace common{
     bool find(const std::string& host, int port, std::vector<std::pair<std::string,int> >&, size_t);
     bool find(const std::string&, std::vector<std::pair<std::string,int> >&, size_t);
 
+    std::pair<std::string,int> find_predecessor(const std::string& host, int port);
+    std::pair<std::string,int> find_predecessor(const std::string&);
+
     // run just once in starting up the process: creates <name>/cht directory.
     static void setup_cht_dir(lock_service&, const std::string&);
 
   private:
+
+    bool get_hashlist_(const std::string& key, std::vector<std::string>&);
+
     std::string name_;
     cshared_ptr<lock_service> lock_service_;
   }; //cht  
