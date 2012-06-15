@@ -20,12 +20,12 @@ public:
       return call<config_data(std::string)>("get_config")(name);
     }
 
-    int32_t train(std::string arg0, std::vector<std::pair<float, datum > > arg1) {
-      return call<int32_t(std::string, std::vector<std::pair<float, datum > >)>("train")(arg0, arg1);
+    int32_t train(std::string name, std::vector<std::pair<float, datum > > train_data) {
+      return call<int32_t(std::string, std::vector<std::pair<float, datum > >)>("train")(name, train_data);
     }
 
-    std::vector<float > estimate(std::string arg0, std::vector<datum > arg1) {
-      return call<std::vector<float >(std::string, std::vector<datum >)>("estimate")(arg0, arg1);
+    std::vector<float > estimate(std::string name, std::vector<datum > estimate_data) {
+      return call<std::vector<float >(std::string, std::vector<datum >)>("estimate")(name, estimate_data);
     }
 
     bool save(std::string name, std::string arg1) {

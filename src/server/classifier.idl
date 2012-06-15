@@ -52,8 +52,8 @@ message config_data {
 }
 
 message datum {
-  0: list<tuple<string, string> >  sv
-  1: list<tuple<string, double> >  nv
+  0: list<tuple<string, string> >  string_values
+  1: list<tuple<string, double> >  num_values
 }
 
 message estimate_result {
@@ -76,10 +76,10 @@ service classifier {
   list<list<estimate_result> >  classify(0: string name, 1: list<datum> data) # //@random
 
   #@broadcast #@update #@all_and
-  bool save(0: string name, 1: string arg1) # //@broadcast
+  bool save(0: string name, 1: string id) # //@broadcast
 
   #@broadcast #@update #@all_and
-  bool load(0: string name, 1: string arg1) # //@broadcast
+  bool load(0: string name, 1: string id) # //@broadcast
 
   #@broadcast #@analysis #@merge
   map<string, map<string, string> >  get_status(0: string name) # //@broadcast

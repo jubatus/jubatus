@@ -24,8 +24,8 @@ public:
       return call<bool(std::string, std::string)>("clear_row")(name, id);
     }
 
-    bool update_row(std::string name, std::string id, datum arg2) {
-      return call<bool(std::string, std::string, datum)>("update_row")(name, id, arg2);
+    bool update_row(std::string name, std::string id, datum d) {
+      return call<bool(std::string, std::string, datum)>("update_row")(name, id, d);
     }
 
     bool clear(std::string name) {
@@ -36,8 +36,8 @@ public:
       return call<datum(std::string, std::string)>("complete_row_from_id")(name, id);
     }
 
-    datum complete_row_from_data(std::string name, datum arg1) {
-      return call<datum(std::string, datum)>("complete_row_from_data")(name, arg1);
+    datum complete_row_from_data(std::string name, datum d) {
+      return call<datum(std::string, datum)>("complete_row_from_data")(name, d);
     }
 
     similar_result similar_row_from_id(std::string name, std::string id, uint32_t size) {
@@ -60,16 +60,16 @@ public:
       return call<float(std::string, datum, datum)>("similarity")(name, lhs, rhs);
     }
 
-    float l2norm(std::string name, datum arg1) {
-      return call<float(std::string, datum)>("l2norm")(name, arg1);
+    float l2norm(std::string name, datum d) {
+      return call<float(std::string, datum)>("l2norm")(name, d);
     }
 
-    bool save(std::string name, std::string arg1) {
-      return call<bool(std::string, std::string)>("save")(name, arg1);
+    bool save(std::string name, std::string id) {
+      return call<bool(std::string, std::string)>("save")(name, id);
     }
 
-    bool load(std::string name, std::string arg1) {
-      return call<bool(std::string, std::string)>("load")(name, arg1);
+    bool load(std::string name, std::string id) {
+      return call<bool(std::string, std::string)>("load")(name, id);
     }
 
     std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
