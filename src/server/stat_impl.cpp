@@ -19,32 +19,32 @@ public:
   config_data get_config(std::string name) //analysis random
   { JRLOCK__(p_); return p_->get_config(); }
 
-  bool push(std::string arg0, std::string arg1, double arg2) //update cht
-  { JWLOCK__(p_); return p_->push(arg1, arg2); }
+  bool push(std::string name, std::string key, double val) //update cht
+  { JWLOCK__(p_); return p_->push(key, val); }
 
-  double sum(std::string arg0, std::string arg1) //analysis cht
-  { JRLOCK__(p_); return p_->sum(arg1); }
+  double sum(std::string name, std::string key) //analysis cht
+  { JRLOCK__(p_); return p_->sum(key); }
 
-  double stddev(std::string arg0, std::string arg1) //analysis cht
-  { JRLOCK__(p_); return p_->stddev(arg1); }
+  double stddev(std::string name, std::string key) //analysis cht
+  { JRLOCK__(p_); return p_->stddev(key); }
 
-  double max(std::string arg0, std::string arg1) //analysis cht
-  { JRLOCK__(p_); return p_->max(arg1); }
+  double max(std::string name, std::string key) //analysis cht
+  { JRLOCK__(p_); return p_->max(key); }
 
-  double min(std::string arg0, std::string arg1) //analysis cht
-  { JRLOCK__(p_); return p_->min(arg1); }
+  double min(std::string name, std::string key) //analysis cht
+  { JRLOCK__(p_); return p_->min(key); }
 
-  double entropy(std::string arg0, std::string arg1) //analysis cht
-  { JRLOCK__(p_); return p_->entropy(arg1); }
+  double entropy(std::string name, std::string key) //analysis cht
+  { JRLOCK__(p_); return p_->entropy(key); }
 
-  double moment(std::string arg0, std::string arg1, int n, double c) //analysis cht
-  { JRLOCK__(p_); return p_->moment(arg1, n, c); }
+  double moment(std::string name, std::string key, int n, double c) //analysis cht
+  { JRLOCK__(p_); return p_->moment(key, n, c); }
 
-  bool save(std::string name, std::string arg1) //update broadcast
-  { JWLOCK__(p_); return p_->save(arg1); }
+  bool save(std::string name, std::string key) //update broadcast
+  { JWLOCK__(p_); return p_->save(key); }
 
-  bool load(std::string name, std::string arg1) //update broadcast
-  { JWLOCK__(p_); return p_->load(arg1); }
+  bool load(std::string name, std::string key) //update broadcast
+  { JWLOCK__(p_); return p_->load(key); }
 
   std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
   { JRLOCK__(p_); return p_->get_status(); }

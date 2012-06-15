@@ -20,40 +20,40 @@ public:
       return call<config_data(std::string)>("get_config")(name);
     }
 
-    bool push(std::string arg0, std::string arg1, double arg2) {
-      return call<bool(std::string, std::string, double)>("push")(arg0, arg1, arg2);
+    bool push(std::string name, std::string key, double val) {
+      return call<bool(std::string, std::string, double)>("push")(name, key, val);
     }
 
-    double sum(std::string arg0, std::string arg1) {
-      return call<double(std::string, std::string)>("sum")(arg0, arg1);
+    double sum(std::string name, std::string key) {
+      return call<double(std::string, std::string)>("sum")(name, key);
     }
 
-    double stddev(std::string arg0, std::string arg1) {
-      return call<double(std::string, std::string)>("stddev")(arg0, arg1);
+    double stddev(std::string name, std::string key) {
+      return call<double(std::string, std::string)>("stddev")(name, key);
     }
 
-    double max(std::string arg0, std::string arg1) {
-      return call<double(std::string, std::string)>("max")(arg0, arg1);
+    double max(std::string name, std::string key) {
+      return call<double(std::string, std::string)>("max")(name, key);
     }
 
-    double min(std::string arg0, std::string arg1) {
-      return call<double(std::string, std::string)>("min")(arg0, arg1);
+    double min(std::string name, std::string key) {
+      return call<double(std::string, std::string)>("min")(name, key);
     }
 
-    double entropy(std::string arg0, std::string arg1) {
-      return call<double(std::string, std::string)>("entropy")(arg0, arg1);
+    double entropy(std::string name, std::string key) {
+      return call<double(std::string, std::string)>("entropy")(name, key);
     }
 
-    double moment(std::string arg0, std::string arg1, int32_t n, double c) {
-      return call<double(std::string, std::string, int32_t, double)>("moment")(arg0, arg1, n, c);
+    double moment(std::string name, std::string key, int32_t n, double c) {
+      return call<double(std::string, std::string, int32_t, double)>("moment")(name, key, n, c);
     }
 
-    bool save(std::string name, std::string arg1) {
-      return call<bool(std::string, std::string)>("save")(name, arg1);
+    bool save(std::string name, std::string key) {
+      return call<bool(std::string, std::string)>("save")(name, key);
     }
 
-    bool load(std::string name, std::string arg1) {
-      return call<bool(std::string, std::string)>("load")(name, arg1);
+    bool load(std::string name, std::string key) {
+      return call<bool(std::string, std::string)>("load")(name, key);
     }
 
     std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
