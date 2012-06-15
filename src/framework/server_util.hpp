@@ -59,7 +59,7 @@ struct server_argv {
 
   bool is_standalone() const {
     return (z == "");
-  };
+  }
   std::string boot_message(const std::string& progname) const;
 };
 
@@ -111,10 +111,10 @@ int run_server(int args, char** argv){
     ("put_diff",
      pfi::lang::bind(&UserServClass::put_diff_impl,
 		     impl_server.get_p().get(), pfi::lang::_1));
-  serv.add<std::string(int)>
+  serv.add<std::string()>
     ("get_storage",
      pfi::lang::bind(&UserServClass::get_storage,
-		     impl_server.get_p().get(), pfi::lang::_1));
+		     impl_server.get_p().get()));
 
   set_exit_on_term();
 

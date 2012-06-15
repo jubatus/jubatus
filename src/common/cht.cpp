@@ -17,6 +17,7 @@
 
 #include "cht.hpp"
 #include "membership.hpp"
+#include "exception.hpp"
 #include <stdlib.h>
 #include <glog/logging.h>
 
@@ -58,14 +59,12 @@ namespace common{
   // find(hash)    :: lock_service -> key -> [node] where hash(node0) <= hash(key) < hash(node1)
   bool cht::find(const std::string& key, std::vector<std::pair<std::string,int> >& out){
     out.clear();
-    std::string path = ACTOR_BASE_PATH + "/" + name_ + "/cht";
-    std::string hash = make_hash(key);
-    std::vector<std::pair<std::string, int> > ret;
     std::vector<std::string> hlist;
-    lock_service_->list(path, hlist);
-
-    if(hlist.empty()) return false;
-    std::sort(hlist.begin(), hlist.end());
+    if(! get_hashlist_(key, hlist)){
+      throw not_found(key);
+    }
+    std::string hash = make_hash(key);
+    std::string path = ACTOR_BASE_PATH + "/" + name_ + "/cht";
 
     std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(), hlist.end(), hash);
     size_t idx = int(node0 - hlist.begin()) % hlist.size();
@@ -78,6 +77,7 @@ namespace common{
         out.push_back(make_pair(ip,port));
       }else{
         // TODO: output log
+        throw not_found(path);
       }
       idx++;
       idx %= hlist.size();
@@ -85,11 +85,47 @@ namespace common{
     return !hlist.size();
   }
 
+  std::pair<std::string,int> cht::find_predecessor(const std::string& host, int port){
+    return find_predecessor(build_loc_str(host, port));
+  }
+  std::pair<std::string,int> cht::find_predecessor(const std::string& key){
+    std::vector<std::string> hlist;
+    get_hashlist_(key, hlist);
+
+    std::string hash = make_hash(key);
+    std::string path = ACTOR_BASE_PATH + "/" + name_ + "/cht";
+
+    std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(), hlist.end(), hash);
+    size_t idx = (int(node0 - hlist.begin())+ hlist.size() -1) % hlist.size();
+
+    std::string ip;
+    int port;
+    std::string loc;
+    if(lock_service_->read(path + "/" + hlist[idx], loc)){
+      revert(loc, ip, port);
+      return make_pair(ip, port);
+    }else{
+      throw not_found(path);
+      // TODO: output log and throw exception
+    }
+  }
+
   void cht::setup_cht_dir(lock_service& ls, const std::string& name){
     std::string path = ACTOR_BASE_PATH + "/" + name;
     ls.create(path, "");
     path +=  "/cht";
     ls.create(path, "");
+  }
+
+  bool cht::get_hashlist_(const std::string& key, std::vector<std::string>& hlist){
+    hlist.clear();
+    std::string path = ACTOR_BASE_PATH + "/" + name_ + "/cht";
+    std::vector<std::pair<std::string, int> > ret;
+    lock_service_->list(path, hlist);
+
+    if(hlist.empty()) return false;
+    std::sort(hlist.begin(), hlist.end());
+    return true;
   }
 
 }

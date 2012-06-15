@@ -50,6 +50,7 @@ namespace common {
     // ephemeral only
     void create_seq(const std::string& path, std::string&);
 
+    //returns unsorted list
     void list(const std::string& path, std::vector<std::string>& out);
     void hd_list(const std::string& path, std::string& out);
 

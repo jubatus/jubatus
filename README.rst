@@ -13,6 +13,10 @@ LGPL 2.1
 Update history
 --------------
 
+
+Bugfix
+  - internal API get_storage implemented again (#21)
+
 Release 0.2.3 2012/6/8
 ~~~~~~~~~~~~~~~~~~~~~~~
 
