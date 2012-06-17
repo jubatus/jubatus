@@ -119,6 +119,8 @@ double stat::moment(const std::string &key, int n, double c) const
 
   if (n == 1) return (st.sum_ - c * st.n_) / st.n_ ;
 
+  if (n == 2) return (st.sum2_ - 2 * st.sum_ * c) / st.n_ + c * c;
+
   // fallback
   double ret = 0;
   for (size_t i = 0; i < window_.size(); ++i) {
