@@ -26,6 +26,7 @@
 #include <fstream>
 #include <sstream>
 #include <pficommon/system/time_util.h>
+#include <pficommon/lang/cast.h>
 #include <cassert>
 
 using std::vector;
@@ -309,7 +310,12 @@ bool jubatus_serv::load(std::string id) {
   build_local_path_(ifile, "jubatus", id);
 
   std::ifstream ifs(ifile.c_str(), std::ios::binary);
-  if(!ifs)throw std::runtime_error(ifile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
+  if(!ifs){
+    build_local_path0_(ifile, "jubatus", id); // FIXME: add tests for this code
+    ifs.open(ifile.c_str(), std::ios::binary);
+    if(!ifs)
+      throw std::runtime_error(ifile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
+  }
   try{
     for(size_t i = 0;i<mixables_.size(); ++i){
       mixables_[i]->clear();
@@ -365,5 +371,16 @@ void jubatus_serv::find_from_cht(const std::string& key, size_t n,
 
 }
 
+void jubatus_serv::build_local_path_(std::string& out, const std::string& type, const std::string& id) const
+{
+  out = base_path_ + "/" + a_.eth + "_" + pfi::lang::lexical_cast<std::string>(a_.port) + "_";
+  out += type + "_" + id + ".jc";
+}
+
+void jubatus_serv::build_local_path0_(std::string& out, const std::string& type, const std::string& id) const
+{
+  out = base_path_ + "/";
+  out += type + "_" + id + ".jc";
+}
 
 }}

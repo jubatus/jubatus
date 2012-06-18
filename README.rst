@@ -44,6 +44,7 @@ Improvements
 
 Bugfix
   - internal API get_storage implemented again (#21)
+  - #45
 
 Release 0.2.3 2012/6/8
 ~~~~~~~~~~~~~~~~~~~~~~~
