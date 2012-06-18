@@ -25,7 +25,7 @@ namespace jubatus {
 namespace anomaly {
 
 anomaly_base* create_anomaly(const map<string, string>& config){
-  const map<string, string>::const_iterator name_it = config.find("name");
+  const map<string, string>::const_iterator name_it = config.find("anomaly:name");
   const string name = name_it == config.end() ? "" : name_it->second;
 
   if (name == "lof") {
