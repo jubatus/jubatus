@@ -25,11 +25,11 @@ public:
   std::vector<std::vector<estimate_result > > classify(std::string name, std::vector<datum > data) //analysis random
   { JRLOCK__(p_); return p_->classify(data); }
 
-  bool save(std::string name, std::string arg1) //update broadcast
-  { JWLOCK__(p_); return p_->save(arg1); }
+  bool save(std::string name, std::string id) //update broadcast
+  { JWLOCK__(p_); return p_->save(id); }
 
-  bool load(std::string name, std::string arg1) //update broadcast
-  { JWLOCK__(p_); return p_->load(arg1); }
+  bool load(std::string name, std::string id) //update broadcast
+  { JWLOCK__(p_); return p_->load(id); }
 
   std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
   { JRLOCK__(p_); return p_->get_status(); }
