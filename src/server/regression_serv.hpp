@@ -33,13 +33,14 @@
 namespace jubatus{
 namespace server{
 
-struct gresser : public jubatus::framework::mixable<storage::storage_base, diffv>
+struct gresser : public jubatus::framework::mixable<storage::storage_base, diffv, gresser>
 {
   gresser(){
-    function<diffv(const storage::storage_base*)> getdiff(&gresser::get_diff);
-    function<int(const storage::storage_base*, const diffv&, diffv&)> reduce(&gresser::reduce);
-    function<int(storage::storage_base*, const diffv&)> putdiff(&gresser::put_diff);
-    set_mixer(getdiff, reduce, putdiff);
+    // function<diffv(const storage::storage_base*)> getdiff(&gresser::get_diff);
+    // function<int(const storage::storage_base*, const diffv&, diffv&)> reduce(&gresser::reduce);
+    // function<int(storage::storage_base*, const diffv&)> putdiff(&gresser::put_diff);
+    // set_mixer(getdiff, reduce, putdiff);
+    set_default_mixer();
   }
   virtual ~gresser(){}
   static diffv get_diff(const storage::storage_base* model){
