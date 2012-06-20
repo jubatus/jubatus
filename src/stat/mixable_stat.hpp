@@ -25,6 +25,8 @@ namespace stat {
 
 class mixable_stat : public stat {
 public:
+  mixable_stat(size_t);
+  virtual ~mixable_stat();
   // entropy = - \sum_{for all keys in this stat} p(key) log p(key)
 
   // - mixed entropy -
@@ -38,7 +40,6 @@ public:
   std::pair<double,size_t> get_diff() const ;
   void put_diff(const std::pair<double,size_t>&);
   static void reduce(const std::pair<double,size_t>&,
-		     const std::pair<double,size_t>&,
 		     std::pair<double,size_t>&);
   double mixed_entropy() const;
 

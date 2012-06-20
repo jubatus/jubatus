@@ -17,16 +17,42 @@
 
 #pragma once
 
-#include "../stat/stat.hpp"
+#include "../stat/mixable_stat.hpp"
 #include "jubatus_serv.hpp"
 #include "stat_types.hpp"
 
 namespace jubatus{
 namespace server{
 
-// class mixable_stat : public frameworK::mixable<>
-// {
-// };
+struct mixable_stat : public framework::mixable<jubatus::stat::mixable_stat,
+						std::pair<double,size_t>,
+						mixable_stat>
+{
+public:
+  void clear(){}
+  mixable_stat()
+  {
+    set_default_mixer();
+  }
+  static std::pair<double,size_t> get_diff(const jubatus::stat::mixable_stat* model)
+  {
+    return model->get_diff();
+  }
+  static int reduce(const jubatus::stat::mixable_stat*,
+		    const std::pair<double,size_t>& v, std::pair<double,size_t>& acc)
+  {
+    jubatus::stat::mixable_stat::reduce(v, acc);
+    return 0;
+  }
+
+  static int put_diff(jubatus::stat::mixable_stat* model,
+		      const std::pair<double,size_t>& v)
+  {
+    model->put_diff(v);
+    return 0;
+  }
+
+};
 
 class stat_serv : public framework::jubatus_serv
 {
@@ -48,7 +74,7 @@ public:
 
 private:
   jubatus::config_data config_;
-  pfi::lang::shared_ptr<jubatus::stat::stat> stat_;
+  server::mixable_stat stat_;
 };
 
 }

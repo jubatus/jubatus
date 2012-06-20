@@ -16,6 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "stat_serv.hpp"
+#include "../common/shared_ptr.hpp"
 
 namespace jubatus {
 namespace server {
@@ -24,7 +25,9 @@ stat_serv::stat_serv(const framework::server_argv& a)
   :jubatus_serv(a)
 {
   config_.window_size = 1024; // default till users call set_config
-  stat_ =  pfi::lang::shared_ptr<stat::stat>(new stat::stat(config_.window_size)); //FIXME
+  common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(config_.window_size));
+  stat_.set_model(model);
+  register_mixable(framework::mixable_cast(&stat_));
 }
 
 stat_serv::~stat_serv() {
@@ -37,33 +40,39 @@ void stat_serv::after_load(){
 
 bool stat_serv::set_config(const config_data& config){
   config_ = config;
-  stat_ =  pfi::lang::shared_ptr<stat::stat>(new stat::stat(config_.window_size)); //FIXME
+  common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(config_.window_size));
+  stat_.set_model(model);
   return 0;
 }
 config_data stat_serv::get_config()const{
   return config_;
 }
 int stat_serv::push(const std::string& key, double value){
-  stat_->push(key,value);
+  stat_.get_model()->push(key,value);
   return 0;
 }
 double stat_serv::sum(const std::string& key) const {
-  return stat_->sum(key);
+  return stat_.get_model()->sum(key);
 }
 double stat_serv::stddev(const std::string& key) const {
-  return stat_->stddev(key);
+  return stat_.get_model()->stddev(key);
 }
 double stat_serv::max(const std::string& key) const {
-  return stat_->max(key);
+  return stat_.get_model()->max(key);
 }
 double stat_serv::min(const std::string& key) const {
-  return stat_->min(key);
+  return stat_.get_model()->min(key);
 }
 double stat_serv::entropy(const std::string& key) const {
-  return stat_->entropy();
+#ifdef HAVE_ZOOKEEPER_H
+  //FIXME: currently gets old value of entropy when mix completed
+  return stat_.get_model()->mixed_entropy();
+#else
+  return stat_.get_model()->entropy();
+#endif
 }
 double stat_serv::moment(const std::string& key, int n,double c) const{
-  return stat_->moment(key, n, c);
+  return stat_.get_model()->moment(key, n, c);
 }
 
 

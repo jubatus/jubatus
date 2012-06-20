@@ -23,6 +23,15 @@ using std::pair;
 namespace jubatus {
 namespace stat {
 
+mixable_stat::mixable_stat(size_t window_size)
+  : stat(window_size)
+{
+}
+
+mixable_stat::~mixable_stat()
+{
+}
+  
 std::pair<double,size_t> mixable_stat::get_diff() const
 {
   std::pair<double, size_t> ret;
@@ -50,17 +59,19 @@ void mixable_stat::put_diff(const pair<double,size_t>& e)
 }
 
 void mixable_stat::reduce(const pair<double,size_t>& lhs,
-				 const pair<double,size_t>& rhs,
-				 pair<double,size_t>& ret)
+			  pair<double,size_t>& ret)
 {
-  ret.first = lhs.first + rhs.first;
-  ret.second = lhs.second + rhs.second;
+  ret.first += lhs.first;
+  ret.second += lhs.second;
 }
 
 double mixable_stat::mixed_entropy() const
 {
+  if( n_ == 0 ){
+    return 0;
+  }
   double n = n_;
-  return e_ / n_ - log(n);
+  return log(n) - e_ / n_;
 }
 
 }

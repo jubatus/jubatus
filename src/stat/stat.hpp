@@ -45,7 +45,7 @@ private:
 class stat {
 public:
   stat(size_t window_size);
-  ~stat();
+  virtual ~stat();
 
   void push(const std::string &key, double val);
 
