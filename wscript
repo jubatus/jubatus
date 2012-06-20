@@ -85,9 +85,15 @@ def configure(conf):
   conf.recurse(subdirs)
 
 def build(bld):
-#  bld.install_files('${PREFIX}/include/jubatus', [
-#      'src/config.hpp',
-#      ])
 
+  bld(source = 'jubatus.pc.in',
+      prefix = bld.env['PREFIX'],
+      exec_prefix = '${prefix}',
+      libdir = bld.env['LIBDIR'],
+      includedir = '${prefix}/include',
+      PACKAGE = APPNAME,
+      VERSION = VERSION)
+
+  bld.install_files('${PREFIX}/lib/pkgconfig', 'jubatus.pc')
   bld.recurse(subdirs)
 

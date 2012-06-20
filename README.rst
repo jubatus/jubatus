@@ -41,6 +41,7 @@ Improvements
     - Shortest path search
 
   - New neighbor-search algorithm for recommender: minhash
+  - installs pkgconfig file (#42, jubatus.pc)
 
 Bugfix
   - internal API get_storage implemented again (#21)
