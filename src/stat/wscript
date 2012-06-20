@@ -3,7 +3,7 @@ def configure(conf): pass
 
 def build(bld):
   bld.shlib(
-    source = ['stat.cpp'],
+    source = ['stat.cpp', 'mixable_stat.cpp'],
     target = 'jubatus_stat',
     includes = '.',
     use = 'PFICOMMON'

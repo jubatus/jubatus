@@ -145,6 +145,7 @@ private:
     double min_;
   };
 
+protected:
   std::deque<std::pair<uint64_t, std::pair<std::string, double> > > window_;
   pfi::data::unordered_map<std::string, stat_val> stats_;
 

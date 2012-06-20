@@ -24,6 +24,10 @@
 namespace jubatus{
 namespace server{
 
+// class mixable_stat : public frameworK::mixable<>
+// {
+// };
+
 class stat_serv : public framework::jubatus_serv
 {
 public:
