@@ -17,8 +17,11 @@
 
 #include "recommender_serv.hpp"
 
+#include <sstream>
+
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/cast.h>
+#include <pficommon/text/json.h>
 
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
@@ -47,7 +50,9 @@ int recommender_serv::set_config(config_data config)
   config_ = config;
   shared_ptr<fv_converter::datum_to_fv_converter> converter(new fv_converter::datum_to_fv_converter);
   fv_converter::converter_config c;
-  convert<jubatus::converter_config, fv_converter::converter_config>(config.converter, c);
+  std::stringstream ss(config.converter);
+  // FIXME: check invalid json format
+  ss >> pfi::text::json::via_json(c);
   fv_converter::initialize_converter(c, *converter);
   converter_ = converter;
   rcmdr_.set_model(make_model());

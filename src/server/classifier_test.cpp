@@ -74,12 +74,6 @@ bool operator == (const jubatus::config_data& lhs, const jubatus::config_data& r
   return ( lhs.method == rhs.method );
 }
 
-string config_to_string(const jubatus::fv_converter::converter_config& config) {
-  stringstream ss;
-  ss << to_json(config);
-  return ss.str();
-}
-
 config_data make_simple_config(const string& method) {
   config_data c;
   c.method = method;
