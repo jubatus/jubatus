@@ -19,7 +19,6 @@
 #include "../storage/storage_factory.hpp"
 #include "../storage/local_storage_mixture.hpp"
 #include "../regression/regression_factory.hpp"
-#include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
 
 #include "../common/rpc_util.hpp"
@@ -28,7 +27,6 @@
 
 #include <pficommon/lang/bind.h>
 #include <pficommon/lang/function.h>
-#include <pficommon/text/json.h>
 
 #include <glog/logging.h>
 
@@ -60,14 +58,10 @@ regression_serv::~regression_serv() {
 int regression_serv::set_config(config_data config) {
   DLOG(INFO) << __func__;
 
-  shared_ptr<datum_to_fv_converter> converter(new datum_to_fv_converter);
-    
-  convert<jubatus::config_data, config_data>(config, config_);
-  fv_converter::converter_config c;
-  stringstream ss(config.config);
-  // FIXME: check invalid json format
-  ss >> pfi::text::json::via_json(c);
-  fv_converter::initialize_converter(c, *converter);
+  shared_ptr<datum_to_fv_converter> converter
+      = framework::make_fv_converter(config.config);
+
+  config_ = config;
   converter_ = converter;
 
   gresser_.regression_.reset(regression_factory().create_regression(config_.method, gresser_.get_model().get()));

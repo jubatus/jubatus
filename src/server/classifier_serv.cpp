@@ -16,9 +16,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "classifier_serv.hpp"
+
 #include "../storage/storage_factory.hpp"
 #include "../classifier/classifier_factory.hpp"
-#include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
 
 #include "../common/rpc_util.hpp"
@@ -30,8 +30,6 @@
 #include <glog/logging.h>
 
 #include <cmath> //for isfinite()
-
-#include <pficommon/text/json.h>
 
 #include "diffv.hpp"
 
@@ -65,13 +63,8 @@ classifier_serv::~classifier_serv() {
 int classifier_serv::set_config(config_data config) {
   DLOG(INFO) << __func__;
 
-  shared_ptr<datum_to_fv_converter> converter(new datum_to_fv_converter);
-    
-  fv_converter::converter_config c;
-  stringstream ss(config.config);
-  // FIXME: check invalid json format
-  ss >> pfi::text::json::via_json(c);
-  fv_converter::initialize_converter(c, *converter);
+  shared_ptr<datum_to_fv_converter> converter
+      = framework::make_fv_converter(config.config);
 
   config_ = config;
   converter_ = converter;

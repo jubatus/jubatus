@@ -29,6 +29,7 @@
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/lang/function.h>
 #include <pficommon/network/mprpc.h>
+#include <pficommon/lang/shared_ptr.h>
 
 #ifdef HAVE_ZOOKEEPER_H
 #  include "../common/lock_service.hpp"
@@ -38,7 +39,13 @@ namespace cmdline{
 class parser;
 }
 
-namespace jubatus { namespace framework {
+namespace jubatus {
+
+namespace fv_converter {
+class datum_to_fv_converter;
+}
+
+namespace framework {
 
 struct server_argv {
 
@@ -122,5 +129,8 @@ int run_server(int args, char** argv){
   ignore_sigpipe();
   return impl_server.run();
 };
+
+pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+make_fv_converter(const std::string& config);
 
 }}
