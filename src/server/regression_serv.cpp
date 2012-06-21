@@ -28,6 +28,7 @@
 
 #include <pficommon/lang/bind.h>
 #include <pficommon/lang/function.h>
+#include <pficommon/text/json.h>
 
 #include <glog/logging.h>
 
@@ -63,7 +64,9 @@ int regression_serv::set_config(config_data config) {
     
   convert<jubatus::config_data, config_data>(config, config_);
   fv_converter::converter_config c;
-  convert<jubatus::converter_config, fv_converter::converter_config>(config_.config, c);
+  stringstream ss(config.config);
+  // FIXME: check invalid json format
+  ss >> pfi::text::json::via_json(c);
   fv_converter::initialize_converter(c, *converter);
   converter_ = converter;
 
