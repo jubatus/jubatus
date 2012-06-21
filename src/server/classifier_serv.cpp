@@ -31,6 +31,8 @@
 
 #include <cmath> //for isfinite()
 
+#include <pficommon/text/json.h>
+
 #include "diffv.hpp"
 
 using namespace jubatus::storage;
@@ -65,10 +67,13 @@ int classifier_serv::set_config(config_data config) {
 
   shared_ptr<datum_to_fv_converter> converter(new datum_to_fv_converter);
     
-  convert<jubatus::config_data, config_data>(config, config_);
   fv_converter::converter_config c;
-  convert<jubatus::converter_config, fv_converter::converter_config>(config_.config, c);
+  stringstream ss(config.config);
+  // FIXME: check invalid json format
+  ss >> pfi::text::json::via_json(c);
   fv_converter::initialize_converter(c, *converter);
+
+  config_ = config;
   converter_ = converter;
 
   wm_.wm_ = common::cshared_ptr<fv_converter::weight_manager>(new weight_manager);

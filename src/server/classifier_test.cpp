@@ -21,6 +21,7 @@
 #include <string>
 #include <iostream>
 #include <limits>
+#include <iterator>
 
 #include <pficommon/lang/cast.h>
 #include <pficommon/text/json.h>
@@ -73,12 +74,38 @@ bool operator == (const jubatus::config_data& lhs, const jubatus::config_data& r
   return ( lhs.method == rhs.method );
 }
 
+string config_to_string(const jubatus::fv_converter::converter_config& config) {
+  stringstream ss;
+  ss << to_json(config);
+  return ss.str();
+}
+
+config_data make_simple_config(const string& method) {
+  config_data c;
+  c.method = method;
+  jubatus::fv_converter::converter_config config;
+  jubatus::fv_converter::num_rule rule = { "*", "num" };
+  config.num_rules.push_back(rule);
+  c.config = config_to_string(config);
+  return c;
+}
+
+config_data make_empty_config(const string& method) {
+  config_data c;
+  c.method = method;
+  jubatus::fv_converter::converter_config config;
+  c.config = config_to_string(config);
+  return c;
+}
+
 void load_config(jubatus::config_data& c){
   fv_converter::converter_config cc;
   ifstream ifs("./test_input/config.json");
   ifs >> via_json_with_default(cc);
+  //string data((istreambuf_iterator<char>(ifs)), (istreambuf_iterator<char>()));
   c.method = "PA";
-  framework::convert<fv_converter::converter_config, converter_config>(cc, c.config);
+  c.config = config_to_string(cc);
+  //framework::convert<fv_converter::converter_config, converter_config>(cc, c.config);
 }
 
 string get_max_label(const vector<estimate_result>& result) {
@@ -119,8 +146,7 @@ namespace {
 
 TEST_P(classifier_test, set_config_exception){
   classifier c("localhost", PORT, 10);
-  jubatus::config_data config;
-  config.method = "pa";
+  jubatus::config_data config = make_empty_config("pa");
   ASSERT_THROW2(c.set_config("", config), std::exception, "unsupported method (pa)");
   //  ASSERT_THROW(c.set_config("", config), std::exception);
   config.method = "";
@@ -135,8 +161,7 @@ TEST_P(classifier_test, simple){
   
   classifier c("localhost", PORT, 10);
   {
-    jubatus::config_data config;
-    config.method = GetParam();
+    jubatus::config_data config = make_empty_config(GetParam());
     
     c.set_config("", config);
     c.get_config("");
@@ -210,13 +235,11 @@ TEST_P(classifier_test, api_classify){
   ASSERT_EQ(data.size(), res);
 }
 
+
 void my_test(const char* method) {
   classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
-  config_data c;
-  c.method = method;
-  num_rule rule = { "*", "num" };
-  c.config.num_rules.push_back(rule);
+  config_data c = make_simple_config(method);
 
   cli.set_config(NAME, c);
 
@@ -282,10 +305,7 @@ TEST_P(classifier_test, my_test) {
 
 TEST_P(classifier_test, duplicated_keys){
   classifier cli("localhost", PORT, 10);
-  config_data c;
-  c.method = GetParam();
-  num_rule rule = { "*", "num" };
-  c.config.num_rules.push_back(rule);
+  config_data c = make_simple_config(GetParam());
 
   cli.set_config(NAME, c);
 
@@ -366,14 +386,10 @@ TEST_P(classifier_test, get_status){
 }
 TEST_P(classifier_test, save_load){
   classifier cli("localhost", PORT, 10);
-  const char* meth = GetParam();
   std::vector<std::pair<std::string,int> > v;
 
   const size_t example_size = 1000;
-  config_data c;
-  c.method = meth;
-  num_rule rule = { "*", "num" };
-  c.config.num_rules.push_back(rule);
+  config_data c = make_simple_config(GetParam());
 
   int res_config = cli.set_config(NAME, c);
   //  ASSERT_TRUE(res_config.success);
@@ -413,10 +429,7 @@ TEST_P(classifier_test, save_load_2){
   std::vector<std::pair<std::string,int> > v;
 
   // Setup
-  config_data c;
-  c.method = GetParam();
-  num_rule rule = { "*", "num" };
-  c.config.num_rules.push_back(rule);
+  config_data c = make_simple_config(GetParam());
 
   int res_config = cli.set_config(NAME, c);
   ASSERT_EQ(0, res_config);
@@ -464,10 +477,7 @@ TEST_P(classifier_test, nan){
   classifier cli("localhost", PORT, 10);
 
   // Setup
-  config_data c;
-  c.method = GetParam();
-  num_rule rule = { "*", "num" };
-  c.config.num_rules.push_back(rule);
+  config_data c = make_simple_config(GetParam());
 
   int res_config = cli.set_config(NAME, c);
   ASSERT_EQ(0, res_config);
