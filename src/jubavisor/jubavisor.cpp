@@ -22,6 +22,7 @@
 
 #include "jubavisor.hpp"
 #include "../common/util.hpp"
+#include "../common/exception.hpp"
 #include "../common/membership.hpp"
 
 using namespace jubatus;
@@ -38,7 +39,7 @@ jubervisor::jubervisor(const std::string& hosts, int port, int max,
 {
   // portable code for socket write(2) MSG_NOSIGNAL
   if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
-    throw std::runtime_error("can't ignore SIGPIPE");
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't ignore SIGPIPE"));
 
   zk_->create(JUBATUS_BASE_PATH, "");
   zk_->create(JUBAVISOR_BASE_PATH, "");

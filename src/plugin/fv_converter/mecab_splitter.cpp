@@ -31,7 +31,7 @@ static MeCab::Tagger* create_mecab_tagger(const char* arg) {
   if (!t) {
     string msg("cannot make mecab tagger: ");
     msg += MeCab::getTaggerError();
-    throw converter_exception(msg);
+    throw JUBATUS_EXCEPTION(converter_exception(msg));
   } else {
     return t;
   }

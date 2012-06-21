@@ -21,6 +21,7 @@
 #include <string>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
+#include "../common/exception.hpp"
 #include "../common/type.hpp"
 #include <msgpack.hpp>
 
@@ -131,7 +132,7 @@ typedef pfi::data::unordered_map<preset_query, spt_mixed> spt_query_mixed;
 typedef pfi::data::unordered_map<preset_query, spt_diff> spt_query_diff;
 
 
-class graph_exception : public std::runtime_error
+class graph_exception : public jubatus::exception::runtime_error
 {
 public:
   graph_exception(const std::string& what) : runtime_error(what)

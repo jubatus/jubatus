@@ -63,14 +63,14 @@ void stat::push(const std::string &key, double val)
 double stat::sum(const std::string &key) const
 {
   pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.find(key);
-  if (p == stats_.end()) throw stat_error("sum: key " + key + " not found"); 
+  if (p == stats_.end()) throw JUBATUS_EXCEPTION(stat_error("sum: key " + key + " not found"));
   return p->second.sum_;
 }
 
 double stat::stddev(const std::string &key) const
 {
   pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.find(key);
-  if (p == stats_.end()) throw stat_error("stddev: key " + key + " not found");
+  if (p == stats_.end()) throw JUBATUS_EXCEPTION(stat_error("stddev: key " + key + " not found"));
   const stat_val &st = p->second;
   return sqrt(moment(key, 2, st.sum_ / st.n_));
 }
@@ -78,7 +78,7 @@ double stat::stddev(const std::string &key) const
 double stat::max(const std::string &key) const
 {
   pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.find(key);
-  if (p == stats_.end()) throw stat_error("max: key " + key + " not found");
+  if (p == stats_.end()) throw JUBATUS_EXCEPTION(stat_error("max: key " + key + " not found"));
   const stat_val &st = p->second;
   return st.max_;
 }
@@ -86,7 +86,7 @@ double stat::max(const std::string &key) const
 double stat::min(const std::string &key) const
 {
   pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.find(key);
-  if (p == stats_.end()) throw stat_error("min: key " + key + " not found");
+  if (p == stats_.end()) throw JUBATUS_EXCEPTION(stat_error("min: key " + key + " not found"));
   const stat_val &st = p->second;
   return st.min_;
 }
@@ -112,7 +112,7 @@ double stat::moment(const std::string &key, int n, double c) const
   if (n < 0) return -1;
 
   pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.find(key);
-  if (p == stats_.end()) throw stat_error("min: key " + key + " not found");
+  if (p == stats_.end()) throw JUBATUS_EXCEPTION(stat_error("min: key " + key + " not found"));
   const stat_val &st = p->second;
 
   if (n == 0) return 1;

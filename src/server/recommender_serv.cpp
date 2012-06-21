@@ -20,6 +20,7 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/cast.h>
 
+#include "../common/exception.hpp"
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/revert.hpp"
@@ -222,7 +223,7 @@ std::map<std::string, std::map<std::string, std::string> > recommender_serv::get
 void recommender_serv::check_set_config()const
 {
   if (!rcmdr_.get_model()){
-    throw config_not_set();
+    throw JUBATUS_EXCEPTION(config_not_set());
   }
 }
 

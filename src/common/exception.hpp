@@ -328,7 +328,7 @@ public:
 class not_found : public membership_error {
 public:
   not_found(const std::string& n)
-    : membership_error(std::string(__func__) + n)
+    : membership_error(n)
   {}
 };
 

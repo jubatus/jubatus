@@ -190,18 +190,18 @@ class datum_to_fv_converter_impl {
     // "<KEY_NAME>$<VALUE>@<FEATURE_TYPE>#<SAMPLE_WEIGHT>/<GLOBAL_WEIGHT>"
     size_t sharp = feature.rfind('#');
     if (sharp == string::npos) {
-      throw converter_exception("this feature is not string feature");
+      throw JUBATUS_EXCEPTION(converter_exception("this feature is not string feature"));
     }
     size_t at = feature.rfind('@', sharp);
     if (at == string::npos) {
-      throw converter_exception("this feature is not valid feature");
+      throw JUBATUS_EXCEPTION(converter_exception("this feature is not valid feature"));
     }
     size_t dollar = feature.rfind('$', at);
     if (dollar == string::npos) {
-      throw converter_exception("this feature is not valid feature");
+      throw JUBATUS_EXCEPTION(converter_exception("this feature is not valid feature"));
     }
     if (feature.substr(at + 1, sharp - at - 1) != "str") {
-      throw converter_exception("this feature is not revertible");
+      throw JUBATUS_EXCEPTION(converter_exception("this feature is not revertible"));
     }
 
     string key(feature.substr(0, dollar));
@@ -317,7 +317,7 @@ class datum_to_fv_converter_impl {
       case WITH_WEIGHT_FILE:
         return "weight";
       default:
-        throw runtime_error("unknown global weight type");
+        throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("unknown global weight type"));
     }
   }
 

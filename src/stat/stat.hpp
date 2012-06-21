@@ -24,11 +24,12 @@
 #include <pficommon/data/unordered_map.h>
 #include <cstdlib>
 #include <stdint.h>
+#include "../common/exception.hpp"
 
 namespace jubatus {
 namespace stat {
 
-class stat_error : public std::exception {
+class stat_error : public jubatus::exception::jubaexception<stat_error> {
 public:
   stat_error(const std::string &msg)
     : msg_(msg) {}
