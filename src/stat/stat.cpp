@@ -115,12 +115,11 @@ double stat::moment(const std::string &key, int n, double c) const
   if (p == stats_.end()) throw stat_error("min: key " + key + " not found");
   const stat_val &st = p->second;
 
-  if (n == 0) return st.n_;
+  if (n == 0) return 1;
 
-  if (n == 1) return st.sum_ - c * st.n_;
+  if (n == 1) return (st.sum_ - c * st.n_) / st.n_ ;
 
-  if (n == 2)
-    return sqrt(st.sum2_ - st.n_ * sq(c));
+  if (n == 2) return (st.sum2_ - 2 * st.sum_ * c) / st.n_ + c * c;
 
   // fallback
   double ret = 0;
@@ -128,7 +127,7 @@ double stat::moment(const std::string &key, int n, double c) const
     if (window_[i].second.first != key) continue;
     ret += pow(window_[i].second.second - c, n);
   }
-  return ret;
+  return ret / st.n_;
 }
 
 bool stat::save(std::ostream& os){
