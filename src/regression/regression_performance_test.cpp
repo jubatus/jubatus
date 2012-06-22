@@ -5,6 +5,7 @@
 #include <time.h>
 #include <pficommon/lang/cast.h>
 #include <pficommon/lang/scoped_ptr.h>
+#include "../common/exception.hpp"
 #include "../common/cmdline.h"
 #include "../common/type.hpp"
 #include "regression.hpp"
@@ -88,7 +89,7 @@ void run(const string& filename) {
   }
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) try {
   cmdline::parser p;
   p.set_program_name("regression_performance_test");
   p.footer("testfiles...");
@@ -103,4 +104,6 @@ int main(int argc, char* argv[]) {
   for (size_t i = 0; i < p.rest().size(); ++i) {
     run(p.rest()[i]);
   }
+} catch (const jubatus::exception::jubatus_exception& e) {
+  std::cout << e.diagnostic_information(true) << std::endl;
 }

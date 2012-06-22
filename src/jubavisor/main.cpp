@@ -23,6 +23,7 @@
 #include <pficommon/lang/bind.h>
 #include <assert.h>
 
+#include "../common/exception.hpp"
 #include "../common/util.hpp"
 #include "../common/cmdline.h"
 
@@ -31,7 +32,7 @@ static const std::string PROGNAME = "jubakeeper";
 using namespace jubatus;
 using namespace pfi::lang;
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[]) try {
   
   cmdline::parser p;
   p.add<int>("rpc-port", 'p', "port number", false, 9199);
@@ -75,5 +76,7 @@ int main(int argc, char* argv[]){
     }
   }
   return 0;
+} catch (const jubatus::exception::jubatus_exception& e) {
+  std::cout << e.diagnostic_information(true) << std::endl;
 }
 
