@@ -12,6 +12,7 @@ anomaly_serv::anomaly_serv(const server_argv& a)
 {
   std::map<std::string,std::string>  config;
   config["anomaly:name"] = "lof";
+  config["name"] = "euclid_lsh";
   anomaly::anomaly_base* an = anomaly::create_anomaly(config);
   anomaly_.set_model(common::cshared_ptr<anomaly::anomaly_base>(an));
   register_mixable(framework::mixable_cast(&anomaly_));
