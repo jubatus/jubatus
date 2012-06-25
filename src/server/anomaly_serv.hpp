@@ -1,14 +1,42 @@
 // this is automatically generated template header please implement and edit.
 #pragma once
-#include "../framework.hpp"
+#include "../framework/jubatus_serv.hpp"
+#include "../framework/server_util.hpp"
 #include "anomaly_types.hpp"
-using namespace jubatus::framework;
+
+#include "../anomaly/anomaly_base.hpp"
+#include "mixable_weight_manager.hpp"
+#include "../fv_converter/datum_to_fv_converter.hpp"
 
 namespace jubatus { namespace server { // do not change
-class anomaly_serv : public jubatus_serv // do not change
+
+struct mixable_anomaly :
+    public framework::mixable<jubatus::anomaly::anomaly_base, std::string,
+			      jubatus::server::mixable_anomaly>
+{
+  mixable_anomaly(){ set_default_mixer(); }
+  static std::string get_diff(const jubatus::anomaly::anomaly_base* model){
+    std::string diff;
+    //model->get_diff(diff);
+    return diff;
+  }
+  static int reduce(const jubatus::anomaly::anomaly_base* model,
+		    const std::string& v, std::string& acc){
+    //model->
+    return 0;
+  }
+  static int put_diff(const jubatus::anomaly::anomaly_base* model,
+		      const std::string& v){
+    //
+    return 0;
+  }
+  void clear(){}
+};
+
+class anomaly_serv : public framework::jubatus_serv // do not change
 {
 public:
-  anomaly_serv(const server_argv& a); // do not change
+  anomaly_serv(const framework::server_argv& a); // do not change
   virtual ~anomaly_serv(); // do not change
 
   bool set_config(const config_data& c); //update broadcast
@@ -29,14 +57,13 @@ public:
 
   std::vector<std::string > get_all_rows() const; //analysis broadcast
 
-  bool save(const std::string& arg1); //update broadcast
-
-  bool load(const std::string& arg1); //update broadcast
-
-  std::map<std::string,std::map<std::string,std::string > > get_status() const; //analysis broadcast
   void after_load();
 
 private:
-  // add user data here like: pfi::lang::shared_ptr<some_type> some_;
+  config_data config_;
+  mixable_anomaly anomaly_;
+
+  common::cshared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  mixable_weight_manager wm_;
 };
 }} // namespace jubatus::server

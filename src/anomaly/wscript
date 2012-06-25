@@ -6,6 +6,7 @@ def build(bld):
   bld.shlib(
     source = [
       'anomaly_base.cpp',
+      'anomaly_factory.cpp',
       'lof.cpp',
       'lof_storage.cpp',
       ],
