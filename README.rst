@@ -42,10 +42,13 @@ Improvements
 
   - New neighbor-search algorithm for recommender: minhash
   - installs pkgconfig file (#42, jubatus.pc)
+  - jubavisor handling signal (#53)
+  - Exception handling and error outputs (#55)
 
 Bugfix
   - internal API get_storage implemented again (#21)
-  - #45, #15
+  - Forgot ignoring signal in keeper #47
+  - #54, #45, #15
 
 Release 0.2.3 2012/6/8
 ~~~~~~~~~~~~~~~~~~~~~~~
