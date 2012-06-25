@@ -45,6 +45,7 @@ keeper::~keeper(){
 int keeper::run(){
   { LOG(INFO) << "running in port=" << a_.port; }
   set_exit_on_term();
+  ignore_sigpipe();
   return this->serv(a_.port, a_.threadnum);
 };
 
