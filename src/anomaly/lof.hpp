@@ -30,6 +30,7 @@ public:
   ~lof();
 
   virtual float calc_anomaly_score(const sfv_t& query) const; //return anomaly score of query
+  virtual float calc_anomaly_score(const std::string& id) const;
 
   virtual void clear();
   virtual void clear_row(const std::string& id);

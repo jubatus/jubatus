@@ -59,18 +59,15 @@ float lof_storage::collect_lrds(const sfv_t& query,
   vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(query, neighbors, neighbor_num_);
 
-  // collect lrd values of the nearest neighbors
-  neighbor_lrd.clear();
-  for (size_t i = 0; i < neighbors.size(); ++i) {
-    neighbor_lrd[neighbors[i].first] = get_lrd(neighbors[i].first);
-  }
+  return collect_lrds_from_neighbors(neighbors, neighbor_lrd);
+}
 
-  // return lrd of the query
-  float sum_reachability = 0;
-  for (size_t i = 0; i < neighbors.size(); ++i) {
-    sum_reachability += max(neighbors[i].second, get_kdist(neighbors[i].first));
-  }
-  return neighbors.size() / sum_reachability;
+float lof_storage::collect_lrds(const string& id,
+                                unordered_map<string, float>& neighbor_lrd) const {
+  vector<pair<string, float> > neighbors;
+  nn_engine_->neighbor_row(id, neighbors, neighbor_num_);
+
+  return collect_lrds_from_neighbors(neighbors, neighbor_lrd);
 }
 
 void lof_storage::remove_row(const string& row) {
@@ -208,6 +205,23 @@ void lof_storage::mix(const string& lhs, string& rhs) const {
 }
 
 // private
+
+float lof_storage::collect_lrds_from_neighbors(
+    const vector<pair<string, float> >& neighbors,
+    unordered_map<string, float>& neighbor_lrd) const {
+  // collect lrd values of the nearest neighbors
+  neighbor_lrd.clear();
+  for (size_t i = 0; i < neighbors.size(); ++i) {
+    neighbor_lrd[neighbors[i].first] = get_lrd(neighbors[i].first);
+  }
+
+  // return lrd of the query
+  float sum_reachability = 0;
+  for (size_t i = 0; i < neighbors.size(); ++i) {
+    sum_reachability += max(neighbors[i].second, get_kdist(neighbors[i].first));
+  }
+  return neighbors.size() / sum_reachability;
+}
 
 void lof_storage::serialize_diff(const lof_table_t& table,
                                  const string& nn_diff,

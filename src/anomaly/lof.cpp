@@ -36,6 +36,21 @@ using pfi::math::random::mtrand;
 namespace jubatus {
 namespace anomaly {
 
+namespace {
+
+float calculate_lof(float lrd,
+                    const unordered_map<string, float>& neighbor_lrd) {
+  float sum_neighbor_lrd = 0;
+  for (unordered_map<string, float>::const_iterator it = neighbor_lrd.begin();
+       it != neighbor_lrd.end(); ++it) {
+    sum_neighbor_lrd += it->second;
+  }
+
+  return sum_neighbor_lrd / (neighbor_lrd.size() * lrd);
+}
+
+}
+
 lof::lof() {
 }
 
@@ -50,13 +65,14 @@ float lof::calc_anomaly_score(const sfv_t& query) const {
   unordered_map<string, float> neighbor_lrd;
   const float lrd = lof_index_.collect_lrds(query, neighbor_lrd);
 
-  float sum_neighbor_lrd = 0;
-  for (unordered_map<string, float>::const_iterator it = neighbor_lrd.begin();
-       it != neighbor_lrd.end(); ++it) {
-    sum_neighbor_lrd += it->second;
-  }
+  return calculate_lof(lrd, neighbor_lrd);
+}
 
-  return sum_neighbor_lrd / (neighbor_lrd.size() * lrd);
+float lof::calc_anomaly_score(const string& id) const {
+  unordered_map<string, float> neighbor_lrd;
+  const float lrd = lof_index_.collect_lrds(id, neighbor_lrd);
+
+  return calculate_lof(lrd, neighbor_lrd);
 }
 
 void lof::clear() {

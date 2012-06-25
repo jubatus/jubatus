@@ -46,6 +46,8 @@ public:
   // calculate lrd of query and lrd values of its neighbors
   float collect_lrds(const sfv_t& query,
                      pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
+  float collect_lrds(const std::string& id,
+                     pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
   
   // For Update
   void remove_row(const std::string& row);
@@ -129,6 +131,10 @@ private:
       ar & str;
     }
   }
+
+  float collect_lrds_from_neighbors(
+      const std::vector<std::pair<std::string, float> >& neighbors,
+      pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
 
   void serialize_diff(const lof_table_t& table,
                       const std::string& nn_diff,
