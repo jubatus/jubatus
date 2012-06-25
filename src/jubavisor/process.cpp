@@ -41,7 +41,7 @@ using namespace pfi::lang;
 namespace jubatus{
 
 process::process(const std::string& zkhosts, const std::string& logfile):
-  zk_hosts_(zkhosts), logfile_(logfile){}
+  zk_hosts_(zkhosts), logfile_(logfile), rpc_port_(-1){}
 process::~process(){}
 
 // str : "<server>/<name>
@@ -75,6 +75,7 @@ bool process::spawn_link(int p){
   std::string cmd = server_;  // TODO: check cmd exits
   LOG(INFO) << "forking " << cmd << " with port " << p;
 
+  rpc_port_ = p;
   pid_ = fork();
   if(pid_ > 0){
     LOG(INFO) << "forked - pid: " << pid_;
