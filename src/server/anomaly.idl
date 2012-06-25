@@ -79,9 +79,6 @@ service anomaly {
   #@random #@analysis #@pass
   float calc_score(0: string name, 1: datum d) # //@random
 
-  #@cht #@analysis #@pass
-  datum decode_row(0: string name, 1: string id) # //@cht
-
   #@broadcast #@analysis #@concat
   list<string>  get_all_rows(0: string name) # //@broadcast
 

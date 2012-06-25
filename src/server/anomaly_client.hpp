@@ -40,10 +40,6 @@ public:
       return call<float(std::string, datum)>("calc_score")(name, d);
     }
 
-    datum decode_row(std::string name, std::string id) {
-      return call<datum(std::string, std::string)>("decode_row")(name, id);
-    }
-
     std::vector<std::string > get_all_rows(std::string name) {
       return call<std::vector<std::string >(std::string)>("get_all_rows")(name);
     }

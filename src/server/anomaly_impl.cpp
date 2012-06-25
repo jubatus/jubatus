@@ -34,9 +34,6 @@ public:
   float calc_score(std::string name, datum d) //analysis random
   { JRLOCK__(p_); return p_->calc_score(d); }
 
-  datum decode_row(std::string name, std::string id) //analysis cht(2)
-  { JRLOCK__(p_); return p_->decode_row(id); }
-
   std::vector<std::string > get_all_rows(std::string name) //analysis broadcast
   { JRLOCK__(p_); return p_->get_all_rows(); }
 

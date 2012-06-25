@@ -33,10 +33,8 @@ bool anomaly_serv::set_config(const config_data& c)
   common::cshared_ptr<fv_converter::datum_to_fv_converter>
     converter(new fv_converter::datum_to_fv_converter);
     
-  //convert<jubatus::config_data, config_data>(config, config_);
   jubatus::fv_converter::converter_config converter_config;
   convert(c.converter, converter_config);
-  //convert<jubatus::converter_config, fv_converter::converter_config>(config_.config, c);
   fv_converter::initialize_converter(converter_config, *converter);
   converter_ = converter;
 
@@ -66,11 +64,20 @@ std::pair<std::string,float > anomaly_serv::add(const datum& d)
 {
   fv_converter::datum data;
   sfv_t v;
-  convert(d, data);
-  converter_->convert(data, v);
-  float score = anomaly_.get_model()->calc_anomaly_score(v);
-  std::string id = ""; //TODO: FIXME: create new ID by using...?
-  return make_pair(id, score);
+  uint64_t id = idgen_.generate();
+  std::string id_str = pfi::lang::lexical_cast<std::string>(id);
+
+  if(a_.is_standalone()){
+    convert(d, data);
+    converter_->convert(data, v);
+    // add the point, before calc score
+    anomaly_.get_model()->update_row(id_str, v);
+    float score = anomaly_.get_model()->calc_anomaly_score(v);
+    return make_pair(id_str, score);
+    
+  }else{
+    //TODO: FIXME:  do RPC to right server by using CHT.
+  }
 }
 
 //update, cht
@@ -80,10 +87,9 @@ float anomaly_serv::update(const std::string& id, const datum& d)
   sfv_t v;
   convert(d, data);
   converter_->convert(data, v);
+  // float score = calc_anomaly_score(id);
   float score = anomaly_.get_model()->calc_anomaly_score(v);
-  // TODO: FIXME: do add the point to LOF
   return score;
-  
 }
 
 //update, broadcast
@@ -102,21 +108,6 @@ float anomaly_serv::calc_score(const datum& d) const
   converter_->convert(data, v);
   float score = anomaly_.get_model()->calc_anomaly_score(v);
   return score;
-}
-
-//analysis, cht
-datum anomaly_serv::decode_row(const std::string& id) const
-{
-  // sfv_t v;
-  // fv_converter::datum ret;
-
-  // anomaly_.get_model()->decode_row(id, v);
-  // fv_converter::revert_feature(v, ret);
-  
-  datum ret0;
-  // convert<fv_converter::datum, datum>(ret, ret0);
-  return ret0;
-
 }
 
 //analysis, broadcast

@@ -27,7 +27,6 @@ public:
     rpc_server::add<float(std::string, std::string, datum) >("update", pfi::lang::bind(&Impl::update, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
     rpc_server::add<bool(std::string) >("clear", pfi::lang::bind(&Impl::clear, static_cast<Impl*>(this), pfi::lang::_1));
     rpc_server::add<float(std::string, datum) >("calc_score", pfi::lang::bind(&Impl::calc_score, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
-    rpc_server::add<datum(std::string, std::string) >("decode_row", pfi::lang::bind(&Impl::decode_row, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<std::vector<std::string >(std::string) >("get_all_rows", pfi::lang::bind(&Impl::get_all_rows, static_cast<Impl*>(this), pfi::lang::_1));
     rpc_server::add<bool(std::string, std::string) >("save", pfi::lang::bind(&Impl::save, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<bool(std::string, std::string) >("load", pfi::lang::bind(&Impl::load, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));

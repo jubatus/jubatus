@@ -17,17 +17,17 @@ struct mixable_anomaly :
   mixable_anomaly(){ set_default_mixer(); }
   static std::string get_diff(const jubatus::anomaly::anomaly_base* model){
     std::string diff;
-    //model->get_diff(diff);
+    model->get_const_storage()->get_diff(diff);
     return diff;
   }
   static int reduce(const jubatus::anomaly::anomaly_base* model,
 		    const std::string& v, std::string& acc){
-    //model->
+    model->get_const_storage()->mix(v, acc);
     return 0;
   }
-  static int put_diff(const jubatus::anomaly::anomaly_base* model,
+  static int put_diff(jubatus::anomaly::anomaly_base* model,
 		      const std::string& v){
-    //
+    model->get_storage()->set_mixed_and_clear_diff(v);
     return 0;
   }
   void clear(){}
@@ -52,8 +52,6 @@ public:
   bool clear(); //update broadcast
 
   float calc_score(const datum& d) const; //analysis random
-
-  datum decode_row(const std::string& id) const; //analysis cht
 
   std::vector<std::string > get_all_rows() const; //analysis broadcast
 
