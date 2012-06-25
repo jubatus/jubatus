@@ -83,7 +83,7 @@ void lof::clear_row(const string& id) {
   lof_index_.remove_row(id);
 }
 
-void lof::update_row(string& id, const sfv_diff_t& diff) {
+void lof::update_row(const string& id, const sfv_diff_t& diff) {
   lof_index_.update_row(id, diff);
 }
 
