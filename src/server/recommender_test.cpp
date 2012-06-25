@@ -59,7 +59,7 @@ TEST_F(recommender_test, small) {
   c.set_config(NAME, conf);
 
   jubatus::datum d;
-  d.nv.push_back(make_pair("f1", 1.0));
+  d.num_values.push_back(make_pair("f1", 1.0));
   c.update_row(NAME, "key", d);
   c.clear_row(NAME, "key");
   c.update_row(NAME, "key", d);

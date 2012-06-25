@@ -48,7 +48,7 @@ public:
 #ifdef HAVE_ZOOKEEPER_H
   void join_to_cluster(common::cshared_ptr<jubatus::common::lock_service>);
   
-  std::string get_storage(int i);
+  std::string get_storage();
 
   std::vector<std::string> get_diff_impl(int);
   int put_diff_impl(std::vector<std::string> unpacked);
@@ -74,15 +74,10 @@ public:
 
   std::vector<std::string> mix_agg(const std::vector<std::string>& lhs,
    				   const std::vector<std::string>& rhs);
-    
+
 protected:
-  void build_local_path_(std::string& out, const std::string& type, const std::string& id){
-    out = base_path_ + "/";
-    out += type;
-    out += "_";
-    out += id;
-    out += ".jc";
-  };
+  void build_local_path_(std::string& out, const std::string& type, const std::string& id) const;
+  void build_local_path0_(std::string& out, const std::string& type, const std::string& id) const;
 
   server_argv a_;
   unsigned int update_count_;

@@ -5,6 +5,24 @@ The Jubatus library is a online machine learning framework which runs in distrib
 
 See http://jubat.us for details.
 
+QuickStart
+----------
+
+Jubatus publicly supports Ubuntu >= 12.04 , Redhat Linux >= 6.2 . In other platforms, some may work if they have gcc >= 4.4 .
+
+For minimal standalone mode, Jubatus requires libevent >= 1.4 , pficommon >= 1.3.1 , google-glog , libmsgpack, python >= 2.6 . Please install these softwares with headers before installation.
+
+::
+
+  $ git clone git://github.com/jubatus/jubatus.git
+  $ cd jubatus
+  $ ./waf configure --disable-re2
+  $ ./waf build
+  $ sudo ./waf install
+  $ jubaclassifier
+
+Here Jubatus classifier server have started. Enjoy!
+
 LICENSE
 -------
 
@@ -13,8 +31,8 @@ LGPL 2.1
 Update history
 --------------
 
-Release 0.3.0 2012/7/1
-~~~~~~~~~~~~~~~~~~~~~~~
+Release 0.3.0 (scheduled in 2012/7/1)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
   - Distributed Graph Processing
@@ -23,6 +41,11 @@ Improvements
     - Shortest path search
 
   - New neighbor-search algorithm for recommender: minhash
+  - installs pkgconfig file (#42, jubatus.pc)
+
+Bugfix
+  - internal API get_storage implemented again (#21)
+  - #45, #15
 
 Release 0.2.3 2012/6/8
 ~~~~~~~~~~~~~~~~~~~~~~~

@@ -57,7 +57,7 @@ datum convert_vector(const vector<double>& vec) {
   datum d;
   for (size_t i = 0; i < vec.size(); i++) {
     string f = "f" + lexical_cast<string>(i);
-    d.nv.push_back(make_pair(f, vec[i]));
+    d.num_values.push_back(make_pair(f, vec[i]));
   }
   return d;
 }
@@ -130,7 +130,7 @@ TEST_F(regression_test, small) {
   cout << "train" << endl;
   vector<pair<float, datum> > data;
   datum d;
-  d.nv.push_back(make_pair("f1", 1.0));
+  d.num_values.push_back(make_pair("f1", 1.0));
   data.push_back(make_pair(10, d));
   c.train(NAME, data);
 

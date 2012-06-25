@@ -28,20 +28,20 @@ service stat {
   config_data get_config(0: string name) # #@random
 
   #@cht #@update #@all_and
-  bool push(0: string arg0, 1: string key, 2: double v) # #@cht
+  bool push(0: string name, 1: string key, 2: double val) # #@cht
 
-  #@cht #@analysis #@pass
-  double sum(0: string arg0, 1: string key) # #@cht
-  #@cht #@analysis #@pass
-  double stddev(0: string arg0, 1: string key) # #@cht
-  #@cht #@analysis #@pass
-  double max(0: string arg0, 1: string key) # #@cht
-  #@cht #@analysis #@pass
-  double min(0: string arg0, 1: string key) # #@cht
-  #@cht #@analysis #@pass
-  double entropy(0: string arg0, 1: string key) # #@cht
-  #@cht #@analysis #@pass
-  double moment(0: string arg0, 1: string key, 2: int n, 3: double c) # #@cht
+  #@cht #@analysis #@random
+  double sum(0: string name, 1: string key) # #@cht
+  #@cht #@analysis #@random
+  double stddev(0: string name, 1: string key) # #@cht
+  #@cht #@analysis #@random
+  double max(0: string name, 1: string key) # #@cht
+  #@cht #@analysis #@random
+  double min(0: string name, 1: string key) # #@cht
+  #@cht #@analysis #@random
+  double entropy(0: string name, 1: string key) # #@cht
+  #@cht #@analysis #@random
+  double moment(0: string name, 1: string key, 2: int n, 3: double c) # #@cht
 
   #@broadcast #@update #@all_and
   bool save(0: string name, 1: string id) # #@broadcast

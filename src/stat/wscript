@@ -3,7 +3,7 @@ def configure(conf): pass
 
 def build(bld):
   bld.shlib(
-    source = ['stat.cpp'],
+    source = ['stat.cpp', 'mixable_stat.cpp'],
     target = 'jubatus_stat',
     includes = '.',
     use = 'PFICOMMON'
@@ -12,7 +12,7 @@ def build(bld):
   bld.program(
     features = 'gtest',
     source = [
-      'stat_test.cpp'
+      'stat_test.cpp', 'mixable_stat_test.cpp'
       ],
     target = 'stat_test',
     includes = '.',

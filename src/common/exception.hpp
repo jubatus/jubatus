@@ -47,6 +47,11 @@ namespace jubatus{
     membership_error(const std::string& n):runtime_error(n){};
   };
 
+  class not_found : public membership_error {
+  public:
+    not_found(const std::string& n):membership_error(std::string(__func__) + n){};
+  };
+
   class argv_error : public std::runtime_error {
   public:
     argv_error(const std::string& n):runtime_error(n){};
