@@ -35,7 +35,7 @@ using namespace pfi::lang;
 int main(int argc, char* argv[]) try {
   
   cmdline::parser p;
-  p.add<int>("rpc-port", 'p', "port number", false, 9199);
+  p.add<int>("rpc-port", 'p', "port number", false, 9198);
   p.add<std::string>("zookeeper", 'z', "zookeeper location", true);
   p.add<std::string>("logdir", 'l', "log to output all child process' log", false, "/tmp");
   p.add<int>("timeout", 't', "rpc timeout", false, 10);
