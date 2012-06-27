@@ -31,6 +31,33 @@ using jubatus::exception::error_info_list_t;
 using jubatus::exception::exception_thrower_ptr;
 using jubatus::exception::jubaexception;
 
+namespace jubatus {
+namespace exception {
+typedef error_info<struct test_my_tag_, int> test_my_tag;
+inline string to_string(const test_my_tag& info)
+{
+  return pfi::lang::lexical_cast<string>(info.value() * 2);
+}
+} // exception
+} // jubatus
+
+TEST(error_info, defined_tag)
+{
+  jubatus::exception::test_my_tag tag(1);
+
+  EXPECT_FALSE(tag.splitter());
+  EXPECT_EQ(1, tag.value());
+}
+
+TEST(error_info, error_info_base)
+{
+  jubatus::exception::test_my_tag tag(1);
+  const jubatus::exception::error_info_base& base = tag;
+
+  EXPECT_FALSE(base.splitter());
+  EXPECT_EQ("2", base.as_string());
+}
+
 namespace test_exception {
 class ore_exception : public jubaexception<ore_exception> {
 public:
@@ -56,7 +83,7 @@ public:
   // multi-derived exception cannot get as it thrower
   // because thrower() returns exception_thrower_impl<runtime_error>
 };
-}
+} // test_exception
 
 TEST(exception, custom_exception)
 {
@@ -145,10 +172,10 @@ TEST(exception, exception_info_macro)
   } catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
     EXPECT_EQ(4, info_list.size());
-    EXPECT_EQ(false, info_list[0]->splitter());
-    EXPECT_EQ(false, info_list[1]->splitter());
-    EXPECT_EQ(false, info_list[2]->splitter());
-    EXPECT_EQ(true, info_list[3]->splitter());
+    EXPECT_FALSE(info_list[0]->splitter());
+    EXPECT_FALSE(info_list[1]->splitter());
+    EXPECT_FALSE(info_list[2]->splitter());
+    EXPECT_TRUE(info_list[3]->splitter());
   }
 }
 
@@ -161,12 +188,12 @@ TEST(exception, exception_info_macro_additional)
   } catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
     EXPECT_EQ(5, info_list.size());
-    EXPECT_EQ(false, info_list[0]->splitter());
+    EXPECT_FALSE(info_list[0]->splitter());
     EXPECT_EQ(string("message"), info_list[0]->as_string());
-    EXPECT_EQ(false, info_list[1]->splitter());
-    EXPECT_EQ(false, info_list[2]->splitter());
-    EXPECT_EQ(false, info_list[3]->splitter());
-    EXPECT_EQ(true, info_list[4]->splitter());
+    EXPECT_FALSE(info_list[1]->splitter());
+    EXPECT_FALSE(info_list[2]->splitter());
+    EXPECT_FALSE(info_list[3]->splitter());
+    EXPECT_TRUE(info_list[4]->splitter());
   }
 }
 
@@ -191,10 +218,10 @@ TEST(exception, exception_custom_error_info)
   } catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
     EXPECT_EQ(4, info_list.size());
-    EXPECT_EQ(false, info_list[0]->splitter());
-    EXPECT_EQ(false, info_list[1]->splitter());
-    EXPECT_EQ(false, info_list[2]->splitter());
-    EXPECT_EQ(true, info_list[3]->splitter());
+    EXPECT_FALSE(info_list[0]->splitter());
+    EXPECT_FALSE(info_list[1]->splitter());
+    EXPECT_FALSE(info_list[2]->splitter());
+    EXPECT_TRUE(info_list[3]->splitter());
   }
 }
 
@@ -217,16 +244,16 @@ TEST(exception, exception_info_add_macro)
     caught = true;
     error_info_list_t info_list = e.error_info();
     EXPECT_EQ(9, info_list.size());
-    EXPECT_EQ(false, info_list[0]->splitter());
-    EXPECT_EQ(false, info_list[1]->splitter());
-    EXPECT_EQ(false, info_list[2]->splitter());
-    EXPECT_EQ(true, info_list[3]->splitter());
-    EXPECT_EQ(false, info_list[4]->splitter());
+    EXPECT_FALSE(info_list[0]->splitter());
+    EXPECT_FALSE(info_list[1]->splitter());
+    EXPECT_FALSE(info_list[2]->splitter());
+    EXPECT_TRUE(info_list[3]->splitter());
+    EXPECT_FALSE(info_list[4]->splitter());
     EXPECT_EQ(string("added"), info_list[4]->as_string());
-    EXPECT_EQ(false, info_list[5]->splitter());
-    EXPECT_EQ(false, info_list[6]->splitter());
-    EXPECT_EQ(false, info_list[7]->splitter());
-    EXPECT_EQ(true, info_list[8]->splitter());
+    EXPECT_FALSE(info_list[5]->splitter());
+    EXPECT_FALSE(info_list[6]->splitter());
+    EXPECT_FALSE(info_list[7]->splitter());
+    EXPECT_TRUE(info_list[8]->splitter());
   }
 
   EXPECT_TRUE(caught);
@@ -287,5 +314,4 @@ TEST(exception, exception_class_name)
   EXPECT_EQ(string("jubatus::exception::runtime_error"), static_cast<jubatus_exception*>(&object)->name());
 }
 #endif
-
 
