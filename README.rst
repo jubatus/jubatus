@@ -31,8 +31,8 @@ LGPL 2.1
 Update history
 --------------
 
-Release 0.3.0 (scheduled in 2012/7/1)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Release 0.3.0 2012/6/29
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
   - Distributed Graph Processing

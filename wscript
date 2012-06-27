@@ -1,6 +1,6 @@
 import Options
 
-VERSION = '0.3.0-RC1'
+VERSION = '0.3.0'
 APPNAME = 'jubatus'
 
 top = '.'
