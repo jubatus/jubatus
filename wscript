@@ -27,7 +27,6 @@ def options(opt):
 
 def configure(conf):
   conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe']
-  conf.env.LINKFLAGS += ['-flat_namespace']
 
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
