@@ -20,6 +20,7 @@
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
+#include <pficommon/lang/cast.h>
 #include <pficommon/math/random.h>
 #include "lsh_index_storage.hpp"
 #include "lsh_util.hpp"
@@ -197,7 +198,7 @@ void lsh_index_storage::similar_row(const vector<float>& hash,
   for (uint64_t i = 0; i < table_num_; ++i) {
     lsh_vector key = gen.base(i);
     key.push_back(i);
-    if (retrieve_hit_rows(key, ret_num, cands)) {
+    if (retrieve_hit_rows(hash_lv(key), ret_num, cands)) {
       get_sorted_similar_rows(cands, bv, norm, ret_num, ids);
       return;
     }
@@ -207,11 +208,32 @@ void lsh_index_storage::similar_row(const vector<float>& hash,
   for (uint64_t i = 0; i < probe_num; ++i) {
     pair<size_t, lsh_vector> p = gen.get_next_table_and_vector();
     p.second.push_back(p.first);
-    if (retrieve_hit_rows(p.second, ret_num, cands)) {
+    if (retrieve_hit_rows(hash_lv(p.second), ret_num, cands)) {
       break;
     }
   }
   get_sorted_similar_rows(cands, bv, norm, ret_num, ids);
+}
+
+void lsh_index_storage::similar_row(const string& id,
+                                    uint64_t ret_num,
+                                    vector<pair<string, float> >& ids) const {
+  lsh_master_table_t::const_iterator it = master_table_diff_.find(id);
+  if (it == master_table_diff_.end()) {
+    it = master_table_.find(id);
+    if (it == master_table_.end()) {
+      return;
+    }
+  }
+
+  unordered_set<uint64_t> cands;
+  for (size_t i = 0; i < it->second.lsh_hash.size(); ++i) {
+    if (retrieve_hit_rows(it->second.lsh_hash[i], ret_num, cands)) {
+      break;
+    }
+  }
+
+  get_sorted_similar_rows(cands, it->second.simhash_bv, it->second.norm, ret_num, ids);
 }
 
 string lsh_index_storage::name() const {
@@ -316,10 +338,9 @@ void lsh_index_storage::set_mixed_row(const string& row, const lsh_entry& entry)
   }
 }
 
-bool lsh_index_storage::retrieve_hit_rows(const lsh_vector& key,
+bool lsh_index_storage::retrieve_hit_rows(size_t hash,
                                           size_t ret_num,
                                           unordered_set<uint64_t>& cands) const {
-  const size_t hash = hash_lv(key);
   const pair<lsh_table_t::const_iterator, lsh_table_t::const_iterator>
       range = lsh_table_.equal_range(hash);
 

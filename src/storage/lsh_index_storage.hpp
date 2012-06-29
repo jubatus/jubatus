@@ -48,6 +48,9 @@ public:
                    uint64_t probe_num,
                    uint64_t ret_num,
                    std::vector<std::pair<std::string, float> >& ids) const;
+  void similar_row(const std::string& id,
+                   uint64_t ret_num,
+                   std::vector<std::pair<std::string, float> >& ids) const;
   std::string name() const;
 
   size_t table_num() const { return table_num_; }
@@ -85,7 +88,7 @@ private:
                                 float norm,
                                 lsh_entry& entry) const;
   void add_index(const std::string& row, const lsh_entry& entry);
-  bool retrieve_hit_rows(const lsh_vector& key,
+  bool retrieve_hit_rows(size_t hash,
                          size_t ret_num,
                          pfi::data::unordered_set<uint64_t>& cands) const;
   void get_sorted_similar_rows(const pfi::data::unordered_set<uint64_t>& cands,
