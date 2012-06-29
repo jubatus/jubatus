@@ -90,25 +90,6 @@ private:
   void serialize(Ar& ar) {
     ar & MEMBER(lof_table_) & MEMBER(lof_table_diff_);
 
-    // TODO: Move it to pficommon (serialization of unordered_set)
-    if (ar.is_read) {
-      update_queue_.clear();
-      uint64_t n = 0;
-      ar & n;
-      std::string e;
-      while (n-- > 0) {
-        ar & e;
-        update_queue_.insert(e);
-      }
-    } else {
-      uint64_t n = update_queue_.size();
-      ar & n;
-      for (pfi::data::unordered_set<std::string>::iterator it = update_queue_.begin();
-           it != update_queue_.end(); ++it) {
-        ar & const_cast<std::string&>(*it);
-      }
-    }
-
     ar & MEMBER(neighbor_num_) & MEMBER(reverse_nn_num_);
 
     // TODO: Make it more efficient
@@ -143,19 +124,15 @@ private:
                         lof_table_t& table,
                         std::string& nn_diff) const;
 
-  void update_all_kdist();
-  void update_all_lrd();
+  void collect_neighbors(const std::string& row,
+                         pfi::data::unordered_set<std::string>& nn) const;
 
+  void update_entries(const pfi::data::unordered_set<std::string>& rows);
   void update_kdist(const std::string& row);
   void update_lrd(const std::string& row);
 
-  void push_neighbors_to_update_queue(const std::string& row);
-  void push_neighbors_to_update_queue(const sfv_t& query);
-
   lof_table_t lof_table_ ; // table for storing k-dist and lrd values
   lof_table_t lof_table_diff_;
-
-  pfi::data::unordered_set<std::string> update_queue_;
 
   uint32_t neighbor_num_; // k of k-nn
   uint32_t reverse_nn_num_;  // ck of ck-nn as an approx. of k-reverse-nn

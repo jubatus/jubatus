@@ -16,6 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <algorithm>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 #include "../common/config_util.hpp"
@@ -85,15 +86,22 @@ void lof_storage::get_all_row_ids(vector<string>& ids) const {
 }
 
 void lof_storage::update_row(const string& row, const sfv_t& diff) {
-  sfv_t query;
-  nn_engine_->decode_row(row, query);
+  unordered_set<string> update_set;
 
-  if (!query.empty()) {
-    push_neighbors_to_update_queue(query);
+  {
+    sfv_t query;
+    nn_engine_->decode_row(row, query);
+    if (!query.empty()) {
+      collect_neighbors(row, update_set);
+    }
   }
 
   nn_engine_->update_row(row, diff);
-  push_neighbors_to_update_queue(row);
+  collect_neighbors(row, update_set);
+
+  update_set.insert(row);
+
+  update_entries(update_set);
 }
 
 string lof_storage::name() const {
@@ -123,9 +131,17 @@ float lof_storage::get_lrd(const string& row) const {
 }
 
 void lof_storage::update_all() {
-  update_all_kdist();
-  update_all_lrd();
-  update_queue_.clear();
+  vector<string> ids;
+  get_all_row_ids(ids);
+
+  // NOTE: These two loops are separated, since update_lrd requires new kdist
+  // values of k-NN.
+  for (size_t i = 0; i < ids.size(); ++i) {
+    update_kdist(ids[i]);
+  }
+  for (size_t i = 0; i < ids.size(); ++i) {
+    update_lrd(ids[i]);
+  }
 }
 
 bool lof_storage::save(ostream& os) {
@@ -155,9 +171,6 @@ void lof_storage::get_diff(string& diff) const {
 }
 
 void lof_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
-  // Although the name contains "clear diff", this method actually creates
-  // a new diff, which will be mixed at the next time.
-
   string nn_diff;
   deserialize_diff(mixed_diff, lof_table_diff_, nn_diff);
 
@@ -168,21 +181,6 @@ void lof_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
     lof_table_[it->first] = it->second;
   }
   lof_table_diff_.clear();
-
-  // kdists for all items must be updated before updating lrds,
-  // since lrd of some item depends on kdists of its nearest neighbors.
-
-  for (unordered_set<string>::const_iterator it = update_queue_.begin();
-       it != update_queue_.end(); ++it) {
-    update_kdist(*it);
-  }
-
-  for (unordered_set<string>::const_iterator it = update_queue_.begin();
-       it != update_queue_.end(); ++it) {
-    update_lrd(*it);
-  }
-
-  update_queue_.clear();
 }
 
 void lof_storage::mix(const string& lhs, string& rhs) const {
@@ -195,7 +193,7 @@ void lof_storage::mix(const string& lhs, string& rhs) const {
   nn_engine_->get_const_storage()->mix(nn_diff, nn_mixed);
 
   for (lof_table_t::const_iterator it = diff.begin(); it != diff.end(); ++it) {
-    mixed[it->first] = it->second;
+    mixed.insert(*it);
   }
 
   ostringstream oss;
@@ -209,6 +207,10 @@ void lof_storage::mix(const string& lhs, string& rhs) const {
 float lof_storage::collect_lrds_from_neighbors(
     const vector<pair<string, float> >& neighbors,
     unordered_map<string, float>& neighbor_lrd) const {
+  if (neighbors.empty()) {
+    return numeric_limits<float>::infinity();
+  }
+
   // collect lrd values of the nearest neighbors
   neighbor_lrd.clear();
   for (size_t i = 0; i < neighbors.size(); ++i) {
@@ -220,6 +222,11 @@ float lof_storage::collect_lrds_from_neighbors(
   for (size_t i = 0; i < neighbors.size(); ++i) {
     sum_reachability += max(neighbors[i].second, get_kdist(neighbors[i].first));
   }
+
+  if (sum_reachability == 0) {
+    return numeric_limits<float>::infinity();
+  }
+
   return neighbors.size() / sum_reachability;
 }
 
@@ -249,16 +256,25 @@ void lof_storage::deserialize_diff(const string& diff,
   bi >> nn_diff;
 }
 
-void lof_storage::update_all_kdist() {
-  for (unordered_set<string>::const_iterator it = update_queue_.begin();
-       it != update_queue_.end(); ++it) {
-    update_kdist(*it);
+void lof_storage::collect_neighbors(const string& row,
+                                    unordered_set<string>& nn) const {
+  vector<pair<string, float> > neighbors;
+  nn_engine_->neighbor_row(row, neighbors, reverse_nn_num_);
+
+  for (size_t i = 0; i < neighbors.size(); ++i) {
+    nn.insert(neighbors[i].first);
   }
 }
 
-void lof_storage::update_all_lrd() {
-  for (unordered_set<string>::const_iterator it = update_queue_.begin();
-       it != update_queue_.end(); ++it) {
+void lof_storage::update_entries(const unordered_set<string>& rows) {
+  // NOTE: These two loops are separated, since update_lrd requires new kdist
+  // values of k-NN.
+  for (unordered_set<string>::const_iterator it = rows.begin();
+       it != rows.end(); ++it) {
+    update_kdist(*it);
+  }
+  for (unordered_set<string>::const_iterator it = rows.begin();
+       it != rows.end(); ++it) {
     update_lrd(*it);
   }
 }
@@ -266,38 +282,32 @@ void lof_storage::update_all_lrd() {
 void lof_storage::update_kdist(const string& row) {
   vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(row, neighbors, neighbor_num_);
-  lof_table_diff_[row].kdist = neighbors.back().second;
+
+  if (!neighbors.empty()) {
+    lof_table_diff_[row].kdist = neighbors.back().second;
+  }
 }
 
 void lof_storage::update_lrd(const string& row) {
   vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(row, neighbors, neighbor_num_);
 
+  if (neighbors.empty()) {
+    lof_table_diff_[row].lrd = 1;
+    return;
+  }
+
   float sum_reachability = 0;
   for (size_t i = 0; i < neighbors.size(); ++i) {
     sum_reachability += max(neighbors[i].second, get_kdist(neighbors[i].first));
   }
 
+  if (sum_reachability == 0) {
+    lof_table_diff_[row].lrd = numeric_limits<float>::infinity();
+    return;
+  }
+
   lof_table_diff_[row].lrd = neighbors.size() / sum_reachability;
-}
-
-void lof_storage::push_neighbors_to_update_queue(const string& row) {
-  vector<pair<string, float> > neighbors;
-  nn_engine_->neighbor_row(row, neighbors, reverse_nn_num_);
-
-  for (size_t i = 0; i < neighbors.size(); ++i) {
-    update_queue_.insert(neighbors[i].first);
-  }
-  update_queue_.insert(row);
-}
-
-void lof_storage::push_neighbors_to_update_queue(const sfv_t& query) {
-  vector<pair<string, float> > neighbors;
-  nn_engine_->neighbor_row(query, neighbors, reverse_nn_num_);
-
-  for (size_t i = 0; i < neighbors.size(); ++i) {
-    update_queue_.insert(neighbors[i].first);
-  }
 }
 
 }
