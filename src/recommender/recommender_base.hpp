@@ -44,8 +44,8 @@ public:
   virtual storage::recommender_storage_base* get_storage() = 0;
   virtual const storage::recommender_storage_base* get_const_storage() const = 0;
 
-  void similar_row(const std::string& id, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
-  void neighbor_row(const std::string& id, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  virtual void similar_row(const std::string& id, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  virtual void neighbor_row(const std::string& id, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
   void complete_row(const std::string& id, sfv_t& ret) const;
   void complete_row(const sfv_t& query, sfv_t& ret) const;
   void decode_row(const std::string& id, sfv_t& ret) const;

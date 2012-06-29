@@ -100,6 +100,15 @@ void euclid_lsh::neighbor_row(const sfv_t& query,
   }
 }
 
+void euclid_lsh::neighbor_row(const string& id,
+                              vector<pair<string, float> >& ids,
+                              size_t ret_num) const {
+  similar_row(id, ids, ret_num);
+  for (size_t i = 0; i < ids.size(); ++i) {
+    ids[i].second = -ids[i].second;
+  }
+}
+
 void euclid_lsh::similar_row(const sfv_t& query,
                              vector<pair<string, float> >& ids,
                              size_t ret_num) const {
@@ -108,6 +117,13 @@ void euclid_lsh::similar_row(const sfv_t& query,
   const vector<float> hash = lsh_function(query, lsh_index_.all_lsh_num(), bin_width_);
   const float norm = calc_norm(query);
   lsh_index_.similar_row(hash, norm, num_probe_, ret_num, ids);
+}
+
+void euclid_lsh::similar_row(const string& id,
+                             vector<pair<string, float> >& ids,
+                             size_t ret_num) const {
+  ids.clear();
+  lsh_index_.similar_row(id, ret_num, ids);
 }
 
 void euclid_lsh::clear() {
