@@ -326,7 +326,7 @@ bool lsh_index_storage::retrieve_hit_rows(const lsh_vector& key,
   for (lsh_table_t::const_iterator it = range.first; it != range.second; ++it) {
     cands.insert(it->second);
   }
-  return cands.size() >= max(ret_num, table_num_ * 3);
+  return cands.size() >= max(static_cast<long long unsigned>(ret_num), table_num_ * 3);
 }
 
 void lsh_index_storage::get_sorted_similar_rows(const unordered_set<uint64_t>& cands,
