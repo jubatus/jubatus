@@ -15,6 +15,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "exception.hpp"
 #include "lock_service.hpp"
 #include "zk.hpp"
 #include "cached_zk.hpp"
@@ -30,7 +31,7 @@ lock_service* create_lock_service(const std::string& name,
   else if(name == "cached_zk"){
     return reinterpret_cast<lock_service*>(new cached_zk(hosts, timeout, log));
   }
-  throw std::runtime_error(name);
+  throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(std::string("unknown lock_service: ") + name));
 }
 
 lock_service_mutex::lock_service_mutex(lock_service& ls, const std::string& path):
@@ -39,7 +40,7 @@ lock_service_mutex::lock_service_mutex(lock_service& ls, const std::string& path
     impl_ = reinterpret_cast<try_lockable*>(new zkmutex(ls, path));
   }else{
     { LOG(ERROR) << "unknown lock_service: " << ls.type(); }
-    throw std::runtime_error(ls.type());
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(std::string("unknown lock_service: ") + ls.type()));
   }
 };
 

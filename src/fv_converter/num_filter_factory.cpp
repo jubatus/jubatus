@@ -51,7 +51,7 @@ num_filter* num_filter_factory::create(
   } else if (name == "dynamic") {
     return create_dynamic_filter(params);
   } else {
-    throw converter_exception("unknonw num filter name: " + name);
+    throw JUBATUS_EXCEPTION(converter_exception("unknonw num filter name: " + name));
   }
 }
 

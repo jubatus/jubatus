@@ -38,7 +38,7 @@ num_feature_factory::create(const string& name,
   if (name == "dynamic") {
     return create_dynamic_num_feature(params);
   } else {
-    throw converter_exception(string("unknonwn num feature name: ") + name);
+    throw JUBATUS_EXCEPTION(converter_exception(string("unknonwn num feature name: ") + name));
   }
 }
 

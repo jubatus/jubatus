@@ -24,6 +24,7 @@
 #include <pficommon/network/mprpc.h>
 #include <pficommon/lang/function.h>
 
+#include "../common/exception.hpp"
 #include "../common/zk.hpp"
 #include "../common/membership.hpp"
 #include "../common/cmdline.h"
@@ -40,7 +41,7 @@ void send2supervisor(const string& , const string&, const string&, unsigned int 
 void send2server(const string& , const string&, const string&);
 void status(const string&, const string&);
 
-int main(int args, char** argv){
+int main(int args, char** argv) try {
   cmdline::parser p;
   p.add<std::string>("cmd", 'c', "command to send servers(start|stop|save|load)", true);
   p.add<std::string>("server", 's', "server exec file of learning machine (jubaclassifier, ...)", true);
@@ -84,7 +85,10 @@ int main(int args, char** argv){
   }else if(cmd == "save" or cmd == "load"){ //or set_config?
     send2server(cmd, name, zk);
   }
-  //cout << cmd << name << zk << endl;
+
+  return 0;
+} catch (const jubatus::exception::jubatus_exception& e) {
+  std::cout << e.diagnostic_information(true) << std::endl;
 }
 
 int do_request(const string& cmd, const string& name, const string& ip_port, unsigned int n){

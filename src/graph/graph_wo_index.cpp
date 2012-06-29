@@ -106,7 +106,7 @@ void graph_wo_index::clear(){
 
 void graph_wo_index::create_node(node_id_t id){
   if (local_nodes_.count(id) > 0){
-    throw local_node_exists(id);
+    throw JUBATUS_EXCEPTION(local_node_exists(id));
   }
   local_nodes_[id] = node_info();
   may_set_landmark(id);
@@ -128,14 +128,14 @@ void graph_wo_index::may_set_landmark(node_id_t id){
 
 void graph_wo_index::create_global_node(node_id_t id){
   if (global_nodes_.count(id) > 0){
-    throw global_node_exists(id);
+    throw JUBATUS_EXCEPTION(global_node_exists(id));
   }
   global_nodes_[id] = 0;
 }
 
 void graph_wo_index::remove_global_node(node_id_t id){
   if (global_nodes_.count(id) == 0){
-    throw unknown_id("remove_global_node", id);
+    throw JUBATUS_EXCEPTION(unknown_id("remove_global_node", id));
   }
   global_nodes_.erase(id);
 }
@@ -143,7 +143,7 @@ void graph_wo_index::remove_global_node(node_id_t id){
 void graph_wo_index::update_node(node_id_t id, const property& p){
   node_info_map::iterator it = local_nodes_.find(id);
   if (it == local_nodes_.end()){
-    throw unknown_id("update_node", id);
+    throw JUBATUS_EXCEPTION(unknown_id("update_node", id));
   }
   it->second.p = p;
   may_set_landmark(id);
@@ -153,12 +153,11 @@ void graph_wo_index::remove_node(node_id_t id){
   node_info ni;
   try {
     get_node(id, ni);
-  } catch (runtime_error& e){
-    throw unknown_id("remove_node", id);
+  } catch (jubatus::exception::runtime_error&){
+    throw JUBATUS_EXCEPTION(unknown_id("remove_node", id));
   }
   if (ni.in_edges.size() > 0 || ni.out_edges.size() > 0){
-    throw runtime_error(string("graph_wo_index::remove_node unknown id=")
-                        + lexical_cast<string>(id));
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(string("graph_wo_index::remove_node unknown id=") + lexical_cast<string>(id)));
   }
   local_nodes_.erase(id);
 }
@@ -166,12 +165,12 @@ void graph_wo_index::remove_node(node_id_t id){
 void graph_wo_index::create_edge(edge_id_t eid, node_id_t src, node_id_t tgt){
   if (local_nodes_.find(src) == local_nodes_.end() &&
       local_nodes_.find(tgt) == local_nodes_.end()){
-    throw unknown_id(string("graph_wo_index::create_edge unknown src id=")
+    throw JUBATUS_EXCEPTION(unknown_id(string("graph_wo_index::create_edge unknown src id=")
                      + lexical_cast<string>(src) + " tgt id=" + lexical_cast<string>(tgt),
-                     src);
+                     src));
   }
   if (local_edges_.count(eid) > 0){
-    throw edge_exists(eid);
+    throw JUBATUS_EXCEPTION(edge_exists(eid));
   }
   
   edge_info ei;
@@ -189,7 +188,7 @@ void graph_wo_index::create_edge(edge_id_t eid, node_id_t src, node_id_t tgt){
 void graph_wo_index::update_edge(edge_id_t eid, const property& p){
   edge_info_map::iterator it = local_edges_.find(eid);
   if (it == local_edges_.end()){
-    throw unknown_id("update_edge:eid", eid);
+    throw JUBATUS_EXCEPTION(unknown_id("update_edge:eid", eid));
   }
   it->second.p = p;
 }
@@ -197,7 +196,7 @@ void graph_wo_index::update_edge(edge_id_t eid, const property& p){
 void graph_wo_index::remove_edge(edge_id_t eid){
   edge_info_map::iterator it = local_edges_.find(eid);
   if (it == local_edges_.end()){
-    throw unknown_id("remove_edge:eid", eid);
+    throw JUBATUS_EXCEPTION(unknown_id("remove_edge:eid", eid));
   }
   node_id_t src = it->second.src;
   node_id_t tgt = it->second.tgt;
@@ -232,15 +231,15 @@ double graph_wo_index::centrality(node_id_t id, centrality_type ct, const preset
   if (ct == EIGENSCORE){
     eigen_vector_query_mixed::const_iterator model_it = eigen_scores_.find(query);
     if (model_it == eigen_scores_.end()) {
-      throw unknown_centrality_type(ct);
+      throw JUBATUS_EXCEPTION(unknown_centrality_type(ct));
     }
     eigen_vector_mixed::const_iterator it = model_it->second.find(id);
     if (it == model_it->second.end()){
-      throw unknown_id("centrality", id);
+      throw JUBATUS_EXCEPTION(unknown_id("centrality", id));
     }
     return it->second.score;
   } else {
-    throw unknown_centrality_type(ct);
+    throw JUBATUS_EXCEPTION(unknown_centrality_type(ct));
   }
 
 }
@@ -249,14 +248,14 @@ void graph_wo_index::shortest_path(node_id_t src, node_id_t tgt,
                                    uint64_t max_hop, vector<node_id_t>& ret,
 				   const preset_query& query) const{
   if (global_nodes_.count(src) == 0){
-    throw unknown_id("shortest_path:src", src);
+    throw JUBATUS_EXCEPTION(unknown_id("shortest_path:src", src));
   }
   if (global_nodes_.count(tgt) == 0){
-    throw unknown_id("shortest_path:tgt", tgt);
+    throw JUBATUS_EXCEPTION(unknown_id("shortest_path:tgt", tgt));
   }
   spt_query_mixed::const_iterator model_it = spts_.find(query);
   if (model_it == spts_.end()) {
-    throw unknown_query(query);
+    throw JUBATUS_EXCEPTION(unknown_query(query));
   }
   const spt_mixed& mixed = model_it->second;
   ret.clear();
@@ -322,7 +321,7 @@ void graph_wo_index::shortest_path(node_id_t src, node_id_t tgt,
 void graph_wo_index::get_node(node_id_t id, node_info& ret) const{
   node_info_map::const_iterator it = local_nodes_.find(id);
   if (it == local_nodes_.end()){
-    throw unknown_id("get_node", id);
+    throw JUBATUS_EXCEPTION(unknown_id("get_node", id));
   }
   ret = it->second;
 }
@@ -330,7 +329,7 @@ void graph_wo_index::get_node(node_id_t id, node_info& ret) const{
 void graph_wo_index::get_edge(edge_id_t eid, edge_info& ret) const{
   edge_info_map::const_iterator it = local_edges_.find(eid);
   if (it == local_edges_.end()){
-    throw unknown_id("get_edge", eid);
+    throw JUBATUS_EXCEPTION(unknown_id("get_edge", eid));
   }
   ret = it->second;
 }

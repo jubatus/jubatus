@@ -17,6 +17,7 @@
 
 #include "keeper.hpp"
 
+#include <iostream>
 #include <glog/logging.h>
 
 #include "../common/membership.hpp"
@@ -35,18 +36,25 @@ keeper::keeper(const keeper_argv& a)
   ls = zk_;
   jubatus::common::prepare_jubatus(*zk_);
   if(!register_keeper(*zk_, a_.eth, a_.port) ){
-    throw membership_error("can't register to zookeeper.");
+    throw JUBATUS_EXCEPTION(membership_error("can't register to zookeeper."));
   }
 }
 
 keeper::~keeper(){
 }
 
-int keeper::run(){
-  { LOG(INFO) << "running in port=" << a_.port; }
-  set_exit_on_term();
-  return this->serv(a_.port, a_.threadnum);
-};
+int keeper::run()
+{
+  try {
+    { LOG(INFO) << "running in port=" << a_.port; }
+    set_exit_on_term();
+    ignore_sigpipe();
+    return this->serv(a_.port, a_.threadnum);
+  } catch (const jubatus::exception::jubatus_exception& e) {
+    std::cout << e.diagnostic_information(true) << std::endl;
+    return -1;
+  }
+}
 
 void keeper::get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret){
   using namespace std;

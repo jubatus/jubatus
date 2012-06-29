@@ -35,7 +35,7 @@ static const uint64_t DEFAULT_BASE_NUM = 64; // should be in config
 lsh::lsh(uint64_t base_num)
     : base_num_(base_num) {
   if (base_num == 0) {
-    throw runtime_error("base_num == 0");
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("base_num == 0"));
   }
 }
 

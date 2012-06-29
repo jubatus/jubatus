@@ -314,3 +314,32 @@ TEST(datum_to_fv_converter, register_num_filter) {
   EXPECT_EQ("/age+5@str$25", feature[1].first);
 }
 
+TEST(datum_to_fv_converter, recursive_filter) {
+  datum_to_fv_converter conv;
+  weight_manager wm;
+  datum datum;
+  datum.num_values_.push_back(make_pair("/age", 20));
+
+  conv.register_num_rule("str",
+                         shared_ptr<key_matcher>(new match_all()),
+                         shared_ptr<num_feature>(new num_string_feature()));
+
+  conv.register_num_filter(
+      shared_ptr<key_matcher>(new match_all()),
+      shared_ptr<num_filter>(new add_filter(5)),
+      "+5");
+  conv.register_num_filter(
+      shared_ptr<key_matcher>(new match_all()),
+      shared_ptr<num_filter>(new add_filter(2)),
+      "+2");
+
+  vector<pair<string, float> > feature;
+  conv.convert(datum, feature);
+  wm.update_weight(feature);
+  wm.get_weight(feature);
+
+  EXPECT_EQ(4u, feature.size());
+  EXPECT_EQ("/age+5@str$25", feature[1].first);
+  EXPECT_EQ("/age+2@str$22", feature[2].first);
+  EXPECT_EQ("/age+5+2@str$27", feature[3].first);
+} 

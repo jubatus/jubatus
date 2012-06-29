@@ -70,7 +70,7 @@ public:
       pack_(get_diff_fun_(model_.get()), buf);
       return buf;
     }else{
-      throw config_not_set();
+      throw JUBATUS_EXCEPTION(config_not_set());
     }
   };
   void put_diff(const std::string& d){
@@ -79,7 +79,7 @@ public:
       unpack_(d, diff);
       put_diff_fun_(model_.get(), diff);
     }else{
-      throw config_not_set();
+      throw JUBATUS_EXCEPTION(config_not_set());
     }
   }
   void reduce(const std::string& lhs, std::string& acc) const {
@@ -140,7 +140,7 @@ mixable0* mixable_cast(Mixable* m){
   if(m){
     return reinterpret_cast<mixable0*>(m);
   }else{
-    throw std::runtime_error("nullpointer exception");
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("nullpointer exception"));
   }
 }
 

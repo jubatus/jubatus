@@ -15,6 +15,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "../common/exception.hpp"
 #include "storage_factory.hpp"
 #include "storage_base.hpp"
 #include "local_storage.hpp"
@@ -31,7 +32,8 @@ storage_base* storage_factory::create_storage(const std::string& name){
     return static_cast<storage_base*>(new local_storage_mixture);
   }
 
-  throw std::exception(); //maybe bug or configuration mistake
+  // maybe bug or configuration mistake
+  throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(std::string("failed to create storage: ") + name));
 }
 
 }

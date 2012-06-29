@@ -159,7 +159,7 @@ void jubatus_serv::join_to_cluster(common::cshared_ptr<jubatus::common::lock_ser
   std::string path = common::ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
   z->list(path, list);
   if(list.empty()){
-    throw not_found(" cluster to join");
+    throw JUBATUS_EXCEPTION(not_found(" cluster to join"));
   }
   common::lock_service_mutex zlk(*z, common::ACTOR_BASE_PATH + "/" + a_.name + "/master_lock");
   while(not zlk.try_lock()){ ; }
@@ -290,7 +290,8 @@ bool jubatus_serv::save(std::string id)  {
   
   std::ofstream ofs(ofile.c_str(), std::ios::trunc|std::ios::binary);
   if(!ofs){
-    throw std::runtime_error(ofile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(ofile + ": cannot open")
+        << jubatus::exception::error_errno(errno));
   }
   try{
     for(size_t i=0; i<mixables_.size(); ++i){
@@ -301,7 +302,7 @@ bool jubatus_serv::save(std::string id)  {
     return true;
   }catch(const std::runtime_error& e){
     LOG(ERROR) << e.what();
-    throw e;
+    throw;
   }
 }
     
@@ -314,7 +315,8 @@ bool jubatus_serv::load(std::string id) {
     build_local_path0_(ifile, "jubatus", id); // FIXME: add tests for this code
     ifs.open(ifile.c_str(), std::ios::binary);
     if(!ifs)
-      throw std::runtime_error(ifile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(ifile + ": cannot open")
+          << jubatus::exception::error_errno(errno));
   }
   try{
     for(size_t i = 0;i<mixables_.size(); ++i){
@@ -327,7 +329,7 @@ bool jubatus_serv::load(std::string id) {
   }catch(const std::runtime_error& e){
     ifs.close();
     LOG(ERROR) << e.what();
-    throw e;
+    throw;
   }
 }
 

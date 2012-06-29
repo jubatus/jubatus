@@ -29,7 +29,7 @@ namespace fv_converter {
 re2_filter::re2_filter(const string& regexp, const string& replace) 
     : re_(regexp), replace_(replace) {
   if (!re_.ok()) {
-    throw converter_exception("invalid regular expression: " + regexp);
+    throw JUBATUS_EXCEPTION(converter_exception("invalid regular expression: " + regexp));
   }
   
 }

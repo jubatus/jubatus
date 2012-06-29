@@ -33,7 +33,7 @@ static character_ngram*
 create_character_ngram(const splitter_factory::param_t& params) {
   int n = get_int_or_die(params, "char_num");
   if (n <= 0) {
-    throw converter_exception(string("char_num must be positive integer"));
+    throw JUBATUS_EXCEPTION(converter_exception(string("char_num must be positive integer")));
   }
   size_t m = static_cast<size_t>(n);
   return new character_ngram(m);
@@ -52,7 +52,7 @@ word_splitter* splitter_factory::create(const std::string& name,
   } else if (name == "dynamic") {
     return create_dynamic_splitter(params);
   } else {
-    throw converter_exception(string("unknown splitter name: ") + name);
+    throw JUBATUS_EXCEPTION(converter_exception(string("unknown splitter name: ") + name));
   }
 }
 

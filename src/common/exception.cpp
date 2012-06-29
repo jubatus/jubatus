@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,33 +15,39 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <string>
-#include <dlfcn.h>
 #include "exception.hpp"
-
-using namespace std;
+#include <cstring>
 
 namespace jubatus {
-namespace fv_converter {
+namespace exception {
 
-void* dynamic_load(const string& path,
-                   const string& function) {
-  void* handle = dlopen(path.c_str(), RTLD_LAZY);
-  if (!handle) {
-    char *error = dlerror();
-    throw converter_exception("cannot load dynamic library: " + path + ": "
-                              + error);
+error_info_list_t jubatus_exception::error_info() const
+{
+  return info_list_;
+}
+
+std::string jubatus_exception::diagnostic_information(bool display_what) const
+{
+  std::ostringstream tmp;
+
+  tmp << "Dynamic exception type: ";
+  tmp << detail::demangle_symbol(typeid(*this).name());
+
+  if (display_what && strcmp(what(), ""))
+    tmp << "::what: " << what();
+  tmp << '\n';
+
+  size_t frame = 0;
+  for (error_info_list_t::const_iterator it = info_list_.begin(), end = info_list_.end();
+      it != end; ++it) {
+    if ((*it)->splitter()) {
+      frame++;
+      continue;
+    }
+    tmp << '#' << frame << " [" << (*it)->tag_typeid_name() << "] = " << (*it)->as_string() << '\n';
   }
-
-  dlerror();
-  void* func = dlsym(handle, function.c_str());
-  char* error = dlerror();
-  if (error != NULL) {
-    dlclose(handle);
-    throw converter_exception(error);
-  }
-  return func;
+  return tmp.str();
 }
 
-}
-}
+} // exception
+} // jubatus
