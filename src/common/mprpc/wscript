@@ -9,7 +9,7 @@ def build(bld):
   bld.shlib(
     source = src,
     target = 'jubacommon_mprpc',
-    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT LIBEVENT'
+    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT LIBEVENT MSGPACK'
     )
 
   bld.program(
