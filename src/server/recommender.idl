@@ -54,8 +54,8 @@ message config_data {
 }
 
 message datum {
-  0: list<tuple<string, string> >  sv
-  1: list<tuple<string, double> >  nv
+  0: list<tuple<string, string> >  string_values
+  1: list<tuple<string, double> >  num_values
 }
 
 service recommender {
@@ -70,40 +70,40 @@ service recommender {
   bool clear_row(0: string name, 1: string id) # //@cht
 
   #@cht #@update #@all_and
-  bool update_row(0: string name, 1: string id, 2: datum arg2) # //@cht
+  bool update_row(0: string name, 1: string id, 2: datum d) # //@cht
 
   #@broadcast #@update #@all_and
   bool clear(0: string name) # //@broadcast
 
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   datum complete_row_from_id(0: string name, 1: string id) # //@cht
 
   #@random #@analysis #@pass
-  datum complete_row_from_data(0: string name, 1: datum arg1) # //@random
+  datum complete_row_from_data(0: string name, 1: datum d) # //@random
 
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   similar_result similar_row_from_id(0: string name, 1: string id, 2: uint size) # //@cht
 
   #@random #@analysis #@pass
   similar_result similar_row_from_data(0: string name, 1: datum data, 2: uint size) # //@random
 
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   datum decode_row(0: string name, 1: string id) # //@cht
 
   #@broadcast #@analysis #@concat
   list<string>  get_all_rows(0: string name) # //@broadcast
 
-  #@random #@analysis #@random
+  #@random #@analysis #@pass
   float similarity(0: string name, 1: datum lhs, 2:datum rhs) # //@random
 
   #@random #@analysis #@random
-  float l2norm(0: string name, 1: datum arg1) # //@random
+  float l2norm(0: string name, 1: datum d) # //@random
 
   #@broadcast #@update #@all_and
-  bool save(0: string name, 1: string arg1) # //@broadcast
+  bool save(0: string name, 1: string id) # //@broadcast
 
   #@broadcast #@update #@all_and
-  bool load(0: string name, 1: string arg1) # //@broadcast
+  bool load(0: string name, 1: string id) # //@broadcast
 
   #@broadcast #@analysis #@merge
   map<string, map<string, string> >  get_status(0: string name) # //@broadcast

@@ -58,7 +58,8 @@ void ux_splitter::split(const string& string,
 static void read_all_lines(const char* file_name, vector<string>& lines) {
   ifstream ifs(file_name);
   if (!ifs) {
-    throw converter_exception(string("cannot open: ") + file_name);
+    throw JUBATUS_EXCEPTION(converter_exception(string("cannot open: ") + file_name)
+        << jubatus::exception::error_file_name(file_name));
   }
   for (string line; getline(ifs, line); ) {
     lines.push_back(line);

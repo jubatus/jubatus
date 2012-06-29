@@ -1,0 +1,106 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+#pragma once
+
+#include <pficommon/data/unordered_map.h>
+#include <pficommon/data/unordered_set.h>
+#include "graph_base.hpp"
+
+namespace jubatus{
+namespace graph {
+
+class graph_wo_index : public graph_base {
+public:
+  graph_wo_index();
+  ~graph_wo_index();
+
+  void alpha(double a);
+
+  void clear();
+  void create_node(node_id_t id);
+  void create_global_node(node_id_t id);
+  void remove_global_node(node_id_t id);
+  void update_node(node_id_t id, const property& p);
+  void remove_node(node_id_t id);
+
+  void create_edge(edge_id_t eid, node_id_t src, node_id_t tgt);
+  void update_edge(edge_id_t eid, const property& p);
+  void remove_edge(edge_id_t eid);
+  
+  void add_centrality_query(const preset_query&);
+  void add_shortest_path_query(const preset_query&);
+  void remove_centrality_query(const preset_query&);
+  void remove_shortest_path_query(const preset_query&);
+
+  double centrality(node_id_t id, centrality_type ct, const preset_query&) const;
+  void shortest_path(node_id_t src, node_id_t tgt, 
+                     uint64_t max_hop, std::vector<node_id_t>& ret,
+		     const preset_query&) const;
+  
+  void get_node(node_id_t id, node_info& ret) const;
+  void get_edge(edge_id_t eid, edge_info& ret) const;
+
+  void get_diff(std::string& diff)const;
+  void set_mixed_and_clear_diff(const std::string& mixed);
+
+  std::string type() const;
+
+  void get_status(std::map<std::string, std::string>& status) const;
+  void update_index();
+
+  static void mix(const std::string& diff, std::string& mixed);
+
+private:
+  typedef pfi::data::unordered_map<node_id_t, node_info> node_info_map;
+  typedef pfi::data::unordered_map<edge_id_t, edge_info> edge_info_map;
+
+  bool save_imp(std::ostream& os);
+  bool load_imp(std::istream& is);
+
+  static void remove_by_swap(std::vector<edge_id_t>& edges, edge_id_t eid);
+
+  node_info_map local_nodes_;
+  edge_info_map local_edges_;
+  pfi::data::unordered_map<node_id_t, uint8_t> global_nodes_; // value is dummy for serialization
+
+  // centeralities
+  double alpha_;
+  eigen_vector_query_mixed eigen_scores_;
+  void get_diff_eigen_score(eigen_vector_query_diff& diff) const;
+  void set_mixed_and_clear_diff_eigen_score(eigen_vector_query_mixed& mixed);
+  static void mix(const eigen_vector_query_diff& diff,
+                  eigen_vector_query_mixed& mixed);
+
+  // shortest pathes
+  spt_query_mixed spts_;
+  void may_set_landmark(node_id_t id);
+  void get_diff_shortest_path_tree(spt_query_diff& diff)const;
+  void set_mixed_and_clear_diff_shortest_path_tree(const spt_query_mixed& mixed);
+  void update_spt();
+  void update_spt_edges(const preset_query& query,
+                        spt_edges& se, node_id_t landmark, bool is_out);
+  void update_spt_node(const preset_query& query,
+                       const std::vector<edge_id_t>& edges, spt_edges& se, bool is_out);
+  bool is_node_matched_to_query(const preset_query& query, node_id_t id) const;
+  static void mix_spt(const shortest_path_tree& diff,
+                      shortest_path_tree& mixed);
+  static void mix(const spt_query_diff& diff, spt_query_mixed& mixed);
+};
+
+}
+}

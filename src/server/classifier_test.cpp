@@ -47,17 +47,17 @@ static const int PORT = 65432;
 
 void make_small_data() {
   datum pos1;
-  pos1.sv.push_back(make_pair("text", "a b c"));
+  pos1.string_values.push_back(make_pair("text", "a b c"));
 
   datum neg1;
-  neg1.sv.push_back(make_pair("text", "A B C"));
+  neg1.string_values.push_back(make_pair("text", "A B C"));
 }
 
 datum convert_vector(const vector<double>& vec) {
   datum d;
   for (size_t i = 0; i < vec.size(); i++) {
     string f = "f" + lexical_cast<string>(i);
-    d.nv.push_back(make_pair(f, vec[i]));
+    d.num_values.push_back(make_pair(f, vec[i]));
   }
   return d;
 }
@@ -296,7 +296,7 @@ TEST_P(classifier_test, duplicated_keys){
     pair<string, double> feature = make_pair(lexical_cast<string>(dim), 1.0);
     // add 100 duplicated values
     for (size_t j = 0; j < 100; ++j)
-      d.nv.push_back(feature);
+      d.num_values.push_back(feature);
   }
   vector<pair<string, datum> > data;
   data.push_back(make_pair("", d));
@@ -308,7 +308,7 @@ TEST_P(classifier_test, duplicated_keys){
   {
     datum d;
     for (size_t i = 0; i < 100; ++i) {
-      d.nv.push_back(make_pair(lexical_cast<string>(i), 1.0));
+      d.num_values.push_back(make_pair(lexical_cast<string>(i), 1.0));
     }
     vector<datum> data;
     data.push_back(d);
@@ -423,9 +423,9 @@ TEST_P(classifier_test, save_load_2){
 
   // Test data
   datum pos;
-  pos.nv.push_back(make_pair("value", 10.0));
+  pos.num_values.push_back(make_pair("value", 10.0));
   datum neg;
-  neg.nv.push_back(make_pair("value", -10.0));
+  neg.num_values.push_back(make_pair("value", -10.0));
 
   // Save empty state
   ASSERT_TRUE(cli.save(NAME, "empty"));
@@ -473,7 +473,7 @@ TEST_P(classifier_test, nan){
   ASSERT_EQ(0, res_config);
 
   datum d;
-  d.nv.push_back(make_pair("value", numeric_limits<float>::quiet_NaN()));
+  d.num_values.push_back(make_pair("value", numeric_limits<float>::quiet_NaN()));
   vector<pair<string, datum> > data;
   data.push_back(make_pair("l1", d));
   cli.train(NAME, data);

@@ -16,6 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "util.hpp"
+
 #include <cstring>
 #include <cstdio>
 #include <cstdlib>
@@ -41,6 +42,8 @@
 #ifdef __APPLE__
 #include <libproc.h>
 #endif
+
+#include "../common/exception.hpp"
 
 using std::string;
 using namespace pfi::lang;
@@ -82,18 +85,21 @@ std::string get_program_name()
   ssize_t ret = readlink(exe_sym_path, path, PATH_MAX);
   if (ret != -1) {
     if (ret == PATH_MAX)
-      throw std::runtime_error(std::string("Failed to get program name. Path size overed PATH_MAX."));
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get program name. Path size overed PATH_MAX.")
+        << jubatus::exception::error_errno(errno));
     path[ret] = '\0';
   }
 #endif
   if (ret < 0) {
-    throw std::runtime_error(std::string("Failed to get program name: ") + strerror(errno));
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get program name")
+        << jubatus::exception::error_errno(errno));
   }
 
   // get basename
   const char* last = strrchr(path, '/');
   if (!last)
-    throw std::runtime_error(std::string("Failed to get program name from path: ") + path);
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(string("Failed to get program name from path: ") + path)
+       << jubatus::exception::error_file_name(path));
   return std::string(last + 1);
 }
 
@@ -119,12 +125,14 @@ std::string load(const std::string& file, std::vector< std::pair<std::string, in
     if(self==tmp)
       self_included = true;
     if(!(ifs >> port)){
+      // TODO: replace jubatus exception
       throw parse_error(file, line, tmp.size(), string("input port"));
     }
     s.push_back(std::pair<std::string,int>(tmp, port));
     line++;
   }
   if(!self_included){
+    // TODO: replace jubatus exception
     throw parse_error(file, s.size(), 0, //FIXME: 0
                       string("self IP(eth0) not included in list"));
   }
@@ -149,8 +157,8 @@ void append_server_path(const string& argv0){
   const char * env = getenv("PATH");
   char cwd[PATH_MAX];
   if (!getcwd(cwd, PATH_MAX)) {
-    char* s = strerror(errno);
-    throw std::runtime_error(std::string(s));
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to getcwd"))
+      << jubatus::exception::error_errno(errno);
   }  
   
   string p = argv0.substr(0, argv0.find_last_of('/'));
@@ -179,3 +187,5 @@ void get_machine_status(std::map<std::string, std::string>& ret){
 
 } //util
 } //jubatus
+
+

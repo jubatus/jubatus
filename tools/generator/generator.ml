@@ -34,25 +34,12 @@ let is_service = function
   | Service(_,_) -> true;
   | _ -> false;;
 
-let parse_decorators decorators =
-(* FIXME: you should use pattern matching against decorators, instead *)
-  let routing =
-    let s = List.nth decorators 0 in String.sub s 2 (String.length s - 2)
-  in
-  let rwtype =
-    let s = List.nth decorators 1 in String.sub s 2 (String.length s - 2)
-  in
-  let agg =
-    let s = List.nth decorators 2 in String.sub s 2 (String.length s - 2)
-  in
-  (routing,rwtype,agg);;
-
 exception Bad_container of string
 
 let to_keeper_strings = function
   | Service(_, methods) ->
     let to_keeper_string (Method(rettype0, name, argv, decorators)) =
-      let routing,rwtype,agg = parse_decorators decorators in
+      let routing,rwtype,agg = Validator.make_decoration decorators in
       let rettype = Util.decl_type2string rettype0 in
       let sorted_argv = List.sort
 	(fun lhs rhs -> let Field(l,_,_) = lhs in let Field(r,_,_) = rhs in l-r ) argv
@@ -63,23 +50,27 @@ let to_keeper_strings = function
       let argv_strs = List.map Util.decl_type2string argv_types in
 
       match routing with
-	| "random" -> 
-	  Printf.sprintf "  k.register_%s<%s >(\"%s\"); //%s %s"
-	    routing (String.concat ", " (rettype::argv_strs))  name agg rwtype;
-	| "cht" -> (* when needs aggregator *)
+	| Random ->
+	  Printf.sprintf "  k.register_random<%s >(\"%s\"); //%s %s"
+	    (String.concat ", " (rettype::argv_strs))  name
+	    (Stree.aggtype_to_string agg) (Stree.reqtype_to_string rwtype);
+	| Cht(i) -> (* when needs aggregator *)
 	  let aggfunc =
 	    let tmpl =
 	      (* merge for map, concat for list *)
 	      match rettype0 with (* FIXME: this should be fixed up as Util *)
 		| Map(k,v) -> "<"^(Util.decl_type2string k)^","^(Util.decl_type2string v)^" >" ;
 		| List t ->  "<"^(Util.decl_type2string t)^" >" ;
-		| _ when agg = "random" -> "<"^rettype^" >" ;
+		| _ when agg = Pass ->  "<"^rettype^" >" ;
 		| _ -> "" (* FIXME, dangerous *)
 	    in
-	    Printf.sprintf "pfi::lang::function<%s(%s,%s)>(&%s%s)" rettype rettype rettype agg tmpl
+	    Printf.sprintf "pfi::lang::function<%s(%s,%s)>(&%s%s)" rettype rettype rettype
+	      (Stree.aggtype_to_string agg) tmpl
 	  in
-	  Printf.sprintf "  k.register_%s<%s >(\"%s\", %s); //%s"
-	    routing (String.concat ", " (rettype::(List.tl argv_strs)))  name aggfunc rwtype
+	  Printf.sprintf "  k.register_cht<%d, %s >(\"%s\", %s); //%s" i
+	    (String.concat ", " (rettype::(List.tl argv_strs))) name aggfunc
+	    (Stree.reqtype_to_string rwtype)
+	| Internal -> ""; (* no code generated in keeper *)
 	| _ ->
 	  let aggfunc =
 	    let tmpl =
@@ -87,13 +78,16 @@ let to_keeper_strings = function
 	      match rettype0 with
 		| Map(k,v) -> "<"^(Util.decl_type2string k)^","^(Util.decl_type2string v)^" >" ;
 		| List(t) ->  "<"^(Util.decl_type2string t)^" >" ;
-		| _ when agg = "random" -> "<"^rettype^" >" ;
+		| _ when agg = Pass -> "<"^rettype^" >" ;
 		| _ -> "" (* FIXME, dangerous *)
 	    in
-	    Printf.sprintf "pfi::lang::function<%s(%s,%s)>(&%s%s)" rettype rettype rettype agg tmpl
+	    Printf.sprintf "pfi::lang::function<%s(%s,%s)>(&%s%s)" rettype rettype rettype
+	      (Stree.aggtype_to_string agg) tmpl
 	  in
 	  Printf.sprintf "  k.register_%s<%s >(\"%s\", %s); //%s"
-	    routing (String.concat ", " (rettype::argv_strs))  name aggfunc rwtype
+	    (Stree.routing_to_string routing)
+	    (String.concat ", " (rettype::argv_strs))  name aggfunc
+	    (Stree.reqtype_to_string rwtype)
     in
     List.map to_keeper_string methods;
   | _ -> [];;
@@ -129,7 +123,7 @@ let to_impl_strings = function
   | Service(_, methods) ->
     let to_keeper_string m =
       let Method(rettype, name, argv, decorators) = m in
-      let routing,rwtype,_ = parse_decorators decorators in
+      let routing,rwtype,_ = Validator.make_decoration decorators in
 
       let rettype = Util.decl_type2string rettype in
       let sorted_argv = List.sort
@@ -142,13 +136,14 @@ let to_impl_strings = function
 	(fun field -> let Field(_,_,n) = field in n) (List.tl sorted_argv)
       in
       let lock_str = match rwtype with
-	|"update" -> "JWLOCK__";
-	|"analysis"->"JRLOCK__";
-	|_ -> raise (Wrong_rwtype (rwtype ^" for "^ name))
+	| Update   -> "JWLOCK__";
+	| Analysis ->"JRLOCK__"
       in
       
-      (Printf.sprintf "\n  %s %s(%s) //%s %s" rettype name (String.concat ", " argv_strs) rwtype routing)
-	^(Printf.sprintf "\n  { %s(p_); return p_->%s(%s); }" lock_str name (String.concat ", " argv_strs2))
+      (Printf.sprintf "\n  %s %s(%s) //%s %s"
+	 rettype name (String.concat ", " argv_strs)
+	 (Stree.reqtype_to_string rwtype) (Stree.routing_to_string routing))
+      ^(Printf.sprintf "\n  { %s(p_); return p_->%s(%s); }" lock_str name (String.concat ", " argv_strs2))
 	
     in
     List.map to_keeper_string methods;
@@ -178,7 +173,15 @@ let generate_impl s output strees =
   let use_cht =
     let include_cht_api = function
       | Service(_, methods) ->
-	List.exists (fun m -> let Method(_,_,_,decs) = m in List.mem "#@cht" decs) methods;
+	let has_cht (Method(_,_,_,decs)) =
+	  let rec has_cht_ = function
+	    | [] -> false;
+	    | Routing(Cht(_))::_ -> true;
+	    | _::tl -> has_cht_ tl
+	  in
+	  has_cht_ decs
+	in
+	List.exists has_cht methods;
       | _ -> false
     in
     if List.exists include_cht_api strees then " p_->use_cht();"
@@ -207,9 +210,9 @@ let generate_impl s output strees =
 
 let to_tmpl_strings = function
   | Service(_, methods) ->
-    let to_tmpl_string m =
-      let Method(rettype, name, argv, decorators) = m in
-      let routing,rwtype,_ = parse_decorators decorators in
+
+    let to_tmpl_string (Method(rettype, name, argv, decorators)) =
+      let routing,rwtype,_ = Validator.make_decoration decorators in
       let rettype = Util.decl_type2string rettype in
       let sorted_argv = List.sort
 	(fun lhs rhs -> let Field(l,_,_) = lhs in let Field(r,_,_) = rhs in l-r ) argv
@@ -218,13 +221,13 @@ let to_tmpl_strings = function
 	(fun field -> let Field(_,t,n) = field in (decl_type2string_const_ref t)^" "^n) (List.tl sorted_argv)
       in
       let const_str = match rwtype with
-	|"update" -> "";
-	|"analysis"->" const";
-	|_ -> raise (Wrong_rwtype (rwtype ^" for "^ name))
+	| Update -> "";
+	| Analysis ->" const"
       in
 
       (Printf.sprintf "\n  %s %s(%s)%s; //%s %s"
-	 rettype name (String.concat ", " argv_strs) const_str rwtype routing)
+	 rettype name (String.concat ", " argv_strs) const_str
+	 (reqtype_to_string rwtype) (routing_to_string routing))
     in
     List.map to_tmpl_string methods;
   | _ -> [];;
@@ -260,9 +263,9 @@ let generate_server_tmpl_header s output strees =
 
 let to_impl_strings classname = function
   | Service(_, methods) ->
-    let to_impl_string m =
-      let Method(rettype, name, argv, decorators) = m in
-      let routing,rwtype,_ = parse_decorators decorators in
+    let to_impl_string (Method(rettype, name, argv, decorators)) =
+
+      let routing,rwtype,_ = Validator.make_decoration decorators in
       let rettype = Util.decl_type2string rettype in
       let sorted_argv = List.sort
 	(fun lhs rhs -> let Field(l,_,_) = lhs in let Field(r,_,_) = rhs in l-r ) argv
@@ -271,13 +274,13 @@ let to_impl_strings classname = function
 	(fun field -> let Field(_,t,n) = field in (decl_type2string_const_ref t)^" "^n) (List.tl sorted_argv)
       in
       let const_str = match rwtype with
-	|"update" -> "";
-	|"analysis"->" const";
-	|_ -> raise (Wrong_rwtype (rwtype ^" for "^ name))
+	| Update -> "";
+	| Analysis ->" const"
       in
 
       (Printf.sprintf "\n//%s, %s\n%s %s::%s(%s)%s\n{}"
-	 rwtype routing rettype classname name (String.concat ", " argv_strs) const_str)
+	 (reqtype_to_string rwtype) (routing_to_string routing) rettype
+	 classname name (String.concat ", " argv_strs) const_str)
     in
     List.map to_impl_string methods;
   | _ -> [];;

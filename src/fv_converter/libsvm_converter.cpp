@@ -41,7 +41,7 @@ void libsvm_converter::convert(const string& line, datum& ret_datum, string& ret
       break;
     size_t p = s.find(':');
     if (p == string::npos)
-      throw converter_exception("invalid libsvm format: " + s);
+      throw JUBATUS_EXCEPTION(converter_exception("invalid libsvm format: " + s));
     string id = s.substr(0, p);
     float val = lexical_cast<float>(s.substr(p + 1));
     num_values.push_back(make_pair(id, val));

@@ -21,7 +21,6 @@
 
 namespace jubatus { namespace framework {
 
-
 template <typename K, typename V>
 std::map<K,V> merge(std::map<K,V> lhs, std::map<K,V> rhs)
 {
@@ -47,6 +46,11 @@ std::vector<T> concat(std::vector<T> lhs, std::vector<T> rhs)
 template <typename T>
 T random(T lhs, T rhs){
   return lhs; //TODO: make random? or left(change fun name)?
+}
+
+template <typename T>
+T pass(T lhs, T rhs){
+  return lhs; //TODO:
 }
 
 template <typename T>

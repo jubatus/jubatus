@@ -168,7 +168,7 @@ std::map<std::string, std::map<std::string,std::string> > classifier_serv::get_s
 void classifier_serv::check_set_config()const
 {
   if (!clsfer_.classifier_){
-    throw config_not_set();
+    throw JUBATUS_EXCEPTION(config_not_set());
   }
 }
 

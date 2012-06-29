@@ -30,17 +30,17 @@ namespace jubatus {
 re2_splitter::re2_splitter(const string& regexp, int group)
     : re_(regexp), group_(group) {
   if (group < 0) {
-    throw converter_exception("'group' must be positive");
+    throw JUBATUS_EXCEPTION(converter_exception("'group' must be positive"));
   }
   if (!re_.ok()) {
-    throw converter_exception("invalid regular expression: " + regexp);
+    throw JUBATUS_EXCEPTION(converter_exception("invalid regular expression: " + regexp));
   }
   if (group > re_.NumberOfCapturingGroups()) {
     string msg = "regexp '" + regexp + "' only contains "
         + lexical_cast<string>(re_.NumberOfCapturingGroups())
         + " groups, but 'group' is "
         + lexical_cast<string>(group);
-    throw converter_exception(msg);
+    throw JUBATUS_EXCEPTION(converter_exception(msg));
   }
 }
 
@@ -72,7 +72,7 @@ static
 const string& get(const map<string, string>& args, const string& key) {
   map<string, string>::const_iterator it = args.find(key);
   if (it == args.end()) {
-    throw converter_exception("not found: " + key);
+    throw JUBATUS_EXCEPTION(converter_exception("not found: " + key));
   } else {
     return it->second;
   }
@@ -88,7 +88,7 @@ int get_int_with_default(const map<string, string>& args,
   try {
     return pfi::lang::lexical_cast<int>(s);
   } catch(const bad_cast&) {
-    throw converter_exception("is not integer: " + key + " = " + s);
+    throw JUBATUS_EXCEPTION(converter_exception("is not integer: " + key + " = " + s));
   }
 }
 

@@ -16,6 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <pficommon/text/json.h>
+#include "../common/exception.hpp"
 #include "../common/cmdline.h"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/datum.hpp"
@@ -89,7 +90,7 @@ void read_datum(datum& datum) {
   }
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) try {
   cmdline::parser p;
   p.add<string>("input-format", 'i', "input format (json/datum)", false, "json",
                 cmdline::oneof<string>("json", "datum"));
@@ -151,4 +152,6 @@ int main(int argc, char* argv[]) {
   }
 
   return -1;
+} catch (const jubatus::exception::jubatus_exception& e) {
+  std::cout << e.diagnostic_information(true) << std::endl;
 }

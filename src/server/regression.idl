@@ -52,8 +52,8 @@ message config_data {
 }
 
 message datum {
-  0: list<tuple<string, string> >  sv
-  1: list<tuple<string, double> >  nv
+  0: list<tuple<string, string> >  string_values
+  1: list<tuple<string, double> >  num_values
 }
 
 service regression {
@@ -65,10 +65,10 @@ service regression {
   config_data get_config(0: string name) # //@random
 
   #@random #@update #@pass
-  int train(0: string arg0, 1: list<tuple<float, datum> >  arg1) # //@random
+  int train(0: string name, 1: list<tuple<float, datum> > train_data) # //@random
 
   #@random #@analysis #@pass
-  list<float>  estimate(0: string arg0, 1: list<datum>  arg1) # //@random
+  list<float>  estimate(0: string name, 1: list<datum>  estimate_data) # //@random
 
   #@broadcast #@update #@all_and
   bool save(0: string name, 1: string arg1) # //@broadcast

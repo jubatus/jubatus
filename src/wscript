@@ -5,6 +5,7 @@ common plugin stat
 classifier fv_converter recommender regression storage
 framework server
 cmd jubavisor
+graph
 '''
 
 def options(opt):

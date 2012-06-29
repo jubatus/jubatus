@@ -22,6 +22,7 @@
 #include <utility>
 #include <stdexcept>
 #include "storage_type.hpp"
+#include "../common/exception.hpp"
 #include "../common/type.hpp"
 
 #include <iostream>
@@ -59,7 +60,7 @@ public:
 
 };
 
-class storage_exception : public std::exception {
+class storage_exception : public jubatus::exception::jubaexception<storage_exception> {
 public:
   storage_exception(const std::string &msg): msg(msg) {}
   ~storage_exception() throw() {}

@@ -116,13 +116,15 @@ TEST(rpc_mclient, small)
     EXPECT_FALSE(cli.join_all(function<bool(bool,bool)>(&jubatus::framework::all_and)));
   }
   {
+    int ans = 73684*2 * kServerSize;
     cli.call_async("test_twice", 73684);
-    EXPECT_EQ(73684*2 * kServerSize,
+    EXPECT_EQ(ans,
         cli.join_all(function<int(int,int)>(&jubatus::framework::add<int>)));
   }
   {
+    int ans = kServerSize*(23+21-234);
     cli.call_async("add_all", 23,21,-234);
-    EXPECT_EQ(kServerSize*(23+21-234),
+    EXPECT_EQ(ans,
         cli.join_all(function<int(int,int)>(&jubatus::framework::add<int>)));
   }
   {
@@ -143,7 +145,8 @@ TEST(rpc_mclient, small)
     const int payload_count = 1024 * 1024;
     vector<int> hoge(payload_count, 10);
     cli.call_async("sum", hoge);
-    EXPECT_EQ(10 * payload_count * kServerSize,
+    int ans = 10 * payload_count * kServerSize;
+    EXPECT_EQ(ans,
         cli.join_all(function<int(int,int)>(&jubatus::framework::add<int>)));
   }
 
@@ -168,7 +171,6 @@ TEST(rpc_mclient, socket_disconnection)
       clients.push_back(make_pair(string("localhost"), port));
   }
 
-  const size_t kServerSize = clients.size();
   usleep(500000);
   {
     test_mrpc_client cli0("localhost", PORT0, 3.0);

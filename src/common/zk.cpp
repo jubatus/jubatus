@@ -39,7 +39,10 @@ namespace common{
       logfilep_ = fopen(logfile.c_str(), "a+");
       if(logfilep_ == NULL){
         LOG(ERROR) << "cannot init zk logfile:" << logfile;
-        throw std::runtime_error("cannot open zk logfile");
+        throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot open zk logfile")
+          << jubatus::exception::error_file_name(logfile.c_str())
+          << jubatus::exception::error_errno(errno)
+          << jubatus::exception::error_api_func("fopen"));
       }
       zoo_set_log_stream(logfilep_);
     }
@@ -50,8 +53,9 @@ namespace common{
       // timeout is supposed to be ms??
       zh_ = zookeeper_init(hosts.c_str(), NULL, timeout * 1000, 0, NULL, 0);
       if(zh_ == NULL){
-	perror("");
-	throw std::runtime_error("cannot init zk");
+        perror("");
+        throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot init zk")
+          << jubatus::exception::error_api_func("zookeeper_init"));
       }
       state_ = zoo_state(zh_);
     }while(state_ == ZOO_CONNECTING_STATE);
@@ -79,7 +83,10 @@ namespace common{
     if(ephemeral){
       if(rc != ZOK){
         LOG(ERROR) << path << " failed in creation:" << zerror(rc);
-        throw std::runtime_error(path.c_str());;
+        throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("failed to create zk empheral node")
+          << jubatus::exception::error_message(std::string("zerror: ") + zerror(rc))
+          << jubatus::exception::error_api_func("zoo_create")
+          << jubatus::exception::error_file_name(path));
       }
     }else{
       if(rc != ZOK && rc != ZNODEEXISTS){
@@ -101,6 +108,22 @@ namespace common{
     }else{
       seqfile = path_buffer;
     }
+  };
+
+  uint64_t zk::create_id(const std::string& path, uint32_t prefix){
+    scoped_lock lk(m_);
+    struct Stat st;
+    int rc = zoo_set2(zh_, path.c_str(), "dummy", 6, -1, &st);
+
+    if(rc != ZOK){
+      LOG(ERROR) << path << " failed on zoo_set2 " << zerror(rc);
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("failed create id")
+        << jubatus::exception::error_message(std::string("zerror: ") + zerror(rc))
+        << jubatus::exception::error_api_func("zoo_set2"));
+    }
+    uint64_t ret = prefix;
+    ret <<= 32;
+    return (ret | st.version);
   };
 
   void zk::remove(const std::string& path){

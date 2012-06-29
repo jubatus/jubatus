@@ -30,6 +30,10 @@ using pfi::lang::function;
 namespace jubatus{
 namespace framework{
 
+class dummy
+{
+};
+
 class mixable0 {
 public:
   mixable0(){};
@@ -42,7 +46,9 @@ public:
   virtual void clear() = 0;
 };
 
-template <typename Model, typename Diff>
+// last T is for CRTP, optional
+template <typename Model, typename Diff,
+	  typename T = dummy>
 class mixable : public mixable0 {
 public:
   mixable():
@@ -64,7 +70,7 @@ public:
       pack_(get_diff_fun_(model_.get()), buf);
       return buf;
     }else{
-      throw config_not_set();
+      throw JUBATUS_EXCEPTION(config_not_set());
     }
   };
   void put_diff(const std::string& d){
@@ -73,7 +79,7 @@ public:
       unpack_(d, diff);
       put_diff_fun_(model_.get(), diff);
     }else{
-      throw config_not_set();
+      throw JUBATUS_EXCEPTION(config_not_set());
     }
   }
   void reduce(const std::string& lhs, std::string& acc) const {
@@ -98,6 +104,12 @@ public:
     reduce_fun_ = reduce_fun;
     put_diff_fun_ = put_diff_fun;
   };
+  void set_default_mixer(){
+    function<Diff(const Model*)> get_diff_fun(&T::get_diff);
+    function<int(const Model*, const Diff&, Diff&)> reduce_fun(&T::reduce);
+    function<int(Model*, const Diff&)> put_diff_fun(&T::put_diff);
+    set_mixer(get_diff_fun, reduce_fun, put_diff_fun);
+  }
   common::cshared_ptr<Model> get_model()const{return model_;};
 
   static Diff dummy_get_diff(const Model*){ return Diff(); };
@@ -128,7 +140,7 @@ mixable0* mixable_cast(Mixable* m){
   if(m){
     return reinterpret_cast<mixable0*>(m);
   }else{
-    throw std::runtime_error("nullpointer exception");
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("nullpointer exception"));
   }
 }
 

@@ -81,10 +81,10 @@ struct datum {
 public:
 
   
-  MSGPACK_DEFINE(sv, nv);  
+  MSGPACK_DEFINE(string_values, num_values);  
 
-  std::vector<std::pair<std::string, std::string > > sv;
-  std::vector<std::pair<std::string, double > > nv;
+  std::vector<std::pair<std::string, std::string > > string_values;
+  std::vector<std::pair<std::string, double > > num_values;
 };
 
 } // namespace jubatus

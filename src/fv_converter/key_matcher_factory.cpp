@@ -43,7 +43,7 @@ key_matcher* key_matcher_factory::create_matcher(const std::string& matcher) {
 #ifdef HAVE_RE2
     return new re2_match(matcher.substr(1, matcher.size() - 2));
 #else
-    throw converter_exception("cannot use regexp rule: " + matcher);
+    throw JUBATUS_EXCEPTION(converter_exception("cannot use regexp rule: " + matcher));
 #endif
   } else {
     return new exact_match(matcher);

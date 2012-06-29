@@ -26,6 +26,8 @@
 #include <fstream>
 #include <sstream>
 #include <pficommon/system/time_util.h>
+#include <pficommon/lang/cast.h>
+#include <cassert>
 
 using std::vector;
 using std::string;
@@ -45,7 +47,9 @@ jubatus_serv::jubatus_serv(const server_argv& a, const std::string& base_path):
 		   pfi::lang::bind(&jubatus_serv::do_mix, this, pfi::lang::_1))),
   use_cht_(false),
 #endif
+  idgen_(a_.is_standalone()),
   base_path_(a_.tmpdir)
+
 {
 };
 
@@ -67,7 +71,11 @@ int jubatus_serv::start(pfi::network::mprpc::rpc_server& serv){
     ls = zk_;
     jubatus::common::prepare_jubatus(*zk_);
     
+    std::string counter_path = common::ACTOR_BASE_PATH + "/" + a_.name;
+    idgen_.set_ls(zk_, counter_path);
+
     if( a_.join ){ // join to the existing cluster with -j option
+      LOG(INFO) << "joining to the cluseter " << a_.name;
       join_to_cluster(zk_);
     }
     
@@ -150,36 +158,46 @@ void jubatus_serv::join_to_cluster(common::cshared_ptr<jubatus::common::lock_ser
   std::vector<std::string> list;
   std::string path = common::ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
   z->list(path, list);
-  if(not list.empty()){
-    common::lock_service_mutex zlk(*z, common::ACTOR_BASE_PATH + "/" + a_.name + "/master_lock");
-    while(not zlk.try_lock()){ ; }
-
-    // if you're using even any cht, you should choose from cht. otherwise random.
-    size_t i = rand() % list.size();
-
-    std::string ip;
-    int port;
-    common::revert(list[i], ip, port);
-    pfi::network::mprpc::rpc_client c(ip, port, a_.timeout);
-    
-    pfi::lang::function<std::string(int)> f = c.call<std::string(int)>("get_storage");
-    std::string data = f(0);
-    LOG(INFO) << "join to cluster: " << data.size() << " bytes got from " << ip << " " << port;
-    std::stringstream ss( data );
-    
-    for(size_t i = 0;i<mixables_.size(); ++i){
-      mixables_[i]->clear();
-      mixables_[i]->load(ss);
-    }
-    DLOG(INFO) << "all data successfully loaded to " << mixables_.size() << " mixables.";
+  if(list.empty()){
+    throw JUBATUS_EXCEPTION(not_found(" cluster to join"));
   }
+  common::lock_service_mutex zlk(*z, common::ACTOR_BASE_PATH + "/" + a_.name + "/master_lock");
+  while(not zlk.try_lock()){ ; }
+  
+  std::string ip;
+  int port;
+  // if you're using even any cht, you should choose from cht. otherwise random.
+  if( use_cht_ ){
+    common::cht ht(z, a_.name);
+    std::pair<std::string, int> predecessor = ht.find_predecessor(a_.eth, a_.port);
+    ip = predecessor.first;
+    port = predecessor.second;
+    DLOG(INFO) << ip << " " << port;
+  }else{
+    size_t i = rand() % list.size();
+    common::revert(list[i], ip, port);
+  }
+  
+  pfi::network::mprpc::rpc_client c(ip, port, a_.timeout);
+  
+  pfi::lang::function<std::string()> f = c.call<std::string()>("get_storage");
+  std::string data = f();
+  LOG(INFO) << "join to cluster: " << data.size() << " bytes got from " << ip << " " << port;
+  std::stringstream ss( data );
+  
+  for(size_t i = 0;i<mixables_.size(); ++i){
+    mixables_[i]->clear();
+    mixables_[i]->load(ss);
+  }
+  DLOG(INFO) << "all data successfully loaded to " << mixables_.size() << " mixables.";
 };
 
-std::string jubatus_serv::get_storage(int i){
+std::string jubatus_serv::get_storage(){
   std::stringstream ss;
   for(size_t i=0; i<mixables_.size(); ++i){
     mixables_[i]->save(ss);
   }
+  LOG(INFO) << "new server has come. Sending back " << ss.str().size() << " bytes.";
   return ss.str();
 }
     
@@ -249,12 +267,12 @@ void jubatus_serv::do_mix(const std::vector<std::pair<std::string,int> >& v){
   }
 
   clock_time end = get_clock_time();
-  DLOG(INFO) << "mixed with " << v.size() << " servers in " << (double)(end - start) << " secs.";
   size_t s = 0;
   for(size_t i=0; i<accs.size(); ++i){
     s+=accs[i].size();
   }
-  DLOG(INFO) << s << " bytes (serialized data) has been put.";
+  DLOG(INFO) << "mixed with " << v.size() << " servers in " << (double)(end - start) << " secs, "
+             << s << " bytes (serialized data) has been put.";
 }
 #endif
 
@@ -272,7 +290,8 @@ bool jubatus_serv::save(std::string id)  {
   
   std::ofstream ofs(ofile.c_str(), std::ios::trunc|std::ios::binary);
   if(!ofs){
-    throw std::runtime_error(ofile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(ofile + ": cannot open")
+        << jubatus::exception::error_errno(errno));
   }
   try{
     for(size_t i=0; i<mixables_.size(); ++i){
@@ -283,7 +302,7 @@ bool jubatus_serv::save(std::string id)  {
     return true;
   }catch(const std::runtime_error& e){
     LOG(ERROR) << e.what();
-    throw e;
+    throw;
   }
 }
     
@@ -292,7 +311,13 @@ bool jubatus_serv::load(std::string id) {
   build_local_path_(ifile, "jubatus", id);
 
   std::ifstream ifs(ifile.c_str(), std::ios::binary);
-  if(!ifs)throw std::runtime_error(ifile + ": cannot open (" + pfi::lang::lexical_cast<std::string>(errno) + ")" );
+  if(!ifs){
+    build_local_path0_(ifile, "jubatus", id); // FIXME: add tests for this code
+    ifs.open(ifile.c_str(), std::ios::binary);
+    if(!ifs)
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(ifile + ": cannot open")
+          << jubatus::exception::error_errno(errno));
+  }
   try{
     for(size_t i = 0;i<mixables_.size(); ++i){
       mixables_[i]->clear();
@@ -304,7 +329,60 @@ bool jubatus_serv::load(std::string id) {
   }catch(const std::runtime_error& e){
     ifs.close();
     LOG(ERROR) << e.what();
-    throw e;
+    throw;
   }
 }
+
+void jubatus_serv::get_members(std::vector<std::pair<std::string,int> >& ret)
+{
+  ret.clear();
+#ifdef HAVE_ZOOKEEPER_H
+  common::get_all_actors(*zk_, a_.name, ret);
+
+  if(ret.empty()){
+    return;
+  }
+  try{
+    // remove myself
+    for(std::vector<std::pair<std::string,int> >::iterator it = ret.begin(); it != ret.end(); it++){
+      if(it->first == a_.eth && it->second == a_.port){
+        it = ret.erase(it);
+        it--;
+        continue;
+      }
+    }
+  }catch(...){
+    // eliminate the exception "no clients."
+  }
+#endif
+
+}
+
+void jubatus_serv::find_from_cht(const std::string& key, size_t n,
+				 std::vector<std::pair<std::string,int> >& out)
+{
+  out.clear();
+#ifdef HAVE_ZOOKEEPER_H
+  common::cht ht(zk_, a_.name);
+  ht.find(key, out, n); //replication number of local_node
+#else
+  //cannot reach here, assertion!
+  assert(a_.is_standalone());
+  //out.push_back(make_pair(a_.eth, a_.port));
+#endif
+
+}
+
+void jubatus_serv::build_local_path_(std::string& out, const std::string& type, const std::string& id) const
+{
+  out = base_path_ + "/" + a_.eth + "_" + pfi::lang::lexical_cast<std::string>(a_.port) + "_";
+  out += type + "_" + id + ".jc";
+}
+
+void jubatus_serv::build_local_path0_(std::string& out, const std::string& type, const std::string& id) const
+{
+  out = base_path_ + "/";
+  out += type + "_" + id + ".jc";
+}
+
 }}

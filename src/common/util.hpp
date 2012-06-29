@@ -20,6 +20,8 @@
 #include <vector>
 #include <map>
 
+#include <stdint.h>
+
 namespace jubatus{
 namespace util{
 

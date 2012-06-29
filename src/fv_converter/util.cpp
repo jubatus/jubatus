@@ -28,7 +28,7 @@ const string& get_or_die(const map<string, string> & params,
                          const string& key) {
   map<string, string>::const_iterator it = params.find(key);
   if (it == params.end()) {
-    throw converter_exception(string("\"" + key +  "\" is not specified in parameters"));
+    throw JUBATUS_EXCEPTION(converter_exception(string("\"" + key +  "\" is not specified in parameters")));
   }
   return it->second;
 }
@@ -50,7 +50,7 @@ const int get_int_or_die(const map<string, string>& params,
   try {
     return pfi::lang::lexical_cast<int>(s);
   } catch (const bad_cast& e) {
-    throw converter_exception(string("\"" + key + "\" must be an integer value: " + s));
+    throw JUBATUS_EXCEPTION(converter_exception(string("\"" + key + "\" must be an integer value: " + s)));
   }
 }
 

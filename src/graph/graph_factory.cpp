@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,33 +15,22 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <string>
-#include <dlfcn.h>
-#include "exception.hpp"
+#include "graph_factory.hpp"
+#include "graph.hpp"
+#include "../common/exception.hpp"
+#include <stdexcept>
 
 using namespace std;
 
 namespace jubatus {
-namespace fv_converter {
+namespace graph {
 
-void* dynamic_load(const string& path,
-                   const string& function) {
-  void* handle = dlopen(path.c_str(), RTLD_LAZY);
-  if (!handle) {
-    char *error = dlerror();
-    throw converter_exception("cannot load dynamic library: " + path + ": "
-                              + error);
+graph_base* create_graph(const string& name){
+  if (name == "graph_wo_index"){
+    return new graph_wo_index;
+  } else {
+    throw JUBATUS_EXCEPTION(unknown_graph(name));
   }
-
-  dlerror();
-  void* func = dlsym(handle, function.c_str());
-  char* error = dlerror();
-  if (error != NULL) {
-    dlclose(handle);
-    throw converter_exception(error);
-  }
-  return func;
 }
-
 }
 }

@@ -1,6 +1,6 @@
 import Options
 
-VERSION = '0.2.3'
+VERSION = '0.3.0'
 APPNAME = 'jubatus'
 
 top = '.'
@@ -27,7 +27,6 @@ def options(opt):
 
 def configure(conf):
   conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe']
-  conf.env.LINKFLAGS += ['-flat_namespace']
 
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
@@ -85,9 +84,15 @@ def configure(conf):
   conf.recurse(subdirs)
 
 def build(bld):
-#  bld.install_files('${PREFIX}/include/jubatus', [
-#      'src/config.hpp',
-#      ])
 
+  bld(source = 'jubatus.pc.in',
+      prefix = bld.env['PREFIX'],
+      exec_prefix = '${prefix}',
+      libdir = bld.env['LIBDIR'],
+      includedir = '${prefix}/include',
+      PACKAGE = APPNAME,
+      VERSION = VERSION)
+
+  bld.install_files('${PREFIX}/lib/pkgconfig', 'jubatus.pc')
   bld.recurse(subdirs)
 

@@ -19,17 +19,14 @@
 
 #include <stdexcept>
 #include <string>
+#include "../common/exception.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
-class converter_exception : public std::exception {
+class converter_exception : public jubatus::exception::runtime_error {
  public:
-  converter_exception(const std::string& msg): msg(msg) {}
-  ~converter_exception() throw() {}
-  const char *what() const throw() { return msg.c_str(); }
- private:
-  std::string msg;
+  converter_exception(const std::string& msg): runtime_error(msg) {}
 };
 
 }
