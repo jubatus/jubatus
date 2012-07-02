@@ -37,7 +37,7 @@ public:
   virtual float calc_anomaly_score(const std::string& id) const = 0;
   virtual void clear() = 0;
   virtual void clear_row(const std::string& id) = 0;
-  virtual void update_row(std::string& id, const sfv_diff_t& diff) = 0;
+  virtual void update_row(const std::string& id, const sfv_diff_t& diff) = 0;
   virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
 
   virtual std::string type() const = 0;

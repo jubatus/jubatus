@@ -73,9 +73,9 @@ TEST(converter_config, config) {
 
   } catch (const std::exception& e) {
     cout << e.what() << endl;
-    throw e;
+    throw;
   } catch (const std::string& e) {
     cout << e << endl;
-    throw e;
+    throw;
   }
 }

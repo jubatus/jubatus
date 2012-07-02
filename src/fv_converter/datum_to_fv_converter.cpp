@@ -190,18 +190,18 @@ class datum_to_fv_converter_impl {
     // "<KEY_NAME>$<VALUE>@<FEATURE_TYPE>#<SAMPLE_WEIGHT>/<GLOBAL_WEIGHT>"
     size_t sharp = feature.rfind('#');
     if (sharp == string::npos) {
-      throw converter_exception("this feature is not string feature");
+      throw JUBATUS_EXCEPTION(converter_exception("this feature is not string feature"));
     }
     size_t at = feature.rfind('@', sharp);
     if (at == string::npos) {
-      throw converter_exception("this feature is not valid feature");
+      throw JUBATUS_EXCEPTION(converter_exception("this feature is not valid feature"));
     }
     size_t dollar = feature.rfind('$', at);
     if (dollar == string::npos) {
-      throw converter_exception("this feature is not valid feature");
+      throw JUBATUS_EXCEPTION(converter_exception("this feature is not valid feature"));
     }
     if (feature.substr(at + 1, sharp - at - 1) != "str") {
-      throw converter_exception("this feature is not revertible");
+      throw JUBATUS_EXCEPTION(converter_exception("this feature is not revertible"));
     }
 
     string key(feature.substr(0, dollar));
@@ -217,14 +217,24 @@ class datum_to_fv_converter_impl {
   void filter_strings(const datum::sv_t& string_values,
                       datum::sv_t& filtered_values) const {
     for (size_t i = 0; i < string_filter_rules_.size(); ++i) {
-      string_filter_rules_[i].filter(string_values, filtered_values);
+      datum::sv_t update;
+      string_filter_rules_[i].filter(string_values, update);
+      string_filter_rules_[i].filter(filtered_values, update);
+
+      filtered_values.insert(filtered_values.end(),
+                             update.begin(), update.end());
     }
   }
 
   void filter_nums(const datum::nv_t& num_values,
                    datum::nv_t& filtered_values) const {
     for (size_t i = 0; i < num_filter_rules_.size(); ++i) {
-      num_filter_rules_[i].filter(num_values, filtered_values);
+      datum::nv_t update;
+      num_filter_rules_[i].filter(num_values, update);
+      num_filter_rules_[i].filter(filtered_values, update);
+
+      filtered_values.insert(filtered_values.end(),
+                             update.begin(), update.end());
     }
   }
 
@@ -317,7 +327,7 @@ class datum_to_fv_converter_impl {
       case WITH_WEIGHT_FILE:
         return "weight";
       default:
-        throw runtime_error("unknown global weight type");
+        throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("unknown global weight type"));
     }
   }
 

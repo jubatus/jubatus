@@ -78,24 +78,28 @@ def build(bld):
   bld.shlib(
     source = 'test_splitter.cpp',
     target = 'splitter_sample',
+    install_path = None,
     name = 'splitter_sample',
     )
 
   bld.shlib(
     source = 'test_num_feature.cpp',
     target = 'num_feature_sample',
+    install_path = None,
     name = 'num_feature_sample',
     )
 
   bld.shlib(
     source = 'test_num_filter.cpp',
     target = 'num_filter_sample',
+    install_path = None,
     name = 'num_filter_sample',
     )
 
   bld.shlib(
     source = 'test_string_filter.cpp',
     target = 'filter_sample',
+    install_path = None,
     name = 'filter_sample',
     )
 

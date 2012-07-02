@@ -57,7 +57,7 @@ recommender_base* create_recommender(const string& name) {
   } else if (name == "mock") {
     return new recommender_mock;
   } else {
-    throw unsupported_method(name);
+    throw JUBATUS_EXCEPTION(unsupported_method(name));
   }
 }
 

@@ -112,7 +112,8 @@ class keeper : public pfi::network::mprpc::rpc_server {
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
-    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+    if(list.empty())
+      throw std::runtime_error(method_name + ": no worker serving");
     const std::pair<std::string, int>& c = list[rng_(list.size())];
 
     try{
@@ -120,7 +121,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
       return cli.call<R(std::string)>(method_name)(name);
     }catch(const std::exception& e){
       LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
-      throw e;
+      throw;
     }
   }
   template <typename R, typename A>
@@ -130,7 +131,8 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
     get_members_(name, list);
 
-    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+    if(list.empty())
+      throw std::runtime_error(method_name + ": no worker serving");
     const std::pair<std::string, int>& c = list[rng_(list.size())];
 
     try{
@@ -138,7 +140,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
       return cli.call<R(std::string,A)>(method_name)(name, arg);
     }catch(const std::exception& e){
       LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
-      throw e;
+      throw;
     }
   }
   template <typename R, typename A0, typename A1>
@@ -147,7 +149,8 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
     get_members_(name, list);
 
-    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+    if(list.empty())
+      throw std::runtime_error(method_name + ": no worker serving");
     const std::pair<std::string, int>& c = list[rng_(list.size())];
 
     try{
@@ -155,7 +158,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
       return cli.call<R(std::string,A0,A1)>(method_name)(name, a0, a1);
     }catch(const std::exception& e){
       LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
-      throw e;
+      throw;
     }
   }
   template <typename R, typename A0, typename A1, typename A2>
@@ -164,7 +167,8 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
     get_members_(name, list);
 
-    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+    if(list.empty())
+      throw std::runtime_error(method_name + ": no worker serving");
     const std::pair<std::string, int>& c = list[rng_(list.size())];
 
     try{
@@ -172,7 +176,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
       return cli.call<R(std::string,A0,A1,A2)>(method_name)(name, a0, a1, a2);
     }catch(const std::exception& e){
       LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
-      throw e;
+      throw;
     }
   }
 
@@ -183,7 +187,8 @@ class keeper : public pfi::network::mprpc::rpc_server {
     std::vector<std::pair<std::string, int> > list;
 
     get_members_(name, list);
-    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+    if(list.empty())
+      throw std::runtime_error(method_name + ": no worker serving");
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -191,7 +196,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
       return c.join_all<R>(agg);
     }catch(const std::exception& e){
       LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
-      throw e;
+      throw;
     }
   }
   template <typename R, typename A>
@@ -201,7 +206,8 @@ class keeper : public pfi::network::mprpc::rpc_server {
     std::vector<std::pair<std::string, int> > list;
 
     get_members_(name, list);
-    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+    if(list.empty())
+      throw std::runtime_error(method_name + ": no worker serving");
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -211,7 +217,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
     }catch(const std::exception& e){
       std::cout << __LINE__ << e.what() << std::endl;
       // LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
-      throw e;
+      throw;
     }
   }
 
@@ -225,7 +231,8 @@ class keeper : public pfi::network::mprpc::rpc_server {
       jubatus::common::cht ht(zk_, name);
       ht.find(id, list, N);
     }
-    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+    if(list.empty())
+      throw std::runtime_error(method_name + ": no worker serving");
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -233,7 +240,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
       return c.join_all<R>(agg);
     }catch(const std::exception& e){
       LOG(ERROR) << N << " " << e.what(); // << " from " << c.first << ":" << c.second;
-      throw e;
+      throw;
     }
   }
   template <int N, typename R, typename A0>
@@ -245,7 +252,8 @@ class keeper : public pfi::network::mprpc::rpc_server {
       jubatus::common::cht ht(zk_, name);
       ht.find(id, list, N);
     }
-    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+    if(list.empty())
+      throw std::runtime_error(method_name + ": no worker serving");
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -253,7 +261,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
       return c.join_all<R>(agg);
     }catch(const std::exception& e){
       LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
-      throw e;
+      throw;
     }
   }
   template <int N, typename R, typename A0, typename A1>
@@ -265,7 +273,8 @@ class keeper : public pfi::network::mprpc::rpc_server {
       jubatus::common::cht ht(zk_, name);
       ht.find(id, list, N);
     }
-    if(list.empty())throw std::runtime_error(method_name + ": no worker serving");
+    if(list.empty())
+      throw std::runtime_error(method_name + ": no worker serving");
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -273,7 +282,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
       return c.join_all<R>(agg);
     }catch(const std::exception& e){
       LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
-      throw e;
+      throw;
     }
   }
 

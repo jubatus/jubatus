@@ -62,7 +62,7 @@ namespace common{
     out.clear();
     std::vector<std::string> hlist;
     if(! get_hashlist_(key, hlist)){
-      throw not_found(key);
+      throw JUBATUS_EXCEPTION(not_found(key));
     }
     std::string hash = make_hash(key);
     std::string path = ACTOR_BASE_PATH + "/" + name_ + "/cht";
@@ -78,7 +78,7 @@ namespace common{
         out.push_back(make_pair(ip,port));
       }else{
         // TODO: output log
-        throw not_found(path);
+        throw JUBATUS_EXCEPTION(not_found(path));
       }
       idx++;
       idx %= hlist.size();
@@ -106,7 +106,7 @@ namespace common{
       revert(loc, ip, port);
       return make_pair(ip, port);
     }else{
-      throw not_found(path);
+      throw JUBATUS_EXCEPTION(not_found(path));
       // TODO: output log and throw exception
     }
   }

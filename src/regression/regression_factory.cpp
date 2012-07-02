@@ -28,7 +28,7 @@ regression_factory::create_regression(const std::string& name,
   if (name == "PA") {
     return new regression::PA(storage);
   } else {
-    throw unsupported_method(name);
+    throw JUBATUS_EXCEPTION(unsupported_method(name));
   }
 }
 

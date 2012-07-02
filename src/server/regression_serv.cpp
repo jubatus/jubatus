@@ -135,7 +135,7 @@ std::map<std::string, std::map<std::string,std::string> > regression_serv::get_s
 void regression_serv::check_set_config()const
 {
   if(!gresser_.regression_){
-    throw config_not_set();
+    throw JUBATUS_EXCEPTION(config_not_set());
   }
 }
   
