@@ -223,7 +223,6 @@ std::vector<node_id> graph_serv::shortest_path(const shortest_path_req& req) con
 { 
   std::vector<jubatus::graph::node_id_t> ret0;
   jubatus::graph::preset_query q;
-  framework::convert(req.q, q);
   g_.get_model()->shortest_path(n2i(req.src), n2i(req.tgt), req.max_hop, ret0, q);
   std::vector<node_id> ret;
   for(size_t i=0;i<ret0.size();++i){
