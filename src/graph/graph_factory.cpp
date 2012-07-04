@@ -17,6 +17,7 @@
 
 #include "graph_factory.hpp"
 #include "graph.hpp"
+#include "../common/exception.hpp"
 #include <stdexcept>
 
 using namespace std;
@@ -28,7 +29,7 @@ graph_base* create_graph(const string& name){
   if (name == "graph_wo_index"){
     return new graph_wo_index;
   } else {
-    throw unknown_graph(name);
+    throw JUBATUS_EXCEPTION(unknown_graph(name));
   }
 }
 }

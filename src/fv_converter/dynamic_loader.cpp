@@ -28,8 +28,11 @@ dynamic_loader::dynamic_loader(const std::string& path)
   void* handle = dlopen(path.c_str(), RTLD_LAZY);
   if (!handle) {
     char *error = dlerror();
-    throw converter_exception("cannot load dynamic library: " + path + ": "
-                              + error);
+    throw JUBATUS_EXCEPTION(converter_exception("cannot load dynamic library: " + path + ": "
+                              + error)
+        << jubatus::exception::error_api_func("dlopen")
+        << jubatus::exception::error_file_name(path)
+        << jubatus::exception::error_message(error));
   }
   handle_ = handle;
 }
@@ -45,7 +48,10 @@ void* dynamic_loader::load_symbol(const std::string& name) const {
   void* func = dlsym(handle_, name.c_str());
   char* error = dlerror();
   if (error != NULL) {
-    throw converter_exception(error);
+    throw JUBATUS_EXCEPTION(converter_exception("cannot dlsym: " + name)
+        << jubatus::exception::error_api_func("dlsym")
+        << jubatus::exception::error_message("dlsym name: " + name)
+        << jubatus::exception::error_message(error));
   }
   return func;
 }

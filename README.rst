@@ -31,8 +31,14 @@ LGPL 2.1
 Update history
 --------------
 
-Release 0.3.0 (scheduled in 2012/7/1)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(scheduled) Release 0.3.1 2012/7/x
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Bugfix
+  - #66
+
+Release 0.3.0 2012/6/29
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
   - Distributed Graph Processing
@@ -42,10 +48,13 @@ Improvements
 
   - New neighbor-search algorithm for recommender: minhash
   - installs pkgconfig file (#42, jubatus.pc)
+  - jubavisor handling signal (#53)
+  - Exception handling and error outputs (#55)
 
 Bugfix
   - internal API get_storage implemented again (#21)
-  - #45, #15
+  - Forgot ignoring signal in keeper #47
+  - #54, #45, #15
 
 Release 0.2.3 2012/6/8
 ~~~~~~~~~~~~~~~~~~~~~~~

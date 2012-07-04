@@ -35,12 +35,13 @@
 #include <cassert>
 
 #include "../common/util.hpp"
+#include "../common/exception.hpp"
 
 using namespace pfi::lang;
 namespace jubatus{
 
 process::process(const std::string& zkhosts, const std::string& logfile):
-  zk_hosts_(zkhosts), logfile_(logfile){}
+  zk_hosts_(zkhosts), logfile_(logfile), rpc_port_(-1){}
 process::~process(){}
 
 // str : "<server>/<name>
@@ -59,11 +60,11 @@ bool process::set_names(const std::string& str){
 void redirect(const char* filename, int fd){
   int new_fd = open(filename, O_WRONLY|O_CREAT, 0644);
   if(new_fd < 0){
-    throw std::runtime_error("cannot open file");
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot open file"));
   }
   int r = dup2(new_fd, fd);
   if(r < 0 ){
-    throw std::runtime_error("cannot dup(2)");
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot dup(2)"));
   }
   close(new_fd);
 }
@@ -74,6 +75,7 @@ bool process::spawn_link(int p){
   std::string cmd = server_;  // TODO: check cmd exits
   LOG(INFO) << "forking " << cmd << " with port " << p;
 
+  rpc_port_ = p;
   pid_ = fork();
   if(pid_ > 0){
     LOG(INFO) << "forked - pid: " << pid_;

@@ -83,7 +83,7 @@ namespace jubatus { namespace framework {
     interval_count = p.get<int>("interval_count");
 
     if(z != "" and name == ""){
-      throw argv_error("can't start multinode mode without name specified");
+      throw JUBATUS_EXCEPTION(argv_error("can't start multinode mode without name specified"));
     }
     
     LOG(INFO) << boot_message(jubatus::util::get_program_name());
@@ -162,9 +162,9 @@ namespace jubatus { namespace framework {
     sigact.sa_sigaction = exit_on_term2;
     sigact.sa_flags = SA_RESTART;
     if(sigaction(SIGTERM, &sigact, NULL) != 0)
-      throw std::runtime_error("can't set SIGTERM handler");
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't set SIGTERM handler"));
     if(sigaction(SIGINT, &sigact, NULL) != 0)
-      throw std::runtime_error("can't set SIGINT handler");
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't set SIGINT handler"));
 
     ::atexit(jubatus::framework::atexit);
   }
@@ -173,7 +173,7 @@ namespace jubatus { namespace framework {
   void ignore_sigpipe(){
     // portable code for socket write(2) MSG_NOSIGNAL
     if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
-      throw std::runtime_error("can't ignore SIGPIPE");
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't ignore SIGPIPE"));
   }
 
 pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>

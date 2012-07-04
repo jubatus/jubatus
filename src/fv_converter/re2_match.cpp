@@ -24,7 +24,7 @@ namespace jubatus {
 re2_match::re2_match(const std::string& regexp)
     : re_(regexp) {
   if (!re_.ok()) {
-    throw converter_exception("invalid regular expression");
+    throw JUBATUS_EXCEPTION(converter_exception("invalid regular expression"));
   }
 }
 

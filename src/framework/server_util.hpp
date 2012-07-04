@@ -20,9 +20,11 @@
 #include <csignal>
 #include <string>
 #include <sstream>
+#include <iostream>
 
 #include <msgpack.hpp>
 
+#include "../common/exception.hpp"
 #include "../common/shared_ptr.hpp"
 #include <pficommon/lang/noncopyable.h>
 #include <pficommon/concurrent/lock.h>
@@ -105,30 +107,35 @@ void set_exit_on_term();
 void ignore_sigpipe();
 
 template <class ImplServerClass, class UserServClass>
-int run_server(int args, char** argv){
-
-  ImplServerClass impl_server(server_argv(args, argv));
+int run_server(int args, char** argv)
+{
+  try {
+    ImplServerClass impl_server(server_argv(args, argv));
 #ifdef HAVE_ZOOKEEPER_H
-  pfi::network::mprpc::rpc_server& serv = impl_server;
-  serv.add<std::vector<std::string>(int)>
-    ("get_diff",
-     pfi::lang::bind(&UserServClass::get_diff_impl,
-		     impl_server.get_p().get(), pfi::lang::_1));
-  serv.add<int(std::vector<std::string>)>
-    ("put_diff",
-     pfi::lang::bind(&UserServClass::put_diff_impl,
-		     impl_server.get_p().get(), pfi::lang::_1));
-  serv.add<std::string()>
-    ("get_storage",
-     pfi::lang::bind(&UserServClass::get_storage,
-		     impl_server.get_p().get()));
+    pfi::network::mprpc::rpc_server& serv = impl_server;
+    serv.add<std::vector<std::string>(int)>
+      ("get_diff",
+       pfi::lang::bind(&UserServClass::get_diff_impl,
+           impl_server.get_p().get(), pfi::lang::_1));
+    serv.add<int(std::vector<std::string>)>
+      ("put_diff",
+       pfi::lang::bind(&UserServClass::put_diff_impl,
+           impl_server.get_p().get(), pfi::lang::_1));
+    serv.add<std::string()>
+      ("get_storage",
+       pfi::lang::bind(&UserServClass::get_storage,
+           impl_server.get_p().get()));
 
-  set_exit_on_term();
+    set_exit_on_term();
 
 #endif // HAVE_ZOOKEEPER_H
-  ignore_sigpipe();
-  return impl_server.run();
-};
+    ignore_sigpipe();
+    return impl_server.run();
+  } catch (const jubatus::exception::jubatus_exception& e) {
+    std::cout << e.diagnostic_information(true) << std::endl;
+    return -1;
+  }
+}
 
 pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
 make_fv_converter(const std::string& config);

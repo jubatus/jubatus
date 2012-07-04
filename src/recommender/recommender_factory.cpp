@@ -33,7 +33,7 @@ recommender_base* create_recommender(const string& name){
   } else if (name == "lsh"){
     return new lsh;
   } else {
-    throw unsupported_method(name);
+    throw JUBATUS_EXCEPTION(unsupported_method(name));
   }
 }
 

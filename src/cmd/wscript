@@ -3,14 +3,13 @@ def options(opt): pass
 def configure(conf): pass
 
 def build(bld):
-  if not bld.env.HAVE_ZOOKEEPER_H: return
-
-  bld.program(
-    source = 'jubactl.cpp',
-    target = 'jubactl',
-    includes = '.',
-    use = 'MSGPACK PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon'
-    )
+  if bld.env.HAVE_ZOOKEEPER_H:
+    bld.program(
+      source = 'jubactl.cpp',
+      target = 'jubactl',
+      includes = '.',
+      use = 'MSGPACK PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon'
+      )
 
   bld.program(
     source = 'jubaconv.cpp',

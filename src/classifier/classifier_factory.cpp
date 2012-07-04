@@ -39,7 +39,7 @@ classifier_base* classifier_factory::create_classifier(const std::string& name, 
   } else if (name == "NHERD"){
     return static_cast<classifier_base*>(new NHERD(storage));
   } else {
-    throw unsupported_method(name);
+    throw JUBATUS_EXCEPTION(unsupported_method(name));
   }
 }
 

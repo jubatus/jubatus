@@ -33,6 +33,7 @@ class jubervisor{
 public:
   jubervisor(const std::string&, int, int = 10, const std::string& logfile = "");
   ~jubervisor();
+
   int start(std::string, unsigned int);
 
   // reduces processes to N - FIXME: currently the second value ignored and all processes stopped
@@ -43,14 +44,19 @@ public:
   //  void die_if_deleted(int, int, std::string);
   
 private:
+  typedef std::vector<process> process_list_t;
+  typedef std::map<std::string, process_list_t > child_map_t;
+
   int start_(const std::string&, unsigned int);
   //  int stop_(const std::string&, std::vector<process>&);
+
+  static void sigchld_handler_(int);
 
   pfi::lang::shared_ptr<common::lock_service> zk_;
   std::string name_;
   int port_base_;
   std::queue<int> port_pool_;
-  std::map<std::string, std::vector<process> > children_;
+  child_map_t children_;
 
   std::string logfile_;
   pfi::concurrent::mutex m_;

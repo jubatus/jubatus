@@ -53,7 +53,7 @@ static splitter_weight_type make_weight_type(const string& sample, const string&
   } else if (sample == "log_tf") {
     sample_type = LOG_TERM_FREQUENCY;
   } else {
-    throw converter_exception(string("unknown sample weight: ") + sample);
+    throw JUBATUS_EXCEPTION(converter_exception(string("unknown sample weight: ") + sample));
   }
 
   term_weight_type global_type;
@@ -64,7 +64,7 @@ static splitter_weight_type make_weight_type(const string& sample, const string&
   } else if (global == "weight") {
     global_type = WITH_WEIGHT_FILE;
   } else {
-    throw converter_exception(string("unknown global weight: ") + global);
+    throw JUBATUS_EXCEPTION(converter_exception(string("unknown global weight: ") + global));
   }
   return splitter_weight_type(sample_type, global_type);
 }
@@ -72,7 +72,7 @@ static splitter_weight_type make_weight_type(const string& sample, const string&
 static string get_or_die(const map<string, string>& m, const string& key) {
   map<string, string>::const_iterator it = m.find(key);
   if (it == m.end()) {
-    throw converter_exception(string("unknown parameter: ") + key);
+    throw JUBATUS_EXCEPTION(converter_exception(string("unknown parameter: ") + key));
   } else {
     return it->second;
   }
@@ -114,7 +114,7 @@ static void init_num_filter_rules(const vector<filter_rule>& filter_rules,
     const filter_rule& rule = filter_rules[i];
     map<string, num_filter_ptr>::const_iterator it = filters.find(rule.type);
     if (it == filters.end()) {
-      throw converter_exception("unknown type: " + rule.type);
+      throw JUBATUS_EXCEPTION(converter_exception("unknown type: " + rule.type));
     }
 
     matcher_ptr m(f.create_matcher(rule.key));
@@ -148,7 +148,7 @@ static void init_string_filter_rules(const vector<filter_rule>& filter_rules,
     const filter_rule& rule = filter_rules[i];
     map<string, string_filter_ptr>::const_iterator it = filters.find(rule.type);
     if (it == filters.end()) {
-      throw converter_exception("unknown type: " + rule.type);
+      throw JUBATUS_EXCEPTION(converter_exception("unknown type: " + rule.type));
     }
 
     matcher_ptr m(f.create_matcher(rule.key));
@@ -165,7 +165,7 @@ static void init_string_rules(const vector<string_rule>& string_rules,
     matcher_ptr m(f.create_matcher(rule.key));
     map<string, splitter_ptr>::const_iterator it = splitters.find(rule.type);
     if (it == splitters.end()) {
-      throw converter_exception("unknown type: " + rule.type);
+      throw JUBATUS_EXCEPTION(converter_exception("unknown type: " + rule.type));
     }
     
     vector<splitter_weight_type> ws;
@@ -202,7 +202,7 @@ static void init_num_rules(const vector<num_rule>& num_rules,
     matcher_ptr m(f.create_matcher(rule.key));
     map<string, num_feature_ptr>::const_iterator it = num_features.find(rule.type);
     if (it == num_features.end()) {
-      throw converter_exception("unknown type: " + rule.type);
+      throw JUBATUS_EXCEPTION(converter_exception("unknown type: " + rule.type));
     }
 
     conv.register_num_rule(rule.type, m, it->second);

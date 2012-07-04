@@ -29,11 +29,12 @@ namespace jubatus{
     bool spawn_link(int);
     bool kill();
 
-    bool has_samespec(const process&) const ;
+    bool has_samespec(const process&) const;
 
-    const std::string& get_name() const { return name_; };
-    const std::string& get_server() const { return server_; };
-    int get_rpc_port()const {return rpc_port_;};
+    const std::string& get_name() const { return name_; }
+    const std::string& get_server() const { return server_; }
+    int get_rpc_port() const { return rpc_port_; }
+    int get_pid() const { return pid_; }
   private:
     std::string server_;
     std::string name_;

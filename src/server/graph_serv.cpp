@@ -77,7 +77,7 @@ std::string graph_serv::create_node(){
       std::vector<std::pair<std::string, int> > nodes;
       find_from_cht(nid_str, 2, nodes);
       if(nodes.empty()){
-        throw std::runtime_error("fatal: no server found in cht: "+nid_str);
+        throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("fatal: no server found in cht: "+nid_str));
       }
       // this sequences MUST success, in case of failures the whole request should be canceled
       if(nodes[0].first == a_.eth && nodes[0].second == a_.port){
@@ -162,7 +162,7 @@ int graph_serv::create_edge(const std::string& id, const edge_info& ei)
     std::vector<std::pair<std::string, int> > nodes;
     find_from_cht(ei.src, 2, nodes);
     if(nodes.empty()){
-      throw std::runtime_error("fatal: no server found in cht: "+ei.src);
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("fatal: no server found in cht: "+ei.src));
     }
     // TODO: assertion: nodes[0] should be myself
     this->create_edge_here(eid, ei);
@@ -214,7 +214,7 @@ double graph_serv::centrality(const std::string& id, const centrality_type& s,
     std::stringstream msg;
     msg << "unknown centrality type: " << s;
     LOG(ERROR) << msg.str();
-    throw std::runtime_error(msg.str());
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(msg.str()));
   }
   
 }
@@ -223,6 +223,7 @@ std::vector<node_id> graph_serv::shortest_path(const shortest_path_req& req) con
 { 
   std::vector<jubatus::graph::node_id_t> ret0;
   jubatus::graph::preset_query q;
+  framework::convert(req.q, q);
   g_.get_model()->shortest_path(n2i(req.src), n2i(req.tgt), req.max_hop, ret0, q);
   std::vector<node_id> ret;
   for(size_t i=0;i<ret0.size();++i){
@@ -290,7 +291,7 @@ edge_info graph_serv::get_edge(const std::string& nid, const edge_id_t& id)const
 //@broadcast
 int graph_serv::update_index(){
   if(not a_.is_standalone()){
-    throw std::runtime_error("manual mix is available only in standalone mode.");
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("manual mix is available only in standalone mode."));
   }
   clock_time start = get_clock_time();
   g_.get_model()->update_index();
@@ -331,7 +332,7 @@ int graph_serv::create_node_here(const std::string& nid)
   }catch(const graph::global_node_exists& e){//pass through
   }catch(const std::runtime_error& e){
     DLOG(INFO) << e.what() << " " << nid;
-    throw e;
+    throw;
   }
 
   return 0;
@@ -344,7 +345,7 @@ int graph_serv::create_global_node(const std::string& nid)
   }catch(const graph::global_node_exists& e){
   }catch(const std::runtime_error& e){
     DLOG(INFO) << e.what() << " " << nid;
-    throw e;
+    throw;
   }
   return 0;
 } //update internal
@@ -357,7 +358,7 @@ int graph_serv::remove_global_node(const std::string& nid)
   }catch(const graph::global_node_exists& e){
   }catch(const std::runtime_error& e){
     DLOG(INFO) << e.what() << " " << nid;
-    throw e;
+    throw;
   }
   return 0;
 } //update internal
@@ -369,7 +370,7 @@ int graph_serv::create_edge_here(edge_id_t eid, const edge_info& ei)
     g_.get_model()->update_edge(eid, ei.p);
   }catch(const graph::graph_exception& e){
     DLOG(INFO) << e.what() << " " << eid;
-    throw e;
+    throw;
   }
   return 0;
 }
