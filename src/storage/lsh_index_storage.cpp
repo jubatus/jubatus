@@ -80,6 +80,10 @@ bit_vector binarize(const vector<float>& hash) {
 
 float calc_euclidean_distance(const lsh_entry& entry, const bit_vector& bv, float norm) {
   const uint64_t hamm = bv.calc_hamming_similarity(entry.simhash_bv);
+  if (hamm == bv.bit_num()) {
+    // Avoid NaN caused by arithmetic error
+    return abs(norm - entry.norm);
+  }
   const float angle = (1 - float(hamm) / bv.bit_num()) * M_PI;
   const float dot = entry.norm * norm * cos(angle);
   return sqrt(norm * norm + entry.norm * entry.norm - 2 * dot);
