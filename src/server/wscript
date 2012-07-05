@@ -47,6 +47,8 @@ def build(bld):
       target = n)
 
   bld.install_files('${PREFIX}/include/jubatus/client', [
+      'anomaly_types.hpp',
+      'anomaly_client.hpp',
       'classifier_types.hpp',
       'classifier_client.hpp',
       'regression_types.hpp',
