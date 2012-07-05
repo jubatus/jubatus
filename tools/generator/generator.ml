@@ -194,9 +194,9 @@ let generate_impl s output strees =
 		     (List.filter is_service strees)));
 
   output <<< "  int run(){ return p_->start(*this); };";
-  output <<< ("  pfi::lang::shared_ptr<"^s#basename^"_serv> get_p(){ return p_; };");
+  output <<< ("  common::cshared_ptr<"^s#basename^"_serv> get_p(){ return p_; };");
   output <<< "private:";
-  output <<< ("  pfi::lang::shared_ptr<"^s#basename^"_serv> p_;");
+  output <<< ("  common::cshared_ptr<"^s#basename^"_serv> p_;");
   output <<< "};";
   output <<< "}} // namespace jubatus::server";
 
