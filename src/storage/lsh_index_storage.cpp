@@ -374,9 +374,14 @@ void lsh_index_storage::get_sorted_similar_rows(const unordered_set<uint64_t>& c
     const float dist = calc_euclidean_distance(*entry, query_simhash, query_norm);
     ids.push_back(make_pair(row, -dist));
   }
-  sort(ids.begin(), ids.end(), greater_second());
 
-  if (ids.size() > ret_num) {
+  if (ids.size() <= ret_num) {
+    sort(ids.begin(), ids.end(), greater_second());
+  } else {
+    partial_sort(ids.begin(),
+                 ids.begin() + ret_num,
+                 ids.end(),
+                 greater_second());
     ids.resize(ret_num);
   }
 }
