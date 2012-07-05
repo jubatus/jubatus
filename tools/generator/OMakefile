@@ -77,6 +77,7 @@ test: $(PROGRAM)  small.idl
 #	-diff recommender_keeper.cpp ../../src/server/recommender_keeper.cpp
 
 regenerate: $(PROGRAM)
+	./$(PROGRAM) ../../src/server/anomaly.idl -i -o ../../src/server
 	./$(PROGRAM) ../../src/server/recommender.idl -i -o ../../src/server
 	./$(PROGRAM) ../../src/server/regression.idl  -i -o ../../src/server
 	./$(PROGRAM) ../../src/server/classifier.idl  -i -o ../../src/server
