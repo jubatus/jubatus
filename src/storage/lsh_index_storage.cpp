@@ -134,8 +134,11 @@ void lsh_index_storage::remove_row(const string& row) {
 
   lsh_master_table_t::iterator entry_it = master_table_diff_.find(row);
   if (entry_it == master_table_diff_.end()) {
-    entry_it = master_table_.find(row);
     master_table_diff_[row] = lsh_entry();
+    entry_it = master_table_.find(row);
+    if (entry_it == master_table_.end()) {
+      return;
+    }
   }
   lsh_entry& entry = entry_it->second;
 
