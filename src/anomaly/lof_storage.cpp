@@ -66,7 +66,16 @@ float lof_storage::collect_lrds(const sfv_t& query,
 float lof_storage::collect_lrds(const string& id,
                                 unordered_map<string, float>& neighbor_lrd) const {
   vector<pair<string, float> > neighbors;
-  nn_engine_->neighbor_row(id, neighbors, neighbor_num_);
+  nn_engine_->neighbor_row(id, neighbors, neighbor_num_ + 1);
+
+  // neighbor_row returns id itself, so we remove it from the list
+  for (size_t i = 0; i < neighbors.size(); ++i) {
+    if (neighbors[i].first == id) {
+      swap(neighbors[i], neighbors.back());
+      break;
+    }
+  }
+  neighbors.pop_back();
 
   return collect_lrds_from_neighbors(neighbors, neighbor_lrd);
 }

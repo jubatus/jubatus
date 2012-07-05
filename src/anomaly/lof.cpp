@@ -16,6 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <cmath>
+#include <limits>
 #include <string>
 #include <vector>
 #include <glog/logging.h>
@@ -40,6 +41,10 @@ namespace {
 
 float calculate_lof(float lrd,
                     const unordered_map<string, float>& neighbor_lrd) {
+  if (neighbor_lrd.empty()) {
+    return lrd == 0 ? 1 : numeric_limits<float>::infinity();
+  }
+
   float sum_neighbor_lrd = 0;
   for (unordered_map<string, float>::const_iterator it = neighbor_lrd.begin();
        it != neighbor_lrd.end(); ++it) {
