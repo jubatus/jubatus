@@ -51,6 +51,10 @@ float calculate_lof(float lrd,
     sum_neighbor_lrd += it->second;
   }
 
+  if (isinf(sum_neighbor_lrd) && isinf(lrd)) {
+    return 1;
+  }
+
   return sum_neighbor_lrd / (neighbor_lrd.size() * lrd);
 }
 
