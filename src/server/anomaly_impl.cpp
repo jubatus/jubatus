@@ -46,9 +46,9 @@ public:
   std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
   { JRLOCK__(p_); return p_->get_status(); }
   int run(){ return p_->start(*this); };
-  pfi::lang::shared_ptr<anomaly_serv> get_p(){ return p_; };
+  common::cshared_ptr<anomaly_serv> get_p(){ return p_; };
 private:
-  pfi::lang::shared_ptr<anomaly_serv> p_;
+  common::cshared_ptr<anomaly_serv> p_;
 };
 }} // namespace jubatus::server
 int main(int args, char** argv){
