@@ -37,6 +37,8 @@ using pfi::lang::function;
 using pfi::system::time::clock_time;
 using pfi::system::time::get_clock_time;
 
+using jubatus::common::mprpc::rpc_result;
+
 namespace jubatus { namespace framework {
 
 jubatus_serv::jubatus_serv(const server_argv& a, const std::string& base_path):
@@ -259,10 +261,10 @@ void jubatus_serv::do_mix(const std::vector<std::pair<std::string,int> >& v){
       f = pfi::lang::bind(&jubatus_serv::mix_agg, this, pfi::lang::_1, pfi::lang::_2);
     common::mprpc::rpc_mclient c(v, a_.timeout);
     try{
-      c.call_async("get_diff", 0);
-      accs = c.join_all<std::vector<std::string> >(f);
-      c.call_async("put_diff", accs);
-      c.join_all<int>(pfi::lang::function<int(int,int)>(&framework::add<int>));
+      rpc_result<vector<string> > result_accs = c.call("get_diff", 0, f);
+      // TODO: output log when result has error
+      rpc_result<int> result_put = c.call("put_diff", *result_accs, pfi::lang::function<int(int,int)>(&framework::add<int>));
+      // TODO: output log when result has error
     }catch(const std::exception & e){
       LOG(WARNING) << e.what() << " : mix failed";
       return;
