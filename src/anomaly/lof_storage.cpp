@@ -278,20 +278,31 @@ void lof_storage::collect_neighbors(const string& row,
 void lof_storage::update_entries(const unordered_set<string>& rows) {
   // NOTE: These two loops are separated, since update_lrd requires new kdist
   // values of k-NN.
-  for (unordered_set<string>::const_iterator it = rows.begin();
-       it != rows.end(); ++it) {
-    update_kdist(*it);
+  typedef unordered_map<string, vector<pair<string, float> > > rows_to_neighbors_type;
+
+  rows_to_neighbors_type rows_to_neighbors;
+  for (unordered_set<string>::const_iterator it = rows.begin(); it != rows.end(); ++it) {
+    nn_engine_->neighbor_row(*it, rows_to_neighbors[*it], neighbor_num_);
   }
-  for (unordered_set<string>::const_iterator it = rows.begin();
-       it != rows.end(); ++it) {
-    update_lrd(*it);
+
+  for (rows_to_neighbors_type::const_iterator it = rows_to_neighbors.begin();
+       it != rows_to_neighbors.end(); ++it) {
+    update_kdist_with_neighbors(it->first, it->second);
+  }
+  for (rows_to_neighbors_type::const_iterator it = rows_to_neighbors.begin();
+       it != rows_to_neighbors.end(); ++it) {
+    update_lrd_with_neighbors(it->first, it->second);
   }
 }
 
 void lof_storage::update_kdist(const string& row) {
   vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(row, neighbors, neighbor_num_);
+  update_kdist_with_neighbors(row, neighbors);
+}
 
+void lof_storage::update_kdist_with_neighbors(const string& row,
+                                              const vector<pair<string, float> >& neighbors) {
   if (!neighbors.empty()) {
     lof_table_diff_[row].kdist = neighbors.back().second;
   }
@@ -300,14 +311,19 @@ void lof_storage::update_kdist(const string& row) {
 void lof_storage::update_lrd(const string& row) {
   vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(row, neighbors, neighbor_num_);
+  update_lrd_with_neighbors(row, neighbors);
+}
 
+void lof_storage::update_lrd_with_neighbors(const string& row,
+                                            const vector<pair<string, float> >& neighbors) {
   if (neighbors.empty()) {
     lof_table_diff_[row].lrd = 1;
     return;
   }
 
+  const size_t length = min(neighbors.size(), size_t(neighbor_num_));
   float sum_reachability = 0;
-  for (size_t i = 0; i < neighbors.size(); ++i) {
+  for (size_t i = 0; i < length; ++i) {
     sum_reachability += max(neighbors[i].second, get_kdist(neighbors[i].first));
   }
 
@@ -316,7 +332,7 @@ void lof_storage::update_lrd(const string& row) {
     return;
   }
 
-  lof_table_diff_[row].lrd = neighbors.size() / sum_reachability;
+  lof_table_diff_[row].lrd = length / sum_reachability;
 }
 
 }
