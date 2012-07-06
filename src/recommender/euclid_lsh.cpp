@@ -42,7 +42,7 @@ const uint64_t DEFAULT_TABLE_NUM = 4;  // should be in config
 const float DEFAULT_BIN_WIDTH = 100;  // should be in config
 const uint32_t DEFAULT_NUM_PROBE = 64;  // should be in config
 const uint32_t DEFAULT_SEED = 1091;  // should be in config
-const bool DEFAULT_RETAIN_PROJECTION = true;
+const bool DEFAULT_RETAIN_PROJECTION = false;
 
 struct greater_second {
   bool operator()(const pair<string, float>& l, const pair<string, float>& r) const {
