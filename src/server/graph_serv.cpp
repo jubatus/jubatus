@@ -110,8 +110,8 @@ std::string graph_serv::create_node(){
 
       try{
         c.call("create_global_node", a_.name, nid_str, pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
-      }catch(const std::runtime_error & e){ // no results?, pass through
-        DLOG(INFO) << __func__ << " " << e.what();
+      }catch(const common::mprpc::rpc_no_result& e){ // pass through
+        DLOG(INFO) << __func__ << " " << e.diagnostic_information(true);
       }
     }
   }else{
@@ -141,7 +141,11 @@ int graph_serv::remove_node(const std::string& nid){
     
     if(not members.empty()){
       common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
-      c.call("remove_global_node", a_.name, nid, pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+      try{
+        c.call("remove_global_node", a_.name, nid, pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+      }catch(const common::mprpc::rpc_no_result& e){ // pass through
+        DLOG(INFO) << __func__ << " " << e.diagnostic_information(true);
+      }
     }
   }
   DLOG(INFO) << "node removed: " << nid;
