@@ -36,7 +36,8 @@ namespace storage {
 namespace {
 
 struct greater_second {
-  bool operator()(const pair<string, float>& l, const pair<string, float>& r) const {
+  template<typename P>
+  bool operator()(const P& l, const P& r) const {
     return l.second > r.second;
   }
 };
@@ -362,27 +363,33 @@ void lsh_index_storage::get_sorted_similar_rows(const unordered_set<uint64_t>& c
                                                 float query_norm,
                                                 uint64_t ret_num,
                                                 vector<pair<string, float> >& ids) const {
-  ids.clear();
-  ids.reserve(cands.size());
+  // Avoid string copy as far as possible
+  vector<pair<uint64_t, float> > scored;
+  scored.reserve(cands.size());
   for (unordered_set<uint64_t>::const_iterator it = cands.begin();
        it != cands.end(); ++it) {
-    const string& row = key_manager_.get_key(*it);
-    const lsh_entry* entry = get_lsh_entry(row);
+    const lsh_entry* entry = get_lsh_entry(key_manager_.get_key(*it));
     if (!entry) {
       continue;
     }
     const float dist = calc_euclidean_distance(*entry, query_simhash, query_norm);
-    ids.push_back(make_pair(row, -dist));
+    scored.push_back(make_pair(*it, -dist));
   }
 
-  if (ids.size() <= ret_num) {
-    sort(ids.begin(), ids.end(), greater_second());
+  if (scored.size() <= ret_num) {
+    sort(scored.begin(), scored.end(), greater_second());
   } else {
-    partial_sort(ids.begin(),
-                 ids.begin() + ret_num,
-                 ids.end(),
+    partial_sort(scored.begin(),
+                 scored.begin() + ret_num,
+                 scored.end(),
                  greater_second());
-    ids.resize(ret_num);
+    scored.resize(ret_num);
+  }
+
+  ids.resize(scored.size());
+  for (size_t i = 0; i < scored.size(); ++i) {
+    ids[i].first = key_manager_.get_key(scored[i].first);
+    ids[i].second = scored[i].second;
   }
 }
 
