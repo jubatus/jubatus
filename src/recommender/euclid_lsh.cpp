@@ -42,6 +42,7 @@ const uint64_t DEFAULT_TABLE_NUM = 4;  // should be in config
 const float DEFAULT_BIN_WIDTH = 100;  // should be in config
 const uint32_t DEFAULT_NUM_PROBE = 64;  // should be in config
 const uint32_t DEFAULT_SEED = 1091;  // should be in config
+const bool DEFAULT_RETAIN_PROJECTION = true;
 
 struct greater_second {
   bool operator()(const pair<string, float>& l, const pair<string, float>& r) const {
@@ -77,7 +78,8 @@ vector<float> lsh_function(const sfv_t& query, size_t dimension, float bin_width
 euclid_lsh::euclid_lsh()
     : lsh_index_(DEFAULT_LSH_NUM, DEFAULT_TABLE_NUM, DEFAULT_SEED),
       bin_width_(DEFAULT_BIN_WIDTH),
-      num_probe_(DEFAULT_NUM_PROBE) {
+      num_probe_(DEFAULT_NUM_PROBE),
+      retain_projection_(DEFAULT_RETAIN_PROJECTION) {
 }
 
 euclid_lsh::euclid_lsh(const std::map<std::string, std::string>& config)
@@ -85,7 +87,8 @@ euclid_lsh::euclid_lsh(const std::map<std::string, std::string>& config)
                  get_param(config, "table_num", DEFAULT_TABLE_NUM),
                  get_param(config, "seed", DEFAULT_SEED)),
       bin_width_(get_param(config, "bin_width", DEFAULT_BIN_WIDTH)),
-      num_probe_(get_param(config, "probe_num", DEFAULT_NUM_PROBE)) {
+      num_probe_(get_param(config, "probe_num", DEFAULT_NUM_PROBE)),
+      retain_projection_(get_param(config, "retain_projection", DEFAULT_RETAIN_PROJECTION)) {
 }
 
 euclid_lsh::~euclid_lsh() {
@@ -160,6 +163,35 @@ storage::lsh_index_storage* euclid_lsh::get_storage() {
 
 const storage::lsh_index_storage* euclid_lsh::get_const_storage() const {
   return &lsh_index_;
+}
+
+vector<float> euclid_lsh::calculate_lsh(const sfv_t& query) {
+  vector<float> hash(lsh_index_.all_lsh_num());
+  for (size_t i = 0; i < query.size(); ++i) {
+    const uint32_t seed = hash_util::calc_string_hash(query[i].first);
+    const vector<float> proj = get_projection(seed);
+    for (size_t j = 0; j < hash.size(); ++j) {
+      hash[j] += query[i].second * proj[j];
+    }
+  }
+  for (size_t j = 0; j < hash.size(); ++j) {
+    hash[j] /= bin_width_;
+  }
+  return hash;
+}
+
+vector<float> euclid_lsh::get_projection(uint32_t seed) {
+  vector<float> tmpl_proj;
+  vector<float>& proj = retain_projection_ ? projection_[seed] : tmpl_proj;
+
+  if (proj.empty()) {
+    mtrand rnd(seed);
+    proj.resize(lsh_index_.all_lsh_num());
+    for (size_t i = 0; i < proj.size(); ++i) {
+      proj[i] = rnd.next_gaussian();
+    }
+  }
+  return proj;
 }
 
 bool euclid_lsh::save_impl(ostream& os) {

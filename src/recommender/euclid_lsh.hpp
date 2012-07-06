@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <map>
 #include <pficommon/data/serialization.h>
+#include <pficommon/data/unordered_map.h>
 #include "recommender_base.hpp"
 #include "../storage/lsh_index_storage.hpp"
 
@@ -54,8 +55,11 @@ class euclid_lsh : public recommender_base {
   friend class pfi::data::serialization::access;
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(lsh_index_) & MEMBER(bin_width_) & MEMBER(num_probe_);
+    ar & MEMBER(lsh_index_) & MEMBER(bin_width_) & MEMBER(num_probe_) & MEMBER(projection_) & MEMBER(retain_projection_);
   }
+
+  std::vector<float> calculate_lsh(const sfv_t& query);
+  std::vector<float> get_projection(uint32_t seed);
 
   virtual bool save_impl(std::ostream& os);
   virtual bool load_impl(std::istream& is);
@@ -63,6 +67,9 @@ class euclid_lsh : public recommender_base {
   storage::lsh_index_storage lsh_index_;
   float bin_width_;
   uint32_t num_probe_;
+
+  pfi::data::unordered_map<uint32_t, std::vector<float> > projection_;
+  bool retain_projection_;
 };
 
 }
