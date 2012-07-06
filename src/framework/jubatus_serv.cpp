@@ -197,6 +197,10 @@ void jubatus_serv::join_to_cluster(common::cshared_ptr<jubatus::common::lock_ser
 std::string jubatus_serv::get_storage(){
   std::stringstream ss;
   for(size_t i=0; i<mixables_.size(); ++i){
+    if(mixables_[i] == NULL){
+      LOG(ERROR) << i << "th mixable is null";
+      throw JUBATUS_EXCEPTION(config_not_set);
+    }
     mixables_[i]->save(ss);
   }
   LOG(INFO) << "new server has come. Sending back " << ss.str().size() << " bytes.";
@@ -204,15 +208,14 @@ std::string jubatus_serv::get_storage(){
 }
     
 std::vector<std::string> jubatus_serv::get_diff_impl(int){
-  // if(mixables_.empty()){
-  //   //throw config_not_set(); nothing to mix
-  // }
   std::vector<std::string> o;
-  {
-    scoped_lock lk(rlock(m_));
-    for(size_t i=0; i<mixables_.size(); ++i){
-      o.push_back(mixables_[i]->get_diff());
-    }
+
+  scoped_lock lk(rlock(m_));
+  if(mixables_.empty()){
+    throw config_not_set(); // nothing to mix
+  }
+  for(size_t i=0; i<mixables_.size(); ++i){
+    o.push_back(mixables_[i]->get_diff());
   }
   return o;
 };

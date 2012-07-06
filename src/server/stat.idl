@@ -30,17 +30,17 @@ service stat {
   #@cht #@update #@all_and
   bool push(0: string name, 1: string key, 2: double val) # #@cht
 
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   double sum(0: string name, 1: string key) # #@cht
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   double stddev(0: string name, 1: string key) # #@cht
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   double max(0: string name, 1: string key) # #@cht
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   double min(0: string name, 1: string key) # #@cht
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   double entropy(0: string name, 1: string key) # #@cht
-  #@cht #@analysis #@random
+  #@cht #@analysis #@pass
   double moment(0: string name, 1: string key, 2: int n, 3: double c) # #@cht
 
   #@broadcast #@update #@all_and

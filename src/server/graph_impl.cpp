@@ -82,9 +82,9 @@ public:
   int create_edge_here(std::string name, edge_id_t eid, edge_info ei) //update 
   { JWLOCK__(p_); return p_->create_edge_here(eid, ei); }
   int run(){ return p_->start(*this); };
-  pfi::lang::shared_ptr<graph_serv> get_p(){ return p_; };
+  common::cshared_ptr<graph_serv> get_p(){ return p_; };
 private:
-  pfi::lang::shared_ptr<graph_serv> p_;
+  common::cshared_ptr<graph_serv> p_;
 };
 }} // namespace jubatus::server
 int main(int args, char** argv){
