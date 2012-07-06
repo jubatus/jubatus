@@ -131,6 +131,13 @@ private:
   void update_kdist(const std::string& row);
   void update_lrd(const std::string& row);
 
+  void update_kdist_with_neighbors(
+      const std::string& row,
+      const std::vector<std::pair<std::string, float> >& neighbors);
+  void update_lrd_with_neighbors(
+      const std::string& row,
+      const std::vector<std::pair<std::string, float> >& neighbors);
+
   lof_table_t lof_table_ ; // table for storing k-dist and lrd values
   lof_table_t lof_table_diff_;
 
