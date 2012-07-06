@@ -71,10 +71,7 @@ PROGRAM = jenerator
 
 
 test: $(PROGRAM)  small.idl
-	./$(PROGRAM) small.idl -d
-#	./$(PROGRAM) ../../src/server/recommender.idl -i
-#	-diff recommender_impl.cpp ../../src/server/recommender_impl.cpp
-#	-diff recommender_keeper.cpp ../../src/server/recommender_keeper.cpp
+	./$(PROGRAM) small.idl
 
 regenerate: $(PROGRAM)
 	./$(PROGRAM) ../../src/server/recommender.idl -i -o ../../src/server

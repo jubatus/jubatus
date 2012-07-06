@@ -19,11 +19,11 @@ public:
   config_data get_config(std::string name) //analysis random
   { JRLOCK__(p_); return p_->get_config(); }
 
-  int train(std::string arg0, std::vector<std::pair<float,datum > > arg1) //update random
-  { JWLOCK__(p_); return p_->train(arg1); }
+  int train(std::string name, std::vector<std::pair<float,datum > > train_data) //update random
+  { JWLOCK__(p_); return p_->train(train_data); }
 
-  std::vector<float > estimate(std::string arg0, std::vector<datum > arg1) //analysis random
-  { JRLOCK__(p_); return p_->estimate(arg1); }
+  std::vector<float > estimate(std::string name, std::vector<datum > estimate_data) //analysis random
+  { JRLOCK__(p_); return p_->estimate(estimate_data); }
 
   bool save(std::string name, std::string arg1) //update broadcast
   { JWLOCK__(p_); return p_->save(arg1); }
@@ -34,9 +34,9 @@ public:
   std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
   { JRLOCK__(p_); return p_->get_status(); }
   int run(){ return p_->start(*this); };
-  pfi::lang::shared_ptr<regression_serv> get_p(){ return p_; };
+  common::cshared_ptr<regression_serv> get_p(){ return p_; };
 private:
-  pfi::lang::shared_ptr<regression_serv> p_;
+  common::cshared_ptr<regression_serv> p_;
 };
 }} // namespace jubatus::server
 int main(int args, char** argv){

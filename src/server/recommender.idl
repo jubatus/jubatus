@@ -96,7 +96,7 @@ service recommender {
   #@random #@analysis #@pass
   float similarity(0: string name, 1: datum lhs, 2:datum rhs) # //@random
 
-  #@random #@analysis #@random
+  #@random #@analysis #@pass
   float l2norm(0: string name, 1: datum d) # //@random
 
   #@broadcast #@update #@all_and
