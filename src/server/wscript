@@ -63,3 +63,11 @@ def build(bld):
       'graph_types.hpp',
       'graph_client.hpp',
       ])
+
+  bld.install_files('${PREFIX}/share/jubatus/', [
+      'classifier.idl',
+      'regression.idl',
+      'recommender.idl',
+      'stat.idl',
+      'graph.idl',
+      ])
