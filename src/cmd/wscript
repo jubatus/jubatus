@@ -25,3 +25,17 @@ def build(bld):
     use = 'MSGPACK PFICOMMON jubacommon'
     )
 
+  bld.program(
+    source = 'jubasave.cpp',
+    target = 'jubasave',
+    includes = '.',
+    use = 'MSGPACK PFICOMMON jubacommon'
+    )
+
+  bld.program(
+    source = 'jubaload.cpp',
+    target = 'jubaload',
+    includes = '.',
+    use = 'MSGPACK PFICOMMON jubacommon'
+    )
+
