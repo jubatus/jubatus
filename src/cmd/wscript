@@ -17,3 +17,11 @@ def build(bld):
     includes = '.',
     use = 'PFICOMMON jubacommon jubaconverter'
     )
+
+  bld.program(
+    source = 'jubastatus.cpp',
+    target = 'jubastatus',
+    includes = '.',
+    use = 'MSGPACK PFICOMMON jubacommon'
+    )
+
