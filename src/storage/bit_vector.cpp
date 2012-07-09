@@ -56,7 +56,7 @@ uint64_t  bit_vector::calc_hamming_similarity(const bit_vector& bv) const{
 
   uint64_t heads_match = 0;
   while (a != a_back) {
-    heads_match += BLOCKSIZE - pop_count(*a++ ^ *b++);
+    heads_match += pop_count(~(*a++ ^ *b++));
   }
   const uint64_t tail_match = (bit_num - 1) % BLOCKSIZE + 1 - pop_count(*a ^ *b);
   return heads_match + tail_match;
