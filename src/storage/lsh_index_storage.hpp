@@ -64,7 +64,7 @@ public:
   virtual void mix(const std::string& lhs, std::string& rhs) const;
 
 private:
-  typedef pfi::data::unordered_multimap<uint64_t, uint64_t> lsh_table_t;
+  typedef pfi::data::unordered_map<uint64_t, std::vector<uint64_t> > lsh_table_t;
 
   friend class pfi::data::serialization::access;
   template<class Ar>
@@ -83,6 +83,8 @@ private:
       }
     }
   }
+
+  lsh_master_table_t::iterator remove_and_get_row(const std::string& row);
 
   std::vector<float> make_entry(const std::vector<float>&hash,
                                 float norm,

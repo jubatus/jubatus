@@ -125,39 +125,16 @@ lsh_index_storage::~lsh_index_storage() {
 }
 
 void lsh_index_storage::set_row(const string& row, const vector<float>& hash, float norm) {
-  remove_row(row);
-  lsh_entry& entry = master_table_diff_[row];
-  make_entry(hash, norm, entry);
-  add_index(row, entry);
+  lsh_master_table_t::iterator it = remove_and_get_row(row);
+  if (it == master_table_diff_.end()) {
+    it = master_table_diff_.insert(make_pair(row, lsh_entry())).first;
+  }
+  make_entry(hash, norm, it->second);
+  add_index(row, it->second);
 }
 
 void lsh_index_storage::remove_row(const string& row) {
-  const uint64_t row_id = key_manager_.get_id_const(row);
-  if (row_id == key_manager::NOTFOUND) {
-    return;
-  }
-
-  lsh_master_table_t::iterator entry_it = master_table_diff_.find(row);
-  if (entry_it == master_table_diff_.end()) {
-    master_table_diff_[row] = lsh_entry();
-    entry_it = master_table_.find(row);
-    if (entry_it == master_table_.end()) {
-      return;
-    }
-  }
-  lsh_entry& entry = entry_it->second;
-
-  for (size_t i = 0; i < entry.lsh_hash.size(); ++i) {
-    pair<lsh_table_t::iterator, lsh_table_t::iterator> range =
-        lsh_table_.equal_range(entry.lsh_hash[i]);
-    for (lsh_table_t::iterator it = range.first; it != range.second; ++it) {
-      if (it->second == row_id) {
-        lsh_table_.erase(it);
-        break;
-      }
-    }
-  }
-  entry = lsh_entry();
+  remove_and_get_row(row);
 }
 
 void lsh_index_storage::clear() {
@@ -293,6 +270,39 @@ void lsh_index_storage::mix(const string& lhs, string& rhs) const {
 
 // private
 
+lsh_master_table_t::iterator lsh_index_storage::remove_and_get_row(const string& row) {
+  const uint64_t row_id = key_manager_.get_id_const(row);
+  if (row_id == key_manager::NOTFOUND) {
+    return master_table_diff_.end();
+  }
+
+  lsh_master_table_t::iterator entry_it = master_table_diff_.find(row);
+  lsh_master_table_t::iterator ret_it = entry_it;
+  if (entry_it == master_table_diff_.end()) {
+    ret_it = master_table_diff_.insert(make_pair(row, lsh_entry())).first;
+    entry_it = master_table_.find(row);
+    if (entry_it == master_table_.end()) {
+      return ret_it;
+    }
+  }
+  lsh_entry& entry = entry_it->second;
+
+  for (size_t i = 0; i < entry.lsh_hash.size(); ++i) {
+    lsh_table_t::iterator it = lsh_table_.find(entry.lsh_hash[i]);
+    if (it != lsh_table_.end()) {
+      vector<uint64_t>& range = it->second;
+      range.erase(remove(range.begin(), range.end(), row_id),
+                  range.end());
+      if (range.empty()) {
+        lsh_table_.erase(it);
+      }
+    }
+  }
+  entry = lsh_entry();
+
+  return ret_it;
+}
+
 vector<float> lsh_index_storage::make_entry(const vector<float>& hash,
                                             float norm,
                                             lsh_entry& entry) const {
@@ -315,7 +325,8 @@ vector<float> lsh_index_storage::make_entry(const vector<float>& hash,
 void lsh_index_storage::add_index(const string& row, const lsh_entry& entry) {
   const uint64_t row_id = key_manager_.get_id(row);
   for (size_t i = 0; i < entry.lsh_hash.size(); ++i) {
-    lsh_table_.insert(make_pair(entry.lsh_hash[i], row_id));
+    lsh_table_[entry.lsh_hash[i]].push_back(row_id);
+    // lsh_table_.insert(make_pair(entry.lsh_hash[i], row_id));
   }
 }
 
@@ -327,12 +338,13 @@ void lsh_index_storage::remove_model_row(const std::string& row) {
 
   const uint64_t row_id = key_manager_.get_id_const(row);
   for (size_t i = 0; i < entry->lsh_hash.size(); ++i) {
-    const pair<lsh_table_t::iterator, lsh_table_t::iterator>
-        range = lsh_table_.equal_range(entry->lsh_hash[i]);
-    for (lsh_table_t::iterator it = range.first; it != range.second; ++it) {
-      if (it->second == row_id) {
+    lsh_table_t::iterator it = lsh_table_.find(entry->lsh_hash[i]);
+    if (it != lsh_table_.end()) {
+      vector<uint64_t>& range = it->second;
+      range.erase(remove(range.begin(), range.end(), row_id),
+                  range.end());
+      if (range.empty()) {
         lsh_table_.erase(it);
-        break;
       }
     }
   }
@@ -342,18 +354,19 @@ void lsh_index_storage::set_mixed_row(const string& row, const lsh_entry& entry)
   const uint64_t row_id = key_manager_.get_id(row);
   master_table_[row] = entry;
   for (size_t i = 0; i < entry.lsh_hash.size(); ++i) {
-    lsh_table_.insert(make_pair(entry.lsh_hash[i], row_id));
+    lsh_table_[entry.lsh_hash[i]].push_back(row_id);
   }
 }
 
 bool lsh_index_storage::retrieve_hit_rows(size_t hash,
                                           size_t ret_num,
                                           unordered_set<uint64_t>& cands) const {
-  const pair<lsh_table_t::const_iterator, lsh_table_t::const_iterator>
-      range = lsh_table_.equal_range(hash);
-
-  for (lsh_table_t::const_iterator it = range.first; it != range.second; ++it) {
-    cands.insert(it->second);
+  lsh_table_t::const_iterator it = lsh_table_.find(hash);
+  if (it != lsh_table_.end()) {
+    const vector<uint64_t>& range = it->second;
+    for (size_t i = 0; i < range.size(); ++i) {
+      cands.insert(range[i]);
+    }
   }
   return cands.size() >= max(static_cast<uint64_t>(ret_num), table_num_ * 3);
 }
