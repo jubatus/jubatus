@@ -39,7 +39,7 @@ Improvements
   - JSON interface for set_config APIs (#44)
 
 Bugfix
-  - #69, #66, #65
+  - #73, #69, #66, #65
 
 Release 0.3.0 2012/6/29
 ~~~~~~~~~~~~~~~~~~~~~~~

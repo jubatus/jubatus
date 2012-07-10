@@ -27,7 +27,9 @@
 #include "../common/util.hpp"
 #include "../common/cmdline.h"
 
-static const std::string PROGNAME = "jubakeeper";
+namespace {
+const std::string PROGNAME = "jubavisor";
+}
 
 using namespace jubatus;
 using namespace pfi::lang;
