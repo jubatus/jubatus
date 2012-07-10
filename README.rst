@@ -36,6 +36,7 @@ scheduled Release 0.3.1 2012/7/x
 
 Improvements
   - RPC enhances to many exceptions and provide new error handling interface (#49)
+  - JSON interface for set_config APIs (#44)
 
 Bugfix
   - #69, #66, #65
