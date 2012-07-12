@@ -54,5 +54,7 @@ public:
 
 };
 
+#warning no tests written
+
 }
 }

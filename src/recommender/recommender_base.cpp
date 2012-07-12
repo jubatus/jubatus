@@ -81,6 +81,11 @@ void recommender_base::complete_row(const sfv_t& query, sfv_t& ret) const{
   }
 }
 
+void recommender_base::get_status(std::map<std::string, std::string>& ret) const
+{
+  orig_.get_status(ret);
+}
+
 void recommender_base::save(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << orig_;

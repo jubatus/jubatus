@@ -157,6 +157,12 @@ void bit_index_storage::similar_row(const bit_vector& bv, vector<pair<string, fl
   }
 }
 
+void bit_index_storage::get_status(std::map<std::string, std::string>& ret) const
+{
+  ret["bit_index_storage::bit_table_size"] = pfi::lang::lexical_cast<std::string>(bitvals_.size());
+  ret["bit_index_storage::bit_table_diff_size"] = pfi::lang::lexical_cast<std::string>(bitvals_diff_.size());
+}
+
 bool bit_index_storage::save(std::ostream& os){
   pfi::data::serialization::binary_oarchive oa(os);
   oa << *this;

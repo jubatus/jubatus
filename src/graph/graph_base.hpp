@@ -24,6 +24,22 @@
 namespace jubatus{
 namespace graph {
 
+
+struct property_stat
+{
+  property_stat();
+  property_stat(const property& p);
+  uint64_t total_property_key_length;
+  uint64_t total_property_val_length;
+  uint64_t total_property_entry_count;
+
+  //same as operator +=
+  void add(const property_stat& ps);
+  double mean_keylen()const;
+  double mean_vallen()const;
+  uint64_t total_count()const;
+};
+
 class graph_base{
 public:
   graph_base();

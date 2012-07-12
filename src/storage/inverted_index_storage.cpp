@@ -131,6 +131,15 @@ void inverted_index_storage::get_all_column_ids(std::vector<std::string>& ids) c
   }
 }
 
+
+void inverted_index_storage::get_status(std::map<std::string, std::string>& ret) const {
+  ret["inverted_index_storage::tbl_size"] = pfi::lang::lexical_cast<std::string>(inv_.size());
+  ret["inverted_index_storage::tbl_diff_size"] = pfi::lang::lexical_cast<std::string>(inv_diff_.size());
+  ret["inverted_index_storage::column2norm_size"] = pfi::lang::lexical_cast<std::string>(column2norm_.size());
+  ret["inverted_index_storage::column2norm_diff_size"] = pfi::lang::lexical_cast<std::string>(column2norm_diff_.size());
+  ret["inverted_index_storage::id_size"] = pfi::lang::lexical_cast<std::string>(column2id_.size());
+}
+
 void inverted_index_storage::get_diff(std::string& diff_str) const {
   sparse_matrix_storage diff;
   for (tbl_t::const_iterator it = inv_diff_.begin(); it != inv_diff_.end(); ++it){

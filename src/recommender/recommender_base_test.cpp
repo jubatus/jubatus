@@ -122,5 +122,13 @@ TEST(recommender_base, calc_similality){
   EXPECT_FLOAT_EQ((2.0 * 3.0 + 3.0 * 3.0) / r.calc_l2norm(q1) / r.calc_l2norm(q2), r.calc_similality(q1, q2));
 }
 
+TEST(recommender_base, get_status){
+  recommender_impl r;
+  std::map<std::string,std::string> status;
+  r.get_status(status);
+  EXPECT_EQ("3", status["sparse_matrix_storage::row_num"]);
+  EXPECT_EQ("4", status["sparse_matrix_storage::key_num"]);
+}
+
 }
 }

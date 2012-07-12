@@ -45,6 +45,8 @@ public:
   void get_all_row_ids(std::vector<std::string>& ids) const;
   void clear();
 
+  void get_status(std::map<std::string, std::string>&) const;
+
   bool save(std::ostream&);
   bool load(std::istream&);
 

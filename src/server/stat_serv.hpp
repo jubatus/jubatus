@@ -72,6 +72,8 @@ public:
   double entropy(const std::string&) const ;
   double moment(const std::string&, int, double) const;
 
+  std::map<std::string,std::map<std::string,std::string> > get_status()const;
+
 private:
   jubatus::config_data config_;
   server::mixable_stat stat_;

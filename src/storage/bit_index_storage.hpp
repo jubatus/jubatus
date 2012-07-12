@@ -43,6 +43,8 @@ public:
   void similar_row(const bit_vector& bv, std::vector<std::pair<std::string, float> >& ids, uint64_t ret_num) const;
   std::string name() const;
 
+  void get_status(std::map<std::string, std::string>&) const;
+
   bool save(std::ostream& os);
   bool load(std::istream& is);
 

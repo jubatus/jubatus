@@ -207,6 +207,11 @@ std::map<std::string, std::map<std::string, std::string> > recommender_serv::get
 {
   std::map<std::string, std::string> ret0;
 
+  if( rcmdr_.get_model() ){
+    rcmdr_.get_model()->get_status(ret0);
+    rcmdr_.get_model()->get_storage()->get_status(ret0);
+  }
+
   ret0["clear_row_cnt"] = pfi::lang::lexical_cast<std::string>(clear_row_cnt_);
   ret0["update_row_cnt"] = pfi::lang::lexical_cast<std::string>(update_row_cnt_);
   ret0["build_cnt"] = pfi::lang::lexical_cast<std::string>(build_cnt_);

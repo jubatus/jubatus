@@ -820,5 +820,51 @@ TEST(graph, eigen_value_edge_query_failure) {
   }
 }
 
+TEST(graph, get_status) {
+  // V = { 1, 2, 3, 4 }, E = { (1, 2), (2, 3), (3, 4) }.
+  // V1 = { 1, 2 }, V2 = { 3, 4 }.
+  // Edges except (2, 3) have a property { "aaa": "bbb" }.
+  // Edge (2, 3) has a property { "aaa": "ccc" }.
+  // query: Find the shortest path from 1 to 4 with edge property { "aaa": "bbb" }.
+
+  preset_query query;
+  query.edge_query.push_back(make_pair("aaa", "bbb"));
+
+  map<string, string> prop;
+  prop["aaa"] = "bbb";
+
+  graph_wo_index gs;
+  gs.add_centrality_query(query);
+  gs.alpha(3/4.);
+
+  gs.create_node(1);
+  gs.create_node(2);
+  gs.update_node(1, prop);
+
+  gs.create_edge(12, 1, 2);
+  gs.update_edge(12, prop);
+  gs.create_edge(23, 2, 3);
+  
+  // TODO: add preset_query and make values non-zero at eigen_vector_num, shortest_path_num
+  gs.update_index();
+
+  map<string, string> st;
+  gs.get_status(st);
+  
+  ASSERT_EQ("2", st["local_node_num"]);
+  ASSERT_EQ("0", st["global_node_num"]);
+  ASSERT_EQ("2", st["local_edge_num"]);
+  
+  ASSERT_EQ("3", st["mean_node_property::keylen"]);
+  ASSERT_EQ("3", st["mean_node_property::vallen"]);
+  ASSERT_EQ("1", st["mean_node_property::count"] );
+  ASSERT_EQ("3", st["mean_edge_property::keylen"]);
+  ASSERT_EQ("3", st["mean_edge_property::vallen"]);
+  ASSERT_EQ("1", st["mean_edge_property::count"] );
+  ASSERT_EQ("0", st["eigen_vector_num"]);
+  ASSERT_EQ("0", st["shortest_path_num"]);
+}
+
+
 }
 }

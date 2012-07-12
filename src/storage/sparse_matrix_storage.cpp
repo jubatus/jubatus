@@ -45,7 +45,6 @@ void sparse_matrix_storage::set_row(const string& row, const vector<pair<string,
   row_t& row_v = tbl_[row];
   for (size_t i = 0; i < columns.size(); ++i){
     float & v = row_v[column2id_.get_id(columns[i].first)];
-    //norm_ptr_->notify(row, v, columns[i].second);
     v = columns[i].second;
   }
 }
@@ -109,7 +108,6 @@ void sparse_matrix_storage::remove(const string& row, const string& column){
   if (cit == it->second.end()){
     return;
   }
-  //norm_ptr_->notify(row, cit->second, 0.f);
   it->second.erase(cit);
 }
 
@@ -118,12 +116,6 @@ void sparse_matrix_storage::remove_row(const string& row){
   if (it == tbl_.end()){
     return;
   }
-
-  /*
-  for (row_t::const_iterator cit = it->second.begin(); cit != it->second.end(); ++cit){
-    norm_ptr_->notify(row, cit->second, 0.f);
-  }
-  */
 
   tbl_.erase(it);
 }
@@ -139,7 +131,14 @@ void sparse_matrix_storage::get_all_row_ids(vector<string>& ids) const{
 void sparse_matrix_storage::clear() {
   column2id_.clear();
   tbl_.clear();
-  //norm_ptr_->clear();
+}
+
+void sparse_matrix_storage::get_status(std::map<std::string, std::string>& ret) const
+{
+  // amount of rows
+  ret["sparse_matrix_storage::row_num"] = pfi::lang::lexical_cast<std::string>(tbl_.size());
+  // amount of ids
+  ret["sparse_matrix_storage::key_num"] = pfi::lang::lexical_cast<std::string>(column2id_.size());
 }
 
 bool sparse_matrix_storage::save(ostream& os) {

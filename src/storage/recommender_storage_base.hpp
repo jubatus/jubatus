@@ -18,6 +18,7 @@
 #pragma once
 
 #include <string>
+#include <map>
 
 namespace jubatus {
 namespace storage{
@@ -25,6 +26,8 @@ namespace storage{
 class recommender_storage_base {
 public:
   virtual ~recommender_storage_base() {}
+
+  virtual void get_status(std::map<std::string, std::string>&) const = 0;
 
   virtual void get_diff(std::string& diff) const = 0;
   virtual void set_mixed_and_clear_diff(const std::string& mixed_diff) = 0;

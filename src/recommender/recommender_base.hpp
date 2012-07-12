@@ -48,6 +48,7 @@ public:
   void complete_row(const sfv_t& query, sfv_t& ret) const;
   void decode_row(const std::string& id, sfv_t& ret) const;
 
+  void get_status(std::map<std::string, std::string>&) const;
 
   void save(std::ostream&);
   void load(std::istream&);

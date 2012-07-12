@@ -58,6 +58,8 @@ public:
   double entropy() const;
   double moment(const std::string &key, int n, double c) const;
 
+  void get_status(std::pair<double, uint64_t>&)const;
+
   bool save(std::ostream&);
   bool load(std::istream&);
   std::string type() const;

@@ -34,6 +34,13 @@ TEST(bit_index_storage, trivial) {
   EXPECT_EQ("r3", ids[1].first);
   EXPECT_FLOAT_EQ(0.75, ids[1].second);
 
+  {
+    map<string,string> status;
+    s.get_status(status);
+    ASSERT_EQ("0", status["bit_index_storage::bit_table_size"]);
+    ASSERT_EQ("4", status["bit_index_storage::bit_table_diff_size"]);
+  }
+
   stringstream ss;
   s.save(ss);
   bit_index_storage t;
@@ -69,6 +76,13 @@ TEST(bit_index_storage, diff) {
   v.resize_and_clear(4);
   s2.get_row("r2", v);
   EXPECT_TRUE(make_vector("1010") == v);
+
+  {
+    map<string,string> status;
+    s2.get_status(status);
+    ASSERT_EQ("2", status["bit_index_storage::bit_table_size"]);
+    ASSERT_EQ("0", status["bit_index_storage::bit_table_diff_size"]);
+  }
 }
 
 TEST(bit_index_storage, mix) {

@@ -130,6 +130,12 @@ double stat::moment(const std::string &key, int n, double c) const
   return ret / st.n_;
 }
 
+void stat::get_status(std::pair<double, uint64_t>& ret)const
+{
+  ret.first = ((double)(window_.size()))/(stats_.size());
+  ret.second = stats_.size();
+}
+
 bool stat::save(std::ostream& os){
   pfi::data::serialization::binary_oarchive oa(os);
   oa << *this;

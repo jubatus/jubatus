@@ -617,6 +617,37 @@ void graph_wo_index::get_status(map<string, string>& status) const {
   status["local_node_num"] = lexical_cast<string>(local_nodes_.size());
   status["global_node_num"] = lexical_cast<string>(global_nodes_.size());
   status["local_edge_num"] = lexical_cast<string>(local_edges_.size());
+
+  //total property size, for memory size estimation.
+  property_stat node_stat, edge_stat;
+  for(node_info_map::const_iterator it = local_nodes_.begin();
+      it != local_nodes_.end(); ++it){
+    node_stat.add(it->second.p);
+  }
+  for(edge_info_map::const_iterator it = local_edges_.begin();
+      it != local_edges_.end(); ++it){
+    edge_stat.add(it->second.p);
+  }
+  
+  status["mean_node_property::keylen"] = lexical_cast<string>(node_stat.mean_keylen());
+  status["mean_node_property::vallen"] = lexical_cast<string>(node_stat.mean_vallen());
+  status["mean_node_property::count"]  = lexical_cast<string>(node_stat.total_count());
+  status["mean_edge_property::keylen"] = lexical_cast<string>(node_stat.mean_keylen());
+  status["mean_edge_property::vallen"] = lexical_cast<string>(node_stat.mean_vallen());
+  status["mean_edge_property::count"]  = lexical_cast<string>(node_stat.total_count());
+
+  // amount of size of eigen vectors
+  uint64_t eigen_vector_num = 0;
+  for(eigen_vector_query_mixed::const_iterator it=eigen_scores_.begin(); it != eigen_scores_.end(); ++it){
+    eigen_vector_num += it->second.size(); // it->second :: eigen_vector_mixed
+  }
+  // amount of landmarks
+  uint64_t spt_num = 0;
+  for(spt_query_mixed::const_iterator it=spts_.begin(); it!=spts_.end(); ++it){
+    spt_num += it->second.size(); // it->second :: vector<shortest_path_tree>
+  }
+  status["eigen_vector_num"]  = lexical_cast<string>(eigen_vector_num);
+  status["shortest_path_num"] = lexical_cast<string>(spt_num);
 }
 
 void graph_wo_index::mix(const string& diff, string& mixed){

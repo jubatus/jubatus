@@ -62,5 +62,14 @@ TEST_F(stat_test, small) {
 
   ASSERT_EQ(true, c.save("", __func__));
   ASSERT_EQ(true, c.load("", __func__));
+
+  {
+    map<string,map<string,string> > status = c.get_status("");
+    for(map<string,map<string,string> >::iterator it=status.begin();
+        it!=status.end(); ++it){
+      ASSERT_EQ("1", it->second["average_queue_len"]);
+      ASSERT_EQ("1", it->second["key_num"]);
+    }
+  }
 }
 }

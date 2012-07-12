@@ -50,11 +50,17 @@ config_data make_simple_config(const string& method) {
 
 TEST_F(recommender_test, get_status){
   jubatus::client::recommender cli("localhost", PORT, 10);
+  jubatus::config_data conf = make_simple_config("minhash");
+  cli.set_config(NAME, conf);
+
   map<string,map<string,string> > status = cli.get_status(NAME);
+
   EXPECT_EQ(status.size(), 1u);
-  for(map<string,map<string,string> >::const_iterator it = status.begin();
+  for(map<string,map<string,string> >::iterator it = status.begin();
       it != status.end(); ++it){
     EXPECT_GE(it->second.size(), 8u);
+    ASSERT_EQ("0", (it->second)["sparse_matrix_storage::row_num"]);
+    ASSERT_EQ("0", (it->second)["sparse_matrix_storage::key_num"]);
   }
 }
 

@@ -43,6 +43,8 @@ public:
 
   void calc_scores(const sfv_t& sfv, std::vector<std::pair<std::string, float> >& scores, size_t ret_num) const;
 
+  void get_status(std::map<std::string, std::string>&) const;
+
   void get_diff(std::string& diff_str) const;
   void set_mixed_and_clear_diff(const std::string& mixed_diff);
   void mix(const std::string& lhs_str, std::string& rhs_str) const;

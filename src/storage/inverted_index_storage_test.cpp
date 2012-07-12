@@ -68,6 +68,16 @@ TEST(inverted_index_storage, diff) {
   EXPECT_EQ(1.0, t.get("c2", "r1"));
   EXPECT_EQ(0.0, t.get("c3", "r1"));
   EXPECT_EQ(0.0, t.get("c1", "r2"));
+
+  {
+    map<string,string> status;
+    s.get_status(status);
+    ASSERT_EQ("0", status["inverted_index_storage::tbl_size"]);
+    ASSERT_EQ("2", status["inverted_index_storage::tbl_diff_size"]);
+    ASSERT_EQ("0", status["inverted_index_storage::column2norm_size"]);
+    ASSERT_EQ("1", status["inverted_index_storage::column2norm_diff_size"]);
+    ASSERT_EQ("1", status["inverted_index_storage::id_size"]);
+  }
 }
 
 TEST(inverted_index_storage, mix) {

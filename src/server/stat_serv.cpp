@@ -18,6 +18,8 @@
 #include "stat_serv.hpp"
 #include "../common/shared_ptr.hpp"
 
+using std::string;
+
 namespace jubatus {
 namespace server {
 
@@ -75,6 +77,20 @@ double stat_serv::moment(const std::string& key, int n,double c) const{
   return stat_.get_model()->moment(key, n, c);
 }
 
+std::map<std::string,std::map<std::string,std::string> > stat_serv::get_status()const
+{
+  std::map<std::string,std::string> ret0;
+  std::pair<double, uint64_t> stats;
+  stat_.get_model()->get_status(stats);
+  ret0["average_queue_len"] = pfi::lang::lexical_cast<string>(stats.first);
+  ret0["key_num"] = pfi::lang::lexical_cast<string>(stats.second);
+
+  std::map<std::string, std::map<std::string,std::string> > ret =
+    jubatus_serv::get_status();
+
+  ret[get_server_identifier()].insert(ret0.begin(), ret0.end());
+  return ret;
+}
 
 } // namespace server
 } // namespace jubatus
