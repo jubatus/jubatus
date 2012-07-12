@@ -6,6 +6,7 @@
 #include <pficommon/lang/scoped_ptr.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/math/random.h>
+#include "../common/exception.hpp"
 #include "../common/hash.hpp"
 #include "../common/portable_mixer.hpp"
 
@@ -282,8 +283,8 @@ TEST_P(lof_storage_mix_test, mix_after_remove) {
     const string row = lexical_cast<string>(i);
     for (size_t j = 0; j < storages_.size(); ++j) {
       if (i % 2 == 0) {
-        EXPECT_THROW(storages_[j]->get_kdist(row), runtime_error);
-        EXPECT_THROW(storages_[j]->get_lrd(row), runtime_error);
+        EXPECT_THROW(storages_[j]->get_kdist(row), exception::runtime_error);
+        EXPECT_THROW(storages_[j]->get_lrd(row), exception::runtime_error);
       } else {
         EXPECT_NO_THROW(storages_[j]->get_kdist(row));
         EXPECT_NO_THROW(storages_[j]->get_lrd(row));

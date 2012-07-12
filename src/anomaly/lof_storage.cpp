@@ -20,6 +20,7 @@
 #include <sstream>
 #include <stdexcept>
 #include "../common/config_util.hpp"
+#include "../common/exception.hpp"
 #include "../recommender/recommender_factory.hpp"
 #include "anomaly_type.hpp"
 #include "lof_storage.hpp"
@@ -123,10 +124,12 @@ float lof_storage::get_kdist(const string& row) const {
   if (it == lof_table_diff_.end()) {
     it = lof_table_.find(row);
     if (it == lof_table_.end()) {
-      throw runtime_error("lof_storage::get_kdist: row \"" + row + "\" does not exist");
+      throw JUBATUS_EXCEPTION(exception::runtime_error("specified row does not exist")
+                              << exception::error_message("row id: " + row));
     }
   } else if (is_removed(it->second)) {
-    throw runtime_error("lof_storage::get_kdist row \"" + row + "\" is recently removed");
+    throw JUBATUS_EXCEPTION(exception::runtime_error("specified row is recently removed")
+                            << exception::error_message("row id: " + row));
   }
   return it->second.kdist;
 }
@@ -136,10 +139,12 @@ float lof_storage::get_lrd(const string& row) const {
   if (it == lof_table_diff_.end()) {
     it = lof_table_.find(row);
     if (it == lof_table_.end()) {
-      throw runtime_error("lof_storage::get_lrd: row \"" + row + "\" does not exist");
+      throw JUBATUS_EXCEPTION(exception::runtime_error("specified row does not exist")
+                              << exception::error_message("row id: " + row));
     }
   } else if (is_removed(it->second)) {
-    throw runtime_error("lof_storage::get_lrd: row \"" + row + "\" is recently removed");
+    throw JUBATUS_EXCEPTION(exception::runtime_error("specified row is recently removed")
+                            << exception::error_message("row id: " + row));
   }
   return it->second.lrd;
 }
@@ -282,7 +287,9 @@ void lof_storage::deserialize_diff(const string& diff,
   bi >> table >> nn_engine_name;
 
   if (nn_engine_->type() != nn_engine_name) {
-    throw anomaly::inconsistent_nearest_neighbor_engine_error();
+    throw JUBATUS_EXCEPTION(exception::runtime_error("inconsistent nearest neighbor engine type")
+                            << exception::error_message("lof's NN engine type:  " + nn_engine_->type())
+                            << exception::error_message("diff's NN engine type: " + nn_engine_name));
   }
 
   bi >> nn_diff;
