@@ -19,25 +19,25 @@ public:
   config_data get_config(std::string name) //analysis random
   { JRLOCK__(p_); return p_->get_config(); }
 
-  bool push(std::string name, std::string key, double val) //update cht(2)
+  bool push(std::string name, std::string key, double val) //update cht(1)
   { JWLOCK__(p_); return p_->push(key, val); }
 
-  double sum(std::string name, std::string key) //analysis cht(2)
+  double sum(std::string name, std::string key) //analysis cht(1)
   { JRLOCK__(p_); return p_->sum(key); }
 
-  double stddev(std::string name, std::string key) //analysis cht(2)
+  double stddev(std::string name, std::string key) //analysis cht(1)
   { JRLOCK__(p_); return p_->stddev(key); }
 
-  double max(std::string name, std::string key) //analysis cht(2)
+  double max(std::string name, std::string key) //analysis cht(1)
   { JRLOCK__(p_); return p_->max(key); }
 
-  double min(std::string name, std::string key) //analysis cht(2)
+  double min(std::string name, std::string key) //analysis cht(1)
   { JRLOCK__(p_); return p_->min(key); }
 
-  double entropy(std::string name, std::string key) //analysis cht(2)
+  double entropy(std::string name, std::string key) //analysis cht(1)
   { JRLOCK__(p_); return p_->entropy(key); }
 
-  double moment(std::string name, std::string key, int n, double c) //analysis cht(2)
+  double moment(std::string name, std::string key, int n, double c) //analysis cht(1)
   { JRLOCK__(p_); return p_->moment(key, n, c); }
 
   bool save(std::string name, std::string id) //update broadcast

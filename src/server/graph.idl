@@ -61,7 +61,7 @@ service graph {
   int update_node(0: string name, 1: string nid, 2: property p) # //@cht
 
   #@cht(1) #@update #@all_and
-  int create_edge(0: string name, 1: string nid, 2: edge_info ei) # //@cht
+  edge_id_t create_edge(0: string name, 1: string nid, 2: edge_info ei) # //@cht
 
   #@cht #@update #@all_and
   int update_edge(0: string name, 1: string nid, 2: edge_id_t eid, 3: edge_info ei) # //@cht
