@@ -81,12 +81,13 @@ float lof_storage::collect_lrds(const string& id,
 }
 
 void lof_storage::remove_row(const string& row) {
-  lof_table_.erase(row);
+  mark_removed(lof_table_diff_[row]);
   nn_engine_->clear_row(row);
 }
 
 void lof_storage::clear() {
   lof_table_.clear();
+  lof_table_diff_.clear();
   nn_engine_->clear();
 }
 
@@ -124,6 +125,8 @@ float lof_storage::get_kdist(const string& row) const {
     if (it == lof_table_.end()) {
       throw runtime_error("lof_storage::get_kdist: row \"" + row + "\" does not exist");
     }
+  } else if (is_removed(it->second)) {
+    throw runtime_error("lof_storage::get_kdist row \"" + row + "\" is recently removed");
   }
   return it->second.kdist;
 }
@@ -135,6 +138,8 @@ float lof_storage::get_lrd(const string& row) const {
     if (it == lof_table_.end()) {
       throw runtime_error("lof_storage::get_lrd: row \"" + row + "\" does not exist");
     }
+  } else if (is_removed(it->second)) {
+    throw runtime_error("lof_storage::get_lrd: row \"" + row + "\" is recently removed");
   }
   return it->second.lrd;
 }
@@ -187,7 +192,11 @@ void lof_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
 
   for (lof_table_t::const_iterator it = lof_table_diff_.begin();
        it != lof_table_diff_.end(); ++it) {
-    lof_table_[it->first] = it->second;
+    if (is_removed(it->second)) {
+      lof_table_.erase(it->first);
+    } else {
+      lof_table_[it->first] = it->second;
+    }
   }
   lof_table_diff_.clear();
 }
@@ -202,7 +211,11 @@ void lof_storage::mix(const string& lhs, string& rhs) const {
   nn_engine_->get_const_storage()->mix(nn_diff, nn_mixed);
 
   for (lof_table_t::const_iterator it = diff.begin(); it != diff.end(); ++it) {
-    mixed.insert(*it);
+    if (is_removed(it->second)) {
+      mark_removed(mixed[it->first]);
+    } else {
+      mixed.insert(*it);
+    }
   }
 
   ostringstream oss;
@@ -212,6 +225,16 @@ void lof_storage::mix(const string& lhs, string& rhs) const {
 }
 
 // private
+
+//static
+void lof_storage::mark_removed(lof_entry& entry) {
+  entry.kdist = -1;
+}
+
+//static
+bool lof_storage::is_removed(const lof_entry& entry) {
+  return entry.kdist < 0;
+}
 
 float lof_storage::collect_lrds_from_neighbors(
     const vector<pair<string, float> >& neighbors,

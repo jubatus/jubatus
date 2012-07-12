@@ -180,6 +180,11 @@ protected:
     single_storage_->update_row(name, x);
   }
 
+  void remove(const string& name) {
+    portable_mixer_.get_hash(name)->remove_row(name);
+    single_storage_->remove_row(name);
+  }
+
   void mix() {
     portable_mixer_.mix();
 
@@ -215,9 +220,9 @@ protected:
 };
 
 TEST_P(lof_storage_mix_test, consistency) {
-  static const size_t kNumSample = 40;
-  static const size_t kNumQuery = 1;
-  static const float kDeviation = 1;
+  static const size_t kNumSample = 100;
+  static const size_t kNumQuery = 10;
+  static const float kDeviation = 2;
 
   const sfv_t mu0 = make_dense_sfv("1 1");
   const sfv_t mu1 = make_dense_sfv("2 1");
@@ -254,11 +259,44 @@ TEST_P(lof_storage_mix_test, consistency) {
   }
 }
 
+TEST_P(lof_storage_mix_test, mix_after_remove) {
+  static const size_t kNumSample = 100;
+  static const float kDeviation = 2;
+
+  const sfv_t mu0 = make_dense_sfv("1 1");
+  const sfv_t mu1 = make_dense_sfv("2 1");
+
+  for (size_t i = 0; i < kNumSample; ++i) {
+    update(lexical_cast<string>(i), mu0, kDeviation);
+  }
+  mix();
+
+  for (size_t i = 0; i < kNumSample; ++i) {
+    if (i % 2 == 0) {
+      remove(lexical_cast<string>(i));
+    }
+  }
+  mix();
+
+  for (size_t i = 0; i < kNumSample; ++i) {
+    const string row = lexical_cast<string>(i);
+    for (size_t j = 0; j < storages_.size(); ++j) {
+      if (i % 2 == 0) {
+        EXPECT_THROW(storages_[j]->get_kdist(row), runtime_error);
+        EXPECT_THROW(storages_[j]->get_lrd(row), runtime_error);
+      } else {
+        EXPECT_NO_THROW(storages_[j]->get_kdist(row));
+        EXPECT_NO_THROW(storages_[j]->get_lrd(row));
+      }
+    }
+  }
+}
+
 INSTANTIATE_TEST_CASE_P(
     lof_storage_mix_test_instance,
     lof_storage_mix_test,
     ::testing::Values(
-        make_pair(3,
+        make_pair(5,
                   string("anomaly:name\tlof\n"
                          "lof:neighbor_num\t10\n"
                          "lof:reverse_nn_num\t30\n"

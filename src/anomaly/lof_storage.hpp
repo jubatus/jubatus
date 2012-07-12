@@ -85,6 +85,9 @@ private:
 
   typedef pfi::data::unordered_map<std::string, lof_entry> lof_table_t;
 
+  static void mark_removed(lof_entry& entry);
+  static bool is_removed(const lof_entry& entry);
+
   friend class pfi::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
