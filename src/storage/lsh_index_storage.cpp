@@ -326,7 +326,6 @@ void lsh_index_storage::add_index(const string& row, const lsh_entry& entry) {
   const uint64_t row_id = key_manager_.get_id(row);
   for (size_t i = 0; i < entry.lsh_hash.size(); ++i) {
     lsh_table_[entry.lsh_hash[i]].push_back(row_id);
-    // lsh_table_.insert(make_pair(entry.lsh_hash[i], row_id));
   }
 }
 
@@ -368,7 +367,7 @@ bool lsh_index_storage::retrieve_hit_rows(size_t hash,
       cands.insert(range[i]);
     }
   }
-  return cands.size() >= max(static_cast<uint64_t>(ret_num), table_num_ * 3);
+  return cands.size() >= static_cast<uint64_t>(ret_num);
 }
 
 void lsh_index_storage::get_sorted_similar_rows(const unordered_set<uint64_t>& cands,
