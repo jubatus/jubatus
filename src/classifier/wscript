@@ -29,3 +29,9 @@ def build(bld):
      target = "classifier_test",
      includes = '.',
      use = 'jubatus_classifier jubastorage')
+
+  bld.install_files('${PREFIX}/include/jubatus/classifier', [
+      'classifier_base.hpp',
+      'classifier_factory.hpp',
+      'classifier_type.hpp',
+      ])

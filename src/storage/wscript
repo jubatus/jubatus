@@ -40,5 +40,9 @@ def build(bld):
       'bit_index_storage_test.cpp',
       ])
 
-  bld.install_files('${PREFIX}/include/jubatus/server/storage',
-                    'storage_type.hpp')
+  bld.install_files('${PREFIX}/include/jubatus/storage',
+                    ['storage_base.hpp',
+                     'storage_type.hpp',
+                     'storage_factory.hpp',
+                     'bit_vector.hpp'
+                     ])
