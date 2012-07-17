@@ -22,6 +22,7 @@
 
 #include "../common/membership.hpp"
 #include "../common/exception.hpp"
+#include "../common/util.hpp"
 #include "server_util.hpp"
 
 using namespace jubatus;
@@ -47,8 +48,8 @@ int keeper::run()
 {
   try {
     { LOG(INFO) << "running in port=" << a_.port; }
-    set_exit_on_term();
-    ignore_sigpipe();
+    jubatus::util::set_exit_on_term();
+    jubatus::util::ignore_sigpipe();
     return this->serv(a_.port, a_.threadnum);
   } catch (const jubatus::exception::jubatus_exception& e) {
     std::cout << e.diagnostic_information(true) << std::endl;

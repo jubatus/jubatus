@@ -148,33 +148,7 @@ namespace jubatus { namespace framework {
     if(ls)
       ls->force_close();
   }
-
-  void exit_on_term(int){
-    exit(0);
-  }
-  void exit_on_term2(int, siginfo_t*, void*){
-    exit(0);
-  }
-
-  void set_exit_on_term(){
-    struct sigaction sigact;
-    sigact.sa_handler = exit_on_term;
-    sigact.sa_sigaction = exit_on_term2;
-    sigact.sa_flags = SA_RESTART;
-    if(sigaction(SIGTERM, &sigact, NULL) != 0)
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't set SIGTERM handler"));
-    if(sigaction(SIGINT, &sigact, NULL) != 0)
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't set SIGINT handler"));
-
-    ::atexit(jubatus::framework::atexit);
-  }
 #endif
-
-  void ignore_sigpipe(){
-    // portable code for socket write(2) MSG_NOSIGNAL
-    if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't ignore SIGPIPE"));
-  }
 
 pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
 make_fv_converter(const std::string& config) {
