@@ -50,6 +50,7 @@ private:
   int start_(const std::string&, unsigned int);
   //  int stop_(const std::string&, std::vector<process>&);
 
+  static void atexit_();
   static void sigchld_handler_(int);
 
   pfi::lang::shared_ptr<common::lock_service> zk_;

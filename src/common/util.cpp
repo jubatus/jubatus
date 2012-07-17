@@ -20,6 +20,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cstdlib>
+#include <csignal>
 #include <errno.h>
 #include <string.h>
 
@@ -183,6 +184,39 @@ void get_machine_status(std::map<std::string, std::string>& ret){
   ret["RSS"] = pfi::lang::lexical_cast<std::string>(vm_rss);
   ret["SHR"] = pfi::lang::lexical_cast<std::string>(vm_shr);
 
+}
+
+namespace {
+void exit_on_term(int)
+{
+  exit(0);
+}
+}
+
+void set_exit_on_term()
+{
+  struct sigaction sigact;
+  sigact.sa_handler = exit_on_term;
+  sigact.sa_flags = SA_RESTART;
+
+  if (sigaction(SIGTERM, &sigact, NULL) != 0)
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't set SIGTERM handler")
+        << jubatus::exception::error_api_func("sigaction")
+        << jubatus::exception::error_errno(errno));
+
+  if (sigaction(SIGINT, &sigact, NULL) != 0)
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't set SIGINT handler")
+        << jubatus::exception::error_api_func("sigaction")
+        << jubatus::exception::error_errno(errno));
+}
+
+void ignore_sigpipe()
+{
+  // portable code for socket write(2) MSG_NOSIGNAL
+  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't ignore SIGPIPE")
+        << jubatus::exception::error_api_func("signal")
+        << jubatus::exception::error_errno(errno));
 }
 
 } //util
