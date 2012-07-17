@@ -16,8 +16,6 @@
 
 namespace jubatus {
 
-typedef std::string converter_config;
-
 typedef std::vector<std::pair<std::string, float > > similar_result;
 
 struct config_data {
@@ -27,7 +25,7 @@ public:
   MSGPACK_DEFINE(method, converter);  
 
   std::string method;
-  converter_config converter;
+  std::string converter;
 };
 
 struct datum {
