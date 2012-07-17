@@ -18,8 +18,6 @@ namespace jubatus {
 
 typedef std::map<std::string, std::string > param_t;
 
-typedef std::string converter_config;
-
 struct config_data {
 public:
 
@@ -27,7 +25,7 @@ public:
   MSGPACK_DEFINE(method, config);  
 
   std::string method;
-  converter_config config;
+  std::string config;
 };
 
 struct datum {

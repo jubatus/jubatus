@@ -16,11 +16,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 type param_t = map<string, string> 
-type converter_config = string # just a JSON
 
 message config_data {
   0: string method
-  1: converter_config config
+  1: string config # JSON
 }
 
 message datum {
