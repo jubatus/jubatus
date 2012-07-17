@@ -241,6 +241,8 @@ TEST(lsh_index_storage, mix) {
   s3.set_row("r2", h0, 1);
   s3.set_row("r3", h0, 1);
   s3.set_row("r4", h0, 1);
+  string d3;
+  s3.get_diff(d3);
   s3.set_mixed_and_clear_diff(d2);
 
   // r1, r2 and r3 are overwritten by d2
@@ -260,8 +262,40 @@ TEST(lsh_index_storage, mix) {
   ids.clear();
 
   s3.similar_row(h0, 1, 0, 4, ids);
-  vector<pair<string, float> > expect;
-  EXPECT_EQ(expect, ids);
+  // vector<pair<string, float> > expect;
+  // EXPECT_EQ(expect, ids);
+  EXPECT_EQ("r4", ids[0].first);
+}
+
+TEST(lsh_index_storage, set_and_remove_arround_mix) {
+  const vector<float> h1 = make_hash("1 2 3 4");
+  const vector<float> h2 = make_hash("2 3 4 5");
+
+  lsh_index_storage s1(4, 1, 0), s2(4, 1, 0), s3(4, 1, 0);
+  s1.set_row("r1", h1, 1);
+  s1.set_row("r2", h2, 1);
+
+  string d1;
+  s1.set_row("r3", h1, 1);
+  s1.get_diff(d1);
+  s1.set_row("r4", h1, 1);
+  s1.remove_row("r3");
+
+  string d2;
+  s2.get_diff(d2);
+
+  s1.mix(d1, d2);
+
+  s1.set_mixed_and_clear_diff(d2);
+  s1.remove_row("r4");
+
+  vector<pair<string, float> > ids;
+
+  s1.similar_row(h1, 1, 80, 3, ids);
+  EXPECT_EQ(2u, ids.size());
+  EXPECT_EQ("r1", ids[0].first);
+  EXPECT_EQ("r2", ids[1].first);
+  ids.clear();
 }
 
 }

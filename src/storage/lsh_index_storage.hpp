@@ -102,6 +102,8 @@ private:
   void remove_model_row(const std::string& row);
   void set_mixed_row(const std::string& row, const lsh_entry& entry);
 
+  void set_diff(const lsh_master_table_t& diff);
+
   lsh_master_table_t master_table_;
   lsh_master_table_t master_table_diff_;
 

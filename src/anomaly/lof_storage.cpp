@@ -124,12 +124,12 @@ float lof_storage::get_kdist(const string& row) const {
   if (it == lof_table_diff_.end()) {
     it = lof_table_.find(row);
     if (it == lof_table_.end()) {
-      throw JUBATUS_EXCEPTION(exception::runtime_error("specified row does not exist")
-                              << exception::error_message("row id: " + row));
+      throw JUBATUS_EXCEPTION(
+          exception::runtime_error("specified row does not exist (id: " + row + ')'));
     }
   } else if (is_removed(it->second)) {
-    throw JUBATUS_EXCEPTION(exception::runtime_error("specified row is recently removed")
-                            << exception::error_message("row id: " + row));
+    throw JUBATUS_EXCEPTION(
+        exception::runtime_error("specified row is recently removed (id: " + row + ')'));
   }
   return it->second.kdist;
 }
@@ -139,12 +139,12 @@ float lof_storage::get_lrd(const string& row) const {
   if (it == lof_table_diff_.end()) {
     it = lof_table_.find(row);
     if (it == lof_table_.end()) {
-      throw JUBATUS_EXCEPTION(exception::runtime_error("specified row does not exist")
-                              << exception::error_message("row id: " + row));
+      throw JUBATUS_EXCEPTION(
+          exception::runtime_error("specified row does not exist (id: " + row + ')'));
     }
   } else if (is_removed(it->second)) {
-    throw JUBATUS_EXCEPTION(exception::runtime_error("specified row is recently removed")
-                            << exception::error_message("row id: " + row));
+    throw JUBATUS_EXCEPTION(
+        exception::runtime_error("specified row is recently removed (id: " + row + ')'));
   }
   return it->second.lrd;
 }
@@ -187,23 +187,34 @@ void lof_storage::get_diff(string& diff) const {
   serialize_diff(lof_table_diff_, nn_diff, oss);
 
   diff = oss.str();
+
+  lof_storage& s = const_cast<lof_storage&>(*this);
+  for (lof_table_t::const_iterator it = s.lof_table_diff_.begin();
+       it != s.lof_table_diff_.end(); ++it) {
+    if (is_removed(it->second)) {
+      s.lof_table_.erase(it->first);
+    } else {
+      s.lof_table_[it->first] = it->second;
+    }
+  }
+  s.lof_table_diff_.clear();
 }
 
 void lof_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
   string nn_diff;
-  deserialize_diff(mixed_diff, lof_table_diff_, nn_diff);
+  lof_table_t lof_diff;
+  deserialize_diff(mixed_diff, lof_diff, nn_diff);
 
   nn_engine_->get_storage()->set_mixed_and_clear_diff(nn_diff);
 
-  for (lof_table_t::const_iterator it = lof_table_diff_.begin();
-       it != lof_table_diff_.end(); ++it) {
+  for (lof_table_t::const_iterator it = lof_diff.begin();
+       it != lof_diff.end(); ++it) {
     if (is_removed(it->second)) {
       lof_table_.erase(it->first);
-    } else {
+    } else if (lof_table_diff_.find(it->first) == lof_table_diff_.end()) {
       lof_table_[it->first] = it->second;
     }
   }
-  lof_table_diff_.clear();
 }
 
 void lof_storage::mix(const string& lhs, string& rhs) const {

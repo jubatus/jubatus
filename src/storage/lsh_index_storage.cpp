@@ -239,12 +239,29 @@ bool lsh_index_storage::load(istream& is) {
 
 void lsh_index_storage::get_diff(string& diff) const {
   diff = serialize_diff(master_table_diff_);
+
+  // NOTE: See comment at set_mixed_and_clear_diff.
+  lsh_index_storage& self = const_cast<lsh_index_storage&>(*this);
+  lsh_master_table_t current_diff;
+  current_diff.swap(self.master_table_diff_);
+
+  for (lsh_master_table_t::const_iterator it = current_diff.begin(); it != current_diff.end(); ++it) {
+    if (it->second.lsh_hash.empty()) {
+      self.remove_model_row(it->first);
+      self.master_table_.erase(it->first);
+    } else {
+      self.remove_model_row(it->first);
+      self.set_mixed_row(it->first, it->second);
+    }
+  }
 }
 
 void lsh_index_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
   lsh_master_table_t diff = extract_diff(mixed_diff);
-
   for (lsh_master_table_t::const_iterator it = diff.begin(); it != diff.end(); ++it) {
+    if (master_table_diff_.find(it->first) != master_table_diff_.end()) {
+      continue;
+    }
     if (it->second.lsh_hash.empty()) {
       remove_model_row(it->first);
       master_table_.erase(it->first);
@@ -254,7 +271,10 @@ void lsh_index_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
     }
   }
 
-  master_table_diff_.clear();
+  // NOTE: Clearing diff after MIX causes inconsistency between
+  // master table and lsh tables, so we clearing diff right after
+  // get_diff.
+  // master_table_diff_.clear();
 }
 
 void lsh_index_storage::mix(const string& lhs, string& rhs) const {
@@ -414,6 +434,21 @@ const lsh_entry* lsh_index_storage::get_lsh_entry(const string& row) const {
     }
   }
   return &it->second;
+}
+
+void lsh_index_storage::set_diff(const lsh_master_table_t& diff) {
+  for (lsh_master_table_t::const_iterator it = diff.begin(); it != diff.end(); ++it) {
+    if (master_table_diff_.find(it->first) != master_table_diff_.end()) {
+      continue;
+    }
+    if (it->second.lsh_hash.empty()) {
+      remove_model_row(it->first);
+      master_table_.erase(it->first);
+    } else {
+      remove_model_row(it->first);
+      set_mixed_row(it->first, it->second);
+    }
+  }
 }
 
 }
