@@ -62,48 +62,10 @@ bool anomaly_serv::clear_row(const std::string& id)
   return true;
 }
 
-//update, random
-std::pair<std::string,float > anomaly_serv::add(const datum& d)
+std::string anomaly_serv::get_id()
 {
   uint64_t id = idgen_.generate();
-  std::string id_str = pfi::lang::lexical_cast<std::string>(id);
-
-  if(a_.is_standalone()){
-    
-    float score = update(id_str, d);
-    return make_pair(id_str, score);
-    
-  }else{
-
-    std::vector<std::pair<std::string, int> > nodes;
-    float score = 0;
-    find_from_cht(id_str, 2, nodes);
-    if(nodes.empty()){
-      throw std::runtime_error("fatal: no server found in cht: "+id_str);
-    }
-    // this sequences MUST success, in case of failures the whole request should be canceled
-    if(nodes[0].first == a_.eth && nodes[0].second == a_.port){
-      score = this->update(id_str, d);
-    }else{
-      client::anomaly c(nodes[0].first, nodes[0].second, 5.0);
-      score = c.update(a_.name, id_str, d);
-    }
-    
-    for(size_t i = 1; i < nodes.size(); ++i){
-      try{
-	if(nodes[i].first == a_.eth && nodes[i].second == a_.port){
-	  score = this->update(id_str, d);
-	}else{
-	  client::anomaly c(nodes[i].first, nodes[i].second, 5.0);
-	  score = c.update(a_.name, id_str, d);
-	}
-	
-      }catch(const std::runtime_error& e){ // error !
-	LOG(INFO) << i+1 << "th replica: " << nodes[i].first << ":" << nodes[i].second << " " << e.what();
-      }
-    }
-    return make_pair(id_str, score);
-  }
+  return pfi::lang::lexical_cast<std::string>(id);
 }
 
 //update, cht

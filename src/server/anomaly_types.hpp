@@ -1,5 +1,5 @@
 
-// This file is auto-generated from anomaly.idl
+// This file is auto-generated from src/server/anomaly.idl
 // *** DO NOT EDIT ***
 
 #ifndef ANOMALY_TYPES_HPP_

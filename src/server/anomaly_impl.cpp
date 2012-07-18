@@ -22,8 +22,8 @@ public:
   bool clear_row(std::string name, std::string id) //update cht(2)
   { JWLOCK__(p_); return p_->clear_row(id); }
 
-  std::pair<std::string,float > add(std::string name, datum d) //update random
-  { JWLOCK__(p_); return p_->add(d); }
+  std::string get_id(std::string name) //update random
+  { JWLOCK__(p_); return p_->get_id(); }
 
   float update(std::string name, std::string id, datum d) //update cht(2)
   { JWLOCK__(p_); return p_->update(id, d); }
@@ -46,9 +46,9 @@ public:
   std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
   { JRLOCK__(p_); return p_->get_status(); }
   int run(){ return p_->start(*this); };
-  common::cshared_ptr<anomaly_serv> get_p(){ return p_; };
+  pfi::lang::shared_ptr<anomaly_serv> get_p(){ return p_; };
 private:
-  common::cshared_ptr<anomaly_serv> p_;
+  pfi::lang::shared_ptr<anomaly_serv> p_;
 };
 }} // namespace jubatus::server
 int main(int args, char** argv){

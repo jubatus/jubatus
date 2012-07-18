@@ -1,5 +1,5 @@
 
-// This file is auto-generated from anomaly.idl
+// This file is auto-generated from src/server/anomaly.idl
 // *** DO NOT EDIT ***
 
 #ifndef ANOMALY_SERVER_HPP_
@@ -23,7 +23,7 @@ public:
     rpc_server::add<bool(std::string, config_data) >("set_config", pfi::lang::bind(&Impl::set_config, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<config_data(std::string) >("get_config", pfi::lang::bind(&Impl::get_config, static_cast<Impl*>(this), pfi::lang::_1));
     rpc_server::add<bool(std::string, std::string) >("clear_row", pfi::lang::bind(&Impl::clear_row, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
-    rpc_server::add<std::pair<std::string, float >(std::string, datum) >("add", pfi::lang::bind(&Impl::add, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<std::string(std::string) >("get_id", pfi::lang::bind(&Impl::get_id, static_cast<Impl*>(this), pfi::lang::_1));
     rpc_server::add<float(std::string, std::string, datum) >("update", pfi::lang::bind(&Impl::update, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
     rpc_server::add<bool(std::string) >("clear", pfi::lang::bind(&Impl::clear, static_cast<Impl*>(this), pfi::lang::_1));
     rpc_server::add<float(std::string, datum) >("calc_score", pfi::lang::bind(&Impl::calc_score, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));

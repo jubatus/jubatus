@@ -9,7 +9,7 @@ int main(int args, char** argv){
   k.register_broadcast<bool, config_data >("set_config", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_random<config_data >("get_config"); //pass analysis
   k.register_cht<2, bool >("clear_row", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
-  k.register_random<std::pair<std::string,float >, datum >("add"); //pass update
+  k.register_random<std::string >("get_id"); //pass update
   k.register_cht<2, float, datum >("update", pfi::lang::function<float(float,float)>(&pass<float >)); //update
   k.register_broadcast<bool >("clear", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_random<float, datum >("calc_score"); //pass analysis

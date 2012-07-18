@@ -45,7 +45,7 @@ public:
 
   bool clear_row(const std::string& id); //update cht
 
-  std::pair<std::string,float > add(const datum& d); //update random
+  std::string get_id();
 
   float update(const std::string& id, const datum& d); //update cht
 

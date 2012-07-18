@@ -24,8 +24,8 @@ public:
       return call<bool(std::string, std::string)>("clear_row")(name, id);
     }
 
-    std::pair<std::string, float > add(std::string name, datum d) {
-      return call<std::pair<std::string, float >(std::string, datum)>("add")(name, d);
+    std::string get_id(std::string name) {
+      return call<std::string(std::string)>("get_id")(name);
     }
 
     float update(std::string name, std::string id, datum d) {
