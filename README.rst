@@ -31,8 +31,8 @@ LGPL 2.1
 Update history
 --------------
 
-scheduled Release 0.3.1 2012/7/x
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+0.3.1 2012/7/20
+~~~~~~~~~~~~~~~
 
 Improvements
   - RPC enhances to many exceptions and provide new error handling interface (#49)
