@@ -20,11 +20,15 @@
 
 #include <iostream>
 
+#include <pficommon/text/json.h>
+
 #include "../common/util.hpp"
 #include "../common/cmdline.h"
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
 
+#include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../fv_converter/converter_config.hpp"
 
 #define SET_PROGNAME(s) \
   static const std::string PROGNAME(JUBATUS_APPNAME "_" s);
@@ -144,33 +148,19 @@ namespace jubatus { namespace framework {
     if(ls)
       ls->force_close();
   }
-
-  void exit_on_term(int){
-    exit(0);
-  }
-  void exit_on_term2(int, siginfo_t*, void*){
-    exit(0);
-  }
-
-  void set_exit_on_term(){
-    struct sigaction sigact;
-    sigact.sa_handler = exit_on_term;
-    sigact.sa_sigaction = exit_on_term2;
-    sigact.sa_flags = SA_RESTART;
-    if(sigaction(SIGTERM, &sigact, NULL) != 0)
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't set SIGTERM handler"));
-    if(sigaction(SIGINT, &sigact, NULL) != 0)
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't set SIGINT handler"));
-
-    ::atexit(jubatus::framework::atexit);
-  }
 #endif
 
-  void ignore_sigpipe(){
-    // portable code for socket write(2) MSG_NOSIGNAL
-    if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't ignore SIGPIPE"));
-  }
+pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+make_fv_converter(const std::string& config) {
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+      converter(new fv_converter::datum_to_fv_converter);
+  fv_converter::converter_config c;
+  std::stringstream ss(config);
+  // FIXME: check invalid json format
+  ss >> pfi::text::json::via_json(c);
+  fv_converter::initialize_converter(c, *converter);
+  return converter;
+}
 
 }
 }

@@ -38,6 +38,13 @@ typedef error_info<struct error_at_file_, char const *> error_at_file;
 typedef error_info<struct error_at_func_, char const *> error_at_func;
 typedef error_info<struct error_at_line_, int> error_at_line;
 typedef error_info<struct error_errno_, int> error_errno;
+inline std::string to_string(const error_errno& info)
+{
+  std::string msg(strerror(info.value()));
+  msg += " (" + pfi::lang::lexical_cast<std::string>(info.value()) + ")";
+  return msg;
+}
+
 typedef error_info<struct error_file_name_, std::string> error_file_name;
 typedef error_info<struct error_api_func_, std::string> error_api_func;
 typedef error_info<struct error_message_, std::string> error_message;
@@ -70,7 +77,7 @@ public:
   virtual exception_thrower_ptr thrower() const = 0;
 
   template <class Exception>
-  friend Exception const & add_info(Exception const & e, pfi::lang::shared_ptr<error_info_base> info);
+  friend const Exception& add_info(const Exception& e, pfi::lang::shared_ptr<error_info_base> info);
 
   std::string name() const throw()
   {
@@ -96,20 +103,20 @@ private:
 };
 
 template <class Exception>
-inline Exception const & add_info(Exception const & e, pfi::lang::shared_ptr<error_info_base> info)
+inline const Exception& add_info(const Exception& e, pfi::lang::shared_ptr<error_info_base> info)
 {
   e.info_list_.push_back(info);
   return e;
 }
 
 template <class Exception, class Tag, class V>
-inline Exception const & operator <<(Exception const & e, error_info<Tag, V> const & info)
+inline const Exception& operator <<(const Exception& e, const error_info<Tag, V>& info)
 {
   return add_info(e, pfi::lang::shared_ptr<error_info_base>(new error_info<Tag, V>(info)));
 }
 
 template <class Exception>
-inline Exception const & operator <<(Exception const & e, pfi::lang::shared_ptr<error_info_base> info)
+inline const Exception& operator <<(const Exception& e, pfi::lang::shared_ptr<error_info_base> info)
 {
   return add_info(e, info);
 }
@@ -174,7 +181,7 @@ private:
 };
 
 template <class Exception>
-inline Exception const & operator <<(Exception const & e, exception_thrower_binder_type const &)
+inline const Exception& operator <<(const Exception& e, const exception_thrower_binder_type&)
 {
   e.bind_thrower(exception_thrower_ptr(new exception_thrower_impl<Exception>(e)));
   return e;
@@ -205,7 +212,7 @@ private:
 
 namespace detail {
 template <class Exception>
-exception_thrower_ptr current_std_exception(Exception const & e)
+exception_thrower_ptr current_std_exception(const Exception& e)
 {
   return exception_thrower_ptr(new exception_thrower_impl<Exception>(e));
 }

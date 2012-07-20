@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <csignal>
+#include <cstdlib>
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -26,11 +26,13 @@
 
 #include "../common/exception.hpp"
 #include "../common/shared_ptr.hpp"
+#include "../common/util.hpp"
 #include <pficommon/lang/noncopyable.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/lang/function.h>
 #include <pficommon/network/mprpc.h>
+#include <pficommon/lang/shared_ptr.h>
 
 #ifdef HAVE_ZOOKEEPER_H
 #  include "../common/lock_service.hpp"
@@ -40,7 +42,13 @@ namespace cmdline{
 class parser;
 }
 
-namespace jubatus { namespace framework {
+namespace jubatus {
+
+namespace fv_converter {
+class datum_to_fv_converter;
+}
+
+namespace framework {
 
 struct server_argv {
 
@@ -91,13 +99,7 @@ void convert(const From& from, To& to){
 #ifdef HAVE_ZOOKEEPER_H
 extern jubatus::common::cshared_ptr<jubatus::common::lock_service> ls;
 void atexit(void);
-
-void exit_on_term(int);
-void exit_on_term2(int, siginfo_t*, void*);
-void set_exit_on_term();
 #endif
-
-void ignore_sigpipe();
 
 template <class ImplServerClass, class UserServClass>
 int run_server(int args, char** argv)
@@ -119,15 +121,19 @@ int run_server(int args, char** argv)
        pfi::lang::bind(&UserServClass::get_storage,
            impl_server.get_p().get()));
 
-    set_exit_on_term();
+    jubatus::util::set_exit_on_term();
+    ::atexit(jubatus::framework::atexit);
 
 #endif // HAVE_ZOOKEEPER_H
-    ignore_sigpipe();
+    jubatus::util::ignore_sigpipe();
     return impl_server.run();
   } catch (const jubatus::exception::jubatus_exception& e) {
     std::cout << e.diagnostic_information(true) << std::endl;
     return -1;
   }
 }
+
+pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+make_fv_converter(const std::string& config);
 
 }}

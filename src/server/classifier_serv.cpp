@@ -16,9 +16,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "classifier_serv.hpp"
+
 #include "../storage/storage_factory.hpp"
 #include "../classifier/classifier_factory.hpp"
-#include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
 
 #include "../common/rpc_util.hpp"
@@ -63,12 +63,10 @@ classifier_serv::~classifier_serv() {
 int classifier_serv::set_config(config_data config) {
   DLOG(INFO) << __func__;
 
-  shared_ptr<datum_to_fv_converter> converter(new datum_to_fv_converter);
-    
-  convert<jubatus::config_data, config_data>(config, config_);
-  fv_converter::converter_config c;
-  convert<jubatus::converter_config, fv_converter::converter_config>(config_.config, c);
-  fv_converter::initialize_converter(c, *converter);
+  shared_ptr<datum_to_fv_converter> converter
+      = framework::make_fv_converter(config.config);
+
+  config_ = config;
   converter_ = converter;
 
   wm_.wm_ = common::cshared_ptr<fv_converter::weight_manager>(new weight_manager);

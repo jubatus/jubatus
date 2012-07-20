@@ -37,6 +37,8 @@ using pfi::lang::function;
 using pfi::system::time::clock_time;
 using pfi::system::time::get_clock_time;
 
+using jubatus::common::mprpc::rpc_result;
+
 namespace jubatus { namespace framework {
 
 jubatus_serv::jubatus_serv(const server_argv& a, const std::string& base_path):
@@ -51,7 +53,7 @@ jubatus_serv::jubatus_serv(const server_argv& a, const std::string& base_path):
   base_path_(a_.tmpdir)
 
 {
-};
+}
 
 int jubatus_serv::start(pfi::network::mprpc::rpc_server& serv){
 
@@ -110,13 +112,13 @@ void jubatus_serv::register_mixable(mixable0* m){
 
 #endif
   mixables_.push_back(m);
-};
+}
     
 void jubatus_serv::use_cht(){
 #ifdef HAVE_ZOOKEEPER_H
   use_cht_ = true;
 #endif
-};
+}
 
 std::map<std::string, std::map<std::string,std::string> > jubatus_serv::get_status() const {
   std::map<std::string, std::string> data;
@@ -142,7 +144,7 @@ std::map<std::string, std::map<std::string,std::string> > jubatus_serv::get_stat
   std::map<std::string, std::map<std::string,std::string> > ret;
   ret[get_server_identifier()] = data;
   return ret;
-};
+}
 
 std::string jubatus_serv::get_server_identifier()const{
   std::stringstream ss;
@@ -150,7 +152,7 @@ std::string jubatus_serv::get_server_identifier()const{
   ss << "_";
   ss << a_.port;
   return ss.str();
-};
+}
     
 //here
 #ifdef HAVE_ZOOKEEPER_H
@@ -190,11 +192,15 @@ void jubatus_serv::join_to_cluster(common::cshared_ptr<jubatus::common::lock_ser
     mixables_[i]->load(ss);
   }
   DLOG(INFO) << "all data successfully loaded to " << mixables_.size() << " mixables.";
-};
+}
 
 std::string jubatus_serv::get_storage(){
   std::stringstream ss;
   for(size_t i=0; i<mixables_.size(); ++i){
+    if(mixables_[i] == NULL){
+      LOG(ERROR) << i << "th mixable is null";
+      throw JUBATUS_EXCEPTION(config_not_set());
+    }
     mixables_[i]->save(ss);
   }
   LOG(INFO) << "new server has come. Sending back " << ss.str().size() << " bytes.";
@@ -202,18 +208,17 @@ std::string jubatus_serv::get_storage(){
 }
     
 std::vector<std::string> jubatus_serv::get_diff_impl(int){
-  // if(mixables_.empty()){
-  //   //throw config_not_set(); nothing to mix
-  // }
   std::vector<std::string> o;
-  {
-    scoped_lock lk(rlock(m_));
-    for(size_t i=0; i<mixables_.size(); ++i){
-      o.push_back(mixables_[i]->get_diff());
-    }
+
+  scoped_lock lk(rlock(m_));
+  if(mixables_.empty()){
+    throw JUBATUS_EXCEPTION(config_not_set()); // nothing to mix
+  }
+  for(size_t i=0; i<mixables_.size(); ++i){
+    o.push_back(mixables_[i]->get_diff());
   }
   return o;
-};
+}
 
 int jubatus_serv::put_diff_impl(std::vector<std::string> unpacked){
   scoped_lock lk(wlock(m_));
@@ -226,7 +231,7 @@ int jubatus_serv::put_diff_impl(std::vector<std::string> unpacked){
   }
   mixer_->clear();
   return 0;
-};
+}
 
 std::vector<std::string> jubatus_serv::mix_agg(const std::vector<std::string>& lhs,
  					       const std::vector<std::string>& rhs){
@@ -240,7 +245,7 @@ std::vector<std::string> jubatus_serv::mix_agg(const std::vector<std::string>& l
     ret.push_back(tmp);
   }
   return ret;
-};
+}
 
 void jubatus_serv::do_mix(const std::vector<std::pair<std::string,int> >& v){
   vector<string> accs;
@@ -256,10 +261,10 @@ void jubatus_serv::do_mix(const std::vector<std::pair<std::string,int> >& v){
       f = pfi::lang::bind(&jubatus_serv::mix_agg, this, pfi::lang::_1, pfi::lang::_2);
     common::mprpc::rpc_mclient c(v, a_.timeout);
     try{
-      c.call_async("get_diff", 0);
-      accs = c.join_all<std::vector<std::string> >(f);
-      c.call_async("put_diff", accs);
-      c.join_all<int>(pfi::lang::function<int(int,int)>(&framework::add<int>));
+      rpc_result<vector<string> > result_accs = c.call("get_diff", 0, f);
+      // TODO: output log when result has error
+      rpc_result<int> result_put = c.call("put_diff", *result_accs, pfi::lang::function<int(int,int)>(&framework::add<int>));
+      // TODO: output log when result has error
     }catch(const std::exception & e){
       LOG(WARNING) << e.what() << " : mix failed";
       return;

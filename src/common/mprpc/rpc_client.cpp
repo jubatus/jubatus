@@ -20,29 +20,37 @@
 #include <glog/logging.h>
 
 
+using std::string;
+using std::vector;
 using pfi::lang::shared_ptr;
 using pfi::system::time::clock_time;
 using pfi::system::time::get_clock_time;
 
 namespace jubatus { namespace common { namespace mprpc {
 
-rpc_mclient::rpc_mclient(const std::vector<std::pair<std::string, uint16_t> >& hosts,
+rpc_mclient::rpc_mclient(const vector<std::pair<string, uint16_t> >& hosts,
                          int timeout_sec):
   hosts_(hosts),
   timeout_sec_(timeout_sec),
   start_(get_clock_time()),
   evbase_(::event_base_new())
 {
+  if (!evbase_)
+    throw std::bad_alloc();
+
   connect_async_();
   create_fd_event_();
 }
 
-rpc_mclient::rpc_mclient(const std::vector<std::pair<std::string, int> >& hosts,
+rpc_mclient::rpc_mclient(const vector<std::pair<string, int> >& hosts,
                          int timeout_sec):
   timeout_sec_(timeout_sec),
   start_(get_clock_time()),
   evbase_(::event_base_new())
 {
+  if (!evbase_)
+    throw std::bad_alloc();
+
   for(size_t i=0; i<hosts.size(); ++i){
     hosts_.push_back(hosts[i]);
   }
@@ -50,143 +58,28 @@ rpc_mclient::rpc_mclient(const std::vector<std::pair<std::string, int> >& hosts,
   create_fd_event_();
 }
 
-rpc_mclient::~rpc_mclient(){
-  ::event_base_free(evbase_);
-}
-
-void rpc_mclient::call_async(const std::string& m)
+rpc_mclient::~rpc_mclient()
 {
-  call_async_(m, std::vector<int>());
+  ::event_base_free(evbase_);
 }
 
 void rpc_mclient::connect_async_()
 {
   clients_.clear();
-  for(size_t i=0; i<hosts_.size(); ++i){
-    shared_ptr<async_sock> p(new async_sock);
-    p->connect_async(hosts_[i].first, hosts_[i].second);
-    clients_.insert(std::make_pair(p->get(), socket_context(p)));
+  vector<std::pair<string, uint16_t> >::const_iterator it = hosts_.begin(), end = hosts_.end();
+  for (; it != end; ++it) {
+    shared_ptr<async_client> client(new async_client(it->first, it->second));
+    client->connect_async();
+
+    clients_.push_back(client);
   }
-}
-
-static void readable_callback(int fd, short int events, void* arg)
-{
-  async_context* ctx = static_cast<async_context*>(arg);
-  try {
-    ctx->rest -= ctx->c->readable_callback(fd, events, ctx);
-  } catch (...) {
-    event_base_loopbreak(ctx->evbase);
-  }
-}
-
-int rpc_mclient::readable_callback(int fd, int events, async_context* ctx){
-  int done = 0;
-  pfi::lang::shared_ptr<async_sock> client = clients_[fd].socket;
-
-  if (events == EV_READ) {
-    int r = client->recv_async();
-    if (r <= 0) {
-      if (errno != EAGAIN || errno != EWOULDBLOCK) {
-        client->disconnected();
-        done++;
-      }
-
-    } else {
-      rpc_response_t res;
-
-      if(client->salvage(res.response, res.zone)){
-        //cout << __FILE__ << " " << __LINE__ << ":"<< endl;
-        //cout << "\ta0: "<< int(res.response.a0) << endl;
-        //cout << "\ta2: "<< res.response.a2.type << " " << res.response.a2.is_nil() << " " << res.response.a2 << endl;
-        //cout << "\ta3: "<< res.response.a3.type << " " << res.response.a3.is_nil() << " " << res.response.a3 << endl;;
-
-        done++;
-        if(res.response.a0 == 1){
-          if(res.response.a2.is_nil()){
-            ctx->ret.push_back(res);
-          }
-        }
-      }
-    }
-
-  } else {
-    // EV_TIMEOUT or error occured
-    if (events == EV_TIMEOUT)
-      ;// TODO: push timeout exception
-
-    client->disconnected();
-    done++;
-  }
-
-  if (done)
-    event_del(&clients_[fd].ev_read);
-
-  if (client->is_closed())
-    clients_.erase(fd);
-
-  return done;
-}
-
-static void writable_callback(int fd, short int events, void* arg)
-{
-  async_context* ctx = static_cast<async_context*>(arg);
-  try {
-    ctx->rest -= ctx->c->writable_callback(fd, events, ctx);
-  } catch (...) {
-    event_base_loopbreak(ctx->evbase);
-  }
-}
-
-int rpc_mclient::writable_callback(int fd, int events, async_context* ctx){
-  int done = 0;
-  pfi::lang::shared_ptr<async_sock> client = clients_[fd].socket;
-
-  if (events == EV_WRITE) {
-    if(client->is_connecting()){
-      client->set_sending();
-    }
-
-    int r = client->send_async(ctx->buf->data(), ctx->buf->size());
-    if (r <= 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
-      client->disconnected();
-      done++;
-
-    } else if (client->received() == ctx->buf->size()){
-      done++;
-      client->reset_received();
-      client->set_recving();
-
-    }
-
-  } else {
-    // EV_TIMEOUT or error occured
-    if (events == EV_TIMEOUT)
-      ;// TODO: push timeout exception
-
-    clients_[fd].socket->disconnected();
-    done++;
-  }
-
-  if (done)
-    event_del(&clients_[fd].ev_write);
-
-  if (client->is_closed())
-    clients_.erase(fd);
-
-  return done;
 }
 
 void rpc_mclient::create_fd_event_()
 {
-  socket_info_map_t::iterator it, end;
-  for (it = clients_.begin(), end = clients_.end(); it != end; ++it) {
-    socket_context& c = it->second;
-
-    // use `event_new' when only support libevent 2.x
-    event_set(&c.ev_read, c.socket->get(), EV_READ | EV_TIMEOUT | EV_PERSIST, &mprpc::readable_callback, &context_);
-    event_set(&c.ev_write, c.socket->get(), EV_WRITE | EV_TIMEOUT | EV_PERSIST, &mprpc::writable_callback, &context_);
-    event_base_set(evbase_, &c.ev_read);
-    event_base_set(evbase_, &c.ev_write);
+  for (client_list_t::iterator it = clients_.begin(), end = clients_.end();
+    it != end; ++it) {
+    (*it)->prepare_event(evbase_);
   }
 }
 
@@ -196,50 +89,35 @@ void rpc_mclient::register_fd_readable_()
   timeout.tv_sec = timeout_sec_;
   timeout.tv_usec = 0;
 
-  socket_info_map_t::iterator it, end;
-  for (it = clients_.begin(), end = clients_.end(); it != end; ++it) {
-    event_add(&it->second.ev_read, &timeout);
+  for (client_list_t::iterator it = clients_.begin(), end = clients_.end();
+    it != end; ++it) {
+    if ((*it)->is_closed())
+      continue;
+    (*it)->register_read(timeout);
   }
 }
 
-void rpc_mclient::register_fd_writable_()
+void rpc_mclient::register_fd_writable_(const msgpack::sbuffer& sbuf)
 {
   struct timeval timeout;
   timeout.tv_sec = timeout_sec_;
   timeout.tv_usec = 0;
 
-  socket_info_map_t::iterator it, end;
-  for (it = clients_.begin(), end = clients_.end(); it != end; ++it) {
-    event_add(&it->second.ev_write, &timeout);
+  for (client_list_t::iterator it = clients_.begin(), end = clients_.end();
+    it != end; ++it) {
+    if ((*it)->is_closed())
+      continue;
+    (*it)->set_send_buffer(sbuf);
+    (*it)->register_write(timeout);
   }
 }
 
-void rpc_mclient::send_async(const msgpack::sbuffer& buf)
+void rpc_mclient::send_all(const msgpack::sbuffer& buf)
 {
-  context_ = async_context();
-  context_.c = this;
-  context_.evbase = evbase_;
-  context_.rest = clients_.size();
-  context_.buf = &buf;
-
-  register_fd_writable_();
-
+  register_fd_writable_(buf);
   event_base_dispatch(evbase_);
-  // FIXME: It is desirable to event_del all write event for preparing failure.
-  // TODO: check timeout or connection error
 }
 
-
-void rpc_mclient::join_some_()
-{
-  context_.ret.clear();
-
-  event_base_dispatch(evbase_);
-  // FIXME: It is desirable to event_del all read event for preparing failure.
-  // TODO: check timeout or connection error
-}
-
-}
-}
-}
-
+} // mprpc
+} // common
+} // jubatus

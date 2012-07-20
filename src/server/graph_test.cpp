@@ -8,6 +8,14 @@
 using namespace jubatus::client;
 static const int PORT = 65431;
 
+namespace jubatus {
+
+  typedef uint64_t edge_id_t;
+  typedef std::string node_id;
+  typedef int centrality_type;
+
+}
+
 namespace {
 
   class graph_test : public ::testing::TestWithParam<const char*> {

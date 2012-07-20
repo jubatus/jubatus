@@ -107,12 +107,11 @@ std::string graph_serv::create_node(){
     get_members(members);
     if(not members.empty()){
       common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
-      c.call_async("create_global_node", a_.name, nid_str);
 
       try{
-        c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
-      }catch(const std::runtime_error & e){ // no results?, pass through
-        DLOG(INFO) << __func__ << " " << e.what();
+        c.call("create_global_node", a_.name, nid_str, pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+      }catch(const common::mprpc::rpc_no_result& e){ // pass through
+        DLOG(INFO) << __func__ << " " << e.diagnostic_information(true);
       }
     }
   }else{
@@ -142,8 +141,11 @@ int graph_serv::remove_node(const std::string& nid){
     
     if(not members.empty()){
       common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
-      c.call_async("remove_global_node", a_.name, nid);
-      c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+      try{
+        c.call("remove_global_node", a_.name, nid, pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+      }catch(const common::mprpc::rpc_no_result& e){ // pass through
+        DLOG(INFO) << __func__ << " " << e.diagnostic_information(true);
+      }
     }
   }
   DLOG(INFO) << "node removed: " << nid;
@@ -223,6 +225,7 @@ std::vector<node_id> graph_serv::shortest_path(const shortest_path_req& req) con
 { 
   std::vector<jubatus::graph::node_id_t> ret0;
   jubatus::graph::preset_query q;
+  framework::convert(req.q, q);
   g_.get_model()->shortest_path(n2i(req.src), n2i(req.tgt), req.max_hop, ret0, q);
   std::vector<node_id> ret;
   for(size_t i=0;i<ret0.size();++i){

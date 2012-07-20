@@ -69,13 +69,20 @@ void make_random_data(vector<pair<float, datum> >& data, size_t size) {
   }
 }
 
+config_data make_simple_config(const string& method) {
+  config_data c;
+  c.method = method;
+  jubatus::fv_converter::converter_config config;
+  jubatus::fv_converter::num_rule rule = { "*", "num" };
+  config.num_rules.push_back(rule);
+  c.config = config_to_string(config);
+  return c;
+}
+
 void my_test(const char* meth, const char* stor){ 
   client::regression r("localhost", PORT, 10);
   const size_t example_size = 1000;
-  config_data c;
-  c.method = meth;
-  num_rule rule = { "*", "num" };
-  c.config.num_rules.push_back(rule);
+  config_data c = make_simple_config(meth);
 
   r.set_config(NAME, c);
 
@@ -121,10 +128,7 @@ TEST_F(regression_test, small) {
   client::regression c("localhost", PORT, 10);
   
   cout << "set_config" << endl;
-  config_data conf;
-  conf.method = "PA";
-  num_rule r = {"*", "num"};
-  conf.config.num_rules.push_back(r);
+  config_data conf = make_simple_config("PA");
   c.set_config("test", conf);
 
   cout << "train" << endl;

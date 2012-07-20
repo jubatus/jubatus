@@ -31,6 +31,17 @@ LGPL 2.1
 Update history
 --------------
 
+0.3.1 2012/7/20
+~~~~~~~~~~~~~~~
+
+Improvements
+  - RPC enhances to many exceptions and provide new error handling interface (#49)
+  - JSON interface for set_config APIs (#44)
+  - jubavisor close zk connection correctly (#74)
+
+Bugfix
+  - #73, #69, #66, #65
+
 Release 0.3.0 2012/6/29
 ~~~~~~~~~~~~~~~~~~~~~~~
 

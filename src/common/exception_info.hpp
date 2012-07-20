@@ -15,6 +15,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#pragma once
+
 #include <cstring>
 #include <typeinfo>
 #include <pficommon/lang/shared_ptr.h>
@@ -29,7 +31,11 @@ std::string demangle_symbol(const char *symbol);
 
 class error_info_base {
 public:
-  virtual bool splitter() const = 0;
+  virtual bool splitter() const
+  {
+    return false;
+  }
+
   virtual std::string tag_typeid_name() const = 0;
   virtual std::string as_string() const = 0;
 
@@ -39,6 +45,12 @@ public:
 
 template <class Tag, class V>
 class error_info;
+
+template <class Tag, class V>
+inline std::string to_string(const error_info<Tag, V>& info)
+{
+  return pfi::lang::lexical_cast<std::string, V>(info.value());
+}
 
 template<>
 class error_info<struct error_splitter_, void> : public error_info_base {
@@ -60,34 +72,6 @@ public:
   }
 };
 
-template<>
-class error_info<struct error_errno_, int> : public error_info_base {
-public:
-  error_info(int err)
-    : value_(err)
-  {
-  }
-
-  bool splitter() const
-  {
-    return false;
-  }
-
-  std::string tag_typeid_name() const
-  {
-    return jubatus::exception::detail::demangle_symbol(typeid(struct error_errno_*).name());
-  }
-
-  std::string as_string() const
-  {
-    std::string msg(strerror(value_));
-    msg += " (" + pfi::lang::lexical_cast<std::string>(value_) + ")";
-    return msg;
-  }
-private:
-  int value_;
-};
-
 template <class Tag, class V>
 class error_info : public error_info_base {
 public:
@@ -95,7 +79,6 @@ public:
   error_info(value_type v);
   ~error_info() throw();
 
-  bool splitter() const;
   std::string tag_typeid_name() const;
   std::string as_string() const;
 
@@ -120,12 +103,6 @@ inline error_info<Tag, V>::~error_info() throw()
 }
 
 template <class Tag, class V>
-inline bool error_info<Tag, V>::splitter() const
-{
-  return false;
-}
-
-template <class Tag, class V>
 inline std::string error_info<Tag, V>::tag_typeid_name() const
 {
   return jubatus::exception::detail::demangle_symbol(typeid(Tag*).name());
@@ -134,8 +111,7 @@ inline std::string error_info<Tag, V>::tag_typeid_name() const
 template <class Tag, class V>
 inline std::string error_info<Tag, V>::as_string() const
 {
-  // TODO: implement generic and user defined converter to std::string
-  return pfi::lang::lexical_cast<std::string>(value_);
+  return to_string(*this);
 }
 
 } // exception
