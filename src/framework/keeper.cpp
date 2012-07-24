@@ -70,7 +70,11 @@ void keeper::get_members_(const std::string& name, std::vector<std::pair<std::st
     zk_->list(path, list);
   }
   vector<string>::const_iterator it;
-  
+
+  if(list.empty()){
+    throw JUBATUS_EXCEPTION(no_worker(name));
+  }
+
   // FIXME:
   // do you return all server list? it can be very large
   for(it = list.begin(); it!= list.end(); ++it){
@@ -78,5 +82,18 @@ void keeper::get_members_(const std::string& name, std::vector<std::pair<std::st
     int port;
     common::revert(*it, ip, port);
     ret.push_back(make_pair(ip,port));
+  }
+}
+
+void keeper::get_members_from_cht_(const std::string& name, const std::string& id,
+                                   std::vector<std::pair<std::string, int> >& ret, size_t n)
+{
+  ret.clear();
+  pfi::concurrent::scoped_lock lk(mutex_);
+  jubatus::common::cht ht(zk_, a_.type, name);
+  ht.find(id, ret, n);
+
+  if(ret.empty()){
+    throw JUBATUS_EXCEPTION(no_worker(name));
   }
 }
