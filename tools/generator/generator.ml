@@ -108,7 +108,7 @@ let generate_keeper s output strees =
   output <<< ("using namespace "^s#namespace^";");
   output <<< "using namespace jubatus::framework;";
   output <<< "int main(int args, char** argv){";
-  output <<< "  keeper k(keeper_argv(args,argv));";
+  output <<< "  keeper k(keeper_argv(args,argv,\""^s#basename^"\"));";
 
   List.iter (fun l -> output <<< l)
     (List.flatten (List.map to_keeper_strings
@@ -205,7 +205,7 @@ let generate_impl s output strees =
   
   output <<< "    jubatus::framework::run_server<jubatus::server::"^s#basename^"_impl_,";
   output <<< "                                   jubatus::server::"^s#basename^"_serv>";
-  output <<< "       (args, argv);";
+  output <<< "       (args, argv, \""^s#basename^"\");";
   output <<< "}";;
 
 let to_tmpl_strings = function

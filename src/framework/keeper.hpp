@@ -226,7 +226,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
     std::vector<std::pair<std::string, int> > list;
     {
       pfi::concurrent::scoped_lock lk(mutex_);
-      jubatus::common::cht ht(zk_, name);
+      jubatus::common::cht ht(zk_, a_.type, name);
       ht.find(id, list, N);
     }
     if(list.empty())
@@ -246,7 +246,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
     std::vector<std::pair<std::string, int> > list;
     {
       pfi::concurrent::scoped_lock lk(mutex_);
-      jubatus::common::cht ht(zk_, name);
+      jubatus::common::cht ht(zk_, a_.type, name);
       ht.find(id, list, N);
     }
     if(list.empty())
@@ -266,7 +266,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
     std::vector<std::pair<std::string, int> > list;
     {
       pfi::concurrent::scoped_lock lk(mutex_);
-      jubatus::common::cht ht(zk_, name);
+      jubatus::common::cht ht(zk_, a_.type, name);
       ht.find(id, list, N);
     }
     if(list.empty())

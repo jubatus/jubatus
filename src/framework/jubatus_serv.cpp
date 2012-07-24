@@ -41,17 +41,17 @@ using jubatus::common::mprpc::rpc_result;
 
 namespace jubatus { namespace framework {
 
-jubatus_serv::jubatus_serv(const server_argv& a, const std::string& base_path):
+jubatus_serv::jubatus_serv(const server_argv& a,
+                           const std::string& base_path):
   a_(a),
   update_count_(0),
 #ifdef HAVE_ZOOKEEPER_H
-  mixer_(new mixer(a_.name, a_.interval_count, a_.interval_sec,
+  mixer_(new mixer(a_.type, a_.name, a_.interval_count, a_.interval_sec,
 		   pfi::lang::bind(&jubatus_serv::do_mix, this, pfi::lang::_1))),
   use_cht_(false),
 #endif
   idgen_(a_.is_standalone()),
   base_path_(a_.tmpdir)
-
 {
 }
 
@@ -71,9 +71,10 @@ int jubatus_serv::start(pfi::network::mprpc::rpc_server& serv){
     zk_ = common::cshared_ptr<jubatus::common::lock_service>
       (common::create_lock_service("zk", a_.z, a_.timeout, logfile));
     ls = zk_;
-    jubatus::common::prepare_jubatus(*zk_);
+    jubatus::common::prepare_jubatus(*zk_, a_.type, a_.name);
     
-    std::string counter_path = common::ACTOR_BASE_PATH + "/" + a_.name;
+    std::string counter_path;
+    common::build_actor_path(counter_path, a_.type, a_.name);
     idgen_.set_ls(zk_, counter_path);
 
     if( a_.join ){ // join to the existing cluster with -j option
@@ -82,14 +83,14 @@ int jubatus_serv::start(pfi::network::mprpc::rpc_server& serv){
     }
     
     if( use_cht_ ){
-      jubatus::common::cht::setup_cht_dir(*zk_, a_.name);
-      jubatus::common::cht ht(zk_, a_.name);
+      jubatus::common::cht::setup_cht_dir(*zk_, a_.type, a_.name);
+      jubatus::common::cht ht(zk_, a_.type, a_.name);
       ht.register_node(a_.eth, a_.port);
     }
     
     // FIXME(rethink): is this sequence correct?
     mixer_->set_zk(zk_);
-    register_actor(*zk_, a_.name, a_.eth, a_.port);
+    register_actor(*zk_, a_.type, a_.name, a_.eth, a_.port);
     mixer_->start();
   }
 #endif
@@ -158,19 +159,21 @@ std::string jubatus_serv::get_server_identifier()const{
 #ifdef HAVE_ZOOKEEPER_H
 void jubatus_serv::join_to_cluster(common::cshared_ptr<jubatus::common::lock_service> z){
   std::vector<std::string> list;
-  std::string path = common::ACTOR_BASE_PATH + "/" + a_.name + "/nodes";
-  z->list(path, list);
+  std::string path;
+  common::build_actor_path(path, a_.type, a_.name);
+  z->list(path + "/nodes", list);
   if(list.empty()){
     throw JUBATUS_EXCEPTION(not_found(" cluster to join"));
   }
-  common::lock_service_mutex zlk(*z, common::ACTOR_BASE_PATH + "/" + a_.name + "/master_lock");
+
+  common::lock_service_mutex zlk(*z, path + "/master_lock");
   while(not zlk.try_lock()){ ; }
   
   std::string ip;
   int port;
   // if you're using even any cht, you should choose from cht. otherwise random.
   if( use_cht_ ){
-    common::cht ht(z, a_.name);
+    common::cht ht(z, a_.type, a_.name);
     std::pair<std::string, int> predecessor = ht.find_predecessor(a_.eth, a_.port);
     ip = predecessor.first;
     port = predecessor.second;
@@ -342,7 +345,7 @@ void jubatus_serv::get_members(std::vector<std::pair<std::string,int> >& ret)
 {
   ret.clear();
 #ifdef HAVE_ZOOKEEPER_H
-  common::get_all_actors(*zk_, a_.name, ret);
+  common::get_all_actors(*zk_, a_.type, a_.name, ret);
 
   if(ret.empty()){
     return;
@@ -368,7 +371,7 @@ void jubatus_serv::find_from_cht(const std::string& key, size_t n,
 {
   out.clear();
 #ifdef HAVE_ZOOKEEPER_H
-  common::cht ht(zk_, a_.name);
+  common::cht ht(zk_, a_.type, a_.name);
   ht.find(key, out, n); //replication number of local_node
 #else
   //cannot reach here, assertion!

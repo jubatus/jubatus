@@ -5,7 +5,7 @@
 using namespace jubatus;
 using namespace jubatus::framework;
 int main(int args, char** argv){
-  keeper k(keeper_argv(args,argv));
+  keeper k(keeper_argv(args,argv,"graph"));
   k.register_random<std::string >("create_node"); //pass update
   k.register_cht<2, int >("remove_node", pfi::lang::function<int(int,int)>(&pass<int >)); //update
   k.register_cht<2, int, property >("update_node", pfi::lang::function<int(int,int)>(&all_and)); //update

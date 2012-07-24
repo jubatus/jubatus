@@ -42,7 +42,9 @@ namespace jubatus { namespace framework {
     std::cout << "jubatus-" << VERSION << " (" << progname << ")" << std::endl;
   }
 
-  server_argv::server_argv(int args, char** argv){
+  server_argv::server_argv(int args, char** argv, const std::string& type)
+    : type(type)
+  {
     google::InitGoogleLogging(argv[0]);
     google::LogToStderr(); // only when debug
 
@@ -102,7 +104,9 @@ namespace jubatus { namespace framework {
     return ret.str();
   };
 
-  keeper_argv::keeper_argv(int args, char** argv){
+  keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
+    : type(t)
+  {
     google::InitGoogleLogging(argv[0]);
     google::LogToStderr(); // only when debug
 

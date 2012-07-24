@@ -37,7 +37,8 @@ namespace framework{
 
   class mixer {
   public:
-    mixer(const std::string& name, unsigned int count_threshold, unsigned int tick_threshold,
+    mixer(const std::string& type, const std::string& name,
+          unsigned int count_threshold, unsigned int tick_threshold,
           pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_fun);
     virtual ~mixer(){};
 
@@ -68,6 +69,7 @@ namespace framework{
     pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_func_;
 
     common::cshared_ptr<jubatus::common::lock_service> zk_;
+    std::string type_;
     std::string name_;
 
     unsigned int count_threshold_;

@@ -35,8 +35,8 @@ keeper::keeper(const keeper_argv& a)
     //    zk_(common::create_lock_service("zk", a.z, a.timeout))
 {
   ls = zk_;
-  jubatus::common::prepare_jubatus(*zk_);
-  if(!register_keeper(*zk_, a_.eth, a_.port) ){
+  jubatus::common::prepare_jubatus(*zk_, a_.type, "");
+  if(!register_keeper(*zk_, a_.type, a_.eth, a_.port) ){
     throw JUBATUS_EXCEPTION(membership_error("can't register to zookeeper."));
   }
 }
@@ -61,7 +61,9 @@ void keeper::get_members_(const std::string& name, std::vector<std::pair<std::st
   using namespace std;
   ret.clear();
   vector<string> list;
-  string path = common::ACTOR_BASE_PATH + "/" + name + "/nodes";
+  string path;
+  common::build_actor_path(path, a_.type, name);
+  path += "/nodes";
 
   {
     pfi::concurrent::scoped_lock lk(mutex_);

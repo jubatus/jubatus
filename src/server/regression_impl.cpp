@@ -43,5 +43,5 @@ int main(int args, char** argv){
   return
     jubatus::framework::run_server<jubatus::server::regression_impl_,
                                    jubatus::server::regression_serv>
-       (args, argv);
+       (args, argv, "regression");
 }

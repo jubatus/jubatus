@@ -91,5 +91,5 @@ int main(int args, char** argv){
   return
     jubatus::framework::run_server<jubatus::server::graph_impl_,
                                    jubatus::server::graph_serv>
-       (args, argv);
+       (args, argv, "graph");
 }

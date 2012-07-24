@@ -22,9 +22,11 @@
 namespace jubatus {
 namespace framework {
 
-  mixer::mixer(const std::string& name, unsigned int count_threshold, unsigned int tick_threshold,
+  mixer::mixer(const std::string& type, const std::string& name,
+               unsigned int count_threshold, unsigned int tick_threshold,
                pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_fun)
     :mixer_func_(mixer_fun),
+     type_(type),
      name_(name), 
      count_threshold_(count_threshold),
      counter_(0),
@@ -60,7 +62,9 @@ namespace framework {
 
 
   void mixer::try_mix(){
-    jubatus::common::lock_service_mutex zklock(*zk_, common::ACTOR_BASE_PATH +"/" + name_ + "/master_lock");
+    std::string path;
+    common::build_actor_path(path, type_, name_);
+    jubatus::common::lock_service_mutex zklock(*zk_, path + "/master_lock");
     try {
       {
         pfi::concurrent::scoped_lock lk(m_);
@@ -81,7 +85,7 @@ namespace framework {
 
       } //unlock
       std::vector<std::pair<std::string,int> > servers;
-      common::get_all_actors(*zk_, name_, servers);
+      common::get_all_actors(*zk_, type_, name_, servers);
       mixer_func_(servers);
       mix_count_++;
       DLOG(INFO) << ".... " << mix_count_ << "th mix done.";

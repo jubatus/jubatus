@@ -34,22 +34,27 @@ namespace common{
   std::string build_loc_str(const std::string&, int, unsigned int = 0);
 
   // /path/base -> 127.0.0.1 -> 9199 -> /path/base/127.0.0.1_9199
-  bool build_existence_path(const std::string&, const std::string&, int, std::string&);
+  void build_existence_path(const std::string&, const std::string&, int, std::string&);
+
+  void build_actor_path(std::string&, const std::string& type, const std::string& name);
 
   // 127.0.0.1_9199 -> (127.0.0.1, 9199)
   bool revert(const std::string&, std::string&, int&);
 
   // zk -> name -> ip -> port -> bool
-  bool register_actor(lock_service&, const std::string&, const std::string&, int);
+  bool register_actor(lock_service&, const std::string& type, const std::string& name,
+                      const std::string& ip, int port);
   // zk -> name -> ip -> port -> bool
-  bool register_keeper(lock_service&, const std::string&, int);
+  bool register_keeper(lock_service&, const std::string& type, const std::string& ip, int);
   // zk -> name -> list( (ip, rpc_port) )
-  bool get_all_actors(lock_service&, const std::string&, std::vector<std::pair<std::string, int> >&);
+  bool get_all_actors(lock_service&, const std::string& type, const std::string&,
+                      std::vector<std::pair<std::string, int> >&);
 
   bool push_cleanup(lock_service&, pfi::lang::function<void()>&);
 
   void force_exit();
 
-  void prepare_jubatus(lock_service& ls);
+  void prepare_jubatus(lock_service& ls,
+                       const std::string& type, const std::string& name = "");
 }
 }

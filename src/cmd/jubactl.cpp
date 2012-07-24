@@ -37,15 +37,16 @@ using std::cout;
 using std::endl;
 using std::vector;
 void usage();
-void send2supervisor(const string& , const string&, const string&, unsigned int N);
+void send2supervisor(const string&, const string& , const string&, const string&, unsigned int N);
 void send2server(const string& , const string&, const string&);
-void status(const string&, const string&);
+void status(const string&, const string&, const string&);
 
 int main(int args, char** argv) try {
   cmdline::parser p;
   p.add<std::string>("cmd", 'c', "command to send servers(start|stop|save|load)", true);
   p.add<std::string>("server", 's', "server exec file of learning machine (jubaclassifier, ...)", true);
   p.add<std::string>("name", 'n', "learning machine name", true);
+  p.add<std::string>("type", 't', "learning machine type", true);
   p.add<unsigned int>("num", 'N', "num of process in the whole cluster (one on each server when 0)", false);
   p.add<std::string>("zookeeper", 'z', "ZooKeeper location environment: 'ZK' is available instead", false);
   p.add("debug", 'd', "debug mode");
@@ -57,6 +58,7 @@ int main(int args, char** argv) try {
 
   string cmd = p.get<std::string>("cmd");
   string name = p.get<std::string>("server") + "/" + p.get<std::string>("name");
+  string type = p.get<std::string>("type");
 
   unsigned int N = p.get<unsigned int>("num");
 
@@ -76,12 +78,12 @@ int main(int args, char** argv) try {
   }
 
   if(cmd == "status"){
-    status(p.get<string>("name"), zk);
+    status(type, p.get<string>("name"), zk);
     return 0;
   }
 
   if(cmd == "start" or cmd == "stop"){
-    send2supervisor(cmd, name, zk, N);
+    send2supervisor(cmd, type, name, zk, N);
   }else if(cmd == "save" or cmd == "load"){ //or set_config?
     send2server(cmd, name, zk);
   }
@@ -110,15 +112,18 @@ int do_request(const string& cmd, const string& name, const string& ip_port, uns
   return r;
 }
 
-void send2supervisor(const string& cmd, const string& name, const string& zkhosts, unsigned int N){
+void send2supervisor(const string& cmd,
+                     const string& type, const string& name,
+                     const string& zkhosts, unsigned int N){
   pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
     (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
   vector<string> list;
 
   if(cmd == "start"){ //FIXME: mess
-    string path = name.substr(name.find_first_of("/")+1);
-    path = jubatus::common::ACTOR_BASE_PATH + "/" + path.substr(0, path.find_first_of("/"));
+    string path0 = name.substr(name.find_first_of("/")+1);
+    string path;
+    jubatus::common::build_actor_path(path, type, path0.substr(0, path0.find_first_of("/")));
     ls_->create(path);
     path += "/nodes";
     ls_->create(path);
@@ -182,10 +187,13 @@ void show(jubatus::common::lock_service& z, const string& path, const string& na
   }
 }
 
-void status(const string& name, const string& zkhosts){
+void status(const string& type, const string& name,
+            const string& zkhosts){
   pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
     (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
-  show(*ls_, jubatus::common::JUBAKEEPER_BASE_PATH, "jubakeeper");
+  show(*ls_, jubatus::common::JUBAKEEPER_BASE_PATH + "/" + type, "jubakeeper");
   show(*ls_, jubatus::common::JUBAVISOR_BASE_PATH, "jubavisor");
-  show(*ls_, jubatus::common::ACTOR_BASE_PATH + "/" + name + "/nodes", name);
+  std::string path;
+  jubatus::common::build_actor_path(path, type, name);
+  show(*ls_, path + "/nodes", name);
 }
