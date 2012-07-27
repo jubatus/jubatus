@@ -132,7 +132,7 @@ std::map<std::string, std::map<std::string,std::string> > jubatus_serv::get_stat
   data["interval_count"] = pfi::lang::lexical_cast<std::string>(a_.interval_count);
   data["is_standalone"] = pfi::lang::lexical_cast<std::string>(a_.is_standalone());
   data["VERSION"] = JUBATUS_VERSION;
-  data["PROGNAME"] = JUBATUS_APPNAME;
+  data["PROGNAME"] = a_.program_name;
   
   data["update_count"] = pfi::lang::lexical_cast<std::string>(update_count_);
   

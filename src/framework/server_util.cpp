@@ -30,9 +30,6 @@
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/converter_config.hpp"
 
-#define SET_PROGNAME(s) \
-  static const std::string PROGNAME(JUBATUS_APPNAME "_" s);
-
 
 namespace jubatus { namespace framework {
 
