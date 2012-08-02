@@ -1,4 +1,4 @@
-.PHONY: all install clean test uninstall
+.PHONY: all install clean test regenerate uninstall
 
 clean:
 	rm -rf $(filter-proper-targets $(ls R, .))
