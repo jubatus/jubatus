@@ -25,7 +25,7 @@ let debugmode = ref false
 
 let _ =
   Arg.parse [
-    ("-o", Arg.Set_string(outdir), "output directory"); (* FIXME: bug: ignored *)
+    ("-o", Arg.Set_string(outdir), "output directory"); (* FIXME: need to adapt slash ended path *)
     ("-i", Arg.Set(internal), "internal include"); (* for jubatus internal use *)
     ("-n", Arg.Set_string(namespace), "namespace"); (* C++ namespace *)
     ("-t", Arg.Set(default_template), "output default template xxx_serv file");
@@ -39,7 +39,7 @@ let namespace = !namespace
 let default_template = !default_template
 let debugmode = !debugmode
 
-let parse source_file = 
+let parse source_file =
   let lexbuf = Lexing.from_channel (open_in source_file) in
   try
     Jdl_parser.input Jdl_lexer.token lexbuf
@@ -82,11 +82,10 @@ let _ =
   let basename = Util.get_basename source_file in
   let s = new Generator.spec namespace internal source_file basename in
 
-  Generator.generate_keeper s (make_output (basename^"_keeper.cpp")) strees;
+  Generator.generate_keeper s (make_output (outdir^"/"^basename^"_keeper.cpp")) strees;
+  Generator.generate_impl s (make_output (outdir^"/"^basename^"_impl.cpp")) strees;
 
-  Generator.generate_impl s (make_output (basename^"_impl.cpp")) strees;
-  
   if default_template then begin
-    Generator.generate_server_tmpl_header s (make_output (basename^"_serv.tmpl.hpp")) strees;
-    Generator.generate_server_tmpl_impl s (make_output (basename^"_serv.tmpl.cpp")) strees
+    Generator.generate_server_tmpl_header s (make_output (outdir^"/"^basename^"_serv.tmpl.hpp")) strees;
+    Generator.generate_server_tmpl_impl s (make_output (outdir^"/"^basename^"_serv.tmpl.cpp")) strees
   end;;
