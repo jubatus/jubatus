@@ -31,8 +31,16 @@ LGPL 2.1
 Update history
 --------------
 
-0.3.1 2012/7/20
+Preparing 0.3.2
 ~~~~~~~~~~~~~~~
+
+Improvements
+  - jubavisor/jubactl support jubauts server options (#75)
+
+Bugfix
+
+Release 0.3.1 2012/7/20
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
   - RPC enhances to many exceptions and provide new error handling interface (#49)

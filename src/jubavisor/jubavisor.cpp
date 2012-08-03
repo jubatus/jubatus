@@ -135,14 +135,14 @@ void jubervisor::sigchld_handler_(int sig)
 // server : "jubaclassifier" ...
 // name : any but ""
 // -> exec ./<server> -n <name> -p <rpc_port> -z <zk>
-int jubervisor::start(std::string str, unsigned int N)
+int jubervisor::start(std::string str, unsigned int N, framework::server_argv argv)
 {
   scoped_lock lk(m_);
   LOG(INFO) << str << " " << N;
-  return start_(str, N);
+  return start_(str, N, argv);
 }
 
-int jubervisor::start_(const std::string& str, unsigned int N)
+int jubervisor::start_(const std::string& str, unsigned int N, const framework::server_argv& argv)
 {
   std::string name;
   {
@@ -171,7 +171,7 @@ int jubervisor::start_(const std::string& str, unsigned int N)
   }
   
   for(unsigned int n=0; n<N; ++n){
-    process p(zk_->get_hosts());
+    process p(zk_->get_hosts(), argv);
     p.set_names(str);
     it = children_.find(name);
 

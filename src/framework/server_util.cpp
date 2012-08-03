@@ -58,6 +58,8 @@ namespace jubatus { namespace framework {
     p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
     p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
 
+    // APPLY CHANGES TO JUBAVISOR WHEN ARGUMENTS MODIFIED
+
     p.add("version", 'v', "version");
 
     p.parse_check(args, argv);

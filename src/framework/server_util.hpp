@@ -54,7 +54,7 @@ struct server_argv {
 
   server_argv(int args, char** argv, const std::string& type);
   server_argv();
-  
+
   bool join;
   int port;
   int timeout;
@@ -67,6 +67,9 @@ struct server_argv {
   std::string eth;
   int interval_sec;
   int interval_count;
+
+  MSGPACK_DEFINE(join, port, timeout, threadnum, program_name, type, z, name,
+      tmpdir, eth, interval_sec, interval_count);
 
   bool is_standalone() const {
     return (z == "");
