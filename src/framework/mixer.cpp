@@ -27,7 +27,7 @@ namespace framework {
                pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_fun)
     :mixer_func_(mixer_fun),
      type_(type),
-     name_(name), 
+     name_(name),
      count_threshold_(count_threshold),
      counter_(0),
      tick_threshold_(tick_threshold),

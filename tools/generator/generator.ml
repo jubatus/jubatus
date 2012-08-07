@@ -107,7 +107,6 @@ let generate_keeper s output strees =
   output <<< ("#include \""^s#basename^"_types.hpp\"");
   output <<< ("using namespace "^s#namespace^";");
   output <<< "using namespace jubatus::framework;";
-  output <<< "using namespace "^s#basename^";";
   output <<< "int main(int args, char** argv){";
   output <<< "  keeper k(keeper_argv(args,argv,\""^s#basename^"\"));";
 
@@ -164,7 +163,6 @@ let generate_impl s output strees =
   output <<< "using namespace jubatus::framework;";
 
   output <<< "namespace jubatus { namespace server {";
-  output <<< "using "^s#basename^"::server::"^s#basename^";";
   output <<< ("class "^s#basename^"_impl_ : public "^s#basename^"<"^s#basename^"_impl_>");
   output <<< "{";
   output <<< "public:";
