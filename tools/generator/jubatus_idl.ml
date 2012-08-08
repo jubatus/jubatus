@@ -82,10 +82,10 @@ let _ =
   let basename = Util.get_basename source_file in
   let s = new Generator.spec namespace internal source_file basename in
 
-  Generator.generate_keeper s (make_output (outdir^"/"^basename^"_keeper.cpp")) strees;
-  Generator.generate_impl s (make_output (outdir^"/"^basename^"_impl.cpp")) strees;
+  Keeper_generator.generate s (make_output (outdir^"/"^basename^"_keeper.cpp")) strees;
+  Impl_generator.generate s (make_output (outdir^"/"^basename^"_impl.cpp")) strees;
 
   if default_template then begin
-    Generator.generate_server_tmpl_header s (make_output (outdir^"/"^basename^"_serv.tmpl.hpp")) strees;
-    Generator.generate_server_tmpl_impl s (make_output (outdir^"/"^basename^"_serv.tmpl.cpp")) strees
+    Server_generator.generate_header s (make_output (outdir^"/"^basename^"_serv.tmpl.hpp")) strees;
+    Server_generator.generate_impl s (make_output (outdir^"/"^basename^"_serv.tmpl.cpp")) strees
   end;;

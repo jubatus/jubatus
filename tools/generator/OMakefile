@@ -54,12 +54,10 @@ FILES[] =
     validator
     stree
     generator
+    keeper_generator
+    impl_generator
+    server_generator
     util
-
-#    idl
-#    server_template
-#    keeper_template
-#    idl_template
 
 PROGRAM = jenerator
 # OCAML_LIBS +=
@@ -71,7 +69,7 @@ PROGRAM = jenerator
 
 
 test: $(PROGRAM)  small.idl
-	./$(PROGRAM) small.idl
+	./$(PROGRAM) small.idl -t
 
 regenerate: $(PROGRAM)
 	./$(PROGRAM) ../../src/server/recommender.idl -i -o ../../src/server
