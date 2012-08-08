@@ -26,6 +26,7 @@
 #include <fstream>
 #include <sstream>
 #include <pficommon/system/time_util.h>
+#include <pficommon/system/sysstat.h>
 #include <pficommon/lang/cast.h>
 #include <cassert>
 
@@ -145,6 +146,18 @@ std::map<std::string, std::map<std::string,std::string> > jubatus_serv::get_stat
   std::map<std::string, std::map<std::string,std::string> > ret;
   ret[get_server_identifier()] = data;
   return ret;
+}
+
+std::map<std::string, std::string> jubatus_serv::get_loads()const{
+	std::map<std::string, std::string> result;
+	{
+		pfi::system::sysstat::sysstat_ret sys;
+		get_sysstat(sys);
+		result["loadavg"] = pfi::lang::lexical_cast<std::string>(sys.loadavg);
+		result["tatal_memory"] = pfi::lang::lexical_cast<std::string>(sys.total_memory);
+		result["free_memory"] = pfi::lang::lexical_cast<std::string>(sys.free_memory);
+	}
+	return result;
 }
 
 std::string jubatus_serv::get_server_identifier()const{

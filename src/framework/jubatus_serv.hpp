@@ -44,6 +44,7 @@ public:
   void use_cht();
 
   std::map<std::string, std::map<std::string,std::string> > get_status() const;
+  std::map<std::string, std::string> get_loads() const;
   std::string get_server_identifier()const;
 
 #ifdef HAVE_ZOOKEEPER_H
