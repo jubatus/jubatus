@@ -92,10 +92,6 @@ public:
       return call<int32_t(std::string, std::string)>("create_node_here")(name, nid);
     }
 
-    int32_t create_global_node(std::string name, std::string nid) {
-      return call<int32_t(std::string, std::string)>("create_global_node")(name, nid);
-    }
-
     int32_t remove_global_node(std::string name, std::string nid) {
       return call<int32_t(std::string, std::string)>("remove_global_node")(name, nid);
     }
