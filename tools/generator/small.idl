@@ -31,7 +31,7 @@ service srvce {
   #@random #@update #@ignore
   int hello(1:string name)
 
-  #@random #@update #@ignore
+  #@random #@nolock #@ignore
   int world(1: string ppp, 2: int aaa)
 
   #@cht #@update #@all_or

@@ -43,9 +43,7 @@ TEST_P(graph_test, simple){
   {
     c.clear("");
     nid = c.create_node("");
-    c.create_global_node("", nid);
     nid0 = c.create_node("");
-    c.create_global_node("", nid0);
     //    c.set_config("", config);
     //    c.get_config("", 0);
   }

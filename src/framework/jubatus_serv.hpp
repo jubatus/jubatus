@@ -107,3 +107,5 @@ protected:
 #define JWLOCK__(p) \
   pfi::concurrent::scoped_lock lk(wlock((p)->get_rw_mutex())); \
   (p)->updated();
+
+#define NOLOCK__(p) {;}
