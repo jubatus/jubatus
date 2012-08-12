@@ -1,0 +1,15 @@
+*.cmo
+*.cmi
+*.cmx
+*.output
+*.run
+*.o
+jdl_lexer.ml
+jdl_parser.ml
+jdl_parser.mli
+*.opt
+*~
+*.omc
+.omakedb*
+jubadoc
+
