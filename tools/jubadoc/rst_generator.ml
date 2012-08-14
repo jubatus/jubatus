@@ -40,15 +40,78 @@ let to_impl_strings = function
     List.map to_keeper_string methods;
   | _ -> [];;
 *)
+
+let format_doclines doclines =
+  let strip line =
+    String.sub line 2 ((String.length line) - 3)
+  in
+  String.concat "\n" (List.map strip doclines);;
+
 let to_string = function
-  | Typedef(name,t,doclines) -> "typedef"^name;
-  | Enum(name,nums,doclines) -> "enum"^name;
-  | Message(name,fields,doclines) -> "msg"^name;
-  | Exception(name,fields,p,doclines) -> "ex"^name;
-  | Service(name,methods,doclines) -> "service"^name;;
+  | Typedef(name,t,doclines) ->
+    (* type newname = list<somemsg>
+       =>
+       .. describe:: type newname = list<somemsg>
+
+       <doclines>
+    *)
+    ".. describe:: type " ^ name ^ " = <t>"
+    ^ "\n" ^ (format_doclines doclines) ^ "\n";
+
+  | Enum(name,nums,doclines) ->
+    (* enum spam {
+         0: ham
+         1: foo
+       }
+       =>
+       .. describe:: enum spam
+
+       + ham
+       + foo
+
+       <doclines>
+    *)
+    ".. describe:: enum " ^ name
+    ^ "\n\n"
+      (* nums *)
+    ^ (format_doclines doclines) ^ "\n";
+
+  | Message(name,fields,doclines) ->
+    (* message somemsg {
+         #- aaa
+         0: a
+         #- bbbb bbb
+         1: b
+       }
+       =>
+       .. describe:: message
+
+       + a
+       
+        - aaa in single line?
+
+       + b
+
+        - bbb
+    *)
+    "msg => "^name;
+
+  | Exception(name,fields,p,doclines) ->
+    (*
+      exception ...
+    *)
+    "ex => "^name;
+
+  | Service(name,methods,doclines) ->
+    (*
+    *)
+    "service => "^name;;
 
 let generate s output strees =
-  output <<< Generator.comment;
+  output <<< (".. " ^ Generator.comment);
+  output <<< "\n";
 
+  output <<< "sometitle";
+  output <<< "=========\n";
   List.iter (fun l -> output <<< (to_string l)) strees;
   ();;
