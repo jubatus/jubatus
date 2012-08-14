@@ -8,18 +8,17 @@ type somet3 = list<somet0>
 
 #- this is document for some_enum
 #- should be.
-#-
-#-
+#- 
+#- 
 enum some_enum {
-
-  #- this is document for symbol named 'saitama'.
   0: saitama
-
-  #- this is document for symbol named 'gunma'
   1: gunma
 }
 
+#- this message 'hoge' is a...
+#- ooo?
 message hoge{
+  #- comment for someint
   0: int someint
 #  1: int somei = 234 not yet supported
   1: int somei
@@ -27,15 +26,22 @@ message hoge{
 }
 
 exception ex0 {
+  #- this is message itself
   0: string msg0
+  #- this is message itself
+  #- this is message itself
+  #- aaa
   1: hoge obj
 }
+
 exception ex < ex0 {
   0: string msg
 }
 
+#- must have ...
 service srvce {
 
+  #- ooo
   #@random #@update #@ignore
   int hello(1:string name)
 

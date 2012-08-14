@@ -4,12 +4,12 @@
 *.output
 *.run
 *.o
-jdl_lexer.ml
-jdl_parser.ml
-jdl_parser.mli
+*_lexer.ml
+*_parser.ml
+*_parser.mli
 *.opt
 *~
 *.omc
 .omakedb*
-jubadoc
+
 

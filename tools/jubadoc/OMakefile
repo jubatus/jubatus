@@ -7,7 +7,6 @@ clean:
 USE_OCAMLFIND = true
 
 OCAMLPACKS[] =
-    jingoo
 #    pack1
 #    pack2
 
@@ -49,15 +48,12 @@ OCAMLCFLAGS   += -g
 OCamlGeneratedFiles(jdl_parser.ml jdl_lexer.ml)
 
 FILES[] =
-    jubatus_idl
-    jdl_lexer
-    jdl_parser
-    validator
+    jubadoc
+    jubadoc_lexer
+    jubadoc_parser
     stree
     generator
-    keeper_generator
-    impl_generator
-    server_generator
+    rst_generator
     util
 
 PROGRAM = jubadoc
@@ -70,7 +66,8 @@ OCAML_LIBS +=
 
 
 test: $(PROGRAM)  small.idl
-	./$(PROGRAM) small.idl -t
+	./$(PROGRAM) small.idl
+	cat small.rst
 
 regenerate: $(PROGRAM)
 	./$(PROGRAM) ../../src/server/recommender.idl -i -o ../../src/server
