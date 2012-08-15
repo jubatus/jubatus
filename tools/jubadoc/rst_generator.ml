@@ -94,18 +94,31 @@ let to_string = function
 
         - bbb
     *)
-    "msg => "^name;
+    ".. describe:: " ^ name
+    ^ "\n\n" ^ (format_doclines doclines) ^ "\n";
 
   | Exception(name,fields,p,doclines) ->
     (*
-      exception ...
+      exception ex {
+      }
     *)
-    "ex => "^name;
+    ".. describe:: " ^ name ^ " (< " ^ p ^ ")"
+    ^ "\n\n" ^ (format_doclines doclines) ^ "\n";
 
   | Service(name,methods,doclines) ->
     (*
+      service s {
+      }
+      =>
+      service s
+      ---------
+
+      .. describe:: list<int> foo(...)
     *)
-    "service => "^name;;
+    "service "^name^"\n"
+    ^"----------------------\n\n"
+    ^ (format_doclines doclines) ^ "\n"
+;;
 
 let generate s output strees =
   output <<< (".. " ^ Generator.comment);
