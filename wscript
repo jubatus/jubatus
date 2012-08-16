@@ -93,6 +93,5 @@ def build(bld):
       PACKAGE = APPNAME,
       VERSION = VERSION)
 
-  bld.install_files('${PREFIX}/lib/pkgconfig', 'jubatus.pc')
   bld.recurse(subdirs)
 
