@@ -57,6 +57,8 @@ service srvce {
   #@broadcast #@update #@all_and
   bool save(1:string name, 2: string id)
 
+  #- hoafsda
+  #- hoafsda
   #@broadcast #@update #@all_and
   bool load(1:string name, 2: string id)
 

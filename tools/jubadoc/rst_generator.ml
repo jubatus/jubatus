@@ -41,11 +41,12 @@ let to_impl_strings = function
   | _ -> [];;
 *)
 
-let format_doclines doclines =
-  let strip line =
-    String.sub line 2 ((String.length line) - 3)
+let enum2string nums =
+  let enumerate (i, s) =
+    "- " ^ s ^ " = " ^ (string_of_int i)
   in
-  String.concat "\n" (List.map strip doclines);;
+  String.concat "\n" (List.map enumerate nums);;
+
 
 let to_string = function
   | Typedef(name,t,doclines) ->
@@ -55,7 +56,7 @@ let to_string = function
 
        <doclines>
     *)
-    ".. describe:: type " ^ name ^ " = <t>"
+    ".. describe:: type " ^ name ^ " = " ^ (decl_type2mpidl t)
     ^ "\n" ^ (format_doclines doclines) ^ "\n";
 
   | Enum(name,nums,doclines) ->
@@ -66,14 +67,15 @@ let to_string = function
        =>
        .. describe:: enum spam
 
-       + ham
-       + foo
+       - ham = 0
+       - foo = 1
 
        <doclines>
     *)
     ".. describe:: enum " ^ name
     ^ "\n\n"
-      (* nums *)
+    ^ (enum2string nums)
+    ^ "\n\n"
     ^ (format_doclines doclines) ^ "\n";
 
   | Message(name,fields,doclines) ->
@@ -94,16 +96,26 @@ let to_string = function
 
         - bbb
     *)
-    ".. describe:: " ^ name
-    ^ "\n\n" ^ (format_doclines doclines) ^ "\n";
+    ".. describe:: message " ^ name
+    ^ "\n\n"
+    ^ (String.concat "\n" (List.map field_type2mpidl fields))
+    ^ "\n\n"
+    ^ (format_doclines doclines) ^ "\n";
 
   | Exception(name,fields,p,doclines) ->
+    let p_str = match p with
+      | "" -> p;
+      | _  -> " (< " ^ p ^ ")"
+    in
     (*
       exception ex {
       }
     *)
-    ".. describe:: " ^ name ^ " (< " ^ p ^ ")"
-    ^ "\n\n" ^ (format_doclines doclines) ^ "\n";
+    ".. describe:: " ^ name ^ p_str
+    ^ "\n\n"
+    ^ (String.concat "\n" (List.map field_type2mpidl fields))
+    ^ "\n\n"
+    ^ (format_doclines doclines) ^ "\n";
 
   | Service(name,methods,doclines) ->
     (*
@@ -117,7 +129,9 @@ let to_string = function
     *)
     "service "^name^"\n"
     ^"----------------------\n\n"
-    ^ (format_doclines doclines) ^ "\n"
+    ^ (format_doclines doclines) ^ "\n\n"
+    ^ (String.concat "\n" (List.map method_type2mpidl methods))
+      
 ;;
 
 let generate s output strees =
@@ -128,3 +142,4 @@ let generate s output strees =
   output <<< "=========\n";
   List.iter (fun l -> output <<< (to_string l)) strees;
   ();;
+

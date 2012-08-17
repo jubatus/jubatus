@@ -147,3 +147,56 @@ let rec decl_type2string_const_ref = function
   | Tuple(ts) ->
     "const msgpack::type::tuple<"^(String.concat "," (List.map decl_type2string ts))^" >&";
   | Nullable(t) -> "const /* nullable */" ^(decl_type2string t);;
+
+
+(* todo: unify with Jubadoc_parser.mly:l90 a_type code. or do int using camlp4 *)
+let rec decl_type2mpidl = function
+  | Void -> "void";
+  | Object -> "object";
+  | Bool -> "bool";
+  | Byte -> "byte";
+  | Short -> "short";
+  | Int -> "int";
+  | Long -> "long";
+  | Ubyte -> "ubyte";
+  | Ushort -> "ushort";
+  | Uint  -> "uint";
+  | Ulong -> "ulong";
+  | Float -> "float";
+  | Double -> "double";
+  | Raw  -> "raw";
+  | String -> "string";
+  | Struct(s) -> "message " ^ s;
+  | List(decl_type_t) -> "list<"^(decl_type2mpidl decl_type_t)^">";
+  | Map(k,v) -> "map<"^(decl_type2mpidl k)^", "^(decl_type2mpidl v)^">";
+  | Tuple(decl_types) ->
+    "tuple<" ^ (String.concat ", " (List.map decl_type2mpidl decl_types)) ^ ">";
+  | Nullable(decl_type_t) -> "nullable "^(decl_type2mpidl decl_type_t);;
+(*		 | `Null *)
+
+
+let format_doclines doclines =
+  let strip line =
+    String.sub line 3 ((String.length line) - 3)
+  in
+  String.concat "" (List.map strip doclines);;
+
+let field_type2mpidl (Field(i, t, n, c)) =
+  let make_fielddoc = function
+    | [] -> "";
+    | doclines -> "\n\n - "
+      ^ (String.concat " - " (List.map (fun line -> String.sub line 3 ((String.length line) - 3)) c))
+  in
+  "+ " ^ (string_of_int i) ^ ": " ^ (decl_type2mpidl t) ^ " " ^ n
+  ^ (make_fielddoc c);;
+
+let method_type2mpidl (Method(t, n, fields, decs, cmt)) =
+  let field2mpidl (Field(i, t, n, _)) =
+    (string_of_int (i-1)) ^ ": " ^ (decl_type2mpidl t) ^ " " ^ n
+  in
+  let fields_str = String.concat ", " (List.map field2mpidl fields) in
+  ".. describe:: " ^ (decl_type2mpidl t) ^ " " ^ n ^ "(" ^ fields_str ^ ")\n"
+  ^ "\n"
+  ^ (String.concat ", " (List.map decorator_to_string decs))
+  ^ "\n\n"
+  ^ (format_doclines cmt) ;;
