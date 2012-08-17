@@ -1,0 +1,74 @@
+
+
+type hoge_t = int
+type somet0 = list<double>
+type somet1 = map<int,int>
+type somet2 = tuple<int,string>
+type somet3 = list<somet0>
+
+#- this is document for some_enum
+#- should be.
+#- 
+#- 
+enum some_enum {
+  0: saitama
+  1: gunma
+}
+
+#- this message 'hoge' is a...
+#- ooo?
+message hoge{
+  #- comment for someint
+  0: int someint
+#  1: int somei = 234 not yet supported
+  1: int somei
+  2: list<somet0> aa
+}
+
+exception ex0 {
+  #- this is message itself
+  0: string msg0
+  #- this is message itself
+  #- this is message itself
+  #- aaa
+  1: hoge obj
+}
+
+exception ex < ex0 {
+  0: string msg
+}
+
+#- must have ...
+service srvce {
+
+  #- ooo
+  #@random #@update #@ignore
+  int hello(1:string name)
+
+  #@random #@nolock #@ignore
+  int world(1: string ppp, 2: int aaa)
+
+  #@cht #@update #@all_or
+  bool someupdate(1: string name, 2: string key, 3: int hage)
+
+  #@cht(1) #@analysis #@pass
+  bool someread0(1: string name, 2: string key)
+
+  #@broadcast #@update #@all_and
+  bool save(1:string name, 2: string id)
+
+  #- hoafsda
+  #- hoafsda
+  #@broadcast #@update #@all_and
+  bool load(1:string name, 2: string id)
+
+  #@broadcast #@analysis #@merge
+  bool get_status(1:string name)
+
+# bad
+#  string bye()
+
+# bad
+# #@cht #@update
+#  string hoge(1:string 2:string)
+}

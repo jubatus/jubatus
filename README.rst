@@ -36,6 +36,7 @@ Preparing 0.3.2
 
 Improvements
   - jubavisor/jubactl support jubauts server options (#75)
+  - jubadoc: document generator (.idl => .rst)
 
 Bugfix
 
