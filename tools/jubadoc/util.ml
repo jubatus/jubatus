@@ -187,12 +187,12 @@ let field_type2mpidl (Field(i, t, n, c)) =
     | doclines -> "\n\n - "
       ^ (String.concat " - " (List.map (fun line -> String.sub line 3 ((String.length line) - 3)) c))
   in
-  "+ " ^ (string_of_int i) ^ ": " ^ (decl_type2mpidl t) ^ " " ^ n
+  "- " ^ (string_of_int i) ^ ": " ^ (decl_type2mpidl t) ^ " " ^ n
   ^ (make_fielddoc c);;
 
 let method_type2mpidl (Method(t, n, fields, decs, cmt)) =
   let field2mpidl (Field(i, t, n, _)) =
-    (string_of_int (i-1)) ^ ": " ^ (decl_type2mpidl t) ^ " " ^ n
+    (string_of_int i) ^ ": " ^ (decl_type2mpidl t) ^ " " ^ n
   in
   let fields_str = String.concat ", " (List.map field2mpidl fields) in
   ".. describe:: " ^ (decl_type2mpidl t) ^ " " ^ n ^ "(" ^ fields_str ^ ")\n"
