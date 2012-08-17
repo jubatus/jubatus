@@ -10,6 +10,7 @@ subdirs = 'src'
 def options(opt):
   opt.load('compiler_cxx')
   opt.load('unittest_gtest')
+  opt.load('gnu_dirs')
 
   opt.add_option('--enable-zookeeper',
                  action='store_true', default=False, # dest='nozk',
@@ -30,6 +31,7 @@ def configure(conf):
 
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
+  conf.load('gnu_dirs')
 
   conf.check_cxx(lib = 'msgpack')
   conf.check_cxx(lib = 'dl')
@@ -93,6 +95,5 @@ def build(bld):
       PACKAGE = APPNAME,
       VERSION = VERSION)
 
-  bld.install_files('${PREFIX}/lib/pkgconfig', 'jubatus.pc')
   bld.recurse(subdirs)
 
