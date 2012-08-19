@@ -15,40 +15,12 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-type param_t = map<string, string> 
-
-message string_rule {
-  0: string key
-  1: string t
-  2: string sample_weight
-  3: string global_weight
-}
-
-message filter_rule {
-  0: string key
-  1: string t
-  2: string suffix
-}
-
-message num_rule {
-  0: string key
-  1: string t
-}
-
-message converter_config {
-  0: map<string, param_t>  string_filter_types
-  1: list<filter_rule>  string_filter_rules
-  2: map<string, param_t>  num_filter_types
-  3: list<filter_rule>  num_filter_rules
-  4: map<string, param_t>  string_types
-  5: list<string_rule>  string_rules
-  6: map<string, param_t>  num_types
-  7: list<num_rule>  num_rules
-}
-
 message config_data {
-  0: param_t config
-  1: converter_config converter
+  #- configuration for NN search and LOF example follows:
+  0: map<string,string> config
+  
+  #- JSON formatted conveter configuration: see http://jubat.us/en/fv_convert.html for details
+  1: string converter
 }
 
 message datum {

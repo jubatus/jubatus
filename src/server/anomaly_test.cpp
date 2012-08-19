@@ -52,6 +52,6 @@ TEST_F(anomaly_test, small){
   client::anomaly c("localhost", PORT, 10);
 
   // FIXME: write tests
-  //  c.get_config("");
+  c.get_config("");
 }
 }
