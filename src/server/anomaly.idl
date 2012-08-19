@@ -15,8 +15,22 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#- argument for set_config(). Example for ``config``:
+#- 
+#- ::
+#- 
+#-    {
+#-     "anomaly:name": "lof",
+#-     "lof:neighbor_num": "10",
+#-     "lof:reverse_nn_num": "30",
+#-     "name": "euclid_lsh",
+#-     "lsh_num": "8",
+#-     "table_num": "16",
+#-     "probe_num": "64",
+#-     "bin_width": "10"
+#-    }
 message config_data {
-  #- configuration for NN search and LOF example follows:
+  #- configuration for NN search and LOF
   0: map<string,string> config
   
   #- JSON formatted conveter configuration: see http://jubat.us/en/fv_convert.html for details
@@ -36,18 +50,23 @@ service anomaly {
   #@random #@analysis #@pass
   config_data get_config(0: string name) # //@random
 
+  #- clear a point data.
   #@cht #@update #@all_and
   bool clear_row(0: string name, 1: string id) # //@cht
 
+  #- add a point data.
   #@random #@update #@pass
   tuple<string, float> add(0: string name, 1: datum d) # //@random
 
+  #- update a point with new data.
   #@cht #@update #@pass
   float update(0: string name, 1: string id, 2: datum d) # //@cht
 
+  #- clear whole data.
   #@broadcast #@update #@all_and
   bool clear(0: string name) # //@broadcast
 
+  #- calculate an anomaly measure value without adding a point.
   #@random #@analysis #@pass
   float calc_score(0: string name, 1: datum d) # //@random
 
