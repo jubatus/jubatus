@@ -38,6 +38,16 @@ namespace {
     };
   };
 
+config_data make_simple_config(const string& method) {
+  config_data c;
+  c.method = method;
+  jubatus::fv_converter::converter_config config;
+  jubatus::fv_converter::num_rule rule = { "*", "num" };
+  config.num_rules.push_back(rule);
+  c.converter = config_to_string(config);
+  return c;
+}
+
 TEST_F(recommender_test, get_status){
   jubatus::client::recommender cli("localhost", PORT, 10);
   map<string,map<string,string> > status = cli.get_status(NAME);
@@ -52,10 +62,7 @@ TEST_F(recommender_test, small) {
 
   jubatus::client::recommender c("localhost", PORT, 10);
   
-  jubatus::config_data conf;
-  conf.config["name"] = "lsh";
-  jubatus::num_rule r = {"*", "num"};
-  conf.converter.num_rules.push_back(r);
+  jubatus::config_data conf = make_simple_config("lsh");
   c.set_config(NAME, conf);
 
   jubatus::datum d;

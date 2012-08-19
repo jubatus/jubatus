@@ -10,7 +10,7 @@ def build(bld):
     source = 'main.cpp jubavisor.cpp process.cpp',
     target = 'jubavisor',
     includes = '.',
-    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon'
+    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon jubatus_framework'
     )
 
   bld.program(
@@ -18,5 +18,5 @@ def build(bld):
     source = 'jubavisor.cpp jubavisor_test.cpp process.cpp',
     target = 'jubavisor_test',
     includes = '.',
-    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon'
+    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon jubatus_framework'
     )

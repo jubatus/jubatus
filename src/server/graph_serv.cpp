@@ -26,6 +26,7 @@
 #include "../framework/aggregators.hpp"
 
 #include <pficommon/lang/cast.h>
+#include <pficommon/concurrent/lock.h>
 #include <sstream>
 
 #include <pficommon/system/time_util.h>
@@ -64,11 +65,9 @@ graph_serv::graph_serv(const framework::server_argv& a)
 graph_serv::~graph_serv()
 {}
 
-std::string graph_serv::create_node(){
+std::string graph_serv::create_node(){ /* no lock here */
   uint64_t nid = idgen_.generate();
   std::string nid_str = pfi::lang::lexical_cast<std::string>(nid);
-  // send true create_global_node to other machines.
-  //DLOG(INFO) << __func__ << " " << nid_str;
 
   if(not a_.is_standalone()){
     // we dont need global locking, because getting unique id from zk
@@ -79,43 +78,22 @@ std::string graph_serv::create_node(){
       if(nodes.empty()){
         throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("fatal: no server found in cht: "+nid_str));
       }
-      // this sequences MUST success, in case of failures the whole request should be canceled
-      if(nodes[0].first == a_.eth && nodes[0].second == a_.port){
-        this->create_node_here(nid_str);
-      }else{
-        client::graph c(nodes[0].first, nodes[0].second, 5.0);
-        c.create_node_here(a_.name, nid_str);
-      }
+      selective_create_node_(nodes[0], nid_str);
 
       for(size_t i = 1; i < nodes.size(); ++i){
         try{
-          if(nodes[i].first == a_.eth && nodes[i].second == a_.port){
-            this->create_node_here(nid_str);
-          }else{
-            client::graph c(nodes[i].first, nodes[i].second, 5.0);
-            c.create_node_here(a_.name, nid_str);
-          }
+          selective_create_node_(nodes[i], nid_str);
+
         }catch(const graph::local_node_exists& e){ // pass through
         }catch(const graph::global_node_exists& e){// pass through
-
         }catch(const std::runtime_error& e){ // error !
           LOG(INFO) << i+1 << "th replica: " << nodes[i].first << ":" << nodes[i].second << " " << e.what();
         }
       }
     }
-    std::vector<std::pair<std::string, int> > members;
-    get_members(members);
-    if(not members.empty()){
-      common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
-      c.call_async("create_global_node", a_.name, nid_str);
 
-      try{
-        c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
-      }catch(const std::runtime_error & e){ // no results?, pass through
-        DLOG(INFO) << __func__ << " " << e.what();
-      }
-    }
   }else{
+    pfi::concurrent::scoped_lock lk(wlock(m_));
     this->create_node_here(nid_str);
   }
   DLOG(INFO) << "new node created: " << nid_str;
@@ -142,8 +120,11 @@ int graph_serv::remove_node(const std::string& nid){
     
     if(not members.empty()){
       common::mprpc::rpc_mclient c(members, a_.timeout); //create global node
-      c.call_async("remove_global_node", a_.name, nid);
-      c.join_all<int>(pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+      try{
+        c.call("remove_global_node", a_.name, nid, pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
+      }catch(const common::mprpc::rpc_no_result& e){ // pass through
+        DLOG(INFO) << __func__ << " " << e.diagnostic_information(true);
+      }
     }
   }
   DLOG(INFO) << "node removed: " << nid;
@@ -151,7 +132,7 @@ int graph_serv::remove_node(const std::string& nid){
 }
 
   //@cht
-int graph_serv::create_edge(const std::string& id, const edge_info& ei)
+int graph_serv::create_edge(const std::string& id, const edge_info& ei)  /* no lock here */
 { 
   edge_id_t eid = idgen_.generate();
   //TODO: assert id==ei.src
@@ -165,7 +146,10 @@ int graph_serv::create_edge(const std::string& id, const edge_info& ei)
       throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("fatal: no server found in cht: "+ei.src));
     }
     // TODO: assertion: nodes[0] should be myself
-    this->create_edge_here(eid, ei);
+    {
+      pfi::concurrent::scoped_lock lk(wlock(m_));
+      this->create_edge_here(eid, ei);
+    }
     for(size_t i = 1; i < nodes.size(); ++i){
       try{
 	if(nodes[i].first == a_.eth && nodes[i].second == a_.port){
@@ -181,6 +165,7 @@ int graph_serv::create_edge(const std::string& id, const edge_info& ei)
       }
     }
   }else{
+    pfi::concurrent::scoped_lock lk(wlock(m_));
     this->create_edge_here(eid, ei);
   }
 
@@ -223,6 +208,7 @@ std::vector<node_id> graph_serv::shortest_path(const shortest_path_req& req) con
 { 
   std::vector<jubatus::graph::node_id_t> ret0;
   jubatus::graph::preset_query q;
+  framework::convert(req.q, q);
   g_.get_model()->shortest_path(n2i(req.src), n2i(req.tgt), req.max_hop, ret0, q);
   std::vector<node_id> ret;
   for(size_t i=0;i<ret0.size();++i){
@@ -336,18 +322,6 @@ int graph_serv::create_node_here(const std::string& nid)
 
   return 0;
 }
-int graph_serv::create_global_node(const std::string& nid)
-{
-  try{
-    g_.get_model()->create_global_node(n2i(nid));
-  }catch(const graph::local_node_exists& e){
-  }catch(const graph::global_node_exists& e){
-  }catch(const std::runtime_error& e){
-    DLOG(INFO) << e.what() << " " << nid;
-    throw;
-  }
-  return 0;
-} //update internal
 
 int graph_serv::remove_global_node(const std::string& nid)
 {
@@ -375,5 +349,21 @@ int graph_serv::create_edge_here(edge_id_t eid, const edge_info& ei)
 }
 
 void graph_serv::after_load(){}
+
+void graph_serv::selective_create_node_(const std::pair<std::string,int>& target,
+                                        const std::string nid_str)
+{
+  if(target.first == a_.eth && target.second == a_.port){
+
+    pfi::concurrent::scoped_lock lk(wlock(m_));
+    this->create_node_here(nid_str);
+
+  }else{
+    // must not lock here
+    client::graph c(target.first, target.second, 5.0);
+    c.create_node_here(a_.name, nid_str);
+  }
+}
+
 
 }}

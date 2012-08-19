@@ -22,6 +22,7 @@
 
 #include "../common/membership.hpp"
 #include "../common/exception.hpp"
+#include "../common/util.hpp"
 #include "server_util.hpp"
 
 using namespace jubatus;
@@ -34,8 +35,8 @@ keeper::keeper(const keeper_argv& a)
     //    zk_(common::create_lock_service("zk", a.z, a.timeout))
 {
   ls = zk_;
-  jubatus::common::prepare_jubatus(*zk_);
-  if(!register_keeper(*zk_, a_.eth, a_.port) ){
+  jubatus::common::prepare_jubatus(*zk_, a_.type, "");
+  if(!register_keeper(*zk_, a_.type, a_.eth, a_.port) ){
     throw JUBATUS_EXCEPTION(membership_error("can't register to zookeeper."));
   }
 }
@@ -47,8 +48,8 @@ int keeper::run()
 {
   try {
     { LOG(INFO) << "running in port=" << a_.port; }
-    set_exit_on_term();
-    ignore_sigpipe();
+    jubatus::util::set_exit_on_term();
+    jubatus::util::ignore_sigpipe();
     return this->serv(a_.port, a_.threadnum);
   } catch (const jubatus::exception::jubatus_exception& e) {
     std::cout << e.diagnostic_information(true) << std::endl;
@@ -60,14 +61,20 @@ void keeper::get_members_(const std::string& name, std::vector<std::pair<std::st
   using namespace std;
   ret.clear();
   vector<string> list;
-  string path = common::ACTOR_BASE_PATH + "/" + name + "/nodes";
+  string path;
+  common::build_actor_path(path, a_.type, name);
+  path += "/nodes";
 
   {
     pfi::concurrent::scoped_lock lk(mutex_);
     zk_->list(path, list);
   }
   vector<string>::const_iterator it;
-  
+
+  if(list.empty()){
+    throw JUBATUS_EXCEPTION(no_worker(name));
+  }
+
   // FIXME:
   // do you return all server list? it can be very large
   for(it = list.begin(); it!= list.end(); ++it){
@@ -75,5 +82,18 @@ void keeper::get_members_(const std::string& name, std::vector<std::pair<std::st
     int port;
     common::revert(*it, ip, port);
     ret.push_back(make_pair(ip,port));
+  }
+}
+
+void keeper::get_members_from_cht_(const std::string& name, const std::string& id,
+                                   std::vector<std::pair<std::string, int> >& ret, size_t n)
+{
+  ret.clear();
+  pfi::concurrent::scoped_lock lk(mutex_);
+  jubatus::common::cht ht(zk_, a_.type, name);
+  ht.find(id, ret, n);
+
+  if(ret.empty()){
+    throw JUBATUS_EXCEPTION(no_worker(name));
   }
 }

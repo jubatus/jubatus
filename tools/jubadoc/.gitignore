@@ -1,0 +1,15 @@
+*.cmo
+*.cmi
+*.cmx
+*.output
+*.run
+*.o
+*_lexer.ml
+*_parser.ml
+*_parser.mli
+*.opt
+*~
+*.omc
+.omakedb*
+
+

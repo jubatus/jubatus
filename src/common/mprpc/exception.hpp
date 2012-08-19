@@ -1,0 +1,65 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+#pragma once
+
+#include <pficommon/network/mprpc/exception.h>
+#include "../exception.hpp"
+
+namespace jubatus {
+namespace common {
+namespace mprpc {
+
+typedef jubatus::exception::error_info<struct error_method_, std::string> error_method;
+
+class rpc_no_client : public jubatus::exception::jubaexception<rpc_no_client> {
+public:
+  const char* what() const throw() { return "no client"; }
+};
+
+class rpc_no_result : public jubatus::exception::jubaexception<rpc_no_result> {
+public:
+  const char* what() const throw() { return "no result"; }
+};
+
+
+class rpc_io_error : public jubatus::exception::jubaexception<rpc_io_error> {
+};
+
+class rpc_timeout_error : public jubatus::exception::jubaexception<rpc_timeout_error> {
+};
+
+// rpc_server error
+class rpc_type_error : public jubatus::exception::jubaexception<rpc_type_error> {
+};
+
+// rpc_server error
+class rpc_method_not_found : public jubatus::exception::jubaexception<rpc_method_not_found> {
+};
+
+// rpc_server error
+class rpc_call_error : public jubatus::exception::jubaexception<rpc_call_error> {
+};
+
+class rpc_internal_error : public jubatus::exception::jubaexception<rpc_internal_error> {
+};
+
+
+} // mprpc
+} // common
+} // jubatus
+

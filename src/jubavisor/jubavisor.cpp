@@ -15,15 +15,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <signal.h>
+#include "jubavisor.hpp"
+#include <algorithm>
 #include <sys/wait.h>
 #include <errno.h>
+#include <csignal>
 #include <pficommon/concurrent/lock.h>
 
-#include <csignal>
 #include <glog/logging.h>
 
-#include "jubavisor.hpp"
 #include "../common/util.hpp"
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
@@ -44,10 +44,9 @@ jubervisor::jubervisor(const std::string& hosts, int port, int max,
   logfile_(logfile),
   max_children_(max)
 {
-  // portable code for socket write(2) MSG_NOSIGNAL
-  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't ignore SIGPIPE")
-        << jubatus::exception::error_errno(errno));
+  jubatus::util::ignore_sigpipe();
+  jubatus::util::set_exit_on_term();
+  ::atexit(jubervisor::atexit_);
 
   // handle SIG_CHLD
   struct sigaction sa;
@@ -85,6 +84,12 @@ jubervisor::jubervisor(const std::string& hosts, int port, int max,
 jubervisor::~jubervisor()
 {
   stop_all();
+}
+
+void jubervisor::atexit_()
+{
+  if (g_jubavisor && g_jubavisor->zk_)
+    g_jubavisor->zk_->force_close();
 }
 
 void jubervisor::sigchld_handler_(int sig)
@@ -130,14 +135,14 @@ void jubervisor::sigchld_handler_(int sig)
 // server : "jubaclassifier" ...
 // name : any but ""
 // -> exec ./<server> -n <name> -p <rpc_port> -z <zk>
-int jubervisor::start(std::string str, unsigned int N)
+int jubervisor::start(std::string str, unsigned int N, framework::server_argv argv)
 {
   scoped_lock lk(m_);
   LOG(INFO) << str << " " << N;
-  return start_(str, N);
+  return start_(str, N, argv);
 }
 
-int jubervisor::start_(const std::string& str, unsigned int N)
+int jubervisor::start_(const std::string& str, unsigned int N, const framework::server_argv& argv)
 {
   std::string name;
   {
@@ -166,7 +171,7 @@ int jubervisor::start_(const std::string& str, unsigned int N)
   }
   
   for(unsigned int n=0; n<N; ++n){
-    process p(zk_->get_hosts());
+    process p(zk_->get_hosts(), argv);
     p.set_names(str);
     it = children_.find(name);
 

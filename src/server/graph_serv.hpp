@@ -24,6 +24,10 @@
 
 namespace jubatus { namespace server {
 
+typedef uint64_t edge_id_t;
+typedef std::string node_id;
+typedef int centrality_type;
+
 struct mixable_graph : public framework::mixable<jubatus::graph::graph_base, std::string, mixable_graph>
 {
   void clear(){
@@ -113,6 +117,9 @@ public:
   void after_load();
 
 private:
+  void selective_create_node_(const std::pair<std::string,int>& target,
+                              const std::string nid_str);
+
   mixable_graph g_;
 };
 

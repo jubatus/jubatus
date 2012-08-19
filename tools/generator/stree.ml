@@ -31,7 +31,7 @@ type decl_type = Void | Object | Bool
 type field_type = Field of int * decl_type * string
 
 type routing_type = Random | Cht of int | Broadcast | Internal
-type reqtype = Update | Analysis
+type reqtype = Update | Analysis | Nolock
 
 (* known_aggregators =
    ["#@all_and"; "#@all_or"; "#@concat"; "#@merge"; "#@ignore";"#@pass"] in  *)
@@ -68,6 +68,7 @@ let check_type name =
 let make_decorator = function
   | "#@update"   -> Reqtype(Update);
   | "#@analysis" -> Reqtype(Analysis);
+  | "#@nolock"   -> Reqtype(Nolock);
 
   | "#@random"   -> Routing(Random);
   | "#@broadcast" -> Routing(Broadcast);
@@ -104,7 +105,8 @@ let aggtype_to_string = function
 
 let reqtype_to_string = function
   | Update -> "update";
-  | Analysis -> "analysis";;
+  | Analysis -> "analysis";
+  | Nolock -> "nolock";;
 
 let decorator_to_string = function
   | Reqtype(r) -> "Reqtype("^(reqtype_to_string r)^")";

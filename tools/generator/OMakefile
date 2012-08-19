@@ -1,4 +1,4 @@
-.PHONY: all install clean test uninstall
+.PHONY: all install clean test regenerate uninstall
 
 clean:
 	rm -rf $(filter-proper-targets $(ls R, .))
@@ -54,12 +54,10 @@ FILES[] =
     validator
     stree
     generator
+    keeper_generator
+    impl_generator
+    server_generator
     util
-
-#    idl
-#    server_template
-#    keeper_template
-#    idl_template
 
 PROGRAM = jenerator
 # OCAML_LIBS +=
@@ -71,10 +69,7 @@ PROGRAM = jenerator
 
 
 test: $(PROGRAM)  small.idl
-	./$(PROGRAM) small.idl -d
-#	./$(PROGRAM) ../../src/server/recommender.idl -i
-#	-diff recommender_impl.cpp ../../src/server/recommender_impl.cpp
-#	-diff recommender_keeper.cpp ../../src/server/recommender_keeper.cpp
+	./$(PROGRAM) small.idl -t
 
 regenerate: $(PROGRAM)
 	./$(PROGRAM) ../../src/server/anomaly.idl -i -o ../../src/server

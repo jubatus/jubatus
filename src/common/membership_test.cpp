@@ -29,7 +29,7 @@ TEST(util, build_loc_str) {
 
 TEST(util, build_existence_path) {
   string s;
-  EXPECT_TRUE(build_existence_path("/path/base", "127.0.0.1", 9199, s));
+  build_existence_path("/path/base", "127.0.0.1", 9199, s);
   EXPECT_EQ("/path/base/127.0.0.1_9199", s);
 }
 

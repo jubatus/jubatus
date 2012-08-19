@@ -18,7 +18,7 @@ TEST(mixable_stat_test, mixed_entropy) {
 
   std::pair<double,size_t> d = p.get_diff();
   ASSERT_DOUBLE_EQ(e_d, d.first);
-  ASSERT_EQ(3, d.second);
+  ASSERT_EQ(3u, d.second);
 
   p.put_diff(d);
 

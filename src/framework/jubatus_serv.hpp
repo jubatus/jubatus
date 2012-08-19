@@ -33,7 +33,8 @@ namespace jubatus { namespace framework {
 class jubatus_serv : pfi::lang::noncopyable {
 
 public:
-  jubatus_serv(const server_argv& a, const std::string& base_path = "/tmp");
+  jubatus_serv(const server_argv& a,
+               const std::string& base_path = "/tmp");
   virtual ~jubatus_serv(){};
 
   virtual int start(pfi::network::mprpc::rpc_server& serv);
@@ -79,7 +80,7 @@ protected:
   void build_local_path_(std::string& out, const std::string& type, const std::string& id) const;
   void build_local_path0_(std::string& out, const std::string& type, const std::string& id) const;
 
-  server_argv a_;
+  const server_argv a_;
   unsigned int update_count_;
 
   std::vector<mixable0*> mixables_;
@@ -105,3 +106,5 @@ protected:
 #define JWLOCK__(p) \
   pfi::concurrent::scoped_lock lk(wlock((p)->get_rw_mutex())); \
   (p)->updated();
+
+#define NOLOCK__(p) {;}

@@ -38,9 +38,9 @@ TEST(zk, zk_trivial) {
   std::string name1_, path1;
 
   name_ = build_loc_str("localhost", 10000);
-  path = ACTOR_BASE_PATH + "/" + name_;
+  build_actor_path(path, name_);
   name1_ = build_loc_str("localhost", 10001);
-  path1 = ACTOR_BASE_PATH + "/" + name1_;
+  build_actor_path(path1, name1_);
 
   zk_->create(JUBATUS_BASE_PATH, "");
   zk_->create(ACTOR_BASE_PATH, "");

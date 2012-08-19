@@ -38,5 +38,8 @@ void append_server_path(const std::string& argv0);
 
 void get_machine_status(std::map<std::string, std::string>&);
 
+void set_exit_on_term();
+void ignore_sigpipe();
+
 } //util
 } //namespace jubatus

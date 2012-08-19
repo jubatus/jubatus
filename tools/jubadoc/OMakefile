@@ -1,0 +1,82 @@
+.PHONY: all install clean test uninstall
+
+clean:
+	rm -rf $(filter-proper-targets $(ls R, .))
+	rm -rf *.omc
+
+USE_OCAMLFIND = true
+
+OCAMLPACKS[] =
+#    pack1
+#    pack2
+
+if $(not $(OCAMLFIND_EXISTS))
+    eprintln(This project requires ocamlfind\, but is was not found.)
+    eprintln(You need to install ocamlfind and run "omake --configure".)
+    exit 1
+
+#
+# Include path
+#
+# OCAMLINCLUDES +=
+
+#
+# Compile native or byte code? 
+#
+# The default values are defined as follows:
+#
+NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
+BYTE_ENABLED = $(not $(OCAMLOPT_EXISTS))
+
+# MENHIR_ENABLED =true
+
+# Various options
+
+OCAMLFLAGS    += -g -thread
+OCAMLCFLAGS   += -g
+# OCAMLOPTFLAGS +=
+# OCAML_LINK_FLAGS +=
+# OCAML_BYTE_LINK_FLAGS +=
+# OCAML_NATIVE_LINK_FLAGS +=
+
+################################################
+# Generated files
+#
+# Workaround for the fact that ocamldep does not pay attention to .mll
+# and .mly files.
+#
+OCamlGeneratedFiles(jdl_parser.ml jdl_lexer.ml)
+
+FILES[] =
+    jubadoc
+    jubadoc_lexer
+    jubadoc_parser
+    stree
+    generator
+    rst_generator
+    util
+
+PROGRAM = jubadoc
+OCAML_LIBS +=
+# OCAML_CLIBS +=
+# OCAML_OTHER_LIBS +=
+# OCAML_LIB_FLAGS +=
+
+.DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
+
+
+test: $(PROGRAM)  small.idl
+	./$(PROGRAM) small.idl
+	cat small.rst
+
+regenerate: $(PROGRAM)
+	./$(PROGRAM) ../../src/server/recommender.idl -i -o ../../src/server
+	./$(PROGRAM) ../../src/server/regression.idl  -i -o ../../src/server
+	./$(PROGRAM) ../../src/server/classifier.idl  -i -o ../../src/server
+	./$(PROGRAM) ../../src/server/stat.idl        -i -o ../../src/server
+	./$(PROGRAM) ../../src/server/graph.idl       -i -o ../../src/server
+
+OCamlProgramInstall(install, /usr/local/bin, $(PROGRAM), $(FILES))
+
+uninstall:
+	-rm /usr/local/bin/$(PROGRAM)

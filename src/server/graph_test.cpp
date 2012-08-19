@@ -8,6 +8,14 @@
 using namespace jubatus::client;
 static const int PORT = 65431;
 
+namespace jubatus {
+
+  typedef uint64_t edge_id_t;
+  typedef std::string node_id;
+  typedef int centrality_type;
+
+}
+
 namespace {
 
   class graph_test : public ::testing::TestWithParam<const char*> {
@@ -35,9 +43,7 @@ TEST_P(graph_test, simple){
   {
     c.clear("");
     nid = c.create_node("");
-    c.create_global_node("", nid);
     nid0 = c.create_node("");
-    c.create_global_node("", nid0);
     //    c.set_config("", config);
     //    c.get_config("", 0);
   }

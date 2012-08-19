@@ -18,6 +18,7 @@
 #include "zk.hpp"
 
 #include <assert.h>
+#include <unistd.h>
 
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/bind.h>
@@ -47,18 +48,24 @@ namespace common{
       zoo_set_log_stream(logfilep_);
     }
     
-    do{
-      // FIXME?: this loop will call zookeeper_init many times till
-      // the state got ZOO_CONNECTING_STAT
-      // timeout is supposed to be ms??
-      zh_ = zookeeper_init(hosts.c_str(), NULL, timeout * 1000, 0, NULL, 0);
-      if(zh_ == NULL){
-        perror("");
-        throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot init zk")
-          << jubatus::exception::error_api_func("zookeeper_init"));
-      }
-      state_ = zoo_state(zh_);
-    }while(state_ == ZOO_CONNECTING_STATE);
+    zh_ = zookeeper_init(hosts.c_str(), NULL, timeout * 1000, 0, NULL, 0);
+    if(!zh_){
+      perror("");
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot init zk")
+        << jubatus::exception::error_api_func("zookeeper_init")
+        << jubatus::exception::error_errno(errno));
+    }
+
+    // sleep the state got not ZOO_CONNECTING_STATE
+    while((state_ = zoo_state(zh_)) == ZOO_CONNECTING_STATE){
+      usleep(100);
+    }
+
+    if(is_unrecoverable(zh_) == ZINVALIDSTATE){
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot connect zk")
+        << jubatus::exception::error_api_func("is_unrecoverable")
+        << jubatus::exception::error_message(zerror(errno)));
+    }
 
     zoo_set_context(zh_, this);
     zoo_set_watcher(zh_, mywatcher);
@@ -73,6 +80,7 @@ namespace common{
   
   void zk::force_close(){
     zookeeper_close(zh_);
+    zh_ = NULL;
   }
   void zk::create(const std::string& path, const std::string& payload, bool ephemeral){
     scoped_lock lk(m_);

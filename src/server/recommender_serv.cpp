@@ -45,11 +45,9 @@ recommender_serv::~recommender_serv(){
 
 int recommender_serv::set_config(config_data config)
 {
+  shared_ptr<fv_converter::datum_to_fv_converter> converter
+      = framework::make_fv_converter(config.converter);
   config_ = config;
-  shared_ptr<fv_converter::datum_to_fv_converter> converter(new fv_converter::datum_to_fv_converter);
-  fv_converter::converter_config c;
-  convert<jubatus::converter_config, fv_converter::converter_config>(config.converter, c);
-  fv_converter::initialize_converter(c, *converter);
   converter_ = converter;
   rcmdr_.set_model(make_model());
   return 0;
@@ -96,7 +94,7 @@ int recommender_serv::clear()
 
 common::cshared_ptr<recommender_base> recommender_serv::make_model(){
   return common::cshared_ptr<recommender_base>
-    (jubatus::recommender::create_recommender(config_.config));
+    (jubatus::recommender::create_recommender(config_.method));
 }  
 
 void recommender_serv::after_load(){

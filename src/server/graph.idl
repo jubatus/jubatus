@@ -15,17 +15,12 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-type centrality_type = int
-
-type node_id = string
-type edge_id_t = ulong
-
 type property = map<string, string> 
 
 message node_info {
   0: property p
-  1: list<edge_id_t>  in_edges
-  2: list<edge_id_t>  out_edges
+  1: list<ulong>  in_edges
+  2: list<ulong>  out_edges
 }
 
 # query: { key => value }
@@ -38,20 +33,20 @@ message preset_query {
 
 message edge_info {
   0: property p
-  1: node_id src
-  2: node_id tgt
+  1: string src
+  2: string tgt
 }
 
 message shortest_path_req {
-  0: node_id src
-  1: node_id tgt
+  0: string src
+  1: string tgt
   2: uint max_hop
   3: preset_query q
 }
 
 service graph {
 
-  #@random #@update #@pass
+  #@random #@nolock #@pass
   string create_node(0: string name) # //@cht
 
   #@cht(2) #@update #@pass
@@ -60,18 +55,18 @@ service graph {
   #@cht #@update #@all_and
   int update_node(0: string name, 1: string nid, 2: property p) # //@cht
 
-  #@cht(1) #@update #@all_and
-  int create_edge(0: string name, 1: string nid, 2: edge_info ei) # //@cht
+  #@cht(1) #@nolock #@all_and
+  ulong create_edge(0: string name, 1: string nid, 2: edge_info ei) # //@cht
 
   #@cht #@update #@all_and
-  int update_edge(0: string name, 1: string nid, 2: edge_id_t eid, 3: edge_info ei) # //@cht
+  int update_edge(0: string name, 1: string nid, 2: ulong eid, 3: edge_info ei) # //@cht
 
   #@cht #@update #@all_and
-  int remove_edge(0: string name, 1: string nid, 2: edge_id_t e) # //@cht
+  int remove_edge(0: string name, 1: string nid, 2: ulong e) # //@cht
 
   #@random #@analysis #@pass
   double centrality(0: string name, 1: string nid,
-		    2: centrality_type ct, 3: preset_query q) # //@random
+		    2: int ct, 3: preset_query q) # //@random
 
   #@broadcast #@update #@all_and
   bool add_centrality_query(0: string name, 1: preset_query q)
@@ -83,7 +78,7 @@ service graph {
   bool remove_shortest_path_query(0: string name, 1: preset_query q)
 
   #@random #@analysis #@pass
-  list<node_id>  shortest_path(0: string name, 1: shortest_path_req r) # //@random
+  list<string>  shortest_path(0: string name, 1: shortest_path_req r) # //@random
 
   #@broadcast #@update #@all_and
   int update_index(0: string name) # //@broadcast
@@ -95,7 +90,7 @@ service graph {
   node_info get_node(0: string name, 1: string nid) # //@cht
 
   #@cht #@analysis #@pass
-  edge_info get_edge(0: string name, 1: string nid, 2: edge_id_t e) # //@cht
+  edge_info get_edge(0: string name, 1: string nid, 2: ulong e) # //@cht
 
   #@broadcast #@update #@all_and
   bool save(0: string name, 1: string arg1)
@@ -109,10 +104,8 @@ service graph {
   #@internal #@update #@pass
   int create_node_here(0: string name, 1: string nid)
   #@internal #@update #@pass
-  int create_global_node(0: string name, 1: string nid)
-  #@internal #@update #@pass
   int remove_global_node(0: string name, 1: string nid)
 
   #@internal #@update #@pass
-  int create_edge_here(0: string name, 1: edge_id_t eid, 2: edge_info ei)
+  int create_edge_here(0: string name, 1: ulong eid, 2: edge_info ei)
 }

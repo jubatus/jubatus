@@ -55,5 +55,5 @@ int main(int args, char** argv){
   return
     jubatus::framework::run_server<jubatus::server::anomaly_impl_,
                                    jubatus::server::anomaly_serv>
-       (args, argv);
+       (args, argv, "anomaly");
 }

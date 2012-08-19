@@ -37,7 +37,7 @@ namespace common{
 
   class cht{
   public:
-    cht(cshared_ptr<lock_service>, const std::string&);
+    cht(cshared_ptr<lock_service>, const std::string& type, const std::string& name);
     ~cht();
 
     // node :: ip_port
@@ -58,13 +58,14 @@ namespace common{
     std::pair<std::string,int> find_predecessor(const std::string&);
 
     // run just once in starting up the process: creates <name>/cht directory.
-    static void setup_cht_dir(lock_service&, const std::string&);
+    static void setup_cht_dir(lock_service&, const std::string&, const std::string&);
 
   private:
 
     bool get_hashlist_(const std::string& key, std::vector<std::string>&);
 
-    std::string name_;
+    const std::string type_;
+    const std::string name_;
     cshared_ptr<lock_service> lock_service_;
   }; //cht  
 }
