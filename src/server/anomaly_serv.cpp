@@ -30,24 +30,19 @@ anomaly_serv::anomaly_serv(const server_argv& a)
 anomaly_serv::~anomaly_serv()
 {}
 
-
 //update, broadcast
-bool anomaly_serv::set_config(const config_data& c)
+bool anomaly_serv::set_config(const jubatus::config_data& config)
 {
-  config_ = c;
-  
-  common::cshared_ptr<fv_converter::datum_to_fv_converter>
-    converter(new fv_converter::datum_to_fv_converter);
-    
-  jubatus::fv_converter::converter_config converter_config;
-  convert(c.converter, converter_config);
-  fv_converter::initialize_converter(converter_config, *converter);
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+    converter = framework::make_fv_converter(config.converter);
+
+  config_ = config;
   converter_ = converter;
 
   wm_.wm_ = common::cshared_ptr<fv_converter::weight_manager>(new weight_manager);
   wm_.set_model(wm_.wm_);
 
-  anomaly::anomaly_base* an = anomaly::create_anomaly(c.config);
+  anomaly::anomaly_base* an = anomaly::create_anomaly(config.config);
   anomaly_.set_model(common::cshared_ptr<anomaly::anomaly_base>(an));
   return true;
 }

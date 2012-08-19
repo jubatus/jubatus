@@ -26,6 +26,7 @@ using namespace std;
 using namespace jubatus;
 
 static const int PORT = 65436;
+static const std::string NAME = "";
 
 namespace {
 
@@ -47,11 +48,61 @@ namespace {
   };
 
 
+void make_default_config(jubatus::config_data& c)
+{
+  c.config["anomaly:name"] = "lof";
+  c.config["lof:neighbor_num"] = "10";
+  c.config["lof:reverse_nn_num"] = "30";
+  c.config["name"] = "euclid_lsh";
+  c.config["lsh_num"] = "8";
+  c.config["table_num"] = "16";
+  c.config["probe_num"] = "64";
+  c.config["bin_width"] = "10";
+  
+  jubatus::fv_converter::converter_config config;
+  jubatus::fv_converter::num_rule rule = { "*", "num" };
+  config.num_rules.push_back(rule);
+  c.converter = config_to_string(config);
+}
+
 TEST_F(anomaly_test, small){
 
   client::anomaly c("localhost", PORT, 10);
 
-  // FIXME: write tests
-  c.get_config("");
+  {
+    jubatus::config_data config, config2;
+    make_default_config(config);
+
+    c.set_config(NAME, config);
+    config2 = c.get_config(NAME);
+    ASSERT_EQ(config.config, config2.config);
+    ASSERT_EQ(config.converter, config2.converter);
+  }
+  {
+    datum d;
+    d.nv.push_back(make_pair("f1", 1.0));
+
+    c.add(NAME, d); // is it good to be inf?
+    std::pair<std::string, float> w = c.add(NAME, d);
+    float v = c.calc_score(NAME, d);
+    ASSERT_DOUBLE_EQ(w.second, v);
+  }
+  {
+    std::vector<std::string> rows = c.get_all_rows(NAME);
+    ASSERT_EQ(2u, rows.size());
+  }
+  c.save(NAME, "id");
+  c.clear(NAME);
+  {
+    std::vector<std::string> rows = c.get_all_rows(NAME);
+    ASSERT_EQ(0u, rows.size());
+  }
+  c.load(NAME, "id");
+  {
+    std::vector<std::string> rows = c.get_all_rows(NAME);
+    ASSERT_EQ(2u, rows.size());
+  }
+  { c.get_status(NAME);
+  }
 }
 }

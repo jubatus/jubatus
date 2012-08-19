@@ -39,7 +39,7 @@ public:
   anomaly_serv(const framework::server_argv& a); // do not change
   virtual ~anomaly_serv(); // do not change
 
-  bool set_config(const config_data& c); //update broadcast
+  bool set_config(const jubatus::config_data& c); //update broadcast
 
   config_data get_config() const; //analysis random
 
@@ -60,10 +60,11 @@ public:
 private:
   float selective_update_(const std::string&, int, const std::string& id, const datum& d);
 
-  config_data config_;
+  jubatus::config_data config_;
   mixable_anomaly anomaly_;
 
-  common::cshared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   mixable_weight_manager wm_;
 };
+
 }} // namespace jubatus::server

@@ -70,5 +70,3 @@ std::string config_to_string(const jubatus::fv_converter::converter_config& conf
   ss << pfi::text::json::to_json(config);
   return ss.str();
 }
-
-
