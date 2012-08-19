@@ -22,8 +22,8 @@ public:
   bool clear_row(std::string name, std::string id) //update cht(2)
   { JWLOCK__(p_); return p_->clear_row(id); }
 
-  std::pair<std::string,float > add(std::string name, datum d) //update random
-  { JWLOCK__(p_); return p_->add(d); }
+  std::pair<std::string,float > add(std::string name, datum d) //nolock random
+  { NOLOCK__(p_); return p_->add(d); }
 
   float update(std::string name, std::string id, datum d) //update cht(2)
   { JWLOCK__(p_); return p_->update(id, d); }

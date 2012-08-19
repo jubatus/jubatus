@@ -45,7 +45,7 @@ public:
 
   bool clear_row(const std::string& id); //update cht
 
-  std::pair<std::string,float > add(const datum& d); //update random
+  std::pair<std::string,float > add(const datum& d);
 
   float update(const std::string& id, const datum& d); //update cht
 
@@ -58,6 +58,8 @@ public:
   void after_load();
 
 private:
+  float selective_update_(const std::string&, int, const std::string& id, const datum& d);
+
   config_data config_;
   mixable_anomaly anomaly_;
 

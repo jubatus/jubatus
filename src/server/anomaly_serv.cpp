@@ -1,8 +1,11 @@
 // this is automatically generated template header please implement and edit.
 
+
 #include "anomaly_serv.hpp"
 #include "../anomaly/anomaly_factory.hpp"
 #include "../fv_converter/converter_config.hpp"
+
+#include <pficommon/concurrent/lock.h>
 
 #include "anomaly_client.hpp"
 
@@ -62,48 +65,39 @@ bool anomaly_serv::clear_row(const std::string& id)
   return true;
 }
 
-//update, random
+//nolock, random
 std::pair<std::string,float > anomaly_serv::add(const datum& d)
 {
   uint64_t id = idgen_.generate();
   std::string id_str = pfi::lang::lexical_cast<std::string>(id);
 
-  if(a_.is_standalone()){
+  if(not a_.is_standalone()){
     
-    float score = update(id_str, d);
-    return make_pair(id_str, score);
-    
-  }else{
-
     std::vector<std::pair<std::string, int> > nodes;
     float score = 0;
     find_from_cht(id_str, 2, nodes);
     if(nodes.empty()){
-      throw std::runtime_error("fatal: no server found in cht: "+id_str);
+      throw JUBATUS_EXCEPTION(membership_error("no server found in cht: "+id_str));
     }
     // this sequences MUST success, in case of failures the whole request should be canceled
-    if(nodes[0].first == a_.eth && nodes[0].second == a_.port){
-      score = this->update(id_str, d);
-    }else{
-      client::anomaly c(nodes[0].first, nodes[0].second, 5.0);
-      score = c.update(a_.name, id_str, d);
-    }
+    score = selective_update_(nodes[0].first, nodes[0].second, id_str, d);
     
     for(size_t i = 1; i < nodes.size(); ++i){
       try{
-	if(nodes[i].first == a_.eth && nodes[i].second == a_.port){
-	  score = this->update(id_str, d);
-	}else{
-	  client::anomaly c(nodes[i].first, nodes[i].second, 5.0);
-	  score = c.update(a_.name, id_str, d);
-	}
+	selective_update_(nodes[i].first, nodes[i].second, id_str, d);
 	
       }catch(const std::runtime_error& e){ // error !
 	LOG(INFO) << i+1 << "th replica: " << nodes[i].first << ":" << nodes[i].second << " " << e.what();
       }
     }
     return make_pair(id_str, score);
+
+  }else{ // standalone mode
+    float score = update(id_str, d);
+    return make_pair(id_str, score);
   }
+    
+
 }
 
 //update, cht
@@ -132,8 +126,7 @@ float anomaly_serv::calc_score(const datum& d) const
   sfv_t v;
   convert(d, data);
   converter_->convert(data, v);
-  float score = anomaly_.get_model()->calc_anomaly_score(v);
-  return score;
+  return anomaly_.get_model()->calc_anomaly_score(v);
 }
 
 //analysis, broadcast
@@ -145,4 +138,19 @@ std::vector<std::string > anomaly_serv::get_all_rows() const
 }
 
 void anomaly_serv::after_load(){}
+
+float anomaly_serv::selective_update_(const std::string& host, int port, const std::string& id, const datum& d)
+{
+  //nolock context
+  if(host == a_.eth && port == a_.port){
+
+    pfi::concurrent::scoped_lock lk(wlock(m_));
+    return this->update(id, d);
+
+  }else{ // needs no lock
+    client::anomaly c(host, port, 5.0);
+    return c.update(a_.name, id, d);
+  }
+}
+
 }} // namespace jubatus::server
