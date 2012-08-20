@@ -134,9 +134,9 @@ std::map<std::string, std::map<std::string,std::string> > jubatus_serv::get_stat
   data["is_standalone"] = pfi::lang::lexical_cast<std::string>(a_.is_standalone());
   data["VERSION"] = JUBATUS_VERSION;
   data["PROGNAME"] = a_.program_name;
-  
+
   data["update_count"] = pfi::lang::lexical_cast<std::string>(update_count_);
-  
+
 #ifdef HAVE_ZOOKEEPER_H
   mixer_->get_status(data);
   data["zk"] = a_.z;
@@ -154,7 +154,7 @@ std::map<std::string, std::string> jubatus_serv::get_loads()const{
 		pfi::system::sysstat::sysstat_ret sys;
 		get_sysstat(sys);
 		result["loadavg"] = pfi::lang::lexical_cast<std::string>(sys.loadavg);
-		result["tatal_memory"] = pfi::lang::lexical_cast<std::string>(sys.total_memory);
+		result["total_memory"] = pfi::lang::lexical_cast<std::string>(sys.total_memory);
 		result["free_memory"] = pfi::lang::lexical_cast<std::string>(sys.free_memory);
 	}
 	return result;
