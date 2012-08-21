@@ -98,5 +98,5 @@ let generate s output strees =
     (List.flatten (List.map to_keeper_strings
 		     (List.filter Generator.is_service strees)));
   
-  output <<< "  k.run();";
+  output <<< "  return k.run();";
   output <<< "}";;

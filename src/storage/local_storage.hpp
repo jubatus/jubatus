@@ -40,7 +40,7 @@ public:
   void get2(const std::string &feature, feature_val2_t& ret);
   void get3(const std::string &feature, feature_val3_t& ret);
 
-  void inp(const sfv_t& sfv, map_feature_val1_t& ret); /// inner product 
+  void inp(const sfv_t& sfv, map_feature_val1_t& ret); /// inner product
 
   void set(const std::string &feature, const std::string &klass, const val1_t& w);
   void set2(const std::string &feature, const std::string &klass, const val2_t& w);
