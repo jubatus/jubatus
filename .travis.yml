@@ -1,0 +1,28 @@
+language: cpp
+compiler:
+  - gcc
+#  - clang
+
+before_install:
+  - "sudo apt-get install -qq update"
+  - "sudo apt-get install libmsgpack-dev libevent-dev"
+#  - "git clone git://github.com/pfi/pficommon.git"
+#  - "wget http://google-glog.googlecode.com/files/glog-0.3.2.tar.gz"
+
+before_script:
+  - ./waf configure --disable-re2
+  - ./waf build
+
+script:
+  - ./waf --check
+
+branches:
+  only:
+    - develop
+    - master
+
+notifications:
+  email:
+    false
+#    on_success: jubatus@groups.google.com
+#    on_feature: jubatus@groups.google.com
