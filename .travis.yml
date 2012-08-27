@@ -7,7 +7,8 @@ before_install:
   - "sudo apt-get -qq update"
   - "sudo apt-get -qq install libmsgpack-dev libevent-dev"
 #  - "git clone git://github.com/pfi/pficommon.git"
-#  - "wget http://google-glog.googlecode.com/files/glog-0.3.2.tar.gz"
+  - "wget http://google-glog.googlecode.com/files/glog-0.3.2.tar.gz"
+  - "tar xzf glog-0.3.2.tar.gz && cd glog-0.3.2 && ./configure && make && sudo make install"
 
 before_script:
   - ./waf configure --disable-re2
