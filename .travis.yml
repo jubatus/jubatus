@@ -10,8 +10,9 @@ before_install:
   - "tar xzf glog-0.3.2.tar.gz && cd glog-0.3.2 && ./configure && make && sudo make install"
   - "cd -"
   - "git clone git://github.com/pfi/pficommon.git"
-  - "cd pficommon && ./waf configure && ./waf build && ./waf install"
+  - "cd pficommon && ./waf configure && ./waf build && sudo ./waf install"
   - "cd -"
+# todo: add re2 and zookeeper
 
 before_script:
   - ./waf configure --disable-re2
@@ -27,6 +28,8 @@ branches:
 
 notifications:
   email:
-    false
-#    on_success: jubatus@groups.google.com
-#    on_feature: jubatus@groups.google.com
+    recipients:
+      - jubatus@groups.google.com
+      - jubatus@lab.ntt.co.jp
+    on_success: never
+    on_failure: change
