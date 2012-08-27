@@ -37,8 +37,10 @@ Preparing 0.3.2
 Improvements
   - jubavisor/jubactl support jubauts server options (#75)
   - jubadoc: document generator (.idl => .rst)
+  - jenerator: enabled -o option to specify output directory
 
 Bugfix
+  - #51, #76, #77, #79, #83, #96
 
 Release 0.3.1 2012/7/20
 ~~~~~~~~~~~~~~~~~~~~~~~
