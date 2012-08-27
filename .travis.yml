@@ -4,8 +4,8 @@ compiler:
 #  - clang
 
 before_install:
-  - "sudo apt-get install -qq update"
-  - "sudo apt-get install libmsgpack-dev libevent-dev"
+  - "sudo apt-get -qq update"
+  - "sudo apt-get -qq install libmsgpack-dev libevent-dev"
 #  - "git clone git://github.com/pfi/pficommon.git"
 #  - "wget http://google-glog.googlecode.com/files/glog-0.3.2.tar.gz"
 
