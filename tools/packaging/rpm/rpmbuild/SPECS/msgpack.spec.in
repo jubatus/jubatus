@@ -1,0 +1,66 @@
+%define package_version @MSGPACK_VERSION@
+%define package_release @MSGPACK_RELEASE@
+
+Name:		msgpack
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	An efficient binary serialization format
+Group:		Development/Libraries
+License:	Apache License 2.0
+URL:		http://msgpack.org/
+Source0:	http://msgpack.org/releases/cpp/%{name}-%{version}.tar.gz
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+%package devel
+Summary:	Headers and libraries for msgpack
+Requires:	%{name} = %{version}-%{release}
+
+%description
+MessagePack is an efficient binary serialization format.
+It lets you exchange data among multiple languages like JSON but it's faster and smaller.
+For example, small integers (like flags or error code) are encoded into a single byte, 
+and typical short strings only require an extra byte in addition to the strings themselves.
+
+%description devel
+This package provides headers and libraries needed to develop applications using msgpack.
+
+%prep
+%setup -q
+
+%build
+%configure
+%{__make} %{?_smp_mflags}
+
+%install
+%{__rm} -rf %{buildroot}
+%makeinstall
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc AUTHORS ChangeLog NEWS NOTICE README
+%doc COPYING LICENSE
+%{_libdir}/libmsgpack.so.*
+%{_libdir}/libmsgpackc.so.*
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/libmsgpack.so
+%{_libdir}/libmsgpack.a
+%{_libdir}/libmsgpack.la
+%{_libdir}/libmsgpackc.so
+%{_libdir}/libmsgpackc.a
+%{_libdir}/libmsgpackc.la
+%{_includedir}/msgpack
+%{_includedir}/msgpack.h
+%{_includedir}/msgpack.hpp
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%changelog
+* Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
++ Initial version

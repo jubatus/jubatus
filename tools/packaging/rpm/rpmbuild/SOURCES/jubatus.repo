@@ -1,0 +1,5 @@
+[jubatus]
+name = Jubatus Repository
+baseurl = http://download.jubat.us/yum/rhel/$releasever/stable/$basearch/
+gpgcheck = 0
+enabled = 1

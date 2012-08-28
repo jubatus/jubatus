@@ -1,0 +1,27 @@
+--- wscript.orig	2011-11-01 19:48:00.000000000 +0900
++++ wscript	2012-08-22 19:36:14.762479102 +0900
+@@ -9,21 +9,22 @@
+ def options(ctx):
+   ctx.load('compiler_cxx')
+   ctx.load('unittest_gtest')
++  ctx.load('gnu_dirs')
+ 
+ def configure(ctx):
+   ctx.load('compiler_cxx')
+   ctx.load('unittest_gtest')	
++  ctx.load('gnu_dirs')
+   ctx.env.CXXFLAGS += ['-O2', '-W', '-Wall', '-g']
+ 
+ def build(bld):
+   bld(source = 'ux.pc.in',
+       prefix = bld.env['PREFIX'],
+       exec_prefix = '${prefix}',
+-      libdir = '${exec_prefix}/lib',
++      libdir = bld.env['LIBDIR'],
+       includedir = '${prefix}/include',
+       PACKAGE = APPNAME,
+       VERSION = VERSION)
+-  bld.install_files('${PREFIX}/lib/pkgconfig', 'ux.pc')
+   bld.recurse('src')
+ 
+ def dist_hook():

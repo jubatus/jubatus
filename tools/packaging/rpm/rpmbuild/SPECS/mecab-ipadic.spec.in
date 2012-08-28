@@ -1,0 +1,51 @@
+# Disable *-debuginfo for this package as we don't have any ELF binaries
+%global debug_package %{nil}
+
+%define package_version @MECAB_IPADIC_VERSION@
+%define package_release @MECAB_IPADIC_RELEASE@
+
+%define target_archive @MECAB_IPADIC_ARCHIVE@
+%define target_dirname @MECAB_IPADIC_ARCHIVE_DIR@
+
+Name:		mecab-ipadic
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	IPA Dictionary for MeCab
+Group:		Applications/Text
+# License is "mecab-ipadic": http://fedoraproject.org/wiki/Licensing#Good_Licenses
+License:	mecab-ipadic
+URL:		http://code.google.com/p/mecab/
+Source0:	http://mecab.googlecode.com/files/%{target_archive}
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+# mecab-config command (in mecab package) is required to configure mecab-ipadic
+BuildRequires:	mecab
+
+Requires:		mecab
+
+%description
+IPA Dictionary for MeCab.
+
+%prep
+%setup -q -n %{target_dirname}
+
+%build
+%configure --with-charset=utf8
+%{__make} %{?_smp_mflags}
+
+%install
+%{__rm} -rf %{buildroot}
+%makeinstall DESTDIR=%{buildroot}
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc AUTHORS ChangeLog NEWS README
+%doc COPYING
+%{_libdir}/mecab/dic/ipadic
+
+%changelog
+* Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
++ Initial version

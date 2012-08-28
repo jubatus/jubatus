@@ -1,0 +1,113 @@
+#!/bin/bash
+
+prepare_rpmbuild() {
+	PACKAGE="${1}"; shift
+	SOURCES_DIR="${PACKAGER_RPM_DIR}/SOURCES"
+	SPECFILE="${PACKAGER_RPM_DIR}/SPECS/${PACKAGE}.spec"
+	SPECINFILE="${PACKAGER_RPM_DIR}/SPECS/${PACKAGE}.spec.in"
+
+	pushd "${SOURCES_DIR}"
+
+	case "${PACKAGE}" in
+		jubatus )
+			fill_placeholder "${SPECINFILE}" "${SPECFILE}" \
+								JUBATUS_VERSION \
+								JUBATUS_CHECKOUT \
+								JUBATUS_CHECKOUT_DATE \
+								JUBATUS_RELEASE \
+								JUBATUS_URL
+			rm -rf jubatus
+			git clone "${JUBATUS_URL}"
+			git --work-tree=jubatus --git-dir=jubatus/.git checkout "${JUBATUS_CHECKOUT}"
+			tar --create --gzip --exclude-vcs --file "jubatus-${JUBATUS_VERSION}.tar.gz" jubatus
+			rm -rf jubatus
+			;;
+		jubatus-client )
+			fill_placeholder "${SPECINFILE}" "${SPECFILE}" \
+								JUBATUS_CLIENT_VERSION \
+								JUBATUS_CLIENT_RELEASE \
+								JUBATUS_CLIENT_ARCHIVE \
+								JUBATUS_CLIENT_ARCHIVE_DIR
+			;;
+		jubatus-release )
+			fill_placeholder "${SPECINFILE}" "${SPECFILE}" \
+								JUBATUS_RELEASE_VERSION \
+								JUBATUS_RELEASE_RELEASE
+			;;
+		msgpack )
+			fill_placeholder "${SPECINFILE}" "${SPECFILE}" \
+								MSGPACK_VERSION \
+								MSGPACK_RELEASE
+			;;
+		pficommon )
+			fill_placeholder "${SPECINFILE}" "${SPECFILE}" \
+								PFICOMMON_VERSION \
+								PFICOMMON_CHECKOUT \
+								PFICOMMON_CHECKOUT_DATE \
+								PFICOMMON_RELEASE \
+								PFICOMMON_URL
+			rm -rf pficommon
+			git clone "${PFICOMMON_URL}"
+			git --work-tree=pficommon --git-dir=pficommon/.git checkout "${PFICOMMON_CHECKOUT}"
+			tar --create --gzip --exclude-vcs --file "pficommon-${PFICOMMON_VERSION}.tar.gz" pficommon
+			rm -rf pficommon
+			;;
+		zookeeper-client )
+			fill_placeholder "${SPECINFILE}" "${SPECFILE}" \
+								ZOOKEEPER_VERSION \
+								ZOOKEEPER_RELEASE
+			;;
+		glog )
+			fill_placeholder "${SPECINFILE}" "${SPECFILE}" \
+								GLOG_VERSION \
+								GLOG_RELEASE
+			;;
+		re2 )
+			fill_placeholder "${SPECINFILE}" "${SPECFILE}" \
+								RE2_VERSION \
+								RE2_CHECKOUT \
+								RE2_CHECKOUT_DATE \
+								RE2_RELEASE \
+								RE2_URL
+			rm -rf re2
+			hg clone -u "${RE2_CHECKOUT}" "${RE2_URL}" re2
+			tar --create --gzip --exclude-vcs --file "${SOURCES_DIR}/re2-${RE2_VERSION}.tar.gz" re2
+			rm -rf re2
+			;;
+		ux )
+			fill_placeholder "${SPECINFILE}" "${SPECFILE}" \
+								UX_VERSION \
+								UX_RELEASE
+			;;
+		mecab )
+			fill_placeholder "${SPECINFILE}" "${SPECFILE}" \
+								MECAB_VERSION \
+								MECAB_RELEASE
+			;;
+		mecab-ipadic )
+			fill_placeholder "${SPECINFILE}" "${SPECFILE}" \
+								MECAB_IPADIC_VERSION \
+								MECAB_IPADIC_RELEASE \
+								MECAB_IPADIC_ARCHIVE \
+								MECAB_IPADIC_ARCHIVE_DIR
+			;;
+		* )
+			echo "Unknown package: "${PACKAGE}""
+			return 1
+	esac
+
+	# Download Sources & Patches if the URL is provided in SPEC file
+	spectool -g "${SPECFILE}"
+
+	popd
+}
+
+fill_placeholder() {
+	SPECINFILE="${1}"; shift
+	SPECFILE="${1}"; shift
+	cp "${SPECINFILE}" "${SPECFILE}" 
+	for KEY in "${@}"; do
+		VALUE="$(eval echo \$${KEY})"
+		perl -pi -e "s|\@${KEY}\@|${VALUE}|g" "${SPECFILE}"
+	done
+}

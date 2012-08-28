@@ -1,0 +1,46 @@
+# Disable *-debuginfo for this package as we don't have any ELF binaries
+%global debug_package %{nil}
+
+%define package_version @JUBATUS_CLIENT_VERSION@
+%define package_release @JUBATUS_CLIENT_RELEASE@
+
+%define target_archive @JUBATUS_CLIENT_ARCHIVE@
+%define target_dirname @JUBATUS_CLIENT_ARCHIVE_DIR@
+
+Name:		jubatus-client
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	Jubatus C++ Client
+Vendor:		PFI & NTT
+Group:		Development/Libraries
+License:	LGPL 2.1
+URL:		http://jubat.us/
+Source0:	https://github.com/downloads/jubatus/jubatus/%{target_archive}
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+Requires:	pficommon >= 1.3.1
+
+%description
+Jubatus is a distributed processing framework and streaming machine learning library.
+This package provides Jubatus C++ client headers.
+
+%prep
+%setup -q -n %{target_dirname}
+
+%build
+
+%install
+%{__rm} -rf %{buildroot}
+%{__mkdir_p} %{buildroot}%{_includedir}/jubatus/client
+%{__cp} -rp cpp/* %{buildroot}%{_includedir}/jubatus/client
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%{_includedir}/jubatus/client
+
+%changelog
+* Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
++ Initial version
