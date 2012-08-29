@@ -66,13 +66,13 @@ clean_minimal() {
 	rm -rf "${PACKAGER_RPM_DIR}"/SOURCES/jubatus
 	rm -rf "${PACKAGER_RPM_DIR}"/SOURCES/pficommon
 	rm -rf "${PACKAGER_RPM_DIR}"/SOURCES/re2
+	rm -f "${PACKAGER_RPM_DIR}"/SPECS/*.spec
 }
 
 # Clean (all)
 clean_all() {
 	clean_minimal
 	rm -f "${PACKAGER_RPM_DIR}"/SOURCES/*.{gz,bz2}
-	rm -f "${PACKAGER_RPM_DIR}"/SPECS/*.spec
 }
 
 # Uninstall All
