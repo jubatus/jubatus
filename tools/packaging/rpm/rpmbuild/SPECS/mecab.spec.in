@@ -9,6 +9,7 @@ Group:		Applications/Text
 License:	BSD / LGPL 2.1 / GPL 2
 URL:		http://code.google.com/p/mecab/
 Source0:	http://mecab.googlecode.com/files/%{name}-%{version}.tar.gz
+Patch0:		mecab-fix-dicdir.patch
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 %package devel
@@ -24,6 +25,7 @@ This package provides headers and libraries needed to develop applications using
 
 %prep
 %setup -q
+%patch0 -p0
 
 %build
 %configure --enable-utf8-only
