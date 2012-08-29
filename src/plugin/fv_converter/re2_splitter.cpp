@@ -45,7 +45,7 @@ re2_splitter::re2_splitter(const string& regexp, int group)
 }
 
 void re2_splitter::split(const string& str,
-                         vector<pair<size_t, size_t> >& bounds) {
+                         vector<pair<size_t, size_t> >& bounds) const {
   re2::StringPiece input(str.c_str());
   int groupSize = re_.NumberOfCapturingGroups() + 1;
   vector<re2::StringPiece> words(groupSize);

@@ -41,6 +41,8 @@ Improvements
   - GCC compilation version <= 4.2 when zookeeper enabled (#60)
   - Experimental support for Clang compilation (#100)
   - Make the timeout smaller in unittest
+  - libmecab_splitter works well in multi-thread environment, and now only support mecab ver. 0.99 or later
+  - word_splitter::split method is now constant
 
 Bugfix
   - #117, #113, #118, #114

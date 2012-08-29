@@ -30,7 +30,7 @@ dynamic_splitter::dynamic_splitter(const std::string& path,
 }
 
 void dynamic_splitter::split(const string& string,
-                             vector<pair<size_t, size_t> >& ret_boundaries) {
+                             vector<pair<size_t, size_t> >& ret_boundaries) const {
   impl_->split(string, ret_boundaries);
 }
 

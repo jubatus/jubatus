@@ -21,12 +21,16 @@
 #include <map>
 
 #include <pficommon/lang/scoped_ptr.h>
+#include <pficommon/lang/bind.h>
+#include <pficommon/concurrent/thread.h>
 
 #include "mecab_splitter.hpp"
 #include "../../fv_converter/test_util.hpp"
 #include "../../fv_converter/exception.hpp"
 
 using namespace std;
+using namespace pfi::lang;
+using namespace pfi::concurrent;
 
 namespace jubatus {
 
@@ -83,6 +87,33 @@ TEST(mecab_splitter, with_space) {
   exp.push_back(make_pair(11, 9));
 
   PairVectorEquals(exp, bs);
+}
+
+void run(mecab_splitter* m) {
+  vector<pair<size_t, size_t> > exp;
+  exp.push_back(make_pair(0, 6));
+  exp.push_back(make_pair(6, 3));
+  exp.push_back(make_pair(9, 6));
+  exp.push_back(make_pair(15, 6));
+
+  for (int i = 0; i < 1000; ++i) {
+    vector<pair<size_t, size_t> > bs;
+    m->split("本日は晴天なり", bs);
+    PairVectorEquals(exp, bs);
+  }
+}
+
+TEST(mecab_spltter, multi_thread) {
+  // run mecab_splitter in two threads
+  mecab_splitter m;
+  vector<shared_ptr<thread> > ts;
+  for (int i = 0; i < 100; ++i) {
+    ts.push_back(shared_ptr<thread>(new thread(bind(&run ,&m))));
+    ts[i]->start();
+  }
+  for (int i = 0; i < 100; ++i) {
+    ts[i]->join();
+  }
 }
 
 }

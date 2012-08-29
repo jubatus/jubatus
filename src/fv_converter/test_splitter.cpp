@@ -27,7 +27,7 @@ using namespace jubatus::fv_converter;
 class my_splitter : public word_splitter {
  public:
   void split(const std::string& str,
-             std::vector<std::pair<size_t, size_t> >& bounds) {
+             std::vector<std::pair<size_t, size_t> >& bounds) const {
     size_t p = 0;
     while (true) {
       size_t b = str.find_first_not_of(' ', p);

@@ -27,7 +27,7 @@ namespace fv_converter {
 class without_split : public word_splitter {
  public:
   void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries);
+             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 };
 
 }

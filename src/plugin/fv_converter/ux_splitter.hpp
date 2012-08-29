@@ -28,7 +28,7 @@ class ux_splitter : public fv_converter::word_splitter {
   ~ux_splitter();
 
   void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries);
+             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
  private:
   ux::Trie trie_;
