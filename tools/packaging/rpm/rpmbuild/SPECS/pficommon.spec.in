@@ -1,8 +1,6 @@
 %define package_version @PFICOMMON_VERSION@
 %define package_release @PFICOMMON_RELEASE@
 
-%define target_archive @PFICOMMON_ARCHIVE@
-
 %define __waf ./waf
 
 Name:		pficommon

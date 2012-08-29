@@ -7,7 +7,7 @@ JUBATUS_CHECKOUT="431a9286a119bbf31f40c8cef20df8ceaac62d55" # git tag or revisio
 JUBATUS_CHECKOUT_DATE="20120828"
 #JUBATUS_RELEASE="1"
 JUBATUS_RELEASE="1.${JUBATUS_CHECKOUT_DATE}git${JUBATUS_CHECKOUT:0:10}"
-JUBATUS_URL="https://github.com/jubatus/jubatus.git"
+JUBATUS_URL="https://github.com/jubatus/jubatus.git" # repository
 
 # ==============================================================================
 # Jubatus Client Header (C++)
@@ -31,7 +31,7 @@ PFICOMMON_CHECKOUT="2bd6015c35833c405746b263772702572a37f384" # git tag or revis
 PFICOMMON_CHECKOUT_DATE="20120828"
 #PFICOMMON_RELEASE="1"
 PFICOMMON_RELEASE="1.${PFICOMMON_CHECKOUT_DATE}git${PFICOMMON_CHECKOUT:0:10}"
-PFICOMMON_URL="https://github.com/pfi/pficommon.git"
+PFICOMMON_URL="https://github.com/pfi/pficommon.git" # repository
 
 # ==============================================================================
 # msgpack
@@ -59,7 +59,7 @@ RE2_CHECKOUT="401ab4168e8e5cd2ff5903ce5d2d8b92cfec191d" # mercurial tag or revis
 RE2_CHECKOUT_DATE="20120821"
 #RE2_RELEASE="1"
 RE2_RELEASE="1.${RE2_CHECKOUT_DATE}hg${RE2_CHECKOUT:0:12}"
-RE2_URL="https://re2.googlecode.com/hg"
+RE2_URL="https://re2.googlecode.com/hg" # repository
 
 # ==============================================================================
 # ux
@@ -79,4 +79,4 @@ MECAB_RELEASE="1"
 MECAB_IPADIC_VERSION="2.7.0.20070801"
 MECAB_IPADIC_RELEASE="1"
 MECAB_IPADIC_ARCHIVE="mecab-ipadic-2.7.0-20070801.tar.gz"
-MECAB_IPADIC_ARCHIVE_DIR="mecab-ipadic-2.7.0-20070801"
+MECAB_IPADIC_ARCHIVE_DIR="mecab-ipadic-2.7.0-20070801" # directory name after expansion
