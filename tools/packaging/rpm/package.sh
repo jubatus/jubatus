@@ -26,10 +26,15 @@ usage() {
 	cat << _EOF_
 
 Usage:
-	${PACKAGER} [ -i ] { -a | -j | -p package1 [package2 ...] | -c | -C }
-	${PACKAGER} -u
+	${PACKAGER} [-u] [-c|-C] [[-i] [-a|-j|-p package...]]
 
 Options:
+	-a	Build all packages (Jubatus and its dependencies).
+	-j	Build Jubatus packages (${PKGS_JUBATUS}) only.
+	-p	Build the specified package(s) only. Available packages are:
+			${PKGS_JUBATUS}
+			${PKGS_DEPENDS}
+
 	-i	Install built packages.
 			If you don't have build-requirement packages (pficommon-devel,
 			msgpack-devel, etc.) installed, use this option to automatically
@@ -42,15 +47,14 @@ Options:
 			become interactive.
 			You must specify "-c" or "-C" (see below) together with this option.
 
-	-a	Build all packages (Jubatus and its dependencies).
-	-j	Build Jubatus packages (${PKGS_JUBATUS}) only.
-	-p	Build the specified package(s). Available packages are:
-			${PKGS_JUBATUS}
-			${PKGS_DEPENDS}
-
 	-u	Uninstall all installed packages.
+
 	-c	Clean the rpmbuild directory, but preserve downloaded archives.
 	-C	Completely clean the rpmbuild directory.
+
+Note:
+	When "-u", "-c" or "-C" is specified together with one of "-a", "-j" or "-p",
+	uninstall/clean operation runs prior to building packages.
 
 _EOF_
 }
