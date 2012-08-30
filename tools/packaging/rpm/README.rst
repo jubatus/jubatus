@@ -58,7 +58,7 @@ For jubatus, pficommon, re2
 
 * ``*_CHECKOUT``
 
-  - The tag or the commit ID of the VCS (Git/Mercurial) to use for this build.
+  - Tag, commit ID or branch of the VCS (Git/Mercurial) to use for this build.
 
 * ``*_REPOS``
 

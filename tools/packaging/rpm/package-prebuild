@@ -16,9 +16,9 @@ prepare_rpmbuild() {
 			git clone "${JUBATUS_REPOS}" jubatus
 			pushd jubatus
 			git checkout "${JUBATUS_CHECKOUT}"
-			JUBATUS_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
 			if [ "${JUBATUS_IS_SNAPSHOT}" = "yes" ]; then
 				JUBATUS_CHECKOUT="$(git log --pretty=format:'%H' --max-count=1 HEAD)"
+				JUBATUS_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
 				JUBATUS_RELEASE="${JUBATUS_RELEASE}.${JUBATUS_CHECKOUT_DATE}git${JUBATUS_CHECKOUT:0:6}"
 			fi
 			popd
@@ -46,9 +46,9 @@ prepare_rpmbuild() {
 			git clone "${PFICOMMON_REPOS}" pficommon
 			pushd pficommon
 			git checkout "${PFICOMMON_CHECKOUT}"
-			PFICOMMON_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
 			if [ "${PFICOMMON_IS_SNAPSHOT}" = "yes" ]; then
 				PFICOMMON_CHECKOUT="$(git log --pretty=format:'%H' --max-count=1 HEAD)"
+				PFICOMMON_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
 				PFICOMMON_RELEASE="1.${PFICOMMON_CHECKOUT_DATE}git${PFICOMMON_CHECKOUT:0:6}"
 			fi
 			popd
@@ -78,9 +78,9 @@ prepare_rpmbuild() {
 			rm -rf re2
 			hg clone -u "${RE2_CHECKOUT}" "${RE2_REPOS}" re2
 			pushd re2
-			RE2_CHECKOUT_DATE="$(hg heads --template='{date|shortdate}' | tr -d '-')"
 			if [ "${RE2_IS_SNAPSHOT}" = "yes" ]; then
 				RE2_CHECKOUT="$(hg heads --template='{node}')"
+				RE2_CHECKOUT_DATE="$(hg heads --template='{date|shortdate}' | tr -d '-')"
 				RE2_RELEASE="${RE2_RELEASE}.${RE2_CHECKOUT_DATE}hg${RE2_CHECKOUT:0:6}"
 			fi
 			popd
@@ -123,7 +123,7 @@ spec_substitute() {
 	SPECINFILE="${1}"; shift
 	SPECFILE="${1}"; shift
 
-	cp -a "${SPECINFILE}" "${SPECFILE}" 
+	cp -a "${SPECINFILE}" "${SPECFILE}"
 	for KEY in "${@}"; do
 		VALUE="$(eval echo \$${KEY})"
 		perl -pi -e "s|\@${KEY}\@|${VALUE}|g" "${SPECFILE}"

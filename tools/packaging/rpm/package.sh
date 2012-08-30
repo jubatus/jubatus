@@ -38,7 +38,7 @@ Options:
 	-i	Install built packages.
 			If you don't have build-requirement packages (pficommon-devel,
 			msgpack-devel, etc.) installed, use this option to automatically
-			install built packages for each time, before going onto next 
+			install built packages for each time, before going onto next
 			package build process.
 			In general, you only need to use this option for the first time.
 			When using this option, you need to run this command as root, or
@@ -170,7 +170,6 @@ main() {
 	fi
 
 	# Build task
-	TARGET_PKGS=""
 	if [ "${BUILD_ALL}" = "yes" ]; then
 		build_package ${PKGS_DEPENDS} ${PKGS_JUBATUS}
 	elif [ "${BUILD_JUBATUS}" = "yes" ]; then

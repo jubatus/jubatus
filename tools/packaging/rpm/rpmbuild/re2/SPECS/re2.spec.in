@@ -16,8 +16,8 @@ Summary:    Headers and libraries for re2
 Requires:   %{name} = %{version}-%{release}
 
 %description
-RE2 is a fast, safe, thread-friendly alternative to backtracking regular expression engines 
-like those used in PCRE, Perl, and Python. It is a C++ library. 
+RE2 is a fast, safe, thread-friendly alternative to backtracking regular expression engines
+like those used in PCRE, Perl, and Python. It is a C++ library.
 
 %description devel
 This package provides headers and libraries needed to develop applications using re2.
@@ -55,4 +55,4 @@ perl -pi -e 's|^(libdir)=(.+)$|$1=%{_libdir}|' Makefile
 
 %changelog
 * Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
-+ Initial version
+- Initial version

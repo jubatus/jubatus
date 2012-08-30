@@ -1,6 +1,10 @@
 %define package_version @ZOOKEEPER_VERSION@
 %define package_release @ZOOKEEPER_RELEASE@
 
+# Using mirror instead of official server
+#%define apache_dist http://www.apache.org/dist
+%define apache_dist http://ftp.jaist.ac.jp/pub/apache
+
 %define c_client_dir src/c
 
 Name:		zookeeper-client
@@ -10,7 +14,7 @@ Summary:	ZooKeeper C Client
 Group:		Development/Libraries
 License:	Apache License 2.0
 URL:		http://zookeeper.apache.org/
-Source0:	http://www.apache.org/dist/zookeeper/zookeeper-%{version}/zookeeper-%{version}.tar.gz
+Source0:	%{apache_dist}/zookeeper/zookeeper-%{version}/zookeeper-%{version}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 %package devel
@@ -85,4 +89,4 @@ popd
 
 %changelog
 * Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
-+ Initial version
+- Initial version
