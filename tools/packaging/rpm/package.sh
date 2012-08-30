@@ -12,10 +12,10 @@ PKGS_JUBATUS="jubatus jubatus-client jubatus-release"
 PACKAGER="$(basename "${0}")"
 PACKAGER_DIR="$(cd $(dirname ${0}) && echo ${PWD})"
 PACKAGER_RPM_DIR="${PACKAGER_DIR}/rpmbuild"
-PACKAGER_DOWNLOAD_DIR="${PACKAGER_DIR}/download"
 
 # Commands
 RUN_AS_ROOT="sudo"
+YUM="yum --disablerepo=*"
 
 # Includes
 . ${PACKAGER_DIR}/package-config
@@ -26,9 +26,8 @@ usage() {
 	cat << _EOF_
 
 Usage:
-	${PACKAGER} [ -i ] { -a | -j | -p package1 [package2 ...] }
+	${PACKAGER} [ -i ] { -a | -j | -p package1 [package2 ...] | -c | -C }
 	${PACKAGER} -u
-	${PACKAGER} { -c | -C }
 
 Options:
 	-i	Install built packages.
@@ -41,6 +40,7 @@ Options:
 			sudo command needs to be available. When using sudo, you may need
 			to type in your password; in this case, the build process will
 			become interactive.
+			You must specify "-c" or "-C" (see below) together with this option.
 
 	-a	Build all packages (Jubatus and its dependencies).
 	-j	Build Jubatus packages (${PKGS_JUBATUS}) only.
@@ -55,42 +55,65 @@ Options:
 _EOF_
 }
 
+# Test if the given command(s) exists in PATH
+test_command_exists() {
+	for CMD in "$@"; do
+		if ! which "${CMD}" > /dev/null 2>&1; then
+			echo "ERROR: Cannot detect '$CMD' command."
+			echo "Try \`yum provides '*/$CMD'\` to find package."
+			return 1
+		fi
+	done
+}
+
 # "cleanroom" - run the given command in a cleanroom for environment-sensitive jobs
 cleanroom() {
 	/usr/bin/env -i - HOME="$(echo ~$(whoami))" PATH="/sbin:/bin:/usr/sbin:/usr/bin" "$@"
 }
 
-# Clean (minimal)
+# Clean but preserve downloaded archives
 clean_minimal() {
-	rm -rf "${PACKAGER_RPM_DIR}"/{BUILD,BUILDROOT,RPMS,SRPMS}
-	rm -rf "${PACKAGER_RPM_DIR}"/SOURCES/jubatus
-	rm -rf "${PACKAGER_RPM_DIR}"/SOURCES/pficommon
-	rm -rf "${PACKAGER_RPM_DIR}"/SOURCES/re2
-	rm -f "${PACKAGER_RPM_DIR}"/SPECS/*.spec
+	rm -rf "${PACKAGER_RPM_DIR}"/*/{BUILD,BUILDROOT,RPMS,SRPMS}
+	rm -f "${PACKAGER_RPM_DIR}"/*/SPECS/*.spec
 }
 
-# Clean (all)
+# Clean everything
 clean_all() {
 	clean_minimal
-	rm -f "${PACKAGER_RPM_DIR}"/SOURCES/*.{gz,bz2}
+	rm -f "${PACKAGER_RPM_DIR}"/*/SOURCES/*.{gz,bz2}
 }
 
-# Uninstall All
+# Uninstall all packages
 uninstall_all() {
 	REMOVE_PKGS=""
+	echo "Uninstall packages..."
 	for PACKAGE in ${PKGS_DEPENDS} ${PKGS_JUBATUS}; do
 		REMOVE_PKGS="${REMOVE_PKGS} ${PACKAGE} ${PACKAGE}-debuginfo"
 	done
-	${RUN_AS_ROOT} yum -y remove ${REMOVE_PKGS}
+	${RUN_AS_ROOT} ${YUM} -y remove ${REMOVE_PKGS}
+}
+
+# Build packages
+build_package() {
+	for PACKAGE in ${@}; do
+		echo "Building package for ${PACKAGE}..."
+		pushd "${PACKAGER_RPM_DIR}/${PACKAGE}"
+		prepare_rpmbuild "${PACKAGE}"
+		cleanroom rpmbuild --define "%_topdir "${PACKAGER_RPM_DIR}"/"${PACKAGE}"" -ba SPECS/${PACKAGE}.spec
+		[ "${AUTO_INSTALL}" = "yes" ] && "${RUN_AS_ROOT}" ${YUM} -y install RPMS/*/*.rpm
+		popd
+	done
 }
 
 # Main
 main() {
-	if [ $# -lt 1 ]; then
-		usage
-		exit 1
-	fi
+	[ $# -lt 1 ] && ( usage; exit 1 );
 
+	# Check if commands required to run this script exist.
+	# Commands not included in coreutils package must be listed here.
+	test_command_exists git hg tar perl yum rpmbuild spectool || exit 1
+
+	# See how we're called.
 	AUTO_INSTALL="no"
 	BUILD_ALL="no"
 	BUILD_JUBATUS="no"
@@ -121,12 +144,14 @@ main() {
 	done
 	shift $((${OPTIND} - 1))
 
-	# uninstall options
-	if [ "${UNINSTALL_MODE}" = "yes" ]; then
-		uninstall_all
+	# When using "-i" mode, "-c" or "-C" must be specified together,
+	# to ensure that previously-built RPMs are not globbed by wildcard.
+	if [ "${AUTO_INSTALL}" = "yes" -a "${CLEAN_MODE}" = "no" ]; then
+		echo "ERROR: '-c' or '-C' must be specified when using '-i'"
+		exit 1
 	fi
 
-	# clean options
+	# Clean task
 	if [ "${CLEAN_MODE}" = "minimal" ]; then
 		echo "Cleaning..."
 		clean_minimal
@@ -135,24 +160,19 @@ main() {
 		clean_all
 	fi
 
-	# build options
-	TARGET_PKGS=""
-	if [ "${BUILD_ALL}" = "yes" ]; then
-		TARGET_PKGS="${PKGS_DEPENDS} ${PKGS_JUBATUS}"
-	elif [ "${BUILD_JUBATUS}" = "yes" ]; then
-		TARGET_PKGS="${PKGS_JUBATUS}"
-	elif [ "${BUILD_PKGS}" = "yes" ]; then
-		TARGET_PKGS="${@}"
+	# Uninstall task
+	if [ "${UNINSTALL_MODE}" = "yes" ]; then
+		uninstall_all
 	fi
 
-	if [ -n "${TARGET_PKGS}" ]; then
-		pushd "${PACKAGER_RPM_DIR}"
-		for PACKAGE in ${TARGET_PKGS}; do
-			prepare_rpmbuild "${PACKAGE}"
-			cleanroom rpmbuild --define "%_topdir "${PACKAGER_RPM_DIR}"" -ba SPECS/${PACKAGE}.spec
-			[ "${AUTO_INSTALL}" = "yes" ] && "${RUN_AS_ROOT}" yum -y install RPMS/*/*.rpm
-		done
-		popd
+	# Build task
+	TARGET_PKGS=""
+	if [ "${BUILD_ALL}" = "yes" ]; then
+		build_package ${PKGS_DEPENDS} ${PKGS_JUBATUS}
+	elif [ "${BUILD_JUBATUS}" = "yes" ]; then
+		build_package ${PKGS_JUBATUS}
+	elif [ "${BUILD_PKGS}" = "yes" ]; then
+		build_package ${@}
 	fi
 
 	cat <<- _EOF_
