@@ -43,7 +43,7 @@ void status(const string&, const string&, const string&);
 
 int main(int args, char** argv) try {
   cmdline::parser p;
-  p.add<std::string>("cmd", 'c', "command to send servers(start|stop|save|load)", true);
+  p.add<std::string>("cmd", 'c', "command to send servers (start|stop|save|load)", true);
   p.add<std::string>("server", 's', "server exec file of learning machine (jubaclassifier, ...)", true);
   p.add<std::string>("name", 'n', "learning machine name", true);
   p.add<std::string>("type", 't', "learning machine type", true);
@@ -56,7 +56,7 @@ int main(int args, char** argv) try {
   p.add<std::string>("tmpdir", 'D', "[start] directory to place plugins", false, "/tmp");
   p.add("join", 'J', "[start] join to the existing cluster");
   p.add<int>("interval_sec", 'S', "[start] mix interval by seconds", false, 16);
-  p.add<int>("interval_count", 'I', "mix interval by update count", false, 512);
+  p.add<int>("interval_count", 'I', "[start] mix interval by update count", false, 512);
 
   p.add("debug", 'd', "debug mode");
   p.parse_check(args, argv);
