@@ -72,10 +72,10 @@ int main(int args, char** argv) try {
   string zk;
   char* zkenv = std::getenv("ZK");
 
-  if(zkenv){
-    zk = zkenv;
-  }else if(p.get<std::string>("zookeeper") != "" ){
+  if(p.get<std::string>("zookeeper") != ""){
     zk = p.get<std::string>("zookeeper");
+  }else if(zkenv){
+    zk = zkenv;
   }else{
     cout << "can't get ZK location: set 'ZK' environment or specify '-z <somezkaddrs>" << endl;
     cout << p.get<std::string>("zookeeper") << endl;;
