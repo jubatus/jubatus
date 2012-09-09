@@ -10,4 +10,4 @@ build:
 	./waf build
 
 check:
-	./waf check
+	./waf --checkall
