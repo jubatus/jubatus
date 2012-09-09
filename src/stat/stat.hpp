@@ -71,6 +71,7 @@ private:
 
   size_t window_size_;
 
+protected:
   struct stat_val {
     stat_val()
       : n_(0)
@@ -147,7 +148,6 @@ private:
     double min_;
   };
 
-protected:
   std::deque<std::pair<uint64_t, std::pair<std::string, double> > > window_;
   pfi::data::unordered_map<std::string, stat_val> stats_;
 
