@@ -1,5 +1,5 @@
 [jubatus]
-name = Jubatus Packages for Enterprise Linux $releasever - $basearch
-baseurl = http://download.jubat.us/yum/rhel/$releasever/stable/$basearch/
+name = Jubatus Packages for Enterprise Linux 6 - $basearch
+baseurl = http://download.jubat.us/yum/rhel/6/stable/$basearch/
 gpgcheck = 0
 enabled = 1
