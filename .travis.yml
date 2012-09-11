@@ -1,0 +1,35 @@
+language: cpp
+compiler:
+  - gcc
+#  - clang
+
+before_install:
+  - "sudo apt-get -qq update"
+  - "sudo apt-get -qq install libmsgpack-dev libevent-dev"
+  - "wget http://google-glog.googlecode.com/files/glog-0.3.2.tar.gz"
+  - "tar xzf glog-0.3.2.tar.gz && cd glog-0.3.2 && ./configure && make && sudo make install"
+  - "cd -"
+  - "git clone git://github.com/pfi/pficommon.git"
+  - "cd pficommon && ./waf configure && ./waf build && sudo ./waf install"
+  - "cd -"
+# todo: add re2 and zookeeper
+
+before_script:
+  - ./waf configure --disable-re2
+  - ./waf build
+
+script:
+  - ./waf --check
+
+branches:
+  only:
+    - develop
+    - master
+
+notifications:
+  email:
+    recipients:
+      - jubatus@groups.google.com
+      - jubatus@lab.ntt.co.jp
+    on_success: never
+    on_failure: change

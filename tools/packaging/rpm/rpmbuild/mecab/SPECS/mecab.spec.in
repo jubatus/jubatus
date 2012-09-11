@@ -1,0 +1,71 @@
+%define package_version @MECAB_VERSION@
+%define package_release @MECAB_RELEASE@
+
+Name:		mecab
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	Yet Another Part-of-Speech and Morphological Analyzer
+Group:		Applications/Text
+License:	BSD / LGPL 2.1 / GPL 2
+URL:		http://code.google.com/p/mecab/
+Source0:	http://mecab.googlecode.com/files/%{name}-%{version}.tar.gz
+Patch0:		mecab-fix-dicdir.patch
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+%package devel
+Summary:	Headers and libraries for MeCab
+Group:		Development/Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description
+MeCab is an open source morphological analyzer engine.
+
+%description devel
+This package provides headers and libraries needed to develop applications using MeCab.
+
+%prep
+%setup -q
+%patch0 -p0
+
+%build
+%configure --enable-utf8-only
+
+# Workaround for Rpath
+# See: http://fedoraproject.org/wiki/Packaging/Guidelines#Removing_Rpath
+%{__sed} -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+%{__sed} -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+
+%{__make} %{?_smp_mflags}
+
+%install
+%{__rm} -rf %{buildroot}
+%makeinstall
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc AUTHORS ChangeLog NEWS README
+%doc COPYING GPL LGPL BSD
+%doc %{_mandir}/man1/mecab.1.gz
+%{_bindir}/mecab
+%{_bindir}/mecab-config
+%{_libdir}/libmecab.so.*
+%{_libexecdir}/mecab
+%config(noreplace) %{_sysconfdir}/mecabrc
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/libmecab.so
+%{_libdir}/libmecab.a
+%{_libdir}/libmecab.la
+%{_includedir}/mecab.h
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%changelog
+* Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
+- Initial version

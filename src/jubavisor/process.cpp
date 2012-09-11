@@ -89,8 +89,6 @@ bool process::spawn_link(int p){
   }else if(pid_==0){
     redirect("/dev/null", 1);
     redirect("/dev/null", 2);
-    util::append_env_path("LD_LIBRARY_PATH", "/usr/local/lib");
-    //    setenv("LD_LIBRARY_PATH", "/usr/local/lib", true);
     const std::string argv[] =
       { cmd,
         "-z", zk_hosts_,

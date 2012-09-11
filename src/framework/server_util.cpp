@@ -143,7 +143,6 @@ namespace jubatus { namespace framework {
     return ret.str();
   };
 
-  
 #ifdef HAVE_ZOOKEEPER_H
     common::cshared_ptr<jubatus::common::lock_service> ls;
 

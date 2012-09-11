@@ -1,0 +1,131 @@
+#!/bin/bash
+
+prepare_rpmbuild() {
+	PACKAGE="${1}"; shift
+
+	SOURCES_DIR="${PACKAGER_RPM_DIR}/${PACKAGE}/SOURCES"
+	SPECFILE="${PACKAGER_RPM_DIR}/${PACKAGE}/SPECS/${PACKAGE}.spec"
+	SPECINFILE="${SPECFILE}.in"
+
+	mkdir -p "${SOURCES_DIR}"
+	pushd "${SOURCES_DIR}"
+
+	case "${PACKAGE}" in
+		jubatus )
+			rm -rf jubatus
+			git clone "${JUBATUS_REPOS}" jubatus
+			pushd jubatus
+			git checkout "${JUBATUS_CHECKOUT}"
+			if [ "${JUBATUS_IS_SNAPSHOT}" = "yes" ]; then
+				JUBATUS_CHECKOUT="$(git log --pretty=format:'%H' --max-count=1 HEAD)"
+				JUBATUS_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
+				JUBATUS_RELEASE="${JUBATUS_RELEASE}.${JUBATUS_CHECKOUT_DATE}git${JUBATUS_CHECKOUT:0:6}"
+			fi
+			popd
+			tar --create --gzip --exclude-vcs --file "jubatus-${JUBATUS_VERSION}.tar.gz" jubatus
+			rm -rf jubatus
+
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								JUBATUS_VERSION \
+								JUBATUS_RELEASE
+			;;
+		jubatus-client )
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								JUBATUS_CLIENT_VERSION \
+								JUBATUS_CLIENT_RELEASE \
+								JUBATUS_CLIENT_ARCHIVE \
+								JUBATUS_CLIENT_ARCHIVE_DIR
+			;;
+		jubatus-release )
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								JUBATUS_RELEASE_VERSION \
+								JUBATUS_RELEASE_RELEASE
+			;;
+		pficommon )
+			rm -rf pficommon
+			git clone "${PFICOMMON_REPOS}" pficommon
+			pushd pficommon
+			git checkout "${PFICOMMON_CHECKOUT}"
+			if [ "${PFICOMMON_IS_SNAPSHOT}" = "yes" ]; then
+				PFICOMMON_CHECKOUT="$(git log --pretty=format:'%H' --max-count=1 HEAD)"
+				PFICOMMON_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
+				PFICOMMON_RELEASE="1.${PFICOMMON_CHECKOUT_DATE}git${PFICOMMON_CHECKOUT:0:6}"
+			fi
+			popd
+			tar --create --gzip --exclude-vcs --file "pficommon-${PFICOMMON_VERSION}.tar.gz" pficommon
+			rm -rf pficommon
+
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								PFICOMMON_VERSION \
+								PFICOMMON_RELEASE
+			;;
+		msgpack )
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								MSGPACK_VERSION \
+								MSGPACK_RELEASE
+			;;
+		zookeeper-client )
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								ZOOKEEPER_VERSION \
+								ZOOKEEPER_RELEASE
+			;;
+		glog )
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								GLOG_VERSION \
+								GLOG_RELEASE
+			;;
+		re2 )
+			rm -rf re2
+			hg clone -u "${RE2_CHECKOUT}" "${RE2_REPOS}" re2
+			pushd re2
+			if [ "${RE2_IS_SNAPSHOT}" = "yes" ]; then
+				RE2_CHECKOUT="$(hg heads --template='{node}')"
+				RE2_CHECKOUT_DATE="$(hg heads --template='{date|shortdate}' | tr -d '-')"
+				RE2_RELEASE="${RE2_RELEASE}.${RE2_CHECKOUT_DATE}hg${RE2_CHECKOUT:0:6}"
+			fi
+			popd
+			tar --create --gzip --exclude-vcs --file "${SOURCES_DIR}/re2-${RE2_VERSION}.tar.gz" re2
+			rm -rf re2
+
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								RE2_VERSION \
+								RE2_RELEASE
+			;;
+		ux )
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								UX_VERSION \
+								UX_RELEASE
+			;;
+		mecab )
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								MECAB_VERSION \
+								MECAB_RELEASE
+			;;
+		mecab-ipadic )
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								MECAB_IPADIC_VERSION \
+								MECAB_IPADIC_RELEASE \
+								MECAB_IPADIC_ARCHIVE \
+								MECAB_IPADIC_ARCHIVE_DIR
+			;;
+		* )
+			echo "Unknown package: "${PACKAGE}""
+			return 1
+	esac
+
+	# Download Sources & Patches if the URL is provided in SPEC file
+	spectool -g "${SPECFILE}"
+
+	popd
+}
+
+spec_substitute() {
+	SPECINFILE="${1}"; shift
+	SPECFILE="${1}"; shift
+
+	cp -a "${SPECINFILE}" "${SPECFILE}"
+	for KEY in "${@}"; do
+		VALUE="$(eval echo \$${KEY})"
+		perl -pi -e "s|\@${KEY}\@|${VALUE}|g" "${SPECFILE}"
+	done
+}

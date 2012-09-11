@@ -35,53 +35,53 @@
 namespace jubatus{
 namespace framework{
 
-  class mixer {
-  public:
-    mixer(const std::string& type, const std::string& name,
-          unsigned int count_threshold, unsigned int tick_threshold,
-          pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_fun);
-    virtual ~mixer(){};
+class mixer {
+public:
+  mixer(const std::string& type, const std::string& name,
+        unsigned int count_threshold, unsigned int tick_threshold,
+        pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_fun);
+  virtual ~mixer(){};
 
-    unsigned int updated();
-    void accessed(){};
-    void clear();
+  unsigned int updated();
+  void accessed(){};
+  void clear();
 
-    void set_zk(common::cshared_ptr<jubatus::common::lock_service>& z){
-      zk_ = z;
-    }
-    void start(){
-      if(!zk_)
-        throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("zk is not initialized."));
-      t_.start();
-    }
-    void get_status(std::map<std::string,std::string>& out);
+  void set_zk(common::cshared_ptr<jubatus::common::lock_service>& z){
+    zk_ = z;
+  }
+  void start(){
+    if(!zk_)
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("zk is not initialized."));
+    t_.start();
+  }
+  void get_status(std::map<std::string,std::string>& out);
 
 
-    void mixer_loop(){
-      while(true)try_mix();
-    }
+  void mixer_loop(){
+    while(true)try_mix();
+  }
 
-    int get_count()const {return counter_;} ; //FIXME: not thread-safe
-    void try_mix();
+  int get_count()const {return counter_;} ; //FIXME: not thread-safe
+  void try_mix();
 
-  private:
+private:
 
-    pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_func_;
+  pfi::lang::function<void(const std::vector<std::pair<std::string,int> >&)> mixer_func_;
 
-    common::cshared_ptr<jubatus::common::lock_service> zk_;
-    std::string type_;
-    std::string name_;
+  common::cshared_ptr<jubatus::common::lock_service> zk_;
+  std::string type_;
+  std::string name_;
 
-    unsigned int count_threshold_;
-    unsigned int counter_;
-    unsigned int tick_threshold_;
-    unsigned int ticktime_;
-    unsigned int mix_count_;
+  unsigned int count_threshold_;
+  unsigned int counter_;
+  unsigned int tick_threshold_;
+  unsigned int ticktime_;
+  unsigned int mix_count_;
 
-    pfi::concurrent::thread t_;
-    pfi::concurrent::mutex m_;
-    pfi::concurrent::condition c_;
-  };
+  pfi::concurrent::thread t_;
+  pfi::concurrent::mutex m_;
+  pfi::concurrent::condition c_;
+};
 
 }
 }

@@ -1,16 +1,16 @@
 Jubatus
 =======
 
-The Jubatus library is a online machine learning framework which runs in distributed environment.
+The Jubatus library is an online machine learning framework which runs in distributed environment.
 
 See http://jubat.us for details.
 
 QuickStart
 ----------
 
-Jubatus publicly supports Ubuntu >= 12.04 , Redhat Linux >= 6.2 . In other platforms, some may work if they have gcc >= 4.4 .
+Jubatus officially supports Ubuntu >= 12.04 , Red Hat Enterprise Linux >= 6.2 . On other platforms, some may work if they have gcc >= 4.4 .
 
-For minimal standalone mode, Jubatus requires libevent >= 1.4 , pficommon >= 1.3.1 , google-glog , libmsgpack, python >= 2.6 . Please install these softwares with headers before installation.
+For minimal standalone mode, Jubatus requires libevent >= 1.4 , pficommon >= 1.3.1 , google-glog , libmsgpack, python >= 2.6 . Please install these software with headers before installation.
 
 ::
 
@@ -21,9 +21,9 @@ For minimal standalone mode, Jubatus requires libevent >= 1.4 , pficommon >= 1.3
   $ sudo ./waf install
   $ jubaclassifier
 
-Here Jubatus classifier server have started. Enjoy!
+Here Jubatus classifier server has started. Enjoy!
 
-LICENSE
+License
 -------
 
 LGPL 2.1
@@ -37,8 +37,10 @@ Preparing 0.3.2
 Improvements
   - jubavisor/jubactl support jubauts server options (#75)
   - jubadoc: document generator (.idl => .rst)
+  - jenerator: enabled -o option to specify output directory
 
 Bugfix
+  - #51, #76, #77, #79, #83, #96
 
 Release 0.3.1 2012/7/20
 ~~~~~~~~~~~~~~~~~~~~~~~

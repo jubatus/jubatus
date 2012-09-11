@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <cstdlib>
 #include <exception>
 #include <stdexcept>
 #include <ios>

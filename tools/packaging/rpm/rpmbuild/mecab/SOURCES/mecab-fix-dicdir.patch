@@ -1,0 +1,11 @@
+--- mecabrc.in.orig	2011-10-23 04:21:24.000000000 +0900
++++ mecabrc.in	2012-08-29 18:15:07.296488469 +0900
+@@ -3,7 +3,7 @@
+ ;
+ ; $Id: mecabrc.in,v 1.3 2006/05/29 15:36:08 taku-ku Exp $;
+ ;
+-dicdir =  @prefix@/lib/mecab/dic/ipadic
++dicdir =  @libdir@/mecab/dic/ipadic
+ 
+ ; userdic = /home/foo/bar/user.dic
+ 

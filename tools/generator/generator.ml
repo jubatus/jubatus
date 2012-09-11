@@ -33,7 +33,5 @@ end;;
 let is_service = function
   | Service(_,_) -> true;
   | _ -> false;;
-
 exception Bad_container of string
 exception Wrong_rwtype of string
-
