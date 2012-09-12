@@ -35,7 +35,7 @@ public:
     : msg_(msg) {}
   ~stat_error() throw() {}
 
-  const char *what() throw() {
+  const char *what() const throw() {
     return msg_.c_str();
   }
 
