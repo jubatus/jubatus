@@ -35,7 +35,13 @@ using pfi::concurrent::scoped_lock;
 
 namespace {
 jubervisor* g_jubavisor = NULL;
+
+// for GCC and Clang compatibility: to use pfi::lang::bind 'void (*)(int) __attribute__((noreturn))'
+void exit_wrapper(int status)
+{
+  exit(status);
 }
+} // namespace
 
 jubervisor::jubervisor(const std::string& hosts, int port, int max,
                        const std::string& logfile):
@@ -75,7 +81,7 @@ jubervisor::jubervisor(const std::string& hosts, int port, int max,
 
   pfi::lang::function<void()> h = bind(&jubervisor::stop_all, this);
   zk_->push_cleanup(h);
-  pfi::lang::function<void()> g = bind(&exit, -1);
+  pfi::lang::function<void()> g = bind(&::exit_wrapper, -1);
   zk_->push_cleanup(g);
 
   g_jubavisor = this;
