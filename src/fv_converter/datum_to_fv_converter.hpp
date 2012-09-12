@@ -45,7 +45,7 @@ struct splitter_weight_type {
       : freq_weight_type_(freq_weight_type), term_weight_type_(term_weight_type) {}
 };
 
-class datum;
+struct datum;
 class datum_to_fv_converter_impl;
 class word_splitter;
 class key_matcher;

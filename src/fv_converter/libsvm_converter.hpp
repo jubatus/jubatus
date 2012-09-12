@@ -22,7 +22,7 @@
 namespace jubatus {
 namespace fv_converter{
 
-class datum;
+struct datum;
 
 class libsvm_converter {
  public:
