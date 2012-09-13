@@ -17,8 +17,9 @@
 
 #include <cmath>
 
-#include "datum_to_fv_converter.hpp"
+#include <pficommon/data/optional.h>
 
+#include "datum_to_fv_converter.hpp"
 #include "datum.hpp"
 
 #include "space_splitter.hpp"
@@ -30,6 +31,7 @@
 #include "num_filter.hpp"
 #include "exception.hpp"
 #include "weight_manager.hpp"
+#include "feature_hasher.hpp"
 
 #include <iostream>
 
@@ -114,6 +116,8 @@ class datum_to_fv_converter_impl {
   
   weight_manager weights_;
 
+  pfi::data::optional<feature_hasher> hasher_;
+
  public:
   datum_to_fv_converter_impl() 
       : weights_() {
@@ -164,6 +168,10 @@ class datum_to_fv_converter_impl {
     convert_unweighted(datum, fv);
     weights_.update_weight(fv);
 
+    if (hasher_) {
+      hasher_->hash_feature_keys(fv);
+    }
+    
     fv.swap(ret_fv);
   }
 
@@ -211,6 +219,9 @@ class datum_to_fv_converter_impl {
     expect.second.swap(value);
   }
 
+  void set_hash_max_size(uint64_t hash_max_size) {
+    hasher_ = feature_hasher(hash_max_size);
+  }
 
  private:
 
@@ -367,6 +378,7 @@ class datum_to_fv_converter_impl {
       }
     }
   }
+
 };
 
 
@@ -421,6 +433,10 @@ void datum_to_fv_converter::add_weight(const string& key,
 void datum_to_fv_converter::revert_feature(const string& feature,
                                            pair<string, string>& expect) const {
   pimpl_->revert_feature(feature, expect);
+}
+
+void datum_to_fv_converter::set_hash_max_size(uint64_t hash_max_size) {
+  pimpl_->set_hash_max_size(hash_max_size);
 }
 
 }

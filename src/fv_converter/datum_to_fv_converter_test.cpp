@@ -343,3 +343,20 @@ TEST(datum_to_fv_converter, recursive_filter) {
   EXPECT_EQ("/age+2@str$22", feature[2].first);
   EXPECT_EQ("/age+5+2@str$27", feature[3].first);
 } 
+
+TEST(datum_to_fv_converter, hasher) {
+  datum_to_fv_converter conv;
+  conv.set_hash_max_size(1);
+  conv.register_num_rule("str",
+                         shared_ptr<key_matcher>(new match_all()),
+                         shared_ptr<num_feature>(new num_string_feature()));
+  datum d;
+  for (int i = 0; i < 10; ++i)
+    d.num_values_.push_back(make_pair("age", i));
+
+  vector<pair<string, float> > feature;
+  conv.convert(d, feature);
+
+  for (size_t i = 0; i < feature.size(); ++i)
+    EXPECT_EQ("0", feature[i].first);
+}
