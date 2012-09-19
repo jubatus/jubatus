@@ -39,6 +39,9 @@ Requires:		mecab-ipadic
 Summary:	Headers and libraries to develop engines and plugins for Jubatus Framework
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
+Requires:	pficommon-devel >= 1.3.1
+Requires:	msgpack-devel
+Requires:	glog-devel >= 0.3.0
 
 %description
 Jubatus is a distributed processing framework and streaming machine learning library.
