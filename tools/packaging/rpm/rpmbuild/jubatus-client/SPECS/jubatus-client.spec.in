@@ -32,7 +32,7 @@ This package provides Jubatus C++ client headers.
 %install
 %{__rm} -rf %{buildroot}
 %{__install} -d %{buildroot}%{_includedir}/jubatus/client
-%{__cp} -rp cpp/* %{buildroot}%{_includedir}/jubatus/client
+%{__cp} -rp cpp/*/*.hpp %{buildroot}%{_includedir}/jubatus/client
 
 %clean
 %{__rm} -rf %{buildroot}
