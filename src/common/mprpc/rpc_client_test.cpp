@@ -152,7 +152,7 @@ TEST(rpc_mclient, error_multi_rpc)
       if (error_multi_rpc* multi_error = dynamic_cast<error_multi_rpc*>(it->get())) {
         has_error_multi_rpc = true;
         std::vector<rpc_error> error_list = multi_error->value();
-        EXPECT_EQ(1, error_list.size());
+        EXPECT_EQ(1u, error_list.size());
 
         EXPECT_EQ(string("localhost"), error_list[0].host());
         EXPECT_EQ(kPortStart, error_list[0].port());
@@ -330,7 +330,7 @@ TEST(rpc_mclient, socket_disconnection)
     EXPECT_FALSE(*r);
 
     EXPECT_TRUE(r.has_error());
-    ASSERT_EQ(1, r.error.size());
+    ASSERT_EQ(1u, r.error.size());
 
     rpc_error& error = r.error.front();
     EXPECT_EQ(string("localhost"), error.host());

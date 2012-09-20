@@ -138,7 +138,7 @@ TEST(exception, exception_with_error_info)
       << error_at_func("custom_exception");
   } catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
-    EXPECT_EQ(3, info_list.size());
+    EXPECT_EQ(3u, info_list.size());
     EXPECT_EQ(string("exception_test.cpp"), info_list[0]->as_string());
     EXPECT_EQ(string("12345"), info_list[1]->as_string());
     EXPECT_EQ(string("custom_exception"), info_list[2]->as_string());
@@ -171,7 +171,7 @@ TEST(exception, exception_info_macro)
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("hogehoge"));
   } catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
-    EXPECT_EQ(4, info_list.size());
+    EXPECT_EQ(4u, info_list.size());
     EXPECT_FALSE(info_list[0]->splitter());
     EXPECT_FALSE(info_list[1]->splitter());
     EXPECT_FALSE(info_list[2]->splitter());
@@ -187,7 +187,7 @@ TEST(exception, exception_info_macro_additional)
         );
   } catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
-    EXPECT_EQ(5, info_list.size());
+    EXPECT_EQ(5u, info_list.size());
     EXPECT_FALSE(info_list[0]->splitter());
     EXPECT_EQ(string("message"), info_list[0]->as_string());
     EXPECT_FALSE(info_list[1]->splitter());
@@ -217,7 +217,7 @@ TEST(exception, exception_custom_error_info)
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("hogehoge"));
   } catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
-    EXPECT_EQ(4, info_list.size());
+    EXPECT_EQ(4u, info_list.size());
     EXPECT_FALSE(info_list[0]->splitter());
     EXPECT_FALSE(info_list[1]->splitter());
     EXPECT_FALSE(info_list[2]->splitter());
@@ -243,7 +243,7 @@ TEST(exception, exception_info_add_macro)
   } catch (const jubatus_exception& e) {
     caught = true;
     error_info_list_t info_list = e.error_info();
-    EXPECT_EQ(9, info_list.size());
+    EXPECT_EQ(9u, info_list.size());
     EXPECT_FALSE(info_list[0]->splitter());
     EXPECT_FALSE(info_list[1]->splitter());
     EXPECT_FALSE(info_list[2]->splitter());
