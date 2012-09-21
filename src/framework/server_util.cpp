@@ -30,9 +30,6 @@
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/converter_config.hpp"
 
-#define SET_PROGNAME(s) \
-  static const std::string PROGNAME(JUBATUS_APPNAME "_" s);
-
 
 namespace jubatus { namespace framework {
 
@@ -42,7 +39,9 @@ namespace jubatus { namespace framework {
     std::cout << "jubatus-" << VERSION << " (" << progname << ")" << std::endl;
   }
 
-  server_argv::server_argv(int args, char** argv){
+  server_argv::server_argv(int args, char** argv, const std::string& type)
+    : type(type)
+  {
     google::InitGoogleLogging(argv[0]);
     google::LogToStderr(); // only when debug
 
@@ -58,6 +57,8 @@ namespace jubatus { namespace framework {
 
     p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
     p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
+
+    // APPLY CHANGES TO JUBAVISOR WHEN ARGUMENTS MODIFIED
 
     p.add("version", 'v', "version");
 
@@ -102,7 +103,9 @@ namespace jubatus { namespace framework {
     return ret.str();
   };
 
-  keeper_argv::keeper_argv(int args, char** argv){
+  keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
+    : type(t)
+  {
     google::InitGoogleLogging(argv[0]);
     google::LogToStderr(); // only when debug
 
@@ -140,7 +143,6 @@ namespace jubatus { namespace framework {
     return ret.str();
   };
 
-  
 #ifdef HAVE_ZOOKEEPER_H
     common::cshared_ptr<jubatus::common::lock_service> ls;
 

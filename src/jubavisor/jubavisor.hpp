@@ -25,6 +25,7 @@
 #include <pficommon/concurrent/mutex.h>
 
 #include "../common/lock_service.hpp"
+#include "../framework/server_util.hpp"
 #include "process.hpp"
 
 namespace jubatus{
@@ -34,7 +35,7 @@ public:
   jubervisor(const std::string&, int, int = 10, const std::string& logfile = "");
   ~jubervisor();
 
-  int start(std::string, unsigned int);
+  int start(std::string, unsigned int, framework::server_argv argv);
 
   // reduces processes to N - FIXME: currently the second value ignored and all processes stopped
   int stop(std::string, unsigned int);
@@ -47,7 +48,7 @@ private:
   typedef std::vector<process> process_list_t;
   typedef std::map<std::string, process_list_t > child_map_t;
 
-  int start_(const std::string&, unsigned int);
+  int start_(const std::string&, unsigned int, const framework::server_argv& argv);
   //  int stop_(const std::string&, std::vector<process>&);
 
   static void atexit_();
@@ -64,7 +65,7 @@ private:
   unsigned int max_children_;
 };
 
-MPRPC_PROC(start, int(std::string, unsigned int));
+MPRPC_PROC(start, int(std::string, unsigned int, framework::server_argv));
 MPRPC_PROC(stop, int(std::string, unsigned int));
   //MPRPC_PROC(ensure, int(std::string));
 

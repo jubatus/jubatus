@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) try {
   jubervisor j(p.get<std::string>("zookeeper"), port, 16, logfile);
   jubervisor_server serv(10*1024);
   {
-    serv.set_start(bind(&jubervisor::start, &j, _1, _2));
+    serv.set_start(bind(&jubervisor::start, &j, _1, _2, _3));
     serv.set_stop(bind(&jubervisor::stop, &j, _1, _2));
     if(!serv.serv(port, 2)){
       LOG(ERROR) << "cannot start rpc server.";

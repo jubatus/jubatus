@@ -1,0 +1,59 @@
+%define package_version @UX_VERSION@
+%define package_release @UX_RELEASE@
+
+%define __waf ./waf
+
+Name:		ux
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	More Succinct Trie Data structure
+Group:		Development/Libraries
+License:	New BSD License
+URL:		http://code.google.com/p/ux-trie/
+Source0:	http://ux-trie.googlecode.com/files/%{name}-%{version}.tar.bz2
+Patch0:		ux-fix-waf-libdir.patch
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+%package devel
+Summary:	Headers and libraries for UX
+Requires:	%{name} = %{version}-%{release}
+
+%description
+UX is a library for managing string collections, and support several string operations efficiently as in trie.
+
+%description devel
+This package provides headers and libraries needed to develop applications using UX.
+
+%prep
+%setup -q
+%patch0 -p0
+
+%build
+%{__waf} configure --prefix=%{_prefix} --libdir=%{_libdir}
+%{__waf} build
+
+%install
+%{__rm} -rf %{buildroot}
+%{__waf} install --destdir=%{buildroot}
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%{_bindir}/ux
+# As UX has no SONAME defined, include shared library without version number here.
+%{_libdir}/libux.so
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/pkgconfig/ux.pc
+%{_includedir}/ux
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%changelog
+* Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
+- Initial version

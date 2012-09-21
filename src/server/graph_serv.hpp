@@ -117,6 +117,9 @@ public:
   void after_load();
 
 private:
+  void selective_create_node_(const std::pair<std::string,int>& target,
+                              const std::string nid_str);
+
   mixable_graph g_;
 };
 

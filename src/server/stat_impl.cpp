@@ -58,5 +58,5 @@ int main(int args, char** argv){
   return
     jubatus::framework::run_server<jubatus::server::stat_impl_,
                                    jubatus::server::stat_serv>
-       (args, argv);
+       (args, argv, "stat");
 }

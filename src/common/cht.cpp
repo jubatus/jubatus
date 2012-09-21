@@ -33,8 +33,8 @@ namespace common{
     return ss.str();
   };
 
-  cht::cht(cshared_ptr<lock_service> z, const std::string& name):
-    name_(name), lock_service_(z)
+  cht::cht(cshared_ptr<lock_service> z, const std::string& type, const std::string& name):
+    type_(type), name_(name), lock_service_(z)
   {
   }
 
@@ -43,7 +43,9 @@ namespace common{
   // register_node :: node -> bool;
   // creates /jubatus/actors/<name>/cht/<hash(ip_port)> with contents ip_port
   void cht::register_node(const std::string& ip, int port){
-    std::string path = ACTOR_BASE_PATH + "/" + name_ + "/cht";
+    std::string path;
+    build_actor_path(path, type_, name_);
+    path += "/cht";
 
     for(unsigned int i=0; i<NUM_VSERV; ++i){
       std::string hashpath = path+"/"+make_hash(build_loc_str(ip, port, i));
@@ -65,7 +67,9 @@ namespace common{
       throw JUBATUS_EXCEPTION(not_found(key));
     }
     std::string hash = make_hash(key);
-    std::string path = ACTOR_BASE_PATH + "/" + name_ + "/cht";
+    std::string path;
+    build_actor_path(path, type_, name_);
+    path += "/cht";
 
     std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(), hlist.end(), hash);
     size_t idx = int(node0 - hlist.begin()) % hlist.size();
@@ -94,7 +98,9 @@ namespace common{
     get_hashlist_(key, hlist);
 
     std::string hash = make_hash(key);
-    std::string path = ACTOR_BASE_PATH + "/" + name_ + "/cht";
+    std::string path;
+    build_actor_path(path, type_, name_);
+    path += "/cht";
 
     std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(), hlist.end(), hash);
     size_t idx = (int(node0 - hlist.begin())+ hlist.size() -1) % hlist.size();
@@ -111,8 +117,9 @@ namespace common{
     }
   }
 
-  void cht::setup_cht_dir(lock_service& ls, const std::string& name){
-    std::string path = ACTOR_BASE_PATH + "/" + name;
+  void cht::setup_cht_dir(lock_service& ls, const std::string& type, const std::string& name){
+    std::string path;
+    build_actor_path(path, type, name);
     ls.create(path, "");
     path +=  "/cht";
     ls.create(path, "");
@@ -120,7 +127,9 @@ namespace common{
 
   bool cht::get_hashlist_(const std::string& key, std::vector<std::string>& hlist){
     hlist.clear();
-    std::string path = ACTOR_BASE_PATH + "/" + name_ + "/cht";
+    std::string path;
+    build_actor_path(path, type_, name_);
+    path += "/cht";
     std::vector<std::pair<std::string, int> > ret;
     lock_service_->list(path, hlist);
 

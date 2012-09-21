@@ -73,4 +73,16 @@ TEST(mecab_splitter_create, illegal_argument) {
                converter_exception);
 }
 
+TEST(mecab_splitter, with_space) {
+  mecab_splitter m;
+  vector<pair<size_t, size_t> > bs;
+  m.split(" テスト テスト ", bs);
+  vector<pair<size_t, size_t> > exp;
+  
+  exp.push_back(make_pair(1, 9));
+  exp.push_back(make_pair(11, 9));
+
+  PairVectorEquals(exp, bs);
+}
+
 }

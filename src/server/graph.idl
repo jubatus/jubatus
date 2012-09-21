@@ -46,7 +46,7 @@ message shortest_path_req {
 
 service graph {
 
-  #@random #@update #@pass
+  #@random #@nolock #@pass
   string create_node(0: string name) # //@cht
 
   #@cht(2) #@update #@pass
@@ -55,7 +55,7 @@ service graph {
   #@cht #@update #@all_and
   int update_node(0: string name, 1: string nid, 2: property p) # //@cht
 
-  #@cht(1) #@update #@all_and
+  #@cht(1) #@nolock #@all_and
   ulong create_edge(0: string name, 1: string nid, 2: edge_info ei) # //@cht
 
   #@cht #@update #@all_and
@@ -103,8 +103,6 @@ service graph {
 
   #@internal #@update #@pass
   int create_node_here(0: string name, 1: string nid)
-  #@internal #@update #@pass
-  int create_global_node(0: string name, 1: string nid)
   #@internal #@update #@pass
   int remove_global_node(0: string name, 1: string nid)
 

@@ -5,11 +5,11 @@
 using namespace jubatus;
 using namespace jubatus::framework;
 int main(int args, char** argv){
-  keeper k(keeper_argv(args,argv));
-  k.register_random<std::string >("create_node"); //pass update
+  keeper k(keeper_argv(args,argv,"graph"));
+  k.register_random<std::string >("create_node"); //pass nolock
   k.register_cht<2, int >("remove_node", pfi::lang::function<int(int,int)>(&pass<int >)); //update
   k.register_cht<2, int, property >("update_node", pfi::lang::function<int(int,int)>(&all_and)); //update
-  k.register_cht<1, unsigned long, edge_info >("create_edge", pfi::lang::function<unsigned long(unsigned long,unsigned long)>(&all_and)); //update
+  k.register_cht<1, unsigned long, edge_info >("create_edge", pfi::lang::function<unsigned long(unsigned long,unsigned long)>(&all_and)); //nolock
   k.register_cht<2, int, unsigned long, edge_info >("update_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
   k.register_cht<2, int, unsigned long >("remove_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
   k.register_random<double, std::string, int, preset_query >("centrality"); //pass analysis
@@ -25,7 +25,6 @@ int main(int args, char** argv){
   k.register_broadcast<bool, std::string >("save", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_broadcast<bool, std::string >("load", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
   k.register_broadcast<std::map<std::string,std::map<std::string,std::string > > >("get_status", pfi::lang::function<std::map<std::string,std::map<std::string,std::string > >(std::map<std::string,std::map<std::string,std::string > >,std::map<std::string,std::map<std::string,std::string > >)>(&merge<std::string,std::map<std::string,std::string > >)); //analysis
-
 
 
 

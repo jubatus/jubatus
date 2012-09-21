@@ -41,6 +41,13 @@
 namespace jubatus {
 namespace framework {
 
+class no_worker : public jubatus::exception::runtime_error
+{
+public:
+  no_worker(const std::string& name) : runtime_error(name)
+  {}
+};
+
 class keeper : public pfi::network::mprpc::rpc_server {
  public:
   keeper(const keeper_argv& a);
@@ -112,10 +119,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
-    if(list.empty())
-      throw std::runtime_error(method_name + ": no worker serving");
     const std::pair<std::string, int>& c = list[rng_(list.size())];
-
     try{
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
       return cli.call<R(std::string)>(method_name)(name);
@@ -128,13 +132,9 @@ class keeper : public pfi::network::mprpc::rpc_server {
   R random_proxy(const std::string& method_name, const std::string& name, const A& arg){
     //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
-
     get_members_(name, list);
 
-    if(list.empty())
-      throw std::runtime_error(method_name + ": no worker serving");
     const std::pair<std::string, int>& c = list[rng_(list.size())];
-
     try{
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
       return cli.call<R(std::string,A)>(method_name)(name, arg);
@@ -146,13 +146,9 @@ class keeper : public pfi::network::mprpc::rpc_server {
   template <typename R, typename A0, typename A1>
   R random_proxy(const std::string& method_name, const std::string& name, const A0& a0, const A1& a1){
     std::vector<std::pair<std::string, int> > list;
-
     get_members_(name, list);
 
-    if(list.empty())
-      throw std::runtime_error(method_name + ": no worker serving");
     const std::pair<std::string, int>& c = list[rng_(list.size())];
-
     try{
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
       return cli.call<R(std::string,A0,A1)>(method_name)(name, a0, a1);
@@ -167,10 +163,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
 
     get_members_(name, list);
 
-    if(list.empty())
-      throw std::runtime_error(method_name + ": no worker serving");
     const std::pair<std::string, int>& c = list[rng_(list.size())];
-
     try{
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
       return cli.call<R(std::string,A0,A1,A2)>(method_name)(name, a0, a1, a2);
@@ -185,10 +178,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
                     pfi::lang::function<R(R,R)>& agg) {
     //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
-
     get_members_(name, list);
-    if(list.empty())
-      throw std::runtime_error(method_name + ": no worker serving");
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -203,10 +193,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
                     pfi::lang::function<R(R,R)>& agg) {
     //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
-
     get_members_(name, list);
-    if(list.empty())
-      throw std::runtime_error(method_name + ": no worker serving");
 
     try{
       std::cout << __LINE__ << " name:" << name << " method:" << method_name << std::endl;
@@ -224,13 +211,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& id,
               pfi::lang::function<R(R,R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
-    {
-      pfi::concurrent::scoped_lock lk(mutex_);
-      jubatus::common::cht ht(zk_, name);
-      ht.find(id, list, N);
-    }
-    if(list.empty())
-      throw std::runtime_error(method_name + ": no worker serving");
+    get_members_from_cht_(name, id, list, N);
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -244,13 +225,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& id, const A0& arg,
               pfi::lang::function<R(R,R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
-    {
-      pfi::concurrent::scoped_lock lk(mutex_);
-      jubatus::common::cht ht(zk_, name);
-      ht.find(id, list, N);
-    }
-    if(list.empty())
-      throw std::runtime_error(method_name + ": no worker serving");
+    get_members_from_cht_(name, id, list, N);
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -264,13 +239,7 @@ class keeper : public pfi::network::mprpc::rpc_server {
   R cht_proxy(const std::string& method_name, const std::string& name, const std::string& id, const A0& a0, const A1& a1,
               pfi::lang::function<R(R,R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
-    {
-      pfi::concurrent::scoped_lock lk(mutex_);
-      jubatus::common::cht ht(zk_, name);
-      ht.find(id, list, N);
-    }
-    if(list.empty())
-      throw std::runtime_error(method_name + ": no worker serving");
+    get_members_from_cht_(name, id, list, N);
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -282,6 +251,8 @@ class keeper : public pfi::network::mprpc::rpc_server {
   }
 
   void get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret);
+  void get_members_from_cht_(const std::string& name,const std::string& id,
+                             std::vector<std::pair<std::string, int> >& ret, size_t n);
 
   keeper_argv a_;
   pfi::math::random::mtrand rng_;

@@ -17,12 +17,15 @@
 
 #pragma once
 #include <string>
+#include "../framework/server_util.hpp"
+
 namespace jubatus{
 
   // child process
   class process{
   public:
-    process(const std::string& zkhosts, const std::string& logfile = "/dev/null");
+    process(const std::string& zkhosts);
+    process(const std::string& zkhosts, const framework::server_argv& server_option);
     ~process();
 
     bool set_names(const std::string&);
@@ -33,14 +36,13 @@ namespace jubatus{
 
     const std::string& get_name() const { return name_; }
     const std::string& get_server() const { return server_; }
-    int get_rpc_port() const { return rpc_port_; }
+    int get_rpc_port() const { return server_option_.port; }
     int get_pid() const { return pid_; }
   private:
     std::string server_;
     std::string name_;
     std::string zk_hosts_;
-    std::string logfile_;
-    int rpc_port_;
+    framework::server_argv server_option_;
     int pid_;
   };
 

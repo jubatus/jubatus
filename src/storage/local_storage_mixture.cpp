@@ -144,7 +144,7 @@ void local_storage_mixture::get_status(std::map<std::string,std::string>& status
   status["diff_size"] = pfi::lang::lexical_cast<std::string>(tbl_diff_.size());
 }
 
-void local_storage_mixture::update(const string &feature, const string& inc_class, const string& dec_class, val1_t v) {
+void local_storage_mixture::update(const string &feature, const string& inc_class, const string& dec_class, const val1_t& v) {
   id_feature_val3_t& feature_row = tbl_diff_[feature];
   feature_row[class2id_.get_id(inc_class)].v1 += v;
   feature_row[class2id_.get_id(dec_class)].v1 -= v;

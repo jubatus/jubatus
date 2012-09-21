@@ -1,0 +1,92 @@
+%define package_version @ZOOKEEPER_VERSION@
+%define package_release @ZOOKEEPER_RELEASE@
+
+# Using mirror instead of official server
+#%define apache_dist http://www.apache.org/dist
+%define apache_dist http://ftp.jaist.ac.jp/pub/apache
+
+%define c_client_dir src/c
+
+Name:		zookeeper-client
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	ZooKeeper C Client
+Group:		Development/Libraries
+License:	Apache License 2.0
+URL:		http://zookeeper.apache.org/
+Source0:	%{apache_dist}/zookeeper/zookeeper-%{version}/zookeeper-%{version}.tar.gz
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+%package devel
+Summary:	Headers and libraries for ZooKeeper client
+Requires:	%{name} = %{version}-%{release}
+
+%package utils
+Summary:	Utility commands for ZooKeeper
+Requires:	%{name} = %{version}-%{release}
+
+%description
+ZooKeeper is a centralized service for maintaining configuration information, naming, 
+providing distributed synchronization, and providing group services.
+This package provides ZooKeeper C client library.
+
+%description devel
+This package provides headers and libraries needed to develop applications using ZooKeeper C client.
+
+%description utils
+This package provides miscellaneous utility commands for ZooKeeper.
+
+%prep
+%setup -q -n zookeeper-%{version}
+
+%build
+pushd %{c_client_dir}
+%configure
+
+# Workaround for Rpath
+# See: http://fedoraproject.org/wiki/Packaging/Guidelines#Removing_Rpath
+%{__sed} -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+%{__sed} -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+
+%{__make} %{?_smp_mflags}
+
+popd
+
+%install
+%{__rm} -rf %{buildroot}
+pushd %{c_client_dir}
+%makeinstall
+popd
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc README.txt NOTICE.txt LICENSE.txt CHANGES.txt
+%{_libdir}/libzookeeper_st.so.*
+%{_libdir}/libzookeeper_mt.so.*
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/libzookeeper_st.so
+%{_libdir}/libzookeeper_st.a
+%{_libdir}/libzookeeper_st.la
+%{_libdir}/libzookeeper_mt.so
+%{_libdir}/libzookeeper_mt.a
+%{_libdir}/libzookeeper_mt.la
+%{_includedir}/c-client-src
+
+%files utils
+%defattr(-,root,root,-)
+%{_bindir}/cli_st
+%{_bindir}/cli_mt
+%{_bindir}/load_gen
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%changelog
+* Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
+- Initial version

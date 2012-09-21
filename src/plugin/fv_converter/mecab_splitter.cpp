@@ -59,6 +59,7 @@ void mecab_splitter::split(const string& string,
     if (node->stat == MECAB_BOS_NODE || node->stat == MECAB_EOS_NODE)
       continue;
 
+    p += node->rlength - node->length;
     bounds.push_back(make_pair(p, node->length));
     p += node->length;
   }

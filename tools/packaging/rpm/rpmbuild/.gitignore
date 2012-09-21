@@ -1,0 +1,7 @@
+BUILD
+BUILDROOT
+RPMS
+SRPMS
+*.spec
+*.gz
+*.bz2

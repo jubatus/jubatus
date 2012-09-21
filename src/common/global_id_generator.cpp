@@ -47,7 +47,7 @@ uint64_t global_id_generator::generate()
 #else
     // never reaches here
     assert(is_standalone_);
-
+    return 0; // dummy to remove warning
 #endif
   }
 }

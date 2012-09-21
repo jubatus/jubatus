@@ -13,8 +13,8 @@ public:
     p_(new graph_serv(a))
   { p_->use_cht();}
 
-  std::string create_node(std::string name) //update random
-  { JWLOCK__(p_); return p_->create_node(); }
+  std::string create_node(std::string name) //nolock random
+  { NOLOCK__(p_); return p_->create_node(); }
 
   int remove_node(std::string name, std::string nid) //update cht(2)
   { JWLOCK__(p_); return p_->remove_node(nid); }
@@ -22,8 +22,8 @@ public:
   int update_node(std::string name, std::string nid, property p) //update cht(2)
   { JWLOCK__(p_); return p_->update_node(nid, p); }
 
-  unsigned long create_edge(std::string name, std::string nid, edge_info ei) //update cht(1)
-  { JWLOCK__(p_); return p_->create_edge(nid, ei); }
+  unsigned long create_edge(std::string name, std::string nid, edge_info ei) //nolock cht(1)
+  { NOLOCK__(p_); return p_->create_edge(nid, ei); }
 
   int update_edge(std::string name, std::string nid, unsigned long eid, edge_info ei) //update cht(2)
   { JWLOCK__(p_); return p_->update_edge(nid, eid, ei); }
@@ -73,9 +73,6 @@ public:
   int create_node_here(std::string name, std::string nid) //update 
   { JWLOCK__(p_); return p_->create_node_here(nid); }
 
-  int create_global_node(std::string name, std::string nid) //update 
-  { JWLOCK__(p_); return p_->create_global_node(nid); }
-
   int remove_global_node(std::string name, std::string nid) //update 
   { JWLOCK__(p_); return p_->remove_global_node(nid); }
 
@@ -91,5 +88,5 @@ int main(int args, char** argv){
   return
     jubatus::framework::run_server<jubatus::server::graph_impl_,
                                    jubatus::server::graph_serv>
-       (args, argv);
+       (args, argv, "graph");
 }

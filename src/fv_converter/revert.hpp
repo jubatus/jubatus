@@ -23,7 +23,7 @@
 namespace jubatus {
 namespace fv_converter {
 
-class datum;
+struct datum;
 
 void revert_feature(const sfv_t& fv,
                     datum& data);

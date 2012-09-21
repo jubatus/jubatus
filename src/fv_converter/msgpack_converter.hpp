@@ -18,13 +18,13 @@
 #pragma once
 
 namespace msgpack {
-class object;
+struct object;
 }
 
 namespace jubatus {
 namespace fv_converter {
 
-class datum;
+struct datum;
 
 class msgpack_converter {
  public:

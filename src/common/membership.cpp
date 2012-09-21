@@ -19,6 +19,9 @@
 
 #include <cstdlib>
 
+#include <iostream>
+using namespace std;
+
 #include <pficommon/lang/cast.h>
 using namespace pfi::lang;
 
@@ -36,9 +39,11 @@ namespace common{
   }
 
   // /path/base -> 127.0.0.1 -> 9199 -> /path/base/127.0.0.1_9199
-  bool build_existence_path(const std::string& base, const std::string& ip, int port, std::string& out){
+  void build_existence_path(const std::string& base, const std::string& ip, int port, std::string& out){
     out = base + "/" + ip + "_" + lexical_cast<std::string,int>(port);
-    return true;
+  }
+  void build_actor_path(std::string& path, const std::string& type, const std::string& name){
+    path = ACTOR_BASE_PATH + "/" + type + "/" + name;
   }
 
   // 127.0.0.1_9199 -> (127.0.0.1, 9199)
@@ -49,9 +54,12 @@ namespace common{
   }
 
   // zk -> name -> ip -> port -> bool
-  bool register_actor(lock_service& z, const std::string& name, const std::string& ip, int port){
+  bool register_actor(lock_service& z,
+                      const std::string& type, const std::string& name,
+                      const std::string& ip, int port){
 
-    std::string path = ACTOR_BASE_PATH + "/" + name;
+    std::string path;
+    build_actor_path(path, type, name);
     z.create(path, "");
     z.create(path + "/master_lock", "");
     path += "/nodes";
@@ -69,8 +77,10 @@ namespace common{
     return true;
   }
 
-  bool register_keeper(lock_service& z, const std::string& ip, int port){
+  bool register_keeper(lock_service& z, const std::string& type, const std::string& ip, int port){
     std::string path = JUBAKEEPER_BASE_PATH;
+    z.create(path, "");
+    path += "/" + type;
     z.create(path, "");
     {
       std::string path1;
@@ -84,9 +94,13 @@ namespace common{
   }
 
   // zk -> name -> list( (ip, rpc_port) )
-  bool get_all_actors(lock_service& z, const std::string& name, std::vector<std::pair<std::string, int> >& ret){
+  bool get_all_actors(lock_service& z,
+                      const std::string& type, const std::string& name,
+                      std::vector<std::pair<std::string, int> >& ret){
     ret.clear();
-    std::string path = ACTOR_BASE_PATH + "/" + name + "/nodes";
+    std::string path;
+    build_actor_path(path, type, name);
+    path += "/nodes";
     std::vector<std::string> list;
     z.list(path, list);
     for(std::vector<std::string>::const_iterator it = list.begin();
@@ -108,11 +122,18 @@ namespace common{
     exit(-1);
   }
 
-  void prepare_jubatus(lock_service& ls){
+  void prepare_jubatus(lock_service& ls, const std::string& type, const std::string& name){
     ls.create(JUBATUS_BASE_PATH);
     ls.create(JUBAVISOR_BASE_PATH);
     ls.create(JUBAKEEPER_BASE_PATH);
     ls.create(ACTOR_BASE_PATH);
+
+    std::string path = ACTOR_BASE_PATH + "/" + type;
+    ls.create(path);
+    if(name != ""){
+      build_actor_path(path, type, name);
+      ls.create(path);
+    }
   }
 }
 }

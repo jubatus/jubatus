@@ -40,8 +40,13 @@
 using namespace pfi::lang;
 namespace jubatus{
 
-process::process(const std::string& zkhosts, const std::string& logfile):
-  zk_hosts_(zkhosts), logfile_(logfile), rpc_port_(-1){}
+process::process(const std::string& zkhosts):
+  zk_hosts_(zkhosts){}
+
+process::process(const std::string& zkhosts, const framework::server_argv& server_option):
+  zk_hosts_(zkhosts), server_option_(server_option)
+{}
+
 process::~process(){}
 
 // str : "<server>/<name>
@@ -75,26 +80,34 @@ bool process::spawn_link(int p){
   std::string cmd = server_;  // TODO: check cmd exits
   LOG(INFO) << "forking " << cmd << " with port " << p;
 
-  rpc_port_ = p;
+  server_option_.port = p;
   pid_ = fork();
   if(pid_ > 0){
     LOG(INFO) << "forked - pid: " << pid_;
     return true;
 
   }else if(pid_==0){
-    // redirect(logfile_.c_str(), 1);
-    // redirect(logfile_.c_str(), 2);
     redirect("/dev/null", 1);
     redirect("/dev/null", 2);
-    util::append_env_path("LD_LIBRARY_PATH", "/usr/local/lib");
-    //    setenv("LD_LIBRARY_PATH", "/usr/local/lib", true);
-    const char * const argv[12] =
-      { cmd.c_str(),
-        "-z", zk_hosts_.c_str(),
-        "-n", name_.c_str(),
-        "-p", lexical_cast<std::string,int>(p).c_str(),
-        NULL };
-    execvp(cmd.c_str(), (char* const*)argv);
+    const std::string argv[] =
+      { cmd,
+        "-z", zk_hosts_,
+        "-n", name_,
+        "-p", lexical_cast<std::string>(p),
+        "-c", lexical_cast<std::string>(server_option_.threadnum),
+        "-t", lexical_cast<std::string>(server_option_.timeout),
+        "-d", server_option_.tmpdir,
+        "-s", lexical_cast<std::string,int>(server_option_.interval_sec),
+        "-i", lexical_cast<std::string,int>(server_option_.interval_count),
+        };
+    std::vector<const char*> arg_list;
+    for (size_t i = 0; i < sizeof(argv)/sizeof(*argv); ++i)
+      arg_list.push_back(argv[i].c_str());
+    if (server_option_.join)
+      arg_list.push_back("-j");
+    arg_list.push_back(NULL);
+
+    execvp(cmd.c_str(), (char* const*)&arg_list[0]);
     perror(cmd.c_str());  // execv only returns on error
 
   }else{

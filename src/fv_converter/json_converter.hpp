@@ -28,7 +28,7 @@ class json;
 namespace jubatus {
 namespace fv_converter{
 
-class datum;
+struct datum;
 
 class json_converter {
 

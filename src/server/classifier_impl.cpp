@@ -43,5 +43,5 @@ int main(int args, char** argv){
   return
     jubatus::framework::run_server<jubatus::server::classifier_impl_,
                                    jubatus::server::classifier_serv>
-       (args, argv);
+       (args, argv, "classifier");
 }

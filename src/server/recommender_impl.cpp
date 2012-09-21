@@ -70,5 +70,5 @@ int main(int args, char** argv){
   return
     jubatus::framework::run_server<jubatus::server::recommender_impl_,
                                    jubatus::server::recommender_serv>
-       (args, argv);
+       (args, argv, "recommender");
 }
