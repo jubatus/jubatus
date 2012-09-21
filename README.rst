@@ -31,16 +31,17 @@ LGPL 2.1
 Update history
 --------------
 
-Preparing 0.3.2
-~~~~~~~~~~~~~~~
+Release 0.3.2 2012/9/21
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
   - jubavisor/jubactl support jubauts server options (#75)
-  - jubadoc: document generator (.idl => .rst)
+  - jubadoc: document generator (.idl => .rst) (#88)
   - jenerator: enabled -o option to specify output directory
+  - yum (RPM) packaging (#40)
 
 Bugfix
-  - #51, #76, #77, #79, #83, #96
+  - #51, #76, #77, #79, #83, #90, #91, #96, #98, #99, #100, #101, #102, #103
 
 Release 0.3.1 2012/7/20
 ~~~~~~~~~~~~~~~~~~~~~~~
