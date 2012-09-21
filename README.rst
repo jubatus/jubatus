@@ -35,7 +35,7 @@ Release 0.3.2 2012/9/21
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
-  - jubavisor/jubactl support jubauts server options (#75)
+  - jubavisor/jubactl support jubatus server options (#75)
   - jubadoc: document generator (.idl => .rst) (#88)
   - jenerator: enabled -o option to specify output directory
   - yum (RPM) packaging (#40)
