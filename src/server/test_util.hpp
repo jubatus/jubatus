@@ -27,12 +27,32 @@
 
 #include <pficommon/lang/cast.h>
 #include <pficommon/text/json.h>
+#include <pficommon/network/mprpc.h>
 
 #include "../fv_converter/converter_config.hpp"
 
 using std::string;
 using std::cout;
 using std::endl;
+
+void wait_server(int port) {
+  pfi::network::mprpc::rpc_client cli("localhost", port, 10);
+  long sleep_time = 1000;
+  // 1000 * \sum {i=0..9} 2^i = 1024000 micro sec = 1024 ms
+  for (int i = 0; i < 10; ++i) {
+    usleep(sleep_time);
+    try {
+      cli.call<bool()>("dummy")();
+      throw std::runtime_error("dummy rpc successed");
+    } catch(pfi::network::mprpc::method_not_found& e) {
+      return;
+    } catch(pfi::network::mprpc::rpc_io_error& e) {
+      // wait until the server bigins to listen
+    }
+    sleep_time *= 2;
+  }
+  throw std::runtime_error("cannot connect");
+}
 
 pid_t fork_process(const char* name, int port = 9199){
   string cmd(BUILD_DIR);
@@ -52,7 +72,7 @@ pid_t fork_process(const char* name, int port = 9199){
     perror("--");
     return -1;
   }
-  usleep(77777); // we wanna be lucky!
+  wait_server(port);
   return child;
 }
 
