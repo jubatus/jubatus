@@ -20,7 +20,7 @@ type param_t = map<string, string>
 #- ``converter`` is a string of JSON format that describes configuration of feature extranction of ``datum`` . See :doc:`fv_convert` for details.
 message config_data {
   0: string method
-  1: string converter
+  1: string config
 }
 
 message datum {
