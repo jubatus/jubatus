@@ -37,13 +37,18 @@ namespace {
       zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
             (common::create_lock_service("zk", "localhost:2181", 1024, "test.log"));
 
+      std::string engine_name, engine_root;
+      engine_name = "test";
+      engine_root = ACTOR_BASE_PATH + "/" + engine_name;
+
       name_ = build_loc_str("localhost", 10000);
-      build_actor_path(path, name_);
+      build_actor_path(path, engine_name, name_);
       name1_ = build_loc_str("localhost", 10001);
-      build_actor_path(path1, name1_);
+      build_actor_path(path1, engine_name, name1_);
 
       zk_->create(JUBATUS_BASE_PATH, "");
       zk_->create(ACTOR_BASE_PATH, "");
+      zk_->create(engine_root, "");
 
       zk_->create(path, "hoge0", true);
       zk_->create(path1, "hoge1", true);
