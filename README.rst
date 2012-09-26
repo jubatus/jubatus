@@ -31,6 +31,12 @@ LGPL 2.1
 Update history
 --------------
 
+preparing Release 0.3.3
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Improvements
+  - Jubatus loads plugin from default directory (#57)
+
 Release 0.3.2 2012/9/21
 ~~~~~~~~~~~~~~~~~~~~~~~
 

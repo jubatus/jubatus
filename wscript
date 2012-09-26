@@ -77,9 +77,13 @@ def configure(conf):
     conf.env.append_value('CXXFLAGS', '-ftest-coverage')
     conf.env.append_value('LINKFLAGS', '-lgcov')
 
+  # plugin install path
+  conf.env.JUBATUS_PLUGIN_DIR = conf.env['LIBDIR'] + '/jubatus/plugin'
+
   # don't know why this does not work when put after conf.recurse
   conf.define('JUBATUS_VERSION', VERSION)
   conf.define('JUBATUS_APPNAME', APPNAME)
+  conf.define('JUBATUS_PLUGIN_DIR', conf.env.JUBATUS_PLUGIN_DIR)
   conf.define('BUILD_DIR',  conf.bldnode.abspath())
   conf.write_config_header('src/config.hpp', remove=False)
 

@@ -55,7 +55,7 @@ def build(bld):
     'weight_manager.cpp',
     'keyword_weights.cpp',
     ]
-  use = 'PFICOMMON MSGPACK DL'
+  use = 'PFICOMMON MSGPACK DL jubacommon'
 
   if bld.env.HAVE_RE2:
     source.append('re2_match.cpp')
