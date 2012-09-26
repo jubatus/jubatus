@@ -38,7 +38,7 @@ dynamic_loader::dynamic_loader(const std::string& path)
 }
 
 dynamic_loader::~dynamic_loader() {
-  if (dlclose(handle_)) {
+  if (handle_ && dlclose(handle_) != 0) {
     // TODO failed
   }
 }
