@@ -34,7 +34,7 @@ namespace jubatus {
 namespace common {
 // TODO: write zk mock and test them all?
 
-class zk : lock_service {
+class zk : public lock_service {
 public:
   // timeout [ms]
   zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
@@ -80,10 +80,10 @@ protected:
 };
 
 // TODO: write zk mock and test them all?
-class zkmutex : try_lockable {
+class zkmutex : public try_lockable {
 public:
   zkmutex(lock_service& ls, const std::string& path):
-    zk_(reinterpret_cast<zk&>(ls)), path_(path), has_lock_(false)
+    zk_(ls), path_(path), has_lock_(false)
   {}
   virtual ~zkmutex() { this->unlock(); }
 
@@ -92,7 +92,7 @@ public:
   bool unlock();
 
 private:
-  zk& zk_;
+  lock_service& zk_;
   std::string path_;
   std::string seqfile_;
   bool has_lock_;

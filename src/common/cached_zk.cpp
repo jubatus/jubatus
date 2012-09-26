@@ -110,7 +110,7 @@ void cached_zk::clear_cache(const char* path)
 void cached_zk::update_cache(zhandle_t* zh, int type, int state,
     const char* path, void* ctx)
 {
-  cached_zk* zk = reinterpret_cast<cached_zk*>(ctx);
+  cached_zk* zk = static_cast<cached_zk*>(ctx);
 
   if (type == ZOO_CHILD_EVENT) {
     // update cache

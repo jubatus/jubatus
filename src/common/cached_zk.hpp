@@ -25,7 +25,7 @@ namespace jubatus {
 namespace common {
   // TODO: write zk mock and test them all?
 
-class cached_zk : zk {
+class cached_zk : public zk {
 public:
   // timeout [ms]
   cached_zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
