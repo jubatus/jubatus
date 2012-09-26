@@ -1,20 +1,20 @@
 # ==============================================================================
 # Jubatus
 # ==============================================================================
-JUBATUS_VERSION="0.3.1"
+JUBATUS_VERSION="0.3.2"
 JUBATUS_RELEASE="1"
-JUBATUS_IS_SNAPSHOT="yes"
-JUBATUS_CHECKOUT="develop"
-#JUBATUS_CHECKOUT="jubatus-${JUBATUS_VERSION}"
+JUBATUS_IS_SNAPSHOT="no"
+#JUBATUS_CHECKOUT="develop"
+JUBATUS_CHECKOUT="jubatus-${JUBATUS_VERSION}"
 JUBATUS_REPOS="https://github.com/jubatus/jubatus.git"
 
 # ==============================================================================
 # Jubatus Client Header (C++)
 # ==============================================================================
-JUBATUS_CLIENT_VERSION="${JUBATUS_VERSION}.20120720"
+JUBATUS_CLIENT_VERSION="0.3.1.20120720"
 JUBATUS_CLIENT_RELEASE="1"
-JUBATUS_CLIENT_ARCHIVE="jubatus_client.${JUBATUS_VERSION}.2012-07-20.tar.gz"
-JUBATUS_CLIENT_ARCHIVE_DIR="jubatus_client.${JUBATUS_VERSION}"
+JUBATUS_CLIENT_ARCHIVE="jubatus_client.0.3.1.2012-07-20.tar.gz"
+JUBATUS_CLIENT_ARCHIVE_DIR="jubatus_client.0.3.1"
 
 # ==============================================================================
 # Jubatus Release (Yum Repository)
@@ -28,7 +28,7 @@ JUBATUS_RELEASE_RELEASE="1"
 PFICOMMON_VERSION="1.3.1.0"
 PFICOMMON_RELEASE="1"
 PFICOMMON_IS_SNAPSHOT="yes"
-PFICOMMON_CHECKOUT="master"
+PFICOMMON_CHECKOUT="0b2a805ac026407fcd7b50b77d86b8d00e6a99ac"
 #PFICOMMON_CHECKOUT="v${PFICOMMON_VERSION}"
 PFICOMMON_REPOS="https://github.com/pfi/pficommon.git"
 
