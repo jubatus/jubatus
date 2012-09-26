@@ -22,8 +22,8 @@
 
 #include <stdint.h>
 
-namespace jubatus{
-namespace util{
+namespace jubatus {
+namespace util {
 
 void get_ip(const char* nic, std::string& out);
 std::string get_ip(const char* nic);

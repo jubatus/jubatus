@@ -20,13 +20,14 @@
 #include <string>
 #include <stdint.h>
 
-namespace jubatus{
+namespace jubatus {
 
-class hash_util{
+class hash_util {
 public:
-  static uint64_t calc_string_hash(const std::string& s){
+  static uint64_t calc_string_hash(const std::string& s) {
+    // FNV-1 hash function
     uint64_t hash = 14695981039346656037LLU;
-    for (size_t i = 0; i < s.size(); ++i){
+    for (size_t i = 0; i < s.size(); ++i) {
       hash *= 1099511628211LLU;
       hash ^= s[i];
     }
@@ -34,4 +35,4 @@ public:
   }
 };
 
-}
+} // jubatus

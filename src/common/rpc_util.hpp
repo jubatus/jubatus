@@ -20,7 +20,7 @@
 #include <pficommon/data/serialization.h>
 #include <msgpack.hpp>
 
-namespace jubatus{
+namespace jubatus {
 
 typedef std::pair<std::string, int> connection_info;
 
