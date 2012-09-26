@@ -71,6 +71,12 @@ string get_ip(const char* nic){
   return ret;
 }
 
+string base_name(const string& path)
+{
+  size_t found = path.rfind('/');
+  return found != string::npos ? path.substr(found + 1) : path;
+}
+
 std::string get_program_name()
 {
   // WARNING: this code will only work on linux or OS X
@@ -97,11 +103,11 @@ std::string get_program_name()
   }
 
   // get basename
-  const char* last = strrchr(path, '/');
-  if (!last)
+  const string program_base_name = base_name(path);
+  if (program_base_name == path)
       throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(string("Failed to get program name from path: ") + path)
        << jubatus::exception::error_file_name(path));
-  return std::string(last + 1);
+  return program_base_name;
 }
 
 //local server list should be like:

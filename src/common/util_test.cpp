@@ -40,6 +40,12 @@ TEST(common,util2){
   ASSERT_NE(env, env2);
 }
 
+TEST(common, base_name){
+  EXPECT_EQ("test", jubatus::util::base_name("/path/to/test"));
+  EXPECT_EQ("basename", jubatus::util::base_name("basename"));
+  EXPECT_EQ("", jubatus::util::base_name("/path/to/"));
+}
+
 TEST(common,util_get_program_name){
   std::string path;
   EXPECT_NO_THROW({
