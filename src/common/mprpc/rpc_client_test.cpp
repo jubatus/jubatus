@@ -17,6 +17,7 @@
 
 #include "rpc_client.hpp"
 #include "../../framework/aggregators.hpp"
+#include "../../server/test_util.hpp"
 #include "gtest/gtest.h"
 #include <pficommon/concurrent/thread.h>
 #include <pficommon/network/mprpc.h>
@@ -181,9 +182,9 @@ TEST(rpc_mclient, small)
     threads.back()->start();
 
     clients.push_back(make_pair(string("localhost"), port));
+	wait_server(port);
   }
   const size_t kServerSize = clients.size();
-  usleep(500000);
   {
     test_mrpc_client cli0("localhost", PORT0, 3.0);
     test_mrpc_client cli1("localhost", PORT1, 3.0);
@@ -311,12 +312,12 @@ TEST(rpc_mclient, socket_disconnection)
   server_ptr ser(new test_mrpc_server(3.0));
   thread th(pfi::lang::bind(&server_thread, ser, kPortStart));
   th.start();
+  wait_server(kPortStart);
 
   vector<pair<string,uint16_t> > clients;
   clients.push_back(make_pair(string("localhost"), kPortStart));
   clients.push_back(make_pair(string("localhost"), kInvalidPort));  // connection refused
 
-  usleep(500000);
   {
     test_mrpc_client cli0("localhost", kPortStart, 3.0);
     test_mrpc_client cli1("localhost", kInvalidPort, 3.0);
