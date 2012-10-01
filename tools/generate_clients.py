@@ -4,11 +4,11 @@ import os
 import tarfile
 import shutil
 import re
+import glob
 
-def generate(idl, lang, indir, outdir):
-
+def generate(idlfile, lang, outdir):
+    idl = os.path.splitext(os.path.basename(idlfile))[0]
     print("generating {0}.{1}".format(idl, lang))
-    idlfile = idl+".idl"
     options = []
     if lang == "cpp":
         options.append("-p")
@@ -30,7 +30,7 @@ def generate(idl, lang, indir, outdir):
             pass
         outdir = outdir + '/' + idl
 
-    cmd = ["mpidl", lang, indir + idlfile, '-o', outdir] + options
+    cmd = ["mpidl", lang, idlfile, '-o', outdir] + options
 #    print(cmd)
     subprocess.call(cmd)
     print(outdir)
@@ -65,15 +65,14 @@ if __name__=='__main__':
         indir = sys.argv[1] + "/"
 
     langs = ["haskell", "cpp", "ruby", "java", "php", "perl", "python"]
-    servers = ["classifier", "regression", "recommender", "stat"]
-    comb = [(s, l) for s in servers for l in langs]
+    idlfiles = glob.glob(indir + "*.idl")
     for lang in langs:
         outdir = "jubatus"
         try: os.mkdir(outdir)
         except: pass
 
-        for server in servers:
-            generate(server, lang, indir, outdir)
+        for idlfile in idlfiles:
+            generate(idlfile, lang, outdir)
         
         name = "jubatus-%s" % lang
         pack(name, version_string, outdir)
