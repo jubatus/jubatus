@@ -211,6 +211,12 @@ static void init_num_rules(const vector<num_rule>& num_rules,
 
 void initialize_converter(const converter_config& config,
                           datum_to_fv_converter& conv) {
+  if (config.hash_max_size.bool_test() && *config.hash_max_size.get() <= 0) {
+    stringstream msg;
+    msg << "hash_max_size must be positive, but is " << *config.hash_max_size.get();
+    throw JUBATUS_EXCEPTION(converter_exception(msg.str()));
+  }
+
   map<string, string_filter_ptr> string_filters;
   init_string_filter_types(config.string_filter_types, string_filters);
   map<string, num_filter_ptr> num_filters;
@@ -225,6 +231,10 @@ void initialize_converter(const converter_config& config,
   init_num_filter_rules(config.num_filter_rules, num_filters, conv);
   init_string_rules(config.string_rules, splitters, conv);
   init_num_rules(config.num_rules, num_features, conv);
+
+  if (config.hash_max_size.bool_test()) {
+    conv.set_hash_max_size(*config.hash_max_size.get());
+  }
 }
 
 }

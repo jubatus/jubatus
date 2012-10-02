@@ -36,6 +36,7 @@ preparing Release 0.3.3
 
 Improvements
   - Jubatus loads plugin from default directory (#57)
+  - Add hash_max_size option to learn in fixed-size memory (#67)
 
 Release 0.3.2 2012/9/21
 ~~~~~~~~~~~~~~~~~~~~~~~

@@ -86,6 +86,8 @@ class datum_to_fv_converter {
   void revert_feature(const std::string& feature,
                       std::pair<std::string, std::string>& expect) const;
 
+  void set_hash_max_size(uint64_t hash_max_size);
+
  private:
   pfi::lang::scoped_ptr<datum_to_fv_converter_impl> pimpl_;
 };
