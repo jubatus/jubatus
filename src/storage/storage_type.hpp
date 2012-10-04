@@ -240,6 +240,7 @@ binop(std::vector<std::pair<std::string, E> > &lhs,
 
     if (li < lsize && lhs[li].first == rhs[ri].first){
       lhs[li].second = f(lhs[li].second, rhs[ri].second);
+      ++li;
     } else {
       lhs.push_back(make_pair(rhs[ri].first, f(default_value, rhs[ri].second)));
     }
