@@ -1,10 +1,40 @@
 require 'formula'
 
+class ZooKeeperLib < Requirement
+  def initialize
+    @zk = Formula.factory('zookeeper')
+  end
+
+  def fatal?
+    true
+  end
+
+  def satisfied?
+    @zk.installed? and File.exist?(@zk.lib + 'libzookeeper_mt.dylib')
+  end
+
+  def message
+    if @zk.installed?
+      <<-EOS.undent
+        ZooKeeper build was requested, but Zookeeper was already built without `--c` option.
+        You will need to `brew uninstall zookeeper; brew install zookeeper --c` first.
+      EOS
+    else
+      <<-EOS.undent
+        ZooKeeper build was requested, but Zookeeper is not installed.
+        You will need to `brew install zookeeper --c` first.
+      EOS
+    end
+  end
+end
+
 class Jubatus < Formula
   url 'https://github.com/jubatus/jubatus/tarball/jubatus-0.3.2'
   head 'https://github.com/jubatus/jubatus.git'
   homepage 'http://jubat.us/'
   md5 '53122d27aa5889d14917338171e3b396'
+
+  option 'enable-zookeeper', 'Using zookeeper for distributed environemnt'
 
   depends_on 'glog'
   depends_on 'libevent'
@@ -12,6 +42,10 @@ class Jubatus < Formula
   depends_on 'pkg-config'
   depends_on 'pficommon'
   depends_on 're2' unless ARGV.include? "--disable-re2"
+
+  if build.include? 'enable-zookeeper'
+    depends_on ZooKeeperLib.new
+  end
 
   def options
     [
