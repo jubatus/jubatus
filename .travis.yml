@@ -1,35 +1,54 @@
 language: cpp
+
 compiler:
   - gcc
-#  - clang
+  - clang
 
 before_install:
-  - "sudo apt-get -qq update"
-  - "sudo apt-get -qq install libmsgpack-dev libevent-dev"
-  - "wget http://google-glog.googlecode.com/files/glog-0.3.2.tar.gz"
-  - "tar xzf glog-0.3.2.tar.gz && cd glog-0.3.2 && ./configure && make && sudo make install"
-  - "cd -"
-  - "git clone git://github.com/pfi/pficommon.git"
-  - "cd pficommon && ./waf configure && ./waf build && sudo ./waf install"
-  - "cd -"
-# todo: add re2 and zookeeper
+  - lsb_release -a
+  - uname -a
+  - sudo apt-get -qq update
 
-before_script:
-  - ./waf configure --disable-re2
-  - ./waf build
+install:
+  # msgpack, libevent
+  - sudo apt-get -qq install libmsgpack-dev libevent-dev
+  # glog
+  - wget http://google-glog.googlecode.com/files/glog-0.3.2.tar.gz && tar xf glog-0.3.2.tar.gz
+  - pushd glog-0.3.2 && ./configure && make && sudo make install && popd
+  - sudo ldconfig
+  # pficommon
+  - git clone git://github.com/pfi/pficommon.git
+  - pushd pficommon && ./waf configure --disable-database --disable-fcgi --disable-magickpp && ./waf build && sudo ./waf install && popd
+  - sudo ldconfig
+  # zookeeper
+  - wget http://apache.openmirror.de/zookeeper/zookeeper-3.4.4/zookeeper-3.4.4.tar.gz && tar xf zookeeper-3.4.4.tar.gz
+  - pushd zookeeper-3.4.4/src/c && ./configure && make && sudo make install && popd
+  - sudo ldconfig
+  # re2
+  - hg clone https://re2.googlecode.com/hg re2
+  - pushd re2 && make && sudo make install && popd
+  - sudo ldconfig
+  # ux
+  - wget http://ux-trie.googlecode.com/files/ux-0.1.8.tar.bz2 && tar xf ux-0.1.8.tar.bz2
+  - pushd ux-0.1.8 && ./waf configure && ./waf build && sudo ./waf install && popd
+  - sudo ldconfig
+  # mecab
+  - wget http://mecab.googlecode.com/files/mecab-0.994.tar.gz && tar xf mecab-0.994.tar.gz
+  - pushd mecab-0.994 && ./configure --enable-utf8-only && make && sudo make install && popd
+  - sudo ldconfig
+  # mecab-ipadic
+  - wget http://mecab.googlecode.com/files/mecab-ipadic-2.7.0-20070801.tar.gz && tar xf mecab-ipadic-2.7.0-20070801.tar.gz
+  - pushd mecab-ipadic-2.7.0-20070801 && ./configure --with-charset=utf8 && make && sudo make install && popd
+  - sudo ldconfig
 
 script:
-  - ./waf --check
+  - ./waf configure --enable-zookeeper --enable-mecab --enable-ux
+  - ./waf build --checkall
 
 branches:
   only:
-    - develop
     - master
+    - develop
 
 notifications:
-  email:
-    recipients:
-      - jubatus@groups.google.com
-      - jubatus@lab.ntt.co.jp
-    on_success: never
-    on_failure: change
+  email: false
