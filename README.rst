@@ -37,9 +37,13 @@ preparing Release 0.3.3
 Improvements
   - Jubatus loads plugin from default directory (#57)
   - Add hash_max_size option to learn in fixed-size memory (#67)
+  - OS X Homebrew packaging (#116)
+  - GCC compilation version <= 4.2 when zookeeper enabled (#60)
+  - Experimental support for Clang compilation (#100)
+  - Make the timeout smaller in unittest
 
 Bugfix
-  - #117
+  - #117, #113
 
 Release 0.3.2 2012/9/21
 ~~~~~~~~~~~~~~~~~~~~~~~
