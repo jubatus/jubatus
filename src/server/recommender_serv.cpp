@@ -184,6 +184,8 @@ std::vector<std::string> recommender_serv::get_all_rows()
 }
 
 float recommender_serv::similarity(const datum& l, const datum& r){
+  check_set_config();
+
   fv_converter::datum d0, d1;
   convert<datum, fv_converter::datum>(l, d0);
   convert<datum, fv_converter::datum>(r, d1);
@@ -194,6 +196,8 @@ float recommender_serv::similarity(const datum& l, const datum& r){
   return recommender_base::calc_similality(v0, v1);
 }
 float recommender_serv::l2norm(const datum& q){
+  check_set_config();
+
   fv_converter::datum d0;
   convert<datum, fv_converter::datum>(q, d0);
 

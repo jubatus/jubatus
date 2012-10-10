@@ -6,6 +6,7 @@
 #include "../recommender/recommender.hpp"
 #include "../recommender/recommender_type.hpp"
 #include "../classifier/classifier_test_util.hpp"
+#include "../common/exception.hpp"
 
 #include <pficommon/lang/cast.h>
 #include <vector>
@@ -77,6 +78,27 @@ TEST_F(recommender_test, small) {
 
   c.save(NAME, "name");
   c.load(NAME, "name");
+}
+
+TEST_F(recommender_test, throws_in_cast_not_configured) {
+  jubatus::client::recommender cli("localhost", PORT, 10);
+  EXPECT_THROW(cli.get_all_rows(NAME), std::exception);
+  EXPECT_THROW(cli.get_config(NAME), std::exception);
+  EXPECT_THROW(cli.clear_row(NAME,"k"), std::exception);
+
+  jubatus::datum d;
+  d.num_values.push_back(make_pair("f1", 1.0));
+  EXPECT_THROW(cli.update_row(NAME, "k", d), std::exception);
+
+  EXPECT_THROW(cli.complete_row_from_id(NAME, "k"), std::exception);
+  EXPECT_THROW(cli.complete_row_from_data(NAME, d), std::exception);
+  EXPECT_THROW(cli.similar_row_from_id(NAME, "k",1), std::exception);
+  EXPECT_THROW(cli.similar_row_from_data(NAME, d, 1), std::exception);
+  EXPECT_THROW(cli.decode_row(NAME, "k"), std::exception);
+  EXPECT_THROW(cli.clear(NAME), std::exception);
+  EXPECT_THROW(cli.similarity(NAME,d,d), std::exception);
+  EXPECT_THROW(cli.l2norm(NAME,d), std::exception);
+  EXPECT_THROW(cli.get_all_rows(NAME), std::exception);
 }
 
 sfv_diff_t make_vec(float v1, float v2, float v3) {
@@ -166,6 +188,5 @@ TYPED_TEST_P(recommender_random_test, random) {
   }
   EXPECT_GT(correct, 5u);
 }
-
 
 }
