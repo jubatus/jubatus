@@ -60,7 +60,7 @@ graph_serv::graph_serv(const framework::server_argv& a)
   common::cshared_ptr<jubatus::graph::graph_base> 
     g(jubatus::graph::create_graph("graph_wo_index"));
   g_.set_model(g);
-  register_mixable(mixable_cast(&g_));
+  register_mixable(&g_);
 }
 graph_serv::~graph_serv()
 {}
