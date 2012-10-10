@@ -52,7 +52,7 @@ namespace jubatus { namespace framework {
 
     p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
     p.add<std::string>("name", 'n', "learning machine instance name", false);
-    p.add<std::string>("tmpdir", 'd', "directory to place plugins", false, "/tmp");
+    p.add<std::string>("tmpdir", 'd', "directory to output logs", false, "/tmp");
     p.add("join", 'j', "join to the existing cluster");
 
     p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
