@@ -37,7 +37,6 @@
 
 #include "num_filter_impl.hpp"
 
-#include "weight_manager.hpp"
 #include "converter_config.hpp"
 #include "exception.hpp"
 
@@ -48,7 +47,6 @@ using namespace pfi::lang;
 
 TEST(datum_to_fv_converter, trivial) {
   datum_to_fv_converter conv;
-  weight_manager wm;
 }
 
 TEST(datum_to_fv_converter, num_feature) {
@@ -57,7 +55,6 @@ TEST(datum_to_fv_converter, num_feature) {
   datum.num_values_.push_back(make_pair("/val2", 0.));
 
   datum_to_fv_converter conv;
-  weight_manager wm;
   typedef shared_ptr<num_feature> num_feature_t;
   shared_ptr<key_matcher> a(new match_all());
   
@@ -65,8 +62,6 @@ TEST(datum_to_fv_converter, num_feature) {
   conv.register_num_rule("log", a, num_feature_t(new num_log_feature()));
   vector<pair<string, float> > feature;
   conv.convert(datum, feature);
-  wm.update_weight(feature);
-  wm.get_weight(feature);
 
   vector<pair<string, float> > expected;
   expected.push_back(make_pair("/val1@num", 1.1));
@@ -83,7 +78,6 @@ TEST(datum_to_fv_converter, string_feature) {
   typedef shared_ptr<word_splitter> splitter_t;
 
   datum_to_fv_converter conv;
-  weight_manager wm;
   {
     shared_ptr<word_splitter> s(new space_splitter());
     vector<splitter_weight_type> p;
@@ -117,17 +111,13 @@ TEST(datum_to_fv_converter, string_feature) {
     datum datum;
     datum.string_values_.push_back(make_pair("/name", "doc0"));
     datum.string_values_.push_back(make_pair("/title", " this is "));
-    conv.convert(datum, feature);
-    wm.update_weight(feature);
-    wm.get_weight(feature);
+    conv.convert_and_update_weight(datum, feature);
   }
   {
     datum datum;
     datum.string_values_.push_back(make_pair("/name", "doc1"));
     datum.string_values_.push_back(make_pair("/title", " this is it . it is it ."));
-    conv.convert(datum, feature);
-    wm.update_weight(feature);
-    wm.get_weight(feature);
+    conv.convert_and_update_weight(datum, feature);
   }
 
   vector<pair<string, float> > expected;
@@ -164,7 +154,6 @@ TEST(datum_to_fv_converter, string_feature) {
 
 TEST(datum_to_fv_converter, weight) {
   datum_to_fv_converter conv;
-  weight_manager wm;
   {
     shared_ptr<key_matcher> match(new match_all());
     shared_ptr<word_splitter> s(new space_splitter());
@@ -172,16 +161,13 @@ TEST(datum_to_fv_converter, weight) {
     p.push_back(splitter_weight_type(FREQ_BINARY, WITH_WEIGHT_FILE));
     conv.register_string_rule("space", match, s, p);
   }
-  wm.add_weight("/id$a@space", 3.f); // <- new
-  conv.add_weight("/id$a@space", 3.f); // <-deprecated
+  conv.add_weight("/id$a@space", 3.f);
 
   datum datum;
   datum.string_values_.push_back(make_pair("/id", "a b"));
 
   vector<pair<string, float> > feature;
-  conv.convert(datum, feature);
-  wm.update_weight(feature);
-  wm.get_weight(feature);
+  conv.convert_and_update_weight(datum, feature);
 
   ASSERT_EQ(1u, feature.size());
   ASSERT_EQ("/id$a@space#bin/weight", feature[0].first);
@@ -190,7 +176,6 @@ TEST(datum_to_fv_converter, weight) {
 
 TEST(datum_to_fv_converter, register_string_rule) {
   datum_to_fv_converter conv;
-  weight_manager wm;
   initialize_converter(converter_config(), conv);
 
   vector<splitter_weight_type> p;
@@ -204,8 +189,6 @@ TEST(datum_to_fv_converter, register_string_rule) {
 
   vector<pair<string, float> > feature;
   conv.convert(datum, feature);
-  wm.update_weight(feature);
-  wm.get_weight(feature);
 
   vector<pair<string, float> > exp;
   exp.push_back(make_pair("/id$a@1gram#bin/bin", 1.));
@@ -219,7 +202,6 @@ TEST(datum_to_fv_converter, register_string_rule) {
 
 TEST(datum_to_fv_converter, register_num_rule) {
   datum_to_fv_converter conv;
-  weight_manager wm;
 
   datum datum;
   datum.num_values_.push_back(make_pair("/age", 20));
@@ -227,8 +209,6 @@ TEST(datum_to_fv_converter, register_num_rule) {
   {
     vector<pair<string, float> > feature;
     conv.convert(datum, feature);
-    wm.update_weight(feature);
-    wm.get_weight(feature);
     EXPECT_EQ(0u, feature.size());
   }
   
@@ -239,8 +219,6 @@ TEST(datum_to_fv_converter, register_num_rule) {
   {
     vector<pair<string, float> > feature;
     conv.convert(datum, feature);
-    wm.update_weight(feature);
-    wm.get_weight(feature);
     EXPECT_EQ(1u, feature.size());
 
     vector<pair<string, float> > exp;
@@ -254,7 +232,6 @@ TEST(datum_to_fv_converter, register_num_rule) {
 
 TEST(datum_to_fv_converter, register_string_filter) {
   datum_to_fv_converter conv;
-  weight_manager wm;
 
   datum datum;
   datum.string_values_.push_back(make_pair("/text", "<tag>aaa</tag>"));
@@ -268,8 +245,6 @@ TEST(datum_to_fv_converter, register_string_filter) {
   {
     vector<pair<string, float> > feature;
     conv.convert(datum, feature);
-    wm.update_weight(feature);
-    wm.get_weight(feature);
     EXPECT_EQ(1u, feature.size());
   }
 
@@ -281,8 +256,6 @@ TEST(datum_to_fv_converter, register_string_filter) {
   {
     vector<pair<string, float> > feature;
     conv.convert(datum, feature);
-    wm.update_weight(feature);
-    wm.get_weight(feature);
     EXPECT_EQ(2u, feature.size());
     EXPECT_EQ("/text_filtered$aaa@str#bin/bin", feature[1].first);
   }
@@ -291,7 +264,6 @@ TEST(datum_to_fv_converter, register_string_filter) {
 
 TEST(datum_to_fv_converter, register_num_filter) {
   datum_to_fv_converter conv;
-  weight_manager wm;
 
   datum datum;
   datum.num_values_.push_back(make_pair("/age", 20));
@@ -307,8 +279,6 @@ TEST(datum_to_fv_converter, register_num_filter) {
 
   vector<pair<string, float> > feature;
   conv.convert(datum, feature);
-  wm.update_weight(feature);
-  wm.get_weight(feature);
 
   EXPECT_EQ(2u, feature.size());
   EXPECT_EQ("/age+5@str$25", feature[1].first);
@@ -316,7 +286,6 @@ TEST(datum_to_fv_converter, register_num_filter) {
 
 TEST(datum_to_fv_converter, recursive_filter) {
   datum_to_fv_converter conv;
-  weight_manager wm;
   datum datum;
   datum.num_values_.push_back(make_pair("/age", 20));
 
@@ -335,8 +304,6 @@ TEST(datum_to_fv_converter, recursive_filter) {
 
   vector<pair<string, float> > feature;
   conv.convert(datum, feature);
-  wm.update_weight(feature);
-  wm.get_weight(feature);
 
   EXPECT_EQ(4u, feature.size());
   EXPECT_EQ("/age+5@str$25", feature[1].first);

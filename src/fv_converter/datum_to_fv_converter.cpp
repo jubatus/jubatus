@@ -163,11 +163,25 @@ class datum_to_fv_converter_impl {
   }
 
   void convert(const datum& datum,
-               sfv_t& ret_fv) {
+               sfv_t& ret_fv) const {
+    sfv_t fv;
+    convert_unweighted(datum, fv);
+    weights_.get_weight(fv);
+
+    if (hasher_) {
+      hasher_->hash_feature_keys(fv);
+    }
+    
+    fv.swap(ret_fv);
+  }
+
+  void convert_and_update_weight(const datum& datum,
+                                 sfv_t& ret_fv) {
     sfv_t fv;
     convert_unweighted(datum, fv);
     weights_.update_weight(fv);
-
+    weights_.get_weight(fv);
+    
     if (hasher_) {
       hasher_->hash_feature_keys(fv);
     }
@@ -391,8 +405,12 @@ datum_to_fv_converter::datum_to_fv_converter()
 datum_to_fv_converter::~datum_to_fv_converter() {
 }
 
-void datum_to_fv_converter::convert(const datum& datum, sfv_t& ret_fv) {
+void datum_to_fv_converter::convert(const datum& datum, sfv_t& ret_fv) const {
   pimpl_->convert(datum, ret_fv);
+}
+
+void datum_to_fv_converter::convert_and_update_weight(const datum& datum, sfv_t& ret_fv) {
+  pimpl_->convert_and_update_weight(datum, ret_fv);
 }
 
 void datum_to_fv_converter::clear_rules() {
