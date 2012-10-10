@@ -1,7 +1,8 @@
 language: cpp
 
 compiler:
-  - gcc
+# Disable gcc until Travis migrates to 64-bit environment (see #120)
+#  - gcc
   - clang
 
 before_install:
