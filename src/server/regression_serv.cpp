@@ -49,7 +49,7 @@ regression_serv::regression_serv(const framework::server_argv & a)
   :jubatus_serv(a)
 {
   gresser_.set_model(make_model());
-  register_mixable(framework::mixable_cast(&gresser_));
+  register_mixable(&gresser_);
 }
 
 regression_serv::~regression_serv() {

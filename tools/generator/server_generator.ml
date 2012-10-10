@@ -110,7 +110,7 @@ let generate_impl s output strees =
   output <<< "{";
   output <<< "  //somemixable* mi = new somemixable;";
   output <<< "  //somemixable_.set_model(mi);";
-  output <<< "  //register_mixable(framework::mixable_cast(mi));";
+  output <<< "  //register_mixable(mi);";
   output <<< "}\n";
 
   output <<< (classname^"::~"^classname^"()");

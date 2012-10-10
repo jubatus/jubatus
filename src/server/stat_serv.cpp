@@ -27,7 +27,7 @@ stat_serv::stat_serv(const framework::server_argv& a)
   config_.window_size = 1024; // default till users call set_config
   common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(config_.window_size));
   stat_.set_model(model);
-  register_mixable(framework::mixable_cast(&stat_));
+  register_mixable(&stat_);
 }
 
 stat_serv::~stat_serv() {

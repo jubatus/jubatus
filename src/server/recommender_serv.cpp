@@ -37,7 +37,7 @@ recommender_serv::recommender_serv(const framework::server_argv& a)
   :jubatus_serv(a, a.tmpdir)
 {
   //  rcmdr_.set_model(make_model()); -> we'd have to make it safer
-  register_mixable(mixable_cast(&rcmdr_));
+  register_mixable(&rcmdr_);
 }
 
 recommender_serv::~recommender_serv(){

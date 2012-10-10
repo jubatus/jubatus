@@ -49,12 +49,12 @@ classifier_serv::classifier_serv(const framework::server_argv& a)
   :framework::jubatus_serv(a)
 {
   clsfer_.set_model(make_model());
-  register_mixable(framework::mixable_cast(&clsfer_));
+  register_mixable(&clsfer_);
 
   wm_.wm_ = common::cshared_ptr<fv_converter::weight_manager>(new weight_manager);
   wm_.set_model(wm_.wm_);
 
-  register_mixable(framework::mixable_cast(&wm_));
+  register_mixable(&wm_);
 }
 
 classifier_serv::~classifier_serv() {
