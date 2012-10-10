@@ -43,7 +43,7 @@ Improvements
   - Make the timeout smaller in unittest
 
 Bugfix
-  - #117, #113, #118
+  - #117, #113, #118, #114
 
 Release 0.3.2 2012/9/21
 ~~~~~~~~~~~~~~~~~~~~~~~

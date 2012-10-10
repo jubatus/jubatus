@@ -36,6 +36,7 @@ inverted_index::~inverted_index() {
 
 void inverted_index::similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const{
   ids.clear();
+  if (ret_num == 0) return;
   inv_.calc_scores(query, ids, ret_num);
 }
 

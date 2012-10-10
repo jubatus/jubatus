@@ -40,7 +40,7 @@ minhash::~minhash(){
 
 void minhash::similar_row(const sfv_t& query, vector<pair<string, float> > & ids, size_t ret_num) const{
   ids.clear();
-  if (hash_num_ == 0) return;
+  if (ret_num == 0) return;
 
   bit_vector query_bv;
   calc_minhash_values(query, query_bv);

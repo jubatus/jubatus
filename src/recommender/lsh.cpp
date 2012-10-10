@@ -47,6 +47,7 @@ lsh::~lsh(){
 
 void lsh::similar_row(const sfv_t& query, vector<pair<string, float> > & ids, size_t ret_num) const{
   ids.clear();
+  if (ret_num == 0) return;
 
   bit_vector query_bv;
   calc_lsh_values(query, query_bv);
