@@ -33,7 +33,7 @@ class word_splitter {
      Each baoudary is represented as a pair of a beginning position and its length.
    */
   virtual void split(const std::string& string,
-                     std::vector<std::pair<size_t, size_t> >& ret_boundaries) = 0;
+                     std::vector<std::pair<size_t, size_t> >& ret_boundaries) const = 0;
 };
 
 }

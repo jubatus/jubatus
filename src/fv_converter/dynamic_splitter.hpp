@@ -32,7 +32,7 @@ class dynamic_splitter : public word_splitter {
                    const std::map<std::string, std::string>& params);
 
   void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries);
+             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
  private:
   dynamic_loader loader_;

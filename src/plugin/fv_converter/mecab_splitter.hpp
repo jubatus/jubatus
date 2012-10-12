@@ -31,10 +31,10 @@ class mecab_splitter : public fv_converter::word_splitter {
   mecab_splitter(const char* arg);
 
   void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries);
+             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
  private:
-  pfi::lang::scoped_ptr<MeCab::Tagger> tagger_;
+  pfi::lang::scoped_ptr<MeCab::Model> model_;
 };
 
 }
