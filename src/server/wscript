@@ -40,6 +40,13 @@ def build(bld):
     use='PFICOMMON jubastorage'
     )
 
+  bld.program(
+    features = 'gtest',
+    source = 'recommender_serv.cpp recommender_serv_test.cpp',
+    target = 'recommender_serv_test',
+    includes = '. ../framework',
+    use = 'PFICOMMON jubaconverter jubastorage jubatus_recommender jubatus_framework')
+
   #new classifier
   build_one(bld, "classifier", 'jubaconverter jubastorage', 'linear_function_mixer.cpp')
 
