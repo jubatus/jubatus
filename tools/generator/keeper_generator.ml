@@ -81,22 +81,28 @@ let generate s output strees =
   
   if s#internal then begin
     output <<< "#include \"../framework/keeper.hpp\"";
-    output <<< "#include \"../framework/aggregators.hpp\""
+    output <<< "#include \"../framework/aggregators.hpp\"";
+    output <<< "#include \"../common/exception.hpp\""
   end
   else begin
     output <<< "#include <jubatus/framework.hpp>";
-    output <<< "#include <jubatus/framework/aggregators.hpp>"
+    output <<< "#include <jubatus/framework/aggregators.hpp>";
+    output <<< "#include <jubatus/common/exception.hpp>"
   end;
   
   output <<< ("#include \""^s#basename^"_types.hpp\"");
   output <<< ("using namespace "^s#namespace^";");
   output <<< "using namespace jubatus::framework;";
   output <<< "int main(int args, char** argv){";
+  output <<< " try{";
   output <<< "  keeper k(keeper_argv(args,argv,\""^s#basename^"\"));";
 
   List.iter (fun l -> output <<< l)
     (List.flatten (List.map to_keeper_strings
 		     (List.filter Generator.is_service strees)));
-  
-  output <<< "  return k.run();";
-  output <<< "}";;
+
+  output <<< "  k.run();";
+  output <<< "  } catch (const jubatus::exception::jubatus_exception& e) {";
+  output <<< "    std::cout << e.diagnostic_information(true) << std::endl;";
+  output <<< "  return -1;";
+  output <<< "}}";;
