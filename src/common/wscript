@@ -42,7 +42,8 @@ def build(bld):
       includes = '.',
       use = 'jubacommon'
       )
-  map(make_test, test_src)
+  for s in test_src:
+    make_test(s)
 
   bld.install_files('${PREFIX}/include/jubatus/common/', bld.path.ant_glob('*.hpp'))
   bld.recurse(subdirs)
