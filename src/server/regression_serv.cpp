@@ -98,7 +98,7 @@ int regression_serv::train(const vector<pair<float, jubatus::datum> >& data) {
   
   for (size_t i = 0; i < data.size(); ++i) {
     convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
-    converter_->convert(d, v);
+    converter_->convert_and_update_weight(d, v);
     regression_->train(v, data[i].first);
     count++;
   }

@@ -74,8 +74,6 @@ int classifier_serv::set_config(const config_data& config) {
   config_ = config;
   converter_ = converter;
 
-  wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
-  
   classifier_.reset(classifier_factory::create_classifier(config.method, clsfer_.get_model().get()));
 
   // FIXME: switch the function when set_config is done
@@ -98,11 +96,8 @@ int classifier_serv::train(const vector<pair<string, jubatus::datum> >& data) {
   
   for (size_t i = 0; i < data.size(); ++i) {
     convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
-    converter_->convert(d, v);
+    converter_->convert_and_update_weight(d, v);
     sort_and_merge(v);
-
-    wm_.get_model()->update_weight(v);
-    wm_.get_model()->get_weight(v);
 
     classifier_->train(v, data[i].first);
     count++;
@@ -122,8 +117,6 @@ classifier_serv::classify(const vector<jubatus::datum>& data) const {
   for (size_t i = 0; i < data.size(); ++i) {
     convert<datum, fv_converter::datum>(data[i], d);
     converter_->convert(d, v);
-    
-    wm_.get_model()->get_weight(v);
 
     classify_result scores;
     classifier_->classify_with_scores(v, scores);

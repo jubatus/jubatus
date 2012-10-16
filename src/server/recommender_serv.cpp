@@ -85,7 +85,7 @@ int recommender_serv::update_row(std::string id,datum dat) {
   fv_converter::datum d;
   convert<jubatus::datum, fv_converter::datum>(dat, d);
   sfv_diff_t v;
-  converter_->convert(d, v);
+  converter_->convert_and_update_weight(d, v);
   rcmdr_.get_model()->update_row(id, v);
   return 0;
 }
