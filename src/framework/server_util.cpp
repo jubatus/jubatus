@@ -29,6 +29,7 @@
 
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/converter_config.hpp"
+#include "../fv_converter/exception.hpp"
 
 
 namespace jubatus { namespace framework {
@@ -162,6 +163,8 @@ namespace jubatus { namespace framework {
 
 pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
 make_fv_converter(const std::string& config) {
+  if (config == "")
+    throw JUBATUS_EXCEPTION(fv_converter::converter_exception("Config of feature vector converter is empty"));
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
       converter(new fv_converter::datum_to_fv_converter);
   fv_converter::converter_config c;
