@@ -130,7 +130,7 @@ TEST(datum_to_fv_converter, string_feature) {
   expected.push_back(make_pair("/title$it@space#bin/bin",   1.));
   expected.push_back(make_pair("/title$.@space#bin/bin",    1.));
 
-  double idf1 = log(2. / 1.);
+  double idf1 = log((2. + 1) / (1. + 1));
   //double idf2 = log(2. / 2.);
   expected.push_back(make_pair("/name$doc1@space#tf/idf",  1. * idf1));
   //expected.push_back(make_pair("/title$this@space#tf/idf", 1. * idf2));
