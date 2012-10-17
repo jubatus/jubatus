@@ -39,11 +39,17 @@
 
 #include "converter_config.hpp"
 #include "exception.hpp"
+#include "weight_manager.hpp"
 
 using namespace std;
 using namespace jubatus;
 using namespace jubatus::fv_converter;
 using namespace pfi::lang;
+using jubatus::common::cshared_ptr;
+
+void init_weight_manager(datum_to_fv_converter& conv) {
+  conv.set_weight_manager(cshared_ptr<weight_manager>(new weight_manager));
+}
 
 TEST(datum_to_fv_converter, trivial) {
   datum_to_fv_converter conv;
@@ -55,6 +61,7 @@ TEST(datum_to_fv_converter, num_feature) {
   datum.num_values_.push_back(make_pair("/val2", 0.));
 
   datum_to_fv_converter conv;
+  init_weight_manager(conv);
   typedef shared_ptr<num_feature> num_feature_t;
   shared_ptr<key_matcher> a(new match_all());
   
@@ -78,6 +85,7 @@ TEST(datum_to_fv_converter, string_feature) {
   typedef shared_ptr<word_splitter> splitter_t;
 
   datum_to_fv_converter conv;
+  init_weight_manager(conv);
   {
     shared_ptr<word_splitter> s(new space_splitter());
     vector<splitter_weight_type> p;
@@ -154,6 +162,7 @@ TEST(datum_to_fv_converter, string_feature) {
 
 TEST(datum_to_fv_converter, weight) {
   datum_to_fv_converter conv;
+  init_weight_manager(conv);
   {
     shared_ptr<key_matcher> match(new match_all());
     shared_ptr<word_splitter> s(new space_splitter());
@@ -176,6 +185,7 @@ TEST(datum_to_fv_converter, weight) {
 
 TEST(datum_to_fv_converter, register_string_rule) {
   datum_to_fv_converter conv;
+  init_weight_manager(conv);
   initialize_converter(converter_config(), conv);
 
   vector<splitter_weight_type> p;
@@ -202,6 +212,7 @@ TEST(datum_to_fv_converter, register_string_rule) {
 
 TEST(datum_to_fv_converter, register_num_rule) {
   datum_to_fv_converter conv;
+  init_weight_manager(conv);
 
   datum datum;
   datum.num_values_.push_back(make_pair("/age", 20));
@@ -232,6 +243,7 @@ TEST(datum_to_fv_converter, register_num_rule) {
 
 TEST(datum_to_fv_converter, register_string_filter) {
   datum_to_fv_converter conv;
+  init_weight_manager(conv);
 
   datum datum;
   datum.string_values_.push_back(make_pair("/text", "<tag>aaa</tag>"));
@@ -264,6 +276,7 @@ TEST(datum_to_fv_converter, register_string_filter) {
 
 TEST(datum_to_fv_converter, register_num_filter) {
   datum_to_fv_converter conv;
+  init_weight_manager(conv);
 
   datum datum;
   datum.num_values_.push_back(make_pair("/age", 20));
@@ -286,6 +299,7 @@ TEST(datum_to_fv_converter, register_num_filter) {
 
 TEST(datum_to_fv_converter, recursive_filter) {
   datum_to_fv_converter conv;
+  init_weight_manager(conv);
   datum datum;
   datum.num_values_.push_back(make_pair("/age", 20));
 
@@ -313,6 +327,7 @@ TEST(datum_to_fv_converter, recursive_filter) {
 
 TEST(datum_to_fv_converter, hasher) {
   datum_to_fv_converter conv;
+  init_weight_manager(conv);
   conv.set_hash_max_size(1);
   conv.register_num_rule("str",
                          shared_ptr<key_matcher>(new match_all()),

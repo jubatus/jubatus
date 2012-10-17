@@ -73,9 +73,8 @@ int regression_serv::set_config(const config_data& config) {
 
   config_ = config;
   converter_ = converter;
+  (*converter_).set_weight_manager(wm_.get_model());
 
-  wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
-  
   regression_.reset(regression_factory().create_regression(config.method, gresser_.get_model().get()));
 
   // FIXME: switch the function when set_config is done

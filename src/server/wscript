@@ -32,12 +32,19 @@ def build_one(bld, name, libraries = '', sources = ''):
 
 
 def build(bld):
+  bld.stlib(
+    source = [
+      'linear_function_mixer.cpp',
+      'mixable_weight_manager.cpp',
+      ],
+    target = 'jubaserver',
+    )
+
   bld.program(
     features='gtest',
-    source=[ 'linear_function_mixer.cpp',
-             'linear_function_mixer_test.cpp' ],
+    source='linear_function_mixer_test.cpp',
     target='linear_function_mixer_test',
-    use='PFICOMMON jubastorage'
+    use='PFICOMMON jubastorage jubaserver'
     )
 
   bld.program(
@@ -45,16 +52,16 @@ def build(bld):
     source = 'recommender_serv.cpp recommender_serv_test.cpp',
     target = 'recommender_serv_test',
     includes = '. ../framework',
-    use = 'PFICOMMON jubaconverter jubastorage jubatus_recommender jubatus_framework')
+    use = 'PFICOMMON jubaconverter jubastorage jubaserver jubatus_recommender jubatus_framework')
 
   #new classifier
-  build_one(bld, "classifier", 'jubaconverter jubastorage', 'linear_function_mixer.cpp')
+  build_one(bld, "classifier", 'jubaconverter jubastorage jubaserver')
 
   # #new regression
-  build_one(bld, "regression", 'jubaconverter jubastorage', 'linear_function_mixer.cpp')
+  build_one(bld, "regression", 'jubaconverter jubastorage jubaserver')
 
   # #new recommender
-  build_one(bld, "recommender", 'jubaconverter jubastorage')
+  build_one(bld, "recommender", 'jubaconverter jubastorage jubaserver')
 
   build_one(bld, "stat")
 

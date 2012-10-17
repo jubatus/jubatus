@@ -59,6 +59,7 @@ private:
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<classifier_base> classifier_;
   linear_function_mixer clsfer_;
+  mixable_weight_manager wm_;
 };
 
 }

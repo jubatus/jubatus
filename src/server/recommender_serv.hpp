@@ -28,6 +28,7 @@
 #include "../recommender/recommender_base.hpp"
 #include "../storage/recommender_storage.hpp"
 #include "recommender_types.hpp"
+#include "mixable_weight_manager.hpp"
 
 namespace jubatus {
 namespace server {
@@ -93,6 +94,7 @@ private:
   config_data config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   rcmdr rcmdr_;
+  mixable_weight_manager wm_;
 
   uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;

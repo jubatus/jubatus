@@ -22,7 +22,7 @@ datum make_datum(const string& s) {
 
 TEST(recommender_serv, feature_vector_weight) {
   framework::server_argv arg;
-  recommender_serv s(arg);
+  recommender_serv s(arg, common::cshared_ptr<common::lock_service>());
   config_data conf;
   conf.method = "inverted_index";
   fv_converter::converter_config config;
@@ -40,10 +40,10 @@ TEST(recommender_serv, feature_vector_weight) {
   s.update_row("4", make_datum("1 3 4"));
   s.update_row("1", make_datum("1 2"));
 
+  // document frequency of "2" is low, so the weigth of "2" is higher than other words
   similar_result res = s.similar_row_from_data(make_datum("2 3 4"), 1);
   ASSERT_EQ(1u, res.size());
   EXPECT_EQ("1", res[0].first);
-  cout << res[0].second << endl;
 }
 
 }

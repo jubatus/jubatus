@@ -17,31 +17,25 @@
 
 #pragma once
 
-#include "../fv_converter/weight_manager.hpp"
 #include "../framework/mixable.hpp"
-#include "../common/shared_ptr.hpp"
+#include "../fv_converter/weight_manager.hpp"
 
-namespace jubatus{
-namespace server{
+namespace jubatus {
+namespace server {
 
-using jubatus::fv_converter::weight_manager;
-using jubatus::fv_converter::keyword_weights;
+class mixable_weight_manager
+    : public framework::mixable<fv_converter::weight_manager,
+                                fv_converter::keyword_weights> {
+ public:
+  fv_converter::keyword_weights get_diff_impl() const;
 
-struct mixable_weight_manager : public framework::mixable<weight_manager, keyword_weights>
-{
-  keyword_weights get_diff_impl() const {
-    return get_model()->get_diff();
-  };
-  void mix_impl(const keyword_weights& lhs,
-                const keyword_weights& rhs,
-                keyword_weights& mixed) const {
-    mixed = lhs;
-    mixed.merge(lhs);
-  };
-  void put_diff_impl(const keyword_weights& diff) {
-    get_model()->put_diff(diff);
-  };
-  void clear(){};
+  void put_diff_impl(const fv_converter::keyword_weights& diff);
+  
+  void mix_impl(const fv_converter::keyword_weights& lhs,
+                const fv_converter::keyword_weights& rhs,
+                fv_converter::keyword_weights& acc) const;
+  void clear();
 };
 
-}}
+}
+}
