@@ -111,7 +111,6 @@ public:
     }
 
     if (serv.serv(a.port, a.threadnum)) {
-      LOG(INFO) << "running in port=" << a.port;
       return 0;
     } else {
       LOG(ERROR) << "failed starting server: any process using port " << a.port << "?";

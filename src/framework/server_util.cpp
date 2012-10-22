@@ -138,6 +138,8 @@ namespace jubatus { namespace framework {
     timeout = p.get<int>("timeout");
     z = p.get<std::string>("zookeeper");
     eth = jubatus::util::get_ip("eth0");
+
+    LOG(INFO) << boot_message(jubatus::util::get_program_name());
   };
 
   keeper_argv::keeper_argv():
