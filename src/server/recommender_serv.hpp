@@ -20,53 +20,50 @@
 #include <string>
 #include <vector>
 
+#include "../common/lock_service.hpp"
 #include "../common/shared_ptr.hpp"
-#include "server_util.hpp"
-#include "jubatus_serv.hpp"
-#include "recommender_types.hpp"
-#include "../storage/recommender_storage.hpp"
-
+#include "../framework/mixable.hpp"
+#include "../framework/server_base.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../recommender/recommender_base.hpp"
-#include "../framework/mixable.hpp"
-
-using jubatus::recommender::recommender_base;
+#include "../storage/recommender_storage.hpp"
+#include "recommender_types.hpp"
 
 namespace jubatus {
 namespace server {
 
-struct rcmdr : public jubatus::framework::mixable<recommender_base, std::string, rcmdr>{
-  rcmdr(){
-    // function<std::string(const recommender_base*)> getdiff(&get_diff);
-    // function<int(const recommender_base*, const std::string&, std::string&)> reduce(&rcmdr::reduce);
-    // function<int(recommender_base*, const std::string&)> putdiff(&put_diff);
-    // set_mixer(getdiff, reduce, putdiff);
-    set_default_mixer();
-  }
-  static std::string get_diff(const recommender_base* model){
+struct rcmdr : public framework::mixable<jubatus::recommender::recommender_base, std::string> {
+  std::string get_diff_impl() const {
     std::string ret;
-    model->get_const_storage()->get_diff(ret);
+    get_model()->get_const_storage()->get_diff(ret);
     return ret;
   }
-  static int put_diff(recommender_base* model, std::string v){
-    model->get_storage()->set_mixed_and_clear_diff(v);
-    return 0;
+
+  void put_diff_impl(const std::string& v) {
+    get_model()->get_storage()->set_mixed_and_clear_diff(v);
   }
-  static int reduce(const recommender_base* model, const std::string& v, std::string& acc){
-    model->get_const_storage()->mix(v, acc);
-    return 0;
+
+  void mix_impl(const std::string& lhs,
+                const std::string& rhs,
+                std::string& mixed) const {
+    mixed = lhs;
+    get_model()->get_const_storage()->mix(rhs, mixed);
   }
-  virtual ~rcmdr(){}
-  void clear(){}
+
+  void clear() {}
 };
 
-typedef std::vector<std::pair<std::string, jubatus::datum> > rows;
-
-class recommender_serv : public framework::jubatus_serv
-{
+class recommender_serv : public framework::server_base {
 public:
-  recommender_serv(const framework::server_argv&);
+  recommender_serv(const framework::server_argv& a,
+                   const common::cshared_ptr<common::lock_service>& zk);
   virtual ~recommender_serv();
+
+  framework::mixer::mixer* get_mixer() const {
+    return mixer_.get();
+  }
+
+  void get_status(status_t& status) const;
 
   int set_config(config_data config);
   config_data get_config();
@@ -75,8 +72,7 @@ public:
   int update_row(std::string id, datum dat);
   int clear();
 
-  common::cshared_ptr<recommender_base> make_model();
-  void after_load();
+  common::cshared_ptr<jubatus::recommender::recommender_base> make_model();
 
   datum complete_row_from_id(std::string id);
   datum complete_row_from_data(datum dat);
@@ -89,10 +85,10 @@ public:
   datum decode_row(std::string id);
   std::vector<std::string> get_all_rows();
 
-  std::map<std::string, std::map<std::string, std::string> > get_status();
   void check_set_config()const;
 
 private:
+  pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
 
   config_data config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;

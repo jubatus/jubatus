@@ -18,30 +18,53 @@
 #pragma once
 
 #include <stdint.h>
+#include <map>
+#include <string>
+#include <vector>
+#include <pficommon/concurrent/rwmutex.h>
+#include <pficommon/lang/shared_ptr.h>
+#include "server_util.hpp"
 
-#include "lock_service.hpp"
-#include "shared_ptr.hpp"
+namespace jubatus {
+namespace framework {
 
-namespace jubatus { namespace common {
+class mixable0;
 
-class global_id_generator
-{
+namespace mixer {
+class mixer;
+}
+
+class server_base {
 public:
+  typedef std::map<std::string, std::string> status_t;
 
-  global_id_generator(bool);
-  ~global_id_generator();
+  explicit server_base(const server_argv& a);
+  virtual ~server_base() {}
 
-  uint64_t generate();
+  virtual mixer::mixer* get_mixer() const = 0;
+  virtual void get_status(status_t& status) const = 0;
 
-  void set_ls(cshared_ptr<lock_service>&, const std::string&);
+  virtual bool save(const std::string& id);
+  virtual bool load(const std::string& id);
+  void event_model_updated();
+
+  uint64_t update_count() const {
+    return update_count_;
+  }
+
+  pfi::concurrent::rw_mutex& rw_mutex() {
+    return rw_mutex_;
+  }
+
+  const server_argv& argv() const {
+    return argv_;
+  }
 
 private:
-  global_id_generator();
-  bool is_standalone_;
-  uint64_t counter_;
-
-  std::string path_;
-  cshared_ptr<lock_service> ls_;
+  const server_argv argv_;
+  pfi::concurrent::rw_mutex rw_mutex_;
+  uint64_t update_count_;
 };
 
-}}
+}
+}

@@ -29,29 +29,19 @@ using jubatus::fv_converter::keyword_weights;
 
 struct mixable_weight_manager : public framework::mixable<weight_manager, keyword_weights>
 {
-  mixable_weight_manager(){
-    function<keyword_weights(const weight_manager*)>
-      getdiff(&mixable_weight_manager::get_diff);
-    function<int(const weight_manager*, const keyword_weights&,keyword_weights&)>
-      reduce(&mixable_weight_manager::reduce);
-    function<int(weight_manager*,const keyword_weights&)>
-      putdiff(&mixable_weight_manager::put_diff);
-    set_mixer(getdiff,reduce,putdiff);
+  keyword_weights get_diff_impl() const {
+    return get_model()->get_diff();
   };
-  static keyword_weights get_diff(const weight_manager* wm){
-    return wm->get_diff();
+  void mix_impl(const keyword_weights& lhs,
+                const keyword_weights& rhs,
+                keyword_weights& mixed) const {
+    mixed = lhs;
+    mixed.merge(lhs);
   };
-  static int reduce(const weight_manager*, const keyword_weights& lhs, keyword_weights& rhs){
-    rhs.merge(lhs);
-    return 0;
-  };
-  static int put_diff(weight_manager* wm, const keyword_weights& diff){
-    wm->put_diff(diff);
-    return 0;
+  void put_diff_impl(const keyword_weights& diff) {
+    get_model()->put_diff(diff);
   };
   void clear(){};
-
-  common::cshared_ptr<weight_manager> wm_;
 };
 
 }}

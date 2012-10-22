@@ -16,53 +16,72 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "stat_serv.hpp"
+
 #include "../common/shared_ptr.hpp"
+#include "../framework/mixer/mixer_factory.hpp"
+
+using namespace std;
+using namespace jubatus::common;
+using namespace jubatus::framework;
 
 namespace jubatus {
 namespace server {
 
-stat_serv::stat_serv(const framework::server_argv& a)
-  :jubatus_serv(a)
-{
+stat_serv::stat_serv(const server_argv& a,
+                     const cshared_ptr<lock_service>& zk)
+    : server_base(a) {
   config_.window_size = 1024; // default till users call set_config
   common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(config_.window_size));
   stat_.set_model(model);
-  register_mixable(&stat_);
+
+  mixer_.reset(mixer::create_mixer(a, zk));
+
+  mixer_->register_mixable(&stat_);
 }
 
 stat_serv::~stat_serv() {
 }
 
-// after load(..) called, users reset their own data
-void stat_serv::after_load(){
-  //  stat_.reset();
-};
+mixer::mixer* stat_serv::get_mixer() const {
+  return mixer_.get();
+}
 
-bool stat_serv::set_config(const config_data& config){
+void stat_serv::get_status(status_t& status) const {
+  status.insert(make_pair("storage", stat_.get_model()->type()));
+}
+
+bool stat_serv::set_config(const config_data& config) {
   config_ = config;
   common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(config_.window_size));
   stat_.set_model(model);
   return 0;
 }
-config_data stat_serv::get_config()const{
+
+config_data stat_serv::get_config() const {
   return config_;
 }
-int stat_serv::push(const std::string& key, double value){
+
+int stat_serv::push(const std::string& key, double value) {
   stat_.get_model()->push(key,value);
   return 0;
 }
+
 double stat_serv::sum(const std::string& key) const {
   return stat_.get_model()->sum(key);
 }
+
 double stat_serv::stddev(const std::string& key) const {
   return stat_.get_model()->stddev(key);
 }
+
 double stat_serv::max(const std::string& key) const {
   return stat_.get_model()->max(key);
 }
+
 double stat_serv::min(const std::string& key) const {
   return stat_.get_model()->min(key);
 }
+
 double stat_serv::entropy(const std::string& key) const {
 #ifdef HAVE_ZOOKEEPER_H
   //FIXME: currently gets old value of entropy when mix completed
@@ -71,10 +90,10 @@ double stat_serv::entropy(const std::string& key) const {
   return stat_.get_model()->entropy();
 #endif
 }
-double stat_serv::moment(const std::string& key, int n,double c) const{
+
+double stat_serv::moment(const std::string& key, int n,double c) const {
   return stat_.get_model()->moment(key, n, c);
 }
-
 
 } // namespace server
 } // namespace jubatus

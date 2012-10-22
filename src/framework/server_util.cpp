@@ -103,6 +103,14 @@ namespace jubatus { namespace framework {
     return ret.str();
   };
 
+  std::string get_server_identifier(const server_argv& a) {
+    std::stringstream ss;
+    ss << a.eth;
+    ss << "_";
+    ss << a.port;
+    return ss.str();
+  }
+
   keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
     : type(t)
   {
@@ -143,14 +151,14 @@ namespace jubatus { namespace framework {
     return ret.str();
   };
 
-#ifdef HAVE_ZOOKEEPER_H
-    common::cshared_ptr<jubatus::common::lock_service> ls;
+  common::cshared_ptr<jubatus::common::lock_service> ls;
 
   void atexit(void){
+#ifdef HAVE_ZOOKEEPER_H
     if(ls)
       ls->force_close();
-  }
 #endif
+  }
 
 pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
 make_fv_converter(const std::string& config) {

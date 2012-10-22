@@ -118,6 +118,83 @@ void rpc_mclient::send_all(const msgpack::sbuffer& buf)
   event_base_dispatch(evbase_);
 }
 
+rpc_result_object rpc_mclient::wait(const std::string& method)
+{
+  rpc_result_object result;
+
+  if (clients_.empty())
+    throw JUBATUS_EXCEPTION(rpc_no_client() << error_method(method));
+
+  register_fd_readable_();
+  event_base_dispatch(evbase_);
+
+  size_t count = 0;
+
+  for (client_list_t::iterator it = clients_.begin(), end = clients_.end();
+      it != end; ++it) {
+    shared_ptr<async_client> client = *it;
+    async_client::response_list_t& response_list = client->response();
+
+    try {
+      if (client->read_exception())
+        client->read_exception()->throw_exception();
+      if (client->write_exception())
+        client->write_exception()->throw_exception();
+      if (response_list.empty())
+        throw JUBATUS_EXCEPTION(rpc_no_result() << error_method(method));
+
+      // If implement RPC specification strictly, you must find response by msgid,
+      // but pfi::network::mprpc::rpc_server does not support RPC pipelining.
+      rpc_response_t res = response_list.front();
+      response_list.erase(response_list.begin());
+      if (res.has_error()) {
+        if (res.error().type == msgpack::type::POSITIVE_INTEGER) {
+          // error code defined in pficommon/mprpc/message.h
+          switch (static_cast<unsigned int>(res.error().via.u64)) {
+          case pfi::network::mprpc::METHOD_NOT_FOUND:
+            throw JUBATUS_EXCEPTION(rpc_method_not_found() << error_method(method));
+
+          case pfi::network::mprpc::TYPE_MISMATCH:
+            throw JUBATUS_EXCEPTION(rpc_type_error() << error_method(method));
+
+          default:
+            throw JUBATUS_EXCEPTION(rpc_call_error()
+                << error_method(method)
+                << jubatus::exception::error_message(std::string("rpc_server error: " + pfi::lang::lexical_cast<std::string>(res.error().via.u64))));
+          }
+        } else {
+          // MEMO: other error object returned
+          throw JUBATUS_EXCEPTION(rpc_call_error()
+              << error_method(method)
+              << jubatus::exception::error_message("error response: " + pfi::lang::lexical_cast<std::string>(res.error())));
+        }
+      }
+
+      result.response.push_back(res);
+
+      count++;
+
+    // continue process next result when exception thrown
+    } catch (...) {
+      // store exception_thrower to list of error
+      result.error.push_back(rpc_error(client->host(), client->port(), jubatus::exception::get_current_exception()));
+
+      // clear last exception set by libevent callback
+      client->context_->read_exception.reset();
+      client->context_->write_exception.reset();
+    }
+  }
+
+  if (!count) {
+    rpc_no_result e;
+    if (result.has_error())
+      e << error_multi_rpc(result.error);
+    throw JUBATUS_EXCEPTION(e << error_method(method));
+  }
+
+  return result;
+}
+
 } // mprpc
 } // common
 } // jubatus

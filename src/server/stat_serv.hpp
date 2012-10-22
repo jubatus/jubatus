@@ -18,61 +18,58 @@
 #pragma once
 
 #include "../stat/mixable_stat.hpp"
-#include "jubatus_serv.hpp"
+#include "../framework.hpp"
+#include "../framework/mixer/mixer.hpp"
+#include "../framework/server_base.hpp"
 #include "stat_types.hpp"
 
-namespace jubatus{
-namespace server{
+namespace jubatus {
+namespace server {
 
 struct mixable_stat : public framework::mixable<jubatus::stat::mixable_stat,
-						std::pair<double,size_t>,
-						mixable_stat>
-{
+                                                std::pair<double,size_t> > {
 public:
-  void clear(){}
-  mixable_stat()
-  {
-    set_default_mixer();
-  }
-  static std::pair<double,size_t> get_diff(const jubatus::stat::mixable_stat* model)
-  {
-    return model->get_diff();
-  }
-  static int reduce(const jubatus::stat::mixable_stat*,
-		    const std::pair<double,size_t>& v, std::pair<double,size_t>& acc)
-  {
-    jubatus::stat::mixable_stat::reduce(v, acc);
-    return 0;
+  void clear() {}
+
+  std::pair<double,size_t> get_diff_impl() const {
+    return get_model()->get_diff();
   }
 
-  static int put_diff(jubatus::stat::mixable_stat* model,
-		      const std::pair<double,size_t>& v)
-  {
-    model->put_diff(v);
-    return 0;
+  void mix_impl(const std::pair<double, size_t>& lhs,
+                const std::pair<double, size_t>& rhs,
+                std::pair<double, size_t>& mixed) const {
+    mixed = lhs;
+    jubatus::stat::mixable_stat::reduce(rhs, mixed);
+  }
+
+  void put_diff_impl(const std::pair<double,size_t>& v) {
+    get_model()->put_diff(v);
   }
 
 };
 
-class stat_serv : public framework::jubatus_serv
-{
+class stat_serv : public framework::server_base {
 public:
-  stat_serv(const framework::server_argv&);
+  stat_serv(const framework::server_argv&,
+            const common::cshared_ptr<common::lock_service>& zk);
   virtual ~stat_serv();
 
-  void after_load();
+  framework::mixer::mixer* get_mixer() const;
+  void get_status(status_t& status) const;
 
   bool set_config(const config_data&);
   config_data get_config()const;
   int push(const std::string& key, double value);
-  double sum(const std::string&) const ;
-  double stddev(const std::string&) const ;
-  double max(const std::string&) const ;
-  double min(const std::string&) const ;
-  double entropy(const std::string&) const ;
+  double sum(const std::string&) const;
+  double stddev(const std::string&) const;
+  double max(const std::string&) const;
+  double min(const std::string&) const;
+  double entropy(const std::string&) const;
   double moment(const std::string&, int, double) const;
 
 private:
+  pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
+
   jubatus::config_data config_;
   server::mixable_stat stat_;
 };

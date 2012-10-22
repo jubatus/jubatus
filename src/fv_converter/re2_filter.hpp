@@ -18,10 +18,7 @@
 #pragma once
 
 #include <string>
-
-#ifdef HAVE_RE2
 #include <re2/re2.h>
-#endif
 
 #include "string_filter.hpp"
 

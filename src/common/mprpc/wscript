@@ -9,14 +9,14 @@ def build(bld):
   bld.shlib(
     source = src,
     target = 'jubacommon_mprpc',
-    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT LIBEVENT MSGPACK'
+    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT LIBEVENT MSGPACK jubacommon'
     )
 
   bld.program(
     features = 'gtest',
     source = 'rpc_client_test.cpp',
     target = 'rpc_client_test',
-    includes = '. ../framework',
+    includes = '.',
     use = 'PFICOMMON MSGPACK jubacommon jubacommon_mprpc',
     )
 

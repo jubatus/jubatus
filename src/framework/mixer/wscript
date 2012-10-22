@@ -1,0 +1,23 @@
+def options(opt):
+  pass
+
+def configure(conf):
+  pass
+
+def build(bld):
+  mixer_framework = 'PFICOMMON MSGPACK LIBGLOG'
+  mixer_source = 'mixer_factory.cpp'
+  if bld.env.HAVE_ZOOKEEPER_H:
+    mixer_framework += ' jubacommon jubacommon_mprpc'
+    mixer_source += ' linear_mixer.cpp'
+
+  bld.shlib(target = 'jubamixer',
+            source = mixer_source,
+            use = mixer_framework)
+
+  bld.install_files('${PREFIX}/include/jubatus/framework/mixer', [
+      'dummy_mixer.hpp',
+      'linear_mixer.hpp',
+      'mixer.hpp',
+      'mixer_factory.hpp'
+      ])

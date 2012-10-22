@@ -15,51 +15,34 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "global_id_generator.hpp"
-#include <cassert>
+#pragma once
 
-namespace jubatus { namespace common {
+#include <pficommon/network/mprpc.h>
+#include "../server_base.hpp"
 
+namespace jubatus {
+namespace framework {
 
-global_id_generator::global_id_generator():
-  is_standalone_(true),
-  counter_(0)
-{}
-global_id_generator::global_id_generator(bool is_standalone):
-  is_standalone_(is_standalone),
-  counter_(0)
-{}
+class mixable0;
 
-global_id_generator::~global_id_generator()
-{}
+namespace mixer {
 
-uint64_t global_id_generator::generate()
-{
-  if(is_standalone_){
-    return __sync_fetch_and_add(&counter_, 1);
+class mixer {
+public:
+  virtual ~mixer() {}
 
-  }else{
-#ifdef HAVE_ZOOKEEPER_H
+  virtual void register_api(pfi::network::mprpc::rpc_server& server) = 0;
+  virtual void register_mixable(mixable0* m) = 0;
 
-    // FIXME: to be implemented
-    return ls_->create_id(path_);
+  virtual void start() = 0;
+  virtual void stop() = 0;
 
-#else
-    // never reaches here
-    assert(is_standalone_);
-    return 0; // dummy to remove warning
-#endif
-  }
+  virtual void updated() = 0;
+
+  virtual void get_status(server_base::status_t& status) const = 0;
+  virtual std::vector<mixable0*> get_mixables() const = 0;
+};
+
 }
-
-    void global_id_generator::set_ls(cshared_ptr<lock_service>& ls,
-                                     const std::string& path_prefix)
-{
-#ifdef HAVE_ZOOKEEPER_H
-  path_ = path_prefix + "/id_generator";
-  ls_ = ls;
-  ls_->create(path_);
-#endif
 }
-
-}}
+}

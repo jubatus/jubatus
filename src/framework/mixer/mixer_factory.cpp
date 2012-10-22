@@ -15,51 +15,29 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "global_id_generator.hpp"
-#include <cassert>
+#include "mixer_factory.hpp"
 
-namespace jubatus { namespace common {
-
-
-global_id_generator::global_id_generator():
-  is_standalone_(true),
-  counter_(0)
-{}
-global_id_generator::global_id_generator(bool is_standalone):
-  is_standalone_(is_standalone),
-  counter_(0)
-{}
-
-global_id_generator::~global_id_generator()
-{}
-
-uint64_t global_id_generator::generate()
-{
-  if(is_standalone_){
-    return __sync_fetch_and_add(&counter_, 1);
-
-  }else{
 #ifdef HAVE_ZOOKEEPER_H
-
-    // FIXME: to be implemented
-    return ls_->create_id(path_);
-
+#include "linear_mixer.hpp"
 #else
-    // never reaches here
-    assert(is_standalone_);
-    return 0; // dummy to remove warning
+#include "dummy_mixer.hpp"
 #endif
-  }
-}
 
-    void global_id_generator::set_ls(cshared_ptr<lock_service>& ls,
-                                     const std::string& path_prefix)
-{
+namespace jubatus {
+namespace framework {
+namespace mixer {
+
+mixer* create_mixer(const server_argv& a,
+                    const common::cshared_ptr<common::lock_service>& zk) {
 #ifdef HAVE_ZOOKEEPER_H
-  path_ = path_prefix + "/id_generator";
-  ls_ = ls;
-  ls_->create(path_);
+  return new linear_mixer(
+      linear_communication::create(zk, a.type, a.name, a.timeout),
+      a.interval_count, a.interval_sec);
+#else
+  return new dummy_mixer;
 #endif
 }
 
-}}
+}
+}
+}

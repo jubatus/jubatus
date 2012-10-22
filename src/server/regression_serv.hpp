@@ -17,80 +17,50 @@
 
 #pragma once
 
-#include <string>
 #include <vector>
-
-#include "../common/rpc_util.hpp"
-#include "../regression/regression_base.hpp"
-#include "../fv_converter/datum_to_fv_converter.hpp"
-#include "../storage/storage_base.hpp"
+#include <pficommon/lang/scoped_ptr.h>
+#include <pficommon/lang/shared_ptr.h>
 #include "../common/shared_ptr.hpp"
+#include "../framework/mixable.hpp"
+#include "../framework/mixer/mixer.hpp"
+#include "../framework/server_base.hpp"
+#include "../regression/regression_base.hpp"
 #include "regression_types.hpp"
-#include "jubatus_serv.hpp"
 #include "diffv.hpp"
+#include "linear_function_mixer.hpp"
+#include "mixable_weight_manager.hpp"
 
+namespace jubatus {
+namespace server {
 
-namespace jubatus{
-namespace server{
-
-struct gresser : public jubatus::framework::mixable<storage::storage_base, diffv, gresser>
-{
-  gresser(){
-    // function<diffv(const storage::storage_base*)> getdiff(&gresser::get_diff);
-    // function<int(const storage::storage_base*, const diffv&, diffv&)> reduce(&gresser::reduce);
-    // function<int(storage::storage_base*, const diffv&)> putdiff(&gresser::put_diff);
-    // set_mixer(getdiff, reduce, putdiff);
-    set_default_mixer();
-  }
-  virtual ~gresser(){}
-  static diffv get_diff(const storage::storage_base* model){
-    diffv ret;
-    ret.count = 1; //FIXME mixer_->get_count();
-    model->get_diff(ret.v);
-    return ret;
-  }
-  static int reduce(const storage::storage_base*, const diffv& v, diffv& acc);
-
-  static int put_diff(storage::storage_base* model, const diffv& v){
-    diffv diff = v;
-    diff /= (double) v.count;
-    model->set_average_and_clear_diff(diff.v);
-    return 0;
-  }
-
-  void clear(){};
-
-  pfi::lang::shared_ptr<regression_base> regression_;
-};
-  
-
-class regression_serv : public jubatus::framework::jubatus_serv
-{
+class regression_serv : public framework::server_base {
 public:
-  regression_serv(const framework::server_argv&);
+  regression_serv(const framework::server_argv& a,
+                  const common::cshared_ptr<common::lock_service>& zk);
   virtual ~regression_serv();
 
-  static diffv get_diff(const storage::storage_base*);
-  static int put_diff(storage::storage_base*, diffv v);
-  static int reduce(const storage::storage_base*, const diffv&, diffv&);
+  framework::mixer::mixer* get_mixer() const {
+    return mixer_.get();
+  }
 
-  int set_config(config_data);
+  void get_status(status_t& status) const;
+
+  int set_config(const config_data& config);
   config_data get_config();
-  int train(std::vector<std::pair<float, datum> > data);
-  std::vector<float> estimate(std::vector<datum> data);
+  int train(const std::vector<std::pair<float, datum> >& data);
+  std::vector<float> estimate(const std::vector<datum>& data) const;
 
-  common::cshared_ptr<storage::storage_base> make_model();
-  void after_load();
-
-  std::map<std::string, std::map<std::string, std::string> > get_status();
-  void check_set_config()const;
+  void check_set_config() const;
 
 private:
+  pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
+
   config_data config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  gresser gresser_;
+  pfi::lang::shared_ptr<regression_base> regression_;
+  linear_function_mixer gresser_;
+  mixable_weight_manager wm_;
 };
 
-void mix_parameter(diffv& lhs, const diffv& rhs);
 }
-} // namespace jubatus
+}
