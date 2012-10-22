@@ -15,38 +15,19 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
+#pragma once
+#include "lock_service.hpp"
 #include "membership.hpp"
 
-using namespace std;
+#include <string>
+#include <vector>
+#include <map>
 
 namespace jubatus {
 namespace common {
 
-TEST(util, build_loc_str) {
-  EXPECT_EQ("127.0.0.1_9199", build_loc_str("127.0.0.1", 9199));
-}
+bool getconfig_fromzk(lock_service& , const std::string& , const std::string& , std::string&);
+bool setconfig_tozk(lock_service& , const std::string& , const std::string& , std::string&);
 
-TEST(util, build_existence_path) {
-  string s;
-  build_existence_path("/path/base", "127.0.0.1", 9199, s);
-  EXPECT_EQ("/path/base/127.0.0.1_9199", s);
-}
-
-TEST(util, build_config_path) {
-  string p;
-  build_config_path(p , "name", "type");
-  EXPECT_EQ("/jubatus/config/name/type", p);
-}
-
-TEST(util, revert) {
-  string name = "127.0.0.1_9199";
-  string ip;
-  int port;
-  ASSERT_TRUE(revert(name, ip, port));
-  EXPECT_EQ("127.0.0.1", ip);
-  EXPECT_EQ(9199, port);
-}
-
-}
-}
+} // common
+} // jubatus

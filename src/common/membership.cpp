@@ -49,6 +49,11 @@ void build_actor_path(string& path, const string& type, const string& name)
   path = ACTOR_BASE_PATH + "/" + type + "/" + name;
 }
 
+void build_config_path(string& path, const string& type, const string& name)
+{
+  path = CONFIG_BASE_PATH + "/" + type + "/" + name;
+}
+
 // 127.0.0.1_9199 -> (127.0.0.1, 9199)
 bool revert(const string& name, string& ip, int& port)
 {
@@ -136,12 +141,18 @@ void prepare_jubatus(lock_service& ls, const string& type, const string& name)
   ls.create(JUBAVISOR_BASE_PATH);
   ls.create(JUBAKEEPER_BASE_PATH);
   ls.create(ACTOR_BASE_PATH);
+  ls.create(CONFIG_BASE_PATH);
 
   string path = ACTOR_BASE_PATH + "/" + type;
   ls.create(path);
+  string cpath = CONFIG_BASE_PATH + "/" + type;
+  ls.create(cpath);
+
   if (name != "") {
     build_actor_path(path, type, name);
+    build_config_path(cpath, type, name);
     ls.create(path);
+    ls.create(cpath);
   }
 }
 

@@ -11,7 +11,7 @@ def configure(conf):
 
 def build(bld):
   import Options
-  src = 'exception.cpp util.cpp key_manager.cpp vector_util.cpp global_id_generator.cpp'
+  src = 'exception.cpp util.cpp key_manager.cpp vector_util.cpp global_id_generator.cpp config.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
     src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp'
 
@@ -32,7 +32,7 @@ def build(bld):
   if bld.env.HAVE_ZOOKEEPER_H:
     test_src += ['membership_test.cpp', 'cht_test.cpp']
     if bld.env.INTEGRATION_TEST:
-      test_src += ['zk_test.cpp', 'cached_zk_test.cpp']
+      test_src += ['zk_test.cpp', 'cached_zk_test.cpp', 'config_test.cpp']
     
   def make_test(s):
     bld.program(

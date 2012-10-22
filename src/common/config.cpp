@@ -15,38 +15,53 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-#include "membership.hpp"
+#include "config.hpp"
+
+#include <cstdlib>
+#include <iostream>
+#include <pficommon/lang/cast.h>
 
 using namespace std;
+using namespace pfi::lang;
 
 namespace jubatus {
 namespace common {
 
-TEST(util, build_loc_str) {
-  EXPECT_EQ("127.0.0.1_9199", build_loc_str("127.0.0.1", 9199));
+
+bool getconfig_fromzk(lock_service& z,
+                    const string& type, const string& name,
+                    string& config)
+{
+  string path;
+  build_config_path(path, type, name);
+  if (!z.exists(path)){
+    return false;
+  }
+
+  z.create(path + "/config_lock", "");
+  common::lock_service_mutex zlk(z, path + "/config_lock");
+  while(not zlk.try_lock()){ ; }
+
+  z.read(path, config);
+  return true;
 }
 
-TEST(util, build_existence_path) {
-  string s;
-  build_existence_path("/path/base", "127.0.0.1", 9199, s);
-  EXPECT_EQ("/path/base/127.0.0.1_9199", s);
+bool setconfig_tozk(lock_service& z,
+                    const string& type, const string& name,
+                    string& config)
+{
+  string path;
+  build_config_path(path, type, name);
+
+  z.create(path + "/config_lock", "");
+  common::lock_service_mutex zlk(z, path + "/config_lock");
+  while(not zlk.try_lock()){ ; }
+
+  z.create(path, config);
+  return true;
 }
 
-TEST(util, build_config_path) {
-  string p;
-  build_config_path(p , "name", "type");
-  EXPECT_EQ("/jubatus/config/name/type", p);
-}
 
-TEST(util, revert) {
-  string name = "127.0.0.1_9199";
-  string ip;
-  int port;
-  ASSERT_TRUE(revert(name, ip, port));
-  EXPECT_EQ("127.0.0.1", ip);
-  EXPECT_EQ(9199, port);
-}
 
-}
-}
+} // common
+} // jubatus

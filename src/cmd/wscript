@@ -11,6 +11,14 @@ def build(bld):
       use = 'MSGPACK PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon jubatus_framework'
       )
 
+    bld.program(
+      source = 'jubaconfig.cpp',
+      target = 'jubaconfig',
+      includes = '.',
+      use = 'MSGPACK PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon jubatus_framework'
+      )
+
+
   bld.program(
     source = 'jubaconv.cpp',
     target = 'jubaconv',

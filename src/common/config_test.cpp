@@ -16,37 +16,38 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
-#include "membership.hpp"
+#include "config.hpp"
 
 using namespace std;
+using namespace pfi::lang;
 
 namespace jubatus {
 namespace common {
 
-TEST(util, build_loc_str) {
-  EXPECT_EQ("127.0.0.1_9199", build_loc_str("127.0.0.1", 9199));
-}
+TEST(config, setconfig_zk) {
+  pfi::lang::shared_ptr<jubatus::common::lock_service> zk_;
+  zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
+        (common::create_lock_service("zk", "localhost:2181", 10, "/dev/null"));
 
-TEST(util, build_existence_path) {
-  string s;
-  build_existence_path("/path/base", "127.0.0.1", 9199, s);
-  EXPECT_EQ("/path/base/127.0.0.1_9199", s);
-}
+  std::string engine_name, config_str;
+  std::string name_, path, string, dat;
+  engine_name = "test";
+  name_ = "test_name";
+//  config_str = "{[\"test\":\"config\"]}";
+  config_str = "testestestest";
 
-TEST(util, build_config_path) {
-  string p;
-  build_config_path(p , "name", "type");
-  EXPECT_EQ("/jubatus/config/name/type", p);
-}
 
-TEST(util, revert) {
-  string name = "127.0.0.1_9199";
-  string ip;
-  int port;
-  ASSERT_TRUE(revert(name, ip, port));
-  EXPECT_EQ("127.0.0.1", ip);
-  EXPECT_EQ(9199, port);
-}
+  jubatus::common::prepare_jubatus(*zk_, engine_name, "");
+  jubatus::common::setconfig_tozk(*zk_, engine_name, name_, config_str);
+
+  build_config_path(path, engine_name, name_);
+
+  ASSERT_EQ(true, zk_->exists(path));
+
+  zk_->read(path, dat);
+  ASSERT_EQ("testestestest", dat);
 
 }
-}
+
+} // common
+} // jubatus
