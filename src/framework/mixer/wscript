@@ -15,6 +15,13 @@ def build(bld):
             source = mixer_source,
             use = mixer_framework)
 
+  bld.program(
+    features='gtest',
+    source = 'linear_mixer_test.cpp',
+    target = 'linear_mixer_test',
+    use = 'jubamixer'
+    )
+
   bld.install_files('${PREFIX}/include/jubatus/framework/mixer', [
       'dummy_mixer.hpp',
       'linear_mixer.hpp',

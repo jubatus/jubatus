@@ -67,9 +67,9 @@ public:
   void get_status(server_base::status_t& status) const;
   std::vector<mixable0*> get_mixables() const;
 
+  void mix();
 private:
   void mixer_loop();
-  void mix();
 
   void clear();
 
