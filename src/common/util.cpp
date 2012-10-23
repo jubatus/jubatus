@@ -50,15 +50,24 @@ using namespace pfi::lang;
 namespace jubatus {
 namespace util {
 
+// FIXME: AF_INET does not specify IPv6
 void get_ip(const char* nic, string& out)
 {
   int fd;
   struct ifreq ifr;
 
   fd = socket(AF_INET, SOCK_DGRAM, 0);
+  if (fd == -1) {
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to create socket(AF_INET, SOCK_DGRAM)")
+      << jubatus::exception::error_errno(errno));
+  }
+
   ifr.ifr_addr.sa_family = AF_INET;
   strncpy(ifr.ifr_name, nic, IFNAMSIZ-1);
-  ioctl(fd, SIOCGIFADDR, &ifr);
+  if (ioctl(fd, SIOCGIFADDR, &ifr) == -1) {
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get IP address from interface")
+      << jubatus::exception::error_errno(errno));
+  }
   close(fd);
 
   struct sockaddr_in* sin = (struct sockaddr_in*)(&(ifr.ifr_addr));
