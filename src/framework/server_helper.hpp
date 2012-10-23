@@ -73,7 +73,9 @@ public:
     status_t& data = status[get_server_identifier(a)];
 
     util::get_machine_status(data);
-  
+
+    // TBD: running_time, epoch_time
+    // TBD: type(server type), name(instance name: when zookeeper enabled), eth
     data["timeout"] = pfi::lang::lexical_cast<std::string>(a.timeout);
     data["threadnum"] = pfi::lang::lexical_cast<std::string>(a.threadnum);
     data["tmpdir"] = a.tmpdir;
