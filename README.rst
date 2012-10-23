@@ -43,6 +43,7 @@ Improvements
   - Make the timeout smaller in unittest
   - libmecab_splitter works well in multi-thread environment, and now only support mecab ver. 0.99 or later
   - word_splitter::split method is now constant
+  - global_id_generator(standalone-mode) for graph, that supports 32 bit environment (#135)
 
 Bugfix
   - #117, #113, #118, #114

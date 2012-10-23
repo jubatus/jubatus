@@ -22,6 +22,10 @@
 #include "lock_service.hpp"
 #include "shared_ptr.hpp"
 
+#ifndef ATOMIC_I8_SUPPORT
+#include <pficommon/concurrent/mutex.h>
+#endif
+
 namespace jubatus { namespace common {
 
 class global_id_generator
@@ -42,6 +46,10 @@ private:
 
   std::string path_;
   cshared_ptr<lock_service> ls_;
+
+#ifndef ATOMIC_I8_SUPPORT
+  pfi::concurrent::mutex counter_mutex_;
+#endif
 };
 
 }}

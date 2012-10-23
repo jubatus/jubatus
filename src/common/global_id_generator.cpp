@@ -18,6 +18,10 @@
 #include "global_id_generator.hpp"
 #include <cassert>
 
+#ifndef ATOMIC_I8_SUPPORT
+#include <pficommon/concurrent/lock.h>
+#endif
+
 namespace jubatus { namespace common {
 
 
@@ -36,7 +40,12 @@ global_id_generator::~global_id_generator()
 uint64_t global_id_generator::generate()
 {
   if(is_standalone_){
+#ifdef ATOMIC_I8_SUPPORT
     return __sync_fetch_and_add(&counter_, 1);
+#else
+    pfi::concurrent::scoped_lock lk(counter_mutex_);
+    return ++counter_;
+#endif
 
   }else{
 #ifdef HAVE_ZOOKEEPER_H
