@@ -72,7 +72,11 @@ public:
     const server_argv& a = server_->argv();
     status_t& data = status[get_server_identifier(a)];
 
-    util::get_machine_status(data);
+    util::machine_status_t mt;
+    util::get_machine_status(mt);
+    data["VIRT"] = pfi::lang::lexical_cast<std::string>(mt.vm_size);
+    data["RSS"] = pfi::lang::lexical_cast<std::string>(mt.vm_resident);
+    data["SHR"] = pfi::lang::lexical_cast<std::string>(mt.vm_share);
 
     // TBD: running_time, epoch_time
     // TBD: type(server type), name(instance name: when zookeeper enabled), eth

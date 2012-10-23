@@ -175,23 +175,30 @@ void append_server_path(const string& argv0)
 
 }
 
-void get_machine_status(std::map<std::string, std::string>& ret)
+void get_machine_status(machine_status_t& status)
 {
-  pid_t pid = getpid();
-
   // WARNING: this code will only work on linux
-  std::ostringstream fname;
-  fname << "/proc/" << pid << "/statm";
-  std::ifstream statm(fname.str().c_str());
+  try {
+    // /proc/[pid]/statm shows using page size
+    char path[64];
+    snprintf(path, sizeof(path), "/proc/%d/statm", getpid());
+    std::ifstream statm(path);
 
-  uint64_t vm_virt; statm >> vm_virt;
-  uint64_t vm_rss; statm >> vm_rss;
-  uint64_t vm_shr; statm >> vm_shr;
+    const long page_size = sysconf(_SC_PAGESIZE);
+    uint64_t vm_virt; statm >> vm_virt; vm_virt /= page_size;
+    uint64_t vm_rss; statm >> vm_rss; vm_rss /= page_size;
+    uint64_t vm_shr; statm >> vm_shr; vm_shr /= page_size;
 
-  ret["VIRT"] = pfi::lang::lexical_cast<std::string>(vm_virt);
-  ret["RSS"] = pfi::lang::lexical_cast<std::string>(vm_rss);
-  ret["SHR"] = pfi::lang::lexical_cast<std::string>(vm_shr);
-
+    // in KB
+    status.vm_size = vm_virt; // total program size(virtual memory)
+    status.vm_resident = vm_rss; // resident set size
+    status.vm_share = vm_shr; // shared
+  } catch (...) {
+    // store zero
+    status.vm_size = 0;
+    status.vm_resident = 0;
+    status.vm_share = 0;
+  }
 }
 
 namespace {

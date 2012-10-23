@@ -53,3 +53,11 @@ TEST(common,util_get_program_name){
   });
   EXPECT_EQ(std::string("util_test"), path);
 }
+
+TEST(common, util_get_machine_status)
+{
+  jubatus::util::machine_status_t status;
+  EXPECT_NO_THROW({
+    jubatus::util::get_machine_status(status);
+  });
+}
