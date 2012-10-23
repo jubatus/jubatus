@@ -46,7 +46,7 @@ Improvements
   - global_id_generator(standalone-mode) for graph, that supports 32 bit environment (#135)
 
 Bugfix
-  - #117, #113, #118, #114
+  - #117, #113, #118, #114, #133
 
 Release 0.3.2 2012/9/21
 ~~~~~~~~~~~~~~~~~~~~~~~
