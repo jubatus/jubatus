@@ -28,5 +28,5 @@ int main(int args, char** argv){
 
 
 
-  k.run();
+  return k.run();
 }

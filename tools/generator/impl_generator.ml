@@ -41,11 +41,20 @@ let to_impl_strings = function
 	| Analysis -> "JRLOCK__";
 	| Nolock   -> "NOLOCK__"
       in
-      
+
+      (* TODO: think of generating this abnormal method, which calls the method of p_ rather than get_p(). *)
+      (* We need to write get_status in idl for client codes. *)
+       let pointer =
+        if name = "get_status" then
+          "p_"
+        else
+          "get_p()"
+      in
+          
       (Printf.sprintf "\n  %s %s(%s) //%s %s"
 	 rettype name (String.concat ", " argv_strs)
 	 (Stree.reqtype_to_string rwtype) (Stree.routing_to_string routing))
-      ^(Printf.sprintf "\n  { %s(p_); return p_->%s(%s); }" lock_str name (String.concat ", " argv_strs2))
+      ^(Printf.sprintf "\n  { %s(p_); return %s->%s(%s); }" lock_str pointer name (String.concat ", " argv_strs2))
 	
     in
     List.map to_keeper_string methods;
@@ -71,7 +80,7 @@ let generate s output strees =
   output <<< "public:";
   output <<< ("  "^s#basename^"_impl_(const server_argv& a):");
   output <<< ("    "^s#basename^"<"^s#basename^"_impl_>(a.timeout),");
-  output <<< ("    p_(new "^s#basename^"_serv(a))");
+  output <<< ("    p_(new server_helper<"^s#basename^"_serv>(a))");
 
   let use_cht =
     let include_cht_api = function
@@ -97,9 +106,9 @@ let generate s output strees =
 		     (List.filter Generator.is_service strees)));
 
   output <<< "  int run(){ return p_->start(*this); };";
-  output <<< ("  common::cshared_ptr<"^s#basename^"_serv> get_p(){ return p_; };");
+  output <<< ("  common::cshared_ptr<"^s#basename^"_serv> get_p(){ return p_->server(); };");
   output <<< "private:";
-  output <<< ("  common::cshared_ptr<"^s#basename^"_serv> p_;");
+  output <<< ("  common::cshared_ptr<server_helper<"^s#basename^"_serv> > p_;");
   output <<< "};";
   output <<< "}} // namespace jubatus::server";
 
