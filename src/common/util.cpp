@@ -185,9 +185,11 @@ void get_machine_status(machine_status_t& status)
     std::ifstream statm(path);
 
     const long page_size = sysconf(_SC_PAGESIZE);
-    uint64_t vm_virt; statm >> vm_virt; vm_virt /= page_size;
-    uint64_t vm_rss; statm >> vm_rss; vm_rss /= page_size;
-    uint64_t vm_shr; statm >> vm_shr; vm_shr /= page_size;
+    uint64_t vm_virt, vm_rss , vm_shr;
+    statm >> vm_virt >> vm_rss >> vm_shr;
+    vm_virt = vm_virt * page_size / 1024;
+    vm_rss = vm_rss * page_size / 1024;
+    vm_shr = vm_shr * page_size / 1024;
 
     // in KB
     status.vm_size = vm_virt; // total program size(virtual memory)
