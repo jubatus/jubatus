@@ -1,4 +1,11 @@
 
+// This file is auto-generated from recommender.idl
+// *** DO NOT EDIT ***
+
+#ifndef RECOMMENDER_CLIENT_HPP_
+#define RECOMMENDER_CLIENT_HPP_
+
+
 #include "recommender_types.hpp"
 #include <pficommon/network/mprpc.h>
 
@@ -83,3 +90,6 @@ private:
 
 } // namespace jubatus
 
+
+
+#endif // RECOMMENDER_CLIENT_HPP_

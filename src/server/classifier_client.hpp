@@ -1,4 +1,11 @@
 
+// This file is auto-generated from classifier.idl
+// *** DO NOT EDIT ***
+
+#ifndef CLASSIFIER_CLIENT_HPP_
+#define CLASSIFIER_CLIENT_HPP_
+
+
 #include "classifier_types.hpp"
 #include <pficommon/network/mprpc.h>
 
@@ -47,3 +54,6 @@ private:
 
 } // namespace jubatus
 
+
+
+#endif // CLASSIFIER_CLIENT_HPP_
