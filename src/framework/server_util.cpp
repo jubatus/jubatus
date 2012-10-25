@@ -99,7 +99,7 @@ namespace jubatus { namespace framework {
 
   std::string server_argv::boot_message(const std::string& progname) const {
     std::stringstream ret;
-    ret << "starting " << progname << VERSION << " RPC server at " <<
+    ret << "starting " << progname << " " << VERSION << " RPC server at " <<
       eth << ":" << port << " with timeout: " << timeout;
     return ret.str();
   };
@@ -147,7 +147,7 @@ namespace jubatus { namespace framework {
 
   std::string keeper_argv::boot_message(const std::string& progname) const {
     std::stringstream ret;
-    ret << "starting " << progname << VERSION << " RPC server at " <<
+    ret << "starting " << progname << " " << VERSION << " RPC server at " <<
       eth << ":" << port << " with timeout: " << timeout;
     return ret.str();
   };
