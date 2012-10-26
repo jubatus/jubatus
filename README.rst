@@ -35,6 +35,7 @@ preparing Release 0.3.3
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
+  - deb package (#14)
   - Jubatus loads plugin from default directory (#57)
   - Add hash_max_size option to learn in fixed-size memory (#67)
   - OS X Homebrew packaging (#116)
@@ -47,7 +48,7 @@ Improvements
   - Use (document_frequency + 1) to calculate IDF weight to avoid inifinity
 
 Bugfix
-  - #94, #117, #113, #118, #114, #124, #133, #138, #146, #106, #110, #139, #126, #148
+  - #94, #104, #106, #108, #110, #111, #113, #114, #117, #118, #124, #126, #129, #133, #138, #139, #146, #148
 
 Release 0.3.2 2012/9/21
 ~~~~~~~~~~~~~~~~~~~~~~~
