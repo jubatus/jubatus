@@ -47,7 +47,7 @@ Improvements
   - Use (document_frequency + 1) to calculate IDF weight to avoid inifinity
 
 Bugfix
-  - #94, #117, #113, #118, #114, #124, #133, #146
+  - #94, #117, #113, #118, #114, #124, #133, #138, #146
 
 Release 0.3.2 2012/9/21
 ~~~~~~~~~~~~~~~~~~~~~~~
