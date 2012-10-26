@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+PREFIX = /opt/jubatus
+
+%:
+	dh $@
+
+override_dh_auto_clean:
+override_dh_auto_configure:
+override_dh_auto_build:
+override_dh_auto_test:
+
+override_dh_auto_install:
+	mkdir -p debian/tmp/
+	mv opt/ debian/tmp/opt/
+
+override_dh_makeshlibs:
+override_dh_shlibdeps:
