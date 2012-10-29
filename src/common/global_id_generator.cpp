@@ -65,9 +65,11 @@ uint64_t global_id_generator::generate()
                                      const std::string& path_prefix)
 {
 #ifdef HAVE_ZOOKEEPER_H
-  path_ = path_prefix + "/id_generator";
-  ls_ = ls;
-  ls_->create(path_);
+  if (! is_standalone_) {
+    path_ = path_prefix + "/id_generator";
+    ls_ = ls;
+    ls_->create(path_);
+  }
 #endif
 }
 
