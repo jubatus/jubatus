@@ -37,18 +37,22 @@
 
 #include "num_filter_impl.hpp"
 
-#include "weight_manager.hpp"
 #include "converter_config.hpp"
 #include "exception.hpp"
+#include "weight_manager.hpp"
 
 using namespace std;
 using namespace jubatus;
 using namespace jubatus::fv_converter;
 using namespace pfi::lang;
+using jubatus::common::cshared_ptr;
+
+void init_weight_manager(datum_to_fv_converter& conv) {
+  conv.set_weight_manager(cshared_ptr<weight_manager>(new weight_manager));
+}
 
 TEST(datum_to_fv_converter, trivial) {
   datum_to_fv_converter conv;
-  weight_manager wm;
 }
 
 TEST(datum_to_fv_converter, num_feature) {
@@ -57,7 +61,7 @@ TEST(datum_to_fv_converter, num_feature) {
   datum.num_values_.push_back(make_pair("/val2", 0.));
 
   datum_to_fv_converter conv;
-  weight_manager wm;
+  init_weight_manager(conv);
   typedef shared_ptr<num_feature> num_feature_t;
   shared_ptr<key_matcher> a(new match_all());
   
@@ -65,8 +69,6 @@ TEST(datum_to_fv_converter, num_feature) {
   conv.register_num_rule("log", a, num_feature_t(new num_log_feature()));
   vector<pair<string, float> > feature;
   conv.convert(datum, feature);
-  wm.update_weight(feature);
-  wm.get_weight(feature);
 
   vector<pair<string, float> > expected;
   expected.push_back(make_pair("/val1@num", 1.1));
@@ -83,7 +85,7 @@ TEST(datum_to_fv_converter, string_feature) {
   typedef shared_ptr<word_splitter> splitter_t;
 
   datum_to_fv_converter conv;
-  weight_manager wm;
+  init_weight_manager(conv);
   {
     shared_ptr<word_splitter> s(new space_splitter());
     vector<splitter_weight_type> p;
@@ -117,17 +119,13 @@ TEST(datum_to_fv_converter, string_feature) {
     datum datum;
     datum.string_values_.push_back(make_pair("/name", "doc0"));
     datum.string_values_.push_back(make_pair("/title", " this is "));
-    conv.convert(datum, feature);
-    wm.update_weight(feature);
-    wm.get_weight(feature);
+    conv.convert_and_update_weight(datum, feature);
   }
   {
     datum datum;
     datum.string_values_.push_back(make_pair("/name", "doc1"));
     datum.string_values_.push_back(make_pair("/title", " this is it . it is it ."));
-    conv.convert(datum, feature);
-    wm.update_weight(feature);
-    wm.get_weight(feature);
+    conv.convert_and_update_weight(datum, feature);
   }
 
   vector<pair<string, float> > expected;
@@ -140,7 +138,7 @@ TEST(datum_to_fv_converter, string_feature) {
   expected.push_back(make_pair("/title$it@space#bin/bin",   1.));
   expected.push_back(make_pair("/title$.@space#bin/bin",    1.));
 
-  double idf1 = log(2. / 1.);
+  double idf1 = log((2. + 1) / (1. + 1));
   //double idf2 = log(2. / 2.);
   expected.push_back(make_pair("/name$doc1@space#tf/idf",  1. * idf1));
   //expected.push_back(make_pair("/title$this@space#tf/idf", 1. * idf2));
@@ -164,7 +162,7 @@ TEST(datum_to_fv_converter, string_feature) {
 
 TEST(datum_to_fv_converter, weight) {
   datum_to_fv_converter conv;
-  weight_manager wm;
+  init_weight_manager(conv);
   {
     shared_ptr<key_matcher> match(new match_all());
     shared_ptr<word_splitter> s(new space_splitter());
@@ -172,16 +170,13 @@ TEST(datum_to_fv_converter, weight) {
     p.push_back(splitter_weight_type(FREQ_BINARY, WITH_WEIGHT_FILE));
     conv.register_string_rule("space", match, s, p);
   }
-  wm.add_weight("/id$a@space", 3.f); // <- new
-  conv.add_weight("/id$a@space", 3.f); // <-deprecated
+  conv.add_weight("/id$a@space", 3.f);
 
   datum datum;
   datum.string_values_.push_back(make_pair("/id", "a b"));
 
   vector<pair<string, float> > feature;
-  conv.convert(datum, feature);
-  wm.update_weight(feature);
-  wm.get_weight(feature);
+  conv.convert_and_update_weight(datum, feature);
 
   ASSERT_EQ(1u, feature.size());
   ASSERT_EQ("/id$a@space#bin/weight", feature[0].first);
@@ -190,7 +185,7 @@ TEST(datum_to_fv_converter, weight) {
 
 TEST(datum_to_fv_converter, register_string_rule) {
   datum_to_fv_converter conv;
-  weight_manager wm;
+  init_weight_manager(conv);
   initialize_converter(converter_config(), conv);
 
   vector<splitter_weight_type> p;
@@ -204,8 +199,6 @@ TEST(datum_to_fv_converter, register_string_rule) {
 
   vector<pair<string, float> > feature;
   conv.convert(datum, feature);
-  wm.update_weight(feature);
-  wm.get_weight(feature);
 
   vector<pair<string, float> > exp;
   exp.push_back(make_pair("/id$a@1gram#bin/bin", 1.));
@@ -219,7 +212,7 @@ TEST(datum_to_fv_converter, register_string_rule) {
 
 TEST(datum_to_fv_converter, register_num_rule) {
   datum_to_fv_converter conv;
-  weight_manager wm;
+  init_weight_manager(conv);
 
   datum datum;
   datum.num_values_.push_back(make_pair("/age", 20));
@@ -227,8 +220,6 @@ TEST(datum_to_fv_converter, register_num_rule) {
   {
     vector<pair<string, float> > feature;
     conv.convert(datum, feature);
-    wm.update_weight(feature);
-    wm.get_weight(feature);
     EXPECT_EQ(0u, feature.size());
   }
   
@@ -239,8 +230,6 @@ TEST(datum_to_fv_converter, register_num_rule) {
   {
     vector<pair<string, float> > feature;
     conv.convert(datum, feature);
-    wm.update_weight(feature);
-    wm.get_weight(feature);
     EXPECT_EQ(1u, feature.size());
 
     vector<pair<string, float> > exp;
@@ -254,7 +243,7 @@ TEST(datum_to_fv_converter, register_num_rule) {
 
 TEST(datum_to_fv_converter, register_string_filter) {
   datum_to_fv_converter conv;
-  weight_manager wm;
+  init_weight_manager(conv);
 
   datum datum;
   datum.string_values_.push_back(make_pair("/text", "<tag>aaa</tag>"));
@@ -268,8 +257,6 @@ TEST(datum_to_fv_converter, register_string_filter) {
   {
     vector<pair<string, float> > feature;
     conv.convert(datum, feature);
-    wm.update_weight(feature);
-    wm.get_weight(feature);
     EXPECT_EQ(1u, feature.size());
   }
 
@@ -281,8 +268,6 @@ TEST(datum_to_fv_converter, register_string_filter) {
   {
     vector<pair<string, float> > feature;
     conv.convert(datum, feature);
-    wm.update_weight(feature);
-    wm.get_weight(feature);
     EXPECT_EQ(2u, feature.size());
     EXPECT_EQ("/text_filtered$aaa@str#bin/bin", feature[1].first);
   }
@@ -291,7 +276,7 @@ TEST(datum_to_fv_converter, register_string_filter) {
 
 TEST(datum_to_fv_converter, register_num_filter) {
   datum_to_fv_converter conv;
-  weight_manager wm;
+  init_weight_manager(conv);
 
   datum datum;
   datum.num_values_.push_back(make_pair("/age", 20));
@@ -307,8 +292,6 @@ TEST(datum_to_fv_converter, register_num_filter) {
 
   vector<pair<string, float> > feature;
   conv.convert(datum, feature);
-  wm.update_weight(feature);
-  wm.get_weight(feature);
 
   EXPECT_EQ(2u, feature.size());
   EXPECT_EQ("/age+5@str$25", feature[1].first);
@@ -316,7 +299,7 @@ TEST(datum_to_fv_converter, register_num_filter) {
 
 TEST(datum_to_fv_converter, recursive_filter) {
   datum_to_fv_converter conv;
-  weight_manager wm;
+  init_weight_manager(conv);
   datum datum;
   datum.num_values_.push_back(make_pair("/age", 20));
 
@@ -335,11 +318,27 @@ TEST(datum_to_fv_converter, recursive_filter) {
 
   vector<pair<string, float> > feature;
   conv.convert(datum, feature);
-  wm.update_weight(feature);
-  wm.get_weight(feature);
 
   EXPECT_EQ(4u, feature.size());
   EXPECT_EQ("/age+5@str$25", feature[1].first);
   EXPECT_EQ("/age+2@str$22", feature[2].first);
   EXPECT_EQ("/age+5+2@str$27", feature[3].first);
 } 
+
+TEST(datum_to_fv_converter, hasher) {
+  datum_to_fv_converter conv;
+  init_weight_manager(conv);
+  conv.set_hash_max_size(1);
+  conv.register_num_rule("str",
+                         shared_ptr<key_matcher>(new match_all()),
+                         shared_ptr<num_feature>(new num_string_feature()));
+  datum d;
+  for (int i = 0; i < 10; ++i)
+    d.num_values_.push_back(make_pair("age", i));
+
+  vector<pair<string, float> > feature;
+  conv.convert(d, feature);
+
+  for (size_t i = 0; i < feature.size(); ++i)
+    EXPECT_EQ("0", feature[i].first);
+}

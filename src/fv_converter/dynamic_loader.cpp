@@ -16,6 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <dlfcn.h>
+#include "../common/util.hpp"
 #include "exception.hpp"
 #include "dynamic_loader.hpp"
 #include <iostream>
@@ -26,6 +27,16 @@ namespace fv_converter {
 dynamic_loader::dynamic_loader(const std::string& path)
     : handle_(0) {
   void* handle = dlopen(path.c_str(), RTLD_LAZY);
+
+  if (!handle) {
+    // dlopen from JUBATUS_PLUGIN_DIR
+    const std::string plugin_name = jubatus::util::base_name(path);
+    if (plugin_name != path) {
+      const std::string plugin_path = std::string(JUBATUS_PLUGIN_DIR) + "/" + plugin_name;
+      handle = dlopen(plugin_path.c_str() , RTLD_LAZY);
+    }
+  }
+
   if (!handle) {
     char *error = dlerror();
     throw JUBATUS_EXCEPTION(converter_exception("cannot load dynamic library: " + path + ": "
@@ -38,7 +49,7 @@ dynamic_loader::dynamic_loader(const std::string& path)
 }
 
 dynamic_loader::~dynamic_loader() {
-  if (dlclose(handle_)) {
+  if (handle_ && dlclose(handle_) != 0) {
     // TODO failed
   }
 }

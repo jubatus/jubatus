@@ -31,6 +31,25 @@ LGPL 2.1
 Update history
 --------------
 
+Release 0.3.3 2012/10/29
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Improvements
+  - deb package (#14)
+  - Jubatus loads plugin from default directory (#57)
+  - Add hash_max_size option to learn in fixed-size memory (#67)
+  - OS X Homebrew packaging (#116)
+  - GCC compilation version <= 4.2 when zookeeper enabled (#60)
+  - Experimental support for Clang compilation (#100)
+  - Make the timeout smaller in unittest
+  - libmecab_splitter works well in multi-thread environment, and now only support mecab ver. 0.99 or later
+  - word_splitter::split method is now constant
+  - global_id_generator(standalone-mode) for graph, that supports 32 bit environment (#135)
+  - Use (document_frequency + 1) to calculate IDF weight to avoid inifinity
+
+Bugfix
+  - #94, #104, #106, #108, #110, #111, #113, #114, #117, #118, #124, #126, #129, #133, #138, #139, #146, #148
+
 Release 0.3.2 2012/9/21
 ~~~~~~~~~~~~~~~~~~~~~~~
 

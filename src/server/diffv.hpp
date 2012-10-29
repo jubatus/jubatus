@@ -32,13 +32,6 @@ public:
   int count;
   storage::features3_t v;
 
-  diffv& operator+=(diffv& rhs){
-    this->count += rhs.count;
-    rhs.v *= rhs.count;
-    this->v += rhs.v;
-    return *this;
-  };
-
   diffv& operator/=(double d){
        this->v /= d;
     return *this;

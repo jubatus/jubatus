@@ -115,6 +115,13 @@ struct rpc_result {
   bool has_error() const { return !error.empty(); }
 };
 
+struct rpc_result_object {
+  std::vector<rpc_response_t> response;
+  std::vector<rpc_error> error;
+
+  bool has_error() const { return !error.empty(); }
+};
+
 class rpc_mclient : pfi::lang::noncopyable
 {
 public:
@@ -133,6 +140,9 @@ public:
   template <typename Res, typename A0, typename A1, typename A2, typename A3>
   rpc_result<Res> call(const std::string&, const A0&, const A1&, const A2&, const A3&, const pfi::lang::function<Res(Res,Res)>& reducer);
 
+  template <typename A0>
+  rpc_result_object call(const std::string&, const A0& a0);
+
 private:
   static void readable_callback(int fd, short int events, void* arg);
   static void writable_callback(int fd, short int events, void* arg);
@@ -145,12 +155,13 @@ private:
 
   void send_all(const msgpack::sbuffer& buf);
 
+  rpc_result_object wait(const std::string& m);
+
   template <typename Arr>
   void call_(const std::string&, const Arr& a);
 
   template <typename Res>
   rpc_result<Res> join_(const std::string&, const pfi::lang::function<Res(Res,Res)>& reducer);
-
 
   std::vector<std::pair<std::string, uint16_t> > hosts_;
   int timeout_sec_;
@@ -288,6 +299,15 @@ rpc_result<Res> rpc_mclient::call(const std::string& m, const A0& a0, const A1& 
 {
   call_(m, msgpack::type::tuple<A0, A1, A2, A3>(a0, a1, a2, a3));
   return join_(m, reducer);
+}
+
+
+
+template <typename A0>
+rpc_result_object rpc_mclient::call(const std::string& m, const A0& a0)
+{
+  call_(m, msgpack::type::tuple<A0>(a0));
+  return wait(m);
 }
 
 } // mprpc

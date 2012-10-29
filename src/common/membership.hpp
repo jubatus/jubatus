@@ -22,39 +22,40 @@
 #include <vector>
 #include <map>
 
-namespace jubatus{
-namespace common{
+namespace jubatus {
+namespace common {
 
-  static const std::string JUBATUS_BASE_PATH = "/jubatus";
-  static const std::string JUBAVISOR_BASE_PATH = "/jubatus/supervisors";
-  static const std::string JUBAKEEPER_BASE_PATH = "/jubatus/jubakeepers";
-  static const std::string ACTOR_BASE_PATH = "/jubatus/actors";
+static const std::string JUBATUS_BASE_PATH = "/jubatus";
+static const std::string JUBAVISOR_BASE_PATH = "/jubatus/supervisors";
+static const std::string JUBAKEEPER_BASE_PATH = "/jubatus/jubakeepers";
+static const std::string ACTOR_BASE_PATH = "/jubatus/actors";
 
-  // "127.0.0.1" -> 9199 -> "127.0.0.1_9199"
-  std::string build_loc_str(const std::string&, int, unsigned int = 0);
+// "127.0.0.1" -> 9199 -> "127.0.0.1_9199"
+std::string build_loc_str(const std::string&, int, unsigned int = 0);
 
-  // /path/base -> 127.0.0.1 -> 9199 -> /path/base/127.0.0.1_9199
-  void build_existence_path(const std::string&, const std::string&, int, std::string&);
+// /path/base -> 127.0.0.1 -> 9199 -> /path/base/127.0.0.1_9199
+void build_existence_path(const std::string&, const std::string&, int, std::string&);
 
-  void build_actor_path(std::string&, const std::string& type, const std::string& name);
+void build_actor_path(std::string&, const std::string& type, const std::string& name);
 
-  // 127.0.0.1_9199 -> (127.0.0.1, 9199)
-  bool revert(const std::string&, std::string&, int&);
+// 127.0.0.1_9199 -> (127.0.0.1, 9199)
+bool revert(const std::string&, std::string&, int&);
 
-  // zk -> name -> ip -> port -> bool
-  bool register_actor(lock_service&, const std::string& type, const std::string& name,
-                      const std::string& ip, int port);
-  // zk -> name -> ip -> port -> bool
-  bool register_keeper(lock_service&, const std::string& type, const std::string& ip, int);
-  // zk -> name -> list( (ip, rpc_port) )
-  bool get_all_actors(lock_service&, const std::string& type, const std::string&,
-                      std::vector<std::pair<std::string, int> >&);
+// zk -> name -> ip -> port -> bool
+bool register_actor(lock_service&, const std::string& type, const std::string& name,
+                    const std::string& ip, int port);
+// zk -> name -> ip -> port -> bool
+bool register_keeper(lock_service&, const std::string& type, const std::string& ip, int);
+// zk -> name -> list( (ip, rpc_port) )
+bool get_all_actors(lock_service&, const std::string& type, const std::string&,
+                    std::vector<std::pair<std::string, int> >&);
 
-  bool push_cleanup(lock_service&, pfi::lang::function<void()>&);
+bool push_cleanup(lock_service&, pfi::lang::function<void()>&);
 
-  void force_exit();
+void force_exit();
 
-  void prepare_jubatus(lock_service& ls,
-                       const std::string& type, const std::string& name = "");
-}
-}
+void prepare_jubatus(lock_service& ls,
+                     const std::string& type, const std::string& name = "");
+
+} // common
+} // jubatus

@@ -38,8 +38,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <unistd.h>
-
 #ifdef __APPLE__
 #include <libproc.h>
 #endif
@@ -49,26 +47,35 @@
 using std::string;
 using namespace pfi::lang;
 
-namespace jubatus { namespace util{
+namespace jubatus {
+namespace util {
 
-void get_ip(const char* nic, string& out){
-    int fd;
-    struct ifreq ifr;
-    
-    fd = socket(AF_INET, SOCK_DGRAM, 0);
-    ifr.ifr_addr.sa_family = AF_INET;
-    strncpy(ifr.ifr_name, nic, IFNAMSIZ-1);
-    ioctl(fd, SIOCGIFADDR, &ifr);
-    close(fd);
+void get_ip(const char* nic, string& out)
+{
+  int fd;
+  struct ifreq ifr;
 
-    struct sockaddr_in * sin = (struct sockaddr_in*)(&(ifr.ifr_addr));
-    out = inet_ntoa((struct in_addr)(sin->sin_addr));
+  fd = socket(AF_INET, SOCK_DGRAM, 0);
+  ifr.ifr_addr.sa_family = AF_INET;
+  strncpy(ifr.ifr_name, nic, IFNAMSIZ-1);
+  ioctl(fd, SIOCGIFADDR, &ifr);
+  close(fd);
+
+  struct sockaddr_in* sin = (struct sockaddr_in*)(&(ifr.ifr_addr));
+  out = inet_ntoa((struct in_addr)(sin->sin_addr));
 }
 
-string get_ip(const char* nic){
+string get_ip(const char* nic)
+{
   string ret;
   get_ip(nic, ret);
   return ret;
+}
+
+string base_name(const string& path)
+{
+  size_t found = path.rfind('/');
+  return found != string::npos ? path.substr(found + 1) : path;
 }
 
 std::string get_program_name()
@@ -97,11 +104,11 @@ std::string get_program_name()
   }
 
   // get basename
-  const char* last = strrchr(path, '/');
-  if (!last)
+  const string program_base_name = base_name(path);
+  if (program_base_name == path)
       throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(string("Failed to get program name from path: ") + path)
        << jubatus::exception::error_file_name(path));
-  return std::string(last + 1);
+  return program_base_name;
 }
 
 //local server list should be like:
@@ -111,7 +118,8 @@ std::string get_program_name()
 //  ...
 //  192.168.1.23 2345
 //and must include self IP got from "eth0"
-std::string load(const std::string& file, std::vector< std::pair<std::string, int> >& s){
+std::string load(const std::string& file, std::vector< std::pair<std::string, int> >& s)
+{
   std::string tmp;
   std::string self;
   get_ip("eth0", self);
@@ -119,20 +127,20 @@ std::string load(const std::string& file, std::vector< std::pair<std::string, in
   int port;
   int line = 0;
   std::ifstream ifs(file.c_str());
-  if(!ifs){
+   if (!ifs) {
     return self;
   }
-  while(ifs >> tmp){
-    if(self==tmp)
+  while (ifs >> tmp) {
+    if (self==tmp)
       self_included = true;
-    if(!(ifs >> port)){
+    if (!(ifs >> port)) {
       // TODO: replace jubatus exception
       throw parse_error(file, line, tmp.size(), string("input port"));
     }
     s.push_back(std::pair<std::string,int>(tmp, port));
     line++;
   }
-  if(!self_included){
+  if (!self_included) {
     // TODO: replace jubatus exception
     throw parse_error(file, s.size(), 0, //FIXME: 0
                       string("self IP(eth0) not included in list"));
@@ -140,50 +148,59 @@ std::string load(const std::string& file, std::vector< std::pair<std::string, in
   return self;
 }
 
-
-int daemonize(){
+int daemonize()
+{
   return daemon(0, 0);
 }
 
-void append_env_path(const string& e, const string& argv0){
-  const char * env = getenv(e.c_str());
-  // char cwd[PATH_MAX];
-  // getcwd(cwd, PATH_MAX);
-  
+void append_env_path(const string& e, const string& argv0)
+{
+  const char* env = getenv(e.c_str());
   string new_path = string(env) + ":" + argv0;
   setenv(e.c_str(), new_path.c_str(), new_path.size());
 }
 
-void append_server_path(const string& argv0){
+void append_server_path(const string& argv0)
+{
   const char * env = getenv("PATH");
   char cwd[PATH_MAX];
   if (!getcwd(cwd, PATH_MAX)) {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to getcwd"))
       << jubatus::exception::error_errno(errno);
-  }  
-  
+  }
+
   string p = argv0.substr(0, argv0.find_last_of('/'));
   string new_path = string(env) + ":" + cwd + "/" + p + "/../server";
   setenv("PATH", new_path.c_str(), new_path.size());
 
 }
 
-void get_machine_status(std::map<std::string, std::string>& ret){
-  pid_t pid = getpid();
-
+void get_machine_status(machine_status_t& status)
+{
   // WARNING: this code will only work on linux
-  std::ostringstream fname;
-  fname << "/proc/" << pid << "/statm";
-  std::ifstream statm(fname.str().c_str());
+  try {
+    // /proc/[pid]/statm shows using page size
+    char path[64];
+    snprintf(path, sizeof(path), "/proc/%d/statm", getpid());
+    std::ifstream statm(path);
 
-  uint64_t vm_virt; statm >> vm_virt;
-  uint64_t vm_rss; statm >> vm_rss;
-  uint64_t vm_shr; statm >> vm_shr;
+    const long page_size = sysconf(_SC_PAGESIZE);
+    uint64_t vm_virt, vm_rss , vm_shr;
+    statm >> vm_virt >> vm_rss >> vm_shr;
+    vm_virt = vm_virt * page_size / 1024;
+    vm_rss = vm_rss * page_size / 1024;
+    vm_shr = vm_shr * page_size / 1024;
 
-  ret["VIRT"] = pfi::lang::lexical_cast<std::string>(vm_virt);
-  ret["RSS"] = pfi::lang::lexical_cast<std::string>(vm_rss);
-  ret["SHR"] = pfi::lang::lexical_cast<std::string>(vm_shr);
-
+    // in KB
+    status.vm_size = vm_virt; // total program size(virtual memory)
+    status.vm_resident = vm_rss; // resident set size
+    status.vm_share = vm_shr; // shared
+  } catch (...) {
+    // store zero
+    status.vm_size = 0;
+    status.vm_resident = 0;
+    status.vm_share = 0;
+  }
 }
 
 namespace {
@@ -213,7 +230,7 @@ void set_exit_on_term()
 void ignore_sigpipe()
 {
   // portable code for socket write(2) MSG_NOSIGNAL
-  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+  if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't ignore SIGPIPE")
         << jubatus::exception::error_api_func("signal")
         << jubatus::exception::error_errno(errno));

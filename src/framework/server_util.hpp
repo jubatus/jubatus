@@ -25,6 +25,7 @@
 #include <msgpack.hpp>
 
 #include "../common/exception.hpp"
+#include "../common/lock_service.hpp"
 #include "../common/shared_ptr.hpp"
 #include "../common/util.hpp"
 #include <pficommon/lang/noncopyable.h>
@@ -33,10 +34,6 @@
 #include <pficommon/lang/function.h>
 #include <pficommon/network/mprpc.h>
 #include <pficommon/lang/shared_ptr.h>
-
-#ifdef HAVE_ZOOKEEPER_H
-#  include "../common/lock_service.hpp"
-#endif
 
 namespace cmdline{
 class parser;
@@ -77,6 +74,8 @@ struct server_argv {
   std::string boot_message(const std::string& progname) const;
 };
 
+std::string get_server_identifier(const server_argv& a);
+
 
 struct keeper_argv {
   keeper_argv(int args, char** argv, const std::string& t);
@@ -101,35 +100,19 @@ void convert(const From& from, To& to){
   msg.get().convert(&to);
 }
 
-#ifdef HAVE_ZOOKEEPER_H
 extern jubatus::common::cshared_ptr<jubatus::common::lock_service> ls;
 void atexit(void);
-#endif
 
 template <class ImplServerClass, class UserServClass>
 int run_server(int args, char** argv, const std::string& type)
 {
   try {
     ImplServerClass impl_server(server_argv(args, argv, type));
-#ifdef HAVE_ZOOKEEPER_H
-    pfi::network::mprpc::rpc_server& serv = impl_server;
-    serv.add<std::vector<std::string>(int)>
-      ("get_diff",
-       pfi::lang::bind(&UserServClass::get_diff_impl,
-           impl_server.get_p().get(), pfi::lang::_1));
-    serv.add<int(std::vector<std::string>)>
-      ("put_diff",
-       pfi::lang::bind(&UserServClass::put_diff_impl,
-           impl_server.get_p().get(), pfi::lang::_1));
-    serv.add<std::string()>
-      ("get_storage",
-       pfi::lang::bind(&UserServClass::get_storage,
-           impl_server.get_p().get()));
 
-    jubatus::util::set_exit_on_term();
+    impl_server.get_p()->get_mixer()->register_api(impl_server);
     ::atexit(jubatus::framework::atexit);
 
-#endif // HAVE_ZOOKEEPER_H
+    jubatus::util::set_exit_on_term();
     jubatus::util::ignore_sigpipe();
     return impl_server.run();
   } catch (const jubatus::exception::jubatus_exception& e) {

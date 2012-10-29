@@ -25,63 +25,63 @@
 
 #include <stdint.h>
 
-namespace jubatus{
-namespace common{
-  
-  // TODO: write lock_service mock and test them all?
-  class lock_service{
-  public:
-    // timeout [ms]
-    lock_service(){};
-    virtual ~lock_service(){};
+namespace jubatus {
+namespace common {
 
-    virtual void force_close() = 0;
-    virtual void create(const std::string& path, const std::string& payload = "", bool ephemeral = false) = 0;
-    virtual void remove(const std::string& path) = 0;
-    virtual bool exists(const std::string& path) = 0;
+// TODO: write lock_service mock and test them all?
+class lock_service {
+public:
+  // timeout [ms]
+  lock_service() {};
+  virtual ~lock_service() {};
 
-    virtual bool bind_watcher(const std::string& path, pfi::lang::function<void(int,int,std::string)>&) = 0;
+  virtual void force_close() = 0;
+  virtual void create(const std::string& path, const std::string& payload = "", bool ephemeral = false) = 0;
+  virtual void remove(const std::string& path) = 0;
+  virtual bool exists(const std::string& path) = 0;
 
-    // ephemeral only
-    virtual void create_seq(const std::string& path, std::string&) = 0;
-    virtual uint64_t create_id(const std::string& path, uint32_t prefix = 0) = 0;
+  virtual bool bind_watcher(const std::string& path, pfi::lang::function<void(int,int,std::string)>&) = 0;
 
-    virtual void list(const std::string& path, std::vector<std::string>& out) = 0;
-    virtual void hd_list(const std::string& path, std::string& out) = 0;
+  // ephemeral only
+  virtual void create_seq(const std::string& path, std::string&) = 0;
+  virtual uint64_t create_id(const std::string& path, uint32_t prefix = 0) = 0;
 
-    // reads data (should be smaller than 1024B)
-    virtual bool read(const std::string& path, std::string& out) = 0;
+  virtual void list(const std::string& path, std::vector<std::string>& out) = 0;
+  virtual void hd_list(const std::string& path, std::string& out) = 0;
 
-    virtual void push_cleanup(pfi::lang::function<void()>& f) = 0;
-    virtual void run_cleanup() = 0;
+  // reads data (should be smaller than 1024B)
+  virtual bool read(const std::string& path, std::string& out) = 0;
 
-    virtual const std::string& get_hosts()const = 0;
-    virtual const std::string type() const = 0;
-  };
+  virtual void push_cleanup(pfi::lang::function<void()>& f) = 0;
+  virtual void run_cleanup() = 0;
 
-  class try_lockable : public pfi::concurrent::lockable{
-  public:
-    virtual bool try_lock() = 0;
-  };
+  virtual const std::string& get_hosts() const = 0;
+  virtual const std::string type() const = 0;
+};
 
-  class lock_service_mutex : public try_lockable {
-  public:
-    lock_service_mutex(lock_service& ls, const std::string& path);
-    virtual ~lock_service_mutex(){
-      delete impl_;
-    }
-    
-    bool lock();
-    bool try_lock();
-    bool unlock();
+class try_lockable : public pfi::concurrent::lockable {
+public:
+  virtual bool try_lock() = 0;
+};
 
-  protected:
-    try_lockable* impl_;
-    std::string path_;
-  };
+class lock_service_mutex : public try_lockable {
+public:
+  lock_service_mutex(lock_service& ls, const std::string& path);
+  virtual ~lock_service_mutex() {
+    delete impl_;
+  }
 
-  lock_service* create_lock_service(const std::string&,
-                                    const std::string& hosts, const int timeout, const std::string& log = "/tmp/zklog");
-  //  void mywatcher(zhandle_t*, int, int, const char*, void*);
-}
-}
+  bool lock();
+  bool try_lock();
+  bool unlock();
+
+protected:
+  try_lockable* impl_;
+  std::string path_;
+};
+
+lock_service* create_lock_service(const std::string&,
+    const std::string& hosts, const int timeout, const std::string& log = "/tmp/zklog");
+
+} // common
+} // jubatus

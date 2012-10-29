@@ -18,131 +18,100 @@
 #pragma once
 
 #include <string>
-#include <pficommon/lang/function.h>
 #include <iostream>
 #include <msgpack.hpp>
+
 #include "../common/exception.hpp"
 #include "../common/shared_ptr.hpp"
-#include "../config.hpp"
-
-using pfi::lang::function;
 
 namespace jubatus{
 namespace framework{
 
-class dummy
-{
-};
-
 class mixable0 {
 public:
-  mixable0(){};
-  virtual ~mixable0(){};
-  virtual std::string get_diff()const = 0;
+  mixable0() {}
+  virtual ~mixable0() {}
+  virtual std::string get_diff() const = 0;
   virtual void put_diff(const std::string&) = 0;
-  virtual void reduce(const std::string&, std::string&) const = 0;
+  virtual void mix(const std::string&, const std::string&, std::string&) const = 0;
   virtual void save(std::ostream & ofs) = 0;
   virtual void load(std::istream & ifs) = 0;
   virtual void clear() = 0;
 };
 
-// last T is for CRTP, optional
-template <typename Model, typename Diff,
-	  typename T = dummy>
+template <typename Model, typename Diff>
 class mixable : public mixable0 {
-public:
-  mixable():
-    get_diff_fun_(&dummy_get_diff),
-    reduce_fun_(&dummy_reduce),
-    put_diff_fun_(&dummy_put_diff)
-  {};
-  virtual ~mixable(){};
+ public:
+  typedef Model model_type;
+  typedef Diff diff_type;
+  typedef common::cshared_ptr<Model> model_ptr;
+
+  virtual ~mixable() {}
 
   virtual void clear() = 0;
-  void set_model(common::cshared_ptr<Model> m){
+
+  virtual Diff get_diff_impl() const = 0;
+  virtual void put_diff_impl(const Diff&) = 0;
+  virtual void mix_impl(const Diff&, const Diff&, Diff&) const = 0;
+
+  void set_model(model_ptr m){
     model_ = m;
   }
 
   std::string get_diff()const{
-    msgpack::sbuffer sbuf;
     if(model_){
       std::string buf;
-      pack_(get_diff_fun_(model_.get()), buf);
+      pack_(get_diff_impl(), buf);
       return buf;
     }else{
       throw JUBATUS_EXCEPTION(config_not_set());
     }
   };
+
   void put_diff(const std::string& d){
     if(model_){
       Diff diff;
       unpack_(d, diff);
-      put_diff_fun_(model_.get(), diff);
+      put_diff_impl(diff);
     }else{
       throw JUBATUS_EXCEPTION(config_not_set());
     }
   }
-  void reduce(const std::string& lhs, std::string& acc) const {
-    Diff l, a; //<- string
-    unpack_(lhs, l);
-    unpack_(acc, a);
-    reduce_fun_(model_.get(), l, a);
-    pack_(a, acc);
+
+  void mix(const std::string& lhs, const std::string& rhs,
+           std::string& mixed_string) const {
+    Diff left, right, mixed;
+    unpack_(lhs, left);
+    unpack_(rhs, right);
+    mix_impl(left, right, mixed);
+    pack_(mixed, mixed_string);
   }
+
   void save(std::ostream & os){
     model_->save(os);
   }
+
   void load(std::istream & is){
     model_->load(is);
   }
 
-  void set_mixer(function<Diff(const Model*)> get_diff_fun, //get_diff
-                 function<int(const Model*, const Diff&, Diff&)> reduce_fun, //mix
-                 function<int(Model*, const Diff&)> put_diff_fun //put_diff
-                 ) {
-    get_diff_fun_ = get_diff_fun;
-    reduce_fun_ = reduce_fun;
-    put_diff_fun_ = put_diff_fun;
-  };
-  void set_default_mixer(){
-    function<Diff(const Model*)> get_diff_fun(&T::get_diff);
-    function<int(const Model*, const Diff&, Diff&)> reduce_fun(&T::reduce);
-    function<int(Model*, const Diff&)> put_diff_fun(&T::put_diff);
-    set_mixer(get_diff_fun, reduce_fun, put_diff_fun);
-  }
-  common::cshared_ptr<Model> get_model()const{return model_;};
+  model_ptr get_model() const { return model_; }
 
-  static Diff dummy_get_diff(const Model*){ return Diff(); };
-  static int dummy_reduce(const Model*, const Diff&, Diff&){return -1;};
-  static int dummy_put_diff(Model*, const Diff&){return -1;};
 private:
   void unpack_(const std::string& buf, Diff& d) const {
     msgpack::unpacked msg;
     msgpack::unpack(&msg, buf.c_str(), buf.size());
     msg.get().convert(&d);
   }
+
   void pack_(const Diff& d, std::string& buf) const {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, d);
     buf = std::string(sbuf.data(), sbuf.size());
   }
 
-  function<Diff(const Model*)> get_diff_fun_;
-  function<int(const Model*, const Diff&, Diff&)> reduce_fun_;
-  function<int(Model*, const Diff&)> put_diff_fun_;
-
-  common::cshared_ptr<Model> model_;
-
+  model_ptr model_;
 };
-
-template <typename Mixable>
-mixable0* mixable_cast(Mixable* m){
-  if(m){
-    return reinterpret_cast<mixable0*>(m);
-  }else{
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("nullpointer exception"));
-  }
-}
 
 } //server
 } //jubatus

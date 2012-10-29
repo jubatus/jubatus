@@ -21,6 +21,7 @@
 #include <vector>
 #include <map>
 #include <pficommon/data/serialization.h>
+#include <pficommon/data/optional.h>
 
 #include <pficommon/network/mprpc.h>
 #include <msgpack.hpp>
@@ -93,6 +94,8 @@ struct converter_config {
   std::map<std::string, param_t> num_types;
   std::vector<num_rule> num_rules;
 
+  pfi::data::optional<int64_t> hash_max_size;
+
   MSGPACK_DEFINE(string_filter_types, string_filter_rules,
                  num_filter_types, num_filter_rules,
                  string_types, string_rules,
@@ -108,7 +111,8 @@ struct converter_config {
         & MEMBER(string_types)
         & MEMBER(string_rules)
         & MEMBER(num_types)
-        & MEMBER(num_rules);
+        & MEMBER(num_rules)
+        & MEMBER(hash_max_size);
   }
 
 };

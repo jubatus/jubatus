@@ -38,6 +38,7 @@ def build(bld):
       'inverted_index_storage_test.cpp',
       'bit_vector_test.cpp',
       'bit_index_storage_test.cpp',
+      'storage_type_test.cpp',
       ])
 
   bld.install_files('${PREFIX}/include/jubatus/storage',

@@ -22,11 +22,18 @@
 
 #include <stdint.h>
 
-namespace jubatus{
-namespace util{
+namespace jubatus {
+namespace util {
+
+struct machine_status_t {
+  uint64_t vm_size; // VIRT
+  uint64_t vm_resident; // RSS
+  uint64_t vm_share;  // SHR
+};
 
 void get_ip(const char* nic, std::string& out);
 std::string get_ip(const char* nic);
+std::string base_name(const std::string&);
 std::string get_program_name();
 
 std::string load(const std::string& file, std::vector< std::pair<std::string, int> >& s);
@@ -36,7 +43,7 @@ int daemonize();
 void append_env_path(const std::string& env_, const std::string& argv0);
 void append_server_path(const std::string& argv0);
 
-void get_machine_status(std::map<std::string, std::string>&);
+void get_machine_status(machine_status_t& status);
 
 void set_exit_on_term();
 void ignore_sigpipe();

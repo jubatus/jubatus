@@ -24,7 +24,7 @@ namespace jubatus {
 namespace stat {
 
 mixable_stat::mixable_stat(size_t window_size)
-  : stat(window_size)
+  : stat(window_size), e_(0), n_(0)
 {
 }
 

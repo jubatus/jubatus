@@ -47,10 +47,14 @@ keeper::~keeper(){
 int keeper::run()
 {
   try {
-    { LOG(INFO) << "running in port=" << a_.port; }
     jubatus::util::set_exit_on_term();
     jubatus::util::ignore_sigpipe();
-    return this->serv(a_.port, a_.threadnum);
+    if (this->serv(a_.port, a_.threadnum)) {
+      return 0;
+    } else {
+      LOG(ERROR) << "failed starting server: any process using port " << a_.port << "?";
+      return -1;
+    }
   } catch (const jubatus::exception::jubatus_exception& e) {
     std::cout << e.diagnostic_information(true) << std::endl;
     return -1;

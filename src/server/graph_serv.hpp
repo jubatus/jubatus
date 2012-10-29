@@ -17,10 +17,13 @@
 
 #pragma once
 
+#include "../common/global_id_generator.hpp"
 #include "../framework.hpp"
-#include "graph_types.hpp"
+#include "../framework/mixer/mixer.hpp"
+#include "../framework/server_base.hpp"
 #include "../graph/graph_base.hpp"
 #include "../graph/graph_wo_index.hpp"
+#include "graph_types.hpp"
 
 namespace jubatus { namespace server {
 
@@ -28,48 +31,43 @@ typedef uint64_t edge_id_t;
 typedef std::string node_id;
 typedef int centrality_type;
 
-struct mixable_graph : public framework::mixable<jubatus::graph::graph_base, std::string, mixable_graph>
+struct mixable_graph : public framework::mixable<jubatus::graph::graph_base, std::string>
 {
-  void clear(){
+  void clear() {
   };
 
-  mixable_graph(){
-    // function<std::string(const jubatus::graph::graph_base*)>
-    //   getdiff(&mixable_graph::get_diff);
-    // function<int(const jubatus::graph::graph_base*,const std::string&,std::string&)>
-    //   reduce(&mixable_graph::reduce);
-    // function<int(jubatus::graph::graph_base*, const std::string&)>
-    //   putdiff(&mixable_graph::put_diff);
-    // set_mixer(getdiff, reduce, putdiff);
-    set_default_mixer();
-  };
-
-  static std::string get_diff(const jubatus::graph::graph_base* m)
+  std::string get_diff_impl() const
   {
     std::string diff;
-    m->get_diff(diff);
+    get_model()->get_diff(diff);
     return diff;
   };
-  static int reduce(const jubatus::graph::graph_base* m, const std::string& v, std::string& acc)
+
+  void mix_impl(const std::string& lhs,
+                const std::string& rhs,
+                std::string& mixed) const
   {
-    jubatus::graph::graph_wo_index::mix(v, acc);
-    return 0;
+    mixed = lhs;
+    jubatus::graph::graph_wo_index::mix(rhs, mixed);
   };
-  static int put_diff(jubatus::graph::graph_base* m, const std::string& v)
+
+  void put_diff_impl(const std::string& v)
   {
-    m->set_mixed_and_clear_diff(v);
-    return 0;
+    get_model()->set_mixed_and_clear_diff(v);
   };
-  //  pfi::lang::shared_ptr<jubatus::graph::graph_base> ptr;
 };
 
-typedef std::string node_id;
-
-class graph_serv : public framework::jubatus_serv {
+class graph_serv : public framework::server_base {
 public:
-
-  graph_serv(const framework::server_argv& a);
+  graph_serv(const framework::server_argv& a,
+             const common::cshared_ptr<common::lock_service>& zk);
   virtual ~graph_serv();
+
+  framework::mixer::mixer* get_mixer() const {
+    return mixer_.get();
+  }
+
+  void get_status(status_t& status) const;
 
   std::string create_node(); //update cht
 
@@ -105,8 +103,6 @@ public:
 
   edge_info get_edge(const std::string& nid, const edge_id_t& e) const; //analysis cht
 
-  std::map<std::string,std::map<std::string,std::string > > get_status() const; //analysis broadcast
-
   // internal apis used between servers
   int create_node_here(const std::string& nid);
   int create_global_node(const std::string& nid);
@@ -114,11 +110,19 @@ public:
 
   int create_edge_here(edge_id_t eid, const edge_info& ei);
 
-  void after_load();
-
 private:
   void selective_create_node_(const std::pair<std::string,int>& target,
                               const std::string nid_str);
+
+  void find_from_cht_(const std::string& key,
+                      size_t n,
+                      std::vector<std::pair<std::string, int> >& out);
+  void get_members_(std::vector<std::pair<std::string, int> >& ret);
+
+  common::cshared_ptr<common::lock_service> zk_;
+
+  pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
+  common::global_id_generator idgen_;
 
   mixable_graph g_;
 };

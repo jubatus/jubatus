@@ -35,7 +35,7 @@ let to_keeper_strings = function
 
       match routing with
 	| Random ->
-	  Printf.sprintf "  k.register_random<%s >(\"%s\"); //%s %s"
+	  Printf.sprintf "    k.register_random<%s >(\"%s\"); //%s %s"
 	    (String.concat ", " (rettype::argv_strs))  name
 	    (Stree.aggtype_to_string agg) (Stree.reqtype_to_string rwtype);
 	| Cht(i) -> (* when needs aggregator *)
@@ -51,7 +51,7 @@ let to_keeper_strings = function
 	    Printf.sprintf "pfi::lang::function<%s(%s,%s)>(&%s%s)" rettype rettype rettype
 	      (Stree.aggtype_to_string agg) tmpl
 	  in
-	  Printf.sprintf "  k.register_cht<%d, %s >(\"%s\", %s); //%s" i
+	  Printf.sprintf "    k.register_cht<%d, %s >(\"%s\", %s); //%s" i
 	    (String.concat ", " (rettype::(List.tl argv_strs))) name aggfunc
 	    (Stree.reqtype_to_string rwtype)
 	| Internal -> ""; (* no code generated in keeper *)
@@ -68,7 +68,7 @@ let to_keeper_strings = function
 	    Printf.sprintf "pfi::lang::function<%s(%s,%s)>(&%s%s)" rettype rettype rettype
 	      (Stree.aggtype_to_string agg) tmpl
 	  in
-	  Printf.sprintf "  k.register_%s<%s >(\"%s\", %s); //%s"
+	  Printf.sprintf "    k.register_%s<%s >(\"%s\", %s); //%s"
 	    (Stree.routing_to_string routing)
 	    (String.concat ", " (rettype::argv_strs))  name aggfunc
 	    (Stree.reqtype_to_string rwtype)
@@ -81,22 +81,30 @@ let generate s output strees =
   
   if s#internal then begin
     output <<< "#include \"../framework/keeper.hpp\"";
-    output <<< "#include \"../framework/aggregators.hpp\""
+    output <<< "#include \"../framework/aggregators.hpp\"";
+    output <<< "#include \"../common/exception.hpp\""
   end
   else begin
     output <<< "#include <jubatus/framework.hpp>";
-    output <<< "#include <jubatus/framework/aggregators.hpp>"
+    output <<< "#include <jubatus/framework/aggregators.hpp>";
+    output <<< "#include <jubatus/common/exception.hpp>" 
   end;
   
   output <<< ("#include \""^s#basename^"_types.hpp\"");
   output <<< ("using namespace "^s#namespace^";");
   output <<< "using namespace jubatus::framework;";
   output <<< "int main(int args, char** argv){";
-  output <<< "  keeper k(keeper_argv(args,argv,\""^s#basename^"\"));";
+  output <<< "  try{";
+  output <<< "    keeper k(keeper_argv(args,argv,\""^s#basename^"\"));";
 
   List.iter (fun l -> output <<< l)
     (List.flatten (List.map to_keeper_strings
 		     (List.filter Generator.is_service strees)));
   
-  output <<< "  return k.run();";
+  output <<< "    return k.run();";
+  output <<< "  } catch (const jubatus::exception::jubatus_exception& e) {";
+  output <<< "    std::cout << e.diagnostic_information(true) << std::endl;";
+  output <<< "    return -1;";
+  output <<< "  }";
   output <<< "}";;
+

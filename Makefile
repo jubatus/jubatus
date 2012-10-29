@@ -1,4 +1,4 @@
-.PHONY: all
+.PHONY: all clean build check install
 
 all:
 	./waf
@@ -11,3 +11,6 @@ build:
 
 check:
 	./waf --checkall
+
+install:
+	./waf install

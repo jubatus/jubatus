@@ -54,8 +54,9 @@ def build(bld):
     'revert.cpp',
     'weight_manager.cpp',
     'keyword_weights.cpp',
+    'feature_hasher.cpp',
     ]
-  use = 'PFICOMMON MSGPACK DL'
+  use = 'PFICOMMON MSGPACK DL jubacommon'
 
   if bld.env.HAVE_RE2:
     source.append('re2_match.cpp')
@@ -127,6 +128,7 @@ def build(bld):
       'revert_test.cpp',
       'weight_manager_test.cpp',
       'keyword_weights_test.cpp',
+      'feature_hasher_test.cpp',
       ]
   test_use = 'PFICOMMON MSGPACK jubaconverter'
 

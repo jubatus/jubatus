@@ -21,34 +21,35 @@
 #include <set>
 #include "zk.hpp"
 
-namespace jubatus{
+namespace jubatus {
 namespace common {
   // TODO: write zk mock and test them all?
 
-  class cached_zk : zk {
-  public:
-    // timeout [ms]
-    cached_zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
-    virtual ~cached_zk();
+class cached_zk : public zk {
+public:
+  // timeout [ms]
+  cached_zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
+  virtual ~cached_zk();
 
-    void list(const std::string& path, std::vector<std::string>& out);
-    void hd_list(const std::string& path, std::string& out);
+  void list(const std::string& path, std::vector<std::string>& out);
+  void hd_list(const std::string& path, std::string& out);
 
-    // reads data (should be smaller than 1024B)
-    bool read(const std::string& path, std::string& out);
+  // reads data (should be smaller than 1024B)
+  bool read(const std::string& path, std::string& out);
 
-    const std::string type() const;
+  const std::string type() const;
 
-    void check_and_update(const std::string& path);
-    void clear_cache(const char* path);
-    static void update_cache(zhandle_t*, int, int, const char*, void*);
-    void reload_cache(const std::string& path);
+  void check_and_update(const std::string& path);
+  void clear_cache(const char* path);
+  static void update_cache(zhandle_t*, int, int, const char*, void*);
+  void reload_cache(const std::string& path);
 
-  private:
-    void list_(const std::string& path, std::set<std::string>& out);
-    std::map<std::string, std::set<std::string> > list_cache_;
-    std::map<std::string, std::string> znode_cache_;
+private:
+  void list_(const std::string& path, std::set<std::string>& out);
+  std::map<std::string, std::set<std::string> > list_cache_;
+  std::map<std::string, std::string> znode_cache_;
 
-  };
-}
-}
+};
+
+} // common
+} // jubatus

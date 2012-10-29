@@ -25,6 +25,7 @@
 #include <pficommon/lang/scoped_ptr.h>
 
 #include "../common/type.hpp"
+#include "../common/shared_ptr.hpp"
 
 namespace jubatus {
 namespace fv_converter {
@@ -52,6 +53,7 @@ class key_matcher;
 class num_feature;
 class string_filter;
 class num_filter;
+class weight_manager;
 
 class datum_to_fv_converter {
  public:
@@ -59,7 +61,9 @@ class datum_to_fv_converter {
 
   ~datum_to_fv_converter();
 
-  void convert(const datum& datum, sfv_t& ret_fv);
+  void convert(const datum& datum, sfv_t& ret_fv) const;
+
+  void convert_and_update_weight(const datum& datum, sfv_t& ret_fv);
 
   void clear_rules();
 
@@ -85,6 +89,10 @@ class datum_to_fv_converter {
 
   void revert_feature(const std::string& feature,
                       std::pair<std::string, std::string>& expect) const;
+
+  void set_hash_max_size(uint64_t hash_max_size);
+
+  void set_weight_manager(common::cshared_ptr<weight_manager> wm);
 
  private:
   pfi::lang::scoped_ptr<datum_to_fv_converter_impl> pimpl_;

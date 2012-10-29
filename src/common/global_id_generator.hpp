@@ -19,9 +19,11 @@
 
 #include <stdint.h>
 
-#ifdef HAVE_ZOOKEEPER_H
 #include "lock_service.hpp"
 #include "shared_ptr.hpp"
+
+#ifndef ATOMIC_I8_SUPPORT
+#include <pficommon/concurrent/mutex.h>
 #endif
 
 namespace jubatus { namespace common {
@@ -35,20 +37,19 @@ public:
 
   uint64_t generate();
 
-#ifdef HAVE_ZOOKEEPER_H
   void set_ls(cshared_ptr<lock_service>&, const std::string&);
-#endif
 
 private:
   global_id_generator();
   bool is_standalone_;
   uint64_t counter_;
 
-#ifdef HAVE_ZOOKEEPER_H
   std::string path_;
   cshared_ptr<lock_service> ls_;
-#endif
 
+#ifndef ATOMIC_I8_SUPPORT
+  pfi::concurrent::mutex counter_mutex_;
+#endif
 };
 
 }}

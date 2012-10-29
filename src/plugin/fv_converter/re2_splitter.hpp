@@ -31,7 +31,7 @@ class re2_splitter : jubatus::fv_converter::word_splitter {
  public:
   re2_splitter(const std::string& regexp, int group);
   void split(const std::string& str,
-             std::vector<std::pair<size_t, size_t> >& bounds);
+             std::vector<std::pair<size_t, size_t> >& bounds) const;
  private:
   re2::RE2 re_;
   int group_;

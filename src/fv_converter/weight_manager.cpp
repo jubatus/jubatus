@@ -56,7 +56,7 @@ double weight_manager::get_global_weight(const string& key) const {
   } else if (type == "idf") {
     double doc_count = get_document_count();
     double doc_freq = get_document_frequency(key);
-    return log(doc_count / doc_freq);
+    return log((doc_count + 1) / (doc_freq + 1));
   } else if (type == "weight") {
     p = key.find_last_of('#');
     if (p == string::npos)

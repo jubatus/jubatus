@@ -40,7 +40,7 @@ ux_splitter::~ux_splitter() {
 }
 
 void ux_splitter::split(const string& string,
-                        vector<pair<size_t, size_t> >& ret_boundaries) {
+                        vector<pair<size_t, size_t> >& ret_boundaries) const {
   vector<pair<size_t, size_t> > bounds;
   for (size_t i = 0; i < string.size(); ++i) {
     size_t len = 0;

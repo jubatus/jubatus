@@ -27,7 +27,7 @@ static bool is_begin_of_character(unsigned char c) {
 }
 
 void character_ngram::split(const std::string& string,
-                            std::vector<std::pair<size_t, size_t> >& ret_boundaries) {
+                            std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
   const size_t len = length_;
   vector<size_t> queue(len);
   size_t p = 0;

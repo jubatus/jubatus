@@ -14,8 +14,16 @@ def options(opt):
 def configure(conf):
   if Options.options.enable_mecab:
     conf.check_cxx(lib = 'mecab',
+                   fragment='''
+#include <mecab.h>
+int main() {
+  MeCab::Model* (*p)(const char*) = MeCab::createModel;
+  &MeCab::Model::createTagger;
+  &MeCab::Model::createLattice;
+}
+''',
                    define_name = 'HAVE_MECAB',
-                   errmsg = 'not found (remove "--enable-mecab" option if not necessary)')
+                   errmsg = 'mecab 0.99 or later is required (remove "--enable-mecab" option if not necessary)')
     
 
   if Options.options.enable_ux:
@@ -33,10 +41,12 @@ def make_test(bld, use, src):
     )
 
 def build(bld):
+
   if bld.env.HAVE_MECAB:
     bld.shlib(
       source = 'mecab_splitter.cpp',
       target = 'mecab_splitter',
+      install_path = bld.env.JUBATUS_PLUGIN_DIR,
       use = 'MECAB jubaconverter'
       )
     make_test(bld, 'mecab_splitter', 'mecab_splitter_test.cpp')
@@ -45,6 +55,7 @@ def build(bld):
     bld.shlib(
       source = 'ux_splitter.cpp',
       target = 'ux_splitter',
+      install_path = bld.env.JUBATUS_PLUGIN_DIR,
       use = 'UX jubaconverter'
       )
     make_test(bld, 'ux_splitter', 'ux_splitter_test.cpp')
@@ -53,6 +64,7 @@ def build(bld):
     bld.shlib(
       source = 're2_splitter.cpp',
       target = 're2_splitter',
+      install_path = bld.env.JUBATUS_PLUGIN_DIR,
       use = 'RE2 jubaconverter'
       )
     make_test(bld, 're2_splitter', 're2_splitter_test.cpp')

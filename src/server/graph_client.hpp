@@ -1,4 +1,11 @@
 
+// This file is auto-generated from graph.idl
+// *** DO NOT EDIT ***
+
+#ifndef GRAPH_CLIENT_HPP_
+#define GRAPH_CLIENT_HPP_
+
+
 #include "graph_types.hpp"
 #include <pficommon/network/mprpc.h>
 
@@ -107,3 +114,6 @@ private:
 
 } // namespace jubatus
 
+
+
+#endif // GRAPH_CLIENT_HPP_

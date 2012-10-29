@@ -1,4 +1,11 @@
 
+// This file is auto-generated from regression.idl
+// *** DO NOT EDIT ***
+
+#ifndef REGRESSION_CLIENT_HPP_
+#define REGRESSION_CLIENT_HPP_
+
+
 #include "regression_types.hpp"
 #include <pficommon/network/mprpc.h>
 
@@ -47,3 +54,6 @@ private:
 
 } // namespace jubatus
 
+
+
+#endif // REGRESSION_CLIENT_HPP_

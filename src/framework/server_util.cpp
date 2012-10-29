@@ -29,6 +29,7 @@
 
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/converter_config.hpp"
+#include "../fv_converter/exception.hpp"
 
 
 namespace jubatus { namespace framework {
@@ -52,7 +53,7 @@ namespace jubatus { namespace framework {
 
     p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
     p.add<std::string>("name", 'n', "learning machine instance name", false);
-    p.add<std::string>("tmpdir", 'd', "directory to place plugins", false, "/tmp");
+    p.add<std::string>("tmpdir", 'd', "directory to output logs", false, "/tmp");
     p.add("join", 'j', "join to the existing cluster");
 
     p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
@@ -98,10 +99,18 @@ namespace jubatus { namespace framework {
 
   std::string server_argv::boot_message(const std::string& progname) const {
     std::stringstream ret;
-    ret << "starting " << progname << VERSION << " RPC server at " <<
+    ret << "starting " << progname << " " << VERSION << " RPC server at " <<
       eth << ":" << port << " with timeout: " << timeout;
     return ret.str();
   };
+
+  std::string get_server_identifier(const server_argv& a) {
+    std::stringstream ss;
+    ss << a.eth;
+    ss << "_";
+    ss << a.port;
+    return ss.str();
+  }
 
   keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
     : type(t)
@@ -129,6 +138,8 @@ namespace jubatus { namespace framework {
     timeout = p.get<int>("timeout");
     z = p.get<std::string>("zookeeper");
     eth = jubatus::util::get_ip("eth0");
+
+    LOG(INFO) << boot_message(jubatus::util::get_program_name());
   };
 
   keeper_argv::keeper_argv():
@@ -138,22 +149,24 @@ namespace jubatus { namespace framework {
 
   std::string keeper_argv::boot_message(const std::string& progname) const {
     std::stringstream ret;
-    ret << "starting " << progname << VERSION << " RPC server at " <<
+    ret << "starting " << progname << " " << VERSION << " RPC server at " <<
       eth << ":" << port << " with timeout: " << timeout;
     return ret.str();
   };
 
-#ifdef HAVE_ZOOKEEPER_H
-    common::cshared_ptr<jubatus::common::lock_service> ls;
+  common::cshared_ptr<jubatus::common::lock_service> ls;
 
   void atexit(void){
+#ifdef HAVE_ZOOKEEPER_H
     if(ls)
       ls->force_close();
-  }
 #endif
+  }
 
 pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
 make_fv_converter(const std::string& config) {
+  if (config == "")
+    throw JUBATUS_EXCEPTION(fv_converter::converter_exception("Config of feature vector converter is empty"));
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
       converter(new fv_converter::datum_to_fv_converter);
   fv_converter::converter_config c;

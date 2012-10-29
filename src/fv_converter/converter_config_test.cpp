@@ -26,6 +26,7 @@
 #include "converter_config.hpp"
 #include "datum_to_fv_converter.hpp"
 #include "datum.hpp"
+#include "exception.hpp"
 
 using namespace std;
 using namespace jubatus;
@@ -78,4 +79,30 @@ TEST(converter_config, config) {
     cout << e << endl;
     throw;
   }
+}
+
+TEST(converter_config, hash) {
+  converter_config config;
+  num_rule r = {"*", "str"};
+  config.num_rules.push_back(r);
+  config.hash_max_size = 1;
+
+  datum_to_fv_converter conv;
+  initialize_converter(config, conv);
+
+  datum d;
+  d.num_values_.push_back(make_pair("age", 10));
+
+  sfv_t f;
+  conv.convert(d, f);
+
+  EXPECT_EQ("0", f[0].first);
+}
+
+TEST(converter_config, hash_negative) {
+  converter_config config;
+  config.hash_max_size = 0;
+  datum_to_fv_converter conv;
+
+  EXPECT_THROW(initialize_converter(config, conv), converter_exception);
 }
