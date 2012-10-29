@@ -71,9 +71,9 @@ This package provides headers and libraries needed to develop new engines or plu
 %{_bindir}/juba*
 # As Jubatus has no SONAME defined, include shared library without version number here.
 %{_libdir}/libjuba*.so
-%{_libdir}/libmecab_splitter.so
-%{_libdir}/libre2_splitter.so
-%{_libdir}/libux_splitter.so
+%{_libdir}/jubatus/plugin/libmecab_splitter.so
+%{_libdir}/jubatus/plugin/libre2_splitter.so
+%{_libdir}/jubatus/plugin/libux_splitter.so
 
 %files devel
 %defattr(-,root,root,-)
