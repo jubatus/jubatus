@@ -12,6 +12,10 @@ def options(opt):
   opt.load('unittest_gtest')
   opt.load('gnu_dirs')
 
+  opt.add_option('--enable-debug',
+                 action='store_true', default=False,
+                 dest='debug', help='build for debug')
+
   opt.add_option('--enable-zookeeper',
                  action='store_true', default=False, # dest='nozk',
                  help='use ZooKeeper')
@@ -54,6 +58,9 @@ def configure(conf):
   conf.check_cxx(header_name = 'netinet/in.h')
   conf.check_cxx(header_name = 'arpa/inet.h')
   conf.check_cxx(header_name = 'dlfcn.h')
+
+  if not Options.options.debug:
+    conf.define('NDEBUG', 1)
 
   if Options.options.enable_zookeeper:
     if (conf.check_cxx(header_name = 'c-client-src/zookeeper.h',
