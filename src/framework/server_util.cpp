@@ -23,6 +23,7 @@
 #include <pficommon/text/json.h>
 
 #include "../common/util.hpp"
+#include "../common/network.hpp"
 #include "../common/cmdline.h"
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
@@ -78,7 +79,7 @@ namespace jubatus { namespace framework {
     name = p.get<std::string>("name");
     tmpdir = p.get<std::string>("tmpdir");
     //    eth = "localhost";
-    eth = jubatus::util::get_ip("eth0");
+    eth = jubatus::common::get_default_v4_address();
     join = p.exist("join");
 
     interval_sec = p.get<int>("interval_sec");
@@ -137,7 +138,7 @@ namespace jubatus { namespace framework {
     threadnum = p.get<int>("thread");
     timeout = p.get<int>("timeout");
     z = p.get<std::string>("zookeeper");
-    eth = jubatus::util::get_ip("eth0");
+    eth = jubatus::common::get_default_v4_address();
 
     LOG(INFO) << boot_message(jubatus::util::get_program_name());
   };

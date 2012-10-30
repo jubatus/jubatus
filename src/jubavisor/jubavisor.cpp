@@ -25,6 +25,7 @@
 #include <glog/logging.h>
 
 #include "../common/util.hpp"
+#include "../common/network.hpp"
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
 
@@ -67,7 +68,7 @@ jubervisor::jubervisor(const std::string& hosts, int port, int max,
   zk_->create(JUBAVISOR_BASE_PATH, "");
   zk_->create(ACTOR_BASE_PATH, "");
 
-  name_ = build_loc_str(util::get_ip("eth0"), port);
+  name_ = build_loc_str(common::get_default_v4_address(), port);
   std::string path = JUBAVISOR_BASE_PATH + "/" + name_;
   zk_->create(path, "", true);
   // FIXME: 
