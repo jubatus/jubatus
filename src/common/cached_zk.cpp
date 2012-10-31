@@ -147,7 +147,7 @@ bool cached_zk::read(const string& path, string& out)
   return true;
 }
 
-bool zk::read_(const string& path, string& out)
+bool cached_zk::read_(const string& path, string& out)
 {
   char buf[1024];
   int buflen = 1024;

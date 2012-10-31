@@ -45,7 +45,9 @@ public:
   void reload_cache(const std::string& path);
 
 private:
+  bool read_(const std::string& path, std::string& out);
   void list_(const std::string& path, std::set<std::string>& out);
+
   std::map<std::string, std::set<std::string> > list_cache_;
   std::map<std::string, std::string> znode_cache_;
 
