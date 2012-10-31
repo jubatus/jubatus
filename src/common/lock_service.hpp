@@ -31,7 +31,7 @@ namespace common {
 // TODO: write lock_service mock and test them all?
 class lock_service {
 public:
-  // timeout [ms]
+  // timeout [sec]
   lock_service() {}
   virtual ~lock_service() {}
 

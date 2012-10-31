@@ -36,7 +36,7 @@ namespace common {
 
 class zk : public lock_service {
 public:
-  // timeout [ms]
+  // timeout [sec]
   zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
   virtual ~zk();
 

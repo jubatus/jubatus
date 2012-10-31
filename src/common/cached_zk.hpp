@@ -27,7 +27,7 @@ namespace common {
 
 class cached_zk : public zk {
 public:
-  // timeout [ms]
+  // timeout [sec]
   cached_zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
   virtual ~cached_zk();
 
