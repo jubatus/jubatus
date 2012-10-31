@@ -32,8 +32,8 @@ namespace common {
 class lock_service {
 public:
   // timeout [ms]
-  lock_service() {};
-  virtual ~lock_service() {};
+  lock_service() {}
+  virtual ~lock_service() {}
 
   virtual void force_close() = 0;
   virtual void create(const std::string& path, const std::string& payload = "", bool ephemeral = false) = 0;
