@@ -34,7 +34,7 @@ cached_zk::~cached_zk()
 {
 }
 
-void cached_zk::list(const string& path, vector<string>& out)
+bool cached_zk::list(const string& path, vector<string>& out)
 {
   out.clear();
   scoped_lock lk(m_);
@@ -57,31 +57,36 @@ void cached_zk::list(const string& path, vector<string>& out)
       out.push_back(*i);
     }
   }
+
+  return true;
 }
 
-void cached_zk::list_(const string& path, std::set<std::string>& out)
+bool cached_zk::list_(const string& path, std::set<std::string>& out)
 {
   out.clear();
   struct String_vector s;
   int rc = zoo_wget_children(zh_, path.c_str(), cached_zk::update_cache, this, &s);
 
   if (rc == ZOK) {
-    std::set<string> cache;
-    for (int i=0; i<s.count; ++i) {
+    for (int i = 0; i < s.count; ++i) {
       out.insert(s.data[i]);
     }
+    return true;
   } else {
     LOG(ERROR) << zerror(rc) << " (" << path << ")";
+    return false;
   }
 }
 
-void cached_zk::hd_list(const string& path, string& out)
+bool cached_zk::hd_list(const string& path, string& out)
 {
   out.clear();
   scoped_lock lk(m_);
   const std::set<string>& list(list_cache_[path]);
   if (!list.empty())
     out = *(list.begin());
+
+  return true;
 }
 
 const string cached_zk::type() const
@@ -106,29 +111,6 @@ void cached_zk::clear_cache(const char* path)
     znode_cache_.erase(string(path));
   }
 }
-
-void cached_zk::update_cache(zhandle_t* zh, int type, int state,
-    const char* path, void* ctx)
-{
-  cached_zk* zk = static_cast<cached_zk*>(ctx);
-
-  if (type == ZOO_CHILD_EVENT) {
-    // update cache
-
-    { LOG(INFO) << "ZOO_CHILD_EVENT: " << path; }
-    zk->reload_cache(path);
-
-  } else if (type == ZOO_DELETED_EVENT ||    // clear one cache
-            type == ZOO_NOTWATCHING_EVENT || // clear one cache?
-            type == ZOO_SESSION_EVENT) { // path == NULL, clear all cache
-    // clear cache
-    { LOG(INFO) << "ZOO_(DELETED|NOTWATCHING|SESSION)_EVENT: " << path; }
-    zk->clear_cache(path);
-  }
-  // ZOO_CHANGED_EVENT => ignore (FIXME, when read() cache going to be modified this needs fix)
-  // ZOO_CREATED_EVENT => ignore
-}
-
 
 bool cached_zk::read(const string& path, string& out)
 {
@@ -160,6 +142,28 @@ bool cached_zk::read_(const string& path, string& out)
     LOG(ERROR) << zerror(rc);
     return false;
   }
+}
+
+void cached_zk::update_cache(zhandle_t* zh, int type, int state,
+    const char* path, void* ctx)
+{
+  cached_zk* zk = static_cast<cached_zk*>(ctx);
+
+  if (type == ZOO_CHILD_EVENT) {
+    // update cache
+
+    { LOG(INFO) << "ZOO_CHILD_EVENT: " << path; }
+    zk->reload_cache(path);
+
+  } else if (type == ZOO_DELETED_EVENT ||    // clear one cache
+            type == ZOO_NOTWATCHING_EVENT || // clear one cache?
+            type == ZOO_SESSION_EVENT) { // path == NULL, clear all cache
+    // clear cache
+    { LOG(INFO) << "ZOO_(DELETED|NOTWATCHING|SESSION)_EVENT: " << path; }
+    zk->clear_cache(path);
+  }
+  // ZOO_CHANGED_EVENT => ignore (FIXME, when read() cache going to be modified this needs fix)
+  // ZOO_CREATED_EVENT => ignore
 }
 
 } // common

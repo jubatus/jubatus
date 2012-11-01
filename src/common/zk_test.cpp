@@ -122,10 +122,12 @@ TEST_F(zk_trivial, create_id)
   zk_->create(root_path, "");
   ASSERT_TRUE(zk_->exists(root_path));
 
-  uint64_t id_initial = zk_->create_id(root_path, 1);
+  uint64_t id_initial = 0, id_second = 0;
+
+  EXPECT_TRUE(zk_->create_id(root_path, 1, id_initial));
   EXPECT_EQ(0x100000000llu + 1, id_initial);
 
-  uint64_t id_second = zk_->create_id(root_path, 1);
+  EXPECT_TRUE(zk_->create_id(root_path, 1, id_second));
   EXPECT_EQ(0x100000000llu + 2, id_second);
 
   zk_->remove(root_path);

@@ -16,6 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "global_id_generator.hpp"
+#include "exception.hpp"
 #include <cassert>
 
 #ifndef ATOMIC_I8_SUPPORT
@@ -50,8 +51,11 @@ uint64_t global_id_generator::generate()
   }else{
 #ifdef HAVE_ZOOKEEPER_H
 
-    // FIXME: to be implemented
-    return ls_->create_id(path_);
+    uint64_t res;
+    if (ls_->create_id(path_, 0, res))
+      return res;
+    else
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to create id"));
 
 #else
     // never reaches here
