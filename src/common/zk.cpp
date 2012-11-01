@@ -76,13 +76,16 @@ zk::~zk()
   force_close();
   if (logfilep_) {
     fclose(logfilep_);
+    logfilep_ = NULL;
   }
 }
 
 void zk::force_close()
 {
-  zookeeper_close(zh_);
-  zh_ = NULL;
+  if (zh_) {
+    zookeeper_close(zh_);
+    zh_ = NULL;
+  }
 }
 
 void zk::create(const string& path, const string& payload, bool ephemeral)
