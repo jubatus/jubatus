@@ -31,10 +31,8 @@ dynamic_loader::dynamic_loader(const std::string& path)
   if (!handle) {
     // dlopen from JUBATUS_PLUGIN_DIR
     const std::string plugin_name = jubatus::util::base_name(path);
-    if (plugin_name != path) {
-      const std::string plugin_path = std::string(JUBATUS_PLUGIN_DIR) + "/" + plugin_name;
-      handle = dlopen(plugin_path.c_str() , RTLD_LAZY);
-    }
+    const std::string plugin_path = std::string(JUBATUS_PLUGIN_DIR) + "/" + plugin_name;
+    handle = dlopen(plugin_path.c_str() , RTLD_LAZY);
   }
 
   if (!handle) {
