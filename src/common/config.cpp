@@ -40,7 +40,7 @@ bool getconfig_fromzk(lock_service& z,
 
   z.create(path + "/config_lock", "");
   common::lock_service_mutex zlk(z, path + "/config_lock");
-  while(not zlk.try_lock()){ ; }
+  while(!zlk.try_lock()){ ; }
 
   z.read(path, config);
   return true;
@@ -55,7 +55,7 @@ bool setconfig_tozk(lock_service& z,
 
   z.create(path + "/config_lock", "");
   common::lock_service_mutex zlk(z, path + "/config_lock");
-  while(not zlk.try_lock()){ ; }
+  while(zlk.try_lock()){ ; }
 
   z.create(path, config);
   return true;
