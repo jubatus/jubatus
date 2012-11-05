@@ -50,8 +50,6 @@ void register_keeper(lock_service&, const std::string& type, const std::string& 
 bool get_all_actors(lock_service&, const std::string& type, const std::string&,
                     std::vector<std::pair<std::string, int> >&);
 
-bool push_cleanup(lock_service&, pfi::lang::function<void()>&);
-
 void force_exit();
 
 void prepare_jubatus(lock_service& ls,

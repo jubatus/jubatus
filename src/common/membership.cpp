@@ -132,12 +132,6 @@ bool get_all_actors(lock_service& z,
   return true;
 }
 
-bool push_cleanup(lock_service& z, pfi::lang::function<void()>& f)
-{
-  z.push_cleanup(f);
-  return true;
-}
-
 void force_exit()
 {
   exit(-1);
