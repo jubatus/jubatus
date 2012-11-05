@@ -66,7 +66,6 @@ bool server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
       ht.register_node(a.eth, a.port);
     }
    
-    // FIXME(rethink): is this sequence correct?
     register_actor(*zk_, a.type, a.name, a.eth, a.port);
     return true;
   }

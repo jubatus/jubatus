@@ -36,9 +36,7 @@ keeper::keeper(const keeper_argv& a)
 {
   ls = zk_;
   jubatus::common::prepare_jubatus(*zk_, a_.type, "");
-  if(!register_keeper(*zk_, a_.type, a_.eth, a_.port) ){
-    throw JUBATUS_EXCEPTION(membership_error("can't register to zookeeper."));
-  }
+  register_keeper(*zk_, a_.type, a_.eth, a_.port);
 }
 
 keeper::~keeper(){

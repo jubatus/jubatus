@@ -30,6 +30,7 @@
 namespace jubatus {
 namespace common {
 
+// FIXME: Is the value reasonable for cht?
 static const unsigned int NUM_VSERV = 8;
 
 // this function does not seem pure, take care when calling from multiple threads
@@ -37,6 +38,9 @@ std::string make_hash(const std::string& key);
 
 class cht {
 public:
+  // run just once in starting up the process: creates <name>/cht directory.
+  static void setup_cht_dir(lock_service&, const std::string&, const std::string&);
+
   cht(cshared_ptr<lock_service>, const std::string& type, const std::string& name);
   ~cht();
 
@@ -56,9 +60,6 @@ public:
 
   std::pair<std::string,int> find_predecessor(const std::string& host, int port);
   std::pair<std::string,int> find_predecessor(const std::string&);
-
-  // run just once in starting up the process: creates <name>/cht directory.
-  static void setup_cht_dir(lock_service&, const std::string&, const std::string&);
 
 private:
 

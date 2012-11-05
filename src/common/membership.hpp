@@ -41,11 +41,11 @@ void build_actor_path(std::string&, const std::string& type, const std::string& 
 // 127.0.0.1_9199 -> (127.0.0.1, 9199)
 bool revert(const std::string&, std::string&, int&);
 
-// zk -> name -> ip -> port -> bool
-bool register_actor(lock_service&, const std::string& type, const std::string& name,
+// zk -> name -> ip -> port -> void
+void register_actor(lock_service&, const std::string& type, const std::string& name,
                     const std::string& ip, int port);
-// zk -> name -> ip -> port -> bool
-bool register_keeper(lock_service&, const std::string& type, const std::string& ip, int);
+// zk -> name -> ip -> port -> void
+void register_keeper(lock_service&, const std::string& type, const std::string& ip, int);
 // zk -> name -> list( (ip, rpc_port) )
 bool get_all_actors(lock_service&, const std::string& type, const std::string&,
                     std::vector<std::pair<std::string, int> >&);

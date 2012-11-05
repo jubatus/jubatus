@@ -65,14 +65,17 @@ uint64_t global_id_generator::generate()
   }
 }
 
-    void global_id_generator::set_ls(cshared_ptr<lock_service>& ls,
-                                     const std::string& path_prefix)
+void global_id_generator::set_ls(cshared_ptr<lock_service>& ls,
+                                 const std::string& path_prefix)
 {
 #ifdef HAVE_ZOOKEEPER_H
-  if (! is_standalone_) {
+  if (!is_standalone_) {
     path_ = path_prefix + "/id_generator";
     ls_ = ls;
-    ls_->create(path_);
+    if (!ls_->create(path_))
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to create global id generator")
+          << jubatus::exception::error_api_func("lock_service::create")
+          << jubatus::exception::error_message(path_));
   }
 #endif
 }
