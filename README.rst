@@ -37,6 +37,7 @@ Preparing Release 0.3.4
 Improvements
 
 Bugfix
+  - Plugin basename specification does not work correctly (#57)
   - #155
 
 Release 0.3.3 2012/10/29
