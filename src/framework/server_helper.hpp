@@ -51,7 +51,7 @@ public:
   typedef typename Server::status_t status_t;
 
   explicit server_helper(const server_argv& a)
-      : impl_(a) {
+      : impl_(a), use_cht_(false) {
     server_.reset(new Server(a, impl_.zk()));
   }
 

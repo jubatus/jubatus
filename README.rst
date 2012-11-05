@@ -31,6 +31,14 @@ LGPL 2.1
 Update history
 --------------
 
+Preparing Release 0.3.4
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Improvements
+
+Bugfix
+  - #155
+
 Release 0.3.3 2012/10/29
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
