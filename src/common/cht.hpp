@@ -33,7 +33,6 @@ namespace common {
 // FIXME: Is the value reasonable for cht?
 static const unsigned int NUM_VSERV = 8;
 
-// this function does not seem pure, take care when calling from multiple threads
 std::string make_hash(const std::string& key);
 
 class cht {
