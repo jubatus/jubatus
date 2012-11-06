@@ -70,7 +70,7 @@ def configure(conf):
     else:
       conf.check_cxx(header_name = 'zookeeper/zookeeper.h',
                      define_name = 'HAVE_ZOOKEEPER_H',
-                     errmsg = 'ZooKeeper c-binding is not found. Please install ZooKeeper with its c-binding.',
+                     errmsg = 'ZooKeeper c-binding is not found. Please install c-binding.',
                      mandatory = True)
       conf.define('ZOOKEEPER_HEADER', 'zookeeper/zookeeper.h')
 
