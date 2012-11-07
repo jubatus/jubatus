@@ -56,7 +56,7 @@ class global_id_generator_impl {
       return __sync_fetch_and_add(&counter_, 1);
 #else
       pfi::concurrent::scoped_lock lk(counter_mutex_);
-      return ++counter_;
+      return counter_++;
 #endif
 
     }else{
