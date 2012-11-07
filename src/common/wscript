@@ -41,6 +41,7 @@ def build(bld):
     'util_test.cpp',
     'network_test.cpp',
     'vector_util_test.cpp',
+    'global_id_generator_test.cpp',
     ]
 
   if bld.env.HAVE_ZOOKEEPER_H:
