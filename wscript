@@ -37,6 +37,13 @@ def configure(conf):
   conf.load('unittest_gtest')
   conf.load('gnu_dirs')
 
+  # Generate config.hpp
+  conf.env.JUBATUS_PLUGIN_DIR = conf.env['LIBDIR'] + '/jubatus/plugin'
+  conf.define('JUBATUS_VERSION', VERSION)
+  conf.define('JUBATUS_APPNAME', APPNAME)
+  conf.define('JUBATUS_PLUGIN_DIR', conf.env.JUBATUS_PLUGIN_DIR)
+  conf.write_config_header('src/config.hpp', guard="JUBATUS_CONFIG_HPP_", remove=False)
+
   conf.check_cxx(lib = 'msgpack')
   conf.check_cxx(lib = 'dl')
 
@@ -84,15 +91,7 @@ def configure(conf):
     conf.env.append_value('CXXFLAGS', '-ftest-coverage')
     conf.env.append_value('LINKFLAGS', '-lgcov')
 
-  # plugin install path
-  conf.env.JUBATUS_PLUGIN_DIR = conf.env['LIBDIR'] + '/jubatus/plugin'
-
-  # don't know why this does not work when put after conf.recurse
-  conf.define('JUBATUS_VERSION', VERSION)
-  conf.define('JUBATUS_APPNAME', APPNAME)
-  conf.define('JUBATUS_PLUGIN_DIR', conf.env.JUBATUS_PLUGIN_DIR)
   conf.define('BUILD_DIR',  conf.bldnode.abspath())
-  conf.write_config_header('src/config.hpp', remove=False)
 
   conf.recurse(subdirs)
 

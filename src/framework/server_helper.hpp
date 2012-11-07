@@ -28,6 +28,7 @@
 #include "../common/lock_service.hpp"
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
+#include "../config.hpp"
 
 namespace jubatus {
 namespace framework {
