@@ -51,14 +51,15 @@ namespace jubatus { namespace framework {
     p.add<int>("rpc-port", 'p', "port number", false, 9199);
     p.add<int>("thread", 'c', "concurrency = thread number", false, 2);
     p.add<int>("timeout", 't', "time out (sec)", false, 10);
+    p.add<std::string>("tmpdir", 'd', "directory to output logs", false, "/tmp");
 
+#ifdef HAVE_ZOOKEEPER_H
     p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
     p.add<std::string>("name", 'n', "learning machine instance name", false);
-    p.add<std::string>("tmpdir", 'd', "directory to output logs", false, "/tmp");
     p.add("join", 'j', "join to the existing cluster");
-
     p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
     p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
+#endif
 
     // APPLY CHANGES TO JUBAVISOR WHEN ARGUMENTS MODIFIED
 
@@ -75,15 +76,24 @@ namespace jubatus { namespace framework {
     threadnum = p.get<int>("thread");
     timeout = p.get<int>("timeout");
     program_name = jubatus::util::get_program_name();
-    z = p.get<std::string>("zookeeper");
-    name = p.get<std::string>("name");
     tmpdir = p.get<std::string>("tmpdir");
+
     //    eth = "localhost";
     eth = jubatus::common::get_default_v4_address();
-    join = p.exist("join");
 
+#ifdef HAVE_ZOOKEEPER_H
+    z = p.get<std::string>("zookeeper");
+    name = p.get<std::string>("name");
+    join = p.exist("join");
     interval_sec = p.get<int>("interval_sec");
     interval_count = p.get<int>("interval_count");
+#else
+    z = "";
+    name = "";
+    join = false;
+    interval_sec = 16;
+    interval_count = 512;
+#endif
 
     if(z != "" and name == ""){
       throw JUBATUS_EXCEPTION(argv_error("can't start multinode mode without name specified"));
