@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,32 +15,20 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#include <gtest/gtest.h>
+#include "global_id_generator.hpp"
 
-#include <stdint.h>
+using namespace std;
 
-#include "lock_service.hpp"
-#include "shared_ptr.hpp"
+namespace jubatus {
+namespace common {
 
-namespace jubatus { namespace common {
+TEST(generate, standalone) {
+  global_id_generator gen(true);
+  EXPECT_EQ(0u, gen.generate());
+  EXPECT_EQ(1u, gen.generate());
+  EXPECT_EQ(2u, gen.generate());
+}
 
-class global_id_generator_impl;
-
-class global_id_generator
-{
-public:
-
-  global_id_generator(bool);
-  ~global_id_generator();
-
-  uint64_t generate();
-
-  void set_ls(cshared_ptr<lock_service>&, const std::string&);
-
-private:
-  global_id_generator();
-
-  pfi::lang::scoped_ptr<global_id_generator_impl> pimpl_;
-};
-
-}}
+}
+}
