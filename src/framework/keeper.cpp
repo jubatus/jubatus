@@ -49,7 +49,7 @@ int keeper::run()
     if (this->serv(a_.port, a_.threadnum)) {
       return 0;
     } else {
-      LOG(ERROR) << "failed starting server: any process using port " << a_.port << "?";
+      LOG(FATAL) << "failed starting server: any process using port " << a_.port << "?";
       return -1;
     }
   } catch (const jubatus::exception::jubatus_exception& e) {
