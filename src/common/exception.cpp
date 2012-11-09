@@ -43,7 +43,7 @@ std::string jubatus_exception::diagnostic_information(bool display_what) const
       frame++;
       continue;
     }
-    tmp << '#' << frame << " [" << (*it)->tag_typeid_name() << "] = " << (*it)->as_string() << '\n';
+    tmp << "    #" << frame << " [" << (*it)->tag_typeid_name() << "] = " << (*it)->as_string() << '\n';
   }
   return tmp.str();
 }
