@@ -4,6 +4,15 @@
 #include "recommender_serv.hpp"
 using namespace jubatus;
 using namespace jubatus::framework;
+#define RETURN_OR_THROW(f) try { \
+  return f; \
+} catch (const jubatus::exception::jubatus_exception& e) { \
+  LOG(WARNING) << e.diagnostic_information(true); \
+  throw; \
+} catch (const std::exception& e) { \
+  LOG(ERROR) << e.what(); \
+  throw; \
+}
 namespace jubatus { namespace server {
 class recommender_impl_ : public recommender<recommender_impl_>
 {
@@ -14,52 +23,52 @@ public:
   { p_->use_cht();}
 
   bool set_config(std::string name, config_data c) //update broadcast
-  { JWLOCK__(p_); return get_p()->set_config(c); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->set_config(c)); }
 
   config_data get_config(std::string name) //analysis random
-  { JRLOCK__(p_); return get_p()->get_config(); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->get_config()); }
 
   bool clear_row(std::string name, std::string id) //update cht(2)
-  { JWLOCK__(p_); return get_p()->clear_row(id); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->clear_row(id)); }
 
   bool update_row(std::string name, std::string id, datum d) //update cht(2)
-  { JWLOCK__(p_); return get_p()->update_row(id, d); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->update_row(id, d)); }
 
   bool clear(std::string name) //update broadcast
-  { JWLOCK__(p_); return get_p()->clear(); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->clear()); }
 
   datum complete_row_from_id(std::string name, std::string id) //analysis cht(2)
-  { JRLOCK__(p_); return get_p()->complete_row_from_id(id); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->complete_row_from_id(id)); }
 
   datum complete_row_from_data(std::string name, datum d) //analysis random
-  { JRLOCK__(p_); return get_p()->complete_row_from_data(d); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->complete_row_from_data(d)); }
 
   similar_result similar_row_from_id(std::string name, std::string id, unsigned int size) //analysis cht(2)
-  { JRLOCK__(p_); return get_p()->similar_row_from_id(id, size); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->similar_row_from_id(id, size)); }
 
   similar_result similar_row_from_data(std::string name, datum data, unsigned int size) //analysis random
-  { JRLOCK__(p_); return get_p()->similar_row_from_data(data, size); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->similar_row_from_data(data, size)); }
 
   datum decode_row(std::string name, std::string id) //analysis cht(2)
-  { JRLOCK__(p_); return get_p()->decode_row(id); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->decode_row(id)); }
 
   std::vector<std::string > get_all_rows(std::string name) //analysis broadcast
-  { JRLOCK__(p_); return get_p()->get_all_rows(); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->get_all_rows()); }
 
   float similarity(std::string name, datum lhs, datum rhs) //analysis random
-  { JRLOCK__(p_); return get_p()->similarity(lhs, rhs); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->similarity(lhs, rhs)); }
 
   float l2norm(std::string name, datum d) //analysis random
-  { JRLOCK__(p_); return get_p()->l2norm(d); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->l2norm(d)); }
 
   bool save(std::string name, std::string id) //update broadcast
-  { JWLOCK__(p_); return get_p()->save(id); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->save(id)); }
 
   bool load(std::string name, std::string id) //update broadcast
-  { JWLOCK__(p_); return get_p()->load(id); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->load(id)); }
 
   std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
-  { JRLOCK__(p_); return p_->get_status(); }
+  { JRLOCK__(p_); RETURN_OR_THROW(p_->get_status()); }
   int run(){ return p_->start(*this); };
   common::cshared_ptr<recommender_serv> get_p(){ return p_->server(); };
 private:

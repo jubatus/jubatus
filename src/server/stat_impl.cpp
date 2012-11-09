@@ -4,6 +4,15 @@
 #include "stat_serv.hpp"
 using namespace jubatus;
 using namespace jubatus::framework;
+#define RETURN_OR_THROW(f) try { \
+  return f; \
+} catch (const jubatus::exception::jubatus_exception& e) { \
+  LOG(WARNING) << e.diagnostic_information(true); \
+  throw; \
+} catch (const std::exception& e) { \
+  LOG(ERROR) << e.what(); \
+  throw; \
+}
 namespace jubatus { namespace server {
 class stat_impl_ : public stat<stat_impl_>
 {
@@ -14,40 +23,40 @@ public:
   { p_->use_cht();}
 
   bool set_config(std::string name, config_data c) //update broadcast
-  { JWLOCK__(p_); return get_p()->set_config(c); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->set_config(c)); }
 
   config_data get_config(std::string name) //analysis random
-  { JRLOCK__(p_); return get_p()->get_config(); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->get_config()); }
 
   bool push(std::string name, std::string key, double val) //update cht(1)
-  { JWLOCK__(p_); return get_p()->push(key, val); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->push(key, val)); }
 
   double sum(std::string name, std::string key) //analysis cht(1)
-  { JRLOCK__(p_); return get_p()->sum(key); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->sum(key)); }
 
   double stddev(std::string name, std::string key) //analysis cht(1)
-  { JRLOCK__(p_); return get_p()->stddev(key); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->stddev(key)); }
 
   double max(std::string name, std::string key) //analysis cht(1)
-  { JRLOCK__(p_); return get_p()->max(key); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->max(key)); }
 
   double min(std::string name, std::string key) //analysis cht(1)
-  { JRLOCK__(p_); return get_p()->min(key); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->min(key)); }
 
   double entropy(std::string name, std::string key) //analysis cht(1)
-  { JRLOCK__(p_); return get_p()->entropy(key); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->entropy(key)); }
 
   double moment(std::string name, std::string key, int n, double c) //analysis cht(1)
-  { JRLOCK__(p_); return get_p()->moment(key, n, c); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->moment(key, n, c)); }
 
   bool save(std::string name, std::string id) //update broadcast
-  { JWLOCK__(p_); return get_p()->save(id); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->save(id)); }
 
   bool load(std::string name, std::string id) //update broadcast
-  { JWLOCK__(p_); return get_p()->load(id); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->load(id)); }
 
   std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
-  { JRLOCK__(p_); return p_->get_status(); }
+  { JRLOCK__(p_); RETURN_OR_THROW(p_->get_status()); }
   int run(){ return p_->start(*this); };
   common::cshared_ptr<stat_serv> get_p(){ return p_->server(); };
 private:
