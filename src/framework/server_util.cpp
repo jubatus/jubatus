@@ -181,8 +181,12 @@ make_fv_converter(const std::string& config) {
       converter(new fv_converter::datum_to_fv_converter);
   fv_converter::converter_config c;
   std::stringstream ss(config);
-  // FIXME: check invalid json format
-  ss >> pfi::text::json::via_json(c);
+  try {
+    ss >> pfi::text::json::via_json(c);
+  } catch (std::bad_cast& e) {
+    std::string msg = std::string("Invalid config format: ") + e.what();
+    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
+  }
   fv_converter::initialize_converter(c, *converter);
   return converter;
 }
