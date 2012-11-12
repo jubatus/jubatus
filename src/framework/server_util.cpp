@@ -115,11 +115,13 @@ namespace jubatus { namespace framework {
   };
 
   void server_argv::set_log_destination(const std::string& progname) const {
-    std::ostringstream path;
-    path << tmpdir << '/' << progname << '.' << name << '.' << eth << '.' << port << '.';
+    std::ostringstream basename;
+    basename <<  progname << '.' << eth << '_' << port;
     for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
-      std::string p = path.str() + google::GetLogSeverityName(severity) + '.';
-      google::SetLogDestination(severity, p.c_str());
+      std::string log = tmpdir + '/' + basename.str() + '.' + name + '.' + google::GetLogSeverityName(severity) + '.';
+      std::string link = basename.str();
+      google::SetLogDestination(severity, log.c_str());
+      google::SetLogSymlink(severity, link.c_str());
     }
   }
 
@@ -174,12 +176,14 @@ namespace jubatus { namespace framework {
   };
 
   void keeper_argv::set_log_destination(const std::string& progname) const {
-    std::ostringstream path;
-    // TODO: get directory path from args 
-    path << "/tmp/" << progname << '.' << eth << '.' << port << '.';
+    std::ostringstream basename;
+    basename <<  progname << '.' << eth << '_' << port;
     for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
-      std::string p = path.str() + google::GetLogSeverityName(severity) + '.';
-      google::SetLogDestination(severity, p.c_str());
+      // TODO: get directory path from args
+      std::string log = "/tmp/" + basename.str() + '.' + google::GetLogSeverityName(severity) + '.';
+      std::string link = basename.str();
+      google::SetLogDestination(severity, log.c_str());
+      google::SetLogSymlink(severity, link.c_str());
     }
   }
 
