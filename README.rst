@@ -38,6 +38,7 @@ Improvements
 
 Bugfix
   - Plugin basename specification does not work correctly (#57)
+  - MIX put_diff/get_diff and update/analyze RPC can be executed on the same time (#171)
   - #155
 
 Release 0.3.3 2012/10/29
