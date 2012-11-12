@@ -94,7 +94,9 @@ namespace jubatus { namespace framework {
 #endif
 
     if(z != "" and name == ""){
-      throw JUBATUS_EXCEPTION(argv_error("can't start multinode mode without name specified"));
+      std::cerr << "can't start multinode mode without name specified" << std::endl;
+      std::cerr << p.usage() << std::endl;
+      exit(1);
     }
 
     set_log_destination(jubatus::util::get_program_name());
