@@ -18,6 +18,7 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
 #include <pficommon/concurrent/rwmutex.h>
 #include <msgpack.hpp>
 
