@@ -27,9 +27,7 @@ namespace mixer {
 class dummy_mixer : public mixer {
 public:
   void register_api(pfi::network::mprpc::rpc_server& server) {}
-  void register_mixable(mixable0* m) {
-    mixables_.push_back(m);
-  }
+  void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder>) {}
 
   void start() {}
   void stop() {}
@@ -37,12 +35,6 @@ public:
   void updated() {}
 
   void get_status(server_base::status_t& status) const {}
-  std::vector<mixable0*> get_mixables() const {
-    return mixables_;
-  }
-
-private:
-  std::vector<mixable0*> mixables_;
 };
 
 }

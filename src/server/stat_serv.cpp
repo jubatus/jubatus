@@ -34,8 +34,10 @@ stat_serv::stat_serv(const server_argv& a,
   stat_.set_model(model);
 
   mixer_.reset(mixer::create_mixer(a, zk));
+  mixable_holder_.reset(new mixable_holder());
 
-  mixer_->register_mixable(&stat_);
+  mixer_->set_mixable_holder(mixable_holder_);
+  mixable_holder_->register_mixable(&stat_);
 }
 
 stat_serv::~stat_serv() {
@@ -43,6 +45,10 @@ stat_serv::~stat_serv() {
 
 mixer::mixer* stat_serv::get_mixer() const {
   return mixer_.get();
+}
+
+pfi::lang::shared_ptr<mixable_holder> stat_serv::get_mixable_holder() const {
+  return mixable_holder_;
 }
 
 void stat_serv::get_status(status_t& status) const {

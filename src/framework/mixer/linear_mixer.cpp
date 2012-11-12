@@ -112,8 +112,8 @@ void linear_mixer::register_api(pfi::network::mprpc::rpc_server& server) {
        pfi::lang::bind(&linear_mixer::put_diff, this, pfi::lang::_1));
 }
 
-void linear_mixer::register_mixable(mixable0* m) {
-  mixables_.push_back(m);
+void linear_mixer::set_mixable_holder(pfi::lang::shared_ptr<mixable_holder> m) {
+  mixable_holder_ = m;
 }
 
 void linear_mixer::start() {
@@ -146,10 +146,6 @@ void linear_mixer::get_status(server_base::status_t& status) const {
   scoped_lock lk(m_);
   status["linear_mixer.count"] = pfi::lang::lexical_cast<string>(counter_);
   status["linear_mixer.ticktime"] = pfi::lang::lexical_cast<string>(ticktime_);  // since last mix
-}
-
-vector<mixable0*> linear_mixer::get_mixables() const {
-  return mixables_;
 }
 
 void linear_mixer::mixer_loop() {
@@ -195,6 +191,8 @@ void linear_mixer::mix() {
     return;
   } else {
     try {
+      mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
+
       common::mprpc::rpc_result_object result;
       communication_->get_diff(result);
 
@@ -202,7 +200,7 @@ void linear_mixer::mix() {
       for (size_t i = 1; i < result.response.size(); ++i) {
         vector<string> tmp = result.response[i].as<vector<string> >();
         for (size_t j = 0; j < tmp.size(); ++j) {
-          mixables_[j]->mix(tmp[j], mixed[j], mixed[j]);
+          mixables[j]->mix(tmp[j], mixed[j], mixed[j]);
         }
       }
 
@@ -228,23 +226,26 @@ vector<string> linear_mixer::get_diff(int) {
   std::vector<std::string> o;
 
   scoped_lock lk(m_);
-  if (mixables_.empty()) {
+
+  mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
+  if (mixables.empty()) {
     throw JUBATUS_EXCEPTION(config_not_set()); // nothing to mix
   }
-  for (size_t i = 0; i < mixables_.size(); ++i) {
-    o.push_back(mixables_[i]->get_diff());
+  for (size_t i = 0; i < mixables.size(); ++i) {
+    o.push_back(mixables[i]->get_diff());
   }
   return o;
 }
 
 int linear_mixer::put_diff(const std::vector<std::string>& unpacked) {
   scoped_lock lk(m_);
-  if (unpacked.size() != mixables_.size()) {
+  mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
+  if (unpacked.size() != mixables.size()) {
     //deserialization error
     return -1;
   }
-  for (size_t i = 0; i < mixables_.size(); ++i) {
-    mixables_[i]->put_diff(unpacked[i]);
+  for (size_t i = 0; i < mixables.size(); ++i) {
+    mixables[i]->put_diff(unpacked[i]);
   }
   counter_ = 0;
   ticktime_ = time(NULL);

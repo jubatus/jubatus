@@ -66,6 +66,10 @@ public:
     return mixer_.get();
   }
 
+  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+    return mixable_holder_;
+  }
+
   void get_status(status_t& status) const;
 
   std::string create_node(); //update cht
@@ -121,6 +125,7 @@ private:
   common::cshared_ptr<common::lock_service> zk_;
 
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
+  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
   common::global_id_generator idgen_;
 
   mixable_graph g_;

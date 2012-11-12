@@ -54,6 +54,7 @@ public:
   virtual ~stat_serv();
 
   framework::mixer::mixer* get_mixer() const;
+  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const;
   void get_status(status_t& status) const;
 
   bool set_config(const config_data&);
@@ -68,6 +69,7 @@ public:
 
 private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
+  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   jubatus::config_data config_;
   server::mixable_stat stat_;

@@ -23,11 +23,10 @@
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/lang/shared_ptr.h>
 #include "server_util.hpp"
+#include "mixable.hpp"
 
 namespace jubatus {
 namespace framework {
-
-class mixable0;
 
 namespace mixer {
 class mixer;
@@ -41,6 +40,7 @@ public:
   virtual ~server_base() {}
 
   virtual mixer::mixer* get_mixer() const = 0;
+  virtual pfi::lang::shared_ptr<mixable_holder> get_mixable_holder() const = 0;
   virtual void get_status(status_t& status) const = 0;
 
   virtual bool save(const std::string& id);
@@ -52,7 +52,7 @@ public:
   }
 
   pfi::concurrent::rw_mutex& rw_mutex() {
-    return rw_mutex_;
+    return get_mixable_holder()->rw_mutex();
   }
 
   const server_argv& argv() const {
@@ -61,7 +61,6 @@ public:
 
 private:
   const server_argv argv_;
-  pfi::concurrent::rw_mutex rw_mutex_;
   uint64_t update_count_;
 };
 

@@ -48,9 +48,11 @@ classifier_serv::classifier_serv(const framework::server_argv& a,
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
 
   mixer_.reset(mixer::create_mixer(a, zk));
+  mixable_holder_.reset(new mixable_holder());
 
-  mixer_->register_mixable(&clsfer_);
-  mixer_->register_mixable(&wm_);
+  mixer_->set_mixable_holder(mixable_holder_);
+  mixable_holder_->register_mixable(&clsfer_);
+  mixable_holder_->register_mixable(&wm_);
 }
 
 classifier_serv::~classifier_serv() {

@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <pficommon/lang/shared_ptr.h>
 #include <pficommon/network/mprpc.h>
 #include "../server_base.hpp"
 
@@ -23,6 +24,7 @@ namespace jubatus {
 namespace framework {
 
 class mixable0;
+class mixable_holder;
 
 namespace mixer {
 
@@ -31,7 +33,7 @@ public:
   virtual ~mixer() {}
 
   virtual void register_api(pfi::network::mprpc::rpc_server& server) = 0;
-  virtual void register_mixable(mixable0* m) = 0;
+  virtual void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder>) = 0;
 
   virtual void start() = 0;
   virtual void stop() = 0;
@@ -39,7 +41,6 @@ public:
   virtual void updated() = 0;
 
   virtual void get_status(server_base::status_t& status) const = 0;
-  virtual std::vector<mixable0*> get_mixables() const = 0;
 };
 
 }

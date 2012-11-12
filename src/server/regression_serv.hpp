@@ -42,6 +42,10 @@ public:
     return mixer_.get();
   }
 
+  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+    return mixable_holder_;
+  }
+
   void get_status(status_t& status) const;
 
   int set_config(const config_data& config);
@@ -53,6 +57,7 @@ public:
 
 private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
+  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   config_data config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;

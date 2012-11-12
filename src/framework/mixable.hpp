@@ -18,6 +18,7 @@
 
 #include <string>
 #include <iostream>
+#include <pficommon/concurrent/rwmutex.h>
 #include <msgpack.hpp>
 
 #include "../common/exception.hpp"
@@ -36,6 +37,29 @@ public:
   virtual void save(std::ostream & ofs) = 0;
   virtual void load(std::istream & ifs) = 0;
   virtual void clear() = 0;
+};
+
+class mixable_holder {
+public:
+  typedef std::vector<mixable0*> mixable_list;
+
+  mixable_holder() {}
+  virtual ~mixable_holder() {}
+  void register_mixable(mixable0* m) {
+    mixables_.push_back(m);
+  }
+
+  mixable_list get_mixables() const {
+    return mixables_;
+  }
+
+  pfi::concurrent::rw_mutex& rw_mutex() {
+    return rw_mutex_;
+  }
+
+protected:
+  pfi::concurrent::rw_mutex rw_mutex_;
+  std::vector<mixable0*> mixables_;
 };
 
 template <typename Model, typename Diff>

@@ -75,8 +75,10 @@ graph_serv::graph_serv(const framework::server_argv& a,
 #endif
 
   mixer_.reset(mixer::create_mixer(a, zk));
+  mixable_holder_.reset(new mixable_holder());
 
-  mixer_->register_mixable(&g_);
+  mixer_->set_mixable_holder(mixable_holder_);
+  mixable_holder_->register_mixable(&g_);
 }
 
 graph_serv::~graph_serv() {}
