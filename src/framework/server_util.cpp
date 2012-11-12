@@ -44,7 +44,6 @@ namespace jubatus { namespace framework {
     : type(type)
   {
     google::InitGoogleLogging(argv[0]);
-    google::LogToStderr(); // only when debug
 
     cmdline::parser p;
     p.add<int>("rpc-port", 'p', "port number", false, 9199);
@@ -97,7 +96,8 @@ namespace jubatus { namespace framework {
     if(z != "" and name == ""){
       throw JUBATUS_EXCEPTION(argv_error("can't start multinode mode without name specified"));
     }
-    
+
+    set_log_destination(jubatus::util::get_program_name());
     LOG(INFO) << boot_message(jubatus::util::get_program_name());
   };
 
@@ -114,6 +114,15 @@ namespace jubatus { namespace framework {
     return ret.str();
   };
 
+  void server_argv::set_log_destination(const std::string& progname) const {
+    std::ostringstream path;
+    path << tmpdir << '/' << progname << '.' << name << '.' << eth << '.' << port << '.';
+    for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
+      std::string p = path.str() + google::GetLogSeverityName(severity) + '.';
+      google::SetLogDestination(severity, p.c_str());
+    }
+  }
+
   std::string get_server_identifier(const server_argv& a) {
     std::stringstream ss;
     ss << a.eth;
@@ -126,7 +135,6 @@ namespace jubatus { namespace framework {
     : type(t)
   {
     google::InitGoogleLogging(argv[0]);
-    google::LogToStderr(); // only when debug
 
     cmdline::parser p;
     p.add<int>("rpc-port", 'p', "port number", false, 9199);
@@ -149,6 +157,7 @@ namespace jubatus { namespace framework {
     z = p.get<std::string>("zookeeper");
     eth = jubatus::common::get_default_v4_address();
 
+    set_log_destination(jubatus::util::get_program_name());
     LOG(INFO) << boot_message(jubatus::util::get_program_name());
   };
 
@@ -163,6 +172,16 @@ namespace jubatus { namespace framework {
       eth << ":" << port << " with timeout: " << timeout;
     return ret.str();
   };
+
+  void keeper_argv::set_log_destination(const std::string& progname) const {
+    std::ostringstream path;
+    // TODO: get directory path from args 
+    path << "/tmp/" << progname << '.' << eth << '.' << port << '.';
+    for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
+      std::string p = path.str() + google::GetLogSeverityName(severity) + '.';
+      google::SetLogDestination(severity, p.c_str());
+    }
+  }
 
   common::cshared_ptr<jubatus::common::lock_service> ls;
 

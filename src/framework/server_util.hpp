@@ -22,6 +22,7 @@
 #include <iostream>
 
 #include <msgpack.hpp>
+#include <glog/logging.h>
 
 #include "../common/exception.hpp"
 #include "../common/lock_service.hpp"
@@ -71,6 +72,7 @@ struct server_argv {
     return (z == "");
   }
   std::string boot_message(const std::string& progname) const;
+  void set_log_destination(const std::string& progname) const;
 };
 
 std::string get_server_identifier(const server_argv& a);
@@ -88,6 +90,7 @@ struct keeper_argv {
   const std::string type;
 
   std::string boot_message(const std::string& progname) const;
+  void set_log_destination(const std::string& progname) const;
 };
 
 template <typename From, typename To>
@@ -115,7 +118,7 @@ int run_server(int args, char** argv, const std::string& type)
     jubatus::util::ignore_sigpipe();
     return impl_server.run();
   } catch (const jubatus::exception::jubatus_exception& e) {
-    std::cout << e.diagnostic_information(true) << std::endl;
+    LOG(FATAL) << e.diagnostic_information(true);
     return -1;
   }
 }
