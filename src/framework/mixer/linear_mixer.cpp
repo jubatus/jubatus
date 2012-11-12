@@ -226,6 +226,7 @@ vector<string> linear_mixer::get_diff(int) {
   std::vector<std::string> o;
 
   scoped_lock lk(m_);
+  scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
 
   mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
   if (mixables.empty()) {
@@ -239,6 +240,8 @@ vector<string> linear_mixer::get_diff(int) {
 
 int linear_mixer::put_diff(const std::vector<std::string>& unpacked) {
   scoped_lock lk(m_);
+  scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
+
   mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
   if (unpacked.size() != mixables.size()) {
     //deserialization error
