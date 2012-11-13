@@ -61,12 +61,13 @@ struct server_argv {
   std::string z;
   std::string name;
   std::string tmpdir;
+  std::string logdir;
   std::string eth;
   int interval_sec;
   int interval_count;
 
   MSGPACK_DEFINE(join, port, timeout, threadnum, program_name, type, z, name,
-      tmpdir, eth, interval_sec, interval_count);
+      tmpdir, logdir, eth, interval_sec, interval_count);
 
   bool is_standalone() const {
     return (z == "");
@@ -86,6 +87,7 @@ struct keeper_argv {
   int timeout;
   int threadnum;
   std::string z;
+  std::string logdir;
   std::string eth;
   const std::string type;
 

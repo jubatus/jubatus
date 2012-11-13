@@ -49,7 +49,8 @@ namespace jubatus { namespace framework {
     p.add<int>("rpc-port", 'p', "port number", false, 9199);
     p.add<int>("thread", 'c', "concurrency = thread number", false, 2);
     p.add<int>("timeout", 't', "time out (sec)", false, 10);
-    p.add<std::string>("tmpdir", 'd', "directory to output logs", false, "/tmp");
+    p.add<std::string>("tmpdir", 'd', "directory to save and load models", false, "/tmp");
+    p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false);
 
 #ifdef HAVE_ZOOKEEPER_H
     p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
@@ -75,6 +76,7 @@ namespace jubatus { namespace framework {
     timeout = p.get<int>("timeout");
     program_name = jubatus::util::get_program_name();
     tmpdir = p.get<std::string>("tmpdir");
+    logdir = p.get<std::string>("logdir");
 
     //    eth = "localhost";
     eth = jubatus::common::get_default_v4_address();
@@ -99,13 +101,18 @@ namespace jubatus { namespace framework {
       exit(1);
     }
 
-    set_log_destination(jubatus::util::get_program_name());
+    if(p.exist("logdir")){
+      set_log_destination(jubatus::util::get_program_name());
+    } else {
+      google::LogToStderr();
+    }
+
     LOG(INFO) << boot_message(jubatus::util::get_program_name());
   };
 
   server_argv::server_argv():
     join(false), port(9199), timeout(10), threadnum(2), z(""), name(""),
-    tmpdir("/tmp"), eth("localhost"), interval_sec(5), interval_count(1024)
+    tmpdir("/tmp"), logdir(""), eth("localhost"), interval_sec(5), interval_count(1024)
   {
   };
 
@@ -120,7 +127,7 @@ namespace jubatus { namespace framework {
     std::ostringstream basename;
     basename <<  progname << '.' << eth << '_' << port;
     for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
-      std::string log = tmpdir + '/' + basename.str() + '.' + name + '.' + google::GetLogSeverityName(severity) + '.';
+      std::string log = logdir + '/' + basename.str() + '.' + name + '.' + google::GetLogSeverityName(severity) + '.';
       std::string link = basename.str();
       google::SetLogDestination(severity, log.c_str());
       google::SetLogSymlink(severity, link.c_str());
@@ -146,6 +153,7 @@ namespace jubatus { namespace framework {
     p.add<int>("timeout", 't', "time out (sec)", false, 10);
 
     p.add<std::string>("zookeeper", 'z', "zookeeper location", false, "localhost:2181");
+    p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false);
     p.add("version", 'v', "version");
 
     p.parse_check(args, argv);
@@ -159,14 +167,19 @@ namespace jubatus { namespace framework {
     threadnum = p.get<int>("thread");
     timeout = p.get<int>("timeout");
     z = p.get<std::string>("zookeeper");
+    logdir = p.get<std::string>("logdir");
     eth = jubatus::common::get_default_v4_address();
 
-    set_log_destination(jubatus::util::get_program_name());
+    if(p.exist("logdir")){
+      set_log_destination(jubatus::util::get_program_name());
+    } else {
+      google::LogToStderr();
+    }
     LOG(INFO) << boot_message(jubatus::util::get_program_name());
   };
 
   keeper_argv::keeper_argv():
-    port(9199), timeout(10), threadnum(16), z("localhost:2181"), eth("")
+    port(9199), timeout(10), threadnum(16), z("localhost:2181"), logdir(""), eth("")
   {
   };
 
@@ -181,8 +194,7 @@ namespace jubatus { namespace framework {
     std::ostringstream basename;
     basename <<  progname << '.' << eth << '_' << port;
     for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
-      // TODO: get directory path from args
-      std::string log = "/tmp/" + basename.str() + '.' + google::GetLogSeverityName(severity) + '.';
+      std::string log = logdir + '/' + basename.str() + '.' + google::GetLogSeverityName(severity) + '.';
       std::string link = basename.str();
       google::SetLogDestination(severity, log.c_str());
       google::SetLogSymlink(severity, link.c_str());
