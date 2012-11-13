@@ -86,6 +86,7 @@ struct keeper_argv {
   int port;
   int timeout;
   int threadnum;
+  std::string program_name;
   std::string z;
   std::string logdir;
   std::string eth;

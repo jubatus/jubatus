@@ -27,10 +27,22 @@
 using namespace jubatus;
 using namespace jubatus::framework;
 
+namespace {
+
+std::string make_logfile_name(const keeper_argv& a) {
+  std::ostringstream logfile;
+  if (a.logdir != ""){
+    logfile << a.logdir << '/' << a.program_name << '.' << a.eth << '_' << a.port << ".zklog";
+  }
+  return logfile.str();
+}
+
+}
+
 keeper::keeper(const keeper_argv& a)
   : pfi::network::mprpc::rpc_server(a.timeout),
     a_(a),
-    zk_(common::create_lock_service("cached_zk", a.z, a.timeout))
+    zk_(common::create_lock_service("cached_zk", a.z, a.timeout, make_logfile_name(a)))
     //    zk_(common::create_lock_service("zk", a.z, a.timeout))
 {
   ls = zk_;

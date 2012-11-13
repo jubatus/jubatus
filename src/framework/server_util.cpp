@@ -166,6 +166,7 @@ namespace jubatus { namespace framework {
     port = p.get<int>("rpc-port");
     threadnum = p.get<int>("thread");
     timeout = p.get<int>("timeout");
+    program_name = jubatus::util::get_program_name();
     z = p.get<std::string>("zookeeper");
     logdir = p.get<std::string>("logdir");
     eth = jubatus::common::get_default_v4_address();

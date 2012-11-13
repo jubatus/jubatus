@@ -28,14 +28,11 @@ namespace framework {
 namespace {
 
 string make_logfile_name(const server_argv& a) {
-  // FIXME: need to decide the log file
-  // without log output file, zkclient outputs to stderr
-  std::string logfile = "/tmp/";
-  logfile += a.program_name;
-  logfile += ".";
-  logfile += pfi::lang::lexical_cast<std::string>(getpid());
-  logfile += ".zklog";
-  return logfile;
+  std::ostringstream logfile;
+  if (a.logdir != ""){
+    logfile << a.logdir << '/' << a.program_name << '.' << a.eth << '_' << a.port << ".zklog";
+  }
+  return logfile.str();
 }
 
 }
