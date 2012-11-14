@@ -22,6 +22,7 @@
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../fv_converter/converter_config.hpp"
 #include "../storage/storage_factory.hpp"
 
 using namespace std;
@@ -68,7 +69,7 @@ int regression_serv::set_config(const config_data& config) {
   DLOG(INFO) << __func__;
 
   shared_ptr<datum_to_fv_converter> converter
-      = framework::make_fv_converter(config.config);
+      = fv_converter::make_fv_converter(config.config);
 
   config_ = config;
   converter_ = converter;

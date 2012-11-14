@@ -105,3 +105,20 @@ TEST(converter_config, hash_negative) {
 
   EXPECT_THROW(initialize_converter(config, conv), converter_exception);
 }
+
+TEST(make_fv_converter, empty) {
+  EXPECT_THROW(make_fv_converter(""), fv_converter::converter_exception);
+}
+
+TEST(make_fv_converter, invalid_config_json) {
+  EXPECT_THROW(make_fv_converter("{"), fv_converter::converter_exception);
+}
+
+TEST(make_fv_converter, config_json_parse_error) {
+  EXPECT_THROW(make_fv_converter("AA"), fv_converter::converter_exception);
+}
+
+TEST(make_fv_converter, config_cast_error) {
+  EXPECT_THROW(make_fv_converter("{}"), fv_converter::converter_exception);
+}
+

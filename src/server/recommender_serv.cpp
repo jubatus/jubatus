@@ -60,7 +60,7 @@ void recommender_serv::get_status(status_t& status) const {
 
 int recommender_serv::set_config(config_data config) {
   shared_ptr<fv_converter::datum_to_fv_converter> converter
-      = framework::make_fv_converter(config.converter);
+      = fv_converter::make_fv_converter(config.converter);
   config_ = config;
   converter_ = converter;
   rcmdr_.set_model(make_model());

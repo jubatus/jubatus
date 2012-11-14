@@ -21,7 +21,7 @@
 #include <map>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/optional.h>
-
+#include <pficommon/lang/shared_ptr.h>
 #include <pficommon/network/mprpc.h>
 #include <msgpack.hpp>
 
@@ -118,6 +118,9 @@ struct converter_config {
 
 void initialize_converter(const converter_config& config,
                           datum_to_fv_converter& converter);
+
+pfi::lang::shared_ptr<datum_to_fv_converter>
+make_fv_converter(const std::string& config);
 
 }
 }
