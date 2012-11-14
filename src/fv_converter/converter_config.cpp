@@ -250,10 +250,10 @@ make_fv_converter(const std::string& config) {
   try {
     ss >> pfi::text::json::via_json(c);
   } catch (pfi::lang::end_of_data& e) {
-    std::string msg = std::string("Invalid config JSON: ") + e.what();
+    std::string msg = std::string("Unexpected end of string is detected: ") + e.what();
     throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
   } catch (pfi::lang::parse_error& e) {
-    std::string msg = std::string("Invalid config JSON: ") + e.what();
+    std::string msg = std::string("Cannot parse config JSON: ") + e.what();
     throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
   } catch (std::bad_cast& e) {
     std::string msg = std::string("Invalid config format: ") + e.what();
