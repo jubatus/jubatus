@@ -195,12 +195,10 @@ class keeper : public pfi::network::mprpc::rpc_server {
     get_members_(name, list);
 
     try{
-      std::cout << __LINE__ << " name:" << name << " method:" << method_name << std::endl;
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
       return *(c.call(method_name, name, arg, agg));
     }catch(const std::exception& e){
-      std::cout << __LINE__ << e.what() << std::endl;
-      // LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
+      LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
       throw;
     }
   }
