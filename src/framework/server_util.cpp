@@ -127,7 +127,11 @@ namespace jubatus { namespace framework {
     std::ostringstream basename;
     basename <<  progname << '.' << eth << '_' << port;
     for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
-      std::string log = logdir + '/' + basename.str() + '.' + name + '.' + google::GetLogSeverityName(severity) + '.';
+      std::string log = logdir + '/';
+      log += basename.str() + '.';
+      log += name + '.';
+      log += google::GetLogSeverityName(severity);
+      log += ".log.";
       std::string link = basename.str();
       google::SetLogDestination(severity, log.c_str());
       google::SetLogSymlink(severity, link.c_str());
@@ -195,7 +199,10 @@ namespace jubatus { namespace framework {
     std::ostringstream basename;
     basename <<  progname << '.' << eth << '_' << port;
     for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
-      std::string log = logdir + '/' + basename.str() + '.' + google::GetLogSeverityName(severity) + '.';
+      std::string log = logdir + '/';
+      log += basename.str() + '.';
+      log += google::GetLogSeverityName(severity);
+      log += ".log.";
       std::string link = basename.str();
       google::SetLogDestination(severity, log.c_str());
       google::SetLogSymlink(severity, link.c_str());
