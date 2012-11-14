@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,41 +16,25 @@
 
 #pragma once
 
-#include "../fv_converter/weight_manager.hpp"
 #include "../framework/mixable.hpp"
-#include "../common/shared_ptr.hpp"
+#include "../fv_converter/weight_manager.hpp"
 
-namespace jubatus{
-namespace server{
+namespace jubatus {
+namespace server {
 
-using jubatus::fv_converter::weight_manager;
-using jubatus::fv_converter::keyword_weights;
+class mixable_weight_manager
+    : public framework::mixable<fv_converter::weight_manager,
+                                fv_converter::keyword_weights> {
+ public:
+  fv_converter::keyword_weights get_diff_impl() const;
 
-struct mixable_weight_manager : public framework::mixable<weight_manager, keyword_weights>
-{
-  mixable_weight_manager(){
-    function<keyword_weights(const weight_manager*)>
-      getdiff(&mixable_weight_manager::get_diff);
-    function<int(const weight_manager*, const keyword_weights&,keyword_weights&)>
-      reduce(&mixable_weight_manager::reduce);
-    function<int(weight_manager*,const keyword_weights&)>
-      putdiff(&mixable_weight_manager::put_diff);
-    set_mixer(getdiff,reduce,putdiff);
-  };
-  static keyword_weights get_diff(const weight_manager* wm){
-    return wm->get_diff();
-  };
-  static int reduce(const weight_manager*, const keyword_weights& lhs, keyword_weights& rhs){
-    rhs.merge(lhs);
-    return 0;
-  };
-  static int put_diff(weight_manager* wm, const keyword_weights& diff){
-    wm->put_diff(diff);
-    return 0;
-  };
-  void clear(){};
-
-  common::cshared_ptr<weight_manager> wm_;
+  void put_diff_impl(const fv_converter::keyword_weights& diff);
+  
+  void mix_impl(const fv_converter::keyword_weights& lhs,
+                const fv_converter::keyword_weights& rhs,
+                fv_converter::keyword_weights& acc) const;
+  void clear();
 };
 
-}}
+}
+}

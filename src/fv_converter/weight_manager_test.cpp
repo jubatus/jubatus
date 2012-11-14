@@ -28,7 +28,7 @@ TEST(weight_manager, trivial) {
     
     ASSERT_EQ(4u, fv.size());
     EXPECT_FLOAT_EQ(1.0, fv[0].second);
-    EXPECT_FLOAT_EQ(1.0 * log(2.0 / 1.0), fv[1].second);
+    EXPECT_FLOAT_EQ(1.0 * log((2.0 + 1) / (1.0 + 1)), fv[1].second);
     EXPECT_FLOAT_EQ(1.0, fv[2].second);
     EXPECT_FLOAT_EQ(1.5, fv[3].second);
   }
@@ -54,7 +54,7 @@ TEST(weight_manager, trivial) {
     m.update_weight(fv);
     m.get_weight(fv);
     EXPECT_EQ(1u, fv.size());
-    EXPECT_FLOAT_EQ(1.0 * log(4.0 / 3.0), fv[0].second);
+    EXPECT_FLOAT_EQ(1.0 * log((4.0 + 1) / (3.0 + 1)), fv[0].second);
   }
   
 }

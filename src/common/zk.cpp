@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -76,16 +75,19 @@ zk::~zk()
   force_close();
   if (logfilep_) {
     fclose(logfilep_);
+    logfilep_ = NULL;
   }
 }
 
 void zk::force_close()
 {
-  zookeeper_close(zh_);
-  zh_ = NULL;
+  if (zh_) {
+    zookeeper_close(zh_);
+    zh_ = NULL;
+  }
 }
 
-void zk::create(const string& path, const string& payload, bool ephemeral)
+bool zk::create(const string& path, const string& payload, bool ephemeral)
 {
   scoped_lock lk(m_);
   int rc = zoo_create(zh_, path.c_str(), payload.c_str(), payload.length(),
@@ -95,20 +97,20 @@ void zk::create(const string& path, const string& payload, bool ephemeral)
   if (ephemeral) {
     if (rc != ZOK) {
       LOG(ERROR) << path << " failed in creation:" << zerror(rc);
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("failed to create zk empheral node")
-        << jubatus::exception::error_message(string("zerror: ") + zerror(rc))
-        << jubatus::exception::error_api_func("zoo_create")
-        << jubatus::exception::error_file_name(path));
+      return false;
     }
   } else {
     if (rc != ZOK && rc != ZNODEEXISTS) {
       LOG(ERROR) << path << " failed in creation " << rc << " " << zerror(rc);
+      return false;
     }
   }
+
+  return true;
 }
 
 // "/some/path" => "/some/path0000012"
-void zk::create_seq(const string& path, string& seqfile)
+bool zk::create_seq(const string& path, string& seqfile)
 {
   scoped_lock lk(m_);
   char path_buffer[path.size()+16];
@@ -117,13 +119,15 @@ void zk::create_seq(const string& path, string& seqfile)
   seqfile = "";
   if (rc != ZOK) {
     LOG(ERROR) << path << " failed in creation - " << zerror(rc);
+    return false;
 
   } else {
     seqfile = path_buffer;
+    return true;
   }
 }
 
-uint64_t zk::create_id(const string& path, uint32_t prefix)
+bool zk::create_id(const string& path, uint32_t prefix, uint64_t& res)
 {
   scoped_lock lk(m_);
   struct Stat st;
@@ -131,29 +135,30 @@ uint64_t zk::create_id(const string& path, uint32_t prefix)
 
   if (rc != ZOK) {
     LOG(ERROR) << path << " failed on zoo_set2 " << zerror(rc);
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("failed create id")
-      << jubatus::exception::error_message(string("zerror: ") + zerror(rc))
-      << jubatus::exception::error_api_func("zoo_set2"));
+    return false;
   }
-  uint64_t ret = prefix;
-  ret <<= 32;
-  return ret | st.version;
+
+  res = (static_cast<uint64_t>(prefix) << 32) | st.version;
+  return true;
 }
 
-void zk::remove(const string& path)
+bool zk::remove(const string& path)
 {
   scoped_lock lk(m_);
   int rc = zoo_delete(zh_, path.c_str(), -1);
   if (rc != ZOK && rc != ZNONODE) {
     LOG(ERROR) << path << ": removal failed - " << zerror(rc);
+    return false;
   }
+
+  return true;
 }
 
 bool zk::exists(const string& path)
 {
   scoped_lock lk(m_);
   int rc = zoo_exists(zh_, path.c_str(), 0, NULL);
-  return (rc==ZOK);
+  return rc == ZOK;
 }
 
 void my_znode_watcher(zhandle_t* zh, int type, int state, const char* path, void * watcherCtx)
@@ -170,13 +175,13 @@ bool zk::bind_watcher(const string& path, pfi::lang::function<void(int,int,strin
   return rc == ZOK;
 }
 
-void zk::list(const string& path, vector<string>& out)
+bool zk::list(const string& path, vector<string>& out)
 {
   scoped_lock lk(m_);
-  list_(path, out);
+  return list_(path, out);
 }
 
-void zk::list_(const string& path, vector<string>& out)
+bool zk::list_(const string& path, vector<string>& out)
 {
   struct String_vector s;
   int rc = zoo_get_children(zh_, path.c_str(), 0, &s);
@@ -185,12 +190,14 @@ void zk::list_(const string& path, vector<string>& out)
       out.push_back(s.data[i]); // full path => #{path}/#{s.data[i]}
     }
     std::sort(out.begin(), out.end());
+    return true;
   } else {
     LOG(ERROR) << zerror(rc) << " (" << path << ")";
+    return false;
   }
 }
 
-void zk::hd_list(const string& path, string& out)
+bool zk::hd_list(const string& path, string& out)
 {
   struct String_vector s;
   scoped_lock lk(m_);
@@ -199,7 +206,10 @@ void zk::hd_list(const string& path, string& out)
     if (0 < s.count) {
       out = s.data[0];
     }
+    return true;
   }
+
+  return false;
 }
 
 bool zk::read(const string& path, string& out)
@@ -249,22 +259,25 @@ bool zkmutex::lock()
     if (try_lock()) break;
     sleep(1);
   }
+
   return true;
 }
 
 bool zkmutex::try_lock()
 {
   pfi::concurrent::scoped_lock lk(m_);
-  if (has_lock_) return has_lock_;
+  if (has_lock_)
+    return has_lock_;
+
   string prefix = path_ + "/lock_";
-  zk_.create_seq(prefix, seqfile_);
+  if (!zk_.create_seq(prefix, seqfile_))
+    return false;
 
   if (seqfile_ == "") return false;
 
   vector<string> list;
-  zk_.list(path_, list);
-
-  if (list.empty()) return false;
+  if (!zk_.list(path_, list) || list.empty())
+    return false;
 
   has_lock_ = ((path_ + "/" + list[0]) == seqfile_);
   if (!has_lock_) {
@@ -278,7 +291,7 @@ bool zkmutex::unlock()
 {
   pfi::concurrent::scoped_lock lk(m_);
   if (has_lock_) {
-    zk_.remove(seqfile_);
+    return zk_.remove(seqfile_);
   }
   return true;
 }

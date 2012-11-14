@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -114,7 +113,7 @@ class datum_to_fv_converter_impl {
   std::vector<string_feature_rule> string_rules_;
   std::vector<num_feature_rule> num_rules_;
   
-  weight_manager weights_;
+  common::cshared_ptr<weight_manager> weights_;
 
   pfi::data::optional<feature_hasher> hasher_;
 
@@ -159,15 +158,33 @@ class datum_to_fv_converter_impl {
 
   void add_weight(const std::string& key,
                   float weight) {
-    weights_.add_weight(key, weight);
+    if (weights_)
+      (*weights_).add_weight(key, weight);
   }
 
   void convert(const datum& datum,
-               sfv_t& ret_fv) {
+               sfv_t& ret_fv) const {
     sfv_t fv;
     convert_unweighted(datum, fv);
-    weights_.update_weight(fv);
+    if (weights_)
+      (*weights_).get_weight(fv);
 
+    if (hasher_) {
+      hasher_->hash_feature_keys(fv);
+    }
+    
+    fv.swap(ret_fv);
+  }
+
+  void convert_and_update_weight(const datum& datum,
+                                 sfv_t& ret_fv) {
+    sfv_t fv;
+    convert_unweighted(datum, fv);
+    if (weights_) {
+      (*weights_).update_weight(fv);
+      (*weights_).get_weight(fv);
+    }
+    
     if (hasher_) {
       hasher_->hash_feature_keys(fv);
     }
@@ -221,6 +238,10 @@ class datum_to_fv_converter_impl {
 
   void set_hash_max_size(uint64_t hash_max_size) {
     hasher_ = feature_hasher(hash_max_size);
+  }
+
+  void set_weight_manager(common::cshared_ptr<weight_manager> wm) {
+    weights_ = wm;
   }
 
  private:
@@ -391,8 +412,12 @@ datum_to_fv_converter::datum_to_fv_converter()
 datum_to_fv_converter::~datum_to_fv_converter() {
 }
 
-void datum_to_fv_converter::convert(const datum& datum, sfv_t& ret_fv) {
+void datum_to_fv_converter::convert(const datum& datum, sfv_t& ret_fv) const {
   pimpl_->convert(datum, ret_fv);
+}
+
+void datum_to_fv_converter::convert_and_update_weight(const datum& datum, sfv_t& ret_fv) {
+  pimpl_->convert_and_update_weight(datum, ret_fv);
 }
 
 void datum_to_fv_converter::clear_rules() {
@@ -437,6 +462,10 @@ void datum_to_fv_converter::revert_feature(const string& feature,
 
 void datum_to_fv_converter::set_hash_max_size(uint64_t hash_max_size) {
   pimpl_->set_hash_max_size(hash_max_size);
+}
+
+void datum_to_fv_converter::set_weight_manager(common::cshared_ptr<weight_manager> wm) {
+  pimpl_->set_weight_manager(wm);
 }
 
 }

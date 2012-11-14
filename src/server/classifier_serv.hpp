@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,80 +16,55 @@
 
 #pragma once
 
-#include <string>
 #include <vector>
-
-#include "../common/rpc_util.hpp"
+#include <pficommon/lang/scoped_ptr.h>
+#include <pficommon/lang/shared_ptr.h>
 #include "../classifier/classifier_base.hpp"
-#include "../fv_converter/datum_to_fv_converter.hpp"
-#include "../storage/storage_base.hpp"
 #include "../common/shared_ptr.hpp"
-
+#include "../framework/mixable.hpp"
+#include "../framework/mixer/mixer.hpp"
+#include "../framework/server_base.hpp"
 #include "classifier_types.hpp"
-#include "jubatus_serv.hpp"
 #include "diffv.hpp"
+#include "linear_function_mixer.hpp"
 #include "mixable_weight_manager.hpp"
 
-namespace jubatus{
-namespace server{
+namespace jubatus {
+namespace server {
 
-// mixable object: It would be better if classifier object itself inherits framework::mixable<>
-struct clsfer : public jubatus::framework::mixable<storage::storage_base, diffv, clsfer>
-{
-
-  clsfer(){
-    // function<diffv(const storage::storage_base*)>  getdiff(&clsfer::get_diff);
-    // function<int(const storage::storage_base*, const diffv&, diffv&)>  reduce(&clsfer::reduce);
-    // function<int(storage::storage_base*, const diffv&)>   putdiff(&clsfer::put_diff);
-    // set_mixer(getdiff, reduce, putdiff);
-    set_default_mixer();
-  };
-  static diffv get_diff(const storage::storage_base* model){
-    diffv ret;
-    ret.count = 1; //FIXME mixer_->get_count();
-    model->get_diff(ret.v);
-    return ret;
-  }
-  static int reduce(const storage::storage_base*, const diffv& v, diffv& acc);
-
-  static int put_diff(storage::storage_base* model, const diffv& v){
-    diffv diff = v;
-    diff /= (double) v.count;
-    model->set_average_and_clear_diff(diff.v);
-    return 0;
-  }
-
-  void clear(){};
-
-  pfi::lang::shared_ptr<classifier_base> classifier_;
-};
-
-class classifier_serv : public framework::jubatus_serv
-{
+class classifier_serv : public framework::server_base {
 public:
-  classifier_serv(const framework::server_argv&);  
+  classifier_serv(const framework::server_argv& a,
+                  const common::cshared_ptr<common::lock_service>& zk);
   virtual ~classifier_serv();
 
-  int set_config(config_data);
+  framework::mixer::mixer* get_mixer() const {
+    return mixer_.get();
+  }
+
+  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+    return mixable_holder_;
+  }
+
+  void get_status(status_t& status) const;
+
+  int set_config(const config_data& config);
   config_data get_config();
-  int train(std::vector<std::pair<std::string, datum> > data);
-  std::vector<std::vector<estimate_result> > classify(std::vector<datum> data)const;
+  int train(const std::vector<std::pair<std::string, datum> >& data);
+  std::vector<std::vector<estimate_result> > classify(const std::vector<datum>& data) const;
 
-  common::cshared_ptr<storage::storage_base> make_model();
-  void after_load();
-
-  std::map<std::string, std::map<std::string, std::string> > get_status();
-
-  void check_set_config()const;
+  void check_set_config() const;
 
 private:
+  pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
+  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
+
   config_data config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  clsfer clsfer_;
+  pfi::lang::shared_ptr<classifier_base> classifier_;
+  linear_function_mixer clsfer_;
   mixable_weight_manager wm_;
-
 };
 
-void mix_parameter(diffv& lhs, const diffv& rhs);
 }
-} // namespace jubatus
+}

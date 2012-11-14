@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,7 +27,7 @@ using namespace std;
 static const char* SPACES = " \t\f\n\r\v";
 
 void space_splitter::split(const string& string,
-                           vector<pair<size_t, size_t> >& ret_boundaries)
+                           vector<pair<size_t, size_t> >& ret_boundaries) const
 {
   vector<pair<size_t, size_t> > bounds;
 

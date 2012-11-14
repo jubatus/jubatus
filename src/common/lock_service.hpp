@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,23 +30,23 @@ namespace common {
 // TODO: write lock_service mock and test them all?
 class lock_service {
 public:
-  // timeout [ms]
-  lock_service() {};
-  virtual ~lock_service() {};
+  // timeout [sec]
+  lock_service() {}
+  virtual ~lock_service() {}
 
   virtual void force_close() = 0;
-  virtual void create(const std::string& path, const std::string& payload = "", bool ephemeral = false) = 0;
-  virtual void remove(const std::string& path) = 0;
+  virtual bool create(const std::string& path, const std::string& payload = "", bool ephemeral = false) = 0;
+  virtual bool remove(const std::string& path) = 0;
   virtual bool exists(const std::string& path) = 0;
 
   virtual bool bind_watcher(const std::string& path, pfi::lang::function<void(int,int,std::string)>&) = 0;
 
   // ephemeral only
-  virtual void create_seq(const std::string& path, std::string&) = 0;
-  virtual uint64_t create_id(const std::string& path, uint32_t prefix = 0) = 0;
+  virtual bool create_seq(const std::string& path, std::string&) = 0;
+  virtual bool create_id(const std::string& path, uint32_t prefix, uint64_t& res) = 0;
 
-  virtual void list(const std::string& path, std::vector<std::string>& out) = 0;
-  virtual void hd_list(const std::string& path, std::string& out) = 0;
+  virtual bool list(const std::string& path, std::vector<std::string>& out) = 0;
+  virtual bool hd_list(const std::string& path, std::string& out) = 0;
 
   // reads data (should be smaller than 1024B)
   virtual bool read(const std::string& path, std::string& out) = 0;

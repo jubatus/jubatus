@@ -5,41 +5,65 @@ def configure(conf):
   pass
 
 
-def build_one(bld, name, libraries = ''):
-  __sources = '%s_impl.cpp %s_serv.cpp' % (name, name)
+def build_one(bld, name, libraries = '', sources = ''):
+  __sources = '%s_impl.cpp %s_serv.cpp ' % (name, name)
+  __sources += sources
 
   bld.program(
     source = __sources,
     target = 'juba'+name,
-    includes = '. ../framework',
+    includes = '.',
     use = 'jubatus_framework jubacommon_mprpc jubatus_%s %s' % (name, libraries)
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
       source = '%s_keeper.cpp ' % name,
       target = 'juba%s_keeper' % name,
-      includes = '. ../framework',
+      includes = '.',
       use = 'PFICOMMON jubatus_framework jubacommon_mprpc'
       )
   bld.program(
     features = 'gtest',
     source = '%s_test.cpp' % name,
     target = '%s_test' % name,
-    includes = '. ../framework',
+    includes = '.',
     use = 'PFICOMMON MSGPACK jubacommon_mprpc',
     )
 
 
 def build(bld):
+  bld.stlib(
+    source = [
+      'linear_function_mixer.cpp',
+      'mixable_weight_manager.cpp',
+      ],
+    includes = '.',
+    target = 'jubaserver',
+    )
+
+  bld.program(
+    features='gtest',
+    source='linear_function_mixer_test.cpp',
+    target='linear_function_mixer_test',
+    includes='.',
+    use='PFICOMMON jubastorage jubaserver'
+    )
+
+  bld.program(
+    features = 'gtest',
+    source = 'recommender_serv.cpp recommender_serv_test.cpp',
+    target = 'recommender_serv_test',
+    includes = '. ../framework',
+    use = 'PFICOMMON jubaconverter jubastorage jubaserver jubatus_recommender jubatus_framework')
 
   #new classifier
-  build_one(bld, "classifier", 'jubaconverter jubastorage')
+  build_one(bld, "classifier", 'jubaconverter jubastorage jubaserver')
 
-  #new regression
-  build_one(bld, "regression", 'jubaconverter jubastorage')
+  # #new regression
+  build_one(bld, "regression", 'jubaconverter jubastorage jubaserver')
 
-  #new recommender
-  build_one(bld, "recommender", 'jubaconverter jubastorage')
+  # #new recommender
+  build_one(bld, "recommender", 'jubaconverter jubastorage jubaserver')
 
   build_one(bld, "stat")
 

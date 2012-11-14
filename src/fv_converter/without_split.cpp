@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +22,7 @@ namespace fv_converter {
 using namespace std;
 
 void without_split::split(const std::string& str,
-                          std::vector<std::pair<size_t, size_t> >& ret_boundaries) {
+                          std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
   ret_boundaries.push_back(make_pair(0, str.size()));
 }
 

@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -56,7 +55,7 @@ double weight_manager::get_global_weight(const string& key) const {
   } else if (type == "idf") {
     double doc_count = get_document_count();
     double doc_freq = get_document_frequency(key);
-    return log(doc_count / doc_freq);
+    return log((doc_count + 1) / (doc_freq + 1));
   } else if (type == "weight") {
     p = key.find_last_of('#');
     if (p == string::npos)

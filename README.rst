@@ -10,7 +10,7 @@ QuickStart
 
 Jubatus officially supports Ubuntu >= 12.04 , Red Hat Enterprise Linux >= 6.2 . On other platforms, some may work if they have gcc >= 4.4 .
 
-For minimal standalone mode, Jubatus requires libevent >= 1.4 , pficommon >= 1.3.1 , google-glog , libmsgpack, python >= 2.6 . Please install these software with headers before installation.
+For minimal standalone mode, Jubatus requires libevent >= 1.4 , pficommon >= 1.3.1 (commit 10b1ba95628b0078984d12300f9a9deb94470952 or later), google-glog , libmsgpack, python >= 2.6 . Please install these software with headers before installation.
 
 ::
 
@@ -31,19 +31,34 @@ LGPL 2.1
 Update history
 --------------
 
-preparing Release 0.3.3
-~~~~~~~~~~~~~~~~~~~~~~~
+Preparing Release 0.3.4
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
+
+Bugfix
+  - Plugin basename specification does not work correctly (#57)
+  - MIX put_diff/get_diff and update/analyze RPC can be executed on the same time (#171)
+  - #155
+
+Release 0.3.3 2012/10/29
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Improvements
+  - deb package (#14)
   - Jubatus loads plugin from default directory (#57)
   - Add hash_max_size option to learn in fixed-size memory (#67)
   - OS X Homebrew packaging (#116)
   - GCC compilation version <= 4.2 when zookeeper enabled (#60)
   - Experimental support for Clang compilation (#100)
   - Make the timeout smaller in unittest
+  - libmecab_splitter works well in multi-thread environment, and now only support mecab ver. 0.99 or later
+  - word_splitter::split method is now constant
+  - global_id_generator(standalone-mode) for graph, that supports 32 bit environment (#135)
+  - Use (document_frequency + 1) to calculate IDF weight to avoid inifinity
 
 Bugfix
-  - #117, #113, #118, #114
+  - #94, #104, #106, #108, #110, #111, #113, #114, #117, #118, #124, #126, #129, #133, #138, #139, #146, #148
 
 Release 0.3.2 2012/9/21
 ~~~~~~~~~~~~~~~~~~~~~~~

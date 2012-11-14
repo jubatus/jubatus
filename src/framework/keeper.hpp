@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -196,12 +195,10 @@ class keeper : public pfi::network::mprpc::rpc_server {
     get_members_(name, list);
 
     try{
-      std::cout << __LINE__ << " name:" << name << " method:" << method_name << std::endl;
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
       return *(c.call(method_name, name, arg, agg));
     }catch(const std::exception& e){
-      std::cout << __LINE__ << e.what() << std::endl;
-      // LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
+      LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
       throw;
     }
   }

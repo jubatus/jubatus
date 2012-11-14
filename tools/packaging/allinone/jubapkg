@@ -1,0 +1,445 @@
+#!/bin/bash -ue
+
+########################################################################
+# Jubatus All-in-one Packager
+########################################################################
+
+# ************************************************************
+#  Configuration
+# ************************************************************
+
+FORCE=""
+
+# Directory Configuration
+PREFIX="/opt/jubatus"
+META_DIR="${PWD}/metadata"
+SOURCE_DIR="${PWD}/source"
+BUILD_DIR="${PWD}/build"
+DEST_DIR="${PWD}/build_root"
+PKG_DIR="${PWD}/package"
+
+# Build Configuration
+export PATH="${DEST_DIR}/${PREFIX}/bin:${PATH}"
+export CPLUS_INCLUDE_PATH="${DEST_DIR}/${PREFIX}/include"
+export LD_LIBRARY_PATH="${DEST_DIR}/${PREFIX}/lib"
+export LD_RUN_PATH="${PREFIX}/lib"
+export PKG_CONFIG_PATH="${DEST_DIR}/${PREFIX}/lib/pkgconfig"
+
+# Version Configuration
+. ./jubapkg_version
+[ -r ./jubapkg_version_local ] && . ./jubapkg_version_local
+
+# ************************************************************
+#  Functions
+# ************************************************************
+
+# -------------------------------
+# @require_commands
+# -------------------------------
+@require_commands() {
+	for CMD in "$@"; do
+		if ! which "${CMD}" > /dev/null 2>&1; then
+			echo "ERROR: Cannot detect '$CMD' command"
+			return 1
+		fi
+	done
+}
+
+# -------------------------------
+# download_url
+# -------------------------------
+download_url() {
+	@require_commands wget
+
+	URL="${1}"
+	if [ ! -s "$(basename "${URL}")" ]; then
+		wget "${URL}"
+	fi
+}
+
+# -------------------------------
+# do_download
+# -------------------------------
+do_download() {
+	@require_commands mkdir rm hg git
+
+	if [ -z "${FORCE}" -a -d "${SOURCE_DIR}" ]; then
+		echo "${SOURCE_DIR} directory already exists; remove it and try again."
+		return 1
+	fi
+
+	mkdir -p "${SOURCE_DIR}"
+	pushd "${SOURCE_DIR}"
+
+	# pkg-config
+	download_url http://pkgconfig.freedesktop.org/releases/pkg-config-${PKG_VER}.tar.gz
+
+	# MessagePack
+	download_url http://msgpack.org/releases/cpp/msgpack-${MSG_VER}.tar.gz
+
+	# Glog
+	download_url http://google-glog.googlecode.com/files/glog-${GLOG_VER}${GLOG_MINOR_VER}.tar.gz
+
+	# UX
+	download_url http://ux-trie.googlecode.com/files/ux-${UX_VER}.tar.bz2
+
+	# MeCab
+	download_url http://mecab.googlecode.com/files/mecab-${MECAB_VER}.tar.gz
+
+	# MeCab IPA Dictionary
+	download_url http://mecab.googlecode.com/files/mecab-ipadic-${IPADIC_VER}.tar.gz
+
+	# re2
+	rm -rf re2
+	hg clone -u "${RE2_VER}" https://re2.googlecode.com/hg re2
+
+	# libevent
+	download_url https://github.com/downloads/libevent/libevent/libevent-${EVENT_VER}-stable.tar.gz
+
+	# ZooKeeper
+	download_url http://ftp.jaist.ac.jp/pub/apache/zookeeper/zookeeper-${ZK_VER}/zookeeper-${ZK_VER}.tar.gz
+
+	# pficommon
+	rm -rf pficommon
+	git clone https://github.com/pfi/pficommon.git pficommon
+	pushd pficommon
+	git checkout ${PFICOMMON_VER} &> /dev/null
+	popd
+
+	# Jubatus
+	rm -rf jubatus
+	git clone https://github.com/jubatus/jubatus.git jubatus
+	pushd jubatus
+	git checkout ${JUBATUS_VER} &> /dev/null
+	popd
+
+	# Jubatus Client (C++ Header)
+	download_url https://github.com/downloads/jubatus/jubatus/jubatus_client.${JUBATUS_H_VER}.${JUBATUS_H_DATE}.tar.gz
+
+	popd
+	echo "----- Download Completed -----"
+	return 0
+}
+
+# -------------------------------
+# do_build
+# -------------------------------
+do_build() {
+	@require_commands mkdir tar make cp perl cat
+
+	if [ -z "${FORCE}" -a -d "${BUILD_DIR}" ]; then
+		echo "${BUILD_DIR} directory already exists; remove it and try again."
+		return 1
+	fi
+
+	mkdir -p "${BUILD_DIR}"
+	pushd "${BUILD_DIR}"
+
+	# Documentation directory
+	DOC_DIR="${DEST_DIR}/${PREFIX}/share/doc"
+	mkdir -p "${DOC_DIR}"
+
+	# pkg-config
+	tar zxf ${SOURCE_DIR}/pkg-config-${PKG_VER}.tar.gz
+	pushd pkg-config-${PKG_VER}
+	./configure --prefix=${PREFIX}
+	make
+	make install DESTDIR=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/pkg-config-${PKG_VER}"
+	cp -a AUTHORS ChangeLog COPYING NEWS README "${DOC_DIR}/pkg-config-${PKG_VER}"
+	popd
+
+	# MessagePack
+	tar zxf ${SOURCE_DIR}/msgpack-${MSG_VER}.tar.gz
+	pushd msgpack-${MSG_VER}
+	./configure --prefix=${PREFIX}
+	make
+	make install DESTDIR=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/msgpack-${MSG_VER}"
+	cp -a AUTHORS ChangeLog COPYING LICENSE NEWS NOTICE README README.md "${DOC_DIR}/msgpack-${MSG_VER}"
+	popd
+
+	# Glog
+	tar zxf ${SOURCE_DIR}/glog-${GLOG_VER}${GLOG_MINOR_VER}.tar.gz
+	pushd glog-${GLOG_VER}
+	./configure --prefix=${PREFIX}
+	make
+	make install DESTDIR=${DEST_DIR}
+	cp -a doc "${DOC_DIR}/glog-${GLOG_VER}${GLOG_MINOR_VER}"
+	popd
+
+	# UX
+	tar jxf ${SOURCE_DIR}/ux-${UX_VER}.tar.bz2
+	pushd ux-${UX_VER}
+	./waf configure --prefix=${PREFIX}
+	./waf build
+	./waf install --destdir=${DEST_DIR}
+	popd
+
+	# MeCab
+	tar zxf ${SOURCE_DIR}/mecab-${MECAB_VER}.tar.gz
+	pushd mecab-${MECAB_VER}
+	./configure --prefix=${PREFIX} --enable-utf8-only
+	make
+	make install DESTDIR=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/mecab-${MECAB_VER}"
+	cp -a doc AUTHORS BSD ChangeLog COPYING GPL LGPL NEWS README "${DOC_DIR}/mecab-${MECAB_VER}"
+	popd
+
+	# MeCab IPA Dictionary
+	tar zxf ${SOURCE_DIR}/mecab-ipadic-${IPADIC_VER}.tar.gz
+	pushd mecab-ipadic-${IPADIC_VER}
+	./configure --prefix=${PREFIX} --with-charset=utf8
+	perl -pi -e 's|^(MECAB_DICT_INDEX)\s*=\s*(.+)$|$1 = '${DEST_DIR}'/$2|i' Makefile
+	make
+	make install DESTDIR=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/mecab-ipadic-${IPADIC_VER}"
+	cp -a AUTHORS ChangeLog COPYING NEWS README "${DOC_DIR}/mecab-ipadic-${IPADIC_VER}"
+	popd
+
+	# re2
+	cp -rp ${SOURCE_DIR}/re2 re2
+	pushd re2
+	perl -pi -e 's|^(prefix)=(.+)$|$1='${PREFIX}'|' Makefile
+	make
+	make install DESTDIR=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/re2"
+	cp -a doc AUTHORS CONTRIBUTORS LICENSE README "${DOC_DIR}/re2"
+	popd
+
+	# libevent
+	tar zxf ${SOURCE_DIR}/libevent-${EVENT_VER}-stable.tar.gz
+	pushd libevent-${EVENT_VER}-stable
+	./configure --prefix=${PREFIX}
+	make
+	make install DESTDIR=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/libevent-${EVENT_VER}"
+	cp -a ChangeLog LICENSE README "${DOC_DIR}/libevent-${EVENT_VER}"
+	popd
+
+	# ZooKeeper
+	tar zxf ${SOURCE_DIR}/zookeeper-${ZK_VER}.tar.gz
+	pushd zookeeper-${ZK_VER}/src/c
+	./configure --prefix=${PREFIX}
+	make
+	make install DESTDIR=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/zookeeper-${ZK_VER}"
+	cp -a ChangeLog LICENSE NOTICE.txt README "${DOC_DIR}/zookeeper-${ZK_VER}"
+	popd
+
+	# pficommon
+	cp -rp ${SOURCE_DIR}/pficommon pficommon
+	pushd pficommon
+	LDFLAGS="-L${DEST_DIR}/${PREFIX}/lib" ./waf configure --prefix=${PREFIX} --disable-database --disable-fcgi --disable-magickpp
+	./waf build
+	./waf install --destdir=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/pficommon"
+	cp -a doc LICENSE README.rst "${DOC_DIR}/pficommon"
+	popd
+
+	# Jubatus
+	cp -rp ${SOURCE_DIR}/jubatus jubatus
+	pushd jubatus
+	LDFLAGS="-L${DEST_DIR}/${PREFIX}/lib" ./waf configure --prefix=${PREFIX} --enable-ux --enable-mecab --enable-zookeeper
+	./waf build
+	./waf install --destdir=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/jubatus"
+	cp -a LICENSE README.rst "${DOC_DIR}/jubatus"
+	popd
+
+	# Jubatus Client (C++ Header)
+	tar zxf ${SOURCE_DIR}/jubatus_client.${JUBATUS_H_VER}.${JUBATUS_H_DATE}.tar.gz
+	cp -rp jubatus_client.${JUBATUS_H_VER}/cpp/*.hpp ${DEST_DIR}/${PREFIX}/include/jubatus/client
+
+	# Profile
+	cat << _EOF_ > ${DEST_DIR}/${PREFIX}/profile
+export JUBATUS_HOME="${PREFIX}"
+export PATH="\${JUBATUS_HOME}/bin:\${PATH}"
+export LD_LIBRARY_PATH="\${JUBATUS_HOME}/lib"
+export LDFLAGS="-L\${JUBATUS_HOME}/lib"
+export CPLUS_INCLUDE_PATH="\${JUBATUS_HOME}/include"
+export PKG_CONFIG_PATH="\${JUBATUS_HOME}/lib/pkgconfig"
+_EOF_
+
+	# Profile (csh)
+	cat << _EOF_ > ${DEST_DIR}/${PREFIX}/profile.csh
+setenv JUBATUS_HOME "${PREFIX}"
+setenv PATH "\${JUBATUS_HOME}/bin:\${PATH}"
+setenv LD_LIBRARY_PATH "\${JUBATUS_HOME}/lib"
+setenv LDFLAGS "-L\${JUBATUS_HOME}/lib"
+setenv CPLUS_INCLUDE_PATH "\${JUBATUS_HOME}/include"
+setenv PKG_CONFIG_PATH "\${JUBATUS_HOME}/lib/pkgconfig"
+_EOF_
+
+	popd
+	echo "----- Build Completed -----"
+	return 0
+}
+
+# -------------------------------
+# do_install
+# -------------------------------
+do_install() {
+	@require_commands cp
+
+	[ ! -d "${DEST_DIR}" ] && ( echo "Not built yet."; exit 1 )
+
+	echo "Installing..."
+	cp -a ${DEST_DIR}/* /
+
+	echo "----- Install Completed -----"
+	return 0
+}
+
+# -------------------------------
+# do_package_deb
+# -------------------------------
+do_package_deb() {
+	@require_commands rm mkdir cp dch debuild
+
+	[ ! -d "${DEST_DIR}" ] && ( echo "Not built yet."; exit 1 )
+
+	rm -rf "${PKG_DIR}/deb"
+	mkdir -p "${PKG_DIR}/deb"
+	pushd "${PKG_DIR}/deb"
+
+	mkdir -p "${DISTRIBUTION_NAME}-${DISTRIBUTION_VERSION}"
+	pushd "${DISTRIBUTION_NAME}-${DISTRIBUTION_VERSION}"
+	cp -a "${DEST_DIR}"/* .
+	cp -a "${META_DIR}/debian" .
+	echo "${PREFIX}" > debian/install
+	echo "${PREFIX}/share/doc" > debian/copyright
+	dch --create --package "${DISTRIBUTION_NAME}" --newversion "${DISTRIBUTION_VERSION}-${DISTRIBUTION_RELEASE}" --distribution unstable --force-distribution "Automatically generated by jubapkg" 2> /dev/null
+	debuild --no-tgz-check -uc -us -b
+	popd
+
+	popd
+}
+
+# -------------------------------
+# do_package_rpm
+# -------------------------------
+do_package_rpm() {
+	echo "Not implemented yet"
+}
+
+# -------------------------------
+# do_usage
+# -------------------------------
+do_usage() {
+	@require_commands cat
+
+	SELF="$(basename "${0}")"
+	cat << _EOF_
+
+Usage:
+  ${SELF} [ -P PREFIX ] [ -f ] [ -d ] [ -b ] [ -i ] [ -p TYPE ] [ -c | -C ] [ -h ]
+
+Options:
+  -P PREFIX
+      The destination directory to be installed [${PREFIX}]
+  -f
+      Force run the specified operation [no]
+  -d
+      Download the source files
+  -b
+      Build the binary
+  -i
+      Install the built files to local filesystem (${PREFIX})
+  -p TYPE
+      Package, where TYPE is one of 'rpm' or 'deb'
+  -c
+      Clean the directory but preserve downloaded source files
+  -C 
+      Clean the directory including downloaded source files
+  -h
+      Help
+
+Examples:
+  1) Clean, download, build and create DEB package
+       ${SELF} -C -d -b -p deb
+  2) Create RPM using already built binary
+       ${SELF} -p rpm
+
+_EOF_
+}
+
+# -------------------------------
+# main
+# -------------------------------
+main() {
+	@require_commands rm
+
+	[ $# -lt 1 ] && ( do_usage; exit 1 );
+
+	OPT_PREFIX=""
+	OPT_FORCE=""
+	OPT_DOWNLOAD=""
+	OPT_BUILD=""
+	OPT_INSTALL=""
+	OPT_PACKAGE=""
+	OPT_CLEAN=""
+	OPT_HELP=""
+	while getopts P:fdbip:cCh OPT; do
+		case "${OPT}" in
+			P ) OPT_PREFIX="${OPTARG}" ;;
+			f ) OPT_FORCE="yes" ;;
+			d ) OPT_DOWNLOAD="yes" ;;
+			b ) OPT_BUILD="yes" ;;
+			i ) OPT_INSTALL="yes" ;;
+			p ) OPT_PACKAGE="${OPTARG}" ;;
+			c ) OPT_CLEAN="${BUILD_DIR} ${DEST_DIR} ${PKG_DIR}" ;;
+			C ) OPT_CLEAN="${BUILD_DIR} ${DEST_DIR} ${PKG_DIR} ${SOURCE_DIR}" ;;
+			h ) OPT_HELP="yes" ;;
+			* ) OPT_HELP="yes" ;;
+		esac
+	done
+
+	if [ ! -z "${OPT_HELP}" ]; then
+		do_usage
+		exit
+	fi
+
+	if [ ! -z "${OPT_PREFIX}" ]; then
+		PREFIX="${OPT_PREFIX}"
+	fi
+
+	if [ ! -z "${OPT_FORCE}" ]; then
+		FORCE="yes"
+	fi
+
+	if [ ! -z "${OPT_CLEAN}" ]; then
+		for DIR in ${OPT_CLEAN}; do
+			echo "Cleaning: ${DIR}"
+			rm -rf "${DIR}"
+		done
+	fi
+
+	if [ ! -z "${OPT_DOWNLOAD}" ]; then
+		do_download
+	fi
+
+	if [ ! -z "${OPT_BUILD}" ]; then
+		do_build
+	fi
+
+	if [ ! -z "${OPT_INSTALL}" ]; then
+		do_install
+	fi
+
+	if [ ! -z "${OPT_PACKAGE}" ]; then
+		case "${OPT_PACKAGE}" in
+			deb ) do_package_deb ;;
+			rpm ) do_package_rpm ;;
+			*   ) echo "Invalid package type; must be 'rpm' or 'deb'" ;;
+		esac
+	fi
+
+	cat << _EOF_
+===============================================
+ SUCCESS (${SECONDS} seconds)
+===============================================
+_EOF_
+}
+
+main "$@"

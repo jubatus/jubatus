@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,12 +26,12 @@ namespace common {
 
 class cached_zk : public zk {
 public:
-  // timeout [ms]
+  // timeout [sec]
   cached_zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
   virtual ~cached_zk();
 
-  void list(const std::string& path, std::vector<std::string>& out);
-  void hd_list(const std::string& path, std::string& out);
+  bool list(const std::string& path, std::vector<std::string>& out);
+  bool hd_list(const std::string& path, std::string& out);
 
   // reads data (should be smaller than 1024B)
   bool read(const std::string& path, std::string& out);
@@ -41,11 +40,14 @@ public:
 
   void check_and_update(const std::string& path);
   void clear_cache(const char* path);
-  static void update_cache(zhandle_t*, int, int, const char*, void*);
   void reload_cache(const std::string& path);
 
 private:
-  void list_(const std::string& path, std::set<std::string>& out);
+  static void update_cache(zhandle_t*, int, int, const char*, void*);
+
+  bool read_(const std::string& path, std::string& out);
+  bool list_(const std::string& path, std::set<std::string>& out);
+
   std::map<std::string, std::set<std::string> > list_cache_;
   std::map<std::string, std::string> znode_cache_;
 

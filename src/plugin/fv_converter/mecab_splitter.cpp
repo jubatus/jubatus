@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,13 +20,14 @@
 #include "../../fv_converter/util.hpp"
 
 using namespace std;
+using namespace pfi::lang;
 
 namespace jubatus {
 
 using fv_converter::converter_exception;
 
-static MeCab::Tagger* create_mecab_tagger(const char* arg) {
-  MeCab::Tagger* t = MeCab::createTagger(arg);
+static MeCab::Model* create_mecab_model(const char* arg) {
+  MeCab::Model* t = MeCab::createModel(arg);
   if (!t) {
     string msg("cannot make mecab tagger: ");
     msg += MeCab::getTaggerError();
@@ -38,20 +38,32 @@ static MeCab::Tagger* create_mecab_tagger(const char* arg) {
 }
 
 mecab_splitter::mecab_splitter()
-    : tagger_(create_mecab_tagger("")) {
+    : model_(create_mecab_model("")) {
 }
 
 mecab_splitter::mecab_splitter(const char* arg)
-    : tagger_(create_mecab_tagger(arg)) {
+    : model_(create_mecab_model(arg)) {
 }
 
 void mecab_splitter::split(const string& string,
-                           vector<pair<size_t, size_t> >& ret_boundaries) {
-  const MeCab::Node* node = tagger_->parseToNode(string.c_str());
-  if (!node) {
-    // cannot parse the given string
+                           vector<pair<size_t, size_t> >& ret_boundaries) const {
+  scoped_ptr<MeCab::Tagger> tagger(model_->createTagger());
+  if (!tagger) {
+    // cannot create tagger
     return;
   }
+  scoped_ptr<MeCab::Lattice> lattice(model_->createLattice());
+  if (!lattice) {
+    // cannot create lattice
+    return;
+  }
+  lattice->set_sentence(string.c_str());
+  if (!tagger->parse(lattice.get())) {
+    // parse error
+    return;
+  }
+
+  const MeCab::Node* node = lattice->bos_node();
   size_t p = 0;
 
   vector<pair<size_t, size_t> > bounds;

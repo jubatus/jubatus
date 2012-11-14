@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,10 +30,10 @@ class mecab_splitter : public fv_converter::word_splitter {
   mecab_splitter(const char* arg);
 
   void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries);
+             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
  private:
-  pfi::lang::scoped_ptr<MeCab::Tagger> tagger_;
+  pfi::lang::scoped_ptr<MeCab::Model> model_;
 };
 
 }

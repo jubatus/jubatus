@@ -1,7 +1,7 @@
 # ==============================================================================
 # Jubatus
 # ==============================================================================
-JUBATUS_VERSION="0.3.2"
+JUBATUS_VERSION="0.3.3"
 JUBATUS_RELEASE="1"
 JUBATUS_IS_SNAPSHOT="no"
 #JUBATUS_CHECKOUT="develop"
@@ -11,10 +11,10 @@ JUBATUS_REPOS="https://github.com/jubatus/jubatus.git"
 # ==============================================================================
 # Jubatus Client Header (C++)
 # ==============================================================================
-JUBATUS_CLIENT_VERSION="0.3.1.20120720"
+JUBATUS_CLIENT_VERSION="0.3.2.20121005"
 JUBATUS_CLIENT_RELEASE="1"
-JUBATUS_CLIENT_ARCHIVE="jubatus_client.0.3.1.2012-07-20.tar.gz"
-JUBATUS_CLIENT_ARCHIVE_DIR="jubatus_client.0.3.1"
+JUBATUS_CLIENT_ARCHIVE="jubatus_client.0.3.2.2012-10-05.tar.gz"
+JUBATUS_CLIENT_ARCHIVE_DIR="jubatus_client.0.3.2"
 
 # ==============================================================================
 # Jubatus Release (Yum Repository)
@@ -28,7 +28,7 @@ JUBATUS_RELEASE_RELEASE="1"
 PFICOMMON_VERSION="1.3.1.0"
 PFICOMMON_RELEASE="1"
 PFICOMMON_IS_SNAPSHOT="yes"
-PFICOMMON_CHECKOUT="0b2a805ac026407fcd7b50b77d86b8d00e6a99ac"
+PFICOMMON_CHECKOUT="10b1ba95628b0078984d12300f9a9deb94470952"
 #PFICOMMON_CHECKOUT="v${PFICOMMON_VERSION}"
 PFICOMMON_REPOS="https://github.com/pfi/pficommon.git"
 
@@ -56,7 +56,7 @@ GLOG_RELEASE="1"
 RE2_VERSION="0"
 RE2_RELEASE="1"
 RE2_IS_SNAPSHOT="yes"
-RE2_CHECKOUT="tip"
+RE2_CHECKOUT="7bf5e87ef4e86f2dcfaa4629bf9b4f4f748c626c"
 #RE2_CHECKOUT="v${RE2_VERSION}"
 RE2_REPOS="https://re2.googlecode.com/hg"
 

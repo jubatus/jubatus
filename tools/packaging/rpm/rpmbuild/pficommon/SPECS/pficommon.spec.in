@@ -46,7 +46,7 @@ This package provides headers and libraries needed to develop applications using
 
 %files
 %defattr(-,root,root,-)
-%doc README.rst README.jp.rst
+%doc README.rst README.ja.rst
 %doc LICENSE
 %{_libdir}/libpficommon*.so.*
 

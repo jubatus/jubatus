@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +24,12 @@
 namespace jubatus {
 namespace util {
 
+struct machine_status_t {
+  uint64_t vm_size; // VIRT
+  uint64_t vm_resident; // RSS
+  uint64_t vm_share;  // SHR
+};
+
 void get_ip(const char* nic, std::string& out);
 std::string get_ip(const char* nic);
 std::string base_name(const std::string&);
@@ -37,7 +42,7 @@ int daemonize();
 void append_env_path(const std::string& env_, const std::string& argv0);
 void append_server_path(const std::string& argv0);
 
-void get_machine_status(std::map<std::string, std::string>&);
+void get_machine_status(machine_status_t& status);
 
 void set_exit_on_term();
 void ignore_sigpipe();

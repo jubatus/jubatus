@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,9 +35,7 @@ keeper::keeper(const keeper_argv& a)
 {
   ls = zk_;
   jubatus::common::prepare_jubatus(*zk_, a_.type, "");
-  if(!register_keeper(*zk_, a_.type, a_.eth, a_.port) ){
-    throw JUBATUS_EXCEPTION(membership_error("can't register to zookeeper."));
-  }
+  register_keeper(*zk_, a_.type, a_.eth, a_.port);
 }
 
 keeper::~keeper(){
@@ -47,10 +44,14 @@ keeper::~keeper(){
 int keeper::run()
 {
   try {
-    { LOG(INFO) << "running in port=" << a_.port; }
     jubatus::util::set_exit_on_term();
     jubatus::util::ignore_sigpipe();
-    return this->serv(a_.port, a_.threadnum);
+    if (this->serv(a_.port, a_.threadnum)) {
+      return 0;
+    } else {
+      LOG(ERROR) << "failed starting server: any process using port " << a_.port << "?";
+      return -1;
+    }
   } catch (const jubatus::exception::jubatus_exception& e) {
     std::cout << e.diagnostic_information(true) << std::endl;
     return -1;

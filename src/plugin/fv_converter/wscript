@@ -14,8 +14,16 @@ def options(opt):
 def configure(conf):
   if Options.options.enable_mecab:
     conf.check_cxx(lib = 'mecab',
+                   fragment='''
+#include <mecab.h>
+int main() {
+  MeCab::Model* (*p)(const char*) = MeCab::createModel;
+  &MeCab::Model::createTagger;
+  &MeCab::Model::createLattice;
+}
+''',
                    define_name = 'HAVE_MECAB',
-                   errmsg = 'not found (remove "--enable-mecab" option if not necessary)')
+                   errmsg = 'mecab 0.99 or later is required (remove "--enable-mecab" option if not necessary)')
     
 
   if Options.options.enable_ux:

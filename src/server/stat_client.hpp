@@ -1,4 +1,11 @@
 
+// This file is auto-generated from stat.idl
+// *** DO NOT EDIT ***
+
+#ifndef STAT_CLIENT_HPP_
+#define STAT_CLIENT_HPP_
+
+
 #include "stat_types.hpp"
 #include <pficommon/network/mprpc.h>
 
@@ -67,3 +74,6 @@ private:
 
 } // namespace jubatus
 
+
+
+#endif // STAT_CLIENT_HPP_

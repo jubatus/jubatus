@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,8 +37,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <unistd.h>
-
 #ifdef __APPLE__
 #include <libproc.h>
 #endif
@@ -52,15 +49,24 @@ using namespace pfi::lang;
 namespace jubatus {
 namespace util {
 
+// FIXME: AF_INET does not specify IPv6
 void get_ip(const char* nic, string& out)
 {
   int fd;
   struct ifreq ifr;
 
   fd = socket(AF_INET, SOCK_DGRAM, 0);
+  if (fd == -1) {
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to create socket(AF_INET, SOCK_DGRAM)")
+      << jubatus::exception::error_errno(errno));
+  }
+
   ifr.ifr_addr.sa_family = AF_INET;
   strncpy(ifr.ifr_name, nic, IFNAMSIZ-1);
-  ioctl(fd, SIOCGIFADDR, &ifr);
+  if (ioctl(fd, SIOCGIFADDR, &ifr) == -1) {
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get IP address from interface")
+      << jubatus::exception::error_errno(errno));
+  }
   close(fd);
 
   struct sockaddr_in* sin = (struct sockaddr_in*)(&(ifr.ifr_addr));
@@ -177,23 +183,32 @@ void append_server_path(const string& argv0)
 
 }
 
-void get_machine_status(std::map<std::string, std::string>& ret)
+void get_machine_status(machine_status_t& status)
 {
-  pid_t pid = getpid();
-
   // WARNING: this code will only work on linux
-  std::ostringstream fname;
-  fname << "/proc/" << pid << "/statm";
-  std::ifstream statm(fname.str().c_str());
+  try {
+    // /proc/[pid]/statm shows using page size
+    char path[64];
+    snprintf(path, sizeof(path), "/proc/%d/statm", getpid());
+    std::ifstream statm(path);
 
-  uint64_t vm_virt; statm >> vm_virt;
-  uint64_t vm_rss; statm >> vm_rss;
-  uint64_t vm_shr; statm >> vm_shr;
+    const long page_size = sysconf(_SC_PAGESIZE);
+    uint64_t vm_virt, vm_rss , vm_shr;
+    statm >> vm_virt >> vm_rss >> vm_shr;
+    vm_virt = vm_virt * page_size / 1024;
+    vm_rss = vm_rss * page_size / 1024;
+    vm_shr = vm_shr * page_size / 1024;
 
-  ret["VIRT"] = pfi::lang::lexical_cast<std::string>(vm_virt);
-  ret["RSS"] = pfi::lang::lexical_cast<std::string>(vm_rss);
-  ret["SHR"] = pfi::lang::lexical_cast<std::string>(vm_shr);
-
+    // in KB
+    status.vm_size = vm_virt; // total program size(virtual memory)
+    status.vm_resident = vm_rss; // resident set size
+    status.vm_share = vm_shr; // shared
+  } catch (...) {
+    // store zero
+    status.vm_size = 0;
+    status.vm_resident = 0;
+    status.vm_share = 0;
+  }
 }
 
 namespace {
