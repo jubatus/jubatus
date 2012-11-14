@@ -34,7 +34,7 @@ string make_logfile_name(const server_argv& a) {
     logfile << a.program_name << '.';
     logfile << a.eth << '_' << a.port;
     logfile << ".zklog.";
-    logfile << pfi::lang::lexical_cast<std::string>(getpid());
+    logfile << getpid();
   }
   return logfile.str();
 }
