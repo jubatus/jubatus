@@ -30,7 +30,11 @@ namespace {
 string make_logfile_name(const server_argv& a) {
   std::ostringstream logfile;
   if (a.logdir != ""){
-    logfile << a.logdir << '/' << a.program_name << '.' << a.eth << '_' << a.port << ".zklog";
+    logfile << a.logdir << '/';
+    logfile << a.program_name << '.';
+    logfile << a.eth << '_' << a.port;
+    logfile << ".zklog.";
+    logfile << pfi::lang::lexical_cast<std::string>(getpid());
   }
   return logfile.str();
 }
