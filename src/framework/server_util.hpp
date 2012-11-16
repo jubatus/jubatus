@@ -72,7 +72,7 @@ struct server_argv {
   bool is_standalone() const {
     return (z == "");
   }
-  std::string boot_message(const std::string& progname) const;
+  void boot_message(const std::string& progname) const;
   void set_log_destination(const std::string& progname) const;
 };
 
@@ -92,7 +92,7 @@ struct keeper_argv {
   std::string eth;
   const std::string type;
 
-  std::string boot_message(const std::string& progname) const;
+  void boot_message(const std::string& progname) const;
   void set_log_destination(const std::string& progname) const;
 };
 

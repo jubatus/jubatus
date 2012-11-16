@@ -18,7 +18,7 @@
 #include <glog/logging.h>
 
 #include <iostream>
-
+#include <iomanip>
 #include <pficommon/text/json.h>
 
 #include "../common/util.hpp"
@@ -107,7 +107,7 @@ namespace jubatus { namespace framework {
       google::LogToStderr();
     }
 
-    LOG(INFO) << boot_message(jubatus::util::get_program_name());
+    boot_message(jubatus::util::get_program_name());
   };
 
   server_argv::server_argv():
@@ -116,11 +116,29 @@ namespace jubatus { namespace framework {
   {
   };
 
-  std::string server_argv::boot_message(const std::string& progname) const {
-    std::stringstream ret;
-    ret << "starting " << progname << " " << VERSION << " RPC server at " <<
-      eth << ":" << port << " with timeout: " << timeout;
-    return ret.str();
+  void server_argv::boot_message(const std::string& progname) const {
+    std::stringstream ss;
+    ss << "starting " << progname << " " << VERSION << " RPC server at " << eth << ":" << port << '\n';
+    ss << "    pid            : " << getpid() << '\n';
+    ss << "    user           : " << getenv("USER") << '\n';
+    ss << "    mode           : ";
+    if(is_standalone()) { 
+      ss << "standalone mode\n";
+    } else {
+      ss << "multinode mode\n";
+    }
+    ss << "    timeout        : " << timeout << '\n';
+    ss << "    thread         : " << threadnum << '\n';
+    ss << "    tmpdir         : " << tmpdir << '\n';
+    ss << "    logdir         : " << logdir << '\n';
+#ifdef HAVE_ZOOKEEPER_H
+    ss << "    zookeeper      : " << z << '\n';
+    ss << "    name           : " << name << '\n';
+    ss << "    join           : " << std::boolalpha << join << '\n';
+    ss << "    interval sec   : " << interval_sec << '\n';
+    ss << "    interval count : " << interval_count << '\n';
+#endif
+    LOG(INFO) << ss.str();
   };
 
   void server_argv::set_log_destination(const std::string& progname) const {
@@ -181,7 +199,8 @@ namespace jubatus { namespace framework {
     } else {
       google::LogToStderr();
     }
-    LOG(INFO) << boot_message(jubatus::util::get_program_name());
+
+    boot_message(jubatus::util::get_program_name());
   };
 
   keeper_argv::keeper_argv():
@@ -189,11 +208,16 @@ namespace jubatus { namespace framework {
   {
   };
 
-  std::string keeper_argv::boot_message(const std::string& progname) const {
-    std::stringstream ret;
-    ret << "starting " << progname << " " << VERSION << " RPC server at " <<
-      eth << ":" << port << " with timeout: " << timeout;
-    return ret.str();
+  void keeper_argv::boot_message(const std::string& progname) const {
+    std::stringstream ss;
+    ss << "starting " << progname << " " << VERSION << " RPC server at " << eth << ":" << port << '\n';
+    ss << "    pid            : " << getpid() << '\n';
+    ss << "    user           : " << getenv("USER") << '\n';
+    ss << "    timeout        : " << timeout << '\n';
+    ss << "    thread         : " << threadnum << '\n';
+    ss << "    logdir         : " << logdir << '\n';
+    ss << "    zookeeper      : " << z << '\n';
+    LOG(INFO) << ss.str();
   };
 
   void keeper_argv::set_log_destination(const std::string& progname) const {
