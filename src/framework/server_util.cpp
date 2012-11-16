@@ -132,7 +132,8 @@ namespace jubatus { namespace framework {
       log += name + '.';
       log += google::GetLogSeverityName(severity);
       log += ".log.";
-      std::string link = basename.str();
+      std::string link = basename.str() + '.';
+      link += pfi::lang::lexical_cast<std::string>(getpid());
       google::SetLogDestination(severity, log.c_str());
       google::SetLogSymlink(severity, link.c_str());
     }
@@ -203,7 +204,8 @@ namespace jubatus { namespace framework {
       log += basename.str() + '.';
       log += google::GetLogSeverityName(severity);
       log += ".log.";
-      std::string link = basename.str();
+      std::string link = basename.str() + '.';
+      link += pfi::lang::lexical_cast<std::string>(getpid());
       google::SetLogDestination(severity, log.c_str());
       google::SetLogSymlink(severity, link.c_str());
     }
