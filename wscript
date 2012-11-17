@@ -45,6 +45,8 @@ def configure(conf):
   conf.write_config_header('src/config.hpp', guard="JUBATUS_CONFIG_HPP_", remove=False)
 
   conf.check_cxx(lib = 'msgpack')
+  conf.check_cxx(lib = 'mpio')
+  conf.check_cxx(lib = 'msgpack-rpc')
   conf.check_cxx(lib = 'dl')
 
   conf.check_cfg(package = 'libglog', args = '--cflags --libs')

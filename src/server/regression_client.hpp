@@ -7,47 +7,49 @@
 
 
 #include "regression_types.hpp"
-#include <pficommon/network/mprpc.h>
-
+#include <msgpack/rpc/client.h>
 
 namespace jubatus {
 
 namespace client {
 
-class regression : public pfi::network::mprpc::rpc_client {
+class regression {
 public:
   regression(const std::string &host, uint64_t port, double timeout_sec)
-    : rpc_client(host, port, timeout_sec) {}
+    : c_(host, port) {
+    c_.set_timeout( timeout_sec );
+  }
 
-    bool set_config(std::string name, config_data c) {
-      return call<bool(std::string, config_data)>("set_config")(name, c);
-    }
+  bool set_config(std::string name, config_data c) {
+    return c_.call("set_config", name, c).get<bool>();
+  }
 
-    config_data get_config(std::string name) {
-      return call<config_data(std::string)>("get_config")(name);
-    }
+  config_data get_config(std::string name) {
+    return c_.call("get_config", name).get<config_data>();
+  }
 
-    int32_t train(std::string name, std::vector<std::pair<float, datum > > train_data) {
-      return call<int32_t(std::string, std::vector<std::pair<float, datum > >)>("train")(name, train_data);
-    }
+  int32_t train(std::string name, std::vector<std::pair<float, datum > > train_data) {
+    return c_.call("train", name, train_data).get<int32_t>();
+  }
 
-    std::vector<float > estimate(std::string name, std::vector<datum > estimate_data) {
-      return call<std::vector<float >(std::string, std::vector<datum >)>("estimate")(name, estimate_data);
-    }
+  std::vector<float > estimate(std::string name, std::vector<datum > estimate_data) {
+    return c_.call("estimate", name, estimate_data).get<std::vector<float> >();
+  }
 
-    bool save(std::string name, std::string arg1) {
-      return call<bool(std::string, std::string)>("save")(name, arg1);
-    }
+  bool save(std::string name, std::string arg1) {
+    return c_.call("save", name, arg1).get<bool>();
+  }
 
-    bool load(std::string name, std::string arg1) {
-      return call<bool(std::string, std::string)>("load")(name, arg1);
-    }
+  bool load(std::string name, std::string arg1) {
+    return c_.call("load", name, arg1).get<bool>();
+  }
 
-    std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
-      return call<std::map<std::string, std::map<std::string, std::string > >(std::string)>("get_status")(name);
-    }
+  std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
+    return c_.call("get_status", name).get<std::map<std::string, std::map<std::string, std::string> > >();
+  }
 
 private:
+  msgpack::rpc::client c_;
 };
 
 } // namespace client

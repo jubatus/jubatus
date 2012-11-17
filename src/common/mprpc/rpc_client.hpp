@@ -34,92 +34,10 @@
 #include "../exception.hpp"
 #include "exception.hpp"
 #include "async_client.hpp"
+#include "rpc_error.hpp"
+#include "rpc_result.hpp"
 
 namespace jubatus { namespace common { namespace mprpc {
-
-class rpc_mclient;
-
-class rpc_error {
-public:
-  rpc_error(const std::string& host, uint16_t port)
-    : host_(host), port_(port)
-  {}
-
-  rpc_error(const std::string& host, uint16_t port, jubatus::exception::exception_thrower_ptr thrower)
-    : host_(host), port_(port), exception_(thrower)
-  {}
-
-  std::string host() const { return host_; }
-  uint16_t port() const { return port_; }
-
-  bool has_exception() const { return exception_; }
-  void throw_exception() const { exception_->throw_exception(); }
-  jubatus::exception::exception_thrower_ptr exception() const { return exception_; }
-
-private:
-  std::string host_;
-  uint16_t port_;
-  jubatus::exception::exception_thrower_ptr exception_;
-};
-
-typedef jubatus::exception::error_info<struct error_multi_rpc_, std::vector<rpc_error> > error_multi_rpc;
-inline std::string to_string(const error_multi_rpc& info)
-{
-  std::ostringstream result;
-
-  size_t host_size = info.value().size();
-  if (host_size == 1) {
-    result << "rpc_error with 1 server" << '\n';
-  } else if (host_size > 1) {
-    result << "rpc_error with " << host_size << " servers" << '\n';
-  }
-
-  std::vector<rpc_error> errors = info.value();
-  for (std::vector<rpc_error>::const_iterator it = errors.begin(), end = errors.end();
-      it != end; ++it) {
-    result << " host: " << it->host() << ", port: " << it->port() << '\n';
-    std::ostringstream tmp;
-    if (it->has_exception()) {
-      try {
-        it->throw_exception();
-      } catch (const jubatus::exception::jubatus_exception& e) {
-        tmp << e.diagnostic_information(false);
-      } catch (const std::exception& e) {
-        tmp << e.what();
-      } catch (...) {
-        tmp << "...";
-      }
-
-      // Indent each line
-      std::vector<std::string> lines = pfi::data::string::split(tmp.str(), '\n');
-      std::ostringstream msg;
-      for (std::vector<std::string>::iterator it = lines.begin(), end = lines.end();
-          it != end; ++it) {
-        if (it->empty()) continue;
-        msg << "   " << *it << '\n';
-      }
-      result << msg.str();
-    }
-  }
-
-  return result.str();
-}
-
-template <class Res>
-struct rpc_result {
-  pfi::lang::shared_ptr<Res> value;
-  std::vector<rpc_error> error;
-
-  Res& operator*() const { return *value; }
-  bool has_error() const { return !error.empty(); }
-};
-
-struct rpc_result_object {
-  std::vector<rpc_response_t> response;
-  std::vector<rpc_error> error;
-
-  bool has_error() const { return !error.empty(); }
-};
 
 class rpc_mclient : pfi::lang::noncopyable
 {

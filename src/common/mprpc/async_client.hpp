@@ -32,7 +32,6 @@
 #include "../exception.hpp"
 #include "exception.hpp"
 
-
 namespace jubatus { namespace common { namespace mprpc {
 
 struct rpc_response_t {
@@ -45,6 +44,11 @@ struct rpc_response_t {
   msgpack::object& error() { return response.a2; }
   template<typename T> const T as() const { return response.a3.as<T>(); }
 
+  rpc_response_t() {}
+  rpc_response_t( uint32_t _msgid, msgpack::object &_error, msgpack::object &_result,
+                  pfi::lang::shared_ptr<msgpack::zone> _zone ) :
+    response( /* msgpack::rpc::RESPONSE */ 1, _msgid, _error, _result ),
+    zone(_zone) {}
 };
 
 class async_sock : public pfi::network::mprpc::socket {

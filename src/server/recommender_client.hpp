@@ -7,83 +7,86 @@
 
 
 #include "recommender_types.hpp"
-#include <pficommon/network/mprpc.h>
+#include <msgpack/rpc/client.h>
 
 
 namespace jubatus {
 
 namespace client {
 
-class recommender : public pfi::network::mprpc::rpc_client {
+class recommender {
 public:
   recommender(const std::string &host, uint64_t port, double timeout_sec)
-    : rpc_client(host, port, timeout_sec) {}
+    : c_(host, port) {
+    c_.set_timeout( timeout_sec );
+  }
 
-    bool set_config(std::string name, config_data c) {
-      return call<bool(std::string, config_data)>("set_config")(name, c);
-    }
+  bool set_config(std::string name, config_data c) {
+    return c_.call("set_config", name, c).get<bool>();
+  }
 
-    config_data get_config(std::string name) {
-      return call<config_data(std::string)>("get_config")(name);
-    }
+  config_data get_config(std::string name) {
+    return c_.call("get_config", name).get<config_data>();
+  }
 
-    bool clear_row(std::string name, std::string id) {
-      return call<bool(std::string, std::string)>("clear_row")(name, id);
-    }
+  bool clear_row(std::string name, std::string id) {
+    return c_.call("clear_row", name, id).get<bool>();
+  }
 
-    bool update_row(std::string name, std::string id, datum d) {
-      return call<bool(std::string, std::string, datum)>("update_row")(name, id, d);
-    }
+  bool update_row(std::string name, std::string id, datum d) {
+    return c_.call("update_row", name, id, d).get<bool>();
+  }
 
-    bool clear(std::string name) {
-      return call<bool(std::string)>("clear")(name);
-    }
+  bool clear(std::string name) {
+    return c_.call("clear", name).get<bool>();
+  }
 
-    datum complete_row_from_id(std::string name, std::string id) {
-      return call<datum(std::string, std::string)>("complete_row_from_id")(name, id);
-    }
+  datum complete_row_from_id(std::string name, std::string id) {
+    return c_.call("complete_row_from_id", name, id).get<datum>();
+  }
 
-    datum complete_row_from_data(std::string name, datum d) {
-      return call<datum(std::string, datum)>("complete_row_from_data")(name, d);
-    }
+  datum complete_row_from_data(std::string name, datum d) {
+    return c_.call("complete_row_from_data", name, d).get<datum>();
+  }
 
-    similar_result similar_row_from_id(std::string name, std::string id, uint32_t size) {
-      return call<similar_result(std::string, std::string, uint32_t)>("similar_row_from_id")(name, id, size);
-    }
+  similar_result similar_row_from_id(std::string name, std::string id, uint32_t size) {
+    return c_.call("similar_row_from_id", name, id, size).get<similar_result>();
+  }
 
-    similar_result similar_row_from_data(std::string name, datum data, uint32_t size) {
-      return call<similar_result(std::string, datum, uint32_t)>("similar_row_from_data")(name, data, size);
-    }
+  similar_result similar_row_from_data(std::string name, datum data, uint32_t size) {
+    return c_.call("similar_row_from_data", name, data, size).get<similar_result>();
+  }
 
-    datum decode_row(std::string name, std::string id) {
-      return call<datum(std::string, std::string)>("decode_row")(name, id);
-    }
+  datum decode_row(std::string name, std::string id) {
+    return c_.call("decode_row", name, id).get<datum>();
+  }
 
-    std::vector<std::string > get_all_rows(std::string name) {
-      return call<std::vector<std::string >(std::string)>("get_all_rows")(name);
-    }
+  std::vector<std::string > get_all_rows(std::string name) {
+    return c_.call("get_all_rows", name).get<std::vector<std::string > >();
+  }
 
-    float similarity(std::string name, datum lhs, datum rhs) {
-      return call<float(std::string, datum, datum)>("similarity")(name, lhs, rhs);
-    }
+  float similarity(std::string name, datum lhs, datum rhs) {
+    return c_.call("similarity", name, lhs, rhs).get<float>();
+  }
 
-    float l2norm(std::string name, datum d) {
-      return call<float(std::string, datum)>("l2norm")(name, d);
-    }
+  float l2norm(std::string name, datum d) {
+    return c_.call("l2norm", name, d).get<float>();
+  }
 
-    bool save(std::string name, std::string id) {
-      return call<bool(std::string, std::string)>("save")(name, id);
-    }
+  bool save(std::string name, std::string id) {
+    return c_.call("save", name, id).get<bool>();
+  }
 
-    bool load(std::string name, std::string id) {
-      return call<bool(std::string, std::string)>("load")(name, id);
-    }
+  bool load(std::string name, std::string id) {
+    return c_.call("load", name, id).get<bool>();
+  }
 
-    std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
-      return call<std::map<std::string, std::map<std::string, std::string > >(std::string)>("get_status")(name);
-    }
+  std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
+    return c_.call("get_status", name).get<std::map<std::string, std::map<std::string, std::string > > >();
+  }
 
 private:
+  msgpack::rpc::client c_;
 };
 
 } // namespace client
