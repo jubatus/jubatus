@@ -104,7 +104,8 @@ public:
     use_cht_ = true;
   }
 
-  int start(pfi::network::mprpc::rpc_server& serv) {
+  template <typename RPCServer>
+  int start(RPCServer& serv) {
     const server_argv& a = server_->argv();
     if (impl_.prepare_for_start(a, use_cht_)) {
       server_->get_mixer()->start();
