@@ -16,10 +16,13 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
+#include <pficommon/text/json.h>
+#include <iostream>
 #include "config.hpp"
 
 using namespace std;
 using namespace pfi::lang;
+using namespace pfi::text::json;
 
 namespace jubatus {
 namespace common {
@@ -29,23 +32,24 @@ TEST(config, setconfig_zk) {
   zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
         (common::create_lock_service("zk", "localhost:2181", 10, "/dev/null"));
 
-  std::string engine_name, config_str;
+  std::string engine_name;
+  istringstream config_str("{\"test\":\"config\"}");
   std::string name_, path, string, dat;
   engine_name = "test";
   name_ = "test_name";
-//  config_str = "{[\"test\":\"config\"]}";
-  config_str = "testestestest";
+  json config;
+  config_str >> config;
 
 
-  jubatus::common::prepare_jubatus(*zk_, engine_name, "");
-  jubatus::common::setconfig_tozk(*zk_, engine_name, name_, config_str);
+  jubatus::common::prepare_jubatus(*zk_, engine_name, name_);
+  jubatus::common::config_tozk(*zk_, engine_name, name_, config);
 
   build_config_path(path, engine_name, name_);
 
   ASSERT_EQ(true, zk_->exists(path));
 
   zk_->read(path, dat);
-  ASSERT_EQ("testestestest", dat);
+  ASSERT_EQ("{\"test\":\"config\"}", dat);
 
 }
 

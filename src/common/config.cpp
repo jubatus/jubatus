@@ -16,51 +16,77 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "config.hpp"
+#include "exception.hpp"
 
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <pficommon/lang/cast.h>
 
 using namespace std;
 using namespace pfi::lang;
+using namespace pfi::text::json;
 
 namespace jubatus {
 namespace common {
 
 
-bool getconfig_fromzk(lock_service& z,
-                    const string& type, const string& name,
-                    string& config)
+void config_fromlocal(const string& path, json& config)
 {
+  ifstream ifc(path.c_str());
+  if (!ifc){
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't read config file."));
+  }
+  ifc >> config;
+}
+
+#ifdef HAVE_ZOOKEEPER_H
+void config_fromzk(lock_service& z,
+                    const string& type, const string& name,
+                    json& config)
+{
+  bool success = true;
   string path;
   build_config_path(path, type, name);
-  if (!z.exists(path)){
-    return false;
-  }
+  success = z.exists(path) && success;
 
-  z.create(path + "/config_lock", "");
-  common::lock_service_mutex zlk(z, path + "/config_lock");
+//  success = z.create(path + "/config_lock", "") && success;
+  common::lock_service_mutex zlk(z, path);
   while(!zlk.try_lock()){ ; }
 
-  z.read(path, config);
-  return true;
+  string str_config;
+  success = z.read(path, str_config) && success;
+  stringstream ss;
+  ss << str_config;
+  ss >> config;
+
+  if (!success)
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get config from zookeeper")
+        << jubatus::exception::error_api_func("lock_service::create"));
 }
 
-bool setconfig_tozk(lock_service& z,
+void config_tozk(lock_service& z,
                     const string& type, const string& name,
-                    string& config)
+                    json& config)
 {
+  bool success = true;
   string path;
   build_config_path(path, type, name);
 
-  z.create(path + "/config_lock", "");
-  common::lock_service_mutex zlk(z, path + "/config_lock");
-  while(zlk.try_lock()){ ; }
+//  success = z.create(path + "/config_lock", "") && success;
+  common::lock_service_mutex zlk(z, path);
+  while(!zlk.try_lock()){ ; }
 
-  z.create(path, config);
-  return true;
+  stringstream str_config;
+  str_config << config;
+  success = z.create(path, str_config.str()) && success;
+  
+  if (!success)
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to set config to zookeeper")
+        << jubatus::exception::error_api_func("lock_service::create"));
 }
-
+#endif
 
 
 } // common

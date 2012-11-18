@@ -22,12 +22,16 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <pficommon/text/json.h>
 
 namespace jubatus {
 namespace common {
 
-bool getconfig_fromzk(lock_service& , const std::string& , const std::string& , std::string&);
-bool setconfig_tozk(lock_service& , const std::string& , const std::string& , std::string&);
+void config_fromlocal(const std::string&, pfi::text::json::json&);
+#ifdef HAVE_ZOOKEEPER_H
+void config_fromzk(lock_service& , const std::string& , const std::string& , pfi::text::json::json&);
+void config_tozk(lock_service& , const std::string& , const std::string& , pfi::text::json::json&);
+#endif
 
 } // common
 } // jubatus
