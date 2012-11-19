@@ -17,12 +17,14 @@
 #include "classifier.hpp"
 #include "classifier_factory.hpp"
 #include "../common/exception.hpp"
+#include "../storage/storage_base.hpp"
 
 using namespace std;
 
 namespace jubatus {
+namespace classifier {
 
-classifier_base* classifier_factory::create_classifier(const std::string& name, storage::storage_base* storage) {
+classifier_base* create_classifier(const std::string& name, storage::storage_base* storage) {
   if (name == "perceptron"){
     return static_cast<classifier_base*>(new perceptron(storage));
   } else if (name == "PA"){
@@ -42,4 +44,5 @@ classifier_base* classifier_factory::create_classifier(const std::string& name, 
   }
 }
 
+}
 }

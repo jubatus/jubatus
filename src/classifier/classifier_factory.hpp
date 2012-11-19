@@ -26,9 +26,9 @@ namespace storage{
 class storage_base;
 }
 
-class classifier_factory {
-public:
-  static classifier_base* create_classifier(const std::string& name, storage::storage_base* storage);
-};
+namespace classifier {
 
+classifier_base* create_classifier(const std::string& name, storage::storage_base* storage);
+
+}
 }
