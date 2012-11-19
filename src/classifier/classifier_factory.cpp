@@ -25,20 +25,28 @@ namespace jubatus {
 namespace classifier {
 
 classifier_base* create_classifier(const std::string& name, storage::storage_base* storage) {
-  if (name == "perceptron"){
-    return static_cast<classifier_base*>(new perceptron(storage));
-  } else if (name == "PA"){
-    return static_cast<classifier_base*>(new PA(storage));
-  } else if (name == "PA1"){
-    return static_cast<classifier_base*>(new PA1(storage));
-  } else if (name == "PA2"){
-    return static_cast<classifier_base*>(new PA2(storage));
-  } else if (name == "CW"){
-    return static_cast<classifier_base*>(new CW(storage));
-  } else if (name == "AROW"){
-    return static_cast<classifier_base*>(new AROW(storage));
-  } else if (name == "NHERD"){
-    return static_cast<classifier_base*>(new NHERD(storage));
+  // TODO remove this interface
+  pfi::text::json::json param;
+  return create_classifier(name, param, storage);
+}
+
+classifier_base* create_classifier(const std::string& name,
+                                   const pfi::text::json::json& param,
+                                   storage::storage_base* storage) {
+  if (name == "perceptron") {
+    return new perceptron(storage);
+  } else if (name == "PA") {
+    return new PA(storage);
+  } else if (name == "PA1") {
+    return new PA1(storage);
+  } else if (name == "PA2") {
+    return new PA2(storage);
+  } else if (name == "CW") {
+    return new CW(storage);
+  } else if (name == "AROW") {
+    return new AROW(storage);
+  } else if (name == "NHERD") {
+    return new NHERD(storage);
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }

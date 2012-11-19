@@ -18,6 +18,8 @@
 
 #include <string>
 
+#include <pficommon/text/json.h>
+
 namespace jubatus {
 
 class classifier_base;
@@ -29,6 +31,9 @@ class storage_base;
 namespace classifier {
 
 classifier_base* create_classifier(const std::string& name, storage::storage_base* storage);
+classifier_base* create_classifier(const std::string& name,
+                                   const pfi::text::json::json& param,
+                                   storage::storage_base* storage);
 
 }
 }

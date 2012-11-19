@@ -78,6 +78,12 @@ int classifier_serv::set_config(const config_data& config) {
 
   classifier_.reset(classifier_factory::create_classifier(config.method, clsfer_.get_model().get()));
 
+  // TODO set param from config
+  pfi::text::json::json param;
+  clsfer_.classifier_.reset(classifier::create_classifier(config.method,
+                                                          param,
+                                                          clsfer_.get_model().get()));
+
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
   return 0;
