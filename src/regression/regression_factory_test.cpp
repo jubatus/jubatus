@@ -8,18 +8,18 @@
 #include "../common/exception.hpp"
 
 namespace jubatus {
+namespace regression {
 
 TEST(regression_factory, trivial) {
-  regression_factory f;
   storage::local_storage s;
-  pfi::lang::scoped_ptr<regression_base> r(f.create_regression("PA", &s));
+  pfi::lang::scoped_ptr<regression_base> r(create_regression("PA", &s));
   EXPECT_EQ(typeid(*r), typeid(regression::PA&));
 }
 
 TEST(regression_factory, unknown) {
-  regression_factory f;
   storage::local_storage s;
-  ASSERT_THROW(f.create_regression("unknown_regression", &s), unsupported_method);
+  ASSERT_THROW(create_regression("unknown_regression", &s), unsupported_method);
 }
 
+}
 }
