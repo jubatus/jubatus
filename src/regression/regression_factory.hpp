@@ -26,10 +26,10 @@ namespace storage {
 class storage_base;
 }
 
-namespace regression {
+class regression_factory {
+  public:
+    regression_base* create_regression(const std::string& name,
+                                       storage::storage_base* storage) const;
+};
 
-regression_base* create_regression(const std::string& name,
-                                   storage::storage_base* storage);
-
-}
 }

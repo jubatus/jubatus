@@ -76,11 +76,9 @@ int classifier_serv::set_config(const config_data& config) {
   converter_ = converter;
   (*converter_).set_weight_manager(wm_.get_model());
 
-  classifier_.reset(classifier_factory::create_classifier(config.method, clsfer_.get_model().get()));
-
   // TODO set param from config
   pfi::text::json::json param;
-  clsfer_.classifier_.reset(classifier::create_classifier(config.method,
+  classifier_.reset(classifier_factory::create_classifier(config.method,
                                                           param,
                                                           clsfer_.get_model().get()));
 
