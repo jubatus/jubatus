@@ -65,7 +65,7 @@ void classifier_serv::get_status(status_t& status) const {
 }
 
 int classifier_serv::set_config(const config_data& config) {
-  DLOG(INFO) << __func__;
+  LOG(INFO) << __func__;
 
   shared_ptr<datum_to_fv_converter> converter =
       framework::make_fv_converter(config.config);
@@ -82,7 +82,6 @@ int classifier_serv::set_config(const config_data& config) {
 }
 
 config_data classifier_serv::get_config() {
-  DLOG(INFO) << __func__;
   check_set_config();
   return config_;
 }

@@ -59,6 +59,7 @@ void recommender_serv::get_status(status_t& status) const {
 }
 
 int recommender_serv::set_config(config_data config) {
+  LOG(INFO) << __func__;
   shared_ptr<fv_converter::datum_to_fv_converter> converter
       = framework::make_fv_converter(config.converter);
   config_ = config;
@@ -94,6 +95,7 @@ int recommender_serv::update_row(std::string id,datum dat) {
 }
 
 int recommender_serv::clear() {
+  LOG(INFO) << __func__;
   check_set_config();
   clear_row_cnt_ = 0;
   update_row_cnt_ = 0;
