@@ -21,9 +21,16 @@
 
 namespace jubatus {
 
+regression_base* regression_factory::create_regression(const std::string& name, storage::storage_base* storage) const {
+  // TODO remove this interface
+  pfi::text::json::json param;
+  return create_regression(name, param, storage);
+}
+
 regression_base*
 regression_factory::create_regression(const std::string& name,
-                  storage::storage_base* storage) const {
+                                      const pfi::text::json::json& param,
+                                      storage::storage_base* storage) const{
   if (name == "PA") {
     return new regression::PA(storage);
   } else {

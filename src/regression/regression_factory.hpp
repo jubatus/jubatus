@@ -17,6 +17,7 @@
 #pragma once
 
 #include <string>
+#include <pficommon/text/json.h>
 
 namespace jubatus {
 
@@ -30,6 +31,10 @@ class regression_factory {
   public:
     regression_base* create_regression(const std::string& name,
                                        storage::storage_base* storage) const;
+    regression_base* create_regression(const std::string& name,
+                                       const pfi::text::json::json& param,
+                                       storage::storage_base* storage) const;
+
 };
 
 }
