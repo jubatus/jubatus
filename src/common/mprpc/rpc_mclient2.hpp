@@ -31,13 +31,14 @@
 
 #include "rpc_error.hpp"
 #include "rpc_result.hpp"
-#include "async_client.hpp"
 
 #define JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method)            \
   catch ( msgpack::rpc::no_method_error ) {                             \
-    throw JUBATUS_EXCEPTION( rpc_method_not_found() << error_method(method)); \
+    throw JUBATUS_EXCEPTION( jubatus::common::mprpc::rpc_method_not_found() \
+                             << jubatus::common::mprpc::error_method(method)); \
   } catch ( msgpack::rpc::argument_error ) {                            \
-    throw JUBATUS_EXCEPTION( rpc_type_error() << error_method(method)); \
+    throw JUBATUS_EXCEPTION( jubatus::common::mprpc::rpc_type_error()   \
+                             << jubatus::common::mprpc::error_method(method)); \
   } catch ( msgpack::rpc::remote_error &e ) {                           \
                                                                         \
     /* NOTE:                                                                  */ \
@@ -48,18 +49,20 @@
                                                                         \
     msgpack::object err = e.error();                                    \
     if ( err.type == msgpack::type::POSITIVE_INTEGER )                  \
-      throw JUBATUS_EXCEPTION(rpc_call_error()                          \
-                              << error_method(method)                   \
+      throw JUBATUS_EXCEPTION(jubatus::common::mprpc::rpc_call_error()                          \
+                              << jubatus::common::mprpc::error_method(method)                   \
                               << jubatus::exception::error_message(std::string("rpc_server error: " + pfi::lang::lexical_cast<std::string>(err.via.u64)))); \
     else                                                                \
-      throw JUBATUS_EXCEPTION(rpc_call_error()                          \
-                              << error_method(method)                   \
+      throw JUBATUS_EXCEPTION(jubatus::common::mprpc::rpc_call_error()                          \
+                              << jubatus::common::mprpc::error_method(method)                   \
                               << jubatus::exception::error_message(std::string("rpc_server error: " + pfi::lang::lexical_cast<std::string>(err)))); \
                                                                         \
   } catch( msgpack::rpc::connect_error ) {                              \
-    throw JUBATUS_EXCEPTION(rpc_io_error() << error_method(method));    \
+    throw JUBATUS_EXCEPTION(jubatus::common::mprpc::rpc_io_error()      \
+                            << jubatus::common::mprpc::error_method(method)); \
   } catch( msgpack::rpc::timeout_error ) {                              \
-    throw JUBATUS_EXCEPTION(rpc_timeout_error() << error_method(method)); \
+    throw JUBATUS_EXCEPTION(jubatus::common::mprpc::rpc_timeout_error() \
+                            << jubatus::common::mprpc::error_method(method)); \
   } catch( msgpack::type_error ) {                                      \
                                                                         \
     /* NOTE: msgpack-rpc will raise msgpack::type_error exception against */ \
@@ -69,7 +72,8 @@
     /* in the sense of "rpc method argument mismatch". So that, new exception */ \
     /* class is expected like rcp_broken_message, ...                     */ \
                                                                         \
-    throw JUBATUS_EXCEPTION(rpc_no_result() << error_method(method));   \
+    throw JUBATUS_EXCEPTION(jubatus::common::mprpc::rpc_no_result() \
+                            << jubatus::common::mprpc::error_method(method)); \
   } 
 
 namespace jubatus { namespace common { namespace mprpc {
@@ -237,43 +241,6 @@ rpc_result_object rpc_mclient2::call(const std::string &m, const A0& a0)
   call_(m, msgpack::type::tuple<const A0&>(a0));
   return wait(m);
 }
-
-rpc_result_object rpc_mclient2::wait(const std::string &method) {
-  rpc_result_object result;
-
-  if ( hosts_.empty() )
-    throw JUBATUS_EXCEPTION(rpc_no_client() << error_method(method));
-
-  for(size_t i = 0; i < futures_.size(); ++i ) {
-    try {
-      result.response.push_back( wait_one( method, futures_[i] ) );
-    } catch (...) {
-      // store exception_thrower to list of error
-      result.error.push_back(rpc_error(hosts_[i].first, hosts_[i].second, jubatus::exception::get_current_exception()));
-    }
-  }
-
-  if ( result.response.empty() ) {
-    rpc_no_result e;
-    if (result.has_error())
-      e << error_multi_rpc(result.error);
-    throw JUBATUS_EXCEPTION(e << error_method(method));
-  }
-  
-  return result;
-}
-
-rpc_response_t rpc_mclient2::wait_one( const std::string &method, msgpack::rpc::future &f ) {
-  try {
-    f.join();
-    msgpack::zone *zone_ptr = f.zone().get();
-    rpc_response_t rpc_resp( /* dummy msgid */0, f.error(), f.result(), 
-                             pfi::lang::shared_ptr<msgpack::zone>(zone_ptr) );
-    return rpc_resp;
-  }
-  JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method);
-}
-
 
 } // mprpc
 } // common

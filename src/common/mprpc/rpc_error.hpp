@@ -27,7 +27,7 @@
 
 namespace jubatus { namespace common { namespace mprpc {
 
-class rpc_mclient;
+// class rpc_mclient;
 
 class rpc_error {
 public:

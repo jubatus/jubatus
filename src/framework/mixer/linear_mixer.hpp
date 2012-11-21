@@ -22,7 +22,7 @@
 #include <pficommon/concurrent/thread.h>
 #include <pficommon/lang/shared_ptr.h>
 #include "../../common/lock_service.hpp"
-#include "../../common/mprpc/rpc_client.hpp"
+#include "../../common/mprpc/rpc_mclient2.hpp"
 #include "../../common/shared_ptr.hpp"
 #include "mixer.hpp"
 

@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,29 +16,26 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-
+#include <msgpack.hpp>
 #include <pficommon/lang/shared_ptr.h>
-#include "rpc_response.hpp"
-#include "rpc_error.hpp"
 
 namespace jubatus { namespace common { namespace mprpc {
 
-template <class Res>
-struct rpc_result {
-  pfi::lang::shared_ptr<Res> value;
-  std::vector<rpc_error> error;
+struct rpc_response_t {
+  msgpack::type::tuple<uint8_t,uint32_t,msgpack::object,msgpack::object> response;
+  pfi::lang::shared_ptr<msgpack::zone> zone;
 
-  Res& operator*() const { return *value; }
-  bool has_error() const { return !error.empty(); }
-};
+  bool has_error() const { return !response.a2.is_nil(); }
 
-struct rpc_result_object {
-  std::vector<rpc_response_t> response;
-  std::vector<rpc_error> error;
+  uint32_t msgid() const { return response.a1; }
+  msgpack::object& error() { return response.a2; }
+  template<typename T> const T as() const { return response.a3.as<T>(); }
 
-  bool has_error() const { return !error.empty(); }
+  rpc_response_t() {}
+  rpc_response_t( uint32_t _msgid, const msgpack::object &_error, const msgpack::object &_result,
+                  pfi::lang::shared_ptr<msgpack::zone> _zone ) :
+    response( /* msgpack::rpc::RESPONSE */ 1, _msgid, _error, _result ),
+    zone(_zone) {}
 };
 
 } // mprpc
