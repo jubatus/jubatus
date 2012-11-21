@@ -43,8 +43,15 @@ void rpc_server2::dispatch( request req ) {
   }
 }
 
-void rpc_server2::add_inner(const std::string &name, mp::shared_ptr<invoker_base> invoker) {
+void rpc_server2::add_inner(const std::string &name, pfi::lang::shared_ptr<invoker_base> invoker) {
   funcs[name] = invoker;
+}
+
+bool rpc_server2::serv(uint16_t port, int nthreads) {
+  instance.listen( "0.0.0.0", port );
+  instance.run( nthreads );
+
+  return false; // never return
 }
 
 } // mprpc

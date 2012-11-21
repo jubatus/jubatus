@@ -18,6 +18,8 @@
 #pragma once
 
 #include <msgpack/rpc/server.h>
+#include <pficommon/lang/shared_ptr.h>
+#include <pficommon/lang/function.h>
 
 namespace jubatus { namespace common { namespace mprpc {
 
@@ -35,7 +37,7 @@ public:
 // async var-arg method type
 template<typename Tuple>
 struct async_vmethod {
-  typedef mp::function<void(invoker_base::request_type, Tuple)> type;
+  typedef pfi::lang::function<void(invoker_base::request_type, Tuple)> type;
 };
 
 // rpc_server2
@@ -55,7 +57,7 @@ public:
   virtual void dispatch(msgpack::rpc::request req);
 
   // synchronous method registration
-  template<typename T> void add(const std::string &name, const mp::function<T> &f);
+  template<typename T> void add(const std::string &name, const pfi::lang::function<T> &f);
 
   // *asynchronous* *var-arg* method registration
   //   where var-arg method means a method receive its arguments by one packed tuple
@@ -63,12 +65,13 @@ public:
   void add_async_vmethod(const std::string &name, 
                          const typename async_vmethod<Tuple>::type &f);
 
+  bool serv(uint16_t port, int nthreads);
   msgpack::rpc::server instance;
 
 private:
-  void add_inner(const std::string &name, mp::shared_ptr<invoker_base> invoker);
+  void add_inner(const std::string &name, pfi::lang::shared_ptr<invoker_base> invoker);
   
-  typedef std::map<std::string, mp::shared_ptr<invoker_base> > func_map;
+  typedef std::map<std::string, pfi::lang::shared_ptr<invoker_base> > func_map;
   func_map funcs;
 };
 
@@ -78,7 +81,7 @@ private:
 template <typename R>
 class invoker0: public invoker_base {
 public:
-  typedef mp::function<R()> func_type;
+  typedef pfi::lang::function<R()> func_type;
   invoker0(const func_type &f): f_(f) {}
   virtual void invoke( msgpack::rpc::request &req ) {
     R retval = f_();
@@ -90,14 +93,14 @@ private:
 };
 
 template <typename R>
-mp::shared_ptr<invoker_base> make_invoker( const mp::function<R()> &f) {
-  return mp::shared_ptr<invoker_base>(new invoker0<R>(f));
+pfi::lang::shared_ptr<invoker_base> make_invoker( const pfi::lang::function<R()> &f) {
+  return pfi::lang::shared_ptr<invoker_base>(new invoker0<R>(f));
 }
 
 template <typename R, typename A1>
 class invoker1: public invoker_base {
 public:
-  typedef mp::function<R(A1)> func_type;
+  typedef pfi::lang::function<R(A1)> func_type;
   invoker1(const func_type &f): f_(f) {}
   virtual void invoke( msgpack::rpc::request &req ) {
     msgpack::type::tuple<A1> params;
@@ -111,14 +114,14 @@ private:
 };
 
 template <typename R, typename A1>
-mp::shared_ptr<invoker_base> make_invoker( const mp::function<R(A1)> &f) {
-  return mp::shared_ptr<invoker_base>(new invoker1<R,A1>(f));
+pfi::lang::shared_ptr<invoker_base> make_invoker( const pfi::lang::function<R(A1)> &f) {
+  return pfi::lang::shared_ptr<invoker_base>(new invoker1<R,A1>(f));
 }
 
 template <typename R, typename A1, typename A2>
 class invoker2: public invoker_base {
 public:
-  typedef mp::function<R(A1,A2)> func_type;
+  typedef pfi::lang::function<R(A1,A2)> func_type;
   invoker2(const func_type &f): f_(f) {}
   virtual void invoke( msgpack::rpc::request &req ) {
     msgpack::type::tuple<A1,A2> params;
@@ -132,14 +135,14 @@ private:
 };
 
 template <typename R, typename A1, typename A2>
-mp::shared_ptr<invoker_base> make_invoker( const mp::function<R(A1,A2)> &f) {
-  return mp::shared_ptr<invoker_base>(new invoker2<R,A1,A2>(f));
+pfi::lang::shared_ptr<invoker_base> make_invoker( const pfi::lang::function<R(A1,A2)> &f) {
+  return pfi::lang::shared_ptr<invoker_base>(new invoker2<R,A1,A2>(f));
 }
 
 template <typename R, typename A1, typename A2, typename A3>
 class invoker3: public invoker_base {
 public:
-  typedef mp::function<R(A1,A2,A3)> func_type;
+  typedef pfi::lang::function<R(A1,A2,A3)> func_type;
   invoker3(const func_type &f): f_(f) {}
   virtual void invoke( msgpack::rpc::request &req ) {
     msgpack::type::tuple<A1,A2,A3> params;
@@ -153,14 +156,14 @@ private:
 };
 
 template <typename R, typename A1, typename A2, typename A3>
-mp::shared_ptr<invoker_base> make_invoker( const mp::function<R(A1,A2,A3)> &f) {
-  return mp::shared_ptr<invoker_base>(new invoker3<R,A1,A2,A3>(f));
+pfi::lang::shared_ptr<invoker_base> make_invoker( const pfi::lang::function<R(A1,A2,A3)> &f) {
+  return pfi::lang::shared_ptr<invoker_base>(new invoker3<R,A1,A2,A3>(f));
 }
 
 template <typename R, typename A1, typename A2, typename A3, typename A4>
 class invoker4: public invoker_base {
 public:
-  typedef mp::function<R(A1,A2,A3,A4)> func_type;
+  typedef pfi::lang::function<R(A1,A2,A3,A4)> func_type;
   invoker4(const func_type &f): f_(f) {}
   virtual void invoke( msgpack::rpc::request &req ) {
     msgpack::type::tuple<A1,A2,A3,A4> params;
@@ -174,8 +177,8 @@ private:
 };
 
 template <typename R, typename A1, typename A2, typename A3, typename A4>
-mp::shared_ptr<invoker_base> make_invoker( const mp::function<R(A1,A2,A3,A4)> &f) {
-  return mp::shared_ptr<invoker_base>(new invoker4<R,A1,A2,A3,A4>(f));
+pfi::lang::shared_ptr<invoker_base> make_invoker( const pfi::lang::function<R(A1,A2,A3,A4)> &f) {
+  return pfi::lang::shared_ptr<invoker_base>(new invoker4<R,A1,A2,A3,A4>(f));
 }
 
 //
@@ -203,14 +206,14 @@ private:
 };
 
 template <typename Tuple>
-mp::shared_ptr<invoker_base>
+pfi::lang::shared_ptr<invoker_base>
 make_async_vmethod_invoker( const typename async_vmethod<Tuple>::type &f ) {
-  return mp::shared_ptr<invoker_base>(new async_vmethod_invoker1<Tuple>(f));
+  return pfi::lang::shared_ptr<invoker_base>(new async_vmethod_invoker1<Tuple>(f));
 }
 
 // shortcut
 template <typename T>
-void rpc_server2::add(const std::string &name, const mp::function<T> &f) {
+void rpc_server2::add(const std::string &name, const pfi::lang::function<T> &f) {
   add_inner(name, make_invoker(f));
 }
 

@@ -24,30 +24,17 @@
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/network/mprpc.h>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/math/random.h>
 
-#include "../common/lock_service.hpp"
-#include "../common/cht.hpp"
+#include "keeper_common.hpp"
 #include "../common/mprpc/rpc_client.hpp"
-#include "../common/shared_ptr.hpp"
 
 #include "server_util.hpp"
-#include <glog/logging.h>
 #include <iostream>
 
 namespace jubatus {
 namespace framework {
 
-class no_worker : public jubatus::exception::runtime_error
-{
-public:
-  no_worker(const std::string& name) : runtime_error(name)
-  {}
-};
-
-class keeper : public pfi::network::mprpc::rpc_server {
+class keeper : public keeper_common, pfi::network::mprpc::rpc_server {
  public:
   keeper(const keeper_argv& a);
   virtual ~keeper();
@@ -246,15 +233,6 @@ class keeper : public pfi::network::mprpc::rpc_server {
       throw;
     }
   }
-
-  void get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret);
-  void get_members_from_cht_(const std::string& name,const std::string& id,
-                             std::vector<std::pair<std::string, int> >& ret, size_t n);
-
-  keeper_argv a_;
-  pfi::math::random::mtrand rng_;
-  pfi::concurrent::mutex mutex_;
-  common::cshared_ptr<common::lock_service> zk_;
 
 };
 

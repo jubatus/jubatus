@@ -103,7 +103,7 @@ linear_mixer::linear_mixer(pfi::lang::shared_ptr<linear_communication> communica
       is_running_(false),
       t_(pfi::lang::bind(&linear_mixer::mixer_loop, this)) {}
 
-void linear_mixer::register_api(pfi::network::mprpc::rpc_server& server) {
+void linear_mixer::register_api(rpc_server_t& server) {
   server.add<std::vector<std::string>(int)>
       ("get_diff",
        pfi::lang::bind(&linear_mixer::get_diff, this, pfi::lang::_1));

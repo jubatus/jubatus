@@ -31,6 +31,7 @@
 
 #include "rpc_error.hpp"
 #include "rpc_result.hpp"
+#include "async_client.hpp"
 
 #define JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method)            \
   catch ( msgpack::rpc::no_method_error ) {                             \
@@ -39,11 +40,11 @@
     throw JUBATUS_EXCEPTION( rpc_type_error() << error_method(method)); \
   } catch ( msgpack::rpc::remote_error &e ) {                           \
                                                                         \
-    // NOTE:                                                            \
-    //   msgpack-rpc raise remote_error against 'integer'-type error    \
-    // ( excluding NO_METHOD_ERROR and ARGUMENT_ERROR ) and non-integer error \
-    // ( excluding TIMEOUT_ERROR, CONNECT_ERROR ). We map these errors to \
-    // juba's rpc_call_error with error code or error message.          \
+    /* NOTE:                                                                  */ \
+    /*   msgpack-rpc raise remote_error against 'integer'-type error          */ \
+    /* ( excluding NO_METHOD_ERROR and ARGUMENT_ERROR ) and non-integer error */ \
+    /* ( excluding TIMEOUT_ERROR, CONNECT_ERROR ). We map these errors to     */ \
+    /* juba's rpc_call_error with error code or error message.                */ \
                                                                         \
     msgpack::object err = e.error();                                    \
     if ( err.type == msgpack::type::POSITIVE_INTEGER )                  \
@@ -61,12 +62,12 @@
     throw JUBATUS_EXCEPTION(rpc_timeout_error() << error_method(method)); \
   } catch( msgpack::type_error ) {                                      \
                                                                         \
-    // NOTE: msgpack-rpc will raise msgpack::type_error exception against \
-    // broken messages. We map these errors to juba's rpc_no_result.    \
-    //                                                                  \
-    // NOTE: juba's rpc_type_errors are preffered. but these are used   \
-    // in the sense of "rpc method argument mismatch". So that, new exception \
-    // class is expected like rcp_broken_message, ...                   \
+    /* NOTE: msgpack-rpc will raise msgpack::type_error exception against */ \
+    /* broken messages. We map these errors to juba's rpc_no_result.      */ \
+    /*                                                                    */ \
+    /* NOTE: juba's rpc_type_errors are preffered. but these are used     */ \
+    /* in the sense of "rpc method argument mismatch". So that, new exception */ \
+    /* class is expected like rcp_broken_message, ...                     */ \
                                                                         \
     throw JUBATUS_EXCEPTION(rpc_no_result() << error_method(method));   \
   } 
@@ -262,12 +263,12 @@ rpc_result_object rpc_mclient2::wait(const std::string &method) {
   return result;
 }
 
-rpc_response_t
-void rpc_mclient2::wait_one( const std::string &method, msgpack::rpc::future &f ) {
+rpc_response_t rpc_mclient2::wait_one( const std::string &method, msgpack::rpc::future &f ) {
   try {
     f.join();
-    rpc_respones_t rpc_resp( /* dummy msgid */0, f.error(), f.result(), 
-                             pfi::lang::shared_ptr<msgpack::zone>(f.zone()) );
+    msgpack::zone *zone_ptr = f.zone().get();
+    rpc_response_t rpc_resp( /* dummy msgid */0, f.error(), f.result(), 
+                             pfi::lang::shared_ptr<msgpack::zone>(zone_ptr) );
     return rpc_resp;
   }
   JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method);

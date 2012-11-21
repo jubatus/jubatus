@@ -21,7 +21,7 @@
 #include <vector>
 
 #include <pficommon/lang/shared_ptr.h>
-
+#include "async_client.hpp"
 #include "rpc_error.hpp"
 
 namespace jubatus { namespace common { namespace mprpc {

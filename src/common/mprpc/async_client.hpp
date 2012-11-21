@@ -45,7 +45,7 @@ struct rpc_response_t {
   template<typename T> const T as() const { return response.a3.as<T>(); }
 
   rpc_response_t() {}
-  rpc_response_t( uint32_t _msgid, msgpack::object &_error, msgpack::object &_result,
+  rpc_response_t( uint32_t _msgid, const msgpack::object &_error, const msgpack::object &_result,
                   pfi::lang::shared_ptr<msgpack::zone> _zone ) :
     response( /* msgpack::rpc::RESPONSE */ 1, _msgid, _error, _result ),
     zone(_zone) {}
