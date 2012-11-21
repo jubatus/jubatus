@@ -78,11 +78,11 @@
 
 namespace jubatus { namespace common { namespace mprpc {
 
-class rpc_mclient2: pfi::lang::noncopyable {
+class rpc_mclient: pfi::lang::noncopyable {
 public:
   typedef std::vector<std::pair<std::string, uint16_t> > host_spec_list_t;
 
-  rpc_mclient2(const host_spec_list_t& hosts, int timeout_sec,
+  rpc_mclient(const host_spec_list_t& hosts, int timeout_sec,
                msgpack::rpc::session_pool *pool = NULL) :
     hosts_(hosts),
     timeout_sec_(timeout_sec),
@@ -91,7 +91,7 @@ public:
     init_pool( pool );
   }
 
-  rpc_mclient2(const std::vector<std::pair<std::string, int> >& hosts, int timeout_sec,
+  rpc_mclient(const std::vector<std::pair<std::string, int> >& hosts, int timeout_sec,
                msgpack::rpc::session_pool *pool = NULL ):
     timeout_sec_(timeout_sec),
     pool_(NULL),
@@ -103,7 +103,7 @@ public:
     init_pool( pool );
   }
 
-  ~rpc_mclient2() {
+  ~rpc_mclient() {
     if ( pool_allocated_ && pool_) {
       delete pool_;
       pool_ = NULL;
@@ -153,31 +153,31 @@ private:
 };
 
 template <typename Res, typename A0>
-rpc_result<Res> rpc_mclient2::call( const std::string &m, const A0 &a0, const pfi::lang::function<Res(Res,Res)> &reducer) {
+rpc_result<Res> rpc_mclient::call( const std::string &m, const A0 &a0, const pfi::lang::function<Res(Res,Res)> &reducer) {
   call_(m, msgpack::type::tuple<const A0&>(a0));
   return join_(m, reducer);
 }
 
 template <typename Res, typename A0, typename A1>
-rpc_result<Res> rpc_mclient2::call( const std::string &m, const A0 &a0, const A1 &a1, const pfi::lang::function<Res(Res,Res)> &reducer) {
+rpc_result<Res> rpc_mclient::call( const std::string &m, const A0 &a0, const A1 &a1, const pfi::lang::function<Res(Res,Res)> &reducer) {
   call_(m, msgpack::type::tuple<const A0&, const A1&>(a0, a1));
   return join_(m, reducer);
 }
 
 template <typename Res, typename A0, typename A1, typename A2>
-rpc_result<Res> rpc_mclient2::call( const std::string &m, const A0 &a0, const A1 &a1, const A2 &a2, const pfi::lang::function<Res(Res,Res)> &reducer) {
+rpc_result<Res> rpc_mclient::call( const std::string &m, const A0 &a0, const A1 &a1, const A2 &a2, const pfi::lang::function<Res(Res,Res)> &reducer) {
   call_(m, msgpack::type::tuple<const A0&, const A1&, const A2&>(a0, a1, a2));
   return join_(m, reducer);
 }
 
 template <typename Res, typename A0, typename A1, typename A2, typename A3>
-rpc_result<Res> rpc_mclient2::call( const std::string &m, const A0 &a0, const A1 &a1, const A2 &a2, const A3 &a3, const pfi::lang::function<Res(Res,Res)> &reducer) {
+rpc_result<Res> rpc_mclient::call( const std::string &m, const A0 &a0, const A1 &a1, const A2 &a2, const A3 &a3, const pfi::lang::function<Res(Res,Res)> &reducer) {
   call_(m, msgpack::type::tuple<const A0&, const A1&, const A2&, const A3&>(a0, a1, a2, a3));
   return join_(m, reducer);
 }
 
 template <typename Args>
-void rpc_mclient2::call_( const std::string &m, const Args &args) {
+void rpc_mclient::call_( const std::string &m, const Args &args) {
   futures_.clear();
   futures_.reserve( hosts_.size() );
   for( host_spec_list_t::iterator itr = hosts_.begin(), end = hosts_.end(); 
@@ -189,7 +189,7 @@ void rpc_mclient2::call_( const std::string &m, const Args &args) {
 }
 
 template<typename Res>
-void rpc_mclient2::join_one_(const std::string &method, msgpack::rpc::future &response,
+void rpc_mclient::join_one_(const std::string &method, msgpack::rpc::future &response,
                              rpc_result<Res>& result,
                              const pfi::lang::function<Res(Res,Res)> &reducer ) {
   try {
@@ -204,7 +204,7 @@ void rpc_mclient2::join_one_(const std::string &method, msgpack::rpc::future &re
 }
 
 template<typename Res>
-rpc_result<Res> rpc_mclient2::join_(const std::string &method, const pfi::lang::function<Res(Res,Res)> &reducer ) {
+rpc_result<Res> rpc_mclient::join_(const std::string &method, const pfi::lang::function<Res(Res,Res)> &reducer ) {
 
   rpc_result<Res> result;
 
@@ -236,7 +236,7 @@ rpc_result<Res> rpc_mclient2::join_(const std::string &method, const pfi::lang::
 }
 
 template <typename A0>
-rpc_result_object rpc_mclient2::call(const std::string &m, const A0& a0)
+rpc_result_object rpc_mclient::call(const std::string &m, const A0& a0)
 {
   call_(m, msgpack::type::tuple<const A0&>(a0));
   return wait(m);

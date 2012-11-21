@@ -19,7 +19,7 @@
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/network/mprpc.h>
 #include "../server_base.hpp"
-#include "../../common/mprpc/rpc_server2.hpp"
+#include "../../common/mprpc/rpc_server.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -31,10 +31,7 @@ namespace mixer {
 
 class mixer {
 public:
-#if 0
-  typedef pfi::network::mprpc::rpc_server rpc_server_t;
-#endif
-  typedef jubatus::common::mprpc::rpc_server2 rpc_server_t;
+  typedef jubatus::common::mprpc::rpc_server rpc_server_t;
 
 public:
   virtual ~mixer() {}

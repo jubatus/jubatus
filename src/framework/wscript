@@ -11,7 +11,7 @@ def build(bld):
 
   framework_source = 'server_util.cpp server_base.cpp server_helper.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
-    framework_source +=  ' keeper_common.cpp keeper2.cpp'
+    framework_source +=  ' keeper_common.cpp keeper.cpp'
 
   bld.shlib(
     source = framework_source,

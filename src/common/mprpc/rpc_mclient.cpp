@@ -14,13 +14,13 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "rpc_mclient2.hpp"
+#include "rpc_mclient.hpp"
 #include <utility>
 #include <glog/logging.h>
 
 namespace jubatus { namespace common { namespace mprpc {
 
-rpc_result_object rpc_mclient2::wait(const std::string &method) {
+rpc_result_object rpc_mclient::wait(const std::string &method) {
   rpc_result_object result;
 
   if ( hosts_.empty() )
@@ -45,7 +45,7 @@ rpc_result_object rpc_mclient2::wait(const std::string &method) {
   return result;
 }
 
-rpc_response_t rpc_mclient2::wait_one( const std::string &method, msgpack::rpc::future &f ) {
+rpc_response_t rpc_mclient::wait_one( const std::string &method, msgpack::rpc::future &f ) {
   try {
     f.join();
     msgpack::zone *zone_ptr = f.zone().get();

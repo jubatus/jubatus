@@ -15,16 +15,16 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "rpc_server2.hpp"
+#include "rpc_server.hpp"
 
 using namespace msgpack::rpc;
 
 namespace jubatus { namespace common { namespace mprpc {
 
-// rpc_server2
-//   Msgpack-RPC based server with 'hashed' dispatcher. rpc_server2 can add RPC method on-the-fly.
+// rpc_server
+//   Msgpack-RPC based server with 'hashed' dispatcher. rpc_server can add RPC method on-the-fly.
 //
-void rpc_server2::dispatch( request req ) {
+void rpc_server::dispatch( request req ) {
   std::string method;
   req.method().convert(&method);
 
@@ -43,11 +43,11 @@ void rpc_server2::dispatch( request req ) {
   }
 }
 
-void rpc_server2::add_inner(const std::string &name, pfi::lang::shared_ptr<invoker_base> invoker) {
+void rpc_server::add_inner(const std::string &name, pfi::lang::shared_ptr<invoker_base> invoker) {
   funcs[name] = invoker;
 }
 
-bool rpc_server2::serv(uint16_t port, int nthreads) {
+bool rpc_server::serv(uint16_t port, int nthreads) {
   instance.listen( "0.0.0.0", port );
   instance.run( nthreads );
 

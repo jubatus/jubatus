@@ -15,7 +15,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "keeper2.hpp"
+#include "keeper.hpp"
 
 #include <iostream>
 #include <glog/logging.h>
@@ -30,23 +30,23 @@ using namespace jubatus::framework;
 
 namespace jubatus { namespace framework {
 __thread msgpack::rpc::session_pool *private_session_pool_ = NULL;
-__thread keeper2::async_task_loop* keeper2::async_task_loop::private_async_task_loop_;
+__thread keeper::async_task_loop* keeper::async_task_loop::private_async_task_loop_;
 
 // NOTE: '__thread' is gcc-extension. We should re-implement with
 //       pthread TLS?
 
 }}
 
-keeper2::keeper2(const keeper_argv& a)
+keeper::keeper(const keeper_argv& a)
   : keeper_common(a),
-    jubatus::common::mprpc::rpc_server2() // FIMXE: set server timeout a.timeout
+    jubatus::common::mprpc::rpc_server() // FIMXE: set server timeout a.timeout
 {
 }
 
-keeper2::~keeper2(){
+keeper::~keeper(){
 }
 
-int keeper2::run()
+int keeper::run()
 {
   try {
     { LOG(INFO) << "running in port=" << a_.port; }

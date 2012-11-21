@@ -4,7 +4,7 @@ def options(opt): pass
 def configure(conf): pass
 
 def build(bld):
-  src = 'rpc_mclient2.cpp rpc_server2.cpp'
+  src = 'rpc_mclient.cpp rpc_server.cpp'
 
   bld.shlib(
     source = src,

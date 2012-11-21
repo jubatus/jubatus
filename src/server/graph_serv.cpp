@@ -138,7 +138,7 @@ int graph_serv::remove_node(const std::string& nid) {
     get_members_(members);
     
     if (!members.empty()) {
-      common::mprpc::rpc_mclient2 c(members, argv().timeout); //create global node
+      common::mprpc::rpc_mclient c(members, argv().timeout); //create global node
       try {
         c.call("remove_global_node", argv().name, nid, pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
       } catch(const common::mprpc::rpc_no_result& e) { // pass through

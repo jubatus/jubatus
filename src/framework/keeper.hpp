@@ -34,8 +34,8 @@
 
 #include <msgpack.hpp>
 #include <msgpack/rpc/client.h>
-#include "../common/mprpc/rpc_mclient2.hpp"
-#include "../common/mprpc/rpc_server2.hpp"
+#include "../common/mprpc/rpc_mclient.hpp"
+#include "../common/mprpc/rpc_server.hpp"
 #include "../common/mprpc/exception.hpp"
 
 #include <iostream>
@@ -50,38 +50,38 @@ extern const object TIMEOUT_ERROR;
 namespace jubatus {
 namespace framework {
 
-class keeper2 : public keeper_common, jubatus::common::mprpc::rpc_server2 {
+class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 public:
   typedef msgpack::rpc::request request_type;
   typedef std::vector<std::pair<std::string, int> > host_list_type;
 
 public:
-  keeper2(const keeper_argv& a);
-  virtual ~keeper2();
+  keeper(const keeper_argv& a);
+  virtual ~keeper();
   int run();
 
   template <typename R>
   void register_random(const std::string& method_name) {
     using namespace mp::placeholders;
-    mp::function<R(std::string)> f = mp::bind(&keeper2::template random_proxy<R>, this, method_name, _1);
+    mp::function<R(std::string)> f = mp::bind(&keeper::template random_proxy<R>, this, method_name, _1);
     add(method_name, f);
   }
   template <typename R, typename A0> 
   void register_random(const std::string& method_name) {
     using namespace mp::placeholders;
-    mp::function<R(std::string,A0)> f = mp::bind(&keeper2::template random_proxy<R,A0>, this, method_name, _1, _2);
+    mp::function<R(std::string,A0)> f = mp::bind(&keeper::template random_proxy<R,A0>, this, method_name, _1, _2);
     add(method_name, f);
   }
   template <typename R, typename A0, typename A1>
   void register_random(const std::string& method_name) {
     using namespace mp::placeholders;
-    mp::function<R(std::string,A0,A1)> f = mp::bind(&keeper2::template random_proxy<R,A0,A1>, this, method_name, _1, _2, _3);
+    mp::function<R(std::string,A0,A1)> f = mp::bind(&keeper::template random_proxy<R,A0,A1>, this, method_name, _1, _2, _3);
     add(method_name,f); 
   }
   template <typename R, typename A0, typename A1, typename A2>
   void register_random(const std::string& method_name) {
     using namespace mp::placeholders;
-    mp::function<R(std::string,A0,A1,A2)> f = mp::bind(&keeper2::template random_proxy<R,A0,A1,A2>, this, method_name, _1, _2, _3, _4);
+    mp::function<R(std::string,A0,A1,A2)> f = mp::bind(&keeper::template random_proxy<R,A0,A1,A2>, this, method_name, _1, _2, _3, _4);
     add(method_name,f); 
   }
 
@@ -90,7 +90,7 @@ public:
                           pfi::lang::function<R(R,R)> agg){
     using namespace mp::placeholders;
     mp::function<R(std::string)> f =
-      mp::bind(&keeper2::template broadcast_proxy<R>, this, method_name, _1, 
+      mp::bind(&keeper::template broadcast_proxy<R>, this, method_name, _1, 
                agg);
     add(method_name, f);
   }
@@ -99,7 +99,7 @@ public:
                           pfi::lang::function<R(R,R)> agg){
     using namespace mp::placeholders;
     mp::function<R(std::string, A0)> f =
-      mp::bind(&keeper2::template broadcast_proxy<R, A0>, this, method_name, _1, _2,
+      mp::bind(&keeper::template broadcast_proxy<R, A0>, this, method_name, _1, _2,
                agg);
     add(method_name, f);
   }
@@ -108,21 +108,21 @@ public:
   void register_cht(std::string method_name, pfi::lang::function<R(R,R)> agg) {
     using namespace mp::placeholders;
     mp::function<R(std::string, std::string)> f =
-      mp::bind(&keeper2::template cht_proxy<N,R>, this, method_name, _1, _2, agg);
+      mp::bind(&keeper::template cht_proxy<N,R>, this, method_name, _1, _2, agg);
     add(method_name, f);
   }
   template <int N, typename R, typename A0>
   void register_cht(std::string method_name, pfi::lang::function<R(R,R)> agg) {
     using namespace mp::placeholders;
     mp::function<R(std::string, std::string, A0)> f =
-      mp::bind(&keeper2::template cht_proxy<N,R,A0>, this, method_name, _1, _2, _3, agg);
+      mp::bind(&keeper::template cht_proxy<N,R,A0>, this, method_name, _1, _2, _3, agg);
     add(method_name, f);
   }
   template <int N, typename R, typename A0, typename A1>
   void register_cht(std::string method_name, pfi::lang::function<R(R,R)> agg) {
     using namespace mp::placeholders;
     mp::function<R(std::string, std::string, A0, A1)> f =
-      mp::bind(&keeper2::template cht_proxy<N,R, A0, A1>, this, method_name, _1, _2, _3, _4, agg);
+      mp::bind(&keeper::template cht_proxy<N,R, A0, A1>, this, method_name, _1, _2, _3, _4, agg);
     add(method_name, f);
   }
   
@@ -236,7 +236,7 @@ private:
     typedef typename common::mprpc::async_vmethod<Tuple>::type vfunc_type;
 
     vfunc_type f =
-      mp::bind(&keeper2::template random_async_vproxy<R, Tuple>, this,
+      mp::bind(&keeper::template random_async_vproxy<R, Tuple>, this,
                /* request */ _1,
                method_name, /* packed_args */ _2 );
     add_async_vmethod<Tuple>(method_name, f);
@@ -249,7 +249,7 @@ private:
     typedef typename common::mprpc::async_vmethod<Tuple>::type vfunc_type;
 
     vfunc_type f =
-      mp::bind(&keeper2::template broadcast_async_vproxy<R, Tuple>, this,
+      mp::bind(&keeper::template broadcast_async_vproxy<R, Tuple>, this,
                /* request */ _1,
                method_name, /* packed_args */ _2, 
                agg);
@@ -263,7 +263,7 @@ private:
     typedef typename common::mprpc::async_vmethod<Tuple>::type vfunc_type;
 
     vfunc_type f =
-      mp::bind(&keeper2::template cht_async_vproxy<N, R, Tuple>, this,
+      mp::bind(&keeper::template cht_async_vproxy<N, R, Tuple>, this,
                /* request */ _1,
                method_name, /* packed_args */ _2, 
                agg);
@@ -359,7 +359,7 @@ private:
     get_members_(name, list);
 
     try{
-      jubatus::common::mprpc::rpc_mclient2 c(list, a_.timeout, get_private_session_pool());
+      jubatus::common::mprpc::rpc_mclient c(list, a_.timeout, get_private_session_pool());
       return *(c.call(method_name, name, agg));
     }catch(const std::exception& e){
       LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
@@ -375,7 +375,7 @@ private:
 
     try{
       std::cout << __LINE__ << " name:" << name << " method:" << method_name << std::endl;
-      jubatus::common::mprpc::rpc_mclient2 c(list, a_.timeout, get_private_session_pool());
+      jubatus::common::mprpc::rpc_mclient c(list, a_.timeout, get_private_session_pool());
       return *(c.call(method_name, name, arg, agg));
     }catch(const std::exception& e){
       std::cout << __LINE__ << e.what() << std::endl;
@@ -404,7 +404,7 @@ private:
     get_members_from_cht_(name, id, list, N);
 
     try{
-      jubatus::common::mprpc::rpc_mclient2 c(list, a_.timeout, get_private_session_pool());
+      jubatus::common::mprpc::rpc_mclient c(list, a_.timeout, get_private_session_pool());
       return *(c.call(method_name, name, id, agg));
     }catch(const std::exception& e){
       LOG(ERROR) << N << " " << e.what(); // << " from " << c.first << ":" << c.second;
@@ -418,7 +418,7 @@ private:
     get_members_from_cht_(name, id, list, N);
 
     try{
-      jubatus::common::mprpc::rpc_mclient2 c(list, a_.timeout, get_private_session_pool());
+      jubatus::common::mprpc::rpc_mclient c(list, a_.timeout, get_private_session_pool());
       return *(c.call(method_name, name, id, arg, agg));
     }catch(const std::exception& e){
       LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;
@@ -432,7 +432,7 @@ private:
     get_members_from_cht_(name, id, list, N);
 
     try{
-      jubatus::common::mprpc::rpc_mclient2 c(list, a_.timeout, get_private_session_pool());
+      jubatus::common::mprpc::rpc_mclient c(list, a_.timeout, get_private_session_pool());
       return *(c.call(method_name, name, id, a0, a1, agg));
     }catch(const std::exception& e){
       LOG(ERROR) << e.what(); // << " from " << c.first << ":" << c.second;

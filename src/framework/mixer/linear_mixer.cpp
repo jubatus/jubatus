@@ -22,7 +22,7 @@
 #include <pficommon/system/time_util.h>
 #include "../../common/exception.hpp"
 #include "../../common/membership.hpp"
-#include "../../common/mprpc/rpc_mclient2.hpp"
+#include "../../common/mprpc/rpc_mclient.hpp"
 #include "../mixable.hpp"
 
 using namespace std;
@@ -73,13 +73,13 @@ size_t linear_communication_impl::update_members() {
 
 void linear_communication_impl::get_diff(common::mprpc::rpc_result_object& result) const {
   // TODO: to be replaced to new client with socket connection pooling
-  common::mprpc::rpc_mclient2 client(servers_, timeout_sec_);
+  common::mprpc::rpc_mclient client(servers_, timeout_sec_);
   result = client.call("get_diff", 0);
 }
 
 void linear_communication_impl::put_diff(const vector<string>& mixed) const {
   // TODO: to be replaced to new client with socket connection pooling
-  common::mprpc::rpc_mclient2 client(servers_, timeout_sec_);
+  common::mprpc::rpc_mclient client(servers_, timeout_sec_);
   client.call("put_diff", mixed);
 }
 

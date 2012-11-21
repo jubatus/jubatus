@@ -24,7 +24,7 @@
 namespace jubatus { namespace common { namespace mprpc {
 
 // invoker_base, invoker*
-//   method entry for rpc_server2 ( internal use only ).
+//   method entry for rpc_server ( internal use only ).
 //   invoker_base is the base class. invokerN is entry for arity-N method
 class invoker_base {
 public:
@@ -40,19 +40,19 @@ struct async_vmethod {
   typedef pfi::lang::function<void(invoker_base::request_type, Tuple)> type;
 };
 
-// rpc_server2
-//   Msgpack-RPC based server with 'hashed' dispatcher. rpc_server2 can add RPC method on-the-fly.
+// rpc_server
+//   Msgpack-RPC based server with 'hashed' dispatcher. rpc_server can add RPC method on-the-fly.
 //
-class rpc_server2: public msgpack::rpc::dispatcher {
+class rpc_server: public msgpack::rpc::dispatcher {
 public:
-  rpc_server2( msgpack::rpc::loop lo = msgpack::rpc::loop()): 
+  rpc_server( msgpack::rpc::loop lo = msgpack::rpc::loop()): 
     instance(lo) { instance.serve(this); }
-  rpc_server2( double server_timeout, msgpack::rpc::loop lo = msgpack::rpc::loop()): 
+  rpc_server( double server_timeout, msgpack::rpc::loop lo = msgpack::rpc::loop()): 
     instance(lo) {
     instance.set_server_timeout(server_timeout);
     instance.serve(this);
   }
-  ~rpc_server2() {}
+  ~rpc_server() {}
 
   virtual void dispatch(msgpack::rpc::request req);
 
@@ -213,12 +213,12 @@ make_async_vmethod_invoker( const typename async_vmethod<Tuple>::type &f ) {
 
 // shortcut
 template <typename T>
-void rpc_server2::add(const std::string &name, const pfi::lang::function<T> &f) {
+void rpc_server::add(const std::string &name, const pfi::lang::function<T> &f) {
   add_inner(name, make_invoker(f));
 }
 
 template <typename Tuple>
-void rpc_server2::add_async_vmethod(const std::string &name,
+void rpc_server::add_async_vmethod(const std::string &name,
                                     const typename async_vmethod<Tuple>::type &f) {
   add_inner(name, make_async_vmethod_invoker<Tuple>(f));
 }
