@@ -223,15 +223,15 @@ void linear_mixer::mix() {
 }
 
 vector<string> linear_mixer::get_diff(int) {
-  std::vector<std::string> o;
-
-  scoped_lock lk(m_);
   scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
+  scoped_lock lk(m_);
 
   mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
   if (mixables.empty()) {
     throw JUBATUS_EXCEPTION(config_not_set()); // nothing to mix
   }
+
+  std::vector<std::string> o;
   for (size_t i = 0; i < mixables.size(); ++i) {
     o.push_back(mixables[i]->get_diff());
   }
@@ -239,8 +239,8 @@ vector<string> linear_mixer::get_diff(int) {
 }
 
 int linear_mixer::put_diff(const std::vector<std::string>& unpacked) {
-  scoped_lock lk(m_);
   scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
+  scoped_lock lk(m_);
 
   mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
   if (unpacked.size() != mixables.size()) {
