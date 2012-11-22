@@ -126,7 +126,4 @@ int run_server(int args, char** argv, const std::string& type)
   }
 }
 
-pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-make_fv_converter(const std::string& config);
-
 }}
