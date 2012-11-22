@@ -19,8 +19,8 @@ class stat_impl_ : public stat<stat_impl_>
 public:
   stat_impl_(const server_argv& a):
     stat<stat_impl_>(a.timeout),
-    p_(new server_helper<stat_serv>(a))
-  { p_->use_cht();}
+    p_(new server_helper<stat_serv>(a, true))
+  {}
 
   bool set_config(std::string name, config_data c) //update broadcast
   { JWLOCK__(p_); RETURN_OR_THROW(get_p()->set_config(c)); }

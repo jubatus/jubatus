@@ -19,8 +19,8 @@ class graph_impl_ : public graph<graph_impl_>
 public:
   graph_impl_(const server_argv& a):
     graph<graph_impl_>(a.timeout),
-    p_(new server_helper<graph_serv>(a))
-  { p_->use_cht();}
+    p_(new server_helper<graph_serv>(a, true))
+  {}
 
   std::string create_node(std::string name) //nolock random
   { NOLOCK__(p_); RETURN_OR_THROW(get_p()->create_node()); }

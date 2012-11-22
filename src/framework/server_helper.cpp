@@ -49,7 +49,7 @@ server_helper_impl::server_helper_impl(const server_argv& a) {
 #endif
 }
 
-bool server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
+void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
     ls = zk_;
@@ -67,10 +67,8 @@ bool server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
     }
    
     register_actor(*zk_, a.type, a.name, a.eth, a.port);
-    return true;
   }
 #endif
-  return false;
 }
 
 }
