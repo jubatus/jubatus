@@ -74,7 +74,7 @@ void cht::register_node(const std::string& ip, int port)
           << jubatus::exception::error_api_func("lock_service::create")
           << jubatus::exception::error_message("cht hashpash: " + hashpath));
 
-    DLOG(INFO) << "created " << hashpath;
+    DLOG(INFO) << "cht node created: " << hashpath;
   }
 }
 

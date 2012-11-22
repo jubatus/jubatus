@@ -18,7 +18,7 @@
 #include <glog/logging.h>
 
 #include <iostream>
-
+#include <iomanip>
 #include <pficommon/text/json.h>
 
 #include "../common/util.hpp"
@@ -44,13 +44,13 @@ namespace jubatus { namespace framework {
     : type(type)
   {
     google::InitGoogleLogging(argv[0]);
-    google::LogToStderr(); // only when debug
 
     cmdline::parser p;
     p.add<int>("rpc-port", 'p', "port number", false, 9199);
     p.add<int>("thread", 'c', "concurrency = thread number", false, 2);
     p.add<int>("timeout", 't', "time out (sec)", false, 10);
-    p.add<std::string>("tmpdir", 'd', "directory to output logs", false, "/tmp");
+    p.add<std::string>("tmpdir", 'd', "directory to save and load models", false, "/tmp");
+    p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false);
 
 #ifdef HAVE_ZOOKEEPER_H
     p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
@@ -76,6 +76,7 @@ namespace jubatus { namespace framework {
     timeout = p.get<int>("timeout");
     program_name = jubatus::util::get_program_name();
     tmpdir = p.get<std::string>("tmpdir");
+    logdir = p.get<std::string>("logdir");
 
     //    eth = "localhost";
     eth = jubatus::common::get_default_v4_address();
@@ -95,24 +96,66 @@ namespace jubatus { namespace framework {
 #endif
 
     if(z != "" and name == ""){
-      throw JUBATUS_EXCEPTION(argv_error("can't start multinode mode without name specified"));
+      std::cerr << "can't start multinode mode without name specified" << std::endl;
+      std::cerr << p.usage() << std::endl;
+      exit(1);
     }
-    
-    LOG(INFO) << boot_message(jubatus::util::get_program_name());
+
+    if(p.exist("logdir")){
+      set_log_destination(jubatus::util::get_program_name());
+    } else {
+      google::LogToStderr();
+    }
+
+    boot_message(jubatus::util::get_program_name());
   };
 
   server_argv::server_argv():
     join(false), port(9199), timeout(10), threadnum(2), z(""), name(""),
-    tmpdir("/tmp"), eth("localhost"), interval_sec(5), interval_count(1024)
+    tmpdir("/tmp"), logdir(""), eth("localhost"), interval_sec(5), interval_count(1024)
   {
   };
 
-  std::string server_argv::boot_message(const std::string& progname) const {
-    std::stringstream ret;
-    ret << "starting " << progname << " " << VERSION << " RPC server at " <<
-      eth << ":" << port << " with timeout: " << timeout;
-    return ret.str();
+  void server_argv::boot_message(const std::string& progname) const {
+    std::stringstream ss;
+    ss << "starting " << progname << " " << VERSION << " RPC server at " << eth << ":" << port << '\n';
+    ss << "    pid            : " << getpid() << '\n';
+    ss << "    user           : " << getenv("USER") << '\n';
+    ss << "    mode           : ";
+    if(is_standalone()) { 
+      ss << "standalone mode\n";
+    } else {
+      ss << "multinode mode\n";
+    }
+    ss << "    timeout        : " << timeout << '\n';
+    ss << "    thread         : " << threadnum << '\n';
+    ss << "    tmpdir         : " << tmpdir << '\n';
+    ss << "    logdir         : " << logdir << '\n';
+#ifdef HAVE_ZOOKEEPER_H
+    ss << "    zookeeper      : " << z << '\n';
+    ss << "    name           : " << name << '\n';
+    ss << "    join           : " << std::boolalpha << join << '\n';
+    ss << "    interval sec   : " << interval_sec << '\n';
+    ss << "    interval count : " << interval_count << '\n';
+#endif
+    LOG(INFO) << ss.str();
   };
+
+  void server_argv::set_log_destination(const std::string& progname) const {
+    std::ostringstream basename;
+    basename <<  progname << '.' << eth << '_' << port;
+    for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
+      std::string log = logdir + '/';
+      log += basename.str() + '.';
+      log += name + '.';
+      log += google::GetLogSeverityName(severity);
+      log += ".log.";
+      std::string link = basename.str() + '.';
+      link += pfi::lang::lexical_cast<std::string>(getpid());
+      google::SetLogDestination(severity, log.c_str());
+      google::SetLogSymlink(severity, link.c_str());
+    }
+  }
 
   std::string get_server_identifier(const server_argv& a) {
     std::stringstream ss;
@@ -126,7 +169,6 @@ namespace jubatus { namespace framework {
     : type(t)
   {
     google::InitGoogleLogging(argv[0]);
-    google::LogToStderr(); // only when debug
 
     cmdline::parser p;
     p.add<int>("rpc-port", 'p', "port number", false, 9199);
@@ -134,6 +176,7 @@ namespace jubatus { namespace framework {
     p.add<int>("timeout", 't', "time out (sec)", false, 10);
 
     p.add<std::string>("zookeeper", 'z', "zookeeper location", false, "localhost:2181");
+    p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false);
     p.add("version", 'v', "version");
 
     p.parse_check(args, argv);
@@ -146,23 +189,51 @@ namespace jubatus { namespace framework {
     port = p.get<int>("rpc-port");
     threadnum = p.get<int>("thread");
     timeout = p.get<int>("timeout");
+    program_name = jubatus::util::get_program_name();
     z = p.get<std::string>("zookeeper");
+    logdir = p.get<std::string>("logdir");
     eth = jubatus::common::get_default_v4_address();
 
-    LOG(INFO) << boot_message(jubatus::util::get_program_name());
+    if(p.exist("logdir")){
+      set_log_destination(jubatus::util::get_program_name());
+    } else {
+      google::LogToStderr();
+    }
+
+    boot_message(jubatus::util::get_program_name());
   };
 
   keeper_argv::keeper_argv():
-    port(9199), timeout(10), threadnum(16), z("localhost:2181"), eth("")
+    port(9199), timeout(10), threadnum(16), z("localhost:2181"), logdir(""), eth("")
   {
   };
 
-  std::string keeper_argv::boot_message(const std::string& progname) const {
-    std::stringstream ret;
-    ret << "starting " << progname << " " << VERSION << " RPC server at " <<
-      eth << ":" << port << " with timeout: " << timeout;
-    return ret.str();
+  void keeper_argv::boot_message(const std::string& progname) const {
+    std::stringstream ss;
+    ss << "starting " << progname << " " << VERSION << " RPC server at " << eth << ":" << port << '\n';
+    ss << "    pid            : " << getpid() << '\n';
+    ss << "    user           : " << getenv("USER") << '\n';
+    ss << "    timeout        : " << timeout << '\n';
+    ss << "    thread         : " << threadnum << '\n';
+    ss << "    logdir         : " << logdir << '\n';
+    ss << "    zookeeper      : " << z << '\n';
+    LOG(INFO) << ss.str();
   };
+
+  void keeper_argv::set_log_destination(const std::string& progname) const {
+    std::ostringstream basename;
+    basename <<  progname << '.' << eth << '_' << port;
+    for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
+      std::string log = logdir + '/';
+      log += basename.str() + '.';
+      log += google::GetLogSeverityName(severity);
+      log += ".log.";
+      std::string link = basename.str() + '.';
+      link += pfi::lang::lexical_cast<std::string>(getpid());
+      google::SetLogDestination(severity, log.c_str());
+      google::SetLogSymlink(severity, link.c_str());
+    }
+  }
 
   common::cshared_ptr<jubatus::common::lock_service> ls;
 

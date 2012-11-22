@@ -114,11 +114,13 @@ class keeper : public pfi::network::mprpc::rpc_server {
  private:
   template <typename R>
   R random_proxy0(const std::string& method_name, const std::string& name){
-    //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
+    DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
     const std::pair<std::string, int>& c = list[rng_(list.size())];
+    DLOG(INFO) << "request to " << c.first << ":" << c.second;
+
     try{
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
       return cli.call<R(std::string)>(method_name)(name);
@@ -129,11 +131,13 @@ class keeper : public pfi::network::mprpc::rpc_server {
   }
   template <typename R, typename A>
   R random_proxy1(const std::string& method_name, const std::string& name, const A& arg){
-    //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
+    DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
     const std::pair<std::string, int>& c = list[rng_(list.size())];
+    DLOG(INFO) << "request to " << c.first << ":" << c.second;
+
     try{
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
       return cli.call<R(std::string,A)>(method_name)(name, arg);
@@ -144,10 +148,13 @@ class keeper : public pfi::network::mprpc::rpc_server {
   }
   template <typename R, typename A0, typename A1>
   R random_proxy2(const std::string& method_name, const std::string& name, const A0& a0, const A1& a1){
+    DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
     const std::pair<std::string, int>& c = list[rng_(list.size())];
+    DLOG(INFO) << "request to " << c.first << ":" << c.second;
+
     try{
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
       return cli.call<R(std::string,A0,A1)>(method_name)(name, a0, a1);
@@ -158,11 +165,13 @@ class keeper : public pfi::network::mprpc::rpc_server {
   }
   template <typename R, typename A0, typename A1, typename A2>
   R random_proxy3(const std::string& method_name, const std::string& name, const A0& a0, const A1& a1, const A2& a2){
+    DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
-
     get_members_(name, list);
 
     const std::pair<std::string, int>& c = list[rng_(list.size())];
+    DLOG(INFO) << "request to " << c.first << ":" << c.second;
+
     try{
       pfi::network::mprpc::rpc_client cli(c.first, c.second, a_.timeout);
       return cli.call<R(std::string,A0,A1,A2)>(method_name)(name, a0, a1, a2);
@@ -175,9 +184,15 @@ class keeper : public pfi::network::mprpc::rpc_server {
   template <typename R>
   R broadcast_proxy0(const std::string& method_name, const std::string& name,
                     pfi::lang::function<R(R,R)>& agg) {
-    //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
+    DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
+
+#ifndef NDEBUG
+    for(size_t i =0; i < list.size(); i++) {
+      DLOG(INFO) << "request to " << list[i].first << ":" << list[i].second;
+    }
+#endif
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -190,9 +205,15 @@ class keeper : public pfi::network::mprpc::rpc_server {
   template <typename R, typename A>
   R broadcast_proxy1(const std::string& method_name, const std::string& name, const A& arg,
                     pfi::lang::function<R(R,R)>& agg) {
-    //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
+    DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
+
+#ifndef NDEBUG
+    for(size_t i =0; i < list.size(); i++) {
+      DLOG(INFO) << "request to " << list[i].first << ":" << list[i].second;
+    }
+#endif
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -207,8 +228,15 @@ class keeper : public pfi::network::mprpc::rpc_server {
   template <int N, typename R>
   R cht_proxy0(const std::string& method_name, const std::string& name, const std::string& id,
               pfi::lang::function<R(R,R)>& agg) {
+    DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_from_cht_(name, id, list, N);
+
+#ifndef NDEBUG
+    for(size_t i =0; i < list.size(); i++) {
+      DLOG(INFO) << "request to " << list[i].first << ":" << list[i].second;
+    }
+#endif
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -221,8 +249,15 @@ class keeper : public pfi::network::mprpc::rpc_server {
   template <int N, typename R, typename A0>
   R cht_proxy1(const std::string& method_name, const std::string& name, const std::string& id, const A0& arg,
               pfi::lang::function<R(R,R)>& agg) {
+    DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_from_cht_(name, id, list, N);
+
+#ifndef NDEBUG
+    for(size_t i =0; i < list.size(); i++) {
+      DLOG(INFO) << "request to " << list[i].first << ":" << list[i].second;
+    }
+#endif
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);
@@ -235,8 +270,15 @@ class keeper : public pfi::network::mprpc::rpc_server {
   template <int N, typename R, typename A0, typename A1>
   R cht_proxy2(const std::string& method_name, const std::string& name, const std::string& id, const A0& a0, const A1& a1,
               pfi::lang::function<R(R,R)>& agg) {
+    DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_from_cht_(name, id, list, N);
+
+#ifndef NDEBUG
+    for(size_t i =0; i < list.size(); i++) {
+      DLOG(INFO) << "request to " << list[i].first << ":" << list[i].second;
+    }
+#endif
 
     try{
       jubatus::common::mprpc::rpc_mclient c(list, a_.timeout);

@@ -76,6 +76,7 @@ bool server_base::load(const std::string& id) {
       mixables[i]->load(ifs);
     }
     ifs.close();
+    LOG(INFO) << "loaded from " << path;
   } catch (const std::runtime_error& e) {
     ifs.close();
     LOG(ERROR) << e.what();

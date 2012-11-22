@@ -74,12 +74,22 @@ size_t linear_communication_impl::update_members() {
 void linear_communication_impl::get_diff(common::mprpc::rpc_result_object& result) const {
   // TODO: to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
+#ifndef NDEBUG
+  for(size_t i =0; i < servers_.size(); i++) {
+    DLOG(INFO) << "get diff from " << servers_[i].first << ":" << servers_[i].second;
+  }
+#endif
   result = client.call("get_diff", 0);
 }
 
 void linear_communication_impl::put_diff(const vector<string>& mixed) const {
   // TODO: to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
+#ifndef NDEBUG
+  for(size_t i =0; i < servers_.size(); i++) {
+    DLOG(INFO) << "pull diff to " << servers_[i].first << ":" << servers_[i].second;
+  }
+#endif
   client.call("put_diff", mixed);
 }
 
@@ -159,7 +169,7 @@ void linear_mixer::mixer_loop() {
         unsigned int new_ticktime = time(NULL);
         if (counter_ > count_threshold_ || new_ticktime - ticktime_ > tick_threshold_) {
           if (zklock->try_lock()) {
-            DLOG(INFO) << "starting mix:";
+            LOG(INFO) << "starting mix:";
             counter_ = 0;
             ticktime_ = new_ticktime;
           } else {
@@ -171,7 +181,7 @@ void linear_mixer::mixer_loop() {
 
       } //unlock
       mix();
-      DLOG(INFO) << ".... " << mix_count_ << "th mix done.";
+      LOG(INFO) << ".... " << mix_count_ << "th mix done.";
     } catch (const jubatus::exception::jubatus_exception& e) {
       LOG(ERROR) << e.diagnostic_information(true);
     }
@@ -217,8 +227,8 @@ void linear_mixer::mix() {
   }
 
   clock_time end = get_clock_time();
-  DLOG(INFO) << "mixed with " << servers_size << " servers in " << (double)(end - start) << " secs, "
-             << s << " bytes (serialized data) has been put.";
+  LOG(INFO) << "mixed with " << servers_size << " servers in " << (double)(end - start) << " secs, "
+            << s << " bytes (serialized data) has been put.";
   mix_count_++;
 }
 
