@@ -33,7 +33,7 @@ class linear_communication_stub : public linear_communication {
  public:
   size_t update_members() { return 4; }
 
-  pfi::lang::shared_ptr<common::try_lockable> create_lock() {}
+  pfi::lang::shared_ptr<common::try_lockable> create_lock() { return pfi::lang::shared_ptr<common::try_lockable>(); }
 
   void get_diff(common::mprpc::rpc_result_object& result) const {
     result.response.push_back(make_response("1"));
