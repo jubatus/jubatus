@@ -142,7 +142,9 @@ namespace jubatus { namespace framework {
     for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
       std::string log = logdir + '/';
       log += basename.str() + '.';
-      log += name + '.';
+      if (!name.empty()) {
+        log += name + '.';
+      }
       log += google::GetLogSeverityName(severity);
       log += ".log.";
       std::string link = basename.str() + '.';
