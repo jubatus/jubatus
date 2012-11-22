@@ -22,7 +22,6 @@ PKG_DIR="${PWD}/package"
 export PATH="${DEST_DIR}/${PREFIX}/bin:${PATH}"
 export CPLUS_INCLUDE_PATH="${DEST_DIR}/${PREFIX}/include"
 export LD_LIBRARY_PATH="${DEST_DIR}/${PREFIX}/lib"
-export LD_RUN_PATH="${PREFIX}/lib"
 export PKG_CONFIG_PATH="${DEST_DIR}/${PREFIX}/lib/pkgconfig"
 
 # Version Configuration
