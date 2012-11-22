@@ -20,8 +20,9 @@
 #include "../common/exception.hpp"
 
 namespace jubatus {
+namespace regression {
 
-regression_base* regression_factory::create_regression(const std::string& name, storage::storage_base* storage) const {
+regression_base* regression_factory::create_regression(const std::string& name, jubatus::storage::storage_base* storage) const {
   // TODO remove this interface
   pfi::text::json::json param;
   return create_regression(name, param, storage);
@@ -30,7 +31,7 @@ regression_base* regression_factory::create_regression(const std::string& name, 
 regression_base*
 regression_factory::create_regression(const std::string& name,
                                       const pfi::text::json::json& param,
-                                      storage::storage_base* storage) const{
+                                      jubatus::storage::storage_base* storage) const{
   if (name == "PA") {
     return new regression::PA(storage);
   } else {
@@ -38,4 +39,5 @@ regression_factory::create_regression(const std::string& name,
   }
 }
 
+}
 }

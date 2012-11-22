@@ -61,7 +61,7 @@ private:
 
   config_data config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  pfi::lang::shared_ptr<regression_base> regression_;
+  pfi::lang::shared_ptr<jubatus::regression::regression_base> regression_;
   linear_function_mixer gresser_;
   mixable_weight_manager wm_;
 };

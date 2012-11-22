@@ -76,7 +76,7 @@ int regression_serv::set_config(const config_data& config) {
   converter_ = converter;
   (*converter_).set_weight_manager(wm_.get_model());
 
-  regression_.reset(regression_factory().create_regression(config.method, gresser_.get_model().get()));
+  regression_.reset(jubatus::regression::regression_factory().create_regression(config.method, gresser_.get_model().get()));
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
