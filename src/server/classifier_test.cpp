@@ -38,7 +38,7 @@ using namespace pfi::lang;
 using namespace pfi::text::json;
 
 using namespace jubatus;
-using namespace jubatus::client;
+using namespace jubatus::classifier;
 using namespace jubatus::storage;
 using namespace std;
 
@@ -138,7 +138,7 @@ namespace {
   }catch(type__& __e__){ ASSERT_STREQ(what__, __e__.what()); }
 
 TEST_P(classifier_test, set_config_exception){
-  classifier c("localhost", PORT, 10);
+  jubatus::client::classifier c("localhost", PORT, 10);
   jubatus::config_data config = make_empty_config("pa");
   ASSERT_THROW2(c.set_config("", config), std::exception, "unsupported method (pa)");
   //  ASSERT_THROW(c.set_config("", config), std::exception);
@@ -152,7 +152,7 @@ TEST_P(classifier_test, set_config_exception){
 
 TEST_P(classifier_test, simple){
   
-  classifier c("localhost", PORT, 10);
+  jubatus::client::classifier c("localhost", PORT, 10);
   {
     jubatus::config_data config = make_empty_config(GetParam());
     
@@ -182,7 +182,7 @@ TEST_P(classifier_test, config) {
 }
 
 TEST_P(classifier_test, api_config) {
-  classifier cli("localhost", PORT, 10);
+  jubatus::client::classifier cli("localhost", PORT, 10);
   config_data to_set;
   config_data to_get;
   load_config(to_set);
@@ -196,7 +196,7 @@ TEST_P(classifier_test, api_config) {
 }
 
 TEST_P(classifier_test, api_train){
-  classifier cli("localhost", PORT, 10);
+  jubatus::client::classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
   config_data c;
   load_config(c);
@@ -209,7 +209,7 @@ TEST_P(classifier_test, api_train){
 }
 
 TEST_P(classifier_test, api_classify){
-  classifier cli("localhost", PORT, 10);
+  jubatus::client::classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
   config_data c;
   load_config(c);
@@ -230,7 +230,7 @@ TEST_P(classifier_test, api_classify){
 
 
 void my_test(const char* method) {
-  classifier cli("localhost", PORT, 10);
+  jubatus::client::classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
   config_data c = make_simple_config(method);
 
@@ -297,7 +297,7 @@ TEST_P(classifier_test, my_test) {
 }
 
 TEST_P(classifier_test, duplicated_keys){
-  classifier cli("localhost", PORT, 10);
+  jubatus::client::classifier cli("localhost", PORT, 10);
   config_data c = make_simple_config(GetParam());
 
   cli.set_config(NAME, c);
@@ -368,7 +368,7 @@ INSTANTIATE_TEST_CASE_P(classifier_test_instance,
 
 
 TEST_P(classifier_test, get_status){
-  classifier cli("localhost", PORT, 10);
+  jubatus::client::classifier cli("localhost", PORT, 10);
 
   map<string,map<string,string> > status = cli.get_status(NAME);
   EXPECT_EQ(status.size(), 1u);
@@ -378,7 +378,7 @@ TEST_P(classifier_test, get_status){
   }
 }
 TEST_P(classifier_test, save_load){
-  classifier cli("localhost", PORT, 10);
+  jubatus::client::classifier cli("localhost", PORT, 10);
   std::vector<std::pair<std::string,int> > v;
 
   const size_t example_size = 1000;
@@ -411,14 +411,14 @@ TEST_P(classifier_test, save_load){
   EXPECT_EQ(6, atoi(count_str.c_str()));
 }
 
-string classify_and_get_label(classifier& cli, const datum& d) {
+string classify_and_get_label(jubatus::client::classifier& cli, const datum& d) {
   vector<datum> data;
   data.push_back(d);
   return get_max_label(cli.classify(NAME, data)[0]);
 }
 
 TEST_P(classifier_test, save_load_2){
-  classifier cli("localhost", PORT, 10);
+  jubatus::client::classifier cli("localhost", PORT, 10);
   std::vector<std::pair<std::string,int> > v;
 
   // Setup
@@ -467,7 +467,7 @@ TEST_P(classifier_test, save_load_2){
 }
 
 TEST_P(classifier_test, nan){
-  classifier cli("localhost", PORT, 10);
+  jubatus::client::classifier cli("localhost", PORT, 10);
 
   // Setup
   config_data c = make_simple_config(GetParam());

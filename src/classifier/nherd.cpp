@@ -22,6 +22,7 @@
 using namespace std;
 
 namespace jubatus{
+namespace classifier{
 
 NHERD::NHERD (storage::storage_base* storage) : classifier_base(storage) {
   classifier_base::use_covars_ = true;
@@ -67,4 +68,5 @@ std::string NHERD::name() const {
   return string("NHERD");
 }
 
+}
 }

@@ -31,6 +31,7 @@ using namespace jubatus::storage;
 using namespace pfi::lang;
 
 namespace jubatus {
+namespace classifier {
 
 template <typename T>
 class classifier_test : public testing::Test {};
@@ -148,4 +149,5 @@ TEST(classifier_factory, exception){
   delete p;
 }
 
+}
 }

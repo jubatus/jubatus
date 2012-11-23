@@ -19,6 +19,7 @@
 #include "classifier_base.hpp"
 
 namespace jubatus{
+namespace classifier{
 
 class PA2 : public classifier_base {
 public:
@@ -30,4 +31,4 @@ private:
 };
 
 }
-
+}

@@ -25,6 +25,7 @@ using namespace std;
 
 
 namespace jubatus{
+namespace classifier {
 
 using namespace storage;
 
@@ -133,4 +134,5 @@ float classifier_base::squared_norm(const sfv_t& fv) {
   return ret;
 }
 
+}
 }

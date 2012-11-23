@@ -78,7 +78,7 @@ int classifier_serv::set_config(const config_data& config) {
 
   // TODO set param from config
   pfi::text::json::json param;
-  classifier_.reset(classifier_factory::create_classifier(config.method,
+  classifier_.reset(classifier::classifier_factory::create_classifier(config.method,
                                                           param,
                                                           clsfer_.get_model().get()));
 

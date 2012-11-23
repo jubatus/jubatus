@@ -27,10 +27,11 @@
 #include "classifier_type.hpp"
 
 namespace jubatus{
+namespace classifier {
 
 class classifier_base{
 public:
-  classifier_base(storage::storage_base* storage_base);
+  classifier_base(jubatus::storage::storage_base* storage_base);
   virtual ~classifier_base();
   virtual void train(const sfv_t& fv, const std::string& label) = 0;
   
@@ -51,11 +52,11 @@ protected:
 
   static float squared_norm(const sfv_t& sfv);
 
-  storage::storage_base* storage_;
+  jubatus::storage::storage_base* storage_;
   float C_;
   bool use_covars_;  
 };
 
 }
-
+}
 

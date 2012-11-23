@@ -20,6 +20,7 @@
 using namespace std;
 
 namespace jubatus{
+namespace classifier{
 
 PA2::PA2(storage::storage_base* storage) : classifier_base(storage){
 }
@@ -43,5 +44,5 @@ string PA2::name() const {
   return string("PA2"); 
 }
 
-  
+}  
 }

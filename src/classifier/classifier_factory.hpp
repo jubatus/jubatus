@@ -22,11 +22,12 @@
 
 namespace jubatus {
 
-class classifier_base;
-
 namespace storage{
 class storage_base;
 }
+
+namespace classifier{
+class classifier_base;
 
 class classifier_factory {
 public:
@@ -36,4 +37,5 @@ public:
                                    storage::storage_base* storage);
 };
 
+}
 }

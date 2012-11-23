@@ -19,6 +19,7 @@
 #include "classifier_base.hpp"
 
 namespace jubatus{
+namespace classifier{
 
 class AROW : public classifier_base {
 public:
@@ -30,5 +31,5 @@ private:
 };
 
 }
-
+}
 

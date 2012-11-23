@@ -22,8 +22,9 @@
 using namespace std;
 
 namespace jubatus {
+namespace classifier {
 
-classifier_base* classifier_factory::create_classifier(const std::string& name, storage::storage_base* storage) {
+classifier_base* classifier_factory::create_classifier(const std::string& name, jubatus::storage::storage_base* storage) {
   // TODO remove this interface
   pfi::text::json::json param;
   return create_classifier(name, param, storage);
@@ -31,7 +32,7 @@ classifier_base* classifier_factory::create_classifier(const std::string& name, 
 
 classifier_base* classifier_factory::create_classifier(const std::string& name,
                                                        const pfi::text::json::json& param,
-                                                       storage::storage_base* storage) {
+                                                       jubatus::storage::storage_base* storage) {
   if (name == "perceptron") {
     return new perceptron(storage);
   } else if (name == "PA") {
@@ -52,3 +53,5 @@ classifier_base* classifier_factory::create_classifier(const std::string& name,
 }
 
 }
+}
+

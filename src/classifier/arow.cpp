@@ -22,6 +22,7 @@
 using namespace std;
 
 namespace jubatus{
+namespace classifier{
 
 AROW::AROW(storage::storage_base* storage): classifier_base(storage) {
   classifier_base::use_covars_ = true;
@@ -62,4 +63,5 @@ string AROW::name() const {
   return string("AROW");
 }
 
+}
 }

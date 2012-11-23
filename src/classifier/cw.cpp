@@ -22,6 +22,7 @@
 using namespace std;
 
 namespace jubatus{
+namespace classifier{
 
 CW::CW (storage::storage_base* storage) : classifier_base(storage) 
 {
@@ -70,5 +71,5 @@ string CW::name() const{
   return string("CW");
 }
 
-
+}
 }
