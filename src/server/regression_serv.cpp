@@ -69,14 +69,20 @@ void regression_serv::get_status(status_t& status) const {
 int regression_serv::set_config(const config_data& config) {
   DLOG(INFO) << __func__;
 
+  std::string fv_config = "";
+  std::string method;
+
+  fv_config = jubatus::util::get_json((std::string)config, "converter");
+  method = jubatus::util::get_jsonstring((std::string)config, "method");
+
   shared_ptr<datum_to_fv_converter> converter
-      = framework::make_fv_converter(config.config);
+      = framework::make_fv_converter(fv_config);
 
   config_ = config;
   converter_ = converter;
   (*converter_).set_weight_manager(wm_.get_model());
 
-  regression_.reset(jubatus::regression::regression_factory().create_regression(config.method, gresser_.get_model().get()));
+  regression_.reset(jubatus::regression::regression_factory().create_regression(method, gresser_.get_model().get()));
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...

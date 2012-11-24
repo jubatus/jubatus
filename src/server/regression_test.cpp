@@ -69,13 +69,21 @@ void make_random_data(vector<pair<float, datum> >& data, size_t size) {
 }
 
 config_data make_simple_config(const string& method) {
-  config_data c;
-  c.method = method;
+  pfi::text::json::json js(new pfi::text::json::json_object());
+  js["method"] = pfi::text::json::json(new pfi::text::json::json_string(method));  
   jubatus::fv_converter::converter_config config;
   jubatus::fv_converter::num_rule rule = { "*", "num" };
   config.num_rules.push_back(rule);
-  c.config = config_to_string(config);
-  return c;
+  std::stringstream conv;
+  conv << config_to_string(config);
+  pfi::text::json::json jsc;
+  conv >> jsc;
+  js["converter"] = jsc;
+
+  std::stringstream ret;
+  ret << pfi::text::json::pretty(js);
+
+  return (config_data)ret.str();
 }
 
 void my_test(const char* meth, const char* stor){ 

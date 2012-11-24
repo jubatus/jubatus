@@ -18,15 +18,7 @@ namespace jubatus {
 
 typedef std::map<std::string, std::string > param_t;
 
-struct config_data {
-public:
-
-  
-  MSGPACK_DEFINE(method, config);  
-
-  std::string method;
-  std::string config;
-};
+typedef std::string config_data;
 
 struct datum {
 public:

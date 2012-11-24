@@ -15,11 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 type param_t = map<string, string> 
-
-message config_data {
-  0: string method
-  1: string config # JSON
-}
+type config_data = string
 
 message datum {
   0: list<tuple<string, string> >  string_values
