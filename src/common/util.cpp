@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include <pficommon/lang/exception.h>
+#include <pficommon/text/json.h>
 
 #include <fstream>
 
@@ -36,6 +37,8 @@
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
+
+#include <sstream>
 
 #ifdef __APPLE__
 #include <libproc.h>
@@ -243,6 +246,35 @@ void ignore_sigpipe()
         << jubatus::exception::error_api_func("signal")
         << jubatus::exception::error_errno(errno));
 }
+
+std::string get_json(std::string jsonstr, const std::string key){
+
+  std::stringstream ss;
+  pfi::text::json::json js;
+
+  ss << jsonstr;
+  ss >> js;
+
+  std::stringstream ret;
+  ret << pfi::text::json::pretty(js[key]);
+
+  return ret.str();
+}
+
+std::string get_jsonstring(std::string jsonstr, const std::string key){
+
+  std::stringstream ss;
+  pfi::text::json::json js;
+
+  ss << jsonstr;
+  ss >> js;
+
+  std::string ret;
+  pfi::text::json::from_json(js[key], ret);
+
+  return ret;
+}
+
 
 } //util
 } //jubatus
