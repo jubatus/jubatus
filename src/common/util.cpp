@@ -249,25 +249,22 @@ void ignore_sigpipe()
 
 std::string get_json(std::string jsonstr, const std::string key){
 
-  std::stringstream ss;
+  std::stringstream ss(jsonstr);
   pfi::text::json::json js;
 
-  ss << jsonstr;
-  ss >> js;
+  ss >> via_json(js);
 
   std::stringstream ret;
   ret << pfi::text::json::pretty(js[key]);
-
   return ret.str();
 }
 
 std::string get_jsonstring(std::string jsonstr, const std::string key){
 
-  std::stringstream ss;
+  std::stringstream ss(jsonstr);
   pfi::text::json::json js;
 
-  ss << jsonstr;
-  ss >> js;
+  ss >> via_json(js);
 
   std::string ret;
   pfi::text::json::from_json(js[key], ret);
