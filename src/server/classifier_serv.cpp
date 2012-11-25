@@ -69,8 +69,14 @@ void classifier_serv::get_status(status_t& status) const {
 int classifier_serv::set_config(const config_data& config) {
   DLOG(INFO) << __func__;
 
+  std::string fv_config;
+  std::string method;
+
+  fv_config = jubatus::util::get_json((std::string)config, "converter");
+  method = jubatus::util::get_jsonstring((std::string)config, "method");
+
   shared_ptr<datum_to_fv_converter> converter =
-      framework::make_fv_converter(config.config);
+      framework::make_fv_converter(fv_config);
 
   config_ = config;
   converter_ = converter;
@@ -78,7 +84,7 @@ int classifier_serv::set_config(const config_data& config) {
 
   // TODO set param from config
   pfi::text::json::json param;
-  classifier_.reset(classifier::classifier_factory::create_classifier(config.method,
+  classifier_.reset(classifier::classifier_factory::create_classifier(method,
                                                           param,
                                                           clsfer_.get_model().get()));
 

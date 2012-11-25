@@ -15,12 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 type param_t = map<string, string> 
-
-#- ``converter`` is a string of JSON format that describes configuration of feature extranction of ``datum`` . See :doc:`fv_convert` for details.
-message config_data {
-  0: string method
-  1: string config
-}
+type config_data = string
 
 message datum {
   0: list<tuple<string, string> >  string_values
