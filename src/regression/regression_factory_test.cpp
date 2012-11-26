@@ -13,14 +13,16 @@ namespace regression {
 TEST(regression_factory, trivial) {
   regression::regression_factory f;
   storage::local_storage s;
-  pfi::lang::scoped_ptr<regression::regression_base> r(f.create_regression("PA", &s));
+  pfi::text::json::json param;
+  pfi::lang::scoped_ptr<regression::regression_base> r(f.create_regression("PA", param, &s));
   EXPECT_EQ(typeid(*r), typeid(regression::PA&));
 }
 
 TEST(regression_factory, unknown) {
   regression::regression_factory f;
   storage::local_storage s;
-  ASSERT_THROW(f.create_regression("unknown_regression", &s), unsupported_method);
+  pfi::text::json::json param;
+  ASSERT_THROW(f.create_regression("unknown_regression", param, &s), unsupported_method);
 }
 
 }

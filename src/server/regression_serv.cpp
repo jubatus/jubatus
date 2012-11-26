@@ -82,7 +82,9 @@ int regression_serv::set_config(const config_data& config) {
   converter_ = converter;
   (*converter_).set_weight_manager(wm_.get_model());
 
-  regression_.reset(jubatus::regression::regression_factory().create_regression(method, gresser_.get_model().get()));
+  // TODO: use param
+  pfi::text::json::json param;
+  regression_.reset(jubatus::regression::regression_factory().create_regression(method, param, gresser_.get_model().get()));
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...

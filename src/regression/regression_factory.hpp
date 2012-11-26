@@ -30,8 +30,6 @@ class regression_base;
 class regression_factory {
   public:
     regression_base* create_regression(const std::string& name,
-                                       jubatus::storage::storage_base* storage) const;
-    regression_base* create_regression(const std::string& name,
                                        const pfi::text::json::json& param,
                                        jubatus::storage::storage_base* storage) const;
 
