@@ -48,9 +48,7 @@ rpc_result_object rpc_mclient::wait(const std::string &method) {
 rpc_response_t rpc_mclient::wait_one( const std::string &method, msgpack::rpc::future &f ) {
   try {
     f.join();
-    msgpack::zone *zone_ptr = f.zone().get();
-    rpc_response_t rpc_resp( /* dummy msgid */0, f.error(), f.result(), 
-                             pfi::lang::shared_ptr<msgpack::zone>(zone_ptr) );
+    rpc_response_t rpc_resp( f );
     return rpc_resp;
   }
   JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method);

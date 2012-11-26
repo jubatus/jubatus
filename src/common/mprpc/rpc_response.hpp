@@ -21,21 +21,18 @@
 
 namespace jubatus { namespace common { namespace mprpc {
 
-struct rpc_response_t {
-  msgpack::type::tuple<uint8_t,uint32_t,msgpack::object,msgpack::object> response;
-  pfi::lang::shared_ptr<msgpack::zone> zone;
-
-  bool has_error() const { return !response.a2.is_nil(); }
-
-  uint32_t msgid() const { return response.a1; }
-  msgpack::object& error() { return response.a2; }
-  template<typename T> const T as() const { return response.a3.as<T>(); }
-
+class rpc_response_t {
+public:
   rpc_response_t() {}
-  rpc_response_t( uint32_t _msgid, const msgpack::object &_error, const msgpack::object &_result,
-                  pfi::lang::shared_ptr<msgpack::zone> _zone ) :
-    response( /* msgpack::rpc::RESPONSE */ 1, _msgid, _error, _result ),
-    zone(_zone) {}
+  rpc_response_t( msgpack::rpc::future f ): future_(f) {}
+  
+  bool has_error() const { return !future_.error().is_nil(); }
+  // uint32_t msgid() const { return 0; /* NOTE: dummy value */ }
+  msgpack::object error() const { return future_.error(); }
+  template<typename T> const T as() const { return future_.result_as<T>(); }
+
+private:
+  msgpack::rpc::future future_;
 };
 
 } // mprpc
