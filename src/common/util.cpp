@@ -272,6 +272,15 @@ std::string get_jsonstring(std::string jsonstr, const std::string key){
   return ret;
 }
 
+std::string get_jsonstring(std::string jsonstr, const std::string key, const std::string def){
+  std::string ret;
+  try{
+    ret = get_jsonstring(jsonstr, key);
+  }catch(const std::exception& e){
+    ret = def;
+  }
+  return ret;
+}
 
 } //util
 } //jubatus

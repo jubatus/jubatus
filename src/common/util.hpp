@@ -48,7 +48,9 @@ void set_exit_on_term();
 void ignore_sigpipe();
 
 std::string get_jsonstring(std::string, std::string);
+std::string get_jsonstring(std::string, std::string, std::string);
 std::string get_json(std::string, std::string);
+
 
 } //util
 } //namespace jubatus
