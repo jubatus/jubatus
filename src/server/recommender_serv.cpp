@@ -106,8 +106,10 @@ int recommender_serv::clear() {
 }
 
 common::cshared_ptr<recommender::recommender_base> recommender_serv::make_model() {
+  // TODO: set param
+  pfi::text::json::json param;
   return cshared_ptr<recommender::recommender_base>
-    (recommender::create_recommender(config_.method));
+    (recommender::create_recommender(config_.method, param));
 }  
 
 datum recommender_serv::complete_row_from_id(std::string id) {

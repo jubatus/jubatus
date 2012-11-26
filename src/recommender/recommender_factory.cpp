@@ -20,11 +20,14 @@
 #include "../storage/norm_factory.hpp"
 
 using namespace std;
+using pfi::text::json::json;
 
 namespace jubatus {
 namespace recommender {
 
-recommender_base* create_recommender(const string& name){
+recommender_base* create_recommender(const string& name,
+                                     const json& param) {
+  // TODO: use param for each method
   if (name == "inverted_index"){
     return new inverted_index;
   } else if (name == "minhash"){
