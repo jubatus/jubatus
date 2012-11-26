@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +22,7 @@
 #include <iostream>
 
 #include <msgpack.hpp>
+#include <glog/logging.h>
 
 #include "../common/exception.hpp"
 #include "../common/lock_service.hpp"
@@ -61,17 +61,19 @@ struct server_argv {
   std::string z;
   std::string name;
   std::string tmpdir;
+  std::string logdir;
   std::string eth;
   int interval_sec;
   int interval_count;
 
   MSGPACK_DEFINE(join, port, timeout, threadnum, program_name, type, z, name,
-      tmpdir, eth, interval_sec, interval_count);
+      tmpdir, logdir, eth, interval_sec, interval_count);
 
   bool is_standalone() const {
     return (z == "");
   }
-  std::string boot_message(const std::string& progname) const;
+  void boot_message(const std::string& progname) const;
+  void set_log_destination(const std::string& progname) const;
 };
 
 std::string get_server_identifier(const server_argv& a);
@@ -84,11 +86,14 @@ struct keeper_argv {
   int port;
   int timeout;
   int threadnum;
+  std::string program_name;
   std::string z;
+  std::string logdir;
   std::string eth;
   const std::string type;
 
-  std::string boot_message(const std::string& progname) const;
+  void boot_message(const std::string& progname) const;
+  void set_log_destination(const std::string& progname) const;
 };
 
 template <typename From, typename To>
@@ -116,12 +121,9 @@ int run_server(int args, char** argv, const std::string& type)
     jubatus::util::ignore_sigpipe();
     return impl_server.run();
   } catch (const jubatus::exception::jubatus_exception& e) {
-    std::cout << e.diagnostic_information(true) << std::endl;
+    LOG(FATAL) << e.diagnostic_information(true);
     return -1;
   }
 }
-
-pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-make_fv_converter(const std::string& config);
 
 }}

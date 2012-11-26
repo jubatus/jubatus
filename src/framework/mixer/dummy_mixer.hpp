@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,9 +27,7 @@ namespace mixer {
 class dummy_mixer : public mixer {
 public:
   void register_api(pfi::network::mprpc::rpc_server& server) {}
-  void register_mixable(mixable0* m) {
-    mixables_.push_back(m);
-  }
+  void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder>) {}
 
   void start() {}
   void stop() {}
@@ -38,12 +35,6 @@ public:
   void updated() {}
 
   void get_status(server_base::status_t& status) const {}
-  std::vector<mixable0*> get_mixables() const {
-    return mixables_;
-  }
-
-private:
-  std::vector<mixable0*> mixables_;
 };
 
 }

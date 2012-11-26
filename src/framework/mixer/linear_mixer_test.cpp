@@ -33,7 +33,7 @@ class linear_communication_stub : public linear_communication {
  public:
   size_t update_members() { return 4; }
 
-  pfi::lang::shared_ptr<common::try_lockable> create_lock() {}
+  pfi::lang::shared_ptr<common::try_lockable> create_lock() { return pfi::lang::shared_ptr<common::try_lockable>(); }
 
   void get_diff(common::mprpc::rpc_result_object& result) const {
     result.response.push_back(make_response("1"));
@@ -71,8 +71,12 @@ struct mixable_string : public mixable0 {
 TEST(linear_mixer, mix_order) {
   shared_ptr<linear_communication_stub> com(new linear_communication_stub);
   linear_mixer m(com, 1, 1);
+
+  pfi::lang::shared_ptr<mixable_holder> holder(new mixable_holder());
+  m.set_mixable_holder(holder);
+
   mixable_string s;
-  m.register_mixable(&s);
+  holder->register_mixable(&s);
 
   m.mix();
 

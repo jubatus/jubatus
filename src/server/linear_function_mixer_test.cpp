@@ -53,7 +53,7 @@ TEST(linear_function_mixer, diff) {
   m.set_model(linear_function_mixer::model_ptr(new storage::storage_mock_1));
 
   diffv d = m.get_diff_impl();
-  EXPECT_EQ(1u, d.count);
+  EXPECT_EQ(1, d.count);
   ASSERT_EQ(1u, d.v.size());
   EXPECT_EQ("f1", d.v[0].first);
   ASSERT_EQ(1u, d.v[0].second.size());
@@ -79,7 +79,7 @@ TEST(linear_function_mixer, mix) {
   diffv d2 = make_diff(2, 3, 4, 3);
   diffv d;
   m.mix_impl(d1, d2, d);
-  EXPECT_EQ(8u, d.count);
+  EXPECT_EQ(8, d.count);
   ASSERT_EQ(1u, d.v.size());
   EXPECT_EQ("f1", d.v[0].first);
   ASSERT_EQ(1u, d.v[0].second.size());

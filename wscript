@@ -1,6 +1,6 @@
 import Options
 
-VERSION = '0.3.3'
+VERSION = '0.3.4'
 APPNAME = 'jubatus'
 
 top = '.'
@@ -11,6 +11,10 @@ def options(opt):
   opt.load('compiler_cxx')
   opt.load('unittest_gtest')
   opt.load('gnu_dirs')
+
+  opt.add_option('--enable-debug',
+                 action='store_true', default=False,
+                 dest='debug', help='build for debug')
 
   opt.add_option('--enable-zookeeper',
                  action='store_true', default=False, # dest='nozk',
@@ -32,6 +36,13 @@ def configure(conf):
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
   conf.load('gnu_dirs')
+
+  # Generate config.hpp
+  conf.env.JUBATUS_PLUGIN_DIR = conf.env['LIBDIR'] + '/jubatus/plugin'
+  conf.define('JUBATUS_VERSION', VERSION)
+  conf.define('JUBATUS_APPNAME', APPNAME)
+  conf.define('JUBATUS_PLUGIN_DIR', conf.env.JUBATUS_PLUGIN_DIR)
+  conf.write_config_header('src/config.hpp', guard="JUBATUS_CONFIG_HPP_", remove=False)
 
   conf.check_cxx(lib = 'msgpack')
   conf.check_cxx(lib = 'dl')
@@ -55,6 +66,9 @@ def configure(conf):
   conf.check_cxx(header_name = 'arpa/inet.h')
   conf.check_cxx(header_name = 'dlfcn.h')
 
+  if not Options.options.debug:
+    conf.define('NDEBUG', 1)
+
   if Options.options.enable_zookeeper:
     if (conf.check_cxx(header_name = 'c-client-src/zookeeper.h',
                            define_name = 'HAVE_ZOOKEEPER_H',
@@ -63,7 +77,7 @@ def configure(conf):
     else:
       conf.check_cxx(header_name = 'zookeeper/zookeeper.h',
                      define_name = 'HAVE_ZOOKEEPER_H',
-                     errmsg = 'not found ("--disable-zookeeper" option is available)',
+                     errmsg = 'ZooKeeper c-binding is not found. Please install c-binding.',
                      mandatory = True)
       conf.define('ZOOKEEPER_HEADER', 'zookeeper/zookeeper.h')
 
@@ -77,15 +91,7 @@ def configure(conf):
     conf.env.append_value('CXXFLAGS', '-ftest-coverage')
     conf.env.append_value('LINKFLAGS', '-lgcov')
 
-  # plugin install path
-  conf.env.JUBATUS_PLUGIN_DIR = conf.env['LIBDIR'] + '/jubatus/plugin'
-
-  # don't know why this does not work when put after conf.recurse
-  conf.define('JUBATUS_VERSION', VERSION)
-  conf.define('JUBATUS_APPNAME', APPNAME)
-  conf.define('JUBATUS_PLUGIN_DIR', conf.env.JUBATUS_PLUGIN_DIR)
   conf.define('BUILD_DIR',  conf.bldnode.abspath())
-  conf.write_config_header('src/config.hpp', remove=False)
 
   conf.recurse(subdirs)
 

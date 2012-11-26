@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,6 +15,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "converter_config.hpp"
+
+#include <pficommon/text/json.h>
+
 #include "datum_to_fv_converter.hpp"
 #include "splitter_factory.hpp"
 #include "key_matcher.hpp"
@@ -235,6 +237,30 @@ void initialize_converter(const converter_config& config,
   if (config.hash_max_size.bool_test()) {
     conv.set_hash_max_size(*config.hash_max_size.get());
   }
+}
+
+pfi::lang::shared_ptr<datum_to_fv_converter>
+make_fv_converter(const std::string& config) {
+  if (config == "")
+    throw JUBATUS_EXCEPTION(fv_converter::converter_exception("Config of feature vector converter is empty"));
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+      converter(new fv_converter::datum_to_fv_converter);
+  converter_config c;
+  std::stringstream ss(config);
+  try {
+    ss >> pfi::text::json::via_json(c);
+  } catch (pfi::lang::end_of_data& e) {
+    std::string msg = std::string("Unexpected end of string is detected: ") + e.what();
+    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
+  } catch (pfi::lang::parse_error& e) {
+    std::string msg = std::string("Cannot parse config JSON: ") + e.what();
+    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
+  } catch (std::bad_cast& e) {
+    std::string msg = std::string("Invalid config format: ") + e.what();
+    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
+  }
+  fv_converter::initialize_converter(c, *converter);
+  return converter;
 }
 
 }

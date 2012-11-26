@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,8 +34,10 @@ stat_serv::stat_serv(const server_argv& a,
   stat_.set_model(model);
 
   mixer_.reset(mixer::create_mixer(a, zk));
+  mixable_holder_.reset(new mixable_holder());
 
-  mixer_->register_mixable(&stat_);
+  mixer_->set_mixable_holder(mixable_holder_);
+  mixable_holder_->register_mixable(&stat_);
 }
 
 stat_serv::~stat_serv() {
@@ -46,11 +47,16 @@ mixer::mixer* stat_serv::get_mixer() const {
   return mixer_.get();
 }
 
+pfi::lang::shared_ptr<mixable_holder> stat_serv::get_mixable_holder() const {
+  return mixable_holder_;
+}
+
 void stat_serv::get_status(status_t& status) const {
   status.insert(make_pair("storage", stat_.get_model()->type()));
 }
 
 bool stat_serv::set_config(const config_data& config) {
+  LOG(INFO) << __func__;
   config_ = config;
   common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(config_.window_size));
   stat_.set_model(model);

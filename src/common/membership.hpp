@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,16 +40,14 @@ void build_actor_path(std::string&, const std::string& type, const std::string& 
 // 127.0.0.1_9199 -> (127.0.0.1, 9199)
 bool revert(const std::string&, std::string&, int&);
 
-// zk -> name -> ip -> port -> bool
-bool register_actor(lock_service&, const std::string& type, const std::string& name,
+// zk -> name -> ip -> port -> void
+void register_actor(lock_service&, const std::string& type, const std::string& name,
                     const std::string& ip, int port);
-// zk -> name -> ip -> port -> bool
-bool register_keeper(lock_service&, const std::string& type, const std::string& ip, int);
+// zk -> name -> ip -> port -> void
+void register_keeper(lock_service&, const std::string& type, const std::string& ip, int);
 // zk -> name -> list( (ip, rpc_port) )
 bool get_all_actors(lock_service&, const std::string& type, const std::string&,
                     std::vector<std::pair<std::string, int> >&);
-
-bool push_cleanup(lock_service&, pfi::lang::function<void()>&);
 
 void force_exit();
 

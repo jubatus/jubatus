@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,10 +30,8 @@ dynamic_loader::dynamic_loader(const std::string& path)
   if (!handle) {
     // dlopen from JUBATUS_PLUGIN_DIR
     const std::string plugin_name = jubatus::util::base_name(path);
-    if (plugin_name != path) {
-      const std::string plugin_path = std::string(JUBATUS_PLUGIN_DIR) + "/" + plugin_name;
-      handle = dlopen(plugin_path.c_str() , RTLD_LAZY);
-    }
+    const std::string plugin_path = std::string(JUBATUS_PLUGIN_DIR) + "/" + plugin_name;
+    handle = dlopen(plugin_path.c_str() , RTLD_LAZY);
   }
 
   if (!handle) {

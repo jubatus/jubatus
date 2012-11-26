@@ -24,7 +24,7 @@ int main() {
 
 def build(bld):
   import Options
-  src = 'exception.cpp util.cpp key_manager.cpp vector_util.cpp global_id_generator.cpp'
+  src = 'exception.cpp util.cpp network.cpp key_manager.cpp vector_util.cpp global_id_generator.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
     src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp'
 
@@ -39,7 +39,9 @@ def build(bld):
     'exception_test.cpp',
     'key_manager_test.cpp',
     'util_test.cpp',
+    'network_test.cpp',
     'vector_util_test.cpp',
+    'global_id_generator_test.cpp',
     ]
 
   if bld.env.HAVE_ZOOKEEPER_H:

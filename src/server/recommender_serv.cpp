@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,10 +39,12 @@ recommender_serv::recommender_serv(const server_argv& a,
                                    const cshared_ptr<lock_service>& zk)
     : server_base(a) {
   mixer_.reset(mixer::create_mixer(a, zk));
+  mixable_holder_.reset(new mixable_holder());
   wm_.set_model(mixable_weight_manager::model_ptr(new fv_converter::weight_manager));
 
-  mixer_->register_mixable(&rcmdr_);
-  mixer_->register_mixable(&wm_);
+  mixer_->set_mixable_holder(mixable_holder_);
+  mixable_holder_->register_mixable(&rcmdr_);
+  mixable_holder_->register_mixable(&wm_);
 }
 
 recommender_serv::~recommender_serv() {
@@ -60,8 +61,9 @@ void recommender_serv::get_status(status_t& status) const {
 }
 
 int recommender_serv::set_config(config_data config) {
+  LOG(INFO) << __func__;
   shared_ptr<fv_converter::datum_to_fv_converter> converter
-      = framework::make_fv_converter(config.converter);
+      = fv_converter::make_fv_converter(config.converter);
   config_ = config;
   converter_ = converter;
   rcmdr_.set_model(make_model());
@@ -95,6 +97,7 @@ int recommender_serv::update_row(std::string id,datum dat) {
 }
 
 int recommender_serv::clear() {
+  LOG(INFO) << __func__;
   check_set_config();
   clear_row_cnt_ = 0;
   update_row_cnt_ = 0;

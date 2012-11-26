@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +27,7 @@
 #include "../common/lock_service.hpp"
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
+#include "../config.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -35,7 +35,7 @@ namespace framework {
 class server_helper_impl {
 public:
   explicit server_helper_impl(const server_argv& a);
-  bool prepare_for_start(const server_argv& a, bool use_cht);
+  void prepare_for_start(const server_argv& a, bool use_cht);
 
   common::cshared_ptr<jubatus::common::lock_service> zk() const {
     return zk_;
@@ -50,8 +50,10 @@ class server_helper {
 public:
   typedef typename Server::status_t status_t;
 
-  explicit server_helper(const server_argv& a)
-      : impl_(a) {
+  explicit server_helper(const server_argv& a, bool use_cht = false)
+      : impl_(a), use_cht_(use_cht) {
+
+    impl_.prepare_for_start(a, use_cht);
     server_.reset(new Server(a, impl_.zk()));
   }
 
@@ -100,20 +102,17 @@ public:
     return status;
   }
 
-  void use_cht() {
-    use_cht_ = true;
-  }
-
   int start(pfi::network::mprpc::rpc_server& serv) {
     const server_argv& a = server_->argv();
-    if (impl_.prepare_for_start(a, use_cht_)) {
+
+    if (!a.is_standalone()) {
       server_->get_mixer()->start();
     }
 
     if (serv.serv(a.port, a.threadnum)) {
       return 0;
     } else {
-      LOG(ERROR) << "failed starting server: any process using port " << a.port << "?";
+      LOG(FATAL) << "failed starting server: any process using port " << a.port << "?";
       return -1;
     }
   }
@@ -127,9 +126,10 @@ public:
   }
 
 private:
+
   common::cshared_ptr<Server> server_;
   server_helper_impl impl_;
-  bool use_cht_;
+  const bool use_cht_;
 };
 
 }

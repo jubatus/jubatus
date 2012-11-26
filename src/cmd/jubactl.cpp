@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -53,7 +52,8 @@ int main(int args, char** argv) try {
   // Support framework::server_argv
   p.add<int>("thread", 'C', "[start] concurrency = thread number", false, 2);
   p.add<int>("timeout", 'T', "[start] time out (sec)", false, 10);
-  p.add<std::string>("tmpdir", 'D', "[start] directory to place plugins", false, "/tmp");
+  p.add<std::string>("tmpdir", 'D', "[start] directory to load and save models", false, "/tmp");
+  p.add<std::string>("logdir", 'L', "[start] directory to output logs (instead of stderr)", false);
   p.add("join", 'J', "[start] join to the existing cluster");
   p.add<int>("interval_sec", 'S', "[start] mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'I', "[start] mix interval by update count", false, 512);
@@ -146,6 +146,7 @@ void send2supervisor(const string& cmd,
     server_option.z = zkhosts;
     server_option.name = name;
     server_option.tmpdir = argv.get<std::string>("tmpdir");
+    server_option.logdir = argv.get<std::string>("logdir");
     server_option.join = argv.exist("join");
 
     server_option.interval_sec = argv.get<int>("interval_sec");

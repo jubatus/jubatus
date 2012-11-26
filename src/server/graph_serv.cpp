@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -76,8 +75,10 @@ graph_serv::graph_serv(const framework::server_argv& a,
 #endif
 
   mixer_.reset(mixer::create_mixer(a, zk));
+  mixable_holder_.reset(new mixable_holder());
 
-  mixer_->register_mixable(&g_);
+  mixer_->set_mixable_holder(mixable_holder_);
+  mixable_holder_->register_mixable(&g_);
 }
 
 graph_serv::~graph_serv() {}
@@ -109,7 +110,7 @@ std::string graph_serv::create_node() { /* no lock here */
         } catch(const graph::local_node_exists& e) { // pass through
         } catch(const graph::global_node_exists& e) {// pass through
         } catch(const std::runtime_error& e) { // error !
-          LOG(INFO) << i+1 << "th replica: " << nodes[i].first << ":" << nodes[i].second << " " << e.what();
+          LOG(WARNING) << i+1 << "th replica: " << nodes[i].first << ":" << nodes[i].second << " " << e.what();
         }
       }
     }
@@ -135,9 +136,16 @@ int graph_serv::remove_node(const std::string& nid) {
     // if conflicts with create_node, users should re-run to ensure removal
     std::vector<std::pair<std::string, int> > members;
     get_members_(members);
-    
+
     if (!members.empty()) {
       common::mprpc::rpc_mclient c(members, argv().timeout); //create global node
+
+#ifndef NDEBUG
+      for(size_t i =0; i < members.size(); i++) {
+        DLOG(INFO) << "request to " << members[i].first << ":" << members[i].second;
+      }
+#endif
+
       try {
         c.call("remove_global_node", argv().name, nid, pfi::lang::function<int(int,int)>(&jubatus::framework::add<int>));
       } catch(const common::mprpc::rpc_no_result& e) { // pass through
@@ -172,6 +180,7 @@ int graph_serv::create_edge(const std::string& id, const edge_info& ei) {  /* no
 	if (nodes[i].first == argv().eth && nodes[i].second == argv().port) {
 	} else {
 	  client::graph c(nodes[i].first, nodes[i].second, 5.0);
+      DLOG(INFO) << "request to " << nodes[i].first << ":" << nodes[i].second;
 	  c.create_edge_here(argv().name, eid, ei);
 	}
       } catch(const graph::local_node_exists& e) { // pass through
@@ -290,11 +299,12 @@ int graph_serv::update_index() {
   g_.get_model()->get_diff(diff);
   g_.get_model()->set_mixed_and_clear_diff(diff);
   clock_time end = get_clock_time();
-  LOG(WARNING) << "mix done manually and locally; in " << (double)(end - start) << " secs.";
+  LOG(INFO) << "mix done manually and locally; in " << (double)(end - start) << " secs.";
   return 0;
 }
 
 int graph_serv::clear() {
+  LOG(INFO) << __func__;
   if (g_.get_model()) {
     g_.get_model()->clear();
   }
@@ -309,7 +319,6 @@ int graph_serv::create_node_here(const std::string& nid) {
   } catch(const graph::local_node_exists& e) { //pass through
   } catch(const graph::global_node_exists& e) {//pass through
   } catch(const std::runtime_error& e) {
-    DLOG(INFO) << e.what() << " " << nid;
     throw;
   }
   return 0;
@@ -321,7 +330,6 @@ int graph_serv::remove_global_node(const std::string& nid) {
   } catch(const graph::local_node_exists& e) {
   } catch(const graph::global_node_exists& e) {
   } catch(const std::runtime_error& e) {
-    DLOG(INFO) << e.what() << " " << nid;
     throw;
   }
   return 0;
@@ -332,7 +340,6 @@ int graph_serv::create_edge_here(edge_id_t eid, const edge_info& ei) {
     g_.get_model()->create_edge(eid, n2i(ei.src), n2i(ei.tgt));
     g_.get_model()->update_edge(eid, ei.p);
   } catch(const graph::graph_exception& e) {
-    DLOG(INFO) << e.what() << " " << eid;
     throw;
   }
   return 0;

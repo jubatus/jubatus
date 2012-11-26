@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,6 +33,23 @@ std::string make_hash(const std::string& key)
   return ss.str();
 }
 
+void cht::setup_cht_dir(lock_service& ls, const std::string& type, const std::string& name)
+{
+  bool success = true;
+
+  std::string path;
+  build_actor_path(path, type, name);
+  success = ls.create(path) && success;
+
+  path +=  "/cht";
+  success = ls.create(path) && success;
+
+  if (!success)
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to create cht directory")
+        << jubatus::exception::error_api_func("lock_service::create")
+        << jubatus::exception::error_message("cht path: " + path));
+}
+
 cht::cht(cshared_ptr<lock_service> z, const std::string& type, const std::string& name):
   type_(type), name_(name), lock_service_(z)
 {
@@ -53,8 +69,12 @@ void cht::register_node(const std::string& ip, int port)
 
   for (unsigned int i=0; i<NUM_VSERV; ++i) {
     std::string hashpath = path+"/"+make_hash(build_loc_str(ip, port, i));
-    lock_service_->create(hashpath, build_loc_str(ip,port), true);
-    DLOG(INFO) << "created " << hashpath;
+    if (!lock_service_->create(hashpath, build_loc_str(ip,port), true))
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to register cht node")
+          << jubatus::exception::error_api_func("lock_service::create")
+          << jubatus::exception::error_message("cht hashpash: " + hashpath));
+
+    DLOG(INFO) << "cht node created: " << hashpath;
   }
 }
 
@@ -126,25 +146,16 @@ std::pair<std::string,int> cht::find_predecessor(const std::string& key)
   }
 }
 
-void cht::setup_cht_dir(lock_service& ls, const std::string& type, const std::string& name)
-{
-  std::string path;
-  build_actor_path(path, type, name);
-  ls.create(path, "");
-  path +=  "/cht";
-  ls.create(path, "");
-}
-
 bool cht::get_hashlist_(const std::string& key, std::vector<std::string>& hlist)
 {
   hlist.clear();
   std::string path;
   build_actor_path(path, type_, name_);
   path += "/cht";
-  std::vector<std::pair<std::string, int> > ret;
-  lock_service_->list(path, hlist);
 
-  if (hlist.empty()) return false;
+  if (!lock_service_->list(path, hlist) || hlist.empty())
+    return false;
+
   std::sort(hlist.begin(), hlist.end());
   return true;
 }

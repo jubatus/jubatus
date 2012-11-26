@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,11 +21,9 @@
 #include "lock_service.hpp"
 #include "shared_ptr.hpp"
 
-#ifndef ATOMIC_I8_SUPPORT
-#include <pficommon/concurrent/mutex.h>
-#endif
-
 namespace jubatus { namespace common {
+
+class global_id_generator_impl;
 
 class global_id_generator
 {
@@ -41,15 +38,8 @@ public:
 
 private:
   global_id_generator();
-  bool is_standalone_;
-  uint64_t counter_;
 
-  std::string path_;
-  cshared_ptr<lock_service> ls_;
-
-#ifndef ATOMIC_I8_SUPPORT
-  pfi::concurrent::mutex counter_mutex_;
-#endif
+  pfi::lang::scoped_ptr<global_id_generator_impl> pimpl_;
 };
 
 }}

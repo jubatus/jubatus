@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +22,7 @@
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../fv_converter/converter_config.hpp"
 #include "../storage/storage_factory.hpp"
 
 using namespace std;
@@ -49,9 +49,11 @@ regression_serv::regression_serv(const framework::server_argv& a,
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
 
   mixer_.reset(mixer::create_mixer(a, zk));
+  mixable_holder_.reset(new mixable_holder());
 
-  mixer_->register_mixable(&gresser_);
-  mixer_->register_mixable(&wm_);
+  mixer_->set_mixable_holder(mixable_holder_);
+  mixable_holder_->register_mixable(&gresser_);
+  mixable_holder_->register_mixable(&wm_);
 }
 
 regression_serv::~regression_serv() {
@@ -66,10 +68,10 @@ void regression_serv::get_status(status_t& status) const {
 }
 
 int regression_serv::set_config(const config_data& config) {
-  DLOG(INFO) << __func__;
+  LOG(INFO) << __func__;
 
   shared_ptr<datum_to_fv_converter> converter
-      = framework::make_fv_converter(config.config);
+      = fv_converter::make_fv_converter(config.config);
 
   config_ = config;
   converter_ = converter;
@@ -83,7 +85,6 @@ int regression_serv::set_config(const config_data& config) {
 }
 
 config_data regression_serv::get_config() {
-  DLOG(INFO) << __func__;
   check_set_config();
   return config_;
 }

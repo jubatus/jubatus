@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -64,6 +63,10 @@ public:
     return mixer_.get();
   }
 
+  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+    return mixable_holder_;
+  }
+
   void get_status(status_t& status) const;
 
   int set_config(config_data config);
@@ -90,6 +93,7 @@ public:
 
 private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
+  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   config_data config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;

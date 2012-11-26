@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,7 +33,7 @@ cached_zk::~cached_zk()
 {
 }
 
-void cached_zk::list(const string& path, vector<string>& out)
+bool cached_zk::list(const string& path, vector<string>& out)
 {
   out.clear();
   scoped_lock lk(m_);
@@ -57,31 +56,36 @@ void cached_zk::list(const string& path, vector<string>& out)
       out.push_back(*i);
     }
   }
+
+  return true;
 }
 
-void cached_zk::list_(const string& path, std::set<std::string>& out)
+bool cached_zk::list_(const string& path, std::set<std::string>& out)
 {
   out.clear();
   struct String_vector s;
   int rc = zoo_wget_children(zh_, path.c_str(), cached_zk::update_cache, this, &s);
 
   if (rc == ZOK) {
-    std::set<string> cache;
-    for (int i=0; i<s.count; ++i) {
+    for (int i = 0; i < s.count; ++i) {
       out.insert(s.data[i]);
     }
+    return true;
   } else {
     LOG(ERROR) << zerror(rc) << " (" << path << ")";
+    return false;
   }
 }
 
-void cached_zk::hd_list(const string& path, string& out)
+bool cached_zk::hd_list(const string& path, string& out)
 {
   out.clear();
   scoped_lock lk(m_);
   const std::set<string>& list(list_cache_[path]);
   if (!list.empty())
     out = *(list.begin());
+
+  return true;
 }
 
 const string cached_zk::type() const
@@ -107,6 +111,38 @@ void cached_zk::clear_cache(const char* path)
   }
 }
 
+bool cached_zk::read(const string& path, string& out)
+{
+  scoped_lock lk(m_);
+  std::map<string, string>::const_iterator it = znode_cache_.find(path);
+
+  if (it == znode_cache_.end()) {
+    { DLOG(INFO) << "creating cache: " << path; }
+
+    if (read_(path, out))
+      znode_cache_[path] = out;
+
+  } else {
+    out = it->second;
+  }
+  return true;
+}
+
+bool cached_zk::read_(const string& path, string& out)
+{
+  char buf[1024];
+  int buflen = 1024;
+  int rc = zoo_wget(zh_, path.c_str(), cached_zk::update_cache, this, buf, &buflen, NULL);
+
+  if (rc == ZOK) {
+    out = string(buf, buflen);
+    return buflen <= 1024;
+  } else {
+    LOG(ERROR) << zerror(rc);
+    return false;
+  }
+}
+
 void cached_zk::update_cache(zhandle_t* zh, int type, int state,
     const char* path, void* ctx)
 {
@@ -127,39 +163,6 @@ void cached_zk::update_cache(zhandle_t* zh, int type, int state,
   }
   // ZOO_CHANGED_EVENT => ignore (FIXME, when read() cache going to be modified this needs fix)
   // ZOO_CREATED_EVENT => ignore
-}
-
-
-bool cached_zk::read(const string& path, string& out)
-{
-  scoped_lock lk(m_);
-  std::map<string, string>::const_iterator it = znode_cache_.find(path);
-
-  if (it == znode_cache_.end()) {
-    { DLOG(INFO) << "creating cache: " << path; }
-
-    if (read_(path, out))
-      znode_cache_[path] = out;
-
-  } else {
-    out = it->second;
-  }
-  return true;
-}
-
-bool zk::read_(const string& path, string& out)
-{
-  char buf[1024];
-  int buflen = 1024;
-  int rc = zoo_wget(zh_, path.c_str(), cached_zk::update_cache, this, buf, &buflen, NULL);
-
-  if (rc == ZOK) {
-    out = string(buf, buflen);
-    return buflen <= 1024;
-  } else {
-    LOG(ERROR) << zerror(rc);
-    return false;
-  }
 }
 
 } // common

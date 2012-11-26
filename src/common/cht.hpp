@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,13 +29,16 @@
 namespace jubatus {
 namespace common {
 
+// FIXME: Is the value reasonable for cht?
 static const unsigned int NUM_VSERV = 8;
 
-// this function does not seem pure, take care when calling from multiple threads
 std::string make_hash(const std::string& key);
 
 class cht {
 public:
+  // run just once in starting up the process: creates <name>/cht directory.
+  static void setup_cht_dir(lock_service&, const std::string&, const std::string&);
+
   cht(cshared_ptr<lock_service>, const std::string& type, const std::string& name);
   ~cht();
 
@@ -56,9 +58,6 @@ public:
 
   std::pair<std::string,int> find_predecessor(const std::string& host, int port);
   std::pair<std::string,int> find_predecessor(const std::string&);
-
-  // run just once in starting up the process: creates <name>/cht directory.
-  static void setup_cht_dir(lock_service&, const std::string&, const std::string&);
 
 private:
 

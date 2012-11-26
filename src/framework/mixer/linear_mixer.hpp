@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -57,7 +56,7 @@ public:
                unsigned int count_threshold, unsigned int tick_threshold);
 
   void register_api(pfi::network::mprpc::rpc_server& server);
-  void register_mixable(mixable0* m);
+  void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder> m);
 
   void start();
   void stop();
@@ -65,7 +64,6 @@ public:
   void updated();
 
   void get_status(server_base::status_t& status) const;
-  std::vector<mixable0*> get_mixables() const;
 
   void mix();
 private:
@@ -89,6 +87,8 @@ private:
   pfi::concurrent::thread t_;
   mutable pfi::concurrent::mutex m_;
   pfi::concurrent::condition c_;
+
+  pfi::lang::shared_ptr<mixable_holder> mixable_holder_;
   std::vector<mixable0*> mixables_;
 };
 

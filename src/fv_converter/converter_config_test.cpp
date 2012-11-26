@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -106,3 +105,20 @@ TEST(converter_config, hash_negative) {
 
   EXPECT_THROW(initialize_converter(config, conv), converter_exception);
 }
+
+TEST(make_fv_converter, empty) {
+  EXPECT_THROW(make_fv_converter(""), fv_converter::converter_exception);
+}
+
+TEST(make_fv_converter, invalid_config_json) {
+  EXPECT_THROW(make_fv_converter("{"), fv_converter::converter_exception);
+}
+
+TEST(make_fv_converter, config_json_parse_error) {
+  EXPECT_THROW(make_fv_converter("AA"), fv_converter::converter_exception);
+}
+
+TEST(make_fv_converter, config_cast_error) {
+  EXPECT_THROW(make_fv_converter("{}"), fv_converter::converter_exception);
+}
+

@@ -77,7 +77,6 @@ This package provides headers and libraries needed to develop new engines or plu
 
 %files devel
 %defattr(-,root,root,-)
-%{_bindir}/regression_performance_test
 %{_libdir}/pkgconfig/jubatus.pc
 %{_includedir}/jubatus
 %{_datarootdir}/jubatus

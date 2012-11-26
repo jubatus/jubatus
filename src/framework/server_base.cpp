@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -50,7 +49,7 @@ bool server_base::save(const std::string& id) {
         << jubatus::exception::error_errno(errno));
   }
   try {
-    std::vector<mixable0*> mixables = get_mixer()->get_mixables();
+    std::vector<mixable0*> mixables = get_mixable_holder()->get_mixables();
     for (size_t i = 0; i < mixables.size(); ++i) {
       mixables[i]->save(ofs);
     }
@@ -71,12 +70,13 @@ bool server_base::load(const std::string& id) {
                             << jubatus::exception::error_errno(errno));
   }
   try {
-    std::vector<mixable0*> mixables = get_mixer()->get_mixables();
+    std::vector<mixable0*> mixables = get_mixable_holder()->get_mixables();
     for (size_t i = 0; i < mixables.size(); ++i) {
       mixables[i]->clear();
       mixables[i]->load(ifs);
     }
     ifs.close();
+    LOG(INFO) << "loaded from " << path;
   } catch (const std::runtime_error& e) {
     ifs.close();
     LOG(ERROR) << e.what();

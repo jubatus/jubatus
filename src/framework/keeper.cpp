@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,17 +27,31 @@
 using namespace jubatus;
 using namespace jubatus::framework;
 
+namespace {
+
+std::string make_logfile_name(const keeper_argv& a) {
+  std::ostringstream logfile;
+  if (a.logdir != ""){
+    logfile << a.logdir << '/';
+    logfile << a.program_name << '.';
+    logfile << a.eth << '_' << a.port;
+    logfile << ".zklog.";
+    logfile << getpid();
+  }
+  return logfile.str();
+}
+
+}
+
 keeper::keeper(const keeper_argv& a)
   : pfi::network::mprpc::rpc_server(a.timeout),
     a_(a),
-    zk_(common::create_lock_service("cached_zk", a.z, a.timeout))
+    zk_(common::create_lock_service("cached_zk", a.z, a.timeout, make_logfile_name(a)))
     //    zk_(common::create_lock_service("zk", a.z, a.timeout))
 {
   ls = zk_;
   jubatus::common::prepare_jubatus(*zk_, a_.type, "");
-  if(!register_keeper(*zk_, a_.type, a_.eth, a_.port) ){
-    throw JUBATUS_EXCEPTION(membership_error("can't register to zookeeper."));
-  }
+  register_keeper(*zk_, a_.type, a_.eth, a_.port);
 }
 
 keeper::~keeper(){
@@ -52,11 +65,11 @@ int keeper::run()
     if (this->serv(a_.port, a_.threadnum)) {
       return 0;
     } else {
-      LOG(ERROR) << "failed starting server: any process using port " << a_.port << "?";
+      LOG(FATAL) << "failed starting server: any process using port " << a_.port << "?";
       return -1;
     }
   } catch (const jubatus::exception::jubatus_exception& e) {
-    std::cout << e.diagnostic_information(true) << std::endl;
+    LOG(FATAL) << e.diagnostic_information(true);
     return -1;
   }
 }

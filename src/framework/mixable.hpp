@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,6 +18,8 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
+#include <pficommon/concurrent/rwmutex.h>
 #include <msgpack.hpp>
 
 #include "../common/exception.hpp"
@@ -37,6 +38,29 @@ public:
   virtual void save(std::ostream & ofs) = 0;
   virtual void load(std::istream & ifs) = 0;
   virtual void clear() = 0;
+};
+
+class mixable_holder {
+public:
+  typedef std::vector<mixable0*> mixable_list;
+
+  mixable_holder() {}
+  virtual ~mixable_holder() {}
+  void register_mixable(mixable0* m) {
+    mixables_.push_back(m);
+  }
+
+  mixable_list get_mixables() const {
+    return mixables_;
+  }
+
+  pfi::concurrent::rw_mutex& rw_mutex() {
+    return rw_mutex_;
+  }
+
+protected:
+  pfi::concurrent::rw_mutex rw_mutex_;
+  std::vector<mixable0*> mixables_;
 };
 
 template <typename Model, typename Diff>

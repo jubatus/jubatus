@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -75,12 +74,22 @@ size_t linear_communication_impl::update_members() {
 void linear_communication_impl::get_diff(common::mprpc::rpc_result_object& result) const {
   // TODO: to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
+#ifndef NDEBUG
+  for(size_t i =0; i < servers_.size(); i++) {
+    DLOG(INFO) << "get diff from " << servers_[i].first << ":" << servers_[i].second;
+  }
+#endif
   result = client.call("get_diff", 0);
 }
 
 void linear_communication_impl::put_diff(const vector<string>& mixed) const {
   // TODO: to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
+#ifndef NDEBUG
+  for(size_t i =0; i < servers_.size(); i++) {
+    DLOG(INFO) << "pull diff to " << servers_[i].first << ":" << servers_[i].second;
+  }
+#endif
   client.call("put_diff", mixed);
 }
 
@@ -113,8 +122,8 @@ void linear_mixer::register_api(pfi::network::mprpc::rpc_server& server) {
        pfi::lang::bind(&linear_mixer::put_diff, this, pfi::lang::_1));
 }
 
-void linear_mixer::register_mixable(mixable0* m) {
-  mixables_.push_back(m);
+void linear_mixer::set_mixable_holder(pfi::lang::shared_ptr<mixable_holder> m) {
+  mixable_holder_ = m;
 }
 
 void linear_mixer::start() {
@@ -149,10 +158,6 @@ void linear_mixer::get_status(server_base::status_t& status) const {
   status["linear_mixer.ticktime"] = pfi::lang::lexical_cast<string>(ticktime_);  // since last mix
 }
 
-vector<mixable0*> linear_mixer::get_mixables() const {
-  return mixables_;
-}
-
 void linear_mixer::mixer_loop() {
   while (is_running_) {
     pfi::lang::shared_ptr<common::try_lockable> zklock = communication_->create_lock();
@@ -164,7 +169,7 @@ void linear_mixer::mixer_loop() {
         unsigned int new_ticktime = time(NULL);
         if (counter_ > count_threshold_ || new_ticktime - ticktime_ > tick_threshold_) {
           if (zklock->try_lock()) {
-            DLOG(INFO) << "starting mix:";
+            LOG(INFO) << "starting mix:";
             counter_ = 0;
             ticktime_ = new_ticktime;
           } else {
@@ -176,7 +181,7 @@ void linear_mixer::mixer_loop() {
 
       } //unlock
       mix();
-      DLOG(INFO) << ".... " << mix_count_ << "th mix done.";
+      LOG(INFO) << ".... " << mix_count_ << "th mix done.";
     } catch (const jubatus::exception::jubatus_exception& e) {
       LOG(ERROR) << e.diagnostic_information(true);
     }
@@ -196,6 +201,8 @@ void linear_mixer::mix() {
     return;
   } else {
     try {
+      mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
+
       common::mprpc::rpc_result_object result;
       communication_->get_diff(result);
 
@@ -203,7 +210,7 @@ void linear_mixer::mix() {
       for (size_t i = 1; i < result.response.size(); ++i) {
         vector<string> tmp = result.response[i].as<vector<string> >();
         for (size_t j = 0; j < tmp.size(); ++j) {
-          mixables_[j]->mix(tmp[j], mixed[j], mixed[j]);
+          mixables[j]->mix(tmp[j], mixed[j], mixed[j]);
         }
       }
 
@@ -220,32 +227,38 @@ void linear_mixer::mix() {
   }
 
   clock_time end = get_clock_time();
-  DLOG(INFO) << "mixed with " << servers_size << " servers in " << (double)(end - start) << " secs, "
-             << s << " bytes (serialized data) has been put.";
+  LOG(INFO) << "mixed with " << servers_size << " servers in " << (double)(end - start) << " secs, "
+            << s << " bytes (serialized data) has been put.";
   mix_count_++;
 }
 
 vector<string> linear_mixer::get_diff(int) {
-  std::vector<std::string> o;
-
+  scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
-  if (mixables_.empty()) {
+
+  mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
+  if (mixables.empty()) {
     throw JUBATUS_EXCEPTION(config_not_set()); // nothing to mix
   }
-  for (size_t i = 0; i < mixables_.size(); ++i) {
-    o.push_back(mixables_[i]->get_diff());
+
+  std::vector<std::string> o;
+  for (size_t i = 0; i < mixables.size(); ++i) {
+    o.push_back(mixables[i]->get_diff());
   }
   return o;
 }
 
 int linear_mixer::put_diff(const std::vector<std::string>& unpacked) {
+  scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
-  if (unpacked.size() != mixables_.size()) {
+
+  mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
+  if (unpacked.size() != mixables.size()) {
     //deserialization error
     return -1;
   }
-  for (size_t i = 0; i < mixables_.size(); ++i) {
-    mixables_[i]->put_diff(unpacked[i]);
+  for (size_t i = 0; i < mixables.size(); ++i) {
+    mixables[i]->put_diff(unpacked[i]);
   }
   counter_ = 0;
   ticktime_ = time(NULL);

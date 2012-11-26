@@ -4,8 +4,7 @@
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
+ License version 2.1 as published by the Free Software Foundation.
 
  This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -91,6 +90,7 @@ let generate s output strees =
   end;
   
   output <<< ("#include \""^s#basename^"_types.hpp\"");
+  output <<< "#include <glog/logging.h>";
   output <<< ("using namespace "^s#namespace^";");
   output <<< "using namespace jubatus::framework;";
   output <<< "int main(int args, char** argv){";
@@ -103,7 +103,7 @@ let generate s output strees =
   
   output <<< "    return k.run();";
   output <<< "  } catch (const jubatus::exception::jubatus_exception& e) {";
-  output <<< "    std::cout << e.diagnostic_information(true) << std::endl;";
+  output <<< "    LOG(FATAL) << e.diagnostic_information(true);";
   output <<< "    return -1;";
   output <<< "  }";
   output <<< "}";;

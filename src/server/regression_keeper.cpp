@@ -3,6 +3,7 @@
 #include "../framework/aggregators.hpp"
 #include "../common/exception.hpp"
 #include "regression_types.hpp"
+#include <glog/logging.h>
 using namespace jubatus;
 using namespace jubatus::framework;
 int main(int args, char** argv){
@@ -17,7 +18,7 @@ int main(int args, char** argv){
     k.register_broadcast<std::map<std::string,std::map<std::string,std::string > > >("get_status", pfi::lang::function<std::map<std::string,std::map<std::string,std::string > >(std::map<std::string,std::map<std::string,std::string > >,std::map<std::string,std::map<std::string,std::string > >)>(&merge<std::string,std::map<std::string,std::string > >)); //analysis
     return k.run();
   } catch (const jubatus::exception::jubatus_exception& e) {
-    std::cout << e.diagnostic_information(true) << std::endl;
+    LOG(FATAL) << e.diagnostic_information(true);
     return -1;
   }
 }

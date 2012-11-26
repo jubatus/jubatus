@@ -37,6 +37,7 @@ def build(bld):
       'linear_function_mixer.cpp',
       'mixable_weight_manager.cpp',
       ],
+    includes = '.',
     target = 'jubaserver',
     )
 
@@ -44,6 +45,7 @@ def build(bld):
     features='gtest',
     source='linear_function_mixer_test.cpp',
     target='linear_function_mixer_test',
+    includes='.',
     use='PFICOMMON jubastorage jubaserver'
     )
 
