@@ -128,13 +128,14 @@ INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
 
 
 void InitClassifiers(vector<classifier_base*>& classifiers){
-  classifiers.push_back(classifier_factory::create_classifier("perceptron", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("PA", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("PA1", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("PA2", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("CW", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("AROW", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("NHERD", new local_storage));
+  pfi::text::json::json param;
+  classifiers.push_back(classifier_factory::create_classifier("perceptron", param, new local_storage));
+  classifiers.push_back(classifier_factory::create_classifier("PA", param, new local_storage));
+  classifiers.push_back(classifier_factory::create_classifier("PA1", param, new local_storage));
+  classifiers.push_back(classifier_factory::create_classifier("PA2", param, new local_storage));
+  classifiers.push_back(classifier_factory::create_classifier("CW", param, new local_storage));
+  classifiers.push_back(classifier_factory::create_classifier("AROW", param, new local_storage));
+  classifiers.push_back(classifier_factory::create_classifier("NHERD", param, new local_storage));
   for (size_t i = 0; i < classifiers.size(); ++i){
     classifiers[i]->set_C(1.0);
   }
@@ -142,10 +143,11 @@ void InitClassifiers(vector<classifier_base*>& classifiers){
 
 
 TEST(classifier_factory, exception){
+  pfi::text::json::json param;
   local_storage * p = new local_storage;
-  ASSERT_THROW(classifier_factory::create_classifier("pa", p), unsupported_method);
-  ASSERT_THROW(classifier_factory::create_classifier("", p), unsupported_method);
-  ASSERT_THROW(classifier_factory::create_classifier("saitama", p), unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("pa", param, p), unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("", param, p), unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("saitama", param, p), unsupported_method);
   delete p;
 }
 

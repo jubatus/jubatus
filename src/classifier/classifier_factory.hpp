@@ -31,7 +31,6 @@ class classifier_base;
 
 class classifier_factory {
 public:
-  static classifier_base* create_classifier(const std::string& name, storage::storage_base* storage);
   static classifier_base* create_classifier(const std::string& name,
                                    const pfi::text::json::json& param,
                                    storage::storage_base* storage);
