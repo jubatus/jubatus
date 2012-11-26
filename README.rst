@@ -31,15 +31,18 @@ LGPL 2.1
 Update history
 --------------
 
-Preparing Release 0.3.4
+Release 0.3.4 2012/11/26
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
+  - Add --logdir option
+  - Add --enable-debug option to configure (#130)
+  - Catch bad cast of fv_converter (#170)
 
 Bugfix
   - Plugin basename specification does not work correctly (#57)
   - MIX put_diff/get_diff and update/analyze RPC can be executed on the same time (#171)
-  - #155
+  - #121, #131, #136, #150, #155, #156, #157, #160, #163, #165, #167, #172, #179, #180
 
 Release 0.3.3 2012/10/29
 ~~~~~~~~~~~~~~~~~~~~~~~~
