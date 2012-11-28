@@ -1,8 +1,8 @@
 .PHONY: all install clean test uninstall
 
 clean:
-	rm -rf $(filter-proper-targets $(ls R, .))
-	rm -rf *.omc
+    rm -rf $(filter-proper-targets $(ls R, .))
+    rm -rf *.omc
 
 USE_OCAMLFIND = true
 
@@ -66,17 +66,14 @@ OCAML_LIBS +=
 
 
 test: $(PROGRAM)  small.idl
-	./$(PROGRAM) small.idl
-	cat small.rst
+    ./$(PROGRAM) small.idl
+    cat small.rst
 
 regenerate: $(PROGRAM)
-	./$(PROGRAM) ../../src/server/recommender.idl -i -o ../../src/server
-	./$(PROGRAM) ../../src/server/regression.idl  -i -o ../../src/server
-	./$(PROGRAM) ../../src/server/classifier.idl  -i -o ../../src/server
-	./$(PROGRAM) ../../src/server/stat.idl        -i -o ../../src/server
-	./$(PROGRAM) ../../src/server/graph.idl       -i -o ../../src/server
+    foreach(IDL, $(find ../../src/server -name *.idl))
+      ./$(PROGRAM) $(IDL) -o .
 
 OCamlProgramInstall(install, /usr/local/bin, $(PROGRAM), $(FILES))
 
 uninstall:
-	-rm /usr/local/bin/$(PROGRAM)
+    rm /usr/local/bin/$(PROGRAM)
