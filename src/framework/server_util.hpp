@@ -106,7 +106,7 @@ void convert(const From& from, To& to){
 }
 
 extern jubatus::common::cshared_ptr<jubatus::common::lock_service> ls;
-void atexit(void);
+void atexit();
 
 template <class ImplServerClass, class UserServClass>
 int run_server(int args, char** argv, const std::string& type)
@@ -126,4 +126,5 @@ int run_server(int args, char** argv, const std::string& type)
   }
 }
 
-}}
+} // framework
+} // jubatus
