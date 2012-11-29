@@ -137,6 +137,8 @@ let generate s output strees =
   output <<< (".. " ^ Generator.comment);
   output <<< "\n";
 
+  output <<< s#basename;
+
   output <<< "sometitle";
   output <<< "=========\n";
   List.iter (fun l -> output <<< (to_string l)) strees;
