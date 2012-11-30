@@ -20,13 +20,10 @@
 #include <typeinfo>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/cast.h>
+#include <pficommon/lang/demangle.h>
 
 namespace jubatus {
 namespace exception {
-
-namespace detail {
-std::string demangle_symbol(const char *symbol);
-}
 
 class error_info_base {
 public:
@@ -61,7 +58,7 @@ public:
 
   std::string tag_typeid_name() const
   {
-    return jubatus::exception::detail::demangle_symbol(typeid(struct error_splitter_*).name());
+    return pfi::lang::demangle(typeid(struct error_splitter_*).name());
   }
 
   std::string as_string() const
@@ -104,7 +101,7 @@ inline error_info<Tag, V>::~error_info() throw()
 template <class Tag, class V>
 inline std::string error_info<Tag, V>::tag_typeid_name() const
 {
-  return jubatus::exception::detail::demangle_symbol(typeid(Tag*).name());
+  return pfi::lang::demangle(typeid(Tag*).name());
 }
 
 template <class Tag, class V>
