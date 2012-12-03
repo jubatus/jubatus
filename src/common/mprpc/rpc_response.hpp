@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,37 +16,31 @@
 
 #pragma once
 
+#include <msgpack.hpp>
 #include <pficommon/lang/shared_ptr.h>
-#include <pficommon/network/mprpc.h>
-#include "../server_base.hpp"
-#include "../../common/mprpc/rpc_server.hpp"
 
-namespace jubatus {
-namespace framework {
+namespace jubatus { namespace common { namespace mprpc {
 
-class mixable0;
-class mixable_holder;
-
-namespace mixer {
-
-class mixer {
+class rpc_response_t {
 public:
-  typedef jubatus::common::mprpc::rpc_server rpc_server_t;
+  rpc_response_t() {}
+  rpc_response_t(msgpack::rpc::future f ) :
+    zone( f.zone().get() ) {
+    response.a1 = 0 /* NOTE: dummy value */;
+    response.a2 = f.error();
+    response.a3 = f.result();
+  }
 
 public:
-  virtual ~mixer() {}
+  msgpack::type::tuple<uint8_t,uint32_t,msgpack::object,msgpack::object> response;
+  mp::shared_ptr<msgpack::zone> zone;
 
-  virtual void register_api(rpc_server_t& server) = 0;
-  virtual void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder>) = 0;
-
-  virtual void start() = 0;
-  virtual void stop() = 0;
-
-  virtual void updated() = 0;
-
-  virtual void get_status(server_base::status_t& status) const = 0;
+  bool has_error() const { return !response.a2.is_nil(); }
+  uint32_t msgid() const { return response.a1; }
+  msgpack::object& error() { return response.a2; }
+  template<typename T> const T as() const { return response.a3.as<T>(); }
 };
 
-}
-}
-}
+} // mprpc
+} // common
+} // jubatus

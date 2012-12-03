@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,27 +16,31 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
-#include "../mixable.hpp"
-#include "mixer.hpp"
 
-namespace jubatus {
-namespace framework {
-namespace mixer {
+#include <pficommon/lang/shared_ptr.h>
+#include "rpc_response.hpp"
+#include "rpc_error.hpp"
 
-class dummy_mixer : public mixer {
-public:
-  void register_api(rpc_server_t& server) {}
-  void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder>) {}
+namespace jubatus { namespace common { namespace mprpc {
 
-  void start() {}
-  void stop() {}
+template <class Res>
+struct rpc_result {
+  pfi::lang::shared_ptr<Res> value;
+  std::vector<rpc_error> error;
 
-  void updated() {}
-
-  void get_status(server_base::status_t& status) const {}
+  Res& operator*() const { return *value; }
+  bool has_error() const { return !error.empty(); }
 };
 
-}
-}
-}
+struct rpc_result_object {
+  std::vector<rpc_response_t> response;
+  std::vector<rpc_error> error;
+
+  bool has_error() const { return !error.empty(); }
+};
+
+} // mprpc
+} // common
+} // jubatus

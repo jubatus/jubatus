@@ -102,7 +102,8 @@ public:
     return status;
   }
 
-  int start(pfi::network::mprpc::rpc_server& serv) {
+  template <typename RPCServer>
+  int start(RPCServer& serv) {
     const server_argv& a = server_->argv();
 
     if (!a.is_standalone()) {

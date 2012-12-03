@@ -9,14 +9,14 @@
 #include "classifier_types.hpp"
 #include <pficommon/network/mprpc.h>
 #include <pficommon/lang/bind.h>
-
+#include "../common/mprpc/rpc_server.hpp"
 
 namespace jubatus {
 
 namespace server {
 
 template <class Impl>
-class classifier : public pfi::network::mprpc::rpc_server {
+class classifier : public jubatus::common::mprpc::rpc_server {
 public:
   classifier(double timeout_sec): rpc_server(timeout_sec) {
 

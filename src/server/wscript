@@ -13,14 +13,14 @@ def build_one(bld, name, libraries = '', sources = ''):
     source = __sources,
     target = 'juba'+name,
     includes = '.',
-    use = 'jubatus_framework jubacommon_mprpc jubatus_%s %s' % (name, libraries)
+    use = 'jubatus_framework jubacommon_mprpc jubatus_%s %s MPIO MSGPACK-RPC' % (name, libraries)
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
       source = '%s_keeper.cpp ' % name,
       target = 'juba%s_keeper' % name,
       includes = '.',
-      use = 'PFICOMMON jubatus_framework jubacommon_mprpc'
+      use = 'PFICOMMON jubatus_framework jubacommon_mprpc MPIO MSGPACK-RPC'
       )
   bld.program(
     features = 'gtest',

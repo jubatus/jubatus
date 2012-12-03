@@ -22,7 +22,7 @@
 #include <pficommon/concurrent/thread.h>
 #include <pficommon/lang/shared_ptr.h>
 #include "../../common/lock_service.hpp"
-#include "../../common/mprpc/rpc_client.hpp"
+#include "../../common/mprpc/rpc_mclient.hpp"
 #include "../../common/shared_ptr.hpp"
 #include "mixer.hpp"
 
@@ -55,7 +55,7 @@ public:
   linear_mixer(pfi::lang::shared_ptr<linear_communication> communicaiton,
                unsigned int count_threshold, unsigned int tick_threshold);
 
-  void register_api(pfi::network::mprpc::rpc_server& server);
+  void register_api(rpc_server_t& server);
   void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder> m);
 
   void start();

@@ -9,6 +9,7 @@
 #include "graph_types.hpp"
 #include <pficommon/network/mprpc.h>
 #include <pficommon/lang/bind.h>
+#include "../common/mprpc/rpc_server.hpp"
 
 
 namespace jubatus {
@@ -16,7 +17,7 @@ namespace jubatus {
 namespace server {
 
 template <class Impl>
-class graph : public pfi::network::mprpc::rpc_server {
+class graph : public jubatus::common::mprpc::rpc_server {
 public:
   graph(double timeout_sec): rpc_server(timeout_sec) {
 

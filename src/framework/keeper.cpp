@@ -28,31 +28,19 @@
 using namespace jubatus;
 using namespace jubatus::framework;
 
-namespace {
+namespace jubatus { namespace framework {
+__thread msgpack::rpc::session_pool *private_session_pool_ = NULL;
+__thread keeper::async_task_loop* keeper::async_task_loop::private_async_task_loop_;
 
-std::string make_logfile_name(const keeper_argv& a) {
-  std::ostringstream logfile;
-  if (a.logdir != ""){
-    logfile << a.logdir << '/';
-    logfile << a.program_name << '.';
-    logfile << a.eth << '_' << a.port;
-    logfile << ".zklog.";
-    logfile << getpid();
-  }
-  return logfile.str();
-}
+// NOTE: '__thread' is gcc-extension. We should re-implement with
+//       pthread TLS?
 
-}
+}}
 
 keeper::keeper(const keeper_argv& a)
-  : pfi::network::mprpc::rpc_server(a.timeout),
-    a_(a),
-    zk_(common::create_lock_service("cached_zk", a.z, a.timeout, make_logfile_name(a)))
-    //    zk_(common::create_lock_service("zk", a.z, a.timeout))
+  : keeper_common(a),
+    jubatus::common::mprpc::rpc_server() // FIMXE: set server timeout a.timeout
 {
-  ls = zk_;
-  jubatus::common::prepare_jubatus(*zk_, a_.type, "");
-  register_keeper(*zk_, a_.type, a_.eth, a_.port);
 }
 
 keeper::~keeper(){
@@ -64,55 +52,20 @@ int keeper::run()
     ::atexit(jubatus::framework::atexit);
     jubatus::util::set_exit_on_term();
     jubatus::util::ignore_sigpipe();
-    if (this->serv(a_.port, a_.threadnum)) {
-      return 0;
-    } else {
-      LOG(FATAL) << "failed starting server: any process using port " << a_.port << "?";
-      return -1;
-    }
+
+    this->instance.listen( "0.0.0.0", a_.port );
+    this->instance.run( a_.threadnum );
+
+    // TODO: check server start error. and log error message like:
+    //
+    //    LOG(FATAL) << "failed starting server: any process using port " 
+    //               << a_.port << "?";
+    //    return -1;
+    //
+
+    return 0; // never return
   } catch (const jubatus::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
     return -1;
-  }
-}
-
-void keeper::get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret){
-  using namespace std;
-  ret.clear();
-  vector<string> list;
-  string path;
-  common::build_actor_path(path, a_.type, name);
-  path += "/nodes";
-
-  {
-    pfi::concurrent::scoped_lock lk(mutex_);
-    zk_->list(path, list);
-  }
-  vector<string>::const_iterator it;
-
-  if(list.empty()){
-    throw JUBATUS_EXCEPTION(no_worker(name));
-  }
-
-  // FIXME:
-  // do you return all server list? it can be very large
-  for(it = list.begin(); it!= list.end(); ++it){
-    string ip;
-    int port;
-    common::revert(*it, ip, port);
-    ret.push_back(make_pair(ip,port));
-  }
-}
-
-void keeper::get_members_from_cht_(const std::string& name, const std::string& id,
-                                   std::vector<std::pair<std::string, int> >& ret, size_t n)
-{
-  ret.clear();
-  pfi::concurrent::scoped_lock lk(mutex_);
-  jubatus::common::cht ht(zk_, a_.type, name);
-  ht.find(id, ret, n);
-
-  if(ret.empty()){
-    throw JUBATUS_EXCEPTION(no_worker(name));
   }
 }
