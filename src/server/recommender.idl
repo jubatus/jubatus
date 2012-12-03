@@ -16,10 +16,7 @@
 
 type similar_result = list<tuple<string, float> >
 
-message config_data {
-  0: string method
-  1: string converter #JSON
-}
+type config_data = string
 
 message datum {
   0: list<tuple<string, string> >  string_values

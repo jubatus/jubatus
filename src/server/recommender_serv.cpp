@@ -61,8 +61,11 @@ void recommender_serv::get_status(status_t& status) const {
 }
 
 int recommender_serv::set_config(config_data config) {
+  std::string fv_config;
+  fv_config = jubatus::util::get_json((std::string)config, "converter");
+
   shared_ptr<fv_converter::datum_to_fv_converter> converter
-      = framework::make_fv_converter(config.converter);
+      = framework::make_fv_converter(fv_config);
   config_ = config;
   converter_ = converter;
   rcmdr_.set_model(make_model());
@@ -108,8 +111,11 @@ int recommender_serv::clear() {
 common::cshared_ptr<recommender::recommender_base> recommender_serv::make_model() {
   // TODO: set param
   pfi::text::json::json param;
+  std::string method;
+  method = jubatus::util::get_jsonstring((std::string)config_, "method");
+
   return cshared_ptr<recommender::recommender_base>
-    (recommender::create_recommender(config_.method, param));
+    (recommender::create_recommender(method, param));
 }  
 
 datum recommender_serv::complete_row_from_id(std::string id) {
