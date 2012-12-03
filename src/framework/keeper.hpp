@@ -62,25 +62,25 @@ public:
   template <typename R>
   void register_random(const std::string& method_name) {
     using namespace mp::placeholders;
-    mp::function<R(std::string)> f = mp::bind(&keeper::template random_proxy<R>, this, method_name, _1);
+    mp::function<R(std::string)> f = mp::bind(&keeper::template random_proxy0<R>, this, method_name, _1);
     add(method_name, f);
   }
   template <typename R, typename A0> 
   void register_random(const std::string& method_name) {
     using namespace mp::placeholders;
-    mp::function<R(std::string,A0)> f = mp::bind(&keeper::template random_proxy<R,A0>, this, method_name, _1, _2);
+    mp::function<R(std::string,A0)> f = mp::bind(&keeper::template random_proxy1<R,A0>, this, method_name, _1, _2);
     add(method_name, f);
   }
   template <typename R, typename A0, typename A1>
   void register_random(const std::string& method_name) {
     using namespace mp::placeholders;
-    mp::function<R(std::string,A0,A1)> f = mp::bind(&keeper::template random_proxy<R,A0,A1>, this, method_name, _1, _2, _3);
+    mp::function<R(std::string,A0,A1)> f = mp::bind(&keeper::template random_proxy2<R,A0,A1>, this, method_name, _1, _2, _3);
     add(method_name,f); 
   }
   template <typename R, typename A0, typename A1, typename A2>
   void register_random(const std::string& method_name) {
     using namespace mp::placeholders;
-    mp::function<R(std::string,A0,A1,A2)> f = mp::bind(&keeper::template random_proxy<R,A0,A1,A2>, this, method_name, _1, _2, _3, _4);
+    mp::function<R(std::string,A0,A1,A2)> f = mp::bind(&keeper::template random_proxy3<R,A0,A1,A2>, this, method_name, _1, _2, _3, _4);
     add(method_name,f); 
   }
 
@@ -89,7 +89,7 @@ public:
                           pfi::lang::function<R(R,R)> agg){
     using namespace mp::placeholders;
     mp::function<R(std::string)> f =
-      mp::bind(&keeper::template broadcast_proxy<R>, this, method_name, _1, 
+      mp::bind(&keeper::template broadcast_proxy0<R>, this, method_name, _1, 
                agg);
     add(method_name, f);
   }
@@ -98,7 +98,7 @@ public:
                           pfi::lang::function<R(R,R)> agg){
     using namespace mp::placeholders;
     mp::function<R(std::string, A0)> f =
-      mp::bind(&keeper::template broadcast_proxy<R, A0>, this, method_name, _1, _2,
+      mp::bind(&keeper::template broadcast_proxy1<R, A0>, this, method_name, _1, _2,
                agg);
     add(method_name, f);
   }
@@ -107,21 +107,21 @@ public:
   void register_cht(std::string method_name, pfi::lang::function<R(R,R)> agg) {
     using namespace mp::placeholders;
     mp::function<R(std::string, std::string)> f =
-      mp::bind(&keeper::template cht_proxy<N,R>, this, method_name, _1, _2, agg);
+      mp::bind(&keeper::template cht_proxy0<N,R>, this, method_name, _1, _2, agg);
     add(method_name, f);
   }
   template <int N, typename R, typename A0>
   void register_cht(std::string method_name, pfi::lang::function<R(R,R)> agg) {
     using namespace mp::placeholders;
     mp::function<R(std::string, std::string, A0)> f =
-      mp::bind(&keeper::template cht_proxy<N,R,A0>, this, method_name, _1, _2, _3, agg);
+      mp::bind(&keeper::template cht_proxy1<N,R,A0>, this, method_name, _1, _2, _3, agg);
     add(method_name, f);
   }
   template <int N, typename R, typename A0, typename A1>
   void register_cht(std::string method_name, pfi::lang::function<R(R,R)> agg) {
     using namespace mp::placeholders;
     mp::function<R(std::string, std::string, A0, A1)> f =
-      mp::bind(&keeper::template cht_proxy<N,R, A0, A1>, this, method_name, _1, _2, _3, _4, agg);
+      mp::bind(&keeper::template cht_proxy2<N,R, A0, A1>, this, method_name, _1, _2, _3, _4, agg);
     add(method_name, f);
   }
   
@@ -271,7 +271,7 @@ private:
 
 private:
   template <typename R>
-  R random_proxy(const std::string& method_name, const std::string& name){
+  R random_proxy0(const std::string& method_name, const std::string& name){
     //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
@@ -287,7 +287,7 @@ private:
     }
   }
   template <typename R, typename A>
-  R random_proxy(const std::string& method_name, const std::string& name, const A& arg){
+  R random_proxy1(const std::string& method_name, const std::string& name, const A& arg){
     //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
@@ -303,7 +303,7 @@ private:
     }
   }
   template <typename R, typename A0, typename A1>
-  R random_proxy(const std::string& method_name, const std::string& name, const A0& a0, const A1& a1){
+  R random_proxy2(const std::string& method_name, const std::string& name, const A0& a0, const A1& a1){
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
@@ -318,7 +318,7 @@ private:
     }
   }
   template <typename R, typename A0, typename A1, typename A2>
-  R random_proxy(const std::string& method_name, const std::string& name, const A0& a0, const A1& a1, const A2& a2){
+  R random_proxy3(const std::string& method_name, const std::string& name, const A0& a0, const A1& a1, const A2& a2){
     std::vector<std::pair<std::string, int> > list;
 
     get_members_(name, list);
@@ -351,7 +351,7 @@ private:
   //// 
 
   template <typename R>
-  R broadcast_proxy(const std::string& method_name, const std::string& name,
+  R broadcast_proxy0(const std::string& method_name, const std::string& name,
                     pfi::lang::function<R(R,R)>& agg) {
     //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
@@ -366,7 +366,7 @@ private:
     }
   }
   template <typename R, typename A>
-  R broadcast_proxy(const std::string& method_name, const std::string& name, const A& arg,
+  R broadcast_proxy1(const std::string& method_name, const std::string& name, const A& arg,
                     pfi::lang::function<R(R,R)>& agg) {
     //    {DLOG(INFO)<< __func__ << " " << method_name << " " << name;}
     std::vector<std::pair<std::string, int> > list;
@@ -397,7 +397,7 @@ private:
   }
 
   template <int N, typename R>
-  R cht_proxy(const std::string& method_name, const std::string& name, const std::string& id,
+  R cht_proxy0(const std::string& method_name, const std::string& name, const std::string& id,
               pfi::lang::function<R(R,R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
     get_members_from_cht_(name, id, list, N);
@@ -411,7 +411,7 @@ private:
     }
   }
   template <int N, typename R, typename A0>
-  R cht_proxy(const std::string& method_name, const std::string& name, const std::string& id, const A0& arg,
+  R cht_proxy1(const std::string& method_name, const std::string& name, const std::string& id, const A0& arg,
               pfi::lang::function<R(R,R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
     get_members_from_cht_(name, id, list, N);
@@ -425,7 +425,7 @@ private:
     }
   }
   template <int N, typename R, typename A0, typename A1>
-  R cht_proxy(const std::string& method_name, const std::string& name, const std::string& id, const A0& a0, const A1& a1,
+  R cht_proxy2(const std::string& method_name, const std::string& name, const std::string& id, const A0& a0, const A1& a1,
               pfi::lang::function<R(R,R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
     get_members_from_cht_(name, id, list, N);

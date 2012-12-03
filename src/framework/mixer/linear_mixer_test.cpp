@@ -22,7 +22,7 @@ vector<string> make_vector(const string& s) {
 
 jubatus::common::mprpc::rpc_response_t make_response(const string& s) {
   jubatus::common::mprpc::rpc_response_t res;
-  res.zone = shared_ptr<msgpack::zone>(new msgpack::zone);
+  res.zone = mp::shared_ptr<msgpack::zone>(new msgpack::zone);
   res.response.a3 = msgpack::object(make_vector(s), res.zone.get());
   return res;
 }
