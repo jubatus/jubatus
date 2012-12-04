@@ -235,7 +235,7 @@ void keeper_argv::set_log_destination(const std::string& progname) const {
 
 common::cshared_ptr<jubatus::common::lock_service> ls;
 
-void atexit(void){
+void atexit(){
 #ifdef HAVE_ZOOKEEPER_H
   if(ls)
     ls->force_close();
