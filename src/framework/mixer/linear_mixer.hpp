@@ -48,7 +48,7 @@ public:
   // it can throw common::mprpc exception
   virtual void get_diff(common::mprpc::rpc_result_object& result) const = 0;
   // it can throw common::mprpc exception
-  virtual void put_diff(const std::vector<common::mprpc::byte_buffer>& mixed) const = 0;
+  virtual void put_diff(const common::mprpc::byte_buffer& mixed) const = 0;
 };
 
 class linear_mixer : public mixer {
@@ -72,8 +72,8 @@ private:
 
   void clear();
 
-  std::vector<common::mprpc::byte_buffer> get_diff(int);
-  int put_diff(const std::vector<common::mprpc::byte_buffer>& unpacked);
+  common::mprpc::byte_buffer get_diff(int);
+  int put_diff(const common::mprpc::byte_buffer& unpacked);
 
   pfi::lang::shared_ptr<linear_communication> communication_;
   unsigned int count_threshold_;

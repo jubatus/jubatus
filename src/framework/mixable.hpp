@@ -19,6 +19,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <pficommon/lang/scoped_ptr.h>
 #include <pficommon/concurrent/rwmutex.h>
 #include <msgpack.hpp>
 
@@ -29,6 +30,7 @@
 namespace jubatus{
 namespace framework{
 
+
 class mixable0 {
 public:
   mixable0() {}
@@ -37,23 +39,27 @@ public:
   virtual void put_diff(const common::mprpc::byte_buffer&) = 0;
   virtual void mix(const common::mprpc::byte_buffer&, const common::mprpc::byte_buffer&, common::mprpc::byte_buffer&) const = 0;
 
+  //virtual Diff get_diff_impl() const = 0;
+  //virtual void put_diff_impl(const Diff&) = 0;
+  //virtual void mix_impl(const Diff&, const Diff&, Diff&) const = 0;
+
   virtual void save(std::ostream & ofs) = 0;
   virtual void load(std::istream & ifs) = 0;
   virtual void clear() = 0;
 };
 
+
+class model_bundler;
+
 class mixable_holder {
 public:
-  typedef std::vector<mixable0*> mixable_list;
-
-  mixable_holder() {}
+  mixable_holder(model_bundler* b)
+    : bundler_(b)
+  {}
   virtual ~mixable_holder() {}
-  void register_mixable(mixable0* m) {
-    mixables_.push_back(m);
-  }
 
-  mixable_list get_mixables() const {
-    return mixables_;
+  model_bundler* get_bundler() const {
+    return bundler_.get();
   }
 
   pfi::concurrent::rw_mutex& rw_mutex() {
@@ -62,7 +68,7 @@ public:
 
 protected:
   pfi::concurrent::rw_mutex rw_mutex_;
-  std::vector<mixable0*> mixables_;
+  pfi::lang::scoped_ptr<model_bundler> bundler_;
 };
 
 template <typename Model, typename Diff>
@@ -84,35 +90,6 @@ class mixable : public mixable0 {
     model_ = m;
   }
 
-  common::mprpc::byte_buffer get_diff()const{
-    if(model_){
-      common::mprpc::byte_buffer buf;
-      pack_(get_diff_impl(), buf);
-      return buf;
-    }else{
-      throw JUBATUS_EXCEPTION(config_not_set());
-    }
-  };
-
-  void put_diff(const common::mprpc::byte_buffer& d){
-    if(model_){
-      Diff diff;
-      unpack_(d, diff);
-      put_diff_impl(diff);
-    }else{
-      throw JUBATUS_EXCEPTION(config_not_set());
-    }
-  }
-
-  void mix(const common::mprpc::byte_buffer& lhs, const common::mprpc::byte_buffer& rhs,
-           common::mprpc::byte_buffer& mixed_buf) const {
-    Diff left, right, mixed;
-    unpack_(lhs, left);
-    unpack_(rhs, right);
-    mix_impl(left, right, mixed);
-    pack_(mixed, mixed_buf);
-  }
-
   void save(std::ostream & os){
     model_->save(os);
   }
@@ -124,20 +101,170 @@ class mixable : public mixable0 {
   model_ptr get_model() const { return model_; }
 
 private:
-  void unpack_(const common::mprpc::byte_buffer& buf, Diff& d) const {
-    msgpack::unpacked msg;
-    msgpack::unpack(&msg, buf.ptr(), buf.size());
-    msg.get().convert(&d);
-  }
-
-  void pack_(const Diff& d, common::mprpc::byte_buffer& buf) const {
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, d);
-    buf.assign(sbuf.data(), sbuf.size());
-  }
-
   model_ptr model_;
 };
+
+
+namespace detail {
+
+class mix_wrapper_base {
+public:
+  virtual ~mix_wrapper_base()
+  {
+  }
+  virtual void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::packer<msgpack::sbuffer>& mixed) = 0;
+  virtual void get_diff(msgpack::packer<msgpack::sbuffer>& pk) = 0;
+  virtual void put_diff(const msgpack::object& diff_obj) = 0;
+};
+
+template <class M>
+class mix_wrapper : public detail::mix_wrapper_base {
+public:
+  mix_wrapper(M& m)
+    : m_(m)
+  {
+  }
+
+  void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::packer<msgpack::sbuffer>& mixed) {
+    typename M::diff_type lhs_diff, rhs_diff, m;
+    lhs.convert(&lhs_diff);
+    rhs.convert(&rhs_diff);
+    m_.mix_impl(lhs_diff, rhs_diff, m);
+
+    mixed << m;
+  }
+
+  void get_diff(msgpack::packer<msgpack::sbuffer>& pk) {
+    pk << m_.get_diff_impl();
+  }
+
+  void put_diff(const msgpack::object& diff_obj) {
+    typename M::diff_type diff;
+    diff_obj.convert(&diff);
+    m_.put_diff(diff);
+  }
+
+protected:
+  M& m_;
+};
+} // detail
+
+class model_bundler : public mixable0 {
+public:
+  typedef std::vector<msgpack::object> diff_object;
+  typedef std::vector<pfi::lang::shared_ptr<detail::mix_wrapper_base> >  wrapper_list;
+
+  template <class M1 /*= mixable */>
+  static pfi::lang::shared_ptr<mixable0> create(M1& m1)
+  {
+    model_bundler::wrapper_list m;
+    m.push_back(pfi::lang::shared_ptr<detail::mix_wrapper_base>(new detail::mix_wrapper<M1>(m1)));
+    return pfi::lang::shared_ptr<mixable0>(new model_bundler(m));
+  }
+
+  template <class M1, class M2>
+  static pfi::lang::shared_ptr<mixable0> create(M1& m1, M2& m2)
+  {
+    model_bundler::wrapper_list m;
+    m.push_back(pfi::lang::shared_ptr<detail::mix_wrapper_base>(new detail::mix_wrapper<M1>(m1)));
+    m.push_back(pfi::lang::shared_ptr<detail::mix_wrapper_base>(new detail::mix_wrapper<M2>(m2)));
+    return pfi::lang::shared_ptr<mixable0>(new model_bundler(m));
+  }
+
+  template <class M1, class M2, class M3>
+  static pfi::lang::shared_ptr<mixable0> create(M1& m1, M2& m2, M3& m3)
+  {
+    model_bundler::wrapper_list m;
+    m.push_back(pfi::lang::shared_ptr<detail::mix_wrapper_base>(new detail::mix_wrapper<M1>(m1)));
+    m.push_back(pfi::lang::shared_ptr<detail::mix_wrapper_base>(new detail::mix_wrapper<M2>(m2)));
+    m.push_back(pfi::lang::shared_ptr<detail::mix_wrapper_base>(new detail::mix_wrapper<M3>(m3)));
+    return pfi::lang::shared_ptr<mixable0>(new model_bundler(m));
+  }
+
+private:
+  model_bundler(const wrapper_list& mix_wrappers)
+    : m_(mix_wrappers)
+  {
+  }
+public:
+
+  common::mprpc::byte_buffer get_diff() const
+  {
+    // diff buffer
+    msgpack::sbuffer diff_buf;
+    msgpack::packer<msgpack::sbuffer> pk(&diff_buf);
+
+    // TODO: create format/type
+
+    for (wrapper_list::const_iterator it = m_.begin(), end = m_.end();
+        it != end; ++it) {
+      (*it)->get_diff(pk);
+    }
+
+    return common::mprpc::byte_buffer(diff_buf.data(), diff_buf.size());
+  }
+
+  void put_diff(const common::mprpc::byte_buffer& buf)
+  {
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, buf.ptr(), buf.size());
+
+    // TODO: 1. check format: diff_object
+    diff_object diff_obj;
+    msg.get().convert(&diff_obj);
+
+    for (size_t i = 0, size = m_.size(); i < size; ++i ) {
+      m_[i]->put_diff(diff_obj[i]);
+    }
+  }
+
+  void mix(const common::mprpc::byte_buffer& lhs, const common::mprpc::byte_buffer& rhs, common::mprpc::byte_buffer& mixed) const
+  {
+    // unpacker for lhs and rhs
+    msgpack::unpacked lhs_msg, rhs_msg;
+    msgpack::unpack(&lhs_msg, lhs.ptr(), lhs.size());
+    msgpack::unpack(&rhs_msg, rhs.ptr(), rhs.size());
+    // mixed diff buffer
+    msgpack::sbuffer mixed_buf;
+    msgpack::packer<msgpack::sbuffer> mix_pk(&mixed_buf);
+
+    // TODO: 1. check format: diff_object
+
+    diff_object lhs_obj, rhs_obj;
+    lhs_msg.get().convert(&lhs_obj);
+    rhs_msg.get().convert(&rhs_obj);
+
+    // assert(lhs_obj.size() == rhs_obj.size() == m_.size());
+    // TODO: create format/type
+    // mix_pk << ...;
+    mix_pk.pack_array(m_.size());
+
+    // 2. check size of rhs and lhs (array)
+    // 2. unpack lhs and rhs
+
+    for (size_t i = 0, size = m_.size(); i < size; ++i ) {
+      m_[i]->mix(lhs_obj[i], rhs_obj[i], mix_pk);
+    }
+
+    mixed.assign(mixed_buf.data(), mixed_buf.size());
+  }
+
+  void save(std::ostream & ofs)
+  {
+  }
+
+  void load(std::istream & ifs)
+  {
+  }
+
+  void clear()
+  {
+  }
+
+protected:
+  wrapper_list m_;
+};
+
 
 } //server
 } //jubatus

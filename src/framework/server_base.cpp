@@ -49,10 +49,7 @@ bool server_base::save(const std::string& id) {
         << jubatus::exception::error_errno(errno));
   }
   try {
-    std::vector<mixable0*> mixables = get_mixable_holder()->get_mixables();
-    for (size_t i = 0; i < mixables.size(); ++i) {
-      mixables[i]->save(ofs);
-    }
+    get_mixable_holder()->get_bundler()->save(ofs);
     ofs.close();
     LOG(INFO) << "saved to " << path;
   } catch (const std::runtime_error& e) {
@@ -70,11 +67,9 @@ bool server_base::load(const std::string& id) {
                             << jubatus::exception::error_errno(errno));
   }
   try {
-    std::vector<mixable0*> mixables = get_mixable_holder()->get_mixables();
-    for (size_t i = 0; i < mixables.size(); ++i) {
-      mixables[i]->clear();
-      mixables[i]->load(ifs);
-    }
+    model_bundler* bundler = get_mixable_holder()->get_bundler();
+    bundler->clear();
+    bundler->load(ifs);
     ifs.close();
     LOG(INFO) << "loaded from " << path;
   } catch (const std::runtime_error& e) {

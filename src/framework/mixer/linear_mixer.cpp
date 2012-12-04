@@ -42,7 +42,7 @@ public:
   size_t update_members();
   pfi::lang::shared_ptr<common::try_lockable> create_lock();
   void get_diff(common::mprpc::rpc_result_object&) const;
-  void put_diff(const vector<common::mprpc::byte_buffer>&) const;
+  void put_diff(const common::mprpc::byte_buffer&) const;
 
 private:
   common::cshared_ptr<common::lock_service> zk_;
@@ -83,7 +83,7 @@ void linear_communication_impl::get_diff(common::mprpc::rpc_result_object& resul
   result = client.call("get_diff", 0);
 }
 
-void linear_communication_impl::put_diff(const vector<common::mprpc::byte_buffer>& mixed) const {
+void linear_communication_impl::put_diff(const common::mprpc::byte_buffer& mixed) const {
   // TODO: to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
 #ifndef NDEBUG
@@ -115,10 +115,10 @@ linear_mixer::linear_mixer(pfi::lang::shared_ptr<linear_communication> communica
       t_(pfi::lang::bind(&linear_mixer::mixer_loop, this)) {}
 
 void linear_mixer::register_api(pfi::network::mprpc::rpc_server& server) {
-  server.add<std::vector<common::mprpc::byte_buffer>(int)>
+  server.add<common::mprpc::byte_buffer(int)>
       ("get_diff",
        pfi::lang::bind(&linear_mixer::get_diff, this, pfi::lang::_1));
-  server.add<int(std::vector<common::mprpc::byte_buffer>)>
+  server.add<int(common::mprpc::byte_buffer)>
       ("put_diff",
        pfi::lang::bind(&linear_mixer::put_diff, this, pfi::lang::_1));
 }
@@ -202,25 +202,21 @@ void linear_mixer::mix() {
     return;
   } else {
     try {
-      mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
+      model_bundler* bundler = mixable_holder_->get_bundler();
 
       common::mprpc::rpc_result_object result;
       communication_->get_diff(result);
 
-      vector<byte_buffer> mixed = result.response.front().as<vector<byte_buffer> >();
+      byte_buffer mixed = result.response.front().as<byte_buffer>();
       for (size_t i = 1; i < result.response.size(); ++i) {
-        vector<byte_buffer> tmp = result.response[i].as<vector<byte_buffer> >();
-        for (size_t j = 0; j < tmp.size(); ++j) {
-          mixables[j]->mix(tmp[j], mixed[j], mixed[j]);
-        }
+        byte_buffer tmp = result.response[i].as<byte_buffer>();
+        bundler->mix(tmp, mixed, mixed);
       }
 
       communication_->put_diff(mixed);
       // TODO: output log when result has error
 
-      for (size_t i = 0; i < mixed.size(); ++i) {
-        s += mixed[i].size();
-      }
+      s += mixed.size();
     } catch (const std::exception& e) {
       LOG(WARNING) << e.what() << " : mix failed";
       return;
@@ -233,34 +229,19 @@ void linear_mixer::mix() {
   mix_count_++;
 }
 
-vector<byte_buffer> linear_mixer::get_diff(int) {
+byte_buffer linear_mixer::get_diff(int) {
   scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
 
-  mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
-  if (mixables.empty()) {
-    throw JUBATUS_EXCEPTION(config_not_set()); // nothing to mix
-  }
-
-  std::vector<common::mprpc::byte_buffer> o;
-  for (size_t i = 0; i < mixables.size(); ++i) {
-    o.push_back(mixables[i]->get_diff());
-  }
-  return o;
+  return mixable_holder_->get_bundler()->get_diff();
 }
 
-int linear_mixer::put_diff(const std::vector<common::mprpc::byte_buffer>& unpacked) {
+int linear_mixer::put_diff(const common::mprpc::byte_buffer& diff) {
   scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
 
-  mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
-  if (unpacked.size() != mixables.size()) {
-    //deserialization error
-    return -1;
-  }
-  for (size_t i = 0; i < mixables.size(); ++i) {
-    mixables[i]->put_diff(unpacked[i]);
-  }
+  mixable_holder_->get_bundler()->put_diff(diff);
+
   counter_ = 0;
   ticktime_ = time(NULL);
   return 0;

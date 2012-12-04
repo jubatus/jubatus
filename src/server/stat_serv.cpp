@@ -34,10 +34,10 @@ stat_serv::stat_serv(const server_argv& a,
   stat_.set_model(model);
 
   mixer_.reset(mixer::create_mixer(a, zk));
-  mixable_holder_.reset(new mixable_holder());
+  mixable_holder_.reset(new mixable_holder(
+        pfi::lang::shared_ptr<model_bundler>(model_bundler::create(stat_))));
 
   mixer_->set_mixable_holder(mixable_holder_);
-  mixable_holder_->register_mixable(&stat_);
 }
 
 stat_serv::~stat_serv() {
