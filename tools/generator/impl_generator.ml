@@ -126,7 +126,6 @@ let generate s output strees =
   output <<< "int main(int args, char** argv){";
   output <<< "  return";
   
-  output <<< "    jubatus::framework::run_server<jubatus::server::"^s#basename^"_impl_,";
-  output <<< "                                   jubatus::server::"^s#basename^"_serv>";
+  output <<< "    jubatus::framework::run_server<jubatus::server::"^s#basename^"_impl_>";
   output <<< "       (args, argv, \""^s#basename^"\");";
   output <<< "}";;

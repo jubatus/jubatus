@@ -108,7 +108,7 @@ void convert(const From& from, To& to){
 extern jubatus::common::cshared_ptr<jubatus::common::lock_service> ls;
 void atexit();
 
-template <class ImplServerClass, class UserServClass>
+template <class ImplServerClass>
 int run_server(int args, char** argv, const std::string& type)
 {
   try {
