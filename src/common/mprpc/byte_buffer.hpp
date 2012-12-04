@@ -38,8 +38,10 @@ public:
   }
 
   byte_buffer(const void *ptr, size_t size)
-    : buf_(new std::vector<char>(static_cast<const char*>(ptr), static_cast<const char*>(ptr) + size))
+    : buf_(new std::vector<char>())
   {
+    buf_->resize(size);
+    std::memcpy(&(*buf_)[0], ptr, size);
   }
 
   byte_buffer(const byte_buffer& b)
@@ -51,12 +53,11 @@ public:
 
   void assign(const void* ptr, size_t size)
   {
-    if (buf_) {
-      buf_->resize(size);
-      std::memcpy(&(*buf_)[0], ptr, size);
-    } else {
-      buf_.reset(new std::vector<char>(static_cast<const char*>(ptr), static_cast<const char*>(ptr) + size));
+    if (!buf_) {
+      buf_.reset(new std::vector<char>());
     }
+    buf_->resize(size);
+    std::memcpy(&(*buf_)[0], ptr, size);
   }
 
   char* ptr() const
