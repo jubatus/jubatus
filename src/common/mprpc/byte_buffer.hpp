@@ -29,22 +29,21 @@ namespace mprpc {
 class byte_buffer {
 public:
   byte_buffer()
-    : ptr_(NULL)
-    , size_(0)
   {
   }
 
   byte_buffer(size_t size)
     : buf_(new std::vector<char>(size))
-    , ptr_(&(*buf_)[0])
-    , size_(size)
   {
   }
 
   byte_buffer(const void *ptr, size_t size)
     : buf_(new std::vector<char>(static_cast<const char*>(ptr), static_cast<const char*>(ptr) + size))
-    , ptr_(&(*buf_)[0])
-    , size_(size)
+  {
+  }
+
+  byte_buffer(const byte_buffer& b)
+    : buf_(b.buf_)
   {
   }
 
@@ -52,28 +51,32 @@ public:
 
   void assign(const void* ptr, size_t size)
   {
-    if (!buf_)
-      buf_.reset(new std::vector<char>(size));
-
-    ptr_ = &(*buf_)[0];
-    size_ = size;
-    std::memcpy(&(*buf_)[0], ptr, size);
+    if (buf_) {
+      buf_->resize(size);
+      std::memcpy(&(*buf_)[0], ptr, size);
+    } else {
+      buf_.reset(new std::vector<char>(static_cast<const char*>(ptr), static_cast<const char*>(ptr) + size));
+    }
   }
 
   char* ptr() const
   {
-    return ptr_;
+    if (buf_)
+      return &(*buf_)[0];
+    else
+      return NULL;
   }
 
   size_t size() const
   {
-    return size_;
+    if (buf_)
+      return buf_->size();
+    else
+      return 0;
   }
 
 private:
   pfi::lang::shared_ptr<std::vector<char> > buf_;
-  char* ptr_;
-  size_t size_;
 };
 
 } // mprpc
