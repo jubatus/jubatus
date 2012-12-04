@@ -19,7 +19,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include <pficommon/lang/scoped_ptr.h>
+#include <pficommon/lang/shared_ptr.h>
 #include <pficommon/concurrent/rwmutex.h>
 #include <msgpack.hpp>
 
@@ -35,13 +35,6 @@ class mixable0 {
 public:
   mixable0() {}
   virtual ~mixable0() {}
-  virtual common::mprpc::byte_buffer get_diff() const = 0;
-  virtual void put_diff(const common::mprpc::byte_buffer&) = 0;
-  virtual void mix(const common::mprpc::byte_buffer&, const common::mprpc::byte_buffer&, common::mprpc::byte_buffer&) const = 0;
-
-  //virtual Diff get_diff_impl() const = 0;
-  //virtual void put_diff_impl(const Diff&) = 0;
-  //virtual void mix_impl(const Diff&, const Diff&, Diff&) const = 0;
 
   virtual void save(std::ostream & ofs) = 0;
   virtual void load(std::istream & ifs) = 0;
@@ -53,7 +46,7 @@ class model_bundler;
 
 class mixable_holder {
 public:
-  mixable_holder(model_bundler* b)
+  mixable_holder(pfi::lang::shared_ptr<model_bundler> b)
     : bundler_(b)
   {}
   virtual ~mixable_holder() {}
@@ -68,7 +61,7 @@ public:
 
 protected:
   pfi::concurrent::rw_mutex rw_mutex_;
-  pfi::lang::scoped_ptr<model_bundler> bundler_;
+  pfi::lang::shared_ptr<model_bundler> bundler_;
 };
 
 template <typename Model, typename Diff>
@@ -115,6 +108,7 @@ public:
   virtual void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::packer<msgpack::sbuffer>& mixed) = 0;
   virtual void get_diff(msgpack::packer<msgpack::sbuffer>& pk) = 0;
   virtual void put_diff(const msgpack::object& diff_obj) = 0;
+  virtual mixable0* mixable() const = 0;
 };
 
 template <class M>
@@ -141,7 +135,11 @@ public:
   void put_diff(const msgpack::object& diff_obj) {
     typename M::diff_type diff;
     diff_obj.convert(&diff);
-    m_.put_diff(diff);
+    m_.put_diff_impl(diff);
+  }
+
+  mixable0* mixable() const {
+    return &m_;
   }
 
 protected:
@@ -155,30 +153,30 @@ public:
   typedef std::vector<pfi::lang::shared_ptr<detail::mix_wrapper_base> >  wrapper_list;
 
   template <class M1 /*= mixable */>
-  static pfi::lang::shared_ptr<mixable0> create(M1& m1)
+  static pfi::lang::shared_ptr<model_bundler> create(M1& m1)
   {
     model_bundler::wrapper_list m;
     m.push_back(pfi::lang::shared_ptr<detail::mix_wrapper_base>(new detail::mix_wrapper<M1>(m1)));
-    return pfi::lang::shared_ptr<mixable0>(new model_bundler(m));
+    return pfi::lang::shared_ptr<model_bundler>(new model_bundler(m));
   }
 
   template <class M1, class M2>
-  static pfi::lang::shared_ptr<mixable0> create(M1& m1, M2& m2)
+  static pfi::lang::shared_ptr<model_bundler> create(M1& m1, M2& m2)
   {
     model_bundler::wrapper_list m;
     m.push_back(pfi::lang::shared_ptr<detail::mix_wrapper_base>(new detail::mix_wrapper<M1>(m1)));
     m.push_back(pfi::lang::shared_ptr<detail::mix_wrapper_base>(new detail::mix_wrapper<M2>(m2)));
-    return pfi::lang::shared_ptr<mixable0>(new model_bundler(m));
+    return pfi::lang::shared_ptr<model_bundler>(new model_bundler(m));
   }
 
   template <class M1, class M2, class M3>
-  static pfi::lang::shared_ptr<mixable0> create(M1& m1, M2& m2, M3& m3)
+  static pfi::lang::shared_ptr<model_bundler> create(M1& m1, M2& m2, M3& m3)
   {
     model_bundler::wrapper_list m;
     m.push_back(pfi::lang::shared_ptr<detail::mix_wrapper_base>(new detail::mix_wrapper<M1>(m1)));
     m.push_back(pfi::lang::shared_ptr<detail::mix_wrapper_base>(new detail::mix_wrapper<M2>(m2)));
     m.push_back(pfi::lang::shared_ptr<detail::mix_wrapper_base>(new detail::mix_wrapper<M3>(m3)));
-    return pfi::lang::shared_ptr<mixable0>(new model_bundler(m));
+    return pfi::lang::shared_ptr<model_bundler>(new model_bundler(m));
   }
 
 private:
@@ -195,6 +193,7 @@ public:
     msgpack::packer<msgpack::sbuffer> pk(&diff_buf);
 
     // TODO: create format/type
+    pk.pack_array(m_.size());
 
     for (wrapper_list::const_iterator it = m_.begin(), end = m_.end();
         it != end; ++it) {
@@ -251,10 +250,18 @@ public:
 
   void save(std::ostream & ofs)
   {
+    for (wrapper_list::const_iterator it = m_.begin(), end = m_.end();
+        it != end; ++it) {
+      (*it)->mixable()->save(ofs);
+    }
   }
 
   void load(std::istream & ifs)
   {
+    for (wrapper_list::const_iterator it = m_.begin(), end = m_.end();
+        it != end; ++it) {
+      (*it)->mixable()->load(ifs);
+    }
   }
 
   void clear()

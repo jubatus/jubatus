@@ -48,8 +48,10 @@ class linear_communication_stub : public linear_communication {
     result.response.push_back(make_response("4"));
   }
 
-  void put_diff(const vector<byte_buffer>& mixed) const {
-    mixed_ = mixed;
+  void put_diff(const byte_buffer& mixed) const {
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, mixed.ptr(), mixed.size());
+    msg.get().convert(&mixed_);
   }
 
   const vector<string> get_mixed() const {
@@ -85,11 +87,9 @@ TEST(linear_mixer, mix_order) {
   shared_ptr<linear_communication_stub> com(new linear_communication_stub);
   linear_mixer m(com, 1, 1);
 
-  pfi::lang::shared_ptr<mixable_holder> holder(new mixable_holder());
-  m.set_mixable_holder(holder);
-
   mixable_string s;
-  holder->register_mixable(&s);
+  pfi::lang::shared_ptr<mixable_holder> holder(new mixable_holder(model_bundler::create(s)));
+  m.set_mixable_holder(holder);
 
   m.mix();
 
