@@ -256,63 +256,45 @@ public:
 
   void mix(const common::mprpc::byte_buffer& lhs_buf, const common::mprpc::byte_buffer& rhs_buf, common::mprpc::byte_buffer& mixed) const
   {
-    // unpacker for lhs and rhs
+    // preparing object
     msgpack::unpacked lhs_msg, rhs_msg;
-    // TODO return result
     msgpack::unpack(&lhs_msg, lhs_buf.ptr(), lhs_buf.size());
     msgpack::unpack(&rhs_msg, rhs_buf.ptr(), rhs_buf.size());
     msgpack::object lhs = lhs_msg.get();
     msgpack::object rhs = rhs_msg.get();
 
-    diff_object lhs_obj, rhs_obj;
-    lhs.convert(&lhs_obj);
-    rhs.convert(&rhs_obj);
-
-    // mixed diff buffer
-    msgpack::sbuffer mixed_buf;
-    //msgpack::packer<msgpack::sbuffer> mixed_packer(&mixed_buf);
-    // TODO: create format/type
-
     // mix
-    mix_core(lhs_obj, rhs_obj, mixed_buf);
+    msgpack::sbuffer mixed_buf;
+    mix_core(lhs, rhs, mixed_buf);
 
     mixed.assign(mixed_buf.data(), mixed_buf.size());
   }
 
   void mix(const msgpack::object& lhs, const common::mprpc::byte_buffer& rhs_buf, common::mprpc::byte_buffer& mixed) const
   {
+    // preparing object
     msgpack::unpacked rhs_msg;
-    // TODO return result
     msgpack::unpack(&rhs_msg, rhs_buf.ptr(), rhs_buf.size());
     msgpack::object rhs = rhs_msg.get();
 
-    // TODO: 1. check format: diff_object
-    diff_object lhs_obj, rhs_obj;
-    lhs.convert(&lhs_obj);
-    rhs.convert(&rhs_obj);
-
-    // 2. check size of rhs and lhs (array)
-    // 2. unpack lhs and rhs
-
-    // mixed diff buffer
-    msgpack::sbuffer mixed_buf;
-    //msgpack::packer<msgpack::sbuffer> mixed_packer(&mixed_buf);
-    // TODO: create format/type
-
     // mix
-    mix_core(lhs_obj, rhs_obj, mixed_buf);
+    msgpack::sbuffer mixed_buf;
+    mix_core(lhs, rhs, mixed_buf);
 
     mixed = common::mprpc::byte_buffer(mixed_buf.data(), mixed_buf.size());
   }
 
 protected:
 
-  void mix_core(const diff_object& lhs_obj, const diff_object& rhs_obj,
+  void mix_core(const msgpack::object& lhs_obj, const msgpack::object& rhs_obj,
       msgpack::sbuffer& mixed_buf) const
   {
     // TODO: 1. check format: diff_object
+    diff_object lhs, rhs;
+    lhs_obj.convert(&lhs);
+    rhs_obj.convert(&rhs);
 
-    // assert(lhs_obj.size() == rhs_obj.size() == m_.size());
+    // assert(lhs.size() == rhs.size() == m_.size());
     // TODO: create format/type
     // mixed_paker << ...;
     msgpack::packer<msgpack::sbuffer> mixed_packer(&mixed_buf);
@@ -322,7 +304,7 @@ protected:
     // 2. unpack lhs and rhs
 
     for (size_t i = 0, size = m_.size(); i < size; ++i) {
-      m_[i]->mix(lhs_obj[i], rhs_obj[i], mixed_buf);
+      m_[i]->mix(lhs[i], rhs[i], mixed_buf);
     }
   }
 
