@@ -27,28 +27,6 @@
 #include "../common/shared_ptr.hpp"
 #include "../common/mprpc/byte_buffer.hpp"
 
-namespace jubatus {
-namespace framework {
-struct object_holder : public msgpack::object {
-  template <typename T>
-  object_holder(const T& v, msgpack::zone* z)
-    : msgpack::object(v, z)
-  {
-  }
-  object_holder()
-  {
-  }
-};
-}
-}
-namespace msgpack {
-inline void operator<< (msgpack::object::with_zone& o, const jubatus::framework::object_holder& v)
-{
-  o.type = v.type;
-  o.via = v.via;
-}
-}
-
 namespace jubatus{
 namespace framework{
 
