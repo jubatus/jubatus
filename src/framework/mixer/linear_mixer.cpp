@@ -192,7 +192,6 @@ void linear_mixer::mixer_loop() {
 void linear_mixer::mix() {
   using namespace pfi::system::time;
 
-  //vector<string> serialized_diffs;
   clock_time start = get_clock_time();
   size_t s = 0;
 
