@@ -244,20 +244,29 @@ public:
   {
     msgpack::sbuffer sbuf;
     msgpack::pack(&sbuf, obj);
+
+    msgpack::unpacked a;
+    msgpack::unpack(&a, sbuf.data(), sbuf.size());
+    msgpack::object x = a.get();
+    std::vector<std::string> aaa;
+    x.convert(&aaa);
+
     return common::mprpc::byte_buffer(sbuf.data(), sbuf.size());
   }
 
-  void mix(const common::mprpc::byte_buffer& lhs, const common::mprpc::byte_buffer& rhs, common::mprpc::byte_buffer& mixed) const
+  void mix(const common::mprpc::byte_buffer& lhs_buf, const common::mprpc::byte_buffer& rhs_buf, common::mprpc::byte_buffer& mixed) const
   {
     // unpacker for lhs and rhs
     msgpack::unpacked lhs_msg, rhs_msg;
     // TODO return result
-    msgpack::unpack(&lhs_msg, lhs.ptr(), lhs.size());
-    msgpack::unpack(&rhs_msg, rhs.ptr(), rhs.size());
+    msgpack::unpack(&lhs_msg, lhs_buf.ptr(), lhs_buf.size());
+    msgpack::unpack(&rhs_msg, rhs_buf.ptr(), rhs_buf.size());
+    msgpack::object lhs = lhs_msg.get();
+    msgpack::object rhs = rhs_msg.get();
 
     diff_object lhs_obj, rhs_obj;
-    lhs_msg.get().convert(&lhs_obj);
-    rhs_msg.get().convert(&rhs_obj);
+    lhs.convert(&lhs_obj);
+    rhs.convert(&rhs_obj);
 
     // mixed diff buffer
     msgpack::sbuffer mixed_buf;
@@ -275,11 +284,12 @@ public:
     msgpack::unpacked rhs_msg;
     // TODO return result
     msgpack::unpack(&rhs_msg, rhs_buf.ptr(), rhs_buf.size());
+    msgpack::object rhs = rhs_msg.get();
 
     // TODO: 1. check format: diff_object
     diff_object lhs_obj, rhs_obj;
     lhs.convert(&lhs_obj);
-    rhs_msg.get().convert(&rhs_obj);
+    rhs.convert(&rhs_obj);
 
     // 2. check size of rhs and lhs (array)
     // 2. unpack lhs and rhs
