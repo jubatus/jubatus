@@ -170,7 +170,7 @@ protected:
 };
 } // detail
 
-class model_bundler : public mixable0 {
+class model_bundler {
 public:
   typedef std::vector<msgpack::object> diff_object;
   typedef std::vector<pfi::lang::shared_ptr<detail::mix_wrapper_base> >  wrapper_list;
