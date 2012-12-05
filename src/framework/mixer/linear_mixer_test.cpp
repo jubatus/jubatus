@@ -29,7 +29,8 @@ jubatus::common::mprpc::rpc_response_t make_response(const string& s) {
   jubatus::common::mprpc::rpc_response_t res;
 
   res.zone = shared_ptr<msgpack::zone>(new msgpack::zone);
-  res.response.a3 = msgpack::object(make_packed_vector(s), res.zone.get());
+  //res.response.a3 = msgpack::object(make_packed_vector(s), res.zone.get());
+  res.response.a3 = msgpack::object(s, res.zone.get());
   return res;
 }
 
@@ -51,6 +52,7 @@ class linear_communication_stub : public linear_communication {
   void put_diff(const byte_buffer& mixed) const {
     msgpack::unpacked msg;
     msgpack::unpack(&msg, mixed.ptr(), mixed.size());
+    cout << "put_diff = " << msg.get() << endl;
     msg.get().convert(&mixed_);
   }
 

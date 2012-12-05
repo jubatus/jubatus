@@ -27,6 +27,28 @@
 #include "../common/shared_ptr.hpp"
 #include "../common/mprpc/byte_buffer.hpp"
 
+namespace jubatus {
+namespace framework {
+struct object_holder : public msgpack::object {
+  template <typename T>
+  object_holder(const T& v, msgpack::zone* z)
+    : msgpack::object(v, z)
+  {
+  }
+  object_holder()
+  {
+  }
+};
+}
+}
+namespace msgpack {
+inline void operator<< (msgpack::object::with_zone& o, const jubatus::framework::object_holder& v)
+{
+  o.type = v.type;
+  o.via = v.via;
+}
+}
+
 namespace jubatus{
 namespace framework{
 
@@ -105,8 +127,8 @@ public:
   virtual ~mix_wrapper_base()
   {
   }
-  virtual void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::packer<msgpack::sbuffer>& mixed) = 0;
-  virtual void get_diff(msgpack::packer<msgpack::sbuffer>& pk) = 0;
+  virtual void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::sbuffer& mixed) = 0;
+  virtual void get_diff(msgpack::sbuffer& pk) = 0;
   virtual void put_diff(const msgpack::object& diff_obj) = 0;
   virtual mixable0* mixable() const = 0;
 };
@@ -119,17 +141,18 @@ public:
   {
   }
 
-  void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::packer<msgpack::sbuffer>& mixed) {
+  void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::sbuffer& mixed) {
     typename M::diff_type lhs_diff, rhs_diff, m;
     lhs.convert(&lhs_diff);
     rhs.convert(&rhs_diff);
     m_.mix_impl(lhs_diff, rhs_diff, m);
 
-    mixed << m;
+    // output packed data
+    msgpack::pack(mixed, m);
   }
 
-  void get_diff(msgpack::packer<msgpack::sbuffer>& pk) {
-    pk << m_.get_diff_impl();
+  void get_diff(msgpack::sbuffer& pk) {
+    msgpack::pack(pk, m_.get_diff_impl());
   }
 
   void put_diff(const msgpack::object& diff_obj) {
@@ -197,7 +220,7 @@ public:
 
     for (wrapper_list::const_iterator it = m_.begin(), end = m_.end();
         it != end; ++it) {
-      (*it)->get_diff(pk);
+      (*it)->get_diff(diff_buf);
     }
 
     return common::mprpc::byte_buffer(diff_buf.data(), diff_buf.size());
@@ -212,41 +235,91 @@ public:
     diff_object diff_obj;
     msg.get().convert(&diff_obj);
 
-    for (size_t i = 0, size = m_.size(); i < size; ++i ) {
+    for (size_t i = 0, size = m_.size(); i < size; ++i) {
       m_[i]->put_diff(diff_obj[i]);
     }
+  }
+
+  common::mprpc::byte_buffer mixed_raw_data(const msgpack::object& obj)
+  {
+    common::mprpc::byte_buffer buf;
+    if (obj.type == msgpack::type::ARRAY) {
+      // extract
+      buf.assign(obj.via.array.ptr, obj.via.array.size);
+    }
+    return buf;
   }
 
   void mix(const common::mprpc::byte_buffer& lhs, const common::mprpc::byte_buffer& rhs, common::mprpc::byte_buffer& mixed) const
   {
     // unpacker for lhs and rhs
     msgpack::unpacked lhs_msg, rhs_msg;
+    // TODO return result
     msgpack::unpack(&lhs_msg, lhs.ptr(), lhs.size());
     msgpack::unpack(&rhs_msg, rhs.ptr(), rhs.size());
-    // mixed diff buffer
-    msgpack::sbuffer mixed_buf;
-    msgpack::packer<msgpack::sbuffer> mix_pk(&mixed_buf);
-
-    // TODO: 1. check format: diff_object
 
     diff_object lhs_obj, rhs_obj;
     lhs_msg.get().convert(&lhs_obj);
     rhs_msg.get().convert(&rhs_obj);
 
-    // assert(lhs_obj.size() == rhs_obj.size() == m_.size());
+    // mixed diff buffer
+    msgpack::sbuffer mixed_buf;
+    //msgpack::packer<msgpack::sbuffer> mixed_packer(&mixed_buf);
     // TODO: create format/type
-    // mix_pk << ...;
-    mix_pk.pack_array(m_.size());
+
+    // mix
+    mix_core(lhs_obj, rhs_obj, mixed_buf);
+
+    mixed.assign(mixed_buf.data(), mixed_buf.size());
+  }
+
+  void mix(const msgpack::object& lhs, const common::mprpc::byte_buffer& rhs_buf, common::mprpc::byte_buffer& mixed) const
+  {
+    msgpack::unpacked rhs_msg;
+    // TODO return result
+    msgpack::unpack(&rhs_msg, rhs_buf.ptr(), rhs_buf.size());
+
+    // TODO: 1. check format: diff_object
+    diff_object lhs_obj, rhs_obj;
+    lhs.convert(&lhs_obj);
+    rhs_msg.get().convert(&rhs_obj);
 
     // 2. check size of rhs and lhs (array)
     // 2. unpack lhs and rhs
 
-    for (size_t i = 0, size = m_.size(); i < size; ++i ) {
-      m_[i]->mix(lhs_obj[i], rhs_obj[i], mix_pk);
-    }
+    // mixed diff buffer
+    msgpack::sbuffer mixed_buf;
+    //msgpack::packer<msgpack::sbuffer> mixed_packer(&mixed_buf);
+    // TODO: create format/type
 
-    mixed.assign(mixed_buf.data(), mixed_buf.size());
+    // mix
+    mix_core(lhs_obj, rhs_obj, mixed_buf);
+
+    mixed = common::mprpc::byte_buffer(mixed_buf.data(), mixed_buf.size());
   }
+
+protected:
+
+  void mix_core(const diff_object& lhs_obj, const diff_object& rhs_obj,
+      msgpack::sbuffer& mixed_buf) const
+  {
+    // TODO: 1. check format: diff_object
+
+    // assert(lhs_obj.size() == rhs_obj.size() == m_.size());
+    // TODO: create format/type
+    // mixed_paker << ...;
+    msgpack::packer<msgpack::sbuffer> mixed_packer(&mixed_buf);
+    mixed_packer.pack_array(m_.size());
+
+    // 2. check size of rhs and lhs (array)
+    // 2. unpack lhs and rhs
+
+    for (size_t i = 0, size = m_.size(); i < size; ++i) {
+      m_[i]->mix(lhs_obj[i], rhs_obj[i], mixed_buf);
+    }
+  }
+
+public:
 
   void save(std::ostream & ofs)
   {

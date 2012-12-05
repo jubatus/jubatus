@@ -207,12 +207,10 @@ void linear_mixer::mix() {
       common::mprpc::rpc_result_object result;
       communication_->get_diff(result);
 
-      // TODO:handle msgpack::object(array) as a raw bufffer
-      //msgpack::object mixed = result.response.front().response.a3;
-      byte_buffer mixed = result.response.front().as<byte_buffer>();
+      // get first object as a raw data
+      byte_buffer mixed = bundler->mixed_raw_data(result.response.front().response.a3);
       for (size_t i = 1; i < result.response.size(); ++i) {
-        byte_buffer tmp = result.response[i].as<byte_buffer>();
-        //msgpack::object tmp = result.response[i].response.a3;
+        msgpack::object tmp = result.response[i].response.a3;
         bundler->mix(tmp, mixed, mixed);
       }
 
