@@ -242,12 +242,9 @@ public:
 
   common::mprpc::byte_buffer mixed_raw_data(const msgpack::object& obj)
   {
-    common::mprpc::byte_buffer buf;
-    if (obj.type == msgpack::type::ARRAY) {
-      // extract
-      buf.assign(obj.via.array.ptr, obj.via.array.size);
-    }
-    return buf;
+    msgpack::sbuffer sbuf;
+    msgpack::pack(&sbuf, obj);
+    return common::mprpc::byte_buffer(sbuf.data(), sbuf.size());
   }
 
   void mix(const common::mprpc::byte_buffer& lhs, const common::mprpc::byte_buffer& rhs, common::mprpc::byte_buffer& mixed) const

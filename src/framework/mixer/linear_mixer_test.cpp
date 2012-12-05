@@ -29,8 +29,12 @@ jubatus::common::mprpc::rpc_response_t make_response(const string& s) {
   jubatus::common::mprpc::rpc_response_t res;
 
   res.zone = shared_ptr<msgpack::zone>(new msgpack::zone);
-  //res.response.a3 = msgpack::object(make_packed_vector(s), res.zone.get());
-  res.response.a3 = msgpack::object(s, res.zone.get());
+  res.response.a3 = msgpack::object(make_packed_vector(s), res.zone.get());
+
+#if 1
+  msgpack::object o = res.response.a3;
+  cout << o.type << " " << o.via.array.size << " " <<o  << endl;
+#endif
   return res;
 }
 
@@ -52,17 +56,20 @@ class linear_communication_stub : public linear_communication {
   void put_diff(const byte_buffer& mixed) const {
     msgpack::unpacked msg;
     msgpack::unpack(&msg, mixed.ptr(), mixed.size());
-    cout << "put_diff = " << msg.get() << endl;
-    msg.get().convert(&mixed_);
+    msgpack::object o = msg.get();
+    cout << "put_diff = " << o.type << " " << o.via.array.size << endl;
+    cout << o << endl;
+    o.convert(&mixed_);
   }
 
   const vector<string> get_mixed() const {
     vector<string> mixed;
     for (vector<byte_buffer>::const_iterator it = mixed_.begin(); it != mixed_.end(); ++it) {
       // unpack mix-internal
-      msgpack::unpacked msg;
-      msgpack::unpack(&msg, it->ptr(), it->size());
-      mixed.push_back(msg.get().as<string>());
+      //msgpack::unpacked msg;
+      //msgpack::unpack(&msg, it->ptr(), it->size());
+      //mixed.push_back(msg.get().as<string>());
+      mixed.push_back(string(it->ptr(), it->size()));
     }
     return mixed;
   }
@@ -76,6 +83,7 @@ struct mixable_string : public mixable<mixable_string, string> {
   string get_diff_impl() const { return string(); }
   void put_diff_impl(const string&) {}
   void mix_impl(const string& lhs, const string& rhs, string& mixed) const {
+    cout << "mix_impl: '" << lhs << "' '" << rhs<<endl;
     stringstream ss;
     ss << "(" << lhs << "+" << rhs << ")";
     mixed = ss.str();
