@@ -29,11 +29,40 @@
 
 using namespace std;
 using namespace pfi::lang;
+using pfi::text::json::json;
+using pfi::text::json::json_cast;
 using namespace jubatus::common;
 using namespace jubatus::framework;
 
 namespace jubatus {
 namespace server {
+
+namespace {
+
+struct recommender_serv_config {
+  std::string method;
+  pfi::data::optional<pfi::text::json::json> parameter;
+  pfi::text::json::json converter;
+
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    ar
+        & MEMBER(method)
+        & MEMBER(parameter)
+        & MEMBER(converter);
+  }
+};
+
+common::cshared_ptr<recommender::recommender_base>
+make_model(const recommender_serv_config& conf) {
+  // TODO: set param
+  pfi::text::json::json param;
+
+  return cshared_ptr<recommender::recommender_base>
+    (recommender::create_recommender(conf.method, param));
+}  
+
+}
 
 recommender_serv::recommender_serv(const server_argv& a,
                                    const cshared_ptr<lock_service>& zk)
@@ -62,14 +91,15 @@ void recommender_serv::get_status(status_t& status) const {
 
 int recommender_serv::set_config(std::string config) {
   LOG(INFO) << __func__;
-  std::string fv_config;
-  fv_config = jubatus::util::get_json(config, "converter");
+  // TODO: error handling
+  json config_json = lexical_cast<json>(config);
+  recommender_serv_config conf = json_cast<recommender_serv_config>(config_json);
 
   shared_ptr<fv_converter::datum_to_fv_converter> converter
-      = fv_converter::make_fv_converter(fv_config);
+      = fv_converter::make_fv_converter(conf.converter);
   config_ = config;
   converter_ = converter;
-  rcmdr_.set_model(make_model());
+  rcmdr_.set_model(make_model(conf));
   (*converter_).set_weight_manager(wm_.get_model());
   return 0;
 }
@@ -109,16 +139,6 @@ int recommender_serv::clear() {
   rcmdr_.get_model()->clear();
   return 0;
 }
-
-common::cshared_ptr<recommender::recommender_base> recommender_serv::make_model() {
-  // TODO: set param
-  pfi::text::json::json param;
-  std::string method;
-  method = jubatus::util::get_jsonstring((std::string)config_, "method");
-
-  return cshared_ptr<recommender::recommender_base>
-    (recommender::create_recommender(method, param));
-}  
 
 datum recommender_serv::complete_row_from_id(std::string id) {
   check_set_config();

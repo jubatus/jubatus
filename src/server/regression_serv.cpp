@@ -27,6 +27,9 @@
 
 using namespace std;
 using pfi::lang::shared_ptr;
+using pfi::text::json::json;
+using pfi::text::json::json_cast;
+using pfi::lang::lexical_cast;
 using namespace jubatus::common;
 using namespace jubatus::framework;
 using namespace jubatus::fv_converter;
@@ -35,6 +38,20 @@ namespace jubatus {
 namespace server {
 
 namespace {
+
+struct regression_serv_config {
+  std::string method;
+  pfi::data::optional<pfi::text::json::json> parameter;
+  pfi::text::json::json converter;
+
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    ar
+        & MEMBER(method)
+        & MEMBER(parameter)
+        & MEMBER(converter);
+  }
+};
 
 linear_function_mixer::model_ptr make_model(const framework::server_argv& arg) {
   return linear_function_mixer::model_ptr(storage::storage_factory::create_storage((arg.is_standalone())?"local":"local_mixture"));
@@ -70,14 +87,12 @@ void regression_serv::get_status(status_t& status) const {
 int regression_serv::set_config(const string& config) {
   LOG(INFO) << __func__;
 
-  std::string fv_config = "";
-  std::string method;
-
-  fv_config = jubatus::util::get_json(config, "converter");
-  method = jubatus::util::get_jsonstring(config, "method");
+  // TODO: error handling
+  json config_json = lexical_cast<json>(config);
+  regression_serv_config conf = json_cast<regression_serv_config>(config_json);
 
   shared_ptr<datum_to_fv_converter> converter
-      = fv_converter::make_fv_converter(fv_config);
+      = fv_converter::make_fv_converter(conf.converter);
 
   config_ = config;
   converter_ = converter;
@@ -85,7 +100,7 @@ int regression_serv::set_config(const string& config) {
 
   // TODO: use param
   pfi::text::json::json param;
-  regression_.reset(jubatus::regression::regression_factory().create_regression(method, param, gresser_.get_model().get()));
+  regression_.reset(jubatus::regression::regression_factory().create_regression(conf.method, param, gresser_.get_model().get()));
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
