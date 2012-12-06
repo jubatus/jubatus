@@ -73,8 +73,8 @@ int regression_serv::set_config(const string& config) {
   std::string fv_config = "";
   std::string method;
 
-  fv_config = jubatus::util::get_json((std::string)config, "converter");
-  method = jubatus::util::get_jsonstring((std::string)config, "method");
+  fv_config = jubatus::util::get_json(config, "converter");
+  method = jubatus::util::get_jsonstring(config, "method");
 
   shared_ptr<datum_to_fv_converter> converter
       = fv_converter::make_fv_converter(fv_config);
