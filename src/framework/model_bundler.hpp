@@ -250,13 +250,6 @@ public:
   {
     msgpack::sbuffer sbuf;
     msgpack::pack(&sbuf, obj);
-
-    msgpack::unpacked a;
-    msgpack::unpack(&a, sbuf.data(), sbuf.size());
-    msgpack::object x = a.get();
-    std::vector<std::string> aaa;
-    x.convert(&aaa);
-
     return common::mprpc::byte_buffer(sbuf.data(), sbuf.size());
   }
 
