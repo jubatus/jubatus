@@ -16,6 +16,7 @@
 
 #include "keeper.hpp"
 
+#include <cstdlib>
 #include <iostream>
 #include <glog/logging.h>
 
@@ -27,10 +28,26 @@
 using namespace jubatus;
 using namespace jubatus::framework;
 
+namespace {
+
+std::string make_logfile_name(const keeper_argv& a) {
+  std::ostringstream logfile;
+  if (a.logdir != ""){
+    logfile << a.logdir << '/';
+    logfile << a.program_name << '.';
+    logfile << a.eth << '_' << a.port;
+    logfile << ".zklog.";
+    logfile << getpid();
+  }
+  return logfile.str();
+}
+
+}
+
 keeper::keeper(const keeper_argv& a)
   : pfi::network::mprpc::rpc_server(a.timeout),
     a_(a),
-    zk_(common::create_lock_service("cached_zk", a.z, a.timeout))
+    zk_(common::create_lock_service("cached_zk", a.z, a.timeout, make_logfile_name(a)))
     //    zk_(common::create_lock_service("zk", a.z, a.timeout))
 {
   ls = zk_;
@@ -44,16 +61,17 @@ keeper::~keeper(){
 int keeper::run()
 {
   try {
+    ::atexit(jubatus::framework::atexit);
     jubatus::util::set_exit_on_term();
     jubatus::util::ignore_sigpipe();
     if (this->serv(a_.port, a_.threadnum)) {
       return 0;
     } else {
-      LOG(ERROR) << "failed starting server: any process using port " << a_.port << "?";
+      LOG(FATAL) << "failed starting server: any process using port " << a_.port << "?";
       return -1;
     }
   } catch (const jubatus::exception::jubatus_exception& e) {
-    std::cout << e.diagnostic_information(true) << std::endl;
+    LOG(FATAL) << e.diagnostic_information(true);
     return -1;
   }
 }

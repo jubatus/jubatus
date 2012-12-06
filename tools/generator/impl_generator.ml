@@ -53,7 +53,7 @@ let to_impl_strings = function
       (Printf.sprintf "\n  %s %s(%s) //%s %s"
 	 rettype name (String.concat ", " argv_strs)
 	 (Stree.reqtype_to_string rwtype) (Stree.routing_to_string routing))
-      ^(Printf.sprintf "\n  { %s(p_); return %s->%s(%s); }" lock_str pointer name (String.concat ", " argv_strs2))
+      ^(Printf.sprintf "\n  { %s(p_); RETURN_OR_THROW(%s->%s(%s)); }" lock_str pointer name (String.concat ", " argv_strs2))
 	
     in
     List.map to_keeper_string methods;
@@ -72,33 +72,45 @@ let generate s output strees =
   output <<< ("using namespace "^s#namespace^";");
   output <<< "using namespace jubatus::framework;";
 
+  output <<< ("#define RETURN_OR_THROW(f) try { \\");
+  output <<< ("  return f; \\");
+  output <<< ("} catch (const jubatus::exception::jubatus_exception& e) { \\");
+  output <<< ("  LOG(WARNING) << e.diagnostic_information(true); \\");
+  output <<< ("  throw; \\");
+  output <<< ("} catch (const std::exception& e) { \\");
+  output <<< ("  LOG(ERROR) << e.what(); \\");
+  output <<< ("  throw; \\");
+  output <<< ("}");
+
   output <<< "namespace jubatus { namespace server {";
 (*  output <<< "using "^s#basename^"::server::"^s#basename^";"; no way!! *)
+
+  let use_cht =
+    let include_cht_api = function
+      | Service(_, methods) ->
+  let has_cht (Method(_,_,_,decs)) =
+    let rec has_cht_ = function
+      | [] -> false;
+      | Routing(Cht(_))::_ -> true;
+      | _::tl -> has_cht_ tl
+    in
+    has_cht_ decs
+  in
+  List.exists has_cht methods;
+      | _ -> false
+    in
+    if List.exists include_cht_api strees then ", true"
+    else ""
+  in
   output <<< ("class "^s#basename^"_impl_ : public "^s#basename^"<"^s#basename^"_impl_>");
   output <<< "{";
   output <<< "public:";
   output <<< ("  "^s#basename^"_impl_(const server_argv& a):");
   output <<< ("    "^s#basename^"<"^s#basename^"_impl_>(a.timeout),");
-  output <<< ("    p_(new server_helper<"^s#basename^"_serv>(a))");
+  output <<< ("    p_(new server_helper<"^s#basename^"_serv>(a" ^ use_cht ^ "))");
+  output <<< ("  {}");
 
-  let use_cht =
-    let include_cht_api = function
-      | Service(_, methods) ->
-	let has_cht (Method(_,_,_,decs)) =
-	  let rec has_cht_ = function
-	    | [] -> false;
-	    | Routing(Cht(_))::_ -> true;
-	    | _::tl -> has_cht_ tl
-	  in
-	  has_cht_ decs
-	in
-	List.exists has_cht methods;
-      | _ -> false
-    in
-    if List.exists include_cht_api strees then " p_->use_cht();"
-    else ""
-  in
-  output <<< ("  {" ^ use_cht ^ "}");
+
 
   List.iter (fun l -> output <<< l)
     (List.flatten (List.map to_impl_strings
@@ -114,7 +126,6 @@ let generate s output strees =
   output <<< "int main(int args, char** argv){";
   output <<< "  return";
   
-  output <<< "    jubatus::framework::run_server<jubatus::server::"^s#basename^"_impl_,";
-  output <<< "                                   jubatus::server::"^s#basename^"_serv>";
+  output <<< "    jubatus::framework::run_server<jubatus::server::"^s#basename^"_impl_>";
   output <<< "       (args, argv, \""^s#basename^"\");";
   output <<< "}";;

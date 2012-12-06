@@ -342,7 +342,7 @@ class datum_to_fv_converter_impl {
         return tf;
 
       case LOG_TERM_FREQUENCY:
-        name = "logtf";
+        name = "log_tf";
         return  log(1. + tf);
 
       default:

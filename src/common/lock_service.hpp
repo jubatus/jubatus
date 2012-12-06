@@ -80,7 +80,7 @@ protected:
 };
 
 lock_service* create_lock_service(const std::string&,
-    const std::string& hosts, const int timeout, const std::string& log = "/tmp/zklog");
+    const std::string& hosts, const int timeout, const std::string& log = "");
 
 } // common
 } // jubatus

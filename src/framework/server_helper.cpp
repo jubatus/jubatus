@@ -28,14 +28,15 @@ namespace framework {
 namespace {
 
 string make_logfile_name(const server_argv& a) {
-  // FIXME: need to decide the log file
-  // without log output file, zkclient outputs to stderr
-  std::string logfile = "/tmp/";
-  logfile += a.program_name;
-  logfile += ".";
-  logfile += pfi::lang::lexical_cast<std::string>(getpid());
-  logfile += ".zklog";
-  return logfile;
+  std::ostringstream logfile;
+  if (a.logdir != ""){
+    logfile << a.logdir << '/';
+    logfile << a.program_name << '.';
+    logfile << a.eth << '_' << a.port;
+    logfile << ".zklog.";
+    logfile << getpid();
+  }
+  return logfile.str();
 }
 
 }
@@ -48,7 +49,7 @@ server_helper_impl::server_helper_impl(const server_argv& a) {
 #endif
 }
 
-bool server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
+void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
     ls = zk_;
@@ -66,10 +67,8 @@ bool server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
     }
    
     register_actor(*zk_, a.type, a.name, a.eth, a.port);
-    return true;
   }
 #endif
-  return false;
 }
 
 }

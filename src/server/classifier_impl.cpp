@@ -4,6 +4,15 @@
 #include "classifier_serv.hpp"
 using namespace jubatus;
 using namespace jubatus::framework;
+#define RETURN_OR_THROW(f) try { \
+  return f; \
+} catch (const jubatus::exception::jubatus_exception& e) { \
+  LOG(WARNING) << e.diagnostic_information(true); \
+  throw; \
+} catch (const std::exception& e) { \
+  LOG(ERROR) << e.what(); \
+  throw; \
+}
 namespace jubatus { namespace server {
 class classifier_impl_ : public classifier<classifier_impl_>
 {
@@ -14,25 +23,25 @@ public:
   {}
 
   bool set_config(std::string name, config_data c) //update broadcast
-  { JWLOCK__(p_); return get_p()->set_config(c); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->set_config(c)); }
 
   config_data get_config(std::string name) //analysis random
-  { JRLOCK__(p_); return get_p()->get_config(); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->get_config()); }
 
   int train(std::string name, std::vector<std::pair<std::string,datum > > data) //update random
-  { JWLOCK__(p_); return get_p()->train(data); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->train(data)); }
 
   std::vector<std::vector<estimate_result > > classify(std::string name, std::vector<datum > data) //analysis random
-  { JRLOCK__(p_); return get_p()->classify(data); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->classify(data)); }
 
   bool save(std::string name, std::string id) //update broadcast
-  { JWLOCK__(p_); return get_p()->save(id); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->save(id)); }
 
   bool load(std::string name, std::string id) //update broadcast
-  { JWLOCK__(p_); return get_p()->load(id); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->load(id)); }
 
   std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
-  { JRLOCK__(p_); return p_->get_status(); }
+  { JRLOCK__(p_); RETURN_OR_THROW(p_->get_status()); }
   int run(){ return p_->start(*this); };
   common::cshared_ptr<classifier_serv> get_p(){ return p_->server(); };
 private:
@@ -41,7 +50,6 @@ private:
 }} // namespace jubatus::server
 int main(int args, char** argv){
   return
-    jubatus::framework::run_server<jubatus::server::classifier_impl_,
-                                   jubatus::server::classifier_serv>
+    jubatus::framework::run_server<jubatus::server::classifier_impl_>
        (args, argv, "classifier");
 }

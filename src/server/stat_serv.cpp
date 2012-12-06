@@ -56,6 +56,7 @@ void stat_serv::get_status(status_t& status) const {
 }
 
 bool stat_serv::set_config(const config_data& config) {
+  LOG(INFO) << __func__;
   config_ = config;
   common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(config_.window_size));
   stat_.set_model(model);

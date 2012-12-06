@@ -18,7 +18,7 @@
 #include <glog/logging.h>
 
 #include <iostream>
-
+#include <iomanip>
 #include <pficommon/text/json.h>
 
 #include "../common/util.hpp"
@@ -27,165 +27,220 @@
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
 
-#include "../fv_converter/datum_to_fv_converter.hpp"
-#include "../fv_converter/converter_config.hpp"
-#include "../fv_converter/exception.hpp"
+namespace jubatus {
+namespace framework {
 
+static const std::string VERSION(JUBATUS_VERSION);
 
-namespace jubatus { namespace framework {
+void print_version(const std::string& progname){
+  std::cout << "jubatus-" << VERSION << " (" << progname << ")" << std::endl;
+}
 
-  static const std::string VERSION(JUBATUS_VERSION);
+server_argv::server_argv(int args, char** argv, const std::string& type)
+  : type(type)
+{
+  google::InitGoogleLogging(argv[0]);
 
-  void print_version(const std::string& progname){
-    std::cout << "jubatus-" << VERSION << " (" << progname << ")" << std::endl;
-  }
-
-  server_argv::server_argv(int args, char** argv, const std::string& type)
-    : type(type)
-  {
-    google::InitGoogleLogging(argv[0]);
-    google::LogToStderr(); // only when debug
-
-    cmdline::parser p;
-    p.add<int>("rpc-port", 'p', "port number", false, 9199);
-    p.add<int>("thread", 'c', "concurrency = thread number", false, 2);
-    p.add<int>("timeout", 't', "time out (sec)", false, 10);
-    p.add<std::string>("tmpdir", 'd', "directory to output logs", false, "/tmp");
+  cmdline::parser p;
+  p.add<int>("rpc-port", 'p', "port number", false, 9199);
+  p.add<int>("thread", 'c', "concurrency = thread number", false, 2);
+  p.add<int>("timeout", 't', "time out (sec)", false, 10);
+  p.add<std::string>("tmpdir", 'd', "directory to save and load models", false, "/tmp");
+  p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false);
 
 #ifdef HAVE_ZOOKEEPER_H
-    p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
-    p.add<std::string>("name", 'n', "learning machine instance name", false);
-    p.add("join", 'j', "join to the existing cluster");
-    p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
-    p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
+  p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
+  p.add<std::string>("name", 'n', "learning machine instance name", false);
+  p.add("join", 'j', "join to the existing cluster");
+  p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
+  p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
 #endif
 
-    // APPLY CHANGES TO JUBAVISOR WHEN ARGUMENTS MODIFIED
+  // APPLY CHANGES TO JUBAVISOR WHEN ARGUMENTS MODIFIED
 
-    p.add("version", 'v', "version");
+  p.add("version", 'v', "version");
 
-    p.parse_check(args, argv);
+  p.parse_check(args, argv);
 
-    if( p.exist("version") ){
-      print_version(jubatus::util::get_program_name());
-      exit(0);
-    }
+  if( p.exist("version") ){
+    print_version(jubatus::util::get_program_name());
+    exit(0);
+  }
 
-    port = p.get<int>("rpc-port");
-    threadnum = p.get<int>("thread");
-    timeout = p.get<int>("timeout");
-    program_name = jubatus::util::get_program_name();
-    tmpdir = p.get<std::string>("tmpdir");
+  port = p.get<int>("rpc-port");
+  threadnum = p.get<int>("thread");
+  timeout = p.get<int>("timeout");
+  program_name = jubatus::util::get_program_name();
+  tmpdir = p.get<std::string>("tmpdir");
+  logdir = p.get<std::string>("logdir");
 
-    //    eth = "localhost";
-    eth = jubatus::common::get_default_v4_address();
+  //    eth = "localhost";
+  eth = jubatus::common::get_default_v4_address();
 
 #ifdef HAVE_ZOOKEEPER_H
-    z = p.get<std::string>("zookeeper");
-    name = p.get<std::string>("name");
-    join = p.exist("join");
-    interval_sec = p.get<int>("interval_sec");
-    interval_count = p.get<int>("interval_count");
+  z = p.get<std::string>("zookeeper");
+  name = p.get<std::string>("name");
+  join = p.exist("join");
+  interval_sec = p.get<int>("interval_sec");
+  interval_count = p.get<int>("interval_count");
 #else
-    z = "";
-    name = "";
-    join = false;
-    interval_sec = 16;
-    interval_count = 512;
+  z = "";
+  name = "";
+  join = false;
+  interval_sec = 16;
+  interval_count = 512;
 #endif
 
-    if(z != "" and name == ""){
-      throw JUBATUS_EXCEPTION(argv_error("can't start multinode mode without name specified"));
-    }
-    
-    LOG(INFO) << boot_message(jubatus::util::get_program_name());
-  };
-
-  server_argv::server_argv():
-    join(false), port(9199), timeout(10), threadnum(2), z(""), name(""),
-    tmpdir("/tmp"), eth("localhost"), interval_sec(5), interval_count(1024)
-  {
-  };
-
-  std::string server_argv::boot_message(const std::string& progname) const {
-    std::stringstream ret;
-    ret << "starting " << progname << " " << VERSION << " RPC server at " <<
-      eth << ":" << port << " with timeout: " << timeout;
-    return ret.str();
-  };
-
-  std::string get_server_identifier(const server_argv& a) {
-    std::stringstream ss;
-    ss << a.eth;
-    ss << "_";
-    ss << a.port;
-    return ss.str();
+  if(!z.empty() && name.empty()){
+    std::cerr << "can't start multinode mode without name specified" << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
   }
 
-  keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
-    : type(t)
-  {
-    google::InitGoogleLogging(argv[0]);
-    google::LogToStderr(); // only when debug
+  if(p.exist("logdir")){
+    set_log_destination(jubatus::util::get_program_name());
+  } else {
+    google::LogToStderr();
+  }
 
-    cmdline::parser p;
-    p.add<int>("rpc-port", 'p', "port number", false, 9199);
-    p.add<int>("thread", 'c', "concurrency = thread number", false, 16);
-    p.add<int>("timeout", 't', "time out (sec)", false, 10);
+  boot_message(jubatus::util::get_program_name());
+}
 
-    p.add<std::string>("zookeeper", 'z', "zookeeper location", false, "localhost:2181");
-    p.add("version", 'v', "version");
+server_argv::server_argv():
+  join(false), port(9199), timeout(10), threadnum(2), z(""), name(""),
+  tmpdir("/tmp"), logdir(""), eth("localhost"), interval_sec(5), interval_count(1024)
+{
+}
 
-    p.parse_check(args, argv);
-
-    if( p.exist("version") ){
-      print_version(jubatus::util::get_program_name());
-      exit(0);
-    }
-
-    port = p.get<int>("rpc-port");
-    threadnum = p.get<int>("thread");
-    timeout = p.get<int>("timeout");
-    z = p.get<std::string>("zookeeper");
-    eth = jubatus::common::get_default_v4_address();
-
-    LOG(INFO) << boot_message(jubatus::util::get_program_name());
-  };
-
-  keeper_argv::keeper_argv():
-    port(9199), timeout(10), threadnum(16), z("localhost:2181"), eth("")
-  {
-  };
-
-  std::string keeper_argv::boot_message(const std::string& progname) const {
-    std::stringstream ret;
-    ret << "starting " << progname << " " << VERSION << " RPC server at " <<
-      eth << ":" << port << " with timeout: " << timeout;
-    return ret.str();
-  };
-
-  common::cshared_ptr<jubatus::common::lock_service> ls;
-
-  void atexit(void){
+void server_argv::boot_message(const std::string& progname) const {
+  std::stringstream ss;
+  ss << "starting " << progname << " " << VERSION << " RPC server at " << eth << ":" << port << '\n';
+  ss << "    pid            : " << getpid() << '\n';
+  ss << "    user           : " << getenv("USER") << '\n';
+  ss << "    mode           : ";
+  if(is_standalone()) {
+    ss << "standalone mode\n";
+  } else {
+    ss << "multinode mode\n";
+  }
+  ss << "    timeout        : " << timeout << '\n';
+  ss << "    thread         : " << threadnum << '\n';
+  ss << "    tmpdir         : " << tmpdir << '\n';
+  ss << "    logdir         : " << logdir << '\n';
 #ifdef HAVE_ZOOKEEPER_H
-    if(ls)
-      ls->force_close();
+  ss << "    zookeeper      : " << z << '\n';
+  ss << "    name           : " << name << '\n';
+  ss << "    join           : " << std::boolalpha << join << '\n';
+  ss << "    interval sec   : " << interval_sec << '\n';
+  ss << "    interval count : " << interval_count << '\n';
 #endif
+  LOG(INFO) << ss.str();
+}
+
+void server_argv::set_log_destination(const std::string& progname) const {
+  std::ostringstream basename;
+  basename <<  progname << '.' << eth << '_' << port;
+  for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
+    std::string log = logdir + '/';
+    log += basename.str() + '.';
+    if (!name.empty()) {
+      log += name + '.';
+    }
+    log += google::GetLogSeverityName(severity);
+    log += ".log.";
+    std::string link = basename.str() + '.';
+    link += pfi::lang::lexical_cast<std::string>(getpid());
+    google::SetLogDestination(severity, log.c_str());
+    google::SetLogSymlink(severity, link.c_str());
+  }
+}
+
+std::string get_server_identifier(const server_argv& a) {
+  std::stringstream ss;
+  ss << a.eth;
+  ss << "_";
+  ss << a.port;
+  return ss.str();
+}
+
+keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
+  : type(t)
+{
+  google::InitGoogleLogging(argv[0]);
+
+  cmdline::parser p;
+  p.add<int>("rpc-port", 'p', "port number", false, 9199);
+  p.add<int>("thread", 'c', "concurrency = thread number", false, 16);
+  p.add<int>("timeout", 't', "time out (sec)", false, 10);
+
+  p.add<std::string>("zookeeper", 'z', "zookeeper location", false, "localhost:2181");
+  p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false);
+  p.add("version", 'v', "version");
+
+  p.parse_check(args, argv);
+
+  if( p.exist("version") ){
+    print_version(jubatus::util::get_program_name());
+    exit(0);
   }
 
-pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-make_fv_converter(const std::string& config) {
-  if (config == "")
-    throw JUBATUS_EXCEPTION(fv_converter::converter_exception("Config of feature vector converter is empty"));
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-      converter(new fv_converter::datum_to_fv_converter);
-  fv_converter::converter_config c;
-  std::stringstream ss(config);
-  // FIXME: check invalid json format
-  ss >> pfi::text::json::via_json(c);
-  fv_converter::initialize_converter(c, *converter);
-  return converter;
+  port = p.get<int>("rpc-port");
+  threadnum = p.get<int>("thread");
+  timeout = p.get<int>("timeout");
+  program_name = jubatus::util::get_program_name();
+  z = p.get<std::string>("zookeeper");
+  logdir = p.get<std::string>("logdir");
+  eth = jubatus::common::get_default_v4_address();
+
+  if(p.exist("logdir")){
+    set_log_destination(jubatus::util::get_program_name());
+  } else {
+    google::LogToStderr();
+  }
+
+  boot_message(jubatus::util::get_program_name());
 }
 
+keeper_argv::keeper_argv():
+  port(9199), timeout(10), threadnum(16), z("localhost:2181"), logdir(""), eth("")
+{
 }
+
+void keeper_argv::boot_message(const std::string& progname) const {
+  std::stringstream ss;
+  ss << "starting " << progname << " " << VERSION << " RPC server at " << eth << ":" << port << '\n';
+  ss << "    pid            : " << getpid() << '\n';
+  ss << "    user           : " << getenv("USER") << '\n';
+  ss << "    timeout        : " << timeout << '\n';
+  ss << "    thread         : " << threadnum << '\n';
+  ss << "    logdir         : " << logdir << '\n';
+  ss << "    zookeeper      : " << z << '\n';
+  LOG(INFO) << ss.str();
 }
+
+void keeper_argv::set_log_destination(const std::string& progname) const {
+  std::ostringstream basename;
+  basename <<  progname << '.' << eth << '_' << port;
+  for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
+    std::string log = logdir + '/';
+    log += basename.str() + '.';
+    log += google::GetLogSeverityName(severity);
+    log += ".log.";
+    std::string link = basename.str() + '.';
+    link += pfi::lang::lexical_cast<std::string>(getpid());
+    google::SetLogDestination(severity, log.c_str());
+    google::SetLogSymlink(severity, link.c_str());
+  }
+}
+
+common::cshared_ptr<jubatus::common::lock_service> ls;
+
+void atexit(){
+#ifdef HAVE_ZOOKEEPER_H
+  if(ls)
+    ls->force_close();
+#endif
+}
+
+} // framework
+} // jubatus

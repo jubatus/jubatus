@@ -3,6 +3,7 @@
 #include "../framework/aggregators.hpp"
 #include "../common/exception.hpp"
 #include "graph_types.hpp"
+#include <glog/logging.h>
 using namespace jubatus;
 using namespace jubatus::framework;
 int main(int args, char** argv){
@@ -32,7 +33,7 @@ int main(int args, char** argv){
 
     return k.run();
   } catch (const jubatus::exception::jubatus_exception& e) {
-    std::cout << e.diagnostic_information(true) << std::endl;
+    LOG(FATAL) << e.diagnostic_information(true);
     return -1;
   }
 }

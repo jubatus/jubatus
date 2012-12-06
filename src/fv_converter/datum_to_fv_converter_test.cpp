@@ -145,11 +145,11 @@ TEST(datum_to_fv_converter, string_feature) {
   expected.push_back(make_pair("/title$it@space#tf/idf",   3. * idf1));
   expected.push_back(make_pair("/title$.@space#tf/idf",    2. * idf1));
 
-  expected.push_back(make_pair("/name$doc1@space#logtf/idf",  log(2.) * idf1));
-  //expected.push_back(make_pair("/title$this@space#logtf/idf", log(2.) * idf2));
-  //expected.push_back(make_pair("/title$is@space#logtf/idf",   log(3.) * idf2));
-  expected.push_back(make_pair("/title$it@space#logtf/idf",   log(4.) * idf1));
-  expected.push_back(make_pair("/title$.@space#logtf/idf",    log(3.) * idf1));
+  expected.push_back(make_pair("/name$doc1@space#log_tf/idf",  log(2.) * idf1));
+  //expected.push_back(make_pair("/title$this@space#log_tf/idf", log(2.) * idf2));
+  //expected.push_back(make_pair("/title$is@space#log_tf/idf",   log(3.) * idf2));
+  expected.push_back(make_pair("/title$it@space#log_tf/idf",   log(4.) * idf1));
+  expected.push_back(make_pair("/title$.@space#log_tf/idf",    log(3.) * idf1));
 
   //expected.push_back(make_pair("/title$is@ux#tf/bin", 3.));
 

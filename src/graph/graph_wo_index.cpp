@@ -294,6 +294,9 @@ void graph_wo_index::shortest_path(node_id_t src, node_id_t tgt,
       return;
     }
     ret.push_back(cur);
+    if (cur == tgt){
+      return;
+    }
     cur = it->second.second;
   }
   ret.push_back(landmark);
