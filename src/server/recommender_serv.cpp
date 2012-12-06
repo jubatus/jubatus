@@ -63,7 +63,7 @@ void recommender_serv::get_status(status_t& status) const {
 int recommender_serv::set_config(config_data config) {
   LOG(INFO) << __func__;
   std::string fv_config;
-  fv_config = jubatus::util::get_json((std::string)config, "converter");
+  fv_config = jubatus::util::get_json(config, "converter");
 
   shared_ptr<fv_converter::datum_to_fv_converter> converter
       = fv_converter::make_fv_converter(fv_config);
