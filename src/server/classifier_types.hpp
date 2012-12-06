@@ -18,8 +18,6 @@ namespace jubatus {
 
 typedef std::map<std::string, std::string > param_t;
 
-typedef std::string config_data;
-
 struct datum {
 public:
 
