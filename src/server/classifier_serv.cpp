@@ -16,6 +16,9 @@
 
 #include "classifier_serv.hpp"
 
+#include <pficommon/text/json.h>
+#include <pficommon/data/optional.h>
+
 #include "../classifier/classifier_factory.hpp"
 #include "../common/util.hpp"
 #include "../common/vector_util.hpp"
@@ -27,6 +30,9 @@
 
 using namespace std;
 using pfi::lang::shared_ptr;
+using pfi::lang::lexical_cast;
+using pfi::text::json::json;
+using pfi::text::json::json_cast;
 using namespace jubatus::common;
 using namespace jubatus::framework;
 using namespace jubatus::fv_converter;
@@ -35,6 +41,20 @@ namespace jubatus {
 namespace server {
 
 namespace {
+
+struct classifier_serv_config {
+  std::string method;
+  pfi::data::optional<pfi::text::json::json> parameter;
+  pfi::text::json::json converter;
+
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    ar
+        & MEMBER(method)
+        & MEMBER(parameter)
+        & MEMBER(converter);
+  }
+};
 
 linear_function_mixer::model_ptr make_model(const framework::server_argv& arg) {
   return linear_function_mixer::model_ptr(storage::storage_factory::create_storage((arg.is_standalone())?"local":"local_mixture"));
@@ -70,14 +90,12 @@ void classifier_serv::get_status(status_t& status) const {
 int classifier_serv::set_config(const string& config) {
   LOG(INFO) << __func__;
 
-  std::string fv_config;
-  std::string method;
-
-  fv_config = jubatus::util::get_json(config, "converter");
-  method = jubatus::util::get_jsonstring(config, "method");
+  // TODO: error handling
+  json config_json = lexical_cast<json>(config);
+  classifier_serv_config conf = json_cast<classifier_serv_config>(config_json);
 
   shared_ptr<datum_to_fv_converter> converter =
-      fv_converter::make_fv_converter(fv_config);
+      fv_converter::make_fv_converter(conf.converter);
 
   config_ = config;
   converter_ = converter;
@@ -85,7 +103,7 @@ int classifier_serv::set_config(const string& config) {
 
   // TODO set param from config
   pfi::text::json::json param;
-  classifier_.reset(classifier::classifier_factory::create_classifier(method,
+  classifier_.reset(classifier::classifier_factory::create_classifier(conf.method,
                                                           param,
                                                           clsfer_.get_model().get()));
 

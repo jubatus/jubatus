@@ -76,8 +76,6 @@ public:
   int update_row(std::string id, datum dat);
   int clear();
 
-  common::cshared_ptr<jubatus::recommender::recommender_base> make_model();
-
   datum complete_row_from_id(std::string id);
   datum complete_row_from_data(datum dat);
   similar_result similar_row_from_id(std::string id, size_t ret_num);
