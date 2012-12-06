@@ -247,41 +247,6 @@ void ignore_sigpipe()
         << jubatus::exception::error_errno(errno));
 }
 
-std::string get_json(std::string jsonstr, const std::string key){
-
-  std::stringstream ss(jsonstr);
-  pfi::text::json::json js;
-
-  ss >> via_json(js);
-
-  std::stringstream ret;
-  ret << pfi::text::json::pretty(js[key]);
-  return ret.str();
-}
-
-std::string get_jsonstring(std::string jsonstr, const std::string key){
-
-  std::stringstream ss(jsonstr);
-  pfi::text::json::json js;
-
-  ss >> via_json(js);
-
-  std::string ret;
-  pfi::text::json::from_json(js[key], ret);
-
-  return ret;
-}
-
-std::string get_jsonstring(std::string jsonstr, const std::string key, const std::string def){
-  std::string ret;
-  try{
-    ret = get_jsonstring(jsonstr, key);
-  }catch(const std::exception& e){
-    ret = def;
-  }
-  return ret;
-}
-
 } //util
 } //jubatus
 
