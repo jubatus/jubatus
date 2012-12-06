@@ -22,10 +22,10 @@ public:
     p_(new server_helper<stat_serv>(a, true))
   {}
 
-  bool set_config(std::string name, config_data c) //update broadcast
-  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->set_config(c)); }
+  bool set_config(std::string name, std::string conf) //update broadcast
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->set_config(conf)); }
 
-  config_data get_config(std::string name) //analysis random
+  std::string get_config(std::string name) //analysis random
   { JRLOCK__(p_); RETURN_OR_THROW(get_p()->get_config()); }
 
   bool push(std::string name, std::string key, double val) //update cht(1)
