@@ -18,8 +18,6 @@ namespace jubatus {
 
 typedef std::vector<std::pair<std::string, float > > similar_result;
 
-typedef std::string config_data;
-
 struct datum {
 public:
 

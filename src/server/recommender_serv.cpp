@@ -60,7 +60,7 @@ void recommender_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-int recommender_serv::set_config(config_data config) {
+int recommender_serv::set_config(std::string config) {
   LOG(INFO) << __func__;
   std::string fv_config;
   fv_config = jubatus::util::get_json(config, "converter");
@@ -74,7 +74,7 @@ int recommender_serv::set_config(config_data config) {
   return 0;
 }
   
-config_data recommender_serv::get_config() {
+string recommender_serv::get_config() {
   check_set_config();
   return config_;
 }
