@@ -9,8 +9,8 @@ using namespace jubatus::framework;
 int main(int args, char** argv){
   try{
     keeper k(keeper_argv(args,argv,"classifier"));
-    k.register_broadcast<bool, config_data >("set_config", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
-    k.register_random<config_data >("get_config"); //pass analysis
+    k.register_broadcast<bool, std::string >("set_config", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+    k.register_random<std::string >("get_config"); //pass analysis
     k.register_random<int, std::vector<std::pair<std::string,datum > > >("train"); //pass update
     k.register_random<std::vector<std::vector<estimate_result > >, std::vector<datum > >("classify"); //pass analysis
     k.register_broadcast<bool, std::string >("save", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
