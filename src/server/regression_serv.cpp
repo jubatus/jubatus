@@ -67,7 +67,7 @@ void regression_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-int regression_serv::set_config(const config_data& config) {
+int regression_serv::set_config(const string& config) {
   LOG(INFO) << __func__;
 
   std::string fv_config = "";
@@ -92,7 +92,7 @@ int regression_serv::set_config(const config_data& config) {
   return 0;
 }
 
-config_data regression_serv::get_config() {
+string regression_serv::get_config() {
   check_set_config();
   return config_;
 }

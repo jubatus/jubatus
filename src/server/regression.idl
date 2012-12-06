@@ -15,7 +15,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 type param_t = map<string, string> 
-type config_data = string
 
 message datum {
   0: list<tuple<string, string> >  string_values
@@ -25,10 +24,10 @@ message datum {
 service regression {
 
   #@broadcast #@update #@all_and
-  bool set_config(0: string name, 1: config_data c) # //@broadcast
+  bool set_config(0: string name, 1: string conf) # //@broadcast
 
   #@random #@analysis #@pass
-  config_data get_config(0: string name) # //@random
+  string get_config(0: string name) # //@random
 
   #@random #@update #@pass
   int train(0: string name, 1: list<tuple<float, datum> > train_data) # //@random

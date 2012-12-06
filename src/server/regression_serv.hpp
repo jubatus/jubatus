@@ -48,8 +48,8 @@ public:
 
   void get_status(status_t& status) const;
 
-  int set_config(const config_data& config);
-  config_data get_config();
+  int set_config(const std::string& config);
+  std::string get_config();
   int train(const std::vector<std::pair<float, datum> >& data);
   std::vector<float> estimate(const std::vector<datum>& data) const;
 
@@ -59,7 +59,7 @@ private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  config_data config_;
+  std::string config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<jubatus::regression::regression_base> regression_;
   linear_function_mixer gresser_;
