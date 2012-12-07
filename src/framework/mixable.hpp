@@ -27,6 +27,8 @@
 #include "../common/shared_ptr.hpp"
 #include "../common/mprpc/byte_buffer.hpp"
 
+#include "model_bundler.hpp"
+
 namespace jubatus {
 namespace framework {
 
@@ -36,18 +38,37 @@ public:
   mixable0() {}
   virtual ~mixable0() {}
 
-  virtual void save(std::ostream & ofs) = 0;
-  virtual void load(std::istream & ifs) = 0;
+  virtual void save(std::ostream& ofs) = 0;
+  virtual void load(std::istream& ifs) = 0;
   virtual void clear() = 0;
 };
 
-// bundler interface
-class model_mixer_base {
+template <typename Model>
+class model_holder : public mixable0 {
 public:
-  virtual ~model_mixer_base() {}
+  typedef common::cshared_ptr<Model> model_ptr;
+
+  void set_model(model_ptr m) {
+    model_ = m;
+  }
+
+  void save(std::ostream& os) {
+    model_->save(os);
+  }
+
+  void load(std::istream& is) {
+    model_->load(is);
+  }
+
+  model_ptr get_model() const {
+    return model_;
+  }
+
+protected:
+  model_ptr model_;
 };
 
-class model_bundler;
+// bundler interface
 
 class mixable_holder {
 public:
@@ -55,6 +76,11 @@ public:
     : bundler_(b)
   {}
   virtual ~mixable_holder() {}
+
+  template <class T>
+  T* get_mix_bundler() const {
+    return dynamic_cast<T*>(bundler_.get());
+  }
 
   model_bundler* get_bundler() const {
     return bundler_.get();
@@ -69,11 +95,7 @@ protected:
   pfi::lang::shared_ptr<model_bundler> bundler_;
 };
 
-
-
-
 } // framework
 } // jubatus
 
 #include "diff_mixable.hpp"
-#include "model_bundler.hpp"

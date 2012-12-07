@@ -72,7 +72,9 @@ TEST(mixable, save_load) {
 TEST(mixable, trivial) {
   mixable_int m;
   m.set_model(mixable_int::model_ptr(new int_model));
-  pfi::lang::shared_ptr<model_bundler> b(model_bundler::create(m));
+  pfi::lang::shared_ptr<model_bundler> bundler(diff_model_bundler::create(m));
+
+  diff_model_bundler* b = dynamic_cast<diff_model_bundler*>(bundler.get());
 
   m.add(10);
 

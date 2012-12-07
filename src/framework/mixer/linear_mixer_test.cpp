@@ -83,7 +83,7 @@ TEST(linear_mixer, mix_order) {
   linear_mixer m(com, 1, 1);
 
   mixable_string s;
-  pfi::lang::shared_ptr<mixable_holder> holder(new mixable_holder(model_bundler::create(s)));
+  pfi::lang::shared_ptr<mixable_holder> holder(new mixable_holder(diff_model_bundler::create(s)));
   m.set_mixable_holder(holder);
 
   m.mix();

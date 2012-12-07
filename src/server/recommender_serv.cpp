@@ -39,8 +39,7 @@ recommender_serv::recommender_serv(const server_argv& a,
                                    const cshared_ptr<lock_service>& zk)
     : server_base(a) {
   mixer_.reset(mixer::create_mixer(a, zk));
-  mixable_holder_.reset(new mixable_holder(
-        pfi::lang::shared_ptr<model_bundler>(model_bundler::create(rcmdr_, wm_))));
+  mixable_holder_.reset(new mixable_holder(diff_model_bundler::create(rcmdr_, wm_)));
   wm_.set_model(mixable_weight_manager::model_ptr(new fv_converter::weight_manager));
 
   mixer_->set_mixable_holder(mixable_holder_);

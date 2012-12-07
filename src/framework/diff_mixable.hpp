@@ -19,23 +19,30 @@
 namespace jubatus {
 namespace framework {
 
-class model_diff_mixer_base : public model_mixer_base {
+class model_diff_mixer_base : public model_bundler {
 public:
   virtual ~model_diff_mixer_base() {}
 
   virtual common::mprpc::byte_buffer get_diff() const = 0;
   virtual void put_diff(const common::mprpc::byte_buffer& buf) = 0;
-  virtual common::mprpc::byte_buffer mixed_raw_data(const msgpack::object& obj) = 0;
   virtual void mix(const common::mprpc::byte_buffer& lhs_buf, const common::mprpc::byte_buffer& rhs_buf, common::mprpc::byte_buffer& mixed) const = 0;
   virtual void mix(const msgpack::object& lhs, const common::mprpc::byte_buffer& rhs_buf, common::mprpc::byte_buffer& mixed) const = 0;
 
-  class mix_impl_base_type { // inherit?
+  //virtual common::mprpc::byte_buffer mixed_raw_data(const msgpack::object& obj) = 0;
+  static common::mprpc::byte_buffer mixed_raw_data(const msgpack::object& obj)
+  {
+    msgpack::sbuffer sbuf;
+    msgpack::pack(&sbuf, obj);
+    return common::mprpc::byte_buffer(sbuf.data(), sbuf.size());
+  }
+
+
+  class mix_impl_base_type {
   public:
-    //typedef model_diff_mixer_base mix_base_type;
     typedef std::vector<pfi::lang::shared_ptr<mix_impl_base_type> > base_list_type;
 
     mix_impl_base_type() {}
-    ~mix_impl_base_type() {}
+    virtual ~mix_impl_base_type() {}
     virtual void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::sbuffer& mixed) const = 0;
     virtual void get_diff(msgpack::sbuffer& pk) const = 0;
     virtual void put_diff(const msgpack::object& diff_obj) = 0;
@@ -46,11 +53,11 @@ public:
 // strategy: diff
 template <typename Model, typename Diff>
 //class diff_mixable : public mixable0 {
-class mixable : public mixable0 {
+class mixable : public model_holder<Model> {
+                // or public mixable0 and `class nantoka_mixable<Model, Diff>, public mixable0`
 public:
   typedef Model model_type;
   typedef Diff diff_type;
-  typedef common::cshared_ptr<Model> model_ptr;
   typedef model_diff_mixer_base::mix_impl_base_type mix_impl_base_type;
 
   virtual ~mixable() {}
@@ -59,24 +66,9 @@ public:
   virtual void put_diff_impl(const Diff&) = 0;
   virtual void mix_impl(const Diff&, const Diff&, Diff&) const = 0;
 
-  pfi::lang::shared_ptr<mix_impl_base_type> create_mix_impl_strategy() const {
-    //return pfi::lang::shared_ptr<mix_impl_base_type>(new mix_diff_impl(*this));
-    return pfi::lang::shared_ptr<mix_impl_base_type>();
-  };
-
-  void set_model(model_ptr m) {
-    model_ = m;
+  pfi::lang::shared_ptr<mix_impl_base_type> create_mix_impl_strategy() {
+    return pfi::lang::shared_ptr<mix_impl_base_type>(new mix_diff_impl(*this));
   }
-
-  void save(std::ostream& os) {
-    model_->save(os);
-  }
-
-  void load(std::istream& is) {
-    model_->load(is);
-  }
-
-  model_ptr get_model() const { return model_; }
 
 protected:
   class mix_diff_impl : public mix_impl_base_type {
@@ -113,14 +105,104 @@ protected:
   protected:
     mixable<Model, Diff> & m_;
   };
+};
 
-private:
-  model_ptr model_;
+
+class diff_model_bundler : public bundler_factory<diff_model_bundler, model_diff_mixer_base> {
+public:
+  diff_model_bundler(const mix_func_list& m)
+    : bundler_factory<diff_model_bundler, model_diff_mixer_base>(m)
+  {
+  }
+  typedef std::vector<msgpack::object> diff_object;
+
+public:
+  common::mprpc::byte_buffer get_diff() const
+  {
+    // diff buffer
+    msgpack::sbuffer diff_buf;
+    msgpack::packer<msgpack::sbuffer> pk(&diff_buf);
+
+    // TODO: create format/type
+    pk.pack_array(m_.size());
+
+    for (size_t i = 0, size = m_.size(); i < size; ++i) {
+      m_[i]->get_diff(diff_buf);
+    }
+
+    return common::mprpc::byte_buffer(diff_buf.data(), diff_buf.size());
+  }
+
+  void put_diff(const common::mprpc::byte_buffer& buf)
+  {
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, buf.ptr(), buf.size());
+
+    // TODO: 1. check format: diff_object
+    diff_object diff_obj;
+    msg.get().convert(&diff_obj);
+
+    for (size_t i = 0, size = m_.size(); i < size; ++i) {
+      m_[i]->put_diff(diff_obj[i]);
+    }
+  }
+
+  void mix(const common::mprpc::byte_buffer& lhs_buf, const common::mprpc::byte_buffer& rhs_buf, common::mprpc::byte_buffer& mixed) const
+  {
+    // preparing object
+    msgpack::unpacked lhs_msg, rhs_msg;
+    msgpack::unpack(&lhs_msg, lhs_buf.ptr(), lhs_buf.size());
+    msgpack::unpack(&rhs_msg, rhs_buf.ptr(), rhs_buf.size());
+    msgpack::object lhs = lhs_msg.get();
+    msgpack::object rhs = rhs_msg.get();
+
+    // mix
+    msgpack::sbuffer mixed_buf;
+    mix_core(lhs, rhs, mixed_buf);
+
+    mixed.assign(mixed_buf.data(), mixed_buf.size());
+  }
+
+  void mix(const msgpack::object& lhs, const common::mprpc::byte_buffer& rhs_buf, common::mprpc::byte_buffer& mixed) const
+  {
+    // preparing object
+    msgpack::unpacked rhs_msg;
+    msgpack::unpack(&rhs_msg, rhs_buf.ptr(), rhs_buf.size());
+    msgpack::object rhs = rhs_msg.get();
+
+    // mix
+    msgpack::sbuffer mixed_buf;
+    mix_core(lhs, rhs, mixed_buf);
+
+    mixed = common::mprpc::byte_buffer(mixed_buf.data(), mixed_buf.size());
+  }
+
+protected:
+
+  void mix_core(const msgpack::object& lhs_obj, const msgpack::object& rhs_obj,
+      msgpack::sbuffer& mixed_buf) const
+  {
+    // TODO: 1. check format: diff_object
+    diff_object lhs, rhs;
+    lhs_obj.convert(&lhs);
+    rhs_obj.convert(&rhs);
+
+    // assert(lhs.size() == rhs.size() == m_.size());
+    // TODO: create format/type
+    // mixed_paker << ...;
+    msgpack::packer<msgpack::sbuffer> mixed_packer(&mixed_buf);
+    mixed_packer.pack_array(m_.size());
+
+    // 2. check size of rhs and lhs (array)
+    // 2. unpack lhs and rhs
+
+    for (size_t i = 0, size = m_.size(); i < size; ++i) {
+      m_[i]->mix(lhs[i], rhs[i], mixed_buf);
+    }
+  }
 };
 
 
 } // framework
 } // jubatus
-
-#include "model_bundler.hpp"
 

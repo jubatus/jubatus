@@ -201,13 +201,13 @@ void linear_mixer::mix() {
     return;
   } else {
     try {
-      model_bundler* bundler = mixable_holder_->get_bundler();
+      diff_model_bundler* bundler = mixable_holder_->get_mix_bundler<diff_model_bundler>();
 
       common::mprpc::rpc_result_object result;
       communication_->get_diff(result);
 
       // get first object as a raw data
-      byte_buffer mixed = bundler->mixed_raw_data(result.response.front().response.a3);
+      byte_buffer mixed = diff_model_bundler::mixed_raw_data(result.response.front().response.a3);
       for (size_t i = 1; i < result.response.size(); ++i) {
         msgpack::object tmp = result.response[i].response.a3;
         bundler->mix(tmp, mixed, mixed);
@@ -233,14 +233,14 @@ byte_buffer linear_mixer::get_diff(int) {
   scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
 
-  return mixable_holder_->get_bundler()->get_diff();
+  return mixable_holder_->get_mix_bundler<diff_model_bundler>()->get_diff();
 }
 
 int linear_mixer::put_diff(const common::mprpc::byte_buffer& diff) {
   scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
 
-  mixable_holder_->get_bundler()->put_diff(diff);
+  mixable_holder_->get_mix_bundler<diff_model_bundler>()->put_diff(diff);
 
   counter_ = 0;
   ticktime_ = time(NULL);

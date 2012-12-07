@@ -49,8 +49,7 @@ regression_serv::regression_serv(const framework::server_argv& a,
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
 
   mixer_.reset(mixer::create_mixer(a, zk));
-  mixable_holder_.reset(new mixable_holder(
-        pfi::lang::shared_ptr<model_bundler>(model_bundler::create(gresser_, wm_))));
+  mixable_holder_.reset(new mixable_holder(diff_model_bundler::create(gresser_, wm_)));
 
   mixer_->set_mixable_holder(mixable_holder_);
 }

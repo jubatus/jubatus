@@ -75,8 +75,7 @@ graph_serv::graph_serv(const framework::server_argv& a,
 #endif
 
   mixer_.reset(mixer::create_mixer(a, zk));
-  mixable_holder_.reset(new mixable_holder(
-        pfi::lang::shared_ptr<model_bundler>(model_bundler::create(g_))));
+  mixable_holder_.reset(new mixable_holder(diff_model_bundler::create(g_)));
 
   mixer_->set_mixable_holder(mixable_holder_);
 }
