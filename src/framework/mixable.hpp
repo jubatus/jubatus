@@ -41,6 +41,11 @@ public:
   virtual void clear() = 0;
 };
 
+// bundler interface
+class model_mixer_base {
+public:
+  virtual ~model_mixer_base() {}
+};
 
 class model_bundler;
 
@@ -65,6 +70,7 @@ protected:
 };
 
 
+#if 0
 // strategy: diff
 template <typename Model, typename Diff>
 class mixable : public mixable0 {
@@ -80,6 +86,12 @@ class mixable : public mixable0 {
   virtual Diff get_diff_impl() const = 0;
   virtual void put_diff_impl(const Diff&) = 0;
   virtual void mix_impl(const Diff&, const Diff&, Diff&) const = 0;
+
+  // TODO:
+  // mix_diff_policy create_diff_policy()
+  // {
+  //    
+  // }
 
   void set_model(model_ptr m){
     model_ = m;
@@ -98,9 +110,11 @@ class mixable : public mixable0 {
 private:
   model_ptr model_;
 };
+#endif
 
 
 } // framework
 } // jubatus
 
+#include "diff_mixable.hpp"
 #include "model_bundler.hpp"
