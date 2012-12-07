@@ -234,22 +234,22 @@ public:
   void save(std::ostream & ofs)
   {
     for (size_t i = 0, size = m_.size(); i < size; ++i) {
-      m_[i]->mixable()->save(ofs);
+      m_[i]->get_mixable()->save(ofs);
     }
   }
 
   void load(std::istream & ifs)
   {
     for (size_t i = 0, size = m_.size(); i < size; ++i) {
-      m_[i]->mixable()->clear();
-      m_[i]->mixable()->load(ifs);
+      m_[i]->get_mixable()->clear();
+      m_[i]->get_mixable()->load(ifs);
     }
   }
 
   void clear()
   {
     for (size_t i = 0, size = m_.size(); i < size; ++i) {
-      m_[i]->mixable()->clear();
+      m_[i]->get_mixable()->clear();
     }
   }
 

@@ -39,7 +39,7 @@ public:
     virtual void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::sbuffer& mixed) = 0;
     virtual void get_diff(msgpack::sbuffer& pk) = 0;
     virtual void put_diff(const msgpack::object& diff_obj) = 0;
-    virtual mixable0* mixable() const = 0;
+    virtual mixable0* get_mixable() const = 0;
   };
 };
 
@@ -64,7 +64,19 @@ public:
     return pfi::lang::shared_ptr<mix_impl_base_type>();
   };
 
-public:
+  void set_model(model_ptr m) {
+    model_ = m;
+  }
+
+  void save(std::ostream& os) {
+    model_->save(os);
+  }
+
+  void load(std::istream& is) {
+    model_->load(is);
+  }
+
+  model_ptr get_model() const { return model_; }
 
 protected:
   class mix_diff_impl : public mix_impl_base_type {
@@ -94,28 +106,13 @@ protected:
       m_.put_diff_impl(diff);
     }
 
-    mixable0* mixable() const {
+    mixable0* get_mixable() const {
       return &m_;
     }
 
   protected:
     mixable<Model, Diff> & m_;
   };
-
-public:
-  void set_model(model_ptr m) {
-    model_ = m;
-  }
-
-  void save(std::ostream& os) {
-    model_->save(os);
-  }
-
-  void load(std::istream& is) {
-    model_->load(is);
-  }
-
-  model_ptr get_model() const { return model_; }
 
 private:
   model_ptr model_;
