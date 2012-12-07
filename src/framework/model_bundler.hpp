@@ -41,13 +41,6 @@ public:
 class model_mixer_base {
 public:
   virtual ~model_mixer_base() {}
-
-  /*
-  virtual void save(std::ostream&) = 0;
-  virtual void load(std::istream&) = 0;
-  virtual void clear() = 0;
-  virtual mixable0* mixable() const = 0;
-  */
 };
 
 class model_diff_mixer_base : public model_mixer_base {
@@ -312,57 +305,9 @@ protected:
 // strategy_bundler
 
 
-class model_bundler_impl {
-public:
-
-  template <class Strategy>
-  bool is_mix() const {
-    return get_mix_strategy<Strategy>();
-  }
-
-  template <class Strategy>
-  Strategy* get_mix_strategy() const {
-    return dynamic_cast<Strategy*>(mix_strategy_.get());
-  }
-
-  void save(std::ostream & ofs);
-  void load(std::istream & ifs);
-  void clear();
-
-protected:
-  //model_bundler_impl(strategy, mixables)
-  //{
-  //}
-
-protected:
-  pfi::lang::shared_ptr<void> mix_strategy_;
-  // vector<mixable*> mixable_;
-};
-
 
 //typedef mix_diff_bundler model_bundler;
 
-/*
-class model_bundler {
-public:
-  model_bundler_i(model_bundler_i* i)
-    : m_(i)
-  {
-  }
-
-  template <class S>
-  bool is() const {
-    return m_->is<S>();
-  }
-
-  void save(std::ostream & ofs);
-  void load(std::istream & ifs);
-  void clear();
-
-protected:
-  pfi::lang::scoped_lock<model_bundler_impl> m_;
-}
- */
 
 } // framework
 } // jubatus

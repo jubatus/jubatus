@@ -64,6 +64,7 @@ protected:
   pfi::lang::shared_ptr<model_bundler> bundler_;
 };
 
+
 // strategy: diff
 template <typename Model, typename Diff>
 class mixable : public mixable0 {
