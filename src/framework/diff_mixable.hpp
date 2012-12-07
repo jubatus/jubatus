@@ -50,11 +50,13 @@ public:
   };
 };
 
-// strategy: diff
 template <typename Model, typename Diff>
-//class diff_mixable : public mixable0 {
+// TODO: rename `diff_mixable`
 class mixable : public model_holder<Model> {
-                // or public mixable0 and `class nantoka_mixable<Model, Diff>, public mixable0`
+/* or
+//class diff_mixable : public mixable0 {};
+//class nantoka_mixer : public diff_mixable<M, D>, public mixable_holder<M> {};
+ */
 public:
   typedef Model model_type;
   typedef Diff diff_type;

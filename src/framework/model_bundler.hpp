@@ -101,9 +101,5 @@ protected:
   mix_func_list m_;
 };
 
-
-// strategy_bundler
-
-
 } // framework
 } // jubatus
