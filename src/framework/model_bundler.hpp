@@ -23,180 +23,14 @@
 #include "mixable.hpp"
 #include "../common/mprpc/byte_buffer.hpp"
 
-
 namespace jubatus {
 namespace framework {
-
-
-#if 0
-namespace detail {
-
-class mix_policy_base {
-public:
-  virtual ~mix_policy_base()
-  {
-  }
-};
-
-// interface
-class model_mixer_base {
-public:
-  virtual ~model_mixer_base() {}
-};
-
-class model_diff_mixer_base : public model_mixer_base {
-public:
-  virtual ~model_diff_mixer_base() {}
-
-  virtual common::mprpc::byte_buffer get_diff() const = 0;
-  virtual void put_diff(const common::mprpc::byte_buffer& buf) = 0;
-  virtual common::mprpc::byte_buffer mixed_raw_data(const msgpack::object& obj) = 0;
-  virtual void mix(const common::mprpc::byte_buffer& lhs_buf, const common::mprpc::byte_buffer& rhs_buf, common::mprpc::byte_buffer& mixed) const = 0;
-  virtual void mix(const msgpack::object& lhs, const common::mprpc::byte_buffer& rhs_buf, common::mprpc::byte_buffer& mixed) const = 0;
-
-  //virtual mixable0* mixable() const = 0;
-};
-
-class strategy_bundler_base {
-public:
-  virtual ~strategy_bundler_base() {}
-};
-
-class mix_diff_policy : public mix_policy_base {
-public:
-  typedef model_diff_mixer_base mixer_base_type;
-  typedef std::vector<pfi::lang::shared_ptr<mix_diff_policy> > base_list_type;
-
-  mix_diff_policy() {}
-  ~mix_diff_policy() {}
-  virtual void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::sbuffer& mixed) = 0;
-  virtual void get_diff(msgpack::sbuffer& pk) = 0;
-  virtual void put_diff(const msgpack::object& diff_obj) = 0;
-  virtual mixable0* mixable() const = 0;
-};
-
-template <class M>
-class mix_diff_impl : public mix_diff_policy {
-public:
-  mix_diff_impl(M& m)
-    : m_(m)
-  {
-  }
-
-  void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::sbuffer& mixed) {
-    typename M::diff_type lhs_diff, rhs_diff, m;
-    lhs.convert(&lhs_diff);
-    rhs.convert(&rhs_diff);
-    m_.mix_impl(lhs_diff, rhs_diff, m);
-
-    // output packed data
-    msgpack::pack(mixed, m);
-  }
-
-  void get_diff(msgpack::sbuffer& pk) {
-    msgpack::pack(pk, m_.get_diff_impl());
-  }
-
-  void put_diff(const msgpack::object& diff_obj) {
-    typename M::diff_type diff;
-    diff_obj.convert(&diff);
-    m_.put_diff_impl(diff);
-  }
-
-  mixable0* mixable() const {
-    return &m_;
-  }
-
-protected:
-  M& m_;
-};
-
-
-
-template <class T,  // CRTP
-         class P,  // mix policy
-         class B,  // mix base class
-         template <class> class S > // mix_impl with <Model>
-class strategy_bundler : public B {
-public:
-  typedef P impl_base_type;
-  typedef typename P::base_list_type mix_func_list;
-
-  template <class Strategy>
-  bool is_mix() const {
-    return dynamic_cast<Strategy*>(this);
-  }
-
-  // factory method
-  template <class M1> // M1 = mixable
-  static pfi::lang::shared_ptr<T> create(M1& m1)
-  {
-    mix_func_list m;
-    m.push_back(pfi::lang::shared_ptr<impl_base_type>(new S<M1>(m1)));
-    return pfi::lang::shared_ptr<T>(new T(m));
-  }
-
-  template <class M1, class M2>
-  static pfi::lang::shared_ptr<T> create(M1& m1, M2& m2)
-  {
-    mix_func_list m;
-    m.push_back(pfi::lang::shared_ptr<impl_base_type>(new S<M1>(m1)));
-    m.push_back(pfi::lang::shared_ptr<impl_base_type>(new S<M2>(m2)));
-    return pfi::lang::shared_ptr<T>(new T(m));
-  }
-
-  template <class M1, class M2, class M3>
-  static pfi::lang::shared_ptr<T> create(M1& m1, M2& m2, M3& m3)
-  {
-    mix_func_list m;
-    m.push_back(pfi::lang::shared_ptr<impl_base_type>(new S<M1>(m1)));
-    m.push_back(pfi::lang::shared_ptr<impl_base_type>(new S<M2>(m2)));
-    m.push_back(pfi::lang::shared_ptr<impl_base_type>(new S<M3>(m3)));
-    return pfi::lang::shared_ptr<T>(new T(m));
-  }
-
-  // basic functions
-  void save(std::ostream & ofs)
-  {
-    for (size_t i = 0, size = m_.size(); i < size; ++i) {
-      m_[i]->mixable()->save(ofs);
-    }
-  }
-
-  void load(std::istream & ifs)
-  {
-    for (size_t i = 0, size = m_.size(); i < size; ++i) {
-      m_[i]->mixable()->clear();
-      m_[i]->mixable()->load(ifs);
-    }
-  }
-
-  void clear()
-  {
-    for (size_t i = 0, size = m_.size(); i < size; ++i) {
-      m_[i]->mixable()->clear();
-    }
-  }
-
-  strategy_bundler(const mix_func_list& m)
-    : m_(m)
-  {
-  }
-
-protected:
-  mix_func_list m_;
-};
-
-
-} // detail
-#endif
 
 template <class T, class B>
 class factory : public B {
 public:
   typedef typename B::mix_impl_base_type impl_base_type;;
   typedef typename B::mix_impl_base_type::base_list_type mix_func_list;;
-  //typedef std::vector<pfi::lang::shared_ptr<impl_base_type> > mix_func_list;
 
   // factory method
   template <class M1> // M1 = template diff_mixable
@@ -231,14 +65,14 @@ public:
   {
   }
 
-  void save(std::ostream & ofs)
+  void save(std::ostream& ofs)
   {
     for (size_t i = 0, size = m_.size(); i < size; ++i) {
       m_[i]->get_mixable()->save(ofs);
     }
   }
 
-  void load(std::istream & ifs)
+  void load(std::istream& ifs)
   {
     for (size_t i = 0, size = m_.size(); i < size; ++i) {
       m_[i]->get_mixable()->clear();

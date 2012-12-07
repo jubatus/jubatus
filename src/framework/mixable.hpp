@@ -70,47 +70,6 @@ protected:
 };
 
 
-#if 0
-// strategy: diff
-template <typename Model, typename Diff>
-class mixable : public mixable0 {
- public:
-  typedef Model model_type;
-  typedef Diff diff_type;
-  typedef common::cshared_ptr<Model> model_ptr;
-
-  virtual ~mixable() {}
-
-  virtual void clear() = 0;
-
-  virtual Diff get_diff_impl() const = 0;
-  virtual void put_diff_impl(const Diff&) = 0;
-  virtual void mix_impl(const Diff&, const Diff&, Diff&) const = 0;
-
-  // TODO:
-  // mix_diff_policy create_diff_policy()
-  // {
-  //    
-  // }
-
-  void set_model(model_ptr m){
-    model_ = m;
-  }
-
-  void save(std::ostream & os){
-    model_->save(os);
-  }
-
-  void load(std::istream & is){
-    model_->load(is);
-  }
-
-  model_ptr get_model() const { return model_; }
-
-private:
-  model_ptr model_;
-};
-#endif
 
 
 } // framework

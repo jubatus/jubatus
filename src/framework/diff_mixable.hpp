@@ -36,8 +36,8 @@ public:
 
     mix_impl_base_type() {}
     ~mix_impl_base_type() {}
-    virtual void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::sbuffer& mixed) = 0;
-    virtual void get_diff(msgpack::sbuffer& pk) = 0;
+    virtual void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::sbuffer& mixed) const = 0;
+    virtual void get_diff(msgpack::sbuffer& pk) const = 0;
     virtual void put_diff(const msgpack::object& diff_obj) = 0;
     virtual mixable0* get_mixable() const = 0;
   };
@@ -86,7 +86,7 @@ protected:
     {
     }
 
-    void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::sbuffer& mixed) {
+    void mix(const msgpack::object& lhs, const msgpack::object& rhs, msgpack::sbuffer& mixed) const {
       diff_type lhs_diff, rhs_diff, m;
       lhs.convert(&lhs_diff);
       rhs.convert(&rhs_diff);
@@ -96,7 +96,7 @@ protected:
       msgpack::pack(mixed, m);
     }
 
-    void get_diff(msgpack::sbuffer& pk) {
+    void get_diff(msgpack::sbuffer& pk) const {
       msgpack::pack(pk, m_.get_diff_impl());
     }
 
