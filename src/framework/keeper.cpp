@@ -69,10 +69,12 @@ int keeper::run()
     LOG(FATAL) << e.diagnostic_information(true);
   } catch( mp::system_error &e ) {
     if ( e.code == EADDRINUSE )
-      LOG(FATAL) << "failed starting server: any process using port " << a_.port << "?";
+      LOG(FATAL) << "server failed to start: any process using port " << a_.port << "?";
     else
+      LOG(FATAL) << "server failed to start";
       LOG(FATAL) << e.what();
   } catch( std::exception &e ) {
+    LOG(FATAL) << "server failed to start";
     LOG(FATAL) << e.what();
   }
   return -1;
