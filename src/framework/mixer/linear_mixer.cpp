@@ -234,7 +234,7 @@ void linear_mixer::mix() {
 }
 
 vector<byte_buffer> linear_mixer::get_diff(int) {
-  scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
+  scoped_rlock lk_read(mixable_holder_->rw_mutex());
   scoped_lock lk(m_);
 
   mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
@@ -250,7 +250,7 @@ vector<byte_buffer> linear_mixer::get_diff(int) {
 }
 
 int linear_mixer::put_diff(const std::vector<common::mprpc::byte_buffer>& unpacked) {
-  scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
+  scoped_wlock lk_write(mixable_holder_->rw_mutex());
   scoped_lock lk(m_);
 
   mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();

@@ -136,10 +136,10 @@ private:
 }
 
 #define JRLOCK__(p) \
-  ::pfi::concurrent::scoped_lock lk(::pfi::concurrent::rlock((p)->rw_mutex()))
+  ::pfi::concurrent::scoped_rlock lk((p)->rw_mutex())
 
 #define JWLOCK__(p) \
-  ::pfi::concurrent::scoped_lock lk(::pfi::concurrent::wlock((p)->rw_mutex())); \
+  ::pfi::concurrent::scoped_wlock lk((p)->rw_mutex()); \
   (p)->server()->event_model_updated()
 
 #define NOLOCK__(p)
