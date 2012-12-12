@@ -39,6 +39,8 @@ using std::string;
 using std::cout;
 using std::endl;
 using std::vector;
+using namespace pfi::text::json;
+
 void usage();
 void set_config(const string&, const string&, const string&, const string&);
 void get_config(const string&, const string&, const string&);
@@ -93,15 +95,10 @@ void set_config(const string& zkhosts,
     (jubatus::common::create_lock_service("zk", zkhosts, 10, "test.log"));
 
   jubatus::common::prepare_jubatus(*ls_, type, "");
-  std::ifstream ifc(configfile.c_str());
-  std::stringstream ss;
-  ss << ifc.rdbuf();
-  string config_str = ss.str();
 
-  if (!ifc){
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't read config file."));
-  }
-  jubatus::common::setconfig_tozk(*ls_, type, name, config_str);
+  json config;
+  jubatus::common::config_fromlocal(configfile, config);
+  jubatus::common::config_tozk(*ls_, type, name, config);
 
 }
 
@@ -110,9 +107,9 @@ void get_config(const string& zkhosts,
   pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
     (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
-  string config_str;
-  jubatus::common::getconfig_fromzk(*ls_, type, name, config_str);
-  std::cout << config_str << std::endl;
+  json config;
+  jubatus::common::config_fromzk(*ls_, type, name, config);
+  cout << pretty(config);
 }
 
 

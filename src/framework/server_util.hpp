@@ -60,6 +60,7 @@ struct server_argv {
   std::string z;
   std::string name;
   std::string tmpdir;
+  std::string config;
   std::string eth;
   int interval_sec;
   int interval_count;

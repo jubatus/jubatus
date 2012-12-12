@@ -51,6 +51,7 @@ namespace jubatus { namespace framework {
     p.add<int>("thread", 'c', "concurrency = thread number", false, 2);
     p.add<int>("timeout", 't', "time out (sec)", false, 10);
     p.add<std::string>("tmpdir", 'd', "directory to output logs", false, "/tmp");
+    p.add<std::string>("config", 'f', "config json file", false, "");
 
 #ifdef HAVE_ZOOKEEPER_H
     p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
@@ -76,6 +77,7 @@ namespace jubatus { namespace framework {
     timeout = p.get<int>("timeout");
     program_name = jubatus::util::get_program_name();
     tmpdir = p.get<std::string>("tmpdir");
+    config = p.get<std::string>("config");
 
     //    eth = "localhost";
     eth = jubatus::common::get_default_v4_address();
@@ -98,6 +100,10 @@ namespace jubatus { namespace framework {
       throw JUBATUS_EXCEPTION(argv_error("can't start multinode mode without name specified"));
     }
     
+    if(z != "" and config != ""){
+      throw JUBATUS_EXCEPTION(argv_error("can't load from local setting in multinode mode"));
+    }
+
     LOG(INFO) << boot_message(jubatus::util::get_program_name());
   };
 
