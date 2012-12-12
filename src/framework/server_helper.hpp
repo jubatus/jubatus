@@ -134,11 +134,14 @@ public:
       serv.serv(a.port, a.bind_address, a.threadnum);
       return 0;
     } catch( mp::system_error &e ) {
-      if ( e.code == EADDRINUSE )
-        LOG(FATAL) << "failed starting server: any process using port " << a.port << "?";
-      else
+      if ( e.code == EADDRINUSE ) {
+        LOG(FATAL) << "server failed to start: any process using port " << a.port << "?";
+      } else {
+        LOG(FATAL) << "server failed to start";
         LOG(FATAL) << e.what();
+      }
     } catch( std::exception &e ) {
+      LOG(FATAL) << "server failed to start";
       LOG(FATAL) << e.what();
     }
     return -1;
