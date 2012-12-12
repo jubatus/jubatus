@@ -32,7 +32,7 @@ namespace jubatus {
 namespace common {
 
 
-void config_fromlocal(const string& path, json& config)
+void config_fromlocal(const string& path, string& config)
 {
   ifstream ifc(path.c_str());
   if (!ifc){
@@ -44,7 +44,7 @@ void config_fromlocal(const string& path, json& config)
 #ifdef HAVE_ZOOKEEPER_H
 void config_fromzk(lock_service& z,
                     const string& type, const string& name,
-                    json& config)
+                    string& config)
 {
   bool success = true;
   string path;
@@ -55,11 +55,7 @@ void config_fromzk(lock_service& z,
   common::lock_service_mutex zlk(z, path);
   while(!zlk.try_lock()){ ; }
 
-  string str_config;
-  success = z.read(path, str_config) && success;
-  stringstream ss;
-  ss << str_config;
-  ss >> config;
+  success = z.read(path, config) && success;
 
   if (!success)
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get config from zookeeper")
@@ -68,7 +64,7 @@ void config_fromzk(lock_service& z,
 
 void config_tozk(lock_service& z,
                     const string& type, const string& name,
-                    json& config)
+                    string& config)
 {
   bool success = true;
   string path;
@@ -78,9 +74,7 @@ void config_tozk(lock_service& z,
   common::lock_service_mutex zlk(z, path);
   while(!zlk.try_lock()){ ; }
 
-  stringstream str_config;
-  str_config << config;
-  success = z.create(path, str_config.str()) && success;
+  success = z.create(path, config) && success;
   
   if (!success)
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to set config to zookeeper")

@@ -27,10 +27,10 @@
 namespace jubatus {
 namespace common {
 
-void config_fromlocal(const std::string&, pfi::text::json::json&);
+void config_fromlocal(const std::string&, std::string&);
 #ifdef HAVE_ZOOKEEPER_H
-void config_fromzk(lock_service& , const std::string& , const std::string& , pfi::text::json::json&);
-void config_tozk(lock_service& , const std::string& , const std::string& , pfi::text::json::json&);
+void config_fromzk(lock_service& , const std::string& , const std::string& , std::string&);
+void config_tozk(lock_service& , const std::string& , const std::string& , std::string&);
 #endif
 
 } // common

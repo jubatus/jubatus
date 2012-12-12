@@ -37,9 +37,7 @@ TEST(config, setconfig_zk) {
   std::string name_, path, string, dat;
   engine_name = "test";
   name_ = "test_name";
-  json config;
-  config_str >> config;
-
+  std::string config = config_str.str();
 
   jubatus::common::prepare_jubatus(*zk_, engine_name, name_);
   jubatus::common::config_tozk(*zk_, engine_name, name_, config);

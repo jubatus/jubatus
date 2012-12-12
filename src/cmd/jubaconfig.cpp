@@ -39,7 +39,6 @@ using std::string;
 using std::cout;
 using std::endl;
 using std::vector;
-using namespace pfi::text::json;
 
 void usage();
 void set_config(const string&, const string&, const string&, const string&);
@@ -96,7 +95,7 @@ void set_config(const string& zkhosts,
 
   jubatus::common::prepare_jubatus(*ls_, type, "");
 
-  json config;
+  string config;
   jubatus::common::config_fromlocal(configfile, config);
   jubatus::common::config_tozk(*ls_, type, name, config);
 
@@ -107,9 +106,9 @@ void get_config(const string& zkhosts,
   pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
     (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
-  json config;
+  string config;
   jubatus::common::config_fromzk(*ls_, type, name, config);
-  cout << pretty(config);
+  cout << config;
 }
 
 
