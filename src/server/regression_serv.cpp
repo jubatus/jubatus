@@ -71,6 +71,7 @@ regression_serv::regression_serv(const framework::server_argv& a,
   mixer_->set_mixable_holder(mixable_holder_);
   mixable_holder_->register_mixable(&gresser_);
   mixable_holder_->register_mixable(&wm_);
+  set_config(a.config);
 }
 
 regression_serv::~regression_serv() {

@@ -40,7 +40,7 @@ namespace {
     pid_t child_;
 
     regression_test(){
-      child_ = fork_process("regression", PORT);
+      child_ = fork_process("regression", PORT, "./test_input/config.regression.json");
     };
     virtual ~regression_test(){
       kill_process(child_);
@@ -48,7 +48,7 @@ namespace {
     virtual void restart_process(){
 
       kill_process(this->child_);
-      this->child_ = fork_process("regression");
+      this->child_ = fork_process("regression", PORT, "./test_input/config.regression.json");
     };
   };
 
@@ -89,9 +89,9 @@ string make_simple_config(const string& method) {
 void my_test(const char* meth, const char* stor){ 
   client::regression r("localhost", PORT, 10);
   const size_t example_size = 1000;
-  string c = make_simple_config(meth);
+  //string c = make_simple_config(meth);
 
-  r.set_config(NAME, c);
+  //r.set_config(NAME, c);
 
   vector<pair<float, datum> > data;
   make_random_data(data, example_size);
@@ -134,10 +134,6 @@ TEST_F(regression_test, small) {
 
   client::regression c("localhost", PORT, 10);
   
-  cout << "set_config" << endl;
-  string conf = make_simple_config("PA");
-  c.set_config("test", conf);
-
   cout << "train" << endl;
   vector<pair<float, datum> > data;
   datum d;
