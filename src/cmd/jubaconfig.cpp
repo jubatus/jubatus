@@ -91,7 +91,7 @@ int main(int args, char** argv) try {
 void set_config(const string& zkhosts, 
                 const string& type, const string& name, const string& configfile){
   pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
-    (jubatus::common::create_lock_service("zk", zkhosts, 10, "test.log"));
+    (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
   jubatus::common::prepare_jubatus(*ls_, type, "");
 
