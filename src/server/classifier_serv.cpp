@@ -130,6 +130,7 @@ int classifier_serv::train(const vector<pair<string, jubatus::datum> >& data) {
     sort_and_merge(v);
 
     classifier_->train(v, data[i].first);
+    DLOG(INFO) << "trained: " << data[i].first;
     count++;
   }
   // FIXME: send count incrementation to mixer
@@ -159,7 +160,7 @@ classifier_serv::classify(const vector<jubatus::datum>& data) const {
       e.prob = p->score;
       r.push_back(e);
       if (!isfinite(p->score)) {
-        LOG(WARNING) << p->label << ":" << p->score;
+        LOG(WARNING) << "score is infinite: " << p->label << " = " << p->score;
       }
     }
     ret.push_back(r);

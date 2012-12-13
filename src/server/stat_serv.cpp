@@ -84,6 +84,7 @@ string stat_serv::get_config() const {
 
 bool stat_serv::push(const std::string& key, double value) {
   stat_.get_model()->push(key,value);
+  DLOG(INFO) << "pushed: " << key;
   return true;
 }
 
