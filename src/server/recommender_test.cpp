@@ -39,14 +39,22 @@ namespace {
     };
   };
 
-config_data make_simple_config(const string& method) {
-  config_data c;
-  c.method = method;
+std::string make_simple_config(const string& method) {
+  pfi::text::json::json js(new pfi::text::json::json_object());
+  js["method"] = pfi::text::json::json(new pfi::text::json::json_string(method));  
   jubatus::fv_converter::converter_config config;
   jubatus::fv_converter::num_rule rule = { "*", "num" };
   config.num_rules.push_back(rule);
-  c.converter = config_to_string(config);
-  return c;
+  std::stringstream conv;
+  conv << config_to_string(config);
+  pfi::text::json::json jsc;
+  conv >> jsc;
+  js["converter"] = jsc;
+
+  std::stringstream ret;
+  ret << pfi::text::json::pretty(js);
+
+  return ret.str();
 }
 
 TEST_F(recommender_test, get_status){
@@ -63,7 +71,7 @@ TEST_F(recommender_test, small) {
 
   jubatus::client::recommender c("localhost", PORT, 10);
   
-  jubatus::config_data conf = make_simple_config("lsh");
+  string conf = make_simple_config("lsh");
   c.set_config(NAME, conf);
 
   jubatus::datum d;

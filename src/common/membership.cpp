@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <pficommon/lang/cast.h>
+#include <glog/logging.h>
 
 using namespace std;
 using namespace pfi::lang;
@@ -79,6 +80,8 @@ void register_actor(lock_service& z,
     string path1;
     build_existence_path(path, ip, port, path1);
     success = z.create(path1, "", true) && success;
+    if (success)
+      LOG(INFO) << "actor created: " << path1;
   }
 
   if (!success)
@@ -102,6 +105,8 @@ void register_keeper(lock_service& z, const string& type, const string& ip, int 
     string path1;
     build_existence_path(path, ip, port, path1);
     success = z.create(path1, "", true) && success;
+    if (success)
+      LOG(INFO) << "keeper created: " << path1;
   }
 
   if (!success)

@@ -19,12 +19,12 @@ public:
   regression(const std::string &host, uint64_t port, double timeout_sec)
     : rpc_client(host, port, timeout_sec) {}
 
-    bool set_config(std::string name, config_data c) {
-      return call<bool(std::string, config_data)>("set_config")(name, c);
+    bool set_config(std::string name, std::string conf) {
+      return call<bool(std::string, std::string)>("set_config")(name, conf);
     }
 
-    config_data get_config(std::string name) {
-      return call<config_data(std::string)>("get_config")(name);
+    std::string get_config(std::string name) {
+      return call<std::string(std::string)>("get_config")(name);
     }
 
     int32_t train(std::string name, std::vector<std::pair<float, datum > > train_data) {

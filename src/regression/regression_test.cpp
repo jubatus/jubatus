@@ -41,7 +41,7 @@ sfv_t convert(vector<double>& v) {
   return fv;
 }
 
-void random_test(regression_base& p, float x, float y, size_t dim) {
+void random_test(regression::regression_base& p, float x, float y, size_t dim) {
   pfi::math::random::mtrand rand(0);
   // learn with 1000 random data
   for (size_t i = 0; i < 1000; ++i) {

@@ -18,12 +18,15 @@
 
 #include <string>
 
+#include <pficommon/text/json.h>
+
 namespace jubatus {
 namespace recommender {
 
 class recommender_base;
 
-recommender_base* create_recommender(const std::string& name);
+recommender_base* create_recommender(const std::string& name,
+                                     const pfi::text::json::json& param);
 
 }
 }

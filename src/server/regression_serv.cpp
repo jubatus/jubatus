@@ -22,6 +22,7 @@
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../fv_converter/converter_config.hpp"
 #include "../storage/storage_factory.hpp"
 
 using namespace std;
@@ -66,25 +67,32 @@ void regression_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-int regression_serv::set_config(const config_data& config) {
-  DLOG(INFO) << __func__;
+int regression_serv::set_config(const string& config) {
+  LOG(INFO) << __func__;
+
+  std::string fv_config = "";
+  std::string method;
+
+  fv_config = jubatus::util::get_json(config, "converter");
+  method = jubatus::util::get_jsonstring(config, "method");
 
   shared_ptr<datum_to_fv_converter> converter
-      = framework::make_fv_converter(config.config);
+      = fv_converter::make_fv_converter(fv_config);
 
   config_ = config;
   converter_ = converter;
   (*converter_).set_weight_manager(wm_.get_model());
 
-  regression_.reset(regression_factory().create_regression(config.method, gresser_.get_model().get()));
+  // TODO: use param
+  pfi::text::json::json param;
+  regression_.reset(jubatus::regression::regression_factory().create_regression(method, param, gresser_.get_model().get()));
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
   return 0;
 }
 
-config_data regression_serv::get_config() {
-  DLOG(INFO) << __func__;
+string regression_serv::get_config() {
   check_set_config();
   return config_;
 }

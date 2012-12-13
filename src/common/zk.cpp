@@ -106,6 +106,7 @@ bool zk::create(const string& path, const string& payload, bool ephemeral)
     }
   }
 
+  DLOG(INFO) << __func__ << " " << path;
   return true;
 }
 
@@ -118,11 +119,12 @@ bool zk::create_seq(const string& path, string& seqfile)
                       ZOO_EPHEMERAL|ZOO_SEQUENCE, path_buffer, path.size()+16);
   seqfile = "";
   if (rc != ZOK) {
-    LOG(ERROR) << path << " failed in creation - " << zerror(rc);
+    LOG(ERROR) << path << " failed in creation:" << zerror(rc);
     return false;
 
   } else {
     seqfile = path_buffer;
+    DLOG(INFO) << __func__ << " " << seqfile;
     return true;
   }
 }
@@ -139,6 +141,7 @@ bool zk::create_id(const string& path, uint32_t prefix, uint64_t& res)
   }
 
   res = (static_cast<uint64_t>(prefix) << 32) | st.version;
+  DLOG(INFO) << __func__ << " " << path;
   return true;
 }
 
@@ -151,6 +154,7 @@ bool zk::remove(const string& path)
     return false;
   }
 
+  DLOG(INFO) << __func__ << " " << path;
   return true;
 }
 

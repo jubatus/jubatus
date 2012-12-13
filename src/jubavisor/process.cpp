@@ -96,6 +96,7 @@ bool process::spawn_link(int p){
         "-c", lexical_cast<std::string>(server_option_.threadnum),
         "-t", lexical_cast<std::string>(server_option_.timeout),
         "-d", server_option_.tmpdir,
+        "-l", server_option_.logdir,
         "-s", lexical_cast<std::string,int>(server_option_.interval_sec),
         "-i", lexical_cast<std::string,int>(server_option_.interval_count),
         };

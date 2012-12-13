@@ -19,7 +19,7 @@
 using namespace std;
 
 namespace jubatus{
-
+namespace classifier{
 
 perceptron::perceptron(storage::storage_base* storage): classifier_base(storage)
 {
@@ -38,5 +38,6 @@ string perceptron::name() const
 {
   return string("perceptron");
 }
-  
+
+}  
 }

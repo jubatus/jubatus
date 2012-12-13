@@ -5,6 +5,7 @@
 
 #include "recommender_serv.hpp"
 #include "../fv_converter/converter_config.hpp"
+#include "test_util.hpp"
 
 using namespace std;
 
@@ -23,13 +24,20 @@ datum make_datum(const string& s) {
 TEST(recommender_serv, feature_vector_weight) {
   framework::server_argv arg;
   recommender_serv s(arg, common::cshared_ptr<common::lock_service>());
-  config_data conf;
-  conf.method = "inverted_index";
-  fv_converter::converter_config config;
+  pfi::text::json::json js(new pfi::text::json::json_object());
+  js["method"] = pfi::text::json::json(new pfi::text::json::json_string("inverted_index"));  
+  jubatus::fv_converter::converter_config config;
   fv_converter::string_rule r = {"*", "space", "bin", "idf"};
   config.string_rules.push_back(r);
-  conf.converter = lexical_cast<string>(to_json(config));
-  s.set_config(conf);
+  std::stringstream conv;
+  conv << config_to_string(config);
+  pfi::text::json::json jsc;
+  conv >> jsc;
+  js["converter"] = jsc;
+  std::stringstream ret;
+  ret << pfi::text::json::pretty(js);
+
+  s.set_config(ret.str());
 
   // v1 = (1, 1, 0, 0)
   // v2 = (1, 0, 1, 1)

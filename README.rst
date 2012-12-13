@@ -10,7 +10,7 @@ QuickStart
 
 Jubatus officially supports Ubuntu >= 12.04 , Red Hat Enterprise Linux >= 6.2 . On other platforms, some may work if they have gcc >= 4.4 .
 
-For minimal standalone mode, Jubatus requires libevent >= 1.4 , pficommon >= 1.3.1 (commit 10b1ba95628b0078984d12300f9a9deb94470952 or later), google-glog , libmsgpack, python >= 2.6 . Please install these software with headers before installation.
+For minimal standalone mode, Jubatus requires libevent >= 1.4 , pficommon >= 1.3.1 (commit 8fde51454af897cc971bab9033e217ff83b12f78 or later), google-glog , libmsgpack, python >= 2.6 . Please install these software with headers before installation.
 
 ::
 
@@ -31,15 +31,18 @@ LGPL 2.1
 Update history
 --------------
 
-Preparing Release 0.3.4
+Release 0.3.4 2012/11/26
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Improvements
+  - Add --logdir option
+  - Add --enable-debug option to configure (#130)
+  - Catch bad cast of fv_converter (#170)
 
 Bugfix
   - Plugin basename specification does not work correctly (#57)
   - MIX put_diff/get_diff and update/analyze RPC can be executed on the same time (#171)
-  - #155
+  - #121, #131, #136, #150, #155, #156, #157, #160, #163, #165, #167, #172, #179, #180
 
 Release 0.3.3 2012/10/29
 ~~~~~~~~~~~~~~~~~~~~~~~~

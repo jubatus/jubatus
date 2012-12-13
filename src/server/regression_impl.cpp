@@ -4,6 +4,15 @@
 #include "regression_serv.hpp"
 using namespace jubatus;
 using namespace jubatus::framework;
+#define RETURN_OR_THROW(f) try { \
+  return f; \
+} catch (const jubatus::exception::jubatus_exception& e) { \
+  LOG(WARNING) << e.diagnostic_information(true); \
+  throw; \
+} catch (const std::exception& e) { \
+  LOG(ERROR) << e.what(); \
+  throw; \
+}
 namespace jubatus { namespace server {
 class regression_impl_ : public regression<regression_impl_>
 {
@@ -13,26 +22,26 @@ public:
     p_(new server_helper<regression_serv>(a))
   {}
 
-  bool set_config(std::string name, config_data c) //update broadcast
-  { JWLOCK__(p_); return get_p()->set_config(c); }
+  bool set_config(std::string name, std::string conf) //update broadcast
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->set_config(conf)); }
 
-  config_data get_config(std::string name) //analysis random
-  { JRLOCK__(p_); return get_p()->get_config(); }
+  std::string get_config(std::string name) //analysis random
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->get_config()); }
 
   int train(std::string name, std::vector<std::pair<float,datum > > train_data) //update random
-  { JWLOCK__(p_); return get_p()->train(train_data); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->train(train_data)); }
 
   std::vector<float > estimate(std::string name, std::vector<datum > estimate_data) //analysis random
-  { JRLOCK__(p_); return get_p()->estimate(estimate_data); }
+  { JRLOCK__(p_); RETURN_OR_THROW(get_p()->estimate(estimate_data)); }
 
   bool save(std::string name, std::string arg1) //update broadcast
-  { JWLOCK__(p_); return get_p()->save(arg1); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->save(arg1)); }
 
   bool load(std::string name, std::string arg1) //update broadcast
-  { JWLOCK__(p_); return get_p()->load(arg1); }
+  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->load(arg1)); }
 
   std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
-  { JRLOCK__(p_); return p_->get_status(); }
+  { JRLOCK__(p_); RETURN_OR_THROW(p_->get_status()); }
   int run(){ return p_->start(*this); };
   common::cshared_ptr<regression_serv> get_p(){ return p_->server(); };
 private:
@@ -41,7 +50,6 @@ private:
 }} // namespace jubatus::server
 int main(int args, char** argv){
   return
-    jubatus::framework::run_server<jubatus::server::regression_impl_,
-                                   jubatus::server::regression_serv>
+    jubatus::framework::run_server<jubatus::server::regression_impl_>
        (args, argv, "regression");
 }

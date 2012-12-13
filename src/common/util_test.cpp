@@ -60,3 +60,11 @@ TEST(common, util_get_machine_status)
     jubatus::util::get_machine_status(status);
   });
 }
+
+TEST(common, util_getjson)
+{
+  std::string config = "{\"method\" : \"PA\"}";
+  EXPECT_EQ(std::string("PA"), jubatus::util::get_jsonstring(config, "method"));
+  EXPECT_EQ(std::string("PA2"), jubatus::util::get_jsonstring(config, "meth", "PA2"));
+
+}

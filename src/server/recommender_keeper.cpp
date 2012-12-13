@@ -3,13 +3,14 @@
 #include "../framework/aggregators.hpp"
 #include "../common/exception.hpp"
 #include "recommender_types.hpp"
+#include <glog/logging.h>
 using namespace jubatus;
 using namespace jubatus::framework;
 int main(int args, char** argv){
   try{
     keeper k(keeper_argv(args,argv,"recommender"));
-    k.register_broadcast<bool, config_data >("set_config", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
-    k.register_random<config_data >("get_config"); //pass analysis
+    k.register_broadcast<bool, std::string >("set_config", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+    k.register_random<std::string >("get_config"); //pass analysis
     k.register_cht<2, bool >("clear_row", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_cht<2, bool, datum >("update_row", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_broadcast<bool >("clear", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
@@ -26,7 +27,7 @@ int main(int args, char** argv){
     k.register_broadcast<std::map<std::string,std::map<std::string,std::string > > >("get_status", pfi::lang::function<std::map<std::string,std::map<std::string,std::string > >(std::map<std::string,std::map<std::string,std::string > >,std::map<std::string,std::map<std::string,std::string > >)>(&merge<std::string,std::map<std::string,std::string > >)); //analysis
     return k.run();
   } catch (const jubatus::exception::jubatus_exception& e) {
-    std::cout << e.diagnostic_information(true) << std::endl;
+    LOG(FATAL) << e.diagnostic_information(true);
     return -1;
   }
 }

@@ -90,6 +90,7 @@ let generate s output strees =
   end;
   
   output <<< ("#include \""^s#basename^"_types.hpp\"");
+  output <<< "#include <glog/logging.h>";
   output <<< ("using namespace "^s#namespace^";");
   output <<< "using namespace jubatus::framework;";
   output <<< "int main(int args, char** argv){";
@@ -102,7 +103,7 @@ let generate s output strees =
 
   output <<< "    return k.run();";
   output <<< "  } catch (const jubatus::exception::jubatus_exception& e) {";
-  output <<< "    std::cout << e.diagnostic_information(true) << std::endl;";
+  output <<< "    LOG(FATAL) << e.diagnostic_information(true);";
   output <<< "    return -1;";
   output <<< "  }";
   output <<< "}";;

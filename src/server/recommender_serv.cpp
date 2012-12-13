@@ -60,9 +60,13 @@ void recommender_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-int recommender_serv::set_config(config_data config) {
+int recommender_serv::set_config(std::string config) {
+  LOG(INFO) << __func__;
+  std::string fv_config;
+  fv_config = jubatus::util::get_json(config, "converter");
+
   shared_ptr<fv_converter::datum_to_fv_converter> converter
-      = framework::make_fv_converter(config.converter);
+      = fv_converter::make_fv_converter(fv_config);
   config_ = config;
   converter_ = converter;
   rcmdr_.set_model(make_model());
@@ -70,7 +74,7 @@ int recommender_serv::set_config(config_data config) {
   return 0;
 }
   
-config_data recommender_serv::get_config() {
+string recommender_serv::get_config() {
   check_set_config();
   return config_;
 }
@@ -96,6 +100,7 @@ int recommender_serv::update_row(std::string id,datum dat) {
 }
 
 int recommender_serv::clear() {
+  LOG(INFO) << __func__;
   check_set_config();
   clear_row_cnt_ = 0;
   update_row_cnt_ = 0;
@@ -106,8 +111,13 @@ int recommender_serv::clear() {
 }
 
 common::cshared_ptr<recommender::recommender_base> recommender_serv::make_model() {
+  // TODO: set param
+  pfi::text::json::json param;
+  std::string method;
+  method = jubatus::util::get_jsonstring((std::string)config_, "method");
+
   return cshared_ptr<recommender::recommender_base>
-    (recommender::create_recommender(config_.method));
+    (recommender::create_recommender(method, param));
 }  
 
 datum recommender_serv::complete_row_from_id(std::string id) {
