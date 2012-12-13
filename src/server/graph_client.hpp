@@ -7,7 +7,7 @@
 
 
 #include "graph_types.hpp"
-#include <msgpack/rpc/client.h>
+#include <jubatus/msgpack/rpc/client.h>
 
 
 namespace jubatus {

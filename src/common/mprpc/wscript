@@ -9,7 +9,7 @@ def build(bld):
   bld.shlib(
     source = src,
     target = 'jubacommon_mprpc',
-    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT LIBEVENT MPIO MSGPACK-RPC MSGPACK jubacommon'
+    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT LIBEVENT JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK jubacommon'
     )
 
   bld.program(
@@ -17,7 +17,7 @@ def build(bld):
     source = 'rpc_client_test.cpp',
     target = 'rpc_client_test',
     includes = '.',
-    use = 'PFICOMMON MPIO MSGPACK-RPC MSGPACK jubacommon jubacommon_mprpc',
+    use = 'PFICOMMON JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK jubacommon jubacommon_mprpc',
     )
 
   bld.install_files('${PREFIX}/include/jubatus/common/mprpc', bld.path.ant_glob('*.hpp'))

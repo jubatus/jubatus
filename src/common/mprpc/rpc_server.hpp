@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <msgpack/rpc/server.h>
+#include <jubatus/msgpack/rpc/server.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/function.h>
 

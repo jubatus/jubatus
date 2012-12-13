@@ -32,7 +32,7 @@
 #include <glog/logging.h>
 
 #include <msgpack.hpp>
-#include <msgpack/rpc/client.h>
+#include <jubatus/msgpack/rpc/client.h>
 #include "../common/mprpc/rpc_mclient.hpp"
 #include "../common/mprpc/rpc_server.hpp"
 #include "../common/mprpc/exception.hpp"

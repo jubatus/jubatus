@@ -25,8 +25,8 @@
 #include <pficommon/lang/noncopyable.h>
 
 #include <msgpack.hpp>
-#include <msgpack/rpc/client.h>
-#include <msgpack/rpc/session_pool.h>
+#include <jubatus/msgpack/rpc/client.h>
+#include <jubatus/msgpack/rpc/session_pool.h>
 
 #include "rpc_error.hpp"
 #include "rpc_result.hpp"
