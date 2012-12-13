@@ -38,7 +38,9 @@ void config_fromlocal(const string& path, string& config)
   if (!ifc){
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't read config file."));
   }
-  ifc >> config;
+  stringstream ss;
+  ss << ifc.rdbuf();
+  config = ss.str();
 }
 
 #ifdef HAVE_ZOOKEEPER_H
