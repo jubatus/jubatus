@@ -36,7 +36,7 @@ void config_fromlocal(const string& path, string& config)
 {
   ifstream ifc(path.c_str());
   if (!ifc){
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't read config file."));
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't read " + path + " ."));
   }
   stringstream ss;
   ss << ifc.rdbuf();

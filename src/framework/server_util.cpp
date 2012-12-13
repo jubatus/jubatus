@@ -48,7 +48,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add<int>("timeout", 't', "time out (sec)", false, 10);
   p.add<std::string>("tmpdir", 'd', "directory to save and load models", false, "/tmp");
   p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false);
-  p.add<std::string>("config", 'f', "config json file", false, "");
+  p.add<std::string>("config", 'f', "config option need to specify json file when standalone mode (without ZK mode)", false, "");
 
 #ifdef HAVE_ZOOKEEPER_H
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
