@@ -15,7 +15,7 @@ def build(bld):
       source = 'jubaconfig.cpp',
       target = 'jubaconfig',
       includes = '.',
-      use = 'MSGPACK PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon jubatus_framework'
+      use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon'
       )
 
 
