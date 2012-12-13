@@ -26,6 +26,7 @@
 #include "../common/cmdline.h"
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
+#include "../common/config.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -74,11 +75,11 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   program_name = jubatus::util::get_program_name();
   tmpdir = p.get<std::string>("tmpdir");
   logdir = p.get<std::string>("logdir");
-//TODO:  
   std::string config_path = p.get<std::string>("config");
-  if (config_path != "")
+  if (!config_path.empty()){
+    jubatus::common::config_fromlocal(config_path, config);
+  }
   
-
   //    eth = "localhost";
   eth = jubatus::common::get_default_v4_address();
 
@@ -96,12 +97,25 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   interval_count = 512;
 #endif
 
+  if(!z.empty()){
+    pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
+      (jubatus::common::create_lock_service("zk", z, 10, "/dev/null"));
+    jubatus::common::config_fromzk(*ls_, type, name, config);
+   }
+
   if(!z.empty() && name.empty()){
     std::cerr << "can't start multinode mode without name specified" << std::endl;
     std::cerr << p.usage() << std::endl;
     exit(1);
   }
-
+/*
+  TODO: remove this comment out
+  if(config.empty()){
+    std::cerr << "can't detect server config." << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
+  }
+*/
   if(p.exist("logdir")){
     set_log_destination(jubatus::util::get_program_name());
   } else {
