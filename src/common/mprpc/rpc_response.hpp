@@ -25,7 +25,7 @@ class rpc_response_t {
 public:
   rpc_response_t() {}
   rpc_response_t(msgpack::rpc::future f ) :
-    zone( f.zone().get() ) {
+    zone( f.zone().release() ) {
     response.a1 = 0 /* NOTE: dummy value */;
     response.a2 = f.error();
     response.a3 = f.result();

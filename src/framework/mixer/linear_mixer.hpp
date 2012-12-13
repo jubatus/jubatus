@@ -23,6 +23,7 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "../../common/lock_service.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
+#include "../../common/mprpc/byte_buffer.hpp"
 #include "../../common/shared_ptr.hpp"
 #include "mixer.hpp"
 
@@ -47,7 +48,7 @@ public:
   // it can throw common::mprpc exception
   virtual void get_diff(common::mprpc::rpc_result_object& result) const = 0;
   // it can throw common::mprpc exception
-  virtual void put_diff(const std::vector<std::string>& mixed) const = 0;
+  virtual void put_diff(const std::vector<common::mprpc::byte_buffer>& mixed) const = 0;
 };
 
 class linear_mixer : public mixer {
@@ -71,8 +72,8 @@ private:
 
   void clear();
 
-  std::vector<std::string> get_diff(int);
-  int put_diff(const std::vector<std::string>& unpacked);
+  std::vector<common::mprpc::byte_buffer> get_diff(int);
+  int put_diff(const std::vector<common::mprpc::byte_buffer>& unpacked);
 
   pfi::lang::shared_ptr<linear_communication> communication_;
   unsigned int count_threshold_;

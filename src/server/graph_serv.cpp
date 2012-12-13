@@ -115,7 +115,7 @@ std::string graph_serv::create_node() { /* no lock here */
       }
     }
   } else {
-    pfi::concurrent::scoped_lock lk(wlock(rw_mutex()));
+    pfi::concurrent::scoped_wlock write_lk(rw_mutex());
     this->create_node_here(nid_str);
   }
   DLOG(INFO) << "new node created: " << nid_str;
@@ -172,7 +172,7 @@ int graph_serv::create_edge(const std::string& id, const edge_info& ei) {  /* no
     }
     // TODO: assertion: nodes[0] should be myself
     {
-      pfi::concurrent::scoped_lock lk(wlock(rw_mutex()));
+      pfi::concurrent::scoped_wlock wirte_lk(rw_mutex());
       this->create_edge_here(eid, ei);
     }
     for (size_t i = 1; i < nodes.size(); ++i) {
@@ -190,7 +190,7 @@ int graph_serv::create_edge(const std::string& id, const edge_info& ei) {  /* no
       }
     }
   } else {
-    pfi::concurrent::scoped_lock lk(wlock(rw_mutex()));
+    pfi::concurrent::scoped_wlock write_lk(rw_mutex());
     this->create_edge_here(eid, ei);
   }
 
@@ -348,7 +348,7 @@ int graph_serv::create_edge_here(edge_id_t eid, const edge_info& ei) {
 void graph_serv::selective_create_node_(const std::pair<std::string,int>& target,
                                         const std::string nid_str) {
   if (target.first == argv().eth && target.second == argv().port) {
-    pfi::concurrent::scoped_lock lk(wlock(rw_mutex()));
+    pfi::concurrent::scoped_wlock write_lk(rw_mutex());
     this->create_node_here(nid_str);
   } else {
     // must not lock here

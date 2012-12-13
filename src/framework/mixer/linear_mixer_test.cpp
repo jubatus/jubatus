@@ -7,6 +7,7 @@
 
 using namespace std;
 using pfi::lang::shared_ptr;
+using jubatus::common::mprpc::byte_buffer;
 
 namespace jubatus {
 namespace framework {
@@ -14,16 +15,21 @@ namespace mixer {
 
 namespace {
 
-vector<string> make_vector(const string& s) {
-  vector<string> v;
-  v.push_back(s);
+vector<byte_buffer> make_packed_vector(const string& s) {
+  vector<byte_buffer> v;
+  // pack mix-internal
+  msgpack::sbuffer sbuf;
+  msgpack::pack(sbuf, s);
+  v.push_back(byte_buffer(sbuf.data(), sbuf.size()));
+
   return v;
 }
 
 jubatus::common::mprpc::rpc_response_t make_response(const string& s) {
   jubatus::common::mprpc::rpc_response_t res;
   res.zone = mp::shared_ptr<msgpack::zone>(new msgpack::zone);
-  res.response.a3 = msgpack::object(make_vector(s), res.zone.get());
+  res.response.a3 = msgpack::object(make_packed_vector(s), res.zone.get());
+
   return res;
 }
 
@@ -42,23 +48,30 @@ class linear_communication_stub : public linear_communication {
     result.response.push_back(make_response("4"));
   }
 
-  void put_diff(const vector<string>& mixed) const {
+  void put_diff(const vector<byte_buffer>& mixed) const {
     mixed_ = mixed;
   }
 
-  const vector<string>& get_mixed() const {
-    return mixed_;
+  const vector<string> get_mixed() const {
+    vector<string> mixed;
+    for (vector<byte_buffer>::const_iterator it = mixed_.begin(); it != mixed_.end(); ++it) {
+      // unpack mix-internal
+      msgpack::unpacked msg;
+      msgpack::unpack(&msg, it->ptr(), it->size());
+      mixed.push_back(msg.get().as<string>());
+    }
+    return mixed;
   }
 
  private:
-  mutable vector<string> mixed_;
+  mutable vector<byte_buffer> mixed_;
 };
 
-struct mixable_string : public mixable0 {
+struct mixable_string : public mixable<mixable_string, string> {
  public:
-  string get_diff() const { return string(); }
-  void put_diff(const string&) {}
-  void mix(const string& lhs, const string& rhs, string& mixed) const {
+  string get_diff_impl() const { return string(); }
+  void put_diff_impl(const string&) {}
+  void mix_impl(const string& lhs, const string& rhs, string& mixed) const {
     stringstream ss;
     ss << "(" << lhs << "+" << rhs << ")";
     mixed = ss.str();

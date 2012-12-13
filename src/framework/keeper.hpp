@@ -632,8 +632,6 @@ public:
   public:
     async_task_loop() {}
     void run() {
-      std::cout << "async_task_loop: start!: " << (void*)this << std::endl;
-
       while( true ) pool_.run_once();
     }
 

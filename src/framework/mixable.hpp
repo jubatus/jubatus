@@ -24,6 +24,7 @@
 
 #include "../common/exception.hpp"
 #include "../common/shared_ptr.hpp"
+#include "../common/mprpc/byte_buffer.hpp"
 
 namespace jubatus{
 namespace framework{
@@ -32,9 +33,10 @@ class mixable0 {
 public:
   mixable0() {}
   virtual ~mixable0() {}
-  virtual std::string get_diff() const = 0;
-  virtual void put_diff(const std::string&) = 0;
-  virtual void mix(const std::string&, const std::string&, std::string&) const = 0;
+  virtual common::mprpc::byte_buffer get_diff() const = 0;
+  virtual void put_diff(const common::mprpc::byte_buffer&) = 0;
+  virtual void mix(const common::mprpc::byte_buffer&, const common::mprpc::byte_buffer&, common::mprpc::byte_buffer&) const = 0;
+
   virtual void save(std::ostream & ofs) = 0;
   virtual void load(std::istream & ifs) = 0;
   virtual void clear() = 0;
@@ -82,9 +84,9 @@ class mixable : public mixable0 {
     model_ = m;
   }
 
-  std::string get_diff()const{
+  common::mprpc::byte_buffer get_diff()const{
     if(model_){
-      std::string buf;
+      common::mprpc::byte_buffer buf;
       pack_(get_diff_impl(), buf);
       return buf;
     }else{
@@ -92,7 +94,7 @@ class mixable : public mixable0 {
     }
   };
 
-  void put_diff(const std::string& d){
+  void put_diff(const common::mprpc::byte_buffer& d){
     if(model_){
       Diff diff;
       unpack_(d, diff);
@@ -102,13 +104,13 @@ class mixable : public mixable0 {
     }
   }
 
-  void mix(const std::string& lhs, const std::string& rhs,
-           std::string& mixed_string) const {
+  void mix(const common::mprpc::byte_buffer& lhs, const common::mprpc::byte_buffer& rhs,
+           common::mprpc::byte_buffer& mixed_buf) const {
     Diff left, right, mixed;
     unpack_(lhs, left);
     unpack_(rhs, right);
     mix_impl(left, right, mixed);
-    pack_(mixed, mixed_string);
+    pack_(mixed, mixed_buf);
   }
 
   void save(std::ostream & os){
@@ -122,16 +124,16 @@ class mixable : public mixable0 {
   model_ptr get_model() const { return model_; }
 
 private:
-  void unpack_(const std::string& buf, Diff& d) const {
+  void unpack_(const common::mprpc::byte_buffer& buf, Diff& d) const {
     msgpack::unpacked msg;
-    msgpack::unpack(&msg, buf.c_str(), buf.size());
+    msgpack::unpack(&msg, buf.ptr(), buf.size());
     msg.get().convert(&d);
   }
 
-  void pack_(const Diff& d, std::string& buf) const {
+  void pack_(const Diff& d, common::mprpc::byte_buffer& buf) const {
     msgpack::sbuffer sbuf;
     msgpack::pack(sbuf, d);
-    buf = std::string(sbuf.data(), sbuf.size());
+    buf.assign(sbuf.data(), sbuf.size());
   }
 
   model_ptr model_;
