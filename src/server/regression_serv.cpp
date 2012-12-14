@@ -79,13 +79,17 @@ regression_serv::regression_serv(const framework::server_argv& a,
   
   config_json conf;
 
-  if (!a.configpath.empty()){
-    conf.load_json(a.configpath);
-  }else{
-    conf.load_json(a.z, a.type, a.name);
+  try{
+    if (!a.configpath.empty()){
+      conf.load_json(a.configpath);
+    }else{
+      conf.load_json(a.z, a.type, a.name);
+    }
+  } catch (const jubatus::exception::jubatus_exception& e) {
+    LOG(ERROR) << e.what();
+    exit(1);
   }
 
-  //TODO conf.config be correct JSON? 
   set_config(conf.config);
 }
 
