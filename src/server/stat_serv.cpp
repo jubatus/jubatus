@@ -53,6 +53,22 @@ stat_serv::stat_serv(const server_argv& a,
 
   mixer_->set_mixable_holder(mixable_holder_);
   mixable_holder_->register_mixable(&stat_);
+
+  config_json conf_;
+
+  try{
+    if (!a.configpath.empty()){
+      conf_.load_json(a.configpath);
+    }else{
+      conf_.load_json(a.z, a.type, a.name);
+    }
+  } catch (const jubatus::exception::jubatus_exception& e) {
+    LOG(ERROR) << e.what();
+    exit(1);
+  }
+
+  set_config(conf_.config);
+
 }
 
 stat_serv::~stat_serv() {

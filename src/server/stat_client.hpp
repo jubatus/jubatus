@@ -19,10 +19,6 @@ public:
   stat(const std::string &host, uint64_t port, double timeout_sec)
     : rpc_client(host, port, timeout_sec) {}
 
-    bool set_config(std::string name, std::string conf) {
-      return call<bool(std::string, std::string)>("set_config")(name, conf);
-    }
-
     std::string get_config(std::string name) {
       return call<std::string(std::string)>("get_config")(name);
     }
