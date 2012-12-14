@@ -50,8 +50,6 @@ def configure(conf):
   conf.check_cxx(lib = 'dl')
 
   conf.check_cfg(package = 'libglog', args = '--cflags --libs')
-  if not conf.check_cfg(package = 'libevent', args = '--cflags --libs', mandatory = False):
-    conf.check_cxx(lib = 'event', uselib_store = 'LIBEVENT')
   
   conf.check_cfg(package = 'pficommon', args = '--cflags --libs')
   conf.check_cxx(header_name = 'pficommon/network/mprpc.h')
