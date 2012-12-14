@@ -48,14 +48,16 @@ void config_fromzk(lock_service& z,
                     string& config)
 {
   bool success = true;
-  string path;
-  build_config_path(path, type, name);
+  string path = jubatus::common::CONFIG_BASE_PATH;
+  path += '/' + type;
+
   success = z.exists(path) && success;
 
-//  success = z.create(path + "/config_lock", "") && success;
   common::lock_service_mutex zlk(z, path);
   while(!zlk.try_lock()){ ; }
 
+  path += '/' + name;
+  success = z.exists(path) && success;
   success = z.read(path, config) && success;
 
   if (!success)
@@ -68,15 +70,17 @@ void config_tozk(lock_service& z,
                     string& config)
 {
   bool success = true;
-  string path;
-  build_config_path(path, type, name);
+  string path = jubatus::common::CONFIG_BASE_PATH;
+  path += '/' + type;
 
-//  success = z.create(path + "/config_lock", "") && success;
   common::lock_service_mutex zlk(z, path);
   while(!zlk.try_lock()){ ; }
 
+  path += '/' + name;
+
+  // TODO: actors check
   success = z.create(path, config) && success;
-  
+
   if (!success)
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to set config to zookeeper")
         << jubatus::exception::error_api_func("lock_service::create"));

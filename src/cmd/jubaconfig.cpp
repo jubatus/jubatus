@@ -38,18 +38,21 @@ using std::endl;
 using std::vector;
 
 void usage();
-void set_config(const string&, const string&, const string&, const string&);
+void set_config(const string&, const string&, const string&, const string&, const string&);
 void get_config(const string&, const string&, const string&);
+void get_configs(const string&);
 
 int main(int args, char** argv) try {
   cmdline::parser p;
-  p.add<std::string>("file", 'f', "config file to set", false, "");
-  p.add<std::string>("type", 't', "learning machine type", true);
-  p.add<std::string>("name", 'n', "learning machine name", true);
+  p.add<std::string>("cmd", 'c', "command to operate config (write|read|delete|list)", true);
+  p.add<std::string>("file", 'f', "[write] config file to set", false, "");
+  p.add<std::string>("type", 't', "[write|read|delete] learning machine type", false, "");
+  p.add<std::string>("name", 'n', "[write|read|delete] learning machine name", false, "");
   p.add<std::string>("zookeeper", 'z', "ZooKeeper location environment: 'ZK' is available instead", false);
 
   p.add("debug", 'd', "debug mode");
   p.parse_check(args, argv);
+
   google::InitGoogleLogging(argv[0]);
   if(p.exist("debug")){
     google::LogToStderr(); // only when debug
@@ -69,33 +72,48 @@ int main(int args, char** argv) try {
     exit(1);
   }
 
-  
+  string cmd = p.get<std::string>("cmd");
+  string type = p.get<std::string>("type");
+  string name = p.get<std::string>("name");
 
-  string cf = p.get<std::string>("file");
-
-  if(cf == ""){
-    get_config(zk , p.get<std::string>("type"), p.get<std::string>("name"));
-  }
-  else{
-    set_config(zk , p.get<std::string>("type"), p.get<std::string>("name"), cf);
+  if (cmd == "write" || cmd == "delete") {
+    if (type == "" || name == "") {
+      cout << "can't excute "<< cmd << " without type and name specified" << endl;
+      cout << "type: " << type << " name: " << name << endl;
+      cout << p.usage() << endl;
+      exit(1);
+    }
+    set_config(cmd, zk, type, name, p.get<std::string>("file"));
+  } else if (cmd == "read") {
+    get_config(zk, type, name);
+  } else if (cmd == "list") {
+    //TODO: get_configs(zk);
+  } else {
+    cout << "unknown cmd: " << cmd << endl;;
+    cout << p.usage() << endl;
+    exit(1);
   }
 
   return 0;
+
 } catch (const jubatus::exception::jubatus_exception& e) {
   std::cout << e.diagnostic_information(true) << std::endl;
 }
 
-void set_config(const string& zkhosts, 
+void set_config(const string& cmd, const string& zkhosts,
                 const string& type, const string& name, const string& configfile){
   pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
     (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
-  jubatus::common::prepare_jubatus(*ls_, type, "");
-
-  string config;
-  jubatus::common::config_fromlocal(configfile, config);
-  jubatus::common::config_tozk(*ls_, type, name, config);
-
+  // TODO: count actors
+  if (cmd == "write") {
+    jubatus::common::prepare_jubatus(*ls_, type, name);
+    string config;
+    jubatus::common::config_fromlocal(configfile, config);
+    jubatus::common::config_tozk(*ls_, type, name, config);
+  } else if (cmd == "delete") {
+    // TODO: remove config!
+  }
 }
 
 void get_config(const string& zkhosts,
@@ -109,3 +127,6 @@ void get_config(const string& zkhosts,
 }
 
 
+void get_configs(const string& zkhosts){
+  // TODO: impliment
+}
