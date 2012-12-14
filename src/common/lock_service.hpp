@@ -36,6 +36,7 @@ public:
 
   virtual void force_close() = 0;
   virtual bool create(const std::string& path, const std::string& payload = "", bool ephemeral = false) = 0;
+  virtual bool set(const std::string& path, const std::string& payload = "") = 0;
   virtual bool remove(const std::string& path) = 0;
   virtual bool exists(const std::string& path) = 0;
 

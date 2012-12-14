@@ -163,7 +163,9 @@ void prepare_jubatus(lock_service& ls, const string& type, const string& name)
 
   if (name != "") {
     build_actor_path(path, type, name);
+    build_config_path(cpath, type, name);
     success = ls.create(path) && success;
+    success = ls.create(cpath) && success;
   }
 
   if (!success)

@@ -48,21 +48,22 @@ void config_fromzk(lock_service& z,
                     string& config)
 {
   bool success = true;
-  string path = jubatus::common::CONFIG_BASE_PATH;
-  path += '/' + type;
+  string path;
+  build_config_path(path, type, name);
 
   success = z.exists(path) && success;
 
   common::lock_service_mutex zlk(z, path);
   while(!zlk.try_lock()){ ; }
 
-  path += '/' + name;
-  success = z.exists(path) && success;
   success = z.read(path, config) && success;
 
   if (!success)
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get config from zookeeper")
         << jubatus::exception::error_api_func("lock_service::create"));
+
+  LOG(INFO) << "get config from zookeeper: " << type << " / " << name;
+  DLOG(INFO) << "config: " << config;
 }
 
 void config_tozk(lock_service& z,
@@ -70,20 +71,43 @@ void config_tozk(lock_service& z,
                     string& config)
 {
   bool success = true;
-  string path = jubatus::common::CONFIG_BASE_PATH;
-  path += '/' + type;
+  string path;
+  build_config_path(path, type, name);
+
+  success = z.exists(path) && success;
 
   common::lock_service_mutex zlk(z, path);
   while(!zlk.try_lock()){ ; }
 
-  path += '/' + name;
-
-  // TODO: actors check
-  success = z.create(path, config) && success;
+  success = z.set(path, config) && success;
 
   if (!success)
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to set config to zookeeper")
         << jubatus::exception::error_api_func("lock_service::create"));
+
+  LOG(INFO) << "set config to zookeeper: " << type << " / " << name;
+  DLOG(INFO) << "config: " << config;
+}
+
+void remove_config_fromzk(lock_service& z,
+                          const string& type, const string& name)
+{
+  bool success = true;
+  string path;
+  build_config_path(path, type, name);
+
+  success = z.exists(path) && success;
+
+  common::lock_service_mutex zlk(z, path);
+  while(!zlk.try_lock()){ ; }
+
+  success = z.remove(path) && success;
+
+  if (!success)
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to remove config from zookeeper")
+        << jubatus::exception::error_api_func("lock_service::remove"));
+
+  LOG(INFO) << "remove config from zookeeper: " << type << " / " << name;
 }
 #endif
 

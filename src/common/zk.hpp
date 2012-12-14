@@ -41,6 +41,7 @@ public:
 
   void force_close();
   bool create(const std::string& path, const std::string& payload = "", bool ephemeral = false);
+  bool set(const  std::string& path, const std::string& payload = "");
   bool remove(const std::string& path);
   bool exists(const std::string& path);
 

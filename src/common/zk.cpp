@@ -110,6 +110,20 @@ bool zk::create(const string& path, const string& payload, bool ephemeral)
   return true;
 }
 
+
+bool zk::set(const string& path, const string& payload)
+{
+  scoped_lock lk(m_);
+  int rc = zoo_set(zh_, path.c_str(), payload.c_str(), payload.length(), -1);
+  LOG(INFO) << rc << " " << zerror(rc);
+  if (rc != ZOK) {
+    LOG(ERROR) << path << " failed in setting " << rc << " " << zerror(rc);
+    return false;
+  }
+  DLOG(INFO) << __func__ << " " << path << " - " << payload;
+  return true;
+}
+
 // "/some/path" => "/some/path0000012"
 bool zk::create_seq(const string& path, string& seqfile)
 {
@@ -194,6 +208,8 @@ bool zk::list_(const string& path, vector<string>& out)
       out.push_back(s.data[i]); // full path => #{path}/#{s.data[i]}
     }
     std::sort(out.begin(), out.end());
+    return true;
+  } else if (rc == ZNONODE) {
     return true;
   } else {
     LOG(ERROR) << zerror(rc) << " (" << path << ")";

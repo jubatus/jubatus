@@ -38,9 +38,13 @@ using std::endl;
 using std::vector;
 
 void usage();
-void set_config(const string&, const string&, const string&, const string&, const string&);
+void set_config(const string&, const string&, const string&, const string&);
+void delete_config(const string&, const string&, const string&);
 void get_config(const string&, const string&, const string&);
 void get_configs(const string&);
+void print_config(jubatus::common::lock_service&, const string&, const string&);
+void get_all_config_paths(jubatus::common::lock_service&, std::vector<std::pair<string, string> >&);
+bool is_no_workers(jubatus::common::lock_service&, const string&, const string&);
 
 int main(int args, char** argv) try {
   cmdline::parser p;
@@ -76,18 +80,24 @@ int main(int args, char** argv) try {
   string type = p.get<std::string>("type");
   string name = p.get<std::string>("name");
 
-  if (cmd == "write" || cmd == "delete") {
+  if (cmd == "write" || cmd == "delete" || cmd == "read") {
     if (type == "" || name == "") {
       cout << "can't excute "<< cmd << " without type and name specified" << endl;
       cout << "type: " << type << " name: " << name << endl;
       cout << p.usage() << endl;
       exit(1);
     }
-    set_config(cmd, zk, type, name, p.get<std::string>("file"));
-  } else if (cmd == "read") {
-    get_config(zk, type, name);
+
+    if (cmd == "write")
+      set_config(zk, type, name, p.get<std::string>("file"));
+
+    if (cmd == "delete")
+      delete_config(zk, type, name);
+
+    if (cmd == "read")
+      get_config(zk, type, name);
   } else if (cmd == "list") {
-    //TODO: get_configs(zk);
+    get_configs(zk);
   } else {
     cout << "unknown cmd: " << cmd << endl;;
     cout << p.usage() << endl;
@@ -97,23 +107,35 @@ int main(int args, char** argv) try {
   return 0;
 
 } catch (const jubatus::exception::jubatus_exception& e) {
-  std::cout << e.diagnostic_information(true) << std::endl;
+  cout << e.diagnostic_information(true) << endl;
+  exit(1);
 }
 
-void set_config(const string& cmd, const string& zkhosts,
-                const string& type, const string& name, const string& configfile){
+void set_config(const string& zkhosts, const string& type,
+                const string& name, const string& configfile){
   pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
     (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
-  // TODO: count actors
-  if (cmd == "write") {
-    jubatus::common::prepare_jubatus(*ls_, type, name);
-    string config;
-    jubatus::common::config_fromlocal(configfile, config);
-    jubatus::common::config_tozk(*ls_, type, name, config);
-  } else if (cmd == "delete") {
-    // TODO: remove config!
+  if (!is_no_workers(*ls_, type, name)) {
+    cout << "any worker is running" << endl;
+    exit(1);
   }
+  jubatus::common::prepare_jubatus(*ls_, type, name);
+  string config;
+  jubatus::common::config_fromlocal(configfile, config);
+  jubatus::common::config_tozk(*ls_, type, name, config);
+}
+
+
+void delete_config(const string& zkhosts, const string& type, const string& name){
+  pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
+    (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+
+  if (!is_no_workers(*ls_, type, name)) {
+    cout << "any worker is running" << endl;
+    exit(1);
+  }
+  jubatus::common::remove_config_fromzk(*ls_, type, name);
 }
 
 void get_config(const string& zkhosts,
@@ -121,12 +143,59 @@ void get_config(const string& zkhosts,
   pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
     (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
+  print_config(*ls_, type, name);
+}
+
+void get_configs(const string& zkhosts) {
+  pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
+    (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+
+  std::vector<std::pair<string, string> > paths;
+  get_all_config_paths(*ls_, paths);
+
+  for(size_t i =0; i < paths.size(); i++) {
+    cout << "type: " << paths[i].first << ", name: " << paths[i].second << endl;
+    print_config(*ls_, paths[i].first, paths[i].second);
+    cout << '\n';
+  }
+
+}
+
+void print_config(jubatus::common::lock_service& z, const string& type, const string& name) {
   string config;
-  jubatus::common::config_fromzk(*ls_, type, name, config);
+  jubatus::common::config_fromzk(z, type, name, config);
   cout << config;
 }
 
+void get_all_config_paths(jubatus::common::lock_service& z,
+                          std::vector<std::pair<string, string> >& ret) {
+  ret.clear();
 
-void get_configs(const string& zkhosts){
-  // TODO: impliment
+  std::vector<std::string> types;
+  if (!z.list(jubatus::common::CONFIG_BASE_PATH, types) || types.empty())
+    return;
+
+  for(size_t i =0; i < types.size(); i++) {
+    std::vector<std::string> names;
+    std::string path;
+    path = jubatus::common::CONFIG_BASE_PATH + '/' + types[i];
+    if (!z.list(path, names) || names.empty())
+      continue;
+
+    for(size_t j =0; j < names.size(); j++) {
+      std::string config_path;
+      config_path = path + '/' + names[j];
+      ret.push_back(make_pair(types[i], names[j]));
+    }
+  }
+}
+
+bool is_no_workers(jubatus::common::lock_service& z, const string& type, const string& name){
+  std::vector<std::pair<std::string, int> > nodes;
+  jubatus::common::get_all_actors(z, type, name, nodes);
+  if (nodes.empty()) {
+    return true;
+  } else {
+    return false;
+  }
 }
