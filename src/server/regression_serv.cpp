@@ -72,7 +72,7 @@ regression_serv::regression_serv(const framework::server_argv& a,
   mixable_holder_->register_mixable(&gresser_);
   mixable_holder_->register_mixable(&wm_);
 
-  if (a.z.empty() && a.configpath.empty()){
+  if (a.is_standalone() && a.configpath.empty()){
     std::cerr << "can't detect server config." << std::endl;
     exit(1);
   }

@@ -39,10 +39,7 @@ void print_version(const std::string& progname){
 
 void config_json::load_json(const std::string& zkhosts, const std::string& type, const std::string& name)
 {
-  pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
-    (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
-
-  jubatus::common::config_fromzk(*ls_, type, name, config);
+  jubatus::common::config_fromzk(*ls, type, name, config);
 }
 
 void config_json::load_json(const std::string& filepath)
