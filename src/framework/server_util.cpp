@@ -37,6 +37,19 @@ void print_version(const std::string& progname){
   std::cout << "jubatus-" << VERSION << " (" << progname << ")" << std::endl;
 }
 
+void config_json::load_json(const std::string& zkhosts, const std::string& type, const std::string& name)
+{
+  pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
+    (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+
+  jubatus::common::config_fromzk(*ls_, type, name, config);
+}
+
+void config_json::load_json(const std::string& filepath)
+{
+    jubatus::common::config_fromlocal(filepath, config);
+}
+
 server_argv::server_argv(int args, char** argv, const std::string& type)
   : type(type)
 {
@@ -48,7 +61,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add<int>("timeout", 't', "time out (sec)", false, 10);
   p.add<std::string>("tmpdir", 'd', "directory to save and load models", false, "/tmp");
   p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false);
-  p.add<std::string>("config", 'f', "config option need to specify json file when standalone mode (without ZK mode)", false, "");
+  p.add<std::string>("configpath", 'f', "config option need to specify json file when standalone mode (without ZK mode)", false, "");
 
 #ifdef HAVE_ZOOKEEPER_H
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
@@ -75,10 +88,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   program_name = jubatus::util::get_program_name();
   tmpdir = p.get<std::string>("tmpdir");
   logdir = p.get<std::string>("logdir");
-  std::string config_path = p.get<std::string>("config");
-  if (!config_path.empty()){
-    jubatus::common::config_fromlocal(config_path, config);
-  }
+  configpath = p.get<std::string>("configpath");
   
   //    eth = "localhost";
   eth = jubatus::common::get_default_v4_address();
@@ -97,25 +107,12 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   interval_count = 512;
 #endif
 
-  if(!z.empty()){
-    pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
-      (jubatus::common::create_lock_service("zk", z, 10, "/dev/null"));
-    jubatus::common::config_fromzk(*ls_, type, name, config);
-   }
-
   if(!z.empty() && name.empty()){
     std::cerr << "can't start multinode mode without name specified" << std::endl;
     std::cerr << p.usage() << std::endl;
     exit(1);
   }
-/*
-  TODO: remove this comment out
-  if(config.empty()){
-    std::cerr << "can't detect server config." << std::endl;
-    std::cerr << p.usage() << std::endl;
-    exit(1);
-  }
-*/
+
   if(p.exist("logdir")){
     set_log_destination(jubatus::util::get_program_name());
   } else {

@@ -71,7 +71,22 @@ regression_serv::regression_serv(const framework::server_argv& a,
   mixer_->set_mixable_holder(mixable_holder_);
   mixable_holder_->register_mixable(&gresser_);
   mixable_holder_->register_mixable(&wm_);
-  set_config(a.config);
+
+  if (a.z.empty() && a.configpath.empty()){
+    std::cerr << "can't detect server config." << std::endl;
+    exit(1);
+  }
+  
+  config_json conf;
+
+  if (!a.configpath.empty()){
+    conf.load_json(a.configpath);
+  }else{
+    conf.load_json(a.z, a.type, a.name);
+  }
+
+  //TODO conf.config be correct JSON? 
+  set_config(conf.config);
 }
 
 regression_serv::~regression_serv() {
