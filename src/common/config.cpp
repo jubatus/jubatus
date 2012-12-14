@@ -51,7 +51,10 @@ void config_fromzk(lock_service& z,
   string path;
   build_config_path(path, type, name);
 
-  success = z.exists(path) && success;
+  if(!z.exists(path))
+    // not exist. we should to prompt that needs set_config
+    // length of config is not enough, too.
+    return;
 
   common::lock_service_mutex zlk(z, path);
   while(!zlk.try_lock()){ ; }
