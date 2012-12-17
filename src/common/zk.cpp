@@ -115,7 +115,6 @@ bool zk::set(const string& path, const string& payload)
 {
   scoped_lock lk(m_);
   int rc = zoo_set(zh_, path.c_str(), payload.c_str(), payload.length(), -1);
-  LOG(INFO) << rc << " " << zerror(rc);
   if (rc != ZOK) {
     LOG(ERROR) << path << " failed in setting " << rc << " " << zerror(rc);
     return false;
