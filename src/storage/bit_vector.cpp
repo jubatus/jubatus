@@ -43,12 +43,28 @@ void bit_vector::set_bit(uint64_t pos){
 }
 
 uint64_t  bit_vector::calc_hamming_similarity(const bit_vector& bv) const{
-  uint64_t match_num = 0;
-  for (size_t i = 0; i < bits_.size() && i < bv.bits_.size(); ++i){
-    uint64_t all_num = ((i+1) * BLOCKSIZE > bit_num_) ?  bit_num_ - i * BLOCKSIZE : BLOCKSIZE;
-    match_num += all_num - pop_count(bits_[i] ^ bv.bits_[i]);
+  size_t bit_num, max_index;
+  if (bit_num_ < bv.bit_num_) {
+    bit_num = bit_num_;
+    max_index = bits_.size() - 1;
+  } else {
+    bit_num = bv.bit_num_;
+    max_index = bv.bits_.size() - 1;
   }
-  return match_num;
+  if (bit_num == 0) {
+    return 0;
+  }
+
+  const uint64_t* a = &bits_[0];
+  const uint64_t* a_back = a + max_index;
+  const uint64_t* b = &bv.bits_[0];
+
+  uint64_t heads_match = 0;
+  while (a != a_back) {
+    heads_match += pop_count(~(*a++ ^ *b++));
+  }
+  const uint64_t tail_match = (bit_num - 1) % BLOCKSIZE + 1 - pop_count(*a ^ *b);
+  return heads_match + tail_match + (bit_num_ + bv.bit_num_ - 2 * bit_num);
 }
 }
 }

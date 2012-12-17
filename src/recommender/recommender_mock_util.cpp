@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,10 +14,29 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#include <pficommon/data/string/utility.h>
+#include <pficommon/lang/cast.h>
+#include "recommender_mock_util.hpp"
 
-#include "inverted_index.hpp"
-#include "lsh.hpp"
-#include "euclid_lsh.hpp"
-#include "minhash.hpp"
-#include "recommender_mock.hpp"
+using namespace std;
+using pfi::data::string::split;
+
+namespace jubatus {
+namespace recommender {
+
+sfv_t make_sfv(const string& repr) {
+  vector<string> elems = split(repr, ' ');
+  sfv_t sfv(elems.size());
+  for (size_t i = 0; i < elems.size(); ++i) {
+    vector<string> parts = split(elems[i], ':');
+    sfv[i] = make_pair(parts[0], pfi::lang::lexical_cast<float>(parts[1]));
+  }
+  return sfv;
+}
+
+vector<pair<string, float> > make_ids(const string& repr) {
+  return make_sfv(repr);
+}
+
+}
+}

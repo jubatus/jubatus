@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,24 @@
 
 #pragma once
 
-#include "inverted_index.hpp"
-#include "lsh.hpp"
-#include "euclid_lsh.hpp"
-#include "minhash.hpp"
-#include "recommender_mock.hpp"
+#include <string>
+#include <pficommon/lang/cast.h>
+#include <pficommon/text/json.h>
+
+namespace jubatus {
+
+template<typename T>
+T get_param(const pfi::text::json::json& config,
+            const std::string& name,
+            T default_value) {
+  using namespace pfi::text::json;
+  if (is<json_object>(config) && config.count(name))
+    return json_cast_with_default<T>(config[name], default_value);
+
+  return default_value;
+}
+
+pfi::text::json::json get_param_obj(const pfi::text::json::json& config,
+            const std::string& name);
+
+}

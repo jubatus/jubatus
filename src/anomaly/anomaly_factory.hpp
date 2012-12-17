@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,16 @@
 
 #pragma once
 
-#include "inverted_index.hpp"
-#include "lsh.hpp"
-#include "euclid_lsh.hpp"
-#include "minhash.hpp"
-#include "recommender_mock.hpp"
+#include <string>
+#include <pficommon/text/json.h>
+
+namespace jubatus {
+namespace anomaly {
+
+class anomaly_base;
+
+anomaly_base* create_anomaly(const std::string& name,
+                             const pfi::text::json::json& config);
+
+}
+}

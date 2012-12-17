@@ -53,6 +53,13 @@ void lsh::similar_row(const sfv_t& query, vector<pair<string, float> > & ids, si
   row2lshvals_.similar_row(query_bv, ids, ret_num);
 }
 
+void lsh::neighbor_row(const sfv_t& query, vector<pair<string, float> > & ids, size_t ret_num) const{
+  similar_row(query, ids, ret_num);
+  for (size_t i = 0; i < ids.size(); ++i) {
+    ids[i].second = 1 - ids[i].second;
+  }
+}
+
 void lsh::clear(){
   orig_.clear();
   column2baseval_.clear();

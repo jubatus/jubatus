@@ -46,6 +46,13 @@ void minhash::similar_row(const sfv_t& query, vector<pair<string, float> > & ids
   row2minhashvals_.similar_row(query_bv, ids, ret_num);
 }
 
+void minhash::neighbor_row(const sfv_t& query, vector<pair<string, float> > & ids, size_t ret_num) const {
+  similar_row(query, ids, ret_num);
+  for (size_t i = 0; i < ids.size(); ++i) {
+    ids[i].second = 1 - ids[i].second;
+  }
+}
+
 void minhash::clear(){
   orig_.clear();
   row2minhashvals_.clear();
