@@ -23,32 +23,77 @@ using namespace std;
 using namespace pfi::lang;
 using namespace pfi::text::json;
 
-namespace jubatus {
-namespace common {
+class config_trivial : public testing::Test {
+protected:
 
-TEST(config, setconfig_zk) {
+  void SetUp()
+  {
+    zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
+         (jubatus::common::create_lock_service("zk", "localhost:2181", 10, "/dev/null"));
+
+    engine_ = "engine-name";
+    name_ = "test-name";
+    jubatus::common::build_config_path(path_, engine_, name_);
+  }
+
+  void TearDown()
+  {
+    if (!zk_)
+      return;
+
+    if (zk_->exists(path_))
+      zk_->remove(path_);
+  }
+
+  string path_;
+  string engine_;
+  string name_;
   pfi::lang::shared_ptr<jubatus::common::lock_service> zk_;
-  zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
-        (common::create_lock_service("zk", "localhost:2181", 10, "/dev/null"));
+};
 
-  std::string engine_name;
+TEST_F(config_trivial, config_tozk) {
+
   istringstream config_str("{\"test\":\"config\"}");
-  std::string name_, path, string, dat;
-  engine_name = "test";
-  name_ = "test_name";
   std::string config = config_str.str();
 
-  jubatus::common::prepare_jubatus(*zk_, engine_name, name_);
-  jubatus::common::config_tozk(*zk_, engine_name, name_, config);
+  jubatus::common::prepare_jubatus(*zk_, engine_, name_);
+  jubatus::common::config_tozk(*zk_, engine_, name_, config);
 
-  build_config_path(path, engine_name, name_);
+  ASSERT_EQ(true, zk_->exists(path_));
 
-  ASSERT_EQ(true, zk_->exists(path));
-
-  zk_->read(path, dat);
+  std::string dat;
+  zk_->read(path_, dat);
   ASSERT_EQ("{\"test\":\"config\"}", dat);
 
 }
 
-} // common
-} // jubatus
+TEST_F(config_trivial, config_fromzk) {
+
+  istringstream config_str("{\"test\":\"config\"}");
+  std::string config = config_str.str();
+
+  jubatus::common::prepare_jubatus(*zk_, engine_, name_);
+  zk_->set(path_, config);
+
+  std::string dat;
+  jubatus::common::config_fromzk(*zk_, engine_, name_, dat);
+
+  ASSERT_EQ("{\"test\":\"config\"}", dat);
+
+}
+
+
+TEST_F(config_trivial, remove_config_fromzk) {
+
+  istringstream config_str("{\"test\":\"config\"}");
+  std::string config = config_str.str();
+
+  jubatus::common::prepare_jubatus(*zk_, engine_, name_);
+  zk_->set(path_, config);
+
+  std::string dat;
+  jubatus::common::remove_config_fromzk(*zk_, engine_, name_);
+
+  ASSERT_EQ(true, !zk_->exists(path_));
+
+}
