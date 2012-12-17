@@ -34,7 +34,7 @@ let to_keeper_strings = function
 
       match routing with
 	| Random ->
-	  Printf.sprintf "    k.register_random<%s >(\"%s\"); //%s %s"
+	  Printf.sprintf "    k.register_async_random<%s >(\"%s\"); //%s %s"
 	    (String.concat ", " (rettype::argv_strs))  name
 	    (Stree.aggtype_to_string agg) (Stree.reqtype_to_string rwtype);
 	| Cht(i) -> (* when needs aggregator *)
@@ -50,7 +50,7 @@ let to_keeper_strings = function
 	    Printf.sprintf "pfi::lang::function<%s(%s,%s)>(&%s%s)" rettype rettype rettype
 	      (Stree.aggtype_to_string agg) tmpl
 	  in
-	  Printf.sprintf "    k.register_cht<%d, %s >(\"%s\", %s); //%s" i
+	  Printf.sprintf "    k.register_async_cht<%d, %s >(\"%s\", %s); //%s" i
 	    (String.concat ", " (rettype::(List.tl argv_strs))) name aggfunc
 	    (Stree.reqtype_to_string rwtype)
 	| Internal -> ""; (* no code generated in keeper *)
@@ -67,7 +67,7 @@ let to_keeper_strings = function
 	    Printf.sprintf "pfi::lang::function<%s(%s,%s)>(&%s%s)" rettype rettype rettype
 	      (Stree.aggtype_to_string agg) tmpl
 	  in
-	  Printf.sprintf "    k.register_%s<%s >(\"%s\", %s); //%s"
+	  Printf.sprintf "    k.register_async_%s<%s >(\"%s\", %s); //%s"
 	    (Stree.routing_to_string routing)
 	    (String.concat ", " (rettype::argv_strs))  name aggfunc
 	    (Stree.reqtype_to_string rwtype)
