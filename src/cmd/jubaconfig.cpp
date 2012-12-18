@@ -44,7 +44,6 @@ void get_config(const string&, const string&, const string&);
 void get_configs(const string&);
 void print_config(jubatus::common::lock_service&, const string&, const string&);
 void get_all_config_paths(jubatus::common::lock_service&, std::vector<std::pair<string, string> >&);
-bool is_no_workers(jubatus::common::lock_service&, const string&, const string&);
 
 int main(int args, char** argv) try {
   cmdline::parser p;
@@ -116,11 +115,8 @@ void set_config(const string& zkhosts, const string& type,
   pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
     (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
-  if (!is_no_workers(*ls_, type, name)) {
-    cout << "any worker is running" << endl;
-    exit(1);
-  }
   jubatus::common::prepare_jubatus(*ls_, type, name);
+
   string config;
   jubatus::common::config_fromlocal(configfile, config);
   jubatus::common::config_tozk(*ls_, type, name, config);
@@ -131,10 +127,6 @@ void delete_config(const string& zkhosts, const string& type, const string& name
   pfi::lang::shared_ptr<jubatus::common::lock_service> ls_
     (jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
-  if (!is_no_workers(*ls_, type, name)) {
-    cout << "any worker is running" << endl;
-    exit(1);
-  }
   jubatus::common::remove_config_fromzk(*ls_, type, name);
 }
 
@@ -187,15 +179,5 @@ void get_all_config_paths(jubatus::common::lock_service& z,
       config_path = path + '/' + names[j];
       ret.push_back(make_pair(types[i], names[j]));
     }
-  }
-}
-
-bool is_no_workers(jubatus::common::lock_service& z, const string& type, const string& name){
-  std::vector<std::pair<std::string, int> > nodes;
-  jubatus::common::get_all_actors(z, type, name, nodes);
-  if (nodes.empty()) {
-    return true;
-  } else {
-    return false;
   }
 }

@@ -55,6 +55,12 @@ void build_config_path(string& path, const string& type, const string& name)
   path = CONFIG_BASE_PATH + "/" + type + "/" + name;
 }
 
+void build_config_lock_path(string& path, const string& type, const string& name)
+{
+  build_actor_path(path, type, name);
+  path += "/config_lock";
+}
+
 // 127.0.0.1_9199 -> (127.0.0.1, 9199)
 bool revert(const string& name, string& ip, int& port)
 {
@@ -163,7 +169,7 @@ void prepare_jubatus(lock_service& ls, const string& type, const string& name)
 
   if (name != "") {
     build_actor_path(path, type, name);
-    build_config_path(cpath, type, name);
+    build_config_lock_path(cpath, type, name);
     success = ls.create(path) && success;
     success = ls.create(cpath) && success;
   }

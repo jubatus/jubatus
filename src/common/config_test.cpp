@@ -73,7 +73,7 @@ TEST_F(config_trivial, config_fromzk) {
   std::string config = config_str.str();
 
   jubatus::common::prepare_jubatus(*zk_, engine_, name_);
-  zk_->set(path_, config);
+  zk_->create(path_, config);
 
   std::string dat;
   jubatus::common::config_fromzk(*zk_, engine_, name_, dat);
@@ -89,7 +89,7 @@ TEST_F(config_trivial, remove_config_fromzk) {
   std::string config = config_str.str();
 
   jubatus::common::prepare_jubatus(*zk_, engine_, name_);
-  zk_->set(path_, config);
+  zk_->create(path_, config);
 
   std::string dat;
   jubatus::common::remove_config_fromzk(*zk_, engine_, name_);

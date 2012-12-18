@@ -32,6 +32,7 @@ void config_fromlocal(const std::string&, std::string&);
 void config_fromzk(lock_service& , const std::string& , const std::string& , std::string&);
 void config_tozk(lock_service& , const std::string& , const std::string& , std::string&);
 void remove_config_fromzk(lock_service& , const std::string& , const std::string&);
+bool is_no_workers(lock_service&, const std::string&, const std::string&);
 #endif
 
 } // common

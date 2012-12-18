@@ -47,14 +47,20 @@ void config_fromzk(lock_service& z,
                     const string& type, const string& name,
                     string& config)
 {
+  string lock_path;
+  build_config_lock_path(lock_path, type, name);
+
+  if(!z.exists(lock_path))
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("node is not exists: " + lock_path));
+
+  common::lock_service_mutex zlk(z, lock_path);
+  while(!zlk.try_lock()){ ; }
+
   string path;
   build_config_path(path, type, name);
 
   if(!z.exists(path))
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("config is not exists: " + path));
-
-  common::lock_service_mutex zlk(z, path);
-  while(!zlk.try_lock()){ ; }
 
   if (!z.read(path, config))
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("failed to get config from zookeeper: " + path)
@@ -65,19 +71,29 @@ void config_fromzk(lock_service& z,
 }
 
 void config_tozk(lock_service& z,
-                    const string& type, const string& name,
-                    string& config)
+                 const string& type, const string& name,
+                 string& config)
 {
+  string lock_path;
+  build_config_lock_path(lock_path, type, name);
+
+  if(!z.exists(lock_path))
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("node is not exists: " + lock_path));
+
+  common::lock_service_mutex zlk(z, lock_path);
+  while(!zlk.try_lock()){ ; }
+
+  if (!is_no_workers(z, type, name))
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any server is running: " + type + ", " + name));
+
   string path;
   build_config_path(path, type, name);
 
-  if(!z.exists(path))
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("node is not exists: " + path));
+  bool success = true;
+  success = z.create(path) && success;
+  success = z.set(path, config) && success;
 
-  common::lock_service_mutex zlk(z, path);
-  while(!zlk.try_lock()){ ; }
-
-  if (!z.set(path, config))
+  if (!success)
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("failed to set config to zookeeper:" + path)
         << jubatus::exception::error_api_func("lock_service::set"));
 
@@ -88,6 +104,18 @@ void config_tozk(lock_service& z,
 void remove_config_fromzk(lock_service& z,
                           const string& type, const string& name)
 {
+  string lock_path;
+  build_config_lock_path(lock_path, type, name);
+
+  if(!z.exists(lock_path))
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("node is not exists: " + lock_path));
+
+  common::lock_service_mutex zlk(z, lock_path);
+  while(!zlk.try_lock()){ ; }
+
+  if (!is_no_workers(z, type, name))
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any server is running: " + type + ", " + name));
+
   string path;
   build_config_path(path, type, name);
 
@@ -100,8 +128,18 @@ void remove_config_fromzk(lock_service& z,
 
   LOG(INFO) << "remove config from zookeeper: " << path;
 }
-#endif
 
+bool is_no_workers(lock_service& z, const string& type, const string& name){
+  std::vector<std::pair<std::string, int> > nodes;
+  get_all_actors(z, type, name, nodes);
+  if (nodes.empty()) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+#endif
 
 } // common
 } // jubatus

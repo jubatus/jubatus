@@ -40,6 +40,8 @@ void build_actor_path(std::string&, const std::string& type, const std::string& 
 
 void build_config_path(std::string&, const std::string& type, const std::string& name);
 
+void build_config_lock_path(std::string&, const std::string&, const std::string&);
+
 // 127.0.0.1_9199 -> (127.0.0.1, 9199)
 bool revert(const std::string&, std::string&, int&);
 
