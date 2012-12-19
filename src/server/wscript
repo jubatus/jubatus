@@ -1,3 +1,5 @@
+idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl']
+
 def options(opt):
   pass
 
@@ -88,10 +90,12 @@ def build(bld):
       'graph_client.hpp',
       ])
 
-  bld.install_files('${PREFIX}/share/jubatus/', [
-      'classifier.idl',
-      'regression.idl',
-      'recommender.idl',
-      'stat.idl',
-      'graph.idl',
-      ])
+  bld.install_files('${PREFIX}/share/jubatus/', idls)
+
+def regenerate(ctx):
+  import os
+  path = ctx.path.abspath()
+  os.chdir(path)
+  for idl in idls:
+    ctx.exec_command(['jenerator', idl, '-o', '.', '-i'])
+    ctx.exec_command(['mpidl', 'cpp', idl, '-o', '.', '-p', '-n', 'jubatus'])

@@ -19,3 +19,6 @@ def build(bld):
 #  bld.install_files('${PREFIX}/include', 'jubatus.hpp')
   bld.install_files('${PREFIX}/include/jubatus',
                     ['config.hpp', 'plugin.hpp', 'framework.hpp'])
+
+def regenerate(ctx):
+  ctx.recurse(subdirs, mandatory=False)

@@ -107,3 +107,5 @@ def build(bld):
 
   bld.recurse(subdirs)
 
+def regenerate(ctx):
+  ctx.recurse(subdirs, mandatory=False)
