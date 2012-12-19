@@ -25,6 +25,8 @@ int main() {
 def build(bld):
   import Options
   src = 'exception.cpp util.cpp config_util.cpp network.cpp key_manager.cpp vector_util.cpp global_id_generator.cpp'
+  src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
+
   if bld.env.HAVE_ZOOKEEPER_H:
     src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp'
 
@@ -43,6 +45,7 @@ def build(bld):
     'network_test.cpp',
     'vector_util_test.cpp',
     'global_id_generator_test.cpp',
+    'jsonconfig_test.cpp',
     ]
 
   if bld.env.HAVE_ZOOKEEPER_H:
