@@ -15,6 +15,8 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "rpc_server.hpp"
+#include "../exception.hpp"
+#include <glog/logging.h>
 
 using namespace msgpack::rpc;
 
@@ -37,7 +39,11 @@ void rpc_server::dispatch( request req ) {
     fun->second->invoke( req );
   } catch (const msgpack::type_error &e) {
     req.error( msgpack::rpc::ARGUMENT_ERROR, std::string(e.what()) );
+  } catch (const jubatus::exception::jubatus_exception &e) {
+    LOG(WARNING) << e.diagnostic_information(true);
+    req.error(std::string(e.what()));
   } catch( const std::exception &e ) {
+    LOG(ERROR) << e.what();
     req.error( std::string( e.what()));
   }
 }

@@ -53,7 +53,7 @@ let to_impl_strings = function
       (Printf.sprintf "\n  %s %s(%s) //%s %s"
 	 rettype name (String.concat ", " argv_strs)
 	 (Stree.reqtype_to_string rwtype) (Stree.routing_to_string routing))
-      ^(Printf.sprintf "\n  { %s(p_); RETURN_OR_THROW(%s->%s(%s)); }" lock_str pointer name (String.concat ", " argv_strs2))
+      ^(Printf.sprintf "\n  { %s(p_); return %s->%s(%s); }" lock_str pointer name (String.concat ", " argv_strs2))
 	
     in
     List.map to_keeper_string methods;
@@ -71,16 +71,6 @@ let generate s output strees =
   output <<< ("#include \""^s#basename^"_serv.hpp\"");
   output <<< ("using namespace "^s#namespace^";");
   output <<< "using namespace jubatus::framework;";
-
-  output <<< ("#define RETURN_OR_THROW(f) try { \\");
-  output <<< ("  return f; \\");
-  output <<< ("} catch (const jubatus::exception::jubatus_exception& e) { \\");
-  output <<< ("  LOG(WARNING) << e.diagnostic_information(true); \\");
-  output <<< ("  throw; \\");
-  output <<< ("} catch (const std::exception& e) { \\");
-  output <<< ("  LOG(ERROR) << e.what(); \\");
-  output <<< ("  throw; \\");
-  output <<< ("}");
 
   output <<< "namespace jubatus { namespace server {";
 (*  output <<< "using "^s#basename^"::server::"^s#basename^";"; no way!! *)
