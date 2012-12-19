@@ -122,12 +122,12 @@ std::string graph_serv::create_node() { /* no lock here */
   return nid_str;
 }
 
-int graph_serv::update_node(const std::string& id, const property& p) {
+bool graph_serv::update_node(const std::string& id, const property& p) {
   g_.get_model()->update_node(n2i(id), p);
-  return 0;
+  return true;
 }
 
-int graph_serv::remove_node(const std::string& nid) {
+bool graph_serv::remove_node(const std::string& nid) {
   g_.get_model()->remove_node(n2i(nid));
   g_.get_model()->remove_global_node(n2i(nid));
 
@@ -154,11 +154,11 @@ int graph_serv::remove_node(const std::string& nid) {
     }
   }
   DLOG(INFO) << "node removed: " << nid;
-  return 0;
+  return true;
 }
 
 //@cht
-int graph_serv::create_edge(const std::string& id, const edge_info& ei) {  /* no lock here */
+edge_id_t graph_serv::create_edge(const std::string& id, const edge_info& ei) {  /* no lock here */
   edge_id_t eid = idgen_.generate();
   //TODO: assert id==ei.src
   
@@ -199,14 +199,14 @@ int graph_serv::create_edge(const std::string& id, const edge_info& ei) {  /* no
 }
 
 //@random
-int graph_serv::update_edge(const std::string&, edge_id_t eid, const edge_info& ei) {
+bool graph_serv::update_edge(const std::string&, edge_id_t eid, const edge_info& ei) {
   g_.get_model()->update_edge(eid, ei.p);
-  return 0;
+  return true;
 }
 
-int graph_serv::remove_edge(const std::string&, const edge_id_t& id) {
+bool graph_serv::remove_edge(const std::string&, const edge_id_t& id) {
   g_.get_model()->remove_edge(id);
-  return 0;
+  return true;
 }
 
 //@random
@@ -289,7 +289,7 @@ edge_info graph_serv::get_edge(const std::string& nid, const edge_id_t& id) cons
 }
 
 //@broadcast
-int graph_serv::update_index() {
+bool graph_serv::update_index() {
   if (!argv().is_standalone()) {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("manual mix is available only in standalone mode."));
   }
@@ -300,18 +300,18 @@ int graph_serv::update_index() {
   g_.get_model()->set_mixed_and_clear_diff(diff);
   clock_time end = get_clock_time();
   LOG(INFO) << "mix done manually and locally; in " << (double)(end - start) << " secs.";
-  return 0;
+  return true;
 }
 
-int graph_serv::clear() {
+bool graph_serv::clear() {
   LOG(INFO) << __func__;
   if (g_.get_model()) {
     g_.get_model()->clear();
   }
-  return 0;
+  return true;
 }
 
-int graph_serv::create_node_here(const std::string& nid) {
+bool graph_serv::create_node_here(const std::string& nid) {
   try {
     graph::node_id_t id = pfi::lang::lexical_cast<graph::node_id_t>(nid);
     g_.get_model()->create_node(id);
@@ -321,10 +321,10 @@ int graph_serv::create_node_here(const std::string& nid) {
   } catch(const std::runtime_error& e) {
     throw;
   }
-  return 0;
+  return true;
 }
 
-int graph_serv::remove_global_node(const std::string& nid) {
+bool graph_serv::remove_global_node(const std::string& nid) {
   try {
     g_.get_model()->remove_global_node(n2i(nid));
   } catch(const graph::local_node_exists& e) {
@@ -332,17 +332,17 @@ int graph_serv::remove_global_node(const std::string& nid) {
   } catch(const std::runtime_error& e) {
     throw;
   }
-  return 0;
+  return true;
 } //update internal
 
-int graph_serv::create_edge_here(edge_id_t eid, const edge_info& ei) {
+bool graph_serv::create_edge_here(edge_id_t eid, const edge_info& ei) {
   try {
     g_.get_model()->create_edge(eid, n2i(ei.src), n2i(ei.tgt));
     g_.get_model()->update_edge(eid, ei.p);
   } catch(const graph::graph_exception& e) {
     throw;
   }
-  return 0;
+  return true;
 }
 
 void graph_serv::selective_create_node_(const std::pair<std::string,int>& target,
