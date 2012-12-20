@@ -42,10 +42,7 @@ anomaly_base* create_anomaly(const string& name, const json& param) {
 
   if (name == "lof") {
     // TODO: error handling of json_cast
-    cout << "create_anomaly cast<anomaly_config> param: " << param << endl;
     anomaly_config conf = json_cast<anomaly_config>(param);
-    cout << "create_anomaly cast<config>: " << endl;
-    cout << "conf.parameter : " << conf.parameter << endl;
     storage::lof_storage::config config = json_cast<storage::lof_storage::config>(param);
 
     return new lof(config, recommender::create_recommender(conf.method, conf.parameter));
