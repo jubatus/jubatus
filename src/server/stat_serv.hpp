@@ -59,7 +59,7 @@ public:
 
   bool set_config(const config_data&);
   config_data get_config()const;
-  int push(const std::string& key, double value);
+  bool push(const std::string& key, double value);
   double sum(const std::string&) const;
   double stddev(const std::string&) const;
   double max(const std::string&) const;

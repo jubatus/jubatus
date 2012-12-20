@@ -67,9 +67,9 @@ config_data stat_serv::get_config() const {
   return config_;
 }
 
-int stat_serv::push(const std::string& key, double value) {
+bool stat_serv::push(const std::string& key, double value) {
   stat_.get_model()->push(key,value);
-  return 0;
+  return true;
 }
 
 double stat_serv::sum(const std::string& key) const {
