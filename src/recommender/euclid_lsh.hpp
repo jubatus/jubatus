@@ -38,19 +38,25 @@ class euclid_lsh : public recommender_base {
   static const uint32_t DEFAULT_SEED;
   static const bool DEFAULT_RETAIN_PROJECTION;
 
-  struct euclid_lsh_config {
-    euclid_lsh_config();
+  struct config {
+    config();
 
-    uint64_t lsh_num;
-    uint64_t table_num;
+    int64_t lsh_num;
+    int64_t table_num;
     float bin_width;
-    uint32_t probe_num;
-    uint32_t seed;
+    int32_t probe_num;
+    int32_t seed;
     bool retain_projection;
+
+    template <typename Ar>
+    void serialize(Ar& ar) {
+      ar & MEMBER(lsh_num) & MEMBER(table_num) & MEMBER(bin_width) & MEMBER(probe_num)
+        & MEMBER(seed) & MEMBER(retain_projection);
+    }
   };
 
   euclid_lsh();
-  explicit euclid_lsh(const euclid_lsh_config& config);
+  explicit euclid_lsh(const config& config);
   ~euclid_lsh();
 
   virtual void neighbor_row(const sfv_t& query, std::vector<std::pair<std::string, float> >& ids, size_t ret_num) const;

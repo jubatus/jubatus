@@ -62,7 +62,7 @@ float calculate_lof(float lrd,
 lof::lof() {
 }
 
-lof::lof(const storage::lof_storage::lof_storage_config& config, recommender::recommender_base* nn_engine)
+lof::lof(const storage::lof_storage::config& config, recommender::recommender_base* nn_engine)
     : lof_index_(config, nn_engine) {
 }
 

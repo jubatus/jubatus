@@ -25,6 +25,6 @@ namespace recommender {
 class recommender_base;
 
 recommender_base* create_recommender(const std::string& name,
-                                     const pfi::text::json::json param = pfi::text::json::json());
-}
-}
+                                     const pfi::text::json::json& param);
+} // recommender
+} // jubatus

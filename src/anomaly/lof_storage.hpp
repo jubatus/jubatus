@@ -38,18 +38,23 @@ public:
   const static uint32_t DEFAULT_NEIGHBOR_NUM;
   const static uint32_t DEFAULT_REVERSE_NN_NUM;
 
-  struct lof_storage_config {
-    lof_storage_config();
+  struct config {
+    config();
 
-    uint32_t neighbor_num;
-    uint32_t reverse_neighbor_num;
+    int nearest_neighbor_num;
+    int reverse_nearest_neighbor_num;
+
+    template <typename Ar>
+    void serialize(Ar& ar) {
+      ar & MEMBER(nearest_neighbor_num) & MEMBER(reverse_nearest_neighbor_num);
+    }
   };
 
   lof_storage();
   lof_storage(recommender::recommender_base* nn_engine);
 
   // config contains parameters for the underlying nearest neighbor search
-  explicit lof_storage(const lof_storage_config& config, recommender::recommender_base* nn_engine);
+  explicit lof_storage(const config& config, recommender::recommender_base* nn_engine);
 
   virtual ~lof_storage();
 

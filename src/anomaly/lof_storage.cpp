@@ -22,6 +22,7 @@
 #include "../common/config_util.hpp"
 #include "../common/exception.hpp"
 #include "../recommender/recommender_factory.hpp"
+#include "../recommender/euclid_lsh.hpp"
 #include "anomaly_type.hpp"
 
 using namespace std;
@@ -36,16 +37,17 @@ namespace storage {
 const uint32_t lof_storage::DEFAULT_NEIGHBOR_NUM = 10;
 const uint32_t lof_storage::DEFAULT_REVERSE_NN_NUM = 30;
 
-lof_storage::lof_storage_config::lof_storage_config()
-  : neighbor_num(DEFAULT_NEIGHBOR_NUM)
-  , reverse_neighbor_num(DEFAULT_REVERSE_NN_NUM)
+lof_storage::config::config()
+  : nearest_neighbor_num(DEFAULT_NEIGHBOR_NUM)
+  , reverse_nearest_neighbor_num(DEFAULT_REVERSE_NN_NUM)
 {
 }
 
 lof_storage::lof_storage()
   : neighbor_num_(DEFAULT_NEIGHBOR_NUM)
   , reverse_nn_num_(DEFAULT_REVERSE_NN_NUM)
-  , nn_engine_(recommender::create_recommender("euclid_lsh"))
+  , nn_engine_(recommender::create_recommender("euclid_lsh",
+      pfi::text::json::to_json(recommender::euclid_lsh::config())))
 {
 }
 
@@ -56,9 +58,9 @@ lof_storage::lof_storage(recommender::recommender_base* nn_engine)
 {
 }
 
-lof_storage::lof_storage(const lof_storage_config& config, recommender::recommender_base* nn_engine)
-    : neighbor_num_(config.neighbor_num)
-    , reverse_nn_num_(config.reverse_neighbor_num)
+lof_storage::lof_storage(const config& config, recommender::recommender_base* nn_engine)
+    : neighbor_num_(config.nearest_neighbor_num)
+    , reverse_nn_num_(config.reverse_nearest_neighbor_num)
     , nn_engine_(nn_engine)
 {
 }

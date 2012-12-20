@@ -20,6 +20,8 @@
 #include <vector>
 #include <string>
 #include "test_util.hpp"
+#include "../anomaly/lof_storage.hpp"
+#include "../recommender/euclid_lsh.hpp"
 
 using namespace std;
 using namespace jubatus;
@@ -35,15 +37,15 @@ namespace {
 
     anomaly_test(){
       child_ = fork_process("anomaly", PORT);
-    };
+    }
     virtual ~anomaly_test(){
       kill_process(child_);
-    };
+    }
     virtual void restart_process(){
 
       kill_process(this->child_);
       this->child_ = fork_process("anomaly");
-    };
+    }
   };
 
 std::string make_simple_config(const string& method) {
@@ -54,19 +56,19 @@ std::string make_simple_config(const string& method) {
 
   json anomaly_config(new json_object());
   anomaly_config["method"] = json(new json_string("euclid_lsh"));
-  anomaly_config["neighbor_num"] = json(new json_integer(100));
-  anomaly_config["reverse_nn_num"] = json(new json_integer(30));
+  anomaly_config["nearest_neighbor_num"] = json(new json_integer(100));
+  anomaly_config["reverse_nearest_neighbor_num"] = json(new json_integer(30));
 
-  json nn_config(new json_object());
-  nn_config["lsh_num"] = json(new json_integer(8));
-  nn_config["table_num"] = json(new json_integer(16));
-  nn_config["probe_num"] = json(new json_integer(64));
-  nn_config["bin_width"] = json(new json_integer(10));
-  nn_config["seed"] = json(new json_integer(1234));
-  nn_config["retain_projection"] = json(new json_bool(true));
+  recommender::euclid_lsh::config euclid_conf;
+  euclid_conf.lsh_num = 8;
+  euclid_conf.table_num = 8;
+  euclid_conf.probe_num = 8;
+  euclid_conf.bin_width = 8;
+  euclid_conf.seed = 1234;
+  euclid_conf.retain_projection = true;
 
-  anomaly_config["nearest_neighbor"] = nn_config;
-  js["anomaly"] = anomaly_config;
+  anomaly_config["parameter"] = to_json(euclid_conf);
+  js["parameter"] = anomaly_config;
 
   jubatus::fv_converter::converter_config config;
   jubatus::fv_converter::num_rule rule = { "*", "num" };

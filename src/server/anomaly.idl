@@ -20,11 +20,11 @@
 #- 
 #-    {
 #-     "method": "lof",
-#-     "anomaly": {
-#-       "neighbor_num": "10",
-#-       "reverse_nn_num": "30",
+#-     "parameter": {
+#-       "nearest_neighbor_num": "10",
+#-       "reverse_nearest_neighbor_num": "30",
 #-       "method": "euclid_lsh",
-#-       "nearest_neighbor": {
+#-       "parameter": {
 #-         "lsh_num": "8",
 #-         "table_num": "16",
 #-         "probe_num": "64",

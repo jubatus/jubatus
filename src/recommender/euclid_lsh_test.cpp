@@ -54,7 +54,7 @@ sfv_t make_dense_sfv(const string& s) {
 }
 
 class euclid_lsh_mix_test
-    : public ::testing::TestWithParam<pair<int, euclid_lsh::euclid_lsh_config> > {
+    : public ::testing::TestWithParam<pair<int, euclid_lsh::config> > {
  protected:
   static const uint32_t kSeed = 1340764259;  // It may be any FIXED value
 
@@ -82,9 +82,9 @@ class euclid_lsh_mix_test
   virtual void SetUp() {
     rand_ = mtrand(kSeed);
 
-    const pair<int, euclid_lsh::euclid_lsh_config>& param = GetParam();
+    const pair<int, euclid_lsh::config>& param = GetParam();
     const int num_models = param.first;
-    const euclid_lsh::euclid_lsh_config& config = param.second;
+    const euclid_lsh::config& config = param.second;
 
     recoms_.resize(num_models);
     for (int i = 0; i < num_models; ++i) {
@@ -135,9 +135,9 @@ TEST_P(euclid_lsh_mix_test, consistency) {
   }
 }
 
-euclid_lsh::euclid_lsh_config make_euclid_lsh_config()
+euclid_lsh::config make_euclid_lsh_config()
 {
-  euclid_lsh::euclid_lsh_config config;
+  euclid_lsh::config config;
 
   config.lsh_num = 16;
   config.table_num = 4;

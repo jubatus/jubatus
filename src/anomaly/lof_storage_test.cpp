@@ -30,9 +30,9 @@ namespace {
 lof_storage* make_storage(uint32_t k,
                           uint32_t ck,
                           recommender::recommender_base* mock_nn_engine) {
-  lof_storage::lof_storage_config config;
-  config.neighbor_num = k;
-  config.reverse_neighbor_num = ck;
+  lof_storage::config config;
+  config.nearest_neighbor_num = k;
+  config.reverse_nearest_neighbor_num = ck;
   lof_storage* s = new lof_storage(config, mock_nn_engine);
   //s->set_nn_engine(mock_nn_engine);
 
@@ -146,7 +146,7 @@ TEST_F(lof_storage_one_dimensional_test, collect_lrds_novel_input) {
 
 
 class lof_storage_mix_test
-    : public ::testing::TestWithParam<pair<int, lof_storage::lof_storage_config> > {
+    : public ::testing::TestWithParam<pair<int, lof_storage::config> > {
 protected:
   sfv_t generate_gaussian(const string& name, const sfv_t& mean, float deviation) {
     sfv_t sfv(mean);
@@ -182,9 +182,9 @@ protected:
   }
 
   virtual void SetUp() {
-    const pair<int, lof_storage::lof_storage_config>& param = GetParam();
+    const pair<int, lof_storage::config>& param = GetParam();
     const int num_models = param.first;
-    const lof_storage::lof_storage_config& config = param.second;
+    const lof_storage::config& config = param.second;
 
     storages_.resize(num_models);
     for (int i = 0; i < num_models; ++i) {
@@ -280,11 +280,11 @@ TEST_P(lof_storage_mix_test, mix_after_remove) {
   }
 }
 
-lof_storage::lof_storage_config make_lof_storage_config()
+lof_storage::config make_lof_storage_config()
 {
-  lof_storage::lof_storage_config config;
-  config.neighbor_num = 10;
-  config.reverse_neighbor_num = 30;
+  lof_storage::config config;
+  config.nearest_neighbor_num = 10;
+  config.reverse_nearest_neighbor_num = 30;
   return config;
 }
 

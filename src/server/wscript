@@ -27,7 +27,7 @@ def build_one(bld, name, libraries = '', sources = ''):
     source = '%s_test.cpp' % name,
     target = '%s_test' % name,
     includes = '.',
-    use = 'PFICOMMON MSGPACK jubacommon_mprpc',
+    use = 'PFICOMMON MSGPACK jubacommon_mprpc %s' % libraries,
     )
 
 
@@ -64,6 +64,9 @@ def build(bld):
 
   # #new recommender
   build_one(bld, "recommender", 'jubaconverter jubastorage jubaserver')
+
+  # #new anomaly
+  build_one(bld, "anomaly", 'jubaconverter jubastorage jubatus_recommender jubaserver')
 
   build_one(bld, "stat")
 

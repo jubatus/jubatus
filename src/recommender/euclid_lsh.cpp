@@ -67,7 +67,7 @@ vector<float> lsh_function(const sfv_t& query, size_t dimension, float bin_width
 
 }
 
-euclid_lsh::euclid_lsh_config::euclid_lsh_config()
+euclid_lsh::config::config()
   : lsh_num(DEFAULT_LSH_NUM)
   , table_num(DEFAULT_TABLE_NUM)
   , bin_width(DEFAULT_BIN_WIDTH)
@@ -91,7 +91,7 @@ euclid_lsh::euclid_lsh()
       retain_projection_(DEFAULT_RETAIN_PROJECTION) {
 }
 
-euclid_lsh::euclid_lsh(const euclid_lsh_config& config)
+euclid_lsh::euclid_lsh(const config& config)
     : lsh_index_(config.lsh_num, config.table_num, config.seed),
       bin_width_(config.bin_width),
       num_probe_(config.probe_num),

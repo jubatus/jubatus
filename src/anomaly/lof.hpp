@@ -26,7 +26,7 @@ namespace anomaly {
 class lof : public anomaly_base {
 public:
   lof();
-  explicit lof(const storage::lof_storage::lof_storage_config& config, recommender::recommender_base* nn_engine);
+  explicit lof(const storage::lof_storage::config& config, recommender::recommender_base* nn_engine);
   ~lof();
 
   virtual float calc_anomaly_score(const sfv_t& query) const; //return anomaly score of query

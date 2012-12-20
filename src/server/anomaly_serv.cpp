@@ -26,9 +26,10 @@
 #include "../common/membership.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/converter_config.hpp"
-#include "../common/config_util.hpp"
 #include "anomaly_client.hpp"
 
+using pfi::text::json::json;
+using pfi::text::json::json_cast;
 using namespace std;
 using namespace pfi::lang;
 using namespace jubatus::common;
@@ -36,6 +37,30 @@ using namespace jubatus::framework;
 
 namespace jubatus {
 namespace server {
+
+namespace {
+
+struct anomaly_serv_config {
+  std::string method;
+  pfi::text::json::json parameter;
+  pfi::text::json::json converter;
+
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    ar
+        & MEMBER(method)
+        & MEMBER(parameter)
+        & MEMBER(converter);
+  }
+};
+
+common::cshared_ptr<jubatus::anomaly::anomaly_base>
+make_model(const anomaly_serv_config& conf) {
+  return cshared_ptr<jubatus::anomaly::anomaly_base>
+    (jubatus::anomaly::create_anomaly(conf.method, conf.parameter));
+}
+
+} // namespace
 
 anomaly_serv::anomaly_serv(const server_argv& a,
                            const cshared_ptr<lock_service>& zk)
@@ -65,32 +90,17 @@ void anomaly_serv::get_status(status_t& status) const {
   // TODO: write something here
 }
 
-int anomaly_serv::set_config(std::string config) {
+bool anomaly_serv::set_config(std::string config) {
   LOG(INFO) << __func__;
 
-  string fv_config = jubatus::util::get_json(config, "converter");
-  shared_ptr<fv_converter::datum_to_fv_converter> converter
-      = fv_converter::make_fv_converter(fv_config);
+  // TODO: error handling
+  json config_json = lexical_cast<json>(config);
+  anomaly_serv_config conf =  json_cast<anomaly_serv_config>(config_json);
 
   config_ = config;
-  converter_ = converter;
-  anomaly_.set_model(make_model());
+  converter_ = fv_converter::make_fv_converter(conf.converter);
+  anomaly_.set_model(make_model(conf));
   return 0;
-}
-
-common::cshared_ptr<jubatus::anomaly::anomaly_base> anomaly_serv::make_model() const {
-  using namespace pfi::text::json;
-  std::string method;
-  method = jubatus::util::get_jsonstring(config_, "method");
-
-  // FIXME: don't parse and use get_param here
-  json js;
-  std::stringstream ss(config_);
-  ss >> via_json(js);
-  json param = get_param_obj(js, "anomaly");
-
-  return cshared_ptr<jubatus::anomaly::anomaly_base>
-    (jubatus::anomaly::create_anomaly(method, param));
 }
 
 string anomaly_serv::get_config() const {

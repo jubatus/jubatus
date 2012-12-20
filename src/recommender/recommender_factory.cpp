@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "recommender_factory.hpp"
+#include <pficommon/text/json.h>
 #include "recommender.hpp"
 #include "../common/exception.hpp"
 #include "../common/config_util.hpp"
@@ -27,7 +28,9 @@ namespace jubatus {
 namespace recommender {
 
 recommender_base* create_recommender(const string& name,
-                                     const json param) {
+                                     const json& param) {
+  using namespace pfi::text::json;
+
   // TODO: use param for each method
   if (name == "inverted_index"){
     return new inverted_index;
@@ -36,21 +39,14 @@ recommender_base* create_recommender(const string& name,
   } else if (name == "lsh"){
     return new lsh;
   } else if (name == "euclid_lsh") {
-    euclid_lsh::euclid_lsh_config config;
-    config.lsh_num = get_param<int>(param, "lsh_num", euclid_lsh::DEFAULT_LSH_NUM);
-    config.table_num = get_param<int>(param, "table_num", euclid_lsh::DEFAULT_TABLE_NUM);
-    config.seed = get_param<int>(param, "seed", euclid_lsh::DEFAULT_SEED);
-    config.bin_width = get_param<int>(param, "bin_width", euclid_lsh::DEFAULT_BIN_WIDTH);
-    config.probe_num = get_param<int>(param, "probe_num", euclid_lsh::DEFAULT_NUM_PROBE);
-    config.retain_projection = get_param<bool>(param, "retain_projection", euclid_lsh::DEFAULT_RETAIN_PROJECTION);
-    return new euclid_lsh(config);
+    // TODO: error handling of json_cast
+    return new euclid_lsh(json_cast<euclid_lsh::config>(param));
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }
 }
 
-}
-}
-
+} // recommender
+} // jubatus
 
 

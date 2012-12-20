@@ -17,7 +17,7 @@
 #include "anomaly_factory.hpp"
 #include "anomaly.hpp"
 #include "../common/exception.hpp"
-#include "../common/config_util.hpp"
+#include <pficommon/text/json.h>
 
 using namespace std;
 using pfi::text::json::json;
@@ -25,15 +25,30 @@ using pfi::text::json::json;
 namespace jubatus {
 namespace anomaly {
 
-anomaly_base* create_anomaly(const string& name, const json& param) {
-  if (name == "lof") {
-    string engine_name = get_param<string>(param, "method", "euclid_lsh");
-    storage::lof_storage::lof_storage_config config;
-    config.neighbor_num = get_param<int>(param, "neighbor_num", storage::lof_storage::DEFAULT_NEIGHBOR_NUM);
-    config.reverse_neighbor_num = get_param<int>(param, "reverse_neighbor_num", storage::lof_storage::DEFAULT_REVERSE_NN_NUM);
+namespace {
+struct anomaly_config {
+  std::string method; // nest engine name
+  pfi::text::json::json parameter;
 
-    json nn_param = get_param_obj(param, "nearest_neighbor");
-    return new lof(config, recommender::create_recommender(engine_name, nn_param));
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    ar & MEMBER(method) & MEMBER(parameter);
+  }
+};
+}
+
+anomaly_base* create_anomaly(const string& name, const json& param) {
+  using namespace pfi::text::json;
+
+  if (name == "lof") {
+    // TODO: error handling of json_cast
+    cout << "create_anomaly cast<anomaly_config> param: " << param << endl;
+    anomaly_config conf = json_cast<anomaly_config>(param);
+    cout << "create_anomaly cast<config>: " << endl;
+    cout << "conf.parameter : " << conf.parameter << endl;
+    storage::lof_storage::config config = json_cast<storage::lof_storage::config>(param);
+
+    return new lof(config, recommender::create_recommender(conf.method, conf.parameter));
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }
