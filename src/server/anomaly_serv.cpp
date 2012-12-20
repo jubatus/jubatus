@@ -103,7 +103,7 @@ bool anomaly_serv::set_config(std::string config) {
   config_ = config;
   converter_ = fv_converter::make_fv_converter(conf.converter);
   anomaly_.set_model(make_model(conf));
-  return 0;
+  return true;
 }
 
 string anomaly_serv::get_config() const {
@@ -142,7 +142,7 @@ pair<string,float > anomaly_serv::add(const datum& d) {
   for (size_t i = 1; i < nodes.size(); ++i) {
     try {
       selective_update(nodes[i].first, nodes[i].second, id_str, d);
-    } catch(const runtime_error& e) {
+    } catch (const runtime_error& e) {
       LOG(WARNING) << i+1 << "th replica: "
                 << nodes[i].first << ":" << nodes[i].second << " " << e.what();
     }
@@ -219,4 +219,4 @@ float anomaly_serv::selective_update(const string& host,
 }
 
 } // server
-} // jubatus
+} // jubatis
