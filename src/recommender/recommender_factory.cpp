@@ -18,7 +18,6 @@
 #include <pficommon/text/json.h>
 #include "recommender.hpp"
 #include "../common/exception.hpp"
-#include "../common/config_util.hpp"
 #include "../storage/norm_factory.hpp"
 
 using namespace std;

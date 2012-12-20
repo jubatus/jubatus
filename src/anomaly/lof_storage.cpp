@@ -19,7 +19,6 @@
 #include <limits>
 #include <sstream>
 #include <stdexcept>
-#include "../common/config_util.hpp"
 #include "../common/exception.hpp"
 #include "../recommender/recommender_factory.hpp"
 #include "../recommender/euclid_lsh.hpp"

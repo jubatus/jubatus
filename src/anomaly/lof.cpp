@@ -24,7 +24,6 @@
 #include <pficommon/lang/cast.h>
 #include <pficommon/math/random.h>
 #include "../common/hash.hpp"
-#include "../common/config_util.hpp"
 #include "../storage/lsh_util.hpp"
 #include "../storage/lsh_vector.hpp"
 
