@@ -21,14 +21,16 @@
 #-    {
 #-     "method": "lof",
 #-     "parameter": {
-#-       "nearest_neighbor_num": "10",
-#-       "reverse_nearest_neighbor_num": "30",
+#-       "nearest_neighbor_num": 10,
+#-       "reverse_nearest_neighbor_num": 30,
 #-       "method": "euclid_lsh",
 #-       "parameter": {
-#-         "lsh_num": "8",
-#-         "table_num": "16",
-#-         "probe_num": "64",
-#-         "bin_width": "10"
+#-         "lsh_num": 8,
+#-         "table_num": 16,
+#-         "probe_num": 64,
+#-         "bin_width": 10,
+#-         "seed": 1091,
+#-         "retain_projection": false
 #-       }
 #-     }
 #-    }
