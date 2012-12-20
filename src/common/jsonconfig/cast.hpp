@@ -172,6 +172,15 @@ inline void serialize(json_config_iarchive_cast& js, pfi::data::serialization::n
   }
 }
 
+template <>
+inline void serialize(json_config_iarchive_cast& js, pfi::text::json::json& v) {
+  v = js.get();
+}
+
+template <>
+inline void serialize(json_config_iarchive_cast& js, config& v) {
+  v = config(js.get(), js.get_config().path());
+}
 
 template <typename T>
 void json_from_config(const config& conf, T& v) {

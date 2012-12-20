@@ -24,7 +24,6 @@
 
 #include <pficommon/text/json.h>
 #include <pficommon/lang/cast.h>
-#include <pficommon/lang/noncopyable.h>
 
 #include "exception.hpp"
 
@@ -38,9 +37,47 @@ T config_cast(const config& c);
 
 class config {
  public:
+  class iterator;
+
+  config()
+    : json_() {}
+
+  config(const pfi::text::json::json& j)
+    : json_(j) {}
+
+  config(const pfi::text::json::json& j,
+         const std::string& path) : json_(j), path_(path) {}
+
+  template <typename T>
+  T As() const {
+    return config_cast<T>(*this);
+  }
+
+  config operator[](size_t index) const;
+
+  config operator[](const std::string& key) const;
+
+  bool contain(const std::string& key) const;
+
+  iterator begin() const;
+  iterator end() const;
+
+  size_t size() const;
+  const pfi::text::json::json& get() const { return json_; }
+  const std::string& path() const { return path_; }
+
+  template <class T>
+  bool is() const {
+    return pfi::text::json::is<T>(json_);
+  }
+
+  pfi::text::json::json::json_type_t type() const {
+    return json_.type();
+  }
+
   class iterator {  // const_iterator
    public:
-     typedef pfi::text::json::json::const_iterator iterator_base;
+    typedef pfi::text::json::json::const_iterator iterator_base;
     iterator(const iterator&);
     iterator(const config& parent, const pfi::text::json::json::const_iterator& it);
 
@@ -79,52 +116,9 @@ class config {
     pfi::text::json::json::const_iterator it_;
   };
 
-  template <typename T>
-  T As() const {
-    return config_cast<T>(*this);
-  }
-
-  config operator[](size_t index) const;
-
-  config operator[](const std::string& key) const;
-
-  bool contain(const std::string& key) const;
-
-  iterator begin() const;
-  iterator end() const;
-
-  size_t size() const;
-  const pfi::text::json::json& get() const { return json_; }
-  const std::string& path() const { return path_; }
-
-  template <class T>
-  bool is() const {
-    return pfi::text::json::is<T>(json_);
-  }
-
-
-  pfi::text::json::json::json_type_t type() const {
-    return json_.type();
-  }
-
  private:
-  friend class config_root;
-
-  config(const pfi::text::json::json& j,
-         const std::string& path) : json_(j), path_(path) {}
-  config();
-
-  const pfi::text::json::json& json_;
-  const std::string path_;
-};
-
-class config_root : public config {
- public:
-  config_root(const pfi::text::json::json& j)
-      : config(json_, ""), json_(j) {}
-
- private:
-  const pfi::text::json::json json_;
+  pfi::text::json::json json_;
+  std::string path_;
 };
 
 } // jsonconfig
