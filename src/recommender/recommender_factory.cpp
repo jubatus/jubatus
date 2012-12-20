@@ -18,16 +18,18 @@
 #include <pficommon/text/json.h>
 #include "recommender.hpp"
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../storage/norm_factory.hpp"
 
 using namespace std;
+using namespace jubatus::jsonconfig;
 using pfi::text::json::json;
 
 namespace jubatus {
 namespace recommender {
 
 recommender_base* create_recommender(const string& name,
-                                     const json& param) {
+                                     const config& param) {
   using namespace pfi::text::json;
 
   // TODO: use param for each method
@@ -39,7 +41,7 @@ recommender_base* create_recommender(const string& name,
     return new lsh;
   } else if (name == "euclid_lsh") {
     // TODO: error handling of json_cast
-    return new euclid_lsh(json_cast<euclid_lsh::config>(param));
+    return new euclid_lsh(config_cast_check<euclid_lsh::config>(param));
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }

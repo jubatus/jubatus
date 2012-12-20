@@ -63,7 +63,7 @@ std::string make_simple_config(const string& method) {
   euclid_conf.lsh_num = 8;
   euclid_conf.table_num = 8;
   euclid_conf.probe_num = 8;
-  euclid_conf.bin_width = 8;
+  euclid_conf.bin_width = 8.2;  // float
   euclid_conf.seed = 1234;
   euclid_conf.retain_projection = true;
 

@@ -24,12 +24,12 @@
 #include "../anomaly/anomaly_factory.hpp"
 #include "../common/cht.hpp"
 #include "../common/membership.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/converter_config.hpp"
 #include "anomaly_client.hpp"
 
 using pfi::text::json::json;
-using pfi::text::json::json_cast;
 using namespace std;
 using namespace pfi::lang;
 using namespace jubatus::common;
@@ -42,7 +42,7 @@ namespace {
 
 struct anomaly_serv_config {
   std::string method;
-  pfi::text::json::json parameter;
+  jsonconfig::config parameter;
   pfi::text::json::json converter;
 
   template <typename Ar>
@@ -96,9 +96,8 @@ void anomaly_serv::get_status(status_t& status) const {
 bool anomaly_serv::set_config(std::string config) {
   LOG(INFO) << __func__;
 
-  // TODO: error handling
-  json config_json = lexical_cast<json>(config);
-  anomaly_serv_config conf =  json_cast<anomaly_serv_config>(config_json);
+  jsonconfig::config conf_root(lexical_cast<json>(config));
+  anomaly_serv_config conf = jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
 
   config_ = config;
   converter_ = fv_converter::make_fv_converter(conf.converter);

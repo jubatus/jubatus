@@ -18,8 +18,10 @@
 
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/cast.h>
+#include <pficommon/data/optional.h>
 
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
@@ -41,7 +43,7 @@ namespace {
 
 struct recommender_serv_config {
   std::string method;
-  pfi::data::optional<pfi::text::json::json> parameter;
+  pfi::data::optional<jsonconfig::config> parameter;  // FIXME: if must use parameter
   pfi::text::json::json converter;
 
   template <typename Ar>
@@ -55,12 +57,14 @@ struct recommender_serv_config {
 
 common::cshared_ptr<recommender::recommender_base>
 make_model(const recommender_serv_config& conf) {
-  // TODO: set param
-  pfi::text::json::json param;
+  jsonconfig::config param;
+  if (conf.parameter) {
+    param = *conf.parameter;
+  }
 
   return cshared_ptr<recommender::recommender_base>
     (recommender::create_recommender(conf.method, param));
-}  
+}
 
 }
 
@@ -91,9 +95,9 @@ void recommender_serv::get_status(status_t& status) const {
 
 int recommender_serv::set_config(std::string config) {
   LOG(INFO) << __func__;
-  // TODO: error handling
-  json config_json = lexical_cast<json>(config);
-  recommender_serv_config conf = json_cast<recommender_serv_config>(config_json);
+
+  jsonconfig::config conf_root(lexical_cast<json>(config));
+  recommender_serv_config conf = jsonconfig::config_cast_check<recommender_serv_config>(conf_root);
 
   shared_ptr<fv_converter::datum_to_fv_converter> converter
       = fv_converter::make_fv_converter(conf.converter);

@@ -17,9 +17,11 @@
 #include "anomaly_factory.hpp"
 #include "anomaly.hpp"
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include <pficommon/text/json.h>
 
 using namespace std;
+using namespace jubatus::jsonconfig;
 using pfi::text::json::json;
 
 namespace jubatus {
@@ -28,7 +30,7 @@ namespace anomaly {
 namespace {
 struct anomaly_config {
   std::string method; // nest engine name
-  pfi::text::json::json parameter;
+  jsonconfig::config parameter;
 
   template <typename Ar>
   void serialize(Ar& ar) {
@@ -37,13 +39,12 @@ struct anomaly_config {
 };
 }
 
-anomaly_base* create_anomaly(const string& name, const json& param) {
+anomaly_base* create_anomaly(const string& name, const config& param) {
   using namespace pfi::text::json;
 
   if (name == "lof") {
-    // TODO: error handling of json_cast
-    anomaly_config conf = json_cast<anomaly_config>(param);
-    storage::lof_storage::config config = json_cast<storage::lof_storage::config>(param);
+    anomaly_config conf = config_cast_check<anomaly_config>(param);
+    storage::lof_storage::config config = config_cast_check<storage::lof_storage::config>(param);
 
     return new lof(config, recommender::create_recommender(conf.method, conf.parameter));
   } else {

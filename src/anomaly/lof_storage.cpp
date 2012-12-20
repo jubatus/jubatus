@@ -20,6 +20,7 @@
 #include <sstream>
 #include <stdexcept>
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../recommender/recommender_factory.hpp"
 #include "../recommender/euclid_lsh.hpp"
 #include "anomaly_type.hpp"
@@ -46,7 +47,7 @@ lof_storage::lof_storage()
   : neighbor_num_(DEFAULT_NEIGHBOR_NUM)
   , reverse_nn_num_(DEFAULT_REVERSE_NN_NUM)
   , nn_engine_(recommender::create_recommender("euclid_lsh",
-      pfi::text::json::to_json(recommender::euclid_lsh::config())))
+      jsonconfig::config(pfi::text::json::to_json(recommender::euclid_lsh::config()))))
 {
 }
 

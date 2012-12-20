@@ -20,12 +20,15 @@
 #include <pficommon/text/json.h>
 
 namespace jubatus {
+namespace jsonconfig {
+  class config;
+} // jsonconfig
 namespace anomaly {
 
 class anomaly_base;
 
 anomaly_base* create_anomaly(const std::string& name,
-                             const pfi::text::json::json& config);
+                             const jsonconfig::config& param);
 
 }
 }

@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 #include "lof_storage.hpp"
 #include "lof.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../recommender/euclid_lsh.hpp"
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/text/json.h>
@@ -52,7 +53,7 @@ class lof_impl : public lof{
   
   lof_impl() : 
     lof(lof_storage::config(), recommender::create_recommender("euclid_lsh",
-          pfi::text::json::to_json(recommender::euclid_lsh::config())) ){
+          jsonconfig::config(pfi::text::json::to_json(recommender::euclid_lsh::config()))) ){
     // make mock
     orig_.set("r1", "a1", 0.0);
     orig_.set("r1", "a2", 0.0);
