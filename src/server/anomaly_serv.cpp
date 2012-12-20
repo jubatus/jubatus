@@ -218,4 +218,5 @@ float anomaly_serv::selective_update(const string& host,
   }
 }
 
-}} // namespace jubatus::server
+} // server
+} // jubatus
