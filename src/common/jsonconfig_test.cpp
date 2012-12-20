@@ -410,7 +410,7 @@ struct server_conf {
   }
 };
 
-TEST(jsonconfig_cast, error) {
+TEST(jsonconfig_cast, config_cast_error) {
   config conf(lexical_cast<json>("{\"web_server\": { \"host\" : 123}, \"users\": [\"abc\", 1] }"));
 
   config_error_list errors;
@@ -446,22 +446,14 @@ TEST(jsonconfig_cast, cast_check_error) {
     FAIL();
   } catch (const cast_check_error& e) {
     const config_error_list& errors = e.errors();
-    EXPECT_EQ(0, errors.size());
+    EXPECT_EQ(3, errors.size());
 
     type_error* e1 = dynamic_cast<type_error*>(errors[0].get());
     ASSERT_TRUE(e1);
     EXPECT_EQ(".web_server.host", e1->path());
     EXPECT_EQ(json::Integer, e1->actual());
 
-    not_found* e2 = dynamic_cast<not_found*>(errors[1].get());
-    ASSERT_TRUE(e2);
-    EXPECT_EQ(".web_server", e2->path());
-    EXPECT_EQ("port", e2->key());
-
-    type_error* e3 = dynamic_cast<type_error*>(errors[2].get());
-    ASSERT_TRUE(e3);
-    EXPECT_EQ(".users[1]", e3->path());
-    EXPECT_EQ(json::Integer, e3->actual());
+    // same code of the 'config_cast_error'
   }
 }
 

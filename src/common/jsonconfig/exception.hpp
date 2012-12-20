@@ -22,9 +22,11 @@
 #include <stdexcept>
 #include <string>
 #include <typeinfo>
+#include <vector>
 
 #include "../exception.hpp"
 #include <pficommon/text/json.h>
+#include <pficommon/lang/shared_ptr.h>
 
 namespace jubatus {
 namespace jsonconfig {
@@ -102,6 +104,25 @@ class not_found : public config_error {
 
  private:
   std::string key_;
+};
+
+// cast_check_error DOES NOT INHERIT Config_error
+class cast_check_error : public exception::jubaexception<cast_check_error> {
+ public:
+  cast_check_error(const std::vector<pfi::lang::shared_ptr<config_error> >& errors);
+
+  ~cast_check_error() throw();
+
+  size_t size() const {
+    return errors_.size();
+  }
+
+  const std::vector<pfi::lang::shared_ptr<config_error> >& errors() const {
+    return errors_;
+  }
+
+ private:
+  std::vector<pfi::lang::shared_ptr<config_error> > errors_;
 };
 
 } // jsonconfig

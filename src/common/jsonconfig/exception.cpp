@@ -91,5 +91,11 @@ not_found::not_found(const std::string& path, const std::string& key)
 
 not_found::~not_found() throw() {}
 
+cast_check_error::cast_check_error(const std::vector<pfi::lang::shared_ptr<config_error> >& errors)
+ : errors_(errors.begin(), errors.end()) {
+}
+
+cast_check_error::~cast_check_error() throw() {}
+
 } // jsonconfig
 } // jubatus

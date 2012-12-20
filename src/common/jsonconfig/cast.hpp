@@ -209,6 +209,18 @@ T config_cast(const config& c, config_error_list& errors) {
   return value;
 }
 
+template <class T>
+T config_cast_check(const config& c) {
+  config_error_list errors;
+  T value;
+  json_config_iarchive_cast cast(c, &errors);
+  serialize(cast, value);
+  if (!errors.empty()) {
+    throw JUBATUS_EXCEPTION(cast_check_error(errors));
+  }
+  return value;
+}
+
 } // jsonconfig
 } // jubatus
 
