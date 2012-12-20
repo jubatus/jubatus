@@ -88,7 +88,7 @@ class config {
 
   config operator[](const std::string& key) const;
 
-  bool Include(const std::string& key) const;
+  bool contain(const std::string& key) const;
 
   iterator begin() const;
   iterator end() const;

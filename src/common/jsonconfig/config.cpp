@@ -67,7 +67,7 @@ config config::operator[](const std::string& key) const {
   }
 }
 
-bool config::Include(const std::string& key) const {
+bool config::contain(const std::string& key) const {
   return json_.count(key) > 0;
 }
 

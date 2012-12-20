@@ -148,7 +148,7 @@ inline void serialize(json_config_iarchive_cast& js, pfi::data::unordered_map<K,
 template <typename T>
 inline void serialize(json_config_iarchive_cast& js, pfi::data::serialization::named_value<pfi::data::optional<T> >& v) {
   using pfi::text::json::json;
-  if (js.get_config().Include(v.name) && (js.get_config()[v.name].get().type() != json::Null)) {
+  if (js.get_config().contain(v.name) && (js.get_config()[v.name].get().type() != json::Null)) {
     T value;
     json_from_config(js.get_config()[v.name], value, js.errors());
     v.v = value;
@@ -160,7 +160,7 @@ inline void serialize(json_config_iarchive_cast& js, pfi::data::serialization::n
 
 template <typename T>
 inline void serialize(json_config_iarchive_cast& js, pfi::data::serialization::named_value<T>& v) {
-  if (js.get_config().Include(v.name)) {
+  if (js.get_config().contain(v.name)) {
     json_from_config(js.get_config()[v.name], v.v, js.errors());
   } else {
     not_found e(js.get_config().path(), v.name);
