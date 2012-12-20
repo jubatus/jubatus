@@ -87,7 +87,10 @@ anomaly_serv::~anomaly_serv() {
 }
 
 void anomaly_serv::get_status(status_t& status) const {
-  // TODO: write something here
+  status_t my_status;
+  my_status["storage"] = anomaly_.get_model()->type();
+
+  status.insert(my_status.begin(), my_status.end());
 }
 
 bool anomaly_serv::set_config(std::string config) {
