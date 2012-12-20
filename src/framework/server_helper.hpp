@@ -110,12 +110,18 @@ public:
       server_->get_mixer()->start();
     }
 
-    if (serv.serv(a.port, a.bind_address, a.threadnum)) {
+    try {
+      serv.serv(a.port, a.bind_address, a.threadnum);
       return 0;
-    } else {
-      LOG(FATAL) << "failed starting server: any process using port " << a.port << "?";
-      return -1;
+    } catch( mp::system_error &e ) {
+      if ( e.code == EADDRINUSE )
+        LOG(FATAL) << "failed starting server: any process using port " << a.port << "?";
+      else
+        LOG(FATAL) << e.what();
+    } catch( std::exception &e ) {
+      LOG(FATAL) << e.what();
     }
+    return -1;
   }
 
   common::cshared_ptr<Server> server() const {

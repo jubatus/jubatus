@@ -64,8 +64,16 @@ int keeper::run()
     //
 
     return 0; // never return
+
   } catch (const jubatus::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
-    return -1;
+  } catch( mp::system_error &e ) {
+    if ( e.code == EADDRINUSE )
+      LOG(FATAL) << "failed starting server: any process using port " << a_.port << "?";
+    else
+      LOG(FATAL) << e.what();
+  } catch( std::exception &e ) {
+    LOG(FATAL) << e.what();
   }
+  return -1;
 }
