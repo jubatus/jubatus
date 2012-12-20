@@ -30,13 +30,13 @@ namespace jubatus {
 namespace jsonconfig {
 
 TEST(jsonconfig, bool) {
-  json j = json(new json_bool(false));
+  json j(new json_bool(false));
   EXPECT_EQ(false, config_root(j).As<bool>());
 }
 
 TEST(jsonconfig, bool_type_error) {
   try {
-    json j = json(new json_bool(false));
+    json j(new json_bool(false));
     config_root(j).As<int>();
     FAIL();
   } catch (const type_error& e) {
@@ -46,13 +46,13 @@ TEST(jsonconfig, bool_type_error) {
 }
 
 TEST(jsonconfig, int) {
-  json j = json(new json_integer(10));
+  json j(new json_integer(10));
   EXPECT_EQ(10, config_root(j).As<int>());
 }
 
 TEST(jsonconfig, int_type_error) {
   try {
-    json j = json(new json_integer(10));
+    json j(new json_integer(10));
     config_root(j).As<std::string>();
     FAIL();
   } catch (const type_error& e) {
@@ -62,13 +62,13 @@ TEST(jsonconfig, int_type_error) {
 }
 
 TEST(jsonconfig, float) {
-  json j = json(new json_float(0.1));
+  json j(new json_float(0.1));
   EXPECT_FLOAT_EQ(0.1, config_root(j).As<float>());
 }
 
 TEST(jsonconfig, float_type_error) {
   try {
-    json j = json(new json_float(0.1));
+    json j(new json_float(0.1));
     config_root(j).As<std::string>();
     FAIL();
   } catch (const type_error& e) {
@@ -78,13 +78,13 @@ TEST(jsonconfig, float_type_error) {
 }
 
 TEST(jsonconfig, array) {
-  json j = json(new json_array());
+  json j(new json_array());
   j.add(json(new json_integer(10)));
   EXPECT_EQ(10, config_root(j)[0].As<int>());
 }
 
 TEST(jsonconfig, array_out_of_range) {
-  json j = json(new json_array());
+  json j(new json_array());
   try {
     config_root(j)[1].As<int>();
     FAIL();
@@ -96,7 +96,7 @@ TEST(jsonconfig, array_out_of_range) {
 }
 
 TEST(jsonconfig, array_type_error) {
-  json j = json(new json_integer(10));
+  json j(new json_integer(10));
   config_root c(j);
   try {
     c[1];
@@ -108,26 +108,26 @@ TEST(jsonconfig, array_type_error) {
 }
 
 TEST(jsonconfig, object) {
-  json j = json(new json_object());
+  json j(new json_object());
   j["age"] = json(new json_integer(10));
   EXPECT_EQ(10, config_root(j)["age"].As<int>());
 }
 
 TEST(jsonconfig, object_not_found) {
-  json j = json(new json_object());
+  json j(new json_object());
   j["age"] = json(new json_integer(10));
   config_root c(j);
   try {
     c["name"];
     FAIL();
-  } catch (not_found& e) {
+  } catch (const not_found& e) {
     EXPECT_EQ("name", e.key());
     EXPECT_EQ("", e.path());
   }
 }
 
 TEST(jsonconfig, object_type_error) {
-  json j = json(new json_integer(10));
+  json j(new json_integer(10));
   config_root c(j);
   try {
     c["age"];
@@ -139,7 +139,7 @@ TEST(jsonconfig, object_type_error) {
 }
 
 TEST(jsonconfig, error_path) {
-  json j = json(new json_array());
+  json j(new json_array());
   j.add(json(new json_object()));
   j[0]["user"] = json(new json_object());
   j[0]["user"]["age"] = json(new json_integer(10));
@@ -199,7 +199,7 @@ TEST(jsonconfig_cast, error_path) {
   try {
     config_cast<map<string, vector<int> > >(conf);
     FAIL();
-  } catch (type_error& e) {
+  } catch (const type_error& e) {
     EXPECT_EQ(".value[2]", e.path());
     EXPECT_EQ(json::String, e.actual());
     EXPECT_EQ(json::Integer, e.expect());
@@ -212,7 +212,7 @@ TEST(jsonconfig_cast, error_convert_map) {
   try {
     config_cast<map<string, map<string, string> > >(conf);
     FAIL();
-  } catch (type_error& e) {
+  } catch (const type_error& e) {
     EXPECT_EQ(".value", e.path());
     EXPECT_EQ(json::Array, e.actual());
     EXPECT_EQ(json::Object, e.expect());
@@ -225,7 +225,7 @@ TEST(jsonconfig_cast, error_convert_unordered_map) {
   try {
     config_cast<map<string, pfi::data::unordered_map<string, string> > >(conf);
     FAIL();
-  } catch (type_error& e) {
+  } catch (const type_error& e) {
     EXPECT_EQ(".value", e.path());
     EXPECT_EQ(json::Array, e.actual());
     EXPECT_EQ(json::Object, e.expect());
@@ -248,7 +248,7 @@ TEST(jsonconfig_cast, named_not_found) {
   try {
     opt1 a = config_cast<opt1>(conf);
     FAIL();
-  } catch (not_found& e) {
+  } catch (const not_found& e) {
     EXPECT_EQ("", e.path());
     EXPECT_EQ("abc", e.key());
   }
@@ -299,7 +299,7 @@ TEST(jsonconfig_cast, named_nest_not_found) {
   try {
     config_cast<opt2>(conf);
     FAIL();
-  } catch (not_found& e) {
+  } catch (const not_found& e) {
     EXPECT_EQ("", e.path());
     EXPECT_EQ("test", e.key());
   }
