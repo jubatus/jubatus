@@ -49,19 +49,19 @@ service graph {
   string create_node(0: string name) # //@cht
 
   #@cht(2) #@update #@pass
-  int remove_node(0: string name, 1: string nid) # //@cht
+  bool remove_node(0: string name, 1: string nid) # //@cht
 
   #@cht #@update #@all_and
-  int update_node(0: string name, 1: string nid, 2: property p) # //@cht
+  bool update_node(0: string name, 1: string nid, 2: property p) # //@cht
 
   #@cht(1) #@nolock #@all_and
   ulong create_edge(0: string name, 1: string nid, 2: edge_info ei) # //@cht
 
   #@cht #@update #@all_and
-  int update_edge(0: string name, 1: string nid, 2: ulong eid, 3: edge_info ei) # //@cht
+  bool update_edge(0: string name, 1: string nid, 2: ulong eid, 3: edge_info ei) # //@cht
 
   #@cht #@update #@all_and
-  int remove_edge(0: string name, 1: string nid, 2: ulong e) # //@cht
+  bool remove_edge(0: string name, 1: string nid, 2: ulong e) # //@cht
 
   #@random #@analysis #@pass
   double centrality(0: string name, 1: string nid,
@@ -80,10 +80,10 @@ service graph {
   list<string>  shortest_path(0: string name, 1: shortest_path_req r) # //@random
 
   #@broadcast #@update #@all_and
-  int update_index(0: string name) # //@broadcast
+  bool update_index(0: string name) # //@broadcast
 
   #@broadcast #@update #@all_and
-  int clear(0: string name) # //@broadcast
+  bool clear(0: string name) # //@broadcast
 
   #@cht #@analysis #@pass
   node_info get_node(0: string name, 1: string nid) # //@cht
@@ -101,10 +101,10 @@ service graph {
   map<string, map<string, string> >  get_status(0: string name)
 
   #@internal #@update #@pass
-  int create_node_here(0: string name, 1: string nid)
+  bool create_node_here(0: string name, 1: string nid)
   #@internal #@update #@pass
-  int remove_global_node(0: string name, 1: string nid)
+  bool remove_global_node(0: string name, 1: string nid)
 
   #@internal #@update #@pass
-  int create_edge_here(0: string name, 1: ulong eid, 2: edge_info ei)
+  bool create_edge_here(0: string name, 1: ulong eid, 2: edge_info ei)
 }

@@ -10,19 +10,19 @@ int main(int args, char** argv){
   try{
     keeper k(keeper_argv(args,argv,"graph"));
     k.register_async_random<std::string >("create_node"); //pass nolock
-    k.register_async_cht<2, int >("remove_node", pfi::lang::function<int(int,int)>(&pass<int >)); //update
-    k.register_async_cht<2, int, property >("update_node", pfi::lang::function<int(int,int)>(&all_and)); //update
+    k.register_async_cht<2, bool >("remove_node", pfi::lang::function<bool(bool,bool)>(&pass<bool >)); //update
+    k.register_async_cht<2, bool, property >("update_node", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_cht<1, unsigned long, edge_info >("create_edge", pfi::lang::function<unsigned long(unsigned long,unsigned long)>(&all_and)); //nolock
-    k.register_async_cht<2, int, unsigned long, edge_info >("update_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
-    k.register_async_cht<2, int, unsigned long >("remove_edge", pfi::lang::function<int(int,int)>(&all_and)); //update
+    k.register_async_cht<2, bool, unsigned long, edge_info >("update_edge", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+    k.register_async_cht<2, bool, unsigned long >("remove_edge", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_random<double, std::string, int, preset_query >("centrality"); //pass analysis
     k.register_async_broadcast<bool, preset_query >("add_centrality_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_broadcast<bool, preset_query >("add_shortest_path_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_broadcast<bool, preset_query >("remove_centrality_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_broadcast<bool, preset_query >("remove_shortest_path_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_random<std::vector<std::string >, shortest_path_req >("shortest_path"); //pass analysis
-    k.register_async_broadcast<int >("update_index", pfi::lang::function<int(int,int)>(&all_and)); //update
-    k.register_async_broadcast<int >("clear", pfi::lang::function<int(int,int)>(&all_and)); //update
+    k.register_async_broadcast<bool >("update_index", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
+    k.register_async_broadcast<bool >("clear", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_cht<2, node_info >("get_node", pfi::lang::function<node_info(node_info,node_info)>(&pass<node_info >)); //analysis
     k.register_async_cht<2, edge_info, unsigned long >("get_edge", pfi::lang::function<edge_info(edge_info,edge_info)>(&pass<edge_info >)); //analysis
     k.register_async_broadcast<bool, std::string >("save", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
