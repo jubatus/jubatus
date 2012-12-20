@@ -53,7 +53,7 @@ int keeper::run()
     jubatus::util::set_exit_on_term();
     jubatus::util::ignore_sigpipe();
 
-    this->instance.listen( "0.0.0.0", a_.port );
+    this->instance.listen( a_.bind_address, a_.port );
     this->instance.run( a_.threadnum );
 
     // TODO: check server start error. and log error message like:

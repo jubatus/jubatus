@@ -54,6 +54,8 @@ struct server_argv {
 
   bool join;
   int port;
+  std::string bind_address;
+  std::string bind_if;
   int timeout;
   int threadnum;
   std::string program_name;
@@ -84,6 +86,8 @@ struct keeper_argv {
   keeper_argv();
   
   int port;
+  std::string bind_address;
+  std::string bind_if;
   int timeout;
   int threadnum;
   std::string program_name;

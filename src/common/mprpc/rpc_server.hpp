@@ -65,6 +65,7 @@ public:
                          const typename async_vmethod<Tuple>::type &f);
 
   bool serv(uint16_t port, int nthreads);
+  bool serv(uint16_t port, const std::string &bind_address, int nthreads);
   msgpack::rpc::server instance;
 
 private:

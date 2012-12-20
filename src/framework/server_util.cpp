@@ -43,6 +43,8 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
 
   cmdline::parser p;
   p.add<int>("rpc-port", 'p', "port number", false, 9199);
+  p.add<std::string>("listen_addr", 'b', "bind IP address", false, "" );
+  p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
   p.add<int>("thread", 'c', "concurrency = thread number", false, 2);
   p.add<int>("timeout", 't', "time out (sec)", false, 10);
   p.add<std::string>("tmpdir", 'd', "directory to save and load models", false, "/tmp");
@@ -68,14 +70,24 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   }
 
   port = p.get<int>("rpc-port");
+  bind_address = p.get<std::string>("listen_addr");
+  bind_if = p.get<std::string>("listen_if");
   threadnum = p.get<int>("thread");
   timeout = p.get<int>("timeout");
   program_name = jubatus::util::get_program_name();
   tmpdir = p.get<std::string>("tmpdir");
   logdir = p.get<std::string>("logdir");
 
-  //    eth = "localhost";
-  eth = jubatus::common::get_default_v4_address();
+  // determine listen-address and IPaddr used as ZK 'node-name'
+  // TODO: check bind_address is valid format
+  if ( !bind_address.empty() ) {
+    eth = bind_address;
+  } else if ( !bind_if.empty() ) {
+    bind_address = eth = jubatus::util::get_ip( bind_if.c_str() );
+  } else {
+    bind_address = "0.0.0.0";
+    eth = jubatus::common::get_default_v4_address();
+  }
 
 #ifdef HAVE_ZOOKEEPER_H
   z = p.get<std::string>("zookeeper");
@@ -170,6 +182,8 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
 
   cmdline::parser p;
   p.add<int>("rpc-port", 'p', "port number", false, 9199);
+  p.add<std::string>("listen_addr", 'b', "bind IP address", false, "" );
+  p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
   p.add<int>("thread", 'c', "concurrency = thread number", false, 16);
   p.add<int>("timeout", 't', "time out (sec)", false, 10);
 
@@ -185,12 +199,24 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   }
 
   port = p.get<int>("rpc-port");
+  bind_address = p.get<std::string>("listen_addr");
+  bind_if = p.get<std::string>("listen_if");
   threadnum = p.get<int>("thread");
   timeout = p.get<int>("timeout");
   program_name = jubatus::util::get_program_name();
   z = p.get<std::string>("zookeeper");
   logdir = p.get<std::string>("logdir");
-  eth = jubatus::common::get_default_v4_address();
+
+  // determine listen-address and IPaddr used as ZK 'node-name'
+  // TODO: check bind_address is valid format
+  if ( !bind_address.empty() ) {
+    eth = bind_address;
+  } else if ( !bind_if.empty() ) {
+    bind_address = eth = jubatus::util::get_ip( bind_if.c_str() );
+  } else {
+    bind_address = "0.0.0.0";
+    eth = jubatus::common::get_default_v4_address();
+  }
 
   if(p.exist("logdir")){
     set_log_destination(jubatus::util::get_program_name());

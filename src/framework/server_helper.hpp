@@ -110,7 +110,7 @@ public:
       server_->get_mixer()->start();
     }
 
-    if (serv.serv(a.port, a.threadnum)) {
+    if (serv.serv(a.port, a.bind_address, a.threadnum)) {
       return 0;
     } else {
       LOG(FATAL) << "failed starting server: any process using port " << a.port << "?";

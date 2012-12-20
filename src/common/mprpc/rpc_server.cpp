@@ -53,7 +53,11 @@ void rpc_server::add_inner(const std::string &name, pfi::lang::shared_ptr<invoke
 }
 
 bool rpc_server::serv(uint16_t port, int nthreads) {
-  instance.listen( "0.0.0.0", port );
+  return this->serv( port, std::string("0.0.0.0"), nthreads );
+}
+
+bool rpc_server::serv(uint16_t port, const std::string &bind_address, int nthreads) {
+  instance.listen( bind_address, port );
   instance.run( nthreads );
 
   return false; // never return
