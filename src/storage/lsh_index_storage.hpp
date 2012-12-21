@@ -84,7 +84,8 @@ private:
   void serialize(Ar& ar) {
     ar & MEMBER(master_table_) & MEMBER(master_table_diff_)
         & MEMBER(lsh_table_) & MEMBER(lsh_table_diff_)
-        & MEMBER(shift_) & MEMBER(table_num_);
+        & MEMBER(shift_) & MEMBER(table_num_)
+        & MEMBER(key_manager_);
   }
 
   lsh_master_table_t::iterator remove_and_get_row(const std::string& row);
