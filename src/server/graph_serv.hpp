@@ -74,15 +74,15 @@ public:
 
   std::string create_node(); //update cht
 
-  int update_node(const std::string& nid, const property& p); //update cht
+  bool update_node(const std::string& nid, const property& p); //update cht
 
-  int remove_node(const std::string& nid); //update cht
+  bool remove_node(const std::string& nid); //update cht
 
-  int create_edge(const std::string& nid, const edge_info&); //update cht
+  edge_id_t create_edge(const std::string& nid, const edge_info&); //update cht
 
-  int update_edge(const std::string& nid, edge_id_t, const edge_info&); //update cht
+  bool update_edge(const std::string& nid, edge_id_t, const edge_info&); //update cht
 
-  int remove_edge(const std::string& nid, const edge_id_t& e); //update cht
+  bool remove_edge(const std::string& nid, const edge_id_t& e); //update cht
 
   double centrality(const std::string& nid, const centrality_type& ct,
 		    const preset_query& q) const; //analysis random
@@ -98,20 +98,20 @@ public:
   bool remove_shortest_path_query(const preset_query& q); //update broadcast
 
 
-  int update_index(); //update broadcast
+  bool update_index(); //update broadcast
 
-  int clear(); //update broadcast
+  bool clear(); //update broadcast
 
   node_info get_node(const std::string& nid) const; //analysis cht
 
   edge_info get_edge(const std::string& nid, const edge_id_t& e) const; //analysis cht
 
   // internal apis used between servers
-  int create_node_here(const std::string& nid);
-  int create_global_node(const std::string& nid);
-  int remove_global_node(const std::string& nid);
+  bool create_node_here(const std::string& nid);
+  bool create_global_node(const std::string& nid);
+  bool remove_global_node(const std::string& nid);
 
-  int create_edge_here(edge_id_t eid, const edge_info& ei);
+  bool create_edge_here(edge_id_t eid, const edge_info& ei);
 
 private:
   void selective_create_node_(const std::pair<std::string,int>& target,

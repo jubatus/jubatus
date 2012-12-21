@@ -76,15 +76,15 @@ config_data recommender_serv::get_config() {
   return config_;
 }
 
-int recommender_serv::clear_row(std::string id) {
+bool recommender_serv::clear_row(std::string id) {
   check_set_config();
 
   ++clear_row_cnt_;
   rcmdr_.get_model()->clear_row(id);
-  return 0;
+  return true;
 }
 
-int recommender_serv::update_row(std::string id,datum dat) {
+bool recommender_serv::update_row(std::string id,datum dat) {
   check_set_config();
 
   ++update_row_cnt_;
@@ -93,10 +93,10 @@ int recommender_serv::update_row(std::string id,datum dat) {
   sfv_diff_t v;
   converter_->convert_and_update_weight(d, v);
   rcmdr_.get_model()->update_row(id, v);
-  return 0;
+  return true;
 }
 
-int recommender_serv::clear() {
+bool recommender_serv::clear() {
   LOG(INFO) << __func__;
   check_set_config();
   clear_row_cnt_ = 0;
@@ -104,7 +104,7 @@ int recommender_serv::clear() {
   build_cnt_ = 0;
   mix_cnt_ = 0;
   rcmdr_.get_model()->clear();
-  return 0;
+  return true;
 }
 
 common::cshared_ptr<recommender::recommender_base> recommender_serv::make_model() {

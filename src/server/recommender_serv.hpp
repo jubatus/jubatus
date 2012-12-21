@@ -72,9 +72,9 @@ public:
   int set_config(config_data config);
   config_data get_config();
 
-  int clear_row(std::string id);
-  int update_row(std::string id, datum dat);
-  int clear();
+  bool clear_row(std::string id);
+  bool update_row(std::string id, datum dat);
+  bool clear();
 
   common::cshared_ptr<jubatus::recommender::recommender_base> make_model();
 
