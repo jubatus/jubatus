@@ -20,7 +20,6 @@ class classifier : public pfi::network::mprpc::rpc_server {
 public:
   classifier(double timeout_sec): rpc_server(timeout_sec) {
 
-    rpc_server::add<bool(std::string, std::string) >("set_config", pfi::lang::bind(&Impl::set_config, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<std::string(std::string) >("get_config", pfi::lang::bind(&Impl::get_config, static_cast<Impl*>(this), pfi::lang::_1));
     rpc_server::add<int32_t(std::string, std::vector<std::pair<std::string, datum > >) >("train", pfi::lang::bind(&Impl::train, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<std::vector<std::vector<estimate_result > >(std::string, std::vector<datum >) >("classify", pfi::lang::bind(&Impl::classify, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));

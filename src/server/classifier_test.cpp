@@ -69,47 +69,6 @@ void make_random_data(vector<pair<string, datum> >& data, size_t size) {
   }
 }
 
-string make_simple_config(const string& method) {
-  pfi::text::json::json js(new pfi::text::json::json_object());
-  js["method"] = pfi::text::json::json(new pfi::text::json::json_string(method));  
-  jubatus::fv_converter::converter_config config;
-  jubatus::fv_converter::num_rule rule = { "*", "num" };
-  config.num_rules.push_back(rule);
-  std::stringstream conv;
-  conv << config_to_string(config);
-  pfi::text::json::json jsc;
-  conv >> jsc;
-  js["converter"] = jsc;
-
-  std::stringstream ret;
-  ret << pfi::text::json::pretty(js);
-
-  return ret.str();
-}
-
-string make_empty_config(const string& method) {
-  pfi::text::json::json js(new pfi::text::json::json_object());
-  js["method"] = pfi::text::json::json(new pfi::text::json::json_string(method));  
-  jubatus::fv_converter::converter_config config;
-  std::stringstream conv;
-  conv << config_to_string(config);
-  pfi::text::json::json jsc;
-  conv >> jsc;
-  js["converter"] = jsc;
-
-  std::stringstream ret;
-  ret << pfi::text::json::pretty(js);
-
-  return ret.str();
-}
-
-void load_config(string& c){
-  ifstream ifs("./test_input/config.json");
-  stringstream ss;
-  ss << ifs.rdbuf();
-  c = ss.str();
-}
-
 string get_max_label(const vector<estimate_result>& result) {
   string max_label = "";
   double max_prob = 0;
@@ -129,7 +88,8 @@ namespace {
     pid_t child_;
 
     classifier_test(){
-      child_ = fork_process("classifier", PORT);
+      std::string config_path = "./test_input/config.classifier." + std::string(GetParam()) + ".json";
+      child_ = fork_process("classifier", PORT, config_path);
     };
     virtual ~classifier_test(){
       kill_process(child_);
@@ -137,7 +97,8 @@ namespace {
     virtual void restart_process(){
 
       kill_process(this->child_);
-      this->child_ = fork_process("classifier", PORT);
+      std::string config_path = "./test_input/config.classifier." + std::string(GetParam()) + ".json";
+      this->child_ = fork_process("classifier", PORT, config_path);
     };
   };
 
@@ -146,6 +107,7 @@ namespace {
   try{ statement__; FAIL();         \
   }catch(type__& __e__){ ASSERT_STREQ(what__, __e__.what()); }
 
+/*
 TEST_P(classifier_test, set_config_exception){
   jubatus::client::classifier c("localhost", PORT, 10);
   string config = make_empty_config("pa");
@@ -158,16 +120,11 @@ TEST_P(classifier_test, set_config_exception){
   ASSERT_THROW2(c.set_config("", config), std::exception, "unsupported method (saitama)");
   //  ASSERT_THROW(c.set_config("", config), std::exception);
 }
+*/
 
 TEST_P(classifier_test, simple){
   
   jubatus::client::classifier c("localhost", PORT, 10);
-  {
-    string config = make_empty_config(GetParam());
-    
-    c.set_config("", config);
-    c.get_config("");
-  }
   {
     datum d;
     vector<pair<string,datum> > v;
@@ -184,33 +141,17 @@ TEST_P(classifier_test, simple){
   }
 }
 
-TEST_P(classifier_test, config) {
-  string c;
-  load_config(c);
-  SUCCEED();
-}
-
 TEST_P(classifier_test, api_config) {
   jubatus::client::classifier cli("localhost", PORT, 10);
-  string to_set;
   string to_get;
-  load_config(to_set);
-
-  int res_set = cli.set_config(NAME, to_set);
-  //  ASSERT_(res_set.success) << res_set.error;
-  ASSERT_EQ(0, res_set);
 
   EXPECT_NO_THROW(to_get = cli.get_config(NAME));
-
-  EXPECT_TRUE(to_get.compare(to_set) == 0);
 }
 
 TEST_P(classifier_test, api_train){
   jubatus::client::classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
   string c;
-  load_config(c);
-  cli.set_config(NAME, c);
 
   vector<pair<string, datum> > data;
   make_random_data(data, example_size);
@@ -221,18 +162,11 @@ TEST_P(classifier_test, api_train){
 TEST_P(classifier_test, api_classify){
   jubatus::client::classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
-  string c;
-  load_config(c);
 
   vector<datum>  datas; //for classify
 
   vector<pair<string, datum> > data; //for train
   make_random_data(data, example_size);
-
-  ASSERT_THROW2(cli.classify(NAME, datas), std::exception, "config_not_set");
-  ASSERT_THROW2(cli.train(NAME, data), std::exception, "config_not_set");
-
-  cli.set_config(NAME, c);
 
   unsigned int res = cli.train(NAME, data);
   ASSERT_EQ(data.size(), res);
@@ -242,9 +176,6 @@ TEST_P(classifier_test, api_classify){
 void my_test(const char* method) {
   jubatus::client::classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
-  string c = make_simple_config(method);
-
-  cli.set_config(NAME, c);
 
   vector<pair<string, datum> > data;
   make_random_data(data, example_size);
@@ -309,9 +240,6 @@ TEST_P(classifier_test, my_test) {
 
 TEST_P(classifier_test, duplicated_keys){
   jubatus::client::classifier cli("localhost", PORT, 10);
-  string c = make_simple_config(GetParam());
-
-  cli.set_config(NAME, c);
 
   pfi::math::random::mtrand rand(0);
   datum d;
@@ -394,11 +322,8 @@ TEST_P(classifier_test, save_load){
   std::vector<std::pair<std::string,int> > v;
 
   const size_t example_size = 1000;
-  string c = make_simple_config(GetParam());
+//  string c = make_simple_config(GetParam());
 
-  int res_config = cli.set_config(NAME, c);
-  //  ASSERT_TRUE(res_config.success);
-  ASSERT_EQ(0, res_config);
   vector<pair<string, datum> > data;
   make_random_data(data, example_size);
   unsigned int res_train = cli.train(NAME, data);
@@ -420,7 +345,7 @@ TEST_P(classifier_test, save_load){
 
   map<string, map<string, string> > status = cli.get_status(NAME);
   string count_str = status.begin()->second["update_count"];
-  EXPECT_EQ(6, atoi(count_str.c_str()));
+  EXPECT_EQ(4, atoi(count_str.c_str()));
 }
 
 string classify_and_get_label(jubatus::client::classifier& cli, const datum& d) {
@@ -432,12 +357,6 @@ string classify_and_get_label(jubatus::client::classifier& cli, const datum& d) 
 TEST_P(classifier_test, save_load_2){
   jubatus::client::classifier cli("localhost", PORT, 10);
   std::vector<std::pair<std::string,int> > v;
-
-  // Setup
-  string c = make_simple_config(GetParam());
-
-  int res_config = cli.set_config(NAME, c);
-  ASSERT_EQ(0, res_config);
 
   // Test data
   datum pos;
@@ -481,12 +400,6 @@ TEST_P(classifier_test, save_load_2){
 
 TEST_P(classifier_test, nan){
   jubatus::client::classifier cli("localhost", PORT, 10);
-
-  // Setup
-  string c = make_simple_config(GetParam());
-
-  int res_config = cli.set_config(NAME, c);
-  ASSERT_EQ(0, res_config);
 
   datum d;
   d.num_values.push_back(make_pair("value", numeric_limits<float>::quiet_NaN()));

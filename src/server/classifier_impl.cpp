@@ -22,9 +22,6 @@ public:
     p_(new server_helper<classifier_serv>(a))
   {}
 
-  bool set_config(std::string name, std::string conf) //update broadcast
-  { JWLOCK__(p_); RETURN_OR_THROW(get_p()->set_config(conf)); }
-
   std::string get_config(std::string name) //analysis random
   { JRLOCK__(p_); RETURN_OR_THROW(get_p()->get_config()); }
 
