@@ -111,7 +111,8 @@ public:
     }
 
     try {
-      serv.serv(a.port, a.bind_address, a.threadnum);
+      serv.listen( a.port, a.bind_address );
+      serv.start( a.threadnum );
       return 0;
     } catch( mp::system_error &e ) {
       if ( e.code == EADDRINUSE )
