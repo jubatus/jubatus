@@ -93,7 +93,7 @@ void anomaly_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-bool anomaly_serv::set_config(std::string config) {
+bool anomaly_serv::set_config(const std::string& config) {
   LOG(INFO) << __func__;
 
   jsonconfig::config conf_root(lexical_cast<json>(config));
