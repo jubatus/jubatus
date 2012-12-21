@@ -127,7 +127,7 @@ pair<string,float > anomaly_serv::add(const datum& d) {
     float score = update(id_str, d);
     return make_pair(id_str, score);
   }
-    
+
   vector<pair<string, int> > nodes;
   float score = 0;
   find_from_cht(id_str, 2, nodes);
@@ -137,7 +137,7 @@ pair<string,float > anomaly_serv::add(const datum& d) {
   // this sequences MUST success,
   // in case of failures the whole request should be canceled
   score = selective_update(nodes[0].first, nodes[0].second, id_str, d);
-    
+
   for (size_t i = 1; i < nodes.size(); ++i) {
     try {
       selective_update(nodes[i].first, nodes[i].second, id_str, d);
