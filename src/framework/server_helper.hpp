@@ -36,6 +36,7 @@ class server_helper_impl {
 public:
   explicit server_helper_impl(const server_argv& a);
   void prepare_for_start(const server_argv& a, bool use_cht);
+  void prepare_for_run(const server_argv& a, bool use_cht);
 
   common::cshared_ptr<jubatus::common::lock_service> zk() const {
     return zk_;
@@ -104,6 +105,8 @@ public:
 
   int start(pfi::network::mprpc::rpc_server& serv) {
     const server_argv& a = server_->argv();
+
+    impl_.prepare_for_run(a, use_cht_);
 
     if (!a.is_standalone()) {
       server_->get_mixer()->start();
