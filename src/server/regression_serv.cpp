@@ -77,20 +77,7 @@ regression_serv::regression_serv(const framework::server_argv& a,
     exit(1);
   }
   
-  config_json conf;
-
-  try{
-    if (!a.configpath.empty()){
-      conf.load_json(a.configpath);
-    }else{
-      conf.load_json(a.z, a.type, a.name);
-    }
-  } catch (const jubatus::exception::jubatus_exception& e) {
-    LOG(ERROR) << e.what();
-    exit(1);
-  }
-
-  set_config(conf.config);
+  set_config(get_conf(a));
 }
 
 regression_serv::~regression_serv() {

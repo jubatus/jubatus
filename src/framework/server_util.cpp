@@ -37,6 +37,25 @@ void print_version(const std::string& progname){
   std::cout << "jubatus-" << VERSION << " (" << progname << ")" << std::endl;
 }
 
+std::string get_conf(const server_argv& a){
+
+  config_json conf;
+
+  try{
+    if (!a.configpath.empty()){
+      conf.load_json(a.configpath);
+    }else{
+#ifdef HAVE_ZOOKEEPER_H
+      conf.load_json(a.z, a.type, a.name);
+#endif
+    }
+  } catch (const jubatus::exception::jubatus_exception& e) {
+    LOG(ERROR) << e.what();
+    exit(1);
+  }
+  return conf.config;
+}
+
 void config_json::load_json(const std::string& zkhosts, const std::string& type, const std::string& name)
 {
   jubatus::common::config_fromzk(*ls, type, name, config);

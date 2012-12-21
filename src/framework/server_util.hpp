@@ -136,5 +136,8 @@ int run_server(int args, char** argv, const std::string& type)
   }
 }
 
+std::string get_conf(const server_argv& a);
+
+
 } // framework
 } // jubatus
