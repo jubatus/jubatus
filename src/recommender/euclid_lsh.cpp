@@ -203,13 +203,13 @@ vector<float> euclid_lsh::get_projection(uint32_t seed) {
 
 bool euclid_lsh::save_impl(ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
-  oa << lsh_index_;
+  oa << *this;
   return true;
 }
 
 bool euclid_lsh::load_impl(istream& is) {
   pfi::data::serialization::binary_iarchive ia(is);
-  ia >> lsh_index_;
+  ia >> *this;
   return true;
 }
 
