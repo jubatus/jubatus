@@ -154,8 +154,8 @@ float anomaly_serv::update(const string& id, const datum& d) {
   fv_converter::datum data;
   sfv_t v;
   convert(d, data);
-  converter_->convert(data, v);
-  // TODO: use wm_
+  converter_->convert_and_update_weight(data, v);
+
   anomaly_.get_model()->update_row(id, v);
   float score = anomaly_.get_model()->calc_anomaly_score(id);
   return score;
