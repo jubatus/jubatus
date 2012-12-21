@@ -40,7 +40,6 @@ recommender_base* create_recommender(const string& name,
   } else if (name == "lsh"){
     return new lsh;
   } else if (name == "euclid_lsh") {
-    // TODO: error handling of json_cast
     return new euclid_lsh(config_cast_check<euclid_lsh::config>(param));
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
