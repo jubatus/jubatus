@@ -49,13 +49,6 @@ def build(bld):
     use='PFICOMMON jubastorage jubaserver'
     )
 
-  bld.program(
-    features = 'gtest',
-    source = 'recommender_serv.cpp recommender_serv_test.cpp',
-    target = 'recommender_serv_test',
-    includes = '. ../framework',
-    use = 'PFICOMMON jubaconverter jubastorage jubaserver jubatus_recommender jubatus_framework')
-
   #new classifier
   build_one(bld, "classifier", 'jubaconverter jubastorage jubaserver')
 

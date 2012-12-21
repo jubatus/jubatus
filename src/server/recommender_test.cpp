@@ -27,7 +27,7 @@ namespace {
     pid_t child_;
 
     recommender_test(){
-      child_ = fork_process("recommender", PORT);
+      child_ = fork_process("recommender", PORT, "./test_input/config.recommender.json");
     };
     virtual ~recommender_test(){
       kill_process(child_);
@@ -35,27 +35,9 @@ namespace {
     virtual void restart_process(){
 
       kill_process(this->child_);
-      this->child_ = fork_process("recommender", PORT);
+      this->child_ = fork_process("recommender", PORT, "./test_input/config.recommender.json");
     };
   };
-
-std::string make_simple_config(const string& method) {
-  pfi::text::json::json js(new pfi::text::json::json_object());
-  js["method"] = pfi::text::json::json(new pfi::text::json::json_string(method));  
-  jubatus::fv_converter::converter_config config;
-  jubatus::fv_converter::num_rule rule = { "*", "num" };
-  config.num_rules.push_back(rule);
-  std::stringstream conv;
-  conv << config_to_string(config);
-  pfi::text::json::json jsc;
-  conv >> jsc;
-  js["converter"] = jsc;
-
-  std::stringstream ret;
-  ret << pfi::text::json::pretty(js);
-
-  return ret.str();
-}
 
 TEST_F(recommender_test, get_status){
   jubatus::client::recommender cli("localhost", PORT, 10);
@@ -71,9 +53,6 @@ TEST_F(recommender_test, small) {
 
   jubatus::client::recommender c("localhost", PORT, 10);
   
-  string conf = make_simple_config("lsh");
-  c.set_config(NAME, conf);
-
   jubatus::datum d;
   d.num_values.push_back(make_pair("f1", 1.0));
   c.update_row(NAME, "key", d);
@@ -86,27 +65,6 @@ TEST_F(recommender_test, small) {
 
   c.save(NAME, "name");
   c.load(NAME, "name");
-}
-
-TEST_F(recommender_test, throws_in_cast_not_configured) {
-  jubatus::client::recommender cli("localhost", PORT, 10);
-  EXPECT_THROW(cli.get_all_rows(NAME), std::exception);
-  EXPECT_THROW(cli.get_config(NAME), std::exception);
-  EXPECT_THROW(cli.clear_row(NAME,"k"), std::exception);
-
-  jubatus::datum d;
-  d.num_values.push_back(make_pair("f1", 1.0));
-  EXPECT_THROW(cli.update_row(NAME, "k", d), std::exception);
-
-  EXPECT_THROW(cli.complete_row_from_id(NAME, "k"), std::exception);
-  EXPECT_THROW(cli.complete_row_from_data(NAME, d), std::exception);
-  EXPECT_THROW(cli.similar_row_from_id(NAME, "k",1), std::exception);
-  EXPECT_THROW(cli.similar_row_from_data(NAME, d, 1), std::exception);
-  EXPECT_THROW(cli.decode_row(NAME, "k"), std::exception);
-  EXPECT_THROW(cli.clear(NAME), std::exception);
-  EXPECT_THROW(cli.similarity(NAME,d,d), std::exception);
-  EXPECT_THROW(cli.l2norm(NAME,d), std::exception);
-  EXPECT_THROW(cli.get_all_rows(NAME), std::exception);
 }
 
 sfv_diff_t make_vec(float v1, float v2, float v3) {
