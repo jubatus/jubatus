@@ -47,21 +47,7 @@ void config_fromzk(lock_service& z,
                     const string& type, const string& name,
                     string& config)
 {
-  string lock_path;
-  build_config_lock_path(lock_path, type, name);
-
-  if(!z.exists(lock_path))
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("node is not exists: " + lock_path));
-
-  common::lock_service_mutex zk_config_lock(z, lock_path);
-  int retry = 3;
-  while (!zk_config_lock.try_rlock()) {
-    if (retry == 0)
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any user is writing config?"));
-    retry--;
-    sleep(1);
-  }
-
+  // server must get read lock for config_lock before call this method.
   string path;
   build_config_path(path, type, name);
 

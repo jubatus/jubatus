@@ -37,6 +37,7 @@ public:
   explicit server_helper_impl(const server_argv& a);
   void prepare_for_start(const server_argv& a, bool use_cht);
   void prepare_for_run(const server_argv& a, bool use_cht);
+  void get_config_lock(const server_argv& a, int retry);
 
   common::cshared_ptr<jubatus::common::lock_service> zk() const {
     return zk_;
@@ -44,6 +45,7 @@ public:
 
 private:
   common::cshared_ptr<jubatus::common::lock_service> zk_;
+  pfi::lang::shared_ptr<common::try_lockable> zk_config_lock_;
 };
 
 template<typename Server>
@@ -55,6 +57,7 @@ public:
       : impl_(a), use_cht_(use_cht) {
 
     impl_.prepare_for_start(a, use_cht);
+    impl_.get_config_lock(a, 3);
     server_.reset(new Server(a, impl_.zk()));
   }
 

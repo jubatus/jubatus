@@ -59,7 +59,6 @@ void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
       LOG(INFO) << "joining to the cluseter " << a.name;
       LOG(ERROR) << "join is not supported yet :(";
     }
-
   }
 #endif
 }
@@ -68,14 +67,31 @@ void server_helper_impl::prepare_for_run(const server_argv& a, bool use_cht) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
     ls = zk_;
-    
+
     if (use_cht) {
       jubatus::common::cht::setup_cht_dir(*zk_, a.type, a.name);
       jubatus::common::cht ht(zk_, a.type, a.name);
       ht.register_node(a.eth, a.port);
     }
-   
+
     register_actor(*zk_, a.type, a.name, a.eth, a.port);
+  }
+#endif
+}
+
+void server_helper_impl::get_config_lock(const server_argv& a, int retry) {
+#ifdef HAVE_ZOOKEEPER_H
+  if (!a.is_standalone()) {
+    string lock_path;
+    common::build_config_lock_path(lock_path, a.type, a.name);
+    zk_config_lock_ = pfi::lang::shared_ptr<common::try_lockable>(new common::lock_service_mutex(*zk_, lock_path));
+
+    while (!zk_config_lock_->try_rlock()) {
+      if (retry == 0)
+        throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any user is writing config?"));
+      retry--;
+      sleep(1);
+    }
   }
 #endif
 }
