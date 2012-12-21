@@ -53,8 +53,14 @@ void config_fromzk(lock_service& z,
   if(!z.exists(lock_path))
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("node is not exists: " + lock_path));
 
-  common::lock_service_mutex zlk(z, lock_path);
-  while(!zlk.try_lock()){ ; }
+  common::lock_service_mutex zk_config_lock(z, lock_path);
+  int retry = 3;
+  while (!zk_config_lock.try_rlock()) {
+    if (retry == 0)
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any user is writing config?"));
+    retry--;
+    sleep(1);
+  }
 
   string path;
   build_config_path(path, type, name);
@@ -80,8 +86,14 @@ void config_tozk(lock_service& z,
   if(!z.exists(lock_path))
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("node is not exists: " + lock_path));
 
-  common::lock_service_mutex zlk(z, lock_path);
-  while(!zlk.try_lock()){ ; }
+  common::lock_service_mutex zk_config_lock(z, lock_path);
+  int retry = 3;
+  while(!zk_config_lock.try_lock()){
+    if (retry == 0)
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any user is writing config?"));
+    retry--;
+    sleep(1);
+  }
 
   if (!is_no_workers(z, type, name))
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any server is running: " + type + ", " + name));
@@ -110,8 +122,14 @@ void remove_config_fromzk(lock_service& z,
   if(!z.exists(lock_path))
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("node is not exists: " + lock_path));
 
-  common::lock_service_mutex zlk(z, lock_path);
-  while(!zlk.try_lock()){ ; }
+  common::lock_service_mutex zk_config_lock(z, lock_path);
+  int retry = 3;
+  while(!zk_config_lock.try_lock()){
+    if (retry == 0)
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any user is writing config?"));
+    retry--;
+    sleep(1);
+  }
 
   if (!is_no_workers(z, type, name))
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any server is running: " + type + ", " + name));
