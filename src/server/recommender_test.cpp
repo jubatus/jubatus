@@ -51,6 +51,15 @@ std::string make_simple_config(const string& method) {
   conv >> jsc;
   js["converter"] = jsc;
 
+  pfi::text::json::json param(new pfi::text::json::json_object());
+  // recommender's parameter
+  if (method == "lsh") {
+    param["bit_num"] = pfi::text::json::json(new pfi::text::json::json_integer(64));
+  } else if (method == "minhash") {
+    param["hash_num"] = pfi::text::json::json(new pfi::text::json::json_integer(64));
+  }
+  js["parameter"] = param;
+
   std::stringstream ret;
   ret << pfi::text::json::pretty(js);
 

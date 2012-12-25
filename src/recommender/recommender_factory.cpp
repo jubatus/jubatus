@@ -32,14 +32,13 @@ recommender_base* create_recommender(const string& name,
                                      const config& param) {
   using namespace pfi::text::json;
 
-  // TODO: use param for each method
   if (name == "inverted_index"){
     // inverted_index doesn't have parameter
     return new inverted_index;
   } else if (name == "minhash"){
     return new minhash(config_cast_check<minhash::config>(param));
   } else if (name == "lsh"){
-    return new lsh;
+    return new lsh(config_cast_check<lsh::config>(param));
   } else if (name == "euclid_lsh") {
     return new euclid_lsh(config_cast_check<euclid_lsh::config>(param));
   } else {

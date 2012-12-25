@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <pficommon/data/serialization.h>
+
 #include "recommender_base.hpp"
 #include "../storage/bit_index_storage.hpp"
 
@@ -24,7 +26,19 @@ namespace recommender {
 
 class lsh : public recommender_base {
 public:
+  struct config {
+    config();
+
+    int64_t bit_num;
+
+    template <typename Ar>
+    void serialize(Ar& ar) {
+      ar & MEMBER(bit_num);
+    }
+  };
+
   lsh(uint64_t base_num);
+  explicit lsh(const config& config);
   lsh();
   ~lsh();
 
