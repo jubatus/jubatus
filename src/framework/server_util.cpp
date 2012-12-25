@@ -110,7 +110,12 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   }
 
   if(p.exist("logdir")){
-    set_log_destination(jubatus::util::get_program_name());
+    if (jubatus::util::is_writable(logdir.c_str())) {
+      set_log_destination(jubatus::util::get_program_name());
+    } else {
+      std::cerr << "can't create log file: " << strerror(errno) << std::endl;
+      exit(1);
+    }
   } else {
     google::LogToStderr();
   }
@@ -219,7 +224,12 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   }
 
   if(p.exist("logdir")){
-    set_log_destination(jubatus::util::get_program_name());
+    if (jubatus::util::is_writable(logdir.c_str())) {
+      set_log_destination(jubatus::util::get_program_name());
+    } else {
+      std::cerr << "can't create log file: " << strerror(errno) << std::endl;
+      exit(1);
+    }
   } else {
     google::LogToStderr();
   }

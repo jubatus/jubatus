@@ -30,6 +30,7 @@
 #include <limits.h>
 
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <net/if.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
@@ -137,6 +138,22 @@ std::string get_user_name() {
   throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get user name")
     << jubatus::exception::error_api_func("getpwuid_r")
     << jubatus::exception::error_errno(ret));
+}
+
+bool is_writable(const char* dir_path) {
+  struct stat st_buf;
+  if (stat(dir_path, &st_buf) < 0)
+    return false;
+
+  if (!S_ISDIR(st_buf.st_mode)) {
+    errno = ENOTDIR;
+    return false;
+  }
+
+  if (access(dir_path, W_OK) < 0)
+    return false;
+
+  return true;
 }
 
 //local server list should be like:

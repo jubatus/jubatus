@@ -61,6 +61,13 @@ TEST(common, util_get_user_name){
   EXPECT_NE(std::string(""), user);
 }
 
+TEST(common, util_is_writable) {
+  std::string path = "tmp_test_directory";
+  mkdir(path.c_str(), S_IWUSR);
+  EXPECT_EQ(true, jubatus::util::is_writable(path.c_str()));
+  rmdir(path.c_str());
+}
+
 TEST(common, util_get_machine_status)
 {
   jubatus::util::machine_status_t status;
