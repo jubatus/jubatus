@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,24 +14,25 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef PA1_HPP_
-#define PA1_HPP_
+#pragma once
 
-#include "classifier_base.hpp"
+#include <pficommon/data/serialization.h>
 
-namespace jubatus{
-namespace classifier{
+namespace jubatus {
+namespace classifier {
 
-class PA1 : public classifier_base {
-public:
-  PA1(storage::storage_base* storage);
-  PA1(const classifier_config& config, storage::storage_base* storage);
-  void train(const sfv_t& fv, const std::string& label);
-  std::string name() const;
-private:
-  classifier_config config;
+struct classifier_config {
+  classifier_config()
+    : C(1.0f)
+  {}
+
+  float C;
+
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    ar & NAMED_MEMBER("regularization_weight", C);
+  }
 };
 
-}
-}
-#endif // PA1_HPP_
+} // classifier
+} //jubatus

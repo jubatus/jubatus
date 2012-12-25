@@ -17,30 +17,34 @@
 #include "classifier.hpp"
 #include "classifier_factory.hpp"
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../storage/storage_base.hpp"
 
 using namespace std;
+using namespace jubatus::jsonconfig;
 
 namespace jubatus {
 namespace classifier {
 
 classifier_base* classifier_factory::create_classifier(const std::string& name,
-                                                       const pfi::text::json::json& param,
+                                                       const jsonconfig::config& param,
                                                        jubatus::storage::storage_base* storage) {
   if (name == "perceptron") {
+    // perceptron doesn't have parameter
     return new perceptron(storage);
   } else if (name == "PA") {
+    // PA doesn't have parameter
     return new PA(storage);
   } else if (name == "PA1") {
-    return new PA1(storage);
+    return new PA1(config_cast_check<classifier_config>(param), storage);
   } else if (name == "PA2") {
-    return new PA2(storage);
+    return new PA2(config_cast_check<classifier_config>(param), storage);
   } else if (name == "CW") {
-    return new CW(storage);
+    return new CW(config_cast_check<classifier_config>(param), storage);
   } else if (name == "AROW") {
-    return new AROW(storage);
+    return new AROW(config_cast_check<classifier_config>(param), storage);
   } else if (name == "NHERD") {
-    return new NHERD(storage);
+    return new NHERD(config_cast_check<classifier_config>(param), storage);
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }

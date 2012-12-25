@@ -69,6 +69,20 @@ void make_random_data(vector<pair<string, datum> >& data, size_t size) {
   }
 }
 
+void insert_parameter(const string& method, pfi::text::json::json& js)
+{
+  pfi::text::json::json param(new pfi::text::json::json_object());
+  // classifier's parameter
+  if (!(method == "perceptron" || method == "PA")) {
+    float c = 1.001f;
+    if (method == "NHERD") {
+      c = 0.1f;
+    }
+    param["regularization_weight"] = pfi::text::json::json(new pfi::text::json::json_float(c));
+    js["parameter"] = param;
+  }
+}
+
 string make_simple_config(const string& method) {
   pfi::text::json::json js(new pfi::text::json::json_object());
   js["method"] = pfi::text::json::json(new pfi::text::json::json_string(method));  
@@ -80,6 +94,7 @@ string make_simple_config(const string& method) {
   pfi::text::json::json jsc;
   conv >> jsc;
   js["converter"] = jsc;
+  insert_parameter(method, js);
 
   std::stringstream ret;
   ret << pfi::text::json::pretty(js);
@@ -96,6 +111,7 @@ string make_empty_config(const string& method) {
   pfi::text::json::json jsc;
   conv >> jsc;
   js["converter"] = jsc;
+  insert_parameter(method, js);
 
   std::stringstream ret;
   ret << pfi::text::json::pretty(js);
@@ -107,7 +123,17 @@ void load_config(string& c){
   ifstream ifs("./test_input/config.json");
   stringstream ss;
   ss << ifs.rdbuf();
-  c = ss.str();
+
+  // insert parameter
+  pfi::text::json::json js;
+  ss >> js;
+  pfi::text::json::json param(new pfi::text::json::json_object());
+  const string method = pfi::text::json::json_cast<string>(js["method"]);
+  insert_parameter(method, js);
+
+  std::stringstream ret;
+  ret << pfi::text::json::pretty(js);
+  c = ret.str();
 }
 
 string get_max_label(const vector<estimate_result>& result) {

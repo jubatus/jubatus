@@ -19,6 +19,7 @@
 #include <vector>
 #include <string>
 #include <stdint.h>
+#include "classifier_config.hpp"
 
 namespace jubatus{
 

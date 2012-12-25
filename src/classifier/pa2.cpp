@@ -25,6 +25,10 @@ namespace classifier{
 PA2::PA2(storage::storage_base* storage) : classifier_base(storage){
 }
 
+PA2::PA2(const classifier_config& config, storage::storage_base* storage)
+  : classifier_base(storage){
+}
+
 void PA2::train(const sfv_t& sfv, const string& label){
   string incorrect_label;
   float margin = calc_margin(sfv, label, incorrect_label);
@@ -37,7 +41,7 @@ void PA2::train(const sfv_t& sfv, const string& label){
   if (sfv_norm == 0.f) {
     return;
   }
-  update_weight(sfv, loss / (sfv_norm + 1/(2 * C_)), label, incorrect_label);
+  update_weight(sfv, loss / (sfv_norm + 1/(2 * config.C)), label, incorrect_label);
 }
 
 string PA2::name() const {

@@ -1,4 +1,4 @@
-// Jubatus: Online machine learning framework for distributed environment
+// Jubatus: Online machine learning framework for distributed environment 
 // Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@ namespace classifier {
 
 using namespace storage;
 
-classifier_base::classifier_base(storage::storage_base* storage) : storage_(storage), C_(1.f), use_covars_(false) {
+classifier_base::classifier_base(storage::storage_base* storage) : storage_(storage), use_covars_(false) {
 }
 
 classifier_base::~classifier_base(){
@@ -45,14 +45,6 @@ void classifier_base::classify_with_scores(const sfv_t& sfv, classify_result& sc
   }
 }
 
-void classifier_base::set_C(float C){
-    C_ = C;
-}
-
-float classifier_base::C() const {
-  return C_;
-}
- 
 string classifier_base::classify(const sfv_t& fv) const {
   classify_result result;
   classify_with_scores(fv, result);

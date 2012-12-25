@@ -24,7 +24,12 @@ using namespace std;
 namespace jubatus{
 namespace classifier{
 
-AROW::AROW(storage::storage_base* storage): classifier_base(storage) {
+AROW::AROW(storage::storage_base* storage) : classifier_base(storage) {
+  classifier_base::use_covars_ = true;
+}
+
+AROW::AROW(const classifier_config& config, storage::storage_base* storage)
+  : classifier_base(storage), config(config) {
   classifier_base::use_covars_ = true;
 }
 
@@ -35,7 +40,7 @@ void AROW::train(const sfv_t& sfv, const string& label){
    if (margin >= 1.f) {
     return;
   }
-  float beta = 1.f / (variance + C_);
+  float beta = 1.f / (variance + config.C);
   float alpha = (1.f - margin) * beta; // max(0, 1-margin) = 1-margin 
   update(sfv, alpha, beta, label, incorrect_label);
 }

@@ -24,9 +24,14 @@ using namespace std;
 namespace jubatus{
 namespace classifier{
 
-NHERD::NHERD (storage::storage_base* storage) : classifier_base(storage) {
+NHERD::NHERD(storage::storage_base* storage) : classifier_base(storage) {
   classifier_base::use_covars_ = true;
-  set_C(0.1f);
+  config.C = 0.1f;
+}
+
+NHERD::NHERD(const classifier_config& config, storage::storage_base* storage)
+  : classifier_base(storage), config(config) {
+  classifier_base::use_covars_ = true;
 }
 
 void NHERD::train(const sfv_t& sfv, const string& label){
@@ -54,13 +59,14 @@ void NHERD::update(const sfv_t& sfv, float margin, float variance,
     float val_covariance_pos = val * pos_val.v2;
     float val_covariance_neg = val * neg_val.v2;
 
+    const float C = config.C;
     storage_->set2(feature, pos_label, 
-                   storage::val2_t(pos_val.v1 + (1.f - margin) * val_covariance_pos / (val_covariance_pos * val + 1.f / C_),
-                                   1.f / ((1.f / pos_val.v2) + (2 * C_ + C_ * C_ *  variance) * val * val)));
+                   storage::val2_t(pos_val.v1 + (1.f - margin) * val_covariance_pos / (val_covariance_pos * val + 1.f / C),
+                                   1.f / ((1.f / pos_val.v2) + (2 * C + C * C *  variance) * val * val)));
     if (neg_label != "")
       storage_->set2(feature, neg_label, 
-                     storage::val2_t(neg_val.v1 - (1.f - margin) * val_covariance_neg / (val_covariance_neg * val + 1.f / C_),
-                                     1.f / ((1.f / neg_val.v2) + (2 * C_ + C_ * C_ *  variance) * val * val)));
+                     storage::val2_t(neg_val.v1 - (1.f - margin) * val_covariance_neg / (val_covariance_neg * val + 1.f / C),
+                                     1.f / ((1.f / neg_val.v2) + (2 * C + C * C *  variance) * val * val)));
   }
 }
 

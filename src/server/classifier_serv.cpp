@@ -22,6 +22,7 @@
 #include "../classifier/classifier_factory.hpp"
 #include "../common/util.hpp"
 #include "../common/vector_util.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
@@ -101,8 +102,10 @@ int classifier_serv::set_config(const string& config) {
   converter_ = converter;
   (*converter_).set_weight_manager(wm_.get_model());
 
-  // TODO set param from config
-  pfi::text::json::json param;
+  jsonconfig::config param;
+  if (conf.parameter) {
+    param = *conf.parameter;
+  }
   classifier_.reset(classifier::classifier_factory::create_classifier(conf.method,
                                                           param,
                                                           clsfer_.get_model().get()));
