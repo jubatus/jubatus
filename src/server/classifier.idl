@@ -57,7 +57,7 @@ service classifier {
   #- - Parameters:
   #- 
   #-  - ``name`` : a string value to uniquely identifies a task in zookeeper quorum
-  #-  - ``data`` : list of datum for classifiy
+  #-  - ``data`` : list of datum for classify
   #- 
   #- - Returns:
   #- 
