@@ -30,8 +30,8 @@
 namespace jubatus {
 namespace exception {
 
-typedef error_info<struct error_at_file_, char const *> error_at_file;
-typedef error_info<struct error_at_func_, char const *> error_at_func;
+typedef error_info<struct error_at_file_, std::string> error_at_file;
+typedef error_info<struct error_at_func_, std::string> error_at_func;
 typedef error_info<struct error_at_line_, int> error_at_line;
 typedef error_info<struct error_errno_, int> error_errno;
 inline std::string to_string(const error_errno& info)
