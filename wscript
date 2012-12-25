@@ -52,7 +52,7 @@ def configure(conf):
   conf.check_cfg(package = 'libglog', args = '--cflags --libs')
   
   conf.check_cfg(package = 'pficommon', args = '--cflags --libs')
-  conf.check_cxx(header_name = 'pficommon/network/mprpc.h')
+  conf.check_cxx(header_name = 'pficommon/network/mprpc.h', use = 'MSGPACK')
 
   conf.check_cxx(header_name = 'unistd.h')
   conf.check_cxx(header_name = 'sys/types.h')
