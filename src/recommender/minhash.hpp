@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <pficommon/data/serialization.h>
+
 #include "recommender_base.hpp"
 #include "../storage/bit_index_storage.hpp"
 
@@ -24,7 +26,21 @@ namespace recommender {
 
 class minhash : public recommender_base {
 public:
+  struct config {
+    config()
+      : hash_num(64)
+    {}
+
+    int64_t hash_num;
+
+    template <typename Ar>
+    void serialize(Ar& ar) {
+      ar & MEMBER(hash_num);
+    }
+  };
+
   minhash();
+  explicit minhash(const config& config);
   ~minhash();
 
   void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;

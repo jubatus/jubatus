@@ -34,9 +34,10 @@ recommender_base* create_recommender(const string& name,
 
   // TODO: use param for each method
   if (name == "inverted_index"){
+    // inverted_index doesn't have parameter
     return new inverted_index;
   } else if (name == "minhash"){
-    return new minhash;
+    return new minhash(config_cast_check<minhash::config>(param));
   } else if (name == "lsh"){
     return new lsh;
   } else if (name == "euclid_lsh") {

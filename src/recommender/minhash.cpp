@@ -34,6 +34,10 @@ const uint64_t minhash::hash_prime = 0xc3a5c85c97cb3127ULL;
 minhash::minhash() : hash_num_ (64){
 }
 
+minhash::minhash(const config& config)
+  : hash_num_(config.hash_num) {
+}
+
 minhash::~minhash(){
 }
 
