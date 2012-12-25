@@ -128,7 +128,7 @@ void server_argv::boot_message(const std::string& progname) const {
   std::stringstream ss;
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth << ":" << port << '\n';
   ss << "    pid            : " << getpid() << '\n';
-  ss << "    user           : " << getenv("USER") << '\n';
+  ss << "    user           : " << jubatus::util::get_user_name() << '\n';
   ss << "    mode           : ";
   if(is_standalone()) {
     ss << "standalone mode\n";
@@ -236,7 +236,7 @@ void keeper_argv::boot_message(const std::string& progname) const {
   std::stringstream ss;
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth << ":" << port << '\n';
   ss << "    pid            : " << getpid() << '\n';
-  ss << "    user           : " << getenv("USER") << '\n';
+  ss << "    user           : " << jubatus::util::get_user_name() << '\n';
   ss << "    timeout        : " << timeout << '\n';
   ss << "    thread         : " << threadnum << '\n';
   ss << "    logdir         : " << logdir << '\n';

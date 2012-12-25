@@ -33,6 +33,7 @@
 #include <net/if.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#include <pwd.h>
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -117,6 +118,25 @@ std::string get_program_name()
       throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(string("Failed to get program name from path: ") + path)
        << jubatus::exception::error_file_name(path));
   return program_base_name;
+}
+
+std::string get_user_name() {
+  uid_t uid = getuid();
+  long buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+  char buf[buflen];
+  struct passwd pwd;
+  struct passwd* result;
+  int ret = getpwuid_r(uid, &pwd, buf, buflen, &result);
+  if (ret == 0) {
+    if (result != NULL) {
+      return result->pw_name;
+    }
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("User not found")
+      << jubatus::exception::error_api_func("getpwuid_r"));
+  }
+  throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get user name")
+    << jubatus::exception::error_api_func("getpwuid_r")
+    << jubatus::exception::error_errno(ret));
 }
 
 //local server list should be like:
