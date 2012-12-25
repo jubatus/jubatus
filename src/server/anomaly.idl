@@ -34,13 +34,6 @@
 #-       }
 #-     }
 #-    }
-message config_data {
-  #- configuration for NN search and LOF
-  0: map<string,string> config
-  
-  #- JSON formatted conveter configuration: see http://jubat.us/en/fv_convert.html for details
-  1: string converter
-}
 
 message datum {
   0: list<tuple<string, string> >  sv
