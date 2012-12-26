@@ -13,5 +13,8 @@
       {"key" : "*", "type" : "num"}
     ]
   },
+  "parameter" : {
+    "regularization_weight" : 1.001
+  },
   "method": "PA1"
 }

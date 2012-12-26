@@ -13,5 +13,8 @@
       {"key" : "*", "type" : "num"}
     ]
   },
+  "parameter" : {
+    "regularization_weight" : 0.1
+  },
   "method": "NHERD"
 }
