@@ -38,9 +38,6 @@ public:
   std::string classify(const sfv_t& fv) const;
   void classify_with_scores(const sfv_t& fv, classify_result& scores) const;
 
-  void set_C(float C);
-  float C() const;
-
   virtual std::string name() const = 0;
 
 protected:
@@ -53,7 +50,6 @@ protected:
   static float squared_norm(const sfv_t& sfv);
 
   jubatus::storage::storage_base* storage_;
-  float C_;
   bool use_covars_;  
 };
 

@@ -31,11 +31,19 @@ namespace recommender {
 
 static const uint64_t DEFAULT_BASE_NUM = 64; // should be in config
 
+lsh::config::config()
+  : bit_num(DEFAULT_BASE_NUM) {
+}
+
 lsh::lsh(uint64_t base_num)
     : base_num_(base_num) {
   if (base_num == 0) {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("base_num == 0"));
   }
+}
+
+lsh::lsh(const config& config)
+  : base_num_(config.bit_num) {
 }
 
 lsh::lsh() : base_num_(DEFAULT_BASE_NUM){
@@ -51,6 +59,13 @@ void lsh::similar_row(const sfv_t& query, vector<pair<string, float> > & ids, si
   bit_vector query_bv;
   calc_lsh_values(query, query_bv);
   row2lshvals_.similar_row(query_bv, ids, ret_num);
+}
+
+void lsh::neighbor_row(const sfv_t& query, vector<pair<string, float> > & ids, size_t ret_num) const{
+  similar_row(query, ids, ret_num);
+  for (size_t i = 0; i < ids.size(); ++i) {
+    ids[i].second = 1 - ids[i].second;
+  }
 }
 
 void lsh::clear(){

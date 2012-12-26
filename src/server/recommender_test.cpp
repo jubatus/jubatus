@@ -39,6 +39,33 @@ namespace {
     };
   };
 
+std::string make_simple_config(const string& method) {
+  pfi::text::json::json js(new pfi::text::json::json_object());
+  js["method"] = pfi::text::json::json(new pfi::text::json::json_string(method));  
+  jubatus::fv_converter::converter_config config;
+  jubatus::fv_converter::num_rule rule = { "*", "num" };
+  config.num_rules.push_back(rule);
+  std::stringstream conv;
+  conv << config_to_string(config);
+  pfi::text::json::json jsc;
+  conv >> jsc;
+  js["converter"] = jsc;
+
+  pfi::text::json::json param(new pfi::text::json::json_object());
+  // recommender's parameter
+  if (method == "lsh") {
+    param["bit_num"] = pfi::text::json::json(new pfi::text::json::json_integer(64));
+  } else if (method == "minhash") {
+    param["hash_num"] = pfi::text::json::json(new pfi::text::json::json_integer(64));
+  }
+  js["parameter"] = param;
+
+  std::stringstream ret;
+  ret << pfi::text::json::pretty(js);
+
+  return ret.str();
+}
+
 TEST_F(recommender_test, get_status){
   jubatus::client::recommender cli("localhost", PORT, 10);
   map<string,map<string,string> > status = cli.get_status(NAME);
