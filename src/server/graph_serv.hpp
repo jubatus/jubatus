@@ -47,7 +47,10 @@ struct mixable_graph : public framework::mixable<jubatus::graph::graph_base, std
                 std::string& mixed) const
   {
     mixed = lhs;
-    jubatus::graph::graph_wo_index::mix(rhs, mixed);
+    jubatus::graph::graph_wo_index* graph = dynamic_cast<jubatus::graph::graph_wo_index*>(get_model().get());
+    if (graph) {
+      graph->mix(rhs, mixed);
+    }
   };
 
   void put_diff_impl(const std::string& v)
@@ -69,6 +72,10 @@ public:
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
     return mixable_holder_;
   }
+
+  bool set_config(const std::string& config);
+  std::string get_config() const;
+  void check_set_config() const;
 
   void get_status(status_t& status) const;
 
@@ -128,6 +135,7 @@ private:
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
   common::global_id_generator idgen_;
 
+  std::string config_;
   mixable_graph g_;
 };
 
