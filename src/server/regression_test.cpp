@@ -19,6 +19,7 @@
 #include "regression_client.hpp"
 #include <vector>
 #include <string>
+#include <limits>
 #include "../regression/regression_test_util.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/converter_config.hpp"
@@ -79,6 +80,11 @@ string make_simple_config(const string& method) {
   pfi::text::json::json jsc;
   conv >> jsc;
   js["converter"] = jsc;
+
+  pfi::text::json::json param(new pfi::text::json::json_object());
+  param["sensitivity"] = pfi::text::json::json(new pfi::text::json::json_float(0.1f));
+  param["regularization_weight"] = pfi::text::json::json(new pfi::text::json::json_float(numeric_limits<float>::max()));
+  js["parameter"] = param;
 
   std::stringstream ret;
   ret << pfi::text::json::pretty(js);

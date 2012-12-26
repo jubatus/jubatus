@@ -19,6 +19,7 @@
 #include "../regression/regression_factory.hpp"
 #include "../common/util.hpp"
 #include "../common/vector_util.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
@@ -98,8 +99,10 @@ int regression_serv::set_config(const string& config) {
   converter_ = converter;
   (*converter_).set_weight_manager(wm_.get_model());
 
-  // TODO: use param
-  pfi::text::json::json param;
+  jsonconfig::config param;
+  if (conf.parameter) {
+    param = *conf.parameter;
+  }
   regression_.reset(jubatus::regression::regression_factory().create_regression(conf.method, param, gresser_.get_model().get()));
 
   // FIXME: switch the function when set_config is done
