@@ -58,7 +58,9 @@ std::string get_conf(const server_argv& a){
 
 void config_json::load_json(const std::string& zkhosts, const std::string& type, const std::string& name)
 {
+#ifdef HAVE_ZOOKEEPER_H
   jubatus::common::config_fromzk(*ls, type, name, config);
+#endif
 }
 
 void config_json::load_json(const std::string& filepath)
