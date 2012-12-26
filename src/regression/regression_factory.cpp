@@ -18,16 +18,19 @@
 #include "regression_factory.hpp"
 #include "regression.hpp"
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
+
+using namespace jubatus::jsonconfig;
 
 namespace jubatus {
 namespace regression {
 
 regression_base*
 regression_factory::create_regression(const std::string& name,
-                                      const pfi::text::json::json& param,
+                                      const jsonconfig::config& param,
                                       jubatus::storage::storage_base* storage) const{
   if (name == "PA") {
-    return new regression::PA(storage);
+    return new regression::PA(config_cast_check<regression::PA::config>(param), storage);
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }

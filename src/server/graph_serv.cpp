@@ -24,6 +24,7 @@
 
 #include "../common/util.hpp"
 #include "../common/membership.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../framework/aggregators.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../graph/graph_factory.hpp"
@@ -42,6 +43,20 @@ enum graph_serv_error {
   NODE_ALREADY_EXISTS = 0xDEADBEEF
 };
 
+namespace {
+
+struct graph_serv_config {
+  std::string method;
+  jsonconfig::config parameter;
+
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    ar
+        & MEMBER(method)
+        & MEMBER(parameter);
+  }
+};
+
 inline node_id uint642nodeid(uint64_t i) {
   return pfi::lang::lexical_cast<node_id, uint64_t>(i);
 }
@@ -57,13 +72,16 @@ inline node_id i2n(uint64_t i) {
 inline uint64_t n2i(const node_id& id) {
   return nodeid2uint64(id);
 }
+} // namespace
 
 graph_serv::graph_serv(const framework::server_argv& a,
                        const cshared_ptr<lock_service>& zk)
     : server_base(a),
       idgen_(a.is_standalone()) {
+  // TODO(suma or anyone): remove calling set_model/create_graph in constructor, must in set_config
+  jsonconfig::config param;
   cshared_ptr<jubatus::graph::graph_base> 
-    g(jubatus::graph::create_graph("graph_wo_index"));
+    g(jubatus::graph::create_graph("graph_wo_index", param));
   g_.set_model(g);
 
 #ifdef HAVE_ZOOKEEPER_H
@@ -83,13 +101,39 @@ graph_serv::graph_serv(const framework::server_argv& a,
 
 graph_serv::~graph_serv() {}
 
+bool graph_serv::set_config(const std::string& config) {
+  LOG(INFO) << __func__;
+
+  // TODO: error handling
+  jsonconfig::config conf_root(pfi::lang::lexical_cast<pfi::text::json::json>(config));
+  graph_serv_config conf = jsonconfig::config_cast_check<graph_serv_config>(conf_root);
+
+  g_.set_model(cshared_ptr<jubatus::graph::graph_base>(jubatus::graph::create_graph("graph_wo_index", conf.parameter)));
+  return true;
+}
+
+std::string graph_serv::get_config() const {
+  check_set_config();
+  return config_;
+}
+
+void graph_serv::check_set_config() const {
+  if (!g_.get_model()) {
+    throw JUBATUS_EXCEPTION(config_not_set());
+  }
+}
+
 void graph_serv::get_status(status_t& status) const {
+  check_set_config();
+
   status_t my_status;
   g_.get_model()->get_status(my_status);
   status.insert(my_status.begin(), my_status.end());
 }
 
 std::string graph_serv::create_node() { /* no lock here */
+  check_set_config();
+
   uint64_t nid = idgen_.generate();
   std::string nid_str = pfi::lang::lexical_cast<std::string>(nid);
 
@@ -123,11 +167,15 @@ std::string graph_serv::create_node() { /* no lock here */
 }
 
 int graph_serv::update_node(const std::string& id, const property& p) {
+  check_set_config();
+
   g_.get_model()->update_node(n2i(id), p);
   return 0;
 }
 
 int graph_serv::remove_node(const std::string& nid) {
+  check_set_config();
+
   g_.get_model()->remove_node(n2i(nid));
   g_.get_model()->remove_global_node(n2i(nid));
 
@@ -159,6 +207,8 @@ int graph_serv::remove_node(const std::string& nid) {
 
 //@cht
 int graph_serv::create_edge(const std::string& id, const edge_info& ei) {  /* no lock here */
+  check_set_config();
+
   edge_id_t eid = idgen_.generate();
   //TODO: assert id==ei.src
   
@@ -200,11 +250,15 @@ int graph_serv::create_edge(const std::string& id, const edge_info& ei) {  /* no
 
 //@random
 int graph_serv::update_edge(const std::string&, edge_id_t eid, const edge_info& ei) {
+  check_set_config();
+
   g_.get_model()->update_edge(eid, ei.p);
   return 0;
 }
 
 int graph_serv::remove_edge(const std::string&, const edge_id_t& id) {
+  check_set_config();
+
   g_.get_model()->remove_edge(id);
   return 0;
 }
@@ -212,6 +266,8 @@ int graph_serv::remove_edge(const std::string&, const edge_id_t& id) {
 //@random
 double graph_serv::centrality(const std::string& id, const centrality_type& s,
 			      const preset_query& q) const { 
+  check_set_config();
+
   if (s == 0) {
     jubatus::graph::preset_query q0;
     return g_.get_model()->centrality(n2i(id),
@@ -240,6 +296,8 @@ std::vector<node_id> graph_serv::shortest_path(const shortest_path_req& req) con
 
 //update, broadcast
 bool graph_serv::add_centrality_query(const preset_query& q0) {
+  check_set_config();
+
   jubatus::graph::preset_query q;
   framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0, q);
   g_.get_model()->add_centrality_query(q);
@@ -248,6 +306,8 @@ bool graph_serv::add_centrality_query(const preset_query& q0) {
 
 //update, broadcast
 bool graph_serv::add_shortest_path_query(const preset_query& q0) {
+  check_set_config();
+
   jubatus::graph::preset_query q;
   framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0, q);
   g_.get_model()->add_shortest_path_query(q);
@@ -256,6 +316,8 @@ bool graph_serv::add_shortest_path_query(const preset_query& q0) {
 
 //update, broadcast
 bool graph_serv::remove_centrality_query(const preset_query& q0) {
+  check_set_config();
+
   jubatus::graph::preset_query q;
   framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0, q);
   g_.get_model()->remove_centrality_query(q);
@@ -264,6 +326,8 @@ bool graph_serv::remove_centrality_query(const preset_query& q0) {
 
 //update, broadcast
 bool graph_serv::remove_shortest_path_query(const preset_query& q0) {
+  check_set_config();
+
   jubatus::graph::preset_query q;
   framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0, q);
   g_.get_model()->remove_shortest_path_query(q);
@@ -271,6 +335,8 @@ bool graph_serv::remove_shortest_path_query(const preset_query& q0) {
 }
 
 node_info graph_serv::get_node(const std::string& nid) const {
+  check_set_config();
+
   jubatus::graph::node_info info;
   g_.get_model()->get_node(n2i(nid), info);
   jubatus::node_info ret;
@@ -279,6 +345,8 @@ node_info graph_serv::get_node(const std::string& nid) const {
 }
 //@random
 edge_info graph_serv::get_edge(const std::string& nid, const edge_id_t& id) const {
+  check_set_config();
+
   jubatus::graph::edge_info info;
   g_.get_model()->get_edge((jubatus::graph::edge_id_t)id, info);
   jubatus::edge_info ret;
@@ -293,6 +361,8 @@ int graph_serv::update_index() {
   if (!argv().is_standalone()) {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("manual mix is available only in standalone mode."));
   }
+  check_set_config();
+
   clock_time start = get_clock_time();
   g_.get_model()->update_index();
   std::string diff;
@@ -304,6 +374,8 @@ int graph_serv::update_index() {
 }
 
 int graph_serv::clear() {
+  check_set_config();
+
   LOG(INFO) << __func__;
   if (g_.get_model()) {
     g_.get_model()->clear();
