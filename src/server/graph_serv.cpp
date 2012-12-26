@@ -78,11 +78,6 @@ graph_serv::graph_serv(const framework::server_argv& a,
                        const cshared_ptr<lock_service>& zk)
     : server_base(a),
       idgen_(a.is_standalone()) {
-  // TODO(suma or anyone): remove calling set_model/create_graph in constructor, must in set_config
-  jsonconfig::config param;
-  cshared_ptr<jubatus::graph::graph_base> 
-    g(jubatus::graph::create_graph("graph_wo_index", param));
-  g_.set_model(g);
 
 #ifdef HAVE_ZOOKEEPER_H
   zk_ = zk;
@@ -97,6 +92,13 @@ graph_serv::graph_serv(const framework::server_argv& a,
 
   mixer_->set_mixable_holder(mixable_holder_);
   mixable_holder_->register_mixable(&g_);
+
+  if (a.is_standalone() && a.configpath.empty()){
+    std::cerr << "can't detect server config." << std::endl;
+    exit(1);
+  }
+
+  set_config(get_conf(a));
 }
 
 graph_serv::~graph_serv() {}
@@ -108,7 +110,7 @@ bool graph_serv::set_config(const std::string& config) {
   jsonconfig::config conf_root(pfi::lang::lexical_cast<pfi::text::json::json>(config));
   graph_serv_config conf = jsonconfig::config_cast_check<graph_serv_config>(conf_root);
 
-  g_.set_model(cshared_ptr<jubatus::graph::graph_base>(jubatus::graph::create_graph("graph_wo_index", conf.parameter)));
+  g_.set_model(cshared_ptr<jubatus::graph::graph_base>(jubatus::graph::create_graph(conf.method, conf.parameter)));
   return true;
 }
 

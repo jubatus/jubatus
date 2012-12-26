@@ -23,7 +23,7 @@ namespace {
     pid_t child_;
 
     graph_test(){
-      child_ = fork_process("graph", PORT);
+      child_ = fork_process("graph", PORT, "./test_input/config.graph.json");
     };
     virtual ~graph_test(){
       kill_process(child_);
@@ -31,7 +31,7 @@ namespace {
     virtual void restart_process(){
 
       kill_process(this->child_);
-      this->child_ = fork_process("graph", PORT);
+      this->child_ = fork_process("graph", PORT, "./test_input/config.graph.json");
     };
   };
 
