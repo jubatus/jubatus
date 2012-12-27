@@ -42,7 +42,7 @@ std::string get_conf(const server_argv& a){
   config_json conf;
 
   try{
-    if (!a.configpath.empty()){
+    if (a.is_standalone()) {
       conf.load_json(a.configpath);
     }else{
 #ifdef HAVE_ZOOKEEPER_H
@@ -125,8 +125,14 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   interval_count = 512;
 #endif
 
-  if(!z.empty() && name.empty()){
+  if(!is_standalone() && name.empty()){
     std::cerr << "can't start multinode mode without name specified" << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
+  }
+
+  if (is_standalone() && configpath.empty()){
+    std::cerr << "can't start standalone mode without configpath specified" << std::endl;
     std::cerr << p.usage() << std::endl;
     exit(1);
   }

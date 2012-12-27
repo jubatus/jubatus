@@ -57,8 +57,10 @@ public:
       : impl_(a), use_cht_(use_cht) {
 
     impl_.prepare_for_start(a, use_cht);
-    impl_.get_config_lock(a, 3);
     server_.reset(new Server(a, impl_.zk()));
+
+    impl_.get_config_lock(a, 3);
+    server_->set_config(get_conf(a));
   }
 
   std::map<std::string, std::string> get_loads() const {

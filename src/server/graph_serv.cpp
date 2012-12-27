@@ -92,13 +92,6 @@ graph_serv::graph_serv(const framework::server_argv& a,
 
   mixer_->set_mixable_holder(mixable_holder_);
   mixable_holder_->register_mixable(&g_);
-
-  if (a.is_standalone() && a.configpath.empty()){
-    std::cerr << "can't detect server config." << std::endl;
-    exit(1);
-  }
-
-  set_config(get_conf(a));
 }
 
 graph_serv::~graph_serv() {}
