@@ -48,7 +48,9 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add<int>("thread", 'c', "concurrency = thread number", false, 2);
   p.add<int>("timeout", 't', "time out (sec)", false, 10);
   p.add<std::string>("tmpdir", 'd', "directory to save and load models", false, "/tmp");
-  p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false);
+  p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false, "");
+  p.add<int,cmdline::range_reader<int> >("loglevel", 'e', "verbosity of log messages", false,
+                                         google::INFO, cmdline::range(google::INFO, google::FATAL));
 
 #ifdef HAVE_ZOOKEEPER_H
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
@@ -77,6 +79,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   program_name = jubatus::util::get_program_name();
   tmpdir = p.get<std::string>("tmpdir");
   logdir = p.get<std::string>("logdir");
+  loglevel = p.get<int>("loglevel");
 
   // determine listen-address and IPaddr used as ZK 'node-name'
   // TODO: check bind_address is valid format
@@ -109,23 +112,19 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
     exit(1);
   }
 
-  if(p.exist("logdir")){
-    if (jubatus::util::is_writable(logdir.c_str())) {
-      set_log_destination(jubatus::util::get_program_name());
-    } else {
-      std::cerr << "can't create log file: " << strerror(errno) << std::endl;
-      exit(1);
-    }
-  } else {
-    google::LogToStderr();
+  if ( (!logdir.empty()) && (!jubatus::util::is_writable(logdir.c_str())) ) {
+    std::cerr << "can't create log file: " << strerror(errno) << std::endl;
+    exit(1);
   }
+  set_log_destination(jubatus::util::get_program_name());
 
   boot_message(jubatus::util::get_program_name());
 }
 
 server_argv::server_argv():
   join(false), port(9199), timeout(10), threadnum(2), z(""), name(""),
-  tmpdir("/tmp"), logdir(""), eth("localhost"), interval_sec(5), interval_count(1024)
+  tmpdir("/tmp"), logdir(""), loglevel(google::INFO), eth("localhost"),
+  interval_sec(5), interval_count(1024)
 {
 }
 
@@ -144,6 +143,7 @@ void server_argv::boot_message(const std::string& progname) const {
   ss << "    thread         : " << threadnum << '\n';
   ss << "    tmpdir         : " << tmpdir << '\n';
   ss << "    logdir         : " << logdir << '\n';
+  ss << "    loglevel       : " << google::GetLogSeverityName(loglevel) << '(' << loglevel << ')' << '\n';
 #ifdef HAVE_ZOOKEEPER_H
   ss << "    zookeeper      : " << z << '\n';
   ss << "    name           : " << name << '\n';
@@ -155,20 +155,22 @@ void server_argv::boot_message(const std::string& progname) const {
 }
 
 void server_argv::set_log_destination(const std::string& progname) const {
-  std::ostringstream basename;
-  basename <<  progname << '.' << eth << '_' << port;
-  for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
-    std::string log = logdir + '/';
-    log += basename.str() + '.';
-    if (!name.empty()) {
-      log += name + '.';
+  if (logdir.empty()) {
+    for (int severity = google::INFO; severity < google::NUM_SEVERITIES; severity++) {
+      google::SetLogDestination(severity, "");
     }
-    log += google::GetLogSeverityName(severity);
-    log += ".log.";
-    std::string link = basename.str() + '.';
-    link += pfi::lang::lexical_cast<std::string>(getpid());
-    google::SetLogDestination(severity, log.c_str());
-    google::SetLogSymlink(severity, link.c_str());
+    google::SetStderrLogging(loglevel);
+  } else {
+    for (int severity = google::INFO; severity < loglevel; severity++) {
+      google::SetLogDestination(severity, "");
+    }
+    std::ostringstream basename, logdest, symlink;
+    basename << progname << "." << eth << "_" << port;
+    logdest << logdir << "/" << basename.str() << "." << (name.empty() ? "" : name + ".") << "log.";
+    symlink << basename.str() << "." << getpid();
+    google::SetLogDestination(loglevel, logdest.str().c_str());
+    google::SetLogSymlink(loglevel, symlink.str().c_str());
+    google::SetStderrLogging(google::FATAL);
   }
 }
 
@@ -193,7 +195,9 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   p.add<int>("timeout", 't', "time out (sec)", false, 10);
 
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false, "localhost:2181");
-  p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false);
+  p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false, "");
+  p.add<int,cmdline::range_reader<int> >("loglevel", 'e', "verbosity of log messages", false,
+                                         google::INFO, cmdline::range(google::INFO, google::FATAL));
   p.add("version", 'v', "version");
 
   p.parse_check(args, argv);
@@ -211,6 +215,7 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   program_name = jubatus::util::get_program_name();
   z = p.get<std::string>("zookeeper");
   logdir = p.get<std::string>("logdir");
+  loglevel = p.get<int>("loglevel");
 
   // determine listen-address and IPaddr used as ZK 'node-name'
   // TODO: check bind_address is valid format
@@ -223,22 +228,17 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
     eth = jubatus::common::get_default_v4_address();
   }
 
-  if(p.exist("logdir")){
-    if (jubatus::util::is_writable(logdir.c_str())) {
-      set_log_destination(jubatus::util::get_program_name());
-    } else {
-      std::cerr << "can't create log file: " << strerror(errno) << std::endl;
-      exit(1);
-    }
-  } else {
-    google::LogToStderr();
+  if ( (!logdir.empty()) && (!jubatus::util::is_writable(logdir.c_str())) ) {
+    std::cerr << "can't create log file: " << strerror(errno) << std::endl;
+    exit(1);
   }
+  set_log_destination(jubatus::util::get_program_name());
 
   boot_message(jubatus::util::get_program_name());
 }
 
 keeper_argv::keeper_argv():
-  port(9199), timeout(10), threadnum(16), z("localhost:2181"), logdir(""), eth("")
+  port(9199), timeout(10), threadnum(16), z("localhost:2181"), logdir(""), loglevel(google::INFO), eth("")
 {
 }
 
@@ -250,22 +250,28 @@ void keeper_argv::boot_message(const std::string& progname) const {
   ss << "    timeout        : " << timeout << '\n';
   ss << "    thread         : " << threadnum << '\n';
   ss << "    logdir         : " << logdir << '\n';
+  ss << "    loglevel       : " << google::GetLogSeverityName(loglevel) << '(' << loglevel << ')' << '\n';
   ss << "    zookeeper      : " << z << '\n';
   LOG(INFO) << ss.str();
 }
 
 void keeper_argv::set_log_destination(const std::string& progname) const {
-  std::ostringstream basename;
-  basename <<  progname << '.' << eth << '_' << port;
-  for(int severity = 0; severity < google::NUM_SEVERITIES; severity++) {
-    std::string log = logdir + '/';
-    log += basename.str() + '.';
-    log += google::GetLogSeverityName(severity);
-    log += ".log.";
-    std::string link = basename.str() + '.';
-    link += pfi::lang::lexical_cast<std::string>(getpid());
-    google::SetLogDestination(severity, log.c_str());
-    google::SetLogSymlink(severity, link.c_str());
+  if (logdir.empty()) {
+    for (int severity = google::INFO; severity < google::NUM_SEVERITIES; severity++) {
+      google::SetLogDestination(severity, "");
+    }
+    google::SetStderrLogging(loglevel);
+  } else {
+    for (int severity = google::INFO; severity < loglevel; severity++) {
+      google::SetLogDestination(severity, "");
+    }
+    std::ostringstream basename, logdest, symlink;
+    basename << progname << "." << eth << "_" << port;
+    logdest << logdir << "/" << basename.str() << ".log.";
+    symlink << basename.str() << "." << getpid();
+    google::SetLogDestination(loglevel, logdest.str().c_str());
+    google::SetLogSymlink(loglevel, symlink.str().c_str());
+    google::SetStderrLogging(google::FATAL);
   }
 }
 
