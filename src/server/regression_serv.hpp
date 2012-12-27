@@ -48,7 +48,7 @@ public:
 
   void get_status(status_t& status) const;
 
-  int set_config(const std::string& config);
+  bool set_config(const std::string& config);
   std::string get_config();
   int train(const std::vector<std::pair<float, datum> >& data);
   std::vector<float> estimate(const std::vector<datum>& data) const;

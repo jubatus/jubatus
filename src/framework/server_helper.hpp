@@ -28,6 +28,7 @@
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
 #include "../config.hpp"
+#include "../common/jsonconfig.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -60,7 +61,19 @@ public:
     server_.reset(new Server(a, impl_.zk()));
 
     impl_.get_config_lock(a, 3);
-    server_->set_config(get_conf(a));
+
+    try {
+      server_->set_config(get_conf(a));
+    } catch (const jsonconfig::cast_check_error& e) {
+      config_exception config_error;
+      const jsonconfig::config_error_list& errors = e.errors();
+      for (jsonconfig::config_error_list::const_iterator it = errors.begin(),
+          end = errors.end(); it != end; ++it) {
+        config_error << exception::error_message((*it)->what());
+      }
+      // send error message to caller
+      throw JUBATUS_EXCEPTION(config_error);
+    }
   }
 
   std::map<std::string, std::string> get_loads() const {

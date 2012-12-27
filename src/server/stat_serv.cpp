@@ -44,11 +44,6 @@ struct stat_serv_config {
 stat_serv::stat_serv(const server_argv& a,
                      const cshared_ptr<lock_service>& zk)
     : server_base(a) {
-  stat_serv_config conf = { 1024 };
-  config_ = lexical_cast<string>(pfi::text::json::to_json(conf));
-  common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(conf.window_size));
-  stat_.set_model(model);
-
   mixer_.reset(mixer::create_mixer(a, zk));
   mixable_holder_.reset(new mixable_holder());
 
@@ -80,7 +75,7 @@ bool stat_serv::set_config(const string& config) {
   common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(conf.window_size));
   config_ = config;
   stat_.set_model(model);
-  return 0;
+  return true;
 }
 
 string stat_serv::get_config() const {

@@ -48,7 +48,7 @@ public:
 
   void get_status(status_t& status) const;
 
-  int set_config(const std::string& config);
+  bool set_config(const std::string& config);
   std::string get_config();
   int train(const std::vector<std::pair<std::string, datum> >& data);
   std::vector<std::vector<estimate_result> > classify(const std::vector<datum>& data) const;

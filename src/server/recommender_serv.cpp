@@ -93,7 +93,7 @@ void recommender_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-int recommender_serv::set_config(std::string config) {
+bool recommender_serv::set_config(std::string config) {
   LOG(INFO) << __func__;
 
   jsonconfig::config conf_root(lexical_cast<json>(config));
@@ -105,7 +105,7 @@ int recommender_serv::set_config(std::string config) {
   converter_ = converter;
   rcmdr_.set_model(make_model(conf));
   (*converter_).set_weight_manager(wm_.get_model());
-  return 0;
+  return true;
 }
   
 string recommender_serv::get_config() {

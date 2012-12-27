@@ -69,7 +69,7 @@ public:
 
   void get_status(status_t& status) const;
 
-  int set_config(std::string config);
+  bool set_config(std::string config);
   std::string get_config();
 
   int clear_row(std::string id);

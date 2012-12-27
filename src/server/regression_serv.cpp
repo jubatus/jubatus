@@ -85,18 +85,14 @@ void regression_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-int regression_serv::set_config(const string& config) {
+bool regression_serv::set_config(const string& config) {
   LOG(INFO) << __func__;
 
-  // TODO: error handling
-  json config_json = lexical_cast<json>(config);
-  regression_serv_config conf = json_cast<regression_serv_config>(config_json);
-
-  shared_ptr<datum_to_fv_converter> converter
-      = fv_converter::make_fv_converter(conf.converter);
+  jsonconfig::config config_root(lexical_cast<json>(config));
+  regression_serv_config conf = jsonconfig::config_cast_check<regression_serv_config>(config_root);
 
   config_ = config;
-  converter_ = converter;
+  converter_ = fv_converter::make_fv_converter(conf.converter);
   (*converter_).set_weight_manager(wm_.get_model());
 
   jsonconfig::config param;
@@ -107,7 +103,7 @@ int regression_serv::set_config(const string& config) {
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
-  return 0;
+  return true;
 }
 
 string regression_serv::get_config() {
