@@ -9,7 +9,6 @@ using namespace jubatus::framework;
 int main(int args, char** argv){
   try{
     keeper k(keeper_argv(args,argv,"anomaly"));
-    k.register_broadcast<bool, std::string >("set_config", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_random<std::string >("get_config"); //pass analysis
     k.register_cht<2, bool >("clear_row", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_random<std::pair<std::string,float >, datum >("add"); //pass update

@@ -36,7 +36,7 @@ namespace {
     pid_t child_;
 
     anomaly_test(){
-      child_ = fork_process("anomaly", PORT);
+      child_ = fork_process("anomaly", PORT, "./test_input/config.anomaly.json");
     }
     virtual ~anomaly_test(){
       kill_process(child_);
@@ -44,7 +44,7 @@ namespace {
     virtual void restart_process(){
 
       kill_process(this->child_);
-      this->child_ = fork_process("anomaly");
+      this->child_ = fork_process("anomaly", PORT, "./test_input/config.anomaly.json");
     }
   };
 
@@ -89,14 +89,6 @@ TEST_F(anomaly_test, small){
 
   client::anomaly c("localhost", PORT, 10);
 
-  {
-    string config = make_simple_config("lof");
-    string config2;
-
-    c.set_config(NAME, config);
-    config2 = c.get_config(NAME);
-    ASSERT_EQ(config, config2);
-  }
   {
     datum d;
     d.nv.push_back(make_pair("f1", 1.0));

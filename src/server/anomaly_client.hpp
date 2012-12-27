@@ -1,4 +1,11 @@
 
+// This file is auto-generated from anomaly.idl
+// *** DO NOT EDIT ***
+
+#ifndef ANOMALY_CLIENT_HPP_
+#define ANOMALY_CLIENT_HPP_
+
+
 #include "anomaly_types.hpp"
 #include <pficommon/network/mprpc.h>
 
@@ -11,10 +18,6 @@ class anomaly : public pfi::network::mprpc::rpc_client {
 public:
   anomaly(const std::string &host, uint64_t port, double timeout_sec)
     : rpc_client(host, port, timeout_sec) {}
-
-    bool set_config(std::string name, std::string c) {
-      return call<bool(std::string, std::string)>("set_config")(name, c);
-    }
 
     std::string get_config(std::string name) {
       return call<std::string(std::string)>("get_config")(name);
@@ -63,3 +66,6 @@ private:
 
 } // namespace jubatus
 
+
+
+#endif // ANOMALY_CLIENT_HPP_

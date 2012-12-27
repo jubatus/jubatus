@@ -20,7 +20,6 @@ class anomaly : public pfi::network::mprpc::rpc_server {
 public:
   anomaly(double timeout_sec): rpc_server(timeout_sec) {
 
-    rpc_server::add<bool(std::string, std::string) >("set_config", pfi::lang::bind(&Impl::set_config, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<std::string(std::string) >("get_config", pfi::lang::bind(&Impl::get_config, static_cast<Impl*>(this), pfi::lang::_1));
     rpc_server::add<bool(std::string, std::string) >("clear_row", pfi::lang::bind(&Impl::clear_row, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<std::pair<std::string, float >(std::string, datum) >("add", pfi::lang::bind(&Impl::add, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));

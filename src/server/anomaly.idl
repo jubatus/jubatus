@@ -42,9 +42,6 @@ message datum {
 
 service anomaly {
 
-  #@broadcast #@update #@all_and
-  bool set_config(0: string name, 1: string conf) # //@broadcast
-
   #@random #@analysis #@pass
   string get_config(0: string name) # //@random
 
