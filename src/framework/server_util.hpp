@@ -79,8 +79,9 @@ struct server_argv {
   int interval_sec;
   int interval_count;
 
-  MSGPACK_DEFINE(join, port, timeout, threadnum, program_name, type, z, name,
-      tmpdir, logdir, loglevel, eth, interval_sec, interval_count);
+  MSGPACK_DEFINE(join, port, bind_address, bind_if, timeout, threadnum,
+      program_name, type, z, name, tmpdir, logdir, loglevel, eth,
+      interval_sec, interval_count);
 
   bool is_standalone() const {
     return (z == "");

@@ -93,6 +93,7 @@ bool process::spawn_link(int p){
         "-z", zk_hosts_,
         "-n", name_,
         "-p", lexical_cast<std::string>(p),
+        "-B", server_option_.bind_if,
         "-c", lexical_cast<std::string>(server_option_.threadnum),
         "-t", lexical_cast<std::string>(server_option_.timeout),
         "-d", server_option_.tmpdir,

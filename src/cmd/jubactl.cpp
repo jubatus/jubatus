@@ -52,6 +52,7 @@ int main(int args, char** argv) try {
   p.add<std::string>("zookeeper", 'z', "ZooKeeper location environment: 'ZK' is available instead", false);
 
   // Support framework::server_argv
+  p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
   p.add<int>("thread", 'C', "[start] concurrency = thread number", false, 2);
   p.add<int>("timeout", 'T', "[start] time out (sec)", false, 10);
   p.add<std::string>("tmpdir", 'D', "[start] directory to load and save models", false, "/tmp");
@@ -144,6 +145,7 @@ void send2supervisor(const string& cmd,
     path += "/nodes";
     ls_->create(path);
 
+    server_option.bind_if = argv.get<std::string>("listen_if");
     server_option.threadnum = argv.get<int>("thread");
     server_option.timeout = argv.get<int>("timeout");
     server_option.program_name = type;
