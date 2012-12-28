@@ -515,19 +515,23 @@ public:
     typedef pfi::lang::function<Res(Res,Res)> reducer_type;
 
   public:
-    async_task( const host_list_type &hosts, const std::string &method_name,
+    async_task( async_task_loop* at_loop,
+                const host_list_type &hosts, const std::string &method_name,
                 request_type req, reducer_type reducer = reducer_type() ) : 
+      at_loop_(at_loop),
       hosts_(hosts),
       method_name_(method_name),
       req_(req), reducer_(reducer),
-      running_count_(0), cancelled_(false) {
+      running_count_(0), cancelled_(false), timer_id_(-1) {
     }
-    virtual ~async_task() {}
+    virtual ~async_task() {
+      cancel_timeout();
+    }
     
     void done_one( msgpack::rpc::future f, int future_index ) {
       namespace jcm = jubatus::common::mprpc;
 
-      mp::pthread_scoped_lock( lock_ );
+      mp::pthread_scoped_lock _l( lock_ );
 
       if ( !cancelled_ ) {
         try {
@@ -546,6 +550,7 @@ public:
 
       --running_count_;
       if ( !cancelled_ && running_count_ <= 0 ) {
+        cancel_timeout();
         req_.result<Res>( aggregate_results() );
       }
     }
@@ -564,8 +569,26 @@ public:
       return tmp_result;
     }
 
+    void set_timeout(int timeout_sec) {
+      cancel_timeout();
+      if ( timeout_sec > 0 ) {
+        msgpack::rpc::loop loop = at_loop_->pool().get_loop();
+        timer_id_ = loop->add_timer( timeout_sec, 0, 
+                                     mp::bind( &async_task<Res>::on_timeout, 
+                                               this->shared_from_this() ) );
+      }
+    }
+
+    void cancel_timeout() {
+      if ( timer_id_ >= 0 ) {
+        msgpack::rpc::loop loop = at_loop_->pool().get_loop();
+        loop->remove_timer( timer_id_ );
+        timer_id_ = -1;
+      }
+    }
+
     bool on_timeout() {
-      mp::pthread_scoped_lock( lock_ );
+      mp::pthread_scoped_lock _l( lock_ );
       if ( !cancelled_ ) {
         cancelled_ = true;
         for(size_t i = 0; i < futures_.size(); ++i ) {
@@ -578,11 +601,13 @@ public:
     }
 
     template<typename Args>
-    void call_apply( async_task_loop *at_loop, 
-                     const std::string &method_name, const Args &args, int timeout_sec ) {
+    void call_apply( const std::string &method_name, const Args &args, int timeout_sec ) {
+      mp::pthread_scoped_lock _l( lock_ );
+
       running_count_ = hosts_.size();
+      if ( timeout_sec > 0 ) set_timeout( timeout_sec );
       
-      msgpack::rpc::session_pool &pool = at_loop->pool();
+      msgpack::rpc::session_pool &pool = at_loop_->pool();
       for(size_t i = 0; i < hosts_.size(); ++i) {
         msgpack::rpc::session s = pool.get_session( hosts_[i].first, hosts_[i].second );
 
@@ -592,15 +617,11 @@ public:
                                      this->shared_from_this(),
                                      mp::placeholders::_1, i ));
       }
-
-      if ( timeout_sec > 0 ) {
-        msgpack::rpc::loop loop = pool.get_loop();
-        loop->add_timer( timeout_sec, 0, 
-                         mp::bind( &async_task<Res>::on_timeout, this->shared_from_this() ) );
-      }
     }
     
   private:
+    async_task_loop *at_loop_;
+
     host_list_type hosts_;
     std::string method_name_;
     request_type req_;
@@ -608,6 +629,7 @@ public:
 
     int running_count_;
     bool cancelled_;
+    int timer_id_;
 
     std::vector<msgpack::rpc::future> futures_;
     std::vector<result_ptr> results_;
@@ -641,8 +663,14 @@ public:
 
     static async_task_loop* startup() {
       async_task_loop* at_loop =  new async_task_loop();
+#if 0
       pfi::concurrent::thread thr( pfi::lang::bind( &async_task_loop::run, at_loop ) );
       thr.start();
+#else
+      at_loop->pool().start(2);
+      // Use mpio's event loop instead of async_task_loop's one. 
+      // Note: mpio's event loop start() requires thread_num > 1. ( mpio bug? )
+#endif
 
       return at_loop;
     }
@@ -658,8 +686,10 @@ public:
                             const std::string &method_name, const Args &args, int timeout_sec,
                             request_type req, 
                             typename async_task<Res>::reducer_type reducer = typename async_task<Res>::reducer_type()) {
-      mp::shared_ptr<async_task<Res> > task( new async_task<Res>(hosts, method_name, req, reducer) );
-      task->call_apply<Args>( get_private_async_task_loop(), method_name, args, timeout_sec);
+      async_task_loop *at_loop = get_private_async_task_loop();
+      mp::shared_ptr<async_task<Res> > task( new async_task<Res>(at_loop,
+                                                                 hosts, method_name, req, reducer) );
+      task->call_apply<Args>( method_name, args, timeout_sec);
     }
 
     template <typename Res, typename Args>
@@ -669,9 +699,7 @@ public:
                             typename async_task<Res>::reducer_type reducer = typename async_task<Res>::reducer_type()) {
       host_list_type hosts;
       hosts.push_back( std::make_pair(host, port) );
-
-      mp::shared_ptr<async_task<Res> > task( new async_task<Res>(hosts, method_name, req, reducer) );
-      task->call_apply<Args>( get_private_async_task_loop(), method_name, args, timeout_sec);
+      call_apply<Res,Args>( hosts, method_name, args, timeout_sec, req, reducer );
     }
     
   protected:
