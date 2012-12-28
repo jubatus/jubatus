@@ -21,12 +21,8 @@ public:
     c_.set_timeout( timeout_sec );
   }
 
-  bool set_config(std::string name, config_data c) {
-    return c_.call("set_config", name, c).get<bool>();
-  }
-
-  config_data get_config(std::string name) {
-    return c_.call("get_config", name).get<config_data>();
+  std::string get_config(std::string name) {
+    return c_.call("get_config", name).get<std::string>();
   }
 
   bool clear_row(std::string name, std::string id) {

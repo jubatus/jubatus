@@ -21,8 +21,7 @@ class stat : public jubatus::common::mprpc::rpc_server {
 public:
   stat(double timeout_sec): rpc_server(timeout_sec) {
 
-    rpc_server::add<bool(std::string, config_data) >("set_config", pfi::lang::bind(&Impl::set_config, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
-    rpc_server::add<config_data(std::string) >("get_config", pfi::lang::bind(&Impl::get_config, static_cast<Impl*>(this), pfi::lang::_1));
+    rpc_server::add<std::string(std::string) >("get_config", pfi::lang::bind(&Impl::get_config, static_cast<Impl*>(this), pfi::lang::_1));
     rpc_server::add<bool(std::string, std::string, double) >("push", pfi::lang::bind(&Impl::push, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
     rpc_server::add<double(std::string, std::string) >("sum", pfi::lang::bind(&Impl::sum, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<double(std::string, std::string) >("stddev", pfi::lang::bind(&Impl::stddev, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));

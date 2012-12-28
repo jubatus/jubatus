@@ -36,6 +36,7 @@ public:
 
   virtual void force_close() = 0;
   virtual bool create(const std::string& path, const std::string& payload = "", bool ephemeral = false) = 0;
+  virtual bool set(const std::string& path, const std::string& payload = "") = 0;
   virtual bool remove(const std::string& path) = 0;
   virtual bool exists(const std::string& path) = 0;
 
@@ -61,6 +62,9 @@ public:
 class try_lockable : public pfi::concurrent::lockable {
 public:
   virtual bool try_lock() = 0;
+  virtual bool rlock() = 0;
+  virtual bool try_rlock() = 0;
+  virtual bool unlock_r() = 0;
 };
 
 class lock_service_mutex : public try_lockable {
@@ -73,6 +77,9 @@ public:
   bool lock();
   bool try_lock();
   bool unlock();
+  bool rlock();
+  bool try_rlock();
+  bool unlock_r();
 
 protected:
   try_lockable* impl_;

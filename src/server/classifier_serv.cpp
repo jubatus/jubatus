@@ -16,9 +16,13 @@
 
 #include "classifier_serv.hpp"
 
+#include <pficommon/text/json.h>
+#include <pficommon/data/optional.h>
+
 #include "../classifier/classifier_factory.hpp"
 #include "../common/util.hpp"
 #include "../common/vector_util.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
@@ -27,6 +31,9 @@
 
 using namespace std;
 using pfi::lang::shared_ptr;
+using pfi::lang::lexical_cast;
+using pfi::text::json::json;
+using pfi::text::json::json_cast;
 using namespace jubatus::common;
 using namespace jubatus::framework;
 using namespace jubatus::fv_converter;
@@ -35,6 +42,20 @@ namespace jubatus {
 namespace server {
 
 namespace {
+
+struct classifier_serv_config {
+  std::string method;
+  pfi::data::optional<pfi::text::json::json> parameter;
+  pfi::text::json::json converter;
+
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    ar
+        & MEMBER(method)
+        & MEMBER(parameter)
+        & MEMBER(converter);
+  }
+};
 
 linear_function_mixer::model_ptr make_model(const framework::server_argv& arg) {
   return linear_function_mixer::model_ptr(storage::storage_factory::create_storage((arg.is_standalone())?"local":"local_mixture"));
@@ -54,6 +75,7 @@ classifier_serv::classifier_serv(const framework::server_argv& a,
   mixer_->set_mixable_holder(mixable_holder_);
   mixable_holder_->register_mixable(&clsfer_);
   mixable_holder_->register_mixable(&wm_);
+
 }
 
 classifier_serv::~classifier_serv() {
@@ -67,24 +89,30 @@ void classifier_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-int classifier_serv::set_config(const config_data& config) {
+bool classifier_serv::set_config(const string& config) {
   LOG(INFO) << __func__;
 
-  shared_ptr<datum_to_fv_converter> converter =
-      fv_converter::make_fv_converter(config.config);
+  jsonconfig::config config_root(lexical_cast<json>(config));
+  classifier_serv_config conf = jsonconfig::config_cast_check<classifier_serv_config>(config_root);
 
   config_ = config;
-  converter_ = converter;
+  converter_ = fv_converter::make_fv_converter(conf.converter);
   (*converter_).set_weight_manager(wm_.get_model());
 
-  classifier_.reset(classifier_factory::create_classifier(config.method, clsfer_.get_model().get()));
+  jsonconfig::config param;
+  if (conf.parameter) {
+    param = *conf.parameter;
+  }
+  classifier_.reset(classifier::classifier_factory::create_classifier(conf.method,
+                                                          param,
+                                                          clsfer_.get_model().get()));
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
-  return 0;
+  return true;
 }
 
-config_data classifier_serv::get_config() {
+string classifier_serv::get_config() {
   check_set_config();
   return config_;
 }

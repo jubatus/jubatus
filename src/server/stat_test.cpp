@@ -33,7 +33,7 @@ namespace {
     pid_t child_;
 
     stat_test(){
-      child_ = fork_process("stat", PORT);
+      child_ = fork_process("stat", PORT, "./test_input/config.stat.json");
     };
     virtual ~stat_test(){
       kill_process(child_);
@@ -41,7 +41,7 @@ namespace {
     virtual void restart_process(){
 
       kill_process(this->child_);
-      this->child_ = fork_process("stat");
+      this->child_ = fork_process("stat", PORT, "./test_input/config.stat.json");
     };
   };
 

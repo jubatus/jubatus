@@ -16,23 +16,34 @@
 
 #include "stat_serv.hpp"
 
+#include <pficommon/text/json.h>
+
 #include "../common/shared_ptr.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
 using namespace std;
 using namespace jubatus::common;
 using namespace jubatus::framework;
+using pfi::text::json::json;
+using pfi::text::json::json_cast;
+using pfi::lang::lexical_cast;
 
 namespace jubatus {
 namespace server {
 
+struct stat_serv_config {
+  int32_t window_size;
+
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    ar & MEMBER(window_size);
+  }
+};
+
 stat_serv::stat_serv(const server_argv& a,
                      const cshared_ptr<lock_service>& zk)
     : server_base(a) {
-  config_.window_size = 1024; // default till users call set_config
-  common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(config_.window_size));
-  stat_.set_model(model);
-
   mixer_.reset(mixer::create_mixer(a, zk));
   mixable_holder_.reset(new mixable_holder());
 
@@ -55,15 +66,19 @@ void stat_serv::get_status(status_t& status) const {
   status.insert(make_pair("storage", stat_.get_model()->type()));
 }
 
-bool stat_serv::set_config(const config_data& config) {
+bool stat_serv::set_config(const string& config) {
   LOG(INFO) << __func__;
+
+  jsonconfig::config conf_root(lexical_cast<json>(config));
+  stat_serv_config conf = jsonconfig::config_cast_check<stat_serv_config>(conf_root);
+
+  common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(conf.window_size));
   config_ = config;
-  common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(config_.window_size));
   stat_.set_model(model);
-  return 0;
+  return true;
 }
 
-config_data stat_serv::get_config() const {
+string stat_serv::get_config() const {
   return config_;
 }
 

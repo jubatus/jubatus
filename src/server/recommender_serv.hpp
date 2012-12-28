@@ -69,14 +69,12 @@ public:
 
   void get_status(status_t& status) const;
 
-  int set_config(config_data config);
-  config_data get_config();
+  bool set_config(std::string config);
+  std::string get_config();
 
   bool clear_row(std::string id);
   bool update_row(std::string id, datum dat);
   bool clear();
-
-  common::cshared_ptr<jubatus::recommender::recommender_base> make_model();
 
   datum complete_row_from_id(std::string id);
   datum complete_row_from_data(datum dat);
@@ -95,7 +93,7 @@ private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  config_data config_;
+  std::string config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   rcmdr rcmdr_;
   mixable_weight_manager wm_;

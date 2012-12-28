@@ -18,17 +18,26 @@
 
 #include <string>
 
-namespace jubatus {
+#include <pficommon/text/json.h>
 
-class classifier_base;
+namespace jubatus {
 
 namespace storage{
 class storage_base;
 }
+namespace jsonconfig {
+  class config;
+} // jsonconfig
+
+namespace classifier{
+class classifier_base;
 
 class classifier_factory {
 public:
-  static classifier_base* create_classifier(const std::string& name, storage::storage_base* storage);
+  static classifier_base* create_classifier(const std::string& name,
+                                   const jsonconfig::config& param,
+                                   storage::storage_base* storage);
 };
 
+}
 }

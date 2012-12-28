@@ -16,12 +16,6 @@
 
 type param_t = map<string, string> 
 
-#- ``converter`` is a string of JSON format that describes configuration of feature extranction of ``datum`` . See :doc:`fv_convert` for details.
-message config_data {
-  0: string method
-  1: string config
-}
-
 message datum {
   0: list<tuple<string, string> >  string_values
   1: list<tuple<string, double> >  num_values
@@ -34,11 +28,8 @@ message estimate_result {
 
 service classifier {
 
-  #@broadcast #@update #@all_and
-  bool set_config(0: string name, 1: config_data c) # //@broadcast
-
   #@random #@analysis #@pass
-  config_data get_config(0: string name) # //@random
+  string get_config(0: string name) # //@random
 
   #- - Parameters:
   #- 

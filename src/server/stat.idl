@@ -14,17 +14,10 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-message config_data {
-  0: int window_size
-}
-
 service stat {
 
-  #@broadcast #@update #@all_and
-  bool set_config(0: string name, 1: config_data c)
-
   #@random #@analysis #@pass
-  config_data get_config(0: string name)
+  string get_config(0: string name)
 
   #@cht(1) #@update #@all_and
   bool push(0: string name, 1: string key, 2: double val)

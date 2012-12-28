@@ -13,10 +13,7 @@ public:
     p_(new server_helper<recommender_serv>(a, true))
   {}
 
-  bool set_config(std::string name, config_data c) //update broadcast
-  { JWLOCK__(p_); return get_p()->set_config(c); }
-
-  config_data get_config(std::string name) //analysis random
+  std::string get_config(std::string name) //analysis random
   { JRLOCK__(p_); return get_p()->get_config(); }
 
   bool clear_row(std::string name, std::string id) //update cht(2)

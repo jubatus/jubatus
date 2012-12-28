@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include <pficommon/lang/exception.h>
+#include <pficommon/text/json.h>
 
 #include <fstream>
 
@@ -38,6 +39,8 @@
 
 #include <netinet/in.h>
 #include <arpa/inet.h>
+
+#include <sstream>
 
 #ifdef __APPLE__
 #include <libproc.h>

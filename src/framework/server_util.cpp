@@ -26,6 +26,7 @@
 #include "../common/cmdline.h"
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
+#include "../common/config.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -34,6 +35,37 @@ static const std::string VERSION(JUBATUS_VERSION);
 
 void print_version(const std::string& progname){
   std::cout << "jubatus-" << VERSION << " (" << progname << ")" << std::endl;
+}
+
+std::string get_conf(const server_argv& a){
+
+  config_json conf;
+
+  try{
+    if (a.is_standalone()) {
+      conf.load_json(a.configpath);
+    }else{
+#ifdef HAVE_ZOOKEEPER_H
+      conf.load_json(a.z, a.type, a.name);
+#endif
+    }
+  } catch (const jubatus::exception::jubatus_exception& e) {
+    LOG(ERROR) << e.what();
+    exit(1);
+  }
+  return conf.config;
+}
+
+void config_json::load_json(const std::string& zkhosts, const std::string& type, const std::string& name)
+{
+#ifdef HAVE_ZOOKEEPER_H
+  jubatus::common::config_fromzk(*ls, type, name, config);
+#endif
+}
+
+void config_json::load_json(const std::string& filepath)
+{
+    jubatus::common::config_fromlocal(filepath, config);
 }
 
 server_argv::server_argv(int args, char** argv, const std::string& type)
@@ -51,6 +83,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false, "");
   p.add<int,cmdline::range_reader<int> >("loglevel", 'e', "verbosity of log messages", false,
                                          google::INFO, cmdline::range(google::INFO, google::FATAL));
+  p.add<std::string>("configpath", 'f', "config option need to specify json file when standalone mode (without ZK mode)", false, "");
 
 #ifdef HAVE_ZOOKEEPER_H
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
@@ -80,6 +113,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   tmpdir = p.get<std::string>("tmpdir");
   logdir = p.get<std::string>("logdir");
   loglevel = p.get<int>("loglevel");
+  configpath = p.get<std::string>("configpath");
 
   // determine listen-address and IPaddr used as ZK 'node-name'
   // TODO: check bind_address is valid format
@@ -106,8 +140,14 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   interval_count = 512;
 #endif
 
-  if(!z.empty() && name.empty()){
+  if(!is_standalone() && name.empty()){
     std::cerr << "can't start multinode mode without name specified" << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
+  }
+
+  if (is_standalone() && configpath.empty()){
+    std::cerr << "can't start standalone mode without configpath specified" << std::endl;
     std::cerr << p.usage() << std::endl;
     exit(1);
   }

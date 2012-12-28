@@ -24,6 +24,8 @@ namespace storage {
 class storage_base;
 }
 
+namespace regression {
+
 
 class regression_base {
  public:
@@ -45,4 +47,5 @@ class regression_base {
   storage::storage_base* storage_;
 };
 
+}
 }

@@ -18,6 +18,7 @@
 
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
+#include <pficommon/data/serialization.h>
 #include "graph_base.hpp"
 
 namespace jubatus{
@@ -25,6 +26,21 @@ namespace graph {
 
 class graph_wo_index : public graph_base {
 public:
+  struct config {
+    config()
+      : alpha(0.9), landmark_num(5)
+    {}
+
+    double alpha;
+    int landmark_num;
+
+    template <typename Ar>
+    void serialize(Ar& ar) {
+      ar & NAMED_MEMBER("damping_factor", alpha) & MEMBER(landmark_num);
+    }
+  };
+
+  graph_wo_index(const config& config);
   graph_wo_index();
   ~graph_wo_index();
 
@@ -62,7 +78,7 @@ public:
   void get_status(std::map<std::string, std::string>& status) const;
   void update_index();
 
-  static void mix(const std::string& diff, std::string& mixed);
+  void mix(const std::string& diff, std::string& mixed);
 
 private:
   typedef pfi::data::unordered_map<node_id_t, node_info> node_info_map;
@@ -78,7 +94,6 @@ private:
   pfi::data::unordered_map<node_id_t, uint8_t> global_nodes_; // value is dummy for serialization
 
   // centeralities
-  double alpha_;
   eigen_vector_query_mixed eigen_scores_;
   void get_diff_eigen_score(eigen_vector_query_diff& diff) const;
   void set_mixed_and_clear_diff_eigen_score(eigen_vector_query_mixed& mixed);
@@ -98,7 +113,9 @@ private:
   bool is_node_matched_to_query(const preset_query& query, node_id_t id) const;
   static void mix_spt(const shortest_path_tree& diff,
                       shortest_path_tree& mixed);
-  static void mix(const spt_query_diff& diff, spt_query_mixed& mixed);
+  static void mix(const spt_query_diff& diff, spt_query_mixed& mixed, size_t landmark_num);
+
+  config config_;
 };
 
 }

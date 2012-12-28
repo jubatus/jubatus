@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <pficommon/data/serialization.h>
+
 #include "recommender_base.hpp"
 #include "../storage/bit_index_storage.hpp"
 
@@ -24,11 +26,24 @@ namespace recommender {
 
 class lsh : public recommender_base {
 public:
+  struct config {
+    config();
+
+    int64_t bit_num;
+
+    template <typename Ar>
+    void serialize(Ar& ar) {
+      ar & MEMBER(bit_num);
+    }
+  };
+
   lsh(uint64_t base_num);
+  explicit lsh(const config& config);
   lsh();
   ~lsh();
 
   void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  void neighbor_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
   void clear();
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const sfv_diff_t& diff);

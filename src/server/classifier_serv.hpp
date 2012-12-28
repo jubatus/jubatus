@@ -48,8 +48,8 @@ public:
 
   void get_status(status_t& status) const;
 
-  int set_config(const config_data& config);
-  config_data get_config();
+  bool set_config(const std::string& config);
+  std::string get_config();
   int train(const std::vector<std::pair<std::string, datum> >& data);
   std::vector<std::vector<estimate_result> > classify(const std::vector<datum>& data) const;
 
@@ -59,9 +59,9 @@ private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  config_data config_;
+  std::string config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  pfi::lang::shared_ptr<classifier_base> classifier_;
+  pfi::lang::shared_ptr<jubatus::classifier::classifier_base> classifier_;
   linear_function_mixer clsfer_;
   mixable_weight_manager wm_;
 };

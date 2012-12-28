@@ -21,8 +21,14 @@
 using namespace std;
 
 namespace jubatus{
+namespace classifier{
 
 PA1::PA1(storage::storage_base* storage) : classifier_base(storage) 
+{
+}
+
+PA1::PA1(const classifier_config& config, storage::storage_base* storage)
+  : classifier_base(storage), config(config)
 {
 }
 
@@ -38,11 +44,12 @@ void PA1::train(const sfv_t& sfv, const string& label){
     return;
   }
 
-  update_weight(sfv, min(C_, loss / sfv_norm), label, incorrect_label);
+  update_weight(sfv, min(config.C, loss / sfv_norm), label, incorrect_label);
 }
 
 string PA1::name() const {
   return string("PA1"); 
 }
   
+}
 }

@@ -47,6 +47,15 @@ class datum_to_fv_converter;
 
 namespace framework {
 
+struct config_json {
+  config_json(){};
+  
+  std::string config;
+
+  void load_json(const std::string& zkhosts, const std::string& type, const std::string& name);
+  void load_json(const std::string& filepath);
+};
+
 struct server_argv {
 
   server_argv(int args, char** argv, const std::string& type);
@@ -65,6 +74,7 @@ struct server_argv {
   std::string tmpdir;
   std::string logdir;
   int loglevel;
+  std::string configpath;
   std::string eth;
   int interval_sec;
   int interval_count;
@@ -131,6 +141,9 @@ int run_server(int args, char** argv, const std::string& type)
     return -1;
   }
 }
+
+std::string get_conf(const server_argv& a);
+
 
 } // framework
 } // jubatus

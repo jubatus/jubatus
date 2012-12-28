@@ -24,13 +24,16 @@
 #include "classifier.hpp"
 #include "../storage/local_storage.hpp"
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include "classifier_test_util.hpp"
 
 using namespace std;
 using namespace jubatus::storage;
 using namespace pfi::lang;
+using namespace pfi::text::json;
 
 namespace jubatus {
+namespace classifier {
 
 template <typename T>
 class classifier_test : public testing::Test {};
@@ -41,8 +44,6 @@ TYPED_TEST_P(classifier_test, trivial) {
   local_storage s;
   TypeParam p(&s);
   ASSERT_NE(p.name(), "");
-  p.set_C(1.0);
-  ASSERT_EQ(p.C(), 1.0);
   sfv_t fv;
   fv.push_back(make_pair(string("f1"), 1.0));
   p.train(fv, string("label1")); 
@@ -127,25 +128,25 @@ INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
 
 
 void InitClassifiers(vector<classifier_base*>& classifiers){
-  classifiers.push_back(classifier_factory::create_classifier("perceptron", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("PA", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("PA1", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("PA2", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("CW", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("AROW", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("NHERD", new local_storage));
-  for (size_t i = 0; i < classifiers.size(); ++i){
-    classifiers[i]->set_C(1.0);
-  }
+  jsonconfig::config param(to_json(classifier_config()));
+  classifiers.push_back(classifier_factory::create_classifier("perceptron", param, new local_storage));
+  classifiers.push_back(classifier_factory::create_classifier("PA", param, new local_storage));
+  classifiers.push_back(classifier_factory::create_classifier("PA1", param, new local_storage));
+  classifiers.push_back(classifier_factory::create_classifier("PA2", param, new local_storage));
+  classifiers.push_back(classifier_factory::create_classifier("CW", param, new local_storage));
+  classifiers.push_back(classifier_factory::create_classifier("AROW", param, new local_storage));
+  classifiers.push_back(classifier_factory::create_classifier("NHERD", param, new local_storage));
 }
 
 
 TEST(classifier_factory, exception){
+  jsonconfig::config param(to_json(classifier_config()));
   local_storage * p = new local_storage;
-  ASSERT_THROW(classifier_factory::create_classifier("pa", p), unsupported_method);
-  ASSERT_THROW(classifier_factory::create_classifier("", p), unsupported_method);
-  ASSERT_THROW(classifier_factory::create_classifier("saitama", p), unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("pa", param, p), unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("", param, p), unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("saitama", param, p), unsupported_method);
   delete p;
 }
 
+}
 }

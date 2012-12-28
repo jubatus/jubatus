@@ -100,11 +100,10 @@ let generate s output strees =
   List.iter (fun l -> output <<< l)
     (List.flatten (List.map to_keeper_strings
 		     (List.filter Generator.is_service strees)));
-  
+
   output <<< "    return k.run();";
   output <<< "  } catch (const jubatus::exception::jubatus_exception& e) {";
   output <<< "    LOG(FATAL) << e.diagnostic_information(true);";
   output <<< "    return -1;";
   output <<< "  }";
   output <<< "}";;
-

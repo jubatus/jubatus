@@ -15,29 +15,38 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "recommender_factory.hpp"
+#include <pficommon/text/json.h>
 #include "recommender.hpp"
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../storage/norm_factory.hpp"
 
 using namespace std;
+using namespace jubatus::jsonconfig;
+using pfi::text::json::json;
 
 namespace jubatus {
 namespace recommender {
 
-recommender_base* create_recommender(const string& name){
+recommender_base* create_recommender(const string& name,
+                                     const config& param) {
+  using namespace pfi::text::json;
+
   if (name == "inverted_index"){
+    // inverted_index doesn't have parameter
     return new inverted_index;
   } else if (name == "minhash"){
-    return new minhash;
+    return new minhash(config_cast_check<minhash::config>(param));
   } else if (name == "lsh"){
-    return new lsh;
+    return new lsh(config_cast_check<lsh::config>(param));
+  } else if (name == "euclid_lsh") {
+    return new euclid_lsh(config_cast_check<euclid_lsh::config>(param));
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }
 }
 
-}
-}
-
+} // recommender
+} // jubatus
 
 

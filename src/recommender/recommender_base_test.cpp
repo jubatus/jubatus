@@ -34,6 +34,12 @@ class recommender_impl : public recommender_base{
     ids.push_back(make_pair("r1", 2.0));
     ids.push_back(make_pair("r3", 1.0));
   }
+
+  void neighbor_row(const sfv_t& query, vector<pair<string, float> >& ids, size_t ret_num) const{
+    ids.clear();
+    ids.push_back(make_pair("r1", 1.0));
+    ids.push_back(make_pair("r3", 2.0));
+  }
   
   void clear(){}
   void clear_row(const string& id){}

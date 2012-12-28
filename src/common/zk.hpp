@@ -41,6 +41,7 @@ public:
 
   void force_close();
   bool create(const std::string& path, const std::string& payload = "", bool ephemeral = false);
+  bool set(const  std::string& path, const std::string& payload = "");
   bool remove(const std::string& path);
   bool exists(const std::string& path);
 
@@ -81,19 +82,26 @@ protected:
 class zkmutex : public try_lockable {
 public:
   zkmutex(lock_service& ls, const std::string& path):
-    zk_(ls), path_(path), has_lock_(false)
+    zk_(ls), path_(path), has_lock_(false), has_rlock_(false)
   {}
-  virtual ~zkmutex() { this->unlock(); }
+  virtual ~zkmutex() {
+    this->unlock();
+    this->unlock_r();
+  }
 
   bool lock();
   bool try_lock();
   bool unlock();
+  bool rlock();
+  bool try_rlock();
+  bool unlock_r();
 
 private:
   lock_service& zk_;
   std::string path_;
   std::string seqfile_;
   bool has_lock_;
+  bool has_rlock_;
   pfi::concurrent::mutex m_;
 };
 

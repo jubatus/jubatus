@@ -18,8 +18,10 @@
 
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/cast.h>
+#include <pficommon/data/optional.h>
 
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
@@ -29,11 +31,42 @@
 
 using namespace std;
 using namespace pfi::lang;
+using pfi::text::json::json;
+using pfi::text::json::json_cast;
 using namespace jubatus::common;
 using namespace jubatus::framework;
 
 namespace jubatus {
 namespace server {
+
+namespace {
+
+struct recommender_serv_config {
+  std::string method;
+  pfi::data::optional<jsonconfig::config> parameter;  // FIXME: if must use parameter
+  pfi::text::json::json converter;
+
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    ar
+        & MEMBER(method)
+        & MEMBER(parameter)
+        & MEMBER(converter);
+  }
+};
+
+common::cshared_ptr<recommender::recommender_base>
+make_model(const recommender_serv_config& conf) {
+  jsonconfig::config param;
+  if (conf.parameter) {
+    param = *conf.parameter;
+  }
+
+  return cshared_ptr<recommender::recommender_base>
+    (recommender::create_recommender(conf.method, param));
+}
+
+}
 
 recommender_serv::recommender_serv(const server_argv& a,
                                    const cshared_ptr<lock_service>& zk)
@@ -60,18 +93,22 @@ void recommender_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-int recommender_serv::set_config(config_data config) {
+bool recommender_serv::set_config(std::string config) {
   LOG(INFO) << __func__;
+
+  jsonconfig::config conf_root(lexical_cast<json>(config));
+  recommender_serv_config conf = jsonconfig::config_cast_check<recommender_serv_config>(conf_root);
+
   shared_ptr<fv_converter::datum_to_fv_converter> converter
-      = fv_converter::make_fv_converter(config.converter);
+      = fv_converter::make_fv_converter(conf.converter);
   config_ = config;
   converter_ = converter;
-  rcmdr_.set_model(make_model());
+  rcmdr_.set_model(make_model(conf));
   (*converter_).set_weight_manager(wm_.get_model());
-  return 0;
+  return true;
 }
   
-config_data recommender_serv::get_config() {
+string recommender_serv::get_config() {
   check_set_config();
   return config_;
 }
@@ -106,11 +143,6 @@ bool recommender_serv::clear() {
   rcmdr_.get_model()->clear();
   return true;
 }
-
-common::cshared_ptr<recommender::recommender_base> recommender_serv::make_model() {
-  return cshared_ptr<recommender::recommender_base>
-    (recommender::create_recommender(config_.method));
-}  
 
 datum recommender_serv::complete_row_from_id(std::string id) {
   check_set_config();

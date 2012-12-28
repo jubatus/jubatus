@@ -18,4 +18,6 @@
 
 #include "inverted_index.hpp"
 #include "lsh.hpp"
+#include "euclid_lsh.hpp"
 #include "minhash.hpp"
+#include "recommender_mock.hpp"

@@ -32,6 +32,18 @@ TEST(util, build_existence_path) {
   EXPECT_EQ("/path/base/127.0.0.1_9199", s);
 }
 
+TEST(util, build_config_path) {
+  string p;
+  build_config_path(p , "name", "type");
+  EXPECT_EQ("/jubatus/config/name/type", p);
+}
+
+TEST(util, build_config_lock_path) {
+  string p;
+  build_config_lock_path(p , "name", "type");
+  EXPECT_EQ("/jubatus/actors/name/type/config_lock", p);
+}
+
 TEST(util, revert) {
   string name = "127.0.0.1_9199";
   string ip;

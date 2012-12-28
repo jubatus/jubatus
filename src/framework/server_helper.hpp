@@ -28,6 +28,7 @@
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
 #include "../config.hpp"
+#include "../common/jsonconfig.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -36,6 +37,8 @@ class server_helper_impl {
 public:
   explicit server_helper_impl(const server_argv& a);
   void prepare_for_start(const server_argv& a, bool use_cht);
+  void prepare_for_run(const server_argv& a, bool use_cht);
+  void get_config_lock(const server_argv& a, int retry);
 
   common::cshared_ptr<jubatus::common::lock_service> zk() const {
     return zk_;
@@ -43,6 +46,7 @@ public:
 
 private:
   common::cshared_ptr<jubatus::common::lock_service> zk_;
+  pfi::lang::shared_ptr<common::try_lockable> zk_config_lock_;
 };
 
 template<typename Server>
@@ -55,6 +59,21 @@ public:
 
     impl_.prepare_for_start(a, use_cht);
     server_.reset(new Server(a, impl_.zk()));
+
+    impl_.get_config_lock(a, 3);
+
+    try {
+      server_->set_config(get_conf(a));
+    } catch (const jsonconfig::cast_check_error& e) {
+      config_exception config_error;
+      const jsonconfig::config_error_list& errors = e.errors();
+      for (jsonconfig::config_error_list::const_iterator it = errors.begin(),
+          end = errors.end(); it != end; ++it) {
+        config_error << exception::error_message((*it)->what());
+      }
+      // send error message to caller
+      throw JUBATUS_EXCEPTION(config_error);
+    }
   }
 
   std::map<std::string, std::string> get_loads() const {
@@ -105,6 +124,8 @@ public:
   template <typename RPCServer>
   int start(RPCServer& serv) {
     const server_argv& a = server_->argv();
+
+    impl_.prepare_for_run(a, use_cht_);
 
     if (!a.is_standalone()) {
       server_->get_mixer()->start();

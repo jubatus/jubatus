@@ -36,5 +36,22 @@ TEST(bit_vector, shorter_vs_longer_inequality) {
   EXPECT_FALSE(v1 == v2);
 }
 
+TEST(bit_vector, calc_hamming_similarity) {
+  bit_vector v1, v2;
+  v1.resize_and_clear(80);
+  v2.resize_and_clear(80);
+
+  v1.set_bit(10);
+  v1.set_bit(20);
+  v1.set_bit(64);
+  v1.set_bit(70);
+
+  v2.set_bit(10);
+  v2.set_bit(64);
+  v2.set_bit(75);
+
+  EXPECT_EQ(77u, v1.calc_hamming_similarity(v2));
+}
+
 }
 }

@@ -19,6 +19,7 @@
 #include "regression_client.hpp"
 #include <vector>
 #include <string>
+#include <limits>
 #include "../regression/regression_test_util.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/converter_config.hpp"
@@ -40,7 +41,7 @@ namespace {
     pid_t child_;
 
     regression_test(){
-      child_ = fork_process("regression", PORT);
+      child_ = fork_process("regression", PORT, "./test_input/config.regression.json");
     };
     virtual ~regression_test(){
       kill_process(child_);
@@ -48,7 +49,7 @@ namespace {
     virtual void restart_process(){
 
       kill_process(this->child_);
-      this->child_ = fork_process("regression");
+      this->child_ = fork_process("regression", PORT, "./test_input/config.regression.json");
     };
   };
 
@@ -68,22 +69,35 @@ void make_random_data(vector<pair<float, datum> >& data, size_t size) {
   }
 }
 
-config_data make_simple_config(const string& method) {
-  config_data c;
-  c.method = method;
+string make_simple_config(const string& method) {
+  pfi::text::json::json js(new pfi::text::json::json_object());
+  js["method"] = pfi::text::json::json(new pfi::text::json::json_string(method));  
   jubatus::fv_converter::converter_config config;
   jubatus::fv_converter::num_rule rule = { "*", "num" };
   config.num_rules.push_back(rule);
-  c.config = config_to_string(config);
-  return c;
+  std::stringstream conv;
+  conv << config_to_string(config);
+  pfi::text::json::json jsc;
+  conv >> jsc;
+  js["converter"] = jsc;
+
+  pfi::text::json::json param(new pfi::text::json::json_object());
+  param["sensitivity"] = pfi::text::json::json(new pfi::text::json::json_float(0.1f));
+  param["regularization_weight"] = pfi::text::json::json(new pfi::text::json::json_float(numeric_limits<float>::max()));
+  js["parameter"] = param;
+
+  std::stringstream ret;
+  ret << pfi::text::json::pretty(js);
+
+  return ret.str();
 }
 
 void my_test(const char* meth, const char* stor){ 
   client::regression r("localhost", PORT, 10);
   const size_t example_size = 1000;
-  config_data c = make_simple_config(meth);
+  //string c = make_simple_config(meth);
 
-  r.set_config(NAME, c);
+  //r.set_config(NAME, c);
 
   vector<pair<float, datum> > data;
   make_random_data(data, example_size);
@@ -126,10 +140,6 @@ TEST_F(regression_test, small) {
 
   client::regression c("localhost", PORT, 10);
   
-  cout << "set_config" << endl;
-  config_data conf = make_simple_config("PA");
-  c.set_config("test", conf);
-
   cout << "train" << endl;
   vector<pair<float, datum> > data;
   datum d;

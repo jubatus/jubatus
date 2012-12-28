@@ -23,6 +23,7 @@
 #include <pficommon/data/optional.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/network/mprpc.h>
+#include <pficommon/text/json.h>
 #include <msgpack.hpp>
 
 namespace jubatus {
@@ -121,6 +122,9 @@ void initialize_converter(const converter_config& config,
 
 pfi::lang::shared_ptr<datum_to_fv_converter>
 make_fv_converter(const std::string& config);
+
+pfi::lang::shared_ptr<datum_to_fv_converter>
+make_fv_converter(const pfi::text::json::json& config);
 
 }
 }

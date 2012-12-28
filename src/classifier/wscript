@@ -34,4 +34,5 @@ def build(bld):
       'classifier_base.hpp',
       'classifier_factory.hpp',
       'classifier_type.hpp',
+      'classifier_config.hpp',
       ])

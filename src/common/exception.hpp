@@ -280,6 +280,8 @@ inline exception_thrower_ptr get_current_exception()
 
 } // exception
 
+class config_exception : public exception::jubaexception<config_exception>{};
+
 class storage_not_set : public exception::jubaexception<storage_not_set>{};
 
 class config_not_set : public exception::jubaexception<config_not_set> {

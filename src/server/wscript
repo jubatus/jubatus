@@ -1,4 +1,4 @@
-idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl']
+idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl']
 
 def options(opt):
   pass
@@ -29,7 +29,7 @@ def build_one(bld, name, libraries = '', sources = ''):
     source = '%s_test.cpp' % name,
     target = '%s_test' % name,
     includes = '.',
-    use = 'PFICOMMON MSGPACK jubacommon_mprpc',
+    use = 'PFICOMMON MSGPACK jubacommon_mprpc %s' % libraries,
     )
 
 
@@ -51,13 +51,6 @@ def build(bld):
     use='PFICOMMON jubastorage jubaserver'
     )
 
-  bld.program(
-    features = 'gtest',
-    source = 'recommender_serv.cpp recommender_serv_test.cpp',
-    target = 'recommender_serv_test',
-    includes = '. ../framework',
-    use = 'PFICOMMON jubaconverter jubastorage jubaserver jubatus_recommender jubatus_framework')
-
   #new classifier
   build_one(bld, "classifier", 'jubaconverter jubastorage jubaserver')
 
@@ -66,6 +59,9 @@ def build(bld):
 
   # #new recommender
   build_one(bld, "recommender", 'jubaconverter jubastorage jubaserver')
+
+  # #new anomaly
+  build_one(bld, "anomaly", 'jubaconverter jubastorage jubatus_recommender jubaserver')
 
   build_one(bld, "stat")
 
@@ -88,6 +84,8 @@ def build(bld):
       'stat_client.hpp',
       'graph_types.hpp',
       'graph_client.hpp',
+      'anomaly_types.hpp',
+      'anomaly_client.hpp',
       ])
 
   bld.install_files('${PREFIX}/share/jubatus/', idls)

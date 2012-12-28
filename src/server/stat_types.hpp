@@ -16,17 +16,6 @@
 
 namespace jubatus {
 
-struct config_data {
-public:
-
-  
-  MSGPACK_DEFINE(window_size);  
-
-  int32_t window_size;
-
-  config_data(): window_size(1024) {}
-};
-
 } // namespace jubatus
 
 

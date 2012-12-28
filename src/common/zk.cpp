@@ -21,6 +21,7 @@
 
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/bind.h>
+#include <pficommon/data/string/utility.h>
 #include "exception.hpp"
 
 using pfi::concurrent::scoped_lock;
@@ -110,6 +111,19 @@ bool zk::create(const string& path, const string& payload, bool ephemeral)
   return true;
 }
 
+
+bool zk::set(const string& path, const string& payload)
+{
+  scoped_lock lk(m_);
+  int rc = zoo_set(zh_, path.c_str(), payload.c_str(), payload.length(), -1);
+  if (rc != ZOK) {
+    LOG(ERROR) << path << " failed in setting " << rc << " " << zerror(rc);
+    return false;
+  }
+  DLOG(INFO) << __func__ << " " << path << " - " << payload;
+  return true;
+}
+
 // "/some/path" => "/some/path0000012"
 bool zk::create_seq(const string& path, string& seqfile)
 {
@@ -195,6 +209,8 @@ bool zk::list_(const string& path, vector<string>& out)
     }
     std::sort(out.begin(), out.end());
     return true;
+  } else if (rc == ZNONODE) {
+    return true;
   } else {
     LOG(ERROR) << zerror(rc) << " (" << path << ")";
     return false;
@@ -273,7 +289,7 @@ bool zkmutex::try_lock()
   if (has_lock_)
     return has_lock_;
 
-  string prefix = path_ + "/lock_";
+  string prefix = path_ + "/wlock_";
   if (!zk_.create_seq(prefix, seqfile_))
     return false;
 
@@ -283,11 +299,21 @@ bool zkmutex::try_lock()
   if (!zk_.list(path_, list) || list.empty())
     return false;
 
-  has_lock_ = ((path_ + "/" + list[0]) == seqfile_);
+  has_lock_ = true;
+  for (size_t i = 0; i < list.size(); i++) {
+    // not exist all lock less than me.
+    if (seqfile_.compare(prefix.length(), -1, path_ + "/" + list[i], prefix.length(), -1) > 0) {
+      has_lock_ = false;
+      break;
+    }
+  }
+
   if (!has_lock_) {
     zk_.remove(seqfile_);
+  } else {
+    DLOG(INFO) << "got write lock: " << seqfile_;
   }
-  DLOG(INFO) << "got lock for " << path_ << " (" << seqfile_ << ") ";
+
   return has_lock_;
 }
 
@@ -295,6 +321,63 @@ bool zkmutex::unlock()
 {
   pfi::concurrent::scoped_lock lk(m_);
   if (has_lock_) {
+    return zk_.remove(seqfile_);
+  }
+  return true;
+}
+
+bool zkmutex::rlock()
+{
+  pfi::concurrent::scoped_lock lk(m_);
+  LOG(ERROR) << "not implemented:" << __func__;
+  while (!has_rlock_) {
+    if (try_rlock()) break;
+    sleep(1);
+  }
+
+  return true;
+}
+
+bool zkmutex::try_rlock()
+{
+  pfi::concurrent::scoped_lock lk(m_);
+  if (has_rlock_)
+    return has_rlock_;
+
+  string prefix = path_ + "/rlock_";
+  if (!zk_.create_seq(prefix, seqfile_))
+    return false;
+
+  if (seqfile_ == "") return false;
+
+  vector<string> list;
+  if (!zk_.list(path_, list) || list.empty())
+    return false;
+
+  has_rlock_ = true;
+  for (size_t i = 0; i < list.size(); i++) {
+    // not exist write lock less than me.
+    if (pfi::data::string::starts_with(list[i], string("wlock_"))) {
+      if (seqfile_.compare(prefix.length(), -1, path_ + "/" + list[i], prefix.length(), -1) > 0) {
+        has_rlock_ = false;
+        break;
+      }
+    }
+  }
+
+  if (!has_rlock_) {
+    zk_.remove(seqfile_);
+  } else {
+    DLOG(INFO) << "got read lock: " << seqfile_;
+  }
+
+  return has_rlock_;
+}
+
+bool zkmutex::unlock_r()
+{
+  pfi::concurrent::scoped_lock lk(m_);
+  if (has_rlock_) {
     return zk_.remove(seqfile_);
   }
   return true;
