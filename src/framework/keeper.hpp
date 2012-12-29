@@ -689,7 +689,7 @@ public:
       async_task_loop *at_loop = get_private_async_task_loop();
       mp::shared_ptr<async_task<Res> > task( new async_task<Res>(at_loop,
                                                                  hosts, method_name, req, reducer) );
-      task->call_apply<Args>( method_name, args, timeout_sec);
+      task->template call_apply<Args>( method_name, args, timeout_sec);
     }
 
     template <typename Res, typename Args>
