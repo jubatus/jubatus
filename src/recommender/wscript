@@ -30,7 +30,6 @@ def build(bld):
       use = 'PFICOMMON jubatus_recommender jubacommon')
 
   map(make_test, [
-#      'recommender_test.cpp', # FIXME
       'recommender_base_test.cpp',
       'recommender_mock_storage_test.cpp',
       'recommender_mock_test.cpp',
