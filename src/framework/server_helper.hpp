@@ -103,7 +103,7 @@ public:
     // TBD: type(server type), name(instance name: when zookeeper enabled), eth
     data["timeout"] = pfi::lang::lexical_cast<std::string>(a.timeout);
     data["threadnum"] = pfi::lang::lexical_cast<std::string>(a.threadnum);
-    data["tmpdir"] = a.tmpdir;
+    data["datadir"] = a.datadir;
     data["interval_sec"] = pfi::lang::lexical_cast<std::string>(a.interval_sec);
     data["interval_count"] = pfi::lang::lexical_cast<std::string>(a.interval_count);
     data["is_standalone"] = pfi::lang::lexical_cast<std::string>(a.is_standalone());

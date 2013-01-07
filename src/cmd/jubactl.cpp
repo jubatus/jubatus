@@ -55,7 +55,7 @@ int main(int args, char** argv) try {
   p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
   p.add<int>("thread", 'C', "[start] concurrency = thread number", false, 2);
   p.add<int>("timeout", 'T', "[start] time out (sec)", false, 10);
-  p.add<std::string>("tmpdir", 'D', "[start] directory to load and save models", false, "/tmp");
+  p.add<std::string>("datadir", 'D', "[start] directory to load and save models", false, "/tmp");
   p.add<std::string>("logdir", 'L', "[start] directory to output logs (instead of stderr)", false, "");
   p.add<int,cmdline::range_reader<int> >("loglevel", 'E', "[start] verbosity of log messages", false,
                                          google::INFO, cmdline::range(google::INFO, google::FATAL));
@@ -151,7 +151,7 @@ void send2supervisor(const string& cmd,
     server_option.program_name = type;
     server_option.z = zkhosts;
     server_option.name = name;
-    server_option.tmpdir = argv.get<std::string>("tmpdir");
+    server_option.datadir = argv.get<std::string>("datadir");
     server_option.logdir = argv.get<std::string>("logdir");
     server_option.loglevel = argv.get<int>("loglevel");
     server_option.join = argv.exist("join");

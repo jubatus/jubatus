@@ -79,7 +79,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
   p.add<int>("thread", 'c', "concurrency = thread number", false, 2);
   p.add<int>("timeout", 't', "time out (sec)", false, 10);
-  p.add<std::string>("tmpdir", 'd', "directory to save and load models", false, "/tmp");
+  p.add<std::string>("datadir", 'd', "directory to save and load models", false, "/tmp");
   p.add<std::string>("logdir", 'l', "directory to output logs (instead of stderr)", false, "");
   p.add<int,cmdline::range_reader<int> >("loglevel", 'e', "verbosity of log messages", false,
                                          google::INFO, cmdline::range(google::INFO, google::FATAL));
@@ -110,7 +110,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   threadnum = p.get<int>("thread");
   timeout = p.get<int>("timeout");
   program_name = jubatus::util::get_program_name();
-  tmpdir = p.get<std::string>("tmpdir");
+  datadir = p.get<std::string>("datadir");
   logdir = p.get<std::string>("logdir");
   loglevel = p.get<int>("loglevel");
   configpath = p.get<std::string>("configpath");
@@ -163,7 +163,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
 
 server_argv::server_argv():
   join(false), port(9199), timeout(10), threadnum(2), z(""), name(""),
-  tmpdir("/tmp"), logdir(""), loglevel(google::INFO), eth("localhost"),
+  datadir("/tmp"), logdir(""), loglevel(google::INFO), eth("localhost"),
   interval_sec(5), interval_count(1024)
 {
 }
@@ -181,7 +181,7 @@ void server_argv::boot_message(const std::string& progname) const {
   }
   ss << "    timeout        : " << timeout << '\n';
   ss << "    thread         : " << threadnum << '\n';
-  ss << "    tmpdir         : " << tmpdir << '\n';
+  ss << "    datadir        : " << datadir << '\n';
   ss << "    logdir         : " << logdir << '\n';
   ss << "    loglevel       : " << google::GetLogSeverityName(loglevel) << '(' << loglevel << ')' << '\n';
 #ifdef HAVE_ZOOKEEPER_H

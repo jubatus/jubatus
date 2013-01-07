@@ -32,7 +32,7 @@ std::string build_local_path(const server_argv& a,
                              const std::string& type,
                              const std::string& id) {
   std::ostringstream path;
-  path << a.tmpdir << '/' << a.eth << '_' << a.port << '_' << type << '_' << id << ".js";
+  path << a.datadir << '/' << a.eth << '_' << a.port << '_' << type << '_' << id << ".js";
   return path.str();
 }
 
