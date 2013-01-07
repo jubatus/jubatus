@@ -73,7 +73,7 @@ def convert_client_hpp(service_name, line, out):
 
 # main
 
-parser = argparse.ArgumentParser( description='Convert midl output for Jubatus-0.4.x' )
+parser = argparse.ArgumentParser( description='Convert mpidl output for Jubatus-0.4.x' )
 parser.add_argument( '-o', '--output', dest='output', help='output directory')
 parser.add_argument( 'idl_path', help='target idl path')
 
