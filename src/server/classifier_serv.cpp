@@ -90,8 +90,6 @@ void classifier_serv::get_status(status_t& status) const {
 }
 
 bool classifier_serv::set_config(const string& config) {
-  LOG(INFO) << __func__;
-
   jsonconfig::config config_root(lexical_cast<json>(config));
   classifier_serv_config conf = jsonconfig::config_cast_check<classifier_serv_config>(config_root);
 
@@ -109,6 +107,7 @@ bool classifier_serv::set_config(const string& config) {
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
+  LOG(INFO) << __func__;
   return true;
 }
 

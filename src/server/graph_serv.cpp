@@ -97,13 +97,13 @@ graph_serv::graph_serv(const framework::server_argv& a,
 graph_serv::~graph_serv() {}
 
 bool graph_serv::set_config(const std::string& config) {
-  LOG(INFO) << __func__;
-
   jsonconfig::config conf_root(pfi::lang::lexical_cast<pfi::text::json::json>(config));
   graph_serv_config conf = jsonconfig::config_cast_check<graph_serv_config>(conf_root);
 
   config_ = config;
   g_.set_model(cshared_ptr<jubatus::graph::graph_base>(jubatus::graph::create_graph(conf.method, conf.parameter)));
+
+  LOG(INFO) << __func__;
   return true;
 }
 

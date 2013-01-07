@@ -94,8 +94,6 @@ void recommender_serv::get_status(status_t& status) const {
 }
 
 bool recommender_serv::set_config(std::string config) {
-  LOG(INFO) << __func__;
-
   jsonconfig::config conf_root(lexical_cast<json>(config));
   recommender_serv_config conf = jsonconfig::config_cast_check<recommender_serv_config>(conf_root);
 
@@ -105,6 +103,8 @@ bool recommender_serv::set_config(std::string config) {
   converter_ = converter;
   rcmdr_.set_model(make_model(conf));
   (*converter_).set_weight_manager(wm_.get_model());
+
+  LOG(INFO) << __func__;
   return true;
 }
   
