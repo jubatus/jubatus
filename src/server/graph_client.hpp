@@ -25,24 +25,24 @@ public:
     return c_.call("create_node", name).get<std::string>();
   }
 
-  int32_t remove_node(std::string name, std::string nid) {
-    return c_.call("remove_node", name, nid).get<int32_t>();
+  bool remove_node(std::string name, std::string nid) {
+    return c_.call("remove_node", name, nid).get<bool>();
   }
 
-  int32_t update_node(std::string name, std::string nid, property p) {
-    return c_.call("update_node", name, nid, p).get<int32_t>();
+  bool update_node(std::string name, std::string nid, property p) {
+    return c_.call("update_node", name, nid, p).get<bool>();
   }
 
   uint64_t create_edge(std::string name, std::string nid, edge_info ei) {
     return c_.call("create_edge", name, nid, ei).get<uint64_t>();
   }
 
-  int32_t update_edge(std::string name, std::string nid, uint64_t eid, edge_info ei) {
-    return c_.call("update_edge", name, nid, eid, ei).get<int32_t>();
+  bool update_edge(std::string name, std::string nid, uint64_t eid, edge_info ei) {
+    return c_.call("update_edge", name, nid, eid, ei).get<bool>();
   }
 
-  int32_t remove_edge(std::string name, std::string nid, uint64_t e) {
-    return c_.call("remove_edge", name, nid, e).get<int32_t>();
+  bool remove_edge(std::string name, std::string nid, uint64_t e) {
+    return c_.call("remove_edge", name, nid, e).get<bool>();
   }
 
   double get_centrality(std::string name, std::string nid, int32_t ct, preset_query q) {
@@ -69,12 +69,12 @@ public:
     return c_.call("get_shortest_path", name, r).get<std::vector<std::string > >();
   }
 
-  int32_t update_index(std::string name) {
-    return c_.call("update_index", name).get<int32_t>();
+  bool update_index(std::string name) {
+    return c_.call("update_index", name).get<bool>();
   }
 
-  int32_t clear(std::string name) {
-    return c_.call("clear", name).get<int32_t>();
+  bool clear(std::string name) {
+    return c_.call("clear", name).get<bool>();
   }
 
   node_info get_node(std::string name, std::string nid) {
