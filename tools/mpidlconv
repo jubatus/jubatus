@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+#
+# mpidlconv - convert mpidl's output for Jubatus 0.4
+#
+
 import argparse
 import os
 import os.path
