@@ -1,0 +1,83 @@
+#!/usr/bin/python
+
+import argparse
+import os
+import os.path
+import re
+import tempfile
+import shutil
+
+# convert
+def convert(service_name, suffix, input_dir, output_dir, convert_func ):
+    target_filename = service_name + suffix
+    src_path = os.path.join( input_dir, target_filename )
+    if not os.path.exists( src_path ):
+        return False
+
+    dst_path = os.path.join( output_dir, target_filename )
+
+    temp_path = None
+    try:
+        with open( src_path ) as src:
+            lines = src.readlines()
+            with tempfile.NamedTemporaryFile( delete=False ) as temp:
+                temp_path = temp.name
+                for line in lines:
+                    convert_func( service_name, line, temp )
+
+        shutil.move( temp_path, dst_path )
+
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
+
+    return True
+
+# convert *_server.hpp
+def convert_server_hpp(service_name, line, out):
+    out.write( re.sub( r'pfi::network::mprpc::rpc_server', 'jubatus::common::mprpc::rpc_server', line ) )
+    if re.match( r'#include <pficommon/lang/bind.h>', line):
+        out.write( '#include "../common/mprpc/rpc_server.hpp"\n' )
+
+# convert *_client.hpp
+def convert_client_hpp(service_name, line, out):
+    if re.match( r'#include <pficommon/network/mprpc.h>', line ):
+        out.write( "#include <jubatus/msgpack/rpc/client.h>\n" )
+        return
+    
+    if re.match( r'class .+ : public pfi::network::mprpc::rpc_client', line ):
+        out.write( "class %s {\n" % service_name )
+        return
+
+    if re.search( r': rpc_client\(host, port, timeout_sec\) {}', line ):
+        out.write( "    : c_(host, port) {\n" )
+        out.write( "    c_.set_timeout( timeout_sec );\n")
+        out.write( "  }\n" )
+        return
+
+    matched = re.search( r'return call<(?P<ret_type>.+)\((?P<args>.*)\)>\((?P<method>.+)\)\((?P<params>.+)\);', line )
+    if matched:
+        out.write( "      return c_.call(%s, %s).get<%s >();\n" % ( matched.group('method'), matched.group('params'), matched.group('ret_type') ) )
+        return
+
+    if re.search( r'private:', line ):
+        out.write( line )
+        out.write( "  msgpack::rpc::client c_;\n" )
+        return
+
+    out.write( line )
+
+# main
+
+parser = argparse.ArgumentParser( description='Convert midl output for Jubatus-0.4.x' )
+parser.add_argument( '-o', '--output', dest='output', help='output directory')
+parser.add_argument( 'idl_path', help='target idl path')
+
+args = parser.parse_args()
+
+output_dir = args.output if args.output != None else os.path.dirname(args.idl_path)
+input_dir = os.path.dirname( args.idl_path )
+service_name = os.path.splitext( os.path.basename(args.idl_path) )[0]
+
+convert( service_name, '_server.hpp', input_dir, output_dir, convert_server_hpp)
+convert( service_name, '_client.hpp', input_dir, output_dir, convert_client_hpp)
