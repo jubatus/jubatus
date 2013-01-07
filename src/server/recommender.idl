@@ -30,7 +30,7 @@ service recommender {
   bool clear_row(0: string name, 1: string id) # //@cht
 
   #@cht #@update #@all_and
-  bool update_row(0: string name, 1: string id, 2: datum d) # //@cht
+  bool update_row(0: string name, 1: string id, 2: datum row) # //@cht
 
   #@broadcast #@update #@all_and
   bool clear(0: string name) # //@broadcast
@@ -39,13 +39,13 @@ service recommender {
   datum complete_row_from_id(0: string name, 1: string id) # //@cht
 
   #@random #@analysis #@pass
-  datum complete_row_from_data(0: string name, 1: datum d) # //@random
+  datum complete_row_from_datum(0: string name, 1: datum row) # //@random
 
   #@cht #@analysis #@pass
   similar_result similar_row_from_id(0: string name, 1: string id, 2: uint size) # //@cht
 
   #@random #@analysis #@pass
-  similar_result similar_row_from_data(0: string name, 1: datum data, 2: uint size) # //@random
+  similar_result similar_row_from_datum(0: string name, 1: datum row, 2: uint size) # //@random
 
   #@cht #@analysis #@pass
   datum decode_row(0: string name, 1: string id) # //@cht
@@ -54,10 +54,10 @@ service recommender {
   list<string>  get_all_rows(0: string name) # //@broadcast
 
   #@random #@analysis #@pass
-  float similarity(0: string name, 1: datum lhs, 2:datum rhs) # //@random
+  float calc_similarity(0: string name, 1: datum lhs, 2:datum rhs) # //@random
 
   #@random #@analysis #@pass
-  float l2norm(0: string name, 1: datum d) # //@random
+  float calc_l2norm(0: string name, 1: datum row) # //@random
 
   #@broadcast #@update #@all_and
   bool save(0: string name, 1: string id) # //@broadcast
