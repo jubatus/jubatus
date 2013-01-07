@@ -162,6 +162,18 @@ TEST(jsonconfig_cast, int) {
   EXPECT_EQ(1, config_cast<int>(conf));
 }
 
+TEST(jsonconfig_cast, float) {
+  json j(new json_float(1.0));
+  config conf(j);
+  EXPECT_EQ(1.0, config_cast<float>(conf));
+}
+
+TEST(jsonconfig_cast, int_to_float) {
+  json j(new json_integer(1));
+  config conf(j);
+  EXPECT_EQ(1.0, config_cast<float>(conf));
+}
+
 TEST(jsonconfig_cast, string) {
   json j(new json_string("test"));
   config conf(j);
