@@ -84,6 +84,20 @@ inline bool check_json_type(json_config_iarchive_cast& js, pfi::text::json::json
   }
   return true;
 }
+
+inline bool check_json_float(json_config_iarchive_cast& js) {
+  if (js.get().type() != pfi::text::json::json::Float
+      && js.get().type() != pfi::text::json::json::Integer) {
+    type_error e(js.get_config().path(), pfi::text::json::json::Float, js.get().type());
+    if (js.trace_error()) {
+      js.push_error(e);
+    } else {
+      throw JUBATUS_EXCEPTION(e);
+    }
+    return false;
+  }
+  return true;
+}
 } // detail
 
 #define GENERATE_CONFIG_SERIALIZE_DEF(typ, json_typ) \
@@ -97,9 +111,18 @@ inline bool check_json_type(json_config_iarchive_cast& js, pfi::text::json::json
 GENERATE_CONFIG_SERIALIZE_DEF(bool, Bool)
 GENERATE_CONFIG_SERIALIZE_DEF(int32_t, Integer)
 GENERATE_CONFIG_SERIALIZE_DEF(int64_t, Integer)
-GENERATE_CONFIG_SERIALIZE_DEF(float, Float)
-GENERATE_CONFIG_SERIALIZE_DEF(double, Float)
 GENERATE_CONFIG_SERIALIZE_DEF(std::string, String)
+
+#define GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(typ) \
+  template <> \
+  inline void serialize(json_config_iarchive_cast& js, typ& v) { \
+    if (detail::check_json_float(js)) { \
+      v = pfi::text::json::json_cast<typ>(js.get()); \
+    } \
+  }
+
+GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(float)
+GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(double)
 
 template <typename T>
 inline void serialize(json_config_iarchive_cast& js, std::vector<T>& vs) {
