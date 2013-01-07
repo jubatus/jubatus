@@ -41,16 +41,16 @@ public:
     return c_.call("complete_row_from_id", name, id).get<datum>();
   }
 
-  datum complete_row_from_data(std::string name, datum d) {
-    return c_.call("complete_row_from_data", name, d).get<datum>();
+  datum complete_row_from_datum(std::string name, datum d) {
+    return c_.call("complete_row_from_datum", name, d).get<datum>();
   }
 
   similar_result similar_row_from_id(std::string name, std::string id, uint32_t size) {
     return c_.call("similar_row_from_id", name, id, size).get<similar_result>();
   }
 
-  similar_result similar_row_from_data(std::string name, datum data, uint32_t size) {
-    return c_.call("similar_row_from_data", name, data, size).get<similar_result>();
+  similar_result similar_row_from_datum(std::string name, datum data, uint32_t size) {
+    return c_.call("similar_row_from_datum", name, data, size).get<similar_result>();
   }
 
   datum decode_row(std::string name, std::string id) {
@@ -61,12 +61,12 @@ public:
     return c_.call("get_all_rows", name).get<std::vector<std::string > >();
   }
 
-  float similarity(std::string name, datum lhs, datum rhs) {
-    return c_.call("similarity", name, lhs, rhs).get<float>();
+  float calc_similarity(std::string name, datum lhs, datum rhs) {
+    return c_.call("calc_similarity", name, lhs, rhs).get<float>();
   }
 
-  float l2norm(std::string name, datum d) {
-    return c_.call("l2norm", name, d).get<float>();
+  float calc_l2norm(std::string name, datum d) {
+    return c_.call("calc_l2norm", name, d).get<float>();
   }
 
   bool save(std::string name, std::string id) {

@@ -31,8 +31,8 @@ public:
   bool remove_edge(std::string name, std::string nid, unsigned long e) //update cht(2)
   { JWLOCK__(p_); return get_p()->remove_edge(nid, e); }
 
-  double centrality(std::string name, std::string nid, int ct, preset_query q) //analysis random
-  { JRLOCK__(p_); return get_p()->centrality(nid, ct, q); }
+  double get_centrality(std::string name, std::string nid, int ct, preset_query q) //analysis random
+  { JRLOCK__(p_); return get_p()->get_centrality(nid, ct, q); }
 
   bool add_centrality_query(std::string name, preset_query q) //update broadcast
   { JWLOCK__(p_); return get_p()->add_centrality_query(q); }
@@ -46,8 +46,8 @@ public:
   bool remove_shortest_path_query(std::string name, preset_query q) //update broadcast
   { JWLOCK__(p_); return get_p()->remove_shortest_path_query(q); }
 
-  std::vector<std::string > shortest_path(std::string name, shortest_path_req r) //analysis random
-  { JRLOCK__(p_); return get_p()->shortest_path(r); }
+  std::vector<std::string > get_shortest_path(std::string name, shortest_path_req r) //analysis random
+  { JRLOCK__(p_); return get_p()->get_shortest_path(r); }
 
   bool update_index(std::string name) //update broadcast
   { JWLOCK__(p_); return get_p()->update_index(); }

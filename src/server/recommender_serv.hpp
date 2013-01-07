@@ -77,12 +77,12 @@ public:
   bool clear();
 
   datum complete_row_from_id(std::string id);
-  datum complete_row_from_data(datum dat);
+  datum complete_row_from_datum(datum dat);
   similar_result similar_row_from_id(std::string id, size_t ret_num);
-  similar_result similar_row_from_data(datum, size_t);
+  similar_result similar_row_from_datum(datum, size_t);
 
-  float similarity(const datum& , const datum&);
-  float l2norm(const datum& q);
+  float calc_similarity(const datum& , const datum&);
+  float calc_l2norm(const datum& q);
 
   datum decode_row(std::string id);
   std::vector<std::string> get_all_rows();

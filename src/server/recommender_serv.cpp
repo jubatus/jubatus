@@ -158,7 +158,7 @@ datum recommender_serv::complete_row_from_id(std::string id) {
   return ret0;
 }
 
-datum recommender_serv::complete_row_from_data(datum dat) {
+datum recommender_serv::complete_row_from_datum(datum dat) {
   check_set_config();
 
   fv_converter::datum d;
@@ -183,7 +183,7 @@ similar_result recommender_serv::similar_row_from_id(std::string id, size_t ret_
   return ret;
 }
 
-similar_result recommender_serv::similar_row_from_data(datum data, size_t s) {
+similar_result recommender_serv::similar_row_from_datum(datum data, size_t s) {
   check_set_config();
 
   similar_result ret;
@@ -218,7 +218,7 @@ std::vector<std::string> recommender_serv::get_all_rows() {
   return ret;
 }
 
-float recommender_serv::similarity(const datum& l, const datum& r) {
+float recommender_serv::calc_similarity(const datum& l, const datum& r) {
   check_set_config();
 
   fv_converter::datum d0, d1;
@@ -231,7 +231,7 @@ float recommender_serv::similarity(const datum& l, const datum& r) {
   return recommender::recommender_base::calc_similality(v0, v1);
 }
 
-float recommender_serv::l2norm(const datum& q) {
+float recommender_serv::calc_l2norm(const datum& q) {
   check_set_config();
 
   fv_converter::datum d0;

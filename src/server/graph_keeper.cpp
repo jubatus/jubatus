@@ -15,12 +15,12 @@ int main(int args, char** argv){
     k.register_async_cht<1, unsigned long, edge_info >("create_edge", pfi::lang::function<unsigned long(unsigned long,unsigned long)>(&all_and)); //nolock
     k.register_async_cht<2, bool, unsigned long, edge_info >("update_edge", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_cht<2, bool, unsigned long >("remove_edge", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
-    k.register_async_random<double, std::string, int, preset_query >("centrality"); //pass analysis
+    k.register_async_random<double, std::string, int, preset_query >("get_centrality"); //pass analysis
     k.register_async_broadcast<bool, preset_query >("add_centrality_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_broadcast<bool, preset_query >("add_shortest_path_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_broadcast<bool, preset_query >("remove_centrality_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_broadcast<bool, preset_query >("remove_shortest_path_query", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
-    k.register_async_random<std::vector<std::string >, shortest_path_req >("shortest_path"); //pass analysis
+    k.register_async_random<std::vector<std::string >, shortest_path_req >("get_shortest_path"); //pass analysis
     k.register_async_broadcast<bool >("update_index", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_broadcast<bool >("clear", pfi::lang::function<bool(bool,bool)>(&all_and)); //update
     k.register_async_cht<2, node_info >("get_node", pfi::lang::function<node_info(node_info,node_info)>(&pass<node_info >)); //analysis

@@ -28,14 +28,14 @@ public:
   datum complete_row_from_id(std::string name, std::string id) //analysis cht(2)
   { JRLOCK__(p_); return get_p()->complete_row_from_id(id); }
 
-  datum complete_row_from_data(std::string name, datum d) //analysis random
-  { JRLOCK__(p_); return get_p()->complete_row_from_data(d); }
+  datum complete_row_from_datum(std::string name, datum d) //analysis random
+  { JRLOCK__(p_); return get_p()->complete_row_from_datum(d); }
 
   similar_result similar_row_from_id(std::string name, std::string id, unsigned int size) //analysis cht(2)
   { JRLOCK__(p_); return get_p()->similar_row_from_id(id, size); }
 
-  similar_result similar_row_from_data(std::string name, datum data, unsigned int size) //analysis random
-  { JRLOCK__(p_); return get_p()->similar_row_from_data(data, size); }
+  similar_result similar_row_from_datum(std::string name, datum data, unsigned int size) //analysis random
+  { JRLOCK__(p_); return get_p()->similar_row_from_datum(data, size); }
 
   datum decode_row(std::string name, std::string id) //analysis cht(2)
   { JRLOCK__(p_); return get_p()->decode_row(id); }
@@ -43,11 +43,11 @@ public:
   std::vector<std::string > get_all_rows(std::string name) //analysis broadcast
   { JRLOCK__(p_); return get_p()->get_all_rows(); }
 
-  float similarity(std::string name, datum lhs, datum rhs) //analysis random
-  { JRLOCK__(p_); return get_p()->similarity(lhs, rhs); }
+  float calc_similarity(std::string name, datum lhs, datum rhs) //analysis random
+  { JRLOCK__(p_); return get_p()->calc_similarity(lhs, rhs); }
 
-  float l2norm(std::string name, datum d) //analysis random
-  { JRLOCK__(p_); return get_p()->l2norm(d); }
+  float calc_l2norm(std::string name, datum d) //analysis random
+  { JRLOCK__(p_); return get_p()->calc_l2norm(d); }
 
   bool save(std::string name, std::string id) //update broadcast
   { JWLOCK__(p_); return get_p()->save(id); }

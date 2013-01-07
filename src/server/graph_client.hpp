@@ -45,8 +45,8 @@ public:
     return c_.call("remove_edge", name, nid, e).get<int32_t>();
   }
 
-  double centrality(std::string name, std::string nid, int32_t ct, preset_query q) {
-    return c_.call("centrality", name, nid, ct, q).get<double>();
+  double get_centrality(std::string name, std::string nid, int32_t ct, preset_query q) {
+    return c_.call("get_centrality", name, nid, ct, q).get<double>();
   }
 
   bool add_centrality_query(std::string name, preset_query q) {
@@ -65,8 +65,8 @@ public:
     return c_.call("remove_shortest_path_query", name, q).get<bool>();
   }
 
-  std::vector<std::string > shortest_path(std::string name, shortest_path_req r) {
-    return c_.call("shortest_path", name, r).get<std::vector<std::string > >();
+  std::vector<std::string > get_shortest_path(std::string name, shortest_path_req r) {
+    return c_.call("get_shortest_path", name, r).get<std::vector<std::string > >();
   }
 
   int32_t update_index(std::string name) {

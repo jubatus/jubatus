@@ -86,7 +86,7 @@ TEST_F(recommender_test, small) {
   c.clear_row(NAME, "key");
   c.update_row(NAME, "key", d);
 
-  jubatus::datum d2 = c.complete_row_from_data(NAME, d);
+  jubatus::datum d2 = c.complete_row_from_datum(NAME, d);
   jubatus::datum d3 = c.complete_row_from_id(NAME, "key");
   //  cout << res.size() << endl;
 

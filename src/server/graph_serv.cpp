@@ -259,8 +259,8 @@ bool graph_serv::remove_edge(const std::string&, const edge_id_t& id) {
 }
 
 //@random
-double graph_serv::centrality(const std::string& id, const centrality_type& s,
-			      const preset_query& q) const { 
+double graph_serv::get_centrality(const std::string& id, const centrality_type& s,
+                                  const preset_query& q) const {
   check_set_config();
 
   if (s == 0) {
@@ -277,7 +277,7 @@ double graph_serv::centrality(const std::string& id, const centrality_type& s,
 }
 
 //@random
-std::vector<node_id> graph_serv::shortest_path(const shortest_path_req& req) const { 
+std::vector<node_id> graph_serv::get_shortest_path(const shortest_path_req& req) const {
   std::vector<jubatus::graph::node_id_t> ret0;
   jubatus::graph::preset_query q;
   framework::convert(req.q, q);

@@ -92,8 +92,9 @@ def build(bld):
 
 def regenerate(ctx):
   import os
-  path = ctx.path.abspath()
-  os.chdir(path)
+  dest_dir = ctx.path.abspath() # this directory
   for idl in idls:
-    ctx.exec_command(['jenerator', idl, '-o', '.', '-i'])
-    ctx.exec_command(['mpidl', 'cpp', idl, '-o', '.', '-p', '-n', 'jubatus'])
+    service_name = os.path.splitext(idl)[0]
+    ctx.cmd_and_log(['jenerator', idl, '-o', '.', '-i', '-n', 'jubatus'], cwd=dest_dir)
+    ctx.cmd_and_log(['mpidl', 'cpp', idl, '-o', '.', '-p', '-n', 'jubatus'], cwd=dest_dir)
+    ctx.cmd_and_log(['mpidlconv', idl, '-o', '.'], cwd=dest_dir)

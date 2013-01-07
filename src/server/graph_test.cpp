@@ -90,7 +90,7 @@ TEST_P(graph_test, simple){
   }    
   {
     jubatus::preset_query q;
-    double cent = c.centrality("", nid, 0, q);
+    double cent = c.get_centrality("", nid, 0, q);
     ASSERT_GT(0.0, cent);
   }
   {
@@ -99,12 +99,12 @@ TEST_P(graph_test, simple){
     req.tgt = nid0;
     {
       req.max_hop = 1;
-      std::vector<jubatus::node_id> path = c.shortest_path("", req);
+      std::vector<jubatus::node_id> path = c.get_shortest_path("", req);
       ASSERT_EQ(1u, path.size());
     }
     {
       req.max_hop = 0;
-      std::vector<jubatus::node_id> path = c.shortest_path("", req);
+      std::vector<jubatus::node_id> path = c.get_shortest_path("", req);
       ASSERT_EQ(0u, path.size());
     }
   }

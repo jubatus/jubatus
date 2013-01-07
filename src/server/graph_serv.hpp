@@ -91,10 +91,10 @@ public:
 
   bool remove_edge(const std::string& nid, const edge_id_t& e); //update cht
 
-  double centrality(const std::string& nid, const centrality_type& ct,
-		    const preset_query& q) const; //analysis random
+  double get_centrality(const std::string& nid, const centrality_type& ct,
+                        const preset_query& q) const; //analysis random
 
-  std::vector<node_id > shortest_path(const shortest_path_req& r) const; //analysis random
+  std::vector<node_id > get_shortest_path(const shortest_path_req& r) const; //analysis random
 
   bool add_centrality_query(const preset_query& q); //update broadcast
 

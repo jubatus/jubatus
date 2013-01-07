@@ -62,8 +62,8 @@ service graph {
   bool remove_edge(0: string name, 1: string node_id, 2: ulong edge_id) # //@cht
 
   #@random #@analysis #@pass
-  double centrality(0: string name, 1: string node_id,
-                    2: int centrality_type, 3: preset_query query) # //@random
+  double get_centrality(0: string name, 1: string node_id,
+                        2: int centrality_type, 3: preset_query query) # //@random
 
   #@broadcast #@update #@all_and
   bool add_centrality_query(0: string name, 1: preset_query query)
