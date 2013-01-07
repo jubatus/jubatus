@@ -13,14 +13,10 @@ def generate(idlfile, lang, outdir):
     if lang == "cpp":
         options.append("-p")
         options.append("-n")
-        options.append("jubatus")
-        # TODO: Issues #84
-        # options.append("jubatus::" + idl)
+        options.append("jubatus::" + idl)
     if lang == "ruby":
         options.append("-m")
-        options.append("Jubatus")
-        # TODO: Issues #84
-        # options.append("Jubatus::" + idl.capitalize())
+        options.append("Jubatus::" + idl.capitalize())
         outdir = outdir + "/jubatus"
     if lang == "java":
         options.append("-p")
