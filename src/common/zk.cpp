@@ -273,7 +273,7 @@ const string zk::type() const
 bool zkmutex::lock()
 {
   pfi::concurrent::scoped_lock lk(m_);
-  LOG(ERROR) << "not implemented:" << __func__;
+  LOG(ERROR) << "not implemented: " << __func__;
   while (!has_lock_) {
     if (try_lock()) break;
     sleep(1);
@@ -328,7 +328,7 @@ bool zkmutex::unlock()
 bool zkmutex::rlock()
 {
   pfi::concurrent::scoped_lock lk(m_);
-  LOG(ERROR) << "not implemented:" << __func__;
+  LOG(ERROR) << "not implemented: " << __func__;
   while (!has_rlock_) {
     if (try_rlock()) break;
     sleep(1);

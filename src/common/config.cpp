@@ -59,7 +59,6 @@ void config_fromzk(lock_service& z,
         << jubatus::exception::error_api_func("lock_service::read"));
 
   LOG(INFO) << "get config from zookeeper: " << path;
-  DLOG(INFO) << "config: " << config;
 }
 
 void config_tozk(lock_service& z,
@@ -76,7 +75,7 @@ void config_tozk(lock_service& z,
   int retry = 3;
   while(!zk_config_lock.try_lock()){
     if (retry == 0)
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any user is writing config?"));
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any user is using config?"));
     retry--;
     sleep(1);
   }
@@ -96,7 +95,6 @@ void config_tozk(lock_service& z,
         << jubatus::exception::error_api_func("lock_service::set"));
 
   LOG(INFO) << "set config to zookeeper: " << path;
-  DLOG(INFO) << "config: " << config;
 }
 
 void remove_config_fromzk(lock_service& z,
@@ -112,7 +110,7 @@ void remove_config_fromzk(lock_service& z,
   int retry = 3;
   while(!zk_config_lock.try_lock()){
     if (retry == 0)
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any user is writing config?"));
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any user is using config?"));
     retry--;
     sleep(1);
   }
