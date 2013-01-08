@@ -74,6 +74,11 @@ void rpc_server::stop() {
   }
 }
 
+void rpc_server::close() {
+  stop();
+  instance.close();
+}
+
 } // mprpc
 } // common
 } // jubatus

@@ -68,6 +68,7 @@ public:
   void listen(uint16_t port, const std::string &bind_address);
   void start( int nthreads, bool no_hang = false );
   void stop();
+  void close();
 
   msgpack::rpc::server instance;
 
