@@ -3,5 +3,6 @@ BUILDROOT
 RPMS
 SRPMS
 *.spec
+*.tgz
 *.gz
 *.bz2

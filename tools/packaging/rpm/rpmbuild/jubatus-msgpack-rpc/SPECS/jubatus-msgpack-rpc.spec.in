@@ -1,0 +1,64 @@
+%define package_version @JUBATUS_MSGPACK_RPC_VERSION@
+%define package_release @JUBATUS_MSGPACK_RPC_RELEASE@
+
+Name:		jubatus-msgpack-rpc
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	Inter-process Messaging Library for Jubatus
+Group:		Development/Libraries
+License:	Apache License 2.0
+URL:		https://github.com/jubatus/jubatus-msgpack-rpc
+Source0:	%{name}-%{version}.tar.gz
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+BuildRequires:	msgpack-devel
+BuildRequires:	ruby
+BuildRequires:	libtool
+BuildRequires:	autoconf
+BuildRequires:	automake
+
+Requires:		msgpack
+Requires:		jubatus-mpio
+
+%package devel
+Summary:	Headers and libraries for jubatus-msgpack-rpc
+Requires:	%{name} = %{version}-%{release}
+Requires:	msgpack-devel
+Requires:	jubatus-mpio-devel
+
+%description
+jubatus-msgpack-rpc is an inter-process messaging library that uses MessagePack for object serialization.
+
+%description devel
+This package provides headers and libraries needed to develop applications using jubatus-msgpack-rpc.
+
+%prep
+%setup -q -n %{name}/cpp
+
+%build
+./bootstrap
+%configure
+%{__make} %{?_smp_mflags}
+
+%install
+%{__rm} -rf %{buildroot}
+%makeinstall
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc AUTHORS ChangeLog COPYING NEWS NOTICE README README.md
+%{_libdir}/libjubatus_msgpack-rpc.so.*
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/libjubatus_msgpack-rpc.a
+%{_libdir}/libjubatus_msgpack-rpc.la
+%{_libdir}/libjubatus_msgpack-rpc.so
+%{_includedir}/jubatus/msgpack/rpc
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
