@@ -103,7 +103,7 @@ bool graph_serv::set_config(const std::string& config) {
   config_ = config;
   g_.set_model(cshared_ptr<jubatus::graph::graph_base>(jubatus::graph::create_graph(conf.method, conf.parameter)));
 
-  LOG(INFO) << __func__;
+  LOG(INFO) << "config loaded: " << config;
   return true;
 }
 
@@ -242,7 +242,7 @@ edge_id_t graph_serv::create_edge(const std::string& id, const edge_info& ei) { 
     this->create_edge_here(eid, ei);
   }
 
-  DLOG(INFO) << "edge created: (" << eid << ") " << ei.src << " => " << ei.tgt;
+  DLOG(INFO) << "edge created: " << eid << " ( " << ei.src << " => " << ei.tgt << " )";
   return eid;
 }
 
@@ -251,7 +251,7 @@ bool graph_serv::update_edge(const std::string&, edge_id_t eid, const edge_info&
   check_set_config();
 
   g_.get_model()->update_edge(eid, ei.p);
-  DLOG(INFO) << "edge updated: (" << eid << ") " << ei.src << " => " << ei.tgt;
+  DLOG(INFO) << "edge updated: " << eid << " ( " << ei.src << " => " << ei.tgt << " )";
   return true;
 }
 

@@ -107,7 +107,7 @@ bool classifier_serv::set_config(const string& config) {
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
-  LOG(INFO) << __func__;
+  LOG(INFO) << "config loaded: " << config;
   return true;
 }
 

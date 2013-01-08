@@ -104,7 +104,7 @@ bool recommender_serv::set_config(std::string config) {
   rcmdr_.set_model(make_model(conf));
   (*converter_).set_weight_manager(wm_.get_model());
 
-  LOG(INFO) << __func__;
+  LOG(INFO) << "config loaded: " << config;
   return true;
 }
   

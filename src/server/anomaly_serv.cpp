@@ -101,7 +101,7 @@ bool anomaly_serv::set_config(const std::string& config) {
   converter_ = fv_converter::make_fv_converter(conf.converter);
   anomaly_.set_model(make_model(conf));
 
-  LOG(INFO) << __func__;
+  LOG(INFO) << "config loaded: " << config;
   return true;
 }
 
@@ -148,6 +148,7 @@ pair<string,float > anomaly_serv::add(const datum& d) {
       LOG(WARNING) << e.what();
     }
   }
+  DLOG(INFO) << "point added: " << id_str;
   return make_pair(id_str, score);
 }
 
@@ -160,7 +161,7 @@ float anomaly_serv::update(const string& id, const datum& d) {
 
   anomaly_.get_model()->update_row(id, v);
   float score = anomaly_.get_model()->calc_anomaly_score(id);
-  DLOG(INFO) << "row updated: " << id;
+  DLOG(INFO) << "point updated: " << id;
   return score;
 }
 

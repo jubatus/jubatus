@@ -74,7 +74,7 @@ bool stat_serv::set_config(const string& config) {
   config_ = config;
   stat_.set_model(model);
 
-  LOG(INFO) << __func__;
+  LOG(INFO) << "config loaded: " << config;
   return true;
 }
 
