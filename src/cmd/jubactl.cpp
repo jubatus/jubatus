@@ -44,12 +44,12 @@ void status(const string&, const string&, const string&);
 
 int main(int args, char** argv) try {
   cmdline::parser p;
-  p.add<std::string>("cmd", 'c', "command to send servers (start|stop|save|load)", true);
+  p.add<std::string>("cmd", 'c', "command to send servers (start|stop|save|load|status)", true);
   p.add<std::string>("server", 's', "server exec file of learning machine (jubaclassifier, ...)", true);
   p.add<std::string>("name", 'n', "learning machine name", true);
-  p.add<std::string>("type", 't', "learning machine type", true);
+  p.add<std::string>("type", 't', "learning machine type (classifier, ...)", true);
   p.add<unsigned int>("num", 'N', "num of process in the whole cluster (one on each server when 0)", false);
-  p.add<std::string>("zookeeper", 'z', "ZooKeeper location environment: 'ZK' is available instead", false);
+  p.add<std::string>("zookeeper", 'z', "ZooKeeper location; environment variable 'ZK' is used when available", false);
 
   // Support framework::server_argv
   p.add<std::string>("listen_if", 'B', "[start] bind network interfance", false, "");
