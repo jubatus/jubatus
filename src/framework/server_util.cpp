@@ -186,7 +186,6 @@ void server_argv::boot_message(const std::string& progname) const {
   ss << "    datadir        : " << datadir << '\n';
   ss << "    logdir         : " << logdir << '\n';
   ss << "    loglevel       : " << google::GetLogSeverityName(loglevel) << '(' << loglevel << ')' << '\n';
-  ss << "    bind address   : " << bind_address << '\n';
 #ifdef HAVE_ZOOKEEPER_H
   ss << "    zookeeper      : " << z << '\n';
   ss << "    name           : " << name << '\n';
@@ -294,7 +293,6 @@ void keeper_argv::boot_message(const std::string& progname) const {
   ss << "    thread         : " << threadnum << '\n';
   ss << "    logdir         : " << logdir << '\n';
   ss << "    loglevel       : " << google::GetLogSeverityName(loglevel) << '(' << loglevel << ')' << '\n';
-  ss << "    bind address   : " << bind_address << '\n';
   ss << "    zookeeper      : " << z << '\n';
   LOG(INFO) << ss.str();
 }
