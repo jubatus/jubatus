@@ -32,7 +32,6 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/lang/function.h>
-#include <pficommon/network/mprpc.h>
 #include <pficommon/lang/shared_ptr.h>
 
 namespace cmdline{

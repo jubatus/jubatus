@@ -21,9 +21,9 @@
 #include <map> 
 #include <functional>
 #include <algorithm>
+#include <msgpack.hpp>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/serialization.h>
-#include <pficommon/network/mprpc.h>
 #include "bit_vector.hpp"
 #include "lsh_vector.hpp"
 

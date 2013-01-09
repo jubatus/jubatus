@@ -17,7 +17,6 @@
 #pragma once
 
 #include <pficommon/lang/shared_ptr.h>
-#include <pficommon/network/mprpc.h>
 #include "../server_base.hpp"
 #include "../../common/mprpc/rpc_server.hpp"
 

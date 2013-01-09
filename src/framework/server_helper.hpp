@@ -21,7 +21,6 @@
 #include <map>
 #include <string>
 #include <glog/logging.h>
-#include <pficommon/network/mprpc.h>
 #include <pficommon/system/sysstat.h>
 #include "../common/shared_ptr.hpp"
 #include "../common/lock_service.hpp"

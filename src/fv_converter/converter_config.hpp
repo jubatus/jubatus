@@ -22,7 +22,6 @@
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/optional.h>
 #include <pficommon/lang/shared_ptr.h>
-#include <pficommon/network/mprpc.h>
 #include <pficommon/text/json.h>
 #include <msgpack.hpp>
 

@@ -23,7 +23,6 @@
 
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/bind.h>
-#include <pficommon/network/mprpc.h>
 #include <pficommon/concurrent/thread.h>
 
 #include "keeper_common.hpp"
