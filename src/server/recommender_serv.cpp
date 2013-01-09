@@ -94,8 +94,6 @@ void recommender_serv::get_status(status_t& status) const {
 }
 
 bool recommender_serv::set_config(std::string config) {
-  LOG(INFO) << __func__;
-
   jsonconfig::config conf_root(lexical_cast<json>(config));
   recommender_serv_config conf = jsonconfig::config_cast_check<recommender_serv_config>(conf_root);
 
@@ -105,6 +103,8 @@ bool recommender_serv::set_config(std::string config) {
   converter_ = converter;
   rcmdr_.set_model(make_model(conf));
   (*converter_).set_weight_manager(wm_.get_model());
+
+  LOG(INFO) << "config loaded: " << config;
   return true;
 }
   
@@ -118,6 +118,7 @@ bool recommender_serv::clear_row(std::string id) {
 
   ++clear_row_cnt_;
   rcmdr_.get_model()->clear_row(id);
+  DLOG(INFO) << "row cleared: " << id;
   return true;
 }
 
@@ -130,17 +131,19 @@ bool recommender_serv::update_row(std::string id,datum dat) {
   sfv_diff_t v;
   converter_->convert_and_update_weight(d, v);
   rcmdr_.get_model()->update_row(id, v);
+  DLOG(INFO) << "row updated: " << id;
   return true;
 }
 
 bool recommender_serv::clear() {
-  LOG(INFO) << __func__;
   check_set_config();
+
   clear_row_cnt_ = 0;
   update_row_cnt_ = 0;
   build_cnt_ = 0;
   mix_cnt_ = 0;
   rcmdr_.get_model()->clear();
+  LOG(INFO) << "model cleared: " << argv().name;
   return true;
 }
 

@@ -45,10 +45,12 @@ bool server_base::save(const std::string& id) {
   const std::string path = build_local_path(argv_, "jubatus", id);
   std::ofstream ofs(path.c_str(), std::ios::trunc|std::ios::binary);
   if (!ofs) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(path + ": cannot open")
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot open output file")
+        << jubatus::exception::error_file_name(path)
         << jubatus::exception::error_errno(errno));
   }
   try {
+    LOG(INFO) << "starting save to " << path;
     std::vector<mixable0*> mixables = get_mixable_holder()->get_mixables();
     for (size_t i = 0; i < mixables.size(); ++i) {
       mixables[i]->save(ofs);
@@ -56,6 +58,7 @@ bool server_base::save(const std::string& id) {
     ofs.close();
     LOG(INFO) << "saved to " << path;
   } catch (const std::runtime_error& e) {
+    LOG(ERROR) << "failed to save: " << path;
     LOG(ERROR) << e.what();
     throw;
   }
@@ -66,10 +69,12 @@ bool server_base::load(const std::string& id) {
   const std::string path = build_local_path(argv_, "jubatus", id);
   std::ifstream ifs(path.c_str(), std::ios::binary);
   if (!ifs) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(path + ": cannot open")
-                            << jubatus::exception::error_errno(errno));
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot open input file")
+        << jubatus::exception::error_file_name(path)
+        << jubatus::exception::error_errno(errno));
   }
   try {
+    LOG(INFO) << "starting load from " << path;
     std::vector<mixable0*> mixables = get_mixable_holder()->get_mixables();
     for (size_t i = 0; i < mixables.size(); ++i) {
       mixables[i]->clear();
@@ -79,6 +84,7 @@ bool server_base::load(const std::string& id) {
     LOG(INFO) << "loaded from " << path;
   } catch (const std::runtime_error& e) {
     ifs.close();
+    LOG(ERROR) << "failed to load: " << path;
     LOG(ERROR) << e.what();
     throw;
   }

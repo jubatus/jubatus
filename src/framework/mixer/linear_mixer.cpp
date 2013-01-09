@@ -88,7 +88,7 @@ void linear_communication_impl::put_diff(const vector<common::mprpc::byte_buffer
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
 #ifndef NDEBUG
   for(size_t i =0; i < servers_.size(); i++) {
-    DLOG(INFO) << "pull diff to " << servers_[i].first << ":" << servers_[i].second;
+    DLOG(INFO) << "put diff to " << servers_[i].first << ":" << servers_[i].second;
   }
 #endif
   client.call("put_diff", mixed);

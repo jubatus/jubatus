@@ -67,14 +67,14 @@ void stat_serv::get_status(status_t& status) const {
 }
 
 bool stat_serv::set_config(const string& config) {
-  LOG(INFO) << __func__;
-
   jsonconfig::config conf_root(lexical_cast<json>(config));
   stat_serv_config conf = jsonconfig::config_cast_check<stat_serv_config>(conf_root);
 
   common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(conf.window_size));
   config_ = config;
   stat_.set_model(model);
+
+  LOG(INFO) << "config loaded: " << config;
   return true;
 }
 
@@ -84,6 +84,7 @@ string stat_serv::get_config() const {
 
 bool stat_serv::push(const std::string& key, double value) {
   stat_.get_model()->push(key,value);
+  DLOG(INFO) << "pushed: " << key;
   return true;
 }
 

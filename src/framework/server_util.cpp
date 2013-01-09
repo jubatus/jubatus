@@ -59,13 +59,15 @@ std::string get_conf(const server_argv& a){
 void config_json::load_json(const std::string& zkhosts, const std::string& type, const std::string& name)
 {
 #ifdef HAVE_ZOOKEEPER_H
+  LOG(INFO) << "load config from zookeeper: " << zkhosts;
   jubatus::common::config_fromzk(*ls, type, name, config);
 #endif
 }
 
 void config_json::load_json(const std::string& filepath)
 {
-    jubatus::common::config_fromlocal(filepath, config);
+  LOG(INFO) << "load config from local file: " << filepath;
+  jubatus::common::config_fromlocal(filepath, config);
 }
 
 server_argv::server_argv(int args, char** argv, const std::string& type)

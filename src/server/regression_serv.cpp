@@ -86,8 +86,6 @@ void regression_serv::get_status(status_t& status) const {
 }
 
 bool regression_serv::set_config(const string& config) {
-  LOG(INFO) << __func__;
-
   jsonconfig::config config_root(lexical_cast<json>(config));
   regression_serv_config conf = jsonconfig::config_cast_check<regression_serv_config>(config_root);
 
@@ -103,6 +101,7 @@ bool regression_serv::set_config(const string& config) {
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
+  LOG(INFO) << "config loaded: " << config;
   return true;
 }
 
@@ -122,6 +121,7 @@ int regression_serv::train(const vector<pair<float, jubatus::datum> >& data) {
     convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
     converter_->convert_and_update_weight(d, v);
     regression_->train(v, data[i].first);
+    DLOG(INFO) << "trained: " << data[i].first;
     count++;
   }
   // FIXME: send count incrementation to mixer

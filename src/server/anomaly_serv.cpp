@@ -94,8 +94,6 @@ void anomaly_serv::get_status(status_t& status) const {
 }
 
 bool anomaly_serv::set_config(const std::string& config) {
-  LOG(INFO) << __func__;
-
   jsonconfig::config conf_root(lexical_cast<json>(config));
   anomaly_serv_config conf = jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
 
@@ -103,6 +101,7 @@ bool anomaly_serv::set_config(const std::string& config) {
   converter_ = fv_converter::make_fv_converter(conf.converter);
   anomaly_.set_model(make_model(conf));
 
+  LOG(INFO) << "config loaded: " << config;
   return true;
 }
 
@@ -114,6 +113,7 @@ string anomaly_serv::get_config() const {
 bool anomaly_serv::clear_row(const string& id) {
   check_set_config();
   anomaly_.get_model()->clear_row(id);
+  DLOG(INFO) << "row cleared: " << id;
   return true;
 }
 
@@ -133,7 +133,7 @@ pair<string,float > anomaly_serv::add(const datum& d) {
   float score = 0;
   find_from_cht(id_str, 2, nodes);
   if (nodes.empty()) {
-    throw JUBATUS_EXCEPTION(membership_error("no server found in cht: "+id_str));
+    throw JUBATUS_EXCEPTION(membership_error("no server found in cht: " + argv().name));
   }
   // this sequences MUST success,
   // in case of failures the whole request should be canceled
@@ -141,12 +141,14 @@ pair<string,float > anomaly_serv::add(const datum& d) {
 
   for (size_t i = 1; i < nodes.size(); ++i) {
     try {
+      DLOG(INFO) << "request to " << nodes[i].first << ":" << nodes[i].second;
       selective_update(nodes[i].first, nodes[i].second, id_str, d);
     } catch (const runtime_error& e) {
-      LOG(WARNING) << i+1 << "th replica: "
-                << nodes[i].first << ":" << nodes[i].second << " " << e.what();
+      LOG(WARNING) << "cannot create " << i << "th replica: " << nodes[i].first << ":" << nodes[i].second;
+      LOG(WARNING) << e.what();
     }
   }
+  DLOG(INFO) << "point added: " << id_str;
   return make_pair(id_str, score);
 }
 
@@ -159,12 +161,14 @@ float anomaly_serv::update(const string& id, const datum& d) {
 
   anomaly_.get_model()->update_row(id, v);
   float score = anomaly_.get_model()->calc_anomaly_score(id);
+  DLOG(INFO) << "point updated: " << id;
   return score;
 }
 
 bool anomaly_serv::clear() {
   check_set_config();
   anomaly_.get_model()->clear();
+  LOG(INFO) << "model cleared: " << argv().name;
   return true;
 }
 

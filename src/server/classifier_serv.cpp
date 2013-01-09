@@ -90,8 +90,6 @@ void classifier_serv::get_status(status_t& status) const {
 }
 
 bool classifier_serv::set_config(const string& config) {
-  LOG(INFO) << __func__;
-
   jsonconfig::config config_root(lexical_cast<json>(config));
   classifier_serv_config conf = jsonconfig::config_cast_check<classifier_serv_config>(config_root);
 
@@ -109,6 +107,7 @@ bool classifier_serv::set_config(const string& config) {
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
+  LOG(INFO) << "config loaded: " << config;
   return true;
 }
 
@@ -130,6 +129,7 @@ int classifier_serv::train(const vector<pair<string, jubatus::datum> >& data) {
     sort_and_merge(v);
 
     classifier_->train(v, data[i].first);
+    DLOG(INFO) << "trained: " << data[i].first;
     count++;
   }
   // FIXME: send count incrementation to mixer
@@ -159,7 +159,7 @@ classifier_serv::classify(const vector<jubatus::datum>& data) const {
       e.prob = p->score;
       r.push_back(e);
       if (!isfinite(p->score)) {
-        LOG(WARNING) << p->label << ":" << p->score;
+        LOG(WARNING) << "score is infinite: " << p->label << " = " << p->score;
       }
     }
     ret.push_back(r);

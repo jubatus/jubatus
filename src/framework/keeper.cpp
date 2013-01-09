@@ -56,24 +56,17 @@ int keeper::run()
     this->instance.listen( a_.bind_address, a_.port );
     this->instance.run( a_.threadnum );
 
-    // TODO: check server start error. and log error message like:
-    //
-    //    LOG(FATAL) << "failed starting server: any process using port " 
-    //               << a_.port << "?";
-    //    return -1;
-    //
-
     return 0; // never return
 
   } catch (const jubatus::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
   } catch( mp::system_error &e ) {
     if ( e.code == EADDRINUSE )
-      LOG(FATAL) << "failed starting server: any process using port " << a_.port << "?";
+      LOG(FATAL) << "server failed to start: any process using port " << a_.port << "?";
     else
-      LOG(FATAL) << e.what();
+      LOG(FATAL) << "server failed to start: " << e.what();
   } catch( std::exception &e ) {
-    LOG(FATAL) << e.what();
+    LOG(FATAL) << "server failed to start:" << e.what();
   }
   return -1;
 }
