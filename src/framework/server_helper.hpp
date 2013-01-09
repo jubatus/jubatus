@@ -137,12 +137,10 @@ public:
       if ( e.code == EADDRINUSE ) {
         LOG(FATAL) << "server failed to start: any process using port " << a.port << "?";
       } else {
-        LOG(FATAL) << "server failed to start";
-        LOG(FATAL) << e.what();
+        LOG(FATAL) << "server failed to start: " << e.what();
       }
     } catch( std::exception &e ) {
-      LOG(FATAL) << "server failed to start";
-      LOG(FATAL) << e.what();
+      LOG(FATAL) << "server failed to start: " << e.what();
     }
     return -1;
   }
