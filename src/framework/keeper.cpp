@@ -54,7 +54,10 @@ int keeper::run()
     jubatus::util::ignore_sigpipe();
 
     this->instance.listen( a_.bind_address, a_.port );
-    this->instance.run( a_.threadnum );
+    this->instance.start( a_.threadnum );
+    // RPC server started, then register group membership
+    register_keeper(*zk_, a_.type, a_.eth, a_.port);
+    this->instance.join();
 
     return 0; // never return
 

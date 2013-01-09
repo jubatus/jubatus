@@ -49,7 +49,6 @@ keeper_common::keeper_common(const keeper_argv &a) :
 {
   ls = zk_;
   jubatus::common::prepare_jubatus(*zk_, a_.type, "");
-  register_keeper(*zk_, a_.type, a_.eth, a_.port);
 }
 
 keeper_common::~keeper_common() {
