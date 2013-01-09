@@ -38,6 +38,8 @@ def build(bld):
     make_test(t)
 
   bld.install_files('${PREFIX}/include/jubatus/framework', [
+      'keeper.hpp',
+      'keeper_common.hpp',
       'server_base.hpp',
       'server_helper.hpp',
       'server_util.hpp',
