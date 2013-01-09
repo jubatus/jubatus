@@ -39,7 +39,7 @@ __thread keeper::async_task_loop* keeper::async_task_loop::private_async_task_lo
 
 keeper::keeper(const keeper_argv& a)
   : keeper_common(a),
-    jubatus::common::mprpc::rpc_server() // FIMXE: set server timeout a.timeout
+    jubatus::common::mprpc::rpc_server(a.timeout)
 {
 }
 
