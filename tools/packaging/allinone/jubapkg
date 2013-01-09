@@ -98,28 +98,28 @@ do_download() {
 	rm -rf jubatus-mpio
 	git clone https://github.com/jubatus/jubatus-mpio.git jubatus-mpio
 	pushd jubatus-mpio
-	git checkout ${MPIO_VER} &> /dev/null
+	git checkout ${MPIO_VER}
 	popd
 
 	# Jubatus MessagePack-RPC
 	rm -rf jubatus-msgpack-rpc
 	git clone https://github.com/jubatus/jubatus-msgpack-rpc.git jubatus-msgpack-rpc
 	pushd jubatus-msgpack-rpc
-	git checkout ${MSGPACK_RPC_VER} &> /dev/null
+	git checkout ${MSGPACK_RPC_VER}
 	popd
 
 	# pficommon
 	rm -rf pficommon
 	git clone https://github.com/pfi/pficommon.git pficommon
 	pushd pficommon
-	git checkout ${PFICOMMON_VER} &> /dev/null
+	git checkout ${PFICOMMON_VER}
 	popd
 
 	# Jubatus
 	rm -rf jubatus
 	git clone https://github.com/jubatus/jubatus.git jubatus
 	pushd jubatus
-	git checkout ${JUBATUS_VER} &> /dev/null
+	git checkout ${JUBATUS_VER}
 	popd
 
 	# Jubatus Client (C++ Header)
