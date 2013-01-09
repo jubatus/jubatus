@@ -149,7 +149,7 @@ std::string graph_serv::create_node() { /* no lock here */
         } catch(const graph::local_node_exists& e) { // pass through
         } catch(const graph::global_node_exists& e) {// pass through
         } catch(const std::runtime_error& e) { // error !
-          LOG(WARNING) << "cannot crate " << i << "th replica: " << nodes[i].first << ":" << nodes[i].second;
+          LOG(WARNING) << "cannot create " << i << "th replica: " << nodes[i].first << ":" << nodes[i].second;
           LOG(WARNING) << e.what();
         }
       }
