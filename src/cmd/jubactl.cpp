@@ -52,7 +52,7 @@ int main(int args, char** argv) try {
   p.add<std::string>("zookeeper", 'z', "ZooKeeper location environment: 'ZK' is available instead", false);
 
   // Support framework::server_argv
-  p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
+  p.add<std::string>("listen_if", 'B', "[start] bind network interfance", false, "");
   p.add<int>("thread", 'C', "[start] concurrency = thread number", false, 2);
   p.add<int>("timeout", 'T', "[start] time out (sec)", false, 10);
   p.add<std::string>("datadir", 'D', "[start] directory to load and save models", false, "/tmp");
