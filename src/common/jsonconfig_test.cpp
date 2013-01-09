@@ -356,22 +356,16 @@ TEST(jsonconfig_cast, confg) {
   EXPECT_NO_THROW(config_cast<opt4>(conf));
 }
 
-#if 0
-// FIXME: this depends pficommon's issue #122
 TEST(jsonconfig_cast, named_bad_type) {
   config conf(lexical_cast<json>("{\"abc\" : 124, \"test\": [] }"));
 
   try {
     config_cast<opt2>(conf);
     FAIL();
-  } catch (type_error& e) {
-    cout << e.what() << endl;
-    EXPECT_EQ("", e.path());
-  } catch (std::exception& e) {
-    cout << "what?: " << e.what() << endl;
+  } catch (const type_error& e) {
+    EXPECT_EQ(json::Array, e.actual());
   }
 }
-#endif
 
 struct Person {
   string name;

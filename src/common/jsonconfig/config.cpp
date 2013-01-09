@@ -68,6 +68,8 @@ config config::operator[](const std::string& key) const {
 }
 
 bool config::contain(const std::string& key) const {
+  if (type() != pfi::text::json::json::Object)
+    throw JUBATUS_EXCEPTION(type_error(path_, pfi::text::json::json::Object, type()));
   return json_.count(key) > 0;
 }
 
