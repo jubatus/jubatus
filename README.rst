@@ -31,6 +31,56 @@ LGPL 2.1
 Update history
 --------------
 
+Preparing Release 0.4.0
+~~~~~~~~~~~~~~~~~~~~~~~
+
+New machine learning service
+  - Anomaly
+
+    - Calculate anomaly measure value
+
+Improvements
+  - Change RPC implementation to msgpack-rpc based (#27)
+
+    - [ATTENTION] Requires jubatus-mpio and jubatus-msgpack-rpc to install
+    - Add mpidl's output converter 'mpidlconv' (#210)
+
+  - Remove set_config API
+
+    - Standalone mode: specify config file using command option '-f, --configpath'
+    - Multinode mode: store config data to Zookeeper using jubaconfig (#164)
+
+  - More flexible configration (#38)
+
+    - Support hyper-parameters (#197)
+
+  - Commonize name of variables and functions (#203)
+
+  - Add or Change command options
+
+    - Add bind IP address option '-b, --listen_addr' (#152)
+    - Add bind network interfance option '-B, --listen_if' (#152, #214)
+    - Check if logging directory specified by '-l, --logdir' is writeable (#206)
+    - Add verbosity of log messages option '-e, --loglevel' (#207)
+    - Add configuration file option '-f, --configpath'
+    - Change '-d, --tmpdir' to '-d, --datadir' (#198)
+
+  - Improve logging
+
+    - Not separate log file for each log level (#207)
+    - Add start save/load logs (#195)
+    - Add many debug logs
+
+Bugfix
+  - Client symbols may conflict because of using same namespace (#84)
+  - Fix shortest_path when target is found before reaching landmark (#177)
+  - Commonize RPC return types and values (#193)
+  - Segfaults when plugin throws JUBATUS_EXCEPTION (#211)
+  - #86, #184, #204, #213, #219
+
+Refactoring
+  - #186, #187, #191, #192, #199
+
 Release 0.3.4 2012/11/26
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
