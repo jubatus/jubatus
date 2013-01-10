@@ -13,6 +13,9 @@ public:
     p_(new server_helper<graph_serv>(a, true))
   {}
 
+  std::string get_config(std::string name) //analysis random
+  { JRLOCK__(p_); return get_p()->get_config(); }
+
   std::string create_node(std::string name) //nolock random
   { NOLOCK__(p_); return get_p()->create_node(); }
 

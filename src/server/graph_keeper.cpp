@@ -9,6 +9,7 @@ using namespace jubatus::framework;
 int main(int args, char** argv){
   try{
     keeper k(keeper_argv(args,argv,"graph"));
+    k.register_async_random<std::string >("get_config"); //pass analysis
     k.register_async_random<std::string >("create_node"); //pass nolock
     k.register_async_cht<2, bool >("remove_node", pfi::lang::function<bool(bool,bool)>(&pass<bool >)); //update
     k.register_async_cht<2, bool, property >("update_node", pfi::lang::function<bool(bool,bool)>(&all_and)); //update

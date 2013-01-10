@@ -21,6 +21,7 @@ class graph : public jubatus::common::mprpc::rpc_server {
 public:
   graph(double timeout_sec): rpc_server(timeout_sec) {
 
+    rpc_server::add<std::string(std::string) >("get_config", pfi::lang::bind(&Impl::get_config, static_cast<Impl*>(this), pfi::lang::_1));
     rpc_server::add<std::string(std::string) >("create_node", pfi::lang::bind(&Impl::create_node, static_cast<Impl*>(this), pfi::lang::_1));
     rpc_server::add<bool(std::string, std::string) >("remove_node", pfi::lang::bind(&Impl::remove_node, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<bool(std::string, std::string, property) >("update_node", pfi::lang::bind(&Impl::update_node, static_cast<Impl*>(this), pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));

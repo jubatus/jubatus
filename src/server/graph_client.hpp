@@ -21,6 +21,10 @@ public:
     c_.set_timeout( timeout_sec );
   }
 
+  std::string get_config(std::string name) {
+    return c_.call("get_config", name).get<std::string>();
+  }
+
   std::string create_node(std::string name) {
     return c_.call("create_node", name).get<std::string>();
   }

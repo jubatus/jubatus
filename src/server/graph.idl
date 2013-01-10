@@ -43,6 +43,9 @@ message shortest_path_query {
 
 service graph {
 
+  #@random #@analysis #@pass
+  string get_config(0: string name)
+
   #@random #@nolock #@pass
   string create_node(0: string name) # //@cht
 
