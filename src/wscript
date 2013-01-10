@@ -16,9 +16,5 @@ def configure(conf):
 
 def build(bld):
   bld.recurse(subdirs)
-#  bld.install_files('${PREFIX}/include', 'jubatus.hpp')
   bld.install_files('${PREFIX}/include/jubatus',
-                    ['config.hpp', 'plugin.hpp', 'framework.hpp'])
-
-def regenerate(ctx):
-  ctx.recurse(subdirs, mandatory=False)
+                    ['config.hpp', 'client.hpp', 'plugin.hpp', 'framework.hpp'])

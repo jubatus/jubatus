@@ -5,7 +5,7 @@ APPNAME = 'jubatus'
 
 top = '.'
 out = 'build'
-subdirs = 'src'
+subdirs = ['src', 'client']
 
 def options(opt):
   opt.load('compiler_cxx')
@@ -108,4 +108,23 @@ def build(bld):
   bld.recurse(subdirs)
 
 def regenerate(ctx):
-  ctx.recurse(subdirs, mandatory=False)
+  import os
+  server_node = ctx.path.find_node('src/server')
+  for idl_node in server_node.ant_glob('*.idl'):
+    idl = idl_node.name
+    service_name = os.path.splitext(idl)[0]
+    ctx.cmd_and_log(['mpidl', 'cpp', idl, '-o', '.', '-p', '-n', 'jubatus'], cwd=server_node.abspath())
+    ctx.cmd_and_log(['mpidlconv', '-i', '.', '-s', service_name], cwd=server_node.abspath())
+    ctx.cmd_and_log(['jenerator', idl, '-o', '.', '-i', '-n', 'jubatus'], cwd=server_node.abspath())
+
+def regenerate_client(ctx):
+  import os
+  server_node = ctx.path.find_node('src/server')
+  client_node = ctx.path.find_node('client')
+  for idl_node in server_node.ant_glob('*.idl'):
+    idl = idl_node.name
+    service_name = os.path.splitext(idl)[0]
+    ctx.cmd_and_log(['mpidl', 'cpp', idl, '-o', client_node.abspath(), '-p', '-n', 'jubatus::' + service_name], cwd=server_node.abspath())
+    ctx.cmd_and_log(['mpidlconv', '-i', client_node.abspath(), '-s', service_name], cwd=server_node.abspath())
+  for server_hpp in client_node.ant_glob('*_server.hpp'):
+    server_hpp.delete()

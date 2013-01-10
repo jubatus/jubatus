@@ -74,14 +74,15 @@ def convert_client_hpp(service_name, line, out):
 # main
 
 parser = argparse.ArgumentParser( description='Convert mpidl output for Jubatus-0.4.x' )
-parser.add_argument( '-o', '--output', dest='output', help='output directory')
-parser.add_argument( 'idl_path', help='target idl path')
+parser.add_argument( '-i', '--input', dest='input_dir', help='input directory', required=True)
+parser.add_argument( '-o', '--output', dest='output_dir', help='output directory')
+parser.add_argument( '-s', '--service', dest='service_name', help='service name (classifier, recommender, ...)', required=True)
 
 args = parser.parse_args()
 
-output_dir = args.output if args.output != None else os.path.dirname(args.idl_path)
-input_dir = os.path.dirname( args.idl_path )
-service_name = os.path.splitext( os.path.basename(args.idl_path) )[0]
+input_dir = args.input_dir
+output_dir = args.output_dir if args.output_dir != None else args.input_dir
+service_name = args.service_name
 
 convert( service_name, '_server.hpp', input_dir, output_dir, convert_server_hpp)
 convert( service_name, '_client.hpp', input_dir, output_dir, convert_client_hpp)

@@ -32,8 +32,9 @@
 //                                                             //
 //=============================================================//
 
-#include <jubatus/client/classifier.hpp>
-#include <jubatus/client/recommender.hpp>
-#include <jubatus/client/stat.hpp>
-#include <jubatus/client/regression.hpp>
-
+#include <jubatus/client/classifier_client.hpp>
+#include <jubatus/client/recommender_client.hpp>
+#include <jubatus/client/stat_client.hpp>
+#include <jubatus/client/regression_client.hpp>
+#include <jubatus/client/graph_client.hpp>
+#include <jubatus/client/anomaly_client.hpp>

@@ -73,28 +73,4 @@ def build(bld):
       source = bld.path.ant_glob('test_input/*'),
       target = n)
 
-  bld.install_files('${PREFIX}/include/jubatus/client', [
-      'classifier_types.hpp',
-      'classifier_client.hpp',
-      'regression_types.hpp',
-      'regression_client.hpp',
-      'recommender_types.hpp',
-      'recommender_client.hpp',
-      'stat_types.hpp',
-      'stat_client.hpp',
-      'graph_types.hpp',
-      'graph_client.hpp',
-      'anomaly_types.hpp',
-      'anomaly_client.hpp',
-      ])
-
   bld.install_files('${PREFIX}/share/jubatus/', idls)
-
-def regenerate(ctx):
-  import os
-  dest_dir = ctx.path.abspath() # this directory
-  for idl in idls:
-    service_name = os.path.splitext(idl)[0]
-    ctx.cmd_and_log(['jenerator', idl, '-o', '.', '-i', '-n', 'jubatus'], cwd=dest_dir)
-    ctx.cmd_and_log(['mpidl', 'cpp', idl, '-o', '.', '-p', '-n', 'jubatus'], cwd=dest_dir)
-    ctx.cmd_and_log(['mpidlconv', idl, '-o', '.'], cwd=dest_dir)
