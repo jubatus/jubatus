@@ -42,10 +42,6 @@ def convert_server_hpp(service_name, line, out, internal):
     line = re.sub( r'pfi::network::mprpc::rpc_server', 'jubatus::common::mprpc::rpc_server', line )
 
     if re.match( r'#include <pficommon/network/mprpc.h>', line ):
-        return
-
-    if re.match( r'#include <pficommon/lang/bind.h>', line):
-        out.write(line)
         if internal:
             out.write( '#include "../common/mprpc/rpc_server.hpp"\n' )
         else:
