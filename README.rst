@@ -10,7 +10,7 @@ QuickStart
 
 Jubatus officially supports Ubuntu >= 12.04 , Red Hat Enterprise Linux >= 6.2 . On other platforms, some may work if they have gcc >= 4.4 .
 
-For minimal standalone mode, Jubatus requires libevent >= 1.4 , pficommon >= 1.3.1 (commit 8fde51454af897cc971bab9033e217ff83b12f78 or later), google-glog , libmsgpack, python >= 2.6 . Please install these software with headers before installation.
+For minimal standalone mode, Jubatus requires pficommon >= 1.3.1 (commit 8fde51454af897cc971bab9033e217ff83b12f78 or later), google-glog , libmsgpack, python >= 2.6 . Please install these software with headers before installation.
 
 ::
 
