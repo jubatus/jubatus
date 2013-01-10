@@ -67,6 +67,10 @@ void rpc_server::start( int nthreads, bool no_hang ) {
     instance.run( nthreads );
 }
 
+void rpc_server::join() {
+  instance.join();
+}
+
 void rpc_server::stop() {
   if ( !instance.is_end() ) {
     instance.end();

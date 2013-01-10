@@ -67,6 +67,7 @@ public:
   void listen(uint16_t port);
   void listen(uint16_t port, const std::string &bind_address);
   void start( int nthreads, bool no_hang = false );
+  void join();
   void stop();
   void close();
 
