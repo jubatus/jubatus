@@ -41,11 +41,11 @@ TEST_F(graph_test, simple){
   jubatus::node_id nid0 = "1";
   graph c("localhost", PORT, 10);
   {
-    //c.clear("");
+    c.clear("");
     nid = c.create_node("");
     nid0 = c.create_node("");
-    //    c.set_config("", config);
-    //    c.get_config("", 0);
+
+    c.get_config("");
   };
   jubatus::edge_id_t eid = 0;
   {
@@ -92,9 +92,10 @@ TEST_F(graph_test, simple){
 
   {
     jubatus::preset_query q;
-    // FIXME
-    //double cent = c.get_centrality("", nid, 0, q);
-    //ASSERT_GT(0.0, cent);
+    c.add_centrality_query("", q);
+    c.update_index(""); // call manually in standalone mode
+    double cent = c.get_centrality("", nid, 0, q);
+    ASSERT_LT(0.0, cent);
   }
 
   {
@@ -102,14 +103,18 @@ TEST_F(graph_test, simple){
     req.src = nid;
     req.tgt = nid0;
     { // FIXME
-      req.max_hop = 1;
+      req.max_hop = 10;
+      jubatus::preset_query q;
+      //c.add_shortest_path_query("", q);
       //std::vector<jubatus::node_id> path = c.get_shortest_path("", req);
       //ASSERT_EQ(1u, path.size());
     }
-    { // FIXME
+    {
       req.max_hop = 0;
-      //std::vector<jubatus::node_id> path = c.get_shortest_path("", req);
-      //ASSERT_EQ(0u, path.size());
+      jubatus::preset_query q;
+      c.add_shortest_path_query("", q);
+      std::vector<jubatus::node_id> path = c.get_shortest_path("", req);
+      ASSERT_EQ(0u, path.size());
     }
   }
 
