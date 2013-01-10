@@ -114,7 +114,7 @@ def regenerate(ctx):
     idl = idl_node.name
     service_name = os.path.splitext(idl)[0]
     ctx.cmd_and_log(['mpidl', 'cpp', idl, '-o', '.', '-p', '-n', 'jubatus'], cwd=server_node.abspath())
-    ctx.cmd_and_log(['mpidlconv', '-i', '.', '-s', service_name], cwd=server_node.abspath())
+    ctx.cmd_and_log(['mpidlconv', '-I', '-i', '.', '-s', service_name], cwd=server_node.abspath())
     ctx.cmd_and_log(['jenerator', idl, '-o', '.', '-i', '-n', 'jubatus'], cwd=server_node.abspath())
 
 def regenerate_client(ctx):
