@@ -73,4 +73,4 @@ def build(bld):
       source = bld.path.ant_glob('test_input/*'),
       target = n)
 
-  bld.install_files('${PREFIX}/share/jubatus/', idls)
+  bld.install_files('${PREFIX}/share/jubatus/idl/', idls)
