@@ -37,7 +37,6 @@ class Jubatus < Formula
   option 'enable-zookeeper', 'Using zookeeper for distributed environemnt'
 
   depends_on 'glog'
-  depends_on 'libevent'
   depends_on 'mecab' unless ARGV.include? "--disable-mecab"
   depends_on 'pkg-config'
   depends_on 'pficommon'
