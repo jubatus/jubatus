@@ -52,15 +52,31 @@ void rpc_server::add_inner(const std::string &name, pfi::lang::shared_ptr<invoke
   funcs[name] = invoker;
 }
 
-bool rpc_server::serv(uint16_t port, int nthreads) {
-  return this->serv( port, std::string("0.0.0.0"), nthreads );
+void rpc_server::listen( uint16_t port ) {
+  instance.listen( std::string("0.0.0.0"), port );
 }
 
-bool rpc_server::serv(uint16_t port, const std::string &bind_address, int nthreads) {
+void rpc_server::listen( uint16_t port, const std::string &bind_address ) {
   instance.listen( bind_address, port );
-  instance.run( nthreads );
+}
 
-  return false; // never return
+void rpc_server::start( int nthreads, bool no_hang ) {
+  if ( no_hang )
+    instance.start( nthreads );
+  else
+    instance.run( nthreads );
+}
+
+void rpc_server::stop() {
+  if ( !instance.is_end() ) {
+    instance.end();
+    instance.join();
+  }
+}
+
+void rpc_server::close() {
+  stop();
+  instance.close();
 }
 
 } // mprpc
