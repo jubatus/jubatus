@@ -39,12 +39,20 @@ def convert(service_name, suffix, input_dir, output_dir, internal, convert_func 
 
 # convert *_server.hpp
 def convert_server_hpp(service_name, line, out, internal):
-    out.write( re.sub( r'pfi::network::mprpc::rpc_server', 'jubatus::common::mprpc::rpc_server', line ) )
+    line = re.sub( r'pfi::network::mprpc::rpc_server', 'jubatus::common::mprpc::rpc_server', line )
+
+    if re.match( r'#include <pficommon/network/mprpc.h>', line ):
+        return
+
     if re.match( r'#include <pficommon/lang/bind.h>', line):
+        out.write(line)
         if internal:
             out.write( '#include "../common/mprpc/rpc_server.hpp"\n' )
         else:
             out.write( '#include <jubatus/common/mprpc/rpc_server.hpp>\n' )
+        return
+
+    out.write(line)
 
 # convert *_client.hpp
 def convert_client_hpp(service_name, line, out, internal):
