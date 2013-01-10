@@ -80,7 +80,7 @@ parser = argparse.ArgumentParser( description='Convert mpidl output for Jubatus-
 parser.add_argument( '-i', '--input', dest='input_dir', help='input directory', required=True)
 parser.add_argument( '-o', '--output', dest='output_dir', help='output directory')
 parser.add_argument( '-s', '--service', dest='service_name', help='service name (classifier, recommender, ...)', required=True)
-parser.add_argument( '-I', '--internal', dest='internal', help='internal include', default=False)
+parser.add_argument( '-I', '--internal', dest='internal', help='internal include', default=False, action='store_true')
 
 args = parser.parse_args()
 
