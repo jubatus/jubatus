@@ -24,6 +24,7 @@
 #include <pficommon/system/sysstat.h>
 #include "../common/shared_ptr.hpp"
 #include "../common/lock_service.hpp"
+#include "../common/mprpc/rpc_server.hpp"
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
 #include "../config.hpp"
@@ -120,11 +121,8 @@ public:
     return status;
   }
 
-  template <typename RPCServer>
-  int start(RPCServer& serv) {
+  int start(jubatus::common::mprpc::rpc_server& serv) {
     const server_argv& a = server_->argv();
-
-    impl_.prepare_for_run(a, use_cht_);
 
     if (!a.is_standalone()) {
       server_->get_mixer()->start();
@@ -132,7 +130,10 @@ public:
 
     try {
       serv.listen( a.port, a.bind_address );
-      serv.start( a.threadnum );
+      serv.start( a.threadnum, true );
+      // RPC server started, then register group membership
+      impl_.prepare_for_run(a, use_cht_);
+      serv.join();
       return 0;
     } catch( mp::system_error &e ) {
       if ( e.code == EADDRINUSE ) {
@@ -140,6 +141,8 @@ public:
       } else {
         LOG(FATAL) << "server failed to start: " << e.what();
       }
+    } catch( jubatus::exception::jubatus_exception& ) {
+      throw;
     } catch( std::exception &e ) {
       LOG(FATAL) << "server failed to start: " << e.what();
     }
