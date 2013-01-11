@@ -62,8 +62,8 @@ For jubatus, jubatus-mpio, jubatus-msgpack-rpc, pficommon
 Note that, these parameters will NOT be expanded in SPEC templates (``*.spec.in``).
 Never try to write any logic inside SPEC files!
 
-For jubatus-client, mecab-ipadic
---------------------------------
+For mecab-ipadic
+----------------
 
 * ``*_ARCHIVE``
 

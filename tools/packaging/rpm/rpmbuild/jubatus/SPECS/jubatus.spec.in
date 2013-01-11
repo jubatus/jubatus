@@ -46,12 +46,22 @@ Requires:	jubatus-msgpack-rpc-devel
 Requires:	msgpack-devel
 Requires:	glog-devel >= 0.3.0
 
+%package client
+Summary:	Jubatus C++ Client
+Group:		Development/Libraries
+Requires:	msgpack-devel
+Requires:	jubatus-msgpack-rpc-devel
+
 %description
 Jubatus is a distributed processing framework and streaming machine learning library.
 
 %description devel
 Jubatus is a distributed processing framework and streaming machine learning library.
 This package provides headers and libraries needed to develop new engines or plugins for Jubatus Framework.
+
+%description client
+Jubatus is a distributed processing framework and streaming machine learning library.
+This package provides Jubatus C++ client headers.
 
 %prep
 %setup -q -n %{name}
@@ -81,7 +91,9 @@ This package provides headers and libraries needed to develop new engines or plu
 %{_libdir}/pkgconfig/jubatus.pc
 %{_includedir}/jubatus
 %{_datarootdir}/jubatus
-%exclude %{_includedir}/jubatus/client
+
+%files client
+%{_includedir}/jubatus/client
 
 %post -p /sbin/ldconfig
 

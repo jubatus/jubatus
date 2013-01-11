@@ -122,9 +122,6 @@ do_download() {
 	git checkout ${JUBATUS_VER}
 	popd
 
-	# Jubatus Client (C++ Header)
-	download_url http://download.jubat.us/files/clients/jubatus_client.${JUBATUS_HEADER_VER}${JUBATUS_HEADER_SUFFIX}.tar.gz
-
 	popd
 	echo "----- Download Completed -----"
 	return 0
@@ -267,10 +264,6 @@ do_build() {
 	mkdir -p "${DOC_DIR}/jubatus"
 	cp -a LICENSE README.rst "${DOC_DIR}/jubatus"
 	popd
-
-	# Jubatus Client (C++ Header)
-	tar zxf ${SOURCE_DIR}/jubatus_client.${JUBATUS_HEADER_VER}${JUBATUS_HEADER_SUFFIX}.tar.gz
-	cp -rp jubatus_client.${JUBATUS_HEADER_VER}/cpp/*.hpp ${DEST_DIR}/${PREFIX}/include/jubatus/client
 
 	# Profile
 	cat << _EOF_ > ${DEST_DIR}/${PREFIX}/profile
