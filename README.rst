@@ -31,7 +31,7 @@ LGPL 2.1
 Update history
 --------------
 
-Preparing Release 0.4.0
+Release 0.4.0 2013/1/11
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 New machine learning service
