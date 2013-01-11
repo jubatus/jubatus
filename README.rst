@@ -76,6 +76,7 @@ Bugfix
   - Fix shortest_path when target is found before reaching landmark (#177)
   - Commonize RPC return types and values (#193)
   - Segfaults when plugin throws JUBATUS_EXCEPTION (#211)
+  - Fix classifier AROW hyper-parameter conversion (#225)
   - #86, #184, #204, #213, #219
 
 Refactoring
