@@ -4,7 +4,7 @@
 JUBATUS_VERSION="0.4.0"
 JUBATUS_RELEASE="1"
 JUBATUS_IS_SNAPSHOT="no"
-JUBATUS_CHECKOUT="jubatus-${JUBATUS_VERSION}"
+JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
 
 # ==============================================================================
 # pficommon

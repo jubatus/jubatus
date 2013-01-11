@@ -12,19 +12,20 @@ Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 BuildRequires:	msgpack-devel
+BuildRequires:	jubatus-mpio-devel >= 0.4.0
 BuildRequires:	ruby
 BuildRequires:	libtool
 BuildRequires:	autoconf
 BuildRequires:	automake
 
 Requires:		msgpack
-Requires:		jubatus-mpio
+Requires:		jubatus-mpio >= 0.4.0
 
 %package devel
 Summary:	Headers and libraries for jubatus-msgpack-rpc
 Requires:	%{name} = %{version}-%{release}
 Requires:	msgpack-devel
-Requires:	jubatus-mpio-devel
+Requires:	jubatus-mpio-devel >= 0.4.0
 
 %description
 jubatus-msgpack-rpc is an inter-process messaging library that uses MessagePack for object serialization.
