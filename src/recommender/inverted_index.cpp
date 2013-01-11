@@ -39,6 +39,13 @@ void inverted_index::similar_row(const sfv_t& query, std::vector<std::pair<std::
   inv_.calc_scores(query, ids, ret_num);
 }
 
+void inverted_index::neighbor_row(const sfv_t& query, vector<pair<string, float> >& ids, size_t ret_num) const {
+  similar_row(query, ids, ret_num);
+  for (size_t i = 0; i < ids.size(); ++i) {
+    ids[i].second = 1 - ids[i].second;
+  }
+}
+
 void inverted_index::clear(){
   orig_.clear();
   inv_.clear();

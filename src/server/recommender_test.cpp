@@ -27,7 +27,7 @@ namespace {
     pid_t child_;
 
     recommender_test(){
-      child_ = fork_process("recommender", PORT);
+      child_ = fork_process("recommender", PORT, "./test_input/config.recommender.json");
     };
     virtual ~recommender_test(){
       kill_process(child_);
@@ -35,18 +35,35 @@ namespace {
     virtual void restart_process(){
 
       kill_process(this->child_);
-      this->child_ = fork_process("recommender", PORT);
+      this->child_ = fork_process("recommender", PORT, "./test_input/config.recommender.json");
     };
   };
 
-config_data make_simple_config(const string& method) {
-  config_data c;
-  c.method = method;
+std::string make_simple_config(const string& method) {
+  pfi::text::json::json js(new pfi::text::json::json_object());
+  js["method"] = pfi::text::json::json(new pfi::text::json::json_string(method));  
   jubatus::fv_converter::converter_config config;
   jubatus::fv_converter::num_rule rule = { "*", "num" };
   config.num_rules.push_back(rule);
-  c.converter = config_to_string(config);
-  return c;
+  std::stringstream conv;
+  conv << config_to_string(config);
+  pfi::text::json::json jsc;
+  conv >> jsc;
+  js["converter"] = jsc;
+
+  pfi::text::json::json param(new pfi::text::json::json_object());
+  // recommender's parameter
+  if (method == "lsh") {
+    param["bit_num"] = pfi::text::json::json(new pfi::text::json::json_integer(64));
+  } else if (method == "minhash") {
+    param["hash_num"] = pfi::text::json::json(new pfi::text::json::json_integer(64));
+  }
+  js["parameter"] = param;
+
+  std::stringstream ret;
+  ret << pfi::text::json::pretty(js);
+
+  return ret.str();
 }
 
 TEST_F(recommender_test, get_status){
@@ -63,42 +80,18 @@ TEST_F(recommender_test, small) {
 
   jubatus::client::recommender c("localhost", PORT, 10);
   
-  jubatus::config_data conf = make_simple_config("lsh");
-  c.set_config(NAME, conf);
-
   jubatus::datum d;
   d.num_values.push_back(make_pair("f1", 1.0));
   c.update_row(NAME, "key", d);
   c.clear_row(NAME, "key");
   c.update_row(NAME, "key", d);
 
-  jubatus::datum d2 = c.complete_row_from_data(NAME, d);
+  jubatus::datum d2 = c.complete_row_from_datum(NAME, d);
   jubatus::datum d3 = c.complete_row_from_id(NAME, "key");
   //  cout << res.size() << endl;
 
   c.save(NAME, "name");
   c.load(NAME, "name");
-}
-
-TEST_F(recommender_test, throws_in_cast_not_configured) {
-  jubatus::client::recommender cli("localhost", PORT, 10);
-  EXPECT_THROW(cli.get_all_rows(NAME), std::exception);
-  EXPECT_THROW(cli.get_config(NAME), std::exception);
-  EXPECT_THROW(cli.clear_row(NAME,"k"), std::exception);
-
-  jubatus::datum d;
-  d.num_values.push_back(make_pair("f1", 1.0));
-  EXPECT_THROW(cli.update_row(NAME, "k", d), std::exception);
-
-  EXPECT_THROW(cli.complete_row_from_id(NAME, "k"), std::exception);
-  EXPECT_THROW(cli.complete_row_from_data(NAME, d), std::exception);
-  EXPECT_THROW(cli.similar_row_from_id(NAME, "k",1), std::exception);
-  EXPECT_THROW(cli.similar_row_from_data(NAME, d, 1), std::exception);
-  EXPECT_THROW(cli.decode_row(NAME, "k"), std::exception);
-  EXPECT_THROW(cli.clear(NAME), std::exception);
-  EXPECT_THROW(cli.similarity(NAME,d,d), std::exception);
-  EXPECT_THROW(cli.l2norm(NAME,d), std::exception);
-  EXPECT_THROW(cli.get_all_rows(NAME), std::exception);
 }
 
 sfv_diff_t make_vec(float v1, float v2, float v3) {

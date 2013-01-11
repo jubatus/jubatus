@@ -92,13 +92,18 @@ TEST_F(zk_trivial, non_exists)
   ASSERT_FALSE(zk_->exists("/zktest_non_exists_path"));
 }
 
-TEST_F(zk_trivial, create_read)
+TEST_F(zk_trivial, create_set_read)
 {
   zk_->create(root_path, "hoge0", true);
 
   string dat;
   zk_->read(root_path, dat);
   ASSERT_EQ("hoge0", dat);
+
+  zk_->set(root_path, "hoge1");
+  string dat2;
+  zk_->read(root_path, dat2);
+  ASSERT_EQ("hoge1", dat2);
 
   zk_->remove(root_path);
 }

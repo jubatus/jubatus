@@ -16,7 +16,6 @@
 
 #include "pa.hpp"
 
-#include <cfloat>
 #include <cmath>
 #include <iostream>
 
@@ -25,9 +24,12 @@ namespace regression {
 
 using namespace std;
 
+PA::PA(const config& config, storage::storage_base* storage)
+    : regression_base(storage), config_(config), sum_(0), sq_sum_(0), count_(0) {
+}
+
 PA::PA(storage::storage_base* storage)
-    : regression_base(storage), epsilon_(0.1), C_(FLT_MAX),
-      sum_(0), sq_sum_(0), count_(0) {
+    : regression_base(storage), sum_(0), sq_sum_(0), count_(0) {
 }
 
 static float calc_norm(const sfv_t& fv) {
@@ -51,10 +53,10 @@ void PA::train(const sfv_t& fv, float value) {
   float predict = estimate(fv);
   float error = value - predict;
   float sign_error = error > 0 ? 1.0f : -1.0f;
-  float loss = sign_error * error - epsilon_ * std_dev;
+  float loss = sign_error * error - config_.epsilon * std_dev;
 
   if (loss > 0) {
-    float coeff = sign_error * std::min(C_, loss) / (fv_norm * fv_norm);
+    float coeff = sign_error * std::min(config_.C, loss) / (fv_norm * fv_norm);
     if (!isinf(coeff)) {
       update(fv, coeff);
     }

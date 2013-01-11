@@ -60,7 +60,7 @@ download_url() {
 # do_download
 # -------------------------------
 do_download() {
-	@require_commands mkdir rm hg git
+	@require_commands mkdir rm git
 
 	if [ -z "${FORCE}" -a -d "${SOURCE_DIR}" ]; then
 		echo "${SOURCE_DIR} directory already exists; remove it and try again."
@@ -74,10 +74,10 @@ do_download() {
 	download_url http://pkgconfig.freedesktop.org/releases/pkg-config-${PKG_VER}.tar.gz
 
 	# MessagePack
-	download_url http://msgpack.org/releases/cpp/msgpack-${MSG_VER}.tar.gz
+	download_url http://msgpack.org/releases/cpp/msgpack-${MSGPACK_VER}.tar.gz
 
 	# Glog
-	download_url http://google-glog.googlecode.com/files/glog-${GLOG_VER}${GLOG_MINOR_VER}.tar.gz
+	download_url http://google-glog.googlecode.com/files/glog-${GLOG_VER}.tar.gz
 
 	# UX
 	download_url http://ux-trie.googlecode.com/files/ux-${UX_VER}.tar.bz2
@@ -89,31 +89,38 @@ do_download() {
 	download_url http://mecab.googlecode.com/files/mecab-ipadic-${IPADIC_VER}.tar.gz
 
 	# re2
-	rm -rf re2
-	hg clone -u "${RE2_VER}" https://re2.googlecode.com/hg re2
-
-	# libevent
-	download_url https://github.com/downloads/libevent/libevent/libevent-${EVENT_VER}-stable.tar.gz
+	download_url http://re2.googlecode.com/files/re2-${RE2_VER}.tgz
 
 	# ZooKeeper
 	download_url http://ftp.jaist.ac.jp/pub/apache/zookeeper/zookeeper-${ZK_VER}/zookeeper-${ZK_VER}.tar.gz
+
+	# Jubatus MPIO
+	rm -rf jubatus-mpio
+	git clone https://github.com/jubatus/jubatus-mpio.git jubatus-mpio
+	pushd jubatus-mpio
+	git checkout ${MPIO_VER}
+	popd
+
+	# Jubatus MessagePack-RPC
+	rm -rf jubatus-msgpack-rpc
+	git clone https://github.com/jubatus/jubatus-msgpack-rpc.git jubatus-msgpack-rpc
+	pushd jubatus-msgpack-rpc
+	git checkout ${MSGPACK_RPC_VER}
+	popd
 
 	# pficommon
 	rm -rf pficommon
 	git clone https://github.com/pfi/pficommon.git pficommon
 	pushd pficommon
-	git checkout ${PFICOMMON_VER} &> /dev/null
+	git checkout ${PFICOMMON_VER}
 	popd
 
 	# Jubatus
 	rm -rf jubatus
 	git clone https://github.com/jubatus/jubatus.git jubatus
 	pushd jubatus
-	git checkout ${JUBATUS_VER} &> /dev/null
+	git checkout ${JUBATUS_VER}
 	popd
-
-	# Jubatus Client (C++ Header)
-	download_url https://github.com/downloads/jubatus/jubatus/jubatus_client.${JUBATUS_H_VER}.${JUBATUS_H_DATE}.tar.gz
 
 	popd
 	echo "----- Download Completed -----"
@@ -124,7 +131,7 @@ do_download() {
 # do_build
 # -------------------------------
 do_build() {
-	@require_commands mkdir tar make cp perl cat
+	@require_commands mkdir tar make cp perl cat ruby libtool
 
 	if [ -z "${FORCE}" -a -d "${BUILD_DIR}" ]; then
 		echo "${BUILD_DIR} directory already exists; remove it and try again."
@@ -149,22 +156,44 @@ do_build() {
 	popd
 
 	# MessagePack
-	tar zxf ${SOURCE_DIR}/msgpack-${MSG_VER}.tar.gz
-	pushd msgpack-${MSG_VER}
+	tar zxf ${SOURCE_DIR}/msgpack-${MSGPACK_VER}.tar.gz
+	pushd msgpack-${MSGPACK_VER}
 	./configure --prefix=${PREFIX}
 	make
 	make install DESTDIR=${DEST_DIR}
-	mkdir -p "${DOC_DIR}/msgpack-${MSG_VER}"
-	cp -a AUTHORS ChangeLog COPYING LICENSE NEWS NOTICE README README.md "${DOC_DIR}/msgpack-${MSG_VER}"
+	mkdir -p "${DOC_DIR}/msgpack-${MSGPACK_VER}"
+	cp -a AUTHORS ChangeLog COPYING LICENSE NEWS NOTICE README README.md "${DOC_DIR}/msgpack-${MSGPACK_VER}"
+	popd
+
+	# Jubatus MPIO
+	cp -rp ${SOURCE_DIR}/jubatus-mpio jubatus-mpio
+	pushd jubatus-mpio
+	./bootstrap
+	./configure --prefix=${PREFIX}
+	make
+	make install DESTDIR=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/jubatus-mpio"
+	cp -a AUTHORS ChangeLog COPYING LICENSE NEWS NOTICE README README.md "${DOC_DIR}/jubatus-mpio"
+	popd
+
+	# Jubatus MessagePack-RPC
+	cp -rp ${SOURCE_DIR}/jubatus-msgpack-rpc jubatus-msgpack-rpc
+	pushd jubatus-msgpack-rpc/cpp
+	./bootstrap
+	./configure --prefix=${PREFIX} --with-msgpack=${DEST_DIR}/${PREFIX} --with-jubatus-mpio=${DEST_DIR}/${PREFIX}
+	make
+	make install DESTDIR=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/jubatus-msgpack-rpc"
+	cp -a AUTHORS ChangeLog COPYING NEWS NOTICE README README.md "${DOC_DIR}/jubatus-msgpack-rpc"
 	popd
 
 	# Glog
-	tar zxf ${SOURCE_DIR}/glog-${GLOG_VER}${GLOG_MINOR_VER}.tar.gz
+	tar zxf ${SOURCE_DIR}/glog-${GLOG_VER}.tar.gz
 	pushd glog-${GLOG_VER}
 	./configure --prefix=${PREFIX}
 	make
 	make install DESTDIR=${DEST_DIR}
-	cp -a doc "${DOC_DIR}/glog-${GLOG_VER}${GLOG_MINOR_VER}"
+	cp -a doc "${DOC_DIR}/glog-${GLOG_VER}"
 	popd
 
 	# UX
@@ -197,23 +226,13 @@ do_build() {
 	popd
 
 	# re2
-	cp -rp ${SOURCE_DIR}/re2 re2
+	tar zxf ${SOURCE_DIR}/re2-${RE2_VER}.tgz
 	pushd re2
 	perl -pi -e 's|^(prefix)=(.+)$|$1='${PREFIX}'|' Makefile
 	make
 	make install DESTDIR=${DEST_DIR}
 	mkdir -p "${DOC_DIR}/re2"
 	cp -a doc AUTHORS CONTRIBUTORS LICENSE README "${DOC_DIR}/re2"
-	popd
-
-	# libevent
-	tar zxf ${SOURCE_DIR}/libevent-${EVENT_VER}-stable.tar.gz
-	pushd libevent-${EVENT_VER}-stable
-	./configure --prefix=${PREFIX}
-	make
-	make install DESTDIR=${DEST_DIR}
-	mkdir -p "${DOC_DIR}/libevent-${EVENT_VER}"
-	cp -a ChangeLog LICENSE README "${DOC_DIR}/libevent-${EVENT_VER}"
 	popd
 
 	# ZooKeeper
@@ -246,28 +265,24 @@ do_build() {
 	cp -a LICENSE README.rst "${DOC_DIR}/jubatus"
 	popd
 
-	# Jubatus Client (C++ Header)
-	tar zxf ${SOURCE_DIR}/jubatus_client.${JUBATUS_H_VER}.${JUBATUS_H_DATE}.tar.gz
-	cp -rp jubatus_client.${JUBATUS_H_VER}/cpp/*.hpp ${DEST_DIR}/${PREFIX}/include/jubatus/client
-
 	# Profile
 	cat << _EOF_ > ${DEST_DIR}/${PREFIX}/profile
 export JUBATUS_HOME="${PREFIX}"
 export PATH="\${JUBATUS_HOME}/bin:\${PATH}"
-export LD_LIBRARY_PATH="\${JUBATUS_HOME}/lib"
-export LDFLAGS="-L\${JUBATUS_HOME}/lib"
-export CPLUS_INCLUDE_PATH="\${JUBATUS_HOME}/include"
-export PKG_CONFIG_PATH="\${JUBATUS_HOME}/lib/pkgconfig"
+export LD_LIBRARY_PATH="\${JUBATUS_HOME}/lib:\${LD_LIBRARY_PATH}"
+export LDFLAGS="-L\${JUBATUS_HOME}/lib \${LDFLAGS}"
+export CPLUS_INCLUDE_PATH="\${JUBATUS_HOME}/include:\${CPLUS_INCLUDE_PATH}"
+export PKG_CONFIG_PATH="\${JUBATUS_HOME}/lib/pkgconfig:\${PKG_CONFIG_PATH}"
 _EOF_
 
 	# Profile (csh)
 	cat << _EOF_ > ${DEST_DIR}/${PREFIX}/profile.csh
 setenv JUBATUS_HOME "${PREFIX}"
 setenv PATH "\${JUBATUS_HOME}/bin:\${PATH}"
-setenv LD_LIBRARY_PATH "\${JUBATUS_HOME}/lib"
-setenv LDFLAGS "-L\${JUBATUS_HOME}/lib"
-setenv CPLUS_INCLUDE_PATH "\${JUBATUS_HOME}/include"
-setenv PKG_CONFIG_PATH "\${JUBATUS_HOME}/lib/pkgconfig"
+setenv LD_LIBRARY_PATH "\${JUBATUS_HOME}/lib:\${LD_LIBRARY_PATH}"
+setenv LDFLAGS "-L\${JUBATUS_HOME}/lib \${LDFLAGS}"
+setenv CPLUS_INCLUDE_PATH "\${JUBATUS_HOME}/include:\${CPLUS_INCLUDE_PATH}"
+setenv PKG_CONFIG_PATH "\${JUBATUS_HOME}/lib/pkgconfig:\${PKG_CONFIG_PATH}"
 _EOF_
 
 	popd
@@ -306,7 +321,7 @@ do_package_deb() {
 	pushd "${DISTRIBUTION_NAME}-${DISTRIBUTION_VERSION}"
 	cp -a "${DEST_DIR}"/* .
 	cp -a "${META_DIR}/debian" .
-	echo "${PREFIX}" > debian/install
+	echo "${PREFIX#/}" > debian/install
 	echo "${PREFIX}/share/doc" > debian/copyright
 	dch --create --package "${DISTRIBUTION_NAME}" --newversion "${DISTRIBUTION_VERSION}-${DISTRIBUTION_RELEASE}" --distribution unstable --force-distribution "Automatically generated by jubapkg" 2> /dev/null
 	debuild --no-tgz-check -uc -us -b
@@ -318,8 +333,24 @@ do_package_deb() {
 # -------------------------------
 # do_package_rpm
 # -------------------------------
+cleanroom() {
+	/usr/bin/env -i - HOME="$(echo ~$(whoami))" PATH="/sbin:/bin:/usr/sbin:/usr/bin" "$@"
+}
 do_package_rpm() {
-	echo "Not implemented yet"
+	@require_commands rm mkdir rpmbuild
+
+	rm -rf "${PKG_DIR}/rpm"
+	mkdir -p "${PKG_DIR}/rpm"
+	pushd "${PKG_DIR}/rpm"
+
+	cp -a "${DEST_DIR}" "${PKG_DIR}/rpm/BUILDROOT"
+	cleanroom rpmbuild \
+		--define "%_topdir ${PKG_DIR}/rpm" \
+		--define "%user_dist_name ${DISTRIBUTION_NAME}-allinone" \
+		--define "%user_dist_version ${DISTRIBUTION_VERSION}" \
+		--define "%user_dist_release ${DISTRIBUTION_RELEASE}" \
+		--buildroot "${PKG_DIR}/rpm/BUILDROOT" \
+		-bb "${META_DIR}/jubatus-allinone.spec"
 }
 
 # -------------------------------
@@ -344,12 +375,12 @@ Options:
   -b
       Build the binary
   -i
-      Install the built files to local filesystem (${PREFIX})
+      Install the built files
   -p TYPE
       Package, where TYPE is one of 'rpm' or 'deb'
   -c
       Clean the directory but preserve downloaded source files
-  -C 
+  -C
       Clean the directory including downloaded source files
   -h
       Help

@@ -17,19 +17,34 @@
 #pragma once
 
 #include "regression_base.hpp"
+#include <limits>
+#include <pficommon/data/serialization.h>
 
 namespace jubatus {
 namespace regression {
 
 class PA : public regression_base {
  public:
+  struct config {
+    config()
+      : C(std::numeric_limits<float>::max()), epsilon(0.1f)
+    {}
+    float C;
+    float epsilon;
+
+    template <typename Ar>
+    void serialize(Ar& ar) {
+      ar & NAMED_MEMBER("regularization_weight", C) & NAMED_MEMBER("sensitivity", epsilon);
+    }
+  };
+
+  PA(const config& config, storage::storage_base* storage);
   PA(storage::storage_base* storage);
 
   void train(const sfv_t& fv, float value);
 
  private:
-  float epsilon_;
-  float C_;
+  config config_;
   float sum_;
   float sq_sum_;
   float count_;

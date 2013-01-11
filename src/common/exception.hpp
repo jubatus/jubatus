@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include <cstdlib>
 #include <exception>
 #include <stdexcept>
 #include <ios>
@@ -25,17 +24,14 @@
 #include <vector>
 
 #include <pficommon/lang/shared_ptr.h>
+#include <pficommon/lang/demangle.h>
 #include "exception_info.hpp"
-
-#if defined(__GLIBCXX__) || defined(__GLIBCPP__)
-#include <cxxabi.h>
-#endif
 
 namespace jubatus {
 namespace exception {
 
-typedef error_info<struct error_at_file_, char const *> error_at_file;
-typedef error_info<struct error_at_func_, char const *> error_at_func;
+typedef error_info<struct error_at_file_, std::string> error_at_file;
+typedef error_info<struct error_at_func_, std::string> error_at_func;
 typedef error_info<struct error_at_line_, int> error_at_line;
 typedef error_info<struct error_errno_, int> error_errno;
 inline std::string to_string(const error_errno& info)
@@ -83,7 +79,7 @@ public:
   {
     // does not assume multithreading
     if (exception_class_name_.empty())
-      exception_class_name_ = detail::demangle_symbol(typeid(*this).name());
+      exception_class_name_ = pfi::lang::demangle(typeid(*this).name());
 
     return exception_class_name_;
   }
@@ -217,24 +213,6 @@ exception_thrower_ptr current_std_exception(const Exception& e)
   return exception_thrower_ptr(new exception_thrower_impl<Exception>(e));
 }
 
-#if defined(__GLIBCXX__) || defined(__GLIBCPP__)
-inline std::string demangle_symbol(const char *symbol)
-{
-  int status;
-  char* demangled = abi::__cxa_demangle(symbol, 0, 0, &status);
-  if (demangled) {
-    std::string result(demangled);
-    std::free(demangled);
-    return result;
-  }
-  return std::string(symbol);
-}
-#else
-inline std::string demangle_symbol(const char *symbol)
-{
-  return symbol;
-}
-#endif
 } // detail
 
 // Don't call without catch blocks
@@ -301,6 +279,8 @@ inline exception_thrower_ptr get_current_exception()
 }
 
 } // exception
+
+class config_exception : public exception::jubaexception<config_exception>{};
 
 class storage_not_set : public exception::jubaexception<storage_not_set>{};
 

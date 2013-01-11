@@ -18,7 +18,7 @@ def build(bld):
     target = 'jubatus_classifier',
     name = 'jubatus_classifier',
     includes = '.',
-    use = 'PFICOMMON')
+    use = 'PFICOMMON jubacommon')
 
   bld.program(
      features = 'gtest',
@@ -28,10 +28,11 @@ def build(bld):
      ],
      target = "classifier_test",
      includes = '.',
-     use = 'jubatus_classifier jubastorage')
+     use = 'jubacommon jubatus_classifier jubastorage')
 
   bld.install_files('${PREFIX}/include/jubatus/classifier', [
       'classifier_base.hpp',
       'classifier_factory.hpp',
       'classifier_type.hpp',
+      'classifier_config.hpp',
       ])

@@ -15,8 +15,9 @@ Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 BuildRequires:	pficommon-devel >= 1.3.1
+BuildRequires:	jubatus-mpio-devel
+BuildRequires:	jubatus-msgpack-rpc-devel
 BuildRequires:	msgpack-devel
-BuildRequires:	libevent-devel >= 1.4
 BuildRequires:	glog-devel >= 0.3.0
 BuildRequires:	zookeeper-client-devel
 BuildRequires:	re2-devel
@@ -26,8 +27,9 @@ BuildRequires:	pkgconfig
 BuildRequires:	python >= 2.6
 
 Requires:		pficommon >= 1.3.1
+Requires:		jubatus-mpio
+Requires:		jubatus-msgpack-rpc
 Requires:		msgpack
-Requires:		libevent >= 1.4
 Requires:		glog >= 0.3.0
 Requires:		zookeeper-client
 Requires:		re2
@@ -40,8 +42,15 @@ Summary:	Headers and libraries to develop engines and plugins for Jubatus Framew
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	pficommon-devel >= 1.3.1
+Requires:	jubatus-msgpack-rpc-devel
 Requires:	msgpack-devel
 Requires:	glog-devel >= 0.3.0
+
+%package client
+Summary:	Jubatus C++ Client
+Group:		Development/Libraries
+Requires:	msgpack-devel
+Requires:	jubatus-msgpack-rpc-devel
 
 %description
 Jubatus is a distributed processing framework and streaming machine learning library.
@@ -49,6 +58,10 @@ Jubatus is a distributed processing framework and streaming machine learning lib
 %description devel
 Jubatus is a distributed processing framework and streaming machine learning library.
 This package provides headers and libraries needed to develop new engines or plugins for Jubatus Framework.
+
+%description client
+Jubatus is a distributed processing framework and streaming machine learning library.
+This package provides Jubatus C++ client headers.
 
 %prep
 %setup -q -n %{name}
@@ -71,21 +84,17 @@ This package provides headers and libraries needed to develop new engines or plu
 %{_bindir}/juba*
 # As Jubatus has no SONAME defined, include shared library without version number here.
 %{_libdir}/libjuba*.so
-%{_libdir}/jubatus/plugin/libmecab_splitter.so
-%{_libdir}/jubatus/plugin/libre2_splitter.so
-%{_libdir}/jubatus/plugin/libux_splitter.so
+%{_libdir}/jubatus/plugin
 
 %files devel
 %defattr(-,root,root,-)
 %{_libdir}/pkgconfig/jubatus.pc
 %{_includedir}/jubatus
 %{_datarootdir}/jubatus
-%exclude %{_includedir}/jubatus/client
+
+%files client
+%{_includedir}/jubatus/client
 
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
-
-%changelog
-* Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
-- Initial version

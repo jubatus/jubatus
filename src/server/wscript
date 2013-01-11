@@ -1,3 +1,5 @@
+idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl']
+
 def options(opt):
   pass
 
@@ -13,21 +15,21 @@ def build_one(bld, name, libraries = '', sources = ''):
     source = __sources,
     target = 'juba'+name,
     includes = '.',
-    use = 'jubatus_framework jubacommon_mprpc jubatus_%s %s' % (name, libraries)
+    use = 'jubatus_framework jubacommon_mprpc jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
       source = '%s_keeper.cpp ' % name,
       target = 'juba%s_keeper' % name,
       includes = '.',
-      use = 'PFICOMMON jubatus_framework jubacommon_mprpc'
+      use = 'PFICOMMON jubatus_framework jubacommon_mprpc JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
       )
   bld.program(
     features = 'gtest',
     source = '%s_test.cpp' % name,
     target = '%s_test' % name,
     includes = '.',
-    use = 'PFICOMMON MSGPACK jubacommon_mprpc',
+    use = 'PFICOMMON MSGPACK jubacommon_mprpc %s' % libraries,
     )
 
 
@@ -49,13 +51,6 @@ def build(bld):
     use='PFICOMMON jubastorage jubaserver'
     )
 
-  bld.program(
-    features = 'gtest',
-    source = 'recommender_serv.cpp recommender_serv_test.cpp',
-    target = 'recommender_serv_test',
-    includes = '. ../framework',
-    use = 'PFICOMMON jubaconverter jubastorage jubaserver jubatus_recommender jubatus_framework')
-
   #new classifier
   build_one(bld, "classifier", 'jubaconverter jubastorage jubaserver')
 
@@ -64,6 +59,9 @@ def build(bld):
 
   # #new recommender
   build_one(bld, "recommender", 'jubaconverter jubastorage jubaserver')
+
+  # #new anomaly
+  build_one(bld, "anomaly", 'jubaconverter jubastorage jubatus_recommender jubaserver')
 
   build_one(bld, "stat")
 
@@ -75,23 +73,4 @@ def build(bld):
       source = bld.path.ant_glob('test_input/*'),
       target = n)
 
-  bld.install_files('${PREFIX}/include/jubatus/client', [
-      'classifier_types.hpp',
-      'classifier_client.hpp',
-      'regression_types.hpp',
-      'regression_client.hpp',
-      'recommender_types.hpp',
-      'recommender_client.hpp',
-      'stat_types.hpp',
-      'stat_client.hpp',
-      'graph_types.hpp',
-      'graph_client.hpp',
-      ])
-
-  bld.install_files('${PREFIX}/share/jubatus/', [
-      'classifier.idl',
-      'regression.idl',
-      'recommender.idl',
-      'stat.idl',
-      'graph.idl',
-      ])
+  bld.install_files('${PREFIX}/share/jubatus/idl/', idls)

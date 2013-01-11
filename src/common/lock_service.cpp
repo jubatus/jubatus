@@ -59,5 +59,20 @@ bool lock_service_mutex::unlock()
   return impl_->unlock();
 }
 
+bool lock_service_mutex::rlock()
+{
+  return impl_->rlock();
+}
+
+bool lock_service_mutex::try_rlock()
+{
+  return impl_->try_rlock();
+}
+
+bool lock_service_mutex::unlock_r()
+{
+  return impl_->unlock_r();
+}
+
 } // common
 } // jubatus

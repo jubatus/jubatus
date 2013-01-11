@@ -18,6 +18,7 @@
 #include "../storage/storage_base.hpp"
 
 namespace jubatus {
+namespace regression {
 
 regression_base::regression_base(storage::storage_base* storage)
       : storage_(storage) {}
@@ -32,5 +33,5 @@ void regression_base::update(const sfv_t& fv, float coeff) {
   storage_->bulk_update(fv, coeff, "+", "");
 }
 
-
+}
 }

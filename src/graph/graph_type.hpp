@@ -103,8 +103,6 @@ struct preset_query {
   }
 };
 
-const size_t LANDMARK_NUM = 5;
-
 typedef pfi::data::unordered_map<node_id_t, std::pair<uint64_t, node_id_t> > spt_edges;
 
 struct shortest_path_tree{

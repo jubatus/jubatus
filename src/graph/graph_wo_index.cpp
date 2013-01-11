@@ -84,7 +84,11 @@ void normalize(eigen_vector_mixed& v) {
 
 }
 
-graph_wo_index::graph_wo_index() : alpha_(0.9){
+graph_wo_index::graph_wo_index(const config& config) : config_(config){
+  clear();
+}
+
+graph_wo_index::graph_wo_index() {
   clear();
 }
 
@@ -92,7 +96,7 @@ graph_wo_index::~graph_wo_index(){
 }
 
 void graph_wo_index::alpha(double a) {
-  alpha_ = a;
+  config_.alpha = a;
 }
 
 void graph_wo_index::clear(){
@@ -116,7 +120,7 @@ void graph_wo_index::may_set_landmark(node_id_t id){
   // if (id > 1) return;
   for (spt_query_mixed::iterator it = spts_.begin(); it != spts_.end(); ++it) {
     spt_mixed& mixed = it->second;
-    if (mixed.size() == LANDMARK_NUM ||
+    if (mixed.size() == config_.landmark_num ||
         !is_node_matched_to_query(it->first, id)) return;
 
     shortest_path_tree spt;
@@ -274,7 +278,7 @@ void graph_wo_index::shortest_path(node_id_t src, node_id_t tgt,
     }
   }
 
-  if (ind >= LANDMARK_NUM){
+  if (ind >= config_.landmark_num){
     return;
   }
 
@@ -294,6 +298,9 @@ void graph_wo_index::shortest_path(node_id_t src, node_id_t tgt,
       return;
     }
     ret.push_back(cur);
+    if (cur == tgt){
+      return;
+    }
     cur = it->second.second;
   }
   ret.push_back(landmark);
@@ -440,7 +447,7 @@ void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
       }
 
       eigen_vector_info ei;
-      ei.score = alpha_ * score + 1 - alpha_ + alpha_ * dist;
+      ei.score = config_.alpha * score + 1 - config_.alpha + config_.alpha * dist;
 
       if (is_empty_query(query)) {
         ei.out_degree_num = node_it->second.out_edges.size();
@@ -638,7 +645,7 @@ void graph_wo_index::mix(const string& diff, string& mixed){
   }
 
   mix(ediff, emixed);
-  mix(sdiff, smixed);
+  mix(sdiff, smixed, config_.landmark_num);
 
   ostringstream os;
   pfi::data::serialization::binary_oarchive oa(os);
@@ -670,7 +677,7 @@ void  graph_wo_index::mix_spt(const shortest_path_tree& diff, shortest_path_tree
   }
 }
 
-void graph_wo_index::mix(const spt_query_diff& all_diff, spt_query_mixed& all_mixed){
+void graph_wo_index::mix(const spt_query_diff& all_diff, spt_query_mixed& all_mixed, size_t landmark_num){
   for (spt_query_diff::const_iterator it = all_diff.begin();
        it != all_diff.end(); ++it) {
     const spt_diff& diff = it->second;
@@ -694,7 +701,7 @@ void graph_wo_index::mix(const spt_query_diff& all_diff, spt_query_mixed& all_mi
       map<node_id_t, uint64_t>::iterator jt = mixed_landmark2ind.find(it->first);
       if (jt != mixed_landmark2ind.end()){
         mix_spt(diff[it->second], mixed[jt->second]);
-      } else if (mixed.size() < LANDMARK_NUM){
+      } else if (mixed.size() < landmark_num){
         mixed.push_back(diff[it->second]);
       }
     }

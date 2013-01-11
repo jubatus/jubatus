@@ -1,7 +1,7 @@
 import Options
 
 subdirs = '''
-common plugin stat
+anomaly common plugin stat
 classifier fv_converter recommender regression storage
 framework server
 cmd jubavisor
@@ -16,6 +16,5 @@ def configure(conf):
 
 def build(bld):
   bld.recurse(subdirs)
-#  bld.install_files('${PREFIX}/include', 'jubatus.hpp')
   bld.install_files('${PREFIX}/include/jubatus',
-                    ['config.hpp', 'plugin.hpp', 'framework.hpp'])
+                    ['config.hpp', 'client.hpp', 'plugin.hpp', 'framework.hpp'])

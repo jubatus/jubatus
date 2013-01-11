@@ -36,12 +36,16 @@ json MakeJson(const string& string) {
 }
 
 void TestEquals(const string& json_string,
-                const vector<pair<string, string> >& expected_strings,
-                const vector<pair<string, double> >& expected_nums
+                vector<pair<string, string> > expected_strings,
+                vector<pair<string, double> > expected_nums
 ) {
+  sort(expected_strings.begin(), expected_strings.end());
+  sort(expected_nums.begin(), expected_nums.end());
   datum actual;
   json json = MakeJson(json_string);
   json_converter::convert(json, actual);
+  sort(actual.string_values_.begin(), actual.string_values_.end());
+  sort(actual.num_values_.begin(), actual.num_values_.end());
   PairVectorEquals(expected_strings, actual.string_values_);
   PairVectorEquals(expected_nums, actual.num_values_);  
 }

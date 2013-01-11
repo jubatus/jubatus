@@ -11,8 +11,16 @@ before_install:
   - sudo apt-get -qq update
 
 install:
-  # msgpack, libevent
-  - sudo apt-get -qq install libmsgpack-dev libevent-dev
+  # msgpack
+  - sudo apt-get -qq install libmsgpack-dev
+  # jubatus-mpio
+  - git clone https://github.com/jubatus/jubatus-mpio.git
+  - pushd jubatus-mpio && git checkout develop && ./bootstrap && ./configure && make && sudo make install && popd
+  - sudo ldconfig
+  # jubatus-msgpack-rpc
+  - git clone https://github.com/jubatus/jubatus-msgpack-rpc.git
+  - pushd jubatus-msgpack-rpc && git checkout develop && ./bootstrap && ./configure && make && sudo make install && popd
+  - sudo ldconfig
   # glog
   - wget http://google-glog.googlecode.com/files/glog-0.3.2.tar.gz && tar xf glog-0.3.2.tar.gz
   - pushd glog-0.3.2 && ./configure && make && sudo make install && popd
@@ -22,8 +30,8 @@ install:
   - pushd pficommon && ./waf configure --disable-database --disable-fcgi --disable-magickpp && ./waf build && sudo ./waf install && popd
   - sudo ldconfig
   # zookeeper
-  - wget http://apache.openmirror.de/zookeeper/zookeeper-3.4.4/zookeeper-3.4.4.tar.gz && tar xf zookeeper-3.4.4.tar.gz
-  - pushd zookeeper-3.4.4/src/c && ./configure && make && sudo make install && popd
+  - wget http://apache.openmirror.de/zookeeper/zookeeper-3.4.4/zookeeper-3.4.4.tar.gz && tar xf zookeeper-3.4.5.tar.gz
+  - pushd zookeeper-3.4.5/src/c && ./configure && make && sudo make install && popd
   - sudo ldconfig
   # re2
   - hg clone https://re2.googlecode.com/hg re2
@@ -44,7 +52,9 @@ install:
 
 script:
   - ./waf configure --enable-zookeeper --enable-mecab --enable-ux
-  - ./waf build --checkall
+  - ./waf build
+  - ./waf install
+  - ./waf --checkall
 
 branches:
   only:

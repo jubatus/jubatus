@@ -5,6 +5,7 @@
 #include <sstream>
 
 using namespace std;
+using jubatus::common::mprpc::byte_buffer;
 
 namespace jubatus {
 namespace framework {
@@ -53,7 +54,7 @@ class mixable_int : public mixable<int_model, int> {
 TEST(mixable, config_not_set) {
   mixable_int m;
   EXPECT_THROW(m.get_diff(), config_not_set);
-  EXPECT_THROW(m.put_diff(""), config_not_set);
+  EXPECT_THROW(m.put_diff(byte_buffer()), config_not_set);
 }
 
 TEST(mixable, save_load) {
@@ -74,10 +75,10 @@ TEST(mixable, trivial) {
 
   m.add(10);
 
-  string diff1 = m.get_diff();
-  string diff2 = m.get_diff();
+  byte_buffer diff1 = m.get_diff();
+  byte_buffer diff2 = m.get_diff();
 
-  std::string mixed;
+  byte_buffer mixed;
   m.mix(diff1, diff2, mixed);
 
   m.put_diff(mixed);

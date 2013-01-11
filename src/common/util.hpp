@@ -34,6 +34,8 @@ void get_ip(const char* nic, std::string& out);
 std::string get_ip(const char* nic);
 std::string base_name(const std::string&);
 std::string get_program_name();
+std::string get_user_name();
+bool is_writable(const char* dir_path);
 
 std::string load(const std::string& file, std::vector< std::pair<std::string, int> >& s);
 

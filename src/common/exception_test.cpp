@@ -16,6 +16,7 @@
 
 #include "exception.hpp"
 #include <gtest/gtest.h>
+#include <pficommon/lang/demangle.h>
 
 using namespace std;
 using jubatus::exception::jubatus_exception;
@@ -299,12 +300,12 @@ TEST(exception, catch_unknown_current_exception)
   EXPECT_THROW(thrower->throw_exception(), jubatus::exception::unknown_exception);
 }
 
-#if defined(__GLIBCXX__) || defined(__GLIBCPP__)
+#if __GNUC__ >= 3
 TEST(exception, abi_demangle)
 {
   jubatus::exception::runtime_error object("a");
 
-  EXPECT_EQ(string("jubatus::exception::runtime_error"), jubatus::exception::detail::demangle_symbol(typeid(object).name()));
+  EXPECT_EQ(string("jubatus::exception::runtime_error"), pfi::lang::demangle(typeid(object).name()));
 }
 
 TEST(exception, exception_class_name)

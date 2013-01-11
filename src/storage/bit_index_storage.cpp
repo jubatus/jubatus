@@ -14,8 +14,9 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <iterator>
 #include "bit_index_storage.hpp"
+#include <iterator>
+#include <sstream>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
 #include "fixed_size_heap.hpp"

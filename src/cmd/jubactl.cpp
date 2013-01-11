@@ -19,6 +19,8 @@
 #include <iostream>
 #include <cstring>
 
+#include <glog/logging.h>
+
 #include <pficommon/network/mprpc.h>
 #include <pficommon/lang/function.h>
 
@@ -42,18 +44,21 @@ void status(const string&, const string&, const string&);
 
 int main(int args, char** argv) try {
   cmdline::parser p;
-  p.add<std::string>("cmd", 'c', "command to send servers (start|stop|save|load)", true);
+  p.add<std::string>("cmd", 'c', "command to send servers (start|stop|save|load|status)", true);
   p.add<std::string>("server", 's', "server exec file of learning machine (jubaclassifier, ...)", true);
   p.add<std::string>("name", 'n', "learning machine name", true);
-  p.add<std::string>("type", 't', "learning machine type", true);
+  p.add<std::string>("type", 't', "learning machine type (classifier, ...)", true);
   p.add<unsigned int>("num", 'N', "num of process in the whole cluster (one on each server when 0)", false);
-  p.add<std::string>("zookeeper", 'z', "ZooKeeper location environment: 'ZK' is available instead", false);
+  p.add<std::string>("zookeeper", 'z', "ZooKeeper location; environment variable 'ZK' is used when available", false);
 
   // Support framework::server_argv
+  p.add<std::string>("listen_if", 'B', "[start] bind network interfance", false, "");
   p.add<int>("thread", 'C', "[start] concurrency = thread number", false, 2);
   p.add<int>("timeout", 'T', "[start] time out (sec)", false, 10);
-  p.add<std::string>("tmpdir", 'D', "[start] directory to load and save models", false, "/tmp");
-  p.add<std::string>("logdir", 'L', "[start] directory to output logs (instead of stderr)", false);
+  p.add<std::string>("datadir", 'D', "[start] directory to load and save models", false, "/tmp");
+  p.add<std::string>("logdir", 'L', "[start] directory to output logs (instead of stderr)", false, "");
+  p.add<int,cmdline::range_reader<int> >("loglevel", 'E', "[start] verbosity of log messages", false,
+                                         google::INFO, cmdline::range(google::INFO, google::FATAL));
   p.add("join", 'J', "[start] join to the existing cluster");
   p.add<int>("interval_sec", 'S', "[start] mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'I', "[start] mix interval by update count", false, 512);
@@ -140,13 +145,15 @@ void send2supervisor(const string& cmd,
     path += "/nodes";
     ls_->create(path);
 
+    server_option.bind_if = argv.get<std::string>("listen_if");
     server_option.threadnum = argv.get<int>("thread");
     server_option.timeout = argv.get<int>("timeout");
     server_option.program_name = type;
     server_option.z = zkhosts;
     server_option.name = name;
-    server_option.tmpdir = argv.get<std::string>("tmpdir");
+    server_option.datadir = argv.get<std::string>("datadir");
     server_option.logdir = argv.get<std::string>("logdir");
+    server_option.loglevel = argv.get<int>("loglevel");
     server_option.join = argv.exist("join");
 
     server_option.interval_sec = argv.get<int>("interval_sec");

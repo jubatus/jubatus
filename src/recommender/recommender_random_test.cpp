@@ -235,7 +235,7 @@ REGISTER_TYPED_TEST_CASE_P(recommender_random_test,
                            trivial, random, save_load, get_all_row_ids,
                            diff, mix);
 
-typedef testing::Types<inverted_index, lsh, minhash> recommender_types;
+typedef testing::Types<inverted_index, lsh, minhash, euclid_lsh> recommender_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(rt, recommender_random_test, recommender_types);
 

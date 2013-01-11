@@ -57,9 +57,9 @@ public:
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const;
   void get_status(status_t& status) const;
 
-  bool set_config(const config_data&);
-  config_data get_config()const;
-  int push(const std::string& key, double value);
+  bool set_config(const std::string&);
+  std::string get_config()const;
+  bool push(const std::string& key, double value);
   double sum(const std::string&) const;
   double stddev(const std::string&) const;
   double max(const std::string&) const;
@@ -71,7 +71,7 @@ private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  jubatus::config_data config_;
+  std::string config_;
   server::mixable_stat stat_;
 };
 

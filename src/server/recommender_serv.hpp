@@ -69,22 +69,20 @@ public:
 
   void get_status(status_t& status) const;
 
-  int set_config(config_data config);
-  config_data get_config();
+  bool set_config(std::string config);
+  std::string get_config();
 
-  int clear_row(std::string id);
-  int update_row(std::string id, datum dat);
-  int clear();
-
-  common::cshared_ptr<jubatus::recommender::recommender_base> make_model();
+  bool clear_row(std::string id);
+  bool update_row(std::string id, datum dat);
+  bool clear();
 
   datum complete_row_from_id(std::string id);
-  datum complete_row_from_data(datum dat);
+  datum complete_row_from_datum(datum dat);
   similar_result similar_row_from_id(std::string id, size_t ret_num);
-  similar_result similar_row_from_data(datum, size_t);
+  similar_result similar_row_from_datum(datum, size_t);
 
-  float similarity(const datum& , const datum&);
-  float l2norm(const datum& q);
+  float calc_similarity(const datum& , const datum&);
+  float calc_l2norm(const datum& q);
 
   datum decode_row(std::string id);
   std::vector<std::string> get_all_rows();
@@ -95,7 +93,7 @@ private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  config_data config_;
+  std::string config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   rcmdr rcmdr_;
   mixable_weight_manager wm_;

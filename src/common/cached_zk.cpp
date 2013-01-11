@@ -72,7 +72,7 @@ bool cached_zk::list_(const string& path, std::set<std::string>& out)
     }
     return true;
   } else {
-    LOG(ERROR) << zerror(rc) << " (" << path << ")";
+    LOG(ERROR) << "failed to get children: " << path << " - " << zerror(rc);
     return false;
   }
 }

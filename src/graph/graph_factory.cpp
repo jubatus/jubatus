@@ -17,16 +17,18 @@
 #include "graph_factory.hpp"
 #include "graph.hpp"
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include <stdexcept>
 
 using namespace std;
+using namespace jubatus::jsonconfig;
 
 namespace jubatus {
 namespace graph {
 
-graph_base* create_graph(const string& name){
+graph_base* create_graph(const string& name, const jsonconfig::config& param) {
   if (name == "graph_wo_index"){
-    return new graph_wo_index;
+    return new graph_wo_index(config_cast_check<graph_wo_index::config>(param));
   } else {
     throw JUBATUS_EXCEPTION(unknown_graph(name));
   }

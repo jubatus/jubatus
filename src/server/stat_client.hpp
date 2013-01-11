@@ -7,67 +7,66 @@
 
 
 #include "stat_types.hpp"
-#include <pficommon/network/mprpc.h>
+#include <jubatus/msgpack/rpc/client.h>
 
 
 namespace jubatus {
 
 namespace client {
 
-class stat : public pfi::network::mprpc::rpc_client {
+class stat {
 public:
   stat(const std::string &host, uint64_t port, double timeout_sec)
-    : rpc_client(host, port, timeout_sec) {}
+    : c_(host, port) {
+    c_.set_timeout( timeout_sec );
+  }
 
-    bool set_config(std::string name, config_data c) {
-      return call<bool(std::string, config_data)>("set_config")(name, c);
-    }
+  std::string get_config(std::string name) {
+    return c_.call("get_config", name).get<std::string>();
+  }
 
-    config_data get_config(std::string name) {
-      return call<config_data(std::string)>("get_config")(name);
-    }
+  bool push(std::string name, std::string key, double val) {
+    return c_.call("push", name, key, val).get<bool>();
+  }
 
-    bool push(std::string name, std::string key, double val) {
-      return call<bool(std::string, std::string, double)>("push")(name, key, val);
-    }
+  double sum(std::string name, std::string key) {
+    return c_.call("sum", name, key).get<double>();
+  }
 
-    double sum(std::string name, std::string key) {
-      return call<double(std::string, std::string)>("sum")(name, key);
-    }
+  double stddev(std::string name, std::string key) {
+    return c_.call("stddev", name, key).get<double>();
+  }
 
-    double stddev(std::string name, std::string key) {
-      return call<double(std::string, std::string)>("stddev")(name, key);
-    }
+  double max(std::string name, std::string key) {
+    return c_.call("max", name, key).get<double>();
+  }
 
-    double max(std::string name, std::string key) {
-      return call<double(std::string, std::string)>("max")(name, key);
-    }
+  double min(std::string name, std::string key) {
+    return c_.call("min", name, key).get<double>();
+  }
 
-    double min(std::string name, std::string key) {
-      return call<double(std::string, std::string)>("min")(name, key);
-    }
+  double entropy(std::string name, std::string key) {
+    return c_.call("entropy", name, key).get<double>();
+  }
 
-    double entropy(std::string name, std::string key) {
-      return call<double(std::string, std::string)>("entropy")(name, key);
-    }
+  double moment(std::string name, std::string key, int32_t n, double c) {
+    return c_.call("moment", name, key, n, c).get<double>();
+  }
 
-    double moment(std::string name, std::string key, int32_t n, double c) {
-      return call<double(std::string, std::string, int32_t, double)>("moment")(name, key, n, c);
-    }
+  bool save(std::string name, std::string id) {
+    return c_.call("save", name, id).get<bool>();
+  }
 
-    bool save(std::string name, std::string id) {
-      return call<bool(std::string, std::string)>("save")(name, id);
-    }
+  bool load(std::string name, std::string id) {
+    return c_.call("load", name, id).get<bool>();
+  }
 
-    bool load(std::string name, std::string id) {
-      return call<bool(std::string, std::string)>("load")(name, id);
-    }
-
-    std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
-      return call<std::map<std::string, std::map<std::string, std::string > >(std::string)>("get_status")(name);
-    }
+  std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
+    return c_.call("get_status", name).get<std::map<std::string, std::map<std::string, std::string > > >();
+  }
 
 private:
+  msgpack::rpc::client c_;
 };
 
 } // namespace client

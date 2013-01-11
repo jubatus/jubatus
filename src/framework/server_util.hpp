@@ -32,7 +32,6 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/lang/function.h>
-#include <pficommon/network/mprpc.h>
 #include <pficommon/lang/shared_ptr.h>
 
 namespace cmdline{
@@ -47,6 +46,15 @@ class datum_to_fv_converter;
 
 namespace framework {
 
+struct config_json {
+  config_json(){};
+  
+  std::string config;
+
+  void load_json(const std::string& zkhosts, const std::string& type, const std::string& name);
+  void load_json(const std::string& filepath);
+};
+
 struct server_argv {
 
   server_argv(int args, char** argv, const std::string& type);
@@ -54,20 +62,25 @@ struct server_argv {
 
   bool join;
   int port;
+  std::string bind_address;
+  std::string bind_if;
   int timeout;
   int threadnum;
   std::string program_name;
   std::string type;
   std::string z;
   std::string name;
-  std::string tmpdir;
+  std::string datadir;
   std::string logdir;
+  int loglevel;
+  std::string configpath;
   std::string eth;
   int interval_sec;
   int interval_count;
 
-  MSGPACK_DEFINE(join, port, timeout, threadnum, program_name, type, z, name,
-      tmpdir, logdir, eth, interval_sec, interval_count);
+  MSGPACK_DEFINE(join, port, bind_address, bind_if, timeout, threadnum,
+      program_name, type, z, name, datadir, logdir, loglevel, eth,
+      interval_sec, interval_count);
 
   bool is_standalone() const {
     return (z == "");
@@ -84,11 +97,14 @@ struct keeper_argv {
   keeper_argv();
   
   int port;
+  std::string bind_address;
+  std::string bind_if;
   int timeout;
   int threadnum;
   std::string program_name;
   std::string z;
   std::string logdir;
+  int loglevel;
   std::string eth;
   const std::string type;
 
@@ -106,9 +122,9 @@ void convert(const From& from, To& to){
 }
 
 extern jubatus::common::cshared_ptr<jubatus::common::lock_service> ls;
-void atexit(void);
+void atexit();
 
-template <class ImplServerClass, class UserServClass>
+template <class ImplServerClass>
 int run_server(int args, char** argv, const std::string& type)
 {
   try {
@@ -126,4 +142,8 @@ int run_server(int args, char** argv, const std::string& type)
   }
 }
 
-}}
+std::string get_conf(const server_argv& a);
+
+
+} // framework
+} // jubatus

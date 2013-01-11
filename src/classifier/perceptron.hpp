@@ -19,6 +19,7 @@
 #include "classifier_base.hpp"
 
 namespace jubatus{
+namespace classifier{
 
 class perceptron : public classifier_base {
 public:
@@ -27,4 +28,5 @@ public:
   std::string name() const;
 };
 
+}
 }

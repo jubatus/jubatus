@@ -21,13 +21,14 @@
 #include <map>
 #include <string>
 #include <glog/logging.h>
-#include <pficommon/network/mprpc.h>
 #include <pficommon/system/sysstat.h>
 #include "../common/shared_ptr.hpp"
 #include "../common/lock_service.hpp"
+#include "../common/mprpc/rpc_server.hpp"
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
 #include "../config.hpp"
+#include "../common/jsonconfig.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -36,6 +37,8 @@ class server_helper_impl {
 public:
   explicit server_helper_impl(const server_argv& a);
   void prepare_for_start(const server_argv& a, bool use_cht);
+  void prepare_for_run(const server_argv& a, bool use_cht);
+  void get_config_lock(const server_argv& a, int retry);
 
   common::cshared_ptr<jubatus::common::lock_service> zk() const {
     return zk_;
@@ -43,6 +46,7 @@ public:
 
 private:
   common::cshared_ptr<jubatus::common::lock_service> zk_;
+  pfi::lang::shared_ptr<common::try_lockable> zk_config_lock_;
 };
 
 template<typename Server>
@@ -55,6 +59,21 @@ public:
 
     impl_.prepare_for_start(a, use_cht);
     server_.reset(new Server(a, impl_.zk()));
+
+    impl_.get_config_lock(a, 3);
+
+    try {
+      server_->set_config(get_conf(a));
+    } catch (const jsonconfig::cast_check_error& e) {
+      config_exception config_error;
+      const jsonconfig::config_error_list& errors = e.errors();
+      for (jsonconfig::config_error_list::const_iterator it = errors.begin(),
+          end = errors.end(); it != end; ++it) {
+        config_error << exception::error_message((*it)->what());
+      }
+      // send error message to caller
+      throw JUBATUS_EXCEPTION(config_error);
+    }
   }
 
   std::map<std::string, std::string> get_loads() const {
@@ -84,7 +103,7 @@ public:
     // TBD: type(server type), name(instance name: when zookeeper enabled), eth
     data["timeout"] = pfi::lang::lexical_cast<std::string>(a.timeout);
     data["threadnum"] = pfi::lang::lexical_cast<std::string>(a.threadnum);
-    data["tmpdir"] = a.tmpdir;
+    data["datadir"] = a.datadir;
     data["interval_sec"] = pfi::lang::lexical_cast<std::string>(a.interval_sec);
     data["interval_count"] = pfi::lang::lexical_cast<std::string>(a.interval_count);
     data["is_standalone"] = pfi::lang::lexical_cast<std::string>(a.is_standalone());
@@ -102,19 +121,32 @@ public:
     return status;
   }
 
-  int start(pfi::network::mprpc::rpc_server& serv) {
+  int start(jubatus::common::mprpc::rpc_server& serv) {
     const server_argv& a = server_->argv();
 
     if (!a.is_standalone()) {
       server_->get_mixer()->start();
     }
 
-    if (serv.serv(a.port, a.threadnum)) {
+    try {
+      serv.listen( a.port, a.bind_address );
+      serv.start( a.threadnum, true );
+      // RPC server started, then register group membership
+      impl_.prepare_for_run(a, use_cht_);
+      serv.join();
       return 0;
-    } else {
-      LOG(FATAL) << "failed starting server: any process using port " << a.port << "?";
-      return -1;
+    } catch( mp::system_error &e ) {
+      if ( e.code == EADDRINUSE ) {
+        LOG(FATAL) << "server failed to start: any process using port " << a.port << "?";
+      } else {
+        LOG(FATAL) << "server failed to start: " << e.what();
+      }
+    } catch( jubatus::exception::jubatus_exception& ) {
+      throw;
+    } catch( std::exception &e ) {
+      LOG(FATAL) << "server failed to start: " << e.what();
     }
+    return -1;
   }
 
   common::cshared_ptr<Server> server() const {
@@ -136,10 +168,10 @@ private:
 }
 
 #define JRLOCK__(p) \
-  ::pfi::concurrent::scoped_lock lk(::pfi::concurrent::rlock((p)->rw_mutex()))
+  ::pfi::concurrent::scoped_rlock lk((p)->rw_mutex())
 
 #define JWLOCK__(p) \
-  ::pfi::concurrent::scoped_lock lk(::pfi::concurrent::wlock((p)->rw_mutex())); \
+  ::pfi::concurrent::scoped_wlock lk((p)->rw_mutex()); \
   (p)->server()->event_model_updated()
 
 #define NOLOCK__(p)

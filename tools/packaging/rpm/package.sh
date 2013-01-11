@@ -5,8 +5,8 @@
 ################################################################################
 
 # Packages to be built, in order of dependencies
-PKGS_DEPENDS="msgpack pficommon zookeeper-client glog re2 ux mecab mecab-ipadic"
-PKGS_JUBATUS="jubatus jubatus-client jubatus-release"
+PKGS_DEPENDS="msgpack jubatus-mpio jubatus-msgpack-rpc pficommon zookeeper-client glog re2 ux mecab mecab-ipadic"
+PKGS_JUBATUS="jubatus jubatus-release"
 
 # Directories
 PACKAGER="$(basename "${0}")"

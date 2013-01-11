@@ -53,7 +53,7 @@ void wait_server(int port) {
   throw std::runtime_error("cannot connect");
 }
 
-pid_t fork_process(const char* name, int port = 9199){
+pid_t fork_process(const char* name, int port = 9199, std::string config = ""){
   string cmd(BUILD_DIR);
   pid_t child;
   cmd += "/src/server/juba";
@@ -61,7 +61,7 @@ pid_t fork_process(const char* name, int port = 9199){
   child = fork();
   string port_str = pfi::lang::lexical_cast<std::string>(port);
   if(child == 0){
-    const char *const argv[6] = {cmd.c_str(), "-p", port_str.c_str(), "-d", ".", NULL};
+    const char *const argv[8] = {cmd.c_str(), "-p", port_str.c_str(), "-f", config.c_str(), "-d", ".", NULL};
     int ret = execv(cmd.c_str(), (char **const) argv);
     if(ret < 0){
       perror("execl");

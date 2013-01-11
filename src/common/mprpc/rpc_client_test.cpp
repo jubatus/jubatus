@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "rpc_client.hpp"
+#include "rpc_mclient.hpp"
 #include "../../framework/aggregators.hpp"
 #include "../../server/test_util.hpp"
 #include "gtest/gtest.h"

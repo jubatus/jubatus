@@ -38,7 +38,3 @@ Yum Repository for Jubatus and its dependencies.
 %files
 %defattr(-,root,root,-)
 %config(noreplace) %{_sysconfdir}/yum.repos.d/jubatus.repo
-
-%changelog
-* Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
-- Initial version

@@ -75,7 +75,7 @@ popd
 %{_libdir}/libzookeeper_mt.so
 %{_libdir}/libzookeeper_mt.a
 %{_libdir}/libzookeeper_mt.la
-%{_includedir}/c-client-src
+%{_includedir}/zookeeper
 
 %files utils
 %defattr(-,root,root,-)
@@ -86,7 +86,3 @@ popd
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
-
-%changelog
-* Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
-- Initial version

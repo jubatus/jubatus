@@ -13,11 +13,11 @@ prepare_rpmbuild() {
 	case "${PACKAGE}" in
 		jubatus )
 			rm -rf jubatus
-			git clone "${JUBATUS_REPOS}" jubatus
+			git clone https://github.com/jubatus/jubatus.git jubatus
 			pushd jubatus
 			git checkout "${JUBATUS_CHECKOUT}"
 			if [ "${JUBATUS_IS_SNAPSHOT}" = "yes" ]; then
-				JUBATUS_CHECKOUT="$(git log --pretty=format:'%H' --max-count=1 HEAD)"
+				JUBATUS_CHECKOUT="$(git rev-parse HEAD)"
 				JUBATUS_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
 				JUBATUS_RELEASE="${JUBATUS_RELEASE}.${JUBATUS_CHECKOUT_DATE}git${JUBATUS_CHECKOUT:0:6}"
 			fi
@@ -41,13 +41,49 @@ prepare_rpmbuild() {
 								JUBATUS_RELEASE_VERSION \
 								JUBATUS_RELEASE_RELEASE
 			;;
+		jubatus-mpio )
+			rm -rf jubatus-mpio
+			git clone https://github.com/jubatus/jubatus-mpio.git jubatus-mpio
+			pushd jubatus-mpio
+			git checkout "${JUBATUS_MPIO_CHECKOUT}"
+			if [ "${JUBATUS_MPIO_IS_SNAPSHOT}" = "yes" ]; then
+				JUBATUS_MPIO_CHECKOUT="$(git rev-parse HEAD)"
+				JUBATUS_MPIO_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
+				JUBATUS_MPIO_RELEASE="1.${JUBATUS_MPIO_CHECKOUT_DATE}git${JUBATUS_MPIO_CHECKOUT:0:6}"
+			fi
+			popd
+			tar --create --gzip --exclude-vcs --file "jubatus-mpio-${JUBATUS_MPIO_VERSION}.tar.gz" jubatus-mpio
+			rm -rf jubatus-mpio
+
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								JUBATUS_MPIO_VERSION \
+								JUBATUS_MPIO_RELEASE
+			;;
+		jubatus-msgpack-rpc )
+			rm -rf jubatus-msgpack-rpc
+			git clone https://github.com/jubatus/jubatus-msgpack-rpc.git jubatus-msgpack-rpc
+			pushd jubatus-msgpack-rpc
+			git checkout "${JUBATUS_MSGPACK_RPC_CHECKOUT}"
+			if [ "${JUBATUS_MSGPACK_RPC_IS_SNAPSHOT}" = "yes" ]; then
+				JUBATUS_MSGPACK_RPC_CHECKOUT="$(git rev-parse HEAD)"
+				JUBATUS_MSGPACK_RPC_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
+				JUBATUS_MSGPACK_RPC_RELEASE="1.${JUBATUS_MSGPACK_RPC_CHECKOUT_DATE}git${JUBATUS_MSGPACK_RPC_CHECKOUT:0:6}"
+			fi
+			popd
+			tar --create --gzip --exclude-vcs --file "jubatus-msgpack-rpc-${JUBATUS_MSGPACK_RPC_VERSION}.tar.gz" jubatus-msgpack-rpc
+			rm -rf jubatus-msgpack-rpc
+
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								JUBATUS_MSGPACK_RPC_VERSION \
+								JUBATUS_MSGPACK_RPC_RELEASE
+			;;
 		pficommon )
 			rm -rf pficommon
-			git clone "${PFICOMMON_REPOS}" pficommon
+			git clone https://github.com/pfi/pficommon.git pficommon
 			pushd pficommon
 			git checkout "${PFICOMMON_CHECKOUT}"
 			if [ "${PFICOMMON_IS_SNAPSHOT}" = "yes" ]; then
-				PFICOMMON_CHECKOUT="$(git log --pretty=format:'%H' --max-count=1 HEAD)"
+				PFICOMMON_CHECKOUT="$(git rev-parse HEAD)"
 				PFICOMMON_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
 				PFICOMMON_RELEASE="1.${PFICOMMON_CHECKOUT_DATE}git${PFICOMMON_CHECKOUT:0:6}"
 			fi
@@ -75,18 +111,6 @@ prepare_rpmbuild() {
 								GLOG_RELEASE
 			;;
 		re2 )
-			rm -rf re2
-			hg clone -u "${RE2_CHECKOUT}" "${RE2_REPOS}" re2
-			pushd re2
-			if [ "${RE2_IS_SNAPSHOT}" = "yes" ]; then
-				RE2_CHECKOUT="$(hg heads --template='{node}')"
-				RE2_CHECKOUT_DATE="$(hg heads --template='{date|shortdate}' | tr -d '-')"
-				RE2_RELEASE="${RE2_RELEASE}.${RE2_CHECKOUT_DATE}hg${RE2_CHECKOUT:0:6}"
-			fi
-			popd
-			tar --create --gzip --exclude-vcs --file "${SOURCES_DIR}/re2-${RE2_VERSION}.tar.gz" re2
-			rm -rf re2
-
 			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
 								RE2_VERSION \
 								RE2_RELEASE

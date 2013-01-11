@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import subprocess
 import sys
 import os
@@ -13,28 +15,31 @@ def generate(idlfile, lang, outdir):
     if lang == "cpp":
         options.append("-p")
         options.append("-n")
-        options.append("jubatus")
+        options.append("jubatus::" + idl)
     if lang == "ruby":
         options.append("-m")
-        options.append("Jubatus")
+        options.append("Jubatus::" + idl.capitalize())
+        outdir = outdir + "/jubatus"
     if lang == "java":
-        outdir = outdir + '/' + idl
-        try:     os.mkdir(outdir)
-        except:  pass
         options.append("-p")
-        options.append("jubatus")
+        options.append("us.jubat." + idl)
     if lang == "haskell":
-        try:
-            os.mkdir(outdir + '/' + idl)
-        except:
-            pass
-        outdir = outdir + '/' + idl
+        options.append("-m")
+        options.append("Jubatus")
+        outdir = outdir + "/" + idl
+    if lang == "perl":
+        options.append("-n")
+        options.append("Jubatus")
+        outdir = outdir + "/" + idl
+    if lang == "python":
+        outdir = outdir + "/jubatus"
 
     cmd = ["mpidl", lang, idlfile, '-o', outdir] + options
-#    print(cmd)
-    subprocess.call(cmd)
-    print(outdir)
-    return outdir
+    subprocess.check_output(cmd)
+
+def mkdir(path):
+    try: os.makedirs(path)
+    except: pass
 
 def get_version(path):
     f = open(path + "wscript")
@@ -44,13 +49,8 @@ def get_version(path):
             print m.group(0)
             return m.group(0)
 
-def write_version(version_string, file):
-    f = open(file, "w")
-    f.write(version_string)
-    f.close()
-
-def pack(name, version, outdir):
-    filename = "%s-%s.tar.gz" % (name, version)
+def pack(outdir):
+    filename = os.path.basename(outdir) + ".tar.gz"
     tar = tarfile.open(filename, "w:gz")
     tar.add(outdir)
     tar.close()
@@ -58,21 +58,29 @@ def pack(name, version, outdir):
     shutil.rmtree(outdir, True)
     print("wrote %s" % filename)
 
+def get_langs():
+    langs = []
+    usage_string = subprocess.check_output(["mpidl", "--help"])
+    for line in usage_string.split("\n"):
+        m = re.match('^mpidl ([a-z]+) ', line)
+        if m is not None:
+            langs.append(m.group(1))
+    return langs
+
 if __name__=='__main__':
     version_string = get_version("../")
     indir = "../src/server/"
-    if len(sys.argv) > 1:
-        indir = sys.argv[1] + "/"
-
-    langs = ["haskell", "cpp", "ruby", "java", "php", "perl", "python"]
+    langs = get_langs()
     idlfiles = glob.glob(indir + "*.idl")
+
+    outdir = "jubatus_client.%s" % version_string
+    mkdir(outdir)
+
     for lang in langs:
-        outdir = "jubatus"
-        try: os.mkdir(outdir)
-        except: pass
+        outsubdir = outdir + "/%s" % lang
+        mkdir(outsubdir)
 
         for idlfile in idlfiles:
-            generate(idlfile, lang, outdir)
-        
-        name = "jubatus-%s" % lang
-        pack(name, version_string, outdir)
+            generate(idlfile, lang, outsubdir)
+
+    pack(outdir)

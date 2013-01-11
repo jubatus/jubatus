@@ -19,6 +19,7 @@
 #include "../regression/regression_factory.hpp"
 #include "../common/util.hpp"
 #include "../common/vector_util.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
@@ -27,6 +28,9 @@
 
 using namespace std;
 using pfi::lang::shared_ptr;
+using pfi::text::json::json;
+using pfi::text::json::json_cast;
+using pfi::lang::lexical_cast;
 using namespace jubatus::common;
 using namespace jubatus::framework;
 using namespace jubatus::fv_converter;
@@ -35,6 +39,20 @@ namespace jubatus {
 namespace server {
 
 namespace {
+
+struct regression_serv_config {
+  std::string method;
+  pfi::data::optional<pfi::text::json::json> parameter;
+  pfi::text::json::json converter;
+
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    ar
+        & MEMBER(method)
+        & MEMBER(parameter)
+        & MEMBER(converter);
+  }
+};
 
 linear_function_mixer::model_ptr make_model(const framework::server_argv& arg) {
   return linear_function_mixer::model_ptr(storage::storage_factory::create_storage((arg.is_standalone())?"local":"local_mixture"));
@@ -67,24 +85,27 @@ void regression_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-int regression_serv::set_config(const config_data& config) {
-  LOG(INFO) << __func__;
-
-  shared_ptr<datum_to_fv_converter> converter
-      = fv_converter::make_fv_converter(config.config);
+bool regression_serv::set_config(const string& config) {
+  jsonconfig::config config_root(lexical_cast<json>(config));
+  regression_serv_config conf = jsonconfig::config_cast_check<regression_serv_config>(config_root);
 
   config_ = config;
-  converter_ = converter;
+  converter_ = fv_converter::make_fv_converter(conf.converter);
   (*converter_).set_weight_manager(wm_.get_model());
 
-  regression_.reset(regression_factory().create_regression(config.method, gresser_.get_model().get()));
+  jsonconfig::config param;
+  if (conf.parameter) {
+    param = *conf.parameter;
+  }
+  regression_.reset(jubatus::regression::regression_factory().create_regression(conf.method, param, gresser_.get_model().get()));
 
   // FIXME: switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
-  return 0;
+  LOG(INFO) << "config loaded: " << config;
+  return true;
 }
 
-config_data regression_serv::get_config() {
+string regression_serv::get_config() {
   check_set_config();
   return config_;
 }
@@ -100,6 +121,7 @@ int regression_serv::train(const vector<pair<float, jubatus::datum> >& data) {
     convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
     converter_->convert_and_update_weight(d, v);
     regression_->train(v, data[i].first);
+    DLOG(INFO) << "trained: " << data[i].first;
     count++;
   }
   // FIXME: send count incrementation to mixer

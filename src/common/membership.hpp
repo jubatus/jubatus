@@ -28,6 +28,7 @@ static const std::string JUBATUS_BASE_PATH = "/jubatus";
 static const std::string JUBAVISOR_BASE_PATH = "/jubatus/supervisors";
 static const std::string JUBAKEEPER_BASE_PATH = "/jubatus/jubakeepers";
 static const std::string ACTOR_BASE_PATH = "/jubatus/actors";
+static const std::string CONFIG_BASE_PATH = "/jubatus/config";
 
 // "127.0.0.1" -> 9199 -> "127.0.0.1_9199"
 std::string build_loc_str(const std::string&, int, unsigned int = 0);
@@ -36,6 +37,10 @@ std::string build_loc_str(const std::string&, int, unsigned int = 0);
 void build_existence_path(const std::string&, const std::string&, int, std::string&);
 
 void build_actor_path(std::string&, const std::string& type, const std::string& name);
+
+void build_config_path(std::string&, const std::string& type, const std::string& name);
+
+void build_config_lock_path(std::string&, const std::string&, const std::string&);
 
 // 127.0.0.1_9199 -> (127.0.0.1, 9199)
 bool revert(const std::string&, std::string&, int&);

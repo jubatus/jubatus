@@ -6,11 +6,15 @@ def build(bld):
   bld.shlib(
     source = [
       'recommender_base.cpp',
+      'recommender_mock.cpp',
+      'recommender_mock_storage.cpp',
+      'recommender_mock_util.cpp',
       'inverted_index.cpp',
       'minhash.cpp',
       'lsh.cpp',
       'recommender_factory.cpp',
       'lsh_util.cpp',
+      'euclid_lsh.cpp',
       ],
     target = 'jubatus_recommender',
     name = 'jubatus_recommender',
@@ -26,8 +30,10 @@ def build(bld):
       use = 'PFICOMMON jubatus_recommender jubacommon')
 
   map(make_test, [
-#      'recommender_test.cpp', # FIXME
       'recommender_base_test.cpp',
+      'recommender_mock_storage_test.cpp',
+      'recommender_mock_test.cpp',
       'recommender_random_test.cpp',
       'lsh_util_test.cpp',
+      'euclid_lsh_test.cpp',
       ])
