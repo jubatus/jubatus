@@ -29,10 +29,10 @@ class ZooKeeperLib < Requirement
 end
 
 class Jubatus < Formula
-  url 'https://github.com/jubatus/jubatus/tarball/jubatus-0.3.3'
+  url 'https://github.com/jubatus/jubatus/tarball/0.4.0'
   head 'https://github.com/jubatus/jubatus.git'
   homepage 'http://jubat.us/'
-  md5 'c24152f6b75c4c95217bbca8c6771b29'
+  md5 'e85e4117d76daf81d09013dc724792c5'
 
   option 'enable-zookeeper', 'Using zookeeper for distributed environemnt'
 
@@ -40,6 +40,7 @@ class Jubatus < Formula
   depends_on 'mecab' unless ARGV.include? "--disable-mecab"
   depends_on 'pkg-config'
   depends_on 'pficommon'
+  depends_on 'jubatus-mspgack-rpc'
   depends_on 're2' unless ARGV.include? "--disable-re2"
 
   if build.include? 'enable-zookeeper'
