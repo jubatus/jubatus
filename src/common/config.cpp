@@ -25,6 +25,7 @@
 #include <vector>
 #include <pficommon/lang/cast.h>
 #include "exception.hpp"
+#include "jsonconfig.hpp"
 
 using std::ifstream;
 using std::string;
@@ -73,6 +74,17 @@ void config_tozk(
     const string& type,
     const string& name,
     string& config) {
+  if (config == "") {
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("config is empty"));
+  }
+
+  try {
+    pfi::lang::lexical_cast<pfi::text::json::json>(config);
+  } catch (pfi::lang::parse_error& e) {
+    string msg = std::string("cannot parse config to JSON: ") + e.what();
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(msg));
+  }
+
   string lock_path;
   build_config_lock_path(lock_path, type, name);
 
