@@ -19,7 +19,7 @@ install:
   - sudo ldconfig
   # jubatus-msgpack-rpc
   - git clone https://github.com/jubatus/jubatus-msgpack-rpc.git
-  - pushd jubatus-msgpack-rpc && git checkout develop && ./bootstrap && ./configure && make && sudo make install && popd
+  - pushd jubatus-msgpack-rpc/cpp && git checkout develop && ./bootstrap && ./configure --with-jubatus-mpio=/usr/local && make && sudo make install && popd
   - sudo ldconfig
   # glog
   - wget http://google-glog.googlecode.com/files/glog-0.3.2.tar.gz && tar xf glog-0.3.2.tar.gz
