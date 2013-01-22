@@ -52,9 +52,7 @@ install:
 
 script:
   - ./waf configure --enable-zookeeper --enable-mecab --enable-ux
-  - ./waf build
-  - ./waf install
-  - ./waf --checkall
+  - ./waf build --checkall
 
 branches:
   only:
