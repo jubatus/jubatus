@@ -15,11 +15,13 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #pragma once
-#include <string>
-#include <vector>
-#include <map>
 
 #include <stdint.h>
+
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace jubatus {
 namespace util {
@@ -50,5 +52,5 @@ void get_machine_status(machine_status_t& status);
 void set_exit_on_term();
 void ignore_sigpipe();
 
-}  //util
-}  //namespace jubatus
+}  // namespace util
+}  // namespace jubatus

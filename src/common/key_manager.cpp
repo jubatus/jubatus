@@ -15,9 +15,13 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "key_manager.hpp"
+#include <algorithm>
+#include <string>
+#include <vector>
 
-using namespace std;
-using namespace pfi::data;
+using std::string;
+using std::vector;
+using pfi::data::unordered_map;
 
 namespace jubatus {
 
@@ -83,4 +87,4 @@ vector<string> key_manager::get_all_id2key() const {
   return id2key_;
 }
 
-}  // jubatus
+}  // namespace jubatus

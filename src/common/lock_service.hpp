@@ -16,18 +16,19 @@
 
 #pragma once
 
+#include <stdint.h>
+
+#include <string>
 #include <vector>
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/concurrent/mutex.h>
 #include <pficommon/concurrent/lock.h>
 
-#include <stdint.h>
-
 namespace jubatus {
 namespace common {
 
-// TODO: write lock_service mock and test them all?
+// TODO(kashihara): write lock_service mock and test them all?
 class lock_service {
  public:
   // timeout [sec]
@@ -97,5 +98,5 @@ lock_service* create_lock_service(const std::string&, const std::string& hosts,
                                   const int timeout,
                                   const std::string& log = "");
 
-}  // common
-}  // jubatus
+}  // namespace common
+}  // namespace jubatus

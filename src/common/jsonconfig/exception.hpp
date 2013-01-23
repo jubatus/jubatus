@@ -19,14 +19,15 @@
 #ifndef JUBATUS_COMMON_JSONCONFIG_EXCEPTION_HPP_
 #define JUBATUS_COMMON_JSONCONFIG_EXCEPTION_HPP_
 
-#include <stdexcept>
 #include <string>
+#include <stdexcept>
 #include <typeinfo>
 #include <vector>
 
-#include "../exception.hpp"
 #include <pficommon/text/json.h>
 #include <pficommon/lang/shared_ptr.h>
+
+#include "../exception.hpp"
 
 namespace jubatus {
 namespace jsonconfig {
@@ -123,6 +124,6 @@ class cast_check_error : public exception::jubaexception<cast_check_error> {
   std::vector<pfi::lang::shared_ptr<config_error> > errors_;
 };
 
-}  // jsonconfig
-}  // jubatus
-#endif // JSONCONFIG_EXCEPTION_HPP_
+}  // namespace jsonconfig
+}  // namespace jubatus
+#endif  // JUBATUS_COMMON_JSONCONFIG_EXCEPTION_HPP_

@@ -17,10 +17,9 @@
 #include "config.hpp"
 
 #include <iostream>
+#include <string>
 
 #include "exception.hpp"
-
-using namespace std;
 
 namespace jubatus {
 namespace jsonconfig {
@@ -50,8 +49,9 @@ config config::operator[](size_t index) const {
       std::ostringstream os;
       os << path_ << "[" << index << "]";
       return config(json_[index], os.str());
-    } else
+    } else {
       throw JUBATUS_EXCEPTION(out_of_range(path_, json_.size(), index));
+    }
   } catch (const std::bad_cast& e) {
     throw JUBATUS_EXCEPTION(
         type_error(path_, pfi::text::json::json::Array, type()));
@@ -95,5 +95,5 @@ config::iterator config::end() const {
   return iterator(*this, json_.end());
 }
 
-}  // jsonconfig
-}  // jubatus
+}  // namespace jsonconfig
+}  // namespace jubatus

@@ -16,10 +16,12 @@
 
 #include "vector_util.hpp"
 #include <algorithm>
+#include <string>
 
 namespace jubatus {
 
-using namespace std;
+using std::sort;
+using std::string;
 
 void sort_and_merge(sfv_t& sfv) {
   if (sfv.size() == 0)
@@ -41,4 +43,4 @@ void sort_and_merge(sfv_t& sfv) {
   sfv.swap(ret_sfv);
 }
 
-}
+}  // namespace jubatus

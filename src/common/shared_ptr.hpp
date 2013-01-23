@@ -28,19 +28,18 @@ struct cshared_ptr : pfi::lang::shared_ptr<T,
     pfi::concurrent::threading_model::multi_thread> {
  public:
   explicit cshared_ptr<T>(T* t)
-      : pfi::lang::shared_ptr<T, pfi::concurrent::threading_model::multi_thread>(
-          t) {
+      : pfi::lang::shared_ptr<T, pfi::concurrent::threading_model::multi_thread>
+        (t) {
   }
-  ;
+
   explicit cshared_ptr<T>()
-      : pfi::lang::shared_ptr<T, pfi::concurrent::threading_model::multi_thread>() {
+      : pfi::lang::shared_ptr<T, pfi::concurrent::threading_model::multi_thread>
+        () {
   }
-  ;
+
   virtual ~cshared_ptr<T>() {
   }
-  ;
-
 };
 
-}
-}
+}  // namespace common
+}  // namespace jubatus

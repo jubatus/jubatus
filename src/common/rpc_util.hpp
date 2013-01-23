@@ -16,6 +16,7 @@
 
 #pragma once
 #include <string>
+#include <utility>
 #include <pficommon/data/serialization.h>
 #include <msgpack.hpp>
 
@@ -35,14 +36,14 @@ struct result {
     r.retval = t;
     return r;
   }
-  ;
+
   static result<T, E> fail(const E& e) {
     result<T, E> r;
     r.success = false;
     r.error = e;
     return r;
   }
-  ;
+
 
   MSGPACK_DEFINE(success, retval, error);
   template<class Archiver>
@@ -51,4 +52,4 @@ struct result {
   }
 };
 
-}  //namespace jubatus
+}  // namespace jubatus

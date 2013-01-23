@@ -15,11 +15,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "util.hpp"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
-TEST(common,util) {
+TEST(common, util) {
   const std::string env = getenv("PATH");
   jubatus::util::append_env_path("PATH", "./path/to/hoge");
   const std::string env2 = getenv("PATH");
@@ -29,7 +30,7 @@ TEST(common,util) {
   ASSERT_NE(env, env2);
 }
 
-TEST(common,util2) {
+TEST(common, util2) {
   const std::string env = getenv("PATH");
   jubatus::util::append_server_path("./path/to/hoge");
   const std::string env2 = getenv("PATH");
@@ -45,9 +46,9 @@ TEST(common, base_name) {
   EXPECT_EQ("", jubatus::util::base_name("/path/to/"));
 }
 
-TEST(common,util_get_program_name) {
+TEST(common, util_get_program_name) {
   std::string path;
-  EXPECT_NO_THROW( {
+  EXPECT_NO_THROW({
         path = jubatus::util::get_program_name();
       });
   EXPECT_EQ(std::string("util_test"), path);
@@ -55,7 +56,7 @@ TEST(common,util_get_program_name) {
 
 TEST(common, util_get_user_name) {
   std::string user;
-  EXPECT_NO_THROW( {
+  EXPECT_NO_THROW({
         user = jubatus::util::get_user_name();
       });
   EXPECT_NE(std::string(""), user);
@@ -68,10 +69,9 @@ TEST(common, util_is_writable) {
   rmdir(path.c_str());
 }
 
-TEST(common, util_get_machine_status)
-{
+TEST(common, util_get_machine_status) {
   jubatus::util::machine_status_t status;
-  EXPECT_NO_THROW( {
+  EXPECT_NO_THROW({
         jubatus::util::get_machine_status(status);
       });
 }

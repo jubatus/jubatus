@@ -16,18 +16,6 @@
 
 #include "util.hpp"
 
-#include <cstring>
-#include <cstdio>
-#include <cstdlib>
-#include <csignal>
-#include <errno.h>
-#include <string.h>
-
-#include <pficommon/lang/exception.h>
-#include <pficommon/text/json.h>
-
-#include <fstream>
-
 #include <limits.h>
 
 #include <sys/socket.h>
@@ -40,16 +28,31 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <sstream>
+#include <errno.h>
 
 #ifdef __APPLE__
 #include <libproc.h>
 #endif
 
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <csignal>
+
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include <pficommon/lang/exception.h>
+#include <pficommon/text/json.h>
+
 #include "../common/exception.hpp"
 
 using std::string;
-using namespace pfi::lang;
+using pfi::lang::lexical_cast;
+using pfi::lang::parse_error;
 
 namespace jubatus {
 namespace util {
@@ -61,14 +64,16 @@ void get_ip(const char* nic, string& out) {
 
   fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (fd == -1) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to create socket(AF_INET, SOCK_DGRAM)")
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
+          "Failed to create socket(AF_INET, SOCK_DGRAM)")
         << jubatus::exception::error_errno(errno));
   }
 
   ifr.ifr_addr.sa_family = AF_INET;
   strncpy(ifr.ifr_name, nic, IFNAMSIZ - 1);
   if (ioctl(fd, SIOCGIFADDR, &ifr) == -1) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get IP address from interface")
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
+          "Failed to get IP address from interface")
         << jubatus::exception::error_errno(errno));
   }
   close(fd);
@@ -102,20 +107,23 @@ std::string get_program_name() {
   ssize_t ret = readlink(exe_sym_path, path, PATH_MAX);
   if (ret != -1) {
     if (ret == PATH_MAX)
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get program name. Path size overed PATH_MAX.")
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
+            "Failed to get program name. Path size overed PATH_MAX.")
           << jubatus::exception::error_errno(errno));
     path[ret] = '\0';
   }
 #endif
   if (ret < 0) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get program name")
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("Failed to get program name")
         << jubatus::exception::error_errno(errno));
   }
 
   // get basename
   const string program_base_name = base_name(path);
   if (program_base_name == path)
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(string("Failed to get program name from path: ") + path)
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
+          string("Failed to get program name from path: ") + path)
         << jubatus::exception::error_file_name(path));
   return program_base_name;
 }
@@ -134,7 +142,8 @@ std::string get_user_name() {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("User not found")
         << jubatus::exception::error_api_func("getpwuid_r"));
   }
-  throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get user name")
+  throw JUBATUS_EXCEPTION(
+      jubatus::exception::runtime_error("Failed to get user name")
       << jubatus::exception::error_api_func("getpwuid_r")
       << jubatus::exception::error_errno(ret));
 }
@@ -155,13 +164,13 @@ bool is_writable(const char* dir_path) {
   return true;
 }
 
-//local server list should be like:
+// local server list should be like:
 //  192.168.1.2 9199
 //  192.168.1.3 9199
 //  192.168.1.4 10090
 //  ...
 //  192.168.1.23 2345
-//and must include self IP got from "eth0"
+// and must include self IP got from "eth0"
 std::string load(const std::string& file,
                  std::vector<std::pair<std::string, int> >& s) {
   std::string tmp;
@@ -178,15 +187,15 @@ std::string load(const std::string& file,
     if (self == tmp)
       self_included = true;
     if (!(ifs >> port)) {
-      // TODO: replace jubatus exception
+      // TODO(kashihara): replace jubatus exception
       throw parse_error(file, line, tmp.size(), string("input port"));
     }
     s.push_back(std::pair<std::string, int>(tmp, port));
     line++;
   }
   if (!self_included) {
-    // TODO: replace jubatus exception
-    throw parse_error(file, s.size(), 0,  //FIXME: 0
+    // TODO(kashihara): replace jubatus exception
+    throw parse_error(file, s.size(), 0,
                       string("self IP(eth0) not included in list"));
   }
   return self;
@@ -206,13 +215,14 @@ void append_server_path(const string& argv0) {
   const char * env = getenv("PATH");
   char cwd[PATH_MAX];
   if (!getcwd(cwd, PATH_MAX)) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to getcwd"))<< jubatus::exception::error_errno(errno);
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("Failed to getcwd"))
+      << jubatus::exception::error_errno(errno);
   }
 
   string p = argv0.substr(0, argv0.find_last_of('/'));
   string new_path = string(env) + ":" + cwd + "/" + p + "/../server";
   setenv("PATH", new_path.c_str(), new_path.size());
-
 }
 
 void get_machine_status(machine_status_t& status) {
@@ -243,7 +253,7 @@ void get_machine_status(machine_status_t& status) {
 }
 
 namespace {
-void exit_on_term(int) {
+void exit_on_term(int /* signum */) {
   exit(0);
 }
 }
@@ -254,12 +264,14 @@ void set_exit_on_term() {
   sigact.sa_flags = SA_RESTART;
 
   if (sigaction(SIGTERM, &sigact, NULL) != 0)
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't set SIGTERM handler")
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("can't set SIGTERM handler")
         << jubatus::exception::error_api_func("sigaction")
         << jubatus::exception::error_errno(errno));
 
   if (sigaction(SIGINT, &sigact, NULL) != 0)
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't set SIGINT handler")
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("can't set SIGINT handler")
         << jubatus::exception::error_api_func("sigaction")
         << jubatus::exception::error_errno(errno));
 }
@@ -267,11 +279,12 @@ void set_exit_on_term() {
 void ignore_sigpipe() {
   // portable code for socket write(2) MSG_NOSIGNAL
   if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't ignore SIGPIPE")
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("can't ignore SIGPIPE")
         << jubatus::exception::error_api_func("signal")
         << jubatus::exception::error_errno(errno));
 }
 
-}  //util
-}  //jubatus
+}  // namespace util
+}  // namespace jubatus
 

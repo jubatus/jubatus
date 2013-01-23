@@ -15,11 +15,13 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #pragma once
-#include "lock_service.hpp"
 
 #include <string>
+#include <utility>
 #include <vector>
 #include <map>
+
+#include "lock_service.hpp"
 
 namespace jubatus {
 namespace common {
@@ -64,5 +66,5 @@ void force_exit();
 void prepare_jubatus(lock_service& ls, const std::string& type,
                      const std::string& name = "");
 
-}  // common
-}  // jubatus
+}  // namespace common
+}  // namespace jubatus

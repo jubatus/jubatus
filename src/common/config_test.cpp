@@ -16,9 +16,11 @@
 
 #include <gtest/gtest.h>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include "config.hpp"
 
+using std::istringstream;
 using std::string;
 
 class config_trivial : public testing::Test {

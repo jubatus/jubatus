@@ -15,15 +15,19 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "membership.hpp"
-#include "exception.hpp"
 
 #include <cstdlib>
 #include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/lang/cast.h>
 #include <glog/logging.h>
+#include "exception.hpp"
 
-using namespace std;
-using namespace pfi::lang;
+using std::string;
+using std::vector;
+using pfi::lang::lexical_cast;
 
 namespace jubatus {
 namespace common {
@@ -85,7 +89,8 @@ void register_actor(lock_service& z, const string& type, const string& name,
   }
 
   if (!success)
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to register_actor")
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("Failed to register_actor")
         << jubatus::exception::error_api_func("lock_service::create"));
 
   // set exit zlistener here
@@ -110,7 +115,8 @@ void register_keeper(lock_service& z, const string& type, const string& ip,
   }
 
   if (!success)
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to register_actor")
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("Failed to register_actor")
         << jubatus::exception::error_api_func("lock_service::create"));
 
   // set exit zlistener here
@@ -144,7 +150,6 @@ void force_exit() {
 }
 
 void prepare_jubatus(lock_service& ls, const string& type, const string& name) {
-
   bool success = true;
   success = ls.create(JUBATUS_BASE_PATH) && success;
   success = ls.create(JUBAVISOR_BASE_PATH) && success;
@@ -164,10 +169,12 @@ void prepare_jubatus(lock_service& ls, const string& type, const string& name) {
     success = ls.create(cpath) && success;
   }
 
-  if (!success)
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to prepare lock_service")
+  if (!success) {
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("Failed to prepare lock_service")
         << jubatus::exception::error_api_func("lock_service::create"));
+  }
 }
 
-}  // common
-}  // jubatus
+}  // namespace common
+}  // namespace jubatus

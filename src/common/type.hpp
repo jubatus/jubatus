@@ -16,11 +16,12 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
 #include <stdint.h>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace jubatus {
 typedef std::vector<std::pair<std::string, float> > sfv_t;
 typedef std::vector<std::pair<uint64_t, float> > sfvi_t;
-}
+}  // namespace jubatus

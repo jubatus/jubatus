@@ -49,4 +49,4 @@ inline packer<Stream>& operator<<(packer<Stream>& o,
   return o;
 }
 
-}
+}  // namespace jubatus

@@ -16,10 +16,11 @@
 
 #pragma once
 
+#include <stdint.h>
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <iostream>
-#include <stdint.h>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
@@ -28,12 +29,12 @@ namespace jubatus {
 
 class key_manager {
  public:
-  key_manager();
-  key_manager& operator =(const key_manager&);
-
   enum {
     NOTFOUND = 0xFFFFFFFFFFFFFFFFLLU
   };
+
+  key_manager();
+  key_manager& operator =(const key_manager&);
 
   size_t size() const {
     return key2id_.size();
@@ -61,4 +62,4 @@ class key_manager {
   const std::string vacant_;
 };
 
-}  // jubatus
+}  // namespace jubatus

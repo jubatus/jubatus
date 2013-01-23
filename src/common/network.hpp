@@ -16,9 +16,10 @@
 
 #pragma once
 
+#include <netinet/in.h>  // sockaddr_in
+
 #include <vector>
 #include <string>
-#include <netinet/in.h> // sockaddr_in
 #include <pficommon/lang/shared_ptr.h>
 
 namespace jubatus {
@@ -45,5 +46,5 @@ std::string get_default_v4_address(std::string primary_hostaddr =
     std::string());
 // v6 version not implmented yet
 
-}// common
-}  // jubatus
+}  // namespace common
+}  // namespace jubatus

@@ -21,6 +21,7 @@
 #include "../common/membership.hpp"
 
 using std::string;
+using std::vector;
 using jubatus::common::lock_service;
 using jubatus::common::ACTOR_BASE_PATH;
 using jubatus::common::JUBATUS_BASE_PATH;
@@ -132,6 +133,7 @@ TEST_F(zk_trivial, create_id) {
 
 TEST_F(zk_trivial, trivial_with_membershp) {
   using jubatus::common::build_actor_path;
+  using jubatus::common::build_loc_str;
 
   string name_, path;
   string name1_, path1;

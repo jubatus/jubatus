@@ -20,7 +20,9 @@
 #define JUBATUS_COMMON_JSONCONFIG_CONFIG_HPP_
 
 #include <stdint.h>
+#include <string>
 #include <typeinfo>
+#include <utility>
 
 #include <pficommon/text/json.h>
 #include <pficommon/lang/cast.h>
@@ -106,7 +108,8 @@ class config {
       return *it_;
     }
 
-    const std::pair<const std::string, pfi::text::json::json>* operator->() const {
+    const std::pair<const std::string, pfi::text::json::json>* operator->()
+      const {
       return it_.operator->();
     }
     // FowrardIterator
@@ -114,7 +117,7 @@ class config {
       ++it_;
       return *this;
     }
-    const iterator operator++(int) {
+    const iterator operator++(int /* unused */) {
       iterator temp(*this);
       ++it_;
       return temp;
@@ -130,7 +133,7 @@ class config {
   std::string path_;
 };
 
-}  // jsonconfig
-}  // jubatus
+}  // namespace jsonconfig
+}  // namespace jubatus
 
-#endif // JSONCONFIG_CONFIG_HPP_
+#endif  // JSONCONFIG_CONFIG_HPP_

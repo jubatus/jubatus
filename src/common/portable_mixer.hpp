@@ -24,7 +24,7 @@
 
 namespace jubatus {
 
-template<typename Storage>
+template <typename Storage>
 class portable_mixer {
  public:
   portable_mixer() {
@@ -74,4 +74,4 @@ class portable_mixer {
   pfi::math::random::mtrand rand_;
 };
 
-}
+}  // namespace jubatus

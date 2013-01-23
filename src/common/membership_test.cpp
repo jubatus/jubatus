@@ -15,9 +15,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
+#include <string>
 #include "membership.hpp"
 
-using namespace std;
+using std::string;
 
 namespace jubatus {
 namespace common {
@@ -53,5 +54,5 @@ TEST(util, revert) {
   EXPECT_EQ(9199, port);
 }
 
-}
-}
+}  // namespace common
+}  // namespace jubatus

@@ -15,8 +15,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #pragma once
-#include "lock_service.hpp"
-#include "membership.hpp"
 
 #include <string>
 #include <vector>
@@ -24,17 +22,23 @@
 #include <pficommon/text/json.h>
 #include <glog/logging.h>
 
+#include "lock_service.hpp"
+#include "membership.hpp"
+
 namespace jubatus {
 namespace common {
 
-void config_fromlocal(const std::string&, std::string&);
+void config_fromlocal(const std::string& path, std::string& config);
 #ifdef HAVE_ZOOKEEPER_H
-void config_fromzk(lock_service& , const std::string& , const std::string& , std::string&);
-void config_tozk(lock_service& , const std::string& , const std::string& , std::string&);
-void remove_config_fromzk(lock_service& , const std::string& , const std::string&);
-bool is_no_workers(lock_service&, const std::string&, const std::string&);
+void config_fromzk(lock_service& z, const std::string& type,
+    const std::string& name, std::string& config);
+void config_tozk(lock_service& z, const std::string& type,
+    const std::string& name, std::string& config);
+void remove_config_fromzk(lock_service& z, const std::string& type,
+    const std::string&);
+bool is_no_workers(lock_service& z, const std::string& type,
+    const std::string& name);
 #endif
 
-}
-  // common
-} // jubatus
+}  // namespace common
+}  // namespace jubatus

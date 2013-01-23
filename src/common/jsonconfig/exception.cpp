@@ -16,7 +16,10 @@
 
 #include "exception.hpp"
 
-using namespace std;
+#include <string>
+#include <vector>
+
+using std::string;
 using pfi::text::json::json;
 
 namespace jubatus {

@@ -19,7 +19,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
-#include <net/if.h> // In BSD, must be included before including <ifaddrs.h>
+#include <net/if.h>  // In BSD, must be included before including <ifaddrs.h>
 #include <ifaddrs.h>
 
 #include <netinet/in.h>
@@ -27,10 +27,11 @@
 
 #include <errno.h>
 
+#include <string>
 #include <glog/logging.h>
 #include "../common/exception.hpp"
 
-using namespace std;
+using std::string;
 
 namespace jubatus {
 namespace common {
@@ -41,7 +42,8 @@ string get_host_name(const void* sock_addr, size_t sock_size) {
   int s = getnameinfo(static_cast<const sockaddr*>(sock_addr), sock_size, host,
                       NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
   if (s) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get hostname")
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("Failed to get hostname")
         << jubatus::exception::error_api_func("getnameinfo")
         << jubatus::exception::error_message(gai_strerror(s)));
   }
@@ -51,7 +53,7 @@ string get_host_name(const void* sock_addr, size_t sock_size) {
 
 class ipv4_address : public network_address {
  public:
-  ipv4_address(const sockaddr_in* addr)
+  explicit ipv4_address(const sockaddr_in* addr)
       : addr_(*addr) {
   }
 
@@ -93,16 +95,17 @@ class ipv4_address : public network_address {
   string interface_name_;
 };
 
-// TODO: implement ipv6_address
+// TODO(kashihara): implement ipv6_address
 
-}// namespace
+}  // namespace
 
 address_list get_network_address() {
   address_list result;
 
   struct ifaddrs* addrs;
   if (getifaddrs(&addrs) == -1) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get interface addresses")
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("Failed to get interface addresses")
         << jubatus::exception::error_api_func("getifaddrs")
         << jubatus::exception::error_errno(errno));
   }
@@ -117,7 +120,7 @@ address_list get_network_address() {
                     reinterpret_cast<struct sockaddr_in*>(ifa->ifa_addr),
                     ifa->ifa_name)));
       } else if (family == AF_INET6) {
-        // TODO: to be implemented to return ipv6_address
+        // TODO(kashihara): to be implemented to return ipv6_address
       }
     }
   } catch (...) {
@@ -129,7 +132,7 @@ address_list get_network_address() {
   return result;
 }
 
-// TODO: support hostaddr can be hostname not only IP address
+// TODO(kashihara): support hostaddr can be hostname not only IP address
 string get_default_v4_address(string hostaddr) {
   string address;
 
@@ -155,6 +158,6 @@ string get_default_v4_address(string hostaddr) {
   return address;
 }
 
-}  // common
-}  // jubatus
+}  // namespace common
+}  // namespace jubatus
 

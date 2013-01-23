@@ -19,13 +19,15 @@
 #ifndef JUBATUS_COMMON_JSOCONFIG_CAST_HPP_
 #define JUBATUS_COMMON_JSOCONFIG_CAST_HPP_
 
-#include "config.hpp"
-
 #include <stdint.h>
+#include <map>
+#include <string>
 #include <vector>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/demangle.h>
+
+#include "config.hpp"
 
 namespace jubatus {
 namespace jsonconfig {
@@ -34,7 +36,7 @@ typedef std::vector<pfi::lang::shared_ptr<config_error> > config_error_list;
 
 class json_config_iarchive_cast {
  public:
-  json_config_iarchive_cast(const config& js)
+  explicit json_config_iarchive_cast(const config& js)
       : js_(js),
         errors_(NULL) {
   }
@@ -64,20 +66,21 @@ class json_config_iarchive_cast {
   config_error_list* errors() const {
     return errors_;
   }
+
  private:
   const config& js_;
   config_error_list* errors_;
 };
 
-template<typename T>
+template <typename T>
 void json_from_config(const config& conf, T& v);
 
-template<typename T>
+template <typename T>
 void json_from_config(const config& conf, T& v, json_config_iarchive_cast& js);
 
-template<typename T>
+template <typename T>
 inline void serialize(json_config_iarchive_cast& js, T& v) {
-  // TODO: insert typecheck
+  // TODO(unnno): insert typecheck
   pfi::data::serialization::access::serialize(js, v);
 }
 
@@ -136,7 +139,7 @@ GENERATE_CONFIG_SERIALIZE_DEF(std::string, String)
 GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(float)
 GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(double)
 
-template<typename T>
+template <typename T>
 inline void serialize(json_config_iarchive_cast& js, std::vector<T>& vs) {
   // check errors
   if (!detail::check_json_type(js, pfi::text::json::json::Array))
@@ -150,7 +153,7 @@ inline void serialize(json_config_iarchive_cast& js, std::vector<T>& vs) {
   vs.swap(v);
 }
 
-template<typename K, typename V>
+template <typename K, typename V>
 inline void serialize(json_config_iarchive_cast& js, std::map<K, V>& m) {
   if (!detail::check_json_type(js, pfi::text::json::json::Object))
     return;
@@ -166,7 +169,7 @@ inline void serialize(json_config_iarchive_cast& js, std::map<K, V>& m) {
   tmp.swap(m);
 }
 
-template<typename K, typename V>
+template <typename K, typename V>
 inline void serialize(json_config_iarchive_cast& js,
                       pfi::data::unordered_map<K, V>& m) {
   if (!detail::check_json_type(js, pfi::text::json::json::Object))
@@ -183,7 +186,7 @@ inline void serialize(json_config_iarchive_cast& js,
   tmp.swap(m);
 }
 
-template<typename T>
+template <typename T>
 inline void serialize(
     json_config_iarchive_cast& js,
     pfi::data::serialization::named_value<pfi::data::optional<T> >& v) {
@@ -199,7 +202,7 @@ inline void serialize(
   }
 }
 
-template<typename T>
+template <typename T>
 inline void serialize(json_config_iarchive_cast& js,
                       pfi::data::serialization::named_value<T>& v) {
   if (js.get_config().contain(v.name)) {
@@ -224,26 +227,26 @@ inline void serialize(json_config_iarchive_cast& js, config& v) {
   v = config(js.get(), js.get_config().path());
 }
 
-template<typename T>
+template <typename T>
 void json_from_config(const config& conf, T& v) {
   json_config_iarchive_cast cast(conf);
   serialize(cast, v);
 }
 
-template<typename T>
+template <typename T>
 void json_from_config(const config& conf, T& v, config_error_list* errors) {
   json_config_iarchive_cast cast(conf, errors);
   serialize(cast, v);
 }
 
-template<class T>
+template <class T>
 T config_cast(const config& c) {
   T value;
   json_from_config(c, value);
   return value;
 }
 
-template<class T>
+template <class T>
 T config_cast(const config& c, config_error_list& errors) {
   T value;
   json_config_iarchive_cast cast(c, &errors);
@@ -251,7 +254,7 @@ T config_cast(const config& c, config_error_list& errors) {
   return value;
 }
 
-template<class T>
+template <class T>
 T config_cast_check(const config& c) {
   config_error_list errors;
   T value;
@@ -263,7 +266,7 @@ T config_cast_check(const config& c) {
   return value;
 }
 
-}  // jsonconfig
-}  // jubatus
+}  // namespace jsonconfig
+}  // namespace jubatus
 
-#endif // JSOCONFIG_CAST_HPP_
+#endif  // JUBAUTS_COMMON_JSOCONFIG_CAST_HPP_
