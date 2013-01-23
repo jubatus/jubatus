@@ -40,7 +40,7 @@ TEST(ux_splitter, split) {
   for (size_t i = 0; i < sizeof(keywords) / sizeof(keywords[0]); ++i) {
     ks.push_back(keywords[i]);
   }
-    vector<pair<size_t, size_t> > bounds;
+  vector<pair<size_t, size_t> > bounds;
   {
     ux_splitter splitter(ks);
     splitter.split(doc, bounds);

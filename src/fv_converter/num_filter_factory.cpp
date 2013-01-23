@@ -28,23 +28,20 @@ using namespace jubatus::fv_converter;
 
 namespace jubatus {
 
-static
-add_filter* create_add_filter(const map<string, string>& params) {
+static add_filter* create_add_filter(const map<string, string>& params) {
   const string& value = get_or_die(params, "value");
   double float_val = pfi::lang::lexical_cast<double>(value);
   return new add_filter(float_val);
 }
 
-static
-num_filter* create_dynamic_filter(const map<string, string>& params) {
+static num_filter* create_dynamic_filter(const map<string, string>& params) {
   const string& path = get_or_die(params, "path");
   const string& function = get_or_die(params, "function");
   return new dynamic_num_filter(path, function, params);
 }
 
 num_filter* num_filter_factory::create(
-    const string& name,
-    const map<string, string>& params) const {
+    const string& name, const map<string, string>& params) const {
   if (name == "add") {
     return create_add_filter(params);
   } else if (name == "dynamic") {

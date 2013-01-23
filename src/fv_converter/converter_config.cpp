@@ -46,10 +46,11 @@ typedef shared_ptr<num_feature> num_feature_ptr;
 typedef shared_ptr<string_filter> string_filter_ptr;
 typedef shared_ptr<num_filter> num_filter_ptr;
 
-static splitter_weight_type make_weight_type(const string& sample, const string& global) {
+static splitter_weight_type make_weight_type(const string& sample,
+                                             const string& global) {
   frequency_weight_type sample_type;
   if (sample == "bin") {
-    sample_type =  FREQ_BINARY;
+    sample_type = FREQ_BINARY;
   } else if (sample == "tf") {
     sample_type = TERM_FREQUENCY;
   } else if (sample == "log_tf") {
@@ -84,7 +85,7 @@ static void init_string_filter_types(const map<string, param_t>& filter_types,
                                      map<string, string_filter_ptr>& filters) {
   string_filter_factory f;
   for (map<string, param_t>::const_iterator it = filter_types.begin();
-       it != filter_types.end(); ++it) {
+      it != filter_types.end(); ++it) {
     const string& name = it->first;
     const map<string, string>& param = it->second;
 
@@ -98,7 +99,7 @@ static void init_num_filter_types(const map<string, param_t>& filter_types,
                                   map<string, num_filter_ptr>& filters) {
   num_filter_factory f;
   for (map<string, param_t>::const_iterator it = filter_types.begin();
-       it != filter_types.end(); ++it) {
+      it != filter_types.end(); ++it) {
     const string& name = it->first;
     const map<string, string>& param = it->second;
 
@@ -132,19 +133,20 @@ static void init_string_types(const map<string, param_t>& string_types,
 
   splitter_factory f;
   for (map<string, param_t>::const_iterator it = string_types.begin();
-       it != string_types.end(); ++it) {
+      it != string_types.end(); ++it) {
     const string& name = it->first;
     const map<string, string>& param = it->second;
-    
+
     string method = get_or_die(param, "method");
     splitter_ptr splitter(f.create(method, param));
     splitters[name] = splitter;
   }
 }
 
-static void init_string_filter_rules(const vector<filter_rule>& filter_rules,
-                                     const map<string, string_filter_ptr>& filters,
-                                     datum_to_fv_converter& conv) {
+static void init_string_filter_rules(
+    const vector<filter_rule>& filter_rules,
+    const map<string, string_filter_ptr>& filters,
+    datum_to_fv_converter& conv) {
   key_matcher_factory f;
   for (size_t i = 0; i < filter_rules.size(); ++i) {
     const filter_rule& rule = filter_rules[i];
@@ -169,7 +171,7 @@ static void init_string_rules(const vector<string_rule>& string_rules,
     if (it == splitters.end()) {
       throw JUBATUS_EXCEPTION(converter_exception("unknown type: " + rule.type));
     }
-    
+
     vector<splitter_weight_type> ws;
     ws.push_back(make_weight_type(rule.sample_weight, rule.global_weight));
     conv.register_string_rule(rule.type, m, it->second, ws);
@@ -185,10 +187,10 @@ static void init_num_types(const map<string, param_t>& num_types,
 
   num_feature_factory f;
   for (map<string, param_t>::const_iterator it = num_types.begin();
-       it != num_types.end(); ++it) {
+      it != num_types.end(); ++it) {
     const string& name = it->first;
     const map<string, string>& param = it->second;
-    
+
     string method = get_or_die(param, "method");
     num_feature_ptr feature(f.create(method, param));
     num_features[name] = feature;
@@ -202,7 +204,8 @@ static void init_num_rules(const vector<num_rule>& num_rules,
   for (size_t i = 0; i < num_rules.size(); ++i) {
     const num_rule& rule = num_rules[i];
     matcher_ptr m(f.create_matcher(rule.key));
-    map<string, num_feature_ptr>::const_iterator it = num_features.find(rule.type);
+    map<string, num_feature_ptr>::const_iterator it = num_features.find(
+        rule.type);
     if (it == num_features.end()) {
       throw JUBATUS_EXCEPTION(converter_exception("unknown type: " + rule.type));
     }
@@ -215,7 +218,8 @@ void initialize_converter(const converter_config& config,
                           datum_to_fv_converter& conv) {
   if (config.hash_max_size.bool_test() && *config.hash_max_size.get() <= 0) {
     stringstream msg;
-    msg << "hash_max_size must be positive, but is " << *config.hash_max_size.get();
+    msg << "hash_max_size must be positive, but is "
+        << *config.hash_max_size.get();
     throw JUBATUS_EXCEPTION(converter_exception(msg.str()));
   }
 
@@ -239,18 +243,19 @@ void initialize_converter(const converter_config& config,
   }
 }
 
-pfi::lang::shared_ptr<datum_to_fv_converter>
-make_fv_converter(const std::string& config) {
+pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
+    const std::string& config) {
   if (config == "")
     throw JUBATUS_EXCEPTION(fv_converter::converter_exception("Config of feature vector converter is empty"));
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-      converter(new fv_converter::datum_to_fv_converter);
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
+      new fv_converter::datum_to_fv_converter);
   converter_config c;
   std::stringstream ss(config);
   try {
     ss >> pfi::text::json::via_json(c);
   } catch (pfi::lang::end_of_data& e) {
-    std::string msg = std::string("Unexpected end of string is detected: ") + e.what();
+    std::string msg = std::string("Unexpected end of string is detected: ")
+        + e.what();
     throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
   } catch (pfi::lang::parse_error& e) {
     std::string msg = std::string("Cannot parse config JSON: ") + e.what();
@@ -263,8 +268,8 @@ make_fv_converter(const std::string& config) {
   return converter;
 }
 
-pfi::lang::shared_ptr<datum_to_fv_converter>
-make_fv_converter(const pfi::text::json::json& config) {
+pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
+    const pfi::text::json::json& config) {
   converter_config c;
   try {
     c = pfi::text::json::json_cast<converter_config>(config);
@@ -272,8 +277,8 @@ make_fv_converter(const pfi::text::json::json& config) {
     std::string msg = std::string("Invalid config format: ") + e.what();
     throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
   }
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-      converter(new fv_converter::datum_to_fv_converter);
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
+      new fv_converter::datum_to_fv_converter);
   fv_converter::initialize_converter(c, *converter);
   return converter;
 }

@@ -26,11 +26,12 @@ namespace jubatus {
 namespace regression {
 
 regression_base*
-regression_factory::create_regression(const std::string& name,
-                                      const jsonconfig::config& param,
-                                      jubatus::storage::storage_base* storage) const{
+regression_factory::create_regression(
+    const std::string& name, const jsonconfig::config& param,
+    jubatus::storage::storage_base* storage) const {
   if (name == "PA") {
-    return new regression::PA(config_cast_check<regression::PA::config>(param), storage);
+    return new regression::PA(config_cast_check<regression::PA::config>(param),
+                              storage);
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }

@@ -20,13 +20,14 @@
 
 namespace jubatus {
 namespace jsonconfig {
-  class config;
-} // jsonconfig
+class config;
+}  // jsonconfig
 namespace graph {
 
 class graph_base;
 
-graph_base* create_graph(const std::string& name, const jsonconfig::config& param);
+graph_base* create_graph(const std::string& name,
+                         const jsonconfig::config& param);
 
 }
 }

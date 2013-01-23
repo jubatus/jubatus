@@ -26,11 +26,12 @@ namespace jubatus {
 namespace server {
 
 struct mixable_stat : public framework::mixable<jubatus::stat::mixable_stat,
-                                                std::pair<double,size_t> > {
-public:
-  void clear() {}
+    std::pair<double, size_t> > {
+ public:
+  void clear() {
+  }
 
-  std::pair<double,size_t> get_diff_impl() const {
+  std::pair<double, size_t> get_diff_impl() const {
     return get_model()->get_diff();
   }
 
@@ -41,14 +42,14 @@ public:
     jubatus::stat::mixable_stat::reduce(rhs, mixed);
   }
 
-  void put_diff_impl(const std::pair<double,size_t>& v) {
+  void put_diff_impl(const std::pair<double, size_t>& v) {
     get_model()->put_diff(v);
   }
 
 };
 
 class stat_serv : public framework::server_base {
-public:
+ public:
   stat_serv(const framework::server_argv&,
             const common::cshared_ptr<common::lock_service>& zk);
   virtual ~stat_serv();
@@ -58,7 +59,7 @@ public:
   void get_status(status_t& status) const;
 
   bool set_config(const std::string&);
-  std::string get_config()const;
+  std::string get_config() const;
   bool push(const std::string& key, double value);
   double sum(const std::string&) const;
   double stddev(const std::string&) const;
@@ -67,7 +68,7 @@ public:
   double entropy(const std::string&) const;
   double moment(const std::string&, int, double) const;
 
-private:
+ private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
@@ -76,4 +77,4 @@ private:
 };
 
 }
-} // namespace jubatus
+}  // namespace jubatus

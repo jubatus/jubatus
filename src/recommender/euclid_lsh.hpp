@@ -48,10 +48,10 @@ class euclid_lsh : public recommender_base {
     int32_t seed;
     bool retain_projection;
 
-    template <typename Ar>
+    template<typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(lsh_num) & MEMBER(table_num) & MEMBER(bin_width) & MEMBER(probe_num)
-        & MEMBER(seed) & MEMBER(retain_projection);
+      ar & MEMBER(lsh_num) & MEMBER(table_num) & MEMBER(bin_width)
+          & MEMBER(probe_num) & MEMBER(seed) & MEMBER(retain_projection);
     }
   };
 
@@ -59,11 +59,19 @@ class euclid_lsh : public recommender_base {
   explicit euclid_lsh(const config& config);
   ~euclid_lsh();
 
-  virtual void neighbor_row(const sfv_t& query, std::vector<std::pair<std::string, float> >& ids, size_t ret_num) const;
-  virtual void neighbor_row(const std::string& id, std::vector<std::pair<std::string, float> >& ids, size_t ret_num) const;
+  virtual void neighbor_row(const sfv_t& query,
+                            std::vector<std::pair<std::string, float> >& ids,
+                            size_t ret_num) const;
+  virtual void neighbor_row(const std::string& id,
+                            std::vector<std::pair<std::string, float> >& ids,
+                            size_t ret_num) const;
 
-  virtual void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> >& ids, size_t ret_num) const;
-  virtual void similar_row(const std::string& id, std::vector<std::pair<std::string, float> >& ids, size_t ret_num) const;
+  virtual void similar_row(const sfv_t& query,
+                           std::vector<std::pair<std::string, float> >& ids,
+                           size_t ret_num) const;
+  virtual void similar_row(const std::string& id,
+                           std::vector<std::pair<std::string, float> >& ids,
+                           size_t ret_num) const;
 
   virtual void clear();
   virtual void clear_row(const std::string& id);
@@ -78,7 +86,8 @@ class euclid_lsh : public recommender_base {
   friend class pfi::data::serialization::access;
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(lsh_index_) & MEMBER(bin_width_) & MEMBER(num_probe_) & MEMBER(projection_) & MEMBER(retain_projection_);
+    ar & MEMBER(lsh_index_) & MEMBER(bin_width_) & MEMBER(num_probe_)
+        & MEMBER(projection_) & MEMBER(retain_projection_);
   }
 
   std::vector<float> calculate_lsh(const sfv_t& query);

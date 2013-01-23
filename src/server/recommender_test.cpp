@@ -22,26 +22,32 @@ static const int PORT = 65433;
 
 namespace {
 
-  class recommender_test : public ::testing::Test {
-  protected:
-    pid_t child_;
+class recommender_test : public ::testing::Test {
+ protected:
+  pid_t child_;
 
-    recommender_test(){
-      child_ = fork_process("recommender", PORT, "./test_input/config.recommender.json");
-    };
-    virtual ~recommender_test(){
-      kill_process(child_);
-    };
-    virtual void restart_process(){
+  recommender_test() {
+    child_ = fork_process("recommender", PORT,
+                          "./test_input/config.recommender.json");
+  }
+  ;
+  virtual ~recommender_test() {
+    kill_process(child_);
+  }
+  ;
+  virtual void restart_process() {
 
-      kill_process(this->child_);
-      this->child_ = fork_process("recommender", PORT, "./test_input/config.recommender.json");
-    };
-  };
+    kill_process(this->child_);
+    this->child_ = fork_process("recommender", PORT,
+                                "./test_input/config.recommender.json");
+  }
+  ;
+};
 
 std::string make_simple_config(const string& method) {
   pfi::text::json::json js(new pfi::text::json::json_object());
-  js["method"] = pfi::text::json::json(new pfi::text::json::json_string(method));  
+  js["method"] = pfi::text::json::json(
+      new pfi::text::json::json_string(method));
   jubatus::fv_converter::converter_config config;
   jubatus::fv_converter::num_rule rule = { "*", "num" };
   config.num_rules.push_back(rule);
@@ -54,9 +60,11 @@ std::string make_simple_config(const string& method) {
   pfi::text::json::json param(new pfi::text::json::json_object());
   // recommender's parameter
   if (method == "lsh") {
-    param["bit_num"] = pfi::text::json::json(new pfi::text::json::json_integer(64));
+    param["bit_num"] = pfi::text::json::json(
+        new pfi::text::json::json_integer(64));
   } else if (method == "minhash") {
-    param["hash_num"] = pfi::text::json::json(new pfi::text::json::json_integer(64));
+    param["hash_num"] = pfi::text::json::json(
+        new pfi::text::json::json_integer(64));
   }
   js["parameter"] = param;
 
@@ -66,12 +74,12 @@ std::string make_simple_config(const string& method) {
   return ret.str();
 }
 
-TEST_F(recommender_test, get_status){
+TEST_F(recommender_test, get_status) {
   jubatus::client::recommender cli("localhost", PORT, 10);
   map<string,map<string,string> > status = cli.get_status(NAME);
   EXPECT_EQ(status.size(), 1u);
   for(map<string,map<string,string> >::const_iterator it = status.begin();
-      it != status.end(); ++it){
+      it != status.end(); ++it) {
     EXPECT_GE(it->second.size(), 8u);
   }
 }
@@ -79,7 +87,7 @@ TEST_F(recommender_test, get_status){
 TEST_F(recommender_test, small) {
 
   jubatus::client::recommender c("localhost", PORT, 10);
-  
+
   jubatus::datum d;
   d.num_values.push_back(make_pair("f1", 1.0));
   c.update_row(NAME, "key", d);
@@ -109,11 +117,11 @@ sfv_diff_t make_vec(const string& c1, const string& c2, const string& c3) {
   return v;
 }
 
+template<typename T>
+class recommender_random_test : public testing::Test {
+};
 
-template <typename T>
-class recommender_random_test : public testing::Test {};
-
-TYPED_TEST_CASE_P(recommender_random_test);
+TYPED_TEST_CASE_P (recommender_random_test);
 
 TYPED_TEST_P(recommender_random_test, trivial) {
   TypeParam r;
@@ -160,14 +168,14 @@ TYPED_TEST_P(recommender_random_test, random) {
   size_t correct = 0;
   for (size_t i = 0; i < ids.size(); ++i) {
     if (ids[i].first[1] == '1')
-      ++correct;
+    ++correct;
   }
   EXPECT_GT(correct, 5u);
 
   // save the recommender
   stringstream oss;
   r.save(oss);
-  TypeParam r2;  
+  TypeParam r2;
   r2.load(oss);
 
   // Run the same test
@@ -177,7 +185,7 @@ TYPED_TEST_P(recommender_random_test, random) {
   correct = 0;
   for (size_t i = 0; i < ids.size(); ++i) {
     if (ids[i].first[1] == '1')
-      ++correct;
+    ++correct;
   }
   EXPECT_GT(correct, 5u);
 }

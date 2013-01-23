@@ -23,30 +23,32 @@ namespace jubatus {
 
 typedef std::pair<std::string, int> connection_info;
 
-template <typename T, typename E = std::string>
+template<typename T, typename E = std::string>
 struct result {
   bool success;
   T retval;
   E error;
 
-  static result<T,E> ok(const T& t){
-    result<T,E> r;
+  static result<T, E> ok(const T& t) {
+    result<T, E> r;
     r.success = true;
     r.retval = t;
     return r;
-  };
-  static result<T,E> fail(const E& e){
-    result<T,E> r;
+  }
+  ;
+  static result<T, E> fail(const E& e) {
+    result<T, E> r;
     r.success = false;
     r.error = e;
     return r;
-  };
+  }
+  ;
 
   MSGPACK_DEFINE(success, retval, error);
-  template <class Archiver>
+  template<class Archiver>
   void serialize(Archiver &ar) {
     ar & MEMBER(success) & MEMBER(retval) & MEMBER(error);
   }
 };
 
-} //namespace jubatus
+}  //namespace jubatus

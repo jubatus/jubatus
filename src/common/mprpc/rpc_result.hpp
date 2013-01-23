@@ -23,24 +23,32 @@
 #include "rpc_response.hpp"
 #include "rpc_error.hpp"
 
-namespace jubatus { namespace common { namespace mprpc {
+namespace jubatus {
+namespace common {
+namespace mprpc {
 
-template <class Res>
+template<class Res>
 struct rpc_result {
   pfi::lang::shared_ptr<Res> value;
   std::vector<rpc_error> error;
 
-  Res& operator*() const { return *value; }
-  bool has_error() const { return !error.empty(); }
+  Res& operator*() const {
+    return *value;
+  }
+  bool has_error() const {
+    return !error.empty();
+  }
 };
 
 struct rpc_result_object {
   std::vector<rpc_response_t> response;
   std::vector<rpc_error> error;
 
-  bool has_error() const { return !error.empty(); }
+  bool has_error() const {
+    return !error.empty();
+  }
 };
 
-} // mprpc
-} // common
-} // jubatus
+}  // mprpc
+}  // common
+}  // jubatus

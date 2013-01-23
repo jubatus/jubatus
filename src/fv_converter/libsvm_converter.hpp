@@ -19,14 +19,15 @@
 #include <string>
 
 namespace jubatus {
-namespace fv_converter{
+namespace fv_converter {
 
 struct datum;
 
 class libsvm_converter {
  public:
 
-  static void convert(const std::string& line, datum& ret_datum, std::string& ret_label);
+  static void convert(const std::string& line, datum& ret_datum,
+                      std::string& ret_label);
 };
 
 }

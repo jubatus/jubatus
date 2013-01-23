@@ -34,8 +34,7 @@ typedef error_info<struct error_at_file_, std::string> error_at_file;
 typedef error_info<struct error_at_func_, std::string> error_at_func;
 typedef error_info<struct error_at_line_, int> error_at_line;
 typedef error_info<struct error_errno_, int> error_errno;
-inline std::string to_string(const error_errno& info)
-{
+inline std::string to_string(const error_errno& info) {
   std::string msg(strerror(info.value()));
   msg += " (" + pfi::lang::lexical_cast<std::string>(info.value()) + ")";
   return msg;
@@ -47,7 +46,9 @@ typedef error_info<struct error_message_, std::string> error_message;
 
 typedef error_info<struct error_splitter_, void> error_splitter;
 
-struct exception_thrower_binder_type {};  // for exception_thrower
+struct exception_thrower_binder_type {
+};
+// for exception_thrower
 
 #if defined(__GNUC__)
 #define JUBATUS_ERROR_FUNC jubatus::exception::error_at_func(__PRETTY_FUNCTION__)
@@ -64,19 +65,19 @@ typedef pfi::lang::shared_ptr<exception_thrower_base> exception_thrower_ptr;
 typedef std::vector<pfi::lang::shared_ptr<error_info_base> > error_info_list_t;
 
 class jubatus_exception : public std::exception {
-public:
-  jubatus_exception() throw()
-  {}
-  virtual ~jubatus_exception() throw()
-  {}
+ public:
+  jubatus_exception() throw () {
+  }
+  virtual ~jubatus_exception() throw () {
+  }
 
   virtual exception_thrower_ptr thrower() const = 0;
 
-  template <class Exception>
-  friend const Exception& add_info(const Exception& e, pfi::lang::shared_ptr<error_info_base> info);
+  template<class Exception>
+  friend const Exception& add_info(const Exception& e,
+                                   pfi::lang::shared_ptr<error_info_base> info);
 
-  std::string name() const throw()
-  {
+  std::string name() const throw () {
     // does not assume multithreading
     if (exception_class_name_.empty())
       exception_class_name_ = pfi::lang::demangle(typeid(*this).name());
@@ -84,8 +85,7 @@ public:
     return exception_class_name_;
   }
 
-  virtual const char* what() const throw()
-  {
+  virtual const char* what() const throw () {
     name();
     return exception_class_name_.c_str();
   }
@@ -93,142 +93,146 @@ public:
   error_info_list_t error_info() const;
   std::string diagnostic_information(bool display_what = false) const;
 
-private:
+ private:
   mutable std::string exception_class_name_;
   mutable error_info_list_t info_list_;
 };
 
-template <class Exception>
-inline const Exception& add_info(const Exception& e, pfi::lang::shared_ptr<error_info_base> info)
-{
+template<class Exception>
+inline const Exception& add_info(const Exception& e,
+                                 pfi::lang::shared_ptr<error_info_base> info) {
   e.info_list_.push_back(info);
   return e;
 }
 
-template <class Exception, class Tag, class V>
-inline const Exception& operator <<(const Exception& e, const error_info<Tag, V>& info)
-{
-  return add_info(e, pfi::lang::shared_ptr<error_info_base>(new error_info<Tag, V>(info)));
+template<class Exception, class Tag, class V>
+inline const Exception& operator <<(const Exception& e,
+                                    const error_info<Tag, V>& info) {
+  return add_info(
+      e, pfi::lang::shared_ptr<error_info_base>(new error_info<Tag, V>(info)));
 }
 
-template <class Exception>
-inline const Exception& operator <<(const Exception& e, pfi::lang::shared_ptr<error_info_base> info)
-{
+template<class Exception>
+inline const Exception& operator <<(
+    const Exception& e, pfi::lang::shared_ptr<error_info_base> info) {
   return add_info(e, info);
 }
 
 class exception_thrower_base {
-public:
-  exception_thrower_base()
-  {}
-  virtual ~exception_thrower_base()
-  {}
+ public:
+  exception_thrower_base() {
+  }
+  virtual ~exception_thrower_base() {
+  }
 
   virtual void throw_exception() const = 0;
 };
 
-template <class Exception>
+template<class Exception>
 class exception_thrower_impl : public exception_thrower_base {
-public:
+ public:
   explicit exception_thrower_impl(const Exception& e)
-    : exception_(e)
-  {}
+      : exception_(e) {
+  }
 
-private:
+ private:
   // noncopylable
   exception_thrower_impl(const exception_thrower_impl&);
   exception_thrower_impl& operator=(const exception_thrower_impl&);
 
-public:
-  void throw_exception() const
-  {
+ public:
+  void throw_exception() const {
     throw exception_;
   }
 
-private:
+ private:
   Exception exception_;
 };
 
-template <class Exception>
+template<class Exception>
 class jubaexception : public jubatus_exception {
-public:
-  jubaexception()
-  {}
-  virtual ~jubaexception() throw()
-  {}
+ public:
+  jubaexception() {
+  }
+  virtual ~jubaexception() throw () {
+  }
 
-  exception_thrower_ptr thrower() const
-  {
+  exception_thrower_ptr thrower() const {
     if (thrower_) {
       return thrower_;
     } else {
-      return exception_thrower_ptr(new exception_thrower_impl<Exception>(*(static_cast<const Exception*>(this))));
+      return exception_thrower_ptr(
+          new exception_thrower_impl<Exception>(
+              *(static_cast<const Exception*>(this))));
     }
   }
 
   // This is desireble in private
-  void bind_thrower(exception_thrower_ptr thrower) const
-  {
+  void bind_thrower(exception_thrower_ptr thrower) const {
     thrower_ = thrower;
   }
 
-private:
+ private:
   mutable exception_thrower_ptr thrower_;
 };
 
-template <class Exception>
-inline const Exception& operator <<(const Exception& e, const exception_thrower_binder_type&)
-{
-  e.bind_thrower(exception_thrower_ptr(new exception_thrower_impl<Exception>(e)));
+template<class Exception>
+inline const Exception& operator <<(const Exception& e,
+                                    const exception_thrower_binder_type&) {
+  e.bind_thrower(
+      exception_thrower_ptr(new exception_thrower_impl<Exception>(e)));
   return e;
 }
 
 class unknown_exception : public jubaexception<unknown_exception> {
-public:
+ public:
   explicit unknown_exception()
-    // TODO: push unknown_exception
-  {}
+  // TODO: push unknown_exception
+  {
+  }
 
-  const char* what() const throw() { return "unknown exception"; }
+  const char* what() const throw () {
+    return "unknown exception";
+  }
 };
 
 class runtime_error : public jubaexception<runtime_error> {
-public:
+ public:
   explicit runtime_error(const std::string& what)
-    : what_(what)
-  {}
+      : what_(what) {
+  }
 
-  ~runtime_error() throw()
-  {}
+  ~runtime_error() throw () {
+  }
 
-  const char* what() const throw() { return what_.c_str(); }
-private:
+  const char* what() const throw () {
+    return what_.c_str();
+  }
+ private:
   std::string what_;
 };
 
 namespace detail {
-template <class Exception>
-exception_thrower_ptr current_std_exception(const Exception& e)
-{
+template<class Exception>
+exception_thrower_ptr current_std_exception(const Exception& e) {
   return exception_thrower_ptr(new exception_thrower_impl<Exception>(e));
 }
 
-} // detail
+}  // detail
 
 // Don't call without catch blocks
-inline exception_thrower_ptr get_current_exception()
-{
+inline exception_thrower_ptr get_current_exception() {
   exception_thrower_ptr ptr;
 
   try {
     throw;
-  } catch (std::bad_alloc& e) { // exception
+  } catch (std::bad_alloc& e) {  // exception
     ptr = detail::current_std_exception(e);
 
   } catch (std::bad_cast& e) {  // exception
     ptr = detail::current_std_exception(e);
 
-  } catch (std::bad_exception& e) { // exception
+  } catch (std::bad_exception& e) {  // exception
     ptr = detail::current_std_exception(e);
 
   } catch (std::bad_typeid& e) {  // exception
@@ -246,22 +250,22 @@ inline exception_thrower_ptr get_current_exception()
   } catch (std::out_of_range& e) {  // logic_error
     ptr = detail::current_std_exception(e);
 
-  } catch (std::logic_error& e) { // exception
+  } catch (std::logic_error& e) {  // exception
     ptr = detail::current_std_exception(e);
 
-  } catch (std::range_error& e) { // runtime_error
+  } catch (std::range_error& e) {  // runtime_error
     ptr = detail::current_std_exception(e);
 
   } catch (std::overflow_error& e) {  // runtime_error
     ptr = detail::current_std_exception(e);
 
-  } catch (std::underflow_error& e) { // runtime_error
+  } catch (std::underflow_error& e) {  // runtime_error
     ptr = detail::current_std_exception(e);
 
-  } catch (std::runtime_error& e) { // exception
+  } catch (std::runtime_error& e) {  // exception
     ptr = detail::current_std_exception(e);
 
-  } catch (std::ios_base::failure& e) { // exception
+  } catch (std::ios_base::failure& e) {  // exception
     ptr = detail::current_std_exception(e);
 
   } catch (jubatus_exception& e) {
@@ -278,52 +282,54 @@ inline exception_thrower_ptr get_current_exception()
   return ptr;
 }
 
-} // exception
+}  // exception
 
-class config_exception : public exception::jubaexception<config_exception>{};
+class config_exception : public exception::jubaexception<config_exception> {
+};
 
-class storage_not_set : public exception::jubaexception<storage_not_set>{};
+class storage_not_set : public exception::jubaexception<storage_not_set> {
+};
 
 class config_not_set : public exception::jubaexception<config_not_set> {
-  const char* what() const throw()
-  {
+  const char* what() const throw () {
     return "config_not_set";
   }
 };
 
 class unsupported_method : public exception::runtime_error {
-public:
+ public:
   unsupported_method(const std::string& n)
-    : jubatus::exception::runtime_error(std::string("unsupported method (") + n + ")")
-  {}
+      : jubatus::exception::runtime_error(
+          std::string("unsupported method (") + n + ")") {
+  }
 };
 
 class bad_storage_type : public exception::runtime_error {
-public:
+ public:
   bad_storage_type(const std::string& n)
-    : jubatus::exception::runtime_error(n)
-  {}
+      : jubatus::exception::runtime_error(n) {
+  }
 };
 
 class membership_error : public exception::runtime_error {
-public:
+ public:
   membership_error(const std::string& n)
-    : jubatus::exception::runtime_error(n)
-  {}
+      : jubatus::exception::runtime_error(n) {
+  }
 };
 
 class not_found : public membership_error {
-public:
+ public:
   not_found(const std::string& n)
-    : membership_error(n)
-  {}
+      : membership_error(n) {
+  }
 };
 
 class argv_error : public exception::runtime_error {
-public:
+ public:
   argv_error(const std::string& n)
-    : jubatus::exception::runtime_error(n)
-  {}
+      : jubatus::exception::runtime_error(n) {
+  }
 };
 
 }

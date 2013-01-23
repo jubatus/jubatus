@@ -27,7 +27,7 @@ vector<byte_buffer> make_packed_vector(const string& s) {
 
 jubatus::common::mprpc::rpc_response_t make_response(const string& s) {
   jubatus::common::mprpc::rpc_response_t res;
-  res.zone = mp::shared_ptr<msgpack::zone>(new msgpack::zone);
+  res.zone = mp::shared_ptr < msgpack::zone > (new msgpack::zone);
   res.response.a3 = msgpack::object(make_packed_vector(s), res.zone.get());
 
   return res;
@@ -37,9 +37,13 @@ jubatus::common::mprpc::rpc_response_t make_response(const string& s) {
 
 class linear_communication_stub : public linear_communication {
  public:
-  size_t update_members() { return 4; }
+  size_t update_members() {
+    return 4;
+  }
 
-  pfi::lang::shared_ptr<common::try_lockable> create_lock() { return pfi::lang::shared_ptr<common::try_lockable>(); }
+  pfi::lang::shared_ptr<common::try_lockable> create_lock() {
+    return pfi::lang::shared_ptr<common::try_lockable>();
+  }
 
   void get_diff(common::mprpc::rpc_result_object& result) const {
     result.response.push_back(make_response("1"));
@@ -53,8 +57,9 @@ class linear_communication_stub : public linear_communication {
   }
 
   const vector<string> get_mixed() const {
-    vector<string> mixed;
-    for (vector<byte_buffer>::const_iterator it = mixed_.begin(); it != mixed_.end(); ++it) {
+    vector < string > mixed;
+    for (vector<byte_buffer>::const_iterator it = mixed_.begin();
+        it != mixed_.end(); ++it) {
       // unpack mix-internal
       msgpack::unpacked msg;
       msgpack::unpack(&msg, it->ptr(), it->size());
@@ -69,16 +74,22 @@ class linear_communication_stub : public linear_communication {
 
 struct mixable_string : public mixable<mixable_string, string> {
  public:
-  string get_diff_impl() const { return string(); }
-  void put_diff_impl(const string&) {}
+  string get_diff_impl() const {
+    return string();
+  }
+  void put_diff_impl(const string&) {
+  }
   void mix_impl(const string& lhs, const string& rhs, string& mixed) const {
     stringstream ss;
     ss << "(" << lhs << "+" << rhs << ")";
     mixed = ss.str();
   }
-  void save(ostream&) {}
-  void load(istream&) {}
-  void clear() {}
+  void save(ostream&) {
+  }
+  void load(istream&) {
+  }
+  void clear() {
+  }
 };
 
 TEST(linear_mixer, mix_order) {

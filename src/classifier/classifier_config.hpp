@@ -23,16 +23,16 @@ namespace classifier {
 
 struct classifier_config {
   classifier_config()
-    : C(1.0f)
-  {}
+      : C(1.0f) {
+  }
 
   float C;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & NAMED_MEMBER("regularization_weight", C);
   }
 };
 
-} // classifier
-} //jubatus
+}  // classifier
+}  //jubatus

@@ -45,7 +45,7 @@ float calculate_lof(float lrd,
 
   float sum_neighbor_lrd = 0;
   for (unordered_map<string, float>::const_iterator it = neighbor_lrd.begin();
-       it != neighbor_lrd.end(); ++it) {
+      it != neighbor_lrd.end(); ++it) {
     sum_neighbor_lrd += it->second;
   }
 
@@ -61,7 +61,8 @@ float calculate_lof(float lrd,
 lof::lof() {
 }
 
-lof::lof(const storage::lof_storage::config& config, recommender::recommender_base* nn_engine)
+lof::lof(const storage::lof_storage::config& config,
+         recommender::recommender_base* nn_engine)
     : lof_index_(config, nn_engine) {
 }
 
@@ -121,7 +122,6 @@ bool lof::load_impl(istream& is) {
   ia >> lof_index_;
   return true;
 }
-
 
 }
 }

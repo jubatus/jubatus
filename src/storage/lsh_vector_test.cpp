@@ -29,7 +29,7 @@ lsh_vector make_vector(const string& str) {
   ss << str;
 
   vector<int> v;
-  for (int n; ss >> n; ) {
+  for (int n; ss >> n;) {
     v.push_back(n);
   }
   return lsh_vector(v);

@@ -27,27 +27,23 @@ recommender_mock_storage::~recommender_mock_storage() {
 }
 
 void recommender_mock_storage::set_similar_items(
-    const sfv_t& query,
-    const vector<pair<string, float> >& ids) {
+    const sfv_t& query, const vector<pair<string, float> >& ids) {
   similar_relation_[query] = ids;
 }
 
 void recommender_mock_storage::set_neighbor_items(
-    const sfv_t& query,
-    const vector<pair<string, float> >& ids) {
+    const sfv_t& query, const vector<pair<string, float> >& ids) {
   neighbor_relation_[query] = ids;
 }
 
 void recommender_mock_storage::similar_items_similarity(
-    const sfv_t& query,
-    vector<pair<string, float> >& ids,
+    const sfv_t& query, vector<pair<string, float> >& ids,
     size_t ret_num) const {
   get_relation(query, similar_relation_, ret_num, ids);
 }
 
 void recommender_mock_storage::neighbor_items_distance(
-    const sfv_t& query,
-    vector<pair<string, float> >& ids,
+    const sfv_t& query, vector<pair<string, float> >& ids,
     size_t ret_num) const {
   get_relation(query, neighbor_relation_, ret_num, ids);
 }
@@ -78,7 +74,8 @@ void recommender_mock_storage::get_diff(string& diff) const {
   diff = oss.str();
 }
 
-void recommender_mock_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
+void recommender_mock_storage::set_mixed_and_clear_diff(
+    const string& mixed_diff) {
   istringstream iss(mixed_diff);
   binary_iarchive bi(iss);
   bi >> *this;
@@ -132,7 +129,8 @@ void recommender_mock_storage::update_relation_key(const sfv_t& from,
 //static
 void recommender_mock_storage::mix_relation(const relation_type& from,
                                             relation_type& to) {
-  for (relation_type::const_iterator it = from.begin(); it != from.end(); ++it) {
+  for (relation_type::const_iterator it = from.begin(); it != from.end();
+      ++it) {
     to[it->first] = it->second;
   }
 }

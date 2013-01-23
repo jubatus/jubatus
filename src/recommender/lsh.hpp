@@ -25,13 +25,13 @@ namespace jubatus {
 namespace recommender {
 
 class lsh : public recommender_base {
-public:
+ public:
   struct config {
     config();
 
     int64_t bit_num;
 
-    template <typename Ar>
+    template<typename Ar>
     void serialize(Ar& ar) {
       ar & MEMBER(bit_num);
     }
@@ -42,8 +42,12 @@ public:
   lsh();
   ~lsh();
 
-  void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
-  void neighbor_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  void similar_row(const sfv_t& query,
+                   std::vector<std::pair<std::string, float> > & ids,
+                   size_t ret_num) const;
+  void neighbor_row(const sfv_t& query,
+                    std::vector<std::pair<std::string, float> > & ids,
+                    size_t ret_num) const;
   void clear();
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const sfv_diff_t& diff);
@@ -52,19 +56,19 @@ public:
   storage::recommender_storage_base* get_storage();
   const storage::recommender_storage_base* get_const_storage() const;
 
-private:
+ private:
   bool save_impl(std::ostream&);
   bool load_impl(std::istream&);
 
   void calc_lsh_values(const sfv_t& sfv, storage::bit_vector& bv) const;
   void generate_column_base(const std::string& column);
   void generate_column_bases(const sfv_t& v);
-  
-  pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_; // bases for lsh
+
+  pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_;  // bases for lsh
   storage::bit_index_storage row2lshvals_;
 
   const uint64_t base_num_;
 };
 
-} // namespace recommender
-} // namespace jubatus
+}  // namespace recommender
+}  // namespace jubatus

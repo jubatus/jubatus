@@ -12,15 +12,13 @@ namespace server {
 
 namespace {
 
-val3_t mix_val3(double w1, double w2,
-                const val3_t& lhs, const val3_t& rhs) {
+val3_t mix_val3(double w1, double w2, const val3_t& lhs, const val3_t& rhs) {
   return val3_t((w1 * lhs.v1 + w2 * rhs.v1) / (w1 + w2),
                 std::min(lhs.v2, rhs.v2),
                 (w1 * lhs.v3 + w2 * rhs.v3) / (w1 + w2));
 }
 
-feature_val3_t mix_feature(double w1, double w2,
-                           const feature_val3_t& lhs,
+feature_val3_t mix_feature(double w1, double w2, const feature_val3_t& lhs,
                            const feature_val3_t& rhs) {
   val3_t def(0, 1, 0);
   feature_val3_t ret(lhs);
@@ -30,8 +28,7 @@ feature_val3_t mix_feature(double w1, double w2,
 
 }
 
-void linear_function_mixer::mix_impl(const diffv& lhs,
-                                     const diffv& rhs,
+void linear_function_mixer::mix_impl(const diffv& lhs, const diffv& rhs,
                                      diffv& mixed) const {
   features3_t l(lhs.v);
   const features3_t& r(rhs.v);
@@ -42,7 +39,7 @@ void linear_function_mixer::mix_impl(const diffv& lhs,
 
 diffv linear_function_mixer::get_diff_impl() const {
   diffv ret;
-  ret.count = 1; //FIXME mixer_->get_count();
+  ret.count = 1;  //FIXME mixer_->get_count();
   get_model()->get_diff(ret.v);
   return ret;
 }
@@ -54,6 +51,5 @@ void linear_function_mixer::put_diff_impl(const diffv& v) {
 void linear_function_mixer::clear() {
 }
 
-
-} // namespace server
-} // namespace jubatus
+}  // namespace server
+}  // namespace jubatus

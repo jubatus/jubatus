@@ -19,11 +19,12 @@
 #include <string>
 
 namespace jubatus {
-namespace storage{
+namespace storage {
 
 class anomaly_storage_base {
-public:
-  virtual ~anomaly_storage_base() {}
+ public:
+  virtual ~anomaly_storage_base() {
+  }
 
   virtual void get_diff(std::string& diff) const = 0;
   virtual void set_mixed_and_clear_diff(const std::string& mixed_diff) = 0;

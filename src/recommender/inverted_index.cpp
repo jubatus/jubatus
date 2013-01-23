@@ -27,70 +27,74 @@ using namespace pfi::lang;
 namespace jubatus {
 namespace recommender {
 
-inverted_index::inverted_index() { 
+inverted_index::inverted_index() {
 }
 
 inverted_index::~inverted_index() {
 }
 
-void inverted_index::similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const{
+void inverted_index::similar_row(
+    const sfv_t& query, std::vector<std::pair<std::string, float> > & ids,
+    size_t ret_num) const {
   ids.clear();
-  if (ret_num == 0) return;
+  if (ret_num == 0)
+    return;
   inv_.calc_scores(query, ids, ret_num);
 }
 
-void inverted_index::neighbor_row(const sfv_t& query, vector<pair<string, float> >& ids, size_t ret_num) const {
+void inverted_index::neighbor_row(const sfv_t& query,
+                                  vector<pair<string, float> >& ids,
+                                  size_t ret_num) const {
   similar_row(query, ids, ret_num);
   for (size_t i = 0; i < ids.size(); ++i) {
     ids[i].second = 1 - ids[i].second;
   }
 }
 
-void inverted_index::clear(){
+void inverted_index::clear() {
   orig_.clear();
   inv_.clear();
 }
 
-void inverted_index::clear_row(const std::string& id){
-  vector<pair<string, float> > columns;
+void inverted_index::clear_row(const std::string& id) {
+  vector < pair<string, float> > columns;
   orig_.get_row(id, columns);
-  for (size_t i = 0; i < columns.size(); ++i){
+  for (size_t i = 0; i < columns.size(); ++i) {
     inv_.remove(columns[i].first, id);
   }
   orig_.remove_row(id);
 }
 
-void inverted_index::update_row(const std::string& id, const sfv_diff_t& diff){
+void inverted_index::update_row(const std::string& id, const sfv_diff_t& diff) {
   orig_.set_row(id, diff);
-  for (size_t i = 0; i < diff.size(); ++i){
+  for (size_t i = 0; i < diff.size(); ++i) {
     inv_.set(diff[i].first, id, diff[i].second);
   }
 }
 
-void inverted_index::get_all_row_ids(std::vector<std::string>& ids) const{
-  inv_.get_all_column_ids(ids); // inv_.column = row
+void inverted_index::get_all_row_ids(std::vector<std::string>& ids) const {
+  inv_.get_all_column_ids(ids);  // inv_.column = row
 }
 
 string inverted_index::type() const {
   return string("inverted_index");
 }
-bool inverted_index::save_impl(std::ostream& os){
+bool inverted_index::save_impl(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << inv_;
   return true;
 }
-bool inverted_index::load_impl(std::istream& is){
+bool inverted_index::load_impl(std::istream& is) {
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> inv_;
   return true;
 }
-storage::recommender_storage_base* inverted_index::get_storage(){
+storage::recommender_storage_base* inverted_index::get_storage() {
   return &inv_;
 }
-const storage::recommender_storage_base* inverted_index::get_const_storage()const{
+const storage::recommender_storage_base* inverted_index::get_const_storage() const {
   return &inv_;
 }
 
-
-} // namespace recommender
-} // namespace jubatus
+}  // namespace recommender
+}  // namespace jubatus

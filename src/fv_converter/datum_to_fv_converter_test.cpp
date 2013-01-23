@@ -63,7 +63,7 @@ TEST(datum_to_fv_converter, num_feature) {
   init_weight_manager(conv);
   typedef shared_ptr<num_feature> num_feature_t;
   shared_ptr<key_matcher> a(new match_all());
-  
+
   conv.register_num_rule("num", a, num_feature_t(new num_value_feature()));
   conv.register_num_rule("log", a, num_feature_t(new num_log_feature()));
   vector<pair<string, float> > feature;
@@ -93,25 +93,24 @@ TEST(datum_to_fv_converter, string_feature) {
     p.push_back(splitter_weight_type(LOG_TERM_FREQUENCY, IDF));
     conv.register_string_rule("space", match, s, p);
   }
-  
+
   /*  {
-    vector<string> keywords;
-    keywords.push_back("is");
-    //shared_ptr<word_splitter> s(new ux_splitter(keywords));
-    shared_ptr<word_splitter> s(new dynamic_splitter(
-        "../plugin/fv_converter/libux_splitter.so",
-        "create", map<string, string>()));
-    vector<splitter_weight_type> p;
-    p.push_back(splitter_weight_type(TERM_FREQUENCY, TERM_BINARY));
-    conv.register_string_rule("ux", match, s, p);
-  }
-  */
+   vector<string> keywords;
+   keywords.push_back("is");
+   //shared_ptr<word_splitter> s(new ux_splitter(keywords));
+   shared_ptr<word_splitter> s(new dynamic_splitter(
+   "../plugin/fv_converter/libux_splitter.so",
+   "create", map<string, string>()));
+   vector<splitter_weight_type> p;
+   p.push_back(splitter_weight_type(TERM_FREQUENCY, TERM_BINARY));
+   conv.register_string_rule("ux", match, s, p);
+   }
+   */
   {
     vector<splitter_weight_type> p;
     p.push_back(splitter_weight_type(FREQ_BINARY, TERM_BINARY));
     conv.register_string_rule("str", match, splitter_t(new without_split()), p);
   }
-
 
   vector<pair<string, float> > feature;
   {
@@ -128,35 +127,35 @@ TEST(datum_to_fv_converter, string_feature) {
   }
 
   vector<pair<string, float> > expected;
-  expected.push_back(make_pair("/name$doc1@str#bin/bin",  1.));
-  expected.push_back(make_pair("/title$ this is it . it is it .@str#bin/bin",  1.));
+  expected.push_back(make_pair("/name$doc1@str#bin/bin", 1.));
+  expected.push_back(make_pair("/title$ this is it . it is it .@str#bin/bin", 1.));
 
-  expected.push_back(make_pair("/name$doc1@space#bin/bin",  1.));
+  expected.push_back(make_pair("/name$doc1@space#bin/bin", 1.));
   expected.push_back(make_pair("/title$this@space#bin/bin", 1.));
-  expected.push_back(make_pair("/title$is@space#bin/bin",   1.));
-  expected.push_back(make_pair("/title$it@space#bin/bin",   1.));
-  expected.push_back(make_pair("/title$.@space#bin/bin",    1.));
+  expected.push_back(make_pair("/title$is@space#bin/bin", 1.));
+  expected.push_back(make_pair("/title$it@space#bin/bin", 1.));
+  expected.push_back(make_pair("/title$.@space#bin/bin", 1.));
 
   double idf1 = log((2. + 1) / (1. + 1));
   //double idf2 = log(2. / 2.);
-  expected.push_back(make_pair("/name$doc1@space#tf/idf",  1. * idf1));
+  expected.push_back(make_pair("/name$doc1@space#tf/idf", 1. * idf1));
   //expected.push_back(make_pair("/title$this@space#tf/idf", 1. * idf2));
   //expected.push_back(make_pair("/title$is@space#tf/idf",   2. * idf2));
-  expected.push_back(make_pair("/title$it@space#tf/idf",   3. * idf1));
-  expected.push_back(make_pair("/title$.@space#tf/idf",    2. * idf1));
+  expected.push_back(make_pair("/title$it@space#tf/idf", 3. * idf1));
+  expected.push_back(make_pair("/title$.@space#tf/idf", 2. * idf1));
 
-  expected.push_back(make_pair("/name$doc1@space#log_tf/idf",  log(2.) * idf1));
+  expected.push_back(make_pair("/name$doc1@space#log_tf/idf", log(2.) * idf1));
   //expected.push_back(make_pair("/title$this@space#log_tf/idf", log(2.) * idf2));
   //expected.push_back(make_pair("/title$is@space#log_tf/idf",   log(3.) * idf2));
-  expected.push_back(make_pair("/title$it@space#log_tf/idf",   log(4.) * idf1));
-  expected.push_back(make_pair("/title$.@space#log_tf/idf",    log(3.) * idf1));
+  expected.push_back(make_pair("/title$it@space#log_tf/idf", log(4.) * idf1));
+  expected.push_back(make_pair("/title$.@space#log_tf/idf", log(3.) * idf1));
 
   //expected.push_back(make_pair("/title$is@ux#tf/bin", 3.));
 
   sort(feature.begin(), feature.end());
   sort(expected.begin(), expected.end());
 
-  PairVectorEquals(expected, feature);  
+  PairVectorEquals(expected, feature);
 }
 
 TEST(datum_to_fv_converter, weight) {
@@ -221,7 +220,7 @@ TEST(datum_to_fv_converter, register_num_rule) {
     conv.convert(datum, feature);
     EXPECT_EQ(0u, feature.size());
   }
-  
+
   shared_ptr<num_feature> f(new num_string_feature());
   shared_ptr<key_matcher> a(new match_all());
   conv.register_num_rule("str", a, f);
@@ -250,9 +249,9 @@ TEST(datum_to_fv_converter, register_string_filter) {
   vector<splitter_weight_type> p;
   p.push_back(splitter_weight_type(FREQ_BINARY, TERM_BINARY));
   conv.register_string_rule("str",
-                            shared_ptr<key_matcher>(new match_all()),
-                            shared_ptr<word_splitter>(new without_split()),
-                            p);
+      shared_ptr<key_matcher>(new match_all()),
+      shared_ptr<word_splitter>(new without_split()),
+      p);
   {
     vector<pair<string, float> > feature;
     conv.convert(datum, feature);
@@ -261,8 +260,8 @@ TEST(datum_to_fv_converter, register_string_filter) {
 
 #ifdef HAVE_RE2
   conv.register_string_filter(shared_ptr<key_matcher>(new match_all()),
-                              shared_ptr<string_filter>(new re2_filter("<[^>]*>", "")),
-                              "_filtered");
+      shared_ptr<string_filter>(new re2_filter("<[^>]*>", "")),
+      "_filtered");
 
   {
     vector<pair<string, float> > feature;
@@ -281,8 +280,8 @@ TEST(datum_to_fv_converter, register_num_filter) {
   datum.num_values_.push_back(make_pair("/age", 20));
 
   conv.register_num_rule("str",
-                         shared_ptr<key_matcher>(new match_all()),
-                         shared_ptr<num_feature>(new num_string_feature()));
+      shared_ptr<key_matcher>(new match_all()),
+      shared_ptr<num_feature>(new num_string_feature()));
 
   conv.register_num_filter(
       shared_ptr<key_matcher>(new match_all()),
@@ -303,8 +302,8 @@ TEST(datum_to_fv_converter, recursive_filter) {
   datum.num_values_.push_back(make_pair("/age", 20));
 
   conv.register_num_rule("str",
-                         shared_ptr<key_matcher>(new match_all()),
-                         shared_ptr<num_feature>(new num_string_feature()));
+      shared_ptr<key_matcher>(new match_all()),
+      shared_ptr<num_feature>(new num_string_feature()));
 
   conv.register_num_filter(
       shared_ptr<key_matcher>(new match_all()),
@@ -322,22 +321,22 @@ TEST(datum_to_fv_converter, recursive_filter) {
   EXPECT_EQ("/age+5@str$25", feature[1].first);
   EXPECT_EQ("/age+2@str$22", feature[2].first);
   EXPECT_EQ("/age+5+2@str$27", feature[3].first);
-} 
+}
 
 TEST(datum_to_fv_converter, hasher) {
   datum_to_fv_converter conv;
   init_weight_manager(conv);
   conv.set_hash_max_size(1);
   conv.register_num_rule("str",
-                         shared_ptr<key_matcher>(new match_all()),
-                         shared_ptr<num_feature>(new num_string_feature()));
+      shared_ptr<key_matcher>(new match_all()),
+      shared_ptr<num_feature>(new num_string_feature()));
   datum d;
   for (int i = 0; i < 10; ++i)
-    d.num_values_.push_back(make_pair("age", i));
+  d.num_values_.push_back(make_pair("age", i));
 
   vector<pair<string, float> > feature;
   conv.convert(d, feature);
 
   for (size_t i = 0; i < feature.size(); ++i)
-    EXPECT_EQ("0", feature[i].first);
+  EXPECT_EQ("0", feature[i].first);
 }

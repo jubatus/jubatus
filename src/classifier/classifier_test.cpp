@@ -35,10 +35,11 @@ using namespace pfi::text::json;
 namespace jubatus {
 namespace classifier {
 
-template <typename T>
-class classifier_test : public testing::Test {};
+template<typename T>
+class classifier_test : public testing::Test {
+};
 
-TYPED_TEST_CASE_P(classifier_test);
+TYPED_TEST_CASE_P (classifier_test);
 
 TYPED_TEST_P(classifier_test, trivial) {
   local_storage s;
@@ -46,7 +47,7 @@ TYPED_TEST_P(classifier_test, trivial) {
   ASSERT_NE(p.name(), "");
   sfv_t fv;
   fv.push_back(make_pair(string("f1"), 1.0));
-  p.train(fv, string("label1")); 
+  p.train(fv, string("label1"));
   fv.push_back(make_pair(string("f2"), 1.0));
   p.train(fv, string("label2"));
   classify_result scores;
@@ -59,7 +60,7 @@ TYPED_TEST_P(classifier_test, sfv_err) {
   TypeParam p(&s);
   sfv_t fv;
   fv.push_back(make_pair(string("f1"), 0.0));
-  p.train(fv, string("label1")); 
+  p.train(fv, string("label1"));
   fv.push_back(make_pair(string("f2"), 1.0));
   p.train(fv, string("label2"));
   classify_result scores;
@@ -119,27 +120,32 @@ TYPED_TEST_P(classifier_test, random3) {
 }
 
 REGISTER_TYPED_TEST_CASE_P(classifier_test,
-                           trivial, sfv_err, random, random3);
+    trivial, sfv_err, random, random3);
 
 typedef testing::Types<perceptron, PA, PA1, PA2, CW, AROW, NHERD> classifier_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
 
-
-
-void InitClassifiers(vector<classifier_base*>& classifiers){
+void InitClassifiers(vector<classifier_base*>& classifiers) {
   jsonconfig::config param(to_json(classifier_config()));
-  classifiers.push_back(classifier_factory::create_classifier("perceptron", param, new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("PA", param, new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("PA1", param, new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("PA2", param, new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("CW", param, new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("AROW", param, new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("NHERD", param, new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("perceptron", param,
+                                            new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("PA", param, new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("PA1", param, new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("PA2", param, new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("CW", param, new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("AROW", param, new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("NHERD", param, new local_storage));
 }
 
-
-TEST(classifier_factory, exception){
+TEST(classifier_factory, exception) {
   jsonconfig::config param(to_json(classifier_config()));
   local_storage * p = new local_storage;
   ASSERT_THROW(classifier_factory::create_classifier("pa", param, p), unsupported_method);

@@ -23,8 +23,10 @@ namespace fv_converter {
 
 class key_matcher {
  public:
-  key_matcher() {}
-  virtual ~key_matcher() {}
+  key_matcher() {
+  }
+  virtual ~key_matcher() {
+  }
 
   virtual bool match(const std::string& key) = 0;
 };

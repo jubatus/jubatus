@@ -33,11 +33,12 @@ class mixer;
 }
 
 class server_base {
-public:
+ public:
   typedef std::map<std::string, std::string> status_t;
 
   explicit server_base(const server_argv& a);
-  virtual ~server_base() {}
+  virtual ~server_base() {
+  }
 
   virtual mixer::mixer* get_mixer() const = 0;
   virtual pfi::lang::shared_ptr<mixable_holder> get_mixable_holder() const = 0;
@@ -59,7 +60,7 @@ public:
     return argv_;
   }
 
-private:
+ private:
   const server_argv argv_;
   uint64_t update_count_;
 };

@@ -27,7 +27,8 @@ using jubatus::fv_converter::converter_exception;
 namespace jubatus {
 
 re2_splitter::re2_splitter(const string& regexp, int group)
-    : re_(regexp), group_(group) {
+    : re_(regexp),
+      group_(group) {
   if (group < 0) {
     throw JUBATUS_EXCEPTION(converter_exception("'group' must be positive"));
   }
@@ -37,8 +38,7 @@ re2_splitter::re2_splitter(const string& regexp, int group)
   if (group > re_.NumberOfCapturingGroups()) {
     string msg = "regexp '" + regexp + "' only contains "
         + lexical_cast<string>(re_.NumberOfCapturingGroups())
-        + " groups, but 'group' is "
-        + lexical_cast<string>(group);
+        + " groups, but 'group' is " + lexical_cast<string>(group);
     throw JUBATUS_EXCEPTION(converter_exception(msg));
   }
 }
@@ -47,7 +47,7 @@ void re2_splitter::split(const string& str,
                          vector<pair<size_t, size_t> >& bounds) const {
   re2::StringPiece input(str.c_str());
   int groupSize = re_.NumberOfCapturingGroups() + 1;
-  vector<re2::StringPiece> words(groupSize);
+  vector < re2::StringPiece > words(groupSize);
   size_t current = 0;
   while (re_.Match(input, current, input.size(), re2::RE2::UNANCHORED,
                    &(words[0]), words.size())) {
@@ -67,8 +67,7 @@ void re2_splitter::split(const string& str,
 
 }
 
-static
-const string& get(const map<string, string>& args, const string& key) {
+static const string& get(const map<string, string>& args, const string& key) {
   map<string, string>::const_iterator it = args.find(key);
   if (it == args.end()) {
     throw JUBATUS_EXCEPTION(converter_exception("not found: " + key));
@@ -78,23 +77,23 @@ const string& get(const map<string, string>& args, const string& key) {
 }
 
 static
-int get_int_with_default(const map<string, string>& args,
-                         const string& key, int default_value) {
+int get_int_with_default(const map<string, string>& args, const string& key,
+                         int default_value) {
   if (args.count(key) == 0) {
     return default_value;
   }
   string s = get(args, key);
   try {
     return pfi::lang::lexical_cast<int>(s);
-  } catch(const bad_cast&) {
+  } catch (const bad_cast&) {
     throw JUBATUS_EXCEPTION(converter_exception("is not integer: " + key + " = " + s));
   }
 }
 
 extern "C" {
-  jubatus::re2_splitter* create(const map<string, string>& args) {
-    string pattern = get(args, "pattern");
-    int group = get_int_with_default(args, "group", 0);
-    return new jubatus::re2_splitter(pattern, group);
-  }
+jubatus::re2_splitter* create(const map<string, string>& args) {
+  string pattern = get(args, "pattern");
+  int group = get_int_with_default(args, "group", 0);
+  return new jubatus::re2_splitter(pattern, group);
+}
 }

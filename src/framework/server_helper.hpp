@@ -34,7 +34,7 @@ namespace jubatus {
 namespace framework {
 
 class server_helper_impl {
-public:
+ public:
   explicit server_helper_impl(const server_argv& a);
   void prepare_for_start(const server_argv& a, bool use_cht);
   void prepare_for_run(const server_argv& a, bool use_cht);
@@ -44,18 +44,19 @@ public:
     return zk_;
   }
 
-private:
+ private:
   common::cshared_ptr<jubatus::common::lock_service> zk_;
   pfi::lang::shared_ptr<common::try_lockable> zk_config_lock_;
 };
 
 template<typename Server>
 class server_helper {
-public:
+ public:
   typedef typename Server::status_t status_t;
 
   explicit server_helper(const server_argv& a, bool use_cht = false)
-      : impl_(a), use_cht_(use_cht) {
+      : impl_(a),
+        use_cht_(use_cht) {
 
     impl_.prepare_for_start(a, use_cht);
     server_.reset(new Server(a, impl_.zk()));
@@ -77,19 +78,21 @@ public:
   }
 
   std::map<std::string, std::string> get_loads() const {
-    std::map<std::string, std::string> result;
+    std::map < std::string, std::string > result;
     {
       pfi::system::sysstat::sysstat_ret sys;
       get_sysstat(sys);
       result["loadavg"] = pfi::lang::lexical_cast<std::string>(sys.loadavg);
-      result["total_memory"] = pfi::lang::lexical_cast<std::string>(sys.total_memory);
-      result["free_memory"] = pfi::lang::lexical_cast<std::string>(sys.free_memory);
+      result["total_memory"] = pfi::lang::lexical_cast<std::string>(
+          sys.total_memory);
+      result["free_memory"] = pfi::lang::lexical_cast<std::string>(
+          sys.free_memory);
     }
     return result;
   }
 
   std::map<std::string, status_t> get_status() const {
-    std::map<std::string, status_t> status;
+    std::map < std::string, status_t > status;
     const server_argv& a = server_->argv();
     status_t& data = status[get_server_identifier(a)];
 
@@ -105,12 +108,15 @@ public:
     data["threadnum"] = pfi::lang::lexical_cast<std::string>(a.threadnum);
     data["datadir"] = a.datadir;
     data["interval_sec"] = pfi::lang::lexical_cast<std::string>(a.interval_sec);
-    data["interval_count"] = pfi::lang::lexical_cast<std::string>(a.interval_count);
-    data["is_standalone"] = pfi::lang::lexical_cast<std::string>(a.is_standalone());
+    data["interval_count"] = pfi::lang::lexical_cast<std::string>(
+        a.interval_count);
+    data["is_standalone"] = pfi::lang::lexical_cast<std::string>(
+        a.is_standalone());
     data["VERSION"] = JUBATUS_VERSION;
     data["PROGNAME"] = a.program_name;
 
-    data["update_count"] = pfi::lang::lexical_cast<std::string>(server_->update_count());
+    data["update_count"] = pfi::lang::lexical_cast<std::string>(
+        server_->update_count());
 
     server_->get_status(data);
 
@@ -129,21 +135,22 @@ public:
     }
 
     try {
-      serv.listen( a.port, a.bind_address );
-      serv.start( a.threadnum, true );
+      serv.listen(a.port, a.bind_address);
+      serv.start(a.threadnum, true);
       // RPC server started, then register group membership
       impl_.prepare_for_run(a, use_cht_);
       serv.join();
       return 0;
-    } catch( mp::system_error &e ) {
-      if ( e.code == EADDRINUSE ) {
-        LOG(FATAL) << "server failed to start: any process using port " << a.port << "?";
+    } catch (mp::system_error &e) {
+      if (e.code == EADDRINUSE) {
+        LOG(FATAL) << "server failed to start: any process using port "
+            << a.port << "?";
       } else {
         LOG(FATAL) << "server failed to start: " << e.what();
       }
-    } catch( jubatus::exception::jubatus_exception& ) {
+    } catch (jubatus::exception::jubatus_exception&) {
       throw;
-    } catch( std::exception &e ) {
+    } catch (std::exception &e) {
       LOG(FATAL) << "server failed to start: " << e.what();
     }
     return -1;
@@ -157,7 +164,7 @@ public:
     return server_->rw_mutex();
   }
 
-private:
+ private:
 
   common::cshared_ptr<Server> server_;
   server_helper_impl impl_;

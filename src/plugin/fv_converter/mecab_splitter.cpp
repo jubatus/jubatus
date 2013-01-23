@@ -45,8 +45,8 @@ mecab_splitter::mecab_splitter(const char* arg)
     : model_(create_mecab_model(arg)) {
 }
 
-void mecab_splitter::split(const string& string,
-                           vector<pair<size_t, size_t> >& ret_boundaries) const {
+void mecab_splitter::split(
+    const string& string, vector<pair<size_t, size_t> >& ret_boundaries) const {
   scoped_ptr<MeCab::Tagger> tagger(model_->createTagger());
   if (!tagger) {
     // cannot create tagger
@@ -66,7 +66,7 @@ void mecab_splitter::split(const string& string,
   const MeCab::Node* node = lattice->bos_node();
   size_t p = 0;
 
-  vector<pair<size_t, size_t> > bounds;
+  vector < pair<size_t, size_t> > bounds;
   for (; node; node = node->next) {
     if (node->stat == MECAB_BOS_NODE || node->stat == MECAB_EOS_NODE)
       continue;
@@ -82,9 +82,9 @@ void mecab_splitter::split(const string& string,
 }
 
 extern "C" {
-  jubatus::mecab_splitter*
-  create(const std::map<std::string, std::string>& params) {
-    string param = jubatus::fv_converter::get_with_default(params, "arg", "");
-    return new jubatus::mecab_splitter(param.c_str());
-  }
+jubatus::mecab_splitter*
+create(const std::map<std::string, std::string>& params) {
+  string param = jubatus::fv_converter::get_with_default(params, "arg", "");
+  return new jubatus::mecab_splitter(param.c_str());
+}
 }

@@ -25,11 +25,18 @@ namespace regression {
 using namespace std;
 
 PA::PA(const config& config, storage::storage_base* storage)
-    : regression_base(storage), config_(config), sum_(0), sq_sum_(0), count_(0) {
+    : regression_base(storage),
+      config_(config),
+      sum_(0),
+      sq_sum_(0),
+      count_(0) {
 }
 
 PA::PA(storage::storage_base* storage)
-    : regression_base(storage), sum_(0), sq_sum_(0), count_(0) {
+    : regression_base(storage),
+      sum_(0),
+      sq_sum_(0),
+      count_(0) {
 }
 
 static float calc_norm(const sfv_t& fv) {
@@ -45,9 +52,7 @@ void PA::train(const sfv_t& fv, float value) {
   sq_sum_ += value * value;
   count_ += 1;
   float avg = sum_ / count_;
-  float std_dev = sqrt(sq_sum_ / count_
-                       - 2 * avg * sum_ / count_
-                       + avg * avg);
+  float std_dev = sqrt(sq_sum_ / count_ - 2 * avg * sum_ / count_ + avg * avg);
   float fv_norm = sqrt(calc_norm(fv));
 
   float predict = estimate(fv);

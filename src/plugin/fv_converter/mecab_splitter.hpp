@@ -39,6 +39,6 @@ class mecab_splitter : public fv_converter::word_splitter {
 }
 
 extern "C" {
-  jubatus::mecab_splitter*
-  create(const std::map<std::string, std::string>& params);
+jubatus::mecab_splitter*
+create(const std::map<std::string, std::string>& params);
 }

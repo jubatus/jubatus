@@ -28,8 +28,7 @@ dynamic_string_filter::dynamic_string_filter(const std::string& path,
       impl_(load_object<string_filter>(loader_, function, params)) {
 }
 
-void dynamic_string_filter::filter(const string& input,
-                                   string& output) const {
+void dynamic_string_filter::filter(const string& input, string& output) const {
   impl_->filter(input, output);
 }
 

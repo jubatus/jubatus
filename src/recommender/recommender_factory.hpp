@@ -21,13 +21,13 @@
 
 namespace jubatus {
 namespace jsonconfig {
-  class config;
-} // jsonconfig
+class config;
+}  // jsonconfig
 namespace recommender {
 
 class recommender_base;
 
 recommender_base* create_recommender(const std::string& name,
                                      const jsonconfig::config& param);
-} // recommender
-} // jubatus
+}  // recommender
+}  // jubatus

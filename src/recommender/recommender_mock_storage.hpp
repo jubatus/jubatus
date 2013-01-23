@@ -26,17 +26,19 @@ namespace jubatus {
 namespace recommender {
 
 class recommender_mock_storage : public storage::recommender_storage_base {
-public:
+ public:
   virtual ~recommender_mock_storage();
 
-  void set_similar_items(const sfv_t& query,
-                         const std::vector<std::pair<std::string, float> >& ids);
-  void set_neighbor_items(const sfv_t& query,
-                          const std::vector<std::pair<std::string, float> >& ids);
+  void set_similar_items(
+      const sfv_t& query,
+      const std::vector<std::pair<std::string, float> >& ids);
+  void set_neighbor_items(
+      const sfv_t& query,
+      const std::vector<std::pair<std::string, float> >& ids);
 
-  void similar_items_similarity(const sfv_t& query,
-                                std::vector<std::pair<std::string, float> >& ids,
-                                size_t ret_num) const;
+  void similar_items_similarity(
+      const sfv_t& query, std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
   void neighbor_items_distance(const sfv_t& query,
                                std::vector<std::pair<std::string, float> >& ids,
                                size_t ret_num) const;
@@ -51,7 +53,7 @@ public:
   virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
   virtual void mix(const std::string& lhs, std::string& rhs) const;
 
-private:
+ private:
   typedef std::map<sfv_t, std::vector<std::pair<std::string, float> > > relation_type;
 
   friend class pfi::data::serialization::access;
@@ -60,13 +62,11 @@ private:
     ar & MEMBER(similar_relation_) & MEMBER(neighbor_relation_);
   }
 
-  static void get_relation(const sfv_t& query,
-                           const relation_type& relmap,
+  static void get_relation(const sfv_t& query, const relation_type& relmap,
                            size_t ret_num,
                            std::vector<std::pair<std::string, float> >& ids);
 
-  static void update_relation_key(const sfv_t& from,
-                                  const sfv_t& to,
+  static void update_relation_key(const sfv_t& from, const sfv_t& to,
                                   relation_type& relmap);
 
   static void mix_relation(const relation_type& from, relation_type& to);

@@ -33,7 +33,7 @@ namespace jubatus {
 namespace server {
 
 class regression_serv : public framework::server_base {
-public:
+ public:
   regression_serv(const framework::server_argv& a,
                   const common::cshared_ptr<common::lock_service>& zk);
   virtual ~regression_serv();
@@ -55,7 +55,7 @@ public:
 
   void check_set_config() const;
 
-private:
+ private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 

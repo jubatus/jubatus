@@ -29,12 +29,11 @@
 #include "../recommender/recommender_factory.hpp"
 #include "anomaly_storage_base.hpp"
 
-
 namespace jubatus {
-namespace storage{
+namespace storage {
 
 class lof_storage : public anomaly_storage_base {
-public:
+ public:
   const static uint32_t DEFAULT_NEIGHBOR_NUM;
   const static uint32_t DEFAULT_REVERSE_NN_NUM;
 
@@ -44,7 +43,7 @@ public:
     int nearest_neighbor_num;
     int reverse_nearest_neighbor_num;
 
-    template <typename Ar>
+    template<typename Ar>
     void serialize(Ar& ar) {
       ar & MEMBER(nearest_neighbor_num) & MEMBER(reverse_nearest_neighbor_num);
     }
@@ -54,17 +53,20 @@ public:
   lof_storage(recommender::recommender_base* nn_engine);
 
   // config contains parameters for the underlying nearest neighbor search
-  explicit lof_storage(const config& config, recommender::recommender_base* nn_engine);
+  explicit lof_storage(const config& config,
+                       recommender::recommender_base* nn_engine);
 
   virtual ~lof_storage();
 
   // For Analyze
   // calculate lrd of query and lrd values of its neighbors
-  float collect_lrds(const sfv_t& query,
-                     pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
-  float collect_lrds(const std::string& id,
-                     pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
-  
+  float collect_lrds(
+      const sfv_t& query,
+      pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
+  float collect_lrds(
+      const std::string& id,
+      pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
+
   // For Update
   void remove_row(const std::string& row);
   void clear();
@@ -88,7 +90,7 @@ public:
   virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
   virtual void mix(const std::string& lhs, std::string& rhs) const;
 
-private:
+ private:
   struct lof_entry {
     float kdist;
     float lrd;
@@ -136,11 +138,9 @@ private:
       const std::vector<std::pair<std::string, float> >& neighbors,
       pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
 
-  void serialize_diff(const lof_table_t& table,
-                      const std::string& nn_diff,
+  void serialize_diff(const lof_table_t& table, const std::string& nn_diff,
                       std::ostream& out) const;
-  void deserialize_diff(const std::string& diff,
-                        lof_table_t& table,
+  void deserialize_diff(const std::string& diff, lof_table_t& table,
                         std::string& nn_diff) const;
 
   void collect_neighbors(const std::string& row,
@@ -157,10 +157,10 @@ private:
       const std::string& row,
       const std::vector<std::pair<std::string, float> >& neighbors);
 
-  lof_table_t lof_table_ ; // table for storing k-dist and lrd values
+  lof_table_t lof_table_;  // table for storing k-dist and lrd values
   lof_table_t lof_table_diff_;
 
-  uint32_t neighbor_num_; // k of k-nn
+  uint32_t neighbor_num_;  // k of k-nn
   uint32_t reverse_nn_num_;  // ck of ck-nn as an approx. of k-reverse-nn
 
   pfi::lang::scoped_ptr<recommender::recommender_base> nn_engine_;

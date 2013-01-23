@@ -26,7 +26,7 @@ namespace fv_converter {
 class re2_match : public key_matcher {
  public:
   re2_match(const std::string& regexp);
-  
+
   bool match(const std::string& key);
 
  private:
@@ -35,4 +35,5 @@ class re2_match : public key_matcher {
   re2::RE2 re_;
 };
 
-}}
+}
+}

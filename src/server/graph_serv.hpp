@@ -24,43 +24,45 @@
 #include "../graph/graph_wo_index.hpp"
 #include "graph_types.hpp"
 
-namespace jubatus { namespace server {
+namespace jubatus {
+namespace server {
 
 typedef uint64_t edge_id_t;
 typedef std::string node_id;
 typedef int centrality_type;
 
-struct mixable_graph : public framework::mixable<jubatus::graph::graph_base, std::string>
-{
+struct mixable_graph : public framework::mixable<jubatus::graph::graph_base,
+    std::string> {
   void clear() {
-  };
+  }
+  ;
 
-  std::string get_diff_impl() const
-  {
+  std::string get_diff_impl() const {
     std::string diff;
     get_model()->get_diff(diff);
     return diff;
-  };
+  }
+  ;
 
-  void mix_impl(const std::string& lhs,
-                const std::string& rhs,
-                std::string& mixed) const
-  {
+  void mix_impl(const std::string& lhs, const std::string& rhs,
+                std::string& mixed) const {
     mixed = lhs;
-    jubatus::graph::graph_wo_index* graph = dynamic_cast<jubatus::graph::graph_wo_index*>(get_model().get());
+    jubatus::graph::graph_wo_index* graph =
+        dynamic_cast<jubatus::graph::graph_wo_index*>(get_model().get());
     if (graph) {
       graph->mix(rhs, mixed);
     }
-  };
+  }
+  ;
 
-  void put_diff_impl(const std::string& v)
-  {
+  void put_diff_impl(const std::string& v) {
     get_model()->set_mixed_and_clear_diff(v);
-  };
+  }
+  ;
 };
 
 class graph_serv : public framework::server_base {
-public:
+ public:
   graph_serv(const framework::server_argv& a,
              const common::cshared_ptr<common::lock_service>& zk);
   virtual ~graph_serv();
@@ -79,39 +81,38 @@ public:
 
   void get_status(status_t& status) const;
 
-  std::string create_node(); //update cht
+  std::string create_node();  //update cht
 
-  bool update_node(const std::string& nid, const property& p); //update cht
+  bool update_node(const std::string& nid, const property& p);  //update cht
 
-  bool remove_node(const std::string& nid); //update cht
+  bool remove_node(const std::string& nid);  //update cht
 
-  edge_id_t create_edge(const std::string& nid, const edge_info&); //update cht
+  edge_id_t create_edge(const std::string& nid, const edge_info&);  //update cht
 
-  bool update_edge(const std::string& nid, edge_id_t, const edge_info&); //update cht
+  bool update_edge(const std::string& nid, edge_id_t, const edge_info&);  //update cht
 
-  bool remove_edge(const std::string& nid, const edge_id_t& e); //update cht
+  bool remove_edge(const std::string& nid, const edge_id_t& e);  //update cht
 
   double get_centrality(const std::string& nid, const centrality_type& ct,
-                        const preset_query& q) const; //analysis random
+                        const preset_query& q) const;  //analysis random
 
-  std::vector<node_id > get_shortest_path(const shortest_path_req& r) const; //analysis random
+  std::vector<node_id> get_shortest_path(const shortest_path_req& r) const;  //analysis random
 
-  bool add_centrality_query(const preset_query& q); //update broadcast
+  bool add_centrality_query(const preset_query& q);  //update broadcast
 
-  bool add_shortest_path_query(const preset_query& q); //update broadcast
+  bool add_shortest_path_query(const preset_query& q);  //update broadcast
 
-  bool remove_centrality_query(const preset_query& q); //update broadcast
+  bool remove_centrality_query(const preset_query& q);  //update broadcast
 
-  bool remove_shortest_path_query(const preset_query& q); //update broadcast
+  bool remove_shortest_path_query(const preset_query& q);  //update broadcast
 
+  bool update_index();  //update broadcast
 
-  bool update_index(); //update broadcast
+  bool clear();  //update broadcast
 
-  bool clear(); //update broadcast
+  node_info get_node(const std::string& nid) const;  //analysis cht
 
-  node_info get_node(const std::string& nid) const; //analysis cht
-
-  edge_info get_edge(const std::string& nid, const edge_id_t& e) const; //analysis cht
+  edge_info get_edge(const std::string& nid, const edge_id_t& e) const;  //analysis cht
 
   // internal apis used between servers
   bool create_node_here(const std::string& nid);
@@ -120,12 +121,11 @@ public:
 
   bool create_edge_here(edge_id_t eid, const edge_info& ei);
 
-private:
-  void selective_create_node_(const std::pair<std::string,int>& target,
+ private:
+  void selective_create_node_(const std::pair<std::string, int>& target,
                               const std::string nid_str);
 
-  void find_from_cht_(const std::string& key,
-                      size_t n,
+  void find_from_cht_(const std::string& key, size_t n,
                       std::vector<std::pair<std::string, int> >& out);
   void get_members_(std::vector<std::pair<std::string, int> >& ret);
 

@@ -29,7 +29,7 @@ namespace {
 
 string make_logfile_name(const server_argv& a) {
   std::ostringstream logfile;
-  if (a.logdir != ""){
+  if (a.logdir != "") {
     logfile << a.logdir << '/';
     logfile << a.program_name << '.';
     logfile << a.eth << '_' << a.port;
@@ -54,8 +54,8 @@ void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
   if (!a.is_standalone()) {
     ls = zk_;
     common::prepare_jubatus(*zk_, a.type, a.name);
-    
-    if (a.join) { // join to the existing cluster with -j option
+
+    if (a.join) {  // join to the existing cluster with -j option
       LOG(INFO) << "joining to the cluseter " << a.name;
       LOG(ERROR) << "join is not supported yet :(";
     }
@@ -88,7 +88,7 @@ void server_helper_impl::get_config_lock(const server_argv& a, int retry) {
 
     while (!zk_config_lock_->try_rlock()) {
       if (retry == 0)
-        throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any user is writing config?"));
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any user is writing config?"));
       retry--;
       sleep(1);
     }

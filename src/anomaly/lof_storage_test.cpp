@@ -9,7 +9,6 @@
 #include "../common/exception.hpp"
 #include "../common/hash.hpp"
 #include "../common/portable_mixer.hpp" // FIXME: use linear_mixer
-
 #include "../recommender/recommender_mock.hpp"
 #include "../recommender/recommender_mock_util.hpp"
 #include "lof_storage.hpp"
@@ -27,8 +26,7 @@ namespace storage {
 
 namespace {
 
-lof_storage* make_storage(uint32_t k,
-                          uint32_t ck,
+lof_storage* make_storage(uint32_t k, uint32_t ck,
                           recommender::recommender_base* mock_nn_engine) {
   lof_storage::config config;
   config.nearest_neighbor_num = k;
@@ -87,7 +85,7 @@ TEST(lof_storage, get_all_row_ids) {
 
 // One dimensional example (points = { -1, 0, 1, 10 }, k = 2)
 class lof_storage_one_dimensional_test : public ::testing::Test {
-protected:
+ protected:
   virtual void SetUp() {
     rmock_ = new recommender::recommender_mock;
     storage_.reset(make_storage(2, 2, rmock_));
@@ -101,7 +99,8 @@ protected:
     rmock_->set_neighbor_relation(make_sfv("1:0"), make_ids("-1:1 1:1 10:10"));
     rmock_->set_neighbor_relation(make_sfv("1:1"), make_ids("0:1 -1:2 10:9"));
     rmock_->set_neighbor_relation(make_sfv("1:10"), make_ids("1:9 0:10 -1:11"));
-    rmock_->set_neighbor_relation(make_sfv("1:2"), make_ids("1:1 0:2 -1:3 10:8"));
+    rmock_->set_neighbor_relation(make_sfv("1:2"),
+                                  make_ids("1:1 0:2 -1:3 10:8"));
 
     storage_->update_all();
   }
@@ -144,11 +143,11 @@ TEST_F(lof_storage_one_dimensional_test, collect_lrds_novel_input) {
   EXPECT_FLOAT_EQ(1/2.f, lrds["0"]);
 }
 
-
-class lof_storage_mix_test
-    : public ::testing::TestWithParam<pair<int, lof_storage::config> > {
-protected:
-  sfv_t generate_gaussian(const string& name, const sfv_t& mean, float deviation) {
+class lof_storage_mix_test : public ::testing::TestWithParam<
+    pair<int, lof_storage::config> > {
+ protected:
+  sfv_t generate_gaussian(const string& name, const sfv_t& mean,
+                          float deviation) {
     sfv_t sfv(mean);
     const uint64_t seed = hash_util::calc_string_hash(name);
     mtrand r(seed);
@@ -188,9 +187,11 @@ protected:
 
     storages_.resize(num_models);
     for (int i = 0; i < num_models; ++i) {
-      storages_[i].reset(new lof_storage(config, new recommender::recommender_mock));
+      storages_[i].reset(
+          new lof_storage(config, new recommender::recommender_mock));
     }
-    single_storage_.reset(new lof_storage(config, new recommender::recommender_mock));
+    single_storage_.reset(
+        new lof_storage(config, new recommender::recommender_mock));
 
     for (size_t i = 0; i < storages_.size(); ++i) {
       portable_mixer_.add(storages_[i].get());
@@ -239,7 +240,7 @@ TEST_P(lof_storage_mix_test, consistency) {
       EXPECT_FLOAT_EQ(expect_lrd, actual_lrd);
 
       for (unordered_map<string, float>::const_iterator it = expect_lrds.begin();
-           it != expect_lrds.end(); ++it) {
+          it != expect_lrds.end(); ++it) {
         EXPECT_TRUE(actual_lrds.count(it->first));
         EXPECT_FLOAT_EQ(it->second, actual_lrds[it->first]);
       }
@@ -280,8 +281,7 @@ TEST_P(lof_storage_mix_test, mix_after_remove) {
   }
 }
 
-lof_storage::config make_lof_storage_config()
-{
+lof_storage::config make_lof_storage_config() {
   lof_storage::config config;
   config.nearest_neighbor_num = 10;
   config.reverse_nearest_neighbor_num = 30;
@@ -293,7 +293,7 @@ INSTANTIATE_TEST_CASE_P(
     lof_storage_mix_test,
     ::testing::Values(
         make_pair(5, make_lof_storage_config())
-        ));
+    ));
 
 }
 }

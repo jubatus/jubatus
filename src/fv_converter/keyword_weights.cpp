@@ -27,7 +27,8 @@ using namespace std;
 keyword_weights::keyword_weights()
     : document_count_(),
       document_frequencies_(),
-      weights_() {}
+      weights_() {
+}
 
 struct is_zero {
   bool operator()(const pair<string, float>& p) {

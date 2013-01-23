@@ -21,11 +21,14 @@
 #include <stdint.h>
 #include "classifier_config.hpp"
 
-namespace jubatus{
+namespace jubatus {
 
-struct classify_result_elem{
-  classify_result_elem (const std::string& label, float score) :
-    label(label), score(score){};
+struct classify_result_elem {
+  classify_result_elem(const std::string& label, float score)
+      : label(label),
+        score(score) {
+  }
+  ;
   std::string label;
   float score;
 };

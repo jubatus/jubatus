@@ -29,21 +29,23 @@ namespace jubatus {
 namespace stat {
 
 class stat_error : public jubatus::exception::jubaexception<stat_error> {
-public:
+ public:
   stat_error(const std::string &msg)
-    : msg_(msg) {}
-  ~stat_error() throw() {}
+      : msg_(msg) {
+  }
+  ~stat_error() throw () {
+  }
 
-  const char *what() const throw() {
+  const char *what() const throw () {
     return msg_.c_str();
   }
 
-private:
+ private:
   std::string msg_;
 };
 
 class stat {
-public:
+ public:
   stat(size_t window_size);
   virtual ~stat();
 
@@ -61,23 +63,23 @@ public:
   bool load(std::istream&);
   std::string type() const;
 
-private:
+ private:
   friend class pfi::data::serialization::access;
-  template <class Archive>
+  template<class Archive>
   void serialize(Archive &ar) {
     ar & window_size_ & window_;
   }
 
   size_t window_size_;
 
-protected:
+ protected:
   struct stat_val {
     stat_val()
-      : n_(0)
-      , sum_(0)
-      , sum2_(0)
-      , max_(0)
-      , min_(0) {
+        : n_(0),
+          sum_(0),
+          sum2_(0),
+          max_(0),
+          min_(0) {
     }
 
     void add(double d) {
@@ -104,18 +106,17 @@ protected:
         if (n_ > 0) {
           bool first = true;
           for (size_t i = 0; i < st.window_.size(); ++i) {
-            if (st.window_[i].second.first != key) continue;
+            if (st.window_[i].second.first != key)
+              continue;
             double d = st.window_[i].second.second;
             if (first) {
               max_ = d;
               first = false;
-            }
-            else {
+            } else {
               max_ = std::max(max_, d);
             }
           }
-        }
-        else {
+        } else {
           max_ = 0;
         }
       }
@@ -123,18 +124,17 @@ protected:
         if (n_ > 0) {
           bool first = true;
           for (size_t i = 0; i < st.window_.size(); ++i) {
-            if (st.window_[i].second.first != key) continue;
+            if (st.window_[i].second.first != key)
+              continue;
             double d = st.window_[i].second.second;
             if (first) {
               min_ = d;
               first = false;
-            }
-            else {
+            } else {
               min_ = std::min(min_, d);
             }
           }
-        }
-        else {
+        } else {
           min_ = 0;
         }
       }
@@ -153,4 +153,4 @@ protected:
 };
 
 }
-} // namespace jubatus
+}  // namespace jubatus

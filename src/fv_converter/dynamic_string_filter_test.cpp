@@ -27,8 +27,8 @@ TEST(dynamic_string_filter, trivial) {
   map<string, string> params;
 
   dynamic_string_filter f(LIBFILTER_SAMPLE,
-                          "create",
-                          params);
+      "create",
+      params);
   string out;
   f.filter("hoge-hoge", out);
   EXPECT_EQ("hoge hoge", out);
@@ -37,18 +37,17 @@ TEST(dynamic_string_filter, trivial) {
 TEST(dynamic_string_filter, unknown_file) {
   map<string, string> params;
   EXPECT_THROW(dynamic_string_filter f("unkonwn_file.so",
-                                       "create",
-                                       params),
-               converter_exception);
+          "create",
+          params),
+      converter_exception);
 }
 
 TEST(dynamic_string_filter, unknown_function) {
   map<string, string> params;
   EXPECT_THROW(dynamic_string_filter f(LIBFILTER_SAMPLE,
-                                       "unknown_function",
-                                       params),
-               converter_exception);
+          "unknown_function",
+          params),
+      converter_exception);
 }
-
 
 }

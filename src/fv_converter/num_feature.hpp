@@ -23,12 +23,15 @@ namespace jubatus {
 namespace fv_converter {
 
 class num_feature {
-public:
-  num_feature() {}
-  virtual ~num_feature() {}
+ public:
+  num_feature() {
+  }
+  virtual ~num_feature() {
+  }
 
-  virtual void add_feature(const std::string& key, double value,
-                           std::vector<std::pair<std::string, float> >& ret_fv) const = 0;
+  virtual void add_feature(
+      const std::string& key, double value,
+      std::vector<std::pair<std::string, float> >& ret_fv) const = 0;
 };
 
 }

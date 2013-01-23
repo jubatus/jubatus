@@ -30,14 +30,16 @@ namespace {
 vector<float> make_hash(const string& b) {
   vector<float> v;
   istringstream ss(b);
-  for (float x; ss >> x; ) {
+  for (float x; ss >> x;) {
     v.push_back(x);
   }
   return v;
 }
 
 float distance(float norm1, float norm2, float angle_ratio) {
-  return sqrt(norm1*norm1 + norm2*norm2 - 2*norm1*norm2*cos(angle_ratio*M_PI));
+  return sqrt(
+      norm1 * norm1 + norm2 * norm2
+          - 2 * norm1 * norm2 * cos(angle_ratio * M_PI));
 }
 
 }

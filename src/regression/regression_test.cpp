@@ -10,10 +10,11 @@ using namespace pfi::lang;
 
 namespace jubatus {
 
-template <typename T>
-class regression_test : public testing::Test {};
+template<typename T>
+class regression_test : public testing::Test {
+};
 
-TYPED_TEST_CASE_P(regression_test);
+TYPED_TEST_CASE_P (regression_test);
 
 TYPED_TEST_P(regression_test, trivial) {
   local_storage s;
@@ -21,7 +22,7 @@ TYPED_TEST_P(regression_test, trivial) {
   sfv_t fv;
   fv.push_back(make_pair(string("f1"), 1.0));
   p.train(fv, 10);
-  
+
   fv.clear();
   fv.push_back(make_pair(string("f2"), 1.0));
   p.train(fv, -10);
@@ -45,14 +46,14 @@ void random_test(regression::regression_base& p, float x, float y, size_t dim) {
   pfi::math::random::mtrand rand(0);
   // learn with 1000 random data
   for (size_t i = 0; i < 1000; ++i) {
-    std::pair<float, std::vector<double> > tfv = gen_random_data(x , x, dim);
+    std::pair<float, std::vector<double> > tfv = gen_random_data(x, x, dim);
     p.train(convert(tfv.second), tfv.first);
   }
 
   size_t ok = 0;
   for (size_t i = 0; i < 100; ++i) {
-    std::pair<float, std::vector<double> > tfv = gen_random_data(x , x, dim);
-  if (fabs(p.estimate(convert(tfv.second)) - tfv.first) < 2.0 * y * x)
+    std::pair<float, std::vector<double> > tfv = gen_random_data(x, x, dim);
+    if (fabs(p.estimate(convert(tfv.second)) - tfv.first) < 2.0 * y * x)
       ++ok;
   }
   EXPECT_GT(ok, 90u);
@@ -75,8 +76,6 @@ TYPED_TEST_P(regression_test, random) {
     random_test(p, 10000, 1, 10);
   }
 }
-
-
 
 REGISTER_TYPED_TEST_CASE_P(
     regression_test,

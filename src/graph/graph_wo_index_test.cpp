@@ -21,7 +21,7 @@
 
 using namespace std;
 
-namespace jubatus{
+namespace jubatus {
 namespace graph {
 
 namespace {
@@ -52,7 +52,7 @@ void mix_graph(size_t count, graph_wo_index& g) {
 
 }
 
-TEST(graph_wo_index, none){
+TEST(graph_wo_index, none) {
   graph_wo_index g;
   preset_query q;
 
@@ -130,8 +130,8 @@ TEST(graph_wo_index, none){
   EXPECT_THROW(g.remove_node(5), jubatus::exception::runtime_error);
   EXPECT_THROW(g.remove_node(999), jubatus::exception::runtime_error);
   EXPECT_THROW(g.remove_edge(5), jubatus::exception::runtime_error);
-  EXPECT_THROW(g.remove_node(777), jubatus::exception::runtime_error); // edge is associated
-  EXPECT_THROW(g.remove_node(888), jubatus::exception::runtime_error); // edge is associated
+  EXPECT_THROW(g.remove_node(777), jubatus::exception::runtime_error);  // edge is associated
+  EXPECT_THROW(g.remove_node(888), jubatus::exception::runtime_error);// edge is associated
 
   g.remove_edge(10000);
   g.remove_edge(10001);
@@ -148,24 +148,24 @@ TEST(graph_wo_index, none){
   g.update_index();
 }
 
-TEST(graph, random){
+TEST(graph, random) {
   graph_wo_index g;
 
   const uint64_t node_num = 1000;
   uint64_t local_node_num = 0;
   set<uint64_t> local_ids;
-  for (uint64_t i = 0; i < node_num; ++i){
+  for (uint64_t i = 0; i < node_num; ++i) {
     g.create_global_node(i);
-    if ((rand() % 10) == 0){
+    if ((rand() % 10) == 0) {
       g.create_node(i);
       local_ids.insert(i);
       ++local_node_num;
     }
   }
-  
+
   const uint64_t edge_num = 10000;
   uint64_t edge_added_num = 0;
-  for (uint64_t i = 0; i < edge_num; ++i){
+  for (uint64_t i = 0; i < edge_num; ++i) {
     uint64_t src = rand() % node_num;
     uint64_t tgt = rand() % node_num;
     if (src == tgt) continue;
@@ -173,17 +173,16 @@ TEST(graph, random){
     g.create_edge(i, src, tgt);
     ++edge_added_num;
   }
-  
+
   map<string, string> status;
   g.get_status(status);
   ASSERT_EQ(pfi::lang::lexical_cast<string>(local_node_num), status["local_node_num"]);
   ASSERT_EQ(pfi::lang::lexical_cast<string>(node_num), status["global_node_num"]);
   ASSERT_EQ(pfi::lang::lexical_cast<string>(edge_added_num), status["local_edge_num"]);
 
-  
 }
 
-TEST(graph, mix){
+TEST(graph, mix) {
   graph_wo_index g;
   string diff;
   g.get_diff(diff);
@@ -582,7 +581,7 @@ TEST(graph, shortest_path_node_query_failure_at_non_landmark_point) {
   g[1].create_edge(62, 6, 2);
   g[3].create_edge(62, 6, 2);
 
-  mix_graphs(2, g);  // Node 6 is not a landmark
+  mix_graphs(2, g);// Node 6 is not a landmark
 
   vector<node_id_t> expect;
   expect.push_back(1);

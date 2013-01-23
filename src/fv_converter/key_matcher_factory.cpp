@@ -38,7 +38,8 @@ key_matcher* key_matcher_factory::create_matcher(const std::string& matcher) {
     return new suffix_match(matcher.substr(1));
   } else if (matcher[matcher.size() - 1] == '*') {
     return new prefix_match(matcher.substr(0, matcher.size() - 1));
-  } else if (matcher.size() >= 2 && matcher[0] == '/' && matcher[matcher.size() - 1] == '/') {
+  } else if (matcher.size() >= 2 && matcher[0] == '/'
+      && matcher[matcher.size() - 1] == '/') {
 #ifdef HAVE_RE2
     return new re2_match(matcher.substr(1, matcher.size() - 2));
 #else

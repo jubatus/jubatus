@@ -31,7 +31,7 @@ using namespace pfi::data::serialization;
 
 namespace jubatus {
 
-TEST(local_storage_mixture, save_load){
+TEST(local_storage_mixture, save_load) {
 
   local_storage_mixture st;
   {
@@ -43,7 +43,7 @@ TEST(local_storage_mixture, save_load){
   }
   stringstream ss;
   st.save(ss);
-  
+
 }
 
 TEST(local_storage_mixture, get_diff) {
@@ -67,11 +67,11 @@ TEST(local_storage_mixture, get_diff) {
   sort(a.begin(), a.end());
   ASSERT_EQ(3u, a.size());
   EXPECT_EQ("x", a[0].first);
-  EXPECT_EQ(1,   a[0].second.v1);
+  EXPECT_EQ(1, a[0].second.v1);
   EXPECT_EQ("y", a[1].first);
-  EXPECT_EQ(2,   a[1].second.v1);  
+  EXPECT_EQ(2, a[1].second.v1);
   EXPECT_EQ("z", a[2].first);
-  EXPECT_EQ(3,   a[2].second.v1);
+  EXPECT_EQ(3, a[2].second.v1);
 
   EXPECT_EQ("b", diff[1].first);
   feature_val3_t& b = diff[1].second;
@@ -113,13 +113,13 @@ TEST(local_storage_mixture, get_diff) {
 
     ASSERT_EQ(4u, v.size());
     EXPECT_EQ("w", v[0].first);
-    EXPECT_EQ(4,   v[0].second);
+    EXPECT_EQ(4, v[0].second);
     EXPECT_EQ("x", v[1].first);
-    EXPECT_EQ(3,   v[1].second);
+    EXPECT_EQ(3, v[1].second);
     EXPECT_EQ("y", v[2].first);
-    EXPECT_EQ(2,   v[2].second);
+    EXPECT_EQ(2, v[2].second);
     EXPECT_EQ("z", v[3].first);
-    EXPECT_EQ(3,   v[3].second);
+    EXPECT_EQ(3, v[3].second);
   }
   {
     feature_val1_t v;
@@ -139,7 +139,7 @@ TEST(local_storage_mixture, get_diff) {
 
     ASSERT_EQ(1u, v.size());
     EXPECT_EQ("x", v[0].first);
-    EXPECT_EQ(1,   v[0].second);
+    EXPECT_EQ(1, v[0].second);
   }
   {
     features3_t diff;

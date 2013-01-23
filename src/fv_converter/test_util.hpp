@@ -21,22 +21,19 @@
 
 namespace {
 
-template <typename S, typename T>
+template<typename S, typename T>
 void PairVectorEquals(const std::vector<std::pair<S, T> >& expected,
                       const std::vector<std::pair<S, T> >& actual) {
   ASSERT_EQ(expected.size(), actual.size()) << "unequal length";
   for (size_t i = 0; i < expected.size(); ++i) {
     const std::pair<S, T>& e = expected[i];
     const std::pair<S, T>& a = actual[i];
-    ASSERT_EQ(e.first, a.first)
-        << "(" << e.first << ", " << e.second << ") != "
+    ASSERT_EQ(e.first, a.first) << "(" << e.first << ", " << e.second << ") != "
         << "(" << a.first << ", " << a.second << ")";
-    ASSERT_EQ(e.second, a.second)
-        << "(" << e.first << ", " << e.second << ") != "
-        << "(" << a.first << ", " << a.second << ")";
+    ASSERT_EQ(e.second, a.second) << "(" << e.first << ", " << e.second
+        << ") != " << "(" << a.first << ", " << a.second << ")";
   }
 }
 
 }
-
 

@@ -27,20 +27,22 @@
 #include "recommender_storage_base.hpp"
 
 namespace jubatus {
-namespace storage{
+namespace storage {
 
-class inverted_index_storage : public recommender_storage_base{
-public:
+class inverted_index_storage : public recommender_storage_base {
+ public:
   inverted_index_storage();
   ~inverted_index_storage();
 
-  void set(const std::string& row, const std::string& column, float val); 
+  void set(const std::string& row, const std::string& column, float val);
   float get(const std::string& row, const std::string& column) const;
   void remove(const std::string& row, const std::string& column);
   void clear();
   void get_all_column_ids(std::vector<std::string>& ids) const;
 
-  void calc_scores(const sfv_t& sfv, std::vector<std::pair<std::string, float> >& scores, size_t ret_num) const;
+  void calc_scores(const sfv_t& sfv,
+                   std::vector<std::pair<std::string, float> >& scores,
+                   size_t ret_num) const;
 
   void get_diff(std::string& diff_str) const;
   void set_mixed_and_clear_diff(const std::string& mixed_diff);
@@ -51,25 +53,23 @@ public:
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
-private:
+ private:
   static float calc_l2norm(const sfv_t& sfv);
   float calc_columnl2norm(uint64_t column_id) const;
-  float get_from_tbl(const std::string& row, uint64_t column_id, const tbl_t& tbl, bool& exist) const;
+  float get_from_tbl(const std::string& row, uint64_t column_id,
+                     const tbl_t& tbl, bool& exist) const;
 
   friend class pfi::data::serialization::access;
-  template <class Ar>
+  template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(inv_)
-       & MEMBER(inv_diff_)
-       & MEMBER(column2norm_)
-       & MEMBER(column2norm_diff_)
-       & MEMBER(column2id_);
+    ar & MEMBER(inv_) & MEMBER(inv_diff_) & MEMBER(column2norm_)
+        & MEMBER(column2norm_diff_) & MEMBER(column2id_);
 
   }
 
-  void add_inp_scores(const std::string& row, float val, 
+  void add_inp_scores(const std::string& row, float val,
                       pfi::data::unordered_map<uint64_t, float>& scores) const;
-  
+
   tbl_t inv_;
   tbl_t inv_diff_;
   imap_float_t column2norm_;

@@ -51,8 +51,7 @@ class datum_to_fv_converter_impl {
     shared_ptr<string_filter> filter_;
     std::string suffix_;
 
-    void filter(const datum::sv_t& string_values,
-                datum::sv_t& filtered) const {
+    void filter(const datum::sv_t& string_values, datum::sv_t& filtered) const {
       for (size_t i = 0; i < string_values.size(); ++i) {
         const pair<string, string>& value = string_values[i];
         if (matcher_->match(value.first)) {
@@ -70,8 +69,7 @@ class datum_to_fv_converter_impl {
     shared_ptr<num_filter> filter_;
     std::string suffix_;
 
-    void filter(const datum::nv_t& num_values,
-                datum::nv_t& filtered) const {
+    void filter(const datum::nv_t& num_values, datum::nv_t& filtered) const {
       for (size_t i = 0; i < num_values.size(); ++i) {
         const pair<string, double>& value = num_values[i];
         if (matcher_->match(value.first)) {
@@ -89,11 +87,13 @@ class datum_to_fv_converter_impl {
     shared_ptr<word_splitter> splitter_;
     std::vector<splitter_weight_type> weights_;
 
-    string_feature_rule(const string& name,
-                        shared_ptr<key_matcher> matcher,
+    string_feature_rule(const string& name, shared_ptr<key_matcher> matcher,
                         shared_ptr<word_splitter> splitter,
                         const std::vector<splitter_weight_type>& weights)
-      : name_(name), matcher_(matcher), splitter_(splitter), weights_(weights) {
+        : name_(name),
+          matcher_(matcher),
+          splitter_(splitter),
+          weights_(weights) {
     }
   };
 
@@ -102,23 +102,25 @@ class datum_to_fv_converter_impl {
     shared_ptr<key_matcher> matcher_;
     shared_ptr<num_feature> feature_func_;
 
-    num_feature_rule(const string& name,
-                     shared_ptr<key_matcher> matcher,
+    num_feature_rule(const string& name, shared_ptr<key_matcher> matcher,
                      shared_ptr<num_feature> feature_func)
-      : name_(name), matcher_(matcher), feature_func_(feature_func) {}
+        : name_(name),
+          matcher_(matcher),
+          feature_func_(feature_func) {
+    }
   };
 
   std::vector<string_filter_rule> string_filter_rules_;
   std::vector<num_filter_rule> num_filter_rules_;
   std::vector<string_feature_rule> string_rules_;
   std::vector<num_feature_rule> num_rules_;
-  
+
   common::cshared_ptr<weight_manager> weights_;
 
   pfi::data::optional<feature_hasher> hasher_;
 
  public:
-  datum_to_fv_converter_impl() 
+  datum_to_fv_converter_impl()
       : weights_() {
   }
 
@@ -132,7 +134,7 @@ class datum_to_fv_converter_impl {
   void register_string_filter(shared_ptr<key_matcher> matcher,
                               shared_ptr<string_filter> filter,
                               const string& suffix) {
-    string_filter_rule rule =  { matcher, filter, suffix };
+    string_filter_rule rule = { matcher, filter, suffix };
     string_filter_rules_.push_back(rule);
   }
 
@@ -143,27 +145,24 @@ class datum_to_fv_converter_impl {
     num_filter_rules_.push_back(rule);
   }
 
-  void register_string_rule(const string& name,
-                            shared_ptr<key_matcher> matcher,
-                            shared_ptr<word_splitter> splitter, 
+  void register_string_rule(const string& name, shared_ptr<key_matcher> matcher,
+                            shared_ptr<word_splitter> splitter,
                             const vector<splitter_weight_type>& weights) {
-    string_rules_.push_back(string_feature_rule(name, matcher, splitter, weights));
+    string_rules_.push_back(
+        string_feature_rule(name, matcher, splitter, weights));
   }
 
-  void register_num_rule(const string& name,
-                         shared_ptr<key_matcher> matcher,
+  void register_num_rule(const string& name, shared_ptr<key_matcher> matcher,
                          shared_ptr<num_feature> feature_func) {
     num_rules_.push_back(num_feature_rule(name, matcher, feature_func));
   }
 
-  void add_weight(const std::string& key,
-                  float weight) {
+  void add_weight(const std::string& key, float weight) {
     if (weights_)
       (*weights_).add_weight(key, weight);
   }
 
-  void convert(const datum& datum,
-               sfv_t& ret_fv) const {
+  void convert(const datum& datum, sfv_t& ret_fv) const {
     sfv_t fv;
     convert_unweighted(datum, fv);
     if (weights_)
@@ -172,42 +171,40 @@ class datum_to_fv_converter_impl {
     if (hasher_) {
       hasher_->hash_feature_keys(fv);
     }
-    
+
     fv.swap(ret_fv);
   }
 
-  void convert_and_update_weight(const datum& datum,
-                                 sfv_t& ret_fv) {
+  void convert_and_update_weight(const datum& datum, sfv_t& ret_fv) {
     sfv_t fv;
     convert_unweighted(datum, fv);
     if (weights_) {
       (*weights_).update_weight(fv);
       (*weights_).get_weight(fv);
     }
-    
+
     if (hasher_) {
       hasher_->hash_feature_keys(fv);
     }
-    
+
     fv.swap(ret_fv);
   }
 
   void convert_unweighted(const datum& datum, sfv_t& ret_fv) const {
     sfv_t fv;
 
-    vector<pair<string, string> > filtered_strings;
+    vector < pair<string, string> > filtered_strings;
     filter_strings(datum.string_values_, filtered_strings);
     convert_strings(datum.string_values_, fv);
     convert_strings(filtered_strings, fv);
 
-    vector<pair<string, double> > filtered_nums;
+    vector < pair<string, double> > filtered_nums;
     filter_nums(datum.num_values_, filtered_nums);
     convert_nums(datum.num_values_, fv);
     convert_nums(filtered_nums, fv);
 
     fv.swap(ret_fv);
   }
-
 
   void revert_feature(const string& feature,
                       pair<string, string>& expect) const {
@@ -253,8 +250,8 @@ class datum_to_fv_converter_impl {
       string_filter_rules_[i].filter(string_values, update);
       string_filter_rules_[i].filter(filtered_values, update);
 
-      filtered_values.insert(filtered_values.end(),
-                             update.begin(), update.end());
+      filtered_values.insert(filtered_values.end(), update.begin(),
+                             update.end());
     }
   }
 
@@ -265,13 +262,12 @@ class datum_to_fv_converter_impl {
       num_filter_rules_[i].filter(num_values, update);
       num_filter_rules_[i].filter(filtered_values, update);
 
-      filtered_values.insert(filtered_values.end(),
-                             update.begin(), update.end());
+      filtered_values.insert(filtered_values.end(), update.begin(),
+                             update.end());
     }
   }
 
-  void convert_strings(const datum::sv_t& string_values,
-                      sfv_t& ret_fv) const {
+  void convert_strings(const datum::sv_t& string_values, sfv_t& ret_fv) const {
     for (size_t i = 0; i < string_rules_.size(); ++i) {
       convert_strings(string_rules_[i], string_values, ret_fv);
     }
@@ -287,41 +283,38 @@ class datum_to_fv_converter_impl {
   }
 
   void convert_strings(const string_feature_rule& splitter,
-                       const datum::sv_t& string_values,
-                       sfv_t& ret_fv) const {
-    for (size_t j = 0; j < string_values.size(); ++j)  {
+                       const datum::sv_t& string_values, sfv_t& ret_fv) const {
+    for (size_t j = 0; j < string_values.size(); ++j) {
       const string& key = string_values[j].first;
       const string& value = string_values[j].second;
       counter<string> counter;
       count_words(splitter, key, value, counter);
       for (size_t i = 0; i < splitter.weights_.size(); ++i) {
-        make_string_features(key, splitter.name_, splitter.weights_[i], counter, ret_fv);
+        make_string_features(key, splitter.name_, splitter.weights_[i], counter,
+                             ret_fv);
       }
     }
   }
 
-  static string make_feature(const string& key,
-                             const string& value,
+  static string make_feature(const string& key, const string& value,
                              const string& splitter,
                              const string& sample_weight,
                              const string& global_weight) {
-    return key + "$" + value + "@" + splitter + "#" + sample_weight + "/" + global_weight;
+    return key + "$" + value + "@" + splitter + "#" + sample_weight + "/"
+        + global_weight;
   }
 
-  static string make_feature_key(const string& key,
-                                 const string& value,
+  static string make_feature_key(const string& key, const string& value,
                                  const string& splitter) {
     return key + "$" + value + "@" + splitter;
   }
 
-  void count_words(const string_feature_rule& splitter,
-                   const string& key,
-                   const string& value,
-                   counter<string>& counter) const {
+  void count_words(const string_feature_rule& splitter, const string& key,
+                   const string& value, counter<string>& counter) const {
     if (splitter.matcher_->match(key)) {
-      vector<pair<size_t, size_t> > boundaries;
+      vector < pair<size_t, size_t> > boundaries;
       splitter.splitter_->split(value, boundaries);
-      
+
       for (size_t i = 0; i < boundaries.size(); i++) {
         size_t begin = boundaries[i].first;
         size_t len = boundaries[i].second;
@@ -331,7 +324,8 @@ class datum_to_fv_converter_impl {
     }
   }
 
-  double get_sample_weight(frequency_weight_type type, unsigned tf, string& name) const {
+  double get_sample_weight(frequency_weight_type type, unsigned tf,
+                           string& name) const {
     switch (type) {
       case FREQ_BINARY:
         name = "bin";
@@ -343,7 +337,7 @@ class datum_to_fv_converter_impl {
 
       case LOG_TERM_FREQUENCY:
         name = "log_tf";
-        return  log(1. + tf);
+        return log(1. + tf);
 
       default:
         return 0;
@@ -363,34 +357,33 @@ class datum_to_fv_converter_impl {
     }
   }
 
-  void make_string_features(const string& key,
-                            const string& splitter_name,
+  void make_string_features(const string& key, const string& splitter_name,
                             const splitter_weight_type& weight_type,
-                            const counter<string>& count,
-                            sfv_t& ret_fv) const {
-    for (counter<string>::const_iterator it = count.begin();
-         it != count.end(); ++it) {
+                            const counter<string>& count, sfv_t& ret_fv) const {
+    for (counter<string>::const_iterator it = count.begin(); it != count.end();
+        ++it) {
       string sample_weight_name;
-      double sample_weight = get_sample_weight(weight_type.freq_weight_type_, it->second, sample_weight_name);
-      
-      string global_weight_name = get_global_weight_name(weight_type.term_weight_type_);
+      double sample_weight = get_sample_weight(weight_type.freq_weight_type_,
+                                               it->second, sample_weight_name);
+
+      string global_weight_name = get_global_weight_name(
+          weight_type.term_weight_type_);
       float v = sample_weight;
       if (v != 0.0) {
-        string f = make_feature(key, it->first, splitter_name, sample_weight_name, global_weight_name);
+        string f = make_feature(key, it->first, splitter_name,
+                                sample_weight_name, global_weight_name);
         ret_fv.push_back(make_pair(f, v));
       }
     }
   }
 
-  void convert_nums(const datum::nv_t& num_values, 
-                    sfv_t& ret_fv) const {
+  void convert_nums(const datum::nv_t& num_values, sfv_t& ret_fv) const {
     for (size_t i = 0; i < num_values.size(); ++i) {
       convert_num(num_values[i].first, num_values[i].second, ret_fv);
     }
   }
 
-  void convert_num(const string& key, double value,
-                   sfv_t& ret_fv) const {
+  void convert_num(const string& key, double value, sfv_t& ret_fv) const {
     for (size_t i = 0; i < num_rules_.size(); ++i) {
       const num_feature_rule& r = num_rules_[i];
       if (r.matcher_->match(key)) {
@@ -401,7 +394,6 @@ class datum_to_fv_converter_impl {
   }
 
 };
-
 
 ////
 
@@ -416,7 +408,8 @@ void datum_to_fv_converter::convert(const datum& datum, sfv_t& ret_fv) const {
   pimpl_->convert(datum, ret_fv);
 }
 
-void datum_to_fv_converter::convert_and_update_weight(const datum& datum, sfv_t& ret_fv) {
+void datum_to_fv_converter::convert_and_update_weight(const datum& datum,
+                                                      sfv_t& ret_fv) {
   pimpl_->convert_and_update_weight(datum, ret_fv);
 }
 
@@ -424,9 +417,9 @@ void datum_to_fv_converter::clear_rules() {
   pimpl_->clear_rules();
 }
 
-void datum_to_fv_converter::register_string_filter(shared_ptr<key_matcher> matcher,
-                                                   shared_ptr<string_filter> filter,
-                                                   const string& suffix) {
+void datum_to_fv_converter::register_string_filter(
+    shared_ptr<key_matcher> matcher, shared_ptr<string_filter> filter,
+    const string& suffix) {
   pimpl_->register_string_filter(matcher, filter, suffix);
 }
 
@@ -436,22 +429,20 @@ void datum_to_fv_converter::register_num_filter(shared_ptr<key_matcher> matcher,
   pimpl_->register_num_filter(matcher, filter, suffix);
 }
 
-
-void datum_to_fv_converter::register_string_rule(const string& name,
-                                                 shared_ptr<key_matcher> matcher,
-                                                 shared_ptr<word_splitter> splitter,
-                                                 const vector<splitter_weight_type>& weights) {
+void datum_to_fv_converter::register_string_rule(
+    const string& name, shared_ptr<key_matcher> matcher,
+    shared_ptr<word_splitter> splitter,
+    const vector<splitter_weight_type>& weights) {
   pimpl_->register_string_rule(name, matcher, splitter, weights);
 }
 
-void datum_to_fv_converter::register_num_rule(const string& name,
-                                              shared_ptr<key_matcher> matcher,
-                                              shared_ptr<num_feature> feature_func) {
+void datum_to_fv_converter::register_num_rule(
+    const string& name, shared_ptr<key_matcher> matcher,
+    shared_ptr<num_feature> feature_func) {
   pimpl_->register_num_rule(name, matcher, feature_func);
 }
 
-void datum_to_fv_converter::add_weight(const string& key,
-                                       float weight) {
+void datum_to_fv_converter::add_weight(const string& key, float weight) {
   pimpl_->add_weight(key, weight);
 }
 
@@ -464,7 +455,8 @@ void datum_to_fv_converter::set_hash_max_size(uint64_t hash_max_size) {
   pimpl_->set_hash_max_size(hash_max_size);
 }
 
-void datum_to_fv_converter::set_weight_manager(common::cshared_ptr<weight_manager> wm) {
+void datum_to_fv_converter::set_weight_manager(
+    common::cshared_ptr<weight_manager> wm) {
   pimpl_->set_weight_manager(wm);
 }
 

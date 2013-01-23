@@ -21,8 +21,8 @@
 
 namespace jubatus {
 namespace jsonconfig {
-  class config;
-} // jsonconfig
+class config;
+}  // jsonconfig
 namespace anomaly {
 
 class anomaly_base;

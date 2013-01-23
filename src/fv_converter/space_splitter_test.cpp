@@ -27,7 +27,7 @@ static void TestSplit(const string& string,
                       const vector<pair<size_t, size_t> >& expected) {
   space_splitter splitter;
 
-  vector<pair<size_t, size_t> > actual;
+  vector < pair<size_t, size_t> > actual;
   splitter.split(string, actual);
 
   PairVectorEquals(expected, actual);

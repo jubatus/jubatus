@@ -27,30 +27,30 @@ using namespace pfi::lang;
 
 TEST(dynamic_splitter, trivial) {
   dynamic_splitter s(LIBSPLITTER_SAMPLE,
-                     "create",
-                     map<string, string>());
-    vector<pair<size_t, size_t> > bounds;
-    s.split(" test test", bounds);
-  
-    ASSERT_EQ(2u, bounds.size());
-    EXPECT_EQ(1u, bounds[0].first);
-    EXPECT_EQ(4u, bounds[0].second);
-    EXPECT_EQ(6u, bounds[1].first);
-    EXPECT_EQ(4u, bounds[1].second);
+      "create",
+      map<string, string>());
+  vector<pair<size_t, size_t> > bounds;
+  s.split(" test test", bounds);
+
+  ASSERT_EQ(2u, bounds.size());
+  EXPECT_EQ(1u, bounds[0].first);
+  EXPECT_EQ(4u, bounds[0].second);
+  EXPECT_EQ(6u, bounds[1].first);
+  EXPECT_EQ(4u, bounds[1].second);
 }
 
 TEST(dynamic_splitter, unknown_file) {
   EXPECT_THROW(
       dynamic_splitter s("unknown_file.so",
-                         "create",
-                         map<string, string>()),
+          "create",
+          map<string, string>()),
       converter_exception);
 }
 
 TEST(dynamic_splitter, unknown_function) {
   EXPECT_THROW(
       dynamic_splitter s(LIBSPLITTER_SAMPLE,
-                         "unknown_function",
-                         map<string, string>()),
+          "unknown_function",
+          map<string, string>()),
       converter_exception);
 }

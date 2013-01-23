@@ -21,14 +21,18 @@
 namespace jubatus {
 namespace storage {
 
-template <typename T, typename Comp = std::less<T> >
+template<typename T, typename Comp = std::less<T> >
 class fixed_size_heap {
  public:
   fixed_size_heap(size_t max)
-      : max_size_(max), comp_(Comp()) {}
+      : max_size_(max),
+        comp_(Comp()) {
+  }
 
   fixed_size_heap(size_t max, const Comp& comp)
-      : max_size_(max), comp_(comp) {}
+      : max_size_(max),
+        comp_(comp) {
+  }
 
   void push(const T& v) {
     if (data_.size() < max_size_) {

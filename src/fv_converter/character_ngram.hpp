@@ -26,7 +26,9 @@ namespace fv_converter {
 
 class character_ngram : public word_splitter {
  public:
-  character_ngram(size_t length) : length_(length) {}
+  character_ngram(size_t length)
+      : length_(length) {
+  }
 
   void split(const std::string& string,
              std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;

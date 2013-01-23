@@ -36,91 +36,86 @@ namespace jubatus {
 namespace common {
 
 namespace {
-string get_host_name(const void* sock_addr, size_t sock_size)
-{
+string get_host_name(const void* sock_addr, size_t sock_size) {
   char host[NI_MAXHOST];
-  int s = getnameinfo(static_cast<const sockaddr*>(sock_addr), sock_size, host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+  int s = getnameinfo(static_cast<const sockaddr*>(sock_addr), sock_size, host,
+                      NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
   if (s) {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get hostname")
-      << jubatus::exception::error_api_func("getnameinfo")
-      << jubatus::exception::error_message(gai_strerror(s)));
+        << jubatus::exception::error_api_func("getnameinfo")
+        << jubatus::exception::error_message(gai_strerror(s)));
   }
 
   return host;
 }
 
 class ipv4_address : public network_address {
-public:
+ public:
   ipv4_address(const sockaddr_in* addr)
-    : addr_(*addr)
-  {
+      : addr_(*addr) {
   }
 
   ipv4_address(const sockaddr_in* addr, const char* name)
-    : addr_(*addr), interface_name_(name)
-  {
+      : addr_(*addr),
+        interface_name_(name) {
   }
 
-  bool v4() const
-  {
+  bool v4() const {
     return true;
   }
 
-  bool v6() const
-  {
+  bool v6() const {
     return false;
   }
 
-  bool loopback() const
-  {
+  bool loopback() const {
     return addr_.sin_addr.s_addr == htonl(INADDR_LOOPBACK);
   }
 
-  string address() const
-  {
+  string address() const {
     return get_host_name(&addr_, sizeof(addr_));
   }
 
-  string interface() const
-  {
+  string interface() const {
     return interface_name_;
   }
 
-  const sockaddr_in *v4_address() const
-  {
+  const sockaddr_in *v4_address() const {
     return &addr_;
   }
 
-  const sockaddr_in6 *v6_address() const
-  {
+  const sockaddr_in6 *v6_address() const {
     return NULL;
   }
 
-private:
+ private:
   sockaddr_in addr_;
   string interface_name_;
 };
 
 // TODO: implement ipv6_address
 
-} // namespace
+}// namespace
 
-address_list get_network_address()
-{
+address_list get_network_address() {
   address_list result;
 
   struct ifaddrs* addrs;
   if (getifaddrs(&addrs) == -1) {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get interface addresses")
-      << jubatus::exception::error_api_func("getifaddrs")
-      << jubatus::exception::error_errno(errno));
+        << jubatus::exception::error_api_func("getifaddrs")
+        << jubatus::exception::error_errno(errno));
   }
 
   try {
     for (struct ifaddrs* ifa = addrs; ifa != NULL; ifa = ifa->ifa_next) {
       int family = ifa->ifa_addr->sa_family;
       if (family == AF_INET) {
-        result.push_back(pfi::lang::shared_ptr<network_address>(new ipv4_address(reinterpret_cast<struct sockaddr_in*>(ifa->ifa_addr), ifa->ifa_name)));
+        result.push_back(
+            pfi::lang::shared_ptr<network_address>(
+                new ipv4_address(
+                    reinterpret_cast<struct sockaddr_in*>(ifa->ifa_addr),
+                    ifa->ifa_name)));
       } else if (family == AF_INET6) {
         // TODO: to be implemented to return ipv6_address
       }
@@ -135,28 +130,31 @@ address_list get_network_address()
 }
 
 // TODO: support hostaddr can be hostname not only IP address
-string get_default_v4_address(string hostaddr)
-{
+string get_default_v4_address(string hostaddr) {
   string address;
 
   const address_list addrs = get_network_address();
   for (address_list::const_iterator it = addrs.begin(), end = addrs.end();
       it != end; ++it) {
     pfi::lang::shared_ptr<network_address> a(*it);
-    if (a->v6()) continue;
+    if (a->v6())
+      continue;
     address = a->address();
-    if (!hostaddr.empty() && address == hostaddr) break;
+    if (!hostaddr.empty() && address == hostaddr)
+      break;
 
-    if (!a->loopback()) break;
+    if (!a->loopback())
+      break;
   }
 
   if (!hostaddr.empty() && address != hostaddr) {
-    LOG(WARNING) << "Use server address as '" << address << "' because '" << hostaddr << "' missing";
+    LOG(WARNING) << "Use server address as '" << address << "' because '"
+        << hostaddr << "' missing";
   }
 
   return address;
 }
 
-} // common
-} // jubatus
+}  // common
+}  // jubatus
 

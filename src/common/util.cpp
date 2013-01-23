@@ -55,44 +55,40 @@ namespace jubatus {
 namespace util {
 
 // FIXME: AF_INET does not specify IPv6
-void get_ip(const char* nic, string& out)
-{
+void get_ip(const char* nic, string& out) {
   int fd;
   struct ifreq ifr;
 
   fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (fd == -1) {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to create socket(AF_INET, SOCK_DGRAM)")
-      << jubatus::exception::error_errno(errno));
+        << jubatus::exception::error_errno(errno));
   }
 
   ifr.ifr_addr.sa_family = AF_INET;
-  strncpy(ifr.ifr_name, nic, IFNAMSIZ-1);
+  strncpy(ifr.ifr_name, nic, IFNAMSIZ - 1);
   if (ioctl(fd, SIOCGIFADDR, &ifr) == -1) {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get IP address from interface")
-      << jubatus::exception::error_errno(errno));
+        << jubatus::exception::error_errno(errno));
   }
   close(fd);
 
-  struct sockaddr_in* sin = (struct sockaddr_in*)(&(ifr.ifr_addr));
-  out = inet_ntoa((struct in_addr)(sin->sin_addr));
+  struct sockaddr_in* sin = (struct sockaddr_in*) (&(ifr.ifr_addr));
+  out = inet_ntoa((struct in_addr) (sin->sin_addr));
 }
 
-string get_ip(const char* nic)
-{
+string get_ip(const char* nic) {
   string ret;
   get_ip(nic, ret);
   return ret;
 }
 
-string base_name(const string& path)
-{
+string base_name(const string& path) {
   size_t found = path.rfind('/');
   return found != string::npos ? path.substr(found + 1) : path;
 }
 
-std::string get_program_name()
-{
+std::string get_program_name() {
   // WARNING: this code will only work on linux or OS X
 #ifdef __APPLE__
   char path[PROC_PIDPATHINFO_MAXSIZE];
@@ -107,7 +103,7 @@ std::string get_program_name()
   if (ret != -1) {
     if (ret == PATH_MAX)
       throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get program name. Path size overed PATH_MAX.")
-        << jubatus::exception::error_errno(errno));
+          << jubatus::exception::error_errno(errno));
     path[ret] = '\0';
   }
 #endif
@@ -119,8 +115,8 @@ std::string get_program_name()
   // get basename
   const string program_base_name = base_name(path);
   if (program_base_name == path)
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(string("Failed to get program name from path: ") + path)
-       << jubatus::exception::error_file_name(path));
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(string("Failed to get program name from path: ") + path)
+        << jubatus::exception::error_file_name(path));
   return program_base_name;
 }
 
@@ -136,11 +132,11 @@ std::string get_user_name() {
       return result->pw_name;
     }
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("User not found")
-      << jubatus::exception::error_api_func("getpwuid_r"));
+        << jubatus::exception::error_api_func("getpwuid_r"));
   }
   throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to get user name")
-    << jubatus::exception::error_api_func("getpwuid_r")
-    << jubatus::exception::error_errno(ret));
+      << jubatus::exception::error_api_func("getpwuid_r")
+      << jubatus::exception::error_errno(ret));
 }
 
 bool is_writable(const char* dir_path) {
@@ -166,8 +162,8 @@ bool is_writable(const char* dir_path) {
 //  ...
 //  192.168.1.23 2345
 //and must include self IP got from "eth0"
-std::string load(const std::string& file, std::vector< std::pair<std::string, int> >& s)
-{
+std::string load(const std::string& file,
+                 std::vector<std::pair<std::string, int> >& s) {
   std::string tmp;
   std::string self;
   get_ip("eth0", self);
@@ -175,46 +171,42 @@ std::string load(const std::string& file, std::vector< std::pair<std::string, in
   int port;
   int line = 0;
   std::ifstream ifs(file.c_str());
-   if (!ifs) {
+  if (!ifs) {
     return self;
   }
   while (ifs >> tmp) {
-    if (self==tmp)
+    if (self == tmp)
       self_included = true;
     if (!(ifs >> port)) {
       // TODO: replace jubatus exception
       throw parse_error(file, line, tmp.size(), string("input port"));
     }
-    s.push_back(std::pair<std::string,int>(tmp, port));
+    s.push_back(std::pair<std::string, int>(tmp, port));
     line++;
   }
   if (!self_included) {
     // TODO: replace jubatus exception
-    throw parse_error(file, s.size(), 0, //FIXME: 0
+    throw parse_error(file, s.size(), 0,  //FIXME: 0
                       string("self IP(eth0) not included in list"));
   }
   return self;
 }
 
-int daemonize()
-{
+int daemonize() {
   return daemon(0, 0);
 }
 
-void append_env_path(const string& e, const string& argv0)
-{
+void append_env_path(const string& e, const string& argv0) {
   const char* env = getenv(e.c_str());
   string new_path = string(env) + ":" + argv0;
   setenv(e.c_str(), new_path.c_str(), new_path.size());
 }
 
-void append_server_path(const string& argv0)
-{
+void append_server_path(const string& argv0) {
   const char * env = getenv("PATH");
   char cwd[PATH_MAX];
   if (!getcwd(cwd, PATH_MAX)) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to getcwd"))
-      << jubatus::exception::error_errno(errno);
+    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to getcwd"))<< jubatus::exception::error_errno(errno);
   }
 
   string p = argv0.substr(0, argv0.find_last_of('/'));
@@ -223,8 +215,7 @@ void append_server_path(const string& argv0)
 
 }
 
-void get_machine_status(machine_status_t& status)
-{
+void get_machine_status(machine_status_t& status) {
   // WARNING: this code will only work on linux
   try {
     // /proc/[pid]/statm shows using page size
@@ -233,16 +224,16 @@ void get_machine_status(machine_status_t& status)
     std::ifstream statm(path);
 
     const long page_size = sysconf(_SC_PAGESIZE);
-    uint64_t vm_virt, vm_rss , vm_shr;
+    uint64_t vm_virt, vm_rss, vm_shr;
     statm >> vm_virt >> vm_rss >> vm_shr;
     vm_virt = vm_virt * page_size / 1024;
     vm_rss = vm_rss * page_size / 1024;
     vm_shr = vm_shr * page_size / 1024;
 
     // in KB
-    status.vm_size = vm_virt; // total program size(virtual memory)
-    status.vm_resident = vm_rss; // resident set size
-    status.vm_share = vm_shr; // shared
+    status.vm_size = vm_virt;  // total program size(virtual memory)
+    status.vm_resident = vm_rss;  // resident set size
+    status.vm_share = vm_shr;  // shared
   } catch (...) {
     // store zero
     status.vm_size = 0;
@@ -252,14 +243,12 @@ void get_machine_status(machine_status_t& status)
 }
 
 namespace {
-void exit_on_term(int)
-{
+void exit_on_term(int) {
   exit(0);
 }
 }
 
-void set_exit_on_term()
-{
+void set_exit_on_term() {
   struct sigaction sigact;
   sigact.sa_handler = exit_on_term;
   sigact.sa_flags = SA_RESTART;
@@ -275,8 +264,7 @@ void set_exit_on_term()
         << jubatus::exception::error_errno(errno));
 }
 
-void ignore_sigpipe()
-{
+void ignore_sigpipe() {
   // portable code for socket write(2) MSG_NOSIGNAL
   if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("can't ignore SIGPIPE")
@@ -284,7 +272,6 @@ void ignore_sigpipe()
         << jubatus::exception::error_errno(errno));
 }
 
-} //util
-} //jubatus
-
+}  //util
+}  //jubatus
 

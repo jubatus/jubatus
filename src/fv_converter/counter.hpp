@@ -77,12 +77,11 @@ class counter {
     }
   }
 
-  MSGPACK_DEFINE(data_);
-  template <class Archiver>
+  MSGPACK_DEFINE (data_);
+  template<class Archiver>
   void serialize(Archiver &ar) {
-    ar
-      & MEMBER(data_);
-  }  
+    ar & MEMBER(data_);
+  }
  private:
   pfi::data::unordered_map<T, unsigned> data_;
 };

@@ -24,15 +24,15 @@
 namespace jubatus {
 namespace storage {
 
-class norm_none : public norm_base{
-public:
+class norm_none : public norm_base {
+ public:
   norm_none();
   ~norm_none();
   void clear();
   void notify(const std::string& row, float old_val, float new_val);
   float calc_norm(const std::string& row) const;
 
-private:
+ private:
   pfi::data::unordered_map<std::string, float> sq_norms_;
 };
 

@@ -34,7 +34,7 @@ TEST(fixed_size_heap, small) {
 TEST(fixed_size_heap, large) {
   fixed_size_heap<int> h(3);
   for (int i = 0; i < 10; ++i)
-    h.push(i * 7 % 10);
+  h.push(i * 7 % 10);
 
   EXPECT_EQ(3u, h.size());
 
@@ -48,7 +48,7 @@ TEST(fixed_size_heap, large) {
 TEST(fixed_size_heap, reverse) {
   fixed_size_heap<int, greater<int> > h(3);
   for (int i = 0; i < 10; ++i)
-    h.push(i * 7 % 10);
+  h.push(i * 7 % 10);
 
   EXPECT_EQ(3u, h.size());
 

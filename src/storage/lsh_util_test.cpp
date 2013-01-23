@@ -31,7 +31,7 @@ namespace {
 lsh_vector make_vector(const string& str) {
   stringstream ss(str);
   vector<int> v;
-  for (int n; ss >> n; ) {
+  for (int n; ss >> n;) {
     v.push_back(n);
   }
   return lsh_vector(v);
@@ -40,14 +40,13 @@ lsh_vector make_vector(const string& str) {
 vector<float> make_dv(const string& str) {
   stringstream ss(str);
   vector<float> v;
-  for (float x; ss >> x; ) {
+  for (float x; ss >> x;) {
     v.push_back(x);
   }
   return v;
 }
 
-void check_probe(size_t expect_table,
-                 const string& expect_vec,
+void check_probe(size_t expect_table, const string& expect_vec,
                  const pair<size_t, lsh_vector>& actual) {
   EXPECT_EQ(expect_table, actual.first);
   EXPECT_EQ(make_vector(expect_vec), actual.second);

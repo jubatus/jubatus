@@ -21,10 +21,13 @@
 namespace jubatus {
 namespace storage {
 
-class norm_base{
-public:
-  norm_base(){};
-  virtual ~norm_base(){} 
+class norm_base {
+ public:
+  norm_base() {
+  }
+  ;
+  virtual ~norm_base() {
+  }
   virtual void clear() = 0;
   virtual void notify(const std::string& row, float old_val, float new_val) = 0;
   virtual float calc_norm(const std::string& row) const = 0;

@@ -38,10 +38,9 @@ using jubatus::common::mprpc::rpc_error;
 using jubatus::common::mprpc::error_multi_rpc;
 using jubatus::exception::error_info_list_t;
 
-struct strw{
+struct strw {
   string key;
-  string value;
-  MSGPACK_DEFINE(key,value);
+  string value;MSGPACK_DEFINE(key,value);
 };
 
 MPRPC_PROC(test_bool, bool(int));
@@ -51,27 +50,38 @@ MPRPC_PROC(various, string(int,float,double, strw));
 MPRPC_PROC(sum, int(vector<int>));
 MPRPC_PROC(vec, vector<string>(string, size_t));
 
-static bool test_bool(int i){  return i%2; }
-static int  test_twice(int i){ return i*2; }
-static int  add_all(int i, int j, int k){ return (i+j+k); }
-static string various(int i, float f, double d, strw s){
-  string ret =  pfi::lang::lexical_cast<string>(i)
-    + pfi::lang::lexical_cast<string>(f)
-    + pfi::lang::lexical_cast<string>(d)
-    + s.key + s.value;
+static bool test_bool(int i) {
+  return i % 2;
+}
+static int test_twice(int i) {
+  return i * 2;
+}
+static int add_all(int i, int j, int k) {
+  return (i + j + k);
+}
+static string various(int i, float f, double d, strw s) {
+  string ret = pfi::lang::lexical_cast<string>(i)
+      + pfi::lang::lexical_cast<string>(f) + pfi::lang::lexical_cast<string>(d)
+      + s.key + s.value;
   return ret;
 }
 
-static int sum(vector<int> hoge){
+static int sum(vector<int> hoge) {
   int sum = 0;
-  for (size_t i = 0, size = hoge.size(); i < size; i++) sum += hoge[i];
+  for (size_t i = 0, size = hoge.size(); i < size; i++)
+    sum += hoge[i];
   return sum;
 }
-static vector<string> vec(string s, size_t size){ return vector<string>(size, s); }
-static string concat(string l,string r){ return (l+r); };
-static vector<string> concat_vector(const vector<string> lhs, const vector<string> rhs)
-{
-  vector<string> res(lhs.begin(), lhs.end());
+static vector<string> vec(string s, size_t size) {
+  return vector < string > (size, s);
+}
+static string concat(string l, string r) {
+  return (l + r);
+}
+;
+static vector<string> concat_vector(const vector<string> lhs,
+                                    const vector<string> rhs) {
+  vector < string > res(lhs.begin(), lhs.end());
   res.insert(res.end(), rhs.begin(), rhs.end());
   return res;
 }
@@ -82,8 +92,7 @@ typedef shared_ptr<test_mrpc_server> server_ptr;
 typedef vector<server_ptr> server_list;
 typedef vector<shared_ptr<thread> > thread_list;
 
-static void server_thread(server_ptr srv, unsigned u)
-{
+static void server_thread(server_ptr srv, unsigned u) {
   srv->set_test_bool(&test_bool);
   srv->set_test_twice(&test_twice);
   srv->set_add_all(&add_all);
@@ -120,8 +129,7 @@ TEST(rpc_mclient, no_result)
 }
 
 namespace {
-void timeout_server(pfi::network::mprpc::socket* server_socket)
-{
+void timeout_server(pfi::network::mprpc::socket* server_socket) {
   ::accept(server_socket->get(), NULL, NULL);
 
   // wait socket shutdown
@@ -167,7 +175,6 @@ TEST(rpc_mclient, error_multi_rpc)
   server_socket.close();
 }
 
-
 TEST(rpc_mclient, small)
 {
   vector<pair<string,uint16_t> > clients;
@@ -181,7 +188,7 @@ TEST(rpc_mclient, small)
     threads.back()->start();
 
     clients.push_back(make_pair(string("localhost"), port));
-	wait_server(port);
+    wait_server(port);
   }
   const size_t kServerSize = clients.size();
   {
@@ -230,15 +237,15 @@ TEST(rpc_mclient, small)
 
   {
     pfi::lang::function<std::vector<std::string>
-      (const std::vector<std::string>, const std::vector<std::string>)> f = &concat_vector;
+    (const std::vector<std::string>, const std::vector<std::string>)> f = &concat_vector;
 
     rpc_result<vector<string> > r = cli.call("vec", string("a"), 200, f);
     EXPECT_EQ(200 * kServerSize, r.value->size());
   }
 
-  { // server_error: method_not_found
-    //ASSERT_THROW(cli.call("undefined_method", 1, function<int(int,int)>(&jubatus::framework::add<int>)),
-    //  jubatus::common::mprpc::rpc_no_result);
+  {  // server_error: method_not_found
+     //ASSERT_THROW(cli.call("undefined_method", 1, function<int(int,int)>(&jubatus::framework::add<int>)),
+     //  jubatus::common::mprpc::rpc_no_result);
 
     try {
       rpc_result<int> r = cli.call("undefined_method", 1, function<int(int,int)>(&jubatus::framework::add<int>));
@@ -267,9 +274,9 @@ TEST(rpc_mclient, small)
     }
   }
 
-  { // server_error: rpc_type_error
+  {  // server_error: rpc_type_error
     ASSERT_THROW(cli.call("sum", string("test"), function<int(int,int)>(&jubatus::framework::add<int>)),
-      jubatus::common::mprpc::rpc_no_result);
+        jubatus::common::mprpc::rpc_no_result);
 
     try {
       cli.call("sum", string("test"), function<int(int,int)>(&jubatus::framework::add<int>));
@@ -299,9 +306,8 @@ TEST(rpc_mclient, small)
     }
   }
 
-
   for (size_t i = 0; i < servers.size(); i++)
-    servers[i]->stop();
+  servers[i]->stop();
 }
 
 TEST(rpc_mclient, socket_disconnection)

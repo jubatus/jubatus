@@ -27,25 +27,25 @@ TEST(dynamic_num_filter, trivial) {
   map<string, string> params;
 
   dynamic_num_filter f(LIBNUM_FILTER_SAMPLE,
-                       "create",
-                       params);
+      "create",
+      params);
   EXPECT_EQ(6.0, f.filter(3.0));
 }
 
 TEST(dynamic_num_filter, unknown_file) {
   map<string, string> params;
   EXPECT_THROW(dynamic_num_filter f("unkonwn_file.so",
-                                    "create",
-                                    params),
-               converter_exception);
+          "create",
+          params),
+      converter_exception);
 }
 
 TEST(dynamic_num_filter, unknown_function) {
   map<string, string> params;
   EXPECT_THROW(dynamic_num_filter f(LIBNUM_FILTER_SAMPLE,
-                                    "unknown_function",
-                                    params),
-               converter_exception);
+          "unknown_function",
+          params),
+      converter_exception);
 }
 
 }

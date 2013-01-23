@@ -24,10 +24,10 @@
 #include "../common/key_manager.hpp"
 
 namespace jubatus {
-namespace storage{
+namespace storage {
 
 class index_storage {
-public:
+ public:
   index_storage();
   ~index_storage();
 
@@ -35,7 +35,7 @@ public:
   virtual void set_mixed_and_clear_diff(sparse_matrix_storage& mixed) const = 0;
 
   virtual std::string name() const = 0;
-private:
+ private:
 };
 
 }

@@ -24,8 +24,11 @@ namespace fv_converter {
 
 class suffix_match : public key_matcher {
  public:
-  suffix_match(const std::string& suffix) : suffix_(suffix) {}
-  ~suffix_match() {}
+  suffix_match(const std::string& suffix)
+      : suffix_(suffix) {
+  }
+  ~suffix_match() {
+  }
 
   bool match(const std::string& key) {
     return pfi::data::string::ends_with(key, suffix_);

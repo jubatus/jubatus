@@ -11,13 +11,13 @@ using namespace std;
 
 TEST(weight_manager, trivial) {
   weight_manager m;
-  
+
   {
     sfv_t fv;
     m.add_weight("/address$tokyo@str", 1.5);
     m.update_weight(fv);
     m.get_weight(fv);
-    
+
     fv.push_back(make_pair("/title$this@space#bin/bin", 1.0));
     // df = 1, |D| = 2
     fv.push_back(make_pair("/title$this@space#bin/idf", 1.0));
@@ -25,7 +25,7 @@ TEST(weight_manager, trivial) {
     fv.push_back(make_pair("/address$tokyo@str#bin/weight", 1.0));
     m.update_weight(fv);
     m.get_weight(fv);
-    
+
     ASSERT_EQ(4u, fv.size());
     EXPECT_FLOAT_EQ(1.0, fv[0].second);
     EXPECT_FLOAT_EQ(1.0 * log((2.0 + 1) / (1.0 + 1)), fv[1].second);
@@ -56,7 +56,7 @@ TEST(weight_manager, trivial) {
     EXPECT_EQ(1u, fv.size());
     EXPECT_FLOAT_EQ(1.0 * log((4.0 + 1) / (3.0 + 1)), fv[0].second);
   }
-  
+
 }
 
 }

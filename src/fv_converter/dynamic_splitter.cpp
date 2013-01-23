@@ -28,8 +28,8 @@ dynamic_splitter::dynamic_splitter(const std::string& path,
       impl_(load_object<word_splitter>(loader_, function, params)) {
 }
 
-void dynamic_splitter::split(const string& string,
-                             vector<pair<size_t, size_t> >& ret_boundaries) const {
+void dynamic_splitter::split(
+    const string& string, vector<pair<size_t, size_t> >& ret_boundaries) const {
   impl_->split(string, ret_boundaries);
 }
 

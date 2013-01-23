@@ -35,5 +35,6 @@ void remove_config_fromzk(lock_service& , const std::string& , const std::string
 bool is_no_workers(lock_service&, const std::string&, const std::string&);
 #endif
 
-} // common
+}
+  // common
 } // jubatus

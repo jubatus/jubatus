@@ -21,8 +21,9 @@ namespace fv_converter {
 
 using namespace std;
 
-void without_split::split(const std::string& str,
-                          std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
+void without_split::split(
+    const std::string& str,
+    std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
   ret_boundaries.push_back(make_pair(0, str.size()));
 }
 

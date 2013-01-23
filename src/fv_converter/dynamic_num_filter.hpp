@@ -26,9 +26,8 @@ namespace fv_converter {
 
 class dynamic_num_filter : public num_filter {
  public:
-  dynamic_num_filter(const std::string& path,
-                        const std::string& function,
-                        const std::map<std::string, std::string>& params);
+  dynamic_num_filter(const std::string& path, const std::string& function,
+                     const std::map<std::string, std::string>& params);
 
   double filter(double value) const;
 

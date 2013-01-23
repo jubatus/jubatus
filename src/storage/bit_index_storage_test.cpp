@@ -89,7 +89,7 @@ TEST(bit_index_storage, mix) {
   // r1: 0101 (s1)
   // r2: 1010 (s1)
   // r3: 1100 (s2)
-  
+
   s3.set_row("r1", make_vector("1111"));
   s3.set_row("r2", make_vector("1111"));
   s3.set_row("r3", make_vector("1111"));

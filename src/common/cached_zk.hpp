@@ -22,12 +22,13 @@
 
 namespace jubatus {
 namespace common {
-  // TODO: write zk mock and test them all?
+// TODO: write zk mock and test them all?
 
 class cached_zk : public zk {
-public:
+ public:
   // timeout [sec]
-  cached_zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
+  cached_zk(const std::string& hosts, int timeout = 10,
+            const std::string& logfile = "");
   virtual ~cached_zk();
 
   bool list(const std::string& path, std::vector<std::string>& out);
@@ -42,7 +43,7 @@ public:
   void clear_cache(const char* path);
   void reload_cache(const std::string& path);
 
-private:
+ private:
   static void update_cache(zhandle_t*, int, int, const char*, void*);
 
   bool read_(const std::string& path, std::string& out);
@@ -53,5 +54,5 @@ private:
 
 };
 
-} // common
-} // jubatus
+}  // common
+}  // jubatus

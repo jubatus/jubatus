@@ -19,16 +19,16 @@
 
 #include "classifier_base.hpp"
 
-namespace jubatus{
-namespace classifier{
+namespace jubatus {
+namespace classifier {
 
 class PA1 : public classifier_base {
-public:
+ public:
   PA1(storage::storage_base* storage);
   PA1(const classifier_config& config, storage::storage_base* storage);
   void train(const sfv_t& fv, const std::string& label);
   std::string name() const;
-private:
+ private:
   classifier_config config;
 };
 

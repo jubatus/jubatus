@@ -4,91 +4,171 @@
 #include "graph_serv.hpp"
 using namespace jubatus;
 using namespace jubatus::framework;
-namespace jubatus { namespace server {
-class graph_impl_ : public graph<graph_impl_>
-{
-public:
-  graph_impl_(const server_argv& a):
-    graph<graph_impl_>(a.timeout),
-    p_(new server_helper<graph_serv>(a, true))
-  {}
+namespace jubatus {
+namespace server {
+class graph_impl_ : public graph<graph_impl_> {
+ public:
+  graph_impl_(const server_argv& a)
+      : graph<graph_impl_>(a.timeout),
+        p_(new server_helper<graph_serv>(a, true)) {
+  }
 
-  std::string get_config(std::string name) //analysis random
-  { JRLOCK__(p_); return get_p()->get_config(); }
+  std::string get_config(std::string name)  //analysis random
+      {
+    JRLOCK__(p_);
+    return get_p()->get_config();
+  }
 
-  std::string create_node(std::string name) //nolock random
-  { NOLOCK__(p_); return get_p()->create_node(); }
+  std::string create_node(std::string name)  //nolock random
+      {
+    NOLOCK__(p_);
+    return get_p()->create_node();
+  }
 
-  bool remove_node(std::string name, std::string nid) //update cht(2)
-  { JWLOCK__(p_); return get_p()->remove_node(nid); }
+  bool remove_node(std::string name, std::string nid)  //update cht(2)
+                   {
+    JWLOCK__(p_);
+    return get_p()->remove_node(nid);
+  }
 
-  bool update_node(std::string name, std::string nid, property p) //update cht(2)
-  { JWLOCK__(p_); return get_p()->update_node(nid, p); }
+  bool update_node(std::string name, std::string nid, property p)  //update cht(2)
+                   {
+    JWLOCK__(p_);
+    return get_p()->update_node(nid, p);
+  }
 
-  unsigned long create_edge(std::string name, std::string nid, edge_info ei) //nolock cht(1)
-  { NOLOCK__(p_); return get_p()->create_edge(nid, ei); }
+  unsigned long create_edge(std::string name, std::string nid, edge_info ei)  //nolock cht(1)
+                            {
+    NOLOCK__(p_);
+    return get_p()->create_edge(nid, ei);
+  }
 
-  bool update_edge(std::string name, std::string nid, unsigned long eid, edge_info ei) //update cht(2)
-  { JWLOCK__(p_); return get_p()->update_edge(nid, eid, ei); }
+  bool update_edge(std::string name, std::string nid, unsigned long eid,
+                   edge_info ei)  //update cht(2)
+                   {
+    JWLOCK__(p_);
+    return get_p()->update_edge(nid, eid, ei);
+  }
 
-  bool remove_edge(std::string name, std::string nid, unsigned long e) //update cht(2)
-  { JWLOCK__(p_); return get_p()->remove_edge(nid, e); }
+  bool remove_edge(std::string name, std::string nid, unsigned long e)  //update cht(2)
+                   {
+    JWLOCK__(p_);
+    return get_p()->remove_edge(nid, e);
+  }
 
-  double get_centrality(std::string name, std::string nid, int ct, preset_query q) //analysis random
-  { JRLOCK__(p_); return get_p()->get_centrality(nid, ct, q); }
+  double get_centrality(std::string name, std::string nid, int ct,
+                        preset_query q)  //analysis random
+                        {
+    JRLOCK__(p_);
+    return get_p()->get_centrality(nid, ct, q);
+  }
 
-  bool add_centrality_query(std::string name, preset_query q) //update broadcast
-  { JWLOCK__(p_); return get_p()->add_centrality_query(q); }
+  bool add_centrality_query(std::string name, preset_query q)  //update broadcast
+                            {
+    JWLOCK__(p_);
+    return get_p()->add_centrality_query(q);
+  }
 
-  bool add_shortest_path_query(std::string name, preset_query q) //update broadcast
-  { JWLOCK__(p_); return get_p()->add_shortest_path_query(q); }
+  bool add_shortest_path_query(std::string name, preset_query q)  //update broadcast
+                               {
+    JWLOCK__(p_);
+    return get_p()->add_shortest_path_query(q);
+  }
 
-  bool remove_centrality_query(std::string name, preset_query q) //update broadcast
-  { JWLOCK__(p_); return get_p()->remove_centrality_query(q); }
+  bool remove_centrality_query(std::string name, preset_query q)  //update broadcast
+                               {
+    JWLOCK__(p_);
+    return get_p()->remove_centrality_query(q);
+  }
 
-  bool remove_shortest_path_query(std::string name, preset_query q) //update broadcast
-  { JWLOCK__(p_); return get_p()->remove_shortest_path_query(q); }
+  bool remove_shortest_path_query(std::string name, preset_query q)  //update broadcast
+                                  {
+    JWLOCK__(p_);
+    return get_p()->remove_shortest_path_query(q);
+  }
 
-  std::vector<std::string > get_shortest_path(std::string name, shortest_path_req r) //analysis random
-  { JRLOCK__(p_); return get_p()->get_shortest_path(r); }
+  std::vector<std::string> get_shortest_path(std::string name,
+                                             shortest_path_req r)  //analysis random
+      {
+    JRLOCK__(p_);
+    return get_p()->get_shortest_path(r);
+  }
 
-  bool update_index(std::string name) //update broadcast
-  { JWLOCK__(p_); return get_p()->update_index(); }
+  bool update_index(std::string name)  //update broadcast
+      {
+    JWLOCK__(p_);
+    return get_p()->update_index();
+  }
 
-  bool clear(std::string name) //update broadcast
-  { JWLOCK__(p_); return get_p()->clear(); }
+  bool clear(std::string name)  //update broadcast
+      {
+    JWLOCK__(p_);
+    return get_p()->clear();
+  }
 
-  node_info get_node(std::string name, std::string nid) //analysis cht(2)
-  { JRLOCK__(p_); return get_p()->get_node(nid); }
+  node_info get_node(std::string name, std::string nid)  //analysis cht(2)
+                     {
+    JRLOCK__(p_);
+    return get_p()->get_node(nid);
+  }
 
-  edge_info get_edge(std::string name, std::string nid, unsigned long e) //analysis cht(2)
-  { JRLOCK__(p_); return get_p()->get_edge(nid, e); }
+  edge_info get_edge(std::string name, std::string nid, unsigned long e)  //analysis cht(2)
+                     {
+    JRLOCK__(p_);
+    return get_p()->get_edge(nid, e);
+  }
 
-  bool save(std::string name, std::string arg1) //update broadcast
-  { JWLOCK__(p_); return get_p()->save(arg1); }
+  bool save(std::string name, std::string arg1)  //update broadcast
+            {
+    JWLOCK__(p_);
+    return get_p()->save(arg1);
+  }
 
-  bool load(std::string name, std::string arg1) //update broadcast
-  { JWLOCK__(p_); return get_p()->load(arg1); }
+  bool load(std::string name, std::string arg1)  //update broadcast
+            {
+    JWLOCK__(p_);
+    return get_p()->load(arg1);
+  }
 
-  std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
-  { JRLOCK__(p_); return p_->get_status(); }
+  std::map<std::string, std::map<std::string, std::string> > get_status(
+      std::string name)  //analysis broadcast
+      {
+    JRLOCK__(p_);
+    return p_->get_status();
+  }
 
-  bool create_node_here(std::string name, std::string nid) //update 
-  { JWLOCK__(p_); return get_p()->create_node_here(nid); }
+  bool create_node_here(std::string name, std::string nid)  //update 
+                        {
+    JWLOCK__(p_);
+    return get_p()->create_node_here(nid);
+  }
 
-  bool remove_global_node(std::string name, std::string nid) //update 
-  { JWLOCK__(p_); return get_p()->remove_global_node(nid); }
+  bool remove_global_node(std::string name, std::string nid)  //update 
+                          {
+    JWLOCK__(p_);
+    return get_p()->remove_global_node(nid);
+  }
 
-  bool create_edge_here(std::string name, unsigned long eid, edge_info ei) //update 
-  { JWLOCK__(p_); return get_p()->create_edge_here(eid, ei); }
-  int run(){ return p_->start(*this); };
-  common::cshared_ptr<graph_serv> get_p(){ return p_->server(); };
-private:
+  bool create_edge_here(std::string name, unsigned long eid, edge_info ei)  //update 
+                        {
+    JWLOCK__(p_);
+    return get_p()->create_edge_here(eid, ei);
+  }
+  int run() {
+    return p_->start(*this);
+  }
+  ;
+  common::cshared_ptr<graph_serv> get_p() {
+    return p_->server();
+  }
+  ;
+ private:
   common::cshared_ptr<server_helper<graph_serv> > p_;
 };
-}} // namespace jubatus::server
-int main(int args, char** argv){
-  return
-    jubatus::framework::run_server<jubatus::server::graph_impl_>
-       (args, argv, "graph");
+}
+}  // namespace jubatus::server
+int main(int args, char** argv) {
+  return jubatus::framework::run_server<jubatus::server::graph_impl_>(args,
+                                                                      argv,
+                                                                      "graph");
 }

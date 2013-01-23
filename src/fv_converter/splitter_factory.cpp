@@ -38,7 +38,8 @@ create_character_ngram(const splitter_factory::param_t& params) {
   return new character_ngram(m);
 }
 
-word_splitter* create_dynamic_splitter(const splitter_factory::param_t& params) {
+word_splitter* create_dynamic_splitter(
+    const splitter_factory::param_t& params) {
   const string& path = get_or_die(params, "path");
   const string& function = get_or_die(params, "function");
   return new dynamic_splitter(path, function, params);

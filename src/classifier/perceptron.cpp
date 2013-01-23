@@ -18,26 +18,24 @@
 
 using namespace std;
 
-namespace jubatus{
-namespace classifier{
+namespace jubatus {
+namespace classifier {
 
-perceptron::perceptron(storage::storage_base* storage): classifier_base(storage)
-{
+perceptron::perceptron(storage::storage_base* storage)
+    : classifier_base(storage) {
 }
 
-void perceptron::train(const sfv_t& sfv, const std::string& label) 
-{
+void perceptron::train(const sfv_t& sfv, const std::string& label) {
   std::string predicted_label = classify(sfv);
-  if (label == predicted_label){
+  if (label == predicted_label) {
     return;
   }
   update_weight(sfv, 1.f, label, predicted_label);
 }
 
-string perceptron::name() const 
-{
+string perceptron::name() const {
   return string("perceptron");
 }
 
-}  
+}
 }

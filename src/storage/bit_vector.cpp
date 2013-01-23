@@ -24,25 +24,28 @@ namespace storage {
 
 static const uint64_t BLOCKSIZE = 64;
 
-bit_vector::bit_vector() : bit_num_(0) {}
-
-bit_vector::~bit_vector() {}
-
-bool bit_vector::operator==(const bit_vector& v) const {
-  return v.bit_num() == bit_num() &&
-      equal(bits_.begin(), bits_.end(), v.bits_.begin());
+bit_vector::bit_vector()
+    : bit_num_(0) {
 }
 
-void bit_vector::resize_and_clear(uint64_t bit_num){
+bit_vector::~bit_vector() {
+}
+
+bool bit_vector::operator==(const bit_vector& v) const {
+  return v.bit_num() == bit_num()
+      && equal(bits_.begin(), bits_.end(), v.bits_.begin());
+}
+
+void bit_vector::resize_and_clear(uint64_t bit_num) {
   bit_num_ = bit_num;
   bits_.resize((bit_num + BLOCKSIZE - 1) / BLOCKSIZE, 0);
 }
 
-void bit_vector::set_bit(uint64_t pos){
+void bit_vector::set_bit(uint64_t pos) {
   bits_[pos / BLOCKSIZE] |= (1LLU << (pos % BLOCKSIZE));
 }
 
-uint64_t  bit_vector::calc_hamming_similarity(const bit_vector& bv) const{
+uint64_t bit_vector::calc_hamming_similarity(const bit_vector& bv) const {
   size_t bit_num, max_index;
   if (bit_num_ < bv.bit_num_) {
     bit_num = bit_num_;
@@ -63,7 +66,8 @@ uint64_t  bit_vector::calc_hamming_similarity(const bit_vector& bv) const{
   while (a != a_back) {
     heads_match += pop_count(~(*a++ ^ *b++));
   }
-  const uint64_t tail_match = (bit_num - 1) % BLOCKSIZE + 1 - pop_count(*a ^ *b);
+  const uint64_t tail_match = (bit_num - 1) % BLOCKSIZE + 1
+      - pop_count(*a ^ *b);
   return heads_match + tail_match + (bit_num_ + bv.bit_num_ - 2 * bit_num);
 }
 }

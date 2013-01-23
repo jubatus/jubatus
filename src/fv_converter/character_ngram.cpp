@@ -25,16 +25,17 @@ static bool is_begin_of_character(unsigned char c) {
   return (c & 0xC0) != 0x80;
 }
 
-void character_ngram::split(const std::string& string,
-                            std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
+void character_ngram::split(
+    const std::string& string,
+    std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
   const size_t len = length_;
-  vector<size_t> queue(len);
+  vector < size_t > queue(len);
   size_t p = 0;
   size_t n = 0;
 
-  vector<pair<size_t, size_t> > bounds;
+  vector < pair<size_t, size_t> > bounds;
   for (size_t i = 1; i <= string.size(); ++i) {
-    if  (i == string.size() || is_begin_of_character(string[i]))  {
+    if (i == string.size() || is_begin_of_character(string[i])) {
       ++n;
       if (n >= len) {
         size_t b = queue[p];
@@ -49,7 +50,6 @@ void character_ngram::split(const std::string& string,
 
   bounds.swap(ret_boundaries);
 }
-
 
 }
 }

@@ -18,11 +18,11 @@
 
 #include "classifier_base.hpp"
 
-namespace jubatus{
-namespace classifier{
+namespace jubatus {
+namespace classifier {
 
 class perceptron : public classifier_base {
-public:
+ public:
   perceptron(storage::storage_base* storage);
   void train(const sfv_t& sfv, const std::string& label);
   std::string name() const;

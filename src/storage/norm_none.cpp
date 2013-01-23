@@ -19,19 +19,19 @@
 namespace jubatus {
 namespace storage {
 
-norm_none::norm_none(){
+norm_none::norm_none() {
 }
 
-norm_none::~norm_none(){
+norm_none::~norm_none() {
 }
 
-void norm_none::clear(){
+void norm_none::clear() {
 }
 
-void norm_none::notify(const std::string& row, float old_val, float new_val){
+void norm_none::notify(const std::string& row, float old_val, float new_val) {
 }
 
-float norm_none::calc_norm(const std::string& row) const{
+float norm_none::calc_norm(const std::string& row) const {
   return 0.f;
 }
 

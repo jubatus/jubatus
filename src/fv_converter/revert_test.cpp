@@ -66,5 +66,4 @@ TEST(revert_feature, trivial) {
   EXPECT_EQ(12345, data.num_values_[1].second);
 }
 
-
 }

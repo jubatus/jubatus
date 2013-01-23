@@ -27,8 +27,7 @@ class string_filter_factory {
  public:
   typedef std::map<std::string, std::string> param_t;
 
-  string_filter* create(const std::string& name,
-                        const param_t& params) const;
+  string_filter* create(const std::string& name, const param_t& params) const;
 };
 
 }

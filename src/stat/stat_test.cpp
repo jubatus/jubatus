@@ -7,10 +7,11 @@ using namespace pfi::lang;
 
 namespace jubatus {
 
-template <typename T>
-class stat_test : public testing::Test {};
+template<typename T>
+class stat_test : public testing::Test {
+};
 
-TYPED_TEST_CASE_P(stat_test);
+TYPED_TEST_CASE_P (stat_test);
 
 TYPED_TEST_P(stat_test, trivial) {
   TypeParam p(10);
@@ -29,7 +30,6 @@ TYPED_TEST_P(stat_test, trivial) {
   EXPECT_NEAR(p.stddev("test"), 0.82, 0.1);
 
 }
-
 
 REGISTER_TYPED_TEST_CASE_P(
     stat_test,

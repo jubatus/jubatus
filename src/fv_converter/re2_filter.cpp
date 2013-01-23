@@ -25,12 +25,13 @@ using namespace re2;
 namespace jubatus {
 namespace fv_converter {
 
-re2_filter::re2_filter(const string& regexp, const string& replace) 
-    : re_(regexp), replace_(replace) {
+re2_filter::re2_filter(const string& regexp, const string& replace)
+    : re_(regexp),
+      replace_(replace) {
   if (!re_.ok()) {
     throw JUBATUS_EXCEPTION(converter_exception("invalid regular expression: " + regexp));
   }
-  
+
 }
 
 void re2_filter::filter(const string& input, string& output) const {

@@ -29,10 +29,10 @@ namespace anomaly {
 
 namespace {
 struct anomaly_config {
-  std::string method; // nest engine name
+  std::string method;  // nest engine name
   jsonconfig::config parameter;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(method) & MEMBER(parameter);
   }
@@ -44,9 +44,11 @@ anomaly_base* create_anomaly(const string& name, const config& param) {
 
   if (name == "lof") {
     anomaly_config conf = config_cast_check<anomaly_config>(param);
-    storage::lof_storage::config config = config_cast_check<storage::lof_storage::config>(param);
+    storage::lof_storage::config config = config_cast_check<
+        storage::lof_storage::config>(param);
 
-    return new lof(config, recommender::create_recommender(conf.method, conf.parameter));
+    return new lof(config,
+                   recommender::create_recommender(conf.method, conf.parameter));
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }
@@ -54,6 +56,4 @@ anomaly_base* create_anomaly(const string& name, const config& param) {
 
 }
 }
-
-
 

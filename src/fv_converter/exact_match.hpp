@@ -23,8 +23,11 @@ namespace fv_converter {
 
 class exact_match : public key_matcher {
  public:
-  exact_match(const std::string& key) : key_(key) {}
-  ~exact_match() {}
+  exact_match(const std::string& key)
+      : key_(key) {
+  }
+  ~exact_match() {
+  }
 
   bool match(const std::string& key) {
     return key == key_;

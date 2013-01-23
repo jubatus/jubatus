@@ -26,8 +26,7 @@ namespace fv_converter {
 
 class dynamic_splitter : public word_splitter {
  public:
-  dynamic_splitter(const std::string& path,
-                   const std::string& function,
+  dynamic_splitter(const std::string& path, const std::string& function,
                    const std::map<std::string, std::string>& params);
 
   void split(const std::string& string,

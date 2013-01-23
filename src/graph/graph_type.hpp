@@ -24,8 +24,8 @@
 #include "../common/type.hpp"
 #include <msgpack.hpp>
 
-namespace jubatus{
-namespace graph{
+namespace jubatus {
+namespace graph {
 
 typedef uint64_t node_id_t;
 typedef uint64_t edge_id_t;
@@ -36,15 +36,14 @@ enum centrality_type {
   EIGENSCORE = 0
 };
 
-struct eigen_vector_info{
+struct eigen_vector_info {
   double score;
   uint64_t out_degree_num;
 
   friend class pfi::data::serialization::access;
-  template <class Ar>
+  template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(score)
-      & MEMBER(out_degree_num);
+    ar & MEMBER(score) & MEMBER(out_degree_num);
   }
 
 };
@@ -52,7 +51,7 @@ struct eigen_vector_info{
 typedef pfi::data::unordered_map<node_id_t, eigen_vector_info> eigen_vector_diff;
 typedef pfi::data::unordered_map<node_id_t, eigen_vector_info> eigen_vector_mixed;
 
-struct node_info{
+struct node_info {
   property p;
   std::vector<edge_id_t> in_edges;
   std::vector<edge_id_t> out_edges;
@@ -60,16 +59,14 @@ struct node_info{
   MSGPACK_DEFINE(p, in_edges, out_edges);
 
   friend class pfi::data::serialization::access;
-  template <class Ar>
+  template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(p)
-      & MEMBER(in_edges)
-      & MEMBER(out_edges);
+    ar & MEMBER(p) & MEMBER(in_edges) & MEMBER(out_edges);
   }
 
 };
 
-struct edge_info{
+struct edge_info {
   property p;
   node_id_t src;
   node_id_t tgt;
@@ -77,11 +74,9 @@ struct edge_info{
   MSGPACK_DEFINE(p, src, tgt);
 
   friend class pfi::data::serialization::access;
-  template <class Ar>
+  template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(p)
-      & MEMBER(src)
-      & MEMBER(tgt);
+    ar & MEMBER(p) & MEMBER(src) & MEMBER(tgt);
   }
 
 };
@@ -97,7 +92,7 @@ struct preset_query {
 
   MSGPACK_DEFINE(edge_query, node_query);
   friend class pfi::data::serialization::access;
-  template <class Ar>
+  template<class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(edge_query) & MEMBER(node_query);
   }
@@ -105,17 +100,15 @@ struct preset_query {
 
 typedef pfi::data::unordered_map<node_id_t, std::pair<uint64_t, node_id_t> > spt_edges;
 
-struct shortest_path_tree{
+struct shortest_path_tree {
   node_id_t landmark;
   spt_edges from_root;
   spt_edges to_root;
 
   friend class pfi::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar){
-    ar & MEMBER(landmark)
-      & MEMBER(from_root)
-      & MEMBER(to_root);
+  template<class Ar>
+  void serialize(Ar& ar) {
+    ar & MEMBER(landmark) & MEMBER(from_root) & MEMBER(to_root);
   }
 };
 
@@ -128,70 +121,74 @@ typedef pfi::data::unordered_map<preset_query, eigen_vector_diff> eigen_vector_q
 typedef pfi::data::unordered_map<preset_query, spt_mixed> spt_query_mixed;
 typedef pfi::data::unordered_map<preset_query, spt_diff> spt_query_diff;
 
+class graph_exception : public jubatus::exception::runtime_error {
+ public:
+  graph_exception(const std::string& what)
+      : runtime_error(what) {
+  }
 
-class graph_exception : public jubatus::exception::runtime_error
-{
-public:
-  graph_exception(const std::string& what) : runtime_error(what)
-  {}
-  
 };
 
-class unknown_graph : public graph_exception
-{
-public:
-  unknown_graph(const std::string& name) : graph_exception(name)
-  {}
+class unknown_graph : public graph_exception {
+ public:
+  unknown_graph(const std::string& name)
+      : graph_exception(name) {
+  }
 };
 
-class local_node_exists : public graph_exception
-{
-public:
-  local_node_exists(node_id_t id):graph_exception(__func__),
-                                  id_(id)
-  {}
+class local_node_exists : public graph_exception {
+ public:
+  local_node_exists(node_id_t id)
+      : graph_exception(__func__),
+        id_(id) {
+  }
   node_id_t id_;
 };
 
-class global_node_exists : public graph_exception
-{
-public:
-  global_node_exists(node_id_t id):graph_exception(__func__),
-                                   id_(id)
-  {}
+class global_node_exists : public graph_exception {
+ public:
+  global_node_exists(node_id_t id)
+      : graph_exception(__func__),
+        id_(id) {
+  }
   node_id_t id_;
 };
 
-class edge_exists : public graph_exception
-{
-public:
-  edge_exists(edge_id_t id):graph_exception(__func__), id_(id)
-  {}
+class edge_exists : public graph_exception {
+ public:
+  edge_exists(edge_id_t id)
+      : graph_exception(__func__),
+        id_(id) {
+  }
   edge_id_t id_;
 };
 
-class unknown_id : public graph_exception
-{
-public:
-  unknown_id(const std::string& type, uint64_t id):graph_exception(type), id_(id)
-  {}
+class unknown_id : public graph_exception {
+ public:
+  unknown_id(const std::string& type, uint64_t id)
+      : graph_exception(type),
+        id_(id) {
+  }
   uint64_t id_;
 };
-  
-class unknown_centrality_type : public graph_exception
-{
-public:
-  unknown_centrality_type(centrality_type t):graph_exception(__func__), t_(t)
-  {}
+
+class unknown_centrality_type : public graph_exception {
+ public:
+  unknown_centrality_type(centrality_type t)
+      : graph_exception(__func__),
+        t_(t) {
+  }
   centrality_type t_;
 };
 
-class unknown_query : public graph_exception
-{
-public:
-  unknown_query(const preset_query& q):graph_exception(__func__), q_(q)
-  {}
-  virtual ~unknown_query() throw() {}// mmm...
+class unknown_query : public graph_exception {
+ public:
+  unknown_query(const preset_query& q)
+      : graph_exception(__func__),
+        q_(q) {
+  }
+  virtual ~unknown_query() throw () {
+  }  // mmm...
   preset_query q_;
 };
 
@@ -207,8 +204,8 @@ template<> struct hash<jubatus::graph::preset_query> {
   }
 
  private:
-  static size_t update(const std::vector<std::pair<std::string, std::string> >& q,
-                       size_t h) {
+  static size_t update(
+      const std::vector<std::pair<std::string, std::string> >& q, size_t h) {
     for (size_t i = 0; i < q.size(); ++i) {
       h = update(q[i].first, h);
       h = update(q[i].second, h);

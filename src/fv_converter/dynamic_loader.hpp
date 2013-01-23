@@ -34,14 +34,12 @@ class dynamic_loader {
 };
 
 template<typename T>
-T* load_object(const dynamic_loader& loader,
-               const std::string& function,
+T* load_object(const dynamic_loader& loader, const std::string& function,
                const std::map<std::string, std::string>& params) {
   typedef T* (*func_t)(const std::map<std::string, std::string>&);
-  func_t func = (func_t)loader.load_symbol(function);
+  func_t func = (func_t) loader.load_symbol(function);
   return (*func)(params);
 }
-
 
 }
 }

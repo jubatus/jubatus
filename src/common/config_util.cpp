@@ -22,12 +22,13 @@ using namespace pfi::text::json;
 namespace jubatus {
 
 pfi::text::json::json get_param_obj(const pfi::text::json::json& config,
-            const string& name) {
+                                    const string& name) {
 
-  if (is<json_object>(config) && config.count(name) && is<json_object>(config[name]))
+  if (is<json_object>(config) && config.count(name)
+      && is<json_object>(config[name]))
     return config[name];
 
   return json();
 }
 
-} // jubatus
+}  // jubatus

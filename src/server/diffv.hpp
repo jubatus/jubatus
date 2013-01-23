@@ -22,27 +22,32 @@
 namespace jubatus {
 
 struct diffv {
-public:
-  diffv( int c, const storage::features3_t& w ):
-    count(c), v(w)
-  {};
-  diffv(): count(0), v() {};
+ public:
+  diffv(int c, const storage::features3_t& w)
+      : count(c),
+        v(w) {
+  }
+  ;
+  diffv()
+      : count(0),
+        v() {
+  }
+  ;
 
   int count;
   storage::features3_t v;
 
-  diffv& operator/=(double d){
-       this->v /= d;
+  diffv& operator/=(double d) {
+    this->v /= d;
     return *this;
-  };
+  }
+  ;
 
   MSGPACK_DEFINE(count, v);
 
-  template <class Archiver>
+  template<class Archiver>
   void serialize(Archiver &ar) {
-    ar
-      & MEMBER(count)
-      & MEMBER(v);
+    ar & MEMBER(count) & MEMBER(v);
   }
 
 };

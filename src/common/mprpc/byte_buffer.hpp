@@ -27,32 +27,28 @@ namespace common {
 namespace mprpc {
 
 class byte_buffer {
-public:
-  byte_buffer()
-  {
+ public:
+  byte_buffer() {
   }
 
   byte_buffer(size_t size)
-    : buf_(new std::vector<char>(size))
-  {
+      : buf_(new std::vector<char>(size)) {
   }
 
   byte_buffer(const void *ptr, size_t size)
-    : buf_(new std::vector<char>())
-  {
+      : buf_(new std::vector<char>()) {
     buf_->resize(size);
     std::memcpy(&(*buf_)[0], ptr, size);
   }
 
   byte_buffer(const byte_buffer& b)
-    : buf_(b.buf_)
-  {
+      : buf_(b.buf_) {
   }
 
-  ~byte_buffer() {}
+  ~byte_buffer() {
+  }
 
-  void assign(const void* ptr, size_t size)
-  {
+  void assign(const void* ptr, size_t size) {
     if (!buf_) {
       buf_.reset(new std::vector<char>());
     }
@@ -60,34 +56,32 @@ public:
     std::memcpy(&(*buf_)[0], ptr, size);
   }
 
-  char* ptr() const
-  {
+  char* ptr() const {
     if (buf_)
       return &(*buf_)[0];
     else
       return NULL;
   }
 
-  size_t size() const
-  {
+  size_t size() const {
     if (buf_)
       return buf_->size();
     else
       return 0;
   }
 
-private:
+ private:
   pfi::lang::shared_ptr<std::vector<char> > buf_;
 };
 
-} // mprpc
-} // common
-} // jubatus
+}  // mprpc
+}  // common
+}  // jubatus
 
 namespace msgpack {
 
-inline jubatus::common::mprpc::byte_buffer& operator>> (object o, jubatus::common::mprpc::byte_buffer& b)
-{
+inline jubatus::common::mprpc::byte_buffer& operator>>(
+    object o, jubatus::common::mprpc::byte_buffer& b) {
   if (o.type != type::RAW)
     throw type_error();
 
@@ -95,16 +89,16 @@ inline jubatus::common::mprpc::byte_buffer& operator>> (object o, jubatus::commo
   return b;
 }
 
-template <typename Stream>
-inline packer<Stream>& operator<< (packer<Stream>& o, const jubatus::common::mprpc::byte_buffer& b)
-{
+template<typename Stream>
+inline packer<Stream>& operator<<(
+    packer<Stream>& o, const jubatus::common::mprpc::byte_buffer& b) {
   o.pack_raw(b.size());
   o.pack_raw_body(b.ptr(), b.size());
   return o;
 }
 
-inline void operator<< (object::with_zone& o, const jubatus::common::mprpc::byte_buffer& b)
-{
+inline void operator<<(object::with_zone& o,
+                       const jubatus::common::mprpc::byte_buffer& b) {
   o.type = type::RAW;
   char* ptr = static_cast<char*>(o.zone->malloc(b.size()));
   o.via.raw.ptr = ptr;
@@ -112,12 +106,12 @@ inline void operator<< (object::with_zone& o, const jubatus::common::mprpc::byte
   std::memcpy(ptr, b.ptr(), b.size());
 }
 
-inline void operator<< (object& o, const jubatus::common::mprpc::byte_buffer& b)
-{
+inline void operator<<(object& o,
+                       const jubatus::common::mprpc::byte_buffer& b) {
   o.type = type::RAW;
   o.via.raw.ptr = b.ptr();
   o.via.raw.size = static_cast<uint32_t>(b.size());
 }
 
-} // msgpack
+}  // msgpack
 

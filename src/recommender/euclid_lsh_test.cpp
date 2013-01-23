@@ -53,8 +53,8 @@ sfv_t make_dense_sfv(const string& s) {
 
 }
 
-class euclid_lsh_mix_test
-    : public ::testing::TestWithParam<pair<int, euclid_lsh::config> > {
+class euclid_lsh_mix_test : public ::testing::TestWithParam<
+    pair<int, euclid_lsh::config> > {
  protected:
   static const uint32_t kSeed = 1340764259;  // It may be any FIXED value
 
@@ -68,8 +68,8 @@ class euclid_lsh_mix_test
 
   void update(const string& name, const sfv_t& mean, float deviation) {
     const sfv_t x = generate_gaussian(mean, deviation);
-    euclid_lsh* recom =
-        recoms_[hash_util::calc_string_hash(name) % recoms_.size()].get();
+    euclid_lsh* recom = recoms_[hash_util::calc_string_hash(name)
+        % recoms_.size()].get();
     recom->update_row(name, x);
 
     single_recom_->update_row(name, x);
@@ -135,8 +135,7 @@ TEST_P(euclid_lsh_mix_test, consistency) {
   }
 }
 
-euclid_lsh::config make_euclid_lsh_config()
-{
+euclid_lsh::config make_euclid_lsh_config() {
   euclid_lsh::config config;
 
   config.lsh_num = 16;
@@ -154,7 +153,7 @@ INSTANTIATE_TEST_CASE_P(
     euclid_lsh_mix_test,
     ::testing::Values(
         make_pair(2, make_euclid_lsh_config())
-                  ));
+    ));
 
 }
 }

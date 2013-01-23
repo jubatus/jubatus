@@ -22,7 +22,7 @@
 namespace jubatus {
 
 class hash_util {
-public:
+ public:
   static uint64_t calc_string_hash(const std::string& s) {
     // FNV-1 hash function
     uint64_t hash = 14695981039346656037LLU;
@@ -34,4 +34,4 @@ public:
   }
 };
 
-} // jubatus
+}  // jubatus

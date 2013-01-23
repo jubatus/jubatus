@@ -22,14 +22,13 @@
 namespace jubatus {
 namespace server {
 
-class mixable_weight_manager
-    : public framework::mixable<fv_converter::weight_manager,
-                                fv_converter::keyword_weights> {
+class mixable_weight_manager : public framework::mixable<
+    fv_converter::weight_manager, fv_converter::keyword_weights> {
  public:
   fv_converter::keyword_weights get_diff_impl() const;
 
   void put_diff_impl(const fv_converter::keyword_weights& diff);
-  
+
   void mix_impl(const fv_converter::keyword_weights& lhs,
                 const fv_converter::keyword_weights& rhs,
                 fv_converter::keyword_weights& acc) const;

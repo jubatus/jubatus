@@ -23,20 +23,22 @@
 #include "storage_type.hpp"
 
 namespace jubatus {
-namespace storage{
+namespace storage {
 
 class sparse_matrix_storage {
-public:
+ public:
   sparse_matrix_storage();
   ~sparse_matrix_storage();
 
-  sparse_matrix_storage& operator = (const sparse_matrix_storage&);
+  sparse_matrix_storage& operator =(const sparse_matrix_storage&);
 
-  void set(const std::string& row, const std::string& column, float val); 
-  void set_row(const std::string& row, const std::vector<std::pair<std::string, float> >& columns);
+  void set(const std::string& row, const std::string& column, float val);
+  void set_row(const std::string& row,
+               const std::vector<std::pair<std::string, float> >& columns);
 
   float get(const std::string& row, const std::string& column) const;
-  void get_row(const std::string& row, std::vector<std::pair<std::string, float> >& columns) const;
+  void get_row(const std::string& row,
+               std::vector<std::pair<std::string, float> >& columns) const;
 
   float calc_l2norm(const std::string& row) const;
   void remove(const std::string& row, const std::string& column);
@@ -47,12 +49,11 @@ public:
   bool save(std::ostream&);
   bool load(std::istream&);
 
-private:
+ private:
   friend class pfi::data::serialization::access;
-  template <class Ar>
+  template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(tbl_)
-      & MEMBER(column2id_);
+    ar & MEMBER(tbl_) & MEMBER(column2id_);
   }
 
   tbl_t tbl_;

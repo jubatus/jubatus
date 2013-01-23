@@ -14,7 +14,8 @@ keyword_weights mixable_weight_manager::get_diff_impl() const {
   return get_model()->get_diff();
 }
 
-void mixable_weight_manager::put_diff_impl(const fv_converter::keyword_weights& diff) {
+void mixable_weight_manager::put_diff_impl(
+    const fv_converter::keyword_weights& diff) {
   get_model()->put_diff(diff);
 }
 

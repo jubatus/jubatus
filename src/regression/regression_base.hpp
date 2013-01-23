@@ -26,12 +26,12 @@ class storage_base;
 
 namespace regression {
 
-
 class regression_base {
  public:
   regression_base(storage::storage_base* storage);
 
-  virtual ~regression_base() {}
+  virtual ~regression_base() {
+  }
 
   virtual void train(const sfv_t& fv, const float value) = 0;
   float estimate(const sfv_t& fv) const;

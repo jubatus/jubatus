@@ -29,51 +29,45 @@ namespace jubatus {
 namespace common {
 
 // "127.0.0.1" -> 9199 -> "127.0.0.1_9199"
-string build_loc_str(const string& ip, int port, unsigned int i)
-{
+string build_loc_str(const string& ip, int port, unsigned int i) {
   string ret = ip + "_" + lexical_cast<string, int>(port);
   if (i > 0) {
     ret += "_";
-    ret += lexical_cast<string,int>(i);
+    ret += lexical_cast<string, int>(i);
   }
   return ret;
 }
 
 // /path/base -> 127.0.0.1 -> 9199 -> /path/base/127.0.0.1_9199
-void build_existence_path(const string& base, const string& ip, int port, string& out)
-{
+void build_existence_path(const string& base, const string& ip, int port,
+                          string& out) {
   out = base + "/" + ip + "_" + lexical_cast<string, int>(port);
 }
 
-void build_actor_path(string& path, const string& type, const string& name)
-{
+void build_actor_path(string& path, const string& type, const string& name) {
   path = ACTOR_BASE_PATH + "/" + type + "/" + name;
 }
 
-void build_config_path(string& path, const string& type, const string& name)
-{
+void build_config_path(string& path, const string& type, const string& name) {
   path = CONFIG_BASE_PATH + "/" + type + "/" + name;
 }
 
-void build_config_lock_path(string& path, const string& type, const string& name)
-{
+void build_config_lock_path(string& path, const string& type,
+                            const string& name) {
   build_actor_path(path, type, name);
   path += "/config_lock";
 }
 
 // 127.0.0.1_9199 -> (127.0.0.1, 9199)
-bool revert(const string& name, string& ip, int& port)
-{
+bool revert(const string& name, string& ip, int& port) {
   ip = name.substr(0, name.find("_"));
   port = atoi(name.substr(name.find("_") + 1).c_str());
   return true;
 }
 
 // zk -> name -> ip -> port -> void
-void register_actor(lock_service& z,
-                    const string& type, const string& name,
-                    const string& ip, int port)
-{
+void register_actor(lock_service& z, const string& type, const string& name,
+                    const string& ip, int port) {
   bool success = true;
 
   string path;
@@ -95,12 +89,12 @@ void register_actor(lock_service& z,
         << jubatus::exception::error_api_func("lock_service::create"));
 
   // set exit zlistener here
-  pfi::lang::function <void()> f = &force_exit;
+  pfi::lang::function<void()> f = &force_exit;
   z.push_cleanup(f);
 }
 
-void register_keeper(lock_service& z, const string& type, const string& ip, int port)
-{
+void register_keeper(lock_service& z, const string& type, const string& ip,
+                     int port) {
   bool success = true;
 
   string path = JUBAKEEPER_BASE_PATH;
@@ -120,40 +114,36 @@ void register_keeper(lock_service& z, const string& type, const string& ip, int 
         << jubatus::exception::error_api_func("lock_service::create"));
 
   // set exit zlistener here
-  pfi::lang::function <void()> f = &force_exit;
+  pfi::lang::function<void()> f = &force_exit;
   z.push_cleanup(f);
 }
 
 // zk -> name -> list( (ip, rpc_port) )
-bool get_all_actors(lock_service& z,
-                    const string& type, const string& name,
-                    std::vector<std::pair<string, int> >& ret)
-{
+bool get_all_actors(lock_service& z, const string& type, const string& name,
+                    std::vector<std::pair<string, int> >& ret) {
   ret.clear();
   string path;
   build_actor_path(path, type, name);
   path += "/nodes";
-  std::vector<string> list;
+  std::vector < string > list;
   if (!z.list(path, list))
     return false;
 
-  for (std::vector<string>::const_iterator it = list.begin();
-      it != list.end(); ++it) {
+  for (std::vector<string>::const_iterator it = list.begin(); it != list.end();
+      ++it) {
     string ip;
     int port;
     revert(*it, ip, port);
-    ret.push_back(make_pair(ip,port));
+    ret.push_back(make_pair(ip, port));
   }
   return true;
 }
 
-void force_exit()
-{
+void force_exit() {
   exit(-1);
 }
 
-void prepare_jubatus(lock_service& ls, const string& type, const string& name)
-{
+void prepare_jubatus(lock_service& ls, const string& type, const string& name) {
 
   bool success = true;
   success = ls.create(JUBATUS_BASE_PATH) && success;
@@ -179,5 +169,5 @@ void prepare_jubatus(lock_service& ls, const string& type, const string& name)
         << jubatus::exception::error_api_func("lock_service::create"));
 }
 
-} // common
-} // jubatus
+}  // common
+}  // jubatus

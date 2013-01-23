@@ -19,7 +19,6 @@
 
 #include "counter.hpp"
 
-
 using namespace std;
 using namespace jubatus::fv_converter;
 
@@ -28,7 +27,7 @@ namespace jubatus {
 TEST(counter, trivial) {
   counter<string> c;
   EXPECT_FALSE(c.contains("hoge"));
-  
+
   EXPECT_EQ(0u, ((const counter<string>&)c)["hoge"]);
   EXPECT_EQ(0u, c["hoge"]);
   c["hoge"] = 1;

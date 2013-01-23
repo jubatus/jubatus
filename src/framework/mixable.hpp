@@ -26,16 +26,20 @@
 #include "../common/shared_ptr.hpp"
 #include "../common/mprpc/byte_buffer.hpp"
 
-namespace jubatus{
-namespace framework{
+namespace jubatus {
+namespace framework {
 
 class mixable0 {
-public:
-  mixable0() {}
-  virtual ~mixable0() {}
+ public:
+  mixable0() {
+  }
+  virtual ~mixable0() {
+  }
   virtual common::mprpc::byte_buffer get_diff() const = 0;
   virtual void put_diff(const common::mprpc::byte_buffer&) = 0;
-  virtual void mix(const common::mprpc::byte_buffer&, const common::mprpc::byte_buffer&, common::mprpc::byte_buffer&) const = 0;
+  virtual void mix(const common::mprpc::byte_buffer&,
+                   const common::mprpc::byte_buffer&,
+                   common::mprpc::byte_buffer&) const = 0;
 
   virtual void save(std::ostream & ofs) = 0;
   virtual void load(std::istream & ifs) = 0;
@@ -43,11 +47,13 @@ public:
 };
 
 class mixable_holder {
-public:
+ public:
   typedef std::vector<mixable0*> mixable_list;
 
-  mixable_holder() {}
-  virtual ~mixable_holder() {}
+  mixable_holder() {
+  }
+  virtual ~mixable_holder() {
+  }
   void register_mixable(mixable0* m) {
     mixables_.push_back(m);
   }
@@ -60,19 +66,20 @@ public:
     return rw_mutex_;
   }
 
-protected:
+ protected:
   pfi::concurrent::rw_mutex rw_mutex_;
   std::vector<mixable0*> mixables_;
 };
 
-template <typename Model, typename Diff>
+template<typename Model, typename Diff>
 class mixable : public mixable0 {
  public:
   typedef Model model_type;
   typedef Diff diff_type;
   typedef common::cshared_ptr<Model> model_ptr;
 
-  virtual ~mixable() {}
+  virtual ~mixable() {
+  }
 
   virtual void clear() = 0;
 
@@ -80,31 +87,33 @@ class mixable : public mixable0 {
   virtual void put_diff_impl(const Diff&) = 0;
   virtual void mix_impl(const Diff&, const Diff&, Diff&) const = 0;
 
-  void set_model(model_ptr m){
+  void set_model(model_ptr m) {
     model_ = m;
   }
 
-  common::mprpc::byte_buffer get_diff()const{
-    if(model_){
+  common::mprpc::byte_buffer get_diff() const {
+    if (model_) {
       common::mprpc::byte_buffer buf;
       pack_(get_diff_impl(), buf);
       return buf;
-    }else{
+    } else {
       throw JUBATUS_EXCEPTION(config_not_set());
     }
-  };
+  }
+  ;
 
-  void put_diff(const common::mprpc::byte_buffer& d){
-    if(model_){
+  void put_diff(const common::mprpc::byte_buffer& d) {
+    if (model_) {
       Diff diff;
       unpack_(d, diff);
       put_diff_impl(diff);
-    }else{
+    } else {
       throw JUBATUS_EXCEPTION(config_not_set());
     }
   }
 
-  void mix(const common::mprpc::byte_buffer& lhs, const common::mprpc::byte_buffer& rhs,
+  void mix(const common::mprpc::byte_buffer& lhs,
+           const common::mprpc::byte_buffer& rhs,
            common::mprpc::byte_buffer& mixed_buf) const {
     Diff left, right, mixed;
     unpack_(lhs, left);
@@ -113,17 +122,19 @@ class mixable : public mixable0 {
     pack_(mixed, mixed_buf);
   }
 
-  void save(std::ostream & os){
+  void save(std::ostream & os) {
     model_->save(os);
   }
 
-  void load(std::istream & is){
+  void load(std::istream & is) {
     model_->load(is);
   }
 
-  model_ptr get_model() const { return model_; }
+  model_ptr get_model() const {
+    return model_;
+  }
 
-private:
+ private:
   void unpack_(const common::mprpc::byte_buffer& buf, Diff& d) const {
     msgpack::unpacked msg;
     msgpack::unpack(&msg, buf.ptr(), buf.size());
@@ -139,5 +150,5 @@ private:
   model_ptr model_;
 };
 
-} //server
-} //jubatus
+}  //server
+}  //jubatus

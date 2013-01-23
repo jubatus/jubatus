@@ -32,12 +32,13 @@ namespace framework {
 namespace mixer {
 
 class linear_communication {
-public:
+ public:
   static pfi::lang::shared_ptr<linear_communication>
-    create(const common::cshared_ptr<common::lock_service>& zk,
-           const std::string& type, const std::string& name, int timeout_sec);
+  create(const common::cshared_ptr<common::lock_service>& zk,
+         const std::string& type, const std::string& name, int timeout_sec);
 
-  virtual ~linear_communication() {}
+  virtual ~linear_communication() {
+  }
 
   // Call update_members once before using get_diff and put_diff
   virtual size_t update_members() = 0;
@@ -48,11 +49,12 @@ public:
   // it can throw common::mprpc exception
   virtual void get_diff(common::mprpc::rpc_result_object& result) const = 0;
   // it can throw common::mprpc exception
-  virtual void put_diff(const std::vector<common::mprpc::byte_buffer>& mixed) const = 0;
+  virtual void put_diff(
+      const std::vector<common::mprpc::byte_buffer>& mixed) const = 0;
 };
 
 class linear_mixer : public mixer {
-public:
+ public:
   linear_mixer(pfi::lang::shared_ptr<linear_communication> communicaiton,
                unsigned int count_threshold, unsigned int tick_threshold);
 
@@ -67,7 +69,7 @@ public:
   void get_status(server_base::status_t& status) const;
 
   void mix();
-private:
+ private:
   void mixer_loop();
 
   void clear();

@@ -26,10 +26,10 @@
 #include "recommender_storage_base.hpp"
 
 namespace jubatus {
-namespace storage{
+namespace storage {
 
 class bit_index_storage : public recommender_storage_base {
-public:
+ public:
   bit_index_storage();
   ~bit_index_storage();
 
@@ -39,7 +39,9 @@ public:
   void clear();
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
-  void similar_row(const bit_vector& bv, std::vector<std::pair<std::string, float> >& ids, uint64_t ret_num) const;
+  void similar_row(const bit_vector& bv,
+                   std::vector<std::pair<std::string, float> >& ids,
+                   uint64_t ret_num) const;
   std::string name() const;
 
   bool save(std::ostream& os);
@@ -49,13 +51,13 @@ public:
   void set_mixed_and_clear_diff(const std::string& mixed_diff);
   void mix(const std::string& lhs, std::string& rhs) const;
 
-private:
+ private:
   friend class pfi::data::serialization::access;
-  template <class Ar>
+  template<class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(bitvals_) & MEMBER(bitvals_diff_);
   }
-  
+
   bit_table_t bitvals_;
   bit_table_t bitvals_diff_;
 };

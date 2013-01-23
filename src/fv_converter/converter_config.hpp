@@ -41,11 +41,9 @@ struct string_rule {
   MSGPACK_DEFINE(key, type, sample_weight, global_weight);
 
   friend class pfi::data::serialization::access;
-  template <class Archive>
+  template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key)
-        & MEMBER(type)
-        & MEMBER(sample_weight)
+    ar & MEMBER(key) & MEMBER(type) & MEMBER(sample_weight)
         & MEMBER(global_weight);
   }
 };
@@ -58,11 +56,9 @@ struct filter_rule {
   MSGPACK_DEFINE(key, type, suffix);
 
   friend class pfi::data::serialization::access;
-  template <class Archive>
+  template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key)
-        & MEMBER(type)
-        & MEMBER(suffix);
+    ar & MEMBER(key) & MEMBER(type) & MEMBER(suffix);
   }
 };
 
@@ -73,10 +69,9 @@ struct num_rule {
   MSGPACK_DEFINE(key, type);
 
   friend class pfi::data::serialization::access;
-  template <class Archive>
+  template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key)
-        & MEMBER(type);
+    ar & MEMBER(key) & MEMBER(type);
   }
 };
 
@@ -96,22 +91,17 @@ struct converter_config {
   pfi::data::optional<int64_t> hash_max_size;
 
   MSGPACK_DEFINE(string_filter_types, string_filter_rules,
-                 num_filter_types, num_filter_rules,
-                 string_types, string_rules,
-                 num_types, num_rules);
+      num_filter_types, num_filter_rules,
+      string_types, string_rules,
+      num_types, num_rules);
 
   friend class pfi::data::serialization::access;
-  template <class Archive>
+  template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(string_filter_types)
-        & MEMBER(string_filter_rules)
-        & MEMBER(num_filter_types)
-        & MEMBER(num_filter_rules)
-        & MEMBER(string_types)
-        & MEMBER(string_rules)
-        & MEMBER(num_types)
-        & MEMBER(num_rules)
-        & MEMBER(hash_max_size);
+    ar & MEMBER(string_filter_types) & MEMBER(string_filter_rules)
+        & MEMBER(num_filter_types) & MEMBER(num_filter_rules)
+        & MEMBER(string_types) & MEMBER(string_rules) & MEMBER(num_types)
+        & MEMBER(num_rules) & MEMBER(hash_max_size);
   }
 
 };

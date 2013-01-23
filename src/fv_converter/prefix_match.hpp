@@ -26,8 +26,11 @@ namespace fv_converter {
 
 class prefix_match : public key_matcher {
  public:
-  prefix_match(const std::string& prefix) : prefix_(prefix) {}
-  ~prefix_match() {}
+  prefix_match(const std::string& prefix)
+      : prefix_(prefix) {
+  }
+  ~prefix_match() {
+  }
 
   bool match(const std::string& key) {
     return pfi::data::string::starts_with(key, prefix_);

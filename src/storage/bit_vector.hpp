@@ -25,7 +25,7 @@ namespace jubatus {
 namespace storage {
 
 class bit_vector {
-public:
+ public:
   bit_vector();
   ~bit_vector();
 
@@ -35,13 +35,11 @@ public:
   void set_bit(uint64_t pos);
   uint64_t calc_hamming_similarity(const bit_vector& bv) const;
 
-  static uint64_t pop_count(uint64_t r){
-    r = (r & 0x5555555555555555ULL) +
-      ((r >> 1) & 0x5555555555555555ULL);
-    r = (r & 0x3333333333333333ULL) +
-      ((r >> 2) & 0x3333333333333333ULL);
+  static uint64_t pop_count(uint64_t r) {
+    r = (r & 0x5555555555555555ULL) + ((r >> 1) & 0x5555555555555555ULL);
+    r = (r & 0x3333333333333333ULL) + ((r >> 2) & 0x3333333333333333ULL);
     r = (r + (r >> 4)) & 0x0f0f0f0f0f0f0f0fULL;
-    r = r + (r >>  8);
+    r = r + (r >> 8);
     r = r + (r >> 16);
     r = r + (r >> 32);
     return (uint64_t)(r & 0x7f);
@@ -51,9 +49,9 @@ public:
     return bit_num_;
   }
 
-  void debug_print(std::ostream& os) const{
-    for (uint64_t i = 0; i < bit_num_; ++i){
-      if ((bits_[i / 64] >> (i % 64)) & 1LLU){
+  void debug_print(std::ostream& os) const {
+    for (uint64_t i = 0; i < bit_num_; ++i) {
+      if ((bits_[i / 64] >> (i % 64)) & 1LLU) {
         os << "1";
       } else {
         os << "0";
@@ -66,12 +64,11 @@ public:
     std::swap(bit_num_, v.bit_num_);
   }
 
-private:
+ private:
   friend class pfi::data::serialization::access;
-  template <class Ar>
+  template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(bits_)
-      & MEMBER(bit_num_);
+    ar & MEMBER(bits_) & MEMBER(bit_num_);
   }
 
   std::vector<uint64_t> bits_;

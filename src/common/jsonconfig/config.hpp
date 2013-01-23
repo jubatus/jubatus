@@ -32,7 +32,7 @@ namespace jsonconfig {
 
 class config;
 
-template <class T>
+template<class T>
 T config_cast(const config& c);
 
 class config {
@@ -40,15 +40,19 @@ class config {
   class iterator;
 
   config()
-    : json_() {}
+      : json_() {
+  }
 
   config(const pfi::text::json::json& j)
-    : json_(j) {}
+      : json_(j) {
+  }
 
-  config(const pfi::text::json::json& j,
-         const std::string& path) : json_(j), path_(path) {}
+  config(const pfi::text::json::json& j, const std::string& path)
+      : json_(j),
+        path_(path) {
+  }
 
-  template <typename T>
+  template<typename T>
   T As() const {
     return config_cast<T>(*this);
   }
@@ -63,10 +67,14 @@ class config {
   iterator end() const;
 
   size_t size() const;
-  const pfi::text::json::json& get() const { return json_; }
-  const std::string& path() const { return path_; }
+  const pfi::text::json::json& get() const {
+    return json_;
+  }
+  const std::string& path() const {
+    return path_;
+  }
 
-  template <class T>
+  template<class T>
   bool is() const {
     return pfi::text::json::is<T>(json_);
   }
@@ -79,7 +87,8 @@ class config {
    public:
     typedef pfi::text::json::json::const_iterator iterator_base;
     iterator(const iterator&);
-    iterator(const config& parent, const pfi::text::json::json::const_iterator& it);
+    iterator(const config& parent,
+             const pfi::text::json::json::const_iterator& it);
 
     const std::string& key() const;
     config value() const;
@@ -121,7 +130,7 @@ class config {
   std::string path_;
 };
 
-} // jsonconfig
-} // jubatus
+}  // jsonconfig
+}  // jubatus
 
 #endif // JSONCONFIG_CONFIG_HPP_

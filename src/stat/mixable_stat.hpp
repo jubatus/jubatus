@@ -23,8 +23,8 @@ namespace jubatus {
 namespace stat {
 
 class mixable_stat : public stat {
-public:
-  mixable_stat(size_t);
+ public:
+  mixable_stat (size_t);
   virtual ~mixable_stat();
   // entropy = - \sum_{for all keys in this stat} p(key) log p(key)
 
@@ -36,13 +36,13 @@ public:
   //put_diff : pair( \sum n(key) log n(key), partial N ) -> ()
   // mix : pair(e1, n1) -> pair(e2, n2) -> pair( e1+e2, n1+n2 )
   // entropy : e -> n -> e/n - log n
-  std::pair<double,size_t> get_diff() const ;
-  void put_diff(const std::pair<double,size_t>&);
-  static void reduce(const std::pair<double,size_t>&,
-		     std::pair<double,size_t>&);
+  std::pair<double, size_t> get_diff() const;
+  void put_diff(const std::pair<double, size_t>&);
+  static void reduce(const std::pair<double, size_t>&,
+                     std::pair<double, size_t>&);
   double mixed_entropy() const;
 
-private:
+ private:
   double e_;
   double n_;
 };

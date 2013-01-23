@@ -27,10 +27,11 @@ sfv_diff_t make_vec(const string& c1, const string& c2, const string& c3) {
   return v;
 }
 
-template <typename T>
-class recommender_random_test : public testing::Test {};
+template<typename T>
+class recommender_random_test : public testing::Test {
+};
 
-TYPED_TEST_CASE_P(recommender_random_test);
+TYPED_TEST_CASE_P (recommender_random_test);
 
 TYPED_TEST_P(recommender_random_test, trivial) {
   TypeParam r;
@@ -77,14 +78,14 @@ TYPED_TEST_P(recommender_random_test, random) {
   size_t correct = 0;
   for (size_t i = 0; i < ids.size(); ++i) {
     if (ids[i].first[1] == '1')
-      ++correct;
+    ++correct;
   }
   EXPECT_GT(correct, 5u);
 
   // save the recommender
   stringstream oss;
   r.save(oss);
-  TypeParam r2;  
+  TypeParam r2;
   r2.load(oss);
 
   // Run the same test
@@ -94,7 +95,7 @@ TYPED_TEST_P(recommender_random_test, random) {
   correct = 0;
   for (size_t i = 0; i < ids.size(); ++i) {
     if (ids[i].first[1] == '1')
-      ++correct;
+    ++correct;
   }
   EXPECT_GT(correct, 5u);
 }
@@ -109,20 +110,19 @@ void update_random(recommender_base& r) {
   }
 }
 
-void compare_recommenders(recommender_base& r1,
-                          recommender_base& r2,
+void compare_recommenders(recommender_base& r1, recommender_base& r2,
                           bool compare_complete_row = true) {
   // make a query vector
   sfv_t q = make_vec(0.5, 0.3, 1.0);
-  
+
   // Get result before saving
-  vector<pair<string, float> > ids1;
+  vector < pair<string, float> > ids1;
   r1.similar_row(q, ids1, 10);
   sfv_t comp1;
   r1.complete_row("r1_0", comp1);
 
   // Get result from loaded data
-  vector<pair<string, float> > ids2;
+  vector < pair<string, float> > ids2;
   r2.similar_row(q, ids2, 10);
   sfv_t comp2;
   r2.complete_row("r1_0", comp2);
@@ -131,7 +131,7 @@ void compare_recommenders(recommender_base& r1,
   // ID order could not be same if there are score ties.
   // EXPECT_TRUE(ids1 == ids2);
   ASSERT_EQ(ids1.size(), ids2.size());
-  for (size_t i = 0; i < ids1.size(); ++i){
+  for (size_t i = 0; i < ids1.size(); ++i) {
     EXPECT_FLOAT_EQ(ids1[i].second, ids2[i].second);
   }
 
@@ -178,19 +178,19 @@ TYPED_TEST_P(recommender_random_test, get_all_row_ids) {
   ASSERT_TRUE(expect_ids == ids);
 
   /* TODO this test cannot be passed with current implementation
-  // Remove half rows
-  for (size_t i = 0; i < 50; ++i) {
-    string row_name = "r1_" + lexical_cast<string>(i);
-    r.clear_row(row_name);
-  }
+   // Remove half rows
+   for (size_t i = 0; i < 50; ++i) {
+   string row_name = "r1_" + lexical_cast<string>(i);
+   r.clear_row(row_name);
+   }
 
-  // Get rest of ids
-  ids.clear();
-  r.get_all_row_ids(ids);
-  ASSERT_EQ(50u, ids.size());
-  expect_ids.erase(expect_ids.begin(), expect_ids.begin() + 50);
-  ASSERT_TRUE(expect_ids == ids);
-  */
+   // Get rest of ids
+   ids.clear();
+   r.get_all_row_ids(ids);
+   ASSERT_EQ(50u, ids.size());
+   expect_ids.erase(expect_ids.begin(), expect_ids.begin() + 50);
+   ASSERT_TRUE(expect_ids == ids);
+   */
 }
 
 TYPED_TEST_P(recommender_random_test, diff) {
@@ -202,7 +202,7 @@ TYPED_TEST_P(recommender_random_test, diff) {
 
   TypeParam r2;
   r2.get_storage()->set_mixed_and_clear_diff(diff);
-  
+
   compare_recommenders(r, r2, false);
 }
 
@@ -213,7 +213,7 @@ TYPED_TEST_P(recommender_random_test, mix) {
     vector<double> v;
     make_random(mu, 1.0, 3, v);
     sfv_t vec = make_vec(v[0], v[1], v[2]);
-    
+
     string row = "r_" + lexical_cast<string>(i);
     (i < 50 ? r1 : r2).update_row(row, vec);
     expect.update_row(row, vec);
@@ -232,8 +232,8 @@ TYPED_TEST_P(recommender_random_test, mix) {
 }
 
 REGISTER_TYPED_TEST_CASE_P(recommender_random_test,
-                           trivial, random, save_load, get_all_row_ids,
-                           diff, mix);
+    trivial, random, save_load, get_all_row_ids,
+    diff, mix);
 
 typedef testing::Types<inverted_index, lsh, minhash, euclid_lsh> recommender_types;
 

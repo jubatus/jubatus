@@ -38,7 +38,7 @@ TEST(storage_factory, trivial) {
   }
   {
     EXPECT_THROW(storage_factory::create_storage("unknown"),
-                 std::exception);
+        std::exception);
   }
 
 }

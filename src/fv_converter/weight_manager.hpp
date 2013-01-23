@@ -28,9 +28,9 @@ namespace fv_converter {
 class weight_manager {
  public:
   weight_manager();
-  
+
   void update_weight(const sfv_t& fv);
-  void get_weight(sfv_t& fv)const;
+  void get_weight(sfv_t& fv) const;
 
   void add_weight(const std::string& key, float weight);
 
@@ -43,22 +43,20 @@ class weight_manager {
     diff_weights_.clear();
   }
 
-  void save(std::ostream& os){
+  void save(std::ostream& os) {
     pfi::data::serialization::binary_oarchive oa(os);
     oa << diff_weights_;
     oa << master_weights_;
   }
-  void load(std::istream& is){
+  void load(std::istream& is) {
     pfi::data::serialization::binary_iarchive ia(is);
     ia >> diff_weights_;
     ia >> master_weights_;
   }
 
-  template <class Archiver>
+  template<class Archiver>
   void serialize(Archiver &ar) {
-    ar
-      & MEMBER(diff_weights_)
-      & MEMBER(master_weights_);
+    ar & MEMBER(diff_weights_) & MEMBER(master_weights_);
   }
  private:
   size_t get_document_count() const {
@@ -75,7 +73,6 @@ class weight_manager {
     return diff_weights_.get_user_weight(key)
         + master_weights_.get_user_weight(key);
   }
-
 
   double get_global_weight(const std::string& key) const;
 

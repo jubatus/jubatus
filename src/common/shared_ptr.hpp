@@ -19,22 +19,27 @@
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/concurrent/threading_model.h>
 
-namespace jubatus  { namespace common {
+namespace jubatus {
+namespace common {
 
 // just a wrapper for threading_model::multi_thread
-template <typename T>
-struct cshared_ptr
-  : pfi::lang::shared_ptr<T, pfi::concurrent::threading_model::multi_thread>
-{
-public:
-  explicit cshared_ptr<T>(T* t):
-  pfi::lang::shared_ptr<T, pfi::concurrent::threading_model::multi_thread>(t)
-  {};
-  explicit cshared_ptr<T>():
-  pfi::lang::shared_ptr<T, pfi::concurrent::threading_model::multi_thread>()
-  {};
-  virtual ~cshared_ptr<T>(){};
-  
+template<typename T>
+struct cshared_ptr : pfi::lang::shared_ptr<T,
+    pfi::concurrent::threading_model::multi_thread> {
+ public:
+  explicit cshared_ptr<T>(T* t)
+      : pfi::lang::shared_ptr<T, pfi::concurrent::threading_model::multi_thread>(
+          t) {
+  }
+  ;
+  explicit cshared_ptr<T>()
+      : pfi::lang::shared_ptr<T, pfi::concurrent::threading_model::multi_thread>() {
+  }
+  ;
+  virtual ~cshared_ptr<T>() {
+  }
+  ;
+
 };
 
 }

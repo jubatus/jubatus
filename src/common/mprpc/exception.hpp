@@ -26,20 +26,24 @@ namespace mprpc {
 typedef jubatus::exception::error_info<struct error_method_, std::string> error_method;
 
 class rpc_no_client : public jubatus::exception::jubaexception<rpc_no_client> {
-public:
-  const char* what() const throw() { return "no client"; }
+ public:
+  const char* what() const throw () {
+    return "no client";
+  }
 };
 
 class rpc_no_result : public jubatus::exception::jubaexception<rpc_no_result> {
-public:
-  const char* what() const throw() { return "no result"; }
+ public:
+  const char* what() const throw () {
+    return "no result";
+  }
 };
-
 
 class rpc_io_error : public jubatus::exception::jubaexception<rpc_io_error> {
 };
 
-class rpc_timeout_error : public jubatus::exception::jubaexception<rpc_timeout_error> {
+class rpc_timeout_error : public jubatus::exception::jubaexception<
+    rpc_timeout_error> {
 };
 
 // rpc_server error
@@ -47,18 +51,19 @@ class rpc_type_error : public jubatus::exception::jubaexception<rpc_type_error> 
 };
 
 // rpc_server error
-class rpc_method_not_found : public jubatus::exception::jubaexception<rpc_method_not_found> {
+class rpc_method_not_found : public jubatus::exception::jubaexception<
+    rpc_method_not_found> {
 };
 
 // rpc_server error
 class rpc_call_error : public jubatus::exception::jubaexception<rpc_call_error> {
 };
 
-class rpc_internal_error : public jubatus::exception::jubaexception<rpc_internal_error> {
+class rpc_internal_error : public jubatus::exception::jubaexception<
+    rpc_internal_error> {
 };
 
-
-} // mprpc
-} // common
-} // jubatus
+}  // mprpc
+}  // common
+}  // jubatus
 

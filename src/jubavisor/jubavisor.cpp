@@ -37,19 +37,17 @@ namespace {
 jubervisor* g_jubavisor = NULL;
 
 // for GCC and Clang compatibility: to use pfi::lang::bind 'void (*)(int) __attribute__((noreturn))'
-void exit_wrapper(int status)
-{
+void exit_wrapper(int status) {
   exit(status);
 }
-} // namespace
+}  // namespace
 
 jubervisor::jubervisor(const std::string& hosts, int port, int max,
-                       const std::string& logfile):
-  zk_(create_lock_service("zk", hosts, 1024, logfile)),
-  port_base_(port),
-  logfile_(logfile),
-  max_children_(max)
-{
+                       const std::string& logfile)
+    : zk_(create_lock_service("zk", hosts, 1024, logfile)),
+      port_base_(port),
+      logfile_(logfile),
+      max_children_(max) {
   jubatus::util::ignore_sigpipe();
   jubatus::util::set_exit_on_term();
   ::atexit(jubervisor::atexit_);
@@ -75,7 +73,7 @@ jubervisor::jubervisor(const std::string& hosts, int port, int max,
   //  zk_->bind_watcher(path, f);
   DLOG(INFO) << path << " created.";
 
-  for(unsigned int i=0;i<max_children_;++i){
+  for (unsigned int i = 0; i < max_children_; ++i) {
     port_pool_.push(++port_base_);
   }
 
@@ -87,19 +85,16 @@ jubervisor::jubervisor(const std::string& hosts, int port, int max,
   g_jubavisor = this;
 }
 
-jubervisor::~jubervisor()
-{
+jubervisor::~jubervisor() {
   stop_all();
 }
 
-void jubervisor::atexit_()
-{
+void jubervisor::atexit_() {
   if (g_jubavisor && g_jubavisor->zk_)
     g_jubavisor->zk_->force_close();
 }
 
-void jubervisor::sigchld_handler_(int sig)
-{
+void jubervisor::sigchld_handler_(int sig) {
   pid_t child_pid;
   int child_status;
 
@@ -112,16 +107,17 @@ void jubervisor::sigchld_handler_(int sig)
     try {
       scoped_lock lk(g_jubavisor->m_);
 
-      for (child_map_t::iterator it = g_jubavisor->children_.begin(),
-          end = g_jubavisor->children_.end(); it != end; ++it) {
+      for (child_map_t::iterator it = g_jubavisor->children_.begin(), end =
+          g_jubavisor->children_.end(); it != end; ++it) {
         // find child_pid from jubavisor
         bool released = false;
-        for (process_list_t::iterator process_it = it->second.begin(), end = it->second.end();
-            process_it != end; ++process_it) {
+        for (process_list_t::iterator process_it = it->second.begin(), end = it
+            ->second.end(); process_it != end; ++process_it) {
           if (child_pid != process_it->get_pid())
             continue;
 
-          LOG(INFO) << process_it->get_server() << " with port " << process_it->get_rpc_port() << " exited pid: " << child_pid;
+          LOG(INFO) << process_it->get_server() << " with port "
+              << process_it->get_rpc_port() << " exited pid: " << child_pid;
 
           // release reserved port
           g_jubavisor->port_pool_.push(process_it->get_rpc_port());
@@ -130,7 +126,8 @@ void jubervisor::sigchld_handler_(int sig)
           released = true;
           break;
         }
-        if (released) break;
+        if (released)
+          break;
       }
     } catch (...) {
     }
@@ -141,51 +138,54 @@ void jubervisor::sigchld_handler_(int sig)
 // server : "jubaclassifier" ...
 // name : any but ""
 // -> exec ./<server> -n <name> -p <rpc_port> -z <zk>
-int jubervisor::start(std::string str, unsigned int N, framework::server_argv argv)
-{
+int jubervisor::start(std::string str, unsigned int N,
+                      framework::server_argv argv) {
   scoped_lock lk(m_);
   LOG(INFO) << str << " " << N;
   return start_(str, N, argv);
 }
 
-int jubervisor::start_(const std::string& str, unsigned int N, const framework::server_argv& argv)
-{
+int jubervisor::start_(const std::string& str, unsigned int N,
+                       const framework::server_argv& argv) {
   std::string name;
   {
     process p(zk_->get_hosts());
-    if(!p.set_names(str)){
+    if (!p.set_names(str)) {
       LOG(ERROR) << "cannot parse " << str;
       return -1;
     }
     name = p.get_name();
   }
   child_map_t::iterator it = children_.find(name);
-  if(it == children_.end()){
+  if (it == children_.end()) {
     children_.insert(make_pair(name, process_list_t()));
   }
   it = children_.find(name);
-  if(it->second.size() > N){
-    LOG(ERROR) << it->second.size() << " " << name << " already running at this machine.";
+  if (it->second.size() > N) {
+    LOG(ERROR) << it->second.size() << " " << name
+        << " already running at this machine.";
     return -1;
   }
   N -= it->second.size();
 
-  if(port_pool_.size() < N){
+  if (port_pool_.size() < N) {
     LOG(ERROR) << "cannot spawn more than " << max_children_ << " processes.";
-    LOG(ERROR) << "currently remaining " << port_pool_.size() << " while " << N << " requested.";
+    LOG(ERROR) << "currently remaining " << port_pool_.size() << " while " << N
+        << " requested.";
     return -1;
   }
-  
-  for(unsigned int n=0; n<N; ++n){
+
+  for (unsigned int n = 0; n < N; ++n) {
     process p(zk_->get_hosts(), argv);
     p.set_names(str);
     it = children_.find(name);
 
-    int p1 = port_pool_.front(); port_pool_.pop();
-    if(p.spawn_link(p1)){
+    int p1 = port_pool_.front();
+    port_pool_.pop();
+    if (p.spawn_link(p1)) {
       it->second.push_back(p);
-      
-    }else{
+
+    } else {
       LOG(ERROR) << "cannot start: " << p.get_name();
       port_pool_.push(p1);
       return -1;
@@ -194,8 +194,7 @@ int jubervisor::start_(const std::string& str, unsigned int N, const framework::
   return 0;
 }
 
-int jubervisor::stop(std::string str, unsigned int N)
-{
+int jubervisor::stop(std::string str, unsigned int N) {
   DLOG(ERROR) << str;
   process p(zk_->get_hosts());
   p.set_names(str);
@@ -203,7 +202,7 @@ int jubervisor::stop(std::string str, unsigned int N)
   {
     scoped_lock lk(m_);
     child_map_t::iterator it = children_.find(p.get_name());
-    if(it==children_.end()){
+    if (it == children_.end()) {
       LOG(INFO) << p.get_name() << " is not in children.";
       return 0;
     }
@@ -212,28 +211,27 @@ int jubervisor::stop(std::string str, unsigned int N)
   }
   int r = 0;
 
-  for(size_t i = 0; i < v.size(); ++i){
-    if(!v[i].kill()){
+  for (size_t i = 0; i < v.size(); ++i) {
+    if (!v[i].kill()) {
       r--;
-    }else{
+    } else {
       port_pool_.push(v[i].get_rpc_port());
     }
   }
   return r;
 }
 
-void jubervisor::stop_all()
-{
+void jubervisor::stop_all() {
   DLOG(ERROR) << __func__;
   scoped_lock lk(m_);
 
   for (child_map_t::iterator it = children_.begin(), end = children_.end();
-      it != end; ++it){
-    for(size_t i = 0; i < it->second.size(); ++i){
-      if(!it->second[i].kill()){
-        LOG(ERROR) << "failed stopping process: name(" << it->second[i].get_name()
-                   << ") server(" << it->second[i].get_server()
-                   << ") ";
+      it != end; ++it) {
+    for (size_t i = 0; i < it->second.size(); ++i) {
+      if (!it->second[i].kill()) {
+        LOG(ERROR) << "failed stopping process: name("
+            << it->second[i].get_name() << ") server("
+            << it->second[i].get_server() << ") ";
         perror(__func__);
       }
     }

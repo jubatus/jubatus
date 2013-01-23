@@ -30,5 +30,6 @@ TEST(cht, make_hash) {
   ASSERT_NE(hash, hash3);
 }
 
-} // common
+}
+  // common
 } // jubatus

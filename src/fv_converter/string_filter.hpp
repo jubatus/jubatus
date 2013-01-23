@@ -23,7 +23,8 @@ namespace fv_converter {
 
 class string_filter {
  public:
-  virtual ~string_filter() {}
+  virtual ~string_filter() {
+  }
   virtual void filter(const std::string& input, std::string& output) const = 0;
 };
 

@@ -20,6 +20,6 @@
 using namespace jubatus;
 
 //TEST(jubervisor, main){
-  // TODO: think of some tests
-  //  jubervisor j("localhost:2181", 9199); // need zookeeper mock..
+// TODO: think of some tests
+//  jubervisor j("localhost:2181", 9199); // need zookeeper mock..
 //}

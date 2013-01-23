@@ -29,8 +29,8 @@
 namespace jubatus {
 namespace server {
 
-struct mixable_anomaly : public framework::mixable<jubatus::anomaly::anomaly_base, std::string>
-{
+struct mixable_anomaly : public framework::mixable<
+    jubatus::anomaly::anomaly_base, std::string> {
   std::string get_diff_impl() const {
     std::string diff;
     get_model()->get_const_storage()->get_diff(diff);
@@ -41,18 +41,18 @@ struct mixable_anomaly : public framework::mixable<jubatus::anomaly::anomaly_bas
     get_model()->get_storage()->set_mixed_and_clear_diff(v);
   }
 
-  void mix_impl(const std::string& lhs,
-                const std::string& rhs,
+  void mix_impl(const std::string& lhs, const std::string& rhs,
                 std::string& mixed) const {
     mixed = lhs;
     get_model()->get_const_storage()->mix(rhs, mixed);
   }
 
-  void clear() {}
+  void clear() {
+  }
 };
 
 class anomaly_serv : public framework::server_base {
-public:
+ public:
   anomaly_serv(const framework::server_argv& a,
                const common::cshared_ptr<common::lock_service>& zk);
   virtual ~anomaly_serv();
@@ -83,15 +83,12 @@ public:
 
   void check_set_config() const;
 
-private:
-  void find_from_cht(const std::string& key,
-                     size_t n,
+ private:
+  void find_from_cht(const std::string& key, size_t n,
                      std::vector<std::pair<std::string, int> >& out);
 
-  float selective_update(const std::string& host,
-                         int port,
-                         const std::string& id,
-                         const datum& d);
+  float selective_update(const std::string& host, int port,
+                         const std::string& id, const datum& d);
 
   common::cshared_ptr<common::lock_service> zk_;
 
@@ -107,4 +104,5 @@ private:
   common::global_id_generator idgen_;
 };
 
-}} // namespace jubatus::server
+}
+}  // namespace jubatus::server

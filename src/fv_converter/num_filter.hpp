@@ -21,7 +21,8 @@ namespace fv_converter {
 
 class num_filter {
  public:
-  virtual ~num_filter() {}
+  virtual ~num_filter() {
+  }
   virtual double filter(double value) const = 0;
 };
 

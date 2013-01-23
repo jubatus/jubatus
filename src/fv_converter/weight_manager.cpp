@@ -25,7 +25,9 @@ namespace fv_converter {
 using namespace std;
 
 weight_manager::weight_manager()
-    : diff_weights_(), master_weights_() {}
+    : diff_weights_(),
+      master_weights_() {
+}
 
 struct is_zero {
   bool operator()(const pair<string, float>& p) {
@@ -39,7 +41,7 @@ void weight_manager::update_weight(const sfv_t& fv) {
 
 void weight_manager::get_weight(sfv_t& fv) const {
   for (sfv_t::iterator it = fv.begin(); it != fv.end(); ++it) {
-    double global_weight  = get_global_weight(it->first);
+    double global_weight = get_global_weight(it->first);
     it->second *= global_weight;
   }
   fv.erase(remove_if(fv.begin(), fv.end(), is_zero()), fv.end());

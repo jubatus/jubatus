@@ -6,7 +6,6 @@
 namespace jubatus {
 namespace storage {
 
-
 using namespace std;
 
 TEST(sparse_matrix_storage, empty) {
@@ -74,9 +73,9 @@ TEST(sparse_matrix_storage, set) {
   ASSERT_EQ(2u, p.size());
   sort(p.begin(), p.end());
   EXPECT_EQ("c1", p[0].first);
-  EXPECT_EQ(1.0,  p[0].second);
+  EXPECT_EQ(1.0, p[0].second);
   EXPECT_EQ("c2", p[1].first);
-  EXPECT_EQ(2.0,  p[1].second);
+  EXPECT_EQ(2.0, p[1].second);
 
   vector<string> ids;
   s.get_all_row_ids(ids);

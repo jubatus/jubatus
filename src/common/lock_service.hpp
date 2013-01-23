@@ -29,22 +29,29 @@ namespace common {
 
 // TODO: write lock_service mock and test them all?
 class lock_service {
-public:
+ public:
   // timeout [sec]
-  lock_service() {}
-  virtual ~lock_service() {}
+  lock_service() {
+  }
+  virtual ~lock_service() {
+  }
 
   virtual void force_close() = 0;
-  virtual bool create(const std::string& path, const std::string& payload = "", bool ephemeral = false) = 0;
-  virtual bool set(const std::string& path, const std::string& payload = "") = 0;
+  virtual bool create(const std::string& path, const std::string& payload = "",
+                      bool ephemeral = false) = 0;
+  virtual bool set(const std::string& path,
+                   const std::string& payload = "") = 0;
   virtual bool remove(const std::string& path) = 0;
   virtual bool exists(const std::string& path) = 0;
 
-  virtual bool bind_watcher(const std::string& path, pfi::lang::function<void(int,int,std::string)>&) = 0;
+  virtual bool bind_watcher(
+      const std::string& path,
+      pfi::lang::function<void(int, int, std::string)>&) = 0;
 
   // ephemeral only
   virtual bool create_seq(const std::string& path, std::string&) = 0;
-  virtual bool create_id(const std::string& path, uint32_t prefix, uint64_t& res) = 0;
+  virtual bool create_id(const std::string& path, uint32_t prefix,
+                         uint64_t& res) = 0;
 
   virtual bool list(const std::string& path, std::vector<std::string>& out) = 0;
   virtual bool hd_list(const std::string& path, std::string& out) = 0;
@@ -60,7 +67,7 @@ public:
 };
 
 class try_lockable : public pfi::concurrent::lockable {
-public:
+ public:
   virtual bool try_lock() = 0;
   virtual bool rlock() = 0;
   virtual bool try_rlock() = 0;
@@ -68,7 +75,7 @@ public:
 };
 
 class lock_service_mutex : public try_lockable {
-public:
+ public:
   lock_service_mutex(lock_service& ls, const std::string& path);
   virtual ~lock_service_mutex() {
     delete impl_;
@@ -81,13 +88,14 @@ public:
   bool try_rlock();
   bool unlock_r();
 
-protected:
+ protected:
   try_lockable* impl_;
   std::string path_;
 };
 
-lock_service* create_lock_service(const std::string&,
-    const std::string& hosts, const int timeout, const std::string& log = "");
+lock_service* create_lock_service(const std::string&, const std::string& hosts,
+                                  const int timeout,
+                                  const std::string& log = "");
 
-} // common
-} // jubatus
+}  // common
+}  // jubatus

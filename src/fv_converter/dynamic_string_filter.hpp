@@ -26,8 +26,7 @@ namespace fv_converter {
 
 class dynamic_string_filter : public string_filter {
  public:
-  dynamic_string_filter(const std::string& path,
-                        const std::string& function,
+  dynamic_string_filter(const std::string& path, const std::string& function,
                         const std::map<std::string, std::string>& params);
 
   void filter(const std::string& input, std::string& output) const;
@@ -36,7 +35,6 @@ class dynamic_string_filter : public string_filter {
   dynamic_loader loader_;
   pfi::lang::scoped_ptr<string_filter> impl_;
 };
-
 
 }
 }

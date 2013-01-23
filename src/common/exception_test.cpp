@@ -34,12 +34,11 @@ using jubatus::exception::jubaexception;
 namespace jubatus {
 namespace exception {
 typedef error_info<struct test_my_tag_, int> test_my_tag;
-inline string to_string(const test_my_tag& info)
-{
+inline string to_string(const test_my_tag& info) {
   return pfi::lang::lexical_cast<string>(info.value() * 2);
 }
-} // exception
-} // jubatus
+}  // exception
+}  // jubatus
 
 TEST(error_info, defined_tag)
 {
@@ -60,30 +59,32 @@ TEST(error_info, error_info_base)
 
 namespace test_exception {
 class ore_exception : public jubaexception<ore_exception> {
-public:
+ public:
   explicit ore_exception(const std::string& what)
-    : what_(what)
-  {}
-  ~ore_exception() throw()
-  {}
+      : what_(what) {
+  }
+  ~ore_exception() throw () {
+  }
 
-  const char* what() const throw() { return what_.c_str(); }
-private:
+  const char* what() const throw () {
+    return what_.c_str();
+  }
+ private:
   std::string what_;
 };
 
 class derived_exception : public jubatus::exception::runtime_error {
-public:
+ public:
   explicit derived_exception(const std::string& what)
-    : jubatus::exception::runtime_error(what)
-  {}
-  ~derived_exception() throw()
-  {}
+      : jubatus::exception::runtime_error(what) {
+  }
+  ~derived_exception() throw () {
+  }
 
   // multi-derived exception cannot get as it thrower
   // because thrower() returns exception_thrower_impl<runtime_error>
 };
-} // test_exception
+}  // test_exception
 
 TEST(exception, custom_exception)
 {
@@ -169,7 +170,7 @@ TEST(exception, exception_info_macro)
 {
   try {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("hogehoge"));
-  } catch (const jubatus_exception& e) {
+} catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
     EXPECT_EQ(4u, info_list.size());
     EXPECT_FALSE(info_list[0]->splitter());
@@ -182,10 +183,9 @@ TEST(exception, exception_info_macro)
 TEST(exception, exception_info_macro_additional)
 {
   try {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("hogehoge")
-        << jubatus::exception::error_message("message")
-        );
-  } catch (const jubatus_exception& e) {
+    throw JUBATUS_EXCEPTION(
+    jubatus::exception::runtime_error("hogehoge") << jubatus::exception::error_message("message"));
+} catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
     EXPECT_EQ(5u, info_list.size());
     EXPECT_FALSE(info_list[0]->splitter());
@@ -203,7 +203,7 @@ TEST(exception, exception_info_macro_thrower)
 
   try {
     throw JUBATUS_EXCEPTION(test_exception::derived_exception("hogehoge"));
-  } catch (const jubatus_exception& e) {
+} catch (const jubatus_exception& e) {
     thrower = e.thrower();
   }
 
@@ -215,7 +215,7 @@ TEST(exception, exception_custom_error_info)
 {
   try {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("hogehoge"));
-  } catch (const jubatus_exception& e) {
+} catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
     EXPECT_EQ(4u, info_list.size());
     EXPECT_FALSE(info_list[0]->splitter());
@@ -232,7 +232,7 @@ TEST(exception, exception_info_add_macro)
   try {
     try {
       throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("hogehoge"));
-    } catch (const jubatus_exception& e) {
+} catch (const jubatus_exception& e) {
       // push additional information
       e << error_message("added");
       // push some error_info and end-mark of catch(error_splitter)
@@ -264,54 +264,54 @@ TEST(exception, exception_error_info)
   bool caught = false;
   try {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("what"));
-  } catch (const jubatus_exception& e) {
-    caught = true;
-    EXPECT_EQ(string("what"), e.what());
-  }
+} catch (const jubatus_exception& e) {
+caught = true;
+EXPECT_EQ(string("what"), e.what());
+}
 
-  EXPECT_TRUE(caught);
+EXPECT_TRUE(caught);
 }
 
 TEST(exception, current_exception)
 {
-  exception_thrower_ptr thrower;
+exception_thrower_ptr thrower;
 
-  try {
-    throw std::runtime_error("my_runtime_error_hoge");
-  } catch (...) {
-    thrower = jubatus::exception::get_current_exception();
-  }
+try {
+throw std::runtime_error("my_runtime_error_hoge");
+} catch (...) {
+thrower = jubatus::exception::get_current_exception();
+}
 
-  EXPECT_TRUE(thrower);
-  EXPECT_THROW(thrower->throw_exception(), std::runtime_error);
+EXPECT_TRUE(thrower);
+EXPECT_THROW(thrower->throw_exception(), std::runtime_error);
 }
 
 TEST(exception, catch_unknown_current_exception)
 {
-  exception_thrower_ptr thrower;
+exception_thrower_ptr thrower;
 
-  try {
-    throw 100;
-  } catch (...) {
-    thrower = jubatus::exception::get_current_exception();
-  }
+try {
+throw 100;
+} catch (...) {
+thrower = jubatus::exception::get_current_exception();
+}
 
-  EXPECT_TRUE(thrower);
-  EXPECT_THROW(thrower->throw_exception(), jubatus::exception::unknown_exception);
+EXPECT_TRUE(thrower);
+EXPECT_THROW(thrower->throw_exception(), jubatus::exception::unknown_exception);
 }
 
 #if __GNUC__ >= 3
 TEST(exception, abi_demangle)
 {
-  jubatus::exception::runtime_error object("a");
+jubatus::exception::runtime_error object("a");
 
-  EXPECT_EQ(string("jubatus::exception::runtime_error"), pfi::lang::demangle(typeid(object).name()));
+EXPECT_EQ(string("jubatus::exception::runtime_error"), pfi::lang::demangle(typeid(object).name()));
 }
 
 TEST(exception, exception_class_name)
 {
-  jubatus::exception::runtime_error object("a");
-  EXPECT_EQ(string("jubatus::exception::runtime_error"), static_cast<jubatus_exception*>(&object)->name());
+jubatus::exception::runtime_error object("a");
+EXPECT_EQ(string("jubatus::exception::runtime_error"), static_cast<jubatus_exception*>(&object)->name());
 }
 #endif
 

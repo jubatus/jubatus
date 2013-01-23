@@ -36,7 +36,7 @@ TEST(keyword_weights, trivial) {
     m2.update_document_frequency(fv);
 
     m2.add_weight("key3", 3.0);
-  
+
     m.merge(m2);
 
     EXPECT_EQ(4u, m.get_document_count());

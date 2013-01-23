@@ -28,16 +28,15 @@ using pfi::text::json::json;
 namespace jubatus {
 namespace recommender {
 
-recommender_base* create_recommender(const string& name,
-                                     const config& param) {
+recommender_base* create_recommender(const string& name, const config& param) {
   using namespace pfi::text::json;
 
-  if (name == "inverted_index"){
+  if (name == "inverted_index") {
     // inverted_index doesn't have parameter
     return new inverted_index;
-  } else if (name == "minhash"){
+  } else if (name == "minhash") {
     return new minhash(config_cast_check<minhash::config>(param));
-  } else if (name == "lsh"){
+  } else if (name == "lsh") {
     return new lsh(config_cast_check<lsh::config>(param));
   } else if (name == "euclid_lsh") {
     return new euclid_lsh(config_cast_check<euclid_lsh::config>(param));
@@ -46,7 +45,6 @@ recommender_base* create_recommender(const string& name,
   }
 }
 
-} // recommender
-} // jubatus
-
+}  // recommender
+}  // jubatus
 

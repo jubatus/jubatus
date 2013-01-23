@@ -20,7 +20,7 @@ TEST(inverted_index_storage, trivial) {
   // r3: (0, 1, 0, 0, 1)
   s.set("c2", "r3", 1);
   s.set("c5", "r3", 1);
-  
+
   // v:  (1, 1, 0, 0, 0)
   sfv_t v;
   v.push_back(make_pair("c1", 1.0));

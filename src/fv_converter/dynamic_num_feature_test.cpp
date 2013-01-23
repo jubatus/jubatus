@@ -32,8 +32,8 @@ TEST(dynamic_num_feature, trivial) {
 
   {
     dynamic_num_feature f(LIBNUM_FEATURE_SAMPLE,
-                          "create",
-                          params);
+        "create",
+        params);
     sfv_t fv;
     f.add_feature("/path", 1, fv);
 

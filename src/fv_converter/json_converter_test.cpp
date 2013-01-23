@@ -37,8 +37,7 @@ json MakeJson(const string& string) {
 
 void TestEquals(const string& json_string,
                 vector<pair<string, string> > expected_strings,
-                vector<pair<string, double> > expected_nums
-) {
+                vector<pair<string, double> > expected_nums) {
   sort(expected_strings.begin(), expected_strings.end());
   sort(expected_nums.begin(), expected_nums.end());
   datum actual;
@@ -47,7 +46,7 @@ void TestEquals(const string& json_string,
   sort(actual.string_values_.begin(), actual.string_values_.end());
   sort(actual.num_values_.begin(), actual.num_values_.end());
   PairVectorEquals(expected_strings, actual.string_values_);
-  PairVectorEquals(expected_nums, actual.num_values_);  
+  PairVectorEquals(expected_nums, actual.num_values_);
 }
 
 TEST(json_converter, empty) {
@@ -103,7 +102,7 @@ TEST(json_converter, array) {
 
   nums.push_back(make_pair("[0]", 1.));
   nums.push_back(make_pair("[1]", 2.));
-  nums.push_back(make_pair("[2]", 3.));  
+  nums.push_back(make_pair("[2]", 3.));
 
   TestEquals("[1, 2, 3]", strings, nums);
 
@@ -131,5 +130,5 @@ TEST(json_converter, object) {
   nums.push_back(make_pair("/user/age", 20));
 
   TestEquals("{ \"text\": \"Hello\", \"user\": { \"name\": \"Taro\", \"age\": 20 } }",
-             strings, nums);
+      strings, nums);
 }

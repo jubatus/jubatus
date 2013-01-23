@@ -30,19 +30,26 @@ namespace jubatus {
 namespace fv_converter {
 
 enum frequency_weight_type {
-  FREQ_BINARY, TERM_FREQUENCY, LOG_TERM_FREQUENCY
+  FREQ_BINARY,
+  TERM_FREQUENCY,
+  LOG_TERM_FREQUENCY
 };
 
 enum term_weight_type {
-  TERM_BINARY, IDF, WITH_WEIGHT_FILE
+  TERM_BINARY,
+  IDF,
+  WITH_WEIGHT_FILE
 };
 
 struct splitter_weight_type {
   frequency_weight_type freq_weight_type_;
   term_weight_type term_weight_type_;
 
-  splitter_weight_type(frequency_weight_type freq_weight_type, term_weight_type term_weight_type)
-      : freq_weight_type_(freq_weight_type), term_weight_type_(term_weight_type) {}
+  splitter_weight_type(frequency_weight_type freq_weight_type,
+                       term_weight_type term_weight_type)
+      : freq_weight_type_(freq_weight_type),
+        term_weight_type_(term_weight_type) {
+  }
 };
 
 struct datum;
@@ -83,8 +90,7 @@ class datum_to_fv_converter {
                          pfi::lang::shared_ptr<key_matcher> matcher,
                          pfi::lang::shared_ptr<num_feature> feature_func);
 
-  void add_weight(const std::string& key,
-                  float weight);
+  void add_weight(const std::string& key, float weight);
 
   void revert_feature(const std::string& feature,
                       std::pair<std::string, std::string>& expect) const;

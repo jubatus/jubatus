@@ -29,12 +29,12 @@ std::string path, path1;
 std::string name_, name1_;
 
 class czk_test : public ::testing::Test {
-protected:
+ protected:
   pfi::lang::shared_ptr<jubatus::common::lock_service> zk_;
 
   czk_test() {
-    zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
-          (common::create_lock_service("zk", "localhost:2181", 1024, "test.log"));
+    zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>(
+        common::create_lock_service("zk", "localhost:2181", 1024, "test.log"));
 
     std::string engine_name, engine_root;
     engine_name = "test";
@@ -64,23 +64,23 @@ protected:
 TEST(czk, cached_zk_trivial) {
   pfi::lang::shared_ptr<jubatus::common::lock_service> czk_;
   czk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
-        (common::create_lock_service("cached_zk", "localhost:2181", 1024, "cached_test.log"));
+  (common::create_lock_service("cached_zk", "localhost:2181", 1024, "cached_test.log"));
 
   ASSERT_EQ("cached_zk", czk_->type());
 
-/*
-  std::vector<std::string> pathlist;
-  czk_->list(ACTOR_BASE_PATH, pathlist);
-  ASSERT_EQ((unsigned int)2, pathlist.size());
+  /*
+   std::vector<std::string> pathlist;
+   czk_->list(ACTOR_BASE_PATH, pathlist);
+   ASSERT_EQ((unsigned int)2, pathlist.size());
 
-  std::string name_e;
-  czk_->hd_list(ACTOR_BASE_PATH, name_e);
-  ASSERT_EQ(name_e , name_);
+   std::string name_e;
+   czk_->hd_list(ACTOR_BASE_PATH, name_e);
+   ASSERT_EQ(name_e , name_);
 
-  std::string dat;
-  czk_->read(path, dat);
-  ASSERT_EQ("hoge0", dat);
-*/
+   std::string dat;
+   czk_->read(path, dat);
+   ASSERT_EQ("hoge0", dat);
+   */
 }
 
 }

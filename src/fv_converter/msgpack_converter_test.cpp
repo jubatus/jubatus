@@ -26,11 +26,11 @@ using namespace std;
 using namespace jubatus;
 using namespace jubatus::fv_converter;
 
-template <typename T>
+template<typename T>
 void make(const T& data, datum& datum) {
   msgpack::sbuffer sbuf;
   msgpack::pack(sbuf, data);
-  
+
   msgpack::unpacked msg;
   msgpack::unpack(&msg, sbuf.data(), sbuf.size());
   msgpack::object obj = msg.get();
@@ -40,7 +40,7 @@ void make(const T& data, datum& datum) {
 TEST(msgpack_converter, empty) {
   datum datum;
   make(vector<string>(), datum);
-  
+
   ASSERT_EQ(0u, datum.string_values_.size());
   ASSERT_EQ(0u, datum.num_values_.size());
 }
@@ -149,14 +149,14 @@ TEST(msgpack_converter, map) {
     m["taro"]["age"] = 20;
     make(m, datum);
 
-  ASSERT_EQ(0u, datum.string_values_.size());
-  ASSERT_EQ(2u, datum.num_values_.size());
+    ASSERT_EQ(0u, datum.string_values_.size());
+    ASSERT_EQ(2u, datum.num_values_.size());
 
-  ASSERT_EQ("/\"hanako\"/\"age\"", datum.num_values_[0].first);
-  ASSERT_EQ(25., datum.num_values_[0].second);
+    ASSERT_EQ("/\"hanako\"/\"age\"", datum.num_values_[0].first);
+    ASSERT_EQ(25., datum.num_values_[0].second);
 
-  ASSERT_EQ("/\"taro\"/\"age\"", datum.num_values_[1].first);
-  ASSERT_EQ(20., datum.num_values_[1].second);
+    ASSERT_EQ("/\"taro\"/\"age\"", datum.num_values_[1].first);
+    ASSERT_EQ(20., datum.num_values_[1].second);
   }
 
 }

@@ -1,24 +1,21 @@
-
 // This file is auto-generated from graph.idl
 // *** DO NOT EDIT ***
 
 #ifndef GRAPH_CLIENT_HPP_
 #define GRAPH_CLIENT_HPP_
 
-
 #include "graph_types.hpp"
 #include <jubatus/msgpack/rpc/client.h>
-
 
 namespace jubatus {
 
 namespace client {
 
 class graph {
-public:
+ public:
   graph(const std::string &host, uint64_t port, double timeout_sec)
-    : c_(host, port) {
-    c_.set_timeout( timeout_sec );
+      : c_(host, port) {
+    c_.set_timeout(timeout_sec);
   }
 
   std::string get_config(std::string name) {
@@ -41,7 +38,8 @@ public:
     return c_.call("create_edge", name, nid, ei).get<uint64_t>();
   }
 
-  bool update_edge(std::string name, std::string nid, uint64_t eid, edge_info ei) {
+  bool update_edge(std::string name, std::string nid, uint64_t eid,
+                   edge_info ei) {
     return c_.call("update_edge", name, nid, eid, ei).get<bool>();
   }
 
@@ -49,7 +47,8 @@ public:
     return c_.call("remove_edge", name, nid, e).get<bool>();
   }
 
-  double get_centrality(std::string name, std::string nid, int32_t ct, preset_query q) {
+  double get_centrality(std::string name, std::string nid, int32_t ct,
+                        preset_query q) {
     return c_.call("get_centrality", name, nid, ct, q).get<double>();
   }
 
@@ -69,8 +68,9 @@ public:
     return c_.call("remove_shortest_path_query", name, q).get<bool>();
   }
 
-  std::vector<std::string > get_shortest_path(std::string name, shortest_path_req r) {
-    return c_.call("get_shortest_path", name, r).get<std::vector<std::string > >();
+  std::vector<std::string> get_shortest_path(std::string name,
+                                             shortest_path_req r) {
+    return c_.call("get_shortest_path", name, r).get<std::vector<std::string> >();
   }
 
   bool update_index(std::string name) {
@@ -97,8 +97,10 @@ public:
     return c_.call("load", name, arg1).get<bool>();
   }
 
-  std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
-    return c_.call("get_status", name).get<std::map<std::string, std::map<std::string, std::string > > >();
+  std::map<std::string, std::map<std::string, std::string> > get_status(
+      std::string name) {
+    return c_.call("get_status", name)
+        .get<std::map<std::string, std::map<std::string, std::string> > >();
   }
 
   int32_t create_node_here(std::string name, std::string nid) {
@@ -113,14 +115,12 @@ public:
     return c_.call("create_edge_here", name, eid, ei).get<int32_t>();
   }
 
-private:
+ private:
   msgpack::rpc::client c_;
 };
 
-} // namespace client
+}  // namespace client
 
-} // namespace jubatus
-
-
+}  // namespace jubatus
 
 #endif // GRAPH_CLIENT_HPP_

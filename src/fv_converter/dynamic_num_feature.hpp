@@ -27,8 +27,7 @@ namespace fv_converter {
 
 class dynamic_num_feature : public num_feature {
  public:
-  dynamic_num_feature(const std::string& path,
-                      const std::string& function,
+  dynamic_num_feature(const std::string& path, const std::string& function,
                       const std::map<std::string, std::string>& params);
 
   void add_feature(const std::string& key, double value, sfv_t& ret_fv) const;

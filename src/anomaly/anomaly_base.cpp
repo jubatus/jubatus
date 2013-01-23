@@ -45,5 +45,5 @@ void anomaly_base::load(std::istream& is) {
   load_impl(is);
 }
 
-} // namespace anomaly
-} // namespace jubatus
+}  // namespace anomaly
+}  // namespace jubatus

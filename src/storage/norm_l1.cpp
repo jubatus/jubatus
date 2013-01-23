@@ -19,25 +19,26 @@
 namespace jubatus {
 namespace storage {
 
-norm_l1::norm_l1(){
+norm_l1::norm_l1() {
 }
 
-norm_l1::~norm_l1(){
+norm_l1::~norm_l1() {
 }
 
-void norm_l1::clear(){
+void norm_l1::clear() {
   sq_norms_.clear();
 }
 
-void norm_l1::notify(const std::string& row, float old_val, float new_val){
+void norm_l1::notify(const std::string& row, float old_val, float new_val) {
   float& v = sq_norms_[row];
   v -= fabs(old_val);
   v += fabs(new_val);
 }
 
-float norm_l1::calc_norm(const std::string& row) const{
-  pfi::data::unordered_map<std::string, float>::const_iterator it = sq_norms_.find(row);
-  if (it == sq_norms_.end()){
+float norm_l1::calc_norm(const std::string& row) const {
+  pfi::data::unordered_map<std::string, float>::const_iterator it = sq_norms_
+      .find(row);
+  if (it == sq_norms_.end()) {
     return 0.f;
   }
   return it->second;

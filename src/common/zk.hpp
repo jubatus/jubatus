@@ -34,18 +34,21 @@ namespace common {
 // TODO: write zk mock and test them all?
 
 class zk : public lock_service {
-public:
+ public:
   // timeout [sec]
-  zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
+  zk(const std::string& hosts, int timeout = 10,
+     const std::string& logfile = "");
   virtual ~zk();
 
   void force_close();
-  bool create(const std::string& path, const std::string& payload = "", bool ephemeral = false);
-  bool set(const  std::string& path, const std::string& payload = "");
+  bool create(const std::string& path, const std::string& payload = "",
+              bool ephemeral = false);
+  bool set(const std::string& path, const std::string& payload = "");
   bool remove(const std::string& path);
   bool exists(const std::string& path);
 
-  bool bind_watcher(const std::string& path, pfi::lang::function<void(int,int,std::string)>&);
+  bool bind_watcher(const std::string& path,
+                    pfi::lang::function<void(int, int, std::string)>&);
 
   // ephemeral only
   bool create_seq(const std::string& path, std::string&);
@@ -64,7 +67,7 @@ public:
   const std::string& get_hosts() const;
   const std::string type() const;
 
-protected:
+ protected:
   bool list_(const std::string& path, std::vector<std::string>& out);
 
   zhandle_t * zh_;
@@ -80,10 +83,13 @@ protected:
 
 // TODO: write zk mock and test them all?
 class zkmutex : public try_lockable {
-public:
-  zkmutex(lock_service& ls, const std::string& path):
-    zk_(ls), path_(path), has_lock_(false), has_rlock_(false)
-  {}
+ public:
+  zkmutex(lock_service& ls, const std::string& path)
+      : zk_(ls),
+        path_(path),
+        has_lock_(false),
+        has_rlock_(false) {
+  }
   virtual ~zkmutex() {
     this->unlock();
     this->unlock_r();
@@ -96,7 +102,7 @@ public:
   bool try_rlock();
   bool unlock_r();
 
-private:
+ private:
   lock_service& zk_;
   std::string path_;
   std::string seqfile_;
@@ -107,5 +113,5 @@ private:
 
 void mywatcher(zhandle_t*, int, int, const char*, void*);
 
-} // common
-} // jubatus
+}  // common
+}  // jubatus

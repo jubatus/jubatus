@@ -33,8 +33,7 @@ namespace {
 typedef pair<float, pair<int, vector<int> > > diff_type;
 typedef priority_queue<diff_type, vector<diff_type>, greater<diff_type> > heap_type;
 
-void partition(const vector<float>& hash,
-               size_t num_hash_tables,
+void partition(const vector<float>& hash, size_t num_hash_tables,
                vector<vector<float> >& hashes) {
   const size_t hash_size = hash.size() / num_hash_tables;
   hashes.resize(num_hash_tables);
@@ -51,8 +50,7 @@ void threshold(const vector<float>& hash, lsh_vector& lv) {
   }
 }
 
-lsh_vector perturbe(const lsh_vector& src,
-                    const vector<int>& diff,
+lsh_vector perturbe(const lsh_vector& src, const vector<int>& diff,
                     const vector<pair<float, int> >& cands) {
   lsh_vector ret(src);
   for (size_t i = 0; i < diff.size(); ++i) {
@@ -82,7 +80,7 @@ void lsh_probe_generator::init() {
 
   perturbation_sets_.resize(base_.size());
   for (size_t i = 0; i < base_.size(); ++i) {
-    vector<pair<float, int> >& cands = perturbation_sets_[i];
+    vector < pair<float, int> > &cands = perturbation_sets_[i];
     cands.resize(2 * base_size);
     for (int j = 0; j < base_size; ++j) {
       const float dist = hash_[i][j] - base_[i].get(j);
@@ -94,8 +92,9 @@ void lsh_probe_generator::init() {
 
   for (size_t i = 0; i < base_.size(); ++i) {
     if (!perturbation_sets_[i].empty()) {
-      heap_.push(make_pair(perturbation_sets_[i][0].first,
-                           make_pair(i, vector<int>(1))));
+      heap_.push(
+          make_pair(perturbation_sets_[i][0].first,
+                    make_pair(i, vector<int>(1))));
     }
   }
 }
@@ -116,8 +115,8 @@ pair<size_t, lsh_vector> lsh_probe_generator::get_next_table_and_vector() {
     return make_pair(-1ul, lsh_vector());
   }
   const size_t i = heap_.top().second.first;
-  pair<size_t, lsh_vector> ret(i, perturbe(base_[i], heap_.top().second.second,
-                                           perturbation_sets_[i]));
+  pair<size_t, lsh_vector> ret(
+      i, perturbe(base_[i], heap_.top().second.second, perturbation_sets_[i]));
   next_perturbations();
   return ret;
 }
@@ -135,13 +134,13 @@ void lsh_probe_generator::next_perturbations() {
   const float score_base = heap_.top().first;
   heap_.pop();
 
-  if ((size_t)shifted.back() < cands.size()) {
-    const float score_diff =
-        cands[shifted.back()].first - cands[shifted.back() - 1].first;
+  if ((size_t) shifted.back() < cands.size()) {
+    const float score_diff = cands[shifted.back()].first
+        - cands[shifted.back() - 1].first;
     heap_.push(make_pair(score_base + score_diff, make_pair(index, shifted)));
   }
 
-  if ((size_t)expanded.back() < cands.size()) {
+  if ((size_t) expanded.back() < cands.size()) {
     const float score_diff = cands[expanded.back()].first;
     heap_.push(make_pair(score_base + score_diff, make_pair(index, expanded)));
   }

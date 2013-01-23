@@ -29,11 +29,12 @@ class mixable_holder;
 namespace mixer {
 
 class mixer {
-public:
+ public:
   typedef jubatus::common::mprpc::rpc_server rpc_server_t;
 
-public:
-  virtual ~mixer() {}
+ public:
+  virtual ~mixer() {
+  }
 
   virtual void register_api(rpc_server_t& server) = 0;
   virtual void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder>) = 0;

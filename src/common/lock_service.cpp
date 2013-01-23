@@ -23,8 +23,8 @@ namespace jubatus {
 namespace common {
 
 lock_service* create_lock_service(const std::string& name,
-    const std::string& hosts, const int timeout, const std::string& log)
-{
+                                  const std::string& hosts, const int timeout,
+                                  const std::string& log) {
   if (name == "zk") {
     return new zk(hosts, timeout, log);
   } else if (name == "cached_zk") {
@@ -33,46 +33,42 @@ lock_service* create_lock_service(const std::string& name,
   throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(std::string("unknown lock_service: ") + name));
 }
 
-lock_service_mutex::lock_service_mutex(lock_service& ls, const std::string& path):
-  path_(path)
-{
+lock_service_mutex::lock_service_mutex(lock_service& ls,
+                                       const std::string& path)
+    : path_(path) {
   if (ls.type() == "zk" || ls.type() == "cached_zk") {
     impl_ = new zkmutex(ls, path);
   } else {
-    { LOG(ERROR) << "unknown lock_service: " << ls.type(); }
+    {
+      LOG(ERROR) << "unknown lock_service: " << ls.type();
+    }
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(std::string("unknown lock_service: ") + ls.type()));
   }
 }
 
-bool lock_service_mutex::lock()
-{
+bool lock_service_mutex::lock() {
   return impl_->lock();
 }
 
-bool lock_service_mutex::try_lock()
-{
+bool lock_service_mutex::try_lock() {
   return impl_->try_lock();
 }
 
-bool lock_service_mutex::unlock()
-{
+bool lock_service_mutex::unlock() {
   return impl_->unlock();
 }
 
-bool lock_service_mutex::rlock()
-{
+bool lock_service_mutex::rlock() {
   return impl_->rlock();
 }
 
-bool lock_service_mutex::try_rlock()
-{
+bool lock_service_mutex::try_rlock() {
   return impl_->try_rlock();
 }
 
-bool lock_service_mutex::unlock_r()
-{
+bool lock_service_mutex::unlock_r() {
   return impl_->unlock_r();
 }
 
-} // common
-} // jubatus
+}  // common
+}  // jubatus

@@ -95,7 +95,8 @@ lsh_vector lsh_vector::cut(size_t from, size_t len) const {
 
 void lsh_vector::debug_print(ostream& os) const {
   for (size_t i = 0; i < values_.size(); ++i) {
-    if (i > 0) os << ' ';
+    if (i > 0)
+      os << ' ';
     os << values_[i];
   }
 }

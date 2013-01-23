@@ -252,7 +252,7 @@ struct opt1 {
   int abc;
   pfi::data::optional<int> def;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(abc) & MEMBER(def);
   }
@@ -296,18 +296,17 @@ struct opt2 {
     int a;
     int b;
 
-    template <typename Ar>
+    template<typename Ar>
     void serialize(Ar& ar) {
       ar & MEMBER(a) & MEMBER(b);
     }
   } test;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(abc) & MEMBER(def) & MEMBER(test);
   }
 };
-
 
 TEST(jsonconfig_cast, named_nest_not_found) {
   config conf(lexical_cast<json>("{\"abc\" : 124 }"));
@@ -325,7 +324,7 @@ struct opt3 {
   int abc;
   json conf;  // any json type
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(abc) & MEMBER(conf);
   }
@@ -345,7 +344,7 @@ struct opt4 {
   int abc;
   config conf;  // any config
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(abc) & MEMBER(conf);
   }
@@ -376,12 +375,14 @@ struct Person {
   pfi::data::optional<string> hobby;
 
   bool operator ==(const Person& p) const {
-    return name == p.name && height == p.height && age == p.age && attributes == p.attributes && sport == p.sport && hobby == p.hobby;
+    return name == p.name && height == p.height && age == p.age
+        && attributes == p.attributes && sport == p.sport && hobby == p.hobby;
   }
 
-  template <class Ar>
+  template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(name) & MEMBER(height) & MEMBER(age) & MEMBER(attributes) & MEMBER(sport) & MEMBER(hobby);
+    ar & MEMBER(name) & MEMBER(height) & MEMBER(age) & MEMBER(attributes)
+        & MEMBER(sport) & MEMBER(hobby);
   }
 };
 
@@ -402,7 +403,7 @@ struct server_conf {
     std::string host;
     int port;
 
-    template <typename Ar>
+    template<typename Ar>
     void serialize(Ar& ar) {
       ar & MEMBER(host) & MEMBER(port);
     }
@@ -410,7 +411,7 @@ struct server_conf {
 
   std::vector<std::string> users;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(web_server) & MEMBER(users);
   }
@@ -463,5 +464,6 @@ TEST(jsonconfig_cast, cast_check_error) {
   }
 }
 
-} // jsonconfig
+}
+  // jsonconfig
 } // jubatus

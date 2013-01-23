@@ -27,11 +27,12 @@
 #include "../framework/server_util.hpp"
 #include "process.hpp"
 
-namespace jubatus{
+namespace jubatus {
 
-class jubervisor{
-public:
-  jubervisor(const std::string&, int, int = 10, const std::string& logfile = "");
+class jubervisor {
+ public:
+  jubervisor(const std::string&, int, int = 10,
+             const std::string& logfile = "");
   ~jubervisor();
 
   int start(std::string, unsigned int, framework::server_argv argv);
@@ -42,12 +43,13 @@ public:
 
   void stop_all();
   //  void die_if_deleted(int, int, std::string);
-  
-private:
-  typedef std::vector<process> process_list_t;
-  typedef std::map<std::string, process_list_t > child_map_t;
 
-  int start_(const std::string&, unsigned int, const framework::server_argv& argv);
+ private:
+  typedef std::vector<process> process_list_t;
+  typedef std::map<std::string, process_list_t> child_map_t;
+
+  int start_(const std::string&, unsigned int,
+             const framework::server_argv& argv);
   //  int stop_(const std::string&, std::vector<process>&);
 
   static void atexit_();
@@ -66,8 +68,9 @@ private:
 
 MPRPC_PROC(start, int(std::string, unsigned int, framework::server_argv));
 MPRPC_PROC(stop, int(std::string, unsigned int));
-  //MPRPC_PROC(ensure, int(std::string));
+//MPRPC_PROC(ensure, int(std::string));
 
 MPRPC_GEN(1, jubervisor, start, stop);
-            
-}//jubatus
+
+}
+  //jubatus

@@ -39,41 +39,42 @@ class stub_storage : public storage_base {
   }
 
  public:
-  void get_status(std::map<std::string,std::string>&) {
+  void get_status(std::map<std::string, std::string>&) {
   }
 
   void get(const std::string &feature, feature_val1_t& ret) {
     const map<string, val3_t>& f = data_[feature];
-    for (map<string, val3_t>::const_iterator it = f.begin();
-         it != f.end(); ++it) {
+    for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
+        ++it) {
       ret.push_back(make_pair(it->first, val1_t(it->second.v1)));
     }
   }
 
   void get2(const std::string &feature, feature_val2_t& ret) {
     const map<string, val3_t>& f = data_[feature];
-    for (map<string, val3_t>::const_iterator it = f.begin();
-         it != f.end(); ++it) {
-      ret.push_back(make_pair(it->first,
-                              val2_t(it->second.v1,
-                                     it->second.v2)));
+    for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
+        ++it) {
+      ret.push_back(make_pair(it->first, val2_t(it->second.v1, it->second.v2)));
     }
   }
   void get3(const std::string &feature, feature_val3_t& ret) {
     const map<string, val3_t>& f = data_[feature];
-    for (map<string, val3_t>::const_iterator it = f.begin();
-         it != f.end(); ++it) {
+    for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
+        ++it) {
       ret.push_back(*it);
     }
   }
 
-  void set(const std::string &feature, const std::string &klass, const val1_t& w) {
+  void set(const std::string &feature, const std::string &klass,
+           const val1_t& w) {
     data_[feature][klass] = val3_t(w, 0, 0);
   }
-  void set2(const std::string &feature, const std::string &klass, const val2_t& w){
+  void set2(const std::string &feature, const std::string &klass,
+            const val2_t& w) {
     data_[feature][klass] = val3_t(w.v1, w.v2, 0);
   }
-  void set3(const std::string &feature, const std::string &klass, const val3_t& w){
+  void set3(const std::string &feature, const std::string &klass,
+            const val3_t& w) {
     data_[feature][klass] = w;
   }
 
@@ -87,13 +88,16 @@ class stub_storage : public storage_base {
     ia >> *this;
     return true;
   }
-  std::string type()const{ return "stub_storage"; };
+  std::string type() const {
+    return "stub_storage";
+  }
+  ;
 
 };
 }
 }
 
-TEST(key_manager, trivial){
+TEST(key_manager, trivial) {
   key_manager km;
   ASSERT_EQ(0u, km.get_id("x"));
   ASSERT_EQ(1u, km.get_id("y"));
@@ -104,11 +108,11 @@ TEST(key_manager, trivial){
   oa << km;
 }
 
-template <typename T>
+template<typename T>
 class storage_test : public testing::Test {
 };
 
-TYPED_TEST_CASE_P(storage_test);
+TYPED_TEST_CASE_P (storage_test);
 
 TYPED_TEST_P(storage_test, val1d)
 {
@@ -147,7 +151,6 @@ TYPED_TEST_P(storage_test, val1d)
     EXPECT_TRUE(exp == mm);
   }
 }
-
 
 TYPED_TEST_P(storage_test, val2d)
 {
@@ -207,7 +210,7 @@ TYPED_TEST_P(storage_test, val3d)
     exp.push_back(make_pair("x", val3_t(1, 11, 111)));
     exp.push_back(make_pair("y", val3_t(2, 22, 222)));
     exp.push_back(make_pair("z", val3_t(3, 33, 333)));
-    
+
     EXPECT_TRUE(exp == mm);
   }
 
@@ -220,12 +223,12 @@ TYPED_TEST_P(storage_test, val3d)
     feature_val3_t exp;
     exp.push_back(make_pair("x", val3_t(12, 1212, 121212)));
     exp.push_back(make_pair("z", val3_t(45, 4545, 454545)));
-    
+
     EXPECT_TRUE(exp == mm);
   }
 }
 
-TYPED_TEST_P(storage_test, serialize) 
+TYPED_TEST_P(storage_test, serialize)
 {
   //const char* tmp_file_name = "./tmp_local_storage";
 
@@ -249,13 +252,13 @@ TYPED_TEST_P(storage_test, serialize)
     binary_iarchive ia(ss);
     ia >> s;
     //unlink(tmp_file_name);
-    
+
     {
       feature_val3_t mm;
       s.get3("a", mm);
 
       sort(mm.begin(), mm.end());
-      
+
       feature_val3_t exp;
       exp.push_back(make_pair("x", val3_t(1, 11, 111)));
       exp.push_back(make_pair("y", val3_t(2, 22, 222)));
@@ -264,16 +267,16 @@ TYPED_TEST_P(storage_test, serialize)
     }
 
     {
-     feature_val3_t mm;
-     s.get3("b", mm);
+      feature_val3_t mm;
+      s.get3("b", mm);
 
       sort(mm.begin(), mm.end());
-      
+
       feature_val3_t exp;
-     exp.push_back(make_pair("x", val3_t(12, 1212, 121212)));
-     exp.push_back(make_pair("z", val3_t(45, 4545, 454545)));
-     
-     EXPECT_TRUE(exp == mm);
+      exp.push_back(make_pair("x", val3_t(12, 1212, 121212)));
+      exp.push_back(make_pair("z", val3_t(45, 4545, 454545)));
+
+      EXPECT_TRUE(exp == mm);
     }
   }
 }
@@ -290,7 +293,7 @@ TYPED_TEST_P(storage_test, inp) {
   s.set3("f1", "class_z", val3_t(3, 33, 333));
   s.set3("f2", "class_x", val3_t(12, 1212, 121212));
   s.set3("f2", "class_z", val3_t(45, 4545, 454545));
-  
+
   fv.push_back(make_pair("f2", 2.0));
   ret.clear();
   s.inp(fv, ret);
@@ -317,11 +320,12 @@ TYPED_TEST_P(storage_test, inp) {
   EXPECT_FLOAT_EQ(99.0, ret["class_z"]);
 }
 
-template <typename T >
-void get_expect_status(map<string, string>& before, map<string, string>& after) {
+template<typename T>
+void get_expect_status(map<string, string>& before,
+                       map<string, string>& after) {
 }
 
-template <>
+template<>
 void get_expect_status<local_storage>(map<string, string>& before,
                                       map<string, string>& after) {
   before["num_features"] = "0";
@@ -331,7 +335,7 @@ void get_expect_status<local_storage>(map<string, string>& before,
   after["num_classes"] = "3";
 }
 
-template <>
+template<>
 void get_expect_status<local_storage_mixture>(map<string, string>& before,
                                               map<string, string>& after) {
   before["num_features"] = "0";
@@ -341,7 +345,6 @@ void get_expect_status<local_storage_mixture>(map<string, string>& before,
   after["num_classes"] = "3";
 }
 
-
 TYPED_TEST_P(storage_test, get_status) {
   TypeParam s;
   map<string, string> status;
@@ -350,14 +353,14 @@ TYPED_TEST_P(storage_test, get_status) {
   map<string, string> expect_before, expect_after;
   get_expect_status<TypeParam>(expect_before, expect_after);
   for (map<string, string>::const_iterator it = expect_before.begin();
-       it != expect_before.end(); ++it) {
+      it != expect_before.end(); ++it) {
     ASSERT_TRUE(status.count(it->first) > 0);
     EXPECT_EQ(it->second, status[it->first]);
   }
 
   s.set3("feature1", "class1", val3_t(1, 2, 3));
   s.set3("feature1", "class2", val3_t(1, 2, 3));
-  s.set3("feature1", "class3", val3_t(1, 2, 3));  
+  s.set3("feature1", "class3", val3_t(1, 2, 3));
 
   s.set3("feature2", "class1", val3_t(1, 2, 3));
   s.set3("feature2", "class2", val3_t(1, 2, 3));
@@ -366,7 +369,7 @@ TYPED_TEST_P(storage_test, get_status) {
   s.get_status(status);
 
   for (map<string, string>::const_iterator it = expect_after.begin();
-       it != expect_after.end(); ++it) {
+      it != expect_after.end(); ++it) {
     ASSERT_TRUE(status.count(it->first) > 0);
     EXPECT_EQ(it->second, status[it->first]);
   }
@@ -389,7 +392,7 @@ TYPED_TEST_P(storage_test, update) {
   EXPECT_EQ(0.0, v[0].second.v2);
   EXPECT_EQ(0.0, v[0].second.v3);
 
-  EXPECT_EQ("class2", v[1].first);  
+  EXPECT_EQ("class2", v[1].first);
   EXPECT_EQ(-1.0, v[1].second.v1);
   EXPECT_EQ(0.0, v[1].second.v2);
   EXPECT_EQ(0.0, v[1].second.v3);
@@ -414,11 +417,11 @@ TYPED_TEST_P(storage_test, bulk_update) {
   EXPECT_EQ(0.0, v[0].second.v2);
   EXPECT_EQ(0.0, v[0].second.v3);
 
-  EXPECT_EQ("class2", v[1].first);  
+  EXPECT_EQ("class2", v[1].first);
   EXPECT_EQ(-1.5, v[1].second.v1);
   EXPECT_EQ(0.0, v[1].second.v2);
   EXPECT_EQ(0.0, v[1].second.v3);
-  
+
   v.clear();
   s.get3("feature2", v);
   sort(v.begin(), v.end());
@@ -429,7 +432,7 @@ TYPED_TEST_P(storage_test, bulk_update) {
   EXPECT_EQ(0.0, v[0].second.v2);
   EXPECT_EQ(0.0, v[0].second.v3);
 
-  EXPECT_EQ("class2", v[1].first);  
+  EXPECT_EQ("class2", v[1].first);
   EXPECT_EQ(-3.0, v[1].second.v1);
   EXPECT_EQ(0.0, v[1].second.v2);
   EXPECT_EQ(0.0, v[1].second.v3);
@@ -453,7 +456,7 @@ TYPED_TEST_P(storage_test, bulk_update_no_decrease) {
   EXPECT_EQ(1.5, v[0].second.v1);
   EXPECT_EQ(0.0, v[0].second.v2);
   EXPECT_EQ(0.0, v[0].second.v3);
-  
+
   v.clear();
   s.get3("feature2", v);
   sort(v.begin(), v.end());
@@ -466,9 +469,9 @@ TYPED_TEST_P(storage_test, bulk_update_no_decrease) {
 }
 
 REGISTER_TYPED_TEST_CASE_P(storage_test,
-                           val1d, val2d, val3d,
-                           serialize, inp, get_status, update, bulk_update,
-                           bulk_update_no_decrease);
+    val1d, val2d, val3d,
+    serialize, inp, get_status, update, bulk_update,
+    bulk_update_no_decrease);
 
 typedef testing::Types<stub_storage, local_storage, local_storage_mixture> storage_types;
 INSTANTIATE_TYPED_TEST_CASE_P(st, storage_test, storage_types);

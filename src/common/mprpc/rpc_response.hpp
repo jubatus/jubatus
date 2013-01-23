@@ -19,28 +19,39 @@
 #include <msgpack.hpp>
 #include <pficommon/lang/shared_ptr.h>
 
-namespace jubatus { namespace common { namespace mprpc {
+namespace jubatus {
+namespace common {
+namespace mprpc {
 
 class rpc_response_t {
-public:
-  rpc_response_t() {}
-  rpc_response_t(msgpack::rpc::future f ) :
-    zone( f.zone().release() ) {
+ public:
+  rpc_response_t() {
+  }
+  rpc_response_t(msgpack::rpc::future f)
+      : zone(f.zone().release()) {
     response.a1 = 0 /* NOTE: dummy value */;
     response.a2 = f.error();
     response.a3 = f.result();
   }
 
-public:
-  msgpack::type::tuple<uint8_t,uint32_t,msgpack::object,msgpack::object> response;
+ public:
+  msgpack::type::tuple<uint8_t, uint32_t, msgpack::object, msgpack::object> response;
   mp::shared_ptr<msgpack::zone> zone;
 
-  bool has_error() const { return !response.a2.is_nil(); }
-  uint32_t msgid() const { return response.a1; }
-  msgpack::object& error() { return response.a2; }
-  template<typename T> const T as() const { return response.a3.as<T>(); }
+  bool has_error() const {
+    return !response.a2.is_nil();
+  }
+  uint32_t msgid() const {
+    return response.a1;
+  }
+  msgpack::object& error() {
+    return response.a2;
+  }
+  template<typename T> const T as() const {
+    return response.a3.as<T>();
+  }
 };
 
-} // mprpc
-} // common
-} // jubatus
+}  // mprpc
+}  // common
+}  // jubatus

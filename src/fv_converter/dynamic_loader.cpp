@@ -30,14 +30,15 @@ dynamic_loader::dynamic_loader(const std::string& path)
   if (!handle) {
     // dlopen from JUBATUS_PLUGIN_DIR
     const std::string plugin_name = jubatus::util::base_name(path);
-    const std::string plugin_path = std::string(JUBATUS_PLUGIN_DIR) + "/" + plugin_name;
-    handle = dlopen(plugin_path.c_str() , RTLD_LAZY);
+    const std::string plugin_path = std::string(JUBATUS_PLUGIN_DIR) + "/"
+        + plugin_name;
+    handle = dlopen(plugin_path.c_str(), RTLD_LAZY);
   }
 
   if (!handle) {
     char *error = dlerror();
     throw JUBATUS_EXCEPTION(converter_exception("cannot load dynamic library: " + path + ": "
-                              + error)
+            + error)
         << jubatus::exception::error_api_func("dlopen")
         << jubatus::exception::error_file_name(path)
         << jubatus::exception::error_message(error));

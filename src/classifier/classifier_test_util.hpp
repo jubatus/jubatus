@@ -25,8 +25,7 @@
 #include <algorithm>
 #include <pficommon/math/random.h>
 
-void make_random(float mu, float sigma, size_t dim,
-                 std::vector<double>& v) {
+void make_random(float mu, float sigma, size_t dim, std::vector<double>& v) {
   pfi::math::random::mtrand rand(0);
   for (size_t i = 0; i < dim; i++) {
     float value = rand.next_gaussian(mu, sigma);

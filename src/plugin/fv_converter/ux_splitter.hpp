@@ -36,6 +36,6 @@ class ux_splitter : public fv_converter::word_splitter {
 }
 
 extern "C" {
-  jubatus::ux_splitter*
-  create(const std::map<std::string, std::string>& params);
+jubatus::ux_splitter*
+create(const std::map<std::string, std::string>& params);
 }

@@ -14,7 +14,6 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-
 #include <pficommon/data/string/utility.h>
 #include <pficommon/lang/cast.h>
 
@@ -26,11 +25,10 @@ namespace fv_converter {
 
 using namespace std;
 
-void revert_feature(const sfv_t& fv,
-                    fv_converter::datum& data) {
+void revert_feature(const sfv_t& fv, fv_converter::datum& data) {
   for (size_t i = 0; i < fv.size(); ++i) {
     pair<string, float> num_value;
-    pair<string, string> string_value;
+    pair < string, string > string_value;
     if (revert_num_value(fv[i], num_value)) {
       data.num_values_.push_back(num_value);
     } else if (revert_string_value(fv[i], string_value)) {
@@ -38,7 +36,6 @@ void revert_feature(const sfv_t& fv,
     }
   }
 }
-
 
 bool revert_num_value(const pair<string, float>& feature,
                       pair<string, float>& num_value) {
@@ -94,10 +91,10 @@ bool revert_string_value(const pair<string, float>& feature,
   if (f.substr(at + 1, sharp - at - 1) != "str") {
     return false;
   }
-  
+
   string key(f.substr(0, dollar));
   string value(f.substr(dollar + 1, at - dollar - 1));
-  
+
   string_value.first.swap(key);
   string_value.second.swap(value);
   return true;

@@ -20,36 +20,37 @@
 #include <string>
 #include "graph_type.hpp"
 
-namespace jubatus{
+namespace jubatus {
 namespace graph {
 
-class graph_base{
-public:
+class graph_base {
+ public:
   graph_base();
   virtual ~graph_base();
 
   virtual void clear() = 0;
-  virtual void create_node(node_id_t id) = 0; // cht
-  virtual void create_global_node(node_id_t id) = 0; // broadcast
-  virtual void remove_global_node(node_id_t id) = 0; // broadcast
-  virtual void update_node(node_id_t id, const property& p) = 0; // cht
-  virtual void remove_node(node_id_t id) = 0; // cht
-  virtual void create_edge(edge_id_t eid, node_id_t src, node_id_t tgt) = 0; // cht
-  virtual void update_edge(edge_id_t eid, const property& p) = 0; // cht
-  virtual void remove_edge(edge_id_t eid) = 0; // cht
-  
-  virtual void add_centrality_query(const preset_query&) = 0; //broadcast
-  virtual void add_shortest_path_query(const preset_query&) = 0; //broadcast
-  virtual void remove_centrality_query(const preset_query&) = 0; //broadcast
-  virtual void remove_shortest_path_query(const preset_query&) = 0; //broadcast
+  virtual void create_node(node_id_t id) = 0;  // cht
+  virtual void create_global_node(node_id_t id) = 0;  // broadcast
+  virtual void remove_global_node(node_id_t id) = 0;  // broadcast
+  virtual void update_node(node_id_t id, const property& p) = 0;  // cht
+  virtual void remove_node(node_id_t id) = 0;  // cht
+  virtual void create_edge(edge_id_t eid, node_id_t src, node_id_t tgt) = 0;  // cht
+  virtual void update_edge(edge_id_t eid, const property& p) = 0;  // cht
+  virtual void remove_edge(edge_id_t eid) = 0;  // cht
 
-  virtual double centrality(node_id_t id, centrality_type ct, const preset_query&) const = 0; // random
-  virtual void shortest_path(node_id_t src, node_id_t tgt, 
-                             uint64_t max_hop, std::vector<node_id_t>& ret,
-			     const preset_query&) const = 0; // random
-  
-  virtual void get_node(node_id_t id, node_info& ret) const = 0; // cht
-  virtual void get_edge(node_id_t id, edge_info& ret) const = 0; // cht
+  virtual void add_centrality_query(const preset_query&) = 0;  //broadcast
+  virtual void add_shortest_path_query(const preset_query&) = 0;  //broadcast
+  virtual void remove_centrality_query(const preset_query&) = 0;  //broadcast
+  virtual void remove_shortest_path_query(const preset_query&) = 0;  //broadcast
+
+  virtual double centrality(node_id_t id, centrality_type ct,
+                            const preset_query&) const = 0;  // random
+  virtual void shortest_path(node_id_t src, node_id_t tgt, uint64_t max_hop,
+                             std::vector<node_id_t>& ret,
+                             const preset_query&) const = 0;  // random
+
+  virtual void get_node(node_id_t id, node_info& ret) const = 0;  // cht
+  virtual void get_edge(node_id_t id, edge_info& ret) const = 0;  // cht
 
   virtual std::string type() const = 0;
 
@@ -62,7 +63,7 @@ public:
   void save(std::ostream&);
   void load(std::istream&);
 
-protected:
+ protected:
   virtual bool save_imp(std::ostream& os) = 0;
   virtual bool load_imp(std::istream& is) = 0;
 };

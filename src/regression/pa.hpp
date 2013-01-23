@@ -27,14 +27,16 @@ class PA : public regression_base {
  public:
   struct config {
     config()
-      : C(std::numeric_limits<float>::max()), epsilon(0.1f)
-    {}
+        : C(std::numeric_limits<float>::max()),
+          epsilon(0.1f) {
+    }
     float C;
     float epsilon;
 
-    template <typename Ar>
+    template<typename Ar>
     void serialize(Ar& ar) {
-      ar & NAMED_MEMBER("regularization_weight", C) & NAMED_MEMBER("sensitivity", epsilon);
+      ar & NAMED_MEMBER("regularization_weight", C)
+          & NAMED_MEMBER("sensitivity", epsilon);
     }
   };
 

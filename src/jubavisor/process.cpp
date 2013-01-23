@@ -37,43 +37,47 @@
 #include "../common/exception.hpp"
 
 using namespace pfi::lang;
-namespace jubatus{
+namespace jubatus {
 
-process::process(const std::string& zkhosts):
-  zk_hosts_(zkhosts){}
+process::process(const std::string& zkhosts)
+    : zk_hosts_(zkhosts) {
+}
 
-process::process(const std::string& zkhosts, const framework::server_argv& server_option):
-  zk_hosts_(zkhosts), server_option_(server_option)
-{}
+process::process(const std::string& zkhosts,
+                 const framework::server_argv& server_option)
+    : zk_hosts_(zkhosts),
+      server_option_(server_option) {
+}
 
-process::~process(){}
+process::~process() {
+}
 
 // str : "<server>/<name>
-bool process::set_names(const std::string& str){
+bool process::set_names(const std::string& str) {
 
-  if(str.find(" ",0) != std::string::npos){
+  if (str.find(" ", 0) != std::string::npos) {
     return false;
   }
   server_ = str.substr(0, str.find_first_of("/"));
-  name_ = str.substr(str.find_first_of("/")+1);
+  name_ = str.substr(str.find_first_of("/") + 1);
 
   return !(server_.empty() || name_.empty());
 }
 
-  // open file and connect fd to the new file handle
-void redirect(const char* filename, int fd){
-  int new_fd = open(filename, O_WRONLY|O_CREAT, 0644);
-  if(new_fd < 0){
+// open file and connect fd to the new file handle
+void redirect(const char* filename, int fd) {
+  int new_fd = open(filename, O_WRONLY | O_CREAT, 0644);
+  if (new_fd < 0) {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot open file"));
   }
   int r = dup2(new_fd, fd);
-  if(r < 0 ){
+  if (r < 0) {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot dup(2)"));
   }
   close(new_fd);
 }
 
-bool process::spawn_link(int p){
+bool process::spawn_link(int p) {
   // TODO: set better path in installation or else
   // set $PATH where you can find jubatus servers
   std::string cmd = server_;  // TODO: check cmd exits
@@ -81,38 +85,32 @@ bool process::spawn_link(int p){
 
   server_option_.port = p;
   pid_ = fork();
-  if(pid_ > 0){
+  if (pid_ > 0) {
     LOG(INFO) << "forked - pid: " << pid_;
     return true;
 
-  }else if(pid_==0){
+  } else if (pid_ == 0) {
     redirect("/dev/null", 1);
     redirect("/dev/null", 2);
-    const std::string argv[] =
-      { cmd,
-        "-z", zk_hosts_,
-        "-n", name_,
-        "-p", lexical_cast<std::string>(p),
-        "-B", server_option_.bind_if,
-        "-c", lexical_cast<std::string>(server_option_.threadnum),
-        "-t", lexical_cast<std::string>(server_option_.timeout),
-        "-d", server_option_.datadir,
-        "-l", server_option_.logdir,
-        "-e", lexical_cast<std::string,int>(server_option_.loglevel),
-        "-s", lexical_cast<std::string,int>(server_option_.interval_sec),
-        "-i", lexical_cast<std::string,int>(server_option_.interval_count),
-        };
+    const std::string argv[] = { cmd, "-z", zk_hosts_, "-n", name_, "-p",
+        lexical_cast<std::string>(p), "-B", server_option_.bind_if, "-c",
+        lexical_cast<std::string>(server_option_.threadnum), "-t", lexical_cast<
+            std::string>(server_option_.timeout), "-d", server_option_.datadir,
+        "-l", server_option_.logdir, "-e", lexical_cast<std::string, int>(
+            server_option_.loglevel), "-s", lexical_cast<std::string, int>(
+            server_option_.interval_sec), "-i", lexical_cast<std::string, int>(
+            server_option_.interval_count), };
     std::vector<const char*> arg_list;
-    for (size_t i = 0; i < sizeof(argv)/sizeof(*argv); ++i)
+    for (size_t i = 0; i < sizeof(argv) / sizeof(*argv); ++i)
       arg_list.push_back(argv[i].c_str());
     if (server_option_.join)
       arg_list.push_back("-j");
     arg_list.push_back(NULL);
 
-    execvp(cmd.c_str(), (char* const*)&arg_list[0]);
+    execvp(cmd.c_str(), (char* const *) &arg_list[0]);
     perror(cmd.c_str());  // execv only returns on error
 
-  }else{
+  } else {
     perror("failed on forking new process");
     perror(cmd.c_str());
     LOG(ERROR) << cmd;
@@ -126,18 +124,18 @@ bool process::spawn_link(int p){
   return false;
 }
 
-bool process::kill(){
+bool process::kill() {
   int r = ::kill(pid_, SIGTERM);
-  if(r!=0){
+  if (r != 0) {
     perror("cannot kill");
     return false;
   }
   int status = 0;
-  waitpid(pid_, &status,0);
+  waitpid(pid_, &status, 0);
 
-  if(WCOREDUMP(status)){
+  if (WCOREDUMP(status)) {
     LOG(ERROR) << name_ << " coredumped.";
-  }//TODO: add more error processing
+  }  //TODO: add more error processing
 
   DLOG(INFO) << "stopped: " << pid_;
   DLOG(ERROR) << "stopped: " << pid_;
@@ -145,8 +143,7 @@ bool process::kill(){
 }
 
 bool process::has_samespec(const process& rhs) const {
-  return ( get_name() == rhs.get_name() and
-           get_server() == rhs.get_server() );
+  return (get_name() == rhs.get_name() and get_server() == rhs.get_server());
 }
 
 }

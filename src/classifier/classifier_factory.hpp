@@ -22,21 +22,21 @@
 
 namespace jubatus {
 
-namespace storage{
+namespace storage {
 class storage_base;
 }
 namespace jsonconfig {
-  class config;
-} // jsonconfig
+class config;
+}  // jsonconfig
 
-namespace classifier{
+namespace classifier {
 class classifier_base;
 
 class classifier_factory {
-public:
+ public:
   static classifier_base* create_classifier(const std::string& name,
-                                   const jsonconfig::config& param,
-                                   storage::storage_base* storage);
+                                            const jsonconfig::config& param,
+                                            storage::storage_base* storage);
 };
 
 }

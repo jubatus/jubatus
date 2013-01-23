@@ -29,25 +29,25 @@ recommender_mock::recommender_mock() {
 recommender_mock::~recommender_mock() {
 }
 
-void recommender_mock::set_similar_relation(const sfv_t& query,
-                                            const vector<pair<string, float> >& ids) {
+void recommender_mock::set_similar_relation(
+    const sfv_t& query, const vector<pair<string, float> >& ids) {
   storage_.set_similar_items(query, ids);
 }
 
-void recommender_mock::set_similar_relation(const string& id,
-                                            const vector<pair<string, float> >& ids) {
+void recommender_mock::set_similar_relation(
+    const string& id, const vector<pair<string, float> >& ids) {
   sfv_t query;
   decode_row(id, query);
   set_similar_relation(query, ids);
 }
 
-void recommender_mock::set_neighbor_relation(const sfv_t& query,
-                                             const vector<pair<string, float> >& ids) {
+void recommender_mock::set_neighbor_relation(
+    const sfv_t& query, const vector<pair<string, float> >& ids) {
   storage_.set_neighbor_items(query, ids);
 }
 
-void recommender_mock::set_neighbor_relation(const string& id,
-                                             const vector<pair<string, float> >& ids) {
+void recommender_mock::set_neighbor_relation(
+    const string& id, const vector<pair<string, float> >& ids) {
   sfv_t query;
   decode_row(id, query);
   set_neighbor_relation(query, ids);

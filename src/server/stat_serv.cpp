@@ -35,14 +35,13 @@ namespace server {
 struct stat_serv_config {
   int32_t window_size;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(window_size);
   }
 };
 
-stat_serv::stat_serv(const server_argv& a,
-                     const cshared_ptr<lock_service>& zk)
+stat_serv::stat_serv(const server_argv& a, const cshared_ptr<lock_service>& zk)
     : server_base(a) {
   mixer_.reset(mixer::create_mixer(a, zk));
   mixable_holder_.reset(new mixable_holder());
@@ -68,9 +67,11 @@ void stat_serv::get_status(status_t& status) const {
 
 bool stat_serv::set_config(const string& config) {
   jsonconfig::config conf_root(lexical_cast<json>(config));
-  stat_serv_config conf = jsonconfig::config_cast_check<stat_serv_config>(conf_root);
+  stat_serv_config conf = jsonconfig::config_cast_check<stat_serv_config>(
+      conf_root);
 
-  common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(conf.window_size));
+  common::cshared_ptr<stat::mixable_stat> model(
+      new stat::mixable_stat(conf.window_size));
   config_ = config;
   stat_.set_model(model);
 
@@ -83,7 +84,7 @@ string stat_serv::get_config() const {
 }
 
 bool stat_serv::push(const std::string& key, double value) {
-  stat_.get_model()->push(key,value);
+  stat_.get_model()->push(key, value);
   DLOG(INFO) << "pushed: " << key;
   return true;
 }
@@ -113,9 +114,9 @@ double stat_serv::entropy(const std::string& key) const {
 #endif
 }
 
-double stat_serv::moment(const std::string& key, int n,double c) const {
+double stat_serv::moment(const std::string& key, int n, double c) const {
   return stat_.get_model()->moment(key, n, c);
 }
 
-} // namespace server
-} // namespace jubatus
+}  // namespace server
+}  // namespace jubatus

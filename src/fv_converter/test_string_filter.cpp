@@ -37,7 +37,7 @@ class my_filter : public string_filter {
 
 }
 
-extern "C"{
+extern "C" {
 
 string_filter* create(const map<string, string>& params) {
   return new my_filter();

@@ -25,16 +25,22 @@ namespace framework {
 namespace mixer {
 
 class dummy_mixer : public mixer {
-public:
-  void register_api(rpc_server_t& server) {}
-  void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder>) {}
+ public:
+  void register_api(rpc_server_t& server) {
+  }
+  void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder>) {
+  }
 
-  void start() {}
-  void stop() {}
+  void start() {
+  }
+  void stop() {
+  }
 
-  void updated() {}
+  void updated() {
+  }
 
-  void get_status(server_base::status_t& status) const {}
+  void get_status(server_base::status_t& status) const {
+  }
 };
 
 }

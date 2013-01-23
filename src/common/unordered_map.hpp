@@ -22,26 +22,26 @@
 
 namespace msgpack {
 
-template <typename K, typename V>
-inline pfi::data::unordered_map<K, V> operator>> (object o, pfi::data::unordered_map<K, V>& v)
-{
-  if(o.type != type::MAP){
+template<typename K, typename V>
+inline pfi::data::unordered_map<K, V> operator>>(
+    object o, pfi::data::unordered_map<K, V>& v) {
+  if (o.type != type::MAP) {
     throw type_error();
   }
   object_kv* const p_end = o.via.map.ptr + o.via.map.size;
-  for(object_kv* p = o.via.map.ptr; p != p_end; ++p) {
+  for (object_kv* p = o.via.map.ptr; p != p_end; ++p) {
     K key;
     p->key.convert(&key);
     p->val.convert(&v[key]);
   }
   return v;
 }
-  
-template <typename Stream, typename K, typename V>
-inline packer<Stream>& operator<< (packer<Stream>& o, const pfi::data::unordered_map<K,V>& v)
-{
+
+template<typename Stream, typename K, typename V>
+inline packer<Stream>& operator<<(packer<Stream>& o,
+                                  const pfi::data::unordered_map<K, V>& v) {
   o.pack_map(v.size());
-  for(typename std::tr1::unordered_map<K,V>::const_iterator it = v.begin();
+  for (typename std::tr1::unordered_map<K, V>::const_iterator it = v.begin();
       it != v.end(); ++it) {
     o.pack(it->first);
     o.pack(it->second);

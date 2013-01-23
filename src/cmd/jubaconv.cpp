@@ -28,8 +28,8 @@ using namespace jubatus::fv_converter;
 
 void show_invalid_type_error(const string& input_format,
                              const string& output_format) {
-  cerr << "invalid input-output type: "
-       << input_format << " -> " << output_format << endl;
+  cerr << "invalid input-output type: " << input_format << " -> "
+      << output_format << endl;
 }
 
 void output_json(const json& json) {
@@ -43,17 +43,15 @@ void output_datum(const datum& datum) {
 int read_config(const string& conf_file, converter_config& conf) {
   ifstream ifs(conf_file.c_str());
   if (!ifs) {
-    cerr << "cannot open converter config file: "
-         << conf_file << endl;
+    cerr << "cannot open converter config file: " << conf_file << endl;
     return -1;
   }
   ifs >> pfi::text::json::via_json(conf);
   return 0;
 }
 
-void convert_datum(const datum& datum,
-                  jubatus::sfv_t& fv,
-                  const string& conf_file) {
+void convert_datum(const datum& datum, jubatus::sfv_t& fv,
+                   const string& conf_file) {
   if (conf_file == "") {
     cerr << "specify converter config with -c flag" << endl;
     exit(-1);
@@ -74,7 +72,7 @@ void output_fv(const jubatus::sfv_t& fv) {
 void read_json(pfi::text::json::json& json) {
   try {
     cin >> json;
-  } catch(const bad_cast& e) {
+  } catch (const bad_cast& e) {
     cerr << "invalid json format" << endl;
     exit(-1);
   }
@@ -83,18 +81,19 @@ void read_json(pfi::text::json::json& json) {
 void read_datum(datum& datum) {
   try {
     cin >> pfi::text::json::via_json(datum);
-  } catch(const bad_cast& e) {
+  } catch (const bad_cast& e) {
     cerr << "invalid datum format" << endl;
     exit(-1);
   }
 }
 
-int main(int argc, char* argv[]) try {
+int main(int argc, char* argv[])
+try {
   cmdline::parser p;
   p.add<string>("input-format", 'i', "input format (json/datum)", false, "json",
                 cmdline::oneof<string>("json", "datum"));
-  p.add<string>("output-format", 'o', "output format (json/datum/fv)", false, "fv",
-                cmdline::oneof<string>("json", "datum", "fv"));
+  p.add<string>("output-format", 'o', "output format (json/datum/fv)", false,
+                "fv", cmdline::oneof<string>("json", "datum", "fv"));
   p.add<string>("conf", 'c', "converter config file", false);
   p.set_program_name("jubaconv");
   p.parse_check(argc, argv);
@@ -151,6 +150,7 @@ int main(int argc, char* argv[]) try {
   }
 
   return -1;
-} catch (const jubatus::exception::jubatus_exception& e) {
+}
+catch (const jubatus::exception::jubatus_exception& e) {
   std::cout << e.diagnostic_information(true) << std::endl;
 }

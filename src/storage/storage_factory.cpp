@@ -24,10 +24,10 @@
 
 namespace jubatus {
 namespace storage {
-storage_base* storage_factory::create_storage(const std::string& name){
-  if( name == "local" ){
+storage_base* storage_factory::create_storage(const std::string& name) {
+  if (name == "local") {
     return static_cast<storage_base*>(new local_storage);
-  }else if( name == "local_mixture" ){
+  } else if (name == "local_mixture") {
     return static_cast<storage_base*>(new local_storage_mixture);
   }
 
@@ -36,4 +36,4 @@ storage_base* storage_factory::create_storage(const std::string& name){
 }
 
 }
-} // jubatus
+}  // jubatus

@@ -26,7 +26,7 @@ namespace jubatus {
 
 template<typename Storage>
 class portable_mixer {
-public:
+ public:
   portable_mixer() {
   }
 
@@ -69,7 +69,7 @@ public:
     }
   }
 
-private:
+ private:
   std::vector<Storage*> storages_;
   pfi::math::random::mtrand rand_;
 };

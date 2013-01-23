@@ -27,20 +27,20 @@ namespace storage {
 
 class lsh_probe_generator {
  public:
-  lsh_probe_generator(const std::vector<float>& hash,
-                      size_t num_hash_tables);
+  lsh_probe_generator(const std::vector<float>& hash, size_t num_hash_tables);
 
   void init();
 
   lsh_vector base_all() const;
-  const lsh_vector& base(size_t i) const { return base_[i]; }
+  const lsh_vector& base(size_t i) const {
+    return base_[i];
+  }
   std::pair<size_t, lsh_vector> get_next_table_and_vector();
 
  private:
   typedef std::pair<float, std::pair<size_t, std::vector<int> > > diff_type;
-  typedef std::priority_queue<diff_type,
-                              std::vector<diff_type>,
-                              std::greater<diff_type> > heap_type;
+  typedef std::priority_queue<diff_type, std::vector<diff_type>,
+      std::greater<diff_type> > heap_type;
 
   void next_perturbations();
 

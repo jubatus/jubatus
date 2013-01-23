@@ -19,9 +19,9 @@ TEST(sort_and_merge, trivial) {
   sort_and_merge(v);
   ASSERT_EQ(2u, v.size());
   EXPECT_EQ("f2", v[0].first);
-  EXPECT_EQ(2.0,  v[0].second);
+  EXPECT_EQ(2.0, v[0].second);
   EXPECT_EQ("f4", v[1].first);
-  EXPECT_EQ(4.0,  v[1].second);
+  EXPECT_EQ(4.0, v[1].second);
 
 }
 

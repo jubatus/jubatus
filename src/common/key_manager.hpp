@@ -27,9 +27,9 @@
 namespace jubatus {
 
 class key_manager {
-public:
+ public:
   key_manager();
-  key_manager& operator = (const key_manager&);
+  key_manager& operator =(const key_manager&);
 
   enum {
     NOTFOUND = 0xFFFFFFFFFFFFFFFFLLU
@@ -48,18 +48,17 @@ public:
   void init_by_id2key(const std::vector<std::string>& id2key);
   std::vector<std::string> get_all_id2key() const;
 
-protected:
+ protected:
   friend class pfi::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(key2id_)
-      & MEMBER(id2key_);
+    ar & MEMBER(key2id_) & MEMBER(id2key_);
   }
 
-private:
+ private:
   pfi::data::unordered_map<std::string, uint64_t> key2id_;
   std::vector<std::string> id2key_;
   const std::string vacant_;
 };
 
-} // jubatus
+}  // jubatus

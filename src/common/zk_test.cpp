@@ -24,23 +24,20 @@ using jubatus::common::lock_service;
 using jubatus::common::ACTOR_BASE_PATH;
 using jubatus::common::JUBATUS_BASE_PATH;
 
-
 class zk_trivial : public testing::Test {
-protected:
+ protected:
 
-  void SetUp()
-  {
-    zk_ = pfi::lang::shared_ptr<lock_service>
-      (jubatus::common::create_lock_service("zk", "localhost:2181", 1024, "test.log"));
-
+  void SetUp() {
+    zk_ = pfi::lang::shared_ptr<lock_service>(
+        jubatus::common::create_lock_service("zk", "localhost:2181", 1024,
+                                             "test.log"));
 
     root_path = "/jubatus_zk_test_root";
     engine_name = "jubatus_zk_test";
     engine_root = ACTOR_BASE_PATH + "/" + engine_name;
   }
 
-  void TearDown()
-  {
+  void TearDown() {
     if (!zk_)
       return;
 
@@ -62,7 +59,6 @@ protected:
   string engine_root;
   pfi::lang::shared_ptr<lock_service> zk_;
 };
-
 
 TEST_F(zk_trivial, create_exists_remove)
 {
@@ -118,7 +114,7 @@ TEST_F(zk_trivial, create_seq)
   EXPECT_LT(root_path.size(), seqfile.size());
 
   if (!seqfile.empty())
-    zk_->remove(seqfile);
+  zk_->remove(seqfile);
 }
 
 TEST_F(zk_trivial, create_id)

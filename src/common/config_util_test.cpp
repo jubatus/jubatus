@@ -37,7 +37,6 @@ TEST(config_util, get_param_default) {
   EXPECT_EQ("nest_value", get_param(js, "nest", string("value")));
 }
 
-
 TEST(config_util, get_param_obj_null) {
   json js(new json_object());
   js["nest"] = json(new json_object());

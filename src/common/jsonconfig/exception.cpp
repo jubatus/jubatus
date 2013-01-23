@@ -22,13 +22,13 @@ using pfi::text::json::json;
 namespace jubatus {
 namespace jsonconfig {
 
-config_error::config_error(const std::string& path,
-                         const std::string& message)
+config_error::config_error(const std::string& path, const std::string& message)
     : path_(path),
       message_(message + " (" + path_ + ")") {
 }
 
-config_error::~config_error() throw() {}
+config_error::~config_error() throw () {
+}
 
 namespace {
 
@@ -55,8 +55,8 @@ const char* TypeToName(json::json_type_t t) {
 
 std::string MakeTypeErrorMessage(json::json_type_t expect,
                                  json::json_type_t actual) {
-  return string(TypeToName(expect)) + " is expected, but "
-      + TypeToName(actual) + " is given.";
+  return string(TypeToName(expect)) + " is expected, but " + TypeToName(actual)
+      + " is given.";
 }
 
 std::string MakeOutOfRangeMessage(size_t size, size_t index) {
@@ -69,33 +69,42 @@ std::string MakeNotFoundMessage(const std::string& key) {
   return "\"" + key + "\" is not found";
 }
 
-} // namespace
+}  // namespace
 
-type_error::type_error(const std::string& path,
-                     json::json_type_t expect,
-                     json::json_type_t actual)
+type_error::type_error(const std::string& path, json::json_type_t expect,
+                       json::json_type_t actual)
     : config_error(path, MakeTypeErrorMessage(expect, actual)),
-      expect_(expect), actual_(actual) {}
-
-type_error::~type_error() throw() {}
-
-out_of_range::out_of_range(const std::string& path,
-                       size_t size, size_t index)
-    : config_error(path, MakeOutOfRangeMessage(size, index)),
-      size_(size), index_(index) {}
-
-out_of_range::~out_of_range() throw() {}
-
-not_found::not_found(const std::string& path, const std::string& key)
-    : config_error(path, MakeNotFoundMessage(key)), key_(key) {}
-
-not_found::~not_found() throw() {}
-
-cast_check_error::cast_check_error(const std::vector<pfi::lang::shared_ptr<config_error> >& errors)
- : errors_(errors.begin(), errors.end()) {
+      expect_(expect),
+      actual_(actual) {
 }
 
-cast_check_error::~cast_check_error() throw() {}
+type_error::~type_error() throw () {
+}
 
-} // jsonconfig
-} // jubatus
+out_of_range::out_of_range(const std::string& path, size_t size, size_t index)
+    : config_error(path, MakeOutOfRangeMessage(size, index)),
+      size_(size),
+      index_(index) {
+}
+
+out_of_range::~out_of_range() throw () {
+}
+
+not_found::not_found(const std::string& path, const std::string& key)
+    : config_error(path, MakeNotFoundMessage(key)),
+      key_(key) {
+}
+
+not_found::~not_found() throw () {
+}
+
+cast_check_error::cast_check_error(
+    const std::vector<pfi::lang::shared_ptr<config_error> >& errors)
+    : errors_(errors.begin(), errors.end()) {
+}
+
+cast_check_error::~cast_check_error() throw () {
+}
+
+}  // jsonconfig
+}  // jubatus

@@ -14,7 +14,6 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-
 #include "gtest/gtest.h"
 #include "stat_client.hpp"
 #include <vector>
@@ -28,23 +27,25 @@ static const int PORT = 65435;
 
 namespace {
 
-  class stat_test : public ::testing::Test {
-  protected:
-    pid_t child_;
+class stat_test : public ::testing::Test {
+ protected:
+  pid_t child_;
 
-    stat_test(){
-      child_ = fork_process("stat", PORT, "./test_input/config.stat.json");
-    };
-    virtual ~stat_test(){
-      kill_process(child_);
-    };
-    virtual void restart_process(){
+  stat_test() {
+    child_ = fork_process("stat", PORT, "./test_input/config.stat.json");
+  }
+  ;
+  virtual ~stat_test() {
+    kill_process(child_);
+  }
+  ;
+  virtual void restart_process() {
 
-      kill_process(this->child_);
-      this->child_ = fork_process("stat", PORT, "./test_input/config.stat.json");
-    };
-  };
-
+    kill_process(this->child_);
+    this->child_ = fork_process("stat", PORT, "./test_input/config.stat.json");
+  }
+  ;
+};
 
 TEST_F(stat_test, small) {
 

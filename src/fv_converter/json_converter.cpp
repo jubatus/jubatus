@@ -32,28 +32,35 @@ const char* json_converter::NULL_STRING = "null";
 
 static void iter_convert(const json& json, string& root_path, datum& ret_datum);
 
-static void convert_integer(const json_integer& value, const string& path, datum& ret_datum) {
+static void convert_integer(const json_integer& value, const string& path,
+                            datum& ret_datum) {
   ret_datum.num_values_.push_back(make_pair(path, value.get()));
 }
 
-static void convert_float(const json_float& value, const string& path, datum& ret_datum) {
+static void convert_float(const json_float& value, const string& path,
+                          datum& ret_datum) {
   ret_datum.num_values_.push_back(make_pair(path, value.get()));
 }
 
-static void convert_string(const json_string& value, const string& path, datum& ret_datum) {
+static void convert_string(const json_string& value, const string& path,
+                           datum& ret_datum) {
   ret_datum.string_values_.push_back(make_pair(path, value.get()));
 }
 
-static void convert_bool(const json_bool& value, const string& path, datum& ret_datum) {
+static void convert_bool(const json_bool& value, const string& path,
+                         datum& ret_datum) {
   double v = value.get() ? 1 : 0;
   ret_datum.num_values_.push_back(make_pair(path, v));
 }
 
-static void convert_null(const json_null& value, const string& path, datum& ret_datum) {
-  ret_datum.string_values_.push_back(make_pair(path, json_converter::NULL_STRING));
+static void convert_null(const json_null& value, const string& path,
+                         datum& ret_datum) {
+  ret_datum.string_values_.push_back(
+      make_pair(path, json_converter::NULL_STRING));
 }
 
-static void convert_array(const json_array& value, string& path, datum& ret_datum) {
+static void convert_array(const json_array& value, string& path,
+                          datum& ret_datum) {
   size_t len = path.size();
   for (size_t i = 0; i < value.size(); ++i) {
     ostringstream oss;
@@ -64,9 +71,11 @@ static void convert_array(const json_array& value, string& path, datum& ret_datu
   }
 }
 
-static void convert_object(const json_object& value, string& path, datum& ret_datum) {
+static void convert_object(const json_object& value, string& path,
+                           datum& ret_datum) {
   size_t len = path.size();
-  for (json_object::const_iterator it = value.begin(); it != value.end(); ++it) {
+  for (json_object::const_iterator it = value.begin(); it != value.end();
+      ++it) {
     const string& key = it->first;
     const json& val = it->second;
     path += '/';
@@ -76,7 +85,8 @@ static void convert_object(const json_object& value, string& path, datum& ret_da
   }
 }
 
-static void iter_convert(const json& json, string& root_path, datum& ret_datum) {
+static void iter_convert(const json& json, string& root_path,
+                         datum& ret_datum) {
   json_value* value = json.get();
   if (typeid(*value) == typeid(json_integer)) {
     json_integer* int_value = dynamic_cast<json_integer*>(value);
@@ -85,7 +95,7 @@ static void iter_convert(const json& json, string& root_path, datum& ret_datum) 
   } else if (typeid(*value) == typeid(json_float)) {
     json_float* float_value = dynamic_cast<json_float*>(value);
     convert_float(*float_value, root_path, ret_datum);
-    
+
   } else if (typeid(*value) == typeid(json_string)) {
     json_string* string_value = dynamic_cast<json_string*>(value);
     convert_string(*string_value, root_path, ret_datum);

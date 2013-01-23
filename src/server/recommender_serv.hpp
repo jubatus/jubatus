@@ -32,7 +32,8 @@
 namespace jubatus {
 namespace server {
 
-struct rcmdr : public framework::mixable<jubatus::recommender::recommender_base, std::string> {
+struct rcmdr : public framework::mixable<jubatus::recommender::recommender_base,
+    std::string> {
   std::string get_diff_impl() const {
     std::string ret;
     get_model()->get_const_storage()->get_diff(ret);
@@ -43,18 +44,18 @@ struct rcmdr : public framework::mixable<jubatus::recommender::recommender_base,
     get_model()->get_storage()->set_mixed_and_clear_diff(v);
   }
 
-  void mix_impl(const std::string& lhs,
-                const std::string& rhs,
+  void mix_impl(const std::string& lhs, const std::string& rhs,
                 std::string& mixed) const {
     mixed = lhs;
     get_model()->get_const_storage()->mix(rhs, mixed);
   }
 
-  void clear() {}
+  void clear() {
+  }
 };
 
 class recommender_serv : public framework::server_base {
-public:
+ public:
   recommender_serv(const framework::server_argv& a,
                    const common::cshared_ptr<common::lock_service>& zk);
   virtual ~recommender_serv();
@@ -81,15 +82,15 @@ public:
   similar_result similar_row_from_id(std::string id, size_t ret_num);
   similar_result similar_row_from_datum(datum, size_t);
 
-  float calc_similarity(const datum& , const datum&);
+  float calc_similarity(const datum&, const datum&);
   float calc_l2norm(const datum& q);
 
   datum decode_row(std::string id);
   std::vector<std::string> get_all_rows();
 
-  void check_set_config()const;
+  void check_set_config() const;
 
-private:
+ private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
@@ -104,5 +105,5 @@ private:
   uint64_t mix_cnt_;
 };
 
-} // namespace server
-} // namespace jubatus
+}  // namespace server
+}  // namespace jubatus

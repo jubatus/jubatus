@@ -26,10 +26,9 @@ using namespace std;
 
 static const char* SPACES = " \t\f\n\r\v";
 
-void space_splitter::split(const string& string,
-                           vector<pair<size_t, size_t> >& ret_boundaries) const
-{
-  vector<pair<size_t, size_t> > bounds;
+void space_splitter::split(
+    const string& string, vector<pair<size_t, size_t> >& ret_boundaries) const {
+  vector < pair<size_t, size_t> > bounds;
 
   size_t last = 0;
   while (true) {

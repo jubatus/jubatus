@@ -8,8 +8,8 @@
 namespace jubatus {
 namespace server {
 
-class linear_function_mixer
-    : public jubatus::framework::mixable<storage::storage_base, diffv> {
+class linear_function_mixer : public jubatus::framework::mixable<
+    storage::storage_base, diffv> {
  public:
   diffv get_diff_impl() const;
 

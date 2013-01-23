@@ -43,6 +43,6 @@ TEST(fv_converter, key_matcher_factory) {
   ASSERT_TRUE(m_t(f.create_matcher("/.*/hoge/"))->match("fuga/hoge"));
 #else
   ASSERT_THROW(m_t(f.create_matcher("/.*/hoge/"))->match("fuga/hoge"),
-               converter_exception);
+      converter_exception);
 #endif
 }

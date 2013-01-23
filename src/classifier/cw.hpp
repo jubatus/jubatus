@@ -19,21 +19,21 @@
 
 #include "classifier_base.hpp"
 
-namespace jubatus{
-namespace classifier{
+namespace jubatus {
+namespace classifier {
 
 class CW : public classifier_base {
-public:
+ public:
   CW(storage::storage_base* storage);
   CW(const classifier_config& config, storage::storage_base* storage);
   void train(const sfv_t& fv, const std::string& label);
   std::string name() const;
-private:
-  void update(const sfv_t& fv, float step_weigth, const std::string& pos_label, const std::string& neg_label);
+ private:
+  void update(const sfv_t& fv, float step_weigth, const std::string& pos_label,
+              const std::string& neg_label);
   classifier_config config;
 };
 
 }
 }
 #endif // CW_HPP_
-

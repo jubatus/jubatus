@@ -17,13 +17,13 @@
 #pragma once
 #include <string>
 
-namespace jubatus{
-namespace storage{
+namespace jubatus {
+namespace storage {
 
 class storage_base;
 
-class storage_factory{
-public:
+class storage_factory {
+ public:
   static storage_base* create_storage(const std::string& name);
 };
 

@@ -24,7 +24,8 @@ namespace fv_converter {
 class add_filter : public num_filter {
  public:
   add_filter(double value)
-      : value_(value) {}
+      : value_(value) {
+  }
 
   double filter(double value) const {
     return value + value_;
@@ -33,7 +34,6 @@ class add_filter : public num_filter {
  private:
   double value_;
 };
-
 
 }
 }

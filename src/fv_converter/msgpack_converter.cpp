@@ -27,13 +27,14 @@ using namespace std;
 
 static const char* NULL_VALUE = "NULL";
 
-static void iter_convert(const msgpack::object& object, const string& path, datum& datum) {
+static void iter_convert(const msgpack::object& object, const string& path,
+                         datum& datum) {
   switch (object.type) {
     case msgpack::type::NIL: {
       datum.string_values_.push_back(make_pair(path, NULL_VALUE));
       break;
     }
-      
+
     case msgpack::type::BOOLEAN: {
       double v = object.via.boolean ? 1. : 0.;
       datum.num_values_.push_back(make_pair(path, v));
@@ -60,7 +61,8 @@ static void iter_convert(const msgpack::object& object, const string& path, datu
 
     case msgpack::type::RAW: {
       const msgpack::object_raw& raw = object.via.raw;
-      datum.string_values_.push_back(make_pair(path, string(raw.ptr, raw.size)));
+      datum.string_values_.push_back(
+          make_pair(path, string(raw.ptr, raw.size)));
       break;
     }
 

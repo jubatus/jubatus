@@ -36,7 +36,7 @@ class lsh_vector {
   bool operator==(const lsh_vector& lv) const;
   bool operator!=(const lsh_vector& lv) const;
 
-  int  get(size_t pos) const;
+  int get(size_t pos) const;
   void set(size_t pos, int value);
   void push_back(int value);
 
@@ -67,8 +67,7 @@ void swap(lsh_vector& l, lsh_vector& r) {
   l.swap(r);
 }
 
-inline
-std::ostream& operator<<(std::ostream& os, const lsh_vector& lv) {
+inline std::ostream& operator<<(std::ostream& os, const lsh_vector& lv) {
   lv.debug_print(os);
   return os;
 }

@@ -27,8 +27,7 @@ class num_feature;
 class num_feature_factory {
  public:
   typedef std::map<std::string, std::string> param_t;
-  num_feature* create(const std::string& name,
-                      const param_t& params) const;
+  num_feature* create(const std::string& name, const param_t& params) const;
 };
 
 }

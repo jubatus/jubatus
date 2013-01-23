@@ -21,13 +21,13 @@
 #include "lock_service.hpp"
 #include "shared_ptr.hpp"
 
-namespace jubatus { namespace common {
+namespace jubatus {
+namespace common {
 
 class global_id_generator_impl;
 
-class global_id_generator
-{
-public:
+class global_id_generator {
+ public:
 
   global_id_generator(bool);
   ~global_id_generator();
@@ -36,10 +36,11 @@ public:
 
   void set_ls(cshared_ptr<lock_service>&, const std::string&);
 
-private:
+ private:
   global_id_generator();
 
   pfi::lang::scoped_ptr<global_id_generator_impl> pimpl_;
 };
 
-}}
+}
+}

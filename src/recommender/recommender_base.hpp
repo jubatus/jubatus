@@ -27,13 +27,17 @@
 namespace jubatus {
 namespace recommender {
 
-class recommender_base{
-public:
+class recommender_base {
+ public:
   recommender_base();
   virtual ~recommender_base();
 
-  virtual void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const = 0; // return similar row for query with similarity scores.
-  virtual void neighbor_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const = 0; // return similar row for query with distance scores.
+  virtual void similar_row(const sfv_t& query,
+                           std::vector<std::pair<std::string, float> > & ids,
+                           size_t ret_num) const = 0;  // return similar row for query with similarity scores.
+  virtual void neighbor_row(const sfv_t& query,
+                            std::vector<std::pair<std::string, float> > & ids,
+                            size_t ret_num) const = 0;  // return similar row for query with distance scores.
   virtual void clear() = 0;
   virtual void clear_row(const std::string& id) = 0;
   virtual void update_row(const std::string& id, const sfv_diff_t& diff) = 0;
@@ -43,8 +47,12 @@ public:
   virtual storage::recommender_storage_base* get_storage() = 0;
   virtual const storage::recommender_storage_base* get_const_storage() const = 0;
 
-  virtual void similar_row(const std::string& id, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
-  virtual void neighbor_row(const std::string& id, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  virtual void similar_row(const std::string& id,
+                           std::vector<std::pair<std::string, float> > & ids,
+                           size_t ret_num) const;
+  virtual void neighbor_row(const std::string& id,
+                            std::vector<std::pair<std::string, float> > & ids,
+                            size_t ret_num) const;
   void complete_row(const std::string& id, sfv_t& ret) const;
   void complete_row(const sfv_t& query, sfv_t& ret) const;
   void decode_row(const std::string& id, sfv_t& ret) const;
@@ -55,7 +63,7 @@ public:
   static float calc_similality(sfv_t& q1, sfv_t& q2);
   static float calc_l2norm(const sfv_t& query);
 
-protected:
+ protected:
   virtual bool save_impl(std::ostream&) = 0;
   virtual bool load_impl(std::istream&) = 0;
 
@@ -63,5 +71,5 @@ protected:
   storage::sparse_matrix_storage orig_;
 };
 
-} // namespace recommender
-} // namespace jubatus
+}  // namespace recommender
+}  // namespace jubatus

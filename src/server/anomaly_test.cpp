@@ -14,7 +14,6 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-
 #include "gtest/gtest.h"
 #include "anomaly_client.hpp"
 #include <vector>
@@ -31,22 +30,23 @@ static const std::string NAME = "";
 
 namespace {
 
-  class anomaly_test : public ::testing::Test {
-  protected:
-    pid_t child_;
+class anomaly_test : public ::testing::Test {
+ protected:
+  pid_t child_;
 
-    anomaly_test(){
-      child_ = fork_process("anomaly", PORT, "./test_input/config.anomaly.json");
-    }
-    virtual ~anomaly_test(){
-      kill_process(child_);
-    }
-    virtual void restart_process(){
+  anomaly_test() {
+    child_ = fork_process("anomaly", PORT, "./test_input/config.anomaly.json");
+  }
+  virtual ~anomaly_test() {
+    kill_process(child_);
+  }
+  virtual void restart_process() {
 
-      kill_process(this->child_);
-      this->child_ = fork_process("anomaly", PORT, "./test_input/config.anomaly.json");
-    }
-  };
+    kill_process(this->child_);
+    this->child_ = fork_process("anomaly", PORT,
+                                "./test_input/config.anomaly.json");
+  }
+};
 
 std::string make_simple_config(const string& method) {
   using namespace pfi::text::json;
@@ -85,7 +85,7 @@ std::string make_simple_config(const string& method) {
   return ret.str();
 }
 
-TEST_F(anomaly_test, small){
+TEST_F(anomaly_test, small) {
 
   client::anomaly c("localhost", PORT, 10);
 
@@ -93,7 +93,7 @@ TEST_F(anomaly_test, small){
     datum d;
     d.nv.push_back(make_pair("f1", 1.0));
 
-    c.add(NAME, d); // is it good to be inf?
+    c.add(NAME, d);  // is it good to be inf?
     std::pair<std::string, float> w = c.add(NAME, d);
     float v = c.calc_score(NAME, d);
     ASSERT_DOUBLE_EQ(w.second, v);

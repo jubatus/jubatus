@@ -25,10 +25,10 @@ namespace jubatus {
 namespace recommender {
 
 sfv_t make_sfv(const string& repr) {
-  vector<string> elems = split(repr, ' ');
+  vector < string > elems = split(repr, ' ');
   sfv_t sfv(elems.size());
   for (size_t i = 0; i < elems.size(); ++i) {
-    vector<string> parts = split(elems[i], ':');
+    vector < string > parts = split(elems[i], ':');
     sfv[i] = make_pair(parts[0], pfi::lang::lexical_cast<float>(parts[1]));
   }
   return sfv;

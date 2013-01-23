@@ -11,7 +11,9 @@ namespace jubatus {
 namespace framework {
 
 struct int_model {
-  int_model() : value(0) {}
+  int_model()
+      : value(0) {
+  }
 
   int value;
 
@@ -26,9 +28,12 @@ struct int_model {
 
 class mixable_int : public mixable<int_model, int> {
  public:
-  mixable_int() : diff_() {}
+  mixable_int()
+      : diff_() {
+  }
 
-  void clear() {}
+  void clear() {
+  }
 
   int get_diff_impl() const {
     return diff_;
@@ -42,7 +47,7 @@ class mixable_int : public mixable<int_model, int> {
   void mix_impl(const int& lhs, const int& rhs, int& mixed) const {
     mixed = lhs + rhs;
   }
-  
+
   void add(int n) {
     diff_ += n;
   }

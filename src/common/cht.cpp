@@ -26,22 +26,21 @@
 namespace jubatus {
 namespace common {
 
-std::string make_hash(const std::string& key)
-{
+std::string make_hash(const std::string& key) {
   std::stringstream ss;
   ss << pfi::data::digest::md5sum(key);
   return ss.str();
 }
 
-void cht::setup_cht_dir(lock_service& ls, const std::string& type, const std::string& name)
-{
+void cht::setup_cht_dir(lock_service& ls, const std::string& type,
+                        const std::string& name) {
   bool success = true;
 
   std::string path;
   build_actor_path(path, type, name);
   success = ls.create(path) && success;
 
-  path +=  "/cht";
+  path += "/cht";
   success = ls.create(path) && success;
 
   if (!success)
@@ -50,26 +49,26 @@ void cht::setup_cht_dir(lock_service& ls, const std::string& type, const std::st
         << jubatus::exception::error_message("cht path: " + path));
 }
 
-cht::cht(cshared_ptr<lock_service> z, const std::string& type, const std::string& name):
-  type_(type), name_(name), lock_service_(z)
-{
+cht::cht(cshared_ptr<lock_service> z, const std::string& type,
+         const std::string& name)
+    : type_(type),
+      name_(name),
+      lock_service_(z) {
 }
 
-cht::~cht()
-{
+cht::~cht() {
 }
 
 // register_node :: node -> bool;
 // creates /jubatus/actors/<name>/cht/<hash(ip_port)> with contents ip_port
-void cht::register_node(const std::string& ip, int port)
-{
+void cht::register_node(const std::string& ip, int port) {
   std::string path;
   build_actor_path(path, type_, name_);
   path += "/cht";
 
-  for (unsigned int i=0; i<NUM_VSERV; ++i) {
-    std::string hashpath = path+"/"+make_hash(build_loc_str(ip, port, i));
-    if (!lock_service_->create(hashpath, build_loc_str(ip,port), true))
+  for (unsigned int i = 0; i < NUM_VSERV; ++i) {
+    std::string hashpath = path + "/" + make_hash(build_loc_str(ip, port, i));
+    if (!lock_service_->create(hashpath, build_loc_str(ip, port), true))
       throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to register cht node")
           << jubatus::exception::error_api_func("lock_service::create")
           << jubatus::exception::error_message("cht hashpash: " + hashpath));
@@ -78,17 +77,17 @@ void cht::register_node(const std::string& ip, int port)
   }
 }
 
-bool cht::find(const std::string& host, int port, std::vector<std::pair<std::string,int> >& out, size_t s)
-{
+bool cht::find(const std::string& host, int port,
+               std::vector<std::pair<std::string, int> >& out, size_t s) {
   return find(build_loc_str(host, port), out, s);
 }
 
 // return at most n nodes, if theres nodes less than n, return size is also less than n.
 // find(hash)    :: lock_service -> key -> [node] where hash(node0) <= hash(key) < hash(node1)
-bool cht::find(const std::string& key, std::vector<std::pair<std::string,int> >& out, size_t n)
-{
+bool cht::find(const std::string& key,
+               std::vector<std::pair<std::string, int> >& out, size_t n) {
   out.clear();
-  std::vector<std::string> hlist;
+  std::vector < std::string > hlist;
   if (!get_hashlist_(key, hlist)) {
     throw JUBATUS_EXCEPTION(not_found(key));
   }
@@ -97,7 +96,9 @@ bool cht::find(const std::string& key, std::vector<std::pair<std::string,int> >&
   build_actor_path(path, type_, name_);
   path += "/cht";
 
-  std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(), hlist.end(), hash);
+  std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(),
+                                                              hlist.end(),
+                                                              hash);
   size_t idx = int(node0 - hlist.begin()) % hlist.size();
   std::string loc;
   for (size_t i = 0; i < n; ++i) {
@@ -105,7 +106,7 @@ bool cht::find(const std::string& key, std::vector<std::pair<std::string,int> >&
     int port;
     if (lock_service_->read(path + "/" + hlist[idx], loc)) {
       revert(loc, ip, port);
-      out.push_back(make_pair(ip,port));
+      out.push_back(make_pair(ip, port));
     } else {
       // TODO: output log
       throw JUBATUS_EXCEPTION(not_found(path));
@@ -116,14 +117,13 @@ bool cht::find(const std::string& key, std::vector<std::pair<std::string,int> >&
   return !hlist.size();
 }
 
-std::pair<std::string,int> cht::find_predecessor(const std::string& host, int port)
-{
+std::pair<std::string, int> cht::find_predecessor(const std::string& host,
+                                                  int port) {
   return find_predecessor(build_loc_str(host, port));
 }
 
-std::pair<std::string,int> cht::find_predecessor(const std::string& key)
-{
-  std::vector<std::string> hlist;
+std::pair<std::string, int> cht::find_predecessor(const std::string& key) {
+  std::vector < std::string > hlist;
   get_hashlist_(key, hlist);
 
   std::string hash = make_hash(key);
@@ -131,8 +131,10 @@ std::pair<std::string,int> cht::find_predecessor(const std::string& key)
   build_actor_path(path, type_, name_);
   path += "/cht";
 
-  std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(), hlist.end(), hash);
-  size_t idx = (int(node0 - hlist.begin())+ hlist.size() -1) % hlist.size();
+  std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(),
+                                                              hlist.end(),
+                                                              hash);
+  size_t idx = (int(node0 - hlist.begin()) + hlist.size() - 1) % hlist.size();
 
   std::string ip;
   int port;
@@ -146,8 +148,8 @@ std::pair<std::string,int> cht::find_predecessor(const std::string& key)
   }
 }
 
-bool cht::get_hashlist_(const std::string& key, std::vector<std::string>& hlist)
-{
+bool cht::get_hashlist_(const std::string& key,
+                        std::vector<std::string>& hlist) {
   hlist.clear();
   std::string path;
   build_actor_path(path, type_, name_);
@@ -160,5 +162,5 @@ bool cht::get_hashlist_(const std::string& key, std::vector<std::string>& hlist)
   return true;
 }
 
-} // common
-} // jubatus
+}  // common
+}  // jubatus

@@ -38,15 +38,15 @@ re2_filter* create_re2_filter(const string_filter_factory::param_t& params) {
 }
 #endif
 
-static
-string_filter* create_dynamic_filter(const string_filter_factory::param_t& params) {
+static string_filter* create_dynamic_filter(
+    const string_filter_factory::param_t& params) {
   const string& path = get_or_die(params, "path");
   const string& function = get_or_die(params, "function");
   return new dynamic_string_filter(path, function, params);
 }
 
-string_filter* string_filter_factory::create(const string& name,
-                                             const map<string, string>& params) const {
+string_filter* string_filter_factory::create(
+    const string& name, const map<string, string>& params) const {
 #ifdef HAVE_RE2
   if (name == "regexp") {
     return create_re2_filter(params);

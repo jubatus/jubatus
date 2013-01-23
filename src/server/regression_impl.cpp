@@ -4,40 +4,66 @@
 #include "regression_serv.hpp"
 using namespace jubatus;
 using namespace jubatus::framework;
-namespace jubatus { namespace server {
-class regression_impl_ : public regression<regression_impl_>
-{
-public:
-  regression_impl_(const server_argv& a):
-    regression<regression_impl_>(a.timeout),
-    p_(new server_helper<regression_serv>(a))
-  {}
+namespace jubatus {
+namespace server {
+class regression_impl_ : public regression<regression_impl_> {
+ public:
+  regression_impl_(const server_argv& a)
+      : regression<regression_impl_>(a.timeout),
+        p_(new server_helper<regression_serv>(a)) {
+  }
 
-  std::string get_config(std::string name) //analysis random
-  { JRLOCK__(p_); return get_p()->get_config(); }
+  std::string get_config(std::string name)  //analysis random
+      {
+    JRLOCK__(p_);
+    return get_p()->get_config();
+  }
 
-  int train(std::string name, std::vector<std::pair<float,datum > > train_data) //update random
-  { JWLOCK__(p_); return get_p()->train(train_data); }
+  int train(std::string name, std::vector<std::pair<float, datum> > train_data)  //update random
+            {
+    JWLOCK__(p_);
+    return get_p()->train(train_data);
+  }
 
-  std::vector<float > estimate(std::string name, std::vector<datum > estimate_data) //analysis random
-  { JRLOCK__(p_); return get_p()->estimate(estimate_data); }
+  std::vector<float> estimate(std::string name,
+                              std::vector<datum> estimate_data)  //analysis random
+      {
+    JRLOCK__(p_);
+    return get_p()->estimate(estimate_data);
+  }
 
-  bool save(std::string name, std::string arg1) //update broadcast
-  { JWLOCK__(p_); return get_p()->save(arg1); }
+  bool save(std::string name, std::string arg1)  //update broadcast
+            {
+    JWLOCK__(p_);
+    return get_p()->save(arg1);
+  }
 
-  bool load(std::string name, std::string arg1) //update broadcast
-  { JWLOCK__(p_); return get_p()->load(arg1); }
+  bool load(std::string name, std::string arg1)  //update broadcast
+            {
+    JWLOCK__(p_);
+    return get_p()->load(arg1);
+  }
 
-  std::map<std::string,std::map<std::string,std::string > > get_status(std::string name) //analysis broadcast
-  { JRLOCK__(p_); return p_->get_status(); }
-  int run(){ return p_->start(*this); };
-  common::cshared_ptr<regression_serv> get_p(){ return p_->server(); };
-private:
+  std::map<std::string, std::map<std::string, std::string> > get_status(
+      std::string name)  //analysis broadcast
+      {
+    JRLOCK__(p_);
+    return p_->get_status();
+  }
+  int run() {
+    return p_->start(*this);
+  }
+  ;
+  common::cshared_ptr<regression_serv> get_p() {
+    return p_->server();
+  }
+  ;
+ private:
   common::cshared_ptr<server_helper<regression_serv> > p_;
 };
-}} // namespace jubatus::server
-int main(int args, char** argv){
-  return
-    jubatus::framework::run_server<jubatus::server::regression_impl_>
-       (args, argv, "regression");
+}
+}  // namespace jubatus::server
+int main(int args, char** argv) {
+  return jubatus::framework::run_server<jubatus::server::regression_impl_>(
+      args, argv, "regression");
 }

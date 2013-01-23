@@ -28,7 +28,7 @@ namespace fv_converter {
 class keyword_weights {
  public:
   keyword_weights();
-  
+
   void update_document_frequency(const sfv_t& fv);
 
   size_t get_document_frequency(const std::string& key) const {
@@ -48,12 +48,10 @@ class keyword_weights {
   void clear();
 
   MSGPACK_DEFINE(document_count_, document_frequencies_, weights_);
-  template <class Archiver>
+  template<class Archiver>
   void serialize(Archiver &ar) {
-    ar
-      & MEMBER(document_count_)
-      & MEMBER(document_frequencies_)
-      & MEMBER(weights_);
+    ar & MEMBER(document_count_) & MEMBER(document_frequencies_)
+        & MEMBER(weights_);
   }
 
  private:
@@ -63,7 +61,6 @@ class keyword_weights {
   counter<std::string> document_frequencies_;
   typedef pfi::data::unordered_map<std::string, float> weight_t;
   weight_t weights_;
-
 
 };
 

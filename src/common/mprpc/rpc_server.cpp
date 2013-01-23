@@ -20,51 +20,54 @@
 
 using namespace msgpack::rpc;
 
-namespace jubatus { namespace common { namespace mprpc {
+namespace jubatus {
+namespace common {
+namespace mprpc {
 
 // rpc_server
 //   Msgpack-RPC based server with 'hashed' dispatcher. rpc_server can add RPC method on-the-fly.
 //
-void rpc_server::dispatch( request req ) {
+void rpc_server::dispatch(request req) {
   std::string method;
   req.method().convert(&method);
 
-  func_map::iterator fun = funcs.find( method );
-  if ( fun == funcs.end() ) {
-    req.error( msgpack::rpc::NO_METHOD_ERROR, method );
+  func_map::iterator fun = funcs.find(method);
+  if (fun == funcs.end()) {
+    req.error(msgpack::rpc::NO_METHOD_ERROR, method);
     return;
   }
 
   try {
-    fun->second->invoke( req );
+    fun->second->invoke(req);
   } catch (const msgpack::type_error &e) {
-    req.error( msgpack::rpc::ARGUMENT_ERROR, std::string(e.what()) );
+    req.error(msgpack::rpc::ARGUMENT_ERROR, std::string(e.what()));
   } catch (const jubatus::exception::jubatus_exception &e) {
     LOG(WARNING) << e.diagnostic_information(true);
     req.error(std::string(e.what()));
-  } catch( const std::exception &e ) {
+  } catch (const std::exception &e) {
     LOG(ERROR) << e.what();
-    req.error( std::string( e.what()));
+    req.error(std::string(e.what()));
   }
 }
 
-void rpc_server::add_inner(const std::string &name, pfi::lang::shared_ptr<invoker_base> invoker) {
+void rpc_server::add_inner(const std::string &name,
+                           pfi::lang::shared_ptr<invoker_base> invoker) {
   funcs[name] = invoker;
 }
 
-void rpc_server::listen( uint16_t port ) {
-  instance.listen( std::string("0.0.0.0"), port );
+void rpc_server::listen(uint16_t port) {
+  instance.listen(std::string("0.0.0.0"), port);
 }
 
-void rpc_server::listen( uint16_t port, const std::string &bind_address ) {
-  instance.listen( bind_address, port );
+void rpc_server::listen(uint16_t port, const std::string &bind_address) {
+  instance.listen(bind_address, port);
 }
 
-void rpc_server::start( int nthreads, bool no_hang ) {
-  if ( no_hang )
-    instance.start( nthreads );
+void rpc_server::start(int nthreads, bool no_hang) {
+  if (no_hang)
+    instance.start(nthreads);
   else
-    instance.run( nthreads );
+    instance.run(nthreads);
 }
 
 void rpc_server::join() {
@@ -72,7 +75,7 @@ void rpc_server::join() {
 }
 
 void rpc_server::stop() {
-  if ( !instance.is_end() ) {
+  if (!instance.is_end()) {
     instance.end();
     instance.join();
   }
@@ -83,6 +86,6 @@ void rpc_server::close() {
   instance.close();
 }
 
-} // mprpc
-} // common
-} // jubatus
+}  // mprpc
+}  // common
+}  // jubatus

@@ -24,20 +24,19 @@ using namespace pfi::lang;
 using namespace pfi::text::json;
 
 class config_trivial : public testing::Test {
-protected:
+ protected:
 
-  void SetUp()
-  {
-    zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
-         (jubatus::common::create_lock_service("zk", "localhost:2181", 10, "/dev/null"));
+  void SetUp() {
+    zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>(
+        jubatus::common::create_lock_service("zk", "localhost:2181", 10,
+                                             "/dev/null"));
 
     engine_ = "engine-name";
     name_ = "test-name";
     jubatus::common::build_config_path(path_, engine_, name_);
   }
 
-  void TearDown()
-  {
+  void TearDown() {
     if (!zk_)
       return;
 
@@ -81,7 +80,6 @@ TEST_F(config_trivial, config_fromzk) {
   ASSERT_EQ("{\"test\":\"config\"}", dat);
 
 }
-
 
 TEST_F(config_trivial, remove_config_fromzk) {
 

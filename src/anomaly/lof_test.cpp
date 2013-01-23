@@ -35,25 +35,29 @@ namespace anomaly {
 
 namespace {
 
-  float calculate_lof(float lrd,
-                      const unordered_map<string, float>& neighbor_lrd) {
-    float sum_neighbor_lrd = 0;
-    for (unordered_map<string, float>::const_iterator it = neighbor_lrd.begin();
-        it != neighbor_lrd.end(); ++it) {
-      sum_neighbor_lrd += it->second;
-    }
-
-    return sum_neighbor_lrd / (neighbor_lrd.size() * lrd);
+float calculate_lof(float lrd,
+                    const unordered_map<string, float>& neighbor_lrd) {
+  float sum_neighbor_lrd = 0;
+  for (unordered_map<string, float>::const_iterator it = neighbor_lrd.begin();
+      it != neighbor_lrd.end(); ++it) {
+    sum_neighbor_lrd += it->second;
   }
+
+  return sum_neighbor_lrd / (neighbor_lrd.size() * lrd);
+}
 
 }
 
-class lof_impl : public lof{
+class lof_impl : public lof {
  public:
-  
-  lof_impl() : 
-    lof(lof_storage::config(), recommender::create_recommender("euclid_lsh",
-          jsonconfig::config(pfi::text::json::to_json(recommender::euclid_lsh::config()))) ){
+
+  lof_impl()
+      : lof(
+          lof_storage::config(),
+          recommender::create_recommender(
+              "euclid_lsh",
+              jsonconfig::config(
+                  pfi::text::json::to_json(recommender::euclid_lsh::config())))) {
     // make mock
     orig_.set("r1", "a1", 0.0);
     orig_.set("r1", "a2", 0.0);
@@ -78,28 +82,36 @@ class lof_impl : public lof{
     neighbor_lrd.insert(pair<string, float>("r1", 1.0));
     neighbor_lrd.insert(pair<string, float>("r2", 0.5));
     neighbor_lrd.insert(pair<string, float>("r3", 1.5));
-    const float lrd = neighbor_lrd[id];    
+    const float lrd = neighbor_lrd[id];
     return calculate_lof(lrd, neighbor_lrd);
   }
-  void clear(){}
-  void clear_row(const string& id){}
-  void update_row(const string& id, const sfv_diff_t& diff){
+  void clear() {
   }
-  void get_all_row_ids(vector<string>& ids) const{
-  ids.clear();
-  ids.push_back("r1");
-  ids.push_back("r2");
-  ids.push_back("r3");
+  void clear_row(const string& id) {
   }
-  string type() const{
+  void update_row(const string& id, const sfv_diff_t& diff) {
+  }
+  void get_all_row_ids(vector<string>& ids) const {
+    ids.clear();
+    ids.push_back("r1");
+    ids.push_back("r2");
+    ids.push_back("r3");
+  }
+  string type() const {
     return string("lof_impl");
   }
-  bool save_impl(std::ostream&){return true;};
-  bool load_impl(std::istream&){return true;};
-  storage::anomaly_storage_base* get_storage(){
+  bool save_impl(std::ostream&) {
+    return true;
+  }
+  ;
+  bool load_impl(std::istream&) {
+    return true;
+  }
+  ;
+  storage::anomaly_storage_base* get_storage() {
     return NULL;
   }
-  const storage::anomaly_storage_base* get_const_storage()const{
+  const storage::anomaly_storage_base* get_const_storage() const {
     return NULL;
   }
 
@@ -123,9 +135,8 @@ TEST(lof, calc_anomaly_score) {
   EXPECT_EQ(0.5, anomaly_score);
 }
 
-
 TEST(lof, calc_anomaly_score2) {
-   lof_impl l;
+  lof_impl l;
   const string id = "r2";
   const float anomaly_score = l.calc_anomaly_score(id);
   EXPECT_EQ(2.0, anomaly_score);

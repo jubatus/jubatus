@@ -39,5 +39,5 @@ class re2_splitter : jubatus::fv_converter::word_splitter {
 }
 
 extern "C" {
-  jubatus::re2_splitter* create(const std::map<std::string, std::string>& args);
+jubatus::re2_splitter* create(const std::map<std::string, std::string>& args);
 }

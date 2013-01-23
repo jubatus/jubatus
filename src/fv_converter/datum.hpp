@@ -35,23 +35,18 @@ struct datum {
 
   MSGPACK_DEFINE(string_values_, num_values_);
 
-  template <class Archiver>
+  template<class Archiver>
   void serialize(Archiver &ar) {
-    std::map<std::string, std::string> sv;
+    std::map < std::string, std::string > sv;
     std::map<std::string, double> nv;
     if (ar.is_read) {
-      ar 
-        & NAMED_MEMBER("string_values", sv)
-        & NAMED_MEMBER("num_values", nv);
+      ar & NAMED_MEMBER("string_values", sv) & NAMED_MEMBER("num_values", nv);
       string_values_ = sv_t(sv.begin(), sv.end());
       num_values_ = nv_t(nv.begin(), nv.end());
-    }
-    else {
+    } else {
       sv.insert(string_values_.begin(), string_values_.end());
       nv.insert(num_values_.begin(), num_values_.end());
-      ar 
-        & NAMED_MEMBER("string_values", sv)
-        & NAMED_MEMBER("num_values", nv);
+      ar & NAMED_MEMBER("string_values", sv) & NAMED_MEMBER("num_values", nv);
     }
   }
 };

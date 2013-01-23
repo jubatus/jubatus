@@ -35,22 +35,24 @@
 namespace jubatus {
 namespace framework {
 
-class no_worker : public jubatus::exception::runtime_error
-{
-public:
-  no_worker(const std::string& name) : runtime_error("no server found: " + name)
-  {}
+class no_worker : public jubatus::exception::runtime_error {
+ public:
+  no_worker(const std::string& name)
+      : runtime_error("no server found: " + name) {
+  }
 };
 
 class keeper_common {
-public:
+ public:
   keeper_common(const keeper_argv &a);
   virtual ~keeper_common();
 
-protected:
-  void get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret);
-  void get_members_from_cht_(const std::string& name,const std::string& id,
-                             std::vector<std::pair<std::string, int> >& ret, size_t n);
+ protected:
+  void get_members_(const std::string& name,
+                    std::vector<std::pair<std::string, int> >& ret);
+  void get_members_from_cht_(const std::string& name, const std::string& id,
+                             std::vector<std::pair<std::string, int> >& ret,
+                             size_t n);
 
   keeper_argv a_;
   pfi::math::random::mtrand rng_;
@@ -58,6 +60,6 @@ protected:
   common::cshared_ptr<common::lock_service> zk_;
 };
 
-} // framework
-} // jubatus
+}  // framework
+}  // jubatus
 

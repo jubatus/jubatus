@@ -23,12 +23,16 @@ namespace jubatus {
 namespace recommender {
 
 class inverted_index : public recommender_base {
-public:
+ public:
   inverted_index();
   ~inverted_index();
 
-  void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
-  void neighbor_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  void similar_row(const sfv_t& query,
+                   std::vector<std::pair<std::string, float> > & ids,
+                   size_t ret_num) const;
+  void neighbor_row(const sfv_t& query,
+                    std::vector<std::pair<std::string, float> > & ids,
+                    size_t ret_num) const;
   void clear();
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const sfv_diff_t& diff);
@@ -37,11 +41,11 @@ public:
   storage::recommender_storage_base* get_storage();
   const storage::recommender_storage_base* get_const_storage() const;
 
-private:
+ private:
   bool save_impl(std::ostream&);
   bool load_impl(std::istream&);
   storage::inverted_index_storage inv_;
 };
 
-} // namespace recommender
-} // namespace jubatus
+}  // namespace recommender
+}  // namespace jubatus

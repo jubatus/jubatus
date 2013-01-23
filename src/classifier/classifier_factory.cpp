@@ -26,9 +26,9 @@ using namespace jubatus::jsonconfig;
 namespace jubatus {
 namespace classifier {
 
-classifier_base* classifier_factory::create_classifier(const std::string& name,
-                                                       const jsonconfig::config& param,
-                                                       jubatus::storage::storage_base* storage) {
+classifier_base* classifier_factory::create_classifier(
+    const std::string& name, const jsonconfig::config& param,
+    jubatus::storage::storage_base* storage) {
   if (name == "perceptron") {
     // perceptron doesn't have parameter
     return new perceptron(storage);

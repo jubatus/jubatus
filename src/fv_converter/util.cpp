@@ -27,7 +27,7 @@ const string& get_or_die(const map<string, string> & params,
                          const string& key) {
   map<string, string>::const_iterator it = params.find(key);
   if (it == params.end()) {
-    throw JUBATUS_EXCEPTION(converter_exception(string("\"" + key +  "\" is not specified in parameters")));
+    throw JUBATUS_EXCEPTION(converter_exception(string("\"" + key + "\" is not specified in parameters")));
   }
   return it->second;
 }
@@ -43,8 +43,7 @@ std::string get_with_default(const std::map<std::string, std::string> & params,
   }
 }
 
-const int get_int_or_die(const map<string, string>& params,
-                         const string& key) {
+const int get_int_or_die(const map<string, string>& params, const string& key) {
   const string& s = get_or_die(params, key);
   try {
     return pfi::lang::lexical_cast<int>(s);
