@@ -15,11 +15,22 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
+
+#include <map>
+#include <set>
 #include <stdexcept>
+#include <string>
+#include <vector>
+
 #include <pficommon/lang/cast.h>
+
 #include "graph_wo_index.hpp"
 
-using namespace std;
+using std::string;
+using std::vector;
+using std::make_pair;
+using std::map;
+using std::set;
 
 namespace jubatus {
 namespace graph {
@@ -50,7 +61,7 @@ void mix_graph(size_t count, graph_wo_index& g) {
   }
 }
 
-}
+}  // namespace
 
 TEST(graph_wo_index, none) {
   graph_wo_index g;
@@ -63,9 +74,11 @@ TEST(graph_wo_index, none) {
   EXPECT_THROW(g.remove_global_node(7), jubatus::exception::runtime_error);
   EXPECT_THROW(g.update_edge(8, property()), jubatus::exception::runtime_error);
   EXPECT_THROW(g.remove_edge(8), jubatus::exception::runtime_error);
-  EXPECT_THROW(g.centrality(9, EIGENSCORE, q), jubatus::exception::runtime_error);
+  EXPECT_THROW(g.centrality(9, EIGENSCORE, q),
+               jubatus::exception::runtime_error);
   vector<node_id_t> ret;
-  EXPECT_THROW(g.shortest_path(10, 11, 1000, ret, q), jubatus::exception::runtime_error);
+  EXPECT_THROW(g.shortest_path(10, 11, 1000, ret, q),
+               jubatus::exception::runtime_error);
 
   {
     map<string, string> status;
@@ -130,8 +143,10 @@ TEST(graph_wo_index, none) {
   EXPECT_THROW(g.remove_node(5), jubatus::exception::runtime_error);
   EXPECT_THROW(g.remove_node(999), jubatus::exception::runtime_error);
   EXPECT_THROW(g.remove_edge(5), jubatus::exception::runtime_error);
-  EXPECT_THROW(g.remove_node(777), jubatus::exception::runtime_error);  // edge is associated
-  EXPECT_THROW(g.remove_node(888), jubatus::exception::runtime_error);// edge is associated
+  EXPECT_THROW(g.remove_node(777),
+               jubatus::exception::runtime_error);  // edge is associated
+  EXPECT_THROW(g.remove_node(888),
+               jubatus::exception::runtime_error);  // edge is associated
 
   g.remove_edge(10000);
   g.remove_edge(10001);
@@ -176,10 +191,12 @@ TEST(graph, random) {
 
   map<string, string> status;
   g.get_status(status);
-  ASSERT_EQ(pfi::lang::lexical_cast<string>(local_node_num), status["local_node_num"]);
-  ASSERT_EQ(pfi::lang::lexical_cast<string>(node_num), status["global_node_num"]);
-  ASSERT_EQ(pfi::lang::lexical_cast<string>(edge_added_num), status["local_edge_num"]);
-
+  ASSERT_EQ(pfi::lang::lexical_cast<string>(local_node_num),
+            status["local_node_num"]);
+  ASSERT_EQ(pfi::lang::lexical_cast<string>(node_num),
+            status["global_node_num"]);
+  ASSERT_EQ(pfi::lang::lexical_cast<string>(edge_added_num),
+            status["local_edge_num"]);
 }
 
 TEST(graph, mix) {
@@ -340,7 +357,7 @@ TEST(graph, shortest_path_line_graph_with_node_query_failure) {
   // V1 = { 1 }, V2 = { 2, 3 }.
   // Nodes 1 and 3 have a property { "aaa": "bbb" }.
   // Node 2 has a property { "aaa": "ccc" }.
-  // query: Find the shortest path from 1 to 3 with node property { "aaa": "bbb" }.
+  // query: Find the shortest path from 1 to 3 with node { "aaa": "bbb" }.
 
   preset_query query;
   query.node_query.push_back(make_pair("aaa", "bbb"));
@@ -385,7 +402,7 @@ TEST(graph, shortest_path_line_graph_two_bridges_failure) {
   // V1 = { 1, 3 }, V2 = { 2 }.
   // Nodes 1 and 3 have a property { "aaa": "bbb" }.
   // Node 2 has no property.
-  // query: Find the shortest path from 1 to 3 with node property { "aaa": "bbb" }.
+  // query: Find the shortest path from 1 to 3 with node { "aaa": "bbb" }.
 
   preset_query query;
   query.node_query.push_back(make_pair("aaa", "bbb"));
@@ -428,7 +445,7 @@ TEST(graph, shortest_path_line_graph_with_edge_query_failure) {
   // V1 = { 1, 2 }, V2 = { 3, 4 }.
   // Edges except (2, 3) have a property { "aaa": "bbb" }.
   // Edge (2, 3) has a property { "aaa": "ccc" }.
-  // query: Find the shortest path from 1 to 4 with edge property { "aaa": "bbb" }.
+  // query: Find the shortest path from 1 to 4 with edge { "aaa": "bbb" }.
 
   preset_query query;
   query.edge_query.push_back(make_pair("aaa", "bbb"));
@@ -534,7 +551,7 @@ TEST(graph, shortest_path_node_query_failure_at_non_landmark_point) {
   // E = { (1, 3), (3, 4), (4, 5), (5, 2), (1, 6), (6, 2) }.
   // Nodes except 6 have a property { "aaa": "bbb" }.
   // Node 6 does not have any property.
-  // query: Find the shortest path from 1 to 2 with node property { "aaa": "bbb" }.
+  // query: Find the shortest path from 1 to 2 with node { "aaa": "bbb" }.
 
   preset_query query;
   query.node_query.push_back(make_pair("aaa", "bbb"));
@@ -581,7 +598,7 @@ TEST(graph, shortest_path_node_query_failure_at_non_landmark_point) {
   g[1].create_edge(62, 6, 2);
   g[3].create_edge(62, 6, 2);
 
-  mix_graphs(2, g);// Node 6 is not a landmark
+  mix_graphs(2, g);  // Node 6 is not a landmark
 
   vector<node_id_t> expect;
   expect.push_back(1);
@@ -818,5 +835,5 @@ TEST(graph, eigen_value_edge_query_failure) {
   }
 }
 
-}
-}
+}  // namespace graph
+}  // namespace jubatus
