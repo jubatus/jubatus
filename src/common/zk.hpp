@@ -31,7 +31,7 @@
 
 namespace jubatus {
 namespace common {
-// TODO: write zk mock and test them all?
+// TODO(kashihara): write zk mock and test them all?
 
 class zk : public lock_service {
  public:
@@ -54,7 +54,7 @@ class zk : public lock_service {
   bool create_seq(const std::string& path, std::string&);
   bool create_id(const std::string& path, uint32_t prefix, uint64_t& res);
 
-  //returns unsorted list
+  // returns unsorted list
   bool list(const std::string& path, std::vector<std::string>& out);
   bool hd_list(const std::string& path, std::string& out);
 
@@ -81,7 +81,7 @@ class zk : public lock_service {
   FILE* logfilep_;
 };
 
-// TODO: write zk mock and test them all?
+// TODO(kashihara): write zk mock and test them all?
 class zkmutex : public try_lockable {
  public:
   zkmutex(lock_service& ls, const std::string& path)
@@ -113,5 +113,5 @@ class zkmutex : public try_lockable {
 
 void mywatcher(zhandle_t*, int, int, const char*, void*);
 
-}  // common
-}  // jubatus
+}  // namespace common
+}  // namespace jubatus

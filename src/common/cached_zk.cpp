@@ -15,6 +15,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cached_zk.hpp"
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
 #include <pficommon/concurrent/lock.h>
 
 using pfi::concurrent::scoped_lock;
@@ -37,7 +41,7 @@ bool cached_zk::list(const string& path, vector<string>& out) {
   std::map<string, std::set<string> >::const_iterator it = list_cache_.find(
       path);
   if (it == list_cache_.end()) {
-    //first time. get list to create cache and set the watcher at the same time.
+    // First time, get list to create cache and set the watcher
     {
       DLOG(INFO) << "creating cache: " << path;
     }
@@ -161,9 +165,11 @@ void cached_zk::update_cache(zhandle_t* zh, int type, int state,
     }
     zk->clear_cache(path);
   }
-  // ZOO_CHANGED_EVENT => ignore (FIXME, when read() cache going to be modified this needs fix)
   // ZOO_CREATED_EVENT => ignore
+  // ZOO_CHANGED_EVENT
+  //  => ignore
+  // TODO(kashihara): when read() cache going to be modified this needs fix)
 }
 
-}  // common
-}  // jubatus
+}  // namespace common
+}  // namespace jubatus

@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include <string>
 #include <stdint.h>
+#include <string>
 
 namespace jubatus {
 
@@ -34,4 +34,4 @@ class hash_util {
   }
 };
 
-}  // jubatus
+}  // namespace jubatus

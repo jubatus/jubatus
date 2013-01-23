@@ -15,9 +15,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
+#include <string>
 #include "cht.hpp"
 
-using namespace std;
+using std::string;
 
 namespace jubatus {
 namespace common {
@@ -30,6 +31,5 @@ TEST(cht, make_hash) {
   ASSERT_NE(hash, hash3);
 }
 
-}
-  // common
-} // jubatus
+}  // namespace common
+}  // namespace jubatus

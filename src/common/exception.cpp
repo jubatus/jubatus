@@ -16,6 +16,7 @@
 
 #include "exception.hpp"
 #include <cstring>
+#include <string>
 #include <pficommon/lang/demangle.h>
 
 namespace jubatus {
@@ -48,5 +49,5 @@ std::string jubatus_exception::diagnostic_information(bool display_what) const {
   return tmp.str();
 }
 
-}  // exception
-}  // jubatus
+}  // namespace exception
+}  // namespace jubatus

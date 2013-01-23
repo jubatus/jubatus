@@ -18,11 +18,13 @@
 
 #include <map>
 #include <set>
+#include <string>
+#include <vector>
 #include "zk.hpp"
 
 namespace jubatus {
 namespace common {
-// TODO: write zk mock and test them all?
+// TODO(kashihara): write zk mock and test them all?
 
 class cached_zk : public zk {
  public:
@@ -51,8 +53,7 @@ class cached_zk : public zk {
 
   std::map<std::string, std::set<std::string> > list_cache_;
   std::map<std::string, std::string> znode_cache_;
-
 };
 
-}  // common
-}  // jubatus
+}  // namespace common
+}  // namespace jubatus

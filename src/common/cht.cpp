@@ -15,13 +15,17 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cht.hpp"
+
+#include <stdlib.h>
+#include <algorithm>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
+#include <glog/logging.h>
+#include <pficommon/data/digest/md5.h>
 #include "membership.hpp"
 #include "exception.hpp"
-#include <stdlib.h>
-#include <glog/logging.h>
-
-#include <pficommon/data/digest/md5.h>
-#include <sstream>
 
 namespace jubatus {
 namespace common {
@@ -44,7 +48,8 @@ void cht::setup_cht_dir(lock_service& ls, const std::string& type,
   success = ls.create(path) && success;
 
   if (!success)
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to create cht directory")
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("Failed to create cht directory")
         << jubatus::exception::error_api_func("lock_service::create")
         << jubatus::exception::error_message("cht path: " + path));
 }
@@ -69,7 +74,8 @@ void cht::register_node(const std::string& ip, int port) {
   for (unsigned int i = 0; i < NUM_VSERV; ++i) {
     std::string hashpath = path + "/" + make_hash(build_loc_str(ip, port, i));
     if (!lock_service_->create(hashpath, build_loc_str(ip, port), true))
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("Failed to register cht node")
+      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
+            "Failed to register cht node")
           << jubatus::exception::error_api_func("lock_service::create")
           << jubatus::exception::error_message("cht hashpash: " + hashpath));
 
@@ -82,12 +88,14 @@ bool cht::find(const std::string& host, int port,
   return find(build_loc_str(host, port), out, s);
 }
 
-// return at most n nodes, if theres nodes less than n, return size is also less than n.
-// find(hash)    :: lock_service -> key -> [node] where hash(node0) <= hash(key) < hash(node1)
+// return at most n nodes, if theres nodes less than n, return size is also less
+// than n.
+// find(hash) :: lock_service -> key -> [node]
+//   where hash(node0) <= hash(key) < hash(node1)
 bool cht::find(const std::string& key,
                std::vector<std::pair<std::string, int> >& out, size_t n) {
   out.clear();
-  std::vector < std::string > hlist;
+  std::vector<std::string> hlist;
   if (!get_hashlist_(key, hlist)) {
     throw JUBATUS_EXCEPTION(not_found(key));
   }
@@ -99,7 +107,7 @@ bool cht::find(const std::string& key,
   std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(),
                                                               hlist.end(),
                                                               hash);
-  size_t idx = int(node0 - hlist.begin()) % hlist.size();
+  size_t idx = static_cast<int>(node0 - hlist.begin()) % hlist.size();
   std::string loc;
   for (size_t i = 0; i < n; ++i) {
     std::string ip;
@@ -108,7 +116,7 @@ bool cht::find(const std::string& key,
       revert(loc, ip, port);
       out.push_back(make_pair(ip, port));
     } else {
-      // TODO: output log
+      // TODO(?): output log
       throw JUBATUS_EXCEPTION(not_found(path));
     }
     idx++;
@@ -123,7 +131,7 @@ std::pair<std::string, int> cht::find_predecessor(const std::string& host,
 }
 
 std::pair<std::string, int> cht::find_predecessor(const std::string& key) {
-  std::vector < std::string > hlist;
+  std::vector<std::string> hlist;
   get_hashlist_(key, hlist);
 
   std::string hash = make_hash(key);
@@ -134,7 +142,8 @@ std::pair<std::string, int> cht::find_predecessor(const std::string& key) {
   std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(),
                                                               hlist.end(),
                                                               hash);
-  size_t idx = (int(node0 - hlist.begin()) + hlist.size() - 1) % hlist.size();
+  size_t idx = (static_cast<int>(node0 - hlist.begin()) + hlist.size() - 1)
+    % hlist.size();
 
   std::string ip;
   int port;
@@ -144,7 +153,7 @@ std::pair<std::string, int> cht::find_predecessor(const std::string& key) {
     return make_pair(ip, port);
   } else {
     throw JUBATUS_EXCEPTION(not_found(path));
-    // TODO: output log and throw exception
+    // TODO(?): output log and throw exception
   }
 }
 
@@ -162,5 +171,5 @@ bool cht::get_hashlist_(const std::string& key,
   return true;
 }
 
-}  // common
-}  // jubatus
+}  // namespace common
+}  // namespace jubatus

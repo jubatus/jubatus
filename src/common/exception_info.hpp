@@ -17,6 +17,7 @@
 #pragma once
 
 #include <cstring>
+#include <string>
 #include <typeinfo>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/cast.h>
@@ -67,7 +68,7 @@ template<class Tag, class V>
 class error_info : public error_info_base {
  public:
   typedef V value_type;
-  error_info(value_type v);
+  explicit error_info(value_type v);
   ~error_info() throw ();
 
   std::string tag_typeid_name() const;
@@ -100,5 +101,5 @@ inline std::string error_info<Tag, V>::as_string() const {
   return to_string(*this);
 }
 
-}  // exception
-}  // jubatus
+}  // namespace exception
+}  // namespace jubatus

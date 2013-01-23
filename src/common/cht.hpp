@@ -16,15 +16,16 @@
 
 #pragma once
 
-#include <string>
 #include <cstdlib>
+#include <string>
+#include <utility>
 #include <vector>
 #include <map>
 
+#include <pficommon/lang/cast.h>
+
 #include "shared_ptr.hpp"
 #include "lock_service.hpp"
-
-#include <pficommon/lang/cast.h>
 
 namespace jubatus {
 namespace common {
@@ -55,7 +56,8 @@ class cht {
     return find(k, ret, s);
   }
 
-  // find(hash)    :: key -> [node] where  hash(node0) <= hash(key) < hash(node1) < hash(node2) < ...
+  // find(hash)    :: key -> [node]
+  //   where  hash(node0) <= hash(key) < hash(node1) < hash(node2) < ...
   bool find(const std::string& host, int port,
             std::vector<std::pair<std::string, int> >&, size_t);
   bool find(const std::string&, std::vector<std::pair<std::string, int> >&,
@@ -66,14 +68,12 @@ class cht {
   std::pair<std::string, int> find_predecessor(const std::string&);
 
  private:
-
   bool get_hashlist_(const std::string& key, std::vector<std::string>&);
 
   const std::string type_;
   const std::string name_;
   cshared_ptr<lock_service> lock_service_;
 };
-//cht
 
-}// common
-}  // jubatus
+}  // namespace common
+}  // namespace jubatus

@@ -19,6 +19,9 @@
 #include <assert.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <string>
+#include <vector>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/data/string/utility.h>
@@ -38,7 +41,8 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
   if (logfile != "") {
     logfilep_ = fopen(logfile.c_str(), "a+");
     if (!logfilep_) {
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot open zk logfile")
+      throw JUBATUS_EXCEPTION(
+          jubatus::exception::runtime_error("cannot open zk logfile")
           << jubatus::exception::error_file_name(logfile.c_str())
           << jubatus::exception::error_errno(errno)
           << jubatus::exception::error_api_func("fopen"));
@@ -49,7 +53,8 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
   zh_ = zookeeper_init(hosts.c_str(), NULL, timeout * 1000, 0, NULL, 0);
   if (!zh_) {
     perror("");
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("failed to initialize zk: " + hosts)
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("failed to initialize zk: " + hosts)
         << jubatus::exception::error_api_func("zookeeper_init")
         << jubatus::exception::error_errno(errno));
   }
@@ -60,7 +65,8 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
   }
 
   if (is_unrecoverable(zh_) == ZINVALIDSTATE) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("cannot connect zk:" + hosts)
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("cannot connect zk:" + hosts)
         << jubatus::exception::error_api_func("is_unrecoverable")
         << jubatus::exception::error_message(zerror(errno)));
   }
@@ -87,8 +93,9 @@ void zk::force_close() {
 bool zk::create(const string& path, const string& payload, bool ephemeral) {
   scoped_lock lk(m_);
   int rc = zoo_create(zh_, path.c_str(), payload.c_str(), payload.length(),
-                      &ZOO_OPEN_ACL_UNSAFE, ((ephemeral) ? ZOO_EPHEMERAL : 0),  // | ZOO_SEQUENCE
-                      NULL, 0);
+      &ZOO_OPEN_ACL_UNSAFE,
+      ((ephemeral) ? ZOO_EPHEMERAL : 0),  // | ZOO_SEQUENCE
+      NULL, 0);
   if (ephemeral) {
     if (rc != ZOK) {
       LOG(ERROR) << "failed to create: " << path << " - " << zerror(rc);
@@ -377,7 +384,7 @@ void mywatcher(zhandle_t* zh, int type, int state, const char* path, void* p) {
     if (state != ZOO_CONNECTED_STATE && state != ZOO_ASSOCIATING_STATE) {
       LOG(ERROR) << "zk connection expiration - type: " << type << ", state: "
           << state;
-      zk_->run_cleanup();  //type,state);
+      zk_->run_cleanup();
     }
   } else if (type == ZOO_NOTWATCHING_EVENT) {
   } else {
@@ -385,5 +392,5 @@ void mywatcher(zhandle_t* zh, int type, int state, const char* path, void* p) {
   }
 }
 
-}  // common
-}  // jubatus
+}  // namespace common
+}  // namespace jubatus

@@ -17,6 +17,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <string>
 
 #include "lock_service.hpp"
 #include "shared_ptr.hpp"
@@ -28,8 +29,7 @@ class global_id_generator_impl;
 
 class global_id_generator {
  public:
-
-  global_id_generator(bool);
+  explicit global_id_generator(bool is_standalone);
   ~global_id_generator();
 
   uint64_t generate();
@@ -42,5 +42,5 @@ class global_id_generator {
   pfi::lang::scoped_ptr<global_id_generator_impl> pimpl_;
 };
 
-}
-}
+}  // namespace common
+}  // namespace jubatus

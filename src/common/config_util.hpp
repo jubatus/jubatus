@@ -25,7 +25,7 @@ namespace jubatus {
 template<typename T>
 T get_param(const pfi::text::json::json& config, const std::string& name,
             T default_value) {
-  using namespace pfi::text::json;
+  using pfi::text::json::json_cast_with_default;
   if (is<json_object>(config) && config.count(name))
     return json_cast_with_default<T>(config[name], default_value);
 
@@ -35,4 +35,4 @@ T get_param(const pfi::text::json::json& config, const std::string& name,
 pfi::text::json::json get_param_obj(const pfi::text::json::json& config,
                                     const std::string& name);
 
-}
+}  // namespace jubatus

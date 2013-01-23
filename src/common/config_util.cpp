@@ -15,15 +15,17 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "config_util.hpp"
+#include <string>
 
-using namespace std;
-using namespace pfi::text::json;
+using std::string;
+using pfi::text::json::json;
+using pfi::text::json::json_cast;
+using pfi::text::json::json_object;
 
 namespace jubatus {
 
 pfi::text::json::json get_param_obj(const pfi::text::json::json& config,
                                     const string& name) {
-
   if (is<json_object>(config) && config.count(name)
       && is<json_object>(config[name]))
     return config[name];
@@ -31,4 +33,4 @@ pfi::text::json::json get_param_obj(const pfi::text::json::json& config,
   return json();
 }
 
-}  // jubatus
+}  // namespace jubatus

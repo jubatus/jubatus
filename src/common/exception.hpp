@@ -51,13 +51,20 @@ struct exception_thrower_binder_type {
 // for exception_thrower
 
 #if defined(__GNUC__)
-#define JUBATUS_ERROR_FUNC jubatus::exception::error_at_func(__PRETTY_FUNCTION__)
+#define JUBATUS_ERROR_FUNC \
+  jubatus::exception::error_at_func(__PRETTY_FUNCTION__)
 #else
-#define JUBATUS_ERROR_FUNC jubatus::exception::error_at_func(__func__)
+#define JUBATUS_ERROR_FUNC \
+  jubatus::exception::error_at_func(__func__)
 #endif
 
-#define JUBATUS_CURRENT_ERROR_INFO() jubatus::exception::error_at_file(__FILE__) << jubatus::exception::error_at_line(__LINE__) << JUBATUS_ERROR_FUNC << jubatus::exception::error_splitter()
-#define JUBATUS_EXCEPTION(e) e << jubatus::exception::exception_thrower_binder_type() << JUBATUS_CURRENT_ERROR_INFO()
+#define JUBATUS_CURRENT_ERROR_INFO() \
+  jubatus::exception::error_at_file(__FILE__) \
+    << jubatus::exception::error_at_line(__LINE__) \
+    << JUBATUS_ERROR_FUNC << jubatus::exception::error_splitter()
+#define JUBATUS_EXCEPTION(e) e << \
+  jubatus::exception::exception_thrower_binder_type() \
+    << JUBATUS_CURRENT_ERROR_INFO()
 
 class exception_thrower_base;
 typedef pfi::lang::shared_ptr<exception_thrower_base> exception_thrower_ptr;
@@ -186,9 +193,8 @@ inline const Exception& operator <<(const Exception& e,
 
 class unknown_exception : public jubaexception<unknown_exception> {
  public:
-  explicit unknown_exception()
-  // TODO: push unknown_exception
-  {
+  explicit unknown_exception() {
+    // TODO(kashihara): push unknown_exception
   }
 
   const char* what() const throw () {
@@ -218,7 +224,7 @@ exception_thrower_ptr current_std_exception(const Exception& e) {
   return exception_thrower_ptr(new exception_thrower_impl<Exception>(e));
 }
 
-}  // detail
+}  // namespace detail
 
 // Don't call without catch blocks
 inline exception_thrower_ptr get_current_exception() {
@@ -226,63 +232,46 @@ inline exception_thrower_ptr get_current_exception() {
 
   try {
     throw;
-  } catch (std::bad_alloc& e) {  // exception
+  } catch (const std::bad_alloc& e) {  // exception
     ptr = detail::current_std_exception(e);
-
-  } catch (std::bad_cast& e) {  // exception
+  } catch (const std::bad_cast& e) {  // exception
     ptr = detail::current_std_exception(e);
-
-  } catch (std::bad_exception& e) {  // exception
+  } catch (const std::bad_exception& e) {  // exception
     ptr = detail::current_std_exception(e);
-
-  } catch (std::bad_typeid& e) {  // exception
+  } catch (const std::bad_typeid& e) {  // exception
     ptr = detail::current_std_exception(e);
-
-  } catch (std::domain_error& e) {  // logic_error
+  } catch (const std::domain_error& e) {  // logic_error
     ptr = detail::current_std_exception(e);
-
-  } catch (std::invalid_argument& e) {  // logic_error
+  } catch (const std::invalid_argument& e) {  // logic_error
     ptr = detail::current_std_exception(e);
-
-  } catch (std::length_error& e) {  // logic_error
+  } catch (const std::length_error& e) {  // logic_error
     ptr = detail::current_std_exception(e);
-
-  } catch (std::out_of_range& e) {  // logic_error
+  } catch (const std::out_of_range& e) {  // logic_error
     ptr = detail::current_std_exception(e);
-
-  } catch (std::logic_error& e) {  // exception
+  } catch (const std::logic_error& e) {  // exception
     ptr = detail::current_std_exception(e);
-
-  } catch (std::range_error& e) {  // runtime_error
+  } catch (const std::range_error& e) {  // runtime_error
     ptr = detail::current_std_exception(e);
-
-  } catch (std::overflow_error& e) {  // runtime_error
+  } catch (const std::overflow_error& e) {  // runtime_error
     ptr = detail::current_std_exception(e);
-
-  } catch (std::underflow_error& e) {  // runtime_error
+  } catch (const std::underflow_error& e) {  // runtime_error
     ptr = detail::current_std_exception(e);
-
-  } catch (std::runtime_error& e) {  // exception
+  } catch (const std::runtime_error& e) {  // exception
     ptr = detail::current_std_exception(e);
-
-  } catch (std::ios_base::failure& e) {  // exception
+  } catch (const std::ios_base::failure& e) {  // exception
     ptr = detail::current_std_exception(e);
-
-  } catch (jubatus_exception& e) {
+  } catch (const jubatus_exception& e) {
     ptr = e.thrower();
-
-  } catch (std::exception& e) {
+  } catch (const std::exception& e) {
     ptr = detail::current_std_exception(e);
-
   } catch (...) {
     ptr = unknown_exception().thrower();
-
   }
 
   return ptr;
 }
 
-}  // exception
+}  // namespace exception
 
 class config_exception : public exception::jubaexception<config_exception> {
 };
@@ -298,7 +287,7 @@ class config_not_set : public exception::jubaexception<config_not_set> {
 
 class unsupported_method : public exception::runtime_error {
  public:
-  unsupported_method(const std::string& n)
+  explicit unsupported_method(const std::string& n)
       : jubatus::exception::runtime_error(
           std::string("unsupported method (") + n + ")") {
   }
@@ -306,30 +295,30 @@ class unsupported_method : public exception::runtime_error {
 
 class bad_storage_type : public exception::runtime_error {
  public:
-  bad_storage_type(const std::string& n)
+  explicit bad_storage_type(const std::string& n)
       : jubatus::exception::runtime_error(n) {
   }
 };
 
 class membership_error : public exception::runtime_error {
  public:
-  membership_error(const std::string& n)
+  explicit membership_error(const std::string& n)
       : jubatus::exception::runtime_error(n) {
   }
 };
 
 class not_found : public membership_error {
  public:
-  not_found(const std::string& n)
+  explicit not_found(const std::string& n)
       : membership_error(n) {
   }
 };
 
 class argv_error : public exception::runtime_error {
  public:
-  argv_error(const std::string& n)
+  explicit argv_error(const std::string& n)
       : jubatus::exception::runtime_error(n) {
   }
 };
 
-}
+}  // namespace jubatus
