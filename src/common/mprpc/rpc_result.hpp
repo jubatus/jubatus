@@ -29,26 +29,25 @@ namespace mprpc {
 
 template<class Res>
 struct rpc_result {
-  pfi::lang::shared_ptr<Res> value;
-  std::vector<rpc_error> error;
-
   Res& operator*() const {
     return *value;
   }
   bool has_error() const {
     return !error.empty();
   }
+
+  pfi::lang::shared_ptr<Res> value;
+  std::vector<rpc_error> error;
 };
 
 struct rpc_result_object {
-  std::vector<rpc_response_t> response;
-  std::vector<rpc_error> error;
-
   bool has_error() const {
     return !error.empty();
   }
-};
 
+  std::vector<rpc_response_t> response;
+  std::vector<rpc_error> error;
+};
 }  // mprpc
 }  // common
 }  // jubatus

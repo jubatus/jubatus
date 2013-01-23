@@ -16,9 +16,9 @@
 
 #pragma once
 
+#include <stdint.h>
 #include <vector>
 #include <cstring>
-#include <stdint.h>
 #include <msgpack.hpp>
 #include <pficommon/lang/shared_ptr.h>
 
@@ -31,11 +31,11 @@ class byte_buffer {
   byte_buffer() {
   }
 
-  byte_buffer(size_t size)
+  explicit byte_buffer(size_t size)
       : buf_(new std::vector<char>(size)) {
   }
 
-  byte_buffer(const void *ptr, size_t size)
+  byte_buffer(const void* ptr, size_t size)
       : buf_(new std::vector<char>()) {
     buf_->resize(size);
     std::memcpy(&(*buf_)[0], ptr, size);
@@ -57,23 +57,24 @@ class byte_buffer {
   }
 
   char* ptr() const {
-    if (buf_)
+    if (buf_) {
       return &(*buf_)[0];
-    else
+    } else {
       return NULL;
+    }
   }
 
   size_t size() const {
-    if (buf_)
+    if (buf_) {
       return buf_->size();
-    else
+    } else {
       return 0;
+    }
   }
 
  private:
   pfi::lang::shared_ptr<std::vector<char> > buf_;
 };
-
 }  // mprpc
 }  // common
 }  // jubatus
@@ -81,9 +82,11 @@ class byte_buffer {
 namespace msgpack {
 
 inline jubatus::common::mprpc::byte_buffer& operator>>(
-    object o, jubatus::common::mprpc::byte_buffer& b) {
-  if (o.type != type::RAW)
+    object o,
+    jubatus::common::mprpc::byte_buffer& b) {
+  if (o.type != type::RAW) {
     throw type_error();
+  }
 
   b.assign(o.via.raw.ptr, o.via.raw.size);
   return b;
@@ -91,14 +94,16 @@ inline jubatus::common::mprpc::byte_buffer& operator>>(
 
 template<typename Stream>
 inline packer<Stream>& operator<<(
-    packer<Stream>& o, const jubatus::common::mprpc::byte_buffer& b) {
+    packer<Stream>& o,
+    const jubatus::common::mprpc::byte_buffer& b) {
   o.pack_raw(b.size());
   o.pack_raw_body(b.ptr(), b.size());
   return o;
 }
 
-inline void operator<<(object::with_zone& o,
-                       const jubatus::common::mprpc::byte_buffer& b) {
+inline void operator<<(
+    object::with_zone& o,
+    const jubatus::common::mprpc::byte_buffer& b) {
   o.type = type::RAW;
   char* ptr = static_cast<char*>(o.zone->malloc(b.size()));
   o.via.raw.ptr = ptr;
@@ -106,12 +111,11 @@ inline void operator<<(object::with_zone& o,
   std::memcpy(ptr, b.ptr(), b.size());
 }
 
-inline void operator<<(object& o,
-                       const jubatus::common::mprpc::byte_buffer& b) {
+inline void operator<<(
+    object& o,
+    const jubatus::common::mprpc::byte_buffer& b) {
   o.type = type::RAW;
   o.via.raw.ptr = b.ptr();
   o.via.raw.size = static_cast<uint32_t>(b.size());
 }
-
 }  // msgpack
-

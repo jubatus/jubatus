@@ -38,7 +38,7 @@ class rpc_error {
   }
 
   rpc_error(const std::string& host, uint16_t port,
-            jubatus::exception::exception_thrower_ptr thrower)
+      jubatus::exception::exception_thrower_ptr thrower)
       : host_(host),
         port_(port),
         exception_(thrower) {
@@ -67,8 +67,10 @@ class rpc_error {
   jubatus::exception::exception_thrower_ptr exception_;
 };
 
-typedef jubatus::exception::error_info<struct error_multi_rpc_,
+typedef jubatus::exception::error_info<
+    struct error_multi_rpc_,
     std::vector<rpc_error> > error_multi_rpc;
+
 inline std::string to_string(const error_multi_rpc& info) {
   std::ostringstream result;
 
@@ -80,8 +82,9 @@ inline std::string to_string(const error_multi_rpc& info) {
   }
 
   std::vector<rpc_error> errors = info.value();
-  for (std::vector<rpc_error>::const_iterator it = errors.begin(), end = errors
-      .end(); it != end; ++it) {
+  for (std::vector<rpc_error>::const_iterator
+      it = errors.begin(), end = errors.end();
+      it != end; ++it) {
     result << " host: " << it->host() << ", port: " << it->port() << '\n';
     std::ostringstream tmp;
     if (it->has_exception()) {
@@ -96,13 +99,15 @@ inline std::string to_string(const error_multi_rpc& info) {
       }
 
       // Indent each line
-      std::vector < std::string > lines = pfi::data::string::split(tmp.str(),
-                                                                   '\n');
+      std::vector < std::string > lines =
+          pfi::data::string::split(tmp.str(), '\n');
       std::ostringstream msg;
-      for (std::vector<std::string>::iterator it = lines.begin(), end = lines
-          .end(); it != end; ++it) {
-        if (it->empty())
+      for (std::vector<std::string>::iterator
+          it = lines.begin(), end = lines.end();
+          it != end; ++it) {
+        if (it->empty()) {
           continue;
+        }
         msg << "   " << *it << '\n';
       }
       result << msg.str();
@@ -111,7 +116,6 @@ inline std::string to_string(const error_multi_rpc& info) {
 
   return result.str();
 }
-
 }  // mprpc
 }  // common
 }  // jubatus
