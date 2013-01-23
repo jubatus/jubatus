@@ -14,24 +14,27 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <stdexcept>
+#include <string>
+
 #include "graph_factory.hpp"
 #include "graph.hpp"
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
-#include <stdexcept>
-
-using namespace std;
-using namespace jubatus::jsonconfig;
 
 namespace jubatus {
 namespace graph {
 
-graph_base* create_graph(const string& name, const jsonconfig::config& param) {
+graph_base* create_graph(
+    const std::string& name,
+    const jsonconfig::config& param) {
   if (name == "graph_wo_index") {
-    return new graph_wo_index(config_cast_check<graph_wo_index::config>(param));
+    return new graph_wo_index(
+        jsonconfig::config_cast_check<graph_wo_index::config>(param));
   } else {
     throw JUBATUS_EXCEPTION(unknown_graph(name));
   }
 }
-}
-}
+
+}  // namespace jubatus
+}  // namespace graph
