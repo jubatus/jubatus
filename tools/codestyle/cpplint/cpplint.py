@@ -283,9 +283,10 @@ for op, inv_replacement in [('==', 'NE'), ('!=', 'EQ'),
 # _IncludeState.CheckNextIncludeOrder().
 _C_SYS_HEADER = 1
 _CPP_SYS_HEADER = 2
-_LIKELY_MY_HEADER = 3
-_POSSIBLE_MY_HEADER = 4
-_OTHER_HEADER = 5
+_PFICOMMON_SYS_HEADER = 3
+_LIKELY_MY_HEADER = 4
+_POSSIBLE_MY_HEADER = 5
+_OTHER_HEADER = 6
 
 
 _regexp_compile_cache = {}
@@ -380,11 +381,13 @@ class _IncludeState(dict):
   _MY_H_SECTION = 1
   _C_SECTION = 2
   _CPP_SECTION = 3
-  _OTHER_H_SECTION = 4
+  _PFICOMMON_SECTION = 4
+  _OTHER_H_SECTION = 5
 
   _TYPE_NAMES = {
       _C_SYS_HEADER: 'C system header',
       _CPP_SYS_HEADER: 'C++ system header',
+      _PFICOMMON_SYS_HEADER: 'pficommon system header',
       _LIKELY_MY_HEADER: 'header this file implements',
       _POSSIBLE_MY_HEADER: 'header this file may implement',
       _OTHER_HEADER: 'other header',
@@ -394,6 +397,7 @@ class _IncludeState(dict):
       _MY_H_SECTION: 'a header this file implements',
       _C_SECTION: 'C system header',
       _CPP_SECTION: 'C++ system header',
+      _PFICOMMON_SECTION: 'pficommon system header',
       _OTHER_H_SECTION: 'other header',
       }
 
@@ -463,6 +467,12 @@ class _IncludeState(dict):
     elif header_type == _CPP_SYS_HEADER:
       if self._section <= self._CPP_SECTION:
         self._section = self._CPP_SECTION
+      else:
+        self._last_header = ''
+        return error_message
+    elif header_type == _PFICOMMON_SYS_HEADER:
+      if self._section <= self._PFICOMMON_SECTION:
+        self._section = self._PFICOMMON_SECTION
       else:
         self._last_header = ''
         return error_message
@@ -2330,6 +2340,8 @@ def _ClassifyInclude(fileinfo, include, is_system):
     _C_SYS_HEADER
     >>> _ClassifyInclude(FileInfo('foo/foo.cc'), 'string', True)
     _CPP_SYS_HEADER
+    >>> _ClassifyInclude(FileInfo('foo/foo.cc'), 'pficommon/lang/cast.h', True)
+    _PFICOMMON_SYS_HEADER
     >>> _ClassifyInclude(FileInfo('foo/foo.cc'), 'foo/foo.h', False)
     _LIKELY_MY_HEADER
     >>> _ClassifyInclude(FileInfo('foo/foo_unknown_extension.cc'),
@@ -2342,6 +2354,10 @@ def _ClassifyInclude(fileinfo, include, is_system):
   # those already checked for above.
   is_stl_h = include in _STL_HEADERS
   is_cpp_h = is_stl_h or include in _CPP_HEADERS
+  is_pficommon_h = include.find('<pficommon/')
+
+  if is_pficommon_h:
+    return _PFICOMMON_SYS_HEADER
 
   if is_system:
     if is_cpp_h:
