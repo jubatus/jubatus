@@ -14,26 +14,28 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_STAT_MIXABLE_STAT_H_
+#define JUBATUS_STAT_MIXABLE_STAT_H_
 
-#include "stat.hpp"
 #include <map>
+#include <utility>
+#include "stat.hpp"
 
 namespace jubatus {
 namespace stat {
 
 class mixable_stat : public stat {
  public:
-  mixable_stat (size_t);
+  explicit mixable_stat(size_t);
   virtual ~mixable_stat();
   // entropy = - \sum_{for all keys in this stat} p(key) log p(key)
 
   // - mixed entropy -
-  //p(key) log p(key) = { n(key) log n(key) - n (key) log N } / N
-  //E (key) = ( \sum n(key) log n(key) )/N - log N / N \sum n(key)
+  // p(key) log p(key) = { n(key) log n(key) - n (key) log N } / N
+  // E (key) = ( \sum n(key) log n(key) )/N - log N / N \sum n(key)
   //        = ( \sum n(key) log n(key) )/N - log N
-  //get_diff : () ->  pair( \sum n(key) log n(key), partial N )
-  //put_diff : pair( \sum n(key) log n(key), partial N ) -> ()
+  // get_diff : () ->  pair( \sum n(key) log n(key), partial N )
+  // put_diff : pair( \sum n(key) log n(key), partial N ) -> ()
   // mix : pair(e1, n1) -> pair(e2, n2) -> pair( e1+e2, n1+n2 )
   // entropy : e -> n -> e/n - log n
   std::pair<double, size_t> get_diff() const;
@@ -46,6 +48,7 @@ class mixable_stat : public stat {
   double e_;
   double n_;
 };
+}  // namespace stat
+}  // namespace jubatus
 
-}
-}
+#endif  // JUBATUS_STAT_MIXABLE_STAT_H_

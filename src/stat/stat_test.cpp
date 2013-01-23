@@ -1,9 +1,22 @@
-#include <gtest/gtest.h>
-#include "stat.hpp"
-#include <pficommon/math/random.h>
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-using namespace std;
-using namespace pfi::lang;
+#include <gtest/gtest.h>
+#include <pficommon/math/random.h>
+#include "stat.hpp"
 
 namespace jubatus {
 
@@ -11,7 +24,7 @@ template<typename T>
 class stat_test : public testing::Test {
 };
 
-TYPED_TEST_CASE_P (stat_test);
+TYPED_TEST_CASE_P(stat_test);
 
 TYPED_TEST_P(stat_test, trivial) {
   TypeParam p(10);
@@ -28,7 +41,6 @@ TYPED_TEST_P(stat_test, trivial) {
   EXPECT_NEAR(p.moment("test", 2 , 2.0) , 0.67, 0.1);
   EXPECT_NEAR(p.moment("test", 3 , 0.0) , 12.0, 0.1);
   EXPECT_NEAR(p.stddev("test"), 0.82, 0.1);
-
 }
 
 REGISTER_TYPED_TEST_CASE_P(
@@ -38,5 +50,4 @@ REGISTER_TYPED_TEST_CASE_P(
 typedef testing::Types<stat::stat> stat_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(stt, stat_test, stat_types);
-
-}
+}  // namespace jubatus
