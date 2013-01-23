@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_STAT_STAT_H_
-#define JUBATUS_STAT_STAT_H_
+#ifndef JUBATUS_STAT_STAT_HPP_
+#define JUBATUS_STAT_STAT_HPP_
 
 #include <stdint.h>
 #include <algorithm>
@@ -160,4 +160,4 @@ class stat {
 }  // namespace stat
 }  // namespace jubatus
 
-#endif  // JUBATUS_STAT_STAT_H_
+#endif  // JUBATUS_STAT_STAT_HPP_
