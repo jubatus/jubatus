@@ -2220,6 +2220,12 @@ def CheckStyle(filename, clean_lines, linenum, file_extension, class_state,
         line.startswith('#define %s' % cppvar) or
         line.startswith('#endif  // %s' % cppvar)):
       is_header_guard = True
+  # Check if the line is a comment of license term
+  is_license_comment = False
+  if (line.startswith('// Copyright (C)') or
+      line.startswith('// Foundation, Inc., 51 Franklin Street')):
+      is_license_comment = True
+
   # #include lines and header guards can be long, since there's no clean way to
   # split them.
   #
@@ -2229,6 +2235,7 @@ def CheckStyle(filename, clean_lines, linenum, file_extension, class_state,
   # The "$Id:...$" comment may also get very long without it being the
   # developers fault.
   if (not line.startswith('#include') and not is_header_guard and
+      not is_license_comment and
       not Match(r'^\s*//.*http(s?)://\S*$', line) and
       not Match(r'^// \$Id:.*#[0-9]+ \$$', line)):
     line_width = GetLineWidth(line)
