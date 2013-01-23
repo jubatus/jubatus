@@ -1,10 +1,29 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 #include <gtest/gtest.h>
+#include <string>
+#include <vector>
+#include <map>
+
 #include "test_util.hpp"
 #include "graph_client.hpp"
 
-#include <map>
+using jubatus::client::graph;
 
-using namespace jubatus::client;
 static const int PORT = 65431;
 
 namespace jubatus {
@@ -13,7 +32,7 @@ typedef uint64_t edge_id_t;
 typedef std::string node_id;
 typedef int centrality_type;
 
-}
+}  // namespace jubatus
 
 namespace {
 
@@ -24,22 +43,20 @@ class graph_test : public ::testing::Test {
   graph_test() {
     child_ = fork_process("graph", PORT, "./test_input/config.graph.json");
   }
-  ;
+
   virtual ~graph_test() {
     kill_process(child_);
   }
-  ;
-  virtual void restart_process() {
 
+  virtual void restart_process() {
     kill_process(this->child_);
-    this->child_ = fork_process("graph", PORT,
+    this->child_ = fork_process("graph",
+                                PORT,
                                 "./test_input/config.graph.json");
   }
-  ;
 };
 
 TEST_F(graph_test, simple) {
-
   jubatus::node_id nid = "0";
   jubatus::node_id nid0 = "1";
   graph c("localhost", PORT, 10);
@@ -65,7 +82,7 @@ TEST_F(graph_test, simple) {
     ei.tgt = nid0;
     ei.p = p;
     eid = c.create_edge("", nid, ei);
-    c.create_edge("", nid0, ei);  //TODO: do we need this? release?
+    c.create_edge("", nid0, ei);  // TODO(kmaehashi): do we need this? release?
   }
   {
     c.save("", "test");
@@ -75,7 +92,10 @@ TEST_F(graph_test, simple) {
   {
     jubatus::node_info i = c.get_node("", nid);
     ASSERT_EQ(0u, i.in_edges.size());
-    EXPECT_EQ(2u, i.out_edges.size());  // FIXME: is this correct?(before 1)
+
+    // TODO(suma): is this correct?(before 1)
+    EXPECT_EQ(2u, i.out_edges.size());
+
     ASSERT_EQ("huga", i.p["hoge"]);
     ASSERT_EQ("test0", i.p["name"]);
   }
@@ -105,12 +125,12 @@ TEST_F(graph_test, simple) {
     jubatus::shortest_path_req req;
     req.src = nid;
     req.tgt = nid0;
-    {  // FIXME
+    {  // TODO(kuenishi)
       req.max_hop = 10;
       jubatus::preset_query q;
-      //c.add_shortest_path_query("", q);
-      //std::vector<jubatus::node_id> path = c.get_shortest_path("", req);
-      //ASSERT_EQ(1u, path.size());
+      // c.add_shortest_path_query("", q);
+      // std::vector<jubatus::node_id> path = c.get_shortest_path("", req);
+      // ASSERT_EQ(1u, path.size());
     }
     {
       req.max_hop = 0;
@@ -130,4 +150,4 @@ TEST_F(graph_test, simple) {
   }
 }
 
-}
+}  // namespace

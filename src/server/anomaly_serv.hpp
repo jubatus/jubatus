@@ -16,6 +16,10 @@
 
 #pragma once
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "../anomaly/anomaly_base.hpp"
 #include "../common/global_id_generator.hpp"
 #include "../common/lock_service.hpp"
@@ -53,8 +57,9 @@ struct mixable_anomaly : public framework::mixable<
 
 class anomaly_serv : public framework::server_base {
  public:
-  anomaly_serv(const framework::server_argv& a,
-               const common::cshared_ptr<common::lock_service>& zk);
+  anomaly_serv(
+      const framework::server_argv& a,
+      const common::cshared_ptr<common::lock_service>& zk);
   virtual ~anomaly_serv();
 
   framework::mixer::mixer* get_mixer() const {
@@ -84,11 +89,16 @@ class anomaly_serv : public framework::server_base {
   void check_set_config() const;
 
  private:
-  void find_from_cht(const std::string& key, size_t n,
-                     std::vector<std::pair<std::string, int> >& out);
+  void find_from_cht(
+      const std::string& key,
+      size_t n,
+      std::vector<std::pair<std::string, int> >& out);
 
-  float selective_update(const std::string& host, int port,
-                         const std::string& id, const datum& d);
+  float selective_update(
+      const std::string& host,
+      int port,
+      const std::string& id,
+      const datum& d);
 
   common::cshared_ptr<common::lock_service> zk_;
 
@@ -104,5 +114,5 @@ class anomaly_serv : public framework::server_base {
   common::global_id_generator idgen_;
 };
 
-}
-}  // namespace jubatus::server
+}  // namespace server
+}  // namespace jubatus

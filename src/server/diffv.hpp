@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "../storage/storage_type.hpp"
 #include <pficommon/network/mprpc.h>
+#include "../storage/storage_type.hpp"
 
 namespace jubatus {
 
@@ -27,12 +27,11 @@ struct diffv {
       : count(c),
         v(w) {
   }
-  ;
+
   diffv()
       : count(0),
         v() {
   }
-  ;
 
   int count;
   storage::features3_t v;
@@ -41,7 +40,6 @@ struct diffv {
     this->v /= d;
     return *this;
   }
-  ;
 
   MSGPACK_DEFINE(count, v);
 
@@ -49,7 +47,6 @@ struct diffv {
   void serialize(Archiver &ar) {
     ar & MEMBER(count) & MEMBER(v);
   }
-
 };
 
-}
+}  // namespace jubatus

@@ -16,18 +16,26 @@
 
 #include "stat_serv.hpp"
 
+#include <algorithm>
+#include <string>
+
 #include <pficommon/text/json.h>
 
 #include "../common/shared_ptr.hpp"
 #include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
-using namespace std;
-using namespace jubatus::common;
-using namespace jubatus::framework;
+using std::string;
+using std::make_pair;
 using pfi::text::json::json;
 using pfi::text::json::json_cast;
 using pfi::lang::lexical_cast;
+
+using jubatus::common::cshared_ptr;
+using jubatus::common::lock_service;
+using jubatus::framework::server_argv;
+using jubatus::framework::mixer::create_mixer;
+using jubatus::framework::mixable_holder;
 
 namespace jubatus {
 namespace server {
@@ -43,7 +51,7 @@ struct stat_serv_config {
 
 stat_serv::stat_serv(const server_argv& a, const cshared_ptr<lock_service>& zk)
     : server_base(a) {
-  mixer_.reset(mixer::create_mixer(a, zk));
+  mixer_.reset(create_mixer(a, zk));
   mixable_holder_.reset(new mixable_holder());
 
   mixer_->set_mixable_holder(mixable_holder_);
@@ -53,7 +61,7 @@ stat_serv::stat_serv(const server_argv& a, const cshared_ptr<lock_service>& zk)
 stat_serv::~stat_serv() {
 }
 
-mixer::mixer* stat_serv::get_mixer() const {
+framework::mixer::mixer* stat_serv::get_mixer() const {
   return mixer_.get();
 }
 
@@ -107,7 +115,7 @@ double stat_serv::min(const std::string& key) const {
 
 double stat_serv::entropy(const std::string& key) const {
 #ifdef HAVE_ZOOKEEPER_H
-  //FIXME: currently gets old value of entropy when mix completed
+  // TODO(kuenishi): currently gets old value of entropy when mix completed
   return stat_.get_model()->mixed_entropy();
 #else
   return stat_.get_model()->entropy();

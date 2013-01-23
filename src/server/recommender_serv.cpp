@@ -16,6 +16,9 @@
 
 #include "recommender_serv.hpp"
 
+#include <string>
+#include <vector>
+
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/cast.h>
 #include <pficommon/data/optional.h>
@@ -28,12 +31,18 @@
 #include "../fv_converter/revert.hpp"
 #include "../recommender/recommender_factory.hpp"
 
-using namespace std;
-using namespace pfi::lang;
+using std::string;
+using pfi::lang::lexical_cast;
+using pfi::lang::shared_ptr;
 using pfi::text::json::json;
 using pfi::text::json::json_cast;
-using namespace jubatus::common;
-using namespace jubatus::framework;
+
+using jubatus::common::cshared_ptr;
+using jubatus::common::lock_service;
+using jubatus::framework::convert;
+using jubatus::framework::server_argv;
+using jubatus::framework::mixer::create_mixer;
+using jubatus::framework::mixable_holder;
 
 namespace jubatus {
 namespace server {
@@ -42,7 +51,8 @@ namespace {
 
 struct recommender_serv_config {
   std::string method;
-  pfi::data::optional<jsonconfig::config> parameter;  // FIXME: if must use parameter
+  // TODO(unnonouno): if must use parameter
+  pfi::data::optional<jsonconfig::config> parameter;
   pfi::text::json::json converter;
 
   template<typename Ar>
@@ -62,12 +72,13 @@ common::cshared_ptr<recommender::recommender_base> make_model(
       recommender::create_recommender(conf.method, param));
 }
 
-}
+}  // namespace
 
-recommender_serv::recommender_serv(const server_argv& a,
-                                   const cshared_ptr<lock_service>& zk)
+recommender_serv::recommender_serv(
+    const server_argv& a,
+    const cshared_ptr<lock_service>& zk)
     : server_base(a) {
-  mixer_.reset(mixer::create_mixer(a, zk));
+  mixer_.reset(create_mixer(a, zk));
   mixable_holder_.reset(new mixable_holder());
   wm_.set_model(
       mixable_weight_manager::model_ptr(new fv_converter::weight_manager));
@@ -176,8 +187,9 @@ datum recommender_serv::complete_row_from_datum(datum dat) {
   return ret0;
 }
 
-similar_result recommender_serv::similar_row_from_id(std::string id,
-                                                     size_t ret_num) {
+similar_result recommender_serv::similar_row_from_id(
+    std::string id,
+    size_t ret_num) {
   check_set_config();
 
   similar_result ret;
@@ -215,7 +227,7 @@ datum recommender_serv::decode_row(std::string id) {
 std::vector<std::string> recommender_serv::get_all_rows() {
   check_set_config();
 
-  std::vector < std::string > ret;
+  std::vector<std::string> ret;
   rcmdr_.get_model()->get_all_row_ids(ret);
   return ret;
 }
@@ -242,7 +254,6 @@ float recommender_serv::calc_l2norm(const datum& q) {
   sfv_t v0;
   converter_->convert(d0, v0);
   return recommender::recommender_base::calc_l2norm(v0);
-
 }
 
 void recommender_serv::check_set_config() const {

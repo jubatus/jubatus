@@ -1,23 +1,50 @@
-#include "gtest/gtest.h"
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+#include <gtest/gtest.h>
+
+#include <vector>
+#include <utility>
+#include <map>
+#include <string>
+
+#include <pficommon/lang/cast.h>
+
 #include "recommender_client.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/converter_config.hpp"
-
 #include "../recommender/recommender.hpp"
 #include "../recommender/recommender_type.hpp"
 #include "../classifier/classifier_test_util.hpp"
 #include "../common/exception.hpp"
 
-#include <pficommon/lang/cast.h>
-#include <vector>
 #include "test_util.hpp"
 
-using namespace std;
-using namespace pfi::lang;
-using namespace jubatus;
-using jubatus::client::recommender;
+using std::string;
+using std::map;
+using std::vector;
+using std::pair;
+using std::make_pair;
+using std::stringstream;
 
-static const string NAME = "test";
+using jubatus::sfv_diff_t;
+using jubatus::client::recommender;
+using pfi::lang::lexical_cast;
+
+static const char* NAME = "test";
 static const int PORT = 65433;
 
 namespace {
@@ -27,21 +54,21 @@ class recommender_test : public ::testing::Test {
   pid_t child_;
 
   recommender_test() {
-    child_ = fork_process("recommender", PORT,
+    child_ = fork_process("recommender",
+                          PORT,
                           "./test_input/config.recommender.json");
   }
-  ;
+
   virtual ~recommender_test() {
     kill_process(child_);
   }
-  ;
-  virtual void restart_process() {
 
+  virtual void restart_process() {
     kill_process(this->child_);
-    this->child_ = fork_process("recommender", PORT,
+    this->child_ = fork_process("recommender",
+                                PORT,
                                 "./test_input/config.recommender.json");
   }
-  ;
 };
 
 std::string make_simple_config(const string& method) {
@@ -76,16 +103,15 @@ std::string make_simple_config(const string& method) {
 
 TEST_F(recommender_test, get_status) {
   jubatus::client::recommender cli("localhost", PORT, 10);
-  map<string,map<string,string> > status = cli.get_status(NAME);
+  map<string, map<string, string> > status = cli.get_status(NAME);
   EXPECT_EQ(status.size(), 1u);
-  for(map<string,map<string,string> >::const_iterator it = status.begin();
+  for (map<string, map<string, string> >::const_iterator it = status.begin();
       it != status.end(); ++it) {
     EXPECT_GE(it->second.size(), 8u);
   }
 }
 
 TEST_F(recommender_test, small) {
-
   jubatus::client::recommender c("localhost", PORT, 10);
 
   jubatus::datum d;
@@ -109,6 +135,7 @@ sfv_diff_t make_vec(float v1, float v2, float v3) {
   v.push_back(make_pair("c3", v3));
   return v;
 }
+
 sfv_diff_t make_vec(const string& c1, const string& c2, const string& c3) {
   sfv_diff_t v;
   v.push_back(make_pair(c1, 1.0));
@@ -121,7 +148,7 @@ template<typename T>
 class recommender_random_test : public testing::Test {
 };
 
-TYPED_TEST_CASE_P (recommender_random_test);
+TYPED_TEST_CASE_P(recommender_random_test);
 
 TYPED_TEST_P(recommender_random_test, trivial) {
   TypeParam r;
@@ -167,8 +194,9 @@ TYPED_TEST_P(recommender_random_test, random) {
   ASSERT_EQ(10u, ids.size());
   size_t correct = 0;
   for (size_t i = 0; i < ids.size(); ++i) {
-    if (ids[i].first[1] == '1')
-    ++correct;
+    if (ids[i].first[1] == '1') {
+      ++correct;
+    }
   }
   EXPECT_GT(correct, 5u);
 
@@ -184,10 +212,11 @@ TYPED_TEST_P(recommender_random_test, random) {
   ASSERT_EQ(10u, ids.size());
   correct = 0;
   for (size_t i = 0; i < ids.size(); ++i) {
-    if (ids[i].first[1] == '1')
-    ++correct;
+    if (ids[i].first[1] == '1') {
+      ++correct;
+    }
   }
   EXPECT_GT(correct, 5u);
 }
 
-}
+}  // namespace

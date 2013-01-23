@@ -14,12 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
-#include <string>
 #include <iostream>
-#include <limits>
 #include <iterator>
+#include <limits>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <pficommon/lang/cast.h>
 #include <pficommon/text/json.h>
@@ -33,15 +36,21 @@
 
 #include "test_util.hpp"
 
-using namespace pfi::lang;
-using namespace pfi::text::json;
+using std::string;
+using std::vector;
+using std::map;
+using std::pair;
+using std::make_pair;
+using std::ifstream;
+using std::stringstream;
+using std::isfinite;
+using std::numeric_limits;
 
-using namespace jubatus;
-using namespace jubatus::classifier;
-using namespace jubatus::storage;
-using namespace std;
+using pfi::lang::lexical_cast;
+using jubatus::datum;
+using jubatus::estimate_result;
 
-static const string NAME = "classifier_test";
+static const char* NAME = "classifier_test";
 static const int PORT = 65432;
 
 void make_small_data() {
@@ -156,29 +165,31 @@ class classifier_test : public ::testing::TestWithParam<const char*> {
   pid_t child_;
 
   classifier_test() {
-    std::string config_path = "./test_input/config.classifier."
-        + std::string(GetParam()) + ".json";
+    std::string config_path =
+        "./test_input/config.classifier." + std::string(GetParam()) + ".json";
     child_ = fork_process("classifier", PORT, config_path);
   }
-  ;
+
   virtual ~classifier_test() {
     kill_process(child_);
   }
-  ;
-  virtual void restart_process() {
 
+  virtual void restart_process() {
     kill_process(this->child_);
-    std::string config_path = "./test_input/config.classifier."
-        + std::string(GetParam()) + ".json";
+    std::string config_path =
+        "./test_input/config.classifier." + std::string(GetParam()) + ".json";
     this->child_ = fork_process("classifier", PORT, config_path);
   }
-  ;
 };
 
-//todo: insert __LINE__ as original line number
+// todo: insert __LINE__ as original line number
 #define ASSERT_THROW2(statement__, type__, what__) \
-  try{ statement__; FAIL();         \
-  }catch(type__& __e__){ ASSERT_STREQ(what__, __e__.what()); }
+  try { \
+    statement__; \
+    FAIL(); \
+  } catch (type__& __e__) { \
+    ASSERT_STREQ(what__, __e__.what()); \
+  }
 
 /*
  TEST_P(classifier_test, set_config_exception){
@@ -196,12 +207,11 @@ class classifier_test : public ::testing::TestWithParam<const char*> {
  */
 
 TEST_P(classifier_test, simple) {
-
   jubatus::client::classifier c("localhost", PORT, 10);
   {
     datum d;
-    vector<pair<string,datum> > v;
-    v.push_back(make_pair<string,datum>("hoge", d));
+    vector<pair<string, datum> > v;
+    v.push_back(make_pair("hoge", d));
     c.train("", v);
 
     vector<datum> v2;
@@ -236,9 +246,9 @@ TEST_P(classifier_test, api_classify) {
   jubatus::client::classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
 
-  vector<datum> datas;  //for classify
+  vector<datum> datas;  // for classify
 
-  vector<pair<string, datum> > data;//for train
+  vector<pair<string, datum> > data;  // for train
   make_random_data(data, example_size);
 
   unsigned int res = cli.train(NAME, data);
@@ -249,12 +259,12 @@ void my_test(const char* method) {
   jubatus::client::classifier cli("localhost", PORT, 10);
   const size_t example_size = 1000;
 
-  vector < pair<string, datum> > data;
+  vector<pair<string, datum> > data;
   make_random_data(data, example_size);
   unsigned int res = cli.train(NAME, data);
   ASSERT_EQ(data.size(), res);
 
-  vector < string > labels;
+  vector<string> labels;
   vector<datum> datas;
   {
     vector<pair<string, datum> >::const_iterator it;
@@ -263,12 +273,12 @@ void my_test(const char* method) {
       datas.push_back(it->second);
     }
   }
-  vector < vector<estimate_result> > result = cli.classify(NAME, datas);
+  vector<vector<estimate_result> > result = cli.classify(NAME, datas);
 //  ASSERT_TRUE(res.);
   ASSERT_EQ(example_size, result.size());
   ASSERT_EQ(data.size(), result.size());
 
-  vector<string>::const_iterator it0;  //answers
+  vector<string>::const_iterator it0;  // answers
   vector<vector<estimate_result> >::const_iterator it;
   size_t count = 0;
   for (it = result.begin(), it0 = labels.begin();
@@ -279,7 +289,7 @@ void my_test(const char* method) {
       //   cout << "[" << ite->label << "]" <<  endl;
       // }
     }
-    ASSERT_EQ(2u, it->size());  //estimate_results should have two label OK/NG
+    ASSERT_EQ(2u, it->size());  // estimate_results should have two label OK/NG
     string most0;
     double prob0 = DBL_MIN;
     vector<estimate_result>::const_iterator ite;
@@ -301,7 +311,8 @@ void my_test(const char* method) {
       }
     }
   }
-  EXPECT_GE(count, result.size() - 10);  //num of wrong classification should be less than 1%
+  // num of wrong classification should be less than 1%
+  EXPECT_GE(count, result.size() - 10);
 }
 
 TEST_P(classifier_test, my_test) {
@@ -336,7 +347,8 @@ TEST_P(classifier_test, duplicated_keys) {
     data.push_back(d);
     vector<vector<estimate_result> > result = cli.classify(NAME, data);
     ASSERT_EQ(1u, result.size());
-    // if the classifier could not learn properly, it estimates scores of labels to NaN and returns no results.
+    /* if the classifier could not learn properly, it estimates
+       scores of labels to NaN and returns no results. */
     ASSERT_EQ(2u, result[0].size());
   }
 }
@@ -345,7 +357,7 @@ INSTANTIATE_TEST_CASE_P(classifier_test_instance,
     classifier_test,
     testing::Values("PA", "PA1", "PA2", "CW", "AROW", "NHERD"));
 
-//FIXME: can't link classifier_serv
+// TODO(kuenishi): can't link classifier_serv
 // TEST(mix_parameter, trivial) {
 //   diffv sum;
 //   diffv diff;
@@ -378,9 +390,9 @@ INSTANTIATE_TEST_CASE_P(classifier_test_instance,
 TEST_P(classifier_test, get_status) {
   jubatus::client::classifier cli("localhost", PORT, 10);
 
-  map<string,map<string,string> > status = cli.get_status(NAME);
+  map<string, map<string, string> > status = cli.get_status(NAME);
   EXPECT_EQ(status.size(), 1u);
-  for(map<string,map<string,string> >::const_iterator it = status.begin();
+  for (map<string, map<string, string> >::const_iterator it = status.begin();
       it != status.end(); ++it) {
     EXPECT_GE(it->second.size(), 8u);
   }
@@ -388,7 +400,7 @@ TEST_P(classifier_test, get_status) {
 
 TEST_P(classifier_test, save_load) {
   jubatus::client::classifier cli("localhost", PORT, 10);
-  std::vector<std::pair<std::string,int> > v;
+  std::vector<std::pair<std::string, int> > v;
 
   const size_t example_size = 1000;
 //  string c = make_simple_config(GetParam());
@@ -417,8 +429,9 @@ TEST_P(classifier_test, save_load) {
   EXPECT_EQ(4, atoi(count_str.c_str()));
 }
 
-string classify_and_get_label(jubatus::client::classifier& cli,
-                              const datum& d) {
+string classify_and_get_label(
+    jubatus::client::classifier& cli,
+    const datum& d) {
   vector<datum> data;
   data.push_back(d);
   return get_max_label(cli.classify(NAME, data)[0]);
@@ -426,7 +439,7 @@ string classify_and_get_label(jubatus::client::classifier& cli,
 
 TEST_P(classifier_test, save_load_2) {
   jubatus::client::classifier cli("localhost", PORT, 10);
-  std::vector<std::pair<std::string,int> > v;
+  std::vector<std::pair<std::string, int> > v;
 
   // Test data
   datum pos;
@@ -457,7 +470,7 @@ TEST_P(classifier_test, save_load_2) {
   // And the classifier classify data improperly, but cannot expect results
   string pos_max = classify_and_get_label(cli, pos);
   string neg_max = classify_and_get_label(cli, neg);
-  ASSERT_TRUE(pos_max.compare(neg_max) == 0);
+  ASSERT_EQ(0, pos_max.compare(neg_max));
 
   // Reload server
   ASSERT_TRUE(cli.load(NAME, "test"));
@@ -465,14 +478,14 @@ TEST_P(classifier_test, save_load_2) {
   // The classifier works well
   ASSERT_EQ("pos", classify_and_get_label(cli, pos));
   ASSERT_EQ("neg", classify_and_get_label(cli, neg));
-
 }
 
 TEST_P(classifier_test, nan) {
   jubatus::client::classifier cli("localhost", PORT, 10);
 
   datum d;
-  d.num_values.push_back(make_pair("value", numeric_limits<float>::quiet_NaN()));
+  d.num_values.push_back(
+      make_pair("value", numeric_limits<float>::quiet_NaN()));
   vector<pair<string, datum> > data;
   data.push_back(make_pair("l1", d));
   cli.train(NAME, data);
@@ -485,5 +498,4 @@ TEST_P(classifier_test, nan) {
   EXPECT_FALSE(isfinite(result[0][0].prob));
 }
 
-}
-
+}  // namespace

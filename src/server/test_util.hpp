@@ -16,12 +16,12 @@
 
 #pragma once
 
-#include <string>
-#include <iostream>
-
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
+
+#include <string>
+#include <iostream>
 #include <cstdio>
 
 #include <pficommon/lang/cast.h>
@@ -36,7 +36,7 @@ using std::endl;
 
 void wait_server(int port) {
   pfi::network::mprpc::rpc_client cli("localhost", port, 10);
-  long sleep_time = 1000;
+  int64_t sleep_time = 1000;
   // 1000 * \sum {i=0..9} 2^i = 1024000 micro sec = 1024 ms
   for (int i = 0; i < 10; ++i) {
     usleep(sleep_time);
@@ -63,7 +63,7 @@ pid_t fork_process(const char* name, int port = 9199, std::string config = "") {
   if (child == 0) {
     const char * const argv[8] = { cmd.c_str(), "-p", port_str.c_str(), "-f",
         config.c_str(), "-d", ".", NULL };
-    int ret = execv(cmd.c_str(), (char ** const ) argv);
+    int ret = execv(cmd.c_str(), (char ** const) argv);
     if (ret < 0) {
       perror("execl");
       cout << cmd << " " << child << endl;
@@ -91,4 +91,3 @@ std::string config_to_string(
   ss << pfi::text::json::to_json(config);
   return ss.str();
 }
-

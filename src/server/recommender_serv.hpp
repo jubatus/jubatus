@@ -44,8 +44,10 @@ struct rcmdr : public framework::mixable<jubatus::recommender::recommender_base,
     get_model()->get_storage()->set_mixed_and_clear_diff(v);
   }
 
-  void mix_impl(const std::string& lhs, const std::string& rhs,
-                std::string& mixed) const {
+  void mix_impl(
+      const std::string& lhs,
+      const std::string& rhs,
+      std::string& mixed) const {
     mixed = lhs;
     get_model()->get_const_storage()->mix(rhs, mixed);
   }
@@ -56,8 +58,9 @@ struct rcmdr : public framework::mixable<jubatus::recommender::recommender_base,
 
 class recommender_serv : public framework::server_base {
  public:
-  recommender_serv(const framework::server_argv& a,
-                   const common::cshared_ptr<common::lock_service>& zk);
+  recommender_serv(
+      const framework::server_argv& a,
+      const common::cshared_ptr<common::lock_service>& zk);
   virtual ~recommender_serv();
 
   framework::mixer::mixer* get_mixer() const {

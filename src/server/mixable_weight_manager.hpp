@@ -29,11 +29,12 @@ class mixable_weight_manager : public framework::mixable<
 
   void put_diff_impl(const fv_converter::keyword_weights& diff);
 
-  void mix_impl(const fv_converter::keyword_weights& lhs,
-                const fv_converter::keyword_weights& rhs,
-                fv_converter::keyword_weights& acc) const;
+  void mix_impl(
+      const fv_converter::keyword_weights& lhs,
+      const fv_converter::keyword_weights& rhs,
+      fv_converter::keyword_weights& acc) const;
   void clear();
 };
 
-}
-}
+}  // namespace server
+}  // namespace jubatus
