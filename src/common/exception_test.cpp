@@ -249,8 +249,7 @@ TEST(exception, exception_info_add_macro) {
   EXPECT_TRUE(caught);
 }
 
-TEST(exception, exception_error_info)
-{
+TEST(exception, exception_error_info) {
   bool caught = false;
   try {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("what"));
