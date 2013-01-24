@@ -39,7 +39,6 @@ TEST(sort_and_merge, trivial) {
   EXPECT_EQ(2.0, v[0].second);
   EXPECT_EQ("f4", v[1].first);
   EXPECT_EQ(4.0, v[1].second);
-
 }
 
 }  // namespace jubatus
