@@ -1533,7 +1533,7 @@ def CheckSpacingForFunctionCall(filename, line, linenum, error):
   # Note that we assume the contents of [] to be short enough that
   # they'll never need to wrap.
   if (  # Ignore control structures.
-      not Search(r'\b(if|for|while|switch|return|delete)\b', fncall) and
+      not Search(r'\b(if|for|while|switch|return|delete|catch)\b', fncall) and
       # Ignore pointers/references to functions.
       not Search(r' \([^)]+\)\([^)]*(\)|,$)', fncall) and
       # Ignore pointers/references to arrays.
@@ -1811,7 +1811,7 @@ def CheckSpacing(filename, clean_lines, linenum, error):
   # Otherwise not.  Note we only check for non-spaces on *both* sides;
   # sometimes people put non-spaces on one side when aligning ='s among
   # many lines (not that this is behavior that I approve of...)
-  if Search(r'[\w.]=[\w.]', line) and not Search(r'\b(if|while) ', line):
+  if Search(r'[\w.]=[\w.]', line) and not Search(r'\b(if|while|catch) ', line):
     error(filename, linenum, 'whitespace/operators', 4,
           'Missing spaces around =')
 
