@@ -70,8 +70,9 @@ void mecab_splitter::split(
 
   std::vector<std::pair<size_t, size_t> > bounds;
   for (; node; node = node->next) {
-    if (node->stat == MECAB_BOS_NODE || node->stat == MECAB_EOS_NODE)
+    if (node->stat == MECAB_BOS_NODE || node->stat == MECAB_EOS_NODE) {
       continue;
+    }
 
     p += node->rlength - node->length;
     bounds.push_back(std::make_pair(p, node->length));
