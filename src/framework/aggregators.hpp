@@ -43,12 +43,12 @@ std::vector<T> concat(std::vector<T> lhs, std::vector<T> rhs) {
 
 template<typename T>
 T random(T lhs, T rhs) {
-  return lhs;  //TODO: make random? or left(change fun name)?
+  return lhs;  // TODO( ): make random? or left(change fun name)?
 }
 
 template<typename T>
 T pass(T lhs, T rhs) {
-  return lhs;  //TODO:
+  return lhs;  // TODO( ):
 }
 
 template<typename T>
@@ -59,7 +59,6 @@ T add(T lhs, T rhs) {
 bool all_and(bool l, bool r) {
   return l && r;
 }
-;
 
-}
-}
+}  // namespace framework
+}  // namespace jubatus

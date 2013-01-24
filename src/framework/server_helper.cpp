@@ -16,15 +16,15 @@
 
 #include "server_helper.hpp"
 
+#include <string>
+
 #include "../common/cht.hpp"
 #include "../common/membership.hpp"
 
-using namespace std;
-using namespace jubatus::common;
-
 namespace jubatus {
 namespace framework {
-
+using std::string;
+using std::ostringstream;
 namespace {
 
 string make_logfile_name(const server_argv& a) {
@@ -39,12 +39,14 @@ string make_logfile_name(const server_argv& a) {
   return logfile.str();
 }
 
-}
+}  // namespace
 
 server_helper_impl::server_helper_impl(const server_argv& a) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
-    zk_.reset(common::create_lock_service("zk", a.z, a.timeout, make_logfile_name(a)));
+    zk_.reset(common::create_lock_service("zk",
+                                          a.z, a.timeout,
+                                          make_logfile_name(a)));
   }
 #endif
 }
@@ -84,11 +86,13 @@ void server_helper_impl::get_config_lock(const server_argv& a, int retry) {
   if (!a.is_standalone()) {
     string lock_path;
     common::build_config_lock_path(lock_path, a.type, a.name);
-    zk_config_lock_ = pfi::lang::shared_ptr<common::try_lockable>(new common::lock_service_mutex(*zk_, lock_path));
+    zk_config_lock_ = pfi::lang::shared_ptr<common::try_lockable>
+      (new common::lock_service_mutex(*zk_, lock_path));
 
     while (!zk_config_lock_->try_rlock()) {
       if (retry == 0)
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("any user is writing config?"));
+      throw JUBATUS_EXCEPTION
+        (jubatus::exception::runtime_error("any user is writing config?"));
       retry--;
       sleep(1);
     }
@@ -96,5 +100,5 @@ void server_helper_impl::get_config_lock(const server_argv& a, int retry) {
 #endif
 }
 
-}
-}
+}  // namespace framework
+}  // namespace jubatus

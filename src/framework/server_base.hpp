@@ -30,15 +30,14 @@ namespace framework {
 
 namespace mixer {
 class mixer;
-}
+}  // namespace mixer
 
 class server_base {
  public:
   typedef std::map<std::string, std::string> status_t;
 
   explicit server_base(const server_argv& a);
-  virtual ~server_base() {
-  }
+  virtual ~server_base() {}
 
   virtual mixer::mixer* get_mixer() const = 0;
   virtual pfi::lang::shared_ptr<mixable_holder> get_mixable_holder() const = 0;
@@ -65,5 +64,5 @@ class server_base {
   uint64_t update_count_;
 };
 
-}
-}
+}  // namespace framework
+}  // namespace jubatus

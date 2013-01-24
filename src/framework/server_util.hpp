@@ -23,16 +23,16 @@
 
 #include <msgpack.hpp>
 #include <glog/logging.h>
-
-#include "../common/exception.hpp"
-#include "../common/lock_service.hpp"
-#include "../common/shared_ptr.hpp"
-#include "../common/util.hpp"
 #include <pficommon/lang/noncopyable.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/shared_ptr.h>
+
+#include "../common/exception.hpp"
+#include "../common/lock_service.hpp"
+#include "../common/shared_ptr.hpp"
+#include "../common/util.hpp"
 
 namespace cmdline {
 class parser;
@@ -49,7 +49,6 @@ namespace framework {
 struct config_json {
   config_json() {
   }
-  ;
 
   std::string config;
 
@@ -59,7 +58,6 @@ struct config_json {
 };
 
 struct server_argv {
-
   server_argv(int args, char** argv, const std::string& type);
   server_argv();
 
@@ -145,5 +143,5 @@ int run_server(int args, char** argv, const std::string& type) {
 
 std::string get_conf(const server_argv& a);
 
-}  // framework
-}  // jubatus
+}  // namespace framework
+}  // namespace jubatus

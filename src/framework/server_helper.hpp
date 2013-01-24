@@ -57,7 +57,6 @@ class server_helper {
   explicit server_helper(const server_argv& a, bool use_cht = false)
       : impl_(a),
         use_cht_(use_cht) {
-
     impl_.prepare_for_start(a, use_cht);
     server_.reset(new Server(a, impl_.zk()));
 
@@ -141,7 +140,7 @@ class server_helper {
       impl_.prepare_for_run(a, use_cht_);
       serv.join();
       return 0;
-    } catch (mp::system_error &e) {
+    } catch (const mp::system_error &e) {
       if (e.code == EADDRINUSE) {
         LOG(FATAL) << "server failed to start: any process using port "
             << a.port << "?";
@@ -150,7 +149,7 @@ class server_helper {
       }
     } catch (jubatus::exception::jubatus_exception&) {
       throw;
-    } catch (std::exception &e) {
+    } catch (const std::exception &e) {
       LOG(FATAL) << "server failed to start: " << e.what();
     }
     return -1;
@@ -165,14 +164,13 @@ class server_helper {
   }
 
  private:
-
   common::cshared_ptr<Server> server_;
   server_helper_impl impl_;
   const bool use_cht_;
 };
 
-}
-}
+}  // namespace framework
+}  // namespace jubatus
 
 #define JRLOCK__(p) \
   ::pfi::concurrent::scoped_rlock lk((p)->rw_mutex())

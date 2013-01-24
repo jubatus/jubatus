@@ -1,11 +1,16 @@
-#include <gtest/gtest.h>
-#include "linear_mixer.hpp"
 
 #include <iostream>
+#include <string>
+#include <vector>
+#include <gtest/gtest.h>
 
+#include "linear_mixer.hpp"
 #include "../mixable.hpp"
 
-using namespace std;
+
+
+using std::vector;
+using std::string;
 using pfi::lang::shared_ptr;
 using jubatus::common::mprpc::byte_buffer;
 
@@ -33,7 +38,7 @@ jubatus::common::mprpc::rpc_response_t make_response(const string& s) {
   return res;
 }
 
-}
+}  // namespace
 
 class linear_communication_stub : public linear_communication {
  public:
@@ -109,6 +114,6 @@ TEST(linear_mixer, mix_order) {
   EXPECT_EQ("(4+(3+(2+1)))", mixed[0]);
 }
 
-}
-}
-}
+}  // namespace mixer
+}  // namespace framework
+}  // namespace jubatus

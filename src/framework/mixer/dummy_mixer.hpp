@@ -43,6 +43,6 @@ class dummy_mixer : public mixer {
   }
 };
 
-}
-}
-}
+}  // namespace mixer
+}  // namespace framework
+}  // namespace jubatus

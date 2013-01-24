@@ -17,6 +17,9 @@
 #include "keeper_common.hpp"
 
 #include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
 #include <glog/logging.h>
 
 #include "../common/membership.hpp"
@@ -24,8 +27,8 @@
 #include "../common/util.hpp"
 #include "server_util.hpp"
 
-using namespace jubatus;
-using namespace jubatus::framework;
+namespace jubatus {
+namespace framework {
 
 namespace {
 
@@ -41,7 +44,7 @@ std::string make_logfile_name(const keeper_argv& a) {
   return logfile.str();
 }
 
-}
+}  // namespace
 
 keeper_common::keeper_common(const keeper_argv &a)
     : a_(a),
@@ -56,10 +59,9 @@ keeper_common::~keeper_common() {
 
 void keeper_common::get_members_(
     const std::string& name, std::vector<std::pair<std::string, int> >& ret) {
-  using namespace std;
   ret.clear();
-  vector < string > list;
-  string path;
+  std::vector<std::string> list;
+  std::string path;
   common::build_actor_path(path, a_.type, name);
   path += "/nodes";
 
@@ -67,7 +69,7 @@ void keeper_common::get_members_(
     pfi::concurrent::scoped_lock lk(mutex_);
     zk_->list(path, list);
   }
-  vector<string>::const_iterator it;
+  std::vector<std::string>::const_iterator it;
 
   if (list.empty()) {
     throw JUBATUS_EXCEPTION(no_worker(name));
@@ -76,7 +78,7 @@ void keeper_common::get_members_(
   // FIXME:
   // do you return all server list? it can be very large
   for (it = list.begin(); it != list.end(); ++it) {
-    string ip;
+    std::string ip;
     int port;
     common::revert(*it, ip, port);
     ret.push_back(make_pair(ip, port));
@@ -95,3 +97,6 @@ void keeper_common::get_members_from_cht_(
     throw JUBATUS_EXCEPTION(no_worker(name));
   }
 }
+
+}  // namespace framework
+}  // namespace jubatus

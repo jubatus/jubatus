@@ -28,6 +28,6 @@ namespace mixer {
 mixer* create_mixer(const server_argv& a,
                     const common::cshared_ptr<common::lock_service>& zk);
 
-}
-}
-}
+}  // namespace mixer
+}  // namespace framework
+}  // namespace jubatus

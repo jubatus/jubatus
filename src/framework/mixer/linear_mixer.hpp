@@ -17,6 +17,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <pficommon/concurrent/condition.h>
 #include <pficommon/concurrent/mutex.h>
 #include <pficommon/concurrent/thread.h>
@@ -43,7 +44,8 @@ class linear_communication {
   // Call update_members once before using get_diff and put_diff
   virtual size_t update_members() = 0;
 
-  // We use shared_ptr instead of auto_ptr/unique_ptr because in C++03 specification limits.
+  // We use shared_ptr instead of auto_ptr/unique_ptr
+  // because in C++03 specification limits.
   virtual pfi::lang::shared_ptr<common::try_lockable> create_lock() = 0;
 
   // it can throw common::mprpc exception
@@ -69,12 +71,13 @@ class linear_mixer : public mixer {
   void get_status(server_base::status_t& status) const;
 
   void mix();
+
  private:
   void mixer_loop();
 
   void clear();
 
-  std::vector<common::mprpc::byte_buffer> get_diff(int);
+  std::vector<common::mprpc::byte_buffer> get_diff(int d);
   int put_diff(const std::vector<common::mprpc::byte_buffer>& unpacked);
 
   pfi::lang::shared_ptr<linear_communication> communication_;
@@ -95,6 +98,6 @@ class linear_mixer : public mixer {
   std::vector<mixable0*> mixables_;
 };
 
-}
-}
-}
+}  // namespace mixer
+}  // namespace framework
+}  // namespace jubatus

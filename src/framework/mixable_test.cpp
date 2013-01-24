@@ -91,5 +91,5 @@ TEST(mixable, trivial) {
   EXPECT_EQ(20, m.get_model()->value);
 }
 
-}
-}
+}  // namespace framework
+}  // namespace jubatus
