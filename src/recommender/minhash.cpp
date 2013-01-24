@@ -14,17 +14,21 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "minhash.hpp"
+
 #include <algorithm>
 #include <cmath>
-#include <float.h>
-#include "minhash.hpp"
+#include <cfloat>
+#include <string>
+#include <utility>
+#include <vector>
 #include "../common/exception.hpp"
 #include "../common/hash.hpp"
 
-using namespace std;
-using namespace pfi::data;
-using namespace pfi::lang;
-using namespace jubatus::storage;
+using std::pair;
+using std::string;
+using std::vector;
+using jubatus::storage::bit_vector;
 
 namespace jubatus {
 namespace recommender {
@@ -43,8 +47,8 @@ minhash::~minhash() {
 }
 
 void minhash::similar_row(const sfv_t& query,
-                          vector<pair<string, float> > & ids,
-                          size_t ret_num) const {
+    vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   ids.clear();
   if (ret_num == 0)
     return;
@@ -55,8 +59,8 @@ void minhash::similar_row(const sfv_t& query,
 }
 
 void minhash::neighbor_row(const sfv_t& query,
-                           vector<pair<string, float> > & ids,
-                           size_t ret_num) const {
+    vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   similar_row(query, ids, ret_num);
   for (size_t i = 0; i < ids.size(); ++i) {
     ids[i].second = 1 - ids[i].second;
@@ -75,7 +79,7 @@ void minhash::clear_row(const string& id) {
 
 void minhash::calc_minhash_values(const sfv_t& sfv, bit_vector& bv) const {
   vector<float> min_values_buffer(hash_num_, FLT_MAX);
-  vector < uint64_t > hash_buffer(hash_num_);
+  vector<uint64_t> hash_buffer(hash_num_);
   for (size_t i = 0; i < sfv.size(); ++i) {
     uint64_t key_hash = hash_util::calc_string_hash(sfv[i].first);
     float val = sfv[i].second;
@@ -110,6 +114,7 @@ void minhash::get_all_row_ids(std::vector<std::string>& ids) const {
   row2minhashvals_.get_all_row_ids(ids);
 }
 
+// original by Hash64 http://burtleburtle.net/bob/hash/evahash.html
 void minhash::hash_mix64(uint64_t& a, uint64_t& b, uint64_t& c) {
   a -= b;
   a -= c;

@@ -16,7 +16,9 @@
 
 #pragma once
 
-#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 #include "recommender_base.hpp"
 #include "recommender_mock_storage.hpp"
@@ -46,11 +48,11 @@ class recommender_mock : public recommender_base {
       const std::vector<std::pair<std::string, float> >& ids);
 
   virtual void similar_row(const sfv_t& query,
-                           std::vector<std::pair<std::string, float> > & ids,
-                           size_t ret_num) const;
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
   virtual void neighbor_row(const sfv_t& query,
-                            std::vector<std::pair<std::string, float> > & ids,
-                            size_t ret_num) const;
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
   virtual void clear();
   virtual void clear_row(const std::string& id);
   virtual void update_row(const std::string& id, const sfv_diff_t& diff);

@@ -14,24 +14,26 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <map>
+#include <gtest/gtest.h>
 #include <string>
 #include <utility>
 #include <vector>
-#include <gtest/gtest.h>
 #include <pficommon/data/string/utility.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/math/random.h>
 #include "euclid_lsh.hpp"
 #include "../common/hash.hpp"
-#include "../common/portable_mixer.hpp" // FIXME: use linear_mixer
+#include "../common/portable_mixer.hpp"  // FIXME: use linear_mixer
 #include "../storage/lsh_index_storage.hpp"
 
-using namespace std;
-using namespace pfi::data::string;
-using namespace pfi::lang;
-using namespace pfi::math::random;
-using namespace jubatus::storage;
+using std::istringstream;
+using std::make_pair;
+using std::pair;
+using std::string;
+using std::vector;
+using pfi::lang::lexical_cast;
+using pfi::math::random::mtrand;
+using jubatus::storage::lsh_index_storage;
 
 namespace jubatus {
 namespace recommender {
@@ -51,7 +53,7 @@ sfv_t make_dense_sfv(const string& s) {
   return sfv;
 }
 
-}
+}  // namespace
 
 class euclid_lsh_mix_test : public ::testing::TestWithParam<
     pair<int, euclid_lsh::config> > {
@@ -97,8 +99,8 @@ class euclid_lsh_mix_test : public ::testing::TestWithParam<
     }
   }
 
-  vector<shared_ptr<euclid_lsh> > recoms_;
-  shared_ptr<euclid_lsh> single_recom_;
+  vector<pfi::lang::shared_ptr<euclid_lsh> > recoms_;
+  pfi::lang::shared_ptr<euclid_lsh> single_recom_;
   portable_mixer<lsh_index_storage> portable_mixer_;
 
   mtrand rand_;
@@ -141,19 +143,13 @@ euclid_lsh::config make_euclid_lsh_config() {
   config.lsh_num = 16;
   config.table_num = 4;
   config.bin_width = 1;
-  //string(""
-  //                       "lsh_num\t16\n"
-  //                       "table_num\t4\n"
-  //                       "bin_width\t1\n")
   return config;
 }
 
 INSTANTIATE_TEST_CASE_P(
     euclid_lsh_mix_test_instance,
     euclid_lsh_mix_test,
-    ::testing::Values(
-        make_pair(2, make_euclid_lsh_config())
-    ));
+    ::testing::Values(make_pair(2, make_euclid_lsh_config())));
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus

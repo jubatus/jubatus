@@ -14,11 +14,17 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 #include "recommender_mock.hpp"
 
-using namespace std;
-using namespace pfi::data::serialization;
+using std::istream;
+using std::ostream;
+using std::pair;
+using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace recommender {
@@ -54,14 +60,14 @@ void recommender_mock::set_neighbor_relation(
 }
 
 void recommender_mock::similar_row(const sfv_t& query,
-                                   vector<pair<string, float> >& ids,
-                                   size_t ret_num) const {
+    vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   storage_.similar_items_similarity(query, ids, ret_num);
 }
 
 void recommender_mock::neighbor_row(const sfv_t& query,
-                                    vector<pair<string, float> >& ids,
-                                    size_t ret_num) const {
+    vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   storage_.neighbor_items_distance(query, ids, ret_num);
 }
 
@@ -101,21 +107,22 @@ storage::recommender_storage_base* recommender_mock::get_storage() {
   return &storage_;
 }
 
-const storage::recommender_storage_base* recommender_mock::get_const_storage() const {
+const storage::recommender_storage_base* recommender_mock::get_const_storage()
+    const {
   return &storage_;
 }
 
 bool recommender_mock::save_impl(ostream& os) {
-  binary_oarchive bo(os);
+  pfi::data::serialization::binary_oarchive bo(os);
   bo << *this;
   return true;
 }
 
 bool recommender_mock::load_impl(istream& is) {
-  binary_iarchive bi(is);
+  pfi::data::serialization::binary_iarchive bi(is);
   bi >> *this;
   return true;
 }
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus

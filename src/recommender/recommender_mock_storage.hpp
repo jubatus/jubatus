@@ -18,6 +18,8 @@
 
 #include <map>
 #include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 #include "../storage/recommender_storage_base.hpp"
 #include "recommender_type.hpp"
@@ -40,8 +42,8 @@ class recommender_mock_storage : public storage::recommender_storage_base {
       const sfv_t& query, std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   void neighbor_items_distance(const sfv_t& query,
-                               std::vector<std::pair<std::string, float> >& ids,
-                               size_t ret_num) const;
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
 
   void update(const sfv_t& from, const sfv_t& to);
   void remove(const sfv_t& query);
@@ -54,7 +56,8 @@ class recommender_mock_storage : public storage::recommender_storage_base {
   virtual void mix(const std::string& lhs, std::string& rhs) const;
 
  private:
-  typedef std::map<sfv_t, std::vector<std::pair<std::string, float> > > relation_type;
+  typedef std::map<sfv_t, std::vector<std::pair<std::string, float> > >
+    relation_type;
 
   friend class pfi::data::serialization::access;
   template<typename Ar>
@@ -63,11 +66,11 @@ class recommender_mock_storage : public storage::recommender_storage_base {
   }
 
   static void get_relation(const sfv_t& query, const relation_type& relmap,
-                           size_t ret_num,
-                           std::vector<std::pair<std::string, float> >& ids);
+      size_t ret_num,
+      std::vector<std::pair<std::string, float> >& ids);
 
   static void update_relation_key(const sfv_t& from, const sfv_t& to,
-                                  relation_type& relmap);
+      relation_type& relmap);
 
   static void mix_relation(const relation_type& from, relation_type& to);
 
@@ -75,5 +78,5 @@ class recommender_mock_storage : public storage::recommender_storage_base {
   relation_type neighbor_relation_;
 };
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus

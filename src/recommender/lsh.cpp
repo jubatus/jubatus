@@ -14,17 +14,21 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <algorithm>
-#include <cmath>
 #include "lsh.hpp"
+
+#include <cmath>
+#include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 #include "../common/exception.hpp"
 #include "../common/hash.hpp"
 #include "lsh_util.hpp"
 
-using namespace std;
-using namespace pfi::data;
-using namespace pfi::lang;
-using namespace jubatus::storage;
+using std::pair;
+using std::string;
+using std::vector;
+using jubatus::storage::bit_vector;
 
 namespace jubatus {
 namespace recommender {
@@ -53,8 +57,8 @@ lsh::lsh()
 lsh::~lsh() {
 }
 
-void lsh::similar_row(const sfv_t& query, vector<pair<string, float> > & ids,
-                      size_t ret_num) const {
+void lsh::similar_row(const sfv_t& query, vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   ids.clear();
   if (ret_num == 0)
     return;
@@ -64,8 +68,8 @@ void lsh::similar_row(const sfv_t& query, vector<pair<string, float> > & ids,
   row2lshvals_.similar_row(query_bv, ids, ret_num);
 }
 
-void lsh::neighbor_row(const sfv_t& query, vector<pair<string, float> > & ids,
-                       size_t ret_num) const {
+void lsh::neighbor_row(const sfv_t& query, vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   similar_row(query, ids, ret_num);
   for (size_t i = 0; i < ids.size(); ++i) {
     ids[i].second = 1 - ids[i].second;
@@ -122,21 +126,25 @@ void lsh::get_all_row_ids(std::vector<std::string>& ids) const {
 string lsh::type() const {
   return string("lsh");
 }
+
 bool lsh::save_impl(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << column2baseval_;
   oa << row2lshvals_;
   return true;
 }
+
 bool lsh::load_impl(std::istream& is) {
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> column2baseval_;
   ia >> row2lshvals_;
   return true;
 }
+
 storage::recommender_storage_base* lsh::get_storage() {
   return &row2lshvals_;
 }
+
 const storage::recommender_storage_base* lsh::get_const_storage() const {
   return &row2lshvals_;
 }

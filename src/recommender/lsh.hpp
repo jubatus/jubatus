@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 
 #include "recommender_base.hpp"
@@ -37,17 +40,17 @@ class lsh : public recommender_base {
     }
   };
 
-  lsh(uint64_t base_num);
+  explicit lsh(uint64_t base_num);
   explicit lsh(const config& config);
   lsh();
   ~lsh();
 
   void similar_row(const sfv_t& query,
-                   std::vector<std::pair<std::string, float> > & ids,
-                   size_t ret_num) const;
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
   void neighbor_row(const sfv_t& query,
-                    std::vector<std::pair<std::string, float> > & ids,
-                    size_t ret_num) const;
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
   void clear();
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const sfv_diff_t& diff);
@@ -64,7 +67,9 @@ class lsh : public recommender_base {
   void generate_column_base(const std::string& column);
   void generate_column_bases(const sfv_t& v);
 
-  pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_;  // bases for lsh
+  // bases for lsh
+  pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_;
+
   storage::bit_index_storage row2lshvals_;
 
   const uint64_t base_num_;

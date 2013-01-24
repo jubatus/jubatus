@@ -16,11 +16,17 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string>
+#include <utility>
+#include <vector>
 #include "recommender_base.hpp"
 #include "../common/vector_util.hpp"
 
-using namespace std;
-using namespace pfi::data;
+using std::make_pair;
+using std::pair;
+using std::string;
+using std::sort;
+using std::vector;
 
 namespace jubatus {
 namespace recommender {
@@ -34,7 +40,7 @@ recommender_base::~recommender_base() {
 }
 
 void recommender_base::similar_row(
-    const std::string& id, std::vector<std::pair<std::string, float> > & ids,
+    const std::string& id, std::vector<std::pair<std::string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
   sfv_t sfv;
@@ -43,8 +49,8 @@ void recommender_base::similar_row(
 }
 
 void recommender_base::neighbor_row(const string& id,
-                                    vector<pair<string, float> >& ids,
-                                    size_t ret_num) const {
+    vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   ids.clear();
   sfv_t sfv;
   orig_.get_row(id, sfv);
@@ -65,7 +71,7 @@ void recommender_base::complete_row(const std::string& id, sfv_t& ret) const {
 
 void recommender_base::complete_row(const sfv_t& query, sfv_t& ret) const {
   ret.clear();
-  vector < pair<string, float> > ids;
+  vector<pair<string, float> > ids;
   similar_row(query, ids, complete_row_similar_num_);
   if (ids.size() == 0)
     return;
@@ -141,5 +147,5 @@ float recommender_base::calc_l2norm(const sfv_t& query) {
   return sqrt(ret);
 }
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus

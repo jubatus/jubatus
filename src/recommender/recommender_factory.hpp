@@ -22,12 +22,12 @@
 namespace jubatus {
 namespace jsonconfig {
 class config;
-}  // jsonconfig
+}  // namespace jsonconfig
 namespace recommender {
 
 class recommender_base;
 
 recommender_base* create_recommender(const std::string& name,
-                                     const jsonconfig::config& param);
-}  // recommender
-}  // jubatus
+    const jsonconfig::config& param);
+}  // namespace recommender
+}  // namespace jubatus

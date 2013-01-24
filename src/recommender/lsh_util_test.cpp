@@ -1,13 +1,32 @@
-#include <gtest/gtest.h>
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <gtest/gtest.h>
+#include <string>
+#include <vector>
+#include <pficommon/data/unordered_map.h>
 #include "lsh_util.hpp"
 #include "../storage/bit_vector.hpp"
-#include <pficommon/data/unordered_map.h>
 
 namespace jubatus {
 namespace recommender {
 
-using namespace std;
+using std::make_pair;
+using std::string;
+using std::vector;
 using jubatus::storage::bit_vector;
 using pfi::data::unordered_map;
 
@@ -64,5 +83,5 @@ TEST(prod_invert_and_vector, trivial) {
   EXPECT_FLOAT_EQ(4.0, r[2]);
 }
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus

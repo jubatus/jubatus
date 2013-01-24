@@ -14,20 +14,26 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "euclid_lsh.hpp"
+
 #include <cmath>
 #include <queue>
+#include <utility>
+#include <string>
 #include <vector>
 #include <glog/logging.h>
 #include <pficommon/data/serialization.h>
 #include <pficommon/lang/cast.h>
 #include <pficommon/math/random.h>
-#include "euclid_lsh.hpp"
 #include "../common/hash.hpp"
 #include "../storage/lsh_util.hpp"
 #include "../storage/lsh_vector.hpp"
 
-using namespace std;
-using namespace jubatus::storage;
+using std::string;
+using std::vector;
+using std::pair;
+using std::ostream;
+using std::istream;
 using pfi::math::random::mtrand;
 
 namespace jubatus {
@@ -37,7 +43,7 @@ namespace {
 
 struct greater_second {
   bool operator()(const pair<string, float>& l,
-                  const pair<string, float>& r) const {
+      const pair<string, float>& r) const {
     return l.second > r.second;
   }
 };
@@ -51,7 +57,7 @@ float calc_norm(const sfv_t& sfv) {
 }
 
 vector<float> lsh_function(const sfv_t& query, size_t dimension,
-                           float bin_width) {
+    float bin_width) {
   vector<float> hash(dimension);
   for (size_t i = 0; i < query.size(); ++i) {
     const uint32_t seed = hash_util::calc_string_hash(query[i].first);
@@ -66,7 +72,7 @@ vector<float> lsh_function(const sfv_t& query, size_t dimension,
   return hash;
 }
 
-}
+}  // namespace
 
 euclid_lsh::config::config()
     : lsh_num(DEFAULT_LSH_NUM),
@@ -102,8 +108,8 @@ euclid_lsh::~euclid_lsh() {
 }
 
 void euclid_lsh::neighbor_row(const sfv_t& query,
-                              vector<pair<string, float> >& ids,
-                              size_t ret_num) const {
+    vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   similar_row(query, ids, ret_num);
   for (size_t i = 0; i < ids.size(); ++i) {
     ids[i].second = -ids[i].second;
@@ -111,8 +117,8 @@ void euclid_lsh::neighbor_row(const sfv_t& query,
 }
 
 void euclid_lsh::neighbor_row(const string& id,
-                              vector<pair<string, float> >& ids,
-                              size_t ret_num) const {
+    vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   similar_row(id, ids, ret_num);
   for (size_t i = 0; i < ids.size(); ++i) {
     ids[i].second = -ids[i].second;
@@ -120,19 +126,19 @@ void euclid_lsh::neighbor_row(const string& id,
 }
 
 void euclid_lsh::similar_row(const sfv_t& query,
-                             vector<pair<string, float> >& ids,
-                             size_t ret_num) const {
+    vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   ids.clear();
 
   const vector<float> hash = lsh_function(query, lsh_index_.all_lsh_num(),
-                                          bin_width_);
+      bin_width_);
   const float norm = calc_norm(query);
   lsh_index_.similar_row(hash, norm, num_probe_, ret_num, ids);
 }
 
 void euclid_lsh::similar_row(const string& id,
-                             vector<pair<string, float> >& ids,
-                             size_t ret_num) const {
+    vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   ids.clear();
   lsh_index_.similar_row(id, ret_num, ids);
 }
@@ -153,7 +159,7 @@ void euclid_lsh::update_row(const string& id, const sfv_diff_t& diff) {
   orig_.get_row(id, row);
 
   const vector<float> hash = lsh_function(row, lsh_index_.all_lsh_num(),
-                                          bin_width_);
+      bin_width_);
   const float norm = calc_norm(row);
   lsh_index_.set_row(id, hash, norm);
 }
@@ -215,5 +221,5 @@ bool euclid_lsh::load_impl(istream& is) {
   return true;
 }
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus

@@ -14,15 +14,18 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <sstream>
-#include <string>
 #include <gtest/gtest.h>
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/string/utility.h>
 #include <pficommon/lang/cast.h>
 #include "recommender_mock_storage.hpp"
 #include "recommender_mock_util.hpp"
 
-using namespace std;
+using std::pair;
+using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace recommender {
@@ -38,7 +41,7 @@ void mix(recommender_mock_storage& s1, recommender_mock_storage& s2) {
   s2.set_mixed_and_clear_diff(mixed);
 }
 
-}
+}  // namespace
 
 TEST(recommender_mock_storage, similar_items) {
   const sfv_t query = make_sfv("f1:1 f2:1");
@@ -120,5 +123,5 @@ TEST(recommender_mock_storage, mix_with_neighbor_relation) {
   EXPECT_EQ(make_ids("d1:1 d2:2 d3:3"), ids);
 }
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus

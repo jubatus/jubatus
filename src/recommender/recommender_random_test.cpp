@@ -1,15 +1,40 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/lang/cast.h>
 #include "recommender.hpp"
 #include "../classifier/classifier_test_util.hpp"
 
+using std::make_pair;
+using std::pair;
+using std::sort;
+using std::string;
+using std::stringstream;
+using std::vector;
+using pfi::lang::lexical_cast;
+
 namespace jubatus {
 namespace recommender {
-
-using namespace std;
-using namespace pfi::lang;
 
 sfv_diff_t make_vec(float v1, float v2, float v3) {
   sfv_diff_t v;
@@ -31,7 +56,7 @@ template<typename T>
 class recommender_random_test : public testing::Test {
 };
 
-TYPED_TEST_CASE_P (recommender_random_test);
+TYPED_TEST_CASE_P(recommender_random_test);
 
 TYPED_TEST_P(recommender_random_test, trivial) {
   TypeParam r;
@@ -116,13 +141,13 @@ void compare_recommenders(recommender_base& r1, recommender_base& r2,
   sfv_t q = make_vec(0.5, 0.3, 1.0);
 
   // Get result before saving
-  vector < pair<string, float> > ids1;
+  vector<pair<string, float> > ids1;
   r1.similar_row(q, ids1, 10);
   sfv_t comp1;
   r1.complete_row("r1_0", comp1);
 
   // Get result from loaded data
-  vector < pair<string, float> > ids2;
+  vector<pair<string, float> > ids2;
   r2.similar_row(q, ids2, 10);
   sfv_t comp2;
   r2.complete_row("r1_0", comp2);
@@ -235,9 +260,10 @@ REGISTER_TYPED_TEST_CASE_P(recommender_random_test,
     trivial, random, save_load, get_all_row_ids,
     diff, mix);
 
-typedef testing::Types<inverted_index, lsh, minhash, euclid_lsh> recommender_types;
+typedef testing::Types<inverted_index, lsh, minhash, euclid_lsh>
+  recommender_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(rt, recommender_random_test, recommender_types);
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus

@@ -16,13 +16,10 @@
 
 #pragma once
 
-#include <vector>
-#include <utility>
-#include <string>
 #include "../common/type.hpp"
 
 namespace jubatus {
 
 typedef sfv_t sfv_diff_t;
 
-}
+}  // namespace jubatus

@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 
 #include "recommender_base.hpp"
@@ -44,11 +47,11 @@ class minhash : public recommender_base {
   ~minhash();
 
   void similar_row(const sfv_t& query,
-                   std::vector<std::pair<std::string, float> > & ids,
-                   size_t ret_num) const;
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
   void neighbor_row(const sfv_t& query,
-                    std::vector<std::pair<std::string, float> > & ids,
-                    size_t ret_num) const;
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
   void clear();
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const sfv_diff_t& diff);

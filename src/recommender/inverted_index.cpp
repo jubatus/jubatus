@@ -14,15 +14,19 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "inverted_index.hpp"
+
 #include <algorithm>
 #include <cmath>
-#include "inverted_index.hpp"
+#include <string>
+#include <utility>
+#include <vector>
 #include "../common/exception.hpp"
 #include "../common/vector_util.hpp"
 
-using namespace std;
-using namespace pfi::data;
-using namespace pfi::lang;
+using std::pair;
+using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace recommender {
@@ -34,7 +38,8 @@ inverted_index::~inverted_index() {
 }
 
 void inverted_index::similar_row(
-    const sfv_t& query, std::vector<std::pair<std::string, float> > & ids,
+    const sfv_t& query,
+    std::vector<std::pair<std::string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
   if (ret_num == 0)
@@ -43,8 +48,8 @@ void inverted_index::similar_row(
 }
 
 void inverted_index::neighbor_row(const sfv_t& query,
-                                  vector<pair<string, float> >& ids,
-                                  size_t ret_num) const {
+    vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   similar_row(query, ids, ret_num);
   for (size_t i = 0; i < ids.size(); ++i) {
     ids[i].second = 1 - ids[i].second;
@@ -57,7 +62,7 @@ void inverted_index::clear() {
 }
 
 void inverted_index::clear_row(const std::string& id) {
-  vector < pair<string, float> > columns;
+  vector<pair<string, float> > columns;
   orig_.get_row(id, columns);
   for (size_t i = 0; i < columns.size(); ++i) {
     inv_.remove(columns[i].first, id);
@@ -79,20 +84,25 @@ void inverted_index::get_all_row_ids(std::vector<std::string>& ids) const {
 string inverted_index::type() const {
   return string("inverted_index");
 }
+
 bool inverted_index::save_impl(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << inv_;
   return true;
 }
+
 bool inverted_index::load_impl(std::istream& is) {
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> inv_;
   return true;
 }
+
 storage::recommender_storage_base* inverted_index::get_storage() {
   return &inv_;
 }
-const storage::recommender_storage_base* inverted_index::get_const_storage() const {
+
+const storage::recommender_storage_base* inverted_index::get_const_storage()
+     const {
   return &inv_;
 }
 

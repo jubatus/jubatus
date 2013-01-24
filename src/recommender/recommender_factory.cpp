@@ -14,23 +14,23 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "recommender_factory.hpp"
+#include <string>
 #include <pficommon/text/json.h>
+#include "recommender_factory.hpp"
 #include "recommender.hpp"
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
 #include "../storage/norm_factory.hpp"
 
-using namespace std;
-using namespace jubatus::jsonconfig;
+using std::string;
 using pfi::text::json::json;
+using jubatus::jsonconfig::config;
+using jubatus::jsonconfig::config_cast_check;
 
 namespace jubatus {
 namespace recommender {
 
 recommender_base* create_recommender(const string& name, const config& param) {
-  using namespace pfi::text::json;
-
   if (name == "inverted_index") {
     // inverted_index doesn't have parameter
     return new inverted_index;
@@ -45,6 +45,6 @@ recommender_base* create_recommender(const string& name, const config& param) {
   }
 }
 
-}  // recommender
-}  // jubatus
+}  // namespace recommender
+}  // namespace jubatus
 
