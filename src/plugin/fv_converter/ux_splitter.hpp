@@ -16,6 +16,10 @@
 
 #pragma once
 
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 #include <ux/ux.hpp>
 #include "../../fv_converter/word_splitter.hpp"
 
@@ -23,9 +27,8 @@ namespace jubatus {
 
 class ux_splitter : public fv_converter::word_splitter {
  public:
-  ux_splitter(const std::vector<std::string>& keywords);
+  explicit ux_splitter(const std::vector<std::string>& keywords);
   ~ux_splitter();
-
   void split(const std::string& string,
              std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
@@ -33,9 +36,8 @@ class ux_splitter : public fv_converter::word_splitter {
   ux::Trie trie_;
 };
 
-}
+}  // namespace jubatus
 
 extern "C" {
-jubatus::ux_splitter*
-create(const std::map<std::string, std::string>& params);
+jubatus::ux_splitter* create(const std::map<std::string, std::string>& params);
 }

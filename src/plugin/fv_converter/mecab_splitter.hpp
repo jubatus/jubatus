@@ -16,8 +16,11 @@
 
 #pragma once
 
-#include <mecab.h>
 #include <map>
+#include <string>
+#include <utility>
+#include <vector>
+#include <mecab.h>
 #include <pficommon/lang/scoped_ptr.h>
 
 #include "../../fv_converter/word_splitter.hpp"
@@ -27,7 +30,7 @@ namespace jubatus {
 class mecab_splitter : public fv_converter::word_splitter {
  public:
   mecab_splitter();
-  mecab_splitter(const char* arg);
+  explicit mecab_splitter(const char* arg);
 
   void split(const std::string& string,
              std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
@@ -36,9 +39,9 @@ class mecab_splitter : public fv_converter::word_splitter {
   pfi::lang::scoped_ptr<MeCab::Model> model_;
 };
 
-}
+}  // namespace jubatus
 
 extern "C" {
-jubatus::mecab_splitter*
-create(const std::map<std::string, std::string>& params);
+jubatus::mecab_splitter* create(
+    const std::map<std::string, std::string>& params);
 }

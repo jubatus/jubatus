@@ -16,12 +16,12 @@
 
 #pragma once
 
-#include <re2/re2.h>
+#include <map>
 #include <string>
+#include <utility>
 #include <vector>
 #include <pficommon/lang/scoped_ptr.h>
-#include <map>
-
+#include <re2/re2.h>
 #include "../../fv_converter/word_splitter.hpp"
 
 namespace jubatus {
@@ -29,14 +29,16 @@ namespace jubatus {
 class re2_splitter : jubatus::fv_converter::word_splitter {
  public:
   re2_splitter(const std::string& regexp, int group);
-  void split(const std::string& str,
-             std::vector<std::pair<size_t, size_t> >& bounds) const;
+  void split(
+      const std::string& str,
+      std::vector<std::pair<size_t, size_t> >& bounds) const;
+
  private:
   re2::RE2 re_;
   int group_;
 };
 
-}
+}  // namespace jubatus
 
 extern "C" {
 jubatus::re2_splitter* create(const std::map<std::string, std::string>& args);
