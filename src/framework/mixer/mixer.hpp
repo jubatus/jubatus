@@ -47,6 +47,6 @@ class mixer {
   virtual void get_status(server_base::status_t& status) const = 0;
 };
 
-}
-}
-}
+}  // namespace mixer
+}  // namespace framework
+}  // namespace jubatus

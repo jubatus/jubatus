@@ -37,6 +37,6 @@ mixer* create_mixer(const server_argv& a,
 #endif
 }
 
-}
-}
-}
+}  // namespace mixer
+}  // namespace framework
+}  // namespace jubatus

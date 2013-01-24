@@ -6,5 +6,5 @@
 namespace jubatus {
 namespace framework {
 
-}
-}
+}  // namespace framework
+}  // namespace jubatus

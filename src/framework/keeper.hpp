@@ -36,7 +36,6 @@
 #include "../common/mprpc/rpc_server.hpp"
 #include "../common/mprpc/exception.hpp"
 
-
 namespace msgpack {
 namespace rpc {
 extern const object TIMEOUT_ERROR;
@@ -78,6 +77,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   void register_random(const std::string& method_name) {
     using mp::placeholders::_1;
     using mp::placeholders::_2;
+    using mp::placeholders::_3;
     mp::function<R(std::string, A0, A1)> f = mp::bind(
         &keeper::template random_proxy2<R, A0, A1>, this, method_name, _1, _2,
         _3);
@@ -87,6 +87,8 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   void register_random(const std::string& method_name) {
     using mp::placeholders::_1;
     using mp::placeholders::_2;
+    using mp::placeholders::_3;
+    using mp::placeholders::_4;
     mp::function<R(std::string, A0, A1, A2)> f = mp::bind(
         &keeper::template random_proxy3<R, A0, A1, A2>, this, method_name, _1,
         _2, _3, _4);
@@ -259,7 +261,8 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
  private:
   template<typename R, typename Tuple>
   void register_async_vrandom_inner(const std::string &method_name) {
-    using mp::placeholders;
+    using mp::placeholders::_1;
+    using mp::placeholders::_2;
     typedef typename common::mprpc::async_vmethod<Tuple>::type vfunc_type;
 
     vfunc_type f = mp::bind(&keeper::template random_async_vproxy<R, Tuple>,

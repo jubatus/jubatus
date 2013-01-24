@@ -34,8 +34,6 @@ __thread keeper::async_task_loop*
 // NOTE: '__thread' is gcc-extension. We should re-implement with
 //       pthread TLS?
 
-}  // namespace framework
-}  // namespace jubatus
 
 keeper::keeper(const keeper_argv& a)
     : keeper_common(a),
@@ -71,3 +69,6 @@ int keeper::run() {
   }
   return -1;
 }
+
+}  // namespace framework
+}  // namespace jubatus

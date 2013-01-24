@@ -15,10 +15,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "server_util.hpp"
-#include <glog/logging.h>
 
 #include <iostream>
 #include <iomanip>
+#include <string>
+
+#include <glog/logging.h>
 #include <pficommon/text/json.h>
 
 #include "../common/util.hpp"
@@ -38,7 +40,6 @@ void print_version(const std::string& progname) {
 }
 
 std::string get_conf(const server_argv& a) {
-
   config_json conf;
 
   try {
@@ -89,7 +90,8 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add<std::string>(
       "configpath",
       'f',
-      "config option need to specify json file when standalone mode (without ZK mode)",
+      "config option need to specify json file"
+      "when standalone mode (without ZK mode)",
       false, "");
 
 #ifdef HAVE_ZOOKEEPER_H
@@ -350,10 +352,11 @@ common::cshared_ptr<jubatus::common::lock_service> ls;
 
 void atexit() {
 #ifdef HAVE_ZOOKEEPER_H
-  if(ls)
-  ls->force_close();
+  if (ls) {
+    ls->force_close();
+  }
 #endif
 }
 
-}  // framework
-}  // jubatus
+}  // namespace framework
+}  // namespace jubatus

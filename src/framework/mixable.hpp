@@ -150,5 +150,5 @@ class mixable : public mixable0 {
   model_ptr model_;
 };
 
-}  //server
-}  //jubatus
+}  // namespace server
+}  // namespace jubatus
