@@ -43,8 +43,8 @@ void ux_splitter::split(
   std::vector<std::pair<size_t, size_t> > bounds;
   for (size_t i = 0; i < string.size(); ++i) {
     size_t len = 0;
-    ux::id_t id = trie_.prefixSearch(string.c_str() + i, string.size() - i,
-                                     len);
+    ux::id_t id = trie_.prefixSearch(
+        string.c_str() + i, string.size() - i, len);
     if (id == ux::NOTFOUND) {
       continue;
     }
@@ -75,7 +75,7 @@ extern "C" {
 jubatus::ux_splitter* create(const std::map<std::string, std::string>& params) {
   const std::string& path =
       jubatus::fv_converter::get_or_die(params, "dict_path");
-  std::vector < std::string > lines;
+  std::vector<std::string> lines;
   jubatus::read_all_lines(path.c_str(), lines);
 
   return new jubatus::ux_splitter(lines);
