@@ -11,6 +11,9 @@
 
 using std::vector;
 using std::string;
+using std::istream;
+using std::ostream;
+using std::stringstream;
 using pfi::lang::shared_ptr;
 using jubatus::common::mprpc::byte_buffer;
 
