@@ -2843,6 +2843,11 @@ def CheckCStyleCast(filename, linenum, line, raw_line, cast_type, pattern,
           'Using sizeof(type).  Use sizeof(varname) instead if possible')
     return True
 
+  # Skip typeid with pointer
+  # e.g., typeid(ClassName*)
+  if Match(r'.*typeid\s*$', line[0:match.start(1) - 1]):
+    return True
+
   remainder = line[match.end(0):]
 
   # The close paren is for function pointers as arguments to a function.
