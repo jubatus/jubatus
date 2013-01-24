@@ -1,4 +1,4 @@
-// Jubatus: Online machine learning framework for distributed environment 
+// Jubatus: Online machine learning framework for distributed environment
 // Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
@@ -14,19 +14,25 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <float.h>
-#include <queue>
-#include <algorithm>
 #include "classifier_base.hpp"
-#include "classifier_util.hpp"
-#include <assert.h>
 
-using namespace std;
+#include <assert.h>
+#include <float.h>
+
+#include <algorithm>
+#include <queue>
+#include <string>
+#include <vector>
+
+#include "classifier_util.hpp"
+
+using std::string;
+using std::vector;
+using jubatus::storage::map_feature_val1_t;
+using jubatus::storage::feature_val2_t;
 
 namespace jubatus {
 namespace classifier {
-
-using namespace storage;
 
 classifier_base::classifier_base(storage::storage_base* storage)
     : storage_(storage),
@@ -36,8 +42,9 @@ classifier_base::classifier_base(storage::storage_base* storage)
 classifier_base::~classifier_base() {
 }
 
-void classifier_base::classify_with_scores(const sfv_t& sfv,
-                                           classify_result& scores) const {
+void classifier_base::classify_with_scores(
+    const sfv_t& sfv,
+    classify_result& scores) const {
   scores.clear();
 
   map_feature_val1_t ret;
@@ -63,14 +70,18 @@ string classifier_base::classify(const sfv_t& fv) const {
   return max_class;
 }
 
-void classifier_base::update_weight(const sfv_t& sfv, float step_width,
-                                    const string& pos_label,
-                                    const string& neg_label) {
+void classifier_base::update_weight(
+    const sfv_t& sfv,
+    float step_width,
+    const string& pos_label,
+    const string& neg_label) {
   storage_->bulk_update(sfv, step_width, pos_label, neg_label);
 }
 
 string classifier_base::get_largest_incorrect_label(
-    const sfv_t& fv, const string& label, classify_result& scores) const {
+    const sfv_t& fv,
+    const string& label,
+    classify_result& scores) const {
   classify_with_scores(fv, scores);
   float max_score = -FLT_MAX;
   string max_class;
@@ -86,8 +97,10 @@ string classifier_base::get_largest_incorrect_label(
   return max_class;
 }
 
-float classifier_base::calc_margin(const sfv_t& fv, const string& label,
-                                   string& incorrect_label) const {
+float classifier_base::calc_margin(
+    const sfv_t& fv,
+    const string& label,
+    string& incorrect_label) const {
   classify_result scores;
   incorrect_label = get_largest_incorrect_label(fv, label, scores);
   float correct_score = 0.f;
@@ -103,10 +116,11 @@ float classifier_base::calc_margin(const sfv_t& fv, const string& label,
   return incorrect_score - correct_score;
 }
 
-float classifier_base::calc_margin_and_variance(const sfv_t& sfv,
-                                                const string& label,
-                                                string& incorrect_label,
-                                                float& var) const {
+float classifier_base::calc_margin_and_variance(
+    const sfv_t& sfv,
+    const string& label,
+    string& incorrect_label,
+    float& var) const {
   float margin = calc_margin(sfv, label, incorrect_label);
   var = 0.f;
 
@@ -137,5 +151,5 @@ float classifier_base::squared_norm(const sfv_t& fv) {
   return ret;
 }
 
-}
-}
+}  // namespace classifier
+}  // namespace jubatus

@@ -16,7 +16,9 @@
 
 #include "perceptron.hpp"
 
-using namespace std;
+#include <string>
+
+using std::string;
 
 namespace jubatus {
 namespace classifier {
@@ -37,5 +39,5 @@ string perceptron::name() const {
   return string("perceptron");
 }
 
-}
-}
+}  // namespace classifier
+}  // namespace jubatus

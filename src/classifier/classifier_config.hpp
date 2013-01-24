@@ -34,5 +34,5 @@ struct classifier_config {
   }
 };
 
-}  // classifier
-}  //jubatus
+}  // namespace classifier
+}  // namespace jubatus

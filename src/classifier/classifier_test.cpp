@@ -15,9 +15,14 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
-#include <sstream>
-#include <fstream>
+
 #include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <pficommon/lang/cast.h>
 
 #include "classifier_factory.hpp"
@@ -27,10 +32,12 @@
 #include "../common/jsonconfig.hpp"
 #include "classifier_test_util.hpp"
 
-using namespace std;
-using namespace jubatus::storage;
-using namespace pfi::lang;
-using namespace pfi::text::json;
+using std::pair;
+using std::string;
+using std::vector;
+using pfi::text::json::to_json;
+using pfi::lang::lexical_cast;
+using jubatus::storage::local_storage;
 
 namespace jubatus {
 namespace classifier {
@@ -39,7 +46,7 @@ template<typename T>
 class classifier_test : public testing::Test {
 };
 
-TYPED_TEST_CASE_P (classifier_test);
+TYPED_TEST_CASE_P(classifier_test);
 
 TYPED_TEST_P(classifier_test, trivial) {
   local_storage s;
@@ -66,8 +73,8 @@ TYPED_TEST_P(classifier_test, sfv_err) {
   classify_result scores;
   p.classify_with_scores(fv, scores);
   ASSERT_EQ(1u, scores.size());
-//  <FIXME>why not 
-//  ASSERT_EQ(2u, scores.size());
+  // TODO(kuenishi) why not
+  // ASSERT_EQ(2u, scores.size());
 }
 
 sfv_t convert(vector<double>& v) {
@@ -119,10 +126,15 @@ TYPED_TEST_P(classifier_test, random3) {
   EXPECT_GT(correct, 95u);
 }
 
-REGISTER_TYPED_TEST_CASE_P(classifier_test,
-    trivial, sfv_err, random, random3);
+REGISTER_TYPED_TEST_CASE_P(
+    classifier_test,
+    trivial,
+    sfv_err,
+    random,
+    random3);
 
-typedef testing::Types<perceptron, PA, PA1, PA2, CW, AROW, NHERD> classifier_types;
+typedef testing::Types<perceptron, PA, PA1, PA2, CW, AROW, NHERD>
+  classifier_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
 
@@ -148,11 +160,14 @@ void InitClassifiers(vector<classifier_base*>& classifiers) {
 TEST(classifier_factory, exception) {
   jsonconfig::config param(to_json(classifier_config()));
   local_storage * p = new local_storage;
-  ASSERT_THROW(classifier_factory::create_classifier("pa", param, p), unsupported_method);
-  ASSERT_THROW(classifier_factory::create_classifier("", param, p), unsupported_method);
-  ASSERT_THROW(classifier_factory::create_classifier("saitama", param, p), unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("pa", param, p),
+      unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("", param, p),
+      unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("saitama", param, p),
+      unsupported_method);
   delete p;
 }
 
-}
-}
+}  // namespace classifier
+}  // namespace jubatus

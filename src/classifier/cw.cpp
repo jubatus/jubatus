@@ -14,12 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "cw.hpp"
+
 #include <algorithm>
 #include <cmath>
-#include "cw.hpp"
+#include <string>
+
 #include "classifier_util.hpp"
 
-using namespace std;
+using std::string;
 
 namespace jubatus {
 namespace classifier {
@@ -51,8 +54,11 @@ void CW::train(const sfv_t& sfv, const string& label) {
   update(sfv, gamma, label, incorrect_label);
 }
 
-void CW::update(const sfv_t& sfv, float step_width, const string& pos_label,
-                const string& neg_label) {
+void CW::update(
+    const sfv_t& sfv,
+    float step_width,
+    const string& pos_label,
+    const string& neg_label) {
   for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
@@ -85,5 +91,5 @@ string CW::name() const {
   return string("CW");
 }
 
-}
-}
+}  // namespace classifier
+}  // namespase jubatus

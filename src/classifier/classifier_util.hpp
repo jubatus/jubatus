@@ -22,10 +22,13 @@ namespace jubatus {
 
 class ClassifierUtil {
  public:
-  template<class T, class U> static void get_two(const T& t,
-                                                 const std::string& label1,
-                                                 const std::string& label2,
-                                                 U& u1, U& u2) {
+  template<class T, class U>
+  static void get_two(
+      const T& t,
+      const std::string& label1,
+      const std::string& label2,
+      U& u1,
+      U& u2) {
     for (size_t i = 0; i < t.size(); ++i) {
       if (t[i].first == label1) {
         u1 = t[i].second;
@@ -36,4 +39,4 @@ class ClassifierUtil {
   }
 };
 
-}
+}  // namespace jubatus

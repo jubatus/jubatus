@@ -16,13 +16,14 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstdlib>
 #include <cmath>
 #include <cfloat>
-#include <vector>
 #include <string>
-#include <iostream>
-#include <algorithm>
+#include <utility>
+#include <vector>
+
 #include <pficommon/math/random.h>
 
 void make_random(float mu, float sigma, size_t dim, std::vector<double>& v) {
@@ -33,8 +34,11 @@ void make_random(float mu, float sigma, size_t dim, std::vector<double>& v) {
   }
 }
 
-void make_random(const std::vector<float>& mus, float sigma, size_t dim,
-                 std::vector<double>& v) {
+void make_random(
+    const std::vector<float>& mus,
+    float sigma,
+    size_t dim,
+    std::vector<double>& v) {
   pfi::math::random::mtrand rand(0);
   for (size_t i = 0; i < dim; i++) {
     float value = rand.next_gaussian(mus[i % mus.size()], sigma);

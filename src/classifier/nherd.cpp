@@ -14,12 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "nherd.hpp"
+
 #include <algorithm>
 #include <cmath>
-#include "nherd.hpp"
+#include <string>
+
 #include "classifier_util.hpp"
 
-using namespace std;
+using std::string;
 
 namespace jubatus {
 namespace classifier {
@@ -47,8 +50,12 @@ void NHERD::train(const sfv_t& sfv, const string& label) {
   update(sfv, margin, variance, label, incorrect_label);
 }
 
-void NHERD::update(const sfv_t& sfv, float margin, float variance,
-                   const string& pos_label, const string& neg_label) {
+void NHERD::update(
+    const sfv_t& sfv,
+    float margin,
+    float variance,
+    const string& pos_label,
+    const string& neg_label) {
   for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
@@ -71,7 +78,8 @@ void NHERD::update(const sfv_t& sfv, float margin, float variance,
                 + (1.f - margin) * val_covariance_pos
                     / (val_covariance_pos * val + 1.f / C),
             1.f
-                / ((1.f / pos_val.v2) + (2 * C + C * C * variance) * val * val)));
+                / ((1.f / pos_val.v2) + (2 * C + C * C * variance)
+                    * val * val)));
     if (neg_label != "")
       storage_->set2(
           feature,
@@ -81,7 +89,8 @@ void NHERD::update(const sfv_t& sfv, float margin, float variance,
                   - (1.f - margin) * val_covariance_neg
                       / (val_covariance_neg * val + 1.f / C),
               1.f
-                  / ((1.f / neg_val.v2) + (2 * C + C * C * variance) * val * val)));
+                  / ((1.f / neg_val.v2) + (2 * C + C * C * variance)
+                      * val * val)));
   }
 }
 
@@ -89,5 +98,5 @@ std::string NHERD::name() const {
   return string("NHERD");
 }
 
-}
-}
+}  // namespace classifier
+}  // namespace jubatus

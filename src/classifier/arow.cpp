@@ -14,12 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "arow.hpp"
+
 #include <algorithm>
 #include <cmath>
-#include "arow.hpp"
+#include <string>
+
 #include "classifier_util.hpp"
 
-using namespace std;
+using std::string;
 
 namespace jubatus {
 namespace classifier {
@@ -43,13 +46,18 @@ void AROW::train(const sfv_t& sfv, const string& label) {
   if (margin >= 1.f) {
     return;
   }
+
   float beta = 1.f / (variance + 1.f / config.C);
-  float alpha = (1.f - margin) * beta;  // max(0, 1-margin) = 1-margin 
+  float alpha = (1.f - margin) * beta;  // max(0, 1 - margin) = 1 - margin
   update(sfv, alpha, beta, label, incorrect_label);
 }
 
-void AROW::update(const sfv_t& sfv, float alpha, float beta,
-                  const std::string& pos_label, const std::string& neg_label) {
+void AROW::update(
+    const sfv_t& sfv,
+    float alpha,
+    float beta,
+    const std::string& pos_label,
+    const std::string& neg_label) {
   for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
@@ -74,12 +82,11 @@ void AROW::update(const sfv_t& sfv, float alpha, float beta,
               neg_val.v1 - alpha * neg_val.v2 * val,
               neg_val.v2 - beta * neg_val.v2 * neg_val.v2 * val * val));
   }
-
 }
 
 string AROW::name() const {
   return string("AROW");
 }
 
-}
-}
+}  // namespace classifier
+}  // namespace jubatus

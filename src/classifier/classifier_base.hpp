@@ -16,12 +16,13 @@
 
 #pragma once
 
-#include <vector>
+#include <stdint.h>
+
+#include <cmath>
 #include <map>
 #include <string>
-#include <cmath>
-#include <iostream>
-#include <stdint.h>
+#include <vector>
+
 #include "../common/type.hpp"
 #include "../storage/storage_base.hpp"
 #include "classifier_type.hpp"
@@ -31,7 +32,7 @@ namespace classifier {
 
 class classifier_base {
  public:
-  classifier_base(jubatus::storage::storage_base* storage_base);
+  explicit classifier_base(jubatus::storage::storage_base* storage_base);
   virtual ~classifier_base();
   virtual void train(const sfv_t& fv, const std::string& label) = 0;
 
@@ -41,18 +42,24 @@ class classifier_base {
   virtual std::string name() const = 0;
 
  protected:
-
-  void update_weight(const sfv_t& sfv, float step_weigth,
-                     const std::string& pos_label,
-                     const std::string& neg_class);
-  float calc_margin(const sfv_t& sfv, const std::string& label,
-                    std::string& incorrect_label) const;
-  float calc_margin_and_variance(const sfv_t& sfv, const std::string& label,
-                                 std::string& incorrect_label,
-                                 float& variance) const;
-  std::string get_largest_incorrect_label(const sfv_t& sfv,
-                                          const std::string& label,
-                                          classify_result& scores) const;
+  void update_weight(
+      const sfv_t& sfv,
+      float step_weigth,
+      const std::string& pos_label,
+      const std::string& neg_class);
+  float calc_margin(
+      const sfv_t& sfv,
+      const std::string& label,
+      std::string& incorrect_label) const;
+  float calc_margin_and_variance(
+      const sfv_t& sfv,
+      const std::string& label,
+      std::string& incorrect_label,
+      float& variance) const;
+  std::string get_largest_incorrect_label(
+      const sfv_t& sfv,
+      const std::string& label,
+      classify_result& scores) const;
 
   static float squared_norm(const sfv_t& sfv);
 
@@ -60,6 +67,6 @@ class classifier_base {
   bool use_covars_;
 };
 
-}
-}
+}  // namespace classifier
+}  // namespace jubatus
 

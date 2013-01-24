@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "classifier_base.hpp"
 
 namespace jubatus {
@@ -23,14 +25,10 @@ namespace classifier {
 
 class PA : public classifier_base {
  public:
-  PA(storage::storage_base* storage);
-  void set_config(std::map<std::string, int>& config);
+  explicit PA(storage::storage_base* storage);
   void train(const sfv_t& fv, const std::string& label);
   std::string name() const;
-
- private:
-
 };
 
-}
-}
+}  // namespace classifier
+}  // namespace jubatus

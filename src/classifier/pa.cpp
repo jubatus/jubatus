@@ -16,7 +16,9 @@
 
 #include "pa.hpp"
 
-using namespace std;
+#include <string>
+
+using std::string;
 
 namespace jubatus {
 namespace classifier {
@@ -43,5 +45,5 @@ string PA::name() const {
   return string("PA");
 }
 
-}
-}
+}  // namespace classifier
+}  // namespace jubatus
