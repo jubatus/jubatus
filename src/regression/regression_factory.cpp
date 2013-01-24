@@ -15,12 +15,13 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <stdexcept>
+#include <string>
 #include "regression_factory.hpp"
 #include "regression.hpp"
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
 
-using namespace jubatus::jsonconfig;
+using jubatus::jsonconfig::config_cast_check;
 
 namespace jubatus {
 namespace regression {
@@ -37,5 +38,5 @@ regression_factory::create_regression(
   }
 }
 
-}
-}
+}  // namespace regression
+}  // namespace jubatus

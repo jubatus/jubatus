@@ -28,7 +28,7 @@ namespace regression {
 
 class regression_base {
  public:
-  regression_base(storage::storage_base* storage);
+  explicit regression_base(storage::storage_base* storage);
 
   virtual ~regression_base() {
   }
@@ -47,5 +47,5 @@ class regression_base {
   storage::storage_base* storage_;
 };
 
-}
-}
+}  // namespace regression
+}  // namespace stat

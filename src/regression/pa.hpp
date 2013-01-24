@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include "regression_base.hpp"
 #include <limits>
 #include <pficommon/data/serialization.h>
+#include "regression_base.hpp"
 
 namespace jubatus {
 namespace regression {
@@ -41,7 +41,7 @@ class PA : public regression_base {
   };
 
   PA(const config& config, storage::storage_base* storage);
-  PA(storage::storage_base* storage);
+  explicit PA(storage::storage_base* storage);
 
   void train(const sfv_t& fv, float value);
 
@@ -52,5 +52,5 @@ class PA : public regression_base {
   float count_;
 };
 
-}
-}
+}  // namespace regression
+}  // namespace jubatus

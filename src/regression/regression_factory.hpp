@@ -35,8 +35,7 @@ class regression_factory {
   regression_base* create_regression(
       const std::string& name, const jsonconfig::config& param,
       jubatus::storage::storage_base* storage) const;
-
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

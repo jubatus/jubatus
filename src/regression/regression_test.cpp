@@ -1,12 +1,34 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 #include <gtest/gtest.h>
+#include <utility>
+#include <string>
+#include <vector>
+#include <pficommon/math/random.h>
 #include "regression.hpp"
 #include "../storage/local_storage.hpp"
 #include "regression_test_util.hpp"
-#include <pficommon/math/random.h>
 
-using namespace std;
-using namespace jubatus::storage;
-using namespace pfi::lang;
+using std::string;
+using std::vector;
+using std::make_pair;
+using jubatus::storage::local_storage;
+using pfi::lang::lexical_cast;
+
 
 namespace jubatus {
 
@@ -14,7 +36,7 @@ template<typename T>
 class regression_test : public testing::Test {
 };
 
-TYPED_TEST_CASE_P (regression_test);
+TYPED_TEST_CASE_P(regression_test);
 
 TYPED_TEST_P(regression_test, trivial) {
   local_storage s;
@@ -32,7 +54,7 @@ TYPED_TEST_P(regression_test, trivial) {
   EXPECT_TRUE(p.estimate(fv) > 0.0);
 }
 
-//FIXME same as classifier_test.cpp
+// FIXME same as classifier_test.cpp
 sfv_t convert(vector<double>& v) {
   sfv_t fv;
   for (size_t i = 0; i < v.size(); ++i) {
@@ -43,7 +65,7 @@ sfv_t convert(vector<double>& v) {
 }
 
 void random_test(regression::regression_base& p, float x, float y, size_t dim) {
-  pfi::math::random::mtrand rand(0);
+  pfi::math::random::mtrand rand_r(0);
   // learn with 1000 random data
   for (size_t i = 0; i < 1000; ++i) {
     std::pair<float, std::vector<double> > tfv = gen_random_data(x, x, dim);
@@ -84,5 +106,4 @@ REGISTER_TYPED_TEST_CASE_P(
 typedef testing::Types<regression::PA> regression_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(reg, regression_test, regression_types);
-
 }

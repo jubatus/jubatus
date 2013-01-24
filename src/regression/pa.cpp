@@ -16,13 +16,12 @@
 
 #include "pa.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
 namespace jubatus {
 namespace regression {
-
-using namespace std;
 
 PA::PA(const config& config, storage::storage_base* storage)
     : regression_base(storage),
@@ -68,5 +67,5 @@ void PA::train(const sfv_t& fv, float value) {
   }
 }
 
-}
-}
+}  // namespace regression
+}  // namespace jubatus

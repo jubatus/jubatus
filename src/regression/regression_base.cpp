@@ -34,5 +34,5 @@ void regression_base::update(const sfv_t& fv, float coeff) {
   storage_->bulk_update(fv, coeff, "+", "");
 }
 
-}
-}
+}  // namespace regression
+}  // namespace jubatus

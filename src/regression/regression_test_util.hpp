@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <cfloat>
+#include <utility>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -26,7 +27,7 @@
 #include <pficommon/math/random.h>
 
 void make_gaussian_random(float mu, float sigma, size_t dim,
-                          std::vector<double>& v) {
+    std::vector<double>& v) {
   pfi::math::random::mtrand rand(0);
   for (size_t i = 0; i < dim; i++) {
     float value = rand.next_gaussian(mu, sigma);
@@ -42,14 +43,14 @@ void make_random(size_t dim, std::vector<double>& v) {
   }
 }
 std::pair<float, std::vector<double> > gen_random_data(float mu, float sigma,
-                                                       size_t dim) {
+    size_t dim) {
   std::pair<float, std::vector<double> > p;
 
   std::vector<double> coef;
-  make_random(dim, coef);
-  make_gaussian_random(mu, sigma, dim, p.second);
+  make_random(dim , coef);
+  make_gaussian_random(mu, sigma, dim , p.second);
   for (size_t i = 0; i < dim; i++) {
-    p.first += p.second[i] * coef[i];
+  p.first += p.second[i] * coef[i];
   }
   return p;
 }
