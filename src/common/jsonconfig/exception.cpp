@@ -109,5 +109,5 @@ cast_check_error::cast_check_error(
 cast_check_error::~cast_check_error() throw () {
 }
 
-}  // jsonconfig
-}  // jubatus
+}  // namespace jsonconfig
+}  // namespace jubatus
