@@ -17,6 +17,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <glog/logging.h>
@@ -37,14 +38,13 @@ namespace framework {
 
 class no_worker : public jubatus::exception::runtime_error {
  public:
-  no_worker(const std::string& name)
+  explicit no_worker(const std::string& name)
       : runtime_error("no server found: " + name) {
   }
 };
-
 class keeper_common {
  public:
-  keeper_common(const keeper_argv &a);
+  explicit keeper_common(const keeper_argv &a);
   virtual ~keeper_common();
 
  protected:
@@ -60,6 +60,6 @@ class keeper_common {
   common::cshared_ptr<common::lock_service> zk_;
 };
 
-}  // framework
-}  // jubatus
+}  // namespace framework
+}  // namespace jubatus
 

@@ -16,37 +16,35 @@
 
 #pragma once
 
+#include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <glog/logging.h>
-
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/concurrent/thread.h>
+#include <msgpack.hpp>
+#include <jubatus/msgpack/rpc/client.h>
 
 #include "keeper_common.hpp"
 
 #include "server_util.hpp"
-#include <glog/logging.h>
 
-#include <msgpack.hpp>
-#include <jubatus/msgpack/rpc/client.h>
 #include "../common/mprpc/rpc_mclient.hpp"
 #include "../common/mprpc/rpc_server.hpp"
 #include "../common/mprpc/exception.hpp"
 
-#include <iostream>
 
 namespace msgpack {
 namespace rpc {
 extern const object TIMEOUT_ERROR;
-// FIXME: ugly import... 
+// FIXME: ugly import...
 // We should replace msgpack-rpc TIMEOUT_ERROR, CONNECT_ERROR ... by
 // POSITIVE_INTEGER style error
-}
-}
-;
+}  // namespace rpc
+}  // namespace msgpack
 
 namespace jubatus {
 namespace framework {
@@ -57,27 +55,29 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   typedef std::vector<std::pair<std::string, int> > host_list_type;
 
  public:
-  keeper(const keeper_argv& a);
+  explicit keeper(const keeper_argv& a);
   virtual ~keeper();
   int run();
 
   template<typename R>
   void register_random(const std::string& method_name) {
-    using namespace mp::placeholders;
+    using mp::placeholders::_1;
     mp::function < R(std::string) > f = mp::bind(
         &keeper::template random_proxy0<R>, this, method_name, _1);
     add(method_name, f);
   }
   template<typename R, typename A0>
   void register_random(const std::string& method_name) {
-    using namespace mp::placeholders;
+    using mp::placeholders::_1;
+    using mp::placeholders::_2;
     mp::function<R(std::string, A0)> f = mp::bind(
         &keeper::template random_proxy1<R, A0>, this, method_name, _1, _2);
     add(method_name, f);
   }
   template<typename R, typename A0, typename A1>
   void register_random(const std::string& method_name) {
-    using namespace mp::placeholders;
+    using mp::placeholders::_1;
+    using mp::placeholders::_2;
     mp::function<R(std::string, A0, A1)> f = mp::bind(
         &keeper::template random_proxy2<R, A0, A1>, this, method_name, _1, _2,
         _3);
@@ -85,7 +85,8 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   }
   template<typename R, typename A0, typename A1, typename A2>
   void register_random(const std::string& method_name) {
-    using namespace mp::placeholders;
+    using mp::placeholders::_1;
+    using mp::placeholders::_2;
     mp::function<R(std::string, A0, A1, A2)> f = mp::bind(
         &keeper::template random_proxy3<R, A0, A1, A2>, this, method_name, _1,
         _2, _3, _4);
@@ -95,7 +96,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   template<typename R>
   void register_broadcast(std::string method_name,
                           pfi::lang::function<R(R, R)> agg) {
-    using namespace mp::placeholders;
+    using mp::placeholders::_1;
     mp::function < R(std::string) > f = mp::bind(
         &keeper::template broadcast_proxy0<R>, this, method_name, _1, agg);
     add(method_name, f);
@@ -103,7 +104,8 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   template<typename R, typename A0>
   void register_broadcast(std::string method_name,
                           pfi::lang::function<R(R, R)> agg) {
-    using namespace mp::placeholders;
+    using mp::placeholders::_1;
+    using mp::placeholders::_2;
     mp::function<R(std::string, A0)> f = mp::bind(
         &keeper::template broadcast_proxy1<R, A0>, this, method_name, _1, _2,
         agg);
@@ -112,14 +114,17 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 
   template<int N, typename R>
   void register_cht(std::string method_name, pfi::lang::function<R(R, R)> agg) {
-    using namespace mp::placeholders;
+    using mp::placeholders::_1;
+    using mp::placeholders::_2;
     mp::function < R(std::string, std::string) > f = mp::bind(
         &keeper::template cht_proxy0<N, R>, this, method_name, _1, _2, agg);
     add(method_name, f);
   }
   template<int N, typename R, typename A0>
   void register_cht(std::string method_name, pfi::lang::function<R(R, R)> agg) {
-    using namespace mp::placeholders;
+    using mp::placeholders::_1;
+    using mp::placeholders::_2;
+    using mp::placeholders::_3;
     mp::function<R(std::string, std::string, A0)> f = mp::bind(
         &keeper::template cht_proxy1<N, R, A0>, this, method_name, _1, _2, _3,
         agg);
@@ -127,7 +132,10 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   }
   template<int N, typename R, typename A0, typename A1>
   void register_cht(std::string method_name, pfi::lang::function<R(R, R)> agg) {
-    using namespace mp::placeholders;
+    using mp::placeholders::_1;
+    using mp::placeholders::_2;
+    using mp::placeholders::_3;
+    using mp::placeholders::_4;
     mp::function<R(std::string, std::string, A0, A1)> f = mp::bind(
         &keeper::template cht_proxy2<N, R, A0, A1>, this, method_name, _1, _2,
         _3, _4, agg);
@@ -149,19 +157,22 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 
   template<typename R, typename A0, typename A1>
   void register_async_random(const std::string &method_name) {
-    typedef typename msgpack::type::tuple<std::string, A0, A1> packed_args_type;
+    typedef typename msgpack::type::tuple<std::string, A0, A1>
+      packed_args_type;
     register_async_vrandom_inner<R, packed_args_type>(method_name);
   }
 
   template<typename R, typename A0, typename A1, typename A2>
   void register_async_random(const std::string &method_name) {
-    typedef typename msgpack::type::tuple<std::string, A0, A1, A2> packed_args_type;
+    typedef typename msgpack::type::tuple<std::string, A0, A1, A2>
+      packed_args_type;
     register_async_vrandom_inner<R, packed_args_type>(method_name);
   }
 
   template<typename R, typename A0, typename A1, typename A2, typename A3>
   void register_async_random(const std::string &method_name) {
-    typedef typename msgpack::type::tuple<std::string, A0, A1, A2, A3> packed_args_type;
+    typedef typename msgpack::type::tuple<std::string, A0, A1, A2, A3>
+      packed_args_type;
     register_async_vrandom_inner<R, packed_args_type>(method_name);
   }
 
@@ -190,14 +201,16 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   template<typename R, typename A0, typename A1, typename A2>
   void register_async_broadcast(const std::string &method_name,
                                 pfi::lang::function<R(R, R)> agg) {
-    typedef typename msgpack::type::tuple<std::string, A0, A1, A2> packed_args_type;
+    typedef typename msgpack::type::tuple<std::string, A0, A1, A2>
+      packed_args_type;
     register_async_vbroadcast_inner<R, packed_args_type>(method_name, agg);
   }
 
   template<typename R, typename A0, typename A1, typename A2, typename A3>
   void register_async_broadcast(const std::string &method_name,
                                 pfi::lang::function<R(R, R)> agg) {
-    typedef typename msgpack::type::tuple<std::string, A0, A1, A2, A3> packed_args_type;
+    typedef typename msgpack::type::tuple<std::string, A0, A1, A2, A3>
+      packed_args_type;
     register_async_vbroadcast_inner<R, packed_args_type>(method_name, agg);
   }
 
@@ -205,32 +218,37 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   template<int N, typename R>
   void register_async_cht(const std::string &method_name,
                           pfi::lang::function<R(R, R)> agg) {
-    typedef typename msgpack::type::tuple<std::string, std::string> packed_args_type;
+    typedef typename msgpack::type::tuple<std::string, std::string>
+      packed_args_type;
     register_async_vcht_inner<N, R, packed_args_type>(method_name, agg);
   }
 
   template<int N, typename R, typename A0>
   void register_async_cht(const std::string &method_name,
                           pfi::lang::function<R(R, R)> agg) {
-    typedef typename msgpack::type::tuple<std::string, std::string, A0> packed_args_type;
+    typedef typename msgpack::type::tuple<std::string, std::string, A0>
+      packed_args_type;
     register_async_vcht_inner<N, R, packed_args_type>(method_name, agg);
   }
 
   template<int N, typename R, typename A0, typename A1>
   void register_async_cht(const std::string &method_name,
                           pfi::lang::function<R(R, R)> agg) {
-    typedef typename msgpack::type::tuple<std::string, std::string, A0, A1> packed_args_type;
+    typedef typename msgpack::type::tuple<std::string, std::string, A0, A1>
+      packed_args_type;
     register_async_vcht_inner<N, R, packed_args_type>(method_name, agg);
   }
 
   template<int N, typename R, typename A0, typename A1, typename A2>
   void register_async_cht(const std::string &method_name,
                           pfi::lang::function<R(R, R)> agg) {
-    typedef typename msgpack::type::tuple<std::string, std::string, A0, A1, A2> packed_args_type;
+    typedef typename msgpack::type::tuple<std::string, std::string, A0, A1, A2>
+      packed_args_type;
     register_async_vcht_inner<N, R, packed_args_type>(method_name, agg);
   }
 
-  template<int N, typename R, typename A0, typename A1, typename A2, typename A3>
+  template<int N, typename R, typename A0, typename A1, typename A2,
+           typename A3>
   void register_async_cht(const std::string &method_name,
                           pfi::lang::function<R(R, R)> agg) {
     typedef typename msgpack::type::tuple<std::string, std::string, A0, A1, A2,
@@ -241,7 +259,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
  private:
   template<typename R, typename Tuple>
   void register_async_vrandom_inner(const std::string &method_name) {
-    using namespace mp::placeholders;
+    using mp::placeholders;
     typedef typename common::mprpc::async_vmethod<Tuple>::type vfunc_type;
 
     vfunc_type f = mp::bind(&keeper::template random_async_vproxy<R, Tuple>,
@@ -254,7 +272,8 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   template<typename R, typename Tuple>
   void register_async_vbroadcast_inner(
       const std::string &method_name, const pfi::lang::function<R(R, R)> &agg) {
-    using namespace mp::placeholders;
+    using mp::placeholders::_1;
+    using mp::placeholders::_2;
     typedef typename common::mprpc::async_vmethod<Tuple>::type vfunc_type;
 
     vfunc_type f = mp::bind(&keeper::template broadcast_async_vproxy<R, Tuple>,
@@ -267,7 +286,8 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   template<int N, typename R, typename Tuple>
   void register_async_vcht_inner(const std::string &method_name,
                                  const pfi::lang::function<R(R, R)> &agg) {
-    using namespace mp::placeholders;
+    using mp::placeholders::_1;
+    using mp::placeholders::_2;
     typedef typename common::mprpc::async_vmethod<Tuple>::type vfunc_type;
 
     vfunc_type f = mp::bind(&keeper::template cht_async_vproxy<N, R, Tuple>,
@@ -368,8 +388,6 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
                                                    a_.timeout, req);
   }
 
-  //// 
-
   template<typename R>
   R broadcast_proxy0(const std::string& method_name, const std::string& name,
                      pfi::lang::function<R(R, R)>& agg) {
@@ -446,7 +464,8 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
                                             get_private_session_pool());
       return *(c.call(method_name, name, id, agg));
     } catch (const std::exception& e) {
-      LOG(ERROR) << N << " " << e.what();  // << " from " << c.first << ":" << c.second;
+      LOG(ERROR) << N << " " << e.what();
+      // << " from " << c.first << ":" << c.second;
       throw;
     }
   }
@@ -668,7 +687,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
         result_ptr result(new Res(f.get<Res>()));
         results_.push_back(result);
       }
-      JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER( method_name_);
+      JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method_name_);
     }
   };
 
@@ -690,11 +709,12 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
     static async_task_loop* startup() {
       async_task_loop* at_loop = new async_task_loop();
 #if 0
-      pfi::concurrent::thread thr( pfi::lang::bind( &async_task_loop::run, at_loop ) );
+      pfi::concurrent::thread thr(pfi::lang::bind(&async_task_loop::run,
+                                                  at_loop));
       thr.start();
 #else
       at_loop->pool().start(2);
-      // Use mpio's event loop instead of async_task_loop's one. 
+      // Use mpio's event loop instead of async_task_loop's one.
       // Note: mpio's event loop start() requires thread_num > 1. ( mpio bug? )
 #endif
 
@@ -737,8 +757,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 
     static __thread async_task_loop* private_async_task_loop_;
   };
-
 };
 
-}
-}  //namespace jubatus
+}  // namespace framework
+}  // namespace jubatus

@@ -25,19 +25,17 @@
 #include "../common/util.hpp"
 #include "server_util.hpp"
 
-using namespace jubatus;
-using namespace jubatus::framework;
-
 namespace jubatus {
 namespace framework {
 __thread msgpack::rpc::session_pool *private_session_pool_ = NULL;
-__thread keeper::async_task_loop* keeper::async_task_loop::private_async_task_loop_;
+__thread keeper::async_task_loop*
+  keeper::async_task_loop::private_async_task_loop_;
 
 // NOTE: '__thread' is gcc-extension. We should re-implement with
 //       pthread TLS?
 
-}
-}
+}  // namespace framework
+}  // namespace jubatus
 
 keeper::keeper(const keeper_argv& a)
     : keeper_common(a),
@@ -60,16 +58,15 @@ int keeper::run() {
     this->instance_.join();
 
     return 0;  // never return
-
   } catch (const jubatus::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
-  } catch (mp::system_error &e) {
+  } catch (const mp::system_error &e) {
     if (e.code == EADDRINUSE)
       LOG(FATAL) << "server failed to start: any process using port " << a_.port
           << "?";
     else
       LOG(FATAL) << "server failed to start: " << e.what();
-  } catch (std::exception &e) {
+  } catch (const std::exception &e) {
     LOG(FATAL) << "server failed to start:" << e.what();
   }
   return -1;

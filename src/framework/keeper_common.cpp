@@ -17,6 +17,9 @@
 #include "keeper_common.hpp"
 
 #include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
 #include <glog/logging.h>
 
 #include "../common/membership.hpp"
@@ -41,7 +44,7 @@ std::string make_logfile_name(const keeper_argv& a) {
   return logfile.str();
 }
 
-}
+}  // namespace
 
 keeper_common::keeper_common(const keeper_argv &a)
     : a_(a),

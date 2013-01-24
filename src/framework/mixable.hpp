@@ -19,8 +19,9 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include <pficommon/concurrent/rwmutex.h>
+
 #include <msgpack.hpp>
+#include <pficommon/concurrent/rwmutex.h>
 
 #include "../common/exception.hpp"
 #include "../common/shared_ptr.hpp"
@@ -100,7 +101,6 @@ class mixable : public mixable0 {
       throw JUBATUS_EXCEPTION(config_not_set());
     }
   }
-  ;
 
   void put_diff(const common::mprpc::byte_buffer& d) {
     if (model_) {
