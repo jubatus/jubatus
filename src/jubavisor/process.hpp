@@ -14,8 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_JUBAVISOR_PROCESS_HPP_
+#define JUBATUS_JUBAVISOR_PROCESS_HPP_
+
 #include <string>
+
 #include "../framework/server_util.hpp"
 
 namespace jubatus {
@@ -23,16 +26,17 @@ namespace jubatus {
 // child process
 class process {
  public:
-  process(const std::string& zkhosts);
-  process(const std::string& zkhosts,
-          const framework::server_argv& server_option);
+  explicit process(const std::string& zkhosts);
+  process(
+      const std::string& zkhosts,
+      const framework::server_argv& server_option);
   ~process();
 
-  bool set_names(const std::string&);
-  bool spawn_link(int);
+  bool set_names(const std::string& str);
+  bool spawn_link(int p);
   bool kill();
 
-  bool has_samespec(const process&) const;
+  bool has_samespec(const process& rhs) const;
 
   const std::string& get_name() const {
     return name_;
@@ -46,6 +50,7 @@ class process {
   int get_pid() const {
     return pid_;
   }
+
  private:
   std::string server_;
   std::string name_;
@@ -54,4 +59,6 @@ class process {
   int pid_;
 };
 
-}
+}  // namespace jubatus
+
+#endif  // JUBATUS_JUBAVISOR_PROCESS_HPP_

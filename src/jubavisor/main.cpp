@@ -14,14 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "jubavisor.hpp"
+#include <assert.h>
 
 #include <iostream>
+#include <string>
 
 #include <glog/logging.h>
 #include <pficommon/lang/bind.h>
-#include <assert.h>
 
+#include "jubavisor.hpp"
 #include "../common/exception.hpp"
 #include "../common/util.hpp"
 #include "../common/cmdline.h"
@@ -30,12 +31,14 @@ namespace {
 const std::string PROGNAME = "jubavisor";
 }
 
-using namespace jubatus;
-using namespace pfi::lang;
+using jubatus::jubervisor;
+using jubatus::jubervisor_server;
+using pfi::lang::_1;
+using pfi::lang::_2;
+using pfi::lang::_3;
+using pfi::lang::bind;
 
-int main(int argc, char* argv[])
-try {
-
+int main(int argc, char* argv[]) try {
   cmdline::parser p;
   p.add<int>("rpc-port", 'p', "port number", false, 9198);
   p.add<std::string>("zookeeper", 'z', "zookeeper location", true);
@@ -48,10 +51,10 @@ try {
   std::string logfile = "";
 
   if (p.exist("daemon")) {
-    util::append_server_path(argv[0]);
+    jubatus::util::append_server_path(argv[0]);
     logfile = p.get<std::string>("logdir") + "/" + PROGNAME + ".";
 
-    int r = util::daemonize();
+    int r = jubatus::util::daemonize();
 
     google::InitGoogleLogging(argv[0]);
     if (r == -1) {
@@ -78,8 +81,7 @@ try {
     }
   }
   return 0;
-}
-catch (const jubatus::exception::jubatus_exception& e) {
+} catch (const jubatus::exception::jubatus_exception& e) {
   std::cout << e.diagnostic_information(true) << std::endl;
 }
 

@@ -14,12 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "jubavisor.hpp"
 #include <gtest/gtest.h>
 
-using namespace jubatus;
+#include "jubavisor.hpp"
 
-//TEST(jubervisor, main){
-// TODO: think of some tests
-//  jubervisor j("localhost:2181", 9199); // need zookeeper mock..
-//}
+// TEST(jubervisor, main){
+// TODO(kumagi): think of some tests
+//   jubervisor j("localhost:2181", 9199); // need zookeeper mock..
+// }

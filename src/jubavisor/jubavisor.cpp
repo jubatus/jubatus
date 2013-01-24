@@ -14,36 +14,43 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "jubavisor.hpp"
-#include <algorithm>
-#include <sys/wait.h>
 #include <errno.h>
+#include <sys/wait.h>
+
+#include <algorithm>
 #include <csignal>
-#include <pficommon/concurrent/lock.h>
+#include <string>
 
 #include <glog/logging.h>
+#include <pficommon/concurrent/lock.h>
 
+#include "jubavisor.hpp"
 #include "../common/util.hpp"
 #include "../common/network.hpp"
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
 
-using namespace jubatus;
-using namespace jubatus::common;
-using namespace pfi::lang;
+using jubatus::jubervisor;
+using jubatus::common::create_lock_service;
+using jubatus::common::build_loc_str;
 using pfi::concurrent::scoped_lock;
+using pfi::lang::bind;
 
 namespace {
 jubervisor* g_jubavisor = NULL;
 
-// for GCC and Clang compatibility: to use pfi::lang::bind 'void (*)(int) __attribute__((noreturn))'
+// for GCC and Clang compatibility:
+// to use pfi::lang::bind 'void (*)(int) __attribute__((noreturn))'
 void exit_wrapper(int status) {
   exit(status);
 }
 }  // namespace
 
-jubervisor::jubervisor(const std::string& hosts, int port, int max,
-                       const std::string& logfile)
+jubervisor::jubervisor(
+    const std::string& hosts,
+    int port,
+    int max,
+    const std::string& logfile)
     : zk_(create_lock_service("zk", hosts, 1024, logfile)),
       port_base_(port),
       logfile_(logfile),
@@ -57,19 +64,22 @@ jubervisor::jubervisor(const std::string& hosts, int port, int max,
   sa.sa_handler = sigchld_handler_;
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = SA_RESTART | SA_NOCLDSTOP;
-  if (sigaction(SIGCHLD, &sa, NULL) == -1)
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("failed sigaction(SIGCHLD)")
+  if (sigaction(SIGCHLD, &sa, NULL) == -1) {
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("failed sigaction(SIGCHLD)")
         << jubatus::exception::error_errno(errno));
+  }
 
-  zk_->create(JUBATUS_BASE_PATH, "");
-  zk_->create(JUBAVISOR_BASE_PATH, "");
-  zk_->create(ACTOR_BASE_PATH, "");
+  zk_->create(jubatus::common::JUBATUS_BASE_PATH, "");
+  zk_->create(jubatus::common::JUBAVISOR_BASE_PATH, "");
+  zk_->create(jubatus::common::ACTOR_BASE_PATH, "");
 
   name_ = build_loc_str(common::get_default_v4_address(), port);
-  std::string path = JUBAVISOR_BASE_PATH + "/" + name_;
+  std::string path = jubatus::common::JUBAVISOR_BASE_PATH + "/" + name_;
   zk_->create(path, "", true);
-  // FIXME: 
-  //  pfi::lang::function<void(int,int,std::string)> f = bind(&jubervisor::die_if_deleted, this, _1, _2, _3);
+  // TODO(kumagi):
+  //  pfi::lang::function<void(int,int,std::string)> f
+  //    = bind(&jubervisor::die_if_deleted, this, _1, _2, _3);
   //  zk_->bind_watcher(path, f);
   DLOG(INFO) << path << " created.";
 
@@ -90,34 +100,39 @@ jubervisor::~jubervisor() {
 }
 
 void jubervisor::atexit_() {
-  if (g_jubavisor && g_jubavisor->zk_)
+  if (g_jubavisor && g_jubavisor->zk_) {
     g_jubavisor->zk_->force_close();
+  }
 }
 
 void jubervisor::sigchld_handler_(int sig) {
   pid_t child_pid;
   int child_status;
 
-  // This handler need to waitpid(-1, ,WNOHANG) to destroy whole zombie process correctly,
-  // because signal hander cannot handle some signal on the same time.
+  // This handler need to waitpid(-1, ,WNOHANG) to destroy whole zombie process
+  // correctly, because signal hander cannot handle some signal on the same
+  // time.
   while ((child_pid = waitpid(-1, &child_status, WNOHANG)) > 0) {
-    if (!g_jubavisor)
+    if (!g_jubavisor) {
       continue;
+    }
 
     try {
       scoped_lock lk(g_jubavisor->m_);
 
-      for (child_map_t::iterator it = g_jubavisor->children_.begin(), end =
-          g_jubavisor->children_.end(); it != end; ++it) {
+      for (child_map_t::iterator it = g_jubavisor->children_.begin(),
+               end = g_jubavisor->children_.end(); it != end; ++it) {
         // find child_pid from jubavisor
         bool released = false;
-        for (process_list_t::iterator process_it = it->second.begin(), end = it
-            ->second.end(); process_it != end; ++process_it) {
-          if (child_pid != process_it->get_pid())
+        for (process_list_t::iterator process_it = it->second.begin(),
+                 end = it->second.end(); process_it != end; ++process_it) {
+          if (child_pid != process_it->get_pid()) {
             continue;
+          }
 
-          LOG(INFO) << process_it->get_server() << " with port "
-              << process_it->get_rpc_port() << " exited pid: " << child_pid;
+          LOG(INFO) << process_it->get_server()
+                    << " with port " << process_it->get_rpc_port()
+                    << " exited pid: " << child_pid;
 
           // release reserved port
           g_jubavisor->port_pool_.push(process_it->get_rpc_port());
@@ -126,8 +141,9 @@ void jubervisor::sigchld_handler_(int sig) {
           released = true;
           break;
         }
-        if (released)
+        if (released) {
           break;
+        }
       }
     } catch (...) {
     }
@@ -138,15 +154,19 @@ void jubervisor::sigchld_handler_(int sig) {
 // server : "jubaclassifier" ...
 // name : any but ""
 // -> exec ./<server> -n <name> -p <rpc_port> -z <zk>
-int jubervisor::start(std::string str, unsigned int N,
-                      framework::server_argv argv) {
+int jubervisor::start(
+    std::string str,
+    unsigned int N,
+    framework::server_argv argv) {
   scoped_lock lk(m_);
   LOG(INFO) << str << " " << N;
   return start_(str, N, argv);
 }
 
-int jubervisor::start_(const std::string& str, unsigned int N,
-                       const framework::server_argv& argv) {
+int jubervisor::start_(
+    const std::string& str,
+    unsigned int N,
+    const framework::server_argv& argv) {
   std::string name;
   {
     process p(zk_->get_hosts());
@@ -163,7 +183,7 @@ int jubervisor::start_(const std::string& str, unsigned int N,
   it = children_.find(name);
   if (it->second.size() > N) {
     LOG(ERROR) << it->second.size() << " " << name
-        << " already running at this machine.";
+               << " already running at this machine.";
     return -1;
   }
   N -= it->second.size();
@@ -171,7 +191,7 @@ int jubervisor::start_(const std::string& str, unsigned int N,
   if (port_pool_.size() < N) {
     LOG(ERROR) << "cannot spawn more than " << max_children_ << " processes.";
     LOG(ERROR) << "currently remaining " << port_pool_.size() << " while " << N
-        << " requested.";
+               << " requested.";
     return -1;
   }
 
@@ -226,12 +246,12 @@ void jubervisor::stop_all() {
   scoped_lock lk(m_);
 
   for (child_map_t::iterator it = children_.begin(), end = children_.end();
-      it != end; ++it) {
+       it != end; ++it) {
     for (size_t i = 0; i < it->second.size(); ++i) {
       if (!it->second[i].kill()) {
         LOG(ERROR) << "failed stopping process: name("
-            << it->second[i].get_name() << ") server("
-            << it->second[i].get_server() << ") ";
+                   << it->second[i].get_name() << ") server("
+                   << it->second[i].get_server() << ") ";
         perror(__func__);
       }
     }
