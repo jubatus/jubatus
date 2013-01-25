@@ -18,7 +18,6 @@
 #include <vector>
 #include <gtest/gtest.h>
 #include "character_ngram.hpp"
-#include "test_util.hpp"
 
 namespace jubatus {
 namespace fv_converter {
@@ -45,14 +44,14 @@ TEST(character_ngram, split) {
     std::vector<std::pair<size_t, size_t> > bs;
     int exp[]= { 0, 1, 1, 1, 2, 1, 3, 1, -1 };
     ngram.split("aa a", bs);
-    PairVectorEquals(make_pairs(exp), bs);
+    ASSERT_EQ(make_pairs(exp), bs);
   }
 
   {
     std::vector<std::pair<size_t, size_t> > bs;
     int exp[]= { 0, 1, 1, 1, 2, 1, -1 };
     ngram.split("a b", bs);
-    PairVectorEquals(make_pairs(exp), bs);
+    ASSERT_EQ(make_pairs(exp), bs);
   }
 }
 
@@ -62,7 +61,7 @@ TEST(character_ngram, japanese) {
   std::vector<std::pair<size_t, size_t> > bs;
   int exp[]= { 0, 3,  3, 3,  6, 3,  9, 1,  10, 3, -1 };
   ngram.split("あいうaあ", bs);
-  PairVectorEquals(make_pairs(exp), bs);
+  ASSERT_EQ(make_pairs(exp), bs);
 }
 
 TEST(character_ngram, bigram) {
@@ -71,7 +70,7 @@ TEST(character_ngram, bigram) {
   std::vector<std::pair<size_t, size_t> > bs;
   int exp[]= { 0, 2, 1, 2, 2, 2, -1 };
   ngram.split("aaaa", bs);
-  PairVectorEquals(make_pairs(exp), bs);
+  ASSERT_EQ(make_pairs(exp), bs);
 }
 
 }  // namespace fv_converter

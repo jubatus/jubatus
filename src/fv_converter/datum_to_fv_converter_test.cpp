@@ -34,7 +34,6 @@
 #  include "re2_filter.hpp"
 #endif
 #include "space_splitter.hpp"
-#include "test_util.hpp"
 #include "weight_manager.hpp"
 #include "without_split.hpp"
 
@@ -78,7 +77,7 @@ TEST(datum_to_fv_converter, num_feature) {
   // expected.push_back(std::make_pair("/val2@num", 0.));
   // expected.push_back(std::make_pair("/val2@log", log(1.)));
 
-  PairVectorEquals(expected, feature);
+  ASSERT_EQ(expected, feature);
 }
 
 TEST(datum_to_fv_converter, string_feature) {
@@ -164,7 +163,7 @@ TEST(datum_to_fv_converter, string_feature) {
   std::sort(feature.begin(), feature.end());
   std::sort(expected.begin(), expected.end());
 
-  PairVectorEquals(expected, feature);
+  ASSERT_EQ(expected, feature);
 }
 
 TEST(datum_to_fv_converter, weight) {
@@ -214,7 +213,7 @@ TEST(datum_to_fv_converter, register_string_rule) {
 
   std::sort(feature.begin(), feature.end());
   std::sort(exp.begin(), exp.end());
-  PairVectorEquals(exp, feature);
+  ASSERT_EQ(exp, feature);
 }
 
 TEST(datum_to_fv_converter, register_num_rule) {
@@ -244,7 +243,7 @@ TEST(datum_to_fv_converter, register_num_rule) {
 
     std::sort(feature.begin(), feature.end());
     std::sort(exp.begin(), exp.end());
-    PairVectorEquals(exp, feature);
+    ASSERT_EQ(exp, feature);
   }
 }
 

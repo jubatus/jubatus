@@ -24,7 +24,6 @@
 #include "datum.hpp"
 #include "datum_to_fv_converter.hpp"
 #include "exception.hpp"
-#include "test_util.hpp"
 
 namespace jubatus {
 namespace fv_converter {
@@ -66,7 +65,7 @@ TEST(converter_config, config) {
 
     std::sort(f.begin(), f.end());
     std::sort(exp.begin(), exp.end());
-    PairVectorEquals(exp, f);
+    ASSERT_EQ(exp, f);
   } catch (const std::exception& e) {
     std::cout << e.what() << std::endl;
     throw;

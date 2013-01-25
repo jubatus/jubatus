@@ -22,7 +22,6 @@
 #include <pficommon/text/json.h>
 #include "datum.hpp"
 #include "json_converter.hpp"
-#include "test_util.hpp"
 
 using pfi::text::json::json;
 
@@ -47,8 +46,8 @@ void TestEquals(
   json_converter::convert(json, actual);
   std::sort(actual.string_values_.begin(), actual.string_values_.end());
   std::sort(actual.num_values_.begin(), actual.num_values_.end());
-  PairVectorEquals(expected_strings, actual.string_values_);
-  PairVectorEquals(expected_nums, actual.num_values_);
+  ASSERT_EQ(expected_strings, actual.string_values_);
+  ASSERT_EQ(expected_nums, actual.num_values_);
 }
 
 TEST(json_converter, empty) {

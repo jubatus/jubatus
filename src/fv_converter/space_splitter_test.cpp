@@ -19,7 +19,6 @@
 #include <vector>
 #include <gtest/gtest.h>
 #include "space_splitter.hpp"
-#include "test_util.hpp"
 
 namespace jubatus {
 namespace fv_converter {
@@ -34,7 +33,7 @@ void test_split(
   std::vector<std::pair<size_t, size_t> > actual;
   splitter.split(string, actual);
 
-  PairVectorEquals(expected, actual);
+  ASSERT_EQ(expected, actual);
 }
 
 }  // namespace

@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include "sparse_matrix_storage.hpp"
-#include "../fv_converter/test_util.hpp"
 #include "norm.hpp"
 
 namespace jubatus {
@@ -34,7 +33,7 @@ TEST(sparse_matrix_storage, set_row) {
 
   vector<pair<string, float> > p;
   s.get_row("r1", p);
-  PairVectorEquals(r1, p);
+  ASSERT_EQ(r1, p);
 
   EXPECT_EQ(2.0, s.get("r1", "c2"));
   EXPECT_EQ(0.0, s.get("unknown", "c2"));
