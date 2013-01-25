@@ -31,5 +31,5 @@ class splitter_factory {
   word_splitter* create(const std::string& name, const param_t& params) const;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

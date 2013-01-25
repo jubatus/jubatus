@@ -17,8 +17,8 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
-
 #include "word_splitter.hpp"
 
 namespace jubatus {
@@ -26,7 +26,7 @@ namespace fv_converter {
 
 class character_ngram : public word_splitter {
  public:
-  character_ngram(size_t length)
+  explicit character_ngram(size_t length)
       : length_(length) {
   }
 
@@ -37,5 +37,5 @@ class character_ngram : public word_splitter {
   const size_t length_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

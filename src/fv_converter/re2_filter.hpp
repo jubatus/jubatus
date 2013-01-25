@@ -18,7 +18,6 @@
 
 #include <string>
 #include <re2/re2.h>
-
 #include "string_filter.hpp"
 
 namespace jubatus {
@@ -37,5 +36,5 @@ class re2_filter : public string_filter {
   std::string replace_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

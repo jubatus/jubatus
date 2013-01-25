@@ -17,6 +17,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace jubatus {
@@ -38,5 +39,5 @@ class word_splitter {
       std::vector<std::pair<size_t, size_t> >& ret_boundaries) const = 0;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

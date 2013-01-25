@@ -31,5 +31,5 @@ class key_matcher {
   virtual bool match(const std::string& key) = 0;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

@@ -24,7 +24,7 @@ namespace fv_converter {
 
 class feature_hasher {
  public:
-  feature_hasher(uint64_t max);
+  explicit feature_hasher(uint64_t max);
 
   void hash_feature_keys(sfv_t& fv) const;
 
@@ -32,5 +32,5 @@ class feature_hasher {
   uint64_t max_size_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

@@ -18,13 +18,14 @@
 
 #include <string>
 #include <pficommon/data/string/utility.h>
+#include "key_matcher.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
 class suffix_match : public key_matcher {
  public:
-  suffix_match(const std::string& suffix)
+  explicit suffix_match(const std::string& suffix)
       : suffix_(suffix) {
   }
   ~suffix_match() {
@@ -38,5 +39,5 @@ class suffix_match : public key_matcher {
   const std::string suffix_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

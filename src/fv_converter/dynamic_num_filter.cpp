@@ -16,14 +16,16 @@
 
 #include "dynamic_num_filter.hpp"
 
-using namespace std;
+#include <map>
+#include <string>
 
 namespace jubatus {
 namespace fv_converter {
 
-dynamic_num_filter::dynamic_num_filter(const std::string& path,
-                                       const std::string& function,
-                                       const map<string, string>& params)
+dynamic_num_filter::dynamic_num_filter(
+    const std::string& path,
+    const std::string& function,
+    const std::map<std::string, std::string>& params)
     : loader_(path),
       impl_(load_object<num_filter>(loader_, function, params)) {
 }
@@ -32,5 +34,5 @@ double dynamic_num_filter::filter(double value) const {
   return impl_->filter(value);
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

@@ -14,17 +14,18 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <map>
+#include <string>
+#include <vector>
 #include <gtest/gtest.h>
 #include <msgpack.hpp>
-#include <vector>
-#include <map>
-
-#include "msgpack_converter.hpp"
 #include "datum.hpp"
+#include "msgpack_converter.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace jubatus::fv_converter;
+namespace jubatus {
+namespace fv_converter {
+
+namespace {
 
 template<typename T>
 void make(const T& data, datum& datum) {
@@ -37,9 +38,11 @@ void make(const T& data, datum& datum) {
   msgpack_converter::convert(obj, datum);
 }
 
+}  // namespace
+
 TEST(msgpack_converter, empty) {
   datum datum;
-  make(vector<string>(), datum);
+  make(std::vector<std::string>(), datum);
 
   ASSERT_EQ(0u, datum.string_values_.size());
   ASSERT_EQ(0u, datum.num_values_.size());
@@ -99,7 +102,7 @@ TEST(msgpack_converter, double) {
 
 TEST(msgpack_converter, raw) {
   datum datum;
-  make<string>("hello", datum);
+  make<std::string>("hello", datum);
 
   ASSERT_EQ(1u, datum.string_values_.size());
   ASSERT_EQ(0u, datum.num_values_.size());
@@ -109,7 +112,7 @@ TEST(msgpack_converter, raw) {
 
 TEST(msgpack_converter, array) {
   datum datum;
-  vector<int> v;
+  std::vector<int> v;
   v.push_back(1);
   v.push_back(2);
   make(v, datum);
@@ -127,7 +130,7 @@ TEST(msgpack_converter, array) {
 TEST(msgpack_converter, map) {
   {
     datum datum;
-    map<string, string> m;
+    std::map<std::string, std::string> m;
     m["age"] = "20";
     m["name"] = "taro";
     make(m, datum);
@@ -144,7 +147,7 @@ TEST(msgpack_converter, map) {
 
   {
     datum datum;
-    map<string, map<string, int> > m;
+    std::map<std::string, std::map<std::string, int> > m;
     m["hanako"]["age"] = 25;
     m["taro"]["age"] = 20;
     make(m, datum);
@@ -158,6 +161,7 @@ TEST(msgpack_converter, map) {
     ASSERT_EQ("/\"taro\"/\"age\"", datum.num_values_[1].first);
     ASSERT_EQ(20., datum.num_values_[1].second);
   }
-
 }
 
+}  // namespace fv_converter
+}  // namespace jubatus

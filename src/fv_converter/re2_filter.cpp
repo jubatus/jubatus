@@ -14,31 +14,26 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <string>
 #include <vector>
-#include <iostream>
 #include "re2_filter.hpp"
 #include "exception.hpp"
 
-using namespace std;
-using namespace re2;
-
 namespace jubatus {
 namespace fv_converter {
-
-re2_filter::re2_filter(const string& regexp, const string& replace)
+re2_filter::re2_filter(const std::string& regexp, const std::string& replace)
     : re_(regexp),
       replace_(replace) {
   if (!re_.ok()) {
-    throw JUBATUS_EXCEPTION(converter_exception("invalid regular expression: " + regexp));
+    throw JUBATUS_EXCEPTION(
+        converter_exception("invalid regular expression: " + regexp));
   }
-
 }
 
-void re2_filter::filter(const string& input, string& output) const {
+void re2_filter::filter(const std::string& input, std::string& output) const {
   output = input;
   RE2::GlobalReplace(&output, re_, replace_);
 }
 
-}
-}
-
+}  // namespace fv_converter
+}  // namespace jubatus

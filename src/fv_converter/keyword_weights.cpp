@@ -15,26 +15,30 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <cmath>
+#include <string>
+#include <utility>
 #include "../common/type.hpp"
-#include "keyword_weights.hpp"
 #include "datum_to_fv_converter.hpp"
+#include "keyword_weights.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
-using namespace std;
+namespace {
+
+struct is_zero {
+  bool operator()(const std::pair<std::string, float>& p) {
+    return p.second == 0;
+  }
+};
+
+}  // namespace
 
 keyword_weights::keyword_weights()
     : document_count_(),
       document_frequencies_(),
       weights_() {
 }
-
-struct is_zero {
-  bool operator()(const pair<string, float>& p) {
-    return p.second == 0;
-  }
-};
 
 void keyword_weights::update_document_frequency(const sfv_t& fv) {
   ++document_count_;
@@ -70,5 +74,5 @@ void keyword_weights::clear() {
   weights_.clear();
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

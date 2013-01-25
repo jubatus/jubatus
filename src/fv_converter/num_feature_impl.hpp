@@ -16,8 +16,12 @@
 
 #pragma once
 
-#include <sstream>
+#include <algorithm>
 #include <cmath>
+#include <sstream>
+#include <string>
+#include <utility>
+#include "../common/type.hpp"
 #include "num_feature.hpp"
 
 namespace jubatus {
@@ -26,7 +30,7 @@ namespace fv_converter {
 class num_value_feature : public num_feature {
  public:
   void add_feature(const std::string& key, double value, sfv_t& ret_fv) const {
-    ret_fv.push_back(make_pair(key, value));
+    ret_fv.push_back(std::make_pair(key, value));
   }
 };
 
@@ -35,16 +39,16 @@ class num_string_feature : public num_feature {
   void add_feature(const std::string& key, double value, sfv_t& ret_fv) const {
     std::stringstream ss;
     ss << key << "$" << value;
-    ret_fv.push_back(make_pair(ss.str(), 1.0));
+    ret_fv.push_back(std::make_pair(ss.str(), 1.0));
   }
 };
 
 class num_log_feature : public num_feature {
  public:
   void add_feature(const std::string& key, double value, sfv_t& ret_fv) const {
-    ret_fv.push_back(make_pair(key, std::log(std::max(1.0, value))));
+    ret_fv.push_back(std::make_pair(key, std::log(std::max(1.0, value))));
   }
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

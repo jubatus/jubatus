@@ -16,8 +16,9 @@
 
 #pragma once
 
-#include <vector>
 #include <string>
+#include <utility>
+#include <vector>
 #include "word_splitter.hpp"
 
 namespace jubatus {
@@ -25,9 +26,10 @@ namespace fv_converter {
 
 class without_split : public word_splitter {
  public:
-  void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
+  void split(
+      const std::string& string,
+      std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

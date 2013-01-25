@@ -16,11 +16,12 @@
 
 #pragma once
 
-#include "datum.hpp"
-#include "counter.hpp"
+#include <string>
+#include <msgpack.hpp>
 #include <pficommon/data/unordered_map.h>
 #include "../common/type.hpp"
-#include <msgpack.hpp>
+#include "counter.hpp"
+#include "datum.hpp"
 
 namespace jubatus {
 namespace fv_converter {
@@ -61,8 +62,7 @@ class keyword_weights {
   counter<std::string> document_frequencies_;
   typedef pfi::data::unordered_map<std::string, float> weight_t;
   weight_t weights_;
-
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

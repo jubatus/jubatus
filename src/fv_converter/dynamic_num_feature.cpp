@@ -16,22 +16,26 @@
 
 #include "dynamic_num_feature.hpp"
 
-using namespace std;
+#include <map>
+#include <string>
 
 namespace jubatus {
 namespace fv_converter {
 
-dynamic_num_feature::dynamic_num_feature(const std::string& path,
-                                         const std::string& function,
-                                         const map<string, string>& params)
+dynamic_num_feature::dynamic_num_feature(
+    const std::string& path,
+    const std::string& function,
+    const std::map<std::string, std::string>& params)
     : loader_(path),
       impl_(load_object<num_feature>(loader_, function, params)) {
 }
 
-void dynamic_num_feature::add_feature(const string& key, double value,
-                                      sfv_t& ret_fv) const {
+void dynamic_num_feature::add_feature(
+    const std::string& key,
+    double value,
+    sfv_t& ret_fv) const {
   impl_->add_feature(key, value, ret_fv);
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

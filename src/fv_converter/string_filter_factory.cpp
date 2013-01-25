@@ -15,16 +15,16 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "string_filter_factory.hpp"
-#include "string_filter.hpp"
-#include "exception.hpp"
 
-#include "util.hpp"
+#include <map>
+#include <string>
+#include "dynamic_string_filter.hpp"
+#include "exception.hpp"
 #ifdef HAVE_RE2
 #  include "re2_filter.hpp"
 #endif
-#include "dynamic_string_filter.hpp"
-
-using namespace std;
+#include "string_filter.hpp"
+#include "util.hpp"
 
 namespace jubatus {
 namespace fv_converter {
@@ -32,33 +32,34 @@ namespace fv_converter {
 #ifdef HAVE_RE2
 static
 re2_filter* create_re2_filter(const string_filter_factory::param_t& params) {
-  const string& pattern = get_or_die(params, "pattern");
-  const string& replace = get_or_die(params, "replace");
+  const std::string& pattern = get_or_die(params, "pattern");
+  const std::string& replace = get_or_die(params, "replace");
   return new re2_filter(pattern, replace);
 }
 #endif
 
 static string_filter* create_dynamic_filter(
     const string_filter_factory::param_t& params) {
-  const string& path = get_or_die(params, "path");
-  const string& function = get_or_die(params, "function");
+  const std::string& path = get_or_die(params, "path");
+  const std::string& function = get_or_die(params, "function");
   return new dynamic_string_filter(path, function, params);
 }
 
 string_filter* string_filter_factory::create(
-    const string& name, const map<string, string>& params) const {
+    const std::string& name,
+    const std::map<std::string, std::string>& params) const {
 #ifdef HAVE_RE2
   if (name == "regexp") {
     return create_re2_filter(params);
-  } else
+  }
 #endif
   if (name == "dynamic") {
     return create_dynamic_filter(params);
   } else {
-    throw JUBATUS_EXCEPTION(converter_exception("unknown filter name: " + name));
+    throw JUBATUS_EXCEPTION(
+        converter_exception("unknown filter name: " + name));
   }
 }
 
-}
-}
-
+}  // namespace fv_converter
+}  // namespace jubatus

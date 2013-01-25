@@ -16,15 +16,14 @@
 
 #pragma once
 
-#include <vector>
 #include <string>
-
+#include <utility>
+#include <vector>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/scoped_ptr.h>
-
-#include "../common/type.hpp"
 #include "../common/shared_ptr.hpp"
+#include "../common/type.hpp"
 
 namespace jubatus {
 namespace fv_converter {
@@ -45,8 +44,9 @@ struct splitter_weight_type {
   frequency_weight_type freq_weight_type_;
   term_weight_type term_weight_type_;
 
-  splitter_weight_type(frequency_weight_type freq_weight_type,
-                       term_weight_type term_weight_type)
+  splitter_weight_type(
+      frequency_weight_type freq_weight_type,
+      term_weight_type term_weight_type)
       : freq_weight_type_(freq_weight_type),
         term_weight_type_(term_weight_type) {
   }
@@ -73,27 +73,32 @@ class datum_to_fv_converter {
 
   void clear_rules();
 
-  void register_string_filter(pfi::lang::shared_ptr<key_matcher> matcher,
-                              pfi::lang::shared_ptr<string_filter> filter,
-                              const std::string& suffix);
+  void register_string_filter(
+      pfi::lang::shared_ptr<key_matcher> matcher,
+      pfi::lang::shared_ptr<string_filter> filter,
+      const std::string& suffix);
 
-  void register_num_filter(pfi::lang::shared_ptr<key_matcher> matcher,
-                           pfi::lang::shared_ptr<num_filter> filter,
-                           const std::string& suffix);
+  void register_num_filter(
+      pfi::lang::shared_ptr<key_matcher> matcher,
+      pfi::lang::shared_ptr<num_filter> filter,
+      const std::string& suffix);
 
-  void register_string_rule(const std::string& name,
-                            pfi::lang::shared_ptr<key_matcher> matcher,
-                            pfi::lang::shared_ptr<word_splitter> splitter,
-                            const std::vector<splitter_weight_type>& weights);
+  void register_string_rule(
+      const std::string& name,
+      pfi::lang::shared_ptr<key_matcher> matcher,
+      pfi::lang::shared_ptr<word_splitter> splitter,
+      const std::vector<splitter_weight_type>& weights);
 
-  void register_num_rule(const std::string& name,
-                         pfi::lang::shared_ptr<key_matcher> matcher,
-                         pfi::lang::shared_ptr<num_feature> feature_func);
+  void register_num_rule(
+      const std::string& name,
+      pfi::lang::shared_ptr<key_matcher> matcher,
+      pfi::lang::shared_ptr<num_feature> feature_func);
 
   void add_weight(const std::string& key, float weight);
 
-  void revert_feature(const std::string& feature,
-                      std::pair<std::string, std::string>& expect) const;
+  void revert_feature(
+      const std::string& feature,
+      std::pair<std::string, std::string>& expect) const;
 
   void set_hash_max_size(uint64_t hash_max_size);
 
@@ -103,6 +108,5 @@ class datum_to_fv_converter {
   pfi::lang::scoped_ptr<datum_to_fv_converter_impl> pimpl_;
 };
 
-}
-
-}
+}  // namespace fv_converter
+}  // namespace jubatus

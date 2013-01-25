@@ -16,22 +16,27 @@
 
 #include "dynamic_splitter.hpp"
 
-using namespace std;
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace jubatus {
 namespace fv_converter {
 
-dynamic_splitter::dynamic_splitter(const std::string& path,
-                                   const std::string& function,
-                                   const map<string, string>& params)
+dynamic_splitter::dynamic_splitter(
+    const std::string& path,
+    const std::string& function,
+    const std::map<std::string, std::string>& params)
     : loader_(path),
       impl_(load_object<word_splitter>(loader_, function, params)) {
 }
 
 void dynamic_splitter::split(
-    const string& string, vector<pair<size_t, size_t> >& ret_boundaries) const {
+    const std::string& string,
+    std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
   impl_->split(string, ret_boundaries);
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

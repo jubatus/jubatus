@@ -17,13 +17,14 @@
 #pragma once
 
 #include <string>
+#include "key_matcher.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
 class exact_match : public key_matcher {
  public:
-  exact_match(const std::string& key)
+  explicit exact_match(const std::string& key)
       : key_(key) {
   }
   ~exact_match() {
@@ -32,9 +33,10 @@ class exact_match : public key_matcher {
   bool match(const std::string& key) {
     return key == key_;
   }
+
  private:
   const std::string key_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

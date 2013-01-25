@@ -30,5 +30,5 @@ class string_filter_factory {
   string_filter* create(const std::string& name, const param_t& params) const;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

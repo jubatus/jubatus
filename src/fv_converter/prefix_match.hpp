@@ -18,7 +18,6 @@
 
 #include <string>
 #include <pficommon/data/string/utility.h>
-
 #include "key_matcher.hpp"
 
 namespace jubatus {
@@ -26,7 +25,7 @@ namespace fv_converter {
 
 class prefix_match : public key_matcher {
  public:
-  prefix_match(const std::string& prefix)
+  explicit prefix_match(const std::string& prefix)
       : prefix_(prefix) {
   }
   ~prefix_match() {
@@ -40,5 +39,5 @@ class prefix_match : public key_matcher {
   const std::string prefix_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

@@ -26,6 +26,5 @@ class num_filter {
   virtual double filter(double value) const = 0;
 };
 
-}
-}
-
+}  // namespace fv_converter
+}  // namespace jubatus

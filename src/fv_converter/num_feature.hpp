@@ -16,8 +16,9 @@
 
 #pragma once
 
-#include <vector>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace jubatus {
 namespace fv_converter {
@@ -30,9 +31,11 @@ class num_feature {
   }
 
   virtual void add_feature(
-      const std::string& key, double value,
+      const std::string& key,
+      double value,
       std::vector<std::pair<std::string, float> >& ret_fv) const = 0;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+

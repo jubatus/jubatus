@@ -16,14 +16,14 @@
 
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
+#include <msgpack.hpp>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/optional.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/text/json.h>
-#include <msgpack.hpp>
 
 namespace jubatus {
 namespace fv_converter {
@@ -103,7 +103,6 @@ struct converter_config {
         & MEMBER(string_types) & MEMBER(string_rules) & MEMBER(num_types)
         & MEMBER(num_rules) & MEMBER(hash_max_size);
   }
-
 };
 
 void initialize_converter(const converter_config& config,
@@ -115,5 +114,5 @@ make_fv_converter(const std::string& config);
 pfi::lang::shared_ptr<datum_to_fv_converter>
 make_fv_converter(const pfi::text::json::json& config);
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

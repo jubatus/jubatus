@@ -16,10 +16,13 @@
 
 #pragma once
 
-#include "datum.hpp"
-#include "counter.hpp"
+#include <istream>
+#include <ostream>
+#include <string>
 #include <pficommon/data/unordered_map.h>
 #include "../common/type.hpp"
+#include "counter.hpp"
+#include "datum.hpp"
 #include "keyword_weights.hpp"
 
 namespace jubatus {
@@ -58,28 +61,29 @@ class weight_manager {
   void serialize(Archiver &ar) {
     ar & MEMBER(diff_weights_) & MEMBER(master_weights_);
   }
+
  private:
   size_t get_document_count() const {
-    return diff_weights_.get_document_count()
-        + master_weights_.get_document_count();
+    return diff_weights_.get_document_count() +
+        master_weights_.get_document_count();
   }
 
   size_t get_document_frequency(const std::string& key) const {
-    return diff_weights_.get_document_frequency(key)
-        + master_weights_.get_document_frequency(key);
+    return diff_weights_.get_document_frequency(key) +
+        master_weights_.get_document_frequency(key);
   }
 
   double get_user_weight(const std::string& key) const {
-    return diff_weights_.get_user_weight(key)
-        + master_weights_.get_user_weight(key);
+    return diff_weights_.get_user_weight(key) +
+        master_weights_.get_user_weight(key);
   }
 
   double get_global_weight(const std::string& key) const;
 
   keyword_weights diff_weights_;
   keyword_weights master_weights_;
-
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+

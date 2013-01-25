@@ -14,17 +14,17 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <map>
+#include <string>
 #include <gtest/gtest.h>
 #include "dynamic_num_filter.hpp"
 #include "exception.hpp"
 
-using namespace std;
-using namespace jubatus::fv_converter;
-
 namespace jubatus {
+namespace fv_converter {
 
 TEST(dynamic_num_filter, trivial) {
-  map<string, string> params;
+  std::map<std::string, std::string> params;
 
   dynamic_num_filter f(LIBNUM_FILTER_SAMPLE,
       "create",
@@ -33,7 +33,7 @@ TEST(dynamic_num_filter, trivial) {
 }
 
 TEST(dynamic_num_filter, unknown_file) {
-  map<string, string> params;
+  std::map<std::string, std::string> params;
   EXPECT_THROW(dynamic_num_filter f("unkonwn_file.so",
           "create",
           params),
@@ -41,11 +41,12 @@ TEST(dynamic_num_filter, unknown_file) {
 }
 
 TEST(dynamic_num_filter, unknown_function) {
-  map<string, string> params;
-  EXPECT_THROW(dynamic_num_filter f(LIBNUM_FILTER_SAMPLE,
-          "unknown_function",
-          params),
+  std::map<std::string, std::string> params;
+  EXPECT_THROW(
+      dynamic_num_filter f(LIBNUM_FILTER_SAMPLE, "unknown_function", params),
       converter_exception);
 }
 
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+

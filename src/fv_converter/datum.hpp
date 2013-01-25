@@ -16,12 +16,12 @@
 
 #pragma once
 
-#include <vector>
+#include <map>
 #include <string>
-
-#include <pficommon/data/serialization.h>
-
+#include <utility>
+#include <vector>
 #include <msgpack.hpp>
+#include <pficommon/data/serialization.h>
 
 namespace jubatus {
 namespace fv_converter {
@@ -37,7 +37,7 @@ struct datum {
 
   template<class Archiver>
   void serialize(Archiver &ar) {
-    std::map < std::string, std::string > sv;
+    std::map<std::string, std::string> sv;
     std::map<std::string, double> nv;
     if (ar.is_read) {
       ar & NAMED_MEMBER("string_values", sv) & NAMED_MEMBER("num_values", nv);
@@ -51,5 +51,5 @@ struct datum {
   }
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

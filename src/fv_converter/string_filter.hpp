@@ -28,5 +28,5 @@ class string_filter {
   virtual void filter(const std::string& input, std::string& output) const = 0;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

@@ -25,10 +25,10 @@ namespace fv_converter {
 
 class converter_exception : public jubatus::exception::runtime_error {
  public:
-  converter_exception(const std::string& msg)
+  explicit converter_exception(const std::string& msg)
       : runtime_error(msg) {
   }
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

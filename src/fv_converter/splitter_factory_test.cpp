@@ -14,30 +14,28 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-
 #include <map>
 #include <string>
+#include <utility>
+#include <vector>
+#include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
-
+#include "exception.hpp"
 #include "splitter_factory.hpp"
 #include "word_splitter.hpp"
-#include "exception.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace jubatus::fv_converter;
-using namespace pfi::lang;
+namespace jubatus {
+namespace fv_converter {
 
 TEST(splitter_factory, trivial) {
   splitter_factory f;
-  map<string, string> param;
+  std::map<std::string, std::string> param;
   ASSERT_THROW(f.create("hoge", param), converter_exception);
 }
 
 TEST(splitter_factory, dynamic) {
   splitter_factory f;
-  map<string, string> param;
+  std::map<std::string, std::string> param;
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
 
   param["path"] = "unknown_file_name";
@@ -47,10 +45,10 @@ TEST(splitter_factory, dynamic) {
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
 
   param["function"] = "create";
-  scoped_ptr<word_splitter> s(f.create("dynamic", param));
+  pfi::lang::scoped_ptr<word_splitter> s(f.create("dynamic", param));
 
-  string d("hoge fuga");
-  vector<pair<size_t, size_t> > bs;
+  std::string d("hoge fuga");
+  std::vector<std::pair<size_t, size_t> > bs;
   s->split(d, bs);
   ASSERT_EQ(2u, bs.size());
   ASSERT_EQ(0u, bs[0].first);
@@ -61,7 +59,7 @@ TEST(splitter_factory, dynamic) {
 
 TEST(splitter_factory, ngram) {
   splitter_factory f;
-  map<string, string> param;
+  std::map<std::string, std::string> param;
   ASSERT_THROW(f.create("ngram", param), converter_exception);
 
   param["char_num"] = "not_a_number";
@@ -71,5 +69,8 @@ TEST(splitter_factory, ngram) {
   ASSERT_THROW(f.create("ngram", param), converter_exception);
 
   param["char_num"] = "2";
-  scoped_ptr<word_splitter> s(f.create("ngram", param));
+  pfi::lang::scoped_ptr<word_splitter> s(f.create("ngram", param));
 }
+
+}  // namespace fv_converter
+}  // namespace jubatus

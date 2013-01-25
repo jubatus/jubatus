@@ -17,17 +17,20 @@
 #pragma once
 
 #include <map>
+#include <string>
 #include <pficommon/lang/scoped_ptr.h>
-#include "string_filter.hpp"
 #include "dynamic_loader.hpp"
+#include "string_filter.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
 class dynamic_string_filter : public string_filter {
  public:
-  dynamic_string_filter(const std::string& path, const std::string& function,
-                        const std::map<std::string, std::string>& params);
+  dynamic_string_filter(
+      const std::string& path,
+      const std::string& function,
+      const std::map<std::string, std::string>& params);
 
   void filter(const std::string& input, std::string& output) const;
 
@@ -36,5 +39,5 @@ class dynamic_string_filter : public string_filter {
   pfi::lang::scoped_ptr<string_filter> impl_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

@@ -17,12 +17,11 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace jubatus {
 namespace fv_converter {
-
-using namespace std;
 
 class StringSplitter {
  public:
@@ -35,9 +34,10 @@ class StringSplitter {
    Returns all word boundaries this splitter found.
    Each baoudary is represented as a pair of a beginning position and its length.
    */
-  virtual void Split(const string& string,
-                     vector<pair<size_t, size_t> >& ret_boundaries) = 0;
+  virtual void Split(
+      const std::string& string,
+      std::vector<std::pair<size_t, size_t> >& ret_boundaries) = 0;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

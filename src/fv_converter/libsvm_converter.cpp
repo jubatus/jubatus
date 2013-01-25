@@ -15,35 +15,37 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <sstream>
+#include <string>
 #include <pficommon/lang/cast.h>
-
-#include "libsvm_converter.hpp"
-#include "exception.hpp"
 #include "datum.hpp"
-
-using namespace std;
-using namespace pfi::lang;
+#include "exception.hpp"
+#include "libsvm_converter.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
-void libsvm_converter::convert(const string& line, datum& ret_datum,
-                               string& ret_label) {
-  string label;
-  istringstream in(line);
+void libsvm_converter::convert(
+    const std::string& line,
+    datum& ret_datum,
+    std::string& ret_label) {
+  std::string label;
+  std::istringstream in(line);
   in >> label;
   datum::nv_t num_values;
 
-  string s;
+  std::string s;
   while (in) {
     in >> s;
-    if (!in)
+    if (!in) {
       break;
+    }
     size_t p = s.find(':');
-    if (p == string::npos)
-      throw JUBATUS_EXCEPTION(converter_exception("invalid libsvm format: " + s));
-    string id = s.substr(0, p);
-    float val = lexical_cast<float>(s.substr(p + 1));
+    if (p == std::string::npos) {
+      throw JUBATUS_EXCEPTION(
+          converter_exception("invalid libsvm format: " + s));
+    }
+    std::string id = s.substr(0, p);
+    float val = pfi::lang::lexical_cast<float>(s.substr(p + 1));
     num_values.push_back(make_pair(id, val));
   }
 
@@ -52,5 +54,5 @@ void libsvm_converter::convert(const string& line, datum& ret_datum,
   ret_datum.num_values_.swap(num_values);
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

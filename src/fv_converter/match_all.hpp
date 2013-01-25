@@ -29,5 +29,5 @@ class match_all : public key_matcher {
   }
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

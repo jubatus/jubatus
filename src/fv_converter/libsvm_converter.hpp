@@ -25,10 +25,11 @@ struct datum;
 
 class libsvm_converter {
  public:
-
-  static void convert(const std::string& line, datum& ret_datum,
-                      std::string& ret_label);
+  static void convert(
+      const std::string& line,
+      datum& ret_datum,
+      std::string& ret_label);
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

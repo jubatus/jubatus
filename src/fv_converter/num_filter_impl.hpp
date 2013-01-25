@@ -23,7 +23,7 @@ namespace fv_converter {
 
 class add_filter : public num_filter {
  public:
-  add_filter(double value)
+  explicit add_filter(double value)
       : value_(value) {
   }
 
@@ -35,5 +35,5 @@ class add_filter : public num_filter {
   double value_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

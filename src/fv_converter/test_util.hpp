@@ -16,11 +16,15 @@
 
 #pragma once
 
-#include <gtest/gtest.h>
+#include <utility>
 #include <vector>
+#include <gtest/gtest.h>
 
-namespace {
+namespace jubatus {
 
+// TODO(beam2d): Move this function to common or consider using ASSERT_EQ
+// directly.  If we continue using it, we must also rename it to follow our
+// convention.
 template<typename S, typename T>
 void PairVectorEquals(const std::vector<std::pair<S, T> >& expected,
                       const std::vector<std::pair<S, T> >& actual) {
@@ -35,5 +39,5 @@ void PairVectorEquals(const std::vector<std::pair<S, T> >& expected,
   }
 }
 
-}
+}  // namespace jubatus
 

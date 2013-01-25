@@ -30,5 +30,5 @@ class num_feature_factory {
   num_feature* create(const std::string& name, const param_t& params) const;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

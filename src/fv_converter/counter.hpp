@@ -28,7 +28,8 @@ template<class T>
 class counter {
  public:
   typedef pfi::data::unordered_map<T, unsigned> map_t;
-  typedef typename pfi::data::unordered_map<T, unsigned>::const_iterator const_iterator;
+  typedef typename pfi::data::unordered_map<T, unsigned>::const_iterator
+      const_iterator;
   typedef typename pfi::data::unordered_map<T, unsigned>::iterator iterator;
 
   bool contains(const T& key) const {
@@ -77,14 +78,16 @@ class counter {
     }
   }
 
-  MSGPACK_DEFINE (data_);
+  MSGPACK_DEFINE(data_);
+
   template<class Archiver>
   void serialize(Archiver &ar) {
     ar & MEMBER(data_);
   }
+
  private:
   pfi::data::unordered_map<T, unsigned> data_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

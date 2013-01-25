@@ -17,25 +17,31 @@
 #pragma once
 
 #include <map>
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/lang/scoped_ptr.h>
-#include "word_splitter.hpp"
 #include "dynamic_loader.hpp"
+#include "word_splitter.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
 class dynamic_splitter : public word_splitter {
  public:
-  dynamic_splitter(const std::string& path, const std::string& function,
-                   const std::map<std::string, std::string>& params);
+  dynamic_splitter(
+      const std::string& path,
+      const std::string& function,
+      const std::map<std::string, std::string>& params);
 
-  void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
+  void split(
+      const std::string& string,
+      std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
  private:
   dynamic_loader loader_;
   pfi::lang::scoped_ptr<word_splitter> impl_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
