@@ -14,16 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-
 #include <limits>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "regression_client.hpp"
+#include <gtest/gtest.h>
 
+#include "regression_client.hpp"
 #include "../regression/regression_test_util.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/converter_config.hpp"
