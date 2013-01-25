@@ -25,7 +25,6 @@
 #include "storage_type.hpp"
 #include "../common/type.hpp"
 #include "../common/key_manager.hpp"
-#include "index_storage.hpp"
 #include "sparse_matrix_storage.hpp"
 #include "recommender_storage_base.hpp"
 
