@@ -16,12 +16,16 @@
 
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 #include <gtest/gtest.h>
 #include "lsh_util.hpp"
 #include "lsh_vector.hpp"
 
-using namespace std;
+using std::pair;
+using std::string;
+using std::stringstream;
+using std::vector;
 
 namespace jubatus {
 namespace storage {
@@ -46,13 +50,14 @@ vector<float> make_dv(const string& str) {
   return v;
 }
 
-void check_probe(size_t expect_table, const string& expect_vec,
-                 const pair<size_t, lsh_vector>& actual) {
+void check_probe(size_t expect_table,
+    const string& expect_vec,
+    const pair<size_t, lsh_vector>& actual) {
   EXPECT_EQ(expect_table, actual.first);
   EXPECT_EQ(make_vector(expect_vec), actual.second);
 }
 
-}
+}  // namespace
 
 TEST(lsh_probe_generator, empty) {
   lsh_probe_generator gen(vector<float>(), 1);
@@ -97,5 +102,5 @@ TEST(lsh_probe_generator, multiple_tables) {
   check_probe(1u, "1 2 2", gen.get_next_table_and_vector());
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

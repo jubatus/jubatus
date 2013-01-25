@@ -31,5 +31,5 @@ class recommender_storage_base {
   virtual void mix(const std::string& lhs, std::string& rhs) const = 0;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

@@ -15,18 +15,28 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "inverted_index_storage.hpp"
+#include <algorithm>
 #include <cmath>
 #include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
-using namespace std;
-using namespace pfi::data;
+using std::istringstream;
+using std::make_pair;
+using std::ostringstream;
+using std::pair;
+using std::sort;
+using std::sqrt;
+using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace storage {
 
-static
-void convert_diff(sparse_matrix_storage& storage, map_float_t& norm,
-                  string& diff) {
+static void convert_diff(sparse_matrix_storage& storage,
+    map_float_t& norm,
+    string& diff) {
   ostringstream os;
   pfi::data::serialization::binary_oarchive bo(os);
   bo << storage;
@@ -34,9 +44,9 @@ void convert_diff(sparse_matrix_storage& storage, map_float_t& norm,
   diff = os.str();
 }
 
-static
-void revert_diff(const string& diff, sparse_matrix_storage& storage,
-                 map_float_t& norm) {
+static void revert_diff(const string& diff,
+    sparse_matrix_storage& storage,
+    map_float_t& norm) {
   istringstream is(diff);
   pfi::data::serialization::binary_iarchive bi(is);
   bi >> storage;
@@ -50,7 +60,7 @@ inverted_index_storage::~inverted_index_storage() {
 }
 
 void inverted_index_storage::set(const std::string& row,
-                                 const std::string& column, float val) {
+    const std::string& column, float val) {
   uint64_t column_id = column2id_.get_id_const(column);
 
   if (column_id == key_manager::NOTFOUND) {
@@ -64,7 +74,7 @@ void inverted_index_storage::set(const std::string& row,
 }
 
 float inverted_index_storage::get(const string& row,
-                                  const string& column) const {
+    const string& column) const {
   uint64_t column_id = column2id_.get_id_const(column);
   if (column_id == key_manager::NOTFOUND) {
     return 0.f;
@@ -87,8 +97,8 @@ float inverted_index_storage::get(const string& row,
 }
 
 float inverted_index_storage::get_from_tbl(const std::string& row,
-                                           uint64_t column_id, const tbl_t& tbl,
-                                           bool& exist) const {
+    uint64_t column_id, const tbl_t& tbl,
+    bool& exist) const {
   exist = false;
 
   if (column_id == key_manager::NOTFOUND) {
@@ -109,7 +119,7 @@ float inverted_index_storage::get_from_tbl(const std::string& row,
 }
 
 void inverted_index_storage::remove(const std::string& row,
-                                    const std::string& column) {
+    const std::string& column) {
   set(row, column, 0.f);
 }
 
@@ -139,7 +149,7 @@ void inverted_index_storage::get_diff(std::string& diff_str) const {
   sparse_matrix_storage diff;
   for (tbl_t::const_iterator it = inv_diff_.begin(); it != inv_diff_.end();
       ++it) {
-    vector < pair<string, float> > columns;
+    vector<pair<string, float> > columns;
     for (row_t::const_iterator it2 = it->second.begin();
         it2 != it->second.end(); ++it2) {
       columns.push_back(make_pair(column2id_.get_key(it2->first), it2->second));
@@ -162,12 +172,12 @@ void inverted_index_storage::set_mixed_and_clear_diff(
   map_float_t mixed_column2norm;
   revert_diff(mixed_diff_str, mixed_inv, mixed_column2norm);
 
-  vector < string > ids;
+  vector<string > ids;
   mixed_inv.get_all_row_ids(ids);
   for (size_t i = 0; i < ids.size(); ++i) {
     const string& row = ids[i];
     row_t& v = inv_[row];
-    vector < pair<string, float> > columns;
+    vector<pair<string, float> > columns;
     mixed_inv.get_row(row, columns);
     for (size_t j = 0; j < columns.size(); ++j) {
       size_t id = column2id_.get_id(columns[j].first);
@@ -198,12 +208,12 @@ void inverted_index_storage::mix(const string& lhs, string& rhs) const {
   revert_diff(rhs, rhs_inv_diff, rhs_column2norm_diff);
 
   // merge inv diffs
-  vector < string > ids;
+  vector<string> ids;
   lhs_inv_diff.get_all_row_ids(ids);
   for (size_t i = 0; i < ids.size(); ++i) {
     const string& row = ids[i];
 
-    vector < pair<string, float> > columns;
+    vector<pair<string, float> > columns;
     lhs_inv_diff.get_row(row, columns);
     rhs_inv_diff.set_row(row, columns);
   }
@@ -230,8 +240,8 @@ bool inverted_index_storage::load(std::istream& is) {
 }
 
 void inverted_index_storage::calc_scores(const sfv_t& query,
-                                         vector<pair<string, float> >& scores,
-                                         size_t ret_num) const {
+    vector<pair<string, float> >& scores,
+    size_t ret_num) const {
   float query_norm = calc_l2norm(query);
   if (query_norm == 0.f) {
     return;
@@ -243,7 +253,7 @@ void inverted_index_storage::calc_scores(const sfv_t& query,
     add_inp_scores(fid, val, i_scores);
   }
 
-  vector < pair<float, uint64_t> > sorted_scores;
+  vector<pair<float, uint64_t> > sorted_scores;
   for (pfi::data::unordered_map<uint64_t, float>::const_iterator it = i_scores
       .begin(); it != i_scores.end(); ++it) {
     float norm = calc_columnl2norm(it->first);
@@ -315,5 +325,5 @@ std::string inverted_index_storage::name() const {
   return string("inverted_index_storage");
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

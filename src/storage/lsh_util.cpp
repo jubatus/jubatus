@@ -18,12 +18,18 @@
 
 #include <algorithm>
 #include <cmath>
-#include <queue>
 #include <functional>
+#include <queue>
 #include <utility>
-#include <tr1/tuple>
+#include <vector>
 
-using namespace std;
+using std::copy;
+using std::greater;
+using std::make_pair;
+using std::pair;
+using std::sort;
+using std::vector;
+using std::priority_queue;
 
 namespace jubatus {
 namespace storage {
@@ -31,10 +37,11 @@ namespace storage {
 namespace {
 
 typedef pair<float, pair<int, vector<int> > > diff_type;
-typedef priority_queue<diff_type, vector<diff_type>, greater<diff_type> > heap_type;
+typedef priority_queue<diff_type, vector<diff_type>,
+    greater<diff_type> > heap_type;
 
 void partition(const vector<float>& hash, size_t num_hash_tables,
-               vector<vector<float> >& hashes) {
+    vector<vector<float> >& hashes) {
   const size_t hash_size = hash.size() / num_hash_tables;
   hashes.resize(num_hash_tables);
   for (size_t i = 0; i < num_hash_tables; ++i) {
@@ -50,8 +57,9 @@ void threshold(const vector<float>& hash, lsh_vector& lv) {
   }
 }
 
-lsh_vector perturbe(const lsh_vector& src, const vector<int>& diff,
-                    const vector<pair<float, int> >& cands) {
+lsh_vector perturbe(const lsh_vector& src,
+    const vector<int>& diff,
+    const vector<pair<float, int> >& cands) {
   lsh_vector ret(src);
   for (size_t i = 0; i < diff.size(); ++i) {
     const int d_idx = cands[diff[i]].second;
@@ -64,10 +72,10 @@ lsh_vector perturbe(const lsh_vector& src, const vector<int>& diff,
   return ret;
 }
 
-}
+}  // namespace
 
 lsh_probe_generator::lsh_probe_generator(const vector<float>& hash,
-                                         size_t num_hash_tables) {
+    size_t num_hash_tables) {
   partition(hash, num_hash_tables, hash_);
   base_.resize(hash_.size());
   for (size_t i = 0; i < hash_.size(); ++i) {
@@ -80,7 +88,7 @@ void lsh_probe_generator::init() {
 
   perturbation_sets_.resize(base_.size());
   for (size_t i = 0; i < base_.size(); ++i) {
-    vector < pair<float, int> > &cands = perturbation_sets_[i];
+    vector<pair<float, int> > &cands = perturbation_sets_[i];
     cands.resize(2 * base_size);
     for (int j = 0; j < base_size; ++j) {
       const float dist = hash_[i][j] - base_[i].get(j);
@@ -146,5 +154,5 @@ void lsh_probe_generator::next_perturbations() {
   }
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

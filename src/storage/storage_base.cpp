@@ -15,15 +15,16 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "storage_base.hpp"
+#include <string>
 #include <pficommon/text/json.h>
 
-using namespace std;
+using std::string;
 
 namespace jubatus {
 namespace storage {
 
 void storage_base::update(const string &feature, const string& inc_class,
-                          const string& dec_class, const val1_t& w) {
+    const string& dec_class, const val1_t& w) {
   feature_val1_t row;
   get(feature, row);
   float inc_class_val = w;
@@ -55,8 +56,8 @@ void storage_base::inp(const sfv_t& sfv, map_feature_val1_t& ret) {
 }
 
 void storage_base::bulk_update(const sfv_t& sfv, float step_width,
-                               const std::string& inc_class,
-                               const std::string& dec_class) {
+    const std::string& inc_class,
+    const std::string& dec_class) {
   for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
@@ -83,5 +84,5 @@ void storage_base::get_diff(features3_t& v) const {
 void storage_base::set_average_and_clear_diff(const features3_t&) {
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

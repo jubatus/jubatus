@@ -16,9 +16,10 @@
 
 #pragma once
 
-#include <vector>
 #include <stdint.h>
 #include <ostream>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
 
@@ -30,7 +31,7 @@ class lsh_vector {
   lsh_vector();
   lsh_vector(const lsh_vector& lv);
   explicit lsh_vector(size_t len);
-  lsh_vector(const std::vector<int>& v);
+  explicit lsh_vector(const std::vector<int>& v);
   ~lsh_vector();
 
   bool operator==(const lsh_vector& lv) const;
@@ -52,9 +53,9 @@ class lsh_vector {
 
  private:
   friend class pfi::data::hash<lsh_vector>;
-
   friend class pfi::data::serialization::access;
-  template<class Ar>
+
+  template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(values_);
   }
@@ -72,8 +73,8 @@ inline std::ostream& operator<<(std::ostream& os, const lsh_vector& lv) {
   return os;
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus
 
 namespace pfi {
 namespace data {
@@ -95,5 +96,5 @@ class hash<jubatus::storage::lsh_vector> {
   }
 };
 
-}
-}
+}  // namespace data
+}  // namespace pfi

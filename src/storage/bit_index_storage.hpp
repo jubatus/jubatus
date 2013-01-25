@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
@@ -40,8 +43,8 @@ class bit_index_storage : public recommender_storage_base {
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
   void similar_row(const bit_vector& bv,
-                   std::vector<std::pair<std::string, float> >& ids,
-                   uint64_t ret_num) const;
+      std::vector<std::pair<std::string, float> >& ids,
+      uint64_t ret_num) const;
   std::string name() const;
 
   bool save(std::ostream& os);
@@ -53,7 +56,7 @@ class bit_index_storage : public recommender_storage_base {
 
  private:
   friend class pfi::data::serialization::access;
-  template<class Ar>
+  template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(bitvals_) & MEMBER(bitvals_diff_);
   }
@@ -62,5 +65,5 @@ class bit_index_storage : public recommender_storage_base {
   bit_table_t bitvals_diff_;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

@@ -36,5 +36,5 @@ class norm_none : public norm_base {
   pfi::data::unordered_map<std::string, float> sq_norms_;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

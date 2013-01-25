@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <map>
+#include <string>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/intern.h>
@@ -33,32 +35,33 @@ class local_storage_mixture : public storage_base {
   void get2(const std::string &feature, feature_val2_t& ret);
   void get3(const std::string &feature, feature_val3_t& ret);
 
-  void inp(const sfv_t& sfv, map_feature_val1_t& ret);  /// inner product 
+  void inp(const sfv_t& sfv, map_feature_val1_t& ret);  /// inner product
 
   void get_diff(features3_t& ret) const;
   void set_average_and_clear_diff(const features3_t& average);
 
   void set(const std::string &feature, const std::string &klass,
-           const val1_t& w);
+      const val1_t& w);
   void set2(const std::string &feature, const std::string &klass,
-            const val2_t& w);
+      const val2_t& w);
   void set3(const std::string &feature, const std::string &klass,
-            const val3_t& w);
+      const val3_t& w);
 
   void get_status(std::map<std::string, std::string>&);
 
   void update(const std::string& feature, const std::string& inc_class,
-              const std::string& dec_class, const val1_t& v);
+      const std::string& dec_class, const val1_t& v);
 
   void bulk_update(const sfv_t& sfv, float step_width,
-                   const std::string& inc_class, const std::string& dec_class);
+      const std::string& inc_class, const std::string& dec_class);
 
   bool save(std::ostream& os);
   bool load(std::istream& is);
   std::string type() const;
+
  private:
   friend class pfi::data::serialization::access;
-  template<class Ar>
+  template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(tbl_) & MEMBER(class2id_) & MEMBER(tbl_diff_);
   }
@@ -70,5 +73,5 @@ class local_storage_mixture : public storage_base {
   id_features3_t tbl_diff_;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

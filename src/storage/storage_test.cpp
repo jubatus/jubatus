@@ -14,16 +14,35 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <algorithm>
+#include <map>
+#include <string>
 #include <gtest/gtest.h>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
 #include "local_storage.hpp"
 #include "local_storage_mixture.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace jubatus::storage;
-using namespace pfi::data::serialization;
+using std::istream;
+using std::make_pair;
+using std::map;
+using std::ofstream;
+using std::sort;
+using std::stringstream;
+using std::string;
+using jubatus::key_manager;
+using jubatus::sfv_t;
+using jubatus::storage::feature_val1_t;
+using jubatus::storage::feature_val2_t;
+using jubatus::storage::feature_val3_t;
+using jubatus::storage::map_feature_val1_t;
+using jubatus::storage::val1_t;
+using jubatus::storage::val2_t;
+using jubatus::storage::val3_t;
+using jubatus::storage::local_storage;
+using jubatus::storage::local_storage_mixture;
+using pfi::data::serialization::binary_iarchive;
+using pfi::data::serialization::binary_oarchive;
 
 namespace jubatus {
 namespace storage {
@@ -33,7 +52,7 @@ class stub_storage : public storage_base {
   map<string, map<string, val3_t> > data_;
 
   friend class pfi::data::serialization::access;
-  template<class Ar>
+  template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(data_);
   }
@@ -57,6 +76,7 @@ class stub_storage : public storage_base {
       ret.push_back(make_pair(it->first, val2_t(it->second.v1, it->second.v2)));
     }
   }
+
   void get3(const std::string &feature, feature_val3_t& ret) {
     const map<string, val3_t>& f = data_[feature];
     for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
@@ -66,15 +86,17 @@ class stub_storage : public storage_base {
   }
 
   void set(const std::string &feature, const std::string &klass,
-           const val1_t& w) {
+      const val1_t& w) {
     data_[feature][klass] = val3_t(w, 0, 0);
   }
+
   void set2(const std::string &feature, const std::string &klass,
-            const val2_t& w) {
+      const val2_t& w) {
     data_[feature][klass] = val3_t(w.v1, w.v2, 0);
   }
+
   void set3(const std::string &feature, const std::string &klass,
-            const val3_t& w) {
+      const val3_t& w) {
     data_[feature][klass] = w;
   }
 
@@ -83,19 +105,20 @@ class stub_storage : public storage_base {
     oa << *this;
     return true;
   }
+
   bool load(std::istream& is) {
     pfi::data::serialization::binary_iarchive ia(is);
     ia >> *this;
     return true;
   }
+
   std::string type() const {
     return "stub_storage";
   }
-  ;
-
 };
-}
-}
+
+}  // namespace storage
+}  // namespace jubatus
 
 TEST(key_manager, trivial) {
   key_manager km;
@@ -108,14 +131,13 @@ TEST(key_manager, trivial) {
   oa << km;
 }
 
-template<typename T>
+template <typename T>
 class storage_test : public testing::Test {
 };
 
-TYPED_TEST_CASE_P (storage_test);
+TYPED_TEST_CASE_P(storage_test);
 
-TYPED_TEST_P(storage_test, val1d)
-{
+TYPED_TEST_P(storage_test, val1d) {
   TypeParam s;
 
   s.set("a", "x", 1);
@@ -152,8 +174,7 @@ TYPED_TEST_P(storage_test, val1d)
   }
 }
 
-TYPED_TEST_P(storage_test, val2d)
-{
+TYPED_TEST_P(storage_test, val2d) {
   TypeParam s;
 
   s.set2("a", "x", val2_t(1, 11));
@@ -190,8 +211,7 @@ TYPED_TEST_P(storage_test, val2d)
   }
 }
 
-TYPED_TEST_P(storage_test, val3d)
-{
+TYPED_TEST_P(storage_test, val3d) {
   TypeParam s;
 
   s.set3("a", "x", val3_t(1, 11, 111));
@@ -228,9 +248,8 @@ TYPED_TEST_P(storage_test, val3d)
   }
 }
 
-TYPED_TEST_P(storage_test, serialize)
-{
-  //const char* tmp_file_name = "./tmp_local_storage";
+TYPED_TEST_P(storage_test, serialize) {
+  // const char* tmp_file_name = "./tmp_local_storage";
 
   stringstream ss;
   {
@@ -241,17 +260,17 @@ TYPED_TEST_P(storage_test, serialize)
     s.set3("b", "x", val3_t(12, 1212, 121212));
     s.set3("b", "z", val3_t(45, 4545, 454545));
 
-    //ofstream ofs(tmp_file_name);
+    // ofstream ofs(tmp_file_name);
     binary_oarchive oa(ss);
     oa << s;
   }
 
   {
     TypeParam s;
-    //ifstream ifs(tmp_file_name);
+    // ifstream ifs(tmp_file_name);
     binary_iarchive ia(ss);
     ia >> s;
-    //unlink(tmp_file_name);
+    // unlink(tmp_file_name);
 
     {
       feature_val3_t mm;
@@ -299,9 +318,9 @@ TYPED_TEST_P(storage_test, inp) {
   s.inp(fv, ret);
 
   EXPECT_EQ(2u, ret.size());
-  ASSERT_TRUE(ret.count("class_x") > 0);
-  ASSERT_TRUE(ret.count("class_y") == 0);
-  ASSERT_TRUE(ret.count("class_z") > 0);
+  ASSERT_LT(0, ret.count("class_x"));
+  ASSERT_EQ(0, ret.count("class_y"));
+  ASSERT_LT(0, ret.count("class_z"));
 
   EXPECT_FLOAT_EQ(24.0, ret["class_x"]);
   EXPECT_FLOAT_EQ(90.0, ret["class_z"]);
@@ -311,23 +330,23 @@ TYPED_TEST_P(storage_test, inp) {
   s.inp(fv, ret);
 
   EXPECT_EQ(3u, ret.size());
-  ASSERT_TRUE(ret.count("class_x") > 0);
-  ASSERT_TRUE(ret.count("class_y") > 0);
-  ASSERT_TRUE(ret.count("class_z") > 0);
+  ASSERT_LT(0, ret.count("class_x"));
+  ASSERT_LT(0, ret.count("class_y"));
+  ASSERT_LT(0, ret.count("class_z"));
 
   EXPECT_FLOAT_EQ(27.0, ret["class_x"]);
   EXPECT_FLOAT_EQ(6.0, ret["class_y"]);
   EXPECT_FLOAT_EQ(99.0, ret["class_z"]);
 }
 
-template<typename T>
+template <typename T>
 void get_expect_status(map<string, string>& before,
-                       map<string, string>& after) {
+    map<string, string>& after) {
 }
 
 template<>
 void get_expect_status<local_storage>(map<string, string>& before,
-                                      map<string, string>& after) {
+    map<string, string>& after) {
   before["num_features"] = "0";
   before["num_classes"] = "0";
 
@@ -337,7 +356,7 @@ void get_expect_status<local_storage>(map<string, string>& before,
 
 template<>
 void get_expect_status<local_storage_mixture>(map<string, string>& before,
-                                              map<string, string>& after) {
+    map<string, string>& after) {
   before["num_features"] = "0";
   before["num_classes"] = "0";
 
@@ -354,7 +373,7 @@ TYPED_TEST_P(storage_test, get_status) {
   get_expect_status<TypeParam>(expect_before, expect_after);
   for (map<string, string>::const_iterator it = expect_before.begin();
       it != expect_before.end(); ++it) {
-    ASSERT_TRUE(status.count(it->first) > 0);
+    ASSERT_LT(0, status.count(it->first));
     EXPECT_EQ(it->second, status[it->first]);
   }
 
@@ -370,7 +389,7 @@ TYPED_TEST_P(storage_test, get_status) {
 
   for (map<string, string>::const_iterator it = expect_after.begin();
       it != expect_after.end(); ++it) {
-    ASSERT_TRUE(status.count(it->first) > 0);
+    ASSERT_LT(0, status.count(it->first));
     EXPECT_EQ(it->second, status[it->first]);
   }
 }
@@ -473,5 +492,6 @@ REGISTER_TYPED_TEST_CASE_P(storage_test,
     serialize, inp, get_status, update, bulk_update,
     bulk_update_no_decrease);
 
-typedef testing::Types<stub_storage, local_storage, local_storage_mixture> storage_types;
+typedef testing::Types<jubatus::storage::stub_storage, local_storage,
+    local_storage_mixture> storage_types;
 INSTANTIATE_TYPED_TEST_CASE_P(st, storage_test, storage_types);

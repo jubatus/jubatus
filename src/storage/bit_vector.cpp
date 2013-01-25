@@ -14,10 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <iostream>
 #include "bit_vector.hpp"
+#include <algorithm>
+#include <iostream>
 
-using namespace std;
+using std::equal;
 
 namespace jubatus {
 namespace storage {
@@ -70,5 +71,6 @@ uint64_t bit_vector::calc_hamming_similarity(const bit_vector& bv) const {
       - pop_count(*a ^ *b);
   return heads_match + tail_match + (bit_num_ + bv.bit_num_ - 2 * bit_num);
 }
-}
-}
+
+}  // namespace storage
+}  // namespace jubatus

@@ -17,8 +17,11 @@
 #include "lsh_vector.hpp"
 #include <algorithm>
 #include <stdexcept>
+#include <vector>
 
-using namespace std;
+using std::ostream;
+using std::vector;
+using std::out_of_range;
 
 namespace jubatus {
 namespace storage {
@@ -105,5 +108,5 @@ void lsh_vector::swap(lsh_vector& lv) {
   values_.swap(lv.values_);
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

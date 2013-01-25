@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "norm_l2.hpp"
+#include <string>
 
 namespace jubatus {
 namespace storage {
@@ -44,5 +45,5 @@ float norm_l2::calc_norm(const std::string& row) const {
   return std::sqrt(it->second);
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

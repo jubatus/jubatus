@@ -15,6 +15,8 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "norm_l1.hpp"
+#include <cmath>
+#include <string>
 
 namespace jubatus {
 namespace storage {
@@ -31,8 +33,8 @@ void norm_l1::clear() {
 
 void norm_l1::notify(const std::string& row, float old_val, float new_val) {
   float& v = sq_norms_[row];
-  v -= fabs(old_val);
-  v += fabs(new_val);
+  v -= std::fabs(old_val);
+  v += std::fabs(new_val);
 }
 
 float norm_l1::calc_norm(const std::string& row) const {
@@ -44,5 +46,5 @@ float norm_l1::calc_norm(const std::string& row) const {
   return it->second;
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

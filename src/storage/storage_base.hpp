@@ -16,6 +16,8 @@
 
 #pragma once
 
+
+#include <iostream>
 #include <map>
 #include <string>
 #include <utility>
@@ -23,8 +25,6 @@
 #include "storage_type.hpp"
 #include "../common/exception.hpp"
 #include "../common/type.hpp"
-
-#include <iostream>
 
 namespace jubatus {
 namespace storage {
@@ -38,14 +38,14 @@ class storage_base {
   virtual void get2(const std::string &feature, feature_val2_t& ret) = 0;
   virtual void get3(const std::string &feature, feature_val3_t& ret) = 0;
 
-  virtual void inp(const sfv_t& sfv, map_feature_val1_t& ret);  /// inner product 
+  virtual void inp(const sfv_t& sfv, map_feature_val1_t& ret);  // inner product
 
   virtual void set(const std::string &feature, const std::string &klass,
-                   const val1_t& w) = 0;
+      const val1_t& w) = 0;
   virtual void set2(const std::string &feature, const std::string &klass,
-                    const val2_t& w) = 0;
+      const val2_t& w) = 0;
   virtual void set3(const std::string &feature, const std::string &klass,
-                    const val3_t& w) = 0;
+      const val3_t& w) = 0;
 
   virtual void get_status(std::map<std::string, std::string>&) = 0;
 
@@ -53,23 +53,22 @@ class storage_base {
   virtual bool load(std::istream&) = 0;
 
   virtual void update(const std::string& feature, const std::string& inc_class,
-                      const std::string& dec_class, const val1_t& w);
+      const std::string& dec_class, const val1_t& w);
 
   virtual void bulk_update(const sfv_t& sfv, float step_width,
-                           const std::string& inc_class,
-                           const std::string& dec_class);
+      const std::string& inc_class,
+      const std::string& dec_class);
 
   virtual void get_diff(features3_t&) const;
   virtual void set_average_and_clear_diff(const features3_t&);
 
   virtual std::string type() const = 0;
-
 };
 
 class storage_exception : public jubatus::exception::jubaexception<
     storage_exception> {
  public:
-  storage_exception(const std::string &msg)
+  explicit storage_exception(const std::string &msg)
       : msg(msg) {
   }
   ~storage_exception() throw () {
@@ -81,5 +80,5 @@ class storage_exception : public jubatus::exception::jubaexception<
   std::string msg;
 };
 
-}
-}  // jubatus
+}  // namespace storage
+}  // namespace jubatus

@@ -25,7 +25,7 @@ class norm_base {
  public:
   norm_base() {
   }
-  ;
+
   virtual ~norm_base() {
   }
   virtual void clear() = 0;
@@ -33,5 +33,5 @@ class norm_base {
   virtual float calc_norm(const std::string& row) const = 0;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

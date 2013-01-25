@@ -50,5 +50,5 @@ class lsh_probe_generator {
   heap_type heap_;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus
