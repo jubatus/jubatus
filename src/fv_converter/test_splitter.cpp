@@ -14,38 +14,41 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <iostream>
-#include <vector>
-#include <string>
 #include <map>
+#include <string>
+#include <utility>
+#include <vector>
 #include "word_splitter.hpp"
 
-using namespace std;
-using namespace jubatus::fv_converter;
+namespace jubatus {
+namespace fv_converter {
 
 class my_splitter : public word_splitter {
  public:
-  void split(const std::string& str,
-             std::vector<std::pair<size_t, size_t> >& bounds) const {
+  void split(
+      const std::string& str,
+      std::vector<std::pair<size_t, size_t> >& bounds) const {
     size_t p = 0;
     while (true) {
       size_t b = str.find_first_not_of(' ', p);
-      if (b == string::npos)
+      if (b == std::string::npos) {
         break;
+      }
       size_t e = str.find_first_of(' ', b);
-      if (e == string::npos)
+      if (e == std::string::npos) {
         e = str.size();
-      bounds.push_back(make_pair(b, e - b));
+      }
+      bounds.push_back(std::make_pair(b, e - b));
       p = e;
     }
   }
 };
 
 extern "C" {
-
-word_splitter* create(const map<string, string>& params) {
+word_splitter* create(const std::map<std::string, std::string>& params) {
   return new my_splitter();
 }
-
 }
 
+}  // namespace fv_converter
+}  // namespace jubatus

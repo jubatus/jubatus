@@ -14,24 +14,29 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "num_feature.hpp"
-#include <string>
 #include <map>
+#include <string>
+#include <utility>
+#include <vector>
+#include "num_feature.hpp"
 
-using namespace std;
+namespace jubatus {
+namespace fv_converter {
 
-class my_num_feature : public jubatus::fv_converter::num_feature {
+class my_num_feature : public num_feature {
  public:
-  void add_feature(const std::string& key, double value,
-                   vector<pair<string, float> >& ret_fv) const {
-    ret_fv.push_back(make_pair(key, value + 1));
+  void add_feature(
+      const std::string& key, double value,
+      std::vector<std::pair<std::string, float> >& ret_fv) const {
+    ret_fv.push_back(std::make_pair(key, value + 1));
   }
 };
 
 extern "C" {
-
-jubatus::fv_converter::num_feature* create(const map<string, string>& params) {
+  num_feature* create(const std::map<std::string, std::string>& params) {
   return new my_num_feature();
 }
-
 }
+
+}  // namespace fv_converter
+}  // namespace jubatus
