@@ -14,6 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <algorithm>
 #include <fstream>
 #include <string>
 
@@ -22,17 +23,16 @@
 #include <pficommon/data/serialization/unordered_map.h>
 #include "local_storage_mixture.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace jubatus::storage;
-using namespace pfi::data::serialization;
+using std::make_pair;
+using std::stringstream;
+using std::sort;
 
 // common tests for storages are written in storage_test.cpp
 
 namespace jubatus {
+namespace storage {
 
 TEST(local_storage_mixture, save_load) {
-
   local_storage_mixture st;
   {
     st.set3("a", "x", val3_t(1, 11, 111));
@@ -43,7 +43,6 @@ TEST(local_storage_mixture, save_load) {
   }
   stringstream ss;
   st.save(ss);
-
 }
 
 TEST(local_storage_mixture, get_diff) {
@@ -148,4 +147,5 @@ TEST(local_storage_mixture, get_diff) {
   }
 }
 
-}
+}  // namespace storage
+}  // namespace jubatus

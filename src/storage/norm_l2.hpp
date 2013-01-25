@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include <string>
 #include <cmath>
+#include <string>
 #include <pficommon/data/unordered_map.h>
 #include "norm_base.hpp"
 
@@ -36,5 +36,5 @@ class norm_l2 : public norm_base {
   pfi::data::unordered_map<std::string, float> sq_norms_;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

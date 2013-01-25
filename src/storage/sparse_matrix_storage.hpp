@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
@@ -34,11 +37,11 @@ class sparse_matrix_storage {
 
   void set(const std::string& row, const std::string& column, float val);
   void set_row(const std::string& row,
-               const std::vector<std::pair<std::string, float> >& columns);
+      const std::vector<std::pair<std::string, float> >& columns);
 
   float get(const std::string& row, const std::string& column) const;
   void get_row(const std::string& row,
-               std::vector<std::pair<std::string, float> >& columns) const;
+      std::vector<std::pair<std::string, float> >& columns) const;
 
   float calc_l2norm(const std::string& row) const;
   void remove(const std::string& row, const std::string& column);
@@ -51,7 +54,7 @@ class sparse_matrix_storage {
 
  private:
   friend class pfi::data::serialization::access;
-  template<class Ar>
+  template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(tbl_) & MEMBER(column2id_);
   }
@@ -60,5 +63,5 @@ class sparse_matrix_storage {
   key_manager column2id_;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

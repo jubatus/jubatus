@@ -27,5 +27,5 @@ class storage_factory {
   static storage_base* create_storage(const std::string& name);
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

@@ -16,11 +16,12 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <map> 
-#include <functional>
 #include <algorithm>
+#include <functional>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 #include <msgpack.hpp>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/serialization.h>
@@ -206,7 +207,7 @@ struct val3_t {
 
  private:
   friend class pfi::data::serialization::access;
-  template<class Ar>
+  template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(v1) & MEMBER(v2) & MEMBER(v3);
   }
@@ -222,14 +223,17 @@ typedef std::vector<std::pair<std::string, feature_val3_t> > features3_t;
 
 typedef pfi::data::unordered_map<std::string, val1_t> map_feature_val1_t;
 typedef pfi::data::unordered_map<std::string, val3_t> map_feature_val3_t;
-typedef pfi::data::unordered_map<std::string, map_feature_val3_t> map_features3_t;
+typedef pfi::data::unordered_map<std::string, map_feature_val3_t>
+    map_features3_t;
 
 namespace detail {
 
-template<class E, class F>
-std::vector<std::pair<std::string, E> > &
-binop(std::vector<std::pair<std::string, E> > &lhs,
-      std::vector<std::pair<std::string, E> > rhs, F f, E default_value = E()) {
+template <class E, class F>
+std::vector<std::pair<std::string, E> >& binop(
+    std::vector<std::pair<std::string, E> > &lhs,
+    std::vector<std::pair<std::string, E> > rhs,
+    F f,
+    E default_value = E()) {
   std::sort(lhs.begin(), lhs.end());
   std::sort(rhs.begin(), rhs.end());
 
@@ -256,95 +260,100 @@ binop(std::vector<std::pair<std::string, E> > &lhs,
   return lhs;
 }
 
-template<class E>
-std::vector<std::pair<std::string, E> > &
-mult_scalar(std::vector<std::pair<std::string, E> > &lhs, double d) {
+template <class E>
+std::vector<std::pair<std::string, E> >& mult_scalar(
+    std::vector<std::pair<std::string, E> >& lhs,
+    double d) {
   for (size_t i = 0; i < lhs.size(); ++i)
     lhs[i].second = lhs[i].second * d;
   return lhs;
 }
 
-}  // detail
+}  // namespace detail
 
-template<class E>
+template <class E>
 inline std::vector<std::pair<std::string, E> > operator +(
     std::vector<std::pair<std::string, E> > lhs,
-    const std::vector<std::pair<std::string, E> > &rhs) {
+    const std::vector<std::pair<std::string, E> >& rhs) {
   return lhs += rhs;
 }
 
-template<class E>
+template <class E>
 inline std::vector<std::pair<std::string, E> > &
-operator +=(std::vector<std::pair<std::string, E> >&lhs,
+operator +=(std::vector<std::pair<std::string, E> >& lhs,
             const std::vector<std::pair<std::string, E> > &rhs) {
   return detail::binop(lhs, rhs, std::plus<E>());
 }
 
-template<class E>
+template <class E>
 inline std::vector<std::pair<std::string, E> > operator -(
     std::vector<std::pair<std::string, E> > lhs,
-    const std::vector<std::pair<std::string, E> > &rhs) {
+    const std::vector<std::pair<std::string, E> >& rhs) {
   return lhs -= rhs;
 }
 
-template<class E>
+template <class E>
 inline std::vector<std::pair<std::string, E> > &
-operator -=(std::vector<std::pair<std::string, E> >&lhs,
-            const std::vector<std::pair<std::string, E> > &rhs) {
+operator -=(std::vector<std::pair<std::string, E> >& lhs,
+            const std::vector<std::pair<std::string, E> >& rhs) {
   return detail::binop(lhs, rhs, std::minus<E>());
 }
 
-template<class E>
+template <class E>
 inline std::vector<std::pair<std::string, E> > operator *(
     std::vector<std::pair<std::string, E> > lhs,
-    const std::vector<std::pair<std::string, E> > &rhs) {
+    const std::vector<std::pair<std::string, E> >& rhs) {
   return lhs *= rhs;
 }
 
-template<class E>
+template <class E>
 inline std::vector<std::pair<std::string, E> > &
-operator *=(std::vector<std::pair<std::string, E> >&lhs,
-            const std::vector<std::pair<std::string, E> > &rhs) {
+operator *=(std::vector<std::pair<std::string, E> >& lhs,
+            const std::vector<std::pair<std::string, E> >& rhs) {
   return detail::binop(lhs, rhs, std::multiplies<E>());
 }
 
-template<class E>
+template <class E>
 inline std::vector<std::pair<std::string, E> > operator /(
     std::vector<std::pair<std::string, E> > lhs,
-    const std::vector<std::pair<std::string, E> > &rhs) {
+    const std::vector<std::pair<std::string, E> >& rhs) {
   return lhs /= rhs;
 }
 
-template<class E>
-inline std::vector<std::pair<std::string, E> > &
-operator /=(std::vector<std::pair<std::string, E> >&lhs,
-            const std::vector<std::pair<std::string, E> > &rhs) {
+template <class E>
+inline std::vector<std::pair<std::string, E> >& operator /=(
+    std::vector<std::pair<std::string, E> >& lhs,
+    const std::vector<std::pair<std::string, E> >& rhs) {
   return detail::binop(lhs, rhs, std::divides<E>());
 }
 
-template<class E>
+template <class E>
 inline std::vector<std::pair<std::string, E> > operator *(
-    std::vector<std::pair<std::string, E> > lhs, double d) {
+    std::vector<std::pair<std::string, E> > lhs,
+    double d) {
   return lhs *= d;
 }
 
-template<class E>
-inline std::vector<std::pair<std::string, E> > &
-operator *=(std::vector<std::pair<std::string, E> >&lhs, double d) {
+template <class E>
+inline std::vector<std::pair<std::string, E> >& operator *=(
+    std::vector<std::pair<std::string, E> >&lhs,
+    double d) {
   return detail::mult_scalar(lhs, d);
 }
 
-template<class E>
+template <class E>
 inline std::vector<std::pair<std::string, E> > operator /(
-    std::vector<std::pair<std::string, E> > lhs, double d) {
+    std::vector<std::pair<std::string, E> > lhs,
+    double d) {
   return lhs /= d;
 }
 
-template<class E>
-inline std::vector<std::pair<std::string, E> > &
-operator /=(std::vector<std::pair<std::string, E> >&lhs, double d) {
+template <class E>
+inline std::vector<std::pair<std::string, E> >& operator /=(
+    std::vector<std::pair<std::string, E> >& lhs,
+    double d) {
   return detail::mult_scalar(lhs, 1.0 / d);
 }
 
-}  // storage
-}  // jubatus
+}  // namespace storage
+}  // namespace jubatus

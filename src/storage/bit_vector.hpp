@@ -16,8 +16,9 @@
 
 #pragma once
 
-#include <vector>
 #include <stdint.h>
+#include <algorithm>
+#include <vector>
 #include <iostream>
 #include <pficommon/data/serialization.h>
 
@@ -66,7 +67,7 @@ class bit_vector {
 
  private:
   friend class pfi::data::serialization::access;
-  template<class Ar>
+  template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(bits_) & MEMBER(bit_num_);
   }
@@ -74,5 +75,6 @@ class bit_vector {
   std::vector<uint64_t> bits_;
   uint64_t bit_num_;
 };
-}
-}
+
+}  // namespace storage
+}  // namespace jubatus

@@ -1,11 +1,34 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 #include <iostream>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 #include <gtest/gtest.h>
 #include "bit_index_storage.hpp"
 
+using std::pair;
+using std::stringstream;
+using std::string;
+using std::vector;
+
 namespace jubatus {
 namespace storage {
-
-using namespace std;
 
 bit_vector make_vector(const string& b) {
   bit_vector v;
@@ -110,5 +133,5 @@ TEST(bit_index_storage, mix) {
   EXPECT_TRUE(v == bit_vector());
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

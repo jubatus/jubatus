@@ -17,14 +17,16 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
+#include <vector>
 
 namespace jubatus {
 namespace storage {
 
-template<typename T, typename Comp = std::less<T> >
+template <typename T, typename Comp = std::less<T> >
 class fixed_size_heap {
  public:
-  fixed_size_heap(size_t max)
+  explicit fixed_size_heap(size_t max)
       : max_size_(max),
         comp_(Comp()) {
   }
@@ -69,5 +71,5 @@ class fixed_size_heap {
   const Comp comp_;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

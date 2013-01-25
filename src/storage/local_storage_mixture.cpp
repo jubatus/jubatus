@@ -15,11 +15,13 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <cmath>
+#include <map>
+#include <string>
+#include <vector>
 #include <pficommon/data/intern.h>
 #include "local_storage_mixture.hpp"
 
-using namespace std;
-using namespace pfi::data;
+using std::string;
 
 namespace jubatus {
 namespace storage {
@@ -31,7 +33,7 @@ void increase(val3_t& a, const val3_t& b) {
   a.v2 += b.v2;
   a.v3 += b.v3;
 }
-}
+}  // namespace
 
 local_storage_mixture::local_storage_mixture() {
 }
@@ -40,7 +42,7 @@ local_storage_mixture::~local_storage_mixture() {
 }
 
 bool local_storage_mixture::get_internal(const string& feature,
-                                         id_feature_val3_t& ret) const {
+    id_feature_val3_t& ret) const {
   ret.clear();
   id_features3_t::const_iterator it = tbl_.find(feature);
 
@@ -63,7 +65,7 @@ bool local_storage_mixture::get_internal(const string& feature,
 }
 
 void local_storage_mixture::get(const std::string &feature,
-                                feature_val1_t& ret) {
+    feature_val1_t& ret) {
   ret.clear();
   id_feature_val3_t m3;
   get_internal(feature, m3);
@@ -74,7 +76,7 @@ void local_storage_mixture::get(const std::string &feature,
 }
 
 void local_storage_mixture::get2(const std::string &feature,
-                                 feature_val2_t& ret) {
+    feature_val2_t& ret) {
   ret.clear();
   id_feature_val3_t m3;
   get_internal(feature, m3);
@@ -87,7 +89,7 @@ void local_storage_mixture::get2(const std::string &feature,
 }
 
 void local_storage_mixture::get3(const std::string &feature,
-                                 feature_val3_t& ret) {
+    feature_val3_t& ret) {
   ret.clear();
   id_feature_val3_t m3;
   get_internal(feature, m3);
@@ -119,15 +121,17 @@ void local_storage_mixture::inp(const sfv_t& sfv, map_feature_val1_t& ret) {
   }
 }
 
-void local_storage_mixture::set(const string &feature, const string& klass,
-                                const val1_t& w) {
+void local_storage_mixture::set(const string &feature,
+    const string& klass,
+    const val1_t& w) {
   uint64_t class_id = class2id_.get_id(klass);
   float w_in_table = tbl_[feature][class_id].v1;
   tbl_diff_[feature][class_id].v1 = w - w_in_table;
 }
 
-void local_storage_mixture::set2(const string &feature, const string& klass,
-                                 const val2_t& w) {
+void local_storage_mixture::set2(const string &feature,
+    const string& klass,
+    const val2_t& w) {
   uint64_t class_id = class2id_.get_id(klass);
   float w1_in_table = tbl_[feature][class_id].v1;
   float w2_in_table = tbl_[feature][class_id].v2;
@@ -137,8 +141,9 @@ void local_storage_mixture::set2(const string &feature, const string& klass,
   triple.v2 = w.v2 - w2_in_table;
 }
 
-void local_storage_mixture::set3(const string &feature, const string& klass,
-                                 const val3_t& w) {
+void local_storage_mixture::set3(const string &feature,
+    const string& klass,
+    const val3_t& w) {
   uint64_t class_id = class2id_.get_id(klass);
   val3_t v = tbl_[feature][class_id];
   tbl_diff_[feature][class_id] = w - v;
@@ -153,16 +158,17 @@ void local_storage_mixture::get_status(
 }
 
 void local_storage_mixture::update(const string &feature,
-                                   const string& inc_class,
-                                   const string& dec_class, const val1_t& v) {
+    const string& inc_class,
+    const string& dec_class, const val1_t& v) {
   id_feature_val3_t& feature_row = tbl_diff_[feature];
   feature_row[class2id_.get_id(inc_class)].v1 += v;
   feature_row[class2id_.get_id(dec_class)].v1 -= v;
 }
 
-void local_storage_mixture::bulk_update(const sfv_t& sfv, float step_width,
-                                        const string& inc_class,
-                                        const string& dec_class) {
+void local_storage_mixture::bulk_update(const sfv_t& sfv,
+    float step_width,
+    const string& inc_class,
+    const string& dec_class) {
   uint64_t inc_id = class2id_.get_id(inc_class);
   if (dec_class != "") {
     uint64_t dec_id = class2id_.get_id(dec_class);
@@ -220,10 +226,10 @@ bool local_storage_mixture::load(std::istream& is) {
   ia >> *this;
   return true;
 }
+
 std::string local_storage_mixture::type() const {
   return "local_storage_mixture";
 }
 
-}
-}
-
+}  // namespace storage
+}  // namespace jubatus

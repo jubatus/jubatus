@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "norm_none.hpp"
+#include <string>
 
 namespace jubatus {
 namespace storage {
@@ -35,5 +36,5 @@ float norm_none::calc_norm(const std::string& row) const {
   return 0.f;
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

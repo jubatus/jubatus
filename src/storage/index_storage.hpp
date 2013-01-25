@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <string>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
@@ -38,5 +39,5 @@ class index_storage {
  private:
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

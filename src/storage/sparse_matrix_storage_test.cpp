@@ -1,11 +1,37 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <utility>
+#include <vector>
 #include <gtest/gtest.h>
 #include "sparse_matrix_storage.hpp"
 #include "norm.hpp"
 
+using std::make_pair;
+using std::pair;
+using std::string;
+using std::stringstream;
+using std::sort;
+using std::vector;
+
 namespace jubatus {
 namespace storage {
-
-using namespace std;
 
 TEST(sparse_matrix_storage, empty) {
   sparse_matrix_storage s;
@@ -93,7 +119,7 @@ TEST(sparse_matrix_storage, calc_l2norm) {
   s.set("r1", "c1", 1.0);
   s.set("r1", "c2", 2.0);
   s.set("r1", "c3", 3.0);
-  EXPECT_FLOAT_EQ(sqrt(14.0), s.calc_l2norm("r1"));
+  EXPECT_FLOAT_EQ(std::sqrt(14.0), s.calc_l2norm("r1"));
 }
 
 TEST(sparse_matrix_storage, save_load) {
@@ -147,5 +173,5 @@ TEST(sparse_matrix_storage, clear) {
   EXPECT_EQ(0.0, s.get("r1", "c1"));
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

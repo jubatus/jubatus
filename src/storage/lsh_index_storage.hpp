@@ -18,6 +18,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <utility>
 #include <vector>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
@@ -34,11 +35,12 @@ struct lsh_entry {
   bit_vector simhash_bv;
   float norm;
 
-  template<typename Ar>
+  template <typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(lsh_hash) & MEMBER(simhash_bv) & MEMBER(norm);
   }
 };
+
 typedef pfi::data::unordered_map<std::string, lsh_entry> lsh_master_table_t;
 
 typedef pfi::data::unordered_map<uint64_t, std::vector<uint64_t> > lsh_table_t;
@@ -52,21 +54,22 @@ class lsh_index_storage : public recommender_storage_base {
 
   // hash is a randomly-projected and scaled hash values without shifting
   void set_row(const std::string& row, const std::vector<float>& hash,
-               float norm);
+      float norm);
   void remove_row(const std::string& row);
   void clear();
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
   void similar_row(const std::vector<float>& hash, float norm,
-                   uint64_t probe_num, uint64_t ret_num,
-                   std::vector<std::pair<std::string, float> >& ids) const;
+      uint64_t probe_num, uint64_t ret_num,
+      std::vector<std::pair<std::string, float> >& ids) const;
   void similar_row(const std::string& id, uint64_t ret_num,
-                   std::vector<std::pair<std::string, float> >& ids) const;
+      std::vector<std::pair<std::string, float> >& ids) const;
   std::string name() const;
 
   size_t table_num() const {
     return table_num_;
   }
+
   size_t all_lsh_num() const {
     return shift_.size();
   }
@@ -79,10 +82,11 @@ class lsh_index_storage : public recommender_storage_base {
   virtual void mix(const std::string& lhs, std::string& rhs) const;
 
  private:
-  typedef pfi::data::unordered_map<uint64_t, std::vector<uint64_t> > lsh_table_t;
+  typedef pfi::data::unordered_map<
+    uint64_t, std::vector<uint64_t> >lsh_table_t;
 
   friend class pfi::data::serialization::access;
-  template<class Ar>
+  template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(master_table_) & MEMBER(master_table_diff_) & MEMBER(lsh_table_)
         & MEMBER(lsh_table_diff_) & MEMBER(shift_) & MEMBER(table_num_)
@@ -92,9 +96,9 @@ class lsh_index_storage : public recommender_storage_base {
   lsh_master_table_t::iterator remove_and_get_row(const std::string& row);
 
   std::vector<float> make_entry(const std::vector<float>&hash, float norm,
-                                lsh_entry& entry) const;
+      lsh_entry& entry) const;
   bool retrieve_hit_rows(size_t hash, size_t ret_num,
-                         pfi::data::unordered_set<uint64_t>& cands) const;
+      pfi::data::unordered_set<uint64_t>& cands) const;
 
   void get_sorted_similar_rows(
       const pfi::data::unordered_set<uint64_t>& cands,
@@ -115,5 +119,5 @@ class lsh_index_storage : public recommender_storage_base {
   key_manager key_manager_;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

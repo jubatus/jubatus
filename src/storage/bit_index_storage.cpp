@@ -15,20 +15,30 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "bit_index_storage.hpp"
+#include <functional>
 #include <iterator>
 #include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
 #include "fixed_size_heap.hpp"
 
-using namespace std;
-using namespace pfi::data;
+using std::greater;
+using std::istringstream;
+using std::ostringstream;
+using std::make_pair;
+using std::pair;
+using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace storage {
 
 bit_index_storage::bit_index_storage() {
 }
+
 bit_index_storage::~bit_index_storage() {
 }
 
@@ -125,18 +135,19 @@ void bit_index_storage::mix(const string& lhs, string& rhs) const {
   rhs = os.str();  // TODO remove redudant copy
 }
 
-typedef fixed_size_heap<pair<uint64_t, string>, greater<pair<uint64_t, string> > > heap_type;
+typedef fixed_size_heap<pair<uint64_t, string>,
+    greater<pair<uint64_t, string> > > heap_type;
 
-static
-void similar_row_one(const bit_vector& x, const pair<string, bit_vector>& y,
-                     heap_type& heap) {
+static void similar_row_one(const bit_vector& x,
+    const pair<string, bit_vector>& y,
+    heap_type& heap) {
   uint64_t match_num = x.calc_hamming_similarity(y.second);
   heap.push(make_pair(match_num, y.first));
 }
 
 void bit_index_storage::similar_row(const bit_vector& bv,
-                                    vector<pair<string, float> >& ids,
-                                    uint64_t ret_num) const {
+    vector<pair<string, float> >& ids,
+    uint64_t ret_num) const {
   ids.clear();
   uint64_t bit_num = bv.bit_num();
   if (bit_num == 0) {
@@ -157,11 +168,11 @@ void bit_index_storage::similar_row(const bit_vector& bv,
     similar_row_one(bv, *it, heap);
   }
 
-  vector < pair<uint64_t, string> > scores;
+  vector<pair<uint64_t, string> > scores;
   heap.get_sorted(scores);
   for (size_t i = 0; i < scores.size() && i < ret_num; ++i) {
-    ids.push_back(
-        make_pair(scores[i].second, (float) scores[i].first / bit_num));
+    ids.push_back(make_pair(
+          scores[i].second, static_cast<float>(scores[i].first) / bit_num));
   }
 }
 
@@ -181,5 +192,5 @@ string bit_index_storage::name() const {
   return string("bit_index_storage");
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

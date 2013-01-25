@@ -16,10 +16,18 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/unordered_set.h>
 #include "sparse_matrix_storage.hpp"
 
-using namespace std;
+using std::istream;
+using std::ostream;
+using std::make_pair;
+using std::pair;
+using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace storage {
@@ -38,7 +46,7 @@ sparse_matrix_storage& sparse_matrix_storage::operator =(
 }
 
 void sparse_matrix_storage::set(const string& row, const string& column,
-                                float val) {
+    float val) {
   tbl_[row][column2id_.get_id(column)] = val;
 }
 
@@ -47,13 +55,13 @@ void sparse_matrix_storage::set_row(
   row_t& row_v = tbl_[row];
   for (size_t i = 0; i < columns.size(); ++i) {
     float & v = row_v[column2id_.get_id(columns[i].first)];
-    //norm_ptr_->notify(row, v, columns[i].second);
+    // norm_ptr_->notify(row, v, columns[i].second);
     v = columns[i].second;
   }
 }
 
 float sparse_matrix_storage::get(const string& row,
-                                 const string& column) const {
+    const string& column) const {
   tbl_t::const_iterator it = tbl_.find(row);
   if (it == tbl_.end()) {
     return 0.f;
@@ -87,7 +95,6 @@ void sparse_matrix_storage::get_row(
 }
 
 float sparse_matrix_storage::calc_l2norm(const string& row) const {
-
   tbl_t::const_iterator it = tbl_.find(row);
   if (it == tbl_.end()) {
     return 0.f;
@@ -98,7 +105,7 @@ float sparse_matrix_storage::calc_l2norm(const string& row) const {
       ++row_it) {
     sq_norm += row_it->second * row_it->second;
   }
-  return sqrt(sq_norm);
+  return std::sqrt(sq_norm);
 }
 
 void sparse_matrix_storage::remove(const string& row, const string& column) {
@@ -116,7 +123,7 @@ void sparse_matrix_storage::remove(const string& row, const string& column) {
   if (cit == it->second.end()) {
     return;
   }
-  //norm_ptr_->notify(row, cit->second, 0.f);
+  // norm_ptr_->notify(row, cit->second, 0.f);
   it->second.erase(cit);
 }
 
@@ -126,11 +133,10 @@ void sparse_matrix_storage::remove_row(const string& row) {
     return;
   }
 
-  /*
-   for (row_t::const_iterator cit = it->second.begin(); cit != it->second.end(); ++cit){
-   norm_ptr_->notify(row, cit->second, 0.f);
-   }
-   */
+  // for (row_t::const_iterator cit = it->second.begin();
+  //     cit != it->second.end(); ++cit){
+  // norm_ptr_->notify(row, cit->second, 0.f);
+  // }
 
   tbl_.erase(it);
 }
@@ -145,7 +151,7 @@ void sparse_matrix_storage::get_all_row_ids(vector<string>& ids) const {
 void sparse_matrix_storage::clear() {
   column2id_.clear();
   tbl_.clear();
-  //norm_ptr_->clear();
+  // norm_ptr_->clear();
 }
 
 bool sparse_matrix_storage::save(ostream& os) {
@@ -153,7 +159,6 @@ bool sparse_matrix_storage::save(ostream& os) {
   oa << *this;
   return true;
 }
-;
 
 bool sparse_matrix_storage::load(istream& is) {
   pfi::data::serialization::binary_iarchive ia(is);
@@ -161,5 +166,5 @@ bool sparse_matrix_storage::load(istream& is) {
   return true;
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

@@ -1,3 +1,19 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 #include <gtest/gtest.h>
 #include "bit_vector.hpp"
 
@@ -15,11 +31,15 @@ TEST(bit_vector, trivial) {
   v1.resize_and_clear(2);
   v2.resize_and_clear(1);
   EXPECT_EQ(2u, v1.calc_hamming_similarity(v2));
-  //EXPECT_EQ(2u, v2.calc_hamming_similarity(v1)); // TODO this line is not work
+
+  // TODO(unknown) this test is not work
+  // EXPECT_EQ(2u, v2.calc_hamming_similarity(v1));
 
   v1.set_bit(1);
   EXPECT_EQ(1u, v1.calc_hamming_similarity(v2));
-  //EXPECT_EQ(1u, v2.calc_hamming_similarity(v1)); // TODO this line is not work
+
+  // TODO(unknown) this test is not work
+  // EXPECT_EQ(1u, v2.calc_hamming_similarity(v1));
 }
 
 TEST(bit_vector, longer_vs_shorter_inequality) {
@@ -53,5 +73,5 @@ TEST(bit_vector, calc_hamming_similarity) {
   EXPECT_EQ(77u, v1.calc_hamming_similarity(v2));
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

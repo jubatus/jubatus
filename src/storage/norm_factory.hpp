@@ -17,8 +17,6 @@
 #pragma once
 
 #include <string>
-#include <cmath>
-#include <pficommon/lang/shared_ptr.h>
 
 namespace jubatus {
 namespace storage {
@@ -27,5 +25,5 @@ class norm_base;
 
 norm_base* create_norm(const std::string& name);
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus
