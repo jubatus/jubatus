@@ -14,12 +14,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "local_storage_mixture.hpp"
 #include <cmath>
 #include <map>
 #include <string>
 #include <vector>
 #include <pficommon/data/intern.h>
-#include "local_storage_mixture.hpp"
 
 using std::string;
 
