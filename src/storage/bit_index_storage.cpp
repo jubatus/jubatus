@@ -93,7 +93,7 @@ void bit_index_storage::get_diff(string& diff) const {
     pfi::data::serialization::binary_oarchive bo(os);
     bo << const_cast<bit_table_t&>(bitvals_diff_);
   }
-  diff = os.str();  // TODO remove redudant copy
+  diff = os.str();  // TODO(unknown) remove redudant copy
 }
 
 void bit_index_storage::set_mixed_and_clear_diff(const string& mixed_diff_str) {
@@ -132,7 +132,7 @@ void bit_index_storage::mix(const string& lhs, string& rhs) const {
     pfi::data::serialization::binary_oarchive bo(os);
     bo << rhs_diff;
   }
-  rhs = os.str();  // TODO remove redudant copy
+  rhs = os.str();  // TODO(unknown) remove redudant copy
 }
 
 typedef fixed_size_heap<pair<uint64_t, string>,

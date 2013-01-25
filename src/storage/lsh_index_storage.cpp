@@ -119,7 +119,7 @@ string serialize_diff(const lsh_master_table_t& table) {
   ostringstream oss;
   pfi::data::serialization::binary_oarchive bo(oss);
   bo << const_cast<lsh_master_table_t&>(table);
-  return oss.str();  // TODO remove redundant copy
+  return oss.str();  // TODO(unknown) remove redundant copy
 }
 
 void retrieve_hit_rows_from_table(size_t hash, const lsh_table_t& table,
