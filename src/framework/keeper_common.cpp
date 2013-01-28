@@ -75,7 +75,7 @@ void keeper_common::get_members_(
     throw JUBATUS_EXCEPTION(no_worker(name));
   }
 
-  // FIXME:
+  // TODO(y-oda-oni-juba):
   // do you return all server list? it can be very large
   for (it = list.begin(); it != list.end(); ++it) {
     std::string ip;

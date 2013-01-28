@@ -583,8 +583,9 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   msgpack::rpc::session_pool* get_private_session_pool() {
     extern __thread msgpack::rpc::session_pool* private_session_pool_;
 
-    if (!private_session_pool_)
+    if (!private_session_pool_) {
       private_session_pool_ = new msgpack::rpc::session_pool();
+    }
     return private_session_pool_;
   }
 
@@ -648,11 +649,13 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
     }
 
     Res aggregate_results() {
-      if (results_.size() == 0)
-        return Res();  // FIXME: we should raise exception ?
+      if (results_.size() == 0) {
+        return Res();  // TODO(kmaehashi): we should raise exception ?
+      }
 
-      if (!reducer_ || results_.size() == 1)
+      if (!reducer_ || results_.size() == 1) {
         return *(results_[0]);
+      }
 
       Res tmp_result = *(results_[0]);
       for (size_t i = 1; i < results_.size(); ++i) {
@@ -684,8 +687,9 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
       if (!cancelled_) {
         cancelled_ = true;
         for (size_t i = 0; i < futures_.size(); ++i) {
-          if (!futures_[i].is_finished())
+          if (!futures_[i].is_finished()) {
             futures_[i].cancel();
+          }
         }
 
         req_.error(msgpack::rpc::TIMEOUT_ERROR);
@@ -701,8 +705,9 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
       mp::pthread_scoped_lock _l(lock_);
 
       running_count_ = hosts_.size();
-      if (timeout_sec > 0)
+      if (timeout_sec > 0) {
         set_timeout(timeout_sec);
+      }
 
       msgpack::rpc::session_pool& pool = at_loop_->pool();
       for (size_t i = 0; i < hosts_.size(); ++i) {
@@ -754,8 +759,9 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
     }
 
     void run() {
-      while (true)
+      while (true) {
         pool_.run_once();
+      }
     }
 
     msgpack::rpc::session_pool& pool() {
@@ -778,8 +784,9 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
     }
 
     static async_task_loop* get_private_async_task_loop() {
-      if (!private_async_task_loop_)
+      if (!private_async_task_loop_) {
         private_async_task_loop_ = startup();
+      }
 
       return private_async_task_loop_;
     }
