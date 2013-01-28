@@ -61,7 +61,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   template<typename R>
   void register_random(const std::string& method_name) {
     using mp::placeholders::_1;
-    mp::function < R(std::string) > f = mp::bind(
+    mp::function<R(std::string)> f = mp::bind(
         &keeper::template random_proxy0<R>, this, method_name, _1);
     add(method_name, f);
   }
@@ -99,7 +99,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   void register_broadcast(std::string method_name,
                           pfi::lang::function<R(R, R)> agg) {
     using mp::placeholders::_1;
-    mp::function < R(std::string) > f = mp::bind(
+    mp::function<R(std::string)> f = mp::bind(
         &keeper::template broadcast_proxy0<R>, this, method_name, _1, agg);
     add(method_name, f);
   }
@@ -118,7 +118,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   void register_cht(std::string method_name, pfi::lang::function<R(R, R)> agg) {
     using mp::placeholders::_1;
     using mp::placeholders::_2;
-    mp::function < R(std::string, std::string) > f = mp::bind(
+    mp::function<R(std::string, std::string)> f = mp::bind(
         &keeper::template cht_proxy0<N, R>, this, method_name, _1, _2, agg);
     add(method_name, f);
   }
@@ -304,7 +304,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   template<typename R>
   R random_proxy0(const std::string& method_name, const std::string& name) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector < std::pair<std::string, int> > list;
+    std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
     const std::pair<std::string, int>& c = list[rng_(list.size())];
@@ -323,7 +323,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   R random_proxy1(const std::string& method_name, const std::string& name,
                   const A& arg) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector < std::pair<std::string, int> > list;
+    std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
     const std::pair<std::string, int>& c = list[rng_(list.size())];
@@ -342,7 +342,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   R random_proxy2(const std::string& method_name, const std::string& name,
                   const A0& a0, const A1& a1) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector < std::pair<std::string, int> > list;
+    std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
     const std::pair<std::string, int>& c = list[rng_(list.size())];
@@ -361,7 +361,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   R random_proxy3(const std::string& method_name, const std::string& name,
                   const A0& a0, const A1& a1, const A2& a2) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector < std::pair<std::string, int> > list;
+    std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
     const std::pair<std::string, int>& c = list[rng_(list.size())];
@@ -381,7 +381,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   template<typename R, typename Tuple>
   void random_async_vproxy(request_type req, const std::string& method_name,
                            const Tuple& args) {
-    std::vector < std::pair<std::string, int> > list;
+    std::vector<std::pair<std::string, int> > list;
     std::string name = args.template get<0>();
     get_members_(name, list);
     const std::pair<std::string, int>& c = list[rng_(list.size())];
@@ -395,7 +395,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   R broadcast_proxy0(const std::string& method_name, const std::string& name,
                      pfi::lang::function<R(R, R)>& agg) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector < std::pair<std::string, int> > list;
+    std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
 #ifndef NDEBUG
@@ -417,7 +417,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   R broadcast_proxy1(const std::string& method_name, const std::string& name,
                      const A& arg, pfi::lang::function<R(R, R)>& agg) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector < std::pair<std::string, int> > list;
+    std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
 
 #ifndef NDEBUG
@@ -441,7 +441,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   void broadcast_async_vproxy(request_type req, const std::string& method_name,
                               const Tuple& args,
                               pfi::lang::function<R(R, R)>& agg) {
-    std::vector < std::pair<std::string, int> > list;
+    std::vector<std::pair<std::string, int> > list;
     std::string name = args.template get<0>();
     get_members_(name, list);
 
@@ -453,7 +453,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   R cht_proxy0(const std::string& method_name, const std::string& name,
                const std::string& id, pfi::lang::function<R(R, R)>& agg) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector < std::pair<std::string, int> > list;
+    std::vector<std::pair<std::string, int> > list;
     get_members_from_cht_(name, id, list, N);
 
 #ifndef NDEBUG
@@ -477,7 +477,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
                const std::string& id, const A0& arg,
                pfi::lang::function<R(R, R)>& agg) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector < std::pair<std::string, int> > list;
+    std::vector<std::pair<std::string, int> > list;
     get_members_from_cht_(name, id, list, N);
 
 #ifndef NDEBUG
@@ -500,7 +500,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
                const std::string& id, const A0& a0, const A1& a1,
                pfi::lang::function<R(R, R)>& agg) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector < std::pair<std::string, int> > list;
+    std::vector<std::pair<std::string, int> > list;
     get_members_from_cht_(name, id, list, N);
 
 #ifndef NDEBUG
@@ -523,7 +523,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
   template<int N, typename R, typename Tuple>
   void cht_async_vproxy(request_type req, const std::string& method_name,
                         const Tuple &args, pfi::lang::function<R(R, R)>& agg) {
-    std::vector < std::pair<std::string, int> > list;
+    std::vector<std::pair<std::string, int> > list;
     std::string name = args.template get<0>();
     std::string id = args.template get<1>();
     get_members_from_cht_(name, id, list, N);
