@@ -365,7 +365,7 @@ class parser {
   }
 
   bool parse(const std::string &arg) {
-    std::vector < std::string > args;
+    std::vector<std::string> args;
 
     std::string buf;
     bool in_quote = false;
