@@ -27,25 +27,31 @@
 #include "../storage/lsh_util.hpp"
 #include "../storage/lsh_vector.hpp"
 
-using namespace std;
-using namespace jubatus::storage;
+using jubatus::anomaly::lof;
 using pfi::data::unordered_map;
 using pfi::math::random::mtrand;
+using std::isinf;
+using std::istream;
+using std::ostream;
+using std::numeric_limits;
+using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace anomaly {
 
 namespace {
 
-float calculate_lof(float lrd,
-                    const unordered_map<string, float>& neighbor_lrd) {
+float calculate_lof(
+    float lrd,
+    const unordered_map<string, float>& neighbor_lrd) {
   if (neighbor_lrd.empty()) {
     return lrd == 0 ? 1 : numeric_limits<float>::infinity();
   }
 
   float sum_neighbor_lrd = 0;
   for (unordered_map<string, float>::const_iterator it = neighbor_lrd.begin();
-      it != neighbor_lrd.end(); ++it) {
+    it != neighbor_lrd.end(); ++it) {
     sum_neighbor_lrd += it->second;
   }
 
@@ -55,14 +61,14 @@ float calculate_lof(float lrd,
 
   return sum_neighbor_lrd / (neighbor_lrd.size() * lrd);
 }
-
 }
 
 lof::lof() {
 }
 
-lof::lof(const storage::lof_storage::config& config,
-         recommender::recommender_base* nn_engine)
+lof::lof(
+    const storage::lof_storage::config& config,
+    recommender::recommender_base* nn_engine)
     : lof_index_(config, nn_engine) {
 }
 
@@ -123,5 +129,5 @@ bool lof::load_impl(istream& is) {
   return true;
 }
 
-}
-}
+}  // namespace anomaly
+}  // namespace jubatus

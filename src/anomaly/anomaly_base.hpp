@@ -14,25 +14,29 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_ANOMALY_ANOMALY_BASE_HPP_
+#define JUBATUS_ANOMALY_ANOMALY_BASE_HPP_
 
+
+#include <string>
 #include <vector>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/lang/shared_ptr.h>
 #include "../common/type.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
-#include "anomaly_type.hpp"
 #include "anomaly_storage_base.hpp"
+#include "anomaly_type.hpp"
 
 namespace jubatus {
 namespace anomaly {
 
-class anomaly_base{
-public:
+class anomaly_base {
+ public:
   anomaly_base();
   virtual ~anomaly_base();
 
-  virtual float calc_anomaly_score(const sfv_t& query) const = 0; //return anomaly score of query
+  // return anomaly score of query
+  virtual float calc_anomaly_score(const sfv_t& query) const = 0;
   virtual float calc_anomaly_score(const std::string& id) const = 0;
   virtual void clear() = 0;
   virtual void clear_row(const std::string& id) = 0;
@@ -49,14 +53,15 @@ public:
   // static float calc_distance(sfv_t& q1, sfv_t& q2);
   // static float calc_l2norm(sfv_t& query);
 
-
-protected:
+ protected:
   virtual bool save_impl(std::ostream&) = 0;
   virtual bool load_impl(std::istream&) = 0;
 
-  static const uint32_t neighbor_num_;
+  static const uint32_t NEIGHBOR_NUM;
   storage::sparse_matrix_storage orig_;
 };
 
-} // namespace anomaly
-} // namespace jubatus
+}  // namespace anomaly
+}  // namespace jubatus
+
+#endif  // JUBATUS_ANOMALY_ANOMALY_BASE_HPP_

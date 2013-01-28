@@ -1,5 +1,25 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+#include <algorithm>
 #include <cmath>
 #include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 #include <gtest/gtest.h>
 #include <pficommon/data/string/utility.h>
 #include <pficommon/lang/cast.h>
@@ -8,31 +28,35 @@
 #include <pficommon/math/random.h>
 #include "../common/exception.hpp"
 #include "../common/hash.hpp"
-#include "../common/portable_mixer.hpp" // FIXME: use linear_mixer
+#include "../common/portable_mixer.hpp"  // TODO(kashihara): use linear_mixer
 #include "../recommender/recommender_mock.hpp"
 #include "../recommender/recommender_mock_util.hpp"
 #include "lof_storage.hpp"
 
-using namespace std;
-using namespace pfi::data::string;
-using pfi::data::unordered_map;
-using namespace pfi::lang;
-using namespace pfi::math::random;
+
 using jubatus::recommender::make_sfv;
 using jubatus::recommender::make_ids;
+using jubatus::storage::lof_storage;
+using pfi::data::unordered_map;
+using pfi::lang::lexical_cast;
+using std::istringstream;
+using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace storage {
 
 namespace {
 
-lof_storage* make_storage(uint32_t k, uint32_t ck,
-                          recommender::recommender_base* mock_nn_engine) {
+lof_storage* make_storage(
+    uint32_t k,
+    uint32_t ck,
+    recommender::recommender_base* mock_nn_engine) {
   lof_storage::config config;
   config.nearest_neighbor_num = k;
   config.reverse_nearest_neighbor_num = ck;
   lof_storage* s = new lof_storage(config, mock_nn_engine);
-  //s->set_nn_engine(mock_nn_engine);
+  // s->set_nn_engine(mock_nn_engine);
 
   return s;
 }
@@ -49,7 +73,6 @@ sfv_t make_dense_sfv(const string& s) {
 
   return sfv;
 }
-
 }
 
 TEST(lof_storage, name) {
@@ -188,10 +211,10 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
     storages_.resize(num_models);
     for (int i = 0; i < num_models; ++i) {
       storages_[i].reset(
-          new lof_storage(config, new recommender::recommender_mock));
+        new lof_storage(config, new recommender::recommender_mock));
     }
     single_storage_.reset(
-        new lof_storage(config, new recommender::recommender_mock));
+      new lof_storage(config, new recommender::recommender_mock));
 
     for (size_t i = 0; i < storages_.size(); ++i) {
       portable_mixer_.add(storages_[i].get());
@@ -209,26 +232,26 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
 };
 
 TEST_P(lof_storage_mix_test, consistency) {
-  static const size_t kNumSample = 100;
-  static const size_t kNumQuery = 10;
-  static const float kDeviation = 2;
+  static const size_t num_sample = 100;
+  static const size_t num_query = 10;
+  static const float deviation = 2;
 
   const sfv_t mu0 = make_dense_sfv("1 1");
   const sfv_t mu1 = make_dense_sfv("2 1");
 
-  for (size_t i = 0; i < kNumSample; ++i) {
-    update(lexical_cast<string>(i), mu0, kDeviation);
+  for (size_t i = 0; i < num_sample; ++i) {
+    update(lexical_cast<string>(i), mu0, deviation);
   }
 
   mix();  // mix the recommenders
 
-  for (size_t i = 0; i < kNumSample; ++i) {
-    update(lexical_cast<string>(i), mu0, kDeviation);
+  for (size_t i = 0; i < num_sample; ++i) {
+    update(lexical_cast<string>(i), mu0, deviation);
   }
 
   mix();  // mix the latest k-dists and lrds
 
-  for (size_t i = 0; i < kNumQuery; ++i) {
+  for (size_t i = 0; i < num_query; ++i) {
     const sfv_t x = generate_gaussian("t" + lexical_cast<string>(i), mu1, 1);
     float expect_lrd, actual_lrd;
     unordered_map<string, float> expect_lrds, actual_lrds;
@@ -239,8 +262,8 @@ TEST_P(lof_storage_mix_test, consistency) {
       actual_lrd = storages_[j]->collect_lrds(x, actual_lrds);
       EXPECT_FLOAT_EQ(expect_lrd, actual_lrd);
 
-      for (unordered_map<string, float>::const_iterator it = expect_lrds.begin();
-          it != expect_lrds.end(); ++it) {
+      for (unordered_map<string, float>::const_iterator it =
+             expect_lrds.begin(); it != expect_lrds.end(); ++it) {
         EXPECT_TRUE(actual_lrds.count(it->first));
         EXPECT_FLOAT_EQ(it->second, actual_lrds[it->first]);
       }
@@ -249,25 +272,25 @@ TEST_P(lof_storage_mix_test, consistency) {
 }
 
 TEST_P(lof_storage_mix_test, mix_after_remove) {
-  static const size_t kNumSample = 100;
-  static const float kDeviation = 2;
+  static const size_t num_sample = 100;
+  static const float deviation = 2;
 
   const sfv_t mu0 = make_dense_sfv("1 1");
   const sfv_t mu1 = make_dense_sfv("2 1");
 
-  for (size_t i = 0; i < kNumSample; ++i) {
-    update(lexical_cast<string>(i), mu0, kDeviation);
+  for (size_t i = 0; i < num_sample; ++i) {
+    update(lexical_cast<string>(i), mu0, deviation);
   }
   mix();
 
-  for (size_t i = 0; i < kNumSample; ++i) {
+  for (size_t i = 0; i < num_sample; ++i) {
     if (i % 2 == 0) {
       remove(lexical_cast<string>(i));
     }
   }
   mix();
 
-  for (size_t i = 0; i < kNumSample; ++i) {
+  for (size_t i = 0; i < num_sample; ++i) {
     const string row = lexical_cast<string>(i);
     for (size_t j = 0; j < storages_.size(); ++j) {
       if (i % 2 == 0) {
@@ -291,9 +314,6 @@ lof_storage::config make_lof_storage_config() {
 INSTANTIATE_TEST_CASE_P(
     lof_storage_mix_test_instance,
     lof_storage_mix_test,
-    ::testing::Values(
-        make_pair(5, make_lof_storage_config())
-    ));
-
+    ::testing::Values(make_pair(5, make_lof_storage_config())));
 }
 }

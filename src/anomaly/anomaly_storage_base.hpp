@@ -14,7 +14,9 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_ANOMALY_ANOMALY_STORAGE_BASE_HPP_
+#define JUBATUS_ANOMALY_ANOMALY_STORAGE_BASE_HPP_
+
 
 #include <string>
 
@@ -30,5 +32,8 @@ class anomaly_storage_base {
   virtual void set_mixed_and_clear_diff(const std::string& mixed_diff) = 0;
   virtual void mix(const std::string& lhs, std::string& rhs) const = 0;
 };
-}
-}
+
+}  // namespace storage
+}  // namespace jubatus
+
+#endif  // JUBATUS_ANOMALY_ANOMALY_STORAGE_BASE_HPP_

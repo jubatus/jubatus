@@ -14,28 +14,31 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_ANOMALY_LOF_STORAGE_HPP_
+#define JUBATUS_ANOMALY_LOF_STORAGE_HPP_
+
 
 #include <iosfwd>
 #include <string>
+#include <utility>
 #include <vector>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
 #include <pficommon/lang/scoped_ptr.h>
 #include <pficommon/text/json.h>
+#include "anomaly_storage_base.hpp"
 #include "../common/type.hpp"
 #include "../recommender/recommender_base.hpp"
 #include "../recommender/recommender_factory.hpp"
-#include "anomaly_storage_base.hpp"
 
 namespace jubatus {
 namespace storage {
 
 class lof_storage : public anomaly_storage_base {
  public:
-  const static uint32_t DEFAULT_NEIGHBOR_NUM;
-  const static uint32_t DEFAULT_REVERSE_NN_NUM;
+  static const uint32_t DEFAULT_NEIGHBOR_NUM;
+  static const uint32_t DEFAULT_REVERSE_NN_NUM;
 
   struct config {
     config();
@@ -50,11 +53,12 @@ class lof_storage : public anomaly_storage_base {
   };
 
   lof_storage();
-  lof_storage(recommender::recommender_base* nn_engine);
+  explicit lof_storage(recommender::recommender_base* nn_engine);
 
   // config contains parameters for the underlying nearest neighbor search
-  explicit lof_storage(const config& config,
-                       recommender::recommender_base* nn_engine);
+  explicit lof_storage(
+      const config& config,
+      recommender::recommender_base* nn_engine);
 
   virtual ~lof_storage();
 
@@ -84,7 +88,8 @@ class lof_storage : public anomaly_storage_base {
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
-  void set_nn_engine(recommender::recommender_base* nn_engine);  // just for test
+  // just for test
+  void set_nn_engine(recommender::recommender_base* nn_engine);
 
   virtual void get_diff(std::string& diff) const;
   virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
@@ -108,12 +113,12 @@ class lof_storage : public anomaly_storage_base {
 
   friend class pfi::data::serialization::access;
   template<class Ar>
+
   void serialize(Ar& ar) {
     ar & MEMBER(lof_table_) & MEMBER(lof_table_diff_);
-
     ar & MEMBER(neighbor_num_) & MEMBER(reverse_nn_num_);
 
-    // TODO: Make it more efficient
+    // TODO(kashihara): Make it more efficient
     if (ar.is_read) {
       std::string name;
       ar & name;
@@ -138,13 +143,18 @@ class lof_storage : public anomaly_storage_base {
       const std::vector<std::pair<std::string, float> >& neighbors,
       pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
 
-  void serialize_diff(const lof_table_t& table, const std::string& nn_diff,
-                      std::ostream& out) const;
-  void deserialize_diff(const std::string& diff, lof_table_t& table,
-                        std::string& nn_diff) const;
+  void serialize_diff(
+      const lof_table_t& table,
+      const std::string& nn_diff,
+      std::ostream& out) const;
+  void deserialize_diff(
+      const std::string& diff,
+      lof_table_t& table,
+      std::string& nn_diff) const;
 
-  void collect_neighbors(const std::string& row,
-                         pfi::data::unordered_set<std::string>& nn) const;
+  void collect_neighbors(
+      const std::string& row,
+      pfi::data::unordered_set<std::string>& nn) const;
 
   void update_entries(const pfi::data::unordered_set<std::string>& rows);
   void update_kdist(const std::string& row);
@@ -166,5 +176,7 @@ class lof_storage : public anomaly_storage_base {
   pfi::lang::scoped_ptr<recommender::recommender_base> nn_engine_;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus
+
+#endif  // JUBATUS_ANOMALY_LOF_STORAGE_HPP_
