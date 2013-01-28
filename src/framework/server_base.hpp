@@ -22,8 +22,9 @@
 #include <vector>
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/lang/shared_ptr.h>
-#include "server_util.hpp"
+
 #include "mixable.hpp"
+#include "server_util.hpp"
 
 namespace jubatus {
 namespace framework {

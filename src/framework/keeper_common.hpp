@@ -21,17 +21,15 @@
 #include <vector>
 
 #include <glog/logging.h>
-
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/math/random.h>
 
+#include "server_util.hpp"
 #include "../common/lock_service.hpp"
 #include "../common/cht.hpp"
 #include "../common/shared_ptr.hpp"
 #include "../common/exception.hpp"
-
-#include "server_util.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -42,17 +40,22 @@ class no_worker : public jubatus::exception::runtime_error {
       : runtime_error("no server found: " + name) {
   }
 };
+
 class keeper_common {
  public:
-  explicit keeper_common(const keeper_argv &a);
+  explicit keeper_common(const keeper_argv& a);
   virtual ~keeper_common();
 
  protected:
-  void get_members_(const std::string& name,
-                    std::vector<std::pair<std::string, int> >& ret);
-  void get_members_from_cht_(const std::string& name, const std::string& id,
-                             std::vector<std::pair<std::string, int> >& ret,
-                             size_t n);
+  void get_members_(
+      const std::string& name,
+      std::vector<std::pair<std::string, int> >& ret);
+
+  void get_members_from_cht_(
+      const std::string& name,
+      const std::string& id,
+      std::vector<std::pair<std::string, int> >& ret,
+      size_t n);
 
   keeper_argv a_;
   pfi::math::random::mtrand rng_;

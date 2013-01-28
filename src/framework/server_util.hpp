@@ -17,12 +17,12 @@
 #pragma once
 
 #include <cstdlib>
+#include <iostream>
 #include <string>
 #include <sstream>
-#include <iostream>
 
-#include <msgpack.hpp>
 #include <glog/logging.h>
+#include <msgpack.hpp>
 #include <pficommon/lang/noncopyable.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
@@ -52,8 +52,10 @@ struct config_json {
 
   std::string config;
 
-  void load_json(const std::string& zkhosts, const std::string& type,
-                 const std::string& name);
+  void load_json(
+      const std::string& zkhosts,
+      const std::string& type,
+      const std::string& name);
   void load_json(const std::string& filepath);
 };
 

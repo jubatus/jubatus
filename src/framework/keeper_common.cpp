@@ -22,10 +22,10 @@
 #include <vector>
 #include <glog/logging.h>
 
+#include "server_util.hpp"
 #include "../common/membership.hpp"
 #include "../common/exception.hpp"
 #include "../common/util.hpp"
-#include "server_util.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -46,7 +46,7 @@ std::string make_logfile_name(const keeper_argv& a) {
 
 }  // namespace
 
-keeper_common::keeper_common(const keeper_argv &a)
+keeper_common::keeper_common(const keeper_argv& a)
     : a_(a),
       zk_(common::create_lock_service("cached_zk", a.z, a.timeout,
                                       make_logfile_name(a))) {
@@ -86,8 +86,10 @@ void keeper_common::get_members_(
 }
 
 void keeper_common::get_members_from_cht_(
-    const std::string& name, const std::string& id,
-    std::vector<std::pair<std::string, int> >& ret, size_t n) {
+    const std::string& name,
+    const std::string& id,
+    std::vector<std::pair<std::string, int> >& ret,
+    size_t n) {
   ret.clear();
   pfi::concurrent::scoped_lock lk(mutex_);
   jubatus::common::cht ht(zk_, a_.type, name);

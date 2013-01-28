@@ -23,8 +23,10 @@
 
 namespace jubatus {
 namespace framework {
+
 using std::string;
 using std::ostringstream;
+
 namespace {
 
 string make_logfile_name(const server_argv& a) {
@@ -86,13 +88,14 @@ void server_helper_impl::get_config_lock(const server_argv& a, int retry) {
   if (!a.is_standalone()) {
     string lock_path;
     common::build_config_lock_path(lock_path, a.type, a.name);
-    zk_config_lock_ = pfi::lang::shared_ptr<common::try_lockable>
-      (new common::lock_service_mutex(*zk_, lock_path));
+    zk_config_lock_ = pfi::lang::shared_ptr<common::try_lockable>(
+        new common::lock_service_mutex(*zk_, lock_path));
 
     while (!zk_config_lock_->try_rlock()) {
-      if (retry == 0)
-      throw JUBATUS_EXCEPTION
-        (jubatus::exception::runtime_error("any user is writing config?"));
+      if (retry == 0) {
+        throw JUBATUS_EXCEPTION(
+            jubatus::exception::runtime_error("any user is writing config?"));
+      }
       retry--;
       sleep(1);
     }
