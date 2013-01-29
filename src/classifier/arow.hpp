@@ -41,4 +41,3 @@ class AROW : public classifier_base {
 
 }  // namespace classifier
 }  // namespace jubatus
-

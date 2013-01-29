@@ -80,7 +80,7 @@ void NHERD::update(
             1.f
                 / ((1.f / pos_val.v2) + (2 * C + C * C * variance)
                     * val * val)));
-    if (neg_label != "")
+    if (neg_label != "") {
       storage_->set2(
           feature,
           neg_label,
@@ -91,6 +91,7 @@ void NHERD::update(
               1.f
                   / ((1.f / neg_val.v2) + (2 * C + C * C * variance)
                       * val * val)));
+    }
   }
 }
 

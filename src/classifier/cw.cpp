@@ -78,12 +78,13 @@ void CW::update(
         pos_label,
         storage::val2_t(pos_val.v1 + step_width * pos_val.v2 * val,
                         1.f / (1.f / pos_val.v2 + covar_pos_step)));
-    if (neg_label != "")
+    if (neg_label != "") {
       storage_->set2(
           feature,
           neg_label,
           storage::val2_t(neg_val.v1 - step_width * neg_val.v2 * val,
                           1.f / (1.f / neg_val.v2 + covar_neg_step)));
+    }
   }
 }
 

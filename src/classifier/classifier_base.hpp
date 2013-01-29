@@ -69,4 +69,3 @@ class classifier_base {
 
 }  // namespace classifier
 }  // namespace jubatus
-

@@ -66,7 +66,7 @@ std::pair<std::string, std::vector<double> > gen_random_data() {
 }
 
 std::pair<std::string, std::vector<double> > gen_random_data3() {
-  const char *labels[] = { "1", "2", "3" };
+  const char* labels[] = { "1", "2", "3" };
   std::vector<float> mus;
   mus.push_back(3);
   mus.push_back(0);

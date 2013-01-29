@@ -74,13 +74,14 @@ void AROW::update(
         storage::val2_t(
             pos_val.v1 + alpha * pos_val.v2 * val,
             pos_val.v2 - beta * pos_val.v2 * pos_val.v2 * val * val));
-    if (neg_label != "")
+    if (neg_label != "") {
       storage_->set2(
           feature,
           neg_label,
           storage::val2_t(
               neg_val.v1 - alpha * neg_val.v2 * val,
               neg_val.v2 - beta * neg_val.v2 * neg_val.v2 * val * val));
+    }
   }
 }
 

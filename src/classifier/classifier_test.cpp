@@ -158,7 +158,7 @@ void InitClassifiers(vector<classifier_base*>& classifiers) {
 
 TEST(classifier_factory, exception) {
   jsonconfig::config param(to_json(classifier_config()));
-  local_storage * p = new local_storage;
+  local_storage* p = new local_storage;
   ASSERT_THROW(classifier_factory::create_classifier("pa", param, p),
       unsupported_method);
   ASSERT_THROW(classifier_factory::create_classifier("", param, p),

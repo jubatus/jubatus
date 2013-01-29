@@ -87,8 +87,9 @@ string classifier_base::get_largest_incorrect_label(
   string max_class;
   for (vector<classify_result_elem>::const_iterator it = scores.begin();
       it != scores.end(); ++it) {
-    if (it->label == label)
+    if (it->label == label) {
       continue;
+    }
     if (it->score > max_score || it == scores.begin()) {
       max_score = it->score;
       max_class = it->label;

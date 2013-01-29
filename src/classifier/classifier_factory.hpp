@@ -20,12 +20,12 @@
 #include <pficommon/text/json.h>
 
 namespace jubatus {
+
 namespace storage {
 
 class storage_base;
 
 }  // namespace storage
-
 
 namespace jsonconfig {
 
@@ -46,4 +46,5 @@ class classifier_factory {
 };
 
 }  // namespace classifier
+
 }  // namespace jubatus

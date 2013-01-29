@@ -37,4 +37,3 @@ struct classify_result_elem {
 typedef std::vector<classify_result_elem> classify_result;
 
 }  // namespace jubatus
-

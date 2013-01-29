@@ -55,4 +55,3 @@ classifier_base* classifier_factory::create_classifier(
 
 }  // namespace classifier
 }  // namespace jubatus
-
