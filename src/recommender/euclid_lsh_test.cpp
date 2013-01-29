@@ -14,13 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include <gtest/gtest.h>
 #include <pficommon/data/string/utility.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/math/random.h>
+
 #include "euclid_lsh.hpp"
 #include "../common/hash.hpp"
 #include "../common/portable_mixer.hpp"  // FIXME: use linear_mixer
