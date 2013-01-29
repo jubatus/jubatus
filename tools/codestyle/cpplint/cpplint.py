@@ -247,8 +247,7 @@ _CPP_HEADERS = frozenset([
 
 # Third party header, explicitly determined by Jubatus project
 _THIRD_PARTY_HEADERS = frozenset([
-    'glog/logging.h', 'jubatus/msgpack/rpc/client.h', 'jubatus/msgpack/rpc/session_pool.h',
-    'mecab.h', 're2/re2.h', 'ux/ux.hpp', 'msgpack.hpp','gtest/gtest.h'
+    'glog/logging.h', 'mecab.h', 're2/re2.h', 'ux/ux.hpp', 'msgpack.hpp','gtest/gtest.h'
     ])
 
 
@@ -2365,7 +2364,9 @@ def _ClassifyInclude(fileinfo, include, is_system):
   """
   # This is a list of all standard c++ header files, except
   # those already checked for above.
-  is_third_party_h = include.find('pficommon') != -1 or include in _THIRD_PARTY_HEADERS
+  is_third_party_h = include.find('pficommon') != -1 or \
+                     include.find('jubatus/msgpack/rpc') != -1 or \
+                     include in _THIRD_PARTY_HEADERS
   is_stl_h = include in _STL_HEADERS
   is_cpp_h = is_stl_h or include in _CPP_HEADERS
 
