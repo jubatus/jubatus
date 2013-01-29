@@ -14,11 +14,13 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
 #include <utility>
 #include <string>
 #include <vector>
+
+#include <gtest/gtest.h>
 #include <pficommon/math/random.h>
+
 #include "regression.hpp"
 #include "../storage/local_storage.hpp"
 #include "regression_test_util.hpp"
@@ -28,7 +30,6 @@ using std::vector;
 using std::make_pair;
 using jubatus::storage::local_storage;
 using pfi::lang::lexical_cast;
-
 
 namespace jubatus {
 
@@ -106,4 +107,5 @@ REGISTER_TYPED_TEST_CASE_P(
 typedef testing::Types<regression::PA> regression_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(reg, regression_test, regression_types);
-}
+
+}  // namespace jubatus

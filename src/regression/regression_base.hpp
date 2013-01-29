@@ -22,7 +22,7 @@ namespace jubatus {
 
 namespace storage {
 class storage_base;
-}
+}  // namespace storage
 
 namespace regression {
 
@@ -48,4 +48,4 @@ class regression_base {
 };
 
 }  // namespace regression
-}  // namespace stat
+}  // namespace jubatus
