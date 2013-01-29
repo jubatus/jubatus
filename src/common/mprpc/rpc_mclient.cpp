@@ -36,8 +36,9 @@ rpc_result_object rpc_mclient::wait(const std::string& method) {
     } catch(...) {
       // store exception_thrower to list of error
       result.error.push_back(
-          rpc_error(hosts_[i].first, hosts_[i].second,
-              jubatus::exception::get_current_exception()));
+          rpc_error(hosts_[i].first,
+                    hosts_[i].second,
+                    jubatus::exception::get_current_exception()));
     }
   }
 
@@ -62,6 +63,7 @@ rpc_response_t rpc_mclient::wait_one(
   }
   JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method);
 }
-}  // mprpc
-}  // common
-}  // jubatus
+
+}  // namespace mprpc
+}  // namespace common
+}  // namespace jubatus

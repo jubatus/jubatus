@@ -16,10 +16,10 @@
 
 #pragma once
 
+#include <stdint.h>
 #include <vector>
 #include <string>
 #include <utility>
-#include <stdint.h>
 
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/function.h>
@@ -91,8 +91,10 @@ class rpc_mclient : pfi::lang::noncopyable {
  public:
   typedef std::vector<std::pair<std::string, uint16_t> > host_spec_list_t;
 
-  rpc_mclient(const host_spec_list_t& hosts, int timeout_sec,
-      msgpack::rpc::session_pool *pool = NULL)
+  rpc_mclient(
+      const host_spec_list_t& hosts,
+      int timeout_sec,
+      msgpack::rpc::session_pool* pool = NULL)
       : hosts_(hosts),
         timeout_sec_(timeout_sec),
         pool_(NULL),
@@ -100,8 +102,10 @@ class rpc_mclient : pfi::lang::noncopyable {
     init_pool(pool);
   }
 
-  rpc_mclient(const std::vector<std::pair<std::string, int> >& hosts,
-      int timeout_sec, msgpack::rpc::session_pool *pool = NULL)
+  rpc_mclient(
+      const std::vector<std::pair<std::string, int> >& hosts,
+      int timeout_sec,
+      msgpack::rpc::session_pool* pool = NULL)
       : timeout_sec_(timeout_sec),
         pool_(NULL),
         pool_allocated_(false) {
@@ -151,7 +155,7 @@ class rpc_mclient : pfi::lang::noncopyable {
   rpc_result_object call(const std::string&, const A0& a0);
 
  private:
-  void init_pool(msgpack::rpc::session_pool *pool) {
+  void init_pool(msgpack::rpc::session_pool* pool) {
     if (pool) {
       pool_ = pool;
     } else {
@@ -179,7 +183,7 @@ class rpc_mclient : pfi::lang::noncopyable {
   host_spec_list_t hosts_;
   int timeout_sec_;
 
-  msgpack::rpc::session_pool *pool_;
+  msgpack::rpc::session_pool* pool_;
   bool pool_allocated_;
   std::vector<msgpack::rpc::future> futures_;
 };
@@ -302,6 +306,7 @@ rpc_result_object rpc_mclient::call(const std::string& m, const A0& a0) {
   call_(m, msgpack::type::tuple<const A0&>(a0));
   return wait(m);
 }
-}  // mprpc
-}  // common
-}  // jubatus
+
+}  // namespace mprpc
+}  // namespace common
+}  // namespace jubatus

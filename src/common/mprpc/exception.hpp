@@ -67,7 +67,8 @@ class rpc_call_error
 class rpc_internal_error
     : public jubatus::exception::jubaexception<rpc_internal_error> {
 };
-}  // mprpc
-}  // common
-}  // jubatus
+
+}  // namespace mprpc
+}  // namespace common
+}  // namespace jubatus
 

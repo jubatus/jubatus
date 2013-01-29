@@ -86,6 +86,7 @@ void rpc_server::close() {
   stop();
   instance_.close();
 }
-}  // mprpc
-}  // common
-}  // jubatus
+
+}  // namespace mprpc
+}  // namespace common
+}  // namespace jubatus

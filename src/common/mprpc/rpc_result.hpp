@@ -48,6 +48,7 @@ struct rpc_result_object {
   std::vector<rpc_response_t> response;
   std::vector<rpc_error> error;
 };
-}  // mprpc
-}  // common
-}  // jubatus
+
+}  // namespace mprpc
+}  // namespace common
+}  // namespace jubatus

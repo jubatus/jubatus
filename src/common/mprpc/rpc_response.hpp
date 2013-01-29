@@ -55,6 +55,7 @@ class rpc_response_t {
     return response.a3.as<T>();
   }
 };
-}  // mprpc
-}  // common
-}  // jubatus
+
+}  // namespace mprpc
+}  // namespace common
+}  // namespace jubatus

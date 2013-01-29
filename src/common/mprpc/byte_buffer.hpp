@@ -75,9 +75,9 @@ class byte_buffer {
  private:
   pfi::lang::shared_ptr<std::vector<char> > buf_;
 };
-}  // mprpc
-}  // common
-}  // jubatus
+}  // namespace mprpc
+}  // namespace common
+}  // namespace jubatus
 
 namespace msgpack {
 
@@ -118,4 +118,5 @@ inline void operator<<(
   o.via.raw.ptr = b.ptr();
   o.via.raw.size = static_cast<uint32_t>(b.size());
 }
-}  // msgpack
+
+}  // namespace msgpack

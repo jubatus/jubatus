@@ -54,7 +54,8 @@ class rpc_server : public msgpack::rpc::dispatcher {
       : instance_(lo) {
     instance_.serve(this);
   }
-  rpc_server(double server_timeout,
+  rpc_server(
+      double server_timeout,
       msgpack::rpc::loop lo = msgpack::rpc::loop())
       : instance_(lo) {
     instance_.set_server_timeout(server_timeout);
@@ -279,6 +280,7 @@ void rpc_server::add_async_vmethod(
     const typename async_vmethod<Tuple>::type& f) {
   add_inner(name, make_async_vmethod_invoker<Tuple>(f));
 }
-}  // mprpc
-}  // common
-}  // jubatus
+
+}  // namespace mprpc
+}  // namespace common
+}  // namespace jubatus
