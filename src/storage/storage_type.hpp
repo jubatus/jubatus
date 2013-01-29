@@ -280,9 +280,9 @@ inline std::vector<std::pair<std::string, E> > operator +(
 }
 
 template <class E>
-inline std::vector<std::pair<std::string, E> > &
+inline std::vector<std::pair<std::string, E> >&
 operator +=(std::vector<std::pair<std::string, E> >& lhs,
-            const std::vector<std::pair<std::string, E> > &rhs) {
+            const std::vector<std::pair<std::string, E> >& rhs) {
   return detail::binop(lhs, rhs, std::plus<E>());
 }
 
@@ -294,7 +294,7 @@ inline std::vector<std::pair<std::string, E> > operator -(
 }
 
 template <class E>
-inline std::vector<std::pair<std::string, E> > &
+inline std::vector<std::pair<std::string, E> >&
 operator -=(std::vector<std::pair<std::string, E> >& lhs,
             const std::vector<std::pair<std::string, E> >& rhs) {
   return detail::binop(lhs, rhs, std::minus<E>());
@@ -308,7 +308,7 @@ inline std::vector<std::pair<std::string, E> > operator *(
 }
 
 template <class E>
-inline std::vector<std::pair<std::string, E> > &
+inline std::vector<std::pair<std::string, E> >&
 operator *=(std::vector<std::pair<std::string, E> >& lhs,
             const std::vector<std::pair<std::string, E> >& rhs) {
   return detail::binop(lhs, rhs, std::multiplies<E>());

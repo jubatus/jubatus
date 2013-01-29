@@ -31,9 +31,9 @@ class local_storage_mixture : public storage_base {
   local_storage_mixture();
   ~local_storage_mixture();
 
-  void get(const std::string &feature, feature_val1_t& ret);
-  void get2(const std::string &feature, feature_val2_t& ret);
-  void get3(const std::string &feature, feature_val3_t& ret);
+  void get(const std::string& feature, feature_val1_t& ret);
+  void get2(const std::string& feature, feature_val2_t& ret);
+  void get3(const std::string& feature, feature_val3_t& ret);
 
   void inp(const sfv_t& sfv, map_feature_val1_t& ret);  /// inner product
 

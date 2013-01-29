@@ -94,7 +94,7 @@ void lsh_probe_generator::init() {
 
   perturbation_sets_.resize(base_.size());
   for (size_t i = 0; i < base_.size(); ++i) {
-    vector<pair<float, int> > &cands = perturbation_sets_[i];
+    vector<pair<float, int> >& cands = perturbation_sets_[i];
     cands.resize(2 * base_size);
     for (int j = 0; j < base_size; ++j) {
       const float dist = hash_[i][j] - base_[i].get(j);

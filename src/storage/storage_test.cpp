@@ -61,7 +61,7 @@ class stub_storage : public storage_base {
   void get_status(std::map<std::string, std::string>&) {
   }
 
-  void get(const std::string &feature, feature_val1_t& ret) {
+  void get(const std::string& feature, feature_val1_t& ret) {
     const map<string, val3_t>& f = data_[feature];
     for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
         ++it) {
@@ -69,7 +69,7 @@ class stub_storage : public storage_base {
     }
   }
 
-  void get2(const std::string &feature, feature_val2_t& ret) {
+  void get2(const std::string& feature, feature_val2_t& ret) {
     const map<string, val3_t>& f = data_[feature];
     for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
         ++it) {
@@ -77,7 +77,7 @@ class stub_storage : public storage_base {
     }
   }
 
-  void get3(const std::string &feature, feature_val3_t& ret) {
+  void get3(const std::string& feature, feature_val3_t& ret) {
     const map<string, val3_t>& f = data_[feature];
     for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
         ++it) {

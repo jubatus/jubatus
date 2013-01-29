@@ -174,7 +174,7 @@ void lsh_index_storage::set_row(
   const uint64_t id = key_manager_.get_id(row);
   const vector<uint64_t>& lsh_hash = it->second.lsh_hash;
   for (size_t i = 0; i < lsh_hash.size(); ++i) {
-    vector<uint64_t > &range = lsh_table_diff_[lsh_hash[i]];
+    vector<uint64_t>& range = lsh_table_diff_[lsh_hash[i]];
     vector<uint64_t>::iterator it = lower_bound(range.begin(), range.end(), id);
     if (it == range.end() || id != *it) {
       range.insert(it, id);
@@ -402,7 +402,7 @@ void lsh_index_storage::remove_model_row(const std::string& row) {
   for (size_t i = 0; i < entry->lsh_hash.size(); ++i) {
     lsh_table_t::iterator it = lsh_table_.find(entry->lsh_hash[i]);
     if (it != lsh_table_.end()) {
-      vector<uint64_t> &range = it->second;
+      vector<uint64_t>& range = it->second;
       vector<uint64_t>::iterator jt = find(range.begin(), range.end(), row_id);
       if (jt != range.end()) {
         range.erase(jt);

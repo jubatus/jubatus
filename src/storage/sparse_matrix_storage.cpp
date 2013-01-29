@@ -58,7 +58,7 @@ void sparse_matrix_storage::set_row(
     const vector<pair<string, float> >& columns) {
   row_t& row_v = tbl_[row];
   for (size_t i = 0; i < columns.size(); ++i) {
-    float & v = row_v[column2id_.get_id(columns[i].first)];
+    float& v = row_v[column2id_.get_id(columns[i].first)];
     // norm_ptr_->notify(row, v, columns[i].second);
     v = columns[i].second;
   }
