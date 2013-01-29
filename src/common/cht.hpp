@@ -30,7 +30,7 @@
 namespace jubatus {
 namespace common {
 
-// FIXME: Is the value reasonable for cht?
+// TODO(kashihara): Is the value reasonable for cht?
 static const unsigned int NUM_VSERV = 8;
 
 std::string make_hash(const std::string& key);
@@ -38,11 +38,16 @@ std::string make_hash(const std::string& key);
 class cht {
  public:
   // run just once in starting up the process: creates <name>/cht directory.
-  static void setup_cht_dir(lock_service&, const std::string&,
-                            const std::string&);
+  static void setup_cht_dir(
+      lock_service&,
+      const std::string&,
+      const std::string&);
 
-  cht(cshared_ptr<lock_service>, const std::string& type,
+  cht(
+      cshared_ptr<lock_service>,
+      const std::string& type,
       const std::string& name);
+
   ~cht();
 
   // node :: ip_port
@@ -50,21 +55,31 @@ class cht {
   void register_node(const std::string&, int);
 
   template<typename T>
-  bool find(const T& t, std::vector<std::pair<std::string, int> > & ret,
-            size_t s) {
+  bool find(
+      const T& t,
+      std::vector<std::pair<std::string, int> >& ret,
+      size_t s) {
     std::string k = pfi::lang::lexical_cast<std::string>(t);
     return find(k, ret, s);
   }
 
   // find(hash)    :: key -> [node]
   //   where  hash(node0) <= hash(key) < hash(node1) < hash(node2) < ...
-  bool find(const std::string& host, int port,
-            std::vector<std::pair<std::string, int> >&, size_t);
-  bool find(const std::string&, std::vector<std::pair<std::string, int> >&,
-            size_t);
+  bool find(
+      const std::string& host,
+      int port,
+      std::vector<std::pair<std::string, int> >&,
+      size_t);
 
-  std::pair<std::string, int> find_predecessor(const std::string& host,
-                                               int port);
+  bool find(
+      const std::string&,
+      std::vector<std::pair<std::string, int> >&,
+      size_t);
+
+  std::pair<std::string, int> find_predecessor(
+      const std::string& host,
+      int port);
+
   std::pair<std::string, int> find_predecessor(const std::string&);
 
  private:

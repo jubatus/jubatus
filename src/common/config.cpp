@@ -45,7 +45,10 @@ void config_fromlocal(const string& path, string& config) {
 }
 
 #ifdef HAVE_ZOOKEEPER_H
-void config_fromzk(lock_service& z, const string& type, const string& name,
+void config_fromzk(
+    lock_service& z,
+    const string& type,
+    const string& name,
     string& config) {
   // server must get read lock for config_lock before call this method.
   string path;
@@ -65,7 +68,10 @@ void config_fromzk(lock_service& z, const string& type, const string& name,
   LOG(INFO) << "get config from zookeeper: " << path;
 }
 
-void config_tozk(lock_service& z, const string& type, const string& name,
+void config_tozk(
+    lock_service& z,
+    const string& type,
+    const string& name,
     string& config) {
   string lock_path;
   build_config_lock_path(lock_path, type, name);
@@ -78,9 +84,10 @@ void config_tozk(lock_service& z, const string& type, const string& name,
   common::lock_service_mutex zk_config_lock(z, lock_path);
   int retry = 3;
   while (!zk_config_lock.try_lock()) {
-    if (retry == 0)
-    throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("any user is using config?"));
+    if (retry == 0) {
+      throw JUBATUS_EXCEPTION(
+          jubatus::exception::runtime_error("any user is using config?"));
+    }
     retry--;
     sleep(1);
   }
@@ -106,7 +113,9 @@ void config_tozk(lock_service& z, const string& type, const string& name,
   LOG(INFO) << "set config to zookeeper: " << path;
 }
 
-void remove_config_fromzk(lock_service& z, const string& type,
+void remove_config_fromzk(
+    lock_service& z,
+    const string& type,
     const string& name) {
   string lock_path;
   build_config_lock_path(lock_path, type, name);

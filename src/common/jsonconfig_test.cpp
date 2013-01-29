@@ -14,12 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-
 #include <map>
 #include <sstream>
 #include <string>
 #include <vector>
+#include <gtest/gtest.h>
 #include <pficommon/text/json.h>
 #include <pficommon/lang/cast.h>
 
@@ -402,8 +401,8 @@ struct Person {
 
 TEST(jsonconfig_cast, struct) {
   config conf(lexical_cast<json>(
-        "{\"name\": \"Taro\", \"height\": 160.0, \"age\": 20, "
-        "\"attributes\": {\"address\": \"Tokyo\"}, \"sport\": \"tennis\"}"));
+      "{\"name\": \"Taro\", \"height\": 160.0, \"age\": 20, "
+      "\"attributes\": {\"address\": \"Tokyo\"}, \"sport\": \"tennis\"}"));
   Person p;
   p.name = "Taro";
   p.height = 160.0;
@@ -435,7 +434,7 @@ struct server_conf {
 
 TEST(jsonconfig_cast, config_cast_error) {
   config conf(lexical_cast<json>(
-        "{\"web_server\": { \"host\" : 123}, \"users\": [\"abc\", 1] }"));
+      "{\"web_server\": { \"host\" : 123}, \"users\": [\"abc\", 1] }"));
 
   config_error_list errors;
   server_conf c = config_cast<server_conf>(conf, errors);
@@ -464,7 +463,7 @@ TEST(jsonconfig_cast, config_cast_error) {
 
 TEST(jsonconfig_cast, cast_check_error) {
   config conf(lexical_cast<json>(
-        "{\"web_server\": { \"host\" : 123}, \"users\": [\"abc\", 1] }"));
+      "{\"web_server\": { \"host\" : 123}, \"users\": [\"abc\", 1] }"));
 
   try {
     config_cast_check<server_conf>(conf);

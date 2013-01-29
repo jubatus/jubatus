@@ -15,10 +15,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "network.hpp"
-#include <gtest/gtest.h>
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <gtest/gtest.h>
 
 using std::cout;
 using std::endl;
@@ -35,15 +35,15 @@ TEST(common, get_network_address) {
   for (size_t i = 0; i < address.size(); i++) {
     pfi::lang::shared_ptr<network_address> p = address[i];
     EXPECT_NO_THROW({
-          cout << "Interface: " << p->interface() << endl;
-          cout << "Addr: " << p->address() << endl;
-          cout << "v4: " << p->v4() << endl;
-          cout << "v6: " << p->v6() << endl;
-          cout << "loopback: " << p->loopback() << endl;
-          cout << "v4 addr: " << p->v4_address() << endl;
-          cout << "v6 addr: " << p->v6_address() << endl;
-          cout << endl;
-        });
+      cout << "Interface: " << p->interface() << endl;
+      cout << "Addr: " << p->address() << endl;
+      cout << "v4: " << p->v4() << endl;
+      cout << "v6: " << p->v6() << endl;
+      cout << "loopback: " << p->loopback() << endl;
+      cout << "v4 addr: " << p->v4_address() << endl;
+      cout << "v6 addr: " << p->v6_address() << endl;
+      cout << endl;
+    });
   }
 #endif
 }

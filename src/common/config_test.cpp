@@ -14,10 +14,10 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <gtest/gtest.h>
 #include "config.hpp"
 
 using std::istringstream;
@@ -36,11 +36,13 @@ class config_trivial : public testing::Test {
   }
 
   void TearDown() {
-    if (!zk_)
+    if (!zk_) {
       return;
+    }
 
-    if (zk_->exists(path_))
+    if (zk_->exists(path_)) {
       zk_->remove(path_);
+    }
   }
 
   string path_;

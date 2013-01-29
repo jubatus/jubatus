@@ -30,13 +30,26 @@ namespace common {
 
 void config_fromlocal(const std::string& path, std::string& config);
 #ifdef HAVE_ZOOKEEPER_H
-void config_fromzk(lock_service& z, const std::string& type,
-    const std::string& name, std::string& config);
-void config_tozk(lock_service& z, const std::string& type,
-    const std::string& name, std::string& config);
-void remove_config_fromzk(lock_service& z, const std::string& type,
+void config_fromzk(
+    lock_service& z,
+    const std::string& type,
+    const std::string& name,
+    std::string& config);
+
+void config_tozk(
+    lock_service& z,
+    const std::string& type,
+    const std::string& name,
+    std::string& config);
+
+void remove_config_fromzk(
+    lock_service& z,
+    const std::string& type,
     const std::string&);
-bool is_no_workers(lock_service& z, const std::string& type,
+
+bool is_no_workers(
+    lock_service& z,
+    const std::string& type,
     const std::string& name);
 #endif
 

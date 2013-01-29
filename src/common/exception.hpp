@@ -81,13 +81,15 @@ class jubatus_exception : public std::exception {
   virtual exception_thrower_ptr thrower() const = 0;
 
   template<class Exception>
-  friend const Exception& add_info(const Exception& e,
-                                   pfi::lang::shared_ptr<error_info_base> info);
+  friend const Exception& add_info(
+      const Exception& e,
+      pfi::lang::shared_ptr<error_info_base> info);
 
   std::string name() const throw () {
     // does not assume multithreading
-    if (exception_class_name_.empty())
+    if (exception_class_name_.empty()) {
       exception_class_name_ = pfi::lang::demangle(typeid(*this).name());
+    }
 
     return exception_class_name_;
   }
@@ -106,22 +108,25 @@ class jubatus_exception : public std::exception {
 };
 
 template<class Exception>
-inline const Exception& add_info(const Exception& e,
-                                 pfi::lang::shared_ptr<error_info_base> info) {
+inline const Exception& add_info(
+    const Exception& e,
+    pfi::lang::shared_ptr<error_info_base> info) {
   e.info_list_.push_back(info);
   return e;
 }
 
 template<class Exception, class Tag, class V>
-inline const Exception& operator <<(const Exception& e,
-                                    const error_info<Tag, V>& info) {
+inline const Exception& operator <<(
+    const Exception& e,
+    const error_info<Tag, V>& info) {
   return add_info(
       e, pfi::lang::shared_ptr<error_info_base>(new error_info<Tag, V>(info)));
 }
 
 template<class Exception>
 inline const Exception& operator <<(
-    const Exception& e, pfi::lang::shared_ptr<error_info_base> info) {
+    const Exception& e,
+    pfi::lang::shared_ptr<error_info_base> info) {
   return add_info(e, info);
 }
 
@@ -184,8 +189,9 @@ class jubaexception : public jubatus_exception {
 };
 
 template<class Exception>
-inline const Exception& operator <<(const Exception& e,
-                                    const exception_thrower_binder_type&) {
+inline const Exception& operator <<(
+    const Exception& e,
+    const exception_thrower_binder_type&) {
   e.bind_thrower(
       exception_thrower_ptr(new exception_thrower_impl<Exception>(e)));
   return e;

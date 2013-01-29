@@ -29,8 +29,10 @@ namespace common {
 class cached_zk : public zk {
  public:
   // timeout [sec]
-  cached_zk(const std::string& hosts, int timeout = 10,
-            const std::string& logfile = "");
+  cached_zk(
+      const std::string& hosts,
+      int timeout = 10,
+      const std::string& logfile = "");
   virtual ~cached_zk();
 
   bool list(const std::string& path, std::vector<std::string>& out);

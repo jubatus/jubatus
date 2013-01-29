@@ -38,10 +38,13 @@ class lock_service {
   }
 
   virtual void force_close() = 0;
-  virtual bool create(const std::string& path, const std::string& payload = "",
-                      bool ephemeral = false) = 0;
-  virtual bool set(const std::string& path,
-                   const std::string& payload = "") = 0;
+  virtual bool create(
+      const std::string& path,
+      const std::string& payload = "",
+      bool ephemeral = false) = 0;
+  virtual bool set(
+      const std::string& path,
+      const std::string& payload = "") = 0;
   virtual bool remove(const std::string& path) = 0;
   virtual bool exists(const std::string& path) = 0;
 
@@ -51,8 +54,10 @@ class lock_service {
 
   // ephemeral only
   virtual bool create_seq(const std::string& path, std::string&) = 0;
-  virtual bool create_id(const std::string& path, uint32_t prefix,
-                         uint64_t& res) = 0;
+  virtual bool create_id(
+      const std::string& path,
+      uint32_t prefix,
+      uint64_t& res) = 0;
 
   virtual bool list(const std::string& path, std::vector<std::string>& out) = 0;
   virtual bool hd_list(const std::string& path, std::string& out) = 0;
@@ -94,9 +99,11 @@ class lock_service_mutex : public try_lockable {
   std::string path_;
 };
 
-lock_service* create_lock_service(const std::string&, const std::string& hosts,
-                                  const int timeout,
-                                  const std::string& log = "");
+lock_service* create_lock_service(
+    const std::string&,
+    const std::string& hosts,
+    const int timeout,
+    const std::string& log = "");
 
 }  // namespace common
 }  // namespace jubatus

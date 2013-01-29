@@ -24,8 +24,9 @@ using std::sort;
 using std::string;
 
 void sort_and_merge(sfv_t& sfv) {
-  if (sfv.size() == 0)
+  if (sfv.size() == 0) {
     return;
+  }
   sort(sfv.begin(), sfv.end());
   sfv_t ret_sfv;
   const string* prev = &sfv[0].first;

@@ -43,8 +43,11 @@ string build_loc_str(const string& ip, int port, unsigned int i) {
 }
 
 // /path/base -> 127.0.0.1 -> 9199 -> /path/base/127.0.0.1_9199
-void build_existence_path(const string& base, const string& ip, int port,
-                          string& out) {
+void build_existence_path(
+    const string& base,
+    const string& ip,
+    int port,
+    string& out) {
   out = base + "/" + ip + "_" + lexical_cast<string, int>(port);
 }
 
@@ -56,8 +59,10 @@ void build_config_path(string& path, const string& type, const string& name) {
   path = CONFIG_BASE_PATH + "/" + type + "/" + name;
 }
 
-void build_config_lock_path(string& path, const string& type,
-                            const string& name) {
+void build_config_lock_path(
+    string& path,
+    const string& type,
+    const string& name) {
   build_actor_path(path, type, name);
   path += "/config_lock";
 }
@@ -70,8 +75,12 @@ bool revert(const string& name, string& ip, int& port) {
 }
 
 // zk -> name -> ip -> port -> void
-void register_actor(lock_service& z, const string& type, const string& name,
-                    const string& ip, int port) {
+void register_actor(
+    lock_service& z,
+    const string& type,
+    const string& name,
+    const string& ip,
+    int port) {
   bool success = true;
 
   string path;
@@ -84,22 +93,27 @@ void register_actor(lock_service& z, const string& type, const string& name,
     string path1;
     build_existence_path(path, ip, port, path1);
     success = z.create(path1, "", true) && success;
-    if (success)
+    if (success) {
       LOG(INFO) << "actor created: " << path1;
+    }
   }
 
-  if (!success)
+  if (!success) {
     throw JUBATUS_EXCEPTION(
         jubatus::exception::runtime_error("Failed to register_actor")
         << jubatus::exception::error_api_func("lock_service::create"));
+  }
 
   // set exit zlistener here
   pfi::lang::function<void()> f = &force_exit;
   z.push_cleanup(f);
 }
 
-void register_keeper(lock_service& z, const string& type, const string& ip,
-                     int port) {
+void register_keeper(
+    lock_service& z,
+    const string& type,
+    const string& ip,
+    int port) {
   bool success = true;
 
   string path = JUBAKEEPER_BASE_PATH;
@@ -110,14 +124,16 @@ void register_keeper(lock_service& z, const string& type, const string& ip,
     string path1;
     build_existence_path(path, ip, port, path1);
     success = z.create(path1, "", true) && success;
-    if (success)
+    if (success) {
       LOG(INFO) << "keeper created: " << path1;
+    }
   }
 
-  if (!success)
+  if (!success) {
     throw JUBATUS_EXCEPTION(
         jubatus::exception::runtime_error("Failed to register_actor")
         << jubatus::exception::error_api_func("lock_service::create"));
+  }
 
   // set exit zlistener here
   pfi::lang::function<void()> f = &force_exit;
@@ -125,15 +141,19 @@ void register_keeper(lock_service& z, const string& type, const string& ip,
 }
 
 // zk -> name -> list( (ip, rpc_port) )
-bool get_all_actors(lock_service& z, const string& type, const string& name,
-                    std::vector<std::pair<string, int> >& ret) {
+bool get_all_actors(
+    lock_service& z,
+    const string& type,
+    const string& name,
+    std::vector<std::pair<string, int> >& ret) {
   ret.clear();
   string path;
   build_actor_path(path, type, name);
   path += "/nodes";
   std::vector<string> list;
-  if (!z.list(path, list))
+  if (!z.list(path, list)) {
     return false;
+  }
 
   for (std::vector<string>::const_iterator it = list.begin(); it != list.end();
       ++it) {

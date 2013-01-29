@@ -51,11 +51,12 @@ class global_id_generator_impl {
     } else {
 #ifdef HAVE_ZOOKEEPER_H
       uint64_t res;
-      if (ls_->create_id(path_, 0, res))
-      return res;
-      else
-      throw JUBATUS_EXCEPTION(
-          jubatus::exception::runtime_error("Failed to create id"));
+      if (ls_->create_id(path_, 0, res)) {
+        return res;
+      } else {
+        throw JUBATUS_EXCEPTION(
+            jubatus::exception::runtime_error("Failed to create id"));
+      }
 #else
       // never reaches here
       assert(is_standalone_);
@@ -69,11 +70,12 @@ class global_id_generator_impl {
     if (!is_standalone_) {
       path_ = path_prefix + "/id_generator";
       ls_ = ls;
-      if (!ls_->create(path_))
+      if (!ls_->create(path_)) {
       throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
             "Failed to create global id generator")
           << jubatus::exception::error_api_func("lock_service::create")
           << jubatus::exception::error_message(path_));
+      }
     }
 #endif
   }

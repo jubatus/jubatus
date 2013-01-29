@@ -47,7 +47,7 @@ struct result {
 
   MSGPACK_DEFINE(success, retval, error);
   template<class Archiver>
-  void serialize(Archiver &ar) {
+  void serialize(Archiver& ar) {
     ar & MEMBER(success) & MEMBER(retval) & MEMBER(error);
   }
 };

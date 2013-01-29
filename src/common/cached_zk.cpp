@@ -85,8 +85,9 @@ bool cached_zk::hd_list(const string& path, string& out) {
   out.clear();
   scoped_lock lk(m_);
   const std::set<string>& list(list_cache_[path]);
-  if (!list.empty())
+  if (!list.empty()) {
     out = *(list.begin());
+  }
 
   return true;
 }
@@ -120,8 +121,9 @@ bool cached_zk::read(const string& path, string& out) {
       DLOG(INFO) << "creating cache: " << path;
     }
 
-    if (read_(path, out))
+    if (read_(path, out)) {
       znode_cache_[path] = out;
+    }
 
   } else {
     out = it->second;
@@ -144,8 +146,12 @@ bool cached_zk::read_(const string& path, string& out) {
   }
 }
 
-void cached_zk::update_cache(zhandle_t* zh, int type, int state,
-                             const char* path, void* ctx) {
+void cached_zk::update_cache(
+    zhandle_t* zh,
+    int type,
+    int state,
+    const char* path,
+    void* ctx) {
   cached_zk* zk = static_cast<cached_zk*>(ctx);
 
   if (type == ZOO_CHILD_EVENT) {
@@ -168,7 +174,7 @@ void cached_zk::update_cache(zhandle_t* zh, int type, int state,
   // ZOO_CREATED_EVENT => ignore
   // ZOO_CHANGED_EVENT
   //  => ignore
-  // TODO(kashihara): when read() cache going to be modified this needs fix)
+  // TODO(kashihara): when read() cache going to be modified this needs fix
 }
 
 }  // namespace common

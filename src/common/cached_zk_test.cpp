@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
 #include <string>
+#include <gtest/gtest.h>
 #include <pficommon/concurrent/lock.h>
 #include "cached_zk.hpp"
 #include "../common/membership.hpp"
@@ -67,19 +67,17 @@ TEST(czk, cached_zk_trivial) {
 
   ASSERT_EQ("cached_zk", czk_->type());
 
-  /*
-   std::vector<std::string> pathlist;
-   czk_->list(ACTOR_BASE_PATH, pathlist);
-   ASSERT_EQ((unsigned int)2, pathlist.size());
+  // std::vector<std::string> pathlist;
+  // czk_->list(ACTOR_BASE_PATH, pathlist);
+  // ASSERT_EQ((unsigned int)2, pathlist.size());
 
-   std::string name_e;
-   czk_->hd_list(ACTOR_BASE_PATH, name_e);
-   ASSERT_EQ(name_e , name_);
+  // std::string name_e;
+  // czk_->hd_list(ACTOR_BASE_PATH, name_e);
+  // ASSERT_EQ(name_e , name_);
 
-   std::string dat;
-   czk_->read(path, dat);
-   ASSERT_EQ("hoge0", dat);
-   */
+  // std::string dat;
+  // czk_->read(path, dat);
+  // ASSERT_EQ("hoge0", dat);
 }
 
 }  // namespace jubatus

@@ -32,8 +32,10 @@ std::string jubatus_exception::diagnostic_information(bool display_what) const {
   tmp << "Dynamic exception type: ";
   tmp << pfi::lang::demangle(typeid(*this).name());
 
-  if (display_what && strcmp(what(), ""))
+  if (display_what && strcmp(what(), "")) {
     tmp << "::what: " << what();
+  }
+
   tmp << '\n';
 
   size_t frame = 0;

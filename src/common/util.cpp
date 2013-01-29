@@ -57,7 +57,7 @@ using pfi::lang::parse_error;
 namespace jubatus {
 namespace util {
 
-// FIXME: AF_INET does not specify IPv6
+// TODO(kashihara): AF_INET does not specify IPv6
 void get_ip(const char* nic, string& out) {
   int fd;
   struct ifreq ifr;
@@ -106,10 +106,11 @@ std::string get_program_name() {
   char path[PATH_MAX];
   ssize_t ret = readlink(exe_sym_path, path, PATH_MAX);
   if (ret != -1) {
-    if (ret == PATH_MAX)
+    if (ret == PATH_MAX) {
       throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
             "Failed to get program name. Path size overed PATH_MAX.")
           << jubatus::exception::error_errno(errno));
+    }
     path[ret] = '\0';
   }
 #endif
@@ -121,10 +122,11 @@ std::string get_program_name() {
 
   // get basename
   const string program_base_name = base_name(path);
-  if (program_base_name == path)
+  if (program_base_name == path) {
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
           string("Failed to get program name from path: ") + path)
         << jubatus::exception::error_file_name(path));
+  }
   return program_base_name;
 }
 
@@ -150,16 +152,18 @@ std::string get_user_name() {
 
 bool is_writable(const char* dir_path) {
   struct stat st_buf;
-  if (stat(dir_path, &st_buf) < 0)
+  if (stat(dir_path, &st_buf) < 0) {
     return false;
+  }
 
   if (!S_ISDIR(st_buf.st_mode)) {
     errno = ENOTDIR;
     return false;
   }
 
-  if (access(dir_path, W_OK) < 0)
+  if (access(dir_path, W_OK) < 0) {
     return false;
+  }
 
   return true;
 }
@@ -171,8 +175,9 @@ bool is_writable(const char* dir_path) {
 //  ...
 //  192.168.1.23 2345
 // and must include self IP got from "eth0"
-std::string load(const std::string& file,
-                 std::vector<std::pair<std::string, int> >& s) {
+std::string load(
+    const std::string& file,
+    std::vector<std::pair<std::string, int> >& s) {
   std::string tmp;
   std::string self;
   get_ip("eth0", self);
@@ -184,8 +189,9 @@ std::string load(const std::string& file,
     return self;
   }
   while (ifs >> tmp) {
-    if (self == tmp)
+    if (self == tmp) {
       self_included = true;
+    }
     if (!(ifs >> port)) {
       // TODO(kashihara): replace jubatus exception
       throw parse_error(file, line, tmp.size(), string("input port"));
@@ -212,12 +218,12 @@ void append_env_path(const string& e, const string& argv0) {
 }
 
 void append_server_path(const string& argv0) {
-  const char * env = getenv("PATH");
+  const char* env = getenv("PATH");
   char cwd[PATH_MAX];
   if (!getcwd(cwd, PATH_MAX)) {
     throw JUBATUS_EXCEPTION(
         jubatus::exception::runtime_error("Failed to getcwd"))
-      << jubatus::exception::error_errno(errno);
+        << jubatus::exception::error_errno(errno);
   }
 
   string p = argv0.substr(0, argv0.find_last_of('/'));
@@ -253,36 +259,41 @@ void get_machine_status(machine_status_t& status) {
 }
 
 namespace {
+
 void exit_on_term(int /* signum */) {
   exit(0);
 }
-}
+
+}  // namespace
 
 void set_exit_on_term() {
   struct sigaction sigact;
   sigact.sa_handler = exit_on_term;
   sigact.sa_flags = SA_RESTART;
 
-  if (sigaction(SIGTERM, &sigact, NULL) != 0)
+  if (sigaction(SIGTERM, &sigact, NULL) != 0) {
     throw JUBATUS_EXCEPTION(
         jubatus::exception::runtime_error("can't set SIGTERM handler")
         << jubatus::exception::error_api_func("sigaction")
         << jubatus::exception::error_errno(errno));
+  }
 
-  if (sigaction(SIGINT, &sigact, NULL) != 0)
+  if (sigaction(SIGINT, &sigact, NULL) != 0) {
     throw JUBATUS_EXCEPTION(
         jubatus::exception::runtime_error("can't set SIGINT handler")
         << jubatus::exception::error_api_func("sigaction")
         << jubatus::exception::error_errno(errno));
+  }
 }
 
 void ignore_sigpipe() {
   // portable code for socket write(2) MSG_NOSIGNAL
-  if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+  if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
     throw JUBATUS_EXCEPTION(
         jubatus::exception::runtime_error("can't ignore SIGPIPE")
         << jubatus::exception::error_api_func("signal")
         << jubatus::exception::error_errno(errno));
+  }
 }
 
 }  // namespace util

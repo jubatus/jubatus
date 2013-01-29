@@ -42,8 +42,8 @@ typedef std::vector<pfi::lang::shared_ptr<network_address> > address_list;
 
 address_list get_network_address();
 
-std::string get_default_v4_address(std::string primary_hostaddr =
-    std::string());
+std::string get_default_v4_address(
+    std::string primary_hostaddr = std::string());
 // v6 version not implmented yet
 
 }  // namespace common

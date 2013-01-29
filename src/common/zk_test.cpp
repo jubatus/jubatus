@@ -14,9 +14,9 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
 #include <string>
 #include <vector>
+#include <gtest/gtest.h>
 #include "lock_service.hpp"
 #include "../common/membership.hpp"
 
@@ -39,20 +39,25 @@ class zk_trivial : public testing::Test {
   }
 
   void TearDown() {
-    if (!zk_)
+    if (!zk_) {
       return;
+    }
 
-    if (zk_->exists(root_path))
+    if (zk_->exists(root_path)) {
       zk_->remove(root_path);
+    }
 
-    if (zk_->exists(engine_root))
+    if (zk_->exists(engine_root)) {
       zk_->remove(engine_root);
+    }
 
-    if (zk_->exists(ACTOR_BASE_PATH))
+    if (zk_->exists(ACTOR_BASE_PATH)) {
       zk_->remove(ACTOR_BASE_PATH);
+    }
 
-    if (zk_->exists(JUBATUS_BASE_PATH))
+    if (zk_->exists(JUBATUS_BASE_PATH)) {
       zk_->remove(JUBATUS_BASE_PATH);
+    }
   }
 
   string root_path;
@@ -110,8 +115,9 @@ TEST_F(zk_trivial, create_seq) {
 
   EXPECT_LT(root_path.size(), seqfile.size());
 
-  if (!seqfile.empty())
-  zk_->remove(seqfile);
+  if (!seqfile.empty()) {
+    zk_->remove(seqfile);
+  }
 }
 
 TEST_F(zk_trivial, create_id) {

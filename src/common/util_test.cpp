@@ -15,10 +15,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "util.hpp"
-#include <gtest/gtest.h>
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <gtest/gtest.h>
 
 TEST(common, util) {
   const std::string env = getenv("PATH");
@@ -49,16 +49,16 @@ TEST(common, base_name) {
 TEST(common, util_get_program_name) {
   std::string path;
   EXPECT_NO_THROW({
-        path = jubatus::util::get_program_name();
-      });
+    path = jubatus::util::get_program_name();
+  });
   EXPECT_EQ(std::string("util_test"), path);
 }
 
 TEST(common, util_get_user_name) {
   std::string user;
   EXPECT_NO_THROW({
-        user = jubatus::util::get_user_name();
-      });
+    user = jubatus::util::get_user_name();
+  });
   EXPECT_NE(std::string(""), user);
 }
 
@@ -72,6 +72,6 @@ TEST(common, util_is_writable) {
 TEST(common, util_get_machine_status) {
   jubatus::util::machine_status_t status;
   EXPECT_NO_THROW({
-        jubatus::util::get_machine_status(status);
-      });
+    jubatus::util::get_machine_status(status);
+  });
 }

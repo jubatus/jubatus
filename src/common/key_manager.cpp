@@ -57,10 +57,11 @@ uint64_t key_manager::get_id_const(const string& key) const {
 }
 
 const string& key_manager::get_key(const uint64_t id) const {
-  if (id < id2key_.size())
+  if (id < id2key_.size()) {
     return id2key_[id];
-  else
+  } else {
     return vacant_;
+  }
 }
 
 void key_manager::swap(key_manager& km) {

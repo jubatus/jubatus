@@ -82,11 +82,11 @@ class ipv4_address : public network_address {
     return interface_name_;
   }
 
-  const sockaddr_in *v4_address() const {
+  const sockaddr_in* v4_address() const {
     return &addr_;
   }
 
-  const sockaddr_in6 *v6_address() const {
+  const sockaddr_in6* v6_address() const {
     return NULL;
   }
 
@@ -140,19 +140,22 @@ string get_default_v4_address(string hostaddr) {
   for (address_list::const_iterator it = addrs.begin(), end = addrs.end();
       it != end; ++it) {
     pfi::lang::shared_ptr<network_address> a(*it);
-    if (a->v6())
+    if (a->v6()) {
       continue;
+    }
     address = a->address();
-    if (!hostaddr.empty() && address == hostaddr)
+    if (!hostaddr.empty() && address == hostaddr) {
       break;
+    }
 
-    if (!a->loopback())
+    if (!a->loopback()) {
       break;
+    }
   }
 
   if (!hostaddr.empty() && address != hostaddr) {
     LOG(WARNING) << "Use server address as '" << address << "' because '"
-        << hostaddr << "' missing";
+                 << hostaddr << "' missing";
   }
 
   return address;

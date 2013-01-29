@@ -23,8 +23,11 @@
 namespace jubatus {
 namespace common {
 
-lock_service* create_lock_service(const std::string& name,
-    const std::string& hosts, const int timeout, const std::string& log) {
+lock_service* create_lock_service(
+    const std::string& name,
+    const std::string& hosts,
+    const int timeout,
+    const std::string& log) {
   if (name == "zk") {
     return new zk(hosts, timeout, log);
   } else if (name == "cached_zk") {
@@ -34,7 +37,8 @@ lock_service* create_lock_service(const std::string& name,
         std::string("unknown lock_service: ") + name));
 }
 
-lock_service_mutex::lock_service_mutex(lock_service& ls,
+lock_service_mutex::lock_service_mutex(
+    lock_service& ls,
     const std::string& path)
     : path_(path) {
   if (ls.type() == "zk" || ls.type() == "cached_zk") {

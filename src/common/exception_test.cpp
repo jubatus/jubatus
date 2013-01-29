@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
 #include <string>
+#include <gtest/gtest.h>
 #include <pficommon/lang/demangle.h>
 #include "exception.hpp"
 
@@ -38,8 +38,8 @@ typedef error_info<struct test_my_tag_, int> test_my_tag;
 inline string to_string(const test_my_tag& info) {
   return pfi::lang::lexical_cast<string>(info.value() * 2);
 }
-}  // exception
-}  // jubatus
+}  // namespace exception
+}  // namespace jubatus
 
 TEST(error_info, defined_tag) {
   jubatus::exception::test_my_tag tag(1);

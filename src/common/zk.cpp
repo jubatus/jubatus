@@ -93,9 +93,9 @@ void zk::force_close() {
 bool zk::create(const string& path, const string& payload, bool ephemeral) {
   scoped_lock lk(m_);
   int rc = zoo_create(zh_, path.c_str(), payload.c_str(), payload.length(),
-      &ZOO_OPEN_ACL_UNSAFE,
-      ((ephemeral) ? ZOO_EPHEMERAL : 0),  // | ZOO_SEQUENCE
-      NULL, 0);
+                      &ZOO_OPEN_ACL_UNSAFE,
+                      ((ephemeral) ? ZOO_EPHEMERAL : 0),  // | ZOO_SEQUENCE
+                      NULL, 0);
   if (ephemeral) {
     if (rc != ZOK) {
       LOG(ERROR) << "failed to create: " << path << " - " << zerror(rc);
@@ -134,7 +134,6 @@ bool zk::create_seq(const string& path, string& seqfile) {
   if (rc != ZOK) {
     LOG(ERROR) << "failed to create: " << path << " - " << zerror(rc);
     return false;
-
   } else {
     seqfile = path_buffer;
     DLOG(INFO) << __func__ << " " << seqfile;
@@ -175,17 +174,22 @@ bool zk::exists(const string& path) {
   return rc == ZOK;
 }
 
-void my_znode_watcher(zhandle_t* zh, int type, int state, const char* path,
-                      void * watcherCtx) {
+void my_znode_watcher(
+    zhandle_t* zh,
+    int type,
+    int state,
+    const char* path,
+    void* watcherCtx) {
   pfi::lang::function<void(int, int, string)>* fp =
       static_cast<pfi::lang::function<void(int, int, string)>*>(watcherCtx);
   (*fp)(type, state, string(path));
   delete fp;
 }
 
-bool zk::bind_watcher(const string& path,
-                      pfi::lang::function<void(int, int, string)>& f) {
-  pfi::lang::function<void(int, int, string)> * fp = new pfi::lang::function<
+bool zk::bind_watcher(
+    const string& path,
+    pfi::lang::function<void(int, int, string)>& f) {
+  pfi::lang::function<void(int, int, string)>* fp = new pfi::lang::function<
       void(int, int, string)>(f);
   int rc = zoo_wexists(zh_, path.c_str(), my_znode_watcher, fp, NULL);
   return rc == ZOK;
@@ -265,8 +269,9 @@ bool zkmutex::lock() {
   pfi::concurrent::scoped_lock lk(m_);
   LOG(ERROR) << "not implemented: " << __func__;
   while (!has_lock_) {
-    if (try_lock())
+    if (try_lock()) {
       break;
+    }
     sleep(1);
   }
 
@@ -275,19 +280,23 @@ bool zkmutex::lock() {
 
 bool zkmutex::try_lock() {
   pfi::concurrent::scoped_lock lk(m_);
-  if (has_lock_)
+  if (has_lock_) {
     return has_lock_;
+  }
 
   string prefix = path_ + "/wlock_";
-  if (!zk_.create_seq(prefix, seqfile_))
+  if (!zk_.create_seq(prefix, seqfile_)) {
     return false;
+  }
 
-  if (seqfile_ == "")
+  if (seqfile_ == "") {
     return false;
+  }
 
   vector<string> list;
-  if (!zk_.list(path_, list) || list.empty())
+  if (!zk_.list(path_, list) || list.empty()) {
     return false;
+  }
 
   has_lock_ = true;
   for (size_t i = 0; i < list.size(); i++) {
@@ -320,8 +329,9 @@ bool zkmutex::rlock() {
   pfi::concurrent::scoped_lock lk(m_);
   LOG(ERROR) << "not implemented: " << __func__;
   while (!has_rlock_) {
-    if (try_rlock())
+    if (try_rlock()) {
       break;
+    }
     sleep(1);
   }
 
@@ -330,19 +340,23 @@ bool zkmutex::rlock() {
 
 bool zkmutex::try_rlock() {
   pfi::concurrent::scoped_lock lk(m_);
-  if (has_rlock_)
+  if (has_rlock_) {
     return has_rlock_;
+  }
 
   string prefix = path_ + "/rlock_";
-  if (!zk_.create_seq(prefix, seqfile_))
+  if (!zk_.create_seq(prefix, seqfile_)) {
     return false;
+  }
 
-  if (seqfile_ == "")
+  if (seqfile_ == "") {
     return false;
+  }
 
   vector<string> list;
-  if (!zk_.list(path_, list) || list.empty())
+  if (!zk_.list(path_, list) || list.empty()) {
     return false;
+  }
 
   has_rlock_ = true;
   for (size_t i = 0; i < list.size(); i++) {
@@ -383,7 +397,7 @@ void mywatcher(zhandle_t* zh, int type, int state, const char* path, void* p) {
   } else if (type == ZOO_SESSION_EVENT) {
     if (state != ZOO_CONNECTED_STATE && state != ZOO_ASSOCIATING_STATE) {
       LOG(ERROR) << "zk connection expiration - type: " << type << ", state: "
-          << state;
+                 << state;
       zk_->run_cleanup();
     }
   } else if (type == ZOO_NOTWATCHING_EVENT) {
