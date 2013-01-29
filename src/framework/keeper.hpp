@@ -644,7 +644,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
       --running_count_;
       if (!cancelled_ && running_count_ <= 0) {
         cancel_timeout();
-        req_.result < Res > (aggregate_results());
+        req_.result<Res>(aggregate_results());
       }
     }
 

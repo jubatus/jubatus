@@ -79,7 +79,7 @@ class server_helper {
   }
 
   std::map<std::string, std::string> get_loads() const {
-    std::map < std::string, std::string > result;
+    std::map<std::string, std::string> result;
     {
       pfi::system::sysstat::sysstat_ret sys;
       get_sysstat(sys);
@@ -93,7 +93,7 @@ class server_helper {
   }
 
   std::map<std::string, status_t> get_status() const {
-    std::map < std::string, status_t > status;
+    std::map<std::string, status_t> status;
     const server_argv& a = server_->argv();
     status_t& data = status[get_server_identifier(a)];
 
