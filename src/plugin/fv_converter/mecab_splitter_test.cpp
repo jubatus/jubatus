@@ -23,7 +23,6 @@
 #include <pficommon/lang/bind.h>
 #include <pficommon/lang/scoped_ptr.h>
 #include "../../fv_converter/exception.hpp"
-#include "../../fv_converter/test_util.hpp"
 #include "mecab_splitter.hpp"
 
 namespace jubatus {
@@ -42,7 +41,7 @@ TEST(mecab_splitter, trivial) {
   exp.push_back(std::make_pair(9, 6));
   exp.push_back(std::make_pair(15, 6));
 
-  PairVectorEquals(exp, bs);
+  ASSERT_EQ(exp, bs);
 }
 
 TEST(mecab_splitter, illegal_argument) {
@@ -81,7 +80,7 @@ TEST(mecab_splitter, with_space) {
   exp.push_back(std::make_pair(1, 9));
   exp.push_back(std::make_pair(11, 9));
 
-  PairVectorEquals(exp, bs);
+  ASSERT_EQ(exp, bs);
 }
 
 void run(mecab_splitter* m) {
@@ -94,7 +93,7 @@ void run(mecab_splitter* m) {
   for (int i = 0; i < 1000; ++i) {
     std::vector<std::pair<size_t, size_t> > bs;
     m->split("本日は晴天なり", bs);
-    PairVectorEquals(exp, bs);
+    ASSERT_EQ(exp, bs);
   }
 }
 
