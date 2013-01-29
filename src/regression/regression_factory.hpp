@@ -23,19 +23,23 @@ namespace jubatus {
 
 namespace storage {
 class storage_base;
-}
+}  // namespace storage
+
 namespace jsonconfig {
 class config;
-}  // jsonconfig
+}  // namespace jsonconfig
+
 namespace regression {
+
 class regression_base;
 
 class regression_factory {
  public:
   regression_base* create_regression(
-      const std::string& name, const jsonconfig::config& param,
+      const std::string& name,
+      const jsonconfig::config& param,
       jubatus::storage::storage_base* storage) const;
 };
 
-}  // namespace storage
+}  // namespace regression
 }  // namespace jubatus

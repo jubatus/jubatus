@@ -33,10 +33,11 @@ namespace jubatus {
 
 class jubervisor {
  public:
-  jubervisor(const std::string& hosts,
-             int port,
-             int max = 10,
-             const std::string& logfile = "");
+  jubervisor(
+      const std::string& hosts,
+      int port,
+      int max = 10,
+      const std::string& logfile = "");
   ~jubervisor();
 
   int start(std::string str, unsigned int N, framework::server_argv argv);

@@ -14,8 +14,9 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
 #include <stdexcept>
+
+#include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
 #include <pficommon/text/json.h>
 
@@ -42,7 +43,7 @@ TEST(regression_factory, unknown) {
   storage::local_storage s;
   jsonconfig::config param;
   ASSERT_THROW(f.create_regression("unknown_regression", param, &s),
-    unsupported_method);
+               unsupported_method);
 }
 
 }  // namespace regression

@@ -29,7 +29,7 @@
 
 namespace {
 const std::string PROGNAME = "jubavisor";
-}
+}  // namespace
 
 using jubatus::jubervisor;
 using jubatus::jubervisor_server;
