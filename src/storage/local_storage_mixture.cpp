@@ -33,6 +33,7 @@ void increase(val3_t& a, const val3_t& b) {
   a.v2 += b.v2;
   a.v3 += b.v3;
 }
+
 }  // namespace
 
 local_storage_mixture::local_storage_mixture() {
@@ -41,7 +42,8 @@ local_storage_mixture::local_storage_mixture() {
 local_storage_mixture::~local_storage_mixture() {
 }
 
-bool local_storage_mixture::get_internal(const string& feature,
+bool local_storage_mixture::get_internal(
+    const string& feature,
     id_feature_val3_t& ret) const {
   ret.clear();
   id_features3_t::const_iterator it = tbl_.find(feature);
@@ -64,7 +66,8 @@ bool local_storage_mixture::get_internal(const string& feature,
   return found;
 }
 
-void local_storage_mixture::get(const std::string &feature,
+void local_storage_mixture::get(
+    const std::string& feature,
     feature_val1_t& ret) {
   ret.clear();
   id_feature_val3_t m3;
@@ -75,7 +78,8 @@ void local_storage_mixture::get(const std::string &feature,
   }
 }
 
-void local_storage_mixture::get2(const std::string &feature,
+void local_storage_mixture::get2(
+    const std::string& feature,
     feature_val2_t& ret) {
   ret.clear();
   id_feature_val3_t m3;
@@ -88,7 +92,8 @@ void local_storage_mixture::get2(const std::string &feature,
   }
 }
 
-void local_storage_mixture::get3(const std::string &feature,
+void local_storage_mixture::get3(
+    const std::string& feature,
     feature_val3_t& ret) {
   ret.clear();
   id_feature_val3_t m3;
@@ -121,7 +126,8 @@ void local_storage_mixture::inp(const sfv_t& sfv, map_feature_val1_t& ret) {
   }
 }
 
-void local_storage_mixture::set(const string &feature,
+void local_storage_mixture::set(
+    const string& feature,
     const string& klass,
     const val1_t& w) {
   uint64_t class_id = class2id_.get_id(klass);
@@ -129,7 +135,8 @@ void local_storage_mixture::set(const string &feature,
   tbl_diff_[feature][class_id].v1 = w - w_in_table;
 }
 
-void local_storage_mixture::set2(const string &feature,
+void local_storage_mixture::set2(
+    const string& feature,
     const string& klass,
     const val2_t& w) {
   uint64_t class_id = class2id_.get_id(klass);
@@ -141,7 +148,8 @@ void local_storage_mixture::set2(const string &feature,
   triple.v2 = w.v2 - w2_in_table;
 }
 
-void local_storage_mixture::set3(const string &feature,
+void local_storage_mixture::set3(
+    const string& feature,
     const string& klass,
     const val3_t& w) {
   uint64_t class_id = class2id_.get_id(klass);
@@ -157,15 +165,18 @@ void local_storage_mixture::get_status(
   status["diff_size"] = pfi::lang::lexical_cast<std::string>(tbl_diff_.size());
 }
 
-void local_storage_mixture::update(const string &feature,
+void local_storage_mixture::update(
+    const string& feature,
     const string& inc_class,
-    const string& dec_class, const val1_t& v) {
+    const string& dec_class,
+    const val1_t& v) {
   id_feature_val3_t& feature_row = tbl_diff_[feature];
   feature_row[class2id_.get_id(inc_class)].v1 += v;
   feature_row[class2id_.get_id(dec_class)].v1 -= v;
 }
 
-void local_storage_mixture::bulk_update(const sfv_t& sfv,
+void local_storage_mixture::bulk_update(
+    const sfv_t& sfv,
     float step_width,
     const string& inc_class,
     const string& dec_class) {

@@ -34,17 +34,23 @@ class storage_base {
   virtual ~storage_base() {
   }
 
-  virtual void get(const std::string &feature, feature_val1_t& ret) = 0;
-  virtual void get2(const std::string &feature, feature_val2_t& ret) = 0;
-  virtual void get3(const std::string &feature, feature_val3_t& ret) = 0;
+  virtual void get(const std::string& feature, feature_val1_t& ret) = 0;
+  virtual void get2(const std::string& feature, feature_val2_t& ret) = 0;
+  virtual void get3(const std::string& feature, feature_val3_t& ret) = 0;
 
   virtual void inp(const sfv_t& sfv, map_feature_val1_t& ret);  // inner product
 
-  virtual void set(const std::string &feature, const std::string &klass,
+  virtual void set(
+      const std::string& feature,
+      const std::string& klass,
       const val1_t& w) = 0;
-  virtual void set2(const std::string &feature, const std::string &klass,
+  virtual void set2(
+      const std::string& feature,
+      const std::string& klass,
       const val2_t& w) = 0;
-  virtual void set3(const std::string &feature, const std::string &klass,
+  virtual void set3(
+      const std::string& feature,
+      const std::string& klass,
       const val3_t& w) = 0;
 
   virtual void get_status(std::map<std::string, std::string>&) = 0;
@@ -52,10 +58,15 @@ class storage_base {
   virtual bool save(std::ostream&) = 0;
   virtual bool load(std::istream&) = 0;
 
-  virtual void update(const std::string& feature, const std::string& inc_class,
-      const std::string& dec_class, const val1_t& w);
+  virtual void update(
+      const std::string& feature,
+      const std::string& inc_class,
+      const std::string& dec_class,
+      const val1_t& w);
 
-  virtual void bulk_update(const sfv_t& sfv, float step_width,
+  virtual void bulk_update(
+      const sfv_t& sfv,
+      float step_width,
       const std::string& inc_class,
       const std::string& dec_class);
 
@@ -65,15 +76,15 @@ class storage_base {
   virtual std::string type() const = 0;
 };
 
-class storage_exception : public jubatus::exception::jubaexception<
-    storage_exception> {
+class storage_exception
+    : public jubatus::exception::jubaexception<storage_exception> {
  public:
-  explicit storage_exception(const std::string &msg)
+  explicit storage_exception(const std::string& msg)
       : msg(msg) {
   }
   ~storage_exception() throw () {
   }
-  const char *what() const throw () {
+  const char* what() const throw () {
     return msg.c_str();
   }
  private:

@@ -53,16 +53,23 @@ class lsh_index_storage : public recommender_storage_base {
   virtual ~lsh_index_storage();
 
   // hash is a randomly-projected and scaled hash values without shifting
-  void set_row(const std::string& row, const std::vector<float>& hash,
+  void set_row(
+      const std::string& row,
+      const std::vector<float>& hash,
       float norm);
   void remove_row(const std::string& row);
   void clear();
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
-  void similar_row(const std::vector<float>& hash, float norm,
-      uint64_t probe_num, uint64_t ret_num,
+  void similar_row(
+      const std::vector<float>& hash,
+      float norm,
+      uint64_t probe_num,
+      uint64_t ret_num,
       std::vector<std::pair<std::string, float> >& ids) const;
-  void similar_row(const std::string& id, uint64_t ret_num,
+  void similar_row(
+      const std::string& id,
+      uint64_t ret_num,
       std::vector<std::pair<std::string, float> >& ids) const;
   std::string name() const;
 
@@ -82,8 +89,7 @@ class lsh_index_storage : public recommender_storage_base {
   virtual void mix(const std::string& lhs, std::string& rhs) const;
 
  private:
-  typedef pfi::data::unordered_map<
-    uint64_t, std::vector<uint64_t> >lsh_table_t;
+  typedef pfi::data::unordered_map<uint64_t, std::vector<uint64_t> >lsh_table_t;
 
   friend class pfi::data::serialization::access;
   template <class Ar>
@@ -95,14 +101,20 @@ class lsh_index_storage : public recommender_storage_base {
 
   lsh_master_table_t::iterator remove_and_get_row(const std::string& row);
 
-  std::vector<float> make_entry(const std::vector<float>&hash, float norm,
+  std::vector<float> make_entry(
+      const std::vector<float>& hash,
+      float norm,
       lsh_entry& entry) const;
-  bool retrieve_hit_rows(size_t hash, size_t ret_num,
+  bool retrieve_hit_rows(
+      size_t hash,
+      size_t ret_num,
       pfi::data::unordered_set<uint64_t>& cands) const;
 
   void get_sorted_similar_rows(
       const pfi::data::unordered_set<uint64_t>& cands,
-      const bit_vector& query_simhash, float query_norm, uint64_t ret_num,
+      const bit_vector& query_simhash,
+      float query_norm,
+      uint64_t ret_num,
       std::vector<std::pair<std::string, float> >& ids) const;
   const lsh_entry* get_lsh_entry(const std::string& row) const;
   void remove_model_row(const std::string& row);

@@ -63,8 +63,7 @@ class lsh_vector {
   std::vector<int> values_;
 };
 
-inline
-void swap(lsh_vector& l, lsh_vector& r) {
+inline void swap(lsh_vector& l, lsh_vector& r) {
   l.swap(r);
 }
 

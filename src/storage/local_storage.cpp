@@ -55,7 +55,7 @@ void local_storage::get2(const string& feature, feature_val2_t& ret) {
   const id_feature_val3_t& m = cit->second;
   for (id_feature_val3_t::const_iterator it = m.begin(); it != m.end(); ++it) {
     ret.push_back(make_pair(class2id_.get_key(it->first),
-          val2_t(it->second.v1, it->second.v2)));
+                            val2_t(it->second.v1, it->second.v2)));
   }
 }
 
@@ -79,8 +79,9 @@ void local_storage::inp(const sfv_t& sfv, map_feature_val1_t& ret) {
     const string& feature = it->first;
     const float val = it->second;
     id_features3_t::const_iterator it2 = tbl_.find(feature);
-    if (it2 == tbl_.end())
+    if (it2 == tbl_.end()) {
       continue;
+    }
     const id_feature_val3_t& m = it2->second;
     for (id_feature_val3_t::const_iterator it3 = m.begin(); it3 != m.end();
         ++it3) {
@@ -89,19 +90,22 @@ void local_storage::inp(const sfv_t& sfv, map_feature_val1_t& ret) {
   }
 
   for (size_t i = 0; i < ret_id.size(); ++i) {
-    if (ret_id[i] == 0.f)
+    if (ret_id[i] == 0.f) {
       continue;
+    }
     ret[class2id_.get_key(i)] = ret_id[i];
   }
 }
 
-void local_storage::set(const string &feature,
+void local_storage::set(
+    const string& feature,
     const string& klass,
     const val1_t& w) {
   tbl_[feature][class2id_.get_id(klass)].v1 = w;
 }
 
-void local_storage::set2(const string &feature,
+void local_storage::set2(
+    const string& feature,
     const string& klass,
     const val2_t& w) {
   val3_t& val3 = tbl_[feature][class2id_.get_id(klass)];
@@ -109,7 +113,8 @@ void local_storage::set2(const string &feature,
   val3.v2 = w.v2;
 }
 
-void local_storage::set3(const string &feature,
+void local_storage::set3(
+    const string& feature,
     const string& klass,
     const val3_t& w) {
   tbl_[feature][class2id_.get_id(klass)] = w;
@@ -129,7 +134,8 @@ float feature_fabssum(const id_feature_val3_t& f) {
   return sum;
 }
 
-void local_storage::bulk_update(const sfv_t& sfv,
+void local_storage::bulk_update(
+    const sfv_t& sfv,
     float step_width,
     const string& inc_class,
     const string& dec_class) {
@@ -151,7 +157,8 @@ void local_storage::bulk_update(const sfv_t& sfv,
   }
 }
 
-void local_storage::update(const string &feature,
+void local_storage::update(
+    const string& feature,
     const string& inc_class,
     const string& dec_class,
     const val1_t& v) {

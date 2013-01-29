@@ -31,8 +31,9 @@ norm_base* create_norm(const string& name) {
   } else if (name == "l1") {
     return new norm_l1;
   } else {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
-          string("create_norm unknown name error:") + name));
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error(
+            string("create_norm unknown name error:") + name));
   }
 }
 

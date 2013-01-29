@@ -50,7 +50,8 @@ vector<float> make_dv(const string& str) {
   return v;
 }
 
-void check_probe(size_t expect_table,
+void check_probe(
+    size_t expect_table,
     const string& expect_vec,
     const pair<size_t, lsh_vector>& actual) {
   EXPECT_EQ(expect_table, actual.first);

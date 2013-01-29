@@ -42,7 +42,8 @@ class bit_index_storage : public recommender_storage_base {
   void clear();
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
-  void similar_row(const bit_vector& bv,
+  void similar_row(
+      const bit_vector& bv,
       std::vector<std::pair<std::string, float> >& ids,
       uint64_t ret_num) const;
   std::string name() const;

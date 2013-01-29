@@ -74,7 +74,8 @@ void initialize_shift(uint32_t seed, vector<float>& shift) {
   }
 }
 
-vector<float> shift_hash(const vector<float>& hash,
+vector<float> shift_hash(
+    const vector<float>& hash,
     const vector<float>& shift) {
   vector<float> shifted(hash);
   for (size_t i = 0; i < shifted.size(); ++i) {
@@ -94,7 +95,8 @@ bit_vector binarize(const vector<float>& hash) {
   return bv;
 }
 
-float calc_euclidean_distance(const lsh_entry& entry,
+float calc_euclidean_distance(
+    const lsh_entry& entry,
     const bit_vector& bv,
     float norm) {
   const uint64_t hamm = bv.calc_hamming_similarity(entry.simhash_bv);
@@ -122,7 +124,9 @@ string serialize_diff(const lsh_master_table_t& table) {
   return oss.str();  // TODO(unknown) remove redundant copy
 }
 
-void retrieve_hit_rows_from_table(size_t hash, const lsh_table_t& table,
+void retrieve_hit_rows_from_table(
+    size_t hash,
+    const lsh_table_t& table,
     unordered_set<uint64_t>& cands) {
   lsh_table_t::const_iterator it = table.find(hash);
   if (it != table.end()) {
@@ -138,15 +142,18 @@ void retrieve_hit_rows_from_table(size_t hash, const lsh_table_t& table,
 lsh_index_storage::lsh_index_storage() {
 }
 
-lsh_index_storage::lsh_index_storage(size_t lsh_num, size_t table_num,
+lsh_index_storage::lsh_index_storage(
+    size_t lsh_num,
+    size_t table_num,
     uint32_t seed)
     : shift_(lsh_num * table_num),
       table_num_(table_num) {
   initialize_shift(seed, shift_);
 }
 
-lsh_index_storage::lsh_index_storage(size_t table_num,
-                                     const vector<float>& shift)
+lsh_index_storage::lsh_index_storage(
+    size_t table_num,
+    const vector<float>& shift)
     : shift_(shift),
       table_num_(table_num) {
 }
@@ -154,7 +161,9 @@ lsh_index_storage::lsh_index_storage(size_t table_num,
 lsh_index_storage::~lsh_index_storage() {
 }
 
-void lsh_index_storage::set_row(const string& row, const vector<float>& hash,
+void lsh_index_storage::set_row(
+    const string& row,
+    const vector<float>& hash,
     float norm) {
   lsh_master_table_t::iterator it = remove_and_get_row(row);
   if (it == master_table_diff_.end()) {
@@ -243,7 +252,9 @@ void lsh_index_storage::similar_row(
   get_sorted_similar_rows(cands, bv, norm, ret_num, ids);
 }
 
-void lsh_index_storage::similar_row(const string& id, uint64_t ret_num,
+void lsh_index_storage::similar_row(
+    const string& id,
+    uint64_t ret_num,
     vector<pair<string, float> >& ids) const {
   lsh_master_table_t::const_iterator it = master_table_diff_.find(id);
   if (it == master_table_diff_.end()) {
@@ -260,8 +271,10 @@ void lsh_index_storage::similar_row(const string& id, uint64_t ret_num,
     }
   }
 
-  get_sorted_similar_rows(cands, it->second.simhash_bv, it->second.norm,
-      ret_num, ids);
+  get_sorted_similar_rows(cands,
+                          it->second.simhash_bv,
+                          it->second.norm,
+                          ret_num, ids);
 }
 
 string lsh_index_storage::name() const {
@@ -341,8 +354,9 @@ lsh_master_table_t::iterator lsh_index_storage::remove_and_get_row(
     lsh_table_t::iterator it = lsh_table_diff_.find(entry.lsh_hash[i]);
     if (it != lsh_table_diff_.end()) {
       vector<uint64_t>& range = it->second;
-      vector<uint64_t>::iterator jt = lower_bound(range.begin(), range.end(),
-          row_id);
+      vector<uint64_t>::iterator jt = lower_bound(range.begin(),
+                                                  range.end(),
+                                                  row_id);
       if (jt != range.end() && row_id == *jt) {
         range.erase(jt);
         if (range.empty()) {
@@ -400,7 +414,8 @@ void lsh_index_storage::remove_model_row(const std::string& row) {
   }
 }
 
-void lsh_index_storage::set_mixed_row(const string& row,
+void lsh_index_storage::set_mixed_row(
+    const string& row,
     const lsh_entry& entry) {
   const uint64_t row_id = key_manager_.get_id(row);
   master_table_[row] = entry;
@@ -441,8 +456,9 @@ void lsh_index_storage::get_sorted_similar_rows(
   if (scored.size() <= ret_num) {
     sort(scored.begin(), scored.end(), greater_second());
   } else {
-    partial_sort(scored.begin(), scored.begin() + ret_num, scored.end(),
-        greater_second());
+    partial_sort(scored.begin(),
+                 scored.begin() + ret_num, scored.end(),
+                 greater_second());
     scored.resize(ret_num);
   }
 

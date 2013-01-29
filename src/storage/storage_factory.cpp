@@ -25,6 +25,7 @@
 
 namespace jubatus {
 namespace storage {
+
 storage_base* storage_factory::create_storage(const std::string& name) {
   if (name == "local") {
     return static_cast<storage_base*>(new local_storage);
@@ -33,8 +34,9 @@ storage_base* storage_factory::create_storage(const std::string& name) {
   }
 
   // maybe bug or configuration mistake
-  throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
-        std::string("failed to create storage: ") + name));
+  throw JUBATUS_EXCEPTION(
+      jubatus::exception::runtime_error(
+          std::string("failed to create storage: ") + name));
 }
 
 }  // namespace storage

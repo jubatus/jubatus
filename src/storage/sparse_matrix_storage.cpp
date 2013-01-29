@@ -46,13 +46,16 @@ sparse_matrix_storage& sparse_matrix_storage::operator =(
   return *this;
 }
 
-void sparse_matrix_storage::set(const string& row, const string& column,
+void sparse_matrix_storage::set(
+    const string& row,
+    const string& column,
     float val) {
   tbl_[row][column2id_.get_id(column)] = val;
 }
 
 void sparse_matrix_storage::set_row(
-    const string& row, const vector<pair<string, float> >& columns) {
+    const string& row,
+    const vector<pair<string, float> >& columns) {
   row_t& row_v = tbl_[row];
   for (size_t i = 0; i < columns.size(); ++i) {
     float & v = row_v[column2id_.get_id(columns[i].first)];
@@ -61,7 +64,8 @@ void sparse_matrix_storage::set_row(
   }
 }
 
-float sparse_matrix_storage::get(const string& row,
+float sparse_matrix_storage::get(
+    const string& row,
     const string& column) const {
   tbl_t::const_iterator it = tbl_.find(row);
   if (it == tbl_.end()) {
@@ -81,7 +85,8 @@ float sparse_matrix_storage::get(const string& row,
 }
 
 void sparse_matrix_storage::get_row(
-    const string& row, vector<pair<string, float> >& columns) const {
+    const string& row,
+    vector<pair<string, float> >& columns) const {
   columns.clear();
   tbl_t::const_iterator it = tbl_.find(row);
   if (it == tbl_.end()) {

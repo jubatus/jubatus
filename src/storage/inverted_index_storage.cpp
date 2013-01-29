@@ -34,7 +34,8 @@ using std::vector;
 namespace jubatus {
 namespace storage {
 
-static void convert_diff(sparse_matrix_storage& storage,
+static void convert_diff(
+    sparse_matrix_storage& storage,
     map_float_t& norm,
     string& diff) {
   ostringstream os;
@@ -44,7 +45,8 @@ static void convert_diff(sparse_matrix_storage& storage,
   diff = os.str();
 }
 
-static void revert_diff(const string& diff,
+static void revert_diff(
+    const string& diff,
     sparse_matrix_storage& storage,
     map_float_t& norm) {
   istringstream is(diff);
@@ -59,8 +61,10 @@ inverted_index_storage::inverted_index_storage() {
 inverted_index_storage::~inverted_index_storage() {
 }
 
-void inverted_index_storage::set(const std::string& row,
-    const std::string& column, float val) {
+void inverted_index_storage::set(
+    const std::string& row,
+    const std::string& column,
+    float val) {
   uint64_t column_id = column2id_.get_id_const(column);
 
   if (column_id == key_manager::NOTFOUND) {
@@ -73,7 +77,8 @@ void inverted_index_storage::set(const std::string& row,
   column2norm_diff_[column_id] += val * val;
 }
 
-float inverted_index_storage::get(const string& row,
+float inverted_index_storage::get(
+    const string& row,
     const string& column) const {
   uint64_t column_id = column2id_.get_id_const(column);
   if (column_id == key_manager::NOTFOUND) {
@@ -96,8 +101,10 @@ float inverted_index_storage::get(const string& row,
   return 0.0;
 }
 
-float inverted_index_storage::get_from_tbl(const std::string& row,
-    uint64_t column_id, const tbl_t& tbl,
+float inverted_index_storage::get_from_tbl(
+    const std::string& row,
+    uint64_t column_id,
+    const tbl_t& tbl,
     bool& exist) const {
   exist = false;
 
@@ -118,7 +125,8 @@ float inverted_index_storage::get_from_tbl(const std::string& row,
   }
 }
 
-void inverted_index_storage::remove(const std::string& row,
+void inverted_index_storage::remove(
+    const std::string& row,
     const std::string& column) {
   set(row, column, 0.f);
 }
@@ -172,7 +180,7 @@ void inverted_index_storage::set_mixed_and_clear_diff(
   map_float_t mixed_column2norm;
   revert_diff(mixed_diff_str, mixed_inv, mixed_column2norm);
 
-  vector<string > ids;
+  vector<string> ids;
   mixed_inv.get_all_row_ids(ids);
   for (size_t i = 0; i < ids.size(); ++i) {
     const string& row = ids[i];
@@ -239,7 +247,8 @@ bool inverted_index_storage::load(std::istream& is) {
   return true;
 }
 
-void inverted_index_storage::calc_scores(const sfv_t& query,
+void inverted_index_storage::calc_scores(
+    const sfv_t& query,
     vector<pair<string, float> >& scores,
     size_t ret_num) const {
   float query_norm = calc_l2norm(query);
@@ -290,7 +299,8 @@ float inverted_index_storage::calc_columnl2norm(uint64_t column_id) const {
 }
 
 void inverted_index_storage::add_inp_scores(
-    const std::string& row, float val,
+    const std::string& row,
+    float val,
     pfi::data::unordered_map<uint64_t, float>& scores) const {
   tbl_t::const_iterator it_diff = inv_diff_.find(row);
   if (it_diff != inv_diff_.end()) {

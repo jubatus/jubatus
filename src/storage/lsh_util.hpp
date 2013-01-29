@@ -39,7 +39,9 @@ class lsh_probe_generator {
 
  private:
   typedef std::pair<float, std::pair<size_t, std::vector<int> > > diff_type;
-  typedef std::priority_queue<diff_type, std::vector<diff_type>,
+  typedef std::priority_queue<
+      diff_type,
+      std::vector<diff_type>,
       std::greater<diff_type> > heap_type;
 
   void next_perturbations();

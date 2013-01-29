@@ -61,49 +61,49 @@ struct val2_t {
     return (v1 != v.v1) ? v1 < v.v1 : v2 < v.v2;
   }
 
-  val2_t operator +(const val2_t &r) const {
+  val2_t operator +(const val2_t& r) const {
     val2_t ret(*this);
     ret += r;
     return ret;
   }
 
-  val2_t &operator +=(const val2_t &r) {
+  val2_t& operator +=(const val2_t& r) {
     v1 += r.v1;
     v2 += r.v2;
     return *this;
   }
 
-  val2_t operator -(const val2_t &r) const {
+  val2_t operator -(const val2_t& r) const {
     val2_t ret(*this);
     ret -= r;
     return ret;
   }
 
-  val2_t &operator -=(const val2_t &r) {
+  val2_t& operator -=(const val2_t& r) {
     v1 -= r.v1;
     v2 -= r.v2;
     return *this;
   }
 
-  val2_t operator *(const val2_t &r) const {
+  val2_t operator *(const val2_t& r) const {
     val2_t ret(*this);
     ret *= r;
     return ret;
   }
 
-  val2_t &operator *=(const val2_t &r) {
+  val2_t& operator *=(const val2_t& r) {
     v1 *= r.v1;
     v2 *= r.v2;
     return *this;
   }
 
-  val2_t operator /(const val2_t &r) const {
+  val2_t operator /(const val2_t& r) const {
     val2_t ret(*this);
     ret /= r;
     return ret;
   }
 
-  val2_t &operator /=(const val2_t &r) {
+  val2_t& operator /=(const val2_t& r) {
     v1 /= r.v1;
     v2 /= r.v2;
     return *this;
@@ -142,33 +142,33 @@ struct val3_t {
     return (v1 != v.v1) ? v1 < v.v1 : (v2 != v.v2) ? v2 < v.v2 : v3 < v.v3;
   }
 
-  val3_t operator +(const val3_t &r) const {
+  val3_t operator +(const val3_t& r) const {
     val3_t ret(*this);
     ret += r;
     return ret;
   }
 
-  val3_t &operator +=(const val3_t &r) {
+  val3_t& operator +=(const val3_t& r) {
     v1 += r.v1;
     v2 += r.v2;
     v3 += r.v3;
     return *this;
   }
 
-  val3_t operator -(const val3_t &r) const {
+  val3_t operator -(const val3_t& r) const {
     val3_t ret(*this);
     ret -= r;
     return ret;
   }
 
-  val3_t &operator -=(const val3_t &r) {
+  val3_t& operator -=(const val3_t& r) {
     v1 -= r.v1;
     v2 -= r.v2;
     v3 -= r.v3;
     return *this;
   }
 
-  val3_t operator *(const val3_t &r) const {
+  val3_t operator *(const val3_t& r) const {
     val3_t ret(*this);
     ret *= r;
     return ret;
@@ -183,20 +183,20 @@ struct val3_t {
     return ret;
   }
 
-  val3_t &operator *=(const val3_t &r) {
+  val3_t& operator *=(const val3_t& r) {
     v1 *= r.v1;
     v2 *= r.v2;
     v3 *= r.v3;
     return *this;
   }
 
-  val3_t operator /(const val3_t &r) const {
+  val3_t operator /(const val3_t& r) const {
     val3_t ret(*this);
     ret /= r;
     return ret;
   }
 
-  val3_t &operator /=(const val3_t &r) {
+  val3_t& operator /=(const val3_t& r) {
     v1 /= r.v1;
     v2 /= r.v2;
     v3 /= r.v3;
@@ -230,7 +230,7 @@ namespace detail {
 
 template <class E, class F>
 std::vector<std::pair<std::string, E> >& binop(
-    std::vector<std::pair<std::string, E> > &lhs,
+    std::vector<std::pair<std::string, E> >& lhs,
     std::vector<std::pair<std::string, E> > rhs,
     F f,
     E default_value = E()) {
@@ -264,8 +264,9 @@ template <class E>
 std::vector<std::pair<std::string, E> >& mult_scalar(
     std::vector<std::pair<std::string, E> >& lhs,
     double d) {
-  for (size_t i = 0; i < lhs.size(); ++i)
+  for (size_t i = 0; i < lhs.size(); ++i) {
     lhs[i].second = lhs[i].second * d;
+  }
   return lhs;
 }
 
@@ -336,7 +337,7 @@ inline std::vector<std::pair<std::string, E> > operator *(
 
 template <class E>
 inline std::vector<std::pair<std::string, E> >& operator *=(
-    std::vector<std::pair<std::string, E> >&lhs,
+    std::vector<std::pair<std::string, E> >& lhs,
     double d) {
   return detail::mult_scalar(lhs, d);
 }

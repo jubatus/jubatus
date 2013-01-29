@@ -37,10 +37,14 @@ namespace storage {
 namespace {
 
 typedef pair<float, pair<int, vector<int> > > diff_type;
-typedef priority_queue<diff_type, vector<diff_type>,
+typedef priority_queue<
+    diff_type,
+    vector<diff_type>,
     greater<diff_type> > heap_type;
 
-void partition(const vector<float>& hash, size_t num_hash_tables,
+void partition(
+    const vector<float>& hash,
+    size_t num_hash_tables,
     vector<vector<float> >& hashes) {
   const size_t hash_size = hash.size() / num_hash_tables;
   hashes.resize(num_hash_tables);
@@ -57,7 +61,8 @@ void threshold(const vector<float>& hash, lsh_vector& lv) {
   }
 }
 
-lsh_vector perturbe(const lsh_vector& src,
+lsh_vector perturbe(
+    const lsh_vector& src,
     const vector<int>& diff,
     const vector<pair<float, int> >& cands) {
   lsh_vector ret(src);
@@ -74,7 +79,8 @@ lsh_vector perturbe(const lsh_vector& src,
 
 }  // namespace
 
-lsh_probe_generator::lsh_probe_generator(const vector<float>& hash,
+lsh_probe_generator::lsh_probe_generator(
+    const vector<float>& hash,
     size_t num_hash_tables) {
   partition(hash, num_hash_tables, hash_);
   base_.resize(hash_.size());
@@ -124,7 +130,8 @@ pair<size_t, lsh_vector> lsh_probe_generator::get_next_table_and_vector() {
   }
   const size_t i = heap_.top().second.first;
   pair<size_t, lsh_vector> ret(
-      i, perturbe(base_[i], heap_.top().second.second, perturbation_sets_[i]));
+      i,
+      perturbe(base_[i], heap_.top().second.second, perturbation_sets_[i]));
   next_perturbations();
   return ret;
 }

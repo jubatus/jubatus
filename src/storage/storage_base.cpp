@@ -23,7 +23,9 @@ using std::string;
 namespace jubatus {
 namespace storage {
 
-void storage_base::update(const string &feature, const string& inc_class,
+void storage_base::update(
+    const string& feature,
+    const string& inc_class,
     const string& dec_class, const val1_t& w) {
   feature_val1_t row;
   get(feature, row);
@@ -55,7 +57,9 @@ void storage_base::inp(const sfv_t& sfv, map_feature_val1_t& ret) {
   }
 }
 
-void storage_base::bulk_update(const sfv_t& sfv, float step_width,
+void storage_base::bulk_update(
+    const sfv_t& sfv,
+    float step_width,
     const std::string& inc_class,
     const std::string& dec_class) {
   for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
@@ -81,6 +85,7 @@ void storage_base::bulk_update(const sfv_t& sfv, float step_width,
 void storage_base::get_diff(features3_t& v) const {
   v.clear();
 }
+
 void storage_base::set_average_and_clear_diff(const features3_t&) {
 }
 

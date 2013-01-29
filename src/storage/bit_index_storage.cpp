@@ -138,14 +138,16 @@ void bit_index_storage::mix(const string& lhs, string& rhs) const {
 typedef fixed_size_heap<pair<uint64_t, string>,
     greater<pair<uint64_t, string> > > heap_type;
 
-static void similar_row_one(const bit_vector& x,
+static void similar_row_one(
+    const bit_vector& x,
     const pair<string, bit_vector>& y,
     heap_type& heap) {
   uint64_t match_num = x.calc_hamming_similarity(y.second);
   heap.push(make_pair(match_num, y.first));
 }
 
-void bit_index_storage::similar_row(const bit_vector& bv,
+void bit_index_storage::similar_row(
+    const bit_vector& bv,
     vector<pair<string, float> >& ids,
     uint64_t ret_num) const {
   ids.clear();
@@ -171,8 +173,8 @@ void bit_index_storage::similar_row(const bit_vector& bv,
   vector<pair<uint64_t, string> > scores;
   heap.get_sorted(scores);
   for (size_t i = 0; i < scores.size() && i < ret_num; ++i) {
-    ids.push_back(make_pair(
-          scores[i].second, static_cast<float>(scores[i].first) / bit_num));
+    ids.push_back(make_pair(scores[i].second,
+                            static_cast<float>(scores[i].first) / bit_num));
   }
 }
 

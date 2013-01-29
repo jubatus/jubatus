@@ -85,17 +85,23 @@ class stub_storage : public storage_base {
     }
   }
 
-  void set(const std::string &feature, const std::string &klass,
+  void set(
+      const std::string& feature,
+      const std::string& klass,
       const val1_t& w) {
     data_[feature][klass] = val3_t(w, 0, 0);
   }
 
-  void set2(const std::string &feature, const std::string &klass,
+  void set2(
+      const std::string& feature,
+      const std::string& klass,
       const val2_t& w) {
     data_[feature][klass] = val3_t(w.v1, w.v2, 0);
   }
 
-  void set3(const std::string &feature, const std::string &klass,
+  void set3(
+      const std::string& feature,
+      const std::string& klass,
       const val3_t& w) {
     data_[feature][klass] = w;
   }
@@ -340,12 +346,14 @@ TYPED_TEST_P(storage_test, inp) {
 }
 
 template <typename T>
-void get_expect_status(map<string, string>& before,
+void get_expect_status(
+    map<string, string>& before,
     map<string, string>& after) {
 }
 
 template<>
-void get_expect_status<local_storage>(map<string, string>& before,
+void get_expect_status<local_storage>(
+    map<string, string>& before,
     map<string, string>& after) {
   before["num_features"] = "0";
   before["num_classes"] = "0";
@@ -355,7 +363,8 @@ void get_expect_status<local_storage>(map<string, string>& before,
 }
 
 template<>
-void get_expect_status<local_storage_mixture>(map<string, string>& before,
+void get_expect_status<local_storage_mixture>(
+    map<string, string>& before,
     map<string, string>& after) {
   before["num_features"] = "0";
   before["num_classes"] = "0";
@@ -488,10 +497,19 @@ TYPED_TEST_P(storage_test, bulk_update_no_decrease) {
 }
 
 REGISTER_TYPED_TEST_CASE_P(storage_test,
-    val1d, val2d, val3d,
-    serialize, inp, get_status, update, bulk_update,
-    bulk_update_no_decrease);
+                           val1d,
+                           val2d,
+                           val3d,
+                           serialize,
+                           inp,
+                           get_status,
+                           update,
+                           bulk_update,
+                           bulk_update_no_decrease);
 
-typedef testing::Types<jubatus::storage::stub_storage, local_storage,
+typedef testing::Types<
+    jubatus::storage::stub_storage,
+    local_storage,
     local_storage_mixture> storage_types;
+
 INSTANTIATE_TYPED_TEST_CASE_P(st, storage_test, storage_types);

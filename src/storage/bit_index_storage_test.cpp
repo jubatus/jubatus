@@ -33,9 +33,11 @@ namespace storage {
 bit_vector make_vector(const string& b) {
   bit_vector v;
   v.resize_and_clear(b.size());
-  for (size_t i = 0; i < b.size(); ++i)
-    if (b[i] == '1')
+  for (size_t i = 0; i < b.size(); ++i) {
+    if (b[i] == '1') {
       v.set_bit(i);
+    }
+  }
   return v;
 }
 
