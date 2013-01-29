@@ -71,10 +71,10 @@ class stat {
   struct stat_val {
     stat_val()
         : n_(0),
-        sum_(0),
-        sum2_(0),
-        max_(0),
-        min_(0) {
+          sum_(0),
+          sum2_(0),
+          max_(0),
+          min_(0) {
     }
 
     void add(double d) {

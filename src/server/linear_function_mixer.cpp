@@ -35,9 +35,10 @@ namespace server {
 namespace {
 
 val3_t mix_val3(double w1, double w2, const val3_t& lhs, const val3_t& rhs) {
-  return val3_t((w1 * lhs.v1 + w2 * rhs.v1) / (w1 + w2),
-                std::min(lhs.v2, rhs.v2),
-                (w1 * lhs.v3 + w2 * rhs.v3) / (w1 + w2));
+  return val3_t(
+      (w1 * lhs.v1 + w2 * rhs.v1) / (w1 + w2),
+      std::min(lhs.v2, rhs.v2),
+      (w1 * lhs.v3 + w2 * rhs.v3) / (w1 + w2));
 }
 
 feature_val3_t mix_feature(

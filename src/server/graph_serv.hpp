@@ -35,7 +35,8 @@ typedef uint64_t edge_id_t;
 typedef std::string node_id;
 typedef int centrality_type;
 
-struct mixable_graph : public framework::mixable<jubatus::graph::graph_base,
+struct mixable_graph : public framework::mixable<
+    jubatus::graph::graph_base,
     std::string> {
   void clear() {
   }

@@ -34,7 +34,8 @@ namespace jubatus {
 namespace server {
 
 struct mixable_anomaly : public framework::mixable<
-    jubatus::anomaly::anomaly_base, std::string> {
+    jubatus::anomaly::anomaly_base,
+    std::string> {
   std::string get_diff_impl() const {
     std::string diff;
     get_model()->get_const_storage()->get_diff(diff);
@@ -45,8 +46,10 @@ struct mixable_anomaly : public framework::mixable<
     get_model()->get_storage()->set_mixed_and_clear_diff(v);
   }
 
-  void mix_impl(const std::string& lhs, const std::string& rhs,
-                std::string& mixed) const {
+  void mix_impl(
+      const std::string& lhs,
+      const std::string& rhs,
+      std::string& mixed) const {
     mixed = lhs;
     get_model()->get_const_storage()->mix(rhs, mixed);
   }

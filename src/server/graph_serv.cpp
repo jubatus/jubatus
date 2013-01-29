@@ -316,11 +316,12 @@ std::vector<node_id> graph_serv::get_shortest_path(
   std::vector<jubatus::graph::node_id_t> ret0;
   jubatus::graph::preset_query q;
   framework::convert(req.q, q);
-  g_.get_model()->shortest_path(n2i(req.src),
-                                n2i(req.tgt),
-                                req.max_hop,
-                                ret0,
-                                q);
+  g_.get_model()->shortest_path(
+      n2i(req.src),
+      n2i(req.tgt),
+      req.max_hop,
+      ret0,
+      q);
   std::vector<node_id> ret;
   for (size_t i = 0; i < ret0.size(); ++i) {
     ret.push_back(i2n(ret0[i]));
@@ -333,8 +334,9 @@ bool graph_serv::add_centrality_query(const preset_query& q0) {
   check_set_config();
 
   jubatus::graph::preset_query q;
-  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0,
-                                                                          q);
+  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(
+      q0,
+      q);
   g_.get_model()->add_centrality_query(q);
   DLOG(INFO) << "centrality query added";
   return true;
@@ -345,8 +347,9 @@ bool graph_serv::add_shortest_path_query(const preset_query& q0) {
   check_set_config();
 
   jubatus::graph::preset_query q;
-  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0,
-                                                                          q);
+  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(
+      q0,
+      q);
   g_.get_model()->add_shortest_path_query(q);
   DLOG(INFO) << "shortest path added";
   return true;
@@ -357,8 +360,9 @@ bool graph_serv::remove_centrality_query(const preset_query& q0) {
   check_set_config();
 
   jubatus::graph::preset_query q;
-  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0,
-                                                                          q);
+  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(
+      q0,
+      q);
   g_.get_model()->remove_centrality_query(q);
   DLOG(INFO) << "centrality query removed";
   return true;
@@ -369,8 +373,9 @@ bool graph_serv::remove_shortest_path_query(const preset_query& q0) {
   check_set_config();
 
   jubatus::graph::preset_query q;
-  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(q0,
-                                                                          q);
+  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(
+      q0,
+      q);
   g_.get_model()->remove_shortest_path_query(q);
   DLOG(INFO) << "shortest path removed";
   return true;
@@ -386,8 +391,9 @@ node_info graph_serv::get_node(const std::string& nid) const {
   return ret;
 }
 // @random
-edge_info graph_serv::get_edge(const std::string& nid,
-                               const edge_id_t& id) const {
+edge_info graph_serv::get_edge(
+    const std::string& nid,
+    const edge_id_t& id) const {
   check_set_config();
 
   jubatus::graph::edge_info info;

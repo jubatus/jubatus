@@ -29,7 +29,8 @@
 namespace jubatus {
 namespace server {
 
-struct mixable_stat : public framework::mixable<jubatus::stat::mixable_stat,
+struct mixable_stat : public framework::mixable<
+    jubatus::stat::mixable_stat,
     std::pair<double, size_t> > {
  public:
   void clear() {

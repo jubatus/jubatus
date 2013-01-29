@@ -61,7 +61,8 @@ struct regression_serv_config {
   }
 };
 
-linear_function_mixer::model_ptr make_model(const framework::server_argv& arg) {
+linear_function_mixer::model_ptr make_model(
+    const framework::server_argv& arg) {
   return linear_function_mixer::model_ptr(
       storage::storage_factory::create_storage(
           (arg.is_standalone()) ? "local" : "local_mixture"));
@@ -110,7 +111,9 @@ bool regression_serv::set_config(const string& config) {
   }
   regression_.reset(
       jubatus::regression::regression_factory().create_regression(
-          conf.method, param, gresser_.get_model().get()));
+          conf.method,
+          param,
+          gresser_.get_model().get()));
 
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...

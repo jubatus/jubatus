@@ -32,7 +32,8 @@
 namespace jubatus {
 namespace server {
 
-struct rcmdr : public framework::mixable<jubatus::recommender::recommender_base,
+struct rcmdr : public framework::mixable<
+    jubatus::recommender::recommender_base,
     std::string> {
   std::string get_diff_impl() const {
     std::string ret;

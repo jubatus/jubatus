@@ -63,7 +63,8 @@ struct classifier_serv_config {
   }
 };
 
-linear_function_mixer::model_ptr make_model(const framework::server_argv& arg) {
+linear_function_mixer::model_ptr make_model(
+    const framework::server_argv& arg) {
   return linear_function_mixer::model_ptr(
       storage::storage_factory::create_storage(
           (arg.is_standalone()) ? "local" : "local_mixture"));
