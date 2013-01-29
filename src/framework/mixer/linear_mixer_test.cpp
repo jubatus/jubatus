@@ -81,7 +81,7 @@ class linear_communication_stub : public linear_communication {
   }
 
   const vector<string> get_mixed() const {
-    vector < string > mixed;
+    vector<string> mixed;
     for (vector<byte_buffer>::const_iterator it = mixed_.begin();
         it != mixed_.end(); ++it) {
       // unpack mix-internal

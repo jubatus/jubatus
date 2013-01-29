@@ -16,16 +16,16 @@
 
 #pragma once
 
-#include <string>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <msgpack.hpp>
 #include <pficommon/concurrent/rwmutex.h>
 
 #include "../common/exception.hpp"
-#include "../common/shared_ptr.hpp"
 #include "../common/mprpc/byte_buffer.hpp"
+#include "../common/shared_ptr.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -34,16 +34,18 @@ class mixable0 {
  public:
   mixable0() {
   }
+
   virtual ~mixable0() {
   }
+
   virtual common::mprpc::byte_buffer get_diff() const = 0;
   virtual void put_diff(const common::mprpc::byte_buffer&) = 0;
   virtual void mix(const common::mprpc::byte_buffer&,
                    const common::mprpc::byte_buffer&,
                    common::mprpc::byte_buffer&) const = 0;
 
-  virtual void save(std::ostream & ofs) = 0;
-  virtual void load(std::istream & ifs) = 0;
+  virtual void save(std::ostream& ofs) = 0;
+  virtual void load(std::istream& ifs) = 0;
   virtual void clear() = 0;
 };
 
@@ -53,8 +55,10 @@ class mixable_holder {
 
   mixable_holder() {
   }
+
   virtual ~mixable_holder() {
   }
+
   void register_mixable(mixable0* m) {
     mixables_.push_back(m);
   }
@@ -112,9 +116,10 @@ class mixable : public mixable0 {
     }
   }
 
-  void mix(const common::mprpc::byte_buffer& lhs,
-           const common::mprpc::byte_buffer& rhs,
-           common::mprpc::byte_buffer& mixed_buf) const {
+  void mix(
+      const common::mprpc::byte_buffer& lhs,
+      const common::mprpc::byte_buffer& rhs,
+      common::mprpc::byte_buffer& mixed_buf) const {
     Diff left, right, mixed;
     unpack_(lhs, left);
     unpack_(rhs, right);
@@ -122,11 +127,11 @@ class mixable : public mixable0 {
     pack_(mixed, mixed_buf);
   }
 
-  void save(std::ostream & os) {
+  void save(std::ostream& os) {
     model_->save(os);
   }
 
-  void load(std::istream & is) {
+  void load(std::istream& is) {
     model_->load(is);
   }
 

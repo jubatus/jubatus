@@ -285,7 +285,7 @@ bool zkmutex::try_lock() {
   if (seqfile_ == "")
     return false;
 
-  vector < string > list;
+  vector<string> list;
   if (!zk_.list(path_, list) || list.empty())
     return false;
 
@@ -340,7 +340,7 @@ bool zkmutex::try_rlock() {
   if (seqfile_ == "")
     return false;
 
-  vector < string > list;
+  vector<string> list;
   if (!zk_.list(path_, list) || list.empty())
     return false;
 

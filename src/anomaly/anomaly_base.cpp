@@ -19,13 +19,10 @@
 #include <cmath>
 #include "../common/vector_util.hpp"
 
-using namespace std;
-using namespace pfi::data;
-
 namespace jubatus {
 namespace anomaly {
 
-const uint32_t anomaly_base::neighbor_num_ = 10;
+const uint32_t anomaly_base::NEIGHBOR_NUM = 10;
 
 anomaly_base::anomaly_base() {
 }

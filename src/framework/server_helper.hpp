@@ -18,17 +18,19 @@
 
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <map>
 #include <string>
 #include <glog/logging.h>
 #include <pficommon/system/sysstat.h>
-#include "../common/shared_ptr.hpp"
-#include "../common/lock_service.hpp"
-#include "../common/mprpc/rpc_server.hpp"
+
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
-#include "../config.hpp"
 #include "../common/jsonconfig.hpp"
+#include "../common/lock_service.hpp"
+#include "../common/mprpc/rpc_server.hpp"
+#include "../common/shared_ptr.hpp"
+#include "../config.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -140,7 +142,7 @@ class server_helper {
       impl_.prepare_for_run(a, use_cht_);
       serv.join();
       return 0;
-    } catch (const mp::system_error &e) {
+    } catch (const mp::system_error& e) {
       if (e.code == EADDRINUSE) {
         LOG(FATAL) << "server failed to start: any process using port "
             << a.port << "?";
@@ -149,7 +151,7 @@ class server_helper {
       }
     } catch (jubatus::exception::jubatus_exception&) {
       throw;
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
       LOG(FATAL) << "server failed to start: " << e.what();
     }
     return -1;

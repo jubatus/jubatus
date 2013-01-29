@@ -61,7 +61,7 @@ void PA::train(const sfv_t& fv, float value) {
 
   if (loss > 0) {
     float coeff = sign_error * std::min(config_.C, loss) / (fv_norm * fv_norm);
-    if (!isinf(coeff)) {
+    if (!std::isinf(coeff)) {
       update(fv, coeff);
     }
   }

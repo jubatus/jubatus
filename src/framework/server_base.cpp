@@ -21,17 +21,20 @@
 #include <string>
 #include <vector>
 #include <glog/logging.h>
-#include "../common/exception.hpp"
+
 #include "mixable.hpp"
 #include "mixer/mixer.hpp"
+#include "../common/exception.hpp"
 
 namespace jubatus {
 namespace framework {
 
 namespace {
 
-std::string build_local_path(const server_argv& a, const std::string& type,
-                             const std::string& id) {
+std::string build_local_path(
+    const server_argv& a,
+    const std::string& type,
+    const std::string& id) {
   std::ostringstream path;
   path << a.datadir << '/' << a.eth << '_' << a.port << '_' << type << '_' << id
       << ".js";
@@ -50,10 +53,10 @@ bool server_base::save(const std::string& id) {
   std::ofstream ofs(path.c_str(), std::ios::trunc | std::ios::binary);
   if (!ofs) {
     throw
-      JUBATUS_EXCEPTION(jubatus::exception::runtime_error
-                          ("cannot open output file")
-                        << jubatus::exception::error_file_name(path)
-                        << jubatus::exception::error_errno(errno));
+        JUBATUS_EXCEPTION(
+            jubatus::exception::runtime_error("cannot open output file")
+            << jubatus::exception::error_file_name(path)
+            << jubatus::exception::error_errno(errno));
   }
   try {
     LOG(INFO) << "starting save to " << path;
@@ -75,11 +78,12 @@ bool server_base::load(const std::string& id) {
   const std::string path = build_local_path(argv_, "jubatus", id);
   std::ifstream ifs(path.c_str(), std::ios::binary);
   if (!ifs) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error
-                            ("cannot open input file")
-                            << jubatus::exception::error_file_name(path)
-                            << jubatus::exception::error_errno(errno));
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("cannot open input file")
+        << jubatus::exception::error_file_name(path)
+        << jubatus::exception::error_errno(errno));
   }
+
   try {
     LOG(INFO) << "starting load from " << path;
     std::vector<mixable0*> mixables = get_mixable_holder()->get_mixables();

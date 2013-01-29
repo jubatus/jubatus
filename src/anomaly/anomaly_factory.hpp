@@ -14,21 +14,26 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_ANOMALY_ANOMALY_FACTORY_HPP_
+#define JUBATUS_ANOMALY_ANOMALY_FACTORY_HPP_
+
 
 #include <string>
 #include <pficommon/text/json.h>
 
 namespace jubatus {
 namespace jsonconfig {
+
 class config;
-}  // jsonconfig
+}  // namespace jsonconfig
+
 namespace anomaly {
 
 class anomaly_base;
 
 anomaly_base* create_anomaly(const std::string& name,
                              const jsonconfig::config& param);
+}  // namespace anomaly
+}  // namespace jubatus
 
-}
-}
+#endif  // JUBATUS_ANOMALY_ANOMALY_FACTORY_HPP_

@@ -131,7 +131,7 @@ bool get_all_actors(lock_service& z, const string& type, const string& name,
   string path;
   build_actor_path(path, type, name);
   path += "/nodes";
-  std::vector < string > list;
+  std::vector<string> list;
   if (!z.list(path, list))
     return false;
 

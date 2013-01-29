@@ -13,11 +13,11 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-#include <sstream>
-#include <gtest/gtest.h>
 
 #include "mixable.hpp"
 
+#include <sstream>
+#include <gtest/gtest.h>
 
 using std::stringstream;
 using jubatus::common::mprpc::byte_buffer;
@@ -32,11 +32,11 @@ struct int_model {
 
   int value;
 
-  void save(std::ostream & ofs) {
+  void save(std::ostream& ofs) {
     ofs << value;
   }
 
-  void load(std::istream & ifs) {
+  void load(std::istream& ifs) {
     ifs >> value;
   }
 };

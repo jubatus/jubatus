@@ -2596,7 +2596,14 @@ def CheckLanguage(filename, clean_lines, linenum, file_extension, include_state,
     # which looks much like the cast we're trying to detect.
     if (match.group(1) is None and  # If new operator, then this isn't a cast
         not (Match(r'^\s*MOCK_(CONST_)?METHOD\d+(_T)?\(', line) or
-             Match(r'^\s*MockCallback<.*>', line))):
+             Match(r'^\s*MockCallback<.*>', line) or
+             Search(r'function<$', line[:match.start()]) or
+             Search(r'register_async_random<', line[:match.start()]) or
+             Search(r'register_async_cht<', line[:match.start()]) or
+             Search(r'add<', line[:match.start()]) or
+             Search(r'\.call<', line[:match.start()]) or
+             Search(r'^MPRPC_PROC\(', line[:match.start()])
+             )):
       error(filename, linenum, 'readability/casting', 4,
             'Using deprecated casting style.  '
             'Use static_cast<%s>(...) instead' %

@@ -23,12 +23,12 @@
 #include <glog/logging.h>
 #include <pficommon/text/json.h>
 
-#include "../common/util.hpp"
-#include "../common/network.hpp"
 #include "../common/cmdline.h"
+#include "../common/config.hpp"
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
-#include "../common/config.hpp"
+#include "../common/network.hpp"
+#include "../common/util.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -57,8 +57,10 @@ std::string get_conf(const server_argv& a) {
   return conf.config;
 }
 
-void config_json::load_json(const std::string& zkhosts, const std::string& type,
-                            const std::string& name) {
+void config_json::load_json(
+    const std::string& zkhosts,
+    const std::string& type,
+    const std::string& name) {
 #ifdef HAVE_ZOOKEEPER_H
   LOG(INFO) << "load config from zookeeper: " << zkhosts;
   jubatus::common::config_fromzk(*ls, type, name, config);
@@ -125,7 +127,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   configpath = p.get<std::string>("configpath");
 
   // determine listen-address and IPaddr used as ZK 'node-name'
-  // TODO: check bind_address is valid format
+  // TODO(y-oda-oni-juba): check bind_address is valid format
   if (!bind_address.empty()) {
     eth = bind_address;
   } else if (!bind_if.empty()) {
@@ -283,7 +285,7 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   loglevel = p.get<int>("loglevel");
 
   // determine listen-address and IPaddr used as ZK 'node-name'
-  // TODO: check bind_address is valid format
+  // TODO(y-oda-oni-juba): check bind_address is valid format
   if (!bind_address.empty()) {
     eth = bind_address;
   } else if (!bind_if.empty()) {
