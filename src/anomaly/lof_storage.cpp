@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "lof_storage.hpp"
+
 #include <algorithm>
 #include <limits>
 #include <sstream>
@@ -22,6 +23,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "anomaly_type.hpp"
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
@@ -83,7 +85,7 @@ lof_storage::~lof_storage() {
 float lof_storage::collect_lrds(
     const sfv_t& query,
     unordered_map<string, float>& neighbor_lrd) const {
-  vector < pair<string, float> > neighbors;
+  vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(query, neighbors, neighbor_num_);
 
   return collect_lrds_from_neighbors(neighbors, neighbor_lrd);
@@ -92,7 +94,7 @@ float lof_storage::collect_lrds(
 float lof_storage::collect_lrds(
     const string& id,
     unordered_map<string, float>& neighbor_lrd) const {
-  vector < pair<string, float> > neighbors;
+  vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(id, neighbors, neighbor_num_ + 1);
 
   // neighbor_row returns id itself, so we remove it from the list
@@ -180,7 +182,7 @@ float lof_storage::get_lrd(const string& row) const {
 }
 
 void lof_storage::update_all() {
-  vector < string > ids;
+  vector<string> ids;
   get_all_row_ids(ids);
 
   // NOTE: These two loops are separated, since update_lrd requires new kdist
@@ -226,7 +228,7 @@ void lof_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
   nn_engine_->get_storage()->set_mixed_and_clear_diff(nn_diff);
 
   for (lof_table_t::const_iterator it = lof_table_diff_.begin();
-      it != lof_table_diff_.end(); ++it) {
+       it != lof_table_diff_.end(); ++it) {
     if (is_removed(it->second)) {
       lof_table_.erase(it->first);
     } else {
@@ -346,16 +348,16 @@ void lof_storage::update_entries(const unordered_set<string>& rows) {
 
   rows_to_neighbors_type rows_to_neighbors;
   for (unordered_set<string>::const_iterator it = rows.begin();
-      it != rows.end(); ++it) {
+       it != rows.end(); ++it) {
     nn_engine_->neighbor_row(*it, rows_to_neighbors[*it], neighbor_num_);
   }
 
   for (rows_to_neighbors_type::const_iterator it = rows_to_neighbors.begin();
-      it != rows_to_neighbors.end(); ++it) {
+       it != rows_to_neighbors.end(); ++it) {
     update_kdist_with_neighbors(it->first, it->second);
   }
   for (rows_to_neighbors_type::const_iterator it = rows_to_neighbors.begin();
-      it != rows_to_neighbors.end(); ++it) {
+       it != rows_to_neighbors.end(); ++it) {
     update_lrd_with_neighbors(it->first, it->second);
   }
 }

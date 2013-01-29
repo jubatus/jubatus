@@ -17,11 +17,12 @@
 #ifndef JUBATUS_ANOMALY_ANOMALY_BASE_HPP_
 #define JUBATUS_ANOMALY_ANOMALY_BASE_HPP_
 
-
 #include <string>
 #include <vector>
+
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/lang/shared_ptr.h>
+
 #include "../common/type.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
 #include "anomaly_storage_base.hpp"
@@ -54,10 +55,11 @@ class anomaly_base {
   // static float calc_l2norm(sfv_t& query);
 
  protected:
+  static const uint32_t NEIGHBOR_NUM;
+
   virtual bool save_impl(std::ostream&) = 0;
   virtual bool load_impl(std::istream&) = 0;
 
-  static const uint32_t NEIGHBOR_NUM;
   storage::sparse_matrix_storage orig_;
 };
 

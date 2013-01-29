@@ -15,8 +15,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "anomaly_base.hpp"
+
 #include <algorithm>
 #include <cmath>
+
 #include "../common/vector_util.hpp"
 
 namespace jubatus {

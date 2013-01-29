@@ -15,14 +15,17 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "lof.hpp"
+
 #include <cmath>
 #include <limits>
 #include <string>
 #include <vector>
+
 #include <glog/logging.h>
 #include <pficommon/data/serialization.h>
 #include <pficommon/lang/cast.h>
 #include <pficommon/math/random.h>
+
 #include "../common/hash.hpp"
 #include "../storage/lsh_util.hpp"
 #include "../storage/lsh_vector.hpp"
@@ -51,7 +54,7 @@ float calculate_lof(
 
   float sum_neighbor_lrd = 0;
   for (unordered_map<string, float>::const_iterator it = neighbor_lrd.begin();
-    it != neighbor_lrd.end(); ++it) {
+       it != neighbor_lrd.end(); ++it) {
     sum_neighbor_lrd += it->second;
   }
 
@@ -61,7 +64,8 @@ float calculate_lof(
 
   return sum_neighbor_lrd / (neighbor_lrd.size() * lrd);
 }
-}
+
+}  // namespace
 
 lof::lof() {
 }

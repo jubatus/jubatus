@@ -15,7 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "lof.hpp"
-#include "lof_storage.hpp"
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,6 +24,7 @@
 #include <pficommon/text/json.h>
 #include "../common/jsonconfig.hpp"
 #include "../recommender/euclid_lsh.hpp"
+#include "lof_storage.hpp"
 
 using jubatus::storage::lof_storage;
 using pfi::data::unordered_map;
@@ -41,7 +42,7 @@ float calculate_lof(
     const unordered_map<string, float>& neighbor_lrd) {
   float sum_neighbor_lrd = 0;
   for (unordered_map<string, float>::const_iterator it = neighbor_lrd.begin();
-    it != neighbor_lrd.end(); ++it) {
+       it != neighbor_lrd.end(); ++it) {
     sum_neighbor_lrd += it->second;
   }
 
@@ -52,9 +53,11 @@ float calculate_lof(
 class lof_impl : public lof {
  public:
   lof_impl()
-      : lof(lof_storage::config(), recommender::create_recommender(
-          "euclid_lsh", jsonconfig::config(pfi::text::json::to_json(
-            recommender::euclid_lsh::config())))) {
+      : lof(lof_storage::config(),
+            recommender::create_recommender(
+                "euclid_lsh",
+                jsonconfig::config(pfi::text::json::to_json(
+                    recommender::euclid_lsh::config())))) {
     // make mock
     orig_.set("r1", "a1", 0.0);
     orig_.set("r1", "a2", 0.0);
@@ -65,6 +68,7 @@ class lof_impl : public lof {
     orig_.set("r3", "a1", 1.0);
     orig_.set("r3", "a1", -1.0);
   }
+
   float calc_anomaly_score(const sfv_t& query) const {
     unordered_map<string, float> neighbor_lrd;
     neighbor_lrd.insert(pair<string, float>("r1", 1.0));
@@ -73,6 +77,7 @@ class lof_impl : public lof {
     const float lrd = 2.0;
     return calculate_lof(lrd, neighbor_lrd);
   }
+
   float calc_anomaly_score(const string& id) const {
     unordered_map<string, float> neighbor_lrd;
     neighbor_lrd.insert(pair<string, float>("r1", 1.0));
@@ -81,30 +86,39 @@ class lof_impl : public lof {
     const float lrd = neighbor_lrd[id];
     return calculate_lof(lrd, neighbor_lrd);
   }
+
   void clear() {
   }
+
   void clear_row(const string& id) {
   }
+
   void update_row(const string& id, const sfv_diff_t& diff) {
   }
+
   void get_all_row_ids(vector<string>& ids) const {
     ids.clear();
     ids.push_back("r1");
     ids.push_back("r2");
     ids.push_back("r3");
   }
+
   string type() const {
     return string("lof_impl");
   }
+
   bool save_impl(std::ostream&) {
     return true;
   }
+
   bool load_impl(std::istream&) {
     return true;
   }
+
   storage::anomaly_storage_base* get_storage() {
     return NULL;
   }
+
   const storage::anomaly_storage_base* get_const_storage() const {
     return NULL;
   }

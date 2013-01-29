@@ -17,7 +17,6 @@
 #ifndef JUBATUS_ANOMALY_ANOMALY_FACTORY_HPP_
 #define JUBATUS_ANOMALY_ANOMALY_FACTORY_HPP_
 
-
 #include <string>
 #include <pficommon/text/json.h>
 
@@ -25,6 +24,7 @@ namespace jubatus {
 namespace jsonconfig {
 
 class config;
+
 }  // namespace jsonconfig
 
 namespace anomaly {
@@ -33,6 +33,7 @@ class anomaly_base;
 
 anomaly_base* create_anomaly(const std::string& name,
                              const jsonconfig::config& param);
+
 }  // namespace anomaly
 }  // namespace jubatus
 

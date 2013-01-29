@@ -17,7 +17,6 @@
 #ifndef JUBATUS_ANOMALY_ANOMALY_STORAGE_BASE_HPP_
 #define JUBATUS_ANOMALY_ANOMALY_STORAGE_BASE_HPP_
 
-
 #include <string>
 
 namespace jubatus {

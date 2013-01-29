@@ -17,16 +17,17 @@
 #ifndef JUBATUS_ANOMALY_LOF_STORAGE_HPP_
 #define JUBATUS_ANOMALY_LOF_STORAGE_HPP_
 
-
 #include <iosfwd>
 #include <string>
 #include <utility>
 #include <vector>
+
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
 #include <pficommon/lang/scoped_ptr.h>
 #include <pficommon/text/json.h>
+
 #include "anomaly_storage_base.hpp"
 #include "../common/type.hpp"
 #include "../recommender/recommender_base.hpp"
@@ -112,8 +113,8 @@ class lof_storage : public anomaly_storage_base {
   static bool is_removed(const lof_entry& entry);
 
   friend class pfi::data::serialization::access;
-  template<class Ar>
 
+  template<class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(lof_table_) & MEMBER(lof_table_diff_);
     ar & MEMBER(neighbor_num_) & MEMBER(reverse_nn_num_);

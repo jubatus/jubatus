@@ -72,7 +72,8 @@ sfv_t make_dense_sfv(const string& s) {
 
   return sfv;
 }
-}
+
+}  // namespace
 
 TEST(lof_storage, name) {
   lof_storage s;

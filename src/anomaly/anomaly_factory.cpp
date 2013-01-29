@@ -14,12 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "anomaly.hpp"
 #include "anomaly_factory.hpp"
+
 #include <string>
+
 #include <pficommon/text/json.h>
+
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
+#include "anomaly.hpp"
 
 using jubatus::jsonconfig::config;
 using jubatus::jsonconfig::config_cast_check;
@@ -45,9 +48,9 @@ anomaly_base* create_anomaly(const string& name, const config& param) {
   if (name == "lof") {
     anomaly_config conf = config_cast_check<anomaly_config>(param);
     storage::lof_storage::config config =
-      config_cast_check<storage::lof_storage::config>(param);
-    return new lof(config,
-      recommender::create_recommender(conf.method, conf.parameter));
+        config_cast_check<storage::lof_storage::config>(param);
+    return new lof(
+        config, recommender::create_recommender(conf.method, conf.parameter));
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }

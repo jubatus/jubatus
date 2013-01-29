@@ -17,7 +17,6 @@
 #ifndef JUBATUS_ANOMALY_ANOMALY_TYPE_HPP_
 #define JUBATUS_ANOMALY_ANOMALY_TYPE_HPP_
 
-
 #include <exception>
 #include <string>
 #include <utility>
@@ -25,7 +24,6 @@
 #include "../common/type.hpp"
 
 namespace jubatus {
-
 typedef sfv_t sfv_diff_t;
 }
 

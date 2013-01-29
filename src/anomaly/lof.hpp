@@ -17,7 +17,6 @@
 #ifndef JUBATUS_ANOMALY_LOF_HPP_
 #define JUBATUS_ANOMALY_LOF_HPP_
 
-
 #include <string>
 #include <vector>
 #include <pficommon/text/json.h>

@@ -17,7 +17,6 @@
 #ifndef JUBATUS_ANOMALY_ANOMALY_HPP_
 #define JUBATUS_ANOMALY_ANOMALY_HPP_
 
-
 #include "lof.hpp"
 
 #endif  // JUBATUS_ANOMALY_ANOMALY_HPP_
