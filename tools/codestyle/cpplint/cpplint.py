@@ -247,8 +247,8 @@ _CPP_HEADERS = frozenset([
 
 # Third party header, explicitly determined by Jubatus project
 _THIRD_PARTY_HEADERS = frozenset([
-    'glog/logging.h', 'jubatus/msgpack/rpc/client.h', 'mecab.h', 're2/re2.h', 'ux/ux.hpp',
-    'msgpack.hpp','gtest/gtest.h'
+    'glog/logging.h', 'jubatus/msgpack/rpc/client.h', 'jubatus/msgpack/rpc/session_pool.h',
+    'mecab.h', 're2/re2.h', 'ux/ux.hpp', 'msgpack.hpp','gtest/gtest.h'
     ])
 
 
