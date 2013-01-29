@@ -42,7 +42,8 @@ namespace recommender {
 namespace {
 
 struct greater_second {
-  bool operator()(const pair<string, float>& l,
+  bool operator()(
+      const pair<string, float>& l,
       const pair<string, float>& r) const {
     return l.second > r.second;
   }
@@ -56,7 +57,9 @@ float calc_norm(const sfv_t& sfv) {
   return sqrt(sqnorm);
 }
 
-vector<float> lsh_function(const sfv_t& query, size_t dimension,
+vector<float> lsh_function(
+    const sfv_t& query,
+    size_t dimension,
     float bin_width) {
   vector<float> hash(dimension);
   for (size_t i = 0; i < query.size(); ++i) {
@@ -107,7 +110,8 @@ euclid_lsh::euclid_lsh(const config& config)
 euclid_lsh::~euclid_lsh() {
 }
 
-void euclid_lsh::neighbor_row(const sfv_t& query,
+void euclid_lsh::neighbor_row(
+    const sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   similar_row(query, ids, ret_num);
@@ -116,7 +120,8 @@ void euclid_lsh::neighbor_row(const sfv_t& query,
   }
 }
 
-void euclid_lsh::neighbor_row(const string& id,
+void euclid_lsh::neighbor_row(
+    const string& id,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   similar_row(id, ids, ret_num);
@@ -125,18 +130,21 @@ void euclid_lsh::neighbor_row(const string& id,
   }
 }
 
-void euclid_lsh::similar_row(const sfv_t& query,
+void euclid_lsh::similar_row(
+    const sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
 
-  const vector<float> hash = lsh_function(query, lsh_index_.all_lsh_num(),
-      bin_width_);
+  const vector<float> hash = lsh_function(query,
+                                          lsh_index_.all_lsh_num(),
+                                          bin_width_);
   const float norm = calc_norm(query);
   lsh_index_.similar_row(hash, norm, num_probe_, ret_num, ids);
 }
 
-void euclid_lsh::similar_row(const string& id,
+void euclid_lsh::similar_row(
+    const string& id,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
@@ -158,8 +166,9 @@ void euclid_lsh::update_row(const string& id, const sfv_diff_t& diff) {
   sfv_t row;
   orig_.get_row(id, row);
 
-  const vector<float> hash = lsh_function(row, lsh_index_.all_lsh_num(),
-      bin_width_);
+  const vector<float> hash = lsh_function(row,
+                                          lsh_index_.all_lsh_num(),
+                                          bin_width_);
   const float norm = calc_norm(row);
   lsh_index_.set_row(id, hash, norm);
 }

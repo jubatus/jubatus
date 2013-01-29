@@ -47,10 +47,12 @@ class recommender_mock : public recommender_base {
       const std::string& id,
       const std::vector<std::pair<std::string, float> >& ids);
 
-  virtual void similar_row(const sfv_t& query,
+  virtual void similar_row(
+      const sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
-  virtual void neighbor_row(const sfv_t& query,
+  virtual void neighbor_row(
+      const sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   virtual void clear();

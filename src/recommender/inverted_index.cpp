@@ -42,12 +42,14 @@ void inverted_index::similar_row(
     std::vector<std::pair<std::string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
-  if (ret_num == 0)
+  if (ret_num == 0) {
     return;
+  }
   inv_.calc_scores(query, ids, ret_num);
 }
 
-void inverted_index::neighbor_row(const sfv_t& query,
+void inverted_index::neighbor_row(
+    const sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   similar_row(query, ids, ret_num);

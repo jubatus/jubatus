@@ -35,11 +35,13 @@ class recommender_base {
   virtual ~recommender_base();
 
   // return similar row for query with similarity scores.
-  virtual void similar_row(const sfv_t& query,
+  virtual void similar_row(
+      const sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const = 0;
   // return similar row for query with distance scores.
-  virtual void neighbor_row(const sfv_t& query,
+  virtual void neighbor_row(
+      const sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const = 0;
   virtual void clear() = 0;
@@ -52,10 +54,12 @@ class recommender_base {
   virtual const storage::recommender_storage_base* get_const_storage()
       const = 0;
 
-  virtual void similar_row(const std::string& id,
+  virtual void similar_row(
+      const std::string& id,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
-  virtual void neighbor_row(const std::string& id,
+  virtual void neighbor_row(
+      const std::string& id,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   void complete_row(const std::string& id, sfv_t& ret) const;

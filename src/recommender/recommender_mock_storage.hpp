@@ -39,9 +39,11 @@ class recommender_mock_storage : public storage::recommender_storage_base {
       const std::vector<std::pair<std::string, float> >& ids);
 
   void similar_items_similarity(
-      const sfv_t& query, std::vector<std::pair<std::string, float> >& ids,
+      const sfv_t& query,
+      std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
-  void neighbor_items_distance(const sfv_t& query,
+  void neighbor_items_distance(
+      const sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
 
@@ -65,11 +67,15 @@ class recommender_mock_storage : public storage::recommender_storage_base {
     ar & MEMBER(similar_relation_) & MEMBER(neighbor_relation_);
   }
 
-  static void get_relation(const sfv_t& query, const relation_type& relmap,
+  static void get_relation(
+      const sfv_t& query,
+      const relation_type& relmap,
       size_t ret_num,
       std::vector<std::pair<std::string, float> >& ids);
 
-  static void update_relation_key(const sfv_t& from, const sfv_t& to,
+  static void update_relation_key(
+      const sfv_t& from,
+      const sfv_t& to,
       relation_type& relmap);
 
   static void mix_relation(const relation_type& from, relation_type& to);

@@ -57,18 +57,23 @@ lsh::lsh()
 lsh::~lsh() {
 }
 
-void lsh::similar_row(const sfv_t& query, vector<pair<string, float> >& ids,
+void lsh::similar_row(
+    const sfv_t& query,
+    vector<pair<string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
-  if (ret_num == 0)
+  if (ret_num == 0) {
     return;
+  }
 
   bit_vector query_bv;
   calc_lsh_values(query, query_bv);
   row2lshvals_.similar_row(query_bv, ids, ret_num);
 }
 
-void lsh::neighbor_row(const sfv_t& query, vector<pair<string, float> >& ids,
+void lsh::neighbor_row(
+    const sfv_t& query,
+    vector<pair<string, float> >& ids,
     size_t ret_num) const {
   similar_row(query, ids, ret_num);
   for (size_t i = 0; i < ids.size(); ++i) {
@@ -151,4 +156,3 @@ const storage::recommender_storage_base* lsh::get_const_storage() const {
 
 }  // namespace recommender
 }  // namespace jubatus
-

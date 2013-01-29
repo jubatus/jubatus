@@ -36,36 +36,42 @@ recommender_mock::~recommender_mock() {
 }
 
 void recommender_mock::set_similar_relation(
-    const sfv_t& query, const vector<pair<string, float> >& ids) {
+    const sfv_t& query,
+    const vector<pair<string, float> >& ids) {
   storage_.set_similar_items(query, ids);
 }
 
 void recommender_mock::set_similar_relation(
-    const string& id, const vector<pair<string, float> >& ids) {
+    const string& id,
+    const vector<pair<string, float> >& ids) {
   sfv_t query;
   decode_row(id, query);
   set_similar_relation(query, ids);
 }
 
 void recommender_mock::set_neighbor_relation(
-    const sfv_t& query, const vector<pair<string, float> >& ids) {
+    const sfv_t& query,
+    const vector<pair<string, float> >& ids) {
   storage_.set_neighbor_items(query, ids);
 }
 
 void recommender_mock::set_neighbor_relation(
-    const string& id, const vector<pair<string, float> >& ids) {
+    const string& id,
+    const vector<pair<string, float> >& ids) {
   sfv_t query;
   decode_row(id, query);
   set_neighbor_relation(query, ids);
 }
 
-void recommender_mock::similar_row(const sfv_t& query,
+void recommender_mock::similar_row(
+    const sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   storage_.similar_items_similarity(query, ids, ret_num);
 }
 
-void recommender_mock::neighbor_row(const sfv_t& query,
+void recommender_mock::neighbor_row(
+    const sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   storage_.neighbor_items_distance(query, ids, ret_num);

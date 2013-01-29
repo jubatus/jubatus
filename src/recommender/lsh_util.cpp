@@ -50,14 +50,17 @@ void set_bit_vector(const std::vector<float>& vec, bit_vector& bit_vec) {
   bit_vec.swap(bv);
 }
 
-void prod_invert_and_vector(const unordered_map<string, vector<float> >& matrix,
-    const sfv_t& vec, size_t dim, vector<float>& ret) {
+void prod_invert_and_vector(
+    const unordered_map<string, vector<float> >& matrix,
+    const sfv_t& vec,
+    size_t dim,
+    vector<float>& ret) {
   vector<float> r(dim);
   for (size_t i = 0; i < vec.size(); ++i) {
     const string& column = vec[i].first;
     float val = vec[i].second;
-    unordered_map<string, vector<float> >::const_iterator it = matrix.find(
-        column);
+    unordered_map<string, vector<float> >::const_iterator it =
+        matrix.find(column);
     if (it == matrix.end()) {
       continue;
     }

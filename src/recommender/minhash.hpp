@@ -46,10 +46,12 @@ class minhash : public recommender_base {
   explicit minhash(const config& config);
   ~minhash();
 
-  void similar_row(const sfv_t& query,
+  void similar_row(
+      const sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
-  void neighbor_row(const sfv_t& query,
+  void neighbor_row(
+      const sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   void clear();

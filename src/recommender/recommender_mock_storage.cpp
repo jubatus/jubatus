@@ -33,23 +33,27 @@ recommender_mock_storage::~recommender_mock_storage() {
 }
 
 void recommender_mock_storage::set_similar_items(
-    const sfv_t& query, const vector<pair<string, float> >& ids) {
+    const sfv_t& query,
+    const vector<pair<string, float> >& ids) {
   similar_relation_[query] = ids;
 }
 
 void recommender_mock_storage::set_neighbor_items(
-    const sfv_t& query, const vector<pair<string, float> >& ids) {
+    const sfv_t& query,
+    const vector<pair<string, float> >& ids) {
   neighbor_relation_[query] = ids;
 }
 
 void recommender_mock_storage::similar_items_similarity(
-    const sfv_t& query, vector<pair<string, float> >& ids,
+    const sfv_t& query,
+    vector<pair<string, float> >& ids,
     size_t ret_num) const {
   get_relation(query, similar_relation_, ret_num, ids);
 }
 
 void recommender_mock_storage::neighbor_items_distance(
-    const sfv_t& query, vector<pair<string, float> >& ids,
+    const sfv_t& query,
+    vector<pair<string, float> >& ids,
     size_t ret_num) const {
   get_relation(query, neighbor_relation_, ret_num, ids);
 }
@@ -101,7 +105,8 @@ void recommender_mock_storage::mix(const string& lhs, string& rhs) const {
 // private
 
 // static
-void recommender_mock_storage::get_relation(const sfv_t& query,
+void recommender_mock_storage::get_relation(
+    const sfv_t& query,
     const relation_type& relmap,
     size_t ret_num,
     vector<pair<string, float> >& ids) {
@@ -118,7 +123,8 @@ void recommender_mock_storage::get_relation(const sfv_t& query,
 }
 
 // static
-void recommender_mock_storage::update_relation_key(const sfv_t& from,
+void recommender_mock_storage::update_relation_key(
+    const sfv_t& from,
     const sfv_t& to,
     relation_type& relmap) {
   relation_type::iterator it = relmap.find(from);
@@ -133,7 +139,8 @@ void recommender_mock_storage::update_relation_key(const sfv_t& from,
 }
 
 // static
-void recommender_mock_storage::mix_relation(const relation_type& from,
+void recommender_mock_storage::mix_relation(
+    const relation_type& from,
     relation_type& to) {
   for (relation_type::const_iterator it = from.begin(); it != from.end();
       ++it) {

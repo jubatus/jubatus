@@ -47,14 +47,18 @@ class recommender_impl : public recommender_base {
     orig_.set("r3", "b1", 1.0);
   }
 
-  void similar_row(const sfv_t& query, vector<pair<string, float> >& ids,
+  void similar_row(
+      const sfv_t& query,
+      vector<pair<string, float> >& ids,
       size_t ret_num) const {
     ids.clear();
     ids.push_back(make_pair("r1", 2.0));
     ids.push_back(make_pair("r3", 1.0));
   }
 
-  void neighbor_row(const sfv_t& query, vector<pair<string, float> >& ids,
+  void neighbor_row(
+      const sfv_t& query,
+      vector<pair<string, float> >& ids,
       size_t ret_num) const {
     ids.clear();
     ids.push_back(make_pair("r1", 1.0));

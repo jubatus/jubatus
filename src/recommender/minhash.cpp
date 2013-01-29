@@ -46,19 +46,22 @@ minhash::minhash(const config& config)
 minhash::~minhash() {
 }
 
-void minhash::similar_row(const sfv_t& query,
+void minhash::similar_row(
+    const sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
-  if (ret_num == 0)
+  if (ret_num == 0) {
     return;
+  }
 
   bit_vector query_bv;
   calc_minhash_values(query, query_bv);
   row2minhashvals_.similar_row(query_bv, ids, ret_num);
 }
 
-void minhash::neighbor_row(const sfv_t& query,
+void minhash::neighbor_row(
+    const sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   similar_row(query, ids, ret_num);
@@ -184,4 +187,3 @@ const storage::recommender_storage_base* minhash::get_const_storage() const {
 
 }  // namespace recommender
 }  // namespace jubatus
-

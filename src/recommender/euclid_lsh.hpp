@@ -62,17 +62,21 @@ class euclid_lsh : public recommender_base {
   explicit euclid_lsh(const config& config);
   ~euclid_lsh();
 
-  virtual void neighbor_row(const sfv_t& query,
+  virtual void neighbor_row(
+      const sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
-  virtual void neighbor_row(const std::string& id,
+  virtual void neighbor_row(
+      const std::string& id,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
 
-  virtual void similar_row(const sfv_t& query,
+  virtual void similar_row(
+      const sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
-  virtual void similar_row(const std::string& id,
+  virtual void similar_row(
+      const std::string& id,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
 

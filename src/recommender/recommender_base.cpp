@@ -48,7 +48,8 @@ void recommender_base::similar_row(
   similar_row(sfv, ids, ret_num);
 }
 
-void recommender_base::neighbor_row(const string& id,
+void recommender_base::neighbor_row(
+    const string& id,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
@@ -73,8 +74,9 @@ void recommender_base::complete_row(const sfv_t& query, sfv_t& ret) const {
   ret.clear();
   vector<pair<string, float> > ids;
   similar_row(query, ids, complete_row_similar_num_);
-  if (ids.size() == 0)
+  if (ids.size() == 0) {
     return;
+  }
 
   size_t exist_row_num = 0;
   for (size_t i = 0; i < ids.size(); ++i) {
@@ -91,8 +93,9 @@ void recommender_base::complete_row(const sfv_t& query, sfv_t& ret) const {
     }
   }
 
-  if (exist_row_num == 0)
+  if (exist_row_num == 0) {
     return;
+  }
   sort_and_merge(ret);
   for (size_t i = 0; i < ret.size(); ++i) {
     ret[i].second /= exist_row_num;
