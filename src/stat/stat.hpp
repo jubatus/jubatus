@@ -34,13 +34,13 @@ namespace stat {
 
 class stat_error : public jubatus::exception::jubaexception<stat_error> {
  public:
-  explicit stat_error(const std::string &msg)
+  explicit stat_error(const std::string& msg)
       : msg_(msg) {
   }
   ~stat_error() throw() {
   }
 
-  const char *what() const throw() {
+  const char* what() const throw() {
     return msg_.c_str();
   }
 
@@ -53,15 +53,15 @@ class stat {
   explicit stat(size_t window_size);
   virtual ~stat();
 
-  void push(const std::string &key, double val);
+  void push(const std::string& key, double val);
 
-  double sum(const std::string &key) const;
-  double stddev(const std::string &key) const;
-  double max(const std::string &key) const;
-  double min(const std::string &key) const;
+  double sum(const std::string& key) const;
+  double stddev(const std::string& key) const;
+  double max(const std::string& key) const;
+  double min(const std::string& key) const;
 
   double entropy() const;
-  double moment(const std::string &key, int n, double c) const;
+  double moment(const std::string& key, int n, double c) const;
 
   bool save(std::ostream&);
   bool load(std::istream&);
@@ -71,10 +71,10 @@ class stat {
   struct stat_val {
     stat_val()
         : n_(0),
-          sum_(0),
-          sum2_(0),
-          max_(0),
-          min_(0) {
+        sum_(0),
+        sum2_(0),
+        max_(0),
+        min_(0) {
     }
 
     void add(double d) {
@@ -95,7 +95,7 @@ class stat {
       }
     }
 
-    void rem(double d, const std::string &key, stat &st) {
+    void rem(double d, const std::string& key, stat& st) {
       n_ -= 1;
       sum_ -= d;
       sum2_ -= d * d;
@@ -152,7 +152,7 @@ class stat {
  private:
   friend class pfi::data::serialization::access;
   template<class Archive>
-  void serialize(Archive &ar) {
+  void serialize(Archive& ar) {
     ar & window_size_ & window_;
   }
   size_t window_size_;

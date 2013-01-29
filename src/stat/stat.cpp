@@ -42,16 +42,16 @@ stat::stat(size_t window_size)
 stat::~stat() {
 }
 
-void stat::push(const std::string &key, double val) {
+void stat::push(const std::string& key, double val) {
   {
     clock_time ct = get_clock_time();
     window_.push_back(make_pair((uint64_t) ct, make_pair(key, val)));
     stats_[key].add(val);
   }
   while (window_.size() > window_size_) {
-    string & key = window_.front().second.first;
+    string& key = window_.front().second.first;
     double val = window_.front().second.second;
-    stat_val &st = stats_[key];
+    stat_val& st = stats_[key];
     st.rem(val, key, *this);
     window_.pop_front();
     if (st.n_ == 0) {
@@ -60,7 +60,7 @@ void stat::push(const std::string &key, double val) {
   }
 }
 
-double stat::sum(const std::string &key) const {
+double stat::sum(const std::string& key) const {
   pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
       stats_.find(key);
   if (p == stats_.end()) {
@@ -69,33 +69,33 @@ double stat::sum(const std::string &key) const {
   return p->second.sum_;
 }
 
-double stat::stddev(const std::string &key) const {
+double stat::stddev(const std::string& key) const {
   pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
       stats_.find(key);
   if (p == stats_.end()) {
     throw JUBATUS_EXCEPTION(stat_error("stddev: key " + key + " not found"));
   }
-  const stat_val &st = p->second;
+  const stat_val& st = p->second;
   return sqrt(moment(key, 2, st.sum_ / st.n_));
 }
 
-double stat::max(const std::string &key) const {
+double stat::max(const std::string& key) const {
   pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
       stats_.find(key);
   if (p == stats_.end()) {
     throw JUBATUS_EXCEPTION(stat_error("max: key " + key + " not found"));
   }
-  const stat_val &st = p->second;
+  const stat_val& st = p->second;
   return st.max_;
 }
 
-double stat::min(const std::string &key) const {
+double stat::min(const std::string& key) const {
   pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
       stats_.find(key);
   if (p == stats_.end()) {
     throw JUBATUS_EXCEPTION(stat_error("min: key " + key + " not found"));
   }
-  const stat_val &st = p->second;
+  const stat_val& st = p->second;
   return st.min_;
 }
 
@@ -114,7 +114,7 @@ double stat::entropy() const {
   return ret;
 }
 
-double stat::moment(const std::string &key, int n, double c) const {
+double stat::moment(const std::string& key, int n, double c) const {
   if (n < 0) {
     return -1;
   }
@@ -123,7 +123,7 @@ double stat::moment(const std::string &key, int n, double c) const {
   if (p == stats_.end()) {
     throw JUBATUS_EXCEPTION(stat_error("min: key " + key + " not found"));
   }
-  const stat_val &st = p->second;
+  const stat_val& st = p->second;
 
   if (n == 0) {
     return 1;

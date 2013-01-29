@@ -56,8 +56,9 @@ void mixable_stat::put_diff(const pair<double, size_t>& e) {
   n_ = e.second;
 }
 
-void mixable_stat::reduce(const pair<double, size_t>& lhs,
-         pair<double, size_t>& ret) {
+void mixable_stat::reduce(
+    const pair<double, size_t>& lhs,
+    pair<double, size_t>& ret) {
   ret.first += lhs.first;
   ret.second += lhs.second;
 }

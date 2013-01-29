@@ -33,7 +33,6 @@
 #include "../recommender/recommender_mock_util.hpp"
 #include "lof_storage.hpp"
 
-
 using jubatus::recommender::make_sfv;
 using jubatus::recommender::make_ids;
 using jubatus::storage::lof_storage;
@@ -129,7 +128,7 @@ class lof_storage_one_dimensional_test : public ::testing::Test {
   }
 
   recommender::recommender_mock* rmock_;
-  scoped_ptr<lof_storage> storage_;
+  pfi::lang::scoped_ptr<lof_storage> storage_;
 };
 
 TEST_F(lof_storage_one_dimensional_test, get_kdist) {
@@ -167,13 +166,13 @@ TEST_F(lof_storage_one_dimensional_test, collect_lrds_novel_input) {
 }
 
 class lof_storage_mix_test : public ::testing::TestWithParam<
-    pair<int, lof_storage::config> > {
+    std::pair<int, lof_storage::config> > {
  protected:
   sfv_t generate_gaussian(const string& name, const sfv_t& mean,
                           float deviation) {
     sfv_t sfv(mean);
     const uint64_t seed = hash_util::calc_string_hash(name);
-    mtrand r(seed);
+    pfi::math::random::mtrand r(seed);
 
     for (size_t i = 0; i < sfv.size(); ++i) {
       sfv[i].second += r.next_gaussian() * deviation;
@@ -204,7 +203,7 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
   }
 
   virtual void SetUp() {
-    const pair<int, lof_storage::config>& param = GetParam();
+    const std::pair<int, lof_storage::config>& param = GetParam();
     const int num_models = param.first;
     const lof_storage::config& config = param.second;
 
@@ -226,8 +225,8 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
     single_storage_.reset();
   }
 
-  vector<shared_ptr<lof_storage> > storages_;
-  shared_ptr<lof_storage> single_storage_;
+  vector<pfi::lang::shared_ptr<lof_storage> > storages_;
+  pfi::lang::shared_ptr<lof_storage> single_storage_;
   portable_mixer<lof_storage> portable_mixer_;
 };
 
@@ -314,6 +313,6 @@ lof_storage::config make_lof_storage_config() {
 INSTANTIATE_TEST_CASE_P(
     lof_storage_mix_test_instance,
     lof_storage_mix_test,
-    ::testing::Values(make_pair(5, make_lof_storage_config())));
+    ::testing::Values(std::make_pair(5, make_lof_storage_config())));
 }
 }

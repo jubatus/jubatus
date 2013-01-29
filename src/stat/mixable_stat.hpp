@@ -40,8 +40,9 @@ class mixable_stat : public stat {
   // entropy : e -> n -> e/n - log n
   std::pair<double, size_t> get_diff() const;
   void put_diff(const std::pair<double, size_t>&);
-  static void reduce(const std::pair<double, size_t>&,
-                     std::pair<double, size_t>&);
+  static void reduce(
+      const std::pair<double, size_t>&,
+      std::pair<double, size_t>&);
   double mixed_entropy() const;
 
  private:
