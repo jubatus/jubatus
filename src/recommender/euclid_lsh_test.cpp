@@ -25,7 +25,7 @@
 
 #include "euclid_lsh.hpp"
 #include "../common/hash.hpp"
-#include "../common/portable_mixer.hpp"  // FIXME: use linear_mixer
+#include "../common/portable_mixer.hpp"  // TODO(suma): use linear_mixer
 #include "../storage/lsh_index_storage.hpp"
 
 using std::istringstream;
