@@ -126,9 +126,9 @@ bool zk::set(const string& path, const string& payload) {
 // "/some/path" => "/some/path0000012"
 bool zk::create_seq(const string& path, string& seqfile) {
   scoped_lock lk(m_);
-  char path_buffer[path.size() + 16];
+  string path_buffer(path.size() + 16, '\0');
   int rc = zoo_create(zh_, path.c_str(), NULL, 0, &ZOO_OPEN_ACL_UNSAFE,
-                      ZOO_EPHEMERAL | ZOO_SEQUENCE, path_buffer,
+                      ZOO_EPHEMERAL | ZOO_SEQUENCE, &path_buffer[0],
                       path.size() + 16);
   seqfile = "";
   if (rc != ZOK) {

@@ -127,11 +127,11 @@ std::string get_program_name() {
 
 std::string get_user_name() {
   uid_t uid = getuid();
-  long buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
-  char buf[buflen];
+  int64_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+  std::vector<char> buf(buflen);
   struct passwd pwd;
   struct passwd* result;
-  int ret = getpwuid_r(uid, &pwd, buf, buflen, &result);
+  int ret = getpwuid_r(uid, &pwd, &buf[0], buflen, &result);
   if (ret == 0) {
     if (result != NULL) {
       return result->pw_name;
@@ -234,7 +234,7 @@ void get_machine_status(machine_status_t& status) {
     snprintf(path, sizeof(path), "/proc/%d/statm", getpid());
     std::ifstream statm(path);
 
-    const long page_size = sysconf(_SC_PAGESIZE);
+    const int64_t page_size = sysconf(_SC_PAGESIZE);
     uint64_t vm_virt, vm_rss, vm_shr;
     statm >> vm_virt >> vm_rss >> vm_shr;
     vm_virt = vm_virt * page_size / 1024;
