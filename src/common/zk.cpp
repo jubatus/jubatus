@@ -301,7 +301,8 @@ bool zkmutex::try_lock() {
   has_lock_ = true;
   for (size_t i = 0; i < list.size(); i++) {
     // not exist all lock less than me.
-    if (seqfile_.compare(prefix.length(), -1, path_ + "/" + list[i],
+    string path1((path_ + '/' + list[i]).c_str(), prefix.size() + 16);
+    if (seqfile_.compare(prefix.length(), -1, path1,
                          prefix.length(), -1) > 0) {
       has_lock_ = false;
       break;
@@ -362,7 +363,8 @@ bool zkmutex::try_rlock() {
   for (size_t i = 0; i < list.size(); i++) {
     // not exist write lock less than me.
     if (pfi::data::string::starts_with(list[i], string("wlock_"))) {
-      if (seqfile_.compare(prefix.length(), -1, path_ + "/" + list[i],
+      string path1((path_ + '/' + list[i]).c_str(), prefix.size() + 16);
+      if (seqfile_.compare(prefix.length(), -1, path1,
                            prefix.length(), -1) > 0) {
         has_rlock_ = false;
         break;
