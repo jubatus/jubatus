@@ -12,3 +12,8 @@ cscope.*
 callgrind.*
 .unittest-gtest
 *.tar.gz
+*.omakedb
+*.omakedb.lock
+*.omc
+*.cmi
+*.cmx
