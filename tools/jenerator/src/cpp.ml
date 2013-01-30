@@ -169,6 +169,7 @@ let gen_client s =
     ];
     indent_lines 1 (List.concat methods);
     [
+      (0, "");
       (0, " private:");
       (1,   "msgpack::rpc::client c_;");
       (0, "};")
@@ -299,8 +300,12 @@ let gen_client_file conf source services =
 
   let content = List.concat [
     [
-      (0, "#include \"" ^ base ^ "_types.hpp\"");
+      (0, "#include <map>");
+      (0, "#include <string>");
+      (0, "#include <vector>");
+      (0, "#include <utility>");
       (0, "#include <jubatus/msgpack/rpc/client.h>");
+      (0, "#include \"" ^ base ^ "_types.hpp\"");
       (0, "");
     ];
     make_namespace namespace (List.concat clients)
@@ -366,7 +371,7 @@ let gen_server s =
       (0, "template <class Impl>");
       (0, "class " ^ s.service_name ^ " : public jubatus::common::mprpc::rpc_server {");
       (0, " public:");
-      (1,   s.service_name ^ "(double timeout_sec) : rpc_server(timeout_sec) {");
+      (1,   "explicit " ^ s.service_name ^ "(double timeout_sec) : rpc_server(timeout_sec) {");
       (2,     "Impl* impl = static_cast<Impl*>(this);");
     ];
     indent_lines 2 methods;
@@ -387,6 +392,10 @@ let gen_server_file conf source services =
 
   let content = List.concat [
     [
+      (0, "#include <map>");
+      (0, "#include <string>");
+      (0, "#include <vector>");
+      (0, "#include <utility>");
       (0, "#include <pficommon/lang/bind.h>");
       (0, "");
       (0, gen_jubatus_include conf "common/mprpc/rpc_server.hpp");
@@ -478,6 +487,11 @@ let gen_keeper_file conf source services =
   
   let s = List.concat [
     [
+      (0, "#include <map>");
+      (0, "#include <string>");
+      (0, "#include <vector>");
+      (0, "#include <utility>");
+      (0, "");
       (0, "#include <glog/logging.h>");
       (0, "");
       (0, gen_jubatus_include conf "common/exception.hpp");
@@ -563,7 +577,7 @@ let gen_impl s =
     [
       (0, "class " ^ impl_name ^ " : public " ^ name ^ "<" ^ impl_name ^ "> {");
       (0, " public:");
-      (1,   impl_name ^ "(const jubatus::framework::server_argv& a):");
+      (1,   "explicit " ^ impl_name ^ "(const jubatus::framework::server_argv& a):");
       (2,     name ^ "<" ^ impl_name ^ ">(a.timeout),");
       (2,     "p_(new jubatus::framework::server_helper<" ^ serv_name ^ ">(a, " ^ gen_bool_literal use_cht ^ ")) {");
       (1,   "}")
@@ -571,7 +585,8 @@ let gen_impl s =
     indent_lines 1 (List.concat methods);
     [
       (1,   "int run() { return p_->start(*this); }");
-      (1,   "common::cshared_ptr<" ^ serv_name ^ "> get_p() { return p_->server(); };");
+      (1,   "common::cshared_ptr<" ^ serv_name ^ "> get_p() { return p_->server(); }");
+      (0, "");
       (0, " private:");
       (1,   "common::cshared_ptr<jubatus::framework::server_helper<" ^ serv_name ^ "> > p_;");
       (0, "};")
@@ -589,6 +604,11 @@ let gen_impl_file conf source services =
   let impls = List.map gen_impl services in
   let s = List.concat [
     [
+      (0, "#include <map>");
+      (0, "#include <string>");
+      (0, "#include <vector>");
+      (0, "#include <utility>");
+      (0, "");
       (0, gen_jubatus_include conf "framework.hpp");
       (0, "#include \"" ^ base ^ "_server.hpp\"");
       (0, "#include \"" ^ base ^ "_serv.hpp\"");
@@ -636,6 +656,7 @@ let gen_server_template_header s =
     indent_lines 1 (List.concat methods);
     [
       (1,   "void after_load();");
+      (0, "");
       (0, " private:");
       (1,   "// add user data here like: pfi::lang::shared_ptr<some_type> some_;");
       (0, "};")
