@@ -28,7 +28,7 @@
 namespace jubatus {
 namespace framework {
 
-__thread msgpack::rpc::session_pool *private_session_pool_ = NULL;
+__thread msgpack::rpc::session_pool* private_session_pool_ = NULL;
 __thread keeper::async_task_loop*
   keeper::async_task_loop::private_async_task_loop_;
 
