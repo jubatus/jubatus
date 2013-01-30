@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_SERVER_LINEAR_FUNCTION_MIXER_HPP_
+#define JUBATUS_SERVER_LINEAR_FUNCTION_MIXER_HPP_
 
 #include "../framework.hpp"
 #include "../storage/storage_base.hpp"
@@ -38,3 +39,5 @@ class linear_function_mixer : public jubatus::framework::mixable<
 
 }  // namespace server
 }  // namespace jubatus
+
+#endif  // JUBATUS_SERVER_LINEAR_FUNCTION_MIXER_HPP_

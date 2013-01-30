@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_SERVER_MIXABLE_WEIGHT_MANAGER_HPP_
+#define JUBATUS_SERVER_MIXABLE_WEIGHT_MANAGER_HPP_
 
 #include "../framework/mixable.hpp"
 #include "../fv_converter/weight_manager.hpp"
@@ -39,3 +40,5 @@ class mixable_weight_manager : public framework::mixable<
 
 }  // namespace server
 }  // namespace jubatus
+
+#endif  // JUBATUS_SERVER_MIXABLE_WEIGHT_MANAGER_HPP_

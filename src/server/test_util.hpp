@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_SERVER_TEST_UTIL_HPP_
+#define JUBATUS_SERVER_TEST_UTIL_HPP_
 
 #include <unistd.h>
 #include <signal.h>
@@ -94,3 +95,5 @@ std::string config_to_string(
   ss << pfi::text::json::to_json(config);
   return ss.str();
 }
+
+#endif  // JUBATUS_SERVER_TEST_UTIL_HPP_
