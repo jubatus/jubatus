@@ -290,7 +290,7 @@ TEST(rpc_mclient, small) {
     } catch (jubatus::common::mprpc::rpc_no_result& e) {
       const error_info_list_t& list = e.error_info();
       bool has_error_multi_rpc = false;
-      // FIXME: support `error_multi_rpc* multi_error =
+      // TODO(y_oda): support `error_multi_rpc* multi_error =
       //     jubatus_exception::find_first<error_multi_rpc>();' like format
       for (error_info_list_t::const_iterator
           it = list.begin(), end = list.end();
@@ -335,7 +335,7 @@ TEST(rpc_mclient, small) {
 
       const error_info_list_t& list = e.error_info();
       bool has_error_multi_rpc = false;
-      // FIXME: support `error_multi_rpc* multi_error =
+      // TODO(y_oda): support `error_multi_rpc* multi_error =
       // jubatus_exception::find_first<error_multi_rpc>();' like format
       for (error_info_list_t::const_iterator
           it = list.begin(), end = list.end();
