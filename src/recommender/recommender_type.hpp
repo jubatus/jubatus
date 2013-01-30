@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_RECOMMENDER_RECOMMENDER_TYPE_HPP_
+#define JUBATUS_RECOMMENDER_RECOMMENDER_TYPE_HPP_
 
 #include "../common/type.hpp"
 
@@ -23,3 +24,5 @@ namespace jubatus {
 typedef sfv_t sfv_diff_t;
 
 }  // namespace jubatus
+
+#endif  // JUBATUS_RECOMMENDER_RECOMMENDER_TYPE_HPP_

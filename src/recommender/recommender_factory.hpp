@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_RECOMMENDER_RECOMMENDER_FACTORY_HPP_
+#define JUBATUS_RECOMMENDER_RECOMMENDER_FACTORY_HPP_
 
 #include <string>
 #include <pficommon/text/json.h>
@@ -36,3 +37,5 @@ recommender_base* create_recommender(const std::string& name,
 }  // namespace recommender
 
 }  // namespace jubatus
+
+#endif  // JUBATUS_RECOMMENDER_RECOMMENDER_FACTORY_HPP_
