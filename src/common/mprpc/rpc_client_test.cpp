@@ -44,8 +44,8 @@ struct strw {
   MSGPACK_DEFINE(key, value);
 };
 
-MPRPC_PROC(test_bool, bool(int));
-MPRPC_PROC(test_twice, int(int));
+MPRPC_PROC(test_bool, bool(int));  // NOLINT
+MPRPC_PROC(test_twice, int(int));  // NOLINT
 MPRPC_PROC(add_all, int(int, int, int));
 MPRPC_PROC(various, string(int, float, double, strw));
 MPRPC_PROC(sum, int(std::vector<int>));

@@ -137,8 +137,8 @@ GENERATE_CONFIG_SERIALIZE_DEF(std::string, String)
     } \
   }
 
-GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(float)
-GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(double)
+GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(float)  // NOLINT
+GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(double)  // NOLINT
 
 template <typename T>
 inline void serialize(json_config_iarchive_cast& js, std::vector<T>& vs) {

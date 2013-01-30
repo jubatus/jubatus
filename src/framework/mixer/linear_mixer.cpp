@@ -132,7 +132,7 @@ linear_mixer::linear_mixer(
 }
 
 void linear_mixer::register_api(rpc_server_t& server) {
-  server.add<vector<common::mprpc::byte_buffer>(int)>(
+  server.add<vector<common::mprpc::byte_buffer>(int)>(  // NOLINT
       "get_diff",
       pfi::lang::bind(&linear_mixer::get_diff, this, pfi::lang::_1));
   server.add<int(vector<common::mprpc::byte_buffer>)>(
