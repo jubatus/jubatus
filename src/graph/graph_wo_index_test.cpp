@@ -14,14 +14,13 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-
 #include <map>
 #include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
+#include <gtest/gtest.h>
 #include <pficommon/lang/cast.h>
 
 #include "graph_wo_index.hpp"

@@ -20,6 +20,7 @@
 #include <string>
 
 namespace jubatus {
+
 namespace jsonconfig {
 class config;
 }  // namespace jsonconfig
@@ -32,7 +33,8 @@ graph_base* create_graph(
     const std::string& name,
     const jsonconfig::config& param);
 
-}  // namespace jubatus
 }  // namespace graph
+
+}  // namespace jubatus
 
 #endif  // JUBATUS_GRAPH_GRAPH_FACTORY_HPP_

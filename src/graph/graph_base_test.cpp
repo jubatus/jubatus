@@ -14,11 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-
 #include <map>
 #include <string>
 #include <vector>
+
+#include <gtest/gtest.h>
 
 #include "graph_base.hpp"
 
@@ -62,8 +62,11 @@ class graph_impl : public graph_base {
   double centrality(node_id_t id, centrality_type ct) const {
   }
 
-  void shortest_path(node_id_t src, node_id_t tgt, uint64_t max_hop,
-                     std::vector<node_id_t>& ret) const {
+  void shortest_path(
+      node_id_t src,
+      node_id_t tgt,
+      uint64_t max_hop,
+      std::vector<node_id_t>& ret) const {
   }
 
   void get_node(node_id_t id, node_info& ret) const {

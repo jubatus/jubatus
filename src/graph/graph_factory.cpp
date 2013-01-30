@@ -36,5 +36,5 @@ graph_base* create_graph(
   }
 }
 
-}  // namespace jubatus
 }  // namespace graph
+}  // namespace jubatus
