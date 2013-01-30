@@ -142,10 +142,8 @@ let gen_client_method m =
       [ (0, gen_call "c_.call" args) ]
     | Some typ ->
       [
-        (* TODO(unnonouno): split this line*)
-        (* (0, gen_call "msgpack::rpc::future f = c_.call" args); *)
-        (* (0, "return " ^ (gen_template "f.get" [typ]) ^ "();"); *)
-        (0, gen_template ("return c_.call" ^ gen_args args ^ ".get") [typ] ^ "();")
+        (0, gen_call "msgpack::rpc::future f = c_.call" args);
+        (0, "return " ^ (gen_template "f.get" [typ]) ^ "();");
       ] in
   List.concat [
     [
