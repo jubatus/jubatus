@@ -481,13 +481,10 @@ let gen_keeper_file conf source services =
       (0, gen_jubatus_include conf "framework/keeper.hpp");
       (0, "#include <glog/logging.h>");
       (0, "");
-      (* TODO(unnonouno): remove using namespace! *)
-      (0, "using namespace jubatus;");
-      (0, "using namespace jubatus::framework;");
-      (0, "");
       (0, "int main(int args, char* argv[]) {");
       (1,   "try {");
-      (2,     "keeper k(keeper_argv(args, argv, " ^ name_str ^ "));");
+      (2,     "jubatus::framework::keeper k(");
+      (4,         "jubatus::framework::keeper_argv(args, argv, " ^ name_str ^ "));");
     ];
     indent_lines 2 (List.concat servers);
     [
@@ -564,7 +561,7 @@ let gen_impl s =
       (0, " public:");
       (1,   impl_name ^ "(const server_argv& a):");
       (2,     name ^ "<" ^ impl_name ^ ">(a.timeout),");
-      (2,     "p_(new server_helper<" ^ serv_name ^ ">(a, " ^ gen_bool_literal use_cht ^ "))");
+      (2,     "p_(new jubatus::framework::server_helper<" ^ serv_name ^ ">(a, " ^ gen_bool_literal use_cht ^ "))");
       (1,   "{}")
     ];
     indent_lines 1 (List.concat methods);
@@ -572,7 +569,7 @@ let gen_impl s =
       (1,   "int run() { return p_->start(*this); }");
       (1,   "common::cshared_ptr<" ^ serv_name ^ "> get_p() { return p_->server(); };");
       (0, " private:");
-      (1,   "common::cshared_ptr<server_helper<" ^ serv_name ^ "> > p_;");
+      (1,   "common::cshared_ptr<jubatus::framework::server_helper<" ^ serv_name ^ "> > p_;");
       (0, "};")
     ]
   ]
@@ -591,9 +588,6 @@ let gen_impl_file conf source services =
       (0, gen_jubatus_include conf "framework.hpp");
       (0, "#include \"" ^ base ^ "_server.hpp\"");
       (0, "#include \"" ^ base ^ "_serv.hpp\"");
-      (* TODO(unnonouno): do not use using namespace *)
-      (0, "using namespace jubatus;");
-      (0, "using namespace jubatus::framework;");
     ];
     make_namespace namespace (List.concat impls);
     [
