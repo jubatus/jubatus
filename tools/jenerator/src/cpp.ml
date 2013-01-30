@@ -300,7 +300,7 @@ let gen_client_file conf source services =
   let content = List.concat [
     [
       (0, "#include \"" ^ base ^ "_types.hpp\"");
-      (0, gen_jubatus_include conf "msgpack/rpc/client.h");
+      (0, "#include <jubatus/msgpack/rpc/client.h>");
       (0, "");
     ];
     make_namespace namespace (List.concat clients)
