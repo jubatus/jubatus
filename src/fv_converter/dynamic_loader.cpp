@@ -37,7 +37,7 @@ dynamic_loader::dynamic_loader(const std::string& path)
   }
 
   if (!handle) {
-    char *error = dlerror();
+    char* error = dlerror();
     throw JUBATUS_EXCEPTION(
         converter_exception(
             "cannot load dynamic library: " + path + ": " + error)

@@ -28,7 +28,7 @@ class dynamic_loader {
   explicit dynamic_loader(const std::string& path);
   ~dynamic_loader();
 
-  void *load_symbol(const std::string& name) const;
+  void* load_symbol(const std::string& name) const;
 
  private:
   void* handle_;
