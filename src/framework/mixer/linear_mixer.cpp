@@ -166,7 +166,7 @@ void linear_mixer::updated() {
   ++counter_;
   if (counter_ > count_threshold_
       || new_ticktime - ticktime_ > tick_threshold_) {
-    c_.notify();  // FIXME: need sync here?
+    c_.notify();  // TODO(beam2d): need sync here?
   }
 }
 
