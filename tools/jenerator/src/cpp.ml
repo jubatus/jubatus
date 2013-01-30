@@ -315,11 +315,13 @@ let gen_type_file conf source idl =
   let namespace = parse_namespace conf.Config.namespace in
   let types = List.map gen_typedef idl in
   let includes = [
-    (0, "#include <vector>");
-    (0, "#include <map>");
-    (0, "#include <string>");
-    (0, "#include <stdexcept>");
     (0, "#include <stdint.h>");
+    (0, "");
+    (0, "#include <map>");
+    (0, "#include <stdexcept>");
+    (0, "#include <string>");
+    (0, "#include <vector>");
+    (0, "");
     (0, "#include <msgpack.hpp>");
   ] in
 
@@ -385,9 +387,10 @@ let gen_server_file conf source services =
 
   let content = List.concat [
     [
-      (0, "#include \"" ^ base ^ "_types.hpp\"");
       (0, "#include <pficommon/lang/bind.h>");
+      (0, "");
       (0, gen_jubatus_include conf "common/mprpc/rpc_server.hpp");
+      (0, "#include \"" ^ base ^ "_types.hpp\"");
       (0, "");
     ];
     make_namespace namespace (List.concat servers)
@@ -475,11 +478,12 @@ let gen_keeper_file conf source services =
   
   let s = List.concat [
     [
-      (0, gen_jubatus_include conf "framework/aggregators.hpp");
-      (0, gen_jubatus_include conf "common/exception.hpp");
-      (0, "#include \"" ^ base ^ "_types.hpp\"");
-      (0, gen_jubatus_include conf "framework/keeper.hpp");
       (0, "#include <glog/logging.h>");
+      (0, "");
+      (0, gen_jubatus_include conf "common/exception.hpp");
+      (0, gen_jubatus_include conf "framework/aggregators.hpp");
+      (0, gen_jubatus_include conf "framework/keeper.hpp");
+      (0, "#include \"" ^ base ^ "_types.hpp\"");
       (0, "");
       (0, "int main(int args, char* argv[]) {");
       (1,   "try {");
