@@ -85,7 +85,7 @@ size_t linear_communication_impl::update_members() {
 
 void linear_communication_impl::get_diff(
     common::mprpc::rpc_result_object& result) const {
-  // TODO: to be replaced to new client with socket connection pooling
+  // TODO(beam2d): to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
 #ifndef NDEBUG
   for (size_t i = 0; i < servers_.size(); i++) {
@@ -98,7 +98,7 @@ void linear_communication_impl::get_diff(
 
 void linear_communication_impl::put_diff(
     const vector<common::mprpc::byte_buffer>& mixed) const {
-  // TODO: to be replaced to new client with socket connection pooling
+  // TODO(beam2d): to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
 #ifndef NDEBUG
   for (size_t i = 0; i < servers_.size(); i++) {
@@ -239,7 +239,7 @@ void linear_mixer::mix() {
       }
 
       communication_->put_diff(mixed);
-      // TODO: output log when result has error
+      // TODO(beam2d): output log when result has error
 
       for (size_t i = 0; i < mixed.size(); ++i) {
         s += mixed[i].size();
