@@ -55,7 +55,7 @@ TYPED_TEST_P(regression_test, trivial) {
   EXPECT_TRUE(p.estimate(fv) > 0.0);
 }
 
-// FIXME same as classifier_test.cpp
+// TODO(odasatoshi) same as classifier_test.cpp
 sfv_t convert(vector<double>& v) {
   sfv_t fv;
   for (size_t i = 0; i < v.size(); ++i) {
