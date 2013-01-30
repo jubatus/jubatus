@@ -107,7 +107,7 @@ bool regression_serv::set_config(const string& config) {
 
   jsonconfig::config param;
   if (conf.parameter) {
-    param = *conf.parameter;
+    param = jsonconfig::config(*conf.parameter);
   }
   regression_.reset(
       jubatus::regression::regression_factory().create_regression(

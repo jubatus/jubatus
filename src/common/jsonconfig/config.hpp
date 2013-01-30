@@ -45,7 +45,7 @@ class config {
       : json_() {
   }
 
-  config(const pfi::text::json::json& j)
+  explicit config(const pfi::text::json::json& j)
       : json_(j) {
   }
 
@@ -89,8 +89,9 @@ class config {
    public:
     typedef pfi::text::json::json::const_iterator iterator_base;
     iterator(const iterator&);
-    iterator(const config& parent,
-             const pfi::text::json::json::const_iterator& it);
+    iterator(
+        const config& parent,
+        const pfi::text::json::json::const_iterator& it);
 
     const std::string& key() const;
     config value() const;
@@ -109,7 +110,7 @@ class config {
     }
 
     const std::pair<const std::string, pfi::text::json::json>* operator->()
-      const {
+        const {
       return it_.operator->();
     }
     // FowrardIterator

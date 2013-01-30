@@ -85,8 +85,9 @@ inline void serialize(json_config_iarchive_cast& js, T& v) {
 }
 
 namespace detail {
-inline bool check_json_type(json_config_iarchive_cast& js,
-                            pfi::text::json::json::json_type_t t) {
+inline bool check_json_type(
+    json_config_iarchive_cast& js,
+    pfi::text::json::json::json_type_t t) {
   if (js.get().type() != t) {
     type_error e(js.get_config().path(), t, js.get().type());
     if (js.trace_error()) {
@@ -102,8 +103,10 @@ inline bool check_json_type(json_config_iarchive_cast& js,
 inline bool check_json_float(json_config_iarchive_cast& js) {
   if (js.get().type() != pfi::text::json::json::Float
       && js.get().type() != pfi::text::json::json::Integer) {
-    type_error e(js.get_config().path(), pfi::text::json::json::Float,
-                 js.get().type());
+    type_error e(
+        js.get_config().path(),
+        pfi::text::json::json::Float,
+        js.get().type());
     if (js.trace_error()) {
       js.push_error(e);
     } else {
@@ -142,8 +145,9 @@ GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(double)
 template <typename T>
 inline void serialize(json_config_iarchive_cast& js, std::vector<T>& vs) {
   // check errors
-  if (!detail::check_json_type(js, pfi::text::json::json::Array))
+  if (!detail::check_json_type(js, pfi::text::json::json::Array)) {
     return;
+  }
 
   size_t size = js.get_config().size();
   std::vector<T> v(size);
@@ -155,8 +159,9 @@ inline void serialize(json_config_iarchive_cast& js, std::vector<T>& vs) {
 
 template <typename K, typename V>
 inline void serialize(json_config_iarchive_cast& js, std::map<K, V>& m) {
-  if (!detail::check_json_type(js, pfi::text::json::json::Object))
+  if (!detail::check_json_type(js, pfi::text::json::json::Object)) {
     return;
+  }
 
   std::map<K, V> tmp;
   typedef config::iterator iter_t;
@@ -170,10 +175,12 @@ inline void serialize(json_config_iarchive_cast& js, std::map<K, V>& m) {
 }
 
 template <typename K, typename V>
-inline void serialize(json_config_iarchive_cast& js,
-                      pfi::data::unordered_map<K, V>& m) {
-  if (!detail::check_json_type(js, pfi::text::json::json::Object))
+inline void serialize(
+    json_config_iarchive_cast& js,
+    pfi::data::unordered_map<K, V>& m) {
+  if (!detail::check_json_type(js, pfi::text::json::json::Object)) {
     return;
+  }
 
   pfi::data::unordered_map<K, V> tmp;
   typedef config::iterator iter_t;

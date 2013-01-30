@@ -53,8 +53,10 @@ class config_error : public exception::jubaexception<config_error> {
 
 class type_error : public config_error {
  public:
-  type_error(const std::string& path, pfi::text::json::json::json_type_t expect,
-             pfi::text::json::json::json_type_t actual);
+  type_error(
+      const std::string& path,
+      pfi::text::json::json::json_type_t expect,
+      pfi::text::json::json::json_type_t actual);
 
   ~type_error() throw ();
 

@@ -29,8 +29,9 @@ config::iterator::iterator(const config::iterator& it)
       it_(it.it_) {
 }
 
-config::iterator::iterator(const config& parent,
-                           const pfi::text::json::json::const_iterator& it)
+config::iterator::iterator(
+    const config& parent,
+    const pfi::text::json::json::const_iterator& it)
     : parent_(parent),
       it_(it) {
 }
@@ -72,9 +73,10 @@ config config::operator[](const std::string& key) const {
 }
 
 bool config::contain(const std::string& key) const {
-  if (type() != pfi::text::json::json::Object)
+  if (type() != pfi::text::json::json::Object) {
     throw JUBATUS_EXCEPTION(
         type_error(path_, pfi::text::json::json::Object, type()));
+  }
   return json_.count(key) > 0;
 }
 

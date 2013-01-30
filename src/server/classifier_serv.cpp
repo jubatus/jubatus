@@ -109,7 +109,7 @@ bool classifier_serv::set_config(const string& config) {
 
   jsonconfig::config param;
   if (conf.parameter) {
-    param = *conf.parameter;
+    param = jsonconfig::config(*conf.parameter);
   }
   classifier_.reset(
       classifier::classifier_factory::create_classifier(

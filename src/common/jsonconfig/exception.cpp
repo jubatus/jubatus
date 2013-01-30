@@ -56,8 +56,9 @@ const char* TypeToName(json::json_type_t t) {
   }
 }
 
-std::string MakeTypeErrorMessage(json::json_type_t expect,
-                                 json::json_type_t actual) {
+std::string MakeTypeErrorMessage(
+    json::json_type_t expect,
+    json::json_type_t actual) {
   return string(TypeToName(expect)) + " is expected, but " + TypeToName(actual)
       + " is given.";
 }
@@ -74,8 +75,10 @@ std::string MakeNotFoundMessage(const std::string& key) {
 
 }  // namespace
 
-type_error::type_error(const std::string& path, json::json_type_t expect,
-                       json::json_type_t actual)
+type_error::type_error(
+    const std::string& path,
+    json::json_type_t expect,
+    json::json_type_t actual)
     : config_error(path, MakeTypeErrorMessage(expect, actual)),
       expect_(expect),
       actual_(actual) {
