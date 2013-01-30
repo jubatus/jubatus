@@ -430,18 +430,6 @@ let gen_aggregator_function ret_type aggregator =
   func ^ "(&" ^ agg ^ ")"
 ;;
 
-let gen_decorator_comment m =
-  let routing, req, agg = get_decorator m in
-  Printf.sprintf "// %s %s"
-    (reqtype_to_string req) (routing_to_string routing)
-;;
-
-let gen_keeper_comment m =
-  let routing, req, agg = get_decorator m in
-  Printf.sprintf "// %s %s"
-    (aggtype_to_string agg) (reqtype_to_string req)
-;;
-
 let gen_keeper_register m ret_type =
   let arg_types = List.map (fun f -> f.field_type) (List.tl m.method_arguments) in
   let method_name_str = gen_string_literal m.method_name in
@@ -450,9 +438,7 @@ let gen_keeper_register m ret_type =
   | Random ->
     let func = gen_template "k.register_async_random" (ret_type::arg_types) in
     let call = gen_call func [method_name_str] in
-    (* TODO(unnonouno): remove comment *)
-    let comment = gen_keeper_comment m in
-    [ (0, call ^ comment) ]
+    [ (0, call) ]
 
   | Cht i ->
     let args = List.tl arg_types in
@@ -461,18 +447,12 @@ let gen_keeper_register m ret_type =
     let num = string_of_int i in
     let func = gen_template_with_strs "k.register_async_cht" (num::arg_strs) in
     let call = gen_call func [method_name_str; gen_aggregator_function ret_type agg] in
-    (* TODO(unnonouno): remove comment *)
-    let _, req, _ = get_decorator m in
-    let comment = "// " ^ (reqtype_to_string req) in
-    [ (0, call ^ comment) ]
+    [ (0, call) ]
 
   | Broadcast ->
     let func = gen_template "k.register_async_broadcast" (ret_type::arg_types) in
     let call = gen_call func [method_name_str; gen_aggregator_function ret_type agg] in
-    (* TODO(unnonouno): remove comment *)
-    let _, req, _ = get_decorator m in
-    let comment = "// " ^ (reqtype_to_string req) in
-    [ (0, call ^ comment) ]
+    [ (0, call) ]
 
   | Internal -> (* no code generated in keeper *)
     []
@@ -555,11 +535,10 @@ let gen_impl_method m =
     | Some typ ->
       gen_call ("return " ^ pointer ^ "->" ^ name) args
   in
-  let comment = gen_decorator_comment m in
 
   List.concat [
     [
-      (0, Printf.sprintf "%s %s%s " ret_type name args_def ^ comment);
+      (0, Printf.sprintf "%s %s%s " ret_type name args_def);
       (* TODO(unnonouno): split lines *)
       (1,  "{ " ^ lock ^ call ^ " }");
     ]
@@ -648,10 +627,8 @@ let gen_server_template_header_method m =
   let name = m.method_name in
   let args_def = gen_function_reference_args_def (List.tl m.method_arguments) in
   let ret_type = gen_ret_type m.method_return_type in
-  let comment = gen_decorator_comment m in
   let const = gen_const m in
-  (* TODO(unnonouno): remove comment *)
-  [ (0, Printf.sprintf "%s %s%s%s;" ret_type name args_def const ^ comment) ]
+  [ (0, Printf.sprintf "%s %s%s%s;" ret_type name args_def const) ]
 ;;
 
 let gen_server_template_header s =
