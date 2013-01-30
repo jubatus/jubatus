@@ -377,7 +377,7 @@ void lof_storage::update_kdist_with_neighbors(
 }
 
 void lof_storage::update_lrd(const string& row) {
-  vector < pair<string, float> > neighbors;
+  vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(row, neighbors, neighbor_num_);
   update_lrd_with_neighbors(row, neighbors);
 }
