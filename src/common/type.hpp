@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_TYPE_HPP_
+#define JUBATUS_COMMON_TYPE_HPP_
 
 #include <stdint.h>
 #include <string>
@@ -27,3 +28,5 @@ typedef std::vector<std::pair<std::string, float> > sfv_t;
 typedef std::vector<std::pair<uint64_t, float> > sfvi_t;
 
 }  // namespace jubatus
+
+#endif  // JUBATUS_COMMON_TYPE_HPP_

@@ -14,8 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_JSONCONFIG_HPP_
+#define JUBATUS_COMMON_JSONCONFIG_HPP_
 
 #include "./jsonconfig/config.hpp"
 #include "./jsonconfig/exception.hpp"
 #include "./jsonconfig/cast.hpp"
+
+#endif  // JUBATUS_COMMON_JSONCONFIG_HPP_
