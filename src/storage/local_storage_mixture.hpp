@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_STORAGE_LOCAL_STORAGE_MIXTURE_HPP_
+#define JUBATUS_STORAGE_LOCAL_STORAGE_MIXTURE_HPP_
 
 #include <map>
 #include <string>
@@ -87,3 +88,5 @@ class local_storage_mixture : public storage_base {
 
 }  // namespace storage
 }  // namespace jubatus
+
+#endif  // JUBATUS_STORAGE_LOCAL_STORAGE_MIXTURE_HPP_

@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_STORAGE_STORAGE_TYPE_HPP_
+#define JUBATUS_STORAGE_STORAGE_TYPE_HPP_
 
 #include <algorithm>
 #include <functional>
@@ -358,3 +359,5 @@ inline std::vector<std::pair<std::string, E> >& operator /=(
 
 }  // namespace storage
 }  // namespace jubatus
+
+#endif  // JUBATUS_STORAGE_STORAGE_TYPE_HPP_

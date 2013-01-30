@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_STORAGE_BIT_INDEX_STORAGE_HPP_
+#define JUBATUS_STORAGE_BIT_INDEX_STORAGE_HPP_
 
 #include <string>
 #include <utility>
@@ -68,3 +69,5 @@ class bit_index_storage : public recommender_storage_base {
 
 }  // namespace storage
 }  // namespace jubatus
+
+#endif  // JUBATUS_STORAGE_BIT_INDEX_STORAGE_HPP_

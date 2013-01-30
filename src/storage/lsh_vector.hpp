@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_STORAGE_LSH_VECTOR_HPP_
+#define JUBATUS_STORAGE_LSH_VECTOR_HPP_
 
 #include <stdint.h>
 #include <ostream>
@@ -97,3 +98,5 @@ class hash<jubatus::storage::lsh_vector> {
 
 }  // namespace data
 }  // namespace pfi
+
+#endif  // JUBATUS_STORAGE_LSH_VECTOR_HPP_
