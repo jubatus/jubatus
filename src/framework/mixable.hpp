@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FRAMEWORK_MIXABLE_HPP_
+#define JUBATUS_FRAMEWORK_MIXABLE_HPP_
 
 #include <iostream>
 #include <string>
@@ -157,3 +158,5 @@ class mixable : public mixable0 {
 
 }  // namespace server
 }  // namespace jubatus
+
+#endif  // JUBATUS_FRAMEWORK_MIXABLE_HPP_
