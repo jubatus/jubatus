@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_REGRESSION_PA_HPP_
+#define JUBATUS_REGRESSION_PA_HPP_
 
 #include <limits>
 #include <pficommon/data/serialization.h>
@@ -54,3 +55,5 @@ class PA : public regression_base {
 
 }  // namespace regression
 }  // namespace jubatus
+
+#endif  // JUBATUS_REGRESSION_PA_HPP_
