@@ -565,9 +565,7 @@ let gen_impl s =
   let use_cht = include_cht_method s in
   List.concat [
     [
-      (0, "class " ^ impl_name ^ " : public " ^ name ^ "<" ^ impl_name ^ ">");
-      (* TODO(unnonouno): fix code format *)
-      (0, "{");
+      (0, "class " ^ impl_name ^ " : public " ^ name ^ "<" ^ impl_name ^ "> {");
       (0, " public:");
       (1,   impl_name ^ "(const server_argv& a):");
       (2,     name ^ "<" ^ impl_name ^ ">(a.timeout),");
@@ -576,8 +574,7 @@ let gen_impl s =
     ];
     indent_lines 1 (List.concat methods);
     [
-      (* TODO(unnonouno): remove semicolon *)
-      (1,   "int run() { return p_->start(*this); };");
+      (1,   "int run() { return p_->start(*this); }");
       (1,   "common::cshared_ptr<" ^ serv_name ^ "> get_p() { return p_->server(); };");
       (0, " private:");
       (1,   "common::cshared_ptr<server_helper<" ^ serv_name ^ "> > p_;");
@@ -638,9 +635,7 @@ let gen_server_template_header s =
   let serv_name = name ^ "_serv" in
   List.concat [
     [
-      (0, "class " ^ serv_name ^ " : public jubatus_serv  // do not change");
-      (* TODO(unnonouno): fix code format *)
-      (0, "{");
+      (0, "class " ^ serv_name ^ " : public jubatus_serv {  // do not change");
       (0, " public:");
       (1,   serv_name ^ "(const server_argv& a);  // do not change");
       (1,   "virtual ~" ^ serv_name ^ "();  // do not change");
@@ -697,17 +692,14 @@ let gen_server_template_source s =
   List.concat [
     [
       (0, serv_name ^ "::" ^ serv_name ^ "(const server_argv& a)");
-      (2,     ": framework::jubatus_serv(a)");
-      (* TODO(unnonouno): fix code format *)
-      (0, "{");
+      (2,     ": framework::jubatus_serv(a) {");
       (1,   "// somemixable* mi = new somemixable;");
       (1,   "// somemixable_.set_model(mi);");
       (1,   "// register_mixable(mi);");
       (0, "}");
       (0, "");
-      (* TODO(unnonouno): fix code format *)
-      (0, serv_name ^ "::~" ^ serv_name ^ "()");
-      (0, "{}");
+      (0, serv_name ^ "::~" ^ serv_name ^ "() {");
+      (0, "}");
     ];
     List.concat methods;
     [ (0, "void " ^ serv_name ^ "::after_load() {}")];
