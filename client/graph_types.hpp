@@ -1,8 +1,10 @@
+
 // This file is auto-generated from graph.idl
 // *** DO NOT EDIT ***
 
 #ifndef GRAPH_TYPES_HPP_
 #define GRAPH_TYPES_HPP_
+
 
 #include <vector>
 #include <map>
@@ -11,43 +13,48 @@
 #include <stdint.h>
 #include <msgpack.hpp>
 
+
 namespace jubatus {
 
 namespace graph {
 
 struct node {
- public:
+public:
 
-  MSGPACK_DEFINE(property, in_edges, out_edges);
+  
+  MSGPACK_DEFINE(property, in_edges, out_edges);  
 
-  std::map<std::string, std::string> property;
-  std::vector<uint64_t> in_edges;
-  std::vector<uint64_t> out_edges;
+  std::map<std::string, std::string > property;
+  std::vector<uint64_t > in_edges;
+  std::vector<uint64_t > out_edges;
 };
 
 struct preset_query {
- public:
+public:
 
-  MSGPACK_DEFINE(edge_query, node_query);
+  
+  MSGPACK_DEFINE(edge_query, node_query);  
 
-  std::vector<std::pair<std::string, std::string> > edge_query;
-  std::vector<std::pair<std::string, std::string> > node_query;
+  std::vector<std::pair<std::string, std::string > > edge_query;
+  std::vector<std::pair<std::string, std::string > > node_query;
 };
 
 struct edge {
- public:
+public:
 
-  MSGPACK_DEFINE(property, source, target);
+  
+  MSGPACK_DEFINE(property, source, target);  
 
-  std::map<std::string, std::string> property;
+  std::map<std::string, std::string > property;
   std::string source;
   std::string target;
 };
 
 struct shortest_path_query {
- public:
+public:
 
-  MSGPACK_DEFINE(source, target, max_hop, query);
+  
+  MSGPACK_DEFINE(source, target, max_hop, query);  
 
   std::string source;
   std::string target;
@@ -55,8 +62,10 @@ struct shortest_path_query {
   preset_query query;
 };
 
-}  // namespace graph
+} // namespace graph
 
-}  // namespace jubatus
+} // namespace jubatus
+
+
 
 #endif // GRAPH_TYPES_HPP_
