@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
+#define JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
 
 #include "../../common/lock_service.hpp"
 #include "../../common/shared_ptr.hpp"
@@ -31,3 +32,5 @@ mixer* create_mixer(const server_argv& a,
 }  // namespace mixer
 }  // namespace framework
 }  // namespace jubatus
+
+#endif  // JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
