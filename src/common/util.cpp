@@ -16,29 +16,24 @@
 
 #include "util.hpp"
 
-#include <limits.h>
-
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <net/if.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <pwd.h>
-
-#include <netinet/in.h>
 #include <arpa/inet.h>
-
-#include <errno.h>
-
 #ifdef __APPLE__
 #include <libproc.h>
 #endif
+#include <net/if.h>
+#include <netinet/in.h>
+#include <pwd.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
-#include <cstring>
+#include <cerrno>
+#include <climits>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <csignal>
-
 #include <fstream>
 #include <sstream>
 #include <string>
