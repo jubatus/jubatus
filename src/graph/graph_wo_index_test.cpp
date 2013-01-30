@@ -182,8 +182,12 @@ TEST(graph, random) {
   for (uint64_t i = 0; i < edge_num; ++i) {
     uint64_t src = rand() % node_num;
     uint64_t tgt = rand() % node_num;
-    if (src == tgt) continue;
-    if (local_ids.count(src) == 0 && local_ids.count(tgt) == 0) continue;
+    if (src == tgt) {
+      continue;
+    }
+    if (local_ids.count(src) == 0 && local_ids.count(tgt) == 0) {
+      continue;
+    }
     g.create_edge(i, src, tgt);
     ++edge_added_num;
   }

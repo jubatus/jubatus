@@ -135,8 +135,9 @@ void graph_wo_index::may_set_landmark(node_id_t id) {
   for (spt_query_mixed::iterator it = spts_.begin(); it != spts_.end(); ++it) {
     spt_mixed& mixed = it->second;
     if (mixed.size() == config_.landmark_num
-        || !is_node_matched_to_query(it->first, id))
+        || !is_node_matched_to_query(it->first, id)) {
       return;
+    }
 
     shortest_path_tree spt;
     spt.landmark = id;
