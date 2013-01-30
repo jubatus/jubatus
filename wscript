@@ -107,6 +107,27 @@ def build(bld):
 
   bld.recurse(subdirs)
 
+def cpplint(ctx):
+  import fnmatch, tempfile
+  cpplint = ctx.path.find_node('tools/codestyle/cpplint/cpplint.py')
+  src_dir = ctx.path.find_node('src')
+  file_list = []
+  excludes = ['src/common/cmdline.h', \
+              'src/server/*_server.hpp', \
+              'src/server/*_impl.cpp', \
+              'src/server/*_keeper.cpp', \
+              'src/server/*_client.hpp', \
+              'src/server/*_types.hpp']
+  for file in src_dir.ant_glob('**/*.cpp **/*.cc **/*.hpp **/*.h'):
+    file_list += [file.path_from(ctx.path)]
+  for exclude in excludes:
+    file_list = [f for f in file_list if not fnmatch.fnmatch(f, exclude)]
+  tmp_file = tempfile.NamedTemporaryFile(delete=True);
+  tmp_file.write("\n".join(file_list));
+  tmp_file.flush()
+  ctx.exec_command('cat ' + tmp_file.name + ' | xargs "' + cpplint.abspath() + '" --filter=-runtime/references,-runtime/rtti')
+  tmp_file.close()
+
 def regenerate(ctx):
   import os
   server_node = ctx.path.find_node('src/server')
