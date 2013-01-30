@@ -105,6 +105,14 @@ def build(bld):
       PACKAGE = APPNAME,
       VERSION = VERSION)
 
+  bld(source = 'jubatus-client.pc.in',
+      prefix = bld.env['PREFIX'],
+      exec_prefix = '${prefix}',
+      libdir = bld.env['LIBDIR'],
+      includedir = '${prefix}/include',
+      PACKAGE = APPNAME,
+      VERSION = VERSION)
+
   bld.recurse(subdirs)
 
 def regenerate(ctx):
