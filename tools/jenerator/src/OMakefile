@@ -53,7 +53,6 @@ FILES[] =
     file_util
     syntax
     config
-    python
     cpp
     main
 
