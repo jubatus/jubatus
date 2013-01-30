@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
+#define JUBATUS_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
 
 #include <map>
 #include <string>
@@ -42,3 +43,5 @@ class dynamic_num_feature : public num_feature {
 
 }  // namespace fv_converter
 }  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_

@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_NUM_FILTER_IMPL_HPP_
+#define JUBATUS_FV_CONVERTER_NUM_FILTER_IMPL_HPP_
 
 #include "num_filter.hpp"
 
@@ -37,3 +38,5 @@ class add_filter : public num_filter {
 
 }  // namespace fv_converter
 }  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_NUM_FILTER_IMPL_HPP_

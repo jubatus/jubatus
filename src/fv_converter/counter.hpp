@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_COUNTER_HPP_
+#define JUBATUS_FV_CONVERTER_COUNTER_HPP_
 
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
@@ -91,3 +92,5 @@ class counter {
 
 }  // namespace fv_converter
 }  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_COUNTER_HPP_
