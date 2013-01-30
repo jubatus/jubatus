@@ -538,9 +538,10 @@ let gen_impl_method m =
 
   List.concat [
     [
-      (0, Printf.sprintf "%s %s%s " ret_type name args_def);
-      (* TODO(unnonouno): split lines *)
-      (1,  "{ " ^ lock ^ call ^ " }");
+      (0, Printf.sprintf "%s %s%s {" ret_type name args_def);
+      (1,   lock);
+      (1,   call);
+      (0, "}");
     ]
   ]
 ;;
