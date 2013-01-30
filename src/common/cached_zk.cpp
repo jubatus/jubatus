@@ -45,7 +45,7 @@ bool cached_zk::list(const string& path, vector<string>& out) {
     {
       DLOG(INFO) << "creating cache: " << path;
     }
-    std::set < string > tmp_list;
+    std::set<string> tmp_list;
     list_(path, tmp_list);
     list_cache_[path] = tmp_list;
 
