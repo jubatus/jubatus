@@ -342,9 +342,7 @@ let get_func_type m =
 let gen_bind m =
   let num_args = List.length m.method_arguments in
   let func = "&Impl::" ^ m.method_name in
-  (* TODO(unnonouno): use local variable *)
-  (*let this = "impl" in*)
-  let this = "static_cast<Impl*>(this)" in
+  let this = "impl" in
   let nums = Array.init num_args (fun n -> Printf.sprintf "pfi::lang::_%d" (n + 1)) in
   let args = func::this::(Array.to_list nums) in
   "pfi::lang::bind" ^ gen_args args
@@ -367,8 +365,7 @@ let gen_server s =
       (0, "class " ^ s.service_name ^ " : public jubatus::common::mprpc::rpc_server {");
       (0, " public:");
       (1,   s.service_name ^ "(double timeout_sec) : rpc_server(timeout_sec) {");
-      (* TODO(unnonouno): use local variable *)
-      (*(2,     "Impl* impl = static_cast<Impl*>(this);");*)
+      (2,     "Impl* impl = static_cast<Impl*>(this);");
     ];
     indent_lines 2 methods;
     [
