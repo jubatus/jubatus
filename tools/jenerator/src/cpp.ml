@@ -563,7 +563,7 @@ let gen_impl s =
     [
       (0, "class " ^ impl_name ^ " : public " ^ name ^ "<" ^ impl_name ^ "> {");
       (0, " public:");
-      (1,   impl_name ^ "(const server_argv& a):");
+      (1,   impl_name ^ "(const jubatus::framework::server_argv& a):");
       (2,     name ^ "<" ^ impl_name ^ ">(a.timeout),");
       (2,     "p_(new jubatus::framework::server_helper<" ^ serv_name ^ ">(a, " ^ gen_bool_literal use_cht ^ "))");
       (1,   "{}")
