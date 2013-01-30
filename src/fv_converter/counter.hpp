@@ -81,7 +81,7 @@ class counter {
   MSGPACK_DEFINE(data_);
 
   template<class Archiver>
-  void serialize(Archiver &ar) {
+  void serialize(Archiver& ar) {
     ar & MEMBER(data_);
   }
 

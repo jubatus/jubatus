@@ -58,7 +58,7 @@ class weight_manager {
   }
 
   template<class Archiver>
-  void serialize(Archiver &ar) {
+  void serialize(Archiver& ar) {
     ar & MEMBER(diff_weights_) & MEMBER(master_weights_);
   }
 

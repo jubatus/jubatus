@@ -20,9 +20,9 @@ namespace pfi {
 namespace text {
 namespace json {
 class json;
-}
-}
-}
+}  // namespace json
+}  // namespace text
+}  // namespace pfi
 
 namespace jubatus {
 namespace fv_converter {

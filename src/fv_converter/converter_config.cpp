@@ -235,8 +235,9 @@ void init_num_rules(
 
 }  // namespace
 
-void initialize_converter(const converter_config& config,
-                          datum_to_fv_converter& conv) {
+void initialize_converter(
+    const converter_config& config,
+    datum_to_fv_converter& conv) {
   if (config.hash_max_size.bool_test() && *config.hash_max_size.get() <= 0) {
     std::stringstream msg;
     msg << "hash_max_size must be positive, but is "
@@ -266,9 +267,10 @@ void initialize_converter(const converter_config& config,
 
 pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
     const std::string& config) {
-  if (config == "")
+  if (config == "") {
     throw JUBATUS_EXCEPTION(fv_converter::converter_exception(
             "Config of feature vector converter is empty"));
+  }
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
       new fv_converter::datum_to_fv_converter);
   converter_config c;

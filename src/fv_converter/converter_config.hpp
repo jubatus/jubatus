@@ -105,8 +105,9 @@ struct converter_config {
   }
 };
 
-void initialize_converter(const converter_config& config,
-                          datum_to_fv_converter& converter);
+void initialize_converter(
+    const converter_config& config,
+    datum_to_fv_converter& converter);
 
 pfi::lang::shared_ptr<datum_to_fv_converter>
 make_fv_converter(const std::string& config);

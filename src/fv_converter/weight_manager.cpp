@@ -66,10 +66,11 @@ double weight_manager::get_global_weight(const std::string& key) const {
     return log((doc_count + 1) / (doc_freq + 1));
   } else if (type == "weight") {
     p = key.find_last_of('#');
-    if (p == std::string::npos)
+    if (p == std::string::npos) {
       return 0;
-    else
+    } else {
       return get_user_weight(key.substr(0, p));
+    }
   } else {
     return 1;
   }

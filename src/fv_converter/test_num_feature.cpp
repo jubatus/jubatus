@@ -26,7 +26,8 @@ namespace fv_converter {
 class my_num_feature : public num_feature {
  public:
   void add_feature(
-      const std::string& key, double value,
+      const std::string& key,
+      double value,
       std::vector<std::pair<std::string, float> >& ret_fv) const {
     ret_fv.push_back(std::make_pair(key, value + 1));
   }

@@ -297,8 +297,10 @@ class datum_to_fv_converter_impl {
     return false;
   }
 
-  void convert_strings(const string_feature_rule& splitter,
-                       const datum::sv_t& string_values, sfv_t& ret_fv) const {
+  void convert_strings(
+      const string_feature_rule& splitter,
+      const datum::sv_t& string_values,
+      sfv_t& ret_fv) const {
     for (size_t j = 0; j < string_values.size(); ++j) {
       const std::string& key = string_values[j].first;
       const std::string& value = string_values[j].second;
@@ -312,7 +314,8 @@ class datum_to_fv_converter_impl {
   }
 
   static std::string make_feature(
-      const std::string& key, const std::string& value,
+      const std::string& key,
+      const std::string& value,
       const std::string& splitter,
       const std::string& sample_weight,
       const std::string& global_weight) {
@@ -458,14 +461,16 @@ void datum_to_fv_converter::register_num_filter(
 }
 
 void datum_to_fv_converter::register_string_rule(
-    const std::string& name, pfi::lang::shared_ptr<key_matcher> matcher,
+    const std::string& name,
+    pfi::lang::shared_ptr<key_matcher> matcher,
     pfi::lang::shared_ptr<word_splitter> splitter,
     const std::vector<splitter_weight_type>& weights) {
   pimpl_->register_string_rule(name, matcher, splitter, weights);
 }
 
 void datum_to_fv_converter::register_num_rule(
-    const std::string& name, pfi::lang::shared_ptr<key_matcher> matcher,
+    const std::string& name,
+    pfi::lang::shared_ptr<key_matcher> matcher,
     pfi::lang::shared_ptr<num_feature> feature_func) {
   pimpl_->register_num_rule(name, matcher, feature_func);
 }

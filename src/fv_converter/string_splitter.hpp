@@ -30,10 +30,9 @@ class StringSplitter {
   virtual ~StringSplitter() {
   }
 
-  /**
-   Returns all word boundaries this splitter found.
-   Each baoudary is represented as a pair of a beginning position and its length.
-   */
+  // Returns all word boundaries this splitter found.
+  // Each baoudary is represented as a pair of a beginning position
+  // and its length.
   virtual void Split(
       const std::string& string,
       std::vector<std::pair<size_t, size_t> >& ret_boundaries) = 0;

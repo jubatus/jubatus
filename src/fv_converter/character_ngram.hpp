@@ -30,8 +30,9 @@ class character_ngram : public word_splitter {
       : length_(length) {
   }
 
-  void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
+  void split(
+      const std::string& string,
+      std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
  private:
   const size_t length_;

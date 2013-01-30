@@ -26,8 +26,9 @@ class my_filter : public string_filter {
   void filter(const std::string& input, std::string& output) const {
     output = input;
     for (size_t i = 0; i < output.size(); ++i) {
-      if (output[i] == '-')
+      if (output[i] == '-') {
         output[i] = ' ';
+      }
     }
   }
 };

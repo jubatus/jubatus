@@ -50,7 +50,7 @@ class keyword_weights {
 
   MSGPACK_DEFINE(document_count_, document_frequencies_, weights_);
   template<class Archiver>
-  void serialize(Archiver &ar) {
+  void serialize(Archiver& ar) {
     ar & MEMBER(document_count_) & MEMBER(document_frequencies_)
         & MEMBER(weights_);
   }

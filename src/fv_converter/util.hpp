@@ -23,11 +23,11 @@ namespace jubatus {
 namespace fv_converter {
 
 const std::string& get_or_die(
-    const std::map<std::string, std::string> & params,
+    const std::map<std::string, std::string>& params,
     const std::string& key);
 
 std::string get_with_default(
-    const std::map<std::string, std::string> & params,
+    const std::map<std::string, std::string>& params,
     const std::string& key,
     const std::string& default_value);
 
