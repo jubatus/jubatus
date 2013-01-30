@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_PLUGIN_FV_CONVERTER_RE2_SPLITTER_HPP_
+#define JUBATUS_PLUGIN_FV_CONVERTER_RE2_SPLITTER_HPP_
 
 #include <map>
 #include <string>
@@ -43,3 +44,5 @@ class re2_splitter : jubatus::fv_converter::word_splitter {
 extern "C" {
 jubatus::re2_splitter* create(const std::map<std::string, std::string>& args);
 }
+
+#endif  // JUBATUS_PLUGIN_FV_CONVERTER_RE2_SPLITTER_HPP_
