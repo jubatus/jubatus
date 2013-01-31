@@ -38,6 +38,15 @@ using jubatus::fv_converter::datum;
 using jubatus::fv_converter::datum_to_fv_converter;
 using jubatus::fv_converter::json_converter;
 
+struct server_config {
+  jubatus::fv_converter::converter_config converter;
+
+  template<typename Ar>
+  void serialize(Ar& ar) {
+    ar & MEMBER(converter);
+  }
+};
+
 void show_invalid_type_error(
     const string& input_format,
     const string& output_format) {
@@ -59,7 +68,9 @@ int read_config(const string& conf_file, converter_config& conf) {
     cerr << "cannot open converter config file: " << conf_file << endl;
     return -1;
   }
-  ifs >> pfi::text::json::via_json(conf);
+  server_config config;
+  ifs >> pfi::text::json::via_json(config);
+  conf = config.converter;
   return 0;
 }
 
