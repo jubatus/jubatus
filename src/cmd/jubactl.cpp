@@ -23,10 +23,10 @@
 #include <pficommon/network/mprpc.h>
 #include <pficommon/lang/function.h>
 
+#include "../third_party/cmdline/cmdline.h"
 #include "../common/exception.hpp"
 #include "../common/zk.hpp"
 #include "../common/membership.hpp"
-#include "../common/cmdline.h"
 #include "../framework/server_util.hpp"
 
 static const std::string PROGNAME(JUBATUS_APPNAME "ctl");

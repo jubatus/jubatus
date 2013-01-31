@@ -23,9 +23,9 @@
 #include <pficommon/lang/bind.h>
 
 #include "jubavisor.hpp"
+#include "../third_party/cmdline/cmdline.h"
 #include "../common/exception.hpp"
 #include "../common/util.hpp"
-#include "../common/cmdline.h"
 
 namespace {
 const std::string PROGNAME = "jubavisor";

@@ -24,8 +24,8 @@
 
 #include <pficommon/lang/function.h>
 
+#include "../third_party/cmdline/cmdline.h"
 #include "../common/config.hpp"
-#include "../common/cmdline.h"
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
 #include "../common/zk.hpp"

@@ -18,8 +18,8 @@
 
 #include <pficommon/text/json.h>
 
+#include "../third_party/cmdline/cmdline.h"
 #include "../common/exception.hpp"
-#include "../common/cmdline.h"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/json_converter.hpp"

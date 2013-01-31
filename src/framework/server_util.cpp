@@ -23,7 +23,7 @@
 #include <glog/logging.h>
 #include <pficommon/text/json.h>
 
-#include "../common/cmdline.h"
+#include "../third_party/cmdline/cmdline.h"
 #include "../common/config.hpp"
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"

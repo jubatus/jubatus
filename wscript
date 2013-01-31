@@ -120,7 +120,7 @@ def cpplint(ctx):
   cpplint = ctx.path.find_node('tools/codestyle/cpplint/cpplint.py')
   src_dir = ctx.path.find_node('src')
   file_list = []
-  excludes = ['src/common/cmdline.h', \
+  excludes = ['src/third_party/**', \
               'src/server/*_server.hpp', \
               'src/server/*_impl.cpp', \
               'src/server/*_keeper.cpp', \
