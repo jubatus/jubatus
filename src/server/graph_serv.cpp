@@ -17,6 +17,7 @@
 #include "graph_serv.hpp"
 
 #include <cassert>
+#include <map>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -177,7 +178,9 @@ std::string graph_serv::create_node() { /* no lock here */
   return nid_str;
 }
 
-bool graph_serv::update_node(const std::string& id, const std::map<std::string, std::string>& p) {
+bool graph_serv::update_node(
+    const std::string& id,
+    const std::map<std::string, std::string>& p) {
   check_set_config();
 
   g_.get_model()->update_node(n2i(id), p);

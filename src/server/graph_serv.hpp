@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -87,7 +88,9 @@ class graph_serv : public framework::server_base {
 
   std::string create_node();
 
-  bool update_node(const std::string& nid, const std::map<std::string, std::string>& p);
+  bool update_node(
+      const std::string& nid,
+      const std::map<std::string, std::string>& p);
 
   bool remove_node(const std::string& nid);
 
