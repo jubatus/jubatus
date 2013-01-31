@@ -14,20 +14,19 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <string>
 #include <gtest/gtest.h>
-
 #include "datum.hpp"
-#include "libsvm_converter.hpp"
 #include "exception.hpp"
+#include "libsvm_converter.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace jubatus::fv_converter;
+namespace jubatus {
+namespace fv_converter {
 
 TEST(libsvm_converter, trivial) {
-  string line = "-1 1:100 2:-1.5";
+  std::string line = "-1 1:100 2:-1.5";
 
-  string label;
+  std::string label;
   datum d;
 
   libsvm_converter::convert(line, d, label);
@@ -41,10 +40,12 @@ TEST(libsvm_converter, trivial) {
 }
 
 TEST(libsvm_converter, illegal) {
-  string line = "1 1,100";
-  string label;
+  std::string line = "1 1,100";
+  std::string label;
   datum d;
 
   ASSERT_THROW(libsvm_converter::convert(line, d, label), converter_exception);
-
 }
+
+}  // namespace fv_converter
+}  // namespace jubatus

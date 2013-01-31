@@ -19,16 +19,14 @@
 #include "feature_hasher.hpp"
 #include "exception.hpp"
 
-using namespace std;
-
 namespace jubatus {
 namespace fv_converter {
 
 TEST(feature_hasher, trivial) {
   feature_hasher h(100);
   sfv_t fv;
-  fv.push_back(make_pair("f1", 1.0));
-  fv.push_back(make_pair("f2", 2.0));
+  fv.push_back(std::make_pair("f1", 1.0));
+  fv.push_back(std::make_pair("f2", 2.0));
 
   h.hash_feature_keys(fv);
 
@@ -43,5 +41,5 @@ TEST(feature_hasher, zero) {
   EXPECT_THROW(feature_hasher(0), converter_exception);
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

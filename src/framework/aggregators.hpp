@@ -14,51 +14,55 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FRAMEWORK_AGGREGATORS_HPP_
+#define JUBATUS_FRAMEWORK_AGGREGATORS_HPP_
+
 #include <map>
 #include <vector>
 
-namespace jubatus { namespace framework {
+namespace jubatus {
+namespace framework {
 
-template <typename K, typename V>
-std::map<K,V> merge(std::map<K,V> lhs, std::map<K,V> rhs)
-{
-  std::map<K,V> ret;
-  typename std::map<K,V>::const_iterator it;
-  for(it = lhs.begin(); it!=lhs.end(); ++it){
+template<typename K, typename V>
+std::map<K, V> merge(std::map<K, V> lhs, std::map<K, V> rhs) {
+  std::map<K, V> ret;
+  typename std::map<K, V>::const_iterator it;
+  for (it = lhs.begin(); it != lhs.end(); ++it) {
     ret[it->first] = it->second;
   }
-  for(it = rhs.begin(); it!=rhs.end(); ++it){
+  for (it = rhs.begin(); it != rhs.end(); ++it) {
     ret[it->first] = it->second;
   }
   return ret;
 }
 
-template <typename T>
-std::vector<T> concat(std::vector<T> lhs, std::vector<T> rhs)
-{
+template<typename T>
+std::vector<T> concat(std::vector<T> lhs, std::vector<T> rhs) {
   std::vector<T> ret = lhs;
   ret.insert(ret.end(), rhs.begin(), rhs.end());
   return ret;
 }
 
-template <typename T>
-T random(T lhs, T rhs){
-  return lhs; //TODO: make random? or left(change fun name)?
+template<typename T>
+T random(T lhs, T rhs) {
+  return lhs;  // TODO( ): make random? or left(change fun name)?
 }
 
-template <typename T>
-T pass(T lhs, T rhs){
-  return lhs; //TODO:
+template<typename T>
+T pass(T lhs, T rhs) {
+  return lhs;  // TODO( ):
 }
 
-template <typename T>
-T add(T lhs, T rhs){
-  return lhs+rhs;
+template<typename T>
+T add(T lhs, T rhs) {
+  return lhs + rhs;
 }
 
-bool all_and(bool l, bool r){
-  return l&&r;
-};
+bool all_and(bool l, bool r) {
+  return l && r;
+}
 
-}}
+}  // namespace framework
+}  // namespace jubatus
+
+#endif  // JUBATUS_FRAMEWORK_AGGREGATORS_HPP_

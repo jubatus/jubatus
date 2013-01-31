@@ -17,6 +17,9 @@
 #include "anomaly_serv.hpp"
 
 #include <cassert>
+#include <string>
+#include <utility>
+#include <vector>
 #include <glog/logging.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/text/json.h>
@@ -29,11 +32,19 @@
 #include "../fv_converter/converter_config.hpp"
 #include "anomaly_client.hpp"
 
+using std::string;
+using std::vector;
+using std::pair;
+
+using pfi::lang::lexical_cast;
 using pfi::text::json::json;
-using namespace std;
-using namespace pfi::lang;
-using namespace jubatus::common;
-using namespace jubatus::framework;
+using jubatus::common::cshared_ptr;
+using jubatus::common::lock_service;
+using jubatus::common::build_actor_path;
+using jubatus::framework::convert;
+using jubatus::framework::server_argv;
+using jubatus::framework::mixer::create_mixer;
+using jubatus::framework::mixable_holder;
 
 namespace jubatus {
 namespace server {
@@ -45,30 +56,29 @@ struct anomaly_serv_config {
   jsonconfig::config parameter;
   pfi::text::json::json converter;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
-    ar
-        & MEMBER(method)
-        & MEMBER(parameter)
-        & MEMBER(converter);
+    ar & MEMBER(method) & MEMBER(parameter) & MEMBER(converter);
   }
 };
 
-common::cshared_ptr<jubatus::anomaly::anomaly_base>
-make_model(const anomaly_serv_config& conf) {
-  return cshared_ptr<jubatus::anomaly::anomaly_base>
-    (jubatus::anomaly::create_anomaly(conf.method, conf.parameter));
+common::cshared_ptr<jubatus::anomaly::anomaly_base> make_model(
+    const anomaly_serv_config& conf) {
+  return cshared_ptr<jubatus::anomaly::anomaly_base>(
+      jubatus::anomaly::create_anomaly(conf.method, conf.parameter));
 }
 
-} // namespace
+}  // namespace
 
-anomaly_serv::anomaly_serv(const server_argv& a,
-                           const cshared_ptr<lock_service>& zk)
+anomaly_serv::anomaly_serv(
+    const server_argv& a,
+    const cshared_ptr<lock_service>& zk)
     : server_base(a),
       idgen_(a.is_standalone()) {
-  mixer_.reset(mixer::create_mixer(a, zk));
+  mixer_.reset(create_mixer(a, zk));
   mixable_holder_.reset(new mixable_holder());
-  wm_.set_model(mixable_weight_manager::model_ptr(new fv_converter::weight_manager));
+  wm_.set_model(
+      mixable_weight_manager::model_ptr(new fv_converter::weight_manager));
 
 #ifdef HAVE_ZOOKEEPER_H
   zk_ = zk;
@@ -95,7 +105,8 @@ void anomaly_serv::get_status(status_t& status) const {
 
 bool anomaly_serv::set_config(const std::string& config) {
   jsonconfig::config conf_root(lexical_cast<json>(config));
-  anomaly_serv_config conf = jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
+  anomaly_serv_config conf =
+      jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
 
   config_ = config;
   converter_ = fv_converter::make_fv_converter(conf.converter);
@@ -117,8 +128,8 @@ bool anomaly_serv::clear_row(const string& id) {
   return true;
 }
 
-//nolock, random
-pair<string,float > anomaly_serv::add(const datum& d) {
+// nolock, random
+pair<string, float> anomaly_serv::add(const datum& d) {
   check_set_config();
 
   uint64_t id = idgen_.generate();
@@ -133,7 +144,8 @@ pair<string,float > anomaly_serv::add(const datum& d) {
   float score = 0;
   find_from_cht(id_str, 2, nodes);
   if (nodes.empty()) {
-    throw JUBATUS_EXCEPTION(membership_error("no server found in cht: " + argv().name));
+    throw JUBATUS_EXCEPTION(
+        membership_error("no server found in cht: " + argv().name));
   }
   // this sequences MUST success,
   // in case of failures the whole request should be canceled
@@ -143,8 +155,9 @@ pair<string,float > anomaly_serv::add(const datum& d) {
     try {
       DLOG(INFO) << "request to " << nodes[i].first << ":" << nodes[i].second;
       selective_update(nodes[i].first, nodes[i].second, id_str, d);
-    } catch (const runtime_error& e) {
-      LOG(WARNING) << "cannot create " << i << "th replica: " << nodes[i].first << ":" << nodes[i].second;
+    } catch (const std::runtime_error& e) {
+      LOG(WARNING) << "cannot create " << i << "th replica: "
+          << nodes[i].first << ":" << nodes[i].second;
       LOG(WARNING) << e.what();
     }
   }
@@ -181,7 +194,7 @@ float anomaly_serv::calc_score(const datum& d) const {
   return anomaly_.get_model()->calc_anomaly_score(v);
 }
 
-vector<string > anomaly_serv::get_all_rows() const {
+vector<string> anomaly_serv::get_all_rows() const {
   check_set_config();
   vector<string> ids;
   anomaly_.get_model()->get_all_row_ids(ids);
@@ -194,33 +207,35 @@ void anomaly_serv::check_set_config() const {
   }
 }
 
-void anomaly_serv::find_from_cht(const string& key,
-                                 size_t n,
-                                 vector<pair<string, int> >& out) {
+void anomaly_serv::find_from_cht(
+    const string& key,
+    size_t n,
+    vector<pair<string, int> >& out) {
   out.clear();
 #ifdef HAVE_ZOOKEEPER_H
   common::cht ht(zk_, argv().type, argv().name);
-  ht.find(key, out, n); //replication number of local_node
+  ht.find(key, out, n);  // replication number of local_node
 #else
-  //cannot reach here, assertion!
+  // cannot reach here, assertion!
   assert(argv().is_standalone());
-  //out.push_back(make_pair(argv().eth, argv().port));
+  // out.push_back(make_pair(argv().eth, argv().port));
 #endif
 }
 
-float anomaly_serv::selective_update(const string& host,
-                                     int port,
-                                     const string& id,
-                                     const datum& d) {
-  //nolock context
+float anomaly_serv::selective_update(
+    const string& host,
+    int port,
+    const string& id,
+    const datum& d) {
+  // nolock context
   if (host == argv().eth && port == argv().port) {
     pfi::concurrent::scoped_lock lk(wlock(rw_mutex()));
     return this->update(id, d);
-  } else { // needs no lock
+  } else {  // needs no lock
     client::anomaly c(host, port, 5.0);
     return c.update(argv().name, id, d);
   }
 }
 
-} // server
-} // jubatis
+}  // namespace server
+}  // namespace jubatus

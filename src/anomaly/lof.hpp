@@ -14,22 +14,28 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_ANOMALY_LOF_HPP_
+#define JUBATUS_ANOMALY_LOF_HPP_
 
+#include <string>
+#include <vector>
+#include <pficommon/text/json.h>
 #include "anomaly_base.hpp"
 #include "lof_storage.hpp"
-#include <pficommon/text/json.h>
 
 namespace jubatus {
 namespace anomaly {
 
 class lof : public anomaly_base {
-public:
+ public:
   lof();
-  explicit lof(const storage::lof_storage::config& config, recommender::recommender_base* nn_engine);
+  explicit lof(
+      const storage::lof_storage::config& config,
+      recommender::recommender_base* nn_engine);
   ~lof();
 
-  virtual float calc_anomaly_score(const sfv_t& query) const; //return anomaly score of query
+  // return anomaly score of query
+  virtual float calc_anomaly_score(const sfv_t& query) const;
   virtual float calc_anomaly_score(const std::string& id) const;
 
   virtual void clear();
@@ -44,15 +50,17 @@ public:
   void save(std::ostream&);
   void load(std::istream&);
 
-  //  static float calc_distance(sfv_t& q1, sfv_t& q2);
-  //  static float calc_l2norm(sfv_t& q1, sfv_t& q2);
+  // static float calc_distance(sfv_t& q1, sfv_t& q2);
+  // static float calc_l2norm(sfv_t& q1, sfv_t& q2);
 
-private:
+ private:
   virtual bool save_impl(std::ostream& os);
   virtual bool load_impl(std::istream& is);
 
   storage::lof_storage lof_index_;
 };
 
-} // namespace anomaly
-} // namespace jubatus
+}  //  namespace anomaly
+}  //  namespace jubatus
+
+#endif  // JUBATUS_ANOMALY_LOF_HPP_

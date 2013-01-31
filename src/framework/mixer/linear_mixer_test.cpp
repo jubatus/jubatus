@@ -1,11 +1,35 @@
-#include <gtest/gtest.h>
-#include "linear_mixer.hpp"
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <iostream>
+#include <string>
+#include <vector>
 
+#include <gtest/gtest.h>
+
+#include "linear_mixer.hpp"
 #include "../mixable.hpp"
 
-using namespace std;
+
+
+using std::vector;
+using std::string;
+using std::istream;
+using std::ostream;
+using std::stringstream;
 using pfi::lang::shared_ptr;
 using jubatus::common::mprpc::byte_buffer;
 
@@ -33,13 +57,17 @@ jubatus::common::mprpc::rpc_response_t make_response(const string& s) {
   return res;
 }
 
-}
+}  // namespace
 
 class linear_communication_stub : public linear_communication {
  public:
-  size_t update_members() { return 4; }
+  size_t update_members() {
+    return 4;
+  }
 
-  pfi::lang::shared_ptr<common::try_lockable> create_lock() { return pfi::lang::shared_ptr<common::try_lockable>(); }
+  pfi::lang::shared_ptr<common::try_lockable> create_lock() {
+    return pfi::lang::shared_ptr<common::try_lockable>();
+  }
 
   void get_diff(common::mprpc::rpc_result_object& result) const {
     result.response.push_back(make_response("1"));
@@ -54,7 +82,8 @@ class linear_communication_stub : public linear_communication {
 
   const vector<string> get_mixed() const {
     vector<string> mixed;
-    for (vector<byte_buffer>::const_iterator it = mixed_.begin(); it != mixed_.end(); ++it) {
+    for (vector<byte_buffer>::const_iterator it = mixed_.begin();
+        it != mixed_.end(); ++it) {
       // unpack mix-internal
       msgpack::unpacked msg;
       msgpack::unpack(&msg, it->ptr(), it->size());
@@ -69,16 +98,22 @@ class linear_communication_stub : public linear_communication {
 
 struct mixable_string : public mixable<mixable_string, string> {
  public:
-  string get_diff_impl() const { return string(); }
-  void put_diff_impl(const string&) {}
+  string get_diff_impl() const {
+    return string();
+  }
+  void put_diff_impl(const string&) {
+  }
   void mix_impl(const string& lhs, const string& rhs, string& mixed) const {
     stringstream ss;
     ss << "(" << lhs << "+" << rhs << ")";
     mixed = ss.str();
   }
-  void save(ostream&) {}
-  void load(istream&) {}
-  void clear() {}
+  void save(ostream&) {
+  }
+  void load(istream&) {
+  }
+  void clear() {
+  }
 };
 
 TEST(linear_mixer, mix_order) {
@@ -98,6 +133,6 @@ TEST(linear_mixer, mix_order) {
   EXPECT_EQ("(4+(3+(2+1)))", mixed[0]);
 }
 
-}
-}
-}
+}  // namespace mixer
+}  // namespace framework
+}  // namespace jubatus

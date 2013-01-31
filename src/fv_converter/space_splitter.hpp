@@ -14,8 +14,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_SPACE_SPLITTER_HPP_
+#define JUBATUS_FV_CONVERTER_SPACE_SPLITTER_HPP_
 
+#include <string>
+#include <utility>
+#include <vector>
 #include "word_splitter.hpp"
 
 namespace jubatus {
@@ -23,9 +27,12 @@ namespace fv_converter {
 
 class space_splitter : public word_splitter {
  public:
-  void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
+  void split(
+      const std::string& string,
+      std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_SPACE_SPLITTER_HPP_

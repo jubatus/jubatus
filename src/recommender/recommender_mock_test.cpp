@@ -14,13 +14,20 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
+
 #include "recommender_factory.hpp"
 #include "recommender_mock.hpp"
 #include "recommender_mock_util.hpp"
 
-using namespace std;
+using std::pair;
+using std::string;
+using std::vector;
 using pfi::lang::scoped_ptr;
 
 namespace jubatus {
@@ -83,5 +90,5 @@ TEST(recommender_mock, name) {
   EXPECT_EQ("recommender_mock", r->type());
 }
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus

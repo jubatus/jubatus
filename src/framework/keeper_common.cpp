@@ -17,21 +17,24 @@
 #include "keeper_common.hpp"
 
 #include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
 #include <glog/logging.h>
 
+#include "server_util.hpp"
 #include "../common/membership.hpp"
 #include "../common/exception.hpp"
 #include "../common/util.hpp"
-#include "server_util.hpp"
 
-using namespace jubatus;
-using namespace jubatus::framework;
+namespace jubatus {
+namespace framework {
 
 namespace {
 
 std::string make_logfile_name(const keeper_argv& a) {
   std::ostringstream logfile;
-  if (a.logdir != ""){
+  if (a.logdir != "") {
     logfile << a.logdir << '/';
     logfile << a.program_name << '.';
     logfile << a.eth << '_' << a.port;
@@ -41,12 +44,12 @@ std::string make_logfile_name(const keeper_argv& a) {
   return logfile.str();
 }
 
-}
+}  // namespace
 
-keeper_common::keeper_common(const keeper_argv &a) :
-  a_(a),
-  zk_(common::create_lock_service("cached_zk", a.z, a.timeout, make_logfile_name(a)))
-{
+keeper_common::keeper_common(const keeper_argv& a)
+    : a_(a),
+      zk_(common::create_lock_service("cached_zk", a.z, a.timeout,
+                                      make_logfile_name(a))) {
   ls = zk_;
   jubatus::common::prepare_jubatus(*zk_, a_.type, "");
 }
@@ -54,11 +57,11 @@ keeper_common::keeper_common(const keeper_argv &a) :
 keeper_common::~keeper_common() {
 }
 
-void keeper_common::get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret){
-  using namespace std;
+void keeper_common::get_members_(
+    const std::string& name, std::vector<std::pair<std::string, int> >& ret) {
   ret.clear();
-  vector<string> list;
-  string path;
+  std::vector<std::string> list;
+  std::string path;
   common::build_actor_path(path, a_.type, name);
   path += "/nodes";
 
@@ -66,31 +69,36 @@ void keeper_common::get_members_(const std::string& name, std::vector<std::pair<
     pfi::concurrent::scoped_lock lk(mutex_);
     zk_->list(path, list);
   }
-  vector<string>::const_iterator it;
+  std::vector<std::string>::const_iterator it;
 
-  if(list.empty()){
+  if (list.empty()) {
     throw JUBATUS_EXCEPTION(no_worker(name));
   }
 
-  // FIXME:
+  // TODO(y-oda-oni-juba):
   // do you return all server list? it can be very large
-  for(it = list.begin(); it!= list.end(); ++it){
-    string ip;
+  for (it = list.begin(); it != list.end(); ++it) {
+    std::string ip;
     int port;
     common::revert(*it, ip, port);
-    ret.push_back(make_pair(ip,port));
+    ret.push_back(make_pair(ip, port));
   }
 }
 
-void keeper_common::get_members_from_cht_(const std::string& name, const std::string& id,
-                                          std::vector<std::pair<std::string, int> >& ret, size_t n)
-{
+void keeper_common::get_members_from_cht_(
+    const std::string& name,
+    const std::string& id,
+    std::vector<std::pair<std::string, int> >& ret,
+    size_t n) {
   ret.clear();
   pfi::concurrent::scoped_lock lk(mutex_);
   jubatus::common::cht ht(zk_, a_.type, name);
   ht.find(id, ret, n);
 
-  if(ret.empty()){
+  if (ret.empty()) {
     throw JUBATUS_EXCEPTION(no_worker(name));
   }
 }
+
+}  // namespace framework
+}  // namespace jubatus

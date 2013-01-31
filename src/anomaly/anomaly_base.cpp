@@ -15,17 +15,16 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "anomaly_base.hpp"
+
 #include <algorithm>
 #include <cmath>
-#include "../common/vector_util.hpp"
 
-using namespace std;
-using namespace pfi::data;
+#include "../common/vector_util.hpp"
 
 namespace jubatus {
 namespace anomaly {
 
-const uint32_t anomaly_base::neighbor_num_ = 10;
+const uint32_t anomaly_base::NEIGHBOR_NUM = 10;
 
 anomaly_base::anomaly_base() {
 }
@@ -45,5 +44,5 @@ void anomaly_base::load(std::istream& is) {
   load_impl(is);
 }
 
-} // namespace anomaly
-} // namespace jubatus
+}  // namespace anomaly
+}  // namespace jubatus

@@ -14,22 +14,30 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_NUM_FEATURE_HPP_
+#define JUBATUS_FV_CONVERTER_NUM_FEATURE_HPP_
 
-#include <vector>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace jubatus {
 namespace fv_converter {
 
 class num_feature {
-public:
-  num_feature() {}
-  virtual ~num_feature() {}
+ public:
+  num_feature() {
+  }
+  virtual ~num_feature() {
+  }
 
-  virtual void add_feature(const std::string& key, double value,
-                           std::vector<std::pair<std::string, float> >& ret_fv) const = 0;
+  virtual void add_feature(
+      const std::string& key,
+      double value,
+      std::vector<std::pair<std::string, float> >& ret_fv) const = 0;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_NUM_FEATURE_HPP_

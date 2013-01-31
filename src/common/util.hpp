@@ -14,19 +14,22 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
-#include <string>
-#include <vector>
-#include <map>
+#ifndef JUBATUS_COMMON_UTIL_HPP_
+#define JUBATUS_COMMON_UTIL_HPP_
 
 #include <stdint.h>
+
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace jubatus {
 namespace util {
 
 struct machine_status_t {
-  uint64_t vm_size; // VIRT
-  uint64_t vm_resident; // RSS
+  uint64_t vm_size;  // VIRT
+  uint64_t vm_resident;  // RSS
   uint64_t vm_share;  // SHR
 };
 
@@ -37,7 +40,9 @@ std::string get_program_name();
 std::string get_user_name();
 bool is_writable(const char* dir_path);
 
-std::string load(const std::string& file, std::vector< std::pair<std::string, int> >& s);
+std::string load(
+    const std::string& file,
+    std::vector<std::pair<std::string, int> >& s);
 
 int daemonize();
 
@@ -49,5 +54,7 @@ void get_machine_status(machine_status_t& status);
 void set_exit_on_term();
 void ignore_sigpipe();
 
-} //util
-} //namespace jubatus
+}  // namespace util
+}  // namespace jubatus
+
+#endif  // JUBATUS_COMMON_UTIL_HPP_

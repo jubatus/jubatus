@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <string>
+#include <utility>
 #include <vector>
 #include <pficommon/lang/scoped_ptr.h>
 #include <pficommon/lang/shared_ptr.h>
@@ -33,9 +35,10 @@ namespace jubatus {
 namespace server {
 
 class classifier_serv : public framework::server_base {
-public:
-  classifier_serv(const framework::server_argv& a,
-                  const common::cshared_ptr<common::lock_service>& zk);
+ public:
+  classifier_serv(
+      const framework::server_argv& a,
+      const common::cshared_ptr<common::lock_service>& zk);
   virtual ~classifier_serv();
 
   framework::mixer::mixer* get_mixer() const {
@@ -51,11 +54,12 @@ public:
   bool set_config(const std::string& config);
   std::string get_config();
   int train(const std::vector<std::pair<std::string, datum> >& data);
-  std::vector<std::vector<estimate_result> > classify(const std::vector<datum>& data) const;
+  std::vector<std::vector<estimate_result> > classify(
+      const std::vector<datum>& data) const;
 
   void check_set_config() const;
 
-private:
+ private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
@@ -66,5 +70,5 @@ private:
   mixable_weight_manager wm_;
 };
 
-}
-}
+}  // namespace server
+}  // namespace jubatus

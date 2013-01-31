@@ -16,19 +16,22 @@
 
 #include "pa.hpp"
 
-using namespace std;
+#include <string>
 
-namespace jubatus{
-namespace classifier{
+using std::string;
 
-PA::PA(storage::storage_base* storage) : classifier_base(storage){
+namespace jubatus {
+namespace classifier {
+
+PA::PA(storage::storage_base* storage)
+    : classifier_base(storage) {
 }
 
-void PA::train(const sfv_t& sfv, const string& label){
+void PA::train(const sfv_t& sfv, const string& label) {
   string incorrect_label;
   float margin = calc_margin(sfv, label, incorrect_label);
   float loss = 1.f + margin;
-  if (loss < 0.f){
+  if (loss < 0.f) {
     return;
   }
   float sfv_norm = squared_norm(sfv);
@@ -38,9 +41,9 @@ void PA::train(const sfv_t& sfv, const string& label){
   update_weight(sfv, loss / sfv_norm, label, incorrect_label);
 }
 
-string PA::name() const{
+string PA::name() const {
   return string("PA");
 }
-  
-}
-}
+
+}  // namespace classifier
+}  // namespace jubatus

@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_PORTABLE_MIXER_HPP_
+#define JUBATUS_COMMON_PORTABLE_MIXER_HPP_
 
 #include <iostream>
 #include <string>
@@ -24,9 +25,9 @@
 
 namespace jubatus {
 
-template<typename Storage>
+template <typename Storage>
 class portable_mixer {
-public:
+ public:
   portable_mixer() {
   }
 
@@ -69,9 +70,11 @@ public:
     }
   }
 
-private:
+ private:
   std::vector<Storage*> storages_;
   pfi::math::random::mtrand rand_;
 };
 
-}
+}  // namespace jubatus
+
+#endif  // JUBATUS_COMMON_PORTABLE_MIXER_HPP_

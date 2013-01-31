@@ -14,42 +14,53 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-
-#include "gtest/gtest.h"
-#include "anomaly_client.hpp"
-#include <vector>
 #include <string>
+#include <utility>
+#include <vector>
+
+#include <gtest/gtest.h>
+
+#include "anomaly_client.hpp"
 #include "test_util.hpp"
 #include "../anomaly/lof_storage.hpp"
 #include "../recommender/euclid_lsh.hpp"
 
-using namespace std;
-using namespace jubatus;
+using std::string;
+using std::make_pair;
+using jubatus::datum;
+using jubatus::recommender::euclid_lsh;
 
 static const int PORT = 65436;
 static const std::string NAME = "";
 
 namespace {
 
-  class anomaly_test : public ::testing::Test {
-  protected:
-    pid_t child_;
+class anomaly_test : public ::testing::Test {
+ protected:
+  pid_t child_;
 
-    anomaly_test(){
-      child_ = fork_process("anomaly", PORT, "./test_input/config.anomaly.json");
-    }
-    virtual ~anomaly_test(){
-      kill_process(child_);
-    }
-    virtual void restart_process(){
-
-      kill_process(this->child_);
-      this->child_ = fork_process("anomaly", PORT, "./test_input/config.anomaly.json");
-    }
-  };
+  anomaly_test() {
+    child_ = fork_process("anomaly",
+                          PORT,
+                          "./test_input/config.anomaly.json");
+  }
+  virtual ~anomaly_test() {
+    kill_process(child_);
+  }
+  virtual void restart_process() {
+    kill_process(this->child_);
+    this->child_ = fork_process("anomaly",
+                                PORT,
+                                "./test_input/config.anomaly.json");
+  }
+};
 
 std::string make_simple_config(const string& method) {
-  using namespace pfi::text::json;
+  using pfi::text::json::json;
+  using pfi::text::json::json_object;
+  using pfi::text::json::json_string;
+  using pfi::text::json::json_integer;
+  using pfi::text::json::to_json;
 
   json js(new json_object());
   js["method"] = json(new json_string(method));
@@ -59,7 +70,7 @@ std::string make_simple_config(const string& method) {
   anomaly_config["nearest_neighbor_num"] = json(new json_integer(100));
   anomaly_config["reverse_nearest_neighbor_num"] = json(new json_integer(30));
 
-  recommender::euclid_lsh::config euclid_conf;
+  euclid_lsh::config euclid_conf;
   euclid_conf.lsh_num = 8;
   euclid_conf.table_num = 8;
   euclid_conf.probe_num = 8;
@@ -85,15 +96,14 @@ std::string make_simple_config(const string& method) {
   return ret.str();
 }
 
-TEST_F(anomaly_test, small){
-
-  client::anomaly c("localhost", PORT, 10);
+TEST_F(anomaly_test, small) {
+  jubatus::client::anomaly c("localhost", PORT, 10);
 
   {
     datum d;
     d.nv.push_back(make_pair("f1", 1.0));
 
-    c.add(NAME, d); // is it good to be inf?
+    c.add(NAME, d);  // is it good to be inf?
     std::pair<std::string, float> w = c.add(NAME, d);
     float v = c.calc_score(NAME, d);
     ASSERT_DOUBLE_EQ(w.second, v);
@@ -116,4 +126,5 @@ TEST_F(anomaly_test, small){
   { c.get_status(NAME);
   }
 }
-}
+
+}  // namespace

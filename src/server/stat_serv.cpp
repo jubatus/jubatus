@@ -16,18 +16,26 @@
 
 #include "stat_serv.hpp"
 
+#include <algorithm>
+#include <string>
+
 #include <pficommon/text/json.h>
 
 #include "../common/shared_ptr.hpp"
 #include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
-using namespace std;
-using namespace jubatus::common;
-using namespace jubatus::framework;
+using std::string;
+using std::make_pair;
 using pfi::text::json::json;
 using pfi::text::json::json_cast;
 using pfi::lang::lexical_cast;
+
+using jubatus::common::cshared_ptr;
+using jubatus::common::lock_service;
+using jubatus::framework::server_argv;
+using jubatus::framework::mixer::create_mixer;
+using jubatus::framework::mixable_holder;
 
 namespace jubatus {
 namespace server {
@@ -35,16 +43,15 @@ namespace server {
 struct stat_serv_config {
   int32_t window_size;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(window_size);
   }
 };
 
-stat_serv::stat_serv(const server_argv& a,
-                     const cshared_ptr<lock_service>& zk)
+stat_serv::stat_serv(const server_argv& a, const cshared_ptr<lock_service>& zk)
     : server_base(a) {
-  mixer_.reset(mixer::create_mixer(a, zk));
+  mixer_.reset(create_mixer(a, zk));
   mixable_holder_.reset(new mixable_holder());
 
   mixer_->set_mixable_holder(mixable_holder_);
@@ -54,7 +61,7 @@ stat_serv::stat_serv(const server_argv& a,
 stat_serv::~stat_serv() {
 }
 
-mixer::mixer* stat_serv::get_mixer() const {
+framework::mixer::mixer* stat_serv::get_mixer() const {
   return mixer_.get();
 }
 
@@ -68,9 +75,11 @@ void stat_serv::get_status(status_t& status) const {
 
 bool stat_serv::set_config(const string& config) {
   jsonconfig::config conf_root(lexical_cast<json>(config));
-  stat_serv_config conf = jsonconfig::config_cast_check<stat_serv_config>(conf_root);
+  stat_serv_config conf =
+      jsonconfig::config_cast_check<stat_serv_config>(conf_root);
 
-  common::cshared_ptr<stat::mixable_stat> model(new stat::mixable_stat(conf.window_size));
+  common::cshared_ptr<stat::mixable_stat> model(
+      new stat::mixable_stat(conf.window_size));
   config_ = config;
   stat_.set_model(model);
 
@@ -83,7 +92,7 @@ string stat_serv::get_config() const {
 }
 
 bool stat_serv::push(const std::string& key, double value) {
-  stat_.get_model()->push(key,value);
+  stat_.get_model()->push(key, value);
   DLOG(INFO) << "pushed: " << key;
   return true;
 }
@@ -106,16 +115,16 @@ double stat_serv::min(const std::string& key) const {
 
 double stat_serv::entropy(const std::string& key) const {
 #ifdef HAVE_ZOOKEEPER_H
-  //FIXME: currently gets old value of entropy when mix completed
+  // TODO(kuenishi): currently gets old value of entropy when mix completed
   return stat_.get_model()->mixed_entropy();
 #else
   return stat_.get_model()->entropy();
 #endif
 }
 
-double stat_serv::moment(const std::string& key, int n,double c) const {
+double stat_serv::moment(const std::string& key, int n, double c) const {
   return stat_.get_model()->moment(key, n, c);
 }
 
-} // namespace server
-} // namespace jubatus
+}  // namespace server
+}  // namespace jubatus

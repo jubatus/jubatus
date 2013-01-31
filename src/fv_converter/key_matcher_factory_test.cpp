@@ -15,26 +15,25 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
-
 #include <pficommon/lang/scoped_ptr.h>
+#include "exception.hpp"
 #include "key_matcher_factory.hpp"
 #include "key_matcher.hpp"
-#include "exception.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace jubatus::fv_converter;
-using namespace pfi::lang;
+namespace jubatus {
+namespace fv_converter {
 
 TEST(fv_converter, key_matcher_factory) {
-  typedef scoped_ptr<key_matcher> m_t;
+  typedef pfi::lang::scoped_ptr<key_matcher> m_t;
 
   key_matcher_factory f;
   ASSERT_TRUE(m_t(f.create_matcher("*"))->match("hogehgeo"));
   ASSERT_TRUE(m_t(f.create_matcher(""))->match("hogehgeo"));
-  ASSERT_TRUE(m_t(f.create_matcher("*hogehoge"))->match("adslfjaldsfjadshogehoge"));
+  ASSERT_TRUE(
+      m_t(f.create_matcher("*hogehoge"))->match("adslfjaldsfjadshogehoge"));
   ASSERT_FALSE(m_t(f.create_matcher("*hogehoge"))->match("hogehogea;lsdufi"));
-  ASSERT_FALSE(m_t(f.create_matcher("hogehoge*"))->match("adslfjaldsfjadshogehoge"));
+  ASSERT_FALSE(
+      m_t(f.create_matcher("hogehoge*"))->match("adslfjaldsfjadshogehoge"));
   ASSERT_TRUE(m_t(f.create_matcher("hogehoge*"))->match("hogehogea;lsdufi"));
   ASSERT_FALSE(m_t(f.create_matcher("hogehoge"))->match("hogefuga"));
   ASSERT_TRUE(m_t(f.create_matcher("hogehoge"))->match("hogehoge"));
@@ -43,6 +42,9 @@ TEST(fv_converter, key_matcher_factory) {
   ASSERT_TRUE(m_t(f.create_matcher("/.*/hoge/"))->match("fuga/hoge"));
 #else
   ASSERT_THROW(m_t(f.create_matcher("/.*/hoge/"))->match("fuga/hoge"),
-               converter_exception);
+      converter_exception);
 #endif
 }
+
+}  // namespace fv_converter
+}  // namespace jubatus

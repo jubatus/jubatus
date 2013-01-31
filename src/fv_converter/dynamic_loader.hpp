@@ -14,34 +14,37 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_DYNAMIC_LOADER_HPP_
+#define JUBATUS_FV_CONVERTER_DYNAMIC_LOADER_HPP_
 
-#include <string>
 #include <map>
+#include <string>
 
 namespace jubatus {
 namespace fv_converter {
 
 class dynamic_loader {
  public:
-  dynamic_loader(const std::string& path);
+  explicit dynamic_loader(const std::string& path);
   ~dynamic_loader();
 
-  void *load_symbol(const std::string& name) const;
+  void* load_symbol(const std::string& name) const;
 
  private:
   void* handle_;
 };
 
 template<typename T>
-T* load_object(const dynamic_loader& loader,
-               const std::string& function,
-               const std::map<std::string, std::string>& params) {
+T* load_object(
+    const dynamic_loader& loader,
+    const std::string& function,
+    const std::map<std::string, std::string>& params) {
   typedef T* (*func_t)(const std::map<std::string, std::string>&);
-  func_t func = (func_t)loader.load_symbol(function);
+  func_t func = reinterpret_cast<func_t>(loader.load_symbol(function));
   return (*func)(params);
 }
 
+}  // namespace fv_converter
+}  // namespace jubatus
 
-}
-}
+#endif  // JUBATUS_FV_CONVERTER_DYNAMIC_LOADER_HPP_

@@ -14,11 +14,16 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <string>
+#include <gtest/gtest.h>
 #include "config_util.hpp"
-#include "gtest/gtest.h"
 
-using namespace std;
-using namespace pfi::text::json;
+using std::string;
+using pfi::text::json::is;
+using pfi::text::json::json;
+using pfi::text::json::json_integer;
+using pfi::text::json::json_object;
+using pfi::text::json::json_string;
 
 namespace jubatus {
 
@@ -36,7 +41,6 @@ TEST(config_util, get_param_default) {
   // nest
   EXPECT_EQ("nest_value", get_param(js, "nest", string("value")));
 }
-
 
 TEST(config_util, get_param_obj_null) {
   json js(new json_object());
@@ -59,4 +63,4 @@ TEST(config_util, json_object) {
   EXPECT_EQ("nest_value", json_cast<string>(nest["nest_key"]));
 }
 
-}
+}  // namespace jubatus

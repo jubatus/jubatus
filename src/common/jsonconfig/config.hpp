@@ -14,13 +14,13 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
-
 #ifndef JUBATUS_COMMON_JSONCONFIG_CONFIG_HPP_
 #define JUBATUS_COMMON_JSONCONFIG_CONFIG_HPP_
 
 #include <stdint.h>
+#include <string>
 #include <typeinfo>
+#include <utility>
 
 #include <pficommon/text/json.h>
 #include <pficommon/lang/cast.h>
@@ -32,7 +32,7 @@ namespace jsonconfig {
 
 class config;
 
-template <class T>
+template<class T>
 T config_cast(const config& c);
 
 class config {
@@ -40,15 +40,19 @@ class config {
   class iterator;
 
   config()
-    : json_() {}
+      : json_() {
+  }
 
-  config(const pfi::text::json::json& j)
-    : json_(j) {}
+  explicit config(const pfi::text::json::json& j)
+      : json_(j) {
+  }
 
-  config(const pfi::text::json::json& j,
-         const std::string& path) : json_(j), path_(path) {}
+  config(const pfi::text::json::json& j, const std::string& path)
+      : json_(j),
+        path_(path) {
+  }
 
-  template <typename T>
+  template<typename T>
   T As() const {
     return config_cast<T>(*this);
   }
@@ -63,10 +67,14 @@ class config {
   iterator end() const;
 
   size_t size() const;
-  const pfi::text::json::json& get() const { return json_; }
-  const std::string& path() const { return path_; }
+  const pfi::text::json::json& get() const {
+    return json_;
+  }
+  const std::string& path() const {
+    return path_;
+  }
 
-  template <class T>
+  template<class T>
   bool is() const {
     return pfi::text::json::is<T>(json_);
   }
@@ -79,7 +87,9 @@ class config {
    public:
     typedef pfi::text::json::json::const_iterator iterator_base;
     iterator(const iterator&);
-    iterator(const config& parent, const pfi::text::json::json::const_iterator& it);
+    iterator(
+        const config& parent,
+        const pfi::text::json::json::const_iterator& it);
 
     const std::string& key() const;
     config value() const;
@@ -97,7 +107,8 @@ class config {
       return *it_;
     }
 
-    const std::pair<const std::string, pfi::text::json::json>* operator->() const {
+    const std::pair<const std::string, pfi::text::json::json>* operator->()
+        const {
       return it_.operator->();
     }
     // FowrardIterator
@@ -105,7 +116,7 @@ class config {
       ++it_;
       return *this;
     }
-    const iterator operator++(int) {
+    const iterator operator++(int /* unused */) {
       iterator temp(*this);
       ++it_;
       return temp;
@@ -121,7 +132,7 @@ class config {
   std::string path_;
 };
 
-} // jsonconfig
-} // jubatus
+}  // namespace jsonconfig
+}  // namespace jubatus
 
-#endif // JSONCONFIG_CONFIG_HPP_
+#endif  // JSONCONFIG_CONFIG_HPP_

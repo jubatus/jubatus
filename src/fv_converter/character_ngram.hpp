@@ -14,11 +14,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_CHARACTER_NGRAM_HPP_
+#define JUBATUS_FV_CONVERTER_CHARACTER_NGRAM_HPP_
 
 #include <string>
+#include <utility>
 #include <vector>
-
 #include "word_splitter.hpp"
 
 namespace jubatus {
@@ -26,14 +27,19 @@ namespace fv_converter {
 
 class character_ngram : public word_splitter {
  public:
-  character_ngram(size_t length) : length_(length) {}
+  explicit character_ngram(size_t length)
+      : length_(length) {
+  }
 
-  void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
+  void split(
+      const std::string& string,
+      std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
  private:
   const size_t length_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_CHARACTER_NGRAM_HPP_

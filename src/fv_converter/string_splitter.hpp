@@ -14,28 +14,32 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_STRING_SPLITTER_HPP_
+#define JUBATUS_FV_CONVERTER_STRING_SPLITTER_HPP_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace jubatus {
 namespace fv_converter {
 
-using namespace std;
-
 class StringSplitter {
  public:
-  StringSplitter() {}
-  virtual ~StringSplitter() {}
-  
-  /**
-     Returns all word boundaries this splitter found.
-     Each baoudary is represented as a pair of a beginning position and its length.
-   */
-  virtual void Split(const string& string,
-                     vector<pair<size_t, size_t> >& ret_boundaries) = 0;
+  StringSplitter() {
+  }
+  virtual ~StringSplitter() {
+  }
+
+  // Returns all word boundaries this splitter found.
+  // Each baoudary is represented as a pair of a beginning position
+  // and its length.
+  virtual void Split(
+      const std::string& string,
+      std::vector<std::pair<size_t, size_t> >& ret_boundaries) = 0;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_STRING_SPLITTER_HPP_

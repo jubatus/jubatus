@@ -14,19 +14,24 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_REGRESSION_REGRESSION_TEST_UTIL_HPP_
+#define JUBATUS_REGRESSION_REGRESSION_TEST_UTIL_HPP_
 
 #include <cstdlib>
 #include <cmath>
 #include <cfloat>
+#include <utility>
 #include <vector>
 #include <string>
 #include <iostream>
 #include <algorithm>
 #include <pficommon/math/random.h>
 
-void make_gaussian_random(float mu, float sigma, size_t dim,
-                 std::vector<double>& v) {
+void make_gaussian_random(
+    float mu,
+    float sigma,
+    size_t dim,
+    std::vector<double>& v) {
   pfi::math::random::mtrand rand(0);
   for (size_t i = 0; i < dim; i++) {
     float value = rand.next_gaussian(mu, sigma);
@@ -34,23 +39,27 @@ void make_gaussian_random(float mu, float sigma, size_t dim,
   }
 }
 
-void make_random(size_t dim, std::vector<double>& v){
+void make_random(size_t dim, std::vector<double>& v) {
   pfi::math::random::mtrand rand(0);
   for (size_t i = 0; i < dim; i++) {
     double value = rand.next_double();
     v.push_back(value);
   }
 }
-std::pair<float, std::vector<double> > gen_random_data(float mu, float sigma, size_t dim) {
+
+std::pair<float, std::vector<double> > gen_random_data(
+    float mu,
+    float sigma,
+    size_t dim) {
   std::pair<float, std::vector<double> > p;
 
   std::vector<double> coef;
-  make_random(dim , coef);
+  make_random(dim, coef);
   make_gaussian_random(mu, sigma, dim , p.second);
-  for (size_t i = 0; i<dim; i++){
-  p.first += p.second[i] * coef[i];
+  for (size_t i = 0; i < dim; i++) {
+    p.first += p.second[i] * coef[i];
   }
   return p;
 }
 
-
+#endif  // JUBATUS_REGRESSION_REGRESSION_TEST_UTIL_HPP_

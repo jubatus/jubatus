@@ -16,22 +16,25 @@
 
 #include "dynamic_string_filter.hpp"
 
-using namespace std;
+#include <map>
+#include <string>
 
 namespace jubatus {
 namespace fv_converter {
 
-dynamic_string_filter::dynamic_string_filter(const std::string& path,
-                                             const std::string& function,
-                                             const map<string, string>& params)
+dynamic_string_filter::dynamic_string_filter(
+    const std::string& path,
+    const std::string& function,
+    const std::map<std::string, std::string>& params)
     : loader_(path),
       impl_(load_object<string_filter>(loader_, function, params)) {
 }
 
-void dynamic_string_filter::filter(const string& input,
-                                   string& output) const {
+void dynamic_string_filter::filter(
+    const std::string& input,
+    std::string& output) const {
   impl_->filter(input, output);
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

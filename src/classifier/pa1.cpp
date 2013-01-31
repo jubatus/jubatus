@@ -14,29 +14,31 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <algorithm>
-#include <iostream>
 #include "pa1.hpp"
 
-using namespace std;
+#include <algorithm>
+#include <string>
 
-namespace jubatus{
-namespace classifier{
+using std::string;
+using std::min;
 
-PA1::PA1(storage::storage_base* storage) : classifier_base(storage) 
-{
+namespace jubatus {
+namespace classifier {
+
+PA1::PA1(storage::storage_base* storage)
+    : classifier_base(storage) {
 }
 
 PA1::PA1(const classifier_config& config, storage::storage_base* storage)
-  : classifier_base(storage), config(config)
-{
+    : classifier_base(storage),
+      config(config) {
 }
 
-void PA1::train(const sfv_t& sfv, const string& label){
+void PA1::train(const sfv_t& sfv, const string& label) {
   string incorrect_label;
   float margin = calc_margin(sfv, label, incorrect_label);
   float loss = 1.f + margin;
-  if (loss < 0.f){
+  if (loss < 0.f) {
     return;
   }
   float sfv_norm = squared_norm(sfv);
@@ -48,8 +50,8 @@ void PA1::train(const sfv_t& sfv, const string& label){
 }
 
 string PA1::name() const {
-  return string("PA1"); 
+  return string("PA1");
 }
-  
-}
-}
+
+}  // namespace classifier
+}  // namespace jubatus

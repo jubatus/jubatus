@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_FEATURE_HASHER_HPP_
+#define JUBATUS_FV_CONVERTER_FEATURE_HASHER_HPP_
 
 #include <stdint.h>
 #include "../common/type.hpp"
@@ -24,7 +25,7 @@ namespace fv_converter {
 
 class feature_hasher {
  public:
-  feature_hasher(uint64_t max);
+  explicit feature_hasher(uint64_t max);
 
   void hash_feature_keys(sfv_t& fv) const;
 
@@ -32,5 +33,7 @@ class feature_hasher {
   uint64_t max_size_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_FEATURE_HASHER_HPP_

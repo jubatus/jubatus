@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_SERVER_MIXABLE_WEIGHT_MANAGER_HPP_
+#define JUBATUS_SERVER_MIXABLE_WEIGHT_MANAGER_HPP_
 
 #include "../framework/mixable.hpp"
 #include "../fv_converter/weight_manager.hpp"
@@ -22,19 +23,22 @@
 namespace jubatus {
 namespace server {
 
-class mixable_weight_manager
-    : public framework::mixable<fv_converter::weight_manager,
-                                fv_converter::keyword_weights> {
+class mixable_weight_manager : public framework::mixable<
+    fv_converter::weight_manager,
+    fv_converter::keyword_weights> {
  public:
   fv_converter::keyword_weights get_diff_impl() const;
 
   void put_diff_impl(const fv_converter::keyword_weights& diff);
-  
-  void mix_impl(const fv_converter::keyword_weights& lhs,
-                const fv_converter::keyword_weights& rhs,
-                fv_converter::keyword_weights& acc) const;
+
+  void mix_impl(
+      const fv_converter::keyword_weights& lhs,
+      const fv_converter::keyword_weights& rhs,
+      fv_converter::keyword_weights& acc) const;
   void clear();
 };
 
-}
-}
+}  // namespace server
+}  // namespace jubatus
+
+#endif  // JUBATUS_SERVER_MIXABLE_WEIGHT_MANAGER_HPP_

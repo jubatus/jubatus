@@ -14,17 +14,29 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-
+#include <map>
 #include <sstream>
+#include <string>
+#include <vector>
+#include <gtest/gtest.h>
 #include <pficommon/text/json.h>
 #include <pficommon/lang/cast.h>
 
 #include "jsonconfig.hpp"
 
-using namespace std;
-using namespace pfi::lang;
-using namespace pfi::text::json;
+using std::cout;
+using std::endl;
+using std::string;
+using std::map;
+using std::vector;
+using pfi::lang::lexical_cast;
+using pfi::text::json::json;
+using pfi::text::json::json_array;
+using pfi::text::json::json_bool;
+using pfi::text::json::json_float;
+using pfi::text::json::json_integer;
+using pfi::text::json::json_object;
+using pfi::text::json::json_string;
 
 namespace jubatus {
 namespace jsonconfig {
@@ -205,7 +217,8 @@ TEST(jsonconfig_cast, unordered_map) {
   m["height"] = 160;
   m["weight"] = 60;
 
-  pfi::data::unordered_map<string, int> v = config_cast<pfi::data::unordered_map<string, int> >(conf);
+  pfi::data::unordered_map<string, int> v =
+    config_cast<pfi::data::unordered_map<string, int> >(conf);
   EXPECT_EQ(m["height"], v["height"]);
   EXPECT_EQ(m["weight"], v["weight"]);
 }
@@ -252,7 +265,7 @@ struct opt1 {
   int abc;
   pfi::data::optional<int> def;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(abc) & MEMBER(def);
   }
@@ -296,18 +309,17 @@ struct opt2 {
     int a;
     int b;
 
-    template <typename Ar>
+    template<typename Ar>
     void serialize(Ar& ar) {
       ar & MEMBER(a) & MEMBER(b);
     }
   } test;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(abc) & MEMBER(def) & MEMBER(test);
   }
 };
-
 
 TEST(jsonconfig_cast, named_nest_not_found) {
   config conf(lexical_cast<json>("{\"abc\" : 124 }"));
@@ -325,7 +337,7 @@ struct opt3 {
   int abc;
   json conf;  // any json type
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(abc) & MEMBER(conf);
   }
@@ -345,7 +357,7 @@ struct opt4 {
   int abc;
   config conf;  // any config
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(abc) & MEMBER(conf);
   }
@@ -376,17 +388,21 @@ struct Person {
   pfi::data::optional<string> hobby;
 
   bool operator ==(const Person& p) const {
-    return name == p.name && height == p.height && age == p.age && attributes == p.attributes && sport == p.sport && hobby == p.hobby;
+    return name == p.name && height == p.height && age == p.age
+        && attributes == p.attributes && sport == p.sport && hobby == p.hobby;
   }
 
-  template <class Ar>
+  template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(name) & MEMBER(height) & MEMBER(age) & MEMBER(attributes) & MEMBER(sport) & MEMBER(hobby);
+    ar & MEMBER(name) & MEMBER(height) & MEMBER(age) & MEMBER(attributes)
+        & MEMBER(sport) & MEMBER(hobby);
   }
 };
 
 TEST(jsonconfig_cast, struct) {
-  config conf(lexical_cast<json>("{\"name\": \"Taro\", \"height\": 160.0, \"age\": 20, \"attributes\": {\"address\": \"Tokyo\"}, \"sport\": \"tennis\"}"));
+  config conf(lexical_cast<json>(
+      "{\"name\": \"Taro\", \"height\": 160.0, \"age\": 20, "
+      "\"attributes\": {\"address\": \"Tokyo\"}, \"sport\": \"tennis\"}"));
   Person p;
   p.name = "Taro";
   p.height = 160.0;
@@ -402,7 +418,7 @@ struct server_conf {
     std::string host;
     int port;
 
-    template <typename Ar>
+    template<typename Ar>
     void serialize(Ar& ar) {
       ar & MEMBER(host) & MEMBER(port);
     }
@@ -410,14 +426,15 @@ struct server_conf {
 
   std::vector<std::string> users;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(web_server) & MEMBER(users);
   }
 };
 
 TEST(jsonconfig_cast, config_cast_error) {
-  config conf(lexical_cast<json>("{\"web_server\": { \"host\" : 123}, \"users\": [\"abc\", 1] }"));
+  config conf(lexical_cast<json>(
+      "{\"web_server\": { \"host\" : 123}, \"users\": [\"abc\", 1] }"));
 
   config_error_list errors;
   server_conf c = config_cast<server_conf>(conf, errors);
@@ -445,7 +462,8 @@ TEST(jsonconfig_cast, config_cast_error) {
 }
 
 TEST(jsonconfig_cast, cast_check_error) {
-  config conf(lexical_cast<json>("{\"web_server\": { \"host\" : 123}, \"users\": [\"abc\", 1] }"));
+  config conf(lexical_cast<json>(
+      "{\"web_server\": { \"host\" : 123}, \"users\": [\"abc\", 1] }"));
 
   try {
     config_cast_check<server_conf>(conf);
@@ -463,5 +481,5 @@ TEST(jsonconfig_cast, cast_check_error) {
   }
 }
 
-} // jsonconfig
-} // jubatus
+}  // namespace jsonconfig
+}  // namespace jubatus

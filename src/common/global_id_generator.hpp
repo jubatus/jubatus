@@ -14,32 +14,36 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_
+#define JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_
 
 #include <stdint.h>
+#include <string>
 
 #include "lock_service.hpp"
 #include "shared_ptr.hpp"
 
-namespace jubatus { namespace common {
+namespace jubatus {
+namespace common {
 
 class global_id_generator_impl;
 
-class global_id_generator
-{
-public:
-
-  global_id_generator(bool);
+class global_id_generator {
+ public:
+  explicit global_id_generator(bool is_standalone);
   ~global_id_generator();
 
   uint64_t generate();
 
   void set_ls(cshared_ptr<lock_service>&, const std::string&);
 
-private:
+ private:
   global_id_generator();
 
   pfi::lang::scoped_ptr<global_id_generator_impl> pimpl_;
 };
 
-}}
+}  // namespace common
+}  // namespace jubatus
+
+#endif  // JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_

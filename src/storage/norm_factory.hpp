@@ -14,11 +14,10 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_STORAGE_NORM_FACTORY_HPP_
+#define JUBATUS_STORAGE_NORM_FACTORY_HPP_
 
 #include <string>
-#include <cmath>
-#include <pficommon/lang/shared_ptr.h>
 
 namespace jubatus {
 namespace storage {
@@ -27,5 +26,7 @@ class norm_base;
 
 norm_base* create_norm(const std::string& name);
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus
+
+#endif  // JUBATUS_STORAGE_NORM_FACTORY_HPP_

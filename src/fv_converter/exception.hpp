@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_EXCEPTION_HPP_
+#define JUBATUS_FV_CONVERTER_EXCEPTION_HPP_
 
 #include <stdexcept>
 #include <string>
@@ -25,8 +26,12 @@ namespace fv_converter {
 
 class converter_exception : public jubatus::exception::runtime_error {
  public:
-  converter_exception(const std::string& msg): runtime_error(msg) {}
+  explicit converter_exception(const std::string& msg)
+      : runtime_error(msg) {
+  }
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_EXCEPTION_HPP_

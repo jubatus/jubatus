@@ -14,10 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <string>
 #include <gtest/gtest.h>
 #include "membership.hpp"
 
-using namespace std;
+using std::string;
 
 namespace jubatus {
 namespace common {
@@ -53,5 +54,5 @@ TEST(util, revert) {
   EXPECT_EQ(9199, port);
 }
 
-}
-}
+}  // namespace common
+}  // namespace jubatus

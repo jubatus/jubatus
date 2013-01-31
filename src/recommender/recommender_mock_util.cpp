@@ -14,11 +14,16 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/string/utility.h>
 #include <pficommon/lang/cast.h>
 #include "recommender_mock_util.hpp"
 
-using namespace std;
+using std::pair;
+using std::string;
+using std::vector;
 using pfi::data::string::split;
 
 namespace jubatus {
@@ -38,5 +43,5 @@ vector<pair<string, float> > make_ids(const string& repr) {
   return make_sfv(repr);
 }
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus

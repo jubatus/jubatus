@@ -16,38 +16,40 @@
 
 #include "exception.hpp"
 #include <cstring>
+#include <string>
 #include <pficommon/lang/demangle.h>
 
 namespace jubatus {
 namespace exception {
 
-error_info_list_t jubatus_exception::error_info() const
-{
+error_info_list_t jubatus_exception::error_info() const {
   return info_list_;
 }
 
-std::string jubatus_exception::diagnostic_information(bool display_what) const
-{
+std::string jubatus_exception::diagnostic_information(bool display_what) const {
   std::ostringstream tmp;
 
   tmp << "Dynamic exception type: ";
   tmp << pfi::lang::demangle(typeid(*this).name());
 
-  if (display_what && strcmp(what(), ""))
+  if (display_what && strcmp(what(), "")) {
     tmp << "::what: " << what();
+  }
+
   tmp << '\n';
 
   size_t frame = 0;
-  for (error_info_list_t::const_iterator it = info_list_.begin(), end = info_list_.end();
-      it != end; ++it) {
+  for (error_info_list_t::const_iterator it = info_list_.begin(), end =
+      info_list_.end(); it != end; ++it) {
     if ((*it)->splitter()) {
       frame++;
       continue;
     }
-    tmp << "    #" << frame << " [" << (*it)->tag_typeid_name() << "] = " << (*it)->as_string() << '\n';
+    tmp << "    #" << frame << " [" << (*it)->tag_typeid_name() << "] = "
+        << (*it)->as_string() << '\n';
   }
   return tmp.str();
 }
 
-} // exception
-} // jubatus
+}  // namespace exception
+}  // namespace jubatus

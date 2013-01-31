@@ -14,23 +14,24 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_CLASSIFIER_PA_HPP_
+#define JUBATUS_CLASSIFIER_PA_HPP_
+
+#include <string>
 
 #include "classifier_base.hpp"
 
-namespace jubatus{
-namespace classifier{
+namespace jubatus {
+namespace classifier {
 
 class PA : public classifier_base {
-public:
-  PA(storage::storage_base* storage);
-  void set_config(std::map<std::string, int>& config);
+ public:
+  explicit PA(storage::storage_base* storage);
   void train(const sfv_t& fv, const std::string& label);
   std::string name() const;
-
-private:
-
 };
 
-}
-}
+}  // namespace classifier
+}  // namespace jubatus
+
+#endif  // JUBATUS_CLASSIFIER_PA_HPP_

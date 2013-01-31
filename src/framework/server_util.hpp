@@ -14,27 +14,28 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FRAMEWORK_SERVER_UTIL_HPP_
+#define JUBATUS_FRAMEWORK_SERVER_UTIL_HPP_
 
 #include <cstdlib>
+#include <iostream>
 #include <string>
 #include <sstream>
-#include <iostream>
 
-#include <msgpack.hpp>
 #include <glog/logging.h>
-
-#include "../common/exception.hpp"
-#include "../common/lock_service.hpp"
-#include "../common/shared_ptr.hpp"
-#include "../common/util.hpp"
+#include <msgpack.hpp>
 #include <pficommon/lang/noncopyable.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/shared_ptr.h>
 
-namespace cmdline{
+#include "../common/exception.hpp"
+#include "../common/lock_service.hpp"
+#include "../common/shared_ptr.hpp"
+#include "../common/util.hpp"
+
+namespace cmdline {
 class parser;
 }
 
@@ -47,16 +48,19 @@ class datum_to_fv_converter;
 namespace framework {
 
 struct config_json {
-  config_json(){};
-  
+  config_json() {
+  }
+
   std::string config;
 
-  void load_json(const std::string& zkhosts, const std::string& type, const std::string& name);
+  void load_json(
+      const std::string& zkhosts,
+      const std::string& type,
+      const std::string& name);
   void load_json(const std::string& filepath);
 };
 
 struct server_argv {
-
   server_argv(int args, char** argv, const std::string& type);
   server_argv();
 
@@ -91,11 +95,10 @@ struct server_argv {
 
 std::string get_server_identifier(const server_argv& a);
 
-
 struct keeper_argv {
   keeper_argv(int args, char** argv, const std::string& t);
   keeper_argv();
-  
+
   int port;
   std::string bind_address;
   std::string bind_if;
@@ -112,8 +115,8 @@ struct keeper_argv {
   void set_log_destination(const std::string& progname) const;
 };
 
-template <typename From, typename To>
-void convert(const From& from, To& to){
+template<typename From, typename To>
+void convert(const From& from, To& to) {
   msgpack::sbuffer sbuf;
   msgpack::pack(sbuf, from);
   msgpack::unpacked msg;
@@ -124,9 +127,8 @@ void convert(const From& from, To& to){
 extern jubatus::common::cshared_ptr<jubatus::common::lock_service> ls;
 void atexit();
 
-template <class ImplServerClass>
-int run_server(int args, char** argv, const std::string& type)
-{
+template<class ImplServerClass>
+int run_server(int args, char** argv, const std::string& type) {
   try {
     ImplServerClass impl_server(server_argv(args, argv, type));
 
@@ -144,6 +146,7 @@ int run_server(int args, char** argv, const std::string& type)
 
 std::string get_conf(const server_argv& a);
 
+}  // namespace framework
+}  // namespace jubatus
 
-} // framework
-} // jubatus
+#endif  // JUBATUS_FRAMEWORK_SERVER_UTIL_HPP_

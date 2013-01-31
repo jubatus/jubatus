@@ -15,10 +15,16 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 #include "recommender_mock_storage.hpp"
 
-using namespace std;
-using namespace pfi::data::serialization;
+using std::istringstream;
+using std::ostringstream;
+using std::pair;
+using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace recommender {
@@ -73,14 +79,15 @@ string recommender_mock_storage::name() const {
 
 void recommender_mock_storage::get_diff(string& diff) const {
   ostringstream oss;
-  binary_oarchive bo(oss);
+  pfi::data::serialization::binary_oarchive bo(oss);
   bo << const_cast<recommender_mock_storage&>(*this);
   diff = oss.str();
 }
 
-void recommender_mock_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
+void recommender_mock_storage::set_mixed_and_clear_diff(
+    const string& mixed_diff) {
   istringstream iss(mixed_diff);
-  binary_iarchive bi(iss);
+  pfi::data::serialization::binary_iarchive bi(iss);
   bi >> *this;
 }
 
@@ -97,11 +104,12 @@ void recommender_mock_storage::mix(const string& lhs, string& rhs) const {
 
 // private
 
-//static
-void recommender_mock_storage::get_relation(const sfv_t& query,
-                                            const relation_type& relmap,
-                                            size_t ret_num,
-                                            vector<pair<string, float> >& ids) {
+// static
+void recommender_mock_storage::get_relation(
+    const sfv_t& query,
+    const relation_type& relmap,
+    size_t ret_num,
+    vector<pair<string, float> >& ids) {
   ids.clear();
 
   relation_type::const_iterator it = relmap.find(query);
@@ -114,10 +122,11 @@ void recommender_mock_storage::get_relation(const sfv_t& query,
   }
 }
 
-//static
-void recommender_mock_storage::update_relation_key(const sfv_t& from,
-                                                   const sfv_t& to,
-                                                   relation_type& relmap) {
+// static
+void recommender_mock_storage::update_relation_key(
+    const sfv_t& from,
+    const sfv_t& to,
+    relation_type& relmap) {
   relation_type::iterator it = relmap.find(from);
   if (it != relmap.end()) {
     relation_type::mapped_type val;
@@ -129,13 +138,15 @@ void recommender_mock_storage::update_relation_key(const sfv_t& from,
   }
 }
 
-//static
-void recommender_mock_storage::mix_relation(const relation_type& from,
-                                            relation_type& to) {
-  for (relation_type::const_iterator it = from.begin(); it != from.end(); ++it) {
+// static
+void recommender_mock_storage::mix_relation(
+    const relation_type& from,
+    relation_type& to) {
+  for (relation_type::const_iterator it = from.begin(); it != from.end();
+      ++it) {
     to[it->first] = it->second;
   }
 }
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus

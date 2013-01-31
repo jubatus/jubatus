@@ -17,13 +17,13 @@
 #include <gtest/gtest.h>
 #include "num_filter_impl.hpp"
 
-using namespace jubatus::fv_converter;
-
 namespace jubatus {
+namespace fv_converter {
 
 TEST(add_filter, trivial) {
   add_filter add(1.0);
   EXPECT_EQ(3.0, add.filter(2.0));
 }
 
-}
+}  // namespace fv_converter
+}  // namespace jubatus

@@ -14,8 +14,13 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_PLUGIN_FV_CONVERTER_UX_SPLITTER_HPP_
+#define JUBATUS_PLUGIN_FV_CONVERTER_UX_SPLITTER_HPP_
 
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 #include <ux/ux.hpp>
 #include "../../fv_converter/word_splitter.hpp"
 
@@ -23,9 +28,8 @@ namespace jubatus {
 
 class ux_splitter : public fv_converter::word_splitter {
  public:
-  ux_splitter(const std::vector<std::string>& keywords);
+  explicit ux_splitter(const std::vector<std::string>& keywords);
   ~ux_splitter();
-
   void split(const std::string& string,
              std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
@@ -33,9 +37,10 @@ class ux_splitter : public fv_converter::word_splitter {
   ux::Trie trie_;
 };
 
-}
+}  // namespace jubatus
 
 extern "C" {
-  jubatus::ux_splitter*
-  create(const std::map<std::string, std::string>& params);
+jubatus::ux_splitter* create(const std::map<std::string, std::string>& params);
 }
+
+#endif  // JUBATUS_PLUGIN_FV_CONVERTER_UX_SPLITTER_HPP_

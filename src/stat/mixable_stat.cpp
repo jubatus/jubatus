@@ -14,8 +14,10 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "mixable_stat.hpp"
 #include <cmath>
+#include <string>
+#include <utility>
+#include "mixable_stat.hpp"
 
 using std::pair;
 
@@ -23,55 +25,50 @@ namespace jubatus {
 namespace stat {
 
 mixable_stat::mixable_stat(size_t window_size)
-  : stat(window_size), e_(0), n_(0)
-{
+    : stat(window_size),
+      e_(0),
+      n_(0) {
 }
 
-mixable_stat::~mixable_stat()
-{
+mixable_stat::~mixable_stat() {
 }
-  
-std::pair<double,size_t> mixable_stat::get_diff() const
-{
+
+std::pair<double, size_t> mixable_stat::get_diff() const {
   std::pair<double, size_t> ret;
   ret.first = 0;
   ret.second = 0;
 
-  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.begin();
-       p != stats_.end(); ++p) {
+  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+      stats_.begin(); p != stats_.end(); ++p) {
     ret.second += p->second.n_;
   }
 
-  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p = stats_.begin();
-       p != stats_.end(); ++p) {
+  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+      stats_.begin(); p != stats_.end(); ++p) {
     double pr = p->second.n_;
     ret.first += pr * log(pr);
   }
   return ret;
-
 }
 
-void mixable_stat::put_diff(const pair<double,size_t>& e)
-{
+void mixable_stat::put_diff(const pair<double, size_t>& e) {
   e_ = e.first;
   n_ = e.second;
 }
 
-void mixable_stat::reduce(const pair<double,size_t>& lhs,
-			  pair<double,size_t>& ret)
-{
+void mixable_stat::reduce(
+    const pair<double, size_t>& lhs,
+    pair<double, size_t>& ret) {
   ret.first += lhs.first;
   ret.second += lhs.second;
 }
 
-double mixable_stat::mixed_entropy() const
-{
-  if( n_ == 0 ){
+double mixable_stat::mixed_entropy() const {
+  if (n_ == 0) {
     return 0;
   }
   double n = n_;
   return log(n) - e_ / n_;
-}
-
-}
-}
+};
+}  // namespace stat
+}  // namespace jubatus

@@ -14,8 +14,10 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_MPRPC_EXCEPTION_HPP_
+#define JUBATUS_COMMON_MPRPC_EXCEPTION_HPP_
 
+#include <string>
 #include <pficommon/network/mprpc/exception.h>
 #include "../exception.hpp"
 
@@ -23,42 +25,52 @@ namespace jubatus {
 namespace common {
 namespace mprpc {
 
-typedef jubatus::exception::error_info<struct error_method_, std::string> error_method;
+typedef jubatus::exception::error_info<
+    struct error_method_,
+    std::string> error_method;
 
 class rpc_no_client : public jubatus::exception::jubaexception<rpc_no_client> {
-public:
-  const char* what() const throw() { return "no client"; }
+ public:
+  const char* what() const throw() {
+    return "no client";
+  }
 };
 
 class rpc_no_result : public jubatus::exception::jubaexception<rpc_no_result> {
-public:
-  const char* what() const throw() { return "no result"; }
+ public:
+  const char* what() const throw() {
+    return "no result";
+  }
 };
-
 
 class rpc_io_error : public jubatus::exception::jubaexception<rpc_io_error> {
 };
 
-class rpc_timeout_error : public jubatus::exception::jubaexception<rpc_timeout_error> {
+class rpc_timeout_error
+    : public jubatus::exception::jubaexception<rpc_timeout_error> {
 };
 
 // rpc_server error
-class rpc_type_error : public jubatus::exception::jubaexception<rpc_type_error> {
+class rpc_type_error
+    : public jubatus::exception::jubaexception<rpc_type_error> {
 };
 
 // rpc_server error
-class rpc_method_not_found : public jubatus::exception::jubaexception<rpc_method_not_found> {
+class rpc_method_not_found
+    : public jubatus::exception::jubaexception<rpc_method_not_found> {
 };
 
 // rpc_server error
-class rpc_call_error : public jubatus::exception::jubaexception<rpc_call_error> {
+class rpc_call_error
+    : public jubatus::exception::jubaexception<rpc_call_error> {
 };
 
-class rpc_internal_error : public jubatus::exception::jubaexception<rpc_internal_error> {
+class rpc_internal_error
+    : public jubatus::exception::jubaexception<rpc_internal_error> {
 };
 
+}  // namespace mprpc
+}  // namespace common
+}  // namespace jubatus
 
-} // mprpc
-} // common
-} // jubatus
-
+#endif  // JUBATUS_COMMON_MPRPC_EXCEPTION_HPP_

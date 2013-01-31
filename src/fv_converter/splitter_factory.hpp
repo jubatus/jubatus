@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_SPLITTER_FACTORY_HPP_
+#define JUBATUS_FV_CONVERTER_SPLITTER_FACTORY_HPP_
 
 #include <string>
 #include <map>
@@ -31,5 +32,7 @@ class splitter_factory {
   word_splitter* create(const std::string& name, const param_t& params) const;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_SPLITTER_FACTORY_HPP_

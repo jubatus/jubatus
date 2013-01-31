@@ -1,24 +1,21 @@
-
 // This file is auto-generated from stat.idl
 // *** DO NOT EDIT ***
 
 #ifndef STAT_CLIENT_HPP_
 #define STAT_CLIENT_HPP_
 
-
 #include "stat_types.hpp"
 #include <jubatus/msgpack/rpc/client.h>
-
 
 namespace jubatus {
 
 namespace client {
 
 class stat {
-public:
+ public:
   stat(const std::string &host, uint64_t port, double timeout_sec)
-    : c_(host, port) {
-    c_.set_timeout( timeout_sec );
+      : c_(host, port) {
+    c_.set_timeout(timeout_sec);
   }
 
   std::string get_config(std::string name) {
@@ -61,18 +58,18 @@ public:
     return c_.call("load", name, id).get<bool>();
   }
 
-  std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
-    return c_.call("get_status", name).get<std::map<std::string, std::map<std::string, std::string > > >();
+  std::map<std::string, std::map<std::string, std::string> > get_status(
+      std::string name) {
+    return c_.call("get_status", name)
+        .get<std::map<std::string, std::map<std::string, std::string> > >();
   }
 
-private:
+ private:
   msgpack::rpc::client c_;
 };
 
-} // namespace client
+}  // namespace client
 
-} // namespace jubatus
-
-
+}  // namespace jubatus
 
 #endif // STAT_CLIENT_HPP_
