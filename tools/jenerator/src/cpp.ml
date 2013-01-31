@@ -221,13 +221,39 @@ let make_guard_name filename =
   Str.global_replace (Str.regexp "[\\./]") "_" upper ^ "_"
 ;;
 
-let print_indent p (indent, line) =
+let rfind line pos ch =
+  if String.rcontains_from line pos ch then
+    Some (String.rindex_from line pos ch)
+  else
+    None
+
+let rindex_split_pos line pos =
+  let paren = rfind line pos '(' in
+  let comma = rfind line pos ',' in
+  match paren, comma with
+  | Some p, Some c -> Some (max (p + 1) (c + 1))
+  | Some p, None -> Some (p + 1)
+  | None, Some c -> Some (c + 1)
+  | None, None -> None
+;;
+
+let rec print_indent p (indent, line) =
   if line == "" then
     (* don't append spaces to a blank line *)
     p ""
   else
     let space = String.make (indent * 2) ' ' in
-    p (space ^ line)
+    let max_len = 80 - indent * 2 in
+    let len = String.length line in
+    if len > max_len then
+      match rindex_split_pos line (max_len - 1) with
+      | Some pos ->
+        p (space ^ String.sub line 0 pos);
+        print_indent p (indent, "    " ^ String.sub line pos (len - pos))
+      | None ->
+        p (space ^ line)
+    else
+      p (space ^ line)
 ;;
 
 let print_lines p =
