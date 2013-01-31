@@ -150,9 +150,9 @@ string get_max_label(const vector<estimate_result>& result) {
   string max_label = "";
   double max_prob = 0;
   for (size_t i = 0; i < result.size(); ++i) {
-    if (max_label == "" || result[i].prob > max_prob) {
+    if (max_label == "" || result[i].score > max_prob) {
       max_label = result[i].label;
-      max_prob = result[i].prob;
+      max_prob = result[i].score;
     }
   }
   return max_label;
@@ -295,8 +295,8 @@ void my_test(const char* method) {
     vector<estimate_result>::const_iterator ite;
     for (ite = it->begin(); ite != it->end(); ++ite) {
       // get most likely label
-      if (prob0 < ite->prob || ite == it->begin()) {
-        prob0 = ite->prob;
+      if (prob0 < ite->score || ite == it->begin()) {
+        prob0 = ite->score;
         most0 = ite->label;
       }
     }
@@ -307,7 +307,7 @@ void my_test(const char* method) {
     if (most0.compare(*it0) != 0) {
       cout << *it0 << "!=" << most0 << endl;
       for (ite = it->begin(); ite != it->end(); ++ite) {
-        cout << ite->label << "\t" << ite->prob << endl;
+        cout << ite->label << "\t" << ite->score << endl;
       }
     }
   }
@@ -495,7 +495,7 @@ TEST_P(classifier_test, nan) {
   vector<vector<estimate_result> > result = cli.classify(NAME, test);
   ASSERT_EQ(1u, result.size());
   ASSERT_EQ(1u, result[0].size());
-  EXPECT_FALSE(isfinite(result[0][0].prob));
+  EXPECT_FALSE(isfinite(result[0][0].score));
 }
 
 }  // namespace

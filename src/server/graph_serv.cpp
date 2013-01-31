@@ -177,7 +177,7 @@ std::string graph_serv::create_node() { /* no lock here */
   return nid_str;
 }
 
-bool graph_serv::update_node(const std::string& id, const property& p) {
+bool graph_serv::update_node(const std::string& id, const std::map<std::string, std::string>& p) {
   check_set_config();
 
   g_.get_model()->update_node(n2i(id), p);
@@ -224,7 +224,7 @@ bool graph_serv::remove_node(const std::string& nid) {
 }
 
 // @cht
-edge_id_t graph_serv::create_edge(const std::string& id, const edge_info& ei) {
+edge_id_t graph_serv::create_edge(const std::string& id, const edge& ei) {
   check_set_config();
 
   edge_id_t eid = idgen_.generate();
@@ -234,7 +234,7 @@ edge_id_t graph_serv::create_edge(const std::string& id, const edge_info& ei) {
     // we dont need global locking, because getting unique id from zk
     // guarantees there'll be no data confliction
     std::vector<std::pair<std::string, int> > nodes;
-    find_from_cht_(ei.src, 2, nodes);
+    find_from_cht_(ei.source, 2, nodes);
     if (nodes.empty()) {
       throw JUBATUS_EXCEPTION(
           jubatus::exception::runtime_error(
@@ -268,7 +268,7 @@ edge_id_t graph_serv::create_edge(const std::string& id, const edge_info& ei) {
   }
 
   DLOG(INFO) << "edge created: " << eid
-      << " ( " << ei.src << " => " << ei.tgt << " )";
+      << " ( " << ei.source << " => " << ei.target << " )";
   return eid;
 }
 
@@ -276,12 +276,12 @@ edge_id_t graph_serv::create_edge(const std::string& id, const edge_info& ei) {
 bool graph_serv::update_edge(
     const std::string&,
     edge_id_t eid,
-    const edge_info& ei) {
+    const edge& ei) {
   check_set_config();
 
-  g_.get_model()->update_edge(eid, ei.p);
+  g_.get_model()->update_edge(eid, ei.property);
   DLOG(INFO) << "edge updated: " << eid
-      << " ( " << ei.src << " => " << ei.tgt << " )";
+      << " ( " << ei.source << " => " << ei.target << " )";
   return true;
 }
 
@@ -312,13 +312,13 @@ double graph_serv::get_centrality(
 
 // @random
 std::vector<node_id> graph_serv::get_shortest_path(
-    const shortest_path_req& req) const {
+    const shortest_path_query& req) const {
   std::vector<jubatus::graph::node_id_t> ret0;
   jubatus::graph::preset_query q;
-  framework::convert(req.q, q);
+  framework::convert(req.query, q);
   g_.get_model()->shortest_path(
-      n2i(req.src),
-      n2i(req.tgt),
+      n2i(req.source),
+      n2i(req.target),
       req.max_hop,
       ret0,
       q);
@@ -381,27 +381,27 @@ bool graph_serv::remove_shortest_path_query(const preset_query& q0) {
   return true;
 }
 
-node_info graph_serv::get_node(const std::string& nid) const {
+node graph_serv::get_node(const std::string& nid) const {
   check_set_config();
 
   jubatus::graph::node_info info;
   g_.get_model()->get_node(n2i(nid), info);
-  jubatus::node_info ret;
-  framework::convert<graph::node_info, jubatus::node_info>(info, ret);
+  jubatus::node ret;
+  framework::convert<graph::node_info, jubatus::node>(info, ret);
   return ret;
 }
 // @random
-edge_info graph_serv::get_edge(
+edge graph_serv::get_edge(
     const std::string& nid,
     const edge_id_t& id) const {
   check_set_config();
 
   jubatus::graph::edge_info info;
   g_.get_model()->get_edge((jubatus::graph::edge_id_t) id, info);
-  jubatus::edge_info ret;
-  ret.p = info.p;
-  ret.src = i2n(info.src);
-  ret.tgt = i2n(info.tgt);
+  jubatus::edge ret;
+  ret.property = info.p;
+  ret.source = i2n(info.src);
+  ret.target = i2n(info.tgt);
   return ret;
 }
 
@@ -460,10 +460,10 @@ bool graph_serv::remove_global_node(const std::string& nid) {
   return true;
 }  // update internal
 
-bool graph_serv::create_edge_here(edge_id_t eid, const edge_info& ei) {
+bool graph_serv::create_edge_here(edge_id_t eid, const edge& ei) {
   try {
-    g_.get_model()->create_edge(eid, n2i(ei.src), n2i(ei.tgt));
-    g_.get_model()->update_edge(eid, ei.p);
+    g_.get_model()->create_edge(eid, n2i(ei.source), n2i(ei.target));
+    g_.get_model()->update_edge(eid, ei.property);
   } catch (const graph::graph_exception& e) {
     throw;
   }

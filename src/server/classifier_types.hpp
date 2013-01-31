@@ -4,35 +4,29 @@
 #ifndef CLASSIFIER_TYPES_HPP_
 #define CLASSIFIER_TYPES_HPP_
 
-#include <vector>
-#include <map>
-#include <string>
-#include <stdexcept>
 #include <stdint.h>
+
+#include <map>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 #include <msgpack.hpp>
-
 namespace jubatus {
-
-typedef std::map<std::string, std::string> param_t;
 
 struct datum {
  public:
-
   MSGPACK_DEFINE(string_values, num_values);
-
   std::vector<std::pair<std::string, std::string> > string_values;
   std::vector<std::pair<std::string, double> > num_values;
 };
-
 struct estimate_result {
  public:
-
-  MSGPACK_DEFINE(label, prob);
-
+  MSGPACK_DEFINE(label, score);
   std::string label;
-  double prob;
+  double score;
 };
 
 }  // namespace jubatus
 
-#endif // CLASSIFIER_TYPES_HPP_
+#endif  // CLASSIFIER_TYPES_HPP_

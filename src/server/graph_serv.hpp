@@ -87,13 +87,13 @@ class graph_serv : public framework::server_base {
 
   std::string create_node();
 
-  bool update_node(const std::string& nid, const property& p);
+  bool update_node(const std::string& nid, const std::map<std::string, std::string>& p);
 
   bool remove_node(const std::string& nid);
 
-  edge_id_t create_edge(const std::string& nid, const edge_info&);
+  edge_id_t create_edge(const std::string& nid, const edge&);
 
-  bool update_edge(const std::string& nid, edge_id_t, const edge_info&);
+  bool update_edge(const std::string& nid, edge_id_t, const edge&);
 
   bool remove_edge(const std::string& nid, const edge_id_t& e);
 
@@ -102,7 +102,7 @@ class graph_serv : public framework::server_base {
       const centrality_type& ct,
       const preset_query& q) const;
 
-  std::vector<node_id> get_shortest_path(const shortest_path_req& r) const;
+  std::vector<node_id> get_shortest_path(const shortest_path_query& r) const;
 
   bool add_centrality_query(const preset_query& q);
 
@@ -116,16 +116,16 @@ class graph_serv : public framework::server_base {
 
   bool clear();
 
-  node_info get_node(const std::string& nid) const;
+  node get_node(const std::string& nid) const;
 
-  edge_info get_edge(const std::string& nid, const edge_id_t& e) const;
+  edge get_edge(const std::string& nid, const edge_id_t& e) const;
 
   // internal apis used between servers
   bool create_node_here(const std::string& nid);
   bool create_global_node(const std::string& nid);
   bool remove_global_node(const std::string& nid);
 
-  bool create_edge_here(edge_id_t eid, const edge_info& ei);
+  bool create_edge_here(edge_id_t eid, const edge& ei);
 
  private:
   void selective_create_node_(
