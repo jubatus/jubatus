@@ -114,7 +114,7 @@ inline bool check_json_float(json_config_iarchive_cast& js) {
   }
   return true;
 }
-}  // detail
+}  // namespace detail
 
 #define GENERATE_CONFIG_SERIALIZE_DEF(typ, json_typ) \
   template <> \

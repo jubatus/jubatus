@@ -443,7 +443,7 @@ TEST(jsonconfig_cast, config_cast_error) {
     cout << errors[i]->what() << endl;
   }
 
-  EXPECT_EQ(3, errors.size());
+  EXPECT_EQ(3U, errors.size());
 
   type_error* e1 = dynamic_cast<type_error*>(errors[0].get());
   ASSERT_TRUE(e1);

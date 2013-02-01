@@ -324,9 +324,9 @@ TYPED_TEST_P(storage_test, inp) {
   s.inp(fv, ret);
 
   EXPECT_EQ(2u, ret.size());
-  ASSERT_LT(0, ret.count("class_x"));
-  ASSERT_EQ(0, ret.count("class_y"));
-  ASSERT_LT(0, ret.count("class_z"));
+  ASSERT_LT(0u, ret.count("class_x"));
+  ASSERT_EQ(0u, ret.count("class_y"));
+  ASSERT_LT(0u, ret.count("class_z"));
 
   EXPECT_FLOAT_EQ(24.0, ret["class_x"]);
   EXPECT_FLOAT_EQ(90.0, ret["class_z"]);
@@ -336,9 +336,9 @@ TYPED_TEST_P(storage_test, inp) {
   s.inp(fv, ret);
 
   EXPECT_EQ(3u, ret.size());
-  ASSERT_LT(0, ret.count("class_x"));
-  ASSERT_LT(0, ret.count("class_y"));
-  ASSERT_LT(0, ret.count("class_z"));
+  ASSERT_LT(0u, ret.count("class_x"));
+  ASSERT_LT(0u, ret.count("class_y"));
+  ASSERT_LT(0u, ret.count("class_z"));
 
   EXPECT_FLOAT_EQ(27.0, ret["class_x"]);
   EXPECT_FLOAT_EQ(6.0, ret["class_y"]);
@@ -382,7 +382,7 @@ TYPED_TEST_P(storage_test, get_status) {
   get_expect_status<TypeParam>(expect_before, expect_after);
   for (map<string, string>::const_iterator it = expect_before.begin();
       it != expect_before.end(); ++it) {
-    ASSERT_LT(0, status.count(it->first));
+    ASSERT_LT(0U, status.count(it->first));
     EXPECT_EQ(it->second, status[it->first]);
   }
 
@@ -398,7 +398,7 @@ TYPED_TEST_P(storage_test, get_status) {
 
   for (map<string, string>::const_iterator it = expect_after.begin();
       it != expect_after.end(); ++it) {
-    ASSERT_LT(0, status.count(it->first));
+    ASSERT_LT(0u, status.count(it->first));
     EXPECT_EQ(it->second, status[it->first]);
   }
 }
