@@ -49,11 +49,11 @@ void stat::push(const std::string& key, double val) {
     stats_[key].add(val);
   }
   while (window_.size() > window_size_) {
-    string& key = window_.front().second.first;
+    string key = window_.front().second.first;
     double val = window_.front().second.second;
     stat_val& st = stats_[key];
-    st.rem(val, key, *this);
     window_.pop_front();
+    st.rem(val, key, *this);
     if (st.n_ == 0) {
       stats_.erase(key);
     }

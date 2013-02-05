@@ -27,19 +27,31 @@ class stat_test : public testing::Test {
 TYPED_TEST_CASE_P(stat_test);
 
 TYPED_TEST_P(stat_test, trivial) {
-  TypeParam p(10);
+  TypeParam p(3);
   p.push("test", 1.0);
-  p.push("test", 2.0);
+  p.push("test", 5.0);
   p.push("test", 3.0);
 
-  EXPECT_TRUE(p.sum("test") == 6.0);
-  EXPECT_TRUE(p.max("test") == 3.0);
+  EXPECT_TRUE(p.sum("test") == 9.0);
+  EXPECT_TRUE(p.max("test") == 5.0);
   EXPECT_TRUE(p.min("test") == 1.0);
   EXPECT_NEAR(p.moment("test", 0 , 0.0) , 1.0, 0.1);
-  EXPECT_NEAR(p.moment("test", 1 , 0.0) , 2.0, 0.1);
-  EXPECT_NEAR(p.moment("test", 2 , 0.0) , 4.67, 0.1);
-  EXPECT_NEAR(p.moment("test", 2 , 2.0) , 0.67, 0.1);
-  EXPECT_NEAR(p.moment("test", 3 , 0.0) , 12.0, 0.1);
+  EXPECT_NEAR(p.moment("test", 1 , 0.0) , 3.0, 0.1);
+  EXPECT_NEAR(p.moment("test", 2 , 0.0) , 11.67, 0.1);
+  EXPECT_NEAR(p.moment("test", 2 , 3.0) , 2.67, 0.1);
+  EXPECT_NEAR(p.moment("test", 3 , 0.0) , 51.0, 0.1);
+  EXPECT_NEAR(p.stddev("test"), 1.63, 0.01);
+
+  p.push("test", 2.0);
+  p.push("test", 4.0);
+  EXPECT_TRUE(p.sum("test") == 9.0);
+  EXPECT_TRUE(p.max("test") == 4.0);
+  EXPECT_TRUE(p.min("test") == 2.0);
+  EXPECT_NEAR(p.moment("test", 0 , 0.0) , 1.0, 0.1);
+  EXPECT_NEAR(p.moment("test", 1 , 0.0) , 3.0, 0.1);
+  EXPECT_NEAR(p.moment("test", 2 , 0.0) , 9.67, 0.1);
+  EXPECT_NEAR(p.moment("test", 2 , 3.0) , 0.67, 0.1);
+  EXPECT_NEAR(p.moment("test", 3 , 0.0) , 33.0, 0.1);
   EXPECT_NEAR(p.stddev("test"), 0.82, 0.1);
 }
 
