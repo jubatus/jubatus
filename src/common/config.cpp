@@ -75,7 +75,8 @@ void config_tozk(
     const string& name,
     string& config) {
   if (config == "") {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("config is empty"));
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error("config is empty"));
   }
 
   try {
