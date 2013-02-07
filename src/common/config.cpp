@@ -24,8 +24,8 @@
 #include <utility>
 #include <vector>
 #include <pficommon/lang/cast.h>
+#include <pficommon/text/json.h>
 #include "exception.hpp"
-#include "jsonconfig.hpp"
 
 using std::ifstream;
 using std::string;
