@@ -13,29 +13,37 @@
 #include "../framework/keeper.hpp"
 #include "classifier_types.hpp"
 
-int main(int args, char* argv[]) {
+namespace jubatus {
+
+int run_keeper(int argc, char* argv[]) {
   try {
     jubatus::framework::keeper k(
-        jubatus::framework::keeper_argv(args, argv, "classifier"));
+        jubatus::framework::keeper_argv(argc, argv, "classifier"));
     k.register_async_random<std::string>("get_config");
     k.register_async_random<int32_t, std::vector<std::pair<std::string,
          datum> > >("train");
     k.register_async_random<std::vector<std::vector<estimate_result> >,
          std::vector<datum> >("classify");
     k.register_async_broadcast<bool, std::string>("save",
-         pfi::lang::function<bool(bool, bool)>(&all_and));
+         pfi::lang::function<bool(bool, bool)>(&jubatus::framework::all_and));
     k.register_async_broadcast<bool, std::string>("load",
-         pfi::lang::function<bool(bool, bool)>(&all_and));
+         pfi::lang::function<bool(bool, bool)>(&jubatus::framework::all_and));
     k.register_async_broadcast<std::map<std::string, std::map<std::string,
          std::string> > >("get_status",
          pfi::lang::function<std::map<std::string, std::map<std::string,
          std::string> >(std::map<std::string, std::map<std::string,
          std::string> >, std::map<std::string, std::map<std::string,
-         std::string> >)>(&merge<std::string, std::map<std::string,
-         std::string> >));
+         std::string> >)>(&jubatus::framework::merge<std::string,
+         std::map<std::string, std::string> >));
     return k.run();
   } catch (const jubatus::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
     return -1;
   }
+}
+
+}  // namespace jubatus
+
+int main(int argc, char* argv[]) {
+  jubatus::run_keeper(argc, argv);
 }

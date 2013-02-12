@@ -438,15 +438,15 @@ let gen_server_file conf source services =
 let gen_aggregator ret_type aggregator =
   match ret_type, aggregator with
   | Bool, All_and ->
-    "all_and"
+    "jubatus::framework::all_and"
   | Bool, All_or ->
-    "all_or"
+    "jubatus::framework::all_or"
   | List t, Concat ->
-    gen_template "concat" [t]
+    gen_template "jubatus::framework::concat" [t]
   | Map (k, v), Merge ->
-    gen_template "merge" [k; v]
+    gen_template "jubatus::framework::merge" [k; v]
   | _, Pass ->
-    gen_template "pass" [ret_type]
+    gen_template "jubatus::framework::pass" [ret_type]
   | _, _ ->
     (* TODO(unnonouno): Are other combinations really illegal?*)
     let msg = Printf.sprintf
@@ -511,6 +511,9 @@ let gen_keeper_file conf source services =
 
   let name_str = gen_string_literal base in
   let servers = List.concat (List.map gen_keeper services) in
+
+  let namespace = parse_namespace conf.Config.namespace in
+  let func = String.concat "::" namespace ^ "::run_keeper" in
   
   let s = List.concat [
     [
@@ -526,18 +529,30 @@ let gen_keeper_file conf source services =
       (0, gen_jubatus_include conf "framework/keeper.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
       (0, "");
-      (0, "int main(int args, char* argv[]) {");
-      (1,   "try {");
-      (2,     "jubatus::framework::keeper k(");
-      (4,         "jubatus::framework::keeper_argv(args, argv, " ^ name_str ^ "));");
     ];
-    indent_lines 2 (List.concat servers);
+    make_namespace namespace (
+      List.concat [
+        [
+          (0, "int run_keeper(int argc, char* argv[]) {");
+          (1,   "try {");
+          (2,     "jubatus::framework::keeper k(");
+          (4,         "jubatus::framework::keeper_argv(argc, argv, " ^ name_str ^ "));");
+        ];
+        indent_lines 2 (List.concat servers);
+        [
+          (2,     "return k.run();");
+          (1,   "} catch (const jubatus::exception::jubatus_exception& e) {");
+          (2,     "LOG(FATAL) << e.diagnostic_information(true);");
+          (2,     "return -1;");
+          (1,   "}");
+          (0, "}")
+        ]
+      ]
+    );
     [
-      (2,     "return k.run();");
-      (1,   "} catch (const jubatus::exception::jubatus_exception& e) {");
-      (2,     "LOG(FATAL) << e.diagnostic_information(true);");
-      (2,     "return -1;");
-      (1,   "}");
+      (0, "");
+      (0, "int main(int argc, char* argv[]) {");
+      (1,   func ^ "(argc, argv);");
       (0, "}")
     ]
   ] in
