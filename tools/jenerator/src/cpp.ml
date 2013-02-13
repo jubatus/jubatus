@@ -737,8 +737,8 @@ let gen_server_template_source_method s m =
   let ret_type = gen_ret_type m.method_return_type in
   let const = gen_const m in
   [
-    (0, Printf.sprintf "%s %s::%s%s%s" ret_type serv_name name args_def const);
-    (0, "{}");
+    (0, Printf.sprintf "%s %s::%s%s%s {" ret_type serv_name name args_def const);
+    (0, "}");
   ]
 ;;
 
