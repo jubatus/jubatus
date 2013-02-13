@@ -1,8 +1,8 @@
 // This file is auto-generated from regression.idl
 // *** DO NOT EDIT ***
 
-#ifndef REGRESSION_TYPES_HPP_
-#define REGRESSION_TYPES_HPP_
+#ifndef JUBATUS_SERVER_REGRESSION_TYPES_HPP_
+#define JUBATUS_SERVER_REGRESSION_TYPES_HPP_
 
 #include <stdint.h>
 
@@ -24,4 +24,4 @@ struct datum {
 
 }  // namespace jubatus
 
-#endif  // REGRESSION_TYPES_HPP_
+#endif  // JUBATUS_SERVER_REGRESSION_TYPES_HPP_

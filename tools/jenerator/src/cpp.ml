@@ -207,7 +207,7 @@ let make_source conf source filename content =
 ;;
 
 let make_header conf source filename content =
-  let guard = make_guard_name filename in
+  let guard = conf.Config.include_guard ^ make_guard_name filename in
   make_source conf source filename (concat_blocks [
     [
       (0, "#ifndef " ^ guard);

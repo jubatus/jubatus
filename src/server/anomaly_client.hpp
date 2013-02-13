@@ -1,8 +1,8 @@
 // This file is auto-generated from anomaly.idl
 // *** DO NOT EDIT ***
 
-#ifndef ANOMALY_CLIENT_HPP_
-#define ANOMALY_CLIENT_HPP_
+#ifndef JUBATUS_SERVER_ANOMALY_CLIENT_HPP_
+#define JUBATUS_SERVER_ANOMALY_CLIENT_HPP_
 
 #include <map>
 #include <string>
@@ -79,4 +79,4 @@ class anomaly {
 }  // namespace client
 }  // namespace jubatus
 
-#endif  // ANOMALY_CLIENT_HPP_
+#endif  // JUBATUS_SERVER_ANOMALY_CLIENT_HPP_

@@ -23,10 +23,11 @@ type t = {
   internal: bool;
   namespace: string;
   default_template: bool;
+  include_guard: string;
 }
-  
+
 let usage =
-  "usage: jenerator -l <lang> [-o <out>] [-i] [-n <namespace>] [-t] idl ...\n"
+  "usage: jenerator -l <lang> [-o <out>] [-i] [-n <namespace>] [-t] [-g <includeguard>] idl ...\n"
 ;;
 
 let languages = [ "cpp"; (* "python"; "java"; "ruby"; *) ]
@@ -42,6 +43,7 @@ let parse_args () =
   let internal = ref false in
   let namespace = ref "" in
   let default_template = ref false in
+  let include_guard = ref "" in
 
   let specs = [
     ("-l", Arg.Symbol(languages, (fun s -> language := Some s)),
@@ -54,6 +56,8 @@ let parse_args () =
      "Namespace");
     ("-t", Arg.Set default_template,
      "Output default template xxx_serv files");
+    ("-g", Arg.Set_string include_guard,
+     "Prefix of include guard (used in C++)");
   ] in
   let rest = ref [] in
   Arg.parse specs (fun arg -> rest := arg::!rest) usage;
@@ -71,7 +75,7 @@ let parse_args () =
         namespace = !namespace;
         internal = !internal;
         default_template = !default_template;
+        include_guard = !include_guard;
       } in
       (conf, !rest)
 ;;
-

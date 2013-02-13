@@ -1,8 +1,8 @@
 // This file is auto-generated from graph.idl
 // *** DO NOT EDIT ***
 
-#ifndef GRAPH_SERVER_HPP_
-#define GRAPH_SERVER_HPP_
+#ifndef JUBATUS_SERVER_GRAPH_SERVER_HPP_
+#define JUBATUS_SERVER_GRAPH_SERVER_HPP_
 
 #include <map>
 #include <string>
@@ -89,4 +89,4 @@ class graph : public jubatus::common::mprpc::rpc_server {
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // GRAPH_SERVER_HPP_
+#endif  // JUBATUS_SERVER_GRAPH_SERVER_HPP_
