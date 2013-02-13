@@ -359,7 +359,6 @@ let gen_type_file conf source idl =
     (0, "#include <stdint.h>");
     (0, "");
     (0, "#include <map>");
-    (0, "#include <stdexcept>");
     (0, "#include <string>");
     (0, "#include <vector>");
     (0, "#include <utility>");
