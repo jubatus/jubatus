@@ -23,11 +23,11 @@
 #include "graph_base.hpp"
 
 namespace jubatus {
-namespace recommender {
+namespace graph {
 
 class graph_impl : public graph_base {
  public:
-  graph_imp() :
+  graph_impl() :
       graph_base() {
   }
 
@@ -60,6 +60,7 @@ class graph_impl : public graph_base {
 
 
   double centrality(node_id_t id, centrality_type ct) const {
+    return 0.0;
   }
 
   void shortest_path(
@@ -76,6 +77,7 @@ class graph_impl : public graph_base {
   }
 
   std::string type() const {
+    return "";
   }
 
   void get_status(std::map<std::string, std::string>& status) const {

@@ -23,5 +23,6 @@ def build(bld):
       use = 'PFICOMMON jubacommon jubatus_graph')
 
   map(make_test, [
+      'graph_base_test.cpp',
       'graph_wo_index_test.cpp',
       ])
