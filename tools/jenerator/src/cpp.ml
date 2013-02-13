@@ -693,9 +693,9 @@ let gen_server_template_header s =
   let serv_name = name ^ "_serv" in
   List.concat [
     [
-      (0, "class " ^ serv_name ^ " : public jubatus_serv {  // do not change");
+      (0, "class " ^ serv_name ^ " : public jubatus::framework::jubatus_serv {  // do not change");
       (0, " public:");
-      (1,   serv_name ^ "(const server_argv& a);  // do not change");
+      (1,   serv_name ^ "(const jubatus::framework::server_argv& a);  // do not change");
       (1,   "virtual ~" ^ serv_name ^ "();  // do not change");
     ];
     indent_lines 1 (List.concat methods);
@@ -720,8 +720,6 @@ let gen_server_template_header_file conf source services =
     [
       (0, gen_jubatus_include conf "framework.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
-      (* TODO(unnonouno): do not use using namespace in header *)
-      (0, "using namespace jubatus::framework;");
     ];
     make_namespace namespace (concat_blocks servers)
   ] in
@@ -748,8 +746,8 @@ let gen_server_template_source s =
   let serv_name = name ^ "_serv" in
   concat_blocks [
     [
-      (0, serv_name ^ "::" ^ serv_name ^ "(const server_argv& a)");
-      (2,     ": framework::jubatus_serv(a) {");
+      (0, serv_name ^ "::" ^ serv_name ^ "(const jubatus::framework::server_argv& a)");
+      (2,     ": jubatus::framework::jubatus_serv(a) {");
       (1,   "// somemixable* mi = new somemixable;");
       (1,   "// somemixable_.set_model(mi);");
       (1,   "// register_mixable(mi);");
@@ -775,8 +773,6 @@ let gen_server_template_source_file conf source services =
   let content = concat_blocks [
     [
       (0, "#include \"" ^ serv_hpp ^ "\"");
-      (0, "");
-      (0, "using namespace jubatus::framework;");
     ];
     make_namespace namespace (concat_blocks servers);
   ] in
