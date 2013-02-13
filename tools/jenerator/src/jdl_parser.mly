@@ -36,7 +36,7 @@ let parse_error s = print ("parse_error->"^s);;
 %token EXCEPTION
 %token SERVICE
 
-%token RRBRACE LRBRACE COMMA COLON
+%token RPAREN LPAREN COMMA COLON
 %token RBRACE LBRACE RBRACE2 LBRACE2
 %token QUESTION
 %token ENUM
@@ -199,19 +199,19 @@ decorators:
      { [ (Syntax.make_decorator $1) ] }
  | DECORATOR decorators
      { (Syntax.make_decorator $1)::$2 }
- | DECORATOR LRBRACE INT RRBRACE
+ | DECORATOR LPAREN INT RPAREN
      { [ (Syntax.make_decorator_with_int $1 $3) ] }
- | DECORATOR LRBRACE INT RRBRACE decorators
+ | DECORATOR LPAREN INT RPAREN decorators
      { (Syntax.make_decorator_with_int $1 $3)::$5 }
 
 // comma separated fields
 cfields:
- | LRBRACE RRBRACE { [] }
- | LRBRACE field cfields_rest { $2::$3 }
+ | LPAREN RPAREN { [] }
+ | LPAREN field cfields_rest { $2::$3 }
 ;
 cfields_rest:
  | COMMA field cfields_rest { $2::$3 }
- | RRBRACE { [] }
+ | RPAREN { [] }
 
 /* TODO: include "hoge.rdl"
  | INCLUDE LBRACE LITERAL RBRACE   {

@@ -42,8 +42,8 @@ rule token = parse
   | '>'       { RBRACE }
   | '}'       { RBRACE2 }
   | '{'       { LBRACE2 }
-  | '('       { LRBRACE }
-  | ')'       { RRBRACE }
+  | '('       { LPAREN }
+  | ')'       { RPAREN }
   | '?'       { QUESTION }
   | '='       { DEFINE }
   | ':'       { COLON }
