@@ -8,4 +8,4 @@ BYTE_ENABLED = $(not $(OCAMLOPT_EXISTS))
 .SUBDIRS: src test
 
 clean:
-	rm -f *~ *.opt *.cmi *.cmx *.o *.omc
+  rm -f *~ *.opt *.cmi *.cmx *.o *.omc

@@ -2,7 +2,7 @@
 OCAMLINCLUDES += ../src
 
 FILES[] =
-	cpp_test
+  cpp_test
 
 USE_OCAMLFIND = true
 OCAMLPACKS[] = oUnit
@@ -12,11 +12,11 @@ OCAML_LIBS += ../src/target
 OCAML_OTHER_LIBS += str
 
 clean:
-	rm -f *~ *.opt *.cmi *.cmx *.o *.omc *.cma *.cmxa
+  rm -f *~ *.opt *.cmi *.cmx *.o *.omc *.cma *.cmxa
 
 .DEFAULT: all
 
 all : $(OCamlProgram $(PROGRAM), $(FILES))
 
 check : all
-	./$(PROGRAM)
+  ./$(PROGRAM)

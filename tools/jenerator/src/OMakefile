@@ -1,8 +1,8 @@
 .PHONY: all install clean test regenerate uninstall
 
 clean:
-	rm -rf $(filter-proper-targets $(ls R, .))
-	rm -rf *.omc
+  rm -rf $(filter-proper-targets $(ls R, .))
+  rm -rf *.omc
 
 USE_OCAMLFIND = true
 #
@@ -48,13 +48,13 @@ OCAMLCFLAGS   += -g
 OCamlGeneratedFiles(jdl_parser.ml jdl_lexer.ml)
 
 FILES[] =
-    jdl_lexer
-    jdl_parser
-    file_util
-    syntax
-    config
-    cpp
-    main
+  jdl_lexer
+  jdl_parser
+  file_util
+  syntax
+  config
+  cpp
+  main
 
 
 PROGRAM = jenerator
@@ -69,16 +69,16 @@ OCAML_OTHER_LIBS += str
 OCamlLibrary($(LIB), $(FILES))
 
 test: $(PROGRAM)  small.idl
-	./$(PROGRAM) small.idl -t
+  ./$(PROGRAM) small.idl -t
 
 regenerate: $(PROGRAM)
-	./$(PROGRAM) ../../src/server/recommender.idl -i -o ../../src/server
-	./$(PROGRAM) ../../src/server/regression.idl  -i -o ../../src/server
-	./$(PROGRAM) ../../src/server/classifier.idl  -i -o ../../src/server
-	./$(PROGRAM) ../../src/server/stat.idl        -i -o ../../src/server
-	./$(PROGRAM) ../../src/server/graph.idl       -i -o ../../src/server
+  ./$(PROGRAM) ../../src/server/recommender.idl -i -o ../../src/server
+  ./$(PROGRAM) ../../src/server/regression.idl  -i -o ../../src/server
+  ./$(PROGRAM) ../../src/server/classifier.idl  -i -o ../../src/server
+  ./$(PROGRAM) ../../src/server/stat.idl        -i -o ../../src/server
+  ./$(PROGRAM) ../../src/server/graph.idl       -i -o ../../src/server
 
 OCamlProgramInstall(install, /usr/local/bin, $(PROGRAM), $(FILES))
 
 uninstall:
-	-rm /usr/local/bin/$(PROGRAM)
+  -rm /usr/local/bin/$(PROGRAM)
