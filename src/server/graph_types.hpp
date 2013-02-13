@@ -13,6 +13,7 @@
 #include <utility>
 
 #include <msgpack.hpp>
+
 namespace jubatus {
 
 struct node {
@@ -22,12 +23,14 @@ struct node {
   std::vector<uint64_t> in_edges;
   std::vector<uint64_t> out_edges;
 };
+
 struct preset_query {
  public:
   MSGPACK_DEFINE(edge_query, node_query);
   std::vector<std::pair<std::string, std::string> > edge_query;
   std::vector<std::pair<std::string, std::string> > node_query;
 };
+
 struct edge {
  public:
   MSGPACK_DEFINE(property, source, target);
@@ -35,6 +38,7 @@ struct edge {
   std::string source;
   std::string target;
 };
+
 struct shortest_path_query {
  public:
   MSGPACK_DEFINE(source, target, max_hop, query);

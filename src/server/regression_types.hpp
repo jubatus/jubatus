@@ -13,6 +13,7 @@
 #include <utility>
 
 #include <msgpack.hpp>
+
 namespace jubatus {
 
 struct datum {

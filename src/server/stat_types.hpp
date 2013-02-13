@@ -13,8 +13,8 @@
 #include <utility>
 
 #include <msgpack.hpp>
-namespace jubatus {
 
+namespace jubatus {
 
 }  // namespace jubatus
 

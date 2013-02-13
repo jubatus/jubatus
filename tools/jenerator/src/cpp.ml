@@ -129,6 +129,113 @@ let gen_ret_type = function
   | Some typ -> gen_type typ
 ;;
 
+let make_guard_name filename =
+  let name = Filename.basename filename in
+  let upper = String.uppercase name in
+  Str.global_replace (Str.regexp "[\\./]") "_" upper ^ "_"
+;;
+
+let rfind line pos ch =
+  if String.rcontains_from line pos ch then
+    Some (String.rindex_from line pos ch)
+  else
+    None
+
+let rindex_split_pos line pos =
+  let paren = rfind line pos '(' in
+  let comma = rfind line pos ',' in
+  match paren, comma with
+  | Some p, Some c -> Some (max (p + 1) (c + 1))
+  | Some p, None -> Some (p + 1)
+  | None, Some c -> Some (c + 1)
+  | None, None -> None
+;;
+
+let rec print_indent p (indent, line) =
+  if line == "" then
+    (* don't append spaces to a blank line *)
+    p ""
+  else
+    let space = String.make (indent * 2) ' ' in
+    let max_len = 80 - indent * 2 in
+    let len = String.length line in
+    if len > max_len then
+      match rindex_split_pos line (max_len - 1) with
+      | Some pos ->
+        p (space ^ String.sub line 0 pos);
+        print_indent p (indent, "    " ^ String.sub line pos (len - pos))
+      | None ->
+        p (space ^ line)
+    else
+      p (space ^ line)
+;;
+
+let print_lines p lines =
+  let blank = ref false in
+  List.iter (fun (indent, line) ->
+    if not (line = "" && !blank) then
+      print_indent p (indent, line);
+    blank := line = ""
+  ) lines
+;;
+
+let rec concat_blocks blocks =
+  let rec insert_blank = function
+    | [] -> []
+    | x::[] -> [x]
+    | x::xs -> x::[(0, "")]::(insert_blank xs) in
+  List.concat (insert_blank blocks)
+;;
+  
+let make_header_message source =
+  let file = Filename.basename source in
+  [
+    "// This file is auto-generated from " ^ file;
+    "// *** DO NOT EDIT ***";
+    "";
+  ]
+;;
+
+let make_source conf source filename content =
+  let path = Filename.concat conf.Config.outdir filename in
+  File_util.safe_open_out path (fun out ->
+    let print = (fun s -> output_string out s; output_char out '\n') in
+    let head = make_header_message source in
+    List.iter print head;
+    print_lines print content
+  )
+;;
+
+let make_header conf source filename content =
+  let guard = make_guard_name filename in
+  make_source conf source filename (concat_blocks [
+    [
+      (0, "#ifndef " ^ guard);
+      (0, "#define " ^ guard);
+    ];
+    content;
+    [
+      (0, "#endif  // " ^ guard);
+    ]
+  ])
+;;
+
+let rec make_namespace ns content =
+  match ns with
+  | [] ->
+    List.concat [
+      [ (0, "") ];
+      content;
+      [ (0, "") ];
+    ]
+  | n::ns ->
+    List.concat [
+      [ (0, "namespace " ^ n ^ " {") ];
+      make_namespace ns content;
+      [ (0, "}  // namespace " ^ n) ];
+    ]
+;;
+
 let gen_client_method m =
   let name = m.method_name in
   let args_def = gen_function_args_def m.method_arguments in
@@ -158,16 +265,20 @@ let gen_client_method m =
 
 let gen_client s =
   let methods = List.map gen_client_method s.service_methods in
+  let constructor = [
+    (0, s.service_name ^ "(const std::string& host, uint64_t port, double timeout_sec)");
+    (2,     ": c_(host, port) {");
+    (1,   "c_.set_timeout(timeout_sec);");
+    (0, "}");
+  ] in
+  let content = concat_blocks (constructor::methods) in
+
   List.concat [
     [
       (0, "class " ^ s.service_name ^ " {");
       (0, " public:");
-      (1,   s.service_name ^ "(const std::string& host, uint64_t port, double timeout_sec)");
-      (3,       ": c_(host, port) {");
-      (2,     "c_.set_timeout(timeout_sec);");
-      (1,   "}");
     ];
-    indent_lines 1 (List.concat methods);
+    indent_lines 1 content;
     [
       (0, "");
       (0, " private:");
@@ -215,106 +326,6 @@ let gen_typedef = function
     []
 ;;
 
-let make_guard_name filename =
-  let name = Filename.basename filename in
-  let upper = String.uppercase name in
-  Str.global_replace (Str.regexp "[\\./]") "_" upper ^ "_"
-;;
-
-let rfind line pos ch =
-  if String.rcontains_from line pos ch then
-    Some (String.rindex_from line pos ch)
-  else
-    None
-
-let rindex_split_pos line pos =
-  let paren = rfind line pos '(' in
-  let comma = rfind line pos ',' in
-  match paren, comma with
-  | Some p, Some c -> Some (max (p + 1) (c + 1))
-  | Some p, None -> Some (p + 1)
-  | None, Some c -> Some (c + 1)
-  | None, None -> None
-;;
-
-let rec print_indent p (indent, line) =
-  if line == "" then
-    (* don't append spaces to a blank line *)
-    p ""
-  else
-    let space = String.make (indent * 2) ' ' in
-    let max_len = 80 - indent * 2 in
-    let len = String.length line in
-    if len > max_len then
-      match rindex_split_pos line (max_len - 1) with
-      | Some pos ->
-        p (space ^ String.sub line 0 pos);
-        print_indent p (indent, "    " ^ String.sub line pos (len - pos))
-      | None ->
-        p (space ^ line)
-    else
-      p (space ^ line)
-;;
-
-let print_lines p =
-  List.iter (print_indent p)
-;;
-
-let concat_blocks blocks =
-  List.concat blocks
-;;
-
-let make_header_message source =
-  let file = Filename.basename source in
-  [
-    "// This file is auto-generated from " ^ file;
-    "// *** DO NOT EDIT ***";
-    "";
-  ]
-;;
-
-let make_source conf source filename content =
-  let path = Filename.concat conf.Config.outdir filename in
-  File_util.safe_open_out path (fun out ->
-    let print = (fun s -> output_string out s; output_char out '\n') in
-    let head = make_header_message source in
-    List.iter print head;
-    print_lines print content
-  )
-;;
-
-let make_header conf source filename content =
-  let guard = make_guard_name filename in
-  make_source conf source filename (List.concat [
-    [
-      (0, "#ifndef " ^ guard);
-      (0, "#define " ^ guard);
-      (0, "");
-    ];
-    content;
-    [
-      (0, "");
-      (0, "#endif  // " ^ guard);
-    ]
-  ])
-;;
-
-let rec make_namespace ns content =
-  match ns with
-  | [] ->
-    List.concat [
-      [ (0, "") ];
-      content;
-      [ (0, "") ];
-    ]
-  | n::ns ->
-    List.concat [
-      [ (0, "namespace " ^ n ^ " {") ];
-      make_namespace ns content;
-      [ (0, "}  // namespace " ^ n) ];
-    ]
-;;
-
 let gen_client_file conf source services =
   let base = File_util.take_base source in
   (* TODO(unnonouno): smarter way? *)
@@ -324,7 +335,7 @@ let gen_client_file conf source services =
   let namespace = List.append namespace ["client"] in
   let clients = List.map gen_client services in
 
-  let content = List.concat [
+  let content = concat_blocks [
     [
       (0, "#include <map>");
       (0, "#include <string>");
@@ -332,9 +343,8 @@ let gen_client_file conf source services =
       (0, "#include <utility>");
       (0, "#include <jubatus/msgpack/rpc/client.h>");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
-      (0, "");
     ];
-    make_namespace namespace (List.concat clients)
+    make_namespace namespace (concat_blocks clients)
   ] in
   
   make_header conf source filename content
@@ -357,10 +367,9 @@ let gen_type_file conf source idl =
     (0, "#include <msgpack.hpp>");
   ] in
 
-  let content = List.concat [
+  let content = concat_blocks [
     includes;
-    (* TODO(unnonouno): insert blank lines *)
-    make_namespace namespace (List.concat types);
+    make_namespace namespace (concat_blocks types);
   ] in
 
   make_header conf source name content
@@ -417,7 +426,7 @@ let gen_server_file conf source services =
   let namespace = List.append namespace ["server"] in
   let servers = List.map gen_server services in
 
-  let content = List.concat [
+  let content = concat_blocks [
     [
       (0, "#include <map>");
       (0, "#include <string>");
@@ -427,9 +436,8 @@ let gen_server_file conf source services =
       (0, "");
       (0, gen_jubatus_include conf "common/mprpc/rpc_server.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
-      (0, "");
     ];
-    make_namespace namespace (List.concat servers)
+    make_namespace namespace (concat_blocks servers)
   ] in
   
   make_header conf source filename content
@@ -515,7 +523,7 @@ let gen_keeper_file conf source services =
   let namespace = parse_namespace conf.Config.namespace in
   let func = String.concat "::" namespace ^ "::run_keeper" in
   
-  let s = List.concat [
+  let s = concat_blocks [
     [
       (0, "#include <map>");
       (0, "#include <string>");
@@ -528,7 +536,6 @@ let gen_keeper_file conf source services =
       (0, gen_jubatus_include conf "framework/aggregators.hpp");
       (0, gen_jubatus_include conf "framework/keeper.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
-      (0, "");
     ];
     make_namespace namespace (
       List.concat [
@@ -550,7 +557,6 @@ let gen_keeper_file conf source services =
       ]
     );
     [
-      (0, "");
       (0, "int main(int argc, char* argv[]) {");
       (1,   func ^ "(argc, argv);");
       (0, "}")
@@ -588,13 +594,11 @@ let gen_impl_method m =
       gen_call ("return " ^ pointer ^ "->" ^ name) args
   in
 
-  List.concat [
-    [
-      (0, Printf.sprintf "%s %s%s {" ret_type name args_def);
-      (1,   lock);
-      (1,   call);
-      (0, "}");
-    ]
+  [
+    (0, Printf.sprintf "%s %s%s {" ret_type name args_def);
+    (1,   lock);
+    (1,   call);
+    (0, "}");
   ]
 ;;
 
@@ -624,7 +628,7 @@ let gen_impl s =
       (2,     "p_(new jubatus::framework::server_helper<" ^ serv_name ^ ">(a, " ^ gen_bool_literal use_cht ^ ")) {");
       (1,   "}")
     ];
-    indent_lines 1 (List.concat methods);
+    indent_lines 1 (concat_blocks methods);
     [
       (1,   "int run() { return p_->start(*this); }");
       (1,   "common::cshared_ptr<" ^ serv_name ^ "> get_p() { return p_->server(); }");
@@ -644,7 +648,7 @@ let gen_impl_file conf source services =
   let namespace = parse_namespace conf.Config.namespace in
   let namespace = List.append namespace ["server"] in
   let impls = List.map gen_impl services in
-  let s = List.concat [
+  let s = concat_blocks [
     [
       (0, "#include <map>");
       (0, "#include <string>");
@@ -714,15 +718,14 @@ let gen_server_template_header_file conf source services =
   let namespace = List.append namespace ["server"] in
   let servers = List.map gen_server_template_header services in
 
-  let content = List.concat [
+  let content = concat_blocks [
     [
       (0, gen_jubatus_include conf "framework.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
       (* TODO(unnonouno): do not use using namespace in header *)
       (0, "using namespace jubatus::framework;");
-      (0, "");
     ];
-    make_namespace namespace (List.concat servers)
+    make_namespace namespace (concat_blocks servers)
   ] in
   
   make_header conf source filename content
@@ -745,7 +748,7 @@ let gen_server_template_source s =
   let methods = List.map (gen_server_template_source_method s) s.service_methods in
   let name = s.service_name in
   let serv_name = name ^ "_serv" in
-  List.concat [
+  concat_blocks [
     [
       (0, serv_name ^ "::" ^ serv_name ^ "(const server_argv& a)");
       (2,     ": framework::jubatus_serv(a) {");
@@ -757,7 +760,7 @@ let gen_server_template_source s =
       (0, serv_name ^ "::~" ^ serv_name ^ "() {");
       (0, "}");
     ];
-    List.concat methods;
+    concat_blocks methods;
     [ (0, "void " ^ serv_name ^ "::after_load() {}")];
   ]
 ;;
@@ -772,13 +775,13 @@ let gen_server_template_source_file conf source services =
   let namespace = List.append namespace ["server"] in
   let servers = List.map gen_server_template_source services in
 
-  let content = List.concat [
+  let content = concat_blocks [
     [
       (0, "#include \"" ^ serv_hpp ^ "\"");
       (0, "");
       (0, "using namespace jubatus::framework;");
     ];
-    make_namespace namespace (List.concat servers);
+    make_namespace namespace (concat_blocks servers);
   ] in
   
   make_source conf source filename content

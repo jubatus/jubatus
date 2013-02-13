@@ -13,6 +13,7 @@
 #include <utility>
 
 #include <msgpack.hpp>
+
 namespace jubatus {
 
 struct datum {
@@ -21,6 +22,7 @@ struct datum {
   std::vector<std::pair<std::string, std::string> > string_values;
   std::vector<std::pair<std::string, double> > num_values;
 };
+
 struct estimate_result {
  public:
   MSGPACK_DEFINE(label, score);

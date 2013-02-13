@@ -9,6 +9,7 @@
 #include "../framework.hpp"
 #include "anomaly_server.hpp"
 #include "anomaly_serv.hpp"
+
 namespace jubatus {
 namespace server {
 
@@ -22,38 +23,47 @@ class anomaly_impl_ : public anomaly<anomaly_impl_> {
     JRLOCK__(p_);
     return get_p()->get_config();
   }
+  
   bool clear_row(std::string name, std::string id) {
     JWLOCK__(p_);
     return get_p()->clear_row(id);
   }
+  
   std::pair<std::string, float> add(std::string name, datum row) {
     JWLOCK__(p_);
     return get_p()->add(row);
   }
+  
   float update(std::string name, std::string id, datum row) {
     JWLOCK__(p_);
     return get_p()->update(id, row);
   }
+  
   bool clear(std::string name) {
     JWLOCK__(p_);
     return get_p()->clear();
   }
+  
   float calc_score(std::string name, datum row) {
     JRLOCK__(p_);
     return get_p()->calc_score(row);
   }
+  
   std::vector<std::string> get_all_rows(std::string name) {
     JRLOCK__(p_);
     return get_p()->get_all_rows();
   }
+  
   bool save(std::string name, std::string id) {
     JWLOCK__(p_);
     return get_p()->save(id);
   }
+  
   bool load(std::string name, std::string id) {
     JWLOCK__(p_);
     return get_p()->load(id);
   }
+  
   std::map<std::string, std::map<std::string, std::string> > get_status(
       std::string name) {
     JRLOCK__(p_);
@@ -68,6 +78,7 @@ class anomaly_impl_ : public anomaly<anomaly_impl_> {
 
 }  // namespace server
 }  // namespace jubatus
+
 int main(int args, char** argv) {
   return
     jubatus::framework::run_server<jubatus::server::anomaly_impl_>
