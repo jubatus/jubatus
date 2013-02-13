@@ -27,7 +27,6 @@
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/serialization.h>
 #include "bit_vector.hpp"
-#include "lsh_vector.hpp"
 
 namespace jubatus {
 namespace storage {
