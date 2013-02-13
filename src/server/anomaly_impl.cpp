@@ -79,8 +79,8 @@ class anomaly_impl_ : public anomaly<anomaly_impl_> {
 }  // namespace server
 }  // namespace jubatus
 
-int main(int args, char** argv) {
+int main(int argc, char* argv[]) {
   return
     jubatus::framework::run_server<jubatus::server::anomaly_impl_>
-      (args, argv, "anomaly");
+      (argc, argv, "anomaly");
 }

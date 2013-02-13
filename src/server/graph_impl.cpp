@@ -148,8 +148,8 @@ class graph_impl_ : public graph<graph_impl_> {
 }  // namespace server
 }  // namespace jubatus
 
-int main(int args, char** argv) {
+int main(int argc, char* argv[]) {
   return
     jubatus::framework::run_server<jubatus::server::graph_impl_>
-      (args, argv, "graph");
+      (argc, argv, "graph");
 }

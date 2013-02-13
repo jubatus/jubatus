@@ -61,8 +61,8 @@ class classifier_impl_ : public classifier<classifier_impl_> {
 }  // namespace server
 }  // namespace jubatus
 
-int main(int args, char** argv) {
+int main(int argc, char* argv[]) {
   return
     jubatus::framework::run_server<jubatus::server::classifier_impl_>
-      (args, argv, "classifier");
+      (argc, argv, "classifier");
 }

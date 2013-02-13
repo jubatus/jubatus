@@ -61,8 +61,8 @@ class regression_impl_ : public regression<regression_impl_> {
 }  // namespace server
 }  // namespace jubatus
 
-int main(int args, char** argv) {
+int main(int argc, char* argv[]) {
   return
     jubatus::framework::run_server<jubatus::server::regression_impl_>
-      (args, argv, "regression");
+      (argc, argv, "regression");
 }

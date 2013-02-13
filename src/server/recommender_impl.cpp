@@ -106,8 +106,8 @@ class recommender_impl_ : public recommender<recommender_impl_> {
 }  // namespace server
 }  // namespace jubatus
 
-int main(int args, char** argv) {
+int main(int argc, char* argv[]) {
   return
     jubatus::framework::run_server<jubatus::server::recommender_impl_>
-      (args, argv, "recommender");
+      (argc, argv, "recommender");
 }

@@ -85,8 +85,8 @@ class stat_impl_ : public stat<stat_impl_> {
 }  // namespace server
 }  // namespace jubatus
 
-int main(int args, char** argv) {
+int main(int argc, char* argv[]) {
   return
     jubatus::framework::run_server<jubatus::server::stat_impl_>
-      (args, argv, "stat");
+      (argc, argv, "stat");
 }

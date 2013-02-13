@@ -660,11 +660,11 @@ let gen_impl_file conf source services =
     ];
     make_namespace namespace (List.concat impls);
     [
-      (0, "int main(int args, char** argv) {");
+      (0, "int main(int argc, char* argv[]) {");
       (1,   "return");
       (* TODO(unnonouno): does not work when service name is not equal to a source file*)
       (2,     "jubatus::framework::run_server<jubatus::server::" ^ base ^ "_impl_>");
-      (3,       "(args, argv, " ^ name_str ^ ");");
+      (3,       "(argc, argv, " ^ name_str ^ ");");
       (0, "}")
     ]
   ] in
