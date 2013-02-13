@@ -139,24 +139,8 @@ def cpplint(ctx):
 def regenerate(ctx):
   import os
   server_node = ctx.path.find_node('src/server')
-  mpidlconv_node = ctx.path.find_node('tools/mpidlconv')
-  jenerator_node = ctx.path.find_node('tools/generator/jenerator')
+  jenerator_node = ctx.path.find_node('tools/jenerator/src/jenerator')
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name
     service_name = os.path.splitext(idl)[0]
-    ctx.cmd_and_log(['mpidl', 'cpp', idl, '-o', '.', '-p', '-n', 'jubatus'], cwd=server_node.abspath())
-    ctx.cmd_and_log([mpidlconv_node.abspath(), '-I', '-i', '.', '-s', service_name], cwd=server_node.abspath())
-    ctx.cmd_and_log([jenerator_node.abspath(), idl, '-o', '.', '-i', '-n', 'jubatus'], cwd=server_node.abspath())
-
-def regenerate_client(ctx):
-  import os
-  server_node = ctx.path.find_node('src/server')
-  client_node = ctx.path.find_node('client')
-  mpidlconv_node = ctx.path.find_node('tools/mpidlconv')
-  for idl_node in server_node.ant_glob('*.idl'):
-    idl = idl_node.name
-    service_name = os.path.splitext(idl)[0]
-    ctx.cmd_and_log(['mpidl', 'cpp', idl, '-o', client_node.abspath(), '-p', '-n', 'jubatus::' + service_name], cwd=server_node.abspath())
-    ctx.cmd_and_log([mpidlconv_node.abspath(), '-i', client_node.abspath(), '-s', service_name], cwd=server_node.abspath())
-  for server_hpp in client_node.ant_glob('*_server.hpp'):
-    server_hpp.delete()
+    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'cpp', '-o', '.', '-i', '-n', 'jubatus', '-g', 'JUBATUS_SERVER_', idl], cwd=server_node.abspath())

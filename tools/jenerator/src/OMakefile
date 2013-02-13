@@ -1,4 +1,4 @@
-.PHONY: all install clean test regenerate uninstall
+.PHONY: all install clean uninstall
 
 clean:
   rm -rf $(filter-proper-targets $(ls R, .))
@@ -67,12 +67,6 @@ OCAML_OTHER_LIBS += str
 .DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
 
 OCamlLibrary($(LIB), $(FILES))
-
-test: $(PROGRAM)  small.idl
-  ./$(PROGRAM) small.idl -t
-
-regenerate: $(PROGRAM)
-  ./$(PROGRAM) -l cpp -i -o ../../../src/server -n jubatus -g JUBATUS_SERVER_ ../../../src/server/*.idl
 
 OCamlProgramInstall(install, /usr/local/bin, $(PROGRAM), $(FILES))
 
