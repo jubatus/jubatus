@@ -18,6 +18,7 @@
 */
 
 %{
+
 open Printf
 open Syntax
 
@@ -52,11 +53,11 @@ let parse_error s = print ("parse_error->"^s);;
 
 %%
 
-input: 
+input:
  | exp0 input { $1::$2 }
  | exp0  { [$1] }
 ;
-   
+
 exp0:
  | typedef { $1 }
  | enum    { $1 }
@@ -162,8 +163,8 @@ field:
  }
 ;
 // default value is not yet implemented | INT COLON a_type LITERAL DEFINE INT {
-//  ($1, $3, $4, ) 
-//} 
+//  ($1, $3, $4, )
+//}
 ;
 
 // TODO: implement version and new RPC-spec
