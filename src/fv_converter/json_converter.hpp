@@ -35,8 +35,6 @@ class json_converter {
   static const char* NULL_STRING;
 
   static void convert(const pfi::text::json::json& jason, datum& ret_datum);
-
-  static void re_convert(const datum& datum, pfi::text::json::json& ret_jason);
 };
 
 }  // namespace fv_converter
