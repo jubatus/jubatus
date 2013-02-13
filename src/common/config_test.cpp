@@ -19,6 +19,7 @@
 #include <string>
 #include <gtest/gtest.h>
 #include "config.hpp"
+#include "exception.hpp"
 
 using std::istringstream;
 using std::string;
@@ -89,4 +90,21 @@ TEST_F(config_trivial, remove_config_fromzk) {
   jubatus::common::remove_config_fromzk(*zk_, engine_, name_);
 
   ASSERT_EQ(true, !zk_->exists(path_));
+}
+
+TEST_F(config_trivial, invalid_config) {
+  istringstream config_str("{\"this\" : \"is\" : \"invalid-json\"}");
+  std::string config = config_str.str();
+
+  EXPECT_THROW(
+      jubatus::common::config_tozk(*zk_, engine_, name_, config),
+      jubatus::exception::runtime_error);
+}
+
+TEST_F(config_trivial, empty_config) {
+  std::string config = "";
+
+  EXPECT_THROW(
+      jubatus::common::config_tozk(*zk_, engine_, name_, config),
+      jubatus::exception::runtime_error);
 }
