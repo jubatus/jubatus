@@ -701,7 +701,6 @@ let gen_server_template_header s =
     ];
     indent_lines 1 (List.concat methods);
     [
-      (1,   "void after_load();");
       (0, "");
       (0, " private:");
       (1,   "// add user data here like: pfi::lang::shared_ptr<some_type> some_;");
@@ -761,7 +760,6 @@ let gen_server_template_source s =
       (0, "}");
     ];
     concat_blocks methods;
-    [ (0, "void " ^ serv_name ^ "::after_load() {}")];
   ]
 ;;
 
