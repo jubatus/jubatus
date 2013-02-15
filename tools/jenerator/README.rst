@@ -60,7 +60,7 @@ server template (different from C++ 'template').
 Licence of generated codes
 ==========================
 
-Jenerator itself is distributed under LGPL, but all generated codes are under MIT.
+Jenerator itself is distributed under LGPL, but you can distribute all generated codes under terms of your choice.
 
 
 Reference
