@@ -1,4 +1,4 @@
-Generator: a user-defined machine learning system
+Jenerator: a user-defined machine learning system
 =================================================
 
 Problem description
