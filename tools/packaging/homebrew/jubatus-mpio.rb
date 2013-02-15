@@ -9,11 +9,6 @@ class JubatusMpio < Formula
   depends_on 'libtool'
   depends_on 'automake'
 
-  def patches
-    # it fails preprocessing with clang
-    DATA
-  end
-
   def install
     system "./bootstrap"
     system "./configure", "--prefix=#{prefix}"
@@ -30,18 +25,3 @@ class JubatusMpio < Formula
     system "false"
   end
 end
-
-__END__
-diff --git a/mpsrc/wavy_kernel.h b/mpsrc/wavy_kernel.h
-index 075b4a4..26dc6c0 100644
---- a/mpsrc/wavy_kernel.h
-+++ b/mpsrc/wavy_kernel.h
-@@ -41,7 +41,7 @@
- #endif
- 
- #define MP_WAVY_KERNEL_HEADER(sys) \
--	MP_PP_HEADER(., wavy_kernel_, sys, )
-+	MP_PP_HEADER(.,wavy_kernel_,sys,)
- 
- #ifndef MP_WAVY_KERNEL_BACKLOG_SIZE
- #define MP_WAVY_KERNEL_BACKLOG_SIZE 1024
