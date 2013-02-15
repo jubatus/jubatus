@@ -101,7 +101,7 @@ TEST_F(anomaly_test, small) {
 
   {
     datum d;
-    d.nv.push_back(make_pair("f1", 1.0));
+    d.num_values.push_back(make_pair("f1", 1.0));
 
     c.add(NAME, d);  // is it good to be inf?
     std::pair<std::string, float> w = c.add(NAME, d);

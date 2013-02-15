@@ -44,9 +44,9 @@ void wait_server(int port) {
     try {
       cli.call<bool()>("dummy")();
       throw std::runtime_error("dummy rpc successed");
-    } catch (pfi::network::mprpc::method_not_found& e) {
+    } catch (const pfi::network::mprpc::method_not_found& e) {
       return;
-    } catch (pfi::network::mprpc::rpc_io_error& e) {
+    } catch (const pfi::network::mprpc::rpc_io_error& e) {
       // wait until the server bigins to listen
     }
     sleep_time *= 2;

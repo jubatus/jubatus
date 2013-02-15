@@ -34,14 +34,12 @@ Simple msgpack-idl parser and a bit complex C++ code generator. Input specificat
 very simple and a extension of msgpack-idl. Users should annotate 3 decorators on each RPC-API
 of each services, which are about routing, R/W feature and aggregator.
 
-- routing
-
+routing
  - cht
  - broadcast
  - random
 
-- R/W feature
-
+R/W feature
  - update   - this does changes the server state, guarded by writer lock.
  - analysis - does not change the server state, so that threads can work in parallel.
 
@@ -52,9 +50,11 @@ to the Jubatus servers: main server-kickstart program, keeper server to be the g
 server template (different from C++ 'template').
 
 - Input: 'xxx.idl' which implements msgpack-idl based extended spec
-- Output0: 'xxx_impl.cpp' which implements developer's application in server-side including 'main()'
+- Output0: 'xxx_impl.cpp', 'xxx_server.hpp' which implements developer's application in server-side including 'main()'
 - Output1: 'xxx_keeper.cpp' -- keeper implementation includes 'main()'
-- Output2: optional: 'xxx_serv.(h|c)pp' -- server template for users
+- Output2: 'xxx_client.hpp' client implementation
+- Output3: 'xxx_types.hpp' type definitions which are used in server, keeper and client
+- Output4: optional: 'xxx_serv.tmpl.(h|c)pp' -- server template for users
 
 Reference
 =========
@@ -74,4 +74,3 @@ Things left
 - other file inclusion
 - comment parsing ('#\n' cannot be parsed)
 - stop using polimorphic variant
-- other messy codes (refs, records instead of tuples, = and ==s)

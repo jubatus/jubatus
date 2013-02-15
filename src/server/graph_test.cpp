@@ -70,7 +70,7 @@ TEST_F(graph_test, simple) {
   };
   jubatus::edge_id_t eid = 0;
   {
-    jubatus::property p;
+    std::map<std::string, std::string> p;
     p["hoge"] = "huga";
     p["name"] = "test0";
     c.update_node("", nid, p);
@@ -78,10 +78,10 @@ TEST_F(graph_test, simple) {
     c.update_node("", nid0, p);
 
     p["name"] = "edge_name_hoge";
-    jubatus::edge_info ei;
-    ei.src = nid;
-    ei.tgt = nid0;
-    ei.p = p;
+    jubatus::edge ei;
+    ei.source = nid;
+    ei.target = nid0;
+    ei.property = p;
     eid = c.create_edge("", nid, ei);
     c.create_edge("", nid0, ei);  // TODO(kmaehashi): do we need this? release?
   }
@@ -91,22 +91,22 @@ TEST_F(graph_test, simple) {
     c.load("", "test");
   }
   {
-    jubatus::node_info i = c.get_node("", nid);
+    jubatus::node i = c.get_node("", nid);
     ASSERT_EQ(0u, i.in_edges.size());
 
     // TODO(suma): is this correct?(before 1)
     EXPECT_EQ(2u, i.out_edges.size());
 
-    ASSERT_EQ("huga", i.p["hoge"]);
-    ASSERT_EQ("test0", i.p["name"]);
+    ASSERT_EQ("huga", i.property["hoge"]);
+    ASSERT_EQ("test0", i.property["name"]);
   }
   {
     // eid = 0 , is nothing
-    jubatus::edge_info i = c.get_edge("", nid, eid);
-    ASSERT_EQ(nid , i.src);
-    ASSERT_EQ(nid0, i.tgt);
-    ASSERT_EQ(2u, i.p.size());
-    ASSERT_EQ("edge_name_hoge", i.p["name"]);
+    jubatus::edge i = c.get_edge("", nid, eid);
+    ASSERT_EQ(nid , i.source);
+    ASSERT_EQ(nid0, i.target);
+    ASSERT_EQ(2u, i.property.size());
+    ASSERT_EQ("edge_name_hoge", i.property["name"]);
   }
 
   {
@@ -123,9 +123,9 @@ TEST_F(graph_test, simple) {
   }
 
   {
-    jubatus::shortest_path_req req;
-    req.src = nid;
-    req.tgt = nid0;
+    jubatus::shortest_path_query req;
+    req.source = nid;
+    req.target = nid0;
     {  // TODO(kuenishi)
       req.max_hop = 10;
       jubatus::preset_query q;

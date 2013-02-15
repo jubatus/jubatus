@@ -166,7 +166,7 @@ vector<vector<estimate_result> > classifier_serv::classify(
         p != scores.end(); ++p) {
       estimate_result e;
       e.label = p->label;
-      e.prob = p->score;
+      e.score = p->score;
       r.push_back(e);
       if (!isfinite(p->score)) {
         LOG(WARNING) << "score is infinite: " << p->label << " = " << p->score;
