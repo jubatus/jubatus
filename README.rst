@@ -31,6 +31,21 @@ LGPL 2.1
 Update history
 --------------
 
+Release 0.4.1 2013/2/15
+~~~~~~~~~~~~~~~~~~~~~~
+
+Improvements
+  - New code generator 'jenerator' for framework users (#240)
+  - Applied coding rules based on Google C++ Style Guide
+  - jubaconv accepts v0.4.x configuration format (#223, #241)
+  - jubaconfig validates JSON syntax of configuration (#226, #245)
+  - server/keeper behaves more stably in distributed mode when failed to start listening (#201)
+  - pkg-config manifest for Jubatus clients (#228)
+
+Bugfix
+  - jubastat returns min/max from values only the current window (#238, #242)
+  - #230, #231, #233, #234, #235, #237, #248
+
 Release 0.4.0 2013/1/11
 ~~~~~~~~~~~~~~~~~~~~~~~
 
