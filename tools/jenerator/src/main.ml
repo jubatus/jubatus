@@ -38,7 +38,8 @@ let _ =
   let (conf, files) = Config.parse_args () in
   let generate =
     match conf.Config.language with
-    | "cpp" -> Cpp.generate
+    | "server" -> Cpp.generate_server
+    | "cpp" -> Cpp.generate_client
     (* | "python" -> Python.generate *)
     (* | "java" -> Java.generate *)
     (* | "ruby" -> Ruby.generate *)

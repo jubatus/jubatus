@@ -143,4 +143,14 @@ def regenerate(ctx):
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name
     service_name = os.path.splitext(idl)[0]
-    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'cpp', '-o', '.', '-i', '-n', 'jubatus', '-g', 'JUBATUS_SERVER_', idl], cwd=server_node.abspath())
+    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'server', '-o', '.', '-i', '-n', 'jubatus', '-g', 'JUBATUS_SERVER_', idl], cwd=server_node.abspath())
+
+def regenerate_client(ctx):
+  import os
+  server_node = ctx.path.find_node('src/server')
+  client_node = ctx.path.find_node('client')
+  jenerator_node = ctx.path.find_node('tools/jenerator/src/jenerator')
+  for idl_node in server_node.ant_glob('*.idl'):
+    idl = idl_node.name
+    service_name = os.path.splitext(idl)[0]
+    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'cpp', '-o', client_node.abspath(), '-i', '-n', 'jubatus::' + service_name, '-g', 'JUBATUS_', idl], cwd=server_node.abspath())

@@ -780,7 +780,7 @@ let gen_server_template_source_file conf source services =
   make_source conf source filename content
 ;;
 
-let generate conf source idl =
+let generate_server conf source idl =
   let services = get_services idl in
 
   gen_type_file conf source idl;
@@ -792,4 +792,10 @@ let generate conf source idl =
     gen_server_template_header_file conf source services;
     gen_server_template_source_file conf source services;
   end
+;;
+
+let generate_client conf source idl =
+  let services = get_services idl in
+
+  gen_client_file conf source services
 ;;
