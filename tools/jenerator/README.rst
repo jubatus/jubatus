@@ -1,4 +1,4 @@
-Generator: a user-defined machine learning system
+Jenerator: a user-defined machine learning system
 =================================================
 
 Problem description
@@ -55,6 +55,13 @@ server template (different from C++ 'template').
 - Output2: 'xxx_client.hpp' client implementation
 - Output3: 'xxx_types.hpp' type definitions which are used in server, keeper and client
 - Output4: optional: 'xxx_serv.tmpl.(h|c)pp' -- server template for users
+
+
+Licence of generated codes
+==========================
+
+Jenerator itself is distributed under LGPL, but you can distribute all generated codes under terms of your choice.
+
 
 Reference
 =========
