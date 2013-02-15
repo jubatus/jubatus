@@ -56,6 +56,13 @@ server template (different from C++ 'template').
 - Output3: 'xxx_types.hpp' type definitions which are used in server, keeper and client
 - Output4: optional: 'xxx_serv.tmpl.(h|c)pp' -- server template for users
 
+
+Licence of generated codes
+==========================
+
+Jenerator itself is distributed under LGPL, but all generated codes are under MIT.
+
+
 Reference
 =========
 
