@@ -1,10 +1,10 @@
 require 'formula'
 
 class JubatusMpio < Formula
-  url 'https://github.com/jubatus/jubatus-mpio/tarball/0.4.0'
+  url 'https://github.com/jubatus/jubatus-mpio/tarball/0.4.1'
   head 'https://github.com/jubatus/jubatus-mpio.git'
   homepage 'https://github.com/jubatus/jubatus-mpio'
-  md5 '907ca7237d51eea4898f99d4e46ed0da'
+  md5 'd9479520de73375fa076f738bd896c45'
 
   depends_on 'libtool'
   depends_on 'automake'
