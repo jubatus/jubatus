@@ -1,6 +1,7 @@
 (*
  Jubatus: Online machine learning framework for distributed environment
- Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+ Copyright (C) 2011-2013 Preferred Infrastructure and Nippon Telegraph and
+ Telephone Corporation.
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -20,11 +21,6 @@
 open Jdl_parser
 
 exception Lex_error of string
-
-let debugprint = ref false;;
-
-let print str =  if !debugprint then print_endline str;;
-
 }
 
 let digit = ['0'-'9']*
@@ -35,28 +31,28 @@ let comment   = "#" [^'@'] [^'\n']* '\n'
 let newline = "\n"
 
 rule token = parse
-  | "exception" { print "exception>"; EXCEPTION }
-  | "message" { print "message>"; MESSAGE }
-  | "type" { print "typedef>"; TYPEDEF }
-  | "enum" { print "enum>"   ; ENUM }
-  | "service" { print "service>"; SERVICE }
-  | literal as s { print ("literal->"^s); LITERAL(s) }
+  | "exception" { EXCEPTION }
+  | "message" { MESSAGE }
+  | "type" { TYPEDEF }
+  | "enum" { ENUM }
+  | "service" { SERVICE }
+  | literal as s { LITERAL(s) }
   | ','       { COMMA }
   | '<'       { LBRACE }
   | '>'       { RBRACE }
-  | '}'       { print"}<="; RBRACE2 }
-  | '{'       { print"=>{"; LBRACE2 }
-  | '('       { LRBRACE }
-  | ')'       { RRBRACE }
+  | '}'       { RBRACE2 }
+  | '{'       { LBRACE2 }
+  | '('       { LPAREN }
+  | ')'       { RPAREN }
   | '?'       { QUESTION }
   | '='       { DEFINE }
   | ':'       { COLON }
   | decorator as d { DECORATOR(d) }
-  | digit as s { print s; INT( int_of_string s ) }
+  | digit as s { INT( int_of_string s ) }
 
-(*  | include_sth as i { print i; INCLUDE(i) } *)
+(*  | include_sth as i { INCLUDE(i) } *)
 
-  | comment     { print "comment"; token lexbuf }
-  | '\n'        { Lexing.new_line lexbuf; token lexbuf }
-  | eof		{ print "eof."; EOF }
-  | _   { token lexbuf }
+  | comment   { token lexbuf }
+  | '\n'      { token lexbuf }
+  | eof       { EOF }
+  | _         { token lexbuf }

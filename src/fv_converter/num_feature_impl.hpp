@@ -14,37 +14,44 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_NUM_FEATURE_IMPL_HPP_
+#define JUBATUS_FV_CONVERTER_NUM_FEATURE_IMPL_HPP_
 
-#include <sstream>
+#include <algorithm>
 #include <cmath>
+#include <sstream>
+#include <string>
+#include <utility>
+#include "../common/type.hpp"
 #include "num_feature.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
 class num_value_feature : public num_feature {
-public:
+ public:
   void add_feature(const std::string& key, double value, sfv_t& ret_fv) const {
-    ret_fv.push_back(make_pair(key, value));
+    ret_fv.push_back(std::make_pair(key, value));
   }
 };
 
 class num_string_feature : public num_feature {
-public:
+ public:
   void add_feature(const std::string& key, double value, sfv_t& ret_fv) const {
     std::stringstream ss;
     ss << key << "$" << value;
-    ret_fv.push_back(make_pair(ss.str(), 1.0));
+    ret_fv.push_back(std::make_pair(ss.str(), 1.0));
   }
 };
 
 class num_log_feature : public num_feature {
-public:
+ public:
   void add_feature(const std::string& key, double value, sfv_t& ret_fv) const {
-    ret_fv.push_back(make_pair(key, std::log(std::max(1.0, value))));
+    ret_fv.push_back(std::make_pair(key, std::log(std::max(1.0, value))));
   }
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_NUM_FEATURE_IMPL_HPP_

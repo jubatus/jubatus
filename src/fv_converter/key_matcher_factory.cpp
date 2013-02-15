@@ -16,20 +16,19 @@
 
 #include "key_matcher_factory.hpp"
 
-#include "key_matcher.hpp"
-#include "match_all.hpp"
-#include "suffix_match.hpp"
-#include "prefix_match.hpp"
+#include <string>
 #include "exact_match.hpp"
 #include "exception.hpp"
-
+#include "key_matcher.hpp"
+#include "match_all.hpp"
+#include "prefix_match.hpp"
 #ifdef HAVE_RE2
 # include "re2_match.hpp"
 #endif
-
-using namespace jubatus::fv_converter;
+#include "suffix_match.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
 key_matcher* key_matcher_factory::create_matcher(const std::string& matcher) {
   if (matcher == "" || matcher == "*") {
@@ -38,15 +37,18 @@ key_matcher* key_matcher_factory::create_matcher(const std::string& matcher) {
     return new suffix_match(matcher.substr(1));
   } else if (matcher[matcher.size() - 1] == '*') {
     return new prefix_match(matcher.substr(0, matcher.size() - 1));
-  } else if (matcher.size() >= 2 && matcher[0] == '/' && matcher[matcher.size() - 1] == '/') {
+  } else if (matcher.size() >= 2 && matcher[0] == '/'
+      && matcher[matcher.size() - 1] == '/') {
 #ifdef HAVE_RE2
     return new re2_match(matcher.substr(1, matcher.size() - 2));
 #else
-    throw JUBATUS_EXCEPTION(converter_exception("cannot use regexp rule: " + matcher));
+    throw JUBATUS_EXCEPTION(
+        converter_exception("cannot use regexp rule: " + matcher));
 #endif
   } else {
     return new exact_match(matcher);
   }
 }
 
-}
+}  // namespace fv_converter
+}  // namespace jubatus

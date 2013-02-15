@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_REGRESSION_REGRESSION_FACTORY_HPP_
+#define JUBATUS_REGRESSION_REGRESSION_FACTORY_HPP_
 
 #include <string>
 #include <pficommon/text/json.h>
@@ -23,20 +24,25 @@ namespace jubatus {
 
 namespace storage {
 class storage_base;
-}
+}  // namespace storage
+
 namespace jsonconfig {
-  class config;
-} // jsonconfig
+class config;
+}  // namespace jsonconfig
+
 namespace regression {
+
 class regression_base;
 
 class regression_factory {
-  public:
-    regression_base* create_regression(const std::string& name,
-                                       const jsonconfig::config& param,
-                                       jubatus::storage::storage_base* storage) const;
-
+ public:
+  regression_base* create_regression(
+      const std::string& name,
+      const jsonconfig::config& param,
+      jubatus::storage::storage_base* storage) const;
 };
 
-}
-}
+}  // namespace regression
+}  // namespace jubatus
+
+#endif  // JUBATUS_REGRESSION_REGRESSION_FACTORY_HPP_

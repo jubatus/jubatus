@@ -21,7 +21,8 @@ namespace jubatus {
 namespace regression {
 
 regression_base::regression_base(storage::storage_base* storage)
-      : storage_(storage) {}
+    : storage_(storage) {
+}
 
 float regression_base::estimate(const sfv_t& fv) const {
   storage::map_feature_val1_t ret;
@@ -33,5 +34,5 @@ void regression_base::update(const sfv_t& fv, float coeff) {
   storage_->bulk_update(fv, coeff, "+", "");
 }
 
-}
-}
+}  // namespace regression
+}  // namespace jubatus

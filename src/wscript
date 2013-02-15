@@ -5,7 +5,7 @@ anomaly common plugin stat
 classifier fv_converter recommender regression storage
 framework server
 cmd jubavisor
-graph
+graph third_party
 '''
 
 def options(opt):

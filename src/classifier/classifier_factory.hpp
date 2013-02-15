@@ -14,30 +14,40 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_CLASSIFIER_CLASSIFIER_FACTORY_HPP_
+#define JUBATUS_CLASSIFIER_CLASSIFIER_FACTORY_HPP_
 
 #include <string>
-
 #include <pficommon/text/json.h>
 
 namespace jubatus {
 
-namespace storage{
-class storage_base;
-}
-namespace jsonconfig {
-  class config;
-} // jsonconfig
+namespace storage {
 
-namespace classifier{
+class storage_base;
+
+}  // namespace storage
+
+namespace jsonconfig {
+
+class config;
+
+}  // namespace jsonconfig
+
+namespace classifier {
+
 class classifier_base;
 
 class classifier_factory {
-public:
-  static classifier_base* create_classifier(const std::string& name,
-                                   const jsonconfig::config& param,
-                                   storage::storage_base* storage);
+ public:
+  static classifier_base* create_classifier(
+      const std::string& name,
+      const jsonconfig::config& param,
+      storage::storage_base* storage);
 };
 
-}
-}
+}  // namespace classifier
+
+}  // namespace jubatus
+
+#endif  // JUBATUS_CLASSIFIER_CLASSIFIER_FACTORY_HPP_

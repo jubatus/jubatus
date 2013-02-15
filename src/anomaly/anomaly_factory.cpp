@@ -15,24 +15,29 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "anomaly_factory.hpp"
-#include "anomaly.hpp"
-#include "../common/exception.hpp"
-#include "../common/jsonconfig.hpp"
+
+#include <string>
+
 #include <pficommon/text/json.h>
 
-using namespace std;
-using namespace jubatus::jsonconfig;
+#include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
+#include "anomaly.hpp"
+
+using jubatus::jsonconfig::config;
+using jubatus::jsonconfig::config_cast_check;
 using pfi::text::json::json;
+using std::string;
 
 namespace jubatus {
 namespace anomaly {
 
 namespace {
 struct anomaly_config {
-  std::string method; // nest engine name
-  jsonconfig::config parameter;
+  std::string method;  // nest engine name
+  jubatus::jsonconfig::config parameter;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(method) & MEMBER(parameter);
   }
@@ -40,20 +45,17 @@ struct anomaly_config {
 }
 
 anomaly_base* create_anomaly(const string& name, const config& param) {
-  using namespace pfi::text::json;
-
   if (name == "lof") {
     anomaly_config conf = config_cast_check<anomaly_config>(param);
-    storage::lof_storage::config config = config_cast_check<storage::lof_storage::config>(param);
-
-    return new lof(config, recommender::create_recommender(conf.method, conf.parameter));
+    storage::lof_storage::config config =
+        config_cast_check<storage::lof_storage::config>(param);
+    return new lof(
+        config, recommender::create_recommender(conf.method, conf.parameter));
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }
-}
+};
 
-}
-}
-
-
+}  // namespace anomaly
+}  // namespace jubatus
 

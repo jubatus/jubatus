@@ -1,33 +1,27 @@
-
 // This file is auto-generated from anomaly.idl
 // *** DO NOT EDIT ***
 
-#ifndef ANOMALY_TYPES_HPP_
-#define ANOMALY_TYPES_HPP_
+#ifndef JUBATUS_SERVER_ANOMALY_TYPES_HPP_
+#define JUBATUS_SERVER_ANOMALY_TYPES_HPP_
 
+#include <stdint.h>
 
-#include <vector>
 #include <map>
 #include <string>
-#include <stdexcept>
-#include <stdint.h>
-#include <msgpack.hpp>
+#include <vector>
+#include <utility>
 
+#include <msgpack.hpp>
 
 namespace jubatus {
 
 struct datum {
-public:
-
-  
-  MSGPACK_DEFINE(sv, nv);  
-
-  std::vector<std::pair<std::string, std::string > > sv;
-  std::vector<std::pair<std::string, double > > nv;
+ public:
+  MSGPACK_DEFINE(string_values, num_values);
+  std::vector<std::pair<std::string, std::string> > string_values;
+  std::vector<std::pair<std::string, double> > num_values;
 };
 
-} // namespace jubatus
+}  // namespace jubatus
 
-
-
-#endif // ANOMALY_TYPES_HPP_
+#endif  // JUBATUS_SERVER_ANOMALY_TYPES_HPP_

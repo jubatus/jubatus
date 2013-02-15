@@ -14,26 +14,23 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
 #include <map>
 #include <string>
+#include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
-
-#include "num_feature.hpp"
 #include "dynamic_num_feature.hpp"
+#include "num_feature.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace jubatus::fv_converter;
-using namespace pfi::lang;
+namespace jubatus {
+namespace fv_converter {
 
 TEST(dynamic_num_feature, trivial) {
-  map<string, string> params;
+  std::map<std::string, std::string> params;
 
   {
     dynamic_num_feature f(LIBNUM_FEATURE_SAMPLE,
-                          "create",
-                          params);
+        "create",
+        params);
     sfv_t fv;
     f.add_feature("/path", 1, fv);
 
@@ -42,3 +39,6 @@ TEST(dynamic_num_feature, trivial) {
     EXPECT_EQ(2., fv[0].second);
   }
 }
+
+}  // namespace fv_converter
+}  // namespace jubatus

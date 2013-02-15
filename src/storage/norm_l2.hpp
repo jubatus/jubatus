@@ -14,27 +14,30 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_STORAGE_NORM_L2_HPP_
+#define JUBATUS_STORAGE_NORM_L2_HPP_
 
-#include <string>
 #include <cmath>
+#include <string>
 #include <pficommon/data/unordered_map.h>
 #include "norm_base.hpp"
 
 namespace jubatus {
 namespace storage {
 
-class norm_l2 : public norm_base{
-public:
+class norm_l2 : public norm_base {
+ public:
   norm_l2();
   ~norm_l2();
   void clear();
   void notify(const std::string& row, float old_val, float new_val);
   float calc_norm(const std::string& row) const;
 
-private:
+ private:
   pfi::data::unordered_map<std::string, float> sq_norms_;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus
+
+#endif  // JUBATUS_STORAGE_NORM_L2_HPP_

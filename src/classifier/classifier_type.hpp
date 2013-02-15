@@ -14,23 +14,29 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_CLASSIFIER_CLASSIFIER_TYPE_HPP_
+#define JUBATUS_CLASSIFIER_CLASSIFIER_TYPE_HPP_
+
+#include <stdint.h>
 
 #include <vector>
 #include <string>
-#include <stdint.h>
+
 #include "classifier_config.hpp"
 
-namespace jubatus{
+namespace jubatus {
 
-struct classify_result_elem{
-  classify_result_elem (const std::string& label, float score) :
-    label(label), score(score){};
+struct classify_result_elem {
+  classify_result_elem(const std::string& label, float score)
+      : label(label),
+        score(score) {
+  };
   std::string label;
   float score;
 };
 
 typedef std::vector<classify_result_elem> classify_result;
 
-}
+}  // namespace jubatus
 
+#endif  // JUBATUS_CLASSIFIER_CLASSIFIER_TYPE_HPP_

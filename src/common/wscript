@@ -63,5 +63,26 @@ def build(bld):
   for s in test_src:
     make_test(s)
 
-  bld.install_files('${PREFIX}/include/jubatus/common/', bld.path.ant_glob('*.hpp'))
+  bld.install_files('${PREFIX}/include/jubatus/common/', [
+    'cached_zk.hpp',
+    'cht.hpp',
+    'config.hpp',
+    'config_util.hpp',
+    'exception.hpp',
+    'exception_info.hpp',
+    'global_id_generator.hpp',
+    'hash.hpp',
+    'jsonconfig.hpp',
+    'key_manager.hpp',
+    'lock_service.hpp',
+    'membership.hpp',
+    'network.hpp',
+    'rpc_util.hpp',
+    'shared_ptr.hpp',
+    'type.hpp',
+    'unordered_map.hpp',
+    'util.hpp',
+    'vector_util.hpp',
+    'zk.hpp',
+    ])
   bld.recurse(subdirs)

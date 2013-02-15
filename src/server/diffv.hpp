@@ -14,37 +14,42 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_SERVER_DIFFV_HPP_
+#define JUBATUS_SERVER_DIFFV_HPP_
 
-#include "../storage/storage_type.hpp"
 #include <pficommon/network/mprpc.h>
+#include "../storage/storage_type.hpp"
 
 namespace jubatus {
 
 struct diffv {
-public:
-  diffv( int c, const storage::features3_t& w ):
-    count(c), v(w)
-  {};
-  diffv(): count(0), v() {};
+ public:
+  diffv(int c, const storage::features3_t& w)
+      : count(c),
+        v(w) {
+  }
+
+  diffv()
+      : count(0),
+        v() {
+  }
 
   int count;
   storage::features3_t v;
 
-  diffv& operator/=(double d){
-       this->v /= d;
+  diffv& operator/=(double d) {
+    this->v /= d;
     return *this;
-  };
+  }
 
   MSGPACK_DEFINE(count, v);
 
-  template <class Archiver>
-  void serialize(Archiver &ar) {
-    ar
-      & MEMBER(count)
-      & MEMBER(v);
+  template<class Archiver>
+  void serialize(Archiver& ar) {
+    ar & MEMBER(count) & MEMBER(v);
   }
-
 };
 
-}
+}  // namespace jubatus
+
+#endif  // JUBATUS_SERVER_DIFFV_HPP_

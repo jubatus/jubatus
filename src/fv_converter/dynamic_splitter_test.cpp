@@ -14,43 +14,48 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 #include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
-#include "word_splitter.hpp"
-#include "exception.hpp"
 #include "dynamic_splitter.hpp"
+#include "exception.hpp"
+#include "word_splitter.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace jubatus::fv_converter;
-using namespace pfi::lang;
+namespace jubatus {
+namespace fv_converter {
 
 TEST(dynamic_splitter, trivial) {
   dynamic_splitter s(LIBSPLITTER_SAMPLE,
-                     "create",
-                     map<string, string>());
-    vector<pair<size_t, size_t> > bounds;
-    s.split(" test test", bounds);
-  
-    ASSERT_EQ(2u, bounds.size());
-    EXPECT_EQ(1u, bounds[0].first);
-    EXPECT_EQ(4u, bounds[0].second);
-    EXPECT_EQ(6u, bounds[1].first);
-    EXPECT_EQ(4u, bounds[1].second);
+      "create",
+      std::map<std::string, std::string>());
+  std::vector<std::pair<size_t, size_t> > bounds;
+  s.split(" test test", bounds);
+
+  ASSERT_EQ(2u, bounds.size());
+  EXPECT_EQ(1u, bounds[0].first);
+  EXPECT_EQ(4u, bounds[0].second);
+  EXPECT_EQ(6u, bounds[1].first);
+  EXPECT_EQ(4u, bounds[1].second);
 }
 
 TEST(dynamic_splitter, unknown_file) {
   EXPECT_THROW(
       dynamic_splitter s("unknown_file.so",
-                         "create",
-                         map<string, string>()),
+          "create",
+          std::map<std::string, std::string>()),
       converter_exception);
 }
 
 TEST(dynamic_splitter, unknown_function) {
   EXPECT_THROW(
       dynamic_splitter s(LIBSPLITTER_SAMPLE,
-                         "unknown_function",
-                         map<string, string>()),
+          "unknown_function",
+          std::map<std::string, std::string>()),
       converter_exception);
 }
+
+}  // namespace fv_converter
+}  // namespace jubatus

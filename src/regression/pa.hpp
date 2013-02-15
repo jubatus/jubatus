@@ -14,11 +14,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_REGRESSION_PA_HPP_
+#define JUBATUS_REGRESSION_PA_HPP_
 
-#include "regression_base.hpp"
 #include <limits>
 #include <pficommon/data/serialization.h>
+#include "regression_base.hpp"
 
 namespace jubatus {
 namespace regression {
@@ -27,19 +28,21 @@ class PA : public regression_base {
  public:
   struct config {
     config()
-      : C(std::numeric_limits<float>::max()), epsilon(0.1f)
-    {}
+        : C(std::numeric_limits<float>::max()),
+          epsilon(0.1f) {
+    }
     float C;
     float epsilon;
 
-    template <typename Ar>
+    template<typename Ar>
     void serialize(Ar& ar) {
-      ar & NAMED_MEMBER("regularization_weight", C) & NAMED_MEMBER("sensitivity", epsilon);
+      ar & NAMED_MEMBER("regularization_weight", C)
+          & NAMED_MEMBER("sensitivity", epsilon);
     }
   };
 
   PA(const config& config, storage::storage_base* storage);
-  PA(storage::storage_base* storage);
+  explicit PA(storage::storage_base* storage);
 
   void train(const sfv_t& fv, float value);
 
@@ -50,5 +53,7 @@ class PA : public regression_base {
   float count_;
 };
 
-}
-}
+}  // namespace regression
+}  // namespace jubatus
+
+#endif  // JUBATUS_REGRESSION_PA_HPP_

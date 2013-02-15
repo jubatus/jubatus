@@ -14,25 +14,28 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "norm_factory.hpp"
+
 #include <string>
 #include "norm.hpp"
-#include "norm_factory.hpp"
 #include "../common/exception.hpp"
 
-using namespace std;
+using std::string;
 
 namespace jubatus {
 namespace storage {
 
-norm_base* create_norm(const string& name){
-  if (name == "l2"){
+norm_base* create_norm(const string& name) {
+  if (name == "l2") {
     return new norm_l2;
-  } else if (name == "l1"){
+  } else if (name == "l1") {
     return new norm_l1;
   } else {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(string("create_norm unknown name error:") + name));
+    throw JUBATUS_EXCEPTION(
+        jubatus::exception::runtime_error(
+            string("create_norm unknown name error:") + name));
   }
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

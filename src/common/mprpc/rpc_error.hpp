@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_MPRPC_RPC_ERROR_HPP_
+#define JUBATUS_COMMON_MPRPC_RPC_ERROR_HPP_
 
 #include <string>
 #include <vector>
@@ -24,36 +25,54 @@
 #include "../exception.hpp"
 #include "exception.hpp"
 
-namespace jubatus { namespace common { namespace mprpc {
+namespace jubatus {
+namespace common {
+namespace mprpc {
 
 // class rpc_mclient;
 
 class rpc_error {
-public:
+ public:
   rpc_error(const std::string& host, uint16_t port)
-    : host_(host), port_(port)
-  {}
+      : host_(host),
+        port_(port) {
+  }
 
-  rpc_error(const std::string& host, uint16_t port, jubatus::exception::exception_thrower_ptr thrower)
-    : host_(host), port_(port), exception_(thrower)
-  {}
+  rpc_error(const std::string& host, uint16_t port,
+      jubatus::exception::exception_thrower_ptr thrower)
+      : host_(host),
+        port_(port),
+        exception_(thrower) {
+  }
 
-  std::string host() const { return host_; }
-  uint16_t port() const { return port_; }
+  std::string host() const {
+    return host_;
+  }
+  uint16_t port() const {
+    return port_;
+  }
 
-  bool has_exception() const { return exception_; }
-  void throw_exception() const { exception_->throw_exception(); }
-  jubatus::exception::exception_thrower_ptr exception() const { return exception_; }
+  bool has_exception() const {
+    return exception_;
+  }
+  void throw_exception() const {
+    exception_->throw_exception();
+  }
+  jubatus::exception::exception_thrower_ptr exception() const {
+    return exception_;
+  }
 
-private:
+ private:
   std::string host_;
   uint16_t port_;
   jubatus::exception::exception_thrower_ptr exception_;
 };
 
-typedef jubatus::exception::error_info<struct error_multi_rpc_, std::vector<rpc_error> > error_multi_rpc;
-inline std::string to_string(const error_multi_rpc& info)
-{
+typedef jubatus::exception::error_info<
+    struct error_multi_rpc_,
+    std::vector<rpc_error> > error_multi_rpc;
+
+inline std::string to_string(const error_multi_rpc& info) {
   std::ostringstream result;
 
   size_t host_size = info.value().size();
@@ -64,7 +83,8 @@ inline std::string to_string(const error_multi_rpc& info)
   }
 
   std::vector<rpc_error> errors = info.value();
-  for (std::vector<rpc_error>::const_iterator it = errors.begin(), end = errors.end();
+  for (std::vector<rpc_error>::const_iterator
+      it = errors.begin(), end = errors.end();
       it != end; ++it) {
     result << " host: " << it->host() << ", port: " << it->port() << '\n';
     std::ostringstream tmp;
@@ -80,11 +100,15 @@ inline std::string to_string(const error_multi_rpc& info)
       }
 
       // Indent each line
-      std::vector<std::string> lines = pfi::data::string::split(tmp.str(), '\n');
+      std::vector<std::string> lines =
+          pfi::data::string::split(tmp.str(), '\n');
       std::ostringstream msg;
-      for (std::vector<std::string>::iterator it = lines.begin(), end = lines.end();
+      for (std::vector<std::string>::iterator
+          it = lines.begin(), end = lines.end();
           it != end; ++it) {
-        if (it->empty()) continue;
+        if (it->empty()) {
+          continue;
+        }
         msg << "   " << *it << '\n';
       }
       result << msg.str();
@@ -94,7 +118,8 @@ inline std::string to_string(const error_multi_rpc& info)
   return result.str();
 }
 
-} // mprpc
-} // common
-} // jubatus
+}  // namespace mprpc
+}  // namespace common
+}  // namespace jubatus
 
+#endif  // JUBATUS_COMMON_MPRPC_RPC_ERROR_HPP_

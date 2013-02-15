@@ -14,12 +14,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "num_filter.hpp"
-#include <string>
 #include <map>
+#include <string>
+#include "num_filter.hpp"
 
-using namespace std;
-using namespace jubatus::fv_converter;
+namespace jubatus {
+namespace fv_converter {
 
 class my_num_filter : public num_filter {
  public:
@@ -29,9 +29,10 @@ class my_num_filter : public num_filter {
 };
 
 extern "C" {
-
-num_filter* create(const map<string, string>& params) {
+num_filter* create(const std::map<std::string, std::string>& params) {
   return new my_num_filter();
 }
-
 }
+
+}  // namespace fv_converter
+}  // namespace jubatus

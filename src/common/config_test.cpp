@@ -14,35 +14,36 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-#include <pficommon/text/json.h>
 #include <iostream>
+#include <sstream>
+#include <string>
+#include <gtest/gtest.h>
 #include "config.hpp"
+#include "exception.hpp"
 
-using namespace std;
-using namespace pfi::lang;
-using namespace pfi::text::json;
+using std::istringstream;
+using std::string;
 
 class config_trivial : public testing::Test {
-protected:
-
-  void SetUp()
-  {
-    zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>
-         (jubatus::common::create_lock_service("zk", "localhost:2181", 10, "/dev/null"));
+ protected:
+  void SetUp() {
+    zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>(
+        jubatus::common::create_lock_service("zk", "localhost:2181", 10,
+                                             "/dev/null"));
 
     engine_ = "engine-name";
     name_ = "test-name";
     jubatus::common::build_config_path(path_, engine_, name_);
   }
 
-  void TearDown()
-  {
-    if (!zk_)
+  void TearDown() {
+    if (!zk_) {
       return;
+    }
 
-    if (zk_->exists(path_))
+    if (zk_->exists(path_)) {
       zk_->remove(path_);
+    }
   }
 
   string path_;
@@ -52,7 +53,6 @@ protected:
 };
 
 TEST_F(config_trivial, config_tozk) {
-
   istringstream config_str("{\"test\":\"config\"}");
   std::string config = config_str.str();
 
@@ -64,11 +64,9 @@ TEST_F(config_trivial, config_tozk) {
   std::string dat;
   zk_->read(path_, dat);
   ASSERT_EQ("{\"test\":\"config\"}", dat);
-
 }
 
 TEST_F(config_trivial, config_fromzk) {
-
   istringstream config_str("{\"test\":\"config\"}");
   std::string config = config_str.str();
 
@@ -79,12 +77,9 @@ TEST_F(config_trivial, config_fromzk) {
   jubatus::common::config_fromzk(*zk_, engine_, name_, dat);
 
   ASSERT_EQ("{\"test\":\"config\"}", dat);
-
 }
 
-
 TEST_F(config_trivial, remove_config_fromzk) {
-
   istringstream config_str("{\"test\":\"config\"}");
   std::string config = config_str.str();
 
@@ -95,5 +90,21 @@ TEST_F(config_trivial, remove_config_fromzk) {
   jubatus::common::remove_config_fromzk(*zk_, engine_, name_);
 
   ASSERT_EQ(true, !zk_->exists(path_));
+}
 
+TEST_F(config_trivial, invalid_config) {
+  istringstream config_str("{\"this\" : \"is\" : \"invalid-json\"}");
+  std::string config = config_str.str();
+
+  EXPECT_THROW(
+      jubatus::common::config_tozk(*zk_, engine_, name_, config),
+      jubatus::exception::runtime_error);
+}
+
+TEST_F(config_trivial, empty_config) {
+  std::string config = "";
+
+  EXPECT_THROW(
+      jubatus::common::config_tozk(*zk_, engine_, name_, config),
+      jubatus::exception::runtime_error);
 }

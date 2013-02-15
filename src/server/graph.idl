@@ -55,7 +55,7 @@ service graph {
   #@cht #@update #@all_and
   bool update_node(0: string name, 1: string node_id, 2: map<string, string> property) # //@cht
 
-  #@cht(1) #@nolock #@all_and
+  #@cht(1) #@nolock #@pass
   ulong create_edge(0: string name, 1: string node_id, 2: edge e) # //@cht
 
   #@cht #@update #@all_and

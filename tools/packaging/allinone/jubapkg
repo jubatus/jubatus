@@ -299,8 +299,9 @@ do_install() {
 
 	[ ! -d "${DEST_DIR}" ] && ( echo "Not built yet."; exit 1 )
 
-	echo "Installing..."
-	cp -a ${DEST_DIR}/* /
+	echo "Installing to ${PREFIX} ..."
+	[ ! -d "${PREFIX}" ] && mkdir -p "${PREFIX}"
+	cp -a "${DEST_DIR}/${PREFIX}"/* "${PREFIX}"
 
 	echo "----- Install Completed -----"
 	return 0

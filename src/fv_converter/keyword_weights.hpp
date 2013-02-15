@@ -14,13 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_KEYWORD_WEIGHTS_HPP_
+#define JUBATUS_FV_CONVERTER_KEYWORD_WEIGHTS_HPP_
 
-#include "datum.hpp"
-#include "counter.hpp"
+#include <string>
+#include <msgpack.hpp>
 #include <pficommon/data/unordered_map.h>
 #include "../common/type.hpp"
-#include <msgpack.hpp>
+#include "counter.hpp"
+#include "datum.hpp"
 
 namespace jubatus {
 namespace fv_converter {
@@ -28,7 +30,7 @@ namespace fv_converter {
 class keyword_weights {
  public:
   keyword_weights();
-  
+
   void update_document_frequency(const sfv_t& fv);
 
   size_t get_document_frequency(const std::string& key) const {
@@ -48,12 +50,10 @@ class keyword_weights {
   void clear();
 
   MSGPACK_DEFINE(document_count_, document_frequencies_, weights_);
-  template <class Archiver>
-  void serialize(Archiver &ar) {
-    ar
-      & MEMBER(document_count_)
-      & MEMBER(document_frequencies_)
-      & MEMBER(weights_);
+  template<class Archiver>
+  void serialize(Archiver& ar) {
+    ar & MEMBER(document_count_) & MEMBER(document_frequencies_)
+        & MEMBER(weights_);
   }
 
  private:
@@ -63,9 +63,9 @@ class keyword_weights {
   counter<std::string> document_frequencies_;
   typedef pfi::data::unordered_map<std::string, float> weight_t;
   weight_t weights_;
-
-
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_KEYWORD_WEIGHTS_HPP_

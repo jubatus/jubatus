@@ -14,31 +14,30 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_JSON_CONVERTER_HPP_
+#define JUBATUS_FV_CONVERTER_JSON_CONVERTER_HPP_
 
 namespace pfi {
 namespace text {
 namespace json {
 class json;
-}
-}
-}
+}  // namespace json
+}  // namespace text
+}  // namespace pfi
 
 namespace jubatus {
-namespace fv_converter{
+namespace fv_converter {
 
 struct datum;
 
 class json_converter {
-
-public:
+ public:
   static const char* NULL_STRING;
 
   static void convert(const pfi::text::json::json& jason, datum& ret_datum);
-
-  static void re_convert(const datum& datum, pfi::text::json::json& ret_jason);
-
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_JSON_CONVERTER_HPP_

@@ -1,82 +1,90 @@
-
 // This file is auto-generated from stat.idl
 // *** DO NOT EDIT ***
 
-#ifndef STAT_CLIENT_HPP_
-#define STAT_CLIENT_HPP_
+#ifndef JUBATUS_STAT_CLIENT_HPP_
+#define JUBATUS_STAT_CLIENT_HPP_
 
-
-#include "stat_types.hpp"
+#include <map>
+#include <string>
+#include <vector>
+#include <utility>
 #include <jubatus/msgpack/rpc/client.h>
-
+#include "stat_types.hpp"
 
 namespace jubatus {
-
 namespace stat {
-
 namespace client {
 
 class stat {
-public:
-  stat(const std::string &host, uint64_t port, double timeout_sec)
-    : c_(host, port) {
-    c_.set_timeout( timeout_sec );
+ public:
+  stat(const std::string& host, uint64_t port, double timeout_sec)
+      : c_(host, port) {
+    c_.set_timeout(timeout_sec);
+  }
+  
+  std::string get_config(std::string name) {
+    msgpack::rpc::future f = c_.call("get_config", name);
+    return f.get<std::string>();
+  }
+  
+  bool push(std::string name, std::string key, double value) {
+    msgpack::rpc::future f = c_.call("push", name, key, value);
+    return f.get<bool>();
+  }
+  
+  double sum(std::string name, std::string key) {
+    msgpack::rpc::future f = c_.call("sum", name, key);
+    return f.get<double>();
+  }
+  
+  double stddev(std::string name, std::string key) {
+    msgpack::rpc::future f = c_.call("stddev", name, key);
+    return f.get<double>();
+  }
+  
+  double max(std::string name, std::string key) {
+    msgpack::rpc::future f = c_.call("max", name, key);
+    return f.get<double>();
+  }
+  
+  double min(std::string name, std::string key) {
+    msgpack::rpc::future f = c_.call("min", name, key);
+    return f.get<double>();
+  }
+  
+  double entropy(std::string name, std::string key) {
+    msgpack::rpc::future f = c_.call("entropy", name, key);
+    return f.get<double>();
+  }
+  
+  double moment(std::string name, std::string key, int32_t degree,
+       double center) {
+    msgpack::rpc::future f = c_.call("moment", name, key, degree, center);
+    return f.get<double>();
+  }
+  
+  bool save(std::string name, std::string id) {
+    msgpack::rpc::future f = c_.call("save", name, id);
+    return f.get<bool>();
+  }
+  
+  bool load(std::string name, std::string id) {
+    msgpack::rpc::future f = c_.call("load", name, id);
+    return f.get<bool>();
+  }
+  
+  std::map<std::string, std::map<std::string, std::string> > get_status(
+      std::string name) {
+    msgpack::rpc::future f = c_.call("get_status", name);
+    return f.get<std::map<std::string, std::map<std::string, std::string> > >();
   }
 
-    std::string get_config(std::string name) {
-      return c_.call("get_config", name).get<std::string >();
-    }
-
-    bool push(std::string name, std::string key, double value) {
-      return c_.call("push", name, key, value).get<bool >();
-    }
-
-    double sum(std::string name, std::string key) {
-      return c_.call("sum", name, key).get<double >();
-    }
-
-    double stddev(std::string name, std::string key) {
-      return c_.call("stddev", name, key).get<double >();
-    }
-
-    double max(std::string name, std::string key) {
-      return c_.call("max", name, key).get<double >();
-    }
-
-    double min(std::string name, std::string key) {
-      return c_.call("min", name, key).get<double >();
-    }
-
-    double entropy(std::string name, std::string key) {
-      return c_.call("entropy", name, key).get<double >();
-    }
-
-    double moment(std::string name, std::string key, int32_t degree, double center) {
-      return c_.call("moment", name, key, degree, center).get<double >();
-    }
-
-    bool save(std::string name, std::string id) {
-      return c_.call("save", name, id).get<bool >();
-    }
-
-    bool load(std::string name, std::string id) {
-      return c_.call("load", name, id).get<bool >();
-    }
-
-    std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
-      return c_.call("get_status", name).get<std::map<std::string, std::map<std::string, std::string > > >();
-    }
-
-private:
+ private:
   msgpack::rpc::client c_;
 };
 
-} // namespace client
+}  // namespace client
+}  // namespace stat
+}  // namespace jubatus
 
-} // namespace stat
-
-} // namespace jubatus
-
-
-
-#endif // STAT_CLIENT_HPP_
+#endif  // JUBATUS_STAT_CLIENT_HPP_

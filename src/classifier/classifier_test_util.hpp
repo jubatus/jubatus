@@ -14,19 +14,20 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_CLASSIFIER_CLASSIFIER_TEST_UTIL_HPP_
+#define JUBATUS_CLASSIFIER_CLASSIFIER_TEST_UTIL_HPP_
 
+#include <algorithm>
 #include <cstdlib>
 #include <cmath>
 #include <cfloat>
-#include <vector>
 #include <string>
-#include <iostream>
-#include <algorithm>
+#include <utility>
+#include <vector>
+
 #include <pficommon/math/random.h>
 
-void make_random(float mu, float sigma, size_t dim,
-                 std::vector<double>& v) {
+void make_random(float mu, float sigma, size_t dim, std::vector<double>& v) {
   pfi::math::random::mtrand rand(0);
   for (size_t i = 0; i < dim; i++) {
     float value = rand.next_gaussian(mu, sigma);
@@ -34,8 +35,11 @@ void make_random(float mu, float sigma, size_t dim,
   }
 }
 
-void make_random(const std::vector<float>& mus, float sigma, size_t dim,
-                 std::vector<double>& v) {
+void make_random(
+    const std::vector<float>& mus,
+    float sigma,
+    size_t dim,
+    std::vector<double>& v) {
   pfi::math::random::mtrand rand(0);
   for (size_t i = 0; i < dim; i++) {
     float value = rand.next_gaussian(mus[i % mus.size()], sigma);
@@ -63,7 +67,7 @@ std::pair<std::string, std::vector<double> > gen_random_data() {
 }
 
 std::pair<std::string, std::vector<double> > gen_random_data3() {
-  const char *labels[] = { "1", "2", "3" };
+  const char* labels[] = { "1", "2", "3" };
   std::vector<float> mus;
   mus.push_back(3);
   mus.push_back(0);
@@ -79,3 +83,5 @@ std::pair<std::string, std::vector<double> > gen_random_data3() {
   make_random(mus, sigma, dim, p.second);
   return p;
 }
+
+#endif  // JUBATUS_CLASSIFIER_CLASSIFIER_TEST_UTIL_HPP_

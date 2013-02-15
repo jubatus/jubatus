@@ -15,21 +15,36 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "lof_storage.hpp"
+
 #include <algorithm>
 #include <limits>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "anomaly_type.hpp"
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
-#include "../recommender/recommender_factory.hpp"
 #include "../recommender/euclid_lsh.hpp"
-#include "anomaly_type.hpp"
+#include "../recommender/recommender_factory.hpp"
 
-using namespace std;
+using jubatus::storage::lof_storage;
 using pfi::data::serialization::binary_iarchive;
 using pfi::data::serialization::binary_oarchive;
 using pfi::data::unordered_map;
 using pfi::data::unordered_set;
+using std::istream;
+using std::istringstream;
+using std::max;
+using std::min;
+using std::numeric_limits;
+using std::ostream;
+using std::ostringstream;
+using std::pair;
+using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace storage {
@@ -38,46 +53,47 @@ const uint32_t lof_storage::DEFAULT_NEIGHBOR_NUM = 10;
 const uint32_t lof_storage::DEFAULT_REVERSE_NN_NUM = 30;
 
 lof_storage::config::config()
-  : nearest_neighbor_num(DEFAULT_NEIGHBOR_NUM)
-  , reverse_nearest_neighbor_num(DEFAULT_REVERSE_NN_NUM)
-{
+    : nearest_neighbor_num(DEFAULT_NEIGHBOR_NUM),
+      reverse_nearest_neighbor_num(DEFAULT_REVERSE_NN_NUM) {
 }
 
 lof_storage::lof_storage()
-  : neighbor_num_(DEFAULT_NEIGHBOR_NUM)
-  , reverse_nn_num_(DEFAULT_REVERSE_NN_NUM)
-  , nn_engine_(recommender::create_recommender("euclid_lsh",
-      jsonconfig::config(pfi::text::json::to_json(recommender::euclid_lsh::config()))))
-{
+    : neighbor_num_(DEFAULT_NEIGHBOR_NUM),
+      reverse_nn_num_(DEFAULT_REVERSE_NN_NUM),
+      nn_engine_(recommender::create_recommender("euclid_lsh",
+        jsonconfig::config(pfi::text::json::to_json(
+          recommender::euclid_lsh::config())))) {
 }
 
 lof_storage::lof_storage(recommender::recommender_base* nn_engine)
-    : neighbor_num_(DEFAULT_NEIGHBOR_NUM)
-    , reverse_nn_num_(DEFAULT_REVERSE_NN_NUM)
-    , nn_engine_(nn_engine)
-{
+    : neighbor_num_(DEFAULT_NEIGHBOR_NUM),
+      reverse_nn_num_(DEFAULT_REVERSE_NN_NUM),
+      nn_engine_(nn_engine) {
 }
 
-lof_storage::lof_storage(const config& config, recommender::recommender_base* nn_engine)
-    : neighbor_num_(config.nearest_neighbor_num)
-    , reverse_nn_num_(config.reverse_nearest_neighbor_num)
-    , nn_engine_(nn_engine)
-{
+lof_storage::lof_storage(
+    const config& config,
+    recommender::recommender_base* nn_engine)
+    : neighbor_num_(config.nearest_neighbor_num),
+      reverse_nn_num_(config.reverse_nearest_neighbor_num),
+      nn_engine_(nn_engine) {
 }
 
 lof_storage::~lof_storage() {
 }
 
-float lof_storage::collect_lrds(const sfv_t& query,
-                                unordered_map<string, float>& neighbor_lrd) const {
+float lof_storage::collect_lrds(
+    const sfv_t& query,
+    unordered_map<string, float>& neighbor_lrd) const {
   vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(query, neighbors, neighbor_num_);
 
   return collect_lrds_from_neighbors(neighbors, neighbor_lrd);
 }
 
-float lof_storage::collect_lrds(const string& id,
-                                unordered_map<string, float>& neighbor_lrd) const {
+float lof_storage::collect_lrds(
+    const string& id,
+    unordered_map<string, float>& neighbor_lrd) const {
   vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(id, neighbors, neighbor_num_ + 1);
 
@@ -136,12 +152,14 @@ float lof_storage::get_kdist(const string& row) const {
   if (it == lof_table_diff_.end()) {
     it = lof_table_.find(row);
     if (it == lof_table_.end()) {
-      throw JUBATUS_EXCEPTION(exception::runtime_error("specified row does not exist")
-                              << exception::error_message("row id: " + row));
+      throw JUBATUS_EXCEPTION(
+        exception::runtime_error("specified row does not exist")
+        << exception::error_message("row id: " + row));
     }
   } else if (is_removed(it->second)) {
-    throw JUBATUS_EXCEPTION(exception::runtime_error("specified row is recently removed")
-                            << exception::error_message("row id: " + row));
+    throw JUBATUS_EXCEPTION(
+      exception::runtime_error("specified row is recently removed")
+      << exception::error_message("row id: " + row));
   }
   return it->second.kdist;
 }
@@ -151,12 +169,14 @@ float lof_storage::get_lrd(const string& row) const {
   if (it == lof_table_diff_.end()) {
     it = lof_table_.find(row);
     if (it == lof_table_.end()) {
-      throw JUBATUS_EXCEPTION(exception::runtime_error("specified row does not exist")
-                              << exception::error_message("row id: " + row));
+      throw JUBATUS_EXCEPTION(
+        exception::runtime_error("specified row does not exist")
+        << exception::error_message("row id: " + row));
     }
   } else if (is_removed(it->second)) {
-    throw JUBATUS_EXCEPTION(exception::runtime_error("specified row is recently removed")
-                            << exception::error_message("row id: " + row));
+    throw JUBATUS_EXCEPTION(
+      exception::runtime_error("specified row is recently removed")
+      << exception::error_message("row id: " + row));
   }
   return it->second.lrd;
 }
@@ -243,12 +263,12 @@ void lof_storage::mix(const string& lhs, string& rhs) const {
 
 // private
 
-//static
+// static
 void lof_storage::mark_removed(lof_entry& entry) {
   entry.kdist = -1;
 }
 
-//static
+// static
 bool lof_storage::is_removed(const lof_entry& entry) {
   return entry.kdist < 0;
 }
@@ -279,19 +299,19 @@ float lof_storage::collect_lrds_from_neighbors(
   return neighbors.size() / sum_reachability;
 }
 
-void lof_storage::serialize_diff(const lof_table_t& table,
-                                 const string& nn_diff,
-                                 ostream& out) const {
+void lof_storage::serialize_diff(
+    const lof_table_t& table,
+    const string& nn_diff,
+    ostream& out) const {
   binary_oarchive bo(out);
   string name = nn_engine_->type();
-  bo << const_cast<lof_table_t&>(table)
-     << name
-     << const_cast<string&>(nn_diff);
+  bo << const_cast<lof_table_t&>(table) << name << const_cast<string&>(nn_diff);
 }
 
-void lof_storage::deserialize_diff(const string& diff,
-                                   lof_table_t& table,
-                                   string& nn_diff) const {
+void lof_storage::deserialize_diff(
+    const string& diff,
+    lof_table_t& table,
+    string& nn_diff) const {
   string nn_engine_name;
 
   istringstream iss(diff);
@@ -299,16 +319,19 @@ void lof_storage::deserialize_diff(const string& diff,
   bi >> table >> nn_engine_name;
 
   if (nn_engine_->type() != nn_engine_name) {
-    throw JUBATUS_EXCEPTION(exception::runtime_error("inconsistent nearest neighbor engine type")
-                            << exception::error_message("lof's NN engine type:  " + nn_engine_->type())
-                            << exception::error_message("diff's NN engine type: " + nn_engine_name));
+    throw JUBATUS_EXCEPTION(
+      exception::runtime_error("inconsistent nearest neighbor engine type")
+      << exception::error_message(
+        "lof's NN engine type:  " + nn_engine_->type())
+      << exception::error_message("diff's NN engine type: " + nn_engine_name));
   }
 
   bi >> nn_diff;
 }
 
-void lof_storage::collect_neighbors(const string& row,
-                                    unordered_set<string>& nn) const {
+void lof_storage::collect_neighbors(
+    const string& row,
+    unordered_set<string>& nn) const {
   vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(row, neighbors, reverse_nn_num_);
 
@@ -320,10 +343,12 @@ void lof_storage::collect_neighbors(const string& row,
 void lof_storage::update_entries(const unordered_set<string>& rows) {
   // NOTE: These two loops are separated, since update_lrd requires new kdist
   // values of k-NN.
-  typedef unordered_map<string, vector<pair<string, float> > > rows_to_neighbors_type;
+  typedef unordered_map<string, vector<pair<string, float> > >
+    rows_to_neighbors_type;
 
   rows_to_neighbors_type rows_to_neighbors;
-  for (unordered_set<string>::const_iterator it = rows.begin(); it != rows.end(); ++it) {
+  for (unordered_set<string>::const_iterator it = rows.begin();
+       it != rows.end(); ++it) {
     nn_engine_->neighbor_row(*it, rows_to_neighbors[*it], neighbor_num_);
   }
 
@@ -343,8 +368,9 @@ void lof_storage::update_kdist(const string& row) {
   update_kdist_with_neighbors(row, neighbors);
 }
 
-void lof_storage::update_kdist_with_neighbors(const string& row,
-                                              const vector<pair<string, float> >& neighbors) {
+void lof_storage::update_kdist_with_neighbors(
+    const string& row,
+    const vector<pair<string, float> >& neighbors) {
   if (!neighbors.empty()) {
     lof_table_diff_[row].kdist = neighbors.back().second;
   }
@@ -356,8 +382,8 @@ void lof_storage::update_lrd(const string& row) {
   update_lrd_with_neighbors(row, neighbors);
 }
 
-void lof_storage::update_lrd_with_neighbors(const string& row,
-                                            const vector<pair<string, float> >& neighbors) {
+void lof_storage::update_lrd_with_neighbors(
+    const string& row, const vector<pair<string, float> >& neighbors) {
   if (neighbors.empty()) {
     lof_table_diff_[row].lrd = 1;
     return;
@@ -377,5 +403,5 @@ void lof_storage::update_lrd_with_neighbors(const string& row,
   lof_table_diff_[row].lrd = length / sum_reachability;
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

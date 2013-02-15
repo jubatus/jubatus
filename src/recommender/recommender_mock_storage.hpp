@@ -14,10 +14,13 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_RECOMMENDER_RECOMMENDER_MOCK_STORAGE_HPP_
+#define JUBATUS_RECOMMENDER_RECOMMENDER_MOCK_STORAGE_HPP_
 
 #include <map>
 #include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 #include "../storage/recommender_storage_base.hpp"
 #include "recommender_type.hpp"
@@ -26,20 +29,24 @@ namespace jubatus {
 namespace recommender {
 
 class recommender_mock_storage : public storage::recommender_storage_base {
-public:
+ public:
   virtual ~recommender_mock_storage();
 
-  void set_similar_items(const sfv_t& query,
-                         const std::vector<std::pair<std::string, float> >& ids);
-  void set_neighbor_items(const sfv_t& query,
-                          const std::vector<std::pair<std::string, float> >& ids);
+  void set_similar_items(
+      const sfv_t& query,
+      const std::vector<std::pair<std::string, float> >& ids);
+  void set_neighbor_items(
+      const sfv_t& query,
+      const std::vector<std::pair<std::string, float> >& ids);
 
-  void similar_items_similarity(const sfv_t& query,
-                                std::vector<std::pair<std::string, float> >& ids,
-                                size_t ret_num) const;
-  void neighbor_items_distance(const sfv_t& query,
-                               std::vector<std::pair<std::string, float> >& ids,
-                               size_t ret_num) const;
+  void similar_items_similarity(
+      const sfv_t& query,
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
+  void neighbor_items_distance(
+      const sfv_t& query,
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
 
   void update(const sfv_t& from, const sfv_t& to);
   void remove(const sfv_t& query);
@@ -51,8 +58,9 @@ public:
   virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
   virtual void mix(const std::string& lhs, std::string& rhs) const;
 
-private:
-  typedef std::map<sfv_t, std::vector<std::pair<std::string, float> > > relation_type;
+ private:
+  typedef std::map<sfv_t, std::vector<std::pair<std::string, float> > >
+    relation_type;
 
   friend class pfi::data::serialization::access;
   template<typename Ar>
@@ -60,14 +68,16 @@ private:
     ar & MEMBER(similar_relation_) & MEMBER(neighbor_relation_);
   }
 
-  static void get_relation(const sfv_t& query,
-                           const relation_type& relmap,
-                           size_t ret_num,
-                           std::vector<std::pair<std::string, float> >& ids);
+  static void get_relation(
+      const sfv_t& query,
+      const relation_type& relmap,
+      size_t ret_num,
+      std::vector<std::pair<std::string, float> >& ids);
 
-  static void update_relation_key(const sfv_t& from,
-                                  const sfv_t& to,
-                                  relation_type& relmap);
+  static void update_relation_key(
+      const sfv_t& from,
+      const sfv_t& to,
+      relation_type& relmap);
 
   static void mix_relation(const relation_type& from, relation_type& to);
 
@@ -75,5 +85,7 @@ private:
   relation_type neighbor_relation_;
 };
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus
+
+#endif  // JUBATUS_RECOMMENDER_RECOMMENDER_MOCK_STORAGE_HPP_

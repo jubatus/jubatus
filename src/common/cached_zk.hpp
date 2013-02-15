@@ -14,20 +14,26 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_CACHED_ZK_HPP_
+#define JUBATUS_COMMON_CACHED_ZK_HPP_
 
 #include <map>
 #include <set>
+#include <string>
+#include <vector>
 #include "zk.hpp"
 
 namespace jubatus {
 namespace common {
-  // TODO: write zk mock and test them all?
+// TODO(kashihara): write zk mock and test them all?
 
 class cached_zk : public zk {
-public:
+ public:
   // timeout [sec]
-  cached_zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
+  cached_zk(
+      const std::string& hosts,
+      int timeout = 10,
+      const std::string& logfile = "");
   virtual ~cached_zk();
 
   bool list(const std::string& path, std::vector<std::string>& out);
@@ -42,7 +48,7 @@ public:
   void clear_cache(const char* path);
   void reload_cache(const std::string& path);
 
-private:
+ private:
   static void update_cache(zhandle_t*, int, int, const char*, void*);
 
   bool read_(const std::string& path, std::string& out);
@@ -50,8 +56,9 @@ private:
 
   std::map<std::string, std::set<std::string> > list_cache_;
   std::map<std::string, std::string> znode_cache_;
-
 };
 
-} // common
-} // jubatus
+}  // namespace common
+}  // namespace jubatus
+
+#endif  // JUBATUS_COMMON_CACHED_ZK_HPP_

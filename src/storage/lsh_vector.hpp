@@ -14,11 +14,13 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_STORAGE_LSH_VECTOR_HPP_
+#define JUBATUS_STORAGE_LSH_VECTOR_HPP_
 
-#include <vector>
 #include <stdint.h>
 #include <ostream>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
 
@@ -30,13 +32,13 @@ class lsh_vector {
   lsh_vector();
   lsh_vector(const lsh_vector& lv);
   explicit lsh_vector(size_t len);
-  lsh_vector(const std::vector<int>& v);
+  explicit lsh_vector(const std::vector<int>& v);
   ~lsh_vector();
 
   bool operator==(const lsh_vector& lv) const;
   bool operator!=(const lsh_vector& lv) const;
 
-  int  get(size_t pos) const;
+  int get(size_t pos) const;
   void set(size_t pos, int value);
   void push_back(int value);
 
@@ -52,9 +54,9 @@ class lsh_vector {
 
  private:
   friend class pfi::data::hash<lsh_vector>;
-
   friend class pfi::data::serialization::access;
-  template<class Ar>
+
+  template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(values_);
   }
@@ -62,19 +64,17 @@ class lsh_vector {
   std::vector<int> values_;
 };
 
-inline
-void swap(lsh_vector& l, lsh_vector& r) {
+inline void swap(lsh_vector& l, lsh_vector& r) {  // NOLINT
   l.swap(r);
 }
 
-inline
-std::ostream& operator<<(std::ostream& os, const lsh_vector& lv) {
+inline std::ostream& operator<<(std::ostream& os, const lsh_vector& lv) {
   lv.debug_print(os);
   return os;
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus
 
 namespace pfi {
 namespace data {
@@ -96,5 +96,7 @@ class hash<jubatus::storage::lsh_vector> {
   }
 };
 
-}
-}
+}  // namespace data
+}  // namespace pfi
+
+#endif  // JUBATUS_STORAGE_LSH_VECTOR_HPP_

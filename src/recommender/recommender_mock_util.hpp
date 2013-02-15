@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_RECOMMENDER_RECOMMENDER_MOCK_UTIL_HPP_
+#define JUBATUS_RECOMMENDER_RECOMMENDER_MOCK_UTIL_HPP_
 
 #include <string>
 #include <utility>
@@ -27,5 +28,7 @@ namespace recommender {
 sfv_t make_sfv(const std::string& repr);
 std::vector<std::pair<std::string, float> > make_ids(const std::string& repr);
 
-}
-}
+}  // namespace recommender
+}  // namespace jubatus
+
+#endif  // JUBATUS_RECOMMENDER_RECOMMENDER_MOCK_UTIL_HPP_

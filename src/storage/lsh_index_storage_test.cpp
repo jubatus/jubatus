@@ -14,13 +14,21 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <algorithm>
 #include <cmath>
 #include <sstream>
 #include <string>
+#include <utility>
+#include <vector>
 #include <gtest/gtest.h>
 #include "lsh_index_storage.hpp"
 
-using namespace std;
+using std::istringstream;
+using std::make_pair;
+using std::pair;
+using std::sort;
+using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace storage {
@@ -30,17 +38,19 @@ namespace {
 vector<float> make_hash(const string& b) {
   vector<float> v;
   istringstream ss(b);
-  for (float x; ss >> x; ) {
+  for (float x; ss >> x;) {
     v.push_back(x);
   }
   return v;
 }
 
 float distance(float norm1, float norm2, float angle_ratio) {
-  return sqrt(norm1*norm1 + norm2*norm2 - 2*norm1*norm2*cos(angle_ratio*M_PI));
+  return std::sqrt(
+      norm1 * norm1 + norm2 * norm2
+          - 2 * norm1 * norm2 * cos(angle_ratio * M_PI));
 }
 
-}
+}  // namespace
 
 TEST(lsh_index_storage, name) {
   lsh_index_storage s(4, 1, 0);
@@ -311,5 +321,5 @@ TEST(lsh_index_storage, set_and_remove_arround_mix) {
   ids.clear();
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_CONFIG_UTIL_HPP_
+#define JUBATUS_COMMON_CONFIG_UTIL_HPP_
 
 #include <string>
 #include <pficommon/lang/cast.h>
@@ -23,17 +24,22 @@
 namespace jubatus {
 
 template<typename T>
-T get_param(const pfi::text::json::json& config,
-            const std::string& name,
-            T default_value) {
-  using namespace pfi::text::json;
-  if (is<json_object>(config) && config.count(name))
+T get_param(
+    const pfi::text::json::json& config,
+    const std::string& name,
+    T default_value) {
+  using pfi::text::json::json_cast_with_default;
+  if (is<json_object>(config) && config.count(name)) {
     return json_cast_with_default<T>(config[name], default_value);
+  }
 
   return default_value;
 }
 
-pfi::text::json::json get_param_obj(const pfi::text::json::json& config,
-            const std::string& name);
+pfi::text::json::json get_param_obj(
+    const pfi::text::json::json& config,
+    const std::string& name);
 
-}
+}  // namespace jubatus
+
+#endif  // JUBATUS_COMMON_CONFIG_UTIL_HPP_

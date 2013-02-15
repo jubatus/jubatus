@@ -45,4 +45,4 @@ TEST(key_manager, get_key) {
   EXPECT_EQ("key1", m.get_key(0));
 }
 
-}
+}  // namespace jubatus

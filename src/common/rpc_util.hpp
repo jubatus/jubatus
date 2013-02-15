@@ -14,8 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_RPC_UTIL_HPP_
+#define JUBATUS_COMMON_RPC_UTIL_HPP_
+
 #include <string>
+#include <utility>
 #include <pficommon/data/serialization.h>
 #include <msgpack.hpp>
 
@@ -23,30 +26,34 @@ namespace jubatus {
 
 typedef std::pair<std::string, int> connection_info;
 
-template <typename T, typename E = std::string>
+template<typename T, typename E = std::string>
 struct result {
   bool success;
   T retval;
   E error;
 
-  static result<T,E> ok(const T& t){
-    result<T,E> r;
+  static result<T, E> ok(const T& t) {
+    result<T, E> r;
     r.success = true;
     r.retval = t;
     return r;
-  };
-  static result<T,E> fail(const E& e){
-    result<T,E> r;
+  }
+
+  static result<T, E> fail(const E& e) {
+    result<T, E> r;
     r.success = false;
     r.error = e;
     return r;
-  };
+  }
+
 
   MSGPACK_DEFINE(success, retval, error);
-  template <class Archiver>
-  void serialize(Archiver &ar) {
+  template<class Archiver>
+  void serialize(Archiver& ar) {
     ar & MEMBER(success) & MEMBER(retval) & MEMBER(error);
   }
 };
 
-} //namespace jubatus
+}  // namespace jubatus
+
+#endif  // JUBATUS_COMMON_RPC_UTIL_HPP_

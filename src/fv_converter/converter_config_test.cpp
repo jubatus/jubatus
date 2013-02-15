@@ -14,68 +14,63 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
+#include <algorithm>
+#include <cmath>
 #include <fstream>
 #include <string>
-#include <cmath>
-
+#include <gtest/gtest.h>
 #include <pficommon/text/json.h>
-
-#include "test_util.hpp"
 #include "converter_config.hpp"
-#include "datum_to_fv_converter.hpp"
 #include "datum.hpp"
+#include "datum_to_fv_converter.hpp"
 #include "exception.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace jubatus::fv_converter;
-using namespace pfi::text::json;
+namespace jubatus {
+namespace fv_converter {
 
 TEST(converter_config, config) {
   try {
-
 #ifdef HAVE_RE2
-    ifstream ifs("./test_input/config.json");
+    std::ifstream ifs("./test_input/config.json");
 #else
-    ifstream ifs("./test_input/config_wo_re2.json");
+    std::ifstream ifs("./test_input/config_wo_re2.json");
 #endif
     converter_config config;
-    ifs >> via_json(config);
+    ifs >> pfi::text::json::via_json(config);
 
     datum_to_fv_converter conv;
     initialize_converter(config, conv);
 
     datum d;
-    d.string_values_.push_back(make_pair("user/name", "Taro Yamada"));
-    d.string_values_.push_back(make_pair("user/text", "hoge fuga <foo>"));
+    d.string_values_.push_back(std::make_pair("user/name", "Taro Yamada"));
+    d.string_values_.push_back(std::make_pair("user/text", "hoge fuga <foo>"));
 
-    d.num_values_.push_back(make_pair("user/id", 1000));
-    d.num_values_.push_back(make_pair("user/age", 20));
+    d.num_values_.push_back(std::make_pair("user/id", 1000));
+    d.num_values_.push_back(std::make_pair("user/age", 20));
 
     sfv_t f;
     conv.convert(d, f);
 
     sfv_t exp;
-    exp.push_back(make_pair("user/name$Taro Yamada@str#bin/bin", 1.));
+    exp.push_back(std::make_pair("user/name$Taro Yamada@str#bin/bin", 1.));
 #ifdef HAVE_RE2
     // only when re2 is enabled, detagging filter works
-    exp.push_back(make_pair("user/text-detagged$hoge fuga @str#bin/bin", 1.));
+    exp.push_back(
+        std::make_pair("user/text-detagged$hoge fuga @str#bin/bin", 1.));
 #endif
-    exp.push_back(make_pair("user/id@str$1000", 1.));
-    exp.push_back(make_pair("user/age@num", 20.));
-    exp.push_back(make_pair("user/age@log", log(20.)));
-    exp.push_back(make_pair("user/age+1@num", 21.));
+    exp.push_back(std::make_pair("user/id@str$1000", 1.));
+    exp.push_back(std::make_pair("user/age@num", 20.));
+    exp.push_back(std::make_pair("user/age@log", log(20.)));
+    exp.push_back(std::make_pair("user/age+1@num", 21.));
 
-    sort(f.begin(), f.end());
-    sort(exp.begin(), exp.end());
-    PairVectorEquals(exp, f);
-
+    std::sort(f.begin(), f.end());
+    std::sort(exp.begin(), exp.end());
+    ASSERT_EQ(exp, f);
   } catch (const std::exception& e) {
-    cout << e.what() << endl;
+    std::cout << e.what() << std::endl;
     throw;
   } catch (const std::string& e) {
-    cout << e << endl;
+    std::cout << e << std::endl;
     throw;
   }
 }
@@ -90,7 +85,7 @@ TEST(converter_config, hash) {
   initialize_converter(config, conv);
 
   datum d;
-  d.num_values_.push_back(make_pair("age", 10));
+  d.num_values_.push_back(std::make_pair("age", 10));
 
   sfv_t f;
   conv.convert(d, f);
@@ -122,3 +117,5 @@ TEST(make_fv_converter, config_cast_error) {
   EXPECT_THROW(make_fv_converter("{}"), fv_converter::converter_exception);
 }
 
+}  // namespace fv_converter
+}  // namespace jubatus

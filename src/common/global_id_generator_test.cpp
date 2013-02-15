@@ -17,8 +17,6 @@
 #include <gtest/gtest.h>
 #include "global_id_generator.hpp"
 
-using namespace std;
-
 namespace jubatus {
 namespace common {
 
@@ -29,5 +27,5 @@ TEST(generate, standalone) {
   EXPECT_EQ(2u, gen.generate());
 }
 
-}
-}
+}  // namespace common
+}  // namespace jubatus

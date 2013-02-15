@@ -25,51 +25,51 @@
 #include "../common/util.hpp"
 #include "server_util.hpp"
 
-using namespace jubatus;
-using namespace jubatus::framework;
+namespace jubatus {
+namespace framework {
 
-namespace jubatus { namespace framework {
-__thread msgpack::rpc::session_pool *private_session_pool_ = NULL;
-__thread keeper::async_task_loop* keeper::async_task_loop::private_async_task_loop_;
+__thread msgpack::rpc::session_pool* private_session_pool_ = NULL;
+__thread keeper::async_task_loop*
+  keeper::async_task_loop::private_async_task_loop_;
 
 // NOTE: '__thread' is gcc-extension. We should re-implement with
 //       pthread TLS?
 
-}}
-
 keeper::keeper(const keeper_argv& a)
-  : keeper_common(a),
-    jubatus::common::mprpc::rpc_server(a.timeout)
-{
+    : keeper_common(a),
+      jubatus::common::mprpc::rpc_server(a.timeout) {
 }
 
-keeper::~keeper(){
+keeper::~keeper() {
 }
 
-int keeper::run()
-{
+int keeper::run() {
   try {
     ::atexit(jubatus::framework::atexit);
     jubatus::util::set_exit_on_term();
     jubatus::util::ignore_sigpipe();
 
-    this->instance.listen( a_.bind_address, a_.port );
-    this->instance.start( a_.threadnum );
+    this->instance_.listen(a_.bind_address, a_.port);
+    this->instance_.start(a_.threadnum);
     // RPC server started, then register group membership
     register_keeper(*zk_, a_.type, a_.eth, a_.port);
-    this->instance.join();
+    this->instance_.join();
 
-    return 0; // never return
-
+    return 0;  // never return
   } catch (const jubatus::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
-  } catch( mp::system_error &e ) {
-    if ( e.code == EADDRINUSE )
-      LOG(FATAL) << "server failed to start: any process using port " << a_.port << "?";
-    else
+  } catch (const mp::system_error& e) {
+    if (e.code == EADDRINUSE) {
+      LOG(FATAL) << "server failed to start: any process using port " << a_.port
+          << "?";
+    } else {
       LOG(FATAL) << "server failed to start: " << e.what();
-  } catch( std::exception &e ) {
+    }
+  } catch (const std::exception& e) {
     LOG(FATAL) << "server failed to start:" << e.what();
   }
   return -1;
 }
+
+}  // namespace framework
+}  // namespace jubatus

@@ -14,29 +14,37 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_DYNAMIC_SPLITTER_HPP_
+#define JUBATUS_FV_CONVERTER_DYNAMIC_SPLITTER_HPP_
 
 #include <map>
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/lang/scoped_ptr.h>
-#include "word_splitter.hpp"
 #include "dynamic_loader.hpp"
+#include "word_splitter.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
 class dynamic_splitter : public word_splitter {
  public:
-  dynamic_splitter(const std::string& path,
-                   const std::string& function,
-                   const std::map<std::string, std::string>& params);
+  dynamic_splitter(
+      const std::string& path,
+      const std::string& function,
+      const std::map<std::string, std::string>& params);
 
-  void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
+  void split(
+      const std::string& string,
+      std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
  private:
   dynamic_loader loader_;
   pfi::lang::scoped_ptr<word_splitter> impl_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_DYNAMIC_SPLITTER_HPP_

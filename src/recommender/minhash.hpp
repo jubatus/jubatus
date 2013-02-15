@@ -14,8 +14,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_RECOMMENDER_MINHASH_HPP_
+#define JUBATUS_RECOMMENDER_MINHASH_HPP_
 
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 
 #include "recommender_base.hpp"
@@ -25,15 +29,15 @@ namespace jubatus {
 namespace recommender {
 
 class minhash : public recommender_base {
-public:
+ public:
   struct config {
     config()
-      : hash_num(64)
-    {}
+        : hash_num(64) {
+    }
 
     int64_t hash_num;
 
-    template <typename Ar>
+    template<typename Ar>
     void serialize(Ar& ar) {
       ar & MEMBER(hash_num);
     }
@@ -43,17 +47,23 @@ public:
   explicit minhash(const config& config);
   ~minhash();
 
-  void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
-  void neighbor_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  void similar_row(
+      const sfv_t& query,
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
+  void neighbor_row(
+      const sfv_t& query,
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
   void clear();
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const sfv_diff_t& diff);
   void get_all_row_ids(std::vector<std::string>& ids) const;
   std::string type() const;
   storage::recommender_storage_base* get_storage();
-  const storage::recommender_storage_base* get_const_storage() const ;
+  const storage::recommender_storage_base* get_const_storage() const;
 
-private:
+ private:
   bool save_impl(std::ostream&);
   bool load_impl(std::istream&);
 
@@ -67,5 +77,7 @@ private:
   storage::bit_index_storage row2minhashvals_;
 };
 
-} // namespace recommender
-} // namespace jubatus
+}  // namespace recommender
+}  // namespace jubatus
+
+#endif  // JUBATUS_RECOMMENDER_MINHASH_HPP_

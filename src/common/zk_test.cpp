@@ -14,47 +14,50 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <string>
+#include <vector>
 #include <gtest/gtest.h>
 #include "lock_service.hpp"
 #include "../common/membership.hpp"
 
-using namespace std;
-using namespace pfi::lang;
+using std::string;
+using std::vector;
 using jubatus::common::lock_service;
 using jubatus::common::ACTOR_BASE_PATH;
 using jubatus::common::JUBATUS_BASE_PATH;
 
-
 class zk_trivial : public testing::Test {
-protected:
-
-  void SetUp()
-  {
-    zk_ = pfi::lang::shared_ptr<lock_service>
-      (jubatus::common::create_lock_service("zk", "localhost:2181", 1024, "test.log"));
-
+ protected:
+  void SetUp() {
+    zk_ = pfi::lang::shared_ptr<lock_service>(
+        jubatus::common::create_lock_service("zk", "localhost:2181", 1024,
+                                             "test.log"));
 
     root_path = "/jubatus_zk_test_root";
     engine_name = "jubatus_zk_test";
     engine_root = ACTOR_BASE_PATH + "/" + engine_name;
   }
 
-  void TearDown()
-  {
-    if (!zk_)
+  void TearDown() {
+    if (!zk_) {
       return;
+    }
 
-    if (zk_->exists(root_path))
+    if (zk_->exists(root_path)) {
       zk_->remove(root_path);
+    }
 
-    if (zk_->exists(engine_root))
+    if (zk_->exists(engine_root)) {
       zk_->remove(engine_root);
+    }
 
-    if (zk_->exists(ACTOR_BASE_PATH))
+    if (zk_->exists(ACTOR_BASE_PATH)) {
       zk_->remove(ACTOR_BASE_PATH);
+    }
 
-    if (zk_->exists(JUBATUS_BASE_PATH))
+    if (zk_->exists(JUBATUS_BASE_PATH)) {
       zk_->remove(JUBATUS_BASE_PATH);
+    }
   }
 
   string root_path;
@@ -63,9 +66,7 @@ protected:
   pfi::lang::shared_ptr<lock_service> zk_;
 };
 
-
-TEST_F(zk_trivial, create_exists_remove)
-{
+TEST_F(zk_trivial, create_exists_remove) {
   const string dir = root_path + "/test1";
 
   ASSERT_FALSE(zk_->exists(root_path));
@@ -87,13 +88,11 @@ TEST_F(zk_trivial, create_exists_remove)
   ASSERT_FALSE(zk_->exists(dir));
 }
 
-TEST_F(zk_trivial, non_exists)
-{
+TEST_F(zk_trivial, non_exists) {
   ASSERT_FALSE(zk_->exists("/zktest_non_exists_path"));
 }
 
-TEST_F(zk_trivial, create_set_read)
-{
+TEST_F(zk_trivial, create_set_read) {
   zk_->create(root_path, "hoge0", true);
 
   string dat;
@@ -108,21 +107,20 @@ TEST_F(zk_trivial, create_set_read)
   zk_->remove(root_path);
 }
 
-// TODO: test lock_service::hd_list()
+// TODO(kashihara): test lock_service::hd_list()
 
-TEST_F(zk_trivial, create_seq)
-{
+TEST_F(zk_trivial, create_seq) {
   string seqfile;
   zk_->create_seq(root_path, seqfile);
 
   EXPECT_LT(root_path.size(), seqfile.size());
 
-  if (!seqfile.empty())
+  if (!seqfile.empty()) {
     zk_->remove(seqfile);
+  }
 }
 
-TEST_F(zk_trivial, create_id)
-{
+TEST_F(zk_trivial, create_id) {
   zk_->create(root_path, "");
   ASSERT_TRUE(zk_->exists(root_path));
 
@@ -137,11 +135,11 @@ TEST_F(zk_trivial, create_id)
   zk_->remove(root_path);
 }
 
-// TODO: test lock_service_mutex
+// TODO(kashihara): test lock_service_mutex
 
-TEST_F(zk_trivial, trivial_with_membershp)
-{
-  using namespace jubatus::common;
+TEST_F(zk_trivial, trivial_with_membershp) {
+  using jubatus::common::build_actor_path;
+  using jubatus::common::build_loc_str;
 
   string name_, path;
   string name1_, path1;

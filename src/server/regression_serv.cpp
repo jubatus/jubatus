@@ -16,6 +16,10 @@
 
 #include "regression_serv.hpp"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "../regression/regression_factory.hpp"
 #include "../common/util.hpp"
 #include "../common/vector_util.hpp"
@@ -26,14 +30,20 @@
 #include "../fv_converter/converter_config.hpp"
 #include "../storage/storage_factory.hpp"
 
-using namespace std;
+using std::string;
+using std::vector;
+using std::pair;
 using pfi::lang::shared_ptr;
 using pfi::text::json::json;
 using pfi::text::json::json_cast;
 using pfi::lang::lexical_cast;
-using namespace jubatus::common;
-using namespace jubatus::framework;
-using namespace jubatus::fv_converter;
+
+using jubatus::common::cshared_ptr;
+using jubatus::common::lock_service;
+using jubatus::framework::convert;
+using jubatus::framework::mixer::create_mixer;
+using jubatus::framework::mixable_holder;
+using jubatus::fv_converter::weight_manager;
 
 namespace jubatus {
 namespace server {
@@ -45,28 +55,29 @@ struct regression_serv_config {
   pfi::data::optional<pfi::text::json::json> parameter;
   pfi::text::json::json converter;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
-    ar
-        & MEMBER(method)
-        & MEMBER(parameter)
-        & MEMBER(converter);
+    ar & MEMBER(method) & MEMBER(parameter) & MEMBER(converter);
   }
 };
 
-linear_function_mixer::model_ptr make_model(const framework::server_argv& arg) {
-  return linear_function_mixer::model_ptr(storage::storage_factory::create_storage((arg.is_standalone())?"local":"local_mixture"));
+linear_function_mixer::model_ptr make_model(
+    const framework::server_argv& arg) {
+  return linear_function_mixer::model_ptr(
+      storage::storage_factory::create_storage(
+          (arg.is_standalone()) ? "local" : "local_mixture"));
 }
 
-}
+}  // namespace
 
-regression_serv::regression_serv(const framework::server_argv& a,
-                                 const cshared_ptr<lock_service>& zk)
+regression_serv::regression_serv(
+    const framework::server_argv& a,
+    const cshared_ptr<lock_service>& zk)
     : server_base(a) {
   gresser_.set_model(make_model(a));
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
 
-  mixer_.reset(mixer::create_mixer(a, zk));
+  mixer_.reset(create_mixer(a, zk));
   mixable_holder_.reset(new mixable_holder());
 
   mixer_->set_mixable_holder(mixable_holder_);
@@ -87,7 +98,8 @@ void regression_serv::get_status(status_t& status) const {
 
 bool regression_serv::set_config(const string& config) {
   jsonconfig::config config_root(lexical_cast<json>(config));
-  regression_serv_config conf = jsonconfig::config_cast_check<regression_serv_config>(config_root);
+  regression_serv_config conf = jsonconfig::config_cast_check<
+      regression_serv_config>(config_root);
 
   config_ = config;
   converter_ = fv_converter::make_fv_converter(conf.converter);
@@ -95,11 +107,15 @@ bool regression_serv::set_config(const string& config) {
 
   jsonconfig::config param;
   if (conf.parameter) {
-    param = *conf.parameter;
+    param = jsonconfig::config(*conf.parameter);
   }
-  regression_.reset(jubatus::regression::regression_factory().create_regression(conf.method, param, gresser_.get_model().get()));
+  regression_.reset(
+      jubatus::regression::regression_factory().create_regression(
+          conf.method,
+          param,
+          gresser_.get_model().get()));
 
-  // FIXME: switch the function when set_config is done
+  // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
   LOG(INFO) << "config loaded: " << config;
   return true;
@@ -116,7 +132,7 @@ int regression_serv::train(const vector<pair<float, jubatus::datum> >& data) {
   int count = 0;
   sfv_t v;
   fv_converter::datum d;
-  
+
   for (size_t i = 0; i < data.size(); ++i) {
     convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
     converter_->convert_and_update_weight(d, v);
@@ -124,11 +140,12 @@ int regression_serv::train(const vector<pair<float, jubatus::datum> >& data) {
     DLOG(INFO) << "trained: " << data[i].first;
     count++;
   }
-  // FIXME: send count incrementation to mixer
+  // TODO(kuenishi): send count incrementation to mixer
   return count;
 }
 
-vector<float> regression_serv::estimate(const vector<jubatus::datum>& data) const {
+vector<float> regression_serv::estimate(
+    const vector<jubatus::datum>& data) const {
   check_set_config();
 
   vector<float> ret;
@@ -139,7 +156,7 @@ vector<float> regression_serv::estimate(const vector<jubatus::datum>& data) cons
     converter_->convert(d, v);
     ret.push_back(regression_->estimate(v));
   }
-  return ret; //vector<estimate_results> >::ok(ret);
+  return ret;  // vector<estimate_results> >::ok(ret);
 }
 
 void regression_serv::check_set_config() const {
@@ -148,5 +165,5 @@ void regression_serv::check_set_config() const {
   }
 }
 
-} // namespace server
-} // namespace jubatus
+}  // namespace server
+}  // namespace jubatus

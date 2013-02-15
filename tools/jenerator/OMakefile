@@ -1,0 +1,11 @@
+.PHONY: all clean check
+
+OCAML_FLAGS=-w A -warn-error A
+
+NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
+BYTE_ENABLED = $(not $(OCAMLOPT_EXISTS))
+
+.SUBDIRS: src test
+
+clean:
+  rm -f *~ *.opt *.cmi *.cmx *.o *.omc

@@ -16,15 +16,18 @@
 
 #include "without_split.hpp"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 namespace jubatus {
 namespace fv_converter {
 
-using namespace std;
-
-void without_split::split(const std::string& str,
-                          std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
-  ret_boundaries.push_back(make_pair(0, str.size()));
+void without_split::split(
+    const std::string& str,
+    std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
+  ret_boundaries.push_back(std::make_pair(0, str.size()));
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

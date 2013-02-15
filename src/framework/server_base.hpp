@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FRAMEWORK_SERVER_BASE_HPP_
+#define JUBATUS_FRAMEWORK_SERVER_BASE_HPP_
 
 #include <stdint.h>
 #include <map>
@@ -22,18 +23,19 @@
 #include <vector>
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/lang/shared_ptr.h>
-#include "server_util.hpp"
+
 #include "mixable.hpp"
+#include "server_util.hpp"
 
 namespace jubatus {
 namespace framework {
 
 namespace mixer {
 class mixer;
-}
+}  // namespace mixer
 
 class server_base {
-public:
+ public:
   typedef std::map<std::string, std::string> status_t;
 
   explicit server_base(const server_argv& a);
@@ -59,10 +61,12 @@ public:
     return argv_;
   }
 
-private:
+ private:
   const server_argv argv_;
   uint64_t update_count_;
 };
 
-}
-}
+}  // namespace framework
+}  // namespace jubatus
+
+#endif  // JUBATUS_FRAMEWORK_SERVER_BASE_HPP_

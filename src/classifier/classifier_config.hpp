@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_CLASSIFIER_CLASSIFIER_CONFIG_HPP_
+#define JUBATUS_CLASSIFIER_CLASSIFIER_CONFIG_HPP_
 
 #include <pficommon/data/serialization.h>
 
@@ -23,16 +24,18 @@ namespace classifier {
 
 struct classifier_config {
   classifier_config()
-    : C(1.0f)
-  {}
+      : C(1.0f) {
+  }
 
   float C;
 
-  template <typename Ar>
+  template<typename Ar>
   void serialize(Ar& ar) {
     ar & NAMED_MEMBER("regularization_weight", C);
   }
 };
 
-} // classifier
-} //jubatus
+}  // namespace classifier
+}  // namespace jubatus
+
+#endif  // JUBATUS_CLASSIFIER_CLASSIFIER_CONFIG_HPP_

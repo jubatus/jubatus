@@ -14,44 +14,52 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "cw.hpp"
+
 #include <algorithm>
 #include <cmath>
-#include "cw.hpp"
+#include <string>
+
 #include "classifier_util.hpp"
 
-using namespace std;
+using std::string;
 
-namespace jubatus{
-namespace classifier{
+namespace jubatus {
+namespace classifier {
 
-CW::CW(storage::storage_base* storage) : classifier_base(storage)
-{
+CW::CW(storage::storage_base* storage)
+    : classifier_base(storage) {
   classifier_base::use_covars_ = true;
 }
 
 CW::CW(const classifier_config& config, storage::storage_base* storage)
-  : classifier_base(storage), config(config)
-{
+    : classifier_base(storage),
+      config(config) {
   classifier_base::use_covars_ = true;
 }
 
-void CW::train(const sfv_t& sfv, const string& label){
+void CW::train(const sfv_t& sfv, const string& label) {
   const float C = config.C;
   string incorrect_label;
   float variance = 0.f;
-  float margin = - calc_margin_and_variance(sfv, label, incorrect_label, variance);
+  float margin = -calc_margin_and_variance(sfv, label, incorrect_label,
+                                           variance);
   float b = 1.f + 2 * C * margin;
-  float gamma = - b + sqrt(b * b - 8 * C * (margin - C * variance));
+  float gamma = -b + sqrt(b * b - 8 * C * (margin - C * variance));
 
-  if (gamma <= 0.f){
+  if (gamma <= 0.f) {
     return;
   }
   gamma /= 4 * C * variance;
   update(sfv, gamma, label, incorrect_label);
 }
 
-void CW::update(const sfv_t& sfv, float step_width, const string& pos_label, const string& neg_label){
-  for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it){
+void CW::update(
+    const sfv_t& sfv,
+    float step_width,
+    const string& pos_label,
+    const string& neg_label) {
+  for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
     storage::feature_val2_t val2;
@@ -65,19 +73,24 @@ void CW::update(const sfv_t& sfv, float step_width, const string& pos_label, con
     float covar_pos_step = 2.f * step_width * pos_val.v2 * val * val * C;
     float covar_neg_step = 2.f * step_width * neg_val.v2 * val * val * C;
 
-   storage_->set2(feature, pos_label, 
-                  storage::val2_t(pos_val.v1 + step_width * pos_val.v2 * val,
-                                  1.f / (1.f / pos_val.v2 + covar_pos_step)));
-   if (neg_label != "")
-     storage_->set2(feature, neg_label, 
-                    storage::val2_t(neg_val.v1 - step_width * neg_val.v2 * val,
-                                    1.f / (1.f / neg_val.v2 + covar_neg_step)));
+    storage_->set2(
+        feature,
+        pos_label,
+        storage::val2_t(pos_val.v1 + step_width * pos_val.v2 * val,
+                        1.f / (1.f / pos_val.v2 + covar_pos_step)));
+    if (neg_label != "") {
+      storage_->set2(
+          feature,
+          neg_label,
+          storage::val2_t(neg_val.v1 - step_width * neg_val.v2 * val,
+                          1.f / (1.f / neg_val.v2 + covar_neg_step)));
+    }
   }
 }
 
-string CW::name() const{
+string CW::name() const {
   return string("CW");
 }
 
-}
-}
+}  // namespace classifier
+}  // namespase jubatus

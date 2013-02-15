@@ -14,42 +14,40 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
+#include <map>
 #include <string>
+#include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
-#include "string_filter_factory.hpp"
 #include "exception.hpp"
-
 #ifdef HAVE_RE2
 #include "re2_filter.hpp"
 #endif
+#include "string_filter_factory.hpp"
 
-using namespace jubatus;
-using namespace jubatus::fv_converter;
-using namespace std;
-using namespace pfi::lang;
+namespace jubatus {
+namespace fv_converter {
 
 #ifdef HAVE_RE2
 TEST(string_filter_factory, trivial) {
   string_filter_factory f;
-  map<string, string> p;
+  std::map<std::string, std::string> p;
   p["pattern"] = ".*";
   p["replace"] = "";
 
-  scoped_ptr<string_filter> filter(f.create("regexp", p));
+  pfi::lang::scoped_ptr<string_filter> filter(f.create("regexp", p));
   EXPECT_TRUE(typeid(*filter) == typeid(re2_filter));
 }
 #endif
 
 TEST(string_filter_factory, unknown) {
   string_filter_factory f;
-  map<string, string> p;
+  std::map<std::string, std::string> p;
   EXPECT_THROW(f.create("unknown", p), converter_exception);
 }
 
 TEST(string_filter_factory, dynamic) {
   string_filter_factory f;
-  map<string, string> p;
+  std::map<std::string, std::string> p;
   ASSERT_THROW(f.create("dynamic", p), converter_exception);
 
   p["path"] = "unknown_file_name";
@@ -59,10 +57,13 @@ TEST(string_filter_factory, dynamic) {
   ASSERT_THROW(f.create("dynamic", p), converter_exception);
 
   p["function"] = "create";
-  scoped_ptr<string_filter> s(f.create("dynamic", p));
+  pfi::lang::scoped_ptr<string_filter> s(f.create("dynamic", p));
 
-  string in("hoge-hoge");
-  string out;
+  std::string in("hoge-hoge");
+  std::string out;
   s->filter(in, out);
   EXPECT_EQ("hoge hoge", out);
 }
+
+}  // namespace fv_converter
+}  // namespace jubatus

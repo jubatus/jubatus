@@ -14,23 +14,32 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_CLASSIFIER_CLASSIFIER_UTIL_HPP_
+#define JUBATUS_CLASSIFIER_CLASSIFIER_UTIL_HPP_
 
 #include <string>
 
-namespace jubatus{
+namespace jubatus {
 
-class ClassifierUtil{
-public:
-  template <class T, class U> static void get_two(const T& t, const std::string& label1, const std::string& label2, U& u1, U& u2){
-    for (size_t i = 0; i < t.size(); ++i){
-      if (t[i].first == label1){
+class ClassifierUtil {
+ public:
+  template<class T, class U>
+  static void get_two(
+      const T& t,
+      const std::string& label1,
+      const std::string& label2,
+      U& u1,
+      U& u2) {
+    for (size_t i = 0; i < t.size(); ++i) {
+      if (t[i].first == label1) {
         u1 = t[i].second;
-      } else if (t[i].first == label2){
+      } else if (t[i].first == label2) {
         u2 = t[i].second;
       }
     }
   }
 };
 
-}
+}  // namespace jubatus
+
+#endif  // JUBATUS_CLASSIFIER_CLASSIFIER_UTIL_HPP_

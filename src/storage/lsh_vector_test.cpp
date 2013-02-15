@@ -16,10 +16,13 @@
 
 #include <sstream>
 #include <string>
+#include <vector>
 #include <gtest/gtest.h>
 #include "lsh_vector.hpp"
 
-using namespace std;
+using std::string;
+using std::stringstream;
+using std::vector;
 
 namespace jubatus {
 namespace storage {
@@ -29,7 +32,7 @@ lsh_vector make_vector(const string& str) {
   ss << str;
 
   vector<int> v;
-  for (int n; ss >> n; ) {
+  for (int n; ss >> n;) {
     v.push_back(n);
   }
   return lsh_vector(v);
@@ -88,5 +91,5 @@ TEST(lsh_vector, cut) {
   EXPECT_EQ(expect, lv.cut(2, 4));
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

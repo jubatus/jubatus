@@ -14,24 +14,33 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_CLASSIFIER_AROW_HPP_
+#define JUBATUS_CLASSIFIER_AROW_HPP_
+
+#include <string>
 
 #include "classifier_base.hpp"
 
-namespace jubatus{
-namespace classifier{
+namespace jubatus {
+namespace classifier {
 
 class AROW : public classifier_base {
-public:
-  AROW(storage::storage_base* stroage);
+ public:
+  explicit AROW(storage::storage_base* stroage);
   AROW(const classifier_config& config, storage::storage_base* stroage);
   void train(const sfv_t& fv, const std::string& label);
   std::string name() const;
-private:
-  void update(const sfv_t& fv, float alpha, float beta, const std::string& pos_label, const std::string& neg_label);
+ private:
+  void update(
+      const sfv_t& fv,
+      float alpha,
+      float beta,
+      const std::string& pos_label,
+      const std::string& neg_label);
   classifier_config config;
 };
 
-}
-}
+}  // namespace classifier
+}  // namespace jubatus
 
+#endif  // JUBATUS_CLASSIFIER_AROW_HPP_

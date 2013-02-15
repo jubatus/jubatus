@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_MPRPC_RPC_RESULT_HPP_
+#define JUBATUS_COMMON_MPRPC_RPC_RESULT_HPP_
 
 #include <string>
 #include <vector>
@@ -23,24 +24,34 @@
 #include "rpc_response.hpp"
 #include "rpc_error.hpp"
 
-namespace jubatus { namespace common { namespace mprpc {
+namespace jubatus {
+namespace common {
+namespace mprpc {
 
-template <class Res>
+template<class Res>
 struct rpc_result {
+  Res& operator*() const {
+    return *value;
+  }
+  bool has_error() const {
+    return !error.empty();
+  }
+
   pfi::lang::shared_ptr<Res> value;
   std::vector<rpc_error> error;
-
-  Res& operator*() const { return *value; }
-  bool has_error() const { return !error.empty(); }
 };
 
 struct rpc_result_object {
+  bool has_error() const {
+    return !error.empty();
+  }
+
   std::vector<rpc_response_t> response;
   std::vector<rpc_error> error;
-
-  bool has_error() const { return !error.empty(); }
 };
 
-} // mprpc
-} // common
-} // jubatus
+}  // namespace mprpc
+}  // namespace common
+}  // namespace jubatus
+
+#endif  // JUBATUS_COMMON_MPRPC_RPC_RESULT_HPP_

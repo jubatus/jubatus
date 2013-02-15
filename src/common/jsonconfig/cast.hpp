@@ -14,18 +14,18 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
-
 #ifndef JUBATUS_COMMON_JSOCONFIG_CAST_HPP_
 #define JUBATUS_COMMON_JSOCONFIG_CAST_HPP_
 
-#include "config.hpp"
-
 #include <stdint.h>
+#include <map>
+#include <string>
 #include <vector>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/demangle.h>
+
+#include "config.hpp"
 
 namespace jubatus {
 namespace jsonconfig {
@@ -34,17 +34,27 @@ typedef std::vector<pfi::lang::shared_ptr<config_error> > config_error_list;
 
 class json_config_iarchive_cast {
  public:
-  json_config_iarchive_cast(const config& js): js_(js), errors_(NULL) {}
-  json_config_iarchive_cast(const config& js, config_error_list* errors): js_(js), errors_(errors) {}
+  explicit json_config_iarchive_cast(const config& js)
+      : js_(js),
+        errors_(NULL) {
+  }
+  json_config_iarchive_cast(const config& js, config_error_list* errors)
+      : js_(js),
+        errors_(errors) {
+  }
 
-  const config& get_config() const { return js_; }
-  const pfi::text::json::json& get() const { return js_.get(); }
+  const config& get_config() const {
+    return js_;
+  }
+  const pfi::text::json::json& get() const {
+    return js_.get();
+  }
 
   bool trace_error() const {
     return errors_;
   }
 
-  template <class T>
+  template<class T>
   void push_error(const T& e) {
     if (errors_) {
       errors_->push_back(pfi::lang::shared_ptr<config_error>(new T(e)));
@@ -54,6 +64,7 @@ class json_config_iarchive_cast {
   config_error_list* errors() const {
     return errors_;
   }
+
  private:
   const config& js_;
   config_error_list* errors_;
@@ -67,12 +78,14 @@ void json_from_config(const config& conf, T& v, json_config_iarchive_cast& js);
 
 template <typename T>
 inline void serialize(json_config_iarchive_cast& js, T& v) {
-  // TODO: insert typecheck
+  // TODO(unnno): insert typecheck
   pfi::data::serialization::access::serialize(js, v);
 }
 
 namespace detail {
-inline bool check_json_type(json_config_iarchive_cast& js, pfi::text::json::json::json_type_t t) {
+inline bool check_json_type(
+    json_config_iarchive_cast& js,
+    pfi::text::json::json::json_type_t t) {
   if (js.get().type() != t) {
     type_error e(js.get_config().path(), t, js.get().type());
     if (js.trace_error()) {
@@ -88,7 +101,10 @@ inline bool check_json_type(json_config_iarchive_cast& js, pfi::text::json::json
 inline bool check_json_float(json_config_iarchive_cast& js) {
   if (js.get().type() != pfi::text::json::json::Float
       && js.get().type() != pfi::text::json::json::Integer) {
-    type_error e(js.get_config().path(), pfi::text::json::json::Float, js.get().type());
+    type_error e(
+        js.get_config().path(),
+        pfi::text::json::json::Float,
+        js.get().type());
     if (js.trace_error()) {
       js.push_error(e);
     } else {
@@ -98,7 +114,7 @@ inline bool check_json_float(json_config_iarchive_cast& js) {
   }
   return true;
 }
-} // detail
+}  // namespace detail
 
 #define GENERATE_CONFIG_SERIALIZE_DEF(typ, json_typ) \
   template <> \
@@ -121,14 +137,15 @@ GENERATE_CONFIG_SERIALIZE_DEF(std::string, String)
     } \
   }
 
-GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(float)
-GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(double)
+GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(float)  // NOLINT
+GENERATE_CONFIG_SERIALIZE_FLOAT_DEF(double)  // NOLINT
 
 template <typename T>
 inline void serialize(json_config_iarchive_cast& js, std::vector<T>& vs) {
   // check errors
-  if (!detail::check_json_type(js, pfi::text::json::json::Array))
+  if (!detail::check_json_type(js, pfi::text::json::json::Array)) {
     return;
+  }
 
   size_t size = js.get_config().size();
   std::vector<T> v(size);
@@ -140,12 +157,14 @@ inline void serialize(json_config_iarchive_cast& js, std::vector<T>& vs) {
 
 template <typename K, typename V>
 inline void serialize(json_config_iarchive_cast& js, std::map<K, V>& m) {
-  if (!detail::check_json_type(js, pfi::text::json::json::Object))
+  if (!detail::check_json_type(js, pfi::text::json::json::Object)) {
     return;
+  }
 
   std::map<K, V> tmp;
   typedef config::iterator iter_t;
-  for (iter_t it = js.get_config().begin(), end = js.get_config().end(); it != end; ++it) {
+  for (iter_t it = js.get_config().begin(), end = js.get_config().end();
+      it != end; ++it) {
     V value;
     json_from_config(it.value(), value, js.errors());
     tmp[it.key()] = value;
@@ -154,13 +173,17 @@ inline void serialize(json_config_iarchive_cast& js, std::map<K, V>& m) {
 }
 
 template <typename K, typename V>
-inline void serialize(json_config_iarchive_cast& js, pfi::data::unordered_map<K, V>& m) {
-  if (!detail::check_json_type(js, pfi::text::json::json::Object))
+inline void serialize(
+    json_config_iarchive_cast& js,
+    pfi::data::unordered_map<K, V>& m) {
+  if (!detail::check_json_type(js, pfi::text::json::json::Object)) {
     return;
+  }
 
   pfi::data::unordered_map<K, V> tmp;
   typedef config::iterator iter_t;
-  for (iter_t it = js.get_config().begin(), end = js.get_config().end(); it != end; ++it) {
+  for (iter_t it = js.get_config().begin(), end = js.get_config().end();
+      it != end; ++it) {
     V value;
     json_from_config(it.value(), value, js.errors());
     tmp[it.key()] = value;
@@ -169,9 +192,12 @@ inline void serialize(json_config_iarchive_cast& js, pfi::data::unordered_map<K,
 }
 
 template <typename T>
-inline void serialize(json_config_iarchive_cast& js, pfi::data::serialization::named_value<pfi::data::optional<T> >& v) {
+inline void serialize(
+    json_config_iarchive_cast& js,
+    pfi::data::serialization::named_value<pfi::data::optional<T> >& v) {
   using pfi::text::json::json;
-  if (js.get_config().contain(v.name) && (js.get_config()[v.name].get().type() != json::Null)) {
+  if (js.get_config().contain(v.name)
+      && (js.get_config()[v.name].get().type() != json::Null)) {
     T value;
     json_from_config(js.get_config()[v.name], value, js.errors());
     v.v = value;
@@ -182,7 +208,8 @@ inline void serialize(json_config_iarchive_cast& js, pfi::data::serialization::n
 }
 
 template <typename T>
-inline void serialize(json_config_iarchive_cast& js, pfi::data::serialization::named_value<T>& v) {
+inline void serialize(json_config_iarchive_cast& js,
+                      pfi::data::serialization::named_value<T>& v) {
   if (js.get_config().contain(v.name)) {
     json_from_config(js.get_config()[v.name], v.v, js.errors());
   } else {
@@ -195,12 +222,12 @@ inline void serialize(json_config_iarchive_cast& js, pfi::data::serialization::n
   }
 }
 
-template <>
+template<>
 inline void serialize(json_config_iarchive_cast& js, pfi::text::json::json& v) {
   v = js.get();
 }
 
-template <>
+template<>
 inline void serialize(json_config_iarchive_cast& js, config& v) {
   v = config(js.get(), js.get_config().path());
 }
@@ -244,7 +271,7 @@ T config_cast_check(const config& c) {
   return value;
 }
 
-} // jsonconfig
-} // jubatus
+}  // namespace jsonconfig
+}  // namespace jubatus
 
-#endif // JSOCONFIG_CAST_HPP_
+#endif  // JUBAUTS_COMMON_JSOCONFIG_CAST_HPP_

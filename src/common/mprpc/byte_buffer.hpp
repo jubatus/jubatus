@@ -14,11 +14,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_MPRPC_BYTE_BUFFER_HPP_
+#define JUBATUS_COMMON_MPRPC_BYTE_BUFFER_HPP_
 
+#include <stdint.h>
 #include <vector>
 #include <cstring>
-#include <stdint.h>
 #include <msgpack.hpp>
 #include <pficommon/lang/shared_ptr.h>
 
@@ -27,32 +28,28 @@ namespace common {
 namespace mprpc {
 
 class byte_buffer {
-public:
-  byte_buffer()
-  {
+ public:
+  byte_buffer() {
   }
 
-  byte_buffer(size_t size)
-    : buf_(new std::vector<char>(size))
-  {
+  explicit byte_buffer(size_t size)
+      : buf_(new std::vector<char>(size)) {
   }
 
-  byte_buffer(const void *ptr, size_t size)
-    : buf_(new std::vector<char>())
-  {
+  byte_buffer(const void* ptr, size_t size)
+      : buf_(new std::vector<char>()) {
     buf_->resize(size);
     std::memcpy(&(*buf_)[0], ptr, size);
   }
 
   byte_buffer(const byte_buffer& b)
-    : buf_(b.buf_)
-  {
+      : buf_(b.buf_) {
   }
 
-  ~byte_buffer() {}
+  ~byte_buffer() {
+  }
 
-  void assign(const void* ptr, size_t size)
-  {
+  void assign(const void* ptr, size_t size) {
     if (!buf_) {
       buf_.reset(new std::vector<char>());
     }
@@ -60,51 +57,54 @@ public:
     std::memcpy(&(*buf_)[0], ptr, size);
   }
 
-  char* ptr() const
-  {
-    if (buf_)
+  char* ptr() const {
+    if (buf_) {
       return &(*buf_)[0];
-    else
+    } else {
       return NULL;
+    }
   }
 
-  size_t size() const
-  {
-    if (buf_)
+  size_t size() const {
+    if (buf_) {
       return buf_->size();
-    else
+    } else {
       return 0;
+    }
   }
 
-private:
+ private:
   pfi::lang::shared_ptr<std::vector<char> > buf_;
 };
-
-} // mprpc
-} // common
-} // jubatus
+}  // namespace mprpc
+}  // namespace common
+}  // namespace jubatus
 
 namespace msgpack {
 
-inline jubatus::common::mprpc::byte_buffer& operator>> (object o, jubatus::common::mprpc::byte_buffer& b)
-{
-  if (o.type != type::RAW)
+inline jubatus::common::mprpc::byte_buffer& operator>>(
+    object o,
+    jubatus::common::mprpc::byte_buffer& b) {
+  if (o.type != type::RAW) {
     throw type_error();
+  }
 
   b.assign(o.via.raw.ptr, o.via.raw.size);
   return b;
 }
 
-template <typename Stream>
-inline packer<Stream>& operator<< (packer<Stream>& o, const jubatus::common::mprpc::byte_buffer& b)
-{
+template<typename Stream>
+inline packer<Stream>& operator<<(
+    packer<Stream>& o,
+    const jubatus::common::mprpc::byte_buffer& b) {
   o.pack_raw(b.size());
   o.pack_raw_body(b.ptr(), b.size());
   return o;
 }
 
-inline void operator<< (object::with_zone& o, const jubatus::common::mprpc::byte_buffer& b)
-{
+inline void operator<<(
+    object::with_zone& o,
+    const jubatus::common::mprpc::byte_buffer& b) {
   o.type = type::RAW;
   char* ptr = static_cast<char*>(o.zone->malloc(b.size()));
   o.via.raw.ptr = ptr;
@@ -112,12 +112,14 @@ inline void operator<< (object::with_zone& o, const jubatus::common::mprpc::byte
   std::memcpy(ptr, b.ptr(), b.size());
 }
 
-inline void operator<< (object& o, const jubatus::common::mprpc::byte_buffer& b)
-{
+inline void operator<<(
+    object& o,
+    const jubatus::common::mprpc::byte_buffer& b) {
   o.type = type::RAW;
   o.via.raw.ptr = b.ptr();
   o.via.raw.size = static_cast<uint32_t>(b.size());
 }
 
-} // msgpack
+}  // namespace msgpack
 
+#endif  // JUBATUS_COMMON_MPRPC_BYTE_BUFFER_HPP_

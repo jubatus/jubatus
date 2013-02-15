@@ -15,10 +15,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "re2_match.hpp"
+
+#include <string>
 #include "exception.hpp"
 
-using namespace jubatus::fv_converter;
 namespace jubatus {
+namespace fv_converter {
 
 re2_match::re2_match(const std::string& regexp)
     : re_(regexp) {
@@ -31,5 +33,5 @@ bool re2_match::match(const std::string& key) {
   return re2::RE2::FullMatch(key, re_);
 }
 
-}
-
+}  // namespace fv_converter
+}  // namespace jubatus

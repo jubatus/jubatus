@@ -14,22 +14,25 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
+#define JUBATUS_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
 
 #include <map>
+#include <string>
 #include <pficommon/lang/scoped_ptr.h>
-#include "num_feature.hpp"
-#include "dynamic_loader.hpp"
 #include "../common/type.hpp"
+#include "dynamic_loader.hpp"
+#include "num_feature.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
 class dynamic_num_feature : public num_feature {
  public:
-  dynamic_num_feature(const std::string& path,
-                      const std::string& function,
-                      const std::map<std::string, std::string>& params);
+  dynamic_num_feature(
+      const std::string& path,
+      const std::string& function,
+      const std::map<std::string, std::string>& params);
 
   void add_feature(const std::string& key, double value, sfv_t& ret_fv) const;
 
@@ -38,5 +41,7 @@ class dynamic_num_feature : public num_feature {
   pfi::lang::scoped_ptr<num_feature> impl_;
 };
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_

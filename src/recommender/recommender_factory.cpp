@@ -14,30 +14,29 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "recommender_factory.hpp"
+#include <string>
 #include <pficommon/text/json.h>
+#include "recommender_factory.hpp"
 #include "recommender.hpp"
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
 #include "../storage/norm_factory.hpp"
 
-using namespace std;
-using namespace jubatus::jsonconfig;
+using std::string;
 using pfi::text::json::json;
+using jubatus::jsonconfig::config;
+using jubatus::jsonconfig::config_cast_check;
 
 namespace jubatus {
 namespace recommender {
 
-recommender_base* create_recommender(const string& name,
-                                     const config& param) {
-  using namespace pfi::text::json;
-
-  if (name == "inverted_index"){
+recommender_base* create_recommender(const string& name, const config& param) {
+  if (name == "inverted_index") {
     // inverted_index doesn't have parameter
     return new inverted_index;
-  } else if (name == "minhash"){
+  } else if (name == "minhash") {
     return new minhash(config_cast_check<minhash::config>(param));
-  } else if (name == "lsh"){
+  } else if (name == "lsh") {
     return new lsh(config_cast_check<lsh::config>(param));
   } else if (name == "euclid_lsh") {
     return new euclid_lsh(config_cast_check<euclid_lsh::config>(param));
@@ -46,7 +45,6 @@ recommender_base* create_recommender(const string& name,
   }
 }
 
-} // recommender
-} // jubatus
-
+}  // namespace recommender
+}  // namespace jubatus
 

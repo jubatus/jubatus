@@ -14,21 +14,24 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "classifier.hpp"
 #include "classifier_factory.hpp"
+
+#include <string>
+
+#include "classifier.hpp"
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
 #include "../storage/storage_base.hpp"
 
-using namespace std;
-using namespace jubatus::jsonconfig;
+using jubatus::jsonconfig::config_cast_check;
 
 namespace jubatus {
 namespace classifier {
 
-classifier_base* classifier_factory::create_classifier(const std::string& name,
-                                                       const jsonconfig::config& param,
-                                                       jubatus::storage::storage_base* storage) {
+classifier_base* classifier_factory::create_classifier(
+    const std::string& name,
+    const jsonconfig::config& param,
+    jubatus::storage::storage_base* storage) {
   if (name == "perceptron") {
     // perceptron doesn't have parameter
     return new perceptron(storage);
@@ -50,6 +53,5 @@ classifier_base* classifier_factory::create_classifier(const std::string& name,
   }
 }
 
-}
-}
-
+}  // namespace classifier
+}  // namespace jubatus
