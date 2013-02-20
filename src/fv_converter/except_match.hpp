@@ -26,8 +26,9 @@ namespace fv_converter {
 
 class except_match : public key_matcher {
  public:
-  except_match(pfi::lang::shared_ptr<key_matcher> condition,
-               pfi::lang::shared_ptr<key_matcher> except)
+  except_match(
+      pfi::lang::shared_ptr<key_matcher> condition,
+      pfi::lang::shared_ptr<key_matcher> except)
       : condition_(condition), except_(except) {
   }
   
