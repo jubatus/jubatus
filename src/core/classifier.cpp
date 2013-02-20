@@ -90,13 +90,6 @@ classify_result classifier::classify(
   classify_result scores;
   classifier_->classify_with_scores(v, scores);
   return scores;
-
-#if 0
-    // Implemented to be server side
-    if (!isfinite(p->score)) {
-      LOG(WARNING) << "score is infinite: " << p->label << " = " << p->score;
-    }
-#endif
 }
 
 }  // namespace core
