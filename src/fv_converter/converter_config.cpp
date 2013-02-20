@@ -93,7 +93,7 @@ matcher_ptr create_key_matcher(
   key_matcher_factory f;
   if (except) {
     matcher_ptr m1(f.create_matcher(key));
-    matcher_ptr m2(f.create_matcher(*except.get()));
+    matcher_ptr m2(f.create_matcher(*except));
     return matcher_ptr(new except_match(m1, m2));
   } else {
     return matcher_ptr(f.create_matcher(key));
