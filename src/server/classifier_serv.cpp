@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -63,11 +63,10 @@ struct classifier_serv_config {
   }
 };
 
-linear_function_mixer::model_ptr make_model(
+storage::storage_base* make_model(
     const framework::server_argv& arg) {
-  return linear_function_mixer::model_ptr(
-      storage::storage_factory::create_storage(
-          (arg.is_standalone()) ? "local" : "local_mixture"));
+  return storage::storage_factory::create_storage(
+      (arg.is_standalone()) ? "local" : "local_mixture");
 }
 
 }  // namespace
@@ -75,16 +74,8 @@ linear_function_mixer::model_ptr make_model(
 classifier_serv::classifier_serv(
     const framework::server_argv& a,
     const cshared_ptr<lock_service>& zk)
-    : server_base(a) {
-  clsfer_.set_model(make_model(a));
-  wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
-
-  mixer_.reset(create_mixer(a, zk));
-  mixable_holder_.reset(new mixable_holder());
-
-  mixer_->set_mixable_holder(mixable_holder_);
-  mixable_holder_->register_mixable(&clsfer_);
-  mixable_holder_->register_mixable(&wm_);
+    : server_base(a),
+      mixer_(create_mixer(a, zk)) {
 }
 
 classifier_serv::~classifier_serv() {
@@ -92,8 +83,10 @@ classifier_serv::~classifier_serv() {
 
 void classifier_serv::get_status(status_t& status) const {
   status_t my_status;
-  clsfer_.get_model()->get_status(my_status);
-  my_status["storage"] = clsfer_.get_model()->type();
+
+  storage::storage_base* model = classifier_->get_model();
+  model->get_status(my_status);
+  my_status["storage"] = model->type();
 
   status.insert(my_status.begin(), my_status.end());
 }
@@ -104,16 +97,22 @@ bool classifier_serv::set_config(const string& config) {
       jsonconfig::config_cast_check<classifier_serv_config>(config_root);
 
   config_ = config;
-  converter_ = fv_converter::make_fv_converter(conf.converter);
-  (*converter_).set_weight_manager(wm_.get_model());
 
   jsonconfig::config param;
   if (conf.parameter) {
     param = jsonconfig::config(*conf.parameter);
   }
+
+  // Model owner moved to classifier_
+  storage::storage_base* model = make_model(argv());
+
   classifier_.reset(
-      classifier::classifier_factory::create_classifier(
-          conf.method, param, clsfer_.get_model().get()));
+      new core::classifier(
+        model,
+        classifier::classifier_factory::create_classifier(
+          conf.method, param, model),
+        mixer_,
+        fv_converter::make_fv_converter(conf.converter)));
 
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
@@ -130,15 +129,13 @@ int classifier_serv::train(const vector<pair<string, jubatus::datum> >& data) {
   check_set_config();
 
   int count = 0;
-  sfv_t v;
+
   fv_converter::datum d;
-
   for (size_t i = 0; i < data.size(); ++i) {
+    // TODO(IDL): remove conversion
     convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
-    converter_->convert_and_update_weight(d, v);
-    sort_and_merge(v);
+    classifier_->train(std::make_pair(data[i].first, d));
 
-    classifier_->train(v, data[i].first);
     DLOG(INFO) << "trained: " << data[i].first;
     count++;
   }
@@ -148,22 +145,21 @@ int classifier_serv::train(const vector<pair<string, jubatus::datum> >& data) {
 
 vector<vector<estimate_result> > classifier_serv::classify(
     const vector<jubatus::datum>& data) const {
-  vector<vector<estimate_result> > ret;
-
   check_set_config();
 
-  sfv_t v;
+  vector<vector<estimate_result> > ret;
   fv_converter::datum d;
-  for (size_t i = 0; i < data.size(); ++i) {
-    convert<datum, fv_converter::datum>(data[i], d);
-    converter_->convert(d, v);
 
-    classify_result scores;
-    classifier_->classify_with_scores(v, scores);
+  for (size_t i = 0; i < data.size(); ++i) {
+    // TODO(IDL): remove conversion
+    convert<jubatus::datum, fv_converter::datum>(data[i], d);
+
+    classify_result scores = classifier_->classify(d);
 
     vector<estimate_result> r;
-    for (vector<classify_result_elem>::const_iterator p = scores.begin();
+    for (classify_result::const_iterator p = scores.begin();
         p != scores.end(); ++p) {
+      // convert to server IDL types
       estimate_result e;
       e.label = p->label;
       e.score = p->score;

@@ -15,7 +15,7 @@ def build_one(bld, name, libraries = '', sources = ''):
     source = __sources,
     target = 'juba'+name,
     includes = '.',
-    use = 'jubatus_framework jubacommon_mprpc jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
+    use = 'jubatus_framework jubacommon_mprpc jubatus_core jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(

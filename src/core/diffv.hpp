@@ -14,30 +14,44 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_CLASSIFIER_TYPE_HPP_
-#define JUBATUS_CLASSIFIER_CLASSIFIER_TYPE_HPP_
+#ifndef JUBATUS_CORE_DIFFV_HPP_
+#define JUBATUS_CORE_DIFFV_HPP_
 
-#include <stdint.h>
-
-#include <vector>
-#include <string>
-
-#include "classifier_config.hpp"
+#include <pficommon/network/mprpc.h>
+#include "../storage/storage_type.hpp"
 
 namespace jubatus {
+namespace core {
 
-// TODO(unknown): namespace should be classifier
-struct classify_result_elem {
-  classify_result_elem(const std::string& label, float score)
-      : label(label),
-        score(score) {
-  };
-  std::string label;
-  float score;
+struct diffv {
+ public:
+  diffv(int c, const storage::features3_t& w)
+      : count(c),
+        v(w) {
+  }
+
+  diffv()
+      : count(0),
+        v() {
+  }
+
+  int count;
+  storage::features3_t v;
+
+  diffv& operator/=(double d) {
+    this->v /= d;
+    return *this;
+  }
+
+  MSGPACK_DEFINE(count, v);
+
+  template<class Archiver>
+  void serialize(Archiver& ar) {
+    ar & MEMBER(count) & MEMBER(v);
+  }
 };
 
-typedef std::vector<classify_result_elem> classify_result;
-
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CLASSIFIER_CLASSIFIER_TYPE_HPP_
+#endif  // JUBATUS_CORE_DIFFV_HPP_

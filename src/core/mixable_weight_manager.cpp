@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,30 +14,37 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_CLASSIFIER_TYPE_HPP_
-#define JUBATUS_CLASSIFIER_CLASSIFIER_TYPE_HPP_
+#include "mixable_weight_manager.hpp"
 
-#include <stdint.h>
+#include <pficommon/data/serialization.h>
 
-#include <vector>
-#include <string>
+#include "../fv_converter/weight_manager.hpp"
 
-#include "classifier_config.hpp"
+using jubatus::fv_converter::keyword_weights;
+using jubatus::fv_converter::weight_manager;
 
 namespace jubatus {
+namespace core {
 
-// TODO(unknown): namespace should be classifier
-struct classify_result_elem {
-  classify_result_elem(const std::string& label, float score)
-      : label(label),
-        score(score) {
-  };
-  std::string label;
-  float score;
-};
+keyword_weights mixable_weight_manager::get_diff_impl() const {
+  return get_model()->get_diff();
+}
 
-typedef std::vector<classify_result_elem> classify_result;
+void mixable_weight_manager::put_diff_impl(
+    const fv_converter::keyword_weights& diff) {
+  get_model()->put_diff(diff);
+}
 
+void mixable_weight_manager::mix_impl(
+    const keyword_weights& lhs,
+    const keyword_weights& rhs,
+    keyword_weights& acc) const {
+  acc = rhs;
+  acc.merge(lhs);
+}
+
+void mixable_weight_manager::clear() {
+}
+
+}  // namespace core
 }  // namespace jubatus
-
-#endif  // JUBATUS_CLASSIFIER_CLASSIFIER_TYPE_HPP_
