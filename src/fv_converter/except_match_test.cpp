@@ -26,8 +26,9 @@ namespace fv_converter {
 typedef pfi::lang::shared_ptr<key_matcher> matcher_ptr;
 
 TEST(except_match, trivial) {
-  except_match m(matcher_ptr(new match_all()),
-                 matcher_ptr(new exact_match("hoge")));
+  except_match m(
+      matcher_ptr(new match_all()),
+      matcher_ptr(new exact_match("hoge")));
   ASSERT_FALSE(m.match("hoge"));
   ASSERT_TRUE(m.match("fuga"));
 }
