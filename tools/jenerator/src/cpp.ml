@@ -797,5 +797,6 @@ let generate_server conf source idl =
 let generate_client conf source idl =
   let services = get_services idl in
 
-  gen_client_file conf source services
+  gen_type_file conf source idl;
+  gen_client_file conf source services;
 ;;
