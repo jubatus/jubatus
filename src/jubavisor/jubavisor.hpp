@@ -22,23 +22,23 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/network/mprpc.h>
 #include <pficommon/concurrent/mutex.h>
 
 #include "process.hpp"
 #include "../common/lock_service.hpp"
+#include "../common/rpc_util.hpp"
 #include "../framework/server_util.hpp"
 
 namespace jubatus {
 
-class jubervisor {
+class jubavisor {
  public:
-  jubervisor(
+  jubavisor(
       const std::string& hosts,
       int port,
       int max = 10,
       const std::string& logfile = "");
-  ~jubervisor();
+  ~jubavisor();
 
   int start(std::string str, unsigned int N, framework::server_argv argv);
 
@@ -74,11 +74,11 @@ class jubervisor {
   unsigned int max_children_;
 };
 
-MPRPC_PROC(start, int(std::string, unsigned int, framework::server_argv));
-MPRPC_PROC(stop, int(std::string, unsigned int));
+JUBATUS_MPRPC_PROC(start, int, (std::string, unsigned int, framework::server_argv));
+JUBATUS_MPRPC_PROC(stop, int, (std::string, unsigned int));
 // MPRPC_PROC(ensure, int(std::string));
 
-MPRPC_GEN(1, jubervisor, start, stop);
+JUBATUS_MPRPC_GEN(1, jubavisor, start, stop);
 
 }  // namespace jubatus
 

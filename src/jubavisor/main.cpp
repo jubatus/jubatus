@@ -31,8 +31,8 @@ namespace {
 const std::string PROGNAME = "jubavisor";
 }  // namespace
 
-using jubatus::jubervisor;
-using jubatus::jubervisor_server;
+using jubatus::jubavisor;
+using jubatus::jubavisor_server;
 using pfi::lang::_1;
 using pfi::lang::_2;
 using pfi::lang::_3;
@@ -70,13 +70,24 @@ int main(int argc, char* argv[]) try {
     LOG(INFO) << " starting at standalone mode " << port;
   }
 
-  jubervisor j(p.get<std::string>("zookeeper"), port, 16, logfile);
-  jubervisor_server serv(10 * 1024);
+  jubavisor j(p.get<std::string>("zookeeper"), port, 16, logfile);
+  jubavisor_server serv(10 * 1024);
   {
-    serv.set_start(bind(&jubervisor::start, &j, _1, _2, _3));
-    serv.set_stop(bind(&jubervisor::stop, &j, _1, _2));
-    if (!serv.serv(port, 2)) {
-      LOG(ERROR) << "cannot start rpc server.";
+    serv.set_start(bind(&jubavisor::start, &j, _1, _2, _3));
+    serv.set_stop(bind(&jubavisor::stop, &j, _1, _2));
+
+    try {
+      serv.listen( port );
+      serv.__start__( 2 );
+      serv.join();
+      
+    } catch (const mp::system_error& e) {
+      if (e.code == EADDRINUSE) {
+        LOG(ERROR) << "server failed to start: any process using port "
+                   << port << "?";
+      } else {
+        LOG(FATAL) << "server failed to start: " << e.what();
+      }
       return -1;
     }
   }
@@ -84,4 +95,3 @@ int main(int argc, char* argv[]) try {
 } catch (const jubatus::exception::jubatus_exception& e) {
   std::cout << e.diagnostic_information(true) << std::endl;
 }
-
