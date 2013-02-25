@@ -125,7 +125,7 @@ string serialize_diff(const lsh_master_table_t& table) {
 }
 
 void retrieve_hit_rows_from_table(
-    size_t hash,
+    uint64_t hash,
     const lsh_table_t& table,
     unordered_set<uint64_t>& cands) {
   lsh_table_t::const_iterator it = table.find(hash);
@@ -425,7 +425,7 @@ void lsh_index_storage::set_mixed_row(
 }
 
 bool lsh_index_storage::retrieve_hit_rows(
-    size_t hash,
+    uint64_t hash,
     size_t ret_num,
     unordered_set<uint64_t>& cands) const {
   retrieve_hit_rows_from_table(hash, lsh_table_diff_, cands);
