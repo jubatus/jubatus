@@ -214,7 +214,7 @@ class server_socket_t {
 
     NO_INTR(
         res,
-        ::bind(sock, reinterpret_cast<sockaddr*>&saddr, sizeof(saddr)));
+        ::bind(sock, reinterpret_cast<sockaddr*>(&saddr), sizeof(saddr)));
     if (FAILED(res)) {
       NO_INTR(res, ::close(sock));
       return -1;
