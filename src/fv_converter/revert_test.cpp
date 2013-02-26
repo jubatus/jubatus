@@ -87,5 +87,21 @@ TEST(revert_feature, trivial) {
   EXPECT_EQ(12345, data.num_values_[1].second);
 }
 
+
+TEST(revert_feature, dollar_mark_onvalue) {
+  fv_converter::datum data;
+  sfv_t fv;
+
+  fv.push_back(std::make_pair("name$do$c1@str#bin/bin", 1.0));
+
+  revert_feature(fv, data);
+
+  ASSERT_EQ(1u, data.string_values_.size());
+  EXPECT_EQ("name", data.string_values_[0].first);
+  EXPECT_EQ("do$c1", data.string_values_[0].second);
+  ASSERT_EQ(0, data.num_values_.size());
+}
+
+
 }  // namespace fv_converter
 }  // namespace jubatus
