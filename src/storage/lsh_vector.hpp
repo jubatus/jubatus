@@ -82,15 +82,15 @@ namespace data {
 template<>
 class hash<jubatus::storage::lsh_vector> {
  public:
-  size_t operator()(const jubatus::storage::lsh_vector& lv) const {
+  uint64_t operator()(const jubatus::storage::lsh_vector& lv) const {
     const char* p = reinterpret_cast<const char*>(&lv.values_[0]);
     const size_t len = lv.size() * sizeof(lv.values_[0]);
     const char* const end = p + len;
 
-    size_t x = 14695981039346656037ull;
+    uint64_t x = 14695981039346656037ull;
     while (p != end) {
       x *= 1099511628211ull;
-      x ^= static_cast<size_t>(*p++);
+      x ^= static_cast<uint64_t>(*p++);
     }
     return x;
   }
