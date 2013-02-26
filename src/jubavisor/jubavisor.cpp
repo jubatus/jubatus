@@ -23,6 +23,7 @@
 
 #include <glog/logging.h>
 #include <pficommon/concurrent/lock.h>
+#include <pficommon/lang/bind.h>
 
 #include "jubavisor.hpp"
 #include "../common/util.hpp"
@@ -30,14 +31,14 @@
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
 
-using jubatus::jubervisor;
+using jubatus::jubavisor;
 using jubatus::common::create_lock_service;
 using jubatus::common::build_loc_str;
 using pfi::concurrent::scoped_lock;
 using pfi::lang::bind;
 
 namespace {
-jubervisor* g_jubavisor = NULL;
+jubavisor* g_jubavisor = NULL;
 
 // for GCC and Clang compatibility:
 // to use pfi::lang::bind 'void (*)(int) __attribute__((noreturn))'
@@ -46,7 +47,7 @@ void exit_wrapper(int status) {
 }
 }  // namespace
 
-jubervisor::jubervisor(
+jubavisor::jubavisor(
     const std::string& hosts,
     int port,
     int max,
@@ -57,7 +58,7 @@ jubervisor::jubervisor(
       max_children_(max) {
   jubatus::util::ignore_sigpipe();
   jubatus::util::set_exit_on_term();
-  ::atexit(jubervisor::atexit_);
+  ::atexit(jubavisor::atexit_);
 
   // handle SIG_CHLD
   struct sigaction sa;
@@ -79,7 +80,7 @@ jubervisor::jubervisor(
   zk_->create(path, "", true);
   // TODO(kumagi):
   //  pfi::lang::function<void(int,int,std::string)> f
-  //    = bind(&jubervisor::die_if_deleted, this, _1, _2, _3);
+  //    = bind(&jubavisor::die_if_deleted, this, _1, _2, _3);
   //  zk_->bind_watcher(path, f);
   DLOG(INFO) << path << " created.";
 
@@ -87,7 +88,7 @@ jubervisor::jubervisor(
     port_pool_.push(++port_base_);
   }
 
-  pfi::lang::function<void()> h = bind(&jubervisor::stop_all, this);
+  pfi::lang::function<void()> h = bind(&jubavisor::stop_all, this);
   zk_->push_cleanup(h);
   pfi::lang::function<void()> g = bind(&::exit_wrapper, -1);
   zk_->push_cleanup(g);
@@ -95,17 +96,17 @@ jubervisor::jubervisor(
   g_jubavisor = this;
 }
 
-jubervisor::~jubervisor() {
+jubavisor::~jubavisor() {
   stop_all();
 }
 
-void jubervisor::atexit_() {
+void jubavisor::atexit_() {
   if (g_jubavisor && g_jubavisor->zk_) {
     g_jubavisor->zk_->force_close();
   }
 }
 
-void jubervisor::sigchld_handler_(int sig) {
+void jubavisor::sigchld_handler_(int sig) {
   pid_t child_pid;
   int child_status;
 
@@ -154,7 +155,7 @@ void jubervisor::sigchld_handler_(int sig) {
 // server : "jubaclassifier" ...
 // name : any but ""
 // -> exec ./<server> -n <name> -p <rpc_port> -z <zk>
-int jubervisor::start(
+int jubavisor::start(
     std::string str,
     unsigned int N,
     framework::server_argv argv) {
@@ -163,7 +164,7 @@ int jubervisor::start(
   return start_(str, N, argv);
 }
 
-int jubervisor::start_(
+int jubavisor::start_(
     const std::string& str,
     unsigned int N,
     const framework::server_argv& argv) {
@@ -214,7 +215,7 @@ int jubervisor::start_(
   return 0;
 }
 
-int jubervisor::stop(std::string str, unsigned int N) {
+int jubavisor::stop(std::string str, unsigned int N) {
   DLOG(ERROR) << str;
   process p(zk_->get_hosts());
   p.set_names(str);
@@ -241,7 +242,7 @@ int jubervisor::stop(std::string str, unsigned int N) {
   return r;
 }
 
-void jubervisor::stop_all() {
+void jubavisor::stop_all() {
   DLOG(ERROR) << __func__;
   scoped_lock lk(m_);
 
