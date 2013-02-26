@@ -45,8 +45,8 @@ struct strw {
   MSGPACK_DEFINE(key, value);
 };
 
-JUBATUS_MPRPC_PROC(test_bool, bool, (int));
-JUBATUS_MPRPC_PROC(test_twice, int, (int));
+JUBATUS_MPRPC_PROC(test_bool, bool, (int));  // NOLINT
+JUBATUS_MPRPC_PROC(test_twice, int, (int));  // NOLINT
 JUBATUS_MPRPC_PROC(add_all, int, (int, int, int));
 JUBATUS_MPRPC_PROC(various, string, (int, float, double, strw));
 JUBATUS_MPRPC_PROC(sum, int, (std::vector<int>));
@@ -91,7 +91,15 @@ static std::vector<std::string> concat_vector(
   return res;
 }
 
-JUBATUS_MPRPC_GEN(1, test_mrpc, test_bool, test_twice, add_all, various, sum, vec);
+JUBATUS_MPRPC_GEN(
+    1,
+    test_mrpc,
+    test_bool,
+    test_twice,
+    add_all,
+    various,
+    sum,
+    vec);
 
 typedef shared_ptr<test_mrpc_server> server_ptr;
 typedef std::vector<server_ptr> server_list;
@@ -105,8 +113,8 @@ static void server_thread(server_ptr srv, unsigned u) {
   srv->set_sum(&sum);
   srv->set_vec(&vec);
 
-  srv->listen( u );
-  srv->start( 10, /*no_hang*/ true );
+  srv->listen(u);
+  srv->start(10, /*no_hang=*/ true);
 }
 
 static const uint16_t PORT0 = 60023;
@@ -142,18 +150,18 @@ TEST(rpc_mclient, no_result) {
 namespace {
 
 class server_socket_t {
-public:
+ public:
   server_socket_t() : fd_(-1) {
   }
   ~server_socket_t() {
     close();
   }
   int get() {
-    return fd_; 
+    return fd_;
   }
-  bool listen(uint16_t port, int backlog = 4096 ) {
+  bool listen(uint16_t port, int backlog = 4096) {
     int nfd = listen_sock(port, backlog);
-    if(nfd < 0) {
+    if (nfd < 0) {
       return false;
     }
     close();
@@ -164,9 +172,9 @@ public:
     if ( fd_ < 0 ) {
       return false;
     }
-    ::shutdown( fd_, SHUT_RDWR );
+    ::shutdown(fd_, SHUT_RDWR);
     int result = 0;
-    NO_INTR( result, ::close(fd_) );
+    NO_INTR(result, ::close(fd_));
     if ( FAILED(result) ) {
       fd_ = -1;
       return false;
@@ -175,8 +183,8 @@ public:
     return true;
   }
 
-private:
-  int listen_sock( uint16_t port, int backlog ) {
+ private:
+  int listen_sock(uint16_t port, int backlog) {
     int sock = -1;
     NO_INTR(sock, ::socket(PF_INET, SOCK_STREAM, 0));
     if (FAILED(sock)) {
@@ -186,10 +194,15 @@ private:
     int yes = 1;
     int res = -1;
     NO_INTR(
-        res, 
-        ::setsockopt( sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&yes, sizeof(yes)));
+        res,
+        ::setsockopt(
+            sock,
+            SOL_SOCKET,
+            SO_REUSEADDR,
+            (const char*)&yes,
+            sizeof(yes)));
 
-    if (FAILED(res)){
+    if (FAILED(res)) {
       NO_INTR(res, ::close(sock));
       return -1;
     }
@@ -199,18 +212,20 @@ private:
     saddr.sin_addr.s_addr = htonl(INADDR_ANY);
     saddr.sin_port = htons(port);
 
-    NO_INTR(res, ::bind(sock, (sockaddr*)&saddr, sizeof(saddr)));
-    if (FAILED(res)){
+    NO_INTR(
+        res,
+        ::bind(sock, reinterpret_cast<sockaddr*>&saddr, sizeof(saddr)));
+    if (FAILED(res)) {
       NO_INTR(res, ::close(sock));
       return -1;
     }
 
     NO_INTR(res, ::listen(sock, backlog));
-    if (FAILED(res)){
+    if (FAILED(res)) {
       NO_INTR(res, ::close(sock));
       return -1;
     }
-    
+
     return sock;
   }
 
@@ -412,7 +427,9 @@ TEST(rpc_mclient, small) {
           std::string("test"),
           function<int(int, int)>(&jubatus::framework::add<int>));
     } catch (jubatus::common::mprpc::rpc_no_result& e) {
-      cout << "rpc_no_result: error detail: " << e.diagnostic_information(true) << endl;
+      cout << "rpc_no_result: error detail: "
+           << e.diagnostic_information(true)
+           << endl;
 
       const error_info_list_t& list = e.error_info();
       bool has_error_multi_rpc = false;
@@ -465,7 +482,7 @@ TEST(rpc_mclient, socket_disconnection) {
     test_mrpc_client cli0("localhost", kPortStart, 3.0);
     test_mrpc_client cli1("localhost", kInvalidPort, 3.0);
     EXPECT_EQ(true, cli0.call_test_bool(23));
-    EXPECT_THROW(cli1.call_test_twice(12), msgpack::rpc::connect_error );
+    EXPECT_THROW(cli1.call_test_twice(12), msgpack::rpc::connect_error);
   }
 
   jubatus::common::mprpc::rpc_mclient cli(clients, 1.0);

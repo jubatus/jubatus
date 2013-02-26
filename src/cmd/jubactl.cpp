@@ -138,17 +138,17 @@ int do_request(
   int port;
   jubatus::common::revert(ip_port, ip, port);
 
-  msgpack::rpc::client c( ip, port );
-  c.set_timeout( 10 );
+  msgpack::rpc::client c(ip, port);
+  c.set_timeout(10);
   cout << "sending " << cmd << " / " << name << " to "
       << ip_port << "..." << std::flush;
 
   int r;
 
   if (cmd == "start") {
-    r = c.call( cmd, name, n, argv).get<int>();
+    r = c.call(cmd, name, n, argv).get<int>();
   } else {
-    r = c.call( cmd, name, n ).get<int>();
+    r = c.call(cmd, name, n).get<int>();
   }
 
   if (r != 0) {
@@ -238,13 +238,13 @@ void send2server(
     int port;
     jubatus::common::revert(*it, ip, port);
 
-    msgpack::rpc::client c( ip, port );
-    c.set_timeout( 10 );
+    msgpack::rpc::client c(ip, port);
+    c.set_timeout(10);
 
     cout << "sending " << cmd << " / " << name << " to "
         << *it << "..." << std::flush;
 
-    int r = c.call( cmd, name ).get<int>();
+    int r = c.call(cmd, name).get<int>();
     if (r != 0) {
       cout << "failed." << endl;
       LOG(ERROR) << "can't do '" << cmd << " " << name << "' in "

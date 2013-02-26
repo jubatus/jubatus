@@ -74,7 +74,10 @@ class jubavisor {
   unsigned int max_children_;
 };
 
-JUBATUS_MPRPC_PROC(start, int, (std::string, unsigned int, framework::server_argv));
+JUBATUS_MPRPC_PROC(
+    start,
+    int,
+    (std::string, unsigned int, framework::server_argv));
 JUBATUS_MPRPC_PROC(stop, int, (std::string, unsigned int));
 // MPRPC_PROC(ensure, int(std::string));
 
