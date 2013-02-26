@@ -22,11 +22,12 @@
 
 #include <gtest/gtest.h>
 #include <pficommon/concurrent/thread.h>
-#include <pficommon/network/mprpc.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/lang/cast.h>
+#include <pficommon/system/syscall.h>
 
 #include "rpc_mclient.hpp"
+#include "rpc_util.hpp"
 #include "../../framework/aggregators.hpp"
 #include "../../server/test_util.hpp"
 
@@ -44,12 +45,12 @@ struct strw {
   MSGPACK_DEFINE(key, value);
 };
 
-MPRPC_PROC(test_bool, bool(int));  // NOLINT
-MPRPC_PROC(test_twice, int(int));  // NOLINT
-MPRPC_PROC(add_all, int(int, int, int));
-MPRPC_PROC(various, string(int, float, double, strw));
-MPRPC_PROC(sum, int(std::vector<int>));
-MPRPC_PROC(vec, std::vector<std::string>(std::string, size_t));
+JUBATUS_MPRPC_PROC(test_bool, bool, (int));
+JUBATUS_MPRPC_PROC(test_twice, int, (int));
+JUBATUS_MPRPC_PROC(add_all, int, (int, int, int));
+JUBATUS_MPRPC_PROC(various, string, (int, float, double, strw));
+JUBATUS_MPRPC_PROC(sum, int, (std::vector<int>));
+JUBATUS_MPRPC_PROC(vec, std::vector<std::string>, (std::string, size_t));
 
 static bool test_bool(int i) {
   return i % 2;
@@ -90,7 +91,7 @@ static std::vector<std::string> concat_vector(
   return res;
 }
 
-MPRPC_GEN(1, test_mrpc, test_bool, test_twice, add_all, various, sum, vec);
+JUBATUS_MPRPC_GEN(1, test_mrpc, test_bool, test_twice, add_all, various, sum, vec);
 
 typedef shared_ptr<test_mrpc_server> server_ptr;
 typedef std::vector<server_ptr> server_list;
@@ -103,7 +104,9 @@ static void server_thread(server_ptr srv, unsigned u) {
   srv->set_various(&various);
   srv->set_sum(&sum);
   srv->set_vec(&vec);
-  srv->serv(u, 10);
+
+  srv->listen( u );
+  srv->start( 10, /*no_hang*/ true );
 }
 
 static const uint16_t PORT0 = 60023;
@@ -138,7 +141,83 @@ TEST(rpc_mclient, no_result) {
 
 namespace {
 
-void timeout_server(pfi::network::mprpc::socket* server_socket) {
+class server_socket_t {
+public:
+  server_socket_t() : fd_(-1) {
+  }
+  ~server_socket_t() {
+    close();
+  }
+  int get() {
+    return fd_; 
+  }
+  bool listen(uint16_t port, int backlog = 4096 ) {
+    int nfd = listen_sock(port, backlog);
+    if(nfd < 0) {
+      return false;
+    }
+    close();
+    fd_ = nfd;
+    return true;
+  }
+  bool close() {
+    if ( fd_ < 0 ) {
+      return false;
+    }
+    ::shutdown( fd_, SHUT_RDWR );
+    int result = 0;
+    NO_INTR( result, ::close(fd_) );
+    if ( FAILED(result) ) {
+      fd_ = -1;
+      return false;
+    }
+    fd_ = -1;
+    return true;
+  }
+
+private:
+  int listen_sock( uint16_t port, int backlog ) {
+    int sock = -1;
+    NO_INTR(sock, ::socket(PF_INET, SOCK_STREAM, 0));
+    if (FAILED(sock)) {
+      return -1;
+    }
+
+    int yes = 1;
+    int res = -1;
+    NO_INTR(
+        res, 
+        ::setsockopt( sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&yes, sizeof(yes)));
+
+    if (FAILED(res)){
+      NO_INTR(res, ::close(sock));
+      return -1;
+    }
+
+    sockaddr_in saddr = {};
+    saddr.sin_family = PF_INET;
+    saddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    saddr.sin_port = htons(port);
+
+    NO_INTR(res, ::bind(sock, (sockaddr*)&saddr, sizeof(saddr)));
+    if (FAILED(res)){
+      NO_INTR(res, ::close(sock));
+      return -1;
+    }
+
+    NO_INTR(res, ::listen(sock, backlog));
+    if (FAILED(res)){
+      NO_INTR(res, ::close(sock));
+      return -1;
+    }
+    
+    return sock;
+  }
+
+  int fd_;
+};
+
+void timeout_server(server_socket_t* server_socket) {
   ::accept(server_socket->get(), NULL, NULL);
 
   // wait socket shutdown
@@ -148,7 +227,7 @@ void timeout_server(pfi::network::mprpc::socket* server_socket) {
 }  // namespace
 
 TEST(rpc_mclient, error_multi_rpc) {
-  pfi::network::mprpc::socket server_socket;
+  server_socket_t server_socket;
   server_socket.listen(kPortStart);
   thread t(pfi::lang::bind(&timeout_server, &server_socket));
   t.start();
@@ -202,6 +281,7 @@ TEST(rpc_mclient, small) {
     clients.push_back(std::make_pair(std::string("localhost"), port));
     wait_server(port);
   }
+
   const size_t kServerSize = clients.size();
   {
     test_mrpc_client cli0("localhost", PORT0, 3.0);
@@ -209,6 +289,7 @@ TEST(rpc_mclient, small) {
     EXPECT_EQ(true, cli0.call_test_bool(23));
     EXPECT_EQ(24, cli1.call_test_twice(12));
   }
+
   jubatus::common::mprpc::rpc_mclient cli(clients, 3.0);
   {
     rpc_result<bool> r = cli.call(
@@ -331,7 +412,7 @@ TEST(rpc_mclient, small) {
           std::string("test"),
           function<int(int, int)>(&jubatus::framework::add<int>));
     } catch (jubatus::common::mprpc::rpc_no_result& e) {
-      cout << "rpc_no_result" << e.diagnostic_information(true) << endl;
+      cout << "rpc_no_result: error detail: " << e.diagnostic_information(true) << endl;
 
       const error_info_list_t& list = e.error_info();
       bool has_error_multi_rpc = false;
@@ -384,7 +465,7 @@ TEST(rpc_mclient, socket_disconnection) {
     test_mrpc_client cli0("localhost", kPortStart, 3.0);
     test_mrpc_client cli1("localhost", kInvalidPort, 3.0);
     EXPECT_EQ(true, cli0.call_test_bool(23));
-    EXPECT_THROW(cli1.call_test_twice(12), pfi::network::mprpc::rpc_error);
+    EXPECT_THROW(cli1.call_test_twice(12), msgpack::rpc::connect_error );
   }
 
   jubatus::common::mprpc::rpc_mclient cli(clients, 1.0);
@@ -406,5 +487,5 @@ TEST(rpc_mclient, socket_disconnection) {
     EXPECT_THROW(error.throw_exception(), jubatus::common::mprpc::rpc_io_error);
   }
 
-  ser->stop();
+  ser->close();
 }

@@ -22,7 +22,7 @@
 #include <jubatus/msgpack/rpc/client.h>
 #include <pficommon/data/serialization.h>
 #include <msgpack.hpp>
-#include "../common/mprpc/rpc_server.hpp"
+#include "rpc_server.hpp"
 
 namespace jubatus {
 

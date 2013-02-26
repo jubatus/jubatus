@@ -26,7 +26,7 @@
 
 #include "process.hpp"
 #include "../common/lock_service.hpp"
-#include "../common/rpc_util.hpp"
+#include "../common/mprpc/rpc_util.hpp"
 #include "../framework/server_util.hpp"
 
 namespace jubatus {
