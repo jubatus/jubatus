@@ -40,6 +40,7 @@
 #include <utility>
 #include <vector>
 
+#include <glog/logging.h>
 #include <pficommon/lang/exception.h>
 #include <pficommon/text/json.h>
 
@@ -256,6 +257,7 @@ void get_machine_status(machine_status_t& status) {
 namespace {
 
 void exit_on_term(int /* signum */) {
+  LOG(INFO) << "stopping RPC server";
   exit(0);
 }
 
