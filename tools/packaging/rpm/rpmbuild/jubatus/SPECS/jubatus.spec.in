@@ -90,11 +90,12 @@ This package provides Jubatus C++ client headers.
 %files devel
 %defattr(-,root,root,-)
 %{_libdir}/pkgconfig/jubatus.pc
-%{_libdir}/pkgconfig/jubatus-client.pc
 %{_includedir}/jubatus
 
 %files client
+%{_libdir}/pkgconfig/jubatus-client.pc
 %{_includedir}/jubatus/client
+%{_includedir}/jubatus/client.hpp
 
 %post -p /sbin/ldconfig
 
