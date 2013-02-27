@@ -32,3 +32,8 @@ Update history
 --------------
 
 Update history can be found `here <https://github.com/jubatus/jubatus/wiki/Release-Note>`_ .
+
+Contributors
+------------
+
+Patches contributed by `those people <https://github.com/jubatus/jubatus/contributors>`_ .
