@@ -169,13 +169,13 @@ class server_socket_t {
     return true;
   }
   bool close() {
-    if ( fd_ < 0 ) {
+    if (fd_ < 0) {
       return false;
     }
     ::shutdown(fd_, SHUT_RDWR);
     int result = 0;
     NO_INTR(result, ::close(fd_));
-    if ( FAILED(result) ) {
+    if (FAILED(result)) {
       fd_ = -1;
       return false;
     }
@@ -199,7 +199,7 @@ class server_socket_t {
             sock,
             SOL_SOCKET,
             SO_REUSEADDR,
-            (const char*)&yes,
+            &yes,
             sizeof(yes)));
 
     if (FAILED(res)) {
