@@ -77,7 +77,6 @@ def build(bld):
     'lock_service.hpp',
     'membership.hpp',
     'network.hpp',
-    'rpc_util.hpp',
     'shared_ptr.hpp',
     'type.hpp',
     'unordered_map.hpp',

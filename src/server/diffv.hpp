@@ -17,7 +17,6 @@
 #ifndef JUBATUS_SERVER_DIFFV_HPP_
 #define JUBATUS_SERVER_DIFFV_HPP_
 
-#include <pficommon/network/mprpc.h>
 #include "../storage/storage_type.hpp"
 
 namespace jubatus {
