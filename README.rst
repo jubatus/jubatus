@@ -31,9 +31,9 @@ LGPL 2.1
 Update history
 --------------
 
-Update history can be found `here <https://github.com/jubatus/jubatus/wiki/Release-Note>`_ .
+Update history can be found from `ChangeLog <https://github.com/jubatus/jubatus/blob/master/ChangeLog>`_ or `WikiPage <https://github.com/jubatus/jubatus/wiki/ChangeLog>`_.
 
 Contributors
 ------------
 
-Patches contributed by `those people <https://github.com/jubatus/jubatus/contributors>`_ .
+Patches contributed by `those people <https://github.com/jubatus/jubatus/contributors>`_.
