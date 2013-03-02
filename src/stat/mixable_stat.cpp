@@ -40,13 +40,9 @@ std::pair<double, size_t> mixable_stat::get_diff() const {
 
   for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
       stats_.begin(); p != stats_.end(); ++p) {
-    ret.second += p->second.n_;
-  }
-
-  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
-      stats_.begin(); p != stats_.end(); ++p) {
     double pr = p->second.n_;
     ret.first += pr * log(pr);
+    ret.second += pr;
   }
   return ret;
 }
