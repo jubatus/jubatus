@@ -68,6 +68,8 @@ class local_storage : public storage_base {
       const std::string& inc_class,
       const std::string& dec_class);
 
+  void clear();
+
   bool save(std::ostream&);
   bool load(std::istream&);
   std::string type() const;
