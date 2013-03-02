@@ -59,6 +59,11 @@ TYPED_TEST_P(classifier_test, trivial) {
   classify_result scores;
   p.classify_with_scores(fv, scores);
   ASSERT_EQ(2u, scores.size());
+
+  p.clear();
+
+  p.classify_with_scores(fv, scores);
+  ASSERT_EQ(0u, scores.size());
 }
 
 TYPED_TEST_P(classifier_test, sfv_err) {
