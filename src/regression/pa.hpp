@@ -46,6 +46,8 @@ class PA : public regression_base {
 
   void train(const sfv_t& fv, float value);
 
+  void clear();
+
  private:
   config config_;
   float sum_;
