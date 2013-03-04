@@ -586,6 +586,8 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 
     if (!private_session_pool_) {
       private_session_pool_ = new msgpack::rpc::session_pool();
+      private_session_pool_->set_pool_time_limit(a_.session_pool_expire);
+      private_session_pool_->set_pool_size_limit(a_.session_pool_size);
     }
     return private_session_pool_;
   }
