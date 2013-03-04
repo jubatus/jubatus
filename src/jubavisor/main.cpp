@@ -77,9 +77,9 @@ int main(int argc, char* argv[]) try {
     serv.set_stop(bind(&jubavisor::stop, &j, _1, _2));
 
     try {
-      serv.listen(port);
-      serv.__start__(2);
-      serv.join();
+      serv.rpc_listen(port);
+      serv.rpc_start(2);
+      serv.rpc_join();
     } catch (const mp::system_error& e) {
       if (e.code == EADDRINUSE) {
         LOG(ERROR) << "server failed to start: any process using port "

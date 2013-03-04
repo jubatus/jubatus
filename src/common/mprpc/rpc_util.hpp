@@ -56,60 +56,60 @@ struct result {
   }
 };
 
-#define JUBATUS_MPRPC_PROC(name, ret_type, param_list)                  \
-  namespace _server_impl {                                              \
-  class name : public virtual jubatus::common::mprpc::rpc_server {      \
-  public:                                                               \
+#define JUBATUS_MPRPC_PROC(name, ret_type, param_list)                    \
+  namespace _server_impl {                                                \
+  class name : public virtual jubatus::common::mprpc::rpc_server {        \
+  public:                                                                 \
     name() : rpc_server(0) { }                                            \
     void set_##name(const pfi::lang::function< ret_type param_list> &f) { \
-      rpc_server::add< ret_type param_list>(#name, f);                  \
-    }                                                                   \
-  };                                                                    \
-  }                                                                     \
-                                                                        \
-  namespace _client_impl {                                              \
-  class name : public virtual msgpack::rpc::client {                    \
-  public:                                                               \
-    name(): msgpack::rpc::client("", 0) { }                              \
-                                                                        \
-    template<typename A0>                                               \
-    ret_type call_##name(A0 a0) {                                     \
-      return call(#name, a0).template get<ret_type>();                   \
-    }                                                                   \
-    template<typename A0, typename A1>                                  \
-    ret_type call_##name(A0 a0, A1 a1) {                              \
+      rpc_server::add< ret_type param_list>(#name, f);                    \
+    }                                                                     \
+  };                                                                      \
+  }                                                                       \
+                                                                          \
+  namespace _client_impl {                                                \
+  class name : public virtual msgpack::rpc::client {                      \
+  public:                                                                 \
+    name(): msgpack::rpc::client("", 0) { }                               \
+                                                                          \
+    template<typename A0>                                                 \
+    ret_type call_##name(A0 a0) {                                         \
+      return call(#name, a0).template get<ret_type>();                    \
+    }                                                                     \
+    template<typename A0, typename A1>                                    \
+    ret_type call_##name(A0 a0, A1 a1) {                                  \
       return call(#name, a0, a1).template get<ret_type>();                \
-    }                                                                   \
-    template<typename A0, typename A1, typename A2>                     \
-    ret_type call_##name(A0 a0, A1 a1, A2 a2) {                       \
-      return call(#name, a0, a1, a2).template get<ret_type>();             \
-    }                                                                   \
-    template<typename A0, typename A1, typename A2, typename A3>        \
-    ret_type call_##name(A0 a0, A1 a1, A2 a2, A3 a3) {                \
-      return call(#name, a0, a1, a2, a3).template get<ret_type>();          \
-    }                                                                   \
-  };                                                                    \
+    }                                                                     \
+    template<typename A0, typename A1, typename A2>                       \
+    ret_type call_##name(A0 a0, A1 a1, A2 a2) {                           \
+      return call(#name, a0, a1, a2).template get<ret_type>();            \
+    }                                                                     \
+    template<typename A0, typename A1, typename A2, typename A3>          \
+    ret_type call_##name(A0 a0, A1 a1, A2 a2, A3 a3) {                    \
+      return call(#name, a0, a1, a2, a3).template get<ret_type>();        \
+    }                                                                     \
+  };                                                                      \
   }
 
 #define JUBATUS_MPRPC_GEN(ver, base, ...)                               \
   namespace _server_impl {                                              \
   struct base##_server : __VA_ARGS__ {                                  \
   public:                                                               \
-    base##_server(double timeout_sec)                                    \
-        : jubatus::common::mprpc::rpc_server(timeout_sec) { }               \
-    void __listen__(uint16_t port) {                                    \
+    base##_server(double timeout_sec)                                   \
+        : jubatus::common::mprpc::rpc_server(timeout_sec) { }           \
+    void rpc_listen(uint16_t port) {                                    \
       jubatus::common::mprpc::rpc_server::listen(port);                 \
     }                                                                   \
-    void __start__(int nthreads, bool no_hang = false) {               \
+    void rpc_start(int nthreads, bool no_hang = false) {                \
       jubatus::common::mprpc::rpc_server::start(nthreads, no_hang);     \
     }                                                                   \
-    void __join__() {                                                   \
+    void rpc_join() {                                                   \
       jubatus::common::mprpc::rpc_server::join();                       \
     }                                                                   \
-    void __stop__() {                                                   \
+    void rpc_stop() {                                                   \
       jubatus::common::mprpc::rpc_server::stop();                       \
     }                                                                   \
-    void __close__() {                                                  \
+    void rpc_close() {                                                  \
       jubatus::common::mprpc::rpc_server::close();                      \
     }                                                                   \
   };                                                                    \
