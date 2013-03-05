@@ -227,9 +227,10 @@ void local_storage_mixture::set_average_and_clear_diff(
 }
 
 void local_storage_mixture::clear() {
-  tbl_.clear();
-  class2id_.clear();
-  tbl_diff_.clear();
+  // Clear and minimize
+  id_features3_t().swap(tbl_);
+  key_manager().swap(class2id_);
+  id_features3_t().swap(tbl_diff_);
 }
 
 bool local_storage_mixture::save(std::ostream& os) {
