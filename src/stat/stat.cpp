@@ -148,6 +148,11 @@ double stat::moment(const std::string& key, int n, double c) const {
   return ret / st.n_;
 }
 
+void stat::clear() {
+  window_.clear();
+  stats_.clear();
+}
+
 bool stat::save(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << *this;

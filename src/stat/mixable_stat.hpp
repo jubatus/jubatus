@@ -45,6 +45,8 @@ class mixable_stat : public stat {
       std::pair<double, size_t>&);
   double mixed_entropy() const;
 
+  virtual void clear();
+
  private:
   double e_;
   double n_;

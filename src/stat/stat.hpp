@@ -63,6 +63,8 @@ class stat {
   double entropy() const;
   double moment(const std::string& key, int n, double c) const;
 
+  virtual void clear();
+
   bool save(std::ostream&);
   bool load(std::istream&);
   std::string type() const;

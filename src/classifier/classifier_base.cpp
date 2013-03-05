@@ -70,6 +70,10 @@ string classifier_base::classify(const sfv_t& fv) const {
   return max_class;
 }
 
+void classifier_base::clear() {
+  storage_->clear();
+}
+
 void classifier_base::update_weight(
     const sfv_t& sfv,
     float step_width,
