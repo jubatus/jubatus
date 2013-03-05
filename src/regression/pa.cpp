@@ -68,9 +68,9 @@ void PA::train(const sfv_t& fv, float value) {
 
 void PA::clear() {
   regression_base::clear();
-  sum_    = 0.f;
+  sum_ = 0.f;
   sq_sum_ = 0.f;
-  count_  = 0.f;
+  count_ = 0.f;
 }
 
 }  // namespace regression
