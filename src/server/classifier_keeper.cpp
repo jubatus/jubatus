@@ -24,6 +24,8 @@ int run_keeper(int argc, char* argv[]) {
          datum> > >("train");
     k.register_async_random<std::vector<std::vector<estimate_result> >,
          std::vector<datum> >("classify");
+    k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
+         bool)>(&jubatus::framework::all_and));
     k.register_async_broadcast<bool, std::string>("save",
          pfi::lang::function<bool(bool, bool)>(&jubatus::framework::all_and));
     k.register_async_broadcast<bool, std::string>("load",

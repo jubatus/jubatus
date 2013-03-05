@@ -421,13 +421,15 @@ TEST_P(classifier_test, save_load) {
   bool res_save = cli.save(NAME, "hoge");
   ASSERT_EQ(true, res_save);
 
+  ASSERT_EQ(true, cli.clear(NAME));
+
   bool res_load = cli.load(NAME, "hoge");
   ASSERT_EQ(true, res_load);
   my_test(GetParam());
 
   map<string, map<string, string> > status = cli.get_status(NAME);
   string count_str = status.begin()->second["update_count"];
-  EXPECT_EQ(4, atoi(count_str.c_str()));
+  EXPECT_EQ(5, atoi(count_str.c_str()));
 }
 
 string classify_and_get_label(

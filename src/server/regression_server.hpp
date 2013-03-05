@@ -29,6 +29,8 @@ class regression : public jubatus::common::mprpc::rpc_server {
     rpc_server::add<std::vector<float>(std::string, std::vector<datum>)>(
         "estimate", pfi::lang::bind(&Impl::estimate, impl, pfi::lang::_1,
          pfi::lang::_2));
+    rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(&Impl::clear,
+         impl, pfi::lang::_1));
     rpc_server::add<bool(std::string, std::string)>("save", pfi::lang::bind(
         &Impl::save, impl, pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<bool(std::string, std::string)>("load", pfi::lang::bind(

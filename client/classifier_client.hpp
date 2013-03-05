@@ -39,6 +39,11 @@ class classifier {
     return f.get<std::vector<std::vector<estimate_result> > >();
   }
   
+  bool clear(std::string name) {
+    msgpack::rpc::future f = c_.call("clear", name);
+    return f.get<bool>();
+  }
+  
   bool save(std::string name, std::string id) {
     msgpack::rpc::future f = c_.call("save", name, id);
     return f.get<bool>();

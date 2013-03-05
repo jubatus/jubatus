@@ -39,6 +39,8 @@ class stat : public jubatus::common::mprpc::rpc_server {
     rpc_server::add<double(std::string, std::string, int32_t, double)>("moment",
          pfi::lang::bind(&Impl::moment, impl, pfi::lang::_1, pfi::lang::_2,
          pfi::lang::_3, pfi::lang::_4));
+    rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(&Impl::clear,
+         impl, pfi::lang::_1));
     rpc_server::add<bool(std::string, std::string)>("save", pfi::lang::bind(
         &Impl::save, impl, pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<bool(std::string, std::string)>("load", pfi::lang::bind(

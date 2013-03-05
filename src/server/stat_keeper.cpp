@@ -35,6 +35,8 @@ int run_keeper(int argc, char* argv[]) {
     k.register_async_cht<1, double, int32_t, double>("moment",
          pfi::lang::function<double(double, double)>(
         &jubatus::framework::pass<double>));
+    k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
+         bool)>(&jubatus::framework::all_and));
     k.register_async_broadcast<bool, std::string>("save",
          pfi::lang::function<bool(bool, bool)>(&jubatus::framework::all_and));
     k.register_async_broadcast<bool, std::string>("load",

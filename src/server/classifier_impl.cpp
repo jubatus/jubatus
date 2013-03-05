@@ -36,6 +36,11 @@ class classifier_impl_ : public classifier<classifier_impl_> {
     return get_p()->classify(data);
   }
   
+  bool clear(std::string name) {
+    JWLOCK__(p_);
+    return get_p()->clear();
+  }
+  
   bool save(std::string name, std::string id) {
     JWLOCK__(p_);
     return get_p()->save(id);

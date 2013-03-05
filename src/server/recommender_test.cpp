@@ -126,6 +126,7 @@ TEST_F(recommender_test, small) {
   //  cout << res.size() << endl;
 
   c.save(NAME, "name");
+  c.clear(NAME);
   c.load(NAME, "name");
 }
 

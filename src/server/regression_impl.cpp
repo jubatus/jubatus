@@ -36,6 +36,11 @@ class regression_impl_ : public regression<regression_impl_> {
     return get_p()->estimate(estimate_data);
   }
   
+  bool clear(std::string name) {
+    JWLOCK__(p_);
+    return get_p()->clear();
+  }
+  
   bool save(std::string name, std::string id) {
     JWLOCK__(p_);
     return get_p()->save(id);

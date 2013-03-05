@@ -36,6 +36,9 @@ service stat {
   double moment(0: string name, 1: string key, 2: int degree, 3: double center)
 
   #@broadcast #@update #@all_and
+  bool clear(0: string name) # //@broadcast
+
+  #@broadcast #@update #@all_and
   bool save(0: string name, 1: string id) # #@broadcast
 
   #@broadcast #@update #@all_and
