@@ -181,6 +181,7 @@ float anomaly_serv::update(const string& id, const datum& d) {
 bool anomaly_serv::clear() {
   check_set_config();
   anomaly_.get_model()->clear();
+  wm_.clear();
   LOG(INFO) << "model cleared: " << argv().name;
   return true;
 }
