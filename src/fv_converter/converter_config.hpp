@@ -24,7 +24,6 @@
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/optional.h>
 #include <pficommon/lang/shared_ptr.h>
-#include <pficommon/data/optional.h>
 #include <pficommon/text/json.h>
 
 namespace jubatus {

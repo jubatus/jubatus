@@ -83,9 +83,9 @@ void lsh::neighbor_row(
 
 void lsh::clear() {
   orig_.clear();
-  pfi::data::unordered_map<std::string, std::vector<float> >().swap(column2baseval_);
+  pfi::data::unordered_map<std::string, std::vector<float> >()
+    .swap(column2baseval_);
   row2lshvals_.clear();
-
 }
 
 void lsh::clear_row(const string& id) {

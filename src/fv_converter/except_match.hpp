@@ -31,7 +31,7 @@ class except_match : public key_matcher {
       pfi::lang::shared_ptr<key_matcher> except)
       : condition_(condition), except_(except) {
   }
-  
+
   bool match(const std::string& s) {
     return condition_->match(s) && !except_->match(s);
   }
