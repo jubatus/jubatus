@@ -115,8 +115,8 @@ void lof_storage::remove_row(const string& row) {
 }
 
 void lof_storage::clear() {
-  lof_table_.clear();
-  lof_table_diff_.clear();
+  lof_table_t().swap(lof_table_);
+  lof_table_t().swap(lof_table_diff_);
   nn_engine_->clear();
 }
 

@@ -132,11 +132,11 @@ void inverted_index_storage::remove(
 }
 
 void inverted_index_storage::clear() {
-  inv_.clear();
-  inv_diff_.clear();
-  column2norm_.clear();
-  column2norm_diff_.clear();
-  column2id_.clear();
+  tbl_t().swap(inv_);
+  tbl_t().swap(inv_diff_);
+  imap_float_t().swap(column2norm_);
+  imap_float_t().swap(column2norm_diff_);
+  key_manager().swap(column2id_);
 }
 
 void inverted_index_storage::get_all_column_ids(

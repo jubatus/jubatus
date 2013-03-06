@@ -155,8 +155,8 @@ void sparse_matrix_storage::get_all_row_ids(vector<string>& ids) const {
 }
 
 void sparse_matrix_storage::clear() {
-  column2id_.clear();
-  tbl_.clear();
+  tbl_t().swap(tbl_);
+  key_manager().swap(column2id_);
   // norm_ptr_->clear();
 }
 
