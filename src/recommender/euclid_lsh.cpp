@@ -154,6 +154,9 @@ void euclid_lsh::similar_row(
 void euclid_lsh::clear() {
   orig_.clear();
   lsh_index_.clear();
+
+  // Clear projection cache
+  pfi::data::unordered_map<uint32_t, std::vector<float> >().swap(projection_);
 }
 
 void euclid_lsh::clear_row(const string& id) {
