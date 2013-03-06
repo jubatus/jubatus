@@ -136,6 +136,7 @@ void inverted_index_storage::clear() {
   inv_diff_.clear();
   column2norm_.clear();
   column2norm_diff_.clear();
+  column2id_.clear();
 }
 
 void inverted_index_storage::get_all_column_ids(
