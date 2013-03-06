@@ -7,7 +7,7 @@ def configure(conf):
   if conf.env.HAVE_ZOOKEEPER_H:
     conf.check_cxx(msg = 'Checking for compiler TLS extension support',
                    fragment='__thread int i; int main() { return 0; }',
-                   errmsg = 'no (Jubatus officialy support GCC 4.4 or later)')
+                   errmsg = 'no (Jubatus officially support GCC 4.4 or later)')
 
 
 def build_one(bld, name, libraries = '', sources = ''):
