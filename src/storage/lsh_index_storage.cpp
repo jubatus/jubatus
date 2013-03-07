@@ -187,10 +187,10 @@ void lsh_index_storage::remove_row(const string& row) {
 }
 
 void lsh_index_storage::clear() {
-  master_table_.clear();
-  master_table_diff_.clear();
-  lsh_table_.clear();
-  lsh_table_diff_.clear();
+  lsh_master_table_t().swap(master_table_);
+  lsh_master_table_t().swap(master_table_diff_);
+  lsh_table_t().swap(lsh_table_);
+  lsh_table_t().swap(lsh_table_diff_);
   key_manager_.clear();
 }
 
