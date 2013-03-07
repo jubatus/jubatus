@@ -42,6 +42,7 @@ using std::stringstream;
 
 using jubatus::sfv_diff_t;
 using jubatus::client::recommender;
+using pfi::data::optional;
 using pfi::lang::lexical_cast;
 
 static const char* NAME = "test";
@@ -76,7 +77,7 @@ std::string make_simple_config(const string& method) {
   js["method"] = pfi::text::json::json(
       new pfi::text::json::json_string(method));
   jubatus::fv_converter::converter_config config;
-  jubatus::fv_converter::num_rule rule = { "*", "num" };
+  jubatus::fv_converter::num_rule rule = { "*", optional<string>(), "num" };
   config.num_rules.push_back(rule);
   std::stringstream conv;
   conv << config_to_string(config);
@@ -125,6 +126,7 @@ TEST_F(recommender_test, small) {
   //  cout << res.size() << endl;
 
   c.save(NAME, "name");
+  c.clear(NAME);
   c.load(NAME, "name");
 }
 

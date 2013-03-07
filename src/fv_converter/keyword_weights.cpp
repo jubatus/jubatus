@@ -71,7 +71,7 @@ void keyword_weights::merge(const keyword_weights& w) {
 void keyword_weights::clear() {
   document_count_ = 0;
   document_frequencies_.clear();
-  weights_.clear();
+  weight_t().swap(weights_);
 }
 
 }  // namespace fv_converter

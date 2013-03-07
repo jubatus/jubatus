@@ -54,6 +54,7 @@ TEST_F(stat_test, small) {
   ASSERT_DOUBLE_EQ(0., c.entropy("", "hoge"));
 
   ASSERT_EQ(true, c.save("", __func__));
+  ASSERT_EQ(true, c.clear(""));
   ASSERT_EQ(true, c.load("", __func__));
 }
 

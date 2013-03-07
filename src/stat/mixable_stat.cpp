@@ -40,13 +40,9 @@ std::pair<double, size_t> mixable_stat::get_diff() const {
 
   for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
       stats_.begin(); p != stats_.end(); ++p) {
-    ret.second += p->second.n_;
-  }
-
-  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
-      stats_.begin(); p != stats_.end(); ++p) {
     double pr = p->second.n_;
     ret.first += pr * log(pr);
+    ret.second += pr;
   }
   return ret;
 }
@@ -69,6 +65,13 @@ double mixable_stat::mixed_entropy() const {
   }
   double n = n_;
   return log(n) - e_ / n_;
-};
+}
+
+void mixable_stat::clear() {
+  stat::clear();
+  e_ = 0;
+  n_ = 0;
+}
+
 }  // namespace stat
 }  // namespace jubatus

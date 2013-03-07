@@ -29,6 +29,10 @@
 #include "../common/util.hpp"
 #include "../common/membership.hpp"
 #include "../common/jsonconfig.hpp"
+#ifdef HAVE_ZOOKEEPER_H
+#include "../common/mprpc/rpc_mclient.hpp"
+#include "../common/cht.hpp"
+#endif
 #include "../framework/aggregators.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../graph/graph_factory.hpp"
@@ -194,6 +198,7 @@ bool graph_serv::remove_node(const std::string& nid) {
   g_.get_model()->remove_node(n2i(nid));
   g_.get_model()->remove_global_node(n2i(nid));
 
+#ifdef HAVE_ZOOKEEPER_H
   if (!argv().is_standalone()) {
     // send true remove_node_ to other machine,
     // if conflicts with create_node, users should re-run to ensure removal
@@ -222,6 +227,7 @@ bool graph_serv::remove_node(const std::string& nid) {
       }
     }
   }
+#endif
   DLOG(INFO) << "node removed: " << nid;
   return true;
 }

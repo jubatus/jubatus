@@ -25,6 +25,9 @@
 #include "datum_to_fv_converter.hpp"
 #include "exception.hpp"
 
+using std::string;
+using pfi::data::optional;
+
 namespace jubatus {
 namespace fv_converter {
 
@@ -77,7 +80,7 @@ TEST(converter_config, config) {
 
 TEST(converter_config, hash) {
   converter_config config;
-  num_rule r = {"*", "str"};
+  num_rule r = {"*", optional<string>(), "str"};
   config.num_rules.push_back(r);
   config.hash_max_size = 1;
 

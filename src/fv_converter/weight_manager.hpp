@@ -47,6 +47,11 @@ class weight_manager {
     diff_weights_.clear();
   }
 
+  void clear() {
+    diff_weights_.clear();
+    master_weights_.clear();
+  }
+
   void save(std::ostream& os) {
     pfi::data::serialization::binary_oarchive oa(os);
     oa << diff_weights_;

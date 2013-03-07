@@ -40,6 +40,8 @@ class classifier_base {
   std::string classify(const sfv_t& fv) const;
   void classify_with_scores(const sfv_t& fv, classify_result& scores) const;
 
+  void clear();
+
   virtual std::string name() const = 0;
 
  protected:

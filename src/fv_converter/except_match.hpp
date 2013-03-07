@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,43 +14,33 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_REGRESSION_REGRESSION_BASE_HPP_
-#define JUBATUS_REGRESSION_REGRESSION_BASE_HPP_
+#ifndef JUBATUS_FV_CONVERTER_EXCEPT_MATCH_HPP_
+#define JUBATUS_FV_CONVERTER_EXCEPT_MATCH_HPP_
 
-#include "../common/type.hpp"
+#include <string>
+#include <pficommon/lang/shared_ptr.h>
+#include "key_matcher.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
-namespace storage {
-class storage_base;
-}  // namespace storage
-
-namespace regression {
-
-class regression_base {
+class except_match : public key_matcher {
  public:
-  explicit regression_base(storage::storage_base* storage);
-
-  virtual ~regression_base() {
+  except_match(
+      pfi::lang::shared_ptr<key_matcher> condition,
+      pfi::lang::shared_ptr<key_matcher> except)
+      : condition_(condition), except_(except) {
   }
 
-  virtual void train(const sfv_t& fv, const float value) = 0;
-  float estimate(const sfv_t& fv) const;
-
-  virtual void clear();
-
- protected:
-  storage::storage_base* get_storage() const {
-    return storage_;
+  bool match(const std::string& s) {
+    return condition_->match(s) && !except_->match(s);
   }
-
-  void update(const sfv_t& fv, float coeff);
 
  private:
-  storage::storage_base* storage_;
+  pfi::lang::shared_ptr<key_matcher> condition_, except_;
 };
 
-}  // namespace regression
+}  // namespace fv_converter
 }  // namespace jubatus
 
-#endif  // JUBATUS_REGRESSION_REGRESSION_BASE_HPP_
+#endif  // JUBATUS_FV_CONVERTER_EXCEPT_MATCH_HPP_

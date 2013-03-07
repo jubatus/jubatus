@@ -47,6 +47,7 @@ using std::isfinite;
 using std::numeric_limits;
 
 using pfi::lang::lexical_cast;
+using pfi::data::optional;
 using jubatus::datum;
 using jubatus::estimate_result;
 
@@ -96,7 +97,7 @@ string make_simple_config(const string& method) {
   js["method"] = pfi::text::json::json(
       new pfi::text::json::json_string(method));
   jubatus::fv_converter::converter_config config;
-  jubatus::fv_converter::num_rule rule = { "*", "num" };
+  jubatus::fv_converter::num_rule rule = { "*", optional<string>(), "num" };
   config.num_rules.push_back(rule);
   std::stringstream conv;
   conv << config_to_string(config);
@@ -420,13 +421,15 @@ TEST_P(classifier_test, save_load) {
   bool res_save = cli.save(NAME, "hoge");
   ASSERT_EQ(true, res_save);
 
+  ASSERT_EQ(true, cli.clear(NAME));
+
   bool res_load = cli.load(NAME, "hoge");
   ASSERT_EQ(true, res_load);
   my_test(GetParam());
 
   map<string, map<string, string> > status = cli.get_status(NAME);
   string count_str = status.begin()->second["update_count"];
-  EXPECT_EQ(4, atoi(count_str.c_str()));
+  EXPECT_EQ(5, atoi(count_str.c_str()));
 }
 
 string classify_and_get_label(

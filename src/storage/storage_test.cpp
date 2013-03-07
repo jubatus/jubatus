@@ -118,6 +118,10 @@ class stub_storage : public storage_base {
     return true;
   }
 
+  void clear() {
+    data_.clear();
+  }
+
   std::string type() const {
     return "stub_storage";
   }
@@ -496,6 +500,46 @@ TYPED_TEST_P(storage_test, bulk_update_no_decrease) {
   EXPECT_EQ(0.0, v[0].second.v3);
 }
 
+TYPED_TEST_P(storage_test, clear) {
+  TypeParam s;
+
+  s.set3("a", "x", val3_t(1, 11, 111));
+  s.set3("a", "y", val3_t(2, 22, 222));
+  s.set3("a", "z", val3_t(3, 33, 333));
+  s.set3("b", "x", val3_t(12, 1212, 121212));
+  s.set3("b", "z", val3_t(45, 4545, 454545));
+
+  {
+    feature_val3_t mm;
+    s.get3("a", mm);
+
+    ASSERT_EQ(3u, mm.size());
+  }
+
+  {
+    feature_val3_t mm;
+    s.get3("b", mm);
+
+    ASSERT_EQ(2u, mm.size());
+  }
+
+  s.clear();
+
+  {
+    feature_val3_t mm;
+    s.get3("a", mm);
+
+    ASSERT_EQ(0u, mm.size());
+  }
+
+  {
+    feature_val3_t mm;
+    s.get3("b", mm);
+
+    ASSERT_EQ(0u, mm.size());
+  }
+}
+
 REGISTER_TYPED_TEST_CASE_P(storage_test,
                            val1d,
                            val2d,
@@ -505,7 +549,8 @@ REGISTER_TYPED_TEST_CASE_P(storage_test,
                            get_status,
                            update,
                            bulk_update,
-                           bulk_update_no_decrease);
+                           bulk_update_no_decrease,
+                           clear);
 
 typedef testing::Types<
     jubatus::storage::stub_storage,

@@ -152,6 +152,7 @@ bool recommender_serv::clear() {
   build_cnt_ = 0;
   mix_cnt_ = 0;
   rcmdr_.get_model()->clear();
+  wm_.clear();
   LOG(INFO) << "model cleared: " << argv().name;
   return true;
 }

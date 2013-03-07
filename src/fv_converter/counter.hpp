@@ -70,7 +70,7 @@ class counter {
   }
 
   void clear() {
-    data_.clear();
+    pfi::data::unordered_map<T, unsigned>().swap(data_);
   }
 
   void add(const counter<T>& counts) {

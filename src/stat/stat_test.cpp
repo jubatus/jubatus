@@ -53,6 +53,19 @@ TYPED_TEST_P(stat_test, trivial) {
   EXPECT_NEAR(p.moment("test", 2 , 3.0) , 0.67, 0.1);
   EXPECT_NEAR(p.moment("test", 3 , 0.0) , 33.0, 0.1);
   EXPECT_NEAR(p.stddev("test"), 0.82, 0.1);
+
+  p.clear();
+
+  p.push("test", 1.0);
+  EXPECT_TRUE(p.sum("test") == 1.0);
+  EXPECT_TRUE(p.max("test") == 1.0);
+  EXPECT_TRUE(p.min("test") == 1.0);
+  EXPECT_NEAR(p.moment("test", 0 , 0.0) , 1.0, 0.1);
+  EXPECT_NEAR(p.moment("test", 1 , 0.0) , 1.0, 0.1);
+  EXPECT_NEAR(p.moment("test", 2 , 0.0) , 1.0, 0.1);
+  EXPECT_NEAR(p.moment("test", 2 , 3.0) , 4.0, 0.1);
+  EXPECT_NEAR(p.moment("test", 3 , 0.0) , 1.0, 0.1);
+  EXPECT_NEAR(p.stddev("test"), 0.0, 0.1);
 }
 
 REGISTER_TYPED_TEST_CASE_P(

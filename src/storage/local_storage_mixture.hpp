@@ -68,6 +68,8 @@ class local_storage_mixture : public storage_base {
       const std::string& inc_class,
       const std::string& dec_class);
 
+  void clear();
+
   bool save(std::ostream& os);
   bool load(std::istream& is);
   std::string type() const;

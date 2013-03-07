@@ -167,6 +167,12 @@ void local_storage::update(
   feature_row[class2id_.get_id(dec_class)].v1 -= v;
 }
 
+void local_storage::clear() {
+  // Clear and minimize
+  id_features3_t().swap(tbl_);
+  key_manager().swap(class2id_);
+}
+
 bool local_storage::save(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << *this;

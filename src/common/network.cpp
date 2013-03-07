@@ -112,6 +112,9 @@ address_list get_network_address() {
 
   try {
     for (struct ifaddrs* ifa = addrs; ifa != NULL; ifa = ifa->ifa_next) {
+      if (ifa->ifa_addr == NULL) {
+        continue;
+      }
       int family = ifa->ifa_addr->sa_family;
       if (family == AF_INET) {
         result.push_back(
