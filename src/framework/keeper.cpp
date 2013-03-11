@@ -30,7 +30,7 @@ namespace framework {
 
 __thread msgpack::rpc::session_pool* private_session_pool_ = NULL;
 __thread keeper::async_task_loop*
-  keeper::async_task_loop::private_async_task_loop_;
+  keeper::async_task_loop::private_async_task_loop_ = NULL;
 
 // NOTE: '__thread' is gcc-extension. We should re-implement with
 //       pthread TLS?
