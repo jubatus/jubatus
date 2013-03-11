@@ -758,7 +758,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
  public:
   class async_task_loop : public mp::enable_shared_from_this<async_task_loop> {
    public:
-    explicit async_task_loop(const keeper_argv &a) {
+    explicit async_task_loop(const keeper_argv& a) {
       pool_.set_pool_time_limit(a.session_pool_expire);
       pool_.set_pool_size_limit(a.session_pool_size);
     }
@@ -773,7 +773,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
       return pool_;
     }
 
-    static async_task_loop* startup(const keeper_argv &a) {
+    static async_task_loop* startup(const keeper_argv& a) {
       async_task_loop* at_loop = new async_task_loop(a);
 
 #if 0
@@ -789,7 +789,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
       return at_loop;
     }
 
-    static async_task_loop* get_private_async_task_loop(const keeper_argv &a) {
+    static async_task_loop* get_private_async_task_loop(const keeper_argv& a) {
       if (!private_async_task_loop_) {
         private_async_task_loop_ = startup(a);
       }
@@ -802,7 +802,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
         const host_list_type& hosts,
         const std::string& method_name,
         const Args& args,
-        const keeper_argv &a,
+        const keeper_argv& a,
         int timeout_sec,
         request_type req,
         typename async_task<Res>::reducer_type reducer =
@@ -819,7 +819,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
         int port,
         const std::string& method_name,
         const Args& args,
-        const keeper_argv &a,
+        const keeper_argv& a,
         int timeout_sec,
         request_type req,
         typename async_task<Res>::reducer_type reducer =
