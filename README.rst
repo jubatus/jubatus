@@ -3,25 +3,63 @@ Jubatus
 
 The Jubatus library is an online machine learning framework which runs in distributed environment.
 
-See http://jubat.us for details.
+See http://jubat.us/ for details.
 
-QuickStart
-----------
+Quick Start
+-----------
 
-Jubatus officially supports Ubuntu >= 12.04 , Red Hat Enterprise Linux >= 6.2 . On other platforms, some may work if they have gcc >= 4.4 .
+We officially support Ubuntu Server 12.04 LTS (x86_64) and Red Hat Enterprise Linux 6.2 or later (x86_64).
 
-For minimal standalone mode, Jubatus requires pficommon >= 1.3.1 (commit 8fde51454af897cc971bab9033e217ff83b12f78 or later), google-glog , libmsgpack, jubatus-mpio, jubatus-msgpack-rpc, python >= 2.6 . Please install these software with headers before installation.
+See `QuickStart <http://jubat.us/en/quickstart.html>`_ for detailed description.
+
+Red Hat Enterprise Linux 6.2 or later (x86_64)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Run the following command to register Jubatus Yum repository to the system.
 
 ::
 
-  $ git clone git://github.com/jubatus/jubatus.git
-  $ cd jubatus
-  $ ./waf configure --disable-re2
-  $ ./waf build
-  $ sudo ./waf install
-  $ jubaclassifier -f /usr/local/share/jubatus/example/config/classifier/pa.json
+  $ sudo rpm -Uvh http://download.jubat.us/yum/rhel/6/stable/x86_64/jubatus-release-6-1.el6.x86_64.rpm
 
-Here Jubatus classifier server has started. Enjoy!
+Then install ``jubatus`` and ``jubatus-client`` package.
+
+::
+
+  $ sudo yum install jubatus jubatus-client
+
+Now Jubatus is installed in ``/usr/bin/juba*``.
+
+::
+
+  $ jubaclassifier -f /usr/share/jubatus/example/config/classifier/pa.json
+
+Ubuntu Server 12.04 LTS (x86_64)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Write the following line to ``/etc/apt/sources.list.d/jubatus.list`` to register Jubatus Apt repository to the system.
+
+::
+
+  deb http://download.jubat.us/apt binary/
+
+Now install ``jubatus`` package.
+
+::
+
+  $ sudo apt-get update
+  $ sudo apt-get install -y --force-yes jubatus
+
+Now Jubatus is installed in ``/opt/jubatus/bin/juba*``.
+
+::
+
+  $ source /opt/jubatus/profile
+  $ jubaclassifier -f /opt/jubatus/share/jubatus/example/config/classifier/pa.json
+
+Other Platforms
+~~~~~~~~~~~~~~~
+
+For other platforms, refer to the `documentation <http://jubat.us/en/build.html>`_.
 
 License
 -------
