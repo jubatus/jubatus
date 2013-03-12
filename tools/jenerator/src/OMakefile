@@ -54,6 +54,8 @@ FILES[] =
   syntax
   config
   cpp
+  python
+  ruby
   main
 
 
