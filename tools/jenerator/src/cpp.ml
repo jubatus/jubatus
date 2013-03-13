@@ -36,7 +36,9 @@ let parse_namespace namespace =
 ;;
 
 let indent_line n (ind, line) =
-  (ind + n, line)
+  match line with
+  | "" -> (ind, line)
+  | _ -> (ind + n, line)
 ;;
 
 let indent_lines n =

@@ -225,6 +225,14 @@ TEST_P(classifier_test, simple) {
   }
 }
 
+TEST_P(classifier_test, api_get_client) {
+  jubatus::client::classifier cli("localhost", PORT, 10);
+  string to_get = cli.get_config(NAME);
+
+  msgpack::rpc::client& conn = cli.get_client();
+  EXPECT_NO_THROW(conn.close());
+}
+
 TEST_P(classifier_test, api_config) {
   jubatus::client::classifier cli("localhost", PORT, 10);
   string to_get;
