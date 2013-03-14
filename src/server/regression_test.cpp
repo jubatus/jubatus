@@ -184,4 +184,12 @@ TEST_F(regression_test, small) {
   cout << res.size() << endl;
 }
 
+TEST_F(regression_test, api_get_client) {
+  jubatus::client::regression cli("localhost", PORT, 10);
+  string to_get = cli.get_config(NAME);
+
+  msgpack::rpc::client& conn = cli.get_client();
+  EXPECT_NO_THROW(conn.close());
+}
+
 }  // namespace

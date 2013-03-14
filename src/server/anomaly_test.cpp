@@ -128,4 +128,12 @@ TEST_F(anomaly_test, small) {
   }
 }
 
+TEST_F(anomaly_test, api_get_client) {
+  jubatus::client::anomaly cli("localhost", PORT, 10);
+  string to_get = cli.get_config(NAME);
+
+  msgpack::rpc::client& conn = cli.get_client();
+  EXPECT_NO_THROW(conn.close());
+}
+
 }  // namespace

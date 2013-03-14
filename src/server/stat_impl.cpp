@@ -23,58 +23,58 @@ class stat_impl_ : public stat<stat_impl_> {
     JRLOCK__(p_);
     return get_p()->get_config();
   }
-  
+
   bool push(std::string name, std::string key, double value) {
     JWLOCK__(p_);
     return get_p()->push(key, value);
   }
-  
+
   double sum(std::string name, std::string key) {
     JRLOCK__(p_);
     return get_p()->sum(key);
   }
-  
+
   double stddev(std::string name, std::string key) {
     JRLOCK__(p_);
     return get_p()->stddev(key);
   }
-  
+
   double max(std::string name, std::string key) {
     JRLOCK__(p_);
     return get_p()->max(key);
   }
-  
+
   double min(std::string name, std::string key) {
     JRLOCK__(p_);
     return get_p()->min(key);
   }
-  
+
   double entropy(std::string name, std::string key) {
     JRLOCK__(p_);
     return get_p()->entropy(key);
   }
-  
+
   double moment(std::string name, std::string key, int32_t degree,
        double center) {
     JRLOCK__(p_);
     return get_p()->moment(key, degree, center);
   }
-  
+
   bool clear(std::string name) {
     JWLOCK__(p_);
     return get_p()->clear();
   }
-  
+
   bool save(std::string name, std::string id) {
     JWLOCK__(p_);
     return get_p()->save(id);
   }
-  
+
   bool load(std::string name, std::string id) {
     JWLOCK__(p_);
     return get_p()->load(id);
   }
-  
+
   std::map<std::string, std::map<std::string, std::string> > get_status(
       std::string name) {
     JRLOCK__(p_);

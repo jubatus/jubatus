@@ -36,7 +36,9 @@ let parse_namespace namespace =
 ;;
 
 let indent_line n (ind, line) =
-  (ind + n, line)
+  match line with
+  | "" -> (ind, line)
+  | _ -> (ind + n, line)
 ;;
 
 let indent_lines n =
@@ -280,6 +282,10 @@ let gen_client s =
     ];
     indent_lines 1 content;
     [
+      (0, "");
+      (1, "msgpack::rpc::client& get_client() {");
+      (2, "return c_;");
+      (1, "}");
       (0, "");
       (0, " private:");
       (1,   "msgpack::rpc::client c_;");

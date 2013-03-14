@@ -130,6 +130,14 @@ TEST_F(recommender_test, small) {
   c.load(NAME, "name");
 }
 
+TEST_F(recommender_test, api_get_client) {
+  jubatus::client::recommender cli("localhost", PORT, 10);
+  string to_get = cli.get_config(NAME);
+
+  msgpack::rpc::client& conn = cli.get_client();
+  EXPECT_NO_THROW(conn.close());
+}
+
 sfv_diff_t make_vec(float v1, float v2, float v3) {
   sfv_diff_t v;
   v.push_back(make_pair("c1", v1));
