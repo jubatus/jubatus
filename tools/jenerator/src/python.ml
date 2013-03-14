@@ -20,125 +20,46 @@
 (* tsushima wrote :*)
 
 open Syntax
+open Lib
 
-(* same with cpp.ml *)
-let indent_line n (ind, line) =
-  (ind + n, line)
-;;
+let comment_out_head = "#"
 
-(* same with cpp.ml *)
-let indent_lines n =
-  List.map (indent_line n)
-;;
-
-(* same with cpp.ml *)
-let rfind line pos ch =
-  if String.rcontains_from line pos ch then
-    Some (String.rindex_from line pos ch)
-  else
-    None
-
-(* same with cpp.ml *)
-let rindex_split_pos line pos =
-  let paren = rfind line pos '(' in
-  let comma = rfind line pos ',' in
-  match paren, comma with
-  | Some p, Some c -> Some (max (p + 1) (c + 1))
-  | Some p, None -> Some (p + 1)
-  | None, Some c -> Some (c + 1)
-  | None, None -> None
-;;
-
-(* same with cpp.ml *)
-let rec print_indent p (indent, line) =
-  if line == "" then
-    (* don't append spaces to a blank line *)
-    p ""
-  else
-    let space = String.make (indent * 2) ' ' in
-    let max_len = 80 - indent * 2 in
-    let len = String.length line in
-    if len > max_len then
-      match rindex_split_pos line (max_len - 1) with
-      | Some pos ->
-        p (space ^ String.sub line 0 pos);
-        print_indent p (indent, "    " ^ String.sub line pos (len - pos))
-      | None ->
-        p (space ^ line)
-    else
-      p (space ^ line)
-;;
-
-(* same with cpp.ml *)
-let print_lines p lines =
-  let blank = ref false in
-  List.iter (fun (indent, line) ->
-    if not (line = "" && !blank) then
-      print_indent p (indent, line);
-    blank := line = ""
-  ) lines
-;;
-
-(* same with cpp.ml *)
-let rec concat_blocks blocks =
-  let rec insert_blank = function
-    | [] -> []
-    | x::[] -> [x]
-    | x::xs -> x::[(0, "")]::(insert_blank xs) in
-  List.concat (insert_blank blocks)
-;;
-
-(* same with cpp.ml *)
-let make_header_message source =
-  let file = Filename.basename source in
-  [
-    "## This file is auto-generated from " ^ file;
-    "## *** DO NOT EDIT ***";
-    "";
-  ]
-;;
-
-(* same with cpp.ml *)
-let make_source conf source filename content =
-  let path = Filename.concat conf.Config.outdir filename in
-  File_util.safe_open_out path (fun out ->
-    let print = (fun s -> output_string out s; output_char out '\n') in
-    let head = make_header_message source in
-    List.iter print head;
-    print_lines print content
-  )
-;;
-
-let make_header conf source filename content = 
-  make_source conf source filename content
+let make_header conf source filename content =
+  make_source conf source filename content comment_out_head
 ;;
   
 
 (* return : retval = self.client.call(names) *)
 let gen_retval func args =
-  (0, "retval = self.client.call('" ^ func ^ "', " ^ (String.concat ", " args) ^ ")")
+  "retval = self.client.call('" ^ func ^ "', " ^ (String.concat ", " args) ^ ")"
 ;;
 
 (* return : def func_name (self, args): *)
 let gen_def func args =
-  (0, "def " ^ func ^ " (self, " ^ (String.concat ", " args) ^ "):")
+  "def " ^ func ^ " (self, " ^ (String.concat ", " args) ^ "):"
 ;;
 
-let rec gen_type t name = match t with
+let rec gen_type t name num = match t with
     | Object -> raise (Unknown_type("Object is not supported"))
     | Bool | Int(_, _) | Float(_) | Raw | String -> 
-	name
+	if num = "" then name
+	else name ^ "[" ^ num ^ "]"
     | Struct s  -> s ^ ".from_msgpack(" ^ name ^ ")"
-    | List t -> "[" ^ (gen_type t ("elim_" ^ name)) ^ " for " ^ ("elim_" ^ name) ^ " in " ^ name ^ "]"
+    | List t -> 
+	let name_ = "elim_" ^ name ^ 
+	  (if num = "" then "" else "_" ^ num ^ "_") in
+	let name_paren = name ^ 
+	  (if num = "" then "" else "[" ^ num ^ "]") in
+	  "[" ^ (gen_type t name_ "") ^ " for " ^ name_ 
+	  ^ " in " ^ name_paren ^ "]"
     | Map(key, value) -> 
-	let t1' = (gen_type key ("k_" ^ name)) in
-	let t2' = (gen_type value ("v_" ^ name)) in
+	let t1' = (gen_type key ("k_" ^ name) num) in
+	let t2' = (gen_type value ("v_" ^ name) num) in
 	  "{" ^ t1' ^ " : " ^ t2' ^ " for " ^ 
 	    ("k_" ^ name)  ^ "," ^ ("v_" ^ name) ^ 
 	    " in " ^ (name ^ ".items()") ^ "}"
     | Tuple [t1; t2] -> 
-	"(" ^ gen_type t1 (name ^ "[0]") ^ "," ^ gen_type t2 (name ^ "[1]") ^")"
-	  (* assert false (* TODO (tsushima): no example *) *)
+	"(" ^ gen_type t1 (name ^ "[0]") num ^ "," ^ gen_type t2 (name ^ "[1]") num ^")"
     | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
     | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
 
@@ -147,7 +68,7 @@ let gen_args args =
 ;;
 
 let gen_arg_def f =
-  (gen_type f.field_type "retval") ^ " " ^ f.field_name
+  (gen_type f.field_type "retval" "") ^ " " ^ f.field_name
 ;;
 
 let gen_call func args =
@@ -157,7 +78,7 @@ let gen_call func args =
 
 let gen_ret_type = function
   | None -> "" (* TODO (tsushima): OK? or retval? *)
-  | Some typ -> gen_type typ "retval"
+  | Some typ -> gen_type typ "retval" ""
 ;;
 
 let gen_client_method m =
@@ -166,19 +87,19 @@ let gen_client_method m =
     ::  List.map (fun f -> f.field_name) m.method_arguments in 
   let ret_type = gen_ret_type m.method_return_type in
   let call =
-    [(gen_def (List.hd args) (List.tl args));
-     (gen_retval (List.hd args) (List.tl args));
-     (0, "return " ^ ret_type)] in
+    [(0, gen_def (List.hd args) (List.tl args));
+     (1, gen_retval (List.hd args) (List.tl args));
+     (1, "return " ^ ret_type)] in
     call
 
 let gen_client s =
   let methods = List.map gen_client_method s.service_methods in
   let constructor = [
     (0, "def __init__ (self, host, port):");
-    (0, "address = msgpackrpc.Address(host, port)");
-    (0, "self." ^ s.service_name ^ "= msgpackrpc.Client(address)")
+    (1, "address = msgpackrpc.Address(host, port)");
+    (1, "self." ^ s.service_name ^ "= msgpackrpc.Client(address)")
   ] in
-  let content = concat_blocks ((indent_lines 1 constructor) :: methods) in
+  let content = concat_blocks (constructor :: methods) in
     List.concat [
       [
 	(0, "class " ^ s.service_name ^ ":");
@@ -191,7 +112,6 @@ let gen_message_field f =
   (0, gen_arg_def f ^ ";")
 ;;
 
-(* TODO: rename*)
 let gen_self_with_comma field_names =
   (List.map (fun s -> (0, "self." ^ s ^ ",")) field_names)
 
@@ -206,20 +126,13 @@ let gen_to_msgpack field_names =
     [(1, "  )")]
   ]
 
-let number = ref (-1)
-let rec gen_arg f =
-  number := !number + 1;
-  f (string_of_int (!number))
-
 let rec gen_from_msgpack_types field_types =
-  number := -1;
-  let rec loop = function
+  let rec loop lst num = match lst with
     | [] -> []
-    | [t] -> [(2, gen_type t (gen_arg (fun x -> "arg_" ^ x ^ "_")))]
+    | [t] -> [(2, gen_type t "arg" (string_of_int num))]
     | t :: rest -> 
-	let name = (gen_arg (fun x -> "arg_" ^ x ^ "_")) in
-	(2, (gen_type t name) ^ ",") :: (loop rest) 
-  in loop field_types
+	(2, (gen_type t "arg" (string_of_int num)) ^ ",") :: (loop rest (num + 1)) 
+  in loop field_types 0
     
 let gen_from_msgpack field_names field_types s =
   List.concat [
@@ -231,14 +144,13 @@ let gen_from_msgpack field_names field_types s =
   ]
 
 let gen_message m =
-(*   let fields = List.map gen_message_field m.message_fields in *)
   let field_names = List.map (fun f -> f.field_name) m.message_fields in
   let field_types = List.map (fun f -> f.field_type) m.message_fields in
   List.concat [
     [
       (0, "class " ^ m.message_name ^ ":");
+      (1, gen_def "__init__" field_names);
     ];
-    indent_lines 1 [(gen_def "__init__" field_names)];
     indent_lines 2 (gen_self_without_comma field_names);
     [(0, "")];
     indent_lines 1 (gen_to_msgpack field_names);
@@ -249,7 +161,8 @@ let gen_message m =
 
 let gen_typedef = function
   | Typedef(name, typ) ->
-      [ (0, "typedef " ^ gen_type typ "retval" ^ " " ^ name ^ ";") ]
+      (* TODO : OK ?*)
+      []
   | Message m ->
     gen_message m
   | _ ->
@@ -274,7 +187,6 @@ let gen_client_file conf source services =
 let gen_type_file conf source idl =
   let base = File_util.take_base source in
   let name = base ^ "_types.py" in
-(*  let namespace = parse_namespace conf.Config.namespace in *)
   let types = List.map gen_typedef idl in
   let includes = [
     (0, "import sys");
@@ -289,16 +201,6 @@ let gen_type_file conf source idl =
   make_header conf source name content
 ;;
 
-(* same with cpp.ml *)
-let get_services idl =
-  let services =
-    List.fold_left (fun lst x ->
-      match x with
-      | Service s ->
-        s::lst
-      | _ -> lst) [] idl in
-  List.rev services
-;;
 
 let generate conf source idl =
   let services = get_services idl in
