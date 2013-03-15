@@ -1,6 +1,6 @@
 
-Preparing Release 0.4.2
------------------------
+Release 0.4.2 - 2013/03/15
+--------------------------
 
 * Improvements
     * Feature extraction configration supports exception rules (#253)
