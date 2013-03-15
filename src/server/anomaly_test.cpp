@@ -29,6 +29,7 @@ using std::string;
 using std::make_pair;
 using jubatus::datum;
 using jubatus::recommender::euclid_lsh;
+using pfi::data::optional;
 
 static const int PORT = 65436;
 static const std::string NAME = "";
@@ -82,7 +83,7 @@ std::string make_simple_config(const string& method) {
   js["parameter"] = anomaly_config;
 
   jubatus::fv_converter::converter_config config;
-  jubatus::fv_converter::num_rule rule = { "*", "num" };
+  jubatus::fv_converter::num_rule rule = { "*", optional<string>(), "num" };
   config.num_rules.push_back(rule);
   std::stringstream conv;
   conv << config_to_string(config);
@@ -125,6 +126,14 @@ TEST_F(anomaly_test, small) {
   }
   { c.get_status(NAME);
   }
+}
+
+TEST_F(anomaly_test, api_get_client) {
+  jubatus::client::anomaly cli("localhost", PORT, 10);
+  string to_get = cli.get_config(NAME);
+
+  msgpack::rpc::client& conn = cli.get_client();
+  EXPECT_NO_THROW(conn.close());
 }
 
 }  // namespace

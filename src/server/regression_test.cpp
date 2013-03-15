@@ -36,6 +36,7 @@ using std::make_pair;
 using std::numeric_limits;
 using std::cout;
 using std::endl;
+using pfi::data::optional;
 using pfi::lang::lexical_cast;
 
 using jubatus::datum;
@@ -89,7 +90,7 @@ string make_simple_config(const string& method) {
   js["method"] = pfi::text::json::json(
       new pfi::text::json::json_string(method));
   jubatus::fv_converter::converter_config config;
-  jubatus::fv_converter::num_rule rule = { "*", "num" };
+  jubatus::fv_converter::num_rule rule = { "*", optional<string>(), "num" };
   config.num_rules.push_back(rule);
   std::stringstream conv;
   conv << config_to_string(config);
@@ -181,6 +182,14 @@ TEST_F(regression_test, small) {
   test.push_back(d);
   vector<float> res = c.estimate(NAME, test);
   cout << res.size() << endl;
+}
+
+TEST_F(regression_test, api_get_client) {
+  jubatus::client::regression cli("localhost", PORT, 10);
+  string to_get = cli.get_config(NAME);
+
+  msgpack::rpc::client& conn = cli.get_client();
+  EXPECT_NO_THROW(conn.close());
 }
 
 }  // namespace

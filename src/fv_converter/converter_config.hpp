@@ -35,6 +35,7 @@ typedef std::map<std::string, std::string> param_t;
 
 struct string_rule {
   std::string key;
+  pfi::data::optional<std::string> except;
   std::string type;
   std::string sample_weight;
   std::string global_weight;
@@ -44,13 +45,18 @@ struct string_rule {
   friend class pfi::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key) & MEMBER(type) & MEMBER(sample_weight)
+    ar
+        & MEMBER(key)
+        & MEMBER(except)
+        & MEMBER(type)
+        & MEMBER(sample_weight)
         & MEMBER(global_weight);
   }
 };
 
 struct filter_rule {
   std::string key;
+  pfi::data::optional<std::string> except;
   std::string type;
   std::string suffix;
 
@@ -59,12 +65,13 @@ struct filter_rule {
   friend class pfi::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key) & MEMBER(type) & MEMBER(suffix);
+    ar & MEMBER(key) & MEMBER(except) & MEMBER(type) & MEMBER(suffix);
   }
 };
 
 struct num_rule {
   std::string key;
+  pfi::data::optional<std::string> except;
   std::string type;
 
   MSGPACK_DEFINE(key, type);
@@ -72,7 +79,7 @@ struct num_rule {
   friend class pfi::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key) & MEMBER(type);
+    ar & MEMBER(key) & MEMBER(except) & MEMBER(type);
   }
 };
 

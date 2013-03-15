@@ -38,7 +38,7 @@ void PA::train(const sfv_t& sfv, const string& label) {
   if (sfv_norm == 0.f) {
     return;
   }
-  update_weight(sfv, loss / sfv_norm, label, incorrect_label);
+  update_weight(sfv, loss / (2 * sfv_norm), label, incorrect_label);
 }
 
 string PA::name() const {

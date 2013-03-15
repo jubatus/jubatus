@@ -263,7 +263,7 @@ do_build() {
 	./waf build
 	./waf install --destdir=${DEST_DIR}
 	mkdir -p "${DOC_DIR}/jubatus"
-	cp -a LICENSE README.rst "${DOC_DIR}/jubatus"
+	cp -a LICENSE README.rst ChangeLog.rst "${DOC_DIR}/jubatus"
 	popd
 
 	# Profile

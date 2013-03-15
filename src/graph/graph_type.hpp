@@ -218,14 +218,14 @@ namespace pfi {
 namespace data {
 
 template<> struct hash<jubatus::graph::preset_query> {
-  size_t operator()(const jubatus::graph::preset_query& p) const {
+  uint64_t operator()(const jubatus::graph::preset_query& p) const {
     return update(p.node_query, update(p.edge_query, 14695981039346656037LLU));
   }
 
  private:
-  static size_t update(
+  static uint64_t update(
       const std::vector<std::pair<std::string, std::string> >& q,
-      size_t h) {
+      uint64_t h) {
     for (size_t i = 0; i < q.size(); ++i) {
       h = update(q[i].first, h);
       h = update(q[i].second, h);
@@ -233,7 +233,7 @@ template<> struct hash<jubatus::graph::preset_query> {
     return h;
   }
 
-  static size_t update(const std::string& s, size_t h) {
+  static uint64_t update(const std::string& s, uint64_t h) {
     for (size_t i = 0; i < s.size(); ++i) {
       h *= 1099511628211LLU;
       h ^= s[i];

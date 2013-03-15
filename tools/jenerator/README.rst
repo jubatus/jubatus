@@ -7,7 +7,7 @@ Problem description
 Jubatus is going to be a framework to implement `online machine learning which scales automatically`.
 But currently it has only a set of direct implementations of classifier, regression and recommender.
 And there are 9 x N declarations or implemenations for eash learning machine's API, where N is a number
-of API. For example, classifier currently has 8 APIs (train, classify, set_config, get_config, save,
+of API. For example, classifier currently has 7 APIs (train, classify, set_config, get_config, save,
  load and get_status). Thus there're 9 x 7 = 63 reputations of function declarations or implementations.
 Recommender has 12 APIs therefore we'd 84 reputations. (M variety of client libraries will increase
  the number: (M + 8) x N )

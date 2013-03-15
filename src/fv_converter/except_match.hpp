@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,41 +14,33 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_DIFFV_HPP_
-#define JUBATUS_SERVER_DIFFV_HPP_
+#ifndef JUBATUS_FV_CONVERTER_EXCEPT_MATCH_HPP_
+#define JUBATUS_FV_CONVERTER_EXCEPT_MATCH_HPP_
 
-#include "../storage/storage_type.hpp"
+#include <string>
+#include <pficommon/lang/shared_ptr.h>
+#include "key_matcher.hpp"
 
 namespace jubatus {
+namespace fv_converter {
 
-struct diffv {
+class except_match : public key_matcher {
  public:
-  diffv(int c, const storage::features3_t& w)
-      : count(c),
-        v(w) {
+  except_match(
+      pfi::lang::shared_ptr<key_matcher> condition,
+      pfi::lang::shared_ptr<key_matcher> except)
+      : condition_(condition), except_(except) {
   }
 
-  diffv()
-      : count(0),
-        v() {
+  bool match(const std::string& s) {
+    return condition_->match(s) && !except_->match(s);
   }
 
-  int count;
-  storage::features3_t v;
-
-  diffv& operator/=(double d) {
-    this->v /= d;
-    return *this;
-  }
-
-  MSGPACK_DEFINE(count, v);
-
-  template<class Archiver>
-  void serialize(Archiver& ar) {
-    ar & MEMBER(count) & MEMBER(v);
-  }
+ private:
+  pfi::lang::shared_ptr<key_matcher> condition_, except_;
 };
 
+}  // namespace fv_converter
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_DIFFV_HPP_
+#endif  // JUBATUS_FV_CONVERTER_EXCEPT_MATCH_HPP_

@@ -61,7 +61,10 @@ TEST(ux_splitter, create) {
   std::map<std::string, std::string> param;
   ASSERT_THROW(create(param), converter_exception);
 
-  param["path"] = "unknown_file_name";
+  param["dict_path"] = "unknown_file_name";
+  ASSERT_THROW(create(param), converter_exception);
+
+  param["dict_path"] = "../../fv_converter/test_input";
   ASSERT_THROW(create(param), converter_exception);
 
   param["dict_path"] = "../../fv_converter/test_input/keywords";

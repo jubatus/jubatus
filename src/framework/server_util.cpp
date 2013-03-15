@@ -260,6 +260,8 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
 
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false,
                      "localhost:2181");
+  p.add<int>("pool_expire", 'E', "session-pool expire time (sec)", false, 60);
+  p.add<int>("pool_size", 'S', "session-pool maximum size", false, 0);
   p.add<std::string>("logdir", 'l',
                      "directory to output logs (instead of stderr)", false, "");
   p.add<int, cmdline::range_reader<int> >(
@@ -281,6 +283,8 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   timeout = p.get<int>("timeout");
   program_name = jubatus::util::get_program_name();
   z = p.get<std::string>("zookeeper");
+  session_pool_expire = p.get<int>("pool_expire");
+  session_pool_size = p.get<int>("pool_size");
   logdir = p.get<std::string>("logdir");
   loglevel = p.get<int>("loglevel");
 

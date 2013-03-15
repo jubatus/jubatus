@@ -416,7 +416,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
     const std::pair<std::string, int>& c = list[rng_(list.size())];
 
     async_task_loop::template call_apply<R, Tuple>(
-        c.first, c.second, method_name, args, a_.timeout, req);
+        c.first, c.second, method_name, args, a_, a_.timeout, req);
   }
 
   template<typename R>
@@ -480,8 +480,8 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
     std::string name = args.template get<0>();
     get_members_(name, list);
 
-    async_task_loop::template call_apply<R, Tuple>(list, method_name, args,
-                                                   a_.timeout, req, agg);
+    async_task_loop::template call_apply<R, Tuple>(
+        list, method_name, args, a_, a_.timeout, req, agg);
   }
 
   template<int N, typename R>
@@ -576,8 +576,8 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
     std::string id = args.template get<1>();
     get_members_from_cht_(name, id, list, N);
 
-    async_task_loop::template call_apply<R, Tuple>(list, method_name, args,
-                                                   a_.timeout, req, agg);
+    async_task_loop::template call_apply<R, Tuple>(
+        list, method_name, args, a_, a_.timeout, req, agg);
   }
 
   // get thread local session-pool
@@ -586,6 +586,8 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 
     if (!private_session_pool_) {
       private_session_pool_ = new msgpack::rpc::session_pool();
+      private_session_pool_->set_pool_time_limit(a_.session_pool_expire);
+      private_session_pool_->set_pool_size_limit(a_.session_pool_size);
     }
     return private_session_pool_;
   }
@@ -756,7 +758,9 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
  public:
   class async_task_loop : public mp::enable_shared_from_this<async_task_loop> {
    public:
-    async_task_loop() {
+    explicit async_task_loop(const keeper_argv& a) {
+      pool_.set_pool_time_limit(a.session_pool_expire);
+      pool_.set_pool_size_limit(a.session_pool_size);
     }
 
     void run() {
@@ -769,8 +773,9 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
       return pool_;
     }
 
-    static async_task_loop* startup() {
-      async_task_loop* at_loop = new async_task_loop();
+    static async_task_loop* startup(const keeper_argv& a) {
+      async_task_loop* at_loop = new async_task_loop(a);
+
 #if 0
       pfi::concurrent::thread thr(pfi::lang::bind(&async_task_loop::run,
                                                   at_loop));
@@ -784,9 +789,9 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
       return at_loop;
     }
 
-    static async_task_loop* get_private_async_task_loop() {
+    static async_task_loop* get_private_async_task_loop(const keeper_argv& a) {
       if (!private_async_task_loop_) {
-        private_async_task_loop_ = startup();
+        private_async_task_loop_ = startup(a);
       }
 
       return private_async_task_loop_;
@@ -797,11 +802,12 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
         const host_list_type& hosts,
         const std::string& method_name,
         const Args& args,
+        const keeper_argv& a,
         int timeout_sec,
         request_type req,
         typename async_task<Res>::reducer_type reducer =
         typename async_task<Res>::reducer_type()) {
-      async_task_loop* at_loop = get_private_async_task_loop();
+      async_task_loop* at_loop = get_private_async_task_loop(a);
       mp::shared_ptr<async_task<Res> > task(
           new async_task<Res>(at_loop, hosts, method_name, req, reducer));
       task->template call_apply<Args>(method_name, args, timeout_sec);
@@ -813,13 +819,14 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
         int port,
         const std::string& method_name,
         const Args& args,
+        const keeper_argv& a,
         int timeout_sec,
         request_type req,
         typename async_task<Res>::reducer_type reducer =
         typename async_task<Res>::reducer_type()) {
       host_list_type hosts;
       hosts.push_back(std::make_pair(host, port));
-      call_apply<Res, Args>(hosts, method_name, args, timeout_sec, req,
+      call_apply<Res, Args>(hosts, method_name, args, a, timeout_sec, req,
                             reducer);
     }
 

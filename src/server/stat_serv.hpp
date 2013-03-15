@@ -34,6 +34,7 @@ struct mixable_stat : public framework::mixable<
     std::pair<double, size_t> > {
  public:
   void clear() {
+    get_model()->clear();
   }
 
   std::pair<double, size_t> get_diff_impl() const {
@@ -73,6 +74,8 @@ class stat_serv : public framework::server_base {
   double min(const std::string&) const;
   double entropy(const std::string&) const;
   double moment(const std::string&, int, double) const;
+
+  bool clear();
 
  private:
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;

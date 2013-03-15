@@ -226,6 +226,13 @@ void local_storage_mixture::set_average_and_clear_diff(
   tbl_diff_.clear();
 }
 
+void local_storage_mixture::clear() {
+  // Clear and minimize
+  id_features3_t().swap(tbl_);
+  key_manager().swap(class2id_);
+  id_features3_t().swap(tbl_diff_);
+}
+
 bool local_storage_mixture::save(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << *this;

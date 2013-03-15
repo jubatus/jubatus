@@ -18,7 +18,6 @@
 #define JUBATUS_COMMON_MPRPC_EXCEPTION_HPP_
 
 #include <string>
-#include <pficommon/network/mprpc/exception.h>
 #include "../exception.hpp"
 
 namespace jubatus {

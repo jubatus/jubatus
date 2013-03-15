@@ -74,6 +74,8 @@ class storage_base {
   virtual void get_diff(features3_t&) const;
   virtual void set_average_and_clear_diff(const features3_t&);
 
+  virtual void clear() = 0;
+
   virtual std::string type() const = 0;
 };
 

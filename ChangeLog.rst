@@ -1,4 +1,26 @@
 
+Release 0.4.2 - 2013/03/15
+--------------------------
+
+* Improvements
+    * Feature extraction configration supports exception rules (#253)
+    * Add 'clear' method for classifier, regression and stat (#200, #279)
+    * Keeper supports configuration of session pool (#266)
+    * Add 'get_client' method for each clients (related #244)
+    * Check if thread local variables are enable in configure (#283)
+    * Output logs when server started (#258)
+    * Output logs when server received signal (#208)
+
+* Bugfix
+    * fv_converter may revert wrong feature (#247)
+    * Fix PA update equation (#254)
+    * Fix CW update equation (#277)
+    * Segfaults when point-to-point (tap) interface is installed (#273)
+    * recommender/anomaly: does not call clear() for weight manager (#282)
+    * ux_splitter plug-in does not raise error when directory is specified for dict_path (#286)
+    * #229, #263, #267, #271, #278
+
+
 Release 0.4.1 - 2013/02/15
 --------------------------
 

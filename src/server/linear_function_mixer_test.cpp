@@ -84,6 +84,9 @@ class storage_mock_base : public storage::storage_base {
   void set_average_and_clear_diff(const features3_t&) {
   }
 
+  virtual void clear() {
+  }
+
   std::string type() const {
     return "";
   }

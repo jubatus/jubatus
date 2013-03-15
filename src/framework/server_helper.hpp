@@ -138,9 +138,11 @@ class server_helper {
 
     try {
       serv.listen(a.port, a.bind_address);
+      LOG(INFO) << "start listening at port " << a.port;
       serv.start(a.threadnum, true);
       // RPC server started, then register group membership
       impl_.prepare_for_run(a, use_cht_);
+      LOG(INFO) << jubatus::util::get_program_name() << " RPC server startup";
       serv.join();
       return 0;
     } catch (const mp::system_error& e) {

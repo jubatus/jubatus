@@ -151,4 +151,12 @@ TEST_F(graph_test, simple) {
   }
 }
 
+TEST_F(graph_test, api_get_client) {
+  jubatus::client::graph cli("localhost", PORT, 10);
+  string to_get = cli.get_config("");
+
+  msgpack::rpc::client& conn = cli.get_client();
+  EXPECT_NO_THROW(conn.close());
+}
+
 }  // namespace

@@ -37,6 +37,8 @@ class regression_base {
   virtual void train(const sfv_t& fv, const float value) = 0;
   float estimate(const sfv_t& fv) const;
 
+  virtual void clear();
+
  protected:
   storage::storage_base* get_storage() const {
     return storage_;

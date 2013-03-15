@@ -70,8 +70,8 @@ void CW::update(
     ClassifierUtil::get_two(val2, pos_label, neg_label, pos_val, neg_val);
 
     const float C = config.C;
-    float covar_pos_step = 2.f * step_width * pos_val.v2 * val * val * C;
-    float covar_neg_step = 2.f * step_width * neg_val.v2 * val * val * C;
+    float covar_pos_step = 2.f * step_width * val * val * C;
+    float covar_neg_step = 2.f * step_width * val * val * C;
 
     storage_->set2(
         feature,
