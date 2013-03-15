@@ -1,7 +1,7 @@
 # ==============================================================================
 # Jubatus
 # ==============================================================================
-JUBATUS_VERSION="0.4.1"
+JUBATUS_VERSION="0.4.2"
 JUBATUS_RELEASE="1"
 JUBATUS_IS_SNAPSHOT="no"
 JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
@@ -31,10 +31,10 @@ JUBATUS_MPIO_CHECKOUT="${JUBATUS_MPIO_VERSION}"
 # ==============================================================================
 # jubatus-msgpack-rpc
 # ==============================================================================
-JUBATUS_MSGPACK_RPC_VERSION="0.4.0p1"
+JUBATUS_MSGPACK_RPC_VERSION="0.4.1"
 JUBATUS_MSGPACK_RPC_RELEASE="1"
 JUBATUS_MSGPACK_RPC_IS_SNAPSHOT="no"
-JUBATUS_MSGPACK_RPC_CHECKOUT="0.4.0-p1"
+JUBATUS_MSGPACK_RPC_CHECKOUT="0.4.1"
 
 # ==============================================================================
 # re2
