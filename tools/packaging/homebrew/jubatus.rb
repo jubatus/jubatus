@@ -30,10 +30,10 @@ class ZooKeeperLib < Requirement
 end
 
 class Jubatus < Formula
-  url 'https://github.com/jubatus/jubatus/tarball/0.4.1'
+  url 'https://github.com/jubatus/jubatus/tarball/0.4.2'
   head 'https://github.com/jubatus/jubatus.git'
   homepage 'http://jubat.us/'
-  md5 'ffeef232b84615fc6b74ac50566e21e4'
+  md5 'c68dd45f9d46722d51d1efa44f642fcb'
   version '0.4.0'
 
   option 'enable-zookeeper', 'Using zookeeper for distributed environemnt'

@@ -1,10 +1,10 @@
 require 'formula'
 
 class JubatusMsgpackRpc < Formula
-  url 'https://github.com/jubatus/jubatus-msgpack-rpc/tarball/0.4.0-p1'
+  url 'https://github.com/jubatus/jubatus-msgpack-rpc/tarball/0.4.1'
   head 'https://github.com/jubatus/jubatus-msgpack-rpc.git'
-  homepage 'http://pfi.github.com/pficommon/'
-  md5 'c0adee3737cdc781da188f8700e5810f'
+  homepage 'http://github.com/jubatus/jubatus-msgpack-rpc/'
+  md5 '3db938a380072aef817b725192ba9b43'
 
   depends_on 'msgpack'
   depends_on 'jubatus-mpio'
