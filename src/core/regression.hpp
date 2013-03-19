@@ -18,44 +18,52 @@
 
 #include <string>
 #include <utility>
-#include <vector>
 
 #include <pficommon/lang/shared_ptr.h>
-#include "../core/regression.hpp"
-#include "regression_types.hpp"
+#include "../regression/regression_base.hpp"
+#include "../framework/mixable.hpp"
+#include "../framework/mixer/mixer.hpp"
+#include "../framework/server_base.hpp"
+#include "../server/diffv.hpp"
+#include "linear_function_mixer.hpp"
+#include "mixable_weight_manager.hpp"
 
 namespace jubatus {
-namespace server {
+namespace core {
 
-class regression_serv : public framework::server_base {
+class regression {
  public:
-  regression_serv(
-      const framework::server_argv& a,
-      const common::cshared_ptr<common::lock_service>& zk);
-  virtual ~regression_serv();
+  regression(
+      storage::storage_base* model_storage,
+      jubatus::regression::regression_base* regression_method,
+      pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
+      pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+  virtual ~regression();
 
   framework::mixer::mixer* get_mixer() const {
-    return regression_->get_mixer();
+    return mixer_.get();
   }
 
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
-    return regression_->get_mixable_holder();
+    return mixable_holder_;
   }
 
-  void get_status(status_t& status) const;
+  storage::storage_base* get_model() const {
+    return mixable_regression_model_.get_model().get();
+  }
 
-  bool set_config(const std::string& config);
-  std::string get_config();
-  int train(const std::vector<std::pair<float, datum> >& data);
-  std::vector<float> estimate(const std::vector<datum>& data) const;
-
-  void check_set_config() const;
+  void train(const std::pair<float, fv_converter::datum>& data);
+  float estimate(const fv_converter::datum& data) const;
 
  private:
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<core::regression> regression_;
-  std::string config_;
+  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
+
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  pfi::lang::shared_ptr<jubatus::regression::regression_base> regression_;
+  linear_function_mixer mixable_regression_model_;
+  mixable_weight_manager wm_;
 };
 
-}  // namespace server
+}  // namespace core
 }  // namespace jubatus

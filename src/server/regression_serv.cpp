@@ -20,9 +20,11 @@
 #include <utility>
 #include <vector>
 
+#include <pficommon/text/json.h>
+#include <pficommon/data/optional.h>
+
 #include "../regression/regression_factory.hpp"
 #include "../common/util.hpp"
-#include "../common/vector_util.hpp"
 #include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/datum.hpp"
@@ -35,15 +37,12 @@ using std::vector;
 using std::pair;
 using pfi::lang::shared_ptr;
 using pfi::text::json::json;
-using pfi::text::json::json_cast;
 using pfi::lang::lexical_cast;
 
 using jubatus::common::cshared_ptr;
 using jubatus::common::lock_service;
 using jubatus::framework::convert;
 using jubatus::framework::mixer::create_mixer;
-using jubatus::framework::mixable_holder;
-using jubatus::fv_converter::weight_manager;
 
 namespace jubatus {
 namespace server {
@@ -61,11 +60,10 @@ struct regression_serv_config {
   }
 };
 
-linear_function_mixer::model_ptr make_model(
+storage::storage_base* make_model(
     const framework::server_argv& arg) {
-  return linear_function_mixer::model_ptr(
-      storage::storage_factory::create_storage(
-          (arg.is_standalone()) ? "local" : "local_mixture"));
+  return storage::storage_factory::create_storage(
+      (arg.is_standalone()) ? "local" : "local_mixture");
 }
 
 }  // namespace
@@ -73,16 +71,8 @@ linear_function_mixer::model_ptr make_model(
 regression_serv::regression_serv(
     const framework::server_argv& a,
     const cshared_ptr<lock_service>& zk)
-    : server_base(a) {
-  gresser_.set_model(make_model(a));
-  wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
-
-  mixer_.reset(create_mixer(a, zk));
-  mixable_holder_.reset(new mixable_holder());
-
-  mixer_->set_mixable_holder(mixable_holder_);
-  mixable_holder_->register_mixable(&gresser_);
-  mixable_holder_->register_mixable(&wm_);
+    : server_base(a),
+      mixer_(create_mixer(a, zk)) {
 }
 
 regression_serv::~regression_serv() {
@@ -90,30 +80,35 @@ regression_serv::~regression_serv() {
 
 void regression_serv::get_status(status_t& status) const {
   status_t my_status;
-  gresser_.get_model()->get_status(my_status);
-  my_status["storage"] = gresser_.get_model()->type();
+
+  storage::storage_base* model = regression_->get_model();
+  model->get_status(my_status);
+  my_status["storage"] = model->type();
 
   status.insert(my_status.begin(), my_status.end());
 }
 
 bool regression_serv::set_config(const string& config) {
   jsonconfig::config config_root(lexical_cast<json>(config));
-  regression_serv_config conf = jsonconfig::config_cast_check<
-      regression_serv_config>(config_root);
+  regression_serv_config conf =
+      jsonconfig::config_cast_check<regression_serv_config>(config_root);
 
   config_ = config;
-  converter_ = fv_converter::make_fv_converter(conf.converter);
-  (*converter_).set_weight_manager(wm_.get_model());
 
   jsonconfig::config param;
   if (conf.parameter) {
     param = jsonconfig::config(*conf.parameter);
   }
+
+  storage::storage_base* model = make_model(argv());
+
   regression_.reset(
-      jubatus::regression::regression_factory().create_regression(
-          conf.method,
-          param,
-          gresser_.get_model().get()));
+      new core::regression(
+          model,
+          regression::regression_factory::create_regression(
+              conf.method, param, model),
+          mixer_,
+          fv_converter::make_fv_converter(conf.converter)));
 
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
@@ -130,13 +125,12 @@ int regression_serv::train(const vector<pair<float, jubatus::datum> >& data) {
   check_set_config();
 
   int count = 0;
-  sfv_t v;
-  fv_converter::datum d;
 
+  fv_converter::datum d;
   for (size_t i = 0; i < data.size(); ++i) {
+    // TODO(IDL): remove conversion
     convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
-    converter_->convert_and_update_weight(d, v);
-    regression_->train(v, data[i].first);
+    regression_->train(std::make_pair(data[i].first, d));
     DLOG(INFO) << "trained: " << data[i].first;
     count++;
   }
@@ -149,12 +143,12 @@ vector<float> regression_serv::estimate(
   check_set_config();
 
   vector<float> ret;
-  sfv_t v;
   fv_converter::datum d;
+
   for (size_t i = 0; i < data.size(); ++i) {
-    convert<datum, fv_converter::datum>(data[i], d);
-    converter_->convert(d, v);
-    ret.push_back(regression_->estimate(v));
+    // TODO(IDL): remove conversion
+    convert<jubatus::datum, fv_converter::datum>(data[i], d);
+    ret.push_back(regression_->estimate(d));
   }
   return ret;  // vector<estimate_results> >::ok(ret);
 }
