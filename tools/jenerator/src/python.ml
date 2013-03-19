@@ -30,13 +30,21 @@ let make_header conf source filename content =
   
 
 (* return : retval = self.client.call(names) *)
-let gen_retval func args =
-  "retval = self.client.call('" ^ func ^ "', " ^ (String.concat ", " args) ^ ")"
+let gen_retval = function
+  | [] -> assert false
+  | func :: [] ->
+      "retval = self.client.call('" ^ func ^ "')"
+  | func :: args ->
+      "retval = self.client.call('" ^ func ^ "', " ^ (String.concat ", " args) ^ ")"
 ;;
 
 (* return : def func_name (self, args): *)
-let gen_def func args =
-  "def " ^ func ^ " (self, " ^ (String.concat ", " args) ^ "):"
+let gen_def = function
+  | [] -> assert false
+  | func :: [] ->
+      "def " ^ func ^ "(self):"
+  | func :: args ->
+      "def " ^ func ^ " (self, " ^ (String.concat ", " args) ^ "):"
 ;;
 
 let rec gen_type t name num = match t with
@@ -87,8 +95,8 @@ let gen_client_method m =
     ::  List.map (fun f -> f.field_name) m.method_arguments in 
   let ret_type = gen_ret_type m.method_return_type in
   let call =
-    [(0, gen_def (List.hd args) (List.tl args));
-     (1, gen_retval (List.hd args) (List.tl args));
+    [(0, gen_def args);
+     (1, gen_retval args);
      (1, "return " ^ ret_type)] in
     call
 
@@ -149,7 +157,7 @@ let gen_message m =
   List.concat [
     [
       (0, "class " ^ m.message_name ^ ":");
-      (1, gen_def "__init__" field_names);
+      (1, gen_def ("__init__"::field_names));
     ];
     indent_lines 2 (gen_self_without_comma field_names);
     [(0, "")];

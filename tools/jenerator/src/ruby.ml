@@ -28,14 +28,22 @@ let make_header conf source filename content =
   make_source conf source filename content comment_out_head
 ;;
 
-(* return : retval = self.client.call(names) *)
-let gen_retval func args =
-  "@cli.call(:" ^ func ^ ", " ^ (String.concat ", " args) ^ ")"
+(* return : retval = @cli.call(names) *)
+let gen_retval = function
+  | [] -> assert false
+  | func :: [] ->
+      "@cli.call(:" ^ func ^ ")"
+  | func :: args ->
+      "@cli.call(:" ^ func ^ ", " ^ (String.concat ", " args) ^ ")"
 ;;
 
-(* return : def func_name (self, args): *)
-let gen_def func args =
-  "def " ^ func ^ "(" ^ (String.concat ", " args) ^ ")"
+(* return : def func_name (args): *)
+let gen_def = function
+  | [] -> assert false
+  | func :: [] ->
+      "def " ^ func 
+  | func :: args ->
+      "def " ^ func ^ "(" ^ (String.concat ", " args) ^ ")"
 ;;
 
 let rec gen_type t name = match t with
@@ -61,8 +69,8 @@ let gen_client_method m =
   let name = m.method_name in
   let args = name ::  List.map (fun f -> f.field_name) m.method_arguments in 
   let call =
-    [(0, gen_def (List.hd args) (List.tl args));
-     (1, gen_retval (List.hd args) (List.tl args));
+    [(0, gen_def args);
+     (1, gen_retval args);
      (0, "end")
     ] 
   in call
@@ -97,7 +105,7 @@ let gen_self_without_comma field_names =
 ;;
 
 let gen_initialize field_names = 
-    (List.concat [[(0, gen_def "initialize" field_names)];
+    (List.concat [[(0, gen_def ("initialize"::field_names))];
 		  indent_lines 1 (gen_self_without_comma field_names);
 		  [(0, "end")]])
 ;;
