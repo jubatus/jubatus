@@ -14,28 +14,45 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_PA2_HPP_
-#define JUBATUS_CLASSIFIER_PA2_HPP_
+#include "passive_aggressive_2.hpp"
 
+#include <algorithm>
 #include <string>
 
-#include "classifier_base.hpp"
+using std::string;
 
 namespace jubatus {
 namespace classifier {
 
-class PA2 : public classifier_base {
- public:
-  explicit PA2(storage::storage_base* storage);
-  PA2(const classifier_config& config, storage::storage_base* storage);
+passive_aggressive_2::passive_aggressive_2(storage::storage_base* storage)
+    : classifier_base(storage) {
+}
 
-  void train(const sfv_t& sfv, const std::string& label);
-  std::string name() const;
- private:
-  classifier_config config;
-};
+passive_aggressive_2::passive_aggressive_2(
+    const classifier_config& config,
+    storage::storage_base* storage)
+    : classifier_base(storage) {
+}
+
+void passive_aggressive_2::train(const sfv_t& sfv, const string& label) {
+  string incorrect_label;
+  float margin = calc_margin(sfv, label, incorrect_label);
+  float loss = 1.f + margin;
+
+  if (loss < 0.f) {
+    return;
+  }
+  float sfv_norm = squared_norm(sfv);
+  if (sfv_norm == 0.f) {
+    return;
+  }
+  update_weight(
+      sfv, loss / (2 * sfv_norm + 1 / (2 * config.C)), label, incorrect_label);
+}
+
+string passive_aggressive_2::name() const {
+  return string("passive_aggressive_2");
+}
 
 }  // namespace classifier
 }  // namespace jubatus
-
-#endif  // JUBATUS_CLASSIFIER_PA2_HPP_

@@ -41,8 +41,9 @@ classifier_base* classifier_factory::create_classifier(
   } else if (name == "PA1" || name == "passive_aggressive_1") {
     return new passive_aggressive_1(
         config_cast_check<classifier_config>(param), storage);
-  } else if (name == "PA2") {
-    return new PA2(config_cast_check<classifier_config>(param), storage);
+  } else if (name == "PA2" || name == "passive_aggressive_2") {
+    return new passive_aggressive_2(
+        config_cast_check<classifier_config>(param), storage);
   } else if (name == "CW" || name == "confidence_weighted") {
     return new confidence_weighted(
         config_cast_check<classifier_config>(param), storage);

@@ -9,7 +9,7 @@ def build(bld):
 	perceptron.cpp
 	passive_aggressive.cpp
 	passive_aggressive_1.cpp
-	pa2.cpp
+	passive_aggressive_2.cpp
 	confidence_weighted.cpp	
 	arow.cpp
 	normal_herd.cpp

@@ -138,7 +138,7 @@ REGISTER_TYPED_TEST_CASE_P(
     random3);
 
 typedef testing::Types<
-  perceptron, passive_aggressive, passive_aggressive_1, PA2,
+  perceptron, passive_aggressive, passive_aggressive_1, passive_aggressive_2,
   confidence_weighted, arow, normal_herd>
   classifier_types;
 
@@ -156,7 +156,8 @@ void InitClassifiers(vector<classifier_base*>& classifiers) {
       classifier_factory::create_classifier(
           "passive_aggressive_1", param, new local_storage));
   classifiers.push_back(
-      classifier_factory::create_classifier("PA2", param, new local_storage));
+      classifier_factory::create_classifier(
+          "passive_aggressive_2", param, new local_storage));
   classifiers.push_back(
       classifier_factory::create_classifier(
           "confidence_weighted", param, new local_storage));

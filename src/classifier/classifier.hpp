@@ -21,7 +21,7 @@
 #include "perceptron.hpp"
 #include "passive_aggressive.hpp"
 #include "passive_aggressive_1.hpp"
-#include "pa2.hpp"
+#include "passive_aggressive_2.hpp"
 #include "confidence_weighted.hpp"
 #include "arow.hpp"
 #include "normal_herd.hpp"
