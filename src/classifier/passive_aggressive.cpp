@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "pa.hpp"
+#include "passive_aggressive.hpp"
 
 #include <string>
 
@@ -23,11 +23,11 @@ using std::string;
 namespace jubatus {
 namespace classifier {
 
-PA::PA(storage::storage_base* storage)
+passive_aggressive::passive_aggressive(storage::storage_base* storage)
     : classifier_base(storage) {
 }
 
-void PA::train(const sfv_t& sfv, const string& label) {
+void passive_aggressive::train(const sfv_t& sfv, const string& label) {
   string incorrect_label;
   float margin = calc_margin(sfv, label, incorrect_label);
   float loss = 1.f + margin;
@@ -41,8 +41,8 @@ void PA::train(const sfv_t& sfv, const string& label) {
   update_weight(sfv, loss / (2 * sfv_norm), label, incorrect_label);
 }
 
-string PA::name() const {
-  return string("PA");
+string passive_aggressive::name() const {
+  return string("passive_aggressive");
 }
 
 }  // namespace classifier

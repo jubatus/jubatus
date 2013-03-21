@@ -7,7 +7,7 @@ def build(bld):
     source = '''
         classifier_base.cpp
 	perceptron.cpp
-	pa.cpp
+	passive_aggressive.cpp
 	pa1.cpp
 	pa2.cpp
 	confidence_weighted.cpp	

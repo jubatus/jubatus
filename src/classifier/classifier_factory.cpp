@@ -35,9 +35,9 @@ classifier_base* classifier_factory::create_classifier(
   if (name == "perceptron") {
     // perceptron doesn't have parameter
     return new perceptron(storage);
-  } else if (name == "PA") {
-    // PA doesn't have parameter
-    return new PA(storage);
+  } else if (name == "PA" || name == "passive_aggressive") {
+    // passive_aggressive doesn't have parameter
+    return new passive_aggressive(storage);
   } else if (name == "PA1") {
     return new PA1(config_cast_check<classifier_config>(param), storage);
   } else if (name == "PA2") {
