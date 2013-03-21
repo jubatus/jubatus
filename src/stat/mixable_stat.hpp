@@ -18,7 +18,9 @@
 #define JUBATUS_STAT_MIXABLE_STAT_HPP_
 
 #include <map>
+#include <string>
 #include <utility>
+
 #include "stat.hpp"
 
 namespace jubatus {
@@ -43,7 +45,7 @@ class mixable_stat : public stat {
   static void reduce(
       const std::pair<double, size_t>&,
       std::pair<double, size_t>&);
-  double mixed_entropy() const;
+  double entropy() const;
 
  private:
   double e_;

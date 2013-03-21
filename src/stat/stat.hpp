@@ -53,6 +53,12 @@ class stat {
   explicit stat(size_t window_size);
   virtual ~stat();
 
+  virtual std::pair<double, size_t> get_diff() const {
+    std::pair<double, size_t> ret;
+    return ret;
+  }
+  virtual void put_diff(const std::pair<double, size_t>&) {}
+
   void push(const std::string& key, double val);
 
   double sum(const std::string& key) const;
@@ -60,7 +66,7 @@ class stat {
   double max(const std::string& key) const;
   double min(const std::string& key) const;
 
-  double entropy() const;
+  virtual double entropy() const;
   double moment(const std::string& key, int n, double c) const;
 
   bool save(std::ostream&);
