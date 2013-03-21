@@ -137,7 +137,8 @@ REGISTER_TYPED_TEST_CASE_P(
     random,
     random3);
 
-typedef testing::Types<perceptron, PA, PA1, PA2, CW, AROW, NHERD>
+typedef testing::Types<
+  perceptron, PA, PA1, PA2, confidence_weighted, AROW, NHERD>
   classifier_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
@@ -154,7 +155,8 @@ void InitClassifiers(vector<classifier_base*>& classifiers) {
   classifiers.push_back(
       classifier_factory::create_classifier("PA2", param, new local_storage));
   classifiers.push_back(
-      classifier_factory::create_classifier("CW", param, new local_storage));
+      classifier_factory::create_classifier(
+          "confidence_weighted", param, new local_storage));
   classifiers.push_back(
       classifier_factory::create_classifier("AROW", param, new local_storage));
   classifiers.push_back(

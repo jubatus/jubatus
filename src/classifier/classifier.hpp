@@ -22,7 +22,7 @@
 #include "pa.hpp"
 #include "pa1.hpp"
 #include "pa2.hpp"
-#include "cw.hpp"
+#include "confidence_weighted.hpp"
 #include "arow.hpp"
 #include "nherd.hpp"
 

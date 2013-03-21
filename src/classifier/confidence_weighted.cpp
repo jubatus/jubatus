@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "cw.hpp"
+#include "confidence_weighted.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -27,18 +27,20 @@ using std::string;
 namespace jubatus {
 namespace classifier {
 
-CW::CW(storage::storage_base* storage)
+confidence_weighted::confidence_weighted(storage::storage_base* storage)
     : classifier_base(storage) {
   classifier_base::use_covars_ = true;
 }
 
-CW::CW(const classifier_config& config, storage::storage_base* storage)
+confidence_weighted::confidence_weighted(
+    const classifier_config& config,
+    storage::storage_base* storage)
     : classifier_base(storage),
       config(config) {
   classifier_base::use_covars_ = true;
 }
 
-void CW::train(const sfv_t& sfv, const string& label) {
+void confidence_weighted::train(const sfv_t& sfv, const string& label) {
   const float C = config.C;
   string incorrect_label;
   float variance = 0.f;
@@ -54,7 +56,7 @@ void CW::train(const sfv_t& sfv, const string& label) {
   update(sfv, gamma, label, incorrect_label);
 }
 
-void CW::update(
+void confidence_weighted::update(
     const sfv_t& sfv,
     float step_width,
     const string& pos_label,
@@ -88,8 +90,8 @@ void CW::update(
   }
 }
 
-string CW::name() const {
-  return string("CW");
+string confidence_weighted::name() const {
+  return string("confidence_weighted");
 }
 
 }  // namespace classifier

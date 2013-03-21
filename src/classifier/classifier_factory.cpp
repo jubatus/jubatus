@@ -42,8 +42,9 @@ classifier_base* classifier_factory::create_classifier(
     return new PA1(config_cast_check<classifier_config>(param), storage);
   } else if (name == "PA2") {
     return new PA2(config_cast_check<classifier_config>(param), storage);
-  } else if (name == "CW") {
-    return new CW(config_cast_check<classifier_config>(param), storage);
+  } else if (name == "CW" || name == "confidence_weighted") {
+    return new confidence_weighted(
+        config_cast_check<classifier_config>(param), storage);
   } else if (name == "AROW") {
     return new AROW(config_cast_check<classifier_config>(param), storage);
   } else if (name == "NHERD") {
