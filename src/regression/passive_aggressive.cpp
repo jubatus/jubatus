@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "pa.hpp"
+#include "passive_aggressive.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -23,7 +23,9 @@
 namespace jubatus {
 namespace regression {
 
-PA::PA(const config& config, storage::storage_base* storage)
+passive_aggressive::passive_aggressive(
+    const config& config,
+    storage::storage_base* storage)
     : regression_base(storage),
       config_(config),
       sum_(0.f),
@@ -31,7 +33,7 @@ PA::PA(const config& config, storage::storage_base* storage)
       count_(0.f) {
 }
 
-PA::PA(storage::storage_base* storage)
+passive_aggressive::passive_aggressive(storage::storage_base* storage)
     : regression_base(storage),
       sum_(0.f),
       sq_sum_(0.f),
@@ -46,7 +48,7 @@ static float squared_norm(const sfv_t& fv) {
   return norm;
 }
 
-void PA::train(const sfv_t& fv, float value) {
+void passive_aggressive::train(const sfv_t& fv, float value) {
   sum_ += value;
   sq_sum_ += value * value;
   count_ += 1;
@@ -66,7 +68,7 @@ void PA::train(const sfv_t& fv, float value) {
   }
 }
 
-void PA::clear() {
+void passive_aggressive::clear() {
   regression_base::clear();
   sum_ = 0.f;
   sq_sum_ = 0.f;

@@ -121,7 +121,7 @@ REGISTER_TYPED_TEST_CASE_P(
     regression_test,
     trivial, random);
 
-typedef testing::Types<regression::PA> regression_types;
+typedef testing::Types<regression::passive_aggressive> regression_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(reg, regression_test, regression_types);
 

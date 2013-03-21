@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_REGRESSION_PA_HPP_
-#define JUBATUS_REGRESSION_PA_HPP_
+#ifndef JUBATUS_REGRESSION_PASSIVE_AGGRESSIVE_HPP_
+#define JUBATUS_REGRESSION_PASSIVE_AGGRESSIVE_HPP_
 
 #include <limits>
 #include <pficommon/data/serialization.h>
@@ -24,7 +24,7 @@
 namespace jubatus {
 namespace regression {
 
-class PA : public regression_base {
+class passive_aggressive : public regression_base {
  public:
   struct config {
     config()
@@ -41,8 +41,8 @@ class PA : public regression_base {
     }
   };
 
-  PA(const config& config, storage::storage_base* storage);
-  explicit PA(storage::storage_base* storage);
+  passive_aggressive(const config& config, storage::storage_base* storage);
+  explicit passive_aggressive(storage::storage_base* storage);
 
   void train(const sfv_t& fv, float value);
 
@@ -58,4 +58,4 @@ class PA : public regression_base {
 }  // namespace regression
 }  // namespace jubatus
 
-#endif  // JUBATUS_REGRESSION_PA_HPP_
+#endif  // JUBATUS_REGRESSION_PASSIVE_AGGRESSIVE_HPP_
