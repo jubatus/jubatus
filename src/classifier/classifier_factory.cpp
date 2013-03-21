@@ -47,8 +47,9 @@ classifier_base* classifier_factory::create_classifier(
         config_cast_check<classifier_config>(param), storage);
   } else if (name == "AROW" || name == "arow") {
     return new arow(config_cast_check<classifier_config>(param), storage);
-  } else if (name == "NHERD") {
-    return new NHERD(config_cast_check<classifier_config>(param), storage);
+  } else if (name == "NHERD" || name == "normal_herd") {
+    return new normal_herd(
+        config_cast_check<classifier_config>(param), storage);
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }

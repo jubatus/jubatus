@@ -12,7 +12,7 @@ def build(bld):
 	pa2.cpp
 	confidence_weighted.cpp	
 	arow.cpp
-	nherd.cpp
+	normal_herd.cpp
         classifier_factory.cpp
 	''',
     target = 'jubatus_classifier',

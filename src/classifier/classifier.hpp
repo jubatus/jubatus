@@ -24,6 +24,6 @@
 #include "pa2.hpp"
 #include "confidence_weighted.hpp"
 #include "arow.hpp"
-#include "nherd.hpp"
+#include "normal_herd.hpp"
 
 #endif  // JUBATUS_CLASSIFIER_CLASSIFIER_HPP_

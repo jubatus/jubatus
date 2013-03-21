@@ -138,7 +138,7 @@ REGISTER_TYPED_TEST_CASE_P(
     random3);
 
 typedef testing::Types<
-  perceptron, PA, PA1, PA2, confidence_weighted, arow, NHERD>
+  perceptron, PA, PA1, PA2, confidence_weighted, arow, normal_herd>
   classifier_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);

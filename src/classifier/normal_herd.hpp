@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_NHERD_HPP_
-#define JUBATUS_CLASSIFIER_NHERD_HPP_
+#ifndef JUBATUS_CLASSIFIER_NORMAL_HERD_HPP_
+#define JUBATUS_CLASSIFIER_NORMAL_HERD_HPP_
 
 #include <string>
 
@@ -24,10 +24,10 @@
 namespace jubatus {
 namespace classifier {
 
-class NHERD : public classifier_base {
+class normal_herd : public classifier_base {
  public:
-  explicit NHERD(storage::storage_base* storage);
-  NHERD(const classifier_config& config, storage::storage_base* storage);
+  explicit normal_herd(storage::storage_base* storage);
+  normal_herd(const classifier_config& config, storage::storage_base* storage);
   void train(const sfv_t& fv, const std::string& label);
   std::string name() const;
  private:
@@ -43,4 +43,4 @@ class NHERD : public classifier_base {
 }  // namespace classifier
 }  // namespace jubatus
 
-#endif  // JUBATUS_CLASSIFIER_NHERD_HPP_
+#endif  // JUBATUS_CLASSIFIER_NORMAL_HERD_HPP_

@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "nherd.hpp"
+#include "normal_herd.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -27,19 +27,21 @@ using std::string;
 namespace jubatus {
 namespace classifier {
 
-NHERD::NHERD(storage::storage_base* storage)
+normal_herd::normal_herd(storage::storage_base* storage)
     : classifier_base(storage) {
   classifier_base::use_covars_ = true;
   config.C = 0.1f;
 }
 
-NHERD::NHERD(const classifier_config& config, storage::storage_base* storage)
+normal_herd::normal_herd(
+    const classifier_config& config,
+    storage::storage_base* storage)
     : classifier_base(storage),
       config(config) {
   classifier_base::use_covars_ = true;
 }
 
-void NHERD::train(const sfv_t& sfv, const string& label) {
+void normal_herd::train(const sfv_t& sfv, const string& label) {
   string incorrect_label;
   float variance = 0.f;
   float margin = -calc_margin_and_variance(sfv, label, incorrect_label,
@@ -50,7 +52,7 @@ void NHERD::train(const sfv_t& sfv, const string& label) {
   update(sfv, margin, variance, label, incorrect_label);
 }
 
-void NHERD::update(
+void normal_herd::update(
     const sfv_t& sfv,
     float margin,
     float variance,
@@ -95,8 +97,8 @@ void NHERD::update(
   }
 }
 
-std::string NHERD::name() const {
-  return string("NHERD");
+std::string normal_herd::name() const {
+  return string("normal_herd");
 }
 
 }  // namespace classifier
