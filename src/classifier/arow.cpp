@@ -27,18 +27,18 @@ using std::string;
 namespace jubatus {
 namespace classifier {
 
-AROW::AROW(storage::storage_base* storage)
+arow::arow(storage::storage_base* storage)
     : classifier_base(storage) {
   classifier_base::use_covars_ = true;
 }
 
-AROW::AROW(const classifier_config& config, storage::storage_base* storage)
+arow::arow(const classifier_config& config, storage::storage_base* storage)
     : classifier_base(storage),
       config(config) {
   classifier_base::use_covars_ = true;
 }
 
-void AROW::train(const sfv_t& sfv, const string& label) {
+void arow::train(const sfv_t& sfv, const string& label) {
   string incorrect_label;
   float variance = 0.f;
   float margin = -calc_margin_and_variance(sfv, label, incorrect_label,
@@ -52,7 +52,7 @@ void AROW::train(const sfv_t& sfv, const string& label) {
   update(sfv, alpha, beta, label, incorrect_label);
 }
 
-void AROW::update(
+void arow::update(
     const sfv_t& sfv,
     float alpha,
     float beta,
@@ -85,8 +85,8 @@ void AROW::update(
   }
 }
 
-string AROW::name() const {
-  return string("AROW");
+string arow::name() const {
+  return string("arow");
 }
 
 }  // namespace classifier
