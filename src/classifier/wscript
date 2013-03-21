@@ -8,7 +8,7 @@ def build(bld):
         classifier_base.cpp
 	perceptron.cpp
 	passive_aggressive.cpp
-	pa1.cpp
+	passive_aggressive_1.cpp
 	pa2.cpp
 	confidence_weighted.cpp	
 	arow.cpp

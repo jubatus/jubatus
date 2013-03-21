@@ -20,7 +20,7 @@
 #include "classifier_base.hpp"
 #include "perceptron.hpp"
 #include "passive_aggressive.hpp"
-#include "pa1.hpp"
+#include "passive_aggressive_1.hpp"
 #include "pa2.hpp"
 #include "confidence_weighted.hpp"
 #include "arow.hpp"
