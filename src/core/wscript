@@ -10,6 +10,7 @@ def build(bld):
   core_source = [
       'classifier.cpp',
       'regression.cpp',
+      'recommender.cpp',
       'linear_function_mixer.cpp',
       'mixable_weight_manager.cpp',
       ]
@@ -18,7 +19,7 @@ def build(bld):
     source = core_source,
     target = 'jubatus_core',
     includes = '.',
-    use = 'PFICOMMON jubacommon jubatus_framework MSGPACK LIBGLOG jubaconverter jubastorage jubamixer jubatus_classifier jubatus_regression'
+    use = 'PFICOMMON jubacommon jubatus_framework MSGPACK LIBGLOG jubaconverter jubastorage jubamixer jubatus_classifier jubatus_regression jubatus_recommender'
     )
 
   def make_test(t):
@@ -40,4 +41,5 @@ def build(bld):
   bld.install_files('${PREFIX}/include/jubatus/core', [
       'classifier.hpp',
       'regression.hpp',
+      'recommender.hpp',
       ])
