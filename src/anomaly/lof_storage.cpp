@@ -60,9 +60,10 @@ lof_storage::config::config()
 lof_storage::lof_storage()
     : neighbor_num_(DEFAULT_NEIGHBOR_NUM),
       reverse_nn_num_(DEFAULT_REVERSE_NN_NUM),
-      nn_engine_(recommender::create_recommender("euclid_lsh",
-        jsonconfig::config(pfi::text::json::to_json(
-          recommender::euclid_lsh::config())))) {
+      nn_engine_(recommender::recommender_factory::create_recommender(
+          "euclid_lsh",
+          jsonconfig::config(pfi::text::json::to_json(
+              recommender::euclid_lsh::config())))) {
 }
 
 lof_storage::lof_storage(recommender::recommender_base* nn_engine)

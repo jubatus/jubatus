@@ -30,7 +30,9 @@ using jubatus::jsonconfig::config_cast_check;
 namespace jubatus {
 namespace recommender {
 
-recommender_base* create_recommender(const string& name, const config& param) {
+recommender_base* recommender_factory::create_recommender(
+    const string& name,
+    const config& param) {
   if (name == "inverted_index") {
     // inverted_index doesn't have parameter
     return new inverted_index;

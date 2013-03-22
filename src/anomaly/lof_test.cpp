@@ -54,7 +54,7 @@ class lof_impl : public lof {
  public:
   lof_impl()
       : lof(lof_storage::config(),
-            recommender::create_recommender(
+            recommender::recommender_factory::create_recommender(
                 "euclid_lsh",
                 jsonconfig::config(pfi::text::json::to_json(
                     recommender::euclid_lsh::config())))) {

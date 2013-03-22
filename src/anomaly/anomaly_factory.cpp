@@ -50,7 +50,10 @@ anomaly_base* create_anomaly(const string& name, const config& param) {
     storage::lof_storage::config config =
         config_cast_check<storage::lof_storage::config>(param);
     return new lof(
-        config, recommender::create_recommender(conf.method, conf.parameter));
+        config,
+        recommender::recommender_factory::create_recommender(
+            conf.method,
+            conf.parameter));
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }

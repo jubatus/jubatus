@@ -63,12 +63,13 @@ void mixable_stat::reduce(
   ret.second += lhs.second;
 }
 
-double mixable_stat::mixed_entropy() const {
+double mixable_stat::entropy() const {
   if (n_ == 0) {
     return 0;
   }
   double n = n_;
   return log(n) - e_ / n_;
-};
+}
+
 }  // namespace stat
 }  // namespace jubatus

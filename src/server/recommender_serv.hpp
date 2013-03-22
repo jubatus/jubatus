@@ -17,45 +17,14 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
-
-#include "../common/lock_service.hpp"
-#include "../common/shared_ptr.hpp"
-#include "../framework/mixable.hpp"
-#include "../framework/server_base.hpp"
-#include "../fv_converter/datum_to_fv_converter.hpp"
-#include "../recommender/recommender_base.hpp"
-#include "../storage/recommender_storage.hpp"
+#include <pficommon/lang/shared_ptr.h>
+#include "../core/recommender.hpp"
 #include "recommender_types.hpp"
-#include "mixable_weight_manager.hpp"
 
 namespace jubatus {
 namespace server {
-
-struct rcmdr : public framework::mixable<
-    jubatus::recommender::recommender_base,
-    std::string> {
-  std::string get_diff_impl() const {
-    std::string ret;
-    get_model()->get_const_storage()->get_diff(ret);
-    return ret;
-  }
-
-  void put_diff_impl(const std::string& v) {
-    get_model()->get_storage()->set_mixed_and_clear_diff(v);
-  }
-
-  void mix_impl(
-      const std::string& lhs,
-      const std::string& rhs,
-      std::string& mixed) const {
-    mixed = lhs;
-    get_model()->get_const_storage()->mix(rhs, mixed);
-  }
-
-  void clear() {
-  }
-};
 
 class recommender_serv : public framework::server_base {
  public:
@@ -64,17 +33,18 @@ class recommender_serv : public framework::server_base {
       const common::cshared_ptr<common::lock_service>& zk);
   virtual ~recommender_serv();
 
+
   framework::mixer::mixer* get_mixer() const {
-    return mixer_.get();
+    return recommender_->get_mixer();
   }
 
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
-    return mixable_holder_;
+    return recommender_->get_mixable_holder();
   }
 
   void get_status(status_t& status) const;
 
-  bool set_config(std::string config);
+  bool set_config(const std::string& config);
   std::string get_config();
 
   bool clear_row(std::string id);
@@ -95,13 +65,9 @@ class recommender_serv : public framework::server_base {
   void check_set_config() const;
 
  private:
-  pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
-
+  pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
+  pfi::lang::shared_ptr<core::recommender> recommender_;
   std::string config_;
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  rcmdr rcmdr_;
-  mixable_weight_manager wm_;
 
   uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;
