@@ -69,7 +69,7 @@ bool stat_serv::set_config(const string& config) {
       new core::stat(
           argv().is_standalone() ? new stat::stat(conf.window_size)
                                  : new stat::mixable_stat(conf.window_size),
-      mixer_));
+          mixer_));
 
   LOG(INFO) << "config loaded: " << config;
   return true;
