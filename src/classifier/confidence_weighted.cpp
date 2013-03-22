@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "nherd.hpp"
+#include "confidence_weighted.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -27,77 +27,72 @@ using std::string;
 namespace jubatus {
 namespace classifier {
 
-NHERD::NHERD(storage::storage_base* storage)
+confidence_weighted::confidence_weighted(storage::storage_base* storage)
     : classifier_base(storage) {
   classifier_base::use_covars_ = true;
-  config.C = 0.1f;
 }
 
-NHERD::NHERD(const classifier_config& config, storage::storage_base* storage)
+confidence_weighted::confidence_weighted(
+    const classifier_config& config,
+    storage::storage_base* storage)
     : classifier_base(storage),
       config(config) {
   classifier_base::use_covars_ = true;
 }
 
-void NHERD::train(const sfv_t& sfv, const string& label) {
+void confidence_weighted::train(const sfv_t& sfv, const string& label) {
+  const float C = config.C;
   string incorrect_label;
   float variance = 0.f;
   float margin = -calc_margin_and_variance(sfv, label, incorrect_label,
                                            variance);
-  if (margin >= 1.f) {
+  float b = 1.f + 2 * C * margin;
+  float gamma = -b + sqrt(b * b - 8 * C * (margin - C * variance));
+
+  if (gamma <= 0.f) {
     return;
   }
-  update(sfv, margin, variance, label, incorrect_label);
+  gamma /= 4 * C * variance;
+  update(sfv, gamma, label, incorrect_label);
 }
 
-void NHERD::update(
+void confidence_weighted::update(
     const sfv_t& sfv,
-    float margin,
-    float variance,
+    float step_width,
     const string& pos_label,
     const string& neg_label) {
   for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
-    storage::feature_val2_t ret;
-    storage_->get2(feature, ret);
+    storage::feature_val2_t val2;
+    storage_->get2(feature, val2);
 
     storage::val2_t pos_val(0.f, 1.f);
     storage::val2_t neg_val(0.f, 1.f);
-    ClassifierUtil::get_two(ret, pos_label, neg_label, pos_val, neg_val);
-
-    float val_covariance_pos = val * pos_val.v2;
-    float val_covariance_neg = val * neg_val.v2;
+    ClassifierUtil::get_two(val2, pos_label, neg_label, pos_val, neg_val);
 
     const float C = config.C;
+    float covar_pos_step = 2.f * step_width * val * val * C;
+    float covar_neg_step = 2.f * step_width * val * val * C;
+
     storage_->set2(
         feature,
         pos_label,
-        storage::val2_t(
-            pos_val.v1
-                + (1.f - margin) * val_covariance_pos
-                    / (val_covariance_pos * val + 1.f / C),
-            1.f
-                / ((1.f / pos_val.v2) + (2 * C + C * C * variance)
-                    * val * val)));
+        storage::val2_t(pos_val.v1 + step_width * pos_val.v2 * val,
+                        1.f / (1.f / pos_val.v2 + covar_pos_step)));
     if (neg_label != "") {
       storage_->set2(
           feature,
           neg_label,
-          storage::val2_t(
-              neg_val.v1
-                  - (1.f - margin) * val_covariance_neg
-                      / (val_covariance_neg * val + 1.f / C),
-              1.f
-                  / ((1.f / neg_val.v2) + (2 * C + C * C * variance)
-                      * val * val)));
+          storage::val2_t(neg_val.v1 - step_width * neg_val.v2 * val,
+                          1.f / (1.f / neg_val.v2 + covar_neg_step)));
     }
   }
 }
 
-std::string NHERD::name() const {
-  return string("NHERD");
+string confidence_weighted::name() const {
+  return string("confidence_weighted");
 }
 
 }  // namespace classifier
-}  // namespace jubatus
+}  // namespase jubatus

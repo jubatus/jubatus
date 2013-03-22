@@ -14,45 +14,33 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "pa1.hpp"
+#ifndef JUBATUS_CLASSIFIER_NORMAL_HERD_HPP_
+#define JUBATUS_CLASSIFIER_NORMAL_HERD_HPP_
 
-#include <algorithm>
 #include <string>
 
-using std::string;
-using std::min;
+#include "classifier_base.hpp"
 
 namespace jubatus {
 namespace classifier {
 
-PA1::PA1(storage::storage_base* storage)
-    : classifier_base(storage) {
-}
-
-PA1::PA1(const classifier_config& config, storage::storage_base* storage)
-    : classifier_base(storage),
-      config(config) {
-}
-
-void PA1::train(const sfv_t& sfv, const string& label) {
-  string incorrect_label;
-  float margin = calc_margin(sfv, label, incorrect_label);
-  float loss = 1.f + margin;
-  if (loss < 0.f) {
-    return;
-  }
-  float sfv_norm = squared_norm(sfv);
-  if (sfv_norm == 0.f) {
-    return;
-  }
-
-  update_weight(
-      sfv, min(config.C, loss / (2 * sfv_norm)), label, incorrect_label);
-}
-
-string PA1::name() const {
-  return string("PA1");
-}
+class normal_herd : public classifier_base {
+ public:
+  explicit normal_herd(storage::storage_base* storage);
+  normal_herd(const classifier_config& config, storage::storage_base* storage);
+  void train(const sfv_t& fv, const std::string& label);
+  std::string name() const;
+ private:
+  void update(
+      const sfv_t& sfv,
+      float margin,
+      float variance,
+      const std::string& pos_label,
+      const std::string& neg_label);
+  classifier_config config;
+};
 
 }  // namespace classifier
 }  // namespace jubatus
+
+#endif  // JUBATUS_CLASSIFIER_NORMAL_HERD_HPP_

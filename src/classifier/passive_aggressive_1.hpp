@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_PA2_HPP_
-#define JUBATUS_CLASSIFIER_PA2_HPP_
+#ifndef JUBATUS_CLASSIFIER_PASSIVE_AGGRESSIVE_1_HPP_
+#define JUBATUS_CLASSIFIER_PASSIVE_AGGRESSIVE_1_HPP_
 
 #include <string>
 
@@ -24,12 +24,13 @@
 namespace jubatus {
 namespace classifier {
 
-class PA2 : public classifier_base {
+class passive_aggressive_1 : public classifier_base {
  public:
-  explicit PA2(storage::storage_base* storage);
-  PA2(const classifier_config& config, storage::storage_base* storage);
-
-  void train(const sfv_t& sfv, const std::string& label);
+  explicit passive_aggressive_1(storage::storage_base* storage);
+  passive_aggressive_1(
+      const classifier_config& config,
+      storage::storage_base* storage);
+  void train(const sfv_t& fv, const std::string& label);
   std::string name() const;
  private:
   classifier_config config;
@@ -38,4 +39,4 @@ class PA2 : public classifier_base {
 }  // namespace classifier
 }  // namespace jubatus
 
-#endif  // JUBATUS_CLASSIFIER_PA2_HPP_
+#endif  // JUBATUS_CLASSIFIER_PASSIVE_AGGRESSIVE_1_HPP_

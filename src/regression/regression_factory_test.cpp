@@ -32,10 +32,11 @@ namespace regression {
 TEST(regression_factory, trivial) {
   regression::regression_factory f;
   storage::local_storage s;
-  jsonconfig::config param(pfi::text::json::to_json(regression::PA::config()));
+  jsonconfig::config param(pfi::text::json::to_json(
+      regression::passive_aggressive::config()));
   pfi::lang::scoped_ptr<regression::regression_base>
     r(f.create_regression("PA", param, &s));
-  EXPECT_EQ(typeid(*r), typeid(regression::PA&));
+  EXPECT_EQ(typeid(*r), typeid(regression::passive_aggressive&));
 }
 
 TEST(regression_factory, unknown) {
