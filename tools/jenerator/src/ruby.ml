@@ -29,13 +29,25 @@ let make_header conf source filename content =
 ;;
 
 (* return : retval = @cli.call(names) *)
-let gen_retval = function
+let gen_retval' = function
   | [] -> assert false
+      (* Because m.method_name (@gen_client_method) can not be empty *)
   | func :: [] ->
       "@cli.call(:" ^ func ^ ")"
   | func :: args ->
       "@cli.call(:" ^ func ^ ", " ^ (String.concat ", " args) ^ ")"
 ;;
+
+let gen_retval args typ = match typ with
+  | Some(t) -> 
+      (match t with
+	 | Struct (st) ->
+	     (String.capitalize st) ^ ".from_tuple(" ^ gen_retval' args ^ ")"
+	 | Bool | Float(_) | String | Map(_) | List(_) -> gen_retval' args
+	 | _ -> gen_retval' args
+	     (* TODO: OK? *)
+      )      
+  | None -> gen_retval' args
 
 (* return : def func_name (args): *)
 let gen_def = function
@@ -50,13 +62,18 @@ let rec gen_type t name = match t with
     | Object -> raise (Unknown_type("Object is not supported"))
     | Bool | Int(_, _) | Float(_) | Raw | String -> 
 	if (name = "x" || name = "tuple") then "" else name
-    | Struct s  -> s ^ ".from_msgpack(" ^ name ^ ")"
-    | List t -> name ^ ".map { |x|  [" ^ gen_type t "x" ^ "] }" 
+    | Struct s  -> (String.capitalize s) ^ ".from_tuple(" ^ name ^ ")"
+    | List t -> 
+	(match t with
+	   | Bool | Int(_, _) | Float(_) | Raw | String -> name ^ ".map {|x| x}"
+	   | _ ->
+	       name ^ ".map {|x|  [" ^ gen_type t "x" ^ "] }")
     | Map(key, value) -> 
-	".map {" ^ (gen_type key name) ^ " " ^ (gen_type value name) ^ "}" 
+	
+	name ^ ".each_with_object({}) {|(k,v),h| h[k] = v}" 
 	  (* TODO (tsushima): no exmaple *)
     | Tuple [t1; t2] -> 
-	gen_type t1 (name ^ "[0]") ^ ", " ^ gen_type t2 (name ^ "[1]")
+	gen_type t1 (name ^ "[0]") ^ ", " ^ gen_type t2 (name ^ "[1], ")
     | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
     | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
 ;;
@@ -70,7 +87,7 @@ let gen_client_method m =
   let args = name ::  List.map (fun f -> f.field_name) m.method_arguments in 
   let call =
     [(0, gen_def args);
-     (1, gen_retval args);
+     (1, gen_retval args m.method_return_type);
      (0, "end")
     ] 
   in call
@@ -79,11 +96,11 @@ let gen_client_method m =
 let gen_client s =
   let constructor = [
     (0, "def initialize(host, port)");
-    (1, "@cli = MessagePack::RPC::" ^ (String.capitalize s.service_name) ^ ".new(host, port)");
+    (1, "@cli = MessagePack::RPC::Client.new(host, port)");
     (0, "end")
   ] in
   let methods = List.map gen_client_method s.service_methods in
-  let content = concat_blocks (constructor :: methods) in
+  let content = List.concat (constructor :: methods) in
     List.concat [
       [
 	(0, "class " ^ (String.capitalize s.service_name));
@@ -101,7 +118,7 @@ let gen_self_with_comma field_names =
 ;;
 
 let gen_self_without_comma field_names =
-  (List.map (fun s -> (0, "@" ^ s ^ " = " ^ s)) field_names)
+  (List.map (fun s -> (0, " @" ^ s ^ " = " ^ s ^ " ")) field_names)
 ;;
 
 let gen_initialize field_names = 
@@ -110,12 +127,26 @@ let gen_initialize field_names =
 		  [(0, "end")]])
 ;;
 
+let gen_to_tuple' field_names field_types = 
+  let lst = (List.map2 (fun s t -> (1, "@" ^ s ^ gen_type t "")) field_names field_types) in
+  let lst = match lst with
+    | [] -> []
+    | (i, st) :: rest -> (i, "[" ^ st) :: rest in
+  let rec loop lst = match lst with
+    | [] -> []
+    | (i, st) :: [] -> (i, st ^ "]") ::[]
+    | (i, st) :: rest -> (i, st ^ ",") :: (loop rest) in
+    loop lst
+  
+
 let gen_to_tuple field_names field_types =
   List.concat [
-    [(0, "def to_tuple");
-     (0, "[")];
+    [(0, "def to_tuple")];
+     (* (1, "[")];
      indent_lines 1 (List.map2 (fun s t -> (0, "@" ^ s ^ gen_type t "tuple" ^ ",")) field_names field_types);
-    [(0, "]"); (0, "end")]]
+    [(1, "]"); *)
+     gen_to_tuple' field_names field_types;
+     [(0, "end")]]
 ;;
 
 let gen_to_msgpack field_names field_types =
@@ -147,8 +178,36 @@ let gen_from_tuple field_names field_types s =
   ]
 ;;
 
-let gen_attr_accessor field_names = 
-  "attr_accessor " ^ (String.concat ", " (List.map (fun x -> ":" ^ x) field_names))
+let gen_attr_reader field_names field_types = 
+  let rec loop field_names field_types = match (field_names, field_types) with
+    | ([], []) -> []
+    | (n :: ns, t :: ts) ->
+	(match t with
+	   | Map(_) | Struct(_) -> (":" ^ n) :: (loop ns ts)
+	   | _ -> (loop ns ts))
+    | _ -> assert false
+  in
+    match (loop field_names field_types) with
+      | [] -> []
+      | lst -> [(1, "attr_reader " ^ (String.concat ", " lst))]
+    
+
+let gen_attr_accessor field_names field_types = 
+  let rec loop field_names field_types = match (field_names, field_types) with
+    | ([], []) -> []
+    | (n :: ns, t :: ts) ->
+	(match t with
+	   | Map(_) | Struct(_) ->(loop ns ts)
+	   | _ ->  (":" ^ n) :: (loop ns ts))
+    | _ -> assert false
+  in
+    match (loop field_names field_types) with
+      | [] -> []
+      | lst -> [(1, "attr_accessor " ^ (String.concat ", " lst))]  
+
+let gen_attr field_names field_types = 
+  (gen_attr_reader field_names field_types) @
+    (gen_attr_accessor field_names field_types)
 ;;
 
 let gen_message m =
@@ -166,16 +225,31 @@ let gen_message m =
     indent_lines 1 (gen_to_msgpack field_names field_types);
     (* def from_tuple .. *)
     indent_lines 1 (gen_from_tuple field_names field_types m.message_name);
-    [(1, gen_attr_accessor field_names);
-     (0, "end");
+    (gen_attr field_names field_types);
+    [(0, "end");
      (0, "")];
   ]
 ;;
 
+let gen_typedef name typ = 
+  List.concat [
+    [
+      (0, "class " ^ (String.capitalize name));
+      (1, gen_def [(String.capitalize name) ^ ".from_tuple"; "tuple"]);
+      (2, (gen_type typ "tuple"));
+      (1, "end");
+      (1, gen_def ["to_tuple"; "o"]);
+      (2, "o");
+      (1, "end");
+      (0, "end")
+    ];
+  ]
+    
+    
+
 let gen_typedef = function
   | Typedef(name, typ) ->
-      (* TODO (tsushima) : OK? *)
-      []
+      gen_typedef name typ
   | Message m ->
     gen_message m
   | _ ->
@@ -200,8 +274,8 @@ let gen_client_file conf source services =
     ];
     (concat_blocks clients);
     ((0, "end") :: 
-       (0, "end") :: 
-       (List.map (fun s -> (0, "end")) services));
+     (0, "end") :: 
+     (List.map (fun s -> (0, "end")) services));
   ]
   in make_header conf source filename content
 ;;
@@ -212,13 +286,13 @@ let gen_type_file conf source idl =
   let types = List.map gen_typedef idl in
   let includes = [
     (0, "require 'rubygems'");
-    (0, "require 'msgpack/rpc'")
+    (0, "require 'msgpack/rpc'");
+    (0, "module Jubatus");
+    (0, ("module " ^ (String.capitalize base)))
   ] in
 
   let content = concat_blocks [
     includes;
-    [(0, "module Jubatus");
-     (0, ("module " ^ (String.capitalize base)))];
     (concat_blocks types);
     [(0, "end"); (* for "module Jubatus" *)
      (0, "end")] (* for "module " ^ (String.capitalize base) *)
