@@ -33,7 +33,7 @@ passive_aggressive_1::passive_aggressive_1(
     const classifier_config& config,
     storage::storage_base* storage)
     : classifier_base(storage),
-      config(config) {
+      config_(config) {
 }
 
 void passive_aggressive_1::train(const sfv_t& sfv, const string& label) {
@@ -49,7 +49,7 @@ void passive_aggressive_1::train(const sfv_t& sfv, const string& label) {
   }
 
   update_weight(
-      sfv, min(config.C, loss / (2 * sfv_norm)), label, incorrect_label);
+      sfv, min(config_.C, loss / (2 * sfv_norm)), label, incorrect_label);
 }
 
 string passive_aggressive_1::name() const {

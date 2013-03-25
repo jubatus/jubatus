@@ -33,7 +33,7 @@ class passive_aggressive_1 : public classifier_base {
   void train(const sfv_t& fv, const std::string& label);
   std::string name() const;
  private:
-  classifier_config config;
+  classifier_config config_;
 };
 
 }  // namespace classifier

@@ -38,7 +38,7 @@ class confidence_weighted : public classifier_base {
     float step_weigth,
     const std::string& pos_label,
     const std::string& neg_label);
-  classifier_config config;
+  classifier_config config_;
 };
 
 }  // namespace classifier

@@ -37,7 +37,7 @@ class normal_herd : public classifier_base {
       float variance,
       const std::string& pos_label,
       const std::string& neg_label);
-  classifier_config config;
+  classifier_config config_;
 };
 
 }  // namespace classifier

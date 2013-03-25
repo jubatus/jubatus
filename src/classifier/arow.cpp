@@ -34,7 +34,7 @@ arow::arow(storage::storage_base* storage)
 
 arow::arow(const classifier_config& config, storage::storage_base* storage)
     : classifier_base(storage),
-      config(config) {
+      config_(config) {
   classifier_base::use_covars_ = true;
 }
 
@@ -47,7 +47,7 @@ void arow::train(const sfv_t& sfv, const string& label) {
     return;
   }
 
-  float beta = 1.f / (variance + 1.f / config.C);
+  float beta = 1.f / (variance + 1.f / config_.C);
   float alpha = (1.f - margin) * beta;  // max(0, 1 - margin) = 1 - margin
   update(sfv, alpha, beta, label, incorrect_label);
 }
