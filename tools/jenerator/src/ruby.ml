@@ -17,7 +17,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 *)
 
-(* tsushima wrote :*)
+(* tsushima wrote *)
 
 open Syntax
 open Lib
@@ -48,6 +48,7 @@ let gen_retval args typ = match typ with
 	     (* TODO: OK? *)
       )      
   | None -> gen_retval' args
+;;
 
 (* return : def func_name (args): *)
 let gen_def = function
@@ -59,23 +60,21 @@ let gen_def = function
 ;;
 
 let rec gen_type t name = match t with
-    | Object -> raise (Unknown_type("Object is not supported"))
-    | Bool | Int(_, _) | Float(_) | Raw | String -> 
-	if (name = "x" || name = "tuple") then "" else name
-    | Struct s  -> (String.capitalize s) ^ ".from_tuple(" ^ name ^ ")"
-    | List t -> 
-	(match t with
-	   | Bool | Int(_, _) | Float(_) | Raw | String -> name ^ ".map {|x| x}"
-	   | _ ->
-	       name ^ ".map {|x|  [" ^ gen_type t "x" ^ "] }")
-    | Map(key, value) -> 
-	
-	name ^ ".each_with_object({}) {|(k,v),h| h[k] = v}" 
-	  (* TODO (tsushima): no exmaple *)
-    | Tuple [t1; t2] -> 
-	gen_type t1 (name ^ "[0]") ^ ", " ^ gen_type t2 (name ^ "[1], ")
-    | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
-    | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
+  | Object -> raise (Unknown_type("Object is not supported"))
+  | Bool | Int(_, _) | Float(_) | Raw | String -> 
+      name
+  | Struct s  -> (String.capitalize s) ^ ".from_tuple(" ^ name ^ ")"
+  | List t -> 
+      (match t with
+	 | Bool | Int(_, _) | Float(_) | Raw | String -> name ^ ".map {|x| x}"
+	 | _ ->
+	     name ^ ".map {|x|  [" ^ gen_type t "x" ^ "] }")
+  | Map(key, value) -> 
+      name ^ ".each_with_object({}) {|(k,v),h| h[k] = v}" (* TODO: OK? *)
+  | Tuple [t1; t2] ->
+      gen_type t1 (name ^ "[0]") ^ ", " ^ gen_type t2 (name ^ "[1], ")
+  | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
+  | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
 ;;
 
 let gen_arg_def f =
@@ -97,6 +96,9 @@ let gen_client s =
   let constructor = [
     (0, "def initialize(host, port)");
     (1, "@cli = MessagePack::RPC::Client.new(host, port)");
+    (0, "end");
+    (0, "def get_client");
+    (1, "@cli");
     (0, "end")
   ] in
   let methods = List.map gen_client_method s.service_methods in
@@ -117,36 +119,36 @@ let gen_self_with_comma field_names =
   (List.map (fun s -> (0, "@" ^ s ^ ",")) field_names)
 ;;
 
-let gen_self_without_comma field_names =
+let gen_self_with_equal field_names =
   (List.map (fun s -> (0, " @" ^ s ^ " = " ^ s ^ " ")) field_names)
 ;;
 
 let gen_initialize field_names = 
     (List.concat [[(0, gen_def ("initialize"::field_names))];
-		  indent_lines 1 (gen_self_without_comma field_names);
+		  indent_lines 1 (gen_self_with_equal field_names);
 		  [(0, "end")]])
 ;;
 
+(* ad hoc ..  TODO: nested struct *)
+let gen_type' t name = match t with
+  | Struct s  -> name ^ ".to_tuple"
+  | _ -> gen_type t name
+;;
+
 let gen_to_tuple' field_names field_types = 
-  let lst = (List.map2 (fun s t -> (1, "@" ^ s ^ gen_type t "")) field_names field_types) in
-  let lst = match lst with
-    | [] -> []
-    | (i, st) :: rest -> (i, "[" ^ st) :: rest in
-  let rec loop lst = match lst with
-    | [] -> []
-    | (i, st) :: [] -> (i, st ^ "]") ::[]
-    | (i, st) :: rest -> (i, st ^ ",") :: (loop rest) in
-    loop lst
-  
+  let rec loop s t = match (s, t) with
+    | (s :: [], t :: []) -> (0, gen_type' t (" @" ^ s)) :: [(0, "]")]
+    | (s :: ss, t :: ts) -> (0, (gen_type' t (" @" ^ s)) ^ ",") :: (loop ss ts)
+    | _ -> assert false in
+    (0, "[") :: (loop field_names field_types)
+;;
+
 
 let gen_to_tuple field_names field_types =
   List.concat [
     [(0, "def to_tuple")];
-     (* (1, "[")];
-     indent_lines 1 (List.map2 (fun s t -> (0, "@" ^ s ^ gen_type t "tuple" ^ ",")) field_names field_types);
-    [(1, "]"); *)
-     gen_to_tuple' field_names field_types;
-     [(0, "end")]]
+    indent_lines 1 (gen_to_tuple' field_names field_types);
+    [(0, "end")]]
 ;;
 
 let gen_to_msgpack field_names field_types =
@@ -189,8 +191,9 @@ let gen_attr_reader field_names field_types =
   in
     match (loop field_names field_types) with
       | [] -> []
-      | lst -> [(1, "attr_reader " ^ (String.concat ", " lst))]
-    
+      | lst -> [(0, "attr_reader " ^ (String.concat ", " lst))]
+;;
+  
 
 let gen_attr_accessor field_names field_types = 
   let rec loop field_names field_types = match (field_names, field_types) with
@@ -203,7 +206,8 @@ let gen_attr_accessor field_names field_types =
   in
     match (loop field_names field_types) with
       | [] -> []
-      | lst -> [(1, "attr_accessor " ^ (String.concat ", " lst))]  
+      | lst -> [(0, "attr_accessor " ^ (String.concat ", " lst))]  
+;;
 
 let gen_attr field_names field_types = 
   (gen_attr_reader field_names field_types) @
@@ -225,33 +229,31 @@ let gen_message m =
     indent_lines 1 (gen_to_msgpack field_names field_types);
     (* def from_tuple .. *)
     indent_lines 1 (gen_from_tuple field_names field_types m.message_name);
-    (gen_attr field_names field_types);
+    indent_lines 1 (gen_attr field_names field_types);
     [(0, "end");
      (0, "")];
   ]
 ;;
 
-let gen_typedef name typ = 
-  List.concat [
-    [
-      (0, "class " ^ (String.capitalize name));
-      (1, gen_def [(String.capitalize name) ^ ".from_tuple"; "tuple"]);
-      (2, (gen_type typ "tuple"));
-      (1, "end");
-      (1, gen_def ["to_tuple"; "o"]);
-      (2, "o");
-      (1, "end");
-      (0, "end")
-    ];
+let gen_typedef' name typ = 
+  [
+    (0, "class " ^ (String.capitalize name));
+    (1, gen_def [(String.capitalize name) ^ ".from_tuple"; "tuple"]);
+    (2, (gen_type typ "tuple"));
+    (1, "end");
+    (1, gen_def ["to_tuple"; "o"]);
+    (2, "o");
+    (1, "end");
+    (0, "end")
   ]
-    
+;;
     
 
 let gen_typedef = function
   | Typedef(name, typ) ->
-      gen_typedef name typ
+      gen_typedef' name typ
   | Message m ->
-    gen_message m
+      gen_message m
   | _ ->
     []
 ;;

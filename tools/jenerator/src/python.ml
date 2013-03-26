@@ -17,12 +17,13 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 *)
 
-(* tsushima wrote :*)
+(* tsushima wrote *)
 
 open Syntax
 open Lib
 
 let comment_out_head = "#"
+;;
 
 let make_header conf source filename content =
   make_source conf source filename content comment_out_head
@@ -51,10 +52,12 @@ let gen_def = function
 let gen_typename_with_paren name num = 
   if num = "" then name
   else name ^ "[" ^ num ^ "]"
+;;
 
 let gen_typename_with_bar name num = 
   if num = "" then name
   else name ^ "_" ^ num ^ "_"
+;;
 
 let rec gen_type t name num = match t with
     | Object -> raise (Unknown_type("Object is not supported"))
@@ -67,8 +70,8 @@ let rec gen_type t name num = match t with
 	  "[" ^ (gen_type t name_bar "") ^ " for " ^ name_bar 
 	  ^ " in " ^ name_paren ^ "]"
     | Map(key, value) -> 
-	let new_name_paren = (gen_typename_with_paren name num) in
 	let new_name_bar = (gen_typename_with_bar name num) in
+	let new_name_paren = (gen_typename_with_paren name num) in
 	let t1' = (gen_type key ("k_" ^ new_name_bar) "") in
 	let t2' = (gen_type value ("v_" ^ new_name_bar) "") in
 	  "{" ^ t1' ^ " : " ^ t2' ^ " for " ^ 
@@ -78,6 +81,7 @@ let rec gen_type t name num = match t with
 	" (" ^ gen_type t1 (name ^ "[0]") num ^ ", " ^ gen_type t2 (name ^ "[1]") num ^") "
     | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
     | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
+;;
 
 let gen_args args = 
   "(" ^ String.concat ", " args ^ ")"
@@ -93,7 +97,7 @@ let gen_call func args =
 ;;
 
 let gen_ret_type = function
-  | None -> "" (* TODO (tsushima): OK? or retval? *)
+  | None -> "retval" (* TODO (tsushima): OK? *)
   | Some typ -> gen_type typ "retval" ""
 ;;
 
@@ -107,13 +111,17 @@ let gen_client_method m =
      (1, gen_retval args);
      (1, "return " ^ ret_type)] in
     call
+;;
 
 let gen_client s =
   let methods = List.map gen_client_method s.service_methods in
   let constructor = [
     (0, "def __init__ (self, host, port):");
     (1, "address = msgpackrpc.Address(host, port)");
-    (1, "self.client = msgpackrpc.Client(address)")
+    (1, "self.client = msgpackrpc.Client(address)");
+    (0, "");
+    (0, "def get_client (self):");
+    (1, "return self.client")
   ] in
   let content = concat_blocks (constructor :: methods) in
     List.concat [
@@ -130,9 +138,11 @@ let gen_message_field f =
 
 let gen_self_with_comma field_names =
   (List.map (fun s -> (0, "self." ^ s ^ ",")) field_names)
+;;
 
 let gen_self_without_comma field_names =
   (List.map (fun s -> (0, "self." ^ s ^ " = " ^ s)) field_names)
+;;
 
 let gen_to_msgpack field_names =
   List.concat [
@@ -141,26 +151,33 @@ let gen_to_msgpack field_names =
     indent_lines 2 (gen_self_with_comma field_names);
     [(1, "  )")]
   ]
+;;
 
 let rec gen_from_msgpack_types field_types = match field_types with
-  | [] -> assert false
-  | [t] -> [(2, (gen_type t "arg" "") ^ ")")]
-  | _ ->
+  | [] -> []
+  | [t] -> [(0, (gen_type t "arg" ""))] (* TODO : ad-hoc? *)
+  | _ -> 
       let rec loop lst num = match lst with
 	| [] -> []
-	| [t] -> [(2, (gen_type t "arg" (string_of_int num)) ^ ")")]
+	| [t] -> [(0, (gen_type t "arg" (string_of_int num)))]
 	| t :: rest -> 
-	    (2, (gen_type t "arg" (string_of_int num)) ^ ",") :: (loop rest (num + 1)) 
+	    (0, (gen_type t "arg" (string_of_int num)) ^ ",") :: (loop rest (num + 1))
       in loop field_types 0
+;;
     
 let gen_from_msgpack field_names field_types s =
   List.concat [
     [(0, "@staticmethod")];
     [(0, "def from_msgpack (arg):")];
-    [(1, "return " ^ s ^ "(")];
-    (gen_from_msgpack_types field_types);
-   (* [(1, ")")] *)
+    (* ad-hoc *)
+    if s = "" then (List.concat [[(1, "return ")]; (indent_lines 2 (gen_from_msgpack_types field_types))])
+    else
+      List.concat [
+	[(1, "return " ^ s ^ "(")];
+	indent_lines 2 (gen_from_msgpack_types field_types);
+	[(1, ")")]]
   ]
+;;
 
 let gen_message m =
   let field_names = List.map (fun f -> f.field_name) m.message_fields in
@@ -185,6 +202,7 @@ let gen_typedef' name typ =
     ];
     indent_lines 1 (gen_from_msgpack [] [typ] "");
   ]
+;;
 
 
 let gen_typedef = function
@@ -200,7 +218,6 @@ let gen_client_file conf source services =
   let base = File_util.take_base source in
   let filename = base ^ "_client.py" in
   let clients = List.map gen_client services in
-
   let content = concat_blocks [
     [
       (0, "");
@@ -221,12 +238,10 @@ let gen_type_file conf source idl =
     (0, "import sys");
     (0, "import msgpack");
   ] in
-
   let content = concat_blocks [
     includes;
     (concat_blocks types)
   ] in
-
   make_header conf source name content
 ;;
 
