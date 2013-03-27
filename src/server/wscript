@@ -61,7 +61,7 @@ def build(bld):
   build_one(bld, "recommender", 'jubaconverter jubastorage jubaserver')
 
   # #new anomaly
-  build_one(bld, "anomaly", 'jubaconverter jubastorage jubatus_recommender jubaserver')
+  build_one(bld, "anomaly", 'jubaconverter jubastorage jubatus_recommender jubaserver' )
 
   build_one(bld, "stat")
 

@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,39 +14,36 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_CLASSIFIER_FACTORY_HPP_
-#define JUBATUS_CLASSIFIER_CLASSIFIER_FACTORY_HPP_
-
+#include <cassert>
 #include <string>
-#include <pficommon/text/json.h>
+
+#ifndef ATOMIC_I8_SUPPORT
+#include <pficommon/concurrent/lock.h>
+#include <pficommon/concurrent/mutex.h>
+#endif
+
+#include "exception.hpp"
+#include "global_id_generator_base.hpp"
+#include "global_id_generator_standalone.hpp"
 
 namespace jubatus {
+namespace common {
 
-namespace storage {
+global_id_generator_standalone::global_id_generator_standalone()
+    : counter_(0) {
+}
 
-class storage_base;
+global_id_generator_standalone::~global_id_generator_standalone() {
+}
 
-}  // namespace storage
+uint64_t global_id_generator_standalone::generate() {
+#ifdef ATOMIC_I8_SUPPORT
+  return __sync_fetch_and_add(&counter_, 1);
+#else
+  pfi::concurrent::scoped_lock lk(counter_mutex_);
+  return counter_++;
+#endif
+}
 
-namespace jsonconfig {
-
-class config;
-
-}  // namespace jsonconfig
-
-namespace classifier {
-
-class classifier_base;
-
-class classifier_factory {
- public:
-  static classifier_base* create_classifier(
-      const std::string& name,
-      const jsonconfig::config& param,
-      storage::storage_base* storage);
-};
-
-}  // namespace classifier
+}  // namespace common
 }  // namespace jubatus
-
-#endif  // JUBATUS_CLASSIFIER_CLASSIFIER_FACTORY_HPP_

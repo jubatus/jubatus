@@ -24,7 +24,7 @@ int main() {
 
 def build(bld):
   import Options
-  src = 'exception.cpp util.cpp network.cpp key_manager.cpp vector_util.cpp global_id_generator.cpp config.cpp'
+  src = 'exception.cpp util.cpp network.cpp key_manager.cpp vector_util.cpp global_id_generator.cpp global_id_generator_standalone.cpp global_id_generator_zk.cpp config.cpp'
   src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
 
   if bld.env.HAVE_ZOOKEEPER_H:
@@ -71,6 +71,9 @@ def build(bld):
     'exception.hpp',
     'exception_info.hpp',
     'global_id_generator.hpp',
+    'global_id_generator_base.hpp',
+    'global_id_generator_standalone.hpp',
+    'global_id_generator_zk.hpp',
     'hash.hpp',
     'jsonconfig.hpp',
     'key_manager.hpp',

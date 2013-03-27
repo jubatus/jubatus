@@ -44,7 +44,9 @@ struct anomaly_config {
 };
 }
 
-anomaly_base* create_anomaly(const string& name, const config& param) {
+anomaly_base* anomaly_factory::create_anomaly(
+    const string& name,
+    const config& param) {
   if (name == "lof") {
     anomaly_config conf = config_cast_check<anomaly_config>(param);
     storage::lof_storage::config config =

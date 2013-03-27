@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,39 +14,23 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_CLASSIFIER_FACTORY_HPP_
-#define JUBATUS_CLASSIFIER_CLASSIFIER_FACTORY_HPP_
+#ifndef JUBATUS_COMMON_GLOBAL_ID_GENERATOR_BASE_HPP_
+#define JUBATUS_COMMON_GLOBAL_ID_GENERATOR_BASE_HPP_
 
+#include <stdint.h>
 #include <string>
-#include <pficommon/text/json.h>
 
 namespace jubatus {
+namespace common {
 
-namespace storage {
-
-class storage_base;
-
-}  // namespace storage
-
-namespace jsonconfig {
-
-class config;
-
-}  // namespace jsonconfig
-
-namespace classifier {
-
-class classifier_base;
-
-class classifier_factory {
+class global_id_generator_base {
  public:
-  static classifier_base* create_classifier(
-      const std::string& name,
-      const jsonconfig::config& param,
-      storage::storage_base* storage);
+  virtual ~global_id_generator_base() {}
+
+  virtual uint64_t generate() = 0;
 };
 
-}  // namespace classifier
+}  // namespace common
 }  // namespace jubatus
 
-#endif  // JUBATUS_CLASSIFIER_CLASSIFIER_FACTORY_HPP_
+#endif  // JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_
