@@ -44,7 +44,6 @@ using std::pair;
 using std::string;
 using std::vector;
 using std::pair;
-using std::isfinite;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
 using jubatus::common::cshared_ptr;
@@ -52,8 +51,6 @@ using jubatus::common::lock_service;
 using jubatus::framework::convert;
 using jubatus::framework::server_argv;
 using jubatus::framework::mixer::create_mixer;
-using jubatus::framework::mixable_holder;
-using jubatus::fv_converter::weight_manager;
 
 namespace jubatus {
 namespace server {
@@ -83,7 +80,9 @@ anomaly_serv::anomaly_serv(
 
 #ifdef HAVE_ZOOKEEPER_H
   if (a.is_standalone()) {
+#endif
     idgen_.reset(new common::global_id_generator_standalone());
+#ifdef HAVE_ZOOKEEPER_H
   } else {
     zk_ = zk;
     common::global_id_generator_zk* idgen_zk =
@@ -94,8 +93,6 @@ anomaly_serv::anomaly_serv(
     common::build_actor_path(counter_path, a.type, a.name);
     idgen_zk->set_ls(zk_, counter_path);
   }
-#else
-  idgen_.reset(new common::global_id_generetor_standalone());
 #endif
 }
 
@@ -117,6 +114,9 @@ bool anomaly_serv::set_config(const std::string& config) {
   config_ = config;
 
 #if 0
+  // TODO(oda): we should use optional<jsonconfig::config> instead of
+  //            jsonconfig::config ?
+
   jsonconfig::config param;
   if (conf.parameter) {
     param = jsonconfig::config(*conf.parameter);
@@ -150,13 +150,17 @@ bool anomaly_serv::clear_row(const string& id) {
 pair<string, float> anomaly_serv::add(const datum& d) {
   check_set_config();
 
+#ifdef HAVE_ZOOKEEPER_H
   if (argv().is_standalone()) {
+#endif
     fv_converter::datum data;
     convert(d, data);
     return anomaly_->add(idgen_, data);
+#ifdef HAVE_ZOOKEEPER_H
   } else {
     return add_zk(d);
   }
+#endif
 }
 
 pair<string, float> anomaly_serv::add_zk(const datum& d) {

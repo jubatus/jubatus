@@ -6,7 +6,7 @@ def configure(conf):
 
 def build(bld):
 
-  # TODO: annomaly, graph
+  # TODO: graph
   core_source = [
       'classifier.cpp',
       'regression.cpp',
