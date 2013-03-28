@@ -17,3 +17,7 @@ callgrind.*
 *.omc
 *.cmi
 *.cmx
+GPATH
+GRTAGS
+GSYMS
+GTAGS
