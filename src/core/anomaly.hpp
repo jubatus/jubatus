@@ -22,7 +22,6 @@
 #include <vector>
 #include <pficommon/lang/shared_ptr.h>
 #include "../anomaly/anomaly_base.hpp"
-#include "../common/global_id_generator_base.hpp"
 #include "../common/shared_ptr.hpp"
 #include "../framework/mixable.hpp"
 #include "../framework/mixer/mixer.hpp"
@@ -81,7 +80,7 @@ class anomaly {
 
   void clear_row(const std::string& id);
   std::pair<std::string, float> add(
-      const pfi::lang::shared_ptr<common::global_id_generator_base>& idgen,
+      const std::string& id,
       const fv_converter::datum& d);
   float update(const std::string& id, const fv_converter::datum& d);
   void clear();

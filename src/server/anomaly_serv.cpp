@@ -152,23 +152,23 @@ bool anomaly_serv::clear_row(const string& id) {
 pair<string, float> anomaly_serv::add(const datum& d) {
   check_set_config();
 
+  uint64_t id = idgen_->generate();
+  string id_str = pfi::lang::lexical_cast<string>(id);
+
 #ifdef HAVE_ZOOKEEPER_H
   if (argv().is_standalone()) {
 #endif
     fv_converter::datum data;
     convert(d, data);
-    return anomaly_->add(idgen_, data);
+    return anomaly_->add(id_str, data);
 #ifdef HAVE_ZOOKEEPER_H
   } else {
-    return add_zk(d);
+    return add_zk(id_str, d);
   }
 #endif
 }
 
-pair<string, float> anomaly_serv::add_zk(const datum& d) {
-  uint64_t id = idgen_->generate();
-  string id_str = pfi::lang::lexical_cast<string>(id);
-
+pair<string, float> anomaly_serv::add_zk(const string&id_str, const datum& d) {
   vector<pair<string, int> > nodes;
   float score = 0;
   find_from_cht(id_str, 2, nodes);

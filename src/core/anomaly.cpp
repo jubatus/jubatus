@@ -74,13 +74,10 @@ void anomaly::clear_row(const std::string& id) {
 }
 
 pair<string, float> anomaly::add(
-    const pfi::lang::shared_ptr<common::global_id_generator_base>& idgen,
+    const string& id,
     const fv_converter::datum& d) {
-  uint64_t id = idgen->generate();
-  string id_str = pfi::lang::lexical_cast<string>(id);
-
-  float score = this->update(id_str, d);
-  return make_pair(id_str, score);
+  float score = this->update(id, d);
+  return make_pair(id, score);
 }
 
 float anomaly::update(const string& id, const fv_converter::datum& d) {
