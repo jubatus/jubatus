@@ -25,8 +25,10 @@
 #include <pficommon/text/json.h>
 
 #include "../common/global_id_generator_standalone.hpp"
+#ifdef HAVE_ZOOKEEPER_H
 #include "../common/global_id_generator_zk.hpp"
 #include "../common/membership.hpp"
+#endif
 #include "../common/util.hpp"
 #include "../common/vector_util.hpp"
 #include "../common/jsonconfig.hpp"

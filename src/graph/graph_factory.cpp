@@ -25,7 +25,7 @@
 namespace jubatus {
 namespace graph {
 
-graph_base* create_graph(
+graph_base* graph_factory::create_graph(
     const std::string& name,
     const jsonconfig::config& param) {
   if (name == "graph_wo_index") {

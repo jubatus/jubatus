@@ -59,8 +59,6 @@ struct mixable_anomaly : public framework::mixable<
   }
 };
 
-class anomaly_cluster_base;
-
 class anomaly {
  public:
   anomaly(

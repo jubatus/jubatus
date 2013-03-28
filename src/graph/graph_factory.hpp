@@ -29,9 +29,12 @@ namespace graph {
 
 class graph_base;
 
-graph_base* create_graph(
-    const std::string& name,
-    const jsonconfig::config& param);
+class graph_factory {
+ public:
+  static graph_base* create_graph(
+      const std::string& name,
+      const jsonconfig::config& param);
+};
 
 }  // namespace graph
 

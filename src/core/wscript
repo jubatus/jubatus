@@ -5,14 +5,13 @@ def configure(conf):
   pass
 
 def build(bld):
-
-  # TODO: graph
   core_source = [
       'classifier.cpp',
       'regression.cpp',
       'recommender.cpp',
       'stat.cpp',
       'anomaly.cpp',
+      'graph.cpp',
       'linear_function_mixer.cpp',
       'mixable_weight_manager.cpp',
       ]
@@ -21,7 +20,7 @@ def build(bld):
     source = core_source,
     target = 'jubatus_core',
     includes = '.',
-    use = 'PFICOMMON jubacommon jubatus_framework MSGPACK LIBGLOG jubaconverter jubastorage jubamixer jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly'
+    use = 'PFICOMMON jubacommon jubatus_framework MSGPACK LIBGLOG jubaconverter jubastorage jubamixer jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph'
     )
 
   def make_test(t):
@@ -45,5 +44,6 @@ def build(bld):
       'regression.hpp',
       'recommender.hpp',
       'stat.hpp',
-      'anomaly.hpp'
+      'anomaly.hpp',
+      'graph.hpp'
       ])
