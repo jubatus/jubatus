@@ -53,9 +53,11 @@ FILES[] =
   file_util
   syntax
   config
+  lib
   cpp
   python
   ruby
+  java
   main
 
 

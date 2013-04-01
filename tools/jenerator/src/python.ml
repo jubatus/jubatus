@@ -28,7 +28,6 @@ let comment_out_head = "#"
 let make_header conf source filename content =
   make_source conf source filename content comment_out_head
 ;;
-  
 
 (* return : retval = self.client.call(names) *)
 let gen_retval = function

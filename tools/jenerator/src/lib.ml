@@ -80,9 +80,9 @@ let rec concat_blocks blocks =
 ;;
 
 let make_header_message source comment_out_head =
-  let file = Filename.basename source in
+ (*  let file = Filename.basename source in *)
   [
-    comment_out_head ^ " This file is auto-generated from " ^ file;
+    comment_out_head ^ " This file is auto-generated from " ^ source;
     comment_out_head ^ " *** DO NOT EDIT ***";
     "";
   ]
