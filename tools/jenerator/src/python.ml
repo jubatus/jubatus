@@ -59,27 +59,27 @@ let gen_typename_with_bar name num =
 ;;
 
 let rec gen_type t name num = match t with
-    | Object -> raise (Unknown_type("Object is not supported"))
-    | Bool | Int(_, _) | Float(_) | Raw | String -> 
-	gen_typename_with_paren name num
-    | Struct s  -> s ^ ".from_msgpack(" ^ gen_typename_with_paren name num ^ ")"
-    | List t -> 
-	let name_bar = "elem_" ^ (gen_typename_with_bar name num) in
-	let name_paren = gen_typename_with_paren name num in
-	  "[" ^ (gen_type t name_bar "") ^ " for " ^ name_bar 
-	  ^ " in " ^ name_paren ^ "]"
-    | Map(key, value) -> 
-	let new_name_bar = (gen_typename_with_bar name num) in
-	let new_name_paren = (gen_typename_with_paren name num) in
-	let t1' = (gen_type key ("k_" ^ new_name_bar) "") in
-	let t2' = (gen_type value ("v_" ^ new_name_bar) "") in
-	  "{" ^ t1' ^ " : " ^ t2' ^ " for " ^ 
-	    ("k_" ^ new_name_bar)  ^ "," ^ ("v_" ^ new_name_bar) ^ 
-	    " in " ^ new_name_paren ^ ".items()" ^ "}"
-    | Tuple [t1; t2] -> 
-	" (" ^ gen_type t1 (name ^ "[0]") num ^ ", " ^ gen_type t2 (name ^ "[1]") num ^") "
-    | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
-    | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
+  | Object -> raise (Unknown_type("Object is not supported"))
+  | Bool | Int(_, _) | Float(_) | Raw | String -> 
+    gen_typename_with_paren name num
+  | Struct s  -> s ^ ".from_msgpack(" ^ gen_typename_with_paren name num ^ ")"
+  | List t -> 
+    let name_bar = "elem_" ^ (gen_typename_with_bar name num) in
+    let name_paren = gen_typename_with_paren name num in
+    "[" ^ (gen_type t name_bar "") ^ " for " ^ name_bar 
+    ^ " in " ^ name_paren ^ "]"
+  | Map(key, value) -> 
+    let new_name_bar = (gen_typename_with_bar name num) in
+    let new_name_paren = (gen_typename_with_paren name num) in
+    let t1' = (gen_type key ("k_" ^ new_name_bar) "") in
+    let t2' = (gen_type value ("v_" ^ new_name_bar) "") in
+    "{" ^ t1' ^ " : " ^ t2' ^ " for " ^ 
+      ("k_" ^ new_name_bar)  ^ "," ^ ("v_" ^ new_name_bar) ^ 
+      " in " ^ new_name_paren ^ ".items()" ^ "}"
+  | Tuple [t1; t2] -> 
+    " (" ^ gen_type t1 (name ^ "[0]") num ^ ", " ^ gen_type t2 (name ^ "[1]") num ^") "
+  | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
+  | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
 ;;
 
 let gen_args args = 
@@ -125,7 +125,7 @@ let gen_client s =
   let content = concat_blocks (constructor :: methods) in
     List.concat [
       [
-	(0, "class " ^ s.service_name ^ ":");
+        (0, "class " ^ s.service_name ^ ":");
       ];
     indent_lines 1 content
     ]
@@ -157,10 +157,10 @@ let rec gen_from_msgpack_types field_types = match field_types with
   | [t] -> [(0, (gen_type t "arg" ""))] (* TODO : ad-hoc? *)
   | _ -> 
       let rec loop lst num = match lst with
-	| [] -> []
-	| [t] -> [(0, (gen_type t "arg" (string_of_int num)))]
-	| t :: rest -> 
-	    (0, (gen_type t "arg" (string_of_int num)) ^ ",") :: (loop rest (num + 1))
+        | [] -> []
+        | [t] -> [(0, (gen_type t "arg" (string_of_int num)))]
+        | t :: rest -> 
+          (0, (gen_type t "arg" (string_of_int num)) ^ ",") :: (loop rest (num + 1))
       in loop field_types 0
 ;;
     
@@ -172,9 +172,9 @@ let gen_from_msgpack field_names field_types s =
     if s = "" then (List.concat [[(1, "return ")]; (indent_lines 2 (gen_from_msgpack_types field_types))])
     else
       List.concat [
-	[(1, "return " ^ s ^ "(")];
-	indent_lines 2 (gen_from_msgpack_types field_types);
-	[(1, ")")]]
+        [(1, "return " ^ s ^ "(")];
+        indent_lines 2 (gen_from_msgpack_types field_types);
+        [(1, ")")]]
   ]
 ;;
 
