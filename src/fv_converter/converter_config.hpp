@@ -20,7 +20,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <msgpack.hpp>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/optional.h>
 #include <pficommon/lang/shared_ptr.h>
@@ -40,8 +39,6 @@ struct string_rule {
   std::string sample_weight;
   std::string global_weight;
 
-  MSGPACK_DEFINE(key, type, sample_weight, global_weight);
-
   friend class pfi::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
@@ -60,8 +57,6 @@ struct filter_rule {
   std::string type;
   std::string suffix;
 
-  MSGPACK_DEFINE(key, type, suffix);
-
   friend class pfi::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
@@ -73,8 +68,6 @@ struct num_rule {
   std::string key;
   pfi::data::optional<std::string> except;
   std::string type;
-
-  MSGPACK_DEFINE(key, type);
 
   friend class pfi::data::serialization::access;
   template<class Archive>
@@ -97,11 +90,6 @@ struct converter_config {
   std::vector<num_rule> num_rules;
 
   pfi::data::optional<int64_t> hash_max_size;
-
-  MSGPACK_DEFINE(string_filter_types, string_filter_rules,
-      num_filter_types, num_filter_rules,
-      string_types, string_rules,
-      num_types, num_rules);
 
   friend class pfi::data::serialization::access;
   template<class Archive>
