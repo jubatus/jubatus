@@ -67,7 +67,6 @@ def build(bld):
     'cached_zk.hpp',
     'cht.hpp',
     'config.hpp',
-    'config_util.hpp',
     'exception.hpp',
     'exception_info.hpp',
     'global_id_generator.hpp',
