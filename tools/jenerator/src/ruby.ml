@@ -41,11 +41,11 @@ let gen_retval' = function
 let gen_retval args typ = match typ with
   | Some(t) -> 
       (match t with
-	 | Struct (st) ->
-	     (String.capitalize st) ^ ".from_tuple(" ^ gen_retval' args ^ ")"
-	 | Bool | Float(_) | String | Map(_) | List(_) -> gen_retval' args
-	 | _ -> gen_retval' args
-	     (* TODO: OK? *)
+      | Struct (st) ->
+        (String.capitalize st) ^ ".from_tuple(" ^ gen_retval' args ^ ")"
+      | Bool | Float(_) | String | Map(_) | List(_) -> gen_retval' args
+      | _ -> gen_retval' args
+      (* TODO: OK? *)
       )      
   | None -> gen_retval' args
 ;;
@@ -66,9 +66,9 @@ let rec gen_type t name = match t with
   | Struct s  -> (String.capitalize s) ^ ".from_tuple(" ^ name ^ ")"
   | List t -> 
       (match t with
-	 | Bool | Int(_, _) | Float(_) | Raw | String -> name ^ ".map {|x| x}"
-	 | _ ->
-	     name ^ ".map {|x|  [" ^ gen_type t "x" ^ "] }")
+      | Bool | Int(_, _) | Float(_) | Raw | String -> name ^ ".map {|x| x}"
+      | _ ->
+        name ^ ".map {|x|  [" ^ gen_type t "x" ^ "] }")
   | Map(key, value) -> 
       name ^ ".each_with_object({}) {|(k,v),h| h[k] = v}" (* TODO: OK? *)
   | Tuple [t1; t2] ->
@@ -105,11 +105,11 @@ let gen_client s =
   let content = List.concat (constructor :: methods) in
     List.concat [
       [
-	(0, "class " ^ (String.capitalize s.service_name));
+        (0, "class " ^ (String.capitalize s.service_name));
       ];
     indent_lines 1 content;
       [
-	(0, "end")
+        (0, "end")
       ]
     ]
 ;;
@@ -125,8 +125,8 @@ let gen_self_with_equal field_names =
 
 let gen_initialize field_names = 
     (List.concat [[(0, gen_def ("initialize"::field_names))];
-		  indent_lines 1 (gen_self_with_equal field_names);
-		  [(0, "end")]])
+                  indent_lines 1 (gen_self_with_equal field_names);
+                  [(0, "end")]])
 ;;
 
 (* ad hoc ..  TODO: nested struct *)
@@ -161,11 +161,11 @@ let rec gen_from_tuple_types field_types =
   let rec loop field_types num = match field_types with
     | [] -> []
     | [t] -> 
-	let name = "tuple[" ^ (string_of_int num) ^ "]" in
-	[(2, gen_type t name)]
+      let name = "tuple[" ^ (string_of_int num) ^ "]" in
+      [(2, gen_type t name)]
     | t :: rest -> 
-	let name = "tuple[" ^ (string_of_int num) ^ "]" in
-	(2, (gen_type t name) ^ ",") :: (loop rest (num + 1)) 
+      let name = "tuple[" ^ (string_of_int num) ^ "]" in
+      (2, (gen_type t name) ^ ",") :: (loop rest (num + 1)) 
   in loop field_types 0
 ;;
     
@@ -184,9 +184,9 @@ let gen_attr_reader field_names field_types =
   let rec loop field_names field_types = match (field_names, field_types) with
     | ([], []) -> []
     | (n :: ns, t :: ts) ->
-	(match t with
-	   | Map(_) | Struct(_) -> (":" ^ n) :: (loop ns ts)
-	   | _ -> (loop ns ts))
+      (match t with
+      | Map(_) | Struct(_) -> (":" ^ n) :: (loop ns ts)
+      | _ -> (loop ns ts))
     | _ -> assert false
   in
     match (loop field_names field_types) with
@@ -199,9 +199,9 @@ let gen_attr_accessor field_names field_types =
   let rec loop field_names field_types = match (field_names, field_types) with
     | ([], []) -> []
     | (n :: ns, t :: ts) ->
-	(match t with
-	   | Map(_) | Struct(_) ->(loop ns ts)
-	   | _ ->  (":" ^ n) :: (loop ns ts))
+      (match t with
+      | Map(_) | Struct(_) ->(loop ns ts)
+      | _ ->  (":" ^ n) :: (loop ns ts))
     | _ -> assert false
   in
     match (loop field_names field_types) with
