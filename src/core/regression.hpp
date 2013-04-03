@@ -25,7 +25,7 @@
 #include "../framework/mixable.hpp"
 #include "../framework/mixer/mixer.hpp"
 #include "../framework/server_base.hpp"
-#include "../server/diffv.hpp"
+#include "diffv.hpp"
 #include "linear_function_mixer.hpp"
 #include "mixable_weight_manager.hpp"
 

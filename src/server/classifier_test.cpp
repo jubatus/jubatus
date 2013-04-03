@@ -27,7 +27,6 @@
 #include <pficommon/lang/cast.h>
 #include <pficommon/text/json.h>
 
-#include "diffv.hpp"
 #include "classifier_client.hpp"
 #include "classifier_serv.hpp"
 #include "../storage/storage_type.hpp"
