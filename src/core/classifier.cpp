@@ -64,22 +64,11 @@ classifier::classifier(
 classifier::~classifier() {
 }
 
-#if 0
-void classifier::get_status(status_t& status) const {
-  status_t my_status;
-  mixable_classifier_model_.get_model()->get_status(my_status);
-  my_status["storage"] = mixable_classifier_model_.get_model()->type();
-
-  status.insert(my_status.begin(), my_status.end());
-}
-#endif
-
 void classifier::train(const pair<string, fv_converter::datum>& data) {
   sfv_t v;
   converter_->convert_and_update_weight(data.second, v);
   sort_and_merge(v);
   classifier_->train(v, data.first);
-  // TODO(suma): increment mixer
 }
 
 classify_result classifier::classify(
