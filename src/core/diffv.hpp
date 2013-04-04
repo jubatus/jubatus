@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,21 +14,43 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-#include "global_id_generator_base.hpp"
-#include "global_id_generator_standalone.hpp"
+#ifndef JUBATUS_CORE_DIFFV_HPP_
+#define JUBATUS_CORE_DIFFV_HPP_
+
+#include "../storage/storage_type.hpp"
 
 namespace jubatus {
-namespace common {
+namespace core {
 
-TEST(generate, standalone) {
-  global_id_generator_standalone gen;
-  EXPECT_EQ(0u, gen.generate());
-  EXPECT_EQ(1u, gen.generate());
-  EXPECT_EQ(2u, gen.generate());
-}
+struct diffv {
+ public:
+  diffv(int c, const storage::features3_t& w)
+      : count(c),
+        v(w) {
+  }
 
-// TODO(oda): test with idgen_zk
+  diffv()
+      : count(0),
+        v() {
+  }
 
-}  // namespace common
+  int count;
+  storage::features3_t v;
+
+  diffv& operator/=(double d) {
+    this->v /= d;
+    return *this;
+  }
+
+  MSGPACK_DEFINE(count, v);
+
+  template<class Archiver>
+  void serialize(Archiver& ar) {
+    ar & MEMBER(count) & MEMBER(v);
+  }
+};
+
+}  // namespace core
 }  // namespace jubatus
+
+#endif  // JUBATUS_CORE_DIFFV_HPP_

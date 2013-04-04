@@ -18,7 +18,7 @@ def build_one(bld, name, libraries = '', sources = ''):
     source = __sources,
     target = 'juba'+name,
     includes = '.',
-    use = 'jubatus_framework jubacommon_mprpc jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
+    use = 'jubatus_framework jubacommon_mprpc jubatus_core jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
@@ -37,34 +37,17 @@ def build_one(bld, name, libraries = '', sources = ''):
 
 
 def build(bld):
-  bld.stlib(
-    source = [
-      'linear_function_mixer.cpp',
-      'mixable_weight_manager.cpp',
-      ],
-    includes = '.',
-    target = 'jubaserver',
-    )
-
-  bld.program(
-    features='gtest',
-    source='linear_function_mixer_test.cpp',
-    target='linear_function_mixer_test',
-    includes='.',
-    use='PFICOMMON jubastorage jubaserver'
-    )
-
   #new classifier
-  build_one(bld, "classifier", 'jubaconverter jubastorage jubaserver')
+  build_one(bld, "classifier", 'jubaconverter jubastorage')
 
   # #new regression
-  build_one(bld, "regression", 'jubaconverter jubastorage jubaserver')
+  build_one(bld, "regression", 'jubaconverter jubastorage')
 
   # #new recommender
-  build_one(bld, "recommender", 'jubaconverter jubastorage jubaserver')
+  build_one(bld, "recommender", 'jubaconverter jubastorage')
 
   # #new anomaly
-  build_one(bld, "anomaly", 'jubaconverter jubastorage jubatus_recommender jubaserver')
+  build_one(bld, "anomaly", 'jubaconverter jubastorage jubatus_recommender' )
 
   build_one(bld, "stat")
 

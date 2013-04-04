@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,41 +14,23 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_DIFFV_HPP_
-#define JUBATUS_SERVER_DIFFV_HPP_
+#ifndef JUBATUS_COMMON_GLOBAL_ID_GENERATOR_BASE_HPP_
+#define JUBATUS_COMMON_GLOBAL_ID_GENERATOR_BASE_HPP_
 
-#include "../storage/storage_type.hpp"
+#include <stdint.h>
+#include <string>
 
 namespace jubatus {
+namespace common {
 
-struct diffv {
+class global_id_generator_base {
  public:
-  diffv(int c, const storage::features3_t& w)
-      : count(c),
-        v(w) {
-  }
+  virtual ~global_id_generator_base() {}
 
-  diffv()
-      : count(0),
-        v() {
-  }
-
-  int count;
-  storage::features3_t v;
-
-  diffv& operator/=(double d) {
-    this->v /= d;
-    return *this;
-  }
-
-  MSGPACK_DEFINE(count, v);
-
-  template<class Archiver>
-  void serialize(Archiver& ar) {
-    ar & MEMBER(count) & MEMBER(v);
-  }
+  virtual uint64_t generate() = 0;
 };
 
+}  // namespace common
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_DIFFV_HPP_
+#endif  // JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_

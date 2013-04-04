@@ -14,36 +14,36 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_
-#define JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_
-
-#include <stdint.h>
+#include <cassert>
 #include <string>
 
-#include "lock_service.hpp"
-#include "shared_ptr.hpp"
+#ifndef ATOMIC_I8_SUPPORT
+#include <pficommon/concurrent/lock.h>
+#include <pficommon/concurrent/mutex.h>
+#endif
+
+#include "exception.hpp"
+#include "global_id_generator_base.hpp"
+#include "global_id_generator_standalone.hpp"
 
 namespace jubatus {
 namespace common {
 
-class global_id_generator_impl;
+global_id_generator_standalone::global_id_generator_standalone()
+    : counter_(0) {
+}
 
-class global_id_generator {
- public:
-  explicit global_id_generator(bool is_standalone);
-  ~global_id_generator();
+global_id_generator_standalone::~global_id_generator_standalone() {
+}
 
-  uint64_t generate();
-
-  void set_ls(cshared_ptr<lock_service>&, const std::string&);
-
- private:
-  global_id_generator();
-
-  pfi::lang::scoped_ptr<global_id_generator_impl> pimpl_;
-};
+uint64_t global_id_generator_standalone::generate() {
+#ifdef ATOMIC_I8_SUPPORT
+  return __sync_fetch_and_add(&counter_, 1);
+#else
+  pfi::concurrent::scoped_lock lk(counter_mutex_);
+  return counter_++;
+#endif
+}
 
 }  // namespace common
 }  // namespace jubatus
-
-#endif  // JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_

@@ -14,56 +14,80 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_STAT_SERV_HPP_
-#define JUBATUS_SERVER_STAT_SERV_HPP_
+#ifndef JUBATUS_CORE_STAT_HPP_
+#define JUBATUS_CORE_STAT_HPP_
 
 #include <algorithm>
 #include <string>
 #include <utility>
 
-#include "../framework/server_base.hpp"
+#include "../stat/stat.hpp"
+#include "../stat/mixable_stat.hpp"
 #include "../framework/mixer/mixer.hpp"
-#include "../core/stat.hpp"
 
 namespace jubatus {
-namespace server {
+namespace core {
 
-class stat_serv : public framework::server_base {
+struct mixable_stat : public framework::mixable<
+    jubatus::stat::stat,
+    std::pair<double, size_t> > {
  public:
-  stat_serv(
-      const framework::server_argv&,
-      const common::cshared_ptr<common::lock_service>& zk);
-  virtual ~stat_serv();
+  void clear() {
+  }
+
+  std::pair<double, size_t> get_diff_impl() const {
+    return get_model()->get_diff();
+  }
+
+  void mix_impl(
+      const std::pair<double, size_t>& lhs,
+      const std::pair<double, size_t>& rhs,
+      std::pair<double, size_t>& mixed) const {
+    mixed = lhs;
+    jubatus::stat::mixable_stat::reduce(rhs, mixed);
+  }
+
+  void put_diff_impl(const std::pair<double, size_t>& v) {
+    get_model()->put_diff(v);
+  }
+};
+
+class stat {
+ public:
+  stat(
+      jubatus::stat::stat* stat_method,
+      pfi::lang::shared_ptr<framework::mixer::mixer> mixer);
+  virtual ~stat();
 
   framework::mixer::mixer* get_mixer() const {
-    return stat_->get_mixer();
+    return mixer_.get();
   }
 
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
-    return stat_->get_mixable_holder();
+    return mixable_holder_;
   }
 
-  void get_status(status_t& status) const;
+  jubatus::stat::stat* get_model() const {
+    return mixable_stat_model_.get_model().get();
+  }
 
-  bool set_config(const std::string&);
-  std::string get_config() const;
-  bool push(const std::string& key, double value);
+  void push(const std::string& key, double value);
   double sum(const std::string&) const;
   double stddev(const std::string&) const;
   double max(const std::string&) const;
   double min(const std::string&) const;
-  double entropy(const std::string&) const;
+  double entropy() const;
   double moment(const std::string&, int, double) const;
-
-  bool clear();
 
  private:
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<core::stat> stat_;
-  std::string config_;
+  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
+
+  pfi::lang::shared_ptr<jubatus::stat::stat> stat_;
+  mixable_stat mixable_stat_model_;
 };
 
-}  // namespace server
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_STAT_SERV_HPP_
+#endif  // JUBATUS_CORE_STAT_HPP_

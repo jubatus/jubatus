@@ -38,15 +38,7 @@ TEST(mixable_stat_test, mixed_entropy) {
 
   p.put_diff(d);
 
-  ASSERT_DOUBLE_EQ(e_e, p.mixed_entropy());
-  ASSERT_DOUBLE_EQ(p.entropy(), p.mixed_entropy());
-
-  p.clear();
-
-  d = p.get_diff();
-  ASSERT_DOUBLE_EQ(0.0, d.first);
-  ASSERT_EQ(0u, d.second);
-
-  ASSERT_DOUBLE_EQ(0.0, p.mixed_entropy());
+  ASSERT_DOUBLE_EQ(e_e, p.entropy());
+  ASSERT_DOUBLE_EQ(p.entropy(), p.entropy());
 }
 }  // namespace jubatus

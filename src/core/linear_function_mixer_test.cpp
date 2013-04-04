@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -103,7 +103,7 @@ class storage_mock_1 : public storage_mock_base {
 
 }  // namespace storage
 
-namespace server {
+namespace core {
 
 TEST(linear_function_mixer, diff) {
   linear_function_mixer m;
@@ -149,5 +149,5 @@ TEST(linear_function_mixer, mix) {
   EXPECT_EQ(27./8., d.v[0].second[0].second.v3);
 }
 
-}  // namespace storage
+}  // namespace core
 }  // namespace jubatus

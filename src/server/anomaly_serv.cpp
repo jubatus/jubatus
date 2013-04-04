@@ -24,27 +24,36 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/text/json.h>
 
-#include "../anomaly/anomaly_factory.hpp"
+#include "../common/global_id_generator_standalone.hpp"
+#ifdef HAVE_ZOOKEEPER_H
 #include "../common/cht.hpp"
+#include "../common/global_id_generator_zk.hpp"
 #include "../common/membership.hpp"
+#endif
+#include "../common/util.hpp"
+#include "../common/vector_util.hpp"
 #include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
+#include "../fv_converter/datum.hpp"
+#include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/converter_config.hpp"
+#include "../anomaly/anomaly_factory.hpp"
 #include "anomaly_client.hpp"
 
 using std::string;
 using std::vector;
 using std::pair;
 
+using std::string;
+using std::vector;
+using std::pair;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
 using jubatus::common::cshared_ptr;
 using jubatus::common::lock_service;
-using jubatus::common::build_actor_path;
 using jubatus::framework::convert;
 using jubatus::framework::server_argv;
 using jubatus::framework::mixer::create_mixer;
-using jubatus::framework::mixable_holder;
 
 namespace jubatus {
 namespace server {
@@ -53,6 +62,8 @@ namespace {
 
 struct anomaly_serv_config {
   std::string method;
+  // TODO(oda): we should use optional<jsonconfig::config> instead of
+  //            jsonconfig::config ?
   jsonconfig::config parameter;
   pfi::text::json::json converter;
 
@@ -62,35 +73,30 @@ struct anomaly_serv_config {
   }
 };
 
-common::cshared_ptr<jubatus::anomaly::anomaly_base> make_model(
-    const anomaly_serv_config& conf) {
-  return cshared_ptr<jubatus::anomaly::anomaly_base>(
-      jubatus::anomaly::create_anomaly(conf.method, conf.parameter));
-}
-
 }  // namespace
 
 anomaly_serv::anomaly_serv(
     const server_argv& a,
     const cshared_ptr<lock_service>& zk)
     : server_base(a),
-      idgen_(a.is_standalone()) {
-  mixer_.reset(create_mixer(a, zk));
-  mixable_holder_.reset(new mixable_holder());
-  wm_.set_model(
-      mixable_weight_manager::model_ptr(new fv_converter::weight_manager));
+      mixer_(create_mixer(a, zk)) {
 
 #ifdef HAVE_ZOOKEEPER_H
-  zk_ = zk;
-
-  string counter_path;
-  build_actor_path(counter_path, a.type, a.name);
-  idgen_.set_ls(zk_, counter_path);
+  if (a.is_standalone()) {
 #endif
+    idgen_.reset(new common::global_id_generator_standalone());
+#ifdef HAVE_ZOOKEEPER_H
+  } else {
+    zk_ = zk;
+    common::global_id_generator_zk* idgen_zk =
+        new common::global_id_generator_zk();
+    idgen_.reset(idgen_zk);
 
-  mixer_->set_mixable_holder(mixable_holder_);
-  mixable_holder_->register_mixable(&anomaly_);
-  mixable_holder_->register_mixable(&wm_);
+    string counter_path;
+    common::build_actor_path(counter_path, a.type, a.name);
+    idgen_zk->set_ls(zk_, counter_path);
+  }
+#endif
 }
 
 anomaly_serv::~anomaly_serv() {
@@ -98,7 +104,7 @@ anomaly_serv::~anomaly_serv() {
 
 void anomaly_serv::get_status(status_t& status) const {
   status_t my_status;
-  my_status["storage"] = anomaly_.get_model()->type();
+  my_status["storage"] = anomaly_->get_model()->type();
 
   status.insert(my_status.begin(), my_status.end());
 }
@@ -109,8 +115,23 @@ bool anomaly_serv::set_config(const std::string& config) {
       jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
 
   config_ = config;
-  converter_ = fv_converter::make_fv_converter(conf.converter);
-  anomaly_.set_model(make_model(conf));
+
+#if 0
+  // TODO(oda): we should use optional<jsonconfig::config> instead of
+  //            jsonconfig::config ?
+
+  jsonconfig::config param;
+  if (conf.parameter) {
+    param = jsonconfig::config(*conf.parameter);
+  }
+#endif
+
+  anomaly_.reset(
+      new core::anomaly(
+          anomaly::anomaly_factory::create_anomaly(
+              conf.method, conf.parameter),
+          mixer_,
+          fv_converter::make_fv_converter(conf.converter)));
 
   LOG(INFO) << "config loaded: " << config;
   return true;
@@ -123,7 +144,7 @@ string anomaly_serv::get_config() const {
 
 bool anomaly_serv::clear_row(const string& id) {
   check_set_config();
-  anomaly_.get_model()->clear_row(id);
+  anomaly_->clear_row(id);
   DLOG(INFO) << "row cleared: " << id;
   return true;
 }
@@ -132,14 +153,23 @@ bool anomaly_serv::clear_row(const string& id) {
 pair<string, float> anomaly_serv::add(const datum& d) {
   check_set_config();
 
-  uint64_t id = idgen_.generate();
+  uint64_t id = idgen_->generate();
   string id_str = pfi::lang::lexical_cast<string>(id);
 
+#ifdef HAVE_ZOOKEEPER_H
   if (argv().is_standalone()) {
-    float score = update(id_str, d);
-    return make_pair(id_str, score);
+#endif
+    fv_converter::datum data;
+    convert(d, data);
+    return anomaly_->add(id_str, data);
+#ifdef HAVE_ZOOKEEPER_H
+  } else {
+    return add_zk(id_str, d);
   }
+#endif
+}
 
+pair<string, float> anomaly_serv::add_zk(const string&id_str, const datum& d) {
   vector<pair<string, int> > nodes;
   float score = 0;
   find_from_cht(id_str, 2, nodes);
@@ -168,20 +198,16 @@ pair<string, float> anomaly_serv::add(const datum& d) {
 float anomaly_serv::update(const string& id, const datum& d) {
   check_set_config();
   fv_converter::datum data;
-  sfv_t v;
   convert(d, data);
-  converter_->convert_and_update_weight(data, v);
 
-  anomaly_.get_model()->update_row(id, v);
-  float score = anomaly_.get_model()->calc_anomaly_score(id);
+  float score = anomaly_->update(id, data);
   DLOG(INFO) << "point updated: " << id;
   return score;
 }
 
 bool anomaly_serv::clear() {
   check_set_config();
-  anomaly_.get_model()->clear();
-  wm_.clear();
+  anomaly_->clear();
   LOG(INFO) << "model cleared: " << argv().name;
   return true;
 }
@@ -189,21 +215,17 @@ bool anomaly_serv::clear() {
 float anomaly_serv::calc_score(const datum& d) const {
   check_set_config();
   fv_converter::datum data;
-  sfv_t v;
   convert(d, data);
-  converter_->convert(data, v);
-  return anomaly_.get_model()->calc_anomaly_score(v);
+  return anomaly_->calc_score(data);
 }
 
 vector<string> anomaly_serv::get_all_rows() const {
   check_set_config();
-  vector<string> ids;
-  anomaly_.get_model()->get_all_row_ids(ids);
-  return ids;
+  return anomaly_->get_all_rows();
 }
 
 void anomaly_serv::check_set_config() const {
-  if (!anomaly_.get_model()) {
+  if (!anomaly_) {
     throw JUBATUS_EXCEPTION(config_not_set());
   }
 }

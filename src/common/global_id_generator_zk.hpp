@@ -14,30 +14,34 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_LINEAR_FUNCTION_MIXER_HPP_
-#define JUBATUS_SERVER_LINEAR_FUNCTION_MIXER_HPP_
+#ifndef JUBATUS_COMMON_GLOBAL_ID_GENERATOR_ZK_HPP_
+#define JUBATUS_COMMON_GLOBAL_ID_GENERATOR_ZK_HPP_
 
-#include "../framework.hpp"
-#include "../storage/storage_base.hpp"
+#include <stdint.h>
+#include <string>
 
-#include "diffv.hpp"
+#include "global_id_generator_base.hpp"
+#include "lock_service.hpp"
+#include "shared_ptr.hpp"
 
 namespace jubatus {
-namespace server {
+namespace common {
 
-class linear_function_mixer : public jubatus::framework::mixable<
-    storage::storage_base, diffv> {
+class global_id_generator_zk: public global_id_generator_base {
  public:
-  diffv get_diff_impl() const;
+  global_id_generator_zk();
+  virtual ~global_id_generator_zk();
 
-  void mix_impl(const diffv& lhs, const diffv& rhs, diffv& mixed) const;
+  uint64_t generate();
 
-  void put_diff_impl(const diffv& v);
+  void set_ls(cshared_ptr<lock_service>& ls, const std::string& path_prefix);
 
-  void clear();
+ private:
+  std::string path_;
+  cshared_ptr<lock_service> ls_;
 };
 
-}  // namespace server
+}  // namespace common
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_LINEAR_FUNCTION_MIXER_HPP_
+#endif  // JUBATUS_COMMON_GLOBAL_ID_GENERATOR_ZK_HPP_
