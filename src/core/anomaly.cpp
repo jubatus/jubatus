@@ -59,11 +59,7 @@ anomaly::anomaly(
   mixable_holder_->register_mixable(&anomaly_);
   mixable_holder_->register_mixable(&wm_);
 
-#if 0
-  // TODO(oda): original anomaly_serv doesn't call set_weigt_manager()
-  // Is this right?
   (*converter_).set_weight_manager(wm_.get_model());
-#endif
 }
 
 anomaly::~anomaly() {
