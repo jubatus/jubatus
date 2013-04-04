@@ -153,6 +153,13 @@ vector<float> regression_serv::estimate(
   return ret;  // vector<estimate_results> >::ok(ret);
 }
 
+bool regression_serv::clear() {
+  check_set_config();
+  regression_->get_model()->clear();
+  LOG(INFO) << "model cleared: " << argv().name;
+  return true;
+}
+
 void regression_serv::check_set_config() const {
   if (!regression_) {
     throw JUBATUS_EXCEPTION(config_not_set());

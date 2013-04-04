@@ -24,10 +24,10 @@
 namespace jubatus {
 namespace classifier {
 
-class AROW : public classifier_base {
+class arow : public classifier_base {
  public:
-  explicit AROW(storage::storage_base* stroage);
-  AROW(const classifier_config& config, storage::storage_base* stroage);
+  explicit arow(storage::storage_base* stroage);
+  arow(const classifier_config& config, storage::storage_base* stroage);
   void train(const sfv_t& fv, const std::string& label);
   std::string name() const;
  private:
@@ -37,7 +37,7 @@ class AROW : public classifier_base {
       float beta,
       const std::string& pos_label,
       const std::string& neg_label);
-  classifier_config config;
+  classifier_config config_;
 };
 
 }  // namespace classifier

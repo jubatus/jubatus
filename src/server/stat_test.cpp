@@ -54,7 +54,16 @@ TEST_F(stat_test, small) {
   ASSERT_DOUBLE_EQ(0., c.entropy("", "hoge"));
 
   ASSERT_EQ(true, c.save("", __func__));
+  ASSERT_EQ(true, c.clear(""));
   ASSERT_EQ(true, c.load("", __func__));
+}
+
+TEST_F(stat_test, api_get_client) {
+  jubatus::client::stat cli("localhost", PORT, 10);
+  cli.clear("");
+
+  msgpack::rpc::client& conn = cli.get_client();
+  EXPECT_NO_THROW(conn.close());
 }
 
 }  // namespace

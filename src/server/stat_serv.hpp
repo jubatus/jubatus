@@ -55,6 +55,8 @@ class stat_serv : public framework::server_base {
   double entropy(const std::string&) const;
   double moment(const std::string&, int, double) const;
 
+  bool clear();
+
  private:
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
   pfi::lang::shared_ptr<core::stat> stat_;

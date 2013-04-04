@@ -53,6 +53,23 @@ TYPED_TEST_P(regression_test, trivial) {
   fv.clear();
   fv.push_back(make_pair("f1", 2.0));
   EXPECT_TRUE(p.estimate(fv) > 0.0);
+
+  p.clear();
+
+  fv.clear();
+  fv.push_back(make_pair("f1", 2.0));
+  EXPECT_TRUE(p.estimate(fv) == 0.0);
+
+  fv.push_back(make_pair(string("f1"), 1.0));
+  p.train(fv, -10);
+
+  fv.clear();
+  fv.push_back(make_pair(string("f2"), 1.0));
+  p.train(fv, 10);
+
+  fv.clear();
+  fv.push_back(make_pair("f1", 2.0));
+  EXPECT_TRUE(p.estimate(fv) < 0.0);
 }
 
 // TODO(odasatoshi) same as classifier_test.cpp
@@ -104,7 +121,7 @@ REGISTER_TYPED_TEST_CASE_P(
     regression_test,
     trivial, random);
 
-typedef testing::Types<regression::PA> regression_types;
+typedef testing::Types<regression::passive_aggressive> regression_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(reg, regression_test, regression_types);
 

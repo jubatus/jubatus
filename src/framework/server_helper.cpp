@@ -20,6 +20,7 @@
 
 #include "../common/cht.hpp"
 #include "../common/membership.hpp"
+#include "../common/util.hpp"
 
 namespace jubatus {
 namespace framework {
@@ -79,6 +80,7 @@ void server_helper_impl::prepare_for_run(const server_argv& a, bool use_cht) {
     }
 
     register_actor(*zk_, a.type, a.name, a.eth, a.port);
+    LOG(INFO) << "registered group membership";
   }
 #endif
 }

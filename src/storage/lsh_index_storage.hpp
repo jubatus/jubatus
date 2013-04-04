@@ -107,7 +107,7 @@ class lsh_index_storage : public recommender_storage_base {
       float norm,
       lsh_entry& entry) const;
   bool retrieve_hit_rows(
-      size_t hash,
+      uint64_t hash,
       size_t ret_num,
       pfi::data::unordered_set<uint64_t>& cands) const;
 

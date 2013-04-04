@@ -25,9 +25,9 @@
 #include <iostream>
 #include <cstdio>
 
+#include <jubatus/msgpack/rpc/client.h>
 #include <pficommon/lang/cast.h>
 #include <pficommon/text/json.h>
-#include <pficommon/network/mprpc.h>
 
 #include "../fv_converter/converter_config.hpp"
 
@@ -36,17 +36,18 @@ using std::cout;
 using std::endl;
 
 void wait_server(int port) {
-  pfi::network::mprpc::rpc_client cli("localhost", port, 10);
+  msgpack::rpc::client cli("localhost", port);
+  cli.set_timeout(10);
   int64_t sleep_time = 1000;
   // 1000 * \sum {i=0..9} 2^i = 1024000 micro sec = 1024 ms
   for (int i = 0; i < 10; ++i) {
     usleep(sleep_time);
     try {
-      cli.call<bool()>("dummy")();
+      cli.call(std::string("dummy")).get<bool>();
       throw std::runtime_error("dummy rpc successed");
-    } catch (const pfi::network::mprpc::method_not_found& e) {
+    } catch (const msgpack::rpc::no_method_error& e) {
       return;
-    } catch (const pfi::network::mprpc::rpc_io_error& e) {
+    } catch (const msgpack::rpc::connect_error& e) {
       // wait until the server bigins to listen
     }
     sleep_time *= 2;

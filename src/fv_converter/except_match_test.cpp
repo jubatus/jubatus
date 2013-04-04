@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,27 +14,24 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_PA1_HPP_
-#define JUBATUS_CLASSIFIER_PA1_HPP_
+#include <gtest/gtest.h>
 
-#include <string>
-
-#include "classifier_base.hpp"
+#include "except_match.hpp"
+#include "match_all.hpp"
+#include "exact_match.hpp"
 
 namespace jubatus {
-namespace classifier {
+namespace fv_converter {
 
-class PA1 : public classifier_base {
- public:
-  explicit PA1(storage::storage_base* storage);
-  PA1(const classifier_config& config, storage::storage_base* storage);
-  void train(const sfv_t& fv, const std::string& label);
-  std::string name() const;
- private:
-  classifier_config config;
-};
+typedef pfi::lang::shared_ptr<key_matcher> matcher_ptr;
 
-}  // namespace classifier
+TEST(except_match, trivial) {
+  except_match m(
+      matcher_ptr(new match_all()),
+      matcher_ptr(new exact_match("hoge")));
+  ASSERT_FALSE(m.match("hoge"));
+  ASSERT_TRUE(m.match("fuga"));
+}
+
+}  // namespace fv_converter
 }  // namespace jubatus
-
-#endif  // JUBATUS_CLASSIFIER_PA1_HPP_

@@ -14,46 +14,24 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_COMMON_RPC_UTIL_HPP_
-#define JUBATUS_COMMON_RPC_UTIL_HPP_
+#ifndef JUBATUS_CLASSIFIER_PASSIVE_AGGRESSIVE_HPP_
+#define JUBATUS_CLASSIFIER_PASSIVE_AGGRESSIVE_HPP_
 
 #include <string>
-#include <utility>
-#include <pficommon/data/serialization.h>
-#include <msgpack.hpp>
+
+#include "classifier_base.hpp"
 
 namespace jubatus {
+namespace classifier {
 
-typedef std::pair<std::string, int> connection_info;
-
-template<typename T, typename E = std::string>
-struct result {
-  bool success;
-  T retval;
-  E error;
-
-  static result<T, E> ok(const T& t) {
-    result<T, E> r;
-    r.success = true;
-    r.retval = t;
-    return r;
-  }
-
-  static result<T, E> fail(const E& e) {
-    result<T, E> r;
-    r.success = false;
-    r.error = e;
-    return r;
-  }
-
-
-  MSGPACK_DEFINE(success, retval, error);
-  template<class Archiver>
-  void serialize(Archiver& ar) {
-    ar & MEMBER(success) & MEMBER(retval) & MEMBER(error);
-  }
+class passive_aggressive : public classifier_base {
+ public:
+  explicit passive_aggressive(storage::storage_base* storage);
+  void train(const sfv_t& fv, const std::string& label);
+  std::string name() const;
 };
 
+}  // namespace classifier
 }  // namespace jubatus
 
-#endif  // JUBATUS_COMMON_RPC_UTIL_HPP_
+#endif  // JUBATUS_CLASSIFIER_PASSIVE_AGGRESSIVE_HPP_

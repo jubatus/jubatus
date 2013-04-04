@@ -27,7 +27,7 @@ norm_l2::~norm_l2() {
 }
 
 void norm_l2::clear() {
-  sq_norms_.clear();
+  pfi::data::unordered_map<std::string, float>().swap(sq_norms_);
 }
 
 void norm_l2::notify(const std::string& row, float old_val, float new_val) {

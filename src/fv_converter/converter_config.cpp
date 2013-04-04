@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <pficommon/text/json.h>
+#include "except_match.hpp"
 #include "datum_to_fv_converter.hpp"
 #include "exception.hpp"
 #include "key_matcher.hpp"
@@ -86,6 +87,19 @@ std::string get_or_die(
   }
 }
 
+matcher_ptr create_key_matcher(
+    const std::string& key,
+    const pfi::data::optional<std::string>& except) {
+  key_matcher_factory f;
+  if (except) {
+    matcher_ptr m1(f.create_matcher(key));
+    matcher_ptr m2(f.create_matcher(*except));
+    return matcher_ptr(new except_match(m1, m2));
+  } else {
+    return matcher_ptr(f.create_matcher(key));
+  }
+}
+
 void init_string_filter_types(
     const std::map<std::string, param_t>& filter_types,
     std::map<std::string, string_filter_ptr>& filters) {
@@ -120,7 +134,6 @@ void init_num_filter_rules(
     const std::vector<filter_rule>& filter_rules,
     const std::map<std::string, num_filter_ptr>& filters,
     datum_to_fv_converter& conv) {
-  key_matcher_factory f;
   for (size_t i = 0; i < filter_rules.size(); ++i) {
     const filter_rule& rule = filter_rules[i];
     std::map<std::string, num_filter_ptr>::const_iterator it =
@@ -130,7 +143,7 @@ void init_num_filter_rules(
           converter_exception("unknown type: " + rule.type));
     }
 
-    matcher_ptr m(f.create_matcher(rule.key));
+    matcher_ptr m(create_key_matcher(rule.key, rule.except));
     conv.register_num_filter(m, it->second, rule.suffix);
   }
 }
@@ -158,7 +171,6 @@ void init_string_filter_rules(
     const std::vector<filter_rule>& filter_rules,
     const std::map<std::string, string_filter_ptr>& filters,
     datum_to_fv_converter& conv) {
-  key_matcher_factory f;
   for (size_t i = 0; i < filter_rules.size(); ++i) {
     const filter_rule& rule = filter_rules[i];
     std::map<std::string, string_filter_ptr>::const_iterator it =
@@ -168,7 +180,7 @@ void init_string_filter_rules(
           converter_exception("unknown type: " + rule.type));
     }
 
-    matcher_ptr m(f.create_matcher(rule.key));
+    matcher_ptr m(create_key_matcher(rule.key, rule.except));
     conv.register_string_filter(m, it->second, rule.suffix);
   }
 }
@@ -177,10 +189,9 @@ void init_string_rules(
     const std::vector<string_rule>& string_rules,
     const std::map<std::string, splitter_ptr>& splitters,
     datum_to_fv_converter& conv) {
-  key_matcher_factory f;
   for (size_t i = 0; i < string_rules.size(); ++i) {
     const string_rule& rule = string_rules[i];
-    matcher_ptr m(f.create_matcher(rule.key));
+    matcher_ptr m(create_key_matcher(rule.key, rule.except));
     std::map<std::string, splitter_ptr>::const_iterator it =
         splitters.find(rule.type);
     if (it == splitters.end()) {
@@ -218,10 +229,9 @@ void init_num_rules(
     const std::vector<num_rule>& num_rules,
     const std::map<std::string, num_feature_ptr>& num_features,
     datum_to_fv_converter& conv) {
-  key_matcher_factory f;
   for (size_t i = 0; i < num_rules.size(); ++i) {
     const num_rule& rule = num_rules[i];
-    matcher_ptr m(f.create_matcher(rule.key));
+    matcher_ptr m(create_key_matcher(rule.key, rule.except));
     std::map<std::string, num_feature_ptr>::const_iterator it =
         num_features.find(rule.type);
     if (it == num_features.end()) {

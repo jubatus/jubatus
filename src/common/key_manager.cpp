@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -71,8 +71,8 @@ void key_manager::swap(key_manager& km) {
 }
 
 void key_manager::clear() {
-  key2id_.clear();
-  id2key_.clear();
+  pfi::data::unordered_map<std::string, uint64_t>().swap(key2id_);
+  std::vector<std::string>().swap(id2key_);
 }
 
 void key_manager::init_by_id2key(const std::vector<std::string>& id2key) {

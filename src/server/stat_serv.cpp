@@ -109,5 +109,11 @@ double stat_serv::moment(const std::string& key, int n, double c) const {
   return stat_->moment(key, n, c);
 }
 
+bool stat_serv::clear() {
+  stat_->get_model()->clear();
+  LOG(INFO) << "model cleared: " << argv().name;
+  return true;
+}
+
 }  // namespace server
 }  // namespace jubatus

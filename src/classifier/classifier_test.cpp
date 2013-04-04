@@ -59,6 +59,11 @@ TYPED_TEST_P(classifier_test, trivial) {
   classify_result scores;
   p.classify_with_scores(fv, scores);
   ASSERT_EQ(2u, scores.size());
+
+  p.clear();
+
+  p.classify_with_scores(fv, scores);
+  ASSERT_EQ(0u, scores.size());
 }
 
 TYPED_TEST_P(classifier_test, sfv_err) {
@@ -132,7 +137,9 @@ REGISTER_TYPED_TEST_CASE_P(
     random,
     random3);
 
-typedef testing::Types<perceptron, PA, PA1, PA2, CW, AROW, NHERD>
+typedef testing::Types<
+  perceptron, passive_aggressive, passive_aggressive_1, passive_aggressive_2,
+  confidence_weighted, arow, normal_herd>
   classifier_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
@@ -143,13 +150,17 @@ void InitClassifiers(vector<classifier_base*>& classifiers) {
       classifier_factory::create_classifier("perceptron", param,
                                             new local_storage));
   classifiers.push_back(
-      classifier_factory::create_classifier("PA", param, new local_storage));
+      classifier_factory::create_classifier(
+          "passive_aggressive", param, new local_storage));
   classifiers.push_back(
-      classifier_factory::create_classifier("PA1", param, new local_storage));
+      classifier_factory::create_classifier(
+          "passive_aggressive_1", param, new local_storage));
   classifiers.push_back(
-      classifier_factory::create_classifier("PA2", param, new local_storage));
+      classifier_factory::create_classifier(
+          "passive_aggressive_2", param, new local_storage));
   classifiers.push_back(
-      classifier_factory::create_classifier("CW", param, new local_storage));
+      classifier_factory::create_classifier(
+          "confidence_weighted", param, new local_storage));
   classifiers.push_back(
       classifier_factory::create_classifier("AROW", param, new local_storage));
   classifiers.push_back(

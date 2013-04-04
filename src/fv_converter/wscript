@@ -129,6 +129,7 @@ def build(bld):
       'weight_manager_test.cpp',
       'keyword_weights_test.cpp',
       'feature_hasher_test.cpp',
+      'except_match_test.cpp',
       ]
   test_use = 'PFICOMMON MSGPACK jubaconverter'
 

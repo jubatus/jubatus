@@ -44,6 +44,7 @@ void mixable_weight_manager::mix_impl(
 }
 
 void mixable_weight_manager::clear() {
+  get_model()->clear();
 }
 
 }  // namespace core

@@ -50,6 +50,8 @@ class classifier_serv : public framework::server_base {
   std::vector<std::vector<estimate_result> > classify(
       const std::vector<datum>& data) const;
 
+  bool clear();
+
   void check_set_config() const;
 
  private:

@@ -50,6 +50,8 @@ class regression_serv : public framework::server_base {
   int train(const std::vector<std::pair<float, datum> >& data);
   std::vector<float> estimate(const std::vector<datum>& data) const;
 
+  bool clear();
+
   void check_set_config() const;
 
  private:

@@ -30,7 +30,7 @@ let usage =
   "usage: jenerator -l <lang> [-o <out>] [-i] [-n <namespace>] [-t] [-g <includeguard>] idl ...\n"
 ;;
 
-let languages = [ "server"; "cpp"; (* "python"; "java"; "ruby"; *) ]
+let languages = [ "server"; "cpp"; "python" ; (*"java"; *)"ruby"; ]
 ;;
 
 let exit_with_message specs msg =

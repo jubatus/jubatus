@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,43 +14,33 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "pa2.hpp"
+#ifndef JUBATUS_FV_CONVERTER_EXCEPT_MATCH_HPP_
+#define JUBATUS_FV_CONVERTER_EXCEPT_MATCH_HPP_
 
-#include <algorithm>
 #include <string>
-
-using std::string;
+#include <pficommon/lang/shared_ptr.h>
+#include "key_matcher.hpp"
 
 namespace jubatus {
-namespace classifier {
+namespace fv_converter {
 
-PA2::PA2(storage::storage_base* storage)
-    : classifier_base(storage) {
-}
-
-PA2::PA2(const classifier_config& config, storage::storage_base* storage)
-    : classifier_base(storage) {
-}
-
-void PA2::train(const sfv_t& sfv, const string& label) {
-  string incorrect_label;
-  float margin = calc_margin(sfv, label, incorrect_label);
-  float loss = 1.f + margin;
-
-  if (loss < 0.f) {
-    return;
+class except_match : public key_matcher {
+ public:
+  except_match(
+      pfi::lang::shared_ptr<key_matcher> condition,
+      pfi::lang::shared_ptr<key_matcher> except)
+      : condition_(condition), except_(except) {
   }
-  float sfv_norm = squared_norm(sfv);
-  if (sfv_norm == 0.f) {
-    return;
+
+  bool match(const std::string& s) {
+    return condition_->match(s) && !except_->match(s);
   }
-  update_weight(
-      sfv, loss / (2 * sfv_norm + 1 / (2 * config.C)), label, incorrect_label);
-}
 
-string PA2::name() const {
-  return string("PA2");
-}
+ private:
+  pfi::lang::shared_ptr<key_matcher> condition_, except_;
+};
 
-}  // namespace classifier
+}  // namespace fv_converter
 }  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_EXCEPT_MATCH_HPP_

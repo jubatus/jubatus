@@ -173,6 +173,14 @@ vector<vector<estimate_result> > classifier_serv::classify(
   return ret;  // vector<estimate_results> >::ok(ret);
 }
 
+bool classifier_serv::clear() {
+  check_set_config();
+
+  classifier_->get_model()->clear();
+  LOG(INFO) << "model cleared: " << argv().name;
+  return true;
+}
+
 void classifier_serv::check_set_config() const {
   if (!classifier_) {
     throw JUBATUS_EXCEPTION(config_not_set());

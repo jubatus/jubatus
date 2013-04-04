@@ -86,7 +86,7 @@ bool revert_string_value(
   if (at == std::string::npos) {
     return false;
   }
-  size_t dollar = f.rfind('$', at);
+  size_t dollar = f.find('$');
   if (dollar == std::string::npos) {
     return false;
   }

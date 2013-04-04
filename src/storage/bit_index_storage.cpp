@@ -69,8 +69,8 @@ void bit_index_storage::remove_row(const string& row) {
 }
 
 void bit_index_storage::clear() {
-  bitvals_.clear();
-  bitvals_diff_.clear();
+  bit_table_t().swap(bitvals_);
+  bit_table_t().swap(bitvals_diff_);
 }
 
 void bit_index_storage::get_all_row_ids(std::vector<std::string>& ids) const {

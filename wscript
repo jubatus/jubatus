@@ -1,6 +1,7 @@
 import Options
+import os
 
-VERSION = '0.4.1'
+VERSION = '0.4.2'
 APPNAME = 'jubatus'
 
 top = '.'
@@ -49,10 +50,14 @@ def configure(conf):
   conf.check_cxx(lib = 'jubatus_msgpack-rpc')
   conf.check_cxx(lib = 'dl')
 
-  conf.check_cfg(package = 'libglog', args = '--cflags --libs')
-  
-  conf.check_cfg(package = 'pficommon', args = '--cflags --libs')
-  conf.check_cxx(header_name = 'pficommon/network/mprpc.h', use = 'MSGPACK')
+  # pkg-config tests
+  conf.find_program('pkg-config') # make sure that pkg-config command exists
+  try:
+    conf.check_cfg(package = 'libglog', args = '--cflags --libs')
+    conf.check_cfg(package = 'pficommon', args = '--cflags --libs')
+  except conf.errors.ConfigurationError, e:
+    conf.to_log("PKG_CONFIG_PATH: " + os.environ.get('PKG_CONFIG_PATH', ''))
+    conf.fatal("Failed to find the library. Please confirm that PKG_CONFIG_PATH environment variable is correctly set.", e)
 
   conf.check_cxx(header_name = 'unistd.h')
   conf.check_cxx(header_name = 'sys/types.h')

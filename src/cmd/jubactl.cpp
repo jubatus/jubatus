@@ -20,7 +20,7 @@
 #include <cstring>
 
 #include <glog/logging.h>
-#include <pficommon/network/mprpc.h>
+#include <jubatus/msgpack/rpc/client.h>
 #include <pficommon/lang/function.h>
 
 #include "../third_party/cmdline/cmdline.h"
@@ -138,17 +138,17 @@ int do_request(
   int port;
   jubatus::common::revert(ip_port, ip, port);
 
-  pfi::network::mprpc::rpc_client c(ip, port, 10);
+  msgpack::rpc::client c(ip, port);
+  c.set_timeout(10);
   cout << "sending " << cmd << " / " << name << " to "
       << ip_port << "..." << std::flush;
 
   int r;
 
   if (cmd == "start") {
-    r = c.call<int(string, unsigned int, jubatus::framework::server_argv)>(cmd)(
-        name, n, argv);
+    r = c.call(cmd, name, n, argv).get<int>();
   } else {
-    r = c.call<int(string, unsigned int)>(cmd)(name, n);
+    r = c.call(cmd, name, n).get<int>();
   }
 
   if (r != 0) {
@@ -238,12 +238,13 @@ void send2server(
     int port;
     jubatus::common::revert(*it, ip, port);
 
-    pfi::network::mprpc::rpc_client c(ip, port, 10);
-    pfi::lang::function<int(string)> f = c.call<int(string)>(cmd);
+    msgpack::rpc::client c(ip, port);
+    c.set_timeout(10);
+
     cout << "sending " << cmd << " / " << name << " to "
         << *it << "..." << std::flush;
 
-    int r = f(name);
+    int r = c.call(cmd, name).get<int>();
     if (r != 0) {
       cout << "failed." << endl;
       LOG(ERROR) << "can't do '" << cmd << " " << name << "' in "

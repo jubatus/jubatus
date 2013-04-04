@@ -26,6 +26,7 @@
 
 #include "../common/global_id_generator_standalone.hpp"
 #ifdef HAVE_ZOOKEEPER_H
+#include "../common/cht.hpp"
 #include "../common/global_id_generator_zk.hpp"
 #include "../common/membership.hpp"
 #endif

@@ -24,6 +24,7 @@
 #include <glog/logging.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/text/json.h>
+#include <pficommon/system/time_util.h>
 
 #ifdef HAVE_ZOOKEEPER_H
 #include "../common/cht.hpp"

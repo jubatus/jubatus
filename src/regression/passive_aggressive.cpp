@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "pa.hpp"
+#include "passive_aggressive.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -23,48 +23,56 @@
 namespace jubatus {
 namespace regression {
 
-PA::PA(const config& config, storage::storage_base* storage)
+passive_aggressive::passive_aggressive(
+    const config& config,
+    storage::storage_base* storage)
     : regression_base(storage),
       config_(config),
-      sum_(0),
-      sq_sum_(0),
-      count_(0) {
+      sum_(0.f),
+      sq_sum_(0.f),
+      count_(0.f) {
 }
 
-PA::PA(storage::storage_base* storage)
+passive_aggressive::passive_aggressive(storage::storage_base* storage)
     : regression_base(storage),
-      sum_(0),
-      sq_sum_(0),
-      count_(0) {
+      sum_(0.f),
+      sq_sum_(0.f),
+      count_(0.f) {
 }
 
-static float calc_norm(const sfv_t& fv) {
-  float norm = 0;
+static float squared_norm(const sfv_t& fv) {
+  float norm = 0.f;
   for (size_t i = 0; i < fv.size(); ++i) {
     norm += fv[i].second * fv[i].second;
   }
   return norm;
 }
 
-void PA::train(const sfv_t& fv, float value) {
+void passive_aggressive::train(const sfv_t& fv, float value) {
   sum_ += value;
   sq_sum_ += value * value;
   count_ += 1;
   float avg = sum_ / count_;
-  float std_dev = sqrt(sq_sum_ / count_ - 2 * avg * sum_ / count_ + avg * avg);
-  float fv_norm = sqrt(calc_norm(fv));
+  float std_dev = sqrt(sq_sum_ / count_ -  avg * avg);
 
   float predict = estimate(fv);
   float error = value - predict;
-  float sign_error = error > 0 ? 1.0f : -1.0f;
+  float sign_error = error > 0.f ? 1.0f : -1.0f;
   float loss = sign_error * error - config_.epsilon * std_dev;
 
-  if (loss > 0) {
-    float coeff = sign_error * std::min(config_.C, loss) / (fv_norm * fv_norm);
+  if (loss > 0.f) {
+    float coeff = sign_error * std::min(config_.C, loss) / squared_norm(fv);
     if (!std::isinf(coeff)) {
       update(fv, coeff);
     }
   }
+}
+
+void passive_aggressive::clear() {
+  regression_base::clear();
+  sum_ = 0.f;
+  sq_sum_ = 0.f;
+  count_ = 0.f;
 }
 
 }  // namespace regression

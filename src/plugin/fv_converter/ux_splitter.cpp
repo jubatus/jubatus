@@ -16,11 +16,18 @@
 
 #include "ux_splitter.hpp"
 
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include <fstream>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
+#include <cerrno>
+
+#include <glog/logging.h>
+
 #include "../../fv_converter/util.hpp"
 #include "../../fv_converter/exception.hpp"
 
@@ -58,6 +65,18 @@ void ux_splitter::split(
 static void read_all_lines(
     const char* file_name,
     std::vector<std::string>& lines) {
+  struct stat st;
+  if (stat(file_name, &st) != 0) {
+    throw JUBATUS_EXCEPTION(
+        converter_exception("failed to stat file: " + std::string(file_name))
+        << jubatus::exception::error_api_func("stat")
+        << jubatus::exception::error_errno(errno));
+  }
+  if (S_ISDIR(st.st_mode)) {
+    throw JUBATUS_EXCEPTION(converter_exception(
+        "directory is specified instead of file: " + std::string(file_name)));
+  }
+
   std::ifstream ifs(file_name);
   if (!ifs) {
     throw JUBATUS_EXCEPTION(
@@ -77,6 +96,7 @@ jubatus::ux_splitter* create(const std::map<std::string, std::string>& params) {
       jubatus::fv_converter::get_or_die(params, "dict_path");
   std::vector<std::string> lines;
   jubatus::read_all_lines(path.c_str(), lines);
+  LOG(INFO) << "loaded " << lines.size() << " words";
 
   return new jubatus::ux_splitter(lines);
 }
