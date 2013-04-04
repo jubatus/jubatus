@@ -76,6 +76,19 @@ class server_helper {
       }
       // send error message to caller
       throw JUBATUS_EXCEPTION(config_error);
+    } catch (const pfi::lang::parse_error& e) {
+      // exit immediately on JSON parse error with exit-code 1
+      std::string msg =
+          std::string("syntax error in configuration: ") +
+          (a.is_standalone() ?
+           a.configpath :
+           std::string("<zookeeper>")) + ":" +
+          pfi::lang::lexical_cast<std::string>(e.lineno()) + ":" +
+          pfi::lang::lexical_cast<std::string>(e.pos()) + " " +
+          e.msg();
+
+      LOG(ERROR) << msg;
+      exit(1);
     }
   }
 

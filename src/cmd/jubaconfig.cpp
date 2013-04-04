@@ -147,7 +147,7 @@ void set_config(
 
   string config;
   jubatus::common::config_fromlocal(configfile, config);
-  jubatus::common::config_tozk(*ls_, type, name, config);
+  jubatus::common::config_tozk(*ls_, type, name, config, configfile);
 }
 
 void delete_config(
