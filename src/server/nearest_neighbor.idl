@@ -1,0 +1,49 @@
+
+type neighbor_result = list<tuple<string, float> >
+
+message config_data {
+  0: map<string, string> config
+  1: string converter #JSON
+}
+
+message datum {
+  0: list<tuple<string, string> >  string_values
+  1: list<tuple<string, double> >  num_values
+}
+service nearest_neighbor {
+  #@broadcast #@update #@all_and
+  bool set_config(0: string name, 1: config_data config)
+
+  #@random #@analysis #@pass
+  config_data get_config(0: string name) # //@random
+
+  #@broadcast #@update #@pass
+  bool init_table(0: string name)
+
+  #@broadcast #@update #@all_and
+  bool clear(0: string name)
+
+  #@cht(1) #@update #@pass
+  bool set_row(0: string name, 1: string id, 2: datum d)
+
+  #@random #@analysis #@pass
+  neighbor_result neighbor_row_from_id(0: string name, 1: string id, 2: uint size)
+
+  #@random #@analysis #@pass
+  neighbor_result neighbor_row_from_data(0: string name, 1: datum query, 2: uint size)
+
+  #@random #@analysis #@pass
+  neighbor_result similar_row_from_id(0: string name, 1: string id, 2: int ret_num)
+
+  #@random #@analysis #@pass
+  neighbor_result similar_row_from_data(0: string name, 1: datum query, 2: int ret_num)
+
+  #@broadcast #@nolock #@all_and
+  bool save(0: string name, 1: string id) # #@broadcast
+
+  #@broadcast #@update #@all_and
+  bool load(0: string name, 1: string id) # //@broadcast
+
+  #@broadcast #@analysis #@merge
+  map<string, map<string, string> >  get_status(0: string name) # //@broadcast
+}

@@ -1,3 +1,4 @@
+# -*- python -*-
 def options(opt):
   pass
 
@@ -9,7 +10,7 @@ def build(bld):
   mixer_source = 'mixer_factory.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
     mixer_framework += ' jubacommon jubacommon_mprpc'
-    mixer_source += ' linear_mixer.cpp'
+    mixer_source += ' linear_mixer.cpp push_mixer.cpp'
 
   bld.shlib(target = 'jubamixer',
             source = mixer_source,
@@ -27,5 +28,8 @@ def build(bld):
       'dummy_mixer.hpp',
       'linear_mixer.hpp',
       'mixer.hpp',
-      'mixer_factory.hpp'
+      'mixer_factory.hpp',
+      'random_mixer.hpp',
+      'skip_mixer.hpp',
+      'broadcast_mixer.hpp'
       ])

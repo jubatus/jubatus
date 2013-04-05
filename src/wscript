@@ -2,7 +2,7 @@ import Options
 
 subdirs = '''
 anomaly common plugin stat
-classifier fv_converter recommender regression storage
+classifier fv_converter recommender regression storage nearest_neighbor
 framework core server
 cmd jubavisor
 graph third_party

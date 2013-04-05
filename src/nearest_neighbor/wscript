@@ -1,0 +1,46 @@
+# -*- python -*-
+def options(opt):
+  pass
+
+def configure(conf):
+  pass
+
+def build(bld):
+  bld.shlib(
+    source = [
+      'nearest_neighbor_base.cpp',
+      'nearest_neighbor_factory.cpp',
+      'bit_vector_nearest_neighbor_base.cpp',
+      'bit_vector_ranking.cpp',
+      'minhash.cpp',
+      'lsh.cpp',
+      'lsh_function.cpp',
+      'euclid_lsh.cpp'
+    ],
+    target = 'jubatus_nearest_neighbor',
+    name = 'jubatus_nearest_neighbor',
+    use = 'PFICOMMON')
+
+  bld.shlib(
+    target = 'nearest_neighbor',
+    source = [
+        'bit_vector_nearest_neighbor_base.cpp',
+        'bit_vector_ranking.cpp',
+        'euclid_lsh.cpp',
+        'lsh.cpp',
+        'lsh_function.cpp',
+        'minhash.cpp',
+        'nearest_neighbor_base.cpp',
+        'nearest_neighbor_factory.cpp',
+        ],
+    use = 'PFICOMMON jubastorage')
+
+  bld.program(
+    target = 'nearest_neighbor_base_test',
+    features = 'gtest',
+    source = [
+      'nearest_neighbor_base_test.cpp',
+      'bit_vector_nearest_neighbor_base_test.cpp',
+      'nearest_neighbor_test.cpp',
+    ],
+    use = 'nearest_neighbor column_table')

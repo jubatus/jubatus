@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,22 +14,24 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
-#define JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
+#ifndef JUBATUS_NEAREST_NEIGHBOR_NEAREST_NEIGHBOR_FACTORY_HPP_
+#define JUBATUS_NEAREST_NEIGHBOR_NEAREST_NEIGHBOR_FACTORY_HPP_
 
-#include "../../common/lock_service.hpp"
-#include "../../common/shared_ptr.hpp"
-#include "../server_util.hpp"
-#include "mixer.hpp"
+#include <map>
+#include <string>
+#include "../table/column/column_table.hpp"
 
 namespace jubatus {
-namespace framework {
-namespace mixer {
+namespace nearest_neighbor {
 
-mixer* create_mixer(const server_argv& a,
-                    const common::cshared_ptr<common::lock_service>& zk,
-                    const std::string& default_mixer);
+class nearest_neighbor_base;
 
-}}} // namespace jubatus::framework::mixer
+nearest_neighbor_base*
+create_nearest_neighbor(const std::map<std::string, std::string>& config,
+                        table::column_table* table,
+                        const std::string& id);
 
-#endif  // JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
+}  // namespace nearest_neighbor
+}  // namespace jubatus
+
+#endif  // JUBATUS_NEAREST_NEIGHBOR_NEAREST_NEIGHBOR_FACTORY_HPP_

@@ -16,26 +16,17 @@
 
 #include "linear_mixer.hpp"
 
-#include <utility>
-#include <string>
-#include <vector>
-
 #include <glog/logging.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/system/time_util.h>
 #include "../../common/exception.hpp"
 #include "../../common/membership.hpp"
-#include "../../common/mprpc/rpc_mclient.hpp"
+#include "../../common/mprpc/rpc_client.hpp"
 #include "../mixable.hpp"
 
-using std::vector;
-using std::string;
-using std::pair;
-using jubatus::common::mprpc::byte_buffer;
-using pfi::concurrent::scoped_lock;
-using pfi::concurrent::scoped_rlock;
-using pfi::concurrent::scoped_wlock;
+using namespace std;
+using namespace pfi::concurrent;
 
 namespace jubatus {
 namespace framework {
@@ -43,17 +34,16 @@ namespace mixer {
 
 namespace {
 class linear_communication_impl : public linear_communication {
- public:
+public:
   linear_communication_impl(const common::cshared_ptr<common::lock_service>& zk,
-                            const string& type, const string& name,
-                            int timeout_sec);
+                            const std::string& type, const std::string& name, int timeout_sec);
 
   size_t update_members();
   pfi::lang::shared_ptr<common::try_lockable> create_lock();
-  void get_diff(common::mprpc::rpc_result_object& a) const;
-  void put_diff(const vector<common::mprpc::byte_buffer>& a) const;
+  void get_diff(common::mprpc::rpc_result_object&) const;
+  void put_diff(const vector<string>&) const;
 
- private:
+private:
   common::cshared_ptr<common::lock_service> zk_;
   string type_;
   string name_;
@@ -61,21 +51,19 @@ class linear_communication_impl : public linear_communication {
   vector<pair<string, int> > servers_;
 };
 
-linear_communication_impl::linear_communication_impl(
-    const common::cshared_ptr<common::lock_service>& zk,
-    const string& type, const string& name, int timeout_sec)
+linear_communication_impl::linear_communication_impl(const common::cshared_ptr<common::lock_service>& zk,
+                                                     const std::string& type, const std::string& name,
+                                                     int timeout_sec)
     : zk_(zk),
       type_(type),
       name_(name),
       timeout_sec_(timeout_sec) {
 }
 
-pfi::lang::shared_ptr<common::try_lockable>
-linear_communication_impl::create_lock() {
+pfi::lang::shared_ptr<common::try_lockable> linear_communication_impl::create_lock() {
   string path;
   common::build_actor_path(path, type_, name_);
-  return pfi::lang::shared_ptr<common::try_lockable>(
-      new common::lock_service_mutex(*zk_, path + "/master_lock"));
+  return pfi::lang::shared_ptr<common::try_lockable>(new common::lock_service_mutex(*zk_, path + "/master_lock"));
 }
 
 size_t linear_communication_impl::update_members() {
@@ -83,44 +71,29 @@ size_t linear_communication_impl::update_members() {
   return servers_.size();
 }
 
-void linear_communication_impl::get_diff(
-    common::mprpc::rpc_result_object& result) const {
-  // TODO(beam2d): to be replaced to new client with socket connection pooling
+void linear_communication_impl::get_diff(common::mprpc::rpc_result_object& result) const {
+  // TODO: to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
-#ifndef NDEBUG
-  for (size_t i = 0; i < servers_.size(); i++) {
-    DLOG(INFO) << "get diff from " << servers_[i].first << ":"
-        << servers_[i].second;
-  }
-#endif
   result = client.call("get_diff", 0);
 }
 
-void linear_communication_impl::put_diff(
-    const vector<common::mprpc::byte_buffer>& mixed) const {
-  // TODO(beam2d): to be replaced to new client with socket connection pooling
+void linear_communication_impl::put_diff(const vector<string>& mixed) const {
+  // TODO: to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
-#ifndef NDEBUG
-  for (size_t i = 0; i < servers_.size(); i++) {
-    DLOG(INFO) << "put diff to " << servers_[i].first << ":"
-        << servers_[i].second;
-  }
-#endif
   client.call("put_diff", mixed);
 }
 
-}  // namespace
+} // namespace
 
-pfi::lang::shared_ptr<linear_communication> linear_communication::create(
-    const common::cshared_ptr<common::lock_service>& zk,
-    const string& type, const string& name, int timeout_sec) {
-  return pfi::lang::shared_ptr<linear_communication_impl>(
-      new linear_communication_impl(zk, type, name, timeout_sec));
+pfi::lang::shared_ptr<linear_communication>
+linear_communication::create(const common::cshared_ptr<common::lock_service>& zk,
+                        const std::string& type, const std::string& name,
+                        int timeout_sec) {
+  return pfi::lang::shared_ptr<linear_communication_impl>(new linear_communication_impl(zk, type, name, timeout_sec));
 }
 
-linear_mixer::linear_mixer(
-    pfi::lang::shared_ptr<linear_communication> communication,
-    unsigned int count_threshold, unsigned int tick_threshold)
+linear_mixer::linear_mixer(pfi::lang::shared_ptr<linear_communication> communication,
+                           unsigned int count_threshold, unsigned int tick_threshold)
     : communication_(communication),
       count_threshold_(count_threshold),
       tick_threshold_(tick_threshold),
@@ -128,16 +101,15 @@ linear_mixer::linear_mixer(
       ticktime_(0),
       mix_count_(0),
       is_running_(false),
-      t_(pfi::lang::bind(&linear_mixer::mixer_loop, this)) {
-}
+      t_(pfi::lang::bind(&linear_mixer::mixer_loop, this)) {}
 
-void linear_mixer::register_api(rpc_server_t& server) {
-  server.add<vector<common::mprpc::byte_buffer>(int)>(  // NOLINT
-      "get_diff",
-      pfi::lang::bind(&linear_mixer::get_diff, this, pfi::lang::_1));
-  server.add<int(vector<common::mprpc::byte_buffer>)>(
-      "put_diff",
-      pfi::lang::bind(&linear_mixer::put_diff, this, pfi::lang::_1));
+void linear_mixer::register_api(pfi::network::mprpc::rpc_server& server) {
+  server.add<std::vector<std::string>(int)>
+      ("get_diff",
+       pfi::lang::bind(&linear_mixer::get_diff, this, pfi::lang::_1));
+  server.add<int(std::vector<std::string>)>
+      ("put_diff",
+       pfi::lang::bind(&linear_mixer::put_diff, this, pfi::lang::_1));
 }
 
 void linear_mixer::set_mixable_holder(pfi::lang::shared_ptr<mixable_holder> m) {
@@ -164,34 +136,30 @@ void linear_mixer::updated() {
   scoped_lock lk(m_);
   unsigned int new_ticktime = time(NULL);
   ++counter_;
-  if (counter_ > count_threshold_
-      || new_ticktime - ticktime_ > tick_threshold_) {
-    c_.notify();  // TODO(beam2d): need sync here?
+  if(counter_ > count_threshold_ ||
+     new_ticktime - ticktime_ > tick_threshold_){
+    c_.notify(); // FIXME: need sync here?
   }
 }
 
 void linear_mixer::get_status(server_base::status_t& status) const {
   scoped_lock lk(m_);
-  status["linear_mixer.count"] =
-    pfi::lang::lexical_cast<string>(counter_);
-  status["linear_mixer.ticktime"] =
-    pfi::lang::lexical_cast<string>(ticktime_);  // since last mix
+  status["linear_mixer.count"] = pfi::lang::lexical_cast<string>(counter_);
+  status["linear_mixer.ticktime"] = pfi::lang::lexical_cast<string>(ticktime_);  // since last mix
 }
 
 void linear_mixer::mixer_loop() {
   while (is_running_) {
-    pfi::lang::shared_ptr<common::try_lockable> zklock = communication_
-        ->create_lock();
+    pfi::lang::shared_ptr<common::try_lockable> zklock = communication_->create_lock();
     try {
       {
         scoped_lock lk(m_);
 
         c_.wait(m_, 1);
         unsigned int new_ticktime = time(NULL);
-        if (counter_ > count_threshold_
-            || new_ticktime - ticktime_ > tick_threshold_) {
+        if (counter_ > count_threshold_ || new_ticktime - ticktime_ > tick_threshold_) {
           if (zklock->try_lock()) {
-            LOG(INFO) << "starting mix:";
+            DLOG(INFO) << "starting mix:";
             counter_ = 0;
             ticktime_ = new_ticktime;
           } else {
@@ -200,9 +168,10 @@ void linear_mixer::mixer_loop() {
         } else {
           continue;
         }
-      }  // unlock
+
+      } //unlock
       mix();
-      LOG(INFO) << ".... " << mix_count_ << "th mix done.";
+      DLOG(INFO) << ".... " << mix_count_ << "th mix done.";
     } catch (const jubatus::exception::jubatus_exception& e) {
       LOG(ERROR) << e.diagnostic_information(true);
     }
@@ -210,10 +179,9 @@ void linear_mixer::mixer_loop() {
 }
 
 void linear_mixer::mix() {
-  using pfi::system::time::clock_time;
-  using pfi::system::time::get_clock_time;
+  using namespace pfi::system::time;
 
-  // vector<string> serialized_diffs;
+  //vector<string> serialized_diffs;
   clock_time start = get_clock_time();
   size_t s = 0;
 
@@ -228,18 +196,16 @@ void linear_mixer::mix() {
       common::mprpc::rpc_result_object result;
       communication_->get_diff(result);
 
-      vector<byte_buffer> mixed = result.response.front()
-        .as<vector<byte_buffer> >();
+      vector<string> mixed = result.response.front().as<vector<string> >();
       for (size_t i = 1; i < result.response.size(); ++i) {
-        vector<byte_buffer> tmp =
-          result.response[i].as<vector<byte_buffer> >();
+        vector<string> tmp = result.response[i].as<vector<string> >();
         for (size_t j = 0; j < tmp.size(); ++j) {
           mixables[j]->mix(tmp[j], mixed[j], mixed[j]);
         }
       }
 
       communication_->put_diff(mixed);
-      // TODO(beam2d): output log when result has error
+      // TODO: output log when result has error
 
       for (size_t i = 0; i < mixed.size(); ++i) {
         s += mixed[i].size();
@@ -251,36 +217,34 @@ void linear_mixer::mix() {
   }
 
   clock_time end = get_clock_time();
-  LOG(INFO) << "mixed with " << servers_size << " servers in "
-      << static_cast<double>(end - start) << " secs, " << s
-      << " bytes (serialized data) has been put.";
+  DLOG(INFO) << "mixed with " << servers_size << " servers in " << (double)(end - start) << " secs, "
+             << s << " bytes (serialized data) has been put.";
   mix_count_++;
 }
 
-vector<byte_buffer> linear_mixer::get_diff(int a) {
-  scoped_rlock lk_read(mixable_holder_->rw_mutex());
+vector<string> linear_mixer::get_diff(int) {
+  scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
 
   mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
   if (mixables.empty()) {
-    throw JUBATUS_EXCEPTION(config_not_set());  // nothing to mix
+    throw JUBATUS_EXCEPTION(config_not_set()); // nothing to mix
   }
 
-  vector<common::mprpc::byte_buffer> o;
+  std::vector<std::string> o;
   for (size_t i = 0; i < mixables.size(); ++i) {
     o.push_back(mixables[i]->get_diff());
   }
   return o;
 }
 
-int linear_mixer::put_diff(
-    const vector<common::mprpc::byte_buffer>& unpacked) {
-  scoped_wlock lk_write(mixable_holder_->rw_mutex());
+int linear_mixer::put_diff(const std::vector<std::string>& unpacked) {
+  scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
 
   mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
   if (unpacked.size() != mixables.size()) {
-    // deserialization error
+    //deserialization error
     return -1;
   }
   for (size_t i = 0; i < mixables.size(); ++i) {
@@ -291,6 +255,6 @@ int linear_mixer::put_diff(
   return 0;
 }
 
-}  // namespace mixer
-}  // namespace framework
-}  // namespace jubatus
+}
+}
+}
