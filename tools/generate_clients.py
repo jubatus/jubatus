@@ -46,7 +46,7 @@ def get_version(path):
     for line in f.readlines():
         if line[:7] == 'VERSION':
             m = re.search('[0-9\.]+', line)
-            print m.group(0)
+            print(m.group(0))
             return m.group(0)
 
 def pack(outdir):
