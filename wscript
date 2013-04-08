@@ -1,5 +1,6 @@
 import Options
 import os
+import sys
 
 VERSION = '0.4.2'
 APPNAME = 'jubatus'
@@ -55,7 +56,8 @@ def configure(conf):
   try:
     conf.check_cfg(package = 'libglog', args = '--cflags --libs')
     conf.check_cfg(package = 'pficommon', args = '--cflags --libs')
-  except conf.errors.ConfigurationError as e:
+  except conf.errors.ConfigurationError:
+    e = sys.exc_info()[1]
     conf.to_log("PKG_CONFIG_PATH: " + os.environ.get('PKG_CONFIG_PATH', ''))
     conf.fatal("Failed to find the library. Please confirm that PKG_CONFIG_PATH environment variable is correctly set.", e)
 
