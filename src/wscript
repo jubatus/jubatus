@@ -6,6 +6,7 @@ classifier fv_converter recommender regression storage nearest_neighbor
 framework core server
 cmd jubavisor
 graph third_party
+table
 '''
 
 def options(opt):
