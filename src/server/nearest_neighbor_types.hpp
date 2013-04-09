@@ -1,45 +1,29 @@
-
 // This file is auto-generated from nearest_neighbor.idl
 // *** DO NOT EDIT ***
 
-#ifndef NEAREST_NEIGHBOR_TYPES_HPP_
-#define NEAREST_NEIGHBOR_TYPES_HPP_
+#ifndef JUBATUS_SERVER_NEAREST_NEIGHBOR_TYPES_HPP_
+#define JUBATUS_SERVER_NEAREST_NEIGHBOR_TYPES_HPP_
 
+#include <stdint.h>
 
-#include <vector>
 #include <map>
 #include <string>
-#include <stdexcept>
-#include <stdint.h>
-#include <msgpack.hpp>
+#include <vector>
+#include <utility>
 
+#include <msgpack.hpp>
 
 namespace jubatus {
 
-typedef std::vector<std::pair<std::string, float > > neighbor_result;
-
-struct config_data {
-public:
-
-  
-  MSGPACK_DEFINE(config, converter);  
-
-  std::map<std::string, std::string > config;
-  std::string converter;
-};
+typedef std::vector<std::pair<std::string, float> > neighbor_result;
 
 struct datum {
-public:
-
-  
-  MSGPACK_DEFINE(string_values, num_values);  
-
-  std::vector<std::pair<std::string, std::string > > string_values;
-  std::vector<std::pair<std::string, double > > num_values;
+ public:
+  MSGPACK_DEFINE(string_values, num_values);
+  std::vector<std::pair<std::string, std::string> > string_values;
+  std::vector<std::pair<std::string, double> > num_values;
 };
 
-} // namespace jubatus
+}  // namespace jubatus
 
-
-
-#endif // NEAREST_NEIGHBOR_TYPES_HPP_
+#endif  // JUBATUS_SERVER_NEAREST_NEIGHBOR_TYPES_HPP_

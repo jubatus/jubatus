@@ -57,8 +57,19 @@ class nearest_neighbor_test
     : public ::testing::TestWithParam<map<string, string> > {
  protected:
   void SetUp() {
+    map<string, string> param = GetParam();
+    string name = param["nearest_neighbor:name"];
+    param.erase("nearest_neighbor:name");
+    using pfi::text::json::json;
+    json config_js(new pfi::text::json::json_object);
+    for (map<string, string>::iterator it = param.begin(); it != param.end(); ++it)
+      config_js.add(it->first, json(new pfi::text::json::json_string(it->second)));
+
+    using jubatus::jsonconfig::config;
+    using pfi::text::json::json;
+
     table_.reset(new column_table);
-    nn_.reset(create_nearest_neighbor(GetParam(), table_.get(), "localhost"));
+    nn_.reset(create_nearest_neighbor(name, config(config_js, ""), table_.get(), "localhost"));
   }
 
   column_table* get_table() { return table_.get(); }

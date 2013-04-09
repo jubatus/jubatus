@@ -27,9 +27,20 @@ namespace nearest_neighbor {
 
 class lsh : public bit_vector_nearest_neighbor_base {
  public:
-  lsh(const std::map<std::string, std::string>& config,
+  struct config {
+    config() : bitnum(64u) {
+    }
+
+    int32_t bitnum;
+
+    template <typename Ar>
+    void serialize(Ar& ar) {
+      ar & MEMBER(bitnum);
+    }
+  };
+  lsh(const config& conf,
       table::column_table* table, const std::string& id);
-  lsh(const std::map<std::string, std::string>& config,
+  lsh(const config& conf,
       table::column_table* table,
       std::vector<table::column_type>& schema,
       const std::string& id);

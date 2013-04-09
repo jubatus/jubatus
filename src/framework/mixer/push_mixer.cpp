@@ -19,8 +19,9 @@
 
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/bind.h>
+#include <pficommon/system/time_util.h>
 #include "../../common/membership.hpp"
-#include "../../common/mprpc/rpc_client.hpp"
+#include "../../common/mprpc/rpc_mclient.hpp"
 #include "../mixable.hpp"
 
 using namespace std;
@@ -147,7 +148,7 @@ push_mixer::push_mixer(shared_ptr<push_communication> communication,
     is_running_(false),
     t_(pfi::lang::bind(&push_mixer::mixer_loop, this)) {}
 
-void push_mixer::register_api(pfi::network::mprpc::rpc_server& server) {
+void push_mixer::register_api(rpc_server_t& server) {
   server.add<vector<string>(vector<string>)>(
     "pull", bind(&push_mixer::pull, this, _1));
   server.add<vector<string>(int)>(

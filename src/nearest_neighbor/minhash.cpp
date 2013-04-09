@@ -22,7 +22,6 @@
 
 #include <cfloat>
 #include <cmath>
-#include "../common/config_util.hpp"
 #include "../common/hash.hpp"
 
 using std::string;
@@ -65,17 +64,17 @@ float calc_hash(uint64_t a, uint64_t b, float val) {
 }
 }
 
-minhash::minhash(const map<string, string>& config,
+minhash::minhash(const config& conf,
                  table::column_table* table, const std::string& id)
     : bit_vector_nearest_neighbor_base(
-      get_param(config, "minhash:bitnum", 64u), table, id) {}
+      conf.bitnum, table, id) {}
 
-minhash::minhash(const map<string, string>& config,
+minhash::minhash(const config& conf,
                  table::column_table* table,
                  vector<column_type>& schema,
                  const std::string& id)
     : bit_vector_nearest_neighbor_base(
-      get_param(config, "minhash:bitnum", 64u), table, schema, id) {}
+      conf.bitnum, table, schema, id) {}
 
 bit_vector minhash::hash(const sfv_t& sfv) const {
   vector<float> min_values_buffer(bitnum(), FLT_MAX);

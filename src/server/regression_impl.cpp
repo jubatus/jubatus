@@ -23,34 +23,34 @@ class regression_impl_ : public regression<regression_impl_> {
     JRLOCK__(p_);
     return get_p()->get_config();
   }
-
+  
   int32_t train(std::string name, std::vector<std::pair<float,
        datum> > train_data) {
     JWLOCK__(p_);
     return get_p()->train(train_data);
   }
-
+  
   std::vector<float> estimate(std::string name,
        std::vector<datum> estimate_data) {
     JRLOCK__(p_);
     return get_p()->estimate(estimate_data);
   }
-
+  
   bool clear(std::string name) {
     JWLOCK__(p_);
     return get_p()->clear();
   }
-
+  
   bool save(std::string name, std::string id) {
     JWLOCK__(p_);
     return get_p()->save(id);
   }
-
+  
   bool load(std::string name, std::string id) {
     JWLOCK__(p_);
     return get_p()->load(id);
   }
-
+  
   std::map<std::string, std::map<std::string, std::string> > get_status(
       std::string name) {
     JRLOCK__(p_);

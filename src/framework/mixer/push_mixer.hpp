@@ -25,7 +25,7 @@
 #include <pficommon/concurrent/mutex.h>
 #include <pficommon/concurrent/thread.h>
 #include "../../common/lock_service.hpp"
-#include "../../common/mprpc/rpc_client.hpp"
+#include "../../common/mprpc/rpc_mclient.hpp"
 #include "../../common/shared_ptr.hpp"
 #include "mixer.hpp"
 
@@ -68,7 +68,7 @@ public:
              unsigned int count_threshold, unsigned int tick_threshold,
              const std::pair<std::string, int>& my_id);
 
-  void register_api(pfi::network::mprpc::rpc_server& server);
+  void register_api(rpc_server_t& server);
   void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder> holder);
 
   void start();

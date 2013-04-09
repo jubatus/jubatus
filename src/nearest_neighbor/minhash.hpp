@@ -27,9 +27,21 @@ namespace nearest_neighbor {
 
 class minhash : public bit_vector_nearest_neighbor_base {
  public:
-  minhash(const std::map<std::string, std::string>& config,
+  struct config {
+    config()
+      : bitnum(64u) {
+    }
+
+    int32_t bitnum;
+
+    template <typename Ar>
+    void serialize(Ar& ar) {
+      ar & MEMBER(bitnum);
+    }
+  };
+  minhash(const config& conf,
           table::column_table* table, const std::string& id);
-  minhash(const std::map<std::string, std::string>& config,
+  minhash(const config& conf,
           table::column_table* table,
           std::vector<table::column_type>& schema, const std::string& id);
 

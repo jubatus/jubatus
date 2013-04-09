@@ -4,9 +4,11 @@
 #include <iostream>
 
 #include "../mixable.hpp"
+#include "../../common/mprpc/byte_buffer.hpp"
 
 using namespace std;
 using pfi::lang::shared_ptr;
+using jubatus::common::mprpc::byte_buffer;
 
 namespace jubatus {
 namespace framework {
@@ -42,8 +44,19 @@ class linear_communication_stub : public linear_communication {
     result.response.push_back(make_response("4"));
   }
 
-  void put_diff(const vector<string>& mixed) const {
-    mixed_ = mixed;
+  void put_diff(const vector<byte_buffer>& mixed) const {
+    vector<string> tmp;
+    tmp.reserve(mixed.size());
+    typedef vector<byte_buffer>::const_iterator iter_t;
+    for (iter_t it = mixed.begin(); it != mixed.end(); ++it) {
+      if (const char* p = it->ptr()) {
+        size_t size = it->size();
+        tmp.push_back(std::string(p, size));
+      } else {
+        tmp.push_back("");
+      }
+    }
+    mixed_.swap(tmp);
   }
 
   const vector<string>& get_mixed() const {
@@ -56,12 +69,13 @@ class linear_communication_stub : public linear_communication {
 
 struct mixable_string : public mixable0 {
  public:
-  string get_diff() const { return string(); }
-  void put_diff(const string&) {}
-  void mix(const string& lhs, const string& rhs, string& mixed) const {
+  common::mprpc::byte_buffer get_diff() const { return common::mprpc::byte_buffer(); }
+  void put_diff(const byte_buffer&) {}
+  void mix(const byte_buffer& lhs, const byte_buffer& rhs, byte_buffer& mixed) const {
     stringstream ss;
-    ss << "(" << lhs << "+" << rhs << ")";
-    mixed = ss.str();
+    ss << "(" << string(lhs.ptr(), lhs.size()) << "+" << string(rhs.ptr(), rhs.size()) << ")";
+    string s = ss.str();
+    mixed.assign(s.data(), s.size());
   }
   string get_pull_argument() const { return string(); }
   string pull(const string&) const { return string(); }

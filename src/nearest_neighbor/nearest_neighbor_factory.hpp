@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 #include "../table/column/column_table.hpp"
+#include "../common/jsonconfig.hpp"
 
 namespace jubatus {
 namespace nearest_neighbor {
@@ -27,7 +28,8 @@ namespace nearest_neighbor {
 class nearest_neighbor_base;
 
 nearest_neighbor_base*
-create_nearest_neighbor(const std::map<std::string, std::string>& config,
+create_nearest_neighbor(const std::string& name,
+                        const jsonconfig::config& config,
                         table::column_table* table,
                         const std::string& id);
 

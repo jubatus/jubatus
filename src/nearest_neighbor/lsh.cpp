@@ -19,7 +19,6 @@
 #include <map>
 #include "lsh.hpp"
 
-#include "../common/config_util.hpp"
 #include "lsh_function.hpp"
 
 using namespace std;
@@ -29,19 +28,19 @@ using namespace jubatus::table;
 namespace jubatus {
 namespace nearest_neighbor {
 
-lsh::lsh(const map<string, string>& config,
+lsh::lsh(const config& conf,
          table::column_table* table,
          const std::string& id)
   : bit_vector_nearest_neighbor_base(
-        get_param(config, "lsh:bitnum", 64u), table, id)
+        conf.bitnum, table, id)
 {}
 
-lsh::lsh(const map<string, string>& config,
+lsh::lsh(const config& conf,
          table::column_table* table,
          vector<column_type>& schema,
          const std::string& id)
     : bit_vector_nearest_neighbor_base(
-      get_param(config, "lsh:bitnum", 64u), table, schema, id) {}
+      conf.bitnum, table, schema, id) {}
 
 bit_vector lsh::hash(const sfv_t& sfv) const {
   return cosine_lsh(sfv, bitnum());

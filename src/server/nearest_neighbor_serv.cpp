@@ -20,8 +20,10 @@
 
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/cast.h>
+#include <pficommon/text/json.h>
 
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
@@ -35,6 +37,20 @@ using namespace jubatus::framework;
 
 namespace jubatus {
 namespace server {
+
+namespace {
+
+struct nearest_neighbor_serv_config {
+  std::string method;
+  pfi::data::optional<pfi::text::json::json> parameter;
+  pfi::text::json::json converter;
+
+  template<typename Ar>
+  void serialize(Ar& ar) {
+    ar & MEMBER(method) & MEMBER(parameter) & MEMBER(converter);
+  }
+};
+}
 
 nearest_neighbor_serv::nearest_neighbor_serv(const server_argv& a,
                                              const cshared_ptr<lock_service>& zk)
@@ -61,20 +77,31 @@ void nearest_neighbor_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-int nearest_neighbor_serv::set_config(const config_data& config) {
-  DLOG(INFO) << __func__;
-  shared_ptr<fv_converter::datum_to_fv_converter> converter
-      = framework::make_fv_converter(config.converter);
+void nearest_neighbor_serv::set_config(const std::string& config) {
+  jsonconfig::config config_root(lexical_cast<pfi::text::json::json>(config));
+  nearest_neighbor_serv_config conf =
+    jsonconfig::config_cast_check<nearest_neighbor_serv_config>(config_root);
 
   config_ = config;
-  converter_ = converter;
+
+  jsonconfig::config param;
+  if (conf.parameter) {
+    param = jsonconfig::config(*conf.parameter);
+  }
+
+  DLOG(INFO) << __func__;
+  shared_ptr<fv_converter::datum_to_fv_converter> converter
+      = fv_converter::make_fv_converter(conf.converter);
 
   table::column_table* table = mixable_table_.get_model().get();
-  nn_.reset(nearest_neighbor::create_nearest_neighbor(config_.config, table, argv().my_id()));
-  return 0;
+  std::string my_id;
+#ifdef HAVE_ZOOKEEPER_H_
+  my_id = common::build_loc_str(argv().eth, argv().port);
+#endif
+  nn_.reset(nearest_neighbor::create_nearest_neighbor(conf.method, param, table, my_id));
 }
 
-config_data nearest_neighbor_serv::get_config() {
+std::string nearest_neighbor_serv::get_config() {
   DLOG(INFO) << __func__;
   check_set_config();
   return config_;
@@ -155,7 +182,7 @@ neighbor_result nearest_neighbor_serv::similar_row_from_data(const datum& data, 
 }
 
 void nearest_neighbor_serv::check_set_config() const {
-  if (config_.config.empty()){
+  if (!nn_) {
     throw JUBATUS_EXCEPTION(config_not_set());
   }
 }

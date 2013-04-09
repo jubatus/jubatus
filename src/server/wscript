@@ -53,6 +53,8 @@ def build(bld):
 
   build_one(bld, "graph")
 
+  build_one(bld, 'nearest_neighbor', 'column_table', 'mixable_versioned_table.cpp')
+
   n = bld.path.get_bld().make_node('test_input')
   n.mkdir()
   bld(rule = 'cp ${SRC} ${TGT}',

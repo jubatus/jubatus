@@ -28,9 +28,21 @@ namespace nearest_neighbor {
 
 class euclid_lsh : public nearest_neighbor_base {
  public:
-  euclid_lsh(const std::map<std::string, std::string>& config,
+  struct config {
+    config()
+        : hash_num(64u) {
+    }
+
+    int32_t hash_num; // TODO: make uint32_t (by modifying pficommon)
+
+    template <typename Ar>
+    void serialize(Ar& ar) {
+      ar & MEMBER(hash_num);
+    }
+  };
+  euclid_lsh(const config& conf,
              table::column_table* table, const std::string& id);
-  euclid_lsh(const std::map<std::string, std::string>& config,
+  euclid_lsh(const config& conf,
              table::column_table* table,
              std::vector<table::column_type>& schema, const std::string& id);
 
@@ -49,7 +61,7 @@ class euclid_lsh : public nearest_neighbor_base {
   }
 
  private:
-  void set_config(const std::map<std::string, std::string>& config);
+  void set_config(const config& conf);
   void fill_schema(std::vector<table::column_type>& schema);
   table::const_bit_vector_column lsh_column() const;
   table::const_float_column norm_column() const;

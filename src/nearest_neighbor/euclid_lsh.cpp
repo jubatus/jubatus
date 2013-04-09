@@ -22,7 +22,6 @@
 #include <utility>
 #include <cmath>
 #include <pficommon/lang/cast.h>
-#include "../common/config_util.hpp"
 #include "../storage/fixed_size_heap.hpp"
 #include "lsh_function.hpp"
 
@@ -68,22 +67,22 @@ float calc_euclidean_distance(size_t hash_num,
 
 }  // namespace
 
-euclid_lsh::euclid_lsh(const map<string, string>& config,
+euclid_lsh::euclid_lsh(const config& conf,
                        column_table* table, const std::string& id)
   : nearest_neighbor_base(table, id) {
-  set_config(config);
+  set_config(conf);
 
   vector<column_type> schema;
   fill_schema(schema);
   get_table()->init(schema);
 }
 
-euclid_lsh::euclid_lsh(const map<string, string>& config,
+euclid_lsh::euclid_lsh(const config& conf,
                        column_table* table,
                        vector<column_type>& schema,
                        const std::string& id)
   : nearest_neighbor_base(table, id) {
-  set_config(config);
+  set_config(conf);
   fill_schema(schema);
 }
 
@@ -118,8 +117,8 @@ void euclid_lsh::neighbor_row(const std::string& query_id,
   neighbor_row_from_hash(bv, norm, ids, ret_num);
 }
 
-void euclid_lsh::set_config(const map<string, string>& config) {
-  hash_num_ = get_param(config, "euclid_lsh:hash_num", 64u);
+void euclid_lsh::set_config(const config& conf) {
+  hash_num_ = conf.hash_num;
 }
 
 void euclid_lsh::fill_schema(vector<column_type>& schema) {

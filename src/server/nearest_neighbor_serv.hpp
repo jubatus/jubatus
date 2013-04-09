@@ -52,8 +52,8 @@ public:
 
   void get_status(status_t& status) const;
 
-  int set_config(const config_data& config);
-  config_data get_config();
+  void set_config(const std::string& config);
+  std::string get_config();
 
   bool init_table();
 
@@ -71,7 +71,7 @@ private:
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
   std::string my_id_;
 
-  config_data config_;
+  std::string config_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<nearest_neighbor_base> nn_;
   mixable_versioned_table mixable_table_;

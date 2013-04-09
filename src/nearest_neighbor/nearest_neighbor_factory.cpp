@@ -20,8 +20,8 @@
 #include <glog/logging.h>
 #include "nearest_neighbor_factory.hpp"
 
-#include "../common/config_util.hpp"
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include "nearest_neighbor.hpp"
 
 using namespace std;
@@ -30,19 +30,22 @@ namespace jubatus {
 namespace nearest_neighbor {
 
 nearest_neighbor_base* create_nearest_neighbor(
-    const map<string, string>& config,
+    const std::string& name,
+    const jsonconfig::config& config,
     table::column_table* table,
     const std::string& id) {
-  const string name = get_param(config, "nearest_neighbor:name", string());
+
+    using jubatus::jsonconfig::config_cast_check;
+
   if (name == "euclid_lsh") {
     DLOG(INFO) << __func__ << "  euclid_lsh selected ";
-    return new euclid_lsh(config, table, id);
+    return new euclid_lsh(config_cast_check<euclid_lsh::config>(config), table, id);
   } else if (name == "lsh") {
     DLOG(INFO) << __func__ << "  lsh selected ";
-    return new lsh(config, table, id);
+    return new lsh(config_cast_check<lsh::config>(config), table, id);
   } else if (name == "minhash") {
     DLOG(INFO) << __func__ << "  minhash selected ";
-    return new minhash(config, table, id);
+    return new minhash(config_cast_check<minhash::config>(config), table, id);
   } else {
     DLOG(INFO) << __func__ << " unknown " << name << "required";
     throw JUBATUS_EXCEPTION(unsupported_method(name));

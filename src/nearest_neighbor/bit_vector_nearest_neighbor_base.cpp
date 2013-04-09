@@ -20,7 +20,6 @@
 
 #include "bit_vector_nearest_neighbor_base.hpp"
 
-#include "../common/config_util.hpp"
 #include "bit_vector_ranking.hpp"
 
 using std::string;

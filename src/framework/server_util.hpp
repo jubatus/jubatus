@@ -81,6 +81,7 @@ struct server_argv {
   std::string eth;
   int interval_sec;
   int interval_count;
+  std::string mixer;
 
   MSGPACK_DEFINE(join, port, bind_address, bind_if, timeout, threadnum,
       program_name, type, z, name, datadir, logdir, loglevel, eth,
