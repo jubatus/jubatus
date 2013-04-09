@@ -28,7 +28,7 @@ namespace mixer {
 
 mixer* create_mixer(const server_argv& a,
                     const common::cshared_ptr<common::lock_service>& zk,
-                    const std::string& default_mixer);
+                    const std::string& default_mixer = "linear_mixer");
 
 }}} // namespace jubatus::framework::mixer
 
