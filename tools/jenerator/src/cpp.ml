@@ -130,9 +130,9 @@ let make_guard_name filename =
   Str.global_replace (Str.regexp "[\\./]") "_" upper ^ "_"
 ;;
 
-let make_header conf source filename content =
+let make_header_impl for_template conf source filename content =
   let guard = conf.Config.include_guard ^ make_guard_name filename in
-  make_source conf source filename (concat_blocks [
+  make_source_impl for_template conf source filename (concat_blocks [
     [
       (0, "#ifndef " ^ guard);
       (0, "#define " ^ guard);
@@ -143,6 +143,13 @@ let make_header conf source filename content =
     ]
   ]) comment_out_head
 ;;
+
+let make_header = make_header_impl false
+;;
+
+let make_template_header = make_header_impl true
+;;
+
 
 let rec make_namespace ns content =
   match ns with
@@ -606,16 +613,33 @@ let gen_server_template_header_method m =
   [ (0, Printf.sprintf "%s %s%s%s;" ret_type name args_def const) ]
 ;;
 
+(* TODO(unnonouno): These special methods are going to be removed from IDL *)
+let filter_methods methods =
+  List.filter (fun m ->
+    not (m.method_name = "save"
+         or m.method_name = "load"
+         or m.method_name = "get_status")
+  ) methods
+;;
+
 let gen_server_template_header s =
-  let methods = List.map gen_server_template_header_method s.service_methods in
+  let ms = filter_methods s.service_methods in
+  let methods = List.map gen_server_template_header_method ms in
   let name = s.service_name in
   let serv_name = name ^ "_serv" in
   List.concat [
     [
-      (0, "class " ^ serv_name ^ " : public jubatus::framework::jubatus_serv {  // do not change");
+      (0, "class " ^ serv_name ^ " : public jubatus::framework::server_base {  // do not change");
       (0, " public:");
-      (1,   serv_name ^ "(const jubatus::framework::server_argv& a);  // do not change");
+      (1,   serv_name ^ "(");
+      (2,     "const jubatus::framework::server_argv& a,");
+      (2,     "const common::cshared_ptr<common::lock_service>& zk);  // do not change");
       (1,   "virtual ~" ^ serv_name ^ "();  // do not change");
+      (0,   "");
+      (1,   "virtual mixer::mixer* get_mixer() const;");
+      (1,   "pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const;");
+      (1,   "void get_status(status_t& status) const;");
+      (0,   "");
     ];
     indent_lines 1 (List.concat methods);
     [
@@ -643,7 +667,7 @@ let gen_server_template_header_file conf source services =
     make_namespace namespace (concat_blocks servers)
   ] in
   
-  make_header conf source filename content
+  make_template_header conf source filename content
 ;;
 
 let gen_server_template_source_method s m =
@@ -660,20 +684,34 @@ let gen_server_template_source_method s m =
 ;;
 
 let gen_server_template_source s =
-  let methods = List.map (gen_server_template_source_method s) s.service_methods in
+  let ms = filter_methods s.service_methods in
+  let methods = List.map (gen_server_template_source_method s) ms in
   let name = s.service_name in
   let serv_name = name ^ "_serv" in
   concat_blocks [
     [
-      (0, serv_name ^ "::" ^ serv_name ^ "(const jubatus::framework::server_argv& a)");
-      (2,     ": jubatus::framework::jubatus_serv(a) {");
+      (0, serv_name ^ "::" ^ serv_name ^ "(");
+      (1,   "const jubatus::framework::server_argv& a,");
+      (1,   "const common::cshared_ptr<common::lock_service>& zk)");
+      (2,     ": jubatus::framework::server_base(a) {");
       (1,   "// somemixable* mi = new somemixable;");
       (1,   "// somemixable_.set_model(mi);");
-      (1,   "// register_mixable(mi);");
+      (1,   "// get_mixable_holder()->register_mixable(mi);");
       (0, "}");
       (0, "");
       (0, serv_name ^ "::~" ^ serv_name ^ "() {");
       (0, "}");
+      (0, "");
+      (0, "virtual mixer::mixer* " ^ serv_name ^ "::get_mixer() const {");
+      (0, "}");
+      (0, "");
+      (0, "pfi::lang::shared_ptr<framework::mixable_holder> "
+        ^ serv_name ^ "::get_mixable_holder() const {");
+      (0, "}");
+      (0, "");
+      (0, "void " ^ serv_name ^ "::get_status(status_t& status) const {");
+      (0, "}");
+      (0, "");
     ];
     concat_blocks methods;
   ]
@@ -696,7 +734,7 @@ let gen_server_template_source_file conf source services =
     make_namespace namespace (concat_blocks servers);
   ] in
   
-  make_source conf source filename content comment_out_head
+  make_template_source conf source filename content comment_out_head
 ;;
 
 let generate_server conf source idl =
