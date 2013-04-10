@@ -79,25 +79,34 @@ let rec concat_blocks blocks =
   List.concat (insert_blank blocks)
 ;;
 
-let make_header_message source comment_out_head =
+let make_header_message source comment_out_head for_template =
  (*  let file = Filename.basename source in *)
-  [
-    comment_out_head ^ " This file is auto-generated from " ^ source;
+  let first = comment_out_head ^ " This file is auto-generated from " ^ source in
+  if for_template then
+    [first; ""]
+  else [
+    first;
     comment_out_head ^ " *** DO NOT EDIT ***";
-    "";
+    ""
   ]
 ;;
 
-let make_source conf source filename content comment_out_head =
+let make_source_impl for_template conf source filename content comment_out_head =
   let path = Filename.concat conf.Config.outdir filename in
   File_util.safe_open_out path (fun out ->
     let print = (fun s -> output_string out s; output_char out '\n') in
-    let head = make_header_message source comment_out_head in
+    let head = make_header_message source comment_out_head for_template in
     List.iter print head;
     print_lines print content
   )
 ;;
-  
+
+let make_source = make_source_impl false
+;;
+
+let make_template_source = make_source_impl true
+;;
+
 let get_services idl =
   let services =
     List.fold_left (fun lst x ->
