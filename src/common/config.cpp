@@ -73,7 +73,7 @@ void config_tozk(
     lock_service& z,
     const string& type,
     const string& name,
-    string& config ) {
+    string& config) {
   config_tozk(z, type, name, config, string("<istream>"));
 }
 
@@ -91,12 +91,12 @@ void config_tozk(
   try {
     pfi::lang::lexical_cast<pfi::text::json::json>(config);
   } catch (pfi::lang::parse_error& e) {
-      std::string msg =
-          std::string("syntax error in configuration: ") +
-          config_src + ":" +
-          pfi::lang::lexical_cast<std::string>(e.lineno()) + ":" +
-          pfi::lang::lexical_cast<std::string>(e.pos()) + " " +
-          e.msg();
+    std::string msg =
+        std::string("syntax error in configuration: ") +
+        config_src + ":" +
+        pfi::lang::lexical_cast<std::string>(e.lineno()) + ":" +
+        pfi::lang::lexical_cast<std::string>(e.pos()) + " " +
+        e.msg();
     throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(msg));
   }
 
