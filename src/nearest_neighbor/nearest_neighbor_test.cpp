@@ -21,8 +21,10 @@
 
 #include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
+#include <pficommon/lang/cast.h>
 #include "nearest_neighbor_base.hpp"
 #include "nearest_neighbor_factory.hpp"
+#include "../common/jsonconfig.hpp"
 
 using namespace std;
 using namespace jubatus::table;
@@ -57,19 +59,28 @@ class nearest_neighbor_test
     : public ::testing::TestWithParam<map<string, string> > {
  protected:
   void SetUp() {
+    try {
     map<string, string> param = GetParam();
     string name = param["nearest_neighbor:name"];
     param.erase("nearest_neighbor:name");
     using pfi::text::json::json;
     json config_js(new pfi::text::json::json_object);
     for (map<string, string>::iterator it = param.begin(); it != param.end(); ++it)
-      config_js.add(it->first, json(new pfi::text::json::json_string(it->second)));
+        config_js.add(it->first, json(new pfi::text::json::json_integer(pfi::lang::lexical_cast<int>(it->second))));
 
     using jubatus::jsonconfig::config;
     using pfi::text::json::json;
 
     table_.reset(new column_table);
     nn_.reset(create_nearest_neighbor(name, config(config_js, ""), table_.get(), "localhost"));
+    } catch (jubatus::jsonconfig::cast_check_error& e) {
+      std::cout << "In Setup():" <<e.what() << '\n';
+      std::vector<pfi::lang::shared_ptr<jubatus::jsonconfig::config_error> > v = e.errors();
+      for (size_t i = 0; i < v.size(); ++i) {
+        std::cout << v[i]->what() << '\n';
+      }
+      throw;
+    }
   }
 
   column_table* get_table() { return table_.get(); }
@@ -129,11 +140,11 @@ TEST_P(nearest_neighbor_test, empty_neighbor_row) {
 // TODO: Write approximated test of neighbor_row().
 
 const map<string, string> configs[] = {
-  make_config("nearest_neighbor:name", "lsh")("lsh:bitnum", "64")(),
-  make_config("nearest_neighbor:name", "minhash")("minhash:bitnum", "64")(),
+  make_config("nearest_neighbor:name", "lsh")("bitnum", "64")(),
+  make_config("nearest_neighbor:name", "minhash")("bitnum", "64")(),
   make_config(
       "nearest_neighbor:name",
-      "euclid_lsh")("euclid_lsh:hash_num", "64")()
+      "euclid_lsh")("hash_num", "64")()
 };
 
 INSTANTIATE_TEST_CASE_P(lsh_test,
