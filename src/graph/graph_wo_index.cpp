@@ -289,8 +289,8 @@ void graph_wo_index::shortest_path(
   }
   const spt_mixed& mixed = model_it->second;
   ret.clear();
-  uint64_t min_score = LONG_LONG_MAX;
-  uint64_t ind = LONG_LONG_MAX;
+  uint64_t min_score = ~uint64_t();
+  uint64_t ind = ~uint64_t();
   for (uint64_t i = 0; i < mixed.size(); ++i) {
     const shortest_path_tree& spt = mixed[i];
     spt_edges::const_iterator src_it = spt.to_root.find(src);
