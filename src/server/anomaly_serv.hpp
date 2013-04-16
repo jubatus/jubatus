@@ -25,7 +25,7 @@
 #include "../common/global_id_generator_base.hpp"
 #include "../common/lock_service.hpp"
 #include "../common/shared_ptr.hpp"
-#include "../core/anomaly.hpp"
+#include "../driver/anomaly.hpp"
 #include "anomaly_types.hpp"
 
 namespace jubatus {

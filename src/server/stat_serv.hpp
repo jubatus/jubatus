@@ -23,7 +23,7 @@
 
 #include "../framework/server_base.hpp"
 #include "../framework/mixer/mixer.hpp"
-#include "../core/stat.hpp"
+#include "../driver/stat.hpp"
 
 namespace jubatus {
 namespace server {

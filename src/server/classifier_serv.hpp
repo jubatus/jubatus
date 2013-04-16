@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 #include <pficommon/lang/shared_ptr.h>
-#include "../core/classifier.hpp"
+#include "../driver/classifier.hpp"
 #include "classifier_types.hpp"
 
 namespace jubatus {
