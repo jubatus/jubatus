@@ -70,7 +70,11 @@ recommender_serv::recommender_serv(
     const framework::server_argv& a,
     const cshared_ptr<lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk)) {
+      mixer_(create_mixer(a, zk)),
+      clear_row_cnt_(),
+      update_row_cnt_(),
+      build_cnt_(),
+      mix_cnt_() {
 }
 
 recommender_serv::~recommender_serv() {
