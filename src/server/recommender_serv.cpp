@@ -99,7 +99,7 @@ bool recommender_serv::set_config(const std::string &config) {
   }
 
   recommender_.reset(
-      new core::recommender(
+      new driver::recommender(
           recommender::recommender_factory::create_recommender(
               conf.method, param),
           mixer_,

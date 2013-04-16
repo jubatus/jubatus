@@ -66,7 +66,7 @@ bool stat_serv::set_config(const string& config) {
 
   config_ = config;
   stat_.reset(
-      new core::stat(
+      new driver::stat(
           argv().is_standalone() ? new stat::stat(conf.window_size)
                                  : new stat::mixable_stat(conf.window_size),
           mixer_));

@@ -20,7 +20,7 @@
 #include "../storage/storage_type.hpp"
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 struct diffv {
  public:
@@ -50,7 +50,7 @@ struct diffv {
   }
 };
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_DIFFV_HPP_

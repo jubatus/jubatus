@@ -31,7 +31,7 @@
 #include "mixable_weight_manager.hpp"
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 class classifier {
  public:
@@ -69,7 +69,7 @@ class classifier {
   mixable_weight_manager wm_;
 };
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_CLASSIFIER_HPP_

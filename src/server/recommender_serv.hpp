@@ -67,7 +67,7 @@ class recommender_serv : public framework::server_base {
 
  private:
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<core::recommender> recommender_;
+  pfi::lang::shared_ptr<driver::recommender> recommender_;
   std::string config_;
 
   uint64_t clear_row_cnt_;

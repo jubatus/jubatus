@@ -24,7 +24,7 @@ using jubatus::fv_converter::keyword_weights;
 using jubatus::fv_converter::weight_manager;
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 keyword_weights mixable_weight_manager::get_diff_impl() const {
   return get_model()->get_diff();
@@ -47,5 +47,5 @@ void mixable_weight_manager::clear() {
   get_model()->clear();
 }
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus

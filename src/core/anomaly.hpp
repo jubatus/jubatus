@@ -31,7 +31,7 @@
 #include "mixable_weight_manager.hpp"
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 struct mixable_anomaly : public framework::mixable<
     jubatus::anomaly::anomaly_base,
@@ -96,7 +96,7 @@ class anomaly {
   mixable_weight_manager wm_;
 };
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_ANOMALY_HPP_

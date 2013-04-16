@@ -107,7 +107,7 @@ bool classifier_serv::set_config(const string& config) {
   storage::storage_base* model = make_model(argv());
 
   classifier_.reset(
-      new core::classifier(
+      new driver::classifier(
         model,
         classifier::classifier_factory::create_classifier(
           conf.method, param, model),

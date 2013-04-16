@@ -78,7 +78,7 @@ class anomaly_serv : public framework::server_base {
       const datum& d);
 
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<core::anomaly> anomaly_;
+  pfi::lang::shared_ptr<driver::anomaly> anomaly_;
   std::string config_;
 
   common::cshared_ptr<common::lock_service> zk_;

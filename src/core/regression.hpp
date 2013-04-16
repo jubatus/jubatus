@@ -30,7 +30,7 @@
 #include "mixable_weight_manager.hpp"
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 class regression {
  public:
@@ -66,7 +66,7 @@ class regression {
   mixable_weight_manager wm_;
 };
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_REGRESSION_HPP_

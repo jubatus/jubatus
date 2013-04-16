@@ -59,7 +59,7 @@ class stat_serv : public framework::server_base {
 
  private:
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<core::stat> stat_;
+  pfi::lang::shared_ptr<driver::stat> stat_;
   std::string config_;
 };
 

@@ -103,7 +103,7 @@ bool regression_serv::set_config(const string& config) {
   storage::storage_base* model = make_model(argv());
 
   regression_.reset(
-      new core::regression(
+      new driver::regression(
           model,
           regression::regression_factory::create_regression(
               conf.method, param, model),

@@ -34,7 +34,7 @@ using jubatus::framework::mixable_holder;
 using jubatus::fv_converter::weight_manager;
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 regression::regression(
     storage::storage_base* model_storage,
@@ -73,5 +73,5 @@ float regression::estimate(
   return value;
 }
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus

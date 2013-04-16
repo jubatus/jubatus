@@ -149,7 +149,7 @@ bool graph_serv::set_config(const std::string& config) {
 #endif
 
   graph_.reset(
-      new core::graph(
+      new driver::graph(
           graph::graph_factory::create_graph(
               conf.method, conf.parameter),
           mixer_));

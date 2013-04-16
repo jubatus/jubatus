@@ -21,7 +21,7 @@
 #include "../fv_converter/weight_manager.hpp"
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 class mixable_weight_manager : public framework::mixable<
     fv_converter::weight_manager,
@@ -38,7 +38,7 @@ class mixable_weight_manager : public framework::mixable<
   void clear();
 };
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_MIXABLE_WEIGHT_MANAGER_HPP_

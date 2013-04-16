@@ -26,7 +26,7 @@
 #include "../framework/mixer/mixer.hpp"
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 struct mixable_stat : public framework::mixable<
     jubatus::stat::stat,
@@ -87,7 +87,7 @@ class stat {
   mixable_stat mixable_stat_model_;
 };
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_STAT_HPP_

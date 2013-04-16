@@ -33,7 +33,7 @@
 #include "mixable_weight_manager.hpp"
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 struct mixable_graph : public framework::mixable<
     jubatus::graph::graph_base,
@@ -131,7 +131,7 @@ class graph {
   mixable_graph graph_;
 };
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_GRAPH_HPP_

@@ -25,7 +25,7 @@
 using jubatus::framework::mixable_holder;
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 stat::stat(
     jubatus::stat::stat* stat_method,
@@ -69,5 +69,5 @@ double stat::moment(const std::string& key, int n, double c) const {
   return stat_->moment(key, n, c);
 }
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus

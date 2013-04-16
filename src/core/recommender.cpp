@@ -40,7 +40,7 @@ using jubatus::fv_converter::weight_manager;
 using pfi::lang::shared_ptr;
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 recommender::recommender(
     jubatus::recommender::recommender_base* recommender_method,
@@ -150,5 +150,5 @@ std::vector<std::string> recommender::get_all_rows() {
   return ret;
 }
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus

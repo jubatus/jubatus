@@ -56,7 +56,7 @@ class regression_serv : public framework::server_base {
 
  private:
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<core::regression> regression_;
+  pfi::lang::shared_ptr<driver::regression> regression_;
   std::string config_;
 };
 

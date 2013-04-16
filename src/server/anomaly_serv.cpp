@@ -127,7 +127,7 @@ bool anomaly_serv::set_config(const std::string& config) {
 #endif
 
   anomaly_.reset(
-      new core::anomaly(
+      new driver::anomaly(
           anomaly::anomaly_factory::create_anomaly(
               conf.method, conf.parameter),
           mixer_,

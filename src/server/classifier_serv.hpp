@@ -56,7 +56,7 @@ class classifier_serv : public framework::server_base {
 
  private:
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<core::classifier> classifier_;
+  pfi::lang::shared_ptr<driver::classifier> classifier_;
   std::string config_;
 };
 

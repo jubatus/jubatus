@@ -40,7 +40,7 @@ using jubatus::graph::property;
 using pfi::lang::shared_ptr;
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 graph::graph(
     jubatus::graph::graph_base* graph_method,

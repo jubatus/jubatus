@@ -31,7 +31,7 @@
 #include "mixable_weight_manager.hpp"
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 struct mixable_recommender : public framework::mixable<
     jubatus::recommender::recommender_base,
@@ -110,7 +110,7 @@ class recommender {
   mixable_weight_manager wm_;
 };
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_RECOMMENDER_HPP_

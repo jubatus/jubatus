@@ -30,7 +30,7 @@ using jubatus::storage::feature_val3_t;
 using jubatus::storage::features3_t;
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 namespace {
 
@@ -79,5 +79,5 @@ void linear_function_mixer::put_diff_impl(const diffv& v) {
 void linear_function_mixer::clear() {
 }
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus

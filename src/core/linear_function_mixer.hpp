@@ -23,7 +23,7 @@
 #include "diffv.hpp"
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 class linear_function_mixer : public jubatus::framework::mixable<
     storage::storage_base, diffv> {
@@ -37,7 +37,7 @@ class linear_function_mixer : public jubatus::framework::mixable<
   void clear();
 };
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_LINEAR_FUNCTION_MIXER_HPP_

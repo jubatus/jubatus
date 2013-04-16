@@ -41,7 +41,7 @@ using jubatus::fv_converter::weight_manager;
 using pfi::lang::shared_ptr;
 
 namespace jubatus {
-namespace core {
+namespace driver {
 
 anomaly::anomaly(
     jubatus::anomaly::anomaly_base* anomaly_method,
@@ -100,5 +100,5 @@ vector<string> anomaly::get_all_rows() const {
   return ids;
 }
 
-}  // namespace core
+}  // namespace driver
 }  // namespace jubatus
