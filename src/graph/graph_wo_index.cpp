@@ -134,7 +134,7 @@ void graph_wo_index::may_set_landmark(node_id_t id) {
   // if (id > 1) return;
   for (spt_query_mixed::iterator it = spts_.begin(); it != spts_.end(); ++it) {
     spt_mixed& mixed = it->second;
-    if (mixed.size() == config_.landmark_num
+    if (mixed.size() == static_cast<size_t>(config_.landmark_num)
         || !is_node_matched_to_query(it->first, id)) {
       return;
     }
@@ -305,7 +305,7 @@ void graph_wo_index::shortest_path(
     }
   }
 
-  if (ind >= config_.landmark_num) {
+  if (ind >= static_cast<uint64_t>(config_.landmark_num)) {
     return;
   }
 
