@@ -18,7 +18,7 @@ def build(bld):
 
   bld.shlib(
     source = core_source,
-    target = 'jubatus_core',
+    target = 'jubatus_driver',
     includes = '.',
     use = 'PFICOMMON jubacommon jubatus_framework MSGPACK LIBGLOG jubaconverter jubastorage jubamixer jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph'
     )
@@ -29,7 +29,7 @@ def build(bld):
       source=t + '.cpp',
       target=t,
       includes='.',
-      use='jubatus_core'
+      use='jubatus_driver'
       )
 
   tests = [
