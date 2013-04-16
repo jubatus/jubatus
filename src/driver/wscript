@@ -5,7 +5,7 @@ def configure(conf):
   pass
 
 def build(bld):
-  core_source = [
+  source = [
       'classifier.cpp',
       'regression.cpp',
       'recommender.cpp',
@@ -17,7 +17,7 @@ def build(bld):
       ]
 
   bld.shlib(
-    source = core_source,
+    source = source,
     target = 'jubatus_driver',
     includes = '.',
     use = 'PFICOMMON jubacommon jubatus_framework MSGPACK LIBGLOG jubaconverter jubastorage jubamixer jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph'
