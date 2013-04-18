@@ -42,10 +42,10 @@ namespace jubatus {
 namespace driver {
 
 classifier::classifier(
-     storage::storage_base* model_storage,
-     jubatus::classifier::classifier_base* classifier_method,
-     pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
-     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
+    storage::storage_base* model_storage,
+    jubatus::classifier::classifier_base* classifier_method,
+    pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
+    pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixer_(mixer),
       mixable_holder_(new mixable_holder),
       converter_(converter),

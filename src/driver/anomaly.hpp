@@ -61,9 +61,9 @@ struct mixable_anomaly : public framework::mixable<
 class anomaly {
  public:
   anomaly(
-     jubatus::anomaly::anomaly_base* anomaly_method,
-     pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
-     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+      jubatus::anomaly::anomaly_base* anomaly_method,
+      pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
+      pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~anomaly();
 
   framework::mixer::mixer* get_mixer() const {

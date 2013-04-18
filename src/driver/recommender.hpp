@@ -61,9 +61,9 @@ struct mixable_recommender : public framework::mixable<
 class recommender {
  public:
   recommender(
-     jubatus::recommender::recommender_base* recommender_method,
-     pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
-     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+      jubatus::recommender::recommender_base* recommender_method,
+      pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
+      pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~recommender();
 
   framework::mixer::mixer* get_mixer() const {

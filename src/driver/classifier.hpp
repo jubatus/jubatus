@@ -37,10 +37,10 @@ class classifier {
  public:
   // TODO(suma): where is the owner of model, mixer, and converter?
   classifier(
-     storage::storage_base* model_storage,
-     jubatus::classifier::classifier_base* classifier_method,
-     pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
-     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+      storage::storage_base* model_storage,
+      jubatus::classifier::classifier_base* classifier_method,
+      pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
+      pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~classifier();
 
   // TODO(suma): where is the owner of mixer and holder
