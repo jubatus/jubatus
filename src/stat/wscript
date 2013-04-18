@@ -18,3 +18,8 @@ def build(bld):
     includes = '.',
     use = 'jubatus_stat'
     )
+
+  bld.install_files('${PREFIX}/include/jubatus/stat', [
+      'stat.hpp',
+      'mixable_stat.hpp',
+      ])

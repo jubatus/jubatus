@@ -18,6 +18,8 @@
 #define JUBATUS_COMMON_MPRPC_RPC_RESPONSE_HPP_
 
 #include <msgpack.hpp>
+#include <jubatus/msgpack/rpc/future.h>
+
 #include <pficommon/lang/shared_ptr.h>
 
 namespace jubatus {

@@ -45,5 +45,8 @@ def build(bld):
       'recommender.hpp',
       'stat.hpp',
       'anomaly.hpp',
-      'graph.hpp'
+      'graph.hpp',
+      'diffv.hpp',
+      'linear_function_mixer.hpp',
+      'mixable_weight_manager.hpp',
       ])

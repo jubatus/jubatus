@@ -26,3 +26,10 @@ def build(bld):
       'graph_base_test.cpp',
       'graph_wo_index_test.cpp',
       ])
+
+  bld.install_files('${PREFIX}/include/jubatus/graph', [
+      'graph_base.hpp',
+      'graph_factory.hpp',
+      'graph_type.hpp',
+      'graph_wo_index.hpp',
+      ])

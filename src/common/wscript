@@ -64,7 +64,6 @@ def build(bld):
     make_test(s)
 
   bld.install_files('${PREFIX}/include/jubatus/common/', [
-    'cached_zk.hpp',
     'cht.hpp',
     'config.hpp',
     'exception.hpp',
@@ -83,6 +82,5 @@ def build(bld):
     'unordered_map.hpp',
     'util.hpp',
     'vector_util.hpp',
-    'zk.hpp',
     ])
   bld.recurse(subdirs)
