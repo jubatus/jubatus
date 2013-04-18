@@ -21,7 +21,7 @@ namespace jubatus {
 namespace table {
 namespace detail {
 
-void abstruct_column::push_back(const uint8_t& value) {
+void abstract_column::push_back(const uint8_t& value) {
   assert(type_.is(column_type::uint8_type));
   prepare_append(type_.size());
   uint8_column target(ptr_, size_);
@@ -29,7 +29,7 @@ void abstruct_column::push_back(const uint8_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::push_back(const uint16_t& value) {
+void abstract_column::push_back(const uint16_t& value) {
   assert(type_.is(column_type::uint16_type));
   prepare_append(type_.size());
   uint16_column target(ptr_, size_);
@@ -37,7 +37,7 @@ void abstruct_column::push_back(const uint16_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::push_back(const uint32_t& value) {
+void abstract_column::push_back(const uint32_t& value) {
   assert(type_.is(column_type::uint32_type));
   prepare_append(type_.size());
   uint32_column target(ptr_, size_);
@@ -45,7 +45,7 @@ void abstruct_column::push_back(const uint32_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::push_back(const uint64_t& value) {
+void abstract_column::push_back(const uint64_t& value) {
   assert(type_.is(column_type::uint64_type));
   prepare_append(type_.size());
   uint64_column target(ptr_, size_);
@@ -53,7 +53,7 @@ void abstruct_column::push_back(const uint64_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::push_back(const int8_t& value) {
+void abstract_column::push_back(const int8_t& value) {
   assert(type_.is(column_type::int8_type));
   prepare_append(type_.size());
   int8_column target(ptr_, size_);
@@ -61,7 +61,7 @@ void abstruct_column::push_back(const int8_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::push_back(const int16_t& value) {
+void abstract_column::push_back(const int16_t& value) {
   assert(type_.is(column_type::int16_type));
   prepare_append(type_.size());
   int16_column target(ptr_, size_);
@@ -69,7 +69,7 @@ void abstruct_column::push_back(const int16_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::push_back(const int32_t& value) {
+void abstract_column::push_back(const int32_t& value) {
   assert(type_.is(column_type::int32_type));
   prepare_append(type_.size());
   int32_column target(ptr_, size_);
@@ -77,7 +77,7 @@ void abstruct_column::push_back(const int32_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::push_back(const int64_t& value) {
+void abstract_column::push_back(const int64_t& value) {
   assert(type_.is(column_type::int64_type));
   prepare_append(type_.size());
   int64_column target(ptr_, size_);
@@ -85,7 +85,7 @@ void abstruct_column::push_back(const int64_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::push_back(const std::string& value) {
+void abstract_column::push_back(const std::string& value) {
   assert(type_.is(column_type::string_type));
   prepare_append(type_.size());
   string_column target(ptr_, size_);
@@ -93,7 +93,7 @@ void abstruct_column::push_back(const std::string& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::push_back(const float& value) {
+void abstract_column::push_back(const float& value) {
   assert(type_.is(column_type::float_type));
   prepare_append(type_.size());
   float_column target(ptr_, size_);
@@ -101,7 +101,7 @@ void abstruct_column::push_back(const float& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::push_back(const double& value) {
+void abstract_column::push_back(const double& value) {
   assert(type_.is(column_type::double_type));
   prepare_append(type_.size());
   double_column target(ptr_, size_);
@@ -109,7 +109,7 @@ void abstruct_column::push_back(const double& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::push_back(const bit_vector& value) {
+void abstract_column::push_back(const bit_vector& value) {
   assert(type_.is(column_type::bit_vector_type));
   prepare_append(type_.size());
   bit_vector_column target(ptr_, size_, type_.bit_vector_length());
@@ -117,7 +117,7 @@ void abstruct_column::push_back(const bit_vector& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::insert(uint64_t index, const uint8_t& value) {
+void abstract_column::insert(uint64_t index, const uint8_t& value) {
   assert(type_.is(column_type::uint8_type));
   prepare_append(type_.size());
   uint8_column target(ptr_, size_);
@@ -125,7 +125,7 @@ void abstruct_column::insert(uint64_t index, const uint8_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::insert(uint64_t index, const uint16_t& value) {
+void abstract_column::insert(uint64_t index, const uint16_t& value) {
   assert(type_.is(column_type::uint16_type));
   prepare_append(type_.size());
   uint16_column target(ptr_, size_);
@@ -133,7 +133,7 @@ void abstruct_column::insert(uint64_t index, const uint16_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::insert(uint64_t index, const uint32_t& value) {
+void abstract_column::insert(uint64_t index, const uint32_t& value) {
   assert(type_.is(column_type::uint32_type));
   prepare_append(type_.size());
   uint32_column target(ptr_, size_);
@@ -141,7 +141,7 @@ void abstruct_column::insert(uint64_t index, const uint32_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::insert(uint64_t index, const uint64_t& value) {
+void abstract_column::insert(uint64_t index, const uint64_t& value) {
   assert(type_.is(column_type::uint64_type));
   prepare_append(type_.size());
   uint64_column target(ptr_, size_);
@@ -149,7 +149,7 @@ void abstruct_column::insert(uint64_t index, const uint64_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::insert(uint64_t index, const int8_t& value) {
+void abstract_column::insert(uint64_t index, const int8_t& value) {
   assert(type_.is(column_type::int8_type));
   prepare_append(type_.size());
   int8_column target(ptr_, size_);
@@ -157,7 +157,7 @@ void abstruct_column::insert(uint64_t index, const int8_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::insert(uint64_t index, const int16_t& value) {
+void abstract_column::insert(uint64_t index, const int16_t& value) {
   assert(type_.is(column_type::int64_type));
   prepare_append(type_.size());
   int16_column target(ptr_, size_);
@@ -165,7 +165,7 @@ void abstruct_column::insert(uint64_t index, const int16_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::insert(uint64_t index, const int32_t& value) {
+void abstract_column::insert(uint64_t index, const int32_t& value) {
   assert(type_.is(column_type::int32_type));
   prepare_append(type_.size());
   int32_column target(ptr_, size_);
@@ -173,7 +173,7 @@ void abstruct_column::insert(uint64_t index, const int32_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::insert(uint64_t index, const int64_t& value) {
+void abstract_column::insert(uint64_t index, const int64_t& value) {
   assert(type_.is(column_type::int64_type));
   prepare_append(type_.size());
   int64_column target(ptr_, size_);
@@ -181,7 +181,7 @@ void abstruct_column::insert(uint64_t index, const int64_t& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::insert(uint64_t index, const std::string& value) {
+void abstract_column::insert(uint64_t index, const std::string& value) {
   assert(type_.is(column_type::string_type));
   prepare_append(type_.size());
   string_column target(ptr_, size_);
@@ -189,7 +189,7 @@ void abstruct_column::insert(uint64_t index, const std::string& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::insert(uint64_t index, const float& value) {
+void abstract_column::insert(uint64_t index, const float& value) {
   assert(type_.is(column_type::float_type));
   prepare_append(type_.size());
   float_column target(ptr_, size_);
@@ -197,7 +197,7 @@ void abstruct_column::insert(uint64_t index, const float& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::insert(uint64_t index, const double& value) {
+void abstract_column::insert(uint64_t index, const double& value) {
   assert(type_.is(column_type::double_type));
   prepare_append(type_.size());
   double_column target(ptr_, size_);
@@ -205,7 +205,7 @@ void abstruct_column::insert(uint64_t index, const double& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::insert(uint64_t index, const bit_vector& value) {
+void abstract_column::insert(uint64_t index, const bit_vector& value) {
   assert(type_.is(column_type::bit_vector_type));
   prepare_append(type_.size());
   bit_vector_column target(ptr_, size_, type_.bit_vector_length());
@@ -213,73 +213,73 @@ void abstruct_column::insert(uint64_t index, const bit_vector& value) {
   size_ += type_.size();
 }
 
-void abstruct_column::update(uint64_t index, const uint8_t& value) {
+void abstract_column::update(uint64_t index, const uint8_t& value) {
   assert(type_.is(column_type::uint8_type));
   uint8_column target(ptr_, size_);
   target.update(index, value);
 }
 
-void abstruct_column::update(uint64_t index, const uint16_t& value) {
+void abstract_column::update(uint64_t index, const uint16_t& value) {
   assert(type_.is(column_type::uint16_type));
   uint16_column target(ptr_, size_);
   target.update(index, value);
 }
 
-void abstruct_column::update(uint64_t index, const uint32_t& value) {
+void abstract_column::update(uint64_t index, const uint32_t& value) {
   assert(type_.is(column_type::uint32_type));
   uint32_column target(ptr_, size_);
   target.update(index, value);
 }
 
-void abstruct_column::update(uint64_t index, const uint64_t& value) {
+void abstract_column::update(uint64_t index, const uint64_t& value) {
   assert(type_.is(column_type::uint64_type));
   uint64_column target(ptr_, size_);
   target.update(index, value);
 }
 
-void abstruct_column::update(uint64_t index, const int8_t& value) {
+void abstract_column::update(uint64_t index, const int8_t& value) {
   assert(type_.is(column_type::int8_type));
   int8_column target(ptr_, size_);
   target.update(index, value);
 }
 
-void abstruct_column::update(uint64_t index, const int16_t& value) {
+void abstract_column::update(uint64_t index, const int16_t& value) {
   assert(type_.is(column_type::int16_type));
   int16_column target(ptr_, size_);
   target.update(index, value);
 }
 
-void abstruct_column::update(uint64_t index, const int32_t& value) {
+void abstract_column::update(uint64_t index, const int32_t& value) {
   assert(type_.is(column_type::int32_type));
   int32_column target(ptr_, size_);
   target.update(index, value);
 }
 
-void abstruct_column::update(uint64_t index, const int64_t& value) {
+void abstract_column::update(uint64_t index, const int64_t& value) {
   assert(type_.is(column_type::int64_type));
   int64_column target(ptr_, size_);
   target.update(index, value);
 }
 
-void abstruct_column::update(uint64_t index, const std::string& value) {
+void abstract_column::update(uint64_t index, const std::string& value) {
   assert(type_.is(column_type::string_type));
   string_column target(ptr_, size_);
   target.update(index, value);
 }
 
-void abstruct_column::update(uint64_t index, const float& value) {
+void abstract_column::update(uint64_t index, const float& value) {
   assert(type_.is(column_type::float_type));
   float_column target(ptr_, size_);
   target.update(index, value);
 }
 
-void abstruct_column::update(uint64_t index, const double& value) {
+void abstract_column::update(uint64_t index, const double& value) {
   assert(type_.is(column_type::double_type));
   double_column target(ptr_, size_);
   target.update(index, value);
 }
 
-void abstruct_column::update(uint64_t index, const bit_vector& value) {
+void abstract_column::update(uint64_t index, const bit_vector& value) {
   assert(type_.is(column_type::bit_vector_type));
   bit_vector_column target(ptr_, size_, type_.bit_vector_length());
   target[index] = value;

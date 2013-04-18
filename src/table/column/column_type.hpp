@@ -148,7 +148,7 @@ class column_type {
       & MEMBER(bit_vector_length_);
     type_ = static_cast<type_name>(type);
   }
-  friend class abstruct_column;
+  friend class abstract_column;
   type_name type_;
   int bit_vector_length_;
 };

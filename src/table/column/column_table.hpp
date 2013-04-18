@@ -202,7 +202,7 @@ class column_table {
   void dump() const {
     pfi::concurrent::scoped_rlock lk(table_lock_);
     std::cout << "schema is ";
-    for (std::vector<detail::abstruct_column>::const_iterator it
+    for (std::vector<detail::abstract_column>::const_iterator it
              = columns_.begin();
         it != columns_.end();
         ++it) {
@@ -327,7 +327,7 @@ class column_table {
  private:
   std::vector<std::string> keys_;
   std::vector<version_t> versions_;
-  std::vector<detail::abstruct_column> columns_;
+  std::vector<detail::abstract_column> columns_;
   mutable pfi::concurrent::rw_mutex table_lock_;
   uint64_t tuples_;
   uint64_t clock_;

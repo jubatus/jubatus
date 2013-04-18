@@ -33,7 +33,7 @@
 namespace jubatus {
 namespace table {
 namespace detail {
-class abstruct_column;
+class abstract_column;
 }
 
 #define EMBED_TYPES                             \
@@ -294,7 +294,7 @@ class typed_column {
  protected:
   T* ptr_;
   uint64_t size_;
-  friend class detail::abstruct_column;
+  friend class detail::abstract_column;
 
  private:
   friend class const_typed_column<T>;
@@ -355,7 +355,7 @@ typedef typed_column<std::string> string_column;
 typedef const_typed_column<std::string> const_string_column;
 
 namespace detail {
-class abstruct_column {
+class abstract_column {
   typedef std::string string;
   struct align_dummy {
     double d[2];  // strictry alignied data
@@ -363,22 +363,22 @@ class abstruct_column {
 
  private:
   // for extend only
-  abstruct_column(const column_type& type, size_t memory_size)
+  abstract_column(const column_type& type, size_t memory_size)
     : type_(type), reserved_(memory_size), size_(0), destroy_duty_(false) {
     ptr_ = reinterpret_cast<char*>(new align_dummy[reserved_ >> 4]);
   }
 
  public:
-  abstruct_column()
+  abstract_column()
     : type_(column_type::invalid_type),
       ptr_(NULL),
       reserved_(0),
       size_(0),
       destroy_duty_(false)
   {}
-  explicit abstruct_column(const column_type& type)
+  explicit abstract_column(const column_type& type)
     : type_(type), ptr_(NULL), reserved_(0), size_(0), destroy_duty_(false) {}
-  // abstruct_column() {}
+  // abstract_column() {}
   /*
   template<typename T>
   void push_back(const T& value);
@@ -487,7 +487,7 @@ class abstruct_column {
 #undef COLUMN
   }
 
-  ~abstruct_column() {
+  ~abstract_column() {
     if (destroy_duty_ && ptr_ != NULL) {
       if (is_string()) {
         string_column sc(ptr_, size_);
@@ -609,7 +609,7 @@ class abstruct_column {
 #undef SAVE_COLUMN
   }
 
-  void swap(abstruct_column& rhs) {
+  void swap(abstract_column& rhs) {
     using std::swap;
     swap(type_, rhs.type_);
     swap(ptr_, rhs.ptr_);
@@ -631,7 +631,7 @@ class abstruct_column {
       while (reserved_ <= expect_size) {
         reserved_ *= 2;
       }
-      abstruct_column new_column(type_, reserved_);
+      abstract_column new_column(type_, reserved_);
       ::memcpy(new_column.ptr_, ptr_, size_);
       new_column.size_ = size_;
       new_column.destroy_duty_ = true;
@@ -647,7 +647,7 @@ class abstruct_column {
 
   friend std::ostream& operator<<(
       std::ostream& os,
-      const abstruct_column& obj) {
+      const abstract_column& obj) {
     os << obj.type_;
 #define SAVE_COLUMN(type)                                               \
     if (obj.type_.is(column_type::type##_type)) {                       \

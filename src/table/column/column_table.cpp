@@ -35,7 +35,7 @@ void column_table::init(const std::vector<column_type>& schema) {
   for (std::vector<column_type>::const_iterator it = schema.begin();
       it != schema.end();
       ++it) {
-    columns_.push_back(detail::abstruct_column(*it));
+    columns_.push_back(detail::abstract_column(*it));
   }
 }
 
