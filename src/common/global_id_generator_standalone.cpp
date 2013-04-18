@@ -29,8 +29,17 @@
 namespace jubatus {
 namespace common {
 
+struct global_id_generator_standalone::impl {
+  impl() : counter(0) {}
+
+  uint64_t counter;
+#ifndef ATOMIC_I8_SUPPORT
+  pfi::concurrent::mutex counter_mutex;
+#endif
+};
+
 global_id_generator_standalone::global_id_generator_standalone()
-    : counter_(0) {
+    : pimpl_(new impl) {
 }
 
 global_id_generator_standalone::~global_id_generator_standalone() {
@@ -38,10 +47,10 @@ global_id_generator_standalone::~global_id_generator_standalone() {
 
 uint64_t global_id_generator_standalone::generate() {
 #ifdef ATOMIC_I8_SUPPORT
-  return __sync_fetch_and_add(&counter_, 1);
+  return __sync_fetch_and_add(&pimpl_->counter, 1);
 #else
-  pfi::concurrent::scoped_lock lk(counter_mutex_);
-  return counter_++;
+  pfi::concurrent::scoped_lock lk(pimpl_->counter_mutex);
+  return pimpl_->counter++;
 #endif
 }
 

@@ -20,10 +20,7 @@
 #include <stdint.h>
 #include <string>
 
-#ifndef ATOMIC_I8_SUPPORT
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/concurrent/mutex.h>
-#endif
+#include <pficommon/lang/scoped_ptr.h>
 
 #include "global_id_generator_base.hpp"
 
@@ -31,6 +28,8 @@ namespace jubatus {
 namespace common {
 
 class global_id_generator_standalone: public global_id_generator_base {
+  struct impl;
+
  public:
   global_id_generator_standalone();
   virtual ~global_id_generator_standalone();
@@ -38,10 +37,7 @@ class global_id_generator_standalone: public global_id_generator_base {
   virtual uint64_t generate();
 
  private:
-  uint64_t counter_;
-#ifndef ATOMIC_I8_SUPPORT
-  pfi::concurrent::mutex counter_mutex_;
-#endif
+  pfi::lang::scoped_ptr<impl> pimpl_;
 };
 
 }  // namespace common
