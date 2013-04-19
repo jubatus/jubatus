@@ -18,6 +18,6 @@
 #define JUBATUS_REGRESSION_REGRESSION_HPP_
 
 #include "regression_base.hpp"
-#include "pa.hpp"
+#include "passive_aggressive.hpp"
 
 #endif  // JUBATUS_REGRESSION_REGRESSION_HPP_

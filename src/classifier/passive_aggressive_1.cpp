@@ -14,32 +14,47 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_CW_HPP_
-#define JUBATUS_CLASSIFIER_CW_HPP_
+#include "passive_aggressive_1.hpp"
 
+#include <algorithm>
 #include <string>
 
-#include "classifier_base.hpp"
+using std::string;
+using std::min;
 
 namespace jubatus {
 namespace classifier {
 
-class CW : public classifier_base {
- public:
-  explicit CW(storage::storage_base* storage);
-  CW(const classifier_config& config, storage::storage_base* storage);
-  void train(const sfv_t& fv, const std::string& label);
-  std::string name() const;
- private:
-  void update(
-    const sfv_t& fv,
-    float step_weigth,
-    const std::string& pos_label,
-    const std::string& neg_label);
-  classifier_config config;
-};
+passive_aggressive_1::passive_aggressive_1(storage::storage_base* storage)
+    : classifier_base(storage) {
+}
+
+passive_aggressive_1::passive_aggressive_1(
+    const classifier_config& config,
+    storage::storage_base* storage)
+    : classifier_base(storage),
+      config_(config) {
+}
+
+void passive_aggressive_1::train(const sfv_t& sfv, const string& label) {
+  string incorrect_label;
+  float margin = calc_margin(sfv, label, incorrect_label);
+  float loss = 1.f + margin;
+  if (loss < 0.f) {
+    return;
+  }
+  float sfv_norm = squared_norm(sfv);
+  if (sfv_norm == 0.f) {
+    return;
+  }
+
+  update_weight(
+      sfv, min(config_.C, loss / (2 * sfv_norm)), label, incorrect_label);
+}
+
+string passive_aggressive_1::name() const {
+  return string("passive_aggressive_1");
+}
 
 }  // namespace classifier
 }  // namespace jubatus
-
-#endif  // JUBATUS_CLASSIFIER_CW_HPP_

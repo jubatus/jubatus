@@ -165,6 +165,6 @@ bool stat::load(std::istream& is) {
 }
 std::string stat::type() const {
   return "stat";
-};
+}
 }  // namespame stat
 }  // namespace jubatus

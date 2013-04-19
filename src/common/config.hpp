@@ -43,6 +43,13 @@ void config_tozk(
     const std::string& name,
     std::string& config);
 
+void config_tozk(
+    lock_service& z,
+    const std::string& type,
+    const std::string& name,
+    std::string& config,
+    const std::string& config_src);
+
 void remove_config_fromzk(
     lock_service& z,
     const std::string& type,

@@ -36,10 +36,10 @@ class regression_base;
 
 class regression_factory {
  public:
-  regression_base* create_regression(
+  static regression_base* create_regression(
       const std::string& name,
       const jsonconfig::config& param,
-      jubatus::storage::storage_base* storage) const;
+      jubatus::storage::storage_base* storage);
 };
 
 }  // namespace regression

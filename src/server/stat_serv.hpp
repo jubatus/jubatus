@@ -14,45 +14,19 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_SERVER_STAT_SERV_HPP_
+#define JUBATUS_SERVER_STAT_SERV_HPP_
 
 #include <algorithm>
 #include <string>
 #include <utility>
 
-#include "../stat/mixable_stat.hpp"
-#include "../framework.hpp"
-#include "../framework/mixer/mixer.hpp"
 #include "../framework/server_base.hpp"
-#include "stat_types.hpp"
+#include "../framework/mixer/mixer.hpp"
+#include "../driver/stat.hpp"
 
 namespace jubatus {
 namespace server {
-
-struct mixable_stat : public framework::mixable<
-    jubatus::stat::mixable_stat,
-    std::pair<double, size_t> > {
- public:
-  void clear() {
-    get_model()->clear();
-  }
-
-  std::pair<double, size_t> get_diff_impl() const {
-    return get_model()->get_diff();
-  }
-
-  void mix_impl(
-      const std::pair<double, size_t>& lhs,
-      const std::pair<double, size_t>& rhs,
-      std::pair<double, size_t>& mixed) const {
-    mixed = lhs;
-    jubatus::stat::mixable_stat::reduce(rhs, mixed);
-  }
-
-  void put_diff_impl(const std::pair<double, size_t>& v) {
-    get_model()->put_diff(v);
-  }
-};
 
 class stat_serv : public framework::server_base {
  public:
@@ -61,8 +35,14 @@ class stat_serv : public framework::server_base {
       const common::cshared_ptr<common::lock_service>& zk);
   virtual ~stat_serv();
 
-  framework::mixer::mixer* get_mixer() const;
-  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const;
+  framework::mixer::mixer* get_mixer() const {
+    return stat_->get_mixer();
+  }
+
+  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+    return stat_->get_mixable_holder();
+  }
+
   void get_status(status_t& status) const;
 
   bool set_config(const std::string&);
@@ -78,12 +58,12 @@ class stat_serv : public framework::server_base {
   bool clear();
 
  private:
-  pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
-
+  pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
+  pfi::lang::shared_ptr<driver::stat> stat_;
   std::string config_;
-  server::mixable_stat stat_;
 };
 
 }  // namespace server
 }  // namespace jubatus
+
+#endif  // JUBATUS_SERVER_STAT_SERV_HPP_

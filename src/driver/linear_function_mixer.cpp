@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,7 @@ using jubatus::storage::feature_val3_t;
 using jubatus::storage::features3_t;
 
 namespace jubatus {
-namespace server {
+namespace driver {
 
 namespace {
 
@@ -79,5 +79,5 @@ void linear_function_mixer::put_diff_impl(const diffv& v) {
 void linear_function_mixer::clear() {
 }
 
-}  // namespace server
+}  // namespace driver
 }  // namespace jubatus

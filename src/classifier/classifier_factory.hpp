@@ -47,7 +47,6 @@ class classifier_factory {
 };
 
 }  // namespace classifier
-
 }  // namespace jubatus
 
 #endif  // JUBATUS_CLASSIFIER_CLASSIFIER_FACTORY_HPP_

@@ -8,7 +8,7 @@ def build(bld):
     bld.shlib(
         source = [
             'regression_base.cpp',
-            'pa.cpp',
+            'passive_aggressive.cpp',
             'regression_factory.cpp'
             ],
         target = 'jubatus_regression',
@@ -31,3 +31,8 @@ def build(bld):
         ]
     for s in test_source:
         make_test(s)
+
+    bld.install_files('${PREFIX}/include/jubatus/regression', [
+        'regression_base.hpp',
+        'regression_factory.hpp',
+        ])

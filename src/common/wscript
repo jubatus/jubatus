@@ -24,11 +24,11 @@ int main() {
 
 def build(bld):
   import Options
-  src = 'exception.cpp util.cpp network.cpp key_manager.cpp vector_util.cpp global_id_generator.cpp config.cpp'
+  src = 'exception.cpp util.cpp network.cpp key_manager.cpp vector_util.cpp global_id_generator_standalone.cpp config.cpp'
   src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
 
   if bld.env.HAVE_ZOOKEEPER_H:
-    src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp'
+    src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp global_id_generator_zk.cpp'
 
   bld.shlib(
     source = src,
@@ -64,13 +64,13 @@ def build(bld):
     make_test(s)
 
   bld.install_files('${PREFIX}/include/jubatus/common/', [
-    'cached_zk.hpp',
     'cht.hpp',
     'config.hpp',
-    'config_util.hpp',
     'exception.hpp',
     'exception_info.hpp',
-    'global_id_generator.hpp',
+    'global_id_generator_base.hpp',
+    'global_id_generator_standalone.hpp',
+    'global_id_generator_zk.hpp',
     'hash.hpp',
     'jsonconfig.hpp',
     'key_manager.hpp',
@@ -82,6 +82,5 @@ def build(bld):
     'unordered_map.hpp',
     'util.hpp',
     'vector_util.hpp',
-    'zk.hpp',
     ])
   bld.recurse(subdirs)

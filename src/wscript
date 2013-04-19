@@ -3,7 +3,7 @@ import Options
 subdirs = '''
 anomaly common plugin stat
 classifier fv_converter recommender regression storage
-framework server
+framework driver server
 cmd jubavisor
 graph third_party
 '''

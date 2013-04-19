@@ -61,7 +61,7 @@ class graph_base {
       const preset_query&) const = 0;
 
   virtual void get_node(node_id_t id, node_info& ret) const = 0;
-  virtual void get_edge(node_id_t id, edge_info& ret) const = 0;
+  virtual void get_edge(edge_id_t id, edge_info& ret) const = 0;
 
   virtual std::string type() const = 0;
 

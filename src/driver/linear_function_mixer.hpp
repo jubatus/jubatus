@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2012 Preferred Infrastracture and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,32 +14,30 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_COMMON_CONFIG_UTIL_HPP_
-#define JUBATUS_COMMON_CONFIG_UTIL_HPP_
+#ifndef JUBATUS_DRIVER_LINEAR_FUNCTION_MIXER_HPP_
+#define JUBATUS_DRIVER_LINEAR_FUNCTION_MIXER_HPP_
 
-#include <string>
-#include <pficommon/lang/cast.h>
-#include <pficommon/text/json.h>
+#include "../framework.hpp"
+#include "../storage/storage_base.hpp"
+
+#include "diffv.hpp"
 
 namespace jubatus {
+namespace driver {
 
-template<typename T>
-T get_param(
-    const pfi::text::json::json& config,
-    const std::string& name,
-    T default_value) {
-  using pfi::text::json::json_cast_with_default;
-  if (is<json_object>(config) && config.count(name)) {
-    return json_cast_with_default<T>(config[name], default_value);
-  }
+class linear_function_mixer : public jubatus::framework::mixable<
+    storage::storage_base, diffv> {
+ public:
+  diffv get_diff_impl() const;
 
-  return default_value;
-}
+  void mix_impl(const diffv& lhs, const diffv& rhs, diffv& mixed) const;
 
-pfi::text::json::json get_param_obj(
-    const pfi::text::json::json& config,
-    const std::string& name);
+  void put_diff_impl(const diffv& v);
 
+  void clear();
+};
+
+}  // namespace driver
 }  // namespace jubatus
 
-#endif  // JUBATUS_COMMON_CONFIG_UTIL_HPP_
+#endif  // JUBATUS_DRIVER_LINEAR_FUNCTION_MIXER_HPP_

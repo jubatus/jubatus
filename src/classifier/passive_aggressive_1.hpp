@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,36 +14,29 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_
-#define JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_
+#ifndef JUBATUS_CLASSIFIER_PASSIVE_AGGRESSIVE_1_HPP_
+#define JUBATUS_CLASSIFIER_PASSIVE_AGGRESSIVE_1_HPP_
 
-#include <stdint.h>
 #include <string>
 
-#include "lock_service.hpp"
-#include "shared_ptr.hpp"
+#include "classifier_base.hpp"
 
 namespace jubatus {
-namespace common {
+namespace classifier {
 
-class global_id_generator_impl;
-
-class global_id_generator {
+class passive_aggressive_1 : public classifier_base {
  public:
-  explicit global_id_generator(bool is_standalone);
-  ~global_id_generator();
-
-  uint64_t generate();
-
-  void set_ls(cshared_ptr<lock_service>&, const std::string&);
-
+  explicit passive_aggressive_1(storage::storage_base* storage);
+  passive_aggressive_1(
+      const classifier_config& config,
+      storage::storage_base* storage);
+  void train(const sfv_t& fv, const std::string& label);
+  std::string name() const;
  private:
-  global_id_generator();
-
-  pfi::lang::scoped_ptr<global_id_generator_impl> pimpl_;
+  classifier_config config_;
 };
 
-}  // namespace common
+}  // namespace classifier
 }  // namespace jubatus
 
-#endif  // JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_
+#endif  // JUBATUS_CLASSIFIER_PASSIVE_AGGRESSIVE_1_HPP_

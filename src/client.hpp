@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_CLIENT_HPP_
+#define JUBATUS_CLIENT_HPP_
 
 //=============================================================//
 //                                                             //
@@ -38,3 +39,5 @@
 #include <jubatus/client/regression_client.hpp>
 #include <jubatus/client/graph_client.hpp>
 #include <jubatus/client/anomaly_client.hpp>
+
+#endif  // JUBATUS_CLIENT_HPP_

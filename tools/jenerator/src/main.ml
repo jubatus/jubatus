@@ -40,9 +40,9 @@ let _ =
     match conf.Config.language with
     | "server" -> Cpp.generate_server
     | "cpp" -> Cpp.generate_client
-    (* | "python" -> Python.generate *)
-    (* | "java" -> Java.generate *)
-    (* | "ruby" -> Ruby.generate *)
+    | "python" -> Python.generate
+    (*| "java" -> Java.generate*)
+    | "ruby" -> Ruby.generate
     | _ ->
       print_endline ("Unsupported language: \"" ^ conf.Config.language ^ "\"");
       exit 1 in

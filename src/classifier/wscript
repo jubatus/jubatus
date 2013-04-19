@@ -7,12 +7,12 @@ def build(bld):
     source = '''
         classifier_base.cpp
 	perceptron.cpp
-	pa.cpp
-	pa1.cpp
-	pa2.cpp
-	cw.cpp	
+	passive_aggressive.cpp
+	passive_aggressive_1.cpp
+	passive_aggressive_2.cpp
+	confidence_weighted.cpp	
 	arow.cpp
-	nherd.cpp
+	normal_herd.cpp
         classifier_factory.cpp
 	''',
     target = 'jubatus_classifier',

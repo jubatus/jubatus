@@ -14,9 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "regression_factory.hpp"
+
 #include <stdexcept>
 #include <string>
-#include "regression_factory.hpp"
+
 #include "regression.hpp"
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
@@ -29,10 +31,11 @@ namespace regression {
 regression_base* regression_factory::create_regression(
     const std::string& name,
     const jsonconfig::config& param,
-    jubatus::storage::storage_base* storage) const {
-  if (name == "PA") {
-    return new regression::PA(config_cast_check<regression::PA::config>(param),
-                              storage);
+    jubatus::storage::storage_base* storage) {
+  if (name == "PA" || name == "passive_aggressive") {
+    return new regression::passive_aggressive(
+        config_cast_check<regression::passive_aggressive::config>(param),
+        storage);
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }

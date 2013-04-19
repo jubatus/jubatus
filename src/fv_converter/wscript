@@ -148,5 +148,10 @@ def build(bld):
                       'datum.hpp',
                       'converter_config.hpp',
                       'json_converter.hpp',
-                      'exception.hpp'])
+                      'weight_manager.hpp',
+                      'keyword_weights.hpp',
+                      'counter.hpp',
+                      'revert.hpp',
+                      'exception.hpp',
+                    ])
 

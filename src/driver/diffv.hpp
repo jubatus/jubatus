@@ -14,28 +14,43 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_PA2_HPP_
-#define JUBATUS_CLASSIFIER_PA2_HPP_
+#ifndef JUBATUS_DRIVER_DIFFV_HPP_
+#define JUBATUS_DRIVER_DIFFV_HPP_
 
-#include <string>
-
-#include "classifier_base.hpp"
+#include "../storage/storage_type.hpp"
 
 namespace jubatus {
-namespace classifier {
+namespace driver {
 
-class PA2 : public classifier_base {
+struct diffv {
  public:
-  explicit PA2(storage::storage_base* storage);
-  PA2(const classifier_config& config, storage::storage_base* storage);
+  diffv(int c, const storage::features3_t& w)
+      : count(c),
+        v(w) {
+  }
 
-  void train(const sfv_t& sfv, const std::string& label);
-  std::string name() const;
- private:
-  classifier_config config;
+  diffv()
+      : count(0),
+        v() {
+  }
+
+  int count;
+  storage::features3_t v;
+
+  diffv& operator/=(double d) {
+    this->v /= d;
+    return *this;
+  }
+
+  MSGPACK_DEFINE(count, v);
+
+  template<class Archiver>
+  void serialize(Archiver& ar) {
+    ar & MEMBER(count) & MEMBER(v);
+  }
 };
 
-}  // namespace classifier
+}  // namespace driver
 }  // namespace jubatus
 
-#endif  // JUBATUS_CLASSIFIER_PA2_HPP_
+#endif  // JUBATUS_DRIVER_DIFFV_HPP_

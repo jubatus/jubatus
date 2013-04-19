@@ -14,23 +14,16 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_SERVER_REGRESSION_SERV_HPP_
+#define JUBATUS_SERVER_REGRESSION_SERV_HPP_
 
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <pficommon/lang/scoped_ptr.h>
 #include <pficommon/lang/shared_ptr.h>
-#include "../common/shared_ptr.hpp"
-#include "../framework/mixable.hpp"
-#include "../framework/mixer/mixer.hpp"
-#include "../framework/server_base.hpp"
-#include "../regression/regression_base.hpp"
+#include "../driver/regression.hpp"
 #include "regression_types.hpp"
-#include "diffv.hpp"
-#include "linear_function_mixer.hpp"
-#include "mixable_weight_manager.hpp"
 
 namespace jubatus {
 namespace server {
@@ -43,11 +36,11 @@ class regression_serv : public framework::server_base {
   virtual ~regression_serv();
 
   framework::mixer::mixer* get_mixer() const {
-    return mixer_.get();
+    return regression_->get_mixer();
   }
 
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
-    return mixable_holder_;
+    return regression_->get_mixable_holder();
   }
 
   void get_status(status_t& status) const;
@@ -62,15 +55,12 @@ class regression_serv : public framework::server_base {
   void check_set_config() const;
 
  private:
-  pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
-
+  pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
+  pfi::lang::shared_ptr<driver::regression> regression_;
   std::string config_;
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  pfi::lang::shared_ptr<jubatus::regression::regression_base> regression_;
-  linear_function_mixer gresser_;
-  mixable_weight_manager wm_;
 };
 
 }  // namespace server
 }  // namespace jubatus
+
+#endif  // JUBATUS_SERVER_REGRESSION_SERV_HPP_

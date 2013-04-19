@@ -19,11 +19,11 @@
 
 #include "classifier_base.hpp"
 #include "perceptron.hpp"
-#include "pa.hpp"
-#include "pa1.hpp"
-#include "pa2.hpp"
-#include "cw.hpp"
+#include "passive_aggressive.hpp"
+#include "passive_aggressive_1.hpp"
+#include "passive_aggressive_2.hpp"
+#include "confidence_weighted.hpp"
 #include "arow.hpp"
-#include "nherd.hpp"
+#include "normal_herd.hpp"
 
 #endif  // JUBATUS_CLASSIFIER_CLASSIFIER_HPP_

@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,7 @@ using jubatus::fv_converter::keyword_weights;
 using jubatus::fv_converter::weight_manager;
 
 namespace jubatus {
-namespace server {
+namespace driver {
 
 keyword_weights mixable_weight_manager::get_diff_impl() const {
   return get_model()->get_diff();
@@ -47,5 +47,5 @@ void mixable_weight_manager::clear() {
   get_model()->clear();
 }
 
-}  // namespace server
+}  // namespace driver
 }  // namespace jubatus

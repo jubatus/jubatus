@@ -31,8 +31,12 @@ namespace anomaly {
 
 class anomaly_base;
 
-anomaly_base* create_anomaly(const std::string& name,
-                             const jsonconfig::config& param);
+class anomaly_factory {
+ public:
+  static anomaly_base* create_anomaly(
+      const std::string& name,
+      const jsonconfig::config& param);
+};
 
 }  // namespace anomaly
 }  // namespace jubatus

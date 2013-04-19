@@ -57,12 +57,17 @@ class byte_buffer {
     std::memcpy(&(*buf_)[0], ptr, size);
   }
 
-  char* ptr() const {
+  const char* ptr() const {
     if (buf_) {
       return &(*buf_)[0];
     } else {
       return NULL;
     }
+  }
+
+  char* ptr() {
+    return const_cast<char*>(
+      const_cast<const byte_buffer*>(this)->ptr());
   }
 
   size_t size() const {

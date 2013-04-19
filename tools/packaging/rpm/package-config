@@ -1,7 +1,7 @@
 # ==============================================================================
 # Jubatus
 # ==============================================================================
-JUBATUS_VERSION="0.4.2"
+JUBATUS_VERSION="0.4.3"
 JUBATUS_RELEASE="1"
 JUBATUS_IS_SNAPSHOT="no"
 JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
@@ -23,7 +23,7 @@ MSGPACK_RELEASE="1"
 # ==============================================================================
 # jubatus-mpio
 # ==============================================================================
-JUBATUS_MPIO_VERSION="0.4.1"
+JUBATUS_MPIO_VERSION="0.4.2"
 JUBATUS_MPIO_RELEASE="1"
 JUBATUS_MPIO_IS_SNAPSHOT="no"
 JUBATUS_MPIO_CHECKOUT="${JUBATUS_MPIO_VERSION}"

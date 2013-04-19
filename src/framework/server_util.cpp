@@ -92,7 +92,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add<std::string>(
       "configpath",
       'f',
-      "config option need to specify json file"
+      "config option need to specify json file "
       "when standalone mode (without ZK mode)",
       false, "");
 

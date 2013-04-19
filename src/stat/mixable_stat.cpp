@@ -59,18 +59,12 @@ void mixable_stat::reduce(
   ret.second += lhs.second;
 }
 
-double mixable_stat::mixed_entropy() const {
+double mixable_stat::entropy() const {
   if (n_ == 0) {
     return 0;
   }
   double n = n_;
   return log(n) - e_ / n_;
-}
-
-void mixable_stat::clear() {
-  stat::clear();
-  e_ = 0;
-  n_ = 0;
 }
 
 }  // namespace stat

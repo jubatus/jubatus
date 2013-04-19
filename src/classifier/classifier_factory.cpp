@@ -35,19 +35,23 @@ classifier_base* classifier_factory::create_classifier(
   if (name == "perceptron") {
     // perceptron doesn't have parameter
     return new perceptron(storage);
-  } else if (name == "PA") {
-    // PA doesn't have parameter
-    return new PA(storage);
-  } else if (name == "PA1") {
-    return new PA1(config_cast_check<classifier_config>(param), storage);
-  } else if (name == "PA2") {
-    return new PA2(config_cast_check<classifier_config>(param), storage);
-  } else if (name == "CW") {
-    return new CW(config_cast_check<classifier_config>(param), storage);
-  } else if (name == "AROW") {
-    return new AROW(config_cast_check<classifier_config>(param), storage);
-  } else if (name == "NHERD") {
-    return new NHERD(config_cast_check<classifier_config>(param), storage);
+  } else if (name == "PA" || name == "passive_aggressive") {
+    // passive_aggressive doesn't have parameter
+    return new passive_aggressive(storage);
+  } else if (name == "PA1" || name == "passive_aggressive_1") {
+    return new passive_aggressive_1(
+        config_cast_check<classifier_config>(param), storage);
+  } else if (name == "PA2" || name == "passive_aggressive_2") {
+    return new passive_aggressive_2(
+        config_cast_check<classifier_config>(param), storage);
+  } else if (name == "CW" || name == "confidence_weighted") {
+    return new confidence_weighted(
+        config_cast_check<classifier_config>(param), storage);
+  } else if (name == "AROW" || name == "arow") {
+    return new arow(config_cast_check<classifier_config>(param), storage);
+  } else if (name == "NHERD" || name == "normal_herd") {
+    return new normal_herd(
+        config_cast_check<classifier_config>(param), storage);
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }

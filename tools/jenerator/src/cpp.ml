@@ -20,6 +20,9 @@
 (* TODO(unnonouno): split source *)
 
 open Syntax
+open Lib
+
+let comment_out_head = "//"
 
 let gen_jubatus_include conf file =
   let path = 
@@ -33,16 +36,6 @@ let gen_jubatus_include conf file =
 
 let parse_namespace namespace =
   Str.split (Str.regexp "::") namespace
-;;
-
-let indent_line n (ind, line) =
-  match line with
-  | "" -> (ind, line)
-  | _ -> (ind + n, line)
-;;
-
-let indent_lines n =
-  List.map (indent_line n)
 ;;
 
 let rec gen_template typ args =
@@ -137,80 +130,9 @@ let make_guard_name filename =
   Str.global_replace (Str.regexp "[\\./]") "_" upper ^ "_"
 ;;
 
-let rfind line pos ch =
-  if String.rcontains_from line pos ch then
-    Some (String.rindex_from line pos ch)
-  else
-    None
-
-let rindex_split_pos line pos =
-  let paren = rfind line pos '(' in
-  let comma = rfind line pos ',' in
-  match paren, comma with
-  | Some p, Some c -> Some (max (p + 1) (c + 1))
-  | Some p, None -> Some (p + 1)
-  | None, Some c -> Some (c + 1)
-  | None, None -> None
-;;
-
-let rec print_indent p (indent, line) =
-  if line == "" then
-    (* don't append spaces to a blank line *)
-    p ""
-  else
-    let space = String.make (indent * 2) ' ' in
-    let max_len = 80 - indent * 2 in
-    let len = String.length line in
-    if len > max_len then
-      match rindex_split_pos line (max_len - 1) with
-      | Some pos ->
-        p (space ^ String.sub line 0 pos);
-        print_indent p (indent, "    " ^ String.sub line pos (len - pos))
-      | None ->
-        p (space ^ line)
-    else
-      p (space ^ line)
-;;
-
-let print_lines p lines =
-  let blank = ref false in
-  List.iter (fun (indent, line) ->
-    if not (line = "" && !blank) then
-      print_indent p (indent, line);
-    blank := line = ""
-  ) lines
-;;
-
-let rec concat_blocks blocks =
-  let rec insert_blank = function
-    | [] -> []
-    | x::[] -> [x]
-    | x::xs -> x::[(0, "")]::(insert_blank xs) in
-  List.concat (insert_blank blocks)
-;;
-  
-let make_header_message source =
-  let file = Filename.basename source in
-  [
-    "// This file is auto-generated from " ^ file;
-    "// *** DO NOT EDIT ***";
-    "";
-  ]
-;;
-
-let make_source conf source filename content =
-  let path = Filename.concat conf.Config.outdir filename in
-  File_util.safe_open_out path (fun out ->
-    let print = (fun s -> output_string out s; output_char out '\n') in
-    let head = make_header_message source in
-    List.iter print head;
-    print_lines print content
-  )
-;;
-
-let make_header conf source filename content =
+let make_header_impl for_template conf source filename content =
   let guard = conf.Config.include_guard ^ make_guard_name filename in
-  make_source conf source filename (concat_blocks [
+  make_source_impl for_template conf source filename (concat_blocks [
     [
       (0, "#ifndef " ^ guard);
       (0, "#define " ^ guard);
@@ -219,8 +141,15 @@ let make_header conf source filename content =
     [
       (0, "#endif  // " ^ guard);
     ]
-  ])
+  ]) comment_out_head
 ;;
+
+let make_header = make_header_impl false
+;;
+
+let make_template_header = make_header_impl true
+;;
+
 
 let rec make_namespace ns content =
   match ns with
@@ -313,15 +242,6 @@ let gen_message m =
   ]
 ;;
 
-let get_services idl =
-  let services =
-    List.fold_left (fun lst x ->
-      match x with
-      | Service s ->
-        s::lst
-      | _ -> lst) [] idl in
-  List.rev services
-;;
   
 let gen_typedef = function
   | Typedef(name, typ) ->
@@ -567,7 +487,7 @@ let gen_keeper_file conf source services =
       (0, "}")
     ]
   ] in
-  make_source conf source filename s
+  make_source conf source filename s comment_out_head
 ;;
 
 let gen_impl_method m =
@@ -674,7 +594,7 @@ let gen_impl_file conf source services =
       (0, "}")
     ]
   ] in
-  make_source conf source filename s
+  make_source conf source filename s comment_out_head
 ;;
 
 let gen_const m =
@@ -693,16 +613,33 @@ let gen_server_template_header_method m =
   [ (0, Printf.sprintf "%s %s%s%s;" ret_type name args_def const) ]
 ;;
 
+(* TODO(unnonouno): These special methods are going to be removed from IDL *)
+let filter_methods methods =
+  List.filter (fun m ->
+    not (m.method_name = "save"
+         or m.method_name = "load"
+         or m.method_name = "get_status")
+  ) methods
+;;
+
 let gen_server_template_header s =
-  let methods = List.map gen_server_template_header_method s.service_methods in
+  let ms = filter_methods s.service_methods in
+  let methods = List.map gen_server_template_header_method ms in
   let name = s.service_name in
   let serv_name = name ^ "_serv" in
   List.concat [
     [
-      (0, "class " ^ serv_name ^ " : public jubatus::framework::jubatus_serv {  // do not change");
+      (0, "class " ^ serv_name ^ " : public jubatus::framework::server_base {  // do not change");
       (0, " public:");
-      (1,   serv_name ^ "(const jubatus::framework::server_argv& a);  // do not change");
+      (1,   serv_name ^ "(");
+      (2,     "const jubatus::framework::server_argv& a,");
+      (2,     "const common::cshared_ptr<common::lock_service>& zk);  // do not change");
       (1,   "virtual ~" ^ serv_name ^ "();  // do not change");
+      (0,   "");
+      (1,   "virtual mixer::mixer* get_mixer() const;");
+      (1,   "pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const;");
+      (1,   "void get_status(status_t& status) const;");
+      (0,   "");
     ];
     indent_lines 1 (List.concat methods);
     [
@@ -730,7 +667,7 @@ let gen_server_template_header_file conf source services =
     make_namespace namespace (concat_blocks servers)
   ] in
   
-  make_header conf source filename content
+  make_template_header conf source filename content
 ;;
 
 let gen_server_template_source_method s m =
@@ -747,20 +684,34 @@ let gen_server_template_source_method s m =
 ;;
 
 let gen_server_template_source s =
-  let methods = List.map (gen_server_template_source_method s) s.service_methods in
+  let ms = filter_methods s.service_methods in
+  let methods = List.map (gen_server_template_source_method s) ms in
   let name = s.service_name in
   let serv_name = name ^ "_serv" in
   concat_blocks [
     [
-      (0, serv_name ^ "::" ^ serv_name ^ "(const jubatus::framework::server_argv& a)");
-      (2,     ": jubatus::framework::jubatus_serv(a) {");
+      (0, serv_name ^ "::" ^ serv_name ^ "(");
+      (1,   "const jubatus::framework::server_argv& a,");
+      (1,   "const common::cshared_ptr<common::lock_service>& zk)");
+      (2,     ": jubatus::framework::server_base(a) {");
       (1,   "// somemixable* mi = new somemixable;");
       (1,   "// somemixable_.set_model(mi);");
-      (1,   "// register_mixable(mi);");
+      (1,   "// get_mixable_holder()->register_mixable(mi);");
       (0, "}");
       (0, "");
       (0, serv_name ^ "::~" ^ serv_name ^ "() {");
       (0, "}");
+      (0, "");
+      (0, "virtual mixer::mixer* " ^ serv_name ^ "::get_mixer() const {");
+      (0, "}");
+      (0, "");
+      (0, "pfi::lang::shared_ptr<framework::mixable_holder> "
+        ^ serv_name ^ "::get_mixable_holder() const {");
+      (0, "}");
+      (0, "");
+      (0, "void " ^ serv_name ^ "::get_status(status_t& status) const {");
+      (0, "}");
+      (0, "");
     ];
     concat_blocks methods;
   ]
@@ -783,7 +734,7 @@ let gen_server_template_source_file conf source services =
     make_namespace namespace (concat_blocks servers);
   ] in
   
-  make_source conf source filename content
+  make_template_source conf source filename content comment_out_head
 ;;
 
 let generate_server conf source idl =

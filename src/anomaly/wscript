@@ -29,3 +29,10 @@ def build(bld):
       'lof_storage_test.cpp',
       'lof_test.cpp'
       ])
+
+  bld.install_files('${PREFIX}/include/jubatus/anomaly', [
+      'anomaly_base.hpp',
+      'anomaly_factory.hpp',
+      'anomaly_type.hpp',
+      'anomaly_storage_base.hpp',
+      ])

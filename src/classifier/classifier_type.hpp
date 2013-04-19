@@ -26,6 +26,7 @@
 
 namespace jubatus {
 
+// TODO(unknown): namespace should be classifier
 struct classify_result_elem {
   classify_result_elem(const std::string& label, float score)
       : label(label),
