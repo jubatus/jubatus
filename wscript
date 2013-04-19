@@ -2,7 +2,7 @@ import Options
 import os
 import sys
 
-VERSION = '0.4.2'
+VERSION = '0.4.3'
 APPNAME = 'jubatus'
 
 top = '.'
