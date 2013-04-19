@@ -72,9 +72,7 @@ recommender_serv::recommender_serv(
     : server_base(a),
       mixer_(create_mixer(a, zk)),
       clear_row_cnt_(),
-      update_row_cnt_(),
-      build_cnt_(),
-      mix_cnt_() {
+      update_row_cnt_() {
 }
 
 recommender_serv::~recommender_serv() {
@@ -84,8 +82,6 @@ void recommender_serv::get_status(status_t& status) const {
   status_t my_status;
   my_status["clear_row_cnt"] = lexical_cast<string>(clear_row_cnt_);
   my_status["update_row_cnt"] = lexical_cast<string>(update_row_cnt_);
-  my_status["build_cnt"] = lexical_cast<string>(build_cnt_);
-  my_status["mix_cnt"] = lexical_cast<string>(mix_cnt_);
 
   status.insert(my_status.begin(), my_status.end());
 }
@@ -146,8 +142,6 @@ bool recommender_serv::clear() {
 
   clear_row_cnt_ = 0;
   update_row_cnt_ = 0;
-  build_cnt_ = 0;
-  mix_cnt_ = 0;
 
   recommender_->clear();
   LOG(INFO) << "model cleared: " << argv().name;

@@ -72,8 +72,6 @@ class recommender_serv : public framework::server_base {
 
   uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;
-  uint64_t build_cnt_;
-  uint64_t mix_cnt_;
 };
 
 }  // namespace server
