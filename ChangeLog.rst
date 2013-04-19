@@ -1,6 +1,6 @@
 
-Preparing Release 0.4.3
------------------------
+Release 0.4.3 - 2013/04/19
+--------------------------
 
 * Improvements
     * Support Python 2.4 for building (#296)
