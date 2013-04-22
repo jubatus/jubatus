@@ -19,6 +19,7 @@
 #include "re2_filter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(re2_filter, trivial) {
@@ -30,4 +31,5 @@ TEST(re2_filter, trivial) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

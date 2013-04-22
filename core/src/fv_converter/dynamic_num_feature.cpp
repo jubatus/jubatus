@@ -20,6 +20,7 @@
 #include <string>
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 dynamic_num_feature::dynamic_num_feature(
@@ -38,4 +39,5 @@ void dynamic_num_feature::add_feature(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

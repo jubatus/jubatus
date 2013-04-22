@@ -21,6 +21,7 @@
 #include "key_matcher.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(fv_converter, key_matcher_factory) {
@@ -47,4 +48,5 @@ TEST(fv_converter, key_matcher_factory) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

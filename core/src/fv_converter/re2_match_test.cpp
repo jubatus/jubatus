@@ -19,6 +19,7 @@
 #include "re2_match.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(re2_match, trivial) {
@@ -32,4 +33,5 @@ TEST(re2_match, illegal) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

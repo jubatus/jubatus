@@ -21,6 +21,7 @@
 #include "exception.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(dynamic_string_filter, trivial) {
@@ -53,4 +54,5 @@ TEST(dynamic_string_filter, unknown_function) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

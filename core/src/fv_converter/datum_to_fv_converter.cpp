@@ -35,6 +35,7 @@
 #include "without_split.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 /// impl
@@ -495,4 +496,5 @@ void datum_to_fv_converter::set_weight_manager(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

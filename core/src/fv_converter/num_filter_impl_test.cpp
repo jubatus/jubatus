@@ -18,6 +18,7 @@
 #include "num_filter_impl.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(add_filter, trivial) {
@@ -26,4 +27,5 @@ TEST(add_filter, trivial) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

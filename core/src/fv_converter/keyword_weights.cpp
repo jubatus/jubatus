@@ -22,6 +22,7 @@
 #include "keyword_weights.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 namespace {
@@ -75,4 +76,5 @@ void keyword_weights::clear() {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

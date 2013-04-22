@@ -25,6 +25,7 @@
 #include "word_splitter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(dynamic_splitter, trivial) {
@@ -58,4 +59,5 @@ TEST(dynamic_splitter, unknown_function) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

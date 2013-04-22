@@ -23,6 +23,7 @@
 #include "msgpack_converter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 namespace {
@@ -164,4 +165,5 @@ TEST(msgpack_converter, map) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

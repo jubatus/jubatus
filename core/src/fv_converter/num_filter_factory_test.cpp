@@ -23,6 +23,7 @@
 #include "num_filter_impl.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(num_filter_factory, unknown_name) {
@@ -72,4 +73,5 @@ TEST(num_filter_factory, create_dynamic) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

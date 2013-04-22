@@ -21,6 +21,7 @@
 #include "num_feature.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 class my_num_feature : public num_feature {
@@ -40,4 +41,5 @@ extern "C" {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

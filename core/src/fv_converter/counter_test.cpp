@@ -19,6 +19,7 @@
 #include "counter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(counter, trivial) {
@@ -49,4 +50,5 @@ TEST(counter, add) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

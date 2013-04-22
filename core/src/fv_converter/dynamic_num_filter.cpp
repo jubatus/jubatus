@@ -20,6 +20,7 @@
 #include <string>
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 dynamic_num_filter::dynamic_num_filter(
@@ -35,4 +36,5 @@ double dynamic_num_filter::filter(double value) const {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

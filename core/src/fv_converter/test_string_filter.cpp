@@ -19,6 +19,7 @@
 #include "string_filter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 class my_filter : public string_filter {
@@ -40,4 +41,5 @@ string_filter* create(const std::map<std::string, std::string>& params) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

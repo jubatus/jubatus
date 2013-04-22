@@ -20,6 +20,7 @@
 #include "exception.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 re2_match::re2_match(const std::string& regexp)
@@ -34,4 +35,5 @@ bool re2_match::match(const std::string& key) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

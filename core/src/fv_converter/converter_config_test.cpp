@@ -29,6 +29,7 @@ using std::string;
 using pfi::data::optional;
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(converter_config, config) {
@@ -121,4 +122,5 @@ TEST(make_fv_converter, config_cast_error) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

@@ -20,6 +20,7 @@
 #include "character_ngram.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 std::vector<std::pair<size_t, size_t> > make_pairs(int*xs) {
@@ -74,4 +75,5 @@ TEST(character_ngram, bigram) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

@@ -21,6 +21,7 @@
 #include "space_splitter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 namespace {
@@ -79,4 +80,5 @@ TEST(space_splitter, trivial) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

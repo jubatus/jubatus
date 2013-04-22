@@ -21,6 +21,7 @@
 #include "keyword_weights.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(keyword_weights, trivial) {
@@ -68,4 +69,5 @@ TEST(keyword_weights, trivial) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

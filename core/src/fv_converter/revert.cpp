@@ -23,6 +23,7 @@
 #include "datum.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 void revert_feature(const sfv_t& fv, fv_converter::datum& data) {
@@ -103,4 +104,5 @@ bool revert_string_value(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus
