@@ -39,6 +39,7 @@ using pfi::lang::lexical_cast;
 using pfi::data::unordered_set;
 
 namespace jubatus {
+namespace core {
 namespace graph {
 
 namespace {
@@ -764,4 +765,5 @@ void graph_wo_index::remove_by_swap(
 }
 
 }  // namespace graph
+}  // namespace core
 }  // namespace jubatus
