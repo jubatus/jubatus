@@ -24,12 +24,13 @@
 #include "../storage/bit_vector.hpp"
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 using std::make_pair;
 using std::string;
 using std::vector;
-using jubatus::storage::bit_vector;
+using jubatus::core::storage::bit_vector;
 using pfi::data::unordered_map;
 
 TEST(generate_random_vector, empty) {
@@ -86,4 +87,5 @@ TEST(prod_invert_and_vector, trivial) {
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

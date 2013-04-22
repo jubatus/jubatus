@@ -28,9 +28,10 @@
 using std::pair;
 using std::string;
 using std::vector;
-using jubatus::storage::bit_vector;
+using jubatus::core::storage::bit_vector;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 const uint64_t minhash::hash_prime = 0xc3a5c85c97cb3127ULL;
@@ -186,4 +187,5 @@ const storage::recommender_storage_base* minhash::get_const_storage() const {
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

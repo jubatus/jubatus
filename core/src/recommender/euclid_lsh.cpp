@@ -37,6 +37,7 @@ using std::istream;
 using pfi::math::random::mtrand;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 namespace {
@@ -234,4 +235,5 @@ bool euclid_lsh::load_impl(istream& is) {
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

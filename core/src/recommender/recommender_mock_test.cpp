@@ -31,6 +31,7 @@ using std::vector;
 using pfi::lang::scoped_ptr;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 TEST(recommender_mock, similar_row_by_id) {
@@ -91,4 +92,5 @@ TEST(recommender_mock, name) {
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

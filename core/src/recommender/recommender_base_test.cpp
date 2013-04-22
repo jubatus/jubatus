@@ -32,6 +32,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 class recommender_impl : public recommender_base {
@@ -169,4 +170,5 @@ TEST(recommender_base, calc_similality) {
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

@@ -27,6 +27,7 @@ using std::vector;
 using pfi::data::string::split;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 sfv_t make_sfv(const string& repr) {
@@ -44,4 +45,5 @@ vector<pair<string, float> > make_ids(const string& repr) {
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus
