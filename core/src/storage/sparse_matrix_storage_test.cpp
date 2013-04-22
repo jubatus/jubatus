@@ -31,6 +31,7 @@ using std::sort;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 TEST(sparse_matrix_storage, empty) {
@@ -174,4 +175,5 @@ TEST(sparse_matrix_storage, clear) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

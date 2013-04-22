@@ -45,6 +45,7 @@ using pfi::data::serialization::binary_iarchive;
 using pfi::data::serialization::binary_oarchive;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class stub_storage : public storage_base {
@@ -128,6 +129,7 @@ class stub_storage : public storage_base {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 TEST(key_manager, trivial) {

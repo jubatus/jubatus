@@ -25,6 +25,7 @@ using std::stringstream;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 lsh_vector make_vector(const string& str) {
@@ -92,4 +93,5 @@ TEST(lsh_vector, cut) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

@@ -45,6 +45,7 @@ using pfi::data::unordered_set;
 using pfi::math::random::mtrand;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 namespace {
@@ -481,4 +482,5 @@ const lsh_entry* lsh_index_storage::get_lsh_entry(const string& row) const {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

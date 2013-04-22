@@ -29,6 +29,7 @@ using std::sqrt;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 TEST(inverted_index_storage, trivial) {
@@ -128,4 +129,5 @@ TEST(inverted_index_storage, mix) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

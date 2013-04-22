@@ -24,6 +24,7 @@
 using std::string;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 namespace {
@@ -250,4 +251,5 @@ std::string local_storage_mixture::type() const {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

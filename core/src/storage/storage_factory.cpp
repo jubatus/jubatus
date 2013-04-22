@@ -24,6 +24,7 @@
 #include "local_storage_mixture.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 storage_base* storage_factory::create_storage(const std::string& name) {
@@ -40,4 +41,5 @@ storage_base* storage_factory::create_storage(const std::string& name) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
