@@ -30,7 +30,7 @@
 #include "../recommender/euclid_lsh.hpp"
 #include "../recommender/recommender_factory.hpp"
 
-using jubatus::storage::lof_storage;
+using jubatus::core::storage::lof_storage;
 using pfi::data::serialization::binary_iarchive;
 using pfi::data::serialization::binary_oarchive;
 using pfi::data::unordered_map;
@@ -47,6 +47,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 const uint32_t lof_storage::DEFAULT_NEIGHBOR_NUM = 10;
@@ -405,4 +406,5 @@ void lof_storage::update_lrd_with_neighbors(
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

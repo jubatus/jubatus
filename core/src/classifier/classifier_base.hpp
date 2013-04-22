@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_CLASSIFIER_BASE_HPP_
-#define JUBATUS_CLASSIFIER_CLASSIFIER_BASE_HPP_
+#ifndef JUBATUS_CORE_SRC_CLASSIFIER_CLASSIFIER_BASE_HPP_
+#define JUBATUS_CORE_SRC_CLASSIFIER_CLASSIFIER_BASE_HPP_
 
 #include <stdint.h>
 
@@ -29,11 +29,12 @@
 #include "classifier_type.hpp"
 
 namespace jubatus {
+namespace core {
 namespace classifier {
 
 class classifier_base {
  public:
-  explicit classifier_base(jubatus::storage::storage_base* storage_base);
+  explicit classifier_base(jubatus::core::storage::storage_base* storage_base);
   virtual ~classifier_base();
   virtual void train(const sfv_t& fv, const std::string& label) = 0;
 
@@ -66,11 +67,12 @@ class classifier_base {
 
   static float squared_norm(const sfv_t& sfv);
 
-  jubatus::storage::storage_base* storage_;
+  jubatus::core::storage::storage_base* storage_;
   bool use_covars_;
 };
 
 }  // namespace classifier
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CLASSIFIER_CLASSIFIER_BASE_HPP_
+#endif  // JUBATUS_CORE_SRC_CLASSIFIER_CLASSIFIER_BASE_HPP_

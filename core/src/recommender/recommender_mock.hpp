@@ -63,8 +63,8 @@ class recommender_mock : public recommender_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const;
 
   virtual std::string type() const;
-  virtual storage::recommender_storage_base* get_storage();
-  virtual const storage::recommender_storage_base* get_const_storage() const;
+  virtual core::storage::recommender_storage_base* get_storage();
+  virtual const core::storage::recommender_storage_base* get_const_storage() const;
 
  protected:
   virtual bool save_impl(std::ostream&);

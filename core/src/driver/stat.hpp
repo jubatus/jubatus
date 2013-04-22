@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_DRIVER_STAT_HPP_
-#define JUBATUS_DRIVER_STAT_HPP_
+#ifndef JUBATUS_CORE_DRIVER_STAT_HPP_
+#define JUBATUS_CORE_DRIVER_STAT_HPP_
 
 #include <algorithm>
 #include <string>
@@ -26,10 +26,11 @@
 #include "../framework/mixer/mixer.hpp"
 
 namespace jubatus {
+namespace core {
 namespace driver {
 
 struct mixable_stat : public framework::mixable<
-    jubatus::stat::stat,
+    jubatus::core::stat::stat,
     std::pair<double, size_t> > {
  public:
   void clear() {
@@ -44,7 +45,7 @@ struct mixable_stat : public framework::mixable<
       const std::pair<double, size_t>& rhs,
       std::pair<double, size_t>& mixed) const {
     mixed = lhs;
-    jubatus::stat::mixable_stat::reduce(rhs, mixed);
+    jubatus::core::stat::mixable_stat::reduce(rhs, mixed);
   }
 
   void put_diff_impl(const std::pair<double, size_t>& v) {
@@ -55,7 +56,7 @@ struct mixable_stat : public framework::mixable<
 class stat {
  public:
   stat(
-      jubatus::stat::stat* stat_method,
+      jubatus::core::stat::stat* stat_method,
       pfi::lang::shared_ptr<framework::mixer::mixer> mixer);
   virtual ~stat();
 
@@ -67,7 +68,7 @@ class stat {
     return mixable_holder_;
   }
 
-  jubatus::stat::stat* get_model() const {
+  jubatus::core::stat::stat* get_model() const {
     return mixable_stat_model_.get_model().get();
   }
 
@@ -83,11 +84,12 @@ class stat {
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  pfi::lang::shared_ptr<jubatus::stat::stat> stat_;
+  pfi::lang::shared_ptr<jubatus::core::stat::stat> stat_;
   mixable_stat mixable_stat_model_;
 };
 
 }  // namespace driver
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_DRIVER_STAT_HPP_
+#endif  // JUBATUS_CORE_DRIVER_STAT_HPP_

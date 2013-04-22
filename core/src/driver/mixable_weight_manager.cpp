@@ -20,10 +20,11 @@
 
 #include "../fv_converter/weight_manager.hpp"
 
-using jubatus::fv_converter::keyword_weights;
-using jubatus::fv_converter::weight_manager;
+using jubatus::core::fv_converter::keyword_weights;
+using jubatus::core::fv_converter::weight_manager;
 
 namespace jubatus {
+namespace core {
 namespace driver {
 
 keyword_weights mixable_weight_manager::get_diff_impl() const {
@@ -48,4 +49,5 @@ void mixable_weight_manager::clear() {
 }
 
 }  // namespace driver
+}  // namespace core
 }  // namespace jubatus

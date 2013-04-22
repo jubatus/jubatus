@@ -110,11 +110,11 @@ string recommender_mock::type() const {
   return "recommender_mock";
 }
 
-storage::recommender_storage_base* recommender_mock::get_storage() {
+core::storage::recommender_storage_base* recommender_mock::get_storage() {
   return &storage_;
 }
 
-const storage::recommender_storage_base* recommender_mock::get_const_storage()
+const core::storage::recommender_storage_base* recommender_mock::get_const_storage()
     const {
   return &storage_;
 }

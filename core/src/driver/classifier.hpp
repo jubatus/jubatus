@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_DRIVER_CLASSIFIER_HPP_
-#define JUBATUS_DRIVER_CLASSIFIER_HPP_
+#ifndef JUBATUS_CORE_DRIVER_CLASSIFIER_HPP_
+#define JUBATUS_CORE_DRIVER_CLASSIFIER_HPP_
 
 #include <string>
 #include <utility>
@@ -31,6 +31,7 @@
 #include "mixable_weight_manager.hpp"
 
 namespace jubatus {
+namespace core {
 namespace driver {
 
 class classifier {
@@ -38,7 +39,7 @@ class classifier {
   // TODO(suma): where is the owner of model, mixer, and converter?
   classifier(
       storage::storage_base* model_storage,
-      jubatus::classifier::classifier_base* classifier_method,
+      jubatus::core::classifier::classifier_base* classifier_method,
       pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
       pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~classifier();
@@ -64,12 +65,13 @@ class classifier {
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  pfi::lang::shared_ptr<jubatus::classifier::classifier_base> classifier_;
+  pfi::lang::shared_ptr<jubatus::core::classifier::classifier_base> classifier_;
   linear_function_mixer mixable_classifier_model_;
   mixable_weight_manager wm_;
 };
 
 }  // namespace driver
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_DRIVER_CLASSIFIER_HPP_
+#endif  // JUBATUS_CORE_DRIVER_CLASSIFIER_HPP_

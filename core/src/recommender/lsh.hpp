@@ -60,21 +60,21 @@ class lsh : public recommender_base {
   void update_row(const std::string& id, const sfv_diff_t& diff);
   void get_all_row_ids(std::vector<std::string>& ids) const;
   std::string type() const;
-  storage::recommender_storage_base* get_storage();
-  const storage::recommender_storage_base* get_const_storage() const;
+  core::storage::recommender_storage_base* get_storage();
+  const core::storage::recommender_storage_base* get_const_storage() const;
 
  private:
   bool save_impl(std::ostream&);
   bool load_impl(std::istream&);
 
-  void calc_lsh_values(const sfv_t& sfv, storage::bit_vector& bv) const;
+  void calc_lsh_values(const sfv_t& sfv, core::storage::bit_vector& bv) const;
   void generate_column_base(const std::string& column);
   void generate_column_bases(const sfv_t& v);
 
   // bases for lsh
   pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_;
 
-  storage::bit_index_storage row2lshvals_;
+  core::storage::bit_index_storage row2lshvals_;
 
   const uint64_t base_num_;
 };

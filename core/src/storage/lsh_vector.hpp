@@ -82,9 +82,9 @@ namespace pfi {
 namespace data {
 
 template<>
-class hash<jubatus::storage::lsh_vector> {
+class hash<jubatus::core::storage::lsh_vector> {
  public:
-  uint64_t operator()(const jubatus::storage::lsh_vector& lv) const {
+  uint64_t operator()(const jubatus::core::storage::lsh_vector& lv) const {
     const char* p = reinterpret_cast<const char*>(&lv.values_[0]);
     const size_t len = lv.size() * sizeof(lv.values_[0]);
     const char* const end = p + len;

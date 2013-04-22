@@ -26,12 +26,13 @@
 using jubatus::jsonconfig::config_cast_check;
 
 namespace jubatus {
+namespace core {
 namespace classifier {
 
 classifier_base* classifier_factory::create_classifier(
     const std::string& name,
     const jsonconfig::config& param,
-    jubatus::storage::storage_base* storage) {
+    jubatus::core::storage::storage_base* storage) {
   if (name == "perceptron") {
     // perceptron doesn't have parameter
     return new perceptron(storage);
@@ -58,4 +59,5 @@ classifier_base* classifier_factory::create_classifier(
 }
 
 }  // namespace classifier
+}  // namespace core 
 }  // namespace jubatus

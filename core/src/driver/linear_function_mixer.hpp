@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_DRIVER_LINEAR_FUNCTION_MIXER_HPP_
-#define JUBATUS_DRIVER_LINEAR_FUNCTION_MIXER_HPP_
+#ifndef JUBATUS_CORE_DRIVER_LINEAR_FUNCTION_MIXER_HPP_
+#define JUBATUS_CORE_DRIVER_LINEAR_FUNCTION_MIXER_HPP_
 
 #include "../framework.hpp"
 #include "../storage/storage_base.hpp"
@@ -23,9 +23,10 @@
 #include "diffv.hpp"
 
 namespace jubatus {
+namespace core {
 namespace driver {
 
-class linear_function_mixer : public jubatus::framework::mixable<
+class linear_function_mixer : public jubatus::core::framework::mixable<
     storage::storage_base, diffv> {
  public:
   diffv get_diff_impl() const;
@@ -38,6 +39,7 @@ class linear_function_mixer : public jubatus::framework::mixable<
 };
 
 }  // namespace driver
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_DRIVER_LINEAR_FUNCTION_MIXER_HPP_
+#endif  // JUBATUS_CORE_DRIVER_LINEAR_FUNCTION_MIXER_HPP_

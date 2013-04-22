@@ -23,19 +23,19 @@
 #include "../common/type.hpp"
 
 namespace jubatus {
+namespace core {
 
 namespace storage {
 class bit_vector;
 }  // namespace storage
 
-namespace core {
 namespace recommender {
 
 void generate_random_vector(size_t dim, uint32_t seed, std::vector<float>& v);
 
 void set_bit_vector(
     const std::vector<float>& vec,
-    storage::bit_vector& bit_vec);
+    jubatus::core::storage::bit_vector& bit_vec);
 
 void prod_invert_and_vector(
     const pfi::data::unordered_map<std::string, std::vector<float> >& matrix,
@@ -44,8 +44,8 @@ void prod_invert_and_vector(
     std::vector<float>& ret);
 
 }  // namespace recommender
-}  // namespace core
 
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_RECOMMENDER_LSH_UTIL_HPP_

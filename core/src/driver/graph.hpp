@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_DRIVER_GRAPH_HPP_
-#define JUBATUS_DRIVER_GRAPH_HPP_
+#ifndef JUBATUS_CORE_DRIVER_GRAPH_HPP_
+#define JUBATUS_CORE_DRIVER_GRAPH_HPP_
 
 #include <string>
 #include <utility>
@@ -33,10 +33,11 @@
 #include "mixable_weight_manager.hpp"
 
 namespace jubatus {
+namespace core {
 namespace driver {
 
 struct mixable_graph : public framework::mixable<
-    jubatus::graph::graph_base,
+    jubatus::core::graph::graph_base,
     std::string> {
   void clear() {
   }
@@ -52,8 +53,8 @@ struct mixable_graph : public framework::mixable<
       const std::string& rhs,
       std::string& mixed) const {
     mixed = lhs;
-    jubatus::graph::graph_wo_index* graph =
-        dynamic_cast<jubatus::graph::graph_wo_index*>(get_model().get());
+    jubatus::core::graph::graph_wo_index* graph =
+        dynamic_cast<jubatus::core::graph::graph_wo_index*>(get_model().get());
     if (graph) {
       graph->mix(rhs, mixed);
     }
@@ -67,7 +68,7 @@ struct mixable_graph : public framework::mixable<
 class graph {
  public:
   graph(
-      jubatus::graph::graph_base* graph_method,
+      jubatus::core::graph::graph_base* graph_method,
       pfi::lang::shared_ptr<framework::mixer::mixer> mixer);
   virtual ~graph();
 
@@ -79,50 +80,52 @@ class graph {
     return mixable_holder_;
   }
 
-  jubatus::graph::graph_base* get_model() const {
+  jubatus::core::graph::graph_base* get_model() const {
     return graph_.get_model().get();
   }
 
-  void create_node(jubatus::graph::node_id_t id);
+  void create_node(jubatus::core::graph::node_id_t id);
   void update_node(
-      jubatus::graph::node_id_t id,
-      const jubatus::graph::property& p);
-  void remove_node(jubatus::graph::node_id_t id);
+      jubatus::core::graph::node_id_t id,
+      const jubatus::core::graph::property& p);
+  void remove_node(jubatus::core::graph::node_id_t id);
   void create_edge(
-      jubatus::graph::edge_id_t eid,
-      jubatus::graph::node_id_t src,
-      jubatus::graph::node_id_t target,
-      const jubatus::graph::property& p);
+      jubatus::core::graph::edge_id_t eid,
+      jubatus::core::graph::node_id_t src,
+      jubatus::core::graph::node_id_t target,
+      const jubatus::core::graph::property& p);
   void update_edge(
-      jubatus::graph::edge_id_t eid,
-      const jubatus::graph::property& p);
-  void remove_edge(jubatus::graph::edge_id_t eid);
+      jubatus::core::graph::edge_id_t eid,
+      const jubatus::core::graph::property& p);
+  void remove_edge(jubatus::core::graph::edge_id_t eid);
   double get_centrality(
-      jubatus::graph::node_id_t nid,
-      jubatus::graph::centrality_type ct,
-      const jubatus::graph::preset_query& q) const;
-  std::vector<jubatus::graph::node_id_t> get_shortest_path(
-      jubatus::graph::node_id_t src,
-      jubatus::graph::node_id_t target,
+      jubatus::core::graph::node_id_t nid,
+      jubatus::core::graph::centrality_type ct,
+      const jubatus::core::graph::preset_query& q) const;
+  std::vector<jubatus::core::graph::node_id_t> get_shortest_path(
+      jubatus::core::graph::node_id_t src,
+      jubatus::core::graph::node_id_t target,
       uint64_t max_hop,
-      const jubatus::graph::preset_query &q) const;
-  void add_centrality_query(const jubatus::graph::preset_query& q);
-  void add_shortest_path_query(const jubatus::graph::preset_query& q);
-  void remove_centrality_query(const jubatus::graph::preset_query& q);
-  void remove_shortest_path_query(const jubatus::graph::preset_query& q);
-  jubatus::graph::node_info get_node(jubatus::graph::node_id_t nid) const;
-  jubatus::graph::edge_info get_edge(jubatus::graph::edge_id_t eid) const;
+      const jubatus::core::graph::preset_query &q) const;
+  void add_centrality_query(const jubatus::core::graph::preset_query& q);
+  void add_shortest_path_query(const jubatus::core::graph::preset_query& q);
+  void remove_centrality_query(const jubatus::core::graph::preset_query& q);
+  void remove_shortest_path_query(const jubatus::core::graph::preset_query& q);
+  jubatus::core::graph::node_info get_node(
+      jubatus::core::graph::node_id_t nid) const;
+  jubatus::core::graph::edge_info get_edge(
+      jubatus::core::graph::edge_id_t eid) const;
   void update_index();
   void clear();
 
   // internal apis used between servers
-  void create_node_here(jubatus::graph::node_id_t id);
-  void remove_global_node(jubatus::graph::node_id_t nid);
+  void create_node_here(jubatus::core::graph::node_id_t id);
+  void remove_global_node(jubatus::core::graph::node_id_t nid);
   void create_edge_here(
-      jubatus::graph::edge_id_t eid,
-      jubatus::graph::node_id_t src,
-      jubatus::graph::node_id_t target,
-      const jubatus::graph::property& p);
+      jubatus::core::graph::edge_id_t eid,
+      jubatus::core::graph::node_id_t src,
+      jubatus::core::graph::node_id_t target,
+      const jubatus::core::graph::property& p);
 
  private:
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
@@ -132,6 +135,7 @@ class graph {
 };
 
 }  // namespace driver
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_DRIVER_GRAPH_HPP_
+#endif  // JUBATUS_CORE_DRIVER_GRAPH_HPP_

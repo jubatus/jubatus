@@ -34,6 +34,7 @@
 #include "../recommender/recommender_factory.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class lof_storage : public anomaly_storage_base {
@@ -54,12 +55,12 @@ class lof_storage : public anomaly_storage_base {
   };
 
   lof_storage();
-  explicit lof_storage(recommender::recommender_base* nn_engine);
+  explicit lof_storage(core::recommender::recommender_base* nn_engine);
 
   // config contains parameters for the underlying nearest neighbor search
   explicit lof_storage(
       const config& config,
-      recommender::recommender_base* nn_engine);
+      core::recommender::recommender_base* nn_engine);
 
   virtual ~lof_storage();
 
@@ -90,7 +91,7 @@ class lof_storage : public anomaly_storage_base {
   bool load(std::istream& is);
 
   // just for test
-  void set_nn_engine(recommender::recommender_base* nn_engine);
+  void set_nn_engine(core::recommender::recommender_base* nn_engine);
 
   virtual void get_diff(std::string& diff) const;
   virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
@@ -174,10 +175,11 @@ class lof_storage : public anomaly_storage_base {
   uint32_t neighbor_num_;  // k of k-nn
   uint32_t reverse_nn_num_;  // ck of ck-nn as an approx. of k-reverse-nn
 
-  pfi::lang::scoped_ptr<recommender::recommender_base> nn_engine_;
+  pfi::lang::scoped_ptr<core::recommender::recommender_base> nn_engine_;
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_ANOMALY_LOF_STORAGE_HPP_

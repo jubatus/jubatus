@@ -45,13 +45,13 @@ class inverted_index : public recommender_base {
   void update_row(const std::string& id, const sfv_diff_t& diff);
   void get_all_row_ids(std::vector<std::string>& ids) const;
   std::string type() const;
-  storage::recommender_storage_base* get_storage();
-  const storage::recommender_storage_base* get_const_storage() const;
+  core::storage::recommender_storage_base* get_storage();
+  const core::storage::recommender_storage_base* get_const_storage() const;
 
  private:
   bool save_impl(std::ostream&);
   bool load_impl(std::istream&);
-  storage::inverted_index_storage inv_;
+  core::storage::inverted_index_storage inv_;
 };
 
 }  // namespace recommender

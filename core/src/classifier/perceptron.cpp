@@ -21,6 +21,7 @@
 using std::string;
 
 namespace jubatus {
+namespace core{
 namespace classifier {
 
 perceptron::perceptron(storage::storage_base* storage)
@@ -40,4 +41,5 @@ string perceptron::name() const {
 }
 
 }  // namespace classifier
+}  // namespace core
 }  // namespace jubatus

@@ -179,10 +179,10 @@ bool minhash::load_impl(std::istream& is) {
   ia >> row2minhashvals_;
   return true;
 }
-storage::recommender_storage_base* minhash::get_storage() {
+core::storage::recommender_storage_base* minhash::get_storage() {
   return &row2minhashvals_;
 }
-const storage::recommender_storage_base* minhash::get_const_storage() const {
+const core::storage::recommender_storage_base* minhash::get_const_storage() const {
   return &row2minhashvals_;
 }
 

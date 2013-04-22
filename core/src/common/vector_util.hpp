@@ -17,7 +17,7 @@
 #ifndef JUBATUS_COMMON_VECTOR_UTIL_HPP_
 #define JUBATUS_COMMON_VECTOR_UTIL_HPP_
 
-#include "../../core/src/common/type.hpp"
+#include "type.hpp"
 
 namespace jubatus {
 
