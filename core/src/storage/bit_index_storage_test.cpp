@@ -28,6 +28,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 bit_vector make_vector(const string& b) {
@@ -136,4 +137,5 @@ TEST(bit_index_storage, mix) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

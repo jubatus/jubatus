@@ -18,6 +18,7 @@
 #include "bit_vector.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 TEST(bit_vector, pop_count) {
@@ -74,4 +75,5 @@ TEST(bit_vector, calc_hamming_similarity) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

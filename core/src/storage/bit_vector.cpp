@@ -21,6 +21,7 @@
 using std::equal;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 static const uint64_t BLOCKSIZE = 64;
@@ -73,4 +74,5 @@ uint64_t bit_vector::calc_hamming_similarity(const bit_vector& bv) const {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

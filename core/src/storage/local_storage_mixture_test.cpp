@@ -30,6 +30,7 @@ using std::sort;
 // common tests for storages are written in storage_test.cpp
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 TEST(local_storage_mixture, save_load) {
@@ -148,4 +149,5 @@ TEST(local_storage_mixture, get_diff) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

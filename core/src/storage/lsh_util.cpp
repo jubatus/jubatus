@@ -32,6 +32,7 @@ using std::vector;
 using std::priority_queue;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 namespace {
@@ -162,4 +163,5 @@ void lsh_probe_generator::next_perturbations() {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

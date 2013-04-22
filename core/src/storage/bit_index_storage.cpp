@@ -34,6 +34,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 bit_index_storage::bit_index_storage() {
@@ -195,4 +196,5 @@ string bit_index_storage::name() const {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

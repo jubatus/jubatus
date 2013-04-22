@@ -18,6 +18,7 @@
 #include <string>
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 norm_none::norm_none() {
@@ -37,4 +38,5 @@ float norm_none::calc_norm(const std::string& row) const {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
