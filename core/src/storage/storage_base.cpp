@@ -21,6 +21,7 @@
 using std::string;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 void storage_base::update(
@@ -90,4 +91,5 @@ void storage_base::set_average_and_clear_diff(const features3_t&) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

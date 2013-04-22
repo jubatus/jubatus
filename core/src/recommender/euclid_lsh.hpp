@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_RECOMMENDER_EUCLID_LSH_HPP_
-#define JUBATUS_RECOMMENDER_EUCLID_LSH_HPP_
+#ifndef JUBATUS_CORE_RECOMMENDER_EUCLID_LSH_HPP_
+#define JUBATUS_CORE_RECOMMENDER_EUCLID_LSH_HPP_
 
 #include <stdint.h>
 #include <utility>
@@ -28,6 +28,7 @@
 #include "../storage/lsh_index_storage.hpp"
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 class euclid_lsh : public recommender_base {
@@ -113,6 +114,7 @@ class euclid_lsh : public recommender_base {
 };
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_RECOMMENDER_EUCLID_LSH_HPP_
+#endif  // JUBATUS_CORE_RECOMMENDER_EUCLID_LSH_HPP_

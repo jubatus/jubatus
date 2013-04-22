@@ -44,7 +44,7 @@
 #include <pficommon/lang/exception.h>
 #include <pficommon/text/json.h>
 
-#include "../common/exception.hpp"
+#include "../../core/src/common/exception.hpp"
 
 using std::string;
 using pfi::lang::lexical_cast;

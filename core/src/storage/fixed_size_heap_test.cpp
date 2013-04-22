@@ -23,6 +23,7 @@ using std::greater;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 TEST(fixed_size_heap, empyt) {
@@ -79,4 +80,5 @@ TEST(fixed_size_heap, reverse) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

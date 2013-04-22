@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_DRIVER_RECOMMENDER_HPP_
-#define JUBATUS_DRIVER_RECOMMENDER_HPP_
+#ifndef JUBATUS_CORE_DRIVER_RECOMMENDER_HPP_
+#define JUBATUS_CORE_DRIVER_RECOMMENDER_HPP_
 
 #include <string>
 #include <utility>
@@ -31,10 +31,11 @@
 #include "mixable_weight_manager.hpp"
 
 namespace jubatus {
+namespace core {
 namespace driver {
 
 struct mixable_recommender : public framework::mixable<
-    jubatus::recommender::recommender_base,
+    jubatus::core::recommender::recommender_base,
     std::string> {
   std::string get_diff_impl() const {
     std::string ret;
@@ -61,7 +62,7 @@ struct mixable_recommender : public framework::mixable<
 class recommender {
  public:
   recommender(
-      jubatus::recommender::recommender_base* recommender_method,
+      jubatus::core::recommender::recommender_base* recommender_method,
       pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
       pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~recommender();
@@ -111,6 +112,7 @@ class recommender {
 };
 
 }  // namespace driver
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_DRIVER_RECOMMENDER_HPP_
+#endif  // JUBATUS_CORE_DRIVER_RECOMMENDER_HPP_

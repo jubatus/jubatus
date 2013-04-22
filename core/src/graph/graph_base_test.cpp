@@ -23,6 +23,7 @@
 #include "graph_base.hpp"
 
 namespace jubatus {
+namespace core {
 namespace graph {
 
 class graph_impl : public graph_base {
@@ -94,4 +95,5 @@ class graph_impl : public graph_base {
 };
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

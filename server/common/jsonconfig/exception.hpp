@@ -25,7 +25,7 @@
 #include <pficommon/text/json.h>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "../exception.hpp"
+#include "../../../core/src/common/exception.hpp"
 
 namespace jubatus {
 namespace jsonconfig {

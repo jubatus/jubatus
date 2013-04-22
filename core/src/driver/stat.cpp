@@ -22,13 +22,14 @@
 #include "../common/shared_ptr.hpp"
 #include "../framework/mixable.hpp"
 
-using jubatus::framework::mixable_holder;
+using jubatus::core::framework::mixable_holder;
 
 namespace jubatus {
+namespace core {
 namespace driver {
 
 stat::stat(
-    jubatus::stat::stat* stat_method,
+    jubatus::core::stat::stat* stat_method,
     pfi::lang::shared_ptr<framework::mixer::mixer> mixer)
     : mixer_(mixer),
       mixable_holder_(new mixable_holder),
@@ -70,4 +71,5 @@ double stat::moment(const std::string& key, int n, double c) const {
 }
 
 }  // namespace driver
+}  // namespace core
 }  // namespace jubatus

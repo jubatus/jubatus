@@ -24,7 +24,7 @@ using std::pair;
 namespace jubatus {
 
 TEST(mixable_stat_test, mixed_entropy) {
-  stat::mixable_stat p(1024);
+  core::stat::mixable_stat p(1024);
   p.push("test", 1.0);
   p.push("test", 2.0);
   p.push("test", 3.0);

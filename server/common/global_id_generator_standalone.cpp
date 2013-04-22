@@ -22,7 +22,7 @@
 #include <pficommon/concurrent/mutex.h>
 #endif
 
-#include "exception.hpp"
+#include "../../core/src/common/exception.hpp"
 #include "global_id_generator_base.hpp"
 #include "global_id_generator_standalone.hpp"
 

@@ -72,7 +72,7 @@ REGISTER_TYPED_TEST_CASE_P(
     stat_test,
     trivial);
 
-typedef testing::Types<stat::stat> stat_types;
+typedef testing::Types<core::stat::stat> stat_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(stt, stat_test, stat_types);
 }  // namespace jubatus

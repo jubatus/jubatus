@@ -24,6 +24,7 @@ using std::vector;
 using std::out_of_range;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 lsh_vector::lsh_vector() {
@@ -110,4 +111,5 @@ void lsh_vector::swap(lsh_vector& lv) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
