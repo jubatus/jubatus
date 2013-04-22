@@ -22,7 +22,7 @@
 
 #include "global_id_generator_base.hpp"
 #include "lock_service.hpp"
-#include "shared_ptr.hpp"
+#include "../../core/src/common/shared_ptr.hpp"
 
 namespace jubatus {
 namespace common {

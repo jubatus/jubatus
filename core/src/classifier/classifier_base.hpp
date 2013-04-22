@@ -29,11 +29,12 @@
 #include "classifier_type.hpp"
 
 namespace jubatus {
+namespace core {
 namespace classifier {
 
 class classifier_base {
  public:
-  explicit classifier_base(jubatus::storage::storage_base* storage_base);
+  explicit classifier_base(jubatus::core::storage::storage_base* storage_base);
   virtual ~classifier_base();
   virtual void train(const sfv_t& fv, const std::string& label) = 0;
 
@@ -66,7 +67,7 @@ class classifier_base {
 
   static float squared_norm(const sfv_t& sfv);
 
-  jubatus::core::src::storage::storage_base* storage_;
+  jubatus::core::storage::storage_base* storage_;
   bool use_covars_;
 };
 

@@ -28,8 +28,8 @@
 
 using std::string;
 using std::vector;
-using jubatus::core::src::storage::map_feature_val1_t;
-using jubatus::core::src::storage::feature_val2_t;
+using jubatus::core::storage::map_feature_val1_t;
+using jubatus::core::storage::feature_val2_t;
 
 namespace jubatus {
 namespace core{
