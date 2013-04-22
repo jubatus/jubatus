@@ -22,6 +22,7 @@
 using std::pair;
 
 namespace jubatus {
+namespace core {
 namespace stat {
 
 mixable_stat::mixable_stat(size_t window_size)
@@ -68,4 +69,5 @@ double mixable_stat::entropy() const {
 }
 
 }  // namespace stat
+}  // namespace core
 }  // namespace jubatus
