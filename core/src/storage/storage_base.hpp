@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_STORAGE_STORAGE_BASE_HPP_
-#define JUBATUS_STORAGE_STORAGE_BASE_HPP_
+#ifndef JUBATUS_CORE_STORAGE_STORAGE_BASE_HPP_
+#define JUBATUS_CORE_STORAGE_STORAGE_BASE_HPP_
 
 
 #include <iostream>
@@ -99,4 +99,4 @@ class storage_exception
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_STORAGE_STORAGE_BASE_HPP_
+#endif  // JUBATUS_CORE_STORAGE_STORAGE_BASE_HPP_
