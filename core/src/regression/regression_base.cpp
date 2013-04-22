@@ -18,6 +18,7 @@
 #include "../storage/storage_base.hpp"
 
 namespace jubatus {
+namespace core {
 namespace regression {
 
 regression_base::regression_base(storage::storage_base* storage)
@@ -39,4 +40,5 @@ void regression_base::clear() {
 }
 
 }  // namespace regression
+}  // namespace core
 }  // namespace jubatus
