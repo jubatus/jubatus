@@ -30,6 +30,7 @@
 #include "recommender_storage_base.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class inverted_index_storage : public recommender_storage_base {
@@ -86,6 +87,7 @@ class inverted_index_storage : public recommender_storage_base {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_INVERTED_INDEX_STORAGE_HPP_

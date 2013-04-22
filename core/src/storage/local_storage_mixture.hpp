@@ -25,6 +25,7 @@
 #include "local_storage.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class local_storage_mixture : public storage_base {
@@ -89,6 +90,7 @@ class local_storage_mixture : public storage_base {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_LOCAL_STORAGE_MIXTURE_HPP_

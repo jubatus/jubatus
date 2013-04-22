@@ -28,6 +28,7 @@
 #include "../common/type.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class storage_base {
@@ -95,6 +96,7 @@ class storage_exception
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_STORAGE_BASE_HPP_

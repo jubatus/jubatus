@@ -22,6 +22,7 @@
 #include <vector>
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 template <typename T, typename Comp = std::less<T> >
@@ -73,6 +74,7 @@ class fixed_size_heap {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_FIXED_SIZE_HEAP_HPP_

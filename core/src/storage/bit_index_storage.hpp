@@ -30,6 +30,7 @@
 #include "recommender_storage_base.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class bit_index_storage : public recommender_storage_base {
@@ -68,6 +69,7 @@ class bit_index_storage : public recommender_storage_base {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_BIT_INDEX_STORAGE_HPP_

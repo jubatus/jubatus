@@ -20,6 +20,7 @@
 #include <string>
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class norm_base;
@@ -27,6 +28,7 @@ class norm_base;
 norm_base* create_norm(const std::string& name);
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_NORM_FACTORY_HPP_

@@ -25,6 +25,7 @@
 #include <pficommon/data/unordered_map.h>
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class lsh_vector {
@@ -74,6 +75,7 @@ inline std::ostream& operator<<(std::ostream& os, const lsh_vector& lv) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 namespace pfi {

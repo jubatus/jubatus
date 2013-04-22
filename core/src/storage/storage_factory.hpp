@@ -20,6 +20,7 @@
 #include <string>
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class storage_base;
@@ -30,6 +31,7 @@ class storage_factory {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_STORAGE_FACTORY_HPP_

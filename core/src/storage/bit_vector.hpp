@@ -24,6 +24,7 @@
 #include <pficommon/data/serialization.h>
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class bit_vector {
@@ -78,6 +79,7 @@ class bit_vector {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_BIT_VECTOR_HPP_

@@ -26,6 +26,7 @@
 #include "../common/key_manager.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 typedef pfi::data::unordered_map<uint64_t, val3_t> id_feature_val3_t;
@@ -88,6 +89,7 @@ class local_storage : public storage_base {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_LOCAL_STORAGE_HPP_

@@ -29,6 +29,7 @@
 #include "bit_vector.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 typedef pfi::data::unordered_map<uint64_t, float> row_t;
@@ -357,6 +358,7 @@ inline std::vector<std::pair<std::string, E> >& operator /=(
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_STORAGE_TYPE_HPP_
