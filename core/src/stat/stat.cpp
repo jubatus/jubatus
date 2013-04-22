@@ -27,6 +27,7 @@ using pfi::system::time::clock_time;
 using pfi::system::time::get_clock_time;
 
 namespace jubatus {
+namespace core {
 namespace stat {
 
 namespace {
@@ -167,4 +168,5 @@ std::string stat::type() const {
   return "stat";
 }
 }  // namespame stat
+}  // namespace core
 }  // namespace jubatus

@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_STAT_STAT_HPP_
-#define JUBATUS_STAT_STAT_HPP_
+#ifndef JUBATUS_CORE_SRC_STAT_STAT_HPP_
+#define JUBATUS_CORE_SRC_STAT_STAT_HPP_
 
 #include <stdint.h>
 #include <algorithm>
@@ -30,6 +30,7 @@
 #include "../common/exception.hpp"
 
 namespace jubatus {
+namespace core {
 namespace stat {
 
 class stat_error : public jubatus::exception::jubaexception<stat_error> {
@@ -166,6 +167,7 @@ class stat {
   size_t window_size_;
 };
 }  // namespace stat
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_STAT_STAT_HPP_
+#endif  // JUBATUS_CORE_SRC_STAT_STAT_HPP_
