@@ -30,7 +30,7 @@ def build(bld):
      includes = '.',
      use = 'jubacommon jubatus_classifier jubastorage')
 
-  bld.install_files('${PREFIX}/include/jubatus/classifier', [
+  bld.install_files('${PREFIX}/include/jubatus/core/src/classifier', [
       'classifier_base.hpp',
       'classifier_factory.hpp',
       'classifier_type.hpp',

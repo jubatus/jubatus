@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_CLASSIFIER_BASE_HPP_
-#define JUBATUS_CLASSIFIER_CLASSIFIER_BASE_HPP_
+#ifndef JUBATUS_CORE_SRC_CLASSIFIER_CLASSIFIER_BASE_HPP_
+#define JUBATUS_CORE_SRC_CLASSIFIER_CLASSIFIER_BASE_HPP_
 
 #include <stdint.h>
 
@@ -66,11 +66,12 @@ class classifier_base {
 
   static float squared_norm(const sfv_t& sfv);
 
-  jubatus::storage::storage_base* storage_;
+  jubatus::core::src::storage::storage_base* storage_;
   bool use_covars_;
 };
 
 }  // namespace classifier
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CLASSIFIER_CLASSIFIER_BASE_HPP_
+#endif  // JUBATUS_CORE_SRC_CLASSIFIER_CLASSIFIER_BASE_HPP_

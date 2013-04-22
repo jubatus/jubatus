@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLASSIFIER_CLASSIFIER_TYPE_HPP_
-#define JUBATUS_CLASSIFIER_CLASSIFIER_TYPE_HPP_
+#ifndef JUBATUS_CORE_SRC_CLASSIFIER_CLASSIFIER_TYPE_HPP_
+#define JUBATUS_CORE_SRC_CLASSIFIER_CLASSIFIER_TYPE_HPP_
 
 #include <stdint.h>
 
@@ -25,6 +25,8 @@
 #include "classifier_config.hpp"
 
 namespace jubatus {
+namespace core{
+namespace classifier{
 
 // TODO(unknown): namespace should be classifier
 struct classify_result_elem {
@@ -39,5 +41,7 @@ struct classify_result_elem {
 typedef std::vector<classify_result_elem> classify_result;
 
 }  // namespace jubatus
+}  // namespace core
+}  // namespace classifier
 
-#endif  // JUBATUS_CLASSIFIER_CLASSIFIER_TYPE_HPP_
+#endif  // JUBATUS_CORE_SRC_CLASSIFIER_CLASSIFIER_TYPE_HPP_

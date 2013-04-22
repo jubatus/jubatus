@@ -29,6 +29,7 @@ using std::sort;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 const uint64_t recommender_base::complete_row_similar_num_ = 128;
@@ -151,4 +152,5 @@ float recommender_base::calc_l2norm(const sfv_t& query) {
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

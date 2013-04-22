@@ -25,6 +25,7 @@
 using std::string;
 
 namespace jubatus {
+namespace core{
 namespace classifier {
 
 arow::arow(storage::storage_base* storage)
@@ -90,4 +91,5 @@ string arow::name() const {
 }
 
 }  // namespace classifier
+}  // namespace core
 }  // namespace jubatus

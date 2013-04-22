@@ -23,6 +23,7 @@
 #include "../common/jsonconfig.hpp"
 
 namespace jubatus {
+namespace core {
 namespace graph {
 
 graph_base* graph_factory::create_graph(
@@ -37,4 +38,5 @@ graph_base* graph_factory::create_graph(
 }
 
 }  // namespace graph
+}  // namespace core
 }  // namespace jubatus

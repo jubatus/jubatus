@@ -35,9 +35,10 @@ using std::string;
 using std::vector;
 using pfi::lang::lexical_cast;
 using pfi::math::random::mtrand;
-using jubatus::storage::lsh_index_storage;
+using jubatus::core::storage::lsh_index_storage;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 namespace {
@@ -154,4 +155,5 @@ INSTANTIATE_TEST_CASE_P(
     ::testing::Values(make_pair(2, make_euclid_lsh_config())));
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

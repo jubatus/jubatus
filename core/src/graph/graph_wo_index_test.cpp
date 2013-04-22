@@ -32,6 +32,7 @@ using std::map;
 using std::set;
 
 namespace jubatus {
+namespace core {
 namespace graph {
 
 namespace {
@@ -839,4 +840,5 @@ TEST(graph, eigen_value_edge_query_failure) {
 }
 
 }  // namespace graph
+}  // namespace core
 }  // namespace jubatus

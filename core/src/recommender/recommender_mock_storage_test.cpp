@@ -30,6 +30,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 namespace {
@@ -126,4 +127,5 @@ TEST(recommender_mock_storage, mix_with_neighbor_relation) {
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

@@ -23,6 +23,7 @@
 #include "../storage/bit_vector.hpp"
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 using std::string;
@@ -76,4 +77,5 @@ void prod_invert_and_vector(
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

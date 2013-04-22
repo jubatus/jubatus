@@ -31,6 +31,7 @@ using std::vector;
 using jubatus::core::storage::bit_vector;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 static const uint64_t DEFAULT_BASE_NUM = 64;  // should be in config
@@ -156,4 +157,5 @@ const core::storage::recommender_storage_base* lsh::get_const_storage() const {
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

@@ -25,6 +25,7 @@
 using std::string;
 
 namespace jubatus {
+namespace core{
 namespace classifier {
 
 confidence_weighted::confidence_weighted(storage::storage_base* storage)
@@ -95,4 +96,5 @@ string confidence_weighted::name() const {
 }
 
 }  // namespace classifier
+}  // namespace core
 }  // namespase jubatus

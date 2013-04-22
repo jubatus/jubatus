@@ -35,6 +35,7 @@ using std::vector;
 using pfi::lang::lexical_cast;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 sfv_diff_t make_vec(float v1, float v2, float v3) {
@@ -267,4 +268,5 @@ typedef testing::Types<inverted_index, lsh, minhash, euclid_lsh>
 INSTANTIATE_TYPED_TEST_CASE_P(rt, recommender_random_test, recommender_types);
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

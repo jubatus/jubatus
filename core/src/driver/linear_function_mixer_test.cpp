@@ -26,6 +26,7 @@ using std::string;
 using std::make_pair;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class storage_mock_base : public storage::storage_base {
@@ -150,4 +151,5 @@ TEST(linear_function_mixer, mix) {
 }
 
 }  // namespace driver
+}  // namespace core
 }  // namespace jubatus

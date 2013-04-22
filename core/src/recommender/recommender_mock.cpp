@@ -27,6 +27,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 recommender_mock::recommender_mock() {
@@ -131,4 +132,5 @@ bool recommender_mock::load_impl(istream& is) {
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus
