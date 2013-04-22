@@ -29,6 +29,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 inverted_index::inverted_index() {
@@ -109,4 +110,5 @@ const storage::recommender_storage_base* inverted_index::get_const_storage()
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus

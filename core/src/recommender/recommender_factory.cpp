@@ -28,6 +28,7 @@ using jubatus::jsonconfig::config;
 using jubatus::jsonconfig::config_cast_check;
 
 namespace jubatus {
+namespace core {
 namespace recommender {
 
 recommender_base* recommender_factory::create_recommender(
@@ -48,5 +49,6 @@ recommender_base* recommender_factory::create_recommender(
 }
 
 }  // namespace recommender
+}  // namespace core
 }  // namespace jubatus
 
