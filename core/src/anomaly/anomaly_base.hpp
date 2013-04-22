@@ -29,6 +29,7 @@
 #include "anomaly_type.hpp"
 
 namespace jubatus {
+namespace core {
 namespace anomaly {
 
 class anomaly_base {
@@ -45,8 +46,8 @@ class anomaly_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
 
   virtual std::string type() const = 0;
-  virtual storage::anomaly_storage_base* get_storage() = 0;
-  virtual const storage::anomaly_storage_base* get_const_storage() const = 0;
+  virtual core::storage::anomaly_storage_base* get_storage() = 0;
+  virtual const core::storage::anomaly_storage_base* get_const_storage() const = 0;
 
   void save(std::ostream&);
   void load(std::istream&);
@@ -64,6 +65,7 @@ class anomaly_base {
 };
 
 }  // namespace anomaly
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_ANOMALY_ANOMALY_BASE_HPP_

@@ -24,6 +24,7 @@
 #include "lof_storage.hpp"
 
 namespace jubatus {
+namespace core {
 namespace anomaly {
 
 class lof : public anomaly_base {
@@ -31,7 +32,7 @@ class lof : public anomaly_base {
   lof();
   explicit lof(
       const storage::lof_storage::config& config,
-      recommender::recommender_base* nn_engine);
+      core::recommender::recommender_base* nn_engine);
   ~lof();
 
   // return anomaly score of query
@@ -61,6 +62,7 @@ class lof : public anomaly_base {
 };
 
 }  //  namespace anomaly
+}  // core
 }  //  namespace jubatus
 
 #endif  // JUBATUS_ANOMALY_LOF_HPP_

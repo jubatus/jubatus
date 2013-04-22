@@ -30,6 +30,7 @@ using pfi::text::json::json;
 using std::string;
 
 namespace jubatus {
+namespace core {
 namespace anomaly {
 
 namespace {
@@ -62,5 +63,6 @@ anomaly_base* anomaly_factory::create_anomaly(
 };
 
 }  // namespace anomaly
+}  // namespace core
 }  // namespace jubatus
 

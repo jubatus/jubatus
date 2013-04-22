@@ -20,6 +20,7 @@
 #include <string>
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class anomaly_storage_base {
@@ -33,6 +34,7 @@ class anomaly_storage_base {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_ANOMALY_ANOMALY_STORAGE_BASE_HPP_

@@ -30,7 +30,7 @@
 #include "../storage/lsh_util.hpp"
 #include "../storage/lsh_vector.hpp"
 
-using jubatus::anomaly::lof;
+using jubatus::core::anomaly::lof;
 using pfi::data::unordered_map;
 using pfi::math::random::mtrand;
 using std::isinf;
@@ -41,6 +41,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace anomaly {
 
 namespace {
@@ -134,4 +135,5 @@ bool lof::load_impl(istream& is) {
 }
 
 }  // namespace anomaly
+}  // namespace core
 }  // namespace jubatus

@@ -22,6 +22,7 @@
 #include "../common/vector_util.hpp"
 
 namespace jubatus {
+namespace core {
 namespace anomaly {
 
 const uint32_t anomaly_base::NEIGHBOR_NUM = 10;
@@ -45,4 +46,5 @@ void anomaly_base::load(std::istream& is) {
 }
 
 }  // namespace anomaly
+}  // namespace core
 }  // namespace jubatus

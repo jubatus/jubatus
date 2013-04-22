@@ -27,6 +27,7 @@ class config;
 
 }  // namespace jsonconfig
 
+namespace core {
 namespace anomaly {
 
 class anomaly_base;
@@ -39,6 +40,7 @@ class anomaly_factory {
 };
 
 }  // namespace anomaly
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_ANOMALY_ANOMALY_FACTORY_HPP_
