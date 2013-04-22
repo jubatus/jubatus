@@ -7,7 +7,7 @@ APPNAME = 'jubatus'
 
 top = '.'
 out = 'build'
-subdirs = ['src', 'client', 'config']
+subdirs = ['src', 'client', 'config', 'server', 'core']
 
 def options(opt):
   opt.load('compiler_cxx')
