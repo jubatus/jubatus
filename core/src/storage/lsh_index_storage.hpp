@@ -29,6 +29,7 @@
 #include "../common/key_manager.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 struct lsh_entry {
@@ -133,6 +134,7 @@ class lsh_index_storage : public recommender_storage_base {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_LSH_INDEX_STORAGE_HPP_

@@ -24,6 +24,7 @@
 #include "lsh_vector.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class lsh_probe_generator {
@@ -54,6 +55,7 @@ class lsh_probe_generator {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_LSH_UTIL_HPP_

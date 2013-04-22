@@ -23,6 +23,7 @@
 #include "norm_base.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class norm_none : public norm_base {
@@ -38,6 +39,7 @@ class norm_none : public norm_base {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_NORM_NONE_HPP_

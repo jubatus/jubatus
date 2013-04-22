@@ -26,12 +26,13 @@
 using jubatus::jsonconfig::config_cast_check;
 
 namespace jubatus {
+namespace core {
 namespace regression {
 
 regression_base* regression_factory::create_regression(
     const std::string& name,
     const jsonconfig::config& param,
-    jubatus::storage::storage_base* storage) {
+    jubatus::core::storage::storage_base* storage) {
   if (name == "PA" || name == "passive_aggressive") {
     return new regression::passive_aggressive(
         config_cast_check<regression::passive_aggressive::config>(param),
@@ -42,4 +43,5 @@ regression_base* regression_factory::create_regression(
 }
 
 }  // namespace regression
+}  // namespace core
 }  // namespace jubatus

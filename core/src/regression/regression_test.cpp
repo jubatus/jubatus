@@ -28,10 +28,12 @@
 using std::string;
 using std::vector;
 using std::make_pair;
-using jubatus::storage::local_storage;
+using jubatus::core::storage::local_storage;
 using pfi::lang::lexical_cast;
 
 namespace jubatus {
+namespace core {
+namespace regression {
 
 template<typename T>
 class regression_test : public testing::Test {
@@ -125,4 +127,6 @@ typedef testing::Types<regression::passive_aggressive> regression_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(reg, regression_test, regression_types);
 
+}  // namespace regression
+}  // namespace core
 }  // namespace jubatus

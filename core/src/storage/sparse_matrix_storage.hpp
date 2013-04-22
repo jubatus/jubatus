@@ -27,6 +27,7 @@
 #include "storage_type.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class sparse_matrix_storage {
@@ -67,6 +68,7 @@ class sparse_matrix_storage {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_SPARSE_MATRIX_STORAGE_HPP_

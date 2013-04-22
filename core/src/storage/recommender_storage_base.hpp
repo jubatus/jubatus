@@ -20,6 +20,7 @@
 #include <string>
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class recommender_storage_base {
@@ -33,6 +34,7 @@ class recommender_storage_base {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_RECOMMENDER_STORAGE_BASE_HPP_

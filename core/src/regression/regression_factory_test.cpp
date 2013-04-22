@@ -27,6 +27,7 @@
 #include "../common/jsonconfig.hpp"
 
 namespace jubatus {
+namespace core {
 namespace regression {
 
 TEST(regression_factory, trivial) {
@@ -48,4 +49,5 @@ TEST(regression_factory, unknown) {
 }
 
 }  // namespace regression
+}  // namespace core
 }  // namespace jubatus
