@@ -34,23 +34,24 @@
 using std::string;
 using std::vector;
 using std::pair;
-using jubatus::framework::convert;
-using jubatus::framework::mixer::create_mixer;
-using jubatus::framework::mixable_holder;
-using jubatus::fv_converter::weight_manager;
+using jubatus::core::framework::convert;
+using jubatus::core::framework::mixer::create_mixer;
+using jubatus::core::framework::mixable_holder;
+using jubatus::core::fv_converter::weight_manager;
 using pfi::lang::shared_ptr;
 
 namespace jubatus {
+namespace core {
 namespace driver {
 
 anomaly::anomaly(
-    jubatus::anomaly::anomaly_base* anomaly_method,
+    jubatus::core::anomaly::anomaly_base* anomaly_method,
     pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixer_(mixer),
       mixable_holder_(new mixable_holder),
       converter_(converter) {
-  common::cshared_ptr<jubatus::anomaly::anomaly_base>
+  common::cshared_ptr<jubatus::core::anomaly::anomaly_base>
       anomaly_method_p(anomaly_method);
   anomaly_.set_model(anomaly_method_p);
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
@@ -101,4 +102,5 @@ vector<string> anomaly::get_all_rows() const {
 }
 
 }  // namespace driver
+}  // namespace core
 }  // namespace jubatus

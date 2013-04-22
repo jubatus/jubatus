@@ -25,11 +25,12 @@ using pfi::lang::bind;
 using pfi::lang::_1;
 using pfi::lang::_2;
 
-using jubatus::storage::val3_t;
-using jubatus::storage::feature_val3_t;
-using jubatus::storage::features3_t;
+using jubatus::core::storage::val3_t;
+using jubatus::core::storage::feature_val3_t;
+using jubatus::core::storage::features3_t;
 
 namespace jubatus {
+namespace core {
 namespace driver {
 
 namespace {
@@ -80,4 +81,5 @@ void linear_function_mixer::clear() {
 }
 
 }  // namespace driver
+}  // namespace core
 }  // namespace jubatus

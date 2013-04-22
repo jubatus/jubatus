@@ -33,17 +33,18 @@
 using std::string;
 using std::vector;
 using std::pair;
-using jubatus::framework::convert;
-using jubatus::framework::mixer::create_mixer;
-using jubatus::framework::mixable_holder;
-using jubatus::fv_converter::weight_manager;
+using jubatus::core::framework::convert;
+using jubatus::core::framework::mixer::create_mixer;
+using jubatus::core::framework::mixable_holder;
+using jubatus::core::fv_converter::weight_manager;
 
 namespace jubatus {
+namespace core {
 namespace driver {
 
 classifier::classifier(
     storage::storage_base* model_storage,
-    jubatus::classifier::classifier_base* classifier_method,
+    jubatus::core::classifier::classifier_base* classifier_method,
     pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixer_(mixer),
@@ -82,4 +83,5 @@ classify_result classifier::classify(
 }
 
 }  // namespace driver
+}  // namespace core
 }  // namespace jubatus

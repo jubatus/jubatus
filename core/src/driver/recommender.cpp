@@ -33,23 +33,24 @@
 using std::string;
 using std::vector;
 using std::pair;
-using jubatus::framework::convert;
-using jubatus::framework::mixer::create_mixer;
-using jubatus::framework::mixable_holder;
-using jubatus::fv_converter::weight_manager;
+using jubatus::core::framework::convert;
+using jubatus::core::framework::mixer::create_mixer;
+using jubatus::core::framework::mixable_holder;
+using jubatus::core::fv_converter::weight_manager;
 using pfi::lang::shared_ptr;
 
 namespace jubatus {
+namespace core {
 namespace driver {
 
 recommender::recommender(
-    jubatus::recommender::recommender_base* recommender_method,
+    jubatus::core::recommender::recommender_base* recommender_method,
     pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixer_(mixer),
       mixable_holder_(new mixable_holder),
       converter_(converter) {
-  common::cshared_ptr<jubatus::recommender::recommender_base>
+  common::cshared_ptr<jubatus::core::recommender::recommender_base>
       recommender_method_p(recommender_method);
   recommender_.set_model(recommender_method_p);
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
@@ -126,13 +127,13 @@ float recommender::calc_similality(
   sfv_t v0, v1;
   converter_->convert(l, v0);
   converter_->convert(r, v1);
-  return ::jubatus::recommender::recommender_base::calc_similality(v0, v1);
+  return jubatus::core::recommender::recommender_base::calc_similality(v0, v1);
 }
 
 float recommender::calc_l2norm(const fv_converter::datum& q) {
   sfv_t v0;
   converter_->convert(q, v0);
-  return ::jubatus::recommender::recommender_base::calc_l2norm(v0);
+  return jubatus::core::recommender::recommender_base::calc_l2norm(v0);
 }
 
 fv_converter::datum recommender::decode_row(const std::string& id) {
@@ -151,4 +152,5 @@ std::vector<std::string> recommender::get_all_rows() {
 }
 
 }  // namespace driver
+}  // namespace core
 }  // namespace jubatus
