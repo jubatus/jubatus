@@ -25,6 +25,7 @@
 using std::string;
 
 namespace jubatus {
+namespace core{
 namespace classifier {
 
 normal_herd::normal_herd(storage::storage_base* storage)
@@ -102,4 +103,5 @@ std::string normal_herd::name() const {
 }
 
 }  // namespace classifier
+}  // namespace core
 }  // namespace jubatus

@@ -23,6 +23,7 @@ using std::string;
 using std::min;
 
 namespace jubatus {
+namespace core{
 namespace classifier {
 
 passive_aggressive_1::passive_aggressive_1(storage::storage_base* storage)
@@ -57,4 +58,5 @@ string passive_aggressive_1::name() const {
 }
 
 }  // namespace classifier
+}  // namespace core
 }  // namespace jubatus

@@ -28,10 +28,11 @@
 
 using std::string;
 using std::vector;
-using jubatus::storage::map_feature_val1_t;
-using jubatus::storage::feature_val2_t;
+using jubatus::core::src::storage::map_feature_val1_t;
+using jubatus::core::src::storage::feature_val2_t;
 
 namespace jubatus {
+namespace core{
 namespace classifier {
 
 classifier_base::classifier_base(storage::storage_base* storage)
@@ -157,4 +158,5 @@ float classifier_base::squared_norm(const sfv_t& fv) {
 }
 
 }  // namespace classifier
+}  // namespace core
 }  // namespace jubatus
