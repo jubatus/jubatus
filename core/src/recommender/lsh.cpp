@@ -28,7 +28,7 @@
 using std::pair;
 using std::string;
 using std::vector;
-using jubatus::storage::bit_vector;
+using jubatus::core::storage::bit_vector;
 
 namespace jubatus {
 namespace recommender {
@@ -147,11 +147,11 @@ bool lsh::load_impl(std::istream& is) {
   return true;
 }
 
-storage::recommender_storage_base* lsh::get_storage() {
+core::storage::recommender_storage_base* lsh::get_storage() {
   return &row2lshvals_;
 }
 
-const storage::recommender_storage_base* lsh::get_const_storage() const {
+const core::storage::recommender_storage_base* lsh::get_const_storage() const {
   return &row2lshvals_;
 }
 

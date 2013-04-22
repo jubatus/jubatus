@@ -60,7 +60,7 @@ class anomaly_base {
   virtual bool save_impl(std::ostream&) = 0;
   virtual bool load_impl(std::istream&) = 0;
 
-  storage::sparse_matrix_storage orig_;
+  core::storage::sparse_matrix_storage orig_;
 };
 
 }  // namespace anomaly

@@ -27,7 +27,7 @@ namespace recommender {
 
 using std::string;
 using std::vector;
-using jubatus::storage::bit_vector;
+using jubatus::core::storage::bit_vector;
 using pfi::data::unordered_map;
 
 void generate_random_vector(size_t dim, uint32_t seed, vector<float>& ret) {

@@ -184,11 +184,11 @@ string euclid_lsh::type() const {
   return "euclid_lsh";
 }
 
-storage::lsh_index_storage* euclid_lsh::get_storage() {
+core::storage::lsh_index_storage* euclid_lsh::get_storage() {
   return &lsh_index_;
 }
 
-const storage::lsh_index_storage* euclid_lsh::get_const_storage() const {
+const core::storage::lsh_index_storage* euclid_lsh::get_const_storage() const {
   return &lsh_index_;
 }
 

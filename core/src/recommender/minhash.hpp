@@ -60,21 +60,21 @@ class minhash : public recommender_base {
   void update_row(const std::string& id, const sfv_diff_t& diff);
   void get_all_row_ids(std::vector<std::string>& ids) const;
   std::string type() const;
-  storage::recommender_storage_base* get_storage();
-  const storage::recommender_storage_base* get_const_storage() const;
+  core::storage::recommender_storage_base* get_storage();
+  const core::storage::recommender_storage_base* get_const_storage() const;
 
  private:
   bool save_impl(std::ostream&);
   bool load_impl(std::istream&);
 
-  void calc_minhash_values(const sfv_t& sfv, storage::bit_vector& bv) const;
+  void calc_minhash_values(const sfv_t& sfv, core::storage::bit_vector& bv) const;
 
   static float calc_hash(uint64_t a, uint64_t b, float val);
   static void hash_mix64(uint64_t& a, uint64_t& b, uint64_t& c);
 
   static const uint64_t hash_prime;
   uint64_t hash_num_;
-  storage::bit_index_storage row2minhashvals_;
+  core::storage::bit_index_storage row2minhashvals_;
 };
 
 }  // namespace recommender

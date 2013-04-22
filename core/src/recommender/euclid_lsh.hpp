@@ -87,8 +87,8 @@ class euclid_lsh : public recommender_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const;
 
   virtual std::string type() const;
-  virtual storage::lsh_index_storage* get_storage();
-  virtual const storage::lsh_index_storage* get_const_storage() const;
+  virtual core::storage::lsh_index_storage* get_storage();
+  virtual const core::storage::lsh_index_storage* get_const_storage() const;
 
  private:
   friend class pfi::data::serialization::access;
@@ -104,7 +104,7 @@ class euclid_lsh : public recommender_base {
   virtual bool save_impl(std::ostream& os);
   virtual bool load_impl(std::istream& is);
 
-  storage::lsh_index_storage lsh_index_;
+  core::storage::lsh_index_storage lsh_index_;
   float bin_width_;
   uint32_t num_probe_;
 

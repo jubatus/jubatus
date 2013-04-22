@@ -51,8 +51,8 @@ class recommender_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
 
   virtual std::string type() const = 0;
-  virtual storage::recommender_storage_base* get_storage() = 0;
-  virtual const storage::recommender_storage_base* get_const_storage()
+  virtual core::storage::recommender_storage_base* get_storage() = 0;
+  virtual const core::storage::recommender_storage_base* get_const_storage()
       const = 0;
 
   virtual void similar_row(
@@ -78,7 +78,7 @@ class recommender_base {
   virtual bool load_impl(std::istream&) = 0;
 
   static const uint64_t complete_row_similar_num_;
-  storage::sparse_matrix_storage orig_;
+  core::storage::sparse_matrix_storage orig_;
 };
 
 }  // namespace recommender

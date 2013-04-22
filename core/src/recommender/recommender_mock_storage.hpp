@@ -28,7 +28,7 @@
 namespace jubatus {
 namespace recommender {
 
-class recommender_mock_storage : public storage::recommender_storage_base {
+class recommender_mock_storage : public core::storage::recommender_storage_base {
  public:
   virtual ~recommender_mock_storage();
 
