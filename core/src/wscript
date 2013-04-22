@@ -1,6 +1,6 @@
 import Options
 
-subdirs = "anomaly classifier driver fv_converter graph recommender regression stat storage"
+subdirs = "common anomaly classifier driver fv_converter graph recommender regression stat storage"
 
 def options(opt):
   opt.recurse(subdirs)

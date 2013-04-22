@@ -22,7 +22,7 @@
 
 #include <pficommon/data/string/utility.h>
 
-#include "../exception.hpp"
+#include "../../../core/src/common/exception.hpp"
 #include "exception.hpp"
 
 namespace jubatus {

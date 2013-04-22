@@ -25,6 +25,7 @@
 using pfi::lang::scoped_ptr;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 TEST(storage_factory, trivial) {
@@ -44,4 +45,5 @@ TEST(storage_factory, trivial) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

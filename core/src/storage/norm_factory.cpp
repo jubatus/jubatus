@@ -23,6 +23,7 @@
 using std::string;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 norm_base* create_norm(const string& name) {
@@ -38,4 +39,5 @@ norm_base* create_norm(const string& name) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

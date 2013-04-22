@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_STORAGE_LSH_UTIL_HPP_
-#define JUBATUS_STORAGE_LSH_UTIL_HPP_
+#ifndef JUBATUS_CORE_STORAGE_LSH_UTIL_HPP_
+#define JUBATUS_CORE_STORAGE_LSH_UTIL_HPP_
 
 #include <functional>
 #include <queue>
@@ -24,6 +24,7 @@
 #include "lsh_vector.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class lsh_probe_generator {
@@ -54,6 +55,7 @@ class lsh_probe_generator {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_STORAGE_LSH_UTIL_HPP_
+#endif  // JUBATUS_CORE_STORAGE_LSH_UTIL_HPP_

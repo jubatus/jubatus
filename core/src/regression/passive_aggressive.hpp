@@ -14,14 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_REGRESSION_PASSIVE_AGGRESSIVE_HPP_
-#define JUBATUS_REGRESSION_PASSIVE_AGGRESSIVE_HPP_
+#ifndef JUBATUS_CORE_REGRESSION_PASSIVE_AGGRESSIVE_HPP_
+#define JUBATUS_CORE_REGRESSION_PASSIVE_AGGRESSIVE_HPP_
 
 #include <limits>
 #include <pficommon/data/serialization.h>
 #include "regression_base.hpp"
 
 namespace jubatus {
+namespace core {
 namespace regression {
 
 class passive_aggressive : public regression_base {
@@ -56,6 +57,7 @@ class passive_aggressive : public regression_base {
 };
 
 }  // namespace regression
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_REGRESSION_PASSIVE_AGGRESSIVE_HPP_
+#endif  // JUBATUS_CORE_REGRESSION_PASSIVE_AGGRESSIVE_HPP_

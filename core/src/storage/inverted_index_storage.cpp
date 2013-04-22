@@ -32,6 +32,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 static void convert_diff(
@@ -337,4 +338,5 @@ std::string inverted_index_storage::name() const {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

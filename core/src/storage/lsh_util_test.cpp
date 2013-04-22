@@ -28,6 +28,7 @@ using std::stringstream;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 namespace {
@@ -104,4 +105,5 @@ TEST(lsh_probe_generator, multiple_tables) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

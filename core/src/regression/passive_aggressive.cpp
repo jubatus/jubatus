@@ -21,6 +21,7 @@
 #include <iostream>
 
 namespace jubatus {
+namespace core {
 namespace regression {
 
 passive_aggressive::passive_aggressive(
@@ -76,4 +77,5 @@ void passive_aggressive::clear() {
 }
 
 }  // namespace regression
+}  // namespace core
 }  // namespace jubatus

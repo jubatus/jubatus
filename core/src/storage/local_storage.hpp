@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_STORAGE_LOCAL_STORAGE_HPP_
-#define JUBATUS_STORAGE_LOCAL_STORAGE_HPP_
+#ifndef JUBATUS_CORE_STORAGE_LOCAL_STORAGE_HPP_
+#define JUBATUS_CORE_STORAGE_LOCAL_STORAGE_HPP_
 
 #include <map>
 #include <string>
@@ -26,6 +26,7 @@
 #include "../common/key_manager.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 typedef pfi::data::unordered_map<uint64_t, val3_t> id_feature_val3_t;
@@ -88,6 +89,7 @@ class local_storage : public storage_base {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_STORAGE_LOCAL_STORAGE_HPP_
+#endif  // JUBATUS_CORE_STORAGE_LOCAL_STORAGE_HPP_

@@ -31,6 +31,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 namespace {
@@ -322,4 +323,5 @@ TEST(lsh_index_storage, set_and_remove_arround_mix) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

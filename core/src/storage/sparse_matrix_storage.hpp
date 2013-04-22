@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_STORAGE_SPARSE_MATRIX_STORAGE_HPP_
-#define JUBATUS_STORAGE_SPARSE_MATRIX_STORAGE_HPP_
+#ifndef JUBATUS_CORE_STORAGE_SPARSE_MATRIX_STORAGE_HPP_
+#define JUBATUS_CORE_STORAGE_SPARSE_MATRIX_STORAGE_HPP_
 
 #include <string>
 #include <utility>
@@ -27,6 +27,7 @@
 #include "storage_type.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class sparse_matrix_storage {
@@ -67,6 +68,7 @@ class sparse_matrix_storage {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_STORAGE_SPARSE_MATRIX_STORAGE_HPP_
+#endif  // JUBATUS_CORE_STORAGE_SPARSE_MATRIX_STORAGE_HPP_

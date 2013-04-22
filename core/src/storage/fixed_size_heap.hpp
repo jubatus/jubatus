@@ -14,14 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_STORAGE_FIXED_SIZE_HEAP_HPP_
-#define JUBATUS_STORAGE_FIXED_SIZE_HEAP_HPP_
+#ifndef JUBATUS_CORE_STORAGE_FIXED_SIZE_HEAP_HPP_
+#define JUBATUS_CORE_STORAGE_FIXED_SIZE_HEAP_HPP_
 
 #include <algorithm>
 #include <functional>
 #include <vector>
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 template <typename T, typename Comp = std::less<T> >
@@ -73,6 +74,7 @@ class fixed_size_heap {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_STORAGE_FIXED_SIZE_HEAP_HPP_
+#endif  // JUBATUS_CORE_STORAGE_FIXED_SIZE_HEAP_HPP_

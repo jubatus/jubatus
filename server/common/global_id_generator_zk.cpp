@@ -17,7 +17,7 @@
 #include <cassert>
 #include <string>
 
-#include "exception.hpp"
+#include "../../core/src/common/exception.hpp"
 #include "global_id_generator_base.hpp"
 #include "global_id_generator_zk.hpp"
 

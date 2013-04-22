@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_STORAGE_NORM_NONE_HPP_
-#define JUBATUS_STORAGE_NORM_NONE_HPP_
+#ifndef JUBATUS_CORE_STORAGE_NORM_NONE_HPP_
+#define JUBATUS_CORE_STORAGE_NORM_NONE_HPP_
 
 #include <string>
 #include <cmath>
@@ -23,6 +23,7 @@
 #include "norm_base.hpp"
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class norm_none : public norm_base {
@@ -38,6 +39,7 @@ class norm_none : public norm_base {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_STORAGE_NORM_NONE_HPP_
+#endif  // JUBATUS_CORE_STORAGE_NORM_NONE_HPP_

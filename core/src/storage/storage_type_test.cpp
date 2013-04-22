@@ -26,6 +26,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 namespace detail {
 
@@ -47,4 +48,5 @@ TEST(vector_binop, single_applicaton) {
 
 }  // namespace detail
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus

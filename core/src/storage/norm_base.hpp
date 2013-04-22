@@ -14,12 +14,13 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_STORAGE_NORM_BASE_HPP_
-#define JUBATUS_STORAGE_NORM_BASE_HPP_
+#ifndef JUBATUS_CORE_STORAGE_NORM_BASE_HPP_
+#define JUBATUS_CORE_STORAGE_NORM_BASE_HPP_
 
 #include <string>
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 class norm_base {
@@ -35,6 +36,7 @@ class norm_base {
 };
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_STORAGE_NORM_BASE_HPP_
+#endif  // JUBATUS_CORE_STORAGE_NORM_BASE_HPP_

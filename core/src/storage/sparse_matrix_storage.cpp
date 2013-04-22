@@ -31,6 +31,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 sparse_matrix_storage::sparse_matrix_storage() {
@@ -173,4 +174,5 @@ bool sparse_matrix_storage::load(istream& is) {
 }
 
 }  // namespace storage
+}  // namespace core
 }  // namespace jubatus
