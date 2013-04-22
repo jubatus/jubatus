@@ -23,7 +23,7 @@
 #include <vector>
 #include <pficommon/lang/cast.h>
 #include <glog/logging.h>
-#include "exception.hpp"
+#include "../../core/src/common/exception.hpp"
 
 using std::string;
 using std::vector;
