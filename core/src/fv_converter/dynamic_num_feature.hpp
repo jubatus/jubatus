@@ -25,7 +25,7 @@
 #include "num_feature.hpp"
 
 namespace jubatus {
-nameespace core {
+namespace core {
 namespace fv_converter {
 
 class dynamic_num_feature : public num_feature {

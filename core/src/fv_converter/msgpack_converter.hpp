@@ -19,7 +19,7 @@
 
 namespace msgpack {
 struct object;
-}
+}  // namespace msgpack
 
 namespace jubatus {
 namespace core {
