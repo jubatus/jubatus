@@ -31,11 +31,15 @@
 #include "../common/exception.hpp"
 #include "../common/membership.hpp"
 
-using jubatus::jubavisor;
-using jubatus::common::create_lock_service;
-using jubatus::common::build_loc_str;
 using pfi::concurrent::scoped_lock;
 using pfi::lang::bind;
+
+namespace jubatus {
+namespace server {
+namespace jubavisor {
+
+using common::create_lock_service;
+using common::build_loc_str;
 
 namespace {
 jubavisor* g_jubavisor = NULL;
@@ -260,3 +264,6 @@ void jubavisor::stop_all() {
   children_.clear();
 }
 
+}  // namespace jubavisor
+}  // namespace server
+}  // namespace jubatus

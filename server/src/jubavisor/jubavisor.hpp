@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_JUBAVISOR_JUBAVISOR_HPP_
-#define JUBATUS_JUBAVISOR_JUBAVISOR_HPP_
+#ifndef JUBATUS_SERVER_JUBAVISOR_JUBAVISOR_HPP_
+#define JUBATUS_SERVER_JUBAVISOR_JUBAVISOR_HPP_
 
 #include <map>
 #include <queue>
@@ -30,6 +30,8 @@
 #include "../framework/server_util.hpp"
 
 namespace jubatus {
+namespace server {
+namespace jubavisor {
 
 class jubavisor {
  public:
@@ -83,6 +85,8 @@ JUBATUS_MPRPC_PROC(stop, int, (std::string, unsigned int));
 
 JUBATUS_MPRPC_GEN(1, jubavisor, start, stop);
 
+}  // namespace jubavisor
+}  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_JUBAVISOR_JUBAVISOR_HPP_
+#endif  // JUBATUS_SERVER_JUBAVISOR_JUBAVISOR_HPP_

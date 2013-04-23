@@ -31,8 +31,8 @@ namespace {
 const std::string PROGNAME = "jubavisor";
 }  // namespace
 
-using jubatus::jubavisor;
-using jubatus::jubavisor_server;
+using jubatus::server::jubavisor::jubavisor;
+using jubatus::server::jubavisor::jubavisor_server;
 using pfi::lang::_1;
 using pfi::lang::_2;
 using pfi::lang::_3;

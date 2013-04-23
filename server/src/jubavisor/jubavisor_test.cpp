@@ -18,7 +18,15 @@
 
 #include "jubavisor.hpp"
 
+namespace jubatus {
+namespace server {
+namespace jubavisor {
+
 // TEST(jubervisor, main){
 // TODO(kumagi): think of some tests
 //   jubervisor j("localhost:2181", 9199); // need zookeeper mock..
 // }
+
+}  // namespace jubavisor
+}  // namespace server
+}  // namespace jubatus

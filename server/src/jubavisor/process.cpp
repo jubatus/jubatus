@@ -38,6 +38,8 @@
 using pfi::lang::lexical_cast;
 
 namespace jubatus {
+namespace server {
+namespace jubavisor {
 
 process::process(const std::string& zkhosts)
     : zk_hosts_(zkhosts) {
@@ -156,4 +158,6 @@ bool process::has_samespec(const process& rhs) const {
   return (get_name() == rhs.get_name() and get_server() == rhs.get_server());
 }
 
+}  // namespace jubavisor
+}  // namespace server
 }  // namespace jubatus
