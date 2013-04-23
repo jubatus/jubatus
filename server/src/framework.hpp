@@ -18,7 +18,7 @@
 #define JUBATUS_FRAMEWORK_HPP_
 
 // #include "config.hpp"
-#include "framework/mixable.hpp"
+#include "../../core/src/framework/mixable.hpp"
 #include "framework/server_helper.hpp"
 #include "framework/server_util.hpp"
 

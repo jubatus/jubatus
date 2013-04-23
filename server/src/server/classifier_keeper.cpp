@@ -8,7 +8,7 @@
 
 #include <glog/logging.h>
 
-#include "../common/exception.hpp"
+#include "../../../core/src/common/exception.hpp"
 #include "../framework/aggregators.hpp"
 #include "../framework/keeper.hpp"
 #include "classifier_types.hpp"

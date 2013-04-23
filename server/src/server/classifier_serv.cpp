@@ -23,15 +23,15 @@
 #include <pficommon/text/json.h>
 #include <pficommon/data/optional.h>
 
-#include "../classifier/classifier_factory.hpp"
-#include "../common/util.hpp"
-#include "../common/vector_util.hpp"
-#include "../common/jsonconfig.hpp"
+#include "../../../core/src/classifier/classifier_factory.hpp"
+#include "../../../core/src/common/util.hpp"
+#include "../../../core/src/common/vector_util.hpp"
+#include "../../../core/src/common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
-#include "../fv_converter/datum.hpp"
-#include "../fv_converter/datum_to_fv_converter.hpp"
-#include "../fv_converter/converter_config.hpp"
-#include "../storage/storage_factory.hpp"
+#include "../../../core/src/fv_converter/datum.hpp"
+#include "../../../core/src/fv_converter/datum_to_fv_converter.hpp"
+#include "../../../core/src/fv_converter/converter_config.hpp"
+#include "../../../core/src/storage/storage_factory.hpp"
 
 using std::string;
 using std::vector;
@@ -39,13 +39,14 @@ using std::pair;
 using std::isfinite;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
-using jubatus::common::cshared_ptr;
-using jubatus::common::lock_service;
-using jubatus::framework::convert;
-using jubatus::framework::server_argv;
-using jubatus::framework::mixer::create_mixer;
-using jubatus::framework::mixable_holder;
-using jubatus::fv_converter::weight_manager;
+using jubatus::core::common::cshared_ptr;
+using jubatus::server::common::lock_service;
+using jubatus::server::framework::convert;
+using jubatus::server::framework::server_argv;
+using jubatus::server::framework::mixer::create_mixer;
+using jubatus::core::framework::mixable_holder;
+using jubatus::core::fv_converter::weight_manager;
+using jubatus::core::classifier::classify_result;
 
 namespace jubatus {
 namespace server {
@@ -63,9 +64,9 @@ struct classifier_serv_config {
   }
 };
 
-storage::storage_base* make_model(
+core::storage::storage_base* make_model(
     const framework::server_argv& arg) {
-  return storage::storage_factory::create_storage(
+  return core::storage::storage_factory::create_storage(
       (arg.is_standalone()) ? "local" : "local_mixture");
 }
 
@@ -84,7 +85,7 @@ classifier_serv::~classifier_serv() {
 void classifier_serv::get_status(status_t& status) const {
   status_t my_status;
 
-  storage::storage_base* model = classifier_->get_model();
+  core::storage::storage_base* model = classifier_->get_model();
   model->get_status(my_status);
   my_status["storage"] = model->type();
 
@@ -92,27 +93,27 @@ void classifier_serv::get_status(status_t& status) const {
 }
 
 bool classifier_serv::set_config(const string& config) {
-  jsonconfig::config config_root(lexical_cast<json>(config));
+  core::jsonconfig::config config_root(lexical_cast<json>(config));
   classifier_serv_config conf =
-      jsonconfig::config_cast_check<classifier_serv_config>(config_root);
+      core::jsonconfig::config_cast_check<classifier_serv_config>(config_root);
 
   config_ = config;
 
-  jsonconfig::config param;
+  core::jsonconfig::config param;
   if (conf.parameter) {
-    param = jsonconfig::config(*conf.parameter);
+    param = core::jsonconfig::config(*conf.parameter);
   }
 
   // Model owner moved to classifier_
-  storage::storage_base* model = make_model(argv());
+  core::storage::storage_base* model = make_model(argv());
 
   classifier_.reset(
-      new driver::classifier(
+      new core::driver::classifier(
         model,
-        classifier::classifier_factory::create_classifier(
+        core::classifier::classifier_factory::create_classifier(
           conf.method, param, model),
-        mixer_,
-        fv_converter::make_fv_converter(conf.converter)));
+        core::fv_converter::make_fv_converter(conf.converter)));
+  mixer_->set_mixable_holder( classifier_->get_mixable_holder());
 
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
@@ -130,10 +131,10 @@ int classifier_serv::train(const vector<pair<string, jubatus::datum> >& data) {
 
   int count = 0;
 
-  fv_converter::datum d;
+  core::fv_converter::datum d;
   for (size_t i = 0; i < data.size(); ++i) {
     // TODO(IDL): remove conversion
-    convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
+    convert<jubatus::datum, core::fv_converter::datum>(data[i].second, d);
     classifier_->train(std::make_pair(data[i].first, d));
 
     DLOG(INFO) << "trained: " << data[i].first;
@@ -148,11 +149,11 @@ vector<vector<estimate_result> > classifier_serv::classify(
   check_set_config();
 
   vector<vector<estimate_result> > ret;
-  fv_converter::datum d;
+  core::fv_converter::datum d;
 
   for (size_t i = 0; i < data.size(); ++i) {
     // TODO(IDL): remove conversion
-    convert<jubatus::datum, fv_converter::datum>(data[i], d);
+    convert<jubatus::datum, core::fv_converter::datum>(data[i], d);
 
     classify_result scores = classifier_->classify(d);
 

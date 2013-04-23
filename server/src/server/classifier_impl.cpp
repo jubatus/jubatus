@@ -15,9 +15,9 @@ namespace server {
 
 class classifier_impl_ : public classifier<classifier_impl_> {
  public:
-  explicit classifier_impl_(const jubatus::framework::server_argv& a):
+  explicit classifier_impl_(const server::framework::server_argv& a):
     classifier<classifier_impl_>(a.timeout),
-    p_(new jubatus::framework::server_helper<classifier_serv>(a, false)) {
+    p_(new server::framework::server_helper<classifier_serv>(a, false)) {
   }
   std::string get_config(std::string name) {
     JRLOCK__(p_);
@@ -57,10 +57,10 @@ class classifier_impl_ : public classifier<classifier_impl_> {
     return p_->get_status();
   }
   int run() { return p_->start(*this); }
-  common::cshared_ptr<classifier_serv> get_p() { return p_->server(); }
+  core::common::cshared_ptr<classifier_serv> get_p() { return p_->server(); }
 
  private:
-  common::cshared_ptr<jubatus::framework::server_helper<classifier_serv> > p_;
+  core::common::cshared_ptr<server::framework::server_helper<classifier_serv> > p_;
 };
 
 }  // namespace server
@@ -68,6 +68,6 @@ class classifier_impl_ : public classifier<classifier_impl_> {
 
 int main(int argc, char* argv[]) {
   return
-    jubatus::framework::run_server<jubatus::server::classifier_impl_>
+      jubatus::server::framework::run_server<jubatus::server::classifier_impl_>
       (argc, argv, "classifier");
 }
