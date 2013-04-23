@@ -33,7 +33,7 @@ def build(bld):
     source = src,
     target = 'jubaserv_common',
     includes = '.',
-    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT'
+    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon'
     )
 
   test_src = [
