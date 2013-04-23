@@ -28,7 +28,7 @@ namespace jubatus {
 namespace plugin {
 namespace fv_converter {
 
-class ux_splitter : public fv_converter::word_splitter {
+class ux_splitter : public jubatus::core::fv_converter::word_splitter {
  public:
   explicit ux_splitter(const std::vector<std::string>& keywords);
   ~ux_splitter();

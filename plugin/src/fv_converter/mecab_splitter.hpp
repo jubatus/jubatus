@@ -30,7 +30,7 @@ namespace jubatus {
 namespace plugin {
 namespace fv_converter {
 
-class mecab_splitter : public fv_converter::word_splitter {
+class mecab_splitter : public jubatus::core::fv_converter::word_splitter {
  public:
   mecab_splitter();
   explicit mecab_splitter(const char* arg);
