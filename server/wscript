@@ -1,6 +1,6 @@
 import Options
 
-subdirs = "common src"
+subdirs = "src"
 
 def options(opt):
   opt.recurse(subdirs)
