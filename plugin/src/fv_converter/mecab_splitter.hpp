@@ -24,9 +24,11 @@
 #include <mecab.h>
 #include <pficommon/lang/scoped_ptr.h>
 
-#include "../../fv_converter/word_splitter.hpp"
+#include "fv_converter/word_splitter.hpp"
 
 namespace jubatus {
+namespace plugin {
+namespace fv_converter {
 
 class mecab_splitter : public fv_converter::word_splitter {
  public:
@@ -40,10 +42,12 @@ class mecab_splitter : public fv_converter::word_splitter {
   pfi::lang::scoped_ptr<MeCab::Model> model_;
 };
 
+}  // namespace fv_converter
+}  // namespace plugin
 }  // namespace jubatus
 
 extern "C" {
-jubatus::mecab_splitter* create(
+jubatus::plugin::fv_converter::mecab_splitter* create(
     const std::map<std::string, std::string>& params);
 }
 

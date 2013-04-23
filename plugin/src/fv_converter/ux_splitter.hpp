@@ -22,9 +22,11 @@
 #include <utility>
 #include <vector>
 #include <ux/ux.hpp>
-#include "../../fv_converter/word_splitter.hpp"
+#include "fv_converter/word_splitter.hpp"
 
 namespace jubatus {
+namespace plugin {
+namespace fv_converter {
 
 class ux_splitter : public fv_converter::word_splitter {
  public:
@@ -37,10 +39,13 @@ class ux_splitter : public fv_converter::word_splitter {
   ux::Trie trie_;
 };
 
+}  // namespace fv_converter
+}  // namespace plugin
 }  // namespace jubatus
 
 extern "C" {
-jubatus::ux_splitter* create(const std::map<std::string, std::string>& params);
+jubatus::plugin::fv_converter::ux_splitter* create(
+    const std::map<std::string, std::string>& params);
 }
 
 #endif  // JUBATUS_PLUGIN_FV_CONVERTER_UX_SPLITTER_HPP_

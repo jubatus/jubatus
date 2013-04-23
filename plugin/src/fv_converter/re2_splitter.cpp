@@ -20,13 +20,15 @@
 #include <utility>
 #include <vector>
 #include <pficommon/lang/cast.h>
-#include "../../fv_converter/exception.hpp"
+#include "fv_converter/exception.hpp"
 #include "re2_splitter.hpp"
 
 using pfi::lang::lexical_cast;
-using jubatus::fv_converter::converter_exception;
+using jubatus::core::fv_converter::converter_exception;
 
 namespace jubatus {
+namespace plugin {
+namespace fv_converter {
 
 re2_splitter::re2_splitter(const std::string& regexp, int group)
     : re_(regexp),
@@ -69,6 +71,8 @@ void re2_splitter::split(
   }
 }
 
+}  // namespace fv_converter
+}  // namespace plugin
 }  // namespace jubatus
 
 static const std::string& get(
@@ -99,9 +103,10 @@ static int get_int_with_default(
 }
 
 extern "C" {
-jubatus::re2_splitter* create(const std::map<std::string, std::string>& args) {
+jubatus::plugin::fv_converter::re2_splitter* create(
+    const std::map<std::string, std::string>& args) {
   std::string pattern = get(args, "pattern");
   int group = get_int_with_default(args, "group", 0);
-  return new jubatus::re2_splitter(pattern, group);
+  return new jubatus::plugin::fv_converter::re2_splitter(pattern, group);
 }
 }

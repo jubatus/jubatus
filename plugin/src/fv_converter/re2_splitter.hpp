@@ -23,11 +23,13 @@
 #include <vector>
 #include <pficommon/lang/scoped_ptr.h>
 #include <re2/re2.h>
-#include "../../fv_converter/word_splitter.hpp"
+#include "fv_converter/word_splitter.hpp"
 
 namespace jubatus {
+namespace plugin {
+namespace fv_converter {
 
-class re2_splitter : jubatus::fv_converter::word_splitter {
+class re2_splitter : jubatus::core::fv_converter::word_splitter {
  public:
   re2_splitter(const std::string& regexp, int group);
   void split(
@@ -39,10 +41,13 @@ class re2_splitter : jubatus::fv_converter::word_splitter {
   int group_;
 };
 
+}  // namespace fv_converter
+}  // namespace plugin
 }  // namespace jubatus
 
 extern "C" {
-jubatus::re2_splitter* create(const std::map<std::string, std::string>& args);
+jubatus::plugin::fv_converter::re2_splitter* create(
+    const std::map<std::string, std::string>& args);
 }
 
 #endif  // JUBATUS_PLUGIN_FV_CONVERTER_RE2_SPLITTER_HPP_

@@ -24,6 +24,7 @@
 #include "num_feature_factory.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(num_feature_factory, trivial) {
@@ -56,4 +57,5 @@ TEST(num_feature_factory, dynamic) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

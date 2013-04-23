@@ -28,12 +28,14 @@
 
 #include <glog/logging.h>
 
-#include "../../fv_converter/util.hpp"
-#include "../../fv_converter/exception.hpp"
+#include "fv_converter/util.hpp"
+#include "fv_converter/exception.hpp"
 
 namespace jubatus {
+namespace plugin {
+namespace fv_converter {
 
-using fv_converter::converter_exception;
+using core::fv_converter::converter_exception;
 
 ux_splitter::ux_splitter(const std::vector<std::string>& keywords) {
   std::vector<std::string> keys(keywords);
@@ -88,16 +90,19 @@ static void read_all_lines(
   }
 }
 
+}  // namespace fv_converter
+}  // namespace plugin
 }  // namespace jubatus
 
 extern "C" {
-jubatus::ux_splitter* create(const std::map<std::string, std::string>& params) {
+jubatus::plugin::fv_converter::ux_splitter* create(
+    const std::map<std::string, std::string>& params) {
   const std::string& path =
-      jubatus::fv_converter::get_or_die(params, "dict_path");
+      jubatus::core::fv_converter::get_or_die(params, "dict_path");
   std::vector<std::string> lines;
-  jubatus::read_all_lines(path.c_str(), lines);
+  jubatus::plugin::fv_converter::read_all_lines(path.c_str(), lines);
   LOG(INFO) << "loaded " << lines.size() << " words";
 
-  return new jubatus::ux_splitter(lines);
+  return new jubatus::plugin::fv_converter::ux_splitter(lines);
 }
 }
