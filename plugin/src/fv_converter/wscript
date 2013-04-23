@@ -47,8 +47,7 @@ def build(bld):
       source = 'mecab_splitter.cpp',
       target = 'mecab_splitter',
       install_path = bld.env.JUBATUS_PLUGIN_DIR,
-      use = 'MECAB jubaconverter',
-      includes = '../../../core/src',
+      use = 'MECAB jubaconverter core_headers',
       )
     make_test(bld, 'mecab_splitter', 'mecab_splitter_test.cpp')
 
@@ -57,8 +56,7 @@ def build(bld):
       source = 'ux_splitter.cpp',
       target = 'ux_splitter',
       install_path = bld.env.JUBATUS_PLUGIN_DIR,
-      use = 'UX jubaconverter',
-      includes = '../../../core/src',
+      use = 'UX jubaconverter core_headers',
       )
     make_test(bld, 'ux_splitter', 'ux_splitter_test.cpp')
 
@@ -67,7 +65,6 @@ def build(bld):
       source = 're2_splitter.cpp',
       target = 're2_splitter',
       install_path = bld.env.JUBATUS_PLUGIN_DIR,
-      use = 'RE2 jubaconverter',
-      includes = '../../../core/src',
+      use = 'RE2 jubaconverter core_headers',
       )
     make_test(bld, 're2_splitter', 're2_splitter_test.cpp')

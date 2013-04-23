@@ -9,6 +9,7 @@ def configure(conf):
   conf.recurse(subdirs)
 
 def build(bld):
+  bld(name = 'core_headers', export_includes = 'src')
   bld.recurse(subdirs)
   # bld.install_files('${PREFIX}/include/jubatus',
   #                   ['config.hpp', 'client.hpp', 'plugin.hpp', 'framework.hpp'])
