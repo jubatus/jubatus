@@ -22,12 +22,13 @@
 
 #include <pficommon/lang/scoped_ptr.h>
 
-#include "global_id_generator_base.hpp"
+#include "../../core/src/common/global_id_generator_base.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 
-class global_id_generator_standalone: public global_id_generator_base {
+class global_id_generator_standalone: public core::common::global_id_generator_base {
   struct impl;
 
  public:
@@ -41,6 +42,7 @@ class global_id_generator_standalone: public global_id_generator_base {
 };
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_

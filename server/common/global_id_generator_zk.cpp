@@ -18,10 +18,11 @@
 #include <string>
 
 #include "../../core/src/common/exception.hpp"
-#include "global_id_generator_base.hpp"
+#include "../../core/src/common/global_id_generator_base.hpp"
 #include "global_id_generator_zk.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 global_id_generator_zk::global_id_generator_zk() {
@@ -58,4 +59,5 @@ uint64_t global_id_generator_zk::generate() {
 }
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus

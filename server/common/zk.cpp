@@ -32,6 +32,7 @@ using std::vector;
 using std::string;
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 zk::zk(const string& hosts, int timeout, const string& logfile)
@@ -409,4 +410,5 @@ void mywatcher(zhandle_t* zh, int type, int state, const char* path, void* p) {
 }
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus

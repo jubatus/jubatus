@@ -40,18 +40,8 @@ class classifier {
   classifier(
       storage::storage_base* model_storage,
       jubatus::core::classifier::classifier_base* classifier_method,
-#if 0 // DELETE DELETE DELETE
-      pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
-#endif
       pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~classifier();
-
-#if 0 // DELETE DELETE DELETE
-  // TODO(suma): where is the owner of mixer and holder
-  framework::mixer::mixer* get_mixer() const {
-    return mixer_.get();
-  }
-#endif
 
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
     return mixable_holder_;
@@ -65,9 +55,6 @@ class classifier {
   jubatus::core::classifier::classify_result classify(const fv_converter::datum& data) const;
 
  private:
-#if 0 // DELETE DELETE DELETE
-  pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-#endif
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;

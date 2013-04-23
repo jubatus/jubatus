@@ -24,6 +24,7 @@
 #include "zk.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 // TODO(kashihara): write zk mock and test them all?
 
@@ -59,6 +60,7 @@ class cached_zk : public zk {
 };
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_CACHED_ZK_HPP_

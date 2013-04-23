@@ -31,6 +31,7 @@
 #include ZOOKEEPER_HEADER
 
 namespace jubatus {
+namespace server {
 namespace common {
 // TODO(kashihara): write zk mock and test them all?
 
@@ -121,6 +122,7 @@ class zkmutex : public try_lockable {
 void mywatcher(zhandle_t*, int, int, const char*, void*);
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_ZK_HPP_

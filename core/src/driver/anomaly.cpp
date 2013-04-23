@@ -44,24 +44,14 @@ namespace driver {
 
 anomaly::anomaly(
     jubatus::core::anomaly::anomaly_base* anomaly_method,
-#if 0 // DELETE DELETE DELETE
-    pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
-#endif
     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    :
-#if 0 // DELETE DELETE DELETE
- mixer_(mixer),
-#endif
-      mixable_holder_(new mixable_holder),
+    : mixable_holder_(new mixable_holder),
       converter_(converter) {
   common::cshared_ptr<jubatus::core::anomaly::anomaly_base>
       anomaly_method_p(anomaly_method);
   anomaly_.set_model(anomaly_method_p);
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
 
-#if 0 // DELETE DELETE DELETE
-  mixer_->set_mixable_holder(mixable_holder_);
-#endif
   mixable_holder_->register_mixable(&anomaly_);
   mixable_holder_->register_mixable(&wm_);
 

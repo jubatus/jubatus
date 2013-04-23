@@ -17,9 +17,6 @@
 #ifndef JUBATUS_CORE_DRIVER_LINEAR_FUNCTION_MIXER_HPP_
 #define JUBATUS_CORE_DRIVER_LINEAR_FUNCTION_MIXER_HPP_
 
-#if 0 // DELETE DELETE DELETE
-#include "../framework/mixer/mixer.hpp"
-#endif
 #include "../framework/mixable.hpp"
 #include "../storage/storage_base.hpp"
 

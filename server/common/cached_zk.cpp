@@ -26,6 +26,7 @@ using std::vector;
 using std::string;
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 cached_zk::cached_zk(const string& hosts, int timeout, const string& logfile)
@@ -178,4 +179,5 @@ void cached_zk::update_cache(
 }
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus

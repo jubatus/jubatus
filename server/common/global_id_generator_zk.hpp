@@ -20,11 +20,12 @@
 #include <stdint.h>
 #include <string>
 
-#include "global_id_generator_base.hpp"
+#include "../../core/src/common/global_id_generator_base.hpp"
 #include "lock_service.hpp"
 #include "../../core/src/common/shared_ptr.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 class global_id_generator_zk: public global_id_generator_base {
@@ -42,6 +43,7 @@ class global_id_generator_zk: public global_id_generator_base {
 };
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_GLOBAL_ID_GENERATOR_ZK_HPP_

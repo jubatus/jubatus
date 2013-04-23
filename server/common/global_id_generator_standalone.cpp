@@ -23,10 +23,11 @@
 #endif
 
 #include "../../core/src/common/exception.hpp"
-#include "global_id_generator_base.hpp"
+#include "../../core/src/common/global_id_generator_base.hpp"
 #include "global_id_generator_standalone.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 struct global_id_generator_standalone::impl {
@@ -55,4 +56,5 @@ uint64_t global_id_generator_standalone::generate() {
 }
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus

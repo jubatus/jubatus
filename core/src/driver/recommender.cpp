@@ -42,24 +42,14 @@ namespace driver {
 
 recommender::recommender(
     jubatus::core::recommender::recommender_base* recommender_method,
-#if 0  // DELETE DELETE DELETE
-    pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
-#endif
     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    :
-#if 0  // DELETE DELETE DELETE
- mixer_(mixer),
-#endif
-      mixable_holder_(new mixable_holder),
+    : mixable_holder_(new mixable_holder),
       converter_(converter) {
   common::cshared_ptr<jubatus::core::recommender::recommender_base>
       recommender_method_p(recommender_method);
   recommender_.set_model(recommender_method_p);
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
 
-#if 0  // DELETE DELETE DELETE
-  mixer_->set_mixable_holder(mixable_holder_);
-#endif
   mixable_holder_->register_mixable(&recommender_);
   mixable_holder_->register_mixable(&wm_);
 

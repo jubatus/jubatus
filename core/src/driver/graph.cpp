@@ -40,25 +40,12 @@ namespace jubatus {
 namespace core {
 namespace driver {
 
-graph::graph(
-    jubatus::core::graph::graph_base* graph_method
-#if 0 // DELETE DELETE DELETE
-,
-    pfi::lang::shared_ptr<framework::mixer::mixer> mixer
-#endif
-)
-    : 
-#if 0 // DELETE DELETE DELETE
-mixer_(mixer),
-#endif
-      mixable_holder_(new mixable_holder) {
+graph::graph(jubatus::core::graph::graph_base* graph_method)
+    : mixable_holder_(new mixable_holder) {
   common::cshared_ptr<jubatus::core::graph::graph_base>
       graph_method_p(graph_method);
   graph_.set_model(graph_method_p);
 
-#if 0 // DELETE DELETE DELETE
-  mixer_->set_mixable_holder(mixable_holder_);
-#endif
   mixable_holder_->register_mixable(&graph_);
 }
 
