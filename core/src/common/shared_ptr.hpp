@@ -21,6 +21,7 @@
 #include <pficommon/concurrent/threading_model.h>
 
 namespace jubatus {
+namespace core {
 namespace common {
 
 // just a wrapper for threading_model::multi_thread
@@ -43,6 +44,7 @@ struct cshared_ptr : pfi::lang::shared_ptr<T,
 };
 
 }  // namespace common
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_SHARED_PTR_HPP_

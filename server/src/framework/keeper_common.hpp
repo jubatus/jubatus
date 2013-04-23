@@ -27,12 +27,13 @@
 #include <pficommon/math/random.h>
 
 #include "server_util.hpp"
-#include "../common/lock_service.hpp"
-#include "../common/cht.hpp"
-#include "../common/shared_ptr.hpp"
-#include "../common/exception.hpp"
+#include "../../common/lock_service.hpp"
+#include "../../common/cht.hpp"
+#include "../../../core/src/common/shared_ptr.hpp"
+#include "../../../core/src/common/exception.hpp"
 
 namespace jubatus {
+namespace server {
 namespace framework {
 
 class no_worker : public jubatus::exception::runtime_error {
@@ -61,10 +62,11 @@ class keeper_common {
   keeper_argv a_;
   pfi::math::random::mtrand rng_;
   pfi::concurrent::mutex mutex_;
-  common::cshared_ptr<common::lock_service> zk_;
+  core::common::cshared_ptr<common::lock_service> zk_;
 };
 
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_FRAMEWORK_KEEPER_COMMON_HPP_

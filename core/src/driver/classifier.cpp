@@ -20,7 +20,6 @@
 #include <utility>
 #include <vector>
 
-
 #include "../classifier/classifier_factory.hpp"
 #include "../common/util.hpp"
 #include "../common/vector_util.hpp"
@@ -32,7 +31,6 @@
 using std::string;
 using std::vector;
 using std::pair;
-using jubatus::core::framework::convert;
 using jubatus::core::framework::mixable_holder;
 using jubatus::core::fv_converter::weight_manager;
 
@@ -43,9 +41,14 @@ namespace driver {
 classifier::classifier(
     storage::storage_base* model_storage,
     jubatus::core::classifier::classifier_base* classifier_method,
+#if 0 // DELETE DELETE DELETE
     pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
+#endif
     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    : mixer_(mixer),
+    : 
+#if 0 // DELETE DELETE DELETE
+mixer_(mixer),
+#endif
       mixable_holder_(new mixable_holder),
       converter_(converter),
       classifier_(classifier_method) {
@@ -53,7 +56,9 @@ classifier::classifier(
       linear_function_mixer::model_ptr(model_storage));
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
 
+#if 0 // DELETE DELETE DELETE
   mixer_->set_mixable_holder(mixable_holder_);
+#endif
   mixable_holder_->register_mixable(&mixable_classifier_model_);
   mixable_holder_->register_mixable(&wm_);
 
@@ -70,12 +75,12 @@ void classifier::train(const pair<string, fv_converter::datum>& data) {
   classifier_->train(v, data.first);
 }
 
-classify_result classifier::classify(
+jubatus::core::classifier::classify_result classifier::classify(
     const fv_converter::datum& data) const {
   sfv_t v;
   converter_->convert(data, v);
 
-  classify_result scores;
+  jubatus::core::classifier::classify_result scores;
   classifier_->classify_with_scores(v, scores);
   return scores;
 }

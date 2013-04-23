@@ -40,8 +40,8 @@ struct classify_result_elem {
 
 typedef std::vector<classify_result_elem> classify_result;
 
-}  // namespace jubatus
-}  // namespace core
 }  // namespace classifier
+}  // namespace core
+}  // namespace jubatus
 
 #endif  // JUBATUS_CORE_SRC_CLASSIFIER_CLASSIFIER_TYPE_HPP_

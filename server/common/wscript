@@ -25,7 +25,6 @@ int main() {
 def build(bld):
   import Options
   src = 'network.cpp global_id_generator_standalone.cpp config.cpp'
-  # src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
 
   if bld.env.HAVE_ZOOKEEPER_H:
     src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp global_id_generator_zk.cpp'

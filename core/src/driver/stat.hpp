@@ -23,7 +23,10 @@
 
 #include "../stat/stat.hpp"
 #include "../stat/mixable_stat.hpp"
+#if 0 // DELETE DELETE DELETE
 #include "../framework/mixer/mixer.hpp"
+#endif
+#include "../framework/mixable.hpp"
 
 namespace jubatus {
 namespace core {
@@ -56,13 +59,19 @@ struct mixable_stat : public framework::mixable<
 class stat {
  public:
   stat(
-      jubatus::core::stat::stat* stat_method,
-      pfi::lang::shared_ptr<framework::mixer::mixer> mixer);
+      jubatus::core::stat::stat* stat_method
+#if 0 // DELETE DELETE DELETE
+      ,
+      pfi::lang::shared_ptr<framework::mixer::mixer> mixer
+#endif
+);
   virtual ~stat();
 
+#if 0 // DELETE DELETE DELETE
   framework::mixer::mixer* get_mixer() const {
     return mixer_.get();
   }
+#endif
 
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
     return mixable_holder_;
@@ -81,7 +90,9 @@ class stat {
   double moment(const std::string&, int, double) const;
 
  private:
+#if 0 // DELETE DELETE DELETE
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
+#endif
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   pfi::lang::shared_ptr<jubatus::core::stat::stat> stat_;

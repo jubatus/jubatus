@@ -24,13 +24,14 @@
 #include <pficommon/text/json.h>
 
 #include "../third_party/cmdline/cmdline.h"
-#include "../common/config.hpp"
-#include "../common/exception.hpp"
-#include "../common/membership.hpp"
-#include "../common/network.hpp"
-#include "../common/util.hpp"
+#include "../../common/config.hpp"
+#include "../../../../core/src/common/exception.hpp"
+#include "../../common/membership.hpp"
+#include "../../common/network.hpp"
+#include "../../../../core/src/common/util.hpp"
 
 namespace jubatus {
+namespace server {
 namespace framework {
 
 static const std::string VERSION(JUBATUS_VERSION);
@@ -63,13 +64,13 @@ void config_json::load_json(
     const std::string& name) {
 #ifdef HAVE_ZOOKEEPER_H
   LOG(INFO) << "load config from zookeeper: " << zkhosts;
-  jubatus::common::config_fromzk(*ls, type, name, config);
+  jubatus::server::common::config_fromzk(*ls, type, name, config);
 #endif
 }
 
 void config_json::load_json(const std::string& filepath) {
   LOG(INFO) << "load config from local file: " << filepath;
-  jubatus::common::config_fromlocal(filepath, config);
+  jubatus::server::common::config_fromlocal(filepath, config);
 }
 
 server_argv::server_argv(int args, char** argv, const std::string& type)
@@ -354,7 +355,7 @@ void keeper_argv::set_log_destination(const std::string& progname) const {
   }
 }
 
-common::cshared_ptr<jubatus::common::lock_service> ls;
+core::common::cshared_ptr<server::common::lock_service> ls;
 
 void atexit() {
 #ifdef HAVE_ZOOKEEPER_H
@@ -365,4 +366,5 @@ void atexit() {
 }
 
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus

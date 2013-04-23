@@ -22,11 +22,12 @@
 #include <vector>
 #include <glog/logging.h>
 
-#include "mixable.hpp"
+#include "../../../core/src/framework/mixable.hpp"
 #include "mixer/mixer.hpp"
-#include "../common/exception.hpp"
+#include "../../../core/src/common/exception.hpp"
 
 namespace jubatus {
+namespace server {
 namespace framework {
 
 namespace {
@@ -60,7 +61,7 @@ bool server_base::save(const std::string& id) {
   }
   try {
     LOG(INFO) << "starting save to " << path;
-    std::vector<mixable0*> mixables = get_mixable_holder()->get_mixables();
+    std::vector<core::framework::mixable0*> mixables = get_mixable_holder()->get_mixables();
     for (size_t i = 0; i < mixables.size(); ++i) {
       mixables[i]->save(ofs);
     }
@@ -86,7 +87,7 @@ bool server_base::load(const std::string& id) {
 
   try {
     LOG(INFO) << "starting load from " << path;
-    std::vector<mixable0*> mixables = get_mixable_holder()->get_mixables();
+    std::vector<core::framework::mixable0*> mixables = get_mixable_holder()->get_mixables();
     for (size_t i = 0; i < mixables.size(); ++i) {
       mixables[i]->clear();
       mixables[i]->load(ifs);
@@ -110,4 +111,5 @@ void server_base::event_model_updated() {
 }
 
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus

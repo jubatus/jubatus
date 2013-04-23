@@ -20,12 +20,11 @@
 #include <string>
 
 namespace jubatus {
-
+namespace core {
 namespace jsonconfig {
 class config;
 }  // namespace jsonconfig
 
-namespace core {
 namespace graph {
 
 class graph_base;

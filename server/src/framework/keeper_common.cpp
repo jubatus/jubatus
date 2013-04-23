@@ -23,11 +23,12 @@
 #include <glog/logging.h>
 
 #include "server_util.hpp"
-#include "../common/membership.hpp"
-#include "../common/exception.hpp"
-#include "../common/util.hpp"
+#include "../../common/membership.hpp"
+#include "../../../../core/src/common/exception.hpp"
+#include "../../../../core/src/common/util.hpp"
 
 namespace jubatus {
+namespace server {
 namespace framework {
 
 namespace {
@@ -51,7 +52,7 @@ keeper_common::keeper_common(const keeper_argv& a)
       zk_(common::create_lock_service("cached_zk", a.z, a.timeout,
                                       make_logfile_name(a))) {
   ls = zk_;
-  jubatus::common::prepare_jubatus(*zk_, a_.type, "");
+  jubatus::server::common::prepare_jubatus(*zk_, a_.type, "");
 }
 
 keeper_common::~keeper_common() {
@@ -92,7 +93,7 @@ void keeper_common::get_members_from_cht_(
     size_t n) {
   ret.clear();
   pfi::concurrent::scoped_lock lk(mutex_);
-  jubatus::common::cht ht(zk_, a_.type, name);
+  jubatus::server::common::cht ht(zk_, a_.type, name);
   ht.find(id, ret, n);
 
   if (ret.empty()) {
@@ -101,4 +102,5 @@ void keeper_common::get_members_from_cht_(
 }
 
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus

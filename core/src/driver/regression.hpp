@@ -23,11 +23,14 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "../regression/regression_base.hpp"
 #include "../framework/mixable.hpp"
+#if 0 // DELETE DELETE DELETE
 #include "../framework/mixer/mixer.hpp"
 #include "../framework/server_base.hpp"
+#endif
 #include "diffv.hpp"
 #include "linear_function_mixer.hpp"
 #include "mixable_weight_manager.hpp"
+#include "../fv_converter/datum_to_fv_converter.hpp"
 
 namespace jubatus {
 namespace core {
@@ -38,13 +41,17 @@ class regression {
   regression(
       storage::storage_base* model_storage,
       jubatus::core::regression::regression_base* regression_method,
+#if 0 // DELETE DELETE DELETE
       pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
+#endif
       pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~regression();
 
+#if 0 // DELETE DELETE DELETE
   framework::mixer::mixer* get_mixer() const {
     return mixer_.get();
   }
+#endif
 
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
     return mixable_holder_;
@@ -58,7 +65,9 @@ class regression {
   float estimate(const fv_converter::datum& data) const;
 
  private:
+#if 0 // DELETE DELETE DELETE
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
+#endif
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;

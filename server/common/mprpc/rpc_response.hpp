@@ -23,6 +23,7 @@
 #include <pficommon/lang/shared_ptr.h>
 
 namespace jubatus {
+namespace server {
 namespace common {
 namespace mprpc {
 
@@ -61,6 +62,7 @@ class rpc_response_t {
 
 }  // namespace mprpc
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_MPRPC_RPC_RESPONSE_HPP_

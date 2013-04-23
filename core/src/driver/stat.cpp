@@ -29,13 +29,22 @@ namespace core {
 namespace driver {
 
 stat::stat(
-    jubatus::core::stat::stat* stat_method,
-    pfi::lang::shared_ptr<framework::mixer::mixer> mixer)
-    : mixer_(mixer),
+    jubatus::core::stat::stat* stat_method
+#if 0 // DELETE DELETE DELETE
+    ,
+    pfi::lang::shared_ptr<framework::mixer::mixer> mixer
+#endif
+)
+    :
+#if 0 // DELETE DELETE DELETE
+mixer_(mixer),
+#endif
       mixable_holder_(new mixable_holder),
       stat_(stat_method) {
   mixable_stat_model_.set_model(mixable_stat::model_ptr(stat_method));
+#if 0 // DELETE DELETE DELETE
   mixer_->set_mixable_holder(mixable_holder_);
+#endif
   mixable_holder_->register_mixable(&mixable_stat_model_);
 }
 

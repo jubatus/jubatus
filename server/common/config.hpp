@@ -27,6 +27,7 @@
 #include "membership.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 void config_fromlocal(const std::string& path, std::string& config);
@@ -62,6 +63,7 @@ bool is_no_workers(
 #endif
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_CONFIG_HPP_

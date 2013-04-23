@@ -21,14 +21,14 @@
 #include <utility>
 #include <vector>
 #include <pficommon/lang/shared_ptr.h>
+#include "../classifier/classifier_type.hpp"
 #include "../classifier/classifier_base.hpp"
 #include "../common/shared_ptr.hpp"
 #include "../framework/mixable.hpp"
-#include "../framework/mixer/mixer.hpp"
-#include "../framework/server_base.hpp"
 #include "diffv.hpp"
 #include "linear_function_mixer.hpp"
 #include "mixable_weight_manager.hpp"
+#include "../fv_converter/datum_to_fv_converter.hpp"
 
 namespace jubatus {
 namespace core {
@@ -40,14 +40,18 @@ class classifier {
   classifier(
       storage::storage_base* model_storage,
       jubatus::core::classifier::classifier_base* classifier_method,
+#if 0 // DELETE DELETE DELETE
       pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
+#endif
       pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~classifier();
 
+#if 0 // DELETE DELETE DELETE
   // TODO(suma): where is the owner of mixer and holder
   framework::mixer::mixer* get_mixer() const {
     return mixer_.get();
   }
+#endif
 
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
     return mixable_holder_;
@@ -58,10 +62,12 @@ class classifier {
   }
 
   void train(const std::pair<std::string, fv_converter::datum>& data);
-  classify_result classify(const fv_converter::datum& data) const;
+  jubatus::core::classifier::classify_result classify(const fv_converter::datum& data) const;
 
  private:
+#if 0 // DELETE DELETE DELETE
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
+#endif
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;

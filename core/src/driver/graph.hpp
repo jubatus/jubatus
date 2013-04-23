@@ -27,8 +27,10 @@
 #include "../common/global_id_generator_base.hpp"
 #include "../common/shared_ptr.hpp"
 #include "../framework/mixable.hpp"
+#if 0 // DELETE DELETE DELETE
 #include "../framework/mixer/mixer.hpp"
 #include "../framework/server_base.hpp"
+#endif
 #include "linear_function_mixer.hpp"
 #include "mixable_weight_manager.hpp"
 
@@ -68,13 +70,19 @@ struct mixable_graph : public framework::mixable<
 class graph {
  public:
   graph(
-      jubatus::core::graph::graph_base* graph_method,
-      pfi::lang::shared_ptr<framework::mixer::mixer> mixer);
+      jubatus::core::graph::graph_base* graph_method
+#if 0 // DELETE DELETE DELETE
+,
+      pfi::lang::shared_ptr<framework::mixer::mixer> mixer
+#endif
+);
   virtual ~graph();
 
+#if 0 // DELETE DELETE DELETE
   framework::mixer::mixer* get_mixer() const {
     return mixer_.get();
   }
+#endif
 
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
     return mixable_holder_;
@@ -128,7 +136,9 @@ class graph {
       const jubatus::core::graph::property& p);
 
  private:
+#if 0 // DELETE DELETE DELETE
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
+#endif
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   mixable_graph graph_;

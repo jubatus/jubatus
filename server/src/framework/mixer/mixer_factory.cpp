@@ -23,11 +23,12 @@
 #endif
 
 namespace jubatus {
+namespace server {
 namespace framework {
 namespace mixer {
 
 mixer* create_mixer(const server_argv& a,
-                    const common::cshared_ptr<common::lock_service>& zk) {
+                    const core::common::cshared_ptr<common::lock_service>& zk) {
 #ifdef HAVE_ZOOKEEPER_H
   return new linear_mixer(
       linear_communication::create(zk, a.type, a.name, a.timeout),
@@ -39,4 +40,5 @@ mixer* create_mixer(const server_argv& a,
 
 }  // namespace mixer
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus

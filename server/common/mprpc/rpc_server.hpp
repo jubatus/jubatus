@@ -24,6 +24,7 @@
 #include <pficommon/lang/function.h>
 
 namespace jubatus {
+namespace server {
 namespace common {
 namespace mprpc {
 
@@ -284,6 +285,7 @@ void rpc_server::add_async_vmethod(
 
 }  // namespace mprpc
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_MPRPC_RPC_SERVER_HPP_

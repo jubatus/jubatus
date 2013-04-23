@@ -20,12 +20,13 @@
 #include <iostream>
 #include <glog/logging.h>
 
-#include "../common/membership.hpp"
-#include "../common/exception.hpp"
-#include "../common/util.hpp"
+#include "../../common/membership.hpp"
+#include "../../../../core/src/common/exception.hpp"
+#include "../../../../core/src/common/util.hpp"
 #include "server_util.hpp"
 
 namespace jubatus {
+namespace server {
 namespace framework {
 
 __thread msgpack::rpc::session_pool* private_session_pool_ = NULL;
@@ -37,7 +38,7 @@ __thread keeper::async_task_loop*
 
 keeper::keeper(const keeper_argv& a)
     : keeper_common(a),
-      jubatus::common::mprpc::rpc_server(a.timeout) {
+      jubatus::server::common::mprpc::rpc_server(a.timeout) {
 }
 
 keeper::~keeper() {
@@ -45,7 +46,7 @@ keeper::~keeper() {
 
 int keeper::run() {
   try {
-    ::atexit(jubatus::framework::atexit);
+    ::atexit(jubatus::server::framework::atexit);
     jubatus::util::set_exit_on_term();
     jubatus::util::ignore_sigpipe();
 
@@ -77,4 +78,5 @@ int keeper::run() {
 }
 
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus

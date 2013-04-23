@@ -24,8 +24,8 @@
 #include <pficommon/lang/shared_ptr.h>
 
 namespace jubatus {
+namespace core {
 namespace common {
-namespace mprpc {
 
 class byte_buffer {
  public:
@@ -81,15 +81,15 @@ class byte_buffer {
  private:
   pfi::lang::shared_ptr<std::vector<char> > buf_;
 };
-}  // namespace mprpc
 }  // namespace common
+}  // namespace core
 }  // namespace jubatus
 
 namespace msgpack {
 
-inline jubatus::common::mprpc::byte_buffer& operator>>(
+inline jubatus::core::common::byte_buffer& operator>>(
     object o,
-    jubatus::common::mprpc::byte_buffer& b) {
+    jubatus::core::common::byte_buffer& b) {
   if (o.type != type::RAW) {
     throw type_error();
   }
@@ -101,7 +101,7 @@ inline jubatus::common::mprpc::byte_buffer& operator>>(
 template<typename Stream>
 inline packer<Stream>& operator<<(
     packer<Stream>& o,
-    const jubatus::common::mprpc::byte_buffer& b) {
+    const jubatus::core::common::byte_buffer& b) {
   o.pack_raw(b.size());
   o.pack_raw_body(b.ptr(), b.size());
   return o;
@@ -109,7 +109,7 @@ inline packer<Stream>& operator<<(
 
 inline void operator<<(
     object::with_zone& o,
-    const jubatus::common::mprpc::byte_buffer& b) {
+    const jubatus::core::common::byte_buffer& b) {
   o.type = type::RAW;
   char* ptr = static_cast<char*>(o.zone->malloc(b.size()));
   o.via.raw.ptr = ptr;
@@ -119,7 +119,7 @@ inline void operator<<(
 
 inline void operator<<(
     object& o,
-    const jubatus::common::mprpc::byte_buffer& b) {
+    const jubatus::core::common::byte_buffer& b) {
   o.type = type::RAW;
   o.via.raw.ptr = b.ptr();
   o.via.raw.size = static_cast<uint32_t>(b.size());

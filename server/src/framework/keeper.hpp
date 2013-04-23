@@ -31,9 +31,9 @@
 
 #include "keeper_common.hpp"
 #include "server_util.hpp"
-#include "../common/mprpc/rpc_mclient.hpp"
-#include "../common/mprpc/rpc_server.hpp"
-#include "../common/mprpc/exception.hpp"
+#include "../../common/mprpc/rpc_mclient.hpp"
+#include "../../common/mprpc/rpc_server.hpp"
+#include "../../common/mprpc/exception.hpp"
 
 namespace msgpack {
 namespace rpc {
@@ -45,9 +45,10 @@ extern const object TIMEOUT_ERROR;
 }  // namespace msgpack
 
 namespace jubatus {
+namespace server {
 namespace framework {
 
-class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
+class keeper : public keeper_common, jubatus::server::common::mprpc::rpc_server {
  public:
   typedef msgpack::rpc::request request_type;
   typedef std::vector<std::pair<std::string, int> > host_list_type;
@@ -435,7 +436,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 #endif
 
     try {
-      jubatus::common::mprpc::rpc_mclient c(list, a_.timeout,
+      jubatus::server::common::mprpc::rpc_mclient c(list, a_.timeout,
                                             get_private_session_pool());
       return *(c.call(method_name, name, agg));
     } catch (const std::exception& e) {
@@ -460,7 +461,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 #endif
 
     try {
-      jubatus::common::mprpc::rpc_mclient c(list, a_.timeout,
+      jubatus::server::common::mprpc::rpc_mclient c(list, a_.timeout,
                                             get_private_session_pool());
       return *(c.call(method_name, name, arg, agg));
     } catch (const std::exception& e) {
@@ -501,7 +502,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 #endif
 
     try {
-      jubatus::common::mprpc::rpc_mclient c(list, a_.timeout,
+      jubatus::server::common::mprpc::rpc_mclient c(list, a_.timeout,
                                             get_private_session_pool());
       return *(c.call(method_name, name, id, agg));
     } catch (const std::exception& e) {
@@ -528,7 +529,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 #endif
 
     try {
-      jubatus::common::mprpc::rpc_mclient c(list, a_.timeout,
+      jubatus::server::common::mprpc::rpc_mclient c(list, a_.timeout,
                                             get_private_session_pool());
       return *(c.call(method_name, name, id, arg, agg));
     } catch (const std::exception& e) {
@@ -555,7 +556,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 #endif
 
     try {
-      jubatus::common::mprpc::rpc_mclient c(list, a_.timeout,
+      jubatus::server::common::mprpc::rpc_mclient c(list, a_.timeout,
                                             get_private_session_pool());
       return *(c.call(method_name, name, id, a0, a1, agg));
     } catch (const std::exception& e) {
@@ -624,7 +625,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
     }
 
     void done_one(msgpack::rpc::future f, int future_index) {
-      namespace jcm = jubatus::common::mprpc;
+      namespace jcm = jubatus::server::common::mprpc;
 
       mp::pthread_scoped_lock _l(lock_);
 
@@ -739,12 +740,12 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 
     std::vector<msgpack::rpc::future> futures_;
     std::vector<result_ptr> results_;
-    std::vector<jubatus::common::mprpc::rpc_error> errors_;
+    std::vector<jubatus::server::common::mprpc::rpc_error> errors_;
 
     mp::pthread_recursive_mutex lock_;
 
     void done_one_inner(msgpack::rpc::future f, int future_index) {
-      namespace jcm = jubatus::common::mprpc;
+      namespace jcm = jubatus::server::common::mprpc;
 
       try {
         result_ptr result(new Res(f.get<Res>()));
@@ -838,6 +839,7 @@ class keeper : public keeper_common, jubatus::common::mprpc::rpc_server {
 };
 
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_FRAMEWORK_KEEPER_HPP_

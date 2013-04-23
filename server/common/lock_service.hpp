@@ -27,6 +27,7 @@
 #include <pficommon/concurrent/lock.h>
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 // TODO(kashihara): write lock_service mock and test them all?
@@ -107,6 +108,7 @@ lock_service* create_lock_service(
     const std::string& log = "");
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_LOCK_SERVICE_HPP_

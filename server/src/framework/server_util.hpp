@@ -30,9 +30,9 @@
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "../common/exception.hpp"
+#include "../../../core/src/common/exception.hpp"
 #include "../../common/lock_service.hpp"
-#include "../common/shared_ptr.hpp"
+#include "../../../core/src/common/shared_ptr.hpp"
 #include "../../../core/src/common/util.hpp"
 
 namespace cmdline {
@@ -40,11 +40,13 @@ class parser;
 }
 
 namespace jubatus {
-
+namespace core {
 namespace fv_converter {
 class datum_to_fv_converter;
 }
+} // namespace core
 
+namespace server {
 namespace framework {
 
 struct config_json {
@@ -126,7 +128,7 @@ void convert(const From& from, To& to) {
   msg.get().convert(&to);
 }
 
-extern jubatus::common::cshared_ptr<jubatus::common::lock_service> ls;
+extern jubatus::core::common::cshared_ptr<jubatus::server::common::lock_service> ls;
 void atexit();
 
 template<class ImplServerClass>
@@ -135,7 +137,7 @@ int run_server(int args, char** argv, const std::string& type) {
     ImplServerClass impl_server(server_argv(args, argv, type));
 
     impl_server.get_p()->get_mixer()->register_api(impl_server);
-    ::atexit(jubatus::framework::atexit);
+    ::atexit(jubatus::server::framework::atexit);
 
     jubatus::util::set_exit_on_term();
     jubatus::util::ignore_sigpipe();
@@ -149,6 +151,7 @@ int run_server(int args, char** argv, const std::string& type) {
 std::string get_conf(const server_argv& a);
 
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_FRAMEWORK_SERVER_UTIL_HPP_

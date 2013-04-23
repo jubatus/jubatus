@@ -29,6 +29,7 @@
 #include "lock_service.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 // TODO(kashihara): Is the value reasonable for cht?
@@ -45,7 +46,7 @@ class cht {
       const std::string&);
 
   cht(
-      cshared_ptr<lock_service>,
+      core::common::cshared_ptr<lock_service>,
       const std::string& type,
       const std::string& name);
 
@@ -88,10 +89,11 @@ class cht {
 
   const std::string type_;
   const std::string name_;
-  cshared_ptr<lock_service> lock_service_;
+  core::common::cshared_ptr<lock_service> lock_service_;
 };
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_CHT_HPP_

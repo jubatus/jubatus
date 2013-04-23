@@ -21,6 +21,7 @@
 #include <string>
 
 namespace jubatus {
+namespace core {
 namespace common {
 
 class global_id_generator_base {
@@ -31,6 +32,7 @@ class global_id_generator_base {
 };
 
 }  // namespace common
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_

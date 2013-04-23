@@ -23,7 +23,7 @@
 #include "word_splitter.hpp"
 
 namespace jubatus {
-nampspace core {
+namespace core {
 namespace fv_converter {
 
 class without_split : public word_splitter {

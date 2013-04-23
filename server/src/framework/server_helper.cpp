@@ -18,11 +18,12 @@
 
 #include <string>
 
-#include "../common/cht.hpp"
-#include "../common/membership.hpp"
-#include "../common/util.hpp"
+#include "../../common/cht.hpp"
+#include "../../common/membership.hpp"
+#include "../../../core/src/common/util.hpp"
 
 namespace jubatus {
+namespace server {
 namespace framework {
 
 using std::string;
@@ -74,8 +75,8 @@ void server_helper_impl::prepare_for_run(const server_argv& a, bool use_cht) {
     ls = zk_;
 
     if (use_cht) {
-      jubatus::common::cht::setup_cht_dir(*zk_, a.type, a.name);
-      jubatus::common::cht ht(zk_, a.type, a.name);
+      common::cht::setup_cht_dir(*zk_, a.type, a.name);
+      common::cht ht(zk_, a.type, a.name);
       ht.register_node(a.eth, a.port);
     }
 
@@ -106,4 +107,5 @@ void server_helper_impl::get_config_lock(const server_argv& a, int retry) {
 }
 
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus

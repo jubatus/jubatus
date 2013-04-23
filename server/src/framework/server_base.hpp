@@ -24,10 +24,11 @@
 #include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "mixable.hpp"
+#include "../../../core/src/framework/mixable.hpp"
 #include "../../../server/src/framework/server_util.hpp"
 
 namespace jubatus {
+namespace server {
 namespace framework {
 
 namespace mixer {
@@ -42,7 +43,7 @@ class server_base {
   virtual ~server_base() {}
 
   virtual mixer::mixer* get_mixer() const = 0;
-  virtual pfi::lang::shared_ptr<mixable_holder> get_mixable_holder() const = 0;
+  virtual pfi::lang::shared_ptr<core::framework::mixable_holder> get_mixable_holder() const = 0;
   virtual void get_status(status_t& status) const = 0;
 
   virtual bool save(const std::string& id);
@@ -67,6 +68,7 @@ class server_base {
 };
 
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_FRAMEWORK_SERVER_BASE_HPP_

@@ -30,6 +30,7 @@ using std::vector;
 using pfi::lang::lexical_cast;
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 // "127.0.0.1" -> 9199 -> "127.0.0.1_9199"
@@ -197,4 +198,5 @@ void prepare_jubatus(lock_service& ls, const string& type, const string& name) {
 }
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus

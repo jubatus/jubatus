@@ -20,6 +20,7 @@
 #include "../../../core/src/common/exception.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 namespace mprpc {
 
@@ -89,4 +90,5 @@ void rpc_server::close() {
 
 }  // namespace mprpc
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus

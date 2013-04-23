@@ -213,13 +213,14 @@ class unknown_query : public graph_exception {
 };
 
 }  // namespace graph
+}  // namespace core
 }  // namespace jubatus
 
 namespace pfi {
 namespace data {
 
-template<> struct hash<jubatus::graph::preset_query> {
-  uint64_t operator()(const jubatus::graph::preset_query& p) const {
+template<> struct hash<jubatus::core::graph::preset_query> {
+  uint64_t operator()(const jubatus::core::graph::preset_query& p) const {
     return update(p.node_query, update(p.edge_query, 14695981039346656037LLU));
   }
 
@@ -244,7 +245,6 @@ template<> struct hash<jubatus::graph::preset_query> {
 };
 
 }  // namespace data
-}  // namespace core
 }  // namespace pfi
 
 #endif  // JUBATUS_CORE_SRC_GRAPH_GRAPH_TYPE_HPP_

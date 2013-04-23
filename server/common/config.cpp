@@ -32,6 +32,7 @@ using std::string;
 using std::stringstream;
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 void config_fromlocal(const string& path, string& config) {
@@ -198,4 +199,5 @@ bool is_no_workers(lock_service& z, const string& type, const string& name) {
 #endif
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus

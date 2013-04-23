@@ -20,6 +20,7 @@
 #include <glog/logging.h>
 
 namespace jubatus {
+namespace server {
 namespace common {
 namespace mprpc {
 
@@ -66,4 +67,5 @@ rpc_response_t rpc_mclient::wait_one(
 
 }  // namespace mprpc
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus

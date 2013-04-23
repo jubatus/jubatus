@@ -17,20 +17,22 @@
 #ifndef JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
 #define JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
 
-#include "../../common/lock_service.hpp"
-#include "../../common/shared_ptr.hpp"
+#include "../../../common/lock_service.hpp"
+#include "../../../../core/src/common/shared_ptr.hpp"
 #include "../server_util.hpp"
 #include "mixer.hpp"
 
 namespace jubatus {
+namespace server {
 namespace framework {
 namespace mixer {
 
 mixer* create_mixer(const server_argv& a,
-                    const common::cshared_ptr<common::lock_service>& zk);
+                    const core::common::cshared_ptr<common::lock_service>& zk);
 
 }  // namespace mixer
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_

@@ -21,6 +21,7 @@
 #include "../../../core/src/common/exception.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 namespace mprpc {
 
@@ -70,6 +71,7 @@ class rpc_internal_error
 
 }  // namespace mprpc
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_MPRPC_EXCEPTION_HPP_

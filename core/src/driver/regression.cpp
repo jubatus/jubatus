@@ -38,9 +38,14 @@ namespace driver {
 regression::regression(
     storage::storage_base* model_storage,
     jubatus::core::regression::regression_base* regression_method,
+#if 0 // DELETE DELETE DELETE
     pfi::lang::shared_ptr<framework::mixer::mixer> mixer,
+#endif
     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    : mixer_(mixer),
+    :
+#if 0 // DELETE DELETE DELETE
+ mixer_(mixer),
+#endif
       mixable_holder_(new mixable_holder),
       converter_(converter),
       regression_(regression_method) {
@@ -48,7 +53,9 @@ regression::regression(
       linear_function_mixer::model_ptr(model_storage));
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
 
+#if 0 // DELETE DELETE DELETE
   mixer_->set_mixable_holder(mixable_holder_);
+#endif
   mixable_holder_->register_mixable(&mixable_regression_model_);
   mixable_holder_->register_mixable(&wm_);
 

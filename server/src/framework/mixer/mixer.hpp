@@ -19,32 +19,32 @@
 
 #include <pficommon/lang/shared_ptr.h>
 #include "../server_base.hpp"
-#include "../../../server/common/mprpc/rpc_server.hpp"
+#include "../../../common/mprpc/rpc_server.hpp"
 
 namespace jubatus {
-
-namespace framework {
-class server_base;
-}
-
 namespace core {
 namespace framework {
 
 class mixable0;
 class mixable_holder;
 
+} // namespace framework
+} // namespace core
+
+namespace server {
+namespace framework {
 namespace mixer {
 
 class mixer {
  public:
-  typedef jubatus::common::mprpc::rpc_server rpc_server_t;
+  typedef jubatus::server::common::mprpc::rpc_server rpc_server_t;
 
  public:
   virtual ~mixer() {
   }
 
   virtual void register_api(rpc_server_t& server) = 0;
-  virtual void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder>) = 0;
+  virtual void set_mixable_holder(pfi::lang::shared_ptr<core::framework::mixable_holder>) = 0;
 
   virtual void start() = 0;
   virtual void stop() = 0;
@@ -56,7 +56,7 @@ class mixer {
 
 }  // namespace mixer
 }  // namespace framework
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_FRAMEWORK_MIXER_MIXER_HPP_

@@ -26,6 +26,7 @@
 #include "exception.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 namespace mprpc {
 
@@ -120,6 +121,7 @@ inline std::string to_string(const error_multi_rpc& info) {
 
 }  // namespace mprpc
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_MPRPC_RPC_ERROR_HPP_

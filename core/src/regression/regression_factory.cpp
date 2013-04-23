@@ -23,7 +23,7 @@
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
 
-using jubatus::jsonconfig::config_cast_check;
+using jubatus::core::jsonconfig::config_cast_check;
 
 namespace jubatus {
 namespace core {

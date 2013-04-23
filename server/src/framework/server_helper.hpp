@@ -27,13 +27,14 @@
 
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
-#include "../common/jsonconfig.hpp"
-#include "../common/lock_service.hpp"
-#include "../common/mprpc/rpc_server.hpp"
-#include "../common/shared_ptr.hpp"
-#include "../config.hpp"
+#include "../../../core/src/common/jsonconfig.hpp"
+#include "../../common/lock_service.hpp"
+#include "../../common/mprpc/rpc_server.hpp"
+#include "../../../core/src/common/shared_ptr.hpp"
+#include "../../common/config.hpp"
 
 namespace jubatus {
+namespace server {
 namespace framework {
 
 class server_helper_impl {
@@ -43,12 +44,12 @@ class server_helper_impl {
   void prepare_for_run(const server_argv& a, bool use_cht);
   void get_config_lock(const server_argv& a, int retry);
 
-  common::cshared_ptr<jubatus::common::lock_service> zk() const {
+  core::common::cshared_ptr<common::lock_service> zk() const {
     return zk_;
   }
 
  private:
-  common::cshared_ptr<jubatus::common::lock_service> zk_;
+  core::common::cshared_ptr<common::lock_service> zk_;
   pfi::lang::shared_ptr<common::try_lockable> zk_config_lock_;
 };
 
@@ -67,10 +68,10 @@ class server_helper {
 
     try {
       server_->set_config(get_conf(a));
-    } catch (const jsonconfig::cast_check_error& e) {
+    } catch (const core::jsonconfig::cast_check_error& e) {
       config_exception config_error;
-      const jsonconfig::config_error_list& errors = e.errors();
-      for (jsonconfig::config_error_list::const_iterator it = errors.begin(),
+      const core::jsonconfig::config_error_list& errors = e.errors();
+      for (core::jsonconfig::config_error_list::const_iterator it = errors.begin(),
           end = errors.end(); it != end; ++it) {
         config_error << exception::error_message((*it)->what());
       }
@@ -142,7 +143,7 @@ class server_helper {
     return status;
   }
 
-  int start(jubatus::common::mprpc::rpc_server& serv) {
+  int start(common::mprpc::rpc_server& serv) {
     const server_argv& a = server_->argv();
 
     if (!a.is_standalone()) {
@@ -173,7 +174,7 @@ class server_helper {
     return -1;
   }
 
-  common::cshared_ptr<Server> server() const {
+  core::common::cshared_ptr<Server> server() const {
     return server_;
   }
 
@@ -182,12 +183,13 @@ class server_helper {
   }
 
  private:
-  common::cshared_ptr<Server> server_;
+  core::common::cshared_ptr<Server> server_;
   server_helper_impl impl_;
   const bool use_cht_;
 };
 
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus
 
 #define JRLOCK__(p) \

@@ -25,6 +25,7 @@
 #include "lock_service.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 static const std::string JUBATUS_BASE_PATH = "/jubatus";
@@ -91,6 +92,7 @@ void prepare_jubatus(
     const std::string& name = "");
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_MEMBERSHIP_HPP_
