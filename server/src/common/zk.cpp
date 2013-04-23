@@ -25,7 +25,7 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/data/string/utility.h>
-#include "../../core/src/common/exception.hpp"
+#include "common/exception.hpp"
 
 using pfi::concurrent::scoped_lock;
 using std::vector;

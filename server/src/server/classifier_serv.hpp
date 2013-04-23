@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 #include <pficommon/lang/shared_ptr.h>
-#include "../../../core/src/driver/classifier.hpp"
+#include "driver/classifier.hpp"
 #include "classifier_types.hpp"
 #include "../framework/server_base.hpp"
 

@@ -17,7 +17,7 @@
 #include "rpc_server.hpp"
 #include <string>
 #include <glog/logging.h>
-#include "../../../../core/src/common/exception.hpp"
+#include "common/exception.hpp"
 
 namespace jubatus {
 namespace server {

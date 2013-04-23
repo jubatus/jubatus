@@ -24,8 +24,8 @@
 
 #include "server_util.hpp"
 #include "../common/membership.hpp"
-#include "../../../../core/src/common/exception.hpp"
-#include "../../../../core/src/common/util.hpp"
+#include "common/exception.hpp"
+#include "common/util.hpp"
 
 namespace jubatus {
 namespace server {

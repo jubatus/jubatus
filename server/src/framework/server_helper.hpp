@@ -27,10 +27,10 @@
 
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
-#include "../../../core/src/common/jsonconfig.hpp"
+#include "common/jsonconfig.hpp"
 #include "../common/lock_service.hpp"
 #include "../common/mprpc/rpc_server.hpp"
-#include "../../../core/src/common/shared_ptr.hpp"
+#include "common/shared_ptr.hpp"
 #include "../common/config.hpp"
 
 namespace jubatus {

@@ -25,7 +25,7 @@
 #include <glog/logging.h>
 #include <pficommon/data/digest/md5.h>
 #include "membership.hpp"
-#include "../../core/src/common/exception.hpp"
+#include "common/exception.hpp"
 
 namespace jubatus {
 namespace common {

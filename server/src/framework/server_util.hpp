@@ -30,10 +30,10 @@
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "../../../core/src/common/exception.hpp"
+#include "common/exception.hpp"
 #include "../common/lock_service.hpp"
-#include "../../../core/src/common/shared_ptr.hpp"
-#include "../../../core/src/common/util.hpp"
+#include "common/shared_ptr.hpp"
+#include "common/util.hpp"
 
 namespace cmdline {
 class parser;

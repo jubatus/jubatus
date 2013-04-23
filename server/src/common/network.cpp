@@ -29,7 +29,7 @@
 
 #include <string>
 #include <glog/logging.h>
-#include "../../core/src/common/exception.hpp"
+#include "common/exception.hpp"
 
 using std::string;
 

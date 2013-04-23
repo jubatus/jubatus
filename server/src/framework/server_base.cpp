@@ -22,9 +22,9 @@
 #include <vector>
 #include <glog/logging.h>
 
-#include "../../../core/src/framework/mixable.hpp"
+#include "framework/mixable.hpp"
 #include "mixer/mixer.hpp"
-#include "../../../core/src/common/exception.hpp"
+#include "common/exception.hpp"
 
 namespace jubatus {
 namespace server {

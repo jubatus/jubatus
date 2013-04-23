@@ -25,8 +25,8 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "../../common/lock_service.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
-#include "../../../../core/src/common/byte_buffer.hpp"
-#include "../../../../core/src/common/shared_ptr.hpp"
+#include "common/byte_buffer.hpp"
+#include "common/shared_ptr.hpp"
 #include "mixer.hpp"
 
 namespace jubatus {

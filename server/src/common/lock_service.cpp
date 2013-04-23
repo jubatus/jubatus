@@ -16,7 +16,7 @@
 
 #include "lock_service.hpp"
 #include <string>
-#include "../../core/src/common/exception.hpp"
+#include "common/exception.hpp"
 #include "zk.hpp"
 #include "cached_zk.hpp"
 

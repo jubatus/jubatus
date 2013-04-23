@@ -29,8 +29,8 @@
 #include "server_util.hpp"
 #include "../common/lock_service.hpp"
 #include "../common/cht.hpp"
-#include "../../../core/src/common/shared_ptr.hpp"
-#include "../../../core/src/common/exception.hpp"
+#include "common/shared_ptr.hpp"
+#include "common/exception.hpp"
 
 namespace jubatus {
 namespace server {

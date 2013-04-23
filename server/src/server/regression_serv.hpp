@@ -22,7 +22,7 @@
 #include <vector>
 
 #include <pficommon/lang/shared_ptr.h>
-#include "../../../core/src/driver/regression.hpp"
+#include "driver/regression.hpp"
 #include "regression_types.hpp"
 
 namespace jubatus {

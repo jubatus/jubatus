@@ -22,7 +22,7 @@
 
 #include <pficommon/lang/scoped_ptr.h>
 
-#include "../../core/src/common/global_id_generator_base.hpp"
+#include "common/global_id_generator_base.hpp"
 
 namespace jubatus {
 namespace server {

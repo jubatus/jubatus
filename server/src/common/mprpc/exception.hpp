@@ -18,7 +18,7 @@
 #define JUBATUS_COMMON_MPRPC_EXCEPTION_HPP_
 
 #include <string>
-#include "../../../../core/src/common/exception.hpp"
+#include "common/exception.hpp"
 
 namespace jubatus {
 namespace server {

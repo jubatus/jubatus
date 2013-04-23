@@ -17,8 +17,8 @@
 #include <cassert>
 #include <string>
 
-#include "../../core/src/common/exception.hpp"
-#include "../../core/src/common/global_id_generator_base.hpp"
+#include "common/exception.hpp"
+#include "common/global_id_generator_base.hpp"
 #include "global_id_generator_zk.hpp"
 
 namespace jubatus {

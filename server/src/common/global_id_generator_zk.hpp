@@ -20,9 +20,9 @@
 #include <stdint.h>
 #include <string>
 
-#include "../../core/src/common/global_id_generator_base.hpp"
+#include "common/global_id_generator_base.hpp"
 #include "lock_service.hpp"
-#include "../../core/src/common/shared_ptr.hpp"
+#include "common/shared_ptr.hpp"
 
 namespace jubatus {
 namespace server {
