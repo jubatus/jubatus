@@ -21,6 +21,7 @@
 #include "weight_manager.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(weight_manager, trivial) {
@@ -73,4 +74,5 @@ TEST(weight_manager, trivial) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

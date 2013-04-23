@@ -20,6 +20,7 @@
 #include "exception.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(feature_hasher, trivial) {
@@ -42,4 +43,5 @@ TEST(feature_hasher, zero) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

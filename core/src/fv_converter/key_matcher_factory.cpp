@@ -28,6 +28,7 @@
 #include "suffix_match.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 key_matcher* key_matcher_factory::create_matcher(const std::string& matcher) {
@@ -51,4 +52,5 @@ key_matcher* key_matcher_factory::create_matcher(const std::string& matcher) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

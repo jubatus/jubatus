@@ -22,6 +22,7 @@
 #include "util.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 const std::string& get_or_die(
@@ -60,4 +61,5 @@ int get_int_or_die(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

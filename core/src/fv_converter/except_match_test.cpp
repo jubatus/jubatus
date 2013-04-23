@@ -21,6 +21,7 @@
 #include "exact_match.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 typedef pfi::lang::shared_ptr<key_matcher> matcher_ptr;
@@ -34,4 +35,5 @@ TEST(except_match, trivial) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

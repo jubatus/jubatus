@@ -22,6 +22,7 @@
 #include "dynamic_loader.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 dynamic_loader::dynamic_loader(const std::string& path)
@@ -68,4 +69,5 @@ void* dynamic_loader::load_symbol(const std::string& name) const {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

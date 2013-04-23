@@ -21,6 +21,7 @@
 #include "word_splitter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 class my_splitter : public word_splitter {
@@ -51,4 +52,5 @@ word_splitter* create(const std::map<std::string, std::string>& params) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

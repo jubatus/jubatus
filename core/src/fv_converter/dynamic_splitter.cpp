@@ -22,6 +22,7 @@
 #include <vector>
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 dynamic_splitter::dynamic_splitter(
@@ -39,4 +40,5 @@ void dynamic_splitter::split(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

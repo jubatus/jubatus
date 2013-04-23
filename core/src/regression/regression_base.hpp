@@ -20,12 +20,12 @@
 #include "../common/type.hpp"
 
 namespace jubatus {
+namespace core {
 
 namespace storage {
 class storage_base;
 }  // namespace storage
 
-namespace core {
 namespace regression {
 
 class regression_base {
@@ -52,6 +52,7 @@ class regression_base {
 };
 
 }  // namespace regression
+
 }  // namespace core
 }  // namespace jubatus
 

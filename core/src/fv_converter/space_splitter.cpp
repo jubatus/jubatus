@@ -21,6 +21,7 @@
 #include <vector>
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 namespace {
@@ -57,4 +58,5 @@ void space_splitter::split(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

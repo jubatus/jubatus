@@ -24,6 +24,7 @@
 #include "exception.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 feature_hasher::feature_hasher(uint64_t max)
@@ -42,4 +43,5 @@ void feature_hasher::hash_feature_keys(sfv_t& fv) const {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

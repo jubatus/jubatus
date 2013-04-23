@@ -20,6 +20,7 @@
 #include "exception.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 re2_filter::re2_filter(const std::string& regexp, const std::string& replace)
     : re_(regexp),
@@ -36,4 +37,5 @@ void re2_filter::filter(const std::string& input, std::string& output) const {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

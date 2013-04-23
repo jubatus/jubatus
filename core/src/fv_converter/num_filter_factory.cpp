@@ -24,6 +24,7 @@
 #include "util.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 namespace {
@@ -58,4 +59,5 @@ num_filter* num_filter_factory::create(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

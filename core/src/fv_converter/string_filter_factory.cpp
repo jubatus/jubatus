@@ -27,6 +27,7 @@
 #include "util.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 #ifdef HAVE_RE2
@@ -62,4 +63,5 @@ string_filter* string_filter_factory::create(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

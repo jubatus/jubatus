@@ -22,6 +22,7 @@
 #include "revert.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(revert_num_value, str) {
@@ -104,4 +105,5 @@ TEST(revert_feature, dollar_mark_onvalue) {
 
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

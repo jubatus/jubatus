@@ -22,6 +22,7 @@
 #include "num_feature.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(dynamic_num_feature, trivial) {
@@ -41,4 +42,5 @@ TEST(dynamic_num_feature, trivial) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

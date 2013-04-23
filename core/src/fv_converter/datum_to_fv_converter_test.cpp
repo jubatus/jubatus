@@ -41,6 +41,7 @@ using jubatus::common::cshared_ptr;
 using pfi::lang::shared_ptr;
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 namespace {
@@ -350,4 +351,5 @@ TEST(datum_to_fv_converter, hasher) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

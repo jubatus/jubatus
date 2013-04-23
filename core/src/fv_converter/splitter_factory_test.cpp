@@ -25,6 +25,7 @@
 #include "word_splitter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 TEST(splitter_factory, trivial) {
@@ -73,4 +74,5 @@ TEST(splitter_factory, ngram) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

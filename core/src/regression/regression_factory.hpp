@@ -21,20 +21,16 @@
 #include <pficommon/text/json.h>
 
 namespace jubatus {
-
 namespace core {
+
 namespace storage {
 class storage_base;
 }  // namespace storage
-}  // namespace core
 
-namespace core {
 namespace jsonconfig {
 class config;
 }  // namespace jsonconfig
-}  // namespace core
 
-namespace core {
 namespace regression {
 
 class regression_base;
@@ -48,6 +44,7 @@ class regression_factory {
 };
 
 }  // namespace regression
+
 }  // namespace core
 }  // namespace jubatus
 

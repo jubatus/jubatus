@@ -21,6 +21,7 @@
 #include "msgpack_converter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 namespace {
@@ -97,4 +98,5 @@ void msgpack_converter::convert(const msgpack::object& object, datum& datum) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

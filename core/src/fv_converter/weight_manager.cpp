@@ -23,6 +23,7 @@
 #include "datum_to_fv_converter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 namespace {
@@ -81,4 +82,5 @@ void weight_manager::add_weight(const std::string& key, float weight) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

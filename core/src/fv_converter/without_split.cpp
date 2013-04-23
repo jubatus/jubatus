@@ -21,6 +21,7 @@
 #include <vector>
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 void without_split::split(
@@ -30,4 +31,5 @@ void without_split::split(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

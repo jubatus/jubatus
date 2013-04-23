@@ -37,6 +37,7 @@
 #include "without_split.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 namespace {
@@ -318,4 +319,5 @@ pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

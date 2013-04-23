@@ -24,6 +24,7 @@
 #include "word_splitter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 namespace {
@@ -62,4 +63,5 @@ word_splitter* splitter_factory::create(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

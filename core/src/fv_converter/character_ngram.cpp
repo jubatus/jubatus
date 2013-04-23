@@ -21,6 +21,7 @@
 #include <vector>
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 namespace {
@@ -59,4 +60,5 @@ void character_ngram::split(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

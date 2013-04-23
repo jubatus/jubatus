@@ -19,6 +19,7 @@
 #include "num_filter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 class my_num_filter : public num_filter {
@@ -35,4 +36,5 @@ num_filter* create(const std::map<std::string, std::string>& params) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

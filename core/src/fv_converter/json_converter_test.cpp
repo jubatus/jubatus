@@ -26,6 +26,7 @@
 using pfi::text::json::json;
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 json MakeJson(const std::string& string) {
@@ -136,4 +137,5 @@ TEST(json_converter, object) {
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

@@ -14,14 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_FV_CONVERTER_REVERT_HPP_
-#define JUBATUS_FV_CONVERTER_REVERT_HPP_
+#ifndef JUBATUS_CORE_SRC_FV_CONVERTER_REVERT_HPP_
+#define JUBATUS_CORE_SRC_FV_CONVERTER_REVERT_HPP_
 
 #include <string>
 #include <utility>
 #include "../common/type.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 struct datum;
@@ -37,6 +38,7 @@ bool revert_string_value(
     std::pair<std::string, std::string>& string_value);
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_FV_CONVERTER_REVERT_HPP_
+#endif  // JUBATUS_CORE_SRC_FV_CONVERTER_REVERT_HPP_

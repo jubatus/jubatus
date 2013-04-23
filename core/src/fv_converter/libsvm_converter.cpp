@@ -22,6 +22,7 @@
 #include "libsvm_converter.hpp"
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 void libsvm_converter::convert(
@@ -55,4 +56,5 @@ void libsvm_converter::convert(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus

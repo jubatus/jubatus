@@ -30,6 +30,7 @@ using pfi::text::json::json_object;
 using pfi::text::json::json_string;
 
 namespace jubatus {
+namespace core {
 namespace fv_converter {
 
 const char* json_converter::NULL_STRING = "null";
@@ -153,4 +154,5 @@ void json_converter::convert(
 }
 
 }  // namespace fv_converter
+}  // namespace core
 }  // namespace jubatus
