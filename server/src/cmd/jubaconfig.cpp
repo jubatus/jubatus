@@ -24,9 +24,9 @@
 
 #include <pficommon/lang/function.h>
 
+#include "common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
 #include "../common/config.hpp"
-#include "../common/exception.hpp"
 #include "../common/membership.hpp"
 #include "../common/zk.hpp"
 
@@ -52,11 +52,11 @@ void delete_config(
 void get_config(const string& zkhosts, const string& type, const string& name);
 void get_configs(const string& zkhosts);
 void print_config(
-    jubatus::common::lock_service& z,
+    jubatus::server::common::lock_service& z,
     const string& type,
     const string& name);
 void get_all_config_paths(
-    jubatus::common::lock_service& z,
+    jubatus::server::common::lock_service& z,
     std::vector<std::pair<string, string> >& ret);
 
 
@@ -140,36 +140,36 @@ void set_config(
     const string& type,
     const string& name,
     const string& configfile) {
-  pfi::lang::shared_ptr<jubatus::common::lock_service> ls_(
-      jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+      jubatus::server::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
-  jubatus::common::prepare_jubatus(*ls_, type, name);
+  jubatus::server::common::prepare_jubatus(*ls_, type, name);
 
   string config;
-  jubatus::common::config_fromlocal(configfile, config);
-  jubatus::common::config_tozk(*ls_, type, name, config, configfile);
+  jubatus::server::common::config_fromlocal(configfile, config);
+  jubatus::server::common::config_tozk(*ls_, type, name, config, configfile);
 }
 
 void delete_config(
     const string& zkhosts,
     const string& type,
     const string& name) {
-  pfi::lang::shared_ptr<jubatus::common::lock_service> ls_(
-      jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+      jubatus::server::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
-  jubatus::common::remove_config_fromzk(*ls_, type, name);
+  jubatus::server::common::remove_config_fromzk(*ls_, type, name);
 }
 
 void get_config(const string& zkhosts, const string& type, const string& name) {
-  pfi::lang::shared_ptr<jubatus::common::lock_service> ls_(
-      jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+      jubatus::server::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
   print_config(*ls_, type, name);
 }
 
 void get_configs(const string& zkhosts) {
-  pfi::lang::shared_ptr<jubatus::common::lock_service> ls_(
-      jubatus::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+      jubatus::server::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
 
   std::vector<std::pair<string, string> > paths;
   get_all_config_paths(*ls_, paths);
@@ -182,28 +182,28 @@ void get_configs(const string& zkhosts) {
 }
 
 void print_config(
-    jubatus::common::lock_service& z,
+    jubatus::server::common::lock_service& z,
     const string& type,
     const string& name) {
   string config;
-  jubatus::common::config_fromzk(z, type, name, config);
+  jubatus::server::common::config_fromzk(z, type, name, config);
   cout << config;
 }
 
 void get_all_config_paths(
-    jubatus::common::lock_service& z,
+    jubatus::server::common::lock_service& z,
     std::vector<std::pair<string, string> >& ret) {
   ret.clear();
 
   std::vector<std::string> types;
-  if (!z.list(jubatus::common::CONFIG_BASE_PATH, types) || types.empty()) {
+  if (!z.list(jubatus::server::common::CONFIG_BASE_PATH, types) || types.empty()) {
     return;
   }
 
   for (size_t i = 0; i < types.size(); i++) {
     std::vector<std::string> names;
     std::string path;
-    path = jubatus::common::CONFIG_BASE_PATH + '/' + types[i];
+    path = jubatus::server::common::CONFIG_BASE_PATH + '/' + types[i];
     if (!z.list(path, names) || names.empty()) {
       continue;
     }

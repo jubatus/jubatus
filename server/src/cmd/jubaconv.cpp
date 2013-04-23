@@ -18,12 +18,12 @@
 
 #include <pficommon/text/json.h>
 
+#include "common/exception.hpp"
+#include "fv_converter/datum_to_fv_converter.hpp"
+#include "fv_converter/datum.hpp"
+#include "fv_converter/json_converter.hpp"
+#include "fv_converter/converter_config.hpp"
 #include "../third_party/cmdline/cmdline.h"
-#include "../common/exception.hpp"
-#include "../fv_converter/datum_to_fv_converter.hpp"
-#include "../fv_converter/datum.hpp"
-#include "../fv_converter/json_converter.hpp"
-#include "../fv_converter/converter_config.hpp"
 
 using std::bad_cast;
 using std::cerr;
@@ -33,13 +33,13 @@ using std::endl;
 using std::ifstream;
 using std::string;
 using pfi::text::json::json;
-using jubatus::fv_converter::converter_config;
-using jubatus::fv_converter::datum;
-using jubatus::fv_converter::datum_to_fv_converter;
-using jubatus::fv_converter::json_converter;
+using jubatus::core::fv_converter::converter_config;
+using jubatus::core::fv_converter::datum;
+using jubatus::core::fv_converter::datum_to_fv_converter;
+using jubatus::core::fv_converter::json_converter;
 
 struct server_config {
-  jubatus::fv_converter::converter_config converter;
+  jubatus::core::fv_converter::converter_config converter;
 
   template<typename Ar>
   void serialize(Ar& ar) {

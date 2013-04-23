@@ -7,21 +7,18 @@ def build(bld):
     bld.program(
       source = 'jubactl.cpp',
       target = 'jubactl',
-      includes = '.',
-      use = 'MSGPACK PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon jubatus_framework JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' 
+      use = 'MSGPACK PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon jubaserv_common jubatus_framework JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK core_headers'
       )
 
     bld.program(
       source = 'jubaconfig.cpp',
       target = 'jubaconfig',
-      includes = '.',
-      use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon'
+      use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon jubaserv_common core_headers'
       )
 
 
   bld.program(
     source = 'jubaconv.cpp',
     target = 'jubaconv',
-    includes = '.',
-    use = 'PFICOMMON jubacommon jubaconverter'
+    use = 'PFICOMMON jubacommon jubaconverter jubaserv_common core_headers'
     )
