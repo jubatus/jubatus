@@ -18,8 +18,8 @@
 
 #include <string>
 
-#include "../../common/cht.hpp"
-#include "../../common/membership.hpp"
+#include "../common/cht.hpp"
+#include "../common/membership.hpp"
 #include "../../../core/src/common/util.hpp"
 
 namespace jubatus {

@@ -31,7 +31,7 @@
 #include <pficommon/lang/shared_ptr.h>
 
 #include "../../../core/src/common/exception.hpp"
-#include "../../common/lock_service.hpp"
+#include "../common/lock_service.hpp"
 #include "../../../core/src/common/shared_ptr.hpp"
 #include "../../../core/src/common/util.hpp"
 

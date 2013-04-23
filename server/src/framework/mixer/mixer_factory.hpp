@@ -17,7 +17,7 @@
 #ifndef JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
 #define JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
 
-#include "../../../common/lock_service.hpp"
+#include "../../common/lock_service.hpp"
 #include "../../../../core/src/common/shared_ptr.hpp"
 #include "../server_util.hpp"
 #include "mixer.hpp"

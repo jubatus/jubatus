@@ -25,7 +25,7 @@
 
 #include <pficommon/lang/cast.h>
 
-#include "../../core/src/common/shared_ptr.hpp"
+#include "../../../core/src/common/shared_ptr.hpp"
 #include "lock_service.hpp"
 
 namespace jubatus {

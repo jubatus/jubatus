@@ -20,7 +20,7 @@
 #include <iostream>
 #include <glog/logging.h>
 
-#include "../../common/membership.hpp"
+#include "../common/membership.hpp"
 #include "../../../../core/src/common/exception.hpp"
 #include "../../../../core/src/common/util.hpp"
 #include "server_util.hpp"

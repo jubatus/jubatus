@@ -24,10 +24,10 @@
 #include <pficommon/text/json.h>
 
 #include "../third_party/cmdline/cmdline.h"
-#include "../../common/config.hpp"
+#include "../common/config.hpp"
 #include "../../../../core/src/common/exception.hpp"
-#include "../../common/membership.hpp"
-#include "../../common/network.hpp"
+#include "../common/membership.hpp"
+#include "../common/network.hpp"
 #include "../../../../core/src/common/util.hpp"
 
 namespace jubatus {

@@ -31,9 +31,9 @@
 
 #include "keeper_common.hpp"
 #include "server_util.hpp"
-#include "../../common/mprpc/rpc_mclient.hpp"
-#include "../../common/mprpc/rpc_server.hpp"
-#include "../../common/mprpc/exception.hpp"
+#include "../common/mprpc/rpc_mclient.hpp"
+#include "../common/mprpc/rpc_server.hpp"
+#include "../common/mprpc/exception.hpp"
 
 namespace msgpack {
 namespace rpc {

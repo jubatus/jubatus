@@ -19,7 +19,7 @@
 
 #include <pficommon/lang/shared_ptr.h>
 #include "../server_base.hpp"
-#include "../../../common/mprpc/rpc_server.hpp"
+#include "../../common/mprpc/rpc_server.hpp"
 
 namespace jubatus {
 namespace core {

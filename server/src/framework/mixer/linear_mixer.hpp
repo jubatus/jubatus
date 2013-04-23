@@ -23,8 +23,8 @@
 #include <pficommon/concurrent/mutex.h>
 #include <pficommon/concurrent/thread.h>
 #include <pficommon/lang/shared_ptr.h>
-#include "../../../common/lock_service.hpp"
-#include "../../../common/mprpc/rpc_mclient.hpp"
+#include "../../common/lock_service.hpp"
+#include "../../common/mprpc/rpc_mclient.hpp"
 #include "../../../../core/src/common/byte_buffer.hpp"
 #include "../../../../core/src/common/shared_ptr.hpp"
 #include "mixer.hpp"

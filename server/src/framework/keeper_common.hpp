@@ -27,8 +27,8 @@
 #include <pficommon/math/random.h>
 
 #include "server_util.hpp"
-#include "../../common/lock_service.hpp"
-#include "../../common/cht.hpp"
+#include "../common/lock_service.hpp"
+#include "../common/cht.hpp"
 #include "../../../core/src/common/shared_ptr.hpp"
 #include "../../../core/src/common/exception.hpp"
 

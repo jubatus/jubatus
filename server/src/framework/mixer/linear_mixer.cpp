@@ -25,8 +25,8 @@
 #include <pficommon/lang/bind.h>
 #include <pficommon/system/time_util.h>
 #include "../../../../core/src/common/exception.hpp"
-#include "../../../common/membership.hpp"
-#include "../../../common/mprpc/rpc_mclient.hpp"
+#include "../../common/membership.hpp"
+#include "../../common/mprpc/rpc_mclient.hpp"
 #include "../../../../core/src/framework/mixable.hpp"
 
 using std::vector;
