@@ -19,12 +19,14 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include "../../fv_converter/exception.hpp"
+#include "fv_converter/exception.hpp"
 #include "re2_splitter.hpp"
 
-using jubatus::fv_converter::converter_exception;
+using jubatus::core::fv_converter::converter_exception;
 
 namespace jubatus {
+namespace plugin {
+namespace fv_converter {
 
 TEST(re2_splitter, trivial) {
   re2_splitter r("([0-9]+)", 1);
@@ -68,4 +70,6 @@ TEST(re2_splitter, create_error) {
   EXPECT_THROW(create(p), converter_exception);
 }
 
+}  // namespace fv_converter
+}  // namespace plugin
 }  // namespace jubatus

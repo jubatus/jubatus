@@ -20,13 +20,15 @@
 #include <vector>
 #include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
-#include "../../fv_converter/exception.hpp"
+#include "fv_converter/exception.hpp"
 #include "ux_splitter.hpp"
 
 namespace jubatus {
+namespace plugin {
+namespace fv_converter {
 
-using fv_converter::word_splitter;
-using fv_converter::converter_exception;
+using core::fv_converter::word_splitter;
+using core::fv_converter::converter_exception;
 
 TEST(ux_splitter, split) {
   std::vector<std::string> ks;
@@ -80,4 +82,6 @@ TEST(ux_splitter, create) {
   ASSERT_EQ(4u, bs[1].second);
 }
 
+}  // namespace fv_converter
+}  // namespace plugin
 }  // namespace jubatus

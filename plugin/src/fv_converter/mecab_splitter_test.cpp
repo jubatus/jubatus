@@ -22,13 +22,15 @@
 #include <pficommon/concurrent/thread.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/lang/scoped_ptr.h>
-#include "../../fv_converter/exception.hpp"
+#include "fv_converter/exception.hpp"
 #include "mecab_splitter.hpp"
 
 namespace jubatus {
+namespace plugin {
+namespace fv_converter {
 
-using fv_converter::word_splitter;
-using fv_converter::converter_exception;
+using core::fv_converter::word_splitter;
+using core::fv_converter::converter_exception;
 
 TEST(mecab_splitter, trivial) {
   mecab_splitter m;
@@ -111,4 +113,6 @@ TEST(mecab_spltter, multi_thread) {
   }
 }
 
+}  // namespace fv_converter
+}  // namespace plugin
 }  // namespace jubatus

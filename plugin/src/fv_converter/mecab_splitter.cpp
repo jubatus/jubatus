@@ -20,12 +20,14 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "../../fv_converter/exception.hpp"
-#include "../../fv_converter/util.hpp"
+#include "fv_converter/exception.hpp"
+#include "fv_converter/util.hpp"
 
 namespace jubatus {
+namespace plugin {
+namespace fv_converter {
 
-using fv_converter::converter_exception;
+using core::fv_converter::converter_exception;
 
 static MeCab::Model* create_mecab_model(const char* arg) {
   MeCab::Model* t = MeCab::createModel(arg);
@@ -82,13 +84,15 @@ void mecab_splitter::split(
   bounds.swap(ret_boundaries);
 }
 
+}  // namespace fv_converter
+}  // namespace plugin
 }  // namespace jubatus
 
 extern "C" {
-jubatus::mecab_splitter* create(
+jubatus::plugin::fv_converter::mecab_splitter* create(
     const std::map<std::string, std::string>& params) {
   std::string param =
-      jubatus::fv_converter::get_with_default(params, "arg", "");
-  return new jubatus::mecab_splitter(param.c_str());
+      jubatus::core::fv_converter::get_with_default(params, "arg", "");
+  return new jubatus::plugin::fv_converter::mecab_splitter(param.c_str());
 }
 }
