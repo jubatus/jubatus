@@ -64,7 +64,7 @@ PROGRAM = jenerator
 LIB = target
 # OCAML_LIBS +=
 # OCAML_CLIBS +=
-OCAML_OTHER_LIBS += str
+OCAML_OTHER_LIBS += str unix
 # OCAML_LIB_FLAGS +=
 
 .DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))

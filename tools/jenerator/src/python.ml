@@ -218,7 +218,7 @@ let gen_typedef = function
 
 let gen_client_file conf source services =
   let base = File_util.take_base source in
-  let filename = base ^ "_client.py" in
+  let filename = Filename.concat base "client.py" in
   let clients = List.map gen_client services in
   let content = concat_blocks [
     [
@@ -233,7 +233,7 @@ let gen_client_file conf source services =
 
 let gen_type_file conf source idl =
   let base = File_util.take_base source in
-  let name = base ^ "_types.py" in
+  let name = Filename.concat base "types.py" in
   let types = List.map gen_typedef idl in
   let includes = [
     (0, "");
@@ -247,9 +247,15 @@ let gen_type_file conf source idl =
   make_header conf source name content
 ;;
 
+let gen_init_file conf source =
+  let base = File_util.take_base source in
+  let name = Filename.concat base "__init__.py" in
+  make_header conf source name []
+;;
 
 let generate conf source idl =
   let services = get_services idl in
-    gen_client_file conf source services;
-    gen_type_file conf source idl 
+  gen_client_file conf source services;
+  gen_type_file conf source idl;
+  gen_init_file conf source
 ;;
