@@ -56,7 +56,7 @@ let rec split_path path =
     split_path dir @ [base]
 ;;
 
-let mkdirp path =
+let mkdir_all path =
   let paths = split_path path in
   let current = ref "" in
   List.iter (fun p ->
