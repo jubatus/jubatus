@@ -25,7 +25,7 @@
 #include <pficommon/lang/shared_ptr.h>
 
 #include "mixable.hpp"
-#include "server_util.hpp"
+#include "../../../server/src/framework/server_util.hpp"
 
 namespace jubatus {
 namespace framework {

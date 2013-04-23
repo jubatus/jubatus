@@ -24,7 +24,7 @@ int main() {
 
 def build(bld):
   import Options
-  src = 'exception.cpp key_manager.cpp vector_util.cpp '
+  src = 'exception.cpp key_manager.cpp vector_util.cpp util.cpp'
   src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
 
   #if bld.env.HAVE_ZOOKEEPER_H:
@@ -40,7 +40,7 @@ def build(bld):
   test_src = [
     'exception_test.cpp',
     'key_manager_test.cpp',
-   # 'util_test.cpp',
+    'util_test.cpp',
    # 'network_test.cpp',
     'vector_util_test.cpp',
    # 'global_id_generator_test.cpp',

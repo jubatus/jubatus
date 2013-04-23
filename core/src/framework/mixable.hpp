@@ -25,7 +25,7 @@
 #include <pficommon/concurrent/rwmutex.h>
 
 #include "../common/exception.hpp"
-#include "../common/mprpc/byte_buffer.hpp"
+#include "../common/byte_buffer.hpp"
 #include "../common/shared_ptr.hpp"
 
 namespace jubatus {

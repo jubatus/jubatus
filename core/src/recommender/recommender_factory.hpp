@@ -21,13 +21,12 @@
 #include <pficommon/text/json.h>
 
 namespace jubatus {
-
+namespace core {
 namespace jsonconfig {
 
 class config;
 }  // namespace jsonconfig
 
-namespace core {
 namespace recommender {
 
 class recommender_base;
@@ -41,7 +40,6 @@ class recommender_factory {
 
 }  // namespace recommender
 }  // namespace core
-
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_RECOMMENDER_RECOMMENDER_FACTORY_HPP_

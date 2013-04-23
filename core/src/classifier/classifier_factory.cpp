@@ -23,7 +23,7 @@
 #include "../common/jsonconfig.hpp"
 #include "../storage/storage_base.hpp"
 
-using jubatus::jsonconfig::config_cast_check;
+using jubatus::core::jsonconfig::config_cast_check;
 
 namespace jubatus {
 namespace core {

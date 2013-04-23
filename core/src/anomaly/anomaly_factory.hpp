@@ -21,13 +21,13 @@
 #include <pficommon/text/json.h>
 
 namespace jubatus {
+namespace core {
 namespace jsonconfig {
 
 class config;
 
 }  // namespace jsonconfig
 
-namespace core {
 namespace anomaly {
 
 class anomaly_base;

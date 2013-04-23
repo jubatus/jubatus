@@ -22,6 +22,7 @@
 #include "exception.hpp"
 
 namespace jubatus {
+namespace core {
 namespace jsonconfig {
 
 config::iterator::iterator(const config::iterator& it)
@@ -98,4 +99,5 @@ config::iterator config::end() const {
 }
 
 }  // namespace jsonconfig
+}  // namespace core
 }  // namespace jubatus

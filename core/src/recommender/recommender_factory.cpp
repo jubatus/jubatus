@@ -24,8 +24,8 @@
 
 using std::string;
 using pfi::text::json::json;
-using jubatus::jsonconfig::config;
-using jubatus::jsonconfig::config_cast_check;
+using jubatus::core::jsonconfig::config;
+using jubatus::core::jsonconfig::config_cast_check;
 
 namespace jubatus {
 namespace core {

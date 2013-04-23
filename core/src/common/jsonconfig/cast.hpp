@@ -28,6 +28,7 @@
 #include "config.hpp"
 
 namespace jubatus {
+namespace core {
 namespace jsonconfig {
 
 typedef std::vector<pfi::lang::shared_ptr<config_error> > config_error_list;
@@ -272,6 +273,7 @@ T config_cast_check(const config& c) {
 }
 
 }  // namespace jsonconfig
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBAUTS_COMMON_JSOCONFIG_CAST_HPP_

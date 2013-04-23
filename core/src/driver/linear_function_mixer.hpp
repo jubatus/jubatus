@@ -17,7 +17,7 @@
 #ifndef JUBATUS_CORE_DRIVER_LINEAR_FUNCTION_MIXER_HPP_
 #define JUBATUS_CORE_DRIVER_LINEAR_FUNCTION_MIXER_HPP_
 
-#include "../framework.hpp"
+#include "../framework/mixer/mixer.hpp"
 #include "../storage/storage_base.hpp"
 
 #include "diffv.hpp"

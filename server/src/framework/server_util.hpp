@@ -31,9 +31,9 @@
 #include <pficommon/lang/shared_ptr.h>
 
 #include "../common/exception.hpp"
-#include "../common/lock_service.hpp"
+#include "../../common/lock_service.hpp"
 #include "../common/shared_ptr.hpp"
-#include "../common/util.hpp"
+#include "../../../core/src/common/util.hpp"
 
 namespace cmdline {
 class parser;

@@ -20,7 +20,6 @@
 #include <utility>
 
 #include "../common/util.hpp"
-#include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/converter_config.hpp"
@@ -29,7 +28,6 @@
 using std::string;
 using std::pair;
 
-using jubatus::core::framework::mixer::create_mixer;
 using jubatus::core::framework::mixable_holder;
 using jubatus::core::fv_converter::weight_manager;
 

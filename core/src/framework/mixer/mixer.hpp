@@ -19,9 +19,15 @@
 
 #include <pficommon/lang/shared_ptr.h>
 #include "../server_base.hpp"
-#include "../../common/mprpc/rpc_server.hpp"
+#include "../../../server/common/mprpc/rpc_server.hpp"
 
 namespace jubatus {
+
+namespace framework {
+class server_base;
+}
+
+namespace core {
 namespace framework {
 
 class mixable0;
@@ -50,6 +56,7 @@ class mixer {
 
 }  // namespace mixer
 }  // namespace framework
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_FRAMEWORK_MIXER_MIXER_HPP_

@@ -28,6 +28,7 @@
 #include "exception.hpp"
 
 namespace jubatus {
+namespace core {
 namespace jsonconfig {
 
 class config;
@@ -133,6 +134,7 @@ class config {
 };
 
 }  // namespace jsonconfig
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JSONCONFIG_CONFIG_HPP_
