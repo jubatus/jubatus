@@ -1,7 +1,7 @@
 import Options
 
 subdirs = '''
-cmd framework jubavisor server third_party
+common cmd framework jubavisor server third_party
 '''
 
 def options(opt):

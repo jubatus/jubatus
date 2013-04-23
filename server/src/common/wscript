@@ -39,7 +39,7 @@ def build(bld):
   test_src = [
     #'exception_test.cpp',
     #'key_manager_test.cpp',
-    'util_test.cpp',
+    #'util_test.cpp',
     'network_test.cpp',
     #'vector_util_test.cpp',
     'global_id_generator_test.cpp',
