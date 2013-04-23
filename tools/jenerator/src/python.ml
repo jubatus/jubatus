@@ -152,29 +152,23 @@ let gen_to_msgpack field_names =
   ]
 ;;
 
-let rec gen_from_msgpack_types field_types = match field_types with
-  | [] -> []
-  | [t] -> [(0, (gen_type t "arg" ""))] (* TODO : ad-hoc? *)
-  | _ -> 
-      let rec loop lst num = match lst with
-        | [] -> []
-        | [t] -> [(0, (gen_type t "arg" (string_of_int num)))]
-        | t :: rest -> 
-          (0, (gen_type t "arg" (string_of_int num)) ^ ",") :: (loop rest (num + 1))
-      in loop field_types 0
+let mapi f lst =
+  let rec mapi_impl f i = function
+    | [] -> []
+    | x::xs -> f i x :: mapi_impl f (i + 1) xs in
+  mapi_impl f 0 lst
 ;;
-    
+
+let rec gen_from_msgpack_types field_types =
+  mapi (fun i t -> gen_type t "arg" (string_of_int i)) field_types
+;;
+
 let gen_from_msgpack field_names field_types s =
-  List.concat [
-    [(0, "@staticmethod")];
-    [(0, "def from_msgpack (arg):")];
-    (* ad-hoc *)
-    if s = "" then (List.concat [[(1, "return ")]; (indent_lines 2 (gen_from_msgpack_types field_types))])
-    else
-      List.concat [
-        [(1, "return " ^ s ^ "(")];
-        indent_lines 2 (gen_from_msgpack_types field_types);
-        [(1, ")")]]
+  let args = gen_from_msgpack_types field_types in
+  [
+    (0, "@staticmethod");
+    (0, "def from_msgpack (arg):");
+    (1,   "return " ^ s ^ "(" ^ String.concat ", " args ^ ")");
   ]
 ;;
 
@@ -194,12 +188,21 @@ let gen_message m =
   ]
 ;;
 
+let gen_from_msgpack_for_typedef typ =
+  let arg = gen_type typ "arg" "" in
+  [
+    (0, "@staticmethod");
+    (0, "def from_msgpack (arg):");
+    (1,   "return " ^ arg);
+  ]
+;;
+
 let gen_typedef' name typ = 
   List.concat [
     [
       (0, "class " ^ name ^ ":");
     ];
-    indent_lines 1 (gen_from_msgpack [] [typ] "");
+    indent_lines 1 (gen_from_msgpack_for_typedef typ);
   ]
 ;;
 
