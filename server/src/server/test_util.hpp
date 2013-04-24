@@ -29,7 +29,7 @@
 #include <pficommon/lang/cast.h>
 #include <pficommon/text/json.h>
 
-#include "../fv_converter/converter_config.hpp"
+#include "fv_converter/converter_config.hpp"
 
 using std::string;
 using std::cout;
@@ -91,7 +91,7 @@ void kill_process(pid_t child) {
 }
 
 std::string config_to_string(
-    const jubatus::fv_converter::converter_config& config) {
+    const jubatus::core::fv_converter::converter_config& config) {
   std::stringstream ss;
   ss << pfi::text::json::to_json(config);
   return ss.str();
