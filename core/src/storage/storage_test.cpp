@@ -32,15 +32,15 @@ using std::stringstream;
 using std::string;
 using jubatus::key_manager;
 using jubatus::sfv_t;
-using jubatus::storage::feature_val1_t;
-using jubatus::storage::feature_val2_t;
-using jubatus::storage::feature_val3_t;
-using jubatus::storage::map_feature_val1_t;
-using jubatus::storage::val1_t;
-using jubatus::storage::val2_t;
-using jubatus::storage::val3_t;
-using jubatus::storage::local_storage;
-using jubatus::storage::local_storage_mixture;
+using jubatus::core::storage::feature_val1_t;
+using jubatus::core::storage::feature_val2_t;
+using jubatus::core::storage::feature_val3_t;
+using jubatus::core::storage::map_feature_val1_t;
+using jubatus::core::storage::val1_t;
+using jubatus::core::storage::val2_t;
+using jubatus::core::storage::val3_t;
+using jubatus::core::storage::local_storage;
+using jubatus::core::storage::local_storage_mixture;
 using pfi::data::serialization::binary_iarchive;
 using pfi::data::serialization::binary_oarchive;
 
@@ -555,7 +555,7 @@ REGISTER_TYPED_TEST_CASE_P(storage_test,
                            clear);
 
 typedef testing::Types<
-    jubatus::storage::stub_storage,
+    jubatus::core::storage::stub_storage,
     local_storage,
     local_storage_mixture> storage_types;
 
