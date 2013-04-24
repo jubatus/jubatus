@@ -37,7 +37,7 @@ class recommender_serv : public framework::server_base {
 
 
   framework::mixer::mixer* get_mixer() const {
-    return recommender_->get_mixer();
+    return mixer_.get();
   }
 
   pfi::lang::shared_ptr<core::framework::mixable_holder> get_mixable_holder() const {

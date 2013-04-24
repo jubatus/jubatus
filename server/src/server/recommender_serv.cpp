@@ -39,13 +39,12 @@ using std::pair;
 using std::isfinite;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
-using jubatus::common::cshared_ptr;
-using jubatus::common::lock_service;
-using jubatus::framework::convert;
-using jubatus::framework::server_argv;
-using jubatus::framework::mixer::create_mixer;
-using jubatus::framework::mixable_holder;
-using jubatus::fv_converter::weight_manager;
+using jubatus::core::common::cshared_ptr;
+using jubatus::core::fv_converter::weight_manager;
+using jubatus::server::common::lock_service;
+using jubatus::server::framework::convert;
+using jubatus::server::framework::server_argv;
+using jubatus::server::framework::mixer::create_mixer;
 
 namespace jubatus {
 namespace server {
@@ -55,7 +54,7 @@ namespace {
 struct recommender_serv_config {
   std::string method;
   // TODO(unnonouno): if must use parameter
-  pfi::data::optional<jsonconfig::config> parameter;
+  pfi::data::optional<core::jsonconfig::config> parameter;
   pfi::text::json::json converter;
 
   template<typename Ar>
@@ -87,23 +86,23 @@ void recommender_serv::get_status(status_t& status) const {
 }
 
 bool recommender_serv::set_config(const std::string &config) {
-  jsonconfig::config conf_root(lexical_cast<json>(config));
+  core::jsonconfig::config conf_root(lexical_cast<json>(config));
   recommender_serv_config conf =
-      jsonconfig::config_cast_check<recommender_serv_config>(conf_root);
+      core::jsonconfig::config_cast_check<recommender_serv_config>(conf_root);
 
   config_ = config;
 
-  jsonconfig::config param;
+  core::jsonconfig::config param;
   if (conf.parameter) {
-    param = jsonconfig::config(*conf.parameter);
+    param = core::jsonconfig::config(*conf.parameter);
   }
 
   recommender_.reset(
-      new driver::recommender(
-          recommender::recommender_factory::create_recommender(
+      new core::driver::recommender(
+          core::recommender::recommender_factory::create_recommender(
               conf.method, param),
-          mixer_,
-          fv_converter::make_fv_converter(conf.converter)));
+          core::fv_converter::make_fv_converter(conf.converter)));
+  mixer_->set_mixable_holder( recommender_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
   return true;
@@ -128,8 +127,8 @@ bool recommender_serv::update_row(std::string id, datum dat) {
   check_set_config();
 
   ++update_row_cnt_;
-  fv_converter::datum d;
-  convert<jubatus::datum, fv_converter::datum>(dat, d);
+  core::fv_converter::datum d;
+  convert<jubatus::datum, core::fv_converter::datum>(dat, d);
 
   recommender_->update_row(id, d);
   DLOG(INFO) << "row updated: " << id;
@@ -152,23 +151,23 @@ bool recommender_serv::clear() {
 datum recommender_serv::complete_row_from_id(std::string id) {
   check_set_config();
 
-  fv_converter::datum ret = recommender_->complete_row_from_id(id);
+  core::fv_converter::datum ret = recommender_->complete_row_from_id(id);
 
   datum ret0;
-  convert<fv_converter::datum, datum>(ret, ret0);
+  convert<core::fv_converter::datum, datum>(ret, ret0);
   return ret0;
 }
 
 datum recommender_serv::complete_row_from_datum(datum dat) {
   check_set_config();
 
-  fv_converter::datum d;
-  convert<jubatus::datum, fv_converter::datum>(dat, d);
+  core::fv_converter::datum d;
+  convert<jubatus::datum, core::fv_converter::datum>(dat, d);
 
-  fv_converter::datum ret = recommender_->complete_row_from_datum(d);
+  core::fv_converter::datum ret = recommender_->complete_row_from_datum(d);
 
   datum ret0;
-  convert<fv_converter::datum, datum>(ret, ret0);
+  convert<core::fv_converter::datum, datum>(ret, ret0);
   return ret0;
 }
 
@@ -184,8 +183,8 @@ similar_result recommender_serv::similar_row_from_datum(datum data, size_t s) {
   check_set_config();
 
   similar_result ret;
-  fv_converter::datum d;
-  convert<datum, fv_converter::datum>(data, d);
+  core::fv_converter::datum d;
+  convert<datum, core::fv_converter::datum>(data, d);
 
   return recommender_->similar_row_from_datum(d, s);
 }
@@ -193,10 +192,10 @@ similar_result recommender_serv::similar_row_from_datum(datum data, size_t s) {
 datum recommender_serv::decode_row(std::string id) {
   check_set_config();
 
-  fv_converter::datum ret = recommender_->decode_row(id);
+  core::fv_converter::datum ret = recommender_->decode_row(id);
 
   datum ret0;
-  convert<fv_converter::datum, datum>(ret, ret0);
+  convert<core::fv_converter::datum, datum>(ret, ret0);
   return ret0;
 }
 
@@ -209,9 +208,9 @@ std::vector<std::string> recommender_serv::get_all_rows() {
 float recommender_serv::calc_similarity(const datum& l, const datum& r) {
   check_set_config();
 
-  fv_converter::datum d0, d1;
-  convert<datum, fv_converter::datum>(l, d0);
-  convert<datum, fv_converter::datum>(r, d1);
+  core::fv_converter::datum d0, d1;
+  convert<datum, core::fv_converter::datum>(l, d0);
+  convert<datum, core::fv_converter::datum>(r, d1);
 
   return recommender_->calc_similality(d0, d1);
 }
@@ -219,8 +218,8 @@ float recommender_serv::calc_similarity(const datum& l, const datum& r) {
 float recommender_serv::calc_l2norm(const datum& q) {
   check_set_config();
 
-  fv_converter::datum d0;
-  convert<datum, fv_converter::datum>(q, d0);
+  core::fv_converter::datum d0;
+  convert<datum, core::fv_converter::datum>(q, d0);
 
   return recommender_->calc_l2norm(d0);
 }
