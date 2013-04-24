@@ -30,6 +30,7 @@ def build(bld):
       )
 
   tests = [
+    'mixable_test',
     'server_util_test',
     ]
 
