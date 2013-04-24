@@ -6,6 +6,7 @@
 #include <vector>
 #include <utility>
 
+#include "common/shared_ptr.hpp"
 #include "../framework.hpp"
 #include "classifier_server.hpp"
 #include "classifier_serv.hpp"
@@ -15,9 +16,10 @@ namespace server {
 
 class classifier_impl_ : public classifier<classifier_impl_> {
  public:
-  explicit classifier_impl_(const server::framework::server_argv& a):
+  explicit classifier_impl_(const jubatus::server::framework::server_argv& a):
     classifier<classifier_impl_>(a.timeout),
-    p_(new server::framework::server_helper<classifier_serv>(a, false)) {
+    p_(new jubatus::server::framework::server_helper<classifier_serv>(a,
+         false)) {
   }
   std::string get_config(std::string name) {
     JRLOCK__(p_);
@@ -60,7 +62,7 @@ class classifier_impl_ : public classifier<classifier_impl_> {
   core::common::cshared_ptr<classifier_serv> get_p() { return p_->server(); }
 
  private:
-  core::common::cshared_ptr<server::framework::server_helper<classifier_serv> > p_;
+  core::common::cshared_ptr<jubatus::server::framework::server_helper<classifier_serv> > p_;
 };
 
 }  // namespace server
@@ -68,6 +70,6 @@ class classifier_impl_ : public classifier<classifier_impl_> {
 
 int main(int argc, char* argv[]) {
   return
-      jubatus::server::framework::run_server<jubatus::server::classifier_impl_>
+    jubatus::server::framework::run_server<jubatus::server::classifier_impl_>
       (argc, argv, "classifier");
 }

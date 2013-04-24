@@ -6,6 +6,7 @@
 #include <vector>
 #include <utility>
 
+#include "common/shared_ptr.hpp"
 #include "../framework.hpp"
 #include "stat_server.hpp"
 #include "stat_serv.hpp"
@@ -15,9 +16,9 @@ namespace server {
 
 class stat_impl_ : public stat<stat_impl_> {
  public:
-  explicit stat_impl_(const jubatus::framework::server_argv& a):
+  explicit stat_impl_(const jubatus::server::framework::server_argv& a):
     stat<stat_impl_>(a.timeout),
-    p_(new jubatus::framework::server_helper<stat_serv>(a, true)) {
+    p_(new jubatus::server::framework::server_helper<stat_serv>(a, true)) {
   }
   std::string get_config(std::string name) {
     JRLOCK__(p_);
@@ -81,10 +82,10 @@ class stat_impl_ : public stat<stat_impl_> {
     return p_->get_status();
   }
   int run() { return p_->start(*this); }
-  common::cshared_ptr<stat_serv> get_p() { return p_->server(); }
+  core::common::cshared_ptr<stat_serv> get_p() { return p_->server(); }
 
  private:
-  common::cshared_ptr<jubatus::framework::server_helper<stat_serv> > p_;
+  core::common::cshared_ptr<jubatus::server::framework::server_helper<stat_serv> > p_;
 };
 
 }  // namespace server
@@ -92,6 +93,6 @@ class stat_impl_ : public stat<stat_impl_> {
 
 int main(int argc, char* argv[]) {
   return
-    jubatus::framework::run_server<jubatus::server::stat_impl_>
+    jubatus::server::framework::run_server<jubatus::server::stat_impl_>
       (argc, argv, "stat");
 }

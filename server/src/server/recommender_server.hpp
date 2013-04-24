@@ -17,7 +17,7 @@ namespace jubatus {
 namespace server {
 
 template <class Impl>
-class recommender : public jubatus::common::mprpc::rpc_server {
+class recommender : public jubatus::server::common::mprpc::rpc_server {
  public:
   explicit recommender(double timeout_sec) : rpc_server(timeout_sec) {
     Impl* impl = static_cast<Impl*>(this);

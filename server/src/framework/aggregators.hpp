@@ -21,6 +21,7 @@
 #include <vector>
 
 namespace jubatus {
+namespace server {
 namespace framework {
 
 template<typename K, typename V>
@@ -63,6 +64,7 @@ bool all_and(bool l, bool r) {
 }
 
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_SERVER_FRAMEWORK_AGGREGATORS_HPP_

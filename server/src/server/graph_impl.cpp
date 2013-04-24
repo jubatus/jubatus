@@ -6,6 +6,7 @@
 #include <vector>
 #include <utility>
 
+#include "common/shared_ptr.hpp"
 #include "../framework.hpp"
 #include "graph_server.hpp"
 #include "graph_serv.hpp"
@@ -15,9 +16,9 @@ namespace server {
 
 class graph_impl_ : public graph<graph_impl_> {
  public:
-  explicit graph_impl_(const jubatus::framework::server_argv& a):
+  explicit graph_impl_(const jubatus::server::framework::server_argv& a):
     graph<graph_impl_>(a.timeout),
-    p_(new jubatus::framework::server_helper<graph_serv>(a, true)) {
+    p_(new jubatus::server::framework::server_helper<graph_serv>(a, true)) {
   }
   std::string get_config(std::string name) {
     JRLOCK__(p_);
@@ -139,10 +140,10 @@ class graph_impl_ : public graph<graph_impl_> {
     return get_p()->create_edge_here(edge_id, e);
   }
   int run() { return p_->start(*this); }
-  common::cshared_ptr<graph_serv> get_p() { return p_->server(); }
+  core::common::cshared_ptr<graph_serv> get_p() { return p_->server(); }
 
  private:
-  common::cshared_ptr<jubatus::framework::server_helper<graph_serv> > p_;
+  core::common::cshared_ptr<jubatus::server::framework::server_helper<graph_serv> > p_;
 };
 
 }  // namespace server
@@ -150,6 +151,6 @@ class graph_impl_ : public graph<graph_impl_> {
 
 int main(int argc, char* argv[]) {
   return
-    jubatus::framework::run_server<jubatus::server::graph_impl_>
+    jubatus::server::framework::run_server<jubatus::server::graph_impl_>
       (argc, argv, "graph");
 }

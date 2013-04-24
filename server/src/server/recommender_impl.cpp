@@ -6,6 +6,7 @@
 #include <vector>
 #include <utility>
 
+#include "common/shared_ptr.hpp"
 #include "../framework.hpp"
 #include "recommender_server.hpp"
 #include "recommender_serv.hpp"
@@ -15,9 +16,10 @@ namespace server {
 
 class recommender_impl_ : public recommender<recommender_impl_> {
  public:
-  explicit recommender_impl_(const jubatus::framework::server_argv& a):
+  explicit recommender_impl_(const jubatus::server::framework::server_argv& a):
     recommender<recommender_impl_>(a.timeout),
-    p_(new jubatus::framework::server_helper<recommender_serv>(a, true)) {
+    p_(new jubatus::server::framework::server_helper<recommender_serv>(a,
+         true)) {
   }
   std::string get_config(std::string name) {
     JRLOCK__(p_);
@@ -97,10 +99,10 @@ class recommender_impl_ : public recommender<recommender_impl_> {
     return p_->get_status();
   }
   int run() { return p_->start(*this); }
-  common::cshared_ptr<recommender_serv> get_p() { return p_->server(); }
+  core::common::cshared_ptr<recommender_serv> get_p() { return p_->server(); }
 
  private:
-  common::cshared_ptr<jubatus::framework::server_helper<recommender_serv> > p_;
+  core::common::cshared_ptr<jubatus::server::framework::server_helper<recommender_serv> > p_;
 };
 
 }  // namespace server
@@ -108,6 +110,6 @@ class recommender_impl_ : public recommender<recommender_impl_> {
 
 int main(int argc, char* argv[]) {
   return
-    jubatus::framework::run_server<jubatus::server::recommender_impl_>
+    jubatus::server::framework::run_server<jubatus::server::recommender_impl_>
       (argc, argv, "recommender");
 }

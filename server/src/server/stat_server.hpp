@@ -17,7 +17,7 @@ namespace jubatus {
 namespace server {
 
 template <class Impl>
-class stat : public jubatus::common::mprpc::rpc_server {
+class stat : public jubatus::server::common::mprpc::rpc_server {
  public:
   explicit stat(double timeout_sec) : rpc_server(timeout_sec) {
     Impl* impl = static_cast<Impl*>(this);

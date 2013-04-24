@@ -17,7 +17,7 @@ namespace jubatus {
 namespace server {
 
 template <class Impl>
-class regression : public jubatus::common::mprpc::rpc_server {
+class regression : public jubatus::server::common::mprpc::rpc_server {
  public:
   explicit regression(double timeout_sec) : rpc_server(timeout_sec) {
     Impl* impl = static_cast<Impl*>(this);

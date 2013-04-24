@@ -17,7 +17,7 @@ namespace jubatus {
 namespace server {
 
 template <class Impl>
-class graph : public jubatus::common::mprpc::rpc_server {
+class graph : public jubatus::server::common::mprpc::rpc_server {
  public:
   explicit graph(double timeout_sec) : rpc_server(timeout_sec) {
     Impl* impl = static_cast<Impl*>(this);
