@@ -49,14 +49,14 @@ def build(bld):
       install_path = bld.env.JUBATUS_PLUGIN_DIR,
       use = 'MECAB jubaconverter core_headers',
       )
-    make_test(bld, 'mecab_splitter', 'mecab_splitter_test.cpp')
+    make_test(bld, 'PFICOMMON mecab_splitter', 'mecab_splitter_test.cpp')
 
   if bld.env.HAVE_UX:
     bld.shlib(
       source = 'ux_splitter.cpp',
       target = 'ux_splitter',
       install_path = bld.env.JUBATUS_PLUGIN_DIR,
-      use = 'UX jubaconverter core_headers',
+      use = 'UX LIBGLOG jubaconverter core_headers',
       )
     make_test(bld, 'ux_splitter', 'ux_splitter_test.cpp')
 
