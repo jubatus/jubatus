@@ -21,6 +21,7 @@
 using std::string;
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 TEST(cht, make_hash) {
@@ -32,4 +33,5 @@ TEST(cht, make_hash) {
 }
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus

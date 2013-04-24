@@ -37,13 +37,8 @@ def build(bld):
     )
 
   test_src = [
-    #'exception_test.cpp',
-    #'key_manager_test.cpp',
-    #'util_test.cpp',
     'network_test.cpp',
-    #'vector_util_test.cpp',
     'global_id_generator_test.cpp',
-    #'jsonconfig_test.cpp',
     ]
 
   if bld.env.HAVE_ZOOKEEPER_H:
@@ -57,7 +52,7 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'jubacommon'
+      use = ['jubacommon', 'jubaserv_common']
       )
   for s in test_src:
     make_test(s)

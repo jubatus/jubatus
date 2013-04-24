@@ -25,6 +25,7 @@ using std::endl;
 using std::string;
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 TEST(common, get_network_address) {
@@ -58,4 +59,5 @@ TEST(common, get_default_v4_address) {
 }
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus

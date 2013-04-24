@@ -21,6 +21,7 @@
 using std::string;
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 TEST(util, build_loc_str) {
@@ -55,4 +56,5 @@ TEST(util, revert) {
 }
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
