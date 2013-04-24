@@ -30,14 +30,14 @@
 #include "../common/global_id_generator_zk.hpp"
 #include "../common/membership.hpp"
 #endif
-#include "../common/util.hpp"
-#include "../common/vector_util.hpp"
-#include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
-#include "../fv_converter/datum.hpp"
-#include "../fv_converter/datum_to_fv_converter.hpp"
-#include "../fv_converter/converter_config.hpp"
-#include "../anomaly/anomaly_factory.hpp"
+#include "common/util.hpp"
+#include "common/vector_util.hpp"
+#include "common/jsonconfig.hpp"
+#include "fv_converter/datum.hpp"
+#include "fv_converter/datum_to_fv_converter.hpp"
+#include "fv_converter/converter_config.hpp"
+#include "anomaly/anomaly_factory.hpp"
 #include "anomaly_client.hpp"
 
 using std::string;
@@ -49,11 +49,11 @@ using std::vector;
 using std::pair;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
-using jubatus::common::cshared_ptr;
-using jubatus::common::lock_service;
-using jubatus::framework::convert;
-using jubatus::framework::server_argv;
-using jubatus::framework::mixer::create_mixer;
+using jubatus::core::common::cshared_ptr;
+using jubatus::server::common::lock_service;
+using jubatus::server::framework::convert;
+using jubatus::server::framework::server_argv;
+using jubatus::server::framework::mixer::create_mixer;
 
 namespace jubatus {
 namespace server {
@@ -64,7 +64,7 @@ struct anomaly_serv_config {
   std::string method;
   // TODO(oda): we should use optional<jsonconfig::config> instead of
   //            jsonconfig::config ?
-  jsonconfig::config parameter;
+  core::jsonconfig::config parameter;
   pfi::text::json::json converter;
 
   template<typename Ar>
@@ -110,9 +110,9 @@ void anomaly_serv::get_status(status_t& status) const {
 }
 
 bool anomaly_serv::set_config(const std::string& config) {
-  jsonconfig::config conf_root(lexical_cast<json>(config));
+  core::jsonconfig::config conf_root(lexical_cast<json>(config));
   anomaly_serv_config conf =
-      jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
+      core::jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
 
   config_ = config;
 
@@ -127,11 +127,11 @@ bool anomaly_serv::set_config(const std::string& config) {
 #endif
 
   anomaly_.reset(
-      new driver::anomaly(
-          anomaly::anomaly_factory::create_anomaly(
+      new core::driver::anomaly(
+          core::anomaly::anomaly_factory::create_anomaly(
               conf.method, conf.parameter),
-          mixer_,
-          fv_converter::make_fv_converter(conf.converter)));
+          core::fv_converter::make_fv_converter(conf.converter)));
+  mixer_->set_mixable_holder( anomaly_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
   return true;
@@ -159,7 +159,7 @@ pair<string, float> anomaly_serv::add(const datum& d) {
 #ifdef HAVE_ZOOKEEPER_H
   if (argv().is_standalone()) {
 #endif
-    fv_converter::datum data;
+    core::fv_converter::datum data;
     convert(d, data);
     return anomaly_->add(id_str, data);
 #ifdef HAVE_ZOOKEEPER_H
@@ -197,7 +197,7 @@ pair<string, float> anomaly_serv::add_zk(const string&id_str, const datum& d) {
 
 float anomaly_serv::update(const string& id, const datum& d) {
   check_set_config();
-  fv_converter::datum data;
+  core::fv_converter::datum data;
   convert(d, data);
 
   float score = anomaly_->update(id, data);
@@ -214,7 +214,7 @@ bool anomaly_serv::clear() {
 
 float anomaly_serv::calc_score(const datum& d) const {
   check_set_config();
-  fv_converter::datum data;
+  core::fv_converter::datum data;
   convert(d, data);
   return anomaly_->calc_score(data);
 }

@@ -27,6 +27,7 @@
 #include "common/shared_ptr.hpp"
 #include "driver/anomaly.hpp"
 #include "../common/lock_service.hpp"
+#include "../framework/server_base.hpp"
 
 namespace jubatus {
 namespace server {
@@ -35,14 +36,14 @@ class anomaly_serv : public framework::server_base {
  public:
   anomaly_serv(
       const framework::server_argv& a,
-      const common::cshared_ptr<common::lock_service>& zk);
+      const core::common::cshared_ptr<common::lock_service>& zk);
   virtual ~anomaly_serv();
 
   framework::mixer::mixer* get_mixer() const {
-    return anomaly_->get_mixer();
+    return mixer_.get();
   }
 
-  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  pfi::lang::shared_ptr<core::framework::mixable_holder> get_mixable_holder() const {
     return anomaly_->get_mixable_holder();
   }
 
@@ -78,11 +79,11 @@ class anomaly_serv : public framework::server_base {
       const datum& d);
 
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<driver::anomaly> anomaly_;
+  pfi::lang::shared_ptr<core::driver::anomaly> anomaly_;
   std::string config_;
 
-  common::cshared_ptr<common::lock_service> zk_;
-  pfi::lang::shared_ptr<common::global_id_generator_base> idgen_;
+  core::common::cshared_ptr<common::lock_service> zk_;
+  pfi::lang::shared_ptr<core::common::global_id_generator_base> idgen_;
 };
 
 }  // namespace server
