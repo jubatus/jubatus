@@ -145,7 +145,7 @@ def cpplint(ctx):
 
 def regenerate(ctx):
   import os
-  server_node = ctx.path.find_node('src/server')
+  server_node = ctx.path.find_node('server/src/server')
   jenerator_node = ctx.path.find_node('tools/jenerator/src/jenerator')
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name
