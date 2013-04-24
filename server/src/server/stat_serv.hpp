@@ -21,9 +21,9 @@
 #include <string>
 #include <utility>
 
+#include "driver/stat.hpp"
 #include "../framework/server_base.hpp"
 #include "../framework/mixer/mixer.hpp"
-#include "../driver/stat.hpp"
 
 namespace jubatus {
 namespace server {
@@ -32,14 +32,14 @@ class stat_serv : public framework::server_base {
  public:
   stat_serv(
       const framework::server_argv&,
-      const common::cshared_ptr<common::lock_service>& zk);
+      const core::common::cshared_ptr<common::lock_service>& zk);
   virtual ~stat_serv();
 
   framework::mixer::mixer* get_mixer() const {
-    return stat_->get_mixer();
+    return mixer_.get();
   }
 
-  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  pfi::lang::shared_ptr<core::framework::mixable_holder> get_mixable_holder() const {
     return stat_->get_mixable_holder();
   }
 
@@ -59,7 +59,7 @@ class stat_serv : public framework::server_base {
 
  private:
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<driver::stat> stat_;
+  pfi::lang::shared_ptr<core::driver::stat> stat_;
   std::string config_;
 };
 

@@ -21,8 +21,8 @@
 
 #include <pficommon/text/json.h>
 
-#include "../common/shared_ptr.hpp"
-#include "../common/jsonconfig.hpp"
+#include "common/shared_ptr.hpp"
+#include "common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
 using std::string;
@@ -30,10 +30,10 @@ using std::make_pair;
 using pfi::text::json::json;
 using pfi::lang::lexical_cast;
 
-using jubatus::common::cshared_ptr;
-using jubatus::common::lock_service;
-using jubatus::framework::server_argv;
-using jubatus::framework::mixer::create_mixer;
+using jubatus::core::common::cshared_ptr;
+using jubatus::server::common::lock_service;
+using jubatus::server::framework::server_argv;
+using jubatus::server::framework::mixer::create_mixer;
 
 namespace jubatus {
 namespace server {
@@ -60,17 +60,16 @@ void stat_serv::get_status(status_t& status) const {
 }
 
 bool stat_serv::set_config(const string& config) {
-  jsonconfig::config conf_root(lexical_cast<json>(config));
+  core::jsonconfig::config conf_root(lexical_cast<json>(config));
   stat_serv_config conf =
-      jsonconfig::config_cast_check<stat_serv_config>(conf_root);
+      core::jsonconfig::config_cast_check<stat_serv_config>(conf_root);
 
   config_ = config;
   stat_.reset(
-      new driver::stat(
-          argv().is_standalone() ? new stat::stat(conf.window_size)
-                                 : new stat::mixable_stat(conf.window_size),
-          mixer_));
-
+      new core::driver::stat(
+          argv().is_standalone() ? new core::stat::stat(conf.window_size)
+          : new core::stat::mixable_stat(conf.window_size)));
+  
   LOG(INFO) << "config loaded: " << config;
   return true;
 }
