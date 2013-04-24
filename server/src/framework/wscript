@@ -35,6 +35,5 @@ def build(bld):
       'server_base.hpp',
       'server_helper.hpp',
       'server_util.hpp',
-      'mixable.hpp',
       'aggregators.hpp'
       ])
