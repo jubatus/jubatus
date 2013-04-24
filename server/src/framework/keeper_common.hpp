@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_FRAMEWORK_KEEPER_COMMON_HPP_
-#define JUBATUS_FRAMEWORK_KEEPER_COMMON_HPP_
+#ifndef JUBATUS_SERVER_FRAMEWORK_KEEPER_COMMON_HPP_
+#define JUBATUS_SERVER_FRAMEWORK_KEEPER_COMMON_HPP_
 
 #include <string>
 #include <utility>
@@ -69,4 +69,4 @@ class keeper_common {
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_FRAMEWORK_KEEPER_COMMON_HPP_
+#endif  // JUBATUS_SERVER_FRAMEWORK_KEEPER_COMMON_HPP_
