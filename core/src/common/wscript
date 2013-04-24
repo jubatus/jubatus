@@ -27,9 +27,6 @@ def build(bld):
   src = 'exception.cpp key_manager.cpp vector_util.cpp util.cpp'
   src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
 
-  #if bld.env.HAVE_ZOOKEEPER_H:
-  #  src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp global_id_generator_zk.cpp'
-
   bld.shlib(
     source = src,
     target = 'jubacommon',
@@ -41,17 +38,10 @@ def build(bld):
     'exception_test.cpp',
     'key_manager_test.cpp',
     'util_test.cpp',
-   # 'network_test.cpp',
     'vector_util_test.cpp',
-   # 'global_id_generator_test.cpp',
      'jsonconfig_test.cpp',
     ]
 
-  #if bld.env.HAVE_ZOOKEEPER_H:
-  #  test_src += ['membership_test.cpp', 'cht_test.cpp']
-  #  if bld.env.INTEGRATION_TEST:
-  #    test_src += ['zk_test.cpp', 'cached_zk_test.cpp', 'config_test.cpp']
-    
   def make_test(s):
     bld.program(
       features = 'gtest',
@@ -64,23 +54,17 @@ def build(bld):
     make_test(s)
 
   bld.install_files('${PREFIX}/include/jubatus/common/', [
-    'cht.hpp',
-    'config.hpp',
-    'exception.hpp',
-    'exception_info.hpp',
-    'global_id_generator_base.hpp',
-    'global_id_generator_standalone.hpp',
-    'global_id_generator_zk.hpp',
-    'hash.hpp',
-    'jsonconfig.hpp',
-    'key_manager.hpp',
-    'lock_service.hpp',
-    'membership.hpp',
-    'network.hpp',
-    'shared_ptr.hpp',
-    'type.hpp',
-    'unordered_map.hpp',
-    'util.hpp',
-    'vector_util.hpp',
-    ])
+      'byte_buffer.hpp',
+      'exception.hpp',
+      'exception_info.hpp',
+      'global_id_generator_base.hpp',
+      'hash.hpp',
+      'jsonconfig.hpp',
+      'key_manager.hpp',
+      'shared_ptr.hpp',
+      'type.hpp',
+      'unordered_map.hpp',
+      'util.hpp',
+      'vector_util.hpp',
+      ])
   bld.recurse(subdirs)

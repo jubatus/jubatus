@@ -63,23 +63,15 @@ def build(bld):
     make_test(s)
 
   bld.install_files('${PREFIX}/include/jubatus/common/', [
-    'cht.hpp',
-    'config.hpp',
-    'exception.hpp',
-    'exception_info.hpp',
-    'global_id_generator_base.hpp',
-    'global_id_generator_standalone.hpp',
-    'global_id_generator_zk.hpp',
-    'hash.hpp',
-    'jsonconfig.hpp',
-    'key_manager.hpp',
-    'lock_service.hpp',
-    'membership.hpp',
-    'network.hpp',
-    'shared_ptr.hpp',
-    'type.hpp',
-    'unordered_map.hpp',
-    'util.hpp',
-    'vector_util.hpp',
-    ])
+      'cached_zk.hpp',
+      'cht.hpp',
+      'config.hpp',
+      'global_id_generator_standalone.hpp',
+      'global_id_generator_zk.hpp',
+      'lock_service.hpp',
+      'membership.hpp',
+      'network.hpp',
+      'portable_mixer.hpp',
+      'zk.hpp',
+      ])
   bld.recurse(subdirs)

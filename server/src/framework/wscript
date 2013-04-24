@@ -15,9 +15,9 @@ def build(bld):
 
   bld.shlib(
     source = framework_source,
-    target = 'jubatus_framework',
+    target = 'jubaserv_framework',
     includes = '.',
-    use = 'PFICOMMON jubacommon MSGPACK JUBATUS_MPIO JUBATUS_MSGPACK_RPC MSGPACK LIBGLOG jubacommon_mprpc jubaconverter jubamixer core_headers'
+    use = 'PFICOMMON jubacommon MSGPACK JUBATUS_MPIO JUBATUS_MSGPACK_RPC MSGPACK LIBGLOG jubacommon_mprpc jubaconverter jubamixer jubaserv_common core_headers'
     )
 
   def make_test(t):

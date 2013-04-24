@@ -17,8 +17,8 @@ namespace jubatus {
 
 int run_keeper(int argc, char* argv[]) {
   try {
-    jubatus::framework::keeper k(
-        jubatus::framework::keeper_argv(argc, argv, "classifier"));
+    jubatus::server::framework::keeper k(
+        jubatus::server::framework::keeper_argv(argc, argv, "classifier"));
     k.register_async_random<std::string>("get_config");
     k.register_async_random<int32_t, std::vector<std::pair<std::string,
          datum> > >("train");
