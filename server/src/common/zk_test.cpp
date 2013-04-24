@@ -22,16 +22,16 @@
 
 using std::string;
 using std::vector;
-using jubatus::common::lock_service;
-using jubatus::common::ACTOR_BASE_PATH;
-using jubatus::common::JUBATUS_BASE_PATH;
+using jubatus::server::common::lock_service;
+using jubatus::server::common::ACTOR_BASE_PATH;
+using jubatus::server::common::JUBATUS_BASE_PATH;
 
 class zk_trivial : public testing::Test {
  protected:
   void SetUp() {
     zk_ = pfi::lang::shared_ptr<lock_service>(
-        jubatus::common::create_lock_service("zk", "localhost:2181", 1024,
-                                             "test.log"));
+        jubatus::server::common::create_lock_service("zk", "localhost:2181", 1024,
+                                                     "test.log"));
 
     root_path = "/jubatus_zk_test_root";
     engine_name = "jubatus_zk_test";
@@ -138,8 +138,8 @@ TEST_F(zk_trivial, create_id) {
 // TODO(kashihara): test lock_service_mutex
 
 TEST_F(zk_trivial, trivial_with_membershp) {
-  using jubatus::common::build_actor_path;
-  using jubatus::common::build_loc_str;
+  using jubatus::server::common::build_actor_path;
+  using jubatus::server::common::build_loc_str;
 
   string name_, path;
   string name1_, path1;

@@ -15,10 +15,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
-#include "global_id_generator_base.hpp"
 #include "global_id_generator_standalone.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 TEST(generate, standalone) {
@@ -31,4 +31,5 @@ TEST(generate, standalone) {
 // TODO(oda): test with idgen_zk
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus

@@ -21,6 +21,7 @@
 #include "../common/membership.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 std::string path, path1;
@@ -28,10 +29,10 @@ std::string name_, name1_;
 
 class czk_test : public ::testing::Test {
  protected:
-  pfi::lang::shared_ptr<jubatus::common::lock_service> zk_;
+  pfi::lang::shared_ptr<jubatus::server::common::lock_service> zk_;
 
   czk_test() {
-    zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>(
+    zk_ = pfi::lang::shared_ptr<jubatus::server::common::lock_service>(
         common::create_lock_service("zk", "localhost:2181", 1024, "test.log"));
 
     std::string engine_name, engine_root;
@@ -60,8 +61,8 @@ class czk_test : public ::testing::Test {
 };
 
 TEST(czk, cached_zk_trivial) {
-  pfi::lang::shared_ptr<jubatus::common::lock_service> czk_;
-  czk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>(
+  pfi::lang::shared_ptr<jubatus::server::common::lock_service> czk_;
+  czk_ = pfi::lang::shared_ptr<jubatus::server::common::lock_service>(
     common::create_lock_service("cached_zk", "localhost:2181", 1024,
     "cached_test.log"));
 
@@ -81,5 +82,6 @@ TEST(czk, cached_zk_trivial) {
 }
 
 }  // namespace jubatus
+}  // namespace server
 }  // namespace common
 

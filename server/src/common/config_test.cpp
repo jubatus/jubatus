@@ -19,7 +19,7 @@
 #include <string>
 #include <gtest/gtest.h>
 #include "config.hpp"
-#include "exception.hpp"
+#include "../../../core/src/common/exception.hpp"
 
 using std::istringstream;
 using std::string;
@@ -27,13 +27,13 @@ using std::string;
 class config_trivial : public testing::Test {
  protected:
   void SetUp() {
-    zk_ = pfi::lang::shared_ptr<jubatus::common::lock_service>(
-        jubatus::common::create_lock_service("zk", "localhost:2181", 10,
-                                             "/dev/null"));
+    zk_ = pfi::lang::shared_ptr<jubatus::server::common::lock_service>(
+      jubatus::server::common::create_lock_service("zk", "localhost:2181", 10,
+                                                   "/dev/null"));
 
     engine_ = "engine-name";
     name_ = "test-name";
-    jubatus::common::build_config_path(path_, engine_, name_);
+    jubatus::server::common::build_config_path(path_, engine_, name_);
   }
 
   void TearDown() {
@@ -49,15 +49,15 @@ class config_trivial : public testing::Test {
   string path_;
   string engine_;
   string name_;
-  pfi::lang::shared_ptr<jubatus::common::lock_service> zk_;
+  pfi::lang::shared_ptr<jubatus::server::common::lock_service> zk_;
 };
 
 TEST_F(config_trivial, config_tozk) {
   istringstream config_str("{\"test\":\"config\"}");
   std::string config = config_str.str();
 
-  jubatus::common::prepare_jubatus(*zk_, engine_, name_);
-  jubatus::common::config_tozk(*zk_, engine_, name_, config);
+  jubatus::server::common::prepare_jubatus(*zk_, engine_, name_);
+  jubatus::server::common::config_tozk(*zk_, engine_, name_, config);
 
   ASSERT_EQ(true, zk_->exists(path_));
 
@@ -70,11 +70,11 @@ TEST_F(config_trivial, config_fromzk) {
   istringstream config_str("{\"test\":\"config\"}");
   std::string config = config_str.str();
 
-  jubatus::common::prepare_jubatus(*zk_, engine_, name_);
+  jubatus::server::common::prepare_jubatus(*zk_, engine_, name_);
   zk_->create(path_, config);
 
   std::string dat;
-  jubatus::common::config_fromzk(*zk_, engine_, name_, dat);
+  jubatus::server::common::config_fromzk(*zk_, engine_, name_, dat);
 
   ASSERT_EQ("{\"test\":\"config\"}", dat);
 }
@@ -83,11 +83,11 @@ TEST_F(config_trivial, remove_config_fromzk) {
   istringstream config_str("{\"test\":\"config\"}");
   std::string config = config_str.str();
 
-  jubatus::common::prepare_jubatus(*zk_, engine_, name_);
+  jubatus::server::common::prepare_jubatus(*zk_, engine_, name_);
   zk_->create(path_, config);
 
   std::string dat;
-  jubatus::common::remove_config_fromzk(*zk_, engine_, name_);
+  jubatus::server::common::remove_config_fromzk(*zk_, engine_, name_);
 
   ASSERT_EQ(true, !zk_->exists(path_));
 }
@@ -97,7 +97,7 @@ TEST_F(config_trivial, invalid_config) {
   std::string config = config_str.str();
 
   EXPECT_THROW(
-      jubatus::common::config_tozk(*zk_, engine_, name_, config),
+      jubatus::server::common::config_tozk(*zk_, engine_, name_, config),
       jubatus::exception::runtime_error);
 }
 
@@ -105,6 +105,6 @@ TEST_F(config_trivial, empty_config) {
   std::string config = "";
 
   EXPECT_THROW(
-      jubatus::common::config_tozk(*zk_, engine_, name_, config),
+      jubatus::server::common::config_tozk(*zk_, engine_, name_, config),
       jubatus::exception::runtime_error);
 }
