@@ -36,10 +36,10 @@ using std::string;
 using std::vector;
 using pfi::text::json::to_json;
 using pfi::lang::lexical_cast;
-using jubatus::core::src::storage::local_storage;
+using jubatus::core::storage::local_storage;
 
 namespace jubatus {
-namespace core{
+namespace core {
 namespace classifier {
 
 template<typename T>
@@ -181,5 +181,5 @@ TEST(classifier_factory, exception) {
 }
 
 }  // namespace classifier
-}  // namespace core 
+}  // namespace core
 }  // namespace jubatus
