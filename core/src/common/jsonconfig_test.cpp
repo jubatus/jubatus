@@ -39,6 +39,7 @@ using pfi::text::json::json_object;
 using pfi::text::json::json_string;
 
 namespace jubatus {
+namespace core {
 namespace jsonconfig {
 
 TEST(jsonconfig, empty) {
@@ -482,4 +483,5 @@ TEST(jsonconfig_cast, cast_check_error) {
 }
 
 }  // namespace jsonconfig
+}  // namespace core
 }  // namespace jubatus
