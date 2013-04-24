@@ -22,13 +22,13 @@
 
 #include "anomaly_client.hpp"
 #include "test_util.hpp"
-#include "../anomaly/lof_storage.hpp"
-#include "../recommender/euclid_lsh.hpp"
+#include "../../../core/src/anomaly/lof_storage.hpp"
+#include "../../../core/src/recommender/euclid_lsh.hpp"
 
 using std::string;
 using std::make_pair;
 using jubatus::datum;
-using jubatus::recommender::euclid_lsh;
+using jubatus::core::recommender::euclid_lsh;
 using pfi::data::optional;
 
 static const int PORT = 65436;
@@ -82,8 +82,8 @@ std::string make_simple_config(const string& method) {
   anomaly_config["parameter"] = to_json(euclid_conf);
   js["parameter"] = anomaly_config;
 
-  jubatus::fv_converter::converter_config config;
-  jubatus::fv_converter::num_rule rule = { "*", optional<string>(), "num" };
+  jubatus::core::fv_converter::converter_config config;
+  jubatus::core::fv_converter::num_rule rule = { "*", optional<string>(), "num" };
   config.num_rules.push_back(rule);
   std::stringstream conv;
   conv << config_to_string(config);

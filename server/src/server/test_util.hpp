@@ -29,7 +29,7 @@
 #include <pficommon/lang/cast.h>
 #include <pficommon/text/json.h>
 
-#include "../fv_converter/converter_config.hpp"
+#include "../../../core/src/fv_converter/converter_config.hpp"
 
 using std::string;
 using std::cout;
@@ -61,7 +61,7 @@ pid_t fork_process(
     std::string config = "") {
   string cmd(BUILD_DIR);
   pid_t child;
-  cmd += "/src/server/juba";
+  cmd += "/server/src/server/juba";
   cmd += name;
   child = fork();
   string port_str = pfi::lang::lexical_cast<std::string>(port);
@@ -91,7 +91,7 @@ void kill_process(pid_t child) {
 }
 
 std::string config_to_string(
-    const jubatus::fv_converter::converter_config& config) {
+    const jubatus::core::fv_converter::converter_config& config) {
   std::stringstream ss;
   ss << pfi::text::json::to_json(config);
   return ss.str();
