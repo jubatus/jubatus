@@ -29,13 +29,6 @@ def build(bld):
       use='jubaserv_framework'
       )
 
-  tests = [
-    'server_util_test',
-    ]
-
-  for t in tests:
-    make_test(t)
-
   bld.install_files('${PREFIX}/include/jubatus/framework', [
       'keeper.hpp',
       'keeper_common.hpp',

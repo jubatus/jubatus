@@ -20,8 +20,8 @@
 
 #include <gtest/gtest.h>
 
+#include "framework/mixable.hpp"
 #include "linear_mixer.hpp"
-#include "../mixable.hpp"
 
 
 
@@ -31,9 +31,10 @@ using std::istream;
 using std::ostream;
 using std::stringstream;
 using pfi::lang::shared_ptr;
-using jubatus::common::mprpc::byte_buffer;
+using jubatus::core::common::byte_buffer;
 
 namespace jubatus {
+namespace server {
 namespace framework {
 namespace mixer {
 
@@ -49,8 +50,8 @@ vector<byte_buffer> make_packed_vector(const string& s) {
   return v;
 }
 
-jubatus::common::mprpc::rpc_response_t make_response(const string& s) {
-  jubatus::common::mprpc::rpc_response_t res;
+common::mprpc::rpc_response_t make_response(const string& s) {
+  common::mprpc::rpc_response_t res;
   res.zone = mp::shared_ptr<msgpack::zone>(new msgpack::zone);
   res.response.a3 = msgpack::object(make_packed_vector(s), res.zone.get());
 
@@ -96,7 +97,7 @@ class linear_communication_stub : public linear_communication {
   mutable vector<byte_buffer> mixed_;
 };
 
-struct mixable_string : public mixable<mixable_string, string> {
+struct mixable_string : public core::framework::mixable<mixable_string, string> {
  public:
   string get_diff_impl() const {
     return string();
@@ -120,7 +121,7 @@ TEST(linear_mixer, mix_order) {
   shared_ptr<linear_communication_stub> com(new linear_communication_stub);
   linear_mixer m(com, 1, 1);
 
-  pfi::lang::shared_ptr<mixable_holder> holder(new mixable_holder());
+  pfi::lang::shared_ptr<core::framework::mixable_holder> holder(new core::framework::mixable_holder());
   m.set_mixable_holder(holder);
 
   mixable_string s;
@@ -135,4 +136,5 @@ TEST(linear_mixer, mix_order) {
 
 }  // namespace mixer
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus
