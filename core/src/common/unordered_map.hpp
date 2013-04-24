@@ -53,6 +53,6 @@ inline packer<Stream>& operator<<(
   return o;
 }
 
-}  // namespace jubatus
+}  // namespace msgpack
 
 #endif  // JUBATUS_COMMON_UNORDERED_MAP_HPP_
