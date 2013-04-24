@@ -37,7 +37,7 @@
 #include "weight_manager.hpp"
 #include "without_split.hpp"
 
-using jubatus::common::cshared_ptr;
+using jubatus::core::common::cshared_ptr;
 using pfi::lang::shared_ptr;
 
 namespace jubatus {
