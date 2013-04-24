@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 #include <pficommon/lang/shared_ptr.h>
-#include "../driver/recommender.hpp"
+#include "driver/recommender.hpp"
 #include "recommender_types.hpp"
 
 namespace jubatus {
