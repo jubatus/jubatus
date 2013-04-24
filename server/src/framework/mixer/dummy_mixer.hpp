@@ -14,14 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_FRAMEWORK_MIXER_DUMMY_MIXER_HPP_
-#define JUBATUS_FRAMEWORK_MIXER_DUMMY_MIXER_HPP_
+#ifndef JUBATUS_SERVER_FRAMEWORK_MIXER_DUMMY_MIXER_HPP_
+#define JUBATUS_SERVER_FRAMEWORK_MIXER_DUMMY_MIXER_HPP_
 
 #include <vector>
-#include "../mixable.hpp"
+#include "framework/mixable.hpp"
 #include "mixer.hpp"
 
 namespace jubatus {
+namespace server {
 namespace framework {
 namespace mixer {
 
@@ -29,7 +30,7 @@ class dummy_mixer : public mixer {
  public:
   void register_api(rpc_server_t& server) {
   }
-  void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder>) {
+  void set_mixable_holder(pfi::lang::shared_ptr<core::framework::mixable_holder>) {
   }
 
   void start() {
@@ -46,6 +47,7 @@ class dummy_mixer : public mixer {
 
 }  // namespace mixer
 }  // namespace framework
+}  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_FRAMEWORK_MIXER_DUMMY_MIXER_HPP_
+#endif  // JUBATUS_SERVER_FRAMEWORK_MIXER_DUMMY_MIXER_HPP_

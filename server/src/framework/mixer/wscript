@@ -5,7 +5,7 @@ def configure(conf):
   pass
 
 def build(bld):
-  mixer_framework = 'PFICOMMON MSGPACK LIBGLOG'
+  mixer_framework = 'PFICOMMON MSGPACK LIBGLOG core_headers'
   mixer_source = 'mixer_factory.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
     mixer_framework += ' jubacommon jubaserv_common jubaserv_common_mprpc'
