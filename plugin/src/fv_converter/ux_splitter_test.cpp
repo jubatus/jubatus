@@ -66,10 +66,10 @@ TEST(ux_splitter, create) {
   param["dict_path"] = "unknown_file_name";
   ASSERT_THROW(create(param), converter_exception);
 
-  param["dict_path"] = "../../fv_converter/test_input";
+  param["dict_path"] = "../../../../core/src/fv_converter/test_input";
   ASSERT_THROW(create(param), converter_exception);
 
-  param["dict_path"] = "../../fv_converter/test_input/keywords";
+  param["dict_path"] = "../../../../core/src/fv_converter/test_input/keywords";
   pfi::lang::scoped_ptr<word_splitter> s(create(param));
 
   std::string d("hoge fuga");
