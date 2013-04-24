@@ -24,6 +24,7 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "driver/regression.hpp"
 #include "regression_types.hpp"
+#include "../framework/server_base.hpp"
 
 namespace jubatus {
 namespace server {
@@ -32,14 +33,14 @@ class regression_serv : public framework::server_base {
  public:
   regression_serv(
       const framework::server_argv& a,
-      const common::cshared_ptr<common::lock_service>& zk);
+      const core::common::cshared_ptr<common::lock_service>& zk);
   virtual ~regression_serv();
 
   framework::mixer::mixer* get_mixer() const {
-    return regression_->get_mixer();
+    return mixer_.get();
   }
 
-  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  pfi::lang::shared_ptr<core::framework::mixable_holder> get_mixable_holder() const {
     return regression_->get_mixable_holder();
   }
 
@@ -56,7 +57,7 @@ class regression_serv : public framework::server_base {
 
  private:
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<driver::regression> regression_;
+  pfi::lang::shared_ptr<core::driver::regression> regression_;
   std::string config_;
 };
 
