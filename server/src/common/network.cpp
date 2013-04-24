@@ -34,6 +34,7 @@
 using std::string;
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 namespace {
@@ -165,5 +166,6 @@ string get_default_v4_address(string hostaddr) {
 }
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
 

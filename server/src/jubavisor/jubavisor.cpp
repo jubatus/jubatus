@@ -26,10 +26,10 @@
 #include <pficommon/lang/bind.h>
 
 #include "jubavisor.hpp"
-#include "../common/util.hpp"
-#include "../common/network.hpp"
-#include "../common/exception.hpp"
+#include "common/util.hpp"
+#include "common/exception.hpp"
 #include "../common/membership.hpp"
+#include "../common/network.hpp"
 
 using pfi::concurrent::scoped_lock;
 using pfi::lang::bind;
@@ -75,12 +75,13 @@ jubavisor::jubavisor(
         << jubatus::exception::error_errno(errno));
   }
 
-  zk_->create(jubatus::common::JUBATUS_BASE_PATH, "");
-  zk_->create(jubatus::common::JUBAVISOR_BASE_PATH, "");
-  zk_->create(jubatus::common::ACTOR_BASE_PATH, "");
+  zk_->create(jubatus::server::common::JUBATUS_BASE_PATH, "");
+  zk_->create(jubatus::server::common::JUBAVISOR_BASE_PATH, "");
+  zk_->create(jubatus::server::common::ACTOR_BASE_PATH, "");
 
-  name_ = build_loc_str(common::get_default_v4_address(), port);
-  std::string path = jubatus::common::JUBAVISOR_BASE_PATH + "/" + name_;
+  name_ = 
+      build_loc_str(jubatus::server::common::get_default_v4_address(), port);
+  std::string path = jubatus::server::common::JUBAVISOR_BASE_PATH + "/" + name_;
   zk_->create(path, "", true);
   // TODO(kumagi):
   //  pfi::lang::function<void(int,int,std::string)> f
@@ -94,7 +95,7 @@ jubavisor::jubavisor(
 
   pfi::lang::function<void()> h = bind(&jubavisor::stop_all, this);
   zk_->push_cleanup(h);
-  pfi::lang::function<void()> g = bind(&::exit_wrapper, -1);
+  pfi::lang::function<void()> g = bind(&exit_wrapper, -1);
   zk_->push_cleanup(g);
 
   g_jubavisor = this;

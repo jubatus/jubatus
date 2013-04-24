@@ -24,6 +24,7 @@
 #include <pficommon/lang/shared_ptr.h>
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 class network_address {
@@ -48,6 +49,7 @@ std::string get_default_v4_address(
 // v6 version not implmented yet
 
 }  // namespace common
+}  // namespace network
 }  // namespace jubatus
 
 #endif  // JUBATUS_COMMON_NETWORK_HPP_

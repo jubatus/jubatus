@@ -58,7 +58,7 @@ struct result {
 
 #define JUBATUS_MPRPC_PROC(name, ret_type, param_list)                    \
   namespace _server_impl {                                                \
-  class name : public virtual jubatus::common::mprpc::rpc_server {        \
+  class name : public virtual jubatus::server::common::mprpc::rpc_server { \
   public:                                                                 \
     name() : rpc_server(0) { }                                            \
     void set_##name(const pfi::lang::function< ret_type param_list> &f) { \
@@ -96,21 +96,21 @@ struct result {
   struct base##_server : __VA_ARGS__ {                                  \
   public:                                                               \
     base##_server(double timeout_sec)                                   \
-        : jubatus::common::mprpc::rpc_server(timeout_sec) { }           \
+    : jubatus::server::common::mprpc::rpc_server(timeout_sec) { }       \
     void rpc_listen(uint16_t port) {                                    \
-      jubatus::common::mprpc::rpc_server::listen(port);                 \
+      jubatus::server::common::mprpc::rpc_server::listen(port);         \
     }                                                                   \
     void rpc_start(int nthreads, bool no_hang = false) {                \
-      jubatus::common::mprpc::rpc_server::start(nthreads, no_hang);     \
+      jubatus::server::common::mprpc::rpc_server::start(nthreads, no_hang); \
     }                                                                   \
     void rpc_join() {                                                   \
-      jubatus::common::mprpc::rpc_server::join();                       \
+      jubatus::server::common::mprpc::rpc_server::join();                \
     }                                                                   \
     void rpc_stop() {                                                   \
-      jubatus::common::mprpc::rpc_server::stop();                       \
+      jubatus::server::common::mprpc::rpc_server::stop();               \
     }                                                                   \
     void rpc_close() {                                                  \
-      jubatus::common::mprpc::rpc_server::close();                      \
+      jubatus::server::common::mprpc::rpc_server::close();              \
     }                                                                   \
   };                                                                    \
   }                                                                     \

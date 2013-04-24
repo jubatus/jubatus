@@ -22,11 +22,11 @@
 #include <vector>
 
 #include <pficommon/lang/shared_ptr.h>
-#include "../common/global_id_generator_base.hpp"
-#include "../common/lock_service.hpp"
-#include "../common/shared_ptr.hpp"
-#include "../driver/anomaly.hpp"
 #include "anomaly_types.hpp"
+#include "common/global_id_generator_base.hpp"
+#include "common/shared_ptr.hpp"
+#include "driver/anomaly.hpp"
+#include "../common/lock_service.hpp"
 
 namespace jubatus {
 namespace server {

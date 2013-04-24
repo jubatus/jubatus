@@ -32,8 +32,8 @@
 #include <pficommon/lang/cast.h>
 
 #include "process.hpp"
-#include "../common/util.hpp"
-#include "../common/exception.hpp"
+#include "common/util.hpp"
+#include "common/exception.hpp"
 
 using pfi::lang::lexical_cast;
 

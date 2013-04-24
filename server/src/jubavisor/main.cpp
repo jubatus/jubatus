@@ -24,8 +24,8 @@
 
 #include "jubavisor.hpp"
 #include "../third_party/cmdline/cmdline.h"
-#include "../common/exception.hpp"
-#include "../common/util.hpp"
+#include "common/exception.hpp"
+#include "common/util.hpp"
 
 namespace {
 const std::string PROGNAME = "jubavisor";

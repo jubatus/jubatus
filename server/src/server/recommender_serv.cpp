@@ -23,15 +23,15 @@
 #include <pficommon/text/json.h>
 #include <pficommon/data/optional.h>
 
-#include "../common/util.hpp"
-#include "../common/vector_util.hpp"
-#include "../common/jsonconfig.hpp"
+#include "common/util.hpp"
+#include "common/vector_util.hpp"
+#include "common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
-#include "../fv_converter/datum.hpp"
-#include "../fv_converter/datum_to_fv_converter.hpp"
-#include "../fv_converter/converter_config.hpp"
-#include "../recommender/recommender_factory.hpp"
-#include "../storage/storage_factory.hpp"
+#include "fv_converter/datum.hpp"
+#include "fv_converter/datum_to_fv_converter.hpp"
+#include "fv_converter/converter_config.hpp"
+#include "recommender/recommender_factory.hpp"
+#include "storage/storage_factory.hpp"
 
 using std::string;
 using std::vector;

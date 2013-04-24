@@ -23,6 +23,7 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "driver/recommender.hpp"
 #include "recommender_types.hpp"
+#include "../framework/server_base.hpp"
 
 namespace jubatus {
 namespace server {
@@ -31,7 +32,7 @@ class recommender_serv : public framework::server_base {
  public:
   recommender_serv(
       const framework::server_argv& a,
-      const common::cshared_ptr<common::lock_service>& zk);
+      const core::common::cshared_ptr<common::lock_service>& zk);
   virtual ~recommender_serv();
 
 
@@ -39,7 +40,7 @@ class recommender_serv : public framework::server_base {
     return recommender_->get_mixer();
   }
 
-  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  pfi::lang::shared_ptr<core::framework::mixable_holder> get_mixable_holder() const {
     return recommender_->get_mixable_holder();
   }
 
@@ -67,7 +68,7 @@ class recommender_serv : public framework::server_base {
 
  private:
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<driver::recommender> recommender_;
+  pfi::lang::shared_ptr<core::driver::recommender> recommender_;
   std::string config_;
 
   uint64_t clear_row_cnt_;

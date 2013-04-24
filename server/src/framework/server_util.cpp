@@ -135,7 +135,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
     bind_address = eth = jubatus::util::get_ip(bind_if.c_str());
   } else {
     bind_address = "0.0.0.0";
-    eth = jubatus::common::get_default_v4_address();
+    eth = jubatus::server::common::get_default_v4_address();
   }
 
 #ifdef HAVE_ZOOKEEPER_H
@@ -297,7 +297,7 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
     bind_address = eth = jubatus::util::get_ip(bind_if.c_str());
   } else {
     bind_address = "0.0.0.0";
-    eth = jubatus::common::get_default_v4_address();
+    eth = jubatus::server::common::get_default_v4_address();
   }
 
   if ((!logdir.empty()) && (!jubatus::util::is_writable(logdir.c_str()))) {
