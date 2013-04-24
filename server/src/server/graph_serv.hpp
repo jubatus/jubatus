@@ -22,11 +22,12 @@
 #include <utility>
 #include <vector>
 
-#include "../common/global_id_generator_base.hpp"
-#include "../common/lock_service.hpp"
-#include "../common/shared_ptr.hpp"
-#include "../driver/graph.hpp"
+#include "common/global_id_generator_base.hpp"
+#include "common/shared_ptr.hpp"
+#include "driver/graph.hpp"
 #include "graph_types.hpp"
+#include "../common/lock_service.hpp"
+#include "../framework/server_base.hpp"
 
 namespace jubatus {
 namespace server {
@@ -39,14 +40,14 @@ class graph_serv : public framework::server_base {
  public:
   graph_serv(
       const framework::server_argv& a,
-      const common::cshared_ptr<common::lock_service>& zk);
+      const core::common::cshared_ptr<common::lock_service>& zk);
   virtual ~graph_serv();
 
   framework::mixer::mixer* get_mixer() const {
-    return graph_->get_mixer();
+    return mixer_.get();
   }
 
-  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  pfi::lang::shared_ptr<core::framework::mixable_holder> get_mixable_holder() const {
     return graph_->get_mixable_holder();
   }
 
@@ -103,11 +104,11 @@ class graph_serv : public framework::server_base {
 
 
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<driver::graph> graph_;
+  pfi::lang::shared_ptr<core::driver::graph> graph_;
   std::string config_;
 
-  common::cshared_ptr<common::lock_service> zk_;
-  pfi::lang::shared_ptr<common::global_id_generator_base> idgen_;
+  core::common::cshared_ptr<common::lock_service> zk_;
+  pfi::lang::shared_ptr<core::common::global_id_generator_base> idgen_;
 };
 
 }  // namespace server

@@ -35,14 +35,14 @@
 #include "../common/membership.hpp"
 #include "../common/mprpc/rpc_mclient.hpp"
 #endif
-#include "../common/util.hpp"
-#include "../common/vector_util.hpp"
-#include "../common/jsonconfig.hpp"
 #ifdef HAVE_ZOOKEEPER_H
 #include "../framework/aggregators.hpp"
 #endif
 #include "../framework/mixer/mixer_factory.hpp"
-#include "../graph/graph_factory.hpp"
+#include "common/util.hpp"
+#include "common/vector_util.hpp"
+#include "common/jsonconfig.hpp"
+#include "graph/graph_factory.hpp"
 #include "graph_client.hpp"
 
 using std::string;
@@ -54,11 +54,11 @@ using std::vector;
 using std::pair;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
-using jubatus::common::cshared_ptr;
-using jubatus::common::lock_service;
-using jubatus::framework::convert;
-using jubatus::framework::server_argv;
-using jubatus::framework::mixer::create_mixer;
+using jubatus::core::common::cshared_ptr;
+using jubatus::server::common::lock_service;
+using jubatus::server::framework::convert;
+using jubatus::server::framework::server_argv;
+using jubatus::server::framework::mixer::create_mixer;
 
 using pfi::system::time::clock_time;
 using pfi::system::time::get_clock_time;
@@ -76,7 +76,7 @@ struct graph_serv_config {
   std::string method;
   // TODO(oda): we should use optional<jsonconfig::config> instead of
   //            jsonconfig::config ?
-  jsonconfig::config parameter;
+  core::jsonconfig::config parameter;
 
   template<typename Ar>
   void serialize(Ar& ar) {
@@ -131,9 +131,9 @@ graph_serv::~graph_serv() {
 }
 
 bool graph_serv::set_config(const std::string& config) {
-  jsonconfig::config conf_root(
+  core::jsonconfig::config conf_root(
       pfi::lang::lexical_cast<pfi::text::json::json>(config));
-  graph_serv_config conf = jsonconfig::config_cast_check<graph_serv_config>(
+  graph_serv_config conf = core::jsonconfig::config_cast_check<graph_serv_config>(
       conf_root);
 
   config_ = config;
@@ -142,17 +142,17 @@ bool graph_serv::set_config(const std::string& config) {
   // TODO(oda): we should use optional<jsonconfig::config> instead of
   //            jsonconfig::config ?
 
-  jsonconfig::config param;
+  core::jsonconfig::config param;
   if (conf.parameter) {
-    param = jsonconfig::config(*conf.parameter);
+    param = core::jsonconfig::config(*conf.parameter);
   }
 #endif
 
   graph_.reset(
-      new driver::graph(
-          graph::graph_factory::create_graph(
-              conf.method, conf.parameter),
-          mixer_));
+      new core::driver::graph(
+          core::graph::graph_factory::create_graph(
+              conf.method, conf.parameter)));
+  mixer_->set_mixable_holder( graph_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
   return true;
@@ -200,8 +200,8 @@ std::string graph_serv::create_node() { /* no lock here */
       for (size_t i = 1; i < nodes.size(); ++i) {
         try {
           selective_create_node_(nodes[i], nid_str);
-        } catch (const graph::local_node_exists& e) {  // pass through
-        } catch (const graph::global_node_exists& e) {  // pass through
+        } catch (const core::graph::local_node_exists& e) {  // pass through
+        } catch (const core::graph::global_node_exists& e) {  // pass through
         } catch (const std::runtime_error& e) {  // error !
           LOG(WARNING) << "cannot create " << i << "th replica: "
               << nodes[i].first << ":" << nodes[i].second;
@@ -233,7 +233,7 @@ bool graph_serv::update_node(
 bool graph_serv::remove_node(const std::string& nid_str) {
   check_set_config();
 
-  jubatus::graph::node_id_t nid = n2i(nid_str);
+  core::graph::node_id_t nid = n2i(nid_str);
   graph_->remove_node(nid);
 
 #ifdef HAVE_ZOOKEEPER_H
@@ -259,7 +259,7 @@ bool graph_serv::remove_node(const std::string& nid_str) {
                argv().name,
                nid_str,
                pfi::lang::function<int(int, int)>(
-                   &jubatus::framework::add<int>));
+                   &jubatus::server::framework::add<int>));
       } catch (const common::mprpc::rpc_no_result& e) {  // pass through
         DLOG(INFO) << e.diagnostic_information(true);
       }
@@ -302,8 +302,8 @@ edge_id_t graph_serv::create_edge(const std::string& id, const edge& ei) {
               << nodes[i].first << ":" << nodes[i].second;
           c.create_edge_here(argv().name, eid, ei);
         }
-      } catch (const graph::local_node_exists& e) {  // pass through
-      } catch (const graph::global_node_exists& e) {  // pass through
+      } catch (const core::graph::local_node_exists& e) {  // pass through
+      } catch (const core::graph::global_node_exists& e) {  // pass through
       } catch (const std::runtime_error& e) {  // error !
         LOG(WARNING) << "cannot create " << i << "th replica: "
             << nodes[i].first << ":" << nodes[i].second;
@@ -352,8 +352,8 @@ double graph_serv::get_centrality(
   check_set_config();
 
   if (s == 0) {
-    jubatus::graph::preset_query q0;
-    return graph_->get_centrality(n2i(id), jubatus::graph::EIGENSCORE, q0);
+    core::graph::preset_query q0;
+    return graph_->get_centrality(n2i(id), core::graph::EIGENSCORE, q0);
   } else {
     std::stringstream msg;
     msg << "unknown centrality type: " << s;
@@ -364,9 +364,9 @@ double graph_serv::get_centrality(
 // @random
 std::vector<node_id> graph_serv::get_shortest_path(
     const shortest_path_query& req) const {
-  jubatus::graph::preset_query q;
+  core::graph::preset_query q;
   framework::convert(req.query, q);
-  std::vector<jubatus::graph::node_id_t> ret0 =
+  std::vector<core::graph::node_id_t> ret0 =
       graph_->get_shortest_path(
           n2i(req.source),
           n2i(req.target),
@@ -383,8 +383,8 @@ std::vector<node_id> graph_serv::get_shortest_path(
 bool graph_serv::add_centrality_query(const preset_query& q0) {
   check_set_config();
 
-  jubatus::graph::preset_query q;
-  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(
+  core::graph::preset_query q;
+  framework::convert<jubatus::preset_query, core::graph::preset_query>(
       q0,
       q);
   graph_->add_centrality_query(q);
@@ -396,8 +396,8 @@ bool graph_serv::add_centrality_query(const preset_query& q0) {
 bool graph_serv::add_shortest_path_query(const preset_query& q0) {
   check_set_config();
 
-  jubatus::graph::preset_query q;
-  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(
+  core::graph::preset_query q;
+  framework::convert<jubatus::preset_query, core::graph::preset_query>(
       q0,
       q);
   graph_->add_shortest_path_query(q);
@@ -409,8 +409,8 @@ bool graph_serv::add_shortest_path_query(const preset_query& q0) {
 bool graph_serv::remove_centrality_query(const preset_query& q0) {
   check_set_config();
 
-  jubatus::graph::preset_query q;
-  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(
+  core::graph::preset_query q;
+  framework::convert<jubatus::preset_query, core::graph::preset_query>(
       q0,
       q);
   graph_->remove_centrality_query(q);
@@ -422,8 +422,8 @@ bool graph_serv::remove_centrality_query(const preset_query& q0) {
 bool graph_serv::remove_shortest_path_query(const preset_query& q0) {
   check_set_config();
 
-  jubatus::graph::preset_query q;
-  framework::convert<jubatus::preset_query, jubatus::graph::preset_query>(
+  core::graph::preset_query q;
+  framework::convert<jubatus::preset_query, core::graph::preset_query>(
       q0,
       q);
   graph_->remove_shortest_path_query(q);
@@ -434,9 +434,9 @@ bool graph_serv::remove_shortest_path_query(const preset_query& q0) {
 node graph_serv::get_node(const std::string& nid) const {
   check_set_config();
 
-  jubatus::graph::node_info info = graph_->get_node(n2i(nid));
+  core::graph::node_info info = graph_->get_node(n2i(nid));
   jubatus::node ret;
-  framework::convert<graph::node_info, jubatus::node>(info, ret);
+  framework::convert<core::graph::node_info, jubatus::node>(info, ret);
   return ret;
 }
 // @random
@@ -445,7 +445,7 @@ edge graph_serv::get_edge(
     edge_id_t eid) const {
   check_set_config();
 
-  jubatus::graph::edge_info info = graph_->get_edge(eid);
+  core::graph::edge_info info = graph_->get_edge(eid);
   jubatus::edge ret;
   ret.property = info.p;
   ret.source = i2n(info.src);
