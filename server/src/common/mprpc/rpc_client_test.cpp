@@ -34,9 +34,9 @@
 using pfi::lang::function;
 using pfi::lang::shared_ptr;
 using pfi::concurrent::thread;
-using jubatus::common::mprpc::rpc_result;
-using jubatus::common::mprpc::rpc_error;
-using jubatus::common::mprpc::error_multi_rpc;
+using jubatus::server::common::mprpc::rpc_result;
+using jubatus::server::common::mprpc::rpc_error;
+using jubatus::server::common::mprpc::error_multi_rpc;
 using jubatus::exception::error_info_list_t;
 
 struct strw {
@@ -124,14 +124,14 @@ static const uint16_t kPortEnd = kPortStart + 10;
 
 TEST(rpc_mclient, no_client) {
   std::vector<std::pair<std::string, uint16_t> > hosts;
-  jubatus::common::mprpc::rpc_mclient cli(hosts, 3.0);
+  jubatus::server::common::mprpc::rpc_mclient cli(hosts, 3.0);
 
   // MUST USE with some hosts
   ASSERT_THROW(
       cli.call("test",
                1234,
-               function<bool(bool, bool)>(&jubatus::framework::all_and)),
-      jubatus::common::mprpc::rpc_no_client);
+               function<bool(bool, bool)>(&jubatus::server::framework::all_and)),
+      jubatus::server::common::mprpc::rpc_no_client);
 }
 
 TEST(rpc_mclient, no_result) {
@@ -139,12 +139,12 @@ TEST(rpc_mclient, no_result) {
   hosts.push_back(std::make_pair(std::string("localhost"), kPortStart));
   hosts.push_back(std::make_pair(std::string("localhost"), kPortStart + 1));
 
-  jubatus::common::mprpc::rpc_mclient cli(hosts, 3.0);
+  jubatus::server::common::mprpc::rpc_mclient cli(hosts, 3.0);
   ASSERT_THROW(
       cli.call("test",
                1234,
-               function<bool(bool, bool)>(&jubatus::framework::all_and)),
-      jubatus::common::mprpc::rpc_no_result);
+               function<bool(bool, bool)>(&jubatus::server::framework::all_and)),
+      jubatus::server::common::mprpc::rpc_no_result);
 }
 
 namespace {
@@ -249,14 +249,14 @@ TEST(rpc_mclient, error_multi_rpc) {
 
   std::vector<std::pair<std::string, uint16_t> > hosts;
   hosts.push_back(std::make_pair(std::string("localhost"), kPortStart));
-  jubatus::common::mprpc::rpc_mclient cli(hosts, 1.0);
+  jubatus::server::common::mprpc::rpc_mclient cli(hosts, 1.0);
 
   // error_multi_rpc
   try {
     cli.call("test",
              1234,
-             function<bool(bool, bool)>(&jubatus::framework::all_and));
-  } catch (jubatus::common::mprpc::rpc_no_result& e) {
+             function<bool(bool, bool)>(&jubatus::server::framework::all_and));
+  } catch (jubatus::server::common::mprpc::rpc_no_result& e) {
     const error_info_list_t& list = e.error_info();
     bool has_error_multi_rpc = false;
     for (error_info_list_t::const_iterator it = list.begin(), end = list.end();
@@ -271,7 +271,7 @@ TEST(rpc_mclient, error_multi_rpc) {
         EXPECT_EQ(kPortStart, error_list[0].port());
 
         EXPECT_THROW(error_list[0].throw_exception(),
-                     jubatus::common::mprpc::rpc_timeout_error);
+                     jubatus::server::common::mprpc::rpc_timeout_error);
       }
     }
 
@@ -305,12 +305,12 @@ TEST(rpc_mclient, small) {
     EXPECT_EQ(24, cli1.call_test_twice(12));
   }
 
-  jubatus::common::mprpc::rpc_mclient cli(clients, 3.0);
+  jubatus::server::common::mprpc::rpc_mclient cli(clients, 3.0);
   {
     rpc_result<bool> r = cli.call(
         "test_bool",
         73684,
-        function<bool(bool, bool)>(&jubatus::framework::all_and));
+        function<bool(bool, bool)>(&jubatus::server::framework::all_and));
     EXPECT_FALSE(*r);
   }
   {
@@ -318,7 +318,7 @@ TEST(rpc_mclient, small) {
     rpc_result<int> r = cli.call(
         "test_twice",
         73684,
-        function<int(int, int)>(&jubatus::framework::add<int>));
+        function<int(int, int)>(&jubatus::server::framework::add<int>));
     EXPECT_EQ(ans, *r);
   }
   {
@@ -328,7 +328,7 @@ TEST(rpc_mclient, small) {
         23,
         21,
         -234,
-        function<int(int, int)>(&jubatus::framework::add<int>));
+        function<int(int, int)>(&jubatus::server::framework::add<int>));
     EXPECT_EQ(ans, *r);
   }
   {
@@ -358,7 +358,7 @@ TEST(rpc_mclient, small) {
     rpc_result<int> r = cli.call(
         "sum",
         hoge,
-        function<int(int, int)>(&jubatus::framework::add<int>));
+        function<int(int, int)>(&jubatus::server::framework::add<int>));
     EXPECT_EQ(ans, *r);
   }
 
@@ -375,15 +375,15 @@ TEST(rpc_mclient, small) {
   {  // server_error: method_not_found
      // ASSERT_THROW(cli.call("undefined_method",
      //                  1,
-     //                  function<int(int,int)>(&jubatus::framework::add<int>)),
-     //     jubatus::common::mprpc::rpc_no_result);
+     //                  function<int(int,int)>(&jubatus::server::framework::add<int>)),
+     //     jubatus::server::common::mprpc::rpc_no_result);
 
     try {
       rpc_result<int> r = cli.call(
           "undefined_method",
           1,
-          function<int(int, int)>(&jubatus::framework::add<int>));
-    } catch (jubatus::common::mprpc::rpc_no_result& e) {
+          function<int(int, int)>(&jubatus::server::framework::add<int>));
+    } catch (jubatus::server::common::mprpc::rpc_no_result& e) {
       const error_info_list_t& list = e.error_info();
       bool has_error_multi_rpc = false;
       // TODO(y_oda): support `error_multi_rpc* multi_error =
@@ -401,9 +401,9 @@ TEST(rpc_mclient, small) {
             EXPECT_EQ(kPortStart + i, error_list[i].port());
 
             ASSERT_THROW(error_list[i].throw_exception(),
-                         jubatus::common::mprpc::rpc_method_not_found);
+                         jubatus::server::common::mprpc::rpc_method_not_found);
             // TODO(y_oda): check exception error_info has
-            // jubatus::common::error_method("undefined_method")
+            // jubatus::server::common::error_method("undefined_method")
             // but I checked using jubatus_exception::diagnostic_information
             // manually.
           }
@@ -418,15 +418,15 @@ TEST(rpc_mclient, small) {
         cli.call(
             "sum",
             std::string("test"),
-            function<int(int, int)>(&jubatus::framework::add<int>)),
-        jubatus::common::mprpc::rpc_no_result);
+            function<int(int, int)>(&jubatus::server::framework::add<int>)),
+        jubatus::server::common::mprpc::rpc_no_result);
 
     try {
       cli.call(
           "sum",
           std::string("test"),
-          function<int(int, int)>(&jubatus::framework::add<int>));
-    } catch (jubatus::common::mprpc::rpc_no_result& e) {
+          function<int(int, int)>(&jubatus::server::framework::add<int>));
+    } catch (jubatus::server::common::mprpc::rpc_no_result& e) {
       cout << "rpc_no_result: error detail: "
            << e.diagnostic_information(true)
            << endl;
@@ -448,9 +448,9 @@ TEST(rpc_mclient, small) {
             EXPECT_EQ(kPortStart + i, error_list[i].port());
 
             ASSERT_THROW(error_list[i].throw_exception(),
-                        jubatus::common::mprpc::rpc_type_error);
+                        jubatus::server::common::mprpc::rpc_type_error);
             // TODO(y_oda): check exception error_info has
-            // jubatus::common::error_method("sum")
+            // jubatus::server::common::error_method("sum")
             // but I checked using jubatus_exception::diagnostic_information
             // manually.
           }
@@ -485,12 +485,12 @@ TEST(rpc_mclient, socket_disconnection) {
     EXPECT_THROW(cli1.call_test_twice(12), msgpack::rpc::connect_error);
   }
 
-  jubatus::common::mprpc::rpc_mclient cli(clients, 1.0);
+  jubatus::server::common::mprpc::rpc_mclient cli(clients, 1.0);
   {
     rpc_result<bool> r = cli.call(
         "test_bool",
         73684,
-        function<bool(bool, bool)>(&jubatus::framework::all_and));
+        function<bool(bool, bool)>(&jubatus::server::framework::all_and));
     EXPECT_FALSE(*r);
 
     EXPECT_TRUE(r.has_error());
@@ -501,7 +501,7 @@ TEST(rpc_mclient, socket_disconnection) {
     EXPECT_EQ(kInvalidPort, error.port());
 
     EXPECT_TRUE(error.has_exception());
-    EXPECT_THROW(error.throw_exception(), jubatus::common::mprpc::rpc_io_error);
+    EXPECT_THROW(error.throw_exception(), jubatus::server::common::mprpc::rpc_io_error);
   }
 
   ser->close();
