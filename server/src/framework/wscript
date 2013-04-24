@@ -26,7 +26,7 @@ def build(bld):
       source=t + '.cpp',
       target=t,
       includes='.',
-      use='jubatus_framework'
+      use='jubaserv_framework'
       )
 
   tests = [
