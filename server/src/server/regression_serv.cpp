@@ -23,14 +23,14 @@
 #include <pficommon/text/json.h>
 #include <pficommon/data/optional.h>
 
-#include "../regression/regression_factory.hpp"
-#include "../common/util.hpp"
-#include "../common/jsonconfig.hpp"
+#include "common/util.hpp"
+#include "common/jsonconfig.hpp"
+#include "fv_converter/datum.hpp"
+#include "fv_converter/datum_to_fv_converter.hpp"
+#include "fv_converter/converter_config.hpp"
+#include "storage/storage_factory.hpp"
+#include "regression/regression_factory.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
-#include "../fv_converter/datum.hpp"
-#include "../fv_converter/datum_to_fv_converter.hpp"
-#include "../fv_converter/converter_config.hpp"
-#include "../storage/storage_factory.hpp"
 
 using std::string;
 using std::vector;
@@ -39,10 +39,10 @@ using pfi::lang::shared_ptr;
 using pfi::text::json::json;
 using pfi::lang::lexical_cast;
 
-using jubatus::common::cshared_ptr;
-using jubatus::common::lock_service;
-using jubatus::framework::convert;
-using jubatus::framework::mixer::create_mixer;
+using jubatus::core::common::cshared_ptr;
+using jubatus::server::common::lock_service;
+using jubatus::server::framework::convert;
+using jubatus::server::framework::mixer::create_mixer;
 
 namespace jubatus {
 namespace server {
@@ -60,9 +60,9 @@ struct regression_serv_config {
   }
 };
 
-storage::storage_base* make_model(
+core::storage::storage_base* make_model(
     const framework::server_argv& arg) {
-  return storage::storage_factory::create_storage(
+  return core::storage::storage_factory::create_storage(
       (arg.is_standalone()) ? "local" : "local_mixture");
 }
 
@@ -81,7 +81,7 @@ regression_serv::~regression_serv() {
 void regression_serv::get_status(status_t& status) const {
   status_t my_status;
 
-  storage::storage_base* model = regression_->get_model();
+  core::storage::storage_base* model = regression_->get_model();
   model->get_status(my_status);
   my_status["storage"] = model->type();
 
@@ -89,26 +89,25 @@ void regression_serv::get_status(status_t& status) const {
 }
 
 bool regression_serv::set_config(const string& config) {
-  jsonconfig::config config_root(lexical_cast<json>(config));
+  core::jsonconfig::config config_root(lexical_cast<json>(config));
   regression_serv_config conf =
-      jsonconfig::config_cast_check<regression_serv_config>(config_root);
+      core::jsonconfig::config_cast_check<regression_serv_config>(config_root);
 
   config_ = config;
 
-  jsonconfig::config param;
+  core::jsonconfig::config param;
   if (conf.parameter) {
-    param = jsonconfig::config(*conf.parameter);
+    param = core::jsonconfig::config(*conf.parameter);
   }
 
-  storage::storage_base* model = make_model(argv());
+  core::storage::storage_base* model = make_model(argv());
 
   regression_.reset(
-      new driver::regression(
+      new core::driver::regression(
           model,
-          regression::regression_factory::create_regression(
+          core::regression::regression_factory::create_regression(
               conf.method, param, model),
-          mixer_,
-          fv_converter::make_fv_converter(conf.converter)));
+          core::fv_converter::make_fv_converter(conf.converter)));
 
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
@@ -126,10 +125,10 @@ int regression_serv::train(const vector<pair<float, jubatus::datum> >& data) {
 
   int count = 0;
 
-  fv_converter::datum d;
+  core::fv_converter::datum d;
   for (size_t i = 0; i < data.size(); ++i) {
     // TODO(IDL): remove conversion
-    convert<jubatus::datum, fv_converter::datum>(data[i].second, d);
+    convert<jubatus::datum, core::fv_converter::datum>(data[i].second, d);
     regression_->train(std::make_pair(data[i].first, d));
     DLOG(INFO) << "trained: " << data[i].first;
     count++;
@@ -143,11 +142,11 @@ vector<float> regression_serv::estimate(
   check_set_config();
 
   vector<float> ret;
-  fv_converter::datum d;
+  core::fv_converter::datum d;
 
   for (size_t i = 0; i < data.size(); ++i) {
     // TODO(IDL): remove conversion
-    convert<jubatus::datum, fv_converter::datum>(data[i], d);
+    convert<jubatus::datum, core::fv_converter::datum>(data[i], d);
     ret.push_back(regression_->estimate(d));
   }
   return ret;  // vector<estimate_results> >::ok(ret);
