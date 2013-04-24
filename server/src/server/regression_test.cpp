@@ -23,9 +23,9 @@
 #include <gtest/gtest.h>
 
 #include "regression_client.hpp"
-#include "../regression/regression_test_util.hpp"
-#include "../fv_converter/datum.hpp"
-#include "../fv_converter/converter_config.hpp"
+#include "../../../core/src/regression/regression_test_util.hpp"
+#include "../../../core/src/fv_converter/datum.hpp"
+#include "../../../core/src/fv_converter/converter_config.hpp"
 
 #include "test_util.hpp"
 
@@ -89,8 +89,8 @@ string make_simple_config(const string& method) {
   pfi::text::json::json js(new pfi::text::json::json_object());
   js["method"] = pfi::text::json::json(
       new pfi::text::json::json_string(method));
-  jubatus::fv_converter::converter_config config;
-  jubatus::fv_converter::num_rule rule = { "*", optional<string>(), "num" };
+  jubatus::core::fv_converter::converter_config config;
+  jubatus::core::fv_converter::num_rule rule = { "*", optional<string>(), "num" };
   config.num_rules.push_back(rule);
   std::stringstream conv;
   conv << config_to_string(config);
