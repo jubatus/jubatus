@@ -26,13 +26,14 @@
 #include "../recommender/euclid_lsh.hpp"
 #include "lof_storage.hpp"
 
-using jubatus::storage::lof_storage;
+using jubatus::core::storage::lof_storage;
 using pfi::data::unordered_map;
 using std::pair;
 using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace anomaly {
 
 namespace {
@@ -150,4 +151,5 @@ TEST(lof, calc_anomaly_score2) {
 }
 
 }  // namespace anomaly
+}  // namespace core
 }  // namespace jubatus

@@ -33,9 +33,9 @@
 #include "../recommender/recommender_mock_util.hpp"
 #include "lof_storage.hpp"
 
-using jubatus::recommender::make_sfv;
-using jubatus::recommender::make_ids;
-using jubatus::storage::lof_storage;
+using jubatus::core::recommender::make_sfv;
+using jubatus::core::recommender::make_ids;
+using jubatus::core::storage::lof_storage;
 using pfi::data::unordered_map;
 using pfi::lang::lexical_cast;
 using std::istringstream;
@@ -43,6 +43,7 @@ using std::string;
 using std::vector;
 
 namespace jubatus {
+namespace core {
 namespace storage {
 
 namespace {
@@ -315,5 +316,6 @@ INSTANTIATE_TEST_CASE_P(
     lof_storage_mix_test_instance,
     lof_storage_mix_test,
     ::testing::Values(std::make_pair(5, make_lof_storage_config())));
-}
-}
+}  // namespace storage
+}  // namespcae core
+}  // namespcae jubatus
