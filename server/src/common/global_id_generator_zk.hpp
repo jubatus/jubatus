@@ -28,18 +28,20 @@ namespace jubatus {
 namespace server {
 namespace common {
 
-class global_id_generator_zk: public global_id_generator_base {
+class global_id_generator_zk: public core::common::global_id_generator_base {
  public:
   global_id_generator_zk();
   virtual ~global_id_generator_zk();
 
   uint64_t generate();
 
-  void set_ls(cshared_ptr<lock_service>& ls, const std::string& path_prefix);
+  void set_ls(
+      core::common::cshared_ptr<lock_service>& ls,
+      const std::string& path_prefix);
 
  private:
   std::string path_;
-  cshared_ptr<lock_service> ls_;
+  core::common::cshared_ptr<lock_service> ls_;
 };
 
 }  // namespace common

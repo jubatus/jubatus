@@ -21,6 +21,8 @@
 #include "common/global_id_generator_base.hpp"
 #include "global_id_generator_zk.hpp"
 
+using jubatus::core::common::cshared_ptr;
+
 namespace jubatus {
 namespace server {
 namespace common {

@@ -27,7 +27,10 @@
 #include "membership.hpp"
 #include "common/exception.hpp"
 
+using jubatus::core::common::cshared_ptr;
+
 namespace jubatus {
+namespace server {
 namespace common {
 
 std::string make_hash(const std::string& key) {
@@ -188,4 +191,5 @@ bool cht::get_hashlist_(
 }
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus

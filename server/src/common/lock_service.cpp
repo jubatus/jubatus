@@ -21,6 +21,7 @@
 #include "cached_zk.hpp"
 
 namespace jubatus {
+namespace server {
 namespace common {
 
 lock_service* create_lock_service(
@@ -77,4 +78,5 @@ bool lock_service_mutex::unlock_r() {
 }
 
 }  // namespace common
+}  // namespace server
 }  // namespace jubatus
