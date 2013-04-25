@@ -19,7 +19,6 @@
 #include <string>
 #include <utility>
 
-#include "../common/util.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/converter_config.hpp"
