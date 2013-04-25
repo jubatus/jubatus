@@ -10,7 +10,6 @@
 
 #include "jubatus/core/common/exception.hpp"
 #include "../framework/aggregators.hpp"
-#include "../framework/aggregators.hpp"
 #include "../framework/keeper.hpp"
 #include "graph_types.hpp"
 
