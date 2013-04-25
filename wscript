@@ -127,14 +127,14 @@ def build(bld):
 def cpplint(ctx):
   import fnmatch, tempfile
   cpplint = ctx.path.find_node('tools/codestyle/cpplint/cpplint.py')
-  src_dir = ctx.path.find_node('src')
+  src_dir = ctx.path.find_node('jubatus')
   file_list = []
-  excludes = ['src/third_party/**', \
-              'src/server/*_server.hpp', \
-              'src/server/*_impl.cpp', \
-              'src/server/*_keeper.cpp', \
-              'src/server/*_client.hpp', \
-              'src/server/*_types.hpp']
+  excludes = ['jubatus/server/third_party/**', \
+              'jubatus/server/*_server.hpp', \
+              'jubatus/server/*_impl.cpp', \
+              'jubatus/server/*_keeper.cpp', \
+              'jubatus/server/*_client.hpp', \
+              'jubatus/server/*_types.hpp']
   for file in src_dir.ant_glob('**/*.cpp **/*.cc **/*.hpp **/*.h'):
     file_list += [file.path_from(ctx.path)]
   for exclude in excludes:
