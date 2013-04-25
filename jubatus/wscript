@@ -1,6 +1,6 @@
 import Options
 
-subdirs = "core server"
+subdirs = "core server client"
 
 def options(opt):
   opt.recurse(subdirs)
@@ -10,3 +10,5 @@ def configure(conf):
 
 def build(bld):
   bld.recurse(subdirs)
+  bld.install_files('${PREFIX}/include/jubatus',
+                    ['config.hpp', 'client.hpp'])

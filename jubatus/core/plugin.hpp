@@ -17,9 +17,9 @@
 #ifndef JUBATUS_PLUGIN_HPP_
 #define JUBATUS_PLUGIN_HPP_
 
-#include <jubatus/fv_converter/word_splitter.hpp>
-#include <jubatus/fv_converter/string_filter.hpp>
-#include <jubatus/fv_converter/num_feature.hpp>
-#include <jubatus/fv_converter/num_filter.hpp>
+#include <jubatus/core/fv_converter/word_splitter.hpp>
+#include <jubatus/core/fv_converter/string_filter.hpp>
+#include <jubatus/core/fv_converter/num_feature.hpp>
+#include <jubatus/core/fv_converter/num_filter.hpp>
 
 #endif  // JUBATUS_PLUGIN_HPP_

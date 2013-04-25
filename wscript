@@ -7,7 +7,7 @@ APPNAME = 'jubatus'
 
 top = '.'
 out = 'build'
-subdirs = ['client', 'config', 'jubatus', 'plugin']
+subdirs = ['config', 'jubatus', 'plugin']
 
 def options(opt):
   opt.load('compiler_cxx')
@@ -156,8 +156,8 @@ def regenerate(ctx):
 
 def regenerate_client(ctx):
   import os
-  server_node = ctx.path.find_node('src/server')
-  client_node = ctx.path.find_node('client')
+  server_node = ctx.path.find_node('jubatus/server/server')
+  client_node = ctx.path.find_node('jubatus/client')
   jenerator_node = ctx.path.find_node('tools/jenerator/src/jenerator')
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name
