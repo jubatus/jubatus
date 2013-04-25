@@ -20,8 +20,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "fv_converter/exception.hpp"
-#include "fv_converter/util.hpp"
+#include "jubatus/core/fv_converter/exception.hpp"
+#include "jubatus/core/fv_converter/util.hpp"
 
 namespace jubatus {
 namespace plugin {

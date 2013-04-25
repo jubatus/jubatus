@@ -28,8 +28,8 @@
 
 #include <glog/logging.h>
 
-#include "fv_converter/util.hpp"
-#include "fv_converter/exception.hpp"
+#include "jubatus/core/fv_converter/util.hpp"
+#include "jubatus/core/fv_converter/exception.hpp"
 
 namespace jubatus {
 namespace plugin {

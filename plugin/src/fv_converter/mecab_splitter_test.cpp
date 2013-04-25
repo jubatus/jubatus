@@ -22,7 +22,7 @@
 #include <pficommon/concurrent/thread.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/lang/scoped_ptr.h>
-#include "fv_converter/exception.hpp"
+#include "jubatus/core/fv_converter/exception.hpp"
 #include "mecab_splitter.hpp"
 
 namespace jubatus {

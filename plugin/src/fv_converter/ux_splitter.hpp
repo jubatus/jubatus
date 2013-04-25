@@ -22,7 +22,7 @@
 #include <utility>
 #include <vector>
 #include <ux/ux.hpp>
-#include "fv_converter/word_splitter.hpp"
+#include "jubatus/core/fv_converter/word_splitter.hpp"
 
 namespace jubatus {
 namespace plugin {

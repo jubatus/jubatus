@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 #include <pficommon/lang/cast.h>
-#include "fv_converter/exception.hpp"
+#include "jubatus/core/fv_converter/exception.hpp"
 #include "re2_splitter.hpp"
 
 using pfi::lang::lexical_cast;

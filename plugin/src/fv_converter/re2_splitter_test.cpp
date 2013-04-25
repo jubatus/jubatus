@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include "fv_converter/exception.hpp"
+#include "jubatus/core/fv_converter/exception.hpp"
 #include "re2_splitter.hpp"
 
 using jubatus::core::fv_converter::converter_exception;

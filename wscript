@@ -7,7 +7,7 @@ APPNAME = 'jubatus'
 
 top = '.'
 out = 'build'
-subdirs = ['client', 'config', 'core', 'server', 'plugin']
+subdirs = ['client', 'config', 'jubatus', 'plugin']
 
 def options(opt):
   opt.load('compiler_cxx')
@@ -44,7 +44,7 @@ def configure(conf):
   conf.define('JUBATUS_VERSION', VERSION)
   conf.define('JUBATUS_APPNAME', APPNAME)
   conf.define('JUBATUS_PLUGIN_DIR', conf.env.JUBATUS_PLUGIN_DIR)
-  conf.write_config_header('src/config.hpp', guard="JUBATUS_CONFIG_HPP_", remove=False)
+  conf.write_config_header('jubatus/config.hpp', guard="JUBATUS_CONFIG_HPP_", remove=False)
 
   conf.check_cxx(lib = 'msgpack')
   conf.check_cxx(lib = 'jubatus_mpio')
@@ -120,6 +120,8 @@ def build(bld):
       PACKAGE = APPNAME,
       VERSION = VERSION)
 
+  bld(name = 'core_headers', export_includes = './')
+
   bld.recurse(subdirs)
 
 def cpplint(ctx):
@@ -145,7 +147,7 @@ def cpplint(ctx):
 
 def regenerate(ctx):
   import os
-  server_node = ctx.path.find_node('server/src/server')
+  server_node = ctx.path.find_node('jubatus/server/server')
   jenerator_node = ctx.path.find_node('tools/jenerator/src/jenerator')
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name

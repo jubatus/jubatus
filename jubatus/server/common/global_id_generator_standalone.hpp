@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,40 +14,35 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_PLUGIN_FV_CONVERTER_RE2_SPLITTER_HPP_
-#define JUBATUS_PLUGIN_FV_CONVERTER_RE2_SPLITTER_HPP_
+#ifndef JUBATUS_COMMON_GLOBAL_ID_GENERATOR_STANDALONE_HPP_
+#define JUBATUS_COMMON_GLOBAL_ID_GENERATOR_STANDALONE_HPP_
 
-#include <map>
+#include <stdint.h>
 #include <string>
-#include <utility>
-#include <vector>
+
 #include <pficommon/lang/scoped_ptr.h>
-#include <re2/re2.h>
-#include "jubatus/core/fv_converter/word_splitter.hpp"
+
+#include "jubatus/core/common/global_id_generator_base.hpp"
 
 namespace jubatus {
-namespace plugin {
-namespace fv_converter {
+namespace server {
+namespace common {
 
-class re2_splitter : jubatus::core::fv_converter::word_splitter {
+class global_id_generator_standalone: public core::common::global_id_generator_base {
+  struct impl;
+
  public:
-  re2_splitter(const std::string& regexp, int group);
-  void split(
-      const std::string& str,
-      std::vector<std::pair<size_t, size_t> >& bounds) const;
+  global_id_generator_standalone();
+  virtual ~global_id_generator_standalone();
+
+  virtual uint64_t generate();
 
  private:
-  re2::RE2 re_;
-  int group_;
+  pfi::lang::scoped_ptr<impl> pimpl_;
 };
 
-}  // namespace fv_converter
-}  // namespace plugin
+}  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
-extern "C" {
-jubatus::plugin::fv_converter::re2_splitter* create(
-    const std::map<std::string, std::string>& args);
-}
-
-#endif  // JUBATUS_PLUGIN_FV_CONVERTER_RE2_SPLITTER_HPP_
+#endif  // JUBATUS_COMMON_GLOBAL_ID_GENERATOR_HPP_

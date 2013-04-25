@@ -24,7 +24,7 @@
 #include <mecab.h>
 #include <pficommon/lang/scoped_ptr.h>
 
-#include "fv_converter/word_splitter.hpp"
+#include "jubatus/core/fv_converter/word_splitter.hpp"
 
 namespace jubatus {
 namespace plugin {

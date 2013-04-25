@@ -24,6 +24,16 @@ open Lib
 
 let comment_out_head = "//"
 
+let gen_jubatus_core_include conf file =
+  let path =
+    if conf.Config.internal then
+      "\"jubatus/core/" ^ file ^ "\""
+    else
+      "<jubatus/core/" ^ file ^ ">"
+  in
+  "#include " ^ path
+;;
+
 let gen_jubatus_include conf file =
   let path = 
     if conf.Config.internal then
@@ -457,8 +467,7 @@ let gen_keeper_file conf source services =
       (0, "");
       (0, "#include <glog/logging.h>");
       (0, "");
-      (* TODO(suma): replace to include "jubatus/core/common" or remove cshared_ptr before  merge to develop *)
-      (0, "#include \"common/exception.hpp\"");
+      (0, gen_jubatus_core_include conf "common/exception.hpp");
       (0, gen_jubatus_include conf "framework/aggregators.hpp");
       (0, gen_jubatus_include conf "framework/keeper.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
@@ -581,8 +590,7 @@ let gen_impl_file conf source services =
       (0, "#include <vector>");
       (0, "#include <utility>");
       (0, "");
-      (* TODO(suma): replace to include "jubatus/core/common" or remove cshared_ptr before  merge to develop *)
-      (0, "#include \"common/shared_ptr.hpp\"");
+      (0, gen_jubatus_core_include conf "common/shared_ptr.hpp");
       (0, gen_jubatus_include conf "framework.hpp");
       (0, "#include \"" ^ base ^ "_server.hpp\"");
       (0, "#include \"" ^ base ^ "_serv.hpp\"");
