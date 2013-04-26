@@ -104,7 +104,8 @@ core::storage::recommender_storage_base* inverted_index::get_storage() {
   return &inv_;
 }
 
-const core::storage::recommender_storage_base* inverted_index::get_const_storage()
+const core::storage::recommender_storage_base*
+    inverted_index::get_const_storage()
      const {
   return &inv_;
 }

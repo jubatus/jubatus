@@ -68,7 +68,9 @@ class minhash : public recommender_base {
   bool save_impl(std::ostream&);
   bool load_impl(std::istream&);
 
-  void calc_minhash_values(const sfv_t& sfv, core::storage::bit_vector& bv) const;
+  void calc_minhash_values(
+      const sfv_t& sfv,
+      core::storage::bit_vector& bv) const;
 
   static float calc_hash(uint64_t a, uint64_t b, float val);
   static void hash_mix64(uint64_t& a, uint64_t& b, uint64_t& c);

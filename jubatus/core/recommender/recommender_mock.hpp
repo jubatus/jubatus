@@ -64,7 +64,8 @@ class recommender_mock : public recommender_base {
 
   virtual std::string type() const;
   virtual core::storage::recommender_storage_base* get_storage();
-  virtual const core::storage::recommender_storage_base* get_const_storage() const;
+  virtual const core::storage::recommender_storage_base*
+      get_const_storage() const;
 
  protected:
   virtual bool save_impl(std::ostream&);

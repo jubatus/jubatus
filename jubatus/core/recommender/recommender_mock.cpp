@@ -114,7 +114,8 @@ core::storage::recommender_storage_base* recommender_mock::get_storage() {
   return &storage_;
 }
 
-const core::storage::recommender_storage_base* recommender_mock::get_const_storage()
+const core::storage::recommender_storage_base*
+    recommender_mock::get_const_storage()
     const {
   return &storage_;
 }
