@@ -20,7 +20,7 @@ def build(bld):
     source = source,
     target = 'jubatus_driver',
     includes = '.',
-    use = 'PFICOMMON jubacommon MSGPACK LIBGLOG jubaconverter jubastorage jubamixer jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph'
+    use = 'PFICOMMON jubacommon MSGPACK LIBGLOG jubaconverter jubastorage jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph'
     )
 
   def make_test(t):

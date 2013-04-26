@@ -11,7 +11,7 @@ def build(bld):
     mixer_framework += ' jubacommon jubaserv_common jubaserv_common_mprpc'
     mixer_source += ' linear_mixer.cpp'
 
-  bld.shlib(target = 'jubamixer',
+  bld.shlib(target = 'jubaserv_mixer',
             source = mixer_source,
             use = mixer_framework)
 
@@ -20,7 +20,7 @@ def build(bld):
       features='gtest',
       source = 'linear_mixer_test.cpp',
       target = 'linear_mixer_test',
-      use = 'jubamixer'
+      use = 'jubaserv_mixer'
       )
 
   bld.install_files('${PREFIX}/include/jubatus/framework/mixer', [
