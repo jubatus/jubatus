@@ -79,8 +79,8 @@ jubavisor::jubavisor(
   zk_->create(jubatus::server::common::JUBAVISOR_BASE_PATH, "");
   zk_->create(jubatus::server::common::ACTOR_BASE_PATH, "");
 
-  name_ = 
-      build_loc_str(jubatus::server::common::get_default_v4_address(), port);
+  name_ =
+    build_loc_str(jubatus::server::common::get_default_v4_address(), port);
   std::string path = jubatus::server::common::JUBAVISOR_BASE_PATH + "/" + name_;
   zk_->create(path, "", true);
   // TODO(kumagi):
