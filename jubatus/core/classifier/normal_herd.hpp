@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_SRC_CLASSIFIER_NORMAL_HERD_HPP_
-#define JUBATUS_CORE_SRC_CLASSIFIER_NORMAL_HERD_HPP_
+#ifndef JUBATUS_CORE_CLASSIFIER_NORMAL_HERD_HPP_
+#define JUBATUS_CORE_CLASSIFIER_NORMAL_HERD_HPP_
 
 #include <string>
 
@@ -45,4 +45,4 @@ class normal_herd : public classifier_base {
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_SRC_CLASSIFIER_NORMAL_HERD_HPP_
+#endif  // JUBATUS_CORE_CLASSIFIER_NORMAL_HERD_HPP_
