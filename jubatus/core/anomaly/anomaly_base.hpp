@@ -47,7 +47,8 @@ class anomaly_base {
 
   virtual std::string type() const = 0;
   virtual core::storage::anomaly_storage_base* get_storage() = 0;
-  virtual const core::storage::anomaly_storage_base* get_const_storage() const = 0;
+  virtual const core::storage::anomaly_storage_base*
+      get_const_storage() const = 0;
 
   void save(std::ostream&);
   void load(std::istream&);
