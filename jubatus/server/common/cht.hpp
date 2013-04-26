@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_COMMON_CHT_HPP_
-#define JUBATUS_COMMON_CHT_HPP_
+#ifndef JUBATUS_SERVER_COMMON_CHT_HPP_
+#define JUBATUS_SERVER_COMMON_CHT_HPP_
 
 #include <cstdlib>
 #include <string>
@@ -96,4 +96,4 @@ class cht {
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_COMMON_CHT_HPP_
+#endif  // JUBATUS_SERVER_COMMON_CHT_HPP_

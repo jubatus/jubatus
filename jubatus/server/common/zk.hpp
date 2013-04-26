@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_COMMON_ZK_HPP_
-#define JUBATUS_COMMON_ZK_HPP_
+#ifndef JUBATUS_SERVER_COMMON_ZK_HPP_
+#define JUBATUS_SERVER_COMMON_ZK_HPP_
 
 #include <string>
 #include <vector>
@@ -125,4 +125,4 @@ void mywatcher(zhandle_t*, int, int, const char*, void*);
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_COMMON_ZK_HPP_
+#endif  // JUBATUS_SERVER_COMMON_ZK_HPP_
