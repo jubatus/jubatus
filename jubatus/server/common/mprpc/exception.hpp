@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_COMMON_MPRPC_EXCEPTION_HPP_
-#define JUBATUS_COMMON_MPRPC_EXCEPTION_HPP_
+#ifndef JUBATUS_SERVER_COMMON_MPRPC_EXCEPTION_HPP_
+#define JUBATUS_SERVER_COMMON_MPRPC_EXCEPTION_HPP_
 
 #include <string>
 #include "jubatus/core/common/exception.hpp"
@@ -74,4 +74,4 @@ class rpc_internal_error
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_COMMON_MPRPC_EXCEPTION_HPP_
+#endif  // JUBATUS_SERVER_COMMON_MPRPC_EXCEPTION_HPP_

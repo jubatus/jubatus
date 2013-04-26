@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_COMMON_MPRPC_RPC_RESPONSE_HPP_
-#define JUBATUS_COMMON_MPRPC_RPC_RESPONSE_HPP_
+#ifndef JUBATUS_SERVER_COMMON_MPRPC_RPC_RESPONSE_HPP_
+#define JUBATUS_SERVER_COMMON_MPRPC_RPC_RESPONSE_HPP_
 
 #include <msgpack.hpp>
 #include <jubatus/msgpack/rpc/future.h>
@@ -65,4 +65,4 @@ class rpc_response_t {
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_COMMON_MPRPC_RPC_RESPONSE_HPP_
+#endif  // JUBATUS_SERVER_COMMON_MPRPC_RPC_RESPONSE_HPP_
