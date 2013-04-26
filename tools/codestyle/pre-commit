@@ -13,5 +13,6 @@ then
     echo "Error: Please go along with Jubatus coding style when you commit"
     exit 1
 else
+    git diff --name-only --cached | xargs git add
     exit 0
 fi
