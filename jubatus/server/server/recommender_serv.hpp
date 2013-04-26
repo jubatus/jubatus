@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_RECOMMENDER_SERV_HPP_
-#define JUBATUS_SERVER_RECOMMENDER_SERV_HPP_
+#ifndef JUBATUS_SERVER_SERVER_RECOMMENDER_SERV_HPP_
+#define JUBATUS_SERVER_SERVER_RECOMMENDER_SERV_HPP_
 
 #include <string>
 #include <utility>
@@ -78,4 +78,4 @@ class recommender_serv : public framework::server_base {
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_RECOMMENDER_SERV_HPP_
+#endif  // JUBATUS_SERVER_SERVER_RECOMMENDER_SERV_HPP_
