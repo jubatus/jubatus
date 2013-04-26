@@ -52,7 +52,8 @@ class classifier {
   }
 
   void train(const std::pair<std::string, fv_converter::datum>& data);
-  jubatus::core::classifier::classify_result classify(const fv_converter::datum& data) const;
+  jubatus::core::classifier::classify_result classify(
+      const fv_converter::datum& data) const;
 
  private:
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;

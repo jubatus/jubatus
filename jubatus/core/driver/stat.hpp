@@ -55,7 +55,7 @@ struct mixable_stat : public framework::mixable<
 
 class stat {
  public:
-  stat(jubatus::core::stat::stat* stat_method);
+  explicit stat(jubatus::core::stat::stat* stat_method);
   virtual ~stat();
 
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {

@@ -27,7 +27,6 @@
 #include "../common/exception.hpp"
 #include "../common/byte_buffer.hpp"
 #include "../common/shared_ptr.hpp"
-#include "../common/byte_buffer.hpp"
 
 namespace jubatus {
 namespace core {
