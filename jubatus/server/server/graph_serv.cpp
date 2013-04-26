@@ -134,8 +134,8 @@ graph_serv::~graph_serv() {
 bool graph_serv::set_config(const std::string& config) {
   core::jsonconfig::config conf_root(
       pfi::lang::lexical_cast<pfi::text::json::json>(config));
-  graph_serv_config conf = core::jsonconfig::config_cast_check<graph_serv_config>(
-      conf_root);
+  graph_serv_config conf =
+    core::jsonconfig::config_cast_check<graph_serv_config>(conf_root);
 
   config_ = config;
 
@@ -153,7 +153,7 @@ bool graph_serv::set_config(const std::string& config) {
       new core::driver::graph(
           core::graph::graph_factory::create_graph(
               conf.method, conf.parameter)));
-  mixer_->set_mixable_holder( graph_->get_mixable_holder());
+  mixer_->set_mixable_holder(graph_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
   return true;

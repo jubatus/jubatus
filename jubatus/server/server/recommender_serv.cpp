@@ -103,7 +103,7 @@ bool recommender_serv::set_config(const std::string &config) {
           core::recommender::recommender_factory::create_recommender(
               conf.method, param),
           core::fv_converter::make_fv_converter(conf.converter)));
-  mixer_->set_mixable_holder( recommender_->get_mixable_holder());
+  mixer_->set_mixable_holder(recommender_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
   return true;

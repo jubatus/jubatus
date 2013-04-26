@@ -132,7 +132,7 @@ bool anomaly_serv::set_config(const std::string& config) {
           core::anomaly::anomaly_factory::create_anomaly(
               conf.method, conf.parameter),
           core::fv_converter::make_fv_converter(conf.converter)));
-  mixer_->set_mixable_holder( anomaly_->get_mixable_holder());
+  mixer_->set_mixable_holder(anomaly_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
   return true;

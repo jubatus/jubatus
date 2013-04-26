@@ -39,7 +39,8 @@ class stat_serv : public framework::server_base {
     return mixer_.get();
   }
 
-  pfi::lang::shared_ptr<core::framework::mixable_holder> get_mixable_holder() const {
+  pfi::lang::shared_ptr<core::framework::mixable_holder>
+    get_mixable_holder() const {
     return stat_->get_mixable_holder();
   }
 
