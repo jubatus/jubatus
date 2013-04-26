@@ -14,12 +14,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_FRAMEWORK_HPP_
-#define JUBATUS_FRAMEWORK_HPP_
+#ifndef JUBATUS_SERVER_FRAMEWORK_HPP_
+#define JUBATUS_SERVER_FRAMEWORK_HPP_
 
 // #include "config.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 #include "framework/server_helper.hpp"
 #include "framework/server_util.hpp"
 
-#endif  // JUBATUS_FRAMEWORK_HPP_
+#endif  // JUBATUS_SERVER_FRAMEWORK_HPP_
