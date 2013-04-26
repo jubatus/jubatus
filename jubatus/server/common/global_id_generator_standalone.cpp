@@ -23,7 +23,7 @@
 #endif
 
 #include "jubatus/core/common/exception.hpp"
-#include "jubatus/core/common/global_id_generator_base.hpp"
+#include "global_id_generator_base.hpp"
 #include "global_id_generator_standalone.hpp"
 
 namespace jubatus {

@@ -22,9 +22,9 @@
 #include <utility>
 #include <vector>
 
-#include "jubatus/core/common/global_id_generator_base.hpp"
 #include "jubatus/core/common/shared_ptr.hpp"
 #include "jubatus/core/driver/graph.hpp"
+#include "../common/global_id_generator_base.hpp"
 #include "../common/lock_service.hpp"
 #include "../framework/server_base.hpp"
 #include "graph_types.hpp"
@@ -108,7 +108,7 @@ class graph_serv : public framework::server_base {
   std::string config_;
 
   core::common::cshared_ptr<common::lock_service> zk_;
-  pfi::lang::shared_ptr<core::common::global_id_generator_base> idgen_;
+  pfi::lang::shared_ptr<common::global_id_generator_base> idgen_;
 };
 
 }  // namespace server

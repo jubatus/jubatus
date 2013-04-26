@@ -61,6 +61,7 @@ def build(bld):
       'cached_zk.hpp',
       'cht.hpp',
       'config.hpp',
+      'global_id_generator_base.hpp',
       'global_id_generator_standalone.hpp',
       'global_id_generator_zk.hpp',
       'lock_service.hpp',

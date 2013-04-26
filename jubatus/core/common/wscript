@@ -8,18 +8,6 @@ def configure(conf):
   conf.check_cxx(header_name = 'sys/socket.h net/if.h sys/ioctl.h', mandatory = True)
   conf.check_cxx(header_name = 'netinet/in.h arpa/inet.h', mandatory = True)
 
-  # Check compiler(GCC/Clang) support atomic builtin extension
-  conf.check_cxx(fragment='''
-#include <stdint.h>
-int main() {
-  uint64_t c = 0;
-  __sync_fetch_and_add(&c, 0);
-  return 0;
-}
-''',
-                 msg = 'Checking for compiler atomic builtins',
-                 define_name = 'ATOMIC_I8_SUPPORT', mandatory = False)
-
   conf.recurse(subdirs)
 
 def build(bld):
@@ -57,7 +45,6 @@ def build(bld):
       'byte_buffer.hpp',
       'exception.hpp',
       'exception_info.hpp',
-      'global_id_generator_base.hpp',
       'hash.hpp',
       'jsonconfig.hpp',
       'key_manager.hpp',

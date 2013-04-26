@@ -21,7 +21,6 @@
 #include <vector>
 
 #include "../graph/graph_factory.hpp"
-#include "../common/global_id_generator_base.hpp"
 #include "../common/vector_util.hpp"
 #include "../storage/storage_factory.hpp"
 
