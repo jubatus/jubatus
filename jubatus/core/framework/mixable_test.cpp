@@ -20,9 +20,10 @@
 #include <gtest/gtest.h>
 
 using std::stringstream;
-using jubatus::common::mprpc::byte_buffer;
+using jubatus::core::common::byte_buffer;
 
 namespace jubatus {
+namespace core {
 namespace framework {
 
 struct int_model {
@@ -107,4 +108,5 @@ TEST(mixable, trivial) {
 }
 
 }  // namespace framework
+}  // namespace core
 }  // namespace jubatus
