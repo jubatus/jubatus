@@ -144,7 +144,7 @@ def cpplint(ctx):
   tmp_file = tempfile.NamedTemporaryFile(delete=True);
   tmp_file.write("\n".join(file_list));
   tmp_file.flush()
-  ctx.exec_command('cat ' + tmp_file.name + ' | xargs "' + cpplint.abspath() + '" --filter=-runtime/references,-runtime/rtti')
+  ctx.exec_command('cat ' + tmp_file.name + ' | xargs "' + cpplint.abspath() + '" --filter=-runtime/references,-runtime/rtti 2>&1')
   tmp_file.close()
 
 def regenerate(ctx):
