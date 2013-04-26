@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_SRC_FV_CONVERTER_EXACT_MATCH_HPP_
-#define JUBATUS_CORE_SRC_FV_CONVERTER_EXACT_MATCH_HPP_
+#ifndef JUBATUS_CORE_FV_CONVERTER_EXACT_MATCH_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_EXACT_MATCH_HPP_
 
 #include <string>
 #include "key_matcher.hpp"
@@ -44,4 +44,4 @@ class exact_match : public key_matcher {
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_SRC_FV_CONVERTER_EXACT_MATCH_HPP_
+#endif  // JUBATUS_CORE_FV_CONVERTER_EXACT_MATCH_HPP_

@@ -14,6 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#ifndef JUBATUS_CORE_STORAGE_NORM_HPP_
+#define JUBATUS_CORE_STORAGE_NORM_HPP_
+
 #include "norm_l2.hpp"
 #include "norm_l1.hpp"
 #include "norm_none.hpp"
+
+#endif  // JUBATUS_CORE_STORAGE_NORM_HPP_

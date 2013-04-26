@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_SRC_STAT_MIXABLE_STAT_HPP_
-#define JUBATUS_CORE_SRC_STAT_MIXABLE_STAT_HPP_
+#ifndef JUBATUS_CORE_STAT_MIXABLE_STAT_HPP_
+#define JUBATUS_CORE_STAT_MIXABLE_STAT_HPP_
 
 #include <map>
 #include <string>
@@ -56,4 +56,4 @@ class mixable_stat : public stat {
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_SRC_STAT_MIXABLE_STAT_HPP_
+#endif  // JUBATUS_CORE_STAT_MIXABLE_STAT_HPP_
