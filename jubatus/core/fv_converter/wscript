@@ -139,7 +139,7 @@ def build(bld):
 
   make_tests(bld, test_use, test_source)
 
-  bld.install_files('${PREFIX}/include/jubatus/fv_converter',
+  bld.install_files('${PREFIX}/include/jubatus/core/fv_converter',
                     [ 'word_splitter.hpp',
                       'string_filter.hpp',
                       'num_feature.hpp',

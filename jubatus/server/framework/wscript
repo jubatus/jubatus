@@ -29,7 +29,7 @@ def build(bld):
       use='jubaserv_framework'
       )
 
-  bld.install_files('${PREFIX}/include/jubatus/framework', [
+  bld.install_files('${PREFIX}/include/jubatus/server/framework', [
       'keeper.hpp',
       'keeper_common.hpp',
       'server_base.hpp',

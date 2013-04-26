@@ -41,7 +41,7 @@ def build(bld):
   for s in test_src:
     make_test(s)
 
-  bld.install_files('${PREFIX}/include/jubatus/common/', [
+  bld.install_files('${PREFIX}/include/jubatus/core/common/', [
       'byte_buffer.hpp',
       'exception.hpp',
       'exception_info.hpp',

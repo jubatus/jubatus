@@ -39,7 +39,7 @@ def build(bld):
   for t in tests:
     make_test(t)
 
-  bld.install_files('${PREFIX}/include/jubatus/driver', [
+  bld.install_files('${PREFIX}/include/jubatus/core/driver', [
       'classifier.hpp',
       'regression.hpp',
       'recommender.hpp',

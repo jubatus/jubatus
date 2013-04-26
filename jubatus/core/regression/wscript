@@ -32,7 +32,7 @@ def build(bld):
     for s in test_source:
         make_test(s)
 
-    bld.install_files('${PREFIX}/include/jubatus/regression', [
+    bld.install_files('${PREFIX}/include/jubatus/core/regression', [
         'regression_base.hpp',
         'regression_factory.hpp',
         ])

@@ -1,22 +1,17 @@
-subdirs = 'mixer'
-
 def options(opt):
-  opt.recurse(subdirs)
+  pass
 
 def configure(conf):
-  conf.recurse(subdirs)
+  pass
 
 def build(bld):
-  bld.recurse(subdirs)
-
-  framework_source = 'mixable.cpp'
-
   def make_test(t):
     bld.program(
       features='gtest',
       source=t + '.cpp',
       target=t,
       includes='.',
+      use='MSGPACK',
       )
 
   tests = [
@@ -26,6 +21,6 @@ def build(bld):
   for t in tests:
     make_test(t)
 
-  bld.install_files('${PREFIX}/include/jubatus/framework', [
+  bld.install_files('${PREFIX}/include/jubatus/core/framework', [
       'mixable.hpp',
       ])

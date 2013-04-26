@@ -4,4 +4,4 @@ def options(opt): pass
 def configure(conf): pass
 
 def build(bld):
-  bld.install_files('${PREFIX}/include/jubatus/common/jsonconfig', bld.path.ant_glob('*.hpp'))
+  bld.install_files('${PREFIX}/include/jubatus/core/common/jsonconfig', bld.path.ant_glob('*.hpp'))

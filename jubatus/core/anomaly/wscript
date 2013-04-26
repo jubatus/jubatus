@@ -30,7 +30,7 @@ def build(bld):
       'lof_test.cpp'
       ])
 
-  bld.install_files('${PREFIX}/include/jubatus/anomaly', [
+  bld.install_files('${PREFIX}/include/jubatus/core/anomaly', [
       'anomaly_base.hpp',
       'anomaly_factory.hpp',
       'anomaly_type.hpp',

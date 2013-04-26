@@ -23,7 +23,7 @@ def build(bld):
       use = 'jubaserv_mixer'
       )
 
-  bld.install_files('${PREFIX}/include/jubatus/framework/mixer', [
+  bld.install_files('${PREFIX}/include/jubatus/server/framework/mixer', [
       'dummy_mixer.hpp',
       'linear_mixer.hpp',
       'mixer.hpp',

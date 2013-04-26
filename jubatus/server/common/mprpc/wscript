@@ -20,4 +20,4 @@ def build(bld):
     use = 'PFICOMMON JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK jubacommon jubaserv_common_mprpc',
     )
 
-  bld.install_files('${PREFIX}/include/jubatus/common/mprpc', bld.path.ant_glob('*.hpp'))
+  bld.install_files('${PREFIX}/include/jubatus/server/common/mprpc', bld.path.ant_glob('*.hpp'))

@@ -38,7 +38,7 @@ def build(bld):
       'euclid_lsh_test.cpp',
       ])
 
-  bld.install_files('${PREFIX}/include/jubatus/recommender', [
+  bld.install_files('${PREFIX}/include/jubatus/core/recommender', [
       'recommender_base.hpp',
       'recommender_factory.hpp',
       'recommender_type.hpp',

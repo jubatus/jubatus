@@ -12,5 +12,5 @@ def configure(conf):
 
 def build(bld):
   bld.recurse(subdirs)
-  # bld.install_files('${PREFIX}/include/jubatus',
-  #                   ['config.hpp', 'client.hpp', 'plugin.hpp', 'framework.hpp'])
+  bld.install_files('${PREFIX}/include/jubatus/server',
+                    ['framework.hpp'])

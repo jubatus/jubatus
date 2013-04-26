@@ -57,8 +57,7 @@ def build(bld):
   for s in test_src:
     make_test(s)
 
-  bld.install_files('${PREFIX}/include/jubatus/common/', [
-      'cached_zk.hpp',
+  bld.install_files('${PREFIX}/include/jubatus/server/common/', [
       'cht.hpp',
       'config.hpp',
       'global_id_generator_base.hpp',
@@ -67,6 +66,5 @@ def build(bld):
       'lock_service.hpp',
       'membership.hpp',
       'network.hpp',
-      'zk.hpp',
       ])
   bld.recurse(subdirs)
