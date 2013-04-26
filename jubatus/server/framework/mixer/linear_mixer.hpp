@@ -63,7 +63,8 @@ class linear_mixer : public mixer {
                unsigned int count_threshold, unsigned int tick_threshold);
 
   void register_api(rpc_server_t& server);
-  void set_mixable_holder(pfi::lang::shared_ptr<core::framework::mixable_holder> m);
+  void set_mixable_holder(
+      pfi::lang::shared_ptr<core::framework::mixable_holder> m);
 
   void start();
   void stop();

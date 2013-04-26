@@ -48,7 +48,8 @@ namespace jubatus {
 namespace server {
 namespace framework {
 
-class keeper : public keeper_common, jubatus::server::common::mprpc::rpc_server {
+class keeper
+    : public keeper_common, jubatus::server::common::mprpc::rpc_server {
  public:
   typedef msgpack::rpc::request request_type;
   typedef std::vector<std::pair<std::string, int> > host_list_type;

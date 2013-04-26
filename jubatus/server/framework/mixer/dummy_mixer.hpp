@@ -30,7 +30,8 @@ class dummy_mixer : public mixer {
  public:
   void register_api(rpc_server_t& server) {
   }
-  void set_mixable_holder(pfi::lang::shared_ptr<core::framework::mixable_holder>) {
+  void set_mixable_holder(
+      pfi::lang::shared_ptr<core::framework::mixable_holder>) {
   }
 
   void start() {

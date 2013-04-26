@@ -22,14 +22,15 @@
 #include "../../common/mprpc/rpc_server.hpp"
 
 namespace jubatus {
+
 namespace core {
 namespace framework {
 
 class mixable0;
 class mixable_holder;
 
-} // namespace framework
-} // namespace core
+}  // namespace framework
+}  // namespace core
 
 namespace server {
 namespace framework {
@@ -44,7 +45,8 @@ class mixer {
   }
 
   virtual void register_api(rpc_server_t& server) = 0;
-  virtual void set_mixable_holder(pfi::lang::shared_ptr<core::framework::mixable_holder>) = 0;
+  virtual void set_mixable_holder(
+      pfi::lang::shared_ptr<core::framework::mixable_holder>) = 0;
 
   virtual void start() = 0;
   virtual void stop() = 0;

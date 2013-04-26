@@ -97,7 +97,8 @@ class linear_communication_stub : public linear_communication {
   mutable vector<byte_buffer> mixed_;
 };
 
-struct mixable_string : public core::framework::mixable<mixable_string, string> {
+struct mixable_string
+    : public core::framework::mixable<mixable_string, string> {
  public:
   string get_diff_impl() const {
     return string();
@@ -121,7 +122,8 @@ TEST(linear_mixer, mix_order) {
   shared_ptr<linear_communication_stub> com(new linear_communication_stub);
   linear_mixer m(com, 1, 1);
 
-  pfi::lang::shared_ptr<core::framework::mixable_holder> holder(new core::framework::mixable_holder());
+  pfi::lang::shared_ptr<core::framework::mixable_holder> holder(
+      new core::framework::mixable_holder());
   m.set_mixable_holder(holder);
 
   mixable_string s;

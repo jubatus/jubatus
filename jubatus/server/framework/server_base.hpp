@@ -43,7 +43,8 @@ class server_base {
   virtual ~server_base() {}
 
   virtual mixer::mixer* get_mixer() const = 0;
-  virtual pfi::lang::shared_ptr<core::framework::mixable_holder> get_mixable_holder() const = 0;
+  virtual pfi::lang::shared_ptr<core::framework::mixable_holder>
+      get_mixable_holder() const = 0;
   virtual void get_status(status_t& status) const = 0;
 
   virtual bool save(const std::string& id);

@@ -45,9 +45,11 @@ namespace mixer {
 namespace {
 class linear_communication_impl : public linear_communication {
  public:
-  linear_communication_impl(const core::common::cshared_ptr<common::lock_service>& zk,
-                            const string& type, const string& name,
-                            int timeout_sec);
+  linear_communication_impl(
+      const core::common::cshared_ptr<common::lock_service>& zk,
+      const string& type,
+      const string& name,
+      int timeout_sec);
 
   size_t update_members();
   pfi::lang::shared_ptr<common::try_lockable> create_lock();
@@ -141,7 +143,8 @@ void linear_mixer::register_api(rpc_server_t& server) {
       pfi::lang::bind(&linear_mixer::put_diff, this, pfi::lang::_1));
 }
 
-void linear_mixer::set_mixable_holder(pfi::lang::shared_ptr<core::framework::mixable_holder> m) {
+void linear_mixer::set_mixable_holder(
+    pfi::lang::shared_ptr<core::framework::mixable_holder> m) {
   mixable_holder_ = m;
 }
 
@@ -224,7 +227,8 @@ void linear_mixer::mix() {
     return;
   } else {
     try {
-      core::framework::mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
+      core::framework::mixable_holder::mixable_list mixables =
+          mixable_holder_->get_mixables();
 
       common::mprpc::rpc_result_object result;
       communication_->get_diff(result);
@@ -262,7 +266,8 @@ vector<byte_buffer> linear_mixer::get_diff(int a) {
   scoped_rlock lk_read(mixable_holder_->rw_mutex());
   scoped_lock lk(m_);
 
-  core::framework::mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
+  core::framework::mixable_holder::mixable_list mixables =
+      mixable_holder_->get_mixables();
   if (mixables.empty()) {
     throw JUBATUS_EXCEPTION(config_not_set());  // nothing to mix
   }
@@ -279,7 +284,8 @@ int linear_mixer::put_diff(
   scoped_wlock lk_write(mixable_holder_->rw_mutex());
   scoped_lock lk(m_);
 
-  core::framework::mixable_holder::mixable_list mixables = mixable_holder_->get_mixables();
+  core::framework::mixable_holder::mixable_list mixables =
+      mixable_holder_->get_mixables();
   if (unpacked.size() != mixables.size()) {
     // deserialization error
     return -1;

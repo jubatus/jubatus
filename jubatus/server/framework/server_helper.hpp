@@ -71,8 +71,8 @@ class server_helper {
     } catch (const core::jsonconfig::cast_check_error& e) {
       config_exception config_error;
       const core::jsonconfig::config_error_list& errors = e.errors();
-      for (core::jsonconfig::config_error_list::const_iterator it = errors.begin(),
-          end = errors.end(); it != end; ++it) {
+      for (core::jsonconfig::config_error_list::const_iterator
+          it = errors.begin(), end = errors.end(); it != end; ++it) {
         config_error << exception::error_message((*it)->what());
       }
       // send error message to caller

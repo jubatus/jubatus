@@ -40,11 +40,12 @@ class parser;
 }
 
 namespace jubatus {
+
 namespace core {
 namespace fv_converter {
 class datum_to_fv_converter;
-}
-} // namespace core
+}  // namespace fv_converter
+}  // namespace core
 
 namespace server {
 namespace framework {
@@ -128,7 +129,8 @@ void convert(const From& from, To& to) {
   msg.get().convert(&to);
 }
 
-extern jubatus::core::common::cshared_ptr<jubatus::server::common::lock_service> ls;
+extern jubatus::core::common::cshared_ptr<
+    jubatus::server::common::lock_service> ls;
 void atexit();
 
 template<class ImplServerClass>
