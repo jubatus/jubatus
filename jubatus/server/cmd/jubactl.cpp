@@ -168,7 +168,8 @@ void send2supervisor(
     const string& zkhosts,
     const cmdline::parser& argv) {
   pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
-      jubatus::server::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+      jubatus::server::common::create_lock_service(
+          "zk", zkhosts, 10, "/dev/null"));
 
   vector<string> list;
   jubatus::server::framework::server_argv server_option;
@@ -224,7 +225,8 @@ void send2server(
     const string& name,
     const string& zkhosts) {
   pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
-      jubatus::server::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+      jubatus::server::common::create_lock_service(
+          "zk", zkhosts, 10, "/dev/null"));
   vector<string> list;
   ls_->list(jubatus::server::common::ACTOR_BASE_PATH, list);
 
@@ -269,8 +271,12 @@ void show(
 
 void status(const string& type, const string& name, const string& zkhosts) {
   pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
-      jubatus::server::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
-  show(*ls_, jubatus::server::common::JUBAKEEPER_BASE_PATH + "/" + type, "jubakeeper");
+      jubatus::server::common::create_lock_service(
+          "zk", zkhosts, 10, "/dev/null"));
+  show(
+      *ls_,
+      jubatus::server::common::JUBAKEEPER_BASE_PATH + "/" + type,
+      "jubakeeper");
   show(*ls_, jubatus::server::common::JUBAVISOR_BASE_PATH, "jubavisor");
   std::string path;
   jubatus::server::common::build_actor_path(path, type, name);

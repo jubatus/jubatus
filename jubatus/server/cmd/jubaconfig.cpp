@@ -141,7 +141,8 @@ void set_config(
     const string& name,
     const string& configfile) {
   pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
-      jubatus::server::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+      jubatus::server::common::create_lock_service(
+          "zk", zkhosts, 10, "/dev/null"));
 
   jubatus::server::common::prepare_jubatus(*ls_, type, name);
 
@@ -155,21 +156,24 @@ void delete_config(
     const string& type,
     const string& name) {
   pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
-      jubatus::server::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+      jubatus::server::common::create_lock_service(
+          "zk", zkhosts, 10, "/dev/null"));
 
   jubatus::server::common::remove_config_fromzk(*ls_, type, name);
 }
 
 void get_config(const string& zkhosts, const string& type, const string& name) {
   pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
-      jubatus::server::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+      jubatus::server::common::create_lock_service(
+          "zk", zkhosts, 10, "/dev/null"));
 
   print_config(*ls_, type, name);
 }
 
 void get_configs(const string& zkhosts) {
   pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
-      jubatus::server::common::create_lock_service("zk", zkhosts, 10, "/dev/null"));
+      jubatus::server::common::create_lock_service(
+          "zk", zkhosts, 10, "/dev/null"));
 
   std::vector<std::pair<string, string> > paths;
   get_all_config_paths(*ls_, paths);
@@ -196,7 +200,8 @@ void get_all_config_paths(
   ret.clear();
 
   std::vector<std::string> types;
-  if (!z.list(jubatus::server::common::CONFIG_BASE_PATH, types) || types.empty()) {
+  if (!z.list(jubatus::server::common::CONFIG_BASE_PATH, types)
+      || types.empty()) {
     return;
   }
 
