@@ -1,8 +1,8 @@
 // This file is auto-generated from classifier.idl
 // *** DO NOT EDIT ***
 
-#ifndef JUBATUS_CLASSIFIER_TYPES_HPP_
-#define JUBATUS_CLASSIFIER_TYPES_HPP_
+#ifndef JUBATUS_CLIENT_CLASSIFIER_TYPES_HPP_
+#define JUBATUS_CLIENT_CLASSIFIER_TYPES_HPP_
 
 #include <stdint.h>
 
@@ -33,4 +33,4 @@ struct estimate_result {
 }  // namespace classifier
 }  // namespace jubatus
 
-#endif  // JUBATUS_CLASSIFIER_TYPES_HPP_
+#endif  // JUBATUS_CLIENT_CLASSIFIER_TYPES_HPP_

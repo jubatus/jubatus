@@ -1,8 +1,8 @@
 // This file is auto-generated from anomaly.idl
 // *** DO NOT EDIT ***
 
-#ifndef JUBATUS_SERVER_ANOMALY_SERVER_HPP_
-#define JUBATUS_SERVER_ANOMALY_SERVER_HPP_
+#ifndef JUBATUS_SERVER_SERVER_ANOMALY_SERVER_HPP_
+#define JUBATUS_SERVER_SERVER_ANOMALY_SERVER_HPP_
 
 #include <map>
 #include <string>
@@ -49,4 +49,4 @@ class anomaly : public jubatus::server::common::mprpc::rpc_server {
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_ANOMALY_SERVER_HPP_
+#endif  // JUBATUS_SERVER_SERVER_ANOMALY_SERVER_HPP_

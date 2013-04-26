@@ -1,8 +1,8 @@
 // This file is auto-generated from regression.idl
 // *** DO NOT EDIT ***
 
-#ifndef JUBATUS_REGRESSION_CLIENT_HPP_
-#define JUBATUS_REGRESSION_CLIENT_HPP_
+#ifndef JUBATUS_CLIENT_REGRESSION_CLIENT_HPP_
+#define JUBATUS_CLIENT_REGRESSION_CLIENT_HPP_
 
 #include <map>
 #include <string>
@@ -72,4 +72,4 @@ class regression {
 }  // namespace regression
 }  // namespace jubatus
 
-#endif  // JUBATUS_REGRESSION_CLIENT_HPP_
+#endif  // JUBATUS_CLIENT_REGRESSION_CLIENT_HPP_

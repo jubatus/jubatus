@@ -1,8 +1,8 @@
 // This file is auto-generated from anomaly.idl
 // *** DO NOT EDIT ***
 
-#ifndef JUBATUS_ANOMALY_TYPES_HPP_
-#define JUBATUS_ANOMALY_TYPES_HPP_
+#ifndef JUBATUS_CLIENT_ANOMALY_TYPES_HPP_
+#define JUBATUS_CLIENT_ANOMALY_TYPES_HPP_
 
 #include <stdint.h>
 
@@ -26,4 +26,4 @@ struct datum {
 }  // namespace anomaly
 }  // namespace jubatus
 
-#endif  // JUBATUS_ANOMALY_TYPES_HPP_
+#endif  // JUBATUS_CLIENT_ANOMALY_TYPES_HPP_

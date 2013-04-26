@@ -1,8 +1,8 @@
 // This file is auto-generated from graph.idl
 // *** DO NOT EDIT ***
 
-#ifndef JUBATUS_GRAPH_CLIENT_HPP_
-#define JUBATUS_GRAPH_CLIENT_HPP_
+#ifndef JUBATUS_CLIENT_GRAPH_CLIENT_HPP_
+#define JUBATUS_CLIENT_GRAPH_CLIENT_HPP_
 
 #include <map>
 #include <string>
@@ -155,4 +155,4 @@ class graph {
 }  // namespace graph
 }  // namespace jubatus
 
-#endif  // JUBATUS_GRAPH_CLIENT_HPP_
+#endif  // JUBATUS_CLIENT_GRAPH_CLIENT_HPP_

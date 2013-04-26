@@ -1,8 +1,8 @@
 // This file is auto-generated from recommender.idl
 // *** DO NOT EDIT ***
 
-#ifndef JUBATUS_RECOMMENDER_CLIENT_HPP_
-#define JUBATUS_RECOMMENDER_CLIENT_HPP_
+#ifndef JUBATUS_CLIENT_RECOMMENDER_CLIENT_HPP_
+#define JUBATUS_CLIENT_RECOMMENDER_CLIENT_HPP_
 
 #include <map>
 #include <string>
@@ -112,4 +112,4 @@ class recommender {
 }  // namespace recommender
 }  // namespace jubatus
 
-#endif  // JUBATUS_RECOMMENDER_CLIENT_HPP_
+#endif  // JUBATUS_CLIENT_RECOMMENDER_CLIENT_HPP_

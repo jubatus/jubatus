@@ -1,8 +1,8 @@
 // This file is auto-generated from classifier.idl
 // *** DO NOT EDIT ***
 
-#ifndef JUBATUS_CLASSIFIER_CLIENT_HPP_
-#define JUBATUS_CLASSIFIER_CLIENT_HPP_
+#ifndef JUBATUS_CLIENT_CLASSIFIER_CLIENT_HPP_
+#define JUBATUS_CLIENT_CLASSIFIER_CLIENT_HPP_
 
 #include <map>
 #include <string>
@@ -72,4 +72,4 @@ class classifier {
 }  // namespace classifier
 }  // namespace jubatus
 
-#endif  // JUBATUS_CLASSIFIER_CLIENT_HPP_
+#endif  // JUBATUS_CLIENT_CLASSIFIER_CLIENT_HPP_

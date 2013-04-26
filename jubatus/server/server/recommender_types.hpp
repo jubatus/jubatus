@@ -1,8 +1,8 @@
 // This file is auto-generated from recommender.idl
 // *** DO NOT EDIT ***
 
-#ifndef JUBATUS_SERVER_RECOMMENDER_TYPES_HPP_
-#define JUBATUS_SERVER_RECOMMENDER_TYPES_HPP_
+#ifndef JUBATUS_SERVER_SERVER_RECOMMENDER_TYPES_HPP_
+#define JUBATUS_SERVER_SERVER_RECOMMENDER_TYPES_HPP_
 
 #include <stdint.h>
 
@@ -26,4 +26,4 @@ struct datum {
 
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_RECOMMENDER_TYPES_HPP_
+#endif  // JUBATUS_SERVER_SERVER_RECOMMENDER_TYPES_HPP_

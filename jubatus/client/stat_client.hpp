@@ -1,8 +1,8 @@
 // This file is auto-generated from stat.idl
 // *** DO NOT EDIT ***
 
-#ifndef JUBATUS_STAT_CLIENT_HPP_
-#define JUBATUS_STAT_CLIENT_HPP_
+#ifndef JUBATUS_CLIENT_STAT_CLIENT_HPP_
+#define JUBATUS_CLIENT_STAT_CLIENT_HPP_
 
 #include <map>
 #include <string>
@@ -96,4 +96,4 @@ class stat {
 }  // namespace stat
 }  // namespace jubatus
 
-#endif  // JUBATUS_STAT_CLIENT_HPP_
+#endif  // JUBATUS_CLIENT_STAT_CLIENT_HPP_
