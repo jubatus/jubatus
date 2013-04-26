@@ -33,14 +33,16 @@
 #include "rpc_error.hpp"
 #include "rpc_result.hpp"
 
-#define JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method)            \
-  catch ( msgpack::rpc::no_method_error ) {                             \
-    throw JUBATUS_EXCEPTION(jubatus::server::common::mprpc::rpc_method_not_found() \
-                            << jubatus::server::common::mprpc::error_method(method)); \
-  } catch ( msgpack::rpc::argument_error ) {                            \
-    throw JUBATUS_EXCEPTION(jubatus::server::common::mprpc::rpc_type_error() \
-                            << jubatus::server::common::mprpc::error_method(method)); \
-  } catch ( msgpack::rpc::remote_error& e ) {                           \
+#define JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method) \
+  catch (msgpack::rpc::no_method_error) { \
+    throw JUBATUS_EXCEPTION( \
+        jubatus::server::common::mprpc::rpc_method_not_found() \
+        << jubatus::server::common::mprpc::error_method(method)); \
+  } catch (msgpack::rpc::argument_error) { \
+    throw JUBATUS_EXCEPTION( \
+        jubatus::server::common::mprpc::rpc_type_error() \
+        << jubatus::server::common::mprpc::error_method(method)); \
+  } catch (msgpack::rpc::remote_error& e) { \
                                                                         \
     /* NOTE:                                                         */ \
     /*   msgpack-rpc raise remote_error against 'integer'-type error */ \
@@ -49,28 +51,32 @@
     /* We map these errors to                                        */ \
     /* juba's rpc_call_error with error code or error message.       */ \
                                                                         \
-    msgpack::object err = e.error();                                    \
-    if ( err.type == msgpack::type::POSITIVE_INTEGER ) {                \
-      throw JUBATUS_EXCEPTION(jubatus::server::common::mprpc::rpc_call_error() \
-                              << jubatus::server::common::mprpc::error_method(method) \
+    msgpack::object err = e.error(); \
+    if (err.type == msgpack::type::POSITIVE_INTEGER) { \
+      throw JUBATUS_EXCEPTION( \
+          jubatus::server::common::mprpc::rpc_call_error() \
+          << jubatus::server::common::mprpc::error_method(method) \
           << jubatus::exception::error_message( \
                  std::string("rpc_server error: " \
                      + pfi::lang::lexical_cast<std::string>(err.via.u64)))); \
-    } else {                                                           \
-      throw JUBATUS_EXCEPTION(jubatus::server::common::mprpc::rpc_call_error() \
-                              << jubatus::server::common::mprpc::error_method(method) \
+    } else { \
+      throw JUBATUS_EXCEPTION( \
+          jubatus::server::common::mprpc::rpc_call_error() \
+          << jubatus::server::common::mprpc::error_method(method) \
           << jubatus::exception::error_message( \
                  std::string("rpc_server error: " \
                      + pfi::lang::lexical_cast<std::string>(err)))); \
-    }                                                                   \
-  } catch( msgpack::rpc::connect_error ) {                              \
-    throw JUBATUS_EXCEPTION(jubatus::server::common::mprpc::rpc_io_error() \
-                            << jubatus::server::common::mprpc::error_method(method)); \
-  } catch( msgpack::rpc::timeout_error ) {                              \
-    throw JUBATUS_EXCEPTION(jubatus::server::common::mprpc::rpc_timeout_error() \
-                            << jubatus::server::common::mprpc::error_method(method)); \
-  } catch( msgpack::type_error ) {                                      \
-                                                                        \
+    } \
+  } catch(msgpack::rpc::connect_error) { \
+    throw JUBATUS_EXCEPTION( \
+        jubatus::server::common::mprpc::rpc_io_error() \
+        << jubatus::server::common::mprpc::error_method(method)); \
+  } catch(msgpack::rpc::timeout_error) { \
+    throw JUBATUS_EXCEPTION( \
+        jubatus::server::common::mprpc::rpc_timeout_error() \
+        << jubatus::server::common::mprpc::error_method(method)); \
+  } catch(msgpack::type_error) { \
+                                                                     \
     /* NOTE: msgpack-rpc will raise msgpack::type_error exception */ \
     /* against broken messages. We map these errors to juba's     */ \
     /* rpc_no_result.                                             */ \
@@ -80,8 +86,9 @@
     /* So that, new exception class is expected like              */ \
     /* rcp_broken_message, ...                                    */ \
                                                                      \
-    throw JUBATUS_EXCEPTION(jubatus::server::common::mprpc::rpc_no_result() \
-                            << jubatus::server::common::mprpc::error_method(method)); \
+    throw JUBATUS_EXCEPTION( \
+        jubatus::server::common::mprpc::rpc_no_result() \
+        << jubatus::server::common::mprpc::error_method(method)); \
   }
 
 namespace jubatus {

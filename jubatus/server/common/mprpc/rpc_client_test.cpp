@@ -128,9 +128,10 @@ TEST(rpc_mclient, no_client) {
 
   // MUST USE with some hosts
   ASSERT_THROW(
-      cli.call("test",
-               1234,
-               function<bool(bool, bool)>(&jubatus::server::framework::all_and)),
+      cli.call(
+          "test",
+          1234,
+          function<bool(bool, bool)>(&jubatus::server::framework::all_and)),
       jubatus::server::common::mprpc::rpc_no_client);
 }
 
@@ -141,9 +142,10 @@ TEST(rpc_mclient, no_result) {
 
   jubatus::server::common::mprpc::rpc_mclient cli(hosts, 3.0);
   ASSERT_THROW(
-      cli.call("test",
-               1234,
-               function<bool(bool, bool)>(&jubatus::server::framework::all_and)),
+      cli.call(
+          "test",
+           1234,
+           function<bool(bool, bool)>(&jubatus::server::framework::all_and)),
       jubatus::server::common::mprpc::rpc_no_result);
 }
 
@@ -373,9 +375,11 @@ TEST(rpc_mclient, small) {
   }
 
   {  // server_error: method_not_found
-     // ASSERT_THROW(cli.call("undefined_method",
-     //                  1,
-     //                  function<int(int,int)>(&jubatus::server::framework::add<int>)),
+     // ASSERT_THROW(
+     //     cli.call(
+     //         "undefined_method",
+     //         1,
+     //         function<int(int,int)>(&jubatus::server::framework::add<int>)),
      //     jubatus::server::common::mprpc::rpc_no_result);
 
     try {
@@ -501,7 +505,9 @@ TEST(rpc_mclient, socket_disconnection) {
     EXPECT_EQ(kInvalidPort, error.port());
 
     EXPECT_TRUE(error.has_exception());
-    EXPECT_THROW(error.throw_exception(), jubatus::server::common::mprpc::rpc_io_error);
+    EXPECT_THROW(
+        error.throw_exception(),
+        jubatus::server::common::mprpc::rpc_io_error);
   }
 
   ser->close();

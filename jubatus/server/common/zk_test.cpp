@@ -30,8 +30,8 @@ class zk_trivial : public testing::Test {
  protected:
   void SetUp() {
     zk_ = pfi::lang::shared_ptr<lock_service>(
-        jubatus::server::common::create_lock_service("zk", "localhost:2181", 1024,
-                                                     "test.log"));
+        jubatus::server::common::create_lock_service(
+            "zk", "localhost:2181", 1024, "test.log"));
 
     root_path = "/jubatus_zk_test_root";
     engine_name = "jubatus_zk_test";
