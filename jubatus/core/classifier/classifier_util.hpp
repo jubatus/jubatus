@@ -20,8 +20,8 @@
 #include <string>
 
 namespace jubatus {
-namespace core{
-namespace classifier{
+namespace core {
+namespace classifier {
 
 class ClassifierUtil {
  public:

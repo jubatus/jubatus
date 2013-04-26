@@ -25,8 +25,8 @@
 #include "classifier_config.hpp"
 
 namespace jubatus {
-namespace core{
-namespace classifier{
+namespace core {
+namespace classifier {
 
 // TODO(unknown): namespace should be classifier
 struct classify_result_elem {

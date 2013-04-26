@@ -32,7 +32,7 @@ using jubatus::core::storage::map_feature_val1_t;
 using jubatus::core::storage::feature_val2_t;
 
 namespace jubatus {
-namespace core{
+namespace core {
 namespace classifier {
 
 classifier_base::classifier_base(storage::storage_base* storage)

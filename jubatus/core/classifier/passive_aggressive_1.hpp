@@ -22,7 +22,7 @@
 #include "classifier_base.hpp"
 
 namespace jubatus {
-namespace core{
+namespace core {
 namespace classifier {
 
 class passive_aggressive_1 : public classifier_base {
