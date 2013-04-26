@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_SRC_FV_CONVERTER_RE2_FILTER_HPP_
-#define JUBATUS_CORE_SRC_FV_CONVERTER_RE2_FILTER_HPP_
+#ifndef JUBATUS_CORE_FV_CONVERTER_RE2_FILTER_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_RE2_FILTER_HPP_
 
 #include <string>
 #include <re2/re2.h>
@@ -42,4 +42,4 @@ class re2_filter : public string_filter {
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_SRC_FV_CONVERTER_RE2_FILTER_HPP_
+#endif  // JUBATUS_CORE_FV_CONVERTER_RE2_FILTER_HPP_

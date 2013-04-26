@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_SRC_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
-#define JUBATUS_CORE_SRC_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
+#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
 
 #include <map>
 #include <string>
@@ -46,4 +46,4 @@ class dynamic_num_feature : public num_feature {
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_SRC_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
+#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
