@@ -45,4 +45,4 @@ class global_id_generator_standalone: public global_id_generator_base {
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_COMMON_GLOBAL_ID_GENERATOR_HPP_
+#endif  // JUBATUS_SERVER_COMMON_GLOBAL_ID_GENERATOR_STANDALONE_HPP_
