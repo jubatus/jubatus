@@ -22,6 +22,7 @@
 
 #include <pficommon/text/json.h>
 #include <pficommon/data/optional.h>
+#include <pficommon/lang/shared_ptr.h>
 
 #include "jubatus/core/common/util.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
@@ -39,7 +40,6 @@ using pfi::lang::shared_ptr;
 using pfi::text::json::json;
 using pfi::lang::lexical_cast;
 
-using jubatus::core::common::cshared_ptr;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::convert;
 using jubatus::server::framework::mixer::create_mixer;
@@ -70,7 +70,7 @@ core::storage::storage_base* make_model(
 
 regression_serv::regression_serv(
     const framework::server_argv& a,
-    const cshared_ptr<lock_service>& zk)
+    const pfi::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
 }

@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <pficommon/lang/shared_ptr.h>
 
-#include "jubatus/core/common/shared_ptr.hpp"
 #include "../framework.hpp"
 #include "graph_server.hpp"
 #include "graph_serv.hpp"
@@ -140,10 +140,10 @@ class graph_impl_ : public graph<graph_impl_> {
     return get_p()->create_edge_here(edge_id, e);
   }
   int run() { return p_->start(*this); }
-  core::common::cshared_ptr<graph_serv> get_p() { return p_->server(); }
+  pfi::lang::shared_ptr<graph_serv> get_p() { return p_->server(); }
 
  private:
-  core::common::cshared_ptr<jubatus::server::framework::server_helper<graph_serv> > p_;
+  pfi::lang::shared_ptr<jubatus::server::framework::server_helper<graph_serv> > p_;
 };
 
 }  // namespace server

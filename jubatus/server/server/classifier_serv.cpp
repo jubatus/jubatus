@@ -22,6 +22,7 @@
 
 #include <pficommon/text/json.h>
 #include <pficommon/data/optional.h>
+#include <pficommon/lang/shared_ptr.h>
 
 #include "jubatus/core/classifier/classifier_factory.hpp"
 #include "jubatus/core/common/util.hpp"
@@ -40,7 +41,6 @@ using std::pair;
 using std::isfinite;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
-using jubatus::core::common::cshared_ptr;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::convert;
 using jubatus::server::framework::server_argv;
@@ -75,7 +75,7 @@ core::storage::storage_base* make_model(
 
 classifier_serv::classifier_serv(
     const framework::server_argv& a,
-    const cshared_ptr<lock_service>& zk)
+    const pfi::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
 }

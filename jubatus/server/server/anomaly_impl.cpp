@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <pficommon/lang/shared_ptr.h>
 
-#include "jubatus/core/common/shared_ptr.hpp"
 #include "../framework.hpp"
 #include "anomaly_server.hpp"
 #include "anomaly_serv.hpp"
@@ -71,10 +71,10 @@ class anomaly_impl_ : public anomaly<anomaly_impl_> {
     return p_->get_status();
   }
   int run() { return p_->start(*this); }
-  core::common::cshared_ptr<anomaly_serv> get_p() { return p_->server(); }
+  pfi::lang::shared_ptr<anomaly_serv> get_p() { return p_->server(); }
 
  private:
-  core::common::cshared_ptr<jubatus::server::framework::server_helper<anomaly_serv> > p_;
+  pfi::lang::shared_ptr<jubatus::server::framework::server_helper<anomaly_serv> > p_;
 };
 
 }  // namespace server

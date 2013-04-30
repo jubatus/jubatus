@@ -20,6 +20,8 @@
 #include <utility>
 #include <vector>
 
+#include <pficommon/lang/shared_ptr.h>
+
 #include "../recommender/recommender_factory.hpp"
 #include "../common/vector_util.hpp"
 #include "../fv_converter/datum.hpp"
@@ -44,7 +46,7 @@ recommender::recommender(
     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new mixable_holder),
       converter_(converter) {
-  common::cshared_ptr<jubatus::core::recommender::recommender_base>
+  pfi::lang::shared_ptr<jubatus::core::recommender::recommender_base>
       recommender_method_p(recommender_method);
   recommender_.set_model(recommender_method_p);
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));

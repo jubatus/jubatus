@@ -33,7 +33,7 @@ class regression_serv : public framework::server_base {
  public:
   regression_serv(
       const framework::server_argv& a,
-      const core::common::cshared_ptr<common::lock_service>& zk);
+      const pfi::lang::shared_ptr<common::lock_service>& zk);
   virtual ~regression_serv();
 
   framework::mixer::mixer* get_mixer() const {

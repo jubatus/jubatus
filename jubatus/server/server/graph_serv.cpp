@@ -25,6 +25,7 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/text/json.h>
 #include <pficommon/system/time_util.h>
+#include <pficommon/lang/shared_ptr.h>
 
 #include "jubatus/core/common/util.hpp"
 #include "jubatus/core/common/vector_util.hpp"
@@ -55,7 +56,6 @@ using std::vector;
 using std::pair;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
-using jubatus::core::common::cshared_ptr;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::convert;
 using jubatus::server::framework::server_argv;
@@ -105,7 +105,7 @@ inline uint64_t n2i(const node_id& id) {
 
 graph_serv::graph_serv(
     const framework::server_argv& a,
-    const cshared_ptr<lock_service>& zk)
+    const pfi::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
 

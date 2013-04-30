@@ -23,10 +23,9 @@
 
 #include <msgpack.hpp>
 #include <pficommon/concurrent/rwmutex.h>
-
+#include <pficommon/lang/shared_ptr.h>
 #include "../common/exception.hpp"
 #include "../common/byte_buffer.hpp"
-#include "../common/shared_ptr.hpp"
 
 namespace jubatus {
 namespace core {
@@ -83,7 +82,7 @@ class mixable : public mixable0 {
  public:
   typedef Model model_type;
   typedef Diff diff_type;
-  typedef common::cshared_ptr<Model> model_ptr;
+  typedef pfi::lang::shared_ptr<Model> model_ptr;
 
   virtual ~mixable() {
   }

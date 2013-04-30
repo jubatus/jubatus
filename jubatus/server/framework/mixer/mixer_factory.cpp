@@ -14,6 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <pficommon/lang/shared_ptr.h>
+
 #include "mixer_factory.hpp"
 
 #ifdef HAVE_ZOOKEEPER_H
@@ -28,7 +30,7 @@ namespace framework {
 namespace mixer {
 
 mixer* create_mixer(const server_argv& a,
-                    const core::common::cshared_ptr<common::lock_service>& zk) {
+                    const pfi::lang::shared_ptr<common::lock_service>& zk) {
 #ifdef HAVE_ZOOKEEPER_H
   return new linear_mixer(
       linear_communication::create(zk, a.type, a.name, a.timeout),

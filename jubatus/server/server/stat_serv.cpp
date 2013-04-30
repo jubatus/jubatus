@@ -19,9 +19,9 @@
 #include <algorithm>
 #include <string>
 
+#include <pficommon/lang/shared_ptr.h>
 #include <pficommon/text/json.h>
 
-#include "jubatus/core/common/shared_ptr.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
@@ -30,7 +30,6 @@ using std::make_pair;
 using pfi::text::json::json;
 using pfi::lang::lexical_cast;
 
-using jubatus::core::common::cshared_ptr;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::server_argv;
 using jubatus::server::framework::mixer::create_mixer;
@@ -47,7 +46,7 @@ struct stat_serv_config {
   }
 };
 
-stat_serv::stat_serv(const server_argv& a, const cshared_ptr<lock_service>& zk)
+stat_serv::stat_serv(const server_argv& a, const pfi::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
 }

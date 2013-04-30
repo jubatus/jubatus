@@ -21,6 +21,8 @@
 #include <string>
 #include <utility>
 
+#include <pficommon/lang/shared_ptr.h>
+
 #include "jubatus/core/driver/stat.hpp"
 #include "../framework/server_base.hpp"
 #include "../framework/mixer/mixer.hpp"
@@ -32,7 +34,7 @@ class stat_serv : public framework::server_base {
  public:
   stat_serv(
       const framework::server_argv&,
-      const core::common::cshared_ptr<common::lock_service>& zk);
+      const pfi::lang::shared_ptr<common::lock_service>& zk);
   virtual ~stat_serv();
 
   framework::mixer::mixer* get_mixer() const {

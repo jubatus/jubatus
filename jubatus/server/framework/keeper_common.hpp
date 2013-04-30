@@ -24,9 +24,9 @@
 #include <glog/logging.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
+#include <pficommon/lang/shared_ptr.h>
 #include <pficommon/math/random.h>
 
-#include "jubatus/core/common/shared_ptr.hpp"
 #include "jubatus/core/common/exception.hpp"
 #include "server_util.hpp"
 #include "../common/lock_service.hpp"
@@ -62,7 +62,7 @@ class keeper_common {
   keeper_argv a_;
   pfi::math::random::mtrand rng_;
   pfi::concurrent::mutex mutex_;
-  core::common::cshared_ptr<common::lock_service> zk_;
+  pfi::lang::shared_ptr<common::lock_service> zk_;
 };
 
 }  // namespace framework

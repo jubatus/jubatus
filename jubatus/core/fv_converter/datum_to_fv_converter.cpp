@@ -22,6 +22,7 @@
 #include <utility>
 #include <vector>
 #include <pficommon/data/optional.h>
+#include <pficommon/lang/shared_ptr.h>
 #include "counter.hpp"
 #include "datum.hpp"
 #include "exception.hpp"
@@ -117,7 +118,7 @@ class datum_to_fv_converter_impl {
   std::vector<string_feature_rule> string_rules_;
   std::vector<num_feature_rule> num_rules_;
 
-  common::cshared_ptr<weight_manager> weights_;
+  pfi::lang::shared_ptr<weight_manager> weights_;
 
   pfi::data::optional<feature_hasher> hasher_;
 
@@ -252,7 +253,7 @@ class datum_to_fv_converter_impl {
     hasher_ = feature_hasher(hash_max_size);
   }
 
-  void set_weight_manager(common::cshared_ptr<weight_manager> wm) {
+  void set_weight_manager(pfi::lang::shared_ptr<weight_manager> wm) {
     weights_ = wm;
   }
 
@@ -491,7 +492,7 @@ void datum_to_fv_converter::set_hash_max_size(uint64_t hash_max_size) {
 }
 
 void datum_to_fv_converter::set_weight_manager(
-    common::cshared_ptr<weight_manager> wm) {
+    pfi::lang::shared_ptr<weight_manager> wm) {
   pimpl_->set_weight_manager(wm);
 }
 

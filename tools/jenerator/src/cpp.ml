@@ -566,10 +566,10 @@ let gen_impl s =
     indent_lines 1 (concat_blocks methods);
     [
       (1,   "int run() { return p_->start(*this); }");
-      (1,   "core::common::cshared_ptr<" ^ serv_name ^ "> get_p() { return p_->server(); }");
+      (1,   "pfi::lang::shared_ptr<" ^ serv_name ^ "> get_p() { return p_->server(); }");
       (0, "");
       (0, " private:");
-      (1,   "core::common::cshared_ptr<jubatus::server::framework::server_helper<" ^ serv_name ^ "> > p_;");
+      (1,   "pfi::lang::shared_ptr<jubatus::server::framework::server_helper<" ^ serv_name ^ "> > p_;");
       (0, "};")
     ]
   ]
@@ -589,8 +589,8 @@ let gen_impl_file conf source services =
       (0, "#include <string>");
       (0, "#include <vector>");
       (0, "#include <utility>");
+      (0, "#include <pficommon/lang/shared_ptr.h>");
       (0, "");
-      (0, gen_jubatus_core_include conf "common/shared_ptr.hpp");
       (0, gen_jubatus_include conf "framework.hpp");
       (0, "#include \"" ^ base ^ "_server.hpp\"");
       (0, "#include \"" ^ base ^ "_serv.hpp\"");
@@ -644,7 +644,7 @@ let gen_server_template_header s =
       (0, " public:");
       (1,   serv_name ^ "(");
       (2,     "const jubatus::server::framework::server_argv& a,");
-      (2,     "const core::common::cshared_ptr<common::lock_service>& zk);  // do not change");
+      (2,     "const pfi::lang::shared_ptr<common::lock_service>& zk);  // do not change");
       (1,   "virtual ~" ^ serv_name ^ "();  // do not change");
       (0,   "");
       (1,   "virtual mixer::mixer* get_mixer() const;");
@@ -703,7 +703,7 @@ let gen_server_template_source s =
     [
       (0, serv_name ^ "::" ^ serv_name ^ "(");
       (1,   "const jubatus::server::framework::server_argv& a,");
-      (1,   "const core::common::cshared_ptr<common::lock_service>& zk)");
+      (1,   "const pfi::lang::shared_ptr<common::lock_service>& zk)");
       (2,     ": jubatus::server::framework::server_base(a) {");
       (1,   "// somemixable* mi = new somemixable;");
       (1,   "// somemixable_.set_model(mi);");

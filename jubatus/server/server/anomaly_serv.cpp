@@ -23,6 +23,7 @@
 #include <glog/logging.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/text/json.h>
+#include <pficommon/lang/shared_ptr.h>
 
 #include "jubatus/core/common/util.hpp"
 #include "jubatus/core/common/vector_util.hpp"
@@ -50,7 +51,6 @@ using std::vector;
 using std::pair;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
-using jubatus::core::common::cshared_ptr;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::convert;
 using jubatus::server::framework::server_argv;
@@ -78,7 +78,7 @@ struct anomaly_serv_config {
 
 anomaly_serv::anomaly_serv(
     const server_argv& a,
-    const cshared_ptr<lock_service>& zk)
+    const pfi::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
 

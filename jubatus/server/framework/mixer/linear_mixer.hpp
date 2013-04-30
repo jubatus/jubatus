@@ -24,7 +24,6 @@
 #include <pficommon/concurrent/thread.h>
 #include <pficommon/lang/shared_ptr.h>
 #include "jubatus/core/common/byte_buffer.hpp"
-#include "jubatus/core/common/shared_ptr.hpp"
 #include "../../common/lock_service.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
 #include "mixer.hpp"
@@ -37,7 +36,7 @@ namespace mixer {
 class linear_communication {
  public:
   static pfi::lang::shared_ptr<linear_communication>
-  create(const core::common::cshared_ptr<common::lock_service>& zk,
+  create(const pfi::lang::shared_ptr<common::lock_service>& zk,
          const std::string& type, const std::string& name, int timeout_sec);
 
   virtual ~linear_communication() {

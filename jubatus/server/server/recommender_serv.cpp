@@ -22,6 +22,7 @@
 
 #include <pficommon/text/json.h>
 #include <pficommon/data/optional.h>
+#include <pficommon/lang/shared_ptr.h>
 
 #include "jubatus/core/common/util.hpp"
 #include "jubatus/core/common/vector_util.hpp"
@@ -40,7 +41,6 @@ using std::pair;
 using std::isfinite;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
-using jubatus::core::common::cshared_ptr;
 using jubatus::core::fv_converter::weight_manager;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::convert;
@@ -68,7 +68,7 @@ struct recommender_serv_config {
 
 recommender_serv::recommender_serv(
     const framework::server_argv& a,
-    const cshared_ptr<lock_service>& zk)
+    const pfi::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)),
       clear_row_cnt_(),

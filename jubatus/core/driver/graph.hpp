@@ -24,7 +24,6 @@
 #include "../graph/graph_base.hpp"
 #include "../graph/graph_type.hpp"
 #include "../graph/graph_wo_index.hpp"
-#include "../common/shared_ptr.hpp"
 #include "../framework/mixable.hpp"
 #include "linear_function_mixer.hpp"
 #include "mixable_weight_manager.hpp"

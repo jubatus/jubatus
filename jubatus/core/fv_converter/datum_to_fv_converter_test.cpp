@@ -37,7 +37,6 @@
 #include "weight_manager.hpp"
 #include "without_split.hpp"
 
-using jubatus::core::common::cshared_ptr;
 using pfi::lang::shared_ptr;
 
 namespace jubatus {
@@ -47,7 +46,7 @@ namespace fv_converter {
 namespace {
 
 void init_weight_manager(datum_to_fv_converter& conv) {
-  conv.set_weight_manager(cshared_ptr<weight_manager>(new weight_manager));
+  conv.set_weight_manager(shared_ptr<weight_manager>(new weight_manager));
 }
 
 }  // namespace

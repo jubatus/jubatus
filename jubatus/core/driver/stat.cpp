@@ -19,7 +19,6 @@
 #include <algorithm>
 #include <string>
 
-#include "../common/shared_ptr.hpp"
 #include "../framework/mixable.hpp"
 
 using jubatus::core::framework::mixable_holder;

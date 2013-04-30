@@ -22,6 +22,7 @@
 
 #include <glog/logging.h>
 #include <pficommon/text/json.h>
+#include <pficommon/lang/shared_ptr.h>
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/common/util.hpp"
@@ -355,7 +356,7 @@ void keeper_argv::set_log_destination(const std::string& progname) const {
   }
 }
 
-core::common::cshared_ptr<server::common::lock_service> ls;
+pfi::lang::shared_ptr<server::common::lock_service> ls;
 
 void atexit() {
 #ifdef HAVE_ZOOKEEPER_H

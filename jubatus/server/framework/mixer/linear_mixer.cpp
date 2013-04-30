@@ -23,6 +23,7 @@
 #include <glog/logging.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/bind.h>
+#include <pficommon/lang/shared_ptr.h>
 #include <pficommon/system/time_util.h>
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
@@ -46,7 +47,7 @@ namespace {
 class linear_communication_impl : public linear_communication {
  public:
   linear_communication_impl(
-      const core::common::cshared_ptr<common::lock_service>& zk,
+      const pfi::lang::shared_ptr<common::lock_service>& zk,
       const string& type,
       const string& name,
       int timeout_sec);
@@ -57,7 +58,7 @@ class linear_communication_impl : public linear_communication {
   void put_diff(const vector<byte_buffer>& a) const;
 
  private:
-  core::common::cshared_ptr<server::common::lock_service> zk_;
+  pfi::lang::shared_ptr<server::common::lock_service> zk_;
   string type_;
   string name_;
   int timeout_sec_;
@@ -65,7 +66,7 @@ class linear_communication_impl : public linear_communication {
 };
 
 linear_communication_impl::linear_communication_impl(
-    const core::common::cshared_ptr<server::common::lock_service>& zk,
+    const pfi::lang::shared_ptr<server::common::lock_service>& zk,
     const string& type, const string& name, int timeout_sec)
     : zk_(zk),
       type_(type),
@@ -115,7 +116,7 @@ void linear_communication_impl::put_diff(
 }  // namespace
 
 pfi::lang::shared_ptr<linear_communication> linear_communication::create(
-    const core::common::cshared_ptr<server::common::lock_service>& zk,
+    const pfi::lang::shared_ptr<server::common::lock_service>& zk,
     const string& type, const string& name, int timeout_sec) {
   return pfi::lang::shared_ptr<linear_communication_impl>(
       new linear_communication_impl(zk, type, name, timeout_sec));

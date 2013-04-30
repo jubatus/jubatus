@@ -23,10 +23,10 @@
 #include <map>
 #include <string>
 #include <glog/logging.h>
+#include <pficommon/lang/shared_ptr.h>
 #include <pficommon/system/sysstat.h>
 
 #include "jubatus/core/common/jsonconfig.hpp"
-#include "jubatus/core/common/shared_ptr.hpp"
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
 #include "../common/lock_service.hpp"
@@ -44,12 +44,12 @@ class server_helper_impl {
   void prepare_for_run(const server_argv& a, bool use_cht);
   void get_config_lock(const server_argv& a, int retry);
 
-  core::common::cshared_ptr<common::lock_service> zk() const {
+  pfi::lang::shared_ptr<common::lock_service> zk() const {
     return zk_;
   }
 
  private:
-  core::common::cshared_ptr<common::lock_service> zk_;
+  pfi::lang::shared_ptr<common::lock_service> zk_;
   pfi::lang::shared_ptr<common::try_lockable> zk_config_lock_;
 };
 
@@ -174,7 +174,7 @@ class server_helper {
     return -1;
   }
 
-  core::common::cshared_ptr<Server> server() const {
+    pfi::lang::shared_ptr<Server> server() const {
     return server_;
   }
 
@@ -183,7 +183,7 @@ class server_helper {
   }
 
  private:
-  core::common::cshared_ptr<Server> server_;
+  pfi::lang::shared_ptr<Server> server_;
   server_helper_impl impl_;
   const bool use_cht_;
 };

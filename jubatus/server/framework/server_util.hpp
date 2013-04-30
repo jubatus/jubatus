@@ -31,7 +31,6 @@
 #include <pficommon/lang/shared_ptr.h>
 
 #include "jubatus/core/common/exception.hpp"
-#include "jubatus/core/common/shared_ptr.hpp"
 #include "jubatus/core/common/util.hpp"
 #include "../common/lock_service.hpp"
 
@@ -129,7 +128,7 @@ void convert(const From& from, To& to) {
   msg.get().convert(&to);
 }
 
-extern jubatus::core::common::cshared_ptr<
+extern pfi::lang::shared_ptr<
     jubatus::server::common::lock_service> ls;
 void atexit();
 

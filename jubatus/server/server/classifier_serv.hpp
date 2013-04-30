@@ -32,7 +32,7 @@ class classifier_serv : public framework::server_base {
  public:
   classifier_serv(
       const framework::server_argv& a,
-      const core::common::cshared_ptr<common::lock_service>& zk);
+      const pfi::lang::shared_ptr<common::lock_service>& zk);
   virtual ~classifier_serv();
 
   framework::mixer::mixer* get_mixer() const {

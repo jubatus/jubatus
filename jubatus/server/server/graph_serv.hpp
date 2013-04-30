@@ -22,7 +22,8 @@
 #include <utility>
 #include <vector>
 
-#include "jubatus/core/common/shared_ptr.hpp"
+#include <pficommon/lang/shared_ptr.h>
+
 #include "jubatus/core/driver/graph.hpp"
 #include "../common/global_id_generator_base.hpp"
 #include "../common/lock_service.hpp"
@@ -40,7 +41,7 @@ class graph_serv : public framework::server_base {
  public:
   graph_serv(
       const framework::server_argv& a,
-      const core::common::cshared_ptr<common::lock_service>& zk);
+      const pfi::lang::shared_ptr<common::lock_service>& zk);
   virtual ~graph_serv();
 
   framework::mixer::mixer* get_mixer() const {
@@ -108,7 +109,7 @@ class graph_serv : public framework::server_base {
   pfi::lang::shared_ptr<core::driver::graph> graph_;
   std::string config_;
 
-  core::common::cshared_ptr<common::lock_service> zk_;
+  pfi::lang::shared_ptr<common::lock_service> zk_;
   pfi::lang::shared_ptr<common::global_id_generator_base> idgen_;
 };
 

@@ -20,6 +20,8 @@
 #include <utility>
 #include <vector>
 
+#include <pficommon/lang/shared_ptr.h>
+
 #include "../graph/graph_factory.hpp"
 #include "../common/vector_util.hpp"
 #include "../storage/storage_factory.hpp"
@@ -40,7 +42,7 @@ namespace driver {
 
 graph::graph(jubatus::core::graph::graph_base* graph_method)
     : mixable_holder_(new mixable_holder) {
-  common::cshared_ptr<jubatus::core::graph::graph_base>
+  pfi::lang::shared_ptr<jubatus::core::graph::graph_base>
       graph_method_p(graph_method);
   graph_.set_model(graph_method_p);
 

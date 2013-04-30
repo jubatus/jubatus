@@ -23,7 +23,6 @@
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/scoped_ptr.h>
-#include "../common/shared_ptr.hpp"
 #include "../common/type.hpp"
 
 namespace jubatus {
@@ -104,7 +103,7 @@ class datum_to_fv_converter {
 
   void set_hash_max_size(uint64_t hash_max_size);
 
-  void set_weight_manager(common::cshared_ptr<weight_manager> wm);
+  void set_weight_manager(pfi::lang::shared_ptr<weight_manager> wm);
 
  private:
   pfi::lang::scoped_ptr<datum_to_fv_converter_impl> pimpl_;

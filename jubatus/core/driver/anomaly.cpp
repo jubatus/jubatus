@@ -20,6 +20,8 @@
 #include <utility>
 #include <vector>
 
+#include <pficommon/lang/shared_ptr.h>
+
 #include "../anomaly/anomaly_factory.hpp"
 #include "../common/vector_util.hpp"
 #include "../fv_converter/datum.hpp"
@@ -27,7 +29,6 @@
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/revert.hpp"
 #include "../storage/storage_factory.hpp"
-#include "../common/shared_ptr.hpp"
 
 using std::string;
 using std::vector;
@@ -45,7 +46,7 @@ anomaly::anomaly(
     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new mixable_holder),
       converter_(converter) {
-  common::cshared_ptr<jubatus::core::anomaly::anomaly_base>
+  pfi::lang::shared_ptr<jubatus::core::anomaly::anomaly_base>
       anomaly_method_p(anomaly_method);
   anomaly_.set_model(anomaly_method_p);
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));

@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <pficommon/lang/shared_ptr.h>
 
-#include "jubatus/core/common/shared_ptr.hpp"
 #include "../framework.hpp"
 #include "stat_server.hpp"
 #include "stat_serv.hpp"
@@ -82,10 +82,10 @@ class stat_impl_ : public stat<stat_impl_> {
     return p_->get_status();
   }
   int run() { return p_->start(*this); }
-  core::common::cshared_ptr<stat_serv> get_p() { return p_->server(); }
+  pfi::lang::shared_ptr<stat_serv> get_p() { return p_->server(); }
 
  private:
-  core::common::cshared_ptr<jubatus::server::framework::server_helper<stat_serv> > p_;
+  pfi::lang::shared_ptr<jubatus::server::framework::server_helper<stat_serv> > p_;
 };
 
 }  // namespace server

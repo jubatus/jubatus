@@ -24,8 +24,8 @@
 #include <map>
 
 #include <pficommon/lang/cast.h>
+#include <pficommon/lang/shared_ptr.h>
 
-#include "jubatus/core/common/shared_ptr.hpp"
 #include "lock_service.hpp"
 
 namespace jubatus {
@@ -46,7 +46,7 @@ class cht {
       const std::string&);
 
   cht(
-      core::common::cshared_ptr<lock_service>,
+      pfi::lang::shared_ptr<lock_service>,
       const std::string& type,
       const std::string& name);
 
@@ -89,7 +89,7 @@ class cht {
 
   const std::string type_;
   const std::string name_;
-  core::common::cshared_ptr<lock_service> lock_service_;
+  pfi::lang::shared_ptr<lock_service> lock_service_;
 };
 
 }  // namespace common

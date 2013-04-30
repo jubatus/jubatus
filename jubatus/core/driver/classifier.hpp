@@ -23,7 +23,6 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "../classifier/classifier_type.hpp"
 #include "../classifier/classifier_base.hpp"
-#include "../common/shared_ptr.hpp"
 #include "../framework/mixable.hpp"
 #include "diffv.hpp"
 #include "linear_function_mixer.hpp"

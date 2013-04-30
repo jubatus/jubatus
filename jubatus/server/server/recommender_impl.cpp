@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <pficommon/lang/shared_ptr.h>
 
-#include "jubatus/core/common/shared_ptr.hpp"
 #include "../framework.hpp"
 #include "recommender_server.hpp"
 #include "recommender_serv.hpp"
@@ -99,10 +99,10 @@ class recommender_impl_ : public recommender<recommender_impl_> {
     return p_->get_status();
   }
   int run() { return p_->start(*this); }
-  core::common::cshared_ptr<recommender_serv> get_p() { return p_->server(); }
+  pfi::lang::shared_ptr<recommender_serv> get_p() { return p_->server(); }
 
  private:
-  core::common::cshared_ptr<jubatus::server::framework::server_helper<recommender_serv> > p_;
+  pfi::lang::shared_ptr<jubatus::server::framework::server_helper<recommender_serv> > p_;
 };
 
 }  // namespace server

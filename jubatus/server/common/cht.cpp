@@ -24,10 +24,10 @@
 #include <vector>
 #include <glog/logging.h>
 #include <pficommon/data/digest/md5.h>
+#include <pficommon/lang/shared_ptr.h>
 #include "jubatus/core/common/exception.hpp"
 #include "membership.hpp"
 
-using jubatus::core::common::cshared_ptr;
 
 namespace jubatus {
 namespace server {
@@ -61,7 +61,7 @@ void cht::setup_cht_dir(
 }
 
 cht::cht(
-    cshared_ptr<lock_service> z,
+    pfi::lang::shared_ptr<lock_service> z,
     const std::string& type,
     const std::string& name)
     : type_(type),

@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <pficommon/lang/shared_ptr.h>
 
-#include "jubatus/core/common/shared_ptr.hpp"
 #include "../framework.hpp"
 #include "regression_server.hpp"
 #include "regression_serv.hpp"
@@ -59,10 +59,10 @@ class regression_impl_ : public regression<regression_impl_> {
     return p_->get_status();
   }
   int run() { return p_->start(*this); }
-  core::common::cshared_ptr<regression_serv> get_p() { return p_->server(); }
+  pfi::lang::shared_ptr<regression_serv> get_p() { return p_->server(); }
 
  private:
-  core::common::cshared_ptr<jubatus::server::framework::server_helper<regression_serv> > p_;
+  pfi::lang::shared_ptr<jubatus::server::framework::server_helper<regression_serv> > p_;
 };
 
 }  // namespace server
