@@ -24,7 +24,6 @@
 #include <pficommon/data/optional.h>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "jubatus/core/common/util.hpp"
 #include "jubatus/core/common/vector_util.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/fv_converter/datum.hpp"
@@ -33,6 +32,7 @@
 #include "jubatus/core/recommender/recommender_factory.hpp"
 #include "jubatus/core/storage/storage_factory.hpp"
 
+#include "../common/util.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
 using std::string;

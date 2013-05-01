@@ -21,8 +21,8 @@
 #include <pficommon/lang/bind.h>
 
 #include "jubatus/core/common/exception.hpp"
-#include "jubatus/core/common/util.hpp"
 #include "../third_party/cmdline/cmdline.h"
+#include "../common/util.hpp"
 
 #include "jubavisor.hpp"
 

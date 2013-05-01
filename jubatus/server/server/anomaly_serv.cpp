@@ -25,7 +25,6 @@
 #include <pficommon/text/json.h>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "jubatus/core/common/util.hpp"
 #include "jubatus/core/common/vector_util.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/fv_converter/datum.hpp"
@@ -34,6 +33,7 @@
 #include "jubatus/core/anomaly/anomaly_factory.hpp"
 
 #include "../common/global_id_generator_standalone.hpp"
+#include "../common/util.hpp"
 #ifdef HAVE_ZOOKEEPER_H
 #include "../common/cht.hpp"
 #include "../common/global_id_generator_zk.hpp"

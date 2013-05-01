@@ -27,7 +27,6 @@
 #include <pficommon/system/time_util.h>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "jubatus/core/common/util.hpp"
 #include "jubatus/core/common/vector_util.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/graph/graph_factory.hpp"
@@ -36,6 +35,7 @@
 #include "../common/cht.hpp"
 #endif
 #include "../common/global_id_generator_standalone.hpp"
+#include "../common/util.hpp"
 #ifdef HAVE_ZOOKEEPER_H
 #include "../common/global_id_generator_zk.hpp"
 #include "../common/membership.hpp"
