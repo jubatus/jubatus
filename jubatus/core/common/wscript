@@ -48,7 +48,6 @@ def build(bld):
       'hash.hpp',
       'jsonconfig.hpp',
       'key_manager.hpp',
-      'shared_ptr.hpp',
       'type.hpp',
       'unordered_map.hpp',
       'util.hpp',
