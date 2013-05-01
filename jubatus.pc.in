@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: @PACKAGE@
 Description: Framework and Library for Distributed Online Machine Learning
 Version: @VERSION@
-Requires: pficommon >= 1.3.1, libglog >= 0.3.0
+Requires: pficommon >= 1.3.1, libglog >= 0.3.3
 Cflags: -I${includedir}
-Libs: -L${libdir} -ljubatus_framework -ljubacommon -ljubacommon_mprpc -ljubamixer -lmsgpack -ljubatus_mpio -ljubatus_msgpack-rpc
+Libs: -L${libdir} -ljubaserv_framework -ljubaserv_common -ljubaserv_mixer -ljubaserv_common -ljubaserv_common_mprpc -ljubacommon -lmsgpack -ljubatus_mpio -ljubatus_msgpack-rpc

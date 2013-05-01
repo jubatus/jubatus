@@ -1,0 +1,70 @@
+import Options
+
+def options(opt):
+  opt.add_option('--enable-mecab',
+                 action='store_true',
+                 default=False,
+                 help='build mecab feature plugin')
+
+  opt.add_option('--enable-ux',
+                 action='store_true',
+                 default=False,
+                 help='build ux feature plugin')
+
+def configure(conf):
+  if Options.options.enable_mecab:
+    conf.check_cxx(lib = 'mecab',
+                   fragment='''
+#include <mecab.h>
+int main() {
+  MeCab::Model* (*p)(const char*) = MeCab::createModel;
+  &MeCab::Model::createTagger;
+  &MeCab::Model::createLattice;
+}
+''',
+                   define_name = 'HAVE_MECAB',
+                   errmsg = 'mecab 0.99 or later is required (remove "--enable-mecab" option if not necessary)')
+    
+
+  if Options.options.enable_ux:
+    conf.check_cfg(package = 'ux', 
+                   args = '--cflags --libs',
+                   define_name = 'HAVE_UX',
+                   errmsg = 'not found (remove "--enable-ux" option if not necessary)')
+
+def make_test(bld, use, src):
+  bld.program(
+    features = 'gtest',
+    source = src,
+    target = src[0:src.rindex('.')],
+    use = use,
+    )
+
+def build(bld):
+
+  if bld.env.HAVE_MECAB:
+    bld.shlib(
+      source = 'mecab_splitter.cpp',
+      target = 'mecab_splitter',
+      install_path = bld.env.JUBATUS_PLUGIN_DIR,
+      use = 'MECAB jubaconverter core_headers',
+      )
+    make_test(bld, 'PFICOMMON mecab_splitter', 'mecab_splitter_test.cpp')
+
+  if bld.env.HAVE_UX:
+    bld.shlib(
+      source = 'ux_splitter.cpp',
+      target = 'ux_splitter',
+      install_path = bld.env.JUBATUS_PLUGIN_DIR,
+      use = 'UX LIBGLOG jubaconverter core_headers',
+      )
+    make_test(bld, 'ux_splitter', 'ux_splitter_test.cpp')
+
+  if bld.env.HAVE_RE2:
+    bld.shlib(
+      source = 're2_splitter.cpp',
+      target = 're2_splitter',
+      install_path = bld.env.JUBATUS_PLUGIN_DIR,
+      use = 'RE2 jubaconverter core_headers',
+      )
+    make_test(bld, 're2_splitter', 're2_splitter_test.cpp')

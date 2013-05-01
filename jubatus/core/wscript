@@ -1,0 +1,14 @@
+import Options
+
+subdirs = "common anomaly classifier driver framework fv_converter graph recommender regression stat storage"
+
+def options(opt):
+  opt.recurse(subdirs)
+
+def configure(conf):
+  conf.recurse(subdirs)
+
+def build(bld):
+  bld.recurse(subdirs)
+  bld.install_files('${PREFIX}/include/jubatus/core',
+                    ['plugin.hpp'])

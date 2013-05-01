@@ -1,0 +1,24 @@
+def options(opt): pass
+
+def configure(conf): pass
+
+def build(bld):
+  if bld.env.HAVE_ZOOKEEPER_H:
+    bld.program(
+      source = 'jubactl.cpp',
+      target = 'jubactl',
+      use = 'MSGPACK PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon jubaserv_common jubaserv_framework JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK core_headers'
+      )
+
+    bld.program(
+      source = 'jubaconfig.cpp',
+      target = 'jubaconfig',
+      use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon jubaserv_common core_headers'
+      )
+
+
+  bld.program(
+    source = 'jubaconv.cpp',
+    target = 'jubaconv',
+    use = 'PFICOMMON jubacommon jubaconverter jubaserv_common core_headers'
+    )
