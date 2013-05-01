@@ -16,7 +16,7 @@ def build(bld):
     source = src,
     target = 'jubacommon',
     includes = '.',
-    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT'
+    use = 'PFICOMMON'
     )
 
   test_src = [
