@@ -5,9 +5,6 @@ def options(opt):
   opt.recurse(subdirs)
 
 def configure(conf):
-  conf.check_cxx(header_name = 'sys/socket.h net/if.h sys/ioctl.h', mandatory = True)
-  conf.check_cxx(header_name = 'netinet/in.h arpa/inet.h', mandatory = True)
-
   conf.recurse(subdirs)
 
 def build(bld):
