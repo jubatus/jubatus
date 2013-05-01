@@ -17,6 +17,7 @@
 #include <gtest/gtest.h>
 #include <pficommon/math/random.h>
 #include "stat.hpp"
+#include "mixable_stat.hpp"
 
 namespace jubatus {
 
@@ -72,7 +73,7 @@ REGISTER_TYPED_TEST_CASE_P(
     stat_test,
     trivial);
 
-typedef testing::Types<core::stat::stat> stat_types;
+typedef testing::Types<core::stat::stat, core::stat::mixable_stat> stat_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(stt, stat_test, stat_types);
 }  // namespace jubatus
