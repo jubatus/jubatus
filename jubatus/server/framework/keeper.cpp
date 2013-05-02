@@ -21,8 +21,8 @@
 #include <glog/logging.h>
 
 #include "jubatus/core/common/exception.hpp"
-#include "jubatus/core/common/util.hpp"
 #include "../common/membership.hpp"
+#include "../common/util.hpp"
 #include "server_util.hpp"
 
 namespace jubatus {

@@ -44,7 +44,7 @@
 #include <pficommon/lang/exception.h>
 #include <pficommon/text/json.h>
 
-#include "../common/exception.hpp"
+#include "jubatus/core/common/exception.hpp"
 
 using std::string;
 using pfi::lang::lexical_cast;
@@ -162,45 +162,6 @@ bool is_writable(const char* dir_path) {
   }
 
   return true;
-}
-
-// local server list should be like:
-//  192.168.1.2 9199
-//  192.168.1.3 9199
-//  192.168.1.4 10090
-//  ...
-//  192.168.1.23 2345
-// and must include self IP got from "eth0"
-std::string load(
-    const std::string& file,
-    std::vector<std::pair<std::string, int> >& s) {
-  std::string tmp;
-  std::string self;
-  get_ip("eth0", self);
-  bool self_included = false;
-  int port;
-  int line = 0;
-  std::ifstream ifs(file.c_str());
-  if (!ifs) {
-    return self;
-  }
-  while (ifs >> tmp) {
-    if (self == tmp) {
-      self_included = true;
-    }
-    if (!(ifs >> port)) {
-      // TODO(kashihara): replace jubatus exception
-      throw parse_error(file, line, tmp.size(), string("input port"));
-    }
-    s.push_back(std::pair<std::string, int>(tmp, port));
-    line++;
-  }
-  if (!self_included) {
-    // TODO(kashihara): replace jubatus exception
-    throw parse_error(file, s.size(), 0,
-                      string("self IP(eth0) not included in list"));
-  }
-  return self;
 }
 
 int daemonize() {

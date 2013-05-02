@@ -25,11 +25,11 @@
 #include <pficommon/lang/shared_ptr.h>
 
 #include "jubatus/core/common/exception.hpp"
-#include "jubatus/core/common/util.hpp"
 #include "../third_party/cmdline/cmdline.h"
 #include "../common/config.hpp"
 #include "../common/membership.hpp"
 #include "../common/network.hpp"
+#include "../common/util.hpp"
 
 namespace jubatus {
 namespace server {

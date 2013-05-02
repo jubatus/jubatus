@@ -103,10 +103,10 @@ float lof_storage::collect_lrds(
   for (size_t i = 0; i < neighbors.size(); ++i) {
     if (neighbors[i].first == id) {
       swap(neighbors[i], neighbors.back());
+      neighbors.pop_back();
       break;
     }
   }
-  neighbors.pop_back();
 
   return collect_lrds_from_neighbors(neighbors, neighbor_lrd);
 }

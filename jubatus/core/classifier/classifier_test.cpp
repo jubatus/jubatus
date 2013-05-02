@@ -145,29 +145,6 @@ typedef testing::Types<
 
 INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
 
-void InitClassifiers(vector<classifier_base*>& classifiers) {
-  jsonconfig::config param(to_json(classifier_config()));
-  classifiers.push_back(
-      classifier_factory::create_classifier("perceptron", param,
-                                            new local_storage));
-  classifiers.push_back(
-      classifier_factory::create_classifier(
-          "passive_aggressive", param, new local_storage));
-  classifiers.push_back(
-      classifier_factory::create_classifier(
-          "passive_aggressive_1", param, new local_storage));
-  classifiers.push_back(
-      classifier_factory::create_classifier(
-          "passive_aggressive_2", param, new local_storage));
-  classifiers.push_back(
-      classifier_factory::create_classifier(
-          "confidence_weighted", param, new local_storage));
-  classifiers.push_back(
-      classifier_factory::create_classifier("AROW", param, new local_storage));
-  classifiers.push_back(
-      classifier_factory::create_classifier("NHERD", param, new local_storage));
-}
-
 TEST(classifier_factory, exception) {
   jsonconfig::config param(to_json(classifier_config()));
   local_storage* p = new local_storage;

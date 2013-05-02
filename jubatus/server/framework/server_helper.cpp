@@ -18,9 +18,9 @@
 
 #include <string>
 
-#include "jubatus/core/common/util.hpp"
 #include "../common/cht.hpp"
 #include "../common/membership.hpp"
+#include "../common/util.hpp"
 
 namespace jubatus {
 namespace server {

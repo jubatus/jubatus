@@ -5,27 +5,23 @@ def options(opt):
   opt.recurse(subdirs)
 
 def configure(conf):
-  conf.check_cxx(header_name = 'sys/socket.h net/if.h sys/ioctl.h', mandatory = True)
-  conf.check_cxx(header_name = 'netinet/in.h arpa/inet.h', mandatory = True)
-
   conf.recurse(subdirs)
 
 def build(bld):
   import Options
-  src = 'exception.cpp key_manager.cpp vector_util.cpp util.cpp'
+  src = 'exception.cpp key_manager.cpp vector_util.cpp'
   src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
 
   bld.shlib(
     source = src,
     target = 'jubacommon',
     includes = '.',
-    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT'
+    use = 'PFICOMMON'
     )
 
   test_src = [
     'exception_test.cpp',
     'key_manager_test.cpp',
-    'util_test.cpp',
     'vector_util_test.cpp',
      'jsonconfig_test.cpp',
     ]
@@ -48,10 +44,8 @@ def build(bld):
       'hash.hpp',
       'jsonconfig.hpp',
       'key_manager.hpp',
-      'shared_ptr.hpp',
       'type.hpp',
       'unordered_map.hpp',
-      'util.hpp',
       'vector_util.hpp',
       ])
   bld.recurse(subdirs)

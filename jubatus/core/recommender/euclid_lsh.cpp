@@ -21,7 +21,6 @@
 #include <utility>
 #include <string>
 #include <vector>
-#include <glog/logging.h>
 #include <pficommon/data/serialization.h>
 #include <pficommon/lang/cast.h>
 #include <pficommon/math/random.h>

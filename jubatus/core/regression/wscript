@@ -13,7 +13,7 @@ def build(bld):
             ],
         target = 'jubatus_regression',
         includes = '.',
-        use = 'PFICOMMON jubacommon MSGPACK-RPC'
+        use = 'PFICOMMON jubacommon'
         )
 
     def make_test(s):

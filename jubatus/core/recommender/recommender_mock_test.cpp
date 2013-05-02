@@ -21,7 +21,6 @@
 #include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
 
-#include "recommender_factory.hpp"
 #include "recommender_mock.hpp"
 #include "recommender_mock_util.hpp"
 
