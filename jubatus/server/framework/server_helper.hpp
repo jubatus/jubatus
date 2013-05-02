@@ -192,13 +192,13 @@ class server_helper {
 }  // namespace server
 }  // namespace jubatus
 
-#define JRLOCK__(p) \
+#define JRLOCK_(p) \
   ::pfi::concurrent::scoped_rlock lk((p)->rw_mutex())
 
-#define JWLOCK__(p) \
+#define JWLOCK_(p) \
   ::pfi::concurrent::scoped_wlock lk((p)->rw_mutex()); \
   (p)->server()->event_model_updated()
 
-#define NOLOCK__(p)
+#define NOLOCK_(p)
 
 #endif  // JUBATUS_SERVER_FRAMEWORK_SERVER_HELPER_HPP_

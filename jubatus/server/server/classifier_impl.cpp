@@ -22,40 +22,40 @@ class classifier_impl_ : public classifier<classifier_impl_> {
          false)) {
   }
   std::string get_config(std::string name) {
-    JRLOCK__(p_);
+    JRLOCK_(p_);
     return get_p()->get_config();
   }
 
   int32_t train(std::string name, std::vector<std::pair<std::string,
        datum> > data) {
-    JWLOCK__(p_);
+    JWLOCK_(p_);
     return get_p()->train(data);
   }
 
   std::vector<std::vector<estimate_result> > classify(std::string name,
        std::vector<datum> data) {
-    JRLOCK__(p_);
+    JRLOCK_(p_);
     return get_p()->classify(data);
   }
 
   bool clear(std::string name) {
-    JWLOCK__(p_);
+    JWLOCK_(p_);
     return get_p()->clear();
   }
 
   bool save(std::string name, std::string id) {
-    JWLOCK__(p_);
+    JWLOCK_(p_);
     return get_p()->save(id);
   }
 
   bool load(std::string name, std::string id) {
-    JWLOCK__(p_);
+    JWLOCK_(p_);
     return get_p()->load(id);
   }
 
   std::map<std::string, std::map<std::string, std::string> > get_status(
       std::string name) {
-    JRLOCK__(p_);
+    JRLOCK_(p_);
     return p_->get_status();
   }
   int run() { return p_->start(*this); }

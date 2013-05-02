@@ -185,12 +185,12 @@ class classifier_test : public ::testing::TestWithParam<const char*> {
 };
 
 // todo: insert __LINE__ as original line number
-#define ASSERT_THROW2(statement__, type__, what__) \
+#define ASSERT_THROW2(statement_, type_, what_) \
   try { \
-    statement__; \
+    statement_; \
     FAIL(); \
-  } catch (type__& __e__) { \
-    ASSERT_STREQ(what__, __e__.what()); \
+  } catch (type_& e_) { \
+    ASSERT_STREQ(what_, e_.what()); \
   }
 
 /*

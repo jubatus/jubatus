@@ -510,9 +510,9 @@ let gen_impl_method m =
   let _, request, _ = get_decorator m in
   let lock_type =
     match request with
-    | Update -> "JWLOCK__"
-    | Analysis -> "JRLOCK__"
-    | Nolock -> "NOLOCK__" in
+    | Update -> "JWLOCK_"
+    | Analysis -> "JRLOCK_"
+    | Nolock -> "NOLOCK_" in
   let lock = gen_call lock_type ["p_"] in
   (* TODO(unnonouno): think of generating this abnormal method, which calls the method of p_ rather than get_p(). *)
   let pointer =

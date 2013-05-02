@@ -21,53 +21,53 @@ class anomaly_impl_ : public anomaly<anomaly_impl_> {
     p_(new jubatus::server::framework::server_helper<anomaly_serv>(a, true)) {
   }
   std::string get_config(std::string name) {
-    JRLOCK__(p_);
+    JRLOCK_(p_);
     return get_p()->get_config();
   }
 
   bool clear_row(std::string name, std::string id) {
-    JWLOCK__(p_);
+    JWLOCK_(p_);
     return get_p()->clear_row(id);
   }
 
   std::pair<std::string, float> add(std::string name, datum row) {
-    NOLOCK__(p_);
+    NOLOCK_(p_);
     return get_p()->add(row);
   }
 
   float update(std::string name, std::string id, datum row) {
-    JWLOCK__(p_);
+    JWLOCK_(p_);
     return get_p()->update(id, row);
   }
 
   bool clear(std::string name) {
-    JWLOCK__(p_);
+    JWLOCK_(p_);
     return get_p()->clear();
   }
 
   float calc_score(std::string name, datum row) {
-    JRLOCK__(p_);
+    JRLOCK_(p_);
     return get_p()->calc_score(row);
   }
 
   std::vector<std::string> get_all_rows(std::string name) {
-    JRLOCK__(p_);
+    JRLOCK_(p_);
     return get_p()->get_all_rows();
   }
 
   bool save(std::string name, std::string id) {
-    JWLOCK__(p_);
+    JWLOCK_(p_);
     return get_p()->save(id);
   }
 
   bool load(std::string name, std::string id) {
-    JWLOCK__(p_);
+    JWLOCK_(p_);
     return get_p()->load(id);
   }
 
   std::map<std::string, std::map<std::string, std::string> > get_status(
       std::string name) {
-    JRLOCK__(p_);
+    JRLOCK_(p_);
     return p_->get_status();
   }
   int run() { return p_->start(*this); }
