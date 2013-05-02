@@ -160,6 +160,8 @@ pair<string, float> anomaly_serv::add(const datum& d) {
 #ifdef HAVE_ZOOKEEPER_H
   if (argv().is_standalone()) {
 #endif
+    pfi::concurrent::scoped_wlock lk(rw_mutex());
+    event_model_updated();
     core::fv_converter::datum data;
     convert(d, data);
     return anomaly_->add(id_str, data);
@@ -253,7 +255,8 @@ float anomaly_serv::selective_update(
     const datum& d) {
   // nolock context
   if (host == argv().eth && port == argv().port) {
-    pfi::concurrent::scoped_lock lk(wlock(rw_mutex()));
+    pfi::concurrent::scoped_wlock lk(rw_mutex());
+    event_model_updated();
     return this->update(id, d);
   } else {  // needs no lock
     client::anomaly c(host, port, 5.0);

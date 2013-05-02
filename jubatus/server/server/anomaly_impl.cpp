@@ -31,7 +31,7 @@ class anomaly_impl_ : public anomaly<anomaly_impl_> {
   }
 
   std::pair<std::string, float> add(std::string name, datum row) {
-    JWLOCK__(p_);
+    NOLOCK__(p_);
     return get_p()->add(row);
   }
 

@@ -50,7 +50,7 @@ service anomaly {
   bool clear_row(0: string name, 1: string id) # //@cht
 
   #- add a point.
-  #@random #@update #@pass
+  #@random #@nolock #@pass
   tuple<string, float> add(0: string name, 1: datum row) # //@random
 
   #- update a point.
