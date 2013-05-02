@@ -23,7 +23,7 @@
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/text/json.h>
 #include "../common/jsonconfig.hpp"
-#include "../recommender/euclid_lsh.hpp"
+#include "../recommender/recommender.hpp"
 #include "lof_storage.hpp"
 
 using jubatus::core::storage::lof_storage;
@@ -149,6 +149,28 @@ TEST(lof, calc_anomaly_score2) {
   const float anomaly_score = l.calc_anomaly_score(id);
   EXPECT_EQ(2.0, anomaly_score);
 }
+
+template<typename T>
+class lof_test : public testing::Test {
+};
+
+TYPED_TEST_CASE_P(lof_test);
+
+TYPED_TEST_P(lof_test, update_row) {
+  lof l(lof_storage::config(), new TypeParam);
+  sfv_t v, q;
+  const string id = "test";
+  l.update_row(id, v);
+  l.calc_anomaly_score(id);
+}
+
+REGISTER_TYPED_TEST_CASE_P(lof_test, update_row);
+
+typedef testing::Types<recommender::inverted_index, recommender::lsh,
+  recommender::minhash, recommender::euclid_lsh> recommender_types;
+
+INSTANTIATE_TYPED_TEST_CASE_P(lt,
+  lof_test, recommender_types);
 
 }  // namespace anomaly
 }  // namespace core
