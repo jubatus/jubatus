@@ -38,3 +38,30 @@ let take_base path =
   else
     file
 ;;
+
+let file_exist path =
+  try
+    Unix.access path [Unix.F_OK];
+    true
+  with Unix.Unix_error(_, _, _) ->
+    false
+;;
+
+let rec split_path path =
+  if path = "." or path ="/" then
+    [path]
+  else
+    let dir = Filename.dirname path in
+    let base = Filename.basename path in
+    split_path dir @ [base]
+;;
+
+let mkdir_all path =
+  let paths = split_path path in
+  let current = ref "" in
+  List.iter (fun p ->
+    current := Filename.concat !current p;
+    if not (file_exist !current) then
+      Unix.mkdir !current  0o755
+  ) paths
+;;

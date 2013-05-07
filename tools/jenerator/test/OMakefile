@@ -3,6 +3,7 @@ OCAMLINCLUDES += ../src
 
 FILES[] =
   cpp_test
+  file_util_test
 
 USE_OCAMLFIND = true
 OCAMLPACKS[] = oUnit
