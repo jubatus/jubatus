@@ -33,7 +33,13 @@ def build(bld):
       )
 
   tests = [
-    'linear_function_mixer_test'
+    'linear_function_mixer_test',
+    'anomaly_test',
+    'classifier_test',
+    'graph_test',
+    'regression_test',
+    'recommender_test',
+    'stat_test',
     ]
 
   for t in tests:

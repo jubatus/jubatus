@@ -27,14 +27,6 @@ def build_one(bld, name, libraries = '', sources = ''):
       includes = '.',
       use = 'PFICOMMON jubaserv_framework jubaserv_common jubaserv_mprpc_common JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
       )
-  bld.program(
-    features = 'gtest',
-    source = '%s_test.cpp' % name,
-    target = '%s_test' % name,
-    includes = '.',
-    use = 'PFICOMMON MSGPACK jubaserv_common_mprpc %s' % libraries,
-    )
-
 
 def build(bld):
   #new classifier
@@ -52,11 +44,5 @@ def build(bld):
   build_one(bld, "stat")
 
   build_one(bld, "graph")
-
-  n = bld.path.get_bld().make_node('test_input')
-  n.mkdir()
-  bld(rule = 'cp ${SRC} ${TGT}',
-      source = bld.path.ant_glob('test_input/*'),
-      target = n)
 
   bld.install_files('${PREFIX}/share/jubatus/idl/', idls)

@@ -81,6 +81,7 @@ float anomaly::update(const string& id, const fv_converter::datum& d) {
 
 void anomaly::clear() {
   anomaly_.get_model()->clear();
+  wm_.clear();
 }
 
 float anomaly::calc_score(const fv_converter::datum& d) const {

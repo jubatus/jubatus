@@ -74,6 +74,11 @@ jubatus::core::classifier::classify_result classifier::classify(
   return scores;
 }
 
+void classifier::clear() {
+  classifier_->clear();
+  wm_.clear();
+}
+
 }  // namespace driver
 }  // namespace core
 }  // namespace jubatus
