@@ -1,4 +1,20 @@
 
+Release 0.4.3 - 2013/04/19
+--------------------------
+
+* Improvements
+    * Support Python 2.4 for building (#296)
+    * Code generator 'jenerator' supports Ruby and Python Client
+    * Divide server into ML module and RPC server (#264, #311)
+    * Fixed Naming rule on some machine learning algorithms (#257, #299)
+    * #95, #249, #290, #293, #303, #304, #307, #312, #313, #314, #318
+
+* Bugfix
+    * anomaly: doesn't use weight_manager in fv_converter (#309)
+    * classifier: PA2 doesn't use config (#302)
+    * #301
+
+
 Release 0.4.2 - 2013/03/15
 --------------------------
 

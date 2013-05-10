@@ -2,12 +2,12 @@ import Options
 import os
 import sys
 
-VERSION = '0.4.2'
+VERSION = '0.4.3'
 APPNAME = 'jubatus'
 
 top = '.'
 out = 'build'
-subdirs = ['src', 'client', 'config']
+subdirs = ['config', 'jubatus', 'plugin']
 
 def options(opt):
   opt.load('compiler_cxx')
@@ -44,7 +44,7 @@ def configure(conf):
   conf.define('JUBATUS_VERSION', VERSION)
   conf.define('JUBATUS_APPNAME', APPNAME)
   conf.define('JUBATUS_PLUGIN_DIR', conf.env.JUBATUS_PLUGIN_DIR)
-  conf.write_config_header('src/config.hpp', guard="JUBATUS_CONFIG_HPP_", remove=False)
+  conf.write_config_header('jubatus/config.hpp', guard="JUBATUS_CONFIG_HPP_", remove=False)
 
   conf.check_cxx(lib = 'msgpack')
   conf.check_cxx(lib = 'jubatus_mpio')
@@ -120,19 +120,23 @@ def build(bld):
       PACKAGE = APPNAME,
       VERSION = VERSION)
 
+  bld(name = 'core_headers', export_includes = './')
+
   bld.recurse(subdirs)
 
 def cpplint(ctx):
   import fnmatch, tempfile
   cpplint = ctx.path.find_node('tools/codestyle/cpplint/cpplint.py')
-  src_dir = ctx.path.find_node('src')
+  src_dir = ctx.path.find_node('jubatus')
   file_list = []
-  excludes = ['src/third_party/**', \
-              'src/server/*_server.hpp', \
-              'src/server/*_impl.cpp', \
-              'src/server/*_keeper.cpp', \
-              'src/server/*_client.hpp', \
-              'src/server/*_types.hpp']
+  excludes = ['jubatus/server/third_party/**', \
+              'jubatus/server/*_server.hpp', \
+              'jubatus/server/*_impl.cpp', \
+              'jubatus/server/*_keeper.cpp', \
+              'jubatus/server/*_client.hpp', \
+              'jubatus/server/*_types.hpp', \
+              'jubatus/client/*_client.hpp', \
+              'jubatus/client/*_types.hpp']
   for file in src_dir.ant_glob('**/*.cpp **/*.cc **/*.hpp **/*.h'):
     file_list += [file.path_from(ctx.path)]
   for exclude in excludes:
@@ -140,24 +144,24 @@ def cpplint(ctx):
   tmp_file = tempfile.NamedTemporaryFile(delete=True);
   tmp_file.write("\n".join(file_list));
   tmp_file.flush()
-  ctx.exec_command('cat ' + tmp_file.name + ' | xargs "' + cpplint.abspath() + '" --filter=-runtime/references,-runtime/rtti')
+  ctx.exec_command('cat ' + tmp_file.name + ' | xargs "' + cpplint.abspath() + '" --filter=-runtime/references,-runtime/rtti 2>&1')
   tmp_file.close()
 
 def regenerate(ctx):
   import os
-  server_node = ctx.path.find_node('src/server')
+  server_node = ctx.path.find_node('jubatus/server/server')
   jenerator_node = ctx.path.find_node('tools/jenerator/src/jenerator')
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name
     service_name = os.path.splitext(idl)[0]
-    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'server', '-o', '.', '-i', '-n', 'jubatus', '-g', 'JUBATUS_SERVER_', idl], cwd=server_node.abspath())
+    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'server', '-o', '.', '-i', '-n', 'jubatus', '-g', 'JUBATUS_SERVER_SERVER_', idl], cwd=server_node.abspath())
 
 def regenerate_client(ctx):
   import os
-  server_node = ctx.path.find_node('src/server')
-  client_node = ctx.path.find_node('client')
+  server_node = ctx.path.find_node('jubatus/server/server')
+  client_node = ctx.path.find_node('jubatus/client')
   jenerator_node = ctx.path.find_node('tools/jenerator/src/jenerator')
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name
     service_name = os.path.splitext(idl)[0]
-    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'cpp', '-o', client_node.abspath(), '-i', '-n', 'jubatus::' + service_name, '-g', 'JUBATUS_', idl], cwd=server_node.abspath())
+    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'cpp', '-o', client_node.abspath(), '-i', '-n', 'jubatus::' + service_name, '-g', 'JUBATUS_CLIENT_', idl], cwd=server_node.abspath())

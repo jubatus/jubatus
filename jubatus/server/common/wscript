@@ -1,0 +1,72 @@
+
+subdirs = ['mprpc']
+
+def options(opt):
+  opt.recurse(subdirs)
+
+def configure(conf):
+  conf.check_cxx(header_name = 'sys/socket.h net/if.h sys/ioctl.h', mandatory = True)
+  conf.check_cxx(header_name = 'netinet/in.h arpa/inet.h', mandatory = True)
+
+  # Check compiler(GCC/Clang) support atomic builtin extension
+  conf.check_cxx(fragment='''
+#include <stdint.h>
+int main() {
+  uint64_t c = 0;
+  __sync_fetch_and_add(&c, 0);
+  return 0;
+}
+''',
+                 msg = 'Checking for compiler atomic builtins',
+                 define_name = 'ATOMIC_I8_SUPPORT', mandatory = False)
+
+  conf.recurse(subdirs)
+
+def build(bld):
+  import Options
+  src = 'network.cpp global_id_generator_standalone.cpp config.cpp util.cpp'
+
+  if bld.env.HAVE_ZOOKEEPER_H:
+    src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp global_id_generator_zk.cpp'
+
+  bld.shlib(
+    source = src,
+    target = 'jubaserv_common',
+    includes = '.',
+    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon core_headers'
+    )
+
+  test_src = [
+    'network_test.cpp',
+    'global_id_generator_test.cpp',
+    'util_test.cpp',
+    ]
+
+  if bld.env.HAVE_ZOOKEEPER_H:
+    test_src += ['membership_test.cpp', 'cht_test.cpp']
+    if bld.env.INTEGRATION_TEST:
+      test_src += ['zk_test.cpp', 'cached_zk_test.cpp', 'config_test.cpp']
+    
+  def make_test(s):
+    bld.program(
+      features = 'gtest',
+      source = s,
+      target = s[0:s.rfind('.')],
+      includes = '.',
+      use = ['jubacommon', 'jubaserv_common']
+      )
+  for s in test_src:
+    make_test(s)
+
+  bld.install_files('${PREFIX}/include/jubatus/server/common/', [
+      'cht.hpp',
+      'config.hpp',
+      'global_id_generator_base.hpp',
+      'global_id_generator_standalone.hpp',
+      'global_id_generator_zk.hpp',
+      'lock_service.hpp',
+      'membership.hpp',
+      'network.hpp',
+      'util.hpp',
+      ])
+  bld.recurse(subdirs)

@@ -1,0 +1,51 @@
+
+subdirs = ['jsonconfig']
+
+def options(opt):
+  opt.recurse(subdirs)
+
+def configure(conf):
+  conf.recurse(subdirs)
+
+def build(bld):
+  import Options
+  src = 'exception.cpp key_manager.cpp vector_util.cpp'
+  src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
+
+  bld.shlib(
+    source = src,
+    target = 'jubacommon',
+    includes = '.',
+    use = 'PFICOMMON'
+    )
+
+  test_src = [
+    'exception_test.cpp',
+    'key_manager_test.cpp',
+    'vector_util_test.cpp',
+     'jsonconfig_test.cpp',
+    ]
+
+  def make_test(s):
+    bld.program(
+      features = 'gtest',
+      source = s,
+      target = s[0:s.rfind('.')],
+      includes = '.',
+      use = 'jubacommon'
+      )
+  for s in test_src:
+    make_test(s)
+
+  bld.install_files('${PREFIX}/include/jubatus/core/common/', [
+      'byte_buffer.hpp',
+      'exception.hpp',
+      'exception_info.hpp',
+      'hash.hpp',
+      'jsonconfig.hpp',
+      'key_manager.hpp',
+      'type.hpp',
+      'unordered_map.hpp',
+      'vector_util.hpp',
+      ])
+  bld.recurse(subdirs)

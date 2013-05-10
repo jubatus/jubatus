@@ -1,0 +1,26 @@
+def options(opt):
+  pass
+
+def configure(conf):
+  pass
+
+def build(bld):
+  def make_test(t):
+    bld.program(
+      features='gtest',
+      source=t + '.cpp',
+      target=t,
+      includes='.',
+      use='MSGPACK',
+      )
+
+  tests = [
+    'mixable_test',
+    ]
+
+  for t in tests:
+    make_test(t)
+
+  bld.install_files('${PREFIX}/include/jubatus/core/framework', [
+      'mixable.hpp',
+      ])
