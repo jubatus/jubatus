@@ -43,7 +43,9 @@ class linear_communication_stub : public linear_communication {
  public:
   size_t update_members() { return 4; }
 
-  pfi::lang::shared_ptr<common::try_lockable> create_lock() {}
+  pfi::lang::shared_ptr<common::try_lockable> create_lock() {
+    return pfi::lang::shared_ptr<common::try_lockable>();
+  }
 
   void get_diff(common::mprpc::rpc_result_object& result) const {
     result.response.push_back(make_response("1"));
@@ -67,8 +69,18 @@ class linear_communication_stub : public linear_communication {
     mixed_.swap(tmp);
   }
 
-  const vector<string>& get_mixed() const {
-    return mixed_;
+  vector<string> get_mixed() const {
+    vector<string> mixed;
+    mixed.reserve(mixed_.size());
+
+    typedef vector<string>::const_iterator iter_t;
+    for (iter_t it = mixed_.begin(); it != mixed_.end(); ++it) {
+      msgpack::unpacked msg;
+      msgpack::unpack(&msg, it->data(), it->size());
+      mixed.push_back(msg.get().as<string>());
+    }
+
+    return mixed;
   }
 
  private:
