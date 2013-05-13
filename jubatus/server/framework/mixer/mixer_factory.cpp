@@ -53,7 +53,10 @@ mixer* create_mixer(const server_argv& a,
       push_communication::create(zk, a.type, a.name, a.timeout),
       a.interval_count, a.interval_sec, std::make_pair(a.eth, a.port));
   }else{
-    throw JUBATUS_EXCEPTION(config_not_set()); // nothing to mix
+    // TODO: fix to throw
+    return new linear_mixer(
+      linear_communication::create(zk, a.type, a.name, a.timeout),
+      a.interval_count, a.interval_sec);
   }
 #else
   return new dummy_mixer;
