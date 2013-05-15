@@ -29,12 +29,13 @@ using std::map;
 using std::vector;
 using std::pair;
 using pfi::lang::lexical_cast;
-using jubatus::table::column_table;
-using jubatus::table::bit_vector;
-using jubatus::table::column_type;
+using jubatus::core::table::column_table;
+using jubatus::core::table::bit_vector;
+using jubatus::core::table::column_type;
 
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 namespace {
@@ -102,4 +103,5 @@ bit_vector minhash::hash(const sfv_t& sfv) const {
 }
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus

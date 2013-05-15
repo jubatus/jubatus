@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-#ifndef JUBATUS_TABLE_COLUMN_COLUMNS_HPP_
-#define JUBATUS_TABLE_COLUMN_COLUMNS_HPP_
+#ifndef JUBATUS_CORE_TABLE_COLUMN_COLUMNS_HPP_
+#define JUBATUS_CORE_TABLE_COLUMN_COLUMNS_HPP_
 
 #include <iostream>
 #include <string>
@@ -31,6 +31,7 @@
 #include "../storage_exception.hpp"
 
 namespace jubatus {
+namespace core {
 namespace table {
 namespace detail {
 class abstract_column;
@@ -700,6 +701,9 @@ class abstract_column {
   bool destroy_duty_;
 };
 
-}}}/* namespace jubatus::table::detail */
+} // namespace detail
+} // namespace table
+} // namespace core
+} // namespace jubatus
 
-#endif  // JUBATUS_TABLE_COLUMN_COLUMNS_HPP_
+#endif  // JUBATUS_CORE_TABLE_COLUMN_COLUMNS_HPP_

@@ -23,9 +23,10 @@
 
 using namespace std;
 using pfi::lang::lexical_cast;
-using namespace jubatus::table;
+using namespace jubatus::core::table;
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 lsh::lsh(const config& conf,
@@ -47,4 +48,5 @@ bit_vector lsh::hash(const sfv_t& sfv) const {
 }
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus

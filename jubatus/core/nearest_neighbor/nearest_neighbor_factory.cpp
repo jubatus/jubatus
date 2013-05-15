@@ -27,6 +27,7 @@
 using namespace std;
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 nearest_neighbor_base* create_nearest_neighbor(
@@ -54,4 +55,5 @@ nearest_neighbor_base* create_nearest_neighbor(
 }
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus

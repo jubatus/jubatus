@@ -14,6 +14,8 @@ def build(bld):
       'graph.cpp',
       'linear_function_mixer.cpp',
       'mixable_weight_manager.cpp',
+      'mixable_versioned_table.cpp',
+      'nearest_neighbor.cpp',
       ]
 
   bld.shlib(
@@ -49,4 +51,6 @@ def build(bld):
       'diffv.hpp',
       'linear_function_mixer.hpp',
       'mixable_weight_manager.hpp',
+      'mixable_versioned_table.hpp',
+      'nearest_neighbor.hpp',
       ])

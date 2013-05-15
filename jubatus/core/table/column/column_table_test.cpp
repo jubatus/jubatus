@@ -26,36 +26,36 @@
 
 using std::vector;
 
-using jubatus::table::column_table;
-using jubatus::table::column_type;
-using jubatus::table::bit_vector;
-using jubatus::table::owner;
+using jubatus::core::table::column_table;
+using jubatus::core::table::column_type;
+using jubatus::core::table::bit_vector;
+using jubatus::core::table::owner;
 
-using jubatus::table::const_bit_vector_column;
-using jubatus::table::const_double_column;
-using jubatus::table::const_float_column;
-using jubatus::table::const_int8_column;
-using jubatus::table::const_int16_column;
-using jubatus::table::const_int32_column;
-using jubatus::table::const_int64_column;
-using jubatus::table::const_uint8_column;
-using jubatus::table::const_uint16_column;
-using jubatus::table::const_uint32_column;
-using jubatus::table::const_uint64_column;
-using jubatus::table::const_string_column;
+using jubatus::core::table::const_bit_vector_column;
+using jubatus::core::table::const_double_column;
+using jubatus::core::table::const_float_column;
+using jubatus::core::table::const_int8_column;
+using jubatus::core::table::const_int16_column;
+using jubatus::core::table::const_int32_column;
+using jubatus::core::table::const_int64_column;
+using jubatus::core::table::const_uint8_column;
+using jubatus::core::table::const_uint16_column;
+using jubatus::core::table::const_uint32_column;
+using jubatus::core::table::const_uint64_column;
+using jubatus::core::table::const_string_column;
 
-using jubatus::table::bit_vector_column;
-using jubatus::table::double_column;
-using jubatus::table::float_column;
-using jubatus::table::int8_column;
-using jubatus::table::int16_column;
-using jubatus::table::int32_column;
-using jubatus::table::int64_column;
-using jubatus::table::uint8_column;
-using jubatus::table::uint16_column;
-using jubatus::table::uint32_column;
-using jubatus::table::uint64_column;
-using jubatus::table::string_column;
+using jubatus::core::table::bit_vector_column;
+using jubatus::core::table::double_column;
+using jubatus::core::table::float_column;
+using jubatus::core::table::int8_column;
+using jubatus::core::table::int16_column;
+using jubatus::core::table::int32_column;
+using jubatus::core::table::int64_column;
+using jubatus::core::table::uint8_column;
+using jubatus::core::table::uint16_column;
+using jubatus::core::table::uint32_column;
+using jubatus::core::table::uint64_column;
+using jubatus::core::table::string_column;
 
 /*
   column_table t;

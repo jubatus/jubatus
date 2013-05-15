@@ -26,6 +26,7 @@
 using namespace std;
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 nearest_neighbor_base::nearest_neighbor_base(
@@ -73,4 +74,5 @@ void nearest_neighbor_base::load(istream& is) {
 }
 
 }  // namespace nearest_neighbor
+}  // namespcae core
 }  // namespace jubatus

@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_NEAREST_NEIGHBOR_BIT_VECTOR_NEAREST_NEIGHBOR_BASE_HPP_
-#define JUBATUS_NEAREST_NEIGHBOR_BIT_VECTOR_NEAREST_NEIGHBOR_BASE_HPP_
+#ifndef JUBATUS_CORE_NEAREST_NEIGHBOR_BIT_VECTOR_NEAREST_NEIGHBOR_BASE_HPP_
+#define JUBATUS_CORE_NEAREST_NEIGHBOR_BIT_VECTOR_NEAREST_NEIGHBOR_BASE_HPP_
 
 #include <map>
 #include <string>
@@ -25,6 +25,7 @@
 #include "nearest_neighbor_base.hpp"
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 class bit_vector_nearest_neighbor_base : public nearest_neighbor_base {
@@ -63,6 +64,7 @@ class bit_vector_nearest_neighbor_base : public nearest_neighbor_base {
 };
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_NEAREST_NEIGHBOR_BIT_VECTOR_NEAREST_NEIGHBOR_BASE_HPP_
+#endif  // JUBATUS_CORE_NEAREST_NEIGHBOR_BIT_VECTOR_NEAREST_NEIGHBOR_BASE_HPP_

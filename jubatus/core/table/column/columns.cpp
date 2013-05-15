@@ -17,7 +17,9 @@
 #include <string>
 #include "columns.hpp"
 #include <assert.h>
+
 namespace jubatus {
+namespace core {
 namespace table {
 namespace detail {
 
@@ -287,4 +289,5 @@ void abstract_column::update(uint64_t index, const bit_vector& value) {
 
 }  // namespace detail
 }  // namespace table
+}  // namespace core
 }  // namespace jubatus

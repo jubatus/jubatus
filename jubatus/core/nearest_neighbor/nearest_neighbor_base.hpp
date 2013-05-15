@@ -26,6 +26,7 @@
 #include "../table/column/column_table.hpp"
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 class nearest_neighbor_base {
@@ -77,6 +78,7 @@ class nearest_neighbor_base {
 };
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_NEAREST_NEIGHBOR_NEAREST_NEIGHBOR_BASE_HPP_

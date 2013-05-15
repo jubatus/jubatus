@@ -19,8 +19,8 @@
 #include "gtest/gtest.h"
 #include "bit_vector.hpp"
 
-using jubatus::table::bit_vector;
-using jubatus::table::bit_vector_base;
+using jubatus::core::table::bit_vector;
+using jubatus::core::table::bit_vector_base;
 
 TEST(bit_vector, length) {
   bit_vector bv(80);
