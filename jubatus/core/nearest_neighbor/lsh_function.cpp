@@ -15,11 +15,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <vector>
-
-#include "lsh_function.hpp"
-
 #include <pficommon/math/random.h>
 #include "../common/hash.hpp"
+#include "lsh_function.hpp"
 
 using std::vector;
 using jubatus::core::table::bit_vector;

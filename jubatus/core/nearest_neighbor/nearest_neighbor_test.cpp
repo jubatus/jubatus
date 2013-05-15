@@ -22,12 +22,13 @@
 #include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
 #include <pficommon/lang/cast.h>
+#include "../common/jsonconfig.hpp"
 #include "nearest_neighbor_base.hpp"
 #include "nearest_neighbor_factory.hpp"
-#include "../common/jsonconfig.hpp"
 
-using namespace std;
-using namespace jubatus::core::table;
+using std::map;
+using std::string;
+using std::vector;
 using pfi::lang::scoped_ptr;
 
 namespace jubatus {
@@ -61,22 +62,26 @@ class nearest_neighbor_test
  protected:
   void SetUp() {
     try {
-    map<string, string> param = GetParam();
-    string name = param["nearest_neighbor:name"];
-    param.erase("nearest_neighbor:name");
-    using pfi::text::json::json;
-    json config_js(new pfi::text::json::json_object);
-    for (map<string, string>::iterator it = param.begin(); it != param.end(); ++it)
-        config_js.add(it->first, json(new pfi::text::json::json_integer(pfi::lang::lexical_cast<int>(it->second))));
+      map<string, string> param = GetParam();
+      string name = param["nearest_neighbor:name"];
+      param.erase("nearest_neighbor:name");
+      using pfi::text::json::json;
+      json config_js(new pfi::text::json::json_object);
+      for (map<string, string>::iterator it = param.begin();
+           it != param.end(); ++it) {
+        config_js.add(it->first, json(new pfi::text::json::json_integer(
+            pfi::lang::lexical_cast<int>(it->second))));
+      }
 
-    using jubatus::core::jsonconfig::config;
-    using pfi::text::json::json;
+      using jubatus::core::jsonconfig::config;
+      using pfi::text::json::json;
 
-    table_.reset(new column_table);
-    nn_.reset(create_nearest_neighbor(name, config(config_js, ""), table_.get(), "localhost"));
+      table_.reset(new table::column_table);
+      nn_.reset(create_nearest_neighbor(
+          name, config(config_js, ""), table_.get(), "localhost"));
     } catch (jubatus::core::jsonconfig::cast_check_error& e) {
       std::cout << "In Setup():" <<e.what() << '\n';
-      std::vector<pfi::lang::shared_ptr<jubatus::core::jsonconfig::config_error> > v = e.errors();
+      vector<pfi::lang::shared_ptr<jsonconfig::config_error> > v = e.errors();
       for (size_t i = 0; i < v.size(); ++i) {
         std::cout << v[i]->what() << '\n';
       }
@@ -84,11 +89,15 @@ class nearest_neighbor_test
     }
   }
 
-  column_table* get_table() { return table_.get(); }
-  nearest_neighbor_base* get_nn() { return nn_.get(); }
+  table::column_table* get_table() {
+    return table_.get();
+  }
+  nearest_neighbor_base* get_nn() {
+    return nn_.get();
+  }
 
  private:
-  scoped_ptr<column_table> table_;
+  scoped_ptr<table::column_table> table_;
   scoped_ptr<nearest_neighbor_base> nn_;
 };
 
@@ -130,7 +139,7 @@ TEST_P(nearest_neighbor_test, get_all_row_ids) {
 TEST_P(nearest_neighbor_test, empty_neighbor_row) {
   nearest_neighbor_base* nn = get_nn();
 
-  vector<pair<string, float> > ids;
+  vector<std::pair<string, float> > ids;
   nn->neighbor_row("", ids, 1);
   EXPECT_TRUE(ids.empty());
 
@@ -138,19 +147,20 @@ TEST_P(nearest_neighbor_test, empty_neighbor_row) {
   EXPECT_TRUE(ids.empty());
 }
 
-// TODO: Write approximated test of neighbor_row().
+// TODO(beam2d): Write approximated test of neighbor_row().
 
 const map<string, string> configs[] = {
   make_config("nearest_neighbor:name", "lsh")("bitnum", "64")(),
   make_config("nearest_neighbor:name", "minhash")("bitnum", "64")(),
   make_config(
-      "nearest_neighbor:name",
-      "euclid_lsh")("hash_num", "64")()
+      "nearest_neighbor:name", "euclid_lsh")(
+      "hash_num", "64")()
 };
 
-INSTANTIATE_TEST_CASE_P(lsh_test,
-                        nearest_neighbor_test,
-                        ::testing::ValuesIn(configs));
+INSTANTIATE_TEST_CASE_P(
+    lsh_test,
+    nearest_neighbor_test,
+    ::testing::ValuesIn(configs));
 
 }  // namespace nearest_neighbor
 }  // namespace core

@@ -40,13 +40,20 @@ class minhash : public bit_vector_nearest_neighbor_base {
       ar & MEMBER(bitnum);
     }
   };
-  minhash(const config& conf,
-          table::column_table* table, const std::string& id);
-  minhash(const config& conf,
-          table::column_table* table,
-          std::vector<table::column_type>& schema, const std::string& id);
 
-  virtual std::string type() const { return "minhash"; }
+  minhash(
+      const config& conf,
+      table::column_table* table,
+      const std::string& id);
+  minhash(
+      const config& conf,
+      table::column_table* table,
+      std::vector<table::column_type>& schema,
+      const std::string& id);
+
+  virtual std::string type() const {
+    return "minhash";
+  }
 
  protected:
   virtual table::bit_vector hash(const sfv_t& sfv) const;

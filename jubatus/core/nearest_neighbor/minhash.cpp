@@ -14,15 +14,14 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <cfloat>
+#include <cmath>
 #include <map>
 #include <string>
 #include <vector>
 
-#include "minhash.hpp"
-
-#include <cfloat>
-#include <cmath>
 #include "../common/hash.hpp"
+#include "minhash.hpp"
 
 using std::string;
 using std::map;
@@ -37,21 +36,56 @@ using jubatus::core::table::column_type;
 namespace jubatus {
 namespace core {
 namespace nearest_neighbor {
-
 namespace {
+
 void hash_mix64(uint64_t& a, uint64_t& b, uint64_t& c) {
-  a -= b; a -= c; a ^= (c>>43);
-  b -= c; b -= a; b ^= (a<<9);
-  c -= a; c -= b; c ^= (b>>8);
-  a -= b; a -= c; a ^= (c>>38);
-  b -= c; b -= a; b ^= (a<<23);
-  c -= a; c -= b; c ^= (b>>5);
-  a -= b; a -= c; a ^= (c>>35);
-  b -= c; b -= a; b ^= (a<<49);
-  c -= a; c -= b; c ^= (b>>11);
-  a -= b; a -= c; a ^= (c>>12);
-  b -= c; b -= a; b ^= (a<<18);
-  c -= a; c -= b; c ^= (b>>22);
+  a -= b;
+  a -= c;
+  a ^= (c>>43);
+
+  b -= c;
+  b -= a;
+  b ^= (a<<9);
+
+  c -= a;
+  c -= b;
+  c ^= (b>>8);
+
+  a -= b;
+  a -= c;
+  a ^= (c>>38);
+
+  b -= c;
+  b -= a;
+  b ^= (a<<23);
+
+  c -= a;
+  c -= b;
+  c ^= (b>>5);
+
+  a -= b;
+  a -= c;
+  a ^= (c>>35);
+
+  b -= c;
+  b -= a;
+  b ^= (a<<49);
+
+  c -= a;
+  c -= b;
+  c ^= (b>>11);
+
+  a -= b;
+  a -= c;
+  a ^= (c>>12);
+
+  b -= c;
+  b -= a;
+  b ^= (a<<18);
+
+  c -= a;
+  c -= b;
+  c ^= (b>>22);
 }
 
 float calc_hash(uint64_t a, uint64_t b, float val) {
@@ -63,17 +97,21 @@ float calc_hash(uint64_t a, uint64_t b, float val) {
   float r = static_cast<float>(a) / static_cast<float>(0xFFFFFFFFFFFFFFFFLLU);
   return - log(r) / val;
 }
-}
 
-minhash::minhash(const config& conf,
-                 table::column_table* table, const std::string& id)
+}  // namespace
+
+minhash::minhash(
+    const config& conf,
+    table::column_table* table,
+    const std::string& id)
     : bit_vector_nearest_neighbor_base(
       conf.bitnum, table, id) {}
 
-minhash::minhash(const config& conf,
-                 table::column_table* table,
-                 vector<column_type>& schema,
-                 const std::string& id)
+minhash::minhash(
+    const config& conf,
+    table::column_table* table,
+    vector<column_type>& schema,
+    const std::string& id)
     : bit_vector_nearest_neighbor_base(
       conf.bitnum, table, schema, id) {}
 

@@ -39,8 +39,8 @@ using pfi::data::string::split;
 namespace jubatus {
 namespace core {
 namespace nearest_neighbor {
-
 namespace {
+
 bit_vector make_bv(const string& in_str) {
   bit_vector bv(in_str.size());
   for (size_t i = 0; i < in_str.size(); ++i) {
@@ -60,15 +60,18 @@ sfv_t make_sfv(const string& in_str) {
   }
   return sfv;
 }
-}
+
+}  // namespace
 
 class bit_vector_nearest_neighbor_mock
   : public bit_vector_nearest_neighbor_base {
  public:
-  bit_vector_nearest_neighbor_mock(uint64_t bitnum,
-                                   table::column_table* table)
+  bit_vector_nearest_neighbor_mock(
+      uint64_t bitnum,
+      table::column_table* table)
       : bit_vector_nearest_neighbor_base(bitnum, table, "test"),
-        hash_value_(bitnum) {}
+        hash_value_(bitnum) {
+  }
 
   void set_next_bv(const bit_vector& bv) {
     hash_value_ = bv;
@@ -79,7 +82,9 @@ class bit_vector_nearest_neighbor_mock
     set_row(id, sfv_t());
   }
 
-  virtual string type() const { return "bv_mock"; }
+  virtual string type() const {
+    return "bv_mock";
+  }
 
  protected:
   virtual bit_vector hash(const sfv_t&) const {

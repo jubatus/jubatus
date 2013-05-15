@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_NEAREST_NEIGHBOR_EXCEPTION_HPP_
-#define JUBATUS_NEAREST_NEIGHBOR_EXCEPTION_HPP_
+#ifndef JUBATUS_CORE_NEAREST_NEIGHBOR_EXCEPTION_HPP_
+#define JUBATUS_CORE_NEAREST_NEIGHBOR_EXCEPTION_HPP_
 
 #include <string>
 #include "../common/exception.hpp"
@@ -27,7 +27,7 @@ namespace nearest_neighbor {
 class nearest_neighbor_exception
     : public exception::jubaexception<nearest_neighbor_exception> {
  public:
-  nearest_neighbor_exception(const std::string& msg)
+  explicit nearest_neighbor_exception(const std::string& msg)
       : msg(msg) {}
   ~nearest_neighbor_exception() throw() {}
   const char* what() const throw() {
@@ -40,7 +40,7 @@ class nearest_neighbor_exception
 
 class unimplemented_exception : public nearest_neighbor_exception {
  public:
-  unimplemented_exception(const std::string& msg)
+  explicit unimplemented_exception(const std::string& msg)
       : nearest_neighbor_exception(msg) {}
 };
 
@@ -48,4 +48,4 @@ class unimplemented_exception : public nearest_neighbor_exception {
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_NEAREST_NEIGHBOR_EXCEPTION_HPP_
+#endif  // JUBATUS_CORE_NEAREST_NEIGHBOR_EXCEPTION_HPP_

@@ -34,28 +34,38 @@ class euclid_lsh : public nearest_neighbor_base {
         : hash_num(64u) {
     }
 
-    int32_t hash_num; // TODO: make uint32_t (by modifying pficommon)
+    // TODO(beam2d): make it uint32_t (by modifying pficommon)
+    int32_t hash_num;
 
     template <typename Ar>
     void serialize(Ar& ar) {
       ar & MEMBER(hash_num);
     }
   };
-  euclid_lsh(const config& conf,
-             table::column_table* table, const std::string& id);
-  euclid_lsh(const config& conf,
-             table::column_table* table,
-             std::vector<table::column_type>& schema, const std::string& id);
 
-  virtual std::string type() const { return "euclid_lsh"; }
+euclid_lsh(
+      const config& conf,
+      table::column_table* table,
+      const std::string& id);
+  euclid_lsh(
+      const config& conf,
+      table::column_table* table,
+      std::vector<table::column_type>& schema,
+      const std::string& id);
+
+  virtual std::string type() const {
+    return "euclid_lsh";
+  }
 
   virtual void set_row(const std::string& id, const sfv_t& sfv);
-  virtual void neighbor_row(const sfv_t& query,
-                            std::vector<std::pair<std::string, float> >& ids,
-                            uint64_t ret_num) const;
-  virtual void neighbor_row(const std::string& query,
-                            std::vector<std::pair<std::string, float> >& ids,
-                            uint64_t ret_num) const;
+  virtual void neighbor_row(
+      const sfv_t& query,
+      std::vector<std::pair<std::string, float> >& ids,
+      uint64_t ret_num) const;
+  virtual void neighbor_row(
+      const std::string& query,
+      std::vector<std::pair<std::string, float> >& ids,
+      uint64_t ret_num) const;
 
   virtual float calc_similarity(float distance) const {
     return -distance;
@@ -67,10 +77,11 @@ class euclid_lsh : public nearest_neighbor_base {
   table::const_bit_vector_column lsh_column() const;
   table::const_float_column norm_column() const;
 
-  void neighbor_row_from_hash(const table::bit_vector& bv,
-                              float norm,
-                              std::vector<std::pair<std::string, float> >& ids,
-                              uint64_t ret_num) const;
+  void neighbor_row_from_hash(
+      const table::bit_vector& bv,
+      float norm,
+      std::vector<std::pair<std::string, float> >& ids,
+      uint64_t ret_num) const;
 
   uint64_t first_column_id_;
   uint32_t hash_num_;
