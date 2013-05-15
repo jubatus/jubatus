@@ -21,6 +21,8 @@
 #include <string>
 #include <utility>
 
+#include <pficommon/data/serialization.h>
+
 #include "stat.hpp"
 
 namespace jubatus {
@@ -48,7 +50,15 @@ class mixable_stat : public stat {
       std::pair<double, size_t>&);
   double entropy() const;
 
+  bool save(std::ostream&);
+  bool load(std::istream&);
+
  private:
+  friend class pfi::data::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar) {
+    ar & e_ & n_;
+  }
   double e_;
   double n_;
 };

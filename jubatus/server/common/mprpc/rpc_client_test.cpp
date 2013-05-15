@@ -29,8 +29,10 @@
 #include "rpc_mclient.hpp"
 #include "rpc_util.hpp"
 #include "../../framework/aggregators.hpp"
-#include "../../server/test_util.hpp"
 
+using std::string;
+using std::cout;
+using std::endl;
 using pfi::lang::function;
 using pfi::lang::shared_ptr;
 using pfi::concurrent::thread;
@@ -51,6 +53,27 @@ JUBATUS_MPRPC_PROC(add_all, int, (int, int, int));
 JUBATUS_MPRPC_PROC(various, string, (int, float, double, strw));
 JUBATUS_MPRPC_PROC(sum, int, (std::vector<int>));
 JUBATUS_MPRPC_PROC(vec, std::vector<std::string>, (std::string, size_t));
+
+void wait_server(int port) {
+  msgpack::rpc::client cli("localhost", port);
+  cli.set_timeout(10);
+  int64_t sleep_time = 1000;
+  // 1000 * \sum {i=0..9} 2^i = 1024000 micro sec = 1024 ms
+  for (int i = 0; i < 10; ++i) {
+    usleep(sleep_time);
+    try {
+      cli.call(std::string("dummy")).get<bool>();
+      throw std::runtime_error("dummy rpc successed");
+    } catch (const msgpack::rpc::no_method_error& e) {
+      return;
+    } catch (const msgpack::rpc::connect_error& e) {
+      // wait until the server bigins to listen
+    }
+    sleep_time *= 2;
+  }
+  throw std::runtime_error("cannot connect");
+}
+
 
 static bool test_bool(int i) {
   return i % 2;

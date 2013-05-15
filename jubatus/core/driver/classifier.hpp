@@ -54,6 +54,8 @@ class classifier {
   jubatus::core::classifier::classify_result classify(
       const fv_converter::datum& data) const;
 
+  void clear();
+
  private:
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
