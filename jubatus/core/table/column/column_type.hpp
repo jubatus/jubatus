@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012,2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -49,18 +49,18 @@ class column_type {
     invalid_type
   };
   column_type():type_(invalid_type), bit_vector_length_(0) {}
-  explicit column_type(type_name name)
-    :type_(name), bit_vector_length_(0) {
+  explicit column_type(type_name name) : type_(name), bit_vector_length_(0) {
     if (name == bit_vector_type) {
       throw argument_unmatch_exception(
           "bit_vector_type expects bit_vector's length as second argument");
     }
   }
   column_type(type_name name, int length)
-    :type_(name), bit_vector_length_(length) {
+      : type_(name),
+        bit_vector_length_(length) {
     if (name != bit_vector_type) {
       throw argument_unmatch_exception(
-        "unneeded second parameter, it is used only for bit_vector_type");
+          "unneeded second parameter, it is used only for bit_vector_type");
     }
   }
 
@@ -69,51 +69,65 @@ class column_type {
   }
 
   std::string type_as_string() const {
-    if (type_ == int8_type) {return "int8";}
-#define ELSE_IF_TYPE(ctype)                     \
-    else if (type_ == ctype##_type) {           \
-      return #ctype;                            \
+    if (type_ == int8_type) {
+      return "int8";
+    } else if (type_ == int16_type) {
+      return "int16";
+    } else if (type_ == int32_type) {
+      return "int32";
+    } else if (type_ == int64_type) {
+      return "int64";
+    } else if (type_ == uint8_type) {
+      return "uint8";
+    } else if (type_ == uint16_type) {
+      return "uint16";
+    } else if (type_ == uint32_type) {
+      return "uint32";
+    } else if (type_ == uint64_type) {
+      return "uint64";
+    } else if (type_ == float_type) {
+      return "float";
+    } else if (type_ == double_type) {
+      return "double";
+    } else if (type_ == bit_vector_type) {
+      return "bit_vector";
+    } else if (type_ == string_type) {
+      return "string";
     }
-    ELSE_IF_TYPE(int16)  ELSE_IF_TYPE(int32) ELSE_IF_TYPE(int32)
-      ELSE_IF_TYPE(int64) ELSE_IF_TYPE(uint8) ELSE_IF_TYPE(uint16)
-      ELSE_IF_TYPE(uint32) ELSE_IF_TYPE(uint32) ELSE_IF_TYPE(uint64)
-      ELSE_IF_TYPE(float) ELSE_IF_TYPE(double) ELSE_IF_TYPE(bit_vector)
-      ELSE_IF_TYPE(string);
-#undef ELSE_IF_TYPE
     throw type_unmatch_exception("in type_as_string(): unknown type");
   }
 
   size_t size() const {
     switch (type_) {
-    case int8_type:
-    case uint8_type:
-      return 1;
-    case int16_type:
-    case uint16_type:
-      return 2;
-    case int32_type:
-    case uint32_type:
-    case float_type:
-      return 4;
-    case int64_type:
-    case uint64_type:
-    case double_type:
-    case string_type:
-      return 8;
-    case bit_vector_type:
-      return bit_vector::memory_size(bit_vector_length_);
-    case array_type:
-    case invalid_type:
-    default:
-      return 0;
+      case int8_type:
+      case uint8_type:
+        return 1;
+      case int16_type:
+      case uint16_type:
+        return 2;
+      case int32_type:
+      case uint32_type:
+      case float_type:
+        return 4;
+      case int64_type:
+      case uint64_type:
+      case double_type:
+      case string_type:
+        return 8;
+      case bit_vector_type:
+        return bit_vector::memory_size(bit_vector_length_);
+      case array_type:
+      case invalid_type:
+      default:
+        return 0;
     }
   }
 
 
   size_t bit_vector_length() const {
     if (type_ != bit_vector_type) {
-      throw type_unmatch_exception("bit_vector length expected but type was" +
-                                       type_as_string());
+      throw type_unmatch_exception(
+          "bit_vector length expected but type was" + type_as_string());
     }
     return bit_vector_length_;
   }
@@ -146,7 +160,7 @@ class column_type {
   void serialize(Ar& ar) {
     int type = type_;
     ar & NAMED_MEMBER("type_", type)
-      & MEMBER(bit_vector_length_);
+        & MEMBER(bit_vector_length_);
     type_ = static_cast<type_name>(type);
   }
   friend class abstract_column;

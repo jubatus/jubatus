@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012,2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,21 +17,22 @@
 #ifndef JUBATUS_CORE_TABLE_COLUMN_OWNER_HPP_
 #define JUBATUS_CORE_TABLE_COLUMN_OWNER_HPP_
 
-#include <string>
 #include <ostream>
+#include <string>
+#include <msgpack.hpp>
+#include <pficommon/data/serialization.h>
 
 namespace jubatus {
 namespace core {
 namespace table {
 
 struct owner {
-  owner()
-    :name("(uninitialized)")
-  {}
-  explicit owner(const std::string& n)
-    :name(n)
-  {}
   std::string name;
+
+  owner() : name("(uninitialized)") {
+  }
+  explicit owner(const std::string& n) : name(n) {
+  }
 
   bool operator==(const owner& rhs) const {
     return name == rhs.name;
@@ -51,7 +52,6 @@ struct owner {
     ar & MEMBER(name);
   }
 };
-
 
 }  // namespace table
 }  // namespace core

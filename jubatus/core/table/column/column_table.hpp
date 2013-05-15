@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012,2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -18,10 +18,9 @@
 #define JUBATUS_CORE_TABLE_COLUMN_COLUMN_TABLE_HPP_
 
 #include <stdint.h>
-#include <assert.h>
-#include <string.h>
-
 #include <algorithm>
+#include <cassert>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <utility>
@@ -51,24 +50,26 @@ class invalid_row_set : public exception::jubaexception<invalid_row_set> {
 
 
 class column_table {
-  // typedef pfi::data::unordered_map<std::string, uint64_t> index_table;
   typedef pfi::data::unordered_map<std::string, uint64_t> index_table;
 
  public:
   typedef std::pair<owner, uint64_t> version_t;
 
-  column_table():tuples_(0), clock_(0) {
+  column_table()
+      : tuples_(0), clock_(0) {
   }
+  ~column_table() {
+  }
+
   void init(const std::vector<column_type>& schema);
   void clear();
 
   template<typename T1>
   bool add(const std::string& key, const owner& o, const T1& v1) {
     if (columns_.size() != 1) {
-      throw length_unmatch_exception("tuple's length unmatch, expected "
-                                     + pfi::lang::lexical_cast<std::string>(
-                                           tuples_)
-                                     + " tuples.");
+      throw length_unmatch_exception(
+          "tuple's length unmatch, expected " +
+          pfi::lang::lexical_cast<std::string>(tuples_) + " tuples.");
     }
     // check already exists
     pfi::concurrent::scoped_wlock lk(table_lock_);
@@ -96,10 +97,9 @@ class column_table {
   template<typename T1, typename T2>
   bool add(const std::string& key, const owner& o, const T1& v1, const T2& v2) {
     if (columns_.size() != 2) {
-      throw length_unmatch_exception("tuple's length unmatch, expected "
-                                     + pfi::lang::lexical_cast<std::string>(
-                                           tuples_)
-                                     + " tuples.");
+      throw length_unmatch_exception(
+          "tuple's length unmatch, expected " +
+          pfi::lang::lexical_cast<std::string>(tuples_) + " tuples.");
     }
 
     // check already exists */
@@ -130,10 +130,10 @@ class column_table {
 
   template<typename T>
   bool update(
-    const std::string& key,
-    const owner& o,
-    size_t colum_id,
-    const T& v) {
+      const std::string& key,
+      const owner& o,
+      size_t colum_id,
+      const T& v) {
     pfi::concurrent::scoped_wlock lk(table_lock_);
     index_table::iterator it = index_.find(key);
     if (tuples_ < colum_id || it == index_.end()) {
@@ -148,7 +148,9 @@ class column_table {
 
   std::string get_key(uint64_t key_id) const {
     pfi::concurrent::scoped_rlock lk(table_lock_);
-    if (tuples_ <= key_id) {return "";}
+    if (tuples_ <= key_id) {
+      return "";
+    }
     return keys_[key_id];
   }
 
@@ -156,8 +158,7 @@ class column_table {
     pfi::concurrent::scoped_wlock lk(table_lock_);
     uint64_t max_clock = 0;
     for (std::vector<version_t>::const_iterator it = versions_.begin();
-        it != versions_.end();
-        ++it) {
+         it != versions_.end(); ++it) {
       max_clock = std::max(max_clock, it->second);
     }
     clock_ = max_clock;
@@ -199,14 +200,13 @@ class column_table {
     return tuples_;
   }
 
-  ~column_table() { }
   void dump() const {
     pfi::concurrent::scoped_rlock lk(table_lock_);
     std::cout << "schema is ";
-    for (std::vector<detail::abstract_column>::const_iterator it
-             = columns_.begin();
-        it != columns_.end();
-        ++it) {
+    for (std::vector<detail::abstract_column>::const_iterator it =
+             columns_.begin();
+         it != columns_.end();
+         ++it) {
       it->dump();
     }
   }
@@ -242,7 +242,7 @@ class column_table {
     os << std::endl;
     for (uint64_t i = 0; i < tbl.tuples_; ++i) {
       os << tbl.keys_[i] << ":" <<
-        tbl.versions_[i].first << ":" << tbl.versions_[i].second << "\t|";
+          tbl.versions_[i].first << ":" << tbl.versions_[i].second << "\t|";
       for (size_t j = 0; j < tbl.columns_.size(); ++j) {
         tbl.columns_[j].dump(os, i);
         os << "\t|";

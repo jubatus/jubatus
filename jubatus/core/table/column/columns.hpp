@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012,2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -13,22 +13,22 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 #ifndef JUBATUS_CORE_TABLE_COLUMN_COLUMNS_HPP_
 #define JUBATUS_CORE_TABLE_COLUMN_COLUMNS_HPP_
 
-#include <iostream>
-#include <string>
-#include <vector>
-
-#include <memory.h>
 #include <stdint.h>
 #include <algorithm>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
+#include <msgpack.hpp>
 #include <pficommon/lang/demangle.h>
 #include <pficommon/data/serialization.h>
-#include <msgpack.hpp>
+#include "../storage_exception.hpp"
 #include "bit_vector.hpp"
 #include "column_type.hpp"
-#include "../storage_exception.hpp"
 
 namespace jubatus {
 namespace core {
@@ -39,61 +39,63 @@ class abstract_column;
 
 #define EMBED_TYPES                             \
   TYPE(int8)                                    \
-  TYPE(int16)                                   \
-  TYPE(int32)                                   \
-  TYPE(int64)                                   \
+  TYPE(int16)  /* NOLINT */                     \
+  TYPE(int32)  /* NOLINT */                     \
+  TYPE(int64)  /* NOLINT */                     \
   TYPE(uint8)                                   \
-  TYPE(uint16)                                  \
-  TYPE(uint32)                                  \
-  TYPE(uint64)                                  \
-  TYPE(float)                                   \
-  TYPE(double)                                  \
+  TYPE(uint16)  /* NOLINT */                    \
+  TYPE(uint32)  /* NOLINT */                    \
+  TYPE(uint64)  /* NOLINT */                    \
+  TYPE(float)  /* NOLINT */                     \
+  TYPE(double)  /* NOLINT */                    \
   TYPE(string)
 #define USE_TYPES_NEED_T                        \
   TYPE(int8)                                    \
-  TYPE(int16)                                   \
-  TYPE(int32)                                   \
-  TYPE(int64)                                   \
+  TYPE(int16)  /* NOLINT */                     \
+  TYPE(int32)  /* NOLINT */                      \
+  TYPE(int64)  /* NOLINT */                      \
   TYPE(uint8)                                   \
-  TYPE(uint16)                                  \
-  TYPE(uint32)                                  \
-  TYPE(uint64)
+  TYPE(uint16)  /* NOLINT */                    \
+  TYPE(uint32)  /* NOLINT */                    \
+  TYPE(uint64)  // NOLINT
 #define USE_TYPES_UNNEED_T                      \
-  TYPE(float)                                   \
-  TYPE(double)                                  \
+  TYPE(float)  /* NOLINT */                     \
+  TYPE(double)  /* NOLINT */                    \
   TYPE(string)
 
 
 struct bit_vector_column {
   bit_vector_column(char* ptr, uint64_t size, size_t bit_num)
-    :ptr_(reinterpret_cast<char*>(ptr)),
-     size_(size),
-     vector_bit_num_(bit_num)
-  {}
+      : ptr_(reinterpret_cast<char*>(ptr)),
+        size_(size),
+        vector_bit_num_(bit_num) {
+  }
   bit_vector_column(const bit_vector_column& orig)
-    :ptr_(orig.ptr_), size_(orig.size_), vector_bit_num_(orig.vector_bit_num_)
-  {}
+      : ptr_(orig.ptr_),
+        size_(orig.size_),
+        vector_bit_num_(orig.vector_bit_num_) {
+  }
   bit_vector operator[](uint64_t index) const {
     if (size() <= index) {
-      throw array_range_exception("index "
-                                  + pfi::lang::lexical_cast<std::string>(index)
-                                  + " is over length from "
-                                  + pfi::lang::lexical_cast<std::string>(
-                                        size()));
+      throw array_range_exception(
+          "index " + pfi::lang::lexical_cast<std::string>(index) +
+          " is over length from " +
+          pfi::lang::lexical_cast<std::string>(size()));
     }
-    return bit_vector(&ptr_[bit_vector::memory_size(vector_bit_num_) * index],
-                      vector_bit_num_);
+    return bit_vector(
+        &ptr_[bit_vector::memory_size(vector_bit_num_) * index],
+        vector_bit_num_);
   }
   bit_vector operator[](uint64_t index) {
     if (size() <= index) {
-      throw array_range_exception("index "
-                                  + pfi::lang::lexical_cast<std::string>(index)
-                                  + " is over length from "
-                                  + pfi::lang::lexical_cast<std::string>(
-                                        size()));
+      throw array_range_exception(
+          "index " + pfi::lang::lexical_cast<std::string>(index) +
+          " is over length from " +
+          pfi::lang::lexical_cast<std::string>(size()));
     }
-    return bit_vector(&ptr_[bit_vector::memory_size(vector_bit_num_) * index],
-                      vector_bit_num_);
+    return bit_vector(
+        &ptr_[bit_vector::memory_size(vector_bit_num_) * index],
+        vector_bit_num_);
   }
   void push_back(const bit_vector& orig) {
     bit_vector new_bit_vector(&ptr_[size_], vector_bit_num_);
@@ -102,16 +104,17 @@ struct bit_vector_column {
 
   template <typename U>
   void push_back(const U& v) {
-    throw type_unmatch_exception("invalid type push_backed: " +
-                                 pfi::lang::get_typename<U>() +
-                                 " for bit_vector");
+    throw type_unmatch_exception(
+        "invalid type push_backed: " + pfi::lang::get_typename<U>() +
+        " for bit_vector");
   }
 
   void insert(uint64_t index, const bit_vector& value) {
     const uint64_t memory_size = bit_vector::memory_size(vector_bit_num_);
     char* const target = ptr_ + index*memory_size;
-    std::memmove(target + bit_vector::memory_size(vector_bit_num_),
-                 target, size_ - index*memory_size);
+    std::memmove(
+        target + bit_vector::memory_size(vector_bit_num_),
+        target, size_ - index*memory_size);
     size_ += memory_size;
     bit_vector new_bit_vector(target, vector_bit_num_);
     new_bit_vector = value;
@@ -119,9 +122,9 @@ struct bit_vector_column {
 
   template <typename U>
   void insert(uint64_t, const U& v) {
-    throw type_unmatch_exception("invalid type push_backed: " +
-                                 pfi::lang::get_typename<U>() +
-                                 " for bit_vector");
+    throw type_unmatch_exception(
+        "invalid type push_backed: " + pfi::lang::get_typename<U>() +
+        " for bit_vector");
   }
 
   void dump() const {
@@ -145,7 +148,9 @@ struct bit_vector_column {
     return os;
   }
 
-  void clear() {/* we dont need to delete */ }
+  void clear() {
+    // we dont need to delete
+  }
 
  private:
   char* ptr_;
@@ -153,13 +158,17 @@ struct bit_vector_column {
   size_t vector_bit_num_;
 };
 
+// TODO(beam2d): Stop using private inheritance.
 struct const_bit_vector_column : private bit_vector_column {
-  const_bit_vector_column(const char* ptr,
-                          const uint64_t size, size_t bit_num)
-    :bit_vector_column(const_cast<char*>(ptr), size, bit_num)
-  {}
-  const_bit_vector_column(const bit_vector_column& orig)  // implicit!
-                                     :bit_vector_column(orig) {}
+  const_bit_vector_column(
+      const char* ptr,
+      const uint64_t size,
+      size_t bit_num)
+      : bit_vector_column(const_cast<char*>(ptr), size, bit_num) {
+  }
+  const_bit_vector_column(const bit_vector_column& orig)  // NOLINT implicit!
+      : bit_vector_column(orig) {
+  }
   using bit_vector_column::operator[];
   using bit_vector_column::dump;
   using bit_vector_column::size;
@@ -187,8 +196,8 @@ class typed_column {
 
  public:
   typed_column(char* ptr, uint64_t size)
-    :ptr_(reinterpret_cast<T*>(ptr)), size_(size)
-  {}
+      : ptr_(reinterpret_cast<T*>(ptr)), size_(size) {
+  }
 
  private:
   typedef typed_column<T> typed_column_t;
@@ -196,28 +205,28 @@ class typed_column {
     T* const target =
         reinterpret_cast<T*>(&(reinterpret_cast<char*>(ptr_)[size_]));
     size_ += sizeof(T);
-    new (target) T(v);
+    new(target) T(v);
   }
 
   template <typename U>
   void push_back(const U& v) {
-    throw type_unmatch_exception("invalid type push_backed: " +
-                                 pfi::lang::get_typename<U>() +
-                                 " for " + pfi::lang::get_typename<T>());
+    throw type_unmatch_exception(
+        "invalid type push_backed: " + pfi::lang::get_typename<U>() +
+        " for " + pfi::lang::get_typename<T>());
   }
 
   void insert(uint64_t index, const T& v) {
     T* const target = ptr_ + index;
     std::memmove(target + 1, target, size_ - index*sizeof(T));
     size_ += sizeof(T);
-    new (target) T(v);
+    new(target) T(v);
   }
 
   template <typename U>
   void insert(uint64_t index, const U& v) {
-    throw type_unmatch_exception("invalid type inserted: " +
-                                 pfi::lang::get_typename<U>() +
-                                 " for " + pfi::lang::get_typename<T>());
+    throw type_unmatch_exception(
+        "invalid type inserted: " + pfi::lang::get_typename<U>() +
+        " for " + pfi::lang::get_typename<T>());
   }
 
   bool update(uint64_t index, const T& orig) {
@@ -226,15 +235,15 @@ class typed_column {
     }
     T* const target = ptr_ + index;
     target->~T();
-    new (target) T(orig);
+    new(target) T(orig);
     return true;
   }
 
   template<typename U>
   bool update(uint64_t index, const U& orig) {
-    throw type_unmatch_exception("invalid type update(): " +
-                                 pfi::lang::get_typename<U>() +
-                                 " for " + pfi::lang::get_typename<T>());
+    throw type_unmatch_exception(
+        "invalid type update(): " + pfi::lang::get_typename<U>() +
+        " for " + pfi::lang::get_typename<T>());
   }
 
  public:
@@ -250,21 +259,19 @@ class typed_column {
 
   T& operator[](uint64_t index) {
     if (size() <= index) {
-      throw array_range_exception("index "
-                                  + pfi::lang::lexical_cast<std::string>(index)
-                                  + " is over length from "
-                                  + pfi::lang::lexical_cast<std::string>(
-                                        size()));
+      throw array_range_exception(
+          "index " + pfi::lang::lexical_cast<std::string>(index) +
+          " is over length from " +
+          pfi::lang::lexical_cast<std::string>(size()));
     }
     return ptr_[index];
   }
   const T& operator[](uint64_t index) const {
     if (size() <= index) {
-      throw array_range_exception("index "
-                                  + pfi::lang::lexical_cast<std::string>(index)
-                                  + " is over length from "
-                                  + pfi::lang::lexical_cast<std::string>(
-                                        size()));
+      throw array_range_exception(
+          "index " + pfi::lang::lexical_cast<std::string>(index) +
+          " is over length from "
+          + pfi::lang::lexical_cast<std::string>(size()));
     }
     return ptr_[index];
   }
@@ -285,7 +292,6 @@ class typed_column {
       std::ostream& os,
       const typed_column_t& column) {
     os << "size: " << *column.size_ << std::endl;
-    // os.write(*column.ptr_, *column.size_);
     for (uint64_t i = 0; i < column.size(); ++i) {
       os << i << ":" << column[i] << std::endl;
     }
@@ -304,8 +310,8 @@ class typed_column {
   void serialize(Ar& ar) {
     ar & MEMBER(size_);
     for (uint64_t i = 0; i < size_; ++i) {
-      ar & NAMED_MEMBER(pfi::lang::lexical_cast<std::string>
-                            (i), this->operator[](i));
+      ar & NAMED_MEMBER(
+          pfi::lang::lexical_cast<std::string>(i), this->operator[](i));
     }
   }
 };
@@ -317,10 +323,11 @@ class const_typed_column : private typed_column<T> {
  public:
   typedef const_typed_column<T> typed_column_t;
   const_typed_column(const char* ptr, uint64_t size)
-    :base_typed_column(const_cast<char*>(ptr), size)
-  {}
-  const_typed_column(const typed_column<T>& orig)  // implicit!
-    :typed_column<T>(orig) {}
+      : base_typed_column(const_cast<char*>(ptr), size) {
+  }
+  const_typed_column(const typed_column<T>& orig)  // NOLINT implicit!
+      : typed_column<T>(orig) {
+  }
   using base_typed_column::dump;
   using base_typed_column::operator[];
   using base_typed_column::size;
@@ -348,8 +355,8 @@ USE_TYPES_NEED_T
 #undef TYPE
 #undef SUFFIX
 #define SUFFIX(x) x
-COLUMN_T(float);
-COLUMN_T(double);
+COLUMN_T(float);  // NOLINT
+COLUMN_T(double);  // NOLINT
 #undef SUFFIX
 #undef COLUMN_T
 typedef typed_column<std::string> string_column;
@@ -357,34 +364,31 @@ typedef const_typed_column<std::string> const_string_column;
 
 namespace detail {
 class abstract_column {
-  typedef std::string string;
-  struct align_dummy {
-    double d[2];  // strictry alignied data
-  } __attribute__((aligned(16)));
-
- private:
-  // for extend only
-  abstract_column(const column_type& type, size_t memory_size)
-    : type_(type), reserved_(memory_size), size_(0), destroy_duty_(false) {
-    ptr_ = reinterpret_cast<char*>(new align_dummy[reserved_ >> 4]);
-  }
-
  public:
   abstract_column()
-    : type_(column_type::invalid_type),
-      ptr_(NULL),
-      reserved_(0),
-      size_(0),
-      destroy_duty_(false)
-  {}
+      : type_(column_type::invalid_type),
+        ptr_(NULL),
+        reserved_(0),
+        size_(0),
+        destroy_duty_(false) {
+  }
   explicit abstract_column(const column_type& type)
-    : type_(type), ptr_(NULL), reserved_(0), size_(0), destroy_duty_(false) {}
-  // abstract_column() {}
-  /*
-  template<typename T>
-  void push_back(const T& value);
-  */
+      : type_(type),
+        ptr_(NULL),
+        reserved_(0),
+        size_(0),
+        destroy_duty_(false) {
+  }
 
+  ~abstract_column() {
+    if (destroy_duty_ && ptr_ != NULL) {
+      if (is_string()) {
+        string_column sc(ptr_, size_);
+        sc.clear();
+      }
+      delete[] ptr_;
+    }
+  }
   void push_back(const uint8_t& value);
   void push_back(const uint16_t& value);
   void push_back(const uint32_t& value);
@@ -406,7 +410,7 @@ class abstract_column {
         SUFFIX(type) t;                             \
         o.convert(&t);                              \
         column.push_back(t);                        \
-    } else
+    } else  // NOLINT
 #define TYPE(x) COLUMN(x)
 #define SUFFIX(x) x##_t
     USE_TYPES_NEED_T
@@ -422,7 +426,7 @@ class abstract_column {
         if (o.type != msgpack::type::RAW) {
           throw std::bad_cast();
         }
-        memcpy(bv.raw_data_unsafe(), o.via.raw.ptr, o.via.raw.size);
+        std::memcpy(bv.raw_data_unsafe(), o.via.raw.ptr, o.via.raw.size);
         target.push_back(bv);
       } else {
         throw std::bad_cast();
@@ -464,7 +468,7 @@ class abstract_column {
         SUFFIX(type) t;                             \
         o.convert(&t);                              \
         column.update(target, t);                    \
-    } else
+    } else  // NOLINT
 #define TYPE(x) COLUMN(x)
 #define SUFFIX(x) x##_t
     USE_TYPES_NEED_T
@@ -480,7 +484,7 @@ class abstract_column {
         if (o.type != msgpack::type::RAW) {
           throw std::bad_cast();
         }
-        memcpy(bv.raw_data_unsafe(), o.via.raw.ptr, o.via.raw.size);
+        std::memcpy(bv.raw_data_unsafe(), o.via.raw.ptr, o.via.raw.size);
         column[target] = bv;
       } else {
         throw std::bad_cast();
@@ -488,15 +492,6 @@ class abstract_column {
 #undef COLUMN
   }
 
-  ~abstract_column() {
-    if (destroy_duty_ && ptr_ != NULL) {
-      if (is_string()) {
-        string_column sc(ptr_, size_);
-        sc.clear();
-      }
-      delete[] ptr_;
-    }
-  }
   const column_type& type() const {return type_;}
 
 #define COLUMN_T(ctype)                                                 \
@@ -513,11 +508,18 @@ class abstract_column {
   }
 # define SIZE_ARG(x)
 # define SUFFIX(x) x##_t
-  COLUMN_T(int8); COLUMN_T(int16); COLUMN_T(int32); COLUMN_T(int64);
-  COLUMN_T(uint8); COLUMN_T(uint16); COLUMN_T(uint32); COLUMN_T(uint64);
+  COLUMN_T(int8);
+  COLUMN_T(int16);  // NOLINT
+  COLUMN_T(int32);  // NOLINT
+  COLUMN_T(int64);  // NOLINT
+  COLUMN_T(uint8);
+  COLUMN_T(uint16);  // NOLINT
+  COLUMN_T(uint32);  // NOLINT
+  COLUMN_T(uint64);  // NOLINT
 # undef SUFFIX
 # define SUFFIX(x) x
-  COLUMN_T(float); COLUMN_T(double);
+  COLUMN_T(float);  // NOLINT
+  COLUMN_T(double);  // NOLINT
   COLUMN_T(string);
 #  undef SIZE_ARG
 #  define SIZE_ARG(x) , type_.bit_vector_length()
@@ -530,12 +532,13 @@ class abstract_column {
   bool is_type() const {
 #define IS_TYPE(ctype) (typeid(T1) == typeid(SUFFIX(ctype)) && is_##ctype()) ||
 #define SUFFIX(x) x##_t
-    return IS_TYPE(int8) IS_TYPE(int16) IS_TYPE(int32)
-      IS_TYPE(int64) IS_TYPE(uint8) IS_TYPE(uint16)
-      IS_TYPE(uint32) IS_TYPE(uint64)
+    return IS_TYPE(int8) IS_TYPE(int16) IS_TYPE(int32)  // NOLINT
+        IS_TYPE(int64) IS_TYPE(uint8) IS_TYPE(uint16)  // NOLINT
+        IS_TYPE(uint32) IS_TYPE(uint64)  // NOLINT
 #undef SUFFIX
 #define SUFFIX(x) x
-      IS_TYPE(float) IS_TYPE(double) IS_TYPE(string) IS_TYPE(bit_vector)
+        IS_TYPE(float) IS_TYPE(double) IS_TYPE(string)  // NOLINT
+        IS_TYPE(bit_vector)  // NOLINT
 #undef SUFFIX
       0;
   }
@@ -547,15 +550,15 @@ class abstract_column {
     if (type_.is(column_type::type##_type)) {       \
       type##_column column(ptr_, size_); \
         column.clear();                             \
-    } else
+    } else  // NOLINT
 #define TYPE(x) COLUMN(x)
     EMBED_TYPES
       if (type_.is(column_type::bit_vector_type)) {
         bit_vector_column column(ptr_, size_, type_.bit_vector_length());
         column.clear();
       } else {
-        throw type_unmatch_exception("clear(): invalid type " +
-                                     type().type_as_string());
+        throw type_unmatch_exception(
+            "clear(): invalid type " + type().type_as_string());
       }
 #undef TYPE
 #undef COLUMN
@@ -565,22 +568,23 @@ class abstract_column {
   void pack_with_index(const uint64_t index, packer& pk) const {
 #define PACK_COLUMN(type)                                   \
     if (type_.is(column_type::type##_type)) {               \
-      const_##type##_column column(ptr_, size_); \
-        pk.pack(column[index]);                             \
-    } else
+      const_##type##_column column(ptr_, size_);            \
+      pk.pack(column[index]);                               \
+    } else  // NOLINT
 #define TYPE(x) PACK_COLUMN(x)
     EMBED_TYPES
 #undef TYPE
       if (type_.is(column_type::bit_vector_type)) {
-        const_bit_vector_column column(ptr_, size_,
-                                       type_.bit_vector_length());
+        const_bit_vector_column column(
+            ptr_, size_, type_.bit_vector_length());
         const bit_vector bv(column[index]);
         pk.pack_raw(bv.used_bytes());
-        pk.pack_raw_body(reinterpret_cast<const char*>(bv.raw_data_unsafe()),
-                         bv.used_bytes());
+        pk.pack_raw_body(
+            reinterpret_cast<const char*>(bv.raw_data_unsafe()),
+            bv.used_bytes());
       } else {
-        throw type_unmatch_exception("dump(int): invalid type " +
-                                     type().type_as_string());
+        throw type_unmatch_exception(
+            "dump(int): invalid type " + type().type_as_string());
       }
 #undef PACK_COLUMN
   }
@@ -594,17 +598,17 @@ class abstract_column {
 #define SAVE_COLUMN(type)                                   \
     if (type_.is(column_type::type##_type)) {               \
       const_##type##_column column(ptr_, size_);            \
-        os << column[index];                                \
-    } else
+      os << column[index];                                  \
+    } else  // NOLINT
 #define TYPE(x) SAVE_COLUMN(x)
     EMBED_TYPES
       if (type_.is(column_type::bit_vector_type)) {
-        const_bit_vector_column column(ptr_, size_,
-                                       type_.bit_vector_length());
+        const_bit_vector_column column(
+            ptr_, size_, type_.bit_vector_length());
         os << column[index];
       } else {
-        throw type_unmatch_exception("dump(int): invalid type " +
-                                     type().type_as_string());
+        throw type_unmatch_exception(
+            "dump(int): invalid type " + type().type_as_string());
       }
 #undef TYPE
 #undef SAVE_COLUMN
@@ -633,7 +637,7 @@ class abstract_column {
         reserved_ *= 2;
       }
       abstract_column new_column(type_, reserved_);
-      ::memcpy(new_column.ptr_, ptr_, size_);
+      std::memcpy(new_column.ptr_, ptr_, size_);
       new_column.size_ = size_;
       new_column.destroy_duty_ = true;
       destroy_duty_ = false;
@@ -642,6 +646,20 @@ class abstract_column {
   }
 
  private:
+  typedef std::string string;
+  struct align_dummy {
+    double d[2];  // strictry alignied data
+  } __attribute__((aligned(16)));
+
+  // for extend only
+  abstract_column(const column_type& type, size_t memory_size)
+      : type_(type),
+        reserved_(memory_size),
+        size_(0),
+        destroy_duty_(false) {
+    ptr_ = reinterpret_cast<char*>(new align_dummy[reserved_ >> 4]);
+  }
+
   void prepare_append(int newsize) {
     reserve(size_ + newsize);
   }
@@ -655,16 +673,18 @@ class abstract_column {
       const_##type##_column column(obj.ptr_, obj.size_);                \
         os << "column_type: " << obj.type_.type_as_string() << ":";     \
         os << column;                                                   \
-    } else
+    } else  // NOLINT
 #define TYPE(x) SAVE_COLUMN(x)
     EMBED_TYPES
       if (obj.type_.is(column_type::bit_vector_type)) {
-        const_bit_vector_column column(obj.ptr_, obj.size_,
-                                       obj.type().bit_vector_length());
+        const_bit_vector_column column(
+            obj.ptr_, obj.size_, obj.type().bit_vector_length());
         os << "column_type: bit_vector :";
         os << column;
-      } else { throw type_unmatch_exception("operator<<(): invalid type " +
-                                            obj.type().type_as_string());}
+      } else {
+        throw type_unmatch_exception(
+            "operator<<(): invalid type " + obj.type().type_as_string());
+      }
 #undef TYPE
 #undef SAVE_COLUMN
     return os;
@@ -678,7 +698,9 @@ class abstract_column {
     // std::cout << "serializing:" << size_ << std::endl;
     std::vector<uint32_t> vec;
     if (ar.is_read) {
-      if (ptr_) delete[] ptr_;
+      if (ptr_) {
+        delete[] ptr_;
+      }
       ptr_ = new char[size_];
       reserved_ = size_;
     }
@@ -701,9 +723,9 @@ class abstract_column {
   bool destroy_duty_;
 };
 
-} // namespace detail
-} // namespace table
-} // namespace core
-} // namespace jubatus
+}  // namespace detail
+}  // namespace table
+}  // namespace core
+}  // namespace jubatus
 
 #endif  // JUBATUS_CORE_TABLE_COLUMN_COLUMNS_HPP_
