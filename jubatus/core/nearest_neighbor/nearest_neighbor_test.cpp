@@ -27,10 +27,11 @@
 #include "../common/jsonconfig.hpp"
 
 using namespace std;
-using namespace jubatus::table;
+using namespace jubatus::core::table;
 using pfi::lang::scoped_ptr;
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 namespace {
@@ -152,4 +153,5 @@ INSTANTIATE_TEST_CASE_P(lsh_test,
                         ::testing::ValuesIn(configs));
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus

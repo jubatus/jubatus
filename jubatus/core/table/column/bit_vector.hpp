@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef BIT_VECTOR_HPP
-#define BIT_VECTOR_HPP
+#ifndef JUBATUS_CORE_TABLE_COLUMN_BIT_VECTOR_HPP_
+#define JUBATUS_CORE_TABLE_COLUMN_BIT_VECTOR_HPP_
 
 #include <stdint.h>
 #include <assert.h>
@@ -31,6 +31,7 @@
 #include "../storage_exception.hpp"
 
 namespace jubatus {
+namespace core {
 namespace table {
 
 namespace detail {
@@ -375,5 +376,6 @@ class const_bit_vector_base : private bit_vector_base<bit_base> {
 typedef const_bit_vector_base<uint64_t> const_bit_vector;
 
 }  // namespace column
+}  // namespace core
 }  // namespace jubatus
-#endif  // BIT_VECTOR_HPP
+#endif  // JUBATUS_CORE_TABLE_COLUMN_BIT_VECTOR_HPP_

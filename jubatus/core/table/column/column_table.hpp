@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_TABLE_COLUMN_COLUMN_TABLE_HPP_
-#define JUBATUS_TABLE_COLUMN_COLUMN_TABLE_HPP_
+#ifndef JUBATUS_CORE_TABLE_COLUMN_COLUMN_TABLE_HPP_
+#define JUBATUS_CORE_TABLE_COLUMN_COLUMN_TABLE_HPP_
 
 #include <stdint.h>
 #include <assert.h>
@@ -40,6 +40,7 @@
 #include "owner.hpp"
 
 namespace jubatus {
+namespace core {
 namespace table {
 
 class invalid_row_set : public exception::jubaexception<invalid_row_set> {
@@ -345,6 +346,7 @@ class column_table {
 };
 
 }  // namespace table
+}  // namespcae core
 }  // namespace jubatus
 
-#endif  // JUBATUS_TABLE_COLUMN_COLUMN_TABLE_HPP_
+#endif  // JUBATUS_CORE_TABLE_COLUMN_COLUMN_TABLE_HPP_

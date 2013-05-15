@@ -31,14 +31,15 @@ using std::make_pair;
 using std::string;
 using std::vector;
 using pfi::lang::lexical_cast;
-using jubatus::table::column_table;
-using jubatus::table::column_type;
-using jubatus::table::owner;
-using jubatus::table::bit_vector;
-using jubatus::table::const_bit_vector_column;
-using jubatus::table::const_float_column;
+using jubatus::core::table::column_table;
+using jubatus::core::table::column_type;
+using jubatus::core::table::owner;
+using jubatus::core::table::bit_vector;
+using jubatus::core::table::const_bit_vector_column;
+using jubatus::core::table::const_float_column;
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 namespace {
@@ -167,4 +168,5 @@ void euclid_lsh::neighbor_row_from_hash(const bit_vector& bv,
 }
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus

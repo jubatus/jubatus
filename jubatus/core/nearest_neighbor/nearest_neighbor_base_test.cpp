@@ -25,6 +25,7 @@
 #include "nearest_neighbor_base.hpp"
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 using std::string;
@@ -110,4 +111,5 @@ TEST_F(nearest_neighbor_base_test, similar_row) {
 }
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus

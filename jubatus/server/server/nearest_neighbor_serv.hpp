@@ -22,18 +22,20 @@
 #include <vector>
 
 #include "../common/lock_service.hpp"
-#include "../../core/framework/mixable.hpp"
+// #include "../../core/framework/mixable.hpp"
 #include "../framework/server_base.hpp"
-#include "../../core/fv_converter/datum_to_fv_converter.hpp"
-#include "../../core/nearest_neighbor/nearest_neighbor_base.hpp"
+// #include "../../core/fv_converter/datum_to_fv_converter.hpp"
+// #include "../../core/nearest_neighbor/nearest_neighbor_base.hpp"
 #include "../../core/table/column/column_table.hpp"
-#include "mixable_versioned_table.hpp"
+// #include "mixable_versioned_table.hpp"
 #include "nearest_neighbor_types.hpp"
+
+#include "jubatus/core/driver/nearest_neighbor.hpp"
 
 namespace jubatus {
 namespace server {
 
-using jubatus::nearest_neighbor::nearest_neighbor_base;
+using jubatus::core::nearest_neighbor::nearest_neighbor_base;
 
 class nearest_neighbor_serv : public framework::server_base {
 public:
@@ -46,7 +48,7 @@ public:
   }
 
   pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> get_mixable_holder() const {
-    return mixable_holder_;
+    return nearest_neighbor_->get_mixable_holder();
   }
 
   void get_status(status_t& status) const;
@@ -67,18 +69,20 @@ public:
 private:
   void check_set_config()const;
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> mixable_holder_;
-  std::string my_id_;
+  // pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> mixable_holder_;
+  // std::string my_id_;
 
   std::string config_;
-  pfi::lang::shared_ptr<jubatus::core::fv_converter::datum_to_fv_converter> converter_;
-  pfi::lang::shared_ptr<nearest_neighbor_base> nn_;
-  mixable_versioned_table mixable_table_;
+  // pfi::lang::shared_ptr<jubatus::core::fv_converter::datum_to_fv_converter> converter_;
+  // pfi::lang::shared_ptr<nearest_neighbor_base> nn_;
+  // mixable_versioned_table mixable_table_;
 
   uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;
   uint64_t build_cnt_;
   uint64_t mix_cnt_;
+
+  pfi::lang::shared_ptr<core::driver::nearest_neighbor> nearest_neighbor_;
 };
 
 } // namespace server

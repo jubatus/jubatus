@@ -24,10 +24,11 @@
 using std::pair;
 using std::vector;
 using std::make_pair;
-using jubatus::table::bit_vector;
-using jubatus::table::const_bit_vector_column;
+using jubatus::core::table::bit_vector;
+using jubatus::core::table::const_bit_vector_column;
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 void ranking_hamming_bit_vectors(const bit_vector& query,
@@ -51,4 +52,5 @@ void ranking_hamming_bit_vectors(const bit_vector& query,
 }
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus

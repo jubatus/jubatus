@@ -32,11 +32,12 @@ using std::map;
 using std::pair;
 using std::string;
 using std::make_pair;
-using jubatus::table::bit_vector;
-using jubatus::table::column_table;
+using jubatus::core::table::bit_vector;
+using jubatus::core::table::column_table;
 using pfi::data::string::split;
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 namespace {
@@ -165,4 +166,5 @@ TEST_F(bit_vector_nearest_neighbor_base_test, neighbor_row_from_id) {
 }
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus

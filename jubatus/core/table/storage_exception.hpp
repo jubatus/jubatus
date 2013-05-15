@@ -18,6 +18,11 @@
 #define JUBATUS_STORAGE_EXCEPTION_HPP_
 #include <string>
 #include "../common/exception.hpp"
+
+namespace jubatus {
+namespace core {
+namespace table {
+
 class storage_exception
   : public jubatus::exception::jubaexception<storage_exception> {
  public:
@@ -49,5 +54,9 @@ class array_range_exception : public storage_exception {
   explicit array_range_exception(const std::string &msg)
     : storage_exception(msg) {}
 };
+
+} // namespace table
+} // namespace core
+} // namespace jubatus
 
 #endif  // JUBATUS_STORAGE_EXCEPTION_HPP_

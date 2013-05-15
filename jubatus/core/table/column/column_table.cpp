@@ -23,6 +23,7 @@
 #include "column_table.hpp"
 
 namespace jubatus {
+namespace core {
 namespace table {
 
 void column_table::init(const std::vector<column_type>& schema) {
@@ -164,4 +165,5 @@ const_bit_vector_column column_table::get_bit_vector_column(
 
 
 }  // namespace table
+}  // namespace core
 }  // namespace jubatus

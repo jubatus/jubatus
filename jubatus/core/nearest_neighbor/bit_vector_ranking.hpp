@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_NEAREST_NEIGHBOR_BIT_VECTOR_RANKING_HPP_
-#define JUBATUS_NEAREST_NEIGHBOR_BIT_VECTOR_RANKING_HPP_
+#ifndef JUBATUS_CORE_NEAREST_NEIGHBOR_BIT_VECTOR_RANKING_HPP_
+#define JUBATUS_CORE_NEAREST_NEIGHBOR_BIT_VECTOR_RANKING_HPP_
 
 #include <vector>
 #include <utility>
@@ -23,6 +23,7 @@
 #include "../table/column/columns.hpp"
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 void ranking_hamming_bit_vectors(const table::bit_vector& query,
@@ -31,6 +32,7 @@ void ranking_hamming_bit_vectors(const table::bit_vector& query,
                                  uint64_t ret_num);
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_NEAREST_NEIGHBOR_BIT_VECTOR_RANKING_HPP_
+#endif  // JUBATUS_CORE_NEAREST_NEIGHBOR_BIT_VECTOR_RANKING_HPP_

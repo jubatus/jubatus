@@ -21,6 +21,7 @@
 #include "../common/exception.hpp"
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 class nearest_neighbor_exception
@@ -44,6 +45,7 @@ class unimplemented_exception : public nearest_neighbor_exception {
 };
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_NEAREST_NEIGHBOR_EXCEPTION_HPP_

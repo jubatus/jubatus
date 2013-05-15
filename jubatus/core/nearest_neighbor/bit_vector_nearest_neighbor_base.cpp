@@ -25,13 +25,14 @@
 using std::string;
 using std::pair;
 using std::vector;
-using jubatus::table::column_table;
-using jubatus::table::column_type;
-using jubatus::table::bit_vector;
-using jubatus::table::const_bit_vector_column;
-using jubatus::table::owner;
+using jubatus::core::table::column_table;
+using jubatus::core::table::column_type;
+using jubatus::core::table::bit_vector;
+using jubatus::core::table::const_bit_vector_column;
+using jubatus::core::table::owner;
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 bit_vector_nearest_neighbor_base::bit_vector_nearest_neighbor_base(
@@ -112,4 +113,5 @@ void bit_vector_nearest_neighbor_base::neighbor_row_from_hash(
 }
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus

@@ -22,9 +22,10 @@
 #include "../common/hash.hpp"
 
 using std::vector;
-using jubatus::table::bit_vector;
+using jubatus::core::table::bit_vector;
 
 namespace jubatus {
+namespace core {
 namespace nearest_neighbor {
 
 vector<float> random_projection(const sfv_t& sfv, uint32_t hash_num) {
@@ -54,4 +55,5 @@ bit_vector cosine_lsh(const sfv_t& sfv, uint32_t hash_num) {
 }
 
 }  // namespace nearest_neighbor
+}  // namespace core
 }  // namespace jubatus

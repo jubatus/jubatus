@@ -21,11 +21,12 @@
 #include "../../core/common/exception.hpp"
 
 using namespace std;
-using namespace jubatus::table;
+using namespace jubatus::core::table;
 typedef column_table::version_t version_t;
 
 namespace jubatus {
-namespace server {
+namespace core {
+namespace driver {
 
 std::vector<std::string> mixable_versioned_table::get_diff_impl() const {
   return pull_impl(vc_);
@@ -80,5 +81,7 @@ void mixable_versioned_table::update_version(const column_table::version_t& vers
   }
 }
 
-}
-}
+
+} // namespace driver
+} // namespace core
+} // namespace jubatus
