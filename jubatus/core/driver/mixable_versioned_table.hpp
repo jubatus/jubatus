@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -30,16 +30,17 @@ namespace driver {
 
 typedef std::map<table::owner, uint64_t> version_clock;
 
-class mixable_versioned_table
-    : public jubatus::core::framework::mixable<table::column_table,
-                                               std::vector<std::string>,
-                                               version_clock> {
+class mixable_versioned_table : public jubatus::core::framework::mixable<
+    table::column_table,
+    std::vector<std::string>,
+    version_clock> {
  public:
   std::vector<std::string> get_diff_impl() const;
   void put_diff_impl(const std::vector<std::string>& diff);
-  void mix_impl(const std::vector<std::string>& lhs,
-                const std::vector<std::string>& rhs,
-                std::vector<std::string>& mixed) const;
+  void mix_impl(
+      const std::vector<std::string>& lhs,
+      const std::vector<std::string>& rhs,
+      std::vector<std::string>& mixed) const;
 
   version_clock get_pull_argument_impl() const;
   std::vector<std::string> pull_impl(const version_clock& vc) const;
@@ -53,8 +54,8 @@ class mixable_versioned_table
   version_clock vc_;
 };
 
-} // namespace driver
-} // namespace core
-} // namespace jubatus
+}  // namespace driver
+}  // namespace core
+}  // namespace jubatus
 
 #endif  // JUBATUS_CORE_DRIVER_MIXABLE_VERSIONED_TABLE_HPP_
