@@ -127,10 +127,15 @@ bool anomaly_serv::set_config(const std::string& config) {
   }
 #endif
 
+  std::string my_id;
+#ifdef HAVE_ZOOKEEPER_H
+  my_id = common::build_loc_str(argv().eth, argv().port);
+#endif
+
   anomaly_.reset(
       new core::driver::anomaly(
           core::anomaly::anomaly_factory::create_anomaly(
-              conf.method, conf.parameter),
+              conf.method, conf.parameter, my_id),
           core::fv_converter::make_fv_converter(conf.converter)));
   mixer_->set_mixable_holder(anomaly_->get_mixable_holder());
 

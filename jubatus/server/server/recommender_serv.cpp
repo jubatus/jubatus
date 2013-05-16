@@ -98,10 +98,15 @@ bool recommender_serv::set_config(const std::string &config) {
     param = core::jsonconfig::config(*conf.parameter);
   }
 
+  std::string my_id;
+#ifdef HAVE_ZOOKEEPER_H_
+  my_id = common::build_loc_str(argv().eth, argv().port);
+#endif
+
   recommender_.reset(
       new core::driver::recommender(
           core::recommender::recommender_factory::create_recommender(
-              conf.method, param),
+              conf.method, param, my_id),
           core::fv_converter::make_fv_converter(conf.converter)));
   mixer_->set_mixable_holder(recommender_->get_mixable_holder());
 

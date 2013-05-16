@@ -47,7 +47,8 @@ struct anomaly_config {
 
 anomaly_base* anomaly_factory::create_anomaly(
     const string& name,
-    const config& param) {
+    const config& param,
+    const string& id) {
   if (name == "lof") {
     anomaly_config conf = config_cast_check<anomaly_config>(param);
     storage::lof_storage::config config =
@@ -56,7 +57,7 @@ anomaly_base* anomaly_factory::create_anomaly(
         config,
         recommender::recommender_factory::create_recommender(
             conf.method,
-            conf.parameter));
+            conf.parameter, id));
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }
@@ -65,4 +66,3 @@ anomaly_base* anomaly_factory::create_anomaly(
 }  // namespace anomaly
 }  // namespace core
 }  // namespace jubatus
-
