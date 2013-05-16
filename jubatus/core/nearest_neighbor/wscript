@@ -33,7 +33,7 @@ def build(bld):
         'nearest_neighbor_base.cpp',
         'nearest_neighbor_factory.cpp',
         ],
-    use = 'PFICOMMON jubastorage')
+    use = 'PFICOMMON jubastorage column_table')
 
   bld.program(
     target = 'nearest_neighbor_base_test',
