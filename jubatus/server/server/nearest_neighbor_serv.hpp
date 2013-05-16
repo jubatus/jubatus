@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011-2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,21 +15,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_NEAREST_NEIGHBOR_SERV_HPP_
-#define JUBATUS_SERVER_NEAREST_NEIGHBOR_SERV_HPP_
+#ifndef JUBATUS_SERVER_SERVER_NEAREST_NEIGHBOR_SERV_HPP_
+#define JUBATUS_SERVER_SERVER_NEAREST_NEIGHBOR_SERV_HPP_
 
 #include <string>
 #include <vector>
-
-#include "../common/lock_service.hpp"
-// #include "../../core/framework/mixable.hpp"
-#include "../framework/server_base.hpp"
-// #include "../../core/fv_converter/datum_to_fv_converter.hpp"
-// #include "../../core/nearest_neighbor/nearest_neighbor_base.hpp"
 #include "../../core/table/column/column_table.hpp"
-// #include "mixable_versioned_table.hpp"
+#include "../common/lock_service.hpp"
+#include "../framework/server_base.hpp"
 #include "nearest_neighbor_types.hpp"
-
 #include "jubatus/core/driver/nearest_neighbor.hpp"
 
 namespace jubatus {
@@ -38,16 +32,18 @@ namespace server {
 using jubatus::core::nearest_neighbor::nearest_neighbor_base;
 
 class nearest_neighbor_serv : public framework::server_base {
-public:
-  nearest_neighbor_serv(const framework::server_argv& a,
-                        const pfi::lang::shared_ptr<common::lock_service>& zk);
+ public:
+  nearest_neighbor_serv(
+      const framework::server_argv& a,
+      const pfi::lang::shared_ptr<common::lock_service>& zk);
   virtual ~nearest_neighbor_serv();
 
   framework::mixer::mixer* get_mixer() const {
     return mixer_.get();
   }
 
-  pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> get_mixable_holder() const {
+  pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder>
+  get_mixable_holder() const {
     return nearest_neighbor_->get_mixable_holder();
   }
 
@@ -66,16 +62,11 @@ public:
   neighbor_result similar_row_from_id(const std::string& id, size_t ret_num);
   neighbor_result similar_row_from_data(const datum&, size_t);
 
-private:
+ private:
   void check_set_config()const;
   pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
-  // pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> mixable_holder_;
-  // std::string my_id_;
 
   std::string config_;
-  // pfi::lang::shared_ptr<jubatus::core::fv_converter::datum_to_fv_converter> converter_;
-  // pfi::lang::shared_ptr<nearest_neighbor_base> nn_;
-  // mixable_versioned_table mixable_table_;
 
   uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;
@@ -85,7 +76,7 @@ private:
   pfi::lang::shared_ptr<core::driver::nearest_neighbor> nearest_neighbor_;
 };
 
-} // namespace server
-} // namespace jubatus
+}  // namespace server
+}  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_NEAREST_NEIGHBOR_SERV_HPP_
+#endif  // JUBATUS_SERVER_SERVER_NEAREST_NEIGHBOR_SERV_HPP_
