@@ -19,8 +19,9 @@
 
 #include <map>
 #include <string>
-#include "../table/column/column_table.hpp"
+#include <pficommon/lang/shared_ptr.h>
 #include "../common/jsonconfig.hpp"
+#include "../table/column/column_table.hpp"
 
 namespace jubatus {
 namespace core {
@@ -31,7 +32,7 @@ class nearest_neighbor_base;
 nearest_neighbor_base* create_nearest_neighbor(
     const std::string& name,
     const jubatus::core::jsonconfig::config& config,
-    table::column_table* table,
+    pfi::lang::shared_ptr<table::column_table> table,
     const std::string& id);
 
 }  // namespace nearest_neighbor

@@ -35,7 +35,8 @@ using std::make_pair;
 
 class nearest_neighbor_mock : public nearest_neighbor_base {
  public:
-  explicit nearest_neighbor_mock(table::column_table* table)
+  explicit nearest_neighbor_mock(
+      pfi::lang::shared_ptr<table::column_table> table)
       : nearest_neighbor_base(table, "test") {}
 
   void add_next_answer(const string& id, float dist) {
@@ -71,20 +72,21 @@ class nearest_neighbor_mock : public nearest_neighbor_base {
 class nearest_neighbor_base_test : public testing::Test {
  protected:
   virtual void SetUp() {
-    mock_.reset(new nearest_neighbor_mock(&ct_));
+    ct_.reset(new table::column_table);
+    mock_.reset(new nearest_neighbor_mock(ct_));
   }
 
-  table::column_table ct_;
+  pfi::lang::shared_ptr<table::column_table> ct_;
   pfi::lang::scoped_ptr<nearest_neighbor_mock> mock_;
 };
 
 TEST_F(nearest_neighbor_base_test, get_table) {
-  EXPECT_EQ(&ct_, mock_->get_table());
+  EXPECT_EQ(ct_, mock_->get_table());
 }
 
 TEST_F(nearest_neighbor_base_test, get_const_table) {
   const nearest_neighbor_base* cmock = mock_.get();
-  EXPECT_EQ(&ct_, cmock->get_const_table());
+  EXPECT_EQ(ct_, cmock->get_const_table());
 }
 
 TEST_F(nearest_neighbor_base_test, order_of_calc_similarity) {

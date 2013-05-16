@@ -90,7 +90,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
   shared_ptr<core::fv_converter::datum_to_fv_converter> converter =
       core::fv_converter::make_fv_converter(conf.converter);
 
-  core::table::column_table* table = new core::table::column_table;
+  shared_ptr<core::table::column_table> table(new core::table::column_table);
   std::string my_id;
 #ifdef HAVE_ZOOKEEPER_H_
   my_id = common::build_loc_str(argv().eth, argv().port);
@@ -99,8 +99,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
   pfi::lang::shared_ptr<jubatus::core::nearest_neighbor::nearest_neighbor_base>
       nn(jubatus::core::nearest_neighbor::create_nearest_neighbor(
           conf.method, param, table, my_id));
-  nearest_neighbor_.reset(new core::driver::nearest_neighbor(
-      nn, table, converter));
+  nearest_neighbor_.reset(new core::driver::nearest_neighbor(nn, converter));
   mixer_->set_mixable_holder(nearest_neighbor_->get_mixable_holder());
 }
 

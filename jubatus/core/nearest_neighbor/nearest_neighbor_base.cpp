@@ -30,9 +30,11 @@ namespace core {
 namespace nearest_neighbor {
 
 nearest_neighbor_base::nearest_neighbor_base(
-    table::column_table* table,
+    pfi::lang::shared_ptr<table::column_table> table,
     const std::string& id)
-    : my_id_(id), table_(table) {}
+    : my_id_(id),
+      table_(table) {
+}
 
 void nearest_neighbor_base::get_all_row_ids(vector<string>& ids) const {
   vector<string> ret;

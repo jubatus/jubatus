@@ -21,6 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <pficommon/lang/shared_ptr.h>
 #include "nearest_neighbor_base.hpp"
 
 namespace jubatus {
@@ -43,13 +44,13 @@ class euclid_lsh : public nearest_neighbor_base {
     }
   };
 
-euclid_lsh(
+  euclid_lsh(
       const config& conf,
-      table::column_table* table,
+      pfi::lang::shared_ptr<table::column_table> table,
       const std::string& id);
   euclid_lsh(
       const config& conf,
-      table::column_table* table,
+      pfi::lang::shared_ptr<table::column_table> table,
       std::vector<table::column_type>& schema,
       const std::string& id);
 

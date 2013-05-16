@@ -24,19 +24,19 @@ namespace jubatus {
 namespace core {
 namespace nearest_neighbor {
 
-lsh::lsh(const config& conf,
-         table::column_table* table,
-         const std::string& id)
-  : bit_vector_nearest_neighbor_base(
-        conf.bitnum, table, id) {
+lsh::lsh(
+    const config& conf,
+    pfi::lang::shared_ptr<table::column_table> table,
+    const std::string& id)
+    : bit_vector_nearest_neighbor_base(conf.bitnum, table, id) {
 }
 
-lsh::lsh(const config& conf,
-         table::column_table* table,
-         std::vector<table::column_type>& schema,
-         const std::string& id)
-    : bit_vector_nearest_neighbor_base(
-      conf.bitnum, table, schema, id) {
+lsh::lsh(
+    const config& conf,
+    pfi::lang::shared_ptr<table::column_table> table,
+    std::vector<table::column_type>& schema,
+    const std::string& id)
+    : bit_vector_nearest_neighbor_base(conf.bitnum, table, schema, id) {
 }
 
 table::bit_vector lsh::hash(const sfv_t& sfv) const {

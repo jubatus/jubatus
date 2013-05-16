@@ -102,18 +102,18 @@ float calc_hash(uint64_t a, uint64_t b, float val) {
 
 minhash::minhash(
     const config& conf,
-    table::column_table* table,
+    pfi::lang::shared_ptr<table::column_table> table,
     const std::string& id)
-    : bit_vector_nearest_neighbor_base(
-      conf.bitnum, table, id) {}
+    : bit_vector_nearest_neighbor_base(conf.bitnum, table, id) {
+}
 
 minhash::minhash(
     const config& conf,
-    table::column_table* table,
+    pfi::lang::shared_ptr<table::column_table> table,
     vector<column_type>& schema,
     const std::string& id)
-    : bit_vector_nearest_neighbor_base(
-      conf.bitnum, table, schema, id) {}
+    : bit_vector_nearest_neighbor_base(conf.bitnum, table, schema, id) {
+}
 
 bit_vector minhash::hash(const sfv_t& sfv) const {
   vector<float> min_values_buffer(bitnum(), FLT_MAX);
