@@ -15,11 +15,12 @@ def build(bld):
       'recommender_factory.cpp',
       'lsh_util.cpp',
       'euclid_lsh.cpp',
+      'nearest_neighbor_recommender.cpp',
       ],
     target = 'jubatus_recommender',
     name = 'jubatus_recommender',
     includes = '.',
-    use = 'PFICOMMON jubastorage jubacommon')
+    use = 'PFICOMMON jubastorage jubacommon nearest_neighbor')
 
   def make_test(s):
     bld.program(

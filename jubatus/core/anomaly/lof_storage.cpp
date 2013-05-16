@@ -64,7 +64,7 @@ lof_storage::lof_storage()
       nn_engine_(recommender::recommender_factory::create_recommender(
           "euclid_lsh",
           jsonconfig::config(pfi::text::json::to_json(
-              recommender::euclid_lsh::config())))) {
+              recommender::euclid_lsh::config())), "")) {
 }
 
 lof_storage::lof_storage(recommender::recommender_base* nn_engine)
