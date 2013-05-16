@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <string>
+#include <set>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -800,7 +801,7 @@ TEST(table, json_dump) {
     vector<column_type> schema;                                         \
     schema.push_back(column_type(column_type::ctype##_type));           \
     base.init(schema);                                                  \
-    for (size_t i = 0; i < 300; i += 20) {                              \
+    for (size_t i = 0; i < 3000; i += 20) {                             \
       base.add("a" + pfi::lang::lexical_cast<string>(i),                \
                owner("local"),                                          \
                static_cast<ctype##_t>(i));                              \
@@ -812,9 +813,41 @@ TEST(table, json_dump) {
       ++cnt;                                                            \
       ASSERT_EQ(max_size - cnt, base.size());                           \
       ctype##_column ic = base.get_##ctype##_column(0);                 \
+        ASSERT_EQ(ic.size(), base.size());                              \
+        std::set<ctype##_t> expect;                                     \
         for (size_t j = 0; j < max_size - cnt; ++j) {                   \
-          ASSERT_EQ(static_cast<ctype##_t>(i + (j + 1) * 20), ic[j]);   \
+          expect.insert(static_cast<ctype##_t>(i + (j + 1) * 20));      \
         }                                                               \
+        for (size_t j = 0; j < ic.size(); ++j) {                        \
+          expect.erase(ic[j]);                                          \
+        }                                                               \
+        for (std::set<ctype##_t>::const_iterator it = expect.begin();   \
+             it != expect.end();                                        \
+             ++it) {                                                    \
+          std::cout << "rest expected:" << *it << std::endl;            \
+        }                                                               \
+        ASSERT_EQ(0u, expect.size());                                   \
+    }                                                                   \
+    /* delete by index */                                               \
+    for (size_t i = 0; base.size(); i += 20) {                          \
+      base.delete_row(i);                                               \
+      ++cnt;                                                            \
+      ASSERT_EQ(max_size - cnt, base.size());                           \
+      ctype##_column ic = base.get_##ctype##_column(0);                 \
+        ASSERT_EQ(ic.size(), base.size());                              \
+        std::set<ctype##_t> expect;                                     \
+        for (size_t j = 0; j < max_size - cnt; ++j) {                   \
+          expect.insert(static_cast<ctype##_t>(i + (j + 1) * 20));      \
+        }                                                               \
+        for (size_t j = 0; j < ic.size(); ++j) {                        \
+          expect.erase(ic[j]);                                          \
+        }                                                               \
+        for (std::set<ctype##_t>::const_iterator it = expect.begin();   \
+             it != expect.end();                                        \
+             ++it) {                                                    \
+          std::cout << "rest expected:" << *it << std::endl;            \
+        }                                                               \
+        ASSERT_EQ(0u, expect.size());                                   \
     }                                                                   \
 }
 #define TYPE(x) DELETE_ROW_TEST(x)

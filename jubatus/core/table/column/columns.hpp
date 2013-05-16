@@ -263,8 +263,9 @@ class typed_column {
     if (size() <= target) {
       return false;
     }
-    T* const addr = ptr_ + target;
-    std::memmove(addr, addr + 1, size_ - target*sizeof(T));
+    T* const addr_1 = ptr_ + target;
+    T* const addr_2 = ptr_ + size() - 1;
+    std::swap(*addr_1, *addr_2);
     size_ -= sizeof(T);
     return true;
   }

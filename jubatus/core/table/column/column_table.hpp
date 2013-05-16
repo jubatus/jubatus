@@ -331,27 +331,44 @@ class column_table {
     if (it == index_.end()) {
       return false;
     }
+
+    const uint64_t delete_index = it->second;
+
     for (std::vector<detail::abstract_column>::iterator jt = columns_.begin();
          jt != columns_.end();
          ++jt) {
-      if (jt->remove(it->second)) {  // delete success
-        --tuples_;
-      }
+      jt->remove(delete_index);
     }
-    const uint64_t deleted_row = it->second;
-    for (index_table::iterator move_it = index_.begin();
+
+    {  // needs swap on last index
+      const uint64_t final_row = tuples_ - 1;
+      for (index_table::iterator move_it = index_.begin();
          move_it != index_.end();
          ++move_it) {
-      if (deleted_row < move_it->second) {
-        --move_it->second;
+        if (move_it->second == final_row) {
+          move_it->second = delete_index;
+          break;
+        }
       }
     }
+    index_.erase(it);
+    if (delete_index + 1 != keys_.size()) {
+      std::swap(keys_[delete_index], keys_.back());
+    }
+    std::vector<std::string>::iterator key_back = keys_.end();
+    --key_back;
+    keys_.erase(key_back);
 
-    keys_.erase(keys_.begin() + deleted_row);
-    versions_.erase(versions_.begin() + deleted_row);
-
+    if (delete_index + 1 != versions_.size()) {
+      std::swap(versions_[delete_index], versions_.back());
+    }
+    std::vector<version_t>::iterator version_back = versions_.end();
+    --version_back;
+    versions_.erase(version_back);
+    assert(tuples_ == index_.size());
     assert(tuples_ == keys_.size());
     assert(tuples_ == versions_.size());
+    --tuples_;
     ++clock_;
     return true;
   }
@@ -363,21 +380,54 @@ class column_table {
     for (std::vector<detail::abstract_column>::iterator jt = columns_.begin();
          jt != columns_.end();
          ++jt) {
-      if (jt->remove(index)) {  // delete success
-        --tuples_;
-      }
+      jt->remove(index);
     }
-    for (index_table::iterator move_it = index_.begin();
+    {  // needs swap on last index
+      const uint64_t final_row = tuples_ - 1;
+      index_table::iterator delete_target;
+      for (index_table::iterator move_it = index_.begin();
          move_it != index_.end();
          ++move_it) {
-      if (index < move_it->second) {
-        --move_it->second;
+        if (move_it->second == index) {
+          move_it->second = final_row;
+          index_.erase(move_it);
+        } else if (move_it->second == final_row) {
+          delete_target = move_it;
+        }
       }
+      index_.erase(delete_target);
     }
-    keys_.erase(keys_.begin() + index);
-    versions_.erase(versions_.begin() + index);
+
+    {
+      std::swap(keys_[index], keys_.back());
+      std::vector<std::string>::iterator key_back = keys_.end();
+      --key_back;
+      keys_.erase(key_back);
+    }
+    {
+      std::swap(versions_[index], versions_.back());
+      std::vector<version_t>::iterator version_back = versions_.end();
+      --version_back;
+      versions_.erase(version_back);
+    }
+    if (index + 1 != keys_.size()) {
+      std::swap(keys_[index], keys_.back());
+    }
+    std::vector<std::string>::iterator key_back = keys_.end();
+    --key_back;
+    keys_.erase(key_back);
+
+    if (index + 1 != versions_.size()) {
+      std::swap(versions_[index], versions_.back());
+    }
+    std::vector<version_t>::iterator version_back = versions_.end();
+    --version_back;
+    versions_.erase(version_back);
+
+    assert(tuples_ == index_.size());
     assert(tuples_ == keys_.size());
     assert(tuples_ == versions_.size());
+    --tuples_;
     ++clock_;
     return true;
   }
