@@ -131,6 +131,9 @@ bit_vector_base(const bit_vector_t& orig)
     }
     return memcmp(bits_, rhs.bits_, used_bytes()) == 0;
   }
+  bool operator!=(const bit_vector_t& rhs) const {
+    return !this->operator==(rhs);
+  }
 
   // deep copy (In case not own memory, it alloc memory)
   bit_vector_t& operator=(const bit_vector_t& orig) {

@@ -325,6 +325,64 @@ class column_table {
     return set_version;
   }
 
+  bool delete_row(const std::string& target) {
+    pfi::concurrent::scoped_wlock lk(table_lock_);
+    index_table::const_iterator it = index_.find(target);
+    if (it == index_.end()) {
+      return false;
+    }
+    for (std::vector<detail::abstract_column>::iterator jt = columns_.begin();
+         jt != columns_.end();
+         ++jt) {
+      if (jt->remove(it->second)) {  // delete success
+        --tuples_;
+      }
+    }
+    const uint64_t deleted_row = it->second;
+    for (index_table::iterator move_it = index_.begin();
+         move_it != index_.end();
+         ++move_it) {
+      if (deleted_row < move_it->second) {
+        --move_it->second;
+      }
+    }
+
+    keys_.erase(keys_.begin() + deleted_row);
+    versions_.erase(versions_.begin() + deleted_row);
+
+    assert(tuples_ == keys_.size());
+    assert(tuples_ == versions_.size());
+    ++clock_;
+    return true;
+  }
+  bool delete_row(uint64_t index) {
+    pfi::concurrent::scoped_wlock lk(table_lock_);
+    if (size() <= index) {
+      return false;
+    }
+    for (std::vector<detail::abstract_column>::iterator jt = columns_.begin();
+         jt != columns_.end();
+         ++jt) {
+      if (jt->remove(index)) {  // delete success
+        --tuples_;
+      }
+    }
+    for (index_table::iterator move_it = index_.begin();
+         move_it != index_.end();
+         ++move_it) {
+      if (index < move_it->second) {
+        --move_it->second;
+      }
+    }
+    keys_.erase(keys_.begin() + index);
+    versions_.erase(versions_.begin() + index);
+    assert(tuples_ == keys_.size());
+    assert(tuples_ == versions_.size());
+    ++clock_;
+    return true;
+  }
+
+
  private:
   std::vector<std::string> keys_;
   std::vector<version_t> versions_;

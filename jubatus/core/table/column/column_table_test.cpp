@@ -84,6 +84,13 @@ using jubatus::core::table::string_column;
     do_something(bv, d);
   }
 */
+#define INT_TYPES                                     \
+  TYPE(int8);TYPE(int16);TYPE(int32);TYPE(int64);     \
+  TYPE(uint8);TYPE(uint16);TYPE(uint32);TYPE(uint64);
+#define OTHER_TYPES                             \
+  TYPE(float);TYPE(double);TYPE(string);
+#define TYPES INT_TYPES;OTHER_TYPES
+
 using std::string;
 TEST(construct, base_nothing) {
   column_table base;
@@ -95,19 +102,10 @@ TEST(construct, base_nothing) {
   schema.push_back(column_type(column_type::ctype##_type));\
   base.init(schema);\
   }
-
-construct_tuple_test(int8);
-construct_tuple_test(int16);
-construct_tuple_test(int32);
-construct_tuple_test(int64);
-construct_tuple_test(uint8);
-construct_tuple_test(uint16);
-construct_tuple_test(uint32);
-construct_tuple_test(uint64);
-construct_tuple_test(float);
-construct_tuple_test(double);
-construct_tuple_test(string);
+#define TYPE(x) construct_tuple_test(x)
+TYPES
 #undef construct_tuple_test
+#undef TYPE
 
 TEST(construct, int_float_tuple) {
   column_table base;
@@ -147,10 +145,10 @@ TEST(add, int_##ctype) {\
   ASSERT_EQ(0, static_cast<int>(base.get_##ctype##_column(0)[0]));      \
   ASSERT_EQ(base.size(), 1U);                                           \
 }
-add_int_test(int8) add_int_test(int16) add_int_test(int32)
-add_int_test(int64) add_int_test(uint8) add_int_test(uint16)
-add_int_test(uint32) add_int_test(uint64)
+#define TYPE(x) add_int_test(x)
+INT_TYPES
 #undef add_int_test
+#undef TYPE
 
 TEST(add, float) {
   column_table base;
@@ -201,11 +199,10 @@ TEST(add, bit_vector) {
     ctype##_column ints = base.get_##ctype##_column(0);                 \
     ASSERT_EQ(num, ints.size());                                        \
   }
-get_column_int_test(int8) get_column_int_test(int16)
-get_column_int_test(int32) get_column_int_test(int64)
-get_column_int_test(uint8) get_column_int_test(uint16)
-get_column_int_test(uint32) get_column_int_test(uint64)
+#define TYPE(x) get_column_int_test(x)
+INT_TYPES
 #undef get_column_int_test
+#undef TYPE
 
 TEST(get_column, float) {
   column_table base;
@@ -261,7 +258,7 @@ TEST(get_column, bit_vector) {
 #define get_and_read_int_column(ctype)                                  \
   TEST(get_and_read_column, ctype) {                                    \
     const size_t num = 257;                                             \
-    vector<column_type> schema;                                    \
+    std::vector<column_type> schema;                                    \
     schema.push_back(column_type(column_type::ctype##_type));           \
     column_table base;                                                  \
     base.init(schema);                                                  \
@@ -277,11 +274,11 @@ TEST(get_column, bit_vector) {
         ASSERT_EQ(ints[i], ctype##_t(i));                               \
       }                                                                 \
   }
+#define TYPE(x) get_and_read_int_column(x)
+  INT_TYPES
+#undef get_and_read_int_column
+#undef TYPE
 
-get_and_read_int_column(int8) get_and_read_int_column(int16)
-get_and_read_int_column(int32) get_and_read_int_column(int64)
-get_and_read_int_column(uint8) get_and_read_int_column(uint16)
-get_and_read_int_column(uint32) get_and_read_int_column(uint64)
 TEST(get_and_read_column, string) {
   column_table base;
   vector<column_type> schema;
@@ -344,10 +341,9 @@ TEST(pfi, lexical_cast) {
         ASSERT_EQ(ic[i], ctype##_t(i));                         \
       }                                                         \
   }
-iterate_int_test(int8) iterate_int_test(int16)
-iterate_int_test(int32) iterate_int_test(int64)
-iterate_int_test(uint8) iterate_int_test(uint16)
-iterate_int_test(uint32) iterate_int_test(uint64)
+#define TYPE(x) iterate_int_test(x)
+INT_TYPES
+#undef TYPE
 #undef iterate_int_test
 
 TEST(base, iterate_float) {
@@ -822,4 +818,69 @@ TEST(table, json_dump) {
   base.add("hoge", owner("local"), bv);
   base.add("fuga", owner("local"), bv);
   std::cout << base.dump_json() << std::endl;
+}
+
+#define delete_row_test(ctype)                                          \
+  TEST(table, delete_##ctype##_row) {                                   \
+    column_table base;                                                  \
+    vector<column_type> schema;                                         \
+    schema.push_back(column_type(column_type::ctype##_type));           \
+    base.init(schema);                                                  \
+    for (size_t i = 0; i < 300; i += 20) {                              \
+      base.add("a" + pfi::lang::lexical_cast<string>(i),                \
+               owner("local"),                                          \
+               static_cast<ctype##_t>(i));                              \
+    }                                                                   \
+    const uint64_t max_size = base.size();                              \
+    size_t cnt = 0;                                                     \
+    for (size_t i = 0; base.size(); i += 20) {                          \
+      base.delete_row("a" + pfi::lang::lexical_cast<string>(i));        \
+      ++cnt;                                                            \
+      ASSERT_EQ(max_size - cnt, base.size());                           \
+      ctype##_column ic = base.get_##ctype##_column(0);                 \
+        for (size_t j = 0; j < max_size - cnt; ++j) {                   \
+          ASSERT_EQ(static_cast<ctype##_t>(i + (j + 1) * 20), ic[j]);   \
+        }                                                               \
+    }                                                                   \
+}
+#define TYPE(x) delete_row_test(x)
+INT_TYPES
+#undef TYPE
+#undef delete_row_test
+
+TEST(table, delete_bv_row) {
+  column_table base;
+  vector<column_type> schema;
+  schema.push_back(column_type(column_type::bit_vector_type, 800));
+  base.init(schema);
+
+  bit_vector bv1(800);
+  bv1.set_bit(199);
+  bit_vector bv2(800);
+  bv2.set_bit(129);
+  base.add("hoge", owner("local"), bv1);
+  ASSERT_EQ(true, base.delete_row("hoge"));
+  ASSERT_EQ(0u, base.size());
+  base.add("aa", owner("local"), bv1);
+  ASSERT_EQ(1u, base.size());
+  {
+    const_bit_vector_column bc = base.get_bit_vector_column(0);
+    ASSERT_EQ(bv1, bc[0]);
+    ASSERT_NE(bv2, bc[0]);
+  }
+
+  base.add("bb", owner("local"), bv2);
+  {
+    const_bit_vector_column bc = base.get_bit_vector_column(0);
+    ASSERT_EQ(2u, base.size());
+    ASSERT_EQ(bv1, bc[0]);
+    ASSERT_EQ(bv2, bc[1]);
+  }
+
+  base.delete_row(0);  // delete can be done by index number too
+  {
+    const_bit_vector_column bc = base.get_bit_vector_column(0);
+    ASSERT_EQ(1u, base.size());
+    ASSERT_EQ(bv2, bc[0]);  // data will move
+  }
 }
