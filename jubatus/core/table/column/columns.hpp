@@ -316,7 +316,7 @@ class typed_column {
   friend std::ostream& operator<<(
       std::ostream& os,
       const typed_column_t& column) {
-    os << "size: " << *column.size_ << std::endl;
+    os << "size: " << column.size_ << std::endl;
     for (uint64_t i = 0; i < column.size(); ++i) {
       os << i << ":" << column[i] << std::endl;
     }

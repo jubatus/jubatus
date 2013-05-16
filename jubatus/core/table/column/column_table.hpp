@@ -342,14 +342,10 @@ class column_table {
 
     {  // needs swap on last index
       const uint64_t final_row = tuples_ - 1;
-      for (index_table::iterator move_it = index_.begin();
-         move_it != index_.end();
-         ++move_it) {
-        if (move_it->second == final_row) {
-          move_it->second = delete_index;
-          break;
-        }
-      }
+      const std::string& final_key = keys_[final_row];
+      index_table::iterator move_it = index_.find(final_key);
+      assert(move_it->second == final_row);
+      move_it->second = delete_index;
     }
     index_.erase(it);
     if (delete_index + 1 != keys_.size()) {
@@ -383,33 +379,11 @@ class column_table {
       jt->remove(index);
     }
     {  // needs swap on last index
-      const uint64_t final_row = tuples_ - 1;
-      index_table::iterator delete_target;
-      for (index_table::iterator move_it = index_.begin();
-         move_it != index_.end();
-         ++move_it) {
-        if (move_it->second == index) {
-          move_it->second = final_row;
-          index_.erase(move_it);
-        } else if (move_it->second == final_row) {
-          delete_target = move_it;
-        }
-      }
-      index_.erase(delete_target);
+      index_table::iterator move_it = index_.find(keys_[tuples_ - 1]);
+      move_it->second = index;
+      index_.erase(keys_[index]);
     }
 
-    {
-      std::swap(keys_[index], keys_.back());
-      std::vector<std::string>::iterator key_back = keys_.end();
-      --key_back;
-      keys_.erase(key_back);
-    }
-    {
-      std::swap(versions_[index], versions_.back());
-      std::vector<version_t>::iterator version_back = versions_.end();
-      --version_back;
-      versions_.erase(version_back);
-    }
     if (index + 1 != keys_.size()) {
       std::swap(keys_[index], keys_.back());
     }
