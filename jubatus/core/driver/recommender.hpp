@@ -25,6 +25,7 @@
 #include "../framework/mixable.hpp"
 #include "diffv.hpp"
 #include "linear_function_mixer.hpp"
+#include "mixable_versioned_table.hpp"
 #include "mixable_weight_manager.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 
@@ -68,12 +69,6 @@ class recommender {
     return mixable_holder_;
   }
 
-#if 0
-  storage::storage_base* get_model() const {
-    return recommender_.get_model().get();
-  }
-#endif
-
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const fv_converter::datum& dat);
   void clear();
@@ -99,7 +94,11 @@ class recommender {
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  mixable_recommender recommender_;
+  pfi::lang::shared_ptr<core::recommender::recommender_base> recommender_;
+
+  mixable_recommender mixable_recommender_;
+  mixable_versioned_table mixable_versioned_table_;
+
   mixable_weight_manager wm_;
 };
 
