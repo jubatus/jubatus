@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011-2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,17 +17,24 @@
 
 #include "push_mixer.hpp"
 
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/bind.h>
 #include <pficommon/system/time_util.h>
+#include "../../../core/framework/mixable.hpp"
 #include "../../common/membership.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
-#include "../../../core/framework/mixable.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace pfi::concurrent;
-using namespace pfi::lang;
+using std::pair;
+using std::string;
+using std::vector;
+using pfi::concurrent::scoped_lock;
+using pfi::lang::bind;
+using pfi::lang::shared_ptr;
+using pfi::system::time::clock_time;
+using pfi::system::time::get_clock_time;
 
 namespace jubatus {
 namespace server {
@@ -37,24 +44,27 @@ namespace mixer {
 namespace {
 
 class push_communication_impl : public push_communication {
-public:
-  push_communication_impl(const pfi::lang::shared_ptr<common::lock_service>& zk,
-                            const string& type,
-                            const string& name,
-                            int timeout_sec);
+ public:
+  push_communication_impl(
+      const pfi::lang::shared_ptr<common::lock_service>& zk,
+      const string& type,
+      const string& name,
+      int timeout_sec);
 
   size_t update_members();
   size_t size() const;
   shared_ptr<common::try_lockable> create_lock();
   const vector<pair<string, int> >& servers_list() const;
-  void pull(const pair<string, int>& server,
-            const vector<string>& arg,
-            common::mprpc::rpc_result_object& result) const;
-  void get_pull_argument(const pair<string, int>& server,
-                         common::mprpc::rpc_result_object& result) const;
+  void pull(
+      const pair<string, int>& server,
+      const vector<string>& arg,
+      common::mprpc::rpc_result_object& result) const;
+  void get_pull_argument(
+      const pair<string, int>& server,
+      common::mprpc::rpc_result_object& result) const;
   void push(const pair<string, int>& server, const vector<string>& diff) const;
 
-private:
+ private:
   vector<pair<string, int> > servers_;
   pfi::lang::shared_ptr<common::lock_service> zk_;
   string type_;
@@ -85,21 +95,23 @@ size_t push_communication_impl::size() const {
 shared_ptr<common::try_lockable> push_communication_impl::create_lock() {
   string path;
   common::build_actor_path(path, type_, name_);
-  return shared_ptr<common::try_lockable>
-    (new common::lock_service_mutex(*zk_, path + "/master_lock"));
+  return shared_ptr<common::try_lockable>(
+      new common::lock_service_mutex(*zk_, path + "/master_lock"));
 }
 
-const vector<pair<string, int> >& push_communication_impl::servers_list() const {
+const vector<pair<string, int> >& push_communication_impl::servers_list()
+    const {
   return servers_;
 }
 
-void push_communication_impl::pull(const pair<string, int>& server,
-                                        const vector<string>& arg,
-                                        common::mprpc::rpc_result_object& result) const {
+void push_communication_impl::pull(
+    const pair<string, int>& server,
+    const vector<string>& arg,
+    common::mprpc::rpc_result_object& result) const {
   vector<pair<string, int> > servers;
   servers.push_back(server);
 
-  // TODO: to be replaced to new client with socket connection pooling
+  // TODO(beam2d): to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers, timeout_sec_);
   result = client.call("pull", arg);
 }
@@ -110,54 +122,61 @@ void push_communication_impl::get_pull_argument(
   vector<pair<string, int> > servers;
   servers.push_back(server);
 
-  // TODO: to be replaced to new client with socket connection pooling
+  // TODO(beam2d): to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers, timeout_sec_);
   result = client.call("get_pull_argument", 0);
 }
 
-void push_communication_impl::push(const pair<string, int>& server,
-                                        const vector<string>& diff) const {
+void push_communication_impl::push(
+    const pair<string, int>& server,
+    const vector<string>& diff) const {
   vector<pair<string, int> > servers;
   servers.push_back(server);
 
-  // TODO: to be replaced to new client with socket connection pooling
+  // TODO(beam2d): to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers, timeout_sec_);
   client.call("push", diff);
 }
 
+}  // namespace
+
+pfi::lang::shared_ptr<push_communication> push_communication::create(
+    const pfi::lang::shared_ptr<common::lock_service>& zk,
+    const string& type,
+    const string& name,
+    int timeout_sec) {
+  return pfi::lang::shared_ptr<push_communication_impl>(
+      new push_communication_impl(zk, type, name, timeout_sec));
 }
 
-
-pfi::lang::shared_ptr<push_communication>
-push_communication::create(const pfi::lang::shared_ptr<common::lock_service>& zk,
-                                const string& type, const string& name,
-                                int timeout_sec) {
-  return pfi::lang::shared_ptr<push_communication_impl>(new push_communication_impl(zk, type, name, timeout_sec));
+push_mixer::push_mixer(
+    shared_ptr<push_communication> communication,
+    unsigned int count_threshold,
+    unsigned int tick_threshold,
+    const std::pair<std::string, int>& my_id)
+    : communication_(communication),
+      count_threshold_(count_threshold),
+      tick_threshold_(tick_threshold),
+      my_id_(my_id),
+      counter_(0),
+      ticktime_(0),
+      mix_count_(0),
+      is_running_(false),
+      t_(pfi::lang::bind(&push_mixer::mixer_loop, this)) {
 }
-
-
-push_mixer::push_mixer(shared_ptr<push_communication> communication,
-                       unsigned int count_threshold, unsigned int tick_threshold,
-                       const std::pair<std::string, int>& my_id)
-  : communication_(communication),
-    count_threshold_(count_threshold),
-    tick_threshold_(tick_threshold),
-    my_id_(my_id),
-    counter_(0),
-    ticktime_(0),
-    mix_count_(0),
-    is_running_(false),
-    t_(pfi::lang::bind(&push_mixer::mixer_loop, this)) {}
 
 void push_mixer::register_api(rpc_server_t& server) {
   server.add<vector<string>(vector<string>)>(
-    "pull", bind(&push_mixer::pull, this, _1));
-  server.add<vector<string>(int)>(
-    "get_pull_argument", bind(&push_mixer::get_pull_argument, this, _1));
-  server.add<int(vector<string>)>("push", bind(&push_mixer::push, this, _1));
+      "pull", bind(&push_mixer::pull, this, pfi::lang::_1));
+  server.add<std::vector<std::string>(int)>(  // NOLINT
+      "get_pull_argument", bind(
+          &push_mixer::get_pull_argument, this, pfi::lang::_1));
+  server.add<int(vector<string>)>(
+      "push", bind(&push_mixer::push, this, pfi::lang::_1));
 }
 
-void push_mixer::set_mixable_holder(shared_ptr<jubatus::core::framework::mixable_holder> holder) {
+void push_mixer::set_mixable_holder(
+    shared_ptr<jubatus::core::framework::mixable_holder> holder) {
   mixable_holder_ = holder;
 }
 
@@ -181,16 +200,17 @@ void push_mixer::updated() {
   scoped_lock lk(m_);
   unsigned int new_ticktime = time(NULL);
   ++counter_;
-  if(counter_ > count_threshold_ ||
-     new_ticktime - ticktime_ > tick_threshold_){
-    c_.notify(); // FIXME: need sync here?
+  if (counter_ > count_threshold_ ||
+      new_ticktime - ticktime_ > tick_threshold_) {
+    c_.notify();  // FIXME: need sync here?
   }
 }
 
 void push_mixer::get_status(server_base::status_t& status) const {
   scoped_lock lk(m_);
   status["push_mixer.count"] = pfi::lang::lexical_cast<string>(counter_);
-  status["push_mixer.ticktime"] = pfi::lang::lexical_cast<string>(ticktime_);  // since last mix
+  status["push_mixer.ticktime"] =
+      pfi::lang::lexical_cast<string>(ticktime_);  // since last mix
 }
 
 void push_mixer::mixer_loop() {
@@ -200,15 +220,17 @@ void push_mixer::mixer_loop() {
         scoped_lock lk(m_);
         c_.wait(m_, 1);
         unsigned int new_ticktime = time(NULL);
-        if (counter_ < count_threshold_ && new_ticktime - ticktime_ < tick_threshold_) {
+        if (counter_ < count_threshold_ &&
+            new_ticktime - ticktime_ < tick_threshold_) {
           continue;
         } else {
-          DLOG(INFO) << "starting mix because of " << (count_threshold_ <= counter_ ?
-                                                       "counter" : "tick_time") << " threshold";
+          DLOG(INFO) << "starting mix because of "
+                     << (count_threshold_ <= counter_ ? "counter" : "tick_time")
+                     << " threshold";
           counter_ = 0;
           ticktime_ = new_ticktime;
         }
-      } // unlock
+      }  // unlock
       mix();
       DLOG(INFO) << ".... " << mix_count_ << "th mix done.";
     } catch (const jubatus::exception::jubatus_exception& e) {
@@ -218,8 +240,6 @@ void push_mixer::mixer_loop() {
 }
 
 void push_mixer::mix() {
-  using namespace pfi::system::time;
-
   clock_time start = get_clock_time();
   size_t s_pull = 0, s_push = 0;
 
@@ -240,12 +260,14 @@ void push_mixer::mix() {
         vector<string> my_args = get_pull_argument(0);
         common::mprpc::rpc_result_object pull_result;
         communication_->pull(she, my_args, pull_result);
-        vector<string> her_diff = pull_result.response.front().as<vector<string> >();
+        vector<string> her_diff =
+            pull_result.response.front().as<vector<string> >();
 
         // pull from me
         common::mprpc::rpc_result_object args_result;
         communication_->get_pull_argument(she, args_result);
-        vector<string> her_args = args_result.response.front().as<vector<string> >();
+        vector<string> her_args =
+            args_result.response.front().as<vector<string> >();
         vector<string> my_diff = pull(her_args);
 
         // push to her and me
@@ -270,7 +292,9 @@ void push_mixer::mix() {
   }
 
   clock_time end = get_clock_time();
-  LOG(INFO) << (end - start) << " time elapsed " << s_pull << " pulled  " << s_push << " pushed";
+  LOG(INFO) << (end - start) << " time elapsed "
+            << s_pull << " pulled  "
+            << s_push << " pushed";
   mix_count_++;
 }
 
@@ -279,20 +303,22 @@ vector<string> push_mixer::pull(const vector<string>& arg) {
 
   scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
-  vector<jubatus::core::framework::mixable0*> mixables = mixable_holder_->get_mixables();
-  // TODO: check arg.size()==mixables.size()
+  vector<jubatus::core::framework::mixable0*> mixables =
+      mixable_holder_->get_mixables();
+  // TODO(beam2d): check arg.size()==mixables.size()
   for (size_t i = 0; i < mixables.size(); ++i) {
     o.push_back(mixables[i]->pull(arg[i]));
   }
   return o;
 }
 
-vector<string> push_mixer::get_pull_argument(int) {
+vector<string> push_mixer::get_pull_argument(int dummy_arg) {
   vector<string> o;
 
   scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
-  vector<jubatus::core::framework::mixable0*> mixables = mixable_holder_->get_mixables();
+  vector<jubatus::core::framework::mixable0*> mixables =
+      mixable_holder_->get_mixables();
   for (size_t i = 0; i < mixables.size(); ++i) {
     o.push_back(mixables[i]->get_pull_argument());
   }
@@ -302,7 +328,8 @@ vector<string> push_mixer::get_pull_argument(int) {
 int push_mixer::push(const vector<string>& diff) {
   scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
-  vector<jubatus::core::framework::mixable0*> mixables = mixable_holder_->get_mixables();
+  vector<jubatus::core::framework::mixable0*> mixables =
+      mixable_holder_->get_mixables();
   if (diff.size() != mixables.size()) {
     // deserialization error
     return -1;
@@ -315,4 +342,7 @@ int push_mixer::push(const vector<string>& diff) {
   return 0;
 }
 
-}}}} // namespace jubatus::server::framework::mixer
+}  // namespace mixer
+}  // namespace framework
+}  // namespace server
+}  // namespace jubatus

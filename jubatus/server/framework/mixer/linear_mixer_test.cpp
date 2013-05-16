@@ -1,14 +1,31 @@
-#include <gtest/gtest.h>
-
-#include "jubatus/core/framework/mixable.hpp"
-#include "linear_mixer.hpp"
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2011-2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <iostream>
-
-#include "../../../core/framework/mixable.hpp"
+#include <sstream>
+#include <string>
+#include <vector>
+#include <gtest/gtest.h>
 #include "../../../core/common/byte_buffer.hpp"
+#include "../../../core/framework/mixable.hpp"
+#include "linear_mixer.hpp"
+#include "jubatus/core/framework/mixable.hpp"
 
-using namespace std;
+using std::string;
+using std::vector;
 using pfi::lang::shared_ptr;
 using jubatus::core::common::byte_buffer;
 
@@ -16,7 +33,6 @@ namespace jubatus {
 namespace server {
 namespace framework {
 namespace mixer {
-
 namespace {
 
 vector<byte_buffer> make_packed_vector(const string& s) {
@@ -37,7 +53,7 @@ common::mprpc::rpc_response_t make_response(const string& s) {
   return res;
 }
 
-}
+}  // namespace
 
 class linear_communication_stub : public linear_communication {
  public:
@@ -87,22 +103,29 @@ class linear_communication_stub : public linear_communication {
   mutable vector<string> mixed_;
 };
 
-struct mixable_string
-    : public core::framework::mixable<mixable_string, core::common::byte_buffer> {
+struct mixable_string : public core::framework::mixable<
+    mixable_string, core::common::byte_buffer> {
  public:
-  core::common::byte_buffer get_diff_impl() const { return core::common::byte_buffer(); }
-  void put_diff_impl(const byte_buffer&) {}
-  void mix_impl(const byte_buffer& lhs, const byte_buffer& rhs, byte_buffer& mixed) const {
-    stringstream ss;
-    ss << "(" << string(lhs.ptr(), lhs.size()) << "+" << string(rhs.ptr(), rhs.size()) << ")";
+  core::common::byte_buffer get_diff_impl() const {
+    return core::common::byte_buffer();
+  }
+  void put_diff_impl(const byte_buffer&) {
+  }
+  void mix_impl(
+      const byte_buffer& lhs,
+      const byte_buffer& rhs,
+      byte_buffer& mixed) const {
+    std::stringstream ss;
+    ss << "(" << string(lhs.ptr(), lhs.size()) << "+"
+       << string(rhs.ptr(), rhs.size()) << ")";
     string s = ss.str();
     mixed.assign(s.data(), s.size());
   }
   string get_pull_argument() const { return string(); }
   string pull(const string&) const { return string(); }
   void push(const string&) {}
-  void save(ostream&) {}
-  void load(istream&) {}
+  void save(std::ostream&) {}
+  void load(std::istream&) {}
   void clear() {}
 };
 
