@@ -72,8 +72,8 @@ class stat {
 
   virtual void clear();
 
-  bool save(std::ostream&);
-  bool load(std::istream&);
+  virtual bool save(std::ostream&);
+  virtual bool load(std::istream&);
   std::string type() const;
 
  protected:
@@ -148,6 +148,12 @@ class stat {
       }
     }
 
+    friend class pfi::data::serialization::access;
+    template<class Archive>
+    void serialize(Archive& ar) {
+      ar & n_ & sum_ & sum2_ & max_ & min_;
+    }
+
     size_t n_;
 
     double sum_, sum2_;
@@ -162,7 +168,7 @@ class stat {
   friend class pfi::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & window_size_ & window_;
+    ar & window_size_ & window_ & stats_;
   }
   size_t window_size_;
 };

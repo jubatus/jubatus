@@ -74,6 +74,7 @@ void recommender::update_row(
 
 void recommender::clear() {
   recommender_.get_model()->clear();
+  wm_.clear();
 }
 
 fv_converter::datum recommender::complete_row_from_id(const std::string& id) {

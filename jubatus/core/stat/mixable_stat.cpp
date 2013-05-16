@@ -68,6 +68,19 @@ double mixable_stat::entropy() const {
   return log(n) - e_ / n_;
 }
 
+bool mixable_stat::save(std::ostream& os) {
+  pfi::data::serialization::binary_oarchive oa(os);
+  stat::save(os);
+  oa << *this;
+  return true;
+}
+bool mixable_stat::load(std::istream& is) {
+  pfi::data::serialization::binary_iarchive ia(is);
+  stat::load(is);
+  ia >> *this;
+  return true;
+}
+
 }  // namespace stat
 }  // namespace core
 }  // namespace jubatus
