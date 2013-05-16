@@ -14,17 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "nearest_neighbor_factory.hpp"
+
 #include <map>
 #include <string>
-
 #include <glog/logging.h>
-#include "nearest_neighbor_factory.hpp"
 
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
 #include "nearest_neighbor.hpp"
-
-using namespace std;
 
 namespace jubatus {
 namespace core {
@@ -36,11 +34,12 @@ nearest_neighbor_base* create_nearest_neighbor(
     table::column_table* table,
     const std::string& id) {
 
-    using jubatus::core::jsonconfig::config_cast_check;
+  using jubatus::core::jsonconfig::config_cast_check;
 
   if (name == "euclid_lsh") {
     DLOG(INFO) << __func__ << "  euclid_lsh selected ";
-    return new euclid_lsh(config_cast_check<euclid_lsh::config>(config), table, id);
+    return new euclid_lsh(
+        config_cast_check<euclid_lsh::config>(config), table, id);
   } else if (name == "lsh") {
     DLOG(INFO) << __func__ << "  lsh selected ";
     return new lsh(config_cast_check<lsh::config>(config), table, id);

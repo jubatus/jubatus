@@ -21,9 +21,9 @@
 
 #include "../storage/fixed_size_heap.hpp"
 
+using std::make_pair;
 using std::pair;
 using std::vector;
-using std::make_pair;
 using jubatus::core::table::bit_vector;
 using jubatus::core::table::const_bit_vector_column;
 
@@ -31,11 +31,12 @@ namespace jubatus {
 namespace core {
 namespace nearest_neighbor {
 
-void ranking_hamming_bit_vectors(const bit_vector& query,
-                                 const const_bit_vector_column& bvs,
-                                 vector<pair<uint64_t, float> >& ret,
-                                 uint64_t ret_num) {
-  jubatus::core::storage::fixed_size_heap<pair<uint32_t, uint64_t> > heap(ret_num);
+void ranking_hamming_bit_vectors(
+    const bit_vector& query,
+    const const_bit_vector_column& bvs,
+    vector<pair<uint64_t, float> >& ret,
+    uint64_t ret_num) {
+  storage::fixed_size_heap<pair<uint32_t, uint64_t> > heap(ret_num);
   for (uint64_t i = 0; i< bvs.size(); ++i) {
     const size_t dist = query.calc_hamming_distance(bvs[i]);
     heap.push(make_pair(dist, i));

@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012,2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,8 +14,9 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_STORAGE_EXCEPTION_HPP_
-#define JUBATUS_STORAGE_EXCEPTION_HPP_
+#ifndef JUBATUS_CORE_TABLE_STORAGE_EXCEPTION_HPP_
+#define JUBATUS_CORE_TABLE_STORAGE_EXCEPTION_HPP_
+
 #include <string>
 #include "../common/exception.hpp"
 
@@ -55,8 +56,8 @@ class array_range_exception : public storage_exception {
     : storage_exception(msg) {}
 };
 
-} // namespace table
-} // namespace core
-} // namespace jubatus
+}  // namespace table
+}  // namespace core
+}  // namespace jubatus
 
-#endif  // JUBATUS_STORAGE_EXCEPTION_HPP_
+#endif  // JUBATUS_CORE_TABLE_STORAGE_EXCEPTION_HPP_

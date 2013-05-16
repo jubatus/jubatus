@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012,2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,10 +15,11 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <algorithm>
+#include <cassert>
+#include <cstring>
 #include <string>
 #include <utility>
 #include <vector>
-#include <cstring>
 
 #include "column_table.hpp"
 
@@ -31,11 +32,12 @@ void column_table::init(const std::vector<column_type>& schema) {
   /* defining tuple */
   if (!columns_.empty()) {
     throw storage_exception(
-      "Storage's schemas cannot be over written. Clear schemas before init()");
+        "Storage's schemas cannot be over written. Clear schemas before "
+        "init()");
   }
   for (std::vector<column_type>::const_iterator it = schema.begin();
-      it != schema.end();
-      ++it) {
+       it != schema.end();
+       ++it) {
     columns_.push_back(detail::abstract_column(*it));
   }
 }

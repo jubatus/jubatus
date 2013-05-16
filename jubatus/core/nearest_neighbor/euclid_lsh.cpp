@@ -41,8 +41,8 @@ using jubatus::core::table::const_float_column;
 namespace jubatus {
 namespace core {
 namespace nearest_neighbor {
-
 namespace {
+
 float squared_l2norm(const sfv_t& sfv) {
   float sqnorm = 0;
   for (size_t i = 0; i < sfv.size(); ++i) {
@@ -55,10 +55,11 @@ float l2norm(const sfv_t& sfv) {
   return sqrt(squared_l2norm(sfv));
 }
 
-float calc_euclidean_distance(size_t hash_num,
-                              size_t hamming_similarity,
-                              float norm1,
-                              float norm2) {
+float calc_euclidean_distance(
+    size_t hash_num,
+    size_t hamming_similarity,
+    float norm1,
+    float norm2) {
   if (hash_num == hamming_similarity) {
     return abs(norm1 - norm2);
   }
@@ -68,8 +69,10 @@ float calc_euclidean_distance(size_t hash_num,
 
 }  // namespace
 
-euclid_lsh::euclid_lsh(const config& conf,
-                       column_table* table, const std::string& id)
+euclid_lsh::euclid_lsh(
+    const config& conf,
+    column_table* table,
+    const std::string& id)
   : nearest_neighbor_base(table, id) {
   set_config(conf);
 
@@ -78,24 +81,26 @@ euclid_lsh::euclid_lsh(const config& conf,
   get_table()->init(schema);
 }
 
-euclid_lsh::euclid_lsh(const config& conf,
-                       column_table* table,
-                       vector<column_type>& schema,
-                       const std::string& id)
+euclid_lsh::euclid_lsh(
+    const config& conf,
+    column_table* table,
+    vector<column_type>& schema,
+    const std::string& id)
   : nearest_neighbor_base(table, id) {
   set_config(conf);
   fill_schema(schema);
 }
 
 void euclid_lsh::set_row(const string& id, const sfv_t& sfv) {
-  // TODO: support nested algorithm, e.g. when used by lof and then we cannot
-  // suppose that the first two columns are assigned to euclid_lsh.
+  // TODO(beam2d): support nested algorithm, e.g. when used by lof and then we
+  // cannot suppose that the first two columns are assigned to euclid_lsh.
   get_table()->add(id, owner(my_id_), cosine_lsh(sfv, hash_num_), l2norm(sfv));
 }
 
-void euclid_lsh::neighbor_row(const sfv_t& query,
-                              vector<pair<string, float> >& ids,
-                              uint64_t ret_num) const {
+void euclid_lsh::neighbor_row(
+    const sfv_t& query,
+    vector<pair<string, float> >& ids,
+    uint64_t ret_num) const {
   neighbor_row_from_hash(
       cosine_lsh(query, hash_num_),
       l2norm(query),
@@ -103,11 +108,12 @@ void euclid_lsh::neighbor_row(const sfv_t& query,
       ret_num);
 }
 
-void euclid_lsh::neighbor_row(const std::string& query_id,
-                              vector<pair<string, float> >& ids,
-                              uint64_t ret_num) const {
-  const pair<bool, uint64_t> maybe_index
-      = get_const_table()->exact_match(query_id);
+void euclid_lsh::neighbor_row(
+    const std::string& query_id,
+    vector<pair<string, float> >& ids,
+    uint64_t ret_num) const {
+  const pair<bool, uint64_t> maybe_index =
+      get_const_table()->exact_match(query_id);
   if (!maybe_index.first) {
     ids.clear();
     return;
@@ -136,10 +142,11 @@ const_float_column euclid_lsh::norm_column() const {
   return get_const_table()->get_float_column(first_column_id_ + 1);
 }
 
-void euclid_lsh::neighbor_row_from_hash(const bit_vector& bv,
-                                        float norm,
-                                        vector<pair<string, float> >& ids,
-                                        uint64_t ret_num) const {
+void euclid_lsh::neighbor_row_from_hash(
+    const bit_vector& bv,
+    float norm,
+    vector<pair<string, float> >& ids,
+    uint64_t ret_num) const {
   const column_table* table = get_const_table();
 
   jubatus::core::storage::fixed_size_heap<pair<float, size_t> > heap(ret_num);

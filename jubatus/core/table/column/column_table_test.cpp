@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012,2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,13 +17,14 @@
 #include <string>
 #include <vector>
 
+#include <gtest/gtest.h>
 #include <pficommon/text/json.h>
 #include <msgpack.hpp>
-#include "gtest/gtest.h"
 #include "column_table.hpp"
 #include "pficommon/math/random.h"
 #include "pficommon/lang/shared_ptr.h"
 
+using std::string;
 using std::vector;
 
 using jubatus::core::table::column_table;
@@ -57,54 +58,27 @@ using jubatus::core::table::uint32_column;
 using jubatus::core::table::uint64_column;
 using jubatus::core::table::string_column;
 
-/*
-  column_table t;
-  vector<column_type> schema;
-  schema.push_back(column_type(column_type::bit_vector_type, 200));
-  schema.push_back(column_type(column_type::double_type));
-
-  tinit(schema);
-
-  tadd("key", 100, 3.0);
-  tupdate("key", 1, 2.1);
-
-  assert(tsize() == 1);
-
-  // unmatched get_***_column will assert() fails
-  // take care of NDEBUG option
-  bit_vector_column bvc = t.get_bit_vector_column(0);
-  double_column dc = t.get_double_column(1);
-
-  assert(bvc.size() == 1);
-  assert(dc.size() == 1);
-
-  for (size_t i = 0; i < tsize(); ++i) {
-    bit_vector bv = bvc[i];  // shallow-copy(bit_vector and string only now)
-    double d = dc[i];  // deep-copy(int, double)
-    do_something(bv, d);
-  }
-*/
-#define INT_TYPES                                     \
-  TYPE(int8);TYPE(int16);TYPE(int32);TYPE(int64);     \
-  TYPE(uint8);TYPE(uint16);TYPE(uint32);TYPE(uint64);
-#define OTHER_TYPES                             \
-  TYPE(float);TYPE(double);TYPE(string);
-#define TYPES INT_TYPES;OTHER_TYPES
+#define INT_TYPES                                                   \
+  TYPE(int8);TYPE(int16);TYPE(int32);TYPE(int64);  /* NOLINT */     \
+  TYPE(uint8);TYPE(uint16);TYPE(uint32);TYPE(uint64);  /* NOLINT */
+#define OTHER_TYPES                                     \
+  TYPE(float);TYPE(double);TYPE(string);  /* NOLINT */
+#define TYPES INT_TYPES; OTHER_TYPES; /* NOLINT */
 
 using std::string;
 TEST(construct, base_nothing) {
   column_table base;
 }
-#define construct_tuple_test(ctype)\
-  TEST(construct, ctype##_tuple) {\
-  column_table base;\
-  vector<column_type> schema;\
-  schema.push_back(column_type(column_type::ctype##_type));\
-  base.init(schema);\
-  }
-#define TYPE(x) construct_tuple_test(x)
+#define CONSTRUCT_TUPLE_TEST(ctype)           \
+TEST(construct, ctype##_tuple) {              \
+  column_table base;                          \
+  vector<column_type> schema;                             \
+  schema.push_back(column_type(column_type::ctype##_type)); \
+  base.init(schema);                                        \
+}
+#define TYPE(x) CONSTRUCT_TUPLE_TEST(x)
 TYPES
-#undef construct_tuple_test
+#undef CONSTRUCT_TUPLE_TEST
 #undef TYPE
 
 TEST(construct, int_float_tuple) {
@@ -120,7 +94,7 @@ TEST(construct, bitvector_tuple) {
   vector<column_type> schema;
   ASSERT_NO_THROW({
       schema.push_back(
-        column_type(column_type::bit_vector_type, 100));
+          column_type(column_type::bit_vector_type, 100));
     });
   base.init(schema);
 }
@@ -134,7 +108,7 @@ TEST(construct, int_float_bitvector_tuple) {
   base.init(schema);
 }
 
-#define add_int_test(ctype)\
+#define ADD_INT_TEST(ctype)\
 TEST(add, int_##ctype) {\
   column_table base;\
   vector<column_type> schema;\
@@ -145,9 +119,9 @@ TEST(add, int_##ctype) {\
   ASSERT_EQ(0, static_cast<int>(base.get_##ctype##_column(0)[0]));      \
   ASSERT_EQ(base.size(), 1U);                                           \
 }
-#define TYPE(x) add_int_test(x)
+#define TYPE(x) ADD_INT_TEST(x)
 INT_TYPES
-#undef add_int_test
+#undef ADD_INT_TEST
 #undef TYPE
 
 TEST(add, float) {
@@ -184,7 +158,7 @@ TEST(add, bit_vector) {
   ASSERT_EQ(base.size(), 1U);
 }
 
-#define get_column_int_test(ctype)                                      \
+#define GET_COLUMN_INT_TEST(ctype)                                      \
   TEST(get_column, ctype) {                                             \
     const size_t num = 513;                                             \
     column_table base;                                                  \
@@ -199,9 +173,9 @@ TEST(add, bit_vector) {
     ctype##_column ints = base.get_##ctype##_column(0);                 \
     ASSERT_EQ(num, ints.size());                                        \
   }
-#define TYPE(x) get_column_int_test(x)
+#define TYPE(x) GET_COLUMN_INT_TEST(x)
 INT_TYPES
-#undef get_column_int_test
+#undef GET_COLUMN_INT_TEST
 #undef TYPE
 
 TEST(get_column, float) {
@@ -211,8 +185,8 @@ TEST(get_column, float) {
   base.init(schema);
   for (size_t i = 0; i < 100; ++i) {
     ASSERT_EQ(base.add(
-                  pfi::lang::lexical_cast<std::string>(i) +
-                  "a", owner("local") , float(i)), true);
+        pfi::lang::lexical_cast<std::string>(i) +
+        "a", owner("local"), static_cast<float>(i)), true);
   }
   ASSERT_EQ(base.size(), 100U);
   float_column floats = base.get_float_column(0);
@@ -226,9 +200,9 @@ TEST(get_column, string) {
   base.init(schema);
   for (size_t i = 0; i < 100; ++i) {
     ASSERT_EQ(base.add(
-                  pfi::lang::lexical_cast<std::string>(i) + "a",
-                  owner("local") ,
-                  pfi::lang::lexical_cast<std::string>(i)), true);
+        pfi::lang::lexical_cast<std::string>(i) + "a",
+        owner("local"),
+        pfi::lang::lexical_cast<std::string>(i)), true);
   }
   string_column strings = base.get_string_column(0);
   ASSERT_EQ(strings.size(), 100U);
@@ -247,8 +221,9 @@ TEST(get_column, bit_vector) {
     for (size_t j = 0; j < i; ++j) {
       bv.reverse_bit(j % bit_vector_width);
     }
-    ASSERT_EQ(base.add(pfi::lang::lexical_cast<std::string>(i) + "a",
-                           owner("local") , bv), true);
+    ASSERT_EQ(base.add(
+        pfi::lang::lexical_cast<std::string>(i) + "a", owner("local") , bv),
+        true);
   }
   ASSERT_EQ(base.size(), num);
   bit_vector_column bit_vectors = base.get_bit_vector_column(0);
@@ -286,9 +261,10 @@ TEST(get_and_read_column, string) {
   base.init(schema);
   const size_t num = 120;
   for (size_t i = 0; i < num; ++i) {
-    ASSERT_EQ(base.add(pfi::lang::lexical_cast<std::string>(i) + "a",
-                       owner("local"),
-                       pfi::lang::lexical_cast<std::string>(i)), true);
+    ASSERT_EQ(base.add(
+        pfi::lang::lexical_cast<std::string>(i) + "a",
+        owner("local"),
+        pfi::lang::lexical_cast<std::string>(i)), true);
   }
   ASSERT_EQ(base.size(), num);
   string_column strings = base.get_string_column(0);
@@ -305,9 +281,9 @@ TEST(get_and_read_column, bit_vector) {
   for (size_t i = 0; i < num; ++i) {
     bit_vector bv(bit_vector_width);
     bv.set_bit(i % bit_vector_width);
-    ASSERT_EQ(base.add(pfi::lang::lexical_cast<std::string>(i) + "a",
-                           owner("local"), bv),
-              true);
+    ASSERT_EQ(base.add(
+        pfi::lang::lexical_cast<std::string>(i) + "a",
+        owner("local"), bv), true);
   }
   ASSERT_EQ(base.size(), num);
   bit_vector_column strings = base.get_bit_vector_column(0);
@@ -324,7 +300,7 @@ TEST(pfi, lexical_cast) {
                         "hoge");
 }
 
-#define iterate_int_test(ctype)                                 \
+#define ITERATE_INT_TEST(ctype)                                 \
   TEST(column, iterate_int_##ctype) {                           \
     const size_t num = 513;                                     \
     vector<column_type> schema;                            \
@@ -341,10 +317,10 @@ TEST(pfi, lexical_cast) {
         ASSERT_EQ(ic[i], ctype##_t(i));                         \
       }                                                         \
   }
-#define TYPE(x) iterate_int_test(x)
+#define TYPE(x) ITERATE_INT_TEST(x)
 INT_TYPES
 #undef TYPE
-#undef iterate_int_test
+#undef ITERATE_INT_TEST
 
 TEST(base, iterate_float) {
   column_table base;
@@ -352,8 +328,9 @@ TEST(base, iterate_float) {
   schema.push_back(column_type(column_type::float_type));
   base.init(schema);
   for (size_t i = 0; i < 1000; ++i) {
-    base.add<float>(pfi::lang::lexical_cast<std::string>
-                        (i)+"hoge", owner("local"), 0.8*i);
+    base.add<float>(
+        pfi::lang::lexical_cast<std::string>(i) + "hoge", owner("local"),
+        0.8 * i);
   }
   float_column ic = base.get_float_column(0);
   for (size_t i = 0; i < 1000; ++i) {
@@ -392,7 +369,8 @@ TEST(base, iterate_bit_vector) {
     for (size_t j = 0; j < i; ++j) {
       bv.reverse_bit((rand1.next_int()*j)%70);
     }
-    base.add(pfi::lang::lexical_cast<std::string>(i)+"key", owner("local"), bv);
+    base.add(
+        pfi::lang::lexical_cast<std::string>(i) + "key", owner("local"), bv);
   }
   bit_vector_column ic = base.get_bit_vector_column(0);
   for (size_t i = 0; i < 1000; ++i) {
@@ -416,9 +394,9 @@ TEST(column, multi_column) {
     for (size_t j = 0; j < i; ++j) {
       bv.reverse_bit((rand1.next_int()*j)%70);
     }
-    base.add(pfi::lang::lexical_cast<std::string>(i)+"key",
-             owner("local"),
-             bv, int32_t(rand1.next_int()));
+    base.add(
+        pfi::lang::lexical_cast<std::string>(i) + "key", owner("local"), bv,
+        static_cast<int32_t>(rand1.next_int()));
   }
   const_bit_vector_column ic1 = base.get_bit_vector_column(0);
   const_int32_column ic2 = base.get_int32_column(1);
@@ -663,7 +641,6 @@ TEST(table, bv_load) {
 }
 
 TEST(table, get_row) {
-  using namespace msgpack;
   column_table base;
   vector<column_type> schema;
   schema.push_back(column_type(column_type::int32_type));
@@ -672,21 +649,21 @@ TEST(table, get_row) {
 
   base.add("key", owner("self"), 333, std::string("hoge"));
   std::string data = base.get_row(0);
-  unpacked unp;
-  unpack(&unp, data.c_str(), data.size());
+  msgpack::unpacked unp;
+  msgpack::unpack(&unp, data.c_str(), data.size());
 
   // object o = unp.get();
   // std::cout << o << std::endl;
 
-  unpacker pac;
+  msgpack::unpacker pac;
   pac.reserve_buffer(data.size());
-  memcpy(pac.buffer(), data.c_str(), data.size());
+  std::memcpy(pac.buffer(), data.c_str(), data.size());
   pac.buffer_consumed(data.size());
 
   // now starts streaming deserialization.
-  unpacked result;
+  msgpack::unpacked result;
   {
-    object o = unp.get();
+    msgpack::object o = unp.get();
     std::string key;
     o.via.array.ptr[0].convert(&key);
     ASSERT_EQ(key, "key");
@@ -696,7 +673,7 @@ TEST(table, get_row) {
     ASSERT_EQ(v.first, owner("self"));
     ASSERT_EQ(v.second, 0U);
 
-    object& data(o.via.array.ptr[2]);
+    msgpack::object& data(o.via.array.ptr[2]);
     uint32_t size(o.via.array.ptr[2].via.array.size);
     ASSERT_EQ(size, 2U);
     {
@@ -712,7 +689,6 @@ TEST(table, get_row) {
 
 
 TEST(table, set_row) {
-  using namespace msgpack;
   column_table from;
   vector<column_type> schema;
   schema.push_back(column_type(column_type::int32_type));
@@ -736,7 +712,6 @@ TEST(table, set_row) {
   ASSERT_EQ(sc[0], "hoge");
 }
 TEST(table, set_bit_vector_row) {
-  using namespace msgpack;
   const uint32_t bv_width = 23;
   column_table from;
   vector<column_type> schema;
@@ -769,7 +744,6 @@ TEST(table, set_bit_vector_row) {
 }
 
 TEST(table, set_row_overwrite) {
-  using namespace msgpack;
   column_table from;
   vector<column_type> schema;
   schema.push_back(column_type(column_type::string_type));
@@ -820,7 +794,7 @@ TEST(table, json_dump) {
   std::cout << base.dump_json() << std::endl;
 }
 
-#define delete_row_test(ctype)                                          \
+#define DELETE_ROW_TEST(ctype)                                          \
   TEST(table, delete_##ctype##_row) {                                   \
     column_table base;                                                  \
     vector<column_type> schema;                                         \
@@ -843,10 +817,10 @@ TEST(table, json_dump) {
         }                                                               \
     }                                                                   \
 }
-#define TYPE(x) delete_row_test(x)
+#define TYPE(x) DELETE_ROW_TEST(x)
 INT_TYPES
 #undef TYPE
-#undef delete_row_test
+#undef DELETE_ROW_TEST
 
 TEST(table, delete_bv_row) {
   column_table base;

@@ -14,16 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <vector>
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 #include "lsh.hpp"
-
 #include "lsh_function.hpp"
-
-using namespace std;
-using pfi::lang::lexical_cast;
-using namespace jubatus::core::table;
 
 namespace jubatus {
 namespace core {
@@ -33,17 +28,18 @@ lsh::lsh(const config& conf,
          table::column_table* table,
          const std::string& id)
   : bit_vector_nearest_neighbor_base(
-        conf.bitnum, table, id)
-{}
+        conf.bitnum, table, id) {
+}
 
 lsh::lsh(const config& conf,
          table::column_table* table,
-         vector<column_type>& schema,
+         std::vector<table::column_type>& schema,
          const std::string& id)
     : bit_vector_nearest_neighbor_base(
-      conf.bitnum, table, schema, id) {}
+      conf.bitnum, table, schema, id) {
+}
 
-bit_vector lsh::hash(const sfv_t& sfv) const {
+table::bit_vector lsh::hash(const sfv_t& sfv) const {
   return cosine_lsh(sfv, bitnum());
 }
 

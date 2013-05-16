@@ -28,11 +28,11 @@ namespace nearest_neighbor {
 
 class nearest_neighbor_base;
 
-nearest_neighbor_base*
-create_nearest_neighbor(const std::string& name,
-                        const jubatus::core::jsonconfig::config& config,
-                        table::column_table* table,
-                        const std::string& id);
+nearest_neighbor_base* create_nearest_neighbor(
+    const std::string& name,
+    const jubatus::core::jsonconfig::config& config,
+    table::column_table* table,
+    const std::string& id);
 
 }  // namespace nearest_neighbor
 }  // namespace core

@@ -14,11 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_NEAREST_NEIGHBOR_NEAREST_NEIGHBOR_BASE_HPP_
-#define JUBATUS_NEAREST_NEIGHBOR_NEAREST_NEIGHBOR_BASE_HPP_
+#ifndef JUBATUS_CORE_NEAREST_NEIGHBOR_NEAREST_NEIGHBOR_BASE_HPP_
+#define JUBATUS_CORE_NEAREST_NEIGHBOR_NEAREST_NEIGHBOR_BASE_HPP_
 
-#include <iosfwd>
 #include <stdint.h>
+#include <iosfwd>
 #include <string>
 #include <utility>
 #include <vector>
@@ -50,22 +50,26 @@ class nearest_neighbor_base {
   virtual void clear();
 
   virtual void set_row(const std::string& id, const sfv_t& sfv) = 0;
-  virtual void neighbor_row(const sfv_t& query,
-                            std::vector<std::pair<std::string, float> >& ids,
-                            uint64_t ret_num) const = 0;
-  virtual void neighbor_row(const std::string& query_id,
-                            std::vector<std::pair<std::string, float> >& ids,
-                            uint64_t ret_num) const = 0;
+  virtual void neighbor_row(
+      const sfv_t& query,
+      std::vector<std::pair<std::string, float> >& ids,
+      uint64_t ret_num) const = 0;
+  virtual void neighbor_row(
+      const std::string& query_id,
+      std::vector<std::pair<std::string, float> >& ids,
+      uint64_t ret_num) const = 0;
   virtual float calc_similarity(float distance) const {
     return 1 - distance;
   }
 
-  virtual void similar_row(const sfv_t& query,
-                           std::vector<std::pair<std::string, float> >& ids,
-                           uint64_t ret_num) const;
-  virtual void similar_row(const std::string& query_id,
-                           std::vector<std::pair<std::string, float> >& ids,
-                           uint64_t ret_num) const;
+  virtual void similar_row(
+      const sfv_t& query,
+      std::vector<std::pair<std::string, float> >& ids,
+      uint64_t ret_num) const;
+  virtual void similar_row(
+      const std::string& query_id,
+      std::vector<std::pair<std::string, float> >& ids,
+      uint64_t ret_num) const;
 
   virtual void save(std::ostream& os) const;
   virtual void load(std::istream& is);
@@ -81,4 +85,4 @@ class nearest_neighbor_base {
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_NEAREST_NEIGHBOR_NEAREST_NEIGHBOR_BASE_HPP_
+#endif  // JUBATUS_CORE_NEAREST_NEIGHBOR_NEAREST_NEIGHBOR_BASE_HPP_

@@ -1,11 +1,11 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2012,2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License version 2.1 as published by the Free Software Foundation.
 //
-// This library is distributed in the hope that it will be useful, 
+// This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
@@ -203,7 +203,8 @@ TEST(hamming_similarity, calc_with_empty) {
 
 TEST(hamming_similarity, calc_with_one) {
   for (size_t k = 10; k < 67; ++k) {
-    bit_vector bv1(k); bv1.set_bit(0);
+    bit_vector bv1(k);
+    bv1.set_bit(0);
     bit_vector bv2(k);
     for (size_t j = 1; j < k; ++j) {
       // std::cout << bv1 << std::endl << bv2 << std::endl;
@@ -216,7 +217,8 @@ TEST(hamming_similarity, calc_with_one) {
 
 TEST(hamming_similarity, calc_with_two) {
   for (size_t k = 10; k < 67; ++k) {
-    bit_vector bv1(k); bv1.set_bit(0);
+    bit_vector bv1(k);
+    bv1.set_bit(0);
     bit_vector bv2(k);
     bit_vector bv3(k);
     for (size_t j = 1; j < k; ++j) {
