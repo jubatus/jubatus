@@ -37,11 +37,14 @@ class nearest_neighbor {
  public:
   nearest_neighbor(
       pfi::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
-      table::column_table* table,
       pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
 
-  const table::column_table* get_table() const {
+  pfi::lang::shared_ptr<table::column_table> get_table() {
     return nn_->get_table();
+  }
+
+  pfi::lang::shared_ptr<const table::column_table> get_const_table() const {
+    return nn_->get_const_table();
   }
 
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {

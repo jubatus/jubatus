@@ -22,6 +22,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <pficommon/lang/shared_ptr.h>
 #include "../common/type.hpp"
 #include "../table/column/column_table.hpp"
 
@@ -32,16 +33,16 @@ namespace nearest_neighbor {
 class nearest_neighbor_base {
  public:
   explicit nearest_neighbor_base(
-      table::column_table* table,
+      pfi::lang::shared_ptr<table::column_table> table,
       const std::string& id);
   virtual ~nearest_neighbor_base() {}
 
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
-  const table::column_table* get_const_table() const {
+  pfi::lang::shared_ptr<const table::column_table> get_const_table() const {
     return table_;
   }
-  table::column_table* get_table() {
+  pfi::lang::shared_ptr<table::column_table> get_table() {
     return table_;
   }
 
@@ -78,7 +79,7 @@ class nearest_neighbor_base {
   std::string my_id_;
 
  private:
-  table::column_table* table_;
+  pfi::lang::shared_ptr<table::column_table> table_;
 };
 
 }  // namespace nearest_neighbor

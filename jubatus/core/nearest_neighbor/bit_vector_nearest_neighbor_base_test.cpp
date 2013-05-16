@@ -68,7 +68,7 @@ class bit_vector_nearest_neighbor_mock
  public:
   bit_vector_nearest_neighbor_mock(
       uint64_t bitnum,
-      table::column_table* table)
+      pfi::lang::shared_ptr<table::column_table> table)
       : bit_vector_nearest_neighbor_base(bitnum, table, "test"),
         hash_value_(bitnum) {
   }
@@ -99,10 +99,10 @@ class bit_vector_nearest_neighbor_base_test : public testing::Test {
  protected:
   void set_bitnum(uint64_t bitnum) {
     ct_.reset(new column_table);
-    mock_.reset(new bit_vector_nearest_neighbor_mock(bitnum, ct_.get()));
+    mock_.reset(new bit_vector_nearest_neighbor_mock(bitnum, ct_));
   }
 
-  pfi::lang::scoped_ptr<column_table> ct_;
+  pfi::lang::shared_ptr<column_table> ct_;
   pfi::lang::scoped_ptr<bit_vector_nearest_neighbor_mock> mock_;
 };
 

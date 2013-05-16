@@ -71,9 +71,9 @@ float calc_euclidean_distance(
 
 euclid_lsh::euclid_lsh(
     const config& conf,
-    column_table* table,
+    pfi::lang::shared_ptr<column_table> table,
     const std::string& id)
-  : nearest_neighbor_base(table, id) {
+    : nearest_neighbor_base(table, id) {
   set_config(conf);
 
   vector<column_type> schema;
@@ -83,10 +83,10 @@ euclid_lsh::euclid_lsh(
 
 euclid_lsh::euclid_lsh(
     const config& conf,
-    column_table* table,
+    pfi::lang::shared_ptr<column_table> table,
     vector<column_type>& schema,
     const std::string& id)
-  : nearest_neighbor_base(table, id) {
+    : nearest_neighbor_base(table, id) {
   set_config(conf);
   fill_schema(schema);
 }
@@ -147,7 +147,7 @@ void euclid_lsh::neighbor_row_from_hash(
     float norm,
     vector<pair<string, float> >& ids,
     uint64_t ret_num) const {
-  const column_table* table = get_const_table();
+  pfi::lang::shared_ptr<const column_table> table = get_const_table();
 
   jubatus::core::storage::fixed_size_heap<pair<float, size_t> > heap(ret_num);
   {

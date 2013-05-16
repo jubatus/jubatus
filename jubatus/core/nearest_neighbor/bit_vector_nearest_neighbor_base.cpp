@@ -37,9 +37,9 @@ namespace nearest_neighbor {
 
 bit_vector_nearest_neighbor_base::bit_vector_nearest_neighbor_base(
     uint32_t bitnum,
-    table::column_table* table,
+    pfi::lang::shared_ptr<table::column_table> table,
     const std::string& id)
-  : nearest_neighbor_base(table, id),
+    : nearest_neighbor_base(table, id),
       bitnum_(bitnum) {
   vector<column_type> schema;
   fill_schema(schema);
@@ -48,11 +48,11 @@ bit_vector_nearest_neighbor_base::bit_vector_nearest_neighbor_base(
 
 bit_vector_nearest_neighbor_base::bit_vector_nearest_neighbor_base(
     uint32_t bitnum,
-    column_table* table,
+    pfi::lang::shared_ptr<column_table> table,
     vector<column_type>& schema,
     const std::string& id)
-  : nearest_neighbor_base(table, id),
-    bitnum_(bitnum) {
+    : nearest_neighbor_base(table, id),
+      bitnum_(bitnum) {
   fill_schema(schema);
 }
 
@@ -105,7 +105,7 @@ void bit_vector_nearest_neighbor_base::neighbor_row_from_hash(
   vector<pair<size_t, float> > scores;
   ranking_hamming_bit_vectors(query, bit_vector_column(), scores, ret_num);
 
-  const column_table* table = get_const_table();
+  pfi::lang::shared_ptr<const column_table> table = get_const_table();
   ids.clear();
   for (size_t i = 0; i < scores.size(); ++i) {
     ids.push_back(make_pair(table->get_key(scores[i].first), scores[i].second));
