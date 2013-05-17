@@ -173,7 +173,7 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
   common::sfv_t generate_gaussian(const string& name, const common::sfv_t& mean,
                           float deviation) {
     common::sfv_t sfv(mean);
-    const uint64_t seed = hash_util::calc_string_hash(name);
+    const uint64_t seed = common::hash_util::calc_string_hash(name);
     pfi::math::random::mtrand r(seed);
 
     for (size_t i = 0; i < sfv.size(); ++i) {
@@ -229,7 +229,7 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
 
   vector<pfi::lang::shared_ptr<lof_storage> > storages_;
   pfi::lang::shared_ptr<lof_storage> single_storage_;
-  portable_mixer<lof_storage> portable_mixer_;
+  common::portable_mixer<lof_storage> portable_mixer_;
 };
 
 TEST_P(lof_storage_mix_test, consistency) {

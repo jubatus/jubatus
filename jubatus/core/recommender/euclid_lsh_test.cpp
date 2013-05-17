@@ -74,7 +74,7 @@ class euclid_lsh_mix_test
   void update(const string& name, const common::sfv_t& mean, float deviation) {
     const common::sfv_t x = generate_gaussian(mean, deviation);
     euclid_lsh* recom =
-        recoms_[hash_util::calc_string_hash(name) % recoms_.size()].get();
+      recoms_[common::hash_util::calc_string_hash(name) % recoms_.size()].get();
     recom->update_row(name, x);
 
     single_recom_->update_row(name, x);
@@ -104,7 +104,7 @@ class euclid_lsh_mix_test
 
   vector<pfi::lang::shared_ptr<euclid_lsh> > recoms_;
   pfi::lang::shared_ptr<euclid_lsh> single_recom_;
-  portable_mixer<lsh_index_storage> portable_mixer_;
+  common::portable_mixer<lsh_index_storage> portable_mixer_;
 
   mtrand rand_;
 };

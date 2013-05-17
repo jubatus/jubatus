@@ -85,7 +85,7 @@ void minhash::calc_minhash_values(const common::sfv_t& sfv, bit_vector& bv) cons
   vector<float> min_values_buffer(hash_num_, FLT_MAX);
   vector<uint64_t> hash_buffer(hash_num_);
   for (size_t i = 0; i < sfv.size(); ++i) {
-    uint64_t key_hash = hash_util::calc_string_hash(sfv[i].first);
+    uint64_t key_hash = common::hash_util::calc_string_hash(sfv[i].first);
     float val = sfv[i].second;
     for (uint64_t j = 0; j < hash_num_; ++j) {
       float hashval = calc_hash(key_hash, j, val);

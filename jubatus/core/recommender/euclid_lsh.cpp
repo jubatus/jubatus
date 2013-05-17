@@ -63,7 +63,7 @@ vector<float> lsh_function(
     float bin_width) {
   vector<float> hash(dimension);
   for (size_t i = 0; i < query.size(); ++i) {
-    const uint32_t seed = hash_util::calc_string_hash(query[i].first);
+    const uint32_t seed = common::hash_util::calc_string_hash(query[i].first);
     mtrand rnd(seed);
     for (size_t j = 0; j < hash.size(); ++j) {
       hash[j] += query[i].second * rnd.next_gaussian();
@@ -195,7 +195,7 @@ const core::storage::lsh_index_storage* euclid_lsh::get_const_storage() const {
 vector<float> euclid_lsh::calculate_lsh(const common::sfv_t& query) {
   vector<float> hash(lsh_index_.all_lsh_num());
   for (size_t i = 0; i < query.size(); ++i) {
-    const uint32_t seed = hash_util::calc_string_hash(query[i].first);
+    const uint32_t seed = common::hash_util::calc_string_hash(query[i].first);
     const vector<float> proj = get_projection(seed);
     for (size_t j = 0; j < hash.size(); ++j) {
       hash[j] += query[i].second * proj[j];

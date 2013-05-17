@@ -112,7 +112,7 @@ void lsh::generate_column_base(const string& column) {
   if (column2baseval_.count(column) != 0) {
     return;
   }
-  const uint32_t seed = hash_util::calc_string_hash(column);
+  const uint32_t seed = common::hash_util::calc_string_hash(column);
   generate_random_vector(base_num_, seed, column2baseval_[column]);
 }
 
