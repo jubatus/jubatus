@@ -29,6 +29,7 @@
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
+#include "../../config.hpp"
 #include "../common/lock_service.hpp"
 #include "../common/mprpc/rpc_server.hpp"
 #include "../common/config.hpp"
