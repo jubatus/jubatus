@@ -29,6 +29,7 @@
 
 namespace jubatus {
 namespace core {
+namespace common {
 namespace jsonconfig {
 
 class config;
@@ -134,6 +135,7 @@ class config {
 };
 
 }  // namespace jsonconfig
+}  // namespace common
 }  // namespace core
 }  // namespace jubatus
 

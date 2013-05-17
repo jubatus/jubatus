@@ -146,7 +146,7 @@ typedef testing::Types<
 INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
 
 TEST(classifier_factory, exception) {
-  jsonconfig::config param(to_json(classifier_config()));
+  common::jsonconfig::config param(to_json(classifier_config()));
   local_storage* p = new local_storage;
   ASSERT_THROW(classifier_factory::create_classifier("pa", param, p),
       common::unsupported_method);

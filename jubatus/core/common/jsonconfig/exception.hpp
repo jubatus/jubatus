@@ -29,6 +29,7 @@
 
 namespace jubatus {
 namespace core {
+namespace common {
 namespace jsonconfig {
 
 class config_error : public common::exception::jubaexception<config_error> {
@@ -126,6 +127,7 @@ class cast_check_error : public common::exception::jubaexception<cast_check_erro
 };
 
 }  // namespace jsonconfig
+}  // namespace common
 }  // namespace core
 }  // namespace jubatus
 #endif  // JUBATUS_CORE_COMMON_JSONCONFIG_EXCEPTION_HPP_

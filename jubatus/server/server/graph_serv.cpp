@@ -77,7 +77,7 @@ struct graph_serv_config {
   std::string method;
   // TODO(oda): we should use optional<jsonconfig::config> instead of
   //            jsonconfig::config ?
-  core::jsonconfig::config parameter;
+  core::common::jsonconfig::config parameter;
 
   template<typename Ar>
   void serialize(Ar& ar) {
@@ -132,10 +132,10 @@ graph_serv::~graph_serv() {
 }
 
 bool graph_serv::set_config(const std::string& config) {
-  core::jsonconfig::config conf_root(
+  core::common::jsonconfig::config conf_root(
       pfi::lang::lexical_cast<pfi::text::json::json>(config));
   graph_serv_config conf =
-    core::jsonconfig::config_cast_check<graph_serv_config>(conf_root);
+    core::common::jsonconfig::config_cast_check<graph_serv_config>(conf_root);
 
   config_ = config;
 
@@ -143,9 +143,9 @@ bool graph_serv::set_config(const std::string& config) {
   // TODO(oda): we should use optional<jsonconfig::config> instead of
   //            jsonconfig::config ?
 
-  core::jsonconfig::config param;
+  core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::jsonconfig::config(*conf.parameter);
+    param = core::common::jsonconfig::config(*conf.parameter);
   }
 #endif
 

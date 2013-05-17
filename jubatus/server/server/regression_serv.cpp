@@ -89,15 +89,15 @@ void regression_serv::get_status(status_t& status) const {
 }
 
 bool regression_serv::set_config(const string& config) {
-  core::jsonconfig::config config_root(lexical_cast<json>(config));
+  core::common::jsonconfig::config config_root(lexical_cast<json>(config));
   regression_serv_config conf =
-      core::jsonconfig::config_cast_check<regression_serv_config>(config_root);
+      core::common::jsonconfig::config_cast_check<regression_serv_config>(config_root);
 
   config_ = config;
 
-  core::jsonconfig::config param;
+  core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::jsonconfig::config(*conf.parameter);
+    param = core::common::jsonconfig::config(*conf.parameter);
   }
 
   core::storage::storage_base* model = make_model(argv());

@@ -63,7 +63,7 @@ lof_storage::lof_storage()
       reverse_nn_num_(DEFAULT_REVERSE_NN_NUM),
       nn_engine_(recommender::recommender_factory::create_recommender(
           "euclid_lsh",
-          jsonconfig::config(pfi::text::json::to_json(
+          common::jsonconfig::config(pfi::text::json::to_json(
               recommender::euclid_lsh::config())))) {
 }
 

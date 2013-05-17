@@ -23,6 +23,7 @@
 
 namespace jubatus {
 namespace core {
+namespace common {
 namespace jsonconfig {
 
 config::iterator::iterator(const config::iterator& it)
@@ -99,5 +100,6 @@ config::iterator config::end() const {
 }
 
 }  // namespace jsonconfig
+}  // namespace common
 }  // namespace core
 }  // namespace jubatus

@@ -23,7 +23,7 @@
 #include "../common/jsonconfig.hpp"
 #include "../storage/storage_base.hpp"
 
-using jubatus::core::jsonconfig::config_cast_check;
+using jubatus::core::common::jsonconfig::config_cast_check;
 
 namespace jubatus {
 namespace core {
@@ -31,7 +31,7 @@ namespace classifier {
 
 classifier_base* classifier_factory::create_classifier(
     const std::string& name,
-    const jsonconfig::config& param,
+    const common::jsonconfig::config& param,
     jubatus::core::storage::storage_base* storage) {
   if (name == "perceptron") {
     // perceptron doesn't have parameter

@@ -94,15 +94,15 @@ void classifier_serv::get_status(status_t& status) const {
 }
 
 bool classifier_serv::set_config(const string& config) {
-  core::jsonconfig::config config_root(lexical_cast<json>(config));
+  core::common::jsonconfig::config config_root(lexical_cast<json>(config));
   classifier_serv_config conf =
-      core::jsonconfig::config_cast_check<classifier_serv_config>(config_root);
+      core::common::jsonconfig::config_cast_check<classifier_serv_config>(config_root);
 
   config_ = config;
 
-  core::jsonconfig::config param;
+  core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::jsonconfig::config(*conf.parameter);
+    param = core::common::jsonconfig::config(*conf.parameter);
   }
 
   // Model owner moved to classifier_

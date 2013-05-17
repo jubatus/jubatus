@@ -69,10 +69,10 @@ class server_helper {
 
     try {
       server_->set_config(get_conf(a));
-    } catch (const core::jsonconfig::cast_check_error& e) {
+    } catch (const core::common::jsonconfig::cast_check_error& e) {
       core::common::config_exception config_error;
-      const core::jsonconfig::config_error_list& errors = e.errors();
-      for (core::jsonconfig::config_error_list::const_iterator
+      const core::common::jsonconfig::config_error_list& errors = e.errors();
+      for (core::common::jsonconfig::config_error_list::const_iterator
           it = errors.begin(), end = errors.end(); it != end; ++it) {
         config_error << core::common::exception::error_message((*it)->what());
       }

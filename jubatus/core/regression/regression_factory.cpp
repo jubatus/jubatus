@@ -23,7 +23,7 @@
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
 
-using jubatus::core::jsonconfig::config_cast_check;
+using jubatus::core::common::jsonconfig::config_cast_check;
 
 namespace jubatus {
 namespace core {
@@ -31,12 +31,12 @@ namespace regression {
 
 regression_base* regression_factory::create_regression(
     const std::string& name,
-    const jsonconfig::config& param,
+    const common::jsonconfig::config& param,
     jubatus::core::storage::storage_base* storage) {
   if (name == "PA" || name == "passive_aggressive") {
     return new regression::passive_aggressive(
-        config_cast_check<regression::passive_aggressive::config>(param),
-        storage);
+      config_cast_check<regression::passive_aggressive::config>(param),
+      storage);
   } else {
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }

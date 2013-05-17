@@ -33,7 +33,7 @@ namespace regression {
 TEST(regression_factory, trivial) {
   regression::regression_factory f;
   storage::local_storage s;
-  jsonconfig::config param(pfi::text::json::to_json(
+  common::jsonconfig::config param(pfi::text::json::to_json(
       regression::passive_aggressive::config()));
   pfi::lang::scoped_ptr<regression::regression_base>
     r(f.create_regression("PA", param, &s));
@@ -43,7 +43,7 @@ TEST(regression_factory, trivial) {
 TEST(regression_factory, unknown) {
   regression::regression_factory f;
   storage::local_storage s;
-  jsonconfig::config param;
+  common::jsonconfig::config param;
   ASSERT_THROW(f.create_regression("unknown_regression", param, &s),
                common::unsupported_method);
 }

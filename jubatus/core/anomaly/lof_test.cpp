@@ -57,7 +57,7 @@ class lof_impl : public lof {
       : lof(lof_storage::config(),
             recommender::recommender_factory::create_recommender(
                 "euclid_lsh",
-                jsonconfig::config(pfi::text::json::to_json(
+                common::jsonconfig::config(pfi::text::json::to_json(
                     recommender::euclid_lsh::config())))) {
     // make mock
     orig_.set("r1", "a1", 0.0);
