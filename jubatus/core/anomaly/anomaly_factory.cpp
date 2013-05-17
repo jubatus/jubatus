@@ -58,7 +58,7 @@ anomaly_base* anomaly_factory::create_anomaly(
             conf.method,
             conf.parameter));
   } else {
-    throw JUBATUS_EXCEPTION(unsupported_method(name));
+    throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }
 };
 

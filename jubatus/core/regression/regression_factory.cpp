@@ -38,7 +38,7 @@ regression_base* regression_factory::create_regression(
         config_cast_check<regression::passive_aggressive::config>(param),
         storage);
   } else {
-    throw JUBATUS_EXCEPTION(unsupported_method(name));
+    throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }
 }
 

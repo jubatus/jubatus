@@ -70,11 +70,11 @@ class server_helper {
     try {
       server_->set_config(get_conf(a));
     } catch (const core::jsonconfig::cast_check_error& e) {
-      config_exception config_error;
+      core::common::config_exception config_error;
       const core::jsonconfig::config_error_list& errors = e.errors();
       for (core::jsonconfig::config_error_list::const_iterator
           it = errors.begin(), end = errors.end(); it != end; ++it) {
-        config_error << exception::error_message((*it)->what());
+        config_error << core::common::exception::error_message((*it)->what());
       }
       // send error message to caller
       throw JUBATUS_EXCEPTION(config_error);
@@ -167,7 +167,7 @@ class server_helper {
       } else {
         LOG(FATAL) << "server failed to start: " << e.what();
       }
-    } catch (jubatus::exception::jubatus_exception&) {
+    } catch (jubatus::core::common::exception::jubatus_exception&) {
       throw;
     } catch (const std::exception& e) {
       LOG(FATAL) << "server failed to start: " << e.what();

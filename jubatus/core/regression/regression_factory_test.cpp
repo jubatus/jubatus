@@ -45,7 +45,7 @@ TEST(regression_factory, unknown) {
   storage::local_storage s;
   jsonconfig::config param;
   ASSERT_THROW(f.create_regression("unknown_regression", param, &s),
-               unsupported_method);
+               common::unsupported_method);
 }
 
 }  // namespace regression

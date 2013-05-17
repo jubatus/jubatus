@@ -36,7 +36,7 @@ storage_base* storage_factory::create_storage(const std::string& name) {
 
   // maybe bug or configuration mistake
   throw JUBATUS_EXCEPTION(
-      jubatus::exception::runtime_error(
+      jubatus::core::common::exception::runtime_error(
           std::string("failed to create storage: ") + name));
 }
 

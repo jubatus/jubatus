@@ -101,8 +101,8 @@ void register_actor(
 
   if (!success) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("Failed to register_actor")
-        << jubatus::exception::error_api_func("lock_service::create"));
+        jubatus::core::common::exception::runtime_error("Failed to register_actor")
+        << jubatus::core::common::exception::error_api_func("lock_service::create"));
   }
 
   // set exit zlistener here
@@ -132,8 +132,8 @@ void register_keeper(
 
   if (!success) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("Failed to register_actor")
-        << jubatus::exception::error_api_func("lock_service::create"));
+        jubatus::core::common::exception::runtime_error("Failed to register_actor")
+        << jubatus::core::common::exception::error_api_func("lock_service::create"));
   }
 
   // set exit zlistener here
@@ -192,8 +192,8 @@ void prepare_jubatus(lock_service& ls, const string& type, const string& name) {
 
   if (!success) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("Failed to prepare lock_service")
-        << jubatus::exception::error_api_func("lock_service::create"));
+        jubatus::core::common::exception::runtime_error("Failed to prepare lock_service")
+        << jubatus::core::common::exception::error_api_func("lock_service::create"));
   }
 }
 

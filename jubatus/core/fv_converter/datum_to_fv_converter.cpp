@@ -382,7 +382,7 @@ class datum_to_fv_converter_impl {
         return "weight";
       default:
         throw JUBATUS_EXCEPTION(
-            jubatus::exception::runtime_error("unknown global weight type"));
+            jubatus::core::common::exception::runtime_error("unknown global weight type"));
     }
   }
 

@@ -81,7 +81,7 @@ class storage_base {
 };
 
 class storage_exception
-    : public jubatus::exception::jubaexception<storage_exception> {
+    : public jubatus::core::common::exception::jubaexception<storage_exception> {
  public:
   explicit storage_exception(const std::string& msg)
       : msg(msg) {

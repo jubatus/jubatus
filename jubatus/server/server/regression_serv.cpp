@@ -161,7 +161,7 @@ bool regression_serv::clear() {
 
 void regression_serv::check_set_config() const {
   if (!regression_) {
-    throw JUBATUS_EXCEPTION(config_not_set());
+    throw JUBATUS_EXCEPTION(core::common::config_not_set());
   }
 }
 

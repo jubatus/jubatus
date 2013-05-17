@@ -90,6 +90,6 @@ int main(int argc, char* argv[]) try {
     }
   }
   return 0;
-} catch (const jubatus::exception::jubatus_exception& e) {
+} catch (const jubatus::core::common::exception::jubatus_exception& e) {
   std::cout << e.diagnostic_information(true) << std::endl;
 }

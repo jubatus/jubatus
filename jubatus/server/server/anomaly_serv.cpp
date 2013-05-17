@@ -178,7 +178,7 @@ pair<string, float> anomaly_serv::add_zk(const string&id_str, const datum& d) {
   find_from_cht(id_str, 2, nodes);
   if (nodes.empty()) {
     throw JUBATUS_EXCEPTION(
-        membership_error("no server found in cht: " + argv().name));
+      core::common::membership_error("no server found in cht: " + argv().name));
   }
   // this sequences MUST success,
   // in case of failures the whole request should be canceled
@@ -229,7 +229,7 @@ vector<string> anomaly_serv::get_all_rows() const {
 
 void anomaly_serv::check_set_config() const {
   if (!anomaly_) {
-    throw JUBATUS_EXCEPTION(config_not_set());
+    throw JUBATUS_EXCEPTION(core::common::config_not_set());
   }
 }
 

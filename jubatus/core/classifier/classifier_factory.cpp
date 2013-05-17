@@ -54,7 +54,7 @@ classifier_base* classifier_factory::create_classifier(
     return new normal_herd(
         config_cast_check<classifier_config>(param), storage);
   } else {
-    throw JUBATUS_EXCEPTION(unsupported_method(name));
+    throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }
 }
 

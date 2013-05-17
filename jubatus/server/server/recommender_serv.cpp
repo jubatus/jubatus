@@ -227,7 +227,7 @@ float recommender_serv::calc_l2norm(const datum& q) {
 
 void recommender_serv::check_set_config() const {
   if (!recommender_) {
-    throw JUBATUS_EXCEPTION(config_not_set());
+    throw JUBATUS_EXCEPTION(core::common::config_not_set());
   }
 }
 

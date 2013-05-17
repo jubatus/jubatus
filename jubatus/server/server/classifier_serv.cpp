@@ -185,7 +185,7 @@ bool classifier_serv::clear() {
 
 void classifier_serv::check_set_config() const {
   if (!classifier_) {
-    throw JUBATUS_EXCEPTION(config_not_set());
+    throw JUBATUS_EXCEPTION(core::common::config_not_set());
   }
 }
 

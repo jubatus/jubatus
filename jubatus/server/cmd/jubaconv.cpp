@@ -176,6 +176,6 @@ try {
   }
 
   return -1;
-} catch (const jubatus::exception::jubatus_exception& e) {
+} catch (const jubatus::core::common::exception::jubatus_exception& e) {
   std::cout << e.diagnostic_information(true) << std::endl;
 }

@@ -71,8 +71,8 @@ jubavisor::jubavisor(
   sa.sa_flags = SA_RESTART | SA_NOCLDSTOP;
   if (sigaction(SIGCHLD, &sa, NULL) == -1) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("failed sigaction(SIGCHLD)")
-        << jubatus::exception::error_errno(errno));
+        jubatus::core::common::exception::runtime_error("failed sigaction(SIGCHLD)")
+        << jubatus::core::common::exception::error_errno(errno));
   }
 
   zk_->create(jubatus::server::common::JUBATUS_BASE_PATH, "");

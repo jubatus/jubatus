@@ -143,7 +143,7 @@ int run_server(int args, char** argv, const std::string& type) {
     jubatus::util::set_exit_on_term();
     jubatus::util::ignore_sigpipe();
     return impl_server.run();
-  } catch (const jubatus::exception::jubatus_exception& e) {
+  } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
     return -1;
   }

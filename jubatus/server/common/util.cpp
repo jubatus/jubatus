@@ -60,17 +60,17 @@ void get_ip(const char* nic, string& out) {
 
   fd = socket(AF_INET, SOCK_DGRAM, 0);
   if (fd == -1) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
+    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
           "Failed to create socket(AF_INET, SOCK_DGRAM)")
-        << jubatus::exception::error_errno(errno));
+        << jubatus::core::common::exception::error_errno(errno));
   }
 
   ifr.ifr_addr.sa_family = AF_INET;
   strncpy(ifr.ifr_name, nic, IFNAMSIZ - 1);
   if (ioctl(fd, SIOCGIFADDR, &ifr) == -1) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
+    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
           "Failed to get IP address from interface")
-        << jubatus::exception::error_errno(errno));
+        << jubatus::core::common::exception::error_errno(errno));
   }
   close(fd);
 
@@ -103,25 +103,25 @@ std::string get_program_name() {
   ssize_t ret = readlink(exe_sym_path, path, PATH_MAX);
   if (ret != -1) {
     if (ret == PATH_MAX) {
-      throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
+      throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
             "Failed to get program name. Path size overed PATH_MAX.")
-          << jubatus::exception::error_errno(errno));
+          << jubatus::core::common::exception::error_errno(errno));
     }
     path[ret] = '\0';
   }
 #endif
   if (ret < 0) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("Failed to get program name")
-        << jubatus::exception::error_errno(errno));
+        jubatus::core::common::exception::runtime_error("Failed to get program name")
+        << jubatus::core::common::exception::error_errno(errno));
   }
 
   // get basename
   const string program_base_name = base_name(path);
   if (program_base_name == path) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
+    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
           string("Failed to get program name from path: ") + path)
-        << jubatus::exception::error_file_name(path));
+        << jubatus::core::common::exception::error_file_name(path));
   }
   return program_base_name;
 }
@@ -137,13 +137,13 @@ std::string get_user_name() {
     if (result != NULL) {
       return result->pw_name;
     }
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("User not found")
-        << jubatus::exception::error_api_func("getpwuid_r"));
+    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error("User not found")
+        << jubatus::core::common::exception::error_api_func("getpwuid_r"));
   }
   throw JUBATUS_EXCEPTION(
-      jubatus::exception::runtime_error("Failed to get user name")
-      << jubatus::exception::error_api_func("getpwuid_r")
-      << jubatus::exception::error_errno(ret));
+      jubatus::core::common::exception::runtime_error("Failed to get user name")
+      << jubatus::core::common::exception::error_api_func("getpwuid_r")
+      << jubatus::core::common::exception::error_errno(ret));
 }
 
 bool is_writable(const char* dir_path) {
@@ -179,8 +179,8 @@ void append_server_path(const string& argv0) {
   char cwd[PATH_MAX];
   if (!getcwd(cwd, PATH_MAX)) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("Failed to getcwd"))
-        << jubatus::exception::error_errno(errno);
+        jubatus::core::common::exception::runtime_error("Failed to getcwd"))
+        << jubatus::core::common::exception::error_errno(errno);
   }
 
   string p = argv0.substr(0, argv0.find_last_of('/'));
@@ -231,16 +231,16 @@ void set_exit_on_term() {
 
   if (sigaction(SIGTERM, &sigact, NULL) != 0) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("can't set SIGTERM handler")
-        << jubatus::exception::error_api_func("sigaction")
-        << jubatus::exception::error_errno(errno));
+        jubatus::core::common::exception::runtime_error("can't set SIGTERM handler")
+        << jubatus::core::common::exception::error_api_func("sigaction")
+        << jubatus::core::common::exception::error_errno(errno));
   }
 
   if (sigaction(SIGINT, &sigact, NULL) != 0) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("can't set SIGINT handler")
-        << jubatus::exception::error_api_func("sigaction")
-        << jubatus::exception::error_errno(errno));
+        jubatus::core::common::exception::runtime_error("can't set SIGINT handler")
+        << jubatus::core::common::exception::error_api_func("sigaction")
+        << jubatus::core::common::exception::error_errno(errno));
   }
 }
 
@@ -248,9 +248,9 @@ void ignore_sigpipe() {
   // portable code for socket write(2) MSG_NOSIGNAL
   if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("can't ignore SIGPIPE")
-        << jubatus::exception::error_api_func("signal")
-        << jubatus::exception::error_errno(errno));
+        jubatus::core::common::exception::runtime_error("can't ignore SIGPIPE")
+        << jubatus::core::common::exception::error_api_func("signal")
+        << jubatus::core::common::exception::error_errno(errno));
   }
 }
 

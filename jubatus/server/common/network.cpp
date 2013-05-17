@@ -44,9 +44,9 @@ string get_host_name(const void* sock_addr, size_t sock_size) {
                       NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
   if (s) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("Failed to get hostname")
-        << jubatus::exception::error_api_func("getnameinfo")
-        << jubatus::exception::error_message(gai_strerror(s)));
+        jubatus::core::common::exception::runtime_error("Failed to get hostname")
+        << jubatus::core::common::exception::error_api_func("getnameinfo")
+        << jubatus::core::common::exception::error_message(gai_strerror(s)));
   }
 
   return host;
@@ -106,9 +106,9 @@ address_list get_network_address() {
   struct ifaddrs* addrs;
   if (getifaddrs(&addrs) == -1) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("Failed to get interface addresses")
-        << jubatus::exception::error_api_func("getifaddrs")
-        << jubatus::exception::error_errno(errno));
+        jubatus::core::common::exception::runtime_error("Failed to get interface addresses")
+        << jubatus::core::common::exception::error_api_func("getifaddrs")
+        << jubatus::core::common::exception::error_errno(errno));
   }
 
   try {

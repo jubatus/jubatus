@@ -43,10 +43,10 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
     logfilep_ = fopen(logfile.c_str(), "a+");
     if (!logfilep_) {
       throw JUBATUS_EXCEPTION(
-          jubatus::exception::runtime_error("cannot open zk logfile")
-          << jubatus::exception::error_file_name(logfile.c_str())
-          << jubatus::exception::error_errno(errno)
-          << jubatus::exception::error_api_func("fopen"));
+          jubatus::core::common::exception::runtime_error("cannot open zk logfile")
+          << jubatus::core::common::exception::error_file_name(logfile.c_str())
+          << jubatus::core::common::exception::error_errno(errno)
+          << jubatus::core::common::exception::error_api_func("fopen"));
     }
     zoo_set_log_stream(logfilep_);
   }
@@ -55,9 +55,9 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
   if (!zh_) {
     perror("");
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("failed to initialize zk: " + hosts)
-        << jubatus::exception::error_api_func("zookeeper_init")
-        << jubatus::exception::error_errno(errno));
+        jubatus::core::common::exception::runtime_error("failed to initialize zk: " + hosts)
+        << jubatus::core::common::exception::error_api_func("zookeeper_init")
+        << jubatus::core::common::exception::error_errno(errno));
   }
 
   // sleep the state got not ZOO_CONNECTING_STATE
@@ -67,9 +67,9 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
 
   if (is_unrecoverable(zh_) == ZINVALIDSTATE) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("cannot connect zk:" + hosts)
-        << jubatus::exception::error_api_func("is_unrecoverable")
-        << jubatus::exception::error_message(zerror(errno)));
+        jubatus::core::common::exception::runtime_error("cannot connect zk:" + hosts)
+        << jubatus::core::common::exception::error_api_func("is_unrecoverable")
+        << jubatus::core::common::exception::error_message(zerror(errno)));
   }
 
   zoo_set_context(zh_, this);

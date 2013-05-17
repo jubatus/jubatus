@@ -149,11 +149,11 @@ TEST(classifier_factory, exception) {
   jsonconfig::config param(to_json(classifier_config()));
   local_storage* p = new local_storage;
   ASSERT_THROW(classifier_factory::create_classifier("pa", param, p),
-      unsupported_method);
+      common::unsupported_method);
   ASSERT_THROW(classifier_factory::create_classifier("", param, p),
-      unsupported_method);
+      common::unsupported_method);
   ASSERT_THROW(classifier_factory::create_classifier("saitama", param, p),
-      unsupported_method);
+      common::unsupported_method);
   delete p;
 }
 

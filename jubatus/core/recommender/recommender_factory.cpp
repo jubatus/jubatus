@@ -44,7 +44,7 @@ recommender_base* recommender_factory::create_recommender(
   } else if (name == "euclid_lsh") {
     return new euclid_lsh(config_cast_check<euclid_lsh::config>(param));
   } else {
-    throw JUBATUS_EXCEPTION(unsupported_method(name));
+    throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }
 }
 

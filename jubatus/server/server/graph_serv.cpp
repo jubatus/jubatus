@@ -166,7 +166,7 @@ std::string graph_serv::get_config() const {
 
 void graph_serv::check_set_config() const {
   if (!graph_) {
-    throw JUBATUS_EXCEPTION(config_not_set());
+    throw JUBATUS_EXCEPTION(core::common::config_not_set());
   }
 }
 
@@ -193,7 +193,7 @@ std::string graph_serv::create_node() { /* no lock here */
       find_from_cht_(nid_str, 2, nodes);
       if (nodes.empty()) {
         throw JUBATUS_EXCEPTION(
-            jubatus::exception::runtime_error(
+            jubatus::core::common::exception::runtime_error(
                 "no server found in cht: " + argv().name));
       }
       selective_create_node_(nodes[0], nid_str);
@@ -286,7 +286,7 @@ edge_id_t graph_serv::create_edge(const std::string& id, const edge& ei) {
     find_from_cht_(ei.source, 2, nodes);
     if (nodes.empty()) {
       throw JUBATUS_EXCEPTION(
-          jubatus::exception::runtime_error(
+          jubatus::core::common::exception::runtime_error(
               "no server found in cht: " + argv().name));
     }
     // TODO(kuenishi): assertion: nodes[0] should be myself
@@ -358,7 +358,7 @@ double graph_serv::get_centrality(
   } else {
     std::stringstream msg;
     msg << "unknown centrality type: " << s;
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(msg.str()));
+    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(msg.str()));
   }
 }
 
@@ -459,7 +459,7 @@ bool graph_serv::update_index() {
 #ifdef HAVE_ZOOKEEPER_H
   if (!argv().is_standalone()) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error(
+        jubatus::core::common::exception::runtime_error(
             "manual mix is available only in standalone mode."));
   }
 #endif

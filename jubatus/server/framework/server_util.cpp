@@ -52,7 +52,7 @@ std::string get_conf(const server_argv& a) {
       conf.load_json(a.z, a.type, a.name);
 #endif
     }
-  } catch (const jubatus::exception::jubatus_exception& e) {
+  } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(ERROR) << e.what();
     exit(1);
   }
