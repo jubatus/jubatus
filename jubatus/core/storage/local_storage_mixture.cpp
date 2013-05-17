@@ -230,7 +230,7 @@ void local_storage_mixture::set_average_and_clear_diff(
 void local_storage_mixture::clear() {
   // Clear and minimize
   id_features3_t().swap(tbl_);
-  key_manager().swap(class2id_);
+  common::key_manager().swap(class2id_);
   id_features3_t().swap(tbl_diff_);
 }
 

@@ -30,7 +30,7 @@ using std::ofstream;
 using std::sort;
 using std::stringstream;
 using std::string;
-using jubatus::key_manager;
+using jubatus::core::common::key_manager;
 using jubatus::sfv_t;
 using jubatus::core::storage::feature_val1_t;
 using jubatus::core::storage::feature_val2_t;

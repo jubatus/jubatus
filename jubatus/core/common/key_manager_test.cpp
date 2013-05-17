@@ -18,6 +18,8 @@
 #include "key_manager.hpp"
 
 namespace jubatus {
+namespace core {
+namespace common {
 
 TEST(key_manager, get_id) {
   key_manager m;
@@ -45,4 +47,6 @@ TEST(key_manager, get_key) {
   EXPECT_EQ("key1", m.get_key(0));
 }
 
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus

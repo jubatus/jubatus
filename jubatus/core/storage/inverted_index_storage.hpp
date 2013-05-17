@@ -83,7 +83,7 @@ class inverted_index_storage : public recommender_storage_base {
   tbl_t inv_diff_;
   imap_float_t column2norm_;
   imap_float_t column2norm_diff_;
-  key_manager column2id_;
+  common::key_manager column2id_;
 };
 
 }  // namespace storage

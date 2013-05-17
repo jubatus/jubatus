@@ -78,7 +78,7 @@ class local_storage : public storage_base {
  protected:
   // map_features3_t tbl_;
   id_features3_t tbl_;
-  key_manager class2id_;
+  common::key_manager class2id_;
 
  protected:
   friend class pfi::data::serialization::access;

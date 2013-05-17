@@ -171,7 +171,7 @@ void local_storage::update(
 void local_storage::clear() {
   // Clear and minimize
   id_features3_t().swap(tbl_);
-  key_manager().swap(class2id_);
+  common::key_manager().swap(class2id_);
 }
 
 bool local_storage::save(std::ostream& os) {

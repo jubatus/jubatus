@@ -85,7 +85,7 @@ class local_storage_mixture : public storage_base {
   bool get_internal(const std::string& feature, id_feature_val3_t& ret) const;
 
   id_features3_t tbl_;
-  key_manager class2id_;
+  common::key_manager class2id_;
   id_features3_t tbl_diff_;
 };
 
