@@ -78,7 +78,7 @@ void recommender::clear() {
 }
 
 fv_converter::datum recommender::complete_row_from_id(const std::string& id) {
-  sfv_t v;
+  common::sfv_t v;
   recommender_.get_model()->complete_row(id, v);
 
   fv_converter::datum ret;
@@ -88,7 +88,7 @@ fv_converter::datum recommender::complete_row_from_id(const std::string& id) {
 
 fv_converter::datum recommender::complete_row_from_datum(
     const fv_converter::datum& dat) {
-  sfv_t u, v;
+  common::sfv_t u, v;
   converter_->convert(dat, u);
   recommender_.get_model()->complete_row(u, v);
 
@@ -109,7 +109,7 @@ std::vector<std::pair<std::string, float> >
 recommender::similar_row_from_datum(
     const fv_converter::datum& data,
     size_t size) {
-  sfv_t v;
+  common::sfv_t v;
   converter_->convert(data, v);
 
   std::vector<std::pair<std::string, float> > ret;
@@ -120,20 +120,20 @@ recommender::similar_row_from_datum(
 float recommender::calc_similality(
     const fv_converter::datum& l,
     const fv_converter::datum& r) {
-  sfv_t v0, v1;
+  common::sfv_t v0, v1;
   converter_->convert(l, v0);
   converter_->convert(r, v1);
   return jubatus::core::recommender::recommender_base::calc_similality(v0, v1);
 }
 
 float recommender::calc_l2norm(const fv_converter::datum& q) {
-  sfv_t v0;
+  common::sfv_t v0;
   converter_->convert(q, v0);
   return jubatus::core::recommender::recommender_base::calc_l2norm(v0);
 }
 
 fv_converter::datum recommender::decode_row(const std::string& id) {
-  sfv_t v;
+  common::sfv_t v;
   recommender_.get_model()->decode_row(id, v);
 
   fv_converter::datum ret;

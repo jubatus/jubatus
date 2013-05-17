@@ -85,7 +85,7 @@ lof_storage::~lof_storage() {
 }
 
 float lof_storage::collect_lrds(
-    const sfv_t& query,
+    const common::sfv_t& query,
     unordered_map<string, float>& neighbor_lrd) const {
   vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(query, neighbors, neighbor_num_);
@@ -126,11 +126,11 @@ void lof_storage::get_all_row_ids(vector<string>& ids) const {
   nn_engine_->get_all_row_ids(ids);
 }
 
-void lof_storage::update_row(const string& row, const sfv_t& diff) {
+void lof_storage::update_row(const string& row, const common::sfv_t& diff) {
   unordered_set<string> update_set;
 
   {
-    sfv_t query;
+    common::sfv_t query;
     nn_engine_->decode_row(row, query);
     if (!query.empty()) {
       collect_neighbors(row, update_set);

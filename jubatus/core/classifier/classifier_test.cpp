@@ -52,7 +52,7 @@ TYPED_TEST_P(classifier_test, trivial) {
   local_storage s;
   TypeParam p(&s);
   ASSERT_NE(p.name(), "");
-  sfv_t fv;
+  common::sfv_t fv;
   fv.push_back(make_pair(string("f1"), 1.0));
   p.train(fv, string("label1"));
   fv.push_back(make_pair(string("f2"), 1.0));
@@ -70,7 +70,7 @@ TYPED_TEST_P(classifier_test, trivial) {
 TYPED_TEST_P(classifier_test, sfv_err) {
   local_storage s;
   TypeParam p(&s);
-  sfv_t fv;
+  common::sfv_t fv;
   fv.push_back(make_pair(string("f1"), 0.0));
   p.train(fv, string("label1"));
   fv.push_back(make_pair(string("f2"), 1.0));
@@ -82,8 +82,8 @@ TYPED_TEST_P(classifier_test, sfv_err) {
   // ASSERT_EQ(2u, scores.size());
 }
 
-sfv_t convert(vector<double>& v) {
-  sfv_t fv;
+common::sfv_t convert(vector<double>& v) {
+  common::sfv_t fv;
   for (size_t i = 0; i < v.size(); ++i) {
     string f = "f" + lexical_cast<string>(i);
     fv.push_back(make_pair(f, v[i]));

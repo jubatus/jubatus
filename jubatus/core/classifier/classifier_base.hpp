@@ -36,10 +36,10 @@ class classifier_base {
  public:
   explicit classifier_base(jubatus::core::storage::storage_base* storage_base);
   virtual ~classifier_base();
-  virtual void train(const sfv_t& fv, const std::string& label) = 0;
+  virtual void train(const common::sfv_t& fv, const std::string& label) = 0;
 
-  std::string classify(const sfv_t& fv) const;
-  void classify_with_scores(const sfv_t& fv, classify_result& scores) const;
+  std::string classify(const common::sfv_t& fv) const;
+  void classify_with_scores(const common::sfv_t& fv, classify_result& scores) const;
 
   void clear();
 
@@ -47,25 +47,25 @@ class classifier_base {
 
  protected:
   void update_weight(
-      const sfv_t& sfv,
+      const common::sfv_t& sfv,
       float step_weigth,
       const std::string& pos_label,
       const std::string& neg_class);
   float calc_margin(
-      const sfv_t& sfv,
+      const common::sfv_t& sfv,
       const std::string& label,
       std::string& incorrect_label) const;
   float calc_margin_and_variance(
-      const sfv_t& sfv,
+      const common::sfv_t& sfv,
       const std::string& label,
       std::string& incorrect_label,
       float& variance) const;
   std::string get_largest_incorrect_label(
-      const sfv_t& sfv,
+      const common::sfv_t& sfv,
       const std::string& label,
       classify_result& scores) const;
 
-  static float squared_norm(const sfv_t& sfv);
+  static float squared_norm(const common::sfv_t& sfv);
 
   jubatus::core::storage::storage_base* storage_;
   bool use_covars_;

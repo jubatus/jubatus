@@ -72,11 +72,11 @@ void local_storage::get3(const string& feature, feature_val3_t& ret) {
   }
 }
 
-void local_storage::inp(const sfv_t& sfv, map_feature_val1_t& ret) {
+void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret) {
   ret.clear();
 
   std::vector<float> ret_id(class2id_.size());
-  for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
+  for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     const float val = it->second;
     id_features3_t::const_iterator it2 = tbl_.find(feature);
@@ -136,21 +136,21 @@ float feature_fabssum(const id_feature_val3_t& f) {
 }
 
 void local_storage::bulk_update(
-    const sfv_t& sfv,
+    const common::sfv_t& sfv,
     float step_width,
     const string& inc_class,
     const string& dec_class) {
   uint64_t inc_id = class2id_.get_id(inc_class);
   if (dec_class != "") {
     uint64_t dec_id = class2id_.get_id(dec_class);
-    for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
+    for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
       float val = it->second * step_width;
       id_feature_val3_t& feature_row = tbl_[it->first];
       feature_row[inc_id].v1 += val;
       feature_row[dec_id].v1 -= val;
     }
   } else {
-    for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
+    for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
       float val = it->second * step_width;
       id_feature_val3_t& feature_row = tbl_[it->first];
       feature_row[inc_id].v1 += val;

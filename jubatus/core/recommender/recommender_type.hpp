@@ -21,7 +21,7 @@
 
 namespace jubatus {
 
-typedef sfv_t sfv_diff_t;
+typedef core::common::sfv_t sfv_diff_t;
 
 }  // namespace jubatus
 

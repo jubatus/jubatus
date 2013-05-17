@@ -43,8 +43,8 @@ namespace recommender {
 
 namespace {
 
-sfv_t make_dense_sfv(const string& s) {
-  sfv_t sfv;
+common::sfv_t make_dense_sfv(const string& s) {
+  common::sfv_t sfv;
   istringstream iss(s);
 
   size_t i = 0;
@@ -63,16 +63,16 @@ class euclid_lsh_mix_test
  protected:
   static const uint32_t kSeed = 1340764259;  // It may be any FIXED value
 
-  sfv_t generate_gaussian(const sfv_t& mean, float deviation) {
-    sfv_t sfv(mean);
+  common::sfv_t generate_gaussian(const common::sfv_t& mean, float deviation) {
+    common::sfv_t sfv(mean);
     for (size_t i = 0; i < sfv.size(); ++i) {
       sfv[i].second += rand_.next_gaussian() * deviation;
     }
     return sfv;
   }
 
-  void update(const string& name, const sfv_t& mean, float deviation) {
-    const sfv_t x = generate_gaussian(mean, deviation);
+  void update(const string& name, const common::sfv_t& mean, float deviation) {
+    const common::sfv_t x = generate_gaussian(mean, deviation);
     euclid_lsh* recom =
         recoms_[hash_util::calc_string_hash(name) % recoms_.size()].get();
     recom->update_row(name, x);
@@ -115,8 +115,8 @@ TEST_P(euclid_lsh_mix_test, consistency) {
   static const size_t kNumQuery = 5;
   static const float kDeviation = 1;
 
-  const sfv_t mu0 = make_dense_sfv("1 1");
-  const sfv_t mu1 = make_dense_sfv("2 1");
+  const common::sfv_t mu0 = make_dense_sfv("1 1");
+  const common::sfv_t mu1 = make_dense_sfv("2 1");
 
   for (size_t i = 0; i < kNumSample; ++i) {
     update(lexical_cast<string>(i), mu0, kDeviation);
@@ -124,7 +124,7 @@ TEST_P(euclid_lsh_mix_test, consistency) {
   mix();
 
   for (size_t i = 0; i < kNumQuery; ++i) {
-    const sfv_t x = generate_gaussian(mu1, 1);
+    const common::sfv_t x = generate_gaussian(mu1, 1);
     vector<pair<string, float> > expect, actual;
 
     single_recom_->neighbor_row(x, expect, kNumRetrieval);

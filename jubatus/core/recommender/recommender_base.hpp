@@ -38,12 +38,12 @@ class recommender_base {
 
   // return similar row for query with similarity scores.
   virtual void similar_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const = 0;
   // return similar row for query with distance scores.
   virtual void neighbor_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const = 0;
   virtual void clear() = 0;
@@ -64,15 +64,15 @@ class recommender_base {
       const std::string& id,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
-  void complete_row(const std::string& id, sfv_t& ret) const;
-  void complete_row(const sfv_t& query, sfv_t& ret) const;
-  void decode_row(const std::string& id, sfv_t& ret) const;
+  void complete_row(const std::string& id, common::sfv_t& ret) const;
+  void complete_row(const common::sfv_t& query, common::sfv_t& ret) const;
+  void decode_row(const std::string& id, common::sfv_t& ret) const;
 
   void save(std::ostream&);
   void load(std::istream&);
 
-  static float calc_similality(sfv_t& q1, sfv_t& q2);
-  static float calc_l2norm(const sfv_t& query);
+  static float calc_similality(common::sfv_t& q1, common::sfv_t& q2);
+  static float calc_l2norm(const common::sfv_t& query);
 
  protected:
   virtual bool save_impl(std::ostream&) = 0;

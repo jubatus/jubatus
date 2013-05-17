@@ -35,23 +35,23 @@ class recommender_mock_storage
   virtual ~recommender_mock_storage();
 
   void set_similar_items(
-      const sfv_t& query,
+      const common::sfv_t& query,
       const std::vector<std::pair<std::string, float> >& ids);
   void set_neighbor_items(
-      const sfv_t& query,
+      const common::sfv_t& query,
       const std::vector<std::pair<std::string, float> >& ids);
 
   void similar_items_similarity(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   void neighbor_items_distance(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
 
-  void update(const sfv_t& from, const sfv_t& to);
-  void remove(const sfv_t& query);
+  void update(const common::sfv_t& from, const common::sfv_t& to);
+  void remove(const common::sfv_t& query);
   void clear();
 
   std::string name() const;
@@ -61,7 +61,7 @@ class recommender_mock_storage
   virtual void mix(const std::string& lhs, std::string& rhs) const;
 
  private:
-  typedef std::map<sfv_t, std::vector<std::pair<std::string, float> > >
+  typedef std::map<common::sfv_t, std::vector<std::pair<std::string, float> > >
     relation_type;
 
   friend class pfi::data::serialization::access;
@@ -71,14 +71,14 @@ class recommender_mock_storage
   }
 
   static void get_relation(
-      const sfv_t& query,
+      const common::sfv_t& query,
       const relation_type& relmap,
       size_t ret_num,
       std::vector<std::pair<std::string, float> >& ids);
 
   static void update_relation_key(
-      const sfv_t& from,
-      const sfv_t& to,
+      const common::sfv_t& from,
+      const common::sfv_t& to,
       relation_type& relmap);
 
   static void mix_relation(const relation_type& from, relation_type& to);

@@ -19,6 +19,8 @@
 #include <string>
 
 namespace jubatus {
+namespace core {
+namespace common {
 
 using std::sort;
 using std::string;
@@ -44,4 +46,6 @@ void sort_and_merge(sfv_t& sfv) {
   sfv.swap(ret_sfv);
 }
 
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus

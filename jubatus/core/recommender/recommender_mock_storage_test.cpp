@@ -47,7 +47,7 @@ void mix(recommender_mock_storage& s1, recommender_mock_storage& s2) {
 }  // namespace
 
 TEST(recommender_mock_storage, similar_items) {
-  const sfv_t query = make_sfv("f1:1 f2:1");
+  const common::sfv_t query = make_sfv("f1:1 f2:1");
   const vector<pair<string, float> > expect = make_ids("r1:2 r2:1");
 
   recommender_mock_storage storage;
@@ -60,7 +60,7 @@ TEST(recommender_mock_storage, similar_items) {
 }
 
 TEST(recommender_mock_storage, neighbor_items) {
-  const sfv_t query = make_sfv("f1:1 f2:1");
+  const common::sfv_t query = make_sfv("f1:1 f2:1");
   const vector<pair<string, float> > expect = make_ids("r1:1 r2:2");
 
   recommender_mock_storage storage;
@@ -73,7 +73,7 @@ TEST(recommender_mock_storage, neighbor_items) {
 }
 
 TEST(recommender_mock_storage, similar_items_with_small_ret_num) {
-  const sfv_t query = make_sfv("f1:1 f2:1");
+  const common::sfv_t query = make_sfv("f1:1 f2:1");
 
   recommender_mock_storage storage;
   storage.set_similar_items(query, make_ids("d1:3 d2:2 d3:1 d4:0.5"));
@@ -85,7 +85,7 @@ TEST(recommender_mock_storage, similar_items_with_small_ret_num) {
 }
 
 TEST(recommender_mock_storage, neighbor_items_with_small_ret_num) {
-  const sfv_t query = make_sfv("f1:1 f2:1");
+  const common::sfv_t query = make_sfv("f1:1 f2:1");
 
   recommender_mock_storage storage;
   storage.set_neighbor_items(query, make_ids("d1:0.5 d2:1 d3:2 d4:3"));

@@ -35,8 +35,8 @@ class regression_base {
   virtual ~regression_base() {
   }
 
-  virtual void train(const sfv_t& fv, const float value) = 0;
-  float estimate(const sfv_t& fv) const;
+  virtual void train(const common::sfv_t& fv, const float value) = 0;
+  float estimate(const common::sfv_t& fv) const;
 
   virtual void clear();
 
@@ -45,7 +45,7 @@ class regression_base {
     return storage_;
   }
 
-  void update(const sfv_t& fv, float coeff);
+  void update(const common::sfv_t& fv, float coeff);
 
  private:
   storage::storage_base* storage_;

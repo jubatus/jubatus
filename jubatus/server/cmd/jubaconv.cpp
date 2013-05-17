@@ -76,7 +76,7 @@ int read_config(const string& conf_file, converter_config& conf) {
 
 void convert_datum(
     const datum& datum,
-    jubatus::sfv_t& fv,
+    jubatus::core::common::sfv_t& fv,
     const string& conf_file) {
   if (conf_file == "") {
     cerr << "specify converter config with -c flag" << endl;
@@ -89,7 +89,7 @@ void convert_datum(
   conv.convert(datum, fv);
 }
 
-void output_fv(const jubatus::sfv_t& fv) {
+void output_fv(const jubatus::core::common::sfv_t& fv) {
   for (size_t i = 0; i < fv.size(); ++i) {
     cout << fv[i].first << ": " << fv[i].second << endl;
   }
@@ -126,7 +126,7 @@ try {
 
   pfi::text::json::json json;
   datum datum;
-  jubatus::sfv_t fv;
+  jubatus::core::common::sfv_t fv;
 
   bool proc = false;
   string input_format = p.get<string>("input-format");

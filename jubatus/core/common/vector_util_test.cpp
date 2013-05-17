@@ -21,6 +21,8 @@
 using std::make_pair;
 
 namespace jubatus {
+namespace core {
+namespace common {
 
 TEST(sort_and_merge, empty) {
   sfv_t v;
@@ -41,4 +43,6 @@ TEST(sort_and_merge, trivial) {
   EXPECT_EQ(4.0, v[1].second);
 }
 
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus

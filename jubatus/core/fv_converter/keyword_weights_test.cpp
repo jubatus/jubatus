@@ -27,7 +27,7 @@ namespace fv_converter {
 TEST(keyword_weights, trivial) {
   keyword_weights m, m2;
   {
-    sfv_t fv;
+    common::sfv_t fv;
 
     m.update_document_frequency(fv);
 
@@ -43,7 +43,7 @@ TEST(keyword_weights, trivial) {
   }
 
   {
-    sfv_t fv;
+    common::sfv_t fv;
     m2.update_document_frequency(fv);
 
     fv.push_back(std::make_pair("key1", 1.0));

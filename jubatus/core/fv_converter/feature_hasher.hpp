@@ -28,7 +28,7 @@ class feature_hasher {
  public:
   explicit feature_hasher(uint64_t max);
 
-  void hash_feature_keys(sfv_t& fv) const;
+  void hash_feature_keys(common::sfv_t& fv) const;
 
  private:
   uint64_t max_size_;

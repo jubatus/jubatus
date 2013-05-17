@@ -172,8 +172,8 @@ class datum_to_fv_converter_impl {
     }
   }
 
-  void convert(const datum& datum, sfv_t& ret_fv) const {
-    sfv_t fv;
+  void convert(const datum& datum, common::sfv_t& ret_fv) const {
+    common::sfv_t fv;
     convert_unweighted(datum, fv);
     if (weights_) {
       (*weights_).get_weight(fv);
@@ -186,8 +186,8 @@ class datum_to_fv_converter_impl {
     fv.swap(ret_fv);
   }
 
-  void convert_and_update_weight(const datum& datum, sfv_t& ret_fv) {
-    sfv_t fv;
+  void convert_and_update_weight(const datum& datum, common::sfv_t& ret_fv) {
+    common::sfv_t fv;
     convert_unweighted(datum, fv);
     if (weights_) {
       (*weights_).update_weight(fv);
@@ -201,8 +201,8 @@ class datum_to_fv_converter_impl {
     fv.swap(ret_fv);
   }
 
-  void convert_unweighted(const datum& datum, sfv_t& ret_fv) const {
-    sfv_t fv;
+  void convert_unweighted(const datum& datum, common::sfv_t& ret_fv) const {
+    common::sfv_t fv;
 
     std::vector<std::pair<std::string, std::string> > filtered_strings;
     filter_strings(datum.string_values_, filtered_strings);
@@ -284,7 +284,7 @@ class datum_to_fv_converter_impl {
     }
   }
 
-  void convert_strings(const datum::sv_t& string_values, sfv_t& ret_fv) const {
+  void convert_strings(const datum::sv_t& string_values, common::sfv_t& ret_fv) const {
     for (size_t i = 0; i < string_rules_.size(); ++i) {
       convert_strings(string_rules_[i], string_values, ret_fv);
     }
@@ -302,7 +302,7 @@ class datum_to_fv_converter_impl {
   void convert_strings(
       const string_feature_rule& splitter,
       const datum::sv_t& string_values,
-      sfv_t& ret_fv) const {
+      common::sfv_t& ret_fv) const {
     for (size_t j = 0; j < string_values.size(); ++j) {
       const std::string& key = string_values[j].first;
       const std::string& value = string_values[j].second;
@@ -391,7 +391,7 @@ class datum_to_fv_converter_impl {
       const std::string& splitter_name,
       const splitter_weight_type& weight_type,
       const counter<std::string>& count,
-      sfv_t& ret_fv) const {
+      common::sfv_t& ret_fv) const {
     for (counter<std::string>::const_iterator it = count.begin();
          it != count.end(); ++it) {
       std::string sample_weight_name;
@@ -410,13 +410,13 @@ class datum_to_fv_converter_impl {
     }
   }
 
-  void convert_nums(const datum::nv_t& num_values, sfv_t& ret_fv) const {
+  void convert_nums(const datum::nv_t& num_values, common::sfv_t& ret_fv) const {
     for (size_t i = 0; i < num_values.size(); ++i) {
       convert_num(num_values[i].first, num_values[i].second, ret_fv);
     }
   }
 
-  void convert_num(const std::string& key, double value, sfv_t& ret_fv) const {
+  void convert_num(const std::string& key, double value, common::sfv_t& ret_fv) const {
     for (size_t i = 0; i < num_rules_.size(); ++i) {
       const num_feature_rule& r = num_rules_[i];
       if (r.matcher_->match(key)) {
@@ -434,13 +434,13 @@ datum_to_fv_converter::datum_to_fv_converter()
 datum_to_fv_converter::~datum_to_fv_converter() {
 }
 
-void datum_to_fv_converter::convert(const datum& datum, sfv_t& ret_fv) const {
+void datum_to_fv_converter::convert(const datum& datum, common::sfv_t& ret_fv) const {
   pimpl_->convert(datum, ret_fv);
 }
 
 void datum_to_fv_converter::convert_and_update_weight(
     const datum& datum,
-    sfv_t& ret_fv) {
+    common::sfv_t& ret_fv) {
   pimpl_->convert_and_update_weight(datum, ret_fv);
 }
 

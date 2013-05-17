@@ -51,7 +51,7 @@ class recommender_impl : public recommender_base {
   }
 
   void similar_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       vector<pair<string, float> >& ids,
       size_t ret_num) const {
     ids.clear();
@@ -60,7 +60,7 @@ class recommender_impl : public recommender_base {
   }
 
   void neighbor_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       vector<pair<string, float> >& ids,
       size_t ret_num) const {
     ids.clear();
@@ -107,8 +107,8 @@ class recommender_impl : public recommender_base {
 
 TEST(recommender_base, complete_row) {
   recommender_impl r;
-  sfv_t q;
-  sfv_t ret;
+  common::sfv_t q;
+  common::sfv_t ret;
   r.complete_row(q, ret);
   ASSERT_EQ(3u, ret.size());
   EXPECT_EQ("a1", ret[0].first);
@@ -129,7 +129,7 @@ TEST(recommender_base, get_all_row_ids) {
 
 TEST(recommender_base, decode_row) {
   recommender_impl r;
-  sfv_t v;
+  common::sfv_t v;
   r.decode_row("r1", v);
   ASSERT_EQ(2u, v.size());
   EXPECT_EQ("a1", v[0].first);
@@ -143,7 +143,7 @@ TEST(recommender_base, decode_row) {
 
 TEST(recommender_base, calc_l2norm) {
   recommender_impl r;
-  sfv_t q;
+  common::sfv_t q;
   q.push_back(make_pair("a1", 1.0));
   q.push_back(make_pair("a2", 2.0));
   q.push_back(make_pair("a3", 3.0));
@@ -153,8 +153,8 @@ TEST(recommender_base, calc_l2norm) {
 
 TEST(recommender_base, calc_similality) {
   recommender_impl r;
-  sfv_t q1;
-  sfv_t q2;
+  common::sfv_t q1;
+  common::sfv_t q2;
 
   q1.push_back(make_pair("c1", 1.0));
   q1.push_back(make_pair("c2", 2.0));

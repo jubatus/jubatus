@@ -67,7 +67,7 @@ TEST(revert_string_value, error) {
 
 TEST(revert_feature, trivial) {
   fv_converter::datum data;
-  sfv_t fv;
+  common::sfv_t fv;
 
   fv.push_back(std::make_pair("name$doc1@str#bin/bin", 1.0));
   fv.push_back(std::make_pair("message$hello@space#bin/bin", 1.0));
@@ -91,7 +91,7 @@ TEST(revert_feature, trivial) {
 
 TEST(revert_feature, dollar_mark_onvalue) {
   fv_converter::datum data;
-  sfv_t fv;
+  common::sfv_t fv;
 
   fv.push_back(std::make_pair("name$do$c1@str#bin/bin", 1.0));
 

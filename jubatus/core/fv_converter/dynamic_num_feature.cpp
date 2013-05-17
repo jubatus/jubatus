@@ -34,7 +34,7 @@ dynamic_num_feature::dynamic_num_feature(
 void dynamic_num_feature::add_feature(
     const std::string& key,
     double value,
-    sfv_t& ret_fv) const {
+    common::sfv_t& ret_fv) const {
   impl_->add_feature(key, value, ret_fv);
 }
 

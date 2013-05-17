@@ -32,7 +32,7 @@ class keyword_weights {
  public:
   keyword_weights();
 
-  void update_document_frequency(const sfv_t& fv);
+  void update_document_frequency(const common::sfv_t& fv);
 
   size_t get_document_frequency(const std::string& key) const {
     return document_frequencies_[key];

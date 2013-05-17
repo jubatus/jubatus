@@ -53,7 +53,7 @@ void set_bit_vector(const std::vector<float>& vec, bit_vector& bit_vec) {
 
 void prod_invert_and_vector(
     const unordered_map<string, vector<float> >& matrix,
-    const sfv_t& vec,
+    const common::sfv_t& vec,
     size_t dim,
     vector<float>& ret) {
   vector<float> r(dim);

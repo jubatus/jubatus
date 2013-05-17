@@ -28,7 +28,7 @@ passive_aggressive::passive_aggressive(storage::storage_base* storage)
     : classifier_base(storage) {
 }
 
-void passive_aggressive::train(const sfv_t& sfv, const string& label) {
+void passive_aggressive::train(const common::sfv_t& sfv, const string& label) {
   string incorrect_label;
   float margin = calc_margin(sfv, label, incorrect_label);
   float loss = 1.f + margin;

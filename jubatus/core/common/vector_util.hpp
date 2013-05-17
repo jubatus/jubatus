@@ -20,9 +20,13 @@
 #include "type.hpp"
 
 namespace jubatus {
+namespace core {
+namespace common {
 
 void sort_and_merge(sfv_t& sfv);
 
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_COMMON_VECTOR_UTIL_HPP_

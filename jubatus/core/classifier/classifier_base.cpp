@@ -44,7 +44,7 @@ classifier_base::~classifier_base() {
 }
 
 void classifier_base::classify_with_scores(
-    const sfv_t& sfv,
+    const common::sfv_t& sfv,
     classify_result& scores) const {
   scores.clear();
 
@@ -56,7 +56,7 @@ void classifier_base::classify_with_scores(
   }
 }
 
-string classifier_base::classify(const sfv_t& fv) const {
+string classifier_base::classify(const common::sfv_t& fv) const {
   classify_result result;
   classify_with_scores(fv, result);
   float max_score = -FLT_MAX;
@@ -76,7 +76,7 @@ void classifier_base::clear() {
 }
 
 void classifier_base::update_weight(
-    const sfv_t& sfv,
+    const common::sfv_t& sfv,
     float step_width,
     const string& pos_label,
     const string& neg_label) {
@@ -84,7 +84,7 @@ void classifier_base::update_weight(
 }
 
 string classifier_base::get_largest_incorrect_label(
-    const sfv_t& fv,
+    const common::sfv_t& fv,
     const string& label,
     classify_result& scores) const {
   classify_with_scores(fv, scores);
@@ -104,7 +104,7 @@ string classifier_base::get_largest_incorrect_label(
 }
 
 float classifier_base::calc_margin(
-    const sfv_t& fv,
+    const common::sfv_t& fv,
     const string& label,
     string& incorrect_label) const {
   classify_result scores;
@@ -123,7 +123,7 @@ float classifier_base::calc_margin(
 }
 
 float classifier_base::calc_margin_and_variance(
-    const sfv_t& sfv,
+    const common::sfv_t& sfv,
     const string& label,
     string& incorrect_label,
     float& var) const {
@@ -149,7 +149,7 @@ float classifier_base::calc_margin_and_variance(
   return margin;
 }
 
-float classifier_base::squared_norm(const sfv_t& fv) {
+float classifier_base::squared_norm(const common::sfv_t& fv) {
   float ret = 0.f;
   for (size_t i = 0; i < fv.size(); ++i) {
     ret += fv[i].second * fv[i].second;

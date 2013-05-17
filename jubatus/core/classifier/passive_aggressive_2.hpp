@@ -32,7 +32,7 @@ class passive_aggressive_2 : public classifier_base {
       const classifier_config& config,
       storage::storage_base* storage);
 
-  void train(const sfv_t& sfv, const std::string& label);
+  void train(const common::sfv_t& sfv, const std::string& label);
   std::string name() const;
  private:
   classifier_config config_;

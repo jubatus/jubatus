@@ -58,15 +58,15 @@ classifier::~classifier() {
 }
 
 void classifier::train(const pair<string, fv_converter::datum>& data) {
-  sfv_t v;
+  common::sfv_t v;
   converter_->convert_and_update_weight(data.second, v);
-  sort_and_merge(v);
+  common::sort_and_merge(v);
   classifier_->train(v, data.first);
 }
 
 jubatus::core::classifier::classify_result classifier::classify(
     const fv_converter::datum& data) const {
-  sfv_t v;
+  common::sfv_t v;
   converter_->convert(data, v);
 
   jubatus::core::classifier::classify_result scores;

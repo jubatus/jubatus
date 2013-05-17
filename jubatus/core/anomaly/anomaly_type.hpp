@@ -24,7 +24,7 @@
 #include "../common/type.hpp"
 
 namespace jubatus {
-typedef sfv_t sfv_diff_t;
+typedef core::common::sfv_t sfv_diff_t;
 }
 
 #endif  // JUBATUS_CORE_ANOMALY_ANOMALY_TYPE_HPP_
