@@ -76,7 +76,8 @@ class ore_exception : public jubaexception<ore_exception> {
   std::string what_;
 };
 
-class derived_exception : public jubatus::core::common::exception::runtime_error {
+class derived_exception
+    : public jubatus::core::common::exception::runtime_error {
  public:
   explicit derived_exception(const std::string& what)
       : jubatus::core::common::exception::runtime_error(what) {
@@ -113,7 +114,8 @@ TEST(exception, derived_exception) {
   }
 
   EXPECT_TRUE(thrower);
-  EXPECT_THROW(thrower->throw_exception(), jubatus::core::common::exception::runtime_error);
+  EXPECT_THROW(thrower->throw_exception(),
+               jubatus::core::common::exception::runtime_error);
 }
 
 TEST(exception, derived_exception_dynamic_bind) {
@@ -167,7 +169,8 @@ TEST(exception, error_errno_msg) {
 
 TEST(exception, exception_info_macro) {
   try {
-    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error("hogehoge"));
+    throw JUBATUS_EXCEPTION(
+      jubatus::core::common::exception::runtime_error("hogehoge"));
   } catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
     EXPECT_EQ(4u, info_list.size());
@@ -180,7 +183,8 @@ TEST(exception, exception_info_macro) {
 
 TEST(exception, exception_info_macro_additional) {
   try {
-    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error("hogehoge")
+    throw JUBATUS_EXCEPTION(
+      jubatus::core::common::exception::runtime_error("hogehoge")
       << jubatus::core::common::exception::error_message("message"));
   } catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
@@ -209,7 +213,8 @@ TEST(exception, exception_info_macro_thrower) {
 
 TEST(exception, exception_custom_error_info) {
   try {
-    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error("hogehoge"));
+    throw JUBATUS_EXCEPTION(
+      jubatus::core::common::exception::runtime_error("hogehoge"));
   } catch (const jubatus_exception& e) {
     error_info_list_t info_list = e.error_info();
     EXPECT_EQ(4u, info_list.size());
@@ -225,7 +230,8 @@ TEST(exception, exception_info_add_macro) {
 
   try {
     try {
-      throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error("hogehoge"));
+      throw JUBATUS_EXCEPTION(
+        jubatus::core::common::exception::runtime_error("hogehoge"));
   } catch (const jubatus_exception& e) {
       // push additional information
       e << error_message("added");
@@ -256,7 +262,8 @@ TEST(exception, exception_info_add_macro) {
 TEST(exception, exception_error_info) {
   bool caught = false;
   try {
-    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error("what"));
+    throw JUBATUS_EXCEPTION(
+      jubatus::core::common::exception::runtime_error("what"));
   } catch (const jubatus_exception& e) {
     caught = true;
     EXPECT_EQ(string("what"), e.what());

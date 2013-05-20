@@ -39,7 +39,8 @@ class classifier_base {
   virtual void train(const common::sfv_t& fv, const std::string& label) = 0;
 
   std::string classify(const common::sfv_t& fv) const;
-  void classify_with_scores(const common::sfv_t& fv, classify_result& scores) const;
+  void classify_with_scores(const common::sfv_t& fv,
+                            classify_result& scores) const;
 
   void clear();
 

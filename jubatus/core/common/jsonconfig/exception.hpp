@@ -107,7 +107,8 @@ class not_found : public config_error {
 };
 
 // cast_check_error DOES NOT INHERIT Config_error
-class cast_check_error : public common::exception::jubaexception<cast_check_error> {
+class cast_check_error
+  : public common::exception::jubaexception<cast_check_error> {
  public:
   cast_check_error(
       const std::vector<pfi::lang::shared_ptr<config_error> >& errors);

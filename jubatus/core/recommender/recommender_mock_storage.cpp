@@ -59,7 +59,8 @@ void recommender_mock_storage::neighbor_items_distance(
   get_relation(query, neighbor_relation_, ret_num, ids);
 }
 
-void recommender_mock_storage::update(const common::sfv_t& from, const common::sfv_t& to) {
+void recommender_mock_storage::update(const common::sfv_t& from,
+                                      const common::sfv_t& to) {
   update_relation_key(from, to, similar_relation_);
   update_relation_key(from, to, neighbor_relation_);
 }

@@ -105,7 +105,8 @@ void local_storage_mixture::get3(
   }
 }
 
-void local_storage_mixture::inp(const common::sfv_t& sfv, map_feature_val1_t& ret) {
+void local_storage_mixture::inp(const common::sfv_t& sfv,
+                                map_feature_val1_t& ret) {
   ret.clear();
 
   std::vector<float> ret_id(class2id_.size());
@@ -182,16 +183,17 @@ void local_storage_mixture::bulk_update(
     const string& inc_class,
     const string& dec_class) {
   uint64_t inc_id = class2id_.get_id(inc_class);
+  typedef common::sfv_t::const_iterator iter_t;
   if (dec_class != "") {
     uint64_t dec_id = class2id_.get_id(dec_class);
-    for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
+    for (iter_t it = sfv.begin(); it != sfv.end(); ++it) {
       float val = it->second * step_width;
       id_feature_val3_t& feature_row = tbl_diff_[it->first];
       feature_row[inc_id].v1 += val;
       feature_row[dec_id].v1 -= val;
     }
   } else {
-    for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
+    for (iter_t it = sfv.begin(); it != sfv.end(); ++it) {
       float val = it->second * step_width;
       id_feature_val3_t& feature_row = tbl_diff_[it->first];
       feature_row[inc_id].v1 += val;

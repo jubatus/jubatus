@@ -54,9 +54,9 @@ void cht::setup_cht_dir(
 
   if (!success) {
     throw JUBATUS_EXCEPTION(
-        jubatus::core::common::exception::runtime_error("Failed to create cht directory")
-        << jubatus::core::common::exception::error_api_func("lock_service::create")
-        << jubatus::core::common::exception::error_message("cht path: " + path));
+        core::common::exception::runtime_error("Failed to create cht directory")
+        << core::common::exception::error_api_func("lock_service::create")
+        << core::common::exception::error_message("cht path: " + path));
   }
 }
 
@@ -83,9 +83,9 @@ void cht::register_node(const std::string& ip, int port) {
     std::string hashpath = path + "/" + make_hash(build_loc_str(ip, port, i));
     if (!lock_service_->create(hashpath, build_loc_str(ip, port), true)) {
       throw JUBATUS_EXCEPTION(
-          jubatus::core::common::exception::runtime_error("Failed to register cht node")
-          << jubatus::core::common::exception::error_api_func("lock_service::create")
-          << jubatus::core::common::exception::error_message("cht hashpash: " + hashpath));
+        core::common::exception::runtime_error("Failed to register cht node")
+        << core::common::exception::error_api_func("lock_service::create")
+        << core::common::exception::error_message("cht hashpash: " + hashpath));
     }
 
     DLOG(INFO) << "cht node created: " << hashpath;

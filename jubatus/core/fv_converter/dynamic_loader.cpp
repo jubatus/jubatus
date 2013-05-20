@@ -67,9 +67,9 @@ void* dynamic_loader::load_symbol(const std::string& name) const {
   char* error = dlerror();
   if (error != NULL) {
     throw JUBATUS_EXCEPTION(converter_exception("cannot dlsym: " + name)
-        << jubatus::core::common::exception::error_api_func("dlsym")
-        << jubatus::core::common::exception::error_message("dlsym name: " + name)
-        << jubatus::core::common::exception::error_message(error));
+      << jubatus::core::common::exception::error_api_func("dlsym")
+      << jubatus::core::common::exception::error_message("dlsym name: " + name)
+      << jubatus::core::common::exception::error_message(error));
   }
   return func;
 }

@@ -97,7 +97,8 @@ void server_helper_impl::get_config_lock(const server_argv& a, int retry) {
     while (!zk_config_lock_->try_rlock()) {
       if (retry == 0) {
         throw JUBATUS_EXCEPTION(
-            jubatus::core::common::exception::runtime_error("any user is writing config?"));
+          core::common::exception::runtime_error(
+            "any user is writing config?"));
       }
       retry--;
       sleep(1);

@@ -112,8 +112,8 @@ std::string get_program_name() {
 #endif
   if (ret < 0) {
     throw JUBATUS_EXCEPTION(
-        jubatus::core::common::exception::runtime_error("Failed to get program name")
-        << jubatus::core::common::exception::error_errno(errno));
+      core::common::exception::runtime_error("Failed to get program name")
+      << core::common::exception::error_errno(errno));
   }
 
   // get basename
@@ -137,8 +137,9 @@ std::string get_user_name() {
     if (result != NULL) {
       return result->pw_name;
     }
-    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error("User not found")
-        << jubatus::core::common::exception::error_api_func("getpwuid_r"));
+    throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("User not found")
+      << core::common::exception::error_api_func("getpwuid_r"));
   }
   throw JUBATUS_EXCEPTION(
       jubatus::core::common::exception::runtime_error("Failed to get user name")
@@ -231,16 +232,16 @@ void set_exit_on_term() {
 
   if (sigaction(SIGTERM, &sigact, NULL) != 0) {
     throw JUBATUS_EXCEPTION(
-        jubatus::core::common::exception::runtime_error("can't set SIGTERM handler")
-        << jubatus::core::common::exception::error_api_func("sigaction")
-        << jubatus::core::common::exception::error_errno(errno));
+      core::common::exception::runtime_error("can't set SIGTERM handler")
+      << core::common::exception::error_api_func("sigaction")
+      << core::common::exception::error_errno(errno));
   }
 
   if (sigaction(SIGINT, &sigact, NULL) != 0) {
     throw JUBATUS_EXCEPTION(
-        jubatus::core::common::exception::runtime_error("can't set SIGINT handler")
-        << jubatus::core::common::exception::error_api_func("sigaction")
-        << jubatus::core::common::exception::error_errno(errno));
+      core::common::exception::runtime_error("can't set SIGINT handler")
+      << core::common::exception::error_api_func("sigaction")
+      << core::common::exception::error_errno(errno));
   }
 }
 

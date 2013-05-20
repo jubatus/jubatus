@@ -67,7 +67,7 @@ class lsh : public recommender_base {
   bool save_impl(std::ostream&);
   bool load_impl(std::istream&);
 
-  void calc_lsh_values(const common::sfv_t& sfv, core::storage::bit_vector& bv) const;
+  void calc_lsh_values(const common::sfv_t& sfv, storage::bit_vector& bv) const;
   void generate_column_base(const std::string& column);
   void generate_column_bases(const common::sfv_t& v);
 

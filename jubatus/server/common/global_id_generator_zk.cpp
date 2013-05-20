@@ -41,7 +41,7 @@ void global_id_generator_zk::set_ls(
   if (!ls_->create(path_)) {
     throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
         "Failed to create global id generator")
-        << jubatus::core::common::exception::error_api_func("lock_service::create")
+        << core::common::exception::error_api_func("lock_service::create")
         << jubatus::core::common::exception::error_message(path_));
   }
 }
@@ -50,7 +50,7 @@ uint64_t global_id_generator_zk::generate() {
   uint64_t res;
   if ( !ls_ ) {
     throw JUBATUS_EXCEPTION(
-        jubatus::core::common::exception::runtime_error("lock_service is not given"));
+      core::common::exception::runtime_error("lock_service is not given"));
   }
   if (ls_->create_id(path_, 0, res)) {
     return res;

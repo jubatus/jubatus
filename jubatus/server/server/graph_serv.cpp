@@ -358,7 +358,7 @@ double graph_serv::get_centrality(
   } else {
     std::stringstream msg;
     msg << "unknown centrality type: " << s;
-    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(msg.str()));
+    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error(msg.str()));
   }
 }
 

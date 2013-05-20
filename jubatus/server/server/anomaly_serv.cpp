@@ -113,7 +113,7 @@ void anomaly_serv::get_status(status_t& status) const {
 bool anomaly_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   anomaly_serv_config conf =
-      core::common::jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
+    core::common::jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
 
   config_ = config;
 

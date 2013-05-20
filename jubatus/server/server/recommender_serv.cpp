@@ -89,7 +89,8 @@ void recommender_serv::get_status(status_t& status) const {
 bool recommender_serv::set_config(const std::string &config) {
   core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   recommender_serv_config conf =
-      core::common::jsonconfig::config_cast_check<recommender_serv_config>(conf_root);
+    core::common::jsonconfig::config_cast_check<recommender_serv_config>(
+      conf_root);
 
   config_ = config;
 

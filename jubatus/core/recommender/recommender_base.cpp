@@ -59,19 +59,22 @@ void recommender_base::neighbor_row(
   neighbor_row(sfv, ids, ret_num);
 }
 
-void recommender_base::decode_row(const std::string& id, common::sfv_t& ret) const {
+void recommender_base::decode_row(const std::string& id,
+                                  common::sfv_t& ret) const {
   ret.clear();
   orig_.get_row(id, ret);
 }
 
-void recommender_base::complete_row(const std::string& id, common::sfv_t& ret) const {
+void recommender_base::complete_row(const std::string& id,
+                                    common::sfv_t& ret) const {
   ret.clear();
   common::sfv_t sfv;
   orig_.get_row(id, sfv);
   complete_row(sfv, ret);
 }
 
-void recommender_base::complete_row(const common::sfv_t& query, common::sfv_t& ret) const {
+void recommender_base::complete_row(const common::sfv_t& query,
+                                    common::sfv_t& ret) const {
   ret.clear();
   vector<pair<string, float> > ids;
   similar_row(query, ids, complete_row_similar_num_);

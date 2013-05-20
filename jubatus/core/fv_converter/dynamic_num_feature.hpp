@@ -35,7 +35,9 @@ class dynamic_num_feature : public num_feature {
       const std::string& function,
       const std::map<std::string, std::string>& params);
 
-  void add_feature(const std::string& key, double value, common::sfv_t& ret_fv) const;
+  void add_feature(const std::string& key,
+                   double value,
+                   common::sfv_t& ret_fv) const;
 
  private:
   dynamic_loader loader_;

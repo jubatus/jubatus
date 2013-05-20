@@ -253,7 +253,8 @@ TEST_P(lof_storage_mix_test, consistency) {
   mix();  // mix the latest k-dists and lrds
 
   for (size_t i = 0; i < num_query; ++i) {
-    const common::sfv_t x = generate_gaussian("t" + lexical_cast<string>(i), mu1, 1);
+    const common::sfv_t x =
+      generate_gaussian("t" + lexical_cast<string>(i), mu1, 1);
     float expect_lrd, actual_lrd;
     unordered_map<string, float> expect_lrds, actual_lrds;
 
@@ -295,8 +296,10 @@ TEST_P(lof_storage_mix_test, mix_after_remove) {
     const string row = lexical_cast<string>(i);
     for (size_t j = 0; j < storages_.size(); ++j) {
       if (i % 2 == 0) {
-        EXPECT_THROW(storages_[j]->get_kdist(row), common::exception::runtime_error);
-        EXPECT_THROW(storages_[j]->get_lrd(row), common::exception::runtime_error);
+        EXPECT_THROW(storages_[j]->get_kdist(row),
+                     common::exception::runtime_error);
+        EXPECT_THROW(storages_[j]->get_lrd(row),
+                     common::exception::runtime_error);
       } else {
         EXPECT_NO_THROW(storages_[j]->get_kdist(row));
         EXPECT_NO_THROW(storages_[j]->get_lrd(row));

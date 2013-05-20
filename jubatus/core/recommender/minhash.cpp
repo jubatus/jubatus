@@ -81,7 +81,8 @@ void minhash::clear_row(const string& id) {
   row2minhashvals_.remove_row(id);
 }
 
-void minhash::calc_minhash_values(const common::sfv_t& sfv, bit_vector& bv) const {
+void minhash::calc_minhash_values(const common::sfv_t& sfv,
+                                  bit_vector& bv) const {
   vector<float> min_values_buffer(hash_num_, FLT_MAX);
   vector<uint64_t> hash_buffer(hash_num_);
   for (size_t i = 0; i < sfv.size(); ++i) {

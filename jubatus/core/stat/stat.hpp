@@ -33,7 +33,7 @@ namespace jubatus {
 namespace core {
 namespace stat {
 
-class stat_error : public jubatus::core::common::exception::jubaexception<stat_error> {
+class stat_error : public common::exception::jubaexception<stat_error> {
  public:
   explicit stat_error(const std::string& msg)
       : msg_(msg) {

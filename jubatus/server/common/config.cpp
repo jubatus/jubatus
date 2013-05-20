@@ -39,7 +39,7 @@ void config_fromlocal(const string& path, string& config) {
   ifstream ifc(path.c_str());
   if (!ifc) {
     throw JUBATUS_EXCEPTION(
-        jubatus::core::common::exception::runtime_error("can't read " + path + " ."));
+      core::common::exception::runtime_error("can't read " + path + " ."));
   }
   stringstream ss;
   ss << ifc.rdbuf();
@@ -58,13 +58,13 @@ void config_fromzk(
 
   if (!z.exists(path)) {
     throw JUBATUS_EXCEPTION(
-        jubatus::core::common::exception::runtime_error("config is not exists: " + path));
+      core::common::exception::runtime_error("config is not exists: " + path));
   }
 
   if (!z.read(path, config)) {
     throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
           "failed to get config from zookeeper: " + path)
-        << jubatus::core::common::exception::error_api_func("lock_service::read"));
+        << core::common::exception::error_api_func("lock_service::read"));
   }
 
   LOG(INFO) << "get config from zookeeper: " << path;
@@ -98,7 +98,7 @@ void config_tozk(
         pfi::lang::lexical_cast<std::string>(e.lineno()) + ":" +
         pfi::lang::lexical_cast<std::string>(e.pos()) + " " +
         e.msg();
-    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(msg));
+    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error(msg));
   }
 
   string lock_path;
@@ -106,7 +106,8 @@ void config_tozk(
 
   if (!z.exists(lock_path)) {
     throw JUBATUS_EXCEPTION(
-        jubatus::core::common::exception::runtime_error("node is not exists: " + lock_path));
+      core::common::exception::runtime_error(
+        "node is not exists: " + lock_path));
   }
 
   common::lock_service_mutex zk_config_lock(z, lock_path);
@@ -114,7 +115,7 @@ void config_tozk(
   while (!zk_config_lock.try_lock()) {
     if (retry == 0) {
       throw JUBATUS_EXCEPTION(
-          jubatus::core::common::exception::runtime_error("any user is using config?"));
+        core::common::exception::runtime_error("any user is using config?"));
     }
     retry--;
     sleep(1);
@@ -135,7 +136,7 @@ void config_tozk(
   if (!success) {
     throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
           "failed to set config to zookeeper:" + path)
-        << jubatus::core::common::exception::error_api_func("lock_service::set"));
+        << core::common::exception::error_api_func("lock_service::set"));
   }
 
   LOG(INFO) << "set config to zookeeper: " << path;
@@ -150,7 +151,8 @@ void remove_config_fromzk(
 
   if (!z.exists(lock_path)) {
     throw JUBATUS_EXCEPTION(
-        jubatus::core::common::exception::runtime_error("node is not exists: " + lock_path));
+      core::common::exception::runtime_error(
+        "node is not exists: " + lock_path));
   }
 
   common::lock_service_mutex zk_config_lock(z, lock_path);
@@ -158,7 +160,7 @@ void remove_config_fromzk(
   while (!zk_config_lock.try_lock()) {
     if (retry == 0) {
       throw JUBATUS_EXCEPTION(
-          jubatus::core::common::exception::runtime_error("any user is using config?"));
+        core::common::exception::runtime_error("any user is using config?"));
     }
     retry--;
     sleep(1);
@@ -174,13 +176,13 @@ void remove_config_fromzk(
 
   if (!z.exists(path)) {
     throw JUBATUS_EXCEPTION(
-        jubatus::core::common::exception::runtime_error("config is not exists: " + path));
+      core::common::exception::runtime_error("config is not exists: " + path));
   }
 
   if (!z.remove(path)) {
     throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
           "failed to remove config from zookeeper:" + path)
-        << jubatus::core::common::exception::error_api_func("lock_service::remove"));
+        << core::common::exception::error_api_func("lock_service::remove"));
   }
 
   LOG(INFO) << "remove config from zookeeper: " << path;

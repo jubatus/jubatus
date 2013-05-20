@@ -322,10 +322,12 @@ void lof_storage::deserialize_diff(
 
   if (nn_engine_->type() != nn_engine_name) {
     throw JUBATUS_EXCEPTION(
-      common::exception::runtime_error("inconsistent nearest neighbor engine type")
+      common::exception::runtime_error(
+        "inconsistent nearest neighbor engine type")
       << common::exception::error_message(
         "lof's NN engine type:  " + nn_engine_->type())
-      << common::exception::error_message("diff's NN engine type: " + nn_engine_name));
+      << common::exception::error_message(
+        "diff's NN engine type: " + nn_engine_name));
   }
 
   bi >> nn_diff;

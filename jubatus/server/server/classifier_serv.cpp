@@ -96,7 +96,8 @@ void classifier_serv::get_status(status_t& status) const {
 bool classifier_serv::set_config(const string& config) {
   core::common::jsonconfig::config config_root(lexical_cast<json>(config));
   classifier_serv_config conf =
-      core::common::jsonconfig::config_cast_check<classifier_serv_config>(config_root);
+    core::common::jsonconfig::config_cast_check<classifier_serv_config>(
+      config_root);
 
   config_ = config;
 

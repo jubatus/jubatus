@@ -141,16 +141,17 @@ void local_storage::bulk_update(
     const string& inc_class,
     const string& dec_class) {
   uint64_t inc_id = class2id_.get_id(inc_class);
+  typedef common::sfv_t::const_iterator iter_t;
   if (dec_class != "") {
     uint64_t dec_id = class2id_.get_id(dec_class);
-    for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
+    for (iter_t it = sfv.begin(); it != sfv.end(); ++it) {
       float val = it->second * step_width;
       id_feature_val3_t& feature_row = tbl_[it->first];
       feature_row[inc_id].v1 += val;
       feature_row[dec_id].v1 -= val;
     }
   } else {
-    for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
+    for (iter_t it = sfv.begin(); it != sfv.end(); ++it) {
       float val = it->second * step_width;
       id_feature_val3_t& feature_row = tbl_[it->first];
       feature_row[inc_id].v1 += val;
