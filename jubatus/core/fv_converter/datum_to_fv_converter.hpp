@@ -68,9 +68,9 @@ class datum_to_fv_converter {
 
   ~datum_to_fv_converter();
 
-  void convert(const datum& datum, sfv_t& ret_fv) const;
+  void convert(const datum& datum, common::sfv_t& ret_fv) const;
 
-  void convert_and_update_weight(const datum& datum, sfv_t& ret_fv);
+  void convert_and_update_weight(const datum& datum, common::sfv_t& ret_fv);
 
   void clear_rules();
 

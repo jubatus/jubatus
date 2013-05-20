@@ -63,7 +63,7 @@ lof_storage::lof_storage()
       reverse_nn_num_(DEFAULT_REVERSE_NN_NUM),
       nn_engine_(recommender::recommender_factory::create_recommender(
           "euclid_lsh",
-          jsonconfig::config(pfi::text::json::to_json(
+          common::jsonconfig::config(pfi::text::json::to_json(
               recommender::euclid_lsh::config())))) {
 }
 
@@ -85,7 +85,7 @@ lof_storage::~lof_storage() {
 }
 
 float lof_storage::collect_lrds(
-    const sfv_t& query,
+    const common::sfv_t& query,
     unordered_map<string, float>& neighbor_lrd) const {
   vector<pair<string, float> > neighbors;
   nn_engine_->neighbor_row(query, neighbors, neighbor_num_);
@@ -126,11 +126,11 @@ void lof_storage::get_all_row_ids(vector<string>& ids) const {
   nn_engine_->get_all_row_ids(ids);
 }
 
-void lof_storage::update_row(const string& row, const sfv_t& diff) {
+void lof_storage::update_row(const string& row, const common::sfv_t& diff) {
   unordered_set<string> update_set;
 
   {
-    sfv_t query;
+    common::sfv_t query;
     nn_engine_->decode_row(row, query);
     if (!query.empty()) {
       collect_neighbors(row, update_set);
@@ -155,13 +155,13 @@ float lof_storage::get_kdist(const string& row) const {
     it = lof_table_.find(row);
     if (it == lof_table_.end()) {
       throw JUBATUS_EXCEPTION(
-        exception::runtime_error("specified row does not exist")
-        << exception::error_message("row id: " + row));
+        common::exception::runtime_error("specified row does not exist")
+        << common::exception::error_message("row id: " + row));
     }
   } else if (is_removed(it->second)) {
     throw JUBATUS_EXCEPTION(
-      exception::runtime_error("specified row is recently removed")
-      << exception::error_message("row id: " + row));
+      common::exception::runtime_error("specified row is recently removed")
+      << common::exception::error_message("row id: " + row));
   }
   return it->second.kdist;
 }
@@ -172,13 +172,13 @@ float lof_storage::get_lrd(const string& row) const {
     it = lof_table_.find(row);
     if (it == lof_table_.end()) {
       throw JUBATUS_EXCEPTION(
-        exception::runtime_error("specified row does not exist")
-        << exception::error_message("row id: " + row));
+        common::exception::runtime_error("specified row does not exist")
+        << common::exception::error_message("row id: " + row));
     }
   } else if (is_removed(it->second)) {
     throw JUBATUS_EXCEPTION(
-      exception::runtime_error("specified row is recently removed")
-      << exception::error_message("row id: " + row));
+      common::exception::runtime_error("specified row is recently removed")
+      << common::exception::error_message("row id: " + row));
   }
   return it->second.lrd;
 }
@@ -322,10 +322,12 @@ void lof_storage::deserialize_diff(
 
   if (nn_engine_->type() != nn_engine_name) {
     throw JUBATUS_EXCEPTION(
-      exception::runtime_error("inconsistent nearest neighbor engine type")
-      << exception::error_message(
+      common::exception::runtime_error(
+        "inconsistent nearest neighbor engine type")
+      << common::exception::error_message(
         "lof's NN engine type:  " + nn_engine_->type())
-      << exception::error_message("diff's NN engine type: " + nn_engine_name));
+      << common::exception::error_message(
+        "diff's NN engine type: " + nn_engine_name));
   }
 
   bi >> nn_diff;

@@ -62,7 +62,7 @@ int keeper::run() {
     this->instance_.join();
 
     return 0;  // never return
-  } catch (const jubatus::exception::jubatus_exception& e) {
+  } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
   } catch (const mp::system_error& e) {
     if (e.code == EADDRINUSE) {

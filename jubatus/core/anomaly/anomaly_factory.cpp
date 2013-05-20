@@ -24,8 +24,8 @@
 #include "../common/jsonconfig.hpp"
 #include "anomaly.hpp"
 
-using jubatus::core::jsonconfig::config;
-using jubatus::core::jsonconfig::config_cast_check;
+using jubatus::core::common::jsonconfig::config;
+using jubatus::core::common::jsonconfig::config_cast_check;
 using pfi::text::json::json;
 using std::string;
 
@@ -36,7 +36,7 @@ namespace anomaly {
 namespace {
 struct anomaly_config {
   std::string method;  // nest engine name
-  jubatus::core::jsonconfig::config parameter;
+  jubatus::core::common::jsonconfig::config parameter;
 
   template<typename Ar>
   void serialize(Ar& ar) {
@@ -58,7 +58,7 @@ anomaly_base* anomaly_factory::create_anomaly(
             conf.method,
             conf.parameter));
   } else {
-    throw JUBATUS_EXCEPTION(unsupported_method(name));
+    throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }
 };
 

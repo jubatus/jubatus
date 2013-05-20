@@ -42,7 +42,7 @@ void rpc_server::dispatch(msgpack::rpc::request req) {
     fun->second->invoke(req);
   } catch(const msgpack::type_error& e) {
     req.error(msgpack::rpc::ARGUMENT_ERROR, std::string(e.what()));
-  } catch(const jubatus::exception::jubatus_exception& e) {
+  } catch(const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(WARNING) << e.diagnostic_information(true);
     req.error(std::string(e.what()));
   } catch(const std::exception& e) {

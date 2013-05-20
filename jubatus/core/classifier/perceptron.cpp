@@ -28,7 +28,7 @@ perceptron::perceptron(storage::storage_base* storage)
     : classifier_base(storage) {
 }
 
-void perceptron::train(const sfv_t& sfv, const std::string& label) {
+void perceptron::train(const common::sfv_t& sfv, const std::string& label) {
   std::string predicted_label = classify(sfv);
   if (label == predicted_label) {
     return;

@@ -38,7 +38,7 @@ class storage_mock_base : public storage::storage_base {
   void get3(const std::string& feature, feature_val3_t& ret) {
   }
 
-  void inp(const sfv_t& sfv, map_feature_val1_t& ret) {
+  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) {
   }
 
   void set(
@@ -75,7 +75,7 @@ class storage_mock_base : public storage::storage_base {
   }
 
   void bulk_update(
-      const sfv_t& sfv,
+      const common::sfv_t& sfv,
       float step_width,
       const std::string& inc_class,
       const std::string& dec_class) {

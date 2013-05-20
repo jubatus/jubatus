@@ -28,7 +28,7 @@ TEST(weight_manager, trivial) {
   weight_manager m;
 
   {
-    sfv_t fv;
+    common::sfv_t fv;
     m.add_weight("/address$tokyo@str", 1.5);
     m.update_weight(fv);
     m.get_weight(fv);
@@ -54,7 +54,7 @@ TEST(weight_manager, trivial) {
   EXPECT_EQ(1.5, w.get_user_weight("/address$tokyo@str"));
 
   {
-    sfv_t fv;
+    common::sfv_t fv;
     fv.push_back(std::make_pair("/title$this@space#bin/idf", 1.0));
 
     // df = 2, |D| = 3

@@ -40,7 +40,7 @@ class rpc_error {
   }
 
   rpc_error(const std::string& host, uint16_t port,
-      jubatus::exception::exception_thrower_ptr thrower)
+      jubatus::core::common::exception::exception_thrower_ptr thrower)
       : host_(host),
         port_(port),
         exception_(thrower) {
@@ -59,17 +59,17 @@ class rpc_error {
   void throw_exception() const {
     exception_->throw_exception();
   }
-  jubatus::exception::exception_thrower_ptr exception() const {
+  jubatus::core::common::exception::exception_thrower_ptr exception() const {
     return exception_;
   }
 
  private:
   std::string host_;
   uint16_t port_;
-  jubatus::exception::exception_thrower_ptr exception_;
+  jubatus::core::common::exception::exception_thrower_ptr exception_;
 };
 
-typedef jubatus::exception::error_info<
+typedef jubatus::core::common::exception::error_info<
     struct error_multi_rpc_,
     std::vector<rpc_error> > error_multi_rpc;
 
@@ -92,7 +92,7 @@ inline std::string to_string(const error_multi_rpc& info) {
     if (it->has_exception()) {
       try {
         it->throw_exception();
-      } catch (const jubatus::exception::jubatus_exception& e) {
+      } catch (const jubatus::core::common::exception::jubatus_exception& e) {
         tmp << e.diagnostic_information(false);
       } catch (const std::exception& e) {
         tmp << e.what();

@@ -24,8 +24,8 @@
 
 using std::string;
 using pfi::text::json::json;
-using jubatus::core::jsonconfig::config;
-using jubatus::core::jsonconfig::config_cast_check;
+using jubatus::core::common::jsonconfig::config;
+using jubatus::core::common::jsonconfig::config_cast_check;
 
 namespace jubatus {
 namespace core {
@@ -44,7 +44,7 @@ recommender_base* recommender_factory::create_recommender(
   } else if (name == "euclid_lsh") {
     return new euclid_lsh(config_cast_check<euclid_lsh::config>(param));
   } else {
-    throw JUBATUS_EXCEPTION(unsupported_method(name));
+    throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }
 }
 

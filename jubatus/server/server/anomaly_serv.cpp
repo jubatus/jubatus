@@ -65,7 +65,7 @@ struct anomaly_serv_config {
   std::string method;
   // TODO(oda): we should use optional<jsonconfig::config> instead of
   //            jsonconfig::config ?
-  core::jsonconfig::config parameter;
+  core::common::jsonconfig::config parameter;
   pfi::text::json::json converter;
 
   template<typename Ar>
@@ -111,9 +111,9 @@ void anomaly_serv::get_status(status_t& status) const {
 }
 
 bool anomaly_serv::set_config(const std::string& config) {
-  core::jsonconfig::config conf_root(lexical_cast<json>(config));
+  core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   anomaly_serv_config conf =
-      core::jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
+    core::common::jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
 
   config_ = config;
 
@@ -178,7 +178,7 @@ pair<string, float> anomaly_serv::add_zk(const string&id_str, const datum& d) {
   find_from_cht(id_str, 2, nodes);
   if (nodes.empty()) {
     throw JUBATUS_EXCEPTION(
-        membership_error("no server found in cht: " + argv().name));
+      core::common::membership_error("no server found in cht: " + argv().name));
   }
   // this sequences MUST success,
   // in case of failures the whole request should be canceled
@@ -229,7 +229,7 @@ vector<string> anomaly_serv::get_all_rows() const {
 
 void anomaly_serv::check_set_config() const {
   if (!anomaly_) {
-    throw JUBATUS_EXCEPTION(config_not_set());
+    throw JUBATUS_EXCEPTION(core::common::config_not_set());
   }
 }
 

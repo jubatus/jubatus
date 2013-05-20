@@ -44,9 +44,9 @@ void storage_base::update(
   set(feature, dec_class, dec_class_val);
 }
 
-void storage_base::inp(const sfv_t& sfv, map_feature_val1_t& ret) {
+void storage_base::inp(const common::sfv_t& sfv, map_feature_val1_t& ret) {
   ret.clear();
-  for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
+  for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     const float val = it->second;
     feature_val1_t fval1;
@@ -59,11 +59,11 @@ void storage_base::inp(const sfv_t& sfv, map_feature_val1_t& ret) {
 }
 
 void storage_base::bulk_update(
-    const sfv_t& sfv,
+    const common::sfv_t& sfv,
     float step_width,
     const std::string& inc_class,
     const std::string& dec_class) {
-  for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
+  for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
     if (dec_class != "") {

@@ -64,7 +64,7 @@ class sparse_matrix_storage {
   }
 
   tbl_t tbl_;
-  key_manager column2id_;
+  common::key_manager column2id_;
 };
 
 }  // namespace storage

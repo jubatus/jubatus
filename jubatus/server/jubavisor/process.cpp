@@ -72,12 +72,12 @@ void redirect(const char* filename, int fd) {
   int new_fd = open(filename, O_WRONLY | O_CREAT, 0644);
   if (new_fd < 0) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("cannot open file"));
+        jubatus::core::common::exception::runtime_error("cannot open file"));
   }
   int r = dup2(new_fd, fd);
   if (r < 0) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("cannot dup(2)"));
+        jubatus::core::common::exception::runtime_error("cannot dup(2)"));
   }
   close(new_fd);
 }

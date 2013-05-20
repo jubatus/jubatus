@@ -103,7 +103,7 @@ class mixable : public mixable0 {
       pack_(get_diff_impl(), buf);
       return buf;
     } else {
-      throw JUBATUS_EXCEPTION(config_not_set());
+      throw JUBATUS_EXCEPTION(common::config_not_set());
     }
   }
 
@@ -113,7 +113,7 @@ class mixable : public mixable0 {
       unpack_(d, diff);
       put_diff_impl(diff);
     } else {
-      throw JUBATUS_EXCEPTION(config_not_set());
+      throw JUBATUS_EXCEPTION(common::config_not_set());
     }
   }
 

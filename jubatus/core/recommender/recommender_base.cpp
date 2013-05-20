@@ -44,7 +44,7 @@ void recommender_base::similar_row(
     const std::string& id, std::vector<std::pair<std::string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
-  sfv_t sfv;
+  common::sfv_t sfv;
   orig_.get_row(id, sfv);
   similar_row(sfv, ids, ret_num);
 }
@@ -54,24 +54,27 @@ void recommender_base::neighbor_row(
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
-  sfv_t sfv;
+  common::sfv_t sfv;
   orig_.get_row(id, sfv);
   neighbor_row(sfv, ids, ret_num);
 }
 
-void recommender_base::decode_row(const std::string& id, sfv_t& ret) const {
+void recommender_base::decode_row(const std::string& id,
+                                  common::sfv_t& ret) const {
   ret.clear();
   orig_.get_row(id, ret);
 }
 
-void recommender_base::complete_row(const std::string& id, sfv_t& ret) const {
+void recommender_base::complete_row(const std::string& id,
+                                    common::sfv_t& ret) const {
   ret.clear();
-  sfv_t sfv;
+  common::sfv_t sfv;
   orig_.get_row(id, sfv);
   complete_row(sfv, ret);
 }
 
-void recommender_base::complete_row(const sfv_t& query, sfv_t& ret) const {
+void recommender_base::complete_row(const common::sfv_t& query,
+                                    common::sfv_t& ret) const {
   ret.clear();
   vector<pair<string, float> > ids;
   similar_row(query, ids, complete_row_similar_num_);
@@ -81,7 +84,7 @@ void recommender_base::complete_row(const sfv_t& query, sfv_t& ret) const {
 
   size_t exist_row_num = 0;
   for (size_t i = 0; i < ids.size(); ++i) {
-    sfv_t row;
+    common::sfv_t row;
     orig_.get_row(ids[i].first, row);
     if (row.size() == 0) {
       continue;
@@ -97,7 +100,7 @@ void recommender_base::complete_row(const sfv_t& query, sfv_t& ret) const {
   if (exist_row_num == 0) {
     return;
   }
-  sort_and_merge(ret);
+  common::sort_and_merge(ret);
   for (size_t i = 0; i < ret.size(); ++i) {
     ret[i].second /= exist_row_num;
   }
@@ -114,7 +117,7 @@ void recommender_base::load(std::istream& is) {
   load_impl(is);
 }
 
-float recommender_base::calc_similality(sfv_t& q1, sfv_t& q2) {
+float recommender_base::calc_similality(common::sfv_t& q1, common::sfv_t& q2) {
   float q1_norm = calc_l2norm(q1);
   float q2_norm = calc_l2norm(q2);
   if (q1_norm == 0.f || q2_norm == 0.f) {
@@ -143,7 +146,7 @@ float recommender_base::calc_similality(sfv_t& q1, sfv_t& q2) {
   return ret / q1_norm / q2_norm;
 }
 
-float recommender_base::calc_l2norm(const sfv_t& query) {
+float recommender_base::calc_l2norm(const common::sfv_t& query) {
   float ret = 0.f;
   for (size_t i = 0; i < query.size(); ++i) {
     ret += query[i].second * query[i].second;

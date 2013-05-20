@@ -36,7 +36,8 @@ passive_aggressive_2::passive_aggressive_2(
       config_(config) {
 }
 
-void passive_aggressive_2::train(const sfv_t& sfv, const string& label) {
+void passive_aggressive_2::train(const common::sfv_t& sfv,
+                                 const string& label) {
   string incorrect_label;
   float margin = calc_margin(sfv, label, incorrect_label);
   float loss = 1.f + margin;

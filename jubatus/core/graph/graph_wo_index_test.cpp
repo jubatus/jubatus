@@ -70,15 +70,15 @@ TEST(graph_wo_index, none) {
   g.clear();
   ASSERT_EQ("graph_wo_index", g.type());
 
-  EXPECT_THROW(g.update_node(7, property()), jubatus::exception::runtime_error);
-  EXPECT_THROW(g.remove_global_node(7), jubatus::exception::runtime_error);
-  EXPECT_THROW(g.update_edge(8, property()), jubatus::exception::runtime_error);
-  EXPECT_THROW(g.remove_edge(8), jubatus::exception::runtime_error);
+  EXPECT_THROW(g.update_node(7, property()), common::exception::runtime_error);
+  EXPECT_THROW(g.remove_global_node(7), common::exception::runtime_error);
+  EXPECT_THROW(g.update_edge(8, property()), common::exception::runtime_error);
+  EXPECT_THROW(g.remove_edge(8), common::exception::runtime_error);
   EXPECT_THROW(g.centrality(9, EIGENSCORE, q),
-               jubatus::exception::runtime_error);
+               common::exception::runtime_error);
   vector<node_id_t> ret;
   EXPECT_THROW(g.shortest_path(10, 11, 1000, ret, q),
-               jubatus::exception::runtime_error);
+               common::exception::runtime_error);
 
   {
     map<string, string> status;
@@ -109,8 +109,8 @@ TEST(graph_wo_index, none) {
   g.create_edge(10000, 777, 999);
   g.create_edge(10001, 777, 888);
   g.create_edge(10002, 777, 999);
-  EXPECT_THROW(g.create_edge(10002, 4, 5), jubatus::exception::runtime_error);
-  EXPECT_THROW(g.create_edge(10002, 999, 5), jubatus::exception::runtime_error);
+  EXPECT_THROW(g.create_edge(10002, 4, 5), common::exception::runtime_error);
+  EXPECT_THROW(g.create_edge(10002, 999, 5), common::exception::runtime_error);
   {
     map<string, string> status;
     g.get_status(status);
@@ -140,13 +140,13 @@ TEST(graph_wo_index, none) {
     ASSERT_EQ(10001u, ni.in_edges[0]);
   }
 
-  EXPECT_THROW(g.remove_node(5), jubatus::exception::runtime_error);
-  EXPECT_THROW(g.remove_node(999), jubatus::exception::runtime_error);
-  EXPECT_THROW(g.remove_edge(5), jubatus::exception::runtime_error);
+  EXPECT_THROW(g.remove_node(5), common::exception::runtime_error);
+  EXPECT_THROW(g.remove_node(999), common::exception::runtime_error);
+  EXPECT_THROW(g.remove_edge(5), common::exception::runtime_error);
   EXPECT_THROW(g.remove_node(777),
-               jubatus::exception::runtime_error);  // edge is associated
+               common::exception::runtime_error);  // edge is associated
   EXPECT_THROW(g.remove_node(888),
-               jubatus::exception::runtime_error);  // edge is associated
+               common::exception::runtime_error);  // edge is associated
 
   g.remove_edge(10000);
   g.remove_edge(10001);

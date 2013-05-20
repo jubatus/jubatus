@@ -24,6 +24,8 @@ using std::vector;
 using pfi::data::unordered_map;
 
 namespace jubatus {
+namespace core {
+namespace common {
 
 typedef unordered_map<string, uint64_t>::const_iterator cit;
 
@@ -88,4 +90,6 @@ vector<string> key_manager::get_all_id2key() const {
   return id2key_;
 }
 
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus

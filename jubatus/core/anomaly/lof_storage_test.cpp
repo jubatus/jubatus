@@ -61,8 +61,8 @@ lof_storage* make_storage(
   return s;
 }
 
-sfv_t make_dense_sfv(const string& s) {
-  sfv_t sfv;
+common::sfv_t make_dense_sfv(const string& s) {
+  common::sfv_t sfv;
   istringstream iss(s);
 
   size_t i = 0;
@@ -170,10 +170,10 @@ TEST_F(lof_storage_one_dimensional_test, collect_lrds_novel_input) {
 class lof_storage_mix_test : public ::testing::TestWithParam<
     std::pair<int, lof_storage::config> > {
  protected:
-  sfv_t generate_gaussian(const string& name, const sfv_t& mean,
+  common::sfv_t generate_gaussian(const string& name, const common::sfv_t& mean,
                           float deviation) {
-    sfv_t sfv(mean);
-    const uint64_t seed = hash_util::calc_string_hash(name);
+    common::sfv_t sfv(mean);
+    const uint64_t seed = common::hash_util::calc_string_hash(name);
     pfi::math::random::mtrand r(seed);
 
     for (size_t i = 0; i < sfv.size(); ++i) {
@@ -183,8 +183,8 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
     return sfv;
   }
 
-  void update(const string& name, const sfv_t& mean, float deviation) {
-    const sfv_t x = generate_gaussian(name, mean, deviation);
+  void update(const string& name, const common::sfv_t& mean, float deviation) {
+    const common::sfv_t x = generate_gaussian(name, mean, deviation);
     lof_storage* storage = portable_mixer_.get_hash(name);
     storage->update_row(name, x);
 
@@ -229,7 +229,7 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
 
   vector<pfi::lang::shared_ptr<lof_storage> > storages_;
   pfi::lang::shared_ptr<lof_storage> single_storage_;
-  portable_mixer<lof_storage> portable_mixer_;
+  common::portable_mixer<lof_storage> portable_mixer_;
 };
 
 TEST_P(lof_storage_mix_test, consistency) {
@@ -237,8 +237,8 @@ TEST_P(lof_storage_mix_test, consistency) {
   static const size_t num_query = 10;
   static const float deviation = 2;
 
-  const sfv_t mu0 = make_dense_sfv("1 1");
-  const sfv_t mu1 = make_dense_sfv("2 1");
+  const common::sfv_t mu0 = make_dense_sfv("1 1");
+  const common::sfv_t mu1 = make_dense_sfv("2 1");
 
   for (size_t i = 0; i < num_sample; ++i) {
     update(lexical_cast<string>(i), mu0, deviation);
@@ -253,7 +253,8 @@ TEST_P(lof_storage_mix_test, consistency) {
   mix();  // mix the latest k-dists and lrds
 
   for (size_t i = 0; i < num_query; ++i) {
-    const sfv_t x = generate_gaussian("t" + lexical_cast<string>(i), mu1, 1);
+    const common::sfv_t x =
+      generate_gaussian("t" + lexical_cast<string>(i), mu1, 1);
     float expect_lrd, actual_lrd;
     unordered_map<string, float> expect_lrds, actual_lrds;
 
@@ -276,8 +277,8 @@ TEST_P(lof_storage_mix_test, mix_after_remove) {
   static const size_t num_sample = 100;
   static const float deviation = 2;
 
-  const sfv_t mu0 = make_dense_sfv("1 1");
-  const sfv_t mu1 = make_dense_sfv("2 1");
+  const common::sfv_t mu0 = make_dense_sfv("1 1");
+  const common::sfv_t mu1 = make_dense_sfv("2 1");
 
   for (size_t i = 0; i < num_sample; ++i) {
     update(lexical_cast<string>(i), mu0, deviation);
@@ -295,8 +296,10 @@ TEST_P(lof_storage_mix_test, mix_after_remove) {
     const string row = lexical_cast<string>(i);
     for (size_t j = 0; j < storages_.size(); ++j) {
       if (i % 2 == 0) {
-        EXPECT_THROW(storages_[j]->get_kdist(row), exception::runtime_error);
-        EXPECT_THROW(storages_[j]->get_lrd(row), exception::runtime_error);
+        EXPECT_THROW(storages_[j]->get_kdist(row),
+                     common::exception::runtime_error);
+        EXPECT_THROW(storages_[j]->get_lrd(row),
+                     common::exception::runtime_error);
       } else {
         EXPECT_NO_THROW(storages_[j]->get_kdist(row));
         EXPECT_NO_THROW(storages_[j]->get_lrd(row));

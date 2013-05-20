@@ -36,7 +36,7 @@ class lof : public anomaly_base {
   ~lof();
 
   // return anomaly score of query
-  virtual float calc_anomaly_score(const sfv_t& query) const;
+  virtual float calc_anomaly_score(const common::sfv_t& query) const;
   virtual float calc_anomaly_score(const std::string& id) const;
 
   virtual void clear();
@@ -51,8 +51,8 @@ class lof : public anomaly_base {
   void save(std::ostream&);
   void load(std::istream&);
 
-  // static float calc_distance(sfv_t& q1, sfv_t& q2);
-  // static float calc_l2norm(sfv_t& q1, sfv_t& q2);
+  // static float calc_distance(common::sfv_t& q1, common::sfv_t& q2);
+  // static float calc_l2norm(common::sfv_t& q1, common::sfv_t& q2);
 
  private:
   virtual bool save_impl(std::ostream& os);

@@ -55,7 +55,7 @@ namespace {
 struct recommender_serv_config {
   std::string method;
   // TODO(unnonouno): if must use parameter
-  pfi::data::optional<core::jsonconfig::config> parameter;
+  pfi::data::optional<core::common::jsonconfig::config> parameter;
   pfi::text::json::json converter;
 
   template<typename Ar>
@@ -87,15 +87,16 @@ void recommender_serv::get_status(status_t& status) const {
 }
 
 bool recommender_serv::set_config(const std::string &config) {
-  core::jsonconfig::config conf_root(lexical_cast<json>(config));
+  core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   recommender_serv_config conf =
-      core::jsonconfig::config_cast_check<recommender_serv_config>(conf_root);
+    core::common::jsonconfig::config_cast_check<recommender_serv_config>(
+      conf_root);
 
   config_ = config;
 
-  core::jsonconfig::config param;
+  core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::jsonconfig::config(*conf.parameter);
+    param = core::common::jsonconfig::config(*conf.parameter);
   }
 
   recommender_.reset(
@@ -227,7 +228,7 @@ float recommender_serv::calc_l2norm(const datum& q) {
 
 void recommender_serv::check_set_config() const {
   if (!recommender_) {
-    throw JUBATUS_EXCEPTION(config_not_set());
+    throw JUBATUS_EXCEPTION(core::common::config_not_set());
   }
 }
 

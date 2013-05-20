@@ -48,9 +48,9 @@ dynamic_loader::dynamic_loader(const std::string& path)
     throw JUBATUS_EXCEPTION(
         converter_exception(
             "cannot load dynamic library: " + path + ": " + error)
-        << jubatus::exception::error_api_func("dlopen")
-        << jubatus::exception::error_file_name(path)
-        << jubatus::exception::error_message(error));
+        << jubatus::core::common::exception::error_api_func("dlopen")
+        << jubatus::core::common::exception::error_file_name(path)
+        << jubatus::core::common::exception::error_message(error));
   }
   handle_ = handle;
 }
@@ -67,9 +67,9 @@ void* dynamic_loader::load_symbol(const std::string& name) const {
   char* error = dlerror();
   if (error != NULL) {
     throw JUBATUS_EXCEPTION(converter_exception("cannot dlsym: " + name)
-        << jubatus::exception::error_api_func("dlsym")
-        << jubatus::exception::error_message("dlsym name: " + name)
-        << jubatus::exception::error_message(error));
+      << jubatus::core::common::exception::error_api_func("dlsym")
+      << jubatus::core::common::exception::error_message("dlsym name: " + name)
+      << jubatus::core::common::exception::error_message(error));
   }
   return func;
 }

@@ -29,6 +29,7 @@
 
 namespace jubatus {
 namespace core {
+namespace common {
 namespace jsonconfig {
 
 typedef std::vector<pfi::lang::shared_ptr<config_error> > config_error_list;
@@ -273,6 +274,7 @@ T config_cast_check(const config& c) {
 }
 
 }  // namespace jsonconfig
+}  // namespace common
 }  // namespace core
 }  // namespace jubatus
 

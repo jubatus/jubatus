@@ -67,7 +67,7 @@ class lof_storage : public anomaly_storage_base {
   // For Analyze
   // calculate lrd of query and lrd values of its neighbors
   float collect_lrds(
-      const sfv_t& query,
+      const common::sfv_t& query,
       pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
   float collect_lrds(
       const std::string& id,
@@ -77,7 +77,7 @@ class lof_storage : public anomaly_storage_base {
   void remove_row(const std::string& row);
   void clear();
   void get_all_row_ids(std::vector<std::string>& ids) const;
-  void update_row(const std::string& row, const sfv_t& diff);
+  void update_row(const std::string& row, const common::sfv_t& diff);
 
   void update_all();  // Update kdists and lrds
 

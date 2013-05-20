@@ -27,6 +27,8 @@
 #include <pficommon/data/serialization/unordered_map.h>
 
 namespace jubatus {
+namespace core {
+namespace common {
 
 class key_manager {
  public:
@@ -63,6 +65,8 @@ class key_manager {
   const std::string vacant_;
 };
 
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_COMMON_KEY_MANAGER_HPP_

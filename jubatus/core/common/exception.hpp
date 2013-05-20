@@ -29,6 +29,8 @@
 #include "exception_info.hpp"
 
 namespace jubatus {
+namespace core {
+namespace common {
 namespace exception {
 
 typedef error_info<struct error_at_file_, std::string> error_at_file;
@@ -53,18 +55,18 @@ struct exception_thrower_binder_type {
 
 #if defined(__GNUC__)
 #define JUBATUS_ERROR_FUNC \
-  jubatus::exception::error_at_func(__PRETTY_FUNCTION__)
+  jubatus::core::common::exception::error_at_func(__PRETTY_FUNCTION__)
 #else
 #define JUBATUS_ERROR_FUNC \
-  jubatus::exception::error_at_func(__func__)
+  jubatus::core::common::exception::error_at_func(__func__)
 #endif
 
 #define JUBATUS_CURRENT_ERROR_INFO() \
-  jubatus::exception::error_at_file(__FILE__) \
-    << jubatus::exception::error_at_line(__LINE__) \
-    << JUBATUS_ERROR_FUNC << jubatus::exception::error_splitter()
+  jubatus::core::common::exception::error_at_file(__FILE__) \
+    << jubatus::core::common::exception::error_at_line(__LINE__) \
+    << JUBATUS_ERROR_FUNC << jubatus::core::common::exception::error_splitter()
 #define JUBATUS_EXCEPTION(e) e << \
-  jubatus::exception::exception_thrower_binder_type() \
+  jubatus::core::common::exception::exception_thrower_binder_type() \
     << JUBATUS_CURRENT_ERROR_INFO()
 
 class exception_thrower_base;
@@ -295,7 +297,7 @@ class config_not_set : public exception::jubaexception<config_not_set> {
 class unsupported_method : public exception::runtime_error {
  public:
   explicit unsupported_method(const std::string& n)
-      : jubatus::exception::runtime_error(
+      : jubatus::core::common::exception::runtime_error(
           std::string("unsupported method (") + n + ")") {
   }
 };
@@ -303,14 +305,14 @@ class unsupported_method : public exception::runtime_error {
 class bad_storage_type : public exception::runtime_error {
  public:
   explicit bad_storage_type(const std::string& n)
-      : jubatus::exception::runtime_error(n) {
+      : jubatus::core::common::exception::runtime_error(n) {
   }
 };
 
 class membership_error : public exception::runtime_error {
  public:
   explicit membership_error(const std::string& n)
-      : jubatus::exception::runtime_error(n) {
+      : jubatus::core::common::exception::runtime_error(n) {
   }
 };
 
@@ -324,10 +326,12 @@ class not_found : public membership_error {
 class argv_error : public exception::runtime_error {
  public:
   explicit argv_error(const std::string& n)
-      : jubatus::exception::runtime_error(n) {
+      : jubatus::core::common::exception::runtime_error(n) {
   }
 };
 
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_COMMON_EXCEPTION_HPP_

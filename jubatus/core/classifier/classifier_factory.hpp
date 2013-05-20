@@ -28,11 +28,13 @@ class storage_base;
 
 }  // namespace storage
 
+namespace common {
 namespace jsonconfig {
 
 class config;
 
 }  // namespace jsonconfig
+}  // namespace common
 
 namespace classifier {
 
@@ -41,9 +43,9 @@ class classifier_base;
 class classifier_factory {
  public:
   static classifier_base* create_classifier(
-      const std::string& name,
-      const jsonconfig::config& param,
-      storage::storage_base* storage);
+    const std::string& name,
+    const common::jsonconfig::config& param,
+    storage::storage_base* storage);
 };
 
 }  // namespace classifier

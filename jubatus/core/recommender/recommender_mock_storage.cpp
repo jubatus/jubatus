@@ -34,37 +34,38 @@ recommender_mock_storage::~recommender_mock_storage() {
 }
 
 void recommender_mock_storage::set_similar_items(
-    const sfv_t& query,
+    const common::sfv_t& query,
     const vector<pair<string, float> >& ids) {
   similar_relation_[query] = ids;
 }
 
 void recommender_mock_storage::set_neighbor_items(
-    const sfv_t& query,
+    const common::sfv_t& query,
     const vector<pair<string, float> >& ids) {
   neighbor_relation_[query] = ids;
 }
 
 void recommender_mock_storage::similar_items_similarity(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   get_relation(query, similar_relation_, ret_num, ids);
 }
 
 void recommender_mock_storage::neighbor_items_distance(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   get_relation(query, neighbor_relation_, ret_num, ids);
 }
 
-void recommender_mock_storage::update(const sfv_t& from, const sfv_t& to) {
+void recommender_mock_storage::update(const common::sfv_t& from,
+                                      const common::sfv_t& to) {
   update_relation_key(from, to, similar_relation_);
   update_relation_key(from, to, neighbor_relation_);
 }
 
-void recommender_mock_storage::remove(const sfv_t& query) {
+void recommender_mock_storage::remove(const common::sfv_t& query) {
   similar_relation_.erase(query);
   neighbor_relation_.erase(query);
 }
@@ -107,7 +108,7 @@ void recommender_mock_storage::mix(const string& lhs, string& rhs) const {
 
 // static
 void recommender_mock_storage::get_relation(
-    const sfv_t& query,
+    const common::sfv_t& query,
     const relation_type& relmap,
     size_t ret_num,
     vector<pair<string, float> >& ids) {
@@ -125,8 +126,8 @@ void recommender_mock_storage::get_relation(
 
 // static
 void recommender_mock_storage::update_relation_key(
-    const sfv_t& from,
-    const sfv_t& to,
+    const common::sfv_t& from,
+    const common::sfv_t& to,
     relation_type& relmap) {
   relation_type::iterator it = relmap.find(from);
   if (it != relmap.end()) {

@@ -62,7 +62,7 @@ TEST(recommender_mock, neighbor_row_by_id) {
 TEST(recommender_mock, similar_row_by_query) {
   recommender_mock r;
 
-  const sfv_t query = make_sfv("f1:1 f2:1");
+  const common::sfv_t query = make_sfv("f1:1 f2:1");
   const vector<pair<string, float> > expect = make_ids("r2:2 r3:1");
   r.set_similar_relation(query, expect);
 
@@ -75,7 +75,7 @@ TEST(recommender_mock, similar_row_by_query) {
 TEST(recommender_mock, neighbor_row_by_query) {
   recommender_mock r;
 
-  const sfv_t query = make_sfv("f1:1 f2:1");
+  const common::sfv_t query = make_sfv("f1:1 f2:1");
   const vector<pair<string, float> > expect = make_ids("r2:1 r3:2");
   r.set_neighbor_relation(query, expect);
 

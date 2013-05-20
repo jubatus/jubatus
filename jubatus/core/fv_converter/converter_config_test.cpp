@@ -52,10 +52,10 @@ TEST(converter_config, config) {
     d.num_values_.push_back(std::make_pair("user/id", 1000));
     d.num_values_.push_back(std::make_pair("user/age", 20));
 
-    sfv_t f;
+    common::sfv_t f;
     conv.convert(d, f);
 
-    sfv_t exp;
+    common::sfv_t exp;
     exp.push_back(std::make_pair("user/name$Taro Yamada@str#bin/bin", 1.));
 #ifdef HAVE_RE2
     // only when re2 is enabled, detagging filter works
@@ -91,7 +91,7 @@ TEST(converter_config, hash) {
   datum d;
   d.num_values_.push_back(std::make_pair("age", 10));
 
-  sfv_t f;
+  common::sfv_t f;
   conv.convert(d, f);
 
   EXPECT_EQ("0", f[0].first);

@@ -65,7 +65,7 @@ class euclid_lsh : public recommender_base {
   ~euclid_lsh();
 
   virtual void neighbor_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   virtual void neighbor_row(
@@ -74,7 +74,7 @@ class euclid_lsh : public recommender_base {
       size_t ret_num) const;
 
   virtual void similar_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   virtual void similar_row(
@@ -99,7 +99,7 @@ class euclid_lsh : public recommender_base {
       MEMBER(projection_) & MEMBER(retain_projection_);
   }
 
-  std::vector<float> calculate_lsh(const sfv_t& query);
+  std::vector<float> calculate_lsh(const common::sfv_t& query);
   std::vector<float> get_projection(uint32_t seed);
 
   virtual bool save_impl(std::ostream& os);

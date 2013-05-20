@@ -41,7 +41,7 @@ passive_aggressive::passive_aggressive(storage::storage_base* storage)
       count_(0.f) {
 }
 
-static float squared_norm(const sfv_t& fv) {
+static float squared_norm(const common::sfv_t& fv) {
   float norm = 0.f;
   for (size_t i = 0; i < fv.size(); ++i) {
     norm += fv[i].second * fv[i].second;
@@ -49,7 +49,7 @@ static float squared_norm(const sfv_t& fv) {
   return norm;
 }
 
-void passive_aggressive::train(const sfv_t& fv, float value) {
+void passive_aggressive::train(const common::sfv_t& fv, float value) {
   sum_ += value;
   sq_sum_ += value * value;
   count_ += 1;
