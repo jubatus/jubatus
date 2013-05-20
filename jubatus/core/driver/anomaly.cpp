@@ -45,13 +45,11 @@ anomaly::anomaly(
     jubatus::core::anomaly::anomaly_base* anomaly_method,
     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new mixable_holder),
-      converter_(converter) {
-  pfi::lang::shared_ptr<jubatus::core::anomaly::anomaly_base>
-      anomaly_method_p(anomaly_method);
-  anomaly_.set_model(anomaly_method_p);
+      converter_(converter),
+      anomaly_(anomaly_method) {
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
 
-  mixable_holder_->register_mixable(&anomaly_);
+  anomaly_->register_mixables_to_holder(mixable_holder_);
   mixable_holder_->register_mixable(&wm_);
 
   (*converter_).set_weight_manager(wm_.get_model());
@@ -61,7 +59,7 @@ anomaly::~anomaly() {
 }
 
 void anomaly::clear_row(const std::string& id) {
-  anomaly_.get_model()->clear_row(id);
+  anomaly_->clear_row(id);
 }
 
 pair<string, float> anomaly::add(
@@ -75,24 +73,24 @@ float anomaly::update(const string& id, const fv_converter::datum& d) {
   sfv_t v;
   converter_->convert_and_update_weight(d, v);
 
-  anomaly_.get_model()->update_row(id, v);
-  return anomaly_.get_model()->calc_anomaly_score(id);
+  anomaly_->update_row(id, v);
+  return anomaly_->calc_anomaly_score(id);
 }
 
 void anomaly::clear() {
-  anomaly_.get_model()->clear();
+  anomaly_->clear();
   wm_.clear();
 }
 
 float anomaly::calc_score(const fv_converter::datum& d) const {
   sfv_t v;
   converter_->convert(d, v);
-  return anomaly_.get_model()->calc_anomaly_score(v);
+  return anomaly_->calc_anomaly_score(v);
 }
 
 vector<string> anomaly::get_all_rows() const {
   vector<string> ids;
-  anomaly_.get_model()->get_all_row_ids(ids);
+  anomaly_->get_all_row_ids(ids);
   return ids;
 }
 

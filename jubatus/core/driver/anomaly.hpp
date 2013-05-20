@@ -32,31 +32,6 @@ namespace jubatus {
 namespace core {
 namespace driver {
 
-struct mixable_anomaly : public framework::mixable<
-    jubatus::core::anomaly::anomaly_base,
-    std::string> {
-  std::string get_diff_impl() const {
-    std::string diff;
-    get_model()->get_const_storage()->get_diff(diff);
-    return diff;
-  }
-
-  void put_diff_impl(const std::string& v) {
-    get_model()->get_storage()->set_mixed_and_clear_diff(v);
-  }
-
-  void mix_impl(
-      const std::string& lhs,
-      const std::string& rhs,
-      std::string& mixed) const {
-    mixed = lhs;
-    get_model()->get_const_storage()->mix(rhs, mixed);
-  }
-
-  void clear() {
-  }
-};
-
 class anomaly {
  public:
   anomaly(
@@ -69,7 +44,7 @@ class anomaly {
   }
 
   jubatus::core::anomaly::anomaly_base* get_model() const {
-    return anomaly_.get_model().get();
+    return anomaly_.get();
   }
 
   void clear_row(const std::string& id);
@@ -85,7 +60,7 @@ class anomaly {
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  mixable_anomaly anomaly_;
+  pfi::lang::shared_ptr<core::anomaly::anomaly_base> anomaly_;
   mixable_weight_manager wm_;
 };
 

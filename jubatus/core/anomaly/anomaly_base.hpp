@@ -24,6 +24,7 @@
 #include <pficommon/lang/shared_ptr.h>
 
 #include "../common/type.hpp"
+#include "../framework/mixable.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
 #include "anomaly_storage_base.hpp"
 #include "anomaly_type.hpp"
@@ -46,23 +47,11 @@ class anomaly_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
 
   virtual std::string type() const = 0;
-  virtual core::storage::anomaly_storage_base* get_storage() = 0;
-  virtual const core::storage::anomaly_storage_base*
-      get_const_storage() const = 0;
-
-  void save(std::ostream&);
-  void load(std::istream&);
-
-  // static float calc_distance(sfv_t& q1, sfv_t& q2);
-  // static float calc_l2norm(sfv_t& query);
+  virtual void register_mixables_to_holder(
+      pfi::lang::shared_ptr<framework::mixable_holder> holder) = 0;
 
  protected:
   static const uint32_t NEIGHBOR_NUM;
-
-  virtual bool save_impl(std::ostream&) = 0;
-  virtual bool load_impl(std::istream&) = 0;
-
-  core::storage::sparse_matrix_storage orig_;
 };
 
 }  // namespace anomaly
