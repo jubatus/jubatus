@@ -20,9 +20,13 @@
 #include "../common/type.hpp"
 
 namespace jubatus {
+namespace core {
+namespace recommender {
 
 typedef core::common::sfv_t sfv_diff_t;
 
+}  // namespace recommender
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_RECOMMENDER_RECOMMENDER_TYPE_HPP_
