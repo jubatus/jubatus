@@ -67,7 +67,7 @@ void recommender::clear_row(const std::string& id) {
 void recommender::update_row(
     const std::string& id,
     const fv_converter::datum& dat) {
-  sfv_diff_t v;
+  core::recommender::sfv_diff_t v;
   converter_->convert_and_update_weight(dat, v);
   recommender_.get_model()->update_row(id, v);
 }
