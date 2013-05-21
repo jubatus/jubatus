@@ -98,7 +98,7 @@ TEST_F(config_trivial, invalid_config) {
 
   EXPECT_THROW(
       jubatus::server::common::config_tozk(*zk_, engine_, name_, config),
-      jubatus::exception::runtime_error);
+      jubatus::core::common::exception::runtime_error);
 }
 
 TEST_F(config_trivial, empty_config) {
@@ -106,5 +106,5 @@ TEST_F(config_trivial, empty_config) {
 
   EXPECT_THROW(
       jubatus::server::common::config_tozk(*zk_, engine_, name_, config),
-      jubatus::exception::runtime_error);
+      jubatus::core::common::exception::runtime_error);
 }
