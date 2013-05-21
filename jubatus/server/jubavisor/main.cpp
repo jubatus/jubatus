@@ -50,10 +50,10 @@ int main(int argc, char* argv[]) try {
   std::string logfile = "";
 
   if (p.exist("daemon")) {
-    jubatus::util::append_server_path(argv[0]);
+    jubatus::server::common::util::append_server_path(argv[0]);
     logfile = p.get<std::string>("logdir") + "/" + PROGNAME + ".";
 
-    int r = jubatus::util::daemonize();
+    int r = jubatus::server::common::util::daemonize();
 
     google::InitGoogleLogging(argv[0]);
     if (r == -1) {

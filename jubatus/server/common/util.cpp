@@ -51,6 +51,8 @@ using pfi::lang::lexical_cast;
 using pfi::lang::parse_error;
 
 namespace jubatus {
+namespace server {
+namespace common {
 namespace util {
 
 // TODO(kashihara): AF_INET does not specify IPv6
@@ -256,5 +258,7 @@ void ignore_sigpipe() {
 }
 
 }  // namespace util
+}  // namespace common
+}  // namespace server
 }  // namespace jubatus
 

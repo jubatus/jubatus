@@ -22,7 +22,7 @@
 
 TEST(common, util) {
   const std::string env = getenv("PATH");
-  jubatus::util::append_env_path("PATH", "./path/to/hoge");
+  jubatus::server::common::util::append_env_path("PATH", "./path/to/hoge");
   const std::string env2 = getenv("PATH");
   ASSERT_TRUE(env.size() < env2.size());
   //  std::cout << env << std::endl;
@@ -32,7 +32,7 @@ TEST(common, util) {
 
 TEST(common, util2) {
   const std::string env = getenv("PATH");
-  jubatus::util::append_server_path("./path/to/hoge");
+  jubatus::server::common::util::append_server_path("./path/to/hoge");
   const std::string env2 = getenv("PATH");
   ASSERT_TRUE(env.size() < env2.size());
   //  std::cout << env << std::endl;
@@ -41,15 +41,15 @@ TEST(common, util2) {
 }
 
 TEST(common, base_name) {
-  EXPECT_EQ("test", jubatus::util::base_name("/path/to/test"));
-  EXPECT_EQ("basename", jubatus::util::base_name("basename"));
-  EXPECT_EQ("", jubatus::util::base_name("/path/to/"));
+  EXPECT_EQ("test", jubatus::server::common::util::base_name("/path/to/test"));
+  EXPECT_EQ("basename", jubatus::server::common::util::base_name("basename"));
+  EXPECT_EQ("", jubatus::server::common::util::base_name("/path/to/"));
 }
 
 TEST(common, util_get_program_name) {
   std::string path;
   EXPECT_NO_THROW({
-    path = jubatus::util::get_program_name();
+    path = jubatus::server::common::util::get_program_name();
   });
   EXPECT_EQ(std::string("util_test"), path);
 }
@@ -57,7 +57,7 @@ TEST(common, util_get_program_name) {
 TEST(common, util_get_user_name) {
   std::string user;
   EXPECT_NO_THROW({
-    user = jubatus::util::get_user_name();
+    user = jubatus::server::common::util::get_user_name();
   });
   EXPECT_NE(std::string(""), user);
 }
@@ -65,13 +65,13 @@ TEST(common, util_get_user_name) {
 TEST(common, util_is_writable) {
   std::string path = "tmp_test_directory";
   mkdir(path.c_str(), S_IWUSR);
-  EXPECT_EQ(true, jubatus::util::is_writable(path.c_str()));
+  EXPECT_EQ(true, jubatus::server::common::util::is_writable(path.c_str()));
   rmdir(path.c_str());
 }
 
 TEST(common, util_get_machine_status) {
-  jubatus::util::machine_status_t status;
+  jubatus::server::common::util::machine_status_t status;
   EXPECT_NO_THROW({
-    jubatus::util::get_machine_status(status);
+    jubatus::server::common::util::get_machine_status(status);
   });
 }

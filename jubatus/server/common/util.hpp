@@ -25,6 +25,8 @@
 #include <vector>
 
 namespace jubatus {
+namespace server {
+namespace common {
 namespace util {
 
 struct machine_status_t {
@@ -51,6 +53,8 @@ void set_exit_on_term();
 void ignore_sigpipe();
 
 }  // namespace util
+}  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_SERVER_COMMON_UTIL_HPP_

@@ -113,7 +113,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.parse_check(args, argv);
 
   if (p.exist("version")) {
-    print_version(jubatus::util::get_program_name());
+    print_version(common::util::get_program_name());
     exit(0);
   }
 
@@ -122,7 +122,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   bind_if = p.get<std::string>("listen_if");
   threadnum = p.get<int>("thread");
   timeout = p.get<int>("timeout");
-  program_name = jubatus::util::get_program_name();
+  program_name = common::util::get_program_name();
   datadir = p.get<std::string>("datadir");
   logdir = p.get<std::string>("logdir");
   loglevel = p.get<int>("loglevel");
@@ -133,7 +133,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   if (!bind_address.empty()) {
     eth = bind_address;
   } else if (!bind_if.empty()) {
-    bind_address = eth = jubatus::util::get_ip(bind_if.c_str());
+    bind_address = eth = common::util::get_ip(bind_if.c_str());
   } else {
     bind_address = "0.0.0.0";
     eth = jubatus::server::common::get_default_v4_address();
@@ -167,13 +167,13 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
     exit(1);
   }
 
-  if ((!logdir.empty()) && (!jubatus::util::is_writable(logdir.c_str()))) {
+  if ((!logdir.empty()) && (!common::util::is_writable(logdir.c_str()))) {
     std::cerr << "can't create log file: " << strerror(errno) << std::endl;
     exit(1);
   }
-  set_log_destination(jubatus::util::get_program_name());
+  set_log_destination(common::util::get_program_name());
 
-  boot_message(jubatus::util::get_program_name());
+  boot_message(common::util::get_program_name());
 }
 
 server_argv::server_argv()
@@ -196,7 +196,7 @@ void server_argv::boot_message(const std::string& progname) const {
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth
       << ":" << port << '\n';
   ss << "    pid            : " << getpid() << '\n';
-  ss << "    user           : " << jubatus::util::get_user_name() << '\n';
+  ss << "    user           : " << common::util::get_user_name() << '\n';
   ss << "    mode           : ";
   if (is_standalone()) {
     ss << "standalone mode\n";
@@ -274,7 +274,7 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   p.parse_check(args, argv);
 
   if (p.exist("version")) {
-    print_version(jubatus::util::get_program_name());
+    print_version(common::util::get_program_name());
     exit(0);
   }
 
@@ -283,7 +283,7 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   bind_if = p.get<std::string>("listen_if");
   threadnum = p.get<int>("thread");
   timeout = p.get<int>("timeout");
-  program_name = jubatus::util::get_program_name();
+  program_name = common::util::get_program_name();
   z = p.get<std::string>("zookeeper");
   session_pool_expire = p.get<int>("pool_expire");
   session_pool_size = p.get<int>("pool_size");
@@ -295,19 +295,19 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   if (!bind_address.empty()) {
     eth = bind_address;
   } else if (!bind_if.empty()) {
-    bind_address = eth = jubatus::util::get_ip(bind_if.c_str());
+    bind_address = eth = common::util::get_ip(bind_if.c_str());
   } else {
     bind_address = "0.0.0.0";
     eth = jubatus::server::common::get_default_v4_address();
   }
 
-  if ((!logdir.empty()) && (!jubatus::util::is_writable(logdir.c_str()))) {
+  if ((!logdir.empty()) && (!common::util::is_writable(logdir.c_str()))) {
     std::cerr << "can't create log file: " << strerror(errno) << std::endl;
     exit(1);
   }
-  set_log_destination(jubatus::util::get_program_name());
+  set_log_destination(common::util::get_program_name());
 
-  boot_message(jubatus::util::get_program_name());
+  boot_message(common::util::get_program_name());
 }
 
 keeper_argv::keeper_argv()
@@ -325,7 +325,7 @@ void keeper_argv::boot_message(const std::string& progname) const {
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth
       << ":" << port << '\n';
   ss << "    pid            : " << getpid() << '\n';
-  ss << "    user           : " << jubatus::util::get_user_name() << '\n';
+  ss << "    user           : " << common::util::get_user_name() << '\n';
   ss << "    timeout        : " << timeout << '\n';
   ss << "    thread         : " << threadnum << '\n';
   ss << "    logdir         : " << logdir << '\n';

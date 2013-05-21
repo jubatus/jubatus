@@ -140,8 +140,8 @@ int run_server(int args, char** argv, const std::string& type) {
     impl_server.get_p()->get_mixer()->register_api(impl_server);
     ::atexit(jubatus::server::framework::atexit);
 
-    jubatus::util::set_exit_on_term();
-    jubatus::util::ignore_sigpipe();
+    common::util::set_exit_on_term();
+    common::util::ignore_sigpipe();
     return impl_server.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);

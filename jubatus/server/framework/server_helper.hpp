@@ -113,8 +113,8 @@ class server_helper {
     const server_argv& a = server_->argv();
     status_t& data = status[get_server_identifier(a)];
 
-    util::machine_status_t mt;
-    util::get_machine_status(mt);
+    common::util::machine_status_t mt;
+    common::util::get_machine_status(mt);
     data["VIRT"] = pfi::lang::lexical_cast<std::string>(mt.vm_size);
     data["RSS"] = pfi::lang::lexical_cast<std::string>(mt.vm_resident);
     data["SHR"] = pfi::lang::lexical_cast<std::string>(mt.vm_share);
@@ -157,7 +157,7 @@ class server_helper {
       serv.start(a.threadnum, true);
       // RPC server started, then register group membership
       impl_.prepare_for_run(a, use_cht_);
-      LOG(INFO) << jubatus::util::get_program_name() << " RPC server startup";
+      LOG(INFO) << common::util::get_program_name() << " RPC server startup";
       serv.join();
       return 0;
     } catch (const mp::system_error& e) {

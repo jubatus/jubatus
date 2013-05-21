@@ -60,8 +60,8 @@ jubavisor::jubavisor(
       port_base_(port),
       logfile_(logfile),
       max_children_(max) {
-  jubatus::util::ignore_sigpipe();
-  jubatus::util::set_exit_on_term();
+  common::util::ignore_sigpipe();
+  common::util::set_exit_on_term();
   ::atexit(jubavisor::atexit_);
 
   // handle SIG_CHLD
