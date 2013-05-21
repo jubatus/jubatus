@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_COMMON_UTIL_HPP_
-#define JUBATUS_CORE_COMMON_UTIL_HPP_
+#ifndef JUBATUS_SERVER_COMMON_UTIL_HPP_
+#define JUBATUS_SERVER_COMMON_UTIL_HPP_
 
 #include <stdint.h>
 
@@ -53,4 +53,4 @@ void ignore_sigpipe();
 }  // namespace util
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_COMMON_UTIL_HPP_
+#endif  // JUBATUS_SERVER_COMMON_UTIL_HPP_
