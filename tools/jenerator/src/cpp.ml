@@ -483,7 +483,7 @@ let gen_keeper_file conf source services =
         indent_lines 2 (List.concat servers);
         [
           (2,     "return k.run();");
-          (1,   "} catch (const jubatus::exception::jubatus_exception& e) {");
+          (1,   "} catch (const jubatus::core::common::exception::jubatus_exception& e) {");
           (2,     "LOG(FATAL) << e.diagnostic_information(true);");
           (2,     "return -1;");
           (1,   "}");
