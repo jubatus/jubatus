@@ -325,6 +325,44 @@ class column_table {
     return set_version;
   }
 
+  bool update_clock(const std::string& target, const owner& o) {
+    pfi::concurrent::scoped_wlock lk(table_lock_);
+    index_table::const_iterator it = index_.find(target);
+    if (it == index_.end()) {
+      return false;
+    }
+    versions_[it->second] = std::make_pair(o, clock_);
+    ++clock_;
+    return true;
+  }
+
+  bool update_clock(const uint64_t index, const owner& o) {
+    pfi::concurrent::scoped_wlock lk(table_lock_);
+    if (size() < index) {
+      return false;
+    }
+    versions_[index] = std::make_pair(o, clock_);
+    ++clock_;
+    return true;
+  }
+
+  version_t get_clock(const std::string& target) const {
+    pfi::concurrent::scoped_rlock lk(table_lock_);
+    index_table::const_iterator it = index_.find(target);
+    if (it == index_.end()) {
+      return version_t();
+    }
+    return versions_[it->second];
+  }
+
+  version_t get_clock(const uint64_t index) const {
+    pfi::concurrent::scoped_rlock lk(table_lock_);
+    if (size() < index) {
+      return version_t();
+    }
+    return versions_[index];
+  }
+
   bool delete_row(const std::string& target) {
     pfi::concurrent::scoped_wlock lk(table_lock_);
     index_table::const_iterator it = index_.find(target);
@@ -368,6 +406,7 @@ class column_table {
     ++clock_;
     return true;
   }
+
   bool delete_row(uint64_t index) {
     pfi::concurrent::scoped_wlock lk(table_lock_);
     if (size() <= index) {
