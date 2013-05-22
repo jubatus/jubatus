@@ -67,11 +67,10 @@ class recommender_mock : public recommender_base {
   virtual const core::storage::recommender_storage_base*
       get_const_storage() const;
 
- protected:
+ private:
   virtual bool save_impl(std::ostream&);
   virtual bool load_impl(std::istream&);
 
- private:
   friend class pfi::data::serialization::access;
   template<typename Ar>
   void serialize(Ar& ar) {
