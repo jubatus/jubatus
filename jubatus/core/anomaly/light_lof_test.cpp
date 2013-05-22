@@ -140,6 +140,8 @@ REGISTER_TYPED_TEST_CASE_P(
 INSTANTIATE_TYPED_TEST_CASE_P(
     usual_case, light_lof_test, nearest_neighbor_types);
 
+// TODO(beam2d): Add test of MIX.
+
 }  // namespace anomaly
 }  // namespace core
 }  // namespace jubatus
