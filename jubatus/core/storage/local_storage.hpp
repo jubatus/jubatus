@@ -80,7 +80,7 @@ class local_storage : public storage_base {
   id_features3_t tbl_;
   common::key_manager class2id_;
 
- protected:
+ private:
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
