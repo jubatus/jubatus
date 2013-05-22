@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <string>
+#include <set>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -58,29 +59,28 @@ using jubatus::core::table::uint32_column;
 using jubatus::core::table::uint64_column;
 using jubatus::core::table::string_column;
 
+#define INT_TYPES                                                   \
+  TYPE(int8);TYPE(int16);TYPE(int32);TYPE(int64);  /* NOLINT */     \
+  TYPE(uint8);TYPE(uint16);TYPE(uint32);TYPE(uint64);  /* NOLINT */
+#define OTHER_TYPES                                     \
+  TYPE(float);TYPE(double);TYPE(string);  /* NOLINT */
+#define TYPES INT_TYPES; OTHER_TYPES; /* NOLINT */
+
+using std::string;
 TEST(construct, base_nothing) {
   column_table base;
 }
-#define CONSTRUCT_TUPLE_TEST(ctype)\
-TEST(construct, ctype##_tuple) {\
-  column_table base;\
-  vector<column_type> schema;\
-  schema.push_back(column_type(column_type::ctype##_type));\
-  base.init(schema);\
+#define CONSTRUCT_TUPLE_TEST(ctype)           \
+TEST(construct, ctype##_tuple) {              \
+  column_table base;                          \
+  vector<column_type> schema;                             \
+  schema.push_back(column_type(column_type::ctype##_type)); \
+  base.init(schema);                                        \
 }
-
-CONSTRUCT_TUPLE_TEST(int8);
-CONSTRUCT_TUPLE_TEST(int16);  // NOLINT
-CONSTRUCT_TUPLE_TEST(int32);  // NOLINT
-CONSTRUCT_TUPLE_TEST(int64);  // NOLINT
-CONSTRUCT_TUPLE_TEST(uint8);
-CONSTRUCT_TUPLE_TEST(uint16);  // NOLINT
-CONSTRUCT_TUPLE_TEST(uint32);  // NOLINT
-CONSTRUCT_TUPLE_TEST(uint64);  // NOLINT
-CONSTRUCT_TUPLE_TEST(float);  // NOLINT
-CONSTRUCT_TUPLE_TEST(double);  // NOLINT
-CONSTRUCT_TUPLE_TEST(string);
+#define TYPE(x) CONSTRUCT_TUPLE_TEST(x)
+TYPES
 #undef CONSTRUCT_TUPLE_TEST
+#undef TYPE
 
 TEST(construct, int_float_tuple) {
   column_table base;
@@ -120,15 +120,10 @@ TEST(add, int_##ctype) {\
   ASSERT_EQ(0, static_cast<int>(base.get_##ctype##_column(0)[0]));      \
   ASSERT_EQ(base.size(), 1U);                                           \
 }
-ADD_INT_TEST(int8)
-ADD_INT_TEST(int16)  // NOLINT
-ADD_INT_TEST(int32)  // NOLINT
-ADD_INT_TEST(int64)  // NOLINT
-ADD_INT_TEST(uint8)
-ADD_INT_TEST(uint16)  // NOLINT
-ADD_INT_TEST(uint32)  // NOLINT
-ADD_INT_TEST(uint64)  // NOLINT
+#define TYPE(x) ADD_INT_TEST(x)
+INT_TYPES
 #undef ADD_INT_TEST
+#undef TYPE
 
 TEST(add, float) {
   column_table base;
@@ -164,31 +159,25 @@ TEST(add, bit_vector) {
   ASSERT_EQ(base.size(), 1U);
 }
 
-#define GET_COLUMN_INT_TEST(ctype)                            \
-TEST(get_column, ctype) {                                     \
-  const size_t num = 513;                                     \
-  column_table base;                                          \
-  vector<column_type> schema;                                 \
-  schema.push_back(column_type(column_type::ctype##_type));   \
-  base.init(schema);                                          \
-  for (size_t i = 0; i < num; ++i) {                          \
-    ASSERT_EQ(base.add(                                       \
-        pfi::lang::lexical_cast<std::string>(i) +             \
-        "a", owner("local"), ctype##_t(i)), true);            \
-  }                                                           \
-  ASSERT_EQ(num, base.size());                                \
-  ctype##_column ints = base.get_##ctype##_column(0);         \
-      ASSERT_EQ(num, ints.size());                            \
-}
-GET_COLUMN_INT_TEST(int8)
-GET_COLUMN_INT_TEST(int16)  // NOLINT
-GET_COLUMN_INT_TEST(int32)  // NOLINT
-GET_COLUMN_INT_TEST(int64)  // NOLINT
-GET_COLUMN_INT_TEST(uint8)
-GET_COLUMN_INT_TEST(uint16)  // NOLINT
-GET_COLUMN_INT_TEST(uint32)  // NOLINT
-GET_COLUMN_INT_TEST(uint64)  // NOLINT
+#define GET_COLUMN_INT_TEST(ctype)                                      \
+  TEST(get_column, ctype) {                                             \
+    const size_t num = 513;                                             \
+    column_table base;                                                  \
+    vector<column_type> schema;                                    \
+    schema.push_back(column_type(column_type::ctype##_type));           \
+    base.init(schema);                                                  \
+    for (size_t i = 0; i < num; ++i) {                                  \
+      ASSERT_EQ(base.add(pfi::lang::lexical_cast<std::string>(i) +      \
+                         "a", owner("local") , ctype##_t(i)), true);    \
+    }                                                                   \
+    ASSERT_EQ(num, base.size());                                        \
+    ctype##_column ints = base.get_##ctype##_column(0);                 \
+    ASSERT_EQ(num, ints.size());                                        \
+  }
+#define TYPE(x) GET_COLUMN_INT_TEST(x)
+INT_TYPES
 #undef GET_COLUMN_INT_TEST
+#undef TYPE
 
 TEST(get_column, float) {
   column_table base;
@@ -242,35 +231,29 @@ TEST(get_column, bit_vector) {
   ASSERT_EQ(bit_vectors.size(), num);
 }
 
-#define GET_AND_READ_INT_COLUMN(ctype)                                  \
-TEST(get_and_read_column, ctype) {                                      \
-  const size_t num = 257;                                               \
-  vector<column_type> schema;                                           \
-  schema.push_back(column_type(column_type::ctype##_type));             \
-  column_table base;                                                    \
-  base.init(schema);                                                    \
-  for (size_t i = 0; i < num; ++i) {                                    \
-    ASSERT_EQ(base.add(                                                 \
-        pfi::lang::lexical_cast<std::string>(i) + "a", owner("local"),  \
-        ctype##_t(i)), true);                                           \
-  }                                                                     \
-  ASSERT_EQ(base.size(), num);                                          \
-  ctype##_column ints = base.get_##ctype##_column(0);                   \
-  ASSERT_EQ(ints.size(), num);                                          \
-  for (size_t i = 0; i < num; ++i) {                                    \
-    ASSERT_EQ(ints[i], ctype##_t(i));                                   \
-  }                                                                     \
-}
-
-GET_AND_READ_INT_COLUMN(int8)  // NOLINT
-GET_AND_READ_INT_COLUMN(int16)  // NOLINT
-GET_AND_READ_INT_COLUMN(int32)  // NOLINT
-GET_AND_READ_INT_COLUMN(int64)  // NOLINT
-GET_AND_READ_INT_COLUMN(uint8)
-GET_AND_READ_INT_COLUMN(uint16)  // NOLINT
-GET_AND_READ_INT_COLUMN(uint32)  // NOLINT
-GET_AND_READ_INT_COLUMN(uint64)  // NOLINT
-#undef GET_AND_READ_INT_COLUMN
+#define get_and_read_int_column(ctype)                                  \
+  TEST(get_and_read_column, ctype) {                                    \
+    const size_t num = 257;                                             \
+    std::vector<column_type> schema;                                    \
+    schema.push_back(column_type(column_type::ctype##_type));           \
+    column_table base;                                                  \
+    base.init(schema);                                                  \
+    for (size_t i = 0; i < num; ++i) {                                  \
+      ASSERT_EQ(base.add(pfi::lang::lexical_cast<std::string>(i) + "a", \
+                         owner("local"),                                \
+                         ctype##_t(i)), true);                          \
+    }                                                                   \
+    ASSERT_EQ(base.size(), num);                                        \
+    ctype##_column ints = base.get_##ctype##_column(0);                 \
+      ASSERT_EQ(ints.size(), num);                                      \
+      for (size_t i = 0; i < num; ++i) {                                \
+        ASSERT_EQ(ints[i], ctype##_t(i));                               \
+      }                                                                 \
+  }
+#define TYPE(x) get_and_read_int_column(x)
+  INT_TYPES
+#undef get_and_read_int_column
+#undef TYPE
 
 TEST(get_and_read_column, string) {
   column_table base;
@@ -318,32 +301,26 @@ TEST(pfi, lexical_cast) {
                         "hoge");
 }
 
-#define ITERATE_INT_TEST(ctype)                               \
-TEST(column, iterate_int_##ctype) {                           \
-  const size_t num = 513;                                     \
-  vector<column_type> schema;                                 \
-  schema.push_back(column_type(column_type::ctype##_type));   \
-  column_table base;                                          \
-  base.init(schema);                                          \
-  for (size_t i = 0; i < num; ++i) {                          \
-    base.add(                                                 \
-        pfi::lang::lexical_cast<std::string>(i)+"hoge",       \
-        owner("local"), ctype##_t(i));                        \
-  }                                                           \
-  ctype##_column ic = base.get_##ctype##_column(0);           \
-  for (size_t i = 0; i < num; ++i) {                          \
-    ASSERT_EQ(ic[i], ctype##_t(i));                           \
-  }                                                           \
-}
-
-ITERATE_INT_TEST(int8)
-ITERATE_INT_TEST(int16)  // NOLINT
-ITERATE_INT_TEST(int32)  // NOLINT
-ITERATE_INT_TEST(int64)  // NOLINT
-ITERATE_INT_TEST(uint8)
-ITERATE_INT_TEST(uint16)  // NOLINT
-ITERATE_INT_TEST(uint32)  // NOLINT
-ITERATE_INT_TEST(uint64)  // NOLINT
+#define ITERATE_INT_TEST(ctype)                                 \
+  TEST(column, iterate_int_##ctype) {                           \
+    const size_t num = 513;                                     \
+    vector<column_type> schema;                            \
+    schema.push_back(column_type(column_type::ctype##_type));   \
+    column_table base;                                          \
+    base.init(schema);                                          \
+    for (size_t i = 0; i < num; ++i) {                          \
+      base.add(pfi::lang::lexical_cast<std::string>(i)+"hoge",  \
+               owner("local"),                                  \
+               ctype##_t(i));                                   \
+    }                                                           \
+    ctype##_column ic = base.get_##ctype##_column(0);           \
+      for (size_t i = 0; i < num; ++i) {                        \
+        ASSERT_EQ(ic[i], ctype##_t(i));                         \
+      }                                                         \
+  }
+#define TYPE(x) ITERATE_INT_TEST(x)
+INT_TYPES
+#undef TYPE
 #undef ITERATE_INT_TEST
 
 TEST(base, iterate_float) {
@@ -816,4 +793,118 @@ TEST(table, json_dump) {
   base.add("hoge", owner("local"), bv);
   base.add("fuga", owner("local"), bv);
   std::cout << base.dump_json() << std::endl;
+}
+
+#define DELETE_ROW_TEST(ctype)                                          \
+  TEST(table, delete_##ctype##_row) {                                   \
+    column_table base;                                                  \
+    vector<column_type> schema;                                         \
+    schema.push_back(column_type(column_type::ctype##_type));           \
+    base.init(schema);                                                  \
+    for (size_t i = 0; i < 3000; i += 20) {                             \
+      base.add("a" + pfi::lang::lexical_cast<string>(i),                \
+               owner("local"),                                          \
+               static_cast<ctype##_t>(i));                              \
+    }                                                                   \
+    {                                                                   \
+      const uint64_t max_size = base.size();                            \
+      size_t cnt = 0;                                                   \
+      for (size_t i = 0; base.size(); i += 20) {                        \
+        base.delete_row("a" + pfi::lang::lexical_cast<string>(i));      \
+        ++cnt;                                                          \
+        ASSERT_EQ(max_size - cnt, base.size());                         \
+        ctype##_column ic = base.get_##ctype##_column(0);               \
+          ASSERT_EQ(ic.size(), base.size());                            \
+        std::set<ctype##_t> expect;                                     \
+        for (size_t j = 0; j < max_size - cnt; ++j) {                   \
+          expect.insert(static_cast<ctype##_t>(i + (j + 1) * 20));      \
+        }                                                               \
+        for (size_t j = 0; j < ic.size(); ++j) {                        \
+          expect.erase(ic[j]);                                          \
+        }                                                               \
+        for (std::set<ctype##_t>::const_iterator it = expect.begin();   \
+             it != expect.end();                                        \
+             ++it) {                                                    \
+          std::cout << "rest expected:" << *it << std::endl;            \
+        }                                                               \
+        ASSERT_EQ(0u, expect.size());                                   \
+      }                                                                 \
+    }                                                                   \
+    for (size_t i = 0; i < 300; i += 20) {                              \
+      base.add("a" + pfi::lang::lexical_cast<string>(i),                \
+               owner("local"),                                          \
+               static_cast<ctype##_t>(i));                              \
+    }                                                                   \
+    {                                                                   \
+      const uint64_t max_size = base.size();                            \
+      size_t cnt = 0;                                                   \
+      /* delete by index */                                             \
+      for (size_t i = 0; base.size(); i += 20) {                        \
+        std::set<ctype##_t> expect;                                     \
+        {                                                               \
+          ctype##_column ic = base.get_##ctype##_column(0);             \
+          ASSERT_EQ(ic.size(), base.size());                            \
+          for (size_t j = 1; j < ic.size(); ++j) {                      \
+            expect.insert(static_cast<ctype##_t>(ic[j]));               \
+          }                                                             \
+        }                                                               \
+        base.delete_row(0);                                             \
+        ++cnt;                                                          \
+        ASSERT_EQ(max_size - cnt, base.size());                         \
+        {                                                               \
+          ctype##_column ic = base.get_##ctype##_column(0);             \
+          ASSERT_EQ(ic.size(), base.size());                            \
+          for (size_t j = 0; j < ic.size(); ++j) {                      \
+            expect.erase(ic[j]);                                        \
+          }                                                             \
+          for (std::set<ctype##_t>::const_iterator it = expect.begin(); \
+               it != expect.end();                                      \
+               ++it) {                                                  \
+            std::cout << "rest expected:" << *it << std::endl;          \
+          }                                                             \
+        }                                                               \
+        ASSERT_EQ(0u, expect.size());                                   \
+      }                                                                 \
+    }                                                                   \
+}
+#define TYPE(x) DELETE_ROW_TEST(x)
+INT_TYPES
+#undef TYPE
+#undef DELETE_ROW_TEST
+
+TEST(table, delete_bv_row) {
+  column_table base;
+  vector<column_type> schema;
+  schema.push_back(column_type(column_type::bit_vector_type, 800));
+  base.init(schema);
+
+  bit_vector bv1(800);
+  bv1.set_bit(199);
+  bit_vector bv2(800);
+  bv2.set_bit(129);
+  base.add("hoge", owner("local"), bv1);
+  ASSERT_EQ(true, base.delete_row("hoge"));
+  ASSERT_EQ(0u, base.size());
+  base.add("aa", owner("local"), bv1);
+  ASSERT_EQ(1u, base.size());
+  {
+    const_bit_vector_column bc = base.get_bit_vector_column(0);
+    ASSERT_EQ(bv1, bc[0]);
+    ASSERT_NE(bv2, bc[0]);
+  }
+
+  base.add("bb", owner("local"), bv2);
+  {
+    const_bit_vector_column bc = base.get_bit_vector_column(0);
+    ASSERT_EQ(2u, base.size());
+    ASSERT_EQ(bv1, bc[0]);
+    ASSERT_EQ(bv2, bc[1]);
+  }
+
+  base.delete_row(0);  // delete can be done by index number too
+  {
+    const_bit_vector_column bc = base.get_bit_vector_column(0);
+    ASSERT_EQ(1u, base.size());
+    ASSERT_EQ(bv2, bc[0]);  // data will move
+  }
 }

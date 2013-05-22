@@ -17,13 +17,16 @@
 #ifndef JUBATUS_CORE_TABLE_COLUMN_COLUMNS_HPP_
 #define JUBATUS_CORE_TABLE_COLUMN_COLUMNS_HPP_
 
+#include <memory.h>
 #include <stdint.h>
+
 #include <algorithm>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
 #include <msgpack.hpp>
+
 #include <pficommon/lang/demangle.h>
 #include <pficommon/data/serialization.h>
 #include "../storage_exception.hpp"
@@ -62,7 +65,6 @@ class abstract_column;
   TYPE(float)  /* NOLINT */                     \
   TYPE(double)  /* NOLINT */                    \
   TYPE(string)
-
 
 struct bit_vector_column {
   bit_vector_column(char* ptr, uint64_t size, size_t bit_num)
@@ -127,6 +129,19 @@ struct bit_vector_column {
         " for bit_vector");
   }
 
+  bool remove(uint64_t target) {
+    if (size() <= target) {
+      std::cout << "size:" << size() << " <= target:" << target << std::endl;
+      return false;
+    }
+    const uint64_t memory_size = bit_vector::memory_size(vector_bit_num_);
+    char* const from = ptr_ + (target + 1) * memory_size;
+    char* const to = ptr_ + target * memory_size;
+    std::memmove(to, from, size_ - (target + 1) * memory_size);
+    size_ -= memory_size;
+    return true;
+  }
+
   void dump() const {
     std::cout << "[column (bit_vector)"
               << " size:" << size() << " {" << std::endl;
@@ -181,8 +196,6 @@ struct const_bit_vector_column : private bit_vector_column {
     return os;
   }
 };
-
-
 
 template<typename T>
 class const_typed_column;
@@ -246,6 +259,17 @@ class typed_column {
         " for " + pfi::lang::get_typename<T>());
   }
 
+  bool remove(uint64_t target) {
+    if (size() <= target) {
+      return false;
+    }
+    T* const addr_1 = ptr_ + target;
+    T* const addr_2 = ptr_ + size() - 1;
+    std::swap(*addr_1, *addr_2);
+    size_ -= sizeof(T);
+    return true;
+  }
+
  public:
   void dump() const {
     std::cout << "[column (" << pfi::lang::get_typename<T>() << ")"
@@ -288,10 +312,11 @@ class typed_column {
   uint64_t size() const {
     return size_ / sizeof(T);
   }
+
   friend std::ostream& operator<<(
       std::ostream& os,
       const typed_column_t& column) {
-    os << "size: " << *column.size_ << std::endl;
+    os << "size: " << column.size_ << std::endl;
     for (uint64_t i = 0; i < column.size(); ++i) {
       os << i << ":" << column[i] << std::endl;
     }
@@ -467,7 +492,7 @@ class abstract_column {
       type##_column column(ptr_, size_);            \
         SUFFIX(type) t;                             \
         o.convert(&t);                              \
-        column.update(target, t);                    \
+        column.update(target, t);                   \
     } else  // NOLINT
 #define TYPE(x) COLUMN(x)
 #define SUFFIX(x) x##_t
@@ -490,6 +515,36 @@ class abstract_column {
         throw std::bad_cast();
       }
 #undef COLUMN
+  }
+
+  bool remove(uint64_t target) {
+#define COLUMN(type)                                  \
+    if (type_.is(column_type::type##_type)) {         \
+      type##_column column(ptr_, size_);              \
+        if (column.remove(target)) {                  \
+          size_ -= type_.size();                      \
+          return true;                                \
+        }                                             \
+    } else  // NOLINT
+#define TYPE(x) COLUMN(x)
+#define SUFFIX(x) x##_t
+    USE_TYPES_NEED_T
+#undef SUFFIX
+#define SUFFIX(x) x
+      USE_TYPES_UNNEED_T
+#undef SUFFIX
+#undef TYPE
+      if (type_.is(column_type::bit_vector_type)) {
+        bit_vector_column column(ptr_, size_, type_.bit_vector_length());
+        if (column.remove(target)) {
+          size_ -= type_.size();
+          return true;
+        }
+      } else {
+        throw std::bad_cast();
+      }
+#undef COLUMN
+    return false;
   }
 
   const column_type& type() const {return type_;}
@@ -523,7 +578,7 @@ class abstract_column {
   COLUMN_T(string);
 #  undef SIZE_ARG
 #  define SIZE_ARG(x) , type_.bit_vector_length()
-  COLUMN_T(bit_vector);
+  COLUMN_T(bit_vector);  // NOLINT
 #  undef SIZE_ARG
 # undef SUFFIX
 #undef COLUMN_T
