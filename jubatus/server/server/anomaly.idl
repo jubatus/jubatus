@@ -57,6 +57,10 @@ service anomaly {
   #@cht #@update #@pass
   float update(0: string name, 1: string id, 2: datum row) # //@cht
 
+  #- overwrite a point.
+  #@cht #@update #@pass
+  float overwrite(0: string name, 1: string id, 2: datum row) # //@cht
+
   #- clear whole data.
   #@broadcast #@update #@all_and
   bool clear(0: string name) # //@broadcast

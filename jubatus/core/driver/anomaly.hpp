@@ -52,6 +52,7 @@ class anomaly {
       const std::string& id,
       const fv_converter::datum& d);
   float update(const std::string& id, const fv_converter::datum& d);
+  float overwrite(const std::string& id, const fv_converter::datum& d);
   void clear();
   float calc_score(const fv_converter::datum& d) const;
   std::vector<std::string> get_all_rows() const;

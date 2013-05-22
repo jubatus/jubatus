@@ -106,6 +106,10 @@ void lof::update_row(const string& id, const sfv_diff_t& diff) {
   lof_index_->update_row(id, diff);
 }
 
+void lof::set_row(const string& id, const sfv_t& sfv) {
+  throw JUBATUS_EXCEPTION(unsupported_method(__func__));
+}
+
 void lof::get_all_row_ids(vector<string>& ids) const {
   lof_index_->get_all_row_ids(ids);
 }

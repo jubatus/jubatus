@@ -38,14 +38,34 @@ class anomaly_base {
   anomaly_base();
   virtual ~anomaly_base();
 
-  // return anomaly score of query
+  // Calculates and returns anomaly score of given query.
   virtual float calc_anomaly_score(const sfv_t& query) const = 0;
-  virtual float calc_anomaly_score(const std::string& id) const = 0;
-  virtual void clear() = 0;
-  virtual void clear_row(const std::string& id) = 0;
-  virtual void update_row(const std::string& id, const sfv_diff_t& diff) = 0;
-  virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
 
+  // Returns anomaly score of the row corresponding to given id.
+  virtual float calc_anomaly_score(const std::string& id) const = 0;
+
+  // Clears all rows.
+  virtual void clear() = 0;
+
+  // Removes the row corresponding to given id.
+  //
+  // The removal event must be shared among other MIX participants. Thus,
+  // typical implementation does not eliminate the row immediately but marks it
+  // as "removed" instead. Some implementations including light_lof do not
+  // support this function.
+  virtual void clear_row(const std::string& id) = 0;
+
+  // Partially updates the row corresponding to given id.
+  //
+  // Some implementations including light_lof do not support this function.
+  virtual void update_row(const std::string& id, const sfv_diff_t& diff) = 0;
+
+  // Updates the row corresponding to given id.
+  //
+  // Some implementations including lof do not support this function.
+  virtual void set_row(const std::string& id, const sfv_t& sfv) = 0;
+
+  virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
   virtual std::string type() const = 0;
   virtual void register_mixables_to_holder(
       pfi::lang::shared_ptr<framework::mixable_holder> holder) = 0;

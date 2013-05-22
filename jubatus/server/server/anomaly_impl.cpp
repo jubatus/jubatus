@@ -40,6 +40,11 @@ class anomaly_impl_ : public anomaly<anomaly_impl_> {
     return get_p()->update(id, row);
   }
 
+  float overwrite(std::string name, std::string id, datum row) {
+    JWLOCK_(p_);
+    return get_p()->overwrite(id, row);
+  }
+
   bool clear(std::string name) {
     JWLOCK_(p_);
     return get_p()->clear();

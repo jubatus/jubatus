@@ -213,6 +213,16 @@ float anomaly_serv::update(const string& id, const datum& d) {
   return score;
 }
 
+float anomaly_serv::overwrite(const string& id, const datum& d) {
+  check_set_config();
+  core::fv_converter::datum data;
+  convert(d, data);
+
+  float score = anomaly_->overwrite(id, data);
+  DLOG(INFO) << "point overwritten: " << id;
+  return score;
+}
+
 bool anomaly_serv::clear() {
   check_set_config();
   anomaly_->clear();

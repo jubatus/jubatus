@@ -56,6 +56,7 @@ class anomaly_serv : public framework::server_base {
 
   std::pair<std::string, float> add(const datum& d);
   float update(const std::string& id, const datum& d);
+  float overwrite(const std::string& id, const datum& d);
 
   bool clear();
 
