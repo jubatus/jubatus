@@ -52,14 +52,13 @@ class key_manager {
   void init_by_id2key(const std::vector<std::string>& id2key);
   std::vector<std::string> get_all_id2key() const;
 
- protected:
+ private:
   friend class pfi::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(key2id_) & MEMBER(id2key_);
   }
 
- private:
   pfi::data::unordered_map<std::string, uint64_t> key2id_;
   std::vector<std::string> id2key_;
   const std::string vacant_;
