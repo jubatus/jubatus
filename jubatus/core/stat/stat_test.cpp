@@ -69,6 +69,20 @@ TYPED_TEST_P(stat_test, trivial) {
   EXPECT_NEAR(p.stddev("test"), 0.0, 0.1);
 }
 
+TEST(stat_test, entropy) {
+  core::stat::stat p(3);
+
+  p.push("test", 1.0);
+  p.push("test", 2.0);
+  p.push("test", 3.0);
+  EXPECT_TRUE(p.entropy() == 0.0);
+
+  p.push("test1", 1.0);
+  p.push("test2", 2.0);
+  p.push("test3", 3.0);
+  EXPECT_NEAR(p.entropy(), 1.097, 0.01);
+}
+
 REGISTER_TYPED_TEST_CASE_P(
     stat_test,
     trivial);
