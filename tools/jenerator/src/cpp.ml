@@ -713,7 +713,7 @@ let gen_server_template_source s =
       (0, serv_name ^ "::~" ^ serv_name ^ "() {");
       (0, "}");
       (0, "");
-      (0, "virtual mixer::mixer* " ^ serv_name ^ "::get_mixer() const {");
+      (0, "mixer::mixer* " ^ serv_name ^ "::get_mixer() const {");
       (0, "}");
       (0, "");
       (0, "pfi::lang::shared_ptr<framework::mixable_holder> "
