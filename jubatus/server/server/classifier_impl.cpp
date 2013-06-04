@@ -38,6 +38,11 @@ class classifier_impl_ : public classifier<classifier_impl_> {
     return get_p()->classify(data);
   }
 
+  bool delete_class(std::string name, std::vector<std::string> names) {
+    JWLOCK_(p_);
+    return get_p()->delete_class(names);
+  }
+
   bool clear(std::string name) {
     JWLOCK_(p_);
     return get_p()->clear();

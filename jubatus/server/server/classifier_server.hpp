@@ -29,6 +29,9 @@ class classifier : public jubatus::server::common::mprpc::rpc_server {
     rpc_server::add<std::vector<std::vector<estimate_result> >(std::string,
          std::vector<datum>)>("classify", pfi::lang::bind(&Impl::classify, impl,
          pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<bool(std::string, std::vector<std::string>)>("delete_class",
+         pfi::lang::bind(&Impl::delete_class, impl, pfi::lang::_1,
+         pfi::lang::_2));
     rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(&Impl::clear,
          impl, pfi::lang::_1));
     rpc_server::add<bool(std::string, std::string)>("save", pfi::lang::bind(

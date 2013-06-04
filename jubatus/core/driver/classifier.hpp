@@ -54,6 +54,8 @@ class classifier {
   jubatus::core::classifier::classify_result classify(
       const fv_converter::datum& data) const;
 
+  void delete_class(const std::string& name);
+
   void clear();
 
  private:

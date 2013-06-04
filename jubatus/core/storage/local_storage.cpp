@@ -169,6 +169,16 @@ void local_storage::update(
   feature_row[class2id_.get_id(dec_class)].v1 -= v;
 }
 
+void local_storage::delete_class(const std::string& name) {
+  uint64_t delete_id = class2id_.get_id(name);
+  for (id_features3_t::iterator it = tbl_.begin();
+       it != tbl_.end();
+       ++it) {
+    it->second.erase(delete_id);
+  }
+  class2id_.delete_key(name);
+}
+
 void local_storage::clear() {
   // Clear and minimize
   id_features3_t().swap(tbl_);

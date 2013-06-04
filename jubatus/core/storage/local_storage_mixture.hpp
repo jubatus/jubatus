@@ -70,6 +70,8 @@ class local_storage_mixture : public storage_base {
       const std::string& inc_class,
       const std::string& dec_class);
 
+  void delete_class(const std::string& name);
+
   void clear();
 
   bool save(std::ostream& os);

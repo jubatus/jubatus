@@ -157,6 +157,10 @@ float classifier_base::squared_norm(const common::sfv_t& fv) {
   return ret;
 }
 
+void classifier_base::delete_class(const std::string& name) {
+  storage_->delete_class(name);
+}
+
 }  // namespace classifier
 }  // namespace core
 }  // namespace jubatus

@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 #include <pficommon/lang/shared_ptr.h>
-#include "jubatus/core/driver/classifier.hpp"
+#include <jubatus/core/driver/classifier.hpp>
 #include "classifier_types.hpp"
 #include "../framework/server_base.hpp"
 
@@ -51,6 +51,8 @@ class classifier_serv : public framework::server_base {
   int train(const std::vector<std::pair<std::string, datum> >& data);
   std::vector<std::vector<estimate_result> > classify(
       const std::vector<datum>& data) const;
+
+  bool delete_class(const std::vector<std::string> names);
 
   bool clear();
 

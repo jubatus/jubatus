@@ -51,6 +51,7 @@ class key_manager {
 
   void init_by_id2key(const std::vector<std::string>& id2key);
   std::vector<std::string> get_all_id2key() const;
+  void delete_key(const std::string& name);
 
  private:
   friend class pfi::data::serialization::access;
