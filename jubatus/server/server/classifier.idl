@@ -57,6 +57,9 @@ service classifier {
   list<list<estimate_result> >  classify(0: string name, 1: list<datum> data) # //@random
 
   #@broadcast #@update #@all_and
+  bool delete_label(0: string name, 1: list<string> label) # //@broadcast
+
+  #@broadcast #@update #@all_and
   bool clear(0: string name) # //@broadcast
 
   #@broadcast #@update #@all_and
