@@ -31,6 +31,55 @@ class byte_buffer {
  public:
   byte_buffer() {
   }
+  // I think this behavior is inconsistent
+  // considering following codes:
+  //   byte_buffer a(0, 0), b = a;
+  //   a.assign(ptr, size);
+  //   assert(a.ptr() == b.ptr() && a.size() == b.size());
+  // and
+  //   byte_buffer a, b = a;
+  //   a.assign(ptr, size);
+  //   assert(a.ptr() != NULL && b.ptr() == NULL);
+  //   assert(a.size() == size && b.size() == 0);
+  // .
+  //
+  // PROPOSED RESOLUTION:
+  //   a) change default constructor's implememtation:
+  //       byte_buffer()
+  //           : buf_(new std::vector<char>()) {
+  //       }
+  //   b) change assign's implementation:
+  //       // b-1
+  //       void assign(const void* ptr, size_t size) {
+  //         *this = byte_buffer(ptr, size);
+  //       }
+  //      or
+  //       // b-2
+  //       void assign(const void* ptr, size_t size) {
+  //         if (!buf_) {
+  //           assert(!"this->ptr() should not be null.");
+  //           // or throw an exception
+  //         }
+  //         buf_->resize(size);
+  //         std::memcopy(this->ptr(), ptr, size);
+  //       }
+  //      or
+  //       // b-3
+  //       void assign(const void* ptr, size_t size) {
+  //         if (buf_.unique()) {
+  //           // if buffer is unique, directly rewrite it
+  //           buf_->resize(size);
+  //           std::memcopy(this->ptr(), ptr, size);
+  //         }
+  //         else {
+  //           // otherwise (if buffer is shared or does not exist),
+  //           // create new buffer
+  //           *this = byte_buffer(ptr, size);
+  //         }
+  //       }
+  //
+  //   Resolution b-3 seems good to me.
+  //
 
   explicit byte_buffer(size_t size)
       : buf_(new std::vector<char>(size)) {
