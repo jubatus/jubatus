@@ -122,6 +122,7 @@ bool process::spawn_link(int p) {
 
     execvp(cmd.c_str(), (char* const *) &arg_list[0]);
     perror(cmd.c_str());  // execv only returns on error
+    _exit(EXIT_FAILURE);
 
   } else {
     perror("failed on forking new process");
