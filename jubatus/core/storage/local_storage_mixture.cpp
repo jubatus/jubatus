@@ -229,6 +229,21 @@ void local_storage_mixture::set_average_and_clear_diff(
   tbl_diff_.clear();
 }
 
+void local_storage_mixture::delete_class(const std::string& name) {
+  uint64_t delete_id = class2id_.get_id(name);
+  for (id_features3_t::iterator it = tbl_.begin();
+       it != tbl_.end();
+       ++it) {
+    it->second.erase(delete_id);
+  }
+  for (id_features3_t::iterator it = tbl_diff_.begin();
+       it != tbl_.end();
+       ++it) {
+    it->second.erase(delete_id);
+  }
+  class2id_.delete_key(name);
+}
+
 void local_storage_mixture::clear() {
   // Clear and minimize
   id_features3_t().swap(tbl_);

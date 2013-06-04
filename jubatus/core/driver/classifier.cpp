@@ -74,6 +74,11 @@ jubatus::core::classifier::classify_result classifier::classify(
   return scores;
 }
 
+void classifier::delete_class(const std::string& name) {
+  classifier_->delete_class(name);
+}
+
+
 void classifier::clear() {
   classifier_->clear();
   wm_.clear();

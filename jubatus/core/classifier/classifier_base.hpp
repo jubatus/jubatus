@@ -41,7 +41,7 @@ class classifier_base {
   std::string classify(const common::sfv_t& fv) const;
   void classify_with_scores(const common::sfv_t& fv,
                             classify_result& scores) const;
-
+  void delete_class(const std::string& name);
   void clear();
 
   virtual std::string name() const = 0;

@@ -176,6 +176,15 @@ vector<vector<estimate_result> > classifier_serv::classify(
   return ret;  // vector<estimate_results> >::ok(ret);
 }
 
+bool classifier_serv::delete_class(const std::vector<std::string> names) {
+  for (std::vector<std::string>::const_iterator it = names.begin();
+       it != names.end();
+       ++it) {
+    classifier_->delete_class(*it);
+  }
+  return true;
+}
+
 bool classifier_serv::clear() {
   check_set_config();
 
