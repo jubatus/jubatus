@@ -30,12 +30,14 @@ class anomaly_impl_ : public anomaly<anomaly_impl_> {
     return get_p()->clear_row(id);
   }
 
-  std::pair<std::string, float> add(std::string name, datum row) {
+  std::pair<std::string, float> add(std::string name,
+       jubatus::core::fv_converter::datum row) {
     NOLOCK_(p_);
     return get_p()->add(row);
   }
 
-  float update(std::string name, std::string id, datum row) {
+  float update(std::string name, std::string id,
+       jubatus::core::fv_converter::datum row) {
     JWLOCK_(p_);
     return get_p()->update(id, row);
   }
@@ -45,7 +47,7 @@ class anomaly_impl_ : public anomaly<anomaly_impl_> {
     return get_p()->clear();
   }
 
-  float calc_score(std::string name, datum row) {
+  float calc_score(std::string name, jubatus::core::fv_converter::datum row) {
     JRLOCK_(p_);
     return get_p()->calc_score(row);
   }

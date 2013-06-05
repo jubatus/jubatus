@@ -31,12 +31,14 @@ class anomaly {
     return f.get<bool>();
   }
 
-  std::pair<std::string, float> add(std::string name, datum row) {
+  std::pair<std::string, float> add(std::string name,
+       jubatus::core::fv_converter::datum row) {
     msgpack::rpc::future f = c_.call("add", name, row);
     return f.get<std::pair<std::string, float> >();
   }
 
-  float update(std::string name, std::string id, datum row) {
+  float update(std::string name, std::string id,
+       jubatus::core::fv_converter::datum row) {
     msgpack::rpc::future f = c_.call("update", name, id, row);
     return f.get<float>();
   }
@@ -46,7 +48,7 @@ class anomaly {
     return f.get<bool>();
   }
 
-  float calc_score(std::string name, datum row) {
+  float calc_score(std::string name, jubatus::core::fv_converter::datum row) {
     msgpack::rpc::future f = c_.call("calc_score", name, row);
     return f.get<float>();
   }
