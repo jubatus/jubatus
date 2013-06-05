@@ -151,7 +151,7 @@ class exception_thrower_impl : public exception_thrower_base {
   }
 
  private:
-  // noncopylable
+  // noncopyable
   exception_thrower_impl(const exception_thrower_impl&);
   exception_thrower_impl& operator=(const exception_thrower_impl&);
 
