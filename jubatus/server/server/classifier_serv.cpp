@@ -128,7 +128,7 @@ string classifier_serv::get_config() {
   return config_;
 }
 
-int classifier_serv::train(const vector<pair<string, jubatus::datum> >& data) {
+int classifier_serv::train(const vector<pair<string, jubatus::core::fv_converter::datum> >& data) {
   check_set_config();
 
   int count = 0;
@@ -136,8 +136,7 @@ int classifier_serv::train(const vector<pair<string, jubatus::datum> >& data) {
   core::fv_converter::datum d;
   for (size_t i = 0; i < data.size(); ++i) {
     // TODO(IDL): remove conversion
-    convert<jubatus::datum, core::fv_converter::datum>(data[i].second, d);
-    classifier_->train(std::make_pair(data[i].first, d));
+    classifier_->train(std::make_pair(data[i].first, data[i].second));
 
     DLOG(INFO) << "trained: " << data[i].first;
     count++;
@@ -147,17 +146,14 @@ int classifier_serv::train(const vector<pair<string, jubatus::datum> >& data) {
 }
 
 vector<vector<estimate_result> > classifier_serv::classify(
-    const vector<jubatus::datum>& data) const {
+    const vector<jubatus::core::fv_converter::datum>& data) const {
   check_set_config();
 
   vector<vector<estimate_result> > ret;
   core::fv_converter::datum d;
 
   for (size_t i = 0; i < data.size(); ++i) {
-    // TODO(IDL): remove conversion
-    convert<jubatus::datum, core::fv_converter::datum>(data[i], d);
-
-    classify_result scores = classifier_->classify(d);
+    classify_result scores = classifier_->classify(data[i]);
 
     vector<estimate_result> r;
     for (classify_result::const_iterator p = scores.begin();

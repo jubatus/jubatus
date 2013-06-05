@@ -21,9 +21,9 @@ int run_keeper(int argc, char* argv[]) {
         jubatus::server::framework::keeper_argv(argc, argv, "classifier"));
     k.register_async_random<std::string>("get_config");
     k.register_async_random<int32_t, std::vector<std::pair<std::string,
-         datum> > >("train");
+         jubatus::core::fv_converter::datum> > >("train");
     k.register_async_random<std::vector<std::vector<estimate_result> >,
-         std::vector<datum> >("classify");
+         std::vector<jubatus::core::fv_converter::datum> >("classify");
     k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
          bool)>(&jubatus::server::framework::all_and));
     k.register_async_broadcast<bool, std::string>("save",
