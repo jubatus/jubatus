@@ -46,6 +46,11 @@ class byte_buffer {
       : buf_(b.buf_) {
   }
 
+  byte_buffer& operator=(const byte_buffer& b) {
+    this->buf_ = b.buf_;
+    return *this;
+  }
+
   ~byte_buffer() {
   }
 
