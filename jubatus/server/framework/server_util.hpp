@@ -119,15 +119,6 @@ struct keeper_argv {
   void set_log_destination(const std::string& progname) const;
 };
 
-template<typename From, typename To>
-void convert(const From& from, To& to) {
-  msgpack::sbuffer sbuf;
-  msgpack::pack(sbuf, from);
-  msgpack::unpacked msg;
-  msgpack::unpack(&msg, sbuf.data(), sbuf.size());
-  msg.get().convert(&to);
-}
-
 extern pfi::lang::shared_ptr<
     jubatus::server::common::lock_service> ls;
 void atexit();

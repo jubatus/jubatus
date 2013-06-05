@@ -53,7 +53,6 @@ using pfi::lang::lexical_cast;
 using pfi::text::json::json;
 using jubatus::core::fv_converter::datum;
 using jubatus::server::common::lock_service;
-using jubatus::server::framework::convert;
 using jubatus::server::framework::server_argv;
 using jubatus::server::framework::mixer::create_mixer;
 

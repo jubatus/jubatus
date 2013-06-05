@@ -42,7 +42,6 @@ using pfi::lang::lexical_cast;
 
 using jubatus::core::fv_converter::datum;
 using jubatus::server::common::lock_service;
-using jubatus::server::framework::convert;
 using jubatus::server::framework::mixer::create_mixer;
 
 namespace jubatus {
