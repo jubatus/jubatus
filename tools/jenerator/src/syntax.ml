@@ -77,6 +77,7 @@ type enum_type = {
 type message_type = {
   message_name: string;
   message_fields: field_type list;
+  message_raw: string option;
 };;
 
 type exception_type = {
@@ -86,6 +87,7 @@ type exception_type = {
 };;
 
 type statement =
+  | Include of string
   | Typedef of string * decl_type
   | Enum of enum_type
   | Message of message_type

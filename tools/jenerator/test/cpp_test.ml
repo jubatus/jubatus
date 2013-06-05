@@ -6,16 +6,21 @@ open Syntax
    assert_equal ["fuga"; "hoge"] (parse_namespace "fuga::hoge")
 
  let test_gen_template _ =
+   let names = Hashtbl.create 10 in
    assert_equal
      "t<bool, std::string>"
-     (gen_template "t" [Bool; String]);
+     (gen_template names "t" [Bool; String]);
 
    assert_equal
      "t<std::vector<bool> >"
-     (gen_template "t" [List Bool])
+     (gen_template names "t" [List Bool])
 
  let test_gen_type _ =
-   ()
+   let names = Hashtbl.create 10 in
+   Hashtbl.add names "t" "name::t";
+   assert_equal
+     "name::t"
+     (gen_type names (Struct "t"))
 
  let test_gen_string_literal _ =
    assert_equal
@@ -40,6 +45,7 @@ open Syntax
  let suite = "cpp.ml" >:::
    [ "test_parse_namespace" >:: test_parse_namespace;
      "test_gen_template" >:: test_gen_template;
+     "test_gen_type" >:: test_gen_type;
      "test_gen_string_literal" >:: test_gen_string_literal;
      "test_gen_args" >:: test_gen_args
    ]
