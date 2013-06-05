@@ -51,18 +51,20 @@ class recommender_serv : public framework::server_base {
   std::string get_config();
 
   bool clear_row(std::string id);
-  bool update_row(std::string id, datum dat);
+  bool update_row(std::string id, core::fv_converter::datum dat);
   bool clear();
 
-  datum complete_row_from_id(std::string id);
-  datum complete_row_from_datum(datum dat);
+  core::fv_converter::datum complete_row_from_id(std::string id);
+  core::fv_converter::datum complete_row_from_datum(core::fv_converter::datum dat);
   similar_result similar_row_from_id(std::string id, size_t ret_num);
-  similar_result similar_row_from_datum(datum, size_t);
+  similar_result similar_row_from_datum(core::fv_converter::datum, size_t);
 
-  float calc_similarity(const datum&, const datum&);
-  float calc_l2norm(const datum& q);
+  float calc_similarity(
+      const core::fv_converter::datum&,
+      const core::fv_converter::datum&);
+  float calc_l2norm(const core::fv_converter::datum& q);
 
-  datum decode_row(std::string id);
+  core::fv_converter::datum decode_row(std::string id);
   std::vector<std::string> get_all_rows();
 
   void check_set_config() const;
