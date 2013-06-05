@@ -36,10 +36,9 @@ class byte_buffer {
       : buf_(new std::vector<char>(size)) {
   }
 
-  byte_buffer(const void* ptr, size_t size)
-      : buf_(new std::vector<char>()) {
-    buf_->resize(size);
-    std::memcpy(&(*buf_)[0], ptr, size);
+  byte_buffer(const void* ptr, size_t size) {
+    const char* const first = static_cast<const char*>(ptr);
+    buf_.reset( new std::vector<char>(first, first + size) );
   }
 
   // following member functions are implicily defined:
@@ -60,8 +59,8 @@ class byte_buffer {
 
   void assign(const void* ptr, size_t size) {
     if (buf_.unique()) {
-      buf_->resize(size);
-      std::memcpy(&(*buf_)[0], ptr, size);
+      const char* const first = static_cast<const char*>(ptr);
+      buf_->assign(first, first + size);
     }
     else {
       byte_buffer(ptr, size).swap(*this);
@@ -69,8 +68,9 @@ class byte_buffer {
   }
 
   const char* ptr() const {
-    if (buf_) {
+    if (buf_ && !buf_->empty()) {
       return &(*buf_)[0];
+      // `buf_->data()' is much better (C++11 feature)
     } else {
       return NULL;
     }
