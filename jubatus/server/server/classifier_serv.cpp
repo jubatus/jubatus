@@ -134,8 +134,7 @@ int classifier_serv::train(const vector<pair<string, jubatus::core::fv_converter
 
   core::fv_converter::datum d;
   for (size_t i = 0; i < data.size(); ++i) {
-    // TODO(IDL): remove conversion
-    classifier_->train(std::make_pair(data[i].first, data[i].second));
+    classifier_->train(data[i]);
 
     DLOG(INFO) << "trained: " << data[i].first;
     count++;
