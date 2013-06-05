@@ -35,19 +35,19 @@ int run_keeper(int argc, char* argv[]) {
     k.register_async_cht<2, bool, uint64_t>("remove_edge",
          pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
-    k.register_async_random<double, std::string, int32_t, preset_query>(
-        "get_centrality");
-    k.register_async_broadcast<bool, preset_query>("add_centrality_query",
-         pfi::lang::function<bool(bool, bool)>(
+    k.register_async_random<double, std::string, int32_t,
+         jubatus::core::graph::preset_query>("get_centrality");
+    k.register_async_broadcast<bool, jubatus::core::graph::preset_query>(
+        "add_centrality_query", pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
-    k.register_async_broadcast<bool, preset_query>("add_shortest_path_query",
-         pfi::lang::function<bool(bool, bool)>(
+    k.register_async_broadcast<bool, jubatus::core::graph::preset_query>(
+        "add_shortest_path_query", pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
-    k.register_async_broadcast<bool, preset_query>("remove_centrality_query",
-         pfi::lang::function<bool(bool, bool)>(
+    k.register_async_broadcast<bool, jubatus::core::graph::preset_query>(
+        "remove_centrality_query", pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
-    k.register_async_broadcast<bool, preset_query>("remove_shortest_path_query",
-         pfi::lang::function<bool(bool, bool)>(
+    k.register_async_broadcast<bool, jubatus::core::graph::preset_query>(
+        "remove_shortest_path_query", pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_random<std::vector<std::string>, shortest_path_query>(
         "get_shortest_path");
@@ -55,8 +55,10 @@ int run_keeper(int argc, char* argv[]) {
         bool, bool)>(&jubatus::server::framework::all_and));
     k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
          bool)>(&jubatus::server::framework::all_and));
-    k.register_async_cht<2, node>("get_node", pfi::lang::function<node(node,
-         node)>(&jubatus::server::framework::pass<node>));
+    k.register_async_cht<2, jubatus::core::graph::node_info>("get_node",
+         pfi::lang::function<jubatus::core::graph::node_info(
+        jubatus::core::graph::node_info, jubatus::core::graph::node_info)>(
+        &jubatus::server::framework::pass<jubatus::core::graph::node_info>));
     k.register_async_cht<2, edge, uint64_t>("get_edge",
          pfi::lang::function<edge(edge, edge)>(
         &jubatus::server::framework::pass<edge>));

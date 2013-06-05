@@ -83,8 +83,8 @@ TEST_F(graph_test, simple) {
     // TODO(suma): is this correct?(before 1)
     EXPECT_EQ(1u, info.out_edges.size());
 
-    ASSERT_EQ("huga", info.p["hoge"]);
-    ASSERT_EQ("test0", info.p["name"]);
+    ASSERT_EQ("huga", info.property["hoge"]);
+    ASSERT_EQ("test0", info.property["name"]);
   }
   {
     edge_info info = graph_->get_edge(eid);

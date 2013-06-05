@@ -58,27 +58,31 @@ class graph_impl_ : public graph<graph_impl_> {
   }
 
   double get_centrality(std::string name, std::string node_id,
-       int32_t centrality_type, preset_query query) {
+       int32_t centrality_type, jubatus::core::graph::preset_query query) {
     JRLOCK_(p_);
     return get_p()->get_centrality(node_id, centrality_type, query);
   }
 
-  bool add_centrality_query(std::string name, preset_query query) {
+  bool add_centrality_query(std::string name,
+       jubatus::core::graph::preset_query query) {
     JWLOCK_(p_);
     return get_p()->add_centrality_query(query);
   }
 
-  bool add_shortest_path_query(std::string name, preset_query query) {
+  bool add_shortest_path_query(std::string name,
+       jubatus::core::graph::preset_query query) {
     JWLOCK_(p_);
     return get_p()->add_shortest_path_query(query);
   }
 
-  bool remove_centrality_query(std::string name, preset_query query) {
+  bool remove_centrality_query(std::string name,
+       jubatus::core::graph::preset_query query) {
     JWLOCK_(p_);
     return get_p()->remove_centrality_query(query);
   }
 
-  bool remove_shortest_path_query(std::string name, preset_query query) {
+  bool remove_shortest_path_query(std::string name,
+       jubatus::core::graph::preset_query query) {
     JWLOCK_(p_);
     return get_p()->remove_shortest_path_query(query);
   }
@@ -99,7 +103,8 @@ class graph_impl_ : public graph<graph_impl_> {
     return get_p()->clear();
   }
 
-  node get_node(std::string name, std::string node_id) {
+  jubatus::core::graph::node_info get_node(std::string name,
+       std::string node_id) {
     JRLOCK_(p_);
     return get_p()->get_node(node_id);
   }

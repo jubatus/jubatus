@@ -70,18 +70,18 @@ class graph_serv : public framework::server_base {
   double get_centrality(
       const std::string& nid,
       const centrality_type& ct,
-      const preset_query& q) const;
+      const core::graph::preset_query& q) const;
   std::vector<node_id> get_shortest_path(const shortest_path_query& r) const;
-  bool add_centrality_query(const preset_query& q);
-  bool add_shortest_path_query(const preset_query& q);
-  bool remove_centrality_query(const preset_query& q);
-  bool remove_shortest_path_query(const preset_query& q);
+  bool add_centrality_query(const core::graph::preset_query& q);
+  bool add_shortest_path_query(const core::graph::preset_query& q);
+  bool remove_centrality_query(const core::graph::preset_query& q);
+  bool remove_shortest_path_query(const core::graph::preset_query& q);
 
   bool update_index();
 
   bool clear();
 
-  node get_node(const std::string& nid) const;
+  core::graph::node_info get_node(const std::string& nid) const;
   edge get_edge(const std::string& nid, edge_id_t e) const;
 
   // internal apis used between servers

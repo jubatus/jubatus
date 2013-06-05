@@ -165,7 +165,7 @@ void graph_wo_index::update_node(node_id_t id, const property& p) {
   if (it == local_nodes_.end()) {
     throw JUBATUS_EXCEPTION(unknown_id("update_node", id));
   }
-  it->second.p = p;
+  it->second.property = p;
   may_set_landmark(id);
 }
 
@@ -411,7 +411,7 @@ void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
     for (node_info_map::const_iterator node_it = local_nodes_.begin();
          node_it != local_nodes_.end(); ++node_it) {
       if (model.count(node_it->first) == 0) {
-        if (!is_matched_to_query(query.node_query, node_it->second.p)) {
+        if (!is_matched_to_query(query.node_query, node_it->second.property)) {
           unmatched_nodes.insert(node_it->first);
           continue;
         }
@@ -432,7 +432,7 @@ void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
       if (unmatched_nodes.count(node_it->first)) {
         continue;
       }
-      if (!is_matched_to_query(query.node_query, node_it->second.p)) {
+      if (!is_matched_to_query(query.node_query, node_it->second.property)) {
         unmatched_nodes.insert(node_it->first);
         continue;
       }
@@ -568,7 +568,7 @@ bool graph_wo_index::is_node_matched_to_query(
   if (it == local_nodes_.end()) {
     return true;
   }
-  return is_matched_to_query(query.node_query, it->second.p);
+  return is_matched_to_query(query.node_query, it->second.property);
 }
 
 void graph_wo_index::update_spt() {
