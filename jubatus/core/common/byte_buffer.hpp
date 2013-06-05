@@ -42,17 +42,10 @@ class byte_buffer {
     std::memcpy(&(*buf_)[0], ptr, size);
   }
 
-  byte_buffer(const byte_buffer& b)
-      : buf_(b.buf_) {
-  }
-
-  byte_buffer& operator=(const byte_buffer& b) {
-    this->buf_ = b.buf_;
-    return *this;
-  }
-
-  ~byte_buffer() {
-  }
+  // following member functions are implicily defined:
+  //   byte_buffer(const byte_buffer& b) = default;
+  //   byte_buffer& operator=(const byte_buffer& b) = default;
+  //   ~byte_buffer() = default;
 
   void swap(byte_buffer& other) {
     this->buf_.swap(other.buf_);
