@@ -54,6 +54,17 @@ class byte_buffer {
   ~byte_buffer() {
   }
 
+  void swap(byte_buffer& other) {
+    this->buf_.swap(other.buf_);
+    // pfi::lang::shared_ptr provides no non-member swap;
+    // `swap(this->buf_, other.buf_);' may be inefficient.
+    // when pfi::lang::shared_ptr provide non-member swap,
+    // this function should be rewritten with it
+    // because if new data members are added to
+    // pfi::lang::shared_ptr, member function swap
+    // (currently derived from base) may cause object slicing.
+  }
+
   void assign(const void* ptr, size_t size) {
     if (!buf_) {
       buf_.reset(new std::vector<char>());
@@ -86,6 +97,11 @@ class byte_buffer {
  private:
   pfi::lang::shared_ptr<std::vector<char> > buf_;
 };
+
+inline void swap(byte_buffer& one, byte_buffer& another) {
+  one.swap(another);
+}
+
 }  // namespace common
 }  // namespace core
 }  // namespace jubatus
