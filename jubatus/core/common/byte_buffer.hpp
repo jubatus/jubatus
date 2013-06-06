@@ -92,7 +92,7 @@ class byte_buffer {
   pfi::lang::shared_ptr<std::vector<char> > buf_;
 };
 
-inline void swap(byte_buffer& one, byte_buffer& another) {
+inline void swap(byte_buffer& one, byte_buffer& another) {  // NOLINT
   one.swap(another);
 }
 
