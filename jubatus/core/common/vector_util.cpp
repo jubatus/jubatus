@@ -23,6 +23,7 @@ namespace core {
 namespace common {
 
 using std::sort;
+using std::swap;
 using std::string;
 
 void sort_and_merge(sfv_t& sfv) {
@@ -30,20 +31,19 @@ void sort_and_merge(sfv_t& sfv) {
     return;
   }
   sort(sfv.begin(), sfv.end());
-  sfv_t ret_sfv;
-  const string* prev = &sfv[0].first;
-  float val = sfv[0].second;
-  for (size_t i = 1; i < sfv.size(); ++i) {
-    if (sfv[i].first == *prev) {
-      val += sfv[i].second;
+
+  typedef sfv_t::iterator iterator;
+  iterator cur = sfv.begin();
+  iterator end = sfv.end();
+  for (iterator iter = cur+1; iter != end; ++iter) {
+    if (iter->first == cur->first) {
+      cur->second += iter->second;
     } else {
-      ret_sfv.push_back(make_pair(*prev, val));
-      prev = &sfv[i].first;
-      val = sfv[i].second;
+      ++cur;
+      swap(*iter, *cur);
     }
   }
-  ret_sfv.push_back(make_pair(*prev, val));
-  sfv.swap(ret_sfv);
+  sfv.erase(cur+1, end);
 }
 
 }  // namespace common

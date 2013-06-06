@@ -30,6 +30,21 @@ TEST(sort_and_merge, empty) {
   EXPECT_TRUE(v.empty());
 }
 
+TEST(sort_and_merge, identity) {
+  sfv_t v;
+  v.push_back(make_pair("f1", 1.0));
+  v.push_back(make_pair("f2", 2.0));
+  v.push_back(make_pair("f3", 3.0));
+  sort_and_merge(v);
+  ASSERT_EQ(3u, v.size());
+  EXPECT_EQ("f1", v[0].first);
+  EXPECT_EQ(1.0, v[0].second);
+  EXPECT_EQ("f2", v[1].first);
+  EXPECT_EQ(2.0, v[1].second);
+  EXPECT_EQ("f3", v[2].first);
+  EXPECT_EQ(3.0, v[2].second);
+}
+
 TEST(sort_and_merge, trivial) {
   sfv_t v;
   v.push_back(make_pair("f4", 1.0));
