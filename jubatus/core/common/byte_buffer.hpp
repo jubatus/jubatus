@@ -38,7 +38,7 @@ class byte_buffer {
 
   byte_buffer(const void* ptr, size_t size) {
     const char* const first = static_cast<const char*>(ptr);
-    buf_.reset( new std::vector<char>(first, first + size) );
+    buf_.reset(new std::vector<char>(first, first+size));
   }
 
   // following member functions are implicily defined:
@@ -61,8 +61,7 @@ class byte_buffer {
     if (buf_.unique()) {
       const char* const first = static_cast<const char*>(ptr);
       buf_->assign(first, first + size);
-    }
-    else {
+    } else {
       byte_buffer(ptr, size).swap(*this);
     }
   }
@@ -93,7 +92,7 @@ class byte_buffer {
   pfi::lang::shared_ptr<std::vector<char> > buf_;
 };
 
-inline void swap(byte_buffer& one, byte_buffer& another) {
+inline void swap(byte_buffer& one, byte_buffer& another) {  // NOLINT
   one.swap(another);
 }
 

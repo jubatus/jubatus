@@ -70,7 +70,7 @@ TEST(byte_buffer, swap) {
   ASSERT_STREQ(s1, b.ptr());
   ASSERT_EQ(sizeof(s1), b.size());
 
-  swap(a, b);
+  swap(a, b);  // NOLINT
   EXPECT_STREQ(s1, a.ptr());
   EXPECT_EQ(sizeof(s1), a.size());
   EXPECT_EQ(NULL, b.ptr());
