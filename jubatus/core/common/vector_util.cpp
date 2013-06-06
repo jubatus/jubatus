@@ -26,7 +26,7 @@ using std::sort;
 using std::string;
 
 void sort_and_merge(sfv_t& sfv) {
-  if (sfv.size() == 0) {
+  if (sfv.size() <= 1) {
     return;
   }
   sort(sfv.begin(), sfv.end());
