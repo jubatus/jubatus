@@ -23,7 +23,6 @@ namespace core {
 namespace common {
 
 using std::sort;
-using std::swap;
 using std::string;
 
 void sort_and_merge(sfv_t& sfv) {
@@ -40,7 +39,7 @@ void sort_and_merge(sfv_t& sfv) {
       cur->second += iter->second;
     } else {
       ++cur;
-      swap(*iter, *cur);
+      *cur = *iter;
     }
   }
   sfv.erase(cur+1, end);
