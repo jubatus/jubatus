@@ -37,7 +37,10 @@ class key_manager {
   };
 
   key_manager();
-  key_manager& operator =(const key_manager&);
+  // following member funcions are implicitly defined:
+  //   key_manager(const key_manager& k) = default;
+  //   key_manager& operator=(const key_manager& k) = default;
+  //   ~key_manager() = default;
 
   size_t size() const {
     return key2id_.size();
