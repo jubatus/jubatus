@@ -61,7 +61,6 @@ class key_manager {
 
   pfi::data::unordered_map<std::string, uint64_t> key2id_;
   std::vector<std::string> id2key_;
-  const std::string vacant_;
 };
 
 }  // namespace common
