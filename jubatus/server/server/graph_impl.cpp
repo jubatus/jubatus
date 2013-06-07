@@ -31,7 +31,7 @@ class graph_impl_ : public graph<graph_impl_> {
   }
 
   bool remove_node(std::string name, std::string node_id) {
-    JWLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->remove_node(node_id);
   }
 

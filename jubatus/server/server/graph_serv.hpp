@@ -62,6 +62,7 @@ class graph_serv : public framework::server_base {
   bool update_node(
       const std::string& nid,
       const std::map<std::string, std::string>& p);
+  // NOTE: remove_node LOCKs just for WORKAROUND
   bool remove_node(const std::string& nid);
   edge_id_t create_edge(const std::string& nid, const edge&);
   bool update_edge(const std::string& nid, edge_id_t, const edge&);

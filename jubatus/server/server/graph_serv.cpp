@@ -35,6 +35,7 @@
 #include "../common/cht.hpp"
 #endif
 #include "../common/global_id_generator_standalone.hpp"
+#include "../common/unique_lock.hpp"
 #include "../common/util.hpp"
 #ifdef HAVE_ZOOKEEPER_H
 #include "../common/global_id_generator_zk.hpp"
@@ -228,6 +229,11 @@ bool graph_serv::update_node(
 }
 
 bool graph_serv::remove_node(const std::string& nid_str) {
+  // NOTE: this function LOCKs for WORKAROUND;
+  //       perhaps classes around graph are to be redesinged.
+  server::common::unique_wlock lk(rw_mutex());
+  event_model_updated();
+
   check_set_config();
 
   core::graph::node_id_t nid = n2i(nid_str);
@@ -252,6 +258,9 @@ bool graph_serv::remove_node(const std::string& nid_str) {
 #endif
 
       try {
+        // unlock wlock before publishing `remove_global_node`
+        lk.unlock();
+
         c.call("remove_global_node",
                argv().name,
                nid_str,
