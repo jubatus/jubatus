@@ -60,8 +60,8 @@ jubavisor::jubavisor(
       port_base_(port),
       logfile_(logfile),
       max_children_(max) {
-  jubatus::util::ignore_sigpipe();
-  jubatus::util::set_exit_on_term();
+  common::util::ignore_sigpipe();
+  common::util::set_exit_on_term();
   ::atexit(jubavisor::atexit_);
 
   // handle SIG_CHLD
@@ -71,8 +71,8 @@ jubavisor::jubavisor(
   sa.sa_flags = SA_RESTART | SA_NOCLDSTOP;
   if (sigaction(SIGCHLD, &sa, NULL) == -1) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("failed sigaction(SIGCHLD)")
-        << jubatus::exception::error_errno(errno));
+      core::common::exception::runtime_error("failed sigaction(SIGCHLD)")
+      << core::common::exception::error_errno(errno));
   }
 
   zk_->create(jubatus::server::common::JUBATUS_BASE_PATH, "");

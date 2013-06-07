@@ -17,6 +17,9 @@
 #ifndef JUBATUS_CORE_RECOMMENDER_NEAREST_NEIGHBOR_RECOMMENDER_HPP_
 #define JUBATUS_CORE_RECOMMENDER_NEAREST_NEIGHBOR_RECOMMENDER_HPP_
 
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/lang/shared_ptr.h>
 #include "../nearest_neighbor/nearest_neighbor_base.hpp"
 #include "recommender_base.hpp"
@@ -33,11 +36,11 @@ class nearest_neighbor_recommender : public recommender_base {
       nearest_neighbor_engine);
 
   void similar_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   void neighbor_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   void clear();

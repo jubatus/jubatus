@@ -39,7 +39,7 @@ arow::arow(const classifier_config& config, storage::storage_base* storage)
   classifier_base::use_covars_ = true;
 }
 
-void arow::train(const sfv_t& sfv, const string& label) {
+void arow::train(const common::sfv_t& sfv, const string& label) {
   string incorrect_label;
   float variance = 0.f;
   float margin = -calc_margin_and_variance(sfv, label, incorrect_label,
@@ -54,12 +54,12 @@ void arow::train(const sfv_t& sfv, const string& label) {
 }
 
 void arow::update(
-    const sfv_t& sfv,
+    const common::sfv_t& sfv,
     float alpha,
     float beta,
     const std::string& pos_label,
     const std::string& neg_label) {
-  for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
+  for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
     storage::feature_val2_t ret;

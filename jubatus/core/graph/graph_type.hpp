@@ -135,7 +135,7 @@ typedef pfi::data::unordered_map<preset_query, eigen_vector_diff>
 typedef pfi::data::unordered_map<preset_query, spt_mixed> spt_query_mixed;
 typedef pfi::data::unordered_map<preset_query, spt_diff> spt_query_diff;
 
-class graph_exception : public jubatus::exception::runtime_error {
+class graph_exception : public jubatus::core::common::exception::runtime_error {
  public:
   explicit graph_exception(const std::string& what)
       : runtime_error(what) {

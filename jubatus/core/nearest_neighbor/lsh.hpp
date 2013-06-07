@@ -51,7 +51,7 @@ class lsh : public bit_vector_nearest_neighbor_base {
   virtual std::string type() const { return "lsh"; }
 
  protected:
-  virtual table::bit_vector hash(const sfv_t& sfv) const;
+  virtual table::bit_vector hash(const common::sfv_t& sfv) const;
 };
 
 }  // namespace nearest_neighbor

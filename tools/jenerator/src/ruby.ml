@@ -260,7 +260,7 @@ let gen_typedef = function
 
 let gen_client_file conf source services =
   let base = File_util.take_base source in
-  let filename = base ^ "_client.rb" in
+  let filename = Filename.concat base "client.rb" in
   let clients = List.map gen_client services in
 
   let content = concat_blocks [
@@ -284,7 +284,7 @@ let gen_client_file conf source services =
 
 let gen_type_file conf source idl =
   let base = File_util.take_base source in
-  let name = base ^ "_types.rb" in
+  let name = Filename.concat base "types.rb" in
   let types = List.map gen_typedef idl in
   let includes = [
     (0, "require 'rubygems'");

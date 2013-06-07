@@ -336,7 +336,7 @@ void lsh_index_storage::mix(const string& lhs, string& rhs) const {
 lsh_master_table_t::iterator lsh_index_storage::remove_and_get_row(
     const string& row) {
   const uint64_t row_id = key_manager_.get_id_const(row);
-  if (row_id == key_manager::NOTFOUND) {
+  if (row_id == common::key_manager::NOTFOUND) {
     return master_table_diff_.end();
   }
 

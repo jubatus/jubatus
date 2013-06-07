@@ -27,7 +27,7 @@ namespace fv_converter {
 
 struct datum;
 
-void revert_feature(const sfv_t& fv, datum& data);
+void revert_feature(const common::sfv_t& fv, datum& data);
 
 bool revert_num_value(
     const std::pair<std::string, float>& feature,

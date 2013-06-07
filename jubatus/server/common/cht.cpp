@@ -54,9 +54,9 @@ void cht::setup_cht_dir(
 
   if (!success) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("Failed to create cht directory")
-        << jubatus::exception::error_api_func("lock_service::create")
-        << jubatus::exception::error_message("cht path: " + path));
+        core::common::exception::runtime_error("Failed to create cht directory")
+        << core::common::exception::error_api_func("lock_service::create")
+        << core::common::exception::error_message("cht path: " + path));
   }
 }
 
@@ -83,9 +83,9 @@ void cht::register_node(const std::string& ip, int port) {
     std::string hashpath = path + "/" + make_hash(build_loc_str(ip, port, i));
     if (!lock_service_->create(hashpath, build_loc_str(ip, port), true)) {
       throw JUBATUS_EXCEPTION(
-          jubatus::exception::runtime_error("Failed to register cht node")
-          << jubatus::exception::error_api_func("lock_service::create")
-          << jubatus::exception::error_message("cht hashpash: " + hashpath));
+        core::common::exception::runtime_error("Failed to register cht node")
+        << core::common::exception::error_api_func("lock_service::create")
+        << core::common::exception::error_message("cht hashpash: " + hashpath));
     }
 
     DLOG(INFO) << "cht node created: " << hashpath;
@@ -111,7 +111,7 @@ bool cht::find(
   out.clear();
   std::vector<std::string> hlist;
   if (!get_hashlist_(key, hlist)) {
-    throw JUBATUS_EXCEPTION(not_found(key));
+    throw JUBATUS_EXCEPTION(core::common::not_found(key));
   }
   std::string hash = make_hash(key);
   std::string path;
@@ -132,7 +132,7 @@ bool cht::find(
       out.push_back(make_pair(ip, port));
     } else {
       // TODO(kuenishi): output log
-      throw JUBATUS_EXCEPTION(not_found(path));
+      throw JUBATUS_EXCEPTION(core::common::not_found(path));
     }
     idx++;
     idx %= hlist.size();
@@ -169,7 +169,7 @@ std::pair<std::string, int> cht::find_predecessor(const std::string& key) {
     revert(loc, ip, port);
     return make_pair(ip, port);
   } else {
-    throw JUBATUS_EXCEPTION(not_found(path));
+    throw JUBATUS_EXCEPTION(core::common::not_found(path));
     // TODO(kuenishi): output log and throw exception
   }
 }

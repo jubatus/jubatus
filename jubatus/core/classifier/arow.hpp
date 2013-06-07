@@ -29,11 +29,11 @@ class arow : public classifier_base {
  public:
   explicit arow(storage::storage_base* stroage);
   arow(const classifier_config& config, storage::storage_base* stroage);
-  void train(const sfv_t& fv, const std::string& label);
+  void train(const common::sfv_t& fv, const std::string& label);
   std::string name() const;
  private:
   void update(
-      const sfv_t& fv,
+      const common::sfv_t& fv,
       float alpha,
       float beta,
       const std::string& pos_label,

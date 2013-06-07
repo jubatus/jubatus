@@ -21,6 +21,8 @@
 #include <string>
 
 namespace jubatus {
+namespace core {
+namespace common {
 
 class hash_util {
  public:
@@ -35,6 +37,8 @@ class hash_util {
   }
 };
 
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_COMMON_HASH_HPP_

@@ -57,7 +57,7 @@ class lof_impl : public lof {
       : lof(lof_storage::config(),
             recommender::recommender_factory::create_recommender(
                 "euclid_lsh",
-                jsonconfig::config(pfi::text::json::to_json(
+                common::jsonconfig::config(pfi::text::json::to_json(
                     recommender::euclid_lsh::config())), "")) {
     // make mock
     orig_.set("r1", "a1", 0.0);
@@ -70,7 +70,7 @@ class lof_impl : public lof {
     orig_.set("r3", "a1", -1.0);
   }
 
-  float calc_anomaly_score(const sfv_t& query) const {
+  float calc_anomaly_score(const common::sfv_t& query) const {
     unordered_map<string, float> neighbor_lrd;
     neighbor_lrd.insert(pair<string, float>("r1", 1.0));
     neighbor_lrd.insert(pair<string, float>("r2", 0.5));
@@ -137,7 +137,7 @@ TEST(lof, get_all_row_ids) {
 
 TEST(lof, calc_anomaly_score) {
   lof_impl l;
-  sfv_t q;
+  common::sfv_t q;
   float anomaly_score = 0;
   anomaly_score = l.calc_anomaly_score(q);
   EXPECT_EQ(0.5, anomaly_score);
@@ -158,7 +158,7 @@ TYPED_TEST_CASE_P(lof_test);
 
 TYPED_TEST_P(lof_test, update_row) {
   lof l(lof_storage::config(), new TypeParam);
-  sfv_t v, q;
+  common::sfv_t v, q;
   const string id = "test";
   l.update_row(id, v);
   l.calc_anomaly_score(id);

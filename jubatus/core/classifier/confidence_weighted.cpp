@@ -41,7 +41,7 @@ confidence_weighted::confidence_weighted(
   classifier_base::use_covars_ = true;
 }
 
-void confidence_weighted::train(const sfv_t& sfv, const string& label) {
+void confidence_weighted::train(const common::sfv_t& sfv, const string& label) {
   const float C = config_.C;
   string incorrect_label;
   float variance = 0.f;
@@ -58,11 +58,11 @@ void confidence_weighted::train(const sfv_t& sfv, const string& label) {
 }
 
 void confidence_weighted::update(
-    const sfv_t& sfv,
+    const common::sfv_t& sfv,
     float step_width,
     const string& pos_label,
     const string& neg_label) {
-  for (sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
+  for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
     storage::feature_val2_t val2;

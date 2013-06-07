@@ -68,7 +68,7 @@ void inverted_index_storage::set(
     float val) {
   uint64_t column_id = column2id_.get_id_const(column);
 
-  if (column_id == key_manager::NOTFOUND) {
+  if (column_id == common::key_manager::NOTFOUND) {
     column_id = column2id_.get_id(column);
   } else {
     float cur_val = get(row, column);
@@ -82,7 +82,7 @@ float inverted_index_storage::get(
     const string& row,
     const string& column) const {
   uint64_t column_id = column2id_.get_id_const(column);
-  if (column_id == key_manager::NOTFOUND) {
+  if (column_id == common::key_manager::NOTFOUND) {
     return 0.f;
   }
   {
@@ -109,7 +109,7 @@ float inverted_index_storage::get_from_tbl(
     bool& exist) const {
   exist = false;
 
-  if (column_id == key_manager::NOTFOUND) {
+  if (column_id == common::key_manager::NOTFOUND) {
     return 0.f;
   }
   tbl_t::const_iterator it = tbl.find(row);
@@ -137,7 +137,7 @@ void inverted_index_storage::clear() {
   tbl_t().swap(inv_diff_);
   imap_float_t().swap(column2norm_);
   imap_float_t().swap(column2norm_diff_);
-  key_manager().swap(column2id_);
+  common::key_manager().swap(column2id_);
 }
 
 void inverted_index_storage::get_all_column_ids(
@@ -250,7 +250,7 @@ bool inverted_index_storage::load(std::istream& is) {
 }
 
 void inverted_index_storage::calc_scores(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& scores,
     size_t ret_num) const {
   float query_norm = calc_l2norm(query);
@@ -279,7 +279,7 @@ void inverted_index_storage::calc_scores(
   }
 }
 
-float inverted_index_storage::calc_l2norm(const sfv_t& sfv) {
+float inverted_index_storage::calc_l2norm(const common::sfv_t& sfv) {
   float ret = 0.f;
   for (size_t i = 0; i < sfv.size(); ++i) {
     ret += sfv[i].second * sfv[i].second;

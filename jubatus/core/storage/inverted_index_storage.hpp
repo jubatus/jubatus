@@ -45,7 +45,7 @@ class inverted_index_storage : public recommender_storage_base {
   void get_all_column_ids(std::vector<std::string>& ids) const;
 
   void calc_scores(
-      const sfv_t& sfv,
+      const common::sfv_t& sfv,
       std::vector<std::pair<std::string, float> >& scores,
       size_t ret_num) const;
 
@@ -59,7 +59,7 @@ class inverted_index_storage : public recommender_storage_base {
   bool load(std::istream& is);
 
  private:
-  static float calc_l2norm(const sfv_t& sfv);
+  static float calc_l2norm(const common::sfv_t& sfv);
   float calc_columnl2norm(uint64_t column_id) const;
   float get_from_tbl(
       const std::string& row,
@@ -83,7 +83,7 @@ class inverted_index_storage : public recommender_storage_base {
   tbl_t inv_diff_;
   imap_float_t column2norm_;
   imap_float_t column2norm_diff_;
-  key_manager column2id_;
+  common::key_manager column2id_;
 };
 
 }  // namespace storage

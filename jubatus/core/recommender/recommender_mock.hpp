@@ -37,24 +37,24 @@ class recommender_mock : public recommender_base {
   virtual ~recommender_mock();
 
   void set_similar_relation(
-      const sfv_t& query,
+      const common::sfv_t& query,
       const std::vector<std::pair<std::string, float> >& ids);
   void set_similar_relation(
       const std::string& id,
       const std::vector<std::pair<std::string, float> >& ids);
   void set_neighbor_relation(
-      const sfv_t& query,
+      const common::sfv_t& query,
       const std::vector<std::pair<std::string, float> >& ids);
   void set_neighbor_relation(
       const std::string& id,
       const std::vector<std::pair<std::string, float> >& ids);
 
   virtual void similar_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   virtual void neighbor_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   virtual void clear();
@@ -67,11 +67,10 @@ class recommender_mock : public recommender_base {
   virtual const core::storage::recommender_storage_base*
       get_const_storage() const;
 
- protected:
+ private:
   virtual bool save_impl(std::ostream&);
   virtual bool load_impl(std::istream&);
 
- private:
   friend class pfi::data::serialization::access;
   template<typename Ar>
   void serialize(Ar& ar) {

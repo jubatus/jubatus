@@ -38,7 +38,7 @@ class anomaly_base {
   virtual ~anomaly_base();
 
   // return anomaly score of query
-  virtual float calc_anomaly_score(const sfv_t& query) const = 0;
+  virtual float calc_anomaly_score(const common::sfv_t& query) const = 0;
   virtual float calc_anomaly_score(const std::string& id) const = 0;
   virtual void clear() = 0;
   virtual void clear_row(const std::string& id) = 0;

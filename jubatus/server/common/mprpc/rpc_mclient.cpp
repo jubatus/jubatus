@@ -39,7 +39,7 @@ rpc_result_object rpc_mclient::wait(const std::string& method) {
       result.error.push_back(
           rpc_error(hosts_[i].first,
                     hosts_[i].second,
-                    jubatus::exception::get_current_exception()));
+                    jubatus::core::common::exception::get_current_exception()));
     }
   }
 

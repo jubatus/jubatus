@@ -42,9 +42,9 @@ class bit_vector_nearest_neighbor_base : public nearest_neighbor_base {
 
   uint32_t bitnum() const { return bitnum_; }
 
-  virtual void set_row(const std::string& id, const sfv_t& sfv);
+  virtual void set_row(const std::string& id, const common::sfv_t& sfv);
   virtual void neighbor_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       uint64_t ret_num) const;
   virtual void neighbor_row(
@@ -53,7 +53,7 @@ class bit_vector_nearest_neighbor_base : public nearest_neighbor_base {
       uint64_t ret_num) const;
 
  protected:
-  virtual table::bit_vector hash(const sfv_t& sfv) const = 0;
+  virtual table::bit_vector hash(const common::sfv_t& sfv) const = 0;
 
  private:
   void fill_schema(std::vector<table::column_type>& schema);

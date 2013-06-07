@@ -40,7 +40,8 @@ class storage_base {
   virtual void get2(const std::string& feature, feature_val2_t& ret) = 0;
   virtual void get3(const std::string& feature, feature_val3_t& ret) = 0;
 
-  virtual void inp(const sfv_t& sfv, map_feature_val1_t& ret);  // inner product
+  // inner product
+  virtual void inp(const common::sfv_t& sfv, map_feature_val1_t& ret);
 
   virtual void set(
       const std::string& feature,
@@ -67,7 +68,7 @@ class storage_base {
       const val1_t& w);
 
   virtual void bulk_update(
-      const sfv_t& sfv,
+      const common::sfv_t& sfv,
       float step_width,
       const std::string& inc_class,
       const std::string& dec_class);
@@ -81,7 +82,7 @@ class storage_base {
 };
 
 class storage_exception
-    : public jubatus::exception::jubaexception<storage_exception> {
+    : public common::exception::jubaexception<storage_exception> {
  public:
   explicit storage_exception(const std::string& msg)
       : msg(msg) {

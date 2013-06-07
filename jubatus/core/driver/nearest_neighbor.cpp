@@ -37,7 +37,7 @@ nearest_neighbor::nearest_neighbor(
 void nearest_neighbor::set_row(
     const std::string& id,
     const fv_converter::datum& datum) {
-  sfv_t v;
+  common::sfv_t v;
   converter_->convert(datum, v);
   nn_->set_row(id, v);
 }
@@ -53,7 +53,7 @@ std::vector<std::pair<std::string, float> >
 nearest_neighbor::neighbor_row_from_data(
     const fv_converter::datum& datum,
     size_t size) {
-  sfv_t v;
+  common::sfv_t v;
   converter_->convert(datum, v);
   std::vector<std::pair<std::string, float> > ret;
   nn_->neighbor_row(v, ret, size);
@@ -71,7 +71,7 @@ std::vector<std::pair<std::string, float> >
 nearest_neighbor::similar_row(
     const core::fv_converter::datum& datum,
     size_t ret_num) {
-  sfv_t v;
+  common::sfv_t v;
   converter_->convert(datum, v);
   std::vector<std::pair<std::string, float> > ret;
   nn_->similar_row(v, ret, ret_num);

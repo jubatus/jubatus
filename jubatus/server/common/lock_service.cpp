@@ -34,7 +34,7 @@ lock_service* create_lock_service(
   } else if (name == "cached_zk") {
     return new cached_zk(hosts, timeout, log);
   }
-  throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
+  throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
         std::string("unknown lock_service: ") + name));
 }
 
@@ -48,7 +48,7 @@ lock_service_mutex::lock_service_mutex(
     {
       LOG(ERROR) << "unknown lock_service: " << ls.type();
     }
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error(
+    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
           std::string("unknown lock_service: ") + ls.type()));
   }
 }

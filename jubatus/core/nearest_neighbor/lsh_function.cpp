@@ -26,10 +26,10 @@ namespace jubatus {
 namespace core {
 namespace nearest_neighbor {
 
-vector<float> random_projection(const sfv_t& sfv, uint32_t hash_num) {
+vector<float> random_projection(const common::sfv_t& sfv, uint32_t hash_num) {
   vector<float> proj(hash_num);
   for (size_t i = 0; i < sfv.size(); ++i) {
-    const uint32_t seed = hash_util::calc_string_hash(sfv[i].first);
+    const uint32_t seed = common::hash_util::calc_string_hash(sfv[i].first);
     pfi::math::random::mtrand rnd(seed);
     for (uint32_t j = 0; j < hash_num; ++j) {
       proj[j] += sfv[i].second * rnd.next_gaussian();
@@ -48,7 +48,7 @@ bit_vector binarize(const vector<float>& proj) {
   return bv;
 }
 
-bit_vector cosine_lsh(const sfv_t& sfv, uint32_t hash_num) {
+bit_vector cosine_lsh(const common::sfv_t& sfv, uint32_t hash_num) {
   return binarize(random_projection(sfv, hash_num));
 }
 

@@ -45,7 +45,7 @@ class passive_aggressive : public regression_base {
   passive_aggressive(const config& config, storage::storage_base* storage);
   explicit passive_aggressive(storage::storage_base* storage);
 
-  void train(const sfv_t& fv, float value);
+  void train(const common::sfv_t& fv, float value);
 
   void clear();
 

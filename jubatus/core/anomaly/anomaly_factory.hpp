@@ -22,11 +22,13 @@
 
 namespace jubatus {
 namespace core {
+namespace common {
 namespace jsonconfig {
 
 class config;
 
 }  // namespace jsonconfig
+}  // namespace common
 
 namespace anomaly {
 
@@ -36,7 +38,7 @@ class anomaly_factory {
  public:
   static anomaly_base* create_anomaly(
       const std::string& name,
-      const jsonconfig::config& param,
+      const common::jsonconfig::config& param,
       const std::string& id);
 };
 

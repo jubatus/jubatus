@@ -130,7 +130,7 @@ class lsh_index_storage : public recommender_storage_base {
 
   std::vector<float> shift_;
   uint64_t table_num_;
-  key_manager key_manager_;
+  common::key_manager key_manager_;
 };
 
 }  // namespace storage

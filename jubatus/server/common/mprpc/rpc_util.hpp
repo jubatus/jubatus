@@ -25,6 +25,9 @@
 #include "rpc_server.hpp"
 
 namespace jubatus {
+namespace server {
+namespace common {
+namespace mprpc {
 
 typedef std::pair<std::string, int> connection_info;
 
@@ -130,6 +133,9 @@ struct result {
   }                                                                     \
   typedef _client_impl::base##_client base##_client;
 
+}  // namespace mprpc
+}  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_SERVER_COMMON_MPRPC_RPC_UTIL_HPP_

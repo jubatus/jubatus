@@ -33,14 +33,14 @@ nearest_neighbor_recommender::nearest_neighbor_recommender(
 }
 
 void nearest_neighbor_recommender::similar_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     std::vector<std::pair<std::string, float> >& ids,
     size_t ret_num) const {
   nearest_neighbor_engine_->similar_row(query, ids, ret_num);
 }
 
 void nearest_neighbor_recommender::neighbor_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     std::vector<std::pair<std::string, float> >& ids,
     size_t ret_num) const {
   nearest_neighbor_engine_->neighbor_row(query, ids, ret_num);
@@ -52,14 +52,14 @@ void nearest_neighbor_recommender::clear() {
 }
 
 void nearest_neighbor_recommender::clear_row(const std::string& id) {
-  throw JUBATUS_EXCEPTION(unsupported_method(__func__));
+  throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
 }
 
 void nearest_neighbor_recommender::update_row(
     const std::string& id,
-    const sfv_t& diff) {
+    const common::sfv_t& diff) {
   orig_.set_row(id, diff);
-  sfv_t row;
+  common::sfv_t row;
   orig_.get_row(id, row);
   nearest_neighbor_engine_->set_row(id, row);
 }

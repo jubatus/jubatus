@@ -25,7 +25,7 @@ namespace fv_converter {
 
 TEST(feature_hasher, trivial) {
   feature_hasher h(100);
-  sfv_t fv;
+  common::sfv_t fv;
   fv.push_back(std::make_pair("f1", 1.0));
   fv.push_back(std::make_pair("f2", 2.0));
 

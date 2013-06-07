@@ -39,7 +39,7 @@ void set_bit_vector(
 
 void prod_invert_and_vector(
     const pfi::data::unordered_map<std::string, std::vector<float> >& matrix,
-    const sfv_t& vec,
+    const common::sfv_t& vec,
     size_t dim,
     std::vector<float>& ret);
 

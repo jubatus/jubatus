@@ -26,7 +26,7 @@ namespace jubatus {
 namespace core {
 namespace recommender {
 
-sfv_t make_sfv(const std::string& repr);
+common::sfv_t make_sfv(const std::string& repr);
 std::vector<std::pair<std::string, float> > make_ids(const std::string& repr);
 
 }  // namespace recommender

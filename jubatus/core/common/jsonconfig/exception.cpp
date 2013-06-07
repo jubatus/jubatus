@@ -24,6 +24,7 @@ using pfi::text::json::json;
 
 namespace jubatus {
 namespace core {
+namespace common {
 namespace jsonconfig {
 
 config_error::config_error(const std::string& path, const std::string& message)
@@ -114,5 +115,6 @@ cast_check_error::~cast_check_error() throw () {
 }
 
 }  // namespace jsonconfig
+}  // namespace common
 }  // namespace core
 }  // namespace jubatus

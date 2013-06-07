@@ -35,9 +35,9 @@ feature_hasher::feature_hasher(uint64_t max)
   }
 }
 
-void feature_hasher::hash_feature_keys(sfv_t& fv) const {
+void feature_hasher::hash_feature_keys(common::sfv_t& fv) const {
   for (size_t i = 0, size = fv.size(); i < size; ++i) {
-    uint64_t id = hash_util::calc_string_hash(fv[i].first) % max_size_;
+    uint64_t id = common::hash_util::calc_string_hash(fv[i].first) % max_size_;
     fv[i].first = pfi::lang::lexical_cast<std::string>(id);
   }
 }

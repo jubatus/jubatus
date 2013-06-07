@@ -25,7 +25,7 @@ namespace core {
 namespace table {
 
 class storage_exception
-  : public jubatus::exception::jubaexception<storage_exception> {
+  : public common::exception::jubaexception<storage_exception> {
  public:
   explicit storage_exception(const std::string &msg): msg(msg) {}
   ~storage_exception() throw() {}

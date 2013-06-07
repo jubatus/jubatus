@@ -101,14 +101,14 @@ class mixable : public mixable0 {
   virtual void mix_impl(const Diff&, const Diff&, Diff&) const = 0;
 
   virtual PullArg get_pull_argument_impl() const {
-    throw JUBATUS_EXCEPTION(unsupported_method(__func__));
+    throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
   }
   virtual Diff pull_impl(const PullArg&) const {
-    throw JUBATUS_EXCEPTION(unsupported_method(__func__));
+    throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
   }
 
   virtual void push_impl(const Diff&) {
-    throw JUBATUS_EXCEPTION(unsupported_method(__func__));
+    throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
   }
 
   void set_model(model_ptr m) {
@@ -121,7 +121,7 @@ class mixable : public mixable0 {
       pack_(get_diff_impl(), buf);
       return buf;
     } else {
-      throw JUBATUS_EXCEPTION(config_not_set());
+      throw JUBATUS_EXCEPTION(common::config_not_set());
     }
   }
 
@@ -131,7 +131,7 @@ class mixable : public mixable0 {
       unpack_(d, diff);
       put_diff_impl(diff);
     } else {
-      throw JUBATUS_EXCEPTION(config_not_set());
+      throw JUBATUS_EXCEPTION(common::config_not_set());
     }
   }
 
@@ -152,7 +152,7 @@ class mixable : public mixable0 {
       pack_(get_pull_argument_impl(), buf);
       return buf;
     } else {
-      throw JUBATUS_EXCEPTION(config_not_set());
+      throw JUBATUS_EXCEPTION(common::config_not_set());
     }
   }
 
@@ -164,7 +164,7 @@ class mixable : public mixable0 {
       pack_(pull_impl(arg), buf);
       return buf;
     } else {
-      throw JUBATUS_EXCEPTION(config_not_set());
+      throw JUBATUS_EXCEPTION(common::config_not_set());
     }
   }
 
@@ -173,8 +173,8 @@ class mixable : public mixable0 {
       Diff diff;
       unpack_(d, diff);
       push_impl(diff);
-    } else{ 
-      throw JUBATUS_EXCEPTION(config_not_set());
+    } else {
+      throw JUBATUS_EXCEPTION(common::config_not_set());
     }
   }
 

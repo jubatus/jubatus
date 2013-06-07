@@ -43,22 +43,26 @@ class nearest_neighbor_mock : public nearest_neighbor_base {
     answer_.push_back(make_pair(id, dist));
   }
 
-  virtual string type() const { return "nearest_neighbor_mock"; }
+  virtual string type() const {
+    return "nearest_neighbor_mock";
+  }
 
-  virtual void set_row(const string&, const sfv_t&) {}
+  virtual void set_row(const string&, const common::sfv_t&) {}
 
-  virtual void neighbor_row(const sfv_t&,
-                            vector<pair<string, float> >& ids,
-                            uint64_t ret_num) const {
+  virtual void neighbor_row(
+      const common::sfv_t&,
+      vector<pair<string, float> >& ids,
+      uint64_t ret_num) const {
     ids = answer_;
     if (ids.size() > ret_num) {
       ids.resize(ret_num);
     }
   }
 
-  virtual void neighbor_row(const string&,
-                            vector<pair<string, float> >& ids,
-                            uint64_t ret_num) const {
+  virtual void neighbor_row(
+      const string&,
+      vector<pair<string, float> >& ids,
+      uint64_t ret_num) const {
     ids = answer_;
     if (ids.size() > ret_num) {
       ids.resize(ret_num);

@@ -49,7 +49,7 @@ struct greater_second {
   }
 };
 
-float calc_norm(const sfv_t& sfv) {
+float calc_norm(const common::sfv_t& sfv) {
   float sqnorm = 0;
   for (size_t i = 0; i < sfv.size(); ++i) {
     sqnorm += sfv[i].second * sfv[i].second;
@@ -58,12 +58,12 @@ float calc_norm(const sfv_t& sfv) {
 }
 
 vector<float> lsh_function(
-    const sfv_t& query,
+    const common::sfv_t& query,
     size_t dimension,
     float bin_width) {
   vector<float> hash(dimension);
   for (size_t i = 0; i < query.size(); ++i) {
-    const uint32_t seed = hash_util::calc_string_hash(query[i].first);
+    const uint32_t seed = common::hash_util::calc_string_hash(query[i].first);
     mtrand rnd(seed);
     for (size_t j = 0; j < hash.size(); ++j) {
       hash[j] += query[i].second * rnd.next_gaussian();
@@ -111,7 +111,7 @@ euclid_lsh::~euclid_lsh() {
 }
 
 void euclid_lsh::neighbor_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   similar_row(query, ids, ret_num);
@@ -131,7 +131,7 @@ void euclid_lsh::neighbor_row(
 }
 
 void euclid_lsh::similar_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
@@ -166,7 +166,7 @@ void euclid_lsh::clear_row(const string& id) {
 
 void euclid_lsh::update_row(const string& id, const sfv_diff_t& diff) {
   orig_.set_row(id, diff);
-  sfv_t row;
+  common::sfv_t row;
   orig_.get_row(id, row);
 
   const vector<float> hash = lsh_function(row,
@@ -192,10 +192,10 @@ const core::storage::lsh_index_storage* euclid_lsh::get_const_storage() const {
   return &lsh_index_;
 }
 
-vector<float> euclid_lsh::calculate_lsh(const sfv_t& query) {
+vector<float> euclid_lsh::calculate_lsh(const common::sfv_t& query) {
   vector<float> hash(lsh_index_.all_lsh_num());
   for (size_t i = 0; i < query.size(); ++i) {
-    const uint32_t seed = hash_util::calc_string_hash(query[i].first);
+    const uint32_t seed = common::hash_util::calc_string_hash(query[i].first);
     const vector<float> proj = get_projection(seed);
     for (size_t j = 0; j < hash.size(); ++j) {
       hash[j] += query[i].second * proj[j];

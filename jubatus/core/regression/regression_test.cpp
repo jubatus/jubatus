@@ -44,7 +44,7 @@ TYPED_TEST_CASE_P(regression_test);
 TYPED_TEST_P(regression_test, trivial) {
   local_storage s;
   TypeParam p(&s);
-  sfv_t fv;
+  common::sfv_t fv;
   fv.push_back(make_pair(string("f1"), 1.0));
   p.train(fv, 10);
 
@@ -75,8 +75,8 @@ TYPED_TEST_P(regression_test, trivial) {
 }
 
 // TODO(odasatoshi) same as classifier_test.cpp
-sfv_t convert(vector<double>& v) {
-  sfv_t fv;
+common::sfv_t convert(vector<double>& v) {
+  common::sfv_t fv;
   for (size_t i = 0; i < v.size(); ++i) {
     string f = "f" + lexical_cast<string>(i);
     fv.push_back(make_pair(f, v[i]));

@@ -39,7 +39,7 @@ using pfi::concurrent::thread;
 using jubatus::server::common::mprpc::rpc_result;
 using jubatus::server::common::mprpc::rpc_error;
 using jubatus::server::common::mprpc::error_multi_rpc;
-using jubatus::exception::error_info_list_t;
+using jubatus::core::common::exception::error_info_list_t;
 
 struct strw {
   string key;

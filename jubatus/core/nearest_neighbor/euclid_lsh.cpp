@@ -43,7 +43,7 @@ namespace core {
 namespace nearest_neighbor {
 namespace {
 
-float squared_l2norm(const sfv_t& sfv) {
+float squared_l2norm(const common::sfv_t& sfv) {
   float sqnorm = 0;
   for (size_t i = 0; i < sfv.size(); ++i) {
     sqnorm += sfv[i].second * sfv[i].second;
@@ -51,7 +51,7 @@ float squared_l2norm(const sfv_t& sfv) {
   return sqnorm;
 }
 
-float l2norm(const sfv_t& sfv) {
+float l2norm(const common::sfv_t& sfv) {
   return sqrt(squared_l2norm(sfv));
 }
 
@@ -91,14 +91,14 @@ euclid_lsh::euclid_lsh(
   fill_schema(schema);
 }
 
-void euclid_lsh::set_row(const string& id, const sfv_t& sfv) {
+void euclid_lsh::set_row(const string& id, const common::sfv_t& sfv) {
   // TODO(beam2d): support nested algorithm, e.g. when used by lof and then we
   // cannot suppose that the first two columns are assigned to euclid_lsh.
   get_table()->add(id, owner(my_id_), cosine_lsh(sfv, hash_num_), l2norm(sfv));
 }
 
 void euclid_lsh::neighbor_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     uint64_t ret_num) const {
   neighbor_row_from_hash(

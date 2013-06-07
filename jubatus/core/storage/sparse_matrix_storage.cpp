@@ -74,7 +74,7 @@ float sparse_matrix_storage::get(
   }
 
   uint64_t id = column2id_.get_id_const(column);
-  if (id == key_manager::NOTFOUND) {
+  if (id == common::key_manager::NOTFOUND) {
     return 0.f;
   }
 
@@ -122,7 +122,7 @@ void sparse_matrix_storage::remove(const string& row, const string& column) {
   }
 
   uint64_t id = column2id_.get_id_const(column);
-  if (id == key_manager::NOTFOUND) {
+  if (id == common::key_manager::NOTFOUND) {
     return;
   }
 
@@ -157,7 +157,7 @@ void sparse_matrix_storage::get_all_row_ids(vector<string>& ids) const {
 
 void sparse_matrix_storage::clear() {
   tbl_t().swap(tbl_);
-  key_manager().swap(column2id_);
+  common::key_manager().swap(column2id_);
   // norm_ptr_->clear();
 }
 

@@ -155,6 +155,8 @@ def regenerate(ctx):
     idl = idl_node.name
     service_name = os.path.splitext(idl)[0]
     ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'server', '-o', '.', '-i', '-n', 'jubatus', '-g', 'JUBATUS_SERVER_SERVER_', idl], cwd=server_node.abspath())
+    if not service_name in ['graph', 'anomaly']:
+      server_node.find_node('%s_client.hpp' % service_name).delete()
 
 def regenerate_client(ctx):
   import os

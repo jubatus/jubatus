@@ -19,29 +19,32 @@
 #include <string>
 
 namespace jubatus {
+namespace core {
+namespace common {
 
 using std::sort;
 using std::string;
 
 void sort_and_merge(sfv_t& sfv) {
-  if (sfv.size() == 0) {
+  if (sfv.size() <= 1) {
     return;
   }
   sort(sfv.begin(), sfv.end());
-  sfv_t ret_sfv;
-  const string* prev = &sfv[0].first;
-  float val = sfv[0].second;
-  for (size_t i = 1; i < sfv.size(); ++i) {
-    if (sfv[i].first == *prev) {
-      val += sfv[i].second;
+
+  typedef sfv_t::iterator iterator;
+  iterator cur = sfv.begin();
+  iterator end = sfv.end();
+  for (iterator iter = cur+1; iter != end; ++iter) {
+    if (iter->first == cur->first) {
+      cur->second += iter->second;
     } else {
-      ret_sfv.push_back(make_pair(*prev, val));
-      prev = &sfv[i].first;
-      val = sfv[i].second;
+      ++cur;
+      *cur = *iter;
     }
   }
-  ret_sfv.push_back(make_pair(*prev, val));
-  sfv.swap(ret_sfv);
+  sfv.erase(cur+1, end);
 }
 
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus

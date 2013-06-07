@@ -75,15 +75,16 @@ class nearest_neighbor_test
             pfi::lang::lexical_cast<int>(it->second))));
       }
 
-      using jubatus::core::jsonconfig::config;
+      using common::jsonconfig::config;
       using pfi::text::json::json;
 
       table_.reset(new table::column_table);
       nn_.reset(create_nearest_neighbor(
           name, config(config_js, ""), table_, "localhost"));
-    } catch (jubatus::core::jsonconfig::cast_check_error& e) {
+    } catch (common::jsonconfig::cast_check_error& e) {
       std::cout << "In Setup():" <<e.what() << '\n';
-      vector<pfi::lang::shared_ptr<jsonconfig::config_error> > v = e.errors();
+      vector<pfi::lang::shared_ptr<common::jsonconfig::config_error> > v =
+          e.errors();
       for (size_t i = 0; i < v.size(); ++i) {
         std::cout << v[i]->what() << '\n';
       }
@@ -128,7 +129,7 @@ TEST_P(nearest_neighbor_test, get_all_row_ids) {
 
   for (int count = 0; count < 2; ++count) {  // duplicated set_row
     for (size_t i = 0; i < expect.size(); ++i) {
-      nn->set_row(expect[i], sfv_t());
+      nn->set_row(expect[i], common::sfv_t());
     }
   }
 
@@ -145,7 +146,7 @@ TEST_P(nearest_neighbor_test, empty_neighbor_row) {
   nn->neighbor_row("", ids, 1);
   EXPECT_TRUE(ids.empty());
 
-  nn->neighbor_row(sfv_t(), ids, 1);
+  nn->neighbor_row(common::sfv_t(), ids, 1);
   EXPECT_TRUE(ids.empty());
 }
 

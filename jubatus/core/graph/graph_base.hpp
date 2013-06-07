@@ -75,7 +75,7 @@ class graph_base {
   void save(std::ostream&);
   void load(std::istream&);
 
- protected:
+ private:
   virtual bool save_imp(std::ostream& os) = 0;
   virtual bool load_imp(std::istream& is) = 0;
 };

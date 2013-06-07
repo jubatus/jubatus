@@ -130,7 +130,7 @@ try {
   }
 
   return 0;
-} catch (const jubatus::exception::jubatus_exception& e) {
+} catch (const jubatus::core::common::exception::jubatus_exception& e) {
   cout << e.diagnostic_information(true) << endl;
   exit(1);
 }

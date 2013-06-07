@@ -54,10 +54,10 @@ bool server_base::save(const std::string& id) {
   std::ofstream ofs(path.c_str(), std::ios::trunc | std::ios::binary);
   if (!ofs) {
     throw
-        JUBATUS_EXCEPTION(
-            jubatus::exception::runtime_error("cannot open output file")
-            << jubatus::exception::error_file_name(path)
-            << jubatus::exception::error_errno(errno));
+      JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("cannot open output file")
+        << core::common::exception::error_file_name(path)
+        << core::common::exception::error_errno(errno));
   }
   try {
     LOG(INFO) << "starting save to " << path;
@@ -81,9 +81,9 @@ bool server_base::load(const std::string& id) {
   std::ifstream ifs(path.c_str(), std::ios::binary);
   if (!ifs) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("cannot open input file")
-        << jubatus::exception::error_file_name(path)
-        << jubatus::exception::error_errno(errno));
+      core::common::exception::runtime_error("cannot open input file")
+      << core::common::exception::error_file_name(path)
+      << core::common::exception::error_errno(errno));
   }
 
   try {

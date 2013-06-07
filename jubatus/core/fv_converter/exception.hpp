@@ -25,7 +25,7 @@ namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-class converter_exception : public jubatus::exception::runtime_error {
+class converter_exception : public common::exception::runtime_error {
  public:
   explicit converter_exception(const std::string& msg)
       : runtime_error(msg) {

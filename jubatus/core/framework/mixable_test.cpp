@@ -74,8 +74,8 @@ class mixable_int : public mixable<int_model, int> {
 
 TEST(mixable, config_not_set) {
   mixable_int m;
-  EXPECT_THROW(m.get_diff(), config_not_set);
-  EXPECT_THROW(m.put_diff(byte_buffer()), config_not_set);
+  EXPECT_THROW(m.get_diff(), common::config_not_set);
+  EXPECT_THROW(m.put_diff(byte_buffer()), common::config_not_set);
 }
 
 TEST(mixable, save_load) {

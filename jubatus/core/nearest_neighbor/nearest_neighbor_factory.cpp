@@ -30,11 +30,11 @@ namespace nearest_neighbor {
 
 nearest_neighbor_base* create_nearest_neighbor(
     const std::string& name,
-    const jubatus::core::jsonconfig::config& config,
+    const common::jsonconfig::config& config,
     pfi::lang::shared_ptr<table::column_table> table,
     const std::string& id) {
 
-  using jubatus::core::jsonconfig::config_cast_check;
+  using common::jsonconfig::config_cast_check;
 
   if (name == "euclid_lsh") {
     DLOG(INFO) << __func__ << "  euclid_lsh selected ";
@@ -48,7 +48,7 @@ nearest_neighbor_base* create_nearest_neighbor(
     return new minhash(config_cast_check<minhash::config>(config), table, id);
   } else {
     DLOG(INFO) << __func__ << " unknown " << name << "required";
-    throw JUBATUS_EXCEPTION(unsupported_method(name));
+    throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }
   return NULL;
 }

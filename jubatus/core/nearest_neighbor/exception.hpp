@@ -25,7 +25,7 @@ namespace core {
 namespace nearest_neighbor {
 
 class nearest_neighbor_exception
-    : public exception::jubaexception<nearest_neighbor_exception> {
+    : public common::exception::jubaexception<nearest_neighbor_exception> {
  public:
   explicit nearest_neighbor_exception(const std::string& msg)
       : msg(msg) {}

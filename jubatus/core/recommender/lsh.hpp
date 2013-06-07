@@ -48,11 +48,11 @@ class lsh : public recommender_base {
   ~lsh();
 
   void similar_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   void neighbor_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   void clear();
@@ -67,9 +67,9 @@ class lsh : public recommender_base {
   bool save_impl(std::ostream&);
   bool load_impl(std::istream&);
 
-  void calc_lsh_values(const sfv_t& sfv, core::storage::bit_vector& bv) const;
+  void calc_lsh_values(const common::sfv_t& sfv, storage::bit_vector& bv) const;
   void generate_column_base(const std::string& column);
-  void generate_column_bases(const sfv_t& v);
+  void generate_column_bases(const common::sfv_t& v);
 
   // bases for lsh
   pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_;

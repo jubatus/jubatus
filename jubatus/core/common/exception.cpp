@@ -20,6 +20,8 @@
 #include <pficommon/lang/demangle.h>
 
 namespace jubatus {
+namespace core {
+namespace common {
 namespace exception {
 
 error_info_list_t jubatus_exception::error_info() const {
@@ -52,4 +54,6 @@ std::string jubatus_exception::diagnostic_information(bool display_what) const {
 }
 
 }  // namespace exception
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus

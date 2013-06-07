@@ -22,10 +22,13 @@
 
 namespace jubatus {
 namespace core {
+namespace common {
 namespace jsonconfig {
 
 class config;
+
 }  // namespace jsonconfig
+}  // namespace common
 
 namespace recommender {
 
@@ -35,7 +38,7 @@ class recommender_factory {
  public:
   static recommender_base* create_recommender(
       const std::string& name,
-      const jsonconfig::config& param,
+      const common::jsonconfig::config& param,
       const std::string& id);
 };
 

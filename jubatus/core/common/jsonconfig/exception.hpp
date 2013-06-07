@@ -29,9 +29,10 @@
 
 namespace jubatus {
 namespace core {
+namespace common {
 namespace jsonconfig {
 
-class config_error : public exception::jubaexception<config_error> {
+class config_error : public common::exception::jubaexception<config_error> {
  public:
   config_error(const std::string& path, const std::string& message);
 
@@ -106,7 +107,8 @@ class not_found : public config_error {
 };
 
 // cast_check_error DOES NOT INHERIT Config_error
-class cast_check_error : public exception::jubaexception<cast_check_error> {
+class cast_check_error
+  : public common::exception::jubaexception<cast_check_error> {
  public:
   cast_check_error(
       const std::vector<pfi::lang::shared_ptr<config_error> >& errors);
@@ -126,6 +128,7 @@ class cast_check_error : public exception::jubaexception<cast_check_error> {
 };
 
 }  // namespace jsonconfig
+}  // namespace common
 }  // namespace core
 }  // namespace jubatus
 #endif  // JUBATUS_CORE_COMMON_JSONCONFIG_EXCEPTION_HPP_

@@ -57,7 +57,7 @@ class minhash : public bit_vector_nearest_neighbor_base {
   }
 
  protected:
-  virtual table::bit_vector hash(const sfv_t& sfv) const;
+  virtual table::bit_vector hash(const common::sfv_t& sfv) const;
 };
 
 }  // namespace nearest_neighbor

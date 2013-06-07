@@ -24,12 +24,18 @@ namespace jubatus {
 namespace core {
 
 namespace storage {
+
 class storage_base;
+
 }  // namespace storage
 
+namespace common {
 namespace jsonconfig {
+
 class config;
+
 }  // namespace jsonconfig
+}  // namespace common
 
 namespace regression {
 
@@ -39,7 +45,7 @@ class regression_factory {
  public:
   static regression_base* create_regression(
       const std::string& name,
-      const jsonconfig::config& param,
+      const common::jsonconfig::config& param,
       jubatus::core::storage::storage_base* storage);
 };
 
