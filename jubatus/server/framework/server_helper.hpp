@@ -29,6 +29,7 @@
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
+#include "../../config.hpp"
 #include "../common/lock_service.hpp"
 #include "../common/mprpc/rpc_server.hpp"
 #include "../common/config.hpp"
@@ -68,12 +69,12 @@ class server_helper {
 
     try {
       server_->set_config(get_conf(a));
-    } catch (const core::jsonconfig::cast_check_error& e) {
-      config_exception config_error;
-      const core::jsonconfig::config_error_list& errors = e.errors();
-      for (core::jsonconfig::config_error_list::const_iterator
+    } catch (const core::common::jsonconfig::cast_check_error& e) {
+      core::common::config_exception config_error;
+      const core::common::jsonconfig::config_error_list& errors = e.errors();
+      for (core::common::jsonconfig::config_error_list::const_iterator
           it = errors.begin(), end = errors.end(); it != end; ++it) {
-        config_error << exception::error_message((*it)->what());
+        config_error << core::common::exception::error_message((*it)->what());
       }
       // send error message to caller
       throw JUBATUS_EXCEPTION(config_error);
@@ -112,8 +113,8 @@ class server_helper {
     const server_argv& a = server_->argv();
     status_t& data = status[get_server_identifier(a)];
 
-    util::machine_status_t mt;
-    util::get_machine_status(mt);
+    common::util::machine_status_t mt;
+    common::util::get_machine_status(mt);
     data["VIRT"] = pfi::lang::lexical_cast<std::string>(mt.vm_size);
     data["RSS"] = pfi::lang::lexical_cast<std::string>(mt.vm_resident);
     data["SHR"] = pfi::lang::lexical_cast<std::string>(mt.vm_share);
@@ -156,7 +157,7 @@ class server_helper {
       serv.start(a.threadnum, true);
       // RPC server started, then register group membership
       impl_.prepare_for_run(a, use_cht_);
-      LOG(INFO) << jubatus::util::get_program_name() << " RPC server startup";
+      LOG(INFO) << common::util::get_program_name() << " RPC server startup";
       serv.join();
       return 0;
     } catch (const mp::system_error& e) {
@@ -166,7 +167,7 @@ class server_helper {
       } else {
         LOG(FATAL) << "server failed to start: " << e.what();
       }
-    } catch (jubatus::exception::jubatus_exception&) {
+    } catch (jubatus::core::common::exception::jubatus_exception&) {
       throw;
     } catch (const std::exception& e) {
       LOG(FATAL) << "server failed to start: " << e.what();

@@ -14,12 +14,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "bit_vector_nearest_neighbor_base.hpp"
+
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "bit_vector_nearest_neighbor_base.hpp"
-
+#include "../common/type.hpp"
 #include "bit_vector_ranking.hpp"
 
 using std::string;
@@ -58,7 +58,7 @@ bit_vector_nearest_neighbor_base::bit_vector_nearest_neighbor_base(
 
 void bit_vector_nearest_neighbor_base::set_row(
     const string& id,
-    const sfv_t& sfv) {
+    const common::sfv_t& sfv) {
   // TODO(beam2d): support nested algorithm, e.g. when used by lof and then
   // we cannot suppose that the first column is assigned
   // to bit_vector_nearest_neighbor_base.
@@ -66,7 +66,7 @@ void bit_vector_nearest_neighbor_base::set_row(
 }
 
 void bit_vector_nearest_neighbor_base::neighbor_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     uint64_t ret_num) const {
   neighbor_row_from_hash(hash(query), ids, ret_num);

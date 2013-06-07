@@ -44,7 +44,7 @@ TYPED_TEST_CASE_P(lof_test);
 
 TYPED_TEST_P(lof_test, update_row) {
   lof l(lof_storage::config(), new TypeParam);
-  sfv_t v, q;
+  common::sfv_t v, q;
   const string id = "test";
   l.update_row(id, v);
   l.calc_anomaly_score(id);

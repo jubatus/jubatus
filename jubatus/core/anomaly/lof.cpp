@@ -80,7 +80,7 @@ lof::lof(
 lof::~lof() {
 }
 
-float lof::calc_anomaly_score(const sfv_t& query) const {
+float lof::calc_anomaly_score(const common::sfv_t& query) const {
   unordered_map<string, float> neighbor_lrd;
   const float lrd = lof_index_->collect_lrds(query, neighbor_lrd);
 
@@ -106,8 +106,8 @@ void lof::update_row(const string& id, const sfv_diff_t& diff) {
   lof_index_->update_row(id, diff);
 }
 
-void lof::set_row(const string& id, const sfv_t& sfv) {
-  throw JUBATUS_EXCEPTION(unsupported_method(__func__));
+void lof::set_row(const string& id, const common::sfv_t& sfv) {
+  throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
 }
 
 void lof::get_all_row_ids(vector<string>& ids) const {

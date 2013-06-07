@@ -47,8 +47,8 @@ keeper::~keeper() {
 int keeper::run() {
   try {
     ::atexit(jubatus::server::framework::atexit);
-    jubatus::util::set_exit_on_term();
-    jubatus::util::ignore_sigpipe();
+    common::util::set_exit_on_term();
+    common::util::ignore_sigpipe();
 
     this->instance_.listen(a_.bind_address, a_.port);
     LOG(INFO) << "start listening at port " << a_.port;
@@ -58,11 +58,11 @@ int keeper::run() {
     register_keeper(*zk_, a_.type, a_.eth, a_.port);
     LOG(INFO) << "registered group membership";
 
-    LOG(INFO) << jubatus::util::get_program_name() << " RPC server startup";
+    LOG(INFO) << common::util::get_program_name() << " RPC server startup";
     this->instance_.join();
 
     return 0;  // never return
-  } catch (const jubatus::exception::jubatus_exception& e) {
+  } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
   } catch (const mp::system_error& e) {
     if (e.code == EADDRINUSE) {

@@ -74,7 +74,7 @@ TEST(prod_invert_and_vector, trivial) {
   m["c2"].push_back(1.0);
   m["c2"].push_back(0.0);
 
-  sfv_t v;
+  common::sfv_t v;
   v.push_back(make_pair("c1", 2.0));
 
   vector<float> r;

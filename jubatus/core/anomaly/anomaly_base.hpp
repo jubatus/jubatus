@@ -39,7 +39,7 @@ class anomaly_base {
   virtual ~anomaly_base();
 
   // Calculates and returns anomaly score of given query.
-  virtual float calc_anomaly_score(const sfv_t& query) const = 0;
+  virtual float calc_anomaly_score(const common::sfv_t& query) const = 0;
 
   // Returns anomaly score of the row corresponding to given id.
   virtual float calc_anomaly_score(const std::string& id) const = 0;
@@ -63,7 +63,7 @@ class anomaly_base {
   // Updates the row corresponding to given id.
   //
   // Some implementations including lof do not support this function.
-  virtual void set_row(const std::string& id, const sfv_t& sfv) = 0;
+  virtual void set_row(const std::string& id, const common::sfv_t& sfv) = 0;
 
   virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
   virtual std::string type() const = 0;

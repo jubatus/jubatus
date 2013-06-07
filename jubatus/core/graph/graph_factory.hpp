@@ -21,9 +21,13 @@
 
 namespace jubatus {
 namespace core {
+namespace common {
 namespace jsonconfig {
+
 class config;
+
 }  // namespace jsonconfig
+}  // namespace common
 
 namespace graph {
 
@@ -32,8 +36,8 @@ class graph_base;
 class graph_factory {
  public:
   static graph_base* create_graph(
-      const std::string& name,
-      const jsonconfig::config& param);
+    const std::string& name,
+    const common::jsonconfig::config& param);
 };
 
 }  // namespace graph

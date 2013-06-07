@@ -26,7 +26,7 @@ namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-void revert_feature(const sfv_t& fv, fv_converter::datum& data) {
+void revert_feature(const common::sfv_t& fv, fv_converter::datum& data) {
   for (size_t i = 0; i < fv.size(); ++i) {
     std::pair<std::string, float> num_value;
     std::pair<std::string, std::string> string_value;

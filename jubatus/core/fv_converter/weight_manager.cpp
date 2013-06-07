@@ -41,12 +41,12 @@ weight_manager::weight_manager()
       master_weights_() {
 }
 
-void weight_manager::update_weight(const sfv_t& fv) {
+void weight_manager::update_weight(const common::sfv_t& fv) {
   diff_weights_.update_document_frequency(fv);
 }
 
-void weight_manager::get_weight(sfv_t& fv) const {
-  for (sfv_t::iterator it = fv.begin(); it != fv.end(); ++it) {
+void weight_manager::get_weight(common::sfv_t& fv) const {
+  for (common::sfv_t::iterator it = fv.begin(); it != fv.end(); ++it) {
     double global_weight = get_global_weight(it->first);
     it->second *= global_weight;
   }

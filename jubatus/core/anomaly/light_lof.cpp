@@ -83,7 +83,7 @@ light_lof::light_lof(
 light_lof::~light_lof() {
 }
 
-float light_lof::calc_anomaly_score(const sfv_t& query) const {
+float light_lof::calc_anomaly_score(const common::sfv_t& query) const {
   std::vector<float> neighbor_lrds;
   const float lrd = collect_lrds(query, neighbor_lrds);
 
@@ -103,14 +103,14 @@ void light_lof::clear() {
 }
 
 void light_lof::clear_row(const std::string& id) {
-  throw JUBATUS_EXCEPTION(unsupported_method(__func__));
+  throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
 }
 
 void light_lof::update_row(const std::string& id, const sfv_diff_t& diff) {
-  throw JUBATUS_EXCEPTION(unsupported_method(__func__));
+  throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
 }
 
-void light_lof::set_row(const std::string& id, const sfv_t& sfv) {
+void light_lof::set_row(const std::string& id, const common::sfv_t& sfv) {
   pfi::data::unordered_set<uint64_t> update_set;
 
   shared_ptr<column_table> table = mixable_scores_.get_model();
@@ -127,7 +127,7 @@ void light_lof::set_row(const std::string& id, const sfv_t& sfv) {
 
   const std::pair<bool, uint64_t> index = table->exact_match(id);
   if (!index.first) {
-    throw JUBATUS_EXCEPTION(exception::runtime_error(
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error(
         "Failed to add a row to lof table (key = " + id + ')'));
   }
   update_set.insert(index.second);
@@ -152,7 +152,7 @@ void light_lof::register_mixables_to_holder(
 // private
 
 float light_lof::collect_lrds(
-    const sfv_t& query,
+    const common::sfv_t& query,
     std::vector<float>& neighbor_lrds) const {
   std::vector<std::pair<std::string, float> > neighbors;
   nearest_neighbor_engine_->neighbor_row(
@@ -293,7 +293,7 @@ light_lof::parameter light_lof::get_row_parameter(const std::string& row)
   shared_ptr<column_table> table = mixable_scores_.get_model();
   std::pair<bool, uint64_t> hit = table->exact_match(row);
   if (!hit.first) {
-    throw JUBATUS_EXCEPTION(exception::runtime_error(
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error(
         "row \"" + row + "\" not found in light_lof table"));
   }
   parameter param;

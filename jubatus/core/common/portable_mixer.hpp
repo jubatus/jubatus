@@ -24,6 +24,8 @@
 #include "../common/hash.hpp"
 
 namespace jubatus {
+namespace core {
+namespace common {
 
 template <typename Storage>
 class portable_mixer {
@@ -75,6 +77,8 @@ class portable_mixer {
   pfi::math::random::mtrand rand_;
 };
 
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_COMMON_PORTABLE_MIXER_HPP_

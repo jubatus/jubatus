@@ -58,9 +58,9 @@ class euclid_lsh : public nearest_neighbor_base {
     return "euclid_lsh";
   }
 
-  virtual void set_row(const std::string& id, const sfv_t& sfv);
+  virtual void set_row(const std::string& id, const common::sfv_t& sfv);
   virtual void neighbor_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       uint64_t ret_num) const;
   virtual void neighbor_row(

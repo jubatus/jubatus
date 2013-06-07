@@ -45,14 +45,14 @@ typedef ::testing::Types<
 const char* const ID = "my_id";
 const uint32_t SEED = 1091;
 
-vector<sfv_t> draw_2d_points_from_gaussian(
+vector<common::sfv_t> draw_2d_points_from_gaussian(
     size_t num_points,
     float x_mean,
     float y_mean,
     float x_deviation,
     float y_deviation,
     pfi::math::random::mtrand& mtr) {
-  vector<sfv_t> points(num_points);
+  vector<common::sfv_t> points(num_points);
   for (size_t i = 0; i < points.size(); ++i) {
     const float x = mtr.next_gaussian(x_mean, x_deviation);
     const float y = mtr.next_gaussian(y_mean, y_deviation);
@@ -62,8 +62,8 @@ vector<sfv_t> draw_2d_points_from_gaussian(
   return points;
 }
 
-sfv_t create_2d_point(float x, float y) {
-  sfv_t point;
+common::sfv_t create_2d_point(float x, float y) {
+  common::sfv_t point;
   point.push_back(make_pair("x", x));
   point.push_back(make_pair("y", y));
   return point;
@@ -101,7 +101,7 @@ TYPED_TEST_P(light_lof_test, get_all_row_ids) {
       raw_ids, raw_ids + sizeof(raw_ids) / sizeof(raw_ids[0]));
 
   for (size_t i = 0; i < ids.size(); ++i) {
-    this->light_lof_->set_row(ids[i], sfv_t());
+    this->light_lof_->set_row(ids[i], common::sfv_t());
   }
   vector<string> actual_ids;
   this->light_lof_->get_all_row_ids(actual_ids);
@@ -109,25 +109,25 @@ TYPED_TEST_P(light_lof_test, get_all_row_ids) {
 
   // duplicated set
   for (size_t i = 0; i < ids.size(); ++i) {
-    this->light_lof_->set_row(ids[i], sfv_t());
+    this->light_lof_->set_row(ids[i], common::sfv_t());
   }
   this->light_lof_->get_all_row_ids(actual_ids);
   EXPECT_EQ(ids, actual_ids);
 }
 
 TYPED_TEST_P(light_lof_test, calc_anomaly_score_on_gaussian_random_samples) {
-  const vector<sfv_t> random_points =
+  const vector<common::sfv_t> random_points =
       draw_2d_points_from_gaussian(100, 3, 1, 1, 0.5, this->mtr_);
   for (size_t i = 0; i < random_points.size(); ++i) {
     this->light_lof_->set_row(lexical_cast<string>(i), random_points[i]);
   }
 
   // Mean should be treated as normal.
-  const sfv_t normal_query = create_2d_point(3, 1);
+  const common::sfv_t normal_query = create_2d_point(3, 1);
   EXPECT_GT(1.25f, this->light_lof_->calc_anomaly_score(normal_query));
 
   // Outlier point should be treated as anomaly.
-  const sfv_t outlier_query = create_2d_point(0, 3);
+  const common::sfv_t outlier_query = create_2d_point(0, 3);
   EXPECT_LT(2.f, this->light_lof_->calc_anomaly_score(outlier_query));
 }
 

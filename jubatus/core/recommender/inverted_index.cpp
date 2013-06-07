@@ -39,7 +39,7 @@ inverted_index::~inverted_index() {
 }
 
 void inverted_index::similar_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     std::vector<std::pair<std::string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
@@ -50,7 +50,7 @@ void inverted_index::similar_row(
 }
 
 void inverted_index::neighbor_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   similar_row(query, ids, ret_num);

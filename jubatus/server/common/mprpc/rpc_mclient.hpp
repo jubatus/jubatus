@@ -56,14 +56,14 @@
       throw JUBATUS_EXCEPTION( \
           jubatus::server::common::mprpc::rpc_call_error() \
           << jubatus::server::common::mprpc::error_method(method) \
-          << jubatus::exception::error_message( \
+          << jubatus::core::common::exception::error_message( \
                  std::string("rpc_server error: " \
                      + pfi::lang::lexical_cast<std::string>(err.via.u64)))); \
     } else { \
       throw JUBATUS_EXCEPTION( \
           jubatus::server::common::mprpc::rpc_call_error() \
           << jubatus::server::common::mprpc::error_method(method) \
-          << jubatus::exception::error_message( \
+          << jubatus::core::common::exception::error_message( \
                  std::string("rpc_server error: " \
                      + pfi::lang::lexical_cast<std::string>(err)))); \
     } \
@@ -295,7 +295,7 @@ rpc_result<Res> rpc_mclient::join_(
 
       result.error.push_back(
           rpc_error(hosts_[i].first, hosts_[i].second,
-              jubatus::exception::get_current_exception()));
+              jubatus::core::common::exception::get_current_exception()));
     }
   }
 

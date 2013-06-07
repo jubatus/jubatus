@@ -36,7 +36,7 @@ namespace jubatus {
 namespace server {
 namespace framework {
 
-class no_worker : public jubatus::exception::runtime_error {
+class no_worker : public jubatus::core::common::exception::runtime_error {
  public:
   explicit no_worker(const std::string& name)
       : runtime_error("no server found: " + name) {

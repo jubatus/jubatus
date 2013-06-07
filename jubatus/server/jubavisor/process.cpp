@@ -72,12 +72,12 @@ void redirect(const char* filename, int fd) {
   int new_fd = open(filename, O_WRONLY | O_CREAT, 0644);
   if (new_fd < 0) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("cannot open file"));
+        jubatus::core::common::exception::runtime_error("cannot open file"));
   }
   int r = dup2(new_fd, fd);
   if (r < 0) {
     throw JUBATUS_EXCEPTION(
-        jubatus::exception::runtime_error("cannot dup(2)"));
+        jubatus::core::common::exception::runtime_error("cannot dup(2)"));
   }
   close(new_fd);
 }
@@ -122,6 +122,7 @@ bool process::spawn_link(int p) {
 
     execvp(cmd.c_str(), (char* const *) &arg_list[0]);
     perror(cmd.c_str());  // execv only returns on error
+    _exit(EXIT_FAILURE);
 
   } else {
     perror("failed on forking new process");

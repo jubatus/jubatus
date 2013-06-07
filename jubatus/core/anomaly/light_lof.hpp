@@ -59,14 +59,14 @@ class light_lof : public anomaly_base {
 
   // anomaly_base interface
 
-  float calc_anomaly_score(const sfv_t& query) const;
+  float calc_anomaly_score(const common::sfv_t& query) const;
   float calc_anomaly_score(const std::string& id) const;
   void clear();
   // clear_row is not supported
   void clear_row(const std::string& id);
   // update_row is not supported
   void update_row(const std::string& id, const sfv_diff_t& diff);
-  void set_row(const std::string& id, const sfv_t& sfv);
+  void set_row(const std::string& id, const common::sfv_t& sfv);
 
   void get_all_row_ids(std::vector<std::string>& ids) const;
   std::string type() const;
@@ -81,7 +81,7 @@ class light_lof : public anomaly_base {
   };
 
   float collect_lrds(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<float>& neighbor_lrds) const;
   float collect_lrds(
       const std::string& query,

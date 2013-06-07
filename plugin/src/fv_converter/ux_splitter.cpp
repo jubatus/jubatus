@@ -71,8 +71,8 @@ static void read_all_lines(
   if (stat(file_name, &st) != 0) {
     throw JUBATUS_EXCEPTION(
         converter_exception("failed to stat file: " + std::string(file_name))
-        << jubatus::exception::error_api_func("stat")
-        << jubatus::exception::error_errno(errno));
+        << jubatus::core::common::exception::error_api_func("stat")
+        << jubatus::core::common::exception::error_errno(errno));
   }
   if (S_ISDIR(st.st_mode)) {
     throw JUBATUS_EXCEPTION(converter_exception(
@@ -83,7 +83,7 @@ static void read_all_lines(
   if (!ifs) {
     throw JUBATUS_EXCEPTION(
         converter_exception(std::string("cannot open: ") + file_name)
-        << jubatus::exception::error_file_name(file_name));
+        << jubatus::core::common::exception::error_file_name(file_name));
   }
   for (std::string line; getline(ifs, line);) {
     lines.push_back(line);

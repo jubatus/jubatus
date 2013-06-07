@@ -43,7 +43,7 @@ lsh::config::config()
 lsh::lsh(uint64_t base_num)
     : base_num_(base_num) {
   if (base_num == 0) {
-    throw JUBATUS_EXCEPTION(jubatus::exception::runtime_error("base_num == 0"));
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("base_num == 0"));
   }
 }
 
@@ -59,7 +59,7 @@ lsh::~lsh() {
 }
 
 void lsh::similar_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
@@ -73,7 +73,7 @@ void lsh::similar_row(
 }
 
 void lsh::neighbor_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   similar_row(query, ids, ret_num);
@@ -94,7 +94,7 @@ void lsh::clear_row(const string& id) {
   row2lshvals_.remove_row(id);
 }
 
-void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const {
+void lsh::calc_lsh_values(const common::sfv_t& sfv, bit_vector& bv) const {
   const_cast<lsh*>(this)->generate_column_bases(sfv);
 
   vector<float> lsh_vals;
@@ -102,7 +102,7 @@ void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const {
   set_bit_vector(lsh_vals, bv);
 }
 
-void lsh::generate_column_bases(const sfv_t& sfv) {
+void lsh::generate_column_bases(const common::sfv_t& sfv) {
   for (size_t i = 0; i < sfv.size(); ++i) {
     generate_column_base(sfv[i].first);
   }
@@ -112,14 +112,14 @@ void lsh::generate_column_base(const string& column) {
   if (column2baseval_.count(column) != 0) {
     return;
   }
-  const uint32_t seed = hash_util::calc_string_hash(column);
+  const uint32_t seed = common::hash_util::calc_string_hash(column);
   generate_random_vector(base_num_, seed, column2baseval_[column]);
 }
 
 void lsh::update_row(const string& id, const sfv_diff_t& diff) {
   generate_column_bases(diff);
   orig_.set_row(id, diff);
-  sfv_t row;
+  common::sfv_t row;
   orig_.get_row(id, row);
   bit_vector bv;
   calc_lsh_values(row, bv);

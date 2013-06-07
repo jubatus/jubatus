@@ -33,11 +33,11 @@ class inverted_index : public recommender_base {
   ~inverted_index();
 
   void similar_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   void neighbor_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   void clear();

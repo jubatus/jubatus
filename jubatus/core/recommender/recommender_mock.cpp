@@ -37,7 +37,7 @@ recommender_mock::~recommender_mock() {
 }
 
 void recommender_mock::set_similar_relation(
-    const sfv_t& query,
+    const common::sfv_t& query,
     const vector<pair<string, float> >& ids) {
   storage_.set_similar_items(query, ids);
 }
@@ -45,13 +45,13 @@ void recommender_mock::set_similar_relation(
 void recommender_mock::set_similar_relation(
     const string& id,
     const vector<pair<string, float> >& ids) {
-  sfv_t query;
+  common::sfv_t query;
   decode_row(id, query);
   set_similar_relation(query, ids);
 }
 
 void recommender_mock::set_neighbor_relation(
-    const sfv_t& query,
+    const common::sfv_t& query,
     const vector<pair<string, float> >& ids) {
   storage_.set_neighbor_items(query, ids);
 }
@@ -59,20 +59,20 @@ void recommender_mock::set_neighbor_relation(
 void recommender_mock::set_neighbor_relation(
     const string& id,
     const vector<pair<string, float> >& ids) {
-  sfv_t query;
+  common::sfv_t query;
   decode_row(id, query);
   set_neighbor_relation(query, ids);
 }
 
 void recommender_mock::similar_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   storage_.similar_items_similarity(query, ids, ret_num);
 }
 
 void recommender_mock::neighbor_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   storage_.neighbor_items_distance(query, ids, ret_num);
@@ -84,7 +84,7 @@ void recommender_mock::clear() {
 }
 
 void recommender_mock::clear_row(const string& id) {
-  sfv_t sfv;
+  common::sfv_t sfv;
   decode_row(id, sfv);
   storage_.remove(sfv);
 
@@ -92,11 +92,11 @@ void recommender_mock::clear_row(const string& id) {
 }
 
 void recommender_mock::update_row(const string& id, const sfv_diff_t& diff) {
-  sfv_t old_sfv;
+  common::sfv_t old_sfv;
   orig_.get_row(id, old_sfv);
 
   orig_.set_row(id, diff);
-  sfv_t new_sfv;
+  common::sfv_t new_sfv;
   orig_.get_row(id, new_sfv);
 
   storage_.update(old_sfv, new_sfv);

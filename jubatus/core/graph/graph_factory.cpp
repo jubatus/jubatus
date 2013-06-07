@@ -28,10 +28,10 @@ namespace graph {
 
 graph_base* graph_factory::create_graph(
     const std::string& name,
-    const jsonconfig::config& param) {
+    const common::jsonconfig::config& param) {
   if (name == "graph_wo_index") {
     return new graph_wo_index(
-        jsonconfig::config_cast_check<graph_wo_index::config>(param));
+      common::jsonconfig::config_cast_check<graph_wo_index::config>(param));
   } else {
     throw JUBATUS_EXCEPTION(unknown_graph(name));
   }

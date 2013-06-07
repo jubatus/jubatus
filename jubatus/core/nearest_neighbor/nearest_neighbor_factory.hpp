@@ -31,7 +31,7 @@ class nearest_neighbor_base;
 
 nearest_neighbor_base* create_nearest_neighbor(
     const std::string& name,
-    const jubatus::core::jsonconfig::config& config,
+    const common::jsonconfig::config& config,
     pfi::lang::shared_ptr<table::column_table> table,
     const std::string& id);
 

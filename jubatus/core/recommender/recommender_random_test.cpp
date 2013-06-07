@@ -140,18 +140,18 @@ void update_random(recommender_base& r) {
 void compare_recommenders(recommender_base& r1, recommender_base& r2,
                           bool compare_complete_row = true) {
   // make a query vector
-  sfv_t q = make_vec(0.5, 0.3, 1.0);
+  common::sfv_t q = make_vec(0.5, 0.3, 1.0);
 
   // Get result before saving
   vector<pair<string, float> > ids1;
   r1.similar_row(q, ids1, 10);
-  sfv_t comp1;
+  common::sfv_t comp1;
   r1.complete_row("r1_0", comp1);
 
   // Get result from loaded data
   vector<pair<string, float> > ids2;
   r2.similar_row(q, ids2, 10);
-  sfv_t comp2;
+  common::sfv_t comp2;
   r2.complete_row("r1_0", comp2);
 
   // Compare two results
@@ -239,7 +239,7 @@ TYPED_TEST_P(recommender_random_test, mix) {
   for (size_t i = 0; i < 100; ++i) {
     vector<double> v;
     make_random(mu, 1.0, 3, v);
-    sfv_t vec = make_vec(v[0], v[1], v[2]);
+    common::sfv_t vec = make_vec(v[0], v[1], v[2]);
 
     string row = "r_" + lexical_cast<string>(i);
     (i < 50 ? r1 : r2).update_row(row, vec);

@@ -25,9 +25,11 @@ namespace jubatus {
 namespace core {
 namespace nearest_neighbor {
 
-std::vector<float> random_projection(const sfv_t& sfv, uint32_t hash_num);
+std::vector<float> random_projection(
+    const common::sfv_t& sfv,
+    uint32_t hash_num);
 table::bit_vector binarize(const std::vector<float>& proj);
-table::bit_vector cosine_lsh(const sfv_t& sfv, uint32_t hash_num);
+table::bit_vector cosine_lsh(const common::sfv_t& sfv, uint32_t hash_num);
 
 }  // namespace nearest_neighbor
 }  // namespace core

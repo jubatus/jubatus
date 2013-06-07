@@ -211,7 +211,7 @@ void linear_mixer::mixer_loop() {
       }  // unlock
       mix();
       LOG(INFO) << ".... " << mix_count_ << "th mix done.";
-    } catch (const jubatus::exception::jubatus_exception& e) {
+    } catch (const jubatus::core::common::exception::jubatus_exception& e) {
       LOG(ERROR) << e.diagnostic_information(true);
     }
   }
@@ -272,7 +272,7 @@ vector<byte_buffer> linear_mixer::get_diff(int a) {
   core::framework::mixable_holder::mixable_list mixables =
       mixable_holder_->get_mixables();
   if (mixables.empty()) {
-    throw JUBATUS_EXCEPTION(config_not_set());  // nothing to mix
+    throw JUBATUS_EXCEPTION(core::common::config_not_set());  // nothing to mix
   }
 
   vector<byte_buffer> o;

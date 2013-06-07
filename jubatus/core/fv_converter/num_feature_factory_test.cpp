@@ -48,7 +48,7 @@ TEST(num_feature_factory, dynamic) {
   param["function"] = "create";
   pfi::lang::scoped_ptr<num_feature> s(f.create("dynamic", param));
 
-  sfv_t fv;
+  common::sfv_t fv;
   s->add_feature("/path", 1, fv);
 
   ASSERT_EQ(1u, fv.size());

@@ -39,7 +39,7 @@ lsh::lsh(
     : bit_vector_nearest_neighbor_base(conf.bitnum, table, schema, id) {
 }
 
-table::bit_vector lsh::hash(const sfv_t& sfv) const {
+table::bit_vector lsh::hash(const common::sfv_t& sfv) const {
   return cosine_lsh(sfv, bitnum());
 }
 

@@ -640,7 +640,7 @@ class keeper
           errors_.push_back(
               jcm::rpc_error(hosts_[future_index].first,
                              hosts_[future_index].second,
-                             jubatus::exception::get_current_exception()));
+                             core::common::exception::get_current_exception()));
         }
       }
 

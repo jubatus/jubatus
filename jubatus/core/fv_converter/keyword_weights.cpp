@@ -41,9 +41,9 @@ keyword_weights::keyword_weights()
       weights_() {
 }
 
-void keyword_weights::update_document_frequency(const sfv_t& fv) {
+void keyword_weights::update_document_frequency(const common::sfv_t& fv) {
   ++document_count_;
-  for (sfv_t::const_iterator it = fv.begin(); it != fv.end(); ++it) {
+  for (common::sfv_t::const_iterator it = fv.begin(); it != fv.end(); ++it) {
     ++document_frequencies_[it->first];
   }
 }

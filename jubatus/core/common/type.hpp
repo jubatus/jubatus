@@ -23,10 +23,14 @@
 #include <vector>
 
 namespace jubatus {
+namespace core {
+namespace common {
 
 typedef std::vector<std::pair<std::string, float> > sfv_t;
 typedef std::vector<std::pair<uint64_t, float> > sfvi_t;
 
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_COMMON_TYPE_HPP_

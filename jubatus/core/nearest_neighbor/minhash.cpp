@@ -115,11 +115,11 @@ minhash::minhash(
     : bit_vector_nearest_neighbor_base(conf.bitnum, table, schema, id) {
 }
 
-bit_vector minhash::hash(const sfv_t& sfv) const {
+bit_vector minhash::hash(const common::sfv_t& sfv) const {
   vector<float> min_values_buffer(bitnum(), FLT_MAX);
   vector<uint64_t> hash_buffer(bitnum());
   for (size_t i = 0; i < sfv.size(); ++i) {
-    uint64_t key_hash = hash_util::calc_string_hash(sfv[i].first);
+    uint64_t key_hash = common::hash_util::calc_string_hash(sfv[i].first);
     float val = sfv[i].second;
     for (uint32_t j = 0; j < bitnum(); ++j) {
       float hashval = calc_hash(key_hash, j, val);

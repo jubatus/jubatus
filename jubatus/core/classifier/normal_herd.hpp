@@ -29,11 +29,11 @@ class normal_herd : public classifier_base {
  public:
   explicit normal_herd(storage::storage_base* storage);
   normal_herd(const classifier_config& config, storage::storage_base* storage);
-  void train(const sfv_t& fv, const std::string& label);
+  void train(const common::sfv_t& fv, const std::string& label);
   std::string name() const;
  private:
   void update(
-      const sfv_t& sfv,
+      const common::sfv_t& sfv,
       float margin,
       float variance,
       const std::string& pos_label,

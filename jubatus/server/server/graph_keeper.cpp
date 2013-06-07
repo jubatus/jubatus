@@ -74,7 +74,7 @@ int run_keeper(int argc, char* argv[]) {
          std::string> >)>(&jubatus::server::framework::merge<std::string,
          std::map<std::string, std::string> >));
     return k.run();
-  } catch (const jubatus::exception::jubatus_exception& e) {
+  } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
     return -1;
   }

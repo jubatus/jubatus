@@ -48,7 +48,7 @@ minhash::~minhash() {
 }
 
 void minhash::similar_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
@@ -62,7 +62,7 @@ void minhash::similar_row(
 }
 
 void minhash::neighbor_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   similar_row(query, ids, ret_num);
@@ -81,11 +81,12 @@ void minhash::clear_row(const string& id) {
   row2minhashvals_.remove_row(id);
 }
 
-void minhash::calc_minhash_values(const sfv_t& sfv, bit_vector& bv) const {
+void minhash::calc_minhash_values(const common::sfv_t& sfv,
+                                  bit_vector& bv) const {
   vector<float> min_values_buffer(hash_num_, FLT_MAX);
   vector<uint64_t> hash_buffer(hash_num_);
   for (size_t i = 0; i < sfv.size(); ++i) {
-    uint64_t key_hash = hash_util::calc_string_hash(sfv[i].first);
+    uint64_t key_hash = common::hash_util::calc_string_hash(sfv[i].first);
     float val = sfv[i].second;
     for (uint64_t j = 0; j < hash_num_; ++j) {
       float hashval = calc_hash(key_hash, j, val);
@@ -107,7 +108,7 @@ void minhash::calc_minhash_values(const sfv_t& sfv, bit_vector& bv) const {
 void minhash::update_row(const string& id, const sfv_diff_t& diff) {
   orig_.set_row(id, diff);
 
-  sfv_t row;
+  common::sfv_t row;
   orig_.get_row(id, row);
   bit_vector bv;
   calc_minhash_values(row, bv);

@@ -73,17 +73,17 @@ void nearest_neighbor_serv::get_status(status_t& status) const {
 }
 
 void nearest_neighbor_serv::set_config(const std::string& config) {
-  core::jsonconfig::config config_root(
+  core::common::jsonconfig::config config_root(
       lexical_cast<pfi::text::json::json>(config));
   nearest_neighbor_serv_config conf =
-    core::jsonconfig::config_cast_check<nearest_neighbor_serv_config>(
+    core::common::jsonconfig::config_cast_check<nearest_neighbor_serv_config>(
         config_root);
 
   config_ = config;
 
-  core::jsonconfig::config param;
+  core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::jsonconfig::config(*conf.parameter);
+    param = core::common::jsonconfig::config(*conf.parameter);
   }
 
   DLOG(INFO) << __func__;
@@ -181,7 +181,7 @@ neighbor_result nearest_neighbor_serv::similar_row_from_data(
 
 void nearest_neighbor_serv::check_set_config() const {
   if (!nearest_neighbor_) {
-    throw JUBATUS_EXCEPTION(config_not_set());
+    throw JUBATUS_EXCEPTION(core::common::config_not_set());
   }
 }
 

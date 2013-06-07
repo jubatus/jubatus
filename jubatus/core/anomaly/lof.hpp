@@ -36,13 +36,13 @@ class lof : public anomaly_base {
   ~lof();
 
   // return anomaly score of query
-  virtual float calc_anomaly_score(const sfv_t& query) const;
+  virtual float calc_anomaly_score(const common::sfv_t& query) const;
   virtual float calc_anomaly_score(const std::string& id) const;
 
   virtual void clear();
   virtual void clear_row(const std::string& id);
   virtual void update_row(const std::string& id, const sfv_diff_t& diff);
-  virtual void set_row(const std::string& id, const sfv_t& sfv);
+  virtual void set_row(const std::string& id, const common::sfv_t& sfv);
 
   virtual void get_all_row_ids(std::vector<std::string>& ids) const;
   virtual std::string type() const;

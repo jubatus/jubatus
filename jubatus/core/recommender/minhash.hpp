@@ -49,11 +49,11 @@ class minhash : public recommender_base {
   ~minhash();
 
   void similar_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   void neighbor_row(
-      const sfv_t& query,
+      const common::sfv_t& query,
       std::vector<std::pair<std::string, float> >& ids,
       size_t ret_num) const;
   void clear();
@@ -69,7 +69,7 @@ class minhash : public recommender_base {
   bool load_impl(std::istream&);
 
   void calc_minhash_values(
-      const sfv_t& sfv,
+      const common::sfv_t& sfv,
       core::storage::bit_vector& bv) const;
 
   static float calc_hash(uint64_t a, uint64_t b, float val);

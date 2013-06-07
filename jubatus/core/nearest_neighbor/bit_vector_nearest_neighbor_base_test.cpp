@@ -51,8 +51,8 @@ bit_vector make_bv(const string& in_str) {
   return bv;
 }
 
-sfv_t make_sfv(const string& in_str) {
-  sfv_t sfv;
+common::sfv_t make_sfv(const string& in_str) {
+  common::sfv_t sfv;
   vector<string> cells = split(in_str, ' ');
   for (size_t i = 0; i < cells.size(); ++i) {
     vector<string> pair = split(cells[i], ':');
@@ -79,7 +79,7 @@ class bit_vector_nearest_neighbor_mock
 
   void add_bv(const string& id, const bit_vector& bv) {
     set_next_bv(bv);
-    set_row(id, sfv_t());
+    set_row(id, common::sfv_t());
   }
 
   virtual string type() const {
@@ -87,7 +87,7 @@ class bit_vector_nearest_neighbor_mock
   }
 
  protected:
-  virtual bit_vector hash(const sfv_t&) const {
+  virtual bit_vector hash(const common::sfv_t&) const {
     return hash_value_;
   }
 
@@ -128,7 +128,7 @@ TEST_F(bit_vector_nearest_neighbor_base_test, neighbor_row_from_data) {
 
   vector<pair<string, float> > actual_neighbors, expect_neighbors;
   mock_->set_next_bv(make_bv("1111"));
-  mock_->neighbor_row(sfv_t(), actual_neighbors, 3);
+  mock_->neighbor_row(common::sfv_t(), actual_neighbors, 3);
 
   expect_neighbors.push_back(make_pair("C", .25f));
   expect_neighbors.push_back(make_pair("D", .5f));
@@ -138,7 +138,7 @@ TEST_F(bit_vector_nearest_neighbor_base_test, neighbor_row_from_data) {
 
   vector<pair<string, float> > actual_similars, expect_similars;
 
-  mock_->similar_row(sfv_t(), actual_similars, 3);
+  mock_->similar_row(common::sfv_t(), actual_similars, 3);
   expect_similars.push_back(make_pair("C", .75f));
   expect_similars.push_back(make_pair("D", .5f));
   expect_similars.push_back(make_pair("B", .25f));

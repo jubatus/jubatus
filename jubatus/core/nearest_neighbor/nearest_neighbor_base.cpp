@@ -50,7 +50,7 @@ void nearest_neighbor_base::clear() {
 }
 
 void nearest_neighbor_base::similar_row(
-    const sfv_t& query,
+    const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     uint64_t ret_num) const {
   neighbor_row(query, ids, ret_num);

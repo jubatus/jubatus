@@ -70,7 +70,7 @@ pair<string, float> anomaly::add(
 }
 
 float anomaly::update(const string& id, const fv_converter::datum& d) {
-  sfv_t v;
+  common::sfv_t v;
   converter_->convert_and_update_weight(d, v);
 
   anomaly_->update_row(id, v);
@@ -78,7 +78,7 @@ float anomaly::update(const string& id, const fv_converter::datum& d) {
 }
 
 float anomaly::overwrite(const string& id, const fv_converter::datum& d) {
-  sfv_t v;
+  common::sfv_t v;
   converter_->convert_and_update_weight(d, v);
 
   anomaly_->set_row(id, v);
@@ -91,7 +91,7 @@ void anomaly::clear() {
 }
 
 float anomaly::calc_score(const fv_converter::datum& d) const {
-  sfv_t v;
+  common::sfv_t v;
   converter_->convert(d, v);
   return anomaly_->calc_anomaly_score(v);
 }

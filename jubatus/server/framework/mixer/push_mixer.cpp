@@ -233,7 +233,7 @@ void push_mixer::mixer_loop() {
       }  // unlock
       mix();
       DLOG(INFO) << ".... " << mix_count_ << "th mix done.";
-    } catch (const jubatus::exception::jubatus_exception& e) {
+    } catch (const core::common::exception::jubatus_exception& e) {
       LOG(ERROR) << e.diagnostic_information(true);
     }
   }

@@ -25,6 +25,8 @@
 #include <pficommon/lang/demangle.h>
 
 namespace jubatus {
+namespace core {
+namespace common {
 namespace exception {
 
 class error_info_base {
@@ -103,6 +105,8 @@ inline std::string error_info<Tag, V>::as_string() const {
 }
 
 }  // namespace exception
+}  // namespace common
+}  // namespace core
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_COMMON_EXCEPTION_INFO_HPP_
