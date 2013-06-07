@@ -52,11 +52,13 @@ uint64_t key_manager::get_id_const(const string& key) const {
   }
 }
 
+namespace {
+  const std::string vacant = "";
+}
 const string& key_manager::get_key(const uint64_t id) const {
   if (id < id2key_.size()) {
     return id2key_[id];
   } else {
-    static const std::string vacant = "";
     return vacant;
   }
 }
