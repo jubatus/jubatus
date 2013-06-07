@@ -62,11 +62,6 @@ const string& key_manager::get_key(const uint64_t id) const {
   }
 }
 
-void key_manager::swap(key_manager& km) {
-  std::swap(key2id_, km.key2id_);
-  id2key_.swap(km.id2key_);
-}
-
 void key_manager::clear() {
   pfi::data::unordered_map<std::string, uint64_t>().swap(key2id_);
   std::vector<std::string>().swap(id2key_);
