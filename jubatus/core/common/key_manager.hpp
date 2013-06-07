@@ -18,10 +18,8 @@
 #define JUBATUS_CORE_COMMON_KEY_MANAGER_HPP_
 
 #include <stdint.h>
-#include <algorithm>
 #include <string>
 #include <vector>
-#include <iostream>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
@@ -37,7 +35,14 @@ class key_manager {
   };
 
   key_manager();
-  key_manager& operator =(const key_manager&);
+  // following member funcions are implicitly defined:
+  //   key_manager(const key_manager& k) = default;
+  //   key_manager& operator=(const key_manager& k) = default;
+  //   ~key_manager() = default;
+  void swap(key_manager& km) {
+    key2id_.swap(km.key2id_);
+    id2key_.swap(km.id2key_);
+  }
 
   size_t size() const {
     return key2id_.size();
@@ -46,7 +51,6 @@ class key_manager {
   uint64_t get_id(const std::string& key);
   uint64_t get_id_const(const std::string& key) const;
   const std::string& get_key(const uint64_t id) const;
-  void swap(key_manager& km);
   void clear();
 
   void init_by_id2key(const std::vector<std::string>& id2key);
@@ -62,8 +66,11 @@ class key_manager {
 
   pfi::data::unordered_map<std::string, uint64_t> key2id_;
   std::vector<std::string> id2key_;
-  const std::string vacant_;
 };
+
+inline void swap(key_manager& l, key_manager& r) {  // NOLINT
+  l.swap(r);
+}
 
 }  // namespace common
 }  // namespace core

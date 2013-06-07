@@ -50,10 +50,6 @@
 using std::string;
 using std::vector;
 using std::pair;
-
-using std::string;
-using std::vector;
-using std::pair;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
 using jubatus::server::common::lock_service;
