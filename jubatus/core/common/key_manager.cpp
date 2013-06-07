@@ -52,13 +52,13 @@ uint64_t key_manager::get_id_const(const string& key) const {
   }
 }
 
-const std::string vacant = "";  // const object has internal linkage
+const std::string key_not_found = "";  // const object has internal linkage
 
 const string& key_manager::get_key(const uint64_t id) const {
   if (id < id2key_.size()) {
     return id2key_[id];
   } else {
-    return vacant;
+    return key_not_found;
   }
 }
 
