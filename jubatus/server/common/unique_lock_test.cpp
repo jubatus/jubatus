@@ -124,6 +124,18 @@ TEST(unique_lock, swap) {
   }
 }
 
+TEST(unique_rlock, simple) {
+  pfi::concurrent::rw_mutex m;
+  unique_rlock lk(m);
+  EXPECT_TRUE(lk.locked());
+}
+
+TEST(unique_wlock, simple) {
+  pfi::concurrent::rw_mutex m;
+  unique_wlock lk(m);
+  EXPECT_TRUE(lk.locked());
+}
+
 }  // namespace common
 }  // namespace server
 }  // namespace jubatus

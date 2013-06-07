@@ -40,6 +40,28 @@ class default_lock_functions {
   }
 };
 
+using pfi::concurrent::rw_mutex;
+
+class rlock_functions {
+ public:
+  static bool lock(rw_mutex& m) {
+    return m.read_lock();
+  }
+  static void unlock(rw_mutex& m) {
+    m.unlock();
+  }
+};
+
+class wlock_functions {
+ public:
+  static bool lock(rw_mutex& m) {
+    return m.write_lock();
+  }
+  static void unlock(rw_mutex& m) {
+    m.unlock();
+  }
+};
+
 
 template<class Lockable,
          class LockFunctions = default_lock_functions<Lockable> >
@@ -89,10 +111,16 @@ class basic_unique_lock : pfi::lang::noncopyable {
   bool locked_;
 };
 
+typedef basic_unique_lock<pfi::concurrent::lockable> unique_lock;
+typedef basic_unique_lock<rw_mutex, rlock_functions> unique_rlock;
+typedef basic_unique_lock<rw_mutex, wlock_functions> unique_wlock;
+
 }  // namespace unique_lock_detail_
 
 using unique_lock_detail_::basic_unique_lock;
-typedef basic_unique_lock<pfi::concurrent::lockable> unique_lock;
+using unique_lock_detail_::unique_lock;
+using unique_lock_detail_::unique_rlock;
+using unique_lock_detail_::unique_wlock;
 
 }  // namespace common
 }  // namespace server
