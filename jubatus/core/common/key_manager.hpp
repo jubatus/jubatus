@@ -18,10 +18,8 @@
 #define JUBATUS_CORE_COMMON_KEY_MANAGER_HPP_
 
 #include <stdint.h>
-#include <algorithm>
 #include <string>
 #include <vector>
-#include <iostream>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
