@@ -70,12 +70,10 @@ class basic_unique_lock : pfi::lang::noncopyable {
   typedef Lockable lockable_type;
   typedef LockFunctions lock_functions;
 
-  basic_unique_lock()
-      : lp_(), locked_(false) {
+  basic_unique_lock() : lp_(), locked_(false) {
   }
 
-  explicit basic_unique_lock(lockable_type& l)
-      : lp_(&l), locked_(false) {
+  explicit basic_unique_lock(lockable_type& l) : lp_(&l), locked_(false) {
     if (lock_functions::lock(*lp_)) {
       locked_ = true;
     }
