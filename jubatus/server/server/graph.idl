@@ -49,7 +49,7 @@ service graph {
   #@random #@nolock #@pass
   string create_node(0: string name) # //@cht
 
-  #@cht(2) #@update #@pass
+  #@cht(2) #@nolock #@pass
   bool remove_node(0: string name, 1: string node_id) # //@cht
 
   #@cht #@update #@all_and
