@@ -58,13 +58,12 @@ class graph_serv : public framework::server_base {
 
   void get_status(status_t& status) const;
 
-  std::string create_node();
+  std::string create_node();  // no lock
   bool update_node(
       const std::string& nid,
       const std::map<std::string, std::string>& p);
-  // NOTE: remove_node LOCKs just for WORKAROUND
-  bool remove_node(const std::string& nid);
-  edge_id_t create_edge(const std::string& nid, const edge&);
+  bool remove_node(const std::string& nid);  // no lock
+  edge_id_t create_edge(const std::string& nid, const edge&);  // no lock
   bool update_edge(const std::string& nid, edge_id_t, const edge&);
   bool remove_edge(const std::string& nid, const edge_id_t& e);
 

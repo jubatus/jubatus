@@ -229,8 +229,8 @@ bool graph_serv::update_node(
 }
 
 bool graph_serv::remove_node(const std::string& nid_str) {
-  // NOTE: this function LOCKs for WORKAROUND;
-  //       perhaps classes around graph are to be redesinged.
+  // locks manually because we should unlock before global access
+  // make sure this function not to be called from other functions
   server::common::unique_wlock lk(rw_mutex());
   event_model_updated();
 
@@ -258,7 +258,7 @@ bool graph_serv::remove_node(const std::string& nid_str) {
 #endif
 
       try {
-        // unlock wlock before publishing `remove_global_node`
+        // requires unlock before global access to prevent dead-lock
         lk.unlock();
 
         c.call("remove_global_node",
