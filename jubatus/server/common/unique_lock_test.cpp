@@ -26,7 +26,7 @@ class lockable_mock : public pfi::concurrent::lockable {
   }
 
   bool lock() {
-    assert(locked_);
+    assert(!locked_);
     locked_ = true;
     return true;
   }
