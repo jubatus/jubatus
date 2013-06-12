@@ -76,10 +76,6 @@ void key_manager::init_by_id2key(const std::vector<std::string>& id2key) {
   id2key_ = id2key;
 }
 
-vector<string> key_manager::get_all_id2key() const {
-  return id2key_;
-}
-
 void key_manager::delete_key(const std::string& name) {
   const uint64_t id = get_id(name);
   key2id_.erase(name);
