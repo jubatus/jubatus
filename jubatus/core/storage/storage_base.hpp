@@ -73,7 +73,7 @@ class storage_base {
       const std::string& inc_class,
       const std::string& dec_class);
 
-  virtual void delete_class(const std::string& name) = 0;
+  virtual void delete_class(const std::string& name);
 
   virtual void get_diff(features3_t&) const;
   virtual void set_average_and_clear_diff(const features3_t&);

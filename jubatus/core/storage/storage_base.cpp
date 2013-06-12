@@ -83,6 +83,9 @@ void storage_base::bulk_update(
   }
 }
 
+void storage_base::delete_class(const std::string& name) {
+}
+
 void storage_base::get_diff(features3_t& v) const {
   v.clear();
 }
