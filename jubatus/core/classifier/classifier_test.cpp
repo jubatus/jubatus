@@ -131,12 +131,38 @@ TYPED_TEST_P(classifier_test, random3) {
   EXPECT_GT(correct, 95u);
 }
 
+TYPED_TEST_P(classifier_test, delete_class) {
+  local_storage s;
+  TypeParam p(&s);
+
+  common::sfv_t fv;
+  fv.push_back(std::make_pair("f1", 1.f));
+  p.train(fv, "A");
+
+  fv.clear();
+  fv.push_back(std::make_pair("f1", 1.f));
+  fv.push_back(std::make_pair("f2", 1.f));
+  p.train(fv, "B");
+
+  fv.clear();
+  fv.push_back(std::make_pair("f3", 1.f));
+  p.train(fv, "C");
+
+  p.delete_class("B");
+
+  fv.clear();
+  fv.push_back(std::make_pair("f1", 1.f));
+  fv.push_back(std::make_pair("f2", 1.f));
+  EXPECT_EQ("A", p.classify(fv));
+}
+
 REGISTER_TYPED_TEST_CASE_P(
     classifier_test,
     trivial,
     sfv_err,
     random,
-    random3);
+    random3,
+    delete_class);
 
 typedef testing::Types<
   perceptron, passive_aggressive, passive_aggressive_1, passive_aggressive_2,
