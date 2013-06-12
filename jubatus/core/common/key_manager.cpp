@@ -37,7 +37,7 @@ uint64_t key_manager::get_id(const string& key) {
   if (it != key2id_.end()) {
     return it->second;
   }
-  uint64_t new_id = static_cast<uint64_t>(key2id_.size());
+  uint64_t new_id = static_cast<uint64_t>(id2key_.size());
   key2id_[key] = new_id;
   id2key_.push_back(key);
   return new_id;
