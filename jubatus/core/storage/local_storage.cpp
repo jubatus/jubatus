@@ -172,7 +172,10 @@ void local_storage::update(
 }
 
 void local_storage::delete_class(const std::string& name) {
-  uint64_t delete_id = class2id_.get_id(name);
+  uint64_t delete_id = class2id_.get_id_const(name);
+  if (delete_id == common::key_manager::NOTFOUND) {
+    return;
+  }
   for (id_features3_t::iterator it = tbl_.begin();
        it != tbl_.end();
        ++it) {
