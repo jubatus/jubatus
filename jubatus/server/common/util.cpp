@@ -43,6 +43,7 @@
 #include <glog/logging.h>
 #include <pficommon/lang/exception.h>
 #include <pficommon/text/json.h>
+#include <pficommon/concurrent/thread.h>
 
 #include "jubatus/core/common/exception.hpp"
 
@@ -227,31 +228,94 @@ void get_machine_status(machine_status_t& status) {
 
 namespace {
 
-void exit_on_term(int /* signum */) {
-  LOG(INFO) << "stopping RPC server";
-  exit(0);
+// helper functions to handle sigset
+
+void clear_sigset(sigset_t* ss) {
+  if (sigemptyset(ss) != 0) {
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error("failed to call sigemptyset")
+      << core::common::exception::error_api_func("clear_sigset")
+      << core::common::exception::error_errno(errno));
+  }
+}
+
+void add_signal(sigset_t* ss, int signum) {
+  if (sigaddset(ss, signum) != 0) {
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error("failed to call sigaddset")
+      << core::common::exception::error_api_func("add_signal")
+      << core::common::exception::error_errno(errno));
+  }
+}
+
+void setup_sigset(sigset_t* ss) {
+  clear_sigset(ss);
+  add_signal(ss, SIGTERM);
+  add_signal(ss, SIGINT);
+}
+
+void block_signals(const sigset_t* ss) {
+  if (sigprocmask(SIG_BLOCK, ss, NULL) != 0) {
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error("failed to call sigprocmask")
+      << core::common::exception::error_api_func("block_signals")
+      << core::common::exception::error_errno(errno));
+  }
+}
+
+void exit_on_term() {
+  // internal function; do not call this function outside of set_exit_on_term
+  try {
+    sigset_t ss;
+    setup_sigset(&ss);
+
+    block_signals(&ss);
+
+    int signo;
+    if (sigwait(&ss, &signo) != 0) {
+      throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("failed to call sigwait")
+        << core::common::exception::error_api_func("exit_on_term")
+        << core::common::exception::error_errno(errno));
+    }
+
+    switch (signo) {
+      case SIGINT:
+      case SIGTERM:
+        // intended signal; continue
+        break;
+      default:
+        // unintended signal; raise error
+        throw JUBATUS_EXCEPTION(
+          core::common::exception::runtime_error(
+              "unknown signal caught by sigwait (possibily logic error)")
+          << core::common::exception::error_api_func("set_exit_on_term")
+          << core::common::exception::error_errno(errno));
+    }
+
+    LOG(INFO) << "stopping RPC server";
+
+    // TODO(SubaruG): PUT CODES TO STOP OTHER THREADS HERE;
+    //                or move sigwait to main thread
+    //                and use pthread_cancel
+
+    exit(0);  // never returns
+  } catch (const jubatus::core::common::exception::jubatus_exception& e) {
+    LOG(FATAL) << e.diagnostic_information(true);
+  } catch (const std::exception& e) {
+    LOG(FATAL) << e.what();
+  }
+  abort();
 }
 
 }  // namespace
 
 void set_exit_on_term() {
-  struct sigaction sigact;
-  sigact.sa_handler = exit_on_term;
-  sigact.sa_flags = SA_RESTART;
+  sigset_t ss;
+  setup_sigset(&ss);
 
-  if (sigaction(SIGTERM, &sigact, NULL) != 0) {
-    throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("can't set SIGTERM handler")
-      << core::common::exception::error_api_func("sigaction")
-      << core::common::exception::error_errno(errno));
-  }
-
-  if (sigaction(SIGINT, &sigact, NULL) != 0) {
-    throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("can't set SIGINT handler")
-      << core::common::exception::error_api_func("sigaction")
-      << core::common::exception::error_errno(errno));
-  }
+  block_signals(&ss);
+  pfi::concurrent::thread(&exit_on_term).start();
 }
 
 void ignore_sigpipe() {
