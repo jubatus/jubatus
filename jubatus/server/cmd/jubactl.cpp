@@ -46,6 +46,7 @@ void send2supervisor(
     const cmdline::parser& argv);
 void send2server(
     const string& cmd,
+    const string& type,
     const string& name,
     const string& zkhosts);
 void status(const string& type, const string& name, const string& zkhosts);
@@ -120,7 +121,7 @@ try {
   if (cmd == "start" or cmd == "stop") {
     send2supervisor(cmd, type, name, zk, p);
   } else if (cmd == "save" or cmd == "load") {  // or set_config?
-    send2server(cmd, name, zk);
+    send2server(cmd, type, p.get<string>("name"), zk);
   }
 
   return 0;
@@ -222,13 +223,16 @@ void send2supervisor(
 
 void send2server(
     const string& cmd,
+    const string& type,
     const string& name,
     const string& zkhosts) {
   pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
       jubatus::server::common::create_lock_service(
           "zk", zkhosts, 10, "/dev/null"));
+  std::string path;
+  jubatus::server::common::build_actor_path(path, type, name);
   vector<string> list;
-  ls_->list(jubatus::server::common::ACTOR_BASE_PATH, list);
+  ls_->list(path + "/nodes", list);
 
   if (list.empty()) {
     LOG(INFO) << "no server to " << cmd << " " << name;
