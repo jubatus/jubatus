@@ -20,6 +20,15 @@
 open Syntax
 open Lib
 
+module S =
+ Set.Make
+   (struct
+     type t = decl_type * decl_type
+     let compare = compare
+   end)
+
+
+
 let comment_out_head = "//"
 ;;
 
@@ -27,7 +36,7 @@ let make_header conf source filename content =
   make_source conf source filename content comment_out_head
 ;;
 
-let type_files = ref [];;
+let type_files = ref S.empty;;
 let type_defs = ref [];;
 
 
@@ -55,10 +64,10 @@ let gen_public_class name content =
 
 let rec include_list t = match t with
   | Map(key, value) ->
-      (include_list key) && (include_list value)
+      (include_list key) || (include_list value)
   | List t -> true
   | Tuple [t1; t2] ->
-      (include_list t1) && (include_list t2)
+      (include_list t1) || (include_list t2)
   | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
   | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
   | _ -> false
@@ -68,7 +77,7 @@ let rec include_map t = match t with
   | Map(_) -> true
   | List(t) -> include_map t
   | Tuple [t1; t2] ->
-      (include_map t1) && (include_map t2)
+      (include_map t1) || (include_map t2)
   | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
   | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
   | _ -> false
@@ -80,9 +89,9 @@ let rec gen_type t = match t with
     | Int(_, n) -> if n <= 4 then "int" else "long" 
     | Float(false) -> "float"
     | Float(true) -> "double"
-    | Raw -> "raw"
+    | Raw -> raise (Unknown_type("Raw is not supported"))
     | String -> "String"
-    | Struct s  -> 
+    | Struct s  ->
         (try (String.capitalize (gen_type (List.assoc s (!type_defs))))
          with Not_found -> (rename_without_underbar s))
     | List t -> 
@@ -90,20 +99,23 @@ let rec gen_type t = match t with
     | Map(key, value) -> 
         "Map<" ^ (gen_type key) ^ ", " ^ (gen_type value) ^ " >"
     | Tuple [t1; t2] -> 
-        type_files := (Tuple[t1; t2]) :: !type_files;
-        "Tuple" ^ (String.capitalize (String.capitalize(gen_type t1))) ^ (String.capitalize (String.capitalize(gen_type t2)))
+        type_files := S.add (t1, t2) (!type_files);
+        "Tuple" ^ (String.capitalize (gen_type t1)) ^ (String.capitalize (gen_type t2))
     | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
     | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
 ;;
 
-let gen_types_file name class_name t conf source = 
+let gen_types_file name t conf source = 
   let filename = (String.capitalize (rename_without_underbar name)) ^ ".java" in
+  let (t1, t2) = t in
+  let t' = Tuple([t1; t2]) in
   let header = List.concat [
-    [(0, "package us.jubat." ^ class_name ^ ";");
+    [(0, "package us.jubat." ^ conf.Config.namespace ^ ";");
      (0, "")];
-    (if include_map t then [(0, "import java.util.Map;")]
+    
+    (if include_map t' then [(0, "import java.util.Map;")]
      else []);
-    (if include_list t then [(0, "import java.util.List;")]
+    (if include_list t' then [(0, "import java.util.List;")]
      else []);
     [(0, "import org.msgpack.MessagePack;");
      (0, "import org.msgpack.annotation.Message;");
@@ -112,16 +124,13 @@ let gen_types_file name class_name t conf source =
   let content =
     (0, "@Message") :: 
       (gen_public_class name 
-         (match t with
-              Tuple[t1; t2] ->
-                [(0, "public " ^ (gen_type t1) ^ " first;");
-                 (0, "public " ^ (gen_type t2) ^ " second;")]
-            | _ -> assert false)) in
+         [(0, "public " ^ (gen_type t1) ^ " first;");
+          (0, "public " ^ (gen_type t2) ^ " second;")]) in
     make_header conf source filename (header @ content)
 ;;
 
 let gen_ret_type = function
-  | None -> assert false (* TODO (tsushima): OK? *)
+  | None -> "void"
   | Some typ -> gen_type typ
 ;;
 
@@ -152,17 +161,21 @@ let gen_call func args =
   func ^ gen_args args ^ ";"
 ;;
 
-let gen_return args = match args with
-  | [] -> assert false
-  | [f] -> "return iface_." ^ f ^ ";"
-  | f :: args -> "return iface_." ^ f ^ gen_args args ^ ";"
+let gen_return function_name args = match args with
+  | [] -> "return iface_." ^ function_name ^ "();"
+  | args -> "return iface_." ^ function_name ^ gen_args args ^ ";"
 ;;  
 
 let gen_client_method m =
   let name = m.method_name in
   let args = List.map (fun f -> (f.field_name, f.field_type)) m.method_arguments in 
   let call =
-    (gen_public m.method_return_type name args "" [(1, gen_return (name :: (List.map fst args)))]);
+    (match m.method_return_type with
+       | None -> 
+	   (gen_public m.method_return_type name args "" [])
+       | Some(t) -> 
+	   (gen_public m.method_return_type name args "" [(1, gen_return name (List.map fst args))])
+    )
       in
     call
 ;;
@@ -232,13 +245,13 @@ let gen_to_msgpack field_names =
   ]
 ;;
 
-let gen_message m class_name conf source =
+let gen_message m conf source =
   let field_names = List.map (fun f -> f.field_name) m.message_fields in
   let field_types = List.map (fun f -> f.field_type) m.message_fields in
   let filename = (String.capitalize (rename_without_underbar m.message_name)) ^ ".java" in
   let header =
     List.concat
-      [[(0, "package us.jubat." ^ class_name ^ ";");
+      [[(0, "package us.jubat." ^ (conf.Config.namespace) ^ ";");
         (0, "")];
        (if (List.exists include_map field_types) 
         then [(0, "import java.util.Map;")] else []);
@@ -263,8 +276,7 @@ let gen_typedef stat conf source = match stat with
   | Typedef(name, typ) ->
       type_defs := (name, typ) :: !type_defs
   | Message m ->
-      let base = File_util.take_base source in
-      gen_message m base conf source
+      gen_message m conf source
   | _ ->
     ()
 ;;
@@ -285,9 +297,11 @@ let gen_client_file conf source services =
   let filename = (String.capitalize base) ^ "Client.java" in
   let clients = List.map (fun x -> gen_client x (String.capitalize base)) services  in
   let content = concat_blocks [
-    [(0, "");
-     (0, "package us.jubat." ^ base ^ ";");
-     (0, "")];
+    [(0, "")];
+    (if conf.Config.namespace <> "" 
+     then [(0, "package us.jubat." ^ conf.Config.namespace ^ ";")]
+     else []);
+     [(0, "")];
      (if (List.exists (map_search include_map) services) 
       then [(0, "import java.util.Map;")]
      else []);     
@@ -308,7 +322,8 @@ let generate conf source idl =
   let services = get_services idl in
     gen_typedef_file conf source idl;
   let _ = gen_client_file conf source services in
-  let base = File_util.take_base source in
-    let tf = !type_files in
-    List.iter (fun t -> gen_types_file (String.capitalize (gen_type t)) base t conf source) tf;
+  let tf = !type_files in
+    S.iter (fun t -> 
+	      let (t1, t2) = t in
+		gen_types_file (String.capitalize (gen_type (Tuple([t1; t2])))) t conf source) tf
 ;;
