@@ -369,7 +369,7 @@ let gen_server_file conf source services =
       (0, "#include <utility>");
       (0, "#include <pficommon/lang/bind.h>");
       (0, "");
-      (0, gen_jubatus_include conf "common/mprpc/rpc_server.hpp");
+      (0, gen_jubatus_include conf "server/common/mprpc/rpc_server.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
     ];
     make_namespace namespace (concat_blocks servers)
@@ -468,8 +468,8 @@ let gen_keeper_file conf source services =
       (0, "#include <glog/logging.h>");
       (0, "");
       (0, gen_jubatus_core_include conf "common/exception.hpp");
-      (0, gen_jubatus_include conf "framework/aggregators.hpp");
-      (0, gen_jubatus_include conf "framework/keeper.hpp");
+      (0, gen_jubatus_include conf "server/framework/aggregators.hpp");
+      (0, gen_jubatus_include conf "server/framework/keeper.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
     ];
     make_namespace namespace (
@@ -582,6 +582,7 @@ let gen_impl_file conf source services =
 
   let namespace = parse_namespace conf.Config.namespace in
   let namespace = List.append namespace ["server"] in
+  let namespace_str = String.concat "::" namespace in
   let impls = List.map gen_impl services in
   let s = concat_blocks [
     [
@@ -591,7 +592,7 @@ let gen_impl_file conf source services =
       (0, "#include <utility>");
       (0, "#include <pficommon/lang/shared_ptr.h>");
       (0, "");
-      (0, gen_jubatus_include conf "framework.hpp");
+      (0, gen_jubatus_include conf "server/framework.hpp");
       (0, "#include \"" ^ base ^ "_server.hpp\"");
       (0, "#include \"" ^ base ^ "_serv.hpp\"");
     ];
@@ -600,7 +601,7 @@ let gen_impl_file conf source services =
       (0, "int main(int argc, char* argv[]) {");
       (1,   "return");
       (* TODO(unnonouno): does not work when service name is not equal to a source file*)
-      (2,     "jubatus::server::framework::run_server<jubatus::server::" ^ base ^ "_impl_>");
+      (2,     "jubatus::server::framework::run_server<" ^ namespace_str ^ "::" ^ base ^ "_impl_>");
       (3,       "(argc, argv, " ^ name_str ^ ");");
       (0, "}")
     ]
@@ -644,12 +645,13 @@ let gen_server_template_header s =
       (0, " public:");
       (1,   serv_name ^ "(");
       (2,     "const jubatus::server::framework::server_argv& a,");
-      (2,     "const pfi::lang::shared_ptr<common::lock_service>& zk);  // do not change");
+      (2,     "const pfi::lang::shared_ptr<jubatus::server::common::lock_service>& zk);  // do not change");
       (1,   "virtual ~" ^ serv_name ^ "();  // do not change");
       (0,   "");
-      (1,   "virtual mixer::mixer* get_mixer() const;");
-      (1,   "pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const;");
+      (1,   "virtual jubatus::server::framework::mixer::mixer* get_mixer() const;");
+      (1,   "pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> get_mixable_holder() const;");
       (1,   "void get_status(status_t& status) const;");
+      (1,   "void set_config(const std::string& config);");
       (0,   "");
     ];
     indent_lines 1 (List.concat methods);
@@ -672,7 +674,8 @@ let gen_server_template_header_file conf source services =
 
   let content = concat_blocks [
     [
-      (0, gen_jubatus_include conf "framework.hpp");
+      (0, "#include <string>");
+      (0, gen_jubatus_include conf "server/framework.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
     ];
     make_namespace namespace (concat_blocks servers)
@@ -703,7 +706,7 @@ let gen_server_template_source s =
     [
       (0, serv_name ^ "::" ^ serv_name ^ "(");
       (1,   "const jubatus::server::framework::server_argv& a,");
-      (1,   "const pfi::lang::shared_ptr<common::lock_service>& zk)");
+      (1,   "const pfi::lang::shared_ptr<jubatus::server::common::lock_service>& zk)");
       (2,     ": jubatus::server::framework::server_base(a) {");
       (1,   "// somemixable* mi = new somemixable;");
       (1,   "// somemixable_.set_model(mi);");
@@ -713,14 +716,17 @@ let gen_server_template_source s =
       (0, serv_name ^ "::~" ^ serv_name ^ "() {");
       (0, "}");
       (0, "");
-      (0, "mixer::mixer* " ^ serv_name ^ "::get_mixer() const {");
+      (0, "jubatus::server::framework::mixer::mixer* " ^ serv_name ^ "::get_mixer() const {");
       (0, "}");
       (0, "");
-      (0, "pfi::lang::shared_ptr<framework::mixable_holder> "
+      (0, "pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> "
         ^ serv_name ^ "::get_mixable_holder() const {");
       (0, "}");
       (0, "");
       (0, "void " ^ serv_name ^ "::get_status(status_t& status) const {");
+      (0, "}");
+      (0, "");
+      (0, "void " ^ serv_name ^ "::set_config(const std::string& config) {");
       (0, "}");
       (0, "");
     ];
