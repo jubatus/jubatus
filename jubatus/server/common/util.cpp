@@ -269,8 +269,6 @@ void exit_on_term() {
     sigset_t ss;
     setup_sigset(&ss);
 
-    block_signals(&ss);
-
     int signo;
     if (sigwait(&ss, &signo) != 0) {
       throw JUBATUS_EXCEPTION(
