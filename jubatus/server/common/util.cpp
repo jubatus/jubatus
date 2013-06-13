@@ -275,8 +275,7 @@ void exit_on_term() {
     if (sigwait(&ss, &signo) != 0) {
       throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("failed to call sigwait")
-        << core::common::exception::error_api_func("exit_on_term")
-        << core::common::exception::error_errno(errno));
+        << core::common::exception::error_api_func("exit_on_term"));
     }
 
     switch (signo) {
@@ -289,8 +288,7 @@ void exit_on_term() {
         throw JUBATUS_EXCEPTION(
           core::common::exception::runtime_error(
               "unknown signal caught by sigwait (possibily logic error)")
-          << core::common::exception::error_api_func("set_exit_on_term")
-          << core::common::exception::error_errno(errno));
+          << core::common::exception::error_api_func("set_exit_on_term"));
     }
 
     LOG(INFO) << "stopping RPC server";
