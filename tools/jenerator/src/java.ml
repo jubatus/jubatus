@@ -93,14 +93,21 @@ let rec gen_type = function
     (try (String.capitalize (gen_type (List.assoc s (!type_defs))))
      with Not_found -> (rename_without_underbar s))
   | List t -> 
-    "List<" ^ (String.capitalize (gen_type t)) ^ " >"
+    "List<" ^ gen_object_type t ^ " >"
   | Map(key, value) -> 
-    "Map<" ^ (gen_type key) ^ ", " ^ (gen_type value) ^ " >"
+    "Map<" ^ gen_object_type key ^ ", " ^ gen_object_type value ^ " >"
   | Tuple [t1; t2] -> 
     type_files := S.add (t1, t2) (!type_files);
-    "Tuple" ^ (String.capitalize (gen_type t1)) ^ (String.capitalize (gen_type t2))
+    "Tuple" ^ gen_object_type t1 ^ gen_object_type t2
   | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
   | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
+and gen_object_type = function
+  | Bool -> "Boolean"
+  | Int(_, n) ->
+    if n <= 4 then "Integer" else "Long"
+  | Float(false) -> "Float"
+  | Float(true) -> "Double"
+  | t -> gen_type t
 ;;
 
 let gen_package conf =

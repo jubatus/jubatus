@@ -31,6 +31,10 @@ let _ = run_test_tt_main begin "java.ml" >::: [
       (gen_type (Int(true, 4)));
 
     assert_equal
+      "long"
+      (gen_type (Int(true, 8)));
+
+    assert_equal
       "boolean"
       (gen_type Bool);
 
@@ -43,14 +47,54 @@ let _ = run_test_tt_main begin "java.ml" >::: [
       (gen_type (Float true));
 
     assert_equal
+      "String"
+      (gen_type String);
+
+    assert_equal
       "List<Float >"
       (gen_type (List(Float false)));
 
-    (* fix it
-    assert_equal ~printer: Std.dump
+    assert_equal
       "Map<String, Integer >"
       (gen_type (Map(String, Int(true, 4))));
-    *)
+
+    assert_equal
+      "MyObject"
+      (gen_type (Struct("my_object")));
+  end;
+
+  "test_gen_object_type" >:: begin fun() ->
+    assert_equal
+      "Integer"
+      (gen_object_type (Int(true, 4)));
+
+    assert_equal
+      "Long"
+      (gen_object_type (Int(true, 8)));
+
+    assert_equal
+      "Boolean"
+      (gen_object_type Bool);
+
+    assert_equal
+      "Float"
+      (gen_object_type (Float false));
+
+    assert_equal
+      "Double"
+      (gen_object_type (Float true));
+
+    assert_equal
+      "String"
+      (gen_object_type String);
+
+    assert_equal
+      "List<Float >"
+      (gen_object_type (List(Float false)));
+
+    assert_equal
+      "Map<String, Integer >"
+      (gen_object_type (Map(String, Int(true, 4))));
   end;
 
   "test_gen_ret_type" >:: begin fun() ->
