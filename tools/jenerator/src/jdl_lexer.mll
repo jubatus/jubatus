@@ -52,7 +52,7 @@ rule token = parse
 
 (*  | include_sth as i { INCLUDE(i) } *)
 
-  | comment   { token lexbuf }
-  | '\n'      { token lexbuf }
+  | comment   { Lexing.new_line lexbuf; token lexbuf }
+  | newline   { Lexing.new_line lexbuf; token lexbuf }
   | eof       { EOF }
   | _         { token lexbuf }
