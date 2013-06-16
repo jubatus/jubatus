@@ -21,13 +21,11 @@ open Syntax
 open Lib
 
 module S =
- Set.Make
-   (struct
-     type t = decl_type * decl_type
-     let compare = compare
-   end)
-
-
+  Set.Make
+    (struct
+      type t = decl_type * decl_type
+      let compare = compare
+     end)
 
 let comment_out_head = "//"
 ;;
@@ -39,18 +37,18 @@ let make_header conf source filename content =
 let type_files = ref S.empty;;
 let type_defs = ref [];;
 
-
 (* rename : e.g., "rename_without_underbar" -> "RenameWithoutUnderbar" *) 
 let rename_without_underbar st = 
-  let rec loop str b = match str with
+  let rec loop str b =
+    match str with
     | "" -> ""
     | _ -> 
-        let s = String.get str 0 in
-        let str' = String.sub str 1 ((String.length str) - 1) in
-          if s = '_' then (loop str' true)
-          else if b then (String.capitalize (Char.escaped s)) ^ (loop str' false)
-          else (Char.escaped s) ^ (loop str' false) in
-    loop st true
+      let s = String.get str 0 in
+      let str' = String.sub str 1 ((String.length str) - 1) in
+      if s = '_' then (loop str' true)
+      else if b then (String.capitalize (Char.escaped s)) ^ (loop str' false)
+      else (Char.escaped s) ^ (loop str' false) in
+  loop st true
 ;;
 
 
@@ -62,47 +60,47 @@ let gen_public_class name content =
   ]
 ;;
 
-let rec include_list t = match t with
+let rec include_list = function
   | Map(key, value) ->
-      (include_list key) || (include_list value)
+    (include_list key) || (include_list value)
   | List t -> true
   | Tuple [t1; t2] ->
-      (include_list t1) || (include_list t2)
+    (include_list t1) || (include_list t2)
   | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
   | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
   | _ -> false
 ;;
 
-let rec include_map t = match t with
+let rec include_map = function
   | Map(_) -> true
   | List(t) -> include_map t
   | Tuple [t1; t2] ->
-      (include_map t1) || (include_map t2)
+    (include_map t1) || (include_map t2)
   | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
   | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
   | _ -> false
 ;;
 
-let rec gen_type t = match t with
-    | Object -> raise (Unknown_type("Object is not supported"))
-    | Bool -> "boolean"
-    | Int(_, n) -> if n <= 4 then "int" else "long" 
-    | Float(false) -> "float"
-    | Float(true) -> "double"
-    | Raw -> raise (Unknown_type("Raw is not supported"))
-    | String -> "String"
-    | Struct s  ->
-        (try (String.capitalize (gen_type (List.assoc s (!type_defs))))
-         with Not_found -> (rename_without_underbar s))
-    | List t -> 
-        "List<" ^ (String.capitalize (gen_type t)) ^ " >"
-    | Map(key, value) -> 
-        "Map<" ^ (gen_type key) ^ ", " ^ (gen_type value) ^ " >"
-    | Tuple [t1; t2] -> 
-        type_files := S.add (t1, t2) (!type_files);
-        "Tuple" ^ (String.capitalize (gen_type t1)) ^ (String.capitalize (gen_type t2))
-    | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
-    | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
+let rec gen_type = function
+  | Object -> raise (Unknown_type("Object is not supported"))
+  | Bool -> "boolean"
+  | Int(_, n) -> if n <= 4 then "int" else "long" 
+  | Float(false) -> "float"
+  | Float(true) -> "double"
+  | Raw -> raise (Unknown_type("Raw is not supported"))
+  | String -> "String"
+  | Struct s  ->
+    (try (String.capitalize (gen_type (List.assoc s (!type_defs))))
+     with Not_found -> (rename_without_underbar s))
+  | List t -> 
+    "List<" ^ (String.capitalize (gen_type t)) ^ " >"
+  | Map(key, value) -> 
+    "Map<" ^ (gen_type key) ^ ", " ^ (gen_type value) ^ " >"
+  | Tuple [t1; t2] -> 
+    type_files := S.add (t1, t2) (!type_files);
+    "Tuple" ^ (String.capitalize (gen_type t1)) ^ (String.capitalize (gen_type t2))
+  | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
+  | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
 ;;
 
 let gen_types_file name t conf source = 
@@ -126,7 +124,7 @@ let gen_types_file name t conf source =
       (gen_public_class name 
          [(0, "public " ^ (gen_type t1) ^ " first;");
           (0, "public " ^ (gen_type t2) ^ " second;")]) in
-    make_header conf source filename (header @ content)
+  make_header conf source filename (header @ content)
 ;;
 
 let gen_ret_type = function
@@ -146,7 +144,7 @@ let gen_public ret_typ name args opt content =
   List.concat
     [
       [(0, "public " ^ (gen_ret_type ret_typ) ^ " " ^ 
-          name ^ (gen_args_with_type args) ^ opt ^ " {")];
+        name ^ (gen_args_with_type args) ^ opt ^ " {")];
       content;
       [(0, "}"); (0, "")]
     ]
@@ -161,7 +159,8 @@ let gen_call func args =
   func ^ gen_args args ^ ";"
 ;;
 
-let gen_return function_name args = match args with
+let gen_return function_name args =
+  match args with
   | [] -> "return iface_." ^ function_name ^ "();"
   | args -> "return iface_." ^ function_name ^ gen_args args ^ ";"
 ;;  
@@ -171,20 +170,20 @@ let gen_client_method m =
   let args = List.map (fun f -> (f.field_name, f.field_type)) m.method_arguments in 
   let call =
     (match m.method_return_type with
-       | None -> 
-	   (gen_public m.method_return_type name args "" [])
-       | Some(t) -> 
-	   (gen_public m.method_return_type name args "" [(1, gen_return name (List.map fst args))])
+    | None -> 
+      (gen_public m.method_return_type name args "" [])
+    | Some(t) -> 
+      (gen_public m.method_return_type name args "" [(1, gen_return name (List.map fst args))])
     )
-      in
-    call
+  in
+  call
 ;;
 
 let gen_interface m = 
   let name = m.method_name in
   let args = List.map (fun f -> (f.field_name, f.field_type)) m.method_arguments in 
   let interface = (gen_ret_type m.method_return_type) ^ " " ^ name ^ (gen_args_with_type args) ^ ";" in
-    interface
+  interface
 ;;  
 
 let gen_client s name =
@@ -205,23 +204,23 @@ let gen_client s name =
     ] in
   let methods = List.map gen_client_method s.service_methods in
   let content = List.concat methods in
-    List.concat [
-      [
-        (0, "public class " ^ (String.capitalize s.service_name) ^ "Client {");
-      ];
-      indent_lines 1 constructor;
-      indent_lines 1 interfaces;
-      indent_lines 1 content;
-      (indent_lines 1 
-        [(0, "public Client get_client() {");
-         (1, "return c_;");
-         (0, "}");
-         (0, "")
-        ]);
-      [(1, "private Client c_;");
-       (1, "private RPCInterface iface_;");
-       (0, "};")]
-    ]
+  List.concat [
+    [
+      (0, "public class " ^ (String.capitalize s.service_name) ^ "Client {");
+    ];
+    indent_lines 1 constructor;
+    indent_lines 1 interfaces;
+    indent_lines 1 content;
+    (indent_lines 1 
+       [(0, "public Client get_client() {");
+        (1, "return c_;");
+        (0, "}");
+        (0, "")
+       ]);
+    [(1, "private Client c_;");
+     (1, "private RPCInterface iface_;");
+     (0, "};")]
+  ]
 ;;
 
 let gen_message_field f =
@@ -265,18 +264,19 @@ let gen_message m conf source =
     (0, "@Message") :: 
       (gen_public_class (String.capitalize m.message_name)
          ((List.map2 (fun n t -> (0, "public " ^ (gen_type t) ^ " " ^ n ^ ";")) field_names field_types) @ 
-            [(0, "");
-             (0, "public " ^ (rename_without_underbar (String.capitalize m.message_name)) ^ "() {");
-             (0, "");
-             (0, "}")])) in
-    make_header conf source filename (header @ content)
+             [(0, "");
+              (0, "public " ^ (rename_without_underbar (String.capitalize m.message_name)) ^ "() {");
+              (0, "");
+              (0, "}")])) in
+  make_header conf source filename (header @ content)
 ;;
 
-let gen_typedef stat conf source = match stat with
+let gen_typedef stat conf source =
+  match stat with
   | Typedef(name, typ) ->
-      type_defs := (name, typ) :: !type_defs
+    type_defs := (name, typ) :: !type_defs
   | Message m ->
-      gen_message m conf source
+    gen_message m conf source
   | _ ->
     ()
 ;;
@@ -284,8 +284,8 @@ let gen_typedef stat conf source = match stat with
 let map_search' f m = 
   (List.exists (fun k -> f k.field_type) m.method_arguments) ||
     (match (m.method_return_type) with
-       | None -> false
-       | Some(t) -> f t)  
+    | None -> false
+    | Some(t) -> f t)  
 ;;
 
 let map_search f s =
@@ -301,14 +301,14 @@ let gen_client_file conf source services =
     (if conf.Config.namespace <> "" 
      then [(0, "package us.jubat." ^ conf.Config.namespace ^ ";")]
      else []);
-     [(0, "")];
-     (if (List.exists (map_search include_map) services) 
-      then [(0, "import java.util.Map;")]
+    [(0, "")];
+    (if (List.exists (map_search include_map) services) 
+     then [(0, "import java.util.Map;")]
      else []);     
     (if (List.exists (map_search include_list) services) 
      then [(0, "import java.util.List;")] else []);
-      [(0, "import org.msgpack.rpc.Client;");
-       (0, "import org.msgpack.rpc.loop.EventLoop;")];
+    [(0, "import org.msgpack.rpc.Client;");
+     (0, "import org.msgpack.rpc.loop.EventLoop;")];
     (concat_blocks clients)
   ]
   in make_header conf source filename content
@@ -320,10 +320,10 @@ let gen_typedef_file conf source idl =
 
 let generate conf source idl =
   let services = get_services idl in
-    gen_typedef_file conf source idl;
+  gen_typedef_file conf source idl;
   let _ = gen_client_file conf source services in
   let tf = !type_files in
-    S.iter (fun t -> 
-	      let (t1, t2) = t in
-		gen_types_file (String.capitalize (gen_type (Tuple([t1; t2])))) t conf source) tf
+  S.iter (fun t -> 
+    let (t1, t2) = t in
+    gen_types_file (String.capitalize (gen_type (Tuple([t1; t2])))) t conf source) tf
 ;;
