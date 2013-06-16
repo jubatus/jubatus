@@ -147,5 +147,68 @@ let _ = run_test_tt_main begin "java.ml" >::: [
       (gen_return "f" ["x"; "y"]);
   end;
 
+  "test_gen_public" >:: begin fun() ->
+    assert_equal
+      [ (0, "public String fun(int x) {");
+        (1,   "y = x;");
+        (0, "}");
+        (0, ""); ]
+      (gen_public (Some String) "fun" [("x", Int(true, 4))] "" [(1, "y = x;")]);
+  end;
+
+  "test_gen_client_method" >:: begin fun() ->
+    assert_equal
+      [ (0, "public void fun() {");
+        (1,   "iface_.fun();");
+        (0, "}");
+        (0, ""); ]
+      (gen_client_method { method_return_type = None;
+                           method_name = "fun";
+                           method_arguments = [];
+                           method_decorators = []; });
+    assert_equal
+      [ (0, "public String fun() {");
+        (1,   "return iface_.fun();");
+        (0, "}");
+        (0, ""); ]
+      (gen_client_method { method_return_type = Some String;
+                           method_name = "fun";
+                           method_arguments = [];
+                           method_decorators = []; });
+  end;
+
+  "test_gen_interface" >:: begin fun() ->
+    assert_equal
+      "String f(int x, String s);"
+      (gen_interface { method_return_type = Some String;
+                       method_name = "f";
+                       method_arguments = [
+                         { field_number = 1;
+                           field_type = Int(true, 4);
+                           field_name = "x"; };
+                         { field_number = 2;
+                           field_type = String;
+                           field_name = "s"; };
+                       ];
+                       method_decorators = []
+                     });
+
+    assert_equal
+      "void f();"
+      (gen_interface { method_return_type = None;
+                       method_name = "f";
+                       method_arguments = [];
+                       method_decorators = []
+                     });
+  end;
+
+  "test_gen_message_field"  >:: begin fun() ->
+    assert_equal
+      (0, "public String name;")
+      (gen_message_field { field_number = 1;
+                           field_type = String;
+                           field_name = "name"; })
+  end;
+
 ] end
 

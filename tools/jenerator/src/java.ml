@@ -180,15 +180,14 @@ let gen_return function_name args =
 let gen_client_method m =
   let name = m.method_name in
   let args = List.map (fun f -> (f.field_name, f.field_type)) m.method_arguments in 
-  let call =
-    (match m.method_return_type with
-    | None -> 
-      (gen_public m.method_return_type name args "" [])
-    | Some(t) -> 
-      (gen_public m.method_return_type name args "" [(1, gen_return name (List.map fst args))])
-    )
+  let vars = List.map (fun f -> f.field_name) m.method_arguments in
+  let call = match m.method_return_type with
+    | None ->
+      gen_call ("iface_." ^ name) vars
+    | Some _ ->
+      gen_return name vars
   in
-  call
+  gen_public m.method_return_type name args "" [ (1, call) ]
 ;;
 
 let gen_interface m = 
@@ -236,7 +235,7 @@ let gen_client s name =
 ;;
 
 let gen_message_field f =
-  (0, gen_arg_def f ^ ";")
+  (0, "public " ^ gen_arg_def f ^ ";")
 ;;
 
 let gen_self_with_comma field_names =
@@ -257,9 +256,9 @@ let gen_to_msgpack field_names =
 ;;
 
 let gen_message m conf source =
-  let field_names = List.map (fun f -> f.field_name) m.message_fields in
   let field_types = List.map (fun f -> f.field_type) m.message_fields in
-  let filename = rename_without_underbar m.message_name ^ ".java" in
+  let class_name = rename_without_underbar m.message_name in
+  let filename = class_name ^ ".java" in
   let header =
     List.concat
       [gen_package conf;
@@ -272,14 +271,16 @@ let gen_message m conf source =
         (0, "import org.msgpack.annotation.Message;");
         (0, "")]
       ] in
+  let field_defs = List.map gen_message_field m.message_fields in
+  let constructor = 
+    [ (0, "");
+      (0, "public " ^ class_name ^ "() {");
+      (0, "}"); ] in
+  let class_content = field_defs @ constructor in
   let content =
     (0, "@Message") :: 
-      (gen_public_class (rename_without_underbar m.message_name)
-         ((List.map2 (fun n t -> (0, "public " ^ (gen_type t) ^ " " ^ n ^ ";")) field_names field_types) @ 
-             [(0, "");
-              (0, "public " ^ (rename_without_underbar m.message_name) ^ "() {");
-              (0, "");
-              (0, "}")])) in
+      gen_public_class class_name class_content
+  in
   make_header conf source filename (header @ content)
 ;;
 
