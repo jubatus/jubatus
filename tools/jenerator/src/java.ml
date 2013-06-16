@@ -174,9 +174,7 @@ let gen_call func args =
 ;;
 
 let gen_return function_name args =
-  match args with
-  | [] -> "return iface_." ^ function_name ^ "();"
-  | args -> "return iface_." ^ function_name ^ gen_args args ^ ";"
+  "return iface_." ^ function_name ^ gen_args args ^ ";"
 ;;  
 
 let gen_client_method m =
