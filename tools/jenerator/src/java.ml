@@ -90,7 +90,7 @@ let rec gen_type = function
   | Raw -> raise (Unknown_type("Raw is not supported"))
   | String -> "String"
   | Struct s  ->
-    (try (String.capitalize (gen_type (List.assoc s (!type_defs))))
+    (try (gen_type (List.assoc s (!type_defs)))
      with Not_found -> (rename_without_underbar s))
   | List t -> 
     "List<" ^ gen_object_type t ^ " >"
@@ -119,7 +119,7 @@ let gen_package conf =
 ;;
 
 let gen_types_file name t conf source = 
-  let filename = (String.capitalize (rename_without_underbar name)) ^ ".java" in
+  let filename = rename_without_underbar name ^ ".java" in
   let (t1, t2) = t in
   let t' = Tuple([t1; t2]) in
   let header = List.concat [
@@ -218,7 +218,7 @@ let gen_client s name =
   let content = List.concat methods in
   List.concat [
     [
-      (0, "public class " ^ (String.capitalize s.service_name) ^ "Client {");
+      (0, "public class " ^ (rename_without_underbar s.service_name) ^ "Client {");
     ];
     indent_lines 1 constructor;
     indent_lines 1 interfaces;
@@ -259,7 +259,7 @@ let gen_to_msgpack field_names =
 let gen_message m conf source =
   let field_names = List.map (fun f -> f.field_name) m.message_fields in
   let field_types = List.map (fun f -> f.field_type) m.message_fields in
-  let filename = (String.capitalize (rename_without_underbar m.message_name)) ^ ".java" in
+  let filename = rename_without_underbar m.message_name ^ ".java" in
   let header =
     List.concat
       [gen_package conf;
@@ -274,10 +274,10 @@ let gen_message m conf source =
       ] in
   let content =
     (0, "@Message") :: 
-      (gen_public_class (String.capitalize m.message_name)
+      (gen_public_class (rename_without_underbar m.message_name)
          ((List.map2 (fun n t -> (0, "public " ^ (gen_type t) ^ " " ^ n ^ ";")) field_names field_types) @ 
              [(0, "");
-              (0, "public " ^ (rename_without_underbar (String.capitalize m.message_name)) ^ "() {");
+              (0, "public " ^ (rename_without_underbar m.message_name) ^ "() {");
               (0, "");
               (0, "}")])) in
   make_header conf source filename (header @ content)
@@ -306,8 +306,8 @@ let map_search f s =
 
 let gen_client_file conf source services =
   let base = File_util.take_base source in
-  let filename = (String.capitalize base) ^ "Client.java" in
-  let clients = List.map (fun x -> gen_client x (String.capitalize base)) services  in
+  let filename = (rename_without_underbar base) ^ "Client.java" in
+  let clients = List.map (fun x -> gen_client x (rename_without_underbar base)) services  in
   let content = concat_blocks [
     gen_package conf;
 
@@ -334,5 +334,5 @@ let generate conf source idl =
   let tf = !type_files in
   S.iter (fun t -> 
     let (t1, t2) = t in
-    gen_types_file (String.capitalize (gen_type (Tuple([t1; t2])))) t conf source) tf
+    gen_types_file (gen_type (Tuple([t1; t2]))) t conf source) tf
 ;;
