@@ -103,14 +103,21 @@ let rec gen_type = function
   | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
 ;;
 
+let gen_package conf =
+  if conf.Config.namespace == "" then
+    []
+  else
+    [ (0, "package " ^ conf.Config.namespace ^ ";");
+      (0, ""); ]
+;;
+
 let gen_types_file name t conf source = 
   let filename = (String.capitalize (rename_without_underbar name)) ^ ".java" in
   let (t1, t2) = t in
   let t' = Tuple([t1; t2]) in
   let header = List.concat [
-    [(0, "package us.jubat." ^ conf.Config.namespace ^ ";");
-     (0, "")];
-    
+    gen_package conf;
+
     (if include_map t' then [(0, "import java.util.Map;")]
      else []);
     (if include_list t' then [(0, "import java.util.List;")]
@@ -250,8 +257,8 @@ let gen_message m conf source =
   let filename = (String.capitalize (rename_without_underbar m.message_name)) ^ ".java" in
   let header =
     List.concat
-      [[(0, "package us.jubat." ^ (conf.Config.namespace) ^ ";");
-        (0, "")];
+      [gen_package conf;
+
        (if (List.exists include_map field_types) 
         then [(0, "import java.util.Map;")] else []);
        (if (List.exists include_list field_types) 
@@ -297,11 +304,8 @@ let gen_client_file conf source services =
   let filename = (String.capitalize base) ^ "Client.java" in
   let clients = List.map (fun x -> gen_client x (String.capitalize base)) services  in
   let content = concat_blocks [
-    [(0, "")];
-    (if conf.Config.namespace <> "" 
-     then [(0, "package us.jubat." ^ conf.Config.namespace ^ ";")]
-     else []);
-    [(0, "")];
+    gen_package conf;
+
     (if (List.exists (map_search include_map) services) 
      then [(0, "import java.util.Map;")]
      else []);     
