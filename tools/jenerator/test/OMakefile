@@ -2,6 +2,7 @@
 OCAMLINCLUDES += ../src
 
 FILES[] =
+  parse_test
   cpp_test
   java_test
   file_util_test

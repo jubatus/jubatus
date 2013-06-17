@@ -20,10 +20,9 @@
 let parse source_file =
   let lexbuf = Lexing.from_channel (open_in source_file) in
   try
-    Jdl_parser.input Jdl_lexer.token lexbuf
+    Parse.parse lexbuf
   with
-  | Parsing.Parse_error ->
-    let p = Lexing.lexeme_start_p lexbuf in
+  | Parse.Syntax_error p ->
     Printf.fprintf stderr
       "File \"%s\", line %d, character %d: syntax error.\n"
       source_file p.Lexing.pos_lnum
