@@ -20,7 +20,7 @@
 {
 open Jdl_parser
 
-exception Lex_error of string
+exception Illegal_character of (Lexing.position * char)
 }
 
 let digit = ['0'-'9']*
@@ -29,6 +29,7 @@ let decorator = "#@" literal
 let comment   = "#" [^'@'] [^'\n']* '\n'
 (* let include_sth = "#include" *)
 let newline = "\n"
+let space = [' ' '\t']
 
 rule token = parse
   | "exception" { EXCEPTION }
@@ -55,4 +56,7 @@ rule token = parse
   | comment   { Lexing.new_line lexbuf; token lexbuf }
   | newline   { Lexing.new_line lexbuf; token lexbuf }
   | eof       { EOF }
-  | _         { token lexbuf }
+  | space+    { token lexbuf }
+  | _         {
+    let ch = Lexing.lexeme_char lexbuf 0 in
+    raise (Illegal_character(Lexing.lexeme_start_p lexbuf, ch)) }
