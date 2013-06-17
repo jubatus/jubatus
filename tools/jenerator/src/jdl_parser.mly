@@ -108,10 +108,10 @@ a_type:
 ;
 
 ret_type:
- | a_type { match $1 with
-	      | Struct("void") -> None
-	      | _ -> Some ($1) }   /* a bit ad-hoc : tsushima */
-
+ | a_type {
+   match $1 with
+   | Struct("void") -> None
+   | _ -> Some ($1) }   /* a bit ad-hoc : tsushima */
 
 types:
  | a_type COMMA types { $1::$3 }
