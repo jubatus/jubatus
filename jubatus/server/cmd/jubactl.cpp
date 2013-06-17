@@ -221,12 +221,14 @@ void send2supervisor(
   }
   vector<string>::const_iterator it;
   unsigned int n = N / list.size();
+  unsigned int m = N % list.size();
   for (it = list.begin(); it != list.end(); ++it) {
-    do_request(cmd, name, *it, n, server_option);
-  }
-  n = N % list.size();
-  for (size_t i = 0; i < n; ++i) {
-    do_request(cmd, name, *it, n, server_option);
+    if (m == 0) {
+      do_request(cmd, name, *it, n, server_option);
+    } else {
+      do_request(cmd, name, *it, n + 1, server_option);
+      --m;
+    }
   }
 }
 
