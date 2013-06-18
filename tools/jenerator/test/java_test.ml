@@ -237,5 +237,26 @@ let _ = run_test_tt_main begin "java.ml" >::: [
                            field_name = "name"; })
   end;
 
+  "test_gen_to_string" >:: begin fun() ->
+    assert_equal ~printer: Std.dump
+      [ (0, "public String toString() {");
+        (1,   "StringBuilder buffer = new StringBuilder();");
+        (1,   "buffer.add(\"{\");");
+        (1,   "buffer.add(\"t = \");");
+        (1,   "buffer.add(t);");
+        (1,   "buffer.add(\", \");");
+        (1,   "buffer.add(\"}\");");
+        (1,   "return buffer.toString();";);
+        (0, "}");
+      ]
+      (gen_to_string { message_name = "";
+                       message_fields = [
+                         { field_name = "t";
+                           field_type = String;
+                           field_number = 1;
+                         }
+                       ]})
+  end;
+
 ] end
 

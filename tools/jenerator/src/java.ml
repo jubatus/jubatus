@@ -164,6 +164,10 @@ let gen_args_with_type args =
   "(" ^ String.concat ", " (List.map (fun (st, t) -> (gen_type t) ^ " "^ st) args) ^ ")"
 ;;
 
+let gen_string_literal s =
+  "\"" ^ String.escaped s ^ "\""
+;;
+
 let gen_public ret_typ name args opt content = 
   List.concat
     [
@@ -262,6 +266,27 @@ let gen_to_msgpack field_names =
     [(1, "return (")];
     indent_lines 2 (gen_self_with_comma field_names);
     [(1, "  )")]
+  ]
+;;
+
+let gen_to_string m =
+  let add_fields = List.map (fun f ->
+    let lhs = f.field_name ^ " = " in
+    [
+      "buffer.add(" ^ gen_string_literal lhs ^ ");";
+      "buffer.add(" ^ f.field_name ^ ");";
+      "buffer.add(\", \");";
+    ]
+  ) m.message_fields in
+  let add_fields = List.concat add_fields in
+  List.concat [
+    [ (0, "public String toString() {");
+      (1,   "StringBuilder buffer = new StringBuilder();");
+      (1,   "buffer.add(\"{\");"); ];
+    List.map (fun l -> (1, l)) add_fields;
+    [ (1,   "buffer.add(\"}\");");
+      (1,   "return buffer.toString();");
+      (0, "}"); ]
   ]
 ;;
 
