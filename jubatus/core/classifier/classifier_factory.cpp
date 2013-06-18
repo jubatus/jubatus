@@ -24,35 +24,37 @@
 #include "../storage/storage_base.hpp"
 
 using jubatus::core::common::jsonconfig::config_cast_check;
+using pfi::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
 namespace classifier {
 
-classifier_base* classifier_factory::create_classifier(
+shared_ptr<classifier_base> classifier_factory::create_classifier(
     const std::string& name,
     const common::jsonconfig::config& param,
     jubatus::core::storage::storage_base* storage) {
   if (name == "perceptron") {
     // perceptron doesn't have parameter
-    return new perceptron(storage);
+    return shared_ptr<classifier_base>(new perceptron(storage));
   } else if (name == "PA" || name == "passive_aggressive") {
     // passive_aggressive doesn't have parameter
-    return new passive_aggressive(storage);
+    return shared_ptr<classifier_base>(new passive_aggressive(storage));
   } else if (name == "PA1" || name == "passive_aggressive_1") {
-    return new passive_aggressive_1(
-        config_cast_check<classifier_config>(param), storage);
+    return shared_ptr<classifier_base>(new passive_aggressive_1(
+        config_cast_check<classifier_config>(param), storage));
   } else if (name == "PA2" || name == "passive_aggressive_2") {
-    return new passive_aggressive_2(
-        config_cast_check<classifier_config>(param), storage);
+    return shared_ptr<classifier_base>(new passive_aggressive_2(
+        config_cast_check<classifier_config>(param), storage));
   } else if (name == "CW" || name == "confidence_weighted") {
-    return new confidence_weighted(
-        config_cast_check<classifier_config>(param), storage);
+    return shared_ptr<classifier_base>(new confidence_weighted(
+        config_cast_check<classifier_config>(param), storage));
   } else if (name == "AROW" || name == "arow") {
-    return new arow(config_cast_check<classifier_config>(param), storage);
+    return shared_ptr<classifier_base>(new arow(
+        config_cast_check<classifier_config>(param), storage));
   } else if (name == "NHERD" || name == "normal_herd") {
-    return new normal_herd(
-        config_cast_check<classifier_config>(param), storage);
+    return shared_ptr<classifier_base>(new normal_herd(
+        config_cast_check<classifier_config>(param), storage));
   } else {
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }

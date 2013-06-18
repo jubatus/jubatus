@@ -45,9 +45,12 @@ using std::cout;
 using std::endl;
 
 using pfi::lang::lexical_cast;
+using pfi::lang::shared_ptr;
 using pfi::data::optional;
 using jubatus::core::fv_converter::datum;
 using jubatus::core::classifier::classify_result;
+using jubatus::core::classifier::classifier_base;
+using jubatus::core::storage::storage_base;
 
 namespace jubatus {
 namespace core {
@@ -86,7 +89,7 @@ string get_max_label(const classify_result& result) {
 }
 }  // namespace
 
-typedef pair<core::storage::storage_base*, core::classifier::classifier_base*>
+typedef pair<storage_base*, shared_ptr<classifier_base> >
   storage_pair;
 
 class classifier_test : public ::testing::TestWithParam<storage_pair> {
@@ -104,7 +107,7 @@ class classifier_test : public ::testing::TestWithParam<storage_pair> {
 
   void my_test();
 
-  pfi::lang::shared_ptr<core::driver::classifier> classifier_;
+  shared_ptr<core::driver::classifier> classifier_;
 };
 
 TEST_P(classifier_test, simple) {
@@ -291,20 +294,24 @@ vector<storage_pair> create_classifiers() {
 
   storage = new core::storage::local_storage;
   method.push_back(make_pair(storage,
-        new core::classifier::passive_aggressive(storage)));
+        shared_ptr<classifier_base>(
+          new core::classifier::passive_aggressive(storage))));
 
   storage = new core::storage::local_storage;
   method.push_back(make_pair(storage,
-        new core::classifier::passive_aggressive_1(config, storage)));
+        shared_ptr<classifier_base>(
+          new core::classifier::passive_aggressive_1(config, storage))));
 
   storage = new core::storage::local_storage;
   method.push_back(make_pair(storage,
-        new core::classifier::passive_aggressive_2(config, storage)));
+        shared_ptr<classifier_base>(
+          new core::classifier::passive_aggressive_2(config, storage))));
 
   storage = new core::storage::local_storage;
   config.C = 0.1f;
   method.push_back(make_pair(storage,
-        new core::classifier::normal_herd(config, storage)));
+        shared_ptr<classifier_base>(
+          new core::classifier::normal_herd(config, storage))));
 
   return method;
 }
