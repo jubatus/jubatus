@@ -7,7 +7,7 @@
 #include <utility>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "../framework.hpp"
+#include "../../server/framework.hpp"
 #include "graph_server.hpp"
 #include "graph_serv.hpp"
 

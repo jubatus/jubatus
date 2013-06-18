@@ -7,7 +7,7 @@
 #include <utility>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "../framework.hpp"
+#include "../../server/framework.hpp"
 #include "recommender_server.hpp"
 #include "recommender_serv.hpp"
 
