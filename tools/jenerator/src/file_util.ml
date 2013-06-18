@@ -56,6 +56,10 @@ let rec split_path path =
     split_path dir @ [base]
 ;;
 
+let rec concat_path path =
+  List.fold_left Filename.concat "" path
+;;
+
 let mkdir_all path =
   let paths = split_path path in
   let current = ref "" in

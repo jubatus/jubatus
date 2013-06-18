@@ -97,6 +97,33 @@ let _ = run_test_tt_main begin "java.ml" >::: [
       (gen_object_type (Map(String, Int(true, 4))));
   end;
 
+  "test_split_namespace" >:: begin fun() ->
+    assert_equal
+      []
+      (split_namespace { Config.namespace = "";
+                         Config.language = "java";
+                         Config.outdir = "";
+                         Config.internal = false;
+                         Config.default_template = false;
+                         Config.include_guard = ""; } );
+    assert_equal
+      ["us"]
+      (split_namespace { Config.namespace = "us";
+                         Config.language = "java";
+                         Config.outdir = "";
+                         Config.internal = false;
+                         Config.default_template = false;
+                         Config.include_guard = ""; } );
+    assert_equal
+      ["us"; "jubat"; "classifier"]
+      (split_namespace { Config.namespace = "us.jubat.classifier";
+                         Config.language = "java";
+                         Config.outdir = "";
+                         Config.internal = false;
+                         Config.default_template = false;
+                         Config.include_guard = ""; } );
+  end;
+
   "test_gen_ret_type" >:: begin fun() ->
     assert_equal
       "void"

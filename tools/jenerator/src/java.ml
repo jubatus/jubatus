@@ -118,8 +118,18 @@ let gen_package conf =
       (0, ""); ]
 ;;
 
+let split_namespace conf =
+  Str.split (Str.regexp "\\.") conf.Config.namespace
+;;
+
+let make_path conf filename =
+  let package = split_namespace conf in
+  File_util.concat_path (package @ [filename])
+;;
+
 let gen_types_file name t conf source = 
   let filename = rename_without_underbar name ^ ".java" in
+  let path = make_path conf filename in
   let (t1, t2) = t in
   let t' = Tuple([t1; t2]) in
   let header = List.concat [
@@ -138,7 +148,7 @@ let gen_types_file name t conf source =
       (gen_public_class name 
          [(0, "public " ^ (gen_type t1) ^ " first;");
           (0, "public " ^ (gen_type t2) ^ " second;")]) in
-  make_header conf source filename (header @ content)
+  make_header conf source path (header @ content)
 ;;
 
 let gen_ret_type = function
@@ -259,6 +269,7 @@ let gen_message m conf source =
   let field_types = List.map (fun f -> f.field_type) m.message_fields in
   let class_name = rename_without_underbar m.message_name in
   let filename = class_name ^ ".java" in
+  let path = make_path conf filename in
   let header =
     List.concat
       [gen_package conf;
@@ -281,7 +292,7 @@ let gen_message m conf source =
     (0, "@Message") :: 
       gen_public_class class_name class_content
   in
-  make_header conf source filename (header @ content)
+  make_header conf source path (header @ content)
 ;;
 
 let gen_typedef stat conf source =
@@ -308,6 +319,7 @@ let map_search f s =
 let gen_client_file conf source services =
   let base = File_util.take_base source in
   let filename = (rename_without_underbar base) ^ "Client.java" in
+  let path = make_path conf filename in
   let clients = List.map (fun x -> gen_client x (rename_without_underbar base)) services  in
   let content = concat_blocks [
     gen_package conf;
@@ -321,7 +333,7 @@ let gen_client_file conf source services =
      (0, "import org.msgpack.rpc.loop.EventLoop;")];
     (concat_blocks clients)
   ]
-  in make_header conf source filename content
+  in make_header conf source path content
 ;;
 
 let gen_typedef_file conf source idl =
