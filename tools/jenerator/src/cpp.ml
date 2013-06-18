@@ -37,7 +37,7 @@ let gen_jubatus_core_include conf file =
 let gen_jubatus_include conf file =
   let path = 
     if conf.Config.internal then
-      "\"../" ^ file ^ "\""
+      "\"../../" ^ file ^ "\""
     else
       "<jubatus/" ^ file ^ ">"
   in
