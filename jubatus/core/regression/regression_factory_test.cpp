@@ -26,6 +26,8 @@
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
 
+using pfi::lang::shared_ptr;
+
 namespace jubatus {
 namespace core {
 namespace regression {
@@ -35,8 +37,8 @@ TEST(regression_factory, trivial) {
   storage::local_storage s;
   common::jsonconfig::config param(pfi::text::json::to_json(
       regression::passive_aggressive::config()));
-  pfi::lang::scoped_ptr<regression::regression_base>
-    r(f.create_regression("PA", param, &s));
+  shared_ptr<regression::regression_base> r =
+      f.create_regression("PA", param, &s);
   EXPECT_EQ(typeid(*r), typeid(regression::passive_aggressive&));
 }
 
