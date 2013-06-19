@@ -113,7 +113,7 @@ bool classifier_serv::set_config(const string& config) {
       new core::driver::classifier(
         model,
         core::classifier::classifier_factory::create_classifier(
-          conf.method, param, model.get()),
+          conf.method, param, model),
         core::fv_converter::make_fv_converter(conf.converter)));
   mixer_->set_mixable_holder(classifier_->get_mixable_holder());
 

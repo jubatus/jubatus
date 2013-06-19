@@ -28,14 +28,14 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
-confidence_weighted::confidence_weighted(storage::storage_base* storage)
+confidence_weighted::confidence_weighted(classifier_base::storage_ptr storage)
     : classifier_base(storage) {
   classifier_base::use_covars_ = true;
 }
 
 confidence_weighted::confidence_weighted(
     const classifier_config& config,
-    storage::storage_base* storage)
+    classifier_base::storage_ptr storage)
     : classifier_base(storage),
       config_(config) {
   classifier_base::use_covars_ = true;

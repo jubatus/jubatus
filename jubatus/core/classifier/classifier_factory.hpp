@@ -46,7 +46,7 @@ class classifier_factory {
   static pfi::lang::shared_ptr<classifier_base> create_classifier(
     const std::string& name,
     const common::jsonconfig::config& param,
-    storage::storage_base* storage);
+    pfi::lang::shared_ptr<storage::storage_base> storage);
 };
 
 }  // namespace classifier

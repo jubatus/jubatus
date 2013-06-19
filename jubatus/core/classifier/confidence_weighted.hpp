@@ -27,10 +27,10 @@ namespace classifier {
 
 class confidence_weighted : public classifier_base {
  public:
-  explicit confidence_weighted(storage::storage_base* storage);
+  explicit confidence_weighted(classifier_base::storage_ptr storage);
   confidence_weighted(
       const classifier_config& config,
-      storage::storage_base* storage);
+      classifier_base::storage_ptr storage);
   void train(const common::sfv_t& fv, const std::string& label);
   std::string name() const;
  private:

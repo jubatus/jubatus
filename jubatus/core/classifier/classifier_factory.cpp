@@ -33,7 +33,7 @@ namespace classifier {
 shared_ptr<classifier_base> classifier_factory::create_classifier(
     const std::string& name,
     const common::jsonconfig::config& param,
-    jubatus::core::storage::storage_base* storage) {
+    pfi::lang::shared_ptr<storage::storage_base> storage) {
   if (name == "perceptron") {
     // perceptron doesn't have parameter
     return shared_ptr<classifier_base>(new perceptron(storage));

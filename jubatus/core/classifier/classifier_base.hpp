@@ -23,6 +23,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <pficommon/lang/shared_ptr.h>
 
 #include "../common/type.hpp"
 #include "../storage/storage_base.hpp"
@@ -34,7 +35,9 @@ namespace classifier {
 
 class classifier_base {
  public:
-  explicit classifier_base(jubatus::core::storage::storage_base* storage_base);
+  typedef pfi::lang::shared_ptr<storage::storage_base> storage_ptr;
+
+  explicit classifier_base(storage_ptr storage_base);
   virtual ~classifier_base();
   virtual void train(const common::sfv_t& fv, const std::string& label) = 0;
 
@@ -68,7 +71,7 @@ class classifier_base {
 
   static float squared_norm(const common::sfv_t& sfv);
 
-  jubatus::core::storage::storage_base* storage_;
+  storage_ptr storage_;
   bool use_covars_;
 };
 

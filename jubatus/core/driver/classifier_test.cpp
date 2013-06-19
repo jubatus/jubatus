@@ -287,27 +287,27 @@ TEST_P(classifier_test, nan) {
 vector<storage_pair> create_classifiers() {
   vector<storage_pair> method;
 
-  core::storage::storage_base* storage;
+  shared_ptr<core::storage::storage_base> storage;
   core::classifier::classifier_config config;
 
   // TODO(unknown): testing with perceptron?
 
-  storage = new core::storage::local_storage;
+  storage.reset(new core::storage::local_storage);
   method.push_back(make_pair(storage,
         shared_ptr<classifier_base>(
           new core::classifier::passive_aggressive(storage))));
 
-  storage = new core::storage::local_storage;
+  storage.reset(new core::storage::local_storage);
   method.push_back(make_pair(storage,
         shared_ptr<classifier_base>(
           new core::classifier::passive_aggressive_1(config, storage))));
 
-  storage = new core::storage::local_storage;
+  storage.reset(new core::storage::local_storage);
   method.push_back(make_pair(storage,
         shared_ptr<classifier_base>(
           new core::classifier::passive_aggressive_2(config, storage))));
 
-  storage = new core::storage::local_storage;
+  storage.reset(new core::storage::local_storage);
   config.C = 0.1f;
   method.push_back(make_pair(storage,
         shared_ptr<classifier_base>(

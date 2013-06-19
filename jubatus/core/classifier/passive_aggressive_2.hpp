@@ -27,10 +27,10 @@ namespace classifier {
 
 class passive_aggressive_2 : public classifier_base {
  public:
-  explicit passive_aggressive_2(storage::storage_base* storage);
+  explicit passive_aggressive_2(classifier_base::storage_ptr storage);
   passive_aggressive_2(
       const classifier_config& config,
-      storage::storage_base* storage);
+      classifier_base::storage_ptr storage);
 
   void train(const common::sfv_t& sfv, const std::string& label);
   std::string name() const;
