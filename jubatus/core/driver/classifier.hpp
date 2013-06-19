@@ -38,7 +38,7 @@ class classifier {
 
   // TODO(suma): where is the owner of model, mixer, and converter?
   classifier(
-      storage::storage_base* model_storage,
+      pfi::lang::shared_ptr<storage::storage_base> model_storage,
       pfi::lang::shared_ptr<classifier_base> classifier_method,
       pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~classifier();

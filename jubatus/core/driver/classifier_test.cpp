@@ -89,7 +89,7 @@ string get_max_label(const classify_result& result) {
 }
 }  // namespace
 
-typedef pair<storage_base*, shared_ptr<classifier_base> >
+typedef pair<shared_ptr<storage_base>, shared_ptr<classifier_base> >
   storage_pair;
 
 class classifier_test : public ::testing::TestWithParam<storage_pair> {
