@@ -38,7 +38,8 @@ TEST(mixable_stat_test, mixed_entropy) {
 
   p.put_diff(d);
 
-  ASSERT_DOUBLE_EQ(e_e, p.entropy());
-  ASSERT_DOUBLE_EQ(p.entropy(), p.entropy());
+  double bias = d.first / d.second;  // bias to suppress cancellation
+  ASSERT_DOUBLE_EQ(e_e + bias, p.entropy() + bias);
+  ASSERT_DOUBLE_EQ(p.entropy() + bias, p.entropy() + bias);
 }
 }  // namespace jubatus
