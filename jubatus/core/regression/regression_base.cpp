@@ -21,7 +21,7 @@ namespace jubatus {
 namespace core {
 namespace regression {
 
-regression_base::regression_base(storage::storage_base* storage)
+regression_base::regression_base(storage_ptr storage)
     : storage_(storage) {
 }
 

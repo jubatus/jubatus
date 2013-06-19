@@ -55,7 +55,7 @@ class regression_test : public ::testing::Test {
       new core::driver::regression(
         storage,
         shared_ptr<core::regression::regression_base>(
-            new core::regression::passive_aggressive(config, storage.get())),
+            new core::regression::passive_aggressive(config, storage)),
         make_fv_converter()));
   }
 

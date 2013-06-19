@@ -107,7 +107,7 @@ bool regression_serv::set_config(const string& config) {
       new core::driver::regression(
           model,
           core::regression::regression_factory::create_regression(
-              conf.method, param, model.get()),
+              conf.method, param, model),
           core::fv_converter::make_fv_converter(conf.converter)));
   mixer_->set_mixable_holder(regression_->get_mixable_holder());
 

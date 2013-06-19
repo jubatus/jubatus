@@ -30,6 +30,7 @@ using std::vector;
 using std::make_pair;
 using jubatus::core::storage::local_storage;
 using pfi::lang::lexical_cast;
+using pfi::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -42,8 +43,8 @@ class regression_test : public testing::Test {
 TYPED_TEST_CASE_P(regression_test);
 
 TYPED_TEST_P(regression_test, trivial) {
-  local_storage s;
-  TypeParam p(&s);
+  shared_ptr<local_storage> s(new local_storage);
+  TypeParam p(s);
   common::sfv_t fv;
   fv.push_back(make_pair(string("f1"), 1.0));
   p.train(fv, 10);
@@ -103,18 +104,18 @@ void random_test(regression::regression_base& p, float x, float y, size_t dim) {
 
 TYPED_TEST_P(regression_test, random) {
   {
-    local_storage s;
-    TypeParam p(&s);
+    shared_ptr<local_storage> s(new local_storage);
+    TypeParam p(s);
     random_test(p, 1, 1, 3);
   }
   {
-    local_storage s;
-    TypeParam p(&s);
+    shared_ptr<local_storage> s(new local_storage);
+    TypeParam p(s);
     random_test(p, 1, 100, 5);
   }
   {
-    local_storage s;
-    TypeParam p(&s);
+    shared_ptr<local_storage> s(new local_storage);
+    TypeParam p(s);
     random_test(p, 10000, 1, 10);
   }
 }
