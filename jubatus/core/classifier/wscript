@@ -1,0 +1,38 @@
+def options(ctx): pass
+
+def configure(ctx): pass
+
+def build(bld):
+  bld.shlib(
+    source = '''
+        classifier_base.cpp
+	perceptron.cpp
+	passive_aggressive.cpp
+	passive_aggressive_1.cpp
+	passive_aggressive_2.cpp
+	confidence_weighted.cpp	
+	arow.cpp
+	normal_herd.cpp
+        classifier_factory.cpp
+	''',
+    target = 'jubatus_classifier',
+    name = 'jubatus_classifier',
+    includes = '.',
+    use = 'PFICOMMON jubacommon')
+
+  bld.program(
+     features = 'gtest',
+     source = [
+         'classifier_test.cpp',
+         'classifier_factory.cpp'   
+     ],
+     target = "classifier_test",
+     includes = '.',
+     use = 'jubacommon jubatus_classifier jubastorage')
+
+  bld.install_files('${PREFIX}/include/jubatus/core/classifier', [
+      'classifier_base.hpp',
+      'classifier_factory.hpp',
+      'classifier_type.hpp',
+      'classifier_config.hpp',
+      ])

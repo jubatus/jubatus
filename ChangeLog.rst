@@ -1,4 +1,21 @@
 
+Release 0.4.4 - 2013/06/21
+--------------------------
+
+* Improvements
+    * Refactor (#323, #332, #367)
+    * Make juba.*keeper to allow 30 seconds or over as timeout time (#330)
+    * New jenerator (#373)
+    * Add CONTRIBUTING.md (#376, #387)
+    * #188, #322, #333, #354, #390
+
+* Bugfix
+    * Fix jubavisor to detect child process' exec failure (#215, #362)
+    * Eliminate deadlock (#329, #331, #375)
+    * Fix jubactl's save and load (#342, #383, #384)
+    * Fix jubactl's segfault when using -N option (#363, #388)
+    * #315, #319, #320, #327, #348, #358, #381, #385, #386
+
 Release 0.4.3 - 2013/04/19
 --------------------------
 

@@ -1,0 +1,48 @@
+idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl']
+
+def options(opt):
+  pass
+
+def configure(conf):
+  if conf.env.HAVE_ZOOKEEPER_H:
+    conf.check_cxx(msg = 'Checking for compiler TLS extension support',
+                   fragment='__thread int i; int main() { return 0; }',
+                   errmsg = 'no (Jubatus officially support GCC 4.4 or later)')
+
+
+def build_one(bld, name, libraries = '', sources = ''):
+  __sources = '%s_impl.cpp %s_serv.cpp ' % (name, name)
+  __sources += sources
+
+  bld.program(
+    source = __sources,
+    target = 'juba'+name,
+    includes = '.',
+    use = 'jubatus_driver jubaserv_framework jubaserv_common jubaserv_mprpc_common jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
+    )
+  if bld.env.HAVE_ZOOKEEPER_H:
+    bld.program(
+      source = '%s_keeper.cpp ' % name,
+      target = 'juba%s_keeper' % name,
+      includes = '.',
+      use = 'PFICOMMON jubaserv_framework jubaserv_common jubaserv_mprpc_common JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
+      )
+
+def build(bld):
+  #new classifier
+  build_one(bld, "classifier", 'jubaconverter jubastorage')
+
+  # #new regression
+  build_one(bld, "regression", 'jubaconverter jubastorage')
+
+  # #new recommender
+  build_one(bld, "recommender", 'jubaconverter jubastorage')
+
+  # #new anomaly
+  build_one(bld, "anomaly", 'jubaconverter jubastorage jubatus_recommender' )
+
+  build_one(bld, "stat")
+
+  build_one(bld, "graph")
+
+  bld.install_files('${PREFIX}/share/jubatus/idl/', idls)

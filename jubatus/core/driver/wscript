@@ -1,0 +1,58 @@
+def options(opt):
+  pass
+
+def configure(conf):
+  pass
+
+def build(bld):
+  source = [
+      'classifier.cpp',
+      'regression.cpp',
+      'recommender.cpp',
+      'stat.cpp',
+      'anomaly.cpp',
+      'graph.cpp',
+      'linear_function_mixer.cpp',
+      'mixable_weight_manager.cpp',
+      ]
+
+  bld.shlib(
+    source = source,
+    target = 'jubatus_driver',
+    includes = '.',
+    use = 'PFICOMMON jubacommon MSGPACK jubaconverter jubastorage jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph'
+    )
+
+  def make_test(t):
+    bld.program(
+      features='gtest',
+      source=t + '.cpp',
+      target=t,
+      includes='.',
+      use='jubatus_driver'
+      )
+
+  tests = [
+    'linear_function_mixer_test',
+    'anomaly_test',
+    'classifier_test',
+    'graph_test',
+    'regression_test',
+    'recommender_test',
+    'stat_test',
+    ]
+
+  for t in tests:
+    make_test(t)
+
+  bld.install_files('${PREFIX}/include/jubatus/core/driver', [
+      'classifier.hpp',
+      'regression.hpp',
+      'recommender.hpp',
+      'stat.hpp',
+      'anomaly.hpp',
+      'graph.hpp',
+      'diffv.hpp',
+      'linear_function_mixer.hpp',
+      'mixable_weight_manager.hpp',
+      ])

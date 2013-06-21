@@ -8,9 +8,9 @@ Jubatus is going to be a framework to implement `online machine learning which s
 But currently it has only a set of direct implementations of classifier, regression and recommender.
 And there are 9 x N declarations or implemenations for eash learning machine's API, where N is a number
 of API. For example, classifier currently has 7 APIs (train, classify, set_config, get_config, save,
- load and get_status). Thus there're 9 x 7 = 63 reputations of function declarations or implementations.
+load and get_status). Thus there're 9 x 7 = 63 reputations of function declarations or implementations.
 Recommender has 12 APIs therefore we'd 84 reputations. (M variety of client libraries will increase
- the number: (M + 8) x N )
+the number: (M + 8) x N )
 
 A developer of a new machine learning algorithm would have seen a misery of Do Repeat Yourself.
 
@@ -18,7 +18,7 @@ A developer of a new machine learning algorithm would have seen a misery of Do R
 Moreover, composable feature conversion and machine learning must be available in a near future.
 With direct implementation of C++ language it is very difficult to minimize the cost of user-
 implementation. Deciding a specification of Domain Specific Language will enable us a
- under-the-wood optimization and interface improvement.
+under-the-wood optimization and interface improvement.
 
 
 There are several preliminary condition - first of all, for all developers C++ should be available
@@ -28,20 +28,20 @@ more difficult it is, the less developers will come.
 
 
 Solution
-========
+--------
 
 Simple msgpack-idl parser and a bit complex C++ code generator. Input specification of IDL is
 very simple and a extension of msgpack-idl. Users should annotate 3 decorators on each RPC-API
 of each services, which are about routing, R/W feature and aggregator.
 
 routing
- - cht
- - broadcast
- - random
+  - cht
+  - broadcast
+  - random
 
 R/W feature
- - update   - this does changes the server state, guarded by writer lock.
- - analysis - does not change the server state, so that threads can work in parallel.
+  - update   - this does changes the server state, guarded by writer lock.
+  - analysis - does not change the server state, so that threads can work in parallel.
 
  
 
@@ -58,24 +58,24 @@ server template (different from C++ 'template').
 
 
 Licence of generated codes
-==========================
+--------------------------
 
 Jenerator itself is distributed under LGPL, but you can distribute all generated codes under terms of your choice.
 
 
 Reference
-=========
+---------
 
 - msgpack
 
- - http://msgpack.org
+  - http://msgpack.org
 
 - msgpack-idl spec
 
- - https://github.com/msgpack/msgpack-haskell/blob/master/msgpack-idl/Specification.md
+  - https://github.com/msgpack/msgpack-haskell/blob/master/msgpack-idl/Specification.md
 
 Things left
-===========
+-----------
 
 - parse version number in service
 - other file inclusion

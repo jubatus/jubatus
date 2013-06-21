@@ -2,16 +2,42 @@
 
 # please copy this file to .git/hooks/ and chmod +x
 
+EXIT_STATUS=0
+
 CPPLINT="tools/codestyle/cpplint/cpplint.py"
 CPPLINT_ARGS="--filter=-runtime/references,-runtime/rtti"
 
-codestyle_violation_count=$(git diff --cached --name-only | grep -v "^src/third_party/" | xargs "${CPPLINT}" "${CPPLINT_ARGS}" 2>&1 | grep Total | sed -e "s/[^0-9]*\([0-9]*\)/\1/")
+list_target_files() {
+  git diff --cached --name-only | grep -v "^jubatus/server/third_party/"
+}
+
+# cpplint
+codestyle_violation_count=$(list_target_files | xargs "${CPPLINT}" "${CPPLINT_ARGS}" 2>&1 | grep Total | sed -e "s/[^0-9]*\([0-9]*\)/\1/")
 echo $codestyle_violation_count
 if [ $codestyle_violation_count != "0" ]
 then
-    git diff --cached --name-only | xargs "${CPPLINT}" "${CPPLINT_ARGS}"
     echo "Error: Please go along with Jubatus coding style when you commit"
-    exit 1
-else
-    exit 0
+    list_target_files | xargs "${CPPLINT}" "${CPPLINT_ARGS}"
+    EXIT_STATUS=1
 fi
+
+# include guard
+for FILE in $(list_target_files); do
+  case "${FILE}" in
+    *.hpp )
+      GUARD="$(echo ${FILE} | tr a-z/. A-Z__)_"
+      RESULT="$(grep -e "^#ifndef ${GUARD}\$" -e "^#define ${GUARD}\$" -e "^#endif  // ${GUARD}\$" ${FILE})"
+      if [ $(echo "${RESULT}" | wc -l) != 3 ]; then
+        echo "Invalid include guard: ${FILE}: (expects ${GUARD})"
+        EXIT_STATUS=1
+      fi
+    ;;
+  esac
+done
+
+# exit
+if [ ${EXIT_STATUS} = 0 ]; then
+  list_target_files | xargs git add
+fi
+
+exit ${EXIT_STATUS}

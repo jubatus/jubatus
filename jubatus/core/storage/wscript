@@ -1,0 +1,57 @@
+import Options
+
+def options(opt): pass
+
+def configure(conf): pass
+
+def make_test(bld, src):
+  bld.program(
+    features = 'gtest',
+    source = src,
+    target = src[0:src.rindex('.')],
+    use = 'jubastorage',
+    )
+
+def make_tests(bld, srcs):
+  for src in srcs:
+    make_test(bld, src)
+
+def build(bld):
+  cppfiles = ['storage_factory.cpp', 'storage_base.cpp', 'local_storage.cpp',
+              'local_storage_mixture.cpp',
+              'sparse_matrix_storage.cpp', 'inverted_index_storage.cpp', 'bit_vector.cpp', 'bit_index_storage.cpp',
+              'lsh_vector.cpp',
+              'lsh_util.cpp',
+              'lsh_index_storage.cpp']
+  use = 'PFICOMMON jubacommon MSGPACK'
+
+  bld.shlib(
+    source = cppfiles,
+    target = 'jubastorage',
+    includes = '.',
+    use = use
+    )
+
+  make_tests(bld, [
+      'storage_test.cpp',
+      'storage_factory_test.cpp',
+      'local_storage_mixture_test.cpp',
+      'sparse_matrix_storage_test.cpp',
+      'fixed_size_heap_test.cpp',
+      'inverted_index_storage_test.cpp',
+      'lsh_vector_test.cpp',
+      'lsh_util_test.cpp',
+      'lsh_index_storage_test.cpp',
+      'bit_vector_test.cpp',
+      'bit_index_storage_test.cpp',
+      'storage_type_test.cpp',
+      ])
+
+  bld.install_files('${PREFIX}/include/jubatus/core/storage',
+                    ['storage_base.hpp',
+                     'storage_type.hpp',
+                     'storage_factory.hpp',
+                     'bit_vector.hpp',
+                     'sparse_matrix_storage.hpp',
+                     'recommender_storage_base.hpp',
+                     ])

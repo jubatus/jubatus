@@ -2,14 +2,16 @@
 OCAMLINCLUDES += ../src
 
 FILES[] =
+  parse_test
   cpp_test
+  java_test
+  file_util_test
 
 USE_OCAMLFIND = true
-OCAMLPACKS[] = oUnit
+OCAMLPACKS[] = oUnit str
 
 PROGRAM = test
 OCAML_LIBS += ../src/target
-OCAML_OTHER_LIBS += str
 
 clean:
   rm -f *~ *.opt *.cmi *.cmx *.o *.omc *.cma *.cmxa

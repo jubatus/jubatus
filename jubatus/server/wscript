@@ -1,0 +1,16 @@
+import Options
+
+subdirs = '''
+common framework cmd jubavisor server third_party
+'''
+
+def options(opt):
+  opt.recurse(subdirs)
+
+def configure(conf):
+  conf.recurse(subdirs)
+
+def build(bld):
+  bld.recurse(subdirs)
+  bld.install_files('${PREFIX}/include/jubatus/server',
+                    ['framework.hpp'])

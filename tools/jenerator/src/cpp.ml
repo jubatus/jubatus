@@ -24,10 +24,20 @@ open Lib
 
 let comment_out_head = "//"
 
+let gen_jubatus_core_include conf file =
+  let path =
+    if conf.Config.internal then
+      "\"jubatus/core/" ^ file ^ "\""
+    else
+      "<jubatus/core/" ^ file ^ ">"
+  in
+  "#include " ^ path
+;;
+
 let gen_jubatus_include conf file =
   let path = 
     if conf.Config.internal then
-      "\"../" ^ file ^ "\""
+      "\"../../" ^ file ^ "\""
     else
       "<jubatus/" ^ file ^ ">"
   in
@@ -330,7 +340,7 @@ let gen_server s =
   List.concat [
     [
       (0, "template <class Impl>");
-      (0, "class " ^ s.service_name ^ " : public jubatus::common::mprpc::rpc_server {");
+      (0, "class " ^ s.service_name ^ " : public jubatus::server::common::mprpc::rpc_server {");
       (0, " public:");
       (1,   "explicit " ^ s.service_name ^ "(double timeout_sec) : rpc_server(timeout_sec) {");
       (2,     "Impl* impl = static_cast<Impl*>(this);");
@@ -359,7 +369,7 @@ let gen_server_file conf source services =
       (0, "#include <utility>");
       (0, "#include <pficommon/lang/bind.h>");
       (0, "");
-      (0, gen_jubatus_include conf "common/mprpc/rpc_server.hpp");
+      (0, gen_jubatus_include conf "server/common/mprpc/rpc_server.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
     ];
     make_namespace namespace (concat_blocks servers)
@@ -371,15 +381,15 @@ let gen_server_file conf source services =
 let gen_aggregator ret_type aggregator =
   match ret_type, aggregator with
   | Bool, All_and ->
-    "jubatus::framework::all_and"
+    "jubatus::server::framework::all_and"
   | Bool, All_or ->
-    "jubatus::framework::all_or"
+    "jubatus::server::framework::all_or"
   | List t, Concat ->
-    gen_template "jubatus::framework::concat" [t]
+    gen_template "jubatus::server::framework::concat" [t]
   | Map (k, v), Merge ->
-    gen_template "jubatus::framework::merge" [k; v]
+    gen_template "jubatus::server::framework::merge" [k; v]
   | _, Pass ->
-    gen_template "jubatus::framework::pass" [ret_type]
+    gen_template "jubatus::server::framework::pass" [ret_type]
   | _, _ ->
     (* TODO(unnonouno): Are other combinations really illegal?*)
     let msg = Printf.sprintf
@@ -457,9 +467,9 @@ let gen_keeper_file conf source services =
       (0, "");
       (0, "#include <glog/logging.h>");
       (0, "");
-      (0, gen_jubatus_include conf "common/exception.hpp");
-      (0, gen_jubatus_include conf "framework/aggregators.hpp");
-      (0, gen_jubatus_include conf "framework/keeper.hpp");
+      (0, gen_jubatus_core_include conf "common/exception.hpp");
+      (0, gen_jubatus_include conf "server/framework/aggregators.hpp");
+      (0, gen_jubatus_include conf "server/framework/keeper.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
     ];
     make_namespace namespace (
@@ -467,13 +477,13 @@ let gen_keeper_file conf source services =
         [
           (0, "int run_keeper(int argc, char* argv[]) {");
           (1,   "try {");
-          (2,     "jubatus::framework::keeper k(");
-          (4,         "jubatus::framework::keeper_argv(argc, argv, " ^ name_str ^ "));");
+          (2,     "jubatus::server::framework::keeper k(");
+          (4,         "jubatus::server::framework::keeper_argv(argc, argv, " ^ name_str ^ "));");
         ];
         indent_lines 2 (List.concat servers);
         [
           (2,     "return k.run();");
-          (1,   "} catch (const jubatus::exception::jubatus_exception& e) {");
+          (1,   "} catch (const jubatus::core::common::exception::jubatus_exception& e) {");
           (2,     "LOG(FATAL) << e.diagnostic_information(true);");
           (2,     "return -1;");
           (1,   "}");
@@ -500,9 +510,9 @@ let gen_impl_method m =
   let _, request, _ = get_decorator m in
   let lock_type =
     match request with
-    | Update -> "JWLOCK__"
-    | Analysis -> "JRLOCK__"
-    | Nolock -> "NOLOCK__" in
+    | Update -> "JWLOCK_"
+    | Analysis -> "JRLOCK_"
+    | Nolock -> "NOLOCK_" in
   let lock = gen_call lock_type ["p_"] in
   (* TODO(unnonouno): think of generating this abnormal method, which calls the method of p_ rather than get_p(). *)
   let pointer =
@@ -548,18 +558,18 @@ let gen_impl s =
     [
       (0, "class " ^ impl_name ^ " : public " ^ name ^ "<" ^ impl_name ^ "> {");
       (0, " public:");
-      (1,   "explicit " ^ impl_name ^ "(const jubatus::framework::server_argv& a):");
+      (1,   "explicit " ^ impl_name ^ "(const jubatus::server::framework::server_argv& a):");
       (2,     name ^ "<" ^ impl_name ^ ">(a.timeout),");
-      (2,     "p_(new jubatus::framework::server_helper<" ^ serv_name ^ ">(a, " ^ gen_bool_literal use_cht ^ ")) {");
+      (2,     "p_(new jubatus::server::framework::server_helper<" ^ serv_name ^ ">(a, " ^ gen_bool_literal use_cht ^ ")) {");
       (1,   "}")
     ];
     indent_lines 1 (concat_blocks methods);
     [
       (1,   "int run() { return p_->start(*this); }");
-      (1,   "common::cshared_ptr<" ^ serv_name ^ "> get_p() { return p_->server(); }");
+      (1,   "pfi::lang::shared_ptr<" ^ serv_name ^ "> get_p() { return p_->server(); }");
       (0, "");
       (0, " private:");
-      (1,   "common::cshared_ptr<jubatus::framework::server_helper<" ^ serv_name ^ "> > p_;");
+      (1,   "pfi::lang::shared_ptr<jubatus::server::framework::server_helper<" ^ serv_name ^ "> > p_;");
       (0, "};")
     ]
   ]
@@ -572,6 +582,7 @@ let gen_impl_file conf source services =
 
   let namespace = parse_namespace conf.Config.namespace in
   let namespace = List.append namespace ["server"] in
+  let namespace_str = String.concat "::" namespace in
   let impls = List.map gen_impl services in
   let s = concat_blocks [
     [
@@ -579,8 +590,9 @@ let gen_impl_file conf source services =
       (0, "#include <string>");
       (0, "#include <vector>");
       (0, "#include <utility>");
+      (0, "#include <pficommon/lang/shared_ptr.h>");
       (0, "");
-      (0, gen_jubatus_include conf "framework.hpp");
+      (0, gen_jubatus_include conf "server/framework.hpp");
       (0, "#include \"" ^ base ^ "_server.hpp\"");
       (0, "#include \"" ^ base ^ "_serv.hpp\"");
     ];
@@ -589,7 +601,7 @@ let gen_impl_file conf source services =
       (0, "int main(int argc, char* argv[]) {");
       (1,   "return");
       (* TODO(unnonouno): does not work when service name is not equal to a source file*)
-      (2,     "jubatus::framework::run_server<jubatus::server::" ^ base ^ "_impl_>");
+      (2,     "jubatus::server::framework::run_server<" ^ namespace_str ^ "::" ^ base ^ "_impl_>");
       (3,       "(argc, argv, " ^ name_str ^ ");");
       (0, "}")
     ]
@@ -629,16 +641,17 @@ let gen_server_template_header s =
   let serv_name = name ^ "_serv" in
   List.concat [
     [
-      (0, "class " ^ serv_name ^ " : public jubatus::framework::server_base {  // do not change");
+      (0, "class " ^ serv_name ^ " : public jubatus::server::framework::server_base {  // do not change");
       (0, " public:");
       (1,   serv_name ^ "(");
-      (2,     "const jubatus::framework::server_argv& a,");
-      (2,     "const common::cshared_ptr<common::lock_service>& zk);  // do not change");
+      (2,     "const jubatus::server::framework::server_argv& a,");
+      (2,     "const pfi::lang::shared_ptr<jubatus::server::common::lock_service>& zk);  // do not change");
       (1,   "virtual ~" ^ serv_name ^ "();  // do not change");
       (0,   "");
-      (1,   "virtual mixer::mixer* get_mixer() const;");
-      (1,   "pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const;");
+      (1,   "virtual jubatus::server::framework::mixer::mixer* get_mixer() const;");
+      (1,   "pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> get_mixable_holder() const;");
       (1,   "void get_status(status_t& status) const;");
+      (1,   "void set_config(const std::string& config);");
       (0,   "");
     ];
     indent_lines 1 (List.concat methods);
@@ -661,7 +674,8 @@ let gen_server_template_header_file conf source services =
 
   let content = concat_blocks [
     [
-      (0, gen_jubatus_include conf "framework.hpp");
+      (0, "#include <string>");
+      (0, gen_jubatus_include conf "server/framework.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
     ];
     make_namespace namespace (concat_blocks servers)
@@ -691,9 +705,9 @@ let gen_server_template_source s =
   concat_blocks [
     [
       (0, serv_name ^ "::" ^ serv_name ^ "(");
-      (1,   "const jubatus::framework::server_argv& a,");
-      (1,   "const common::cshared_ptr<common::lock_service>& zk)");
-      (2,     ": jubatus::framework::server_base(a) {");
+      (1,   "const jubatus::server::framework::server_argv& a,");
+      (1,   "const pfi::lang::shared_ptr<jubatus::server::common::lock_service>& zk)");
+      (2,     ": jubatus::server::framework::server_base(a) {");
       (1,   "// somemixable* mi = new somemixable;");
       (1,   "// somemixable_.set_model(mi);");
       (1,   "// get_mixable_holder()->register_mixable(mi);");
@@ -702,14 +716,17 @@ let gen_server_template_source s =
       (0, serv_name ^ "::~" ^ serv_name ^ "() {");
       (0, "}");
       (0, "");
-      (0, "virtual mixer::mixer* " ^ serv_name ^ "::get_mixer() const {");
+      (0, "jubatus::server::framework::mixer::mixer* " ^ serv_name ^ "::get_mixer() const {");
       (0, "}");
       (0, "");
-      (0, "pfi::lang::shared_ptr<framework::mixable_holder> "
+      (0, "pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> "
         ^ serv_name ^ "::get_mixable_holder() const {");
       (0, "}");
       (0, "");
       (0, "void " ^ serv_name ^ "::get_status(status_t& status) const {");
+      (0, "}");
+      (0, "");
+      (0, "void " ^ serv_name ^ "::set_config(const std::string& config) {");
       (0, "}");
       (0, "");
     ];

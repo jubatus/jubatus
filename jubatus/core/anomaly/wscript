@@ -1,0 +1,38 @@
+def options(ctx):
+  pass
+
+def configure(ctx):
+  pass
+
+def build(bld):
+  bld.shlib(
+    source = [
+      'anomaly_base.cpp',
+      'anomaly_factory.cpp',
+      'lof.cpp',
+      'lof_storage.cpp',
+      ],
+    target = 'jubatus_anomaly',
+    name = 'jubatus_anomaly',
+    includes = '.',
+    use = 'PFICOMMON jubastorage jubacommon jubatus_recommender')
+
+  def make_test(s):
+    bld.program(
+      features = 'gtest',
+      source = s,
+      target = s[0:s.rfind('.')],
+      includes = '.',
+      use = 'PFICOMMON jubatus_anomaly jubacommon jubatus_recommender')
+
+  map(make_test, [
+      'lof_storage_test.cpp',
+      'lof_test.cpp'
+      ])
+
+  bld.install_files('${PREFIX}/include/jubatus/core/anomaly', [
+      'anomaly_base.hpp',
+      'anomaly_factory.hpp',
+      'anomaly_type.hpp',
+      'anomaly_storage_base.hpp',
+      ])

@@ -1,0 +1,38 @@
+def options(opt):
+    pass
+
+def configure(conf):
+    pass
+
+def build(bld):
+    bld.shlib(
+        source = [
+            'regression_base.cpp',
+            'passive_aggressive.cpp',
+            'regression_factory.cpp'
+            ],
+        target = 'jubatus_regression',
+        includes = '.',
+        use = 'PFICOMMON jubacommon'
+        )
+
+    def make_test(s):
+        bld.program(
+            features = 'gtest',
+            source = s,
+            target = s[0: s.rfind('.')],
+            includes = '.',
+            use = 'jubatus_regression jubastorage'
+            )
+
+    test_source = [
+        'regression_test.cpp',
+        'regression_factory_test.cpp',
+        ]
+    for s in test_source:
+        make_test(s)
+
+    bld.install_files('${PREFIX}/include/jubatus/core/regression', [
+        'regression_base.hpp',
+        'regression_factory.hpp',
+        ])

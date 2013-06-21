@@ -95,6 +95,8 @@ let make_header_message source comment_out_head for_template =
 
 let make_source_impl for_template conf source filename content comment_out_head =
   let path = Filename.concat conf.Config.outdir filename in
+  let dir = Filename.dirname path in
+  File_util.mkdir_all dir;
   File_util.safe_open_out path (fun out ->
     let print = (fun s -> output_string out s; output_char out '\n') in
     let head = make_header_message source comment_out_head for_template in

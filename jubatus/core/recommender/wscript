@@ -1,0 +1,45 @@
+def options(ctx): pass
+
+def configure(ctx): pass
+
+def build(bld):
+  bld.shlib(
+    source = [
+      'recommender_base.cpp',
+      'recommender_mock.cpp',
+      'recommender_mock_storage.cpp',
+      'recommender_mock_util.cpp',
+      'inverted_index.cpp',
+      'minhash.cpp',
+      'lsh.cpp',
+      'recommender_factory.cpp',
+      'lsh_util.cpp',
+      'euclid_lsh.cpp',
+      ],
+    target = 'jubatus_recommender',
+    name = 'jubatus_recommender',
+    includes = '.',
+    use = 'PFICOMMON jubastorage jubacommon')
+
+  def make_test(s):
+    bld.program(
+      features = 'gtest',
+      source = s,
+      target = s[0:s.rfind('.')],
+      includes = '.',
+      use = 'PFICOMMON jubatus_recommender jubacommon')
+
+  map(make_test, [
+      'recommender_base_test.cpp',
+      'recommender_mock_storage_test.cpp',
+      'recommender_mock_test.cpp',
+      'recommender_random_test.cpp',
+      'lsh_util_test.cpp',
+      'euclid_lsh_test.cpp',
+      ])
+
+  bld.install_files('${PREFIX}/include/jubatus/core/recommender', [
+      'recommender_base.hpp',
+      'recommender_factory.hpp',
+      'recommender_type.hpp',
+      ])
