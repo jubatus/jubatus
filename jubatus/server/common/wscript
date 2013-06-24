@@ -39,6 +39,7 @@ def build(bld):
   test_src = [
     'network_test.cpp',
     'global_id_generator_test.cpp',
+    'unique_lock_test.cpp',
     'util_test.cpp',
     ]
 

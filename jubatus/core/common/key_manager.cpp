@@ -32,12 +32,6 @@ typedef unordered_map<string, uint64_t>::const_iterator cit;
 key_manager::key_manager() {
 }
 
-key_manager& key_manager::operator =(const key_manager& km) {
-  key2id_ = km.key2id_;
-  id2key_ = km.id2key_;
-  return *this;
-}
-
 uint64_t key_manager::get_id(const string& key) {
   cit it = key2id_.find(key);
   if (it != key2id_.end()) {
@@ -58,18 +52,14 @@ uint64_t key_manager::get_id_const(const string& key) const {
   }
 }
 
+const std::string key_not_found = "";  // const object has internal linkage
+
 const string& key_manager::get_key(const uint64_t id) const {
   if (id < id2key_.size()) {
     return id2key_[id];
   } else {
-    return vacant_;
+    return key_not_found;
   }
-}
-
-void key_manager::swap(key_manager& km) {
-  std::swap(key2id_, km.key2id_);
-  id2key_.swap(km.id2key_);
-  // no swap for vacant
 }
 
 void key_manager::clear() {

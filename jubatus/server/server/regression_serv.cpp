@@ -109,6 +109,7 @@ bool regression_serv::set_config(const string& config) {
           core::regression::regression_factory::create_regression(
               conf.method, param, model),
           core::fv_converter::make_fv_converter(conf.converter)));
+  mixer_->set_mixable_holder(regression_->get_mixable_holder());
 
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...

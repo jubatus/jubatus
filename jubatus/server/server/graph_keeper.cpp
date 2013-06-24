@@ -9,8 +9,8 @@
 #include <glog/logging.h>
 
 #include "jubatus/core/common/exception.hpp"
-#include "../framework/aggregators.hpp"
-#include "../framework/keeper.hpp"
+#include "../../server/framework/aggregators.hpp"
+#include "../../server/framework/keeper.hpp"
 #include "graph_types.hpp"
 
 namespace jubatus {

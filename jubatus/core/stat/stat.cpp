@@ -112,7 +112,7 @@ double stat::entropy() const {
     double pr = p->second.n_ / static_cast<double>(total);
     ret += pr * log(pr);
   }
-  return ret;
+  return -1.0 * ret;
 }
 
 double stat::moment(const std::string& key, int n, double c) const {

@@ -36,30 +36,40 @@ class byte_buffer {
       : buf_(new std::vector<char>(size)) {
   }
 
-  byte_buffer(const void* ptr, size_t size)
-      : buf_(new std::vector<char>()) {
-    buf_->resize(size);
-    std::memcpy(&(*buf_)[0], ptr, size);
+  byte_buffer(const void* ptr, size_t size) {
+    const char* const first = static_cast<const char*>(ptr);
+    buf_.reset(new std::vector<char>(first, first+size));
   }
 
-  byte_buffer(const byte_buffer& b)
-      : buf_(b.buf_) {
-  }
+  // following member functions are implicily defined:
+  //   byte_buffer(const byte_buffer& b) = default;
+  //   byte_buffer& operator=(const byte_buffer& b) = default;
+  //   ~byte_buffer() = default;
 
-  ~byte_buffer() {
+  void swap(byte_buffer& other) {
+    this->buf_.swap(other.buf_);
+    // pfi::lang::shared_ptr provides no non-member swap;
+    // `swap(this->buf_, other.buf_);' may be inefficient.
+    // when pfi::lang::shared_ptr provide non-member swap,
+    // this function should be rewritten with it
+    // because if new data members are added to
+    // pfi::lang::shared_ptr, member function swap
+    // (currently derived from base) may cause object slicing.
   }
 
   void assign(const void* ptr, size_t size) {
-    if (!buf_) {
-      buf_.reset(new std::vector<char>());
+    if (buf_.unique()) {
+      const char* const first = static_cast<const char*>(ptr);
+      buf_->assign(first, first + size);
+    } else {
+      byte_buffer(ptr, size).swap(*this);
     }
-    buf_->resize(size);
-    std::memcpy(&(*buf_)[0], ptr, size);
   }
 
   const char* ptr() const {
-    if (buf_) {
+    if (buf_ && !buf_->empty()) {
       return &(*buf_)[0];
+      // `buf_->data()' is much better (C++11 feature)
     } else {
       return NULL;
     }
@@ -81,6 +91,11 @@ class byte_buffer {
  private:
   pfi::lang::shared_ptr<std::vector<char> > buf_;
 };
+
+inline void swap(byte_buffer& one, byte_buffer& another) {  // NOLINT
+  one.swap(another);
+}
+
 }  // namespace common
 }  // namespace core
 }  // namespace jubatus

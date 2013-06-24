@@ -7,7 +7,7 @@
 #include <utility>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "../framework.hpp"
+#include "../../server/framework.hpp"
 #include "classifier_server.hpp"
 #include "classifier_serv.hpp"
 

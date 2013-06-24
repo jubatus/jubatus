@@ -10,7 +10,7 @@
 #include <utility>
 #include <pficommon/lang/bind.h>
 
-#include "../common/mprpc/rpc_server.hpp"
+#include "../../server/common/mprpc/rpc_server.hpp"
 #include "regression_types.hpp"
 
 namespace jubatus {

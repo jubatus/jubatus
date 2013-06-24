@@ -52,11 +52,11 @@ struct async_vmethod {
 //
 class rpc_server : public msgpack::rpc::dispatcher {
  public:
-  rpc_server(msgpack::rpc::loop lo = msgpack::rpc::loop())
+  explicit rpc_server(msgpack::rpc::loop lo = msgpack::rpc::loop())
       : instance_(lo) {
     instance_.serve(this);
   }
-  rpc_server(
+  explicit rpc_server(
       double server_timeout,
       msgpack::rpc::loop lo = msgpack::rpc::loop())
       : instance_(lo) {

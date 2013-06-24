@@ -20,7 +20,7 @@
 {
 open Jdl_parser
 
-exception Lex_error of string
+exception Illegal_character of (Lexing.position * char)
 
 let buffer = Buffer.create 256
 
@@ -50,6 +50,7 @@ let decorator = "#@" literal
 let comment   = "#" [^'@'] [^'\n']* '\n'
 (* let include_sth = "#include" *)
 let newline = "\n"
+let space = [' ' '\t']
 
 rule token = parse
   | "%include" { INCLUDE }
@@ -79,10 +80,13 @@ rule token = parse
 
 (*  | include_sth as i { INCLUDE(i) } *)
 
-  | comment   { token lexbuf }
-  | '\n'      { token lexbuf }
+  | comment   { Lexing.new_line lexbuf; token lexbuf }
+  | newline   { Lexing.new_line lexbuf; token lexbuf }
   | eof       { EOF }
-  | _         { token lexbuf }
+  | space+    { token lexbuf }
+  | _         {
+    let ch = Lexing.lexeme_char lexbuf 0 in
+    raise (Illegal_character(Lexing.lexeme_start_p lexbuf, ch)) }
 
 and string = parse
     | '"' 

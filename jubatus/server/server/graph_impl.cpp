@@ -7,7 +7,7 @@
 #include <utility>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "../framework.hpp"
+#include "../../server/framework.hpp"
 #include "graph_server.hpp"
 #include "graph_serv.hpp"
 
@@ -31,7 +31,7 @@ class graph_impl_ : public graph<graph_impl_> {
   }
 
   bool remove_node(std::string name, std::string node_id) {
-    JWLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->remove_node(node_id);
   }
 

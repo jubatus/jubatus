@@ -710,6 +710,7 @@ class keeper
       mp::pthread_scoped_lock _l(lock_);
 
       running_count_ = hosts_.size();
+      // enable keeper::async_task timeout management
       if (timeout_sec > 0) {
         set_timeout(timeout_sec);
       }
@@ -718,7 +719,11 @@ class keeper
       for (size_t i = 0; i < hosts_.size(); ++i) {
         msgpack::rpc::session s = pool.get_session(hosts_[i].first,
                                                    hosts_[i].second);
+        // disable msgpack::rpc::session's timeout.
+        // because session timeout is managed by keeper::async_task
+        s.set_timeout(0);
 
+        // apply async method call and set its callback
         msgpack::rpc::future f = s.call_apply(method_name, args);
         futures_.push_back(f);
         f.attach_callback(

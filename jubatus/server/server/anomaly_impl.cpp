@@ -7,7 +7,7 @@
 #include <utility>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "../framework.hpp"
+#include "../../server/framework.hpp"
 #include "anomaly_server.hpp"
 #include "anomaly_serv.hpp"
 
