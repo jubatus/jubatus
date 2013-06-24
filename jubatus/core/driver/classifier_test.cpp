@@ -63,9 +63,12 @@ datum convert_vector(const vector<double>& vec) {
   return d;
 }
 
-void make_random_data(vector<pair<string, datum> >& data, size_t size) {
+void make_random_data(
+    pfi::math::random::mtrand& rand,
+    vector<pair<string, datum> >& data,
+    size_t size) {
   for (size_t i = 0; i < size; ++i) {
-    pair<string, vector<double> > p = gen_random_data();
+    pair<string, vector<double> > p = gen_random_data(rand);
     data.push_back(make_pair(p.first, convert_vector(p.second)));
   }
 }
@@ -111,20 +114,22 @@ TEST_P(classifier_test, simple) {
 }
 
 TEST_P(classifier_test, api_train) {
+  pfi::math::random::mtrand rand(0);
   const size_t example_size = 1000;
 
   vector<pair<string, datum> > data;
-  make_random_data(data, example_size);
+  make_random_data(rand, data, example_size);
   for (size_t i = 0; i < example_size; i++) {
     classifier_->train(data[i]);
   }
 }
 
 void classifier_test::my_test() {
+  pfi::math::random::mtrand rand(0);
   const size_t example_size = 1000;
 
   vector<pair<string, datum> > data;
-  make_random_data(data, example_size);
+  make_random_data(rand, data, example_size);
   for (size_t i = 0; i < example_size; i++) {
     classifier_->train(data[i]);
   }
@@ -169,8 +174,8 @@ void classifier_test::my_test() {
       }
     }
   }
-  // num of wrong classification should be less than 1%
-  EXPECT_GE(count, result.size() - 10);
+  // num of wrong classification should be less than 5%
+  EXPECT_GE(count, result.size() - 50);
 }
 
 TEST_P(classifier_test, my_test) {
@@ -206,10 +211,11 @@ TEST_P(classifier_test, duplicated_keys) {
 }
 
 TEST_P(classifier_test, save_load) {
+  pfi::math::random::mtrand rand(0);
   const size_t example_size = 1000;
 
   vector<pair<string, datum> > data;
-  make_random_data(data, example_size);
+  make_random_data(rand, data, example_size);
   for (size_t i = 0; i < example_size; i++) {
     classifier_->train(data[i]);
   }
