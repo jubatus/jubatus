@@ -74,6 +74,19 @@ Reference
 
   - https://github.com/msgpack/msgpack-haskell/blob/master/msgpack-idl/Specification.md
 
+Install
+-------
+
+Use omake::
+
+  $ omake
+  $ omake install
+
+Use `PREFIX` environment variable to choose installation direcotry::
+
+  $ PREFIX=/where/you/want/to/install omake install
+
+
 Things left
 -----------
 
