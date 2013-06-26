@@ -186,12 +186,15 @@ void linear_mixer::get_status(server_base::status_t& status) const {
 }
 
 void linear_mixer::mixer_loop() {
-  while (is_running_) {
+  while (true) {
     pfi::lang::shared_ptr<common::try_lockable> zklock = communication_
         ->create_lock();
     try {
       {
         scoped_lock lk(m_);
+        if (!is_running_) {
+          return;
+        }
 
         c_.wait(m_, 1);
         unsigned int new_ticktime = time(NULL);
