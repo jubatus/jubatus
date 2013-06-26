@@ -193,29 +193,25 @@ void append_server_path(const string& argv0) {
 
 void get_machine_status(machine_status_t& status) {
   // WARNING: this code will only work on linux
-  try {
-    // /proc/[pid]/statm shows using page size
-    char path[64];
-    snprintf(path, sizeof(path), "/proc/%d/statm", getpid());
-    std::ifstream statm(path);
+  uint64_t vm_virt = 0, vm_rss = 0, vm_shr = 0;
 
+  // /proc/[pid]/statm shows using page size
+  char path[64];
+  snprintf(path, sizeof(path), "/proc/%d/statm", getpid());
+
+  std::ifstream statm(path);
+  if (statm) {
     const int64_t page_size = sysconf(_SC_PAGESIZE);
-    uint64_t vm_virt, vm_rss, vm_shr;
     statm >> vm_virt >> vm_rss >> vm_shr;
     vm_virt = vm_virt * page_size / 1024;
     vm_rss = vm_rss * page_size / 1024;
     vm_shr = vm_shr * page_size / 1024;
-
-    // in KB
-    status.vm_size = vm_virt;  // total program size(virtual memory)
-    status.vm_resident = vm_rss;  // resident set size
-    status.vm_share = vm_shr;  // shared
-  } catch (...) {
-    // store zero
-    status.vm_size = 0;
-    status.vm_resident = 0;
-    status.vm_share = 0;
   }
+
+  // in KB
+  status.vm_size = vm_virt;  // total program size(virtual memory)
+  status.vm_resident = vm_rss;  // resident set size
+  status.vm_share = vm_shr;  // shared
 }
 
 namespace {
