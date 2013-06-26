@@ -29,6 +29,7 @@
 #include "jubatus/core/framework/mixable.hpp"
 #include "../../common/membership.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
+#include "../../common/unique_lock.hpp"
 
 using std::vector;
 using std::string;
@@ -158,9 +159,10 @@ void linear_mixer::start() {
 }
 
 void linear_mixer::stop() {
-  scoped_lock lk(m_);
+  common::unique_lock lk(m_);
   if (is_running_) {
     is_running_ = false;
+    lk.unlock();
     t_.join();
   }
 }
