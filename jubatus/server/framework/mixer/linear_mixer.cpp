@@ -190,29 +190,25 @@ void linear_mixer::mixer_loop() {
     pfi::lang::shared_ptr<common::try_lockable> zklock = communication_
         ->create_lock();
     try {
-      {
-        scoped_lock lk(m_);
-        if (!is_running_) {
-          return;
-        }
+      common::unique_lock lk(m_);
+      if (!is_running_) {
+        return;
+      }
 
-        c_.wait(m_, 1);
-        unsigned int new_ticktime = time(NULL);
-        if (counter_ > count_threshold_
-            || new_ticktime - ticktime_ > tick_threshold_) {
-          if (zklock->try_lock()) {
-            LOG(INFO) << "starting mix:";
-            counter_ = 0;
-            ticktime_ = new_ticktime;
-          } else {
-            continue;
-          }
-        } else {
-          continue;
+      c_.wait(m_, 1);
+      unsigned int new_ticktime = time(NULL);
+      if (counter_ > count_threshold_
+          || new_ticktime - ticktime_ > tick_threshold_) {
+        if (zklock->try_lock()) {
+          LOG(INFO) << "starting mix:";
+          counter_ = 0;
+          ticktime_ = new_ticktime;
+
+          lk.unlock();
+          mix();
+          LOG(INFO) << ".... " << mix_count_ << "th mix done.";
         }
-      }  // unlock
-      mix();
-      LOG(INFO) << ".... " << mix_count_ << "th mix done.";
+      }
     } catch (const jubatus::core::common::exception::jubatus_exception& e) {
       LOG(ERROR) << e.diagnostic_information(true);
     }
