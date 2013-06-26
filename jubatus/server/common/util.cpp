@@ -197,7 +197,8 @@ void get_machine_status(machine_status_t& status) {
 
   // /proc/[pid]/statm shows using page size
   char path[64];
-  snprintf(path, sizeof(path), "/proc/%d/statm", getpid());
+  int pid = getpid();
+  snprintf(path, sizeof(path), "/proc/%d/statm", pid);
 
   std::ifstream statm(path);
   if (statm) {
