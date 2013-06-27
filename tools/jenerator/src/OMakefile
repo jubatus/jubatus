@@ -68,12 +68,13 @@ LIB = target
 # OCAML_CLIBS +=
 OCAML_OTHER_LIBS += str unix
 # OCAML_LIB_FLAGS +=
+PREFIX = $(getenv PREFIX, /usr/local)
 
 .DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
 
 OCamlLibrary($(LIB), $(FILES))
 
-OCamlProgramInstall(install, /usr/local/bin, $(PROGRAM), $(FILES))
+OCamlProgramInstall(install, $(PREFIX)/bin, $(PROGRAM), $(FILES))
 
 uninstall:
-  -rm /usr/local/bin/$(PROGRAM)
+  -rm $(PREFIX)/bin/$(PROGRAM)
