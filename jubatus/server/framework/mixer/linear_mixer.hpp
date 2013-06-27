@@ -90,7 +90,7 @@ class linear_mixer : public mixer {
   unsigned int ticktime_;
   unsigned int mix_count_;
 
-  volatile bool is_running_;
+  bool is_running_;
 
   pfi::concurrent::thread t_;
   mutable pfi::concurrent::mutex m_;

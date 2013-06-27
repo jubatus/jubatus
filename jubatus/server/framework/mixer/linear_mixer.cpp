@@ -29,6 +29,7 @@
 #include "jubatus/core/framework/mixable.hpp"
 #include "../../common/membership.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
+#include "../../common/unique_lock.hpp"
 
 using std::vector;
 using std::string;
@@ -158,9 +159,10 @@ void linear_mixer::start() {
 }
 
 void linear_mixer::stop() {
-  scoped_lock lk(m_);
+  common::unique_lock lk(m_);
   if (is_running_) {
     is_running_ = false;
+    lk.unlock();
     t_.join();
   }
 }
@@ -184,30 +186,29 @@ void linear_mixer::get_status(server_base::status_t& status) const {
 }
 
 void linear_mixer::mixer_loop() {
-  while (is_running_) {
+  while (true) {
     pfi::lang::shared_ptr<common::try_lockable> zklock = communication_
         ->create_lock();
     try {
-      {
-        scoped_lock lk(m_);
+      common::unique_lock lk(m_);
+      if (!is_running_) {
+        return;
+      }
 
-        c_.wait(m_, 1);
-        unsigned int new_ticktime = time(NULL);
-        if (counter_ > count_threshold_
-            || new_ticktime - ticktime_ > tick_threshold_) {
-          if (zklock->try_lock()) {
-            LOG(INFO) << "starting mix:";
-            counter_ = 0;
-            ticktime_ = new_ticktime;
-          } else {
-            continue;
-          }
-        } else {
-          continue;
+      c_.wait(m_, 1);
+      unsigned int new_ticktime = time(NULL);
+      if (counter_ > count_threshold_
+          || new_ticktime - ticktime_ > tick_threshold_) {
+        if (zklock->try_lock()) {
+          LOG(INFO) << "starting mix:";
+          counter_ = 0;
+          ticktime_ = new_ticktime;
+
+          lk.unlock();
+          mix();
+          LOG(INFO) << ".... " << mix_count_ << "th mix done.";
         }
-      }  // unlock
-      mix();
-      LOG(INFO) << ".... " << mix_count_ << "th mix done.";
+      }
     } catch (const jubatus::core::common::exception::jubatus_exception& e) {
       LOG(ERROR) << e.diagnostic_information(true);
     }
