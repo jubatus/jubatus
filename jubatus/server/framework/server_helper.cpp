@@ -47,7 +47,6 @@ string make_logfile_name(const server_argv& a) {
 
 server_helper_impl::server_helper_impl(const server_argv& a) {
   common::util::prepare_signal_handling();
-  common::util::set_exit_on_term();
 
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {

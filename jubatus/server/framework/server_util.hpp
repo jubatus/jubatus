@@ -27,6 +27,7 @@
 #include <pficommon/lang/noncopyable.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
+#include <pficommon/lang/bind.h>
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/shared_ptr.h>
 
@@ -131,6 +132,10 @@ int run_server(int args, char** argv, const std::string& type) {
   try {
     ImplServerClass impl_server(server_argv(args, argv, type));
     impl_server.get_p()->get_mixer()->register_api(impl_server);
+
+    common::util::set_action_on_term(
+        pfi::lang::bind(&ImplServerClass::end, &impl_server));
+
     return impl_server.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
