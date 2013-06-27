@@ -159,6 +159,9 @@ class server_helper {
       impl_.prepare_for_run(a, use_cht_);
       LOG(INFO) << common::util::get_program_name() << " RPC server startup";
       serv.join();
+      if (!a.is_standalone()) {
+        server_->get_mixer()->stop();
+      }
       return 0;
     } catch (const mp::system_error& e) {
       if (e.code == EADDRINUSE) {
