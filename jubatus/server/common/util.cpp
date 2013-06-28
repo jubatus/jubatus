@@ -255,9 +255,9 @@ void setup_sigset(sigset_t* ss) {
 }
 
 void block_signals(const sigset_t* ss) {
-  if (sigprocmask(SIG_BLOCK, ss, NULL) != 0) {
+  if (pthread_sigmask(SIG_BLOCK, ss, NULL) != 0) {
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("failed to call sigprocmask")
+      core::common::exception::runtime_error("failed to call pthread_sigmask")
       << core::common::exception::error_api_func("block_signals")
       << core::common::exception::error_errno(errno));
   }
