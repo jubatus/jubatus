@@ -262,8 +262,8 @@ let gen_typedef names = function
     [ (0, "typedef " ^ gen_type names typ ^ " " ^ name ^ ";") ]
   | Message m ->
     begin match m.message_raw with
-    | Some raw -> []
-    | None -> gen_message names m
+    | Some raw when Hashtbl.mem names m.message_name -> []
+    | _ -> gen_message names m
     end
   | _ ->
     []
@@ -802,8 +802,11 @@ let generate_server conf source idl =
 
 let generate_client conf source idl =
   let services = get_services idl in
-  let names = collect_names idl in
+  (* In client codes, we need not to use %include *)
+  let empty_names = Hashtbl.create 0 in
+  (* Remove include lines that are only for servers *)
+  let idl = List.filter (function Include _ -> false | _ -> true) idl in
 
-  gen_type_file conf names source idl;
-  gen_client_file conf names source services;
+  gen_type_file conf empty_names source idl;
+  gen_client_file conf empty_names source services;
 ;;
