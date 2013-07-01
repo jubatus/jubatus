@@ -127,12 +127,12 @@ string classifier_serv::get_config() {
   return config_;
 }
 
-int classifier_serv::train(const vector<pair<string, jubatus::core::fv_converter::datum> >& data) {
+int classifier_serv::train(
+    const vector<pair<string, jubatus::core::fv_converter::datum> >& data) {
   check_set_config();
 
   int count = 0;
 
-  core::fv_converter::datum d;
   for (size_t i = 0; i < data.size(); ++i) {
     classifier_->train(data[i]);
 
@@ -148,7 +148,6 @@ vector<vector<estimate_result> > classifier_serv::classify(
   check_set_config();
 
   vector<vector<estimate_result> > ret;
-  core::fv_converter::datum d;
 
   for (size_t i = 0; i < data.size(); ++i) {
     classify_result scores = classifier_->classify(data[i]);
