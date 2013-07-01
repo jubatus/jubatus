@@ -56,13 +56,14 @@ jubavisor::jubavisor(
     int port,
     int max,
     const std::string& logfile)
-    : zk_(create_lock_service("zk", hosts, 1024, logfile)),
-      port_base_(port),
+    : port_base_(port),
       logfile_(logfile),
       max_children_(max) {
   common::util::ignore_sigpipe();
   common::util::set_exit_on_term();
   ::atexit(jubavisor::atexit_);
+
+  zk_.reset(create_lock_service("zk", hosts, 1024, logfile));
 
   // handle SIG_CHLD
   struct sigaction sa;
