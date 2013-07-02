@@ -165,7 +165,7 @@ pair<string, float> anomaly_serv::add(const datum& data) {
     return anomaly_->add(id_str, data);
 #ifdef HAVE_ZOOKEEPER_H
   } else {
-    return add_zk(id_str, d);
+    return add_zk(id_str, data);
   }
 #endif
 }
