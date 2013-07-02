@@ -40,19 +40,20 @@ class graph : public jubatus::server::common::mprpc::rpc_server {
     rpc_server::add<bool(std::string, std::string, uint64_t)>("remove_edge",
          pfi::lang::bind(&Impl::remove_edge, impl, pfi::lang::_1, pfi::lang::_2,
          pfi::lang::_3));
-    rpc_server::add<double(std::string, std::string, int32_t, preset_query)>(
-        "get_centrality", pfi::lang::bind(&Impl::get_centrality, impl,
-         pfi::lang::_1, pfi::lang::_2, pfi::lang::_3, pfi::lang::_4));
-    rpc_server::add<bool(std::string, preset_query)>("add_centrality_query",
-         pfi::lang::bind(&Impl::add_centrality_query, impl, pfi::lang::_1,
-         pfi::lang::_2));
-    rpc_server::add<bool(std::string, preset_query)>("add_shortest_path_query",
-         pfi::lang::bind(&Impl::add_shortest_path_query, impl, pfi::lang::_1,
-         pfi::lang::_2));
-    rpc_server::add<bool(std::string, preset_query)>("remove_centrality_query",
-         pfi::lang::bind(&Impl::remove_centrality_query, impl, pfi::lang::_1,
-         pfi::lang::_2));
-    rpc_server::add<bool(std::string, preset_query)>(
+    rpc_server::add<double(std::string, std::string, int32_t,
+         jubatus::core::graph::preset_query)>("get_centrality", pfi::lang::bind(
+        &Impl::get_centrality, impl, pfi::lang::_1, pfi::lang::_2,
+         pfi::lang::_3, pfi::lang::_4));
+    rpc_server::add<bool(std::string, jubatus::core::graph::preset_query)>(
+        "add_centrality_query", pfi::lang::bind(&Impl::add_centrality_query,
+         impl, pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<bool(std::string, jubatus::core::graph::preset_query)>(
+        "add_shortest_path_query", pfi::lang::bind(
+        &Impl::add_shortest_path_query, impl, pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<bool(std::string, jubatus::core::graph::preset_query)>(
+        "remove_centrality_query", pfi::lang::bind(
+        &Impl::remove_centrality_query, impl, pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<bool(std::string, jubatus::core::graph::preset_query)>(
         "remove_shortest_path_query", pfi::lang::bind(
         &Impl::remove_shortest_path_query, impl, pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<std::vector<std::string>(std::string, shortest_path_query)>(
@@ -62,8 +63,9 @@ class graph : public jubatus::server::common::mprpc::rpc_server {
         &Impl::update_index, impl, pfi::lang::_1));
     rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(&Impl::clear,
          impl, pfi::lang::_1));
-    rpc_server::add<node(std::string, std::string)>("get_node", pfi::lang::bind(
-        &Impl::get_node, impl, pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<jubatus::core::graph::node_info(std::string, std::string)>(
+        "get_node", pfi::lang::bind(&Impl::get_node, impl, pfi::lang::_1,
+         pfi::lang::_2));
     rpc_server::add<edge(std::string, std::string, uint64_t)>("get_edge",
          pfi::lang::bind(&Impl::get_edge, impl, pfi::lang::_1, pfi::lang::_2,
          pfi::lang::_3));

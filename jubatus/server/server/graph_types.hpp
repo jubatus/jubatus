@@ -13,22 +13,9 @@
 
 #include <msgpack.hpp>
 
+#include "../../core/graph/graph_type.hpp"
+
 namespace jubatus {
-
-struct node {
- public:
-  MSGPACK_DEFINE(property, in_edges, out_edges);
-  std::map<std::string, std::string> property;
-  std::vector<uint64_t> in_edges;
-  std::vector<uint64_t> out_edges;
-};
-
-struct preset_query {
- public:
-  MSGPACK_DEFINE(edge_query, node_query);
-  std::vector<std::pair<std::string, std::string> > edge_query;
-  std::vector<std::pair<std::string, std::string> > node_query;
-};
 
 struct edge {
  public:
@@ -44,7 +31,7 @@ struct shortest_path_query {
   std::string source;
   std::string target;
   uint32_t max_hop;
-  preset_query query;
+  jubatus::core::graph::preset_query query;
 };
 
 }  // namespace jubatus

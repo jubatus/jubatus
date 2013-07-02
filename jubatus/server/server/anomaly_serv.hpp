@@ -54,19 +54,19 @@ class anomaly_serv : public framework::server_base {
 
   bool clear_row(const std::string& id);
 
-  std::pair<std::string, float> add(const datum& d);
-  float update(const std::string& id, const datum& d);
+  std::pair<std::string, float> add(const core::fv_converter::datum& d);
+  float update(const std::string& id, const core::fv_converter::datum& d);
 
   bool clear();
 
-  float calc_score(const datum& d) const;
+  float calc_score(const core::fv_converter::datum& d) const;
 
   std::vector<std::string> get_all_rows() const;
 
   void check_set_config() const;
 
  private:
-  std::pair<std::string, float> add_zk(const std::string& id, const datum& d);
+  std::pair<std::string, float> add_zk(const std::string& id, const core::fv_converter::datum& d);
   void find_from_cht(
       const std::string& key,
       size_t n,
@@ -76,7 +76,7 @@ class anomaly_serv : public framework::server_base {
       const std::string& host,
       int port,
       const std::string& id,
-      const datum& d);
+      const core::fv_converter::datum& d);
 
   pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
   pfi::lang::shared_ptr<core::driver::anomaly> anomaly_;

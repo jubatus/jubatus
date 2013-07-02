@@ -24,11 +24,11 @@ class regression : public jubatus::server::common::mprpc::rpc_server {
     rpc_server::add<std::string(std::string)>("get_config", pfi::lang::bind(
         &Impl::get_config, impl, pfi::lang::_1));
     rpc_server::add<int32_t(std::string, std::vector<std::pair<float,
-         datum> >)>("train", pfi::lang::bind(&Impl::train, impl, pfi::lang::_1,
-         pfi::lang::_2));
-    rpc_server::add<std::vector<float>(std::string, std::vector<datum>)>(
-        "estimate", pfi::lang::bind(&Impl::estimate, impl, pfi::lang::_1,
-         pfi::lang::_2));
+         jubatus::core::fv_converter::datum> >)>("train", pfi::lang::bind(
+        &Impl::train, impl, pfi::lang::_1, pfi::lang::_2));
+    rpc_server::add<std::vector<float>(std::string,
+         std::vector<jubatus::core::fv_converter::datum>)>("estimate",
+         pfi::lang::bind(&Impl::estimate, impl, pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(&Impl::clear,
          impl, pfi::lang::_1));
     rpc_server::add<bool(std::string, std::string)>("save", pfi::lang::bind(
