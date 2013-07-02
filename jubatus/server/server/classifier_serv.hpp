@@ -48,7 +48,8 @@ class classifier_serv : public framework::server_base {
 
   bool set_config(const std::string& config);
   std::string get_config();
-  int train(const std::vector<std::pair<std::string, jubatus::core::fv_converter::datum> >& data);
+  int train(const std::vector<
+      std::pair<std::string, jubatus::core::fv_converter::datum> >& data);
   std::vector<std::vector<estimate_result> > classify(
       const std::vector<jubatus::core::fv_converter::datum>& data) const;
 

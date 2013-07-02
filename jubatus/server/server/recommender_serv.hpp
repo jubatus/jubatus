@@ -55,7 +55,8 @@ class recommender_serv : public framework::server_base {
   bool clear();
 
   core::fv_converter::datum complete_row_from_id(std::string id);
-  core::fv_converter::datum complete_row_from_datum(core::fv_converter::datum dat);
+  core::fv_converter::datum complete_row_from_datum(
+      core::fv_converter::datum dat);
   similar_result similar_row_from_id(std::string id, size_t ret_num);
   similar_result similar_row_from_datum(core::fv_converter::datum, size_t);
 

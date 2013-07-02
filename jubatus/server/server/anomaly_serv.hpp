@@ -66,7 +66,8 @@ class anomaly_serv : public framework::server_base {
   void check_set_config() const;
 
  private:
-  std::pair<std::string, float> add_zk(const std::string& id, const core::fv_converter::datum& d);
+  std::pair<std::string, float> add_zk(const std::string& id,
+      const core::fv_converter::datum& d);
   void find_from_cht(
       const std::string& key,
       size_t n,
