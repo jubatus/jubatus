@@ -46,6 +46,9 @@ keeper::~keeper() {
 
 int keeper::run() {
   try {
+    common::util::set_action_on_term(
+        pfi::lang::bind(&msgpack::rpc::server::end, &this->instance_));
+
     this->instance_.listen(a_.bind_address, a_.port);
     LOG(INFO) << "start listening at port " << a_.port;
     this->instance_.start(a_.threadnum);
@@ -57,7 +60,7 @@ int keeper::run() {
     LOG(INFO) << common::util::get_program_name() << " RPC server startup";
     this->instance_.join();
 
-    return 0;  // never return
+    return 0;
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
   } catch (const mp::system_error& e) {
