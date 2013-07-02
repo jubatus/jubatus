@@ -37,6 +37,18 @@ namespace framework {
 
 static const std::string VERSION(JUBATUS_VERSION);
 
+namespace {
+  pfi::lang::shared_ptr<server::common::lock_service> ls;
+
+  void close_lock_service() {
+#ifdef HAVE_ZOOKEEPER_H
+    if (ls) {
+      ls->force_close();
+    }
+#endif
+  }
+}
+
 void print_version(const std::string& progname) {
   std::cout << "jubatus-" << VERSION << " (" << progname << ")" << std::endl;
 }
@@ -400,12 +412,16 @@ void keeper_argv::set_log_destination(const std::string& progname) const {
   }
 }
 
-pfi::lang::shared_ptr<server::common::lock_service> ls;
-
-void atexit() {
+void register_lock_service(pfi::lang::shared_ptr<common::lock_service> new_ls) {
+  if (ls) {
+    throw JUBATUS_EXCEPTION(
+        jubatus::core::common::exception::runtime_error(
+            "lock service is already registered"));
+  }
+  ls.swap(new_ls);
 #ifdef HAVE_ZOOKEEPER_H
   if (ls) {
-    ls->force_close();
+    ::atexit(&close_lock_service);
   }
 #endif
 }

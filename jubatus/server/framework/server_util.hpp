@@ -124,9 +124,7 @@ struct keeper_argv {
   void set_log_destination(const std::string& progname) const;
 };
 
-extern pfi::lang::shared_ptr<
-    jubatus::server::common::lock_service> ls;
-void atexit();
+void register_lock_service(pfi::lang::shared_ptr<common::lock_service> ls);
 
 template<class ImplServerClass>
 int run_server(int args, char** argv, const std::string& type) {

@@ -49,13 +49,12 @@ std::string make_logfile_name(const keeper_argv& a) {
 
 keeper_common::keeper_common(const keeper_argv& a)
     : a_(a) {
-  ::atexit(jubatus::server::framework::atexit);
   common::util::set_exit_on_term();
   common::util::ignore_sigpipe();
 
   zk_.reset(common::create_lock_service(
       "cached_zk", a.z, a.zookeeper_timeout, make_logfile_name(a)));
-  ls = zk_;
+  register_lock_service(zk_);
   jubatus::server::common::prepare_jubatus(*zk_, a_.type, "");
 }
 
