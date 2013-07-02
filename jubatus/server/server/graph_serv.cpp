@@ -249,7 +249,7 @@ bool graph_serv::remove_node(const std::string& nid_str) {
 
     if (!members.empty()) {
       // create global node
-      common::mprpc::rpc_mclient c(members, argv().timeout);
+      common::mprpc::rpc_mclient c(members, argv().interconnect_timeout);
 
 #ifndef NDEBUG
       for (size_t i = 0; i < members.size(); i++) {

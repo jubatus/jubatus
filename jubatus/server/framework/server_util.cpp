@@ -104,6 +104,9 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add("join", 'j', "join to the existing cluster");
   p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
+  p.add<int>("zookeeper_timeout", 'T', "zookeeper time out (sec)", false, 10);
+  p.add<int>("interconnect_timeout", 'I',
+      "interconnect time out between servers (sec)", false, 10);
 #endif
 
   // APPLY CHANGES TO JUBAVISOR WHEN ARGUMENTS MODIFIED
@@ -145,6 +148,8 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   join = p.exist("join");
   interval_sec = p.get<int>("interval_sec");
   interval_count = p.get<int>("interval_count");
+  zookeeper_timeout = p.get<int>("zookeeper_timeout");
+  interconnect_timeout = p.get<int>("interconnect_timeout");
 #else
   z = "";
   name = "";
@@ -163,6 +168,19 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   if (is_standalone() && configpath.empty()) {
     std::cerr << "can't start standalone mode without configpath specified"
         << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
+  }
+
+  if (!is_standalone() && zookeeper_timeout < 1) {
+    std::cerr << "can't start with zookeeper_timeout less than 1" << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
+  }
+
+  if (!is_standalone() && interconnect_timeout < 1) {
+    std::cerr << "can't start with interconnect_timeout less than 1"
+      << std::endl;
     std::cerr << p.usage() << std::endl;
     exit(1);
   }
@@ -259,6 +277,9 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
   p.add<int>("thread", 'c', "concurrency = thread number", false, 16);
   p.add<int>("timeout", 't', "time out (sec)", false, 10);
+  p.add<int>("zookeeper_timeout", 'T', "zookeeper time out (sec)", false, 10);
+  p.add<int>("interconnect_timeout", 'I',
+      "interconnect time out between servers (sec)", false, 10);
 
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false,
                      "localhost:2181");
@@ -283,6 +304,8 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   bind_if = p.get<std::string>("listen_if");
   threadnum = p.get<int>("thread");
   timeout = p.get<int>("timeout");
+  zookeeper_timeout = p.get<int>("zookeeper_timeout");
+  interconnect_timeout = p.get<int>("interconnect_timeout");
   program_name = common::util::get_program_name();
   z = p.get<std::string>("zookeeper");
   session_pool_expire = p.get<int>("pool_expire");
@@ -299,6 +322,19 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   } else {
     bind_address = "0.0.0.0";
     eth = jubatus::server::common::get_default_v4_address();
+  }
+
+  if (zookeeper_timeout < 1) {
+    std::cerr << "can't start with zookeeper_timeout less than 1" << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
+  }
+
+  if (interconnect_timeout < 1) {
+    std::cerr << "can't start with interconnect_timeout less than 1"
+      << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
   }
 
   if ((!logdir.empty()) && (!common::util::is_writable(logdir.c_str()))) {
