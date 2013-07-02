@@ -46,6 +46,10 @@ string make_logfile_name(const server_argv& a) {
 }  // namespace
 
 server_helper_impl::server_helper_impl(const server_argv& a) {
+  ::atexit(jubatus::server::framework::atexit);
+  common::util::set_exit_on_term();
+  common::util::ignore_sigpipe();
+
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
     zk_.reset(common::create_lock_service("zk",
