@@ -41,9 +41,11 @@
 #include <vector>
 
 #include <glog/logging.h>
+#include <pficommon/concurrent/lock.h>
+#include <pficommon/concurrent/mutex.h>
+#include <pficommon/concurrent/thread.h>
 #include <pficommon/lang/exception.h>
 #include <pficommon/text/json.h>
-#include <pficommon/concurrent/thread.h>
 
 #include "jubatus/core/common/exception.hpp"
 
@@ -248,12 +250,6 @@ void add_signal(sigset_t* ss, int signum) {
   }
 }
 
-void setup_sigset(sigset_t* ss) {
-  clear_sigset(ss);
-  add_signal(ss, SIGTERM);
-  add_signal(ss, SIGINT);
-}
-
 void block_signals(const sigset_t* ss) {
   if (pthread_sigmask(SIG_BLOCK, ss, NULL) != 0) {
     throw JUBATUS_EXCEPTION(
@@ -263,11 +259,22 @@ void block_signals(const sigset_t* ss) {
   }
 }
 
-void exit_on_term() {
+void setup_sigset_for_sigterm(sigset_t* ss) {
+  clear_sigset(ss);
+  add_signal(ss, SIGTERM);
+  add_signal(ss, SIGINT);
+}
+
+bool blocking_sigterm = false;
+bool handling_sigterm = false;
+pfi::lang::function<void()> action_on_term;
+pfi::concurrent::mutex mutex_on_term;
+
+void handle_sigterm() {
   // internal function; do not call this function outside of set_exit_on_term
   try {
     sigset_t ss;
-    setup_sigset(&ss);
+    setup_sigset_for_sigterm(&ss);
 
     int signo;
     if (sigwait(&ss, &signo) != 0) {
@@ -289,29 +296,39 @@ void exit_on_term() {
           << core::common::exception::error_api_func("set_exit_on_term"));
     }
 
-    LOG(INFO) << "stopping RPC server";
+    {
+      pfi::concurrent::scoped_lock lk(mutex_on_term);
 
-    // TODO(SubaruG): PUT CODES TO STOP OTHER THREADS HERE;
-    //                or move sigwait to main thread
-    //                and use pthread_cancel
+      if (action_on_term) {
+        action_on_term();
+        pfi::lang::function<void()>().swap(action_on_term);
+      } else {
+        kill(getpid(), signo);  // no signal handler; pending
+      }
 
-    exit(0);  // never returns
+      handling_sigterm = false;
+    }
+    return;
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
   } catch (const std::exception& e) {
     LOG(FATAL) << e.what();
   }
-  abort();
+  std::terminate();
 }
 
-}  // namespace
+void prepare_sigterm_handling() {
+  if (handling_sigterm) {
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error(
+          "start_sigterm_handling() is already called."));
+  }
 
-void set_exit_on_term() {
   sigset_t ss;
-  setup_sigset(&ss);
-
+  setup_sigset_for_sigterm(&ss);
   block_signals(&ss);
-  pfi::concurrent::thread(&exit_on_term).start();
+
+  blocking_sigterm = true;
 }
 
 void ignore_sigpipe() {
@@ -322,6 +339,38 @@ void ignore_sigpipe() {
         << jubatus::core::common::exception::error_api_func("signal")
         << jubatus::core::common::exception::error_errno(errno));
   }
+}
+
+void exit_on_term() {
+  LOG(INFO) << "stopping RPC server";
+  exit(0);
+}
+
+}  // anonymous namespace
+
+void prepare_signal_handling() {
+  prepare_sigterm_handling();
+  ignore_sigpipe();
+}
+
+void set_action_on_term(pfi::lang::function<void()> action) {
+  pfi::concurrent::scoped_lock lk(mutex_on_term);
+
+  if (!blocking_sigterm) {
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error(
+        "prepare_signal_handling must be called before set_action_on_term."));
+  }
+
+  if (!handling_sigterm) {
+    pfi::concurrent::thread(&handle_sigterm).start();
+    handling_sigterm = true;
+  }
+  action_on_term.swap(action);
+}
+
+void set_exit_on_term() {
+  set_action_on_term(&exit_on_term);
 }
 
 }  // namespace util

@@ -59,7 +59,7 @@ jubavisor::jubavisor(
     : port_base_(port),
       logfile_(logfile),
       max_children_(max) {
-  common::util::ignore_sigpipe();
+  common::util::prepare_signal_handling();
   common::util::set_exit_on_term();
   ::atexit(jubavisor::atexit_);
 
