@@ -55,7 +55,6 @@ void prepare_signal_handling();  // NOTE: this function won't work well
                                  //   you should call this function
                                  //   at the head of program.
 void set_action_on_term(pfi::lang::function<void()> action);
-void set_exit_on_term();  // equivalent to set_action_on_term([]{exit(0);})
 
 }  // namespace util
 }  // namespace common

@@ -338,11 +338,6 @@ void ignore_sigpipe() {
   }
 }
 
-void exit_on_term() {
-  LOG(INFO) << "stopping RPC server";
-  exit(0);
-}
-
 }  // anonymous namespace
 
 void prepare_signal_handling() {
@@ -364,10 +359,6 @@ void set_action_on_term(pfi::lang::function<void()> action) {
     handling_sigterm = true;
   }
   action_on_term.swap(action);
-}
-
-void set_exit_on_term() {
-  set_action_on_term(&exit_on_term);
 }
 
 }  // namespace util
