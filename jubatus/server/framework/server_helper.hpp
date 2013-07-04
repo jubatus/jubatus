@@ -23,6 +23,7 @@
 #include <map>
 #include <string>
 #include <glog/logging.h>
+#include <pficommon/lang/bind.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/system/sysstat.h>
 
@@ -154,14 +155,25 @@ class server_helper {
     try {
       serv.listen(a.port, a.bind_address);
       LOG(INFO) << "start listening at port " << a.port;
+
       serv.start(a.threadnum, true);
+
       // RPC server started, then register group membership
       impl_.prepare_for_run(a, use_cht_);
       LOG(INFO) << common::util::get_program_name() << " RPC server startup";
+
+      // Stop RPC server when terminate signal is sent
+      common::util::set_action_on_term(
+          pfi::lang::bind(&server_helper::stop, this, pfi::lang::ref(serv)));
+
+      // wait for termination
       serv.join();
+
+      // RPC server stopped, then stop mixer
       if (!a.is_standalone()) {
         server_->get_mixer()->stop();
       }
+
       return 0;
     } catch (const mp::system_error& e) {
       if (e.code == EADDRINUSE) {
@@ -178,7 +190,12 @@ class server_helper {
     return -1;
   }
 
-    pfi::lang::shared_ptr<Server> server() const {
+  void stop(common::mprpc::rpc_server& serv) {
+    LOG(INFO) << "stopping RPC server";
+    serv.end();
+  }
+
+  pfi::lang::shared_ptr<Server> server() const {
     return server_;
   }
 

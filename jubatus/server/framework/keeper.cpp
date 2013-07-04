@@ -44,11 +44,17 @@ keeper::keeper(const keeper_argv& a)
 keeper::~keeper() {
 }
 
+namespace {
+
+void stop_rpc_server(msgpack::rpc::server& serv) {
+  LOG(INFO) << "stopping RPC server";
+  serv.end();
+}
+
+}  // anonymous namespace
+
 int keeper::run() {
   try {
-    common::util::set_action_on_term(
-        pfi::lang::bind(&msgpack::rpc::server::end, &this->instance_));
-
     this->instance_.listen(a_.bind_address, a_.port);
     LOG(INFO) << "start listening at port " << a_.port;
     this->instance_.start(a_.threadnum);
@@ -58,6 +64,10 @@ int keeper::run() {
     LOG(INFO) << "registered group membership";
 
     LOG(INFO) << common::util::get_program_name() << " RPC server startup";
+
+    common::util::set_action_on_term(
+        pfi::lang::bind(&stop_rpc_server, pfi::lang::ref(this->instance_)));
+
     this->instance_.join();
 
     return 0;
