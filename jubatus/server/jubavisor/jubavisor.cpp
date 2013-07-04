@@ -60,7 +60,6 @@ jubavisor::jubavisor(
       logfile_(logfile),
       max_children_(max) {
   common::util::prepare_signal_handling();
-  common::util::set_exit_on_term();
   ::atexit(jubavisor::atexit_);
 
   zk_.reset(create_lock_service("zk", hosts, 1024, logfile));
@@ -102,6 +101,7 @@ jubavisor::jubavisor(
 
 jubavisor::~jubavisor() {
   stop_all();
+  g_jubavisor = NULL;
 }
 
 void jubavisor::atexit_() {

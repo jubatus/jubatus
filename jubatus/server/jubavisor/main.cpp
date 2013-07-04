@@ -30,12 +30,21 @@ namespace {
 const std::string PROGNAME = "jubavisor";
 }  // namespace
 
+using jubatus::server::common::util::set_action_on_term;
 using jubatus::server::jubavisor::jubavisor;
 using jubatus::server::jubavisor::jubavisor_server;
 using pfi::lang::_1;
 using pfi::lang::_2;
 using pfi::lang::_3;
 using pfi::lang::bind;
+using pfi::lang::ref;
+
+namespace {
+void stop_on_term(jubavisor_server& serv) {
+  LOG(INFO) << "stopping RPC server";
+  serv.rpc_end();
+}
+}  // namespace
 
 int main(int argc, char* argv[]) try {
   cmdline::parser p;
@@ -77,7 +86,8 @@ int main(int argc, char* argv[]) try {
 
     try {
       serv.rpc_listen(port);
-      serv.rpc_start(2);
+      serv.rpc_start(2, true);
+      set_action_on_term(bind(&stop_on_term, ref(serv)));
       serv.rpc_join();
     } catch (const mp::system_error& e) {
       if (e.code == EADDRINUSE) {
