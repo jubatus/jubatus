@@ -69,7 +69,7 @@ class zk : public lock_service {
   // reads data (should be smaller than 1024B)
   bool read(const std::string& path, std::string& out);
 
-  void push_cleanup(pfi::lang::function<void()>& f);
+  void push_cleanup(const pfi::lang::function<void()>& f);
   void run_cleanup();
 
   const std::string& get_hosts() const;

@@ -67,7 +67,7 @@ class lock_service {
   // reads data (should be smaller than 1024B)
   virtual bool read(const std::string& path, std::string& out) = 0;
 
-  virtual void push_cleanup(pfi::lang::function<void()>& f) = 0;
+  virtual void push_cleanup(const pfi::lang::function<void()>& f) = 0;
   virtual void run_cleanup() = 0;
 
   virtual const std::string& get_hosts() const = 0;
