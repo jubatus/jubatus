@@ -44,10 +44,11 @@ using common::build_loc_str;
 namespace {
 jubavisor* g_jubavisor = NULL;
 
-// for GCC and Clang compatibility:
-// to use pfi::lang::bind 'void (*)(int) __attribute__((noreturn))'
-void exit_wrapper(int status) {
-  exit(status);
+void on_connection_expired() {
+  if (g_jubavisor) {
+    g_jubavisor->stop_all();
+  }
+  exit(-1);
 }
 }  // namespace
 
@@ -93,8 +94,7 @@ jubavisor::jubavisor(
     port_pool_.push(++port_base_);
   }
 
-  zk_->push_cleanup(bind(&jubavisor::stop_all, this));
-  zk_->push_cleanup(bind(&exit_wrapper, -1));
+  zk_->push_cleanup(&on_connection_expired);
 
   g_jubavisor = this;
 }
