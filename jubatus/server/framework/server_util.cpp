@@ -104,7 +104,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add("join", 'j', "join to the existing cluster");
   p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
-  p.add<int>("zookeeper_timeout", 'T', "zookeeper time out (sec)", false, 10);
+  p.add<int>("zookeeper_timeout", 'Z', "zookeeper time out (sec)", false, 10);
   p.add<int>("interconnect_timeout", 'I',
       "interconnect time out between servers (sec)", false, 10);
 #endif
@@ -281,7 +281,7 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
   p.add<int>("thread", 'c', "concurrency = thread number", false, 16);
   p.add<int>("timeout", 't', "time out (sec)", false, 10);
-  p.add<int>("zookeeper_timeout", 'T', "zookeeper time out (sec)", false, 10);
+  p.add<int>("zookeeper_timeout", 'Z', "zookeeper time out (sec)", false, 10);
   p.add<int>("interconnect_timeout", 'I',
       "interconnect time out between servers (sec)", false, 10);
 
