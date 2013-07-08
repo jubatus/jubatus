@@ -93,10 +93,8 @@ jubavisor::jubavisor(
     port_pool_.push(++port_base_);
   }
 
-  pfi::lang::function<void()> h = bind(&jubavisor::stop_all, this);
-  zk_->push_cleanup(h);
-  pfi::lang::function<void()> g = bind(&exit_wrapper, -1);
-  zk_->push_cleanup(g);
+  zk_->push_cleanup(bind(&jubavisor::stop_all, this));
+  zk_->push_cleanup(bind(&exit_wrapper, -1));
 
   g_jubavisor = this;
 }
