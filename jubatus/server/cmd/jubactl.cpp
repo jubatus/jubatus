@@ -87,6 +87,10 @@ try {
   p.add<int>("interval_sec", 'S', "[start] mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'I',
       "[start] mix interval by update count", false, 512);
+  p.add<int>("zookeeper_timeout", 'Z',
+      "[start] zookeeper time out (sec)", false, 10);
+  p.add<int>("interconnect_timeout", 'R',
+      "[start] interconnect time out between servers (sec)", false, 10);
 
   p.add("debug", 'd', "debug mode");
 
@@ -206,6 +210,8 @@ void send2supervisor(
 
     server_option.interval_sec = argv.get<int>("interval_sec");
     server_option.interval_count = argv.get<int>("interval_count");
+    server_option.zookeeper_timeout = argv.get<int>("zookeeper_timeout");
+    server_option.interconnect_timeout = argv.get<int>("interconnect_timeout");
   }
 
   ls_->list(jubatus::server::common::JUBAVISOR_BASE_PATH, list);

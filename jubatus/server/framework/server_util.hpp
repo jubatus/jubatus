@@ -71,6 +71,8 @@ struct server_argv {
   std::string bind_address;
   std::string bind_if;
   int timeout;
+  int zookeeper_timeout;
+  int interconnect_timeout;
   int threadnum;
   std::string program_name;
   std::string type;
@@ -84,7 +86,8 @@ struct server_argv {
   int interval_sec;
   int interval_count;
 
-  MSGPACK_DEFINE(join, port, bind_address, bind_if, timeout, threadnum,
+  MSGPACK_DEFINE(join, port, bind_address, bind_if, timeout,
+      zookeeper_timeout, interconnect_timeout, threadnum,
       program_name, type, z, name, datadir, logdir, loglevel, eth,
       interval_sec, interval_count);
 
@@ -105,6 +108,8 @@ struct keeper_argv {
   std::string bind_address;
   std::string bind_if;
   int timeout;
+  int zookeeper_timeout;
+  int interconnect_timeout;
   int threadnum;
   std::string program_name;
   std::string z;

@@ -49,7 +49,7 @@ server_helper_impl::server_helper_impl(const server_argv& a) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
     zk_.reset(common::create_lock_service("zk",
-                                          a.z, a.timeout,
+                                          a.z, a.zookeeper_timeout,
                                           make_logfile_name(a)));
   }
 #endif
