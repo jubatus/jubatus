@@ -183,7 +183,7 @@ void linear_mixer::get_status(server_base::status_t& status) const {
   status["linear_mixer.count"] =
     pfi::lang::lexical_cast<string>(counter_);
   status["linear_mixer.ticktime"] =
-    pfi::lang::lexical_cast<string>(ticktime_);  // since last mix
+    pfi::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
 }
 
 void linear_mixer::mixer_loop() {
