@@ -198,6 +198,8 @@ server_argv::server_argv()
     : join(false),
       port(9199),
       timeout(10),
+      zookeeper_timeout(10),
+      interconnect_timeout(10),
       threadnum(2),
       z(""),
       name(""),
@@ -213,26 +215,28 @@ void server_argv::boot_message(const std::string& progname) const {
   std::stringstream ss;
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth
       << ":" << port << '\n';
-  ss << "    pid            : " << getpid() << '\n';
-  ss << "    user           : " << common::util::get_user_name() << '\n';
-  ss << "    mode           : ";
+  ss << "    pid                  : " << getpid() << '\n';
+  ss << "    user                 : " << common::util::get_user_name() << '\n';
+  ss << "    mode                 : ";
   if (is_standalone()) {
     ss << "standalone mode\n";
   } else {
     ss << "multinode mode\n";
   }
-  ss << "    timeout        : " << timeout << '\n';
-  ss << "    thread         : " << threadnum << '\n';
-  ss << "    datadir        : " << datadir << '\n';
-  ss << "    logdir         : " << logdir << '\n';
-  ss << "    loglevel       : " << google::GetLogSeverityName(loglevel) << '('
-      << loglevel << ')' << '\n';
+  ss << "    timeout              : " << timeout << '\n';
+  ss << "    thread               : " << threadnum << '\n';
+  ss << "    datadir              : " << datadir << '\n';
+  ss << "    logdir               : " << logdir << '\n';
+  ss << "    loglevel             : " << google::GetLogSeverityName(loglevel)
+      << '(' << loglevel << ')' << '\n';
 #ifdef HAVE_ZOOKEEPER_H
-  ss << "    zookeeper      : " << z << '\n';
-  ss << "    name           : " << name << '\n';
-  ss << "    join           : " << std::boolalpha << join << '\n';
-  ss << "    interval sec   : " << interval_sec << '\n';
-  ss << "    interval count : " << interval_count << '\n';
+  ss << "    zookeeper            : " << z << '\n';
+  ss << "    name                 : " << name << '\n';
+  ss << "    join                 : " << std::boolalpha << join << '\n';
+  ss << "    interval sec         : " << interval_sec << '\n';
+  ss << "    interval count       : " << interval_count << '\n';
+  ss << "    zookeeper timeout    : " << zookeeper_timeout << '\n';
+  ss << "    interconnect timeout : " << interconnect_timeout << '\n';
 #endif
   LOG(INFO) << ss.str();
 }
@@ -349,6 +353,8 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
 keeper_argv::keeper_argv()
     : port(9199),
       timeout(10),
+      zookeeper_timeout(10),
+      interconnect_timeout(10),
       threadnum(16),
       z("localhost:2181"),
       logdir(""),
@@ -360,14 +366,16 @@ void keeper_argv::boot_message(const std::string& progname) const {
   std::stringstream ss;
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth
       << ":" << port << '\n';
-  ss << "    pid            : " << getpid() << '\n';
-  ss << "    user           : " << common::util::get_user_name() << '\n';
-  ss << "    timeout        : " << timeout << '\n';
-  ss << "    thread         : " << threadnum << '\n';
-  ss << "    logdir         : " << logdir << '\n';
-  ss << "    loglevel       : " << google::GetLogSeverityName(loglevel) << '('
-      << loglevel << ')' << '\n';
-  ss << "    zookeeper      : " << z << '\n';
+  ss << "    pid                  : " << getpid() << '\n';
+  ss << "    user                 : " << common::util::get_user_name() << '\n';
+  ss << "    timeout              : " << timeout << '\n';
+  ss << "    zookeeper timeout    : " << zookeeper_timeout << '\n';
+  ss << "    interconnect timeout : " << interconnect_timeout << '\n';
+  ss << "    thread               : " << threadnum << '\n';
+  ss << "    logdir               : " << logdir << '\n';
+  ss << "    loglevel             : " << google::GetLogSeverityName(loglevel)
+      << '(' << loglevel << ')' << '\n';
+  ss << "    zookeeper            : " << z << '\n';
   LOG(INFO) << ss.str();
 }
 
