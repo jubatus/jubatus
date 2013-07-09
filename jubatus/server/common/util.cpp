@@ -235,26 +235,24 @@ namespace {
 void clear_sigset(sigset_t* ss) {
   if (sigemptyset(ss) != 0) {
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("failed to call sigemptyset")
-      << core::common::exception::error_api_func("clear_sigset")
-      << core::common::exception::error_errno(errno));
+      core::common::exception::runtime_error("failed to clear sigset")
+      << core::common::exception::error_api_func("sigemptyset"));
   }
 }
 
 void add_signal(sigset_t* ss, int signum) {
   if (sigaddset(ss, signum) != 0) {
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("failed to call sigaddset")
-      << core::common::exception::error_api_func("add_signal")
-      << core::common::exception::error_errno(errno));
+      core::common::exception::runtime_error("failed to add singal to sigset")
+      << core::common::exception::error_api_func("sigaddset"));
   }
 }
 
 void block_signals(const sigset_t* ss) {
   if (pthread_sigmask(SIG_BLOCK, ss, NULL) != 0) {
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("failed to call pthread_sigmask")
-      << core::common::exception::error_api_func("block_signals")
+      core::common::exception::runtime_error("failed to mask signals")
+      << core::common::exception::error_api_func("pthread_sigmask")
       << core::common::exception::error_errno(errno));
   }
 }
@@ -280,7 +278,7 @@ void handle_sigterm() {
     if (sigwait(&ss, &signo) != 0) {
       throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("failed to call sigwait")
-        << core::common::exception::error_api_func("exit_on_term"));
+        << core::common::exception::error_api_func("sigwait"));
     }
 
     switch (signo) {
@@ -289,11 +287,10 @@ void handle_sigterm() {
         // intended signal; continue
         break;
       default:
-        // unintended signal; raise error
+        // unintended signal; raise error (assertion may be better?)
         throw JUBATUS_EXCEPTION(
           core::common::exception::runtime_error(
-              "unknown signal caught by sigwait (possibily logic error)")
-          << core::common::exception::error_api_func("set_exit_on_term"));
+              "unknown signal caught by sigwait (possibily logic error)"));
     }
 
     {
