@@ -16,15 +16,10 @@
 
 #include "signals.hpp"
 
-#ifdef __APPLE__
-#include <libproc.h>
-#endif
 #include <unistd.h>
-
 #include <cassert>
 #include <cerrno>
 #include <csignal>
-#include <utility>
 
 #include <glog/logging.h>
 #include <pficommon/concurrent/lock.h>
