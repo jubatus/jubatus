@@ -33,6 +33,7 @@
 #include "../../config.hpp"
 #include "../common/lock_service.hpp"
 #include "../common/mprpc/rpc_server.hpp"
+#include "../common/signals.hpp"
 #include "../common/config.hpp"
 
 namespace jubatus {

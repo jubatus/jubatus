@@ -22,6 +22,7 @@
 
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
+#include "../common/signals.hpp"
 #include "../common/util.hpp"
 
 #include "jubavisor.hpp"

@@ -22,6 +22,7 @@
 
 #include "jubatus/core/common/exception.hpp"
 #include "../common/membership.hpp"
+#include "../common/signals.hpp"
 #include "../common/util.hpp"
 #include "server_util.hpp"
 
