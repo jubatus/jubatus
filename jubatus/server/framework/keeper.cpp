@@ -46,10 +46,6 @@ keeper::~keeper() {
 
 int keeper::run() {
   try {
-    ::atexit(jubatus::server::framework::atexit);
-    common::util::set_exit_on_term();
-    common::util::ignore_sigpipe();
-
     this->instance_.listen(a_.bind_address, a_.port);
     LOG(INFO) << "start listening at port " << a_.port;
     this->instance_.start(a_.threadnum);

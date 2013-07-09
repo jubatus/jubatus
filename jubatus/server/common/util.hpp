@@ -23,6 +23,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <pficommon/lang/function.h>
 
 namespace jubatus {
 namespace server {
@@ -49,8 +50,12 @@ void append_server_path(const std::string& argv0);
 
 void get_machine_status(machine_status_t& status);
 
-void set_exit_on_term();
-void ignore_sigpipe();
+void prepare_signal_handling();  // NOTE: this function won't work well
+                                 //   if you have any other threads.
+                                 //   you should call this function
+                                 //   at the head of program.
+void set_action_on_term(pfi::lang::function<void()> action);
+void set_exit_on_term();  // equivalent to set_action_on_term([]{exit(0);})
 
 }  // namespace util
 }  // namespace common

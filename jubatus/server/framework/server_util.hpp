@@ -124,20 +124,13 @@ struct keeper_argv {
   void set_log_destination(const std::string& progname) const;
 };
 
-extern pfi::lang::shared_ptr<
-    jubatus::server::common::lock_service> ls;
-void atexit();
+void register_lock_service(pfi::lang::shared_ptr<common::lock_service> ls);
 
 template<class ImplServerClass>
 int run_server(int args, char** argv, const std::string& type) {
   try {
     ImplServerClass impl_server(server_argv(args, argv, type));
-
     impl_server.get_p()->get_mixer()->register_api(impl_server);
-    ::atexit(jubatus::server::framework::atexit);
-
-    common::util::set_exit_on_term();
-    common::util::ignore_sigpipe();
     return impl_server.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
