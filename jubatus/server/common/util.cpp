@@ -28,6 +28,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <cassert>
 #include <cerrno>
 #include <climits>
 #include <cstdio>
@@ -300,18 +301,20 @@ void handle_sigterm() {
         action_on_term();
         pfi::lang::function<void()>().swap(action_on_term);
       } else {
-        kill(getpid(), signo);  // no signal handler; pending
+        kill(getpid(), signo);  // no signal handler; resend signal
+                                // (the signal will be blocked and pending)
       }
 
       handling_sigterm = false;
     }
-    return;
+
+    return;  // signal handling is successfully done.
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
   } catch (const std::exception& e) {
     LOG(FATAL) << e.what();
   }
-  std::terminate();
+  assert(!"should not reach here because LOG(FATAL) aborts");
 }
 
 void prepare_sigterm_handling() {
