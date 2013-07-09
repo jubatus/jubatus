@@ -39,14 +39,6 @@ static const std::string VERSION(JUBATUS_VERSION);
 
 namespace {
   pfi::lang::shared_ptr<server::common::lock_service> ls;
-
-  void close_lock_service() {
-#ifdef HAVE_ZOOKEEPER_H
-    if (ls) {
-      ls->force_close();
-    }
-#endif
-  }
 }
 
 void print_version(const std::string& progname) {
@@ -422,6 +414,15 @@ void register_lock_service(pfi::lang::shared_ptr<common::lock_service> new_ls) {
 #ifdef HAVE_ZOOKEEPER_H
   if (ls) {
     ::atexit(&close_lock_service);
+  }
+#endif
+}
+
+void close_lock_service() {
+#ifdef HAVE_ZOOKEEPER_H
+  if (ls) {
+    ls->force_close();
+    ls.reset();
   }
 #endif
 }

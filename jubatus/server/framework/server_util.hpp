@@ -125,6 +125,7 @@ struct keeper_argv {
 };
 
 void register_lock_service(pfi::lang::shared_ptr<common::lock_service> ls);
+void close_lock_service();
 
 template<class ImplServerClass>
 int run_server(int args, char** argv, const std::string& type) {

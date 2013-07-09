@@ -58,6 +58,7 @@ keeper_common::keeper_common(const keeper_argv& a)
 }
 
 keeper_common::~keeper_common() {
+  close_lock_service();
 }
 
 void keeper_common::get_members_(

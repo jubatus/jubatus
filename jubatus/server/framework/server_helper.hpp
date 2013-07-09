@@ -42,6 +42,8 @@ namespace framework {
 class server_helper_impl {
  public:
   explicit server_helper_impl(const server_argv& a);
+  ~server_helper_impl();
+
   void prepare_for_start(const server_argv& a, bool use_cht);
   void prepare_for_run(const server_argv& a, bool use_cht);
   void get_config_lock(const server_argv& a, int retry);

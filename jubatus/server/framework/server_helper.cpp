@@ -58,6 +58,15 @@ server_helper_impl::server_helper_impl(const server_argv& a) {
 #endif
 }
 
+server_helper_impl::~server_helper_impl() {
+  zk_config_lock_.reset();
+  zk_.reset();
+
+#ifdef HAVE_ZOOKEEPER_H
+  close_lock_service();
+#endif
+}
+
 void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
