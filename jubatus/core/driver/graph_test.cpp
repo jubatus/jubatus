@@ -42,7 +42,8 @@ class graph_test : public ::testing::Test {
     config.alpha = 0.9f;
     config.landmark_num = 5;
     graph_.reset(new core::driver::graph(
-          new core::graph::graph_wo_index(config)));
+          pfi::lang::shared_ptr<core::graph::graph_base>(
+            new core::graph::graph_wo_index(config))));
   }
 
   void TearDown() {

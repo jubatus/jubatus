@@ -22,16 +22,18 @@
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
 
+using pfi::lang::shared_ptr;
+
 namespace jubatus {
 namespace core {
 namespace graph {
 
-graph_base* graph_factory::create_graph(
+shared_ptr<graph_base> graph_factory::create_graph(
     const std::string& name,
     const common::jsonconfig::config& param) {
   if (name == "graph_wo_index") {
-    return new graph_wo_index(
-      common::jsonconfig::config_cast_check<graph_wo_index::config>(param));
+    return shared_ptr<graph_base>(new graph_wo_index(
+      common::jsonconfig::config_cast_check<graph_wo_index::config>(param)));
   } else {
     throw JUBATUS_EXCEPTION(unknown_graph(name));
   }

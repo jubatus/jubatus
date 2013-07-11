@@ -62,7 +62,7 @@ struct mixable_graph : public framework::mixable<
 
 class graph {
  public:
-  explicit graph(jubatus::core::graph::graph_base* graph_method);
+  explicit graph(pfi::lang::shared_ptr<core::graph::graph_base> graph_method);
   virtual ~graph();
 
   pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
