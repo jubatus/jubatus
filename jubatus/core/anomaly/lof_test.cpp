@@ -28,6 +28,7 @@
 
 using jubatus::core::storage::lof_storage;
 using pfi::data::unordered_map;
+using pfi::lang::shared_ptr;
 using std::pair;
 using std::string;
 using std::vector;
@@ -43,7 +44,7 @@ class lof_test : public testing::Test {
 TYPED_TEST_CASE_P(lof_test);
 
 TYPED_TEST_P(lof_test, update_row) {
-  lof l(lof_storage::config(), new TypeParam);
+  lof l(lof_storage::config(), shared_ptr<TypeParam>(new TypeParam));
   common::sfv_t v, q;
   const string id = "test";
   l.update_row(id, v);

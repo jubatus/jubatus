@@ -48,7 +48,8 @@ class anomaly_test : public ::testing::Test {
     anomaly_.reset(new driver::anomaly(
           shared_ptr<core::anomaly::anomaly_base>(
             new core::anomaly::lof(lof_config,
-              new core::recommender::euclid_lsh(lsh_config))),
+              shared_ptr<core::recommender::recommender_base>(
+                new core::recommender::euclid_lsh(lsh_config)))),
           make_fv_converter()));
   }
 

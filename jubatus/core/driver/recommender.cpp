@@ -43,8 +43,8 @@ namespace core {
 namespace driver {
 
 recommender::recommender(
-    jubatus::core::recommender::recommender_base* recommender_method,
-    pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
+    shared_ptr<core::recommender::recommender_base> recommender_method,
+    shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       recommender_(recommender_method) {

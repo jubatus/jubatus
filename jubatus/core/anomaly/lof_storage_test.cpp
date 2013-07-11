@@ -38,6 +38,7 @@ using jubatus::core::recommender::make_ids;
 using jubatus::core::storage::lof_storage;
 using pfi::data::unordered_map;
 using pfi::lang::lexical_cast;
+using pfi::lang::shared_ptr;
 using std::istringstream;
 using std::string;
 using std::vector;
@@ -48,14 +49,14 @@ namespace storage {
 
 namespace {
 
-lof_storage* make_storage(
+shared_ptr<lof_storage> make_storage(
     uint32_t k,
     uint32_t ck,
-    recommender::recommender_base* mock_nn_engine) {
+    shared_ptr<recommender::recommender_base> mock_nn_engine) {
   lof_storage::config config;
   config.nearest_neighbor_num = k;
   config.reverse_nearest_neighbor_num = ck;
-  lof_storage* s = new lof_storage(config, mock_nn_engine);
+  shared_ptr<lof_storage> s(new lof_storage(config, mock_nn_engine));
   // s->set_nn_engine(mock_nn_engine);
 
   return s;
@@ -111,8 +112,8 @@ TEST(lof_storage, get_all_row_ids) {
 class lof_storage_one_dimensional_test : public ::testing::Test {
  protected:
   virtual void SetUp() {
-    rmock_ = new recommender::recommender_mock;
-    storage_.reset(make_storage(2, 2, rmock_));
+    rmock_.reset(new recommender::recommender_mock);
+    storage_ = make_storage(2, 2, rmock_);
 
     storage_->update_row("-1", make_sfv("1:-1"));
     storage_->update_row("0", make_sfv("1:0"));
@@ -129,8 +130,8 @@ class lof_storage_one_dimensional_test : public ::testing::Test {
     storage_->update_all();
   }
 
-  recommender::recommender_mock* rmock_;
-  pfi::lang::scoped_ptr<lof_storage> storage_;
+  shared_ptr<recommender::recommender_mock> rmock_;
+  shared_ptr<lof_storage> storage_;
 };
 
 TEST_F(lof_storage_one_dimensional_test, get_kdist) {
@@ -212,10 +213,14 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
     storages_.resize(num_models);
     for (int i = 0; i < num_models; ++i) {
       storages_[i].reset(
-        new lof_storage(config, new recommender::recommender_mock));
+        new lof_storage(config,
+          shared_ptr<recommender::recommender_mock>(
+            new recommender::recommender_mock)));
     }
     single_storage_.reset(
-      new lof_storage(config, new recommender::recommender_mock));
+      new lof_storage(config,
+        shared_ptr<recommender::recommender_mock>(
+          new recommender::recommender_mock)));
 
     for (size_t i = 0; i < storages_.size(); ++i) {
       portable_mixer_.add(storages_[i].get());

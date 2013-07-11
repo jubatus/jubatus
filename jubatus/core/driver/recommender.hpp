@@ -60,7 +60,7 @@ struct mixable_recommender : public framework::mixable<
 class recommender {
  public:
   recommender(
-      jubatus::core::recommender::recommender_base* recommender_method,
+      pfi::lang::shared_ptr<core::recommender::recommender_base> method,
       pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~recommender();
 

@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include <pficommon/lang/shared_ptr.h>
 #include <pficommon/text/json.h>
 #include "anomaly_base.hpp"
 #include "lof_storage.hpp"
@@ -32,7 +33,7 @@ class lof : public anomaly_base {
   lof();
   explicit lof(
       const storage::lof_storage::config& config,
-      core::recommender::recommender_base* nn_engine);
+      pfi::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
   ~lof();
 
   // return anomaly score of query
