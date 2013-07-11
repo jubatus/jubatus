@@ -33,7 +33,7 @@ namespace driver {
 class anomaly {
  public:
   anomaly(
-      jubatus::core::anomaly::anomaly_base* anomaly_method,
+      pfi::lang::shared_ptr<core::anomaly::anomaly_base> anomaly_method,
       pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~anomaly();
 
