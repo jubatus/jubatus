@@ -17,20 +17,22 @@
 #include "norm_factory.hpp"
 
 #include <string>
+#inclide <pficommon/lang/shared_ptr.h>
 #include "norm.hpp"
 #include "../common/exception.hpp"
 
 using std::string;
+using pfi::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
 namespace storage {
 
-norm_base* create_norm(const string& name) {
+shared_ptr<norm_base> create_norm(const string& name) {
   if (name == "l2") {
-    return new norm_l2;
+    return shared_ptr<norm_base>(new norm_l2);
   } else if (name == "l1") {
-    return new norm_l1;
+    return shared_ptr<norm_base>(new norm_l1);
   } else {
     throw JUBATUS_EXCEPTION(
         jubatus::exception::runtime_error(
