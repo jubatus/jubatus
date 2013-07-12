@@ -22,4 +22,10 @@ let _ = run_test_tt_main begin "python.ml" >::: [
       (gen_args ["x"; "y"]);
   end;
 
+  "test_gen_call" >:: begin fun() ->
+    assert_equal
+      "fun(x, y)"
+      (gen_call "fun" ["x"; "y"])
+  end;
+
 ] end

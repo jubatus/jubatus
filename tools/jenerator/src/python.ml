@@ -84,7 +84,7 @@ let gen_arg_def f =
 
 let gen_call func args =
   (* TODO(unnonouno): format for long lines *)
-  func ^ gen_args args ^ ";"
+  func ^ gen_args args
 ;;
 
 let gen_ret_type = function
