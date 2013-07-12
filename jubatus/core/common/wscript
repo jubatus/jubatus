@@ -39,6 +39,7 @@ def build(bld):
     make_test(s)
 
   bld.install_files('${PREFIX}/include/jubatus/core/common/', [
+      'assert.hpp',
       'byte_buffer.hpp',
       'exception.hpp',
       'exception_info.hpp',
