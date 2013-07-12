@@ -79,7 +79,7 @@ let rec gen_type t name num = match t with
 ;;
 
 let gen_string_literal s =
-  "\'" ^ String.escaped s ^ "\'"
+  "\"" ^ String.escaped s ^ "\""
 ;;
 
 let gen_arg_def f =
@@ -151,7 +151,7 @@ let gen_str name field_names =
   List.concat [
     [
       (0, "def __str__(self):");
-      (1,   "gen = message_string_generator()");
+      (1,   "gen = jubatus.common.MessageStringGenerator()");
       (1,   gen_call "gen.open" [gen_string_literal name])
     ];
     List.map (fun f ->
@@ -253,6 +253,7 @@ let gen_type_file conf source idl =
     (0, "");
     (0, "import sys");
     (0, "import msgpack");
+    (0, "import jubatus.common")
   ] in
   let content = concat_blocks [
     includes;
