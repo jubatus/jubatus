@@ -29,6 +29,7 @@
 #include "jubatus/core/common/exception.hpp"
 #include "../common/membership.hpp"
 #include "../common/network.hpp"
+#include "../common/signals.hpp"
 #include "../common/util.hpp"
 
 using pfi::concurrent::scoped_lock;
@@ -44,10 +45,11 @@ using common::build_loc_str;
 namespace {
 jubavisor* g_jubavisor = NULL;
 
-// for GCC and Clang compatibility:
-// to use pfi::lang::bind 'void (*)(int) __attribute__((noreturn))'
-void exit_wrapper(int status) {
-  exit(status);
+void on_connection_expired() {
+  if (g_jubavisor) {
+    g_jubavisor->stop_all();
+  }
+  exit(-1);
 }
 }  // namespace
 
@@ -56,13 +58,13 @@ jubavisor::jubavisor(
     int port,
     int max,
     const std::string& logfile)
-    : zk_(create_lock_service("zk", hosts, 1024, logfile)),
-      port_base_(port),
+    : port_base_(port),
       logfile_(logfile),
       max_children_(max) {
-  common::util::ignore_sigpipe();
-  common::util::set_exit_on_term();
+  common::util::prepare_signal_handling();
   ::atexit(jubavisor::atexit_);
+
+  zk_.reset(create_lock_service("zk", hosts, 1024, logfile));
 
   // handle SIG_CHLD
   struct sigaction sa;
@@ -93,14 +95,14 @@ jubavisor::jubavisor(
     port_pool_.push(++port_base_);
   }
 
-  zk_->push_cleanup(bind(&jubavisor::stop_all, this));
-  zk_->push_cleanup(bind(&exit_wrapper, -1));
+  zk_->push_cleanup(&on_connection_expired);
 
   g_jubavisor = this;
 }
 
 jubavisor::~jubavisor() {
   stop_all();
+  g_jubavisor = NULL;
 }
 
 void jubavisor::atexit_() {

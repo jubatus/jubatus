@@ -25,6 +25,7 @@
 #include "jubatus/core/common/exception.hpp"
 #include "server_util.hpp"
 #include "../common/membership.hpp"
+#include "../common/signals.hpp"
 #include "../common/util.hpp"
 
 namespace jubatus {
@@ -48,14 +49,17 @@ std::string make_logfile_name(const keeper_argv& a) {
 }  // namespace
 
 keeper_common::keeper_common(const keeper_argv& a)
-    : a_(a),
-      zk_(common::create_lock_service("cached_zk", a.z, a.zookeeper_timeout,
-                                      make_logfile_name(a))) {
-  ls = zk_;
+    : a_(a) {
+  common::util::prepare_signal_handling();
+
+  zk_.reset(common::create_lock_service(
+      "cached_zk", a.z, a.zookeeper_timeout, make_logfile_name(a)));
+  register_lock_service(zk_);
   jubatus::server::common::prepare_jubatus(*zk_, a_.type, "");
 }
 
 keeper_common::~keeper_common() {
+  close_lock_service();
 }
 
 void keeper_common::get_members_(

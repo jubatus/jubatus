@@ -76,6 +76,10 @@ void rpc_server::join() {
   instance_.join();
 }
 
+void rpc_server::end() {
+  instance_.end();
+}
+
 void rpc_server::stop() {
   if (!instance_.is_end()) {
     instance_.end();

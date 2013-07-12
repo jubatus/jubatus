@@ -225,45 +225,6 @@ void get_machine_status(machine_status_t& status) {
   status.vm_share = vm_shr;  // shared
 }
 
-namespace {
-
-void exit_on_term(int /* signum */) {
-  LOG(INFO) << "stopping RPC server";
-  exit(0);
-}
-
-}  // namespace
-
-void set_exit_on_term() {
-  struct sigaction sigact;
-  sigact.sa_handler = exit_on_term;
-  sigact.sa_flags = SA_RESTART;
-
-  if (sigaction(SIGTERM, &sigact, NULL) != 0) {
-    throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("can't set SIGTERM handler")
-      << core::common::exception::error_api_func("sigaction")
-      << core::common::exception::error_errno(errno));
-  }
-
-  if (sigaction(SIGINT, &sigact, NULL) != 0) {
-    throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("can't set SIGINT handler")
-      << core::common::exception::error_api_func("sigaction")
-      << core::common::exception::error_errno(errno));
-  }
-}
-
-void ignore_sigpipe() {
-  // portable code for socket write(2) MSG_NOSIGNAL
-  if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
-    throw JUBATUS_EXCEPTION(
-        jubatus::core::common::exception::runtime_error("can't ignore SIGPIPE")
-        << jubatus::core::common::exception::error_api_func("signal")
-        << jubatus::core::common::exception::error_errno(errno));
-  }
-}
-
 }  // namespace util
 }  // namespace common
 }  // namespace server

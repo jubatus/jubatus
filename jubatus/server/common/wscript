@@ -24,7 +24,7 @@ int main() {
 
 def build(bld):
   import Options
-  src = 'network.cpp global_id_generator_standalone.cpp config.cpp util.cpp'
+  src = 'network.cpp global_id_generator_standalone.cpp config.cpp signals.cpp util.cpp'
 
   if bld.env.HAVE_ZOOKEEPER_H:
     src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp global_id_generator_zk.cpp'
@@ -68,6 +68,7 @@ def build(bld):
       'lock_service.hpp',
       'membership.hpp',
       'network.hpp',
+      'signals.hpp',
       'util.hpp',
       ])
   bld.recurse(subdirs)
