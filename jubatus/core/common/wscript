@@ -8,7 +8,11 @@ def configure(conf):
   conf.recurse(subdirs)
 
 def build(bld):
-  import Options
+  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+    libassert = " LIBGLOG"
+  else:
+    libassert = ""
+
   src = 'exception.cpp key_manager.cpp vector_util.cpp'
   src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
 
@@ -16,7 +20,7 @@ def build(bld):
     source = src,
     target = 'jubacommon',
     includes = '.',
-    use = 'PFICOMMON'
+    use = 'PFICOMMON'+libassert
     )
 
   test_src = [
@@ -33,7 +37,7 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'jubacommon'
+      use = 'jubacommon'+libassert
       )
   for s in test_src:
     make_test(s)

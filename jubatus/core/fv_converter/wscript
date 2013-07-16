@@ -58,6 +58,9 @@ def build(bld):
     ]
   use = 'PFICOMMON MSGPACK DL jubacommon'
 
+  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+    use += ' LIBGLOG'
+
   if bld.env.HAVE_RE2:
     source.append('re2_match.cpp')
     source.append('re2_filter.cpp')
