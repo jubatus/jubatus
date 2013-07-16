@@ -18,10 +18,11 @@
 #define JUBATUS_SERVER_COMMON_UNIQUE_LOCK_HPP_
 
 #include <algorithm>
-#include <cassert>
 #include <pficommon/lang/noncopyable.h>
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/concurrent/rwmutex.h>
+
+#include "jubatus/core/common/assert.hpp"
 
 namespace jubatus {
 namespace server {
@@ -94,7 +95,7 @@ class basic_unique_lock : pfi::lang::noncopyable {
 
   void unlock() {
     if (locked_) {
-      assert(lp_ != NULL);
+      JUBATUS_ASSERT(lp_ != NULL);
       lock_functions::unlock(*lp_);
       locked_ = false;
     }

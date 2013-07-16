@@ -17,7 +17,6 @@
 #include "signals.hpp"
 
 #include <unistd.h>
-#include <cassert>
 #include <cerrno>
 #include <csignal>
 
@@ -26,6 +25,7 @@
 #include <pficommon/concurrent/mutex.h>
 #include <pficommon/concurrent/thread.h>
 
+#include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
 
 namespace jubatus {
@@ -118,7 +118,7 @@ void handle_sigterm() {
   } catch (const std::exception& e) {
     LOG(FATAL) << e.what();
   }
-  assert(!"should not reach here because LOG(FATAL) aborts");
+  JUBATUS_ASSERT_UNREACHABLE();
 }
 
 void prepare_sigterm_handling() {

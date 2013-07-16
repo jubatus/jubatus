@@ -16,7 +16,6 @@
 
 #include "zk.hpp"
 
-#include <assert.h>
 #include <unistd.h>
 
 #include <algorithm>

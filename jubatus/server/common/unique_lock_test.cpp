@@ -14,10 +14,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "unique_lock.hpp"
+
 #include <gtest/gtest.h>
 #include <pficommon/lang/noncopyable.h>
 #include <pficommon/concurrent/lock.h>
-#include "unique_lock.hpp"
+#include "jubatus/core/common/assert.hpp"
 
 class lockable_mock : public pfi::concurrent::lockable {
  public:
@@ -26,13 +28,13 @@ class lockable_mock : public pfi::concurrent::lockable {
   }
 
   bool lock() {
-    assert(!locked_);
+    JUBATUS_ASSERT(!locked_);
     locked_ = true;
     return true;
   }
 
   bool unlock() {
-    assert(locked_);
+    JUBATUS_ASSERT(locked_);
     locked_ = false;
     return true;
   }

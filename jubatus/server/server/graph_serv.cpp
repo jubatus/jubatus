@@ -16,7 +16,6 @@
 
 #include "graph_serv.hpp"
 
-#include <cassert>
 #include <map>
 #include <string>
 #include <utility>
@@ -27,6 +26,7 @@
 #include <pficommon/system/time_util.h>
 #include <pficommon/lang/shared_ptr.h>
 
+#include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/vector_util.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/graph/graph_factory.hpp"
@@ -508,7 +508,8 @@ void graph_serv::find_from_cht_(
   ht.find(key, out, n);  // replication number of local_node
 #else
   // cannot reach here, assertion!
-  assert(argv().is_standalone());
+  JUBATUS_ASSERT_UNREACHABLE();
+  // JUBATUS_ASSERT(argv().is_standalone());
   // out.push_back(make_pair(argv().eth, argv().port));
 #endif
 }
