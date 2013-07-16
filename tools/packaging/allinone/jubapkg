@@ -133,6 +133,13 @@ do_build() {
 		return 1
 	fi
 
+	if [ -d "${PREFIX}" ]; then
+		echo "The prefix directory (${PREFIX}) exists."
+		echo "This may cause your package to link against the wrong version of libraries!"
+		echo "Please remove the directory and run the build again."
+		return 1
+	fi
+
 	# Build Configuration
 	export PATH="${DEST_DIR}/${PREFIX}/bin:${PATH}"
 	export CPLUS_INCLUDE_PATH="${DEST_DIR}/${PREFIX}/include"
