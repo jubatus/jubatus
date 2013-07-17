@@ -11,6 +11,10 @@ list_target_files() {
   git diff --cached --name-only | grep -v "^jubatus/server/third_party/"
 }
 
+if [ -z "$(list_target_files)" ]; then
+  exit 0
+fi
+
 # cpplint
 codestyle_violation_count=$(list_target_files | xargs "${CPPLINT}" "${CPPLINT_ARGS}" 2>&1 | grep Total | sed -e "s/[^0-9]*\([0-9]*\)/\1/")
 echo $codestyle_violation_count
