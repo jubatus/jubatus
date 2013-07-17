@@ -47,7 +47,7 @@ def build(bld):
     test_src += ['membership_test.cpp', 'cht_test.cpp']
     if bld.env.INTEGRATION_TEST:
       test_src += ['zk_test.cpp', 'cached_zk_test.cpp', 'config_test.cpp']
-    
+
   def make_test(s):
     bld.program(
       features = 'gtest',
@@ -69,6 +69,7 @@ def build(bld):
       'membership.hpp',
       'network.hpp',
       'signals.hpp',
+      'unique_lock.hpp',
       'util.hpp',
       ])
   bld.recurse(subdirs)
