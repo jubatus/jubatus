@@ -304,7 +304,8 @@ edge_id_t graph_serv::create_edge(const std::string& id, const edge& ei) {
       try {
         if (nodes[i].first == argv().eth && nodes[i].second == argv().port) {
         } else {
-          client::graph c(nodes[i].first, nodes[i].second, 5.0);
+          client::graph c(
+              nodes[i].first, nodes[i].second, argv().interconnect_timeout);
           DLOG(INFO) << "request to "
               << nodes[i].first << ":" << nodes[i].second;
           c.create_edge_here(argv().name, eid, ei);
@@ -492,7 +493,7 @@ void graph_serv::selective_create_node_(
     this->create_node_here(nid_str);
   } else {
     // must not lock here
-    client::graph c(target.first, target.second, 5.0);
+    client::graph c(target.first, target.second, argv().interconnect_timeout);
     c.create_node_here(argv().name, nid_str);
   }
 }
