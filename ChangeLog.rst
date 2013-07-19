@@ -1,3 +1,23 @@
+Release 0.4.5 - 2013/07/22
+--------------------------
+
+* Improvements
+    * Generate Java/Ruby/Python client by jenerator (#291)
+    * Add options to specify ZooKeeper/Interconnect timeout to server/keeper (#344)
+    * Test failure on 32bit ubuntu (#349, #396)
+    * Fix jenerate install path (#355, #404)
+    * Change error message when mecab.h is not found (#408)
+
+* Bugfix
+    * Fix include file (#169, #410)
+    * Implement graceful exit  (#317, #411, #419)
+    * Fix mix interval_{sec,count} added by 1 (#340)
+    * Fix get_status returns uninitialized values issue (#377, #406)
+    * Generate random vectors in make_random. fixes (#398, #401)
+    * Fix insufficient -l flags in jubatus.pc (#403)
+    * Fix linear_mixer.ticktime returns not integer  (#418)
+    * #394, #416
+
 
 Release 0.4.4 - 2013/06/21
 --------------------------
