@@ -1,7 +1,7 @@
 # ==============================================================================
 # Jubatus
 # ==============================================================================
-JUBATUS_VERSION="0.4.4"
+JUBATUS_VERSION="0.4.5"
 JUBATUS_RELEASE="1"
 JUBATUS_IS_SNAPSHOT="no"
 JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
@@ -12,7 +12,7 @@ JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
 PFICOMMON_VERSION="1.3.1.0"
 PFICOMMON_RELEASE="1"
 PFICOMMON_IS_SNAPSHOT="yes"
-PFICOMMON_CHECKOUT="97700c8a4cbf506398dd9c8e6c270fe4c1055427"
+PFICOMMON_CHECKOUT="d44b82d315ecde6a713b801e81b1d7ad603539ec"
 
 # ==============================================================================
 # msgpack
