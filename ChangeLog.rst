@@ -2,7 +2,6 @@ Release 0.4.5 - 2013/07/22
 --------------------------
 
 * Improvements
-    * Generate Java/Ruby/Python client by jenerator (#291)
     * Add options to specify ZooKeeper/Interconnect timeout to server/keeper (#344)
     * Test failure on 32bit ubuntu (#349, #396)
     * Fix jenerate install path (#355, #404)
