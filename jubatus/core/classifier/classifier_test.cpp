@@ -92,18 +92,19 @@ common::sfv_t convert(vector<double>& v) {
 }
 
 TYPED_TEST_P(classifier_test, random) {
+  pfi::math::random::mtrand rand(0);
   local_storage s;
   TypeParam p(&s);
 
   srand(0);
   for (size_t i = 0; i < 1000; ++i) {
-    pair<string, vector<double> > d = gen_random_data();
+    pair<string, vector<double> > d = gen_random_data(rand);
     p.train(convert(d.second), d.first);
   }
 
   size_t correct = 0;
   for (size_t i = 0; i < 100; ++i) {
-    pair<string, vector<double> > d = gen_random_data();
+    pair<string, vector<double> > d = gen_random_data(rand);
     if (d.first == p.classify(convert(d.second))) {
       ++correct;
     }
@@ -112,18 +113,19 @@ TYPED_TEST_P(classifier_test, random) {
 }
 
 TYPED_TEST_P(classifier_test, random3) {
+  pfi::math::random::mtrand rand(0);
   local_storage s;
   TypeParam p(&s);
 
   srand(0);
   for (size_t i = 0; i < 1000; ++i) {
-    pair<string, vector<double> > d = gen_random_data3();
+    pair<string, vector<double> > d = gen_random_data3(rand);
     p.train(convert(d.second), d.first);
   }
 
   size_t correct = 0;
   for (size_t i = 0; i < 100; ++i) {
-    pair<string, vector<double> > d = gen_random_data3();
+    pair<string, vector<double> > d = gen_random_data3(rand);
     if (d.first == p.classify(convert(d.second))) {
       ++correct;
     }

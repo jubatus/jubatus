@@ -33,7 +33,7 @@ mixer* create_mixer(const server_argv& a,
                     const pfi::lang::shared_ptr<common::lock_service>& zk) {
 #ifdef HAVE_ZOOKEEPER_H
   return new linear_mixer(
-      linear_communication::create(zk, a.type, a.name, a.timeout),
+      linear_communication::create(zk, a.type, a.name, a.interconnect_timeout),
       a.interval_count, a.interval_sec);
 #else
   return new dummy_mixer;

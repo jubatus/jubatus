@@ -5,6 +5,7 @@ FILES[] =
   parse_test
   cpp_test
   java_test
+  python_test
   file_util_test
 
 USE_OCAMLFIND = true

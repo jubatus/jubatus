@@ -29,6 +29,7 @@
 #include "jubatus/core/framework/mixable.hpp"
 #include "../../common/membership.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
+#include "../../common/unique_lock.hpp"
 
 using std::vector;
 using std::string;
@@ -37,6 +38,8 @@ using jubatus::core::common::byte_buffer;
 using pfi::concurrent::scoped_lock;
 using pfi::concurrent::scoped_rlock;
 using pfi::concurrent::scoped_wlock;
+using pfi::system::time::clock_time;
+using pfi::system::time::get_clock_time;
 
 namespace jubatus {
 namespace server {
@@ -129,8 +132,8 @@ linear_mixer::linear_mixer(
       count_threshold_(count_threshold),
       tick_threshold_(tick_threshold),
       counter_(0),
-      ticktime_(0),
       mix_count_(0),
+      ticktime_(get_clock_time()),
       is_running_(false),
       t_(pfi::lang::bind(&linear_mixer::mixer_loop, this)) {
 }
@@ -158,19 +161,19 @@ void linear_mixer::start() {
 }
 
 void linear_mixer::stop() {
-  scoped_lock lk(m_);
+  common::unique_lock lk(m_);
   if (is_running_) {
     is_running_ = false;
+    lk.unlock();
     t_.join();
   }
 }
 
 void linear_mixer::updated() {
   scoped_lock lk(m_);
-  unsigned int new_ticktime = time(NULL);
   ++counter_;
-  if (counter_ > count_threshold_
-      || new_ticktime - ticktime_ > tick_threshold_) {
+  if (counter_ >= count_threshold_
+      || get_clock_time() - ticktime_ > tick_threshold_) {
     c_.notify();  // TODO(beam2d): need sync here?
   }
 }
@@ -180,34 +183,33 @@ void linear_mixer::get_status(server_base::status_t& status) const {
   status["linear_mixer.count"] =
     pfi::lang::lexical_cast<string>(counter_);
   status["linear_mixer.ticktime"] =
-    pfi::lang::lexical_cast<string>(ticktime_);  // since last mix
+    pfi::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
 }
 
 void linear_mixer::mixer_loop() {
-  while (is_running_) {
+  while (true) {
     pfi::lang::shared_ptr<common::try_lockable> zklock = communication_
         ->create_lock();
     try {
-      {
-        scoped_lock lk(m_);
+      common::unique_lock lk(m_);
+      if (!is_running_) {
+        return;
+      }
 
-        c_.wait(m_, 1);
-        unsigned int new_ticktime = time(NULL);
-        if (counter_ > count_threshold_
-            || new_ticktime - ticktime_ > tick_threshold_) {
-          if (zklock->try_lock()) {
-            LOG(INFO) << "starting mix:";
-            counter_ = 0;
-            ticktime_ = new_ticktime;
-          } else {
-            continue;
-          }
-        } else {
-          continue;
+      c_.wait(m_, 0.5);
+      clock_time new_ticktime = get_clock_time();
+      if (counter_ >= count_threshold_
+          || new_ticktime - ticktime_ > tick_threshold_) {
+        if (zklock->try_lock()) {
+          LOG(INFO) << "starting mix:";
+          counter_ = 0;
+          ticktime_ = new_ticktime;
+
+          lk.unlock();
+          mix();
+          LOG(INFO) << ".... " << mix_count_ << "th mix done.";
         }
-      }  // unlock
-      mix();
-      LOG(INFO) << ".... " << mix_count_ << "th mix done.";
+      }
     } catch (const jubatus::core::common::exception::jubatus_exception& e) {
       LOG(ERROR) << e.diagnostic_information(true);
     }
@@ -295,7 +297,7 @@ int linear_mixer::put_diff(
     mixables[i]->put_diff(unpacked[i]);
   }
   counter_ = 0;
-  ticktime_ = time(NULL);
+  ticktime_ = get_clock_time();
   return 0;
 }
 

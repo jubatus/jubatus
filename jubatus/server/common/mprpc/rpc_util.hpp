@@ -107,7 +107,10 @@ struct result {
       jubatus::server::common::mprpc::rpc_server::start(nthreads, no_hang); \
     }                                                                   \
     void rpc_join() {                                                   \
-      jubatus::server::common::mprpc::rpc_server::join();                \
+      jubatus::server::common::mprpc::rpc_server::join();               \
+    }                                                                   \
+    void rpc_end() {                                                    \
+      jubatus::server::common::mprpc::rpc_server::end();                \
     }                                                                   \
     void rpc_stop() {                                                   \
       jubatus::server::common::mprpc::rpc_server::stop();               \

@@ -27,13 +27,13 @@ class regression_impl_ : public regression<regression_impl_> {
   }
 
   int32_t train(std::string name, std::vector<std::pair<float,
-       datum> > train_data) {
+       jubatus::core::fv_converter::datum> > train_data) {
     JWLOCK_(p_);
     return get_p()->train(train_data);
   }
 
   std::vector<float> estimate(std::string name,
-       std::vector<datum> estimate_data) {
+       std::vector<jubatus::core::fv_converter::datum> estimate_data) {
     JRLOCK_(p_);
     return get_p()->estimate(estimate_data);
   }

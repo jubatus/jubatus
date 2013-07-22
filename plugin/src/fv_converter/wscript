@@ -13,6 +13,7 @@ def options(opt):
 
 def configure(conf):
   if Options.options.enable_mecab:
+    conf.check_cxx(header_name = 'mecab.h')
     conf.check_cxx(lib = 'mecab',
                    fragment='''
 #include <mecab.h>

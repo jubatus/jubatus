@@ -46,19 +46,30 @@ string make_logfile_name(const server_argv& a) {
 }  // namespace
 
 server_helper_impl::server_helper_impl(const server_argv& a) {
+  common::util::prepare_signal_handling();
+
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
     zk_.reset(common::create_lock_service("zk",
-                                          a.z, a.timeout,
+                                          a.z, a.zookeeper_timeout,
                                           make_logfile_name(a)));
+    register_lock_service(zk_);
   }
+#endif
+}
+
+server_helper_impl::~server_helper_impl() {
+  zk_config_lock_.reset();
+  zk_.reset();
+
+#ifdef HAVE_ZOOKEEPER_H
+  close_lock_service();
 #endif
 }
 
 void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
-    ls = zk_;
     common::prepare_jubatus(*zk_, a.type, a.name);
 
     if (a.join) {  // join to the existing cluster with -j option
@@ -72,8 +83,6 @@ void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
 void server_helper_impl::prepare_for_run(const server_argv& a, bool use_cht) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
-    ls = zk_;
-
     if (use_cht) {
       common::cht::setup_cht_dir(*zk_, a.type, a.name);
       common::cht ht(zk_, a.type, a.name);

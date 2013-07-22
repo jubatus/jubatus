@@ -85,6 +85,7 @@ class rpc_server : public msgpack::rpc::dispatcher {
   void listen(uint16_t port, const std::string& bind_address);
   void start(int nthreads, bool no_hang = false);
   void join();
+  void end();
   void stop();
   void close();
 

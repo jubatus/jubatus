@@ -1,11 +1,12 @@
 RPM Packaging
 =============
 
-1. Setup the build tools.
+1. On RHEL 6, install the following packages.
 
 ::
 
- yum -y install rpmdevtools
+  sudo yum groupinstall 'Development Tools'
+  sudo yum install git-core ruby rpm-build rpmdevtools spectool createrepo
 
 2. Modify ``package-config`` to specify which version to build. See below for details.
 
@@ -17,10 +18,6 @@ RPM Packaging
 
 Run ``./package.sh`` to see the detailed usage.
 
-Requirements
-------------
-
-* RHEL 6
 
 Common Usage
 ------------

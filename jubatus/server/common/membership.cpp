@@ -106,8 +106,7 @@ void register_actor(
   }
 
   // set exit zlistener here
-  pfi::lang::function<void()> f = &force_exit;
-  z.push_cleanup(f);
+  z.push_cleanup(&force_exit);
 }
 
 void register_keeper(
@@ -137,8 +136,7 @@ void register_keeper(
   }
 
   // set exit zlistener here
-  pfi::lang::function<void()> f = &force_exit;
-  z.push_cleanup(f);
+  z.push_cleanup(&force_exit);
 }
 
 // zk -> name -> list( (ip, rpc_port) )
