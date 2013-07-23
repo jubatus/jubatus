@@ -49,6 +49,7 @@ class server_base {
 
   virtual bool save(const std::string& id);
   virtual bool load(const std::string& id);
+  void load_file(const std::string& path);
   void event_model_updated();
 
   uint64_t update_count() const {

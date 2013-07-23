@@ -101,11 +101,13 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
       "config option need to specify json file "
       "when standalone mode (without ZK mode)",
       false, "");
+  p.add<std::string>("model_file", 'm',
+                     "model data to load on startup", false, "");
 
 #ifdef HAVE_ZOOKEEPER_H
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
   p.add<std::string>("name", 'n', "learning machine instance name", false);
-  p.add<std::string>("mixer", 'm', "mixer strategy", false, "");
+  p.add<std::string>("mixer", 'x', "mixer strategy", false, "");
   p.add("join", 'j', "join to the existing cluster");
   p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
@@ -135,6 +137,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   logdir = p.get<std::string>("logdir");
   loglevel = p.get<int>("loglevel");
   configpath = p.get<std::string>("configpath");
+  modelpath = p.get<std::string>("model_file");
 
   // determine listen-address and IPaddr used as ZK 'node-name'
   // TODO(y-oda-oni-juba): check bind_address is valid format

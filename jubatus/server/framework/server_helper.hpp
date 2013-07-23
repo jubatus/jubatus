@@ -96,6 +96,15 @@ class server_helper {
       LOG(ERROR) << msg;
       exit(1);
     }
+
+    try {
+      // standalone only, is it desirable?
+      if (a.is_standalone() && !a.modelpath.empty()) {
+        server_->load_file(a.modelpath);
+      }
+    } catch (const std::runtime_error& e) {
+      exit(1);
+    }
   }
 
   std::map<std::string, std::string> get_loads() const {

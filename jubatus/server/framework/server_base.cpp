@@ -77,7 +77,11 @@ bool server_base::save(const std::string& id) {
 }
 
 bool server_base::load(const std::string& id) {
-  const std::string path = build_local_path(argv_, "jubatus", id);
+  load_file(build_local_path(argv_, "jubatus", id));
+  return true;
+}
+
+void server_base::load_file(const std::string& path) {
   std::ifstream ifs(path.c_str(), std::ios::binary);
   if (!ifs) {
     throw JUBATUS_EXCEPTION(
@@ -102,7 +106,6 @@ bool server_base::load(const std::string& id) {
     LOG(ERROR) << e.what();
     throw;
   }
-  return true;
 }
 
 void server_base::event_model_updated() {

@@ -82,6 +82,7 @@ struct server_argv {
   std::string logdir;
   int loglevel;
   std::string configpath;
+  std::string modelpath;
   std::string eth;
   int interval_sec;
   int interval_count;
