@@ -1,7 +1,7 @@
 language: cpp
 
 compiler:
-# Disable gcc until Travis migrates to 64-bit environment (see #120)
+# Disable gcc until Travis successes in 64-bit environment (see #120)
 #  - gcc
   - clang
 
@@ -22,8 +22,8 @@ install:
   - pushd jubatus-msgpack-rpc/cpp && git checkout develop && ./bootstrap && ./configure --with-jubatus-mpio=/usr/local && make && sudo make install && popd
   - sudo ldconfig
   # glog
-  - wget http://google-glog.googlecode.com/files/glog-0.3.2.tar.gz && tar xf glog-0.3.2.tar.gz
-  - pushd glog-0.3.2 && ./configure && make && sudo make install && popd
+  - wget http://google-glog.googlecode.com/files/glog-0.3.3.tar.gz && tar xf glog-0.3.3.tar.gz
+  - pushd glog-0.3.3 && ./configure && make && sudo make install && popd
   - sudo ldconfig
   # pficommon
   - git clone git://github.com/pfi/pficommon.git
@@ -38,12 +38,12 @@ install:
   - pushd re2 && make && sudo make install && popd
   - sudo ldconfig
   # ux
-  - wget http://ux-trie.googlecode.com/files/ux-0.1.8.tar.bz2 && tar xf ux-0.1.8.tar.bz2
-  - pushd ux-0.1.8 && ./waf configure && ./waf build && sudo ./waf install && popd
+  - wget http://ux-trie.googlecode.com/files/ux-0.1.9.tar.bz2 && tar xf ux-0.1.9.tar.bz2
+  - pushd ux-0.1.9 && ./waf configure && ./waf build && sudo ./waf install && popd
   - sudo ldconfig
   # mecab
-  - wget http://mecab.googlecode.com/files/mecab-0.994.tar.gz && tar xf mecab-0.994.tar.gz
-  - pushd mecab-0.994 && ./configure --enable-utf8-only && make && sudo make install && popd
+  - wget http://mecab.googlecode.com/files/mecab-0.996.tar.gz && tar xf mecab-0.996.tar.gz
+  - pushd mecab-0.996 && ./configure --enable-utf8-only && make && sudo make install && popd
   - sudo ldconfig
   # mecab-ipadic
   - wget http://mecab.googlecode.com/files/mecab-ipadic-2.7.0-20070801.tar.gz && tar xf mecab-ipadic-2.7.0-20070801.tar.gz
@@ -56,7 +56,8 @@ script:
 
 branches:
   only:
-    - master
+    # Disable still #396 mereged to master (release 0.4.5)
+#    - master
     - develop
 
 notifications:

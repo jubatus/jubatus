@@ -17,6 +17,11 @@ let test_split_path _ =
 let suite = "cpp.ml" >:::
   [ "test_take_base" >:: test_take_base;
     "test_split_path" >:: test_split_path;
+    "test_concat_path" >:: begin fun() ->
+      assert_equal
+        "path/to/file"
+        (File_util.concat_path ["path"; "to"; "file"])
+    end;
   ]
 ;;
  

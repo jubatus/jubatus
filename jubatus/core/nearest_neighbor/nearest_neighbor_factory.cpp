@@ -18,7 +18,6 @@
 
 #include <map>
 #include <string>
-#include <glog/logging.h>
 
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
@@ -37,17 +36,13 @@ nearest_neighbor_base* create_nearest_neighbor(
   using common::jsonconfig::config_cast_check;
 
   if (name == "euclid_lsh") {
-    DLOG(INFO) << __func__ << "  euclid_lsh selected ";
     return new euclid_lsh(
         config_cast_check<euclid_lsh::config>(config), table, id);
   } else if (name == "lsh") {
-    DLOG(INFO) << __func__ << "  lsh selected ";
     return new lsh(config_cast_check<lsh::config>(config), table, id);
   } else if (name == "minhash") {
-    DLOG(INFO) << __func__ << "  minhash selected ";
     return new minhash(config_cast_check<minhash::config>(config), table, id);
   } else {
-    DLOG(INFO) << __func__ << " unknown " << name << "required";
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }
   return NULL;

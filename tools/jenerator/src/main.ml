@@ -17,17 +17,25 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 *)
 
+let show_error_message file pos message =
+  Printf.fprintf stderr
+    "File \"%s\", line %d, character %d: %s\n"
+    file pos.Lexing.pos_lnum
+    (pos.Lexing.pos_cnum - pos.Lexing.pos_bol)
+    message
+;;
+
 let parse source_file =
   let lexbuf = Lexing.from_channel (open_in source_file) in
   try
-    Jdl_parser.input Jdl_lexer.token lexbuf
+    Parse.parse lexbuf
   with
-  | Parsing.Parse_error ->
-    let p = Lexing.lexeme_start_p lexbuf in
-    Printf.fprintf stderr
-      "File \"%s\", line %d, character %d: syntax error.\n"
-      source_file p.Lexing.pos_lnum
-      (p.Lexing.pos_cnum - p.Lexing.pos_bol);
+  | Jdl_lexer.Illegal_character (p, ch) ->
+    let message = Printf.sprintf "illegal character: '%c'." ch in
+    show_error_message source_file p message;
+    raise Parsing.Parse_error;
+  | Parse.Syntax_error p ->
+    show_error_message source_file p "syntax error.";
     raise Parsing.Parse_error;
   | exn ->
     print_endline (Printexc.to_string exn);
@@ -41,7 +49,7 @@ let _ =
     | "server" -> Cpp.generate_server
     | "cpp" -> Cpp.generate_client
     | "python" -> Python.generate
-    (*| "java" -> Java.generate*)
+    | "java" -> Java.generate
     | "ruby" -> Ruby.generate
     | _ ->
       print_endline ("Unsupported language: \"" ^ conf.Config.language ^ "\"");

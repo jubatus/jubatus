@@ -46,7 +46,9 @@ void send2supervisor(
     const cmdline::parser& argv);
 void send2server(
     const string& cmd,
+    const string& type,
     const string& name,
+    const string& id,
     const string& zkhosts);
 void status(const string& type, const string& name, const string& zkhosts);
 
@@ -66,6 +68,8 @@ try {
   p.add<std::string>("zookeeper", 'z',
       "ZooKeeper location; environment variable 'ZK' is used when available",
       false);
+  p.add<std::string>("id", 'i',
+      "[save|load] id of file name ('name' is used by default)", false);
 
   // Support framework::server_argv
   p.add<std::string>("listen_if", 'B',
@@ -83,6 +87,10 @@ try {
   p.add<int>("interval_sec", 'S', "[start] mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'I',
       "[start] mix interval by update count", false, 512);
+  p.add<int>("zookeeper_timeout", 'Z',
+      "[start] zookeeper time out (sec)", false, 10);
+  p.add<int>("interconnect_timeout", 'R',
+      "[start] interconnect time out between servers (sec)", false, 10);
 
   p.add("debug", 'd', "debug mode");
 
@@ -119,8 +127,14 @@ try {
 
   if (cmd == "start" or cmd == "stop") {
     send2supervisor(cmd, type, name, zk, p);
-  } else if (cmd == "save" or cmd == "load") {  // or set_config?
-    send2server(cmd, name, zk);
+  }
+
+  if (cmd == "save" or cmd == "load") {
+    string id = p.get<std::string>("name");
+    if (p.get<std::string>("id") != "") {
+      id = p.get<std::string>("id");
+    }
+    send2server(cmd, type, p.get<string>("name"), id, zk);
   }
 
   return 0;
@@ -196,6 +210,8 @@ void send2supervisor(
 
     server_option.interval_sec = argv.get<int>("interval_sec");
     server_option.interval_count = argv.get<int>("interval_count");
+    server_option.zookeeper_timeout = argv.get<int>("zookeeper_timeout");
+    server_option.interconnect_timeout = argv.get<int>("interconnect_timeout");
   }
 
   ls_->list(jubatus::server::common::JUBAVISOR_BASE_PATH, list);
@@ -211,24 +227,30 @@ void send2supervisor(
   }
   vector<string>::const_iterator it;
   unsigned int n = N / list.size();
+  unsigned int m = N % list.size();
   for (it = list.begin(); it != list.end(); ++it) {
-    do_request(cmd, name, *it, n, server_option);
-  }
-  n = N % list.size();
-  for (size_t i = 0; i < n; ++i) {
-    do_request(cmd, name, *it, n, server_option);
+    if (m == 0) {
+      do_request(cmd, name, *it, n, server_option);
+    } else {
+      do_request(cmd, name, *it, n + 1, server_option);
+      --m;
+    }
   }
 }
 
 void send2server(
     const string& cmd,
+    const string& type,
     const string& name,
+    const string& id,
     const string& zkhosts) {
   pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
       jubatus::server::common::create_lock_service(
           "zk", zkhosts, 10, "/dev/null"));
+  std::string path;
+  jubatus::server::common::build_actor_path(path, type, name);
   vector<string> list;
-  ls_->list(jubatus::server::common::ACTOR_BASE_PATH, list);
+  ls_->list(path + "/nodes", list);
 
   if (list.empty()) {
     LOG(INFO) << "no server to " << cmd << " " << name;
@@ -246,13 +268,13 @@ void send2server(
     cout << "sending " << cmd << " / " << name << " to "
         << *it << "..." << std::flush;
 
-    int r = c.call(cmd, name).get<int>();
-    if (r != 0) {
+    try {
+      c.call(cmd, name, id).get<bool>();
+      cout << "ok." << endl;
+    } catch (msgpack::rpc::rpc_error& e) {
       cout << "failed." << endl;
       LOG(ERROR) << "can't do '" << cmd << " " << name << "' in "
           << ip << " " << port;
-    } else {
-      cout << "ok." << endl;
     }
   }
 }

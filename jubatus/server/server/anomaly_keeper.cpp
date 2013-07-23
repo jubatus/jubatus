@@ -9,8 +9,8 @@
 #include <glog/logging.h>
 
 #include "jubatus/core/common/exception.hpp"
-#include "../framework/aggregators.hpp"
-#include "../framework/keeper.hpp"
+#include "../../server/framework/aggregators.hpp"
+#include "../../server/framework/keeper.hpp"
 #include "anomaly_types.hpp"
 
 namespace jubatus {
@@ -22,15 +22,18 @@ int run_keeper(int argc, char* argv[]) {
     k.register_async_random<std::string>("get_config");
     k.register_async_cht<2, bool>("clear_row", pfi::lang::function<bool(bool,
          bool)>(&jubatus::server::framework::all_and));
-    k.register_async_random<std::pair<std::string, float>, datum>("add");
-    k.register_async_cht<2, float, datum>("update", pfi::lang::function<float(
-        float, float)>(&jubatus::server::framework::pass<float>));
-    k.register_async_cht<2, float, datum>("overwrite",
+    k.register_async_random<std::pair<std::string, float>,
+         jubatus::core::fv_converter::datum>("add");
+    k.register_async_cht<2, float, jubatus::core::fv_converter::datum>("update",
          pfi::lang::function<float(float, float)>(
+        &jubatus::server::framework::pass<float>));
+    k.register_async_cht<2, float, jubatus::core::fv_converter::datum>(
+        "overwrite", pfi::lang::function<float(float, float)>(
         &jubatus::server::framework::pass<float>));
     k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
          bool)>(&jubatus::server::framework::all_and));
-    k.register_async_random<float, datum>("calc_score");
+    k.register_async_random<float, jubatus::core::fv_converter::datum>(
+        "calc_score");
     k.register_async_broadcast<std::vector<std::string> >("get_all_rows",
          pfi::lang::function<std::vector<std::string>(std::vector<std::string>,
          std::vector<std::string>)>(

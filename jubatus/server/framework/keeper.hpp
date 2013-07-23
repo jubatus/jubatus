@@ -329,7 +329,7 @@ class keeper
 
     try {
       msgpack::rpc::client cli(c.first, c.second);
-      cli.set_timeout(a_.timeout);
+      cli.set_timeout(a_.interconnect_timeout);
       return cli.call(method_name, name).template get<R>();
     } catch (const std::exception& e) {
       LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
@@ -351,7 +351,7 @@ class keeper
 
     try {
       msgpack::rpc::client cli(c.first, c.second);
-      cli.set_timeout(a_.timeout);
+      cli.set_timeout(a_.interconnect_timeout);
       return cli.call(method_name, name, arg).template get<R>();
     } catch (const std::exception& e) {
       LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
@@ -374,7 +374,7 @@ class keeper
 
     try {
       msgpack::rpc::client cli(c.first, c.second);
-      cli.set_timeout(a_.timeout);
+      cli.set_timeout(a_.interconnect_timeout);
       return cli.call(method_name, name, a0, a1).template get<R>();
     } catch (const std::exception& e) {
       LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
@@ -398,7 +398,7 @@ class keeper
 
     try {
       msgpack::rpc::client cli(c.first, c.second);
-      cli.set_timeout(a_.timeout);
+      cli.set_timeout(a_.interconnect_timeout);
       return cli.call(method_name, name, a0, a1, a2).template get<R>();
     } catch (const std::exception& e) {
       LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
@@ -418,7 +418,7 @@ class keeper
     const std::pair<std::string, int>& c = list[rng_(list.size())];
 
     async_task_loop::template call_apply<R, Tuple>(
-        c.first, c.second, method_name, args, a_, a_.timeout, req);
+        c.first, c.second, method_name, args, a_, a_.interconnect_timeout, req);
   }
 
   template<typename R>
@@ -437,8 +437,8 @@ class keeper
 #endif
 
     try {
-      jubatus::server::common::mprpc::rpc_mclient c(list, a_.timeout,
-                                            get_private_session_pool());
+      jubatus::server::common::mprpc::rpc_mclient c(list,
+          a_.interconnect_timeout, get_private_session_pool());
       return *(c.call(method_name, name, agg));
     } catch (const std::exception& e) {
       LOG(ERROR) << e.what();  // << " from " << c.first << ":" << c.second;
@@ -462,8 +462,8 @@ class keeper
 #endif
 
     try {
-      jubatus::server::common::mprpc::rpc_mclient c(list, a_.timeout,
-                                            get_private_session_pool());
+      jubatus::server::common::mprpc::rpc_mclient c(list,
+          a_.interconnect_timeout, get_private_session_pool());
       return *(c.call(method_name, name, arg, agg));
     } catch (const std::exception& e) {
       LOG(ERROR) << e.what();  // << " from " << c.first << ":" << c.second;
@@ -483,7 +483,7 @@ class keeper
     get_members_(name, list);
 
     async_task_loop::template call_apply<R, Tuple>(
-        list, method_name, args, a_, a_.timeout, req, agg);
+        list, method_name, args, a_, a_.interconnect_timeout, req, agg);
   }
 
   template<int N, typename R>
@@ -503,8 +503,8 @@ class keeper
 #endif
 
     try {
-      jubatus::server::common::mprpc::rpc_mclient c(list, a_.timeout,
-                                            get_private_session_pool());
+      jubatus::server::common::mprpc::rpc_mclient c(list,
+          a_.interconnect_timeout, get_private_session_pool());
       return *(c.call(method_name, name, id, agg));
     } catch (const std::exception& e) {
       LOG(ERROR) << N << " " << e.what();
@@ -530,8 +530,8 @@ class keeper
 #endif
 
     try {
-      jubatus::server::common::mprpc::rpc_mclient c(list, a_.timeout,
-                                            get_private_session_pool());
+      jubatus::server::common::mprpc::rpc_mclient c(list,
+          a_.interconnect_timeout, get_private_session_pool());
       return *(c.call(method_name, name, id, arg, agg));
     } catch (const std::exception& e) {
       LOG(ERROR) << e.what();  // << " from " << c.first << ":" << c.second;
@@ -557,8 +557,8 @@ class keeper
 #endif
 
     try {
-      jubatus::server::common::mprpc::rpc_mclient c(list, a_.timeout,
-                                            get_private_session_pool());
+      jubatus::server::common::mprpc::rpc_mclient c(list,
+          a_.interconnect_timeout, get_private_session_pool());
       return *(c.call(method_name, name, id, a0, a1, agg));
     } catch (const std::exception& e) {
       LOG(ERROR) << e.what();  // << " from " << c.first << ":" << c.second;
@@ -579,7 +579,7 @@ class keeper
     get_members_from_cht_(name, id, list, N);
 
     async_task_loop::template call_apply<R, Tuple>(
-        list, method_name, args, a_, a_.timeout, req, agg);
+        list, method_name, args, a_, a_.interconnect_timeout, req, agg);
   }
 
   // get thread local session-pool
@@ -710,6 +710,7 @@ class keeper
       mp::pthread_scoped_lock _l(lock_);
 
       running_count_ = hosts_.size();
+      // enable keeper::async_task timeout management
       if (timeout_sec > 0) {
         set_timeout(timeout_sec);
       }
@@ -718,7 +719,11 @@ class keeper
       for (size_t i = 0; i < hosts_.size(); ++i) {
         msgpack::rpc::session s = pool.get_session(hosts_[i].first,
                                                    hosts_[i].second);
+        // disable msgpack::rpc::session's timeout.
+        // because session timeout is managed by keeper::async_task
+        s.set_timeout(0);
 
+        // apply async method call and set its callback
         msgpack::rpc::future f = s.call_apply(method_name, args);
         futures_.push_back(f);
         f.attach_callback(

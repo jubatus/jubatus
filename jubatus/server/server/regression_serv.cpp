@@ -40,8 +40,8 @@ using pfi::lang::shared_ptr;
 using pfi::text::json::json;
 using pfi::lang::lexical_cast;
 
+using jubatus::core::fv_converter::datum;
 using jubatus::server::common::lock_service;
-using jubatus::server::framework::convert;
 using jubatus::server::framework::mixer::create_mixer;
 
 namespace jubatus {
@@ -109,6 +109,7 @@ bool regression_serv::set_config(const string& config) {
           core::regression::regression_factory::create_regression(
               conf.method, param, model),
           core::fv_converter::make_fv_converter(conf.converter)));
+  mixer_->set_mixable_holder(regression_->get_mixable_holder());
 
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
@@ -121,16 +122,14 @@ string regression_serv::get_config() {
   return config_;
 }
 
-int regression_serv::train(const vector<pair<float, jubatus::datum> >& data) {
+int regression_serv::train(const vector<pair<float, datum> >& data) {
   check_set_config();
 
   int count = 0;
 
   core::fv_converter::datum d;
   for (size_t i = 0; i < data.size(); ++i) {
-    // TODO(IDL): remove conversion
-    convert<jubatus::datum, core::fv_converter::datum>(data[i].second, d);
-    regression_->train(std::make_pair(data[i].first, d));
+    regression_->train(data[i]);
     DLOG(INFO) << "trained: " << data[i].first;
     count++;
   }
@@ -139,16 +138,13 @@ int regression_serv::train(const vector<pair<float, jubatus::datum> >& data) {
 }
 
 vector<float> regression_serv::estimate(
-    const vector<jubatus::datum>& data) const {
+    const vector<datum>& data) const {
   check_set_config();
 
   vector<float> ret;
-  core::fv_converter::datum d;
 
   for (size_t i = 0; i < data.size(); ++i) {
-    // TODO(IDL): remove conversion
-    convert<jubatus::datum, core::fv_converter::datum>(data[i], d);
-    ret.push_back(regression_->estimate(d));
+    ret.push_back(regression_->estimate(data[i]));
   }
   return ret;  // vector<estimate_results> >::ok(ret);
 }

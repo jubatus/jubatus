@@ -1,3 +1,40 @@
+Release 0.4.5 - 2013/07/22
+--------------------------
+
+* Improvements
+    * Add options to specify ZooKeeper/Interconnect timeout to server/keeper (#344)
+    * Test failure on 32bit ubuntu (#349, #396)
+    * Fix jenerate install path (#355, #404)
+    * Change error message when mecab.h is not found (#408)
+    * Fix include file (#169, #410)
+    * #416
+
+* Bugfix
+    * Implement graceful exit  (#317, #411, #419)
+    * Fix mix interval_{sec,count} added by 1 (#340)
+    * Fix get_status returns uninitialized values issue (#377, #406)
+    * Generate random vectors in make_random. fixes (#398, #401)
+    * Fix insufficient -l flags in jubatus.pc (#403)
+    * Fix linear_mixer.ticktime returns not integer  (#418)
+    * #394
+
+
+Release 0.4.4 - 2013/06/21
+--------------------------
+
+* Improvements
+    * Refactor (#323, #332, #367)
+    * Make juba.*keeper to allow 30 seconds or over as timeout time (#330)
+    * New jenerator (#373)
+    * Add CONTRIBUTING.md (#376, #387)
+    * #188, #322, #333, #354, #390
+
+* Bugfix
+    * Fix jubavisor to detect child process' exec failure (#215, #362)
+    * Eliminate deadlock (#329, #331, #375)
+    * Fix jubactl's save and load (#342, #383, #384)
+    * Fix jubactl's segfault when using -N option (#363, #388)
+    * #315, #319, #320, #327, #348, #358, #381, #385, #386
 
 Release 0.4.3 - 2013/04/19
 --------------------------

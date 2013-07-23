@@ -36,7 +36,8 @@ let parse_error s = print ("parse_error->"^s);;
 %token EXCEPTION
 %token SERVICE
 
-%token RPAREN LPAREN COMMA COLON
+%token INCLUDE
+%token RPAREN LPAREN COMMA COLON COLON_COLON
 %token RBRACE LBRACE RBRACE2 LBRACE2
 %token QUESTION
 %token ENUM
@@ -45,8 +46,8 @@ let parse_error s = print ("parse_error->"^s);;
 %token <int>    INT
 /* TODO: %token <double> DOUBLE <float> FLOAT <bool> true, false, <string> "..." */
 %token <string> LITERAL
-%token <string> INCLUDE
 %token <string> DECORATOR
+%token <string> STRING
 
 %start input
 %type <Syntax.idl> input
@@ -59,11 +60,17 @@ input:
 ;
 
 exp0:
+ | include_file { $1 }
  | typedef { $1 }
  | enum    { $1 }
  | msg     { $1 }
  | ex      { $1 }
  | service { $1 }
+;
+
+include_file:
+ | INCLUDE STRING { Include($2) }
+;
 
 typedef:
  | TYPEDEF LITERAL DEFINE a_type {
@@ -108,10 +115,10 @@ a_type:
 ;
 
 ret_type:
- | a_type { match $1 with
-	      | Struct("void") -> None
-	      | _ -> Some ($1) }   /* a bit ad-hoc : tsushima */
-
+ | a_type {
+   match $1 with
+   | Struct("void") -> None
+   | _ -> Some ($1) }   /* a bit ad-hoc : tsushima */
 
 types:
  | a_type COMMA types { $1::$3 }
@@ -137,7 +144,22 @@ numbers:
 msg:
  | MESSAGE LITERAL LBRACE2 fields RBRACE2 {
    Message { message_name = $2;
-             message_fields = $4; }
+             message_fields = $4;
+             message_raw = None; }
+ }
+ | MESSAGE LITERAL LPAREN cpp_type RPAREN LBRACE2 fields RBRACE2 {
+   Message { message_name = $2;
+             message_fields = $7;
+             message_raw = Some $4; }
+ }
+;
+
+cpp_type:
+ | LITERAL {
+   $1
+ }
+ | LITERAL COLON_COLON cpp_type {
+   $1 ^ "::" ^ $3
  }
 ;
 

@@ -23,6 +23,7 @@
 #include <pficommon/concurrent/mutex.h>
 #include <pficommon/concurrent/thread.h>
 #include <pficommon/lang/shared_ptr.h>
+#include <pficommon/system/time_util.h>
 #include "jubatus/core/common/byte_buffer.hpp"
 #include "../../common/lock_service.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
@@ -91,10 +92,10 @@ class linear_mixer : public mixer {
   unsigned int tick_threshold_;
 
   unsigned int counter_;
-  unsigned int ticktime_;
   unsigned int mix_count_;
+  pfi::system::time::clock_time ticktime_;
 
-  volatile bool is_running_;
+  bool is_running_;
 
   pfi::concurrent::thread t_;
   mutable pfi::concurrent::mutex m_;

@@ -20,11 +20,11 @@
 
 #include <string>
 #include <vector>
-#include "../../core/table/column/column_table.hpp"
+#include "jubatus/core/driver/nearest_neighbor.hpp"
+#include "jubatus/core/table/column/column_table.hpp"
 #include "../common/lock_service.hpp"
 #include "../framework/server_base.hpp"
 #include "nearest_neighbor_types.hpp"
-#include "jubatus/core/driver/nearest_neighbor.hpp"
 
 namespace jubatus {
 namespace server {
@@ -55,12 +55,14 @@ class nearest_neighbor_serv : public framework::server_base {
   bool init_table();
 
   int clear();
-  int set_row(const std::string& id, const datum& dat);
+  int set_row(const std::string& id, const core::fv_converter::datum& dat);
 
   neighbor_result neighbor_row_from_id(const std::string& id, size_t size);
-  neighbor_result neighbor_row_from_data(const datum& dat, size_t size);
+  neighbor_result neighbor_row_from_data(const core::fv_converter::datum& dat,
+      size_t size);
   neighbor_result similar_row_from_id(const std::string& id, size_t ret_num);
-  neighbor_result similar_row_from_data(const datum&, size_t);
+  neighbor_result similar_row_from_data(const core::fv_converter::datum&,
+      size_t);
 
  private:
   void check_set_config()const;

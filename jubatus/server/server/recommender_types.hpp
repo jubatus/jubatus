@@ -13,16 +13,11 @@
 
 #include <msgpack.hpp>
 
+#include "../../core/fv_converter/datum.hpp"
+
 namespace jubatus {
 
 typedef std::vector<std::pair<std::string, float> > similar_result;
-
-struct datum {
- public:
-  MSGPACK_DEFINE(string_values, num_values);
-  std::vector<std::pair<std::string, std::string> > string_values;
-  std::vector<std::pair<std::string, double> > num_values;
-};
 
 }  // namespace jubatus
 

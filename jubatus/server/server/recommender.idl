@@ -14,9 +14,11 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+%include "../../core/fv_converter/datum.hpp"
+
 type similar_result = list<tuple<string, float> >
 
-message datum {
+message datum(jubatus::core::fv_converter::datum) {
   0: list<tuple<string, string> >  string_values
   1: list<tuple<string, double> >  num_values
 }

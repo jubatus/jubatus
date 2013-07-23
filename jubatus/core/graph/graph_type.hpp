@@ -60,17 +60,17 @@ typedef pfi::data::unordered_map<node_id_t, eigen_vector_info>
   eigen_vector_mixed;
 
 struct node_info {
-  property p;
+  std::map<std::string, std::string> property;
   std::vector<edge_id_t> in_edges;
   std::vector<edge_id_t> out_edges;
 
-  MSGPACK_DEFINE(p, in_edges, out_edges);
+  MSGPACK_DEFINE(property, in_edges, out_edges);
 
   friend class pfi::data::serialization::access;
 
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(p) & MEMBER(in_edges) & MEMBER(out_edges);
+    ar & MEMBER(property) & MEMBER(in_edges) & MEMBER(out_edges);
   }
 };
 

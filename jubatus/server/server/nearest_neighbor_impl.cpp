@@ -7,7 +7,7 @@
 #include <utility>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "../framework.hpp"
+#include "../../server/framework.hpp"
 #include "nearest_neighbor_server.hpp"
 #include "nearest_neighbor_serv.hpp"
 
@@ -32,7 +32,8 @@ class nearest_neighbor_impl_ : public nearest_neighbor<nearest_neighbor_impl_> {
     return get_p()->clear();
   }
 
-  bool set_row(std::string name, std::string id, datum d) {
+  bool set_row(std::string name, std::string id,
+       jubatus::core::fv_converter::datum d) {
     JWLOCK_(p_);
     return get_p()->set_row(id, d);
   }
@@ -43,8 +44,8 @@ class nearest_neighbor_impl_ : public nearest_neighbor<nearest_neighbor_impl_> {
     return get_p()->neighbor_row_from_id(id, size);
   }
 
-  neighbor_result neighbor_row_from_data(std::string name, datum query,
-       uint32_t size) {
+  neighbor_result neighbor_row_from_data(std::string name,
+       jubatus::core::fv_converter::datum query, uint32_t size) {
     JRLOCK_(p_);
     return get_p()->neighbor_row_from_data(query, size);
   }
@@ -55,8 +56,8 @@ class nearest_neighbor_impl_ : public nearest_neighbor<nearest_neighbor_impl_> {
     return get_p()->similar_row_from_id(id, ret_num);
   }
 
-  neighbor_result similar_row_from_data(std::string name, datum query,
-       int32_t ret_num) {
+  neighbor_result similar_row_from_data(std::string name,
+       jubatus::core::fv_converter::datum query, int32_t ret_num) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_data(query, ret_num);
   }

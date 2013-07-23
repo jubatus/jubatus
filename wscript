@@ -1,8 +1,9 @@
 import Options
+from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '0.4.3'
+VERSION = '0.4.5'
 APPNAME = 'jubatus'
 
 top = '.'
@@ -129,12 +130,12 @@ def cpplint(ctx):
   cpplint = ctx.path.find_node('tools/codestyle/cpplint/cpplint.py')
   src_dir = ctx.path.find_node('jubatus')
   file_list = []
-  excludes = ['jubatus/server/third_party/**', \
-              'jubatus/server/*_server.hpp', \
-              'jubatus/server/*_impl.cpp', \
-              'jubatus/server/*_keeper.cpp', \
-              'jubatus/server/*_client.hpp', \
-              'jubatus/server/*_types.hpp', \
+  excludes = ['jubatus/server/third_party/*', \
+              'jubatus/server/server/*_server.hpp', \
+              'jubatus/server/server/*_impl.cpp', \
+              'jubatus/server/server/*_keeper.cpp', \
+              'jubatus/server/server/*_client.hpp', \
+              'jubatus/server/server/*_types.hpp', \
               'jubatus/client/*_client.hpp', \
               'jubatus/client/*_types.hpp']
   for file in src_dir.ant_glob('**/*.cpp **/*.cc **/*.hpp **/*.h'):
@@ -148,22 +149,26 @@ def cpplint(ctx):
   tmp_file.close()
 
 def regenerate(ctx):
-  import os
   server_node = ctx.path.find_node('jubatus/server/server')
   jenerator_node = ctx.path.find_node('tools/jenerator/src/jenerator')
+  if not jenerator_node:
+    raise TaskNotReady('jenerator is not built yet')
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name
     service_name = os.path.splitext(idl)[0]
     ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'server', '-o', '.', '-i', '-n', 'jubatus', '-g', 'JUBATUS_SERVER_SERVER_', idl], cwd=server_node.abspath())
+    print()
     if not service_name in ['graph', 'anomaly']:
       server_node.find_node('%s_client.hpp' % service_name).delete()
 
 def regenerate_client(ctx):
-  import os
   server_node = ctx.path.find_node('jubatus/server/server')
   client_node = ctx.path.find_node('jubatus/client')
   jenerator_node = ctx.path.find_node('tools/jenerator/src/jenerator')
+  if not jenerator_node:
+    raise TaskNotReady('jenerator is not built yet')
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name
     service_name = os.path.splitext(idl)[0]
     ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'cpp', '-o', client_node.abspath(), '-i', '-n', 'jubatus::' + service_name, '-g', 'JUBATUS_CLIENT_', idl], cwd=server_node.abspath())
+    print()

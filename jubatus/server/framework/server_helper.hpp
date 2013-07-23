@@ -23,6 +23,7 @@
 #include <map>
 #include <string>
 #include <glog/logging.h>
+#include <pficommon/lang/bind.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/system/sysstat.h>
 
@@ -32,6 +33,7 @@
 #include "../../config.hpp"
 #include "../common/lock_service.hpp"
 #include "../common/mprpc/rpc_server.hpp"
+#include "../common/signals.hpp"
 #include "../common/config.hpp"
 
 namespace jubatus {
@@ -41,6 +43,8 @@ namespace framework {
 class server_helper_impl {
  public:
   explicit server_helper_impl(const server_argv& a);
+  ~server_helper_impl();
+
   void prepare_for_start(const server_argv& a, bool use_cht);
   void prepare_for_run(const server_argv& a, bool use_cht);
   void get_config_lock(const server_argv& a, int retry);
@@ -154,11 +158,25 @@ class server_helper {
     try {
       serv.listen(a.port, a.bind_address);
       LOG(INFO) << "start listening at port " << a.port;
+
       serv.start(a.threadnum, true);
+
       // RPC server started, then register group membership
       impl_.prepare_for_run(a, use_cht_);
       LOG(INFO) << common::util::get_program_name() << " RPC server startup";
+
+      // Stop RPC server when terminate signal is sent
+      common::util::set_action_on_term(
+          pfi::lang::bind(&server_helper::stop, this, pfi::lang::ref(serv)));
+
+      // wait for termination
       serv.join();
+
+      // RPC server stopped, then stop mixer
+      if (!a.is_standalone()) {
+        server_->get_mixer()->stop();
+      }
+
       return 0;
     } catch (const mp::system_error& e) {
       if (e.code == EADDRINUSE) {
@@ -175,7 +193,12 @@ class server_helper {
     return -1;
   }
 
-    pfi::lang::shared_ptr<Server> server() const {
+  void stop(common::mprpc::rpc_server& serv) {
+    LOG(INFO) << "stopping RPC server";
+    serv.end();
+  }
+
+  pfi::lang::shared_ptr<Server> server() const {
     return server_;
   }
 

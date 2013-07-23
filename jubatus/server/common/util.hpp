@@ -49,9 +49,6 @@ void append_server_path(const std::string& argv0);
 
 void get_machine_status(machine_status_t& status);
 
-void set_exit_on_term();
-void ignore_sigpipe();
-
 }  // namespace util
 }  // namespace common
 }  // namespace server

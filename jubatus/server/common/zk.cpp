@@ -247,7 +247,7 @@ bool zk::read(const string& path, string& out) {
   }
 }
 
-void zk::push_cleanup(pfi::lang::function<void()>& f) {
+void zk::push_cleanup(const pfi::lang::function<void()>& f) {
   scoped_lock lk(m_);
   cleanups_.push_back(f);
 }

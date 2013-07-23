@@ -7,7 +7,7 @@
 #include <utility>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "../framework.hpp"
+#include "../../server/framework.hpp"
 #include "classifier_server.hpp"
 #include "classifier_serv.hpp"
 
@@ -27,13 +27,13 @@ class classifier_impl_ : public classifier<classifier_impl_> {
   }
 
   int32_t train(std::string name, std::vector<std::pair<std::string,
-       datum> > data) {
+       jubatus::core::fv_converter::datum> > data) {
     JWLOCK_(p_);
     return get_p()->train(data);
   }
 
   std::vector<std::vector<estimate_result> > classify(std::string name,
-       std::vector<datum> data) {
+       std::vector<jubatus::core::fv_converter::datum> data) {
     JRLOCK_(p_);
     return get_p()->classify(data);
   }

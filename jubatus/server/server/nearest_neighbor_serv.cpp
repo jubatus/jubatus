@@ -22,17 +22,18 @@
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/cast.h>
 #include <pficommon/text/json.h>
-#include "../../core/common/exception.hpp"
-#include "../../core/common/jsonconfig.hpp"
-#include "../../core/fv_converter/converter_config.hpp"
-#include "../../core/fv_converter/datum.hpp"
-#include "../../core/fv_converter/revert.hpp"
-#include "../../core/nearest_neighbor/nearest_neighbor_factory.hpp"
+#include "jubatus/core/common/exception.hpp"
+#include "jubatus/core/common/jsonconfig.hpp"
+#include "jubatus/core/fv_converter/converter_config.hpp"
+#include "jubatus/core/fv_converter/datum.hpp"
+#include "jubatus/core/fv_converter/revert.hpp"
+#include "jubatus/core/nearest_neighbor/nearest_neighbor_factory.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
 using std::string;
 using pfi::lang::lexical_cast;
 using pfi::lang::shared_ptr;
+using jubatus::core::fv_converter::datum;
 
 namespace jubatus {
 namespace server {
@@ -124,13 +125,11 @@ int nearest_neighbor_serv::clear() {
   return 0;
 }
 
-int nearest_neighbor_serv::set_row(const std::string& id, const datum& dat) {
+int nearest_neighbor_serv::set_row(const std::string& id, const datum& d) {
   // DLOG(INFO) << __func__ << " " << id;
   check_set_config();
 
   ++update_row_cnt_;
-  core::fv_converter::datum d;
-  framework::convert<jubatus::datum, core::fv_converter::datum>(dat, d);
   nearest_neighbor_->set_row(id, d);
   return 0;
 }
@@ -145,14 +144,10 @@ neighbor_result nearest_neighbor_serv::neighbor_row_from_id(
 }
 
 neighbor_result nearest_neighbor_serv::neighbor_row_from_data(
-    const datum& dat,
+    const datum& d,
     size_t size) {
   // DLOG(INFO) << __func__;
   check_set_config();
-
-  neighbor_result ret;
-  core::fv_converter::datum d;
-  framework::convert<jubatus::datum, core::fv_converter::datum>(dat, d);
 
   return nearest_neighbor_->neighbor_row_from_data(d, size);
 }
@@ -167,14 +162,10 @@ neighbor_result nearest_neighbor_serv::similar_row_from_id(
 }
 
 neighbor_result nearest_neighbor_serv::similar_row_from_data(
-    const datum& data,
+    const datum& d,
     size_t ret_num) {
   DLOG(INFO) << __func__;
   check_set_config();
-
-  neighbor_result ret;
-  core::fv_converter::datum d;
-  framework::convert<datum, core::fv_converter::datum>(data, d);
 
   return nearest_neighbor_->similar_row(d, ret_num);
 }

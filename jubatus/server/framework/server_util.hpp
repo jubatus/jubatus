@@ -71,6 +71,8 @@ struct server_argv {
   std::string bind_address;
   std::string bind_if;
   int timeout;
+  int zookeeper_timeout;
+  int interconnect_timeout;
   int threadnum;
   std::string program_name;
   std::string type;
@@ -85,7 +87,8 @@ struct server_argv {
   int interval_count;
   std::string mixer;
 
-  MSGPACK_DEFINE(join, port, bind_address, bind_if, timeout, threadnum,
+  MSGPACK_DEFINE(join, port, bind_address, bind_if, timeout,
+      zookeeper_timeout, interconnect_timeout, threadnum,
       program_name, type, z, name, datadir, logdir, loglevel, eth,
       interval_sec, interval_count);
 
@@ -106,6 +109,8 @@ struct keeper_argv {
   std::string bind_address;
   std::string bind_if;
   int timeout;
+  int zookeeper_timeout;
+  int interconnect_timeout;
   int threadnum;
   std::string program_name;
   std::string z;
@@ -120,29 +125,14 @@ struct keeper_argv {
   void set_log_destination(const std::string& progname) const;
 };
 
-template<typename From, typename To>
-void convert(const From& from, To& to) {
-  msgpack::sbuffer sbuf;
-  msgpack::pack(sbuf, from);
-  msgpack::unpacked msg;
-  msgpack::unpack(&msg, sbuf.data(), sbuf.size());
-  msg.get().convert(&to);
-}
-
-extern pfi::lang::shared_ptr<
-    jubatus::server::common::lock_service> ls;
-void atexit();
+void register_lock_service(pfi::lang::shared_ptr<common::lock_service> ls);
+void close_lock_service();
 
 template<class ImplServerClass>
 int run_server(int args, char** argv, const std::string& type) {
   try {
     ImplServerClass impl_server(server_argv(args, argv, type));
-
     impl_server.get_p()->get_mixer()->register_api(impl_server);
-    ::atexit(jubatus::server::framework::atexit);
-
-    common::util::set_exit_on_term();
-    common::util::ignore_sigpipe();
     return impl_server.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);

@@ -73,6 +73,7 @@ TYPED_TEST_P(recommender_random_test, trivial) {
 }
 
 TYPED_TEST_P(recommender_random_test, random) {
+  pfi::math::random::mtrand rand(0);
   TypeParam r;
 
   // Generate random data from two norma distributions, N1 and N2.
@@ -82,7 +83,7 @@ TYPED_TEST_P(recommender_random_test, random) {
   mu1.push_back(1.0);
   for (size_t i = 0; i < 100; ++i) {
     vector<double> v;
-    make_random(mu1, 1.0, 3, v);
+    make_random(rand, mu1, 1.0, 3, v);
     string row_name = "r1_" + lexical_cast<string>(i);
     r.update_row(row_name, make_vec(v[0], v[1], v[2]));
   }
@@ -93,7 +94,7 @@ TYPED_TEST_P(recommender_random_test, random) {
   mu2.push_back(-1.0);
   for (size_t i = 0; i < 100; ++i) {
     vector<double> v;
-    make_random(mu2, 1.0, 3, v);
+    make_random(rand, mu2, 1.0, 3, v);
     string row_name = "r2_" + lexical_cast<string>(i);
     r.update_row(row_name, make_vec(v[0], v[1], v[2]));
   }
@@ -128,10 +129,11 @@ TYPED_TEST_P(recommender_random_test, random) {
 }
 
 void update_random(recommender_base& r) {
+  pfi::math::random::mtrand rand(0);
   vector<float> mu(3);
   for (size_t i = 0; i < 100; ++i) {
     vector<double> v;
-    make_random(mu, 1.0, 3, v);
+    make_random(rand, mu, 1.0, 3, v);
     string row_name = "r1_" + lexical_cast<string>(i);
     r.update_row(row_name, make_vec(v[0], v[1], v[2]));
   }
@@ -234,11 +236,12 @@ TYPED_TEST_P(recommender_random_test, diff) {
 }
 
 TYPED_TEST_P(recommender_random_test, mix) {
+  pfi::math::random::mtrand rand(0);
   TypeParam r1, r2, expect;
   vector<float> mu(10);
   for (size_t i = 0; i < 100; ++i) {
     vector<double> v;
-    make_random(mu, 1.0, 3, v);
+    make_random(rand, mu, 1.0, 3, v);
     common::sfv_t vec = make_vec(v[0], v[1], v[2]);
 
     string row = "r_" + lexical_cast<string>(i);

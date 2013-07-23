@@ -51,8 +51,8 @@ using std::vector;
 using std::pair;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
+using jubatus::core::fv_converter::datum;
 using jubatus::server::common::lock_service;
-using jubatus::server::framework::convert;
 using jubatus::server::framework::server_argv;
 using jubatus::server::framework::mixer::create_mixer;
 
@@ -156,7 +156,7 @@ bool anomaly_serv::clear_row(const string& id) {
 }
 
 // nolock, random
-pair<string, float> anomaly_serv::add(const datum& d) {
+pair<string, float> anomaly_serv::add(const datum& data) {
   check_set_config();
 
   uint64_t id = idgen_->generate();
@@ -167,12 +167,10 @@ pair<string, float> anomaly_serv::add(const datum& d) {
 #endif
     pfi::concurrent::scoped_wlock lk(rw_mutex());
     event_model_updated();
-    core::fv_converter::datum data;
-    convert(d, data);
     return anomaly_->add(id_str, data);
 #ifdef HAVE_ZOOKEEPER_H
   } else {
-    return add_zk(id_str, d);
+    return add_zk(id_str, data);
   }
 #endif
 }
@@ -203,20 +201,16 @@ pair<string, float> anomaly_serv::add_zk(const string&id_str, const datum& d) {
   return make_pair(id_str, score);
 }
 
-float anomaly_serv::update(const string& id, const datum& d) {
+float anomaly_serv::update(const string& id, const datum& data) {
   check_set_config();
-  core::fv_converter::datum data;
-  convert(d, data);
 
   float score = anomaly_->update(id, data);
   DLOG(INFO) << "point updated: " << id;
   return score;
 }
 
-float anomaly_serv::overwrite(const string& id, const datum& d) {
+float anomaly_serv::overwrite(const string& id, const datum& data) {
   check_set_config();
-  core::fv_converter::datum data;
-  convert(d, data);
 
   float score = anomaly_->overwrite(id, data);
   DLOG(INFO) << "point overwritten: " << id;
@@ -230,10 +224,8 @@ bool anomaly_serv::clear() {
   return true;
 }
 
-float anomaly_serv::calc_score(const datum& d) const {
+float anomaly_serv::calc_score(const datum& data) const {
   check_set_config();
-  core::fv_converter::datum data;
-  convert(d, data);
   return anomaly_->calc_score(data);
 }
 
@@ -274,7 +266,7 @@ float anomaly_serv::selective_update(
     event_model_updated();
     return this->update(id, d);
   } else {  // needs no lock
-    client::anomaly c(host, port, 5.0);
+    client::anomaly c(host, port, argv().interconnect_timeout);
     return c.update(argv().name, id, d);
   }
 }

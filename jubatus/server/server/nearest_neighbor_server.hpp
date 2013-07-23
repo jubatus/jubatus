@@ -10,7 +10,7 @@
 #include <utility>
 #include <pficommon/lang/bind.h>
 
-#include "../common/mprpc/rpc_server.hpp"
+#include "../../server/common/mprpc/rpc_server.hpp"
 #include "nearest_neighbor_types.hpp"
 
 namespace jubatus {
@@ -25,21 +25,23 @@ class nearest_neighbor : public jubatus::server::common::mprpc::rpc_server {
         &Impl::init_table, impl, pfi::lang::_1));
     rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(&Impl::clear,
          impl, pfi::lang::_1));
-    rpc_server::add<bool(std::string, std::string, datum)>("set_row",
-         pfi::lang::bind(&Impl::set_row, impl, pfi::lang::_1, pfi::lang::_2,
-         pfi::lang::_3));
+    rpc_server::add<bool(std::string, std::string,
+         jubatus::core::fv_converter::datum)>("set_row", pfi::lang::bind(
+        &Impl::set_row, impl, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
     rpc_server::add<neighbor_result(std::string, std::string, uint32_t)>(
         "neighbor_row_from_id", pfi::lang::bind(&Impl::neighbor_row_from_id,
          impl, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
-    rpc_server::add<neighbor_result(std::string, datum, uint32_t)>(
+    rpc_server::add<neighbor_result(std::string,
+         jubatus::core::fv_converter::datum, uint32_t)>(
         "neighbor_row_from_data", pfi::lang::bind(&Impl::neighbor_row_from_data,
          impl, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
     rpc_server::add<neighbor_result(std::string, std::string, int32_t)>(
         "similar_row_from_id", pfi::lang::bind(&Impl::similar_row_from_id, impl,
          pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
-    rpc_server::add<neighbor_result(std::string, datum, int32_t)>(
-        "similar_row_from_data", pfi::lang::bind(&Impl::similar_row_from_data,
-         impl, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
+    rpc_server::add<neighbor_result(std::string,
+         jubatus::core::fv_converter::datum, int32_t)>("similar_row_from_data",
+         pfi::lang::bind(&Impl::similar_row_from_data, impl, pfi::lang::_1,
+         pfi::lang::_2, pfi::lang::_3));
     rpc_server::add<bool(std::string, std::string)>("save", pfi::lang::bind(
         &Impl::save, impl, pfi::lang::_1, pfi::lang::_2));
     rpc_server::add<bool(std::string, std::string)>("load", pfi::lang::bind(

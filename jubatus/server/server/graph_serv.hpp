@@ -58,30 +58,30 @@ class graph_serv : public framework::server_base {
 
   void get_status(status_t& status) const;
 
-  std::string create_node();
+  std::string create_node();  // no lock
   bool update_node(
       const std::string& nid,
       const std::map<std::string, std::string>& p);
-  bool remove_node(const std::string& nid);
-  edge_id_t create_edge(const std::string& nid, const edge&);
+  bool remove_node(const std::string& nid);  // no lock
+  edge_id_t create_edge(const std::string& nid, const edge&);  // no lock
   bool update_edge(const std::string& nid, edge_id_t, const edge&);
   bool remove_edge(const std::string& nid, const edge_id_t& e);
 
   double get_centrality(
       const std::string& nid,
       const centrality_type& ct,
-      const preset_query& q) const;
+      const core::graph::preset_query& q) const;
   std::vector<node_id> get_shortest_path(const shortest_path_query& r) const;
-  bool add_centrality_query(const preset_query& q);
-  bool add_shortest_path_query(const preset_query& q);
-  bool remove_centrality_query(const preset_query& q);
-  bool remove_shortest_path_query(const preset_query& q);
+  bool add_centrality_query(const core::graph::preset_query& q);
+  bool add_shortest_path_query(const core::graph::preset_query& q);
+  bool remove_centrality_query(const core::graph::preset_query& q);
+  bool remove_shortest_path_query(const core::graph::preset_query& q);
 
   bool update_index();
 
   bool clear();
 
-  node get_node(const std::string& nid) const;
+  core::graph::node_info get_node(const std::string& nid) const;
   edge get_edge(const std::string& nid, edge_id_t e) const;
 
   // internal apis used between servers

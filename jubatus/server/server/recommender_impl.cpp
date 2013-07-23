@@ -7,7 +7,7 @@
 #include <utility>
 #include <pficommon/lang/shared_ptr.h>
 
-#include "../framework.hpp"
+#include "../../server/framework.hpp"
 #include "recommender_server.hpp"
 #include "recommender_serv.hpp"
 
@@ -31,7 +31,8 @@ class recommender_impl_ : public recommender<recommender_impl_> {
     return get_p()->clear_row(id);
   }
 
-  bool update_row(std::string name, std::string id, datum row) {
+  bool update_row(std::string name, std::string id,
+       jubatus::core::fv_converter::datum row) {
     JWLOCK_(p_);
     return get_p()->update_row(id, row);
   }
@@ -41,12 +42,14 @@ class recommender_impl_ : public recommender<recommender_impl_> {
     return get_p()->clear();
   }
 
-  datum complete_row_from_id(std::string name, std::string id) {
+  jubatus::core::fv_converter::datum complete_row_from_id(std::string name,
+       std::string id) {
     JRLOCK_(p_);
     return get_p()->complete_row_from_id(id);
   }
 
-  datum complete_row_from_datum(std::string name, datum row) {
+  jubatus::core::fv_converter::datum complete_row_from_datum(std::string name,
+       jubatus::core::fv_converter::datum row) {
     JRLOCK_(p_);
     return get_p()->complete_row_from_datum(row);
   }
@@ -57,13 +60,14 @@ class recommender_impl_ : public recommender<recommender_impl_> {
     return get_p()->similar_row_from_id(id, size);
   }
 
-  similar_result similar_row_from_datum(std::string name, datum row,
-       uint32_t size) {
+  similar_result similar_row_from_datum(std::string name,
+       jubatus::core::fv_converter::datum row, uint32_t size) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_datum(row, size);
   }
 
-  datum decode_row(std::string name, std::string id) {
+  jubatus::core::fv_converter::datum decode_row(std::string name,
+       std::string id) {
     JRLOCK_(p_);
     return get_p()->decode_row(id);
   }
@@ -73,12 +77,14 @@ class recommender_impl_ : public recommender<recommender_impl_> {
     return get_p()->get_all_rows();
   }
 
-  float calc_similarity(std::string name, datum lhs, datum rhs) {
+  float calc_similarity(std::string name,
+       jubatus::core::fv_converter::datum lhs,
+       jubatus::core::fv_converter::datum rhs) {
     JRLOCK_(p_);
     return get_p()->calc_similarity(lhs, rhs);
   }
 
-  float calc_l2norm(std::string name, datum row) {
+  float calc_l2norm(std::string name, jubatus::core::fv_converter::datum row) {
     JRLOCK_(p_);
     return get_p()->calc_l2norm(row);
   }

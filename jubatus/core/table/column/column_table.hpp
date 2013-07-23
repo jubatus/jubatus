@@ -42,7 +42,8 @@ namespace jubatus {
 namespace core {
 namespace table {
 
-class invalid_row_set : public common::exception::jubaexception<invalid_row_set> {
+class invalid_row_set
+    : public common::exception::jubaexception<invalid_row_set> {
   const char* what() const throw() {
     return "invalid_row_set";
   }

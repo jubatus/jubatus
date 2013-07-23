@@ -57,7 +57,8 @@ mixer* create_mixer(
   } else {
     // TODO(beam2d): fix to throw
     return new linear_mixer(
-        linear_communication::create(zk, a.type, a.name, a.timeout),
+        linear_communication::create(
+          zk, a.type, a.name, a.interconnect_timeout),
         a.interval_count, a.interval_sec);
   }
 #else

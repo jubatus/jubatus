@@ -37,6 +37,10 @@ namespace framework {
 
 static const std::string VERSION(JUBATUS_VERSION);
 
+namespace {
+  pfi::lang::shared_ptr<server::common::lock_service> ls;
+}
+
 void print_version(const std::string& progname) {
   std::cout << "jubatus-" << VERSION << " (" << progname << ")" << std::endl;
 }
@@ -105,6 +109,9 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add("join", 'j', "join to the existing cluster");
   p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
+  p.add<int>("zookeeper_timeout", 'Z', "zookeeper time out (sec)", false, 10);
+  p.add<int>("interconnect_timeout", 'I',
+      "interconnect time out between servers (sec)", false, 10);
 #endif
 
   // APPLY CHANGES TO JUBAVISOR WHEN ARGUMENTS MODIFIED
@@ -147,6 +154,8 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   join = p.exist("join");
   interval_sec = p.get<int>("interval_sec");
   interval_count = p.get<int>("interval_count");
+  zookeeper_timeout = p.get<int>("zookeeper_timeout");
+  interconnect_timeout = p.get<int>("interconnect_timeout");
 #else
   z = "";
   name = "";
@@ -169,6 +178,19 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
     exit(1);
   }
 
+  if (!is_standalone() && zookeeper_timeout < 1) {
+    std::cerr << "can't start with zookeeper_timeout less than 1" << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
+  }
+
+  if (!is_standalone() && interconnect_timeout < 1) {
+    std::cerr << "can't start with interconnect_timeout less than 1"
+      << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
+  }
+
   if ((!logdir.empty()) && (!common::util::is_writable(logdir.c_str()))) {
     std::cerr << "can't create log file: " << strerror(errno) << std::endl;
     exit(1);
@@ -182,6 +204,8 @@ server_argv::server_argv()
     : join(false),
       port(9199),
       timeout(10),
+      zookeeper_timeout(10),
+      interconnect_timeout(10),
       threadnum(2),
       z(""),
       name(""),
@@ -197,26 +221,28 @@ void server_argv::boot_message(const std::string& progname) const {
   std::stringstream ss;
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth
       << ":" << port << '\n';
-  ss << "    pid            : " << getpid() << '\n';
-  ss << "    user           : " << common::util::get_user_name() << '\n';
-  ss << "    mode           : ";
+  ss << "    pid                  : " << getpid() << '\n';
+  ss << "    user                 : " << common::util::get_user_name() << '\n';
+  ss << "    mode                 : ";
   if (is_standalone()) {
     ss << "standalone mode\n";
   } else {
     ss << "multinode mode\n";
   }
-  ss << "    timeout        : " << timeout << '\n';
-  ss << "    thread         : " << threadnum << '\n';
-  ss << "    datadir        : " << datadir << '\n';
-  ss << "    logdir         : " << logdir << '\n';
-  ss << "    loglevel       : " << google::GetLogSeverityName(loglevel) << '('
-      << loglevel << ')' << '\n';
+  ss << "    timeout              : " << timeout << '\n';
+  ss << "    thread               : " << threadnum << '\n';
+  ss << "    datadir              : " << datadir << '\n';
+  ss << "    logdir               : " << logdir << '\n';
+  ss << "    loglevel             : " << google::GetLogSeverityName(loglevel)
+      << '(' << loglevel << ')' << '\n';
 #ifdef HAVE_ZOOKEEPER_H
-  ss << "    zookeeper      : " << z << '\n';
-  ss << "    name           : " << name << '\n';
-  ss << "    join           : " << std::boolalpha << join << '\n';
-  ss << "    interval sec   : " << interval_sec << '\n';
-  ss << "    interval count : " << interval_count << '\n';
+  ss << "    zookeeper            : " << z << '\n';
+  ss << "    name                 : " << name << '\n';
+  ss << "    join                 : " << std::boolalpha << join << '\n';
+  ss << "    interval sec         : " << interval_sec << '\n';
+  ss << "    interval count       : " << interval_count << '\n';
+  ss << "    zookeeper timeout    : " << zookeeper_timeout << '\n';
+  ss << "    interconnect timeout : " << interconnect_timeout << '\n';
 #endif
   LOG(INFO) << ss.str();
 }
@@ -261,6 +287,9 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
   p.add<int>("thread", 'c', "concurrency = thread number", false, 16);
   p.add<int>("timeout", 't', "time out (sec)", false, 10);
+  p.add<int>("zookeeper_timeout", 'Z', "zookeeper time out (sec)", false, 10);
+  p.add<int>("interconnect_timeout", 'I',
+      "interconnect time out between servers (sec)", false, 10);
 
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false,
                      "localhost:2181");
@@ -285,6 +314,8 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   bind_if = p.get<std::string>("listen_if");
   threadnum = p.get<int>("thread");
   timeout = p.get<int>("timeout");
+  zookeeper_timeout = p.get<int>("zookeeper_timeout");
+  interconnect_timeout = p.get<int>("interconnect_timeout");
   program_name = common::util::get_program_name();
   z = p.get<std::string>("zookeeper");
   session_pool_expire = p.get<int>("pool_expire");
@@ -303,6 +334,19 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
     eth = jubatus::server::common::get_default_v4_address();
   }
 
+  if (zookeeper_timeout < 1) {
+    std::cerr << "can't start with zookeeper_timeout less than 1" << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
+  }
+
+  if (interconnect_timeout < 1) {
+    std::cerr << "can't start with interconnect_timeout less than 1"
+      << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
+  }
+
   if ((!logdir.empty()) && (!common::util::is_writable(logdir.c_str()))) {
     std::cerr << "can't create log file: " << strerror(errno) << std::endl;
     exit(1);
@@ -315,6 +359,8 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
 keeper_argv::keeper_argv()
     : port(9199),
       timeout(10),
+      zookeeper_timeout(10),
+      interconnect_timeout(10),
       threadnum(16),
       z("localhost:2181"),
       logdir(""),
@@ -326,14 +372,16 @@ void keeper_argv::boot_message(const std::string& progname) const {
   std::stringstream ss;
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth
       << ":" << port << '\n';
-  ss << "    pid            : " << getpid() << '\n';
-  ss << "    user           : " << common::util::get_user_name() << '\n';
-  ss << "    timeout        : " << timeout << '\n';
-  ss << "    thread         : " << threadnum << '\n';
-  ss << "    logdir         : " << logdir << '\n';
-  ss << "    loglevel       : " << google::GetLogSeverityName(loglevel) << '('
-      << loglevel << ')' << '\n';
-  ss << "    zookeeper      : " << z << '\n';
+  ss << "    pid                  : " << getpid() << '\n';
+  ss << "    user                 : " << common::util::get_user_name() << '\n';
+  ss << "    timeout              : " << timeout << '\n';
+  ss << "    zookeeper timeout    : " << zookeeper_timeout << '\n';
+  ss << "    interconnect timeout : " << interconnect_timeout << '\n';
+  ss << "    thread               : " << threadnum << '\n';
+  ss << "    logdir               : " << logdir << '\n';
+  ss << "    loglevel             : " << google::GetLogSeverityName(loglevel)
+      << '(' << loglevel << ')' << '\n';
+  ss << "    zookeeper            : " << z << '\n';
   LOG(INFO) << ss.str();
 }
 
@@ -358,12 +406,25 @@ void keeper_argv::set_log_destination(const std::string& progname) const {
   }
 }
 
-pfi::lang::shared_ptr<server::common::lock_service> ls;
+void register_lock_service(pfi::lang::shared_ptr<common::lock_service> new_ls) {
+  if (ls) {
+    throw JUBATUS_EXCEPTION(
+        jubatus::core::common::exception::runtime_error(
+            "lock service is already registered"));
+  }
+  ls.swap(new_ls);
+#ifdef HAVE_ZOOKEEPER_H
+  if (ls) {
+    ::atexit(&close_lock_service);
+  }
+#endif
+}
 
-void atexit() {
+void close_lock_service() {
 #ifdef HAVE_ZOOKEEPER_H
   if (ls) {
     ls->force_close();
+    ls.reset();
   }
 #endif
 }

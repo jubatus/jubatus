@@ -35,6 +35,7 @@
 #include "../common/cht.hpp"
 #endif
 #include "../common/global_id_generator_standalone.hpp"
+#include "../common/unique_lock.hpp"
 #include "../common/util.hpp"
 #ifdef HAVE_ZOOKEEPER_H
 #include "../common/global_id_generator_zk.hpp"
@@ -52,8 +53,9 @@ using std::vector;
 using std::pair;
 using pfi::lang::lexical_cast;
 using pfi::text::json::json;
+using jubatus::core::graph::preset_query;
+using jubatus::core::graph::node_info;
 using jubatus::server::common::lock_service;
-using jubatus::server::framework::convert;
 using jubatus::server::framework::server_argv;
 using jubatus::server::framework::mixer::create_mixer;
 
@@ -228,6 +230,11 @@ bool graph_serv::update_node(
 }
 
 bool graph_serv::remove_node(const std::string& nid_str) {
+  // locks manually because we should unlock before global access
+  // make sure this function not to be called from other functions
+  server::common::unique_wlock lk(rw_mutex());
+  event_model_updated();
+
   check_set_config();
 
   core::graph::node_id_t nid = n2i(nid_str);
@@ -242,7 +249,7 @@ bool graph_serv::remove_node(const std::string& nid_str) {
 
     if (!members.empty()) {
       // create global node
-      common::mprpc::rpc_mclient c(members, argv().timeout);
+      common::mprpc::rpc_mclient c(members, argv().interconnect_timeout);
 
 #ifndef NDEBUG
       for (size_t i = 0; i < members.size(); i++) {
@@ -252,6 +259,9 @@ bool graph_serv::remove_node(const std::string& nid_str) {
 #endif
 
       try {
+        // requires unlock before global access to prevent dead-lock
+        lk.unlock();
+
         c.call("remove_global_node",
                argv().name,
                nid_str,
@@ -294,7 +304,8 @@ edge_id_t graph_serv::create_edge(const std::string& id, const edge& ei) {
       try {
         if (nodes[i].first == argv().eth && nodes[i].second == argv().port) {
         } else {
-          client::graph c(nodes[i].first, nodes[i].second, 5.0);
+          client::graph c(
+              nodes[i].first, nodes[i].second, argv().interconnect_timeout);
           DLOG(INFO) << "request to "
               << nodes[i].first << ":" << nodes[i].second;
           c.create_edge_here(argv().name, eid, ei);
@@ -349,8 +360,7 @@ double graph_serv::get_centrality(
   check_set_config();
 
   if (s == 0) {
-    core::graph::preset_query q0;
-    return graph_->get_centrality(n2i(id), core::graph::EIGENSCORE, q0);
+    return graph_->get_centrality(n2i(id), core::graph::EIGENSCORE, q);
   } else {
     std::stringstream msg;
     msg << "unknown centrality type: " << s;
@@ -361,14 +371,12 @@ double graph_serv::get_centrality(
 // @random
 std::vector<node_id> graph_serv::get_shortest_path(
     const shortest_path_query& req) const {
-  core::graph::preset_query q;
-  framework::convert(req.query, q);
   std::vector<core::graph::node_id_t> ret0 =
       graph_->get_shortest_path(
           n2i(req.source),
           n2i(req.target),
           req.max_hop,
-          q);
+          req.query);
   std::vector<node_id> ret;
   for (size_t i = 0; i < ret0.size(); ++i) {
     ret.push_back(i2n(ret0[i]));
@@ -377,64 +385,45 @@ std::vector<node_id> graph_serv::get_shortest_path(
 }
 
 // update, broadcast
-bool graph_serv::add_centrality_query(const preset_query& q0) {
+bool graph_serv::add_centrality_query(const preset_query& q) {
   check_set_config();
 
-  core::graph::preset_query q;
-  framework::convert<jubatus::preset_query, core::graph::preset_query>(
-      q0,
-      q);
   graph_->add_centrality_query(q);
   DLOG(INFO) << "centrality query added";
   return true;
 }
 
 // update, broadcast
-bool graph_serv::add_shortest_path_query(const preset_query& q0) {
+bool graph_serv::add_shortest_path_query(const preset_query& q) {
   check_set_config();
 
-  core::graph::preset_query q;
-  framework::convert<jubatus::preset_query, core::graph::preset_query>(
-      q0,
-      q);
   graph_->add_shortest_path_query(q);
   DLOG(INFO) << "shortest path added";
   return true;
 }
 
 // update, broadcast
-bool graph_serv::remove_centrality_query(const preset_query& q0) {
+bool graph_serv::remove_centrality_query(const preset_query& q) {
   check_set_config();
 
-  core::graph::preset_query q;
-  framework::convert<jubatus::preset_query, core::graph::preset_query>(
-      q0,
-      q);
   graph_->remove_centrality_query(q);
   DLOG(INFO) << "centrality query removed";
   return true;
 }
 
 // update, broadcast
-bool graph_serv::remove_shortest_path_query(const preset_query& q0) {
+bool graph_serv::remove_shortest_path_query(const preset_query& q) {
   check_set_config();
 
-  core::graph::preset_query q;
-  framework::convert<jubatus::preset_query, core::graph::preset_query>(
-      q0,
-      q);
   graph_->remove_shortest_path_query(q);
   DLOG(INFO) << "shortest path removed";
   return true;
 }
 
-node graph_serv::get_node(const std::string& nid) const {
+node_info graph_serv::get_node(const std::string& nid) const {
   check_set_config();
 
-  core::graph::node_info info = graph_->get_node(n2i(nid));
-  jubatus::node ret;
-  framework::convert<core::graph::node_info, jubatus::node>(info, ret);
-  return ret;
+  return graph_->get_node(n2i(nid));
 }
 // @random
 edge graph_serv::get_edge(
@@ -504,7 +493,7 @@ void graph_serv::selective_create_node_(
     this->create_node_here(nid_str);
   } else {
     // must not lock here
-    client::graph c(target.first, target.second, 5.0);
+    client::graph c(target.first, target.second, argv().interconnect_timeout);
     c.create_node_here(argv().name, nid_str);
   }
 }
