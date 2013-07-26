@@ -63,7 +63,8 @@
     __GNUC__ == 4 && __GNUC_MINOR__ >= 5
   #define JUBATUS_ASSERT_UNREACHABLE() __builtin_unreachable()
 #else
-  #define JUBATUS_ASSERT_UNREACHABLE() ((void)0)
+  #include <exception>  // NOLINT
+  #define JUBATUS_ASSERT_UNREACHABLE() std::terminate()
 #endif
 
 #define JUBATUS_ASSERT_EQ(a, b, messages) ((void)0)
