@@ -132,8 +132,8 @@ bool zk::create_seq(const string& path, string& seqfile) {
   int rc = zoo_create(zh_, path.c_str(), NULL, 0, &ZOO_OPEN_ACL_UNSAFE,
                       ZOO_EPHEMERAL | ZOO_SEQUENCE, &path_buffer[0],
                       path_buffer.size());
-  seqfile = "";
   if (rc != ZOK) {
+    seqfile.clear();
     LOG(ERROR) << "failed to create: " << path << " - " << zerror(rc);
     return false;
   } else {
