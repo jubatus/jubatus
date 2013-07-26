@@ -115,6 +115,18 @@ TEST_F(zk_trivial, create_seq) {
 
   EXPECT_LT(root_path.size(), seqfile.size());
 
+  struct contains_no_null_character {
+    static bool check(const std::string& s) {
+      for (std::size_t i = 0; i < s.size(); ++i) {
+        if (s[i] == '\0') {
+          return false;
+        }
+      }
+      return true;
+    }
+  };
+  EXPECT_PRED1(contains_no_null_character::check, seqfile);
+
   if (!seqfile.empty()) {
     zk_->remove(seqfile);
   }
