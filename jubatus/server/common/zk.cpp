@@ -128,16 +128,16 @@ bool zk::set(const string& path, const string& payload) {
 // "/some/path" => "/some/path0000012"
 bool zk::create_seq(const string& path, string& seqfile) {
   scoped_lock lk(m_);
-  string path_buffer(path.size() + 16, '\0');
+  std::vector<char> path_buffer(path.size() + 16);
   int rc = zoo_create(zh_, path.c_str(), NULL, 0, &ZOO_OPEN_ACL_UNSAFE,
                       ZOO_EPHEMERAL | ZOO_SEQUENCE, &path_buffer[0],
-                      path.size() + 16);
+                      path_buffer.size());
   seqfile = "";
   if (rc != ZOK) {
     LOG(ERROR) << "failed to create: " << path << " - " << zerror(rc);
     return false;
   } else {
-    seqfile = path_buffer;
+    seqfile.assign(&path_buffer[0]);
     DLOG(INFO) << __func__ << " " << seqfile;
     return true;
   }
