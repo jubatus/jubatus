@@ -105,6 +105,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
 #ifdef HAVE_ZOOKEEPER_H
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
   p.add<std::string>("name", 'n', "learning machine instance name", false);
+  p.add<std::string>("mixer", 'm', "mixer strategy", false, "");
   p.add("join", 'j', "join to the existing cluster");
   p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
@@ -149,6 +150,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
 #ifdef HAVE_ZOOKEEPER_H
   z = p.get<std::string>("zookeeper");
   name = p.get<std::string>("name");
+  mixer = p.get<std::string>("mixer");
   join = p.exist("join");
   interval_sec = p.get<int>("interval_sec");
   interval_count = p.get<int>("interval_count");

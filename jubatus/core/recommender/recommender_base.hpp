@@ -22,6 +22,7 @@
 #include <utility>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/lang/shared_ptr.h>
+#include "../table/column/column_table.hpp"
 #include "../common/type.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
 #include "../storage/recommender_storage_base.hpp"
@@ -52,9 +53,24 @@ class recommender_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
 
   virtual std::string type() const = 0;
-  virtual core::storage::recommender_storage_base* get_storage() = 0;
+
+  // Either get_(const)_storage or get_(const)_table should return non-null
+  // pointer.
+  virtual core::storage::recommender_storage_base* get_storage() {
+    return NULL;
+  }
   virtual const core::storage::recommender_storage_base* get_const_storage()
-      const = 0;
+      const {
+    return NULL;
+  }
+
+  virtual pfi::lang::shared_ptr<table::column_table> get_table() {
+    return pfi::lang::shared_ptr<table::column_table>();
+  }
+  virtual pfi::lang::shared_ptr<const table::column_table> get_const_table()
+      const {
+    return pfi::lang::shared_ptr<const table::column_table>();
+  }
 
   virtual void similar_row(
       const std::string& id,

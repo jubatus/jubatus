@@ -42,23 +42,16 @@ class lof : public anomaly_base {
   virtual void clear();
   virtual void clear_row(const std::string& id);
   virtual void update_row(const std::string& id, const sfv_diff_t& diff);
+  virtual void set_row(const std::string& id, const common::sfv_t& sfv);
+
   virtual void get_all_row_ids(std::vector<std::string>& ids) const;
-
   virtual std::string type() const;
-  virtual storage::anomaly_storage_base* get_storage();
-  virtual const storage::anomaly_storage_base* get_const_storage() const;
-
-  void save(std::ostream&);
-  void load(std::istream&);
-
-  // static float calc_distance(common::sfv_t& q1, common::sfv_t& q2);
-  // static float calc_l2norm(common::sfv_t& q1, common::sfv_t& q2);
+  virtual void register_mixables_to_holder(
+      pfi::lang::shared_ptr<framework::mixable_holder> holder);
 
  private:
-  virtual bool save_impl(std::ostream& os);
-  virtual bool load_impl(std::istream& is);
-
-  storage::lof_storage lof_index_;
+  pfi::lang::shared_ptr<storage::lof_storage> lof_index_;
+  storage::mixable_anomaly_storage mixable_storage_;
 };
 
 }  //  namespace anomaly

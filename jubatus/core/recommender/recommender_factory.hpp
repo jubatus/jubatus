@@ -38,7 +38,8 @@ class recommender_factory {
  public:
   static recommender_base* create_recommender(
       const std::string& name,
-      const common::jsonconfig::config& param);
+      const common::jsonconfig::config& param,
+      const std::string& id);
 };
 
 }  // namespace recommender

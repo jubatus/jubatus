@@ -38,7 +38,8 @@ class anomaly_factory {
  public:
   static anomaly_base* create_anomaly(
       const std::string& name,
-      const common::jsonconfig::config& param);
+      const common::jsonconfig::config& param,
+      const std::string& id);
 };
 
 }  // namespace anomaly

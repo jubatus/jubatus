@@ -31,6 +31,9 @@ class anomaly : public jubatus::server::common::mprpc::rpc_server {
     rpc_server::add<float(std::string, std::string,
          jubatus::core::fv_converter::datum)>("update", pfi::lang::bind(
         &Impl::update, impl, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
+    rpc_server::add<float(std::string, std::string,
+         jubatus::core::fv_converter::datum)>("overwrite", pfi::lang::bind(
+        &Impl::overwrite, impl, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
     rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(&Impl::clear,
          impl, pfi::lang::_1));
     rpc_server::add<float(std::string, jubatus::core::fv_converter::datum)>(

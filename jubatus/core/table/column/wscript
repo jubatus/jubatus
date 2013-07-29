@@ -1,0 +1,27 @@
+# -*- python -*-
+def options(opt):
+    pass
+
+def configure(conf):
+    pass
+
+def build(bld):
+  bld.shlib(
+    source = [
+        'column_table.cpp',
+        'columns.cpp'
+    ],
+    target = 'column_table',
+    name = 'column_table',
+    use = 'PFICOMMON'
+  )
+
+  def make_test(s):
+    bld.program(
+      features = 'gtest',
+      source = s,
+      target = s[0:s.rfind('.')],
+      includes = '.',
+      use = 'MSGPACK PFICOMMON column_table jubacommon')
+  map(make_test,['column_table_test.cpp',
+                 'bit_vector_test.cpp'])

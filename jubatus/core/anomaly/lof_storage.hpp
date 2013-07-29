@@ -87,15 +87,15 @@ class lof_storage : public anomaly_storage_base {
   float get_kdist(const std::string& row) const;
   float get_lrd(const std::string& row) const;
 
-  bool save(std::ostream& os);
-  bool load(std::istream& is);
-
   // just for test
   void set_nn_engine(core::recommender::recommender_base* nn_engine);
 
   virtual void get_diff(std::string& diff) const;
   virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
   virtual void mix(const std::string& lhs, std::string& rhs) const;
+
+  virtual void save(std::ostream& os) const;
+  virtual void load(std::istream& is);
 
  private:
   struct lof_entry {

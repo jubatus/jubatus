@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011-2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -36,12 +36,14 @@ namespace mixer {
 
 class linear_communication {
  public:
-  static pfi::lang::shared_ptr<linear_communication>
-  create(const pfi::lang::shared_ptr<common::lock_service>& zk,
-         const std::string& type, const std::string& name, int timeout_sec);
-
   virtual ~linear_communication() {
   }
+
+  static pfi::lang::shared_ptr<linear_communication> create(
+      const pfi::lang::shared_ptr<common::lock_service>& zk,
+      const std::string& type,
+      const std::string& name,
+      int timeout_sec);
 
   // Call update_members once before using get_diff and put_diff
   virtual size_t update_members() = 0;
@@ -59,8 +61,10 @@ class linear_communication {
 
 class linear_mixer : public mixer {
  public:
-  linear_mixer(pfi::lang::shared_ptr<linear_communication> communicaiton,
-               unsigned int count_threshold, unsigned int tick_threshold);
+  linear_mixer(
+      pfi::lang::shared_ptr<linear_communication> communicaiton,
+      unsigned int count_threshold,
+      unsigned int tick_threshold);
 
   void register_api(rpc_server_t& server);
   void set_mixable_holder(

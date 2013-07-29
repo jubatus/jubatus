@@ -22,6 +22,7 @@
 
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
+#include "../nearest_neighbor/nearest_neighbor_factory.hpp"
 #include "anomaly.hpp"
 
 using jubatus::core::common::jsonconfig::config;
@@ -47,16 +48,25 @@ struct anomaly_config {
 
 anomaly_base* anomaly_factory::create_anomaly(
     const string& name,
-    const config& param) {
+    const config& param,
+    const string& id) {
+  anomaly_config conf = config_cast_check<anomaly_config>(param);
   if (name == "lof") {
-    anomaly_config conf = config_cast_check<anomaly_config>(param);
     storage::lof_storage::config config =
         config_cast_check<storage::lof_storage::config>(param);
     return new lof(
         config,
         recommender::recommender_factory::create_recommender(
             conf.method,
-            conf.parameter));
+            conf.parameter, id));
+  } else if (name == "light_lof") {
+    light_lof::config lof_config = config_cast_check<light_lof::config>(param);
+    pfi::lang::shared_ptr<table::column_table> nearest_neighbor_table(
+        new table::column_table);
+    pfi::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+        nearest_neighbor_engine(nearest_neighbor::create_nearest_neighbor(
+            conf.method, conf.parameter, nearest_neighbor_table, id));
+    return new light_lof(lof_config, id, nearest_neighbor_engine);
   } else {
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }
@@ -65,4 +75,3 @@ anomaly_base* anomaly_factory::create_anomaly(
 }  // namespace anomaly
 }  // namespace core
 }  // namespace jubatus
-

@@ -27,6 +27,9 @@ int run_keeper(int argc, char* argv[]) {
     k.register_async_cht<2, float, jubatus::core::fv_converter::datum>("update",
          pfi::lang::function<float(float, float)>(
         &jubatus::server::framework::pass<float>));
+    k.register_async_cht<2, float, jubatus::core::fv_converter::datum>(
+        "overwrite", pfi::lang::function<float(float, float)>(
+        &jubatus::server::framework::pass<float>));
     k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
          bool)>(&jubatus::server::framework::all_and));
     k.register_async_random<float, jubatus::core::fv_converter::datum>(

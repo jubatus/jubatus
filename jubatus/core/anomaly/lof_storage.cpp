@@ -64,7 +64,7 @@ lof_storage::lof_storage()
       nn_engine_(recommender::recommender_factory::create_recommender(
           "euclid_lsh",
           common::jsonconfig::config(pfi::text::json::to_json(
-              recommender::euclid_lsh::config())))) {
+              recommender::euclid_lsh::config())), "")) {
 }
 
 lof_storage::lof_storage(recommender::recommender_base* nn_engine)
@@ -197,18 +197,6 @@ void lof_storage::update_all() {
   }
 }
 
-bool lof_storage::save(ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
-}
-
-bool lof_storage::load(istream& is) {
-  binary_iarchive ia(is);
-  ia >> *this;
-  return true;
-}
-
 void lof_storage::set_nn_engine(recommender::recommender_base* nn_engine) {
   nn_engine_.reset(nn_engine);
 }
@@ -261,6 +249,16 @@ void lof_storage::mix(const string& lhs, string& rhs) const {
   serialize_diff(mixed, nn_mixed, oss);
 
   rhs = oss.str();
+}
+
+void lof_storage::save(ostream& os) const {
+  pfi::data::serialization::binary_oarchive oa(os);
+  oa << const_cast<lof_storage&>(*this);
+}
+
+void lof_storage::load(istream& is) {
+  binary_iarchive ia(is);
+  ia >> *this;
 }
 
 // private

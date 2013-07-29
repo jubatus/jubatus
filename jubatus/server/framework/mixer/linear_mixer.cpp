@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011-2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -45,8 +45,8 @@ namespace jubatus {
 namespace server {
 namespace framework {
 namespace mixer {
-
 namespace {
+
 class linear_communication_impl : public linear_communication {
  public:
   linear_communication_impl(
@@ -120,14 +120,17 @@ void linear_communication_impl::put_diff(
 
 pfi::lang::shared_ptr<linear_communication> linear_communication::create(
     const pfi::lang::shared_ptr<server::common::lock_service>& zk,
-    const string& type, const string& name, int timeout_sec) {
+    const string& type,
+    const string& name,
+    int timeout_sec) {
   return pfi::lang::shared_ptr<linear_communication_impl>(
       new linear_communication_impl(zk, type, name, timeout_sec));
 }
 
 linear_mixer::linear_mixer(
     pfi::lang::shared_ptr<linear_communication> communication,
-    unsigned int count_threshold, unsigned int tick_threshold)
+    unsigned int count_threshold,
+    unsigned int tick_threshold)
     : communication_(communication),
       count_threshold_(count_threshold),
       tick_threshold_(tick_threshold),
@@ -220,7 +223,6 @@ void linear_mixer::mix() {
   using pfi::system::time::clock_time;
   using pfi::system::time::get_clock_time;
 
-  // vector<string> serialized_diffs;
   clock_time start = get_clock_time();
   size_t s = 0;
 

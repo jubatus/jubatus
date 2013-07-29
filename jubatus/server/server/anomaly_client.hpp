@@ -43,6 +43,12 @@ class anomaly {
     return f.get<float>();
   }
 
+  float overwrite(std::string name, std::string id,
+       jubatus::core::fv_converter::datum row) {
+    msgpack::rpc::future f = c_.call("overwrite", name, id, row);
+    return f.get<float>();
+  }
+
   bool clear(std::string name) {
     msgpack::rpc::future f = c_.call("clear", name);
     return f.get<bool>();

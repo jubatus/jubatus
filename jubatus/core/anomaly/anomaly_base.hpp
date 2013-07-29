@@ -24,6 +24,7 @@
 #include <pficommon/lang/shared_ptr.h>
 
 #include "../common/type.hpp"
+#include "../framework/mixable.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
 #include "anomaly_storage_base.hpp"
 #include "anomaly_type.hpp"
@@ -37,32 +38,40 @@ class anomaly_base {
   anomaly_base();
   virtual ~anomaly_base();
 
-  // return anomaly score of query
+  // Calculates and returns anomaly score of given query.
   virtual float calc_anomaly_score(const common::sfv_t& query) const = 0;
+
+  // Returns anomaly score of the row corresponding to given id.
   virtual float calc_anomaly_score(const std::string& id) const = 0;
+
+  // Clears all rows.
   virtual void clear() = 0;
+
+  // Removes the row corresponding to given id.
+  //
+  // The removal event must be shared among other MIX participants. Thus,
+  // typical implementation does not eliminate the row immediately but marks it
+  // as "removed" instead. Some implementations including light_lof do not
+  // support this function.
   virtual void clear_row(const std::string& id) = 0;
+
+  // Partially updates the row corresponding to given id.
+  //
+  // Some implementations including light_lof do not support this function.
   virtual void update_row(const std::string& id, const sfv_diff_t& diff) = 0;
+
+  // Updates the row corresponding to given id.
+  //
+  // Some implementations including lof do not support this function.
+  virtual void set_row(const std::string& id, const common::sfv_t& sfv) = 0;
+
   virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
-
   virtual std::string type() const = 0;
-  virtual core::storage::anomaly_storage_base* get_storage() = 0;
-  virtual const core::storage::anomaly_storage_base*
-      get_const_storage() const = 0;
-
-  void save(std::ostream&);
-  void load(std::istream&);
-
-  // static float calc_distance(sfv_t& q1, sfv_t& q2);
-  // static float calc_l2norm(sfv_t& query);
+  virtual void register_mixables_to_holder(
+      pfi::lang::shared_ptr<framework::mixable_holder> holder) = 0;
 
  protected:
   static const uint32_t NEIGHBOR_NUM;
-
-  virtual bool save_impl(std::ostream&) = 0;
-  virtual bool load_impl(std::istream&) = 0;
-
-  core::storage::sparse_matrix_storage orig_;
 };
 
 }  // namespace anomaly

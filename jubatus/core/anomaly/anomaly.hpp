@@ -17,6 +17,7 @@
 #ifndef JUBATUS_CORE_ANOMALY_ANOMALY_HPP_
 #define JUBATUS_CORE_ANOMALY_ANOMALY_HPP_
 
+#include "light_lof.hpp"
 #include "lof.hpp"
 
 #endif  // JUBATUS_CORE_ANOMALY_ANOMALY_HPP_

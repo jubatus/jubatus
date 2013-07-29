@@ -5,6 +5,16 @@ def configure(conf):
   pass
 
 def build(bld):
+  bld.shlib(
+    source = [
+      'mixable_weight_manager.cpp',
+      'mixable_versioned_table.cpp',
+      ],
+    target = 'jubatus_mixables',
+    includes = '.',
+    use = 'PFICOMMON MSGPACK jubastorage column_table jubaconverter'
+    )
+
   source = [
       'classifier.cpp',
       'regression.cpp',
@@ -13,14 +23,14 @@ def build(bld):
       'anomaly.cpp',
       'graph.cpp',
       'linear_function_mixer.cpp',
-      'mixable_weight_manager.cpp',
+      'nearest_neighbor.cpp',
       ]
 
   bld.shlib(
     source = source,
     target = 'jubatus_driver',
     includes = '.',
-    use = 'PFICOMMON jubacommon MSGPACK jubaconverter jubastorage jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph'
+    use = 'PFICOMMON jubacommon MSGPACK jubaconverter jubastorage jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph jubatus_mixables'
     )
 
   def make_test(t):
@@ -55,4 +65,6 @@ def build(bld):
       'diffv.hpp',
       'linear_function_mixer.hpp',
       'mixable_weight_manager.hpp',
+      'mixable_versioned_table.hpp',
+      'nearest_neighbor.hpp',
       ])
