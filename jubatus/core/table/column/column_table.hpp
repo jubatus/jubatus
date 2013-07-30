@@ -400,10 +400,11 @@ class column_table {
     std::vector<version_t>::iterator version_back = versions_.end();
     --version_back;
     versions_.erase(version_back);
+
+    --tuples_;
     assert(tuples_ == index_.size());
     assert(tuples_ == keys_.size());
     assert(tuples_ == versions_.size());
-    --tuples_;
     ++clock_;
     return true;
   }
@@ -438,10 +439,10 @@ class column_table {
     --version_back;
     versions_.erase(version_back);
 
+    --tuples_;
     assert(tuples_ == index_.size());
     assert(tuples_ == keys_.size());
     assert(tuples_ == versions_.size());
-    --tuples_;
     ++clock_;
     return true;
   }

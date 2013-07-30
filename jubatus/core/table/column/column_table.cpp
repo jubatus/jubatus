@@ -124,11 +124,11 @@ const_int32_column column_table::get_int32_column(size_t column_id) const {
   return columns_[column_id].as_int32_column();
 }
 int64_column column_table::get_int64_column(size_t column_id) {
-  assert(columns_[column_id].type().is(column_type::uint64_type));
+  assert(columns_[column_id].type().is(column_type::int64_type));
   return columns_[column_id].as_int64_column();
 }
 const_int64_column column_table::get_int64_column(size_t column_id) const {
-  assert(columns_[column_id].type().is(column_type::uint64_type));
+  assert(columns_[column_id].type().is(column_type::int64_type));
   return columns_[column_id].as_int64_column();
 }
 float_column column_table::get_float_column(size_t column_id) {
