@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include <algorithm>
-#include <cassert>
 #include <cstring>
 #include <string>
 #include <vector>
@@ -31,6 +30,7 @@
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/concurrent/rwmutex.h>
+#include "../../common/assert.hpp"
 #include "../../common/exception.hpp"
 #include "../storage_exception.hpp"
 #include "bit_vector.hpp"
@@ -81,7 +81,7 @@ class column_table {
       keys_.push_back(key);
       versions_.push_back(std::make_pair(o, clock_));
       columns_[0].push_back(v1);
-      assert(keys_.size() == versions_.size());
+      JUBATUS_ASSERT_EQ(keys_.size(), versions_.size(), "");
 
       // make index
       index_.insert(std::make_pair(key, tuples_));
@@ -113,7 +113,7 @@ class column_table {
       versions_.push_back(std::make_pair(o , clock_));
       columns_[0].push_back(v1);
       columns_[1].push_back(v2);
-      assert(keys_.size() == versions_.size());
+      JUBATUS_ASSERT_EQ(keys_.size(), versions_.size(), "");
 
       // make index
       index_.insert(std::make_pair(key, tuples_));
@@ -297,7 +297,7 @@ class column_table {
       for (size_t i = 0; i < columns_.size(); ++i) {
         columns_[i].push_back(dat.via.array.ptr[i]);
       }
-      assert(keys_.size() == versions_.size());
+      JUBATUS_ASSERT_EQ(keys_.size(), versions_.size(), "");
 
       // make index
       index_.insert(std::make_pair(key, tuples_));
@@ -394,7 +394,7 @@ class column_table {
   index_table index_;
 
   void delete_row_(uint64_t index) {
-    assert(index < size());
+    JUBATUS_ASSERT_LT(index, size(), "");
 
     for (std::vector<detail::abstract_column>::iterator jt = columns_.begin();
          jt != columns_.end();
@@ -420,9 +420,9 @@ class column_table {
     --tuples_;
     ++clock_;
 
-    assert(tuples_ == index_.size());
-    assert(tuples_ == keys_.size());
-    assert(tuples_ == versions_.size());
+    JUBATUS_ASSERT_EQ(tuples_, index_.size(), "");
+    JUBATUS_ASSERT_EQ(tuples_, keys_.size(), "");
+    JUBATUS_ASSERT_EQ(tuples_, versions_.size(), "");
   }
 
   friend class pfi::data::serialization::access;

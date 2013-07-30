@@ -29,6 +29,7 @@
 
 #include <pficommon/lang/demangle.h>
 #include <pficommon/data/serialization.h>
+#include "../../common/assert.hpp"
 #include "../storage_exception.hpp"
 #include "bit_vector.hpp"
 #include "column_type.hpp"
@@ -301,7 +302,7 @@ class typed_column {
   }
 
   void clear() {
-    assert(ptr_ != NULL);
+    JUBATUS_ASSERT(ptr_ != NULL);
     T* target = ptr_;
     for (uint64_t i = 0; i < size(); ++i) {
       target->~T();
@@ -680,7 +681,7 @@ class abstract_column {
 
   void reserve(size_t expect_size) {
     if (ptr_ == NULL) {
-      assert(destroy_duty_ == false);
+      JUBATUS_ASSERT_EQ(destroy_duty_, false, "");
       reserved_ = std::max(expect_size, size_t(64U));
       size_ = 0;
       destroy_duty_ = true;
