@@ -17,7 +17,6 @@
 #include <stdexcept>
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
 #include <pficommon/text/json.h>
 
 #include "regression_factory.hpp"

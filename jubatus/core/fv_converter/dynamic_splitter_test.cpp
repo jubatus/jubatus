@@ -19,7 +19,6 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
 #include "dynamic_splitter.hpp"
 #include "exception.hpp"
 #include "word_splitter.hpp"

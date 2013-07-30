@@ -20,7 +20,6 @@
 #include <utility>
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/cast.h>
 #include "../common/jsonconfig.hpp"
@@ -30,7 +29,6 @@
 using std::map;
 using std::string;
 using std::vector;
-using pfi::lang::scoped_ptr;
 using pfi::lang::shared_ptr;
 
 namespace jubatus {

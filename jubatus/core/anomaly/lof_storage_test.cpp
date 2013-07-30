@@ -23,7 +23,6 @@
 #include <gtest/gtest.h>
 #include <pficommon/data/string/utility.h>
 #include <pficommon/lang/cast.h>
-#include <pficommon/lang/scoped_ptr.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/math/random.h>
 #include "../common/exception.hpp"
