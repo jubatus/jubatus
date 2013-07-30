@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <pficommon/math/random.h>
+#include "../common/assert.hpp"
 #include "../storage/bit_vector.hpp"
 
 namespace jubatus {
@@ -67,7 +68,7 @@ void prod_invert_and_vector(
     }
     const vector<float>& v = it->second;
 
-    // assert(v.size() == base_num_);
+    JUBATUS_ASSERT_EQ(v.size(), r.size(), "");
     for (size_t j = 0; j < v.size(); ++j) {
       r[j] += v[j] * val;
     }

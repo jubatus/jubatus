@@ -5,6 +5,11 @@ def configure(ctx):
   pass
 
 def build(bld):
+  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+    libassert = " LIBGLOG"
+  else:
+    libassert = ""
+
   bld.shlib(
     source = [
       'anomaly_base.cpp',
@@ -16,7 +21,7 @@ def build(bld):
     target = 'jubatus_anomaly',
     name = 'jubatus_anomaly',
     includes = '.',
-    use = 'PFICOMMON jubastorage jubacommon jubatus_recommender column_table')
+    use = 'PFICOMMON jubastorage jubacommon jubatus_recommender column_table'+libassert)
 
   def make_test(s):
     bld.program(
@@ -24,7 +29,7 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'PFICOMMON jubatus_anomaly jubacommon jubatus_recommender jubatus_mixables')
+      use = 'PFICOMMON jubatus_anomaly jubacommon jubatus_recommender jubatus_mixables'+libassert)
 
   map(make_test, [
       'light_lof_test.cpp',

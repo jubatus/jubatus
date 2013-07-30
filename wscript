@@ -76,6 +76,7 @@ def configure(conf):
 
   if not Options.options.debug:
     conf.define('NDEBUG', 1)
+    conf.define('JUBATUS_DISABLE_ASSERTIONS', 1)
 
   if Options.options.enable_zookeeper:
     if (conf.check_cxx(header_name = 'c-client-src/zookeeper.h',

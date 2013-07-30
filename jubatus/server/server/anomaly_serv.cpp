@@ -16,7 +16,6 @@
 
 #include "anomaly_serv.hpp"
 
-#include <cassert>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,6 +24,7 @@
 #include <pficommon/text/json.h>
 #include <pficommon/lang/shared_ptr.h>
 
+#include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/vector_util.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/fv_converter/datum.hpp"
@@ -250,7 +250,8 @@ void anomaly_serv::find_from_cht(
   ht.find(key, out, n);  // replication number of local_node
 #else
   // cannot reach here, assertion!
-  assert(argv().is_standalone());
+  JUBATUS_ASSERT_UNREACHABLE();
+  // JUBATUS_ASSERT(argv().is_standalone());
   // out.push_back(make_pair(argv().eth, argv().port));
 #endif
 }

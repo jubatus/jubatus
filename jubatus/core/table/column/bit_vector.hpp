@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 
-#include <cassert>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -27,6 +26,7 @@
 #include <msgpack.hpp>
 #include <pficommon/lang/cast.h>
 #include <pficommon/data/serialization.h>
+#include "../../common/assert.hpp"
 #include "../../common/exception.hpp"
 #include "../storage_exception.hpp"
 
@@ -321,7 +321,7 @@ struct bit_vector_base {
     msgpack::pack(buffer, tmp);
   }
   void alloc_memory() {
-    assert(!own_);
+    JUBATUS_ASSERT(!own_);
     bits_ = new bit_base[used_bytes()];
     own_ = true;
     memset(bits_, 0, used_bytes());

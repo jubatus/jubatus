@@ -6,6 +6,11 @@ def configure(conf):
     pass
 
 def build(bld):
+  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+    libassert = " LIBGLOG"
+  else:
+    libassert = ""
+
   bld.shlib(
     source = [
         'column_table.cpp',
@@ -13,7 +18,7 @@ def build(bld):
     ],
     target = 'column_table',
     name = 'column_table',
-    use = 'PFICOMMON'
+    use = 'PFICOMMON'+libassert
   )
 
   def make_test(s):
@@ -22,6 +27,6 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'MSGPACK PFICOMMON column_table jubacommon')
+      use = 'MSGPACK PFICOMMON column_table jubacommon'+libassert)
   map(make_test,['column_table_test.cpp',
                  'bit_vector_test.cpp'])

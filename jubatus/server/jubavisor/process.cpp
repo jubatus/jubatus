@@ -21,7 +21,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include <cassert>
 #include <cerrno>
 #include <csignal>
 #include <cstdlib>
@@ -33,6 +32,7 @@
 #include <glog/logging.h>
 #include <pficommon/lang/cast.h>
 
+#include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
 #include "../common/util.hpp"
 
@@ -135,8 +135,7 @@ bool process::spawn_link(int p) {
     return false;
   }
 
-  assert(false);
-  // never reaches here
+  JUBATUS_ASSERT_UNREACHABLE();
   return false;
 }
 

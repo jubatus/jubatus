@@ -17,7 +17,6 @@
 #include "stat.hpp"
 #include <algorithm>
 #include <cmath>
-#include <cassert>
 #include <string>
 #include <pficommon/system/time_util.h>
 #include <pficommon/data/serialization.h>

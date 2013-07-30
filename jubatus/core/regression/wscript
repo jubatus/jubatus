@@ -5,6 +5,11 @@ def configure(conf):
     pass
 
 def build(bld):
+    if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+        libassert = " LIBGLOG"
+    else:
+        libassert = ""
+
     bld.shlib(
         source = [
             'regression_base.cpp',
@@ -13,7 +18,7 @@ def build(bld):
             ],
         target = 'jubatus_regression',
         includes = '.',
-        use = 'PFICOMMON jubacommon'
+        use = 'PFICOMMON jubacommon'+libassert
         )
 
     def make_test(s):
@@ -22,7 +27,7 @@ def build(bld):
             source = s,
             target = s[0: s.rfind('.')],
             includes = '.',
-            use = 'jubatus_regression jubastorage'
+            use = 'jubatus_regression jubastorage'+libassert
             )
 
     test_source = [

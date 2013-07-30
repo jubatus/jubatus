@@ -5,6 +5,11 @@ def configure(conf):
   pass
 
 def build(bld):
+  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+    libassert = " LIBGLOG"
+  else:
+    libassert = ""
+
   bld.shlib(
     source = [
       'mixable_weight_manager.cpp',
@@ -12,7 +17,7 @@ def build(bld):
       ],
     target = 'jubatus_mixables',
     includes = '.',
-    use = 'PFICOMMON MSGPACK jubastorage column_table jubaconverter'
+    use = 'PFICOMMON MSGPACK jubastorage column_table jubaconverter'+libassert
     )
 
   source = [
@@ -30,7 +35,7 @@ def build(bld):
     source = source,
     target = 'jubatus_driver',
     includes = '.',
-    use = 'PFICOMMON jubacommon MSGPACK jubaconverter jubastorage jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph jubatus_mixables'
+    use = 'PFICOMMON jubacommon MSGPACK jubaconverter jubastorage jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph jubatus_mixables'+libassert
     )
 
   def make_test(t):
@@ -39,7 +44,7 @@ def build(bld):
       source=t + '.cpp',
       target=t,
       includes='.',
-      use='jubatus_driver'
+      use='jubatus_driver'+libassert
       )
 
   tests = [
