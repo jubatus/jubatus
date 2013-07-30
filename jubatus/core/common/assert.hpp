@@ -61,6 +61,7 @@
 
 #if __has_builtin(__builtin_unreachable) || \
     __GNUC__ == 4 && __GNUC_MINOR__ >= 5
+  // TODO(gintenlabo): Add __GUNC__ >= 5 if GCC 5.x has __builtin_unreachable
   #define JUBATUS_ASSERT_UNREACHABLE() __builtin_unreachable()
 #else
   #include <exception>  // NOLINT
