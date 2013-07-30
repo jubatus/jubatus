@@ -357,7 +357,7 @@ struct bit_vector_base {
   void serialize(Ar& ar) {
     // TODO(beam2d): Serializing a pointer is dangerous.
     ar & MEMBER(bits_)
-      & MEMBER(bit_num);
+      & MEMBER(bit_num_);
   }
 
   bit_base* bits_;
