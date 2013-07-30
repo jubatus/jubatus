@@ -17,7 +17,6 @@
 #include <map>
 #include <string>
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
 #include "exception.hpp"
 #ifdef HAVE_RE2
 #include "re2_filter.hpp"
@@ -35,7 +34,7 @@ TEST(string_filter_factory, trivial) {
   p["pattern"] = ".*";
   p["replace"] = "";
 
-  pfi::lang::scoped_ptr<string_filter> filter(f.create("regexp", p));
+  pfi::lang::shared_ptr<string_filter> filter(f.create("regexp", p));
   EXPECT_TRUE(typeid(*filter) == typeid(re2_filter));
 }
 #endif
@@ -58,7 +57,7 @@ TEST(string_filter_factory, dynamic) {
   ASSERT_THROW(f.create("dynamic", p), converter_exception);
 
   p["function"] = "create";
-  pfi::lang::scoped_ptr<string_filter> s(f.create("dynamic", p));
+  pfi::lang::shared_ptr<string_filter> s(f.create("dynamic", p));
 
   std::string in("hoge-hoge");
   std::string out;
