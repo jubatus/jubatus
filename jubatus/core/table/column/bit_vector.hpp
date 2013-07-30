@@ -115,7 +115,7 @@ struct bit_vector_base {
   bit_vector_base(const bit_vector_base& orig)
       : bits_(NULL),
         bit_num_(orig.bit_num_),
-        own_(true) {
+        own_(false) {
     if (orig.bits_ == NULL) {
       return;
     }
