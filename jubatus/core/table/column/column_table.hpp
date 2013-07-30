@@ -370,41 +370,7 @@ class column_table {
     if (it == index_.end()) {
       return false;
     }
-
-    const uint64_t delete_index = it->second;
-
-    for (std::vector<detail::abstract_column>::iterator jt = columns_.begin();
-         jt != columns_.end();
-         ++jt) {
-      jt->remove(delete_index);
-    }
-
-    {  // needs swap on last index
-      const uint64_t final_row = tuples_ - 1;
-      const std::string& final_key = keys_[final_row];
-      index_table::iterator move_it = index_.find(final_key);
-      assert(move_it->second == final_row);
-      move_it->second = delete_index;
-    }
-    index_.erase(it);
-    if (delete_index + 1 != keys_.size()) {
-      std::swap(keys_[delete_index], keys_.back());
-    }
-    std::vector<std::string>::iterator key_back = keys_.end();
-    --key_back;
-    keys_.erase(key_back);
-
-    if (delete_index + 1 != versions_.size()) {
-      std::swap(versions_[delete_index], versions_.back());
-    }
-    std::vector<version_t>::iterator version_back = versions_.end();
-    --version_back;
-    versions_.erase(version_back);
-    assert(tuples_ == index_.size());
-    assert(tuples_ == keys_.size());
-    assert(tuples_ == versions_.size());
-    --tuples_;
-    ++clock_;
+    delete_row_(it->second);
     return true;
   }
 
@@ -413,6 +379,23 @@ class column_table {
     if (size() <= index) {
       return false;
     }
+    delete_row_(index);
+    return true;
+  }
+
+
+ private:
+  std::vector<std::string> keys_;
+  std::vector<version_t> versions_;
+  std::vector<detail::abstract_column> columns_;
+  mutable pfi::concurrent::rw_mutex table_lock_;
+  uint64_t tuples_;
+  uint64_t clock_;
+  index_table index_;
+
+  void delete_row_(uint64_t index) {
+    assert(index < size());
+
     for (std::vector<detail::abstract_column>::iterator jt = columns_.begin();
          jt != columns_.end();
          ++jt) {
@@ -427,34 +410,20 @@ class column_table {
     if (index + 1 != keys_.size()) {
       std::swap(keys_[index], keys_.back());
     }
-    std::vector<std::string>::iterator key_back = keys_.end();
-    --key_back;
-    keys_.erase(key_back);
+    keys_.pop_back();
 
     if (index + 1 != versions_.size()) {
       std::swap(versions_[index], versions_.back());
     }
-    std::vector<version_t>::iterator version_back = versions_.end();
-    --version_back;
-    versions_.erase(version_back);
+    versions_.pop_back();
+
+    --tuples_;
+    ++clock_;
 
     assert(tuples_ == index_.size());
     assert(tuples_ == keys_.size());
     assert(tuples_ == versions_.size());
-    --tuples_;
-    ++clock_;
-    return true;
   }
-
-
- private:
-  std::vector<std::string> keys_;
-  std::vector<version_t> versions_;
-  std::vector<detail::abstract_column> columns_;
-  mutable pfi::concurrent::rw_mutex table_lock_;
-  uint64_t tuples_;
-  uint64_t clock_;
-  index_table index_;
 
   friend class pfi::data::serialization::access;
   template <class Ar>

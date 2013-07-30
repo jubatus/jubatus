@@ -115,7 +115,7 @@ struct bit_vector_base {
   bit_vector_base(const bit_vector_base& orig)
       : bits_(NULL),
         bit_num_(orig.bit_num_),
-        own_(true) {
+        own_(false) {
     if (orig.bits_ == NULL) {
       return;
     }
@@ -357,7 +357,7 @@ struct bit_vector_base {
   void serialize(Ar& ar) {
     // TODO(beam2d): Serializing a pointer is dangerous.
     ar & MEMBER(bits_)
-      & MEMBER(bit_num);
+      & MEMBER(bit_num_);
   }
 
   bit_base* bits_;
