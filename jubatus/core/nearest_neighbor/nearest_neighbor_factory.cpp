@@ -23,29 +23,32 @@
 #include "../common/jsonconfig.hpp"
 #include "nearest_neighbor.hpp"
 
+using pfi::lang::shared_ptr;
+
 namespace jubatus {
 namespace core {
 namespace nearest_neighbor {
 
-nearest_neighbor_base* create_nearest_neighbor(
+shared_ptr<nearest_neighbor_base> create_nearest_neighbor(
     const std::string& name,
     const common::jsonconfig::config& config,
-    pfi::lang::shared_ptr<table::column_table> table,
+    shared_ptr<table::column_table> table,
     const std::string& id) {
 
   using common::jsonconfig::config_cast_check;
 
   if (name == "euclid_lsh") {
-    return new euclid_lsh(
-        config_cast_check<euclid_lsh::config>(config), table, id);
+    return shared_ptr<nearest_neighbor_base>(new euclid_lsh(
+        config_cast_check<euclid_lsh::config>(config), table, id));
   } else if (name == "lsh") {
-    return new lsh(config_cast_check<lsh::config>(config), table, id);
+    return shared_ptr<nearest_neighbor_base>(
+        new lsh(config_cast_check<lsh::config>(config), table, id));
   } else if (name == "minhash") {
-    return new minhash(config_cast_check<minhash::config>(config), table, id);
+    return shared_ptr<nearest_neighbor_base>(
+        new minhash(config_cast_check<minhash::config>(config), table, id));
   } else {
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }
-  return NULL;
 }
 
 }  // namespace nearest_neighbor

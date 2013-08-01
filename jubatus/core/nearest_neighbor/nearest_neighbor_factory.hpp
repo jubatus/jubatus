@@ -29,7 +29,7 @@ namespace nearest_neighbor {
 
 class nearest_neighbor_base;
 
-nearest_neighbor_base* create_nearest_neighbor(
+pfi::lang::shared_ptr<nearest_neighbor_base> create_nearest_neighbor(
     const std::string& name,
     const common::jsonconfig::config& config,
     pfi::lang::shared_ptr<table::column_table> table,

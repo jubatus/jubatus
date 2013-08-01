@@ -35,6 +35,7 @@ using pfi::data::serialization::binary_iarchive;
 using pfi::data::serialization::binary_oarchive;
 using pfi::data::unordered_map;
 using pfi::data::unordered_set;
+using pfi::lang::shared_ptr;
 using std::istream;
 using std::istringstream;
 using std::max;
@@ -67,7 +68,8 @@ lof_storage::lof_storage()
               recommender::euclid_lsh::config())), "")) {
 }
 
-lof_storage::lof_storage(recommender::recommender_base* nn_engine)
+lof_storage::lof_storage(
+    shared_ptr<recommender::recommender_base> nn_engine)
     : neighbor_num_(DEFAULT_NEIGHBOR_NUM),
       reverse_nn_num_(DEFAULT_REVERSE_NN_NUM),
       nn_engine_(nn_engine) {
@@ -75,7 +77,7 @@ lof_storage::lof_storage(recommender::recommender_base* nn_engine)
 
 lof_storage::lof_storage(
     const config& config,
-    recommender::recommender_base* nn_engine)
+    shared_ptr<recommender::recommender_base> nn_engine)
     : neighbor_num_(config.nearest_neighbor_num),
       reverse_nn_num_(config.reverse_nearest_neighbor_num),
       nn_engine_(nn_engine) {
@@ -197,8 +199,9 @@ void lof_storage::update_all() {
   }
 }
 
-void lof_storage::set_nn_engine(recommender::recommender_base* nn_engine) {
-  nn_engine_.reset(nn_engine);
+void lof_storage::set_nn_engine(
+    shared_ptr<recommender::recommender_base> nn_engine) {
+  nn_engine_ = nn_engine;
 }
 
 void lof_storage::get_diff(string& diff) const {

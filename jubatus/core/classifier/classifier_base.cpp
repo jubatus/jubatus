@@ -35,7 +35,7 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
-classifier_base::classifier_base(storage::storage_base* storage)
+classifier_base::classifier_base(storage_ptr storage)
     : storage_(storage),
       use_covars_(false) {
 }

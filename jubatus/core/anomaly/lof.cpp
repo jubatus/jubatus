@@ -72,7 +72,7 @@ lof::lof() {
 
 lof::lof(
     const storage::lof_storage::config& config,
-    recommender::recommender_base* nn_engine)
+    pfi::lang::shared_ptr<recommender::recommender_base> nn_engine)
     : lof_index_(new storage::lof_storage(config, nn_engine)) {
   mixable_storage_.set_model(lof_index_);
 }

@@ -28,7 +28,7 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
-normal_herd::normal_herd(storage::storage_base* storage)
+normal_herd::normal_herd(classifier_base::storage_ptr storage)
     : classifier_base(storage) {
   classifier_base::use_covars_ = true;
   config_.C = 0.1f;
@@ -36,7 +36,7 @@ normal_herd::normal_herd(storage::storage_base* storage)
 
 normal_herd::normal_herd(
     const classifier_config& config,
-    storage::storage_base* storage)
+    classifier_base::storage_ptr storage)
     : classifier_base(storage),
       config_(config) {
   classifier_base::use_covars_ = true;

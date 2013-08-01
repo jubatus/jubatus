@@ -37,6 +37,7 @@ using std::string;
 using std::cout;
 using std::endl;
 using pfi::lang::lexical_cast;
+using pfi::lang::shared_ptr;
 using jubatus::core::fv_converter::datum;
 
 namespace jubatus {
@@ -46,14 +47,16 @@ namespace driver {
 class regression_test : public ::testing::Test {
  protected:
   void SetUp() {
-    core::storage::storage_base* storage = new core::storage::local_storage;
+    shared_ptr<storage::storage_base> storage(new storage::local_storage);
     core::regression::passive_aggressive::config config;
     config.C = std::numeric_limits<float>::max();
     config.epsilon = 0.1f;
+    shared_ptr<core::regression::regression_base> method(
+        new core::regression::passive_aggressive(config, storage));
     regression_.reset(
       new core::driver::regression(
         storage,
-        new core::regression::passive_aggressive(config, storage),
+        method,
         make_fv_converter()));
   }
 

@@ -24,19 +24,20 @@
 #include "../common/jsonconfig.hpp"
 
 using jubatus::core::common::jsonconfig::config_cast_check;
+using pfi::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
 namespace regression {
 
-regression_base* regression_factory::create_regression(
+shared_ptr<regression_base> regression_factory::create_regression(
     const std::string& name,
     const common::jsonconfig::config& param,
-    jubatus::core::storage::storage_base* storage) {
+    shared_ptr<storage::storage_base> storage) {
   if (name == "PA" || name == "passive_aggressive") {
-    return new regression::passive_aggressive(
+    return shared_ptr<regression_base>(new regression::passive_aggressive(
       config_cast_check<regression::passive_aggressive::config>(param),
-      storage);
+      storage));
   } else {
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }

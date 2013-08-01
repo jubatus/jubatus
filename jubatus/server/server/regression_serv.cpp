@@ -60,7 +60,7 @@ struct regression_serv_config {
   }
 };
 
-core::storage::storage_base* make_model(
+shared_ptr<core::storage::storage_base> make_model(
     const framework::server_argv& arg) {
   return core::storage::storage_factory::create_storage(
       (arg.is_standalone()) ? "local" : "local_mixture");
@@ -101,7 +101,7 @@ bool regression_serv::set_config(const string& config) {
     param = core::common::jsonconfig::config(*conf.parameter);
   }
 
-  core::storage::storage_base* model = make_model(argv());
+  shared_ptr<core::storage::storage_base> model = make_model(argv());
 
   regression_.reset(
       new core::driver::regression(

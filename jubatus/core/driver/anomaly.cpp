@@ -42,8 +42,8 @@ namespace core {
 namespace driver {
 
 anomaly::anomaly(
-    jubatus::core::anomaly::anomaly_base* anomaly_method,
-    pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
+    shared_ptr<jubatus::core::anomaly::anomaly_base> anomaly_method,
+    shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       anomaly_(anomaly_method) {

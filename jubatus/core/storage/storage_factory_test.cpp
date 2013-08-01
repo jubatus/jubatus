@@ -16,13 +16,12 @@
 
 #include <exception>
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
 
 #include "storage_factory.hpp"
 #include "local_storage.hpp"
 #include "local_storage_mixture.hpp"
 
-using pfi::lang::scoped_ptr;
+using pfi::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -30,12 +29,12 @@ namespace storage {
 
 TEST(storage_factory, trivial) {
   {
-    scoped_ptr<storage_base> s(storage_factory::create_storage("local"));
+    shared_ptr<storage_base> s = storage_factory::create_storage("local");
     EXPECT_EQ(typeid(local_storage), typeid(*s));
   }
   {
-    scoped_ptr<storage_base> s(
-        storage_factory::create_storage("local_mixture"));
+    shared_ptr<storage_base> s =
+        storage_factory::create_storage("local_mixture");
     EXPECT_EQ(typeid(local_storage_mixture), typeid(*s));
   }
   {

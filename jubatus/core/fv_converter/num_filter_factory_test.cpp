@@ -17,7 +17,6 @@
 #include <map>
 #include <string>
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
 #include "exception.hpp"
 #include "num_filter_factory.hpp"
 #include "num_filter_impl.hpp"
@@ -45,7 +44,7 @@ TEST(num_filter_factory, create_add_filter) {
 
   std::map<std::string, std::string> params;
   params["value"] = "10";
-  pfi::lang::scoped_ptr<num_filter> filter(f.create("add", params));
+  pfi::lang::shared_ptr<num_filter> filter(f.create("add", params));
 
   EXPECT_EQ(typeid(add_filter).name(), typeid(*filter).name());
   EXPECT_EQ(20.0, filter->filter(10.0));
@@ -67,7 +66,7 @@ TEST(num_filter_factory, create_dynamic) {
   EXPECT_THROW(f.create("dynamic", params), converter_exception);
 
   params["function"] = "create";
-  pfi::lang::scoped_ptr<num_filter> s(f.create("dynamic", params));
+  pfi::lang::shared_ptr<num_filter> s(f.create("dynamic", params));
 
   EXPECT_EQ(6.0, s->filter(3.0));
 }

@@ -50,7 +50,8 @@ class recommender_test : public ::testing::Test {
  protected:
   void SetUp() {
     recommender_.reset(new driver::recommender(
-          new core::recommender::inverted_index,
+          pfi::lang::shared_ptr<core::recommender::recommender_base>(
+            new core::recommender::inverted_index),
           make_fv_converter()));
   }
 

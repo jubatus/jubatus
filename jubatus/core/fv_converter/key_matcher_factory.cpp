@@ -27,27 +27,32 @@
 #endif
 #include "suffix_match.hpp"
 
+using pfi::lang::shared_ptr;
+
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-key_matcher* key_matcher_factory::create_matcher(const std::string& matcher) {
+shared_ptr<key_matcher> key_matcher_factory::create_matcher(
+    const std::string& matcher) {
   if (matcher == "" || matcher == "*") {
-    return new match_all();
+    return shared_ptr<key_matcher>(new match_all());
   } else if (matcher[0] == '*') {
-    return new suffix_match(matcher.substr(1));
+    return shared_ptr<key_matcher>(new suffix_match(matcher.substr(1)));
   } else if (matcher[matcher.size() - 1] == '*') {
-    return new prefix_match(matcher.substr(0, matcher.size() - 1));
+    return shared_ptr<key_matcher>(
+      new prefix_match(matcher.substr(0, matcher.size() - 1)));
   } else if (matcher.size() >= 2 && matcher[0] == '/'
       && matcher[matcher.size() - 1] == '/') {
 #ifdef HAVE_RE2
-    return new re2_match(matcher.substr(1, matcher.size() - 2));
+    return shared_ptr<key_matcher>(
+      new re2_match(matcher.substr(1, matcher.size() - 2)));
 #else
     throw JUBATUS_EXCEPTION(
         converter_exception("cannot use regexp rule: " + matcher));
 #endif
   } else {
-    return new exact_match(matcher);
+    return shared_ptr<key_matcher>(new exact_match(matcher));
   }
 }
 

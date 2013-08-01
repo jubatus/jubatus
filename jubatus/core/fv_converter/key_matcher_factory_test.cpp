@@ -15,7 +15,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
 #include "exception.hpp"
 #include "key_matcher_factory.hpp"
 #include "key_matcher.hpp"
@@ -25,7 +24,7 @@ namespace core {
 namespace fv_converter {
 
 TEST(fv_converter, key_matcher_factory) {
-  typedef pfi::lang::scoped_ptr<key_matcher> m_t;
+  typedef pfi::lang::shared_ptr<key_matcher> m_t;
 
   key_matcher_factory f;
   ASSERT_TRUE(m_t(f.create_matcher("*"))->match("hogehgeo"));

@@ -20,7 +20,6 @@
 #include <utility>
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/cast.h>
 #include "../common/jsonconfig.hpp"
@@ -30,7 +29,6 @@
 using std::map;
 using std::string;
 using std::vector;
-using pfi::lang::scoped_ptr;
 using pfi::lang::shared_ptr;
 
 namespace jubatus {
@@ -79,8 +77,8 @@ class nearest_neighbor_test
       using pfi::text::json::json;
 
       table_.reset(new table::column_table);
-      nn_.reset(create_nearest_neighbor(
-          name, config(config_js, ""), table_, "localhost"));
+      nn_ = create_nearest_neighbor(
+          name, config(config_js, ""), table_, "localhost");
     } catch (common::jsonconfig::cast_check_error& e) {
       std::cout << "In Setup():" <<e.what() << '\n';
       vector<pfi::lang::shared_ptr<common::jsonconfig::config_error> > v =
@@ -101,7 +99,7 @@ class nearest_neighbor_test
 
  private:
   shared_ptr<table::column_table> table_;
-  scoped_ptr<nearest_neighbor_base> nn_;
+  shared_ptr<nearest_neighbor_base> nn_;
 };
 
 TEST_P(nearest_neighbor_test, type) {

@@ -26,7 +26,7 @@ namespace regression {
 
 passive_aggressive::passive_aggressive(
     const config& config,
-    storage::storage_base* storage)
+    regression_base::storage_ptr storage)
     : regression_base(storage),
       config_(config),
       sum_(0.f),
@@ -34,7 +34,7 @@ passive_aggressive::passive_aggressive(
       count_(0.f) {
 }
 
-passive_aggressive::passive_aggressive(storage::storage_base* storage)
+passive_aggressive::passive_aggressive(regression_base::storage_ptr storage)
     : regression_base(storage),
       sum_(0.f),
       sq_sum_(0.f),

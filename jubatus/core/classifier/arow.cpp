@@ -28,12 +28,14 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
-arow::arow(storage::storage_base* storage)
+arow::arow(classifier_base::storage_ptr storage)
     : classifier_base(storage) {
   classifier_base::use_covars_ = true;
 }
 
-arow::arow(const classifier_config& config, storage::storage_base* storage)
+arow::arow(
+    const classifier_config& config,
+    classifier_base::storage_ptr storage)
     : classifier_base(storage),
       config_(config) {
   classifier_base::use_covars_ = true;

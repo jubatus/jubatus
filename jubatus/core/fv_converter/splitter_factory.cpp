@@ -23,13 +23,15 @@
 #include "util.hpp"
 #include "word_splitter.hpp"
 
+using pfi::lang::shared_ptr;
+
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
 namespace {
 
-character_ngram* create_character_ngram(
+shared_ptr<character_ngram> create_character_ngram(
     const splitter_factory::param_t& params) {
   int n = get_int_or_die(params, "char_num");
   if (n <= 0) {
@@ -37,19 +39,20 @@ character_ngram* create_character_ngram(
         converter_exception(std::string("char_num must be positive integer")));
   }
   size_t m = static_cast<size_t>(n);
-  return new character_ngram(m);
+  return shared_ptr<character_ngram>(new character_ngram(m));
 }
 
-word_splitter* create_dynamic_splitter(
+shared_ptr<word_splitter> create_dynamic_splitter(
     const splitter_factory::param_t& params) {
   const std::string& path = get_or_die(params, "path");
   const std::string& function = get_or_die(params, "function");
-  return new dynamic_splitter(path, function, params);
+  return shared_ptr<word_splitter>(
+      new dynamic_splitter(path, function, params));
 }
 
 }  // namespace
 
-word_splitter* splitter_factory::create(
+shared_ptr<word_splitter> splitter_factory::create(
     const std::string& name,
     const param_t& params) const {
   if (name == "ngram") {

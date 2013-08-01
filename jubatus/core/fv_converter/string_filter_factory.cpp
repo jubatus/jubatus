@@ -26,27 +26,34 @@
 #include "string_filter.hpp"
 #include "util.hpp"
 
+using pfi::lang::shared_ptr;
+
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
+namespace {
+
 #ifdef HAVE_RE2
-static
-re2_filter* create_re2_filter(const string_filter_factory::param_t& params) {
+shared_ptr<re2_filter> create_re2_filter(
+    const string_filter_factory::param_t& params) {
   const std::string& pattern = get_or_die(params, "pattern");
   const std::string& replace = get_or_die(params, "replace");
-  return new re2_filter(pattern, replace);
+  return shared_ptr<re2_filter>(new re2_filter(pattern, replace));
 }
 #endif
 
-static string_filter* create_dynamic_filter(
+shared_ptr<string_filter> create_dynamic_filter(
     const string_filter_factory::param_t& params) {
   const std::string& path = get_or_die(params, "path");
   const std::string& function = get_or_die(params, "function");
-  return new dynamic_string_filter(path, function, params);
+  return shared_ptr<string_filter>(
+      new dynamic_string_filter(path, function, params));
 }
 
-string_filter* string_filter_factory::create(
+}  // namespace
+
+shared_ptr<string_filter> string_filter_factory::create(
     const std::string& name,
     const std::map<std::string, std::string>& params) const {
 #ifdef HAVE_RE2

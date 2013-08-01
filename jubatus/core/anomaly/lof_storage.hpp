@@ -25,7 +25,7 @@
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
-#include <pficommon/lang/scoped_ptr.h>
+#include <pficommon/lang/shared_ptr.h>
 #include <pficommon/text/json.h>
 
 #include "anomaly_storage_base.hpp"
@@ -55,12 +55,13 @@ class lof_storage : public anomaly_storage_base {
   };
 
   lof_storage();
-  explicit lof_storage(core::recommender::recommender_base* nn_engine);
+  explicit lof_storage(
+      pfi::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
 
   // config contains parameters for the underlying nearest neighbor search
   explicit lof_storage(
       const config& config,
-      core::recommender::recommender_base* nn_engine);
+      pfi::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
 
   virtual ~lof_storage();
 
@@ -88,7 +89,8 @@ class lof_storage : public anomaly_storage_base {
   float get_lrd(const std::string& row) const;
 
   // just for test
-  void set_nn_engine(core::recommender::recommender_base* nn_engine);
+  void set_nn_engine(
+      pfi::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
 
   virtual void get_diff(std::string& diff) const;
   virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
@@ -175,7 +177,7 @@ class lof_storage : public anomaly_storage_base {
   uint32_t neighbor_num_;  // k of k-nn
   uint32_t reverse_nn_num_;  // ck of ck-nn as an approx. of k-reverse-nn
 
-  pfi::lang::scoped_ptr<core::recommender::recommender_base> nn_engine_;
+  pfi::lang::shared_ptr<core::recommender::recommender_base> nn_engine_;
 };
 
 }  // namespace storage

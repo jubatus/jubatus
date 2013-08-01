@@ -17,6 +17,7 @@
 #ifndef JUBATUS_CORE_REGRESSION_REGRESSION_BASE_HPP_
 #define JUBATUS_CORE_REGRESSION_REGRESSION_BASE_HPP_
 
+#include <pficommon/lang/shared_ptr.h>
 #include "../common/type.hpp"
 
 namespace jubatus {
@@ -30,7 +31,8 @@ namespace regression {
 
 class regression_base {
  public:
-  explicit regression_base(storage::storage_base* storage);
+  typedef pfi::lang::shared_ptr<storage::storage_base> storage_ptr;
+  explicit regression_base(storage_ptr storage);
 
   virtual ~regression_base() {
   }
@@ -42,13 +44,13 @@ class regression_base {
 
  protected:
   storage::storage_base* get_storage() const {
-    return storage_;
+    return storage_.get();
   }
 
   void update(const common::sfv_t& fv, float coeff);
 
  private:
-  storage::storage_base* storage_;
+  storage_ptr storage_;
 };
 
 }  // namespace regression

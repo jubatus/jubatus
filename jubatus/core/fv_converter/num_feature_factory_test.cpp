@@ -17,7 +17,6 @@
 #include <string>
 #include <map>
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
 #include "../common/type.hpp"
 #include "exception.hpp"
 #include "num_feature.hpp"
@@ -46,7 +45,7 @@ TEST(num_feature_factory, dynamic) {
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
 
   param["function"] = "create";
-  pfi::lang::scoped_ptr<num_feature> s(f.create("dynamic", param));
+  pfi::lang::shared_ptr<num_feature> s(f.create("dynamic", param));
 
   common::sfv_t fv;
   s->add_feature("/path", 1, fv);

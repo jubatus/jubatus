@@ -26,6 +26,7 @@
 #include "test_util.hpp"
 
 using std::make_pair;
+using pfi::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -45,9 +46,11 @@ class anomaly_test : public ::testing::Test {
     lsh_config.seed = 1234;
 
     anomaly_.reset(new driver::anomaly(
-          new core::anomaly::lof(lof_config,
-            new core::recommender::euclid_lsh(lsh_config)),
-        make_fv_converter()));
+          shared_ptr<core::anomaly::anomaly_base>(
+            new core::anomaly::lof(lof_config,
+              shared_ptr<core::recommender::recommender_base>(
+                new core::recommender::euclid_lsh(lsh_config)))),
+          make_fv_converter()));
   }
 
   void TearDown() {

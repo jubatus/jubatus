@@ -19,6 +19,7 @@
 
 #include <string>
 #include <pficommon/text/json.h>
+#include <pficommon/lang/shared_ptr.h>
 
 namespace jubatus {
 namespace core {
@@ -43,10 +44,10 @@ class regression_base;
 
 class regression_factory {
  public:
-  static regression_base* create_regression(
+  static pfi::lang::shared_ptr<regression_base> create_regression(
       const std::string& name,
       const common::jsonconfig::config& param,
-      jubatus::core::storage::storage_base* storage);
+      pfi::lang::shared_ptr<storage::storage_base> storage);
 };
 
 }  // namespace regression

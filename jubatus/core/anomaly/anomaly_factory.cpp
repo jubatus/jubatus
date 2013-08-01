@@ -18,6 +18,7 @@
 
 #include <string>
 
+#include <pficommon/lang/shared_ptr.h>
 #include <pficommon/text/json.h>
 
 #include "../common/exception.hpp"
@@ -27,6 +28,7 @@
 
 using jubatus::core::common::jsonconfig::config;
 using jubatus::core::common::jsonconfig::config_cast_check;
+using pfi::lang::shared_ptr;
 using pfi::text::json::json;
 using std::string;
 
@@ -46,7 +48,7 @@ struct anomaly_config {
 };
 }
 
-anomaly_base* anomaly_factory::create_anomaly(
+shared_ptr<anomaly_base> anomaly_factory::create_anomaly(
     const string& name,
     const config& param,
     const string& id) {
@@ -54,11 +56,11 @@ anomaly_base* anomaly_factory::create_anomaly(
   if (name == "lof") {
     storage::lof_storage::config config =
         config_cast_check<storage::lof_storage::config>(param);
-    return new lof(
+    return shared_ptr<anomaly_base>(new lof(
         config,
         recommender::recommender_factory::create_recommender(
             conf.method,
-            conf.parameter, id));
+            conf.parameter, id)));
   } else if (name == "light_lof") {
     light_lof::config lof_config = config_cast_check<light_lof::config>(param);
     pfi::lang::shared_ptr<table::column_table> nearest_neighbor_table(
@@ -66,7 +68,8 @@ anomaly_base* anomaly_factory::create_anomaly(
     pfi::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
         nearest_neighbor_engine(nearest_neighbor::create_nearest_neighbor(
             conf.method, conf.parameter, nearest_neighbor_table, id));
-    return new light_lof(lof_config, id, nearest_neighbor_engine);
+    return pfi::lang::shared_ptr<anomaly_base>(
+        new light_lof(lof_config, id, nearest_neighbor_engine));
   } else {
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }

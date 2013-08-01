@@ -19,6 +19,7 @@
 
 #include <string>
 #include <map>
+#include <pficommon/lang/shared_ptr.h>
 
 namespace jubatus {
 namespace core {
@@ -28,7 +29,7 @@ class num_filter;
 
 class num_filter_factory {
  public:
-  num_filter* create(
+  pfi::lang::shared_ptr<num_filter> create(
       const std::string& name,
       const std::map<std::string, std::string>& params) const;
 };

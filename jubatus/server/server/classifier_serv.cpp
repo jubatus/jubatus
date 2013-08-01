@@ -40,6 +40,7 @@ using std::vector;
 using std::pair;
 using std::isfinite;
 using pfi::lang::lexical_cast;
+using pfi::lang::shared_ptr;
 using pfi::text::json::json;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::server_argv;
@@ -64,7 +65,7 @@ struct classifier_serv_config {
   }
 };
 
-core::storage::storage_base* make_model(
+shared_ptr<core::storage::storage_base> make_model(
     const framework::server_argv& arg) {
   return core::storage::storage_factory::create_storage(
       (arg.is_standalone()) ? "local" : "local_mixture");
@@ -106,7 +107,7 @@ bool classifier_serv::set_config(const string& config) {
   }
 
   // Model owner moved to classifier_
-  core::storage::storage_base* model = make_model(argv());
+  shared_ptr<core::storage::storage_base> model = make_model(argv());
 
   classifier_.reset(
       new core::driver::classifier(

@@ -35,8 +35,8 @@ namespace core {
 namespace driver {
 
 regression::regression(
-    storage::storage_base* model_storage,
-    jubatus::core::regression::regression_base* regression_method,
+    pfi::lang::shared_ptr<storage::storage_base> model_storage,
+    pfi::lang::shared_ptr<core::regression::regression_base> regression_method,
     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new mixable_holder),
       converter_(converter),

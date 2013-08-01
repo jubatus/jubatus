@@ -33,9 +33,10 @@ namespace driver {
 
 class regression {
  public:
+  typedef core::regression::regression_base regression_base;
   regression(
-      storage::storage_base* model_storage,
-      jubatus::core::regression::regression_base* regression_method,
+      pfi::lang::shared_ptr<storage::storage_base> model_storage,
+      pfi::lang::shared_ptr<regression_base> regression_method,
       pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~regression();
 
