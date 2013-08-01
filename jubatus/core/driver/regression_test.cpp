@@ -51,11 +51,12 @@ class regression_test : public ::testing::Test {
     core::regression::passive_aggressive::config config;
     config.C = std::numeric_limits<float>::max();
     config.epsilon = 0.1f;
+    shared_ptr<core::regression::regression_base> method(
+        new core::regression::passive_aggressive(config, storage));
     regression_.reset(
       new core::driver::regression(
         storage,
-        shared_ptr<core::regression::regression_base>(
-            new core::regression::passive_aggressive(config, storage)),
+        method,
         make_fv_converter()));
   }
 
