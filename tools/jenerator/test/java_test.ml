@@ -240,22 +240,21 @@ let _ = run_test_tt_main begin "java.ml" >::: [
   "test_gen_to_string" >:: begin fun() ->
     assert_equal ~printer: Std.dump
       [ (0, "public String toString() {");
-        (1,   "StringBuilder buffer = new StringBuilder();");
-        (1,   "buffer.add(\"{\");");
-        (1,   "buffer.add(\"t = \");");
-        (1,   "buffer.add(t);");
-        (1,   "buffer.add(\", \");");
-        (1,   "buffer.add(\"}\");");
-        (1,   "return buffer.toString();";);
+        (1,   "MessageStringGenerator gen = new MessageStringGenerator();");
+        (1,   "gen.open(\"m\");");
+        (1,   "gen.add(\"t\", t);");
+        (1,   "gen.close();");
+        (1,   "return gen.toString();";);
         (0, "}");
       ]
-      (gen_to_string { message_name = "";
+      (gen_to_string { message_name = "m";
                        message_fields = [
                          { field_name = "t";
                            field_type = String;
                            field_number = 1;
                          }
-                       ]})
+                       ];
+                       message_raw = None })
   end;
 
 ] end
