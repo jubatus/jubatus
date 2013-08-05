@@ -271,21 +271,18 @@ let gen_to_msgpack field_names =
 
 let gen_to_string m =
   let add_fields = List.map (fun f ->
-    let lhs = f.field_name ^ " = " in
-    [
-      "buffer.add(" ^ gen_string_literal lhs ^ ");";
-      "buffer.add(" ^ f.field_name ^ ");";
-      "buffer.add(\", \");";
-    ]
+    let key = gen_string_literal f.field_name in
+    gen_call "gen.add" [key; f.field_name]
   ) m.message_fields in
-  let add_fields = List.concat add_fields in
+  let call_open = gen_call "gen.open" [gen_string_literal m.message_name] in
   List.concat [
     [ (0, "public String toString() {");
-      (1,   "StringBuilder buffer = new StringBuilder();");
-      (1,   "buffer.add(\"{\");"); ];
+      (1,   "MessageStringGenerator gen = new MessageStringGenerator();");
+      (1,   call_open);
+    ];
     List.map (fun l -> (1, l)) add_fields;
-    [ (1,   "buffer.add(\"}\");");
-      (1,   "return buffer.toString();");
+    [ (1,   "gen.close();");
+      (1,   "return gen.toString();");
       (0, "}"); ]
   ]
 ;;
@@ -305,6 +302,7 @@ let gen_message m conf source =
         then [(0, "import java.util.List;")] else []);
        [(0, "import org.msgpack.MessagePack;");
         (0, "import org.msgpack.annotation.Message;");
+        (0, "import us.jubat.common.MessageStringGenerator;");
         (0, "")]
       ] in
   let field_defs = List.map gen_message_field m.message_fields in
@@ -312,7 +310,8 @@ let gen_message m conf source =
     [ (0, "");
       (0, "public " ^ class_name ^ "() {");
       (0, "}"); ] in
-  let class_content = field_defs @ constructor in
+  let to_string = gen_to_string m in
+  let class_content = field_defs @ constructor @ to_string in
   let content =
     (0, "@Message") :: 
       gen_public_class class_name class_content
