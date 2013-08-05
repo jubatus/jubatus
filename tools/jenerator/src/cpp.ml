@@ -91,6 +91,18 @@ and gen_type names = function
   | Nullable typ ->  raise (Unknown_type "Nullable is not supported")
 ;;
 
+let gen_argument_type names = function
+  | Raw
+  | String
+  | Struct _
+  | List _
+  | Map(_, _)
+  | Tuple _ as t ->
+    "const " ^ gen_type names t ^ "&"
+  | _ as t ->
+    gen_type names t
+;;
+
 let gen_bool_literal = function
   | true -> "true"
   | false -> "false"
@@ -105,6 +117,10 @@ let gen_args args =
 ;;
 
 let gen_arg_def names f =
+  (gen_argument_type names f.field_type) ^ " " ^ f.field_name
+;;
+
+let gen_field_def names f =
   (gen_type names f.field_type) ^ " " ^ f.field_name
 ;;
 
@@ -238,7 +254,7 @@ let gen_client names s =
 ;;
 
 let gen_message_field names f =
-  (0, gen_arg_def names f ^ ";")
+  (0, gen_field_def names f ^ ";")
 ;;
 
 let gen_message names m =

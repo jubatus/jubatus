@@ -22,40 +22,40 @@ class regression {
     c_.set_timeout(timeout_sec);
   }
 
-  std::string get_config(std::string name) {
+  std::string get_config(const std::string& name) {
     msgpack::rpc::future f = c_.call("get_config", name);
     return f.get<std::string>();
   }
 
-  int32_t train(std::string name, std::vector<std::pair<float,
-       datum> > train_data) {
+  int32_t train(const std::string& name, const std::vector<std::pair<float,
+       datum> >& train_data) {
     msgpack::rpc::future f = c_.call("train", name, train_data);
     return f.get<int32_t>();
   }
 
-  std::vector<float> estimate(std::string name,
-       std::vector<datum> estimate_data) {
+  std::vector<float> estimate(const std::string& name,
+       const std::vector<datum>& estimate_data) {
     msgpack::rpc::future f = c_.call("estimate", name, estimate_data);
     return f.get<std::vector<float> >();
   }
 
-  bool clear(std::string name) {
+  bool clear(const std::string& name) {
     msgpack::rpc::future f = c_.call("clear", name);
     return f.get<bool>();
   }
 
-  bool save(std::string name, std::string id) {
+  bool save(const std::string& name, const std::string& id) {
     msgpack::rpc::future f = c_.call("save", name, id);
     return f.get<bool>();
   }
 
-  bool load(std::string name, std::string id) {
+  bool load(const std::string& name, const std::string& id) {
     msgpack::rpc::future f = c_.call("load", name, id);
     return f.get<bool>();
   }
 
   std::map<std::string, std::map<std::string, std::string> > get_status(
-      std::string name) {
+      const std::string& name) {
     msgpack::rpc::future f = c_.call("get_status", name);
     return f.get<std::map<std::string, std::map<std::string, std::string> > >();
   }
