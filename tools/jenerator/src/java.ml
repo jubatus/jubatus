@@ -295,23 +295,26 @@ let gen_message m conf source =
   let header =
     List.concat
       [gen_package conf;
-
        (if (List.exists include_map field_types) 
         then [(0, "import java.util.Map;")] else []);
        (if (List.exists include_list field_types) 
         then [(0, "import java.util.List;")] else []);
        [(0, "import org.msgpack.MessagePack;");
         (0, "import org.msgpack.annotation.Message;");
-        (0, "import us.jubat.common.MessageStringGenerator;");
-        (0, "")]
+        (0, "import us.jubat.common.MessageStringGenerator;"); ]
       ] in
   let field_defs = List.map gen_message_field m.message_fields in
   let constructor = 
-    [ (0, "");
-      (0, "public " ^ class_name ^ "() {");
+    [ (0, "public " ^ class_name ^ "() {");
       (0, "}"); ] in
   let to_string = gen_to_string m in
-  let class_content = field_defs @ constructor @ to_string in
+  let class_content = List.concat [
+    field_defs;
+    [ (0, ""); ];
+    constructor;
+    [ (0, ""); ];
+    to_string;
+  ] in
   let content =
     (0, "@Message") :: 
       gen_public_class class_name class_content
