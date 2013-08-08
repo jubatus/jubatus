@@ -78,6 +78,10 @@ let rec gen_type t name num = match t with
   | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
 ;;
 
+let gen_string_literal s =
+  "\"" ^ String.escaped s ^ "\""
+;;
+
 let gen_arg_def f =
   (gen_type f.field_type "retval" "") ^ " " ^ f.field_name
 ;;
@@ -143,6 +147,23 @@ let gen_to_msgpack field_names =
   ]
 ;;
 
+let gen_str name field_names =
+  List.concat [
+    [
+      (0, "def __str__(self):");
+      (1,   "gen = jubatus.common.MessageStringGenerator()");
+      (1,   gen_call "gen.open" [gen_string_literal name])
+    ];
+    List.map (fun f ->
+      (1,   gen_call "gen.add" [gen_string_literal f; "self." ^ f])
+    ) field_names;
+    [
+      (1,   "gen.close()");
+      (1,   "return gen.to_string()")
+    ]
+  ]
+;;
+
 let mapi f lst =
   let rec mapi_impl f i = function
     | [] -> []
@@ -176,6 +197,8 @@ let gen_message m =
     indent_lines 1 (gen_to_msgpack field_names);
     [(0, "")];
     indent_lines 1 (gen_from_msgpack field_names field_types m.message_name);
+    [(0, "")];
+    indent_lines 1 (gen_str m.message_name field_names)
   ]
 ;;
 
@@ -230,6 +253,7 @@ let gen_type_file conf source idl =
     (0, "");
     (0, "import sys");
     (0, "import msgpack");
+    (0, "import jubatus.common")
   ] in
   let content = concat_blocks [
     includes;
