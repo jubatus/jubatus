@@ -77,8 +77,21 @@ let rec gen_type t name = match t with
   | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
 ;;
 
+let gen_string_literal s =
+  "\"" ^ String.escaped s ^ "\""
+;;
+
 let gen_arg_def f =
   (gen_type f.field_type "retval") ^ " " ^ f.field_name
+;;
+
+let gen_args args = 
+  "(" ^ String.concat ", " args ^ ")"
+;;
+
+let gen_call func args =
+  (* TODO(unnonouno): format for long lines *)
+  func ^ gen_args args
 ;;
 
 let gen_client_method m =
@@ -214,6 +227,25 @@ let gen_attr field_names field_types =
     (gen_attr_accessor field_names field_types)
 ;;
 
+let gen_str name field_names =
+  List.concat [
+    [
+      (0, "def to_s");
+      (1,   "gen = Jubatus::Common::MessageStringGenerator.new");
+      (1,   gen_call "gen.open" [gen_string_literal name])
+    ];
+    List.map (fun f ->
+      (1,   gen_call "gen.add" [gen_string_literal f; "@" ^ f])
+    ) field_names;
+    [
+      (1,   "gen.close()");
+      (1,   "return gen.to_s");
+      (0, "end")
+    ]
+  ]
+;;
+
+
 let gen_message m =
   let field_names = List.map (fun f -> f.field_name) m.message_fields in
   let field_types = List.map (fun f -> f.field_type) m.message_fields in
@@ -229,6 +261,7 @@ let gen_message m =
     indent_lines 1 (gen_to_msgpack field_names field_types);
     (* def from_tuple .. *)
     indent_lines 1 (gen_from_tuple field_names field_types m.message_name);
+    indent_lines 1 (gen_str m.message_name field_names);
     indent_lines 1 (gen_attr field_names field_types);
     [(0, "end");
      (0, "")];
@@ -289,6 +322,7 @@ let gen_type_file conf source idl =
   let includes = [
     (0, "require 'rubygems'");
     (0, "require 'msgpack/rpc'");
+    (0, "require 'jubatus/common'");
     (0, "module Jubatus");
     (0, ("module " ^ (String.capitalize base)))
   ] in
