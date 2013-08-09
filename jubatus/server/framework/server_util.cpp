@@ -102,7 +102,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
       "when standalone mode (without ZK mode)",
       false, "");
   p.add<std::string>("model_file", 'm',
-                     "model data to load on startup", false, "");
+                     "model data to load at startup", false, "");
 
 #ifdef HAVE_ZOOKEEPER_H
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
