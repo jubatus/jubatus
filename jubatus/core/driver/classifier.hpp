@@ -47,7 +47,7 @@ class classifier {
   }
 
   storage::storage_base* get_model() const {
-    return mixable_classifier_model_.get_model().get();
+    return classifier_->get_storage();
   }
 
   void train(const std::pair<std::string, fv_converter::datum>& data);
@@ -61,7 +61,6 @@ class classifier {
 
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<classifier_base> classifier_;
-  linear_function_mixer mixable_classifier_model_;
   mixable_weight_manager wm_;
 };
 
