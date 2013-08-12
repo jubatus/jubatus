@@ -38,16 +38,14 @@ namespace core {
 namespace driver {
 
 classifier::classifier(
-    pfi::lang::shared_ptr<storage::storage_base> model_storage,
     pfi::lang::shared_ptr<core::classifier::classifier_base> classifier_method,
     pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       classifier_(classifier_method) {
-  mixable_classifier_model_.set_model(model_storage);
-  wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
+  classifier_->register_mixables(mixable_holder_.get());
 
-  mixable_holder_->register_mixable(&mixable_classifier_model_);
+  wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
   mixable_holder_->register_mixable(&wm_);
 
   (*converter_).set_weight_manager(wm_.get_model());

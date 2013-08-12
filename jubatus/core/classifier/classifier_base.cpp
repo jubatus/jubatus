@@ -24,6 +24,8 @@
 #include <string>
 #include <vector>
 
+#include "../common/exception.hpp"
+#include "../driver/linear_function_mixer.hpp"
 #include "classifier_util.hpp"
 
 using std::string;
@@ -36,8 +38,9 @@ namespace core {
 namespace classifier {
 
 classifier_base::classifier_base(storage_ptr storage)
-    : storage_(storage),
+    : mixable_(new driver::linear_function_mixer),
       use_covars_(false) {
+  mixable_->set_model(storage);
 }
 
 classifier_base::~classifier_base() {
@@ -49,7 +52,7 @@ void classifier_base::classify_with_scores(
   scores.clear();
 
   map_feature_val1_t ret;
-  storage_->inp(sfv, ret);
+  get_storage()->inp(sfv, ret);
   for (map_feature_val1_t::const_iterator it = ret.begin(); it != ret.end();
       ++it) {
     scores.push_back(classify_result_elem(it->first, it->second));
@@ -72,7 +75,14 @@ string classifier_base::classify(const common::sfv_t& fv) const {
 }
 
 void classifier_base::clear() {
-  storage_->clear();
+  get_storage()->clear();
+}
+
+void classifier_base::register_mixables(framework::mixable_holder* holder)
+    const {
+  if (mixable_) {
+    holder->register_mixable(mixable_.get());
+  }
 }
 
 void classifier_base::update_weight(
@@ -80,7 +90,7 @@ void classifier_base::update_weight(
     float step_width,
     const string& pos_label,
     const string& neg_label) {
-  storage_->bulk_update(sfv, step_width, pos_label, neg_label);
+  get_storage()->bulk_update(sfv, step_width, pos_label, neg_label);
 }
 
 string classifier_base::get_largest_incorrect_label(
@@ -130,11 +140,12 @@ float classifier_base::calc_margin_and_variance(
   float margin = calc_margin(sfv, label, incorrect_label);
   var = 0.f;
 
+  storage::storage_base* storage = get_storage();
   for (size_t i = 0; i < sfv.size(); ++i) {
     const string& feature = sfv[i].first;
     const float val = sfv[i].second;
     feature_val2_t weight_covars;
-    storage_->get2(feature, weight_covars);
+    storage->get2(feature, weight_covars);
     float label_covar = 1.f;
     float incorrect_label_covar = 1.f;
     for (size_t j = 0; j < weight_covars.size(); ++j) {
@@ -155,6 +166,24 @@ float classifier_base::squared_norm(const common::sfv_t& fv) {
     ret += fv[i].second * fv[i].second;
   }
   return ret;
+}
+
+storage::storage_base* classifier_base::get_storage() const {
+  // TODO(beam2d): Split definition of const and non-const version with const
+  // and non-const return value, respectively. We currently return a non-const
+  // pointer in both cases, because some const member functions require a
+  // non-const pointer, due to inaccurately modified member functions of
+  // |storage_base| (e.g. |storage_base::get()| and |storage_base::inp()| are
+  // non-const).
+  if (!mixable_) {
+    throw JUBATUS_EXCEPTION(
+        common::exception::runtime_error("mixable not set"));
+  }
+  if (!mixable_->get_model()) {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("model not set"));
+  }
+
+  return mixable_->get_model().get();
 }
 
 }  // namespace classifier

@@ -59,11 +59,12 @@ void normal_herd::update(
     float variance,
     const string& pos_label,
     const string& neg_label) {
+  storage::storage_base* sto = get_storage();
   for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
     storage::feature_val2_t ret;
-    storage_->get2(feature, ret);
+    sto->get2(feature, ret);
 
     storage::val2_t pos_val(0.f, 1.f);
     storage::val2_t neg_val(0.f, 1.f);
@@ -73,7 +74,7 @@ void normal_herd::update(
     float val_covariance_neg = val * neg_val.v2;
 
     const float C = config_.C;
-    storage_->set2(
+    sto->set2(
         feature,
         pos_label,
         storage::val2_t(
@@ -84,7 +85,7 @@ void normal_herd::update(
                 / ((1.f / pos_val.v2) + (2 * C + C * C * variance)
                     * val * val)));
     if (neg_label != "") {
-      storage_->set2(
+      sto->set2(
           feature,
           neg_label,
           storage::val2_t(

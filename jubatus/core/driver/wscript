@@ -14,6 +14,7 @@ def build(bld):
     source = [
       'mixable_weight_manager.cpp',
       'mixable_versioned_table.cpp',
+      'linear_function_mixer.cpp',
       ],
     target = 'jubatus_mixables',
     includes = '.',
@@ -27,7 +28,6 @@ def build(bld):
       'stat.cpp',
       'anomaly.cpp',
       'graph.cpp',
-      'linear_function_mixer.cpp',
       'nearest_neighbor.cpp',
       ]
 

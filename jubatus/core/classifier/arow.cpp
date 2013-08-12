@@ -61,24 +61,25 @@ void arow::update(
     float beta,
     const std::string& pos_label,
     const std::string& neg_label) {
+  storage::storage_base* sto = get_storage();
   for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
     storage::feature_val2_t ret;
-    storage_->get2(feature, ret);
+    sto->get2(feature, ret);
 
     storage::val2_t pos_val(0.f, 1.f);
     storage::val2_t neg_val(0.f, 1.f);
     ClassifierUtil::get_two(ret, pos_label, neg_label, pos_val, neg_val);
 
-    storage_->set2(
+    sto->set2(
         feature,
         pos_label,
         storage::val2_t(
             pos_val.v1 + alpha * pos_val.v2 * val,
             pos_val.v2 - beta * pos_val.v2 * pos_val.v2 * val * val));
     if (neg_label != "") {
-      storage_->set2(
+      sto->set2(
           feature,
           neg_label,
           storage::val2_t(

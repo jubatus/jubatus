@@ -59,6 +59,7 @@ class mixable0 {
 
 class mixable_holder {
  public:
+  // TODO(beam2d): Let mixable_holder own mixables.
   typedef std::vector<mixable0*> mixable_list;
 
   mixable_holder() {
