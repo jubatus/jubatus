@@ -38,7 +38,7 @@ class classifier_base {
  public:
   typedef pfi::lang::shared_ptr<storage::storage_base> storage_ptr;
 
-  explicit classifier_base(storage_ptr storage);
+  classifier_base(storage_ptr storage, bool use_covars);
   virtual ~classifier_base();
   virtual void train(const common::sfv_t& fv, const std::string& label) = 0;
 
@@ -76,6 +76,7 @@ class classifier_base {
 
   storage::storage_base* get_storage() const;
 
+ private:
   pfi::lang::shared_ptr<driver::linear_function_mixer> mixable_;
   bool use_covars_;
 };

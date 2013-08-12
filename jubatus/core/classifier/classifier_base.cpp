@@ -37,9 +37,9 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
-classifier_base::classifier_base(storage_ptr storage)
+classifier_base::classifier_base(storage_ptr storage, bool use_covars)
     : mixable_(new driver::linear_function_mixer),
-      use_covars_(false) {
+      use_covars_(use_covars) {
   mixable_->set_model(storage);
 }
 

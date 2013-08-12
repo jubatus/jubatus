@@ -29,17 +29,15 @@ namespace core {
 namespace classifier {
 
 normal_herd::normal_herd(classifier_base::storage_ptr storage)
-    : classifier_base(storage) {
-  classifier_base::use_covars_ = true;
+    : classifier_base(storage, true) {
   config_.C = 0.1f;
 }
 
 normal_herd::normal_herd(
     const classifier_config& config,
     classifier_base::storage_ptr storage)
-    : classifier_base(storage),
+    : classifier_base(storage, true),
       config_(config) {
-  classifier_base::use_covars_ = true;
 }
 
 void normal_herd::train(const common::sfv_t& sfv, const string& label) {

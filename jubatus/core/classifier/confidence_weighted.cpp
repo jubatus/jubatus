@@ -29,16 +29,14 @@ namespace core {
 namespace classifier {
 
 confidence_weighted::confidence_weighted(classifier_base::storage_ptr storage)
-    : classifier_base(storage) {
-  classifier_base::use_covars_ = true;
+    : classifier_base(storage, true) {
 }
 
 confidence_weighted::confidence_weighted(
     const classifier_config& config,
     classifier_base::storage_ptr storage)
-    : classifier_base(storage),
+    : classifier_base(storage, true),
       config_(config) {
-  classifier_base::use_covars_ = true;
 }
 
 void confidence_weighted::train(const common::sfv_t& sfv, const string& label) {
