@@ -48,6 +48,8 @@ class classifier_base {
 
   void clear();
 
+  storage::storage_base* get_storage() const;
+
   virtual std::string name() const = 0;
 
   virtual void register_mixables(framework::mixable_holder* holder) const;
@@ -73,8 +75,6 @@ class classifier_base {
       classify_result& scores) const;
 
   static float squared_norm(const common::sfv_t& sfv);
-
-  storage::storage_base* get_storage() const;
 
  private:
   pfi::lang::shared_ptr<driver::linear_function_mixer> mixable_;
