@@ -26,6 +26,7 @@
 #include "storage_type.hpp"
 #include "../common/type.hpp"
 #include "../common/key_manager.hpp"
+#include "../framework/mixable.hpp"
 #include "sparse_matrix_storage.hpp"
 #include "recommender_storage_base.hpp"
 
@@ -84,6 +85,33 @@ class inverted_index_storage : public recommender_storage_base {
   imap_float_t column2norm_;
   imap_float_t column2norm_diff_;
   common::key_manager column2id_;
+};
+
+// TODO(beam2d): Change diff type to pair of tbl_t and imap_float_t. This
+// requires modification of APIs of inverted_index_storage related to MIX.
+class mixable_inverted_index_storage
+    : public framework::mixable<inverted_index_storage, std::string> {
+ public:
+  std::string get_diff_impl() const {
+    std::string ret;
+    get_model()->get_diff(ret);
+    return ret;
+  }
+
+  void put_diff_impl(const std::string& diff) {
+    get_model()->set_mixed_and_clear_diff(diff);
+  }
+
+  void mix_impl(
+      const std::string& lhs,
+      const std::string& rhs,
+      std::string& mixed) const {
+    mixed = lhs;
+    get_model()->mix(rhs, mixed);
+  }
+
+  void clear() {
+  }
 };
 
 }  // namespace storage

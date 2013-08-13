@@ -20,6 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <pficommon/lang/shared_ptr.h>
 #include "recommender_base.hpp"
 #include "../storage/recommender_storage.hpp"
 
@@ -51,7 +52,8 @@ class inverted_index : public recommender_base {
  private:
   bool save_impl(std::ostream&);
   bool load_impl(std::istream&);
-  core::storage::inverted_index_storage inv_;
+  pfi::lang::shared_ptr<storage::mixable_inverted_index_storage>
+  mixable_storage_;
 };
 
 }  // namespace recommender
