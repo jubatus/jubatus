@@ -19,7 +19,7 @@ def build(bld):
     ],
     target = 'jubatus_nearest_neighbor',
     name = 'jubatus_nearest_neighbor',
-    use = 'PFICOMMON')
+    use = 'PFICOMMON jubatus_mixables')
 
   bld.shlib(
     target = 'nearest_neighbor',
@@ -33,7 +33,7 @@ def build(bld):
         'nearest_neighbor_base.cpp',
         'nearest_neighbor_factory.cpp',
         ],
-    use = 'PFICOMMON jubastorage column_table')
+    use = 'PFICOMMON jubastorage column_table jubatus_mixables')
 
   bld.program(
     target = 'nearest_neighbor_base_test',
