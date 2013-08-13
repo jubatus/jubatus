@@ -94,17 +94,23 @@ const uint32_t euclid_lsh::DEFAULT_SEED = 1091;  // should be in config
 const bool euclid_lsh::DEFAULT_RETAIN_PROJECTION = false;
 
 euclid_lsh::euclid_lsh()
-    : lsh_index_(DEFAULT_LSH_NUM, DEFAULT_TABLE_NUM, DEFAULT_SEED),
+    : mixable_storage_(new storage::mixable_lsh_index_storage),
       bin_width_(DEFAULT_BIN_WIDTH),
       num_probe_(DEFAULT_NUM_PROBE),
       retain_projection_(DEFAULT_RETAIN_PROJECTION) {
+  mixable_storage_->set_model(storage::mixable_lsh_index_storage::model_ptr(
+      new storage::lsh_index_storage(
+          DEFAULT_LSH_NUM, DEFAULT_TABLE_NUM, DEFAULT_SEED)));
 }
 
 euclid_lsh::euclid_lsh(const config& config)
-    : lsh_index_(config.lsh_num, config.table_num, config.seed),
+    : mixable_storage_(new storage::mixable_lsh_index_storage),
       bin_width_(config.bin_width),
       num_probe_(config.probe_num),
       retain_projection_(config.retain_projection) {
+  mixable_storage_->set_model(storage::mixable_lsh_index_storage::model_ptr(
+      new storage::lsh_index_storage(
+          config.lsh_num, config.table_num, config.seed)));
 }
 
 euclid_lsh::~euclid_lsh() {
@@ -134,13 +140,13 @@ void euclid_lsh::similar_row(
     const common::sfv_t& query,
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
+  storage::lsh_index_storage& lsh_index = *mixable_storage_->get_model();
   ids.clear();
 
-  const vector<float> hash = lsh_function(query,
-                                          lsh_index_.all_lsh_num(),
-                                          bin_width_);
+  const vector<float> hash = lsh_function(
+      query, lsh_index.all_lsh_num(), bin_width_);
   const float norm = calc_norm(query);
-  lsh_index_.similar_row(hash, norm, num_probe_, ret_num, ids);
+  lsh_index.similar_row(hash, norm, num_probe_, ret_num, ids);
 }
 
 void euclid_lsh::similar_row(
@@ -148,12 +154,12 @@ void euclid_lsh::similar_row(
     vector<pair<string, float> >& ids,
     size_t ret_num) const {
   ids.clear();
-  lsh_index_.similar_row(id, ret_num, ids);
+  mixable_storage_->get_model()->similar_row(id, ret_num, ids);
 }
 
 void euclid_lsh::clear() {
   orig_.clear();
-  lsh_index_.clear();
+  mixable_storage_->get_model()->clear();
 
   // Clear projection cache
   pfi::data::unordered_map<uint32_t, std::vector<float> >().swap(projection_);
@@ -161,23 +167,23 @@ void euclid_lsh::clear() {
 
 void euclid_lsh::clear_row(const string& id) {
   orig_.remove_row(id);
-  lsh_index_.remove_row(id);
+  mixable_storage_->get_model()->remove_row(id);
 }
 
 void euclid_lsh::update_row(const string& id, const sfv_diff_t& diff) {
+  storage::lsh_index_storage& lsh_index = *mixable_storage_->get_model();
   orig_.set_row(id, diff);
   common::sfv_t row;
   orig_.get_row(id, row);
 
-  const vector<float> hash = lsh_function(row,
-                                          lsh_index_.all_lsh_num(),
-                                          bin_width_);
+  const vector<float> hash = lsh_function(
+      row, lsh_index.all_lsh_num(), bin_width_);
   const float norm = calc_norm(row);
-  lsh_index_.set_row(id, hash, norm);
+  lsh_index.set_row(id, hash, norm);
 }
 
 void euclid_lsh::get_all_row_ids(vector<string>& ids) const {
-  lsh_index_.get_all_row_ids(ids);
+  mixable_storage_->get_model()->get_all_row_ids(ids);
 }
 
 string euclid_lsh::type() const {
@@ -185,15 +191,15 @@ string euclid_lsh::type() const {
 }
 
 core::storage::lsh_index_storage* euclid_lsh::get_storage() {
-  return &lsh_index_;
+  return mixable_storage_->get_model().get();
 }
 
 const core::storage::lsh_index_storage* euclid_lsh::get_const_storage() const {
-  return &lsh_index_;
+  return mixable_storage_->get_model().get();
 }
 
 vector<float> euclid_lsh::calculate_lsh(const common::sfv_t& query) {
-  vector<float> hash(lsh_index_.all_lsh_num());
+  vector<float> hash(mixable_storage_->get_model()->all_lsh_num());
   for (size_t i = 0; i < query.size(); ++i) {
     const uint32_t seed = common::hash_util::calc_string_hash(query[i].first);
     const vector<float> proj = get_projection(seed);
@@ -213,7 +219,7 @@ vector<float> euclid_lsh::get_projection(uint32_t seed) {
 
   if (proj.empty()) {
     mtrand rnd(seed);
-    proj.resize(lsh_index_.all_lsh_num());
+    proj.resize(mixable_storage_->get_model()->all_lsh_num());
     for (size_t i = 0; i < proj.size(); ++i) {
       proj[i] = rnd.next_gaussian();
     }
@@ -222,15 +228,23 @@ vector<float> euclid_lsh::get_projection(uint32_t seed) {
 }
 
 bool euclid_lsh::save_impl(ostream& os) {
+  mixable_storage_->save(os);
   pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
+  oa << bin_width_ << num_probe_ << projection_ << retain_projection_;
   return true;
 }
 
 bool euclid_lsh::load_impl(istream& is) {
+  mixable_storage_->load(is);
   pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
+  ia >> bin_width_ >> num_probe_ >> projection_ >> retain_projection_;
   return true;
+}
+
+void euclid_lsh::initialize_model() {
+  mixable_storage_.reset(new storage::mixable_lsh_index_storage);
+  mixable_storage_->set_model(storage::mixable_lsh_index_storage::model_ptr(
+      new storage::lsh_index_storage));
 }
 
 }  // namespace recommender

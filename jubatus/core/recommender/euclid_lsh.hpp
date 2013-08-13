@@ -21,8 +21,8 @@
 #include <utility>
 #include <string>
 #include <vector>
-#include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
+#include <pficommon/lang/shared_ptr.h>
 #include <pficommon/text/json.h>
 #include "recommender_base.hpp"
 #include "../storage/lsh_index_storage.hpp"
@@ -92,20 +92,15 @@ class euclid_lsh : public recommender_base {
   virtual const core::storage::lsh_index_storage* get_const_storage() const;
 
  private:
-  friend class pfi::data::serialization::access;
-  template <typename Ar>
-  void serialize(Ar& ar) {
-    ar & MEMBER(lsh_index_) & MEMBER(bin_width_) & MEMBER(num_probe_) &
-      MEMBER(projection_) & MEMBER(retain_projection_);
-  }
-
   std::vector<float> calculate_lsh(const common::sfv_t& query);
   std::vector<float> get_projection(uint32_t seed);
 
   virtual bool save_impl(std::ostream& os);
   virtual bool load_impl(std::istream& is);
 
-  core::storage::lsh_index_storage lsh_index_;
+  void initialize_model();
+
+  pfi::lang::shared_ptr<storage::mixable_lsh_index_storage> mixable_storage_;
   float bin_width_;
   uint32_t num_probe_;
 
