@@ -78,10 +78,10 @@ void classifier_base::clear() {
   get_storage()->clear();
 }
 
-void classifier_base::register_mixables(framework::mixable_holder* holder)
+void classifier_base::register_mixables(framework::mixable_holder& holder)
     const {
   if (mixable_) {
-    holder->register_mixable(mixable_.get());
+    holder.register_mixable(mixable_.get());
   }
 }
 

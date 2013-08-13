@@ -52,7 +52,7 @@ class classifier_base {
 
   virtual std::string name() const = 0;
 
-  virtual void register_mixables(framework::mixable_holder* holder) const;
+  virtual void register_mixables(framework::mixable_holder& holder) const;
 
  protected:
   void update_weight(

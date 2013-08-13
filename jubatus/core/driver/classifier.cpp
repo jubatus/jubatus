@@ -43,7 +43,7 @@ classifier::classifier(
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       classifier_(classifier_method) {
-  classifier_->register_mixables(mixable_holder_.get());
+  classifier_->register_mixables(*mixable_holder_);
 
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
   mixable_holder_->register_mixable(&wm_);
