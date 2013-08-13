@@ -70,7 +70,6 @@ class nearest_neighbor {
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn_;
-  mixable_versioned_table mixable_table_;
 };
 
 }  // namespace driver

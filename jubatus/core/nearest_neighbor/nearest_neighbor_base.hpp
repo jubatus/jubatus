@@ -25,6 +25,7 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "../common/type.hpp"
 #include "../driver/mixable_versioned_table.hpp"
+#include "../framework/mixable.hpp"
 #include "../table/column/column_table.hpp"
 
 namespace jubatus {
@@ -75,6 +76,8 @@ class nearest_neighbor_base {
 
   virtual void save(std::ostream& os) const;
   virtual void load(std::istream& is);
+
+  virtual void register_mixables(framework::mixable_holder& holder) const;
 
  protected:
   std::string my_id_;
