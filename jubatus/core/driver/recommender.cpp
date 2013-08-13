@@ -48,17 +48,7 @@ recommender::recommender(
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       recommender_(recommender_method) {
-  if (recommender_->get_storage()) {
-    mixable_recommender_.set_model(recommender_);
-    mixable_holder_->register_mixable(&mixable_recommender_);
-  } else if (shared_ptr<table::column_table> table =
-      recommender_->get_table()) {
-    mixable_versioned_table_.set_model(table);
-    mixable_holder_->register_mixable(&mixable_versioned_table_);
-  } else {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error(
-        "Invalid recommender: neither storage nor table exist"));
-  }
+  recommender_->register_mixables(*mixable_holder_);
 
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
   mixable_holder_->register_mixable(&wm_);

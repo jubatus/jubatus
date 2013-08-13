@@ -190,12 +190,8 @@ string euclid_lsh::type() const {
   return "euclid_lsh";
 }
 
-core::storage::lsh_index_storage* euclid_lsh::get_storage() {
-  return mixable_storage_->get_model().get();
-}
-
-const core::storage::lsh_index_storage* euclid_lsh::get_const_storage() const {
-  return mixable_storage_->get_model().get();
+void euclid_lsh::register_mixables(framework::mixable_holder& holder) const {
+  holder.register_mixable(mixable_storage_.get());
 }
 
 vector<float> euclid_lsh::calculate_lsh(const common::sfv_t& query) {

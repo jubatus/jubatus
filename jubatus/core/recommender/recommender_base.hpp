@@ -24,6 +24,7 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "../table/column/column_table.hpp"
 #include "../common/type.hpp"
+#include "../framework/mixable.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
 #include "../storage/recommender_storage_base.hpp"
 #include "recommender_type.hpp"
@@ -54,24 +55,6 @@ class recommender_base {
 
   virtual std::string type() const = 0;
 
-  // Either get_(const)_storage or get_(const)_table should return non-null
-  // pointer.
-  virtual core::storage::recommender_storage_base* get_storage() {
-    return NULL;
-  }
-  virtual const core::storage::recommender_storage_base* get_const_storage()
-      const {
-    return NULL;
-  }
-
-  virtual pfi::lang::shared_ptr<table::column_table> get_table() {
-    return pfi::lang::shared_ptr<table::column_table>();
-  }
-  virtual pfi::lang::shared_ptr<const table::column_table> get_const_table()
-      const {
-    return pfi::lang::shared_ptr<const table::column_table>();
-  }
-
   virtual void similar_row(
       const std::string& id,
       std::vector<std::pair<std::string, float> >& ids,
@@ -86,6 +69,8 @@ class recommender_base {
 
   void save(std::ostream&);
   void load(std::istream&);
+
+  virtual void register_mixables(framework::mixable_holder& holder) const = 0;
 
   static float calc_similality(common::sfv_t& q1, common::sfv_t& q2);
   static float calc_l2norm(const common::sfv_t& query);

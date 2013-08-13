@@ -96,12 +96,7 @@ class recommender_impl : public recommender_base {
     return true;
   }
 
-  storage::recommender_storage_base* get_storage() {
-    return NULL;
-  }
-
-  const storage::recommender_storage_base* get_const_storage() const {
-    return NULL;
+  void register_mixables(framework::mixable_holder&) const {
   }
 };
 

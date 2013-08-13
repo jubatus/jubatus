@@ -151,12 +151,8 @@ bool lsh::load_impl(std::istream& is) {
   return true;
 }
 
-core::storage::recommender_storage_base* lsh::get_storage() {
-  return mixable_storage_->get_model().get();
-}
-
-const core::storage::recommender_storage_base* lsh::get_const_storage() const {
-  return mixable_storage_->get_model().get();
+void lsh::register_mixables(framework::mixable_holder& holder) const {
+  holder.register_mixable(mixable_storage_.get());
 }
 
 void lsh::initialize_model() {

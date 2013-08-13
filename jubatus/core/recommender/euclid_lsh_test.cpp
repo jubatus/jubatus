@@ -56,6 +56,15 @@ common::sfv_t make_dense_sfv(const string& s) {
   return sfv;
 }
 
+lsh_index_storage* get_storage(euclid_lsh& r) {
+  framework::mixable_holder holder;
+  r.register_mixables(holder);
+  storage::mixable_lsh_index_storage* mixable_storage =
+      dynamic_cast<storage::mixable_lsh_index_storage*>(
+          holder.get_mixables().front());
+  return mixable_storage->get_model().get();
+}
+
 }  // namespace
 
 class euclid_lsh_mix_test
@@ -98,7 +107,7 @@ class euclid_lsh_mix_test
     single_recom_.reset(new euclid_lsh(config));
 
     for (int i = 0; i < num_models; ++i) {
-      portable_mixer_.add(recoms_[i]->get_storage());
+      portable_mixer_.add(get_storage(*recoms_[i]));
     }
   }
 

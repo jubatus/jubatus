@@ -50,6 +50,37 @@ using std::vector;
 namespace jubatus {
 namespace core {
 namespace storage {
+namespace {
+
+framework::mixable0* get_mixable(recommender::recommender_base& r) {
+  framework::mixable_holder holder;
+  r.register_mixables(holder);
+  return holder.get_mixables().front();
+}
+
+std::string get_diff_from(framework::mixable0* m) {
+  common::byte_buffer buf = m->get_diff();
+  return std::string(buf.ptr(), buf.ptr() + buf.size());
+}
+
+void put_diff_to(const std::string& diff, framework::mixable0* m) {
+  common::byte_buffer buf(diff.data(), diff.size());
+  m->put_diff(buf);
+}
+
+void mix_by(
+    const std::string& lhs,
+    const std::string& rhs,
+    std::string& mixed,
+    framework::mixable0* m) {
+  common::byte_buffer lhs_buf(lhs.data(), lhs.size());
+  common::byte_buffer rhs_buf(rhs.data(), rhs.size());
+  common::byte_buffer mixed_buf;
+  m->mix(lhs_buf, rhs_buf, mixed_buf);
+  mixed.assign(mixed_buf.ptr(), mixed_buf.size());
+}
+
+}  // namespace
 
 const uint32_t lof_storage::DEFAULT_NEIGHBOR_NUM = 10;
 const uint32_t lof_storage::DEFAULT_REVERSE_NN_NUM = 30;
@@ -205,8 +236,7 @@ void lof_storage::set_nn_engine(
 }
 
 void lof_storage::get_diff(string& diff) const {
-  string nn_diff;
-  nn_engine_->get_const_storage()->get_diff(nn_diff);
+  string nn_diff = get_diff_from(get_mixable(*nn_engine_));
 
   ostringstream oss;
   serialize_diff(lof_table_diff_, nn_diff, oss);
@@ -218,7 +248,7 @@ void lof_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
   string nn_diff;
   deserialize_diff(mixed_diff, lof_table_diff_, nn_diff);
 
-  nn_engine_->get_storage()->set_mixed_and_clear_diff(nn_diff);
+  put_diff_to(nn_diff, get_mixable(*nn_engine_));
 
   for (lof_table_t::const_iterator it = lof_table_diff_.begin();
        it != lof_table_diff_.end(); ++it) {
@@ -238,7 +268,8 @@ void lof_storage::mix(const string& lhs, string& rhs) const {
   deserialize_diff(lhs, diff, nn_diff);
   deserialize_diff(rhs, mixed, nn_mixed);
 
-  nn_engine_->get_const_storage()->mix(nn_diff, nn_mixed);
+  string nn_rhs = nn_mixed;
+  mix_by(nn_diff, nn_rhs, nn_mixed, get_mixable(*nn_engine_));
 
   for (lof_table_t::const_iterator it = diff.begin(); it != diff.end(); ++it) {
     if (is_removed(it->second)) {

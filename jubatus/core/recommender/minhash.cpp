@@ -180,12 +180,9 @@ bool minhash::load_impl(std::istream& is) {
   mixable_storage_->load(is);
   return true;
 }
-core::storage::recommender_storage_base* minhash::get_storage() {
-  return mixable_storage_->get_model().get();
-}
-const core::storage::recommender_storage_base*
-    minhash::get_const_storage() const {
-  return mixable_storage_->get_model().get();
+
+void minhash::register_mixables(framework::mixable_holder& holder) const {
+  holder.register_mixable(mixable_storage_.get());
 }
 
 void minhash::initialize_model() {

@@ -61,8 +61,8 @@ class lsh : public recommender_base {
   void update_row(const std::string& id, const sfv_diff_t& diff);
   void get_all_row_ids(std::vector<std::string>& ids) const;
   std::string type() const;
-  core::storage::recommender_storage_base* get_storage();
-  const core::storage::recommender_storage_base* get_const_storage() const;
+
+  void register_mixables(framework::mixable_holder& holder) const;
 
  private:
   bool save_impl(std::ostream&);

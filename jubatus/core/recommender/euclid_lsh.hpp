@@ -88,8 +88,7 @@ class euclid_lsh : public recommender_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const;
 
   virtual std::string type() const;
-  virtual core::storage::lsh_index_storage* get_storage();
-  virtual const core::storage::lsh_index_storage* get_const_storage() const;
+  virtual void register_mixables(framework::mixable_holder& holder) const;
 
  private:
   std::vector<float> calculate_lsh(const common::sfv_t& query);
