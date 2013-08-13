@@ -24,6 +24,7 @@
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
 #include "../common/key_manager.hpp"
+#include "../framework/mixable.hpp"
 #include "storage_type.hpp"
 #include "sparse_matrix_storage.hpp"
 #include "bit_vector.hpp"
@@ -66,6 +67,33 @@ class bit_index_storage : public recommender_storage_base {
 
   bit_table_t bitvals_;
   bit_table_t bitvals_diff_;
+};
+
+// TODO(beam2d): Change diff type to bit_table_t. This requires modification of
+// APIs of bit_index_storage related to MIX.
+class mixable_bit_index_storage
+    : public framework::mixable<bit_index_storage, std::string> {
+ public:
+  std::string get_diff_impl() const {
+    std::string ret;
+    get_model()->get_diff(ret);
+    return ret;
+  }
+
+  void put_diff_impl(const std::string& diff) {
+    get_model()->set_mixed_and_clear_diff(diff);
+  }
+
+  void mix_impl(
+      const std::string& lhs,
+      const std::string& rhs,
+      std::string& mixed) const {
+    mixed = lhs;
+    get_model()->mix(rhs, mixed);
+  }
+
+  void clear() {
+  }
 };
 
 }  // namespace storage

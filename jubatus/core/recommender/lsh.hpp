@@ -21,6 +21,7 @@
 #include <utility>
 #include <vector>
 #include <pficommon/data/serialization.h>
+#include <pficommon/lang/shared_ptr.h>
 
 #include "recommender_base.hpp"
 #include "../storage/bit_index_storage.hpp"
@@ -71,10 +72,12 @@ class lsh : public recommender_base {
   void generate_column_base(const std::string& column);
   void generate_column_bases(const common::sfv_t& v);
 
+  void initialize_model();
+
   // bases for lsh
   pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_;
 
-  core::storage::bit_index_storage row2lshvals_;
+  pfi::lang::shared_ptr<storage::mixable_bit_index_storage> mixable_storage_;
 
   const uint64_t base_num_;
 };

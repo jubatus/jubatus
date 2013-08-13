@@ -21,6 +21,7 @@
 #include <utility>
 #include <vector>
 #include <pficommon/data/serialization.h>
+#include <pficommon/lang/shared_ptr.h>
 
 #include "recommender_base.hpp"
 #include "../storage/bit_index_storage.hpp"
@@ -75,9 +76,11 @@ class minhash : public recommender_base {
   static float calc_hash(uint64_t a, uint64_t b, float val);
   static void hash_mix64(uint64_t& a, uint64_t& b, uint64_t& c);
 
+  void initialize_model();
+
   static const uint64_t hash_prime;
   uint64_t hash_num_;
-  core::storage::bit_index_storage row2minhashvals_;
+  pfi::lang::shared_ptr<storage::mixable_bit_index_storage> mixable_storage_;
 };
 
 }  // namespace recommender
