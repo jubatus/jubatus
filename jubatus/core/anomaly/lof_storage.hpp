@@ -155,8 +155,6 @@ class lof_storage {
   pfi::lang::shared_ptr<core::recommender::recommender_base> nn_engine_;
 };
 
-// TODO(beam2d): Change diff type to lof_table_t. This requires modification
-// of APIs of lof_storage related to MIX.
 class mixable_lof_storage
     : public framework::mixable<lof_storage, lof_table_t> {
  public:
