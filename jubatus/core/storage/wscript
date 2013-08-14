@@ -58,5 +58,4 @@ def build(bld):
                      'storage_factory.hpp',
                      'bit_vector.hpp',
                      'sparse_matrix_storage.hpp',
-                     'recommender_storage_base.hpp',
                      ])

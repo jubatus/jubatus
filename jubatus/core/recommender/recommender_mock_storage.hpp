@@ -23,15 +23,13 @@
 #include <vector>
 #include <pficommon/data/serialization.h>
 #include "../framework/mixable.hpp"
-#include "../storage/recommender_storage_base.hpp"
 #include "recommender_type.hpp"
 
 namespace jubatus {
 namespace core {
 namespace recommender {
 
-class recommender_mock_storage
-    : public core::storage::recommender_storage_base {
+class recommender_mock_storage {
  public:
   virtual ~recommender_mock_storage();
 
@@ -60,9 +58,9 @@ class recommender_mock_storage
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
-  virtual void get_diff(std::string& diff) const;
-  virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
-  virtual void mix(const std::string& lhs, std::string& rhs) const;
+  void get_diff(std::string& diff) const;
+  void set_mixed_and_clear_diff(const std::string& mixed_diff);
+  void mix(const std::string& lhs, std::string& rhs) const;
 
  private:
   typedef std::map<common::sfv_t, std::vector<std::pair<std::string, float> > >

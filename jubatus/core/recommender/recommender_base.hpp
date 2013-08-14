@@ -26,7 +26,6 @@
 #include "../common/type.hpp"
 #include "../framework/mixable.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
-#include "../storage/recommender_storage_base.hpp"
 #include "recommender_type.hpp"
 
 namespace jubatus {

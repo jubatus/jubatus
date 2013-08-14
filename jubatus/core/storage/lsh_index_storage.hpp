@@ -25,7 +25,6 @@
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
 #include "lsh_vector.hpp"
-#include "recommender_storage_base.hpp"
 #include "storage_type.hpp"
 #include "../common/key_manager.hpp"
 #include "../common/unordered_map.hpp"

@@ -28,13 +28,12 @@
 #include "../common/key_manager.hpp"
 #include "../framework/mixable.hpp"
 #include "sparse_matrix_storage.hpp"
-#include "recommender_storage_base.hpp"
 
 namespace jubatus {
 namespace core {
 namespace storage {
 
-class inverted_index_storage : public recommender_storage_base {
+class inverted_index_storage {
  public:
   inverted_index_storage();
   ~inverted_index_storage();

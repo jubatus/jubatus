@@ -29,7 +29,6 @@
 #include "storage_type.hpp"
 #include "sparse_matrix_storage.hpp"
 #include "bit_vector.hpp"
-#include "recommender_storage_base.hpp"
 
 namespace jubatus {
 namespace core {
