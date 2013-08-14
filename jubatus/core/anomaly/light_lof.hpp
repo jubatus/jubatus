@@ -101,8 +101,6 @@ class light_lof : public anomaly_base {
   pfi::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
       nearest_neighbor_engine_;
 
-  // Mixable of nearest neighbor model.
-  driver::mixable_versioned_table mixable_nearest_neighbor_;
   // Mixable of score table that contains k-dists and LRDs.
   driver::mixable_versioned_table mixable_scores_;
 

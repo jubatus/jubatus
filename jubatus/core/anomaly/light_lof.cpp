@@ -76,7 +76,6 @@ light_lof::light_lof(
       2, table::column_type(table::column_type::float_type));
   table->init(schema);
 
-  mixable_nearest_neighbor_.set_model(nearest_neighbor_engine_->get_table());
   mixable_scores_.set_model(table);
 }
 
@@ -144,7 +143,7 @@ std::string light_lof::type() const {
 }
 
 void light_lof::register_mixables(framework::mixable_holder& holder) {
-  holder.register_mixable(&mixable_nearest_neighbor_);
+  nearest_neighbor_engine_->register_mixables(holder);
   holder.register_mixable(&mixable_scores_);
 }
 
