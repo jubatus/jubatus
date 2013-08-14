@@ -143,10 +143,9 @@ std::string light_lof::type() const {
   return "light_lof";
 }
 
-void light_lof::register_mixables_to_holder(
-    shared_ptr<framework::mixable_holder> holder) {
-  holder->register_mixable(&mixable_nearest_neighbor_);
-  holder->register_mixable(&mixable_scores_);
+void light_lof::register_mixables(framework::mixable_holder& holder) {
+  holder.register_mixable(&mixable_nearest_neighbor_);
+  holder.register_mixable(&mixable_scores_);
 }
 
 // private

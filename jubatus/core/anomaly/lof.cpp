@@ -118,9 +118,8 @@ string lof::type() const {
   return "lof";
 }
 
-void lof::register_mixables_to_holder(
-    pfi::lang::shared_ptr<framework::mixable_holder> holder) {
-  holder->register_mixable(&mixable_storage_);
+void lof::register_mixables(framework::mixable_holder& holder) {
+  holder.register_mixable(&mixable_storage_);
 }
 
 }  // namespace anomaly

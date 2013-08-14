@@ -49,7 +49,7 @@ anomaly::anomaly(
       anomaly_(anomaly_method) {
   wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
 
-  anomaly_->register_mixables_to_holder(mixable_holder_);
+  anomaly_->register_mixables(*mixable_holder_);
   mixable_holder_->register_mixable(&wm_);
 
   (*converter_).set_weight_manager(wm_.get_model());
