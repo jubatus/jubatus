@@ -34,7 +34,6 @@
 
 using jubatus::core::recommender::make_sfv;
 using jubatus::core::recommender::make_ids;
-using jubatus::core::storage::lof_storage;
 using pfi::data::unordered_map;
 using pfi::lang::lexical_cast;
 using pfi::lang::shared_ptr;
@@ -44,7 +43,7 @@ using std::vector;
 
 namespace jubatus {
 namespace core {
-namespace storage {
+namespace anomaly {
 
 namespace {
 

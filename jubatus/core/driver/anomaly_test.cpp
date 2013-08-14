@@ -35,7 +35,7 @@ namespace driver {
 class anomaly_test : public ::testing::Test {
  protected:
   void SetUp() {
-    core::storage::lof_storage::config lof_config;
+    core::anomaly::lof_storage::config lof_config;
     lof_config.nearest_neighbor_num = 100;
     lof_config.reverse_nearest_neighbor_num = 30;
     core::recommender::euclid_lsh::config lsh_config;

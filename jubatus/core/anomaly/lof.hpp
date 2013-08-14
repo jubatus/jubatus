@@ -33,7 +33,7 @@ class lof : public anomaly_base {
  public:
   lof();
   explicit lof(
-      const storage::lof_storage::config& config,
+      const lof_storage::config& config,
       pfi::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
   ~lof();
 
@@ -51,7 +51,7 @@ class lof : public anomaly_base {
   virtual void register_mixables(framework::mixable_holder& holder);
 
  private:
-  pfi::lang::shared_ptr<storage::mixable_lof_storage> mixable_storage_;
+  pfi::lang::shared_ptr<mixable_lof_storage> mixable_storage_;
   pfi::lang::shared_ptr<recommender::recommender_base> nn_engine_;
 };
 

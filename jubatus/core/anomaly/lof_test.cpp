@@ -26,7 +26,6 @@
 #include "../recommender/recommender.hpp"
 #include "lof_storage.hpp"
 
-using jubatus::core::storage::lof_storage;
 using pfi::data::unordered_map;
 using pfi::lang::shared_ptr;
 using std::pair;

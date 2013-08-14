@@ -54,8 +54,8 @@ shared_ptr<anomaly_base> anomaly_factory::create_anomaly(
     const string& id) {
   anomaly_config conf = config_cast_check<anomaly_config>(param);
   if (name == "lof") {
-    storage::lof_storage::config config =
-        config_cast_check<storage::lof_storage::config>(param);
+    lof_storage::config config =
+        config_cast_check<lof_storage::config>(param);
     return shared_ptr<anomaly_base>(new lof(
         config,
         recommender::recommender_factory::create_recommender(

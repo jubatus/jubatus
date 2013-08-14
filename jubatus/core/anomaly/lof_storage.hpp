@@ -35,7 +35,7 @@
 
 namespace jubatus {
 namespace core {
-namespace storage {
+namespace anomaly {
 
 class lof_storage {
  public:
@@ -185,7 +185,7 @@ class mixable_lof_storage
   }
 };
 
-}  // namespace storage
+}  // namespace anomaly
 }  // namespace core
 }  // namespace jubatus
 

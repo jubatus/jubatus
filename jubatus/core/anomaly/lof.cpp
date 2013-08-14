@@ -71,12 +71,12 @@ lof::lof() {
 }
 
 lof::lof(
-    const storage::lof_storage::config& config,
+    const lof_storage::config& config,
     pfi::lang::shared_ptr<recommender::recommender_base> nn_engine)
-    : mixable_storage_(new storage::mixable_lof_storage),
+    : mixable_storage_(new mixable_lof_storage),
       nn_engine_(nn_engine) {
-  mixable_storage_->set_model(storage::mixable_lof_storage::model_ptr(
-      new storage::lof_storage(config, nn_engine)));
+  mixable_storage_->set_model(mixable_lof_storage::model_ptr(
+      new lof_storage(config, nn_engine)));
 }
 
 lof::~lof() {
