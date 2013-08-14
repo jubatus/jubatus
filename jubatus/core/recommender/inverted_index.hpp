@@ -22,7 +22,7 @@
 #include <vector>
 #include <pficommon/lang/shared_ptr.h>
 #include "recommender_base.hpp"
-#include "../storage/recommender_storage.hpp"
+#include "../storage/inverted_index_storage.hpp"
 
 namespace jubatus {
 namespace core {
