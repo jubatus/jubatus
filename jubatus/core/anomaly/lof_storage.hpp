@@ -22,6 +22,7 @@
 #include <utility>
 #include <vector>
 
+#include <msgpack.hpp>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
@@ -29,6 +30,7 @@
 #include <pficommon/text/json.h>
 
 #include "../common/type.hpp"
+#include "../common/unordered_map.hpp"
 #include "../framework/mixable.hpp"
 #include "../recommender/recommender_base.hpp"
 #include "../recommender/recommender_factory.hpp"
@@ -36,6 +38,20 @@
 namespace jubatus {
 namespace core {
 namespace anomaly {
+
+struct lof_entry {
+  float kdist;
+  float lrd;
+
+  MSGPACK_DEFINE(kdist, lrd);
+
+  template<typename Ar>
+  void serialize(Ar& ar) {
+    ar & MEMBER(kdist) & MEMBER(lrd);
+  }
+};
+
+typedef pfi::data::unordered_map<std::string, lof_entry> lof_table_t;
 
 class lof_storage {
  public:
@@ -92,26 +108,14 @@ class lof_storage {
   void set_nn_engine(
       pfi::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
 
-  virtual void get_diff(std::string& diff) const;
-  virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
-  virtual void mix(const std::string& lhs, std::string& rhs) const;
+  void get_diff(lof_table_t& diff) const;
+  void set_mixed_and_clear_diff(const lof_table_t& mixed_diff);
+  void mix(const lof_table_t& lhs, lof_table_t& rhs) const;
 
-  virtual void save(std::ostream& os) const;
-  virtual void load(std::istream& is);
+  void save(std::ostream& os) const;
+  void load(std::istream& is);
 
  private:
-  struct lof_entry {
-    float kdist;
-    float lrd;
-
-    template<typename Ar>
-    void serialize(Ar& ar) {
-      ar & MEMBER(kdist) & MEMBER(lrd);
-    }
-  };
-
-  typedef pfi::data::unordered_map<std::string, lof_entry> lof_table_t;
-
   static void mark_removed(lof_entry& entry);
   static bool is_removed(const lof_entry& entry);
 
@@ -126,13 +130,6 @@ class lof_storage {
   float collect_lrds_from_neighbors(
       const std::vector<std::pair<std::string, float> >& neighbors,
       pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
-
-  void serialize_diff(
-      const lof_table_t& table,
-      std::ostream& out) const;
-  void deserialize_diff(
-      const std::string& diff,
-      lof_table_t& table) const;
 
   void collect_neighbors(
       const std::string& row,
@@ -161,22 +158,22 @@ class lof_storage {
 // TODO(beam2d): Change diff type to lof_table_t. This requires modification
 // of APIs of lof_storage related to MIX.
 class mixable_lof_storage
-    : public framework::mixable<lof_storage, std::string> {
+    : public framework::mixable<lof_storage, lof_table_t> {
  public:
-  std::string get_diff_impl() const {
-    std::string diff;
+  lof_table_t get_diff_impl() const {
+    lof_table_t diff;
     get_model()->get_diff(diff);
     return diff;
   }
 
-  void put_diff_impl(const std::string& v) {
+  void put_diff_impl(const lof_table_t& v) {
     get_model()->set_mixed_and_clear_diff(v);
   }
 
   void mix_impl(
-      const std::string& lhs,
-      const std::string& rhs,
-      std::string& mixed) const {
+      const lof_table_t& lhs,
+      const lof_table_t& rhs,
+      lof_table_t& mixed) const {
     mixed = lhs;
     get_model()->mix(rhs, mixed);
   }

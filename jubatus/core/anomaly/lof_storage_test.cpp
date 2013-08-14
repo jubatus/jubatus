@@ -198,7 +198,7 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
   void mix() {
     portable_mixer_.mix();
 
-    string diff;
+    lof_table_t diff;
     single_storage_->get_diff(diff);
     single_storage_->set_mixed_and_clear_diff(diff);
   }
@@ -232,7 +232,7 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
 
   vector<pfi::lang::shared_ptr<lof_storage> > storages_;
   pfi::lang::shared_ptr<lof_storage> single_storage_;
-  common::portable_mixer<lof_storage> portable_mixer_;
+  common::portable_mixer<lof_storage, lof_table_t> portable_mixer_;
 };
 
 TEST_P(lof_storage_mix_test, consistency) {
