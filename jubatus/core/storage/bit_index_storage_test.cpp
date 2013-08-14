@@ -84,7 +84,7 @@ TEST(bit_index_storage, diff) {
   bit_index_storage s1, s2;
   s1.set_row("r1", make_vector("0101"));
   s1.set_row("r2", make_vector("1010"));
-  string d1;
+  bit_table_t d1;
   s1.get_diff(d1);
 
   s2.set_mixed_and_clear_diff(d1);
@@ -101,12 +101,12 @@ TEST(bit_index_storage, mix) {
   bit_index_storage s1, s2, s3;
   s1.set_row("r1", make_vector("0101"));
   s1.set_row("r2", make_vector("1010"));
-  string d1;
+  bit_table_t d1;
   s1.get_diff(d1);
 
   s2.set_row("r1", make_vector("1110"));
   s2.set_row("r3", make_vector("1100"));
-  string d2;
+  bit_table_t d2;
   s2.get_diff(d2);
 
   s1.mix(d1, d2);

@@ -24,6 +24,7 @@
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
 #include "../common/key_manager.hpp"
+#include "../common/unordered_map.hpp"
 #include "../framework/mixable.hpp"
 #include "storage_type.hpp"
 #include "sparse_matrix_storage.hpp"
@@ -34,7 +35,7 @@ namespace jubatus {
 namespace core {
 namespace storage {
 
-class bit_index_storage : public recommender_storage_base {
+class bit_index_storage {
  public:
   bit_index_storage();
   ~bit_index_storage();
@@ -54,9 +55,9 @@ class bit_index_storage : public recommender_storage_base {
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
-  void get_diff(std::string& diff) const;
-  void set_mixed_and_clear_diff(const std::string& mixed_diff);
-  void mix(const std::string& lhs, std::string& rhs) const;
+  void get_diff(bit_table_t& diff) const;
+  void set_mixed_and_clear_diff(const bit_table_t& mixed_diff);
+  void mix(const bit_table_t& lhs, bit_table_t& rhs) const;
 
  private:
   friend class pfi::data::serialization::access;
@@ -72,22 +73,22 @@ class bit_index_storage : public recommender_storage_base {
 // TODO(beam2d): Change diff type to bit_table_t. This requires modification of
 // APIs of bit_index_storage related to MIX.
 class mixable_bit_index_storage
-    : public framework::mixable<bit_index_storage, std::string> {
+    : public framework::mixable<bit_index_storage, bit_table_t> {
  public:
-  std::string get_diff_impl() const {
-    std::string ret;
+  bit_table_t get_diff_impl() const {
+    bit_table_t ret;
     get_model()->get_diff(ret);
     return ret;
   }
 
-  void put_diff_impl(const std::string& diff) {
+  void put_diff_impl(const bit_table_t& diff) {
     get_model()->set_mixed_and_clear_diff(diff);
   }
 
   void mix_impl(
-      const std::string& lhs,
-      const std::string& rhs,
-      std::string& mixed) const {
+      const bit_table_t& lhs,
+      const bit_table_t& rhs,
+      bit_table_t& mixed) const {
     mixed = lhs;
     get_model()->mix(rhs, mixed);
   }
