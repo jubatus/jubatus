@@ -118,13 +118,6 @@ lsh_master_table_t extract_diff(const string& serialized) {
   return diff;
 }
 
-string serialize_diff(const lsh_master_table_t& table) {
-  ostringstream oss;
-  pfi::data::serialization::binary_oarchive bo(oss);
-  bo << const_cast<lsh_master_table_t&>(table);
-  return oss.str();  // TODO(unknown) remove redundant copy
-}
-
 void retrieve_hit_rows_from_table(
     uint64_t hash,
     const lsh_table_t& table,
@@ -294,13 +287,12 @@ bool lsh_index_storage::load(istream& is) {
   return true;
 }
 
-void lsh_index_storage::get_diff(string& diff) const {
-  diff = serialize_diff(master_table_diff_);
+void lsh_index_storage::get_diff(lsh_master_table_t& diff) const {
+  diff = master_table_diff_;
 }
 
-void lsh_index_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
-  lsh_master_table_t diff = extract_diff(mixed_diff);
-
+void lsh_index_storage::set_mixed_and_clear_diff(
+    const lsh_master_table_t& diff) {
   for (lsh_master_table_t::const_iterator it = diff.begin(); it != diff.end();
       ++it) {
     if (it->second.lsh_hash.empty()) {
@@ -319,16 +311,13 @@ void lsh_index_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
   lsh_table_diff_.clear();
 }
 
-void lsh_index_storage::mix(const string& lhs, string& rhs) const {
-  const lsh_master_table_t diff_l = extract_diff(lhs);
-  lsh_master_table_t diff_r = extract_diff(rhs);
-
-  for (lsh_master_table_t::const_iterator it = diff_l.begin();
-      it != diff_l.end(); ++it) {
-    diff_r[it->first] = it->second;
+void lsh_index_storage::mix(
+    const lsh_master_table_t& lhs,
+    lsh_master_table_t& rhs) const {
+  for (lsh_master_table_t::const_iterator it = lhs.begin(); it != lhs.end();
+       ++it) {
+    rhs[it->first] = it->second;
   }
-
-  rhs = serialize_diff(diff_r);
 }
 
 // private

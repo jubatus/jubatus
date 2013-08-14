@@ -227,7 +227,7 @@ TEST(lsh_index_storage, get_and_set_diff) {
   s1.set_row("r1", make_hash("1 2 3 4"), 1);
   s1.set_row("r2", make_hash("1 2 4 4"), 1);
 
-  string d1;
+  lsh_master_table_t d1;
   s1.get_diff(d1);
 
   s2.set_mixed_and_clear_diff(d1);
@@ -251,13 +251,13 @@ TEST(lsh_index_storage, mix) {
   s1.set_row("r1", h1, 1);
   s1.set_row("r2", h2, 1);
 
-  string d1;
+  lsh_master_table_t d1;
   s1.get_diff(d1);
 
   s2.set_row("r1", h0, 1);  // It cannot happen. Just for the test.
   s2.set_row("r3", h3, 1);
 
-  string d2;
+  lsh_master_table_t d2;
   s2.get_diff(d2);
 
   s1.mix(d1, d2);
@@ -298,14 +298,14 @@ TEST(lsh_index_storage, set_and_remove_arround_mix) {
   lsh_index_storage s1(4, 1, 0), s2(4, 1, 0), s3(4, 1, 0);
   s1.set_row("r1", h1, 1);
 
-  string d1;
+  lsh_master_table_t d1;
   s1.set_row("r2", h2, 1);
   s1.get_diff(d1);
   s1.set_row("r3", h1, 1);
   s1.set_row("r4", h1, 1);
   s1.remove_row("r2");
 
-  string d2;
+  lsh_master_table_t d2;
   s2.get_diff(d2);
 
   s1.mix(d1, d2);

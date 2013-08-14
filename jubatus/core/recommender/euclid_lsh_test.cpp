@@ -113,7 +113,8 @@ class euclid_lsh_mix_test
 
   vector<pfi::lang::shared_ptr<euclid_lsh> > recoms_;
   pfi::lang::shared_ptr<euclid_lsh> single_recom_;
-  common::portable_mixer<lsh_index_storage> portable_mixer_;
+  common::portable_mixer<lsh_index_storage, storage::lsh_master_table_t>
+  portable_mixer_;
 
   mtrand rand_;
 };

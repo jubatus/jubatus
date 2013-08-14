@@ -21,12 +21,14 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <msgpack.hpp>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
 #include "lsh_vector.hpp"
 #include "recommender_storage_base.hpp"
 #include "storage_type.hpp"
 #include "../common/key_manager.hpp"
+#include "../common/unordered_map.hpp"
 #include "../framework/mixable.hpp"
 
 namespace jubatus {
@@ -38,6 +40,8 @@ struct lsh_entry {
   bit_vector simhash_bv;
   float norm;
 
+  MSGPACK_DEFINE(lsh_hash, simhash_bv, norm);
+
   template <typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(lsh_hash) & MEMBER(simhash_bv) & MEMBER(norm);
@@ -48,7 +52,7 @@ typedef pfi::data::unordered_map<std::string, lsh_entry> lsh_master_table_t;
 
 typedef pfi::data::unordered_map<uint64_t, std::vector<uint64_t> > lsh_table_t;
 
-class lsh_index_storage : public recommender_storage_base {
+class lsh_index_storage {
  public:
   lsh_index_storage();
   lsh_index_storage(size_t lsh_num, size_t table_num, uint32_t seed);
@@ -87,9 +91,9 @@ class lsh_index_storage : public recommender_storage_base {
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
-  virtual void get_diff(std::string& diff) const;
-  virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
-  virtual void mix(const std::string& lhs, std::string& rhs) const;
+  void get_diff(lsh_master_table_t& diff) const;
+  void set_mixed_and_clear_diff(const lsh_master_table_t& mixed_diff);
+  void mix(const lsh_master_table_t& lhs, lsh_master_table_t& rhs) const;
 
  private:
   friend class pfi::data::serialization::access;
@@ -132,25 +136,23 @@ class lsh_index_storage : public recommender_storage_base {
   common::key_manager key_manager_;
 };
 
-// TODO(beam2d): Change diff type to lsh_master_table_t. This requires
-// modification of APIs of lsh_index_storage related to MIX.
 class mixable_lsh_index_storage
-    : public framework::mixable<lsh_index_storage, std::string> {
+    : public framework::mixable<lsh_index_storage, lsh_master_table_t> {
  public:
-  std::string get_diff_impl() const {
-    std::string ret;
+  lsh_master_table_t get_diff_impl() const {
+    lsh_master_table_t ret;
     get_model()->get_diff(ret);
     return ret;
   }
 
-  void put_diff_impl(const std::string& diff) {
+  void put_diff_impl(const lsh_master_table_t& diff) {
     get_model()->set_mixed_and_clear_diff(diff);
   }
 
   void mix_impl(
-      const std::string& lhs,
-      const std::string& rhs,
-      std::string& mixed) const {
+      const lsh_master_table_t& lhs,
+      const lsh_master_table_t& rhs,
+      lsh_master_table_t& mixed) const {
     mixed = lhs;
     get_model()->mix(rhs, mixed);
   }
