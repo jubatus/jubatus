@@ -20,11 +20,13 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <msgpack.hpp>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
 #include "storage_type.hpp"
 #include "../common/type.hpp"
+#include "../common/unordered_map.hpp"
 #include "../common/key_manager.hpp"
 #include "../framework/mixable.hpp"
 #include "sparse_matrix_storage.hpp"
@@ -35,6 +37,18 @@ namespace storage {
 
 class inverted_index_storage {
  public:
+  struct diff_type {
+    sparse_matrix_storage inv;
+    map_float_t column2norm;
+
+    MSGPACK_DEFINE(inv, column2norm);
+
+    template<typename Ar>
+    void serialize(Ar& ar) {
+      ar & MEMBER(inv) & MEMBER(column2norm);
+    }
+  };
+
   inverted_index_storage();
   ~inverted_index_storage();
 
@@ -49,9 +63,9 @@ class inverted_index_storage {
       std::vector<std::pair<std::string, float> >& scores,
       size_t ret_num) const;
 
-  void get_diff(std::string& diff_str) const;
-  void set_mixed_and_clear_diff(const std::string& mixed_diff);
-  void mix(const std::string& lhs_str, std::string& rhs_str) const;
+  void get_diff(diff_type& diff_str) const;
+  void set_mixed_and_clear_diff(const diff_type& mixed_diff);
+  void mix(const diff_type& lhs_str, diff_type& rhs_str) const;
 
   std::string name() const;
 
@@ -86,25 +100,23 @@ class inverted_index_storage {
   common::key_manager column2id_;
 };
 
-// TODO(beam2d): Change diff type to pair of tbl_t and imap_float_t. This
-// requires modification of APIs of inverted_index_storage related to MIX.
-class mixable_inverted_index_storage
-    : public framework::mixable<inverted_index_storage, std::string> {
+class mixable_inverted_index_storage : public framework::mixable<
+    inverted_index_storage, inverted_index_storage::diff_type> {
  public:
-  std::string get_diff_impl() const {
-    std::string ret;
+  inverted_index_storage::diff_type get_diff_impl() const {
+    inverted_index_storage::diff_type ret;
     get_model()->get_diff(ret);
     return ret;
   }
 
-  void put_diff_impl(const std::string& diff) {
+  void put_diff_impl(const inverted_index_storage::diff_type& diff) {
     get_model()->set_mixed_and_clear_diff(diff);
   }
 
   void mix_impl(
-      const std::string& lhs,
-      const std::string& rhs,
-      std::string& mixed) const {
+      const inverted_index_storage::diff_type& lhs,
+      const inverted_index_storage::diff_type& rhs,
+      inverted_index_storage::diff_type& mixed) const {
     mixed = lhs;
     get_model()->mix(rhs, mixed);
   }
