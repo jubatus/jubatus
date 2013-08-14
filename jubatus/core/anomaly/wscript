@@ -41,5 +41,4 @@ def build(bld):
       'anomaly_base.hpp',
       'anomaly_factory.hpp',
       'anomaly_type.hpp',
-      'anomaly_storage_base.hpp',
       ])

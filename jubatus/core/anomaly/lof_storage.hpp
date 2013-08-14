@@ -28,7 +28,6 @@
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/text/json.h>
 
-#include "anomaly_storage_base.hpp"
 #include "../common/type.hpp"
 #include "../framework/mixable.hpp"
 #include "../recommender/recommender_base.hpp"
