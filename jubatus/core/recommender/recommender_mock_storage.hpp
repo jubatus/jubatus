@@ -21,6 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <msgpack.hpp>
 #include <pficommon/data/serialization.h>
 #include "../framework/mixable.hpp"
 #include "recommender_type.hpp"
@@ -58,9 +59,10 @@ class recommender_mock_storage {
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
-  void get_diff(std::string& diff) const;
-  void set_mixed_and_clear_diff(const std::string& mixed_diff);
-  void mix(const std::string& lhs, std::string& rhs) const;
+  void get_diff(recommender_mock_storage& diff) const;
+  void set_mixed_and_clear_diff(const recommender_mock_storage& mixed_diff);
+  void mix(const recommender_mock_storage& lhs, recommender_mock_storage& rhs)
+      const;
 
  private:
   typedef std::map<common::sfv_t, std::vector<std::pair<std::string, float> > >
@@ -87,25 +89,28 @@ class recommender_mock_storage {
 
   relation_type similar_relation_;
   relation_type neighbor_relation_;
+
+ public:
+  MSGPACK_DEFINE(similar_relation_, neighbor_relation_);
 };
 
-class mixable_recommender_mock_storage
-    : public framework::mixable<recommender_mock_storage, std::string> {
+class mixable_recommender_mock_storage : public framework::mixable<
+    recommender_mock_storage, recommender_mock_storage> {
  public:
-  std::string get_diff_impl() const {
-    std::string ret;
+  recommender_mock_storage get_diff_impl() const {
+    recommender_mock_storage ret;
     get_model()->get_diff(ret);
     return ret;
   }
 
-  void put_diff_impl(const std::string& diff) {
+  void put_diff_impl(const recommender_mock_storage& diff) {
     get_model()->set_mixed_and_clear_diff(diff);
   }
 
   void mix_impl(
-      const std::string& lhs,
-      const std::string& rhs,
-      std::string& mixed) const {
+      const recommender_mock_storage& lhs,
+      const recommender_mock_storage& rhs,
+      recommender_mock_storage& mixed) const {
     mixed = lhs;
     get_model()->mix(rhs, mixed);
   }
