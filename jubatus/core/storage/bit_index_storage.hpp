@@ -70,8 +70,6 @@ class bit_index_storage {
   bit_table_t bitvals_diff_;
 };
 
-// TODO(beam2d): Change diff type to bit_table_t. This requires modification of
-// APIs of bit_index_storage related to MIX.
 class mixable_bit_index_storage
     : public framework::mixable<bit_index_storage, bit_table_t> {
  public:
