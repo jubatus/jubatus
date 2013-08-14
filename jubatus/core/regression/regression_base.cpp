@@ -22,7 +22,8 @@ namespace core {
 namespace regression {
 
 regression_base::regression_base(storage_ptr storage)
-    : storage_(storage) {
+    : mixable_(new driver::linear_function_mixer) {
+  mixable_->set_model(storage);
 }
 
 float regression_base::estimate(const common::sfv_t& fv) const {
@@ -32,11 +33,16 @@ float regression_base::estimate(const common::sfv_t& fv) const {
 }
 
 void regression_base::update(const common::sfv_t& fv, float coeff) {
-  storage_->bulk_update(fv, coeff, "+", "");
+  get_storage()->bulk_update(fv, coeff, "+", "");
 }
 
 void regression_base::clear() {
-  storage_->clear();
+  get_storage()->clear();
+}
+
+void regression_base::register_mixables(framework::mixable_holder& holder)
+    const {
+  holder.register_mixable(mixable_.get());
 }
 
 }  // namespace regression

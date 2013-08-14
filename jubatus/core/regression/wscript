@@ -18,7 +18,7 @@ def build(bld):
             ],
         target = 'jubatus_regression',
         includes = '.',
-        use = 'PFICOMMON jubacommon'+libassert
+        use = 'PFICOMMON jubacommon jubatus_mixables'+libassert
         )
 
     def make_test(s):

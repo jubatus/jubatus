@@ -45,7 +45,7 @@ class regression {
   }
 
   storage::storage_base* get_model() const {
-    return mixable_regression_model_.get_model().get();
+    return regression_->get_storage();
   }
 
   void train(const std::pair<float, fv_converter::datum>& data);
@@ -56,7 +56,6 @@ class regression {
 
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<jubatus::core::regression::regression_base> regression_;
-  linear_function_mixer mixable_regression_model_;
   mixable_weight_manager wm_;
 };
 

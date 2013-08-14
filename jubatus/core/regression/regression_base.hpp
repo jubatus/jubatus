@@ -19,6 +19,7 @@
 
 #include <pficommon/lang/shared_ptr.h>
 #include "../common/type.hpp"
+#include "../driver/linear_function_mixer.hpp"
 
 namespace jubatus {
 namespace core {
@@ -42,15 +43,17 @@ class regression_base {
 
   virtual void clear();
 
- protected:
+  virtual void register_mixables(framework::mixable_holder& holder) const;
+
   storage::storage_base* get_storage() const {
-    return storage_.get();
+    return mixable_->get_model().get();
   }
 
+ protected:
   void update(const common::sfv_t& fv, float coeff);
 
  private:
-  storage_ptr storage_;
+  pfi::lang::shared_ptr<driver::linear_function_mixer> mixable_;
 };
 
 }  // namespace regression
