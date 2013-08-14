@@ -73,7 +73,8 @@ lof::lof() {
 lof::lof(
     const storage::lof_storage::config& config,
     pfi::lang::shared_ptr<recommender::recommender_base> nn_engine)
-    : lof_index_(new storage::lof_storage(config, nn_engine)) {
+    : lof_index_(new storage::lof_storage(config, nn_engine)),
+      nn_engine_(nn_engine) {
   mixable_storage_.set_model(lof_index_);
 }
 
@@ -119,6 +120,7 @@ string lof::type() const {
 }
 
 void lof::register_mixables(framework::mixable_holder& holder) {
+  nn_engine_->register_mixables(holder);
   holder.register_mixable(&mixable_storage_);
 }
 

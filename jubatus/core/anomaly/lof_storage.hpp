@@ -121,26 +121,6 @@ class lof_storage : public anomaly_storage_base {
   void serialize(Ar& ar) {
     ar & MEMBER(lof_table_) & MEMBER(lof_table_diff_);
     ar & MEMBER(neighbor_num_) & MEMBER(reverse_nn_num_);
-
-    // TODO(kashihara): Make it more efficient
-    if (ar.is_read) {
-      std::string name;
-      ar & name;
-      nn_engine_->clear();
-
-      std::string impl;
-      ar & impl;
-      std::istringstream iss(impl);
-      nn_engine_->load(iss);
-    } else {
-      std::string name = nn_engine_->type();
-      ar & name;
-
-      std::ostringstream oss;
-      nn_engine_->save(oss);
-      std::string str = oss.str();
-      ar & str;
-    }
   }
 
   float collect_lrds_from_neighbors(
@@ -149,12 +129,10 @@ class lof_storage : public anomaly_storage_base {
 
   void serialize_diff(
       const lof_table_t& table,
-      const std::string& nn_diff,
       std::ostream& out) const;
   void deserialize_diff(
       const std::string& diff,
-      lof_table_t& table,
-      std::string& nn_diff) const;
+      lof_table_t& table) const;
 
   void collect_neighbors(
       const std::string& row,

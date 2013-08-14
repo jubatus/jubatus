@@ -21,6 +21,7 @@
 #include <vector>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/text/json.h>
+#include "../recommender/recommender_base.hpp"
 #include "anomaly_base.hpp"
 #include "lof_storage.hpp"
 
@@ -52,6 +53,7 @@ class lof : public anomaly_base {
  private:
   pfi::lang::shared_ptr<storage::lof_storage> lof_index_;
   storage::mixable_anomaly_storage mixable_storage_;
+  pfi::lang::shared_ptr<recommender::recommender_base> nn_engine_;
 };
 
 }  //  namespace anomaly
