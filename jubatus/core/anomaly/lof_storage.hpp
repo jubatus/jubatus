@@ -30,6 +30,7 @@
 
 #include "anomaly_storage_base.hpp"
 #include "../common/type.hpp"
+#include "../framework/mixable.hpp"
 #include "../recommender/recommender_base.hpp"
 #include "../recommender/recommender_factory.hpp"
 
@@ -37,7 +38,7 @@ namespace jubatus {
 namespace core {
 namespace storage {
 
-class lof_storage : public anomaly_storage_base {
+class lof_storage {
  public:
   static const uint32_t DEFAULT_NEIGHBOR_NUM;
   static const uint32_t DEFAULT_REVERSE_NN_NUM;
@@ -156,6 +157,33 @@ class lof_storage : public anomaly_storage_base {
   uint32_t reverse_nn_num_;  // ck of ck-nn as an approx. of k-reverse-nn
 
   pfi::lang::shared_ptr<core::recommender::recommender_base> nn_engine_;
+};
+
+// TODO(beam2d): Change diff type to lof_table_t. This requires modification
+// of APIs of lof_storage related to MIX.
+class mixable_lof_storage
+    : public framework::mixable<lof_storage, std::string> {
+ public:
+  std::string get_diff_impl() const {
+    std::string diff;
+    get_model()->get_diff(diff);
+    return diff;
+  }
+
+  void put_diff_impl(const std::string& v) {
+    get_model()->set_mixed_and_clear_diff(v);
+  }
+
+  void mix_impl(
+      const std::string& lhs,
+      const std::string& rhs,
+      std::string& mixed) const {
+    mixed = lhs;
+    get_model()->mix(rhs, mixed);
+  }
+
+  void clear() {
+  }
 };
 
 }  // namespace storage

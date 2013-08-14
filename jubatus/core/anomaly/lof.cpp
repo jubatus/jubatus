@@ -73,9 +73,10 @@ lof::lof() {
 lof::lof(
     const storage::lof_storage::config& config,
     pfi::lang::shared_ptr<recommender::recommender_base> nn_engine)
-    : lof_index_(new storage::lof_storage(config, nn_engine)),
+    : mixable_storage_(new storage::mixable_lof_storage),
       nn_engine_(nn_engine) {
-  mixable_storage_.set_model(lof_index_);
+  mixable_storage_->set_model(storage::mixable_lof_storage::model_ptr(
+      new storage::lof_storage(config, nn_engine)));
 }
 
 lof::~lof() {
@@ -83,28 +84,30 @@ lof::~lof() {
 
 float lof::calc_anomaly_score(const common::sfv_t& query) const {
   unordered_map<string, float> neighbor_lrd;
-  const float lrd = lof_index_->collect_lrds(query, neighbor_lrd);
+  const float lrd = mixable_storage_->get_model()->collect_lrds(
+      query, neighbor_lrd);
 
   return calculate_lof(lrd, neighbor_lrd);
 }
 
 float lof::calc_anomaly_score(const string& id) const {
   unordered_map<string, float> neighbor_lrd;
-  const float lrd = lof_index_->collect_lrds(id, neighbor_lrd);
+  const float lrd = mixable_storage_->get_model()->collect_lrds(
+      id, neighbor_lrd);
 
   return calculate_lof(lrd, neighbor_lrd);
 }
 
 void lof::clear() {
-  lof_index_->clear();
+  mixable_storage_->get_model()->clear();
 }
 
 void lof::clear_row(const string& id) {
-  lof_index_->remove_row(id);
+  mixable_storage_->get_model()->remove_row(id);
 }
 
 void lof::update_row(const string& id, const sfv_diff_t& diff) {
-  lof_index_->update_row(id, diff);
+  mixable_storage_->get_model()->update_row(id, diff);
 }
 
 void lof::set_row(const string& id, const common::sfv_t& sfv) {
@@ -112,7 +115,7 @@ void lof::set_row(const string& id, const common::sfv_t& sfv) {
 }
 
 void lof::get_all_row_ids(vector<string>& ids) const {
-  lof_index_->get_all_row_ids(ids);
+  mixable_storage_->get_model()->get_all_row_ids(ids);
 }
 
 string lof::type() const {
@@ -121,7 +124,7 @@ string lof::type() const {
 
 void lof::register_mixables(framework::mixable_holder& holder) {
   nn_engine_->register_mixables(holder);
-  holder.register_mixable(&mixable_storage_);
+  holder.register_mixable(mixable_storage_.get());
 }
 
 }  // namespace anomaly
