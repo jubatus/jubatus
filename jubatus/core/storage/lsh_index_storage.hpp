@@ -92,8 +92,6 @@ class lsh_index_storage : public recommender_storage_base {
   virtual void mix(const std::string& lhs, std::string& rhs) const;
 
  private:
-  typedef pfi::data::unordered_map<uint64_t, std::vector<uint64_t> >lsh_table_t;
-
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
