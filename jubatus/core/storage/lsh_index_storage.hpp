@@ -135,30 +135,8 @@ class lsh_index_storage {
   common::key_manager key_manager_;
 };
 
-class mixable_lsh_index_storage
-    : public framework::mixable<lsh_index_storage, lsh_master_table_t> {
- public:
-  lsh_master_table_t get_diff_impl() const {
-    lsh_master_table_t ret;
-    get_model()->get_diff(ret);
-    return ret;
-  }
-
-  void put_diff_impl(const lsh_master_table_t& diff) {
-    get_model()->set_mixed_and_clear_diff(diff);
-  }
-
-  void mix_impl(
-      const lsh_master_table_t& lhs,
-      const lsh_master_table_t& rhs,
-      lsh_master_table_t& mixed) const {
-    mixed = lhs;
-    get_model()->mix(rhs, mixed);
-  }
-
-  void clear() {
-  }
-};
+typedef framework::delegating_mixable<lsh_index_storage, lsh_master_table_t>
+    mixable_lsh_index_storage;
 
 }  // namespace storage
 }  // namespace core

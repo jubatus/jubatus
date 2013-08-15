@@ -155,30 +155,8 @@ class lof_storage {
   pfi::lang::shared_ptr<core::recommender::recommender_base> nn_engine_;
 };
 
-class mixable_lof_storage
-    : public framework::mixable<lof_storage, lof_table_t> {
- public:
-  lof_table_t get_diff_impl() const {
-    lof_table_t diff;
-    get_model()->get_diff(diff);
-    return diff;
-  }
-
-  void put_diff_impl(const lof_table_t& v) {
-    get_model()->set_mixed_and_clear_diff(v);
-  }
-
-  void mix_impl(
-      const lof_table_t& lhs,
-      const lof_table_t& rhs,
-      lof_table_t& mixed) const {
-    mixed = lhs;
-    get_model()->mix(rhs, mixed);
-  }
-
-  void clear() {
-  }
-};
+typedef framework::delegating_mixable<lof_storage, lof_table_t>
+    mixable_lof_storage;
 
 }  // namespace anomaly
 }  // namespace core

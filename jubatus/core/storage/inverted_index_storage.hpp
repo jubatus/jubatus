@@ -100,30 +100,9 @@ class inverted_index_storage {
   common::key_manager column2id_;
 };
 
-class mixable_inverted_index_storage : public framework::mixable<
-    inverted_index_storage, inverted_index_storage::diff_type> {
- public:
-  inverted_index_storage::diff_type get_diff_impl() const {
-    inverted_index_storage::diff_type ret;
-    get_model()->get_diff(ret);
-    return ret;
-  }
-
-  void put_diff_impl(const inverted_index_storage::diff_type& diff) {
-    get_model()->set_mixed_and_clear_diff(diff);
-  }
-
-  void mix_impl(
-      const inverted_index_storage::diff_type& lhs,
-      const inverted_index_storage::diff_type& rhs,
-      inverted_index_storage::diff_type& mixed) const {
-    mixed = lhs;
-    get_model()->mix(rhs, mixed);
-  }
-
-  void clear() {
-  }
-};
+typedef framework::delegating_mixable<
+    inverted_index_storage, inverted_index_storage::diff_type>
+    mixable_inverted_index_storage;
 
 }  // namespace storage
 }  // namespace core

@@ -69,30 +69,8 @@ class bit_index_storage {
   bit_table_t bitvals_diff_;
 };
 
-class mixable_bit_index_storage
-    : public framework::mixable<bit_index_storage, bit_table_t> {
- public:
-  bit_table_t get_diff_impl() const {
-    bit_table_t ret;
-    get_model()->get_diff(ret);
-    return ret;
-  }
-
-  void put_diff_impl(const bit_table_t& diff) {
-    get_model()->set_mixed_and_clear_diff(diff);
-  }
-
-  void mix_impl(
-      const bit_table_t& lhs,
-      const bit_table_t& rhs,
-      bit_table_t& mixed) const {
-    mixed = lhs;
-    get_model()->mix(rhs, mixed);
-  }
-
-  void clear() {
-  }
-};
+typedef framework::delegating_mixable<bit_index_storage, bit_table_t>
+    mixable_bit_index_storage;
 
 }  // namespace storage
 }  // namespace core

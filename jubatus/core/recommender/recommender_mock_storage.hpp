@@ -94,30 +94,9 @@ class recommender_mock_storage {
   MSGPACK_DEFINE(similar_relation_, neighbor_relation_);
 };
 
-class mixable_recommender_mock_storage : public framework::mixable<
-    recommender_mock_storage, recommender_mock_storage> {
- public:
-  recommender_mock_storage get_diff_impl() const {
-    recommender_mock_storage ret;
-    get_model()->get_diff(ret);
-    return ret;
-  }
-
-  void put_diff_impl(const recommender_mock_storage& diff) {
-    get_model()->set_mixed_and_clear_diff(diff);
-  }
-
-  void mix_impl(
-      const recommender_mock_storage& lhs,
-      const recommender_mock_storage& rhs,
-      recommender_mock_storage& mixed) const {
-    mixed = lhs;
-    get_model()->mix(rhs, mixed);
-  }
-
-  void clear() {
-  }
-};
+typedef framework::delegating_mixable<
+    recommender_mock_storage, recommender_mock_storage>
+    mixable_recommender_mock_storage;
 
 }  // namespace recommender
 }  // namespace core
