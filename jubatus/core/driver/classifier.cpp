@@ -44,12 +44,7 @@ classifier::classifier(
       converter_(converter),
       classifier_(classifier_method) {
   classifier_->register_mixables(*mixable_holder_);
-
-  wm_.set_model(fv_converter::mixable_weight_manager::model_ptr(
-      new weight_manager));
-  mixable_holder_->register_mixable(&wm_);
-
-  (*converter_).set_weight_manager(wm_.get_model());
+  converter_->register_mixables(*mixable_holder_);
 }
 
 classifier::~classifier() {
@@ -74,7 +69,7 @@ jubatus::core::classifier::classify_result classifier::classify(
 
 void classifier::clear() {
   classifier_->clear();
-  wm_.clear();
+  converter_->clear_weights();
 }
 
 }  // namespace driver
