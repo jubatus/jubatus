@@ -105,6 +105,8 @@ class datum_to_fv_converter {
   void set_hash_max_size(uint64_t hash_max_size);
 
   void set_weight_manager(pfi::lang::shared_ptr<weight_manager> wm);
+  void clear_weights();
+
   void register_mixables(framework::mixable_holder& holder) const;
 
  private:

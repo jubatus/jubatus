@@ -266,6 +266,10 @@ class datum_to_fv_converter_impl {
     mixable_weights_->set_model(wm);
   }
 
+  void clear_weights() {
+    mixable_weights_->clear();
+  }
+
   void register_mixables(framework::mixable_holder& holder) const {
     if (mixable_weights_->get_model()) {
       holder.register_mixable(mixable_weights_.get());
@@ -515,6 +519,10 @@ void datum_to_fv_converter::set_hash_max_size(uint64_t hash_max_size) {
 void datum_to_fv_converter::set_weight_manager(
     pfi::lang::shared_ptr<weight_manager> wm) {
   pimpl_->set_weight_manager(wm);
+}
+
+void datum_to_fv_converter::clear_weights() {
+  pimpl_->clear_weights();
 }
 
 void datum_to_fv_converter::register_mixables(framework::mixable_holder& holder)
