@@ -221,6 +221,28 @@ class mixable : public mixable0 {
   model_ptr model_;
 };
 
+template<typename Model, typename Diff, typename PullArg = std::string>
+class delegating_mixable : public mixable<Model, Diff, PullArg> {
+ public:
+  Diff get_diff_impl() const {
+    Diff diff;
+    this->get_model()->get_diff(diff);
+    return diff;
+  }
+
+  void put_diff_impl(const Diff& diff) {
+    this->get_model()->set_mixed_and_clear_diff(diff);
+  }
+
+  void mix_impl(const Diff& lhs, const Diff& rhs, Diff& mixed) const {
+    mixed = lhs;
+    this->get_model()->mix(rhs, mixed);
+  }
+
+  void clear() {
+  }
+};
+
 }  // namespace framework
 }  // namespace core
 }  // namespace jubatus
