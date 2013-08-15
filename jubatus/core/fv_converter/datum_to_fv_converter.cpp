@@ -28,6 +28,7 @@
 #include "exception.hpp"
 #include "feature_hasher.hpp"
 #include "match_all.hpp"
+#include "mixable_weight_manager.hpp"
 #include "num_feature.hpp"
 #include "num_filter.hpp"
 #include "space_splitter.hpp"
@@ -118,13 +119,13 @@ class datum_to_fv_converter_impl {
   std::vector<string_feature_rule> string_rules_;
   std::vector<num_feature_rule> num_rules_;
 
-  pfi::lang::shared_ptr<weight_manager> weights_;
+  pfi::lang::shared_ptr<mixable_weight_manager> mixable_weights_;
 
   pfi::data::optional<feature_hasher> hasher_;
 
  public:
   datum_to_fv_converter_impl()
-      : weights_() {
+      : mixable_weights_(new mixable_weight_manager) {
   }
 
   void clear_rules() {
@@ -167,16 +168,20 @@ class datum_to_fv_converter_impl {
   }
 
   void add_weight(const std::string& key, float weight) {
-    if (weights_) {
-      (*weights_).add_weight(key, weight);
+    pfi::lang::shared_ptr<weight_manager> weights =
+        mixable_weights_->get_model();
+    if (weights) {
+      (*weights).add_weight(key, weight);
     }
   }
 
   void convert(const datum& datum, common::sfv_t& ret_fv) const {
     common::sfv_t fv;
     convert_unweighted(datum, fv);
-    if (weights_) {
-      (*weights_).get_weight(fv);
+    pfi::lang::shared_ptr<weight_manager> weights =
+        mixable_weights_->get_model();
+    if (weights) {
+      (*weights).get_weight(fv);
     }
 
     if (hasher_) {
@@ -189,9 +194,11 @@ class datum_to_fv_converter_impl {
   void convert_and_update_weight(const datum& datum, common::sfv_t& ret_fv) {
     common::sfv_t fv;
     convert_unweighted(datum, fv);
-    if (weights_) {
-      (*weights_).update_weight(fv);
-      (*weights_).get_weight(fv);
+    pfi::lang::shared_ptr<weight_manager> weights =
+        mixable_weights_->get_model();
+    if (weights) {
+      (*weights).update_weight(fv);
+      (*weights).get_weight(fv);
     }
 
     if (hasher_) {
@@ -254,7 +261,13 @@ class datum_to_fv_converter_impl {
   }
 
   void set_weight_manager(pfi::lang::shared_ptr<weight_manager> wm) {
-    weights_ = wm;
+    mixable_weights_->set_model(wm);
+  }
+
+  void register_mixables(framework::mixable_holder& holder) const {
+    if (mixable_weights_->get_model()) {
+      holder.register_mixable(mixable_weights_.get());
+    }
   }
 
  private:
@@ -500,6 +513,11 @@ void datum_to_fv_converter::set_hash_max_size(uint64_t hash_max_size) {
 void datum_to_fv_converter::set_weight_manager(
     pfi::lang::shared_ptr<weight_manager> wm) {
   pimpl_->set_weight_manager(wm);
+}
+
+void datum_to_fv_converter::register_mixables(framework::mixable_holder& holder)
+    const {
+  pimpl_->register_mixables(holder);
 }
 
 }  // namespace fv_converter
