@@ -47,7 +47,8 @@ anomaly::anomaly(
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       anomaly_(anomaly_method) {
-  wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
+  wm_.set_model(fv_converter::mixable_weight_manager::model_ptr(
+      new weight_manager));
 
   anomaly_->register_mixables(*mixable_holder_);
   mixable_holder_->register_mixable(&wm_);

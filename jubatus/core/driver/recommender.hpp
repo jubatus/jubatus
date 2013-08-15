@@ -22,8 +22,8 @@
 #include <vector>
 #include <pficommon/lang/shared_ptr.h>
 #include "../recommender/recommender_base.hpp"
+#include "../fv_converter/mixable_weight_manager.hpp"
 #include "../framework/mixable.hpp"
-#include "mixable_weight_manager.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 
 namespace jubatus {
@@ -68,7 +68,7 @@ class recommender {
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<core::recommender::recommender_base> recommender_;
 
-  mixable_weight_manager wm_;
+  fv_converter::mixable_weight_manager wm_;
 };
 
 }  // namespace driver

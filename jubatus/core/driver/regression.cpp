@@ -42,7 +42,8 @@ regression::regression(
       converter_(converter),
       regression_(regression_method) {
   regression_->register_mixables(*mixable_holder_);
-  wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
+  wm_.set_model(fv_converter::mixable_weight_manager::model_ptr(
+      new weight_manager));
 
   mixable_holder_->register_mixable(&wm_);
 

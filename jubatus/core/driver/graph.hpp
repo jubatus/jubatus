@@ -25,7 +25,6 @@
 #include "../graph/graph_type.hpp"
 #include "../graph/graph_wo_index.hpp"
 #include "../framework/mixable.hpp"
-#include "mixable_weight_manager.hpp"
 
 namespace jubatus {
 namespace core {

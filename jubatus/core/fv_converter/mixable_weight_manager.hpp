@@ -14,15 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_DRIVER_MIXABLE_WEIGHT_MANAGER_HPP_
-#define JUBATUS_CORE_DRIVER_MIXABLE_WEIGHT_MANAGER_HPP_
+#ifndef JUBATUS_CORE_FV_CONVERTER_MIXABLE_WEIGHT_MANAGER_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_MIXABLE_WEIGHT_MANAGER_HPP_
 
 #include "../framework/mixable.hpp"
-#include "../fv_converter/weight_manager.hpp"
+#include "weight_manager.hpp"
 
 namespace jubatus {
 namespace core {
-namespace driver {
+namespace fv_converter {
 
 class mixable_weight_manager : public framework::mixable<
     fv_converter::weight_manager,
@@ -39,8 +39,8 @@ class mixable_weight_manager : public framework::mixable<
   void clear();
 };
 
-}  // namespace driver
+}  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_DRIVER_MIXABLE_WEIGHT_MANAGER_HPP_
+#endif  // JUBATUS_CORE_FV_CONVERTER_MIXABLE_WEIGHT_MANAGER_HPP_

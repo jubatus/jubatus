@@ -24,8 +24,8 @@
 #include "../classifier/classifier_type.hpp"
 #include "../classifier/classifier_base.hpp"
 #include "../framework/mixable.hpp"
+#include "../fv_converter/mixable_weight_manager.hpp"
 #include "linear_function_mixer.hpp"
-#include "mixable_weight_manager.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 
 namespace jubatus {
@@ -61,7 +61,7 @@ class classifier {
 
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<classifier_base> classifier_;
-  mixable_weight_manager wm_;
+  fv_converter::mixable_weight_manager wm_;
 };
 
 }  // namespace driver

@@ -23,8 +23,8 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "../anomaly/anomaly_base.hpp"
 #include "../framework/mixable.hpp"
-#include "mixable_weight_manager.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../fv_converter/mixable_weight_manager.hpp"
 
 namespace jubatus {
 namespace core {
@@ -60,7 +60,7 @@ class anomaly {
 
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<core::anomaly::anomaly_base> anomaly_;
-  mixable_weight_manager wm_;
+  fv_converter::mixable_weight_manager wm_;
 };
 
 }  // namespace driver

@@ -53,6 +53,7 @@ def build(bld):
     'dynamic_num_filter.cpp',
     'revert.cpp',
     'weight_manager.cpp',
+    'mixable_weight_manager.cpp',
     'keyword_weights.cpp',
     'feature_hasher.cpp',
     ]
