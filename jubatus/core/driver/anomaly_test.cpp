@@ -21,6 +21,7 @@
 #include <gtest/gtest.h>
 
 #include "../anomaly/anomaly.hpp"
+#include "../fv_converter/datum.hpp"
 #include "../recommender/recommender.hpp"
 #include "anomaly.hpp"
 #include "test_util.hpp"
