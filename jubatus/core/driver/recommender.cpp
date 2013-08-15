@@ -49,12 +49,7 @@ recommender::recommender(
       converter_(converter),
       recommender_(recommender_method) {
   recommender_->register_mixables(*mixable_holder_);
-
-  wm_.set_model(fv_converter::mixable_weight_manager::model_ptr(
-      new weight_manager));
-  mixable_holder_->register_mixable(&wm_);
-
-  (*converter_).set_weight_manager(wm_.get_model());
+  converter_->register_mixables(*mixable_holder_);
 }
 
 recommender::~recommender() {
@@ -74,7 +69,7 @@ void recommender::update_row(
 
 void recommender::clear() {
   recommender_->clear();
-  wm_.clear();
+  converter_->clear_weights();
 }
 
 fv_converter::datum recommender::complete_row_from_id(const std::string& id) {
