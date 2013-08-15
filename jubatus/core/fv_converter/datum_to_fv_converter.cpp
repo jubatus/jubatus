@@ -126,6 +126,8 @@ class datum_to_fv_converter_impl {
  public:
   datum_to_fv_converter_impl()
       : mixable_weights_(new mixable_weight_manager) {
+    set_weight_manager(pfi::lang::shared_ptr<weight_manager>(
+        new weight_manager));
   }
 
   void clear_rules() {
