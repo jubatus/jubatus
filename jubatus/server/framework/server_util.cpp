@@ -84,6 +84,14 @@ void check_ignored_option(const cmdline::parser& p, const std::string& key) {
   }
 }
 
+std::string make_ignored_help(const std::string& help) {
+#ifdef HAVE_ZOOKEEPER_H
+  return help;
+#else
+  return "[IGNORED] " + help;
+#endif
+}
+
 server_argv::server_argv(int args, char** argv, const std::string& type)
     : type(type) {
   google::InitGoogleLogging(argv[0]);
@@ -110,15 +118,23 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add<std::string>("model_file", 'm',
                      "model data to load at startup", false, "");
 
-  p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
-  p.add<std::string>("name", 'n', "learning machine instance name", false);
-  p.add<std::string>("mixer", 'x', "mixer strategy", false, "");
-  p.add("join", 'j', "join to the existing cluster");
-  p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
-  p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
-  p.add<int>("zookeeper_timeout", 'Z', "zookeeper time out (sec)", false, 10);
+  p.add<std::string>("zookeeper", 'z',
+                     make_ignored_help("zookeeper location"), false);
+  p.add<std::string>("name", 'n',
+                     make_ignored_help("learning machine instance name"),
+                     false);
+  p.add<std::string>("mixer", 'x',
+                     make_ignored_help("mixer strategy"), false, "");
+  p.add("join", 'j', make_ignored_help("join to the existing cluster"));
+  p.add<int>("interval_sec", 's',
+             make_ignored_help("mix interval by seconds"), false, 16);
+  p.add<int>("interval_count", 'i',
+             make_ignored_help("mix interval by update count"), false, 512);
+  p.add<int>("zookeeper_timeout", 'Z',
+             make_ignored_help("zookeeper time out (sec)"), false, 10);
   p.add<int>("interconnect_timeout", 'I',
-      "interconnect time out between servers (sec)", false, 10);
+             make_ignored_help("interconnect time out between servers (sec)"),
+             false, 10);
 
   // APPLY CHANGES TO JUBAVISOR WHEN ARGUMENTS MODIFIED
 
