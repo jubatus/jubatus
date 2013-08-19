@@ -78,6 +78,12 @@ void config_json::load_json(const std::string& filepath) {
   jubatus::server::common::config_fromlocal(filepath, config);
 }
 
+void check_ignored_option(const cmdline::parser& p, const std::string& key) {
+  if (p.exist(key)) {
+    std::cerr << "\"" << key << "\" option is ignored" << std::endl;
+  }
+}
+
 server_argv::server_argv(int args, char** argv, const std::string& type)
     : type(type) {
   google::InitGoogleLogging(argv[0]);
@@ -104,7 +110,6 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add<std::string>("model_file", 'm',
                      "model data to load at startup", false, "");
 
-#ifdef HAVE_ZOOKEEPER_H
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
   p.add<std::string>("name", 'n', "learning machine instance name", false);
   p.add<std::string>("mixer", 'x', "mixer strategy", false, "");
@@ -114,7 +119,6 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add<int>("zookeeper_timeout", 'Z', "zookeeper time out (sec)", false, 10);
   p.add<int>("interconnect_timeout", 'I',
       "interconnect time out between servers (sec)", false, 10);
-#endif
 
   // APPLY CHANGES TO JUBAVISOR WHEN ARGUMENTS MODIFIED
 
@@ -160,6 +164,15 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   zookeeper_timeout = p.get<int>("zookeeper_timeout");
   interconnect_timeout = p.get<int>("interconnect_timeout");
 #else
+  check_ignored_option(p, "zookeeper");
+  check_ignored_option(p, "name");
+  check_ignored_option(p, "mixer");
+  check_ignored_option(p, "join");
+  check_ignored_option(p, "interval_sec");
+  check_ignored_option(p, "interval_count");
+  check_ignored_option(p, "zookeeper_timeout");
+  check_ignored_option(p, "interconnect_timeout");
+
   z = "";
   name = "";
   join = false;
