@@ -124,7 +124,7 @@ string lof::type() const {
 
 void lof::register_mixables(framework::mixable_holder& holder) {
   nn_engine_->register_mixables(holder);
-  holder.register_mixable(mixable_storage_.get());
+  holder.register_mixable(mixable_storage_);
 }
 
 }  // namespace anomaly

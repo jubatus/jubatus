@@ -106,7 +106,7 @@ bool inverted_index::load_impl(std::istream& is) {
 
 void inverted_index::register_mixables(framework::mixable_holder& holder)
     const {
-  holder.register_mixable(mixable_storage_.get());
+  holder.register_mixable(mixable_storage_);
 }
 
 }  // namespace recommender

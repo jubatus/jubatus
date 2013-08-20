@@ -52,7 +52,7 @@ void regression_base::get_status(std::map<std::string, std::string>& status)
 
 void regression_base::register_mixables(framework::mixable_holder& holder)
     const {
-  holder.register_mixable(mixable_.get());
+  holder.register_mixable(mixable_);
 }
 
 }  // namespace regression

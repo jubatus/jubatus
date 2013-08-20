@@ -129,7 +129,7 @@ bool recommender_mock::load_impl(istream& is) {
 
 void recommender_mock::register_mixables(framework::mixable_holder& holder)
     const {
-  holder.register_mixable(mixable_storage_.get());
+  holder.register_mixable(mixable_storage_);
 }
 
 }  // namespace recommender

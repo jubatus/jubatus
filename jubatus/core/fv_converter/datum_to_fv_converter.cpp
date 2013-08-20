@@ -272,7 +272,7 @@ class datum_to_fv_converter_impl {
 
   void register_mixables(framework::mixable_holder& holder) const {
     if (mixable_weights_->get_model()) {
-      holder.register_mixable(mixable_weights_.get());
+      holder.register_mixable(mixable_weights_);
     }
   }
 

@@ -59,8 +59,7 @@ class mixable0 {
 
 class mixable_holder {
  public:
-  // TODO(beam2d): Let mixable_holder own mixables.
-  typedef std::vector<mixable0*> mixable_list;
+  typedef std::vector<pfi::lang::shared_ptr<mixable0> > mixable_list;
 
   mixable_holder() {
   }
@@ -68,7 +67,7 @@ class mixable_holder {
   virtual ~mixable_holder() {
   }
 
-  void register_mixable(mixable0* m) {
+  void register_mixable(pfi::lang::shared_ptr<mixable0> m) {
     mixables_.push_back(m);
   }
 
@@ -82,7 +81,7 @@ class mixable_holder {
 
  protected:
   pfi::concurrent::rw_mutex rw_mutex_;
-  std::vector<mixable0*> mixables_;
+  std::vector<pfi::lang::shared_ptr<mixable0> > mixables_;
 };
 
 template<typename Model, typename Diff, typename PullArg = std::string>

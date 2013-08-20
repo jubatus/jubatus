@@ -69,6 +69,7 @@ light_lof::light_lof(
     const std::string& id,
     shared_ptr<nearest_neighbor_base> nearest_neighbor_engine)
     : nearest_neighbor_engine_(nearest_neighbor_engine),
+      mixable_scores_(new driver::mixable_versioned_table),
       config_(conf),
       my_id_(id) {
   shared_ptr<column_table> table(new column_table);
@@ -76,7 +77,7 @@ light_lof::light_lof(
       2, table::column_type(table::column_type::float_type));
   table->init(schema);
 
-  mixable_scores_.set_model(table);
+  mixable_scores_->set_model(table);
 }
 
 light_lof::~light_lof() {
@@ -98,7 +99,7 @@ float light_lof::calc_anomaly_score(const std::string& id) const {
 
 void light_lof::clear() {
   nearest_neighbor_engine_->clear();
-  mixable_scores_.get_model()->clear();
+  mixable_scores_->get_model()->clear();
 }
 
 void light_lof::clear_row(const std::string& id) {
@@ -112,7 +113,7 @@ void light_lof::update_row(const std::string& id, const sfv_diff_t& diff) {
 void light_lof::set_row(const std::string& id, const common::sfv_t& sfv) {
   pfi::data::unordered_set<uint64_t> update_set;
 
-  shared_ptr<column_table> table = mixable_scores_.get_model();
+  shared_ptr<column_table> table = mixable_scores_->get_model();
   if (table->exact_match(id).first) {
     collect_neighbors(id, update_set);
   }
@@ -144,7 +145,7 @@ std::string light_lof::type() const {
 
 void light_lof::register_mixables(framework::mixable_holder& holder) {
   nearest_neighbor_engine_->register_mixables(holder);
-  holder.register_mixable(&mixable_scores_);
+  holder.register_mixable(mixable_scores_);
 }
 
 // private
@@ -220,7 +221,7 @@ void light_lof::collect_neighbors(
   nearest_neighbor_engine_->neighbor_row(
       query, nn_result, config_.reverse_nearest_neighbor_num);
 
-  shared_ptr<column_table> table = mixable_scores_.get_model();
+  shared_ptr<column_table> table = mixable_scores_->get_model();
   for (size_t i = 0; i < nn_result.size(); ++i) {
     const std::pair<bool, uint64_t> hit =
         table->exact_match(nn_result[i].first);
@@ -231,7 +232,7 @@ void light_lof::collect_neighbors(
 }
 
 void light_lof::update_entries(const unordered_set<uint64_t>& neighbors) {
-  shared_ptr<column_table> table = mixable_scores_.get_model();
+  shared_ptr<column_table> table = mixable_scores_->get_model();
   table::float_column kdist_column =
       table->get_float_column(KDIST_COLUMN_INDEX);
   table::float_column lrd_column = table->get_float_column(LRD_COLUMN_INDEX);
@@ -288,7 +289,7 @@ void light_lof::update_entries(const unordered_set<uint64_t>& neighbors) {
 
 light_lof::parameter light_lof::get_row_parameter(const std::string& row)
     const {
-  shared_ptr<column_table> table = mixable_scores_.get_model();
+  shared_ptr<column_table> table = mixable_scores_->get_model();
   std::pair<bool, uint64_t> hit = table->exact_match(row);
   if (!hit.first) {
     throw JUBATUS_EXCEPTION(common::exception::runtime_error(

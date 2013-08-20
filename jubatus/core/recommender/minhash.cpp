@@ -182,7 +182,7 @@ bool minhash::load_impl(std::istream& is) {
 }
 
 void minhash::register_mixables(framework::mixable_holder& holder) const {
-  holder.register_mixable(mixable_storage_.get());
+  holder.register_mixable(mixable_storage_);
 }
 
 void minhash::initialize_model() {

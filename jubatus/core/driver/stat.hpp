@@ -63,7 +63,7 @@ class stat {
   }
 
   jubatus::core::stat::stat* get_model() const {
-    return mixable_stat_model_.get_model().get();
+    return stat_.get();
   }
 
   void push(const std::string& key, double value);
@@ -78,7 +78,6 @@ class stat {
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   pfi::lang::shared_ptr<jubatus::core::stat::stat> stat_;
-  mixable_stat mixable_stat_model_;
 };
 
 }  // namespace driver

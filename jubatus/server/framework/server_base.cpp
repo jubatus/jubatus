@@ -61,7 +61,7 @@ bool server_base::save(const std::string& id) {
   }
   try {
     LOG(INFO) << "starting save to " << path;
-    std::vector<core::framework::mixable0*> mixables =
+    core::framework::mixable_holder::mixable_list mixables =
         get_mixable_holder()->get_mixables();
     for (size_t i = 0; i < mixables.size(); ++i) {
       mixables[i]->save(ofs);
@@ -92,7 +92,7 @@ void server_base::load_file(const std::string& path) {
 
   try {
     LOG(INFO) << "starting load from " << path;
-    std::vector<core::framework::mixable0*> mixables =
+    core::framework::mixable_holder::mixable_list mixables =
         get_mixable_holder()->get_mixables();
     for (size_t i = 0; i < mixables.size(); ++i) {
       mixables[i]->clear();

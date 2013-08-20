@@ -102,7 +102,7 @@ class light_lof : public anomaly_base {
       nearest_neighbor_engine_;
 
   // Mixable of score table that contains k-dists and LRDs.
-  driver::mixable_versioned_table mixable_scores_;
+  pfi::lang::shared_ptr<driver::mixable_versioned_table> mixable_scores_;
 
   config config_;
   std::string my_id_;

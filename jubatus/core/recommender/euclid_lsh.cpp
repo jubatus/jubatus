@@ -191,7 +191,7 @@ string euclid_lsh::type() const {
 }
 
 void euclid_lsh::register_mixables(framework::mixable_holder& holder) const {
-  holder.register_mixable(mixable_storage_.get());
+  holder.register_mixable(mixable_storage_);
 }
 
 vector<float> euclid_lsh::calculate_lsh(const common::sfv_t& query) {
