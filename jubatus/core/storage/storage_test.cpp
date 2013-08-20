@@ -59,7 +59,7 @@ class stub_storage : public storage_base {
   }
 
  public:
-  void get_status(std::map<std::string, std::string>&) {
+  void get_status(std::map<std::string, std::string>&) const {
   }
 
   void get(const std::string& feature, feature_val1_t& ret) const {

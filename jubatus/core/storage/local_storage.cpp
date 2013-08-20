@@ -122,7 +122,7 @@ void local_storage::set3(
   tbl_[feature][class2id_.get_id(klass)] = w;
 }
 
-void local_storage::get_status(std::map<string, std::string>& status) {
+void local_storage::get_status(std::map<string, std::string>& status) const {
   status["num_features"] = pfi::lang::lexical_cast<std::string>(tbl_.size());
   status["num_classes"] = pfi::lang::lexical_cast<std::string>(
       class2id_.size());

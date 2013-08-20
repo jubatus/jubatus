@@ -160,7 +160,7 @@ void local_storage_mixture::set3(
 }
 
 void local_storage_mixture::get_status(
-    std::map<std::string, std::string>& status) {
+    std::map<std::string, std::string>& status) const {
   status["num_features"] = pfi::lang::lexical_cast<std::string>(tbl_.size());
   status["num_classes"] = pfi::lang::lexical_cast<std::string>(
       class2id_.size());

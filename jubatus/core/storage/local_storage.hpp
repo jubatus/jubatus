@@ -57,7 +57,7 @@ class local_storage : public storage_base {
       const std::string& klass,
       const val3_t& w);
 
-  void get_status(std::map<std::string, std::string>&);
+  void get_status(std::map<std::string, std::string>& status) const;
 
   void update(
       const std::string& feature,

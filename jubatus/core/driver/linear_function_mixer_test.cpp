@@ -57,7 +57,7 @@ class storage_mock_base : public storage::storage_base {
       const val3_t& w) {
   }
 
-  void get_status(std::map<std::string, std::string>&) {
+  void get_status(std::map<std::string, std::string>&) const {
   }
 
   bool save(std::ostream&) {

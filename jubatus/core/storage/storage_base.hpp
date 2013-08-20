@@ -56,7 +56,7 @@ class storage_base {
       const std::string& klass,
       const val3_t& w) = 0;
 
-  virtual void get_status(std::map<std::string, std::string>&) = 0;
+  virtual void get_status(std::map<std::string, std::string>&) const = 0;
 
   virtual bool save(std::ostream&) = 0;
   virtual bool load(std::istream&) = 0;
