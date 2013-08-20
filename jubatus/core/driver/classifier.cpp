@@ -16,6 +16,7 @@
 
 #include "classifier.hpp"
 
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -65,6 +66,10 @@ jubatus::core::classifier::classify_result classifier::classify(
   jubatus::core::classifier::classify_result scores;
   classifier_->classify_with_scores(v, scores);
   return scores;
+}
+
+void classifier::get_status(std::map<string, string>& status) const {
+  classifier_->get_status(status);
 }
 
 void classifier::clear() {

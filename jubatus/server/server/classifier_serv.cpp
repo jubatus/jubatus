@@ -85,11 +85,7 @@ classifier_serv::~classifier_serv() {
 
 void classifier_serv::get_status(status_t& status) const {
   status_t my_status;
-
-  core::storage::storage_base* model = classifier_->get_model();
-  model->get_status(my_status);
-  my_status["storage"] = model->type();
-
+  classifier_->get_status(my_status);
   status.insert(my_status.begin(), my_status.end());
 }
 
@@ -172,7 +168,7 @@ vector<vector<estimate_result> > classifier_serv::classify(
 bool classifier_serv::clear() {
   check_set_config();
 
-  classifier_->get_model()->clear();
+  classifier_->clear();
   LOG(INFO) << "model cleared: " << argv().name;
   return true;
 }

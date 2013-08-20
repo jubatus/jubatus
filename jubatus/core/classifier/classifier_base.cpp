@@ -20,6 +20,7 @@
 #include <float.h>
 
 #include <algorithm>
+#include <map>
 #include <queue>
 #include <string>
 #include <vector>
@@ -83,6 +84,12 @@ void classifier_base::register_mixables(framework::mixable_holder& holder)
   if (mixable_) {
     holder.register_mixable(mixable_.get());
   }
+}
+
+void classifier_base::get_status(std::map<string, string>& status) const {
+  storage::storage_base* sto = get_storage();
+  sto->get_status(status);
+  status["storage"] = sto->type();
 }
 
 void classifier_base::update_weight(

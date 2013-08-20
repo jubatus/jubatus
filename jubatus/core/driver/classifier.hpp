@@ -17,6 +17,7 @@
 #ifndef JUBATUS_CORE_DRIVER_CLASSIFIER_HPP_
 #define JUBATUS_CORE_DRIVER_CLASSIFIER_HPP_
 
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -45,14 +46,11 @@ class classifier {
     return mixable_holder_;
   }
 
-  storage::storage_base* get_model() const {
-    return classifier_->get_storage();
-  }
-
   void train(const std::pair<std::string, fv_converter::datum>& data);
   jubatus::core::classifier::classify_result classify(
       const fv_converter::datum& data) const;
 
+  void get_status(std::map<std::string, std::string>& status) const;
   void clear();
 
  private:

@@ -48,11 +48,10 @@ class classifier_base {
 
   void clear();
 
-  storage::storage_base* get_storage() const;
-
   virtual std::string name() const = 0;
 
   virtual void register_mixables(framework::mixable_holder& holder) const;
+  virtual void get_status(std::map<std::string, std::string>& status) const;
 
  protected:
   void update_weight(
@@ -73,6 +72,7 @@ class classifier_base {
       const common::sfv_t& sfv,
       const std::string& label,
       classify_result& scores) const;
+  storage::storage_base* get_storage() const;
 
   static float squared_norm(const common::sfv_t& sfv);
 
