@@ -37,11 +37,12 @@ class local_storage : public storage_base {
   local_storage();
   ~local_storage();
 
-  void get(const std::string &feature, feature_val1_t& ret);
-  void get2(const std::string &feature, feature_val2_t& ret);
-  void get3(const std::string &feature, feature_val3_t& ret);
+  void get(const std::string &feature, feature_val1_t& ret) const;
+  void get2(const std::string &feature, feature_val2_t& ret) const;
+  void get3(const std::string &feature, feature_val3_t& ret) const;
 
-  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret);  // inner product
+  // inner product
+  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const;
 
   void set(
       const std::string& feature,

@@ -36,12 +36,12 @@ class storage_base {
   virtual ~storage_base() {
   }
 
-  virtual void get(const std::string& feature, feature_val1_t& ret) = 0;
-  virtual void get2(const std::string& feature, feature_val2_t& ret) = 0;
-  virtual void get3(const std::string& feature, feature_val3_t& ret) = 0;
+  virtual void get(const std::string& feature, feature_val1_t& ret) const = 0;
+  virtual void get2(const std::string& feature, feature_val2_t& ret) const = 0;
+  virtual void get3(const std::string& feature, feature_val3_t& ret) const = 0;
 
   // inner product
-  virtual void inp(const common::sfv_t& sfv, map_feature_val1_t& ret);
+  virtual void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const;
 
   virtual void set(
       const std::string& feature,

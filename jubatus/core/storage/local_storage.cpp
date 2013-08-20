@@ -35,7 +35,7 @@ local_storage::local_storage() {
 local_storage::~local_storage() {
 }
 
-void local_storage::get(const string& feature, feature_val1_t& ret) {
+void local_storage::get(const string& feature, feature_val1_t& ret) const {
   ret.clear();
   id_features3_t::const_iterator cit = tbl_.find(feature);
   if (cit == tbl_.end()) {
@@ -47,7 +47,7 @@ void local_storage::get(const string& feature, feature_val1_t& ret) {
   }
 }
 
-void local_storage::get2(const string& feature, feature_val2_t& ret) {
+void local_storage::get2(const string& feature, feature_val2_t& ret) const {
   ret.clear();
   id_features3_t::const_iterator cit = tbl_.find(feature);
   if (cit == tbl_.end()) {
@@ -60,7 +60,7 @@ void local_storage::get2(const string& feature, feature_val2_t& ret) {
   }
 }
 
-void local_storage::get3(const string& feature, feature_val3_t& ret) {
+void local_storage::get3(const string& feature, feature_val3_t& ret) const {
   ret.clear();
   id_features3_t::const_iterator cit = tbl_.find(feature);
   if (cit == tbl_.end()) {
@@ -72,7 +72,8 @@ void local_storage::get3(const string& feature, feature_val3_t& ret) {
   }
 }
 
-void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret) {
+void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret)
+    const {
   ret.clear();
 
   std::vector<float> ret_id(class2id_.size());

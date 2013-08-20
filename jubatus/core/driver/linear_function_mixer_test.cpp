@@ -31,14 +31,14 @@ namespace storage {
 
 class storage_mock_base : public storage::storage_base {
  public:
-  void get(const std::string& feature, feature_val1_t& ret) {
+  void get(const std::string& feature, feature_val1_t& ret) const {
   }
-  void get2(const std::string& feature, feature_val2_t& ret) {
+  void get2(const std::string& feature, feature_val2_t& ret) const {
   }
-  void get3(const std::string& feature, feature_val3_t& ret) {
+  void get3(const std::string& feature, feature_val3_t& ret) const {
   }
 
-  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) {
+  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const {
   }
 
   void set(

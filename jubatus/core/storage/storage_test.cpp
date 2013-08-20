@@ -62,27 +62,37 @@ class stub_storage : public storage_base {
   void get_status(std::map<std::string, std::string>&) {
   }
 
-  void get(const std::string& feature, feature_val1_t& ret) {
-    const map<string, val3_t>& f = data_[feature];
-    for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
-        ++it) {
-      ret.push_back(make_pair(it->first, val1_t(it->second.v1)));
+  void get(const std::string& feature, feature_val1_t& ret) const {
+    map<string, map<string, val3_t> >::const_iterator hit = data_.find(feature);
+    if (hit != data_.end()) {
+      const map<string, val3_t>& f = hit->second;
+      for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
+           ++it) {
+        ret.push_back(make_pair(it->first, val1_t(it->second.v1)));
+      }
     }
   }
 
-  void get2(const std::string& feature, feature_val2_t& ret) {
-    const map<string, val3_t>& f = data_[feature];
-    for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
-        ++it) {
-      ret.push_back(make_pair(it->first, val2_t(it->second.v1, it->second.v2)));
+  void get2(const std::string& feature, feature_val2_t& ret) const {
+    map<string, map<string, val3_t> >::const_iterator hit = data_.find(feature);
+    if (hit != data_.end()) {
+      const map<string, val3_t>& f = hit->second;
+      for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
+           ++it) {
+        ret.push_back(
+            make_pair(it->first, val2_t(it->second.v1, it->second.v2)));
+      }
     }
   }
 
-  void get3(const std::string& feature, feature_val3_t& ret) {
-    const map<string, val3_t>& f = data_[feature];
-    for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
-        ++it) {
-      ret.push_back(*it);
+  void get3(const std::string& feature, feature_val3_t& ret) const {
+    map<string, map<string, val3_t> >::const_iterator hit = data_.find(feature);
+    if (hit != data_.end()) {
+      const map<string, val3_t>& f = hit->second;
+      for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
+           ++it) {
+        ret.push_back(*it);
+      }
     }
   }
 
