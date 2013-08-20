@@ -30,3 +30,11 @@ def build(bld):
       use = 'MSGPACK PFICOMMON column_table jubacommon'+libassert)
   map(make_test,['column_table_test.cpp',
                  'bit_vector_test.cpp'])
+
+  bld.install_files('${PREFIX}/include/jubatus/core/table/column/', [
+      'bit_vector.hpp',
+      'column_table.hpp',
+      'column_type.hpp',
+      'columns.hpp',
+      'owner.hpp',
+      ])
