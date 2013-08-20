@@ -72,7 +72,8 @@ class classifier_base {
       const common::sfv_t& sfv,
       const std::string& label,
       classify_result& scores) const;
-  storage::storage_base* get_storage() const;
+  storage::storage_base* get_storage();
+  const storage::storage_base* get_storage() const;
 
   static float squared_norm(const common::sfv_t& sfv);
 

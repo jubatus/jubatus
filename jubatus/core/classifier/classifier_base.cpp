@@ -87,7 +87,7 @@ void classifier_base::register_mixables(framework::mixable_holder& holder)
 }
 
 void classifier_base::get_status(std::map<string, string>& status) const {
-  storage::storage_base* sto = get_storage();
+  const storage::storage_base* sto = get_storage();
   sto->get_status(status);
   status["storage"] = sto->type();
 }
@@ -147,7 +147,7 @@ float classifier_base::calc_margin_and_variance(
   float margin = calc_margin(sfv, label, incorrect_label);
   var = 0.f;
 
-  storage::storage_base* storage = get_storage();
+  const storage::storage_base* storage = get_storage();
   for (size_t i = 0; i < sfv.size(); ++i) {
     const string& feature = sfv[i].first;
     const float val = sfv[i].second;
@@ -175,13 +175,7 @@ float classifier_base::squared_norm(const common::sfv_t& fv) {
   return ret;
 }
 
-storage::storage_base* classifier_base::get_storage() const {
-  // TODO(beam2d): Split definition of const and non-const version with const
-  // and non-const return value, respectively. We currently return a non-const
-  // pointer in both cases, because some const member functions require a
-  // non-const pointer, due to inaccurately modified member functions of
-  // |storage_base| (e.g. |storage_base::get()| and |storage_base::inp()| are
-  // non-const).
+storage::storage_base* classifier_base::get_storage() {
   if (!mixable_) {
     throw JUBATUS_EXCEPTION(
         common::exception::runtime_error("mixable not set"));
@@ -191,6 +185,10 @@ storage::storage_base* classifier_base::get_storage() const {
   }
 
   return mixable_->get_model().get();
+}
+
+const storage::storage_base* classifier_base::get_storage() const {
+  return const_cast<classifier_base*>(this)->get_storage();
 }
 
 }  // namespace classifier
