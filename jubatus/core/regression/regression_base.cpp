@@ -15,6 +15,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "regression_base.hpp"
+
+#include <map>
+#include <string>
 #include "../storage/storage_base.hpp"
 
 namespace jubatus {
@@ -28,16 +31,23 @@ regression_base::regression_base(storage_ptr storage)
 
 float regression_base::estimate(const common::sfv_t& fv) const {
   storage::map_feature_val1_t ret;
-  get_storage()->inp(fv, ret);
+  mixable_->get_model()->inp(fv, ret);
   return ret["+"];
 }
 
 void regression_base::update(const common::sfv_t& fv, float coeff) {
-  get_storage()->bulk_update(fv, coeff, "+", "");
+  mixable_->get_model()->bulk_update(fv, coeff, "+", "");
 }
 
 void regression_base::clear() {
-  get_storage()->clear();
+  mixable_->get_model()->clear();
+}
+
+void regression_base::get_status(std::map<std::string, std::string>& status)
+    const {
+  driver::linear_function_mixer::model_ptr model = mixable_->get_model();
+  model->get_status(status);
+  status["storage"] = model->type();
 }
 
 void regression_base::register_mixables(framework::mixable_holder& holder)

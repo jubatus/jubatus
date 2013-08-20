@@ -16,6 +16,7 @@
 
 #include "regression.hpp"
 
+#include <map>
 #include <string>
 #include <utility>
 
@@ -60,6 +61,15 @@ float regression::estimate(
   converter_->convert(data, v);
   float value = regression_->estimate(v);
   return value;
+}
+
+void regression::get_status(std::map<string, string>& status) const {
+  regression_->get_status(status);
+}
+
+void regression::clear() {
+  regression_->clear();
+  converter_->clear_weights();
 }
 
 }  // namespace driver

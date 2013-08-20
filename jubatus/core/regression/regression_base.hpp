@@ -17,6 +17,8 @@
 #ifndef JUBATUS_CORE_REGRESSION_REGRESSION_BASE_HPP_
 #define JUBATUS_CORE_REGRESSION_REGRESSION_BASE_HPP_
 
+#include <map>
+#include <string>
 #include <pficommon/lang/shared_ptr.h>
 #include "../common/type.hpp"
 #include "../driver/linear_function_mixer.hpp"
@@ -42,12 +44,8 @@ class regression_base {
   float estimate(const common::sfv_t& fv) const;
 
   virtual void clear();
-
   virtual void register_mixables(framework::mixable_holder& holder) const;
-
-  storage::storage_base* get_storage() const {
-    return mixable_->get_model().get();
-  }
+  virtual void get_status(std::map<std::string, std::string>& status) const;
 
  protected:
   void update(const common::sfv_t& fv, float coeff);

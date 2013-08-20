@@ -17,6 +17,7 @@
 #ifndef JUBATUS_CORE_DRIVER_REGRESSION_HPP_
 #define JUBATUS_CORE_DRIVER_REGRESSION_HPP_
 
+#include <map>
 #include <string>
 #include <utility>
 
@@ -43,12 +44,11 @@ class regression {
     return mixable_holder_;
   }
 
-  storage::storage_base* get_model() const {
-    return regression_->get_storage();
-  }
-
   void train(const std::pair<float, fv_converter::datum>& data);
   float estimate(const fv_converter::datum& data) const;
+
+  void get_status(std::map<std::string, std::string>& status) const;
+  void clear();
 
  private:
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
