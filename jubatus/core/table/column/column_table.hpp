@@ -30,12 +30,13 @@
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/concurrent/rwmutex.h>
+#include <pficommon/lang/shared_ptr.h>
 #include "../../common/assert.hpp"
 #include "../../common/exception.hpp"
 #include "../storage_exception.hpp"
 #include "bit_vector.hpp"
 #include "column_type.hpp"
-#include "columns.hpp"
+#include "abstract_column.hpp"
 #include "owner.hpp"
 
 namespace jubatus {
@@ -53,11 +54,11 @@ class invalid_row_set
 class column_table {
   typedef pfi::data::unordered_map<std::string, uint64_t> index_table;
 
- public:
+public:
   typedef std::pair<owner, uint64_t> version_t;
 
   column_table()
-      : tuples_(0), clock_(0) {
+    : tuples_(0), clock_(0) {
   }
   ~column_table() {
   }
@@ -69,8 +70,8 @@ class column_table {
   bool add(const std::string& key, const owner& o, const T1& v1) {
     if (columns_.size() != 1) {
       throw length_unmatch_exception(
-          "tuple's length unmatch, expected " +
-          pfi::lang::lexical_cast<std::string>(tuples_) + " tuples.");
+        "tuple's length unmatch, expected " +
+        pfi::lang::lexical_cast<std::string>(tuples_) + " tuples.");
     }
     // check already exists
     pfi::concurrent::scoped_wlock lk(table_lock_);
@@ -80,7 +81,7 @@ class column_table {
       // add tuple
       keys_.push_back(key);
       versions_.push_back(std::make_pair(o, clock_));
-      columns_[0].push_back(v1);
+      columns_[0]->push_back(v1);
       JUBATUS_ASSERT_EQ(keys_.size(), versions_.size(), "");
 
       // make index
@@ -89,7 +90,7 @@ class column_table {
     } else {  // key exists
       const uint64_t index = it->second;
       versions_[index] = std::make_pair(o, clock_);
-      columns_[0].update(index, v1);
+      columns_[0]->update(index, v1);
     }
     ++clock_;
     return not_found;
@@ -99,8 +100,8 @@ class column_table {
   bool add(const std::string& key, const owner& o, const T1& v1, const T2& v2) {
     if (columns_.size() != 2) {
       throw length_unmatch_exception(
-          "tuple's length unmatch, expected " +
-          pfi::lang::lexical_cast<std::string>(tuples_) + " tuples.");
+        "tuple's length unmatch, expected " +
+        pfi::lang::lexical_cast<std::string>(tuples_) + " tuples.");
     }
 
     // check already exists */
@@ -111,8 +112,8 @@ class column_table {
       // add tuple
       keys_.push_back(key);
       versions_.push_back(std::make_pair(o , clock_));
-      columns_[0].push_back(v1);
-      columns_[1].push_back(v2);
+      columns_[0]->push_back(v1);
+      columns_[1]->push_back(v2);
       JUBATUS_ASSERT_EQ(keys_.size(), versions_.size(), "");
 
       // make index
@@ -121,8 +122,8 @@ class column_table {
     } else {  // key exists
       const uint64_t index = it->second;
       versions_[index] = std::make_pair(o, clock_);
-      columns_[0].update(index, v1);
-      columns_[1].update(index, v2);
+      columns_[0]->update(index, v1);
+      columns_[1]->update(index, v2);
     }
     ++clock_;
     return not_found;
@@ -131,18 +132,18 @@ class column_table {
 
   template<typename T>
   bool update(
-      const std::string& key,
-      const owner& o,
-      size_t colum_id,
-      const T& v) {
+    const std::string& key,
+    const owner& o,
+    size_t colum_id,
+    const T& v) {
     pfi::concurrent::scoped_wlock lk(table_lock_);
     index_table::iterator it = index_.find(key);
     if (tuples_ < colum_id || it == index_.end()) {
       return false;
     }
     versions_[it->second] = std::make_pair(o, clock_);
-    columns_[colum_id].update(it->second, v);
-    columns_[colum_id].update(it->second, v);
+    columns_[colum_id]->update(it->second, v);
+    columns_[colum_id]->update(it->second, v);
     ++clock_;
     return true;
   }
@@ -170,31 +171,31 @@ class column_table {
      argument is column_id
      if type unmatched, it throws type_unmatch_exception
   */
-  uint8_column get_uint8_column(size_t column_id);
-  uint16_column get_uint16_column(size_t column_id);
-  uint32_column get_uint32_column(size_t column_id);
-  uint64_column get_uint64_column(size_t column_id);
-  int8_column get_int8_column(size_t column_id);
-  int16_column get_int16_column(size_t column_id);
-  int32_column get_int32_column(size_t column_id);
-  int64_column get_int64_column(size_t column_id);
-  float_column get_float_column(size_t column_id);
-  double_column get_double_column(size_t column_id);
-  string_column get_string_column(size_t column_id);
-  bit_vector_column get_bit_vector_column(size_t column_id);
+  uint8_column& get_uint8_column(size_t column_id);
+  uint16_column& get_uint16_column(size_t column_id);
+  uint32_column& get_uint32_column(size_t column_id);
+  uint64_column& get_uint64_column(size_t column_id);
+  int8_column& get_int8_column(size_t column_id);
+  int16_column& get_int16_column(size_t column_id);
+  int32_column& get_int32_column(size_t column_id);
+  int64_column& get_int64_column(size_t column_id);
+  float_column& get_float_column(size_t column_id);
+  double_column& get_double_column(size_t column_id);
+  string_column& get_string_column(size_t column_id);
+  bit_vector_column& get_bit_vector_column(size_t column_id);
 
-  const_uint8_column get_uint8_column(size_t column_id) const;
-  const_uint16_column get_uint16_column(size_t column_id) const;
-  const_uint32_column get_uint32_column(size_t column_id) const;
-  const_uint64_column get_uint64_column(size_t column_id) const;
-  const_int8_column get_int8_column(size_t column_id) const;
-  const_int16_column get_int16_column(size_t column_id) const;
-  const_int32_column get_int32_column(size_t column_id) const;
-  const_int64_column get_int64_column(size_t column_id) const;
-  const_float_column get_float_column(size_t column_id) const;
-  const_double_column get_double_column(size_t column_id) const;
-  const_string_column get_string_column(size_t column_id) const;
-  const_bit_vector_column get_bit_vector_column(size_t column_id) const;
+  const_uint8_column& get_uint8_column(size_t column_id) const;
+  const_uint16_column& get_uint16_column(size_t column_id) const;
+  const_uint32_column& get_uint32_column(size_t column_id) const;
+  const_uint64_column& get_uint64_column(size_t column_id) const;
+  const_int8_column& get_int8_column(size_t column_id) const;
+  const_int16_column& get_int16_column(size_t column_id) const;
+  const_int32_column& get_int32_column(size_t column_id) const;
+  const_int64_column& get_int64_column(size_t column_id) const;
+  const_float_column& get_float_column(size_t column_id) const;
+  const_double_column& get_double_column(size_t column_id) const;
+  const_string_column& get_string_column(size_t column_id) const;
+  const_bit_vector_column& get_bit_vector_column(size_t column_id) const;
 
   uint64_t size() const {
     pfi::concurrent::scoped_rlock lk(table_lock_);
@@ -204,11 +205,11 @@ class column_table {
   void dump() const {
     pfi::concurrent::scoped_rlock lk(table_lock_);
     std::cout << "schema is ";
-    for (std::vector<detail::abstract_column>::const_iterator it =
-             columns_.begin();
+    for (std::vector<shared_column>::const_iterator it =
+           columns_.begin();
          it != columns_.end();
          ++it) {
-      it->dump();
+      (*it)->dump();
     }
   }
   std::string dump_json() const {
@@ -223,14 +224,14 @@ class column_table {
   void load(std::istream& is) {
     pfi::concurrent::scoped_wlock lk(table_lock_);
     pfi::data::serialization::binary_iarchive ia(is);
-    ia >> *this;
+    //ia >> *this;
     scan_clock();
   }
 
   void save(std::ostream& os) const {
     pfi::concurrent::scoped_rlock lk(table_lock_);
     pfi::data::serialization::binary_oarchive oa(os);
-    oa << *const_cast<column_table*>(this);
+    //oa << *const_cast<column_table*>(this);
   }
 
   friend std::ostream& operator<<(std::ostream& os, const column_table& tbl) {
@@ -238,14 +239,14 @@ class column_table {
     os << "total size:" << tbl.tuples_ << std::endl;
     os << "types: vesions|";
     for (size_t j = 0; j < tbl.columns_.size(); ++j) {
-      os << tbl.columns_[j].type().type_as_string() << "\t|";
+      os << tbl.columns_[j]->type().type_as_string() << "\t|";
     }
     os << std::endl;
     for (uint64_t i = 0; i < tbl.tuples_; ++i) {
       os << tbl.keys_[i] << ":" <<
-          tbl.versions_[i].first << ":" << tbl.versions_[i].second << "\t|";
+        tbl.versions_[i].first << ":" << tbl.versions_[i].second << "\t|";
       for (size_t j = 0; j < tbl.columns_.size(); ++j) {
-        tbl.columns_[j].dump(os, i);
+        tbl.columns_[j]->dump(os, i);
         os << "\t|";
       }
       os << std::endl;
@@ -271,7 +272,7 @@ class column_table {
     pk.pack(versions_[id]);  // [version]
     pk.pack_array(columns_.size());
     for (size_t i = 0; i < columns_.size(); ++i) {
-      columns_[i].pack_with_index(id, pk);
+      columns_[i]->pack_with_index(id, pk);
     }
     return std::string(sb.data(), sb.size());
   }
@@ -295,7 +296,7 @@ class column_table {
       keys_.push_back(key);
       versions_.push_back(set_version);
       for (size_t i = 0; i < columns_.size(); ++i) {
-        columns_[i].push_back(dat.via.array.ptr[i]);
+        columns_[i]->push_back(dat.via.array.ptr[i]);
       }
       JUBATUS_ASSERT_EQ(keys_.size(), versions_.size(), "");
 
@@ -314,7 +315,7 @@ class column_table {
         // needed!!
         versions_[target] = set_version;
         for (size_t i = 0; i < columns_.size(); ++i) {
-          columns_[i].update(target, dat.via.array.ptr[i]);
+          columns_[i]->update(target, dat.via.array.ptr[i]);
         }
         // make index
         index_.insert(std::make_pair(key, tuples_));
@@ -383,11 +384,11 @@ class column_table {
     return true;
   }
 
-
  private:
+  typedef pfi::lang::shared_ptr<detail::abstract_column> shared_column;
   std::vector<std::string> keys_;
   std::vector<version_t> versions_;
-  std::vector<detail::abstract_column> columns_;
+  std::vector<shared_column> columns_;
   mutable pfi::concurrent::rw_mutex table_lock_;
   uint64_t tuples_;
   uint64_t clock_;
@@ -396,10 +397,10 @@ class column_table {
   void delete_row_(uint64_t index) {
     JUBATUS_ASSERT_LT(index, size(), "");
 
-    for (std::vector<detail::abstract_column>::iterator jt = columns_.begin();
+    for (std::vector<shared_column>::iterator jt = columns_.begin();
          jt != columns_.end();
          ++jt) {
-      jt->remove(index);
+      (*jt)->remove(index);
     }
     {  // needs swap on last index
       index_table::iterator move_it = index_.find(keys_[tuples_ - 1]);

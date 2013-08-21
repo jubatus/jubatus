@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 #include "../table/column/bit_vector.hpp"
-#include "../table/column/columns.hpp"
+#include "../table/column/abstract_column.hpp"
 
 namespace jubatus {
 namespace core {

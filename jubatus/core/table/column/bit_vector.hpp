@@ -106,6 +106,13 @@ struct bit_vector_base {
         bit_num_(bit_num),
         own_(false) {
   }
+  bit_vector_base(const void* bits, size_t bit_num)
+      : bits_(NULL),
+        bit_num_(bit_num),
+        own_(false) {
+    alloc_memory();
+    memcpy(bits_, bits, used_bytes());
+  }
   explicit bit_vector_base(int bit_num)
       : bits_(NULL),
         bit_num_(bit_num),
