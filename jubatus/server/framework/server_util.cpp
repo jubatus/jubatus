@@ -38,6 +38,7 @@ namespace framework {
 static const std::string VERSION(JUBATUS_VERSION);
 
 namespace {
+  const std::string IGNORED_TAG = "[IGNORED]";
   pfi::lang::shared_ptr<server::common::lock_service> ls;
 }
 
@@ -88,7 +89,7 @@ std::string make_ignored_help(const std::string& help) {
 #ifdef HAVE_ZOOKEEPER_H
   return help;
 #else
-  return "[IGNORED] " + help;
+  return IGNORED_TAG + " " + help;
 #endif
 }
 
