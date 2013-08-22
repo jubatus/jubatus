@@ -305,7 +305,7 @@ dbit_vector_column(char* ptr, uint64_t size, size_t bit_num)
 };
 */
 
-pfi::lang::shared_ptr<detail::abstract_column> column_factory(
+inline pfi::lang::shared_ptr<detail::abstract_column> column_factory(
     const column_type& type) {
   return pfi::lang::shared_ptr<detail::abstract_column>(new uint8_column(type));
 }
