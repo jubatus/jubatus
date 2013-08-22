@@ -189,6 +189,8 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   check_ignored_option(p, "interval_count");
   check_ignored_option(p, "zookeeper_timeout");
   check_ignored_option(p, "interconnect_timeout");
+  p.footer("\nAll " + IGNORED_TAG +
+           " options are for compatibility with distirbuted mode");
 
   z = "";
   name = "";
