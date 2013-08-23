@@ -81,7 +81,7 @@ public:
       // add tuple
       keys_.push_back(key);
       versions_.push_back(std::make_pair(o, clock_));
-      columns_[0]->push_back(v1);
+      columns_[0].push_back(v1);
       JUBATUS_ASSERT_EQ(keys_.size(), versions_.size(), "");
 
       // make index
@@ -90,7 +90,7 @@ public:
     } else {  // key exists
       const uint64_t index = it->second;
       versions_[index] = std::make_pair(o, clock_);
-      columns_[0]->update(index, v1);
+      columns_[0].update(index, v1);
     }
     ++clock_;
     return not_found;
@@ -112,8 +112,8 @@ public:
       // add tuple
       keys_.push_back(key);
       versions_.push_back(std::make_pair(o , clock_));
-      columns_[0]->push_back(v1);
-      columns_[1]->push_back(v2);
+      columns_[0].push_back(v1);
+      columns_[1].push_back(v2);
       JUBATUS_ASSERT_EQ(keys_.size(), versions_.size(), "");
 
       // make index
@@ -122,8 +122,8 @@ public:
     } else {  // key exists
       const uint64_t index = it->second;
       versions_[index] = std::make_pair(o, clock_);
-      columns_[0]->update(index, v1);
-      columns_[1]->update(index, v2);
+      columns_[0].update(index, v1);
+      columns_[1].update(index, v2);
     }
     ++clock_;
     return not_found;
@@ -142,8 +142,8 @@ public:
       return false;
     }
     versions_[it->second] = std::make_pair(o, clock_);
-    columns_[colum_id]->update(it->second, v);
-    columns_[colum_id]->update(it->second, v);
+    columns_[colum_id].update(it->second, v);
+    columns_[colum_id].update(it->second, v);
     ++clock_;
     return true;
   }
@@ -205,11 +205,11 @@ public:
   void dump() const {
     pfi::concurrent::scoped_rlock lk(table_lock_);
     std::cout << "schema is ";
-    for (std::vector<shared_column>::const_iterator it =
+    for (std::vector<detail::abstract_column>::const_iterator it =
            columns_.begin();
          it != columns_.end();
          ++it) {
-      (*it)->dump();
+      it->dump();
     }
   }
   std::string dump_json() const {
@@ -239,14 +239,14 @@ public:
     os << "total size:" << tbl.tuples_ << std::endl;
     os << "types: vesions|";
     for (size_t j = 0; j < tbl.columns_.size(); ++j) {
-      os << tbl.columns_[j]->type().type_as_string() << "\t|";
+      os << tbl.columns_[j].type().type_as_string() << "\t|";
     }
     os << std::endl;
     for (uint64_t i = 0; i < tbl.tuples_; ++i) {
       os << tbl.keys_[i] << ":" <<
         tbl.versions_[i].first << ":" << tbl.versions_[i].second << "\t|";
       for (size_t j = 0; j < tbl.columns_.size(); ++j) {
-        tbl.columns_[j]->dump(os, i);
+        tbl.columns_[j].dump(os, i);
         os << "\t|";
       }
       os << std::endl;
@@ -272,7 +272,7 @@ public:
     pk.pack(versions_[id]);  // [version]
     pk.pack_array(columns_.size());
     for (size_t i = 0; i < columns_.size(); ++i) {
-      columns_[i]->pack_with_index(id, pk);
+      columns_[i].pack_with_index(id, pk);
     }
     return std::string(sb.data(), sb.size());
   }
@@ -296,7 +296,7 @@ public:
       keys_.push_back(key);
       versions_.push_back(set_version);
       for (size_t i = 0; i < columns_.size(); ++i) {
-        columns_[i]->push_back(dat.via.array.ptr[i]);
+        columns_[i].push_back(dat.via.array.ptr[i]);
       }
       JUBATUS_ASSERT_EQ(keys_.size(), versions_.size(), "");
 
@@ -315,7 +315,7 @@ public:
         // needed!!
         versions_[target] = set_version;
         for (size_t i = 0; i < columns_.size(); ++i) {
-          columns_[i]->update(target, dat.via.array.ptr[i]);
+          columns_[i].update(target, dat.via.array.ptr[i]);
         }
         // make index
         index_.insert(std::make_pair(key, tuples_));
@@ -385,10 +385,9 @@ public:
   }
 
  private:
-  typedef pfi::lang::shared_ptr<detail::abstract_column> shared_column;
   std::vector<std::string> keys_;
   std::vector<version_t> versions_;
-  std::vector<shared_column> columns_;
+  std::vector<detail::abstract_column> columns_;
   mutable pfi::concurrent::rw_mutex table_lock_;
   uint64_t tuples_;
   uint64_t clock_;
@@ -397,10 +396,10 @@ public:
   void delete_row_(uint64_t index) {
     JUBATUS_ASSERT_LT(index, size(), "");
 
-    for (std::vector<shared_column>::iterator jt = columns_.begin();
+    for (std::vector<detail::abstract_column>::iterator jt = columns_.begin();
          jt != columns_.end();
          ++jt) {
-      (*jt)->remove(index);
+      jt->remove(index);
     }
     {  // needs swap on last index
       index_table::iterator move_it = index_.find(keys_[tuples_ - 1]);
