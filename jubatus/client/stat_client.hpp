@@ -22,64 +22,64 @@ class stat {
     c_.set_timeout(timeout_sec);
   }
 
-  std::string get_config(std::string name) {
+  std::string get_config(const std::string& name) {
     msgpack::rpc::future f = c_.call("get_config", name);
     return f.get<std::string>();
   }
 
-  bool push(std::string name, std::string key, double value) {
+  bool push(const std::string& name, const std::string& key, double value) {
     msgpack::rpc::future f = c_.call("push", name, key, value);
     return f.get<bool>();
   }
 
-  double sum(std::string name, std::string key) {
+  double sum(const std::string& name, const std::string& key) {
     msgpack::rpc::future f = c_.call("sum", name, key);
     return f.get<double>();
   }
 
-  double stddev(std::string name, std::string key) {
+  double stddev(const std::string& name, const std::string& key) {
     msgpack::rpc::future f = c_.call("stddev", name, key);
     return f.get<double>();
   }
 
-  double max(std::string name, std::string key) {
+  double max(const std::string& name, const std::string& key) {
     msgpack::rpc::future f = c_.call("max", name, key);
     return f.get<double>();
   }
 
-  double min(std::string name, std::string key) {
+  double min(const std::string& name, const std::string& key) {
     msgpack::rpc::future f = c_.call("min", name, key);
     return f.get<double>();
   }
 
-  double entropy(std::string name, std::string key) {
+  double entropy(const std::string& name, const std::string& key) {
     msgpack::rpc::future f = c_.call("entropy", name, key);
     return f.get<double>();
   }
 
-  double moment(std::string name, std::string key, int32_t degree,
+  double moment(const std::string& name, const std::string& key, int32_t degree,
        double center) {
     msgpack::rpc::future f = c_.call("moment", name, key, degree, center);
     return f.get<double>();
   }
 
-  bool clear(std::string name) {
+  bool clear(const std::string& name) {
     msgpack::rpc::future f = c_.call("clear", name);
     return f.get<bool>();
   }
 
-  bool save(std::string name, std::string id) {
+  bool save(const std::string& name, const std::string& id) {
     msgpack::rpc::future f = c_.call("save", name, id);
     return f.get<bool>();
   }
 
-  bool load(std::string name, std::string id) {
+  bool load(const std::string& name, const std::string& id) {
     msgpack::rpc::future f = c_.call("load", name, id);
     return f.get<bool>();
   }
 
   std::map<std::string, std::map<std::string, std::string> > get_status(
-      std::string name) {
+      const std::string& name) {
     msgpack::rpc::future f = c_.call("get_status", name);
     return f.get<std::map<std::string, std::map<std::string, std::string> > >();
   }
