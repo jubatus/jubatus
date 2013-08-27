@@ -25,6 +25,7 @@
 #include "../../../core/framework/mixable.hpp"
 #include "../../common/membership.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
+#include "../../common/unique_lock.hpp"
 
 using std::pair;
 using std::string;
@@ -158,8 +159,8 @@ push_mixer::push_mixer(
       tick_threshold_(tick_threshold),
       my_id_(my_id),
       counter_(0),
-      ticktime_(0),
       mix_count_(0),
+      ticktime_(get_clock_time()),
       is_running_(false),
       t_(pfi::lang::bind(&push_mixer::mixer_loop, this)) {
 }
@@ -188,19 +189,19 @@ void push_mixer::start() {
 }
 
 void push_mixer::stop() {
-  scoped_lock lk(m_);
+  common::unique_lock lk(m_);
   if (is_running_) {
     is_running_ = false;
+    lk.unlock();
     t_.join();
   }
 }
 
 void push_mixer::updated() {
   scoped_lock lk(m_);
-  unsigned int new_ticktime = time(NULL);
   ++counter_;
-  if (counter_ > count_threshold_ ||
-      new_ticktime - ticktime_ > tick_threshold_) {
+  if (counter_ >= count_threshold_
+      || get_clock_time() - ticktime_ > tick_threshold_) {
     c_.notify();  // FIXME: need sync here?
   }
 }
@@ -209,29 +210,31 @@ void push_mixer::get_status(server_base::status_t& status) const {
   scoped_lock lk(m_);
   status["push_mixer.count"] = pfi::lang::lexical_cast<string>(counter_);
   status["push_mixer.ticktime"] =
-      pfi::lang::lexical_cast<string>(ticktime_);  // since last mix
+      pfi::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
 }
 
 void push_mixer::mixer_loop() {
   while (is_running_) {
     try {
-      {
-        scoped_lock lk(m_);
-        c_.wait(m_, 1);
-        unsigned int new_ticktime = time(NULL);
-        if (counter_ < count_threshold_ &&
-            new_ticktime - ticktime_ < tick_threshold_) {
-          continue;
-        } else {
-          DLOG(INFO) << "starting mix because of "
-                     << (count_threshold_ <= counter_ ? "counter" : "tick_time")
-                     << " threshold";
-          counter_ = 0;
-          ticktime_ = new_ticktime;
-        }
-      }  // unlock
-      mix();
-      DLOG(INFO) << ".... " << mix_count_ << "th mix done.";
+      common::unique_lock lk(m_);
+      if (!is_running_) {
+        return;
+      }
+
+      c_.wait(m_, 0.5);
+      clock_time new_ticktime = get_clock_time();
+      if (counter_ >= count_threshold_
+          || new_ticktime - ticktime_ > tick_threshold_) {
+        DLOG(INFO) << "starting mix because of "
+                   << (count_threshold_ <= counter_ ? "counter" : "tick_time")
+                   << " threshold";
+        counter_ = 0;
+        ticktime_ = new_ticktime;
+
+        lk.unlock();
+        mix();
+        DLOG(INFO) << ".... " << mix_count_ << "th mix done.";
+      }
     } catch (const core::common::exception::jubatus_exception& e) {
       LOG(ERROR) << e.diagnostic_information(true);
     }
@@ -337,7 +340,7 @@ int push_mixer::push(const vector<string>& diff) {
     mixables[i]->push(diff[i]);
   }
   counter_ = 0;
-  ticktime_ = time(NULL);
+  ticktime_ = get_clock_time();
   return 0;
 }
 

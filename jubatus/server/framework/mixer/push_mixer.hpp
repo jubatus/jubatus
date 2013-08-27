@@ -24,6 +24,7 @@
 #include <pficommon/concurrent/mutex.h>
 #include <pficommon/concurrent/thread.h>
 #include <pficommon/lang/shared_ptr.h>
+#include <pficommon/system/time_util.h>
 #include "../../common/lock_service.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
 #include "mixer.hpp"
@@ -108,8 +109,8 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
   const std::pair<std::string, int> my_id_;
 
   unsigned int counter_;
-  unsigned int ticktime_;
   unsigned int mix_count_;
+  pfi::system::time::clock_time ticktime_;
 
   volatile bool is_running_;
 
