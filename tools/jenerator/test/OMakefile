@@ -9,7 +9,7 @@ FILES[] =
   file_util_test
 
 USE_OCAMLFIND = true
-OCAMLPACKS[] = oUnit str
+OCAMLPACKS[] = oUnit str extlib
 
 PROGRAM = test
 OCAML_LIBS += ../src/target

@@ -164,6 +164,10 @@ let gen_args_with_type args =
   "(" ^ String.concat ", " (List.map (fun (st, t) -> (gen_type t) ^ " "^ st) args) ^ ")"
 ;;
 
+let gen_string_literal s =
+  "\"" ^ String.escaped s ^ "\""
+;;
+
 let gen_public ret_typ name args opt content = 
   List.concat
     [
@@ -265,6 +269,24 @@ let gen_to_msgpack field_names =
   ]
 ;;
 
+let gen_to_string m =
+  let add_fields = List.map (fun f ->
+    let key = gen_string_literal f.field_name in
+    gen_call "gen.add" [key; f.field_name]
+  ) m.message_fields in
+  let call_open = gen_call "gen.open" [gen_string_literal m.message_name] in
+  List.concat [
+    [ (0, "public String toString() {");
+      (1,   "MessageStringGenerator gen = new MessageStringGenerator();");
+      (1,   call_open);
+    ];
+    List.map (fun l -> (1, l)) add_fields;
+    [ (1,   "gen.close();");
+      (1,   "return gen.toString();");
+      (0, "}"); ]
+  ]
+;;
+
 let gen_message m conf source =
   let field_types = List.map (fun f -> f.field_type) m.message_fields in
   let class_name = rename_without_underbar m.message_name in
@@ -273,21 +295,26 @@ let gen_message m conf source =
   let header =
     List.concat
       [gen_package conf;
-
        (if (List.exists include_map field_types) 
         then [(0, "import java.util.Map;")] else []);
        (if (List.exists include_list field_types) 
         then [(0, "import java.util.List;")] else []);
        [(0, "import org.msgpack.MessagePack;");
         (0, "import org.msgpack.annotation.Message;");
-        (0, "")]
+        (0, "import us.jubat.common.MessageStringGenerator;"); ]
       ] in
   let field_defs = List.map gen_message_field m.message_fields in
   let constructor = 
-    [ (0, "");
-      (0, "public " ^ class_name ^ "() {");
+    [ (0, "public " ^ class_name ^ "() {");
       (0, "}"); ] in
-  let class_content = field_defs @ constructor in
+  let to_string = gen_to_string m in
+  let class_content = List.concat [
+    field_defs;
+    [ (0, ""); ];
+    constructor;
+    [ (0, ""); ];
+    to_string;
+  ] in
   let content =
     (0, "@Message") :: 
       gen_public_class class_name class_content
