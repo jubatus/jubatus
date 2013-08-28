@@ -44,7 +44,8 @@ class regression_base {
   float estimate(const common::sfv_t& fv) const;
 
   virtual void clear();
-  virtual void register_mixables(framework::mixable_holder& holder) const;
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
+      const;
   virtual void get_status(std::map<std::string, std::string>& status) const;
 
  protected:

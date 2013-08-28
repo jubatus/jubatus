@@ -73,9 +73,9 @@ std::string nearest_neighbor_recommender::type() const {
   return "nearest_neighbor_recommender:" + nearest_neighbor_engine_->type();
 }
 
-void nearest_neighbor_recommender::register_mixables(
+void nearest_neighbor_recommender::register_mixables_to_holder(
     framework::mixable_holder& holder) const {
-  nearest_neighbor_engine_->register_mixables(holder);
+  nearest_neighbor_engine_->register_mixables_to_holder(holder);
 }
 
 bool nearest_neighbor_recommender::save_impl(std::ostream& os) {

@@ -69,7 +69,8 @@ class recommender_base {
   void save(std::ostream&);
   void load(std::istream&);
 
-  virtual void register_mixables(framework::mixable_holder& holder) const = 0;
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
+      const = 0;
 
   static float calc_similality(common::sfv_t& q1, common::sfv_t& q2);
   static float calc_l2norm(const common::sfv_t& query);

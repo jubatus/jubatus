@@ -122,8 +122,8 @@ string lof::type() const {
   return "lof";
 }
 
-void lof::register_mixables(framework::mixable_holder& holder) {
-  nn_engine_->register_mixables(holder);
+void lof::register_mixables_to_holder(framework::mixable_holder& holder) {
+  nn_engine_->register_mixables_to_holder(holder);
   holder.register_mixable(mixable_storage_);
 }
 

@@ -127,8 +127,8 @@ bool recommender_mock::load_impl(istream& is) {
   return true;
 }
 
-void recommender_mock::register_mixables(framework::mixable_holder& holder)
-    const {
+void recommender_mock::register_mixables_to_holder(
+    framework::mixable_holder& holder) const {
   holder.register_mixable(mixable_storage_);
 }
 

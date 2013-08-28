@@ -50,8 +50,8 @@ void regression_base::get_status(std::map<std::string, std::string>& status)
   status["storage"] = model->type();
 }
 
-void regression_base::register_mixables(framework::mixable_holder& holder)
-    const {
+void regression_base::register_mixables_to_holder(
+    framework::mixable_holder& holder) const {
   holder.register_mixable(mixable_);
 }
 

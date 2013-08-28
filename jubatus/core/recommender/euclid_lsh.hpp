@@ -88,7 +88,8 @@ class euclid_lsh : public recommender_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const;
 
   virtual std::string type() const;
-  virtual void register_mixables(framework::mixable_holder& holder) const;
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
+      const;
 
  private:
   std::vector<float> calculate_lsh(const common::sfv_t& query);

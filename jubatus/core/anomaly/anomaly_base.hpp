@@ -66,7 +66,8 @@ class anomaly_base {
 
   virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
   virtual std::string type() const = 0;
-  virtual void register_mixables(framework::mixable_holder& holder) = 0;
+  virtual void register_mixables_to_holder(
+      framework::mixable_holder& holder) = 0;
 
  protected:
   static const uint32_t NEIGHBOR_NUM;

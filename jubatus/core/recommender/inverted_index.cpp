@@ -104,8 +104,8 @@ bool inverted_index::load_impl(std::istream& is) {
   return true;
 }
 
-void inverted_index::register_mixables(framework::mixable_holder& holder)
-    const {
+void inverted_index::register_mixables_to_holder(
+    framework::mixable_holder& holder) const {
   holder.register_mixable(mixable_storage_);
 }
 

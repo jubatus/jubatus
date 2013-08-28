@@ -270,7 +270,7 @@ class datum_to_fv_converter_impl {
     mixable_weights_->clear();
   }
 
-  void register_mixables(framework::mixable_holder& holder) const {
+  void register_mixables_to_holder(framework::mixable_holder& holder) const {
     if (mixable_weights_->get_model()) {
       holder.register_mixable(mixable_weights_);
     }
@@ -525,9 +525,9 @@ void datum_to_fv_converter::clear_weights() {
   pimpl_->clear_weights();
 }
 
-void datum_to_fv_converter::register_mixables(framework::mixable_holder& holder)
-    const {
-  pimpl_->register_mixables(holder);
+void datum_to_fv_converter::register_mixables_to_holder(
+    framework::mixable_holder& holder) const {
+  pimpl_->register_mixables_to_holder(holder);
 }
 
 }  // namespace fv_converter

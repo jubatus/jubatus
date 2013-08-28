@@ -79,7 +79,7 @@ void nearest_neighbor_base::load(std::istream& is) {
   get_table()->load(is);
 }
 
-void nearest_neighbor_base::register_mixables(
+void nearest_neighbor_base::register_mixables_to_holder(
     framework::mixable_holder& holder) const {
   if (mixable_table_) {
     holder.register_mixable(mixable_table_);

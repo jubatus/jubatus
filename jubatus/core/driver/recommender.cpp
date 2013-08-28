@@ -48,8 +48,8 @@ recommender::recommender(
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       recommender_(recommender_method) {
-  recommender_->register_mixables(*mixable_holder_);
-  converter_->register_mixables(*mixable_holder_);
+  recommender_->register_mixables_to_holder(*mixable_holder_);
+  converter_->register_mixables_to_holder(*mixable_holder_);
 }
 
 recommender::~recommender() {

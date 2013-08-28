@@ -181,7 +181,8 @@ bool minhash::load_impl(std::istream& is) {
   return true;
 }
 
-void minhash::register_mixables(framework::mixable_holder& holder) const {
+void minhash::register_mixables_to_holder(framework::mixable_holder& holder)
+    const {
   holder.register_mixable(mixable_storage_);
 }
 

@@ -47,8 +47,8 @@ anomaly::anomaly(
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       anomaly_(anomaly_method) {
-  anomaly_->register_mixables(*mixable_holder_);
-  converter_->register_mixables(*mixable_holder_);
+  anomaly_->register_mixables_to_holder(*mixable_holder_);
+  converter_->register_mixables_to_holder(*mixable_holder_);
 }
 
 anomaly::~anomaly() {

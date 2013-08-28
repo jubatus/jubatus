@@ -44,8 +44,8 @@ classifier::classifier(
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       classifier_(classifier_method) {
-  classifier_->register_mixables(*mixable_holder_);
-  converter_->register_mixables(*mixable_holder_);
+  classifier_->register_mixables_to_holder(*mixable_holder_);
+  converter_->register_mixables_to_holder(*mixable_holder_);
 }
 
 classifier::~classifier() {

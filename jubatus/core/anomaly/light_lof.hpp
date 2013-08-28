@@ -70,7 +70,7 @@ class light_lof : public anomaly_base {
 
   void get_all_row_ids(std::vector<std::string>& ids) const;
   std::string type() const;
-  void register_mixables(framework::mixable_holder& holder);
+  void register_mixables_to_holder(framework::mixable_holder& holder);
 
  private:
   // Parameters of each data point.

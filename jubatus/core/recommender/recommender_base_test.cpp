@@ -95,7 +95,7 @@ class recommender_impl : public recommender_base {
     return true;
   }
 
-  void register_mixables(framework::mixable_holder&) const {
+  void register_mixables_to_holder(framework::mixable_holder&) const {
   }
 };
 

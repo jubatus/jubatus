@@ -151,7 +151,7 @@ bool lsh::load_impl(std::istream& is) {
   return true;
 }
 
-void lsh::register_mixables(framework::mixable_holder& holder) const {
+void lsh::register_mixables_to_holder(framework::mixable_holder& holder) const {
   holder.register_mixable(mixable_storage_);
 }
 

@@ -42,8 +42,8 @@ regression::regression(
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       regression_(regression_method) {
-  regression_->register_mixables(*mixable_holder_);
-  converter_->register_mixables(*mixable_holder_);
+  regression_->register_mixables_to_holder(*mixable_holder_);
+  converter_->register_mixables_to_holder(*mixable_holder_);
 }
 
 regression::~regression() {

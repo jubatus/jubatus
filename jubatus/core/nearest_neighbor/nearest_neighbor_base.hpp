@@ -77,7 +77,8 @@ class nearest_neighbor_base {
   virtual void save(std::ostream& os) const;
   virtual void load(std::istream& is);
 
-  virtual void register_mixables(framework::mixable_holder& holder) const;
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
+      const;
 
  protected:
   std::string my_id_;

@@ -30,7 +30,7 @@ nearest_neighbor::nearest_neighbor(
     : mixable_holder_(new framework::mixable_holder),
       converter_(converter),
       nn_(nn) {
-  nn_->register_mixables(*mixable_holder_);
+  nn_->register_mixables_to_holder(*mixable_holder_);
 }
 
 void nearest_neighbor::set_row(

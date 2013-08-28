@@ -190,7 +190,8 @@ string euclid_lsh::type() const {
   return "euclid_lsh";
 }
 
-void euclid_lsh::register_mixables(framework::mixable_holder& holder) const {
+void euclid_lsh::register_mixables_to_holder(framework::mixable_holder& holder)
+    const {
   holder.register_mixable(mixable_storage_);
 }
 
