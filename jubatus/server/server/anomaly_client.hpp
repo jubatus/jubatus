@@ -21,61 +21,62 @@ class anomaly {
     c_.set_timeout(timeout_sec);
   }
 
-  std::string get_config(std::string name) {
+  std::string get_config(const std::string& name) {
     msgpack::rpc::future f = c_.call("get_config", name);
     return f.get<std::string>();
   }
 
-  bool clear_row(std::string name, std::string id) {
+  bool clear_row(const std::string& name, const std::string& id) {
     msgpack::rpc::future f = c_.call("clear_row", name, id);
     return f.get<bool>();
   }
 
-  std::pair<std::string, float> add(std::string name,
-       jubatus::core::fv_converter::datum row) {
+  std::pair<std::string, float> add(const std::string& name,
+       const jubatus::core::fv_converter::datum& row) {
     msgpack::rpc::future f = c_.call("add", name, row);
     return f.get<std::pair<std::string, float> >();
   }
 
-  float update(std::string name, std::string id,
-       jubatus::core::fv_converter::datum row) {
+  float update(const std::string& name, const std::string& id,
+       const jubatus::core::fv_converter::datum& row) {
     msgpack::rpc::future f = c_.call("update", name, id, row);
     return f.get<float>();
   }
 
-  float overwrite(std::string name, std::string id,
-       jubatus::core::fv_converter::datum row) {
+  float overwrite(const std::string& name, const std::string& id,
+       const jubatus::core::fv_converter::datum& row) {
     msgpack::rpc::future f = c_.call("overwrite", name, id, row);
     return f.get<float>();
   }
 
-  bool clear(std::string name) {
+  bool clear(const std::string& name) {
     msgpack::rpc::future f = c_.call("clear", name);
     return f.get<bool>();
   }
 
-  float calc_score(std::string name, jubatus::core::fv_converter::datum row) {
+  float calc_score(const std::string& name,
+       const jubatus::core::fv_converter::datum& row) {
     msgpack::rpc::future f = c_.call("calc_score", name, row);
     return f.get<float>();
   }
 
-  std::vector<std::string> get_all_rows(std::string name) {
+  std::vector<std::string> get_all_rows(const std::string& name) {
     msgpack::rpc::future f = c_.call("get_all_rows", name);
     return f.get<std::vector<std::string> >();
   }
 
-  bool save(std::string name, std::string id) {
+  bool save(const std::string& name, const std::string& id) {
     msgpack::rpc::future f = c_.call("save", name, id);
     return f.get<bool>();
   }
 
-  bool load(std::string name, std::string id) {
+  bool load(const std::string& name, const std::string& id) {
     msgpack::rpc::future f = c_.call("load", name, id);
     return f.get<bool>();
   }
 
   std::map<std::string, std::map<std::string, std::string> > get_status(
-      std::string name) {
+      const std::string& name) {
     msgpack::rpc::future f = c_.call("get_status", name);
     return f.get<std::map<std::string, std::map<std::string, std::string> > >();
   }

@@ -21,40 +21,41 @@ class classifier_impl_ : public classifier<classifier_impl_> {
     p_(new jubatus::server::framework::server_helper<classifier_serv>(a,
          false)) {
   }
-  std::string get_config(std::string name) {
+  std::string get_config(const std::string& name) {
     JRLOCK_(p_);
     return get_p()->get_config();
   }
 
-  int32_t train(std::string name, std::vector<std::pair<std::string,
-       jubatus::core::fv_converter::datum> > data) {
+  int32_t train(const std::string& name,
+       const std::vector<std::pair<std::string,
+       jubatus::core::fv_converter::datum> >& data) {
     JWLOCK_(p_);
     return get_p()->train(data);
   }
 
-  std::vector<std::vector<estimate_result> > classify(std::string name,
-       std::vector<jubatus::core::fv_converter::datum> data) {
+  std::vector<std::vector<estimate_result> > classify(const std::string& name,
+       const std::vector<jubatus::core::fv_converter::datum>& data) {
     JRLOCK_(p_);
     return get_p()->classify(data);
   }
 
-  bool clear(std::string name) {
+  bool clear(const std::string& name) {
     JWLOCK_(p_);
     return get_p()->clear();
   }
 
-  bool save(std::string name, std::string id) {
+  bool save(const std::string& name, const std::string& id) {
     JWLOCK_(p_);
     return get_p()->save(id);
   }
 
-  bool load(std::string name, std::string id) {
+  bool load(const std::string& name, const std::string& id) {
     JWLOCK_(p_);
     return get_p()->load(id);
   }
 
   std::map<std::string, std::map<std::string, std::string> > get_status(
-      std::string name) {
+      const std::string& name) {
     JRLOCK_(p_);
     return p_->get_status();
   }

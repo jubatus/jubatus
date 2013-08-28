@@ -21,86 +21,87 @@ class recommender_impl_ : public recommender<recommender_impl_> {
     p_(new jubatus::server::framework::server_helper<recommender_serv>(a,
          true)) {
   }
-  std::string get_config(std::string name) {
+  std::string get_config(const std::string& name) {
     JRLOCK_(p_);
     return get_p()->get_config();
   }
 
-  bool clear_row(std::string name, std::string id) {
+  bool clear_row(const std::string& name, const std::string& id) {
     JWLOCK_(p_);
     return get_p()->clear_row(id);
   }
 
-  bool update_row(std::string name, std::string id,
-       jubatus::core::fv_converter::datum row) {
+  bool update_row(const std::string& name, const std::string& id,
+       const jubatus::core::fv_converter::datum& row) {
     JWLOCK_(p_);
     return get_p()->update_row(id, row);
   }
 
-  bool clear(std::string name) {
+  bool clear(const std::string& name) {
     JWLOCK_(p_);
     return get_p()->clear();
   }
 
-  jubatus::core::fv_converter::datum complete_row_from_id(std::string name,
-       std::string id) {
+  jubatus::core::fv_converter::datum complete_row_from_id(
+      const std::string& name, const std::string& id) {
     JRLOCK_(p_);
     return get_p()->complete_row_from_id(id);
   }
 
-  jubatus::core::fv_converter::datum complete_row_from_datum(std::string name,
-       jubatus::core::fv_converter::datum row) {
+  jubatus::core::fv_converter::datum complete_row_from_datum(
+      const std::string& name, const jubatus::core::fv_converter::datum& row) {
     JRLOCK_(p_);
     return get_p()->complete_row_from_datum(row);
   }
 
-  similar_result similar_row_from_id(std::string name, std::string id,
-       uint32_t size) {
+  similar_result similar_row_from_id(const std::string& name,
+       const std::string& id, uint32_t size) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_id(id, size);
   }
 
-  similar_result similar_row_from_datum(std::string name,
-       jubatus::core::fv_converter::datum row, uint32_t size) {
+  similar_result similar_row_from_datum(const std::string& name,
+       const jubatus::core::fv_converter::datum& row, uint32_t size) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_datum(row, size);
   }
 
-  jubatus::core::fv_converter::datum decode_row(std::string name,
-       std::string id) {
+  jubatus::core::fv_converter::datum decode_row(const std::string& name,
+       const std::string& id) {
     JRLOCK_(p_);
     return get_p()->decode_row(id);
   }
 
-  std::vector<std::string> get_all_rows(std::string name) {
+  std::vector<std::string> get_all_rows(const std::string& name) {
     JRLOCK_(p_);
     return get_p()->get_all_rows();
   }
 
-  float calc_similarity(std::string name,
-       jubatus::core::fv_converter::datum lhs,
-       jubatus::core::fv_converter::datum rhs) {
+  float calc_similarity(const std::string& name,
+       const jubatus::core::fv_converter::datum& lhs,
+       const jubatus::core::fv_converter::datum& rhs) {
     JRLOCK_(p_);
     return get_p()->calc_similarity(lhs, rhs);
   }
 
-  float calc_l2norm(std::string name, jubatus::core::fv_converter::datum row) {
+  float calc_l2norm(const std::string& name,
+       const jubatus::core::fv_converter::datum& row) {
     JRLOCK_(p_);
     return get_p()->calc_l2norm(row);
   }
 
-  bool save(std::string name, std::string id) {
+  bool save(const std::string& name, const std::string& id) {
     JWLOCK_(p_);
     return get_p()->save(id);
   }
 
-  bool load(std::string name, std::string id) {
+  bool load(const std::string& name, const std::string& id) {
     JWLOCK_(p_);
     return get_p()->load(id);
   }
 
   std::map<std::string, std::map<std::string, std::string> > get_status(
-      std::string name) {
+      const std::string& name) {
     JRLOCK_(p_);
     return p_->get_status();
   }

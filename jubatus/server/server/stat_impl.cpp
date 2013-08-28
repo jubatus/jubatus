@@ -20,64 +20,64 @@ class stat_impl_ : public stat<stat_impl_> {
     stat<stat_impl_>(a.timeout),
     p_(new jubatus::server::framework::server_helper<stat_serv>(a, true)) {
   }
-  std::string get_config(std::string name) {
+  std::string get_config(const std::string& name) {
     JRLOCK_(p_);
     return get_p()->get_config();
   }
 
-  bool push(std::string name, std::string key, double value) {
+  bool push(const std::string& name, const std::string& key, double value) {
     JWLOCK_(p_);
     return get_p()->push(key, value);
   }
 
-  double sum(std::string name, std::string key) {
+  double sum(const std::string& name, const std::string& key) {
     JRLOCK_(p_);
     return get_p()->sum(key);
   }
 
-  double stddev(std::string name, std::string key) {
+  double stddev(const std::string& name, const std::string& key) {
     JRLOCK_(p_);
     return get_p()->stddev(key);
   }
 
-  double max(std::string name, std::string key) {
+  double max(const std::string& name, const std::string& key) {
     JRLOCK_(p_);
     return get_p()->max(key);
   }
 
-  double min(std::string name, std::string key) {
+  double min(const std::string& name, const std::string& key) {
     JRLOCK_(p_);
     return get_p()->min(key);
   }
 
-  double entropy(std::string name, std::string key) {
+  double entropy(const std::string& name, const std::string& key) {
     JRLOCK_(p_);
     return get_p()->entropy(key);
   }
 
-  double moment(std::string name, std::string key, int32_t degree,
+  double moment(const std::string& name, const std::string& key, int32_t degree,
        double center) {
     JRLOCK_(p_);
     return get_p()->moment(key, degree, center);
   }
 
-  bool clear(std::string name) {
+  bool clear(const std::string& name) {
     JWLOCK_(p_);
     return get_p()->clear();
   }
 
-  bool save(std::string name, std::string id) {
+  bool save(const std::string& name, const std::string& id) {
     JWLOCK_(p_);
     return get_p()->save(id);
   }
 
-  bool load(std::string name, std::string id) {
+  bool load(const std::string& name, const std::string& id) {
     JWLOCK_(p_);
     return get_p()->load(id);
   }
 
   std::map<std::string, std::map<std::string, std::string> > get_status(
-      std::string name) {
+      const std::string& name) {
     JRLOCK_(p_);
     return p_->get_status();
   }
