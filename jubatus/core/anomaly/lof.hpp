@@ -48,7 +48,8 @@ class lof : public anomaly_base {
 
   virtual void get_all_row_ids(std::vector<std::string>& ids) const;
   virtual std::string type() const;
-  virtual void register_mixables_to_holder(framework::mixable_holder& holder);
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
+      const;
 
  private:
   pfi::lang::shared_ptr<mixable_lof_storage> mixable_storage_;
