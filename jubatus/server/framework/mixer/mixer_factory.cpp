@@ -40,19 +40,20 @@ mixer* create_mixer(
   const std::string& use_mixer = a.mixer;
   if (use_mixer == "linear_mixer") {
     return new linear_mixer(
-        linear_communication::create(zk, a.type, a.name, a.timeout),
+        linear_communication::create(zk, a.type, a.name,
+          a.interconnect_timeout),
         a.interval_count, a.interval_sec);
   } else if (use_mixer == "random_mixer") {
     return new random_mixer(
-        push_communication::create(zk, a.type, a.name, a.timeout),
+        push_communication::create(zk, a.type, a.name, a.interconnect_timeout),
         a.interval_count, a.interval_sec, std::make_pair(a.eth, a.port));
   } else if (use_mixer == "broadcast_mixer") {
     return new broadcast_mixer(
-        push_communication::create(zk, a.type, a.name, a.timeout),
+        push_communication::create(zk, a.type, a.name, a.interconnect_timeout),
         a.interval_count, a.interval_sec, std::make_pair(a.eth, a.port));
   } else if (use_mixer == "skip_mixer") {
     return new skip_mixer(
-        push_communication::create(zk, a.type, a.name, a.timeout),
+        push_communication::create(zk, a.type, a.name, a.interconnect_timeout),
         a.interval_count, a.interval_sec, std::make_pair(a.eth, a.port));
   } else {
     // TODO(beam2d): fix to throw
