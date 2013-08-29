@@ -153,11 +153,6 @@ void inverted_index_storage::get_diff(diff_type& diff) const {
 
 void inverted_index_storage::set_mixed_and_clear_diff(
     const diff_type& mixed_diff) {
-  // istringstream is(mixed_diff_str);
-  // sparse_matrix_storage mixed_inv;
-  // map_float_t mixed_column2norm;
-  // revert_diff(mixed_diff_str, mixed_inv, mixed_column2norm);
-
   vector<string> ids;
   mixed_diff.inv.get_all_row_ids(ids);
   for (size_t i = 0; i < ids.size(); ++i) {
@@ -188,11 +183,6 @@ void inverted_index_storage::set_mixed_and_clear_diff(
 }
 
 void inverted_index_storage::mix(const diff_type& lhs, diff_type& rhs) const {
-  // sparse_matrix_storage lhs_inv_diff, rhs_inv_diff;
-  // map_float_t lhs_column2norm_diff, rhs_column2norm_diff;
-  // revert_diff(lhs, lhs_inv_diff, lhs_column2norm_diff);
-  // revert_diff(rhs, rhs_inv_diff, rhs_column2norm_diff);
-
   // merge inv diffs
   vector<string> ids;
   lhs.inv.get_all_row_ids(ids);
