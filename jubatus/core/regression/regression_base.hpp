@@ -46,6 +46,10 @@ class regression_base {
   virtual void clear();
   virtual void register_mixables_to_holder(framework::mixable_holder& holder)
       const;
+
+  // TODO(beam2d): Think the objective of this function and where it should be
+  // defined. Algorithms have |get_status| tentatively to extract status from
+  // storages.
   virtual void get_status(std::map<std::string, std::string>& status) const;
 
  protected:
