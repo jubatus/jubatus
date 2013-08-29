@@ -20,61 +20,62 @@ class anomaly_impl_ : public anomaly<anomaly_impl_> {
     anomaly<anomaly_impl_>(a.timeout),
     p_(new jubatus::server::framework::server_helper<anomaly_serv>(a, true)) {
   }
-  std::string get_config(std::string name) {
+  std::string get_config(const std::string& name) {
     JRLOCK_(p_);
     return get_p()->get_config();
   }
 
-  bool clear_row(std::string name, std::string id) {
+  bool clear_row(const std::string& name, const std::string& id) {
     JWLOCK_(p_);
     return get_p()->clear_row(id);
   }
 
-  std::pair<std::string, float> add(std::string name,
-       jubatus::core::fv_converter::datum row) {
+  std::pair<std::string, float> add(const std::string& name,
+       const jubatus::core::fv_converter::datum& row) {
     NOLOCK_(p_);
     return get_p()->add(row);
   }
 
-  float update(std::string name, std::string id,
-       jubatus::core::fv_converter::datum row) {
+  float update(const std::string& name, const std::string& id,
+       const jubatus::core::fv_converter::datum& row) {
     JWLOCK_(p_);
     return get_p()->update(id, row);
   }
 
-  float overwrite(std::string name, std::string id,
-       jubatus::core::fv_converter::datum row) {
+  float overwrite(const std::string& name, const std::string& id,
+       const jubatus::core::fv_converter::datum& row) {
     JWLOCK_(p_);
     return get_p()->overwrite(id, row);
   }
 
-  bool clear(std::string name) {
+  bool clear(const std::string& name) {
     JWLOCK_(p_);
     return get_p()->clear();
   }
 
-  float calc_score(std::string name, jubatus::core::fv_converter::datum row) {
+  float calc_score(const std::string& name,
+       const jubatus::core::fv_converter::datum& row) {
     JRLOCK_(p_);
     return get_p()->calc_score(row);
   }
 
-  std::vector<std::string> get_all_rows(std::string name) {
+  std::vector<std::string> get_all_rows(const std::string& name) {
     JRLOCK_(p_);
     return get_p()->get_all_rows();
   }
 
-  bool save(std::string name, std::string id) {
+  bool save(const std::string& name, const std::string& id) {
     JWLOCK_(p_);
     return get_p()->save(id);
   }
 
-  bool load(std::string name, std::string id) {
+  bool load(const std::string& name, const std::string& id) {
     JWLOCK_(p_);
     return get_p()->load(id);
   }
 
   std::map<std::string, std::map<std::string, std::string> > get_status(
-      std::string name) {
+      const std::string& name) {
     JRLOCK_(p_);
     return p_->get_status();
   }

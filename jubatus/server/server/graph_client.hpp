@@ -21,128 +21,133 @@ class graph {
     c_.set_timeout(timeout_sec);
   }
 
-  std::string get_config(std::string name) {
+  std::string get_config(const std::string& name) {
     msgpack::rpc::future f = c_.call("get_config", name);
     return f.get<std::string>();
   }
 
-  std::string create_node(std::string name) {
+  std::string create_node(const std::string& name) {
     msgpack::rpc::future f = c_.call("create_node", name);
     return f.get<std::string>();
   }
 
-  bool remove_node(std::string name, std::string node_id) {
+  bool remove_node(const std::string& name, const std::string& node_id) {
     msgpack::rpc::future f = c_.call("remove_node", name, node_id);
     return f.get<bool>();
   }
 
-  bool update_node(std::string name, std::string node_id, std::map<std::string,
-       std::string> property) {
+  bool update_node(const std::string& name, const std::string& node_id,
+       const std::map<std::string, std::string>& property) {
     msgpack::rpc::future f = c_.call("update_node", name, node_id, property);
     return f.get<bool>();
   }
 
-  uint64_t create_edge(std::string name, std::string node_id, edge e) {
+  uint64_t create_edge(const std::string& name, const std::string& node_id,
+       const edge& e) {
     msgpack::rpc::future f = c_.call("create_edge", name, node_id, e);
     return f.get<uint64_t>();
   }
 
-  bool update_edge(std::string name, std::string node_id, uint64_t edge_id,
-       edge e) {
+  bool update_edge(const std::string& name, const std::string& node_id,
+       uint64_t edge_id, const edge& e) {
     msgpack::rpc::future f = c_.call("update_edge", name, node_id, edge_id, e);
     return f.get<bool>();
   }
 
-  bool remove_edge(std::string name, std::string node_id, uint64_t edge_id) {
+  bool remove_edge(const std::string& name, const std::string& node_id,
+       uint64_t edge_id) {
     msgpack::rpc::future f = c_.call("remove_edge", name, node_id, edge_id);
     return f.get<bool>();
   }
 
-  double get_centrality(std::string name, std::string node_id,
-       int32_t centrality_type, jubatus::core::graph::preset_query query) {
+  double get_centrality(const std::string& name, const std::string& node_id,
+       int32_t centrality_type,
+       const jubatus::core::graph::preset_query& query) {
     msgpack::rpc::future f = c_.call("get_centrality", name, node_id,
          centrality_type, query);
     return f.get<double>();
   }
 
-  bool add_centrality_query(std::string name,
-       jubatus::core::graph::preset_query query) {
+  bool add_centrality_query(const std::string& name,
+       const jubatus::core::graph::preset_query& query) {
     msgpack::rpc::future f = c_.call("add_centrality_query", name, query);
     return f.get<bool>();
   }
 
-  bool add_shortest_path_query(std::string name,
-       jubatus::core::graph::preset_query query) {
+  bool add_shortest_path_query(const std::string& name,
+       const jubatus::core::graph::preset_query& query) {
     msgpack::rpc::future f = c_.call("add_shortest_path_query", name, query);
     return f.get<bool>();
   }
 
-  bool remove_centrality_query(std::string name,
-       jubatus::core::graph::preset_query query) {
+  bool remove_centrality_query(const std::string& name,
+       const jubatus::core::graph::preset_query& query) {
     msgpack::rpc::future f = c_.call("remove_centrality_query", name, query);
     return f.get<bool>();
   }
 
-  bool remove_shortest_path_query(std::string name,
-       jubatus::core::graph::preset_query query) {
+  bool remove_shortest_path_query(const std::string& name,
+       const jubatus::core::graph::preset_query& query) {
     msgpack::rpc::future f = c_.call("remove_shortest_path_query", name, query);
     return f.get<bool>();
   }
 
-  std::vector<std::string> get_shortest_path(std::string name,
-       shortest_path_query query) {
+  std::vector<std::string> get_shortest_path(const std::string& name,
+       const shortest_path_query& query) {
     msgpack::rpc::future f = c_.call("get_shortest_path", name, query);
     return f.get<std::vector<std::string> >();
   }
 
-  bool update_index(std::string name) {
+  bool update_index(const std::string& name) {
     msgpack::rpc::future f = c_.call("update_index", name);
     return f.get<bool>();
   }
 
-  bool clear(std::string name) {
+  bool clear(const std::string& name) {
     msgpack::rpc::future f = c_.call("clear", name);
     return f.get<bool>();
   }
 
-  jubatus::core::graph::node_info get_node(std::string name,
-       std::string node_id) {
+  jubatus::core::graph::node_info get_node(const std::string& name,
+       const std::string& node_id) {
     msgpack::rpc::future f = c_.call("get_node", name, node_id);
     return f.get<jubatus::core::graph::node_info>();
   }
 
-  edge get_edge(std::string name, std::string node_id, uint64_t edge_id) {
+  edge get_edge(const std::string& name, const std::string& node_id,
+       uint64_t edge_id) {
     msgpack::rpc::future f = c_.call("get_edge", name, node_id, edge_id);
     return f.get<edge>();
   }
 
-  bool save(std::string name, std::string id) {
+  bool save(const std::string& name, const std::string& id) {
     msgpack::rpc::future f = c_.call("save", name, id);
     return f.get<bool>();
   }
 
-  bool load(std::string name, std::string id) {
+  bool load(const std::string& name, const std::string& id) {
     msgpack::rpc::future f = c_.call("load", name, id);
     return f.get<bool>();
   }
 
   std::map<std::string, std::map<std::string, std::string> > get_status(
-      std::string name) {
+      const std::string& name) {
     msgpack::rpc::future f = c_.call("get_status", name);
     return f.get<std::map<std::string, std::map<std::string, std::string> > >();
   }
 
-  bool create_node_here(std::string name, std::string node_id) {
+  bool create_node_here(const std::string& name, const std::string& node_id) {
     msgpack::rpc::future f = c_.call("create_node_here", name, node_id);
     return f.get<bool>();
   }
 
-  bool remove_global_node(std::string name, std::string node_id) {
+  bool remove_global_node(const std::string& name, const std::string& node_id) {
     msgpack::rpc::future f = c_.call("remove_global_node", name, node_id);
     return f.get<bool>();
   }
 
-  bool create_edge_here(std::string name, uint64_t edge_id, edge e) {
+  bool create_edge_here(const std::string& name, uint64_t edge_id,
+       const edge& e) {
     msgpack::rpc::future f = c_.call("create_edge_here", name, edge_id, e);
     return f.get<bool>();
   }
