@@ -69,7 +69,7 @@ bool local_storage_mixture::get_internal(
 
 void local_storage_mixture::get(
     const std::string& feature,
-    feature_val1_t& ret) {
+    feature_val1_t& ret) const {
   ret.clear();
   id_feature_val3_t m3;
   get_internal(feature, m3);
@@ -81,7 +81,7 @@ void local_storage_mixture::get(
 
 void local_storage_mixture::get2(
     const std::string& feature,
-    feature_val2_t& ret) {
+    feature_val2_t& ret) const {
   ret.clear();
   id_feature_val3_t m3;
   get_internal(feature, m3);
@@ -95,7 +95,7 @@ void local_storage_mixture::get2(
 
 void local_storage_mixture::get3(
     const std::string& feature,
-    feature_val3_t& ret) {
+    feature_val3_t& ret) const {
   ret.clear();
   id_feature_val3_t m3;
   get_internal(feature, m3);
@@ -106,7 +106,7 @@ void local_storage_mixture::get3(
 }
 
 void local_storage_mixture::inp(const common::sfv_t& sfv,
-                                map_feature_val1_t& ret) {
+                                map_feature_val1_t& ret) const {
   ret.clear();
 
   std::vector<float> ret_id(class2id_.size());
@@ -160,7 +160,7 @@ void local_storage_mixture::set3(
 }
 
 void local_storage_mixture::get_status(
-    std::map<std::string, std::string>& status) {
+    std::map<std::string, std::string>& status) const {
   status["num_features"] = pfi::lang::lexical_cast<std::string>(tbl_.size());
   status["num_classes"] = pfi::lang::lexical_cast<std::string>(
       class2id_.size());

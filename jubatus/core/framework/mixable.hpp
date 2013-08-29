@@ -59,7 +59,7 @@ class mixable0 {
 
 class mixable_holder {
  public:
-  typedef std::vector<mixable0*> mixable_list;
+  typedef std::vector<pfi::lang::shared_ptr<mixable0> > mixable_list;
 
   mixable_holder() {
   }
@@ -67,7 +67,7 @@ class mixable_holder {
   virtual ~mixable_holder() {
   }
 
-  void register_mixable(mixable0* m) {
+  void register_mixable(pfi::lang::shared_ptr<mixable0> m) {
     mixables_.push_back(m);
   }
 
@@ -81,7 +81,7 @@ class mixable_holder {
 
  protected:
   pfi::concurrent::rw_mutex rw_mutex_;
-  std::vector<mixable0*> mixables_;
+  std::vector<pfi::lang::shared_ptr<mixable0> > mixables_;
 };
 
 template<typename Model, typename Diff, typename PullArg = std::string>
@@ -218,6 +218,28 @@ class mixable : public mixable0 {
   }
 
   model_ptr model_;
+};
+
+template<typename Model, typename Diff, typename PullArg = std::string>
+class delegating_mixable : public mixable<Model, Diff, PullArg> {
+ public:
+  Diff get_diff_impl() const {
+    Diff diff;
+    this->get_model()->get_diff(diff);
+    return diff;
+  }
+
+  void put_diff_impl(const Diff& diff) {
+    this->get_model()->set_mixed_and_clear_diff(diff);
+  }
+
+  void mix_impl(const Diff& lhs, const Diff& rhs, Diff& mixed) const {
+    mixed = lhs;
+    this->get_model()->mix(rhs, mixed);
+  }
+
+  void clear() {
+  }
 };
 
 }  // namespace framework

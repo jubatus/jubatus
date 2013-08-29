@@ -44,7 +44,8 @@ void storage_base::update(
   set(feature, dec_class, dec_class_val);
 }
 
-void storage_base::inp(const common::sfv_t& sfv, map_feature_val1_t& ret) {
+void storage_base::inp(const common::sfv_t& sfv, map_feature_val1_t& ret)
+    const {
   ret.clear();
   for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;

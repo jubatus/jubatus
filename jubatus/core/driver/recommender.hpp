@@ -23,39 +23,11 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "../recommender/recommender_base.hpp"
 #include "../framework/mixable.hpp"
-#include "linear_function_mixer.hpp"
-#include "mixable_versioned_table.hpp"
-#include "mixable_weight_manager.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 
 namespace jubatus {
 namespace core {
 namespace driver {
-
-struct mixable_recommender : public framework::mixable<
-    jubatus::core::recommender::recommender_base,
-    std::string> {
-  std::string get_diff_impl() const {
-    std::string ret;
-    get_model()->get_const_storage()->get_diff(ret);
-    return ret;
-  }
-
-  void put_diff_impl(const std::string& v) {
-    get_model()->get_storage()->set_mixed_and_clear_diff(v);
-  }
-
-  void mix_impl(
-      const std::string& lhs,
-      const std::string& rhs,
-      std::string& mixed) const {
-    mixed = lhs;
-    get_model()->get_const_storage()->mix(rhs, mixed);
-  }
-
-  void clear() {
-  }
-};
 
 class recommender {
  public:
@@ -94,11 +66,6 @@ class recommender {
 
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
   pfi::lang::shared_ptr<core::recommender::recommender_base> recommender_;
-
-  mixable_recommender mixable_recommender_;
-  mixable_versioned_table mixable_versioned_table_;
-
-  mixable_weight_manager wm_;
 };
 
 }  // namespace driver

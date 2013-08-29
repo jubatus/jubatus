@@ -16,6 +16,7 @@
 
 #include "regression.hpp"
 
+#include <map>
 #include <string>
 #include <utility>
 
@@ -41,14 +42,8 @@ regression::regression(
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       regression_(regression_method) {
-  mixable_regression_model_.set_model(
-      linear_function_mixer::model_ptr(model_storage));
-  wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
-
-  mixable_holder_->register_mixable(&mixable_regression_model_);
-  mixable_holder_->register_mixable(&wm_);
-
-  (*converter_).set_weight_manager(wm_.get_model());
+  regression_->register_mixables_to_holder(*mixable_holder_);
+  converter_->register_mixables_to_holder(*mixable_holder_);
 }
 
 regression::~regression() {
@@ -66,6 +61,15 @@ float regression::estimate(
   converter_->convert(data, v);
   float value = regression_->estimate(v);
   return value;
+}
+
+void regression::get_status(std::map<string, string>& status) const {
+  regression_->get_status(status);
+}
+
+void regression::clear() {
+  regression_->clear();
+  converter_->clear_weights();
 }
 
 }  // namespace driver

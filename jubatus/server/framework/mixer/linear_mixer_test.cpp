@@ -137,8 +137,8 @@ TEST(linear_mixer, mix_order) {
       new core::framework::mixable_holder());
   m.set_mixable_holder(holder);
 
-  mixable_string s;
-  holder->register_mixable(&s);
+  pfi::lang::shared_ptr<mixable_string> s(new mixable_string);
+  holder->register_mixable(s);
 
   m.mix();
 

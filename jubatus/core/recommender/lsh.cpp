@@ -45,14 +45,17 @@ lsh::lsh(uint64_t base_num)
   if (base_num == 0) {
     throw JUBATUS_EXCEPTION(common::exception::runtime_error("base_num == 0"));
   }
+  initialize_model();
 }
 
 lsh::lsh(const config& config)
     : base_num_(config.bit_num) {
+  initialize_model();
 }
 
 lsh::lsh()
     : base_num_(DEFAULT_BASE_NUM) {
+  initialize_model();
 }
 
 lsh::~lsh() {
@@ -69,7 +72,7 @@ void lsh::similar_row(
 
   bit_vector query_bv;
   calc_lsh_values(query, query_bv);
-  row2lshvals_.similar_row(query_bv, ids, ret_num);
+  mixable_storage_->get_model()->similar_row(query_bv, ids, ret_num);
 }
 
 void lsh::neighbor_row(
@@ -86,12 +89,12 @@ void lsh::clear() {
   orig_.clear();
   pfi::data::unordered_map<std::string, std::vector<float> >()
     .swap(column2baseval_);
-  row2lshvals_.clear();
+  mixable_storage_->get_model()->clear();
 }
 
 void lsh::clear_row(const string& id) {
   orig_.remove_row(id);
-  row2lshvals_.remove_row(id);
+  mixable_storage_->get_model()->remove_row(id);
 }
 
 void lsh::calc_lsh_values(const common::sfv_t& sfv, bit_vector& bv) const {
@@ -123,11 +126,11 @@ void lsh::update_row(const string& id, const sfv_diff_t& diff) {
   orig_.get_row(id, row);
   bit_vector bv;
   calc_lsh_values(row, bv);
-  row2lshvals_.set_row(id, bv);
+  mixable_storage_->get_model()->set_row(id, bv);
 }
 
 void lsh::get_all_row_ids(std::vector<std::string>& ids) const {
-  row2lshvals_.get_all_row_ids(ids);
+  mixable_storage_->get_model()->get_all_row_ids(ids);
 }
 
 string lsh::type() const {
@@ -137,23 +140,25 @@ string lsh::type() const {
 bool lsh::save_impl(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << column2baseval_;
-  oa << row2lshvals_;
+  mixable_storage_->save(os);
   return true;
 }
 
 bool lsh::load_impl(std::istream& is) {
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> column2baseval_;
-  ia >> row2lshvals_;
+  mixable_storage_->load(is);
   return true;
 }
 
-core::storage::recommender_storage_base* lsh::get_storage() {
-  return &row2lshvals_;
+void lsh::register_mixables_to_holder(framework::mixable_holder& holder) const {
+  holder.register_mixable(mixable_storage_);
 }
 
-const core::storage::recommender_storage_base* lsh::get_const_storage() const {
-  return &row2lshvals_;
+void lsh::initialize_model() {
+  mixable_storage_.reset(new storage::mixable_bit_index_storage);
+  mixable_storage_->set_model(storage::mixable_bit_index_storage::model_ptr(
+      new storage::bit_index_storage));
 }
 
 }  // namespace recommender

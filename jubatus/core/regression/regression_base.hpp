@@ -17,8 +17,11 @@
 #ifndef JUBATUS_CORE_REGRESSION_REGRESSION_BASE_HPP_
 #define JUBATUS_CORE_REGRESSION_REGRESSION_BASE_HPP_
 
+#include <map>
+#include <string>
 #include <pficommon/lang/shared_ptr.h>
 #include "../common/type.hpp"
+#include "../driver/linear_function_mixer.hpp"
 
 namespace jubatus {
 namespace core {
@@ -41,16 +44,19 @@ class regression_base {
   float estimate(const common::sfv_t& fv) const;
 
   virtual void clear();
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
+      const;
+
+  // TODO(beam2d): Think the objective of this function and where it should be
+  // defined. Algorithms have |get_status| tentatively to extract status from
+  // storages.
+  virtual void get_status(std::map<std::string, std::string>& status) const;
 
  protected:
-  storage::storage_base* get_storage() const {
-    return storage_.get();
-  }
-
   void update(const common::sfv_t& fv, float coeff);
 
  private:
-  storage_ptr storage_;
+  pfi::lang::shared_ptr<driver::linear_function_mixer> mixable_;
 };
 
 }  // namespace regression

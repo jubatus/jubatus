@@ -35,7 +35,7 @@ local_storage::local_storage() {
 local_storage::~local_storage() {
 }
 
-void local_storage::get(const string& feature, feature_val1_t& ret) {
+void local_storage::get(const string& feature, feature_val1_t& ret) const {
   ret.clear();
   id_features3_t::const_iterator cit = tbl_.find(feature);
   if (cit == tbl_.end()) {
@@ -47,7 +47,7 @@ void local_storage::get(const string& feature, feature_val1_t& ret) {
   }
 }
 
-void local_storage::get2(const string& feature, feature_val2_t& ret) {
+void local_storage::get2(const string& feature, feature_val2_t& ret) const {
   ret.clear();
   id_features3_t::const_iterator cit = tbl_.find(feature);
   if (cit == tbl_.end()) {
@@ -60,7 +60,7 @@ void local_storage::get2(const string& feature, feature_val2_t& ret) {
   }
 }
 
-void local_storage::get3(const string& feature, feature_val3_t& ret) {
+void local_storage::get3(const string& feature, feature_val3_t& ret) const {
   ret.clear();
   id_features3_t::const_iterator cit = tbl_.find(feature);
   if (cit == tbl_.end()) {
@@ -72,7 +72,8 @@ void local_storage::get3(const string& feature, feature_val3_t& ret) {
   }
 }
 
-void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret) {
+void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret)
+    const {
   ret.clear();
 
   std::vector<float> ret_id(class2id_.size());
@@ -121,7 +122,7 @@ void local_storage::set3(
   tbl_[feature][class2id_.get_id(klass)] = w;
 }
 
-void local_storage::get_status(std::map<string, std::string>& status) {
+void local_storage::get_status(std::map<string, std::string>& status) const {
   status["num_features"] = pfi::lang::lexical_cast<std::string>(tbl_.size());
   status["num_classes"] = pfi::lang::lexical_cast<std::string>(
       class2id_.size());

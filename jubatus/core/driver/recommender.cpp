@@ -48,22 +48,8 @@ recommender::recommender(
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       recommender_(recommender_method) {
-  if (recommender_->get_storage()) {
-    mixable_recommender_.set_model(recommender_);
-    mixable_holder_->register_mixable(&mixable_recommender_);
-  } else if (shared_ptr<table::column_table> table =
-      recommender_->get_table()) {
-    mixable_versioned_table_.set_model(table);
-    mixable_holder_->register_mixable(&mixable_versioned_table_);
-  } else {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error(
-        "Invalid recommender: neither storage nor table exist"));
-  }
-
-  wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
-  mixable_holder_->register_mixable(&wm_);
-
-  (*converter_).set_weight_manager(wm_.get_model());
+  recommender_->register_mixables_to_holder(*mixable_holder_);
+  converter_->register_mixables_to_holder(*mixable_holder_);
 }
 
 recommender::~recommender() {
@@ -83,7 +69,7 @@ void recommender::update_row(
 
 void recommender::clear() {
   recommender_->clear();
-  wm_.clear();
+  converter_->clear_weights();
 }
 
 fv_converter::datum recommender::complete_row_from_id(const std::string& id) {

@@ -305,7 +305,7 @@ vector<string> push_mixer::pull(const vector<string>& arg) {
 
   scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
-  vector<jubatus::core::framework::mixable0*> mixables =
+  core::framework::mixable_holder::mixable_list mixables =
       mixable_holder_->get_mixables();
   // TODO(beam2d): check arg.size()==mixables.size()
   for (size_t i = 0; i < mixables.size(); ++i) {
@@ -319,7 +319,7 @@ vector<string> push_mixer::get_pull_argument(int dummy_arg) {
 
   scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
-  vector<jubatus::core::framework::mixable0*> mixables =
+  core::framework::mixable_holder::mixable_list mixables =
       mixable_holder_->get_mixables();
   for (size_t i = 0; i < mixables.size(); ++i) {
     o.push_back(mixables[i]->get_pull_argument());
@@ -330,7 +330,7 @@ vector<string> push_mixer::get_pull_argument(int dummy_arg) {
 int push_mixer::push(const vector<string>& diff) {
   scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
-  vector<jubatus::core::framework::mixable0*> mixables =
+  core::framework::mixable_holder::mixable_list mixables =
       mixable_holder_->get_mixables();
   if (diff.size() != mixables.size()) {
     // deserialization error

@@ -89,15 +89,12 @@ string get_max_label(const classify_result& result) {
 }
 }  // namespace
 
-typedef pair<shared_ptr<storage_base>, shared_ptr<classifier_base> >
-  storage_pair;
-
-class classifier_test : public ::testing::TestWithParam<storage_pair> {
+class classifier_test
+    : public ::testing::TestWithParam<shared_ptr<classifier_base> > {
  protected:
   void SetUp() {
     classifier_.reset(new driver::classifier(
-          GetParam().first,
-          GetParam().second,
+          GetParam(),
           make_fv_converter()));
   }
 
@@ -284,8 +281,8 @@ TEST_P(classifier_test, nan) {
   EXPECT_FALSE(isfinite(result[0].score));
 }
 
-vector<storage_pair> create_classifiers() {
-  vector<storage_pair> method;
+vector<shared_ptr<classifier_base> > create_classifiers() {
+  vector<shared_ptr<classifier_base> > method;
 
   shared_ptr<core::storage::storage_base> storage;
   core::classifier::classifier_config config;
@@ -293,25 +290,21 @@ vector<storage_pair> create_classifiers() {
   // TODO(unknown): testing with perceptron?
 
   storage.reset(new core::storage::local_storage);
-  method.push_back(make_pair(storage,
-        shared_ptr<classifier_base>(
-          new core::classifier::passive_aggressive(storage))));
+  method.push_back(shared_ptr<classifier_base>(
+          new core::classifier::passive_aggressive(storage)));
 
   storage.reset(new core::storage::local_storage);
-  method.push_back(make_pair(storage,
-        shared_ptr<classifier_base>(
-          new core::classifier::passive_aggressive_1(config, storage))));
+  method.push_back(shared_ptr<classifier_base>(
+          new core::classifier::passive_aggressive_1(config, storage)));
 
   storage.reset(new core::storage::local_storage);
-  method.push_back(make_pair(storage,
-        shared_ptr<classifier_base>(
-          new core::classifier::passive_aggressive_2(config, storage))));
+  method.push_back(shared_ptr<classifier_base>(
+          new core::classifier::passive_aggressive_2(config, storage)));
 
   storage.reset(new core::storage::local_storage);
   config.C = 0.1f;
-  method.push_back(make_pair(storage,
-        shared_ptr<classifier_base>(
-          new core::classifier::normal_herd(config, storage))));
+  method.push_back(shared_ptr<classifier_base>(
+          new core::classifier::normal_herd(config, storage)));
 
   return method;
 }

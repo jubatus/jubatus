@@ -20,10 +20,12 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <msgpack.hpp>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
 #include "../common/key_manager.hpp"
+#include "../common/unordered_map.hpp"
 #include "storage_type.hpp"
 
 namespace jubatus {
@@ -65,6 +67,9 @@ class sparse_matrix_storage {
 
   tbl_t tbl_;
   common::key_manager column2id_;
+
+ public:
+  MSGPACK_DEFINE(tbl_, column2id_);
 };
 
 }  // namespace storage

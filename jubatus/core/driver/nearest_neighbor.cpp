@@ -26,12 +26,11 @@ namespace driver {
 
 nearest_neighbor::nearest_neighbor(
     pfi::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
-    pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter) {
-  mixable_table_.set_model(nn->get_table());
-  mixable_holder_.reset(new framework::mixable_holder);
-  mixable_holder_->register_mixable(&mixable_table_);
-  converter_ = converter;
-  nn_ = nn;
+    pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
+    : mixable_holder_(new framework::mixable_holder),
+      converter_(converter),
+      nn_(nn) {
+  nn_->register_mixables_to_holder(*mixable_holder_);
 }
 
 void nearest_neighbor::set_row(

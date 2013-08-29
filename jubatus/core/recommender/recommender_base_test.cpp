@@ -23,7 +23,6 @@
 
 #include "../storage/norm.hpp"
 #include "recommender_base.hpp"
-#include "../storage/recommender_storage.hpp"
 #include "../storage/norm_none.hpp"
 
 using std::make_pair;
@@ -96,12 +95,7 @@ class recommender_impl : public recommender_base {
     return true;
   }
 
-  storage::recommender_storage_base* get_storage() {
-    return NULL;
-  }
-
-  const storage::recommender_storage_base* get_const_storage() const {
-    return NULL;
+  void register_mixables_to_holder(framework::mixable_holder&) const {
   }
 };
 

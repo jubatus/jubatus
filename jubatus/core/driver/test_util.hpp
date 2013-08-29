@@ -53,8 +53,8 @@ void save_model(pfi::lang::shared_ptr<
   jubatus::core::framework::mixable_holder>
   holder, std::string& data) {
   std::stringstream os;
-  std::vector<jubatus::core::framework::mixable0*> mixables =
-    holder->get_mixables();
+  jubatus::core::framework::mixable_holder::mixable_list mixables =
+      holder->get_mixables();
   for (size_t i = 0; i < mixables.size(); ++i) {
     mixables[i]->save(os);
   }
@@ -65,7 +65,7 @@ void load_model(pfi::lang::shared_ptr<
   jubatus::core::framework::mixable_holder> holder,
   const std::string& data) {
   std::stringstream is(data);
-  std::vector<jubatus::core::framework::mixable0*> mixables =
+  jubatus::core::framework::mixable_holder::mixable_list mixables =
     holder->get_mixables();
   for (size_t i = 0; i < mixables.size(); ++i) {
     mixables[i]->clear();

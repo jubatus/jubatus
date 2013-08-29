@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,27 +14,37 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_STORAGE_RECOMMENDER_STORAGE_BASE_HPP_
-#define JUBATUS_CORE_STORAGE_RECOMMENDER_STORAGE_BASE_HPP_
+#include "mixable_weight_manager.hpp"
 
-#include <string>
+#include <pficommon/data/serialization.h>
+
+#include "../fv_converter/weight_manager.hpp"
 
 namespace jubatus {
 namespace core {
-namespace storage {
+namespace fv_converter {
 
-class recommender_storage_base {
- public:
-  virtual ~recommender_storage_base() {
-  }
+keyword_weights mixable_weight_manager::get_diff_impl() const {
+  return get_model()->get_diff();
+}
 
-  virtual void get_diff(std::string& diff) const = 0;
-  virtual void set_mixed_and_clear_diff(const std::string& mixed_diff) = 0;
-  virtual void mix(const std::string& lhs, std::string& rhs) const = 0;
-};
+void mixable_weight_manager::put_diff_impl(
+    const fv_converter::keyword_weights& diff) {
+  get_model()->put_diff(diff);
+}
 
-}  // namespace storage
+void mixable_weight_manager::mix_impl(
+    const keyword_weights& lhs,
+    const keyword_weights& rhs,
+    keyword_weights& acc) const {
+  acc = rhs;
+  acc.merge(lhs);
+}
+
+void mixable_weight_manager::clear() {
+  get_model()->clear();
+}
+
+}  // namespace driver
 }  // namespace core
 }  // namespace jubatus
-
-#endif  // JUBATUS_CORE_STORAGE_RECOMMENDER_STORAGE_BASE_HPP_

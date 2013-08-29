@@ -20,9 +20,11 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <msgpack.hpp>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
+#include "unordered_map.hpp"
 
 namespace jubatus {
 namespace core {
@@ -65,6 +67,9 @@ class key_manager {
 
   pfi::data::unordered_map<std::string, uint64_t> key2id_;
   std::vector<std::string> id2key_;
+
+ public:
+  MSGPACK_DEFINE(key2id_, id2key_);
 };
 
 inline void swap(key_manager& l, key_manager& r) {  // NOLINT

@@ -80,11 +80,7 @@ regression_serv::~regression_serv() {
 
 void regression_serv::get_status(status_t& status) const {
   status_t my_status;
-
-  core::storage::storage_base* model = regression_->get_model();
-  model->get_status(my_status);
-  my_status["storage"] = model->type();
-
+  regression_->get_status(my_status);
   status.insert(my_status.begin(), my_status.end());
 }
 
@@ -151,7 +147,7 @@ vector<float> regression_serv::estimate(
 
 bool regression_serv::clear() {
   check_set_config();
-  regression_->get_model()->clear();
+  regression_->clear();
   LOG(INFO) << "model cleared: " << argv().name;
   return true;
 }

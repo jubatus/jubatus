@@ -54,6 +54,12 @@ sfv_diff_t make_vec(const string& c1, const string& c2, const string& c3) {
   return v;
 }
 
+pfi::lang::shared_ptr<framework::mixable0> get_mixable(recommender_base& r) {
+  framework::mixable_holder holder;
+  r.register_mixables_to_holder(holder);
+  return holder.get_mixables().front();
+}
+
 template<typename T>
 class recommender_random_test : public testing::Test {
 };
@@ -226,11 +232,10 @@ TYPED_TEST_P(recommender_random_test, diff) {
   TypeParam r;
   update_random(r);
 
-  string diff;
-  r.get_storage()->get_diff(diff);
+  common::byte_buffer diff = get_mixable(r)->get_diff();
 
   TypeParam r2;
-  r2.get_storage()->set_mixed_and_clear_diff(diff);
+  get_mixable(r2)->put_diff(diff);
 
   compare_recommenders(r, r2, false);
 }
@@ -249,14 +254,14 @@ TYPED_TEST_P(recommender_random_test, mix) {
     expect.update_row(row, vec);
   }
 
-  string diff1, diff2;
-  r1.get_storage()->get_diff(diff1);
-  r2.get_storage()->get_diff(diff2);
+  common::byte_buffer diff1 = get_mixable(r1)->get_diff();
+  common::byte_buffer diff2 = get_mixable(r2)->get_diff();
 
-  r1.get_storage()->mix(diff1, diff2);
+  common::byte_buffer mixed_diff;
+  get_mixable(r1)->mix(diff1, diff2, mixed_diff);
 
   TypeParam mixed;
-  mixed.get_storage()->set_mixed_and_clear_diff(diff2);
+  get_mixable(mixed)->put_diff(mixed_diff);
 
   compare_recommenders(expect, mixed, false);
 }

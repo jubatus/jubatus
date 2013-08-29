@@ -21,12 +21,14 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <msgpack.hpp>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
 #include "lsh_vector.hpp"
-#include "recommender_storage_base.hpp"
 #include "storage_type.hpp"
 #include "../common/key_manager.hpp"
+#include "../common/unordered_map.hpp"
+#include "../framework/mixable.hpp"
 
 namespace jubatus {
 namespace core {
@@ -36,6 +38,8 @@ struct lsh_entry {
   std::vector<uint64_t> lsh_hash;
   bit_vector simhash_bv;
   float norm;
+
+  MSGPACK_DEFINE(lsh_hash, simhash_bv, norm);
 
   template <typename Ar>
   void serialize(Ar& ar) {
@@ -47,7 +51,7 @@ typedef pfi::data::unordered_map<std::string, lsh_entry> lsh_master_table_t;
 
 typedef pfi::data::unordered_map<uint64_t, std::vector<uint64_t> > lsh_table_t;
 
-class lsh_index_storage : public recommender_storage_base {
+class lsh_index_storage {
  public:
   lsh_index_storage();
   lsh_index_storage(size_t lsh_num, size_t table_num, uint32_t seed);
@@ -86,13 +90,11 @@ class lsh_index_storage : public recommender_storage_base {
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
-  virtual void get_diff(std::string& diff) const;
-  virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
-  virtual void mix(const std::string& lhs, std::string& rhs) const;
+  void get_diff(lsh_master_table_t& diff) const;
+  void set_mixed_and_clear_diff(const lsh_master_table_t& mixed_diff);
+  void mix(const lsh_master_table_t& lhs, lsh_master_table_t& rhs) const;
 
  private:
-  typedef pfi::data::unordered_map<uint64_t, std::vector<uint64_t> >lsh_table_t;
-
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
@@ -132,6 +134,9 @@ class lsh_index_storage : public recommender_storage_base {
   uint64_t table_num_;
   common::key_manager key_manager_;
 };
+
+typedef framework::delegating_mixable<lsh_index_storage, lsh_master_table_t>
+    mixable_lsh_index_storage;
 
 }  // namespace storage
 }  // namespace core

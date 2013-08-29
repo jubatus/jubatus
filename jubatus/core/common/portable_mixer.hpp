@@ -27,7 +27,7 @@ namespace jubatus {
 namespace core {
 namespace common {
 
-template <typename Storage>
+template <typename Storage, typename Diff = std::string>
 class portable_mixer {
  public:
   portable_mixer() {
@@ -58,11 +58,11 @@ class portable_mixer {
       return;
     }
 
-    std::string mixed;
+    Diff mixed;
     storages_[0]->get_diff(mixed);
 
     for (size_t i = 1; i < storages_.size(); ++i) {
-      std::string diff;
+      Diff diff;
       storages_[i]->get_diff(diff);
       storages_[0]->mix(diff, mixed);
     }

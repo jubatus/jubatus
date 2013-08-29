@@ -50,8 +50,7 @@ class nearest_neighbor_recommender : public recommender_base {
 
   std::string type() const;
 
-  pfi::lang::shared_ptr<table::column_table> get_table();
-  pfi::lang::shared_ptr<const table::column_table> get_const_table() const;
+  void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
  private:
   bool save_impl(std::ostream& os);

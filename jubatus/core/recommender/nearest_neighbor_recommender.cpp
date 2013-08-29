@@ -73,14 +73,9 @@ std::string nearest_neighbor_recommender::type() const {
   return "nearest_neighbor_recommender:" + nearest_neighbor_engine_->type();
 }
 
-pfi::lang::shared_ptr<table::column_table>
-nearest_neighbor_recommender::get_table() {
-  return nearest_neighbor_engine_->get_table();
-}
-
-pfi::lang::shared_ptr<const table::column_table>
-nearest_neighbor_recommender::get_const_table() const {
-  return nearest_neighbor_engine_->get_const_table();
+void nearest_neighbor_recommender::register_mixables_to_holder(
+    framework::mixable_holder& holder) const {
+  nearest_neighbor_engine_->register_mixables_to_holder(holder);
 }
 
 bool nearest_neighbor_recommender::save_impl(std::ostream& os) {

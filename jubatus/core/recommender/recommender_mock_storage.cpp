@@ -79,29 +79,32 @@ string recommender_mock_storage::name() const {
   return "recommender_mock_storage";
 }
 
-void recommender_mock_storage::get_diff(string& diff) const {
-  ostringstream oss;
-  pfi::data::serialization::binary_oarchive bo(oss);
-  bo << const_cast<recommender_mock_storage&>(*this);
-  diff = oss.str();
+bool recommender_mock_storage::save(std::ostream& os) {
+  pfi::data::serialization::binary_oarchive bo(os);
+  bo << *this;
+  return true;
+}
+
+bool recommender_mock_storage::load(std::istream& is) {
+  pfi::data::serialization::binary_iarchive bi(is);
+  bi >> *this;
+  return true;
+}
+
+void recommender_mock_storage::get_diff(recommender_mock_storage& diff) const {
+  diff = *this;
 }
 
 void recommender_mock_storage::set_mixed_and_clear_diff(
-    const string& mixed_diff) {
-  istringstream iss(mixed_diff);
-  pfi::data::serialization::binary_iarchive bi(iss);
-  bi >> *this;
+    const recommender_mock_storage& mixed_diff) {
+  *this = mixed_diff;
 }
 
-void recommender_mock_storage::mix(const string& lhs, string& rhs) const {
-  recommender_mock_storage lhs_model, rhs_model;
-  lhs_model.set_mixed_and_clear_diff(lhs);
-  rhs_model.set_mixed_and_clear_diff(rhs);
-
-  mix_relation(lhs_model.similar_relation_, rhs_model.similar_relation_);
-  mix_relation(lhs_model.neighbor_relation_, rhs_model.neighbor_relation_);
-
-  rhs_model.get_diff(rhs);
+void recommender_mock_storage::mix(
+    const recommender_mock_storage& lhs,
+    recommender_mock_storage& rhs) const {
+  mix_relation(lhs.similar_relation_, rhs.similar_relation_);
+  mix_relation(lhs.neighbor_relation_, rhs.neighbor_relation_);
 }
 
 // private

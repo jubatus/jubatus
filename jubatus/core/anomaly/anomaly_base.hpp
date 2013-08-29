@@ -26,7 +26,6 @@
 #include "../common/type.hpp"
 #include "../framework/mixable.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
-#include "anomaly_storage_base.hpp"
 #include "anomaly_type.hpp"
 
 namespace jubatus {
@@ -68,7 +67,7 @@ class anomaly_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
   virtual std::string type() const = 0;
   virtual void register_mixables_to_holder(
-      pfi::lang::shared_ptr<framework::mixable_holder> holder) = 0;
+      framework::mixable_holder& holder) const = 0;
 
  protected:
   static const uint32_t NEIGHBOR_NUM;

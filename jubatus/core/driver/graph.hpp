@@ -25,7 +25,6 @@
 #include "../graph/graph_type.hpp"
 #include "../graph/graph_wo_index.hpp"
 #include "../framework/mixable.hpp"
-#include "mixable_weight_manager.hpp"
 
 namespace jubatus {
 namespace core {
@@ -70,7 +69,7 @@ class graph {
   }
 
   jubatus::core::graph::graph_base* get_model() const {
-    return graph_.get_model().get();
+    return graph_->get_model().get();
   }
 
   void create_node(jubatus::core::graph::node_id_t id);
@@ -119,7 +118,7 @@ class graph {
  private:
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  mixable_graph graph_;
+  pfi::lang::shared_ptr<mixable_graph> graph_;
 };
 
 }  // namespace driver

@@ -12,12 +12,12 @@ def build(bld):
 
   bld.shlib(
     source = [
-      'mixable_weight_manager.cpp',
       'mixable_versioned_table.cpp',
+      'linear_function_mixer.cpp',
       ],
     target = 'jubatus_mixables',
     includes = '.',
-    use = 'PFICOMMON MSGPACK jubastorage column_table jubaconverter'+libassert
+    use = 'PFICOMMON MSGPACK jubastorage column_table'+libassert
     )
 
   source = [
@@ -27,7 +27,6 @@ def build(bld):
       'stat.cpp',
       'anomaly.cpp',
       'graph.cpp',
-      'linear_function_mixer.cpp',
       'nearest_neighbor.cpp',
       ]
 

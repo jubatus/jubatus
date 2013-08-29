@@ -33,12 +33,12 @@ class local_storage_mixture : public storage_base {
   local_storage_mixture();
   ~local_storage_mixture();
 
-  void get(const std::string& feature, feature_val1_t& ret);
-  void get2(const std::string& feature, feature_val2_t& ret);
-  void get3(const std::string& feature, feature_val3_t& ret);
+  void get(const std::string& feature, feature_val1_t& ret) const;
+  void get2(const std::string& feature, feature_val2_t& ret) const;
+  void get3(const std::string& feature, feature_val3_t& ret) const;
 
   /// inner product
-  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret);
+  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const;
 
   void get_diff(features3_t& ret) const;
   void set_average_and_clear_diff(const features3_t& average);
@@ -56,7 +56,7 @@ class local_storage_mixture : public storage_base {
       const std::string& klass,
       const val3_t& w);
 
-  void get_status(std::map<std::string, std::string>&);
+  void get_status(std::map<std::string, std::string>& status) const;
 
   void update(
       const std::string& feature,

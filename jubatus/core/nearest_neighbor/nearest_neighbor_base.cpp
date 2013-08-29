@@ -33,14 +33,16 @@ nearest_neighbor_base::nearest_neighbor_base(
     pfi::lang::shared_ptr<table::column_table> table,
     const std::string& id)
     : my_id_(id),
-      table_(table) {
+      mixable_table_(new driver::mixable_versioned_table) {
+  mixable_table_->set_model(table);
 }
 
 void nearest_neighbor_base::get_all_row_ids(vector<string>& ids) const {
   vector<string> ret;
-  ret.reserve(table_->size());
-  for (size_t i = 0; i < table_->size(); ++i) {
-    ret.push_back(table_->get_key(i));
+  pfi::lang::shared_ptr<const table::column_table> table = get_const_table();
+  ret.reserve(table->size());
+  for (size_t i = 0; i < table->size(); ++i) {
+    ret.push_back(table->get_key(i));
   }
   ret.swap(ids);
 }
@@ -70,11 +72,18 @@ void nearest_neighbor_base::similar_row(
 }
 
 void nearest_neighbor_base::save(std::ostream& os) const {
-  table_->save(os);
+  get_const_table()->save(os);
 }
 
 void nearest_neighbor_base::load(std::istream& is) {
-  table_->load(is);
+  get_table()->load(is);
+}
+
+void nearest_neighbor_base::register_mixables_to_holder(
+    framework::mixable_holder& holder) const {
+  if (mixable_table_) {
+    holder.register_mixable(mixable_table_);
+  }
 }
 
 }  // namespace nearest_neighbor

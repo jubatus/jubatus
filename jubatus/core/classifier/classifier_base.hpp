@@ -26,6 +26,7 @@
 #include <pficommon/lang/shared_ptr.h>
 
 #include "../common/type.hpp"
+#include "../driver/linear_function_mixer.hpp"
 #include "../storage/storage_base.hpp"
 #include "classifier_type.hpp"
 
@@ -37,7 +38,7 @@ class classifier_base {
  public:
   typedef pfi::lang::shared_ptr<storage::storage_base> storage_ptr;
 
-  explicit classifier_base(storage_ptr storage_base);
+  classifier_base(storage_ptr storage, bool use_covars);
   virtual ~classifier_base();
   virtual void train(const common::sfv_t& fv, const std::string& label) = 0;
 
@@ -48,6 +49,14 @@ class classifier_base {
   void clear();
 
   virtual std::string name() const = 0;
+
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
+      const;
+
+  // TODO(beam2d): Think the objective of this function and where it should be
+  // defined. Algorithms have |get_status| tentatively to extract status from
+  // storages.
+  virtual void get_status(std::map<std::string, std::string>& status) const;
 
  protected:
   void update_weight(
@@ -68,10 +77,13 @@ class classifier_base {
       const common::sfv_t& sfv,
       const std::string& label,
       classify_result& scores) const;
+  storage::storage_base* get_storage();
+  const storage::storage_base* get_storage() const;
 
   static float squared_norm(const common::sfv_t& sfv);
 
-  storage_ptr storage_;
+ private:
+  pfi::lang::shared_ptr<driver::linear_function_mixer> mixable_;
   bool use_covars_;
 };
 

@@ -35,27 +35,6 @@ namespace jubatus {
 namespace core {
 namespace storage {
 
-static void convert_diff(
-    sparse_matrix_storage& storage,
-    map_float_t& norm,
-    string& diff) {
-  ostringstream os;
-  pfi::data::serialization::binary_oarchive bo(os);
-  bo << storage;
-  bo << norm;
-  diff = os.str();
-}
-
-static void revert_diff(
-    const string& diff,
-    sparse_matrix_storage& storage,
-    map_float_t& norm) {
-  istringstream is(diff);
-  pfi::data::serialization::binary_iarchive bi(is);
-  bi >> storage;
-  bi >> norm;
-}
-
 inverted_index_storage::inverted_index_storage() {
 }
 
@@ -155,8 +134,7 @@ void inverted_index_storage::get_all_column_ids(
   }
 }
 
-void inverted_index_storage::get_diff(std::string& diff_str) const {
-  sparse_matrix_storage diff;
+void inverted_index_storage::get_diff(diff_type& diff) const {
   for (tbl_t::const_iterator it = inv_diff_.begin(); it != inv_diff_.end();
       ++it) {
     vector<pair<string, float> > columns;
@@ -164,31 +142,24 @@ void inverted_index_storage::get_diff(std::string& diff_str) const {
         it2 != it->second.end(); ++it2) {
       columns.push_back(make_pair(column2id_.get_key(it2->first), it2->second));
     }
-    diff.set_row(it->first, columns);
+    diff.inv.set_row(it->first, columns);
   }
 
-  map_float_t column2norm_diff;
   for (imap_float_t::const_iterator it = column2norm_diff_.begin();
       it != column2norm_diff_.end(); ++it) {
-    column2norm_diff[column2id_.get_key(it->first)] = it->second;
+    diff.column2norm[column2id_.get_key(it->first)] = it->second;
   }
-  convert_diff(diff, column2norm_diff, diff_str);
 }
 
 void inverted_index_storage::set_mixed_and_clear_diff(
-    const string& mixed_diff_str) {
-  istringstream is(mixed_diff_str);
-  sparse_matrix_storage mixed_inv;
-  map_float_t mixed_column2norm;
-  revert_diff(mixed_diff_str, mixed_inv, mixed_column2norm);
-
+    const diff_type& mixed_diff) {
   vector<string> ids;
-  mixed_inv.get_all_row_ids(ids);
+  mixed_diff.inv.get_all_row_ids(ids);
   for (size_t i = 0; i < ids.size(); ++i) {
     const string& row = ids[i];
     row_t& v = inv_[row];
     vector<pair<string, float> > columns;
-    mixed_inv.get_row(row, columns);
+    mixed_diff.inv.get_row(row, columns);
     for (size_t j = 0; j < columns.size(); ++j) {
       size_t id = column2id_.get_id(columns[j].first);
       if (columns[j].second == 0.f) {
@@ -200,8 +171,8 @@ void inverted_index_storage::set_mixed_and_clear_diff(
   }
   inv_diff_.clear();
 
-  for (map_float_t::const_iterator it = mixed_column2norm.begin();
-      it != mixed_column2norm.end(); ++it) {
+  for (map_float_t::const_iterator it = mixed_diff.column2norm.begin();
+      it != mixed_diff.column2norm.end(); ++it) {
     uint64_t column_index = column2id_.get_id(it->first);
     column2norm_[column_index] += it->second;
     if (column2norm_[column_index] == 0.f) {
@@ -211,30 +182,23 @@ void inverted_index_storage::set_mixed_and_clear_diff(
   column2norm_diff_.clear();
 }
 
-void inverted_index_storage::mix(const string& lhs, string& rhs) const {
-  sparse_matrix_storage lhs_inv_diff, rhs_inv_diff;
-  map_float_t lhs_column2norm_diff, rhs_column2norm_diff;
-  revert_diff(lhs, lhs_inv_diff, lhs_column2norm_diff);
-  revert_diff(rhs, rhs_inv_diff, rhs_column2norm_diff);
-
+void inverted_index_storage::mix(const diff_type& lhs, diff_type& rhs) const {
   // merge inv diffs
   vector<string> ids;
-  lhs_inv_diff.get_all_row_ids(ids);
+  lhs.inv.get_all_row_ids(ids);
   for (size_t i = 0; i < ids.size(); ++i) {
     const string& row = ids[i];
 
     vector<pair<string, float> > columns;
-    lhs_inv_diff.get_row(row, columns);
-    rhs_inv_diff.set_row(row, columns);
+    lhs.inv.get_row(row, columns);
+    rhs.inv.set_row(row, columns);
   }
 
   // merge norm diffs
-  for (map_float_t::const_iterator it = lhs_column2norm_diff.begin();
-      it != lhs_column2norm_diff.end(); ++it) {
-    rhs_column2norm_diff[it->first] += it->second;
+  for (map_float_t::const_iterator it = lhs.column2norm.begin();
+      it != lhs.column2norm.end(); ++it) {
+    rhs.column2norm[it->first] += it->second;
   }
-
-  convert_diff(rhs_inv_diff, rhs_column2norm_diff, rhs);
 }
 
 bool inverted_index_storage::save(std::ostream& os) {

@@ -21,16 +21,16 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <msgpack.hpp>
 #include <pficommon/data/serialization.h>
-#include "../storage/recommender_storage_base.hpp"
+#include "../framework/mixable.hpp"
 #include "recommender_type.hpp"
 
 namespace jubatus {
 namespace core {
 namespace recommender {
 
-class recommender_mock_storage
-    : public core::storage::recommender_storage_base {
+class recommender_mock_storage {
  public:
   virtual ~recommender_mock_storage();
 
@@ -56,9 +56,13 @@ class recommender_mock_storage
 
   std::string name() const;
 
-  virtual void get_diff(std::string& diff) const;
-  virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
-  virtual void mix(const std::string& lhs, std::string& rhs) const;
+  bool save(std::ostream& os);
+  bool load(std::istream& is);
+
+  void get_diff(recommender_mock_storage& diff) const;
+  void set_mixed_and_clear_diff(const recommender_mock_storage& mixed_diff);
+  void mix(const recommender_mock_storage& lhs, recommender_mock_storage& rhs)
+      const;
 
  private:
   typedef std::map<common::sfv_t, std::vector<std::pair<std::string, float> > >
@@ -85,7 +89,14 @@ class recommender_mock_storage
 
   relation_type similar_relation_;
   relation_type neighbor_relation_;
+
+ public:
+  MSGPACK_DEFINE(similar_relation_, neighbor_relation_);
 };
+
+typedef framework::delegating_mixable<
+    recommender_mock_storage, recommender_mock_storage>
+    mixable_recommender_mock_storage;
 
 }  // namespace recommender
 }  // namespace core

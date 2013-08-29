@@ -24,6 +24,7 @@
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/lang/scoped_ptr.h>
 #include "../common/type.hpp"
+#include "../framework/mixable.hpp"
 
 namespace jubatus {
 namespace core {
@@ -104,6 +105,9 @@ class datum_to_fv_converter {
   void set_hash_max_size(uint64_t hash_max_size);
 
   void set_weight_manager(pfi::lang::shared_ptr<weight_manager> wm);
+  void clear_weights();
+
+  void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
  private:
   pfi::lang::scoped_ptr<datum_to_fv_converter_impl> pimpl_;

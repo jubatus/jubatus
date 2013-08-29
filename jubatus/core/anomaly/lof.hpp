@@ -21,6 +21,7 @@
 #include <vector>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/text/json.h>
+#include "../recommender/recommender_base.hpp"
 #include "anomaly_base.hpp"
 #include "lof_storage.hpp"
 
@@ -32,7 +33,7 @@ class lof : public anomaly_base {
  public:
   lof();
   explicit lof(
-      const storage::lof_storage::config& config,
+      const lof_storage::config& config,
       pfi::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
   ~lof();
 
@@ -47,12 +48,12 @@ class lof : public anomaly_base {
 
   virtual void get_all_row_ids(std::vector<std::string>& ids) const;
   virtual std::string type() const;
-  virtual void register_mixables_to_holder(
-      pfi::lang::shared_ptr<framework::mixable_holder> holder);
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
+      const;
 
  private:
-  pfi::lang::shared_ptr<storage::lof_storage> lof_index_;
-  storage::mixable_anomaly_storage mixable_storage_;
+  pfi::lang::shared_ptr<mixable_lof_storage> mixable_storage_;
+  pfi::lang::shared_ptr<recommender::recommender_base> nn_engine_;
 };
 
 }  //  namespace anomaly

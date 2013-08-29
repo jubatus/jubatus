@@ -84,7 +84,7 @@ TEST(inverted_index_storage, diff) {
   s.set("c1", "r1", 1);
   s.set("c2", "r1", 1);
 
-  string diff;
+  inverted_index_storage::diff_type diff;
   s.get_diff(diff);
 
   inverted_index_storage t;
@@ -107,7 +107,7 @@ TEST(inverted_index_storage, mix) {
   // c1: (0, 2, 0)
   s2.set("c1", "r2", 2);
 
-  string d1, d2;
+  inverted_index_storage::diff_type d1, d2;
   s1.get_diff(d1);
   s2.get_diff(d2);
 
