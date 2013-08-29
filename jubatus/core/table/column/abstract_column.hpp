@@ -7,18 +7,22 @@
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public
 // License along with this library; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA	02110-1301	USA
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-#ifndef JUBATUS_CORE_TABLE_COLUMN_ABSTRUCT_COLUMN_HPP_
-#define JUBATUS_CORE_TABLE_COLUMN_ABSTRUCT_COLUMN_HPP_
-#include <memory>
+#ifndef JUBATUS_CORE_TABLE_COLUMN_ABSTRACT_COLUMN_HPP_
+#define JUBATUS_CORE_TABLE_COLUMN_ABSTRACT_COLUMN_HPP_
+
+#include <algorithm>
 #include <iterator>
+#include <memory>
+#include <string>
+#include <vector>
 #include <msgpack.hpp>
 #include <pficommon/lang/demangle.h>
 #include "../../common/assert.hpp"
@@ -33,72 +37,78 @@ namespace table {
 namespace detail {
 
 class abstract_column_base {
-public:
-  abstract_column_base(const column_type& type)
-    :my_type_(type) {}
-	virtual ~abstract_column_base() {}
-	column_type type() const {
-		return my_type_;
-	}
-	template <typename U>
-	void push_back(const U& type) {
+ public:
+  explicit abstract_column_base(const column_type& type)
+      : my_type_(type) {
+  }
+  virtual ~abstract_column_base() {
+  }
+
+  column_type type() const {
+    return my_type_;
+  }
+  template <typename U>
+  void push_back(const U& type) {
     throw type_unmatch_exception(
       "column: invalid type push_back(): " + pfi::lang::get_typename<U>());
-	}
-	template <typename U>
-	bool insert(uint64_t target, const U& value) {
+  }
+  template <typename U>
+  bool insert(uint64_t target, const U& value) {
     throw type_unmatch_exception(
       "column: invalid type insert(): " + pfi::lang::get_typename<U>());
-	}
-	template <typename U>
-	bool update(uint64_t target, const U& value) {
+  }
+  template <typename U>
+  bool update(uint64_t target, const U& value) {
     throw type_unmatch_exception(
       "column: invalid type update(): " + pfi::lang::get_typename<U>());
-		return true;
+    return true;
   }
   virtual bool remove(uint64_t target) = 0;
   virtual void clear() = 0;
-  virtual void pack_with_index(const uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
+  virtual void pack_with_index(
+      const uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
   }
-	virtual void dump() const = 0;
-	virtual void dump(std::ostream& os, uint64_t target) const = 0;
-private:
-	column_type my_type_;
+  virtual void dump() const = 0;
+  virtual void dump(std::ostream& os, uint64_t target) const = 0;
+
+ private:
+  column_type my_type_;
 };
 
-}	 // namespace detail
+}  // namespace detail
 
 template <typename T>
 class typed_column : public detail::abstract_column_base {
-public:
-  typed_column(const column_type& type)
-    :detail::abstract_column_base(type) { }
+ public:
+  explicit typed_column(const column_type& type)
+      : detail::abstract_column_base(type) {
+  }
 
   using detail::abstract_column_base::push_back;
   using detail::abstract_column_base::insert;
   using detail::abstract_column_base::update;
 
-	void push_back(const T& type) {
+  void push_back(const T& type) {
     array_.push_back(type);
-	}
+  }
   void push_back(const msgpack::object& obj) {
     array_.push_back(T());
     obj.convert(&array_[array_.size()]);
   }
-	bool insert(uint64_t target, const T& value) {
+  bool insert(uint64_t target, const T& value) {
     if (size() < target) {
       return false;
     }
     array_.insert(std::advance(array_.begin(), target), value);
     return true;
-	}
-	bool update(uint64_t index, const T& value) {
+  }
+  bool update(uint64_t index, const T& value) {
     if (size() < index) {
       return false;
     }
-		array_[index] = value;
+    array_[index] = value;
     return true;
-	}
+  }
 
   bool update(uint64_t index, const msgpack::object& obj) {
     if (size() < index) {
@@ -108,21 +118,22 @@ public:
     return true;
   }
 
-	bool remove(uint64_t target) {
+  bool remove(uint64_t target) {
     if (size() < target) {
       return false;
     }
-    std::swap(array_[target], array_.back());
+    using std::swap;
+    swap(array_[target], array_.back());
     array_.pop_back();
     return true;
-	}
+  }
   void clear() {
     array_.clear();
   }
 
-	uint64_t size() const {
-		return array_.size();
-	}
+  uint64_t size() const {
+    return array_.size();
+  }
 
   const T& operator[](uint64_t index) const {
     if (size() < index) {
@@ -144,24 +155,25 @@ public:
     return array_[index];
   }
 
-	void dump() const {}
-	void dump(std::ostream& os, uint64_t target) const {
+  void dump() const {}
+  void dump(std::ostream& os, uint64_t target) const {
   }
-private:
+
+ private:
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(my_type_);
     ar & MEMBER(array_);
   }
-	std::vector<T> array_;
+  std::vector<T> array_;
 };
 
 template <>
 class typed_column<bit_vector> : public detail::abstract_column_base {
-public:
-  typed_column(const column_type& type)
-    :detail::abstract_column_base(type) {
+ public:
+  explicit typed_column(const column_type& type)
+      : detail::abstract_column_base(type) {
   }
 
   using detail::abstract_column_base::push_back;
@@ -184,12 +196,12 @@ public:
     return 1;
   }
   bit_vector operator[](uint64_t index) {
-		return bit_vector(
+    return bit_vector(
       &array_[bit_vector::memory_size(type().bit_vector_length()) * index],
       type().bit_vector_length());
   }
   bit_vector operator[](uint64_t index) const {
-		return bit_vector(
+    return bit_vector(
       &array_[bit_vector::memory_size(type().bit_vector_length()) * index],
       type().bit_vector_length());
   }
@@ -199,10 +211,11 @@ public:
   void clear() {
     array_.clear();
   }
-	void dump() const {}
-	void dump(std::ostream& os, uint64_t target) const {
+  void dump() const {}
+  void dump(std::ostream& os, uint64_t target) const {
   }
-private:
+
+ private:
   std::vector<uint64_t> array_;
 };
 
@@ -239,13 +252,13 @@ typedef const bit_vector_column const_bit_vector_column;
   : ptr_(reinterpret_cast<char*>(ptr)),
   size_(size),
   vector_bit_num_(bit_num) {
-	}
-	bit_vector_column(const bit_vector_column& orig)
+  }
+  bit_vector_column(const bit_vector_column& orig)
   : ptr_(orig.ptr_),
   size_(orig.size_),
   vector_bit_num_(orig.vector_bit_num_) {
-	}
-	bit_vector operator[](uint64_t index) const {
+  }
+  bit_vector operator[](uint64_t index) const {
   if (size() <= index) {
   throw array_range_exception(
   "index " + pfi::lang::lexical_cast<std::string>(index) +
@@ -255,8 +268,8 @@ typedef const bit_vector_column const_bit_vector_column;
   return bit_vector(
   &ptr_[bit_vector::memory_size(vector_bit_num_) * index],
   vector_bit_num_);
-	}
-	bit_vector operator[](uint64_t index) {
+  }
+  bit_vector operator[](uint64_t index) {
   if (size() <= index) {
   throw array_range_exception(
   "index " + pfi::lang::lexical_cast<std::string>(index) +
@@ -266,20 +279,20 @@ typedef const bit_vector_column const_bit_vector_column;
   return bit_vector(
   &ptr_[bit_vector::memory_size(vector_bit_num_) * index],
   vector_bit_num_);
-	}
-	void push_back(const bit_vector& orig) {
+  }
+  void push_back(const bit_vector& orig) {
   bit_vector new_bit_vector(&ptr_[size_], vector_bit_num_);
   new_bit_vector = orig;
-	}
+  }
 
-	template <typename U>
-	void push_back(const U& v) {
+  template <typename U>
+  void push_back(const U& v) {
   throw type_unmatch_exception(
   "invalid type push_backed: " + pfi::lang::get_typename<U>() +
   " for bit_vector");
-	}
+  }
 
-	void insert(uint64_t index, const bit_vector& value) {
+  void insert(uint64_t index, const bit_vector& value) {
   const uint64_t memory_size = bit_vector::memory_size(vector_bit_num_);
   char* const target = ptr_ + index*memory_size;
   std::memmove(
@@ -288,16 +301,16 @@ typedef const bit_vector_column const_bit_vector_column;
   size_ += memory_size;
   bit_vector new_bit_vector(target, vector_bit_num_);
   new_bit_vector = value;
-	}
+  }
 
-	template <typename U>
-	void insert(uint64_t, const U& v) {
+  template <typename U>
+  void insert(uint64_t, const U& v) {
   throw type_unmatch_exception(
   "invalid type push_backed: " + pfi::lang::get_typename<U>() +
   " for bit_vector");
-	}
+  }
 
-	bool remove(uint64_t target) {
+  bool remove(uint64_t target) {
   if (size() <= target) {
   std::cout << "size:" << size() << " <= target:" << target << std::endl;
   return false;
@@ -308,89 +321,93 @@ typedef const bit_vector_column const_bit_vector_column;
   std::memmove(to, from, size_ - (target + 1) * memory_size);
   size_ -= memory_size;
   return true;
-	}
+  }
 
-	void dump() const {
+  void dump() const {
   std::cout << "[column (bit_vector)"
   << " size:" << size() << " {" << std::endl;
-  for (size_t i = 0; i <	size(); ++i) {
+  for (size_t i = 0; i <  size(); ++i) {
   std::cout << "[" << i << "] " << (operator[](i)) << std::endl;
   }
   std::cout << "} ]" << std::endl;
-	}
+  }
 
-	uint64_t size() const {
+  uint64_t size() const {
   return size_ / bit_vector::memory_size(vector_bit_num_);
-	}
+  }
 
-	friend std::ostream& operator<<(
+  friend std::ostream& operator<<(
   std::ostream& os,
   const bit_vector_column& bv) {
-  for (size_t i = 0; i <	bv.size(); ++i) {
+  for (size_t i = 0; i <  bv.size(); ++i) {
   os << bv[i];
   }
   return os;
-	}
+  }
 
-	void clear() {
+  void clear() {
   // we dont need to delete
-	}
+  }
 
   private:
-	char* ptr_;
-	uint64_t size_;
-	size_t vector_bit_num_;
+  char* ptr_;
+  uint64_t size_;
+  size_t vector_bit_num_;
   };
 */
 
 namespace detail {
+
 class abstract_column {
-public:
-  abstract_column(const column_type& type) {
+ public:
+  explicit abstract_column(const column_type& type) {
     if (type.is(column_type::uint8_type)) {
-    base_ =
-      pfi::lang::shared_ptr<detail::abstract_column_base>(new uint8_column(type));
+      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
+          new uint8_column(type));
     } else if (type.is(column_type::uint16_type)) {
-      base_ =
-        pfi::lang::shared_ptr<detail::abstract_column_base>(new uint16_column(type));
+      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
+          new uint16_column(type));
     } else if (type.is(column_type::uint32_type)) {
-      base_ =
-        pfi::lang::shared_ptr<detail::abstract_column_base>(new uint32_column(type));
+      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
+          new uint32_column(type));
     } else if (type.is(column_type::uint64_type)) {
-      base_ =
-        pfi::lang::shared_ptr<detail::abstract_column_base>(new uint64_column(type));
+      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
+          new uint64_column(type));
     } else if (type.is(column_type::int8_type)) {
-      base_ =
-        pfi::lang::shared_ptr<detail::abstract_column_base>(new int8_column(type));
+      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
+          new int8_column(type));
     } else if (type.is(column_type::int16_type)) {
-      base_ =
-        pfi::lang::shared_ptr<detail::abstract_column_base>(new int16_column(type));
+      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
+          new int16_column(type));
     } else if (type.is(column_type::int32_type)) {
-      base_ =
-        pfi::lang::shared_ptr<detail::abstract_column_base>(new int32_column(type));
+      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
+          new int32_column(type));
     } else if (type.is(column_type::int64_type)) {
-      base_ =
-        pfi::lang::shared_ptr<detail::abstract_column_base>(new int64_column(type));
+      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
+          new int64_column(type));
     } else if (type.is(column_type::float_type)) {
-      base_ =
-        pfi::lang::shared_ptr<detail::abstract_column_base>(new float_column(type));
+      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
+          new float_column(type));
     } else if (type.is(column_type::double_type)) {
-      base_ =
-        pfi::lang::shared_ptr<detail::abstract_column_base>(new double_column(type));
+      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
+          new double_column(type));
     } else if (type.is(column_type::string_type)) {
-      base_ =
-        pfi::lang::shared_ptr<detail::abstract_column_base>(new string_column(type));
+      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
+          new string_column(type));
     } else if (type.is(column_type::bit_vector_type)) {
-      base_ =
-        pfi::lang::shared_ptr<detail::abstract_column_base>(new bit_vector_column(type));
+      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
+          new bit_vector_column(type));
     }
   }
+  virtual ~abstract_column() {
+  }
+
   column_type type() const {
     return base_->type();
   }
 
-	template <typename T>
-	void push_back(const T& value) {
+  template <typename T>
+  void push_back(const T& value) {
     const column_type& type = base_->type();
     if (type.is(column_type::uint8_type)) {
       uint8_column& target(*static_cast<uint8_column*>(base_.get()));
@@ -429,10 +446,10 @@ public:
       bit_vector_column& target(*static_cast<bit_vector_column*>(base_.get()));
       target.push_back(value);
     }
-	}
+  }
 
-	template <typename T>
-	bool insert(uint64_t index, const T& value) {
+  template <typename T>
+  bool insert(uint64_t index, const T& value) {
     const column_type& type = base_->type();
     if (type.is(column_type::uint8_type)) {
       uint8_column& target(*static_cast<uint8_column*>(base_.get()));
@@ -472,9 +489,9 @@ public:
       target.insert(index, value);
     }
     return true;
-	}
-	template <typename T>
-	bool update(uint64_t index, const T& value) {
+  }
+  template <typename T>
+  bool update(uint64_t index, const T& value) {
     const column_type& type = base_->type();
     if (type.is(column_type::uint8_type)) {
       uint8_column& target(*static_cast<uint8_column*>(base_.get()));
@@ -513,7 +530,7 @@ public:
       bit_vector_column& target(*static_cast<bit_vector_column*>(base_.get()));
       target.update(index, value);
     }
-		return true;
+    return true;
   }
   bool remove(uint64_t index) {
     const column_type& type = base_->type();
@@ -558,7 +575,8 @@ public:
   };
   virtual void clear() {
   }
-  virtual void pack_with_index(const uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
+  virtual void pack_with_index(
+      const uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
   }
   abstract_column_base* get() {
     return base_.get();
@@ -567,16 +585,18 @@ public:
     return base_.get();
   }
 
-	void dump() const {}
-	void dump(std::ostream& os, uint64_t target) const {
+  void dump() const {}
+  void dump(std::ostream& os, uint64_t target) const {
   }
-private:
+
+ private:
   pfi::lang::shared_ptr<abstract_column_base> base_;
 };
-}
 
-}	 // namespace table
-}	 // namespace core
-}	 // namespace jubatus
+}  // namespace detail
 
-#endif	// JUBATUS_CORE_TABLE_COLUMN_ABSTRUCT_COLUMN_HPP_
+}  // namespace table
+}  // namespace core
+}  // namespace jubatus
+
+#endif  // JUBATUS_CORE_TABLE_COLUMN_ABSTRACT_COLUMN_HPP_

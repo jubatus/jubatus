@@ -54,11 +54,11 @@ class invalid_row_set
 class column_table {
   typedef pfi::data::unordered_map<std::string, uint64_t> index_table;
 
-public:
+ public:
   typedef std::pair<owner, uint64_t> version_t;
 
   column_table()
-    : tuples_(0), clock_(0) {
+      : tuples_(0), clock_(0) {
   }
   ~column_table() {
   }
@@ -224,14 +224,14 @@ public:
   void load(std::istream& is) {
     pfi::concurrent::scoped_wlock lk(table_lock_);
     pfi::data::serialization::binary_iarchive ia(is);
-    //ia >> *this;
+    // ia >> *this;
     scan_clock();
   }
 
   void save(std::ostream& os) const {
     pfi::concurrent::scoped_rlock lk(table_lock_);
     pfi::data::serialization::binary_oarchive oa(os);
-    //oa << *const_cast<column_table*>(this);
+    // oa << *const_cast<column_table*>(this);
   }
 
   friend std::ostream& operator<<(std::ostream& os, const column_table& tbl) {
