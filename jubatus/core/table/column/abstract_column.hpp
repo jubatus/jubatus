@@ -81,7 +81,7 @@ public:
 	void push_back(const T& type) {
     array_.push_back(type);
 	}
-  void push_back(const msgpack::object obj) {
+  void push_back(const msgpack::object& obj) {
     array_.push_back(T());
     obj.convert(&array_[array_.size()]);
   }
@@ -100,7 +100,7 @@ public:
     return true;
 	}
 
-  bool update(uint64_t index, const msgpack::object obj) {
+  bool update(uint64_t index, const msgpack::object& obj) {
     if (size() < index) {
       return false;
     }
@@ -168,11 +168,11 @@ public:
   using detail::abstract_column_base::insert;
   using detail::abstract_column_base::update;
 
-  void push_back(const msgpack::object obj) {
+  void push_back(const msgpack::object& obj) {
     array_.push_back(uint64_t());
     obj.convert(&array_[array_.size()]);
   }
-  bool update(uint64_t index, const msgpack::object obj) {
+  bool update(uint64_t index, const msgpack::object& obj) {
     if (size() < index) {
       return false;
     }
