@@ -34,10 +34,6 @@ namespace jubatus {
 namespace core {
 namespace graph {
 
-class graph_wo_index;
-typedef framework::delegating_mixable<graph_wo_index, std::string>
-    mixable_graph_wo_index;
-
 class graph_wo_index
     : public graph_base,
       public pfi::lang::enable_shared_from_this<graph_wo_index> {
@@ -167,6 +163,9 @@ class graph_wo_index
 
   config config_;
 };
+
+typedef framework::delegating_mixable<graph_wo_index, std::string>
+    mixable_graph_wo_index;
 
 }  // namespace graph
 }  // namespace core
