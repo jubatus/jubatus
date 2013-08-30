@@ -198,6 +198,7 @@ void stat::register_mixables_to_holder(framework::mixable_holder& holder) {
   // TODO(beam2d): Split a part of MIX operations from |stat| to outside of it
   // and use it as a model. |shared_from_this| is a workaround to support this
   // canonical function like other algorithms.
+  // TODO(beam2d): Make it const. This requires removing the workaround.
   if (!mixable_) {
     mixable_.reset(new mixable_stat);
     mixable_->set_model(shared_from_this());
