@@ -28,6 +28,7 @@
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
 #include "../common/exception.hpp"
+#include "../framework/mixable.hpp"
 
 namespace jubatus {
 namespace core {
@@ -175,6 +176,30 @@ class stat {
   double e_;
   double n_;
 };
+
+struct mixable_stat
+    : public framework::mixable<stat, std::pair<double, size_t> > {
+ public:
+  void clear() {
+  }
+
+  std::pair<double, size_t> get_diff_impl() const {
+    return get_model()->get_diff();
+  }
+
+  void mix_impl(
+      const std::pair<double, size_t>& lhs,
+      const std::pair<double, size_t>& rhs,
+      std::pair<double, size_t>& mixed) const {
+    mixed = lhs;
+    stat::reduce(rhs, mixed);
+  }
+
+  void put_diff_impl(const std::pair<double, size_t>& v) {
+    get_model()->put_diff(v);
+  }
+};
+
 }  // namespace stat
 }  // namespace core
 }  // namespace jubatus

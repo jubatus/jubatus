@@ -28,30 +28,6 @@ namespace jubatus {
 namespace core {
 namespace driver {
 
-struct mixable_stat : public framework::mixable<
-    jubatus::core::stat::stat,
-    std::pair<double, size_t> > {
- public:
-  void clear() {
-  }
-
-  std::pair<double, size_t> get_diff_impl() const {
-    return get_model()->get_diff();
-  }
-
-  void mix_impl(
-      const std::pair<double, size_t>& lhs,
-      const std::pair<double, size_t>& rhs,
-      std::pair<double, size_t>& mixed) const {
-    mixed = lhs;
-    jubatus::core::stat::stat::reduce(rhs, mixed);
-  }
-
-  void put_diff_impl(const std::pair<double, size_t>& v) {
-    get_model()->put_diff(v);
-  }
-};
-
 class stat {
  public:
   explicit stat(jubatus::core::stat::stat* stat_method);
