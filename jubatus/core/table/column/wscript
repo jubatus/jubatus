@@ -31,9 +31,9 @@ def build(bld):
                  'bit_vector_test.cpp'])
 
   bld.install_files('${PREFIX}/include/jubatus/core/table/column/', [
+      'abstract_column.hpp',
       'bit_vector.hpp',
       'column_table.hpp',
       'column_type.hpp',
-      'columns.hpp',
       'owner.hpp',
       ])
