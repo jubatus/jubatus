@@ -36,7 +36,9 @@ namespace jubatus {
 namespace core {
 namespace stat {
 
-struct mixable_stat;
+class stat;
+typedef framework::delegating_mixable<stat, std::pair<double, size_t> >
+    mixable_stat;
 
 class stat_error : public common::exception::jubaexception<stat_error> {
  public:
@@ -59,11 +61,11 @@ class stat : public pfi::lang::enable_shared_from_this<stat> {
   explicit stat(size_t window_size);
   virtual ~stat();
 
-  virtual std::pair<double, size_t> get_diff() const;
-  virtual void put_diff(const std::pair<double, size_t>&);
-  static void reduce(
+  virtual void get_diff(std::pair<double, size_t>& ret) const;
+  virtual void set_mixed_and_clear_diff(const std::pair<double, size_t>&);
+  virtual void mix(
       const std::pair<double, size_t>& lhs,
-      std::pair<double, size_t>& ret);
+      std::pair<double, size_t>& ret) const;
 
   void push(const std::string& key, double val);
 
@@ -183,29 +185,6 @@ class stat : public pfi::lang::enable_shared_from_this<stat> {
   double n_;
 
   pfi::lang::shared_ptr<mixable_stat> mixable_;
-};
-
-struct mixable_stat
-    : public framework::mixable<stat, std::pair<double, size_t> > {
- public:
-  void clear() {
-  }
-
-  std::pair<double, size_t> get_diff_impl() const {
-    return get_model()->get_diff();
-  }
-
-  void mix_impl(
-      const std::pair<double, size_t>& lhs,
-      const std::pair<double, size_t>& rhs,
-      std::pair<double, size_t>& mixed) const {
-    mixed = lhs;
-    stat::reduce(rhs, mixed);
-  }
-
-  void put_diff_impl(const std::pair<double, size_t>& v) {
-    get_model()->put_diff(v);
-  }
 };
 
 }  // namespace stat

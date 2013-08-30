@@ -38,8 +38,7 @@ stat::stat(size_t window_size)
 stat::~stat() {
 }
 
-std::pair<double, size_t> stat::get_diff() const {
-  std::pair<double, size_t> ret;
+void stat::get_diff(std::pair<double, size_t>& ret) const {
   ret.first = 0;
   ret.second = 0;
 
@@ -49,17 +48,16 @@ std::pair<double, size_t> stat::get_diff() const {
     ret.first += pr * log(pr);
     ret.second += pr;
   }
-  return ret;
 }
 
-void stat::put_diff(const std::pair<double, size_t>& e) {
+void stat::set_mixed_and_clear_diff(const std::pair<double, size_t>& e) {
   e_ = e.first;
   n_ = e.second;
 }
 
-void stat::reduce(
+void stat::mix(
     const std::pair<double, size_t>& lhs,
-    std::pair<double, size_t>& ret) {
+    std::pair<double, size_t>& ret) const {
   ret.first += lhs.first;
   ret.second += lhs.second;
 }
