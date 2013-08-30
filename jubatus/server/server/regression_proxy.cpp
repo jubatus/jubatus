@@ -1,4 +1,4 @@
-// This file is auto-generated from nearest_neighbor.idl
+// This file is auto-generated from regression.idl
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -10,31 +10,22 @@
 
 #include "jubatus/core/common/exception.hpp"
 #include "../../server/framework/aggregators.hpp"
-#include "../../server/framework/keeper.hpp"
-#include "nearest_neighbor_types.hpp"
+#include "../../server/framework/proxy.hpp"
+#include "regression_types.hpp"
 
 namespace jubatus {
 
-int run_keeper(int argc, char* argv[]) {
+int run_proxy(int argc, char* argv[]) {
   try {
-    jubatus::server::framework::keeper k(
-        jubatus::server::framework::keeper_argv(argc, argv,
-             "nearest_neighbor"));
-    k.register_async_broadcast<bool>("init_table", pfi::lang::function<bool(
-        bool, bool)>(&jubatus::server::framework::pass<bool>));
+    jubatus::server::framework::proxy k(
+        jubatus::server::framework::proxy_argv(argc, argv, "regression"));
+    k.register_async_random<std::string>("get_config");
+    k.register_async_random<int32_t, std::vector<std::pair<float,
+         jubatus::core::fv_converter::datum> > >("train");
+    k.register_async_random<std::vector<float>,
+         std::vector<jubatus::core::fv_converter::datum> >("estimate");
     k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
          bool)>(&jubatus::server::framework::all_and));
-    k.register_async_cht<1, bool, jubatus::core::fv_converter::datum>("set_row",
-         pfi::lang::function<bool(bool, bool)>(
-        &jubatus::server::framework::pass<bool>));
-    k.register_async_random<neighbor_result, std::string, uint32_t>(
-        "neighbor_row_from_id");
-    k.register_async_random<neighbor_result, jubatus::core::fv_converter::datum,
-         uint32_t>("neighbor_row_from_data");
-    k.register_async_random<neighbor_result, std::string, int32_t>(
-        "similar_row_from_id");
-    k.register_async_random<neighbor_result, jubatus::core::fv_converter::datum,
-         int32_t>("similar_row_from_data");
     k.register_async_broadcast<bool, std::string>("save",
          pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
@@ -48,7 +39,6 @@ int run_keeper(int argc, char* argv[]) {
          std::string> >, std::map<std::string, std::map<std::string,
          std::string> >)>(&jubatus::server::framework::merge<std::string,
          std::map<std::string, std::string> >));
-    k.register_async_random<std::string>("get_config");
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
@@ -59,5 +49,5 @@ int run_keeper(int argc, char* argv[]) {
 }  // namespace jubatus
 
 int main(int argc, char* argv[]) {
-  jubatus::run_keeper(argc, argv);
+  jubatus::run_proxy(argc, argv);
 }
