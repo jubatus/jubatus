@@ -27,12 +27,16 @@
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
+#include <pficommon/lang/enable_shared_from_this.h>
+#include <pficommon/lang/shared_ptr.h>
 #include "../common/exception.hpp"
 #include "../framework/mixable.hpp"
 
 namespace jubatus {
 namespace core {
 namespace stat {
+
+struct mixable_stat;
 
 class stat_error : public common::exception::jubaexception<stat_error> {
  public:
@@ -50,7 +54,7 @@ class stat_error : public common::exception::jubaexception<stat_error> {
   std::string msg_;
 };
 
-class stat {
+class stat : public pfi::lang::enable_shared_from_this<stat> {
  public:
   explicit stat(size_t window_size);
   virtual ~stat();
@@ -76,6 +80,8 @@ class stat {
   virtual bool save(std::ostream&);
   virtual bool load(std::istream&);
   std::string type() const;
+
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder);
 
  protected:
   struct stat_val {
@@ -175,6 +181,8 @@ class stat {
 
   double e_;
   double n_;
+
+  pfi::lang::shared_ptr<mixable_stat> mixable_;
 };
 
 struct mixable_stat
