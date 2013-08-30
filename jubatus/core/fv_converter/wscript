@@ -153,6 +153,7 @@ def build(bld):
                       'converter_config.hpp',
                       'json_converter.hpp',
                       'weight_manager.hpp',
+                      'mixable_weight_manager.hpp',
                       'keyword_weights.hpp',
                       'counter.hpp',
                       'revert.hpp',

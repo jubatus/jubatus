@@ -68,7 +68,6 @@ def build(bld):
       'graph.hpp',
       'diffv.hpp',
       'linear_function_mixer.hpp',
-      'mixable_weight_manager.hpp',
       'mixable_versioned_table.hpp',
       'nearest_neighbor.hpp',
       ])
