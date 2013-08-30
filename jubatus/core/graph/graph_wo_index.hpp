@@ -24,14 +24,23 @@
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/unordered_set.h>
 #include <pficommon/data/serialization.h>
+#include <pficommon/lang/enable_shared_from_this.h>
+#include <pficommon/lang/shared_ptr.h>
 
+#include "../framework/mixable.hpp"
 #include "graph_base.hpp"
 
 namespace jubatus {
 namespace core {
 namespace graph {
 
-class graph_wo_index : public graph_base {
+class graph_wo_index;
+typedef framework::delegating_mixable<graph_wo_index, std::string>
+    mixable_graph_wo_index;
+
+class graph_wo_index
+    : public graph_base,
+      public pfi::lang::enable_shared_from_this<graph_wo_index> {
  public:
   struct config {
     config()
@@ -94,6 +103,8 @@ class graph_wo_index : public graph_base {
   void update_index();
 
   void mix(const std::string& diff, std::string& mixed);
+
+  void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
  private:
   typedef pfi::data::unordered_map<node_id_t, node_info> node_info_map;

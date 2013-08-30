@@ -17,7 +17,7 @@ def build(bld):
     target = 'jubatus_graph',
     name = 'jubatus_graph',
     includes = '.',
-    use = 'PFICOMMON jubacommon'+libassert)
+    use = 'PFICOMMON MSGPACK jubacommon'+libassert)
 
   def make_test(s):
     bld.program(
