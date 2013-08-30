@@ -384,6 +384,9 @@ bool graph_wo_index::load_imp(std::istream& is) {
 
 void graph_wo_index::update_index() {
   update_spt();
+  diff_type diff;
+  get_diff(diff);
+  set_mixed_and_clear_diff(diff);
 }
 
 void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
@@ -499,7 +502,7 @@ void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
 }
 
 void graph_wo_index::set_mixed_and_clear_diff_eigen_score(
-    eigen_vector_query_diff& mixed) {
+    const eigen_vector_query_diff& mixed) {
   eigen_scores_ = mixed;
   if (eigen_scores_.size() == 0) {
     return;
@@ -621,34 +624,17 @@ void graph_wo_index::set_mixed_and_clear_diff_shortest_path_tree(
   spts_ = mixed;
 }
 
-void graph_wo_index::get_diff(string& diff) const {
+void graph_wo_index::get_diff(diff_type& diff) const {
   // get_diff should be constant
   const_cast<graph_wo_index*>(this)->update_spt();
 
-  std::ostringstream os;
-  pfi::data::serialization::binary_oarchive oa(os);
-
-  eigen_vector_query_diff ev_diff;
-  get_diff_eigen_score(ev_diff);
-  oa << ev_diff;
-
-  spt_query_diff sdiff;
-  get_diff_shortest_path_tree(sdiff);
-  oa << sdiff;
-  diff = os.str();
+  get_diff_eigen_score(diff.eigen_vector_query);
+  get_diff_shortest_path_tree(diff.spt_query);
 }
 
-void graph_wo_index::set_mixed_and_clear_diff(const string& mixed) {
-  std::istringstream is(mixed);
-  pfi::data::serialization::binary_iarchive ia(is);
-
-  eigen_vector_query_diff emixed;
-  ia >> emixed;
-  set_mixed_and_clear_diff_eigen_score(emixed);
-
-  spt_query_diff smixed;
-  ia >> smixed;
-  set_mixed_and_clear_diff_shortest_path_tree(smixed);
+void graph_wo_index::set_mixed_and_clear_diff(const diff_type& mixed) {
+  set_mixed_and_clear_diff_eigen_score(mixed.eigen_vector_query);
+  set_mixed_and_clear_diff_shortest_path_tree(mixed.spt_query);
 }
 
 void graph_wo_index::get_status(map<string, string>& status) const {
@@ -657,33 +643,9 @@ void graph_wo_index::get_status(map<string, string>& status) const {
   status["local_edge_num"] = lexical_cast<string>(local_edges_.size());
 }
 
-void graph_wo_index::mix(const string& diff, string& mixed) {
-  eigen_vector_query_diff ediff;
-  spt_query_diff sdiff;
-  {
-    std::istringstream is_diff(diff);
-    pfi::data::serialization::binary_iarchive ia(is_diff);
-    ia >> ediff;
-    ia >> sdiff;
-  }
-
-  eigen_vector_query_diff emixed;
-  spt_query_diff smixed;
-  {
-    std::istringstream is_mixed(mixed);
-    pfi::data::serialization::binary_iarchive ia(is_mixed);
-    ia >> emixed;
-    ia >> smixed;
-  }
-
-  mix(ediff, emixed);
-  mix(sdiff, smixed, config_.landmark_num);
-
-  std::ostringstream os;
-  pfi::data::serialization::binary_oarchive oa(os);
-
-  oa << emixed << smixed;
-  mixed = os.str();
+void graph_wo_index::mix(const diff_type& diff, diff_type& mixed) {
+  mix(diff.eigen_vector_query, mixed.eigen_vector_query);
+  mix(diff.spt_query, mixed.spt_query, config_.landmark_num);
 }
 
 void graph_wo_index::mix(

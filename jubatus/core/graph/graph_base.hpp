@@ -70,9 +70,6 @@ class graph_base {
   virtual void get_status(std::map<std::string, std::string>& status) const = 0;
   virtual void update_index() = 0;
 
-  virtual void get_diff(std::string& diff) const = 0;
-  virtual void set_mixed_and_clear_diff(const std::string& mixed) = 0;
-
   virtual void register_mixables_to_holder(
       framework::mixable_holder& holder) const = 0;
 

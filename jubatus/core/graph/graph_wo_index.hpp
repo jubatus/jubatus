@@ -27,6 +27,7 @@
 #include <pficommon/lang/enable_shared_from_this.h>
 #include <pficommon/lang/shared_ptr.h>
 
+#include "../common/unordered_map.hpp"
 #include "../framework/mixable.hpp"
 #include "graph_base.hpp"
 
@@ -38,6 +39,23 @@ class graph_wo_index
     : public graph_base,
       public pfi::lang::enable_shared_from_this<graph_wo_index> {
  public:
+  struct diff_type {
+    eigen_vector_query_diff eigen_vector_query;
+    spt_query_diff spt_query;
+
+    void clear() {
+      eigen_vector_query.clear();
+      spt_query.clear();
+    }
+
+    MSGPACK_DEFINE(eigen_vector_query, spt_query);
+
+    template<typename Ar>
+    void serialize(Ar& ar) {
+      ar & MEMBER(eigen_vector_query) & MEMBER(spt_query);
+    }
+  };
+
   struct config {
     config()
         : alpha(0.9),
@@ -90,15 +108,15 @@ class graph_wo_index
   void get_node(node_id_t id, node_info& ret) const;
   void get_edge(edge_id_t eid, edge_info& ret) const;
 
-  void get_diff(std::string& diff) const;
-  void set_mixed_and_clear_diff(const std::string& mixed);
+  void get_diff(diff_type& diff) const;
+  void set_mixed_and_clear_diff(const diff_type& mixed);
 
   std::string type() const;
 
   void get_status(std::map<std::string, std::string>& status) const;
   void update_index();
 
-  void mix(const std::string& diff, std::string& mixed);
+  void mix(const diff_type& diff, diff_type& mixed);
 
   void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
@@ -123,7 +141,8 @@ class graph_wo_index
       eigen_vector_query_diff& mixed);
 
   void get_diff_eigen_score(eigen_vector_query_diff& diff) const;
-  void set_mixed_and_clear_diff_eigen_score(eigen_vector_query_diff& mixed);
+  void set_mixed_and_clear_diff_eigen_score(
+      const eigen_vector_query_diff& mixed);
 
   eigen_vector_query_diff eigen_scores_;
 
@@ -164,7 +183,7 @@ class graph_wo_index
   config config_;
 };
 
-typedef framework::delegating_mixable<graph_wo_index, std::string>
+typedef framework::delegating_mixable<graph_wo_index, graph_wo_index::diff_type>
     mixable_graph_wo_index;
 
 }  // namespace graph

@@ -126,9 +126,6 @@ jubatus::core::graph::edge_info graph::get_edge(edge_id_t eid) const {
 
 void graph::update_index() {
   graph_->update_index();
-  std::string diff;
-  graph_->get_diff(diff);
-  graph_->set_mixed_and_clear_diff(diff);
 }
 
 void graph::clear() {
