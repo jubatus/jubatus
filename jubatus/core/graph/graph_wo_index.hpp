@@ -120,12 +120,12 @@ class graph_wo_index
   // centeralities
   static void mix(
       const eigen_vector_query_diff& diff,
-      eigen_vector_query_mixed& mixed);
+      eigen_vector_query_diff& mixed);
 
   void get_diff_eigen_score(eigen_vector_query_diff& diff) const;
-  void set_mixed_and_clear_diff_eigen_score(eigen_vector_query_mixed& mixed);
+  void set_mixed_and_clear_diff_eigen_score(eigen_vector_query_diff& mixed);
 
-  eigen_vector_query_mixed eigen_scores_;
+  eigen_vector_query_diff eigen_scores_;
 
   // shortest pathes
   static void mix_spt(
@@ -133,7 +133,7 @@ class graph_wo_index
       shortest_path_tree& mixed);
   static void mix(
       const spt_query_diff& diff,
-      spt_query_mixed& mixed,
+      spt_query_diff& mixed,
       size_t landmark_num);
 
   void may_set_landmark(node_id_t id);
@@ -141,7 +141,7 @@ class graph_wo_index
   void get_diff_shortest_path_tree(spt_query_diff& diff) const;
 
   void set_mixed_and_clear_diff_shortest_path_tree(
-      const spt_query_mixed& mixed);
+      const spt_query_diff& mixed);
 
   void update_spt();
 
@@ -159,7 +159,7 @@ class graph_wo_index
 
   bool is_node_matched_to_query(const preset_query& query, node_id_t id) const;
 
-  spt_query_mixed spts_;
+  spt_query_diff spts_;
 
   config config_;
 };
