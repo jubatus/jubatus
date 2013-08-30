@@ -82,6 +82,26 @@ TEST(stat_test, entropy) {
   EXPECT_NEAR(p.entropy(), 1.097, 0.01);
 }
 
+TEST(stat_test, mixed_entropy) {
+  core::stat::stat p(1024);
+  p.push("test", 1.0);
+  p.push("test", 2.0);
+  p.push("test", 3.0);
+
+  double e_d = 3 * log(3);
+  double e_e = - e_d / 3 + log(3);
+
+  std::pair<double, size_t> d = p.get_diff();
+  ASSERT_DOUBLE_EQ(e_d, d.first);
+  ASSERT_EQ(3u, d.second);
+
+  p.put_diff(d);
+
+  double bias = d.first / d.second;  // bias to suppress cancellation
+  ASSERT_DOUBLE_EQ(e_e + bias, p.entropy() + bias);
+  ASSERT_DOUBLE_EQ(p.entropy() + bias, p.entropy() + bias);
+}
+
 REGISTER_TYPED_TEST_CASE_P(
     stat_test,
     trivial);
