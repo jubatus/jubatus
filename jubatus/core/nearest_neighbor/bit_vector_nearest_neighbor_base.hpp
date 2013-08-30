@@ -57,7 +57,7 @@ class bit_vector_nearest_neighbor_base : public nearest_neighbor_base {
 
  private:
   void fill_schema(std::vector<table::column_type>& schema);
-  table::const_bit_vector_column bit_vector_column() const;
+  table::const_bit_vector_column& bit_vector_column() const;
 
   void neighbor_row_from_hash(
       const table::bit_vector& query,

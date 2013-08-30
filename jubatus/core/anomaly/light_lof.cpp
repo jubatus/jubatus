@@ -236,9 +236,9 @@ void light_lof::collect_neighbors(
 
 void light_lof::update_entries(const unordered_set<uint64_t>& neighbors) {
   shared_ptr<column_table> table = mixable_scores_->get_model();
-  table::float_column kdist_column =
+  table::float_column& kdist_column =
       table->get_float_column(KDIST_COLUMN_INDEX);
-  table::float_column lrd_column = table->get_float_column(LRD_COLUMN_INDEX);
+  table::float_column& lrd_column = table->get_float_column(LRD_COLUMN_INDEX);
 
   unordered_map<uint64_t, std::vector<std::pair<uint64_t, float> > >
       nested_neighbors;

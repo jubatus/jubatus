@@ -80,7 +80,7 @@ void bit_vector_nearest_neighbor_base::neighbor_row(
     return;
   }
 
-  const_bit_vector_column col = bit_vector_column();
+  const_bit_vector_column& col = bit_vector_column();
   neighbor_row_from_hash(col[maybe_index.second], ids, ret_num);
 }
 
@@ -90,7 +90,7 @@ void bit_vector_nearest_neighbor_base::fill_schema(
   schema.push_back(column_type(column_type::bit_vector_type, bitnum_));
 }
 
-const_bit_vector_column bit_vector_nearest_neighbor_base::bit_vector_column()
+const_bit_vector_column& bit_vector_nearest_neighbor_base::bit_vector_column()
     const {
   return get_const_table()->get_bit_vector_column(bit_vector_column_id_);
 }

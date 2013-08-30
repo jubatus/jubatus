@@ -132,11 +132,11 @@ void euclid_lsh::fill_schema(vector<column_type>& schema) {
   schema.push_back(column_type(column_type::float_type));
 }
 
-const_bit_vector_column euclid_lsh::lsh_column() const {
+const_bit_vector_column& euclid_lsh::lsh_column() const {
   return get_const_table()->get_bit_vector_column(first_column_id_);
 }
 
-const_float_column euclid_lsh::norm_column() const {
+const_float_column& euclid_lsh::norm_column() const {
   return get_const_table()->get_float_column(first_column_id_ + 1);
 }
 
@@ -149,8 +149,8 @@ void euclid_lsh::neighbor_row_from_hash(
 
   jubatus::core::storage::fixed_size_heap<pair<float, size_t> > heap(ret_num);
   {
-    const_bit_vector_column bv_col = lsh_column();
-    const_float_column norm_col = norm_column();
+    const_bit_vector_column& bv_col = lsh_column();
+    const_float_column& norm_col = norm_column();
 
     const float denom = bv.bit_num();
     for (size_t i = 0; i < table->size(); ++i) {

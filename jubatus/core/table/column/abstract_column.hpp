@@ -25,6 +25,7 @@
 #include <vector>
 #include <msgpack.hpp>
 #include <pficommon/lang/demangle.h>
+#include <pficommon/lang/noncopyable.h>
 #include "../../common/assert.hpp"
 #include "../storage_exception.hpp"
 #include "bit_vector.hpp"
@@ -36,7 +37,7 @@ namespace table {
 
 namespace detail {
 
-class abstract_column_base {
+class abstract_column_base : pfi::lang::noncopyable {
  public:
   explicit abstract_column_base(const column_type& type)
       : my_type_(type) {
@@ -47,22 +48,42 @@ class abstract_column_base {
   column_type type() const {
     return my_type_;
   }
-  template <typename U>
-  void push_back(const U& type) {
-    throw type_unmatch_exception(
-      "column: invalid type push_back(): " + pfi::lang::get_typename<U>());
-  }
-  template <typename U>
-  bool insert(uint64_t target, const U& value) {
-    throw type_unmatch_exception(
-      "column: invalid type insert(): " + pfi::lang::get_typename<U>());
-  }
-  template <typename U>
-  bool update(uint64_t target, const U& value) {
-    throw type_unmatch_exception(
-      "column: invalid type update(): " + pfi::lang::get_typename<U>());
-    return true;
-  }
+
+  #define JUBATUS_GEN_FUNCTIONS_(tp)                    \
+    virtual void push_back(const tp& value) {           \
+      throw type_unmatch_exception(                     \
+        "column: invalid type in push_back(): "         \
+        "expected: " + my_type_.type_as_string() + ", " \
+        "actual: " + pfi::lang::get_typename<tp>());    \
+    }                                                   \
+    virtual bool insert(uint64_t target, const tp&) {   \
+      throw type_unmatch_exception(                     \
+        "column: invalid type in insert(): "            \
+        "expected: " + my_type_.type_as_string() + ", " \
+        "actual: " + pfi::lang::get_typename<tp>());    \
+    }                                                   \
+    virtual bool update(uint64_t target, const tp&) {   \
+      throw type_unmatch_exception(                     \
+        "column: invalid type in update(): "            \
+        "expected: " + my_type_.type_as_string() + ", " \
+        "actual: " + pfi::lang::get_typename<tp>());    \
+    }
+
+    JUBATUS_GEN_FUNCTIONS_(uint8_t);          // NOLINT
+    JUBATUS_GEN_FUNCTIONS_(uint16_t);         // NOLINT
+    JUBATUS_GEN_FUNCTIONS_(uint32_t);         // NOLINT
+    JUBATUS_GEN_FUNCTIONS_(uint64_t);         // NOLINT
+    JUBATUS_GEN_FUNCTIONS_(int8_t);           // NOLINT
+    JUBATUS_GEN_FUNCTIONS_(int16_t);          // NOLINT
+    JUBATUS_GEN_FUNCTIONS_(int32_t);          // NOLINT
+    JUBATUS_GEN_FUNCTIONS_(int64_t);          // NOLINT
+    JUBATUS_GEN_FUNCTIONS_(float);            // NOLINT
+    JUBATUS_GEN_FUNCTIONS_(double);           // NOLINT
+    JUBATUS_GEN_FUNCTIONS_(std::string);      // NOLINT
+    JUBATUS_GEN_FUNCTIONS_(bit_vector);       // NOLINT
+    JUBATUS_GEN_FUNCTIONS_(msgpack::object);  // NOLINT
+  #undef JUBATUS_GEN_FUNCTIONS_
+
   virtual bool remove(uint64_t target) = 0;
   virtual void clear() = 0;
   virtual void pack_with_index(
@@ -88,20 +109,24 @@ class typed_column : public detail::abstract_column_base {
   using detail::abstract_column_base::insert;
   using detail::abstract_column_base::update;
 
-  void push_back(const T& type) {
-    array_.push_back(type);
+  void push_back(const T& value) {
+    array_.push_back(value);
   }
   void push_back(const msgpack::object& obj) {
-    array_.push_back(T());
-    obj.convert(&array_[array_.size()]);
+    typed_column::push_back(obj.as<T>());
   }
+
   bool insert(uint64_t target, const T& value) {
     if (size() < target) {
       return false;
     }
-    array_.insert(std::advance(array_.begin(), target), value);
+    array_.insert(array_.begin() + target, value);
     return true;
   }
+  bool insert(uint64_t target, const msgpack::object& obj) {
+    return typed_column::insert(target, obj.as<T>());
+  }
+
   bool update(uint64_t index, const T& value) {
     if (size() < index) {
       return false;
@@ -109,13 +134,8 @@ class typed_column : public detail::abstract_column_base {
     array_[index] = value;
     return true;
   }
-
-  bool update(uint64_t index, const msgpack::object& obj) {
-    if (size() < index) {
-      return false;
-    }
-    obj.convert(&array_[index]);
-    return true;
+  bool update(uint64_t target, const msgpack::object& obj) {
+    return typed_column::update(target, obj.as<T>());
   }
 
   bool remove(uint64_t target) {
@@ -180,10 +200,30 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
   using detail::abstract_column_base::insert;
   using detail::abstract_column_base::update;
 
+  void push_back(const bit_vector& value) {
+    const size_t bit_length = type().bit_vector_length();
+    if (value.bit_num() > bit_length) {
+      throw length_unmatch_exception(
+        "invalid length of bit_vector (" +
+        pfi::lang::lexical_cast<std::string>(value.bit_num()) + ", "
+        "expected " +
+        pfi::lang::lexical_cast<std::string>(bit_length) + ")");
+    }
+    for (size_t i = 0; i < blocks_per_value_(); ++i) {
+      array_.push_back(uint64_t());
+    }
+    memcpy(
+        &array_[array_.size() - blocks_per_value_()],
+        value.raw_data_unsafe(),
+        value.used_bytes());
+  }
+  /*
   void push_back(const msgpack::object& obj) {
     array_.push_back(uint64_t());
     obj.convert(&array_[array_.size()]);
   }
+  */
+  /*
   bool update(uint64_t index, const msgpack::object& obj) {
     if (size() < index) {
       return false;
@@ -191,21 +231,28 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
     obj.convert(&array_[index]);
     return true;
   }
+  */
 
   uint64_t size() const {
-    return 1;
+    return array_.size() / blocks_per_value_();
   }
   bit_vector operator[](uint64_t index) {
     return bit_vector(
-      &array_[bit_vector::memory_size(type().bit_vector_length()) * index],
+      &array_[blocks_per_value_() * index],
       type().bit_vector_length());
   }
   bit_vector operator[](uint64_t index) const {
     return bit_vector(
-      &array_[bit_vector::memory_size(type().bit_vector_length()) * index],
+      &array_[blocks_per_value_() * index],
       type().bit_vector_length());
   }
   bool remove(uint64_t target) {
+    if (target >= size()) {
+      return false;
+    }
+    std::vector<uint64_t>::iterator iter =
+        array_.begin() + target * blocks_per_value_();
+    array_.erase(iter, iter + blocks_per_value_());
     return true;
   }
   void clear() {
@@ -217,6 +264,11 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
 
  private:
   std::vector<uint64_t> array_;
+  size_t blocks_per_value_() const {
+    size_t bytes_per_value =
+        bit_vector::memory_size(type().bit_vector_length());
+    return (bytes_per_value + sizeof(uint64_t) - 1) / sizeof(uint64_t);
+  }
 };
 
 typedef typed_column<uint8_t> uint8_column;
@@ -251,221 +303,67 @@ class abstract_column {
  public:
   explicit abstract_column(const column_type& type) {
     if (type.is(column_type::uint8_type)) {
-      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
-          new uint8_column(type));
+      base_.reset(new uint8_column(type));
     } else if (type.is(column_type::uint16_type)) {
-      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
-          new uint16_column(type));
+      base_.reset(new uint16_column(type));
     } else if (type.is(column_type::uint32_type)) {
-      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
-          new uint32_column(type));
+      base_.reset(new uint32_column(type));
     } else if (type.is(column_type::uint64_type)) {
-      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
-          new uint64_column(type));
+      base_.reset(new uint64_column(type));
     } else if (type.is(column_type::int8_type)) {
-      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
-          new int8_column(type));
+      base_.reset(new int8_column(type));
     } else if (type.is(column_type::int16_type)) {
-      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
-          new int16_column(type));
+      base_.reset(new int16_column(type));
     } else if (type.is(column_type::int32_type)) {
-      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
-          new int32_column(type));
+      base_.reset(new int32_column(type));
     } else if (type.is(column_type::int64_type)) {
-      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
-          new int64_column(type));
+      base_.reset(new int64_column(type));
     } else if (type.is(column_type::float_type)) {
-      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
-          new float_column(type));
+      base_.reset(new float_column(type));
     } else if (type.is(column_type::double_type)) {
-      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
-          new double_column(type));
+      base_.reset(new double_column(type));
     } else if (type.is(column_type::string_type)) {
-      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
-          new string_column(type));
+      base_.reset(new string_column(type));
     } else if (type.is(column_type::bit_vector_type)) {
-      base_ = pfi::lang::shared_ptr<detail::abstract_column_base>(
-          new bit_vector_column(type));
+      base_.reset(new bit_vector_column(type));
+    } else {
+      JUBATUS_ASSERT_UNREACHABLE();
     }
-  }
-  virtual ~abstract_column() {
   }
 
   column_type type() const {
+    JUBATUS_ASSERT(base_ != NULL);
     return base_->type();
   }
 
   template <typename T>
   void push_back(const T& value) {
-    const column_type& type = base_->type();
-    if (type.is(column_type::uint8_type)) {
-      uint8_column& target(*static_cast<uint8_column*>(base_.get()));
-      target.push_back(value);
-    } else if (type.is(column_type::uint16_type)) {
-      uint16_column& target(*static_cast<uint16_column*>(base_.get()));
-      target.push_back(value);
-    } else if (type.is(column_type::uint32_type)) {
-      uint32_column& target(*static_cast<uint32_column*>(base_.get()));
-      target.push_back(value);
-    } else if (type.is(column_type::uint64_type)) {
-      uint64_column& target(*static_cast<uint64_column*>(base_.get()));
-      target.push_back(value);
-    } else if (type.is(column_type::int8_type)) {
-      int8_column& target(*static_cast<int8_column*>(base_.get()));
-      target.push_back(value);
-    } else if (type.is(column_type::int16_type)) {
-      int16_column& target(*static_cast<int16_column*>(base_.get()));
-      target.push_back(value);
-    } else if (type.is(column_type::int32_type)) {
-      int32_column& target(*static_cast<int32_column*>(base_.get()));
-      target.push_back(value);
-    } else if (type.is(column_type::int64_type)) {
-      int64_column& target(*static_cast<int64_column*>(base_.get()));
-      target.push_back(value);
-    } else if (type.is(column_type::float_type)) {
-      float_column& target(*static_cast<float_column*>(base_.get()));
-      target.push_back(value);
-    } else if (type.is(column_type::double_type)) {
-      double_column& target(*static_cast<double_column*>(base_.get()));
-      target.push_back(value);
-    } else if (type.is(column_type::string_type)) {
-      string_column& target(*static_cast<string_column*>(base_.get()));
-      target.push_back(value);
-    } else if (type.is(column_type::bit_vector_type)) {
-      bit_vector_column& target(*static_cast<bit_vector_column*>(base_.get()));
-      target.push_back(value);
-    }
+    JUBATUS_ASSERT(base_ != NULL);
+    base_->push_back(value);
   }
 
   template <typename T>
   bool insert(uint64_t index, const T& value) {
-    const column_type& type = base_->type();
-    if (type.is(column_type::uint8_type)) {
-      uint8_column& target(*static_cast<uint8_column*>(base_.get()));
-      target.insert(index, value);
-    } else if (type.is(column_type::uint16_type)) {
-      uint16_column& target(*static_cast<uint16_column*>(base_.get()));
-      target.insert(index, value);
-    } else if (type.is(column_type::uint32_type)) {
-      uint32_column& target(*static_cast<uint32_column*>(base_.get()));
-      target.insert(index, value);
-    } else if (type.is(column_type::uint64_type)) {
-      uint64_column& target(*static_cast<uint64_column*>(base_.get()));
-      target.insert(index, value);
-    } else if (type.is(column_type::int8_type)) {
-      int8_column& target(*static_cast<int8_column*>(base_.get()));
-      target.insert(index, value);
-    } else if (type.is(column_type::int16_type)) {
-      int16_column& target(*static_cast<int16_column*>(base_.get()));
-      target.insert(index, value);
-    } else if (type.is(column_type::int32_type)) {
-      int32_column& target(*static_cast<int32_column*>(base_.get()));
-      target.insert(index, value);
-    } else if (type.is(column_type::int64_type)) {
-      int64_column& target(*static_cast<int64_column*>(base_.get()));
-      target.insert(index, value);
-    } else if (type.is(column_type::float_type)) {
-      float_column& target(*static_cast<float_column*>(base_.get()));
-      target.insert(index, value);
-    } else if (type.is(column_type::double_type)) {
-      double_column& target(*static_cast<double_column*>(base_.get()));
-      target.insert(index, value);
-    } else if (type.is(column_type::string_type)) {
-      string_column& target(*static_cast<string_column*>(base_.get()));
-      target.insert(index, value);
-    } else if (type.is(column_type::bit_vector_type)) {
-      bit_vector_column& target(*static_cast<bit_vector_column*>(base_.get()));
-      target.insert(index, value);
-    }
-    return true;
+    JUBATUS_ASSERT(base_ != NULL);
+    return base_->insert(index, value);
   }
   template <typename T>
   bool update(uint64_t index, const T& value) {
-    const column_type& type = base_->type();
-    if (type.is(column_type::uint8_type)) {
-      uint8_column& target(*static_cast<uint8_column*>(base_.get()));
-      target.update(index, value);
-    } else if (type.is(column_type::uint16_type)) {
-      uint16_column& target(*static_cast<uint16_column*>(base_.get()));
-      target.update(index, value);
-    } else if (type.is(column_type::uint32_type)) {
-      uint32_column& target(*static_cast<uint32_column*>(base_.get()));
-      target.update(index, value);
-    } else if (type.is(column_type::uint64_type)) {
-      uint64_column& target(*static_cast<uint64_column*>(base_.get()));
-      target.update(index, value);
-    } else if (type.is(column_type::int8_type)) {
-      int8_column& target(*static_cast<int8_column*>(base_.get()));
-      target.update(index, value);
-    } else if (type.is(column_type::int16_type)) {
-      int16_column& target(*static_cast<int16_column*>(base_.get()));
-      target.update(index, value);
-    } else if (type.is(column_type::int32_type)) {
-      int32_column& target(*static_cast<int32_column*>(base_.get()));
-      target.update(index, value);
-    } else if (type.is(column_type::int64_type)) {
-      int64_column& target(*static_cast<int64_column*>(base_.get()));
-      target.update(index, value);
-    } else if (type.is(column_type::float_type)) {
-      float_column& target(*static_cast<float_column*>(base_.get()));
-      target.update(index, value);
-    } else if (type.is(column_type::double_type)) {
-      double_column& target(*static_cast<double_column*>(base_.get()));
-      target.update(index, value);
-    } else if (type.is(column_type::string_type)) {
-      string_column& target(*static_cast<string_column*>(base_.get()));
-      target.update(index, value);
-    } else if (type.is(column_type::bit_vector_type)) {
-      bit_vector_column& target(*static_cast<bit_vector_column*>(base_.get()));
-      target.update(index, value);
-    }
-    return true;
+    JUBATUS_ASSERT(base_ != NULL);
+    return base_->update(index, value);
   }
   bool remove(uint64_t index) {
-    const column_type& type = base_->type();
-    if (type.is(column_type::uint8_type)) {
-      uint8_column& target(*static_cast<uint8_column*>(base_.get()));
-      target.remove(index);
-    } else if (type.is(column_type::uint16_type)) {
-      uint16_column& target(*static_cast<uint16_column*>(base_.get()));
-      target.remove(index);
-    } else if (type.is(column_type::uint32_type)) {
-      uint32_column& target(*static_cast<uint32_column*>(base_.get()));
-      target.remove(index);
-    } else if (type.is(column_type::uint64_type)) {
-      uint64_column& target(*static_cast<uint64_column*>(base_.get()));
-      target.remove(index);
-    } else if (type.is(column_type::int8_type)) {
-      int8_column& target(*static_cast<int8_column*>(base_.get()));
-      target.remove(index);
-    } else if (type.is(column_type::int16_type)) {
-      int16_column& target(*static_cast<int16_column*>(base_.get()));
-      target.remove(index);
-    } else if (type.is(column_type::int32_type)) {
-      int32_column& target(*static_cast<int32_column*>(base_.get()));
-      target.remove(index);
-    } else if (type.is(column_type::int64_type)) {
-      int64_column& target(*static_cast<int64_column*>(base_.get()));
-      target.remove(index);
-    } else if (type.is(column_type::float_type)) {
-      float_column& target(*static_cast<float_column*>(base_.get()));
-      target.remove(index);
-    } else if (type.is(column_type::double_type)) {
-      double_column& target(*static_cast<double_column*>(base_.get()));
-      target.remove(index);
-    } else if (type.is(column_type::string_type)) {
-      string_column& target(*static_cast<string_column*>(base_.get()));
-      target.remove(index);
-    } else if (type.is(column_type::bit_vector_type)) {
-      bit_vector_column& target(*static_cast<bit_vector_column*>(base_.get()));
-      target.remove(index);
-    }
-    return true;
+    JUBATUS_ASSERT(base_ != NULL);
+    return base_->remove(index);
   };
-  virtual void clear() {
+  void clear() {
+    JUBATUS_ASSERT(base_ != NULL);
+    base_->clear();
   }
-  virtual void pack_with_index(
-      const uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
+  void pack_with_index(
+      uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
+    JUBATUS_ASSERT(base_ != NULL);
+    base_->pack_with_index(index, pk);
   }
   abstract_column_base* get() {
     return base_.get();
@@ -474,8 +372,13 @@ class abstract_column {
     return base_.get();
   }
 
-  void dump() const {}
+  void dump() const {
+    JUBATUS_ASSERT(base_ != NULL);
+    base_->dump();
+  }
   void dump(std::ostream& os, uint64_t target) const {
+    JUBATUS_ASSERT(base_ != NULL);
+    base_->dump(os, target);
   }
 
  private:
