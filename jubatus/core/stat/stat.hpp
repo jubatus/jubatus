@@ -36,10 +36,6 @@ namespace jubatus {
 namespace core {
 namespace stat {
 
-class stat;
-typedef framework::delegating_mixable<stat, std::pair<double, size_t> >
-    mixable_stat;
-
 class stat_error : public common::exception::jubaexception<stat_error> {
  public:
   explicit stat_error(const std::string& msg)
@@ -83,7 +79,8 @@ class stat : public pfi::lang::enable_shared_from_this<stat> {
   virtual bool load(std::istream&);
   std::string type() const;
 
-  virtual void register_mixables_to_holder(framework::mixable_holder& holder);
+  virtual void register_mixables_to_holder(
+      framework::mixable_holder& holder) const;
 
  protected:
   struct stat_val {
@@ -183,9 +180,10 @@ class stat : public pfi::lang::enable_shared_from_this<stat> {
 
   double e_;
   double n_;
-
-  pfi::lang::shared_ptr<mixable_stat> mixable_;
 };
+
+typedef framework::delegating_mixable<stat, std::pair<double, size_t> >
+    mixable_stat;
 
 }  // namespace stat
 }  // namespace core
