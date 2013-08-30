@@ -27,9 +27,15 @@ def build(bld):
       target = s[0:s.rfind('.')],
       includes = '.',
       use = 'MSGPACK PFICOMMON column_table jubacommon'+libassert)
-  map(make_test,['column_table_test.cpp',
-                 'column_type_test.cpp',
-                 'bit_vector_test.cpp'])
+
+  tests = [
+    'column_table_test.cpp',
+    'column_type_test.cpp',
+    'abstract_column_test.cpp',
+    'bit_vector_test.cpp',
+  ]
+  for test in tests:
+    make_test(test)
 
   bld.install_files('${PREFIX}/include/jubatus/core/table/column/', [
       'abstract_column.hpp',
