@@ -29,17 +29,39 @@ namespace jubatus {
 namespace core {
 namespace stat {
 
-namespace {
-inline double sq(double d) {
-  return d * d;
-}
-}  // namespace
-
 stat::stat(size_t window_size)
-    : window_size_(window_size) {
+    : window_size_(window_size),
+      e_(0),
+      n_(0) {
 }
 
 stat::~stat() {
+}
+
+std::pair<double, size_t> stat::get_diff() const {
+  std::pair<double, size_t> ret;
+  ret.first = 0;
+  ret.second = 0;
+
+  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+      stats_.begin(); p != stats_.end(); ++p) {
+    double pr = p->second.n_;
+    ret.first += pr * log(pr);
+    ret.second += pr;
+  }
+  return ret;
+}
+
+void stat::put_diff(const std::pair<double, size_t>& e) {
+  e_ = e.first;
+  n_ = e.second;
+}
+
+void stat::reduce(
+    const std::pair<double, size_t>& lhs,
+    std::pair<double, size_t>& ret) {
+  ret.first += lhs.first;
+  ret.second += lhs.second;
 }
 
 void stat::push(const std::string& key, double val) {
@@ -100,18 +122,23 @@ double stat::min(const std::string& key) const {
 }
 
 double stat::entropy() const {
-  size_t total = 0;
-  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
-      stats_.begin(); p != stats_.end(); ++p) {
-    total += p->second.n_;
+  if (n_ == 0) {
+    // not MIXed ever yet
+    size_t total = 0;
+    for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+             stats_.begin(); p != stats_.end(); ++p) {
+      total += p->second.n_;
+    }
+    double ret = 0;
+    for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+             stats_.begin(); p != stats_.end(); ++p) {
+      double pr = p->second.n_ / static_cast<double>(total);
+      ret += pr * log(pr);
+    }
+    return -1.0 * ret;
   }
-  double ret = 0;
-  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
-      stats_.begin(); p != stats_.end(); ++p) {
-    double pr = p->second.n_ / static_cast<double>(total);
-    ret += pr * log(pr);
-  }
-  return -1.0 * ret;
+  double n = n_;
+  return std::log(n) - e_ / n_;
 }
 
 double stat::moment(const std::string& key, int n, double c) const {

@@ -54,11 +54,11 @@ class stat {
   explicit stat(size_t window_size);
   virtual ~stat();
 
-  virtual std::pair<double, size_t> get_diff() const {
-    std::pair<double, size_t> ret;
-    return ret;
-  }
-  virtual void put_diff(const std::pair<double, size_t>&) {}
+  virtual std::pair<double, size_t> get_diff() const;
+  virtual void put_diff(const std::pair<double, size_t>&);
+  static void reduce(
+      const std::pair<double, size_t>& lhs,
+      std::pair<double, size_t>& ret);
 
   void push(const std::string& key, double val);
 
@@ -168,9 +168,12 @@ class stat {
   friend class pfi::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & window_size_ & window_ & stats_;
+    ar & window_size_ & window_ & stats_ & e_ & n_;
   }
   size_t window_size_;
+
+  double e_;
+  double n_;
 };
 }  // namespace stat
 }  // namespace core

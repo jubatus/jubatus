@@ -22,7 +22,6 @@
 #include <utility>
 
 #include "../stat/stat.hpp"
-#include "../stat/mixable_stat.hpp"
 #include "../framework/mixable.hpp"
 
 namespace jubatus {
@@ -45,7 +44,7 @@ struct mixable_stat : public framework::mixable<
       const std::pair<double, size_t>& rhs,
       std::pair<double, size_t>& mixed) const {
     mixed = lhs;
-    jubatus::core::stat::mixable_stat::reduce(rhs, mixed);
+    jubatus::core::stat::stat::reduce(rhs, mixed);
   }
 
   void put_diff_impl(const std::pair<double, size_t>& v) {
