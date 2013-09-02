@@ -17,6 +17,7 @@
 #include <gtest/gtest.h>
 #include "dynamic_loader.hpp"
 #include "exception.hpp"
+#include "word_splitter.hpp"
 
 namespace jubatus {
 namespace core {
@@ -39,6 +40,13 @@ TEST(dynamic_loader, unknown_so_file) {
 TEST(dynamic_loader, unknown_function) {
   dynamic_loader l(LIBSPLITTER_SAMPLE);
   EXPECT_THROW(l.load_symbol("unknown"), converter_exception);
+}
+
+TEST(dynamic_loader, null) {
+  dynamic_loader l(LIBSPLITTER_NULL);
+  EXPECT_THROW(load_object<word_splitter>(
+      l, std::string("create"), std::map<std::string, std::string>()),
+               converter_exception);
 }
 
 }  // namespace fv_converter

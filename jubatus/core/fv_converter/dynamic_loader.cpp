@@ -74,6 +74,12 @@ void* dynamic_loader::load_symbol(const std::string& name) const {
   return func;
 }
 
+void check_null_instance(void* inst) {
+  if (!inst) {
+    throw JUBATUS_EXCEPTION(converter_exception("failed to load plugin"));
+  }
+}
+
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
