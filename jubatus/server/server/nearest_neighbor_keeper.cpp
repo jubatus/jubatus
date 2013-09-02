@@ -48,6 +48,7 @@ int run_keeper(int argc, char* argv[]) {
          std::string> >, std::map<std::string, std::map<std::string,
          std::string> >)>(&jubatus::server::framework::merge<std::string,
          std::map<std::string, std::string> >));
+    k.register_async_random<std::string>("get_config");
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);

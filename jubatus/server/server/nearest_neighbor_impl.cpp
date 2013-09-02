@@ -77,6 +77,11 @@ class nearest_neighbor_impl_ : public nearest_neighbor<nearest_neighbor_impl_> {
     JRLOCK_(p_);
     return p_->get_status();
   }
+
+  std::string get_config(const std::string& name) {
+    JRLOCK_(p_);
+    return get_p()->get_config();
+  }
   int run() { return p_->start(*this); }
   pfi::lang::shared_ptr<nearest_neighbor_serv> get_p() { return p_->server(); }
 
