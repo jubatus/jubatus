@@ -141,6 +141,11 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
 
   p.add("version", 'v', "version");
 
+#ifndef HAVE_ZOOKEEPER_H
+  p.footer("\nAll " + IGNORED_TAG +
+           " options are for compatibility with distirbuted mode");
+#endif
+
   p.parse_check(args, argv);
 
   if (p.exist("version")) {
@@ -181,17 +186,6 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   zookeeper_timeout = p.get<int>("zookeeper_timeout");
   interconnect_timeout = p.get<int>("interconnect_timeout");
 #else
-  check_ignored_option(p, "zookeeper");
-  check_ignored_option(p, "name");
-  check_ignored_option(p, "mixer");
-  check_ignored_option(p, "join");
-  check_ignored_option(p, "interval_sec");
-  check_ignored_option(p, "interval_count");
-  check_ignored_option(p, "zookeeper_timeout");
-  check_ignored_option(p, "interconnect_timeout");
-  p.footer("\nAll " + IGNORED_TAG +
-           " options are for compatibility with distirbuted mode");
-
   z = "";
   name = "";
   join = false;
@@ -231,6 +225,17 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
     exit(1);
   }
   set_log_destination(common::util::get_program_name());
+
+#ifndef HAVE_ZOOKEEPER_H
+  check_ignored_option(p, "zookeeper");
+  check_ignored_option(p, "name");
+  check_ignored_option(p, "mixer");
+  check_ignored_option(p, "join");
+  check_ignored_option(p, "interval_sec");
+  check_ignored_option(p, "interval_count");
+  check_ignored_option(p, "zookeeper_timeout");
+  check_ignored_option(p, "interconnect_timeout");
+#endif
 
   boot_message(common::util::get_program_name());
 }
