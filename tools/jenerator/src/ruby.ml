@@ -28,12 +28,19 @@ let make_header conf source filename content =
   make_source conf source filename content comment_out_head
 ;;
 
+let gen_args args = 
+  "(" ^ String.concat ", " args ^ ")"
+;;
+
+let gen_call func args =
+  (* TODO(unnonouno): format for long lines *)
+  func ^ gen_args args
+;;
+
 (* return : retval = @cli.call(names) *)
-let gen_retval' func = function
-  | [] ->
-      "@cli.call(:" ^ func ^ ")"
-  | args ->
-      "@cli.call(:" ^ func ^ ", " ^ (String.concat ", " args) ^ ")"
+let gen_retval' func args =
+  let args' = (":" ^ func) :: args in
+  gen_call "@cli.call" args'
 ;;
 
 let gen_retval func args typ = match typ with
@@ -76,15 +83,6 @@ let rec gen_type t name = match t with
 
 let gen_string_literal s =
   "\"" ^ String.escaped s ^ "\""
-;;
-
-let gen_args args = 
-  "(" ^ String.concat ", " args ^ ")"
-;;
-
-let gen_call func args =
-  (* TODO(unnonouno): format for long lines *)
-  func ^ gen_args args
 ;;
 
 let gen_client_method m =
