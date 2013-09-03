@@ -67,6 +67,34 @@ lsh_index_storage* get_storage(euclid_lsh& r) {
 
 }  // namespace
 
+TEST(euclid_lsh, complete_row) {
+  euclid_lsh::config config;
+  config.lsh_num = 4;
+  config.table_num = 4;
+  config.bin_width = 10;
+  config.probe_num = 0;
+  config.seed = 1091;
+  config.retain_projection = false;
+
+  euclid_lsh r(config);
+  r.update_row("1", make_dense_sfv("1 1 0 1"));
+  r.update_row("2", make_dense_sfv("1 0 1 1"));
+
+  common::sfv_t ret;
+  r.complete_row(make_dense_sfv("1 0 0 1"), ret);
+
+  EXPECT_EQ(4u, ret.size());
+  EXPECT_EQ("0", ret[0].first);
+  EXPECT_EQ("1", ret[1].first);
+  EXPECT_EQ("2", ret[2].first);
+  EXPECT_EQ("3", ret[3].first);
+
+  EXPECT_EQ(1, ret[0].second);
+  EXPECT_LE(0, ret[1].second);
+  EXPECT_LE(0, ret[2].second);
+  EXPECT_EQ(1, ret[3].second);
+}
+
 class euclid_lsh_mix_test
     : public ::testing::TestWithParam<pair<int, euclid_lsh::config> > {
  protected:
