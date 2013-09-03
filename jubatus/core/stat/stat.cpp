@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
+#include <utility>
 #include <pficommon/system/time_util.h>
 #include <pficommon/data/serialization.h>
 
@@ -192,7 +193,8 @@ std::string stat::type() const {
   return "stat";
 }
 
-void stat::register_mixables_to_holder(framework::mixable_holder& holder) const {
+void stat::register_mixables_to_holder(framework::mixable_holder& holder)
+    const {
   // TODO(beam2d): Split a part of MIX operations from |stat| to outside of it
   // and use it as a model. |shared_from_this| is a workaround to support this
   // canonical function like other algorithms.
@@ -201,6 +203,6 @@ void stat::register_mixables_to_holder(framework::mixable_holder& holder) const 
   holder.register_mixable(mixable);
 }
 
-}  // namespame stat
+}  // namespace stat
 }  // namespace core
 }  // namespace jubatus
