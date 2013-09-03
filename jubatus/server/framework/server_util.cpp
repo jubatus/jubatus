@@ -81,7 +81,7 @@ void config_json::load_json(const std::string& filepath) {
 
 void check_ignored_option(const cmdline::parser& p, const std::string& key) {
   if (p.exist(key)) {
-    LOG(WARNING) << "\"" << key << "\" option is ignored" << std::endl;
+    LOG(WARNING) << "\"" << key << "\" option is ignored";
   }
 }
 
