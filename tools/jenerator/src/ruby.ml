@@ -48,9 +48,8 @@ let gen_retval func args typ = match typ with
       (match t with
       | Struct (st) ->
         (String.capitalize st) ^ ".from_tuple(" ^ gen_retval' func args ^ ")"
-      | Bool | Float(_) | String | Map(_) | List(_) -> gen_retval' func args
       | _ -> gen_retval' func args
-      (* TODO: OK? *)
+      (* TODO(unno): use gen_type *)
       )      
   | None -> gen_retval' func args
 ;;
