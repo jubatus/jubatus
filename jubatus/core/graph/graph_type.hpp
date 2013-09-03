@@ -28,6 +28,7 @@
 
 #include "../common/exception.hpp"
 #include "../common/type.hpp"
+#include "../common/unordered_map.hpp"
 
 namespace jubatus {
 namespace core {
@@ -46,8 +47,9 @@ struct eigen_vector_info {
   double score;
   uint64_t out_degree_num;
 
-  friend class pfi::data::serialization::access;
+  MSGPACK_DEFINE(score, out_degree_num);
 
+  friend class pfi::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(score) & MEMBER(out_degree_num);
@@ -56,8 +58,6 @@ struct eigen_vector_info {
 
 typedef pfi::data::unordered_map<node_id_t, eigen_vector_info>
   eigen_vector_diff;
-typedef pfi::data::unordered_map<node_id_t, eigen_vector_info>
-  eigen_vector_mixed;
 
 struct node_info {
   std::map<std::string, std::string> property;
@@ -116,23 +116,20 @@ struct shortest_path_tree {
   spt_edges from_root;
   spt_edges to_root;
 
-  friend class pfi::data::serialization::access;
+  MSGPACK_DEFINE(landmark, from_root, to_root);
 
+  friend class pfi::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(landmark) & MEMBER(from_root) & MEMBER(to_root);
   }
 };
 
-typedef std::vector<shortest_path_tree> spt_mixed;
 typedef std::vector<shortest_path_tree> spt_diff;
 
-typedef pfi::data::unordered_map<preset_query, eigen_vector_mixed>
-  eigen_vector_query_mixed;
 typedef pfi::data::unordered_map<preset_query, eigen_vector_diff>
   eigen_vector_query_diff;
 
-typedef pfi::data::unordered_map<preset_query, spt_mixed> spt_query_mixed;
 typedef pfi::data::unordered_map<preset_query, spt_diff> spt_query_diff;
 
 class graph_exception : public jubatus::core::common::exception::runtime_error {

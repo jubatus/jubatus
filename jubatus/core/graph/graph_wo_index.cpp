@@ -84,13 +84,13 @@ bool is_matched_to_query(
   return true;
 }
 
-void normalize(eigen_vector_mixed& v) {
+void normalize(eigen_vector_diff& v) {
   double sum = 0;
-  for (eigen_vector_mixed::const_iterator it = v.begin(); it != v.end(); ++it) {
+  for (eigen_vector_diff::const_iterator it = v.begin(); it != v.end(); ++it) {
     sum += it->second.score;
   }
   const double normalizer = v.size() / sum;
-  for (eigen_vector_mixed::iterator it = v.begin(); it != v.end(); ++it) {
+  for (eigen_vector_diff::iterator it = v.begin(); it != v.end(); ++it) {
     it->second.score *= normalizer;
   }
 }
@@ -132,8 +132,8 @@ void graph_wo_index::create_node(node_id_t id) {
 void graph_wo_index::may_set_landmark(node_id_t id) {
   // Do we need it?
   // if (id > 1) return;
-  for (spt_query_mixed::iterator it = spts_.begin(); it != spts_.end(); ++it) {
-    spt_mixed& mixed = it->second;
+  for (spt_query_diff::iterator it = spts_.begin(); it != spts_.end(); ++it) {
+    spt_diff& mixed = it->second;
     if (mixed.size() == static_cast<size_t>(config_.landmark_num)
         || !is_node_matched_to_query(it->first, id)) {
       return;
@@ -236,11 +236,11 @@ void graph_wo_index::remove_edge(edge_id_t eid) {
 }
 
 void graph_wo_index::add_centrality_query(const preset_query& query) {
-  eigen_scores_.insert(make_pair(query, eigen_vector_mixed()));
+  eigen_scores_.insert(make_pair(query, eigen_vector_diff()));
 }
 
 void graph_wo_index::add_shortest_path_query(const preset_query& query) {
-  spts_.insert(make_pair(query, spt_mixed()));
+  spts_.insert(make_pair(query, spt_diff()));
 }
 
 void graph_wo_index::remove_centrality_query(const preset_query& query) {
@@ -256,12 +256,12 @@ double graph_wo_index::centrality(
     centrality_type ct,
     const preset_query& query) const {
   if (ct == EIGENSCORE) {
-    eigen_vector_query_mixed::const_iterator model_it
+    eigen_vector_query_diff::const_iterator model_it
         = eigen_scores_.find(query);
     if (model_it == eigen_scores_.end()) {
       throw JUBATUS_EXCEPTION(unknown_centrality_type(ct));
     }
-    eigen_vector_mixed::const_iterator it = model_it->second.find(id);
+    eigen_vector_diff::const_iterator it = model_it->second.find(id);
     if (it == model_it->second.end()) {
       throw JUBATUS_EXCEPTION(unknown_id("centrality", id));
     }
@@ -283,11 +283,11 @@ void graph_wo_index::shortest_path(
   if (global_nodes_.count(tgt) == 0) {
     throw JUBATUS_EXCEPTION(unknown_id("shortest_path:tgt", tgt));
   }
-  spt_query_mixed::const_iterator model_it = spts_.find(query);
+  spt_query_diff::const_iterator model_it = spts_.find(query);
   if (model_it == spts_.end()) {
     throw JUBATUS_EXCEPTION(unknown_query(query));
   }
-  const spt_mixed& mixed = model_it->second;
+  const spt_diff& mixed = model_it->second;
   ret.clear();
   uint64_t min_score = ~uint64_t();
   uint64_t ind = ~uint64_t();
@@ -384,19 +384,22 @@ bool graph_wo_index::load_imp(std::istream& is) {
 
 void graph_wo_index::update_index() {
   update_spt();
+  diff_type diff;
+  get_diff(diff);
+  set_mixed_and_clear_diff(diff);
 }
 
 void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
   diff.clear();  // tmp_diff + swap is better ?
 
-  for (eigen_vector_query_mixed::const_iterator query_it
+  for (eigen_vector_query_diff::const_iterator query_it
            = eigen_scores_.begin();
        query_it != eigen_scores_.end(); ++query_it) {
     const preset_query& query = query_it->first;
-    const eigen_vector_mixed& model = query_it->second;
+    const eigen_vector_diff& model = query_it->second;
 
     double dist = 0;
-    for (eigen_vector_mixed::const_iterator it = model.begin();
+    for (eigen_vector_diff::const_iterator it = model.begin();
          it != model.end(); ++it) {
       if (it->second.out_degree_num == 0) {
         dist += it->second.score;
@@ -455,7 +458,7 @@ void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
           continue;
         }
 
-        eigen_vector_mixed::const_iterator it = model.find(edge_it->second.src);
+        eigen_vector_diff::const_iterator it = model.find(edge_it->second.src);
         if (it == model.end()) {
           continue;
         }
@@ -499,14 +502,14 @@ void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
 }
 
 void graph_wo_index::set_mixed_and_clear_diff_eigen_score(
-    eigen_vector_query_mixed& mixed) {
+    const eigen_vector_query_diff& mixed) {
   eigen_scores_ = mixed;
   if (eigen_scores_.size() == 0) {
     return;
   }
 
   // normalize
-  for (eigen_vector_query_mixed::iterator model_it = eigen_scores_.begin();
+  for (eigen_vector_query_diff::iterator model_it = eigen_scores_.begin();
        model_it != eigen_scores_.end(); ++model_it) {
     normalize(model_it->second);
   }
@@ -571,8 +574,8 @@ bool graph_wo_index::is_node_matched_to_query(
 }
 
 void graph_wo_index::update_spt() {
-  for (spt_query_mixed::iterator it = spts_.begin(); it != spts_.end(); ++it) {
-    spt_mixed& mixed = it->second;
+  for (spt_query_diff::iterator it = spts_.begin(); it != spts_.end(); ++it) {
+    spt_diff& mixed = it->second;
     for (size_t i = 0; i < mixed.size(); ++i) {
       shortest_path_tree& spt = mixed[i];
       update_spt_edges(it->first, spt.to_root, spt.landmark, false);
@@ -585,9 +588,9 @@ void graph_wo_index::get_diff_shortest_path_tree(
     spt_query_diff& all_diff) const {
   all_diff.clear();
 
-  for (spt_query_mixed::const_iterator it = spts_.begin(); it != spts_.end();
+  for (spt_query_diff::const_iterator it = spts_.begin(); it != spts_.end();
        ++it) {
-    const spt_mixed& mixed = it->second;
+    const spt_diff& mixed = it->second;
     spt_diff& diff = all_diff[it->first];
     diff.resize(mixed.size());
 
@@ -617,38 +620,21 @@ void graph_wo_index::get_diff_shortest_path_tree(
 }
 
 void graph_wo_index::set_mixed_and_clear_diff_shortest_path_tree(
-    const spt_query_mixed& mixed) {
+    const spt_query_diff& mixed) {
   spts_ = mixed;
 }
 
-void graph_wo_index::get_diff(string& diff) const {
+void graph_wo_index::get_diff(diff_type& diff) const {
   // get_diff should be constant
   const_cast<graph_wo_index*>(this)->update_spt();
 
-  std::ostringstream os;
-  pfi::data::serialization::binary_oarchive oa(os);
-
-  eigen_vector_query_diff ev_diff;
-  get_diff_eigen_score(ev_diff);
-  oa << ev_diff;
-
-  spt_query_diff sdiff;
-  get_diff_shortest_path_tree(sdiff);
-  oa << sdiff;
-  diff = os.str();
+  get_diff_eigen_score(diff.eigen_vector_query);
+  get_diff_shortest_path_tree(diff.spt_query);
 }
 
-void graph_wo_index::set_mixed_and_clear_diff(const string& mixed) {
-  std::istringstream is(mixed);
-  pfi::data::serialization::binary_iarchive ia(is);
-
-  eigen_vector_query_mixed emixed;
-  ia >> emixed;
-  set_mixed_and_clear_diff_eigen_score(emixed);
-
-  spt_query_mixed smixed;
-  ia >> smixed;
-  set_mixed_and_clear_diff_shortest_path_tree(smixed);
+void graph_wo_index::set_mixed_and_clear_diff(const diff_type& mixed) {
+  set_mixed_and_clear_diff_eigen_score(mixed.eigen_vector_query);
+  set_mixed_and_clear_diff_shortest_path_tree(mixed.spt_query);
 }
 
 void graph_wo_index::get_status(map<string, string>& status) const {
@@ -657,41 +643,17 @@ void graph_wo_index::get_status(map<string, string>& status) const {
   status["local_edge_num"] = lexical_cast<string>(local_edges_.size());
 }
 
-void graph_wo_index::mix(const string& diff, string& mixed) {
-  eigen_vector_query_diff ediff;
-  spt_query_diff sdiff;
-  {
-    std::istringstream is_diff(diff);
-    pfi::data::serialization::binary_iarchive ia(is_diff);
-    ia >> ediff;
-    ia >> sdiff;
-  }
-
-  eigen_vector_query_mixed emixed;
-  spt_query_mixed smixed;
-  {
-    std::istringstream is_mixed(mixed);
-    pfi::data::serialization::binary_iarchive ia(is_mixed);
-    ia >> emixed;
-    ia >> smixed;
-  }
-
-  mix(ediff, emixed);
-  mix(sdiff, smixed, config_.landmark_num);
-
-  std::ostringstream os;
-  pfi::data::serialization::binary_oarchive oa(os);
-
-  oa << emixed << smixed;
-  mixed = os.str();
+void graph_wo_index::mix(const diff_type& diff, diff_type& mixed) {
+  mix(diff.eigen_vector_query, mixed.eigen_vector_query);
+  mix(diff.spt_query, mixed.spt_query, config_.landmark_num);
 }
 
 void graph_wo_index::mix(
     const eigen_vector_query_diff& diff,
-    eigen_vector_query_mixed& mixed) {
+    eigen_vector_query_diff& mixed) {
   for (eigen_vector_query_diff::const_iterator model_it = diff.begin();
       model_it != diff.end(); ++model_it) {
-    eigen_vector_mixed& evm = mixed[model_it->first];
+    eigen_vector_diff& evm = mixed[model_it->first];
     for (eigen_vector_diff::const_iterator it = model_it->second.begin();
          it != model_it->second.end(); ++it) {
       evm[it->first] = it->second;
@@ -715,12 +677,12 @@ void graph_wo_index::mix_spt(
 
 void graph_wo_index::mix(
     const spt_query_diff& all_diff,
-    spt_query_mixed& all_mixed,
+    spt_query_diff& all_mixed,
     size_t landmark_num) {
   for (spt_query_diff::const_iterator it = all_diff.begin();
        it != all_diff.end(); ++it) {
     const spt_diff& diff = it->second;
-    spt_mixed& mixed = all_mixed[it->first];
+    spt_diff& mixed = all_mixed[it->first];
 
     map<node_id_t, uint64_t> diff_landmark2ind;
     for (uint64_t i = 0; i < diff.size(); ++i) {
@@ -747,6 +709,17 @@ void graph_wo_index::mix(
       }
     }
   }
+}
+
+void graph_wo_index::register_mixables_to_holder(
+    framework::mixable_holder& holder) const {
+  // TODO(beam2d): Remove this workaround. It requires separation of model
+  // (storage) from this class.
+  pfi::lang::shared_ptr<mixable_graph_wo_index> mixable(
+      new mixable_graph_wo_index);
+  mixable->set_model(pfi::lang::const_pointer_cast<graph_wo_index>(
+      shared_from_this()));
+  holder.register_mixable(mixable);
 }
 
 void graph_wo_index::remove_by_swap(
