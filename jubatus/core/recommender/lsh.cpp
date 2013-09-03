@@ -37,7 +37,7 @@ namespace recommender {
 static const uint64_t DEFAULT_BASE_NUM = 64;  // should be in config
 
 lsh::config::config()
-    : bit_num(DEFAULT_BASE_NUM) {
+    : hash_num(DEFAULT_BASE_NUM) {
 }
 
 lsh::lsh(uint64_t base_num)
@@ -49,7 +49,7 @@ lsh::lsh(uint64_t base_num)
 }
 
 lsh::lsh(const config& config)
-    : base_num_(config.bit_num) {
+    : base_num_(config.hash_num) {
   initialize_model();
 }
 

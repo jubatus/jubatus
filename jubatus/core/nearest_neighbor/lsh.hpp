@@ -30,14 +30,14 @@ namespace nearest_neighbor {
 class lsh : public bit_vector_nearest_neighbor_base {
  public:
   struct config {
-    config() : bitnum(64u) {
+    config() : hash_num(64u) {
     }
 
-    int32_t bitnum;
+    int32_t hash_num;
 
     template <typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(bitnum);
+      ar & MEMBER(hash_num);
     }
   };
   lsh(const config& conf,

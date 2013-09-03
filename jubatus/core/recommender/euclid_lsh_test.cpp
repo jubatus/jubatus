@@ -153,7 +153,7 @@ TEST_P(euclid_lsh_mix_test, consistency) {
 euclid_lsh::config make_euclid_lsh_config() {
   euclid_lsh::config config;
 
-  config.lsh_num = 16;
+  config.hash_num = 16;
   config.table_num = 4;
   config.bin_width = 1;
   return config;

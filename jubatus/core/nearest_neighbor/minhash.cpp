@@ -104,7 +104,7 @@ minhash::minhash(
     const config& conf,
     pfi::lang::shared_ptr<table::column_table> table,
     const std::string& id)
-    : bit_vector_nearest_neighbor_base(conf.bitnum, table, id) {
+    : bit_vector_nearest_neighbor_base(conf.hash_num, table, id) {
 }
 
 minhash::minhash(
@@ -112,7 +112,7 @@ minhash::minhash(
     pfi::lang::shared_ptr<table::column_table> table,
     vector<column_type>& schema,
     const std::string& id)
-    : bit_vector_nearest_neighbor_base(conf.bitnum, table, schema, id) {
+    : bit_vector_nearest_neighbor_base(conf.hash_num, table, schema, id) {
 }
 
 bit_vector minhash::hash(const common::sfv_t& sfv) const {
