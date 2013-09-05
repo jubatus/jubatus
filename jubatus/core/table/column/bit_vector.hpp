@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -158,26 +159,32 @@ struct bit_vector_base {
 
   // deep copy (In case not own memory, it alloc memory)
   bit_vector_base& operator=(const bit_vector_base& orig) {
-    if (bit_num_ != orig.bit_num_) {
-      throw bit_vector_unmatch_exception(
-          "failed copy bit vector from " +
-          pfi::lang::lexical_cast<std::string>(orig.bit_num_) + " to " +
-          pfi::lang::lexical_cast<std::string>(bit_num_));
-    }
-    if (bits_ == NULL) {
-      alloc_memory();
-    }
-    if (orig.bits_ == NULL) {
-      memset(bits_, 0, used_bytes());
-    } else {
-      memcpy(bits_, orig.bits_, used_bytes());
+    if (&orig != this) {
+      if (bit_num_ != orig.bit_num_) {
+        throw bit_vector_unmatch_exception(
+            "failed copy bit vector from " +
+            pfi::lang::lexical_cast<std::string>(orig.bit_num_) + " to " +
+            pfi::lang::lexical_cast<std::string>(bit_num_));
+      }
+      if (bits_ == NULL) {
+        alloc_memory();
+      }
+      if (orig.bits_ == NULL) {
+        memset(bits_, 0, used_bytes());
+      } else {
+        memcpy(bits_, orig.bits_, used_bytes());
+      }
     }
     return *this;
   }
-  template <typename T>
-  bit_vector_base& operator=(const T& orig) {
-    throw type_unmatch_exception("failed copy bit vector from ");
-    return *this;
+  void swap(bit_vector_base& x) {
+    using std::swap;
+    swap(bits_, x.bits_);
+    swap(bit_num_, x.bit_num_);
+    swap(own_, x.own_);
+  }
+  friend void swap(bit_vector_base& l, bit_vector_base& r) {
+    l.swap(r);
   }
 
   void clear_bit(size_t pos) {
