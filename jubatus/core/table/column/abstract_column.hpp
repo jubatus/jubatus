@@ -128,7 +128,7 @@ class typed_column : public detail::abstract_column_base {
   }
 
   bool update(uint64_t index, const T& value) {
-    if (size() < index) {
+    if (size() <= index) {
       return false;
     }
     array_[index] = value;
@@ -139,7 +139,7 @@ class typed_column : public detail::abstract_column_base {
   }
 
   bool remove(uint64_t target) {
-    if (size() < target) {
+    if (size() <= target) {
       return false;
     }
     using std::swap;
@@ -156,7 +156,7 @@ class typed_column : public detail::abstract_column_base {
   }
 
   const T& operator[](uint64_t index) const {
-    if (size() < index) {
+    if (size() <= index) {
       throw length_unmatch_exception(
         "invalid index [" + pfi::lang::lexical_cast<std::string>(index) +
         "] for [" +
@@ -166,7 +166,7 @@ class typed_column : public detail::abstract_column_base {
   }
 
   T& operator[](uint64_t index) {
-    if (size() < index) {
+    if (size() <= index) {
       throw length_unmatch_exception(
         "invalid index [" + pfi::lang::lexical_cast<std::string>(index) +
         "] for [" +
