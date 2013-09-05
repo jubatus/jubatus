@@ -1,4 +1,4 @@
-// This file is auto-generated from regression.idl
+// This file is auto-generated from stat.idl
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -10,20 +10,31 @@
 
 #include "jubatus/core/common/exception.hpp"
 #include "../../server/framework/aggregators.hpp"
-#include "../../server/framework/keeper.hpp"
-#include "regression_types.hpp"
+#include "../../server/framework/proxy.hpp"
+#include "stat_types.hpp"
 
 namespace jubatus {
 
-int run_keeper(int argc, char* argv[]) {
+int run_proxy(int argc, char* argv[]) {
   try {
-    jubatus::server::framework::keeper k(
-        jubatus::server::framework::keeper_argv(argc, argv, "regression"));
+    jubatus::server::framework::proxy k(
+        jubatus::server::framework::proxy_argv(argc, argv, "stat"));
     k.register_async_random<std::string>("get_config");
-    k.register_async_random<int32_t, std::vector<std::pair<float,
-         jubatus::core::fv_converter::datum> > >("train");
-    k.register_async_random<std::vector<float>,
-         std::vector<jubatus::core::fv_converter::datum> >("estimate");
+    k.register_async_cht<1, bool, double>("push", pfi::lang::function<bool(bool,
+         bool)>(&jubatus::server::framework::all_and));
+    k.register_async_cht<1, double>("sum", pfi::lang::function<double(double,
+         double)>(&jubatus::server::framework::pass<double>));
+    k.register_async_cht<1, double>("stddev", pfi::lang::function<double(double,
+         double)>(&jubatus::server::framework::pass<double>));
+    k.register_async_cht<1, double>("max", pfi::lang::function<double(double,
+         double)>(&jubatus::server::framework::pass<double>));
+    k.register_async_cht<1, double>("min", pfi::lang::function<double(double,
+         double)>(&jubatus::server::framework::pass<double>));
+    k.register_async_cht<1, double>("entropy", pfi::lang::function<double(
+        double, double)>(&jubatus::server::framework::pass<double>));
+    k.register_async_cht<1, double, int32_t, double>("moment",
+         pfi::lang::function<double(double, double)>(
+        &jubatus::server::framework::pass<double>));
     k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
          bool)>(&jubatus::server::framework::all_and));
     k.register_async_broadcast<bool, std::string>("save",
@@ -49,5 +60,5 @@ int run_keeper(int argc, char* argv[]) {
 }  // namespace jubatus
 
 int main(int argc, char* argv[]) {
-  jubatus::run_keeper(argc, argv);
+  jubatus::run_proxy(argc, argv);
 }

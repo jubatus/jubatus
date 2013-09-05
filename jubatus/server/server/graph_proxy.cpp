@@ -10,15 +10,15 @@
 
 #include "jubatus/core/common/exception.hpp"
 #include "../../server/framework/aggregators.hpp"
-#include "../../server/framework/keeper.hpp"
+#include "../../server/framework/proxy.hpp"
 #include "graph_types.hpp"
 
 namespace jubatus {
 
-int run_keeper(int argc, char* argv[]) {
+int run_proxy(int argc, char* argv[]) {
   try {
-    jubatus::server::framework::keeper k(
-        jubatus::server::framework::keeper_argv(argc, argv, "graph"));
+    jubatus::server::framework::proxy k(
+        jubatus::server::framework::proxy_argv(argc, argv, "graph"));
     k.register_async_random<std::string>("get_config");
     k.register_async_random<std::string>("create_node");
     k.register_async_cht<2, bool>("remove_node", pfi::lang::function<bool(bool,
@@ -85,5 +85,5 @@ int run_keeper(int argc, char* argv[]) {
 }  // namespace jubatus
 
 int main(int argc, char* argv[]) {
-  jubatus::run_keeper(argc, argv);
+  jubatus::run_proxy(argc, argv);
 }

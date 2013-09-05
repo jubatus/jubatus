@@ -22,7 +22,7 @@ open Stree
 (*
 let to_impl_strings = function
   | Service(_, methods,_) ->
-    let to_keeper_string m =
+    let to_proxy_string m =
       let Method(rettype, name, argv, decorators,_) = m in
 
       let rettype = Util.decl_type2string rettype in
@@ -36,7 +36,7 @@ let to_impl_strings = function
 	(fun field -> let Field(_,_,n,_) = field in n) (List.tl sorted_argv)
       in
     in 
-    List.map to_keeper_string methods;
+    List.map to_proxy_string methods;
   | _ -> [];;
 *)
 

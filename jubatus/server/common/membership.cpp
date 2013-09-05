@@ -109,14 +109,14 @@ void register_actor(
   z.push_cleanup(&force_exit);
 }
 
-void register_keeper(
+void register_proxy(
     lock_service& z,
     const string& type,
     const string& ip,
     int port) {
   bool success = true;
 
-  string path = JUBAKEEPER_BASE_PATH;
+  string path = JUBAPROXY_BASE_PATH;
   success = z.create(path) && success;
   path += "/" + type;
   success = z.create(path) && success;
@@ -125,7 +125,7 @@ void register_keeper(
     build_existence_path(path, ip, port, path1);
     success = z.create(path1, "", true) && success;
     if (success) {
-      LOG(INFO) << "keeper created: " << path1;
+      LOG(INFO) << "proxy created: " << path1;
     }
   }
 
@@ -172,7 +172,7 @@ void prepare_jubatus(lock_service& ls, const string& type, const string& name) {
   bool success = true;
   success = ls.create(JUBATUS_BASE_PATH) && success;
   success = ls.create(JUBAVISOR_BASE_PATH) && success;
-  success = ls.create(JUBAKEEPER_BASE_PATH) && success;
+  success = ls.create(JUBAPROXY_BASE_PATH) && success;
   success = ls.create(ACTOR_BASE_PATH) && success;
   success = ls.create(CONFIG_BASE_PATH) && success;
 

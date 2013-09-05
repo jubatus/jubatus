@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_FRAMEWORK_KEEPER_COMMON_HPP_
-#define JUBATUS_SERVER_FRAMEWORK_KEEPER_COMMON_HPP_
+#ifndef JUBATUS_SERVER_FRAMEWORK_PROXY_COMMON_HPP_
+#define JUBATUS_SERVER_FRAMEWORK_PROXY_COMMON_HPP_
 
 #include <string>
 #include <utility>
@@ -43,10 +43,10 @@ class no_worker : public jubatus::core::common::exception::runtime_error {
   }
 };
 
-class keeper_common {
+class proxy_common {
  public:
-  explicit keeper_common(const keeper_argv& a);
-  virtual ~keeper_common();
+  explicit proxy_common(const proxy_argv& a);
+  virtual ~proxy_common();
 
  protected:
   void get_members_(
@@ -59,7 +59,7 @@ class keeper_common {
       std::vector<std::pair<std::string, int> >& ret,
       size_t n);
 
-  keeper_argv a_;
+  proxy_argv a_;
   pfi::math::random::mtrand rng_;
   pfi::concurrent::mutex mutex_;
   pfi::lang::shared_ptr<common::lock_service> zk_;
@@ -69,4 +69,4 @@ class keeper_common {
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_FRAMEWORK_KEEPER_COMMON_HPP_
+#endif  // JUBATUS_SERVER_FRAMEWORK_PROXY_COMMON_HPP_
