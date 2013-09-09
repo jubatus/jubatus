@@ -78,7 +78,7 @@ TEST(euclid_lsh, complete_row) {
 
   euclid_lsh r(config);
   r.update_row("1", make_dense_sfv("1 1 0 1"));
-  r.update_row("2", make_dense_sfv("1 0 1 1"));
+  r.update_row("2", make_dense_sfv("1 0 3 1"));
 
   common::sfv_t ret;
   r.complete_row(make_dense_sfv("1 0 0 1"), ret);
@@ -89,9 +89,10 @@ TEST(euclid_lsh, complete_row) {
   EXPECT_EQ("2", ret[2].first);
   EXPECT_EQ("3", ret[3].first);
 
+  // expect unweighted mean of nearest neighbors
   EXPECT_EQ(1, ret[0].second);
-  EXPECT_LE(0, ret[1].second);
-  EXPECT_LE(0, ret[2].second);
+  EXPECT_EQ(0.5, ret[1].second);
+  EXPECT_EQ(1.5, ret[2].second);
   EXPECT_EQ(1, ret[3].second);
 }
 
