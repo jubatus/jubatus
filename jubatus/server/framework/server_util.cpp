@@ -280,7 +280,7 @@ std::string get_server_identifier(const server_argv& a) {
   return ss.str();
 }
 
-keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
+proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
     : type(t) {
   google::InitGoogleLogging(argv[0]);
 
@@ -359,7 +359,7 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   boot_message(common::util::get_program_name());
 }
 
-keeper_argv::keeper_argv()
+proxy_argv::proxy_argv()
     : port(9199),
       timeout(10),
       zookeeper_timeout(10),
@@ -371,7 +371,7 @@ keeper_argv::keeper_argv()
       eth("") {
 }
 
-void keeper_argv::boot_message(const std::string& progname) const {
+void proxy_argv::boot_message(const std::string& progname) const {
   std::stringstream ss;
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth
       << ":" << port << '\n';
@@ -388,7 +388,7 @@ void keeper_argv::boot_message(const std::string& progname) const {
   LOG(INFO) << ss.str();
 }
 
-void keeper_argv::set_log_destination(const std::string& progname) const {
+void proxy_argv::set_log_destination(const std::string& progname) const {
   if (logdir.empty()) {
     for (int severity = google::INFO; severity < google::NUM_SEVERITIES;
         severity++) {

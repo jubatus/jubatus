@@ -17,6 +17,7 @@
 #include "light_lof.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <numeric>
 #include <string>
@@ -30,6 +31,7 @@ using pfi::data::unordered_set;
 using pfi::lang::shared_ptr;
 using jubatus::core::nearest_neighbor::nearest_neighbor_base;
 using jubatus::core::table::column_table;
+using std::isinf;
 
 namespace jubatus {
 namespace core {

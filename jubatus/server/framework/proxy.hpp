@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_FRAMEWORK_KEEPER_HPP_
-#define JUBATUS_SERVER_FRAMEWORK_KEEPER_HPP_
+#ifndef JUBATUS_SERVER_FRAMEWORK_PROXY_HPP_
+#define JUBATUS_SERVER_FRAMEWORK_PROXY_HPP_
 
 #include <iostream>
 #include <string>
@@ -29,7 +29,7 @@
 #include <pficommon/lang/function.h>
 #include <pficommon/lang/bind.h>
 
-#include "keeper_common.hpp"
+#include "proxy_common.hpp"
 #include "server_util.hpp"
 #include "../common/mprpc/rpc_mclient.hpp"
 #include "../common/mprpc/rpc_server.hpp"
@@ -48,15 +48,15 @@ namespace jubatus {
 namespace server {
 namespace framework {
 
-class keeper
-    : public keeper_common, jubatus::server::common::mprpc::rpc_server {
+class proxy
+    : public proxy_common, jubatus::server::common::mprpc::rpc_server {
  public:
   typedef msgpack::rpc::request request_type;
   typedef std::vector<std::pair<std::string, int> > host_list_type;
 
  public:
-  explicit keeper(const keeper_argv& a);
-  virtual ~keeper();
+  explicit proxy(const proxy_argv& a);
+  virtual ~proxy();
 
   int run();
 
@@ -64,7 +64,7 @@ class keeper
   void register_random(const std::string& method_name) {
     using mp::placeholders::_1;
     mp::function<R(std::string)> f = mp::bind(
-        &keeper::template random_proxy0<R>, this, method_name, _1);
+        &proxy::template random_proxy0<R>, this, method_name, _1);
     add(method_name, f);
   }
 
@@ -73,7 +73,7 @@ class keeper
     using mp::placeholders::_1;
     using mp::placeholders::_2;
     mp::function<R(std::string, A0)> f = mp::bind(
-        &keeper::template random_proxy1<R, A0>, this, method_name, _1, _2);
+        &proxy::template random_proxy1<R, A0>, this, method_name, _1, _2);
     add(method_name, f);
   }
 
@@ -83,7 +83,7 @@ class keeper
     using mp::placeholders::_2;
     using mp::placeholders::_3;
     mp::function<R(std::string, A0, A1)> f = mp::bind(
-        &keeper::template random_proxy2<R, A0, A1>,
+        &proxy::template random_proxy2<R, A0, A1>,
         this, method_name, _1, _2, _3);
     add(method_name, f);
   }
@@ -95,7 +95,7 @@ class keeper
     using mp::placeholders::_3;
     using mp::placeholders::_4;
     mp::function<R(std::string, A0, A1, A2)> f = mp::bind(
-        &keeper::template random_proxy3<R, A0, A1, A2>,
+        &proxy::template random_proxy3<R, A0, A1, A2>,
         this, method_name, _1, _2, _3, _4);
     add(method_name, f);
   }
@@ -105,7 +105,7 @@ class keeper
                           pfi::lang::function<R(R, R)> agg) {
     using mp::placeholders::_1;
     mp::function<R(std::string)> f = mp::bind(
-        &keeper::template broadcast_proxy0<R>, this, method_name, _1, agg);
+        &proxy::template broadcast_proxy0<R>, this, method_name, _1, agg);
     add(method_name, f);
   }
 
@@ -115,7 +115,7 @@ class keeper
     using mp::placeholders::_1;
     using mp::placeholders::_2;
     mp::function<R(std::string, A0)> f = mp::bind(
-        &keeper::template broadcast_proxy1<R, A0>,
+        &proxy::template broadcast_proxy1<R, A0>,
         this, method_name, _1, _2, agg);
     add(method_name, f);
   }
@@ -125,7 +125,7 @@ class keeper
     using mp::placeholders::_1;
     using mp::placeholders::_2;
     mp::function<R(std::string, std::string)> f = mp::bind(
-        &keeper::template cht_proxy0<N, R>, this, method_name, _1, _2, agg);
+        &proxy::template cht_proxy0<N, R>, this, method_name, _1, _2, agg);
     add(method_name, f);
   }
 
@@ -135,7 +135,7 @@ class keeper
     using mp::placeholders::_2;
     using mp::placeholders::_3;
     mp::function<R(std::string, std::string, A0)> f = mp::bind(
-        &keeper::template cht_proxy1<N, R, A0>,
+        &proxy::template cht_proxy1<N, R, A0>,
         this, method_name, _1, _2, _3, agg);
     add(method_name, f);
   }
@@ -147,7 +147,7 @@ class keeper
     using mp::placeholders::_3;
     using mp::placeholders::_4;
     mp::function<R(std::string, std::string, A0, A1)> f = mp::bind(
-        &keeper::template cht_proxy2<N, R, A0, A1>,
+        &proxy::template cht_proxy2<N, R, A0, A1>,
         this, method_name, _1, _2, _3, _4, agg);
     add(method_name, f);
   }
@@ -284,7 +284,7 @@ class keeper
     typedef typename common::mprpc::async_vmethod<Tuple>::type vfunc_type;
 
     vfunc_type f = mp::bind(
-        &keeper::template random_async_vproxy<R, Tuple>,
+        &proxy::template random_async_vproxy<R, Tuple>,
         this, /* request */_1, method_name, /* packed_args */_2);
     add_async_vmethod<Tuple>(method_name, f);
   }
@@ -298,7 +298,7 @@ class keeper
     typedef typename common::mprpc::async_vmethod<Tuple>::type vfunc_type;
 
     vfunc_type f = mp::bind(
-        &keeper::template broadcast_async_vproxy<R, Tuple>,
+        &proxy::template broadcast_async_vproxy<R, Tuple>,
         this, /* request */_1, method_name, /* packed_args */_2, agg);
     add_async_vmethod<Tuple>(method_name, f);
   }
@@ -312,7 +312,7 @@ class keeper
     typedef typename common::mprpc::async_vmethod<Tuple>::type vfunc_type;
 
     vfunc_type f = mp::bind(
-        &keeper::template cht_async_vproxy<N, R, Tuple>,
+        &proxy::template cht_async_vproxy<N, R, Tuple>,
         this, /* request */_1, method_name, /* packed_args */_2, agg);
     add_async_vmethod<Tuple>(method_name, f);
   }
@@ -710,7 +710,7 @@ class keeper
       mp::pthread_scoped_lock _l(lock_);
 
       running_count_ = hosts_.size();
-      // enable keeper::async_task timeout management
+      // enable proxy::async_task timeout management
       if (timeout_sec > 0) {
         set_timeout(timeout_sec);
       }
@@ -720,7 +720,7 @@ class keeper
         msgpack::rpc::session s = pool.get_session(hosts_[i].first,
                                                    hosts_[i].second);
         // disable msgpack::rpc::session's timeout.
-        // because session timeout is managed by keeper::async_task
+        // because session timeout is managed by proxy::async_task
         s.set_timeout(0);
 
         // apply async method call and set its callback
@@ -765,7 +765,7 @@ class keeper
  public:
   class async_task_loop : public mp::enable_shared_from_this<async_task_loop> {
    public:
-    explicit async_task_loop(const keeper_argv& a) {
+    explicit async_task_loop(const proxy_argv& a) {
       pool_.set_pool_time_limit(a.session_pool_expire);
       pool_.set_pool_size_limit(a.session_pool_size);
     }
@@ -780,7 +780,7 @@ class keeper
       return pool_;
     }
 
-    static async_task_loop* startup(const keeper_argv& a) {
+    static async_task_loop* startup(const proxy_argv& a) {
       async_task_loop* at_loop = new async_task_loop(a);
 
 #if 0
@@ -796,7 +796,7 @@ class keeper
       return at_loop;
     }
 
-    static async_task_loop* get_private_async_task_loop(const keeper_argv& a) {
+    static async_task_loop* get_private_async_task_loop(const proxy_argv& a) {
       if (!private_async_task_loop_) {
         private_async_task_loop_ = startup(a);
       }
@@ -809,7 +809,7 @@ class keeper
         const host_list_type& hosts,
         const std::string& method_name,
         const Args& args,
-        const keeper_argv& a,
+        const proxy_argv& a,
         int timeout_sec,
         request_type req,
         typename async_task<Res>::reducer_type reducer =
@@ -826,7 +826,7 @@ class keeper
         int port,
         const std::string& method_name,
         const Args& args,
-        const keeper_argv& a,
+        const proxy_argv& a,
         int timeout_sec,
         request_type req,
         typename async_task<Res>::reducer_type reducer =
@@ -848,4 +848,4 @@ class keeper
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_FRAMEWORK_KEEPER_HPP_
+#endif  // JUBATUS_SERVER_FRAMEWORK_PROXY_HPP_

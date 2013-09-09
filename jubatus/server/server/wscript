@@ -22,8 +22,8 @@ def build_one(bld, name, libraries = '', sources = ''):
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
-      source = '%s_keeper.cpp ' % name,
-      target = 'juba%s_keeper' % name,
+      source = '%s_proxy.cpp ' % name,
+      target = 'juba%s_proxy' % name,
       includes = '.',
       use = 'PFICOMMON jubaserv_framework jubaserv_common jubaserv_mprpc_common JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
       )

@@ -8,16 +8,16 @@ def build(bld):
     libassert = ""
 
   bld.shlib(
-    source = ['stat.cpp', 'mixable_stat.cpp'],
+    source = ['stat.cpp'],
     target = 'jubatus_stat',
     includes = '.',
-    use = 'PFICOMMON'+libassert
+    use = 'PFICOMMON MSGPACK'+libassert
     )
 
   bld.program(
     features = 'gtest',
     source = [
-      'stat_test.cpp', 'mixable_stat_test.cpp'
+      'stat_test.cpp',
       ],
     target = 'stat_test',
     includes = '.',
@@ -25,6 +25,5 @@ def build(bld):
     )
 
   bld.install_files('${PREFIX}/include/jubatus/core/stat', [
-      'stat.hpp',
-      'mixable_stat.hpp',
+      'stat.hpp'
       ])

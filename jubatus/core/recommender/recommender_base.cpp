@@ -91,9 +91,8 @@ void recommender_base::complete_row(const common::sfv_t& query,
     } else {
       ++exist_row_num;
     }
-    float ratio = ids[i].second;
     for (size_t j = 0; j < row.size(); ++j) {
-      ret.push_back(make_pair(row[j].first, row[j].second * ratio));
+      ret.push_back(make_pair(row[j].first, row[j].second));
     }
   }
 

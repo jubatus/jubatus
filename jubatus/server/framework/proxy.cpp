@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "keeper.hpp"
+#include "proxy.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -31,18 +31,18 @@ namespace server {
 namespace framework {
 
 __thread msgpack::rpc::session_pool* private_session_pool_ = NULL;
-__thread keeper::async_task_loop*
-  keeper::async_task_loop::private_async_task_loop_ = NULL;
+__thread proxy::async_task_loop*
+  proxy::async_task_loop::private_async_task_loop_ = NULL;
 
 // NOTE: '__thread' is gcc-extension. We should re-implement with
 //       pthread TLS?
 
-keeper::keeper(const keeper_argv& a)
-    : keeper_common(a),
+proxy::proxy(const proxy_argv& a)
+    : proxy_common(a),
       jubatus::server::common::mprpc::rpc_server(a.timeout) {
 }
 
-keeper::~keeper() {
+proxy::~proxy() {
 }
 
 namespace {
@@ -54,14 +54,14 @@ void stop_rpc_server(msgpack::rpc::server& serv) {
 
 }  // anonymous namespace
 
-int keeper::run() {
+int proxy::run() {
   try {
     this->instance_.listen(a_.bind_address, a_.port);
     LOG(INFO) << "start listening at port " << a_.port;
     this->instance_.start(a_.threadnum);
 
     // RPC server started, then register group membership
-    register_keeper(*zk_, a_.type, a_.eth, a_.port);
+    register_proxy(*zk_, a_.type, a_.eth, a_.port);
     LOG(INFO) << "registered group membership";
 
     LOG(INFO) << common::util::get_program_name() << " RPC server startup";

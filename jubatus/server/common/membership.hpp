@@ -30,7 +30,7 @@ namespace common {
 
 static const std::string JUBATUS_BASE_PATH = "/jubatus";
 static const std::string JUBAVISOR_BASE_PATH = "/jubatus/supervisors";
-static const std::string JUBAKEEPER_BASE_PATH = "/jubatus/jubakeepers";
+static const std::string JUBAPROXY_BASE_PATH = "/jubatus/jubaproxies";
 static const std::string ACTOR_BASE_PATH = "/jubatus/actors";
 static const std::string CONFIG_BASE_PATH = "/jubatus/config";
 
@@ -71,7 +71,7 @@ void register_actor(
     int port);
 
 // zk -> name -> ip -> port -> void
-void register_keeper(
+void register_proxy(
     lock_service&,
     const std::string& type,
     const std::string& ip,
