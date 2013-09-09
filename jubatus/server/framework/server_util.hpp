@@ -102,9 +102,9 @@ struct server_argv {
 
 std::string get_server_identifier(const server_argv& a);
 
-struct keeper_argv {
-  keeper_argv(int args, char** argv, const std::string& t);
-  keeper_argv();
+struct proxy_argv {
+  proxy_argv(int args, char** argv, const std::string& t);
+  proxy_argv();
 
   int port;
   std::string bind_address;

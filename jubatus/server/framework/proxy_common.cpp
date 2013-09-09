@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "keeper_common.hpp"
+#include "proxy_common.hpp"
 
 #include <iostream>
 #include <string>
@@ -34,7 +34,7 @@ namespace framework {
 
 namespace {
 
-std::string make_logfile_name(const keeper_argv& a) {
+std::string make_logfile_name(const proxy_argv& a) {
   std::ostringstream logfile;
   if (a.logdir != "") {
     logfile << a.logdir << '/';
@@ -48,7 +48,7 @@ std::string make_logfile_name(const keeper_argv& a) {
 
 }  // namespace
 
-keeper_common::keeper_common(const keeper_argv& a)
+proxy_common::proxy_common(const proxy_argv& a)
     : a_(a) {
   common::util::prepare_signal_handling();
 
@@ -58,11 +58,11 @@ keeper_common::keeper_common(const keeper_argv& a)
   jubatus::server::common::prepare_jubatus(*zk_, a_.type, "");
 }
 
-keeper_common::~keeper_common() {
+proxy_common::~proxy_common() {
   close_lock_service();
 }
 
-void keeper_common::get_members_(
+void proxy_common::get_members_(
     const std::string& name, std::vector<std::pair<std::string, int> >& ret) {
   ret.clear();
   std::vector<std::string> list;
@@ -90,7 +90,7 @@ void keeper_common::get_members_(
   }
 }
 
-void keeper_common::get_members_from_cht_(
+void proxy_common::get_members_from_cht_(
     const std::string& name,
     const std::string& id,
     std::vector<std::pair<std::string, int> >& ret,

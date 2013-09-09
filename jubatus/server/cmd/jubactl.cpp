@@ -297,8 +297,8 @@ void status(const string& type, const string& name, const string& zkhosts) {
           "zk", zkhosts, 10, "/dev/null"));
   show(
       *ls_,
-      jubatus::server::common::JUBAKEEPER_BASE_PATH + "/" + type,
-      "jubakeeper");
+      jubatus::server::common::JUBAPROXY_BASE_PATH + "/" + type,
+      "jubaproxy");
   show(*ls_, jubatus::server::common::JUBAVISOR_BASE_PATH, "jubavisor");
   std::string path;
   jubatus::server::common::build_actor_path(path, type, name);

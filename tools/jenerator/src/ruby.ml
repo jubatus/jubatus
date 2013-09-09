@@ -28,34 +28,37 @@ let make_header conf source filename content =
   make_source conf source filename content comment_out_head
 ;;
 
-(* return : retval = @cli.call(names) *)
-let gen_retval' = function
-  | [] -> assert false
-      (* Because m.method_name (@gen_client_method) can not be empty *)
-  | func :: [] ->
-      "@cli.call(:" ^ func ^ ")"
-  | func :: args ->
-      "@cli.call(:" ^ func ^ ", " ^ (String.concat ", " args) ^ ")"
+let gen_args args = 
+  "(" ^ String.concat ", " args ^ ")"
 ;;
 
-let gen_retval args typ = match typ with
+let gen_call func args =
+  (* TODO(unnonouno): format for long lines *)
+  func ^ gen_args args
+;;
+
+(* return : retval = @cli.call(names) *)
+let gen_retval' func args =
+  let args' = (":" ^ func) :: args in
+  gen_call "@cli.call" args'
+;;
+
+let gen_retval func args typ = match typ with
   | Some(t) -> 
       (match t with
       | Struct (st) ->
-        (String.capitalize st) ^ ".from_tuple(" ^ gen_retval' args ^ ")"
-      | Bool | Float(_) | String | Map(_) | List(_) -> gen_retval' args
-      | _ -> gen_retval' args
-      (* TODO: OK? *)
+        (String.capitalize st) ^ ".from_tuple(" ^ gen_retval' func args ^ ")"
+      | _ -> gen_retval' func args
+      (* TODO(unno): use gen_type *)
       )      
-  | None -> gen_retval' args
+  | None -> gen_retval' func args
 ;;
 
 (* return : def func_name (args): *)
-let gen_def = function
-  | [] -> assert false
-  | func :: [] ->
+let gen_def func = function
+  | [] ->
       "def " ^ func 
-  | func :: args ->
+  | args ->
       "def " ^ func ^ "(" ^ (String.concat ", " args) ^ ")"
 ;;
 
@@ -81,25 +84,12 @@ let gen_string_literal s =
   "\"" ^ String.escaped s ^ "\""
 ;;
 
-let gen_arg_def f =
-  (gen_type f.field_type "retval") ^ " " ^ f.field_name
-;;
-
-let gen_args args = 
-  "(" ^ String.concat ", " args ^ ")"
-;;
-
-let gen_call func args =
-  (* TODO(unnonouno): format for long lines *)
-  func ^ gen_args args
-;;
-
 let gen_client_method m =
   let name = m.method_name in
-  let args = name ::  List.map (fun f -> f.field_name) m.method_arguments in 
+  let args = List.map (fun f -> f.field_name) m.method_arguments in 
   let call =
-    [(0, gen_def args);
-     (1, gen_retval args m.method_return_type);
+    [(0, gen_def name args);
+     (1, gen_retval name args m.method_return_type);
      (0, "end")
     ] 
   in call
@@ -137,7 +127,7 @@ let gen_self_with_equal field_names =
 ;;
 
 let gen_initialize field_names = 
-    (List.concat [[(0, gen_def ("initialize"::field_names))];
+    (List.concat [[(0, gen_def "initialize" field_names)];
                   indent_lines 1 (gen_self_with_equal field_names);
                   [(0, "end")]])
 ;;
@@ -271,10 +261,10 @@ let gen_message m =
 let gen_typedef' name typ = 
   [
     (0, "class " ^ (String.capitalize name));
-    (1, gen_def [(String.capitalize name) ^ ".from_tuple"; "tuple"]);
+    (1, gen_def (String.capitalize name ^ ".from_tuple") ["tuple"]);
     (2, (gen_type typ "tuple"));
     (1, "end");
-    (1, gen_def ["to_tuple"; "o"]);
+    (1, gen_def "to_tuple" ["o"]);
     (2, "o");
     (1, "end");
     (0, "end")

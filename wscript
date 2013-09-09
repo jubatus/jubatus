@@ -134,7 +134,7 @@ def cpplint(ctx):
   excludes = ['jubatus/server/third_party/*', \
               'jubatus/server/server/*_server.hpp', \
               'jubatus/server/server/*_impl.cpp', \
-              'jubatus/server/server/*_keeper.cpp', \
+              'jubatus/server/server/*_proxy.cpp', \
               'jubatus/server/server/*_client.hpp', \
               'jubatus/server/server/*_types.hpp', \
               'jubatus/client/*_client.hpp', \

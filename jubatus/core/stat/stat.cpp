@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
+#include <utility>
 #include <pficommon/system/time_util.h>
 #include <pficommon/data/serialization.h>
 
@@ -29,17 +30,37 @@ namespace jubatus {
 namespace core {
 namespace stat {
 
-namespace {
-inline double sq(double d) {
-  return d * d;
-}
-}  // namespace
-
 stat::stat(size_t window_size)
-    : window_size_(window_size) {
+    : window_size_(window_size),
+      e_(0),
+      n_(0) {
 }
 
 stat::~stat() {
+}
+
+void stat::get_diff(std::pair<double, size_t>& ret) const {
+  ret.first = 0;
+  ret.second = 0;
+
+  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+      stats_.begin(); p != stats_.end(); ++p) {
+    double pr = p->second.n_;
+    ret.first += pr * log(pr);
+    ret.second += pr;
+  }
+}
+
+void stat::set_mixed_and_clear_diff(const std::pair<double, size_t>& e) {
+  e_ = e.first;
+  n_ = e.second;
+}
+
+void stat::mix(
+    const std::pair<double, size_t>& lhs,
+    std::pair<double, size_t>& ret) const {
+  ret.first += lhs.first;
+  ret.second += lhs.second;
 }
 
 void stat::push(const std::string& key, double val) {
@@ -100,18 +121,23 @@ double stat::min(const std::string& key) const {
 }
 
 double stat::entropy() const {
-  size_t total = 0;
-  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
-      stats_.begin(); p != stats_.end(); ++p) {
-    total += p->second.n_;
+  if (n_ == 0) {
+    // not MIXed ever yet
+    size_t total = 0;
+    for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+             stats_.begin(); p != stats_.end(); ++p) {
+      total += p->second.n_;
+    }
+    double ret = 0;
+    for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+             stats_.begin(); p != stats_.end(); ++p) {
+      double pr = p->second.n_ / static_cast<double>(total);
+      ret += pr * log(pr);
+    }
+    return -1.0 * ret;
   }
-  double ret = 0;
-  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
-      stats_.begin(); p != stats_.end(); ++p) {
-    double pr = p->second.n_ / static_cast<double>(total);
-    ret += pr * log(pr);
-  }
-  return -1.0 * ret;
+  double n = n_;
+  return std::log(n) - e_ / n_;
 }
 
 double stat::moment(const std::string& key, int n, double c) const {
@@ -166,6 +192,17 @@ bool stat::load(std::istream& is) {
 std::string stat::type() const {
   return "stat";
 }
-}  // namespame stat
+
+void stat::register_mixables_to_holder(framework::mixable_holder& holder)
+    const {
+  // TODO(beam2d): Split a part of MIX operations from |stat| to outside of it
+  // and use it as a model. |shared_from_this| is a workaround to support this
+  // canonical function like other algorithms.
+  pfi::lang::shared_ptr<mixable_stat> mixable(new mixable_stat);
+  mixable->set_model(pfi::lang::const_pointer_cast<stat>(shared_from_this()));
+  holder.register_mixable(mixable);
+}
+
+}  // namespace stat
 }  // namespace core
 }  // namespace jubatus

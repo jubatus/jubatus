@@ -11,7 +11,7 @@ def build(bld):
 
   framework_source = 'server_util.cpp server_base.cpp server_helper.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
-    framework_source +=  ' keeper_common.cpp keeper.cpp'
+    framework_source +=  ' proxy_common.cpp proxy.cpp'
 
   bld.shlib(
     source = framework_source,
@@ -30,8 +30,8 @@ def build(bld):
       )
 
   bld.install_files('${PREFIX}/include/jubatus/server/framework', [
-      'keeper.hpp',
-      'keeper_common.hpp',
+      'proxy.hpp',
+      'proxy_common.hpp',
       'server_base.hpp',
       'server_helper.hpp',
       'server_util.hpp',
