@@ -28,7 +28,7 @@ lsh::lsh(
     const config& conf,
     pfi::lang::shared_ptr<table::column_table> table,
     const std::string& id)
-    : bit_vector_nearest_neighbor_base(conf.bitnum, table, id) {
+    : bit_vector_nearest_neighbor_base(conf.hash_num, table, id) {
 }
 
 lsh::lsh(
@@ -36,7 +36,7 @@ lsh::lsh(
     pfi::lang::shared_ptr<table::column_table> table,
     std::vector<table::column_type>& schema,
     const std::string& id)
-    : bit_vector_nearest_neighbor_base(conf.bitnum, table, schema, id) {
+    : bit_vector_nearest_neighbor_base(conf.hash_num, table, schema, id) {
 }
 
 table::bit_vector lsh::hash(const common::sfv_t& sfv) const {

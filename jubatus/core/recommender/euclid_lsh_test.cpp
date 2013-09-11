@@ -69,7 +69,7 @@ lsh_index_storage* get_storage(euclid_lsh& r) {
 
 TEST(euclid_lsh, complete_row) {
   euclid_lsh::config config;
-  config.lsh_num = 4;
+  config.hash_num = 4;
   config.table_num = 4;
   config.bin_width = 10;
   config.probe_num = 0;
@@ -182,7 +182,7 @@ TEST_P(euclid_lsh_mix_test, consistency) {
 euclid_lsh::config make_euclid_lsh_config() {
   euclid_lsh::config config;
 
-  config.lsh_num = 16;
+  config.hash_num = 16;
   config.table_num = 4;
   config.bin_width = 1;
   return config;

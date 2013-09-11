@@ -151,8 +151,8 @@ TEST_P(nearest_neighbor_test, empty_neighbor_row) {
 // TODO(beam2d): Write approximated test of neighbor_row().
 
 const map<string, string> configs[] = {
-  make_config("nearest_neighbor:name", "lsh")("bitnum", "64")(),
-  make_config("nearest_neighbor:name", "minhash")("bitnum", "64")(),
+  make_config("nearest_neighbor:name", "lsh")("hash_num", "64")(),
+  make_config("nearest_neighbor:name", "minhash")("hash_num", "64")(),
   make_config(
       "nearest_neighbor:name", "euclid_lsh")(
       "hash_num", "64")()

@@ -40,7 +40,7 @@ class anomaly_test : public ::testing::Test {
     lof_config.nearest_neighbor_num = 100;
     lof_config.reverse_nearest_neighbor_num = 30;
     core::recommender::euclid_lsh::config lsh_config;
-    lsh_config.lsh_num = 8;
+    lsh_config.hash_num = 8;
     lsh_config.table_num = 8;
     lsh_config.probe_num = 8;
     lsh_config.bin_width = 8.2;

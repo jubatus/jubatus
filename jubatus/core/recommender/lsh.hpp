@@ -35,11 +35,11 @@ class lsh : public recommender_base {
   struct config {
     config();
 
-    int64_t bit_num;
+    int64_t hash_num;
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(bit_num);
+      ar & MEMBER(hash_num);
     }
   };
 

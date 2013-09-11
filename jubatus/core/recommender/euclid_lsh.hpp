@@ -36,7 +36,7 @@ class euclid_lsh : public recommender_base {
   using recommender_base::similar_row;
   using recommender_base::neighbor_row;
 
-  static const uint64_t DEFAULT_LSH_NUM;
+  static const uint64_t DEFAULT_HASH_NUM;
   static const uint64_t DEFAULT_TABLE_NUM;
   static const float DEFAULT_BIN_WIDTH;
   static const uint32_t DEFAULT_NUM_PROBE;
@@ -46,7 +46,7 @@ class euclid_lsh : public recommender_base {
   struct config {
     config();
 
-    int64_t lsh_num;
+    int64_t hash_num;
     int64_t table_num;
     float bin_width;
     int32_t probe_num;
@@ -55,7 +55,7 @@ class euclid_lsh : public recommender_base {
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(lsh_num) & MEMBER(table_num) & MEMBER(bin_width) &
+      ar & MEMBER(hash_num) & MEMBER(table_num) & MEMBER(bin_width) &
         MEMBER(probe_num) & MEMBER(seed) & MEMBER(retain_projection);
     }
   };

@@ -14,7 +14,7 @@
     ]
   },
   "parameter" : {
-    "bit_num" : 64
+    "hash_num" : 64
     },
   "method": "lsh"
 }
