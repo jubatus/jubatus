@@ -74,7 +74,6 @@ class nearest_neighbor_test
       }
 
       using common::jsonconfig::config;
-      using pfi::text::json::json;
 
       table_.reset(new table::column_table);
       nn_ = create_nearest_neighbor(
