@@ -25,6 +25,7 @@ def build(bld):
 
   test_src = [
     'exception_test.cpp',
+    'big_endian_test.cpp',
     'byte_buffer_test.cpp',
     'key_manager_test.cpp',
     'vector_util_test.cpp',
@@ -44,6 +45,7 @@ def build(bld):
 
   bld.install_files('${PREFIX}/include/jubatus/core/common/', [
       'assert.hpp',
+      'big_endian.hpp',
       'byte_buffer.hpp',
       'exception.hpp',
       'exception_info.hpp',
