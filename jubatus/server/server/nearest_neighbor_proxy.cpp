@@ -19,8 +19,6 @@ int run_proxy(int argc, char* argv[]) {
   try {
     jubatus::server::framework::proxy k(
         jubatus::server::framework::proxy_argv(argc, argv, "nearest_neighbor"));
-    k.register_async_broadcast<bool>("init_table", pfi::lang::function<bool(
-        bool, bool)>(&jubatus::server::framework::pass<bool>));
     k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
          bool)>(&jubatus::server::framework::all_and));
     k.register_async_cht<1, bool, jubatus::core::fv_converter::datum>("set_row",

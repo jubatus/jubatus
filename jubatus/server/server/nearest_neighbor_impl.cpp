@@ -22,11 +22,6 @@ class nearest_neighbor_impl_ : public nearest_neighbor<nearest_neighbor_impl_> {
     p_(new jubatus::server::framework::server_helper<nearest_neighbor_serv>(a,
          true)) {
   }
-  bool init_table(const std::string& name) {
-    JWLOCK_(p_);
-    return get_p()->init_table();
-  }
-
   bool clear(const std::string& name) {
     JWLOCK_(p_);
     return get_p()->clear();
