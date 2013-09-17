@@ -30,9 +30,7 @@ namespace driver {
 stat::stat(jubatus::core::stat::stat* stat_method)
     : mixable_holder_(new mixable_holder),
       stat_(stat_method) {
-  pfi::lang::shared_ptr<mixable_stat> mixable(new mixable_stat);
-  mixable->set_model(stat_);
-  mixable_holder_->register_mixable(mixable);
+  stat_->register_mixables_to_holder(*mixable_holder_);
 }
 
 stat::~stat() {

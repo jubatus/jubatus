@@ -46,14 +46,14 @@ R/W feature
  
 
 Users can use the input jubatus-IDL file. Output is a set of C++ files that is to be assembled
-to the Jubatus servers: main server-kickstart program, keeper server to be the gateway and C++
+to the Jubatus servers: main server-kickstart program, proxy server to be the gateway and C++
 server template (different from C++ 'template').
 
 - Input: 'xxx.idl' which implements msgpack-idl based extended spec
 - Output0: 'xxx_impl.cpp', 'xxx_server.hpp' which implements developer's application in server-side including 'main()'
-- Output1: 'xxx_keeper.cpp' -- keeper implementation includes 'main()'
+- Output1: 'xxx_proxy.cpp' -- proxy implementation includes 'main()'
 - Output2: 'xxx_client.hpp' client implementation
-- Output3: 'xxx_types.hpp' type definitions which are used in server, keeper and client
+- Output3: 'xxx_types.hpp' type definitions which are used in server, proxy and client
 - Output4: optional: 'xxx_serv.tmpl.(h|c)pp' -- server template for users
 
 

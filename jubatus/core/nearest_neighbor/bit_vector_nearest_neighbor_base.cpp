@@ -99,7 +99,7 @@ void bit_vector_nearest_neighbor_base::neighbor_row_from_hash(
     const bit_vector& query,
     vector<pair<string, float> >& ids,
     uint64_t ret_num) const {
-  vector<pair<size_t, float> > scores;
+  vector<pair<uint64_t, float> > scores;
   ranking_hamming_bit_vectors(query, bit_vector_column(), scores, ret_num);
 
   pfi::lang::shared_ptr<const column_table> table = get_const_table();

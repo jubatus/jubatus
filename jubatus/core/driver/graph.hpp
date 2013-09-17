@@ -23,41 +23,11 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "../graph/graph_base.hpp"
 #include "../graph/graph_type.hpp"
-#include "../graph/graph_wo_index.hpp"
 #include "../framework/mixable.hpp"
 
 namespace jubatus {
 namespace core {
 namespace driver {
-
-struct mixable_graph : public framework::mixable<
-    jubatus::core::graph::graph_base,
-    std::string> {
-  void clear() {
-  }
-
-  std::string get_diff_impl() const {
-    std::string diff;
-    get_model()->get_diff(diff);
-    return diff;
-  }
-
-  void mix_impl(
-      const std::string& lhs,
-      const std::string& rhs,
-      std::string& mixed) const {
-    mixed = lhs;
-    jubatus::core::graph::graph_wo_index* graph =
-        dynamic_cast<jubatus::core::graph::graph_wo_index*>(get_model().get());
-    if (graph) {
-      graph->mix(rhs, mixed);
-    }
-  }
-
-  void put_diff_impl(const std::string& v) {
-    get_model()->set_mixed_and_clear_diff(v);
-  }
-};
 
 class graph {
  public:
@@ -69,7 +39,7 @@ class graph {
   }
 
   jubatus::core::graph::graph_base* get_model() const {
-    return graph_->get_model().get();
+    return graph_.get();
   }
 
   void create_node(jubatus::core::graph::node_id_t id);
@@ -118,7 +88,7 @@ class graph {
  private:
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  pfi::lang::shared_ptr<mixable_graph> graph_;
+  pfi::lang::shared_ptr<core::graph::graph_base> graph_;
 };
 
 }  // namespace driver

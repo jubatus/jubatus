@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl
+// This file is auto-generated from regression.idl
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -10,20 +10,20 @@
 
 #include "jubatus/core/common/exception.hpp"
 #include "../../server/framework/aggregators.hpp"
-#include "../../server/framework/keeper.hpp"
-#include "classifier_types.hpp"
+#include "../../server/framework/proxy.hpp"
+#include "regression_types.hpp"
 
 namespace jubatus {
 
-int run_keeper(int argc, char* argv[]) {
+int run_proxy(int argc, char* argv[]) {
   try {
-    jubatus::server::framework::keeper k(
-        jubatus::server::framework::keeper_argv(argc, argv, "classifier"));
+    jubatus::server::framework::proxy k(
+        jubatus::server::framework::proxy_argv(argc, argv, "regression"));
     k.register_async_random<std::string>("get_config");
-    k.register_async_random<int32_t, std::vector<std::pair<std::string,
+    k.register_async_random<int32_t, std::vector<std::pair<float,
          jubatus::core::fv_converter::datum> > >("train");
-    k.register_async_random<std::vector<std::vector<estimate_result> >,
-         std::vector<jubatus::core::fv_converter::datum> >("classify");
+    k.register_async_random<std::vector<float>,
+         std::vector<jubatus::core::fv_converter::datum> >("estimate");
     k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
          bool)>(&jubatus::server::framework::all_and));
     k.register_async_broadcast<bool, std::string>("save",
@@ -49,5 +49,5 @@ int run_keeper(int argc, char* argv[]) {
 }  // namespace jubatus
 
 int main(int argc, char* argv[]) {
-  jubatus::run_keeper(argc, argv);
+  jubatus::run_proxy(argc, argv);
 }

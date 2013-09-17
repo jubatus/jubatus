@@ -78,7 +78,7 @@ vector<float> lsh_function(
 }  // namespace
 
 euclid_lsh::config::config()
-    : lsh_num(DEFAULT_LSH_NUM),
+    : hash_num(DEFAULT_HASH_NUM),
       table_num(DEFAULT_TABLE_NUM),
       bin_width(DEFAULT_BIN_WIDTH),
       probe_num(DEFAULT_NUM_PROBE),
@@ -86,7 +86,7 @@ euclid_lsh::config::config()
       retain_projection(DEFAULT_RETAIN_PROJECTION) {
 }
 
-const uint64_t euclid_lsh::DEFAULT_LSH_NUM = 64;  // should be in config
+const uint64_t euclid_lsh::DEFAULT_HASH_NUM = 64;  // should be in config
 const uint64_t euclid_lsh::DEFAULT_TABLE_NUM = 4;  // should be in config
 const float euclid_lsh::DEFAULT_BIN_WIDTH = 100;  // should be in config
 const uint32_t euclid_lsh::DEFAULT_NUM_PROBE = 64;  // should be in config
@@ -100,7 +100,7 @@ euclid_lsh::euclid_lsh()
       retain_projection_(DEFAULT_RETAIN_PROJECTION) {
   mixable_storage_->set_model(storage::mixable_lsh_index_storage::model_ptr(
       new storage::lsh_index_storage(
-          DEFAULT_LSH_NUM, DEFAULT_TABLE_NUM, DEFAULT_SEED)));
+          DEFAULT_HASH_NUM, DEFAULT_TABLE_NUM, DEFAULT_SEED)));
 }
 
 euclid_lsh::euclid_lsh(const config& config)
@@ -110,7 +110,7 @@ euclid_lsh::euclid_lsh(const config& config)
       retain_projection_(config.retain_projection) {
   mixable_storage_->set_model(storage::mixable_lsh_index_storage::model_ptr(
       new storage::lsh_index_storage(
-          config.lsh_num, config.table_num, config.seed)));
+          config.hash_num, config.table_num, config.seed)));
 }
 
 euclid_lsh::~euclid_lsh() {

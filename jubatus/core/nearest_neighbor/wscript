@@ -44,3 +44,16 @@ def build(bld):
       'nearest_neighbor_test.cpp',
     ],
     use = 'nearest_neighbor column_table')
+
+  bld.install_files('${PREFIX}/include/jubatus/core/nearest_neighbor/', [
+      'bit_vector_nearest_neighbor_base.hpp',
+      'bit_vector_ranking.hpp',
+      'euclid_lsh.hpp',
+      'exception.hpp',
+      'lsh.hpp',
+      'lsh_function.hpp',
+      'minhash.hpp',
+      'nearest_neighbor.hpp',
+      'nearest_neighbor_base.hpp',
+      'nearest_neighbor_factory.hpp',
+      ])

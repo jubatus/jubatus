@@ -66,9 +66,7 @@ bool stat_serv::set_config(const string& config) {
 
   config_ = config;
   stat_.reset(
-      new core::driver::stat(
-          argv().is_standalone() ? new core::stat::stat(conf.window_size)
-          : new core::stat::mixable_stat(conf.window_size)));
+      new core::driver::stat(new core::stat::stat(conf.window_size)));
   mixer_->set_mixable_holder(stat_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;

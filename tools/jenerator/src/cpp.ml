@@ -454,7 +454,7 @@ let gen_aggregator_function names ret_type aggregator =
   func ^ "(&" ^ agg ^ ")"
 ;;
 
-let gen_keeper_register names m ret_type =
+let gen_proxy_register names m ret_type =
   let arg_types = List.map (fun f -> f.field_type) (List.tl m.method_arguments) in
   let method_name_str = gen_string_literal m.method_name in
   let routing, _, agg = get_decorator m in
@@ -478,32 +478,32 @@ let gen_keeper_register names m ret_type =
     let call = gen_call func [method_name_str; gen_aggregator_function names ret_type agg] in
     [ (0, call) ]
 
-  | Internal -> (* no code generated in keeper *)
+  | Internal -> (* no code generated in proxy *)
     []
 ;;
 
-let gen_keeper_method names m =
+let gen_proxy_method names m =
   match m.method_return_type with
   | Some ret_type ->
-    gen_keeper_register names m ret_type
+    gen_proxy_register names m ret_type
   | None ->
     (* TODO(unnonouno): How to treat funcitons that return no values? *)
     []
 ;;
 
-let gen_keeper names s =
-  List.map (gen_keeper_method names) s.service_methods
+let gen_proxy names s =
+  List.map (gen_proxy_method names) s.service_methods
 ;;
 
-let gen_keeper_file conf names source services =
+let gen_proxy_file conf names source services =
   let base = File_util.take_base source in
-  let filename = base ^ "_keeper.cpp" in
+  let filename = base ^ "_proxy.cpp" in
 
   let name_str = gen_string_literal base in
-  let servers = List.concat (List.map (gen_keeper names) services) in
+  let servers = List.concat (List.map (gen_proxy names) services) in
 
   let namespace = parse_namespace conf.Config.namespace in
-  let func = String.concat "::" namespace ^ "::run_keeper" in
+  let func = String.concat "::" namespace ^ "::run_proxy" in
   
   let s = concat_blocks [
     [
@@ -516,16 +516,16 @@ let gen_keeper_file conf names source services =
       (0, "");
       (0, gen_jubatus_core_include conf "common/exception.hpp");
       (0, gen_jubatus_include conf "server/framework/aggregators.hpp");
-      (0, gen_jubatus_include conf "server/framework/keeper.hpp");
+      (0, gen_jubatus_include conf "server/framework/proxy.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
     ];
     make_namespace namespace (
       List.concat [
         [
-          (0, "int run_keeper(int argc, char* argv[]) {");
+          (0, "int run_proxy(int argc, char* argv[]) {");
           (1,   "try {");
-          (2,     "jubatus::server::framework::keeper k(");
-          (4,         "jubatus::server::framework::keeper_argv(argc, argv, " ^ name_str ^ "));");
+          (2,     "jubatus::server::framework::proxy k(");
+          (4,         "jubatus::server::framework::proxy_argv(argc, argv, " ^ name_str ^ "));");
         ];
         indent_lines 2 (List.concat servers);
         [
@@ -550,7 +550,7 @@ let gen_keeper_file conf names source services =
 let gen_impl_method names m =
   let name = m.method_name in
   let args_def = gen_function_args_def names m.method_arguments in
-  (* Do not use the first argument. It is used for keepers. *)
+  (* Do not use the first argument. It is used for proxies. *)
   let args = List.map (fun f -> f.field_name) (List.tl m.method_arguments) in
   let ret_type = gen_ret_type names m.method_return_type in
 
@@ -808,7 +808,7 @@ let generate_server conf source idl =
   gen_type_file conf names source idl;
   gen_client_file conf names source services;
   gen_server_file conf names source services;
-  gen_keeper_file conf names source services;
+  gen_proxy_file conf names source services;
   gen_impl_file conf names source services;
   if conf.Config.default_template then begin
     gen_server_template_header_file conf names source services;

@@ -13,6 +13,7 @@ def configure(conf):
 
   libpat = conf.env.cxxshlib_PATTERN
   conf.define('LIBSPLITTER_SAMPLE', libpat % 'splitter_sample')
+  conf.define('LIBSPLITTER_NULL', libpat % 'splitter_null')
   conf.define('LIBFILTER_SAMPLE', libpat % 'filter_sample')
   conf.define('LIBNUM_FEATURE_SAMPLE', libpat % 'num_feature_sample')
   conf.define('LIBNUM_FILTER_SAMPLE', libpat % 'num_filter_sample')
@@ -85,6 +86,13 @@ def build(bld):
     target = 'splitter_sample',
     install_path = None,
     name = 'splitter_sample',
+    )
+
+  bld.shlib(
+    source = 'test_splitter_null.cpp',
+    target = 'splitter_null',
+    install_path = None,
+    name = 'splitter_null',
     )
 
   bld.shlib(

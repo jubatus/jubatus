@@ -6,6 +6,7 @@ FILES[] =
   cpp_test
   java_test
   python_test
+  ruby_test
   file_util_test
 
 USE_OCAMLFIND = true

@@ -79,6 +79,11 @@ class nearest_neighbor {
     return f.get<std::map<std::string, std::map<std::string, std::string> > >();
   }
 
+  std::string get_config(const std::string& name) {
+    msgpack::rpc::future f = c_.call("get_config", name);
+    return f.get<std::string>();
+  }
+
   msgpack::rpc::client& get_client() {
     return c_;
   }
