@@ -116,6 +116,7 @@ int nearest_neighbor_serv::clear() {
   update_row_cnt_ = 0;
   build_cnt_ = 0;
   mix_cnt_ = 0;
+  nearest_neighbor_->clear();
   return 0;
 }
 

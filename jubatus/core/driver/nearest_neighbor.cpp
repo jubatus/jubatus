@@ -77,6 +77,11 @@ nearest_neighbor::similar_row(
   return ret;
 }
 
+void nearest_neighbor::clear() {
+  converter_->clear_weights();
+  nn_->clear();
+}
+
 }  // namespace driver
 }  // namespace core
 }  // namespace jubatus
