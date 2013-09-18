@@ -201,21 +201,12 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
   using detail::abstract_column_base::update;
 
   void push_back(const bit_vector& value) {
-    const size_t bit_length = type().bit_vector_length();
-    if (value.bit_num() > bit_length) {
-      throw length_unmatch_exception(
-        "invalid length of bit_vector (" +
-        pfi::lang::lexical_cast<std::string>(value.bit_num()) + ", "
-        "expected " +
-        pfi::lang::lexical_cast<std::string>(bit_length) + ")");
-    }
+    check_bit_vector_(value);
+
     for (size_t i = 0; i < blocks_per_value_(); ++i) {
       array_.push_back(uint64_t());
     }
-    memcpy(
-        &array_[array_.size() - blocks_per_value_()],
-        value.raw_data_unsafe(),
-        value.used_bytes());
+    update_at_(size() - 1, value.raw_data_unsafe());
   }
   /*
   void push_back(const msgpack::object& obj) {
@@ -223,28 +214,25 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
     obj.convert(&array_[array_.size()]);
   }
   */
-  /*
-  bool update(uint64_t index, const msgpack::object& obj) {
+  bool update(uint64_t index, const bit_vector& value) {
+    check_bit_vector_(value);
+
     if (size() < index) {
       return false;
     }
-    obj.convert(&array_[index]);
+    update_at_(index, value.raw_data_unsafe());
     return true;
   }
-  */
 
   uint64_t size() const {
+    JUBATUS_ASSERT_EQ(array_.size() % blocks_per_value_(), 0u, "");
     return array_.size() / blocks_per_value_();
   }
   bit_vector operator[](uint64_t index) {
-    return bit_vector(
-      &array_[blocks_per_value_() * index],
-      type().bit_vector_length());
+    return bit_vector(get_data_at_(index), type().bit_vector_length());
   }
   bit_vector operator[](uint64_t index) const {
-    return bit_vector(
-      &array_[blocks_per_value_() * index],
-      type().bit_vector_length());
+    return bit_vector(get_data_at_(index), type().bit_vector_length());
   }
   bool remove(uint64_t target) {
     if (target >= size()) {
@@ -264,10 +252,40 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
 
  private:
   std::vector<uint64_t> array_;
+
+  size_t bytes_per_value_() const {
+    return bit_vector::memory_size(type().bit_vector_length());
+  }
   size_t blocks_per_value_() const {
-    size_t bytes_per_value =
-        bit_vector::memory_size(type().bit_vector_length());
-    return (bytes_per_value + sizeof(uint64_t) - 1) / sizeof(uint64_t);
+    return (bytes_per_value_() + sizeof(uint64_t) - 1) / sizeof(uint64_t);
+  }
+
+  void* get_data_at_(size_t index) {
+    JUBATUS_ASSERT_LT(index, size(), "");
+    return &array_[blocks_per_value_() * index];
+  }
+  const void* get_data_at_(size_t index) const {
+    JUBATUS_ASSERT_LT(index, size(), "");
+    return &array_[blocks_per_value_() * index];
+  }
+
+  void update_at_(size_t index, const void* raw_data) {
+    if (raw_data) {
+      memcpy(get_data_at_(size() - 1), raw_data, bytes_per_value_());
+    } else {
+      memset(get_data_at_(size() - 1), 0, bytes_per_value_());
+    }
+  }
+
+  void check_bit_vector_(const bit_vector& tested) const {
+    const size_t bit_num_expected = type().bit_vector_length();
+    if (tested.bit_num() > bit_num_expected) {
+      throw length_unmatch_exception(
+        "invalid length of bit_vector (" +
+        pfi::lang::lexical_cast<std::string>(tested.bit_num()) + ", "
+        "expected " +
+        pfi::lang::lexical_cast<std::string>(bit_num_expected) + ")");
+    }
   }
 };
 
