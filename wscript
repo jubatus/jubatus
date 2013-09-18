@@ -31,6 +31,11 @@ def options(opt):
                  action='store_true', default=False, 
                  dest='zktest', help='zk should run in localhost:2181')
 
+  # use (base + 10) ports for RPC module tests
+  opt.add_option('--rpc-test-port-base',
+                 default=60023, choices=map(str, xrange(1024, 65535 - 10)),
+                 help='base port number for RPC module tests')
+
   opt.recurse(subdirs)
 
 def configure(conf):
@@ -99,6 +104,9 @@ def configure(conf):
     conf.env.append_value('CXXFLAGS', '-fprofile-arcs')
     conf.env.append_value('CXXFLAGS', '-ftest-coverage')
     conf.env.append_value('LINKFLAGS', '-lgcov')
+
+  if Options.options.rpc_test_port_base:
+    conf.define('JUBATUS_RPC_TEST_PORT_BASE', int(Options.options.rpc_test_port_base))
 
   conf.define('BUILD_DIR',  conf.bldnode.abspath())
 

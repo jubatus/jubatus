@@ -140,10 +140,10 @@ static void server_thread(server_ptr srv, unsigned u) {
   srv->start(10, /*no_hang=*/ true);
 }
 
-static const uint16_t PORT0 = 60023;
-static const uint16_t PORT1 = 60024;
-static const uint16_t kPortStart = 60023;
-static const uint16_t kPortEnd = kPortStart + 10;
+static const uint16_t PORT0 = JUBATUS_RPC_TEST_PORT_BASE;
+static const uint16_t PORT1 = JUBATUS_RPC_TEST_PORT_BASE + 1;
+static const uint16_t kPortStart = JUBATUS_RPC_TEST_PORT_BASE;
+static const uint16_t kPortEnd = JUBATUS_RPC_TEST_PORT_BASE + 10;
 
 TEST(rpc_mclient, no_client) {
   std::vector<std::pair<std::string, uint16_t> > hosts;
