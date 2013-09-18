@@ -9,9 +9,6 @@ message datum(jubatus::core::fv_converter::datum) {
 }
 
 service nearest_neighbor {
-  #@broadcast #@update #@pass
-  bool init_table(0: string name)
-
   #@broadcast #@update #@all_and
   bool clear(0: string name)
 

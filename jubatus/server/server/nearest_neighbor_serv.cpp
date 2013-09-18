@@ -109,11 +109,6 @@ std::string nearest_neighbor_serv::get_config() {
   return config_;
 }
 
-bool nearest_neighbor_serv::init_table() {
-  DLOG(INFO) << __func__;
-  return true;
-}
-
 int nearest_neighbor_serv::clear() {
   DLOG(INFO) << __func__;
   check_set_config();
@@ -121,6 +116,7 @@ int nearest_neighbor_serv::clear() {
   update_row_cnt_ = 0;
   build_cnt_ = 0;
   mix_cnt_ = 0;
+  nearest_neighbor_->clear();
   return 0;
 }
 

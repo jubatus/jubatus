@@ -65,6 +65,7 @@ class nearest_neighbor {
   std::vector<std::pair<std::string, float> >
   similar_row(const core::fv_converter::datum& datum, size_t ret_num);
 
+  void clear();
 
  private:
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
