@@ -22,11 +22,6 @@ class nearest_neighbor {
     c_.set_timeout(timeout_sec);
   }
 
-  bool init_table(const std::string& name) {
-    msgpack::rpc::future f = c_.call("init_table", name);
-    return f.get<bool>();
-  }
-
   bool clear(const std::string& name) {
     msgpack::rpc::future f = c_.call("clear", name);
     return f.get<bool>();
