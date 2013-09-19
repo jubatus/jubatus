@@ -154,6 +154,13 @@ class column_type {
     return os;
   }
 
+  friend bool operator==(const column_type& x, const column_type& y) {
+    return x.type_ == y.type_ && x.bit_vector_length_ == y.bit_vector_length_;
+  }
+  friend bool operator!=(const column_type& x, const column_type& y) {
+    return !(x == y);
+  }
+
  private:
   friend class pfi::data::serialization::access;
   template <class Ar>
