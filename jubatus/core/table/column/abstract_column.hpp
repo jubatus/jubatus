@@ -175,6 +175,11 @@ class typed_column : public detail::abstract_column_base {
     return array_[index];
   }
 
+  void pack_with_index(
+      const uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
+    pk.pack((*this)[index]);
+  }
+
   void dump() const {}
   void dump(std::ostream& os, uint64_t target) const {
   }
@@ -257,6 +262,10 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
   }
   void clear() {
     array_.clear();
+  }
+  void pack_with_index(
+      const uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
+    pk.pack((*this)[index]);
   }
   void dump() const {}
   void dump(std::ostream& os, uint64_t target) const {
