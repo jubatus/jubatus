@@ -180,8 +180,16 @@ class typed_column : public detail::abstract_column_base {
     pk.pack((*this)[index]);
   }
 
-  void dump() const {}
+  void dump() const {
+    std::cout << "[column (" << type().type_as_string() << ")"
+        << " size:" << size() << " {" << std::endl;
+    for (size_t i = 0; i <  size(); ++i) {
+      dump(std::cout, i);
+    }
+    std::cout << "} ]" << std::endl;
+  }
   void dump(std::ostream& os, uint64_t target) const {
+    os << "[" << target << "] " << (*this)[target] << std::endl;
   }
 
  private:
@@ -285,8 +293,16 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
       const uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
     pk.pack((*this)[index]);
   }
-  void dump() const {}
+  void dump() const {
+    std::cout << "[column (bit_vector)"
+        << " size:" << size() << " {" << std::endl;
+    for (size_t i = 0; i <  size(); ++i) {
+      dump(std::cout, i);
+    }
+    std::cout << "} ]" << std::endl;
+  }
   void dump(std::ostream& os, uint64_t target) const {
+    os << "[" << target << "] " << (*this)[target] << std::endl;
   }
 
  private:
