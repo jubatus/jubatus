@@ -226,6 +226,24 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
     typed_column::push_back(value);
   }
 
+  bool insert(uint64_t target, const bit_vector& value) {
+    check_bit_vector_(value);
+
+    if (size() < target) {
+      return false;
+    }
+    array_.insert(
+        array_.begin() + target * blocks_per_value_(),
+        blocks_per_value_(), 0);
+    update_at_(target, value.raw_data_unsafe());
+    return true;
+  }
+  bool insert(uint64_t target, const msgpack::object& obj) {
+    bit_vector value(type().bit_vector_length());
+    obj.convert(&value);
+    return typed_column::insert(target, value);
+  }
+
   bool update(uint64_t index, const bit_vector& value) {
     check_bit_vector_(value);
 
