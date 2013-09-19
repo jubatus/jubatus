@@ -178,9 +178,14 @@ struct bit_vector_base {
     return *this;
   }
   void swap(bit_vector_base& x) {
+    if (bit_num_ != x.bit_num_) {
+      throw bit_vector_unmatch_exception(
+          "failed to swap bit vectors " +
+          pfi::lang::lexical_cast<std::string>(bit_num_) + " and " +
+          pfi::lang::lexical_cast<std::string>(x.bit_num_));
+    }
     using std::swap;
     swap(bits_, x.bits_);
-    swap(bit_num_, x.bit_num_);
     swap(own_, x.own_);
   }
   friend void swap(bit_vector_base& l, bit_vector_base& r) {
@@ -331,9 +336,33 @@ struct bit_vector_base {
 
   template <typename packable>
   void pack(packable& buffer) const {
-    const std::string tmp(reinterpret_cast<const char*>(bits_), used_bytes());
-    msgpack::pack(buffer, tmp);
+    msgpack::pack(buffer, *this);
   }
+  template<typename Buffer>
+  void msgpack_pack(msgpack::packer<Buffer>& packer) const {
+    const uint64_t bit_num = bit_num_;
+    const std::string tmp = bits_ ?
+        std::string(reinterpret_cast<const char*>(bits_), used_bytes()) :
+        std::string(used_bytes(), 0);
+    packer.pack_array(2);
+    packer.pack(bit_num);
+    packer.pack(tmp);
+  }
+  void msgpack_unpack(msgpack::object o) {
+    if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
+      throw msgpack::type_error();  // like MSGPACK_DEFINE
+    }
+    const uint64_t bit_num = o.via.array.ptr[0].as<uint64_t>();
+    const std::string tmp = o.via.array.ptr[1].as<std::string>();
+    if (tmp.size() != memory_size(bit_num)) {
+      throw bit_vector_unmatch_exception(
+          "msgpack_unpack(): invalid length of packed data: "
+          "expected: " + pfi::lang::lexical_cast<std::string>(bit_num_) +
+          ", got: " + pfi::lang::lexical_cast<std::string>(tmp.size()));
+    }
+    bit_vector_base(tmp.c_str(), bit_num).swap(*this);
+  }
+
   void alloc_memory() {
     JUBATUS_ASSERT(!own_);
     bits_ = new bit_base[used_bytes()];

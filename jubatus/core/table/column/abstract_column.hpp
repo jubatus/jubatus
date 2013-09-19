@@ -208,12 +208,12 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
     }
     update_at_(size() - 1, value.raw_data_unsafe());
   }
-  /*
   void push_back(const msgpack::object& obj) {
-    array_.push_back(uint64_t());
-    obj.convert(&array_[array_.size()]);
+    bit_vector value(type().bit_vector_length());
+    obj.convert(&value);
+    typed_column::push_back(value);
   }
-  */
+
   bool update(uint64_t index, const bit_vector& value) {
     check_bit_vector_(value);
 
@@ -222,6 +222,11 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
     }
     update_at_(index, value.raw_data_unsafe());
     return true;
+  }
+  bool update(uint64_t index, const msgpack::object& obj) {
+    bit_vector value(type().bit_vector_length());
+    obj.convert(&value);
+    return typed_column::update(index, value);
   }
 
   uint64_t size() const {
