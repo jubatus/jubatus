@@ -340,27 +340,33 @@ struct bit_vector_base {
   }
   template<typename Buffer>
   void msgpack_pack(msgpack::packer<Buffer>& packer) const {
-    const uint64_t bit_num = bit_num_;
-    const std::string tmp = bits_ ?
-        std::string(reinterpret_cast<const char*>(bits_), used_bytes()) :
-        std::string(used_bytes(), 0);
     packer.pack_array(2);
-    packer.pack(bit_num);
-    packer.pack(tmp);
+    packer.pack(static_cast<uint64_t>(bit_num_));
+    packer.pack_raw(used_bytes());
+    if (bits_) {
+      packer.pack_raw_body(reinterpret_cast<const char*>(bits_), used_bytes());
+    } else {
+      const char c = 0;
+      for (size_t i = 0; i < used_bytes(); ++i) {
+        packer.pack_raw_body(&c, 1);
+      }
+    }
   }
   void msgpack_unpack(msgpack::object o) {
     if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
       throw msgpack::type_error();  // like MSGPACK_DEFINE
     }
-    const uint64_t bit_num = o.via.array.ptr[0].as<uint64_t>();
-    const std::string tmp = o.via.array.ptr[1].as<std::string>();
-    if (tmp.size() != memory_size(bit_num)) {
+    const msgpack::object* objs = o.via.array.ptr;
+    const uint64_t bit_num = objs[0].as<uint64_t>();
+    const msgpack::type::raw_ref data = objs[1].as<msgpack::type::raw_ref>();
+    if (data.size != memory_size(bit_num)) {
       throw bit_vector_unmatch_exception(
           "msgpack_unpack(): invalid length of packed data: "
           "expected: " + pfi::lang::lexical_cast<std::string>(bit_num_) +
-          ", got: " + pfi::lang::lexical_cast<std::string>(tmp.size()));
+          ", got: " + pfi::lang::lexical_cast<std::string>(data.size));
     }
-    bit_vector_base(tmp.c_str(), bit_num).swap(*this);
+    bit_vector_base(data.ptr, bit_num).swap(*this);
+    JUBATUS_ASSERT(own_ || bits_ == NULL);
   }
 
   void alloc_memory() {
