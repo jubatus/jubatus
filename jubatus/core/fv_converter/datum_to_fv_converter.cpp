@@ -31,6 +31,7 @@
 #include "mixable_weight_manager.hpp"
 #include "num_feature.hpp"
 #include "num_filter.hpp"
+#include "raw_feature.hpp"
 #include "space_splitter.hpp"
 #include "string_filter.hpp"
 #include "weight_manager.hpp"
@@ -114,6 +115,24 @@ class datum_to_fv_converter_impl {
     }
   };
 
+  struct raw_feature_rule {
+    std::string name_;
+    pfi::lang::shared_ptr<key_matcher> matcher_;
+    pfi::lang::shared_ptr<raw_feature> feature_func_;
+
+    raw_feature_rule(
+        const std::string& name,
+        pfi::lang::shared_ptr<key_matcher> matcher,
+        pfi::lang::shared_ptr<raw_feature> feature_func)
+        : name_(name),
+          matcher_(matcher),
+          feature_func_(feature_func) {
+    }
+  };
+
+  // raws
+  std::vector<raw_feature_rule> raw_rules_;
+
   std::vector<string_filter_rule> string_filter_rules_;
   std::vector<num_filter_rule> num_filter_rules_;
   std::vector<string_feature_rule> string_rules_;
@@ -135,6 +154,7 @@ class datum_to_fv_converter_impl {
     num_filter_rules_.clear();
     string_rules_.clear();
     num_rules_.clear();
+    raw_rules_.clear();
   }
 
   void register_string_filter(
@@ -167,6 +187,13 @@ class datum_to_fv_converter_impl {
       pfi::lang::shared_ptr<key_matcher> matcher,
       pfi::lang::shared_ptr<num_feature> feature_func) {
     num_rules_.push_back(num_feature_rule(name, matcher, feature_func));
+  }
+
+  void register_raw_rule(
+      const std::string& name,
+      pfi::lang::shared_ptr<key_matcher> matcher,
+      pfi::lang::shared_ptr<raw_feature> feature_func) {
+    raw_rules_.push_back(raw_feature_rule(name, matcher, feature_func));
   }
 
   void add_weight(const std::string& key, float weight) {
@@ -222,6 +249,8 @@ class datum_to_fv_converter_impl {
     filter_nums(datum.num_values_, filtered_nums);
     convert_nums(datum.num_values_, fv);
     convert_nums(filtered_nums, fv);
+
+    convert_binaries(datum.binary_values_, fv);
 
     fv.swap(ret_fv);
   }
@@ -331,6 +360,26 @@ class datum_to_fv_converter_impl {
       for (size_t i = 0; i < splitter.weights_.size(); ++i) {
         make_string_features(
             key, splitter.name_, splitter.weights_[i], counter, ret_fv);
+      }
+    }
+  }
+
+  void convert_binaries(const datum::sv_t& binary_values,
+                         common::sfv_t& ret_fv) const {
+    for (size_t i = 0; i < raw_rules_.size(); ++i) {
+      convert_binaries(raw_rules_[i], binary_values, ret_fv);
+    }
+  }
+
+  void convert_binaries(
+      const raw_feature_rule& feature,
+      const datum::sv_t& binary_values,
+      common::sfv_t& ret_fv) const {
+    for (size_t j = 0; j < binary_values.size(); ++j) {
+      const std::string& key = binary_values[j].first;
+      const std::string& value = binary_values[j].second;
+      if (feature.matcher_->match(key)) {
+        feature.feature_func_->add_feature(key, value, ret_fv);
       }
     }
   }
@@ -500,6 +549,13 @@ void datum_to_fv_converter::register_num_rule(
     pfi::lang::shared_ptr<key_matcher> matcher,
     pfi::lang::shared_ptr<num_feature> feature_func) {
   pimpl_->register_num_rule(name, matcher, feature_func);
+}
+
+void datum_to_fv_converter::register_raw_rule(
+    const std::string& name,
+    pfi::lang::shared_ptr<key_matcher> matcher,
+    pfi::lang::shared_ptr<raw_feature> feature_func) {
+  pimpl_->register_raw_rule(name, matcher, feature_func);
 }
 
 void datum_to_fv_converter::add_weight(const std::string& key, float weight) {
