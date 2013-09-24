@@ -278,9 +278,12 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
     if (target >= size()) {
       return false;
     }
-    std::vector<uint64_t>::iterator iter =
-        array_.begin() + target * blocks_per_value_();
-    array_.erase(iter, iter + blocks_per_value_());
+    if (target < size() - 1) {
+      const void* back = get_data_at_(size() - 1);
+      memcpy(get_data_at_(target), back, bytes_per_value_());
+    }
+    JUBATUS_ASSERT_GE(array_.size(), blocks_per_value_(), "");
+    array_.resize(array_.size() - blocks_per_value_());
     return true;
   }
   void clear() {
