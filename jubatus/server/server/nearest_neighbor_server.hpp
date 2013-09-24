@@ -21,8 +21,6 @@ class nearest_neighbor : public jubatus::server::common::mprpc::rpc_server {
  public:
   explicit nearest_neighbor(double timeout_sec) : rpc_server(timeout_sec) {
     Impl* impl = static_cast<Impl*>(this);
-    rpc_server::add<bool(std::string)>("init_table", pfi::lang::bind(
-        &Impl::init_table, impl, pfi::lang::_1));
     rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(&Impl::clear,
          impl, pfi::lang::_1));
     rpc_server::add<bool(std::string, std::string,

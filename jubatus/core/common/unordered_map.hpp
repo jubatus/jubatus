@@ -45,7 +45,7 @@ inline packer<Stream>& operator<<(
     packer<Stream>& o,
     const pfi::data::unordered_map<K, V>& v) {
   o.pack_map(v.size());
-  for (typename std::tr1::unordered_map<K, V>::const_iterator it = v.begin();
+  for (typename pfi::data::unordered_map<K, V>::const_iterator it = v.begin();
       it != v.end(); ++it) {
     o.pack(it->first);
     o.pack(it->second);

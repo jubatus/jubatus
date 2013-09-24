@@ -48,7 +48,7 @@ void nearest_neighbor_base::get_all_row_ids(vector<string>& ids) const {
 }
 
 void nearest_neighbor_base::clear() {
-  // TODO(beam2d): Implement clear in column_table
+  mixable_table_->get_model()->clear();
 }
 
 void nearest_neighbor_base::similar_row(

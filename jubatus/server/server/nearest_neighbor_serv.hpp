@@ -51,8 +51,6 @@ class nearest_neighbor_serv : public framework::server_base {
   void set_config(const std::string& config);
   std::string get_config();
 
-  bool init_table();
-
   int clear();
   int set_row(const std::string& id, const core::fv_converter::datum& dat);
 
