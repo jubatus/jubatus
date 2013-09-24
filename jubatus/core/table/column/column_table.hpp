@@ -70,8 +70,8 @@ class column_table {
   bool add(const std::string& key, const owner& o, const T1& v1) {
     if (columns_.size() != 1) {
       throw length_unmatch_exception(
-        "tuple's length unmatch, expected " +
-        pfi::lang::lexical_cast<std::string>(tuples_) + " tuples.");
+          "tuple's length unmatch, expected " +
+          pfi::lang::lexical_cast<std::string>(tuples_) + " tuples.");
     }
     // check already exists
     pfi::concurrent::scoped_wlock lk(table_lock_);
@@ -100,8 +100,8 @@ class column_table {
   bool add(const std::string& key, const owner& o, const T1& v1, const T2& v2) {
     if (columns_.size() != 2) {
       throw length_unmatch_exception(
-        "tuple's length unmatch, expected " +
-        pfi::lang::lexical_cast<std::string>(tuples_) + " tuples.");
+          "tuple's length unmatch, expected " +
+          pfi::lang::lexical_cast<std::string>(tuples_) + " tuples.");
     }
 
     // check already exists */
@@ -132,10 +132,10 @@ class column_table {
 
   template<typename T>
   bool update(
-    const std::string& key,
-    const owner& o,
-    size_t colum_id,
-    const T& v) {
+      const std::string& key,
+      const owner& o,
+      size_t colum_id,
+      const T& v) {
     pfi::concurrent::scoped_wlock lk(table_lock_);
     index_table::iterator it = index_.find(key);
     if (tuples_ < colum_id || it == index_.end()) {
@@ -244,7 +244,7 @@ class column_table {
     os << std::endl;
     for (uint64_t i = 0; i < tbl.tuples_; ++i) {
       os << tbl.keys_[i] << ":" <<
-        tbl.versions_[i].first << ":" << tbl.versions_[i].second << "\t|";
+          tbl.versions_[i].first << ":" << tbl.versions_[i].second << "\t|";
       for (size_t j = 0; j < tbl.columns_.size(); ++j) {
         tbl.columns_[j].dump(os, i);
         os << "\t|";
