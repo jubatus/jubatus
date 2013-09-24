@@ -222,10 +222,7 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
 
   void push_back(const bit_vector& value) {
     check_bit_vector_(value);
-
-    for (size_t i = 0; i < blocks_per_value_(); ++i) {
-      array_.push_back(uint64_t());
-    }
+    array_.resize(array_.size() + blocks_per_value_());
     update_at_(size() - 1, value.raw_data_unsafe());
   }
   void push_back(const msgpack::object& obj) {
