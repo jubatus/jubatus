@@ -3,8 +3,7 @@
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
+# License version 2.1 as published by the Free Software Foundation.
 # 
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,20 +14,13 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-message config_data {
-  0: int window_size
-}
-
 service stat {
 
-  #@broadcast #@update #@all_and
-  bool set_config(0: string name, 1: config_data c)
-
   #@random #@analysis #@pass
-  config_data get_config(0: string name)
+  string get_config(0: string name)
 
   #@cht(1) #@update #@all_and
-  bool push(0: string name, 1: string key, 2: double val)
+  bool push(0: string name, 1: string key, 2: double value)
 
   #@cht(1) #@analysis #@pass
   double sum(0: string name, 1: string key)
@@ -41,7 +33,10 @@ service stat {
   #@cht(1) #@analysis #@pass
   double entropy(0: string name, 1: string key)
   #@cht(1) #@analysis #@pass
-  double moment(0: string name, 1: string key, 2: int n, 3: double c)
+  double moment(0: string name, 1: string key, 2: int degree, 3: double center)
+
+  #@broadcast #@update #@all_and
+  bool clear(0: string name) # //@broadcast
 
   #@broadcast #@update #@all_and
   bool save(0: string name, 1: string id) # #@broadcast

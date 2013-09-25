@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,6 +16,7 @@
 
 #include "keeper.hpp"
 
+#include <cstdlib>
 #include <iostream>
 #include <glog/logging.h>
 
@@ -25,79 +25,56 @@
 #include "../common/util.hpp"
 #include "server_util.hpp"
 
-using namespace jubatus;
-using namespace jubatus::framework;
+namespace jubatus {
+namespace framework {
+
+__thread msgpack::rpc::session_pool* private_session_pool_ = NULL;
+__thread keeper::async_task_loop*
+  keeper::async_task_loop::private_async_task_loop_;
+
+// NOTE: '__thread' is gcc-extension. We should re-implement with
+//       pthread TLS?
 
 keeper::keeper(const keeper_argv& a)
-  : pfi::network::mprpc::rpc_server(a.timeout),
-    a_(a),
-    zk_(common::create_lock_service("cached_zk", a.z, a.timeout))
-    //    zk_(common::create_lock_service("zk", a.z, a.timeout))
-{
-  ls = zk_;
-  jubatus::common::prepare_jubatus(*zk_, a_.type, "");
-  if(!register_keeper(*zk_, a_.type, a_.eth, a_.port) ){
-    throw JUBATUS_EXCEPTION(membership_error("can't register to zookeeper."));
-  }
+    : keeper_common(a),
+      jubatus::common::mprpc::rpc_server(a.timeout) {
 }
 
-keeper::~keeper(){
+keeper::~keeper() {
 }
 
-int keeper::run()
-{
+int keeper::run() {
   try {
+    ::atexit(jubatus::framework::atexit);
     jubatus::util::set_exit_on_term();
     jubatus::util::ignore_sigpipe();
-    if (this->serv(a_.port, a_.threadnum)) {
-      return 0;
-    } else {
-      LOG(ERROR) << "failed starting server: any process using port " << a_.port << "?";
-      return -1;
-    }
+
+    this->instance_.listen(a_.bind_address, a_.port);
+    LOG(INFO) << "start listening at port " << a_.port;
+    this->instance_.start(a_.threadnum);
+
+    // RPC server started, then register group membership
+    register_keeper(*zk_, a_.type, a_.eth, a_.port);
+    LOG(INFO) << "registered group membership";
+
+    LOG(INFO) << jubatus::util::get_program_name() << " RPC server startup";
+    this->instance_.join();
+
+    return 0;  // never return
   } catch (const jubatus::exception::jubatus_exception& e) {
-    std::cout << e.diagnostic_information(true) << std::endl;
-    return -1;
+    LOG(FATAL) << e.diagnostic_information(true);
+  } catch (const mp::system_error& e) {
+    if (e.code == EADDRINUSE) {
+      LOG(FATAL) << "server failed to start: any process using port " << a_.port
+          << "?";
+    } else {
+      LOG(FATAL) << "server failed to start: " << e.what();
+    }
+  } catch (const std::exception& e) {
+    LOG(FATAL) << "server failed to start:" << e.what();
   }
+  return -1;
 }
 
-void keeper::get_members_(const std::string& name, std::vector<std::pair<std::string, int> >& ret){
-  using namespace std;
-  ret.clear();
-  vector<string> list;
-  string path;
-  common::build_actor_path(path, a_.type, name);
-  path += "/nodes";
-
-  {
-    pfi::concurrent::scoped_lock lk(mutex_);
-    zk_->list(path, list);
-  }
-  vector<string>::const_iterator it;
-
-  if(list.empty()){
-    throw JUBATUS_EXCEPTION(no_worker(name));
-  }
-
-  // FIXME:
-  // do you return all server list? it can be very large
-  for(it = list.begin(); it!= list.end(); ++it){
-    string ip;
-    int port;
-    common::revert(*it, ip, port);
-    ret.push_back(make_pair(ip,port));
-  }
-}
-
-void keeper::get_members_from_cht_(const std::string& name, const std::string& id,
-                                   std::vector<std::pair<std::string, int> >& ret, size_t n)
-{
-  ret.clear();
-  pfi::concurrent::scoped_lock lk(mutex_);
-  jubatus::common::cht ht(zk_, a_.type, name);
-  ht.find(id, ret, n);
-
-  if(ret.empty()){
-    throw JUBATUS_EXCEPTION(no_worker(name));
-  }
-}
+}  // namespace framework
+}  // namespace jubatus

@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,22 +14,18 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
 #include <string>
-
+#include <gtest/gtest.h>
 #include "counter.hpp"
 
-
-using namespace std;
-using namespace jubatus::fv_converter;
-
 namespace jubatus {
+namespace fv_converter {
 
 TEST(counter, trivial) {
-  counter<string> c;
+  counter<std::string> c;
   EXPECT_FALSE(c.contains("hoge"));
-  
-  EXPECT_EQ(0u, ((const counter<string>&)c)["hoge"]);
+
+  EXPECT_EQ(0u, ((const counter<std::string>&)c)["hoge"]);
   EXPECT_EQ(0u, c["hoge"]);
   c["hoge"] = 1;
   c["fuga"] = 2;
@@ -39,7 +34,7 @@ TEST(counter, trivial) {
 }
 
 TEST(counter, add) {
-  counter<string> x, y;
+  counter<std::string> x, y;
   x["hoge"] = 1;
   x["fuga"] = 2;
 
@@ -53,4 +48,5 @@ TEST(counter, add) {
   EXPECT_EQ(5u, x["foo"]);
 }
 
-}
+}  // namespace fv_converter
+}  // namespace jubatus

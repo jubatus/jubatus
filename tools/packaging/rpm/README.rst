@@ -21,7 +21,6 @@ Requirements
 ------------
 
 * RHEL 6
-* ``libevent-devel`` package (required to build ``jubatus`` package)
 
 Common Usage
 ------------
@@ -48,8 +47,8 @@ General
   - Package version.
   - Must be incremented to release new RPM with the same ``*_VERSION``.
 
-For jubatus, pficommon, re2
----------------------------
+For jubatus, jubatus-mpio, jubatus-msgpack-rpc, pficommon
+---------------------------------------------------------
 
 * ``*_IS_SNAPSHOT``
 
@@ -60,15 +59,11 @@ For jubatus, pficommon, re2
 
   - Tag, commit ID or branch of the VCS (Git/Mercurial) to use for this build.
 
-* ``*_REPOS``
-
-  - The repository URL to pull from.
-
 Note that, these parameters will NOT be expanded in SPEC templates (``*.spec.in``).
 Never try to write any logic inside SPEC files!
 
-For jubatus-client, mecab-ipadic
---------------------------------
+For mecab-ipadic
+----------------
 
 * ``*_ARCHIVE``
 

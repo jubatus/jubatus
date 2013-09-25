@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,8 +14,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_STORAGE_BIT_INDEX_STORAGE_HPP_
+#define JUBATUS_STORAGE_BIT_INDEX_STORAGE_HPP_
 
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
 #include <pficommon/data/unordered_map.h>
@@ -27,10 +30,10 @@
 #include "recommender_storage_base.hpp"
 
 namespace jubatus {
-namespace storage{
+namespace storage {
 
 class bit_index_storage : public recommender_storage_base {
-public:
+ public:
   bit_index_storage();
   ~bit_index_storage();
 
@@ -40,7 +43,10 @@ public:
   void clear();
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
-  void similar_row(const bit_vector& bv, std::vector<std::pair<std::string, float> >& ids, uint64_t ret_num) const;
+  void similar_row(
+      const bit_vector& bv,
+      std::vector<std::pair<std::string, float> >& ids,
+      uint64_t ret_num) const;
   std::string name() const;
 
   bool save(std::ostream& os);
@@ -50,16 +56,18 @@ public:
   void set_mixed_and_clear_diff(const std::string& mixed_diff);
   void mix(const std::string& lhs, std::string& rhs) const;
 
-private:
+ private:
   friend class pfi::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(bitvals_) & MEMBER(bitvals_diff_);
   }
-  
+
   bit_table_t bitvals_;
   bit_table_t bitvals_diff_;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus
+
+#endif  // JUBATUS_STORAGE_BIT_INDEX_STORAGE_HPP_

@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,20 +14,28 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_CLASSIFIER_PA2_HPP_
+#define JUBATUS_CLASSIFIER_PA2_HPP_
+
+#include <string>
 
 #include "classifier_base.hpp"
 
-namespace jubatus{
+namespace jubatus {
+namespace classifier {
 
 class PA2 : public classifier_base {
-public:
-  PA2(storage::storage_base* storage);
+ public:
+  explicit PA2(storage::storage_base* storage);
+  PA2(const classifier_config& config, storage::storage_base* storage);
 
   void train(const sfv_t& sfv, const std::string& label);
   std::string name() const;
-private:
+ private:
+  classifier_config config;
 };
 
-}
+}  // namespace classifier
+}  // namespace jubatus
 
+#endif  // JUBATUS_CLASSIFIER_PA2_HPP_

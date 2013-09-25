@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,23 +16,22 @@
 
 #include "graph_base.hpp"
 
-namespace jubatus{
-namespace graph{
+namespace jubatus {
+namespace graph {
 
-graph_base::graph_base(){
+graph_base::graph_base() {
 }
 
-graph_base::~graph_base(){
+graph_base::~graph_base() {
 }
 
 void graph_base::save(std::ostream& os) {
   this->save_imp(os);
 }
+
 void graph_base::load(std::istream& is) {
   this->load_imp(is);
 }
 
-
-
-}
-}
+}  // namespace graph
+}  // namespace jubatus

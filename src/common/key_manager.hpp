@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,12 +14,14 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_KEY_MANAGER_HPP_
+#define JUBATUS_COMMON_KEY_MANAGER_HPP_
 
+#include <stdint.h>
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <iostream>
-#include <stdint.h>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/serialization/unordered_map.h>
@@ -28,13 +29,13 @@
 namespace jubatus {
 
 class key_manager {
-public:
-  key_manager();
-  key_manager& operator = (const key_manager&);
-
+ public:
   enum {
     NOTFOUND = 0xFFFFFFFFFFFFFFFFLLU
   };
+
+  key_manager();
+  key_manager& operator =(const key_manager&);
 
   size_t size() const {
     return key2id_.size();
@@ -49,18 +50,19 @@ public:
   void init_by_id2key(const std::vector<std::string>& id2key);
   std::vector<std::string> get_all_id2key() const;
 
-protected:
+ protected:
   friend class pfi::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(key2id_)
-      & MEMBER(id2key_);
+    ar & MEMBER(key2id_) & MEMBER(id2key_);
   }
 
-private:
+ private:
   pfi::data::unordered_map<std::string, uint64_t> key2id_;
   std::vector<std::string> id2key_;
   const std::string vacant_;
 };
 
-} // jubatus
+}  // namespace jubatus
+
+#endif  // JUBATUS_COMMON_KEY_MANAGER_HPP_

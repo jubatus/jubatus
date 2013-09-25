@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,33 +16,76 @@
 
 #include "recommender_serv.hpp"
 
+#include <string>
+#include <vector>
+
 #include <pficommon/concurrent/lock.h>
 #include <pficommon/lang/cast.h>
+#include <pficommon/data/optional.h>
 
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/revert.hpp"
 #include "../recommender/recommender_factory.hpp"
 
+using std::string;
+using pfi::lang::lexical_cast;
+using pfi::lang::shared_ptr;
+using pfi::text::json::json;
+using pfi::text::json::json_cast;
 
-using namespace std;
-using namespace pfi::lang;
-using namespace jubatus::common;
-using namespace jubatus::framework;
+using jubatus::common::cshared_ptr;
+using jubatus::common::lock_service;
+using jubatus::framework::convert;
+using jubatus::framework::server_argv;
+using jubatus::framework::mixer::create_mixer;
+using jubatus::framework::mixable_holder;
 
 namespace jubatus {
 namespace server {
 
-recommender_serv::recommender_serv(const server_argv& a,
-                                   const cshared_ptr<lock_service>& zk)
-    : server_base(a) {
-  mixer_.reset(mixer::create_mixer(a, zk));
-  wm_.set_model(mixable_weight_manager::model_ptr(new fv_converter::weight_manager));
+namespace {
 
-  mixer_->register_mixable(&rcmdr_);
-  mixer_->register_mixable(&wm_);
+struct recommender_serv_config {
+  std::string method;
+  // TODO(unnonouno): if must use parameter
+  pfi::data::optional<jsonconfig::config> parameter;
+  pfi::text::json::json converter;
+
+  template<typename Ar>
+  void serialize(Ar& ar) {
+    ar & MEMBER(method) & MEMBER(parameter) & MEMBER(converter);
+  }
+};
+
+common::cshared_ptr<recommender::recommender_base> make_model(
+    const recommender_serv_config& conf) {
+  jsonconfig::config param;
+  if (conf.parameter) {
+    param = *conf.parameter;
+  }
+
+  return cshared_ptr<recommender::recommender_base>(
+      recommender::create_recommender(conf.method, param));
+}
+
+}  // namespace
+
+recommender_serv::recommender_serv(
+    const server_argv& a,
+    const cshared_ptr<lock_service>& zk)
+    : server_base(a) {
+  mixer_.reset(create_mixer(a, zk));
+  mixable_holder_.reset(new mixable_holder());
+  wm_.set_model(
+      mixable_weight_manager::model_ptr(new fv_converter::weight_manager));
+
+  mixer_->set_mixable_holder(mixable_holder_);
+  mixable_holder_->register_mixable(&rcmdr_);
+  mixable_holder_->register_mixable(&wm_);
 }
 
 recommender_serv::~recommender_serv() {
@@ -59,30 +101,37 @@ void recommender_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-int recommender_serv::set_config(config_data config) {
-  shared_ptr<fv_converter::datum_to_fv_converter> converter
-      = framework::make_fv_converter(config.converter);
+bool recommender_serv::set_config(std::string config) {
+  jsonconfig::config conf_root(lexical_cast<json>(config));
+  recommender_serv_config conf =
+      jsonconfig::config_cast_check<recommender_serv_config>(conf_root);
+
+  shared_ptr<fv_converter::datum_to_fv_converter> converter =
+      fv_converter::make_fv_converter(conf.converter);
   config_ = config;
   converter_ = converter;
-  rcmdr_.set_model(make_model());
+  rcmdr_.set_model(make_model(conf));
   (*converter_).set_weight_manager(wm_.get_model());
-  return 0;
+
+  LOG(INFO) << "config loaded: " << config;
+  return true;
 }
-  
-config_data recommender_serv::get_config() {
+
+string recommender_serv::get_config() {
   check_set_config();
   return config_;
 }
 
-int recommender_serv::clear_row(std::string id) {
+bool recommender_serv::clear_row(std::string id) {
   check_set_config();
 
   ++clear_row_cnt_;
   rcmdr_.get_model()->clear_row(id);
-  return 0;
+  DLOG(INFO) << "row cleared: " << id;
+  return true;
 }
 
-int recommender_serv::update_row(std::string id,datum dat) {
+bool recommender_serv::update_row(std::string id, datum dat) {
   check_set_config();
 
   ++update_row_cnt_;
@@ -91,23 +140,22 @@ int recommender_serv::update_row(std::string id,datum dat) {
   sfv_diff_t v;
   converter_->convert_and_update_weight(d, v);
   rcmdr_.get_model()->update_row(id, v);
-  return 0;
+  DLOG(INFO) << "row updated: " << id;
+  return true;
 }
 
-int recommender_serv::clear() {
+bool recommender_serv::clear() {
   check_set_config();
+
   clear_row_cnt_ = 0;
   update_row_cnt_ = 0;
   build_cnt_ = 0;
   mix_cnt_ = 0;
   rcmdr_.get_model()->clear();
-  return 0;
+  wm_.clear();
+  LOG(INFO) << "model cleared: " << argv().name;
+  return true;
 }
-
-common::cshared_ptr<recommender::recommender_base> recommender_serv::make_model() {
-  return cshared_ptr<recommender::recommender_base>
-    (recommender::create_recommender(config_.method));
-}  
 
 datum recommender_serv::complete_row_from_id(std::string id) {
   check_set_config();
@@ -123,7 +171,7 @@ datum recommender_serv::complete_row_from_id(std::string id) {
   return ret0;
 }
 
-datum recommender_serv::complete_row_from_data(datum dat) {
+datum recommender_serv::complete_row_from_datum(datum dat) {
   check_set_config();
 
   fv_converter::datum d;
@@ -140,7 +188,9 @@ datum recommender_serv::complete_row_from_data(datum dat) {
   return ret0;
 }
 
-similar_result recommender_serv::similar_row_from_id(std::string id, size_t ret_num) {
+similar_result recommender_serv::similar_row_from_id(
+    std::string id,
+    size_t ret_num) {
   check_set_config();
 
   similar_result ret;
@@ -148,7 +198,7 @@ similar_result recommender_serv::similar_row_from_id(std::string id, size_t ret_
   return ret;
 }
 
-similar_result recommender_serv::similar_row_from_data(datum data, size_t s) {
+similar_result recommender_serv::similar_row_from_datum(datum data, size_t s) {
   check_set_config();
 
   similar_result ret;
@@ -169,7 +219,7 @@ datum recommender_serv::decode_row(std::string id) {
 
   rcmdr_.get_model()->decode_row(id, v);
   fv_converter::revert_feature(v, ret);
-  
+
   datum ret0;
   convert<fv_converter::datum, datum>(ret, ret0);
   return ret0;
@@ -183,7 +233,7 @@ std::vector<std::string> recommender_serv::get_all_rows() {
   return ret;
 }
 
-float recommender_serv::similarity(const datum& l, const datum& r) {
+float recommender_serv::calc_similarity(const datum& l, const datum& r) {
   check_set_config();
 
   fv_converter::datum d0, d1;
@@ -195,8 +245,7 @@ float recommender_serv::similarity(const datum& l, const datum& r) {
   converter_->convert(d1, v1);
   return recommender::recommender_base::calc_similality(v0, v1);
 }
-
-float recommender_serv::l2norm(const datum& q) {
+float recommender_serv::calc_l2norm(const datum& q) {
   check_set_config();
 
   fv_converter::datum d0;
@@ -205,7 +254,6 @@ float recommender_serv::l2norm(const datum& q) {
   sfv_t v0;
   converter_->convert(d0, v0);
   return recommender::recommender_base::calc_l2norm(v0);
-
 }
 
 void recommender_serv::check_set_config() const {
@@ -214,5 +262,5 @@ void recommender_serv::check_set_config() const {
   }
 }
 
-} // namespace recommender
-} // namespace jubatus
+}  // namespace recommender
+}  // namespace jubatus

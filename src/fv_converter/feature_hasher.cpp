@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,14 +16,12 @@
 
 #include "feature_hasher.hpp"
 
+#include <string>
 #include <pficommon/data/functional_hash.h>
 #include <pficommon/lang/cast.h>
-
 #include "../common/exception.hpp"
 #include "../common/hash.hpp"
 #include "exception.hpp"
-
-using namespace std;
 
 namespace jubatus {
 namespace fv_converter {
@@ -32,16 +29,17 @@ namespace fv_converter {
 feature_hasher::feature_hasher(uint64_t max)
     : max_size_(max) {
   if (max == 0) {
-    throw JUBATUS_EXCEPTION(converter_exception("feature max size must be positive"));
+    throw JUBATUS_EXCEPTION(
+        converter_exception("feature max size must be positive"));
   }
 }
 
 void feature_hasher::hash_feature_keys(sfv_t& fv) const {
   for (size_t i = 0, size = fv.size(); i < size; ++i) {
     uint64_t id = hash_util::calc_string_hash(fv[i].first) % max_size_;
-    fv[i].first = pfi::lang::lexical_cast<string>(id);
+    fv[i].first = pfi::lang::lexical_cast<std::string>(id);
   }
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

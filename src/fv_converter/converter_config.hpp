@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,16 +14,17 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_CONVERTER_CONFIG_HPP_
+#define JUBATUS_FV_CONVERTER_CONVERTER_CONFIG_HPP_
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
+#include <msgpack.hpp>
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/optional.h>
-
-#include <pficommon/network/mprpc.h>
-#include <msgpack.hpp>
+#include <pficommon/lang/shared_ptr.h>
+#include <pficommon/text/json.h>
 
 namespace jubatus {
 namespace fv_converter {
@@ -35,6 +35,7 @@ typedef std::map<std::string, std::string> param_t;
 
 struct string_rule {
   std::string key;
+  pfi::data::optional<std::string> except;
   std::string type;
   std::string sample_weight;
   std::string global_weight;
@@ -42,9 +43,11 @@ struct string_rule {
   MSGPACK_DEFINE(key, type, sample_weight, global_weight);
 
   friend class pfi::data::serialization::access;
-  template <class Archive>
+  template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key)
+    ar
+        & MEMBER(key)
+        & MEMBER(except)
         & MEMBER(type)
         & MEMBER(sample_weight)
         & MEMBER(global_weight);
@@ -53,72 +56,96 @@ struct string_rule {
 
 struct filter_rule {
   std::string key;
+  pfi::data::optional<std::string> except;
   std::string type;
   std::string suffix;
 
   MSGPACK_DEFINE(key, type, suffix);
 
   friend class pfi::data::serialization::access;
-  template <class Archive>
+  template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key)
-        & MEMBER(type)
-        & MEMBER(suffix);
+    ar & MEMBER(key) & MEMBER(except) & MEMBER(type) & MEMBER(suffix);
   }
 };
 
 struct num_rule {
   std::string key;
+  pfi::data::optional<std::string> except;
   std::string type;
 
   MSGPACK_DEFINE(key, type);
 
   friend class pfi::data::serialization::access;
-  template <class Archive>
+  template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key)
-        & MEMBER(type);
+    ar & MEMBER(key) & MEMBER(except) & MEMBER(type);
+  }
+};
+
+struct time_window_rule {
+  std::string key;
+  std::string width;
+  std::string unit;  // unit is "param" or "datum"
+  pfi::data::optional<std::vector<std::string> > procs;
+
+  MSGPACK_DEFINE(key, width, unit);
+
+  friend class pfi::data::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar) {
+    ar & MEMBER(key) & MEMBER(width) & MEMBER(unit) & MEMBER(procs);
   }
 };
 
 struct converter_config {
-  std::map<std::string, param_t> string_filter_types;
+  typedef std::map<std::string, param_t> rule_type;
+  rule_type string_filter_types;
   std::vector<filter_rule> string_filter_rules;
 
-  std::map<std::string, param_t> num_filter_types;
+  rule_type num_filter_types;
   std::vector<filter_rule> num_filter_rules;
 
-  std::map<std::string, param_t> string_types;
+  std::vector<time_window_rule> string_window_rules;
+  std::vector<time_window_rule> num_window_rules;
+
+  rule_type string_types;
   std::vector<string_rule> string_rules;
 
-  std::map<std::string, param_t> num_types;
+  rule_type num_types;
   std::vector<num_rule> num_rules;
 
   pfi::data::optional<int64_t> hash_max_size;
 
   MSGPACK_DEFINE(string_filter_types, string_filter_rules,
-                 num_filter_types, num_filter_rules,
-                 string_types, string_rules,
-                 num_types, num_rules);
+      num_filter_types, num_filter_rules,
+      string_window_rules, num_window_rules,
+      string_types, string_rules,
+      num_types, num_rules);
 
   friend class pfi::data::serialization::access;
-  template <class Archive>
+  template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(string_filter_types)
-        & MEMBER(string_filter_rules)
-        & MEMBER(num_filter_types)
-        & MEMBER(num_filter_rules)
-        & MEMBER(string_types)
-        & MEMBER(string_rules)
-        & MEMBER(num_types)
-        & MEMBER(num_rules)
+    ar & MEMBER(string_filter_types) & MEMBER(string_filter_rules)
+        & MEMBER(num_filter_types) & MEMBER(num_filter_rules)
+        & MEMBER(string_window_rules) & MEMBER(num_window_rules)
+        & MEMBER(string_types) & MEMBER(string_rules)
+        & MEMBER(num_types) & MEMBER(num_rules)
         & MEMBER(hash_max_size);
   }
-
 };
 
-void initialize_converter(const converter_config& config,
-                          datum_to_fv_converter& converter);
+void initialize_converter(
+    const converter_config& config,
+    datum_to_fv_converter& converter);
 
-}
-}
+pfi::lang::shared_ptr<datum_to_fv_converter>
+make_fv_converter(const std::string& config);
+
+pfi::lang::shared_ptr<datum_to_fv_converter>
+make_fv_converter(const pfi::text::json::json& config);
+
+}  // namespace fv_converter
+}  // namespace jubatus
+
+#endif  // JUBATUS_FV_CONVERTER_CONVERTER_CONFIG_HPP_

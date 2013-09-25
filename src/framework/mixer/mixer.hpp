@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,24 +14,31 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FRAMEWORK_MIXER_MIXER_HPP_
+#define JUBATUS_FRAMEWORK_MIXER_MIXER_HPP_
 
-#include <pficommon/network/mprpc.h>
+#include <pficommon/lang/shared_ptr.h>
 #include "../server_base.hpp"
+#include "../../common/mprpc/rpc_server.hpp"
 
 namespace jubatus {
 namespace framework {
 
 class mixable0;
+class mixable_holder;
 
 namespace mixer {
 
 class mixer {
-public:
-  virtual ~mixer() {}
+ public:
+  typedef jubatus::common::mprpc::rpc_server rpc_server_t;
 
-  virtual void register_api(pfi::network::mprpc::rpc_server& server) = 0;
-  virtual void register_mixable(mixable0* m) = 0;
+ public:
+  virtual ~mixer() {
+  }
+
+  virtual void register_api(rpc_server_t& server) = 0;
+  virtual void set_mixable_holder(pfi::lang::shared_ptr<mixable_holder>) = 0;
 
   virtual void start() = 0;
   virtual void stop() = 0;
@@ -40,9 +46,10 @@ public:
   virtual void updated() = 0;
 
   virtual void get_status(server_base::status_t& status) const = 0;
-  virtual std::vector<mixable0*> get_mixables() const = 0;
 };
 
-}
-}
-}
+}  // namespace mixer
+}  // namespace framework
+}  // namespace jubatus
+
+#endif  // JUBATUS_FRAMEWORK_MIXER_MIXER_HPP_

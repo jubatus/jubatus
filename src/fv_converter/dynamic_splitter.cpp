@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,22 +16,27 @@
 
 #include "dynamic_splitter.hpp"
 
-using namespace std;
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace jubatus {
 namespace fv_converter {
 
-dynamic_splitter::dynamic_splitter(const std::string& path,
-                                   const std::string& function,
-                                   const map<string, string>& params)
+dynamic_splitter::dynamic_splitter(
+    const std::string& path,
+    const std::string& function,
+    const std::map<std::string, std::string>& params)
     : loader_(path),
       impl_(load_object<word_splitter>(loader_, function, params)) {
 }
 
-void dynamic_splitter::split(const string& string,
-                             vector<pair<size_t, size_t> >& ret_boundaries) const {
+void dynamic_splitter::split(
+    const std::string& string,
+    std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
   impl_->split(string, ret_boundaries);
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

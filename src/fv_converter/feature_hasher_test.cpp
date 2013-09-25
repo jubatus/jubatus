@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,16 +19,14 @@
 #include "feature_hasher.hpp"
 #include "exception.hpp"
 
-using namespace std;
-
 namespace jubatus {
 namespace fv_converter {
 
 TEST(feature_hasher, trivial) {
   feature_hasher h(100);
   sfv_t fv;
-  fv.push_back(make_pair("f1", 1.0));
-  fv.push_back(make_pair("f2", 2.0));
+  fv.push_back(std::make_pair("f1", 1.0));
+  fv.push_back(std::make_pair("f2", 2.0));
 
   h.hash_feature_keys(fv);
 
@@ -44,5 +41,5 @@ TEST(feature_hasher, zero) {
   EXPECT_THROW(feature_hasher(0), converter_exception);
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

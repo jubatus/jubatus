@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,19 +14,20 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
-
-#include <string>
-#include <iostream>
+#ifndef JUBATUS_SERVER_TEST_UTIL_HPP_
+#define JUBATUS_SERVER_TEST_UTIL_HPP_
 
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
+
+#include <string>
+#include <iostream>
 #include <cstdio>
 
+#include <jubatus/msgpack/rpc/client.h>
 #include <pficommon/lang/cast.h>
 #include <pficommon/text/json.h>
-#include <pficommon/network/mprpc.h>
 
 #include "../fv_converter/converter_config.hpp"
 
@@ -36,17 +36,18 @@ using std::cout;
 using std::endl;
 
 void wait_server(int port) {
-  pfi::network::mprpc::rpc_client cli("localhost", port, 10);
-  long sleep_time = 1000;
+  msgpack::rpc::client cli("localhost", port);
+  cli.set_timeout(10);
+  int64_t sleep_time = 1000;
   // 1000 * \sum {i=0..9} 2^i = 1024000 micro sec = 1024 ms
   for (int i = 0; i < 10; ++i) {
     usleep(sleep_time);
     try {
-      cli.call<bool()>("dummy")();
+      cli.call(std::string("dummy")).get<bool>();
       throw std::runtime_error("dummy rpc successed");
-    } catch(pfi::network::mprpc::method_not_found& e) {
+    } catch (const msgpack::rpc::no_method_error& e) {
       return;
-    } catch(pfi::network::mprpc::rpc_io_error& e) {
+    } catch (const msgpack::rpc::connect_error& e) {
       // wait until the server bigins to listen
     }
     sleep_time *= 2;
@@ -54,21 +55,25 @@ void wait_server(int port) {
   throw std::runtime_error("cannot connect");
 }
 
-pid_t fork_process(const char* name, int port = 9199){
+pid_t fork_process(
+    const char* name,
+    int port = 9199,
+    std::string config = "") {
   string cmd(BUILD_DIR);
   pid_t child;
   cmd += "/src/server/juba";
   cmd += name;
   child = fork();
   string port_str = pfi::lang::lexical_cast<std::string>(port);
-  if(child == 0){
-    const char *const argv[6] = {cmd.c_str(), "-p", port_str.c_str(), "-d", ".", NULL};
-    int ret = execv(cmd.c_str(), (char **const) argv);
-    if(ret < 0){
+  if (child == 0) {
+    const char* const argv[8] = { cmd.c_str(), "-p", port_str.c_str(), "-f",
+        config.c_str(), "-d", ".", NULL };
+    int ret = execv(cmd.c_str(), (char** const) argv);
+    if (ret < 0) {
       perror("execl");
       cout << cmd << " " << child << endl;
     }
-  }else if( child < 0 ){
+  } else if (child < 0) {
     perror("--");
     return -1;
   }
@@ -76,8 +81,8 @@ pid_t fork_process(const char* name, int port = 9199){
   return child;
 }
 
-void kill_process(pid_t child){
-  if(kill(child, SIGTERM) != 0){
+void kill_process(pid_t child) {
+  if (kill(child, SIGTERM) != 0) {
     perror("");
     return;
   }
@@ -85,10 +90,11 @@ void kill_process(pid_t child){
   waitpid(child, &status, 0);
 }
 
-std::string config_to_string(const jubatus::fv_converter::converter_config& config) {
+std::string config_to_string(
+    const jubatus::fv_converter::converter_config& config) {
   std::stringstream ss;
   ss << pfi::text::json::to_json(config);
   return ss.str();
 }
 
-
+#endif  // JUBATUS_SERVER_TEST_UTIL_HPP_

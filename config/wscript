@@ -1,0 +1,10 @@
+def options(opt):
+  pass
+
+def configure(conf):
+  pass
+
+def build(bld):
+  bld.install_files('${PREFIX}/share/jubatus/example/config/',
+                    bld.path.ant_glob('*/*.json'),
+                    relative_trick=True)

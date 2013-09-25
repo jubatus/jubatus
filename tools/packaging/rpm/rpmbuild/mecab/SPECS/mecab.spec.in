@@ -65,7 +65,3 @@ This package provides headers and libraries needed to develop applications using
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
-
-%changelog
-* Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
-- Initial version

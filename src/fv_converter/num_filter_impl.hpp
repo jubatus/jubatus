@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FV_CONVERTER_NUM_FILTER_IMPL_HPP_
+#define JUBATUS_FV_CONVERTER_NUM_FILTER_IMPL_HPP_
 
 #include "num_filter.hpp"
 
@@ -24,8 +24,9 @@ namespace fv_converter {
 
 class add_filter : public num_filter {
  public:
-  add_filter(double value)
-      : value_(value) {}
+  explicit add_filter(double value)
+      : value_(value) {
+  }
 
   double filter(double value) const {
     return value + value_;
@@ -35,6 +36,7 @@ class add_filter : public num_filter {
   double value_;
 };
 
+}  // namespace fv_converter
+}  // namespace jubatus
 
-}
-}
+#endif  // JUBATUS_FV_CONVERTER_NUM_FILTER_IMPL_HPP_

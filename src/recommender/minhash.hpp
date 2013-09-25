@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +14,13 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_RECOMMENDER_MINHASH_HPP_
+#define JUBATUS_RECOMMENDER_MINHASH_HPP_
+
+#include <string>
+#include <utility>
+#include <vector>
+#include <pficommon/data/serialization.h>
 
 #include "recommender_base.hpp"
 #include "../storage/bit_index_storage.hpp"
@@ -24,20 +29,41 @@ namespace jubatus {
 namespace recommender {
 
 class minhash : public recommender_base {
-public:
+ public:
+  struct config {
+    config()
+        : hash_num(64) {
+    }
+
+    int64_t hash_num;
+
+    template<typename Ar>
+    void serialize(Ar& ar) {
+      ar & MEMBER(hash_num);
+    }
+  };
+
   minhash();
+  explicit minhash(const config& config);
   ~minhash();
 
-  void similar_row(const sfv_t& query, std::vector<std::pair<std::string, float> > & ids, size_t ret_num) const;
+  void similar_row(
+      const sfv_t& query,
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
+  void neighbor_row(
+      const sfv_t& query,
+      std::vector<std::pair<std::string, float> >& ids,
+      size_t ret_num) const;
   void clear();
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const sfv_diff_t& diff);
   void get_all_row_ids(std::vector<std::string>& ids) const;
   std::string type() const;
   storage::recommender_storage_base* get_storage();
-  const storage::recommender_storage_base* get_const_storage() const ;
+  const storage::recommender_storage_base* get_const_storage() const;
 
-private:
+ private:
   bool save_impl(std::ostream&);
   bool load_impl(std::istream&);
 
@@ -51,5 +77,7 @@ private:
   storage::bit_index_storage row2minhashvals_;
 };
 
-} // namespace recommender
-} // namespace jubatus
+}  // namespace recommender
+}  // namespace jubatus
+
+#endif  // JUBATUS_RECOMMENDER_MINHASH_HPP_

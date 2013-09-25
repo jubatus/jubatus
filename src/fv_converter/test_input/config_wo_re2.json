@@ -10,6 +10,8 @@
   "num_filter_rules": [
     { "key": "user/age", "type": "add_1", "suffix": "+1" }
   ],
+  "string_window_rules" : [],
+  "num_window_rules" : [],
   "string_types": {},
   "string_rules":
   [

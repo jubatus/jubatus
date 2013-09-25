@@ -3,8 +3,7 @@
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
+# License version 2.1 as published by the Free Software Foundation.
 #
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,13 +14,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-type param_t = map<string, string> 
-
-message config_data {
-  0: string method
-  1: string config # JSON
-}
-
 message datum {
   0: list<tuple<string, string> >  string_values
   1: list<tuple<string, double> >  num_values
@@ -29,11 +21,8 @@ message datum {
 
 service regression {
 
-  #@broadcast #@update #@all_and
-  bool set_config(0: string name, 1: config_data c) # //@broadcast
-
   #@random #@analysis #@pass
-  config_data get_config(0: string name) # //@random
+  string get_config(0: string name) # //@random
 
   #@random #@update #@pass
   int train(0: string name, 1: list<tuple<float, datum> > train_data) # //@random
@@ -42,10 +31,13 @@ service regression {
   list<float>  estimate(0: string name, 1: list<datum>  estimate_data) # //@random
 
   #@broadcast #@update #@all_and
-  bool save(0: string name, 1: string arg1) # //@broadcast
+  bool clear(0: string name) # //@broadcast
 
   #@broadcast #@update #@all_and
-  bool load(0: string name, 1: string arg1) # //@broadcast
+  bool save(0: string name, 1: string id) # //@broadcast
+
+  #@broadcast #@update #@all_and
+  bool load(0: string name, 1: string id) # //@broadcast
 
   #@broadcast #@analysis #@merge
   map<string, map<string, string> >  get_status(0: string name) # //@broadcast

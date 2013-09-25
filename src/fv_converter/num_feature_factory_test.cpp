@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,31 +14,30 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-
+#include <stdint.h>
 #include <string>
 #include <map>
+#include <utility>
+#include <vector>
+#include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
-
-#include "num_feature_factory.hpp"
-#include "num_feature.hpp"
-#include "exception.hpp"
 #include "../common/type.hpp"
+#include "exception.hpp"
+#include "num_feature.hpp"
+#include "num_feature_factory.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace jubatus::fv_converter;
-using namespace pfi::lang;
+namespace jubatus {
+namespace fv_converter {
 
 TEST(num_feature_factory, trivial) {
   num_feature_factory f;
-  map<string, string> param;
+  std::map<std::string, std::string> param;
   ASSERT_THROW(f.create("hoge", param), converter_exception);
 }
 
 TEST(num_feature_factory, dynamic) {
   num_feature_factory f;
-  map<string, string> param;
+  std::map<std::string, std::string> param;
 
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
 
@@ -50,13 +48,17 @@ TEST(num_feature_factory, dynamic) {
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
 
   param["function"] = "create";
-  scoped_ptr<num_feature> s(f.create("dynamic", param));
+  pfi::lang::scoped_ptr<num_feature> s(f.create("dynamic", param));
 
   sfv_t fv;
-  s->add_feature("/path", 1, fv);
+  std::vector<std::pair<uint64_t, double> > value;
+  value.push_back(std::make_pair(1, 1));
+  s->add_feature("/path", value, fv);
 
   ASSERT_EQ(1u, fv.size());
   EXPECT_EQ("/path", fv[0].first);
   EXPECT_EQ(2., fv[0].second);
-
 }
+
+}  // namespace fv_converter
+}  // namespace jubatus

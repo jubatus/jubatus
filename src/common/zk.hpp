@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_COMMON_ZK_HPP_
+#define JUBATUS_COMMON_ZK_HPP_
 
 #include <string>
 #include <vector>
@@ -32,28 +32,38 @@
 
 namespace jubatus {
 namespace common {
-// TODO: write zk mock and test them all?
+// TODO(kashihara): write zk mock and test them all?
 
 class zk : public lock_service {
-public:
+ public:
   // timeout [sec]
-  zk(const std::string& hosts, int timeout = 10, const std::string& logfile = "");
+  zk(
+      const std::string& hosts,
+      int timeout = 10,
+      const std::string& logfile = "");
+
   virtual ~zk();
 
   void force_close();
-  void create(const std::string& path, const std::string& payload = "", bool ephemeral = false);
-  void remove(const std::string& path);
+  bool create(
+      const std::string& path,
+      const std::string& payload = "",
+      bool ephemeral = false);
+  bool set(const std::string& path, const std::string& payload = "");
+  bool remove(const std::string& path);
   bool exists(const std::string& path);
 
-  bool bind_watcher(const std::string& path, pfi::lang::function<void(int,int,std::string)>&);
+  bool bind_watcher(
+      const std::string& path,
+      pfi::lang::function<void(int, int, std::string)>&);
 
   // ephemeral only
-  void create_seq(const std::string& path, std::string&);
-  uint64_t create_id(const std::string& path, uint32_t prefix = 0);
+  bool create_seq(const std::string& path, std::string&);
+  bool create_id(const std::string& path, uint32_t prefix, uint64_t& res);
 
-  //returns unsorted list
-  void list(const std::string& path, std::vector<std::string>& out);
-  void hd_list(const std::string& path, std::string& out);
+  // returns unsorted list
+  bool list(const std::string& path, std::vector<std::string>& out);
+  bool hd_list(const std::string& path, std::string& out);
 
   // reads data (should be smaller than 1024B)
   bool read(const std::string& path, std::string& out);
@@ -64,11 +74,11 @@ public:
   const std::string& get_hosts() const;
   const std::string type() const;
 
-protected:
-  void list_(const std::string& path, std::vector<std::string>& out);
+ protected:
+  bool list_(const std::string& path, std::vector<std::string>& out);
 
-  zhandle_t * zh_;
-  clientid_t * cid_;
+  zhandle_t* zh_;
+  clientid_t* cid_;
   int state_;
   const std::string hosts_;
 
@@ -78,27 +88,39 @@ protected:
   FILE* logfilep_;
 };
 
-// TODO: write zk mock and test them all?
+// TODO(kashihara): write zk mock and test them all?
 class zkmutex : public try_lockable {
-public:
-  zkmutex(lock_service& ls, const std::string& path):
-    zk_(ls), path_(path), has_lock_(false)
-  {}
-  virtual ~zkmutex() { this->unlock(); }
+ public:
+  zkmutex(lock_service& ls, const std::string& path)
+      : zk_(ls),
+        path_(path),
+        has_lock_(false),
+        has_rlock_(false) {
+  }
+  virtual ~zkmutex() {
+    this->unlock();
+    this->unlock_r();
+  }
 
   bool lock();
   bool try_lock();
   bool unlock();
+  bool rlock();
+  bool try_rlock();
+  bool unlock_r();
 
-private:
+ private:
   lock_service& zk_;
   std::string path_;
   std::string seqfile_;
   bool has_lock_;
+  bool has_rlock_;
   pfi::concurrent::mutex m_;
 };
 
 void mywatcher(zhandle_t*, int, int, const char*, void*);
 
-} // common
-} // jubatus
+}  // namespace common
+}  // namespace jubatus
+
+#endif  // JUBATUS_COMMON_ZK_HPP_

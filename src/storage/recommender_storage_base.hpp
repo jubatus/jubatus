@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,21 +14,25 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_STORAGE_RECOMMENDER_STORAGE_BASE_HPP_
+#define JUBATUS_STORAGE_RECOMMENDER_STORAGE_BASE_HPP_
 
 #include <string>
 
 namespace jubatus {
-namespace storage{
+namespace storage {
 
 class recommender_storage_base {
-public:
-  virtual ~recommender_storage_base() {}
+ public:
+  virtual ~recommender_storage_base() {
+  }
 
   virtual void get_diff(std::string& diff) const = 0;
   virtual void set_mixed_and_clear_diff(const std::string& mixed_diff) = 0;
   virtual void mix(const std::string& lhs, std::string& rhs) const = 0;
 };
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus
+
+#endif  // JUBATUS_STORAGE_RECOMMENDER_STORAGE_BASE_HPP_

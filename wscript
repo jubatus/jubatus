@@ -1,11 +1,12 @@
+# -*- python -*-
 import Options
 
-VERSION = '0.3.3'
+VERSION = '0.4.1'
 APPNAME = 'jubatus'
 
 top = '.'
 out = 'build'
-subdirs = 'src'
+subdirs = ['src', 'client', 'config']
 
 def options(opt):
   opt.load('compiler_cxx')
@@ -37,15 +38,21 @@ def configure(conf):
   conf.load('unittest_gtest')
   conf.load('gnu_dirs')
 
+  # Generate config.hpp
+  conf.env.JUBATUS_PLUGIN_DIR = conf.env['LIBDIR'] + '/jubatus/plugin'
+  conf.define('JUBATUS_VERSION', VERSION)
+  conf.define('JUBATUS_APPNAME', APPNAME)
+  conf.define('JUBATUS_PLUGIN_DIR', conf.env.JUBATUS_PLUGIN_DIR)
+  conf.write_config_header('src/config.hpp', guard="JUBATUS_CONFIG_HPP_", remove=False)
+
   conf.check_cxx(lib = 'msgpack')
+  conf.check_cxx(lib = 'jubatus_mpio')
+  conf.check_cxx(lib = 'jubatus_msgpack-rpc')
   conf.check_cxx(lib = 'dl')
 
   conf.check_cfg(package = 'libglog', args = '--cflags --libs')
-  if not conf.check_cfg(package = 'libevent', args = '--cflags --libs', mandatory = False):
-    conf.check_cxx(lib = 'event', uselib_store = 'LIBEVENT')
   
   conf.check_cfg(package = 'pficommon', args = '--cflags --libs')
-  conf.check_cxx(header_name = 'pficommon/network/mprpc.h')
 
   conf.check_cxx(header_name = 'unistd.h')
   conf.check_cxx(header_name = 'sys/types.h')
@@ -70,7 +77,7 @@ def configure(conf):
     else:
       conf.check_cxx(header_name = 'zookeeper/zookeeper.h',
                      define_name = 'HAVE_ZOOKEEPER_H',
-                     errmsg = 'not found ("--disable-zookeeper" option is available)',
+                     errmsg = 'ZooKeeper c-binding is not found. Please install c-binding.',
                      mandatory = True)
       conf.define('ZOOKEEPER_HEADER', 'zookeeper/zookeeper.h')
 
@@ -84,15 +91,7 @@ def configure(conf):
     conf.env.append_value('CXXFLAGS', '-ftest-coverage')
     conf.env.append_value('LINKFLAGS', '-lgcov')
 
-  # plugin install path
-  conf.env.JUBATUS_PLUGIN_DIR = conf.env['LIBDIR'] + '/jubatus/plugin'
-
-  # don't know why this does not work when put after conf.recurse
-  conf.define('JUBATUS_VERSION', VERSION)
-  conf.define('JUBATUS_APPNAME', APPNAME)
-  conf.define('JUBATUS_PLUGIN_DIR', conf.env.JUBATUS_PLUGIN_DIR)
   conf.define('BUILD_DIR',  conf.bldnode.abspath())
-  conf.write_config_header('src/config.hpp', remove=False)
 
   conf.recurse(subdirs)
 
@@ -106,5 +105,52 @@ def build(bld):
       PACKAGE = APPNAME,
       VERSION = VERSION)
 
+  bld(source = 'jubatus-client.pc.in',
+      prefix = bld.env['PREFIX'],
+      exec_prefix = '${prefix}',
+      libdir = bld.env['LIBDIR'],
+      includedir = '${prefix}/include',
+      PACKAGE = APPNAME,
+      VERSION = VERSION)
+
   bld.recurse(subdirs)
 
+def cpplint(ctx):
+  import fnmatch, tempfile
+  cpplint = ctx.path.find_node('tools/codestyle/cpplint/cpplint.py')
+  src_dir = ctx.path.find_node('src')
+  file_list = []
+  excludes = ['src/third_party/**', \
+              'src/server/*_server.hpp', \
+              'src/server/*_impl.cpp', \
+              'src/server/*_keeper.cpp', \
+              'src/server/*_client.hpp', \
+              'src/server/*_types.hpp']
+  for file in src_dir.ant_glob('**/*.cpp **/*.cc **/*.hpp **/*.h'):
+    file_list += [file.path_from(ctx.path)]
+  for exclude in excludes:
+    file_list = [f for f in file_list if not fnmatch.fnmatch(f, exclude)]
+  tmp_file = tempfile.NamedTemporaryFile(delete=True);
+  tmp_file.write("\n".join(file_list));
+  tmp_file.flush()
+  ctx.exec_command('cat ' + tmp_file.name + ' | xargs "' + cpplint.abspath() + '" --filter=-runtime/references,-runtime/rtti')
+  tmp_file.close()
+
+def regenerate(ctx):
+  import os
+  server_node = ctx.path.find_node('src/server')
+  jenerator_node = ctx.path.find_node('tools/jenerator/src/jenerator')
+  for idl_node in server_node.ant_glob('*.idl'):
+    idl = idl_node.name
+    service_name = os.path.splitext(idl)[0]
+    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'server', '-o', '.', '-i', '-n', 'jubatus', '-g', 'JUBATUS_SERVER_', idl], cwd=server_node.abspath())
+
+def regenerate_client(ctx):
+  import os
+  server_node = ctx.path.find_node('src/server')
+  client_node = ctx.path.find_node('client')
+  jenerator_node = ctx.path.find_node('tools/jenerator/src/jenerator')
+  for idl_node in server_node.ant_glob('*.idl'):
+    idl = idl_node.name
+    service_name = os.path.splitext(idl)[0]
+    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'cpp', '-o', client_node.abspath(), '-i', '-n', 'jubatus::' + service_name, '-g', 'JUBATUS_', idl], cwd=server_node.abspath())

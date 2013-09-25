@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,29 +16,34 @@
 
 #include "pa.hpp"
 
-using namespace std;
+#include <string>
 
-namespace jubatus{
+using std::string;
 
-PA::PA(storage::storage_base* storage) : classifier_base(storage){
+namespace jubatus {
+namespace classifier {
+
+PA::PA(storage::storage_base* storage)
+    : classifier_base(storage) {
 }
 
-void PA::train(const sfv_t& sfv, const string& label){
+void PA::train(const sfv_t& sfv, const string& label) {
   string incorrect_label;
   float margin = calc_margin(sfv, label, incorrect_label);
   float loss = 1.f + margin;
-  if (loss < 0.f){
+  if (loss < 0.f) {
     return;
   }
   float sfv_norm = squared_norm(sfv);
   if (sfv_norm == 0.f) {
     return;
   }
-  update_weight(sfv, loss / sfv_norm, label, incorrect_label);
+  update_weight(sfv, loss / (2 * sfv_norm), label, incorrect_label);
 }
 
-string PA::name() const{
+string PA::name() const {
   return string("PA");
 }
-  
-}
+
+}  // namespace classifier
+}  // namespace jubatus

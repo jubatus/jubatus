@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
+#define JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
 
 #include "../../common/lock_service.hpp"
 #include "../../common/shared_ptr.hpp"
@@ -29,6 +29,8 @@ namespace mixer {
 mixer* create_mixer(const server_argv& a,
                     const common::cshared_ptr<common::lock_service>& zk);
 
-}
-}
-}
+}  // namespace mixer
+}  // namespace framework
+}  // namespace jubatus
+
+#endif  // JUBATUS_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_

@@ -1,0 +1,19 @@
+{
+  "string_filter_types": {},
+  "string_filter_rules": [],
+  "num_filter_types": {},
+  "num_filter_rules": [],
+  "string_window_rules" : [],
+  "num_window_rules" : [
+    {
+      "key": "*",
+      "unit": "datum",
+      "width": "8",
+      "procs" : ["sum", "avg", "var","min","max"]
+    }
+  ],
+  "string_types": {},
+  "string_rules": [],
+  "num_types": {},
+  "num_rules": []
+}

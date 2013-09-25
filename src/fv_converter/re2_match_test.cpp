@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,13 +15,11 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
-
-#include "re2_match.hpp"
 #include "exception.hpp"
+#include "re2_match.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace jubatus::fv_converter;
+namespace jubatus {
+namespace fv_converter {
 
 TEST(re2_match, trivial) {
   re2_match m(".*/hoge");
@@ -33,3 +30,6 @@ TEST(re2_match, trivial) {
 TEST(re2_match, illegal) {
   ASSERT_THROW(re2_match m("*hoge"), converter_exception);
 }
+
+}  // namespace fv_converter
+}  // namespace jubatus

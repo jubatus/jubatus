@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,10 +15,11 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <dlfcn.h>
+#include <iostream>
+#include <string>
 #include "../common/util.hpp"
 #include "exception.hpp"
 #include "dynamic_loader.hpp"
-#include <iostream>
 
 namespace jubatus {
 namespace fv_converter {
@@ -31,14 +31,16 @@ dynamic_loader::dynamic_loader(const std::string& path)
   if (!handle) {
     // dlopen from JUBATUS_PLUGIN_DIR
     const std::string plugin_name = jubatus::util::base_name(path);
-    const std::string plugin_path = std::string(JUBATUS_PLUGIN_DIR) + "/" + plugin_name;
-    handle = dlopen(plugin_path.c_str() , RTLD_LAZY);
+    const std::string plugin_path =
+        std::string(JUBATUS_PLUGIN_DIR) + "/" + plugin_name;
+    handle = dlopen(plugin_path.c_str(), RTLD_LAZY);
   }
 
   if (!handle) {
-    char *error = dlerror();
-    throw JUBATUS_EXCEPTION(converter_exception("cannot load dynamic library: " + path + ": "
-                              + error)
+    char* error = dlerror();
+    throw JUBATUS_EXCEPTION(
+        converter_exception(
+            "cannot load dynamic library: " + path + ": " + error)
         << jubatus::exception::error_api_func("dlopen")
         << jubatus::exception::error_file_name(path)
         << jubatus::exception::error_message(error));
@@ -48,7 +50,7 @@ dynamic_loader::dynamic_loader(const std::string& path)
 
 dynamic_loader::~dynamic_loader() {
   if (handle_ && dlclose(handle_) != 0) {
-    // TODO failed
+    // TODO(kuenishi) failed
   }
 }
 
@@ -65,5 +67,5 @@ void* dynamic_loader::load_symbol(const std::string& name) const {
   return func;
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

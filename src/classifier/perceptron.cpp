@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,27 +16,28 @@
 
 #include "perceptron.hpp"
 
-using namespace std;
+#include <string>
 
-namespace jubatus{
+using std::string;
 
+namespace jubatus {
+namespace classifier {
 
-perceptron::perceptron(storage::storage_base* storage): classifier_base(storage)
-{
+perceptron::perceptron(storage::storage_base* storage)
+    : classifier_base(storage) {
 }
 
-void perceptron::train(const sfv_t& sfv, const std::string& label) 
-{
+void perceptron::train(const sfv_t& sfv, const std::string& label) {
   std::string predicted_label = classify(sfv);
-  if (label == predicted_label){
+  if (label == predicted_label) {
     return;
   }
   update_weight(sfv, 1.f, label, predicted_label);
 }
 
-string perceptron::name() const 
-{
+string perceptron::name() const {
   return string("perceptron");
 }
-  
-}
+
+}  // namespace classifier
+}  // namespace jubatus

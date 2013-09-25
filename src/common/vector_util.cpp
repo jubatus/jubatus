@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,19 +16,23 @@
 
 #include "vector_util.hpp"
 #include <algorithm>
+#include <string>
 
 namespace jubatus {
 
-using namespace std;
+using std::sort;
+using std::string;
 
-void sort_and_merge(sfv_t& sfv){
-  if (sfv.size() == 0) return;
+void sort_and_merge(sfv_t& sfv) {
+  if (sfv.size() == 0) {
+    return;
+  }
   sort(sfv.begin(), sfv.end());
   sfv_t ret_sfv;
   const string* prev = &sfv[0].first;
   float val = sfv[0].second;
-  for (size_t i = 1; i < sfv.size(); ++i){
-    if (sfv[i].first == *prev){
+  for (size_t i = 1; i < sfv.size(); ++i) {
+    if (sfv[i].first == *prev) {
       val += sfv[i].second;
     } else {
       ret_sfv.push_back(make_pair(*prev, val));
@@ -41,4 +44,4 @@ void sort_and_merge(sfv_t& sfv){
   sfv.swap(ret_sfv);
 }
 
-}
+}  // namespace jubatus

@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,31 +15,32 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "num_feature_factory.hpp"
+
+#include <string>
 #include "exception.hpp"
 #include "dynamic_num_feature.hpp"
 #include "util.hpp"
 
-using namespace std;
-
-
 namespace jubatus {
 namespace fv_converter {
 
-num_feature* create_dynamic_num_feature(const num_feature_factory::param_t& params) {
-  const string& path = get_or_die(params, "path");
-  const string& function = get_or_die(params, "function");
+num_feature* create_dynamic_num_feature(
+    const num_feature_factory::param_t& params) {
+  const std::string& path = get_or_die(params, "path");
+  const std::string& function = get_or_die(params, "function");
   return new dynamic_num_feature(path, function, params);
 }
 
-num_feature*
-num_feature_factory::create(const string& name,
-                            const num_feature_factory::param_t& params) const {
+num_feature* num_feature_factory::create(
+    const std::string& name,
+    const num_feature_factory::param_t& params) const {
   if (name == "dynamic") {
     return create_dynamic_num_feature(params);
   } else {
-    throw JUBATUS_EXCEPTION(converter_exception(string("unknonwn num feature name: ") + name));
+    throw JUBATUS_EXCEPTION(
+        converter_exception(std::string("unknonwn num feature name: ") + name));
   }
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

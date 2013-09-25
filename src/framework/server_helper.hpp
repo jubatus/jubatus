@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,44 +14,69 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FRAMEWORK_SERVER_HELPER_HPP_
+#define JUBATUS_FRAMEWORK_SERVER_HELPER_HPP_
 
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <map>
 #include <string>
 #include <glog/logging.h>
-#include <pficommon/network/mprpc.h>
 #include <pficommon/system/sysstat.h>
-#include "../common/shared_ptr.hpp"
-#include "../common/lock_service.hpp"
+
 #include "mixer/mixer.hpp"
 #include "server_util.hpp"
+#include "../common/jsonconfig.hpp"
+#include "../common/lock_service.hpp"
+#include "../common/mprpc/rpc_server.hpp"
+#include "../common/shared_ptr.hpp"
+#include "../config.hpp"
 
 namespace jubatus {
 namespace framework {
 
 class server_helper_impl {
-public:
+ public:
   explicit server_helper_impl(const server_argv& a);
-  bool prepare_for_start(const server_argv& a, bool use_cht);
+  void prepare_for_start(const server_argv& a, bool use_cht);
+  void prepare_for_run(const server_argv& a, bool use_cht);
+  void get_config_lock(const server_argv& a, int retry);
 
   common::cshared_ptr<jubatus::common::lock_service> zk() const {
     return zk_;
   }
 
-private:
+ private:
   common::cshared_ptr<jubatus::common::lock_service> zk_;
+  pfi::lang::shared_ptr<common::try_lockable> zk_config_lock_;
 };
 
 template<typename Server>
 class server_helper {
-public:
+ public:
   typedef typename Server::status_t status_t;
 
-  explicit server_helper(const server_argv& a)
-      : impl_(a) {
+  explicit server_helper(const server_argv& a, bool use_cht = false)
+      : impl_(a),
+        use_cht_(use_cht) {
+    impl_.prepare_for_start(a, use_cht);
     server_.reset(new Server(a, impl_.zk()));
+
+    impl_.get_config_lock(a, 3);
+
+    try {
+      server_->set_config(get_conf(a));
+    } catch (const jsonconfig::cast_check_error& e) {
+      config_exception config_error;
+      const jsonconfig::config_error_list& errors = e.errors();
+      for (jsonconfig::config_error_list::const_iterator it = errors.begin(),
+          end = errors.end(); it != end; ++it) {
+        config_error << exception::error_message((*it)->what());
+      }
+      // send error message to caller
+      throw JUBATUS_EXCEPTION(config_error);
+    }
   }
 
   std::map<std::string, std::string> get_loads() const {
@@ -61,8 +85,10 @@ public:
       pfi::system::sysstat::sysstat_ret sys;
       get_sysstat(sys);
       result["loadavg"] = pfi::lang::lexical_cast<std::string>(sys.loadavg);
-      result["total_memory"] = pfi::lang::lexical_cast<std::string>(sys.total_memory);
-      result["free_memory"] = pfi::lang::lexical_cast<std::string>(sys.free_memory);
+      result["total_memory"] = pfi::lang::lexical_cast<std::string>(
+          sys.total_memory);
+      result["free_memory"] = pfi::lang::lexical_cast<std::string>(
+          sys.free_memory);
     }
     return result;
   }
@@ -82,14 +108,17 @@ public:
     // TBD: type(server type), name(instance name: when zookeeper enabled), eth
     data["timeout"] = pfi::lang::lexical_cast<std::string>(a.timeout);
     data["threadnum"] = pfi::lang::lexical_cast<std::string>(a.threadnum);
-    data["tmpdir"] = a.tmpdir;
+    data["datadir"] = a.datadir;
     data["interval_sec"] = pfi::lang::lexical_cast<std::string>(a.interval_sec);
-    data["interval_count"] = pfi::lang::lexical_cast<std::string>(a.interval_count);
-    data["is_standalone"] = pfi::lang::lexical_cast<std::string>(a.is_standalone());
+    data["interval_count"] = pfi::lang::lexical_cast<std::string>(
+        a.interval_count);
+    data["is_standalone"] = pfi::lang::lexical_cast<std::string>(
+        a.is_standalone());
     data["VERSION"] = JUBATUS_VERSION;
     data["PROGNAME"] = a.program_name;
 
-    data["update_count"] = pfi::lang::lexical_cast<std::string>(server_->update_count());
+    data["update_count"] = pfi::lang::lexical_cast<std::string>(
+        server_->update_count());
 
     server_->get_status(data);
 
@@ -100,22 +129,35 @@ public:
     return status;
   }
 
-  void use_cht() {
-    use_cht_ = true;
-  }
-
-  int start(pfi::network::mprpc::rpc_server& serv) {
+  int start(jubatus::common::mprpc::rpc_server& serv) {
     const server_argv& a = server_->argv();
-    if (impl_.prepare_for_start(a, use_cht_)) {
+
+    if (!a.is_standalone()) {
       server_->get_mixer()->start();
     }
 
-    if (serv.serv(a.port, a.threadnum)) {
+    try {
+      serv.listen(a.port, a.bind_address);
+      LOG(INFO) << "start listening at port " << a.port;
+      serv.start(a.threadnum, true);
+      // RPC server started, then register group membership
+      impl_.prepare_for_run(a, use_cht_);
+      LOG(INFO) << jubatus::util::get_program_name() << " RPC server startup";
+      serv.join();
       return 0;
-    } else {
-      LOG(ERROR) << "failed starting server: any process using port " << a.port << "?";
-      return -1;
+    } catch (const mp::system_error& e) {
+      if (e.code == EADDRINUSE) {
+        LOG(FATAL) << "server failed to start: any process using port "
+            << a.port << "?";
+      } else {
+        LOG(FATAL) << "server failed to start: " << e.what();
+      }
+    } catch (jubatus::exception::jubatus_exception&) {
+      throw;
+    } catch (const std::exception& e) {
+      LOG(FATAL) << "server failed to start: " << e.what();
     }
+    return -1;
   }
 
   common::cshared_ptr<Server> server() const {
@@ -126,20 +168,22 @@ public:
     return server_->rw_mutex();
   }
 
-private:
+ private:
   common::cshared_ptr<Server> server_;
   server_helper_impl impl_;
-  bool use_cht_;
+  const bool use_cht_;
 };
 
-}
-}
+}  // namespace framework
+}  // namespace jubatus
 
 #define JRLOCK__(p) \
-  ::pfi::concurrent::scoped_lock lk(::pfi::concurrent::rlock((p)->rw_mutex()))
+  ::pfi::concurrent::scoped_rlock lk((p)->rw_mutex())
 
 #define JWLOCK__(p) \
-  ::pfi::concurrent::scoped_lock lk(::pfi::concurrent::wlock((p)->rw_mutex())); \
+  ::pfi::concurrent::scoped_wlock lk((p)->rw_mutex()); \
   (p)->server()->event_model_updated()
 
 #define NOLOCK__(p)
+
+#endif  // JUBATUS_FRAMEWORK_SERVER_HELPER_HPP_

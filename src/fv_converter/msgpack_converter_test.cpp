@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,33 +14,36 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <map>
+#include <string>
+#include <vector>
 #include <gtest/gtest.h>
 #include <msgpack.hpp>
-#include <vector>
-#include <map>
-
-#include "msgpack_converter.hpp"
 #include "datum.hpp"
+#include "msgpack_converter.hpp"
 
-using namespace std;
-using namespace jubatus;
-using namespace jubatus::fv_converter;
+namespace jubatus {
+namespace fv_converter {
 
-template <typename T>
+namespace {
+
+template<typename T>
 void make(const T& data, datum& datum) {
   msgpack::sbuffer sbuf;
   msgpack::pack(sbuf, data);
-  
+
   msgpack::unpacked msg;
   msgpack::unpack(&msg, sbuf.data(), sbuf.size());
   msgpack::object obj = msg.get();
   msgpack_converter::convert(obj, datum);
 }
 
+}  // namespace
+
 TEST(msgpack_converter, empty) {
   datum datum;
-  make(vector<string>(), datum);
-  
+  make(std::vector<std::string>(), datum);
+
   ASSERT_EQ(0u, datum.string_values_.size());
   ASSERT_EQ(0u, datum.num_values_.size());
 }
@@ -100,7 +102,7 @@ TEST(msgpack_converter, double) {
 
 TEST(msgpack_converter, raw) {
   datum datum;
-  make<string>("hello", datum);
+  make<std::string>("hello", datum);
 
   ASSERT_EQ(1u, datum.string_values_.size());
   ASSERT_EQ(0u, datum.num_values_.size());
@@ -110,7 +112,7 @@ TEST(msgpack_converter, raw) {
 
 TEST(msgpack_converter, array) {
   datum datum;
-  vector<int> v;
+  std::vector<int> v;
   v.push_back(1);
   v.push_back(2);
   make(v, datum);
@@ -128,7 +130,7 @@ TEST(msgpack_converter, array) {
 TEST(msgpack_converter, map) {
   {
     datum datum;
-    map<string, string> m;
+    std::map<std::string, std::string> m;
     m["age"] = "20";
     m["name"] = "taro";
     make(m, datum);
@@ -145,20 +147,21 @@ TEST(msgpack_converter, map) {
 
   {
     datum datum;
-    map<string, map<string, int> > m;
+    std::map<std::string, std::map<std::string, int> > m;
     m["hanako"]["age"] = 25;
     m["taro"]["age"] = 20;
     make(m, datum);
 
-  ASSERT_EQ(0u, datum.string_values_.size());
-  ASSERT_EQ(2u, datum.num_values_.size());
+    ASSERT_EQ(0u, datum.string_values_.size());
+    ASSERT_EQ(2u, datum.num_values_.size());
 
-  ASSERT_EQ("/\"hanako\"/\"age\"", datum.num_values_[0].first);
-  ASSERT_EQ(25., datum.num_values_[0].second);
+    ASSERT_EQ("/\"hanako\"/\"age\"", datum.num_values_[0].first);
+    ASSERT_EQ(25., datum.num_values_[0].second);
 
-  ASSERT_EQ("/\"taro\"/\"age\"", datum.num_values_[1].first);
-  ASSERT_EQ(20., datum.num_values_[1].second);
+    ASSERT_EQ("/\"taro\"/\"age\"", datum.num_values_[1].first);
+    ASSERT_EQ(20., datum.num_values_[1].second);
   }
-
 }
 
+}  // namespace fv_converter
+}  // namespace jubatus

@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,44 +15,53 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "converter_config.hpp"
+
+#include <map>
+#include <string>
+#include <vector>
+#include <pficommon/text/json.h>
+#include <pficommon/lang/cast.h>
+#include "except_match.hpp"
 #include "datum_to_fv_converter.hpp"
-#include "splitter_factory.hpp"
+#include "exception.hpp"
 #include "key_matcher.hpp"
 #include "key_matcher_factory.hpp"
 #include "num_feature.hpp"
 #include "num_feature_impl.hpp"
 #include "num_feature_factory.hpp"
-#include "space_splitter.hpp"
-#include "without_split.hpp"
-#include "exception.hpp"
-#include "string_filter.hpp"
-#include "string_filter_factory.hpp"
 #include "num_filter.hpp"
 #include "num_filter_factory.hpp"
+#include "space_splitter.hpp"
+#include "splitter_factory.hpp"
+#include "string_filter.hpp"
+#include "string_filter_factory.hpp"
+#include "without_split.hpp"
+
+#include "num_window_preprocess.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
-using namespace std;
-using namespace pfi::lang;
-using namespace jubatus::fv_converter;
+namespace {
 
-typedef shared_ptr<word_splitter> splitter_ptr;
-typedef shared_ptr<key_matcher> matcher_ptr;
-typedef shared_ptr<num_feature> num_feature_ptr;
-typedef shared_ptr<string_filter> string_filter_ptr;
-typedef shared_ptr<num_filter> num_filter_ptr;
+typedef pfi::lang::shared_ptr<key_matcher> matcher_ptr;
+typedef pfi::lang::shared_ptr<word_splitter> splitter_ptr;
+typedef pfi::lang::shared_ptr<num_feature> num_feature_ptr;
+typedef pfi::lang::shared_ptr<string_filter> string_filter_ptr;
+typedef pfi::lang::shared_ptr<num_filter> num_filter_ptr;
 
-static splitter_weight_type make_weight_type(const string& sample, const string& global) {
+splitter_weight_type make_weight_type(
+    const std::string& sample, const std::string& global) {
   frequency_weight_type sample_type;
   if (sample == "bin") {
-    sample_type =  FREQ_BINARY;
+    sample_type = FREQ_BINARY;
   } else if (sample == "tf") {
     sample_type = TERM_FREQUENCY;
   } else if (sample == "log_tf") {
     sample_type = LOG_TERM_FREQUENCY;
   } else {
-    throw JUBATUS_EXCEPTION(converter_exception(string("unknown sample weight: ") + sample));
+    throw JUBATUS_EXCEPTION(
+        converter_exception(std::string("unknown sample weight: ") + sample));
   }
 
   term_weight_type global_type;
@@ -64,171 +72,277 @@ static splitter_weight_type make_weight_type(const string& sample, const string&
   } else if (global == "weight") {
     global_type = WITH_WEIGHT_FILE;
   } else {
-    throw JUBATUS_EXCEPTION(converter_exception(string("unknown global weight: ") + global));
+    throw JUBATUS_EXCEPTION(
+        converter_exception(std::string("unknown global weight: ") + global));
   }
   return splitter_weight_type(sample_type, global_type);
 }
 
-static string get_or_die(const map<string, string>& m, const string& key) {
-  map<string, string>::const_iterator it = m.find(key);
+std::string get_or_die(
+    const std::map<std::string, std::string>& m,
+    const std::string& key) {
+  std::map<std::string, std::string>::const_iterator it = m.find(key);
   if (it == m.end()) {
-    throw JUBATUS_EXCEPTION(converter_exception(string("unknown parameter: ") + key));
+    throw JUBATUS_EXCEPTION(
+        converter_exception(std::string("unknown parameter: ") + key));
   } else {
     return it->second;
   }
 }
 
-static void init_string_filter_types(const map<string, param_t>& filter_types,
-                                     map<string, string_filter_ptr>& filters) {
-  string_filter_factory f;
-  for (map<string, param_t>::const_iterator it = filter_types.begin();
-       it != filter_types.end(); ++it) {
-    const string& name = it->first;
-    const map<string, string>& param = it->second;
+matcher_ptr create_key_matcher(
+    const std::string& key,
+    const pfi::data::optional<std::string>& except) {
+  key_matcher_factory f;
+  if (except) {
+    matcher_ptr m1(f.create_matcher(key));
+    matcher_ptr m2(f.create_matcher(*except));
+    return matcher_ptr(new except_match(m1, m2));
+  } else {
+    return matcher_ptr(f.create_matcher(key));
+  }
+}
 
-    string method = get_or_die(param, "method");
+void init_string_filter_types(
+    const std::map<std::string, param_t>& filter_types,
+    std::map<std::string, string_filter_ptr>& filters) {
+  string_filter_factory f;
+  for (std::map<std::string, param_t>::const_iterator it = filter_types.begin();
+      it != filter_types.end(); ++it) {
+    const std::string& name = it->first;
+    const std::map<std::string, std::string>& param = it->second;
+
+    std::string method = get_or_die(param, "method");
     string_filter_ptr filter(f.create(method, param));
     filters[name] = filter;
   }
 }
 
-static void init_num_filter_types(const map<string, param_t>& filter_types,
-                                  map<string, num_filter_ptr>& filters) {
+void init_num_filter_types(
+    const std::map<std::string, param_t>& filter_types,
+    std::map<std::string, num_filter_ptr>& filters) {
   num_filter_factory f;
-  for (map<string, param_t>::const_iterator it = filter_types.begin();
-       it != filter_types.end(); ++it) {
-    const string& name = it->first;
-    const map<string, string>& param = it->second;
+  for (std::map<std::string, param_t>::const_iterator it = filter_types.begin();
+      it != filter_types.end(); ++it) {
+    const std::string& name = it->first;
+    const std::map<std::string, std::string>& param = it->second;
 
-    string method = get_or_die(param, "method");
+    std::string method = get_or_die(param, "method");
     num_filter_ptr filter(f.create(method, param));
     filters[name] = filter;
   }
 }
 
-static void init_num_filter_rules(const vector<filter_rule>& filter_rules,
-                                  const map<string, num_filter_ptr>& filters,
-                                  datum_to_fv_converter& conv) {
-  key_matcher_factory f;
+void init_num_filter_rules(
+    const std::vector<filter_rule>& filter_rules,
+    const std::map<std::string, num_filter_ptr>& filters,
+    datum_to_fv_converter& conv) {
   for (size_t i = 0; i < filter_rules.size(); ++i) {
     const filter_rule& rule = filter_rules[i];
-    map<string, num_filter_ptr>::const_iterator it = filters.find(rule.type);
+    std::map<std::string, num_filter_ptr>::const_iterator it =
+        filters.find(rule.type);
     if (it == filters.end()) {
-      throw JUBATUS_EXCEPTION(converter_exception("unknown type: " + rule.type));
+      throw JUBATUS_EXCEPTION(
+          converter_exception("unknown type: " + rule.type));
     }
 
-    matcher_ptr m(f.create_matcher(rule.key));
+    matcher_ptr m(create_key_matcher(rule.key, rule.except));
     conv.register_num_filter(m, it->second, rule.suffix);
   }
 }
 
-static void init_string_types(const map<string, param_t>& string_types,
-                              map<string, splitter_ptr>& splitters) {
+void init_string_types(
+    const std::map<std::string, param_t>& string_types,
+    std::map<std::string, splitter_ptr>& splitters) {
   // default
   splitters["str"] = splitter_ptr(new without_split());
   splitters["space"] = splitter_ptr(new space_splitter());
 
   splitter_factory f;
-  for (map<string, param_t>::const_iterator it = string_types.begin();
-       it != string_types.end(); ++it) {
-    const string& name = it->first;
-    const map<string, string>& param = it->second;
-    
-    string method = get_or_die(param, "method");
+  for (std::map<std::string, param_t>::const_iterator it = string_types.begin();
+      it != string_types.end(); ++it) {
+    const std::string& name = it->first;
+    const std::map<std::string, std::string>& param = it->second;
+
+    std::string method = get_or_die(param, "method");
     splitter_ptr splitter(f.create(method, param));
     splitters[name] = splitter;
   }
 }
 
-static void init_string_filter_rules(const vector<filter_rule>& filter_rules,
-                                     const map<string, string_filter_ptr>& filters,
-                                     datum_to_fv_converter& conv) {
-  key_matcher_factory f;
+void init_string_filter_rules(
+    const std::vector<filter_rule>& filter_rules,
+    const std::map<std::string, string_filter_ptr>& filters,
+    datum_to_fv_converter& conv) {
   for (size_t i = 0; i < filter_rules.size(); ++i) {
     const filter_rule& rule = filter_rules[i];
-    map<string, string_filter_ptr>::const_iterator it = filters.find(rule.type);
+    std::map<std::string, string_filter_ptr>::const_iterator it =
+        filters.find(rule.type);
     if (it == filters.end()) {
-      throw JUBATUS_EXCEPTION(converter_exception("unknown type: " + rule.type));
+      throw JUBATUS_EXCEPTION(
+          converter_exception("unknown type: " + rule.type));
     }
 
-    matcher_ptr m(f.create_matcher(rule.key));
+    matcher_ptr m(create_key_matcher(rule.key, rule.except));
     conv.register_string_filter(m, it->second, rule.suffix);
   }
 }
 
-static void init_string_rules(const vector<string_rule>& string_rules,
-                              const map<string, splitter_ptr>& splitters,
-                              datum_to_fv_converter& conv) {
+void init_string_window_rules(
+    const std::vector<time_window_rule>& string_window_rules,
+    datum_to_fv_converter& conv) {
   key_matcher_factory f;
+  for (std::vector<time_window_rule>::const_iterator rule =
+         string_window_rules.begin();
+       rule != string_window_rules.end();
+       ++rule) {
+    matcher_ptr window_matcher(f.create_matcher(rule->key));
+    window::window_type new_type;
+    if (rule->unit == "param") {
+      new_type = window::PARAM_UNIT;
+    } else if (rule->unit == "datum") {
+      new_type = window::DATUM_UNIT;
+    } else {
+      throw JUBATUS_EXCEPTION(
+        converter_exception("unknown string window type " + rule->unit));
+    }
+    const int length = pfi::lang::lexical_cast<int>(rule->width);
+    if (length < 0) {
+      throw JUBATUS_EXCEPTION(
+        converter_exception("too narrow string window lentgh"));
+    }
+    const std::vector<window::window_process> procs
+        = rule->procs ? window::string_config_convert(*rule->procs)
+                      : std::vector<window::window_process>();
+    conv.register_string_window(window_matcher, length, new_type, procs);
+  }
+}
+
+void init_string_rules(
+    const std::vector<string_rule>& string_rules,
+    const std::map<std::string, splitter_ptr>& splitters,
+    datum_to_fv_converter& conv) {
   for (size_t i = 0; i < string_rules.size(); ++i) {
     const string_rule& rule = string_rules[i];
-    matcher_ptr m(f.create_matcher(rule.key));
-    map<string, splitter_ptr>::const_iterator it = splitters.find(rule.type);
+    matcher_ptr m(create_key_matcher(rule.key, rule.except));
+    std::map<std::string, splitter_ptr>::const_iterator it =
+        splitters.find(rule.type);
     if (it == splitters.end()) {
-      throw JUBATUS_EXCEPTION(converter_exception("unknown type: " + rule.type));
+      throw JUBATUS_EXCEPTION(
+          converter_exception("unknown type: " + rule.type));
     }
-    
-    vector<splitter_weight_type> ws;
+
+    std::vector<splitter_weight_type> ws;
     ws.push_back(make_weight_type(rule.sample_weight, rule.global_weight));
     conv.register_string_rule(rule.type, m, it->second, ws);
   }
 }
 
-static void init_num_types(const map<string, param_t>& num_types,
-                           map<string, num_feature_ptr>& num_features) {
+void init_num_window_rules(
+    const std::vector<time_window_rule>& num_window_rules,
+    datum_to_fv_converter& conv) {
+  key_matcher_factory f;
+  for (std::vector<time_window_rule>::const_iterator rule =
+         num_window_rules.begin();
+       rule != num_window_rules.end();
+       ++rule) {
+    matcher_ptr window_matcher(f.create_matcher(rule->key));
+    window::window_type new_type;
+    if (rule->unit == "param") {
+      new_type = window::PARAM_UNIT;
+    } else if (rule->unit == "datum") {
+      new_type = window::DATUM_UNIT;
+    } else {
+      throw JUBATUS_EXCEPTION(
+        converter_exception("unknown num window type " + rule->unit));
+    }
+    const int length = pfi::lang::lexical_cast<int>(rule->width);
+    if (length < 0) {
+      throw JUBATUS_EXCEPTION(
+        converter_exception("too narrow num window lentgh"));
+    }
+    const std::vector<window::window_process> procs
+        = rule->procs ? window::string_config_convert(*rule->procs)
+                      : std::vector<window::window_process>();
+    conv.register_num_window(window_matcher, length, new_type, procs);
+  }
+}
+
+void init_num_types(
+    const std::map<std::string, param_t>& num_types,
+    std::map<std::string, num_feature_ptr>& num_features) {
   // default
   num_features["num"] = num_feature_ptr(new num_value_feature());
   num_features["log"] = num_feature_ptr(new num_log_feature());
   num_features["str"] = num_feature_ptr(new num_string_feature());
+  num_features["con"] = num_feature_ptr(new num_concat_feature());
+  num_features["avg"] = num_feature_ptr(new num_average_feature());
+  num_features["std"] = num_feature_ptr(new num_stddev_feature());
+  num_features["fft"] = num_feature_ptr(new num_fft_feature());
+  num_features["dif"] = num_feature_ptr(new num_diff_feature());
 
   num_feature_factory f;
-  for (map<string, param_t>::const_iterator it = num_types.begin();
-       it != num_types.end(); ++it) {
-    const string& name = it->first;
-    const map<string, string>& param = it->second;
-    
-    string method = get_or_die(param, "method");
+  for (std::map<std::string, param_t>::const_iterator it = num_types.begin();
+      it != num_types.end(); ++it) {
+    const std::string& name = it->first;
+    const std::map<std::string, std::string>& param = it->second;
+
+    std::string method = get_or_die(param, "method");
     num_feature_ptr feature(f.create(method, param));
     num_features[name] = feature;
   }
 }
 
-static void init_num_rules(const vector<num_rule>& num_rules,
-                           const map<string, num_feature_ptr>& num_features,
-                           datum_to_fv_converter& conv) {
-  key_matcher_factory f;
+void init_num_rules(
+    const std::vector<num_rule>& num_rules,
+    const std::map<std::string, num_feature_ptr>& num_features,
+    datum_to_fv_converter& conv) {
   for (size_t i = 0; i < num_rules.size(); ++i) {
     const num_rule& rule = num_rules[i];
-    matcher_ptr m(f.create_matcher(rule.key));
-    map<string, num_feature_ptr>::const_iterator it = num_features.find(rule.type);
+    matcher_ptr m(create_key_matcher(rule.key, rule.except));
+    std::map<std::string, num_feature_ptr>::const_iterator it =
+        num_features.find(rule.type);
     if (it == num_features.end()) {
-      throw JUBATUS_EXCEPTION(converter_exception("unknown type: " + rule.type));
+      throw JUBATUS_EXCEPTION(
+          converter_exception("unknown type: " + rule.type));
     }
 
     conv.register_num_rule(rule.type, m, it->second);
   }
 }
 
-void initialize_converter(const converter_config& config,
-                          datum_to_fv_converter& conv) {
+}  // namespace
+
+void initialize_converter(
+    const converter_config& config,
+    datum_to_fv_converter& conv) {
   if (config.hash_max_size.bool_test() && *config.hash_max_size.get() <= 0) {
-    stringstream msg;
-    msg << "hash_max_size must be positive, but is " << *config.hash_max_size.get();
+    std::stringstream msg;
+    msg << "hash_max_size must be positive, but is "
+        << *config.hash_max_size.get();
     throw JUBATUS_EXCEPTION(converter_exception(msg.str()));
   }
 
-  map<string, string_filter_ptr> string_filters;
+  std::map<std::string, string_filter_ptr> string_filters;
   init_string_filter_types(config.string_filter_types, string_filters);
-  map<string, num_filter_ptr> num_filters;
+  std::map<std::string, num_filter_ptr> num_filters;
   init_num_filter_types(config.num_filter_types, num_filters);
-  map<string, splitter_ptr> splitters;
+  std::map<std::string, splitter_ptr> splitters;
   init_string_types(config.string_types, splitters);
-  map<string, num_feature_ptr> num_features;
+  std::map<std::string, num_feature_ptr> num_features;
   init_num_types(config.num_types, num_features);
 
   conv.clear_rules();
+
+  // filters
   init_string_filter_rules(config.string_filter_rules, string_filters, conv);
   init_num_filter_rules(config.num_filter_rules, num_filters, conv);
+
+  // windows
+  init_string_window_rules(config.string_window_rules, conv);
+  init_num_window_rules(config.num_window_rules, conv);
+
+  // rules
   init_string_rules(config.string_rules, splitters, conv);
   init_num_rules(config.num_rules, num_features, conv);
 
@@ -237,5 +351,47 @@ void initialize_converter(const converter_config& config,
   }
 }
 
+pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
+    const std::string& config) {
+  if (config == "") {
+    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(
+            "Config of feature vector converter is empty"));
+  }
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
+      new fv_converter::datum_to_fv_converter);
+  converter_config c;
+  std::stringstream ss(config);
+  try {
+    ss >> pfi::text::json::via_json(c);
+  } catch (const pfi::lang::end_of_data& e) {
+    std::string msg = std::string("Unexpected end of string is detected: ")
+        + e.what();
+    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
+  } catch (const pfi::lang::parse_error& e) {
+    std::string msg = std::string("Cannot parse config JSON: ") + e.what();
+    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
+  } catch (const std::bad_cast& e) {
+    std::string msg = std::string("Invalid config format: ") + e.what();
+    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
+  }
+  fv_converter::initialize_converter(c, *converter);
+  return converter;
 }
+
+pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
+    const pfi::text::json::json& config) {
+  converter_config c;
+  try {
+    c = pfi::text::json::json_cast<converter_config>(config);
+  } catch (const std::bad_cast& e) {
+    std::string msg = std::string("Invalid config format: ") + e.what();
+    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
+  }
+  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
+      new fv_converter::datum_to_fv_converter);
+  fv_converter::initialize_converter(c, *converter);
+  return converter;
 }
+
+}  // namespace fv_converter
+}  // namespace jubatus

@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,14 +16,16 @@
 
 #include "dynamic_num_filter.hpp"
 
-using namespace std;
+#include <map>
+#include <string>
 
 namespace jubatus {
 namespace fv_converter {
 
-dynamic_num_filter::dynamic_num_filter(const std::string& path,
-                                       const std::string& function,
-                                       const map<string, string>& params)
+dynamic_num_filter::dynamic_num_filter(
+    const std::string& path,
+    const std::string& function,
+    const std::map<std::string, std::string>& params)
     : loader_(path),
       impl_(load_object<num_filter>(loader_, function, params)) {
 }
@@ -33,5 +34,5 @@ double dynamic_num_filter::filter(double value) const {
   return impl_->filter(value);
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

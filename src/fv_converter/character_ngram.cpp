@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,40 +16,47 @@
 
 #include "character_ngram.hpp"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 namespace jubatus {
 namespace fv_converter {
 
-using namespace std;
+namespace {
 
-static bool is_begin_of_character(unsigned char c) {
+bool is_begin_of_character(unsigned char c) {
   return (c & 0xC0) != 0x80;
 }
 
-void character_ngram::split(const std::string& string,
-                            std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
+}  // namespace
+
+void character_ngram::split(
+    const std::string& string,
+    std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
   const size_t len = length_;
-  vector<size_t> queue(len);
+  std::vector<size_t> queue(len);
   size_t p = 0;
   size_t n = 0;
 
-  vector<pair<size_t, size_t> > bounds;
+  std::vector<std::pair<size_t, size_t> > bounds;
   for (size_t i = 1; i <= string.size(); ++i) {
-    if  (i == string.size() || is_begin_of_character(string[i]))  {
+    if (i == string.size() || is_begin_of_character(string[i])) {
       ++n;
       if (n >= len) {
         size_t b = queue[p];
-        bounds.push_back(make_pair(b, i - b));
+        bounds.push_back(std::make_pair(b, i - b));
       }
       queue[p] = i;
       ++p;
-      if (p == len)
+      if (p == len) {
         p = 0;
+      }
     }
   }
 
   bounds.swap(ret_boundaries);
 }
 
-
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

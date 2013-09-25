@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,22 +14,30 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <algorithm>
-#include <cmath>
 #include "lsh.hpp"
+
+#include <cmath>
+#include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 #include "../common/exception.hpp"
 #include "../common/hash.hpp"
 #include "lsh_util.hpp"
 
-using namespace std;
-using namespace pfi::data;
-using namespace pfi::lang;
-using namespace jubatus::storage;
+using std::pair;
+using std::string;
+using std::vector;
+using jubatus::storage::bit_vector;
 
 namespace jubatus {
 namespace recommender {
 
-static const uint64_t DEFAULT_BASE_NUM = 64; // should be in config
+static const uint64_t DEFAULT_BASE_NUM = 64;  // should be in config
+
+lsh::config::config()
+    : bit_num(DEFAULT_BASE_NUM) {
+}
 
 lsh::lsh(uint64_t base_num)
     : base_num_(base_num) {
@@ -39,33 +46,54 @@ lsh::lsh(uint64_t base_num)
   }
 }
 
-lsh::lsh() : base_num_(DEFAULT_BASE_NUM){
+lsh::lsh(const config& config)
+    : base_num_(config.bit_num) {
 }
 
-lsh::~lsh(){
+lsh::lsh()
+    : base_num_(DEFAULT_BASE_NUM) {
 }
 
-void lsh::similar_row(const sfv_t& query, vector<pair<string, float> > & ids, size_t ret_num) const{
+lsh::~lsh() {
+}
+
+void lsh::similar_row(
+    const sfv_t& query,
+    vector<pair<string, float> >& ids,
+    size_t ret_num) const {
   ids.clear();
-  if (ret_num == 0) return;
+  if (ret_num == 0) {
+    return;
+  }
 
   bit_vector query_bv;
   calc_lsh_values(query, query_bv);
   row2lshvals_.similar_row(query_bv, ids, ret_num);
 }
 
-void lsh::clear(){
+void lsh::neighbor_row(
+    const sfv_t& query,
+    vector<pair<string, float> >& ids,
+    size_t ret_num) const {
+  similar_row(query, ids, ret_num);
+  for (size_t i = 0; i < ids.size(); ++i) {
+    ids[i].second = 1 - ids[i].second;
+  }
+}
+
+void lsh::clear() {
   orig_.clear();
-  column2baseval_.clear();
+  pfi::data::unordered_map<std::string, std::vector<float> >()
+    .swap(column2baseval_);
   row2lshvals_.clear();
 }
 
-void lsh::clear_row(const string& id){
+void lsh::clear_row(const string& id) {
   orig_.remove_row(id);
   row2lshvals_.remove_row(id);
 }
 
-void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const{
+void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const {
   const_cast<lsh*>(this)->generate_column_bases(sfv);
 
   vector<float> lsh_vals;
@@ -73,21 +101,21 @@ void lsh::calc_lsh_values(const sfv_t& sfv, bit_vector& bv) const{
   set_bit_vector(lsh_vals, bv);
 }
 
-void lsh::generate_column_bases(const sfv_t& sfv){
-  for (size_t i = 0; i < sfv.size(); ++i){
+void lsh::generate_column_bases(const sfv_t& sfv) {
+  for (size_t i = 0; i < sfv.size(); ++i) {
     generate_column_base(sfv[i].first);
   }
 }
 
-void lsh::generate_column_base(const string& column){
-  if (column2baseval_.count(column) != 0){
+void lsh::generate_column_base(const string& column) {
+  if (column2baseval_.count(column) != 0) {
     return;
   }
   const uint32_t seed = hash_util::calc_string_hash(column);
   generate_random_vector(base_num_, seed, column2baseval_[column]);
 }
 
-void lsh::update_row(const string& id, const sfv_diff_t& diff){
+void lsh::update_row(const string& id, const sfv_diff_t& diff) {
   generate_column_bases(diff);
   orig_.set_row(id, diff);
   sfv_t row;
@@ -97,33 +125,35 @@ void lsh::update_row(const string& id, const sfv_diff_t& diff){
   row2lshvals_.set_row(id, bv);
 }
 
-void lsh::get_all_row_ids(std::vector<std::string>& ids) const{
+void lsh::get_all_row_ids(std::vector<std::string>& ids) const {
   row2lshvals_.get_all_row_ids(ids);
 }
 
-string lsh::type() const{
+string lsh::type() const {
   return string("lsh");
 }
-bool lsh::save_impl(std::ostream& os){
+
+bool lsh::save_impl(std::ostream& os) {
   pfi::data::serialization::binary_oarchive oa(os);
   oa << column2baseval_;
   oa << row2lshvals_;
   return true;
 }
-bool lsh::load_impl(std::istream& is){
+
+bool lsh::load_impl(std::istream& is) {
   pfi::data::serialization::binary_iarchive ia(is);
   ia >> column2baseval_;
   ia >> row2lshvals_;
   return true;
 }
-storage::recommender_storage_base* lsh::get_storage(){
+
+storage::recommender_storage_base* lsh::get_storage() {
   return &row2lshvals_;
 }
-const storage::recommender_storage_base* lsh::get_const_storage()const{
+
+const storage::recommender_storage_base* lsh::get_const_storage() const {
   return &row2lshvals_;
 }
 
-
-} // namespace recommender
-} // namespace jubatus
-
+}  // namespace recommender
+}  // namespace jubatus

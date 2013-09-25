@@ -1,3 +1,4 @@
+# -*- python -*-
 import Options
 
 def options(opt):
@@ -24,10 +25,9 @@ int main() {
 ''',
                    define_name = 'HAVE_MECAB',
                    errmsg = 'mecab 0.99 or later is required (remove "--enable-mecab" option if not necessary)')
-    
 
   if Options.options.enable_ux:
-    conf.check_cfg(package = 'ux', 
+    conf.check_cfg(package = 'ux',
                    args = '--cflags --libs',
                    define_name = 'HAVE_UX',
                    errmsg = 'not found (remove "--enable-ux" option if not necessary)')

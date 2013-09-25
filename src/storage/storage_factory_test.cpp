@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,15 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
 #include <exception>
+#include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
 
 #include "storage_factory.hpp"
 #include "local_storage.hpp"
 #include "local_storage_mixture.hpp"
 
-using namespace pfi::lang;
+using pfi::lang::scoped_ptr;
 
 namespace jubatus {
 namespace storage {
@@ -34,15 +33,15 @@ TEST(storage_factory, trivial) {
     EXPECT_EQ(typeid(local_storage), typeid(*s));
   }
   {
-    scoped_ptr<storage_base> s(storage_factory::create_storage("local_mixture"));
+    scoped_ptr<storage_base> s(
+        storage_factory::create_storage("local_mixture"));
     EXPECT_EQ(typeid(local_storage_mixture), typeid(*s));
   }
   {
     EXPECT_THROW(storage_factory::create_storage("unknown"),
-                 std::exception);
+                std::exception);
   }
-
 }
 
-}
-}
+}  // namespace storage
+}  // namespace jubatus

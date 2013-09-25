@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,25 +15,30 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <cmath>
+#include <string>
+#include <utility>
 #include "../common/type.hpp"
-#include "keyword_weights.hpp"
 #include "datum_to_fv_converter.hpp"
+#include "keyword_weights.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
-using namespace std;
+namespace {
+
+struct is_zero {
+  bool operator()(const std::pair<std::string, float>& p) {
+    return p.second == 0;
+  }
+};
+
+}  // namespace
 
 keyword_weights::keyword_weights()
     : document_count_(),
       document_frequencies_(),
-      weights_() {}
-
-struct is_zero {
-  bool operator()(const pair<string, float>& p) {
-    return p.second == 0;
-  }
-};
+      weights_() {
+}
 
 void keyword_weights::update_document_frequency(const sfv_t& fv) {
   ++document_count_;
@@ -67,8 +71,8 @@ void keyword_weights::merge(const keyword_weights& w) {
 void keyword_weights::clear() {
   document_count_ = 0;
   document_frequencies_.clear();
-  weights_.clear();
+  weight_t().swap(weights_);
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

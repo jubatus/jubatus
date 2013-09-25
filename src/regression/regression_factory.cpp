@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,21 +15,28 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <stdexcept>
+#include <string>
 #include "regression_factory.hpp"
 #include "regression.hpp"
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
+
+using jubatus::jsonconfig::config_cast_check;
 
 namespace jubatus {
+namespace regression {
 
-regression_base*
-regression_factory::create_regression(const std::string& name,
-                                      storage::storage_base* storage) const {
+regression_base* regression_factory::create_regression(
+    const std::string& name,
+    const jsonconfig::config& param,
+    jubatus::storage::storage_base* storage) const {
   if (name == "PA") {
-    return new regression::PA(storage);
+    return new regression::PA(config_cast_check<regression::PA::config>(param),
+                              storage);
   } else {
     throw JUBATUS_EXCEPTION(unsupported_method(name));
   }
 }
 
-
-}
+}  // namespace regression
+}  // namespace jubatus

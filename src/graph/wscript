@@ -1,3 +1,4 @@
+# -*- python -*-
 def options(ctx): pass
 
 def configure(ctx): pass
@@ -12,7 +13,7 @@ def build(bld):
     target = 'jubatus_graph',
     name = 'jubatus_graph',
     includes = '.',
-    use = 'PFICOMMON')
+    use = 'PFICOMMON jubacommon')
 
   def make_test(s):
     bld.program(
@@ -20,8 +21,9 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'PFICOMMON jubatus_graph')
+      use = 'PFICOMMON jubacommon jubatus_graph')
 
   map(make_test, [
+      'graph_base_test.cpp',
       'graph_wo_index_test.cpp',
       ])

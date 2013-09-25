@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# please copy this file to .git/hooks/ and chmod +x
+
+codestyle_violation_count=$(git diff --cached --name-only | grep -v "^src/third_party/" |grep -v "^client" | grep -v ".*_client\.hpp" | xargs tools/codestyle/cpplint/cpplint.py --filter=-runtime/references,-runtime/rtti 2>&1 | grep Total | sed -e "s/[^0-9]*\([0-9]*\)/\1/")
+echo $codestyle_violation_count
+if [ $codestyle_violation_count != "0" ]
+then
+    git diff --cached --name-only | grep -v "^src/third_party/" |grep -v "^client" | grep -v ".*_client\.hpp" | xargs tools/codestyle/cpplint/cpplint.py --filter=-runtime/references,-runtime/rtti
+    #git diff --cached --name-only | xargs tools/codestyle/cpplint/cpplint.py
+    echo "Error: Please go along with Jubatus coding style when you commit"
+    exit 1
+else
+    exit 0
+fi

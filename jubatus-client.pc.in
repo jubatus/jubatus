@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: @PACKAGE@
+Description: Client Library for Distributed Online Machine Learning
+Version: @VERSION@
+Cflags: -I${includedir}
+Libs: -L${libdir} -lmsgpack -ljubatus_mpio -ljubatus_msgpack-rpc

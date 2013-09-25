@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,28 +14,32 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "util.hpp"
-#include "exception.hpp"
+#include <map>
+#include <stdexcept>
+#include <string>
 #include <pficommon/lang/cast.h>
-
-using namespace std;
+#include "exception.hpp"
+#include "util.hpp"
 
 namespace jubatus {
 namespace fv_converter {
 
-const string& get_or_die(const map<string, string> & params,
-                         const string& key) {
-  map<string, string>::const_iterator it = params.find(key);
+const std::string& get_or_die(
+    const std::map<std::string, std::string>& params,
+    const std::string& key) {
+  std::map<std::string, std::string>::const_iterator it = params.find(key);
   if (it == params.end()) {
-    throw JUBATUS_EXCEPTION(converter_exception(string("\"" + key +  "\" is not specified in parameters")));
+    throw JUBATUS_EXCEPTION(converter_exception(
+        std::string("\"" + key + "\" is not specified in parameters")));
   }
   return it->second;
 }
 
-std::string get_with_default(const std::map<std::string, std::string> & params,
-                             const std::string& key,
-                             const std::string& default_value) {
-  map<string, string>::const_iterator it = params.find(key);
+std::string get_with_default(
+    const std::map<std::string, std::string>& params,
+    const std::string& key,
+    const std::string& default_value) {
+  std::map<std::string, std::string>::const_iterator it = params.find(key);
   if (it == params.end()) {
     return default_value;
   } else {
@@ -44,15 +47,17 @@ std::string get_with_default(const std::map<std::string, std::string> & params,
   }
 }
 
-const int get_int_or_die(const map<string, string>& params,
-                         const string& key) {
-  const string& s = get_or_die(params, key);
+int get_int_or_die(
+    const std::map<std::string, std::string>& params,
+    const std::string& key) {
+  const std::string& s = get_or_die(params, key);
   try {
     return pfi::lang::lexical_cast<int>(s);
-  } catch (const bad_cast& e) {
-    throw JUBATUS_EXCEPTION(converter_exception(string("\"" + key + "\" must be an integer value: " + s)));
+  } catch (const std::bad_cast& e) {
+    throw JUBATUS_EXCEPTION(converter_exception(
+        std::string("\"" + key + "\" must be an integer value: " + s)));
   }
 }
 
-}
-}
+}  // namespace fv_converter
+}  // namespace jubatus

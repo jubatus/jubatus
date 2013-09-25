@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,27 +14,28 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_FRAMEWORK_SERVER_UTIL_HPP_
+#define JUBATUS_FRAMEWORK_SERVER_UTIL_HPP_
 
 #include <cstdlib>
+#include <iostream>
 #include <string>
 #include <sstream>
-#include <iostream>
 
+#include <glog/logging.h>
 #include <msgpack.hpp>
+#include <pficommon/lang/noncopyable.h>
+#include <pficommon/concurrent/lock.h>
+#include <pficommon/concurrent/rwmutex.h>
+#include <pficommon/lang/function.h>
+#include <pficommon/lang/shared_ptr.h>
 
 #include "../common/exception.hpp"
 #include "../common/lock_service.hpp"
 #include "../common/shared_ptr.hpp"
 #include "../common/util.hpp"
-#include <pficommon/lang/noncopyable.h>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/lang/function.h>
-#include <pficommon/network/mprpc.h>
-#include <pficommon/lang/shared_ptr.h>
 
-namespace cmdline{
+namespace cmdline {
 class parser;
 }
 
@@ -47,52 +47,76 @@ class datum_to_fv_converter;
 
 namespace framework {
 
-struct server_argv {
+struct config_json {
+  config_json() {
+  }
 
+  std::string config;
+
+  void load_json(
+      const std::string& zkhosts,
+      const std::string& type,
+      const std::string& name);
+  void load_json(const std::string& filepath);
+};
+
+struct server_argv {
   server_argv(int args, char** argv, const std::string& type);
   server_argv();
 
   bool join;
   int port;
+  std::string bind_address;
+  std::string bind_if;
   int timeout;
   int threadnum;
   std::string program_name;
   std::string type;
   std::string z;
   std::string name;
-  std::string tmpdir;
+  std::string datadir;
+  std::string logdir;
+  int loglevel;
+  std::string configpath;
   std::string eth;
   int interval_sec;
   int interval_count;
 
-  MSGPACK_DEFINE(join, port, timeout, threadnum, program_name, type, z, name,
-      tmpdir, eth, interval_sec, interval_count);
+  MSGPACK_DEFINE(join, port, bind_address, bind_if, timeout, threadnum,
+      program_name, type, z, name, datadir, logdir, loglevel, eth,
+      interval_sec, interval_count);
 
   bool is_standalone() const {
     return (z == "");
   }
-  std::string boot_message(const std::string& progname) const;
+  void boot_message(const std::string& progname) const;
+  void set_log_destination(const std::string& progname) const;
 };
 
 std::string get_server_identifier(const server_argv& a);
 
-
 struct keeper_argv {
   keeper_argv(int args, char** argv, const std::string& t);
   keeper_argv();
-  
+
   int port;
+  std::string bind_address;
+  std::string bind_if;
   int timeout;
   int threadnum;
+  std::string program_name;
   std::string z;
+  std::string logdir;
+  int loglevel;
   std::string eth;
   const std::string type;
 
-  std::string boot_message(const std::string& progname) const;
+  void boot_message(const std::string& progname) const;
+  void set_log_destination(const std::string& progname) const;
 };
 
-template <typename From, typename To>
-void convert(const From& from, To& to){
+template<typename From, typename To>
+void convert(const From& from, To& to) {
   msgpack::sbuffer sbuf;
   msgpack::pack(sbuf, from);
   msgpack::unpacked msg;
@@ -101,11 +125,10 @@ void convert(const From& from, To& to){
 }
 
 extern jubatus::common::cshared_ptr<jubatus::common::lock_service> ls;
-void atexit(void);
+void atexit();
 
-template <class ImplServerClass, class UserServClass>
-int run_server(int args, char** argv, const std::string& type)
-{
+template<class ImplServerClass>
+int run_server(int args, char** argv, const std::string& type) {
   try {
     ImplServerClass impl_server(server_argv(args, argv, type));
 
@@ -116,12 +139,14 @@ int run_server(int args, char** argv, const std::string& type)
     jubatus::util::ignore_sigpipe();
     return impl_server.run();
   } catch (const jubatus::exception::jubatus_exception& e) {
-    std::cout << e.diagnostic_information(true) << std::endl;
+    LOG(FATAL) << e.diagnostic_information(true);
     return -1;
   }
 }
 
-pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-make_fv_converter(const std::string& config);
+std::string get_conf(const server_argv& a);
 
-}}
+}  // namespace framework
+}  // namespace jubatus
+
+#endif  // JUBATUS_FRAMEWORK_SERVER_UTIL_HPP_

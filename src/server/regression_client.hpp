@@ -1,59 +1,69 @@
-
 // This file is auto-generated from regression.idl
 // *** DO NOT EDIT ***
 
-#ifndef REGRESSION_CLIENT_HPP_
-#define REGRESSION_CLIENT_HPP_
+#ifndef JUBATUS_SERVER_REGRESSION_CLIENT_HPP_
+#define JUBATUS_SERVER_REGRESSION_CLIENT_HPP_
 
-
+#include <map>
+#include <string>
+#include <vector>
+#include <utility>
+#include <jubatus/msgpack/rpc/client.h>
 #include "regression_types.hpp"
-#include <pficommon/network/mprpc.h>
-
 
 namespace jubatus {
-
 namespace client {
 
-class regression : public pfi::network::mprpc::rpc_client {
-public:
-  regression(const std::string &host, uint64_t port, double timeout_sec)
-    : rpc_client(host, port, timeout_sec) {}
+class regression {
+ public:
+  regression(const std::string& host, uint64_t port, double timeout_sec)
+      : c_(host, port) {
+    c_.set_timeout(timeout_sec);
+  }
+  
+  std::string get_config(std::string name) {
+    msgpack::rpc::future f = c_.call("get_config", name);
+    return f.get<std::string>();
+  }
+  
+  int32_t train(std::string name, std::vector<std::pair<float,
+       datum> > train_data) {
+    msgpack::rpc::future f = c_.call("train", name, train_data);
+    return f.get<int32_t>();
+  }
+  
+  std::vector<float> estimate(std::string name,
+       std::vector<datum> estimate_data) {
+    msgpack::rpc::future f = c_.call("estimate", name, estimate_data);
+    return f.get<std::vector<float> >();
+  }
+  
+  bool clear(std::string name) {
+    msgpack::rpc::future f = c_.call("clear", name);
+    return f.get<bool>();
+  }
+  
+  bool save(std::string name, std::string id) {
+    msgpack::rpc::future f = c_.call("save", name, id);
+    return f.get<bool>();
+  }
+  
+  bool load(std::string name, std::string id) {
+    msgpack::rpc::future f = c_.call("load", name, id);
+    return f.get<bool>();
+  }
+  
+  std::map<std::string, std::map<std::string, std::string> > get_status(
+      std::string name) {
+    msgpack::rpc::future f = c_.call("get_status", name);
+    return f.get<std::map<std::string, std::map<std::string, std::string> > >();
+  }
 
-    bool set_config(std::string name, config_data c) {
-      return call<bool(std::string, config_data)>("set_config")(name, c);
-    }
-
-    config_data get_config(std::string name) {
-      return call<config_data(std::string)>("get_config")(name);
-    }
-
-    int32_t train(std::string name, std::vector<std::pair<float, datum > > train_data) {
-      return call<int32_t(std::string, std::vector<std::pair<float, datum > >)>("train")(name, train_data);
-    }
-
-    std::vector<float > estimate(std::string name, std::vector<datum > estimate_data) {
-      return call<std::vector<float >(std::string, std::vector<datum >)>("estimate")(name, estimate_data);
-    }
-
-    bool save(std::string name, std::string arg1) {
-      return call<bool(std::string, std::string)>("save")(name, arg1);
-    }
-
-    bool load(std::string name, std::string arg1) {
-      return call<bool(std::string, std::string)>("load")(name, arg1);
-    }
-
-    std::map<std::string, std::map<std::string, std::string > > get_status(std::string name) {
-      return call<std::map<std::string, std::map<std::string, std::string > >(std::string)>("get_status")(name);
-    }
-
-private:
+ private:
+  msgpack::rpc::client c_;
 };
 
-} // namespace client
+}  // namespace client
+}  // namespace jubatus
 
-} // namespace jubatus
-
-
-
-#endif // REGRESSION_CLIENT_HPP_
+#endif  // JUBATUS_SERVER_REGRESSION_CLIENT_HPP_

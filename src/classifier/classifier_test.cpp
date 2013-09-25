@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,26 +14,36 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-#include <sstream>
-#include <fstream>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include <gtest/gtest.h>
 #include <pficommon/lang/cast.h>
 
 #include "classifier_factory.hpp"
 #include "classifier.hpp"
 #include "../storage/local_storage.hpp"
 #include "../common/exception.hpp"
+#include "../common/jsonconfig.hpp"
 #include "classifier_test_util.hpp"
 
-using namespace std;
-using namespace jubatus::storage;
-using namespace pfi::lang;
+using std::pair;
+using std::string;
+using std::vector;
+using pfi::text::json::to_json;
+using pfi::lang::lexical_cast;
+using jubatus::storage::local_storage;
 
 namespace jubatus {
+namespace classifier {
 
-template <typename T>
-class classifier_test : public testing::Test {};
+template<typename T>
+class classifier_test : public testing::Test {
+};
 
 TYPED_TEST_CASE_P(classifier_test);
 
@@ -42,16 +51,19 @@ TYPED_TEST_P(classifier_test, trivial) {
   local_storage s;
   TypeParam p(&s);
   ASSERT_NE(p.name(), "");
-  p.set_C(1.0);
-  ASSERT_EQ(p.C(), 1.0);
   sfv_t fv;
   fv.push_back(make_pair(string("f1"), 1.0));
-  p.train(fv, string("label1")); 
+  p.train(fv, string("label1"));
   fv.push_back(make_pair(string("f2"), 1.0));
   p.train(fv, string("label2"));
   classify_result scores;
   p.classify_with_scores(fv, scores);
   ASSERT_EQ(2u, scores.size());
+
+  p.clear();
+
+  p.classify_with_scores(fv, scores);
+  ASSERT_EQ(0u, scores.size());
 }
 
 TYPED_TEST_P(classifier_test, sfv_err) {
@@ -59,14 +71,14 @@ TYPED_TEST_P(classifier_test, sfv_err) {
   TypeParam p(&s);
   sfv_t fv;
   fv.push_back(make_pair(string("f1"), 0.0));
-  p.train(fv, string("label1")); 
+  p.train(fv, string("label1"));
   fv.push_back(make_pair(string("f2"), 1.0));
   p.train(fv, string("label2"));
   classify_result scores;
   p.classify_with_scores(fv, scores);
   ASSERT_EQ(1u, scores.size());
-//  <FIXME>why not 
-//  ASSERT_EQ(2u, scores.size());
+  // TODO(kuenishi) why not
+  // ASSERT_EQ(2u, scores.size());
 }
 
 sfv_t convert(vector<double>& v) {
@@ -118,35 +130,48 @@ TYPED_TEST_P(classifier_test, random3) {
   EXPECT_GT(correct, 95u);
 }
 
-REGISTER_TYPED_TEST_CASE_P(classifier_test,
-                           trivial, sfv_err, random, random3);
+REGISTER_TYPED_TEST_CASE_P(
+    classifier_test,
+    trivial,
+    sfv_err,
+    random,
+    random3);
 
-typedef testing::Types<perceptron, PA, PA1, PA2, CW, AROW, NHERD> classifier_types;
+typedef testing::Types<perceptron, PA, PA1, PA2, CW, AROW, NHERD>
+  classifier_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
 
-
-
-void InitClassifiers(vector<classifier_base*>& classifiers){
-  classifiers.push_back(classifier_factory::create_classifier("perceptron", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("PA", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("PA1", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("PA2", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("CW", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("AROW", new local_storage));
-  classifiers.push_back(classifier_factory::create_classifier("NHERD", new local_storage));
-  for (size_t i = 0; i < classifiers.size(); ++i){
-    classifiers[i]->set_C(1.0);
-  }
+void InitClassifiers(vector<classifier_base*>& classifiers) {
+  jsonconfig::config param(to_json(classifier_config()));
+  classifiers.push_back(
+      classifier_factory::create_classifier("perceptron", param,
+                                            new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("PA", param, new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("PA1", param, new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("PA2", param, new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("CW", param, new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("AROW", param, new local_storage));
+  classifiers.push_back(
+      classifier_factory::create_classifier("NHERD", param, new local_storage));
 }
 
-
-TEST(classifier_factory, exception){
-  local_storage * p = new local_storage;
-  ASSERT_THROW(classifier_factory::create_classifier("pa", p), unsupported_method);
-  ASSERT_THROW(classifier_factory::create_classifier("", p), unsupported_method);
-  ASSERT_THROW(classifier_factory::create_classifier("saitama", p), unsupported_method);
+TEST(classifier_factory, exception) {
+  jsonconfig::config param(to_json(classifier_config()));
+  local_storage* p = new local_storage;
+  ASSERT_THROW(classifier_factory::create_classifier("pa", param, p),
+      unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("", param, p),
+      unsupported_method);
+  ASSERT_THROW(classifier_factory::create_classifier("saitama", param, p),
+      unsupported_method);
   delete p;
 }
 
-}
+}  // namespace classifier
+}  // namespace jubatus

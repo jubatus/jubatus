@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,10 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <string>
 #include <gtest/gtest.h>
 #include "membership.hpp"
 
-using namespace std;
+using std::string;
 
 namespace jubatus {
 namespace common {
@@ -33,6 +33,18 @@ TEST(util, build_existence_path) {
   EXPECT_EQ("/path/base/127.0.0.1_9199", s);
 }
 
+TEST(util, build_config_path) {
+  string p;
+  build_config_path(p , "name", "type");
+  EXPECT_EQ("/jubatus/config/name/type", p);
+}
+
+TEST(util, build_config_lock_path) {
+  string p;
+  build_config_lock_path(p , "name", "type");
+  EXPECT_EQ("/jubatus/actors/name/type/config_lock", p);
+}
+
 TEST(util, revert) {
   string name = "127.0.0.1_9199";
   string ip;
@@ -42,5 +54,5 @@ TEST(util, revert) {
   EXPECT_EQ(9199, port);
 }
 
-}
-}
+}  // namespace common
+}  // namespace jubatus

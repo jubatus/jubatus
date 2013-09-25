@@ -45,7 +45,3 @@ IPA Dictionary for MeCab.
 %doc AUTHORS ChangeLog NEWS README
 %doc COPYING
 %{_libdir}/mecab/dic/ipadic
-
-%changelog
-* Tue Aug 14 2012 Kenichi Maehashi <mockbuild@jubat.us>
-- Initial version

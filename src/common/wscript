@@ -1,5 +1,5 @@
 
-subdirs = 'mprpc'
+subdirs = ['mprpc', 'jsonconfig']
 
 def options(opt):
   opt.recurse(subdirs)
@@ -24,7 +24,9 @@ int main() {
 
 def build(bld):
   import Options
-  src = 'exception.cpp util.cpp network.cpp key_manager.cpp vector_util.cpp global_id_generator.cpp'
+  src = 'exception.cpp util.cpp network.cpp key_manager.cpp vector_util.cpp global_id_generator.cpp config.cpp'
+  src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
+
   if bld.env.HAVE_ZOOKEEPER_H:
     src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp'
 
@@ -41,12 +43,14 @@ def build(bld):
     'util_test.cpp',
     'network_test.cpp',
     'vector_util_test.cpp',
+    'global_id_generator_test.cpp',
+    'jsonconfig_test.cpp',
     ]
 
   if bld.env.HAVE_ZOOKEEPER_H:
     test_src += ['membership_test.cpp', 'cht_test.cpp']
     if bld.env.INTEGRATION_TEST:
-      test_src += ['zk_test.cpp', 'cached_zk_test.cpp']
+      test_src += ['zk_test.cpp', 'cached_zk_test.cpp', 'config_test.cpp']
     
   def make_test(s):
     bld.program(
@@ -59,5 +63,25 @@ def build(bld):
   for s in test_src:
     make_test(s)
 
-  bld.install_files('${PREFIX}/include/jubatus/common/', bld.path.ant_glob('*.hpp'))
+  bld.install_files('${PREFIX}/include/jubatus/common/', [
+    'cached_zk.hpp',
+    'cht.hpp',
+    'config.hpp',
+    'config_util.hpp',
+    'exception.hpp',
+    'exception_info.hpp',
+    'global_id_generator.hpp',
+    'hash.hpp',
+    'jsonconfig.hpp',
+    'key_manager.hpp',
+    'lock_service.hpp',
+    'membership.hpp',
+    'network.hpp',
+    'shared_ptr.hpp',
+    'type.hpp',
+    'unordered_map.hpp',
+    'util.hpp',
+    'vector_util.hpp',
+    'zk.hpp',
+    ])
   bld.recurse(subdirs)

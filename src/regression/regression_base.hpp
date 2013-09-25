@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#pragma once
+#ifndef JUBATUS_REGRESSION_REGRESSION_BASE_HPP_
+#define JUBATUS_REGRESSION_REGRESSION_BASE_HPP_
 
 #include "../common/type.hpp"
 
@@ -23,17 +23,21 @@ namespace jubatus {
 
 namespace storage {
 class storage_base;
-}
+}  // namespace storage
 
+namespace regression {
 
 class regression_base {
  public:
-  regression_base(storage::storage_base* storage);
+  explicit regression_base(storage::storage_base* storage);
 
-  virtual ~regression_base() {}
+  virtual ~regression_base() {
+  }
 
   virtual void train(const sfv_t& fv, const float value) = 0;
   float estimate(const sfv_t& fv) const;
+
+  virtual void clear();
 
  protected:
   storage::storage_base* get_storage() const {
@@ -46,4 +50,7 @@ class regression_base {
   storage::storage_base* storage_;
 };
 
-}
+}  // namespace regression
+}  // namespace jubatus
+
+#endif  // JUBATUS_REGRESSION_REGRESSION_BASE_HPP_

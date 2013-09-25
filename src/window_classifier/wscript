@@ -1,0 +1,45 @@
+idls = ['window_classifier.idl']
+
+def options(opt):
+  pass
+
+def configure(conf):
+  pass
+
+
+def build_window_one(bld, name, libraries = '', sources = ''):
+  __sources = 'window_%s_impl.cpp window_%s_serv.cpp ' % (name, name)
+  __sources += sources
+
+  bld.program(
+    source = __sources,
+    target = 'jubawindow_'+name,
+    includes = '.',
+    use = 'jubatus_framework jubacommon_mprpc jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
+    )
+  if bld.env.HAVE_ZOOKEEPER_H:
+    bld.program(
+      source = 'window_%s_keeper.cpp ' % (name),
+      target = 'jubawindow_%s_keeper' % (name),
+      includes = '.',
+      use = 'PFICOMMON jubatus_framework jubacommon_mprpc JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
+      )
+  bld.program(
+    features = 'gtest',
+    source = '%s_test.cpp' % ('window_' + name),
+    target = '%s_test' % ('window_' + name),
+    includes = '.',
+    use = 'PFICOMMON MSGPACK jubacommon_mprpc %s' % libraries,
+    )
+
+def build(bld):
+  #window classifier
+  build_window_one(bld, "classifier", 'jubaconverter jubastorage jubaserver')
+
+  n = bld.path.get_bld().make_node('test_input')
+  n.mkdir()
+  bld(rule = 'cp ${SRC} ${TGT}',
+      source = bld.path.ant_glob('test_input/*'),
+      target = n)
+
+  bld.install_files('${PREFIX}/share/jubatus/idl/', idls)

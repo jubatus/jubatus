@@ -3,8 +3,7 @@
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
+// License version 2.1 as published by the Free Software Foundation.
 //
 // This library is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,20 +15,25 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "network.hpp"
-#include "gtest/gtest.h"
 #include <cstdlib>
 #include <iostream>
+#include <string>
+#include <gtest/gtest.h>
 
-using namespace std;
+using std::cout;
+using std::endl;
+using std::string;
 
-TEST(common, get_network_address)
-{
-  jubatus::common::address_list address = jubatus::common::get_network_address();
+namespace jubatus {
+namespace common {
+
+TEST(common, get_network_address) {
+  address_list address = get_network_address();
   EXPECT_NE(0u, address.size());
 
 #ifndef NDEBUG
   for (size_t i = 0; i < address.size(); i++) {
-    pfi::lang::shared_ptr<jubatus::common::network_address> p = address[i];
+    pfi::lang::shared_ptr<network_address> p = address[i];
     EXPECT_NO_THROW({
       cout << "Interface: " << p->interface() << endl;
       cout << "Addr: " << p->address() << endl;
@@ -44,13 +48,14 @@ TEST(common, get_network_address)
 #endif
 }
 
-TEST(common, get_default_v4_address)
-{
+TEST(common, get_default_v4_address) {
   string address;
-  EXPECT_NO_THROW(address = jubatus::common::get_default_v4_address());
+  EXPECT_NO_THROW(address = get_default_v4_address());
 
 #ifndef NDEBUG
   cout << "default v4 address: " << address << endl;
 #endif
 }
 
+}  // namespace common
+}  // namespace jubatus

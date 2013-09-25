@@ -46,6 +46,8 @@ def build(bld):
     'libsvm_converter.cpp',
     'string_filter_factory.cpp',
     'num_filter_factory.cpp',
+    'num_rolling_factory.cpp',
+    'windowset_config.cpp',
     'dynamic_loader.cpp',
     'dynamic_splitter.cpp',
     'dynamic_num_feature.cpp',
@@ -129,6 +131,11 @@ def build(bld):
       'weight_manager_test.cpp',
       'keyword_weights_test.cpp',
       'feature_hasher_test.cpp',
+      'circular_buffer_test.cpp',
+      'processing_window_test.cpp',
+      'windowset_test.cpp',
+      'except_match_test.cpp',
+      'num_feature_impl_test.cpp',
       ]
   test_use = 'PFICOMMON MSGPACK jubaconverter'
 
@@ -140,6 +147,7 @@ def build(bld):
 
   bld.install_files('${PREFIX}/include/jubatus/fv_converter',
                     [ 'word_splitter.hpp',
+                      'processing_window.hpp',
                       'string_filter.hpp',
                       'num_feature.hpp',
                       'num_filter.hpp',

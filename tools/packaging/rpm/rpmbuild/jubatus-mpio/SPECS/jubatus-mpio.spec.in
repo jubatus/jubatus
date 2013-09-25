@@ -1,0 +1,58 @@
+%define package_version @JUBATUS_MPIO_VERSION@
+%define package_release @JUBATUS_MPIO_RELEASE@
+
+Name:		jubatus-mpio
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	Multipurpose Parallel I/O framework for Jubatus
+Group:		Development/Libraries
+License:	Apache License 2.0
+URL:		https://github.com/jubatus/jubatus-mpio
+Source0:	%{name}-%{version}.tar.gz
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+BuildRequires:	ruby
+BuildRequires:	libtool
+BuildRequires:	autoconf
+BuildRequires:	automake
+
+%package devel
+Summary:	Headers and libraries for jubatus-mpio
+Requires:	%{name} = %{version}-%{release}
+
+%description
+jubatus-mpio is a multipurpose parallel I/O framework for C++ with fully multithreaded event loop implementation.
+
+%description devel
+This package provides headers and libraries needed to develop applications using jubatus-mpio.
+
+%prep
+%setup -q -n %{name}
+
+%build
+./bootstrap
+%configure
+%{__make} %{?_smp_mflags}
+
+%install
+%{__rm} -rf %{buildroot}
+%makeinstall
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc AUTHORS ChangeLog COPYING LICENSE NEWS NOTICE README README.md
+%{_libdir}/libjubatus_mpio.so.*
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/libjubatus_mpio.a
+%{_libdir}/libjubatus_mpio.la
+%{_libdir}/libjubatus_mpio.so
+%{_includedir}/jubatus/mp
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
