@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <vector>
+#include <string>
 
 #include "gtest/gtest.h"
 #include "bit_vector.hpp"
@@ -263,4 +264,68 @@ TEST(memory_size, uint8_under_128) {
 TEST(construct, vector_resize) {
   std::vector<bit_vector> bv(10, bit_vector(10));
   bv.resize(100, bit_vector(19));
+}
+
+TEST(msgpack_pack, empty) {
+  const bit_vector bv(10);
+  EXPECT_EQ(NULL, bv.raw_data_unsafe());
+
+  msgpack::sbuffer buf;
+  msgpack::pack(buf, bv);
+
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, buf.data(), buf.size());
+  msgpack::object obj = unpacked.get();
+
+  ASSERT_EQ(msgpack::type::ARRAY, obj.type);
+  ASSERT_EQ(2u, obj.via.array.size);
+
+  const size_t bits = obj.via.array.ptr[0].as<uint64_t>();
+  const std::string data = obj.via.array.ptr[1].as<std::string>();
+
+  EXPECT_EQ(bv.bit_num(), bits);
+
+  EXPECT_EQ(bv.used_bytes(), data.size());
+  for (size_t i = 0; i < data.size(); ++i) {
+    EXPECT_EQ(0, data[i]);
+  }
+}
+TEST(msgpack_pack, simple) {
+  bit_vector bv(10);
+  bv.set_bit(5);
+  EXPECT_TRUE(bv.raw_data_unsafe() != NULL);
+
+  msgpack::sbuffer buf;
+  msgpack::pack(buf, bv);
+
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, buf.data(), buf.size());
+  msgpack::object obj = unpacked.get();
+
+  ASSERT_EQ(msgpack::type::ARRAY, obj.type);
+  ASSERT_EQ(2u, obj.via.array.size);
+
+  const size_t bits = obj.via.array.ptr[0].as<uint64_t>();
+  const std::string data = obj.via.array.ptr[1].as<std::string>();
+
+  EXPECT_EQ(bv.bit_num(), bits);
+
+  EXPECT_EQ(bv.used_bytes(), data.size());
+  EXPECT_EQ(0, memcmp(&data[0], bv.raw_data_unsafe(), bv.used_bytes()));
+}
+TEST(msgpack_unpack, packed) {
+  bit_vector orig(10);
+  orig.set_bit(5);
+  EXPECT_TRUE(orig.raw_data_unsafe() != NULL);
+
+  msgpack::sbuffer buf;
+  msgpack::pack(buf, orig);
+
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, buf.data(), buf.size());
+
+  bit_vector copied(10);
+  unpacked.get().convert(&copied);
+
+  EXPECT_EQ(orig, copied);
 }

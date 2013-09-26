@@ -171,7 +171,7 @@ TEST(add, bit_vector) {
                          "a", owner("local") , ctype##_t(i)), true);    \
     }                                                                   \
     ASSERT_EQ(num, base.size());                                        \
-    ctype##_column ints = base.get_##ctype##_column(0);                 \
+    const ctype##_column& ints = base.get_##ctype##_column(0);          \
     ASSERT_EQ(num, ints.size());                                        \
   }
 #define TYPE(x) GET_COLUMN_INT_TEST(x)
@@ -190,7 +190,7 @@ TEST(get_column, float) {
         "a", owner("local"), static_cast<float>(i)), true);
   }
   ASSERT_EQ(base.size(), 100U);
-  float_column floats = base.get_float_column(0);
+  const float_column& floats = base.get_float_column(0);
   ASSERT_EQ(floats.size(), 100U);
 }
 
@@ -205,7 +205,7 @@ TEST(get_column, string) {
         owner("local"),
         pfi::lang::lexical_cast<std::string>(i)), true);
   }
-  string_column strings = base.get_string_column(0);
+  const string_column& strings = base.get_string_column(0);
   ASSERT_EQ(strings.size(), 100U);
 }
 
@@ -227,7 +227,7 @@ TEST(get_column, bit_vector) {
         true);
   }
   ASSERT_EQ(base.size(), num);
-  bit_vector_column bit_vectors = base.get_bit_vector_column(0);
+  const bit_vector_column& bit_vectors = base.get_bit_vector_column(0);
   ASSERT_EQ(bit_vectors.size(), num);
 }
 
@@ -244,7 +244,7 @@ TEST(get_column, bit_vector) {
                          ctype##_t(i)), true);                          \
     }                                                                   \
     ASSERT_EQ(base.size(), num);                                        \
-    ctype##_column ints = base.get_##ctype##_column(0);                 \
+    const ctype##_column& ints = base.get_##ctype##_column(0);          \
       ASSERT_EQ(ints.size(), num);                                      \
       for (size_t i = 0; i < num; ++i) {                                \
         ASSERT_EQ(ints[i], ctype##_t(i));                               \
@@ -268,7 +268,7 @@ TEST(get_and_read_column, string) {
         pfi::lang::lexical_cast<std::string>(i)), true);
   }
   ASSERT_EQ(base.size(), num);
-  string_column strings = base.get_string_column(0);
+  const string_column& strings = base.get_string_column(0);
   ASSERT_EQ(strings.size(), num);
 }
 
@@ -287,7 +287,7 @@ TEST(get_and_read_column, bit_vector) {
         owner("local"), bv), true);
   }
   ASSERT_EQ(base.size(), num);
-  bit_vector_column strings = base.get_bit_vector_column(0);
+  const bit_vector_column& strings = base.get_bit_vector_column(0);
   ASSERT_EQ(strings.size(), num);
 }
 
@@ -313,7 +313,7 @@ TEST(pfi, lexical_cast) {
                owner("local"),                                  \
                ctype##_t(i));                                   \
     }                                                           \
-    ctype##_column ic = base.get_##ctype##_column(0);           \
+    const ctype##_column& ic = base.get_##ctype##_column(0);    \
       for (size_t i = 0; i < num; ++i) {                        \
         ASSERT_EQ(ic[i], ctype##_t(i));                         \
       }                                                         \
@@ -333,7 +333,7 @@ TEST(base, iterate_float) {
         pfi::lang::lexical_cast<std::string>(i) + "hoge", owner("local"),
         0.8 * i);
   }
-  float_column ic = base.get_float_column(0);
+  const float_column& ic = base.get_float_column(0);
   for (size_t i = 0; i < 1000; ++i) {
     ASSERT_FLOAT_EQ(ic[i], 0.8*i);
   }
@@ -350,7 +350,7 @@ TEST(base, iterate_string) {
         owner("local"),
         pfi::lang::lexical_cast<std::string>(i)+"value");
   }
-  string_column ic = base.get_string_column(0);
+  const string_column& ic = base.get_string_column(0);
   for (size_t i = 0; i < 1000; ++i) {
     ASSERT_EQ(ic[i], pfi::lang::lexical_cast<std::string>(i)+"value");
   }
@@ -373,7 +373,7 @@ TEST(base, iterate_bit_vector) {
     base.add(
         pfi::lang::lexical_cast<std::string>(i) + "key", owner("local"), bv);
   }
-  bit_vector_column ic = base.get_bit_vector_column(0);
+  const bit_vector_column& ic = base.get_bit_vector_column(0);
   for (size_t i = 0; i < 1000; ++i) {
     bit_vector bv(70);
     for (size_t j = 0; j < i; ++j) {
@@ -399,8 +399,8 @@ TEST(column, multi_column) {
         pfi::lang::lexical_cast<std::string>(i) + "key", owner("local"), bv,
         static_cast<int32_t>(rand1.next_int()));
   }
-  const_bit_vector_column ic1 = base.get_bit_vector_column(0);
-  const_int32_column ic2 = base.get_int32_column(1);
+  const bit_vector_column& ic1 = base.get_bit_vector_column(0);
+  const int32_column& ic2 = base.get_int32_column(1);
 
   for (size_t i = 0; i < 1000; ++i) {
     bit_vector bv(70);
@@ -476,7 +476,7 @@ TEST(table, update) {
   ASSERT_TRUE(base.add("cc", owner("local"), std::string("fuga")));
   ASSERT_EQ(base.size(), 3U);
   {
-    string_column sc = base.get_string_column(0);
+    const string_column& sc = base.get_string_column(0);
     ASSERT_EQ("uaua" , sc[0]);
     ASSERT_EQ("hoge" , sc[1]);
     ASSERT_EQ("fuga" , sc[2]);
@@ -485,7 +485,7 @@ TEST(table, update) {
   ASSERT_TRUE(base.update<std::string>("bb", owner("local"), 0, "ee"));
   ASSERT_TRUE(base.update<std::string>("cc", owner("local"), 0, "ff"));
   {
-    const_string_column sc = base.get_string_column(0);
+    const string_column& sc = base.get_string_column(0);
     ASSERT_EQ("dd" , sc[0]);
     ASSERT_EQ("ee" , sc[1]);
     ASSERT_EQ("ff" , sc[2]);
@@ -503,7 +503,7 @@ TEST(table, const_column) {
   ASSERT_EQ(base.size(), 3U);
   {
     const column_table& const_base = base;
-    const_int32_column ccolumn = const_base.get_int32_column(0);
+    const int32_column& ccolumn = const_base.get_int32_column(0);
     ASSERT_EQ(1000, ccolumn[0]);
     ASSERT_EQ(20, ccolumn[1]);
     ASSERT_EQ(444, ccolumn[2]);
@@ -523,7 +523,7 @@ TEST(table, const_vector_column) {
   ASSERT_EQ(base.size(), 3U);
   {
     const column_table& const_base = base;
-    const_bit_vector_column ccolumn = const_base.get_bit_vector_column(0);
+    const bit_vector_column& ccolumn = const_base.get_bit_vector_column(0);
     bit_vector bv2(40);
     // std::cout << bv2 << std::endl << ccolumn[0] << std::endl << std::endl;
     ASSERT_TRUE(bv2 == ccolumn[0]);
@@ -536,7 +536,7 @@ TEST(table, const_vector_column) {
   }
   {  // left and right swap
     const column_table& const_base = base;
-    const_bit_vector_column ccolumn = const_base.get_bit_vector_column(0);
+    const bit_vector_column& ccolumn = const_base.get_bit_vector_column(0);
     bit_vector bv2(40);
     ASSERT_TRUE(ccolumn[0] == bv2);
     bv2.set_bit(4);
@@ -600,8 +600,8 @@ TEST(table, load) {
   loaded.load(ss);
   // std::cout << pretty(pfi::text::json::to_json(loaded)) << std::endl;
   // std::cout << loaded;
-  const_int32_column ic = loaded.get_int32_column(0);
-  const_double_column fc = loaded.get_double_column(1);
+  const int32_column& ic = loaded.get_int32_column(0);
+  const double_column& fc = loaded.get_double_column(1);
   ASSERT_EQ(ic[0], 54);
   ASSERT_EQ(ic[1], 899);
   ASSERT_EQ(ic[2], 21);
@@ -631,8 +631,8 @@ TEST(table, bv_load) {
   loaded.load(ss);
   // std::cout << pretty(pfi::text::json::to_json(loaded)) << std::endl;
   // std::cout << loaded;
-  const_int32_column ic = loaded.get_int32_column(0);
-  const_bit_vector_column bvc = loaded.get_bit_vector_column(1);
+  const int32_column& ic = loaded.get_int32_column(0);
+  const bit_vector_column& bvc = loaded.get_bit_vector_column(1);
   ASSERT_EQ(ic[0], 54);
   ASSERT_EQ(ic[1], 899);
   ASSERT_EQ(ic[2], 21);
@@ -707,8 +707,8 @@ TEST(table, set_row) {
   ASSERT_EQ(v.second, 0U);
   ASSERT_EQ(to.size(), 1U);
 
-  const_int32_column ic = to.get_int32_column(0);
-  const_string_column sc = to.get_string_column(1);
+  const int32_column& ic = to.get_int32_column(0);
+  const string_column& sc = to.get_string_column(1);
   ASSERT_EQ(ic[0], 333);
   ASSERT_EQ(sc[0], "hoge");
 }
@@ -738,8 +738,8 @@ TEST(table, set_bit_vector_row) {
   ASSERT_EQ(v.second, 0U);
   ASSERT_EQ(to.size(), 1U);
 
-  const_string_column sc = to.get_string_column(0);
-  const_bit_vector_column bc = to.get_bit_vector_column(1);
+  const string_column& sc = to.get_string_column(0);
+  const bit_vector_column& bc = to.get_bit_vector_column(1);
   ASSERT_EQ(sc[0], "hoge");
   ASSERT_EQ(bc[0], bv);
 }
@@ -764,8 +764,8 @@ TEST(table, set_row_overwrite) {
   ASSERT_EQ(v.first, owner("self2"));
   ASSERT_EQ(v.second, 1U);
 
-  const_string_column sc = to.get_string_column(0);
-  const_int32_column ic = to.get_int32_column(1);
+  const string_column& sc = to.get_string_column(0);
+  const int32_column& ic = to.get_int32_column(1);
   ASSERT_EQ(sc[0], "hoge2");
   ASSERT_EQ(ic[0], 2);
 }
@@ -813,7 +813,7 @@ TEST(table, json_dump) {
         base.delete_row("a" + pfi::lang::lexical_cast<string>(i));      \
         ++cnt;                                                          \
         ASSERT_EQ(max_size - cnt, base.size());                         \
-        ctype##_column ic = base.get_##ctype##_column(0);               \
+        const ctype##_column& ic = base.get_##ctype##_column(0);        \
           ASSERT_EQ(ic.size(), base.size());                            \
         std::set<ctype##_t> expect;                                     \
         for (size_t j = 0; j < max_size - cnt; ++j) {                   \
@@ -842,7 +842,7 @@ TEST(table, json_dump) {
       for (size_t i = 0; base.size(); i += 20) {                        \
         std::set<ctype##_t> expect;                                     \
         {                                                               \
-          ctype##_column ic = base.get_##ctype##_column(0);             \
+          const ctype##_column& ic = base.get_##ctype##_column(0);      \
           ASSERT_EQ(ic.size(), base.size());                            \
           for (size_t j = 1; j < ic.size(); ++j) {                      \
             expect.insert(static_cast<ctype##_t>(ic[j]));               \
@@ -852,7 +852,7 @@ TEST(table, json_dump) {
         ++cnt;                                                          \
         ASSERT_EQ(max_size - cnt, base.size());                         \
         {                                                               \
-          ctype##_column ic = base.get_##ctype##_column(0);             \
+          const ctype##_column& ic = base.get_##ctype##_column(0);      \
           ASSERT_EQ(ic.size(), base.size());                            \
           for (size_t j = 0; j < ic.size(); ++j) {                      \
             expect.erase(ic[j]);                                        \
@@ -888,14 +888,14 @@ TEST(table, delete_bv_row) {
   base.add("aa", owner("local"), bv1);
   ASSERT_EQ(1u, base.size());
   {
-    const_bit_vector_column bc = base.get_bit_vector_column(0);
+    const bit_vector_column& bc = base.get_bit_vector_column(0);
     ASSERT_EQ(bv1, bc[0]);
     ASSERT_NE(bv2, bc[0]);
   }
 
   base.add("bb", owner("local"), bv2);
   {
-    const_bit_vector_column bc = base.get_bit_vector_column(0);
+    const bit_vector_column& bc = base.get_bit_vector_column(0);
     ASSERT_EQ(2u, base.size());
     ASSERT_EQ(bv1, bc[0]);
     ASSERT_EQ(bv2, bc[1]);
@@ -903,7 +903,7 @@ TEST(table, delete_bv_row) {
 
   base.delete_row(0);  // delete can be done by index number too
   {
-    const_bit_vector_column bc = base.get_bit_vector_column(0);
+    const bit_vector_column& bc = base.get_bit_vector_column(0);
     ASSERT_EQ(1u, base.size());
     ASSERT_EQ(bv2, bc[0]);  // data will move
   }

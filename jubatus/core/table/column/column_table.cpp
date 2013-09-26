@@ -66,103 +66,102 @@ std::pair<bool, uint64_t> column_table::exact_match(
   }
 }
 
-uint8_column column_table::get_uint8_column(size_t column_id) {
+uint8_column& column_table::get_uint8_column(size_t column_id) {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::uint8_type));
-  return columns_[column_id].as_uint8_column();
+  return *static_cast<uint8_column*>(columns_[column_id].get());
 }
-const_uint8_column column_table::get_uint8_column(size_t column_id) const {
+const_uint8_column& column_table::get_uint8_column(size_t column_id) const {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::uint8_type));
-  return columns_[column_id].as_uint8_column();
+  return *static_cast<const uint8_column*>(columns_[column_id].get());
 }
-uint16_column column_table::get_uint16_column(size_t column_id) {
+uint16_column& column_table::get_uint16_column(size_t column_id) {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::uint16_type));
-  return columns_[column_id].as_uint16_column();
+  return *static_cast<uint16_column*>(columns_[column_id].get());
 }
-const_uint16_column column_table::get_uint16_column(size_t column_id) const {
+const_uint16_column& column_table::get_uint16_column(size_t column_id) const {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::uint16_type));
-  return columns_[column_id].as_uint16_column();
+  return *static_cast<const uint16_column*>(columns_[column_id].get());
 }
-
-uint32_column column_table::get_uint32_column(size_t column_id) {
+uint32_column& column_table::get_uint32_column(size_t column_id) {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::uint32_type));
-  return columns_[column_id].as_uint32_column();
+  return *static_cast<uint32_column*>(columns_[column_id].get());
 }
-const_uint32_column column_table::get_uint32_column(size_t column_id) const {
+const_uint32_column& column_table::get_uint32_column(size_t column_id) const {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::uint32_type));
-  return columns_[column_id].as_uint32_column();
+  return *static_cast<const_uint32_column*>(columns_[column_id].get());
 }
-uint64_column column_table::get_uint64_column(size_t column_id) {
+uint64_column& column_table::get_uint64_column(size_t column_id) {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::uint64_type));
-  return columns_[column_id].as_uint64_column();
+  return *static_cast<uint64_column*>(columns_[column_id].get());
 }
-const_uint64_column column_table::get_uint64_column(size_t column_id) const {
+const_uint64_column& column_table::get_uint64_column(size_t column_id) const {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::uint64_type));
-  return columns_[column_id].as_uint64_column();
+  return *static_cast<const_uint64_column*>(columns_[column_id].get());
 }
-int8_column column_table::get_int8_column(size_t column_id) {
+int8_column& column_table::get_int8_column(size_t column_id) {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::int8_type));
-  return columns_[column_id].as_int8_column();
+  return *static_cast<int8_column*>(columns_[column_id].get());
 }
-const_int8_column column_table::get_int8_column(size_t column_id) const {
+const_int8_column& column_table::get_int8_column(size_t column_id) const {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::int8_type));
-  return columns_[column_id].as_int8_column();
+  return *static_cast<const_int8_column*>(columns_[column_id].get());
 }
-int16_column column_table::get_int16_column(size_t column_id) {
+int16_column& column_table::get_int16_column(size_t column_id) {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::int16_type));
-  return columns_[column_id].as_int16_column();
+  return *static_cast<int16_column*>(columns_[column_id].get());
 }
-const_int16_column column_table::get_int16_column(size_t column_id) const {
+const_int16_column& column_table::get_int16_column(size_t column_id) const {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::int16_type));
-  return columns_[column_id].as_int16_column();
+  return *static_cast<const_int16_column*>(columns_[column_id].get());
 }
-int32_column column_table::get_int32_column(size_t column_id) {
+int32_column& column_table::get_int32_column(size_t column_id) {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::int32_type));
-  return columns_[column_id].as_int32_column();
+  return *static_cast<int32_column*>(columns_[column_id].get());
 }
-const_int32_column column_table::get_int32_column(size_t column_id) const {
+const_int32_column& column_table::get_int32_column(size_t column_id) const {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::int32_type));
-  return columns_[column_id].as_int32_column();
+  return *static_cast<const_int32_column*>(columns_[column_id].get());
 }
-int64_column column_table::get_int64_column(size_t column_id) {
+int64_column& column_table::get_int64_column(size_t column_id) {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::int64_type));
-  return columns_[column_id].as_int64_column();
+  return *static_cast<int64_column*>(columns_[column_id].get());
 }
-const_int64_column column_table::get_int64_column(size_t column_id) const {
+const_int64_column& column_table::get_int64_column(size_t column_id) const {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::int64_type));
-  return columns_[column_id].as_int64_column();
+  return *static_cast<const_int64_column*>(columns_[column_id].get());
 }
-float_column column_table::get_float_column(size_t column_id) {
+float_column& column_table::get_float_column(size_t column_id) {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::float_type));
-  return columns_[column_id].as_float_column();
+  return *static_cast<float_column*>(columns_[column_id].get());
 }
-const_float_column column_table::get_float_column(size_t column_id) const {
+const_float_column& column_table::get_float_column(size_t column_id) const {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::float_type));
-  return columns_[column_id].as_float_column();
+  return *static_cast<const_float_column*>(columns_[column_id].get());
 }
-double_column column_table::get_double_column(size_t column_id) {
+double_column& column_table::get_double_column(size_t column_id) {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::double_type));
-  return columns_[column_id].as_double_column();
+  return *static_cast<double_column*>(columns_[column_id].get());
 }
-const_double_column column_table::get_double_column(size_t column_id) const {
+const_double_column& column_table::get_double_column(size_t column_id) const {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::double_type));
-  return columns_[column_id].as_double_column();
+  return *static_cast<const_double_column*>(columns_[column_id].get());
 }
-string_column column_table::get_string_column(size_t column_id) {
+string_column& column_table::get_string_column(size_t column_id) {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::string_type));
-  return columns_[column_id].as_string_column();
+  return *static_cast<string_column*>(columns_[column_id].get());
 }
-const_string_column column_table::get_string_column(size_t column_id) const {
+const_string_column& column_table::get_string_column(size_t column_id) const {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::string_type));
-  return columns_[column_id].as_string_column();
+  return *static_cast<const_string_column*>(columns_[column_id].get());
 }
-bit_vector_column column_table::get_bit_vector_column(size_t column_id) {
+bit_vector_column& column_table::get_bit_vector_column(size_t column_id) {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::bit_vector_type));
-  return columns_[column_id].as_bit_vector_column();
+  return *static_cast<bit_vector_column*>(columns_[column_id].get());
 }
-const_bit_vector_column column_table::get_bit_vector_column(
+const_bit_vector_column& column_table::get_bit_vector_column(
     size_t column_id) const {
   JUBATUS_ASSERT(columns_[column_id].type().is(column_type::bit_vector_type));
-  return columns_[column_id].as_bit_vector_column();
+  return *static_cast<const_bit_vector_column*>(columns_[column_id].get());
 }
 
 

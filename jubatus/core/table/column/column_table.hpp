@@ -30,12 +30,13 @@
 #include <pficommon/data/serialization.h>
 #include <pficommon/data/unordered_map.h>
 #include <pficommon/concurrent/rwmutex.h>
+#include <pficommon/lang/shared_ptr.h>
 #include "../../common/assert.hpp"
 #include "../../common/exception.hpp"
 #include "../storage_exception.hpp"
 #include "bit_vector.hpp"
 #include "column_type.hpp"
-#include "columns.hpp"
+#include "abstract_column.hpp"
 #include "owner.hpp"
 
 namespace jubatus {
@@ -170,31 +171,31 @@ class column_table {
      argument is column_id
      if type unmatched, it throws type_unmatch_exception
   */
-  uint8_column get_uint8_column(size_t column_id);
-  uint16_column get_uint16_column(size_t column_id);
-  uint32_column get_uint32_column(size_t column_id);
-  uint64_column get_uint64_column(size_t column_id);
-  int8_column get_int8_column(size_t column_id);
-  int16_column get_int16_column(size_t column_id);
-  int32_column get_int32_column(size_t column_id);
-  int64_column get_int64_column(size_t column_id);
-  float_column get_float_column(size_t column_id);
-  double_column get_double_column(size_t column_id);
-  string_column get_string_column(size_t column_id);
-  bit_vector_column get_bit_vector_column(size_t column_id);
+  uint8_column& get_uint8_column(size_t column_id);
+  uint16_column& get_uint16_column(size_t column_id);
+  uint32_column& get_uint32_column(size_t column_id);
+  uint64_column& get_uint64_column(size_t column_id);
+  int8_column& get_int8_column(size_t column_id);
+  int16_column& get_int16_column(size_t column_id);
+  int32_column& get_int32_column(size_t column_id);
+  int64_column& get_int64_column(size_t column_id);
+  float_column& get_float_column(size_t column_id);
+  double_column& get_double_column(size_t column_id);
+  string_column& get_string_column(size_t column_id);
+  bit_vector_column& get_bit_vector_column(size_t column_id);
 
-  const_uint8_column get_uint8_column(size_t column_id) const;
-  const_uint16_column get_uint16_column(size_t column_id) const;
-  const_uint32_column get_uint32_column(size_t column_id) const;
-  const_uint64_column get_uint64_column(size_t column_id) const;
-  const_int8_column get_int8_column(size_t column_id) const;
-  const_int16_column get_int16_column(size_t column_id) const;
-  const_int32_column get_int32_column(size_t column_id) const;
-  const_int64_column get_int64_column(size_t column_id) const;
-  const_float_column get_float_column(size_t column_id) const;
-  const_double_column get_double_column(size_t column_id) const;
-  const_string_column get_string_column(size_t column_id) const;
-  const_bit_vector_column get_bit_vector_column(size_t column_id) const;
+  const_uint8_column& get_uint8_column(size_t column_id) const;
+  const_uint16_column& get_uint16_column(size_t column_id) const;
+  const_uint32_column& get_uint32_column(size_t column_id) const;
+  const_uint64_column& get_uint64_column(size_t column_id) const;
+  const_int8_column& get_int8_column(size_t column_id) const;
+  const_int16_column& get_int16_column(size_t column_id) const;
+  const_int32_column& get_int32_column(size_t column_id) const;
+  const_int64_column& get_int64_column(size_t column_id) const;
+  const_float_column& get_float_column(size_t column_id) const;
+  const_double_column& get_double_column(size_t column_id) const;
+  const_string_column& get_string_column(size_t column_id) const;
+  const_bit_vector_column& get_bit_vector_column(size_t column_id) const;
 
   uint64_t size() const {
     pfi::concurrent::scoped_rlock lk(table_lock_);
@@ -205,7 +206,7 @@ class column_table {
     pfi::concurrent::scoped_rlock lk(table_lock_);
     std::cout << "schema is ";
     for (std::vector<detail::abstract_column>::const_iterator it =
-             columns_.begin();
+           columns_.begin();
          it != columns_.end();
          ++it) {
       it->dump();
@@ -382,7 +383,6 @@ class column_table {
     delete_row_(index);
     return true;
   }
-
 
  private:
   std::vector<std::string> keys_;

@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -106,6 +107,13 @@ struct bit_vector_base {
         bit_num_(bit_num),
         own_(false) {
   }
+  bit_vector_base(const void* bits, size_t bit_num)
+      : bits_(NULL),
+        bit_num_(bit_num),
+        own_(false) {
+    alloc_memory();
+    memcpy(bits_, bits, used_bytes());
+  }
   explicit bit_vector_base(int bit_num)
       : bits_(NULL),
         bit_num_(bit_num),
@@ -151,26 +159,37 @@ struct bit_vector_base {
 
   // deep copy (In case not own memory, it alloc memory)
   bit_vector_base& operator=(const bit_vector_base& orig) {
-    if (bit_num_ != orig.bit_num_) {
-      throw bit_vector_unmatch_exception(
-          "failed copy bit vector from " +
-          pfi::lang::lexical_cast<std::string>(orig.bit_num_) + " to " +
-          pfi::lang::lexical_cast<std::string>(bit_num_));
-    }
-    if (bits_ == NULL) {
-      alloc_memory();
-    }
-    if (orig.bits_ == NULL) {
-      memset(bits_, 0, used_bytes());
-    } else {
-      memcpy(bits_, orig.bits_, used_bytes());
+    if (&orig != this) {
+      if (bit_num_ != orig.bit_num_) {
+        throw bit_vector_unmatch_exception(
+            "failed copy bit vector from " +
+            pfi::lang::lexical_cast<std::string>(orig.bit_num_) + " to " +
+            pfi::lang::lexical_cast<std::string>(bit_num_));
+      }
+      if (bits_ == NULL) {
+        alloc_memory();
+      }
+      if (orig.bits_ == NULL) {
+        memset(bits_, 0, used_bytes());
+      } else {
+        memcpy(bits_, orig.bits_, used_bytes());
+      }
     }
     return *this;
   }
-  template <typename T>
-  bit_vector_base& operator=(const T& orig) {
-    throw type_unmatch_exception("failed copy bit vector from ");
-    return *this;
+  void swap(bit_vector_base& x) {
+    if (bit_num_ != x.bit_num_) {
+      throw bit_vector_unmatch_exception(
+          "failed to swap bit vectors " +
+          pfi::lang::lexical_cast<std::string>(bit_num_) + " and " +
+          pfi::lang::lexical_cast<std::string>(x.bit_num_));
+    }
+    using std::swap;
+    swap(bits_, x.bits_);
+    swap(own_, x.own_);
+  }
+  friend void swap(bit_vector_base& l, bit_vector_base& r) {
+    l.swap(r);
   }
 
   void clear_bit(size_t pos) {
@@ -317,9 +336,39 @@ struct bit_vector_base {
 
   template <typename packable>
   void pack(packable& buffer) const {
-    const std::string tmp(reinterpret_cast<const char*>(bits_), used_bytes());
-    msgpack::pack(buffer, tmp);
+    msgpack::pack(buffer, *this);
   }
+  template<typename Buffer>
+  void msgpack_pack(msgpack::packer<Buffer>& packer) const {
+    packer.pack_array(2);
+    packer.pack(static_cast<uint64_t>(bit_num_));
+    packer.pack_raw(used_bytes());
+    if (bits_) {
+      packer.pack_raw_body(reinterpret_cast<const char*>(bits_), used_bytes());
+    } else {
+      const char c = 0;
+      for (size_t i = 0; i < used_bytes(); ++i) {
+        packer.pack_raw_body(&c, 1);
+      }
+    }
+  }
+  void msgpack_unpack(msgpack::object o) {
+    if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
+      throw msgpack::type_error();  // like MSGPACK_DEFINE
+    }
+    const msgpack::object* objs = o.via.array.ptr;
+    const uint64_t bit_num = objs[0].as<uint64_t>();
+    const msgpack::type::raw_ref data = objs[1].as<msgpack::type::raw_ref>();
+    if (data.size != memory_size(bit_num)) {
+      throw bit_vector_unmatch_exception(
+          "msgpack_unpack(): invalid length of packed data: "
+          "expected: " + pfi::lang::lexical_cast<std::string>(bit_num_) +
+          ", got: " + pfi::lang::lexical_cast<std::string>(data.size));
+    }
+    bit_vector_base(data.ptr, bit_num).swap(*this);
+    JUBATUS_ASSERT(own_ || bits_ == NULL);
+  }
+
   void alloc_memory() {
     JUBATUS_ASSERT(!own_);
     bits_ = new bit_base[used_bytes()];

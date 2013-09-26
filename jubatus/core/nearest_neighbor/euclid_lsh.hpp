@@ -75,8 +75,8 @@ class euclid_lsh : public nearest_neighbor_base {
  private:
   void set_config(const config& conf);
   void fill_schema(std::vector<table::column_type>& schema);
-  table::const_bit_vector_column lsh_column() const;
-  table::const_float_column norm_column() const;
+  table::const_bit_vector_column& lsh_column() const;
+  table::const_float_column& norm_column() const;
 
   void neighbor_row_from_hash(
       const table::bit_vector& bv,

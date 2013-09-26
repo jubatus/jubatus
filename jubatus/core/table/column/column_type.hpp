@@ -154,6 +154,13 @@ class column_type {
     return os;
   }
 
+  friend bool operator==(const column_type& x, const column_type& y) {
+    return x.type_ == y.type_ && x.bit_vector_length_ == y.bit_vector_length_;
+  }
+  friend bool operator!=(const column_type& x, const column_type& y) {
+    return !(x == y);
+  }
+
  private:
   friend class pfi::data::serialization::access;
   template <class Ar>
@@ -163,7 +170,6 @@ class column_type {
         & MEMBER(bit_vector_length_);
     type_ = static_cast<type_name>(type);
   }
-  friend class abstract_column;
   type_name type_;
   int bit_vector_length_;
 };
