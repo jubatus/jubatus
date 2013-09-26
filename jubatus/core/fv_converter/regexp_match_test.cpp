@@ -15,21 +15,21 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
+#include "regexp_match.hpp"
 #include "exception.hpp"
-#include "re2_match.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-TEST(re2_match, trivial) {
-  re2_match m(".*/hoge");
+TEST(regexp_match, trivial) {
+  regexp_match m(".*/hoge");
   ASSERT_TRUE(m.match("hoge/hoge"));
   ASSERT_FALSE(m.match("hoge/fuga"));
 }
 
-TEST(re2_match, illegal) {
-  ASSERT_THROW(re2_match m("*hoge"), converter_exception);
+TEST(regexp_match, illegal) {
+  ASSERT_THROW(regexp_match m("*hoge"), converter_exception);
 }
 
 }  // namespace fv_converter

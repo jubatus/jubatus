@@ -30,9 +30,7 @@
 #include "match_all.hpp"
 #include "num_feature_impl.hpp"
 #include "num_filter_impl.hpp"
-#ifdef HAVE_RE2
-#  include "re2_filter.hpp"
-#endif
+#include "regexp_filter.hpp"
 #include "space_splitter.hpp"
 #include "weight_manager.hpp"
 #include "without_split.hpp"
@@ -266,9 +264,8 @@ TEST(datum_to_fv_converter, register_string_filter) {
     EXPECT_EQ(1u, feature.size());
   }
 
-#ifdef HAVE_RE2
   conv.register_string_filter(shared_ptr<key_matcher>(new match_all()),
-      shared_ptr<string_filter>(new re2_filter("<[^>]*>", "")),
+      shared_ptr<string_filter>(new regexp_filter("<[^>]*>", "")),
       "_filtered");
 
   {
@@ -277,7 +274,6 @@ TEST(datum_to_fv_converter, register_string_filter) {
     EXPECT_EQ(2u, feature.size());
     EXPECT_EQ("/text_filtered$aaa@str#bin/bin", feature[1].first);
   }
-#endif
 }
 
 TEST(datum_to_fv_converter, register_num_filter) {

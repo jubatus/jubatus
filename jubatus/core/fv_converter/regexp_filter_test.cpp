@@ -16,14 +16,14 @@
 
 #include <string>
 #include <gtest/gtest.h>
-#include "re2_filter.hpp"
+#include "regexp_filter.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-TEST(re2_filter, trivial) {
-  re2_filter f("a+", "AA");
+TEST(regexp_filter, trivial) {
+  regexp_filter f("a+", "AA");
 
   std::string out;
   f.filter("auauaa", out);

@@ -22,9 +22,7 @@
 #include "key_matcher.hpp"
 #include "match_all.hpp"
 #include "prefix_match.hpp"
-#ifdef HAVE_RE2
-# include "re2_match.hpp"
-#endif
+#include "regexp_match.hpp"
 #include "suffix_match.hpp"
 
 using pfi::lang::shared_ptr;
@@ -44,13 +42,8 @@ shared_ptr<key_matcher> key_matcher_factory::create_matcher(
       new prefix_match(matcher.substr(0, matcher.size() - 1)));
   } else if (matcher.size() >= 2 && matcher[0] == '/'
       && matcher[matcher.size() - 1] == '/') {
-#ifdef HAVE_RE2
     return shared_ptr<key_matcher>(
-      new re2_match(matcher.substr(1, matcher.size() - 2)));
-#else
-    throw JUBATUS_EXCEPTION(
-        converter_exception("cannot use regexp rule: " + matcher));
-#endif
+      new regexp_match(matcher.substr(1, matcher.size() - 2)));
   } else {
     return shared_ptr<key_matcher>(new exact_match(matcher));
   }
