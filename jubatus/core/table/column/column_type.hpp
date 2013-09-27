@@ -161,13 +161,22 @@ class column_type {
     return !(x == y);
   }
 
-  template<class Packer>
-  void msgpack_pack(Packer& packer) const {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  template<class Buffer>
+  void msgpack_pack(msgpack::packer<Buffer>& packer) const {
+    packer.pack_array(2);
+    packer.pack(static_cast<uint8_t>(type_));
+    packer.pack(static_cast<uint64_t>(bit_vector_length_));
   }
-  template<class Obj>
-  void msgpack_unpack(Obj o) {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  void msgpack_unpack(msgpack::object o) {
+    if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
+      throw msgpack::type_error();
+    }
+    uint8_t type;
+    o.via.array.ptr[0].convert(&type);
+    uint64_t bit_vector_length;
+    o.via.array.ptr[1].convert(&bit_vector_length);
+    type_ = static_cast<type_name>(type);
+    bit_vector_length_ = bit_vector_length;
   }
 
  private:
