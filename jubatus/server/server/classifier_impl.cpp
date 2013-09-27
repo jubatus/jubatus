@@ -19,7 +19,7 @@ class classifier_impl_ : public classifier<classifier_impl_> {
   explicit classifier_impl_(const jubatus::server::framework::server_argv& a):
     classifier<classifier_impl_>(a.timeout),
     p_(new jubatus::server::framework::server_helper<classifier_serv>(a,
-         false)) {
+        false)) {
   }
   std::string get_config(const std::string& name) {
     JRLOCK_(p_);
