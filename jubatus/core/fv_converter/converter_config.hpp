@@ -77,7 +77,7 @@ struct num_rule {
   }
 };
 
-struct raw_rule {
+struct binary_rule {
   std::string key;
   pfi::data::optional<std::string> except;
   std::string type;
@@ -102,8 +102,8 @@ struct converter_config {
   std::map<std::string, param_t> num_types;
   std::vector<num_rule> num_rules;
 
-  pfi::data::optional<std::map<std::string, param_t> > raw_types;
-  pfi::data::optional<std::vector<raw_rule> > raw_rules;
+  pfi::data::optional<std::map<std::string, param_t> > binary_types;
+  pfi::data::optional<std::vector<binary_rule> > binary_rules;
 
   pfi::data::optional<int64_t> hash_max_size;
 
@@ -113,7 +113,7 @@ struct converter_config {
     ar & MEMBER(string_filter_types) & MEMBER(string_filter_rules)
         & MEMBER(num_filter_types) & MEMBER(num_filter_rules)
         & MEMBER(string_types) & MEMBER(string_rules) & MEMBER(num_types)
-        & MEMBER(num_rules) & MEMBER(raw_types) & MEMBER(raw_rules)
+        & MEMBER(num_rules) & MEMBER(binary_types) & MEMBER(binary_rules)
         & MEMBER(hash_max_size);
   }
 };

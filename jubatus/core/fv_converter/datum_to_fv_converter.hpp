@@ -59,7 +59,7 @@ class datum_to_fv_converter_impl;
 class word_splitter;
 class key_matcher;
 class num_feature;
-class raw_feature;
+class binary_feature;
 class string_filter;
 class num_filter;
 class weight_manager;
@@ -97,10 +97,10 @@ class datum_to_fv_converter {
       pfi::lang::shared_ptr<key_matcher> matcher,
       pfi::lang::shared_ptr<num_feature> feature_func);
 
-  void register_raw_rule(
+  void register_binary_rule(
       const std::string& name,
       pfi::lang::shared_ptr<key_matcher> matcher,
-      pfi::lang::shared_ptr<raw_feature> feature_func);
+      pfi::lang::shared_ptr<binary_feature> feature_func);
 
   void add_weight(const std::string& key, float weight);
 

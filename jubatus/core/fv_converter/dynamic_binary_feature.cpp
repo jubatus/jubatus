@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "dynamic_raw_feature.hpp"
+#include "dynamic_binary_feature.hpp"
 
 #include <map>
 #include <string>
@@ -27,15 +27,15 @@ namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-dynamic_raw_feature::dynamic_raw_feature(
+dynamic_binary_feature::dynamic_binary_feature(
     const string& path,
     const string& function,
     const std::map<string, string>& params)
     : loader_(path),
-      impl_(load_object<raw_feature>(loader_, function, params)) {
+      impl_(load_object<binary_feature>(loader_, function, params)) {
 }
 
-void dynamic_raw_feature::add_feature(
+void dynamic_binary_feature::add_feature(
     const string& key,
     const string& value,
     std::vector<std::pair<string, float> >& ret_fv) const {

@@ -14,12 +14,12 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "raw_feature_factory.hpp"
+#include "binary_feature_factory.hpp"
 
 #include <map>
 #include <string>
 #include "exception.hpp"
-#include "dynamic_raw_feature.hpp"
+#include "dynamic_binary_feature.hpp"
 #include "util.hpp"
 
 namespace jubatus {
@@ -27,23 +27,23 @@ namespace core {
 namespace fv_converter {
 namespace {
 
-raw_feature* create_dynamic_num_feature(
-    const raw_feature_factory::param_t& params) {
+binary_feature* create_dynamic_num_feature(
+    const binary_feature_factory::param_t& params) {
   const std::string& path = get_or_die(params, "path");
   const std::string& function = get_or_die(params, "function");
-  return new dynamic_raw_feature(path, function, params);
+  return new dynamic_binary_feature(path, function, params);
 }
 
 }  // namespace
 
-raw_feature* raw_feature_factory::create(
+binary_feature* binary_feature_factory::create(
     const std::string& name,
     const param_t& params) const {
   if (name == "dynamic") {
     return create_dynamic_num_feature(params);
   } else {
     throw JUBATUS_EXCEPTION(
-        converter_exception("unknown raw feature name: " + name));
+        converter_exception("unknown binary feature name: " + name));
   }
 }
 
