@@ -239,10 +239,10 @@ void linear_mixer::mix() {
       communication_->get_diff(result);
 
       vector<byte_buffer> mixed = result.response.front()
-        .as<vector<byte_buffer> >();
+          .as<vector<byte_buffer> >();
       for (size_t i = 1; i < result.response.size(); ++i) {
         vector<byte_buffer> tmp =
-          result.response[i].as<vector<byte_buffer> >();
+            result.response[i].as<vector<byte_buffer> >();
         for (size_t j = 0; j < tmp.size(); ++j) {
           mixables[j]->mix(tmp[j], mixed[j], mixed[j]);
         }
