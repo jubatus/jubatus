@@ -41,13 +41,14 @@ struct int_model {
     ifs >> value;
   }
 
-  template<class Packer>
-  void pack(Packer& packer) const {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  MSGPACK_DEFINE(value);
+
+  template<class Buffer>
+  void pack(msgpack::packer<Buffer>& packer) const {
+    packer.pack(*this);
   }
-  template<class Obj>
-  void unpack(Obj o) {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  void unpack(msgpack::object o) {
+    o.convert(this);
   }
 };
 
@@ -96,6 +97,24 @@ TEST(mixable, save_load) {
   m.save(ss);
   m.get_model()->value = 5;
   m.load(ss);
+  EXPECT_EQ(10, m.get_model()->value);
+}
+
+TEST(mixable, pack_and_unpack) {
+  mixable_int m;
+  m.set_model(mixable_int::model_ptr(new int_model));
+  m.get_model()->value = 10;
+
+  msgpack::sbuffer buf;
+  msgpack::packer<msgpack::sbuffer> packer(buf);
+  m.pack(packer);
+
+  m.get_model()->value = 5;
+
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, buf.data(), buf.size());
+  m.unpack(unpacked.get());
+
   EXPECT_EQ(10, m.get_model()->value);
 }
 
