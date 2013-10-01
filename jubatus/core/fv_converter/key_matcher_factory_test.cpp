@@ -38,12 +38,7 @@ TEST(fv_converter, key_matcher_factory) {
   ASSERT_FALSE(m_t(f.create_matcher("hogehoge"))->match("hogefuga"));
   ASSERT_TRUE(m_t(f.create_matcher("hogehoge"))->match("hogehoge"));
 
-#ifdef HAVE_RE2
   ASSERT_TRUE(m_t(f.create_matcher("/.*/hoge/"))->match("fuga/hoge"));
-#else
-  ASSERT_THROW(m_t(f.create_matcher("/.*/hoge/"))->match("fuga/hoge"),
-      converter_exception);
-#endif
 }
 
 }  // namespace fv_converter
