@@ -248,6 +248,15 @@ bool local_storage_mixture::load(std::istream& is) {
   return true;
 }
 
+void local_storage_mixture::pack(
+    msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
+}
+
+void local_storage_mixture::unpack(msgpack::object o) {
+  o.convert(this);
+}
+
 std::string local_storage_mixture::type() const {
   return "local_storage_mixture";
 }

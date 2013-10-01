@@ -188,6 +188,14 @@ bool local_storage::load(std::istream& is) {
   return true;
 }
 
+void local_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
+}
+
+void local_storage::unpack(msgpack::object o) {
+  o.convert(this);
+}
+
 std::string local_storage::type() const {
   return "local_storage";
 }

@@ -74,7 +74,11 @@ class local_storage_mixture : public storage_base {
 
   bool save(std::ostream& os);
   bool load(std::istream& is);
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
   std::string type() const;
+
+  MSGPACK_DEFINE(tbl_, class2id_, tbl_diff_);
 
  private:
   friend class pfi::data::serialization::access;

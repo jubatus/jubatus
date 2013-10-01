@@ -61,14 +61,8 @@ class storage_base {
   virtual bool save(std::ostream&) = 0;
   virtual bool load(std::istream&) = 0;
 
-  template<class Packer>
-  void pack(Packer& packer) const {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
-  }
-  template<class Obj>
-  void unpack(Obj o) {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
-  }
+  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
+  virtual void unpack(msgpack::object o) = 0;
 
   virtual void update(
       const std::string& feature,
