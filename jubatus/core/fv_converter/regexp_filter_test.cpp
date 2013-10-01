@@ -17,6 +17,7 @@
 #include <string>
 #include <gtest/gtest.h>
 #include "regexp_filter.hpp"
+#include "exception.hpp"
 
 namespace jubatus {
 namespace core {
@@ -31,6 +32,10 @@ TEST(regexp_filter, trivial) {
 
   f.filter("auauaab", out);
   EXPECT_EQ("AAuAAuAAb", out);
+}
+
+TEST(regexp_filter, illegal) {
+  ASSERT_THROW(regexp_filter f("*hoge", "replace"), converter_exception);
 }
 
 }  // namespace fv_converter
