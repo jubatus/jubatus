@@ -26,6 +26,7 @@ def make_test(bld, use, src):
     source = src,
     target = src[0:src.rindex('.')],
     use = use,
+    cxxflags = ['-DGTEST_HAS_POSIX_RE=0']
     )
 
 def make_tests(bld, use, srcs):
