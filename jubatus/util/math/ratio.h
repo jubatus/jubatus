@@ -29,8 +29,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef INCLUDE_GUARD_PFI_MATH_RATIO_H_
-#define INCLUDE_GUARD_PFI_MATH_RATIO_H_
+#ifndef JUBATUS_UTIL_MATH_RATIO_H_
+#define JUBATUS_UTIL_MATH_RATIO_H_
 
 #include <cstdlib>
 #include <iostream>
@@ -159,4 +159,4 @@ std::ostream& operator<<(std::ostream &out,
 }
 }
 }
-#endif // #ifndef INCLUDE_GUARD_PFI_MATH_RATIO_H_
+#endif // #ifndef JUBATUS_UTIL_MATH_RATIO_H_

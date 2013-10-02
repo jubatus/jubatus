@@ -29,8 +29,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef INCLUDE_GUARD_PFI_TEXT_JSON_BASE_H_
-#define INCLUDE_GUARD_PFI_TEXT_JSON_BASE_H_
+#ifndef JUBATUS_UTIL_TEXT_JSON_BASE_H_
+#define JUBATUS_UTIL_TEXT_JSON_BASE_H_
 
 #include <stdint.h>
 #include <iostream>
@@ -796,4 +796,4 @@ inline std::ostream& operator<<(std::ostream& os, const without_escape_tag<T>& j
 } // text
 } // util
 } // jubatus
-#endif // #ifndef INCLUDE_GUARD_PFI_TEXT_JSON_BASE_H_
+#endif // #ifndef JUBATUS_UTIL_TEXT_JSON_BASE_H_

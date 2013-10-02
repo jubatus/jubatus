@@ -29,8 +29,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef INCLUDE_GUARD_PFI_DATA_STRING_USTRING_H_
-#define INCLUDE_GUARD_PFI_DATA_STRING_USTRING_H_
+#ifndef JUBATUS_UTIL_DATA_STRING_USTRING_H_
+#define JUBATUS_UTIL_DATA_STRING_USTRING_H_
 
 #include <assert.h>
 #include <stddef.h>
@@ -209,4 +209,4 @@ std::istream& operator>>(std::istream& in , ustring &str);
 } // data
 } // util
 } // jubatus
-#endif // #ifndef INCLUDE_GUARD_PFI_DATA_STRING_USTRING_H_
+#endif // #ifndef JUBATUS_UTIL_DATA_STRING_USTRING_H_

@@ -29,8 +29,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef INCLUDE_GUARD_PFI_CONCURRENT_LOCK_H_
-#define INCLUDE_GUARD_PFI_CONCURRENT_LOCK_H_
+#ifndef JUBATUS_UTIL_CONCURRENT_LOCK_H_
+#define JUBATUS_UTIL_CONCURRENT_LOCK_H_
 
 #include <memory>
 
@@ -99,4 +99,4 @@ private:
   if (const jubatus::util::concurrent::scoped_lock& lock_93259F69_879A_4BB1_9B8C_3AF8923289F8 = jubatus::util::concurrent::scoped_lock(m))
 #endif
 
-#endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_LOCK_H_
+#endif // #ifndef JUBATUS_UTIL_CONCURRENT_LOCK_H_

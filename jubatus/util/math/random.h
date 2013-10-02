@@ -29,8 +29,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef INCLUDE_GUARD_PFI_MATH_RANDOM_H_
-#define INCLUDE_GUARD_PFI_MATH_RANDOM_H_
+#ifndef JUBATUS_UTIL_MATH_RANDOM_H_
+#define JUBATUS_UTIL_MATH_RANDOM_H_
 
 #include <cmath>
 #include <vector>
@@ -175,4 +175,4 @@ bool sample_without_replacement(RAND& r, int n, int k, std::vector<int>& res) {
 } // math
 } // util
 } // jubatus
-#endif // #ifndef INCLUDE_GUARD_PFI_MATH_RANDOM_H_
+#endif // #ifndef JUBATUS_UTIL_MATH_RANDOM_H_

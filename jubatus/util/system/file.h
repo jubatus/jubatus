@@ -29,8 +29,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef INCLUDE_GUARD_PFI_SYSTEM_FILE_H_
-#define INCLUDE_GUARD_PFI_SYSTEM_FILE_H_
+#ifndef JUBATUS_UTIL_SYSTEM_FILE_H_
+#define JUBATUS_UTIL_SYSTEM_FILE_H_
 
 #include <sys/types.h>
 #include <iostream>
@@ -58,4 +58,4 @@ ssize_t get_file_size(const std::string & fn);
 } // system
 } // util
 } // jubatus
-#endif // #ifndef INCLUDE_GUARD_PFI_SYSTEM_FILE_H_
+#endif // #ifndef JUBATUS_UTIL_SYSTEM_FILE_H_

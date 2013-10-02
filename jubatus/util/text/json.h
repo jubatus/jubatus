@@ -29,11 +29,11 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef INCLUDE_GUARD_PFI_TEXT_JSON_H_
-#define INCLUDE_GUARD_PFI_TEXT_JSON_H_
+#ifndef JUBATUS_UTIL_TEXT_JSON_H_
+#define JUBATUS_UTIL_TEXT_JSON_H_
 
 #include "json/base.h"
 #include "json/parser.h"
 #include "json/cast.h"
 #include "json/serialization.h"
-#endif // #ifndef INCLUDE_GUARD_PFI_TEXT_JSON_H_
+#endif // #ifndef JUBATUS_UTIL_TEXT_JSON_H_

@@ -29,8 +29,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef INCLUDE_GUARD_PFI_LANG_BIND_H_
-#define INCLUDE_GUARD_PFI_LANG_BIND_H_
+#ifndef JUBATUS_UTIL_LANG_BIND_H_
+#define JUBATUS_UTIL_LANG_BIND_H_
 
 #include "mem_fn.h"
 
@@ -634,4 +634,4 @@ _bi::arg<9> const _9 = {};
 } // lang
 } // util
 } // jubatus
-#endif // #ifndef INCLUDE_GUARD_PFI_LANG_BIND_H_
+#endif // #ifndef JUBATUS_UTIL_LANG_BIND_H_

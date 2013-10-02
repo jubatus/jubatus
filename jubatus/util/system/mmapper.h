@@ -29,8 +29,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef INCLUDE_GUARD_PFI_SYSTEM_MMAPPER_H_
-#define INCLUDE_GUARD_PFI_SYSTEM_MMAPPER_H_
+#ifndef JUBATUS_UTIL_SYSTEM_MMAPPER_H_
+#define JUBATUS_UTIL_SYSTEM_MMAPPER_H_
 
 #include <utility>
 #include <string>
@@ -89,4 +89,4 @@ inline void swap(jubatus::util::system::mmapper::mmapper& x, jubatus::util::syst
 }
 }
 
-#endif // #ifndef INCLUDE_GUARD_PFI_SYSTEM_MMAPPER_H_
+#endif // #ifndef JUBATUS_UTIL_SYSTEM_MMAPPER_H_

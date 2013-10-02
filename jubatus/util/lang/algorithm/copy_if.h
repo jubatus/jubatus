@@ -1,5 +1,5 @@
-#ifndef INCLUDE_GUARD_PFI_LANG_ALGORITHM_COPY_IF_H_
-#define INCLUDE_GUARD_PFI_LANG_ALGORITHM_COPY_IF_H_
+#ifndef JUBATUS_UTIL_LANG_ALGORITHM_COPY_IF_H_
+#define JUBATUS_UTIL_LANG_ALGORITHM_COPY_IF_H_
 
 namespace jubatus {
 namespace util {
@@ -25,4 +25,4 @@ copy_if(InputIterator first, InputIterator last, OutputIterator result, Predicat
 } // namespace util
 } // namespace jubatus
 
-#endif // #ifndef INCLUDE_GUARD_PFI_LANG_ALGORITHM_COPY_IF_H_
+#endif // #ifndef JUBATUS_UTIL_LANG_ALGORITHM_COPY_IF_H_

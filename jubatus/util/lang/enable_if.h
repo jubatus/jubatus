@@ -29,8 +29,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef INCLUDE_GUARD_PFI_LANG_ENABLE_IF_H_
-#define INCLUDE_GUARD_PFI_LANG_ENABLE_IF_H_
+#ifndef JUBATUS_UTIL_LANG_ENABLE_IF_H_
+#define JUBATUS_UTIL_LANG_ENABLE_IF_H_
 
 namespace jubatus {
 namespace util {
@@ -58,4 +58,4 @@ struct disable_if : disable_if_c<B_::value, T> {};
 } // namespace util
 } // namespace jubatus
 
-#endif // #ifndef INCLUDE_GUARD_PFI_LANG_ENABLE_IF_H_
+#endif // #ifndef JUBATUS_UTIL_LANG_ENABLE_IF_H_

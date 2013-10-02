@@ -29,8 +29,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef INCLUDE_GUARD_PFI_DATA_STRING_UTILITY_H_
-#define INCLUDE_GUARD_PFI_DATA_STRING_UTILITY_H_
+#ifndef JUBATUS_UTIL_DATA_STRING_UTILITY_H_
+#define JUBATUS_UTIL_DATA_STRING_UTILITY_H_
 
 #include <vector>
 #include <algorithm>
@@ -256,4 +256,4 @@ inline String replace(const String &str, const String &from, const String &to)
 } // data
 } // util
 } // jubatus
-#endif // #ifndef INCLUDE_GUARD_PFI_DATA_STRING_UTILITY_H_
+#endif // #ifndef JUBATUS_UTIL_DATA_STRING_UTILITY_H_
