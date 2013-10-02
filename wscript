@@ -146,7 +146,13 @@ def cpplint(ctx):
               'jubatus/server/server/*_client.hpp', \
               'jubatus/server/server/*_types.hpp', \
               'jubatus/client/*_client.hpp', \
-              'jubatus/client/*_types.hpp']
+              'jubatus/client/*_types.hpp', \
+              'jubatus/util/*.h', \
+              'jubatus/util/*.cpp', \
+              'jubatus/util/*/*.h', \
+              'jubatus/util/*/*.cpp', \
+              'jubatus/util/*/*/*.h', \
+              'jubatus/util/*/*/*.cpp']
   for file in src_dir.ant_glob('**/*.cpp **/*.cc **/*.hpp **/*.h'):
     file_list += [file.path_from(ctx.path)]
   for exclude in excludes:
