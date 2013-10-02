@@ -311,7 +311,11 @@ TEST(msgpack_pack, simple) {
   EXPECT_EQ(bv.bit_num(), bits);
 
   EXPECT_EQ(bv.used_bytes(), data.size());
-  EXPECT_EQ(0, memcmp(&data[0], bv.raw_data_unsafe(), bv.used_bytes()));
+  const uint64_t* orig_data = bv.raw_data_unsafe();
+  for (size_t i = 0; i < bv.used_bytes() / bv.BLOCKSIZE; ++i) {
+    uint64_t x = jubatus::core::common::read_big_endian<uint64_t>(&data[i]);
+    EXPECT_EQ(orig_data[i], x);
+  }
 }
 TEST(msgpack_unpack, packed) {
   bit_vector orig(10);

@@ -29,6 +29,7 @@
 #include <pficommon/data/serialization.h>
 #include "../../common/assert.hpp"
 #include "../../common/exception.hpp"
+#include "../../common/big_endian.hpp"
 #include "../storage_exception.hpp"
 
 namespace jubatus {
@@ -344,7 +345,12 @@ struct bit_vector_base {
     packer.pack(static_cast<uint64_t>(bit_num_));
     packer.pack_raw(used_bytes());
     if (bits_) {
-      packer.pack_raw_body(reinterpret_cast<const char*>(bits_), used_bytes());
+      const size_t n = used_bytes() / BLOCKSIZE;
+      for (size_t i = 0; i < n; ++i) {
+        char buf[BLOCKSIZE];
+        common::write_big_endian(bits_[i], buf);
+        packer.pack_raw_body(buf, BLOCKSIZE);
+      }
     } else {
       const char c = 0;
       for (size_t i = 0; i < used_bytes(); ++i) {
@@ -365,7 +371,12 @@ struct bit_vector_base {
           "expected: " + pfi::lang::lexical_cast<std::string>(bit_num_) +
           ", got: " + pfi::lang::lexical_cast<std::string>(data.size));
     }
-    bit_vector_base(data.ptr, bit_num).swap(*this);
+    std::vector<bit_base> buf;
+    for (size_t i = 0; i < data.size; i += BLOCKSIZE) {
+      buf.push_back(common::read_big_endian<bit_base>(&data.ptr[i]));
+    }
+    bit_vector_base(
+        reinterpret_cast<const char*>(&buf[0]), bit_num).swap(*this);
     JUBATUS_ASSERT(own_ || bits_ == NULL);
   }
 
