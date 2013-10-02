@@ -57,13 +57,13 @@ struct is_floating_point<long double> : true_ {};
 #include <string>
 
 template <class T>
-std::string is_floating_point_(const T&, typename pfi::lang::enable_if<is_floating_point<T> >::type* = 0)
+std::string is_floating_point_(const T&, typename jubatus::util::lang::enable_if<is_floating_point<T> >::type* = 0)
 {
   return "floating point";
 }
 
 template <class T>
-std::string is_floating_point_(const T&, typename pfi::lang::disable_if<is_floating_point<T> >::type* = 0)
+std::string is_floating_point_(const T&, typename jubatus::util::lang::disable_if<is_floating_point<T> >::type* = 0)
 {
   return "not floating point";
 }

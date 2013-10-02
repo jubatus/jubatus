@@ -39,7 +39,7 @@
 #include <cstdlib>
 
 using namespace std;
-using namespace pfi::data::suffix_array;
+using namespace jubatus::util::data::suffix_array;
 
 template<typename IT> 
 int rmq_vanilla(IT b, int i, int j)

@@ -36,12 +36,12 @@
 #include <iostream>
 
 using namespace std;
-using namespace pfi::system::sysstat;
+using namespace jubatus::util::system::sysstat;
 
 TEST(sysstat, tst){
   int r;
   sysstat_ret st;
-  r = pfi::system::sysstat::get_sysstat(st);
+  r = jubatus::util::system::sysstat::get_sysstat(st);
   EXPECT_EQ(r, 0);
   EXPECT_TRUE(st.total_memory > 0);
   EXPECT_TRUE(st.free_memory > 0);

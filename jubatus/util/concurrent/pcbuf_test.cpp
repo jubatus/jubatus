@@ -44,9 +44,9 @@
 #include "../lang/bind.h"
 
 using namespace std;
-using namespace pfi::concurrent;
-using namespace pfi::lang;
-using namespace pfi::system::time;
+using namespace jubatus::util::concurrent;
+using namespace jubatus::util::lang;
+using namespace jubatus::util::system::time;
 
 TEST(pcbuf, pop_timeout)
 {
@@ -74,11 +74,11 @@ TEST(pcbuf, push_timeout)
   }
 }
 
-class flag : pfi::lang::noncopyable {
+class flag : jubatus::util::lang::noncopyable {
 public:
   flag() : f(false) {}
   operator bool() const {
-    pfi::concurrent::scoped_lock lock(m);
+    jubatus::util::concurrent::scoped_lock lock(m);
     if (lock)
       return f;
 
@@ -86,12 +86,12 @@ public:
     return false;
   }
   void set() {
-    pfi::concurrent::scoped_lock lock(m);
+    jubatus::util::concurrent::scoped_lock lock(m);
     if (lock)
       f = true;
   }
   void reset() {
-    pfi::concurrent::scoped_lock lock(m);
+    jubatus::util::concurrent::scoped_lock lock(m);
     if (lock)
       f = false;
   }
@@ -115,7 +115,7 @@ void producer_func(pcbuf<int>* q_ptr, int min, int max,
     local_histgram[i]++;
   }
 
-  pfi::concurrent::scoped_lock lock(histgram_mutex);
+  jubatus::util::concurrent::scoped_lock lock(histgram_mutex);
   if (lock) {
     for (map<int, int>::const_iterator
            it = local_histgram.begin(), end = local_histgram.end();
@@ -141,7 +141,7 @@ void consumer_func(pcbuf<int>* q_ptr, flag* shutdown_flag_ptr,
     }
   }
 
-  pfi::concurrent::scoped_lock lock(histgram_mutex);
+  jubatus::util::concurrent::scoped_lock lock(histgram_mutex);
   if (lock) {
     for (map<int, int>::const_iterator
            it = local_histgram.begin(), end = local_histgram.end();
@@ -166,9 +166,9 @@ TEST(pcbuf, normal)
   mutex producer_histgram_mutex, consumer_histgram_mutex;
 
   // start consumers
-  vector<pfi::lang::shared_ptr<thread> > consumers(consumer_num);
+  vector<jubatus::util::lang::shared_ptr<thread> > consumers(consumer_num);
   for (size_t i = 0; i < consumers.size(); i++) {
-    pfi::lang::function<void(void)> f = bind(consumer_func,
+    jubatus::util::lang::function<void(void)> f = bind(consumer_func,
                                              &q,
                                              &shutdown_flag,
                                              &consumer_histgram,
@@ -178,9 +178,9 @@ TEST(pcbuf, normal)
   }
 
   // start producers
-  vector<pfi::lang::shared_ptr<thread> > producers(producer_num);
+  vector<jubatus::util::lang::shared_ptr<thread> > producers(producer_num);
   for (size_t i = 0; i < producers.size(); i++) {
-    pfi::lang::function<void(void)> f = bind(producer_func,
+    jubatus::util::lang::function<void(void)> f = bind(producer_func,
                                              &q,
                                              produced_data_min,
                                              produced_data_max,
@@ -204,9 +204,9 @@ TEST(pcbuf, normal)
 
   // check result
   ASSERT_TRUE(q.empty());
-  pfi::concurrent::scoped_lock lock_producer(producer_histgram_mutex);
+  jubatus::util::concurrent::scoped_lock lock_producer(producer_histgram_mutex);
   if (lock_producer) {
-    pfi::concurrent::scoped_lock lock_consumer(consumer_histgram_mutex);
+    jubatus::util::concurrent::scoped_lock lock_consumer(consumer_histgram_mutex);
     if (lock_consumer) {
       ASSERT_EQ(producer_histgram.size(), consumer_histgram.size());
       for (map<int, int>::const_iterator

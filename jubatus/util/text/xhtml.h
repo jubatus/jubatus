@@ -39,7 +39,8 @@
 
 #include "../lang/shared_ptr.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace text{
 namespace xhtml{
 
@@ -58,7 +59,7 @@ public:
 class tag_elem : public html_elem{
 public:
   typedef std::map<std::string, std::string> attr_type;
-  typedef std::vector<pfi::lang::shared_ptr<html_elem> > children_type;
+  typedef std::vector<jubatus::util::lang::shared_ptr<html_elem> > children_type;
 
   tag_elem(const std::string &name): name_(name) {}
   tag_elem(const std::string &name, const attr_type &attr)
@@ -68,7 +69,7 @@ public:
     return attr_[key];
   }
 
-  void add_child(const pfi::lang::shared_ptr<html_elem>& elem){
+  void add_child(const jubatus::util::lang::shared_ptr<html_elem>& elem){
     children_.push_back(elem);
   }
 
@@ -108,5 +109,6 @@ public:
 
 } // xhtml
 } // text
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_TEXT_XHTML_H_

@@ -38,7 +38,8 @@
 
 #include "pair.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace serialization{
 
@@ -67,13 +68,13 @@ void serialize(Archive &ar, std::map<K, V, Compare, Allocator> &m)
 
 class map_type : public type_rep {
 public:
-  map_type(const pfi::lang::shared_ptr<type_rep>& key_type,
-           const pfi::lang::shared_ptr<type_rep>& value_type)
+  map_type(const jubatus::util::lang::shared_ptr<type_rep>& key_type,
+           const jubatus::util::lang::shared_ptr<type_rep>& value_type)
     : key_type_(key_type)
     , value_type_(value_type){
   }
 
-  void traverse(pfi::lang::function<void(type_rep*)> f){
+  void traverse(jubatus::util::lang::function<void(type_rep*)> f){
     f(this);
     key_type_->traverse(f);
     value_type_->traverse(f);
@@ -87,27 +88,28 @@ public:
     os<<">";
   }
 
-  pfi::lang::shared_ptr<type_rep> key_type() const {
+  jubatus::util::lang::shared_ptr<type_rep> key_type() const {
     return key_type_;
   }
 
-  pfi::lang::shared_ptr<type_rep> value_type() const {
+  jubatus::util::lang::shared_ptr<type_rep> value_type() const {
     return value_type_;
   }
 
 private:
-  pfi::lang::shared_ptr<type_rep> key_type_;
-  pfi::lang::shared_ptr<type_rep> value_type_;
+  jubatus::util::lang::shared_ptr<type_rep> key_type_;
+  jubatus::util::lang::shared_ptr<type_rep> value_type_;
 };
 
 template <class K, class V, class Compare, class Allocator>
 void serialize(reflection &ref, std::map<K, V, Compare, Allocator> &)
 {
-  ref.add("", pfi::lang::shared_ptr<type_rep>
+  ref.add("", jubatus::util::lang::shared_ptr<type_rep>
           (new map_type(get_type<K>(), get_type<V>())));
 }
 
 } // serialization
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SERIALIZATION_MAP_H_

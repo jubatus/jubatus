@@ -40,9 +40,9 @@
 #include "./random.h"
 
 using namespace std;
-using namespace pfi::math::vector;
+using namespace jubatus::util::math::vector;
 
-pfi::math::random::random<pfi::math::random::mersenne_twister> Rand;
+jubatus::util::math::random::random<jubatus::util::math::random::mersenne_twister> Rand;
 typedef component_by_name::vector2<double> vec2;
 typedef component_by_name::vector3<double> vec3;
 typedef component_by_array::vector7<double> vec7;

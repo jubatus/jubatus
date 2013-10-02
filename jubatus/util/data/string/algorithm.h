@@ -36,7 +36,8 @@
 #include <algorithm>
 #include <climits>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 namespace string {
 
@@ -78,5 +79,6 @@ namespace string {
 
 } // string
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_STRING_ALGORITHM_H_

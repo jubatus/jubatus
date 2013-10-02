@@ -36,7 +36,7 @@
 #include "../../math/random.h"
 #include "../../math/random/mersenne_twister.h"
 
-using namespace pfi::data::encoding;
+using namespace jubatus::util::data::encoding;
 
 TEST(base64, encode)
 {
@@ -76,7 +76,7 @@ TEST(base64, decode)
 
 TEST(base64, encode_and_decode)
 {
-  pfi::math::random::mtrand r;
+  jubatus::util::math::random::mtrand r;
 
   // Generate random 10 test cases
   std::vector<std::string> tests;

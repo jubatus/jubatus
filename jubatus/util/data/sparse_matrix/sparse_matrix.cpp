@@ -41,10 +41,11 @@
 #include "../../system/sysstat.h"
 
 using namespace std;
-using namespace pfi::data::code;
-using namespace pfi::system::file;
+using namespace jubatus::util::data::code;
+using namespace jubatus::util::system::file;
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 namespace sparse_matrix {
 
@@ -361,7 +362,7 @@ namespace sparse_matrix {
     }
   }
 
-  void sparse_matrix_reader::get_row(int row, pfi::data::unordered_map<int,unsigned char>& data)
+  void sparse_matrix_reader::get_row(int row, jubatus::util::data::unordered_map<int,unsigned char>& data)
   {
     if (!dc.is_open()||!offsets) return;
 
@@ -429,8 +430,8 @@ namespace sparse_matrix {
     // for memory usage, split columns to small pieces
     uint64_t sum=0;
     vector<int> boundary;
-    pfi::system::sysstat::sysstat_ret stat;
-    int stat_ret = pfi::system::sysstat::get_sysstat(stat);
+    jubatus::util::system::sysstat::sysstat_ret stat;
+    int stat_ret = jubatus::util::system::sysstat::get_sysstat(stat);
     if (stat_ret<0){
       fprintf(stderr,"get_sysstat failed\n");
       return -1;
@@ -478,4 +479,5 @@ namespace sparse_matrix {
 
 } // sparse_matrix
 } // data
-} // pfi
+} // util
+} // jubatus

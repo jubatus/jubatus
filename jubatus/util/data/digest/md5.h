@@ -36,7 +36,8 @@
 #include <string>
 #include <stdint.h>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace digest{
 
@@ -148,5 +149,6 @@ std::ostream &operator<<(std::ostream &os, const md5sum &m);
 
 } // digest
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_DIGEST_MD5_H_

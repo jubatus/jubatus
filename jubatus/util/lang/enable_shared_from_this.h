@@ -36,7 +36,8 @@
 #include <tr1/memory>
 #include "shared_ptr.h"
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace lang {
 
 template <class T>
@@ -57,18 +58,19 @@ public:
     try {
       return shared_ptr<T>(base::shared_from_this());
     } catch (std::tr1::bad_weak_ptr&) {
-      throw pfi::lang::bad_weak_ptr();
+      throw jubatus::util::lang::bad_weak_ptr();
     }
   }
   shared_ptr<const T> shared_from_this() const {
     try {
       return shared_ptr<const T>(base::shared_from_this());
     } catch (std::tr1::bad_weak_ptr&) {
-      throw pfi::lang::bad_weak_ptr();
+      throw jubatus::util::lang::bad_weak_ptr();
     }
   }
 };
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_ENABLE_SHARED_FROM_THIS_H_

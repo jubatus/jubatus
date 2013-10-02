@@ -36,12 +36,13 @@
 #include "../lang/scoped_ptr.h"
 #include "../lang/noncopyable.h"
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace concurrent {
 
-class thread : pfi::lang::noncopyable {
+class thread : jubatus::util::lang::noncopyable {
 public:
-  explicit thread(const pfi::lang::function<void ()>& f);
+  explicit thread(const jubatus::util::lang::function<void ()>& f);
   ~thread();
 
   bool start();
@@ -56,9 +57,10 @@ public:
 
 private:
   class impl;
-  pfi::lang::scoped_ptr<impl> pimpl;
+  jubatus::util::lang::scoped_ptr<impl> pimpl;
 };
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_THREAD_H_

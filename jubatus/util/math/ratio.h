@@ -35,7 +35,8 @@
 #include <cstdlib>
 #include <iostream>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace math{
 namespace ratio{
 
@@ -154,6 +155,7 @@ std::ostream& operator<<(std::ostream &out,
   return out;
 }
 
+}
 }
 }
 }

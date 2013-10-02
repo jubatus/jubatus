@@ -36,7 +36,7 @@
 #include "function.h"
 #include "gtest/gtest.h"
 
-using pfi::lang::function;
+using jubatus::util::lang::function;
 
 
 TEST(function, constructor)

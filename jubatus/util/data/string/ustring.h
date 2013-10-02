@@ -39,7 +39,8 @@
 #include <stdint.h>
 #include <stdexcept>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 namespace string {
 
@@ -206,5 +207,6 @@ std::istream& operator>>(std::istream& in , ustring &str);
 
 } // string
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_STRING_USTRING_H_

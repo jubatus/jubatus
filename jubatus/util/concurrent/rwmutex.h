@@ -38,7 +38,8 @@
 
 #include "lock.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 class rw_mutex{
@@ -55,7 +56,7 @@ public:
 
 private:
   class impl;
-  pfi::lang::scoped_ptr<impl> pimpl;
+  jubatus::util::lang::scoped_ptr<impl> pimpl;
 };
 
 class rlocker : public lockable{
@@ -165,8 +166,8 @@ public:
 };
 
 template <class LF>
-class scoped_rwlock : public pfi::lang::safe_bool<scoped_rwlock<LF> >
-                    , pfi::lang::noncopyable {
+class scoped_rwlock : public jubatus::util::lang::safe_bool<scoped_rwlock<LF> >
+                    , jubatus::util::lang::noncopyable {
 public:
   explicit scoped_rwlock(rw_mutex &m, double sec=-1)
     : m(&m)
@@ -205,5 +206,6 @@ typedef scoped_rwlock<wlock_func> scoped_wlock;
 
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_RWMUTEX_H_

@@ -40,7 +40,8 @@
 #include "constant.h"
 #include "random/mersenne_twister.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace math{
 namespace random{
 
@@ -49,11 +50,11 @@ class random{
 
 public:
   random()
-    :g(feeder(pfi::system::time::get_clock_time())),
+    :g(feeder(jubatus::util::system::time::get_clock_time())),
     next_gaussian_stocked(false){
   }
 private:
-  uint32_t feeder(pfi::system::time::clock_time ct){
+  uint32_t feeder(jubatus::util::system::time::clock_time ct){
     return (uint32_t)(ct.sec)*(uint32_t)1000000+(uint32_t)(ct.usec);
   }
 public:
@@ -104,8 +105,8 @@ public:
     }else{
       double a = 1.0-next_double();
       double b = 1.0-next_double();
-      double r1 = std::sqrt(-2.0*std::log(a))*std::sin(2.0*pfi::math::pi*b);
-      double r2 = std::sqrt(-2.0*std::log(a))*std::cos(2.0*pfi::math::pi*b);
+      double r1 = std::sqrt(-2.0*std::log(a))*std::sin(2.0*jubatus::util::math::pi*b);
+      double r2 = std::sqrt(-2.0*std::log(a))*std::cos(2.0*jubatus::util::math::pi*b);
       next_gaussian_stock=r2;
       next_gaussian_stocked=true;
       return r1;
@@ -172,5 +173,6 @@ bool sample_without_replacement(RAND& r, int n, int k, std::vector<int>& res) {
 
 } // random
 } // math
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_MATH_RANDOM_H_

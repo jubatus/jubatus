@@ -36,7 +36,8 @@
 #include <typeinfo>
 #include <cstdlib>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace lang{
 
 class bad_any_cast : public std::bad_cast{
@@ -125,5 +126,6 @@ const T &any_cast(const any &a)
 }
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_ANY_H_

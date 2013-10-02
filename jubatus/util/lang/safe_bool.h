@@ -32,7 +32,8 @@
 #ifndef INCLUDE_GUARD_PFI_LANG_SAFE_BOOL_H_
 #define INCLUDE_GUARD_PFI_LANG_SAFE_BOOL_H_
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace lang{
 
 class safe_bool_base{
@@ -89,5 +90,6 @@ void operator!=(const safe_bool<T>& lhs, const safe_bool<U>&)
 }
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_SAFE_BOOL_H_

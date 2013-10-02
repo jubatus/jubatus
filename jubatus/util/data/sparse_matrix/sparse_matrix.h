@@ -41,7 +41,8 @@
 #include "../code/code.h"
 #include "../unordered_map.h"
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 namespace sparse_matrix {
 
@@ -104,14 +105,14 @@ namespace sparse_matrix {
      */
     void get_row(int row, std::vector<std::pair<int,unsigned char> >& data);
     void get_row(int row, std::map<int,unsigned char>& data);
-    void get_row(int row, pfi::data::unordered_map<int,unsigned char>& data);
+    void get_row(int row, jubatus::util::data::unordered_map<int,unsigned char>& data);
 
     /**
      * @brief number of non-zero elements in whole matrix
      */
     int get_row_nonzero_value_num(int row) const;
   private:
-    pfi::data::code::decoder dc;
+    jubatus::util::data::code::decoder dc;
     matrix_offsets* offsets;
   };
 
@@ -121,5 +122,6 @@ namespace sparse_matrix {
   int matrix_transpose(const std::string& fn, const std::string& fnT);
 } // sparse_matrix
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SPARSE_MATRIX_SPARSE_MATRIX_H_

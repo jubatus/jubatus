@@ -54,7 +54,8 @@
 
 using namespace std;
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace system{
 namespace sysstat{
 
@@ -249,6 +250,7 @@ KSTAT_GET_UI_RET:
 }
 #endif
 
+}
 }
 }
 }

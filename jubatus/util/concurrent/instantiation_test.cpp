@@ -4,7 +4,8 @@
 #include "rwmutex.h"
 #include <string>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace concurrent {
 
 template class chan<int>;
@@ -16,8 +17,9 @@ template class mvar<std::string>;
 template class pcbuf<int>;
 template class pcbuf<std::string>;
 
-template class scoped_rwlock<pfi::concurrent::rlock_func>;
-template class scoped_rwlock<pfi::concurrent::wlock_func>;
+template class scoped_rwlock<jubatus::util::concurrent::rlock_func>;
+template class scoped_rwlock<jubatus::util::concurrent::wlock_func>;
 
 } // namespace concurrent
-} // namespace pfi
+} // namespace util
+} // namespace jubatus

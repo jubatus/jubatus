@@ -38,7 +38,8 @@
 #include "../../lang/safe_bool.h"
 #include "../../system/endian_util.h"
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 namespace serialization {
 
@@ -70,7 +71,7 @@ Archive& operator&(Archive& ar, const T& v)
   return ar;
 }
 
-class binary_iarchive : public pfi::lang::safe_bool<binary_iarchive> {
+class binary_iarchive : public jubatus::util::lang::safe_bool<binary_iarchive> {
   binary_iarchive(const binary_iarchive&);
   binary_iarchive& operator=(const binary_iarchive&);
 
@@ -118,7 +119,7 @@ binary_iarchive& operator>>(binary_iarchive& ar, const T& v)
   { \
     tt tmp; \
     ar.read<sizeof(tmp)>(reinterpret_cast<char*>(&tmp)); \
-    if (ar) n = pfi::system::endian::from_little(tmp); \
+    if (ar) n = jubatus::util::system::endian::from_little(tmp); \
   }
 
 gen_serial_binary_iarchive(bool);
@@ -139,7 +140,7 @@ gen_serial_binary_iarchive(long double);
 
 #undef gen_serial_binary_iarchive
 
-class binary_oarchive : public pfi::lang::safe_bool<binary_oarchive> {
+class binary_oarchive : public jubatus::util::lang::safe_bool<binary_oarchive> {
   binary_oarchive(const binary_oarchive&);
   binary_oarchive& operator=(const binary_oarchive&);
 
@@ -190,7 +191,7 @@ binary_oarchive& operator<<(binary_oarchive& ar, const T& v)
 #define gen_serial_binary_oarchive(tt) \
     inline void serialize(binary_oarchive& ar, tt n) \
   { \
-    n = pfi::system::endian::to_little(n); \
+    n = jubatus::util::system::endian::to_little(n); \
     ar.write<sizeof(n)>(reinterpret_cast<const char*>(&n)); \
   }
 
@@ -214,5 +215,6 @@ gen_serial_binary_oarchive(long double);
 
 } // serialization
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SERIALIZATION_BASE_H_

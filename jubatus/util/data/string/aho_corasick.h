@@ -35,7 +35,8 @@
 #include <vector>
 #include <string>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace string{
 
@@ -62,5 +63,6 @@ private:
 
 } // string
 } // data
-} // pficommon
+} // util
+} // jubatuscommon
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_STRING_AHO_CORASICK_H_

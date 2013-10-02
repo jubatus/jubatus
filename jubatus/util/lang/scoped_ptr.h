@@ -35,7 +35,8 @@
 #include <algorithm>
 #include "safe_bool.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace lang{
 
 template <class T>
@@ -72,5 +73,6 @@ void swap(scoped_ptr<T>& x, scoped_ptr<T>& y)
 }
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_SCOPED_PTR_H_

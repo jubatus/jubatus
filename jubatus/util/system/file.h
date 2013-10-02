@@ -36,7 +36,8 @@
 #include <iostream>
 #include <ext/stdio_filebuf.h>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace system{
 namespace file{
 
@@ -55,5 +56,6 @@ ssize_t get_file_size(const std::string & fn);
 
 } // file
 } // system
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_SYSTEM_FILE_H_

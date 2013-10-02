@@ -38,7 +38,7 @@
 #include <algorithm>
 
 using namespace std;
-using namespace pfi::data::code;
+using namespace jubatus::util::data::code;
 
 static const char* tmp_file="./tmp";
 

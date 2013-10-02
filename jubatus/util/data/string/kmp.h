@@ -35,7 +35,8 @@
 #include <iterator>
 #include <vector>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace string{
 
@@ -71,5 +72,6 @@ private:
 
 } // string
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_STRING_KMP_H_

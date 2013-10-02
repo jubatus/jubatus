@@ -37,7 +37,7 @@
 #include <vector>
 
 using namespace std;
-using namespace pfi::data::string;
+using namespace jubatus::util::data::string;
 
 ustring hiragana=string_to_ustring("ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわ");
 ustring katakana=string_to_ustring("ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワ");

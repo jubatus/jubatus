@@ -43,9 +43,9 @@
 #include "../data/optional.h"
 
 using namespace std;
-using namespace pfi::lang;
-using namespace pfi::text::json;
-using namespace pfi::data::serialization;
+using namespace jubatus::util::lang;
+using namespace jubatus::util::text::json;
+using namespace jubatus::util::data::serialization;
 
 struct example1{
   struct img{
@@ -241,7 +241,7 @@ TEST(json, to_json)
   }
 
   {
-    pfi::data::unordered_map<string, double> mm;
+    jubatus::util::data::unordered_map<string, double> mm;
 
     mm["abc"]=1.23;
     mm["hoge"]=3.14;
@@ -688,7 +688,7 @@ TEST(json, parse)
   {
     istringstream iss("[}");
     json j;
-    EXPECT_THROW(iss>>j, pfi::lang::parse_error);
+    EXPECT_THROW(iss>>j, jubatus::util::lang::parse_error);
   }
 
   {
@@ -915,7 +915,7 @@ struct opt1{
   opt1(): abc(0), def() {}
 
   int abc;
-  pfi::data::optional<int> def;
+  jubatus::util::data::optional<int> def;
 
   bool operator==(const opt1 &r) const{
     return abc==r.abc && def==r.def;
@@ -1044,7 +1044,7 @@ TEST(json, serialization)
 
     oa << v;
 
-    pfi::data::serialization::json_iarchive ia(ss);
+    jubatus::util::data::serialization::json_iarchive ia(ss);
 
     example1 w;
     ia >> w;
@@ -1099,7 +1099,7 @@ TEST(json, parse_multiple_jsons)
   EXPECT_EQ(1, v[0]);
   EXPECT_EQ(2, v[1]);
   EXPECT_EQ(3, v[2]);
-  EXPECT_THROW({j=parser.parse();}, pfi::lang::end_of_data);
+  EXPECT_THROW({j=parser.parse();}, jubatus::util::lang::end_of_data);
 }
 
 TEST(json, parse_invalid_multiple_json)
@@ -1124,7 +1124,7 @@ TEST(json, parse_invalid_multiple_json)
   json j;
   EXPECT_NO_THROW({j=parser.parse();});
   EXPECT_NO_THROW({j=parser.parse();});
-  EXPECT_THROW({j=parser.parse();}, pfi::lang::parse_error);
+  EXPECT_THROW({j=parser.parse();}, jubatus::util::lang::parse_error);
 }
 
 TEST(json, escape_ctrl)
@@ -1153,12 +1153,12 @@ TEST(json, invalid_json_num)
   { // LLONG_MAX + 1
     istringstream iss(std::string("9223372036854775808"));
     json j;
-    EXPECT_THROW(iss>>j, pfi::lang::parse_error);
+    EXPECT_THROW(iss>>j, jubatus::util::lang::parse_error);
   }
 
   { // LLONG_MIN - 1
     istringstream iss(std::string("-9223372036854775809"));
     json j;
-    EXPECT_THROW(iss>>j, pfi::lang::parse_error);
+    EXPECT_THROW(iss>>j, jubatus::util::lang::parse_error);
   }
 }

@@ -37,7 +37,8 @@
 #include "pair.h"
 #include "../unordered_set.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace serialization{
 
@@ -56,7 +57,7 @@ void serialize(Archive &ar, unordered_set<T, H, P, A> &s)
     }
   }
   else{
-    for (typename pfi::data::unordered_set<T,H,P,A>::iterator p=s.begin();
+    for (typename jubatus::util::data::unordered_set<T,H,P,A>::iterator p=s.begin();
 	 p!=s.end();p++){
       T v(*p);
       ar & v;
@@ -66,5 +67,6 @@ void serialize(Archive &ar, unordered_set<T, H, P, A> &s)
 
 } // serialization
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SERIALIZATION_UNORDERED_SET_H_

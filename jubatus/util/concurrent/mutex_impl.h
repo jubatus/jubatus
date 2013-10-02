@@ -36,7 +36,8 @@
 
 #include "thread.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 class condition_impl;
@@ -57,5 +58,6 @@ private:
 };
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_MUTEX_IMPL_H_

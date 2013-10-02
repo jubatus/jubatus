@@ -34,7 +34,8 @@
 #include <sstream>
 using namespace std;
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace text{
 namespace xhtml{
 
@@ -121,4 +122,5 @@ void prim_elem::render(ostream &os) const
 
 } // xhtml
 } // text
-} // pfi
+} // util
+} // jubatus

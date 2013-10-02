@@ -19,7 +19,7 @@ struct is_even {
 
 TEST(algorithm, copy_if_test)
 {
-    namespace algo = ::pfi::lang::algorithm;
+    namespace algo = ::jubatus::util::lang::algorithm;
 
     {
         std::vector<int> v;

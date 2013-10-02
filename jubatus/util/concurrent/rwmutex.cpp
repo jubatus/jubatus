@@ -38,9 +38,10 @@
 
 using namespace std;
 
-using namespace pfi::system::time;
+using namespace jubatus::util::system::time;
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 class rw_mutex::impl{
@@ -168,4 +169,5 @@ bool rw_mutex::unlock()
 }
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus

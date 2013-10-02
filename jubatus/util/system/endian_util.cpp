@@ -31,7 +31,8 @@
 
 #include "endian_util.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace system{
 
 namespace endian{
@@ -44,8 +45,8 @@ static inline bool check_is_little()
   return *reinterpret_cast<char*>(&t)==1;
 }
 
-const bool endian::is_little =  pfi::system::endian::check_is_little();
-const bool endian::is_big    = !pfi::system::endian::check_is_little();
+const bool endian::is_little =  jubatus::util::system::endian::check_is_little();
+const bool endian::is_big    = !jubatus::util::system::endian::check_is_little();
 
 template <class T>
 void swap(T &a, T &b)
@@ -64,4 +65,5 @@ void reverse(char *p, int size)
 } // endian
 
 } // system
-} // pfi
+} // util
+} // jubatus

@@ -37,7 +37,8 @@
 
 #include "cast.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace lang{
 
 class parse_error : public std::exception{
@@ -92,5 +93,6 @@ public:
 };
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_EXCEPTION_H_

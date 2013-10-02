@@ -37,7 +37,8 @@
 #include <cmath>
 #include <iostream>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace math{
 namespace vector{
 namespace component_by_name{    
@@ -2067,5 +2068,6 @@ namespace component_by_array{
 
 }//vector
 }//math
-}//pfi
+} //util
+} //jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_MATH_VECTOR_H_

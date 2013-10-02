@@ -41,12 +41,12 @@
 #include "algebra_tester.h"
 
 using namespace std;
-using namespace pfi::lang;
-using namespace pfi::math::random;
-using namespace pfi::math::ratio;
+using namespace jubatus::util::lang;
+using namespace jubatus::util::math::random;
+using namespace jubatus::util::math::ratio;
 
 ratio<int> gen_ratio(){
-  static pfi::math::random::random<mersenne_twister> r;
+  static jubatus::util::math::random::random<mersenne_twister> r;
   int num=r.next_int(0,1000)-500;
   int den=r.next_int(0,1000)-500;
   if(den>=0)++den;

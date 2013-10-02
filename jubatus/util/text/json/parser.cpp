@@ -43,7 +43,8 @@
 
 #include "../../lang/exception.h"
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace text {
 namespace json {
 
@@ -51,7 +52,7 @@ class json_builder : public json_parser::callback {
 public:
   const json& get() const {
     if (stk.size() != 1)
-      throw pfi::lang::parse_error();
+      throw jubatus::util::lang::parse_error();
     return stk[0];
   }
 
@@ -179,7 +180,7 @@ void json_parser::parse_impl(callback& cb)
     char err_msg[64];
     snprintf(err_msg, sizeof(err_msg),
              "invalid char: \'%s\' (U+%04X)",
-             pfi::data::string::uchar_to_string(peek()).c_str(), peek());
+             jubatus::util::data::string::uchar_to_string(peek()).c_str(), peek());
     error(err_msg);
   }
 
@@ -351,7 +352,7 @@ void json_parser::parse_string_prim(char*& buf, int& buf_len, int& str_len)
         int b = parse_hex();
         int c = parse_hex();
         int d = parse_hex();
-        pfi::data::string::uchar_to_chars((a<<12)|(b<<8)|(c<<4)|d, p);
+        jubatus::util::data::string::uchar_to_chars((a<<12)|(b<<8)|(c<<4)|d, p);
         break;
       }
 
@@ -359,7 +360,7 @@ void json_parser::parse_string_prim(char*& buf, int& buf_len, int& str_len)
         char err_msg[64];
         snprintf(err_msg, sizeof(err_msg),
                  "unexpected unescaped char: \'%s\' (U+%04X)",
-                 pfi::data::string::uchar_to_string(c).c_str(), c);
+                 jubatus::util::data::string::uchar_to_string(c).c_str(), c);
         error(err_msg);
       }
 
@@ -371,12 +372,12 @@ void json_parser::parse_string_prim(char*& buf, int& buf_len, int& str_len)
       if ((c>=0x20 && c<=0x21) ||
           (c>=0x23 && c<=0x5B) ||
           (c>=0x5D && c<=0x10FFFF))
-        pfi::data::string::uchar_to_chars(c, p);
+        jubatus::util::data::string::uchar_to_chars(c, p);
       else {
         char err_msg[64];
         snprintf(err_msg, sizeof(err_msg),
                  "unexpected unescaped char: \'%s\' (U+%04X)",
-                 pfi::data::string::uchar_to_string(c).c_str(), c);
+                 jubatus::util::data::string::uchar_to_string(c).c_str(), c);
         error(err_msg);
       }
     }
@@ -419,9 +420,10 @@ void json_parser::error(const std::string& msg)
 {
   std::string filename="<istream>";
   
-  throw pfi::lang::parse_error(filename, lineno, charno, msg);
+  throw jubatus::util::lang::parse_error(filename, lineno, charno, msg);
 }
 
 } // json
 } // text
-} // pfi
+} // util
+} // jubatus

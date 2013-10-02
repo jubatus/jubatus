@@ -57,8 +57,8 @@
 #include "../lang/shared_ptr.h"
 
 using namespace std;
-using namespace pfi::data::serialization;
-using namespace pfi::lang;
+using namespace jubatus::util::data::serialization;
+using namespace jubatus::util::lang;
 
 #define N 16
 
@@ -265,7 +265,7 @@ TEST(serialization, tr1_unordered_map) {
 
 TEST(serialization, pficommon_unordered_map){
   srandom(time(NULL));
-  pfi::data::unordered_map<int,int> vs1,vs2;
+  jubatus::util::data::unordered_map<int,int> vs1,vs2;
   for (size_t i=0;i<N;++i) vs1.insert(make_pair(random(),random()));
   {
     ofstream ofs("./tmp");
@@ -278,7 +278,7 @@ TEST(serialization, pficommon_unordered_map){
     ia>>vs2;
   }
   EXPECT_EQ(vs1.size(),vs2.size());
-  for (pfi::data::unordered_map<int,int>::iterator it=vs1.begin();it!=vs1.end();++it) {
+  for (jubatus::util::data::unordered_map<int,int>::iterator it=vs1.begin();it!=vs1.end();++it) {
     EXPECT_TRUE(vs2.count(it->first));
     EXPECT_EQ(it->second,vs2[it->first]);
   }
@@ -310,7 +310,7 @@ TEST(serialization, tr1_unordered_set) {
 
 TEST(serialization, pficommon_unordered_set) {
   srandom(time(NULL));
-  pfi::data::unordered_set<int> vs1,vs2;
+  jubatus::util::data::unordered_set<int> vs1,vs2;
   for (size_t i=0;i<N;++i) vs1.insert(random());
   {
     ofstream ofs("./tmp");
@@ -323,7 +323,7 @@ TEST(serialization, pficommon_unordered_set) {
     ia>>vs2;
   }
   EXPECT_EQ(vs1.size(),vs2.size());
-  for (pfi::data::unordered_set<int>::iterator it=vs1.begin();it!=vs1.end();++it) {
+  for (jubatus::util::data::unordered_set<int>::iterator it=vs1.begin();it!=vs1.end();++it) {
     EXPECT_TRUE(vs2.count(*it));
   }
 }
@@ -348,25 +348,25 @@ TEST(serialization, vector) {
 
 TEST(serialization, reflect) {
   {
-    pfi::lang::shared_ptr<type_rep> t=get_type<vector<uint16_t> >();
+    jubatus::util::lang::shared_ptr<type_rep> t=get_type<vector<uint16_t> >();
     ostringstream oss;
     t->print(oss);
     EXPECT_EQ(oss.str(), "array<uint(2)>");
   }
   {
-    pfi::lang::shared_ptr<type_rep> t=get_type<vector<int32_t> >();
+    jubatus::util::lang::shared_ptr<type_rep> t=get_type<vector<int32_t> >();
     ostringstream oss;
     t->print(oss);
     EXPECT_EQ(oss.str(), "array<int(4)>");
   }
   {
-    pfi::lang::shared_ptr<type_rep> t=get_type<map<int, string> >();
+    jubatus::util::lang::shared_ptr<type_rep> t=get_type<map<int, string> >();
     ostringstream oss;
     t->print(oss);
     EXPECT_EQ(oss.str(), "map<int(4),string>");
   }
   {
-    pfi::lang::shared_ptr<type_rep> t=get_type<vector<map<vector<int>, string> > >();
+    jubatus::util::lang::shared_ptr<type_rep> t=get_type<vector<map<vector<int>, string> > >();
     ostringstream oss;
     t->print(oss);
     EXPECT_EQ(oss.str(), "array<map<array<int(4)>,string>>");

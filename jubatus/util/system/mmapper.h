@@ -37,11 +37,12 @@
 
 #include "../lang/noncopyable.h"
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace system {
 namespace mmapper {
 
-class mmapper : pfi::lang::noncopyable {
+class mmapper : jubatus::util::lang::noncopyable {
 public:
   typedef char* iterator;
   typedef const char* const_iterator;
@@ -78,10 +79,11 @@ private:
 }
 }
 }
+}
 
 namespace std {
 template <>
-inline void swap(pfi::system::mmapper::mmapper& x, pfi::system::mmapper::mmapper& y)
+inline void swap(jubatus::util::system::mmapper::mmapper& x, jubatus::util::system::mmapper::mmapper& y)
 {
   x.swap(y);
 }

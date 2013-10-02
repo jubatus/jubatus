@@ -37,9 +37,10 @@
 #include "../../concurrent/mutex.h"
 
 using namespace std;
-using namespace pfi::concurrent;
+using namespace jubatus::util::concurrent;
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace digest{
 
@@ -170,4 +171,5 @@ ostream &operator<<(ostream &os, const md5sum &m)
 
 } // digest
 } // data
-} // pfi
+} // util
+} // jubatus

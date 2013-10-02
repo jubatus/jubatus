@@ -37,7 +37,7 @@
 #include <vector>
 
 using namespace std;
-using namespace pfi::data::string;
+using namespace jubatus::util::data::string;
 
 TEST(algorithm_test, edit_distance) {
   {

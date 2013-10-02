@@ -37,7 +37,8 @@
 
 using namespace std;
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 namespace string {
 
@@ -337,4 +338,5 @@ istream& operator>>(istream& in, ustring& us) {
 
 } // string
 } // data
-} // pfi
+} // util
+} // jubatus

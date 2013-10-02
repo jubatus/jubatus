@@ -36,7 +36,8 @@
 
 #include <list>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace serialization{
 
@@ -54,5 +55,6 @@ void serialize(Archive &ar, std::list<T, Allocator> &v)
 
 } // serializatin
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SERIALIZATION_LIST_H_

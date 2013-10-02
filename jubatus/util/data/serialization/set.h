@@ -36,7 +36,8 @@
 
 #include <set>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace serialization{
 
@@ -65,5 +66,6 @@ void serialize(Archive &ar, std::set<T, Compare, Allocator> &s)
 
 } // serializatin
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SERIALIZATION_SET_H_

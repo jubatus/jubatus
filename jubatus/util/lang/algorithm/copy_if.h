@@ -1,7 +1,8 @@
 #ifndef INCLUDE_GUARD_PFI_LANG_ALGORITHM_COPY_IF_H_
 #define INCLUDE_GUARD_PFI_LANG_ALGORITHM_COPY_IF_H_
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace lang {
 namespace algorithm {
 
@@ -21,6 +22,7 @@ copy_if(InputIterator first, InputIterator last, OutputIterator result, Predicat
 
 } // namespace algorithm
 } // namespace lang
-} // namespace pfi
+} // namespace util
+} // namespace jubatus
 
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_ALGORITHM_COPY_IF_H_

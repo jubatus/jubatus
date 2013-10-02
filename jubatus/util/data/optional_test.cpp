@@ -36,7 +36,7 @@
 #include <string>
 
 using namespace std;
-using namespace pfi::data;
+using namespace jubatus::util::data;
 
 TEST(optional, test )
 {

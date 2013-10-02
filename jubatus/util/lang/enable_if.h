@@ -32,7 +32,8 @@
 #ifndef INCLUDE_GUARD_PFI_LANG_ENABLE_IF_H_
 #define INCLUDE_GUARD_PFI_LANG_ENABLE_IF_H_
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace lang {
 
 template <bool, class T = void>
@@ -54,6 +55,7 @@ template <class B_, class T = void>
 struct disable_if : disable_if_c<B_::value, T> {};
 
 } // namespace lang
-} // namespace pfi
+} // namespace util
+} // namespace jubatus
 
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_ENABLE_IF_H_

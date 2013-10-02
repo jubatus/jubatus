@@ -34,7 +34,8 @@
 
 #include <vector>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 
 template <class T>
@@ -62,5 +63,6 @@ private:
 };
 
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_FENWICK_TREE_H_

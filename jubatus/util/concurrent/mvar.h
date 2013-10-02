@@ -37,11 +37,12 @@
 #include "../lang/shared_ptr.h"
 #include "../lang/util.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 template <class T>
-class mvar : pfi::lang::noncopyable{
+class mvar : jubatus::util::lang::noncopyable{
 public:
   mvar() {}
 
@@ -53,7 +54,7 @@ public:
   T take(){
     T ret=T();
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         while (!p)
           cond.wait(m);
@@ -67,7 +68,7 @@ public:
 
   void put(const T &r){
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         while (p)
           cond.wait(m);
@@ -79,7 +80,7 @@ public:
 
   T read(){
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         while (!p)
           cond.wait(m);
@@ -92,7 +93,7 @@ public:
 
   bool try_take(T &ret){
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         if (!p)
           return false;
@@ -106,7 +107,7 @@ public:
 
   bool try_put(const T &r){
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         if (p)
           return false;
@@ -120,7 +121,7 @@ public:
   T swap(const T &r){
     T ret=T();
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         ret = take();
         put(r);
@@ -132,7 +133,7 @@ public:
 
   bool empty() const {
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         return !p;
       }
@@ -142,11 +143,12 @@ public:
   }
 
 private:
-  pfi::lang::shared_ptr<T> p;
+  jubatus::util::lang::shared_ptr<T> p;
   mutable r_mutex m;
   condition cond;
 };
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_MVAR_H_

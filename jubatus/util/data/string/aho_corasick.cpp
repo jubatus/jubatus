@@ -37,7 +37,8 @@
 
 using namespace std;
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace string{
 
@@ -161,4 +162,5 @@ void aho_corasick::search(const std::string& s, vector<pair<int,int> >& res) con
 
 } // string
 } // data
-} // pficommon
+} // util
+} // jubatuscommon

@@ -34,7 +34,8 @@
 
 #include "ref.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace lang{
 
 namespace _mfi{
@@ -68,5 +69,6 @@ T *get_pointer(T *p)
 #undef INSIDE_MEM_FN
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_MEM_FN_H_

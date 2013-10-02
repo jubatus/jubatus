@@ -37,7 +37,8 @@
 
 #include <ctype.h>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace string{
 
@@ -253,5 +254,6 @@ inline String replace(const String &str, const String &from, const String &to)
 
 } // string
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_STRING_UTILITY_H_

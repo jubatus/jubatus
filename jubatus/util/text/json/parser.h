@@ -39,7 +39,8 @@
 
 #include "base.h"
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace text {
 namespace json {
 
@@ -98,9 +99,9 @@ private:
   int peek() {
     if (cbuf < 0)
       if (it != end)
-        cbuf = pfi::data::string::chars_to_uchar(it, end);
+        cbuf = jubatus::util::data::string::chars_to_uchar(it, end);
       else
-        throw pfi::lang::end_of_data("json_parser reached end of data");
+        throw jubatus::util::lang::end_of_data("json_parser reached end of data");
     return cbuf;
   }
   int incr() {
@@ -169,5 +170,6 @@ inline std::istream& operator>>(std::istream& is, json& j)
 
 } // json
 } // text
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_TEXT_JSON_PARSER_H_

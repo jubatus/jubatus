@@ -42,7 +42,8 @@
 #error "There is no hash implementation."
 #endif
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 
 #if HAVE_UNORDERED_MAP
@@ -55,5 +56,6 @@ template <class T>
 class hash : public unordered_namespace::hash<T> {};
 
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_FUNCTIONAL_HASH_H_

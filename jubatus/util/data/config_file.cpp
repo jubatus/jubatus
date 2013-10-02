@@ -39,9 +39,10 @@
 #include "../lang/exception.h"
 
 using namespace std;
-using namespace pfi::lang;
+using namespace jubatus::util::lang;
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 
 config_file::config_file(const string& filename)
@@ -119,4 +120,5 @@ void config_file::init(const string& filename, istream& is)
 }
 
 } // data
-} // pfi
+} // util
+} // jubatus

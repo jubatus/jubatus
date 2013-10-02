@@ -35,12 +35,13 @@
 #include "../lang/util.h"
 #include "mutex.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 class condition_impl;
 
-class condition : pfi::lang::noncopyable{
+class condition : jubatus::util::lang::noncopyable{
 public:
   condition();
   ~condition();
@@ -51,9 +52,10 @@ public:
   void notify_all();
 
 private:
-  pfi::lang::scoped_ptr<condition_impl> pimpl;
+  jubatus::util::lang::scoped_ptr<condition_impl> pimpl;
 };
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_CONDITION_H_

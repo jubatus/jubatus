@@ -82,7 +82,8 @@
 // nowadays almost all compilers should have it
 #include <stdint.h>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 namespace suffix_array {
 
@@ -417,4 +418,5 @@ namespace suffix_array {
   };
 } // suffix_array
 } // data
-} // pfi
+} // util
+} // jubatus

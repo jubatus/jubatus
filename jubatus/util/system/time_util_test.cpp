@@ -37,7 +37,7 @@
 #include <cmath>
 #include <unistd.h>
 
-using namespace pfi::system::time;
+using namespace jubatus::util::system::time;
 using namespace std;
 
 TEST(time_util, causality){

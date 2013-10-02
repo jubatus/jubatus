@@ -32,7 +32,8 @@
 #include "mutex.h"
 #include "mutex_impl.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 mutex_base::mutex_base(bool recursive)
@@ -120,4 +121,5 @@ bool mutex_base::impl::unlock()
 }
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus

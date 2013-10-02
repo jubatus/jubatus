@@ -4,7 +4,8 @@
 #include "enable_shared_from_this.h"
 #include <ios>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace lang {
 
 template class scoped_ptr<scoped_ptr<int> >;
@@ -38,4 +39,5 @@ class foo : enable_shared_from_this<foo> {};
 template class enable_shared_from_this<foo>;
 
 } // lang
-} // pfi
+} // util
+} // jubatus

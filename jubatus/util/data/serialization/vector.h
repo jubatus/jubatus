@@ -36,7 +36,8 @@
 
 #include <vector>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace serialization{
 
@@ -53,9 +54,9 @@ void serialize(Archive &ar, std::vector<T, Allocator> &v)
 
 class array_type : public type_rep {
 public:
-  array_type(const pfi::lang::shared_ptr<type_rep>& type): type(type){}
+  array_type(const jubatus::util::lang::shared_ptr<type_rep>& type): type(type){}
 
-  void traverse(pfi::lang::function<void(type_rep*)> f){
+  void traverse(jubatus::util::lang::function<void(type_rep*)> f){
     f(this);
     type->traverse(f);
   }
@@ -66,19 +67,20 @@ public:
     os<<">";
   }
 
-  pfi::lang::shared_ptr<type_rep> elem_type(){ return type; }
+  jubatus::util::lang::shared_ptr<type_rep> elem_type(){ return type; }
 
 private:
-  pfi::lang::shared_ptr<type_rep> type;
+  jubatus::util::lang::shared_ptr<type_rep> type;
 };
 
 template <class T, class Allocator>
 void serialize(reflection &ref, std::vector<T, Allocator> &)
 {
-  ref.add("", pfi::lang::shared_ptr<type_rep>(new array_type(get_type<T>())));
+  ref.add("", jubatus::util::lang::shared_ptr<type_rep>(new array_type(get_type<T>())));
 }
 
 } // serializatin
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SERIALIZATION_VECTOR_H_

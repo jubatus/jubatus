@@ -37,7 +37,7 @@
 #include <fstream>
 
 using namespace std;
-using namespace pfi::data::string;
+using namespace jubatus::util::data::string;
 
 TEST(aho_corasick_test, null)
 {

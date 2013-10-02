@@ -35,7 +35,8 @@
 #include "../concurrent/lock.h"
 #include "../concurrent/mutex.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace lang{
 
 template <class T>
@@ -44,7 +45,7 @@ public:
   static T &instance(){
     // this may be slow.
     // it may be rewrite by using 'thread-safe Double Checked Locking'.
-    using pfi::concurrent::scoped_lock;
+    using jubatus::util::concurrent::scoped_lock;
     synchronized(m){
       if (!p)
         p=new T();
@@ -54,15 +55,16 @@ public:
 
 private:
   static T *p;
-  static pfi::concurrent::mutex m;
+  static jubatus::util::concurrent::mutex m;
 };
 
 template <class T>
 T *singleton<T>::p=NULL;
 
 template <class T>
-pfi::concurrent::mutex singleton<T>::m;
+jubatus::util::concurrent::mutex singleton<T>::m;
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_SINGLETON_H_

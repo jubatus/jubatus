@@ -35,7 +35,8 @@
 #include <vector>
 #include <iterator>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 namespace suffix_array {
   
@@ -70,5 +71,6 @@ namespace suffix_array {
   }
 } // suffix_array
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SUFFIX_ARRAY_LCP_H_

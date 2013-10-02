@@ -37,7 +37,8 @@
 #include <stdexcept>
 #include <typeinfo>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace lang{
 
 namespace detail{
@@ -104,5 +105,6 @@ Target lexical_cast(const Source &arg)
 }
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_CAST_H_

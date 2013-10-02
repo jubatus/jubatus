@@ -36,7 +36,7 @@
 #include "ref.h"
 
 using namespace std;
-using namespace pfi::lang;
+using namespace jubatus::util::lang;
 
 int foo1(int n)
 {

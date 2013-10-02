@@ -36,7 +36,8 @@
 #include <string>
 #include <map>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 
 class config_file {
@@ -106,5 +107,6 @@ private:
 };
 
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_CONFIG_FILE_H_

@@ -39,7 +39,7 @@
 #include <fstream>
 
 using namespace std;
-using namespace pfi::system::mmapper;
+using namespace jubatus::util::system::mmapper;
 
 TEST(mmapper_test, open_close_empty)
 {

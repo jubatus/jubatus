@@ -39,7 +39,7 @@
 #include <algorithm>
 
 using namespace std;
-using namespace pfi::data;
+using namespace jubatus::util::data;
 
 TEST(LRU, simple1 ) {
   {

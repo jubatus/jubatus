@@ -17,7 +17,7 @@ TEST(demangle, demangle_test)
     bar b;
     foo& f(b);
 
-    using namespace pfi::lang;
+    using namespace jubatus::util::lang;
     ASSERT_EQ("ns::foo", get_static_typename(f));
     ASSERT_EQ("ns::bar", get_dynamic_typename(f));
     ASSERT_EQ("ns::foo", get_typename<ns::foo>());

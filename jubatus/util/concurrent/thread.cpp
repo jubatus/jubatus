@@ -36,15 +36,16 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
-using namespace pfi::lang;
+using namespace jubatus::util::lang;
 using namespace std;
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace concurrent {
 
 class thread::impl : noncopyable {
 public:
-  explicit impl(const pfi::lang::function<void()>& f);
+  explicit impl(const jubatus::util::lang::function<void()>& f);
   ~impl();
 
   bool start();
@@ -57,10 +58,10 @@ private:
   bool running;
   pthread_t tid;
 
-  pfi::lang::function<void ()> f;
+  jubatus::util::lang::function<void ()> f;
 };
 
-thread::thread(const pfi::lang::function<void ()>& f)
+thread::thread(const jubatus::util::lang::function<void ()>& f)
   : pimpl(new impl(f))
 {
 }
@@ -115,7 +116,7 @@ thread::tid_t thread::id()
 #endif
 }
 
-thread::impl::impl(const pfi::lang::function<void ()>& f)
+thread::impl::impl(const jubatus::util::lang::function<void ()>& f)
   : running(false)
   , tid(0)
   , f(f)
@@ -134,7 +135,7 @@ bool thread::impl::start()
   if (running) return false;
 
   running = true;
-  pfi::lang::function<void ()>* pf = new pfi::lang::function<void()>(f);
+  jubatus::util::lang::function<void ()>* pf = new jubatus::util::lang::function<void()>(f);
   int res = pthread_create(&tid, NULL, start_routine, pf);
   if (res != 0){
     delete pf;
@@ -177,11 +178,12 @@ void thread::impl::detach()
 
 void* thread::impl::start_routine(void* p)
 {
-  pfi::lang::function<void ()>* pf = reinterpret_cast<pfi::lang::function<void()>*>(p);
+  jubatus::util::lang::function<void ()>* pf = reinterpret_cast<jubatus::util::lang::function<void()>*>(p);
   (*pf)();
   delete pf;
   return NULL;
 }
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus

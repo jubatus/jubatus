@@ -37,11 +37,12 @@
 
 #include "../lang/util.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 class qsem : public lockable
-           , pfi::lang::noncopyable{
+           , jubatus::util::lang::noncopyable{
 public:
   qsem(int q)
     :quantity(q){
@@ -52,7 +53,7 @@ public:
 
   bool wait(int q=1){
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         while (quantity < q)
           cond.wait(m);
@@ -65,7 +66,7 @@ public:
 
   bool signal(int q=1){
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock)
         quantity += q;
       else
@@ -92,5 +93,6 @@ private:
 };
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_QSEM_H_

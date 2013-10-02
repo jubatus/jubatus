@@ -15,7 +15,8 @@
 #include <string>
 #include <vector>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 
 template class fenwick_tree<int>;
@@ -84,4 +85,5 @@ template void intern<int>::serialize<serialization::binary_iarchive>(serializati
 template class lru<int, int>;
 
 } // namespace data
-} // namespace pfi
+} // namespace util
+} // namespace jubatus

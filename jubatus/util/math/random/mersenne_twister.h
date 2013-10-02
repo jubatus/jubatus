@@ -34,7 +34,8 @@
 #include "license.h"
 #include <stdint.h>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace math{
 namespace random{
 
@@ -61,5 +62,6 @@ private:
 
 } // random
 } // math
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_MATH_RANDOM_MERSENNE_TWISTER_H_

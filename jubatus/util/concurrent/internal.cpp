@@ -34,7 +34,8 @@
 #include <algorithm>
 using namespace std;
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 timespec to_timespec(double sec)
@@ -46,4 +47,5 @@ timespec to_timespec(double sec)
 }
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus

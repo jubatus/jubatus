@@ -36,17 +36,18 @@
 #include "../../data/serialization.h"
 #include "../../lang/safe_bool.h"
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 namespace serialization {
 
-class json_iarchive : public pfi::lang::safe_bool<json_iarchive> {
+class json_iarchive : public jubatus::util::lang::safe_bool<json_iarchive> {
 public:
   json_iarchive(std::istream& is) : is(is) {}
 
   template <class T>
   void get(T& v) {
-    is >> pfi::text::json::via_json(v);
+    is >> jubatus::util::text::json::via_json(v);
   }
 
 private:
@@ -73,7 +74,7 @@ inline void serialize(json_iarchive& ar, T& v)
   ar.get(v);
 }
 
-class json_oarchive : public pfi::lang::safe_bool<json_oarchive> {
+class json_oarchive : public jubatus::util::lang::safe_bool<json_oarchive> {
 public:
   json_oarchive(std::ostream& os, bool pretty = false, bool escape = true)
     : os(os), pretty(pretty), escape(escape)
@@ -81,7 +82,7 @@ public:
 
   template <class T>
   void put(const T& v) {
-    pfi::text::json::gen_print(os, pfi::text::json::to_json(v), pretty, escape);
+    jubatus::util::text::json::gen_print(os, jubatus::util::text::json::to_json(v), pretty, escape);
     if (!pretty)
       os << std::endl;
   }
@@ -114,5 +115,6 @@ inline void serialize(json_oarchive& ar, T& v)
 
 } // serialization
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_TEXT_JSON_SERIALIZATION_H_

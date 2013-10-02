@@ -36,11 +36,13 @@
 
 #include <sys/time.h>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 timespec to_timespec(double sec);
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_INTERNAL_H_

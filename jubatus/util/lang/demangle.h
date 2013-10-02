@@ -38,7 +38,8 @@
 #include <cstdlib>
 #include <cxxabi.h>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace lang {
 namespace detail {
 class malloced_string_holder {
@@ -82,11 +83,13 @@ inline
     return demangle(typeid_name.c_str());
 }
 } // namespace lang
-} // namespace pfi
+} // namespace util
+} // namespace jubatus
 
 #else // #if __GNUC__ >= 3
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace lang {
 inline
 ::std::string demangle(char const* typeid_name)
@@ -100,10 +103,12 @@ inline
     return typeid_name;
 }
 } // namespace lang
-} // namespace pfi
+} // namespace util
+} // namespace jubatus
 #endif // #if __GNUC__ >= 3
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace lang {
 template <typename T>
 ::std::string get_typename()
@@ -123,7 +128,8 @@ template <typename T>
     return demangle(typeid(x).name());
 }
 } // namespace lang
-} // namespace pfi
+} // namespace util
+} // namespace jubatus
 
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_DEMANGLE_H_
 

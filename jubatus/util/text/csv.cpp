@@ -35,7 +35,8 @@
 
 using namespace std;
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace text{
 
 void parse_csv(const string &str,
@@ -50,4 +51,5 @@ void parse_csv(const string &str,
 }
 
 } // text
-} // pfi
+} // util
+} // jubatus

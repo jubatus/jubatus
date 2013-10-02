@@ -39,7 +39,8 @@
 
 #include "../lang/shared_ptr.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace text{
 
 class csv_iterator;
@@ -84,7 +85,7 @@ public:
 private:
   template <class Iterator>
   void init(Iterator b, Iterator e){
-    p=pfi::lang::shared_ptr<parser>(new parser_impl<Iterator>(b, e));
+    p=jubatus::util::lang::shared_ptr<parser>(new parser_impl<Iterator>(b, e));
     has_next=true;
   }
 
@@ -172,7 +173,7 @@ private:
     std::vector<char> buf;
   };
 
-  pfi::lang::shared_ptr<parser> p;
+  jubatus::util::lang::shared_ptr<parser> p;
   bool has_next;
 };
 
@@ -239,5 +240,6 @@ void parse_csv(const std::string &str,
                std::vector<std::vector<std::string> > &ret);
 
 } // text
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_TEXT_CSV_H_

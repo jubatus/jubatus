@@ -42,14 +42,15 @@
 #include "../../lang/shared_ptr.h"
 #include "../../lang/function.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace serialization{
 
 class type_rep{
 public:
   virtual ~type_rep(){}
-  virtual void traverse(pfi::lang::function<void(type_rep*)> f){ f(this); };
+  virtual void traverse(jubatus::util::lang::function<void(type_rep*)> f){ f(this); };
   virtual void print(std::ostream &os)=0;
 };
 
@@ -102,7 +103,7 @@ public:
 
 class class_type : public type_rep {
 public:
-  typedef std::vector<std::pair<std::string, pfi::lang::shared_ptr<type_rep> > > member_type;
+  typedef std::vector<std::pair<std::string, jubatus::util::lang::shared_ptr<type_rep> > > member_type;
   typedef member_type::iterator iterator;
 
   class_type(){}
@@ -113,7 +114,7 @@ public:
     this->name=name;
   }
 
-  void add(const std::string &name, const pfi::lang::shared_ptr<type_rep>& type){
+  void add(const std::string &name, const jubatus::util::lang::shared_ptr<type_rep>& type){
     member.push_back(make_pair(name, type));
   }
 
@@ -125,7 +126,7 @@ public:
     return member.end();
   }
 
-  void traverse(pfi::lang::function<void(type_rep*)> f){
+  void traverse(jubatus::util::lang::function<void(type_rep*)> f){
     f(this);
     for (iterator p=begin(); p!=end(); p++)
       p->second->traverse(f);
@@ -155,13 +156,13 @@ public:
   }
 
   void enter_class(){
-    stk.push(std::vector<std::pair<std::string, pfi::lang::shared_ptr<type_rep> > >());
+    stk.push(std::vector<std::pair<std::string, jubatus::util::lang::shared_ptr<type_rep> > >());
     names.push("");
   }
 
   void leave_class(){
-    pfi::lang::shared_ptr<class_type> cls(new class_type());
-    std::vector<std::pair<std::string, pfi::lang::shared_ptr<type_rep> > > &ms=stk.top();
+    jubatus::util::lang::shared_ptr<class_type> cls(new class_type());
+    std::vector<std::pair<std::string, jubatus::util::lang::shared_ptr<type_rep> > > &ms=stk.top();
     for (int i=0;i<(int)ms.size();i++){
       cls->add(ms[i].first, ms[i].second);
     }
@@ -180,18 +181,18 @@ public:
     names.push(name);
   }
 
-  void add(const std::string &name, pfi::lang::shared_ptr<type_rep> type){
+  void add(const std::string &name, jubatus::util::lang::shared_ptr<type_rep> type){
     stk.top().push_back(make_pair(name, type));
   }
 
-  pfi::lang::shared_ptr<type_rep> get(){
+  jubatus::util::lang::shared_ptr<type_rep> get(){
     return stk.top()[0].second;
   }
 
   static const bool is_read = true;
 
 private:
-  std::stack<std::vector<std::pair<std::string, pfi::lang::shared_ptr<type_rep> > > > stk;
+  std::stack<std::vector<std::pair<std::string, jubatus::util::lang::shared_ptr<type_rep> > > > stk;
   std::stack<std::string> names;
 };
 
@@ -209,7 +210,7 @@ inline void serialize(reflection &ref, T &v)
   template <>							\
   inline void serialize(reflection &ref, t &)			\
   {								\
-    ref.add("", pfi::lang::shared_ptr<type_rep>(v));		\
+    ref.add("", jubatus::util::lang::shared_ptr<type_rep>(v));		\
   }
 
 def_ref(bool, new bool_type());
@@ -245,7 +246,7 @@ inline reflection &operator<<(reflection &ref, T &v)
 }
 
 template <class T>
-pfi::lang::shared_ptr<type_rep> get_type()
+jubatus::util::lang::shared_ptr<type_rep> get_type()
 {
   reflection ref;
   T v;
@@ -297,14 +298,15 @@ inline void serialize(reflection &ref, class_name &cn)
 
 } // serialization
 } // data
-} // pfi
+} // util
+} // jubatus
 
-#define NAME(x) pfi::data::serialization::class_name(#x).get()
+#define NAME(x) jubatus::util::data::serialization::class_name(#x).get()
 #ifdef __GXX_EXPERIMENTAL_CXX0X__ // C++11
-#define MEMBER(x) pfi::data::serialization::named_value<decltype(x)>(#x, x).get()
-#define NAMED_MEMBER(n, x) pfi::data::serialization::named_value<decltype(x)>(n, x).get()
+#define MEMBER(x) jubatus::util::data::serialization::named_value<decltype(x)>(#x, x).get()
+#define NAMED_MEMBER(n, x) jubatus::util::data::serialization::named_value<decltype(x)>(n, x).get()
 #else
-#define MEMBER(x) pfi::data::serialization::named_value<typeof(x)>(#x, x).get()
-#define NAMED_MEMBER(n, x) pfi::data::serialization::named_value<typeof(x)>(n, x).get()
+#define MEMBER(x) jubatus::util::data::serialization::named_value<typeof(x)>(#x, x).get()
+#define NAMED_MEMBER(n, x) jubatus::util::data::serialization::named_value<typeof(x)>(n, x).get()
 #endif
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SERIALIZATION_REFLECT_H_

@@ -43,7 +43,8 @@
 #include "../../data/optional.h"
 #include "../../data/unordered_map.h"
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace text {
 namespace json {
 
@@ -197,7 +198,7 @@ template <class T>
 inline void serialize(json& js, T& v)
 {
   js = json(new json_object());
-  pfi::data::serialization::access::serialize(js, v);
+  jubatus::util::data::serialization::access::serialize(js, v);
 }
 
 template <>
@@ -277,10 +278,10 @@ inline void serialize(json& js, std::map<std::string, T>& v)
 }
 
 template <class T>
-inline void serialize(json& js, pfi::data::unordered_map<std::string, T>& v)
+inline void serialize(json& js, jubatus::util::data::unordered_map<std::string, T>& v)
 {
   json tmp(new json_object);
-  typedef typename pfi::data::unordered_map<std::string, T>::const_iterator iter_t;
+  typedef typename jubatus::util::data::unordered_map<std::string, T>::const_iterator iter_t;
   for (iter_t it = v.begin(), end = v.end(); it != end; ++it)
     tmp[it->first] = to_json(it->second);
 
@@ -298,13 +299,13 @@ inline void serialize(json& js, std::vector<T>& v)
 }
 
 template <class T>
-inline void serialize(json& js, pfi::data::serialization::named_value<T>& v)
+inline void serialize(json& js, jubatus::util::data::serialization::named_value<T>& v)
 {
   js.add(v.name, to_json(v.v));
 }
 
 template <class T>
-inline void serialize(json& js, pfi::data::optional<T>& v)
+inline void serialize(json& js, jubatus::util::data::optional<T>& v)
 {
   if (v)
     js = to_json(*v);
@@ -341,13 +342,13 @@ public:
 template <class T>
 inline void serialize(json_iarchive_cast& js, T& v)
 {
-  pfi::data::serialization::access::serialize(js, v);
+  jubatus::util::data::serialization::access::serialize(js, v);
 }
 
 template <class T>
 inline void serialize(json_iarchive_cast_with_default& js, T& v)
 {
-  pfi::data::serialization::access::serialize(js, v);
+  jubatus::util::data::serialization::access::serialize(js, v);
 }
 
 template <>
@@ -501,7 +502,7 @@ inline void serialize(json_iarchive_cast_with_default& js, std::vector<T>& v)
 }
 
 template <class T>
-inline void serialize(json_iarchive_cast& js, pfi::data::serialization::named_value<T>& v)
+inline void serialize(json_iarchive_cast& js, jubatus::util::data::serialization::named_value<T>& v)
 {
   if (js.get().count(v.name))
     from_json(js.get()[v.name], v.v);
@@ -510,7 +511,7 @@ inline void serialize(json_iarchive_cast& js, pfi::data::serialization::named_va
 }
 
 template <class T>
-inline void serialize(json_iarchive_cast_with_default& js, pfi::data::serialization::named_value<T>& v)
+inline void serialize(json_iarchive_cast_with_default& js, jubatus::util::data::serialization::named_value<T>& v)
 {
   if (!is<json_object>(js.get()))
     return;
@@ -520,10 +521,10 @@ inline void serialize(json_iarchive_cast_with_default& js, pfi::data::serializat
 }
 
 template <class T>
-inline void serialize(json_iarchive_cast& js, pfi::data::optional<T>& v)
+inline void serialize(json_iarchive_cast& js, jubatus::util::data::optional<T>& v)
 {
   if (is<json_null>(js.get()))
-    v = pfi::data::optional<T>();
+    v = jubatus::util::data::optional<T>();
   else {
     T t;
     serialize(js, t);
@@ -532,10 +533,10 @@ inline void serialize(json_iarchive_cast& js, pfi::data::optional<T>& v)
 }
 
 template <class T>
-inline void serialize(json_iarchive_cast_with_default& js, pfi::data::optional<T>& v)
+inline void serialize(json_iarchive_cast_with_default& js, jubatus::util::data::optional<T>& v)
 {
   if (is<json_null>(js.get()))
-    v = pfi::data::optional<T>();
+    v = jubatus::util::data::optional<T>();
   else {
     T t;
     serialize(js, t);
@@ -617,5 +618,6 @@ inline std::istream& operator>>(std::istream& is, const via_json_with_default_wr
 
 } // json
 } // text
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_TEXT_JSON_CAST_H_

@@ -37,11 +37,12 @@
 #include "../lang/shared_ptr.h"
 #include "../lang/safe_bool.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 
 template <class T>
-class optional : public pfi::lang::safe_bool<optional<T> >{
+class optional : public jubatus::util::lang::safe_bool<optional<T> >{
 public:
   optional()
     : dat(NULL) {
@@ -146,5 +147,6 @@ bool operator>=(const optional<T> &r, const optional<T> &s)
 }
 
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_OPTIONAL_H_

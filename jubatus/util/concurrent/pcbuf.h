@@ -40,11 +40,12 @@
 #include "../lang/util.h"
 #include "../system/time_util.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 template<class T>
-class pcbuf : pfi::lang::noncopyable{
+class pcbuf : jubatus::util::lang::noncopyable{
 public:
   explicit pcbuf(size_t capacity) :cap(capacity){
   }
@@ -54,7 +55,7 @@ public:
 
   size_t size() const{
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock)
         return q.size();
     }
@@ -67,7 +68,7 @@ public:
 
   bool empty() const{
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock)
         return q.empty();
     }
@@ -76,7 +77,7 @@ public:
 
   void clear(){
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock)
         q.clear();
     }
@@ -85,7 +86,7 @@ public:
 
   void push(const T& value){
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         while (q.size() >= cap)
           cond.wait(m);
@@ -98,7 +99,7 @@ public:
   bool push(const T& value, double second){
     double start = static_cast<double>(system::time::get_clock_time());
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         while (q.size() >= cap) {
           second -= static_cast<double>(system::time::get_clock_time()) - start;
@@ -114,7 +115,7 @@ public:
 
   void pop(T& value){
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         while (q.empty())
           cond.wait(m);
@@ -128,7 +129,7 @@ public:
   bool pop(T& value, double second){
     double start = static_cast<double>(system::time::get_clock_time());
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         while (q.empty()) {
           second -= static_cast<double>(system::time::get_clock_time()) - start;
@@ -152,5 +153,6 @@ private:
 };
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_PCBUF_H_

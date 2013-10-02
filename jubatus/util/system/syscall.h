@@ -46,7 +46,8 @@
 #define SUCCEEDED(result) ((result)>=0)
 #define FAILED(result) (!SUCCEEDED(result))
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace system{
 namespace syscall{
 
@@ -54,5 +55,6 @@ std::string get_error_msg(int err=errno);
 
 } // syscall
 } // system
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_SYSTEM_SYSCALL_H_

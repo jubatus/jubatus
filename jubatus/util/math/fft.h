@@ -38,7 +38,8 @@
 #include <stdexcept>
 #include <unistd.h>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace math{
 
 namespace detail{
@@ -201,5 +202,6 @@ void ifft2d(Matrix &a)
 }
 
 } // math
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_MATH_FFT_H_

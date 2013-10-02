@@ -38,7 +38,8 @@
 
 #include "reflect.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace serialization{
 
@@ -65,10 +66,11 @@ public:
 template <class CharType, class Traits, class Allocator>
 inline void serialize(reflection &ref, std::basic_string<CharType, Traits, Allocator> &)
 {
-  ref.add("", pfi::lang::shared_ptr<type_rep>(new string_type()));
+  ref.add("", jubatus::util::lang::shared_ptr<type_rep>(new string_type()));
 }
 
 } // serializatin
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SERIALIZATION_STRING_H_

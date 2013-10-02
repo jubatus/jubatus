@@ -32,9 +32,9 @@
 #include "ref.h"
 #include "gtest/gtest.h"
 
-using pfi::lang::reference_wrapper;
-using pfi::lang::ref;
-using pfi::lang::cref;
+using jubatus::util::lang::reference_wrapper;
+using jubatus::util::lang::ref;
+using jubatus::util::lang::cref;
 
 
 TEST(ref, construct)

@@ -47,12 +47,12 @@
 #include "../lang/shared_ptr.h"
 
 using namespace std;
-using namespace pfi::math::random;
-using namespace pfi::lang;
+using namespace jubatus::util::math::random;
+using namespace jubatus::util::lang;
 
 
 template <class t>
-vector<t> moment(int max_mom, int size, pfi::lang::function<t()> &val){
+vector<t> moment(int max_mom, int size, jubatus::util::lang::function<t()> &val){
   vector<t> mom(max_mom,0);
   for(int i=0;i<size; ++i){
     t x=val(); // test
@@ -69,7 +69,7 @@ vector<t> moment(int max_mom, int size, pfi::lang::function<t()> &val){
 
 double uniform(){
   // unform distribution
-  static pfi::math::random::random<mersenne_twister> r;
+  static jubatus::util::math::random::random<mersenne_twister> r;
   return r.next_double(-sqrt(3.0),sqrt(3.0));
 }
 
@@ -80,17 +80,17 @@ double piled_uniform(int n){
 }
 
 double gauss(){
-  static pfi::math::random::random<mersenne_twister> r;
+  static jubatus::util::math::random::random<mersenne_twister> r;
   return r.next_gaussian();
 }
 
 double gauss_shifted(){
-  static pfi::math::random::random<mersenne_twister> r;
+  static jubatus::util::math::random::random<mersenne_twister> r;
   return (r.next_gaussian(42.0, 24.0)-42.0)/24.0;
 }
 
 double gauss_diff(){
-  static pfi::math::random::random<mersenne_twister> r;
+  static jubatus::util::math::random::random<mersenne_twister> r;
   static double last_val = r.next_gaussian();
   double cur_val = r.next_gaussian();
   double ret = (last_val-cur_val)/sqrt(2.0);
@@ -99,10 +99,10 @@ double gauss_diff(){
 }
 
 TEST(random, time_seed){
-  typedef pfi::math::random::random<mersenne_twister> mt;
-  pfi::lang::shared_ptr<mt> r1(new mt);
+  typedef jubatus::util::math::random::random<mersenne_twister> mt;
+  jubatus::util::lang::shared_ptr<mt> r1(new mt);
   usleep(5);
-  pfi::lang::shared_ptr<mt> r2(new mt);
+  jubatus::util::lang::shared_ptr<mt> r2(new mt);
   for(int i=0;i<10;++i){
     int x=r1->next_int(), y=r2->next_int();
     EXPECT_TRUE(x!=y) << "x=" << x << " " << "y=" << y << endl;
@@ -110,7 +110,7 @@ TEST(random, time_seed){
   
 }
 
-bool is_standard_deviation(pfi::lang::function<double()> f, bool expectation=true){
+bool is_standard_deviation(jubatus::util::lang::function<double()> f, bool expectation=true){
   // if f is standard deviation, it passes approx 99.99% probability.
 
   int size=1<<22;
@@ -165,7 +165,7 @@ TEST(random, gaussian_shift){
 }
 
 TEST(random, sampling_with_replacement) {
-  pfi::math::random::random<mersenne_twister> r;
+  jubatus::util::math::random::random<mersenne_twister> r;
   vector<int> vs;
   {
     EXPECT_FALSE(sample_with_replacement(r,100,-1,vs));
@@ -184,7 +184,7 @@ TEST(random, sampling_with_replacement) {
 
 
 TEST(random, sampling_without_replacement) {
-  pfi::math::random::random<mersenne_twister> r;
+  jubatus::util::math::random::random<mersenne_twister> r;
   vector<int> vs;
   EXPECT_FALSE(sample_without_replacement(r,100,-1,vs));
   EXPECT_FALSE(sample_without_replacement(r,0,100,vs));

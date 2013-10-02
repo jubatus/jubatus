@@ -41,10 +41,11 @@
 #include "../system/time_util.h"
 
 using namespace std;
-using namespace pfi::lang;
-using namespace pfi::system::time;
+using namespace jubatus::util::lang;
+using namespace jubatus::util::system::time;
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 class condition_impl{
@@ -170,4 +171,5 @@ void condition_impl::notify_all()
 }
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus

@@ -34,7 +34,8 @@
 
 #include <stdint.h>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace system{
 namespace sysstat{
 
@@ -46,6 +47,7 @@ struct sysstat_ret{
 
 int get_sysstat(sysstat_ret& s);
 
+}
 }
 }
 }

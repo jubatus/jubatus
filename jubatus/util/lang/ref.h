@@ -34,7 +34,8 @@
 
 #include <tr1/functional>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace lang {
 
 template <class T>
@@ -77,5 +78,6 @@ T* get_pointer(const reference_wrapper<T>& r)
 }
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_REF_H_

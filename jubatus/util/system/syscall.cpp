@@ -37,7 +37,8 @@ using namespace std;
 
 #define BUF_SIZE 8192
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace system{
 namespace syscall{
 
@@ -58,4 +59,5 @@ string get_error_msg(int err)
 
 } // syscall
 } // system
-} // pfi
+} // util
+} // jubatus

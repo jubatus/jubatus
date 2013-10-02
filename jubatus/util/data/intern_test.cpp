@@ -41,8 +41,8 @@
 #include "./serialization.h"
 
 using namespace std;
-using namespace pfi::data;
-using namespace pfi::data::serialization;
+using namespace jubatus::util::data;
+using namespace jubatus::util::data::serialization;
 
 static const char* tmp_file="./tmp";
 

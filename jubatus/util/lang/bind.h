@@ -34,7 +34,8 @@
 
 #include "mem_fn.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace lang{
 
 namespace _bi{
@@ -631,5 +632,6 @@ _bi::arg<8> const _8 = {};
 _bi::arg<9> const _9 = {};
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_BIND_H_

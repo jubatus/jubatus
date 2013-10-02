@@ -37,7 +37,8 @@
 
 using namespace std;
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace encoding{
 
@@ -133,4 +134,5 @@ string base64_decode(const string &s)
 
 } // encoding
 } // data
-} // pfi
+} // util
+} // jubatus

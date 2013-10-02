@@ -32,7 +32,8 @@
 #ifndef INCLUDE_GUARD_PFI_LANG_NONCOPYABLE_H_
 #define INCLUDE_GUARD_PFI_LANG_NONCOPYABLE_H_
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace lang{
 
 namespace noncopyable_{ // avoid ADL
@@ -50,5 +51,6 @@ namespace noncopyable_{ // avoid ADL
 typedef noncopyable_::noncopyable noncopyable;
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_NONCOPYABLE_H_

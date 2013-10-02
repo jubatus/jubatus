@@ -46,7 +46,8 @@
 #include "../../data/string/ustring.h"
 #include "../../data/unordered_map.h"
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace text {
 namespace json {
 
@@ -131,7 +132,7 @@ public:
   static const bool is_read = false;
 
 private:
-  pfi::lang::shared_ptr<json_value> val;
+  jubatus::util::lang::shared_ptr<json_value> val;
 };
 
 class json_value {
@@ -293,7 +294,7 @@ public:
       const char* p = dat.c_str();
       const char* end = p + dat.size();
       while (*p) {
-        pfi::data::string::uchar uc = pfi::data::string::chars_to_uchar(p, end);
+        jubatus::util::data::string::uchar uc = jubatus::util::data::string::chars_to_uchar(p, end);
         print_char(os, uc);
       }
     } else {
@@ -310,7 +311,7 @@ private:
     return new json_string(dat);
   }
 
-  static void print_char(std::ostream& os, pfi::data::string::uchar u) {
+  static void print_char(std::ostream& os, jubatus::util::data::string::uchar u) {
     static const char escs[] = {
       '\x22', '\x5C', '\x2F', '\x08', '\x0C', '\x0A', '\x0D', '\x09'
     };
@@ -388,9 +389,9 @@ private:
   };
 
 public:
-  typedef pfi::data::unordered_map<std::string, json>::iterator iterator;
-  typedef pfi::data::unordered_map<std::string, json>::const_iterator const_iterator;
-  typedef pfi::data::unordered_map<std::string, json>::size_type size_type;
+  typedef jubatus::util::data::unordered_map<std::string, json>::iterator iterator;
+  typedef jubatus::util::data::unordered_map<std::string, json>::const_iterator const_iterator;
+  typedef jubatus::util::data::unordered_map<std::string, json>::size_type size_type;
   
   json_object() {}
 
@@ -491,7 +492,7 @@ private:
     return obj.release();
   }
 
-  pfi::data::unordered_map<std::string, json> member;
+  jubatus::util::data::unordered_map<std::string, json> member;
 };
 
 class json_bool : public json_value {
@@ -793,5 +794,6 @@ inline std::ostream& operator<<(std::ostream& os, const without_escape_tag<T>& j
 
 } // json
 } // text
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_TEXT_JSON_BASE_H_

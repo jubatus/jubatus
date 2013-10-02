@@ -35,7 +35,8 @@
 //    Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura,
 //    All rights reserved.
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace math{
 namespace random{
 
@@ -108,4 +109,5 @@ uint32_t mersenne_twister::genrand_int32()
 
 } // random
 } // math
-} // pfi
+} // util
+} // jubatus

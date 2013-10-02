@@ -37,7 +37,8 @@
 #include <ostream>
 #include <istream>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 namespace code {
   class encoder {
@@ -123,5 +124,6 @@ namespace code {
 
 } // code
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_CODE_CODE_H_

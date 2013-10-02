@@ -38,7 +38,8 @@
 #include <cassert>
 #include <stdint.h>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 
 // Least Recently Used Cache in O(log(n))
@@ -121,5 +122,6 @@ private:
 };
 
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_LRU_H_

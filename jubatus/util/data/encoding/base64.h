@@ -34,7 +34,8 @@
 
 #include <string>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace encoding{
 
@@ -43,5 +44,6 @@ std::string base64_decode(const std::string &s);
 
 } // encoding
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_ENCODING_BASE64_H_

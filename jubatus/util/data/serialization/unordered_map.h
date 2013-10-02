@@ -37,7 +37,8 @@
 #include "pair.h"
 #include "../unordered_map.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace serialization{
 
@@ -66,5 +67,6 @@ void serialize(Archive &ar, unordered_map<K, V, H, P, A> &m)
 
 } // serialization
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SERIALIZATION_UNORDERED_MAP_H_

@@ -36,7 +36,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace pfi::text;
+using namespace jubatus::util::text;
 
 template <size_t A, size_t B>
 vector<vector<string> > to_vect(const char *dat[A][B])

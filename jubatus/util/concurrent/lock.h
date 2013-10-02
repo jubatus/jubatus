@@ -37,7 +37,8 @@
 #include "../lang/safe_bool.h"
 #include "../lang/util.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 class lockable{
@@ -48,8 +49,8 @@ public:
   virtual bool unlock()=0;
 };
 
-class scoped_lock : public pfi::lang::safe_bool<scoped_lock>
-                  , pfi::lang::noncopyable {
+class scoped_lock : public jubatus::util::lang::safe_bool<scoped_lock>
+                  , jubatus::util::lang::noncopyable {
 public:
   explicit scoped_lock(lockable &r)
     : l(&r)
@@ -87,14 +88,15 @@ private:
 };
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus
 
 #ifdef __GNUG__
 #define synchronized(m) \
-  if (const pfi::concurrent::scoped_lock& lock_93259F69_879A_4BB1_9B8C_3AF8923289F8 __attribute__((__unused__)) = pfi::concurrent::scoped_lock(m))
+  if (const jubatus::util::concurrent::scoped_lock& lock_93259F69_879A_4BB1_9B8C_3AF8923289F8 __attribute__((__unused__)) = jubatus::util::concurrent::scoped_lock(m))
 #else
 #define synchronized(m) \
-  if (const pfi::concurrent::scoped_lock& lock_93259F69_879A_4BB1_9B8C_3AF8923289F8 = pfi::concurrent::scoped_lock(m))
+  if (const jubatus::util::concurrent::scoped_lock& lock_93259F69_879A_4BB1_9B8C_3AF8923289F8 = jubatus::util::concurrent::scoped_lock(m))
 #endif
 
 #endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_LOCK_H_

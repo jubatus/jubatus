@@ -4,11 +4,11 @@
 #include "weak_ptr.h"
 #include "enable_shared_from_this.h"
 
-class foo : public pfi::lang::enable_shared_from_this<foo> {};
+class foo : public jubatus::util::lang::enable_shared_from_this<foo> {};
 
 TEST(shared_ptr, bad_weak_ptr)
 {
-  using namespace pfi::lang;
+  using namespace jubatus::util::lang;
 
   weak_ptr<int> wp;
   {
@@ -16,12 +16,12 @@ TEST(shared_ptr, bad_weak_ptr)
     wp = p;
   }
 
-  ASSERT_THROW(shared_ptr<int> p(wp);, pfi::lang::bad_weak_ptr);
+  ASSERT_THROW(shared_ptr<int> p(wp);, jubatus::util::lang::bad_weak_ptr);
 }
 
 TEST(shared_ptr, enable_shared_from_this)
 {
-  using namespace pfi::lang;
+  using namespace jubatus::util::lang;
 
 
   shared_ptr<foo> p(new foo);
@@ -33,5 +33,5 @@ TEST(shared_ptr, enable_shared_from_this)
 TEST(shared_ptr, shared_from_this_from_not_shared_object)
 {
   foo x;
-  ASSERT_THROW(x.shared_from_this();, pfi::lang::bad_weak_ptr);
+  ASSERT_THROW(x.shared_from_this();, jubatus::util::lang::bad_weak_ptr);
 }

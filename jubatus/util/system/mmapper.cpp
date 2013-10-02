@@ -39,7 +39,8 @@
 
 #include "syscall.h"
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace system {
 namespace mmapper {
 
@@ -82,6 +83,7 @@ int mmapper::close()
   return 0;
 }
 
+}
 }
 }
 }

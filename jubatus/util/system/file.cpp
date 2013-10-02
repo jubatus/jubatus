@@ -38,7 +38,8 @@
 
 using namespace std;
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace system{
 namespace file{
 
@@ -55,7 +56,7 @@ ssize_t get_file_size(const string & fn)
   struct stat st_buf;
   int r=stat(fn.c_str(), &st_buf);
   if (r < 0) {
-    perror("pfi::system::file::get_file_size: stat failed");
+    perror("jubatus::util::system::file::get_file_size: stat failed");
     return -1;
   }
   return st_buf.st_size;
@@ -64,4 +65,5 @@ ssize_t get_file_size(const string & fn)
 
 } // file
 } // system
-} // pfi
+} // util
+} // jubatus

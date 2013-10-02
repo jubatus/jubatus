@@ -44,7 +44,7 @@ using namespace std;
 
 TEST(md5, empty)
 {
-  pfi::data::digest::md5sum md5("");
+  jubatus::util::data::digest::md5sum md5("");
   ostringstream oss;
   const char fill = oss.fill();
   oss << md5;

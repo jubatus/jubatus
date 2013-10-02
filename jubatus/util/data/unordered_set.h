@@ -46,7 +46,8 @@
 
 #include "functional_hash.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 
 template <class Value,
@@ -112,5 +113,6 @@ public:
 };
 
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_UNORDERED_SET_H_

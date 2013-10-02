@@ -5,7 +5,8 @@
 #include <complex>
 #include <vector>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace math {
 
 template void fft<std::complex<double>*>(std::complex<double>*, std::complex<double>*);
@@ -86,4 +87,5 @@ template std::ostream& operator<<<int>(std::ostream&, const ratio<int>&);
 } // namespace ratio
 
 } // namespace math
-} // namespace pfi
+} // namespace util
+} // namespace jubatus

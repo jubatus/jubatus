@@ -37,7 +37,8 @@
 #include "unordered_map.h"
 #include "serialization/unordered_map.h"
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 
 /**
@@ -129,7 +130,7 @@ public:
 
 private:
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
     if (ar.is_read) {
@@ -155,6 +156,7 @@ void swap(intern<Key, Hash, EqualKey, Alloc>& x, intern<Key, Hash, EqualKey, All
 }
 
 } // data
-} // pfi
+} // util
+} // jubatus
 
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_INTERN_H_

@@ -38,7 +38,7 @@
 #include "ustring.h"
 
 using namespace std;
-using namespace pfi::data::string;
+using namespace jubatus::util::data::string;
 
 #define U string_to_ustring
 

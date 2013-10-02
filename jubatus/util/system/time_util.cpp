@@ -35,7 +35,8 @@
 #include <sys/time.h>
 #include <time.h>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace system{
 namespace time{
 
@@ -112,4 +113,5 @@ clock_time get_clock_time()
 
 } // time
 } // system
-} // pfi
+} // util
+} // jubatus

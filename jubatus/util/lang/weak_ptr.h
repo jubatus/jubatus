@@ -35,7 +35,8 @@
 #include <memory>
 #include <tr1/memory>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace lang {
 
 template <class T, class TM>
@@ -72,5 +73,6 @@ public:
 };
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_WEAK_PTR_H_

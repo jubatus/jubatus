@@ -36,7 +36,8 @@
 
 #include <utility>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace serialization{
 
@@ -48,5 +49,6 @@ void serialize(Archive &ar, std::pair<A,B> &m)
 
 } // serializatin
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SERIALIZATION_PAIR_H_

@@ -40,7 +40,7 @@
 #include <algorithm>
 
 using namespace std;
-using namespace pfi::data::sparse_matrix;
+using namespace jubatus::util::data::sparse_matrix;
 
 static const string tmp_file="./tmp";
 
@@ -116,10 +116,10 @@ TEST(sparse_matrix_test, index) {
         }
       }
       { // get_row using unordered_map<int,unsigned char>
-        pfi::data::unordered_map<int,unsigned char> row_um;
+        jubatus::util::data::unordered_map<int,unsigned char> row_um;
         vector<pair<int,unsigned char> > row;
         smr.get_row(i,row_um);
-        for (pfi::data::unordered_map<int,unsigned char>::iterator it=row_um.begin();it!=row_um.end();++it)
+        for (jubatus::util::data::unordered_map<int,unsigned char>::iterator it=row_um.begin();it!=row_um.end();++it)
           row.push_back(make_pair(it->first,it->second));
         sort(row.begin(),row.end());
         

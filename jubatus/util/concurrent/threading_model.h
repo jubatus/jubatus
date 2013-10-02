@@ -32,7 +32,8 @@
 #ifndef INCLUDE_GUARD_PFI_CONCURRENT_THREADING_MODEL_H_
 #define INCLUDE_GUARD_PFI_CONCURRENT_THREADING_MODEL_H_
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 namespace threading_model{
 
@@ -40,5 +41,6 @@ class multi_thread;
 
 } // threading_model
 } // concurrent
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_THREADING_MODEL_H_

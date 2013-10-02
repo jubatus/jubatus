@@ -42,11 +42,12 @@
 #include "../lang/shared_ptr.h"
 #include "../lang/util.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 template<class T>
-class chan : pfi::lang::noncopyable{
+class chan : jubatus::util::lang::noncopyable{
 public:
   chan()
     :chans(new link()){
@@ -54,14 +55,14 @@ public:
   }
 
   ~chan(){
-    pfi::concurrent::scoped_lock lock(chans->m);
+    jubatus::util::concurrent::scoped_lock lock(chans->m);
     if (lock) {
       chans->cs.erase(this);
     }
   }
 
-  pfi::lang::shared_ptr<chan> dup(){
-    return pfi::lang::shared_ptr<chan>(new chan(chans));
+  jubatus::util::lang::shared_ptr<chan> dup(){
+    return jubatus::util::lang::shared_ptr<chan>(new chan(chans));
   }
 
   void write(const T &r){
@@ -81,7 +82,7 @@ public:
 
   void unget(const T &r){
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         dat.push_front(r);
       }
@@ -91,7 +92,7 @@ public:
 
   int size() const{
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         return dat.size();
       }
@@ -100,7 +101,7 @@ public:
   }
 
   bool empty() const{
-    pfi::concurrent::scoped_lock lock(m);
+    jubatus::util::concurrent::scoped_lock lock(m);
     if (lock) {
       return dat.empty();
     }
@@ -114,9 +115,9 @@ private:
     r_mutex m;
   };
 
-  chan(const pfi::lang::shared_ptr<link>& l)
+  chan(const jubatus::util::lang::shared_ptr<link>& l)
     :chans(l){
-    pfi::concurrent::scoped_lock lock(chans->m);
+    jubatus::util::concurrent::scoped_lock lock(chans->m);
     if (lock) {
       chans->cs.insert(this);
     }
@@ -124,7 +125,7 @@ private:
 
   void put(const T &r){
     {
-      pfi::concurrent::scoped_lock lock(m);
+      jubatus::util::concurrent::scoped_lock lock(m);
       if (lock) {
         dat.push_back(r);
       }
@@ -132,7 +133,7 @@ private:
     cond.notify_all();
   }
 
-  pfi::lang::shared_ptr<link> chans;
+  jubatus::util::lang::shared_ptr<link> chans;
 
   std::deque<T> dat;
   mutable r_mutex m;
@@ -140,5 +141,6 @@ private:
 };
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_CHAN_H_

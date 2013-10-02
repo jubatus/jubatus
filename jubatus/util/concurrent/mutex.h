@@ -36,7 +36,8 @@
 
 #include "lock.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace concurrent{
 
 class condition_impl;
@@ -53,7 +54,7 @@ public:
 
 private:
   class impl;
-  pfi::lang::scoped_ptr<impl> pimpl;
+  jubatus::util::lang::scoped_ptr<impl> pimpl;
 };
 
 // non-recursive mutex
@@ -71,5 +72,6 @@ public:
 };
 
 } // concurrent
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_CONCURRENT_MUTEX_H_

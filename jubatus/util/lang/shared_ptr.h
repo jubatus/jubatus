@@ -36,7 +36,8 @@
 #include <memory>
 #include <tr1/memory>
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace concurrent {
 namespace threading_model {
 
@@ -50,7 +51,7 @@ namespace lang {
 class bad_weak_ptr : public std::exception {
 public:
   const char* what() const throw() {
-    return "pfi::lang::bad_weak_ptr";
+    return "jubatus::util::lang::bad_weak_ptr";
   }
 };
 
@@ -60,7 +61,7 @@ class weak_ptr;
 template <class T>
 class enable_shared_from_this;
 
-template <class T, class /* dummy for compatibility */ = pfi::concurrent::threading_model::single_thread>
+template <class T, class /* dummy for compatibility */ = jubatus::util::concurrent::threading_model::single_thread>
 class shared_ptr : public std::tr1::shared_ptr<T> {
   typedef std::tr1::shared_ptr<T> base;
 
@@ -142,5 +143,6 @@ Deleter* get_deleter(const shared_ptr<T, TM>& p)
 }
 
 } // lang
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_LANG_SHARED_PTR_H_

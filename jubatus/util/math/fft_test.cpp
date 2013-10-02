@@ -38,7 +38,7 @@
 #include <vector>
 
 using namespace std;
-using namespace pfi::math;
+using namespace jubatus::util::math;
 
 typedef complex<double> cplx;
 
@@ -137,7 +137,7 @@ TEST(fft, fft2d)
     for (int j = 0; j < n; ++j)
       a[i][j] = std::cos(2*pi * i / m) * std::cos(2*pi * j / n);
 
-  pfi::math::fft2d(&a[0][0], &a[m][0], n);
+  jubatus::util::math::fft2d(&a[0][0], &a[m][0], n);
 
   for (int i = 0; i < m; ++i) {
     for (int j = 0; j < n; ++j) {
@@ -159,7 +159,7 @@ TEST(fft, fft2d_matrix)
     for (int j = 0; j < n; ++j)
       a[i][j] = std::cos(2*pi * i / m) * std::cos(2*pi * j / n);
 
-  pfi::math::fft2d(a);
+  jubatus::util::math::fft2d(a);
 
   for (int i = 0; i < m; ++i) {
     for (int j = 0; j < n; ++j) {

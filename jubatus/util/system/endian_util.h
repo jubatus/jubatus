@@ -35,7 +35,8 @@
 #include <limits.h>
 #include <stdint.h>
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace system{
 
 namespace endian{
@@ -209,5 +210,6 @@ inline T from_big(T v)
 } // endian
 
 } // system
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_SYSTEM_ENDIAN_UTIL_H_

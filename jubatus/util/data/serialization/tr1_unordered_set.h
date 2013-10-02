@@ -38,7 +38,8 @@
 
 #include "pair.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace serialization{
 
@@ -67,5 +68,6 @@ void serialize(Archive &ar, std::tr1::unordered_set<T, H, P, A> &s)
 
 } // serialization
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SERIALIZATION_TR1_UNORDERED_SET_H_

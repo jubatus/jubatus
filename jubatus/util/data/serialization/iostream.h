@@ -43,7 +43,8 @@
 #include "../../lang/shared_ptr.h"
 #include "../../system/file.h"
 
-namespace pfi{
+namespace jubatus {
+namespace util{
 namespace data{
 namespace serialization{
 
@@ -61,13 +62,13 @@ class stream{
 public:
   stream()
     : fname(PathFunc()()+std::string("/serializeXXXXXX"))
-    , spios(pfi::system::file::tmpstream(fname))
+    , spios(jubatus::util::system::file::tmpstream(fname))
     , pios(spios.get()){
   }
 
   stream(PathFunc pf)
     : fname(pf()+std::string("/serializeXXXXXX"))
-    , spios(pfi::system::file::tmpstream(fname))
+    , spios(jubatus::util::system::file::tmpstream(fname))
     , pios(spios.get()){
   }
 
@@ -86,7 +87,7 @@ public:
 
 private:
   std::string fname;
-  pfi::lang::shared_ptr<std::iostream> spios;
+  jubatus::util::lang::shared_ptr<std::iostream> spios;
   std::iostream *pios;
 };
 
@@ -146,7 +147,7 @@ class stream_type : public type_rep{
 public:
   stream_type(){}
 
-  void traverse(pfi::lang::function<void(type_rep*)> f){
+  void traverse(jubatus::util::lang::function<void(type_rep*)> f){
     f(this);
   }
 
@@ -158,10 +159,11 @@ public:
 template <class Func>
 void serialize(reflection &ref, stream<Func> &str)
 {
-  ref.add("", pfi::lang::shared_ptr<type_rep>(new stream_type()));
+  ref.add("", jubatus::util::lang::shared_ptr<type_rep>(new stream_type()));
 }
 
 } // serializatin
 } // data
-} // pfi
+} // util
+} // jubatus
 #endif // #ifndef INCLUDE_GUARD_PFI_DATA_SERIALIZATION_IOSTREAM_H_

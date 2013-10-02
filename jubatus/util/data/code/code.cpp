@@ -39,11 +39,12 @@
 #include "../../system/endian_util.h"
 
 using namespace std;
-using namespace pfi::system::file;
-using namespace pfi::system::endian;
+using namespace jubatus::util::system::file;
+using namespace jubatus::util::system::endian;
 
 
-namespace pfi {
+namespace jubatus {
+namespace util {
 namespace data {
 namespace code {
 
@@ -241,4 +242,5 @@ namespace code {
 
 } // code
 } // data
-} // pfi
+} // util
+} // jubatus
