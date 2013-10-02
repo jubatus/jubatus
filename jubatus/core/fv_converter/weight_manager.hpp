@@ -69,6 +69,17 @@ class weight_manager {
     ar & MEMBER(diff_weights_) & MEMBER(master_weights_);
   }
 
+  MSGPACK_DEFINE(diff_weights_, master_weights_);
+
+  template<class Packer>
+  void pack(Packer& packer) const {
+    packer.pack(*this);
+  }
+
+  void unpack(msgpack::object o) {
+    o.convert(this);
+  }
+
  private:
   size_t get_document_count() const {
     return diff_weights_.get_document_count() +

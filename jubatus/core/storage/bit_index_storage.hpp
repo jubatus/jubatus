@@ -54,6 +54,15 @@ class bit_index_storage {
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
+  template<class Packer>
+  void pack(Packer& packer) const {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
+  template<class Obj>
+  void unpack(Obj o) {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
+
   void get_diff(bit_table_t& diff) const;
   void set_mixed_and_clear_diff(const bit_table_t& mixed_diff);
   void mix(const bit_table_t& lhs, bit_table_t& rhs) const;

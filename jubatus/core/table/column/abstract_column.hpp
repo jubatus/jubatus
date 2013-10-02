@@ -192,6 +192,14 @@ class typed_column : public detail::abstract_column_base {
     os << "[" << target << "] " << (*this)[target] << std::endl;
   }
 
+  template<class Buffer>
+  void msgpack_pack(msgpack::packer<Buffer>& packer) const {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
+  void msgpack_unpack(msgpack::object o) {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
+
  private:
   friend class pfi::data::serialization::access;
   template <class Ar>
@@ -303,6 +311,14 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
   }
   void dump(std::ostream& os, uint64_t target) const {
     os << "[" << target << "] " << (*this)[target] << std::endl;
+  }
+
+  template<class Buffer>
+  void msgpack_pack(msgpack::packer<Buffer>& packer) const {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
+  void msgpack_unpack(msgpack::object o) {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
   }
 
  private:
@@ -469,6 +485,45 @@ class abstract_column {
   }
   friend void swap(abstract_column& l, abstract_column& r) {
     l.swap(r);
+  }
+
+  template<class Buffer>
+  void msgpack_pack(msgpack::packer<Buffer>& packer) const {
+    column_type type = base_->type();
+
+    packer.pack_array(2);
+    packer.pack(type);
+
+    if (type.is(column_type::uint8_type)) {
+      packer.pack(static_cast<const uint8_column&>(*base_));
+    } else if (type.is(column_type::uint16_type)) {
+      packer.pack(static_cast<const uint16_column&>(*base_));
+    } else if (type.is(column_type::uint32_type)) {
+      packer.pack(static_cast<const uint32_column&>(*base_));
+    } else if (type.is(column_type::uint64_type)) {
+      packer.pack(static_cast<const uint64_column&>(*base_));
+    } else if (type.is(column_type::int8_type)) {
+      packer.pack(static_cast<const int8_column&>(*base_));
+    } else if (type.is(column_type::int16_type)) {
+      packer.pack(static_cast<const int16_column&>(*base_));
+    } else if (type.is(column_type::int32_type)) {
+      packer.pack(static_cast<const int32_column&>(*base_));
+    } else if (type.is(column_type::int64_type)) {
+      packer.pack(static_cast<const int64_column&>(*base_));
+    } else if (type.is(column_type::float_type)) {
+      packer.pack(static_cast<const float_column&>(*base_));
+    } else if (type.is(column_type::double_type)) {
+      packer.pack(static_cast<const double_column&>(*base_));
+    } else if (type.is(column_type::string_type)) {
+      packer.pack(static_cast<const string_column&>(*base_));
+    } else if (type.is(column_type::bit_vector_type)) {
+      packer.pack(static_cast<const bit_vector_column&>(*base_));
+    } else {
+      JUBATUS_ASSERT_UNREACHABLE();
+    }
+  }
+  void msgpack_unpack(msgpack::object o) {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
   }
 
  private:

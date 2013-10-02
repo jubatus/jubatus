@@ -69,6 +69,9 @@ class recommender_base {
   void save(std::ostream&);
   void load(std::istream&);
 
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
+
   virtual void register_mixables_to_holder(framework::mixable_holder& holder)
       const = 0;
 

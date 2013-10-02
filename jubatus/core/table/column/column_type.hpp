@@ -161,6 +161,15 @@ class column_type {
     return !(x == y);
   }
 
+  template<class Packer>
+  void msgpack_pack(Packer& packer) const {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
+  template<class Obj>
+  void msgpack_unpack(Obj o) {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
+
  private:
   friend class pfi::data::serialization::access;
   template <class Ar>

@@ -115,6 +115,15 @@ class lof_storage {
   void save(std::ostream& os) const;
   void load(std::istream& is);
 
+  template<class Packer>
+  void pack(Packer& packer) const {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
+  template<class Obj>
+  void unpack(Obj o) {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
+
  private:
   static void mark_removed(lof_entry& entry);
   static bool is_removed(const lof_entry& entry);

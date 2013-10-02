@@ -26,6 +26,7 @@
 #include <pficommon/lang/shared_ptr.h>
 #include "../common/exception.hpp"
 #include "../common/byte_buffer.hpp"
+#include "../common/assert.hpp"
 
 namespace jubatus {
 namespace core {
@@ -54,6 +55,8 @@ class mixable0 {
 
   virtual void save(std::ostream& ofs) = 0;
   virtual void load(std::istream& ifs) = 0;
+  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
+  virtual void unpack(msgpack::object o) = 0;
   virtual void clear() = 0;
 };
 
@@ -77,6 +80,36 @@ class mixable_holder {
 
   pfi::concurrent::rw_mutex& rw_mutex() {
     return rw_mutex_;
+  }
+
+  void pack(msgpack::sbuffer& buf) const {
+    msgpack::packer<msgpack::sbuffer> packer(buf);
+
+    packer.pack_array(mixables_.size());
+    for (size_t i = 0; i < mixables_.size(); ++i) {
+      mixables_[i]->pack(packer);
+    }
+  }
+
+  void unpack(msgpack::unpacker& unpacker) {
+    msgpack::unpacked unpacked;
+    unpacker.next(&unpacked);
+    msgpack::object o = unpacked.get();
+
+    if (o.type != msgpack::type::ARRAY) {
+      // throw runtime error
+      JUBATUS_ASSERT_UNREACHABLE();
+    }
+
+    if (o.via.array.size != mixables_.size()) {
+      // throw runtime error
+      JUBATUS_ASSERT_UNREACHABLE();
+    }
+
+    msgpack::object* p = o.via.array.ptr;
+    for (size_t i = 0; i < mixables_.size(); ++i) {
+      mixables_[i]->unpack(p[i]);
+    }
   }
 
  protected:
@@ -184,6 +217,14 @@ class mixable : public mixable0 {
 
   void load(std::istream& is) {
     model_->load(is);
+  }
+
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+    model_->pack(packer);
+  }
+
+  void unpack(msgpack::object o) {
+    model_->unpack(o);
   }
 
   model_ptr get_model() const {

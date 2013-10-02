@@ -384,6 +384,17 @@ class column_table {
     return true;
   }
 
+  MSGPACK_DEFINE(keys_, tuples_, versions_, columns_, clock_);
+
+  template<class Packer>
+  void pack(Packer& packer) const {
+    packer.pack(*this);
+  }
+
+  void unpack(msgpack::object o) {
+    o.convert(this);
+  }
+
  private:
   std::vector<std::string> keys_;
   std::vector<version_t> versions_;

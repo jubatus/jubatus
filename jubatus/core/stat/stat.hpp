@@ -79,6 +79,15 @@ class stat : public pfi::lang::enable_shared_from_this<stat> {
   virtual bool load(std::istream&);
   std::string type() const;
 
+  template<class Packer>
+  void pack(Packer& packer) const {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
+  template<class Obj>
+  void unpack(Obj o) {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
+
   virtual void register_mixables_to_holder(
       framework::mixable_holder& holder) const;
 

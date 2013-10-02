@@ -116,6 +116,13 @@ void recommender_base::load(std::istream& is) {
   load_impl(is);
 }
 
+void recommender_base::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+}
+void recommender_base::unpack(msgpack::object o) {
+  throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+}
+
 float recommender_base::calc_similality(common::sfv_t& q1, common::sfv_t& q2) {
   float q1_norm = calc_l2norm(q1);
   float q2_norm = calc_l2norm(q2);

@@ -40,6 +40,15 @@ struct int_model {
   void load(std::istream& ifs) {
     ifs >> value;
   }
+
+  template<class Packer>
+  void pack(Packer& packer) const {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
+  template<class Obj>
+  void unpack(Obj o) {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  }
 };
 
 class mixable_int : public mixable<int_model, int> {
