@@ -25,6 +25,7 @@
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 #include "mixer/mixer.hpp"
+#include "save_load.hpp"
 
 namespace jubatus {
 namespace server {
@@ -50,29 +51,7 @@ server_base::server_base(const server_argv& a)
 }
 
 bool server_base::save(const std::string& id) {
-  const std::string path = build_local_path(argv_, "jubatus", id);
-  std::ofstream ofs(path.c_str(), std::ios::trunc | std::ios::binary);
-  if (!ofs) {
-    throw
-      JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("cannot open output file")
-        << core::common::exception::error_file_name(path)
-        << core::common::exception::error_errno(errno));
-  }
-  try {
-    LOG(INFO) << "starting save to " << path;
-    core::framework::mixable_holder::mixable_list mixables =
-        get_mixable_holder()->get_mixables();
-    for (size_t i = 0; i < mixables.size(); ++i) {
-      mixables[i]->save(ofs);
-    }
-    ofs.close();
-    LOG(INFO) << "saved to " << path;
-  } catch (const std::runtime_error& e) {
-    LOG(ERROR) << "failed to save: " << path;
-    LOG(ERROR) << e.what();
-    throw;
-  }
+  framework::save_file(*this, build_local_path(argv_, "jubatus", id));
   return true;
 }
 
@@ -82,30 +61,7 @@ bool server_base::load(const std::string& id) {
 }
 
 void server_base::load_file(const std::string& path) {
-  std::ifstream ifs(path.c_str(), std::ios::binary);
-  if (!ifs) {
-    throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("cannot open input file")
-      << core::common::exception::error_file_name(path)
-      << core::common::exception::error_errno(errno));
-  }
-
-  try {
-    LOG(INFO) << "starting load from " << path;
-    core::framework::mixable_holder::mixable_list mixables =
-        get_mixable_holder()->get_mixables();
-    for (size_t i = 0; i < mixables.size(); ++i) {
-      mixables[i]->clear();
-      mixables[i]->load(ifs);
-    }
-    ifs.close();
-    LOG(INFO) << "loaded from " << path;
-  } catch (const std::runtime_error& e) {
-    ifs.close();
-    LOG(ERROR) << "failed to load: " << path;
-    LOG(ERROR) << e.what();
-    throw;
-  }
+  framework::load_file(*this, path);
 }
 
 void server_base::event_model_updated() {
