@@ -48,25 +48,20 @@ void regexp_filter::filter(
   const UChar* head = reinterpret_cast<const UChar*>(input.c_str());
   const UChar* cur = head, *end = head + input.size();
 
-  do {
+  // We need to check when cur == end as "$" matches to the eos.
+  while (cur <= end) {
     int r = onig_match(reg_, head, end, cur, NULL, ONIG_OPTION_NONE);
+    if (r >= 0) {
+      ss << replace_;
+      cur += r;
+    }
+    // If the pattern didn't match or mached an empty string, proceed the
+    // pointer forcely.
     if (r <= 0) {
-      cur++;
-      continue;
+      if (cur < end)
+        ss << *cur;
+      ++cur;
     }
-
-    if (head != cur) {
-      ss.write(reinterpret_cast<const char*>(head), cur - head);
-    }
-    ss << replace_;
-
-    cur += r;
-    head = cur;
-  } while (cur != end);
-
-  // output when leave unmatched string
-  if (head != cur) {
-    ss.write(reinterpret_cast<const char*>(head), cur - head);
   }
 
   output = ss.str();

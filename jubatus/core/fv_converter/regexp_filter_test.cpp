@@ -34,6 +34,38 @@ TEST(regexp_filter, trivial) {
   EXPECT_EQ("AAuAAuAAb", out);
 }
 
+TEST(regexp_filter, bos) {
+  regexp_filter f("^", "A");
+
+  std::string out;
+  f.filter("BCD", out);
+  EXPECT_EQ("ABCD", out);
+
+  f.filter("", out);
+  EXPECT_EQ("A", out);
+}
+
+TEST(regexp_filter, eos) {
+  regexp_filter f("$", "A");
+
+  std::string out;
+  f.filter("BCD", out);
+  EXPECT_EQ("BCDA", out);
+
+  f.filter("", out);
+  EXPECT_EQ("A", out);
+}
+
+TEST(regexp_filter, non_greedy) {
+  regexp_filter f(".??", "A");
+
+  std::string out;
+  f.filter("BCD", out);
+  EXPECT_EQ("ABACADA", out);
+  f.filter("", out);
+  EXPECT_EQ("A", out);
+}
+
 TEST(regexp_filter, illegal) {
   ASSERT_THROW(regexp_filter f("*hoge", "replace"), converter_exception);
 }
