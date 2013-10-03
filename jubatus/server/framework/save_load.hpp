@@ -18,6 +18,7 @@
 #define JUBATUS_SERVER_FRAMEWORK_SAVE_LOAD_HPP_
 
 #include <string>
+#include <iostream>
 
 #include "server_base.hpp"
 
@@ -25,8 +26,10 @@ namespace jubatus {
 namespace server {
 namespace framework {
 
-void save_file(const server_base& server, const std::string& path);
-void load_file(server_base& server, const std::string& path);
+void save_server(std::ostream& os,
+    const server_base& server, const std::string& id);
+void load_server(std::istream& is,
+    server_base& server, const std::string& id);
 
 }  // namespace framework
 }  // namespace server
