@@ -26,7 +26,7 @@ def configure(conf):
       conf.env.define_key.remove(x[0])
 
     conf.recurse(subdirs)
-    conf.write_config_header('pfi-config.h', guard = 'JUBATUS_UTIL_PFI_CONFIG_H_')
+    conf.write_config_header('util-config.h', guard = 'JUBATUS_UTIL_PFI_CONFIG_H_')
   finally:
     env.revert()
 

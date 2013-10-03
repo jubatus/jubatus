@@ -32,7 +32,7 @@
 #ifndef JUBATUS_UTIL_DATA_UNORDERED_MAP_H_
 #define JUBATUS_UTIL_DATA_UNORDERED_MAP_H_
 
-#include "../pfi-config.h"
+#include "../util-config.h"
 
 #include <cmath>
 

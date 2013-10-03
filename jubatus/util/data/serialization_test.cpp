@@ -38,7 +38,7 @@
 
 #include "./serialization.h"
 
-#include "../pfi-config.h"
+#include "../util-config.h"
 
 #if HAVE_TR1_UNORDERED_MAP
 #include "./serialization/tr1_unordered_map.h"
