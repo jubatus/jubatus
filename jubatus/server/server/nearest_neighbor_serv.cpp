@@ -72,6 +72,10 @@ void nearest_neighbor_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
+uint64_t nearest_neighbor_serv::user_data_version() const {
+  return 1;
+}
+
 void nearest_neighbor_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config config_root(
       lexical_cast<pfi::text::json::json>(config));

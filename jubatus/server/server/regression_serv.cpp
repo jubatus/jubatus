@@ -84,6 +84,10 @@ void regression_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
+uint64_t regression_serv::user_data_version() const {
+  return 1;
+}
+
 bool regression_serv::set_config(const string& config) {
   core::common::jsonconfig::config config_root(lexical_cast<json>(config));
   regression_serv_config conf =

@@ -176,6 +176,10 @@ void graph_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
+uint64_t graph_serv::user_data_version() const {
+  return 1;
+}
+
 std::string graph_serv::create_node() { /* no lock here */
   check_set_config();
 

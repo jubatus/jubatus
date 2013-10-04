@@ -123,6 +123,10 @@ string classifier_serv::get_config() const {
   return config_;
 }
 
+uint64_t classifier_serv::user_data_version() const {
+  return 1;
+}
+
 int classifier_serv::train(
     const vector<pair<string, jubatus::core::fv_converter::datum> >& data) {
   check_set_config();

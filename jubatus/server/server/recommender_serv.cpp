@@ -86,6 +86,10 @@ void recommender_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
+uint64_t recommender_serv::user_data_version() const {
+  return 1;
+}
+
 bool recommender_serv::set_config(const std::string &config) {
   core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   recommender_serv_config conf =

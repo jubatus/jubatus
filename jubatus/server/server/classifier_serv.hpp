@@ -45,6 +45,7 @@ class classifier_serv : public framework::server_base {
   }
 
   void get_status(status_t& status) const;
+  uint64_t user_data_version() const;
 
   bool set_config(const std::string& config);
   std::string get_config() const;

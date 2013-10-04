@@ -101,7 +101,7 @@ void save_server(std::ostream& os,
     msgpack::packer<msgpack::sbuffer> packer(user_data_buf);
     packer.pack_array(2);
 
-    uint64_t user_data_version = 1;  // TODO(gintenlabo): get model version
+    uint64_t user_data_version = server.user_data_version();
     packer.pack(user_data_version);
 
     core::framework::mixable_holder::mixable_list mixables =
@@ -216,8 +216,7 @@ void load_server(std::istream& is,
           core::common::exception::runtime_error("invalid user container"));
     }
 
-    // TODO(gintenlabo): get model version
-    uint64_t user_data_version_expected = 1;
+    uint64_t user_data_version_expected = server.user_data_version();
     uint64_t user_data_version_actual;
     objs[0].convert(&user_data_version_actual);
     if (user_data_version_actual != user_data_version_expected) {
