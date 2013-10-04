@@ -118,7 +118,7 @@ bool classifier_serv::set_config(const string& config) {
   return true;
 }
 
-string classifier_serv::get_config() {
+string classifier_serv::get_config() const {
   check_set_config();
   return config_;
 }

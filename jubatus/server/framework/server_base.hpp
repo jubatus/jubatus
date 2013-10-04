@@ -52,6 +52,8 @@ class server_base {
   void load_file(const std::string& path);
   void event_model_updated();
 
+  virtual std::string get_config() const = 0;
+
   uint64_t update_count() const {
     return update_count_;
   }

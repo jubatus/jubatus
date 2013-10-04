@@ -113,7 +113,7 @@ bool regression_serv::set_config(const string& config) {
   return true;
 }
 
-string regression_serv::get_config() {
+string regression_serv::get_config() const {
   check_set_config();
   return config_;
 }

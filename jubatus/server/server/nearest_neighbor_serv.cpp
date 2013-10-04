@@ -103,7 +103,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
   mixer_->set_mixable_holder(nearest_neighbor_->get_mixable_holder());
 }
 
-std::string nearest_neighbor_serv::get_config() {
+std::string nearest_neighbor_serv::get_config() const {
   DLOG(INFO) << __func__;
   check_set_config();
   return config_;

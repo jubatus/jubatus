@@ -70,8 +70,8 @@ struct system_data_container {
   system_data_container(const server_base& server, const std::string& id_)
       : version(system_data_container_version),
         timestamp(std::time(NULL)),
-        type(server.argv().type),
-        id(id_), config(/* unimplemented */) {
+        type(server.argv().type), id(id_),
+        config(server.get_config()) {
   }
 
   MSGPACK_DEFINE(version, timestamp, type, id, config);

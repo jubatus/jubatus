@@ -49,7 +49,7 @@ class nearest_neighbor_serv : public framework::server_base {
   void get_status(status_t& status) const;
 
   void set_config(const std::string& config);
-  std::string get_config();
+  std::string get_config() const;
 
   int clear();
   int set_row(const std::string& id, const core::fv_converter::datum& dat);

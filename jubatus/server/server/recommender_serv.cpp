@@ -115,7 +115,7 @@ bool recommender_serv::set_config(const std::string &config) {
   return true;
 }
 
-string recommender_serv::get_config() {
+string recommender_serv::get_config() const {
   check_set_config();
   return config_;
 }
