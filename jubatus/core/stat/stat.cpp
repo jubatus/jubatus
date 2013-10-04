@@ -189,6 +189,12 @@ bool stat::load(std::istream& is) {
   ia >> *this;
   return true;
 }
+void stat::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
+}
+void stat::unpack(msgpack::object o) {
+  o.convert(this);
+}
 std::string stat::type() const {
   return "stat";
 }

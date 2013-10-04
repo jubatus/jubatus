@@ -115,14 +115,15 @@ class lof_storage {
   void save(std::ostream& os) const;
   void load(std::istream& is);
 
-  template<class Packer>
-  void pack(Packer& packer) const {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  template<class Buffer>
+  void pack(msgpack::packer<Buffer>& packer) const {
+    packer.pack(*this);
   }
-  template<class Obj>
-  void unpack(Obj o) {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
+  void unpack(msgpack::object o) {
+    o.convert(this);
   }
+
+  MSGPACK_DEFINE(lof_table_, lof_table_diff_, neighbor_num_, reverse_nn_num_);
 
  private:
   static void mark_removed(lof_entry& entry);

@@ -72,14 +72,10 @@ class inverted_index_storage {
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
-  template<class Packer>
-  void pack(Packer& packer) const {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
-  }
-  template<class Obj>
-  void unpack(Obj o) {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
-  }
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
+
+  MSGPACK_DEFINE(inv_, inv_diff_, column2norm_, column2norm_diff_, column2id_);
 
  private:
   static float calc_l2norm(const common::sfv_t& sfv);

@@ -91,6 +91,15 @@ bool recommender_mock_storage::load(std::istream& is) {
   return true;
 }
 
+void recommender_mock_storage::pack(
+    msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
+}
+
+void recommender_mock_storage::unpack(msgpack::object o) {
+  o.convert(this);
+}
+
 void recommender_mock_storage::get_diff(recommender_mock_storage& diff) const {
   diff = *this;
 }

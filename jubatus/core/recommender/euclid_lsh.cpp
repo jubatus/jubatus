@@ -238,6 +238,25 @@ bool euclid_lsh::load_impl(istream& is) {
   return true;
 }
 
+void euclid_lsh::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack_array(5);
+  mixable_storage_->pack(packer);
+  packer.pack(bin_width_);
+  packer.pack(num_probe_);
+  packer.pack(projection_);
+  packer.pack(retain_projection_);
+}
+
+void euclid_lsh::unpack(msgpack::object o) {
+  std::vector<msgpack::object> mems;
+  o.convert(&mems);
+  mixable_storage_->unpack(mems[0]);
+  mems[1].convert(&bin_width_);
+  mems[2].convert(&num_probe_);
+  mems[3].convert(&projection_);
+  mems[4].convert(&retain_projection_);
+}
+
 void euclid_lsh::initialize_model() {
   mixable_storage_.reset(new storage::mixable_lsh_index_storage);
   mixable_storage_->set_model(storage::mixable_lsh_index_storage::model_ptr(

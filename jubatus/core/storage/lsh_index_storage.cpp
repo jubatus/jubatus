@@ -287,6 +287,14 @@ bool lsh_index_storage::load(istream& is) {
   return true;
 }
 
+void lsh_index_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
+}
+
+void lsh_index_storage::unpack(msgpack::object o) {
+  o.convert(this);
+}
+
 void lsh_index_storage::get_diff(lsh_master_table_t& diff) const {
   diff = master_table_diff_;
 }

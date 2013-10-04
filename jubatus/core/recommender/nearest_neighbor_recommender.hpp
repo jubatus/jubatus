@@ -52,6 +52,9 @@ class nearest_neighbor_recommender : public recommender_base {
 
   void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
+
  private:
   bool save_impl(std::ostream& os);
   bool load_impl(std::istream& is);

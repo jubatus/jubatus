@@ -151,6 +151,19 @@ bool lsh::load_impl(std::istream& is) {
   return true;
 }
 
+void lsh::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack_array(2);
+  packer.pack(column2baseval_);
+  mixable_storage_->pack(packer);
+}
+
+void lsh::unpack(msgpack::object o) {
+  std::vector<msgpack::object> mems;
+  o.convert(&mems);
+  mems[0].convert(&column2baseval_);
+  mixable_storage_->unpack(mems[1]);
+}
+
 void lsh::register_mixables_to_holder(framework::mixable_holder& holder) const {
   holder.register_mixable(mixable_storage_);
 }

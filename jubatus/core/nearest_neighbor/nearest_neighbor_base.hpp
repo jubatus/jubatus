@@ -76,6 +76,8 @@ class nearest_neighbor_base {
 
   virtual void save(std::ostream& os) const;
   virtual void load(std::istream& is);
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
 
   virtual void register_mixables_to_holder(framework::mixable_holder& holder)
       const;

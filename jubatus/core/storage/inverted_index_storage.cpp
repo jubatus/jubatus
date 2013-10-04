@@ -213,6 +213,15 @@ bool inverted_index_storage::load(std::istream& is) {
   return true;
 }
 
+void inverted_index_storage::pack(
+    msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
+}
+
+void inverted_index_storage::unpack(msgpack::object o) {
+  o.convert(this);
+}
+
 void inverted_index_storage::calc_scores(
     const common::sfv_t& query,
     vector<pair<string, float> >& scores,

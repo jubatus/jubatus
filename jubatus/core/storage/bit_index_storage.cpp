@@ -162,6 +162,14 @@ bool bit_index_storage::load(std::istream& is) {
   return true;
 }
 
+void bit_index_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
+}
+
+void bit_index_storage::unpack(msgpack::object o) {
+  o.convert(this);
+}
+
 string bit_index_storage::name() const {
   return string("bit_index_storage");
 }

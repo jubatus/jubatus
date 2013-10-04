@@ -59,14 +59,8 @@ class recommender_mock_storage {
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
-  template<class Packer>
-  void pack(Packer& packer) const {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
-  }
-  template<class Obj>
-  void unpack(Obj o) {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
-  }
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
 
   void get_diff(recommender_mock_storage& diff) const;
   void set_mixed_and_clear_diff(const recommender_mock_storage& mixed_diff);

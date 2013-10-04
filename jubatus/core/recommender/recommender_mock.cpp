@@ -127,6 +127,19 @@ bool recommender_mock::load_impl(istream& is) {
   return true;
 }
 
+void recommender_mock::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack_array(2);
+  packer.pack(orig_);
+  mixable_storage_->pack(packer);
+}
+
+void recommender_mock::unpack(msgpack::object o) {
+  std::vector<msgpack::object> mems;
+  o.convert(&mems);
+  mems[0].convert(&orig_);
+  mixable_storage_->unpack(mems[1]);
+}
+
 void recommender_mock::register_mixables_to_holder(
     framework::mixable_holder& holder) const {
   holder.register_mixable(mixable_storage_);

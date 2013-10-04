@@ -90,18 +90,15 @@ class lsh_index_storage {
   bool save(std::ostream& os);
   bool load(std::istream& is);
 
-  template<class Packer>
-  void pack(Packer& packer) const {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
-  }
-  template<class Obj>
-  void unpack(Obj o) {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("unimplemented"));
-  }
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
 
   void get_diff(lsh_master_table_t& diff) const;
   void set_mixed_and_clear_diff(const lsh_master_table_t& mixed_diff);
   void mix(const lsh_master_table_t& lhs, lsh_master_table_t& rhs) const;
+
+  MSGPACK_DEFINE(master_table_, master_table_diff_, lsh_table_,
+      lsh_table_diff_, shift_, table_num_, key_manager_);
 
  private:
   friend class pfi::data::serialization::access;
