@@ -136,6 +136,9 @@ void recommender_mock::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
 void recommender_mock::unpack(msgpack::object o) {
   std::vector<msgpack::object> mems;
   o.convert(&mems);
+  if (mems.size() != 2) {
+    throw msgpack::type_error();
+  }
   mems[0].convert(&orig_);
   mixable_storage_->unpack(mems[1]);
 }

@@ -160,6 +160,9 @@ void lsh::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
 void lsh::unpack(msgpack::object o) {
   std::vector<msgpack::object> mems;
   o.convert(&mems);
+  if (mems.size() != 2) {
+    throw msgpack::type_error();
+  }
   mems[0].convert(&column2baseval_);
   mixable_storage_->unpack(mems[1]);
 }

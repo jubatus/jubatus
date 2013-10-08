@@ -250,6 +250,9 @@ void euclid_lsh::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
 void euclid_lsh::unpack(msgpack::object o) {
   std::vector<msgpack::object> mems;
   o.convert(&mems);
+  if (mems.size() != 5) {
+    throw msgpack::type_error();
+  }
   mixable_storage_->unpack(mems[0]);
   mems[1].convert(&bin_width_);
   mems[2].convert(&num_probe_);
