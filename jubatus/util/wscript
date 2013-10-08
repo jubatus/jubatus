@@ -43,6 +43,6 @@ def build(bld):
       'jubatus_util_system',
       'jubatus_util_text',
       ])
-  bld.install_files('${HPREFIX}/', ['pfi-config.h'])
+  bld.install_files('${HPREFIX}/', ['util-config.h'])
 
   bld.recurse(subdirs)
