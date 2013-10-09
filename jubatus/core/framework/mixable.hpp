@@ -96,14 +96,9 @@ class mixable_holder {
     unpacker.next(&unpacked);
     msgpack::object o = unpacked.get();
 
-    if (o.type != msgpack::type::ARRAY) {
-      // throw runtime error
-      JUBATUS_ASSERT_UNREACHABLE();
-    }
-
-    if (o.via.array.size != mixables_.size()) {
-      // throw runtime error
-      JUBATUS_ASSERT_UNREACHABLE();
+    if (o.type != msgpack::type::ARRAY ||
+        o.via.array.size != mixables_.size()) {
+      throw msgpack::type_error();
     }
 
     msgpack::object* p = o.via.array.ptr;
