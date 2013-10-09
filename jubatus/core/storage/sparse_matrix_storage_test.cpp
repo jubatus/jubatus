@@ -134,6 +134,19 @@ TEST(sparse_matrix_storage, save_load) {
   EXPECT_FLOAT_EQ(1.0, s2.get("r1", "c1"));
 }
 
+TEST(sparse_matrix_storage, pack_and_unpack) {
+  sparse_matrix_storage s;
+  s.set("r1", "c1", 1.0);
+  msgpack::sbuffer buf;
+  msgpack::pack(buf, s);
+
+  sparse_matrix_storage s2;
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, buf.data(), buf.size());
+  unpacked.get().convert(&s2);
+  EXPECT_FLOAT_EQ(1.0, s2.get("r1", "c1"));
+}
+
 TEST(sparse_matrix_storage, remove) {
   sparse_matrix_storage s;
   s.set("r1", "c1", 1.0);

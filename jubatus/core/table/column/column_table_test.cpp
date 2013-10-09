@@ -641,6 +641,89 @@ TEST(table, bv_load) {
   ASSERT_TRUE(bvc[2].get_bit(1000));
 }
 
+TEST(table, pack) {
+  column_table base;
+  vector<column_type> schema;
+  schema.push_back(column_type(column_type::int32_type));
+  schema.push_back(column_type(column_type::float_type));
+  base.init(schema);
+  ASSERT_TRUE(base.add("aa", owner("local"), 54, 21.1f));
+  ASSERT_TRUE(base.add("bb", owner("local"), 899, 232.1f));
+  ASSERT_TRUE(base.add("cc", owner("local"), 21, 2.0f));
+  msgpack::sbuffer buf;
+  msgpack::packer<msgpack::sbuffer> packer(buf);
+  base.pack(packer);
+}
+
+TEST(table, unpack) {
+  column_table base;
+  vector<column_type> schema;
+  schema.push_back(column_type(column_type::int32_type));
+  schema.push_back(column_type(column_type::double_type));
+  base.init(schema);
+  ASSERT_TRUE(base.add("aa", owner("local"), 54, 21.1));
+  ASSERT_TRUE(base.add("bb", owner("local"), 899, 232.1));
+  ASSERT_TRUE(base.add("cc", owner("local"), 21, 2.0));
+
+  msgpack::sbuffer buf;
+  {
+    msgpack::packer<msgpack::sbuffer> packer(buf);
+    base.pack(packer);
+  }
+
+  column_table loaded;
+  {
+    msgpack::unpacked unpacked;
+    msgpack::unpack(&unpacked, buf.data(), buf.size());
+    loaded.unpack(unpacked.get());
+  }
+
+  const int32_column& ic = loaded.get_int32_column(0);
+  const double_column& fc = loaded.get_double_column(1);
+  ASSERT_EQ(ic[0], 54);
+  ASSERT_EQ(ic[1], 899);
+  ASSERT_EQ(ic[2], 21);
+  ASSERT_FLOAT_EQ(fc[0], 21.1f);
+  ASSERT_FLOAT_EQ(fc[1], 232.1f);
+  ASSERT_FLOAT_EQ(fc[2], 2.0f);
+}
+
+TEST(table, bv_unpack) {
+  column_table base;
+  vector<column_type> schema;
+  schema.push_back(column_type(column_type::int32_type));
+  schema.push_back(column_type(column_type::bit_vector_type, 2020));
+  base.init(schema);
+  bit_vector bv(2020);
+  ASSERT_TRUE(base.add("aa", owner("local"), 54, bv));
+  bv.set_bit(233);
+  ASSERT_TRUE(base.add("bb", owner("local"), 899, bv));
+  bv.set_bit(1000);
+  ASSERT_TRUE(base.add("cc", owner("local"), 21, bv));
+
+  msgpack::sbuffer buf;
+  {
+    msgpack::packer<msgpack::sbuffer> packer(buf);
+    base.pack(packer);
+  }
+
+  column_table loaded;
+  {
+    msgpack::unpacked unpacked;
+    msgpack::unpack(&unpacked, buf.data(), buf.size());
+    loaded.unpack(unpacked.get());
+  }
+
+  const int32_column& ic = loaded.get_int32_column(0);
+  const bit_vector_column& bvc = loaded.get_bit_vector_column(1);
+  ASSERT_EQ(ic[0], 54);
+  ASSERT_EQ(ic[1], 899);
+  ASSERT_EQ(ic[2], 21);
+  ASSERT_TRUE(bvc[1].get_bit(233));
+  ASSERT_TRUE(bvc[2].get_bit(233));
+  ASSERT_TRUE(bvc[2].get_bit(1000));
+}
+
 TEST(table, get_row) {
   column_table base;
   vector<column_type> schema;

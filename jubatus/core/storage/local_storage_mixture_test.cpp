@@ -33,7 +33,7 @@ namespace jubatus {
 namespace core {
 namespace storage {
 
-TEST(local_storage_mixture, save_load) {
+TEST(local_storage_mixture, pack_and_unpack) {
   local_storage_mixture st;
   {
     st.set3("a", "x", val3_t(1, 11, 111));
@@ -42,8 +42,35 @@ TEST(local_storage_mixture, save_load) {
     st.set3("b", "x", val3_t(12, 1212, 121212));
     st.set3("b", "z", val3_t(45, 4545, 454545));
   }
-  stringstream ss;
-  st.save(ss);
+
+  msgpack::sbuffer buf;
+  {
+    msgpack::packer<msgpack::sbuffer> packer(buf);
+    st.pack(packer);
+  }
+
+  local_storage_mixture st2;
+  {
+    msgpack::unpacked unpacked;
+    msgpack::unpack(&unpacked, buf.data(), buf.size());
+    st2.unpack(unpacked.get());
+  }
+
+  feature_val1_t a1, b1;
+  st.get("a", a1);
+  st.get("b", b1);
+  feature_val1_t a2, b2;
+  st2.get("a", a2);
+  st2.get("b", b2);
+
+  ASSERT_EQ(a1.size(), a2.size());
+  for (size_t i = 0; i < a1.size(); ++i) {
+    EXPECT_EQ(a1[i], a2[i]);
+  }
+  ASSERT_EQ(b1.size(), b2.size());
+  for (size_t i = 0; i < b1.size(); ++i) {
+    EXPECT_EQ(b1[i], b2[i]);
+  }
 }
 
 TEST(local_storage_mixture, get_diff) {
