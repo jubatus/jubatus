@@ -78,12 +78,12 @@ void nearest_neighbor_recommender::register_mixables_to_holder(
   nearest_neighbor_engine_->register_mixables_to_holder(holder);
 }
 
-void nearest_neighbor_recommender::pack(
+void nearest_neighbor_recommender::pack_impl(
     msgpack::packer<msgpack::sbuffer>& packer) const {
   nearest_neighbor_engine_->pack(packer);
 }
 
-void nearest_neighbor_recommender::unpack(msgpack::object o) {
+void nearest_neighbor_recommender::unpack_impl(msgpack::object o) {
   nearest_neighbor_engine_->unpack(o);
 }
 

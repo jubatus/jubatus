@@ -66,12 +66,12 @@ class recommender_mock : public recommender_base {
   virtual std::string type() const;
   virtual void register_mixables_to_holder(framework::mixable_holder& holder)
       const;
-  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
-  virtual void unpack(msgpack::object o);
 
  private:
   virtual bool save_impl(std::ostream&);
   virtual bool load_impl(std::istream&);
+  void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack_impl(msgpack::object o);
 
   pfi::lang::shared_ptr<mixable_recommender_mock_storage> mixable_storage_;
 };

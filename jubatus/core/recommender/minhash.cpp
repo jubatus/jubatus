@@ -181,10 +181,10 @@ bool minhash::load_impl(std::istream& is) {
   return true;
 }
 
-void minhash::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void minhash::pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const {
   mixable_storage_->pack(packer);
 }
-void minhash::unpack(msgpack::object o) {
+void minhash::unpack_impl(msgpack::object o) {
   mixable_storage_->unpack(o);
 }
 

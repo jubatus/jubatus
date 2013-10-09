@@ -238,7 +238,7 @@ bool euclid_lsh::load_impl(istream& is) {
   return true;
 }
 
-void euclid_lsh::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void euclid_lsh::pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack_array(5);
   mixable_storage_->pack(packer);
   packer.pack(bin_width_);
@@ -247,7 +247,7 @@ void euclid_lsh::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack(retain_projection_);
 }
 
-void euclid_lsh::unpack(msgpack::object o) {
+void euclid_lsh::unpack_impl(msgpack::object o) {
   std::vector<msgpack::object> mems;
   o.convert(&mems);
   if (mems.size() != 5) {

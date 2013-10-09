@@ -90,8 +90,6 @@ class euclid_lsh : public recommender_base {
   virtual std::string type() const;
   virtual void register_mixables_to_holder(framework::mixable_holder& holder)
       const;
-  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
-  virtual void unpack(msgpack::object o);
 
  private:
   std::vector<float> calculate_lsh(const common::sfv_t& query);
@@ -99,6 +97,8 @@ class euclid_lsh : public recommender_base {
 
   virtual bool save_impl(std::ostream& os);
   virtual bool load_impl(std::istream& is);
+  void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack_impl(msgpack::object o);
 
   void initialize_model();
 

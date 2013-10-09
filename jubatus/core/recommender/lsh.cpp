@@ -151,13 +151,13 @@ bool lsh::load_impl(std::istream& is) {
   return true;
 }
 
-void lsh::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void lsh::pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack_array(2);
   packer.pack(column2baseval_);
   mixable_storage_->pack(packer);
 }
 
-void lsh::unpack(msgpack::object o) {
+void lsh::unpack_impl(msgpack::object o) {
   std::vector<msgpack::object> mems;
   o.convert(&mems);
   if (mems.size() != 2) {

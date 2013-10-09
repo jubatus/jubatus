@@ -69,8 +69,8 @@ class recommender_base {
   void save(std::ostream&);
   void load(std::istream&);
 
-  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
-  virtual void unpack(msgpack::object o) = 0;
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
 
   virtual void register_mixables_to_holder(framework::mixable_holder& holder)
       const = 0;
@@ -81,6 +81,8 @@ class recommender_base {
  protected:
   virtual bool save_impl(std::ostream&) = 0;
   virtual bool load_impl(std::istream&) = 0;
+  virtual void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
+  virtual void unpack_impl(msgpack::object o) = 0;
 
   static const uint64_t complete_row_similar_num_;
   core::storage::sparse_matrix_storage orig_;

@@ -127,13 +127,14 @@ bool recommender_mock::load_impl(istream& is) {
   return true;
 }
 
-void recommender_mock::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void recommender_mock::pack_impl(
+    msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack_array(2);
   packer.pack(orig_);
   mixable_storage_->pack(packer);
 }
 
-void recommender_mock::unpack(msgpack::object o) {
+void recommender_mock::unpack_impl(msgpack::object o) {
   std::vector<msgpack::object> mems;
   o.convert(&mems);
   if (mems.size() != 2) {

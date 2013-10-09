@@ -116,11 +116,14 @@ TYPED_TEST_P(recommender_random_test, random) {
   }
   EXPECT_GT(correct, 5u);
 
-  // save the recommender
-  stringstream oss;
-  r.save(oss);
+  // pack and unpack the recommender
+  msgpack::sbuffer buf;
+  msgpack::packer<msgpack::sbuffer> packer(buf);
+  r.pack(packer);
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, buf.data(), buf.size());
   TypeParam r2;
-  r2.load(oss);
+  r2.unpack(unpacked.get());
 
   // Run the same test
   ids.clear();
@@ -174,17 +177,20 @@ void compare_recommenders(recommender_base& r1, recommender_base& r2,
     EXPECT_TRUE(comp1 == comp2);
 }
 
-TYPED_TEST_P(recommender_random_test, save_load) {
+TYPED_TEST_P(recommender_random_test, pack_and_unpack) {
   TypeParam r;
 
   // Generate random data
   update_random(r);
 
   // save and load
-  stringstream ss;
-  r.save(ss);
+  msgpack::sbuffer buf;
+  msgpack::packer<msgpack::sbuffer> packer(buf);
+  r.pack(packer);
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, buf.data(), buf.size());
   TypeParam r2;
-  r2.load(ss);
+  r2.unpack(unpacked.get());
 
   vector<string> row_ids;
   r2.get_all_row_ids(row_ids);
@@ -267,7 +273,7 @@ TYPED_TEST_P(recommender_random_test, mix) {
 }
 
 REGISTER_TYPED_TEST_CASE_P(recommender_random_test,
-    trivial, random, save_load, get_all_row_ids,
+    trivial, random, pack_and_unpack, get_all_row_ids,
     diff, mix);
 
 typedef testing::Types<inverted_index, lsh, minhash, euclid_lsh>
