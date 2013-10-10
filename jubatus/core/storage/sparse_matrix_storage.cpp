@@ -161,18 +161,6 @@ void sparse_matrix_storage::clear() {
   // norm_ptr_->clear();
 }
 
-bool sparse_matrix_storage::save(ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
-}
-
-bool sparse_matrix_storage::load(istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
-  return true;
-}
-
 }  // namespace storage
 }  // namespace core
 }  // namespace jubatus

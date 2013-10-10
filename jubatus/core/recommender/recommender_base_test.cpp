@@ -87,14 +87,6 @@ class recommender_impl : public recommender_base {
     return string("recommender_impl");
   }
 
-  bool save_impl(std::ostream&) {
-    return true;
-  }
-
-  bool load_impl(std::istream&) {
-    return true;
-  }
-
   void register_mixables_to_holder(framework::mixable_holder&) const {
   }
 

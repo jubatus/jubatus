@@ -150,18 +150,6 @@ void bit_index_storage::similar_row(
   }
 }
 
-bool bit_index_storage::save(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
-}
-
-bool bit_index_storage::load(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
-  return true;
-}
-
 void bit_index_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack(*this);
 }

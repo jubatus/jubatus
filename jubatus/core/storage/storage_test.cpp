@@ -119,18 +119,6 @@ class stub_storage : public storage_base {
     data_[feature][klass] = w;
   }
 
-  bool save(std::ostream& os) {
-    pfi::data::serialization::binary_oarchive oa(os);
-    oa << *this;
-    return true;
-  }
-
-  bool load(std::istream& is) {
-    pfi::data::serialization::binary_iarchive ia(is);
-    ia >> *this;
-    return true;
-  }
-
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
     packer.pack(*this);
   }

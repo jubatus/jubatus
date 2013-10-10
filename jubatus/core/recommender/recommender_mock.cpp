@@ -113,20 +113,6 @@ string recommender_mock::type() const {
   return "recommender_mock";
 }
 
-bool recommender_mock::save_impl(ostream& os) {
-  pfi::data::serialization::binary_oarchive bo(os);
-  bo << orig_;
-  mixable_storage_->save(os);
-  return true;
-}
-
-bool recommender_mock::load_impl(istream& is) {
-  pfi::data::serialization::binary_iarchive bi(is);
-  bi >> orig_;
-  mixable_storage_->load(is);
-  return true;
-}
-
 void recommender_mock::pack_impl(
     msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack_array(2);

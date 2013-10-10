@@ -229,16 +229,6 @@ void lof_storage::mix(const lof_table_t& lhs, lof_table_t& rhs) const {
   }
 }
 
-void lof_storage::save(ostream& os) const {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << const_cast<lof_storage&>(*this);
-}
-
-void lof_storage::load(istream& is) {
-  binary_iarchive ia(is);
-  ia >> *this;
-}
-
 // private
 
 // static

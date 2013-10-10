@@ -79,18 +79,6 @@ string recommender_mock_storage::name() const {
   return "recommender_mock_storage";
 }
 
-bool recommender_mock_storage::save(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive bo(os);
-  bo << *this;
-  return true;
-}
-
-bool recommender_mock_storage::load(std::istream& is) {
-  pfi::data::serialization::binary_iarchive bi(is);
-  bi >> *this;
-  return true;
-}
-
 void recommender_mock_storage::pack(
     msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack(*this);

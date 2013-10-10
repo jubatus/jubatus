@@ -179,16 +179,6 @@ void stat::clear() {
   stats_.clear();
 }
 
-bool stat::save(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
-}
-bool stat::load(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
-  return true;
-}
 void stat::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack(*this);
 }

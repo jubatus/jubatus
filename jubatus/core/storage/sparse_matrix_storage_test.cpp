@@ -123,17 +123,6 @@ TEST(sparse_matrix_storage, calc_l2norm) {
   EXPECT_FLOAT_EQ(std::sqrt(14.0), s.calc_l2norm("r1"));
 }
 
-TEST(sparse_matrix_storage, save_load) {
-  sparse_matrix_storage s;
-  s.set("r1", "c1", 1.0);
-  stringstream ss;
-  s.save(ss);
-
-  sparse_matrix_storage s2;
-  s2.load(ss);
-  EXPECT_FLOAT_EQ(1.0, s2.get("r1", "c1"));
-}
-
 TEST(sparse_matrix_storage, pack_and_unpack) {
   sparse_matrix_storage s;
   s.set("r1", "c1", 1.0);

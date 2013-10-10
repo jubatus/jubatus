@@ -275,18 +275,6 @@ string lsh_index_storage::name() const {
   return "lsh_index_storage";
 }
 
-bool lsh_index_storage::save(ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
-}
-
-bool lsh_index_storage::load(istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
-  return true;
-}
-
 void lsh_index_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack(*this);
 }

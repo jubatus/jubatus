@@ -105,17 +105,6 @@ void recommender_base::complete_row(const common::sfv_t& query,
   }
 }
 
-void recommender_base::save(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << orig_;
-  save_impl(os);
-}
-void recommender_base::load(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> orig_;
-  load_impl(is);
-}
-
 void recommender_base::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack_array(2);
   packer.pack(orig_);

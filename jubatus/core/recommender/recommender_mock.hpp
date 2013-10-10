@@ -68,8 +68,6 @@ class recommender_mock : public recommender_base {
       const;
 
  private:
-  virtual bool save_impl(std::ostream&);
-  virtual bool load_impl(std::istream&);
   void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack_impl(msgpack::object o);
 

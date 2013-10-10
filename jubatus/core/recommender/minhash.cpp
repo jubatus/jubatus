@@ -172,15 +172,6 @@ float minhash::calc_hash(uint64_t a, uint64_t b, float val) {
 string minhash::type() const {
   return string("minhash");
 }
-bool minhash::save_impl(std::ostream& os) {
-  mixable_storage_->save(os);
-  return true;
-}
-bool minhash::load_impl(std::istream& is) {
-  mixable_storage_->load(is);
-  return true;
-}
-
 void minhash::pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const {
   mixable_storage_->pack(packer);
 }

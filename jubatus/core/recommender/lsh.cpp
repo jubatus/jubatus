@@ -137,20 +137,6 @@ string lsh::type() const {
   return string("lsh");
 }
 
-bool lsh::save_impl(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << column2baseval_;
-  mixable_storage_->save(os);
-  return true;
-}
-
-bool lsh::load_impl(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> column2baseval_;
-  mixable_storage_->load(is);
-  return true;
-}
-
 void lsh::pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack_array(2);
   packer.pack(column2baseval_);

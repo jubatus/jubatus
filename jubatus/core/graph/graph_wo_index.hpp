@@ -132,9 +132,6 @@ class graph_wo_index
 
   static void remove_by_swap(std::vector<edge_id_t>& edges, edge_id_t eid);
 
-  bool save_imp(std::ostream& os);
-  bool load_imp(std::istream& is);
-
   node_info_map local_nodes_;
   edge_info_map local_edges_;
 

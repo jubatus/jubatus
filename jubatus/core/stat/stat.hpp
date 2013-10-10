@@ -76,12 +76,9 @@ class stat : public pfi::lang::enable_shared_from_this<stat> {
 
   virtual void clear();
 
-  virtual bool save(std::ostream&);
-  virtual bool load(std::istream&);
-  std::string type() const;
-
   virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   virtual void unpack(msgpack::object o);
+  std::string type() const;
 
   virtual void register_mixables_to_holder(
       framework::mixable_holder& holder) const;

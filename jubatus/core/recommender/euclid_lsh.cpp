@@ -224,20 +224,6 @@ vector<float> euclid_lsh::get_projection(uint32_t seed) {
   return proj;
 }
 
-bool euclid_lsh::save_impl(ostream& os) {
-  mixable_storage_->save(os);
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << bin_width_ << num_probe_ << projection_ << retain_projection_;
-  return true;
-}
-
-bool euclid_lsh::load_impl(istream& is) {
-  mixable_storage_->load(is);
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> bin_width_ >> num_probe_ >> projection_ >> retain_projection_;
-  return true;
-}
-
 void euclid_lsh::pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack_array(5);
   mixable_storage_->pack(packer);

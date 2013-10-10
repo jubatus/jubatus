@@ -112,9 +112,6 @@ class lof_storage {
   void set_mixed_and_clear_diff(const lof_table_t& mixed_diff);
   void mix(const lof_table_t& lhs, lof_table_t& rhs) const;
 
-  void save(std::ostream& os) const;
-  void load(std::istream& is);
-
   template<class Buffer>
   void pack(msgpack::packer<Buffer>& packer) const {
     packer.pack(*this);

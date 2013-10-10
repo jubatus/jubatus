@@ -33,14 +33,6 @@ struct int_model {
 
   int value;
 
-  void save(std::ostream& ofs) {
-    ofs << value;
-  }
-
-  void load(std::istream& ifs) {
-    ifs >> value;
-  }
-
   MSGPACK_DEFINE(value);
 
   template<class Buffer>
@@ -86,18 +78,6 @@ TEST(mixable, config_not_set) {
   mixable_int m;
   EXPECT_THROW(m.get_diff(), common::config_not_set);
   EXPECT_THROW(m.put_diff(byte_buffer()), common::config_not_set);
-}
-
-TEST(mixable, save_load) {
-  mixable_int m;
-  m.set_model(mixable_int::model_ptr(new int_model));
-  m.get_model()->value = 10;
-
-  stringstream ss;
-  m.save(ss);
-  m.get_model()->value = 5;
-  m.load(ss);
-  EXPECT_EQ(10, m.get_model()->value);
 }
 
 TEST(mixable, pack_and_unpack) {

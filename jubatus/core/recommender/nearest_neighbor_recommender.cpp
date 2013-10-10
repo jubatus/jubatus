@@ -87,16 +87,6 @@ void nearest_neighbor_recommender::unpack_impl(msgpack::object o) {
   nearest_neighbor_engine_->unpack(o);
 }
 
-bool nearest_neighbor_recommender::save_impl(std::ostream& os) {
-  nearest_neighbor_engine_->save(os);
-  return true;
-}
-
-bool nearest_neighbor_recommender::load_impl(std::istream& is) {
-  nearest_neighbor_engine_->load(is);
-  return true;
-}
-
 }  // namespace recommender
 }  // namespace core
 }  // namespace jubatus

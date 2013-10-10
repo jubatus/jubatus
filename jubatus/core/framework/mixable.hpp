@@ -53,8 +53,6 @@ class mixable0 {
   virtual std::string pull(const std::string&) const = 0;
   virtual void push(const std::string&) = 0;
 
-  virtual void save(std::ostream& ofs) = 0;
-  virtual void load(std::istream& ifs) = 0;
   virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
   virtual void unpack(msgpack::object o) = 0;
   virtual void clear() = 0;
@@ -198,14 +196,6 @@ class mixable : public mixable0 {
     } else {
       throw JUBATUS_EXCEPTION(common::config_not_set());
     }
-  }
-
-  void save(std::ostream& os) {
-    model_->save(os);
-  }
-
-  void load(std::istream& is) {
-    model_->load(is);
   }
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const {

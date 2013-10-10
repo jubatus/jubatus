@@ -69,9 +69,6 @@ class inverted_index_storage {
 
   std::string name() const;
 
-  bool save(std::ostream& os);
-  bool load(std::istream& is);
-
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);
 

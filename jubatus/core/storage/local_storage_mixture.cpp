@@ -236,18 +236,6 @@ void local_storage_mixture::clear() {
   id_features3_t().swap(tbl_diff_);
 }
 
-bool local_storage_mixture::save(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
-}
-
-bool local_storage_mixture::load(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
-  return true;
-}
-
 void local_storage_mixture::pack(
     msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack(*this);
