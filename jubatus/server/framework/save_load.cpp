@@ -103,13 +103,7 @@ void save_server(std::ostream& os,
 
     uint64_t user_data_version = server.user_data_version();
     packer.pack(user_data_version);
-
-    core::framework::mixable_holder::mixable_list mixables =
-        server.get_mixable_holder()->get_mixables();
-    packer.pack_array(mixables.size());
-    for (size_t i = 0; i < mixables.size(); ++i) {
-      mixables[i]->pack(packer);
-    }
+    server.get_mixable_holder()->pack(packer);
   }
 
   char header_buf[48];
@@ -203,9 +197,6 @@ void load_server(std::istream& is,
   }
 
   {
-    core::framework::mixable_holder::mixable_list mixables =
-        server.get_mixable_holder()->get_mixables();
-
     msgpack::unpacked unpacked;
     msgpack::unpack(&unpacked, &user_data_buf[0], user_data_size);
 
@@ -225,15 +216,7 @@ void load_server(std::istream& is,
             "user data version mismatched"));
     }
 
-    std::vector<msgpack::object> packed_mixables;
-    objs[1].convert(&packed_mixables);
-    if (packed_mixables.size() != mixables.size()) {
-      throw JUBATUS_EXCEPTION(
-          core::common::exception::runtime_error("invalid user container"));
-    }
-    for (size_t i = 0; i < mixables.size(); ++i) {
-      mixables[i]->unpack(packed_mixables[i]);
-    }
+    server.get_mixable_holder()->unpack(objs[1]);
   }
 }
 

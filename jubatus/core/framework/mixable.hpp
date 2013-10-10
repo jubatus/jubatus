@@ -82,20 +82,14 @@ class mixable_holder {
     return rw_mutex_;
   }
 
-  void pack(msgpack::sbuffer& buf) const {
-    msgpack::packer<msgpack::sbuffer> packer(buf);
-
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
     packer.pack_array(mixables_.size());
     for (size_t i = 0; i < mixables_.size(); ++i) {
       mixables_[i]->pack(packer);
     }
   }
 
-  void unpack(msgpack::unpacker& unpacker) {
-    msgpack::unpacked unpacked;
-    unpacker.next(&unpacked);
-    msgpack::object o = unpacked.get();
-
+  void unpack(msgpack::object o) {
     if (o.type != msgpack::type::ARRAY ||
         o.via.array.size != mixables_.size()) {
       throw msgpack::type_error();
