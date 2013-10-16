@@ -91,6 +91,11 @@ uint32_t calc_crc32(const char* header,  // header size is 28 (fixed)
 
 void save_server(std::ostream& os,
     const server_base& server, const std::string& id) {
+  if (id == "") {
+    throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("empty id is not allowed"));
+  }
+
   init_versions();
 
   msgpack::sbuffer system_data_buf;
