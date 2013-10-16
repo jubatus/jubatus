@@ -19,7 +19,7 @@ class recommender_impl_ : public recommender<recommender_impl_> {
   explicit recommender_impl_(const jubatus::server::framework::server_argv& a):
     recommender<recommender_impl_>(a.timeout),
     p_(new jubatus::server::framework::server_helper<recommender_serv>(a,
-         true)) {
+        true)) {
   }
   std::string get_config(const std::string& name) {
     JRLOCK_(p_);
@@ -32,7 +32,7 @@ class recommender_impl_ : public recommender<recommender_impl_> {
   }
 
   bool update_row(const std::string& name, const std::string& id,
-       const jubatus::core::fv_converter::datum& row) {
+      const jubatus::core::fv_converter::datum& row) {
     JWLOCK_(p_);
     return get_p()->update_row(id, row);
   }
@@ -55,19 +55,19 @@ class recommender_impl_ : public recommender<recommender_impl_> {
   }
 
   similar_result similar_row_from_id(const std::string& name,
-       const std::string& id, uint32_t size) {
+      const std::string& id, uint32_t size) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_id(id, size);
   }
 
   similar_result similar_row_from_datum(const std::string& name,
-       const jubatus::core::fv_converter::datum& row, uint32_t size) {
+      const jubatus::core::fv_converter::datum& row, uint32_t size) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_datum(row, size);
   }
 
   jubatus::core::fv_converter::datum decode_row(const std::string& name,
-       const std::string& id) {
+      const std::string& id) {
     JRLOCK_(p_);
     return get_p()->decode_row(id);
   }
@@ -78,14 +78,14 @@ class recommender_impl_ : public recommender<recommender_impl_> {
   }
 
   float calc_similarity(const std::string& name,
-       const jubatus::core::fv_converter::datum& lhs,
-       const jubatus::core::fv_converter::datum& rhs) {
+      const jubatus::core::fv_converter::datum& lhs,
+      const jubatus::core::fv_converter::datum& rhs) {
     JRLOCK_(p_);
     return get_p()->calc_similarity(lhs, rhs);
   }
 
   float calc_l2norm(const std::string& name,
-       const jubatus::core::fv_converter::datum& row) {
+      const jubatus::core::fv_converter::datum& row) {
     JRLOCK_(p_);
     return get_p()->calc_l2norm(row);
   }

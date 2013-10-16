@@ -20,7 +20,7 @@ class nearest_neighbor_impl_ : public nearest_neighbor<nearest_neighbor_impl_> {
       const jubatus::server::framework::server_argv& a):
     nearest_neighbor<nearest_neighbor_impl_>(a.timeout),
     p_(new jubatus::server::framework::server_helper<nearest_neighbor_serv>(a,
-         true)) {
+        true)) {
   }
   bool clear(const std::string& name) {
     JWLOCK_(p_);
@@ -28,31 +28,31 @@ class nearest_neighbor_impl_ : public nearest_neighbor<nearest_neighbor_impl_> {
   }
 
   bool set_row(const std::string& name, const std::string& id,
-       const jubatus::core::fv_converter::datum& d) {
+      const jubatus::core::fv_converter::datum& d) {
     JWLOCK_(p_);
     return get_p()->set_row(id, d);
   }
 
   neighbor_result neighbor_row_from_id(const std::string& name,
-       const std::string& id, uint32_t size) {
+      const std::string& id, uint32_t size) {
     JRLOCK_(p_);
     return get_p()->neighbor_row_from_id(id, size);
   }
 
   neighbor_result neighbor_row_from_data(const std::string& name,
-       const jubatus::core::fv_converter::datum& query, uint32_t size) {
+      const jubatus::core::fv_converter::datum& query, uint32_t size) {
     JRLOCK_(p_);
     return get_p()->neighbor_row_from_data(query, size);
   }
 
   neighbor_result similar_row_from_id(const std::string& name,
-       const std::string& id, int32_t ret_num) {
+      const std::string& id, int32_t ret_num) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_id(id, ret_num);
   }
 
   neighbor_result similar_row_from_data(const std::string& name,
-       const jubatus::core::fv_converter::datum& query, int32_t ret_num) {
+      const jubatus::core::fv_converter::datum& query, int32_t ret_num) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_data(query, ret_num);
   }

@@ -22,21 +22,21 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_random<std::string>("get_config");
     k.register_async_random<std::string>("create_node");
     k.register_async_cht<2, bool>("remove_node", pfi::lang::function<bool(bool,
-         bool)>(&jubatus::server::framework::pass<bool>));
+        bool)>(&jubatus::server::framework::pass<bool>));
     k.register_async_cht<2, bool, std::map<std::string, std::string> >(
         "update_node", pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_cht<1, uint64_t, edge>("create_edge",
-         pfi::lang::function<uint64_t(uint64_t, uint64_t)>(
+        pfi::lang::function<uint64_t(uint64_t, uint64_t)>(
         &jubatus::server::framework::pass<uint64_t>));
     k.register_async_cht<2, bool, uint64_t, edge>("update_edge",
-         pfi::lang::function<bool(bool, bool)>(
+        pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_cht<2, bool, uint64_t>("remove_edge",
-         pfi::lang::function<bool(bool, bool)>(
+        pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_random<double, std::string, int32_t,
-         jubatus::core::graph::preset_query>("get_centrality");
+        jubatus::core::graph::preset_query>("get_centrality");
     k.register_async_broadcast<bool, jubatus::core::graph::preset_query>(
         "add_centrality_query", pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
@@ -54,27 +54,27 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_broadcast<bool>("update_index", pfi::lang::function<bool(
         bool, bool)>(&jubatus::server::framework::all_and));
     k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
-         bool)>(&jubatus::server::framework::all_and));
+        bool)>(&jubatus::server::framework::all_and));
     k.register_async_cht<2, jubatus::core::graph::node_info>("get_node",
-         pfi::lang::function<jubatus::core::graph::node_info(
+        pfi::lang::function<jubatus::core::graph::node_info(
         jubatus::core::graph::node_info, jubatus::core::graph::node_info)>(
         &jubatus::server::framework::pass<jubatus::core::graph::node_info>));
     k.register_async_cht<2, edge, uint64_t>("get_edge",
-         pfi::lang::function<edge(edge, edge)>(
+        pfi::lang::function<edge(edge, edge)>(
         &jubatus::server::framework::pass<edge>));
     k.register_async_broadcast<bool, std::string>("save",
-         pfi::lang::function<bool(bool, bool)>(
+        pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_broadcast<bool, std::string>("load",
-         pfi::lang::function<bool(bool, bool)>(
+        pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_broadcast<std::map<std::string, std::map<std::string,
-         std::string> > >("get_status",
-         pfi::lang::function<std::map<std::string, std::map<std::string,
-         std::string> >(std::map<std::string, std::map<std::string,
-         std::string> >, std::map<std::string, std::map<std::string,
-         std::string> >)>(&jubatus::server::framework::merge<std::string,
-         std::map<std::string, std::string> >));
+        std::string> > >("get_status", pfi::lang::function<std::map<std::string,
+        std::map<std::string, std::string> >(std::map<std::string,
+        std::map<std::string, std::string> >, std::map<std::string,
+        std::map<std::string, std::string> >)>(
+        &jubatus::server::framework::merge<std::string, std::map<std::string,
+        std::string> >));
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);

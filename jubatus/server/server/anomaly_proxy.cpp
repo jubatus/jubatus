@@ -21,36 +21,36 @@ int run_proxy(int argc, char* argv[]) {
         jubatus::server::framework::proxy_argv(argc, argv, "anomaly"));
     k.register_async_random<std::string>("get_config");
     k.register_async_cht<2, bool>("clear_row", pfi::lang::function<bool(bool,
-         bool)>(&jubatus::server::framework::all_and));
+        bool)>(&jubatus::server::framework::all_and));
     k.register_async_random<std::pair<std::string, float>,
-         jubatus::core::fv_converter::datum>("add");
+        jubatus::core::fv_converter::datum>("add");
     k.register_async_cht<2, float, jubatus::core::fv_converter::datum>("update",
-         pfi::lang::function<float(float, float)>(
+        pfi::lang::function<float(float, float)>(
         &jubatus::server::framework::pass<float>));
     k.register_async_cht<2, float, jubatus::core::fv_converter::datum>(
         "overwrite", pfi::lang::function<float(float, float)>(
         &jubatus::server::framework::pass<float>));
     k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
-         bool)>(&jubatus::server::framework::all_and));
+        bool)>(&jubatus::server::framework::all_and));
     k.register_async_random<float, jubatus::core::fv_converter::datum>(
         "calc_score");
     k.register_async_broadcast<std::vector<std::string> >("get_all_rows",
-         pfi::lang::function<std::vector<std::string>(std::vector<std::string>,
-         std::vector<std::string>)>(
+        pfi::lang::function<std::vector<std::string>(std::vector<std::string>,
+        std::vector<std::string>)>(
         &jubatus::server::framework::concat<std::string>));
     k.register_async_broadcast<bool, std::string>("save",
-         pfi::lang::function<bool(bool, bool)>(
+        pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_broadcast<bool, std::string>("load",
-         pfi::lang::function<bool(bool, bool)>(
+        pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_broadcast<std::map<std::string, std::map<std::string,
-         std::string> > >("get_status",
-         pfi::lang::function<std::map<std::string, std::map<std::string,
-         std::string> >(std::map<std::string, std::map<std::string,
-         std::string> >, std::map<std::string, std::map<std::string,
-         std::string> >)>(&jubatus::server::framework::merge<std::string,
-         std::map<std::string, std::string> >));
+        std::string> > >("get_status", pfi::lang::function<std::map<std::string,
+        std::map<std::string, std::string> >(std::map<std::string,
+        std::map<std::string, std::string> >, std::map<std::string,
+        std::map<std::string, std::string> >)>(
+        &jubatus::server::framework::merge<std::string, std::map<std::string,
+        std::string> >));
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);

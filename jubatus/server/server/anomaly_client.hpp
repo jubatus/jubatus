@@ -32,19 +32,19 @@ class anomaly {
   }
 
   std::pair<std::string, float> add(const std::string& name,
-       const jubatus::core::fv_converter::datum& row) {
+      const jubatus::core::fv_converter::datum& row) {
     msgpack::rpc::future f = c_.call("add", name, row);
     return f.get<std::pair<std::string, float> >();
   }
 
   float update(const std::string& name, const std::string& id,
-       const jubatus::core::fv_converter::datum& row) {
+      const jubatus::core::fv_converter::datum& row) {
     msgpack::rpc::future f = c_.call("update", name, id, row);
     return f.get<float>();
   }
 
   float overwrite(const std::string& name, const std::string& id,
-       const jubatus::core::fv_converter::datum& row) {
+      const jubatus::core::fv_converter::datum& row) {
     msgpack::rpc::future f = c_.call("overwrite", name, id, row);
     return f.get<float>();
   }
@@ -55,7 +55,7 @@ class anomaly {
   }
 
   float calc_score(const std::string& name,
-       const jubatus::core::fv_converter::datum& row) {
+      const jubatus::core::fv_converter::datum& row) {
     msgpack::rpc::future f = c_.call("calc_score", name, row);
     return f.get<float>();
   }
