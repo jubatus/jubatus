@@ -58,7 +58,7 @@ let rec print_indent p (indent, line) =
       match rindex_split_pos line (max_len - 1) with
       | Some pos ->
         p (space ^ String.sub line 0 pos);
-        print_indent p (indent, "    " ^ truncate(String.sub line pos (len - pos)))
+        print_indent p (indent, "    " ^ truncate (String.sub line pos (len - pos)))
       | None ->
         p (space ^ line)
     else
