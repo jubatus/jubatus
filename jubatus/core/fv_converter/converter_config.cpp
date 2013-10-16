@@ -149,13 +149,15 @@ void init_num_filter_rules(
   }
 }
 
+void register_default_string_types(
+    std::map<std::string, splitter_ptr>& splitters) {
+  splitters["str"] = splitter_ptr(new without_split());
+  splitters["space"] = splitter_ptr(new space_splitter());
+}
+
 void init_string_types(
     const std::map<std::string, param_t>& string_types,
     std::map<std::string, splitter_ptr>& splitters) {
-  // default
-  splitters["str"] = splitter_ptr(new without_split());
-  splitters["space"] = splitter_ptr(new space_splitter());
-
   splitter_factory f;
   for (std::map<std::string, param_t>::const_iterator it = string_types.begin();
       it != string_types.end(); ++it) {
@@ -206,14 +208,16 @@ void init_string_rules(
   }
 }
 
-void init_num_types(
-    const std::map<std::string, param_t>& num_types,
+void register_default_num_types(
     std::map<std::string, num_feature_ptr>& num_features) {
-  // default
   num_features["num"] = num_feature_ptr(new num_value_feature());
   num_features["log"] = num_feature_ptr(new num_log_feature());
   num_features["str"] = num_feature_ptr(new num_string_feature());
+}
 
+void init_num_types(
+    const std::map<std::string, param_t>& num_types,
+    std::map<std::string, num_feature_ptr>& num_features) {
   num_feature_factory f;
   for (std::map<std::string, param_t>::const_iterator it = num_types.begin();
       it != num_types.end(); ++it) {
@@ -257,19 +261,40 @@ void initialize_converter(
   }
 
   std::map<std::string, string_filter_ptr> string_filters;
-  init_string_filter_types(config.string_filter_types, string_filters);
+  if (config.string_filter_types) {
+    init_string_filter_types(*config.string_filter_types, string_filters);
+  }
+
   std::map<std::string, num_filter_ptr> num_filters;
-  init_num_filter_types(config.num_filter_types, num_filters);
+  if (config.num_filter_types) {
+    init_num_filter_types(*config.num_filter_types, num_filters);
+  }
+
   std::map<std::string, splitter_ptr> splitters;
-  init_string_types(config.string_types, splitters);
+  register_default_string_types(splitters);
+  if (config.string_types) {
+    init_string_types(*config.string_types, splitters);
+  }
+
   std::map<std::string, num_feature_ptr> num_features;
-  init_num_types(config.num_types, num_features);
+  register_default_num_types(num_features);
+  if (config.num_types) {
+    init_num_types(*config.num_types, num_features);
+  }
 
   conv.clear_rules();
-  init_string_filter_rules(config.string_filter_rules, string_filters, conv);
-  init_num_filter_rules(config.num_filter_rules, num_filters, conv);
-  init_string_rules(config.string_rules, splitters, conv);
-  init_num_rules(config.num_rules, num_features, conv);
+  if (config.string_filter_rules) {
+    init_string_filter_rules(*config.string_filter_rules, string_filters, conv);
+  }
+  if (config.num_filter_rules) {
+    init_num_filter_rules(*config.num_filter_rules, num_filters, conv);
+  }
+  if (config.string_rules) {
+    init_string_rules(*config.string_rules, splitters, conv);
+  }
+  if (config.num_rules) {
+    init_num_rules(*config.num_rules, num_features, conv);
+  }
 
   if (config.hash_max_size.bool_test()) {
     conv.set_hash_max_size(*config.hash_max_size.get());

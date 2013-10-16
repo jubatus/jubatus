@@ -82,7 +82,8 @@ TEST(converter_config, config) {
 TEST(converter_config, hash) {
   converter_config config;
   num_rule r = {"*", optional<string>(), "str"};
-  config.num_rules.push_back(r);
+  config.num_rules = std::vector<num_rule>();
+  config.num_rules->push_back(r);
   config.hash_max_size = 1;
 
   datum_to_fv_converter conv;
@@ -105,6 +106,19 @@ TEST(converter_config, hash_negative) {
   EXPECT_THROW(initialize_converter(config, conv), converter_exception);
 }
 
+TEST(make_fv_converter, empty_config) {
+  pfi::text::json::json js(new pfi::text::json::json_object);
+  converter_config config = pfi::text::json::json_cast<converter_config>(js);
+  datum_to_fv_converter conv;
+  initialize_converter(config, conv);
+
+  datum d;
+  common::sfv_t f;
+  conv.convert(d, f);
+
+  EXPECT_EQ(0u, f.size());
+}
+
 TEST(make_fv_converter, empty) {
   EXPECT_THROW(make_fv_converter(""), fv_converter::converter_exception);
 }
@@ -115,10 +129,6 @@ TEST(make_fv_converter, invalid_config_json) {
 
 TEST(make_fv_converter, config_json_parse_error) {
   EXPECT_THROW(make_fv_converter("AA"), fv_converter::converter_exception);
-}
-
-TEST(make_fv_converter, config_cast_error) {
-  EXPECT_THROW(make_fv_converter("{}"), fv_converter::converter_exception);
 }
 
 }  // namespace fv_converter

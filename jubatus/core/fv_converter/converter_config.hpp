@@ -78,17 +78,17 @@ struct num_rule {
 };
 
 struct converter_config {
-  std::map<std::string, param_t> string_filter_types;
-  std::vector<filter_rule> string_filter_rules;
+  pfi::data::optional<std::map<std::string, param_t> > string_filter_types;
+  pfi::data::optional<std::vector<filter_rule> > string_filter_rules;
 
-  std::map<std::string, param_t> num_filter_types;
-  std::vector<filter_rule> num_filter_rules;
+  pfi::data::optional<std::map<std::string, param_t> > num_filter_types;
+  pfi::data::optional<std::vector<filter_rule> > num_filter_rules;
 
-  std::map<std::string, param_t> string_types;
-  std::vector<string_rule> string_rules;
+  pfi::data::optional<std::map<std::string, param_t> > string_types;
+  pfi::data::optional<std::vector<string_rule> > string_rules;
 
-  std::map<std::string, param_t> num_types;
-  std::vector<num_rule> num_rules;
+  pfi::data::optional<std::map<std::string, param_t> > num_types;
+  pfi::data::optional<std::vector<num_rule> > num_rules;
 
   pfi::data::optional<int64_t> hash_max_size;
 
