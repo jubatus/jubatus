@@ -107,10 +107,7 @@ void initialize_converter(
     datum_to_fv_converter& converter);
 
 pfi::lang::shared_ptr<datum_to_fv_converter>
-make_fv_converter(const std::string& config);
-
-pfi::lang::shared_ptr<datum_to_fv_converter>
-make_fv_converter(const pfi::text::json::json& config);
+make_fv_converter(const converter_config& config);
 
 }  // namespace fv_converter
 }  // namespace core

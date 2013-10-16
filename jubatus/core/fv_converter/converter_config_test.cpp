@@ -119,18 +119,6 @@ TEST(make_fv_converter, empty_config) {
   EXPECT_EQ(0u, f.size());
 }
 
-TEST(make_fv_converter, empty) {
-  EXPECT_THROW(make_fv_converter(""), fv_converter::converter_exception);
-}
-
-TEST(make_fv_converter, invalid_config_json) {
-  EXPECT_THROW(make_fv_converter("{"), fv_converter::converter_exception);
-}
-
-TEST(make_fv_converter, config_json_parse_error) {
-  EXPECT_THROW(make_fv_converter("AA"), fv_converter::converter_exception);
-}
-
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus

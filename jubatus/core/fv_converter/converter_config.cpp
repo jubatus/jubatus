@@ -329,17 +329,10 @@ pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
 }
 
 pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
-    const pfi::text::json::json& config) {
-  converter_config c;
-  try {
-    c = pfi::text::json::json_cast<converter_config>(config);
-  } catch (const std::bad_cast& e) {
-    std::string msg = std::string("Invalid config format: ") + e.what();
-    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
-  }
+    const converter_config& config) {
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
       new fv_converter::datum_to_fv_converter);
-  fv_converter::initialize_converter(c, *converter);
+  fv_converter::initialize_converter(config, *converter);
   return converter;
 }
 

@@ -52,7 +52,7 @@ namespace {
 struct regression_serv_config {
   std::string method;
   pfi::data::optional<pfi::text::json::json> parameter;
-  pfi::text::json::json converter;
+  core::fv_converter::converter_config converter;
 
   template<typename Ar>
   void serialize(Ar& ar) {
