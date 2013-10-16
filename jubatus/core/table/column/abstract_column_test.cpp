@@ -26,7 +26,8 @@ using jubatus::core::table::bit_vector;
 TEST(abstract_column, pack_and_unpack) {
   const size_t n = 10;
 
-  abstract_column src(column_type(column_type::int32_type));
+  abstract_column src =
+      abstract_column(column_type(column_type::int32_type));
 
   for (size_t i = 0; i < n; ++i) {
     int32_t value = i;
@@ -54,7 +55,8 @@ TEST(abstract_column, pack_and_unpack) {
   }
 
   // if type is unmatched, convertion throws
-  abstract_column dest2(column_type(column_type::int8_type));
+  abstract_column dest2 =
+      abstract_column(column_type(column_type::int8_type));
   EXPECT_THROW({
     obj.convert(&dest2);
   }, jubatus::core::table::type_unmatch_exception);
@@ -63,7 +65,8 @@ TEST(abstract_column, pack_and_unpack) {
 TEST(abstract_column, bit_vector_pack_and_unpack) {
   const size_t n = 10;
 
-  abstract_column src(column_type(column_type::bit_vector_type, n));
+  abstract_column src =
+      abstract_column(column_type(column_type::bit_vector_type, n));
 
   for (size_t i = 0; i < n; ++i) {
     bit_vector value(n);
@@ -94,7 +97,8 @@ TEST(abstract_column, bit_vector_pack_and_unpack) {
   }
 
   // if type is unmatched, convertion throws
-  abstract_column dest2(column_type(column_type::int8_type));
+  abstract_column dest2 =
+      abstract_column(column_type(column_type::int8_type));
   EXPECT_THROW({
     obj.convert(&dest2);
   }, jubatus::core::table::type_unmatch_exception);
