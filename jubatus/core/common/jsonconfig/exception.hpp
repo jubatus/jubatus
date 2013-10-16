@@ -106,6 +106,20 @@ class not_found : public config_error {
   std::string key_;
 };
 
+class redundant_key : public config_error {
+ public:
+  redundant_key(const std::string& path, const std::string& key);
+
+  ~redundant_key() throw();
+
+  const std::string& key() const {
+    return key_;
+  }
+
+ private:
+  std::string key_;
+};
+
 // cast_check_error DOES NOT INHERIT Config_error
 class cast_check_error
   : public common::exception::jubaexception<cast_check_error> {
