@@ -52,12 +52,13 @@ let rec print_indent p (indent, line) =
   else
     let space = String.make (indent * 2) ' ' in
     let max_len = 80 - indent * 2 in
+    let truncate = Str.replace_first (Str.regexp "^ +") "" in
     let len = String.length line in
     if len > max_len then
       match rindex_split_pos line (max_len - 1) with
       | Some pos ->
         p (space ^ String.sub line 0 pos);
-        print_indent p (indent, "    " ^ String.sub line pos (len - pos))
+        print_indent p (indent, "    " ^ truncate (String.sub line pos (len - pos)))
       | None ->
         p (space ^ line)
     else

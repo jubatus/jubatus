@@ -27,14 +27,14 @@ class classifier_impl_ : public classifier<classifier_impl_> {
   }
 
   int32_t train(const std::string& name,
-       const std::vector<std::pair<std::string,
-       jubatus::core::fv_converter::datum> >& data) {
+      const std::vector<std::pair<std::string,
+      jubatus::core::fv_converter::datum> >& data) {
     JWLOCK_(p_);
     return get_p()->train(data);
   }
 
   std::vector<std::vector<estimate_result> > classify(const std::string& name,
-       const std::vector<jubatus::core::fv_converter::datum>& data) {
+      const std::vector<jubatus::core::fv_converter::datum>& data) {
     JRLOCK_(p_);
     return get_p()->classify(data);
   }

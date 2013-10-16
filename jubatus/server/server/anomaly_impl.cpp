@@ -31,19 +31,19 @@ class anomaly_impl_ : public anomaly<anomaly_impl_> {
   }
 
   std::pair<std::string, float> add(const std::string& name,
-       const jubatus::core::fv_converter::datum& row) {
+      const jubatus::core::fv_converter::datum& row) {
     NOLOCK_(p_);
     return get_p()->add(row);
   }
 
   float update(const std::string& name, const std::string& id,
-       const jubatus::core::fv_converter::datum& row) {
+      const jubatus::core::fv_converter::datum& row) {
     JWLOCK_(p_);
     return get_p()->update(id, row);
   }
 
   float overwrite(const std::string& name, const std::string& id,
-       const jubatus::core::fv_converter::datum& row) {
+      const jubatus::core::fv_converter::datum& row) {
     JWLOCK_(p_);
     return get_p()->overwrite(id, row);
   }
@@ -54,7 +54,7 @@ class anomaly_impl_ : public anomaly<anomaly_impl_> {
   }
 
   float calc_score(const std::string& name,
-       const jubatus::core::fv_converter::datum& row) {
+      const jubatus::core::fv_converter::datum& row) {
     JRLOCK_(p_);
     return get_p()->calc_score(row);
   }

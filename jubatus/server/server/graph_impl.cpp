@@ -36,62 +36,62 @@ class graph_impl_ : public graph<graph_impl_> {
   }
 
   bool update_node(const std::string& name, const std::string& node_id,
-       const std::map<std::string, std::string>& property) {
+      const std::map<std::string, std::string>& property) {
     JWLOCK_(p_);
     return get_p()->update_node(node_id, property);
   }
 
   uint64_t create_edge(const std::string& name, const std::string& node_id,
-       const edge& e) {
+      const edge& e) {
     NOLOCK_(p_);
     return get_p()->create_edge(node_id, e);
   }
 
   bool update_edge(const std::string& name, const std::string& node_id,
-       uint64_t edge_id, const edge& e) {
+      uint64_t edge_id, const edge& e) {
     JWLOCK_(p_);
     return get_p()->update_edge(node_id, edge_id, e);
   }
 
   bool remove_edge(const std::string& name, const std::string& node_id,
-       uint64_t edge_id) {
+      uint64_t edge_id) {
     JWLOCK_(p_);
     return get_p()->remove_edge(node_id, edge_id);
   }
 
   double get_centrality(const std::string& name, const std::string& node_id,
-       int32_t centrality_type,
-       const jubatus::core::graph::preset_query& query) {
+      int32_t centrality_type,
+      const jubatus::core::graph::preset_query& query) {
     JRLOCK_(p_);
     return get_p()->get_centrality(node_id, centrality_type, query);
   }
 
   bool add_centrality_query(const std::string& name,
-       const jubatus::core::graph::preset_query& query) {
+      const jubatus::core::graph::preset_query& query) {
     JWLOCK_(p_);
     return get_p()->add_centrality_query(query);
   }
 
   bool add_shortest_path_query(const std::string& name,
-       const jubatus::core::graph::preset_query& query) {
+      const jubatus::core::graph::preset_query& query) {
     JWLOCK_(p_);
     return get_p()->add_shortest_path_query(query);
   }
 
   bool remove_centrality_query(const std::string& name,
-       const jubatus::core::graph::preset_query& query) {
+      const jubatus::core::graph::preset_query& query) {
     JWLOCK_(p_);
     return get_p()->remove_centrality_query(query);
   }
 
   bool remove_shortest_path_query(const std::string& name,
-       const jubatus::core::graph::preset_query& query) {
+      const jubatus::core::graph::preset_query& query) {
     JWLOCK_(p_);
     return get_p()->remove_shortest_path_query(query);
   }
 
   std::vector<std::string> get_shortest_path(const std::string& name,
-       const shortest_path_query& query) {
+      const shortest_path_query& query) {
     JRLOCK_(p_);
     return get_p()->get_shortest_path(query);
   }
@@ -107,13 +107,13 @@ class graph_impl_ : public graph<graph_impl_> {
   }
 
   jubatus::core::graph::node_info get_node(const std::string& name,
-       const std::string& node_id) {
+      const std::string& node_id) {
     JRLOCK_(p_);
     return get_p()->get_node(node_id);
   }
 
   edge get_edge(const std::string& name, const std::string& node_id,
-       uint64_t edge_id) {
+      uint64_t edge_id) {
     JRLOCK_(p_);
     return get_p()->get_edge(node_id, edge_id);
   }
@@ -145,7 +145,7 @@ class graph_impl_ : public graph<graph_impl_> {
   }
 
   bool create_edge_here(const std::string& name, uint64_t edge_id,
-       const edge& e) {
+      const edge& e) {
     JWLOCK_(p_);
     return get_p()->create_edge_here(edge_id, e);
   }

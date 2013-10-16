@@ -56,7 +56,7 @@ class stat_impl_ : public stat<stat_impl_> {
   }
 
   double moment(const std::string& name, const std::string& key, int32_t degree,
-       double center) {
+      double center) {
     JRLOCK_(p_);
     return get_p()->moment(key, degree, center);
   }

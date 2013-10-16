@@ -19,7 +19,7 @@ class regression_impl_ : public regression<regression_impl_> {
   explicit regression_impl_(const jubatus::server::framework::server_argv& a):
     regression<regression_impl_>(a.timeout),
     p_(new jubatus::server::framework::server_helper<regression_serv>(a,
-         false)) {
+        false)) {
   }
   std::string get_config(const std::string& name) {
     JRLOCK_(p_);
@@ -27,13 +27,13 @@ class regression_impl_ : public regression<regression_impl_> {
   }
 
   int32_t train(const std::string& name, const std::vector<std::pair<float,
-       jubatus::core::fv_converter::datum> >& train_data) {
+      jubatus::core::fv_converter::datum> >& train_data) {
     JWLOCK_(p_);
     return get_p()->train(train_data);
   }
 
   std::vector<float> estimate(const std::string& name,
-       const std::vector<jubatus::core::fv_converter::datum>& estimate_data) {
+      const std::vector<jubatus::core::fv_converter::datum>& estimate_data) {
     JRLOCK_(p_);
     return get_p()->estimate(estimate_data);
   }

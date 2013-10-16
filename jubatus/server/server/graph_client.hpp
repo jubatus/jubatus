@@ -37,63 +37,63 @@ class graph {
   }
 
   bool update_node(const std::string& name, const std::string& node_id,
-       const std::map<std::string, std::string>& property) {
+      const std::map<std::string, std::string>& property) {
     msgpack::rpc::future f = c_.call("update_node", name, node_id, property);
     return f.get<bool>();
   }
 
   uint64_t create_edge(const std::string& name, const std::string& node_id,
-       const edge& e) {
+      const edge& e) {
     msgpack::rpc::future f = c_.call("create_edge", name, node_id, e);
     return f.get<uint64_t>();
   }
 
   bool update_edge(const std::string& name, const std::string& node_id,
-       uint64_t edge_id, const edge& e) {
+      uint64_t edge_id, const edge& e) {
     msgpack::rpc::future f = c_.call("update_edge", name, node_id, edge_id, e);
     return f.get<bool>();
   }
 
   bool remove_edge(const std::string& name, const std::string& node_id,
-       uint64_t edge_id) {
+      uint64_t edge_id) {
     msgpack::rpc::future f = c_.call("remove_edge", name, node_id, edge_id);
     return f.get<bool>();
   }
 
   double get_centrality(const std::string& name, const std::string& node_id,
-       int32_t centrality_type,
-       const jubatus::core::graph::preset_query& query) {
+      int32_t centrality_type,
+      const jubatus::core::graph::preset_query& query) {
     msgpack::rpc::future f = c_.call("get_centrality", name, node_id,
-         centrality_type, query);
+        centrality_type, query);
     return f.get<double>();
   }
 
   bool add_centrality_query(const std::string& name,
-       const jubatus::core::graph::preset_query& query) {
+      const jubatus::core::graph::preset_query& query) {
     msgpack::rpc::future f = c_.call("add_centrality_query", name, query);
     return f.get<bool>();
   }
 
   bool add_shortest_path_query(const std::string& name,
-       const jubatus::core::graph::preset_query& query) {
+      const jubatus::core::graph::preset_query& query) {
     msgpack::rpc::future f = c_.call("add_shortest_path_query", name, query);
     return f.get<bool>();
   }
 
   bool remove_centrality_query(const std::string& name,
-       const jubatus::core::graph::preset_query& query) {
+      const jubatus::core::graph::preset_query& query) {
     msgpack::rpc::future f = c_.call("remove_centrality_query", name, query);
     return f.get<bool>();
   }
 
   bool remove_shortest_path_query(const std::string& name,
-       const jubatus::core::graph::preset_query& query) {
+      const jubatus::core::graph::preset_query& query) {
     msgpack::rpc::future f = c_.call("remove_shortest_path_query", name, query);
     return f.get<bool>();
   }
 
   std::vector<std::string> get_shortest_path(const std::string& name,
-       const shortest_path_query& query) {
+      const shortest_path_query& query) {
     msgpack::rpc::future f = c_.call("get_shortest_path", name, query);
     return f.get<std::vector<std::string> >();
   }
@@ -109,13 +109,13 @@ class graph {
   }
 
   jubatus::core::graph::node_info get_node(const std::string& name,
-       const std::string& node_id) {
+      const std::string& node_id) {
     msgpack::rpc::future f = c_.call("get_node", name, node_id);
     return f.get<jubatus::core::graph::node_info>();
   }
 
   edge get_edge(const std::string& name, const std::string& node_id,
-       uint64_t edge_id) {
+      uint64_t edge_id) {
     msgpack::rpc::future f = c_.call("get_edge", name, node_id, edge_id);
     return f.get<edge>();
   }
@@ -147,7 +147,7 @@ class graph {
   }
 
   bool create_edge_here(const std::string& name, uint64_t edge_id,
-       const edge& e) {
+      const edge& e) {
     msgpack::rpc::future f = c_.call("create_edge_here", name, edge_id, e);
     return f.get<bool>();
   }

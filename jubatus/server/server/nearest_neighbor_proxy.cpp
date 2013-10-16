@@ -20,31 +20,31 @@ int run_proxy(int argc, char* argv[]) {
     jubatus::server::framework::proxy k(
         jubatus::server::framework::proxy_argv(argc, argv, "nearest_neighbor"));
     k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
-         bool)>(&jubatus::server::framework::all_and));
+        bool)>(&jubatus::server::framework::all_and));
     k.register_async_cht<1, bool, jubatus::core::fv_converter::datum>("set_row",
-         pfi::lang::function<bool(bool, bool)>(
+        pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::pass<bool>));
     k.register_async_random<neighbor_result, std::string, uint32_t>(
         "neighbor_row_from_id");
     k.register_async_random<neighbor_result, jubatus::core::fv_converter::datum,
-         uint32_t>("neighbor_row_from_data");
+        uint32_t>("neighbor_row_from_data");
     k.register_async_random<neighbor_result, std::string, int32_t>(
         "similar_row_from_id");
     k.register_async_random<neighbor_result, jubatus::core::fv_converter::datum,
-         int32_t>("similar_row_from_data");
+        int32_t>("similar_row_from_data");
     k.register_async_broadcast<bool, std::string>("save",
-         pfi::lang::function<bool(bool, bool)>(
+        pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_broadcast<bool, std::string>("load",
-         pfi::lang::function<bool(bool, bool)>(
+        pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_broadcast<std::map<std::string, std::map<std::string,
-         std::string> > >("get_status",
-         pfi::lang::function<std::map<std::string, std::map<std::string,
-         std::string> >(std::map<std::string, std::map<std::string,
-         std::string> >, std::map<std::string, std::map<std::string,
-         std::string> >)>(&jubatus::server::framework::merge<std::string,
-         std::map<std::string, std::string> >));
+        std::string> > >("get_status", pfi::lang::function<std::map<std::string,
+        std::map<std::string, std::string> >(std::map<std::string,
+        std::map<std::string, std::string> >, std::map<std::string,
+        std::map<std::string, std::string> >)>(
+        &jubatus::server::framework::merge<std::string, std::map<std::string,
+        std::string> >));
     k.register_async_random<std::string>("get_config");
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
