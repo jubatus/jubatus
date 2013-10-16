@@ -19,7 +19,6 @@
 #include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
 #include "../common/type.hpp"
-#include "binary_feature.hpp"
 #include "dynamic_binary_feature.hpp"
 
 namespace jubatus {
