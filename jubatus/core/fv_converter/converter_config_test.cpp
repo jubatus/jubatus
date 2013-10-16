@@ -17,7 +17,9 @@
 #include <algorithm>
 #include <cmath>
 #include <fstream>
+#include <map>
 #include <string>
+#include <vector>
 #include <gtest/gtest.h>
 #include <pficommon/text/json.h>
 #include "converter_config.hpp"
@@ -25,6 +27,7 @@
 #include "datum_to_fv_converter.hpp"
 #include "exception.hpp"
 
+using std::map;
 using std::string;
 using pfi::data::optional;
 
@@ -77,6 +80,35 @@ TEST(converter_config, config) {
     std::cout << e << std::endl;
     throw;
   }
+}
+
+TEST(converter_config, binary) {
+  converter_config config;
+  map<string, string> param;
+  param["method"] = "dynamic";
+  param["function"] = "create";
+  param["path"] = LIBBINARY_FEATURE_SAMPLE;
+  config.binary_types = map<string, param_t>();
+  (*config.binary_types)["len"] = param;
+
+  binary_rule r = {"*", optional<string>(), "len"};
+  config.binary_rules = std::vector<binary_rule>();
+  config.binary_rules->push_back(r);
+
+  datum_to_fv_converter conv;
+  initialize_converter(config, conv);
+
+  datum d;
+  d.binary_values_.push_back(std::make_pair("bin", "0101"));
+
+  std::cout << "c" << std::endl;
+  common::sfv_t f;
+  conv.convert(d, f);
+  std::cout << "d" << std::endl;
+
+  ASSERT_EQ(1u, f.size());
+  EXPECT_EQ("bin", f[0].first);
+  EXPECT_EQ(4.0, f[0].second);
 }
 
 TEST(converter_config, hash) {
