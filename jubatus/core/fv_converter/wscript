@@ -17,6 +17,7 @@ def configure(conf):
   conf.define('LIBFILTER_SAMPLE', libpat % 'filter_sample')
   conf.define('LIBNUM_FEATURE_SAMPLE', libpat % 'num_feature_sample')
   conf.define('LIBNUM_FILTER_SAMPLE', libpat % 'num_filter_sample')
+  conf.define('LIBBINARY_FEATURE_SAMPLE', libpat % 'binary_feature_sample')
 
 def make_test(bld, use, src):
   bld.program(
@@ -109,6 +110,13 @@ def build(bld):
     target = 'num_filter_sample',
     install_path = None,
     name = 'num_filter_sample',
+    )
+
+  bld.shlib(
+    source = 'test_binary_feature.cpp',
+    target = 'binary_feature_sample',
+    install_path = None,
+    name = 'binary_feature_sample',
     )
 
   bld.shlib(
