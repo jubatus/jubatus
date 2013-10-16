@@ -187,7 +187,7 @@ void load_server(std::istream& is,
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("server type mismatched"));
   }
-  if (system_data_actual.id != system_data_expected.id) {
+  if (id != "" && system_data_actual.id != system_data_expected.id) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("server id mismatched"));
   }
