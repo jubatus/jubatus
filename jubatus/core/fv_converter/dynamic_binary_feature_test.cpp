@@ -18,8 +18,9 @@
 #include <string>
 #include <gtest/gtest.h>
 #include <pficommon/lang/scoped_ptr.h>
+#include "../common/type.hpp"
+#include "binary_feature.hpp"
 #include "dynamic_binary_feature.hpp"
-#include "num_feature.hpp"
 
 namespace jubatus {
 namespace core {
@@ -30,7 +31,7 @@ TEST(dynamic_binary_feature, trivial) {
 
   {
     dynamic_binary_feature f(
-        LIBNUM_FEATURE_SAMPLE,
+        LIBBINARY_FEATURE_SAMPLE,
         "create",
         params);
     common::sfv_t fv;

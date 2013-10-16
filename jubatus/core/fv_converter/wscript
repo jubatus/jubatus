@@ -140,6 +140,7 @@ def build(bld):
       'libsvm_converter_test.cpp',
       'dynamic_splitter_test.cpp',
       'dynamic_num_feature_test.cpp',
+      'dynamic_binary_feature_test.cpp',
       'dynamic_string_filter_test.cpp',
       'dynamic_num_filter_test.cpp',
       'string_filter_factory_test.cpp',
