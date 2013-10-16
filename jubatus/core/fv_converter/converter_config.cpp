@@ -302,33 +302,6 @@ void initialize_converter(
 }
 
 pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
-    const std::string& config) {
-  if (config == "") {
-    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(
-            "Config of feature vector converter is empty"));
-  }
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
-      new fv_converter::datum_to_fv_converter);
-  converter_config c;
-  std::stringstream ss(config);
-  try {
-    ss >> pfi::text::json::via_json(c);
-  } catch (const pfi::lang::end_of_data& e) {
-    std::string msg = std::string("Unexpected end of string is detected: ")
-        + e.what();
-    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
-  } catch (const pfi::lang::parse_error& e) {
-    std::string msg = std::string("Cannot parse config JSON: ") + e.what();
-    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
-  } catch (const std::bad_cast& e) {
-    std::string msg = std::string("Invalid config format: ") + e.what();
-    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
-  }
-  fv_converter::initialize_converter(c, *converter);
-  return converter;
-}
-
-pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
     const converter_config& config) {
   pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
       new fv_converter::datum_to_fv_converter);
