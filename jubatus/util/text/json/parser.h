@@ -97,11 +97,13 @@ private:
   }
 
   int peek() {
-    if (cbuf < 0)
-      if (it != end)
+    if (cbuf < 0) {
+      if (it != end) {
         cbuf = jubatus::util::data::string::chars_to_uchar(it, end);
-      else
+      } else {
         throw jubatus::util::lang::end_of_data("json_parser reached end of data");
+      }
+    }
     return cbuf;
   }
   int incr() {
