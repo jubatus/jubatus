@@ -35,7 +35,7 @@ install:
   - sudo ldconfig
   # oniguruma
   - wget http://www.geocities.jp/kosako3/oniguruma/archive/onig-5.9.4.tar.gz && tar xvf onig-5.9.4.tar.gz
-  - pushd onig-5.9.4 && ./configure && make && make install && popd
+  - pushd onig-5.9.4 && ./configure && make && sudo make install && popd
   - sudo ldconfig
   # re2
   - hg clone https://re2.googlecode.com/hg re2
