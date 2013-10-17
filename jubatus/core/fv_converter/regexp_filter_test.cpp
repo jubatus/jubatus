@@ -81,6 +81,35 @@ TEST(regexp_filter, detag) {
   f.filter("<html>foo bar</html>", out);
   EXPECT_EQ("foo bar", out);
 }
+
+TEST(regexp_filter, substitute) {
+  regexp_filter f("AA", "AAAA");
+
+  std::string out;
+  f.filter("AA", out);
+  EXPECT_EQ("AAAA", out);
+  f.filter("AAAAAAA", out);
+  EXPECT_EQ("AAAAAAAAAAAAA", out);
+}
+
+TEST(regexp_filter, long_substitute) {
+  for (int i = 0; i < 500; i += 3) {
+    std::string long_string = "a";
+    for (int j = 0; j < i; ++j) {
+      long_string += "a";
+    }
+    regexp_filter f("<.*?>", long_string);
+
+    std::string out;
+    f.filter("<dlsfjasfasfdsaf>", out);
+    EXPECT_EQ(long_string, out);
+    f.filter("<>foo bar<>", out);
+    EXPECT_EQ(long_string + "foo bar" + long_string, out);
+    f.filter("<html>foo bar</html>", out);
+    EXPECT_EQ(long_string + "foo bar" + long_string, out);
+  }
+}
+
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
