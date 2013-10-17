@@ -37,11 +37,7 @@ namespace fv_converter {
 
 TEST(converter_config, config) {
   try {
-#ifdef HAVE_RE2
     std::ifstream ifs("./test_input/config.json");
-#else
-    std::ifstream ifs("./test_input/config_wo_re2.json");
-#endif
     converter_config config;
     ifs >> pfi::text::json::via_json(config);
 
@@ -60,11 +56,11 @@ TEST(converter_config, config) {
 
     common::sfv_t exp;
     exp.push_back(std::make_pair("user/name$Taro Yamada@str#bin/bin", 1.));
-#ifdef HAVE_RE2
-    // only when re2 is enabled, detagging filter works
+
+    // detagging filter
     exp.push_back(
         std::make_pair("user/text-detagged$hoge fuga @str#bin/bin", 1.));
-#endif
+
     exp.push_back(std::make_pair("user/id@str$1000", 1.));
     exp.push_back(std::make_pair("user/age@num", 20.));
     exp.push_back(std::make_pair("user/age@log", log(20.)));

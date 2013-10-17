@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,32 +14,32 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_FV_CONVERTER_RE2_FILTER_HPP_
-#define JUBATUS_CORE_FV_CONVERTER_RE2_FILTER_HPP_
+#ifndef JUBATUS_CORE_FV_CONVERTER_ONIG_MATCH_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_ONIG_MATCH_HPP_
 
+#include <oniguruma.h>
 #include <string>
-#include <re2/re2.h>
-#include "string_filter.hpp"
+#include "key_matcher.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-class regexp_filter : public string_filter {
+class regexp_match : public key_matcher {
  public:
-  regexp_filter(const std::string& regexp, const std::string& replace);
+  explicit regexp_match(const std::string& regexp);
+  ~regexp_match();
 
-  void filter(const std::string& input, std::string& output) const;
+  bool match(const std::string& key);
 
  private:
-  regexp_filter();
+  regexp_match();
 
-  re2::RE2 re_;
-  std::string replace_;
+  regex_t* reg_;
 };
 
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_FV_CONVERTER_RE2_FILTER_HPP_
+#endif  // JUBATUS_CORE_FV_CONVERTER_ONIG_MATCH_HPP_

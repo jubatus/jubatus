@@ -14,20 +14,22 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <string>
 #include <gtest/gtest.h>
-#include "re2_filter.hpp"
+#include "regexp_match.hpp"
+#include "exception.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-TEST(re2_filter, trivial) {
-  re2_filter f("a+", "AA");
+TEST(regexp_match, trivial) {
+  regexp_match m(".*/hoge");
+  ASSERT_TRUE(m.match("hoge/hoge"));
+  ASSERT_FALSE(m.match("hoge/fuga"));
+}
 
-  std::string out;
-  f.filter("auauaa", out);
-  EXPECT_EQ("AAuAAuAA", out);
+TEST(regexp_match, illegal) {
+  ASSERT_THROW(regexp_match m("*hoge"), converter_exception);
 }
 
 }  // namespace fv_converter
