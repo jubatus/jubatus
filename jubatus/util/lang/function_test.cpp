@@ -34,7 +34,7 @@
 #include <typeinfo>
 
 #include "function.h"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 using jubatus::util::lang::function;
 

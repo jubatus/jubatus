@@ -16,7 +16,7 @@
 
 #include <vector>
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include "abstract_column.hpp"
 
 using jubatus::core::table::detail::abstract_column;

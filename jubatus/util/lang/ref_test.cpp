@@ -30,7 +30,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ref.h"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 using jubatus::util::lang::reference_wrapper;
 using jubatus::util::lang::ref;

@@ -17,7 +17,7 @@
 #include <vector>
 #include <string>
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include "column_type.hpp"
 
 using jubatus::core::table::column_type;
