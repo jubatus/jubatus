@@ -55,9 +55,6 @@ class sparse_matrix_storage {
   void get_all_row_ids(std::vector<std::string>& ids) const;
   void clear();
 
-  bool save(std::ostream&);
-  bool load(std::istream&);
-
  private:
   friend class pfi::data::serialization::access;
   template <class Ar>

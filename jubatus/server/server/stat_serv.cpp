@@ -59,6 +59,10 @@ void stat_serv::get_status(status_t& status) const {
   status.insert(make_pair("storage", stat_->get_model()->type()));
 }
 
+uint64_t stat_serv::user_data_version() const {
+  return 1;  // should be inclemented when model data is modified
+}
+
 bool stat_serv::set_config(const string& config) {
   core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   stat_serv_config conf =

@@ -78,14 +78,13 @@ void nearest_neighbor_recommender::register_mixables_to_holder(
   nearest_neighbor_engine_->register_mixables_to_holder(holder);
 }
 
-bool nearest_neighbor_recommender::save_impl(std::ostream& os) {
-  nearest_neighbor_engine_->save(os);
-  return true;
+void nearest_neighbor_recommender::pack_impl(
+    msgpack::packer<msgpack::sbuffer>& packer) const {
+  nearest_neighbor_engine_->pack(packer);
 }
 
-bool nearest_neighbor_recommender::load_impl(std::istream& is) {
-  nearest_neighbor_engine_->load(is);
-  return true;
+void nearest_neighbor_recommender::unpack_impl(msgpack::object o) {
+  nearest_neighbor_engine_->unpack(o);
 }
 
 }  // namespace recommender

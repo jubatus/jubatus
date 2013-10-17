@@ -120,14 +120,17 @@ class graph_wo_index
 
   void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
+
+  MSGPACK_DEFINE(local_nodes_, local_edges_,
+      global_nodes_, eigen_scores_, spts_);
+
  private:
   typedef pfi::data::unordered_map<node_id_t, node_info> node_info_map;
   typedef pfi::data::unordered_map<edge_id_t, edge_info> edge_info_map;
 
   static void remove_by_swap(std::vector<edge_id_t>& edges, edge_id_t eid);
-
-  bool save_imp(std::ostream& os);
-  bool load_imp(std::istream& is);
 
   node_info_map local_nodes_;
   edge_info_map local_edges_;

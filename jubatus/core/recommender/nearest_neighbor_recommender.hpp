@@ -53,8 +53,8 @@ class nearest_neighbor_recommender : public recommender_base {
   void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
  private:
-  bool save_impl(std::ostream& os);
-  bool load_impl(std::istream& is);
+  void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack_impl(msgpack::object o);
 
   pfi::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
   nearest_neighbor_engine_;

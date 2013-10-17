@@ -62,10 +62,13 @@ TEST(inverted_index_storage, trivial) {
   EXPECT_FLOAT_EQ(1.0 / sqrt(2) / sqrt(3), scores[2].second);
   EXPECT_EQ("r2", scores[2].first);
 
-  stringstream ss;
-  s.save(ss);
+  msgpack::sbuffer buf;
+  msgpack::packer<msgpack::sbuffer> packer(buf);
+  s.pack(packer);
   inverted_index_storage s2;
-  s2.load(ss);
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, buf.data(), buf.size());
+  s2.unpack(unpacked.get());
   vector<pair<string, float> > scores2;
   s.calc_scores(v, scores2, 100);
   // expect to get same result

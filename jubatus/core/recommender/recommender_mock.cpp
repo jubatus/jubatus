@@ -113,18 +113,21 @@ string recommender_mock::type() const {
   return "recommender_mock";
 }
 
-bool recommender_mock::save_impl(ostream& os) {
-  pfi::data::serialization::binary_oarchive bo(os);
-  bo << orig_;
-  mixable_storage_->save(os);
-  return true;
+void recommender_mock::pack_impl(
+    msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack_array(2);
+  packer.pack(orig_);
+  mixable_storage_->pack(packer);
 }
 
-bool recommender_mock::load_impl(istream& is) {
-  pfi::data::serialization::binary_iarchive bi(is);
-  bi >> orig_;
-  mixable_storage_->load(is);
-  return true;
+void recommender_mock::unpack_impl(msgpack::object o) {
+  std::vector<msgpack::object> mems;
+  o.convert(&mems);
+  if (mems.size() != 2) {
+    throw msgpack::type_error();
+  }
+  mems[0].convert(&orig_);
+  mixable_storage_->unpack(mems[1]);
 }
 
 void recommender_mock::register_mixables_to_holder(

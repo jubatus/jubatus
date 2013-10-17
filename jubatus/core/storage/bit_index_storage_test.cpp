@@ -60,10 +60,13 @@ TEST(bit_index_storage, trivial) {
   EXPECT_EQ("r3", ids[1].first);
   EXPECT_FLOAT_EQ(0.75, ids[1].second);
 
-  stringstream ss;
-  s.save(ss);
+  msgpack::sbuffer buf;
+  msgpack::packer<msgpack::sbuffer> packer(buf);
+  s.pack(packer);
   bit_index_storage t;
-  t.load(ss);
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, buf.data(), buf.size());
+  t.unpack(unpacked.get());
   ids.clear();
   t.similar_row(make_vector("1100"), ids, 2);
   ASSERT_EQ(2u, ids.size());

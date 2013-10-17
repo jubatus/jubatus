@@ -105,15 +105,19 @@ void recommender_base::complete_row(const common::sfv_t& query,
   }
 }
 
-void recommender_base::save(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << orig_;
-  save_impl(os);
+void recommender_base::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack_array(2);
+  packer.pack(orig_);
+  pack_impl(packer);
 }
-void recommender_base::load(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> orig_;
-  load_impl(is);
+void recommender_base::unpack(msgpack::object o) {
+  std::vector<msgpack::object> mems;
+  o.convert(&mems);
+  if (mems.size() != 2) {
+    throw msgpack::type_error();
+  }
+  mems[0].convert(&orig_);
+  unpack_impl(mems[1]);
 }
 
 float recommender_base::calc_similality(common::sfv_t& q1, common::sfv_t& q2) {

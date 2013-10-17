@@ -58,8 +58,8 @@ class storage_base {
 
   virtual void get_status(std::map<std::string, std::string>&) const = 0;
 
-  virtual bool save(std::ostream&) = 0;
-  virtual bool load(std::istream&) = 0;
+  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
+  virtual void unpack(msgpack::object o) = 0;
 
   virtual void update(
       const std::string& feature,

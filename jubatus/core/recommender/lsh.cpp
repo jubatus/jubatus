@@ -137,18 +137,20 @@ string lsh::type() const {
   return string("lsh");
 }
 
-bool lsh::save_impl(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << column2baseval_;
-  mixable_storage_->save(os);
-  return true;
+void lsh::pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack_array(2);
+  packer.pack(column2baseval_);
+  mixable_storage_->pack(packer);
 }
 
-bool lsh::load_impl(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> column2baseval_;
-  mixable_storage_->load(is);
-  return true;
+void lsh::unpack_impl(msgpack::object o) {
+  std::vector<msgpack::object> mems;
+  o.convert(&mems);
+  if (mems.size() != 2) {
+    throw msgpack::type_error();
+  }
+  mems[0].convert(&column2baseval_);
+  mixable_storage_->unpack(mems[1]);
 }
 
 void lsh::register_mixables_to_holder(framework::mixable_holder& holder) const {

@@ -94,14 +94,13 @@ string inverted_index::type() const {
   return string("inverted_index");
 }
 
-bool inverted_index::save_impl(std::ostream& os) {
-  mixable_storage_->save(os);
-  return true;
+void inverted_index::pack_impl(
+    msgpack::packer<msgpack::sbuffer>& packer) const {
+  mixable_storage_->pack(packer);
 }
 
-bool inverted_index::load_impl(std::istream& is) {
-  mixable_storage_->load(is);
-  return true;
+void inverted_index::unpack_impl(msgpack::object o) {
+  mixable_storage_->unpack(o);
 }
 
 void inverted_index::register_mixables_to_holder(

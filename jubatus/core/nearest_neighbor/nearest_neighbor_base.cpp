@@ -71,12 +71,13 @@ void nearest_neighbor_base::similar_row(
   }
 }
 
-void nearest_neighbor_base::save(std::ostream& os) const {
-  get_const_table()->save(os);
+void nearest_neighbor_base::pack(
+    msgpack::packer<msgpack::sbuffer>& packer) const {
+  get_const_table()->pack(packer);
 }
 
-void nearest_neighbor_base::load(std::istream& is) {
-  get_table()->load(is);
+void nearest_neighbor_base::unpack(msgpack::object o) {
+  get_table()->unpack(o);
 }
 
 void nearest_neighbor_base::register_mixables_to_holder(

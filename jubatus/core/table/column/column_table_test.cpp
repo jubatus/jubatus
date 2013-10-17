@@ -569,7 +569,7 @@ TEST(table, ostream_2) {
   ss << base;
 }
 
-TEST(table, save) {
+TEST(table, pack) {
   column_table base;
   vector<column_type> schema;
   schema.push_back(column_type(column_type::int32_type));
@@ -578,11 +578,12 @@ TEST(table, save) {
   ASSERT_TRUE(base.add("aa", owner("local"), 54, 21.1f));
   ASSERT_TRUE(base.add("bb", owner("local"), 899, 232.1f));
   ASSERT_TRUE(base.add("cc", owner("local"), 21, 2.0f));
-  std::stringstream ss;
-  base.save(ss);
+  msgpack::sbuffer buf;
+  msgpack::packer<msgpack::sbuffer> packer(buf);
+  base.pack(packer);
 }
 
-TEST(table, load) {
+TEST(table, unpack) {
   column_table base;
   vector<column_type> schema;
   schema.push_back(column_type(column_type::int32_type));
@@ -591,15 +592,20 @@ TEST(table, load) {
   ASSERT_TRUE(base.add("aa", owner("local"), 54, 21.1));
   ASSERT_TRUE(base.add("bb", owner("local"), 899, 232.1));
   ASSERT_TRUE(base.add("cc", owner("local"), 21, 2.0));
-  // std::cout << pretty(pfi::text::json::to_json(base)) << std::endl;
-  std::stringstream ss;
-  // std::cout << base;
-  base.save(ss);
-  // std::cout << ss.str() << std::endl;
+
+  msgpack::sbuffer buf;
+  {
+    msgpack::packer<msgpack::sbuffer> packer(buf);
+    base.pack(packer);
+  }
+
   column_table loaded;
-  loaded.load(ss);
-  // std::cout << pretty(pfi::text::json::to_json(loaded)) << std::endl;
-  // std::cout << loaded;
+  {
+    msgpack::unpacked unpacked;
+    msgpack::unpack(&unpacked, buf.data(), buf.size());
+    loaded.unpack(unpacked.get());
+  }
+
   const int32_column& ic = loaded.get_int32_column(0);
   const double_column& fc = loaded.get_double_column(1);
   ASSERT_EQ(ic[0], 54);
@@ -610,7 +616,7 @@ TEST(table, load) {
   ASSERT_FLOAT_EQ(fc[2], 2.0f);
 }
 
-TEST(table, bv_load) {
+TEST(table, bv_unpack) {
   column_table base;
   vector<column_type> schema;
   schema.push_back(column_type(column_type::int32_type));
@@ -622,15 +628,20 @@ TEST(table, bv_load) {
   ASSERT_TRUE(base.add("bb", owner("local"), 899, bv));
   bv.set_bit(1000);
   ASSERT_TRUE(base.add("cc", owner("local"), 21, bv));
-  // std::cout << pretty(pfi::text::json::to_json(base)) << std::endl;
-  std::stringstream ss;
-  // std::cout << base;
-  base.save(ss);
-  // std::cout << ss.str() << std::endl;
+
+  msgpack::sbuffer buf;
+  {
+    msgpack::packer<msgpack::sbuffer> packer(buf);
+    base.pack(packer);
+  }
+
   column_table loaded;
-  loaded.load(ss);
-  // std::cout << pretty(pfi::text::json::to_json(loaded)) << std::endl;
-  // std::cout << loaded;
+  {
+    msgpack::unpacked unpacked;
+    msgpack::unpack(&unpacked, buf.data(), buf.size());
+    loaded.unpack(unpacked.get());
+  }
+
   const int32_column& ic = loaded.get_int32_column(0);
   const bit_vector_column& bvc = loaded.get_bit_vector_column(1);
   ASSERT_EQ(ic[0], 54);

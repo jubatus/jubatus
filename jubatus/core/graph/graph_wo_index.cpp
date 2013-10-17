@@ -370,16 +370,12 @@ string graph_wo_index::type() const {
   return string("graph_wo_index");
 }
 
-bool graph_wo_index::save_imp(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << local_nodes_ << local_edges_ << global_nodes_ << eigen_scores_ << spts_;
-  return true;
+void graph_wo_index::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
 }
 
-bool graph_wo_index::load_imp(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> local_nodes_ >> local_edges_ >> global_nodes_ >> eigen_scores_ >> spts_;
-  return true;
+void graph_wo_index::unpack(msgpack::object o) {
+  o.convert(this);
 }
 
 void graph_wo_index::update_index() {

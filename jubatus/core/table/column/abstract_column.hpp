@@ -192,6 +192,14 @@ class typed_column : public detail::abstract_column_base {
     os << "[" << target << "] " << (*this)[target] << std::endl;
   }
 
+  template<class Buffer>
+  void pack_array(msgpack::packer<Buffer>& packer) const {
+    packer.pack(array_);
+  }
+  void unpack_array(msgpack::object o) {
+    o.convert(&array_);
+  }
+
  private:
   friend class pfi::data::serialization::access;
   template <class Ar>
@@ -303,6 +311,14 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
   }
   void dump(std::ostream& os, uint64_t target) const {
     os << "[" << target << "] " << (*this)[target] << std::endl;
+  }
+
+  template<class Buffer>
+  void pack_array(msgpack::packer<Buffer>& packer) const {
+    packer.pack(array_);
+  }
+  void unpack_array(msgpack::object o) {
+    o.convert(&array_);
   }
 
  private:
@@ -469,6 +485,93 @@ class abstract_column {
   }
   friend void swap(abstract_column& l, abstract_column& r) {
     l.swap(r);
+  }
+
+  template<class Buffer>
+  void msgpack_pack(msgpack::packer<Buffer>& packer) const {
+    column_type type = base_->type();
+
+    packer.pack_array(2);
+    packer.pack(type);
+
+    if (type.is(column_type::uint8_type)) {
+      static_cast<const uint8_column&>(*base_).pack_array(packer);
+    } else if (type.is(column_type::uint16_type)) {
+      static_cast<const uint16_column&>(*base_).pack_array(packer);
+    } else if (type.is(column_type::uint32_type)) {
+      static_cast<const uint32_column&>(*base_).pack_array(packer);
+    } else if (type.is(column_type::uint64_type)) {
+      static_cast<const uint64_column&>(*base_).pack_array(packer);
+    } else if (type.is(column_type::int8_type)) {
+      static_cast<const int8_column&>(*base_).pack_array(packer);
+    } else if (type.is(column_type::int16_type)) {
+      static_cast<const int16_column&>(*base_).pack_array(packer);
+    } else if (type.is(column_type::int32_type)) {
+      static_cast<const int32_column&>(*base_).pack_array(packer);
+    } else if (type.is(column_type::int64_type)) {
+      static_cast<const int64_column&>(*base_).pack_array(packer);
+    } else if (type.is(column_type::float_type)) {
+      static_cast<const float_column&>(*base_).pack_array(packer);
+    } else if (type.is(column_type::double_type)) {
+      static_cast<const double_column&>(*base_).pack_array(packer);
+    } else if (type.is(column_type::string_type)) {
+      static_cast<const string_column&>(*base_).pack_array(packer);
+    } else if (type.is(column_type::bit_vector_type)) {
+      static_cast<const bit_vector_column&>(*base_).pack_array(packer);
+    } else {
+      JUBATUS_ASSERT_UNREACHABLE();
+    }
+  }
+  void msgpack_unpack(msgpack::object o) {
+    if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
+      throw msgpack::type_error();
+    }
+    msgpack::object* objs = o.via.array.ptr;
+
+    column_type type;
+    objs[0].convert(&type);
+
+    abstract_column tmp;
+    if (!base_) {
+      abstract_column(type).swap(tmp);  // NOLINT
+    } else if (base_->type() == type) {
+      this->swap(tmp);
+    } else {
+      throw type_unmatch_exception(
+        "column: invalid type in serialize(): "
+        "expected: " + pfi::lang::lexical_cast<std::string>(base_->type()) +
+        ", actual: " + pfi::lang::lexical_cast<std::string>(type));
+    }
+
+    if (type.is(column_type::uint8_type)) {
+      static_cast<uint8_column&>(*tmp.base_).unpack_array(objs[1]);
+    } else if (type.is(column_type::uint16_type)) {
+      static_cast<uint16_column&>(*tmp.base_).unpack_array(objs[1]);
+    } else if (type.is(column_type::uint32_type)) {
+      static_cast<uint32_column&>(*tmp.base_).unpack_array(objs[1]);
+    } else if (type.is(column_type::uint64_type)) {
+      static_cast<uint64_column&>(*tmp.base_).unpack_array(objs[1]);
+    } else if (type.is(column_type::int8_type)) {
+      static_cast<int8_column&>(*tmp.base_).unpack_array(objs[1]);
+    } else if (type.is(column_type::int16_type)) {
+      static_cast<int16_column&>(*tmp.base_).unpack_array(objs[1]);
+    } else if (type.is(column_type::int32_type)) {
+      static_cast<int32_column&>(*tmp.base_).unpack_array(objs[1]);
+    } else if (type.is(column_type::int64_type)) {
+      static_cast<int64_column&>(*tmp.base_).unpack_array(objs[1]);
+    } else if (type.is(column_type::float_type)) {
+      static_cast<float_column&>(*tmp.base_).unpack_array(objs[1]);
+    } else if (type.is(column_type::double_type)) {
+      static_cast<double_column&>(*tmp.base_).unpack_array(objs[1]);
+    } else if (type.is(column_type::string_type)) {
+      static_cast<string_column&>(*tmp.base_).unpack_array(objs[1]);
+    } else if (type.is(column_type::bit_vector_type)) {
+      static_cast<bit_vector_column&>(*tmp.base_).unpack_array(objs[1]);
+    } else {
+      JUBATUS_ASSERT_UNREACHABLE();
+    }
+
+    this->swap(tmp);
   }
 
  private:

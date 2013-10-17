@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,18 +14,20 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "graph_base.hpp"
+#ifndef JUBATUS_CORE_COMMON_CRC32_HPP_
+#define JUBATUS_CORE_COMMON_CRC32_HPP_
+
+#include <stdint.h>
+#include <cstddef>
 
 namespace jubatus {
 namespace core {
-namespace graph {
+namespace common {
 
-graph_base::graph_base() {
-}
+uint32_t calc_crc32(const char* data, size_t size, uint32_t crc = 0);
 
-graph_base::~graph_base() {
-}
-
-}  // namespace graph
+}  // namespace common
 }  // namespace core
 }  // namespace jubatus
+
+#endif  // JUBATUS_CORE_COMMON_CRC32_HPP_

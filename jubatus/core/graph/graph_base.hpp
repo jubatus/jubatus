@@ -73,12 +73,8 @@ class graph_base {
   virtual void register_mixables_to_holder(
       framework::mixable_holder& holder) const = 0;
 
-  void save(std::ostream&);
-  void load(std::istream&);
-
- private:
-  virtual bool save_imp(std::ostream& os) = 0;
-  virtual bool load_imp(std::istream& is) = 0;
+  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
+  virtual void unpack(msgpack::object o) = 0;
 };
 
 }  // namespace graph
