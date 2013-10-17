@@ -302,16 +302,18 @@ void initialize_converter(
   std::map<std::string, num_feature_ptr> num_features;
   init_num_types(config.num_types, num_features);
   std::map<std::string, binary_feature_ptr> binary_features;
-  if (config.binary_types)
+  if (config.binary_types) {
     init_binary_types(*config.binary_types, binary_features);
+  }
 
   conv.clear_rules();
   init_string_filter_rules(config.string_filter_rules, string_filters, conv);
   init_num_filter_rules(config.num_filter_rules, num_filters, conv);
   init_string_rules(config.string_rules, splitters, conv);
   init_num_rules(config.num_rules, num_features, conv);
-  if (config.binary_rules)
+  if (config.binary_rules) {
     init_binary_rules(*config.binary_rules, binary_features, conv);
+  }
 
   if (config.hash_max_size.bool_test()) {
     conv.set_hash_max_size(*config.hash_max_size.get());
