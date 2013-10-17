@@ -87,7 +87,7 @@ void recommender_serv::get_status(status_t& status) const {
 }
 
 uint64_t recommender_serv::user_data_version() const {
-  return 1;
+  return 1;  // should be inclemented when model data is modified
 }
 
 bool recommender_serv::set_config(const std::string &config) {

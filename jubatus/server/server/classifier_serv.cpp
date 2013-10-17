@@ -124,7 +124,7 @@ string classifier_serv::get_config() const {
 }
 
 uint64_t classifier_serv::user_data_version() const {
-  return 1;
+  return 1;  // should be inclemented when model data is modified
 }
 
 int classifier_serv::train(

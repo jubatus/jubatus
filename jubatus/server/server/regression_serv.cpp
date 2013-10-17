@@ -85,7 +85,7 @@ void regression_serv::get_status(status_t& status) const {
 }
 
 uint64_t regression_serv::user_data_version() const {
-  return 1;
+  return 1;  // should be inclemented when model data is modified
 }
 
 bool regression_serv::set_config(const string& config) {
