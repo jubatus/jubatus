@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 #include <glog/logging.h>
+#include <pficommon/lang/cast.h>
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/common/big_endian.hpp"
@@ -29,6 +30,8 @@
 
 using jubatus::core::common::write_big_endian;
 using jubatus::core::common::read_big_endian;
+using std::string;
+using pfi::lang::lexical_cast;
 
 namespace jubatus {
 namespace server {
@@ -131,7 +134,6 @@ void save_server(std::ostream& os,
   os.write(user_data_buf.data(), user_data_buf.size());
 }
 
-// TODO(gintenlabo): implement detailed exception message
 void load_server(std::istream& is,
     server_base& server, const std::string& id) {
   init_versions();
@@ -140,24 +142,31 @@ void load_server(std::istream& is,
   is.read(header_buf, 48);
   if (std::memcmp(header_buf, magic_number, 8) != 0) {
     throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("invalid format"));
+        core::common::exception::runtime_error("invalid file format"));
   }
-  if (read_big_endian<uint64_t>(&header_buf[8]) != format_version) {
+  uint64_t format_version_read = read_big_endian<uint64_t>(&header_buf[8]);
+  if (format_version_read != format_version) {
     throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("invalid format version"));
+        core::common::exception::runtime_error(
+          "invalid format version: " +
+          lexical_cast<string>(format_version_read) +
+          ", expected " +
+          lexical_cast<string>(format_version)));
   }
-  if (read_big_endian<uint32_t>(&header_buf[16]) != jubatus_version_major) {
+  uint32_t jubatus_major_read = read_big_endian<uint32_t>(&header_buf[16]);
+  uint32_t jubatus_minor_read = read_big_endian<uint32_t>(&header_buf[20]);
+  uint32_t jubatus_maintenance_read =
+      read_big_endian<uint32_t>(&header_buf[24]);
+  if (jubatus_major_read != jubatus_version_major ||
+      jubatus_minor_read != jubatus_version_minor ||
+      jubatus_maintenance_read != jubatus_version_maintenance) {
     throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("invalid jubatus version"));
-  }
-  if (read_big_endian<uint32_t>(&header_buf[20]) != jubatus_version_minor) {
-    throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("invalid jubatus version"));
-  }
-  if (read_big_endian<uint32_t>(&header_buf[24])
-      != jubatus_version_maintenance) {
-    throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("invalid jubatus version"));
+        core::common::exception::runtime_error(
+          "jubatus version mismatched: current version: " JUBATUS_VERSION
+          ", saved version: " +
+          lexical_cast<std::string>(jubatus_major_read) + "." +
+          lexical_cast<std::string>(jubatus_minor_read) + "." +
+          lexical_cast<std::string>(jubatus_maintenance_read)));
   }
   uint32_t crc32_expected = read_big_endian<uint32_t>(&header_buf[28]);
   uint64_t system_data_size = read_big_endian<uint64_t>(&header_buf[32]);
@@ -173,8 +182,11 @@ void load_server(std::istream& is,
       &system_data_buf[0], system_data_size,
       &user_data_buf[0], user_data_size);
   if (crc32_actual != crc32_expected) {
+    std::ostringstream ss;
+    ss << "invalid crc32 checksum: " << std::hex << crc32_actual;
+    ss << ", read " << crc32_expected;
     throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("invalid crc32 sum"));
+        core::common::exception::runtime_error(ss.str()));
   }
 
   system_data_container system_data_actual;
@@ -186,19 +198,29 @@ void load_server(std::istream& is,
   system_data_container system_data_expected(server, id);
   if (system_data_actual.version != system_data_expected.version) {
     throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("invalid system data version"));
+        core::common::exception::runtime_error(
+          "invalid system data version: saved version: " +
+          lexical_cast<string>(system_data_actual.version) +
+          ", expected " +
+          lexical_cast<string>(system_data_expected.version)));
   }
   if (system_data_actual.type != system_data_expected.type) {
     throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("server type mismatched"));
+        core::common::exception::runtime_error(
+          "server type mismatched: " + system_data_actual.type +
+          ", expected " + system_data_expected.type));
   }
   if (id != "" && system_data_actual.id != system_data_expected.id) {
     throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("server id mismatched"));
+        core::common::exception::runtime_error(
+          "server id mismatched: " + system_data_actual.type +
+          ", expected " + system_data_expected.type));
   }
   if (system_data_actual.config != system_data_expected.config) {
     throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("server config mismatched"));
+        core::common::exception::runtime_error(
+          "server config mismatched" + system_data_actual.config +
+          ", expected " + system_data_expected.config));
   }
 
   {
@@ -218,7 +240,10 @@ void load_server(std::istream& is,
     if (user_data_version_actual != user_data_version_expected) {
       throw JUBATUS_EXCEPTION(
           core::common::exception::runtime_error(
-            "user data version mismatched"));
+            "user data version mismatched: " +
+            lexical_cast<string>(user_data_version_actual) +
+            ", expected " +
+            lexical_cast<string>(user_data_version_expected)));
     }
 
     server.get_mixable_holder()->unpack(objs[1]);
