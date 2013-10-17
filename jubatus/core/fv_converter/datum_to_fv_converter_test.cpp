@@ -22,6 +22,7 @@
 #include <gtest/gtest.h>
 #include <pficommon/lang/shared_ptr.h>
 #include <pficommon/text/json.h>
+#include "binary_feature.hpp"
 #include "character_ngram.hpp"
 #include "converter_config.hpp"
 #include "datum_to_fv_converter.hpp"
@@ -240,6 +241,51 @@ TEST(datum_to_fv_converter, register_num_rule) {
 
     std::vector<std::pair<std::string, float> > exp;
     exp.push_back(std::make_pair("/age@str$20", 1.));
+
+    std::sort(feature.begin(), feature.end());
+    std::sort(exp.begin(), exp.end());
+    ASSERT_EQ(exp, feature);
+  }
+}
+
+namespace {
+
+class binary_length_feature : public binary_feature {
+ public:
+  void add_feature(
+      const std::string& key,
+      const std::string& value,
+      std::vector<std::pair<std::string, float> >& ret_fv) const {
+    ret_fv.push_back(std::make_pair(key, value.size()));
+  }
+};
+
+}  // namespace
+
+TEST(datum_to_fv_converter, register_binary_rule) {
+  datum_to_fv_converter conv;
+  init_weight_manager(conv);
+
+  datum datum;
+  datum.binary_values_.push_back(std::make_pair("/bin", "0101"));
+
+  {
+    std::vector<std::pair<std::string, float> > feature;
+    conv.convert(datum, feature);
+    EXPECT_EQ(0u, feature.size());
+  }
+
+  shared_ptr<binary_feature> f(new binary_length_feature());
+  shared_ptr<key_matcher> a(new match_all());
+  conv.register_binary_rule("len", a, f);
+
+  {
+    std::vector<std::pair<std::string, float> > feature;
+    conv.convert(datum, feature);
+    EXPECT_EQ(1u, feature.size());
+
+    std::vector<std::pair<std::string, float> > exp;
+    exp.push_back(std::make_pair("/bin", 4.));
 
     std::sort(feature.begin(), feature.end());
     std::sort(exp.begin(), exp.end());

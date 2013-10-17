@@ -30,6 +30,8 @@
 #include "num_feature_factory.hpp"
 #include "num_filter.hpp"
 #include "num_filter_factory.hpp"
+#include "binary_feature.hpp"
+#include "binary_feature_factory.hpp"
 #include "space_splitter.hpp"
 #include "splitter_factory.hpp"
 #include "string_filter.hpp"
@@ -45,6 +47,7 @@ namespace {
 typedef pfi::lang::shared_ptr<word_splitter> splitter_ptr;
 typedef pfi::lang::shared_ptr<key_matcher> matcher_ptr;
 typedef pfi::lang::shared_ptr<num_feature> num_feature_ptr;
+typedef pfi::lang::shared_ptr<binary_feature> binary_feature_ptr;
 typedef pfi::lang::shared_ptr<string_filter> string_filter_ptr;
 typedef pfi::lang::shared_ptr<num_filter> num_filter_ptr;
 
@@ -244,6 +247,40 @@ void init_num_rules(
   }
 }
 
+void init_binary_types(
+    const std::map<std::string, param_t>& binary_types,
+    std::map<std::string, binary_feature_ptr>& binary_features) {
+  binary_feature_factory f;
+  for (std::map<std::string, param_t>::const_iterator it = binary_types.begin();
+       it != binary_types.end(); ++it) {
+    const std::string& name = it->first;
+    const std::map<std::string, std::string>& param = it->second;
+
+    std::string method = get_or_die(param, "method");
+    binary_feature_ptr feature(f.create(method, param));
+    binary_features[name] = feature;
+  }
+}
+
+void init_binary_rules(
+    const std::vector<binary_rule>& binary_rules,
+    const std::map<std::string, binary_feature_ptr>& binary_features,
+    datum_to_fv_converter& conv) {
+  key_matcher_factory f;
+  for (size_t i = 0; i < binary_rules.size(); ++i) {
+    const binary_rule& rule = binary_rules[i];
+    matcher_ptr m(f.create_matcher(rule.key));
+    std::map<std::string, binary_feature_ptr>::const_iterator it =
+        binary_features.find(rule.type);
+    if (it == binary_features.end()) {
+      throw JUBATUS_EXCEPTION(
+          converter_exception("unknown type: " + rule.type));
+    }
+
+    conv.register_binary_rule(rule.type, m, it->second);
+  }
+}
+
 }  // namespace
 
 void initialize_converter(
@@ -264,12 +301,19 @@ void initialize_converter(
   init_string_types(config.string_types, splitters);
   std::map<std::string, num_feature_ptr> num_features;
   init_num_types(config.num_types, num_features);
+  std::map<std::string, binary_feature_ptr> binary_features;
+  if (config.binary_types) {
+    init_binary_types(*config.binary_types, binary_features);
+  }
 
   conv.clear_rules();
   init_string_filter_rules(config.string_filter_rules, string_filters, conv);
   init_num_filter_rules(config.num_filter_rules, num_filters, conv);
   init_string_rules(config.string_rules, splitters, conv);
   init_num_rules(config.num_rules, num_features, conv);
+  if (config.binary_rules) {
+    init_binary_rules(*config.binary_rules, binary_features, conv);
+  }
 
   if (config.hash_max_size.bool_test()) {
     conv.set_hash_max_size(*config.hash_max_size.get());

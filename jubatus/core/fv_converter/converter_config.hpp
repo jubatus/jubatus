@@ -77,6 +77,18 @@ struct num_rule {
   }
 };
 
+struct binary_rule {
+  std::string key;
+  pfi::data::optional<std::string> except;
+  std::string type;
+
+  friend class pfi::data::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar) {
+    ar & MEMBER(key) & MEMBER(type);
+  }
+};
+
 struct converter_config {
   std::map<std::string, param_t> string_filter_types;
   std::vector<filter_rule> string_filter_rules;
@@ -90,6 +102,9 @@ struct converter_config {
   std::map<std::string, param_t> num_types;
   std::vector<num_rule> num_rules;
 
+  pfi::data::optional<std::map<std::string, param_t> > binary_types;
+  pfi::data::optional<std::vector<binary_rule> > binary_rules;
+
   pfi::data::optional<int64_t> hash_max_size;
 
   friend class pfi::data::serialization::access;
@@ -98,7 +113,8 @@ struct converter_config {
     ar & MEMBER(string_filter_types) & MEMBER(string_filter_rules)
         & MEMBER(num_filter_types) & MEMBER(num_filter_rules)
         & MEMBER(string_types) & MEMBER(string_rules) & MEMBER(num_types)
-        & MEMBER(num_rules) & MEMBER(hash_max_size);
+        & MEMBER(num_rules) & MEMBER(binary_types) & MEMBER(binary_rules)
+        & MEMBER(hash_max_size);
   }
 };
 

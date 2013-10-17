@@ -17,6 +17,7 @@ def configure(conf):
   conf.define('LIBFILTER_SAMPLE', libpat % 'filter_sample')
   conf.define('LIBNUM_FEATURE_SAMPLE', libpat % 'num_feature_sample')
   conf.define('LIBNUM_FILTER_SAMPLE', libpat % 'num_filter_sample')
+  conf.define('LIBBINARY_FEATURE_SAMPLE', libpat % 'binary_feature_sample')
 
 def make_test(bld, use, src):
   bld.program(
@@ -43,6 +44,7 @@ def build(bld):
     'key_matcher_factory.cpp',
     'splitter_factory.cpp',
     'num_feature_factory.cpp',
+    'binary_feature_factory.cpp',
     'converter_config.cpp',
     'libsvm_converter.cpp',
     'string_filter_factory.cpp',
@@ -50,6 +52,7 @@ def build(bld):
     'dynamic_loader.cpp',
     'dynamic_splitter.cpp',
     'dynamic_num_feature.cpp',
+    'dynamic_binary_feature.cpp',
     'dynamic_string_filter.cpp',
     'dynamic_num_filter.cpp',
     'revert.cpp',
@@ -110,6 +113,13 @@ def build(bld):
     )
 
   bld.shlib(
+    source = 'test_binary_feature.cpp',
+    target = 'binary_feature_sample',
+    install_path = None,
+    name = 'binary_feature_sample',
+    )
+
+  bld.shlib(
     source = 'test_string_filter.cpp',
     target = 'filter_sample',
     install_path = None,
@@ -130,6 +140,7 @@ def build(bld):
       'libsvm_converter_test.cpp',
       'dynamic_splitter_test.cpp',
       'dynamic_num_feature_test.cpp',
+      'dynamic_binary_feature_test.cpp',
       'dynamic_string_filter_test.cpp',
       'dynamic_num_filter_test.cpp',
       'string_filter_factory_test.cpp',
@@ -156,6 +167,7 @@ def build(bld):
                       'string_filter.hpp',
                       'num_feature.hpp',
                       'num_filter.hpp',
+                      'binary_feature.hpp',
                       'datum_to_fv_converter.hpp',
                       'datum.hpp',
                       'converter_config.hpp',
