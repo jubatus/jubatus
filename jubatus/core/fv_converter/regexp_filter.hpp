@@ -23,4 +23,4 @@
 #include "re2_filter.hpp"
 #endif
 
-#endif  // JUBATUS_CORE_FV_CONVERTER_REGEXP_MATCH_HPP_
+#endif  // JUBATUS_CORE_FV_CONVERTER_REGEXP_FILTER_HPP_

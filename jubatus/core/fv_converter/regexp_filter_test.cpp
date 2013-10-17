@@ -70,6 +70,17 @@ TEST(regexp_filter, illegal) {
   ASSERT_THROW(regexp_filter f("*hoge", "replace"), converter_exception);
 }
 
+TEST(regexp_filter, detag) {
+  regexp_filter f("<.*?>", "");
+
+  std::string out;
+  f.filter("<dlsfjasfasfdsaf>", out);
+  EXPECT_EQ("", out);
+  f.filter("<>foo bar<>", out);
+  EXPECT_EQ("foo bar", out);
+  f.filter("<html>foo bar</html>", out);
+  EXPECT_EQ("foo bar", out);
+}
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
