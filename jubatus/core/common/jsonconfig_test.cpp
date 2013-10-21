@@ -496,6 +496,7 @@ TEST(josnconfig_cast, cast_check_warning) {
 
     redundant_key* e1 = dynamic_cast<redundant_key*>(errors[0].get());
     EXPECT_EQ(".web_server", e1->path());
+    EXPECT_EQ("test", e1->key());
   }
 }
 
