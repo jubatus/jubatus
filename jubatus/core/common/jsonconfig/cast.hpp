@@ -105,7 +105,7 @@ inline void serialize(json_config_iarchive_cast& js, T& v) {
     member_collector collector;
     pfi::data::serialization::access::serialize(collector, v);
     std::set<std::string> members(collector.get_members().begin(),
-                                  collector.get_members().end());
+        collector.get_members().end());
     for (pfi::text::json::json::const_iterator it = js.get().begin();
          it != js.get().end(); ++it) {
       const std::string& key = it->first;
