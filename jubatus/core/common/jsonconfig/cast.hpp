@@ -34,6 +34,27 @@ namespace jsonconfig {
 
 typedef std::vector<pfi::lang::shared_ptr<config_error> > config_error_list;
 
+class member_collector {
+ public:
+  void append(const std::string& name) {
+    members_.push_back(name);
+  }
+
+  const std::vector<std::string>& get_members() const {
+    return members_;
+  }
+
+ private:
+  std::vector<std::string> members_;
+};
+
+template <typename T>
+inline void serialize(
+    member_collector& mem,
+    pfi::data::serialization::named_value<T>& v) {
+  mem.append(v.name);
+}
+
 class json_config_iarchive_cast {
  public:
   explicit json_config_iarchive_cast(const config& js)
@@ -80,7 +101,25 @@ void json_from_config(const config& conf, T& v, json_config_iarchive_cast& js);
 
 template <typename T>
 inline void serialize(json_config_iarchive_cast& js, T& v) {
-  // TODO(unnno): insert typecheck
+  if (js.get().type() == pfi::text::json::json::Object) {
+    member_collector collector;
+    pfi::data::serialization::access::serialize(collector, v);
+    std::set<std::string> members(collector.get_members().begin(),
+                                  collector.get_members().end());
+    for (pfi::text::json::json::const_iterator it = js.get().begin();
+         it != js.get().end(); ++it) {
+      const std::string& key = it->first;
+      if (members.count(key) == 0) {
+        redundant_key e(js.get_config().path(), key);
+        if (js.trace_error()) {
+          js.push_error(e);
+        } else {
+          throw JUBATUS_EXCEPTION(e);
+        }
+      }
+    }
+  }
+
   pfi::data::serialization::access::serialize(js, v);
 }
 
