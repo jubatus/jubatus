@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,24 +14,20 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
-#include "exception.hpp"
-#include "re2_match.hpp"
+#ifndef JUBATUS_CORE_COMMON_CRC32_HPP_
+#define JUBATUS_CORE_COMMON_CRC32_HPP_
+
+#include <stdint.h>
+#include <cstddef>
 
 namespace jubatus {
 namespace core {
-namespace fv_converter {
+namespace common {
 
-TEST(re2_match, trivial) {
-  re2_match m(".*/hoge");
-  ASSERT_TRUE(m.match("hoge/hoge"));
-  ASSERT_FALSE(m.match("hoge/fuga"));
-}
+uint32_t calc_crc32(const char* data, size_t size, uint32_t crc = 0);
 
-TEST(re2_match, illegal) {
-  ASSERT_THROW(re2_match m("*hoge"), converter_exception);
-}
-
-}  // namespace fv_converter
+}  // namespace common
 }  // namespace core
 }  // namespace jubatus
+
+#endif  // JUBATUS_CORE_COMMON_CRC32_HPP_

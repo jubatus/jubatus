@@ -23,14 +23,14 @@ namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-re2_match::re2_match(const std::string& regexp)
+regexp_match::regexp_match(const std::string& regexp)
     : re_(regexp) {
   if (!re_.ok()) {
     throw JUBATUS_EXCEPTION(converter_exception("invalid regular expression"));
   }
 }
 
-bool re2_match::match(const std::string& key) {
+bool regexp_match::match(const std::string& key) {
   return re2::RE2::FullMatch(key, re_);
 }
 

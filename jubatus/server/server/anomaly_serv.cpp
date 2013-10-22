@@ -110,6 +110,10 @@ void anomaly_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
+uint64_t anomaly_serv::user_data_version() const {
+  return 1;  // should be inclemented when model data is modified
+}
+
 bool anomaly_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   anomaly_serv_config conf =

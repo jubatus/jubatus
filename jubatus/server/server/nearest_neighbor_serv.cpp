@@ -72,6 +72,10 @@ void nearest_neighbor_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
+uint64_t nearest_neighbor_serv::user_data_version() const {
+  return 1;  // should be inclemented when model data is modified
+}
+
 void nearest_neighbor_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config config_root(
       lexical_cast<pfi::text::json::json>(config));
@@ -103,7 +107,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
   mixer_->set_mixable_holder(nearest_neighbor_->get_mixable_holder());
 }
 
-std::string nearest_neighbor_serv::get_config() {
+std::string nearest_neighbor_serv::get_config() const {
   DLOG(INFO) << __func__;
   check_set_config();
   return config_;

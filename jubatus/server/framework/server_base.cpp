@@ -25,6 +25,7 @@
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 #include "mixer/mixer.hpp"
+#include "save_load.hpp"
 
 namespace jubatus {
 namespace server {
@@ -38,8 +39,30 @@ std::string build_local_path(
     const std::string& id) {
   std::ostringstream path;
   path << a.datadir << '/' << a.eth << '_' << a.port << '_' << type << '_' << id
-      << ".js";
+      << ".jubatus";
   return path.str();
+}
+
+void load_file_impl(server_base& server,
+    const std::string& path, const std::string& id) {
+  std::ifstream ifs(path.c_str(), std::ios::binary);
+  if (!ifs) {
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error("cannot open input file")
+      << core::common::exception::error_file_name(path)
+      << core::common::exception::error_errno(errno));
+  }
+  try {
+    LOG(INFO) << "starting load from " << path;
+    framework::load_server(ifs, server, id);
+    ifs.close();
+    LOG(INFO) << "loaded from " << path;
+  } catch (const std::runtime_error& e) {
+    ifs.close();
+    LOG(ERROR) << "failed to load: " << path;
+    LOG(ERROR) << e.what();
+    throw;
+  }
 }
 
 }  // namespace
@@ -61,11 +84,7 @@ bool server_base::save(const std::string& id) {
   }
   try {
     LOG(INFO) << "starting save to " << path;
-    core::framework::mixable_holder::mixable_list mixables =
-        get_mixable_holder()->get_mixables();
-    for (size_t i = 0; i < mixables.size(); ++i) {
-      mixables[i]->save(ofs);
-    }
+    framework::save_server(ofs, *this, id);
     ofs.close();
     LOG(INFO) << "saved to " << path;
   } catch (const std::runtime_error& e) {
@@ -77,35 +96,12 @@ bool server_base::save(const std::string& id) {
 }
 
 bool server_base::load(const std::string& id) {
-  load_file(build_local_path(argv_, "jubatus", id));
+  load_file_impl(*this, build_local_path(argv_, "jubatus", id), id);
   return true;
 }
 
 void server_base::load_file(const std::string& path) {
-  std::ifstream ifs(path.c_str(), std::ios::binary);
-  if (!ifs) {
-    throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("cannot open input file")
-      << core::common::exception::error_file_name(path)
-      << core::common::exception::error_errno(errno));
-  }
-
-  try {
-    LOG(INFO) << "starting load from " << path;
-    core::framework::mixable_holder::mixable_list mixables =
-        get_mixable_holder()->get_mixables();
-    for (size_t i = 0; i < mixables.size(); ++i) {
-      mixables[i]->clear();
-      mixables[i]->load(ifs);
-    }
-    ifs.close();
-    LOG(INFO) << "loaded from " << path;
-  } catch (const std::runtime_error& e) {
-    ifs.close();
-    LOG(ERROR) << "failed to load: " << path;
-    LOG(ERROR) << e.what();
-    throw;
-  }
+  load_file_impl(*this, path, "");
 }
 
 void server_base::event_model_updated() {

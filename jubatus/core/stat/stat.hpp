@@ -30,6 +30,7 @@
 #include <pficommon/lang/enable_shared_from_this.h>
 #include <pficommon/lang/shared_ptr.h>
 #include "../common/exception.hpp"
+#include "../common/unordered_map.hpp"
 #include "../framework/mixable.hpp"
 
 namespace jubatus {
@@ -75,8 +76,8 @@ class stat : public pfi::lang::enable_shared_from_this<stat> {
 
   virtual void clear();
 
-  virtual bool save(std::ostream&);
-  virtual bool load(std::istream&);
+  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  virtual void unpack(msgpack::object o);
   std::string type() const;
 
   virtual void register_mixables_to_holder(
@@ -165,6 +166,8 @@ class stat : public pfi::lang::enable_shared_from_this<stat> {
     double sum_, sum2_;
     double max_;
     double min_;
+
+    MSGPACK_DEFINE(n_, sum_, sum2_, max_, min_);
   };
 
   std::deque<std::pair<uint64_t, std::pair<std::string, double> > > window_;
@@ -180,6 +183,9 @@ class stat : public pfi::lang::enable_shared_from_this<stat> {
 
   double e_;
   double n_;
+
+ public:
+  MSGPACK_DEFINE(window_size_, window_, stats_, e_, n_);
 };
 
 typedef framework::delegating_mixable<stat, std::pair<double, size_t> >

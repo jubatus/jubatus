@@ -72,9 +72,11 @@ class local_storage : public storage_base {
 
   void clear();
 
-  bool save(std::ostream&);
-  bool load(std::istream&);
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
   std::string type() const;
+
+  MSGPACK_DEFINE(tbl_, class2id_);
 
  protected:
   // map_features3_t tbl_;

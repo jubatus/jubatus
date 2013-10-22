@@ -22,7 +22,8 @@
 namespace jubatus {
 namespace core {
 namespace fv_converter {
-re2_filter::re2_filter(const std::string& regexp, const std::string& replace)
+regexp_filter::regexp_filter(
+    const std::string& regexp, const std::string& replace)
     : re_(regexp),
       replace_(replace) {
   if (!re_.ok()) {
@@ -31,7 +32,8 @@ re2_filter::re2_filter(const std::string& regexp, const std::string& replace)
   }
 }
 
-void re2_filter::filter(const std::string& input, std::string& output) const {
+void regexp_filter::filter(
+    const std::string& input, std::string& output) const {
   output = input;
   RE2::GlobalReplace(&output, re_, replace_);
 }

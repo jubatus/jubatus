@@ -18,16 +18,13 @@
 #include <string>
 #include <gtest/gtest.h>
 #include "exception.hpp"
-#ifdef HAVE_RE2
-#include "re2_filter.hpp"
-#endif
+#include "regexp_filter.hpp"
 #include "string_filter_factory.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-#ifdef HAVE_RE2
 TEST(string_filter_factory, trivial) {
   string_filter_factory f;
   std::map<std::string, std::string> p;
@@ -35,9 +32,8 @@ TEST(string_filter_factory, trivial) {
   p["replace"] = "";
 
   pfi::lang::shared_ptr<string_filter> filter(f.create("regexp", p));
-  EXPECT_TRUE(typeid(*filter) == typeid(re2_filter));
+  EXPECT_TRUE(typeid(*filter) == typeid(regexp_filter));
 }
-#endif
 
 TEST(string_filter_factory, unknown) {
   string_filter_factory f;

@@ -221,19 +221,6 @@ class column_table {
 
   std::pair<bool, uint64_t> exact_match(const std::string& prefix) const;
 
-  void load(std::istream& is) {
-    pfi::concurrent::scoped_wlock lk(table_lock_);
-    pfi::data::serialization::binary_iarchive ia(is);
-    ia >> *this;
-    scan_clock();
-  }
-
-  void save(std::ostream& os) const {
-    pfi::concurrent::scoped_rlock lk(table_lock_);
-    pfi::data::serialization::binary_oarchive oa(os);
-    oa << *const_cast<column_table*>(this);
-  }
-
   friend std::ostream& operator<<(std::ostream& os, const column_table& tbl) {
     pfi::concurrent::scoped_rlock lk(tbl.table_lock_);
     os << "total size:" << tbl.tuples_ << std::endl;
@@ -382,6 +369,17 @@ class column_table {
     }
     delete_row_(index);
     return true;
+  }
+
+  MSGPACK_DEFINE(keys_, tuples_, versions_, columns_, clock_);
+
+  template<class Packer>
+  void pack(Packer& packer) const {
+    packer.pack(*this);
+  }
+
+  void unpack(msgpack::object o) {
+    o.convert(this);
   }
 
  private:

@@ -51,28 +51,21 @@ pfi::lang::shared_ptr<jubatus::core::fv_converter::datum_to_fv_converter>
   return converter;
 }
 
-void save_model(pfi::lang::shared_ptr<
-  jubatus::core::framework::mixable_holder>
-  holder, std::string& data) {
-  std::stringstream os;
-  jubatus::core::framework::mixable_holder::mixable_list mixables =
-      holder->get_mixables();
-  for (size_t i = 0; i < mixables.size(); ++i) {
-    mixables[i]->save(os);
-  }
-  data = os.str();
+void save_model(
+    pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> holder,
+    std::string& data) {
+  msgpack::sbuffer buf;
+  msgpack::packer<msgpack::sbuffer> packer(buf);
+  holder->pack(packer);
+  data.assign(buf.data(), buf.size());
 }
 
-void load_model(pfi::lang::shared_ptr<
-  jubatus::core::framework::mixable_holder> holder,
-  const std::string& data) {
-  std::stringstream is(data);
-  jubatus::core::framework::mixable_holder::mixable_list mixables =
-    holder->get_mixables();
-  for (size_t i = 0; i < mixables.size(); ++i) {
-    mixables[i]->clear();
-    mixables[i]->load(is);
-  }
+void load_model(
+    pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> holder,
+    const std::string& data) {
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, &data[0], data.size());
+  holder->unpack(unpacked.get());
 }
 
 #endif  // JUBATUS_CORE_DRIVER_TEST_UTIL_HPP_

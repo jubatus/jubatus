@@ -483,6 +483,23 @@ TEST(jsonconfig_cast, cast_check_error) {
   }
 }
 
+TEST(josnconfig_cast, cast_check_warning) {
+  config conf(lexical_cast<json>(
+      "{\"web_server\": { \"host\" : \"localhost\", \"port\": 80, \"test\": 1},"
+      "\"users\": [\"abc\"]}"));
+  try {
+    config_cast_check<server_conf>(conf);
+    FAIL();
+  } catch (const cast_check_error& e) {
+    const config_error_list& errors = e.errors();
+    ASSERT_EQ(1u, errors.size());
+
+    redundant_key* e1 = dynamic_cast<redundant_key*>(errors[0].get());
+    EXPECT_EQ(".web_server", e1->path());
+    EXPECT_EQ("test", e1->key());
+  }
+}
+
 }  // namespace jsonconfig
 }  // namespace common
 }  // namespace core

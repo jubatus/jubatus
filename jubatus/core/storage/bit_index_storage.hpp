@@ -51,12 +51,14 @@ class bit_index_storage {
       uint64_t ret_num) const;
   std::string name() const;
 
-  bool save(std::ostream& os);
-  bool load(std::istream& is);
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
 
   void get_diff(bit_table_t& diff) const;
   void set_mixed_and_clear_diff(const bit_table_t& mixed_diff);
   void mix(const bit_table_t& lhs, bit_table_t& rhs) const;
+
+  MSGPACK_DEFINE(bitvals_, bitvals_diff_);
 
  private:
   friend class pfi::data::serialization::access;

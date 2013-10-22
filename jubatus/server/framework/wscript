@@ -9,7 +9,7 @@ def configure(conf):
 def build(bld):
   bld.recurse(subdirs)
 
-  framework_source = 'server_util.cpp server_base.cpp server_helper.cpp'
+  framework_source = 'save_load.cpp server_util.cpp server_base.cpp server_helper.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
     framework_source +=  ' proxy_common.cpp proxy.cpp'
 
@@ -32,6 +32,7 @@ def build(bld):
   bld.install_files('${PREFIX}/include/jubatus/server/framework', [
       'proxy.hpp',
       'proxy_common.hpp',
+      'save_load.hpp',
       'server_base.hpp',
       'server_helper.hpp',
       'server_util.hpp',

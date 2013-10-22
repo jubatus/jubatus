@@ -176,16 +176,12 @@ void local_storage::clear() {
   common::key_manager().swap(class2id_);
 }
 
-bool local_storage::save(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
+void local_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
 }
 
-bool local_storage::load(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
-  return true;
+void local_storage::unpack(msgpack::object o) {
+  o.convert(this);
 }
 
 std::string local_storage::type() const {

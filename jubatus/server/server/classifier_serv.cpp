@@ -118,9 +118,13 @@ bool classifier_serv::set_config(const string& config) {
   return true;
 }
 
-string classifier_serv::get_config() {
+string classifier_serv::get_config() const {
   check_set_config();
   return config_;
+}
+
+uint64_t classifier_serv::user_data_version() const {
+  return 1;  // should be inclemented when model data is modified
 }
 
 int classifier_serv::train(

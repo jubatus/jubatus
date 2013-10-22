@@ -74,8 +74,8 @@ class nearest_neighbor_base {
       std::vector<std::pair<std::string, float> >& ids,
       uint64_t ret_num) const;
 
-  virtual void save(std::ostream& os) const;
-  virtual void load(std::istream& is);
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
 
   virtual void register_mixables_to_holder(framework::mixable_holder& holder)
       const;

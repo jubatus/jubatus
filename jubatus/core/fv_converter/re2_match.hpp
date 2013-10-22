@@ -25,14 +25,14 @@ namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-class re2_match : public key_matcher {
+class regexp_match : public key_matcher {
  public:
-  explicit re2_match(const std::string& regexp);
+  explicit regexp_match(const std::string& regexp);
 
   bool match(const std::string& key);
 
  private:
-  re2_match();
+  regexp_match();
 
   re2::RE2 re_;
 };

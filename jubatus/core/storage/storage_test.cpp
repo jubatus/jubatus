@@ -59,6 +59,8 @@ class stub_storage : public storage_base {
   }
 
  public:
+  MSGPACK_DEFINE(data_);
+
   void get_status(std::map<std::string, std::string>&) const {
   }
 
@@ -117,16 +119,12 @@ class stub_storage : public storage_base {
     data_[feature][klass] = w;
   }
 
-  bool save(std::ostream& os) {
-    pfi::data::serialization::binary_oarchive oa(os);
-    oa << *this;
-    return true;
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+    packer.pack(*this);
   }
 
-  bool load(std::istream& is) {
-    pfi::data::serialization::binary_iarchive ia(is);
-    ia >> *this;
-    return true;
+  void unpack(msgpack::object o) {
+    o.convert(this);
   }
 
   void clear() {
@@ -293,6 +291,56 @@ TYPED_TEST_P(storage_test, serialize) {
     binary_iarchive ia(ss);
     ia >> s;
     // unlink(tmp_file_name);
+
+    {
+      feature_val3_t mm;
+      s.get3("a", mm);
+
+      sort(mm.begin(), mm.end());
+
+      feature_val3_t exp;
+      exp.push_back(make_pair("x", val3_t(1, 11, 111)));
+      exp.push_back(make_pair("y", val3_t(2, 22, 222)));
+      exp.push_back(make_pair("z", val3_t(3, 33, 333)));
+      EXPECT_TRUE(exp == mm);
+    }
+
+    {
+      feature_val3_t mm;
+      s.get3("b", mm);
+
+      sort(mm.begin(), mm.end());
+
+      feature_val3_t exp;
+      exp.push_back(make_pair("x", val3_t(12, 1212, 121212)));
+      exp.push_back(make_pair("z", val3_t(45, 4545, 454545)));
+
+      EXPECT_TRUE(exp == mm);
+    }
+  }
+}
+
+TYPED_TEST_P(storage_test, messagepack) {
+  msgpack::sbuffer buf;
+
+  {
+    TypeParam s;
+    s.set3("a", "x", val3_t(1, 11, 111));
+    s.set3("a", "y", val3_t(2, 22, 222));
+    s.set3("a", "z", val3_t(3, 33, 333));
+    s.set3("b", "x", val3_t(12, 1212, 121212));
+    s.set3("b", "z", val3_t(45, 4545, 454545));
+
+    msgpack::pack(&buf, s);
+  }
+
+  {
+    TypeParam s;
+
+    msgpack::unpacked unpacked;
+    msgpack::unpack(&unpacked, buf.data(), buf.size());
+
+    unpacked.get().convert(&s);
 
     {
       feature_val3_t mm;
@@ -557,6 +605,7 @@ REGISTER_TYPED_TEST_CASE_P(storage_test,
                            val2d,
                            val3d,
                            serialize,
+                           messagepack,
                            inp,
                            get_status,
                            update,

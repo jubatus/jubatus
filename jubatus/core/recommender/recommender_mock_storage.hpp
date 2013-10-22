@@ -56,8 +56,8 @@ class recommender_mock_storage {
 
   std::string name() const;
 
-  bool save(std::ostream& os);
-  bool load(std::istream& is);
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
 
   void get_diff(recommender_mock_storage& diff) const;
   void set_mixed_and_clear_diff(const recommender_mock_storage& mixed_diff);

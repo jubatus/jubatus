@@ -1,15 +1,17 @@
 import Options
 
 def options(opt):
-  opt.add_option('--disable-re2',
+  opt.add_option('--enable-re2',
                  action='store_true',
                  default=False,
-                 help='do not use re2')
+                 help='do use re2 instead of oniguruma')
 
 def configure(conf):
-  if not Options.options.disable_re2:
+  if Options.options.enable_re2:
     conf.check_cxx(lib = 're2', define_name = 'HAVE_RE2',
-                   errmsg = 'not found (add "--disable-re2" option if not necessary)')
+                   errmsg = 'not found')
+  else:
+    conf.check_cxx(lib = 'onig')
 
   libpat = conf.env.cxxshlib_PATTERN
   conf.define('LIBSPLITTER_SAMPLE', libpat % 'splitter_sample')
@@ -17,6 +19,7 @@ def configure(conf):
   conf.define('LIBFILTER_SAMPLE', libpat % 'filter_sample')
   conf.define('LIBNUM_FEATURE_SAMPLE', libpat % 'num_feature_sample')
   conf.define('LIBNUM_FILTER_SAMPLE', libpat % 'num_filter_sample')
+  conf.define('LIBBINARY_FEATURE_SAMPLE', libpat % 'binary_feature_sample')
 
 def make_test(bld, use, src):
   bld.program(
@@ -24,6 +27,7 @@ def make_test(bld, use, src):
     source = src,
     target = src[0:src.rindex('.')],
     use = use,
+    cxxflags = ['-DGTEST_HAS_POSIX_RE=0']
     )
 
 def make_tests(bld, use, srcs):
@@ -43,6 +47,7 @@ def build(bld):
     'key_matcher_factory.cpp',
     'splitter_factory.cpp',
     'num_feature_factory.cpp',
+    'binary_feature_factory.cpp',
     'converter_config.cpp',
     'libsvm_converter.cpp',
     'string_filter_factory.cpp',
@@ -50,6 +55,7 @@ def build(bld):
     'dynamic_loader.cpp',
     'dynamic_splitter.cpp',
     'dynamic_num_feature.cpp',
+    'dynamic_binary_feature.cpp',
     'dynamic_string_filter.cpp',
     'dynamic_num_filter.cpp',
     'revert.cpp',
@@ -67,6 +73,10 @@ def build(bld):
     source.append('re2_match.cpp')
     source.append('re2_filter.cpp')
     use += ' RE2'
+  else:
+    source.append('onig_match.cpp')
+    source.append('onig_filter.cpp')
+    use += ' ONIG'
 
   bld.shlib(
     source = source,
@@ -110,6 +120,13 @@ def build(bld):
     )
 
   bld.shlib(
+    source = 'test_binary_feature.cpp',
+    target = 'binary_feature_sample',
+    install_path = None,
+    name = 'binary_feature_sample',
+    )
+
+  bld.shlib(
     source = 'test_string_filter.cpp',
     target = 'filter_sample',
     install_path = None,
@@ -130,6 +147,7 @@ def build(bld):
       'libsvm_converter_test.cpp',
       'dynamic_splitter_test.cpp',
       'dynamic_num_feature_test.cpp',
+      'dynamic_binary_feature_test.cpp',
       'dynamic_string_filter_test.cpp',
       'dynamic_num_filter_test.cpp',
       'string_filter_factory_test.cpp',
@@ -142,12 +160,10 @@ def build(bld):
       'keyword_weights_test.cpp',
       'feature_hasher_test.cpp',
       'except_match_test.cpp',
+      'regexp_match_test.cpp',
+      'regexp_filter_test.cpp',
       ]
   test_use = 'PFICOMMON MSGPACK jubaconverter'
-
-  if bld.env.HAVE_RE2:
-    test_source.append('re2_match_test.cpp')
-    test_source.append('re2_filter_test.cpp')
 
   make_tests(bld, test_use, test_source)
 
@@ -156,6 +172,7 @@ def build(bld):
                       'string_filter.hpp',
                       'num_feature.hpp',
                       'num_filter.hpp',
+                      'binary_feature.hpp',
                       'datum_to_fv_converter.hpp',
                       'datum.hpp',
                       'converter_config.hpp',

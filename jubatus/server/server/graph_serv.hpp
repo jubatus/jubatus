@@ -57,6 +57,7 @@ class graph_serv : public framework::server_base {
   std::string get_config() const;
 
   void get_status(status_t& status) const;
+  uint64_t user_data_version() const;
 
   std::string create_node();  // no lock
   bool update_node(

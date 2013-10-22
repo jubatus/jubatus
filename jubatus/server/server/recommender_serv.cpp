@@ -86,6 +86,10 @@ void recommender_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
+uint64_t recommender_serv::user_data_version() const {
+  return 1;  // should be inclemented when model data is modified
+}
+
 bool recommender_serv::set_config(const std::string &config) {
   core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   recommender_serv_config conf =
@@ -115,7 +119,7 @@ bool recommender_serv::set_config(const std::string &config) {
   return true;
 }
 
-string recommender_serv::get_config() {
+string recommender_serv::get_config() const {
   check_set_config();
   return config_;
 }

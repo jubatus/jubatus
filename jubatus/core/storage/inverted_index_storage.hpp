@@ -69,8 +69,10 @@ class inverted_index_storage {
 
   std::string name() const;
 
-  bool save(std::ostream& os);
-  bool load(std::istream& is);
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
+
+  MSGPACK_DEFINE(inv_, inv_diff_, column2norm_, column2norm_diff_, column2id_);
 
  private:
   static float calc_l2norm(const common::sfv_t& sfv);
