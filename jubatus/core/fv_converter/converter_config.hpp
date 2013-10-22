@@ -90,17 +90,17 @@ struct binary_rule {
 };
 
 struct converter_config {
-  std::map<std::string, param_t> string_filter_types;
-  std::vector<filter_rule> string_filter_rules;
+  pfi::data::optional<std::map<std::string, param_t> > string_filter_types;
+  pfi::data::optional<std::vector<filter_rule> > string_filter_rules;
 
-  std::map<std::string, param_t> num_filter_types;
-  std::vector<filter_rule> num_filter_rules;
+  pfi::data::optional<std::map<std::string, param_t> > num_filter_types;
+  pfi::data::optional<std::vector<filter_rule> > num_filter_rules;
 
-  std::map<std::string, param_t> string_types;
-  std::vector<string_rule> string_rules;
+  pfi::data::optional<std::map<std::string, param_t> > string_types;
+  pfi::data::optional<std::vector<string_rule> > string_rules;
 
-  std::map<std::string, param_t> num_types;
-  std::vector<num_rule> num_rules;
+  pfi::data::optional<std::map<std::string, param_t> > num_types;
+  pfi::data::optional<std::vector<num_rule> > num_rules;
 
   pfi::data::optional<std::map<std::string, param_t> > binary_types;
   pfi::data::optional<std::vector<binary_rule> > binary_rules;
@@ -123,10 +123,7 @@ void initialize_converter(
     datum_to_fv_converter& converter);
 
 pfi::lang::shared_ptr<datum_to_fv_converter>
-make_fv_converter(const std::string& config);
-
-pfi::lang::shared_ptr<datum_to_fv_converter>
-make_fv_converter(const pfi::text::json::json& config);
+make_fv_converter(const converter_config& config);
 
 }  // namespace fv_converter
 }  // namespace core

@@ -42,8 +42,10 @@ pfi::lang::shared_ptr<jubatus::core::fv_converter::datum_to_fv_converter>
   num_rule.type = "num";
 
   jubatus::core::fv_converter::converter_config c;
-  c.string_rules.push_back(str_rule);
-  c.num_rules.push_back(num_rule);
+  c.string_rules = std::vector<jubatus::core::fv_converter::string_rule>();
+  c.string_rules->push_back(str_rule);
+  c.num_rules = std::vector<jubatus::core::fv_converter::num_rule>();
+  c.num_rules->push_back(num_rule);
 
   jubatus::core::fv_converter::initialize_converter(c, *converter);
   return converter;

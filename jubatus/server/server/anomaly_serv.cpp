@@ -66,7 +66,7 @@ struct anomaly_serv_config {
   // TODO(oda): we should use optional<jsonconfig::config> instead of
   //            jsonconfig::config ?
   core::common::jsonconfig::config parameter;
-  pfi::text::json::json converter;
+  core::fv_converter::converter_config converter;
 
   template<typename Ar>
   void serialize(Ar& ar) {
