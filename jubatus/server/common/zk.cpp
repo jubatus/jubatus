@@ -184,8 +184,10 @@ void my_znode_watcher(
       static_cast<pfi::lang::function<void(int, int, string)>*>(watcherCtx);
   try {
     (*fp)(type, state, string(path));
-  } catch (const std::exception& e) {
-    LOG(ERROR) << "exception in zk watcher callback:" << e.what();
+  } catch(const std::exception& e) {
+    LOG(WARN) << "exception happen zk watcher callback: " << e.what();
+  } catch (...) {
+    LOG(WARN) << "unknown exception happen zk watcher callback";
   }
   delete fp;
 }
@@ -211,8 +213,10 @@ void my_znode_delete_watcher(
         static_cast<pfi::lang::function<void(string)>*>(watcherCtx);
     try {
       (*fp)(string(path));
-    } catch (const std::exception& e) {
-      LOG(ERROR) << "exception in zk watcher callback:" << e.what();
+    } catch(const std::exception& e) {
+      LOG(WARN) << "exception happen zk watcher callback: " << e.what();
+    } catch (...) {
+      LOG(WARN) << "unknown exception happen zk watcher callback";
     }
     delete fp;
   } else {
