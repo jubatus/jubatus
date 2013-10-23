@@ -22,7 +22,6 @@
 #include <utility>
 #include <vector>
 #include <pficommon/lang/cast.h>
-#include <pficommon/lang/bind.h>
 #include <glog/logging.h>
 #include "jubatus/core/common/exception.hpp"
 
