@@ -22,7 +22,6 @@
 #include <string>
 #include <vector>
 #include <pficommon/concurrent/lock.h>
-#include <pficommon/lang/bind.h>
 #include <pficommon/data/string/utility.h>
 #include "jubatus/core/common/exception.hpp"
 
