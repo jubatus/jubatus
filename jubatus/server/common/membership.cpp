@@ -136,7 +136,8 @@ void watch_delete_actor(
   if (!success) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("Failed to watch_actor")
-        << core::common::exception::error_api_func("lock_service::create"));
+        << core::common::exception::error_api_func(
+            "lock_service::watch_delete_actor"));
   }
 
   // set exit zlistener here
