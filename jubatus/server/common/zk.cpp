@@ -182,7 +182,11 @@ void my_znode_watcher(
     void* watcherCtx) {
   pfi::lang::function<void(int, int, string)>* fp =
       static_cast<pfi::lang::function<void(int, int, string)>*>(watcherCtx);
-  (*fp)(type, state, string(path));
+  try {
+    (*fp)(type, state, string(path));
+  } catch (const std::exception& e) {
+    LOG(ERROR) << "exception in zk watcher callback:" << e.what();
+  }
   delete fp;
 }
 
@@ -205,7 +209,11 @@ void my_znode_delete_watcher(
   if (type == ZOO_DELETED_EVENT) {
     pfi::lang::function<void(string)>* fp =
         static_cast<pfi::lang::function<void(string)>*>(watcherCtx);
-    (*fp)(string(path));
+    try {
+      (*fp)(string(path));
+    } catch (const std::exception& e) {
+      LOG(ERROR) << "exception in zk watcher callback:" << e.what();
+    }
     delete fp;
   } else {
     // if not delete event, re-register
