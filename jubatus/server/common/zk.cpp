@@ -222,15 +222,13 @@ void my_znode_delete_watcher(
   } else {
     // if not delete event, re-register
     DLOG(INFO)
-        << "non-delete event type:["
+        << "non-delete event happen in path:["
+        << path << "] type:["
         << type << "] state:["
         << state << "]";
     int rc = zoo_wexists(zh, path, my_znode_delete_watcher, watcherCtx, NULL);
     if (rc != ZOK) {
-      throw JUBATUS_EXCEPTION(
-          core::common::exception::runtime_error("cannot watch path")
-          << core::common::exception::error_api_func("is_unrecoverable")
-          << core::common::exception::error_message(zerror(errno)));
+      LOG(WARN) << "cannot watch the path: " << path;
     }
   }
 }
