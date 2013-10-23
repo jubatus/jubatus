@@ -101,8 +101,8 @@ void register_actor(
 
   if (!success) {
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("Failed to register_actor")
-      << core::common::exception::error_api_func("lock_service::create"));
+        core::common::exception::runtime_error("Failed to register_actor")
+        << core::common::exception::error_api_func("lock_service::create"));
   }
 
   // set exit zlistener here
@@ -131,8 +131,8 @@ void register_proxy(
 
   if (!success) {
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("Failed to register_actor")
-      << core::common::exception::error_api_func("lock_service::create"));
+        core::common::exception::runtime_error("Failed to register_actor")
+        << core::common::exception::error_api_func("lock_service::create"));
   }
 
   // set exit zlistener here
@@ -154,7 +154,8 @@ bool get_all_actors(
     return false;
   }
 
-  for (std::vector<string>::const_iterator it = list.begin(); it != list.end();
+  for (std::vector<string>::const_iterator it = list.begin();
+       it != list.end();
       ++it) {
     string ip;
     int port;
@@ -190,8 +191,8 @@ void prepare_jubatus(lock_service& ls, const string& type, const string& name) {
 
   if (!success) {
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("Failed to prepare lock_service")
-      << core::common::exception::error_api_func("lock_service::create"));
+        core::common::exception::runtime_error("Failed to prepare lock_service")
+        << core::common::exception::error_api_func("lock_service::create"));
   }
 }
 
