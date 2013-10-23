@@ -185,9 +185,9 @@ void my_znode_watcher(
   try {
     (*fp)(type, state, string(path));
   } catch(const std::exception& e) {
-    LOG(WARN) << "exception thrown from zk watcher callback: " << e.what();
+    LOG(WARNING) << "exception thrown from zk watcher callback: " << e.what();
   } catch (...) {
-    LOG(WARN) << "unknown exception thrown from zk watcher callback";
+    LOG(WARNING) << "unknown exception thrown from zk watcher callback";
   }
   delete fp;
 }
@@ -214,9 +214,9 @@ void my_znode_delete_watcher(
     try {
       (*fp)(string(path));
     } catch(const std::exception& e) {
-      LOG(WARN) << "exception thrown from zk watcher callback: " << e.what();
+      LOG(WARNING) << "exception thrown from zk watcher callback: " << e.what();
     } catch (...) {
-      LOG(WARN) << "unknown exception thrown from zk watcher callback";
+      LOG(WARNING) << "unknown exception thrown from zk watcher callback";
     }
     delete fp;
   } else {
@@ -228,7 +228,7 @@ void my_znode_delete_watcher(
         << state << "]";
     int rc = zoo_wexists(zh, path, my_znode_delete_watcher, watcherCtx, NULL);
     if (rc != ZOK) {
-      LOG(WARN) << "cannot watch the path: " << path;
+      LOG(WARNING) << "cannot watch the path: " << path;
     }
   }
 }
