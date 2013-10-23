@@ -137,9 +137,7 @@ std::string get_user_name() {
   int ret = getpwuid_r(uid, &pwd, &buf[0], buflen, &result);
   if (ret == 0) {
     if (result != NULL) {
-      std::string pw_name(result->pw_name);
-      free(result);
-      return pw_name;
+      return result->pw_name;
     }
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("User not found")
