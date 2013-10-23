@@ -22,6 +22,7 @@
 #include <utility>
 #include <vector>
 #include <pficommon/lang/cast.h>
+#include <pficommon/lang/bind.h>
 #include <glog/logging.h>
 #include "jubatus/core/common/exception.hpp"
 
@@ -102,6 +103,40 @@ void register_actor(
   if (!success) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("Failed to register_actor")
+        << core::common::exception::error_api_func("lock_service::create"));
+  }
+
+  // set exit zlistener here
+  z.push_cleanup(&force_exit);
+}
+
+void watch_delete_actor(
+    lock_service& z,
+    const string& type,
+    const string& name,
+    const string& ip,
+    int port,
+    pfi::lang::function<void(string)> callback) {
+  bool success = true;
+
+  string path;
+  build_actor_path(path, type, name);
+  success = z.create(path) && success;
+  success = z.create(path + "/master_lock", "") && success;
+  path += "/nodes";
+  success = z.create(path) && success;
+  {
+    string path1;
+    build_existence_path(path, ip, port, path1);
+    success = z.bind_delete_watcher(path1, callback) && success;
+    if (success) {
+      LOG(INFO) << "watch start: " << path1;
+    }
+  }
+
+  if (!success) {
+    throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("Failed to watch_actor")
         << core::common::exception::error_api_func("lock_service::create"));
   }
 

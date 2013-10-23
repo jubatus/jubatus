@@ -21,6 +21,7 @@
 #include <utility>
 #include <vector>
 #include <map>
+#include <pficommon/lang/function.h>
 
 #include "lock_service.hpp"
 
@@ -70,6 +71,15 @@ void register_actor(
     const std::string& ip,
     int port);
 
+void watch_delete_actor(
+    lock_service& z,
+    const std::string& type,
+    const std::string& name,
+    const std::string& ip,
+    int port,
+    pfi::lang::function<void(std::string)> callback);
+
+
 // zk -> name -> ip -> port -> void
 void register_proxy(
     lock_service&,
@@ -81,7 +91,7 @@ void register_proxy(
 bool get_all_actors(
     lock_service&,
     const std::string& type,
-    const std::string&,
+    const std::string& name,
     std::vector<std::pair<std::string, int> >&);
 
 void force_exit();

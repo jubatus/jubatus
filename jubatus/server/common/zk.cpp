@@ -196,6 +196,43 @@ bool zk::bind_watcher(
   return rc == ZOK;
 }
 
+void my_znode_delete_watcher(
+    zhandle_t* zh,
+    int type,
+    int state,
+    const char* path,
+    void* watcherCtx) {
+  // state should be checked?
+  if (type == ZOO_DELETED_EVENT) {
+    pfi::lang::function<void(string)>* fp =
+        static_cast<pfi::lang::function<void(string)>*>(watcherCtx);
+    (*fp)(string(path));
+    delete fp;
+  } else {
+    // if not delete event, re-register
+    DLOG(INFO)
+        << "non-delete event type:["
+        << type << "] state:["
+        << state << "]";
+    int rc = zoo_wexists(zh, path, my_znode_delete_watcher, watcherCtx, NULL);
+    if (rc != ZOK) {
+      throw JUBATUS_EXCEPTION(
+          core::common::exception::runtime_error("cannot watch path")
+          << core::common::exception::error_api_func("is_unrecoverable")
+          << core::common::exception::error_message(zerror(errno)));
+    }
+  }
+}
+
+bool zk::bind_delete_watcher(
+    const string& path,
+    pfi::lang::function<void(string)>& f) {
+  pfi::lang::function<void(string)>* fp = new pfi::lang::function<
+      void(string)>(f);
+  int rc = zoo_wexists(zh_, path.c_str(), my_znode_delete_watcher, fp, NULL);
+  return rc == ZOK;
+}
+
 bool zk::list(const string& path, vector<string>& out) {
   scoped_lock lk(m_);
   return list_(path, out);
