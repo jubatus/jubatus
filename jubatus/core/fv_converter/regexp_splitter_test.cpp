@@ -58,7 +58,14 @@ TEST(regexp_splitter, end) {
 TEST(regexp_splitter, match_empty) {
   regexp_splitter r("().", 1);
   std::vector<std::pair<size_t, size_t> > bs;
-  r.split("test", bs);
+  r.split("abc", bs);
+  ASSERT_EQ(3u, bs.size());
+  EXPECT_EQ(0u, bs[0].first);
+  EXPECT_EQ(0u, bs[0].second);
+  EXPECT_EQ(1u, bs[1].first);
+  EXPECT_EQ(0u, bs[1].second);
+  EXPECT_EQ(2u, bs[2].first);
+  EXPECT_EQ(0u, bs[2].second);
 }
 
 TEST(regexp_splitter, error) {
