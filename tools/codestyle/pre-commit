@@ -8,7 +8,7 @@ CPPLINT="tools/codestyle/cpplint/cpplint.py"
 CPPLINT_ARGS="--filter=-runtime/references,-runtime/rtti"
 
 list_target_files() {
-  git diff --cached --name-only | grep -v "^jubatus/server/third_party/"
+  git diff --cached --name-only | grep -v "^jubatus/server/third_party/" | grep -v "^jubatus/server/server/.*_\\(server.[hc]pp\\|impl.cpp\\|types.hpp\\|keeper.cpp\\|client.hpp\\)" | grep -v "^jubatus/client/*"
 }
 
 if [ -z "$(list_target_files)" ]; then

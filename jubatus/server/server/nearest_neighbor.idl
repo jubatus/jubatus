@@ -1,41 +1,24 @@
-
-type neighbor_result = list<tuple<string, float> >
-
-%include "../../core/fv_converter/datum.hpp"
-
-message datum(jubatus::core::fv_converter::datum) {
-  0: list<tuple<string, string> >  string_values
-  1: list<tuple<string, double> >  num_values
+message id_with_score("std::pair<std::string, float>") {
+  0: string id
+  1: float score
 }
 
 service nearest_neighbor {
   #@broadcast #@update #@all_and
-  bool clear(0: string name)
+  bool clear()
 
   #@cht(1) #@update #@pass
-  bool set_row(0: string name, 1: string id, 2: datum d)
+  bool set_row(0: string id, 1: datum d)
 
   #@random #@analysis #@pass
-  neighbor_result neighbor_row_from_id(0: string name, 1: string id, 2: uint size)
+  list<id_with_score> neighbor_row_from_id(0: string id, 1: uint size)
 
   #@random #@analysis #@pass
-  neighbor_result neighbor_row_from_data(0: string name, 1: datum query, 2: uint size)
+  list<id_with_score> neighbor_row_from_data(0: datum query, 1: uint size)
 
   #@random #@analysis #@pass
-  neighbor_result similar_row_from_id(0: string name, 1: string id, 2: int ret_num)
+  list<id_with_score> similar_row_from_id(0: string id, 1: int ret_num)
 
   #@random #@analysis #@pass
-  neighbor_result similar_row_from_data(0: string name, 1: datum query, 2: int ret_num)
-
-  #@broadcast #@nolock #@all_and
-  bool save(0: string name, 1: string id) # #@broadcast
-
-  #@broadcast #@update #@all_and
-  bool load(0: string name, 1: string id) # //@broadcast
-
-  #@broadcast #@analysis #@merge
-  map<string, map<string, string> >  get_status(0: string name) # //@broadcast
-
-  #@random #@analysis #@pass
-  string get_config(0: string name)
+  list<id_with_score> similar_row_from_data(0: datum query, 1: int ret_num)
 }

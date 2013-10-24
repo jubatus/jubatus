@@ -121,3 +121,17 @@ let get_services idl =
       | _ -> lst) [] idl in
   List.rev services
 ;;
+
+let snake_to_lower s =
+  let ss = Str.split (Str.regexp "_") s in
+  match ss with
+    | hd::tl ->
+      hd ^ String.concat "" (List.map String.capitalize tl)
+    | [] ->
+      ""
+;;
+
+let snake_to_upper s =
+  let ss = Str.split (Str.regexp "_") s in
+  String.concat "" (List.map String.capitalize ss)
+;;

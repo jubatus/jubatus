@@ -53,7 +53,7 @@ class graph_serv : public framework::server_base {
     return graph_->get_mixable_holder();
   }
 
-  bool set_config(const std::string& config);
+  void set_config(const std::string& config);
   std::string get_config() const;
 
   void get_status(status_t& status) const;

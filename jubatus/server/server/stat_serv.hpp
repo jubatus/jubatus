@@ -49,7 +49,7 @@ class stat_serv : public framework::server_base {
   void get_status(status_t& status) const;
   uint64_t user_data_version() const;
 
-  bool set_config(const std::string&);
+  void set_config(const std::string&);
   std::string get_config() const;
   bool push(const std::string& key, double value);
   double sum(const std::string&) const;

@@ -50,12 +50,12 @@ class anomaly_serv : public framework::server_base {
   void get_status(status_t& status) const;
   uint64_t user_data_version() const;
 
-  bool set_config(const std::string& config);
+  void set_config(const std::string& config);
   std::string get_config() const;
 
   bool clear_row(const std::string& id);
 
-  std::pair<std::string, float> add(const core::fv_converter::datum& d);
+  id_with_score add(const core::fv_converter::datum& d);
   float update(const std::string& id, const core::fv_converter::datum& d);
   float overwrite(const std::string& id, const core::fv_converter::datum& d);
 
@@ -68,8 +68,10 @@ class anomaly_serv : public framework::server_base {
   void check_set_config() const;
 
  private:
-  std::pair<std::string, float> add_zk(const std::string& id,
+  id_with_score add_zk(
+      const std::string& id,
       const core::fv_converter::datum& d);
+
   void find_from_cht(
       const std::string& key,
       size_t n,

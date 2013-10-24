@@ -16,18 +16,23 @@
 
 %include "../../core/graph/graph_type.hpp"
 
-message node(jubatus::core::graph::node_info) {
+message node("jubatus::core::graph::node_info") {
   0: map<string, string>  property
   1: list<ulong>  in_edges
   2: list<ulong>  out_edges
 }
 
+message query {
+  0: string from_id
+  1: string to_id
+}
+
 # query: { key => value }
 # matches if all keys exist on the property and all value are equal
 # or, empty list matches all node/edge with any property
-message preset_query(jubatus::core::graph::preset_query) {
-  0: list<tuple<string, string> > edge_query
-  1: list<tuple<string, string> > node_query
+message preset_query("jubatus::core::graph::preset_query") {
+  0: list<query> edge_query
+  1: list<query> node_query
 }
 
 message edge {
@@ -45,69 +50,58 @@ message shortest_path_query {
 
 service graph {
 
-  #@random #@analysis #@pass
-  string get_config(0: string name)
-
   #@random #@nolock #@pass
-  string create_node(0: string name) # //@cht
+  string create_node() # //@cht
 
   #@cht(2) #@nolock #@pass
-  bool remove_node(0: string name, 1: string node_id) # //@cht
+  bool remove_node(0: string node_id) # //@cht
 
   #@cht #@update #@all_and
-  bool update_node(0: string name, 1: string node_id, 2: map<string, string> property) # //@cht
+  bool update_node(0: string node_id, 1: map<string, string> property) # //@cht
 
   #@cht(1) #@nolock #@pass
-  ulong create_edge(0: string name, 1: string node_id, 2: edge e) # //@cht
+  ulong create_edge(0: string node_id, 1: edge e) # //@cht
 
   #@cht #@update #@all_and
-  bool update_edge(0: string name, 1: string node_id, 2: ulong edge_id, 3: edge e) # //@cht
+  bool update_edge(0: string node_id, 1: ulong edge_id, 2: edge e) # //@cht
 
   #@cht #@update #@all_and
-  bool remove_edge(0: string name, 1: string node_id, 2: ulong edge_id) # //@cht
+  bool remove_edge(0: string node_id, 1: ulong edge_id) # //@cht
 
   #@random #@analysis #@pass
-  double get_centrality(0: string name, 1: string node_id,
-                        2: int centrality_type, 3: preset_query query) # //@random
+  double get_centrality(0: string node_id,
+                        1: int centrality_type, 2: preset_query query) # //@random
 
   #@broadcast #@update #@all_and
-  bool add_centrality_query(0: string name, 1: preset_query query)
+  bool add_centrality_query(0: preset_query query)
   #@broadcast #@update #@all_and
-  bool add_shortest_path_query(0: string name, 1: preset_query query)
+  bool add_shortest_path_query(0: preset_query query)
   #@broadcast #@update #@all_and
-  bool remove_centrality_query(0: string name, 1: preset_query query)
+  bool remove_centrality_query(0: preset_query query)
   #@broadcast #@update #@all_and
-  bool remove_shortest_path_query(0: string name, 1: preset_query query)
+  bool remove_shortest_path_query(0: preset_query query)
 
   #@random #@analysis #@pass
-  list<string> get_shortest_path(0: string name, 1: shortest_path_query query) # //@random
+  list<string> get_shortest_path(0: shortest_path_query query) # //@random
 
   #@broadcast #@update #@all_and
-  bool update_index(0: string name) # //@broadcast
+  bool update_index() # //@broadcast
 
   #@broadcast #@update #@all_and
-  bool clear(0: string name) # //@broadcast
+  bool clear() # //@broadcast
 
   #@cht #@analysis #@pass
-  node get_node(0: string name, 1: string node_id) # //@cht
+  node get_node(0: string node_id) # //@cht
 
   #@cht #@analysis #@pass
-  edge get_edge(0: string name, 1: string node_id, 2: ulong edge_id) # //@cht
+  edge get_edge(0: string node_id, 1: ulong edge_id) # //@cht
 
-  #@broadcast #@update #@all_and
-  bool save(0: string name, 1: string id)
-
-  #@broadcast #@update #@all_and
-  bool load(0: string name, 1: string id)
-
-  #@broadcast #@analysis #@merge
-  map<string, map<string, string> >  get_status(0: string name)
 
   #@internal #@update #@pass
-  bool create_node_here(0: string name, 1: string node_id)
+  bool create_node_here(0: string node_id)
   #@internal #@update #@pass
-  bool remove_global_node(0: string name, 1: string node_id)
+  bool remove_global_node(0: string node_id)
 
   #@internal #@update #@pass
-  bool create_edge_here(0: string name, 1: ulong edge_id, 2: edge e)
+  bool create_edge_here(0: ulong edge_id, 1: edge e)
 }

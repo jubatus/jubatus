@@ -18,9 +18,12 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <map>
+#include <string>
 #include <glog/logging.h>
 
 #include "jubatus/core/common/exception.hpp"
+#include "aggregators.hpp"
 #include "../common/membership.hpp"
 #include "../common/signals.hpp"
 #include "../common/util.hpp"
@@ -40,6 +43,22 @@ __thread proxy::async_task_loop*
 proxy::proxy(const proxy_argv& a)
     : proxy_common(a),
       jubatus::server::common::mprpc::rpc_server(a.timeout) {
+  typedef std::map<std::string, std::string> string_map;
+  typedef std::map<std::string, string_map> status_type;
+  // register default methods
+  register_async_random<std::string>("get_config");
+  register_async_broadcast<bool, std::string>(
+      "save",
+      pfi::lang::function<bool(bool, bool)>(
+          &jubatus::server::framework::all_and));
+  register_async_broadcast<bool, std::string>(
+      "load",
+      pfi::lang::function<bool(bool, bool)>(
+          &jubatus::server::framework::all_and));
+  register_async_broadcast<status_type>(
+          "get_status",
+          pfi::lang::function<status_type(status_type, status_type)>(
+              &jubatus::server::framework::merge<std::string, string_map>));
 }
 
 proxy::~proxy() {

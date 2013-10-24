@@ -11,23 +11,35 @@
 #include <vector>
 #include <utility>
 
+#include <jubatus/client/common/datum.hpp>
 #include <msgpack.hpp>
 
 namespace jubatus {
 namespace classifier {
-
-struct datum {
- public:
-  MSGPACK_DEFINE(string_values, num_values);
-  std::vector<std::pair<std::string, std::string> > string_values;
-  std::vector<std::pair<std::string, double> > num_values;
-};
 
 struct estimate_result {
  public:
   MSGPACK_DEFINE(label, score);
   std::string label;
   double score;
+  estimate_result() {
+  }
+  estimate_result(const std::string& label, double score)
+    : label(label), score(score) {
+  }
+};
+
+struct labeled_datum {
+ public:
+  MSGPACK_DEFINE(label, data);
+  std::string label;
+  jubatus::client::common::datum data;
+  labeled_datum() {
+  }
+  labeled_datum(const std::string& label,
+      const jubatus::client::common::datum& data)
+    : label(label), data(data) {
+  }
 };
 
 }  // namespace classifier

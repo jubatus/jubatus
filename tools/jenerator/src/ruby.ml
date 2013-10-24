@@ -24,11 +24,20 @@ open Lib
 
 let comment_out_head = "#"
 
-let make_header conf source filename content = 
+let make_header conf source filename content =
   make_source conf source filename content comment_out_head
 ;;
 
-let gen_args args = 
+let gen_string_literal s =
+  "\"" ^ String.escaped s ^ "\""
+;;
+
+let gen_bool_literal = function
+  | true -> "true"
+  | false -> "false"
+;;
+
+let gen_args args =
   "(" ^ String.concat ", " args ^ ")"
 ;;
 
@@ -37,184 +46,118 @@ let gen_call func args =
   func ^ gen_args args
 ;;
 
-(* return : retval = @cli.call(names) *)
-let gen_retval' func args =
-  let args' = (":" ^ func) :: args in
-  gen_call "@cli.call" args'
+let gen_list vars =
+  "[" ^ String.concat ", " vars ^ "]"
 ;;
 
-let gen_retval func args typ = match typ with
-  | Some(t) -> 
-      (match t with
-      | Struct (st) ->
-        (String.capitalize st) ^ ".from_tuple(" ^ gen_retval' func args ^ ")"
-      | _ -> gen_retval' func args
-      (* TODO(unno): use gen_type *)
-      )      
-  | None -> gen_retval' func args
+let rec gen_type = function
+  | Object -> "TObject.new"
+  | Bool -> "TBool.new"
+  | Int(signed, bits) -> gen_call "TInt.new"
+    [gen_bool_literal signed; string_of_int bits]
+  | Float(_) -> "TFloat.new"
+  | Raw -> "TRaw.new"
+  | String -> "TString.new"
+  | Datum -> "TDatum.new"
+  | Struct s  -> gen_call "TUserDef.new" [snake_to_upper s]
+  | List t -> gen_call "TList.new" [gen_type t]
+  | Map(key, value) -> gen_call "TMap.new" [gen_type key; gen_type value]
+  | Nullable(t) -> gen_call "TNullable.new" [gen_type t]
+;;
+
+let gen_client_call m =
+  let name = m.method_name in
+  let args = List.map (fun f -> f.field_name) m.method_arguments in
+  let arg_types = List.map (fun f -> f.field_type) m.method_arguments in
+
+  let args' = gen_list args in
+  let ret_type' = match m.method_return_type with
+    | None -> "nil"
+    | Some t -> gen_type t in
+  let arg_types' = gen_list (List.map gen_type arg_types) in
+  let call_arg = [gen_string_literal name; args'; ret_type'; arg_types'] in
+  gen_call "@jubatus_client.call" call_arg
 ;;
 
 (* return : def func_name (args): *)
 let gen_def func = function
   | [] ->
-      "def " ^ func 
+    "def " ^ func
   | args ->
-      "def " ^ func ^ "(" ^ (String.concat ", " args) ^ ")"
-;;
-
-let rec gen_type t name = match t with
-  | Object -> raise (Unknown_type("Object is not supported"))
-  | Bool | Int(_, _) | Float(_) | Raw | String -> 
-      name
-  | Struct s  -> (String.capitalize s) ^ ".from_tuple(" ^ name ^ ")"
-  | List t -> 
-      (match t with
-      | Bool | Int(_, _) | Float(_) | Raw | String -> name ^ ".map {|x| x}"
-      | _ ->
-        name ^ ".map {|x|  [" ^ gen_type t "x" ^ "] }")
-  | Map(key, value) -> 
-      name ^ ".each_with_object({}) {|(k,v),h| h[k] = v}" (* TODO: OK? *)
-  | Tuple [t1; t2] ->
-      gen_type t1 (name ^ "[0]") ^ ", " ^ gen_type t2 (name ^ "[1], ")
-  | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
-  | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
-;;
-
-let gen_string_literal s =
-  "\"" ^ String.escaped s ^ "\""
+    "def " ^ func ^ "(" ^ (String.concat ", " args) ^ ")"
 ;;
 
 let gen_client_method m =
   let name = m.method_name in
-  let args = List.map (fun f -> f.field_name) m.method_arguments in 
-  let call =
-    [(0, gen_def name args);
-     (1, gen_retval name args m.method_return_type);
-     (0, "end")
-    ] 
-  in call
+  let args = List.map (fun f -> f.field_name) m.method_arguments in
+  [ (0, gen_def name args);
+    (1,   gen_client_call m);
+    (0, "end");
+  ]
 ;;
 
 let gen_client s =
   let constructor = [
-    (0, "def initialize(host, port)");
-    (1, "@cli = MessagePack::RPC::Client.new(host, port)");
+    (0, "def initialize(host, port, name, timeout_sec=10)");
+    (1,   "super");
     (0, "end");
-    (0, "def get_client");
-    (1, "@cli");
-    (0, "end")
+    (0, "");
   ] in
   let methods = List.map gen_client_method s.service_methods in
-  let content = List.concat (constructor :: methods) in
-    List.concat [
-      [
-        (0, "class " ^ (String.capitalize s.service_name));
-      ];
+  let content = concat_blocks (constructor :: methods) in
+  List.concat [
+    [
+      (0, "class " ^ (snake_to_upper s.service_name) ^ " < Jubatus::Common::ClientBase");
+      (1,   "include Jubatus::Common");
+    ];
     indent_lines 1 content;
-      [
-        (0, "end")
-      ]
+    [
+      (0, "end")
     ]
-;;
-
-
-let gen_self_with_comma field_names =
-  (List.map (fun s -> (0, "@" ^ s ^ ",")) field_names)
-;;
-
-let gen_self_with_equal field_names =
-  (List.map (fun s -> (0, " @" ^ s ^ " = " ^ s ^ " ")) field_names)
-;;
-
-let gen_initialize field_names = 
-    (List.concat [[(0, gen_def "initialize" field_names)];
-                  indent_lines 1 (gen_self_with_equal field_names);
-                  [(0, "end")]])
-;;
-
-(* ad hoc ..  TODO: nested struct *)
-let gen_type' t name = match t with
-  | Struct s  -> name ^ ".to_tuple"
-  | _ -> gen_type t name
-;;
-
-let gen_to_tuple' field_names field_types = 
-  let rec loop s t = match (s, t) with
-    | (s :: [], t :: []) -> (0, gen_type' t (" @" ^ s)) :: [(0, "]")]
-    | (s :: ss, t :: ts) -> (0, (gen_type' t (" @" ^ s)) ^ ",") :: (loop ss ts)
-    | _ -> assert false in
-    (0, "[") :: (loop field_names field_types)
-;;
-
-
-let gen_to_tuple field_names field_types =
-  List.concat [
-    [(0, "def to_tuple")];
-    indent_lines 1 (gen_to_tuple' field_names field_types);
-    [(0, "end")]]
-;;
-
-let gen_to_msgpack field_names field_types =
-  [(0, "def to_msgpack(out = '')");
-   (1, "to_tuple.to_msgpack(out)");
-   (0, "end")]
-;;
-
-let rec gen_from_tuple_types field_types =
-  let rec loop field_types num = match field_types with
-    | [] -> []
-    | [t] -> 
-      let name = "tuple[" ^ (string_of_int num) ^ "]" in
-      [(2, gen_type t name)]
-    | t :: rest -> 
-      let name = "tuple[" ^ (string_of_int num) ^ "]" in
-      (2, (gen_type t name) ^ ",") :: (loop rest (num + 1)) 
-  in loop field_types 0
-;;
-    
-let gen_from_tuple field_names field_types s =
-  let s = (String.capitalize s) in
-  List.concat [
-    [(0, "def " ^ s ^ ".from_tuple(tuple)")];
-    [(1, s ^ ".new(")];
-    (gen_from_tuple_types field_types);
-    [(1, ")")];
-    [(0, "end")]
   ]
 ;;
 
-let gen_attr_reader field_names field_types = 
-  let rec loop field_names field_types = match (field_names, field_types) with
-    | ([], []) -> []
-    | (n :: ns, t :: ts) ->
-      (match t with
-      | Map(_) | Struct(_) -> (":" ^ n) :: (loop ns ts)
-      | _ -> (loop ns ts))
-    | _ -> assert false
-  in
-    match (loop field_names field_types) with
-      | [] -> []
-      | lst -> [(0, "attr_reader " ^ (String.concat ", " lst))]
-;;
-  
 
-let gen_attr_accessor field_names field_types = 
-  let rec loop field_names field_types = match (field_names, field_types) with
-    | ([], []) -> []
-    | (n :: ns, t :: ts) ->
-      (match t with
-      | Map(_) | Struct(_) ->(loop ns ts)
-      | _ ->  (":" ^ n) :: (loop ns ts))
-    | _ -> assert false
-  in
-    match (loop field_names field_types) with
-      | [] -> []
-      | lst -> [(0, "attr_accessor " ^ (String.concat ", " lst))]  
+let gen_self_with_equal field_names =
+  List.map (fun s -> (0, "@" ^ s ^ " = " ^ s)) field_names
 ;;
 
-let gen_attr field_names field_types = 
-  (gen_attr_reader field_names field_types) @
-    (gen_attr_accessor field_names field_types)
+let gen_initialize field_names =
+  List.concat [
+    [ (0, gen_def "initialize" field_names) ];
+    indent_lines 1 (gen_self_with_equal field_names);
+    [ (0, "end") ]
+  ]
+;;
+let gen_to_msgpack field_names field_types =
+  let vars = List.map (fun v -> "@" ^ v) field_names in
+  [
+    (0, "def to_msgpack(out = '')");
+    (1,   "t = " ^ gen_list vars);
+    (1,   "return " ^ gen_call "TYPE.to_msgpack" ["t"]);
+    (0, "end");
+  ]
+;;
+
+let gen_message_type field_types =
+  "TYPE = " ^ gen_call "TTuple.new" (List.map gen_type field_types)
+;;
+
+let gen_from_msgpack field_names field_types s =
+  let s = snake_to_upper s in
+  [
+    (0, "def " ^ s ^ ".from_msgpack(m)");
+    (1,  "val = TYPE.from_msgpack(m)");
+    (1,  gen_call (s ^ ".new") ["*val"]);
+    (0, "end")
+  ]
+;;
+
+let gen_attr field_names =
+  let fs = List.map ((^) ":") field_names in
+  match fs with
+    | [] -> []
+    | lst -> [ (0, "attr_reader " ^ String.concat ", " lst)]
 ;;
 
 let gen_str name field_names =
@@ -239,42 +182,27 @@ let gen_str name field_names =
 let gen_message m =
   let field_names = List.map (fun f -> f.field_name) m.message_fields in
   let field_types = List.map (fun f -> f.field_type) m.message_fields in
-  List.concat [
+  concat_blocks [
     [
-      (0, "class " ^ (String.capitalize m.message_name));
+      (0, "class " ^ (snake_to_upper m.message_name));
+      (1,   "include Jubatus::Common");
+      (1,   gen_message_type field_types);
     ];
     (* def initiallize .. *)
     indent_lines 1 (gen_initialize field_names);
-    (* def to_tuple .. *)
-    indent_lines 1 (gen_to_tuple field_names field_types);
     (* def to_msgpack .. *)
     indent_lines 1 (gen_to_msgpack field_names field_types);
-    (* def from_tuple .. *)
-    indent_lines 1 (gen_from_tuple field_names field_types m.message_name);
+    (* def from_msgpack .. *)
+    indent_lines 1 (gen_from_msgpack field_names field_types m.message_name);
     indent_lines 1 (gen_str m.message_name field_names);
-    indent_lines 1 (gen_attr field_names field_types);
-    [(0, "end");
-     (0, "")];
+    indent_lines 1 (gen_attr field_names);
+    [
+      (0, "end");
+    ];
   ]
 ;;
-
-let gen_typedef' name typ = 
-  [
-    (0, "class " ^ (String.capitalize name));
-    (1, gen_def (String.capitalize name ^ ".from_tuple") ["tuple"]);
-    (2, (gen_type typ "tuple"));
-    (1, "end");
-    (1, gen_def "to_tuple" ["o"]);
-    (2, "o");
-    (1, "end");
-    (0, "end")
-  ]
-;;
-    
 
 let gen_typedef = function
-  | Typedef(name, typ) ->
-      gen_typedef' name typ
   | Message m ->
       gen_message m
   | _ ->
@@ -284,23 +212,35 @@ let gen_typedef = function
 let gen_client_file conf source services =
   let base = File_util.take_base source in
   let filename = Filename.concat base "client.rb" in
-  let clients = List.map gen_client services in
+  let clients = List.map (fun s ->
+    let module_name = snake_to_upper s.service_name in
+    concat_blocks [
+      [
+        (0, "module " ^ module_name);
+        (0, "module Client");
+      ];
+      gen_client s;
+      [
+        (0, "end  # Client");
+        (0, "end  # " ^ module_name);
+      ];
+    ]
+  ) services in
 
   let content = concat_blocks [
     [
       (0, "require 'rubygems'");
       (0, "require 'msgpack/rpc'");
+      (0, "require 'jubatus/common'");
       (0, "require File.join(File.dirname(__FILE__), 'types')");
     ];
-    List.concat [
-      [(0, "module Jubatus")];
-      (List.map (fun s -> (0, "module " ^ (String.capitalize s.service_name))) services);
-      [(0, "module Client")]
+    [
+      (0, "module Jubatus");
     ];
-    (concat_blocks clients);
-    ((0, "end") :: 
-     (0, "end") :: 
-     (List.map (fun s -> (0, "end")) services));
+    concat_blocks clients;
+    [
+      (0, "end  # Jubatus");
+    ];
   ]
   in make_header conf source filename content
 ;;
@@ -313,21 +253,25 @@ let gen_type_file conf source idl =
     (0, "require 'rubygems'");
     (0, "require 'msgpack/rpc'");
     (0, "require 'jubatus/common'");
-    (0, "module Jubatus");
-    (0, ("module " ^ (String.capitalize base)))
   ] in
 
   let content = concat_blocks [
     includes;
-    (concat_blocks types);
-    [(0, "end"); (* for "module Jubatus" *)
-     (0, "end")] (* for "module " ^ (String.capitalize base) *)
+    [
+      (0, "module Jubatus");
+      (0, "module " ^ snake_to_upper base);
+    ];
+    concat_blocks types;
+    [
+      (0, "end  # " ^ snake_to_upper base);
+      (0, "end  # Jubatus");
+    ]
   ] in
   make_header conf source name content
 ;;
 
 let generate conf source idl =
   let services = get_services idl in
-    gen_client_file conf source services;
-    gen_type_file conf source idl 
+  gen_client_file conf source services;
+  gen_type_file conf source idl
 ;;

@@ -88,7 +88,7 @@ uint64_t regression_serv::user_data_version() const {
   return 1;  // should be inclemented when model data is modified
 }
 
-bool regression_serv::set_config(const string& config) {
+void regression_serv::set_config(const string& config) {
   core::common::jsonconfig::config config_root(lexical_cast<json>(config));
   regression_serv_config conf =
     core::common::jsonconfig::config_cast_check<regression_serv_config>(
@@ -114,7 +114,6 @@ bool regression_serv::set_config(const string& config) {
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
   LOG(INFO) << "config loaded: " << config;
-  return true;
 }
 
 string regression_serv::get_config() const {
@@ -122,15 +121,16 @@ string regression_serv::get_config() const {
   return config_;
 }
 
-int regression_serv::train(const vector<pair<float, datum> >& data) {
+int regression_serv::train(const vector<scored_datum>& data) {
   check_set_config();
 
   int count = 0;
 
   core::fv_converter::datum d;
   for (size_t i = 0; i < data.size(); ++i) {
-    regression_->train(data[i]);
-    DLOG(INFO) << "trained: " << data[i].first;
+    // TODO(unno): change interface of driver?
+    regression_->train(std::make_pair(data[i].score, data[i].data));
+    DLOG(INFO) << "trained: " << data[i].score;
     count++;
   }
   // TODO(kuenishi): send count incrementation to mixer

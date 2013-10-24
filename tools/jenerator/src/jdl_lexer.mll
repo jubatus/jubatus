@@ -45,7 +45,7 @@ let convert_backslash_char = function
 }
 
 let digit = ['0'-'9']*
-let literal = ['a'-'z'] ['A'-'Z' 'a'-'z' '_' '0'-'9']*
+let literal = (['a'-'z']['a'-'z' '0'-'9']*) ('_' ['a'-'z' '0'-'9']+)*
 let decorator = "#@" literal
 let comment   = "#" [^'@'] [^'\n']* '\n'
 (* let include_sth = "#include" *)
@@ -56,7 +56,6 @@ rule token = parse
   | "%include" { INCLUDE }
   | "exception" { EXCEPTION }
   | "message" { MESSAGE }
-  | "type" { TYPEDEF }
   | "enum" { ENUM }
   | "service" { SERVICE }
   | literal as s { LITERAL(s) }
