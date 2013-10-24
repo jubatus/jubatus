@@ -86,23 +86,22 @@ void register_actor(
 
   string path;
   build_actor_path(path, type, name);
-  success = z.create(path) && success;
-  success = z.create(path + "/master_lock", "") && success;
+  success = success && z.create(path);
+  success = success && z.create(path + "/master_lock", "");
   path += "/nodes";
-  success = z.create(path) && success;
+  success = success && z.create(path);
+
   {
     string path1;
     build_existence_path(path, ip, port, path1);
-    success = z.create(path1, "", true) && success;
+    success = success && z.create(path1, "", true);
     if (success) {
       LOG(INFO) << "actor created: " << path1;
+    } else {
+      throw JUBATUS_EXCEPTION(
+          core::common::exception::runtime_error("Failed to register_actor")
+          << core::common::exception::error_api_func("lock_service::create"));
     }
-  }
-
-  if (!success) {
-    throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("Failed to register_actor")
-        << core::common::exception::error_api_func("lock_service::create"));
   }
 
   // set exit zlistener here
@@ -120,10 +119,10 @@ void watch_delete_actor(
 
   string path;
   build_actor_path(path, type, name);
-  success = z.create(path) && success;
-  success = z.create(path + "/master_lock", "") && success;
+  success = success && z.create(path);
+  success = success && z.create(path + "/master_lock", "");
   path += "/nodes";
-  success = z.create(path) && success;
+  success = success && z.create(path);
 
   if (!success) {
     throw JUBATUS_EXCEPTION(
@@ -135,17 +134,15 @@ void watch_delete_actor(
   {
     string path1;
     build_existence_path(path, ip, port, path1);
-    success = z.bind_delete_watcher(path1, callback);
+    bool success = z.bind_delete_watcher(path1, callback);
     if (success) {
       LOG(INFO) << "watch start: " << path1;
+    } else {
+      throw JUBATUS_EXCEPTION(
+          core::common::exception::runtime_error("Failed to watch actor")
+          << core::common::exception::error_api_func(
+              "lock_service::watch_delete_actor"));
     }
-  }
-
-  if (!success) {
-    throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("Failed to watch actor")
-        << core::common::exception::error_api_func(
-            "lock_service::watch_delete_actor"));
   }
 
   // set exit zlistener here
