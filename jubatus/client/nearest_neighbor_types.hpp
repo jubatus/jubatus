@@ -11,18 +11,22 @@
 #include <vector>
 #include <utility>
 
+#include <jubatus/client/common/datum.hpp>
 #include <msgpack.hpp>
 
 namespace jubatus {
 namespace nearest_neighbor {
 
-typedef std::vector<std::pair<std::string, float> > neighbor_result;
-
-struct datum {
+struct id_with_score {
  public:
-  MSGPACK_DEFINE(string_values, num_values);
-  std::vector<std::pair<std::string, std::string> > string_values;
-  std::vector<std::pair<std::string, double> > num_values;
+  MSGPACK_DEFINE(id, score);
+  std::string id;
+  float score;
+  id_with_score() {
+  }
+  id_with_score(const std::string& id, float score)
+    : id(id), score(score) {
+  }
 };
 
 }  // namespace nearest_neighbor

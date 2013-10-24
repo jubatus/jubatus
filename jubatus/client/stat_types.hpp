@@ -11,6 +11,7 @@
 #include <vector>
 #include <utility>
 
+#include <jubatus/client/common/datum.hpp>
 #include <msgpack.hpp>
 
 namespace jubatus {

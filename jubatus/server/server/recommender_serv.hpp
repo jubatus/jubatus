@@ -28,6 +28,8 @@
 namespace jubatus {
 namespace server {
 
+typedef std::vector<std::pair<std::string, float> > similar_result;
+
 class recommender_serv : public framework::server_base {
  public:
   recommender_serv(
@@ -48,18 +50,21 @@ class recommender_serv : public framework::server_base {
   void get_status(status_t& status) const;
   uint64_t user_data_version() const;
 
-  bool set_config(const std::string& config);
+  void set_config(const std::string& config);
   std::string get_config() const;
 
   bool clear_row(std::string id);
   bool update_row(std::string id, core::fv_converter::datum dat);
   bool clear();
 
-  core::fv_converter::datum complete_row_from_id(std::string id);
+  core::fv_converter::datum complete_row_from_id(
+      std::string id);
   core::fv_converter::datum complete_row_from_datum(
       core::fv_converter::datum dat);
-  similar_result similar_row_from_id(std::string id, size_t ret_num);
-  similar_result similar_row_from_datum(core::fv_converter::datum, size_t);
+  std::vector<id_with_score> similar_row_from_id(
+      std::string id, size_t ret_num);
+  std::vector<id_with_score> similar_row_from_datum(
+      core::fv_converter::datum, size_t);
 
   float calc_similarity(
       const core::fv_converter::datum&,

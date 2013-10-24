@@ -16,34 +16,23 @@
 
 service stat {
 
-  #@random #@analysis #@pass
-  string get_config(0: string name)
-
   #@cht(1) #@update #@all_and
-  bool push(0: string name, 1: string key, 2: double value)
+  bool push(0: string key, 1: double value)
 
   #@cht(1) #@analysis #@pass
-  double sum(0: string name, 1: string key)
+  double sum(0: string key)
   #@cht(1) #@analysis #@pass
-  double stddev(0: string name, 1: string key)
+  double stddev(0: string key)
   #@cht(1) #@analysis #@pass
-  double max(0: string name, 1: string key)
+  double max(0: string key)
   #@cht(1) #@analysis #@pass
-  double min(0: string name, 1: string key)
+  double min(0: string key)
   #@cht(1) #@analysis #@pass
-  double entropy(0: string name, 1: string key)
+  double entropy(0: string key)
   #@cht(1) #@analysis #@pass
-  double moment(0: string name, 1: string key, 2: int degree, 3: double center)
-
-  #@broadcast #@update #@all_and
-  bool clear(0: string name) # //@broadcast
+  double moment(0: string key, 1: int degree, 2: double center)
 
   #@broadcast #@update #@all_and
-  bool save(0: string name, 1: string id) # #@broadcast
+  bool clear() # //@broadcast
 
-  #@broadcast #@update #@all_and
-  bool load(0: string name, 1: string id) # //@broadcast
-
-  #@broadcast #@analysis #@merge
-  map<string, map<string, string> >  get_status(0: string name) # //@broadcast
 }

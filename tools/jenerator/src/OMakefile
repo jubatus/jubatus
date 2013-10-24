@@ -6,7 +6,7 @@ clean:
 
 USE_OCAMLFIND = true
 #
-# OCAMLPACKS[] =
+OCAMLPACKS[] = extlib
 #    pack1
 #    pack2
 #

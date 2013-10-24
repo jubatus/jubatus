@@ -11,9 +11,8 @@
 #include <vector>
 #include <utility>
 
+#include "jubatus/core/fv_converter/datum.hpp"
 #include <msgpack.hpp>
-
-#include "../../core/fv_converter/datum.hpp"
 
 namespace jubatus {
 
@@ -22,6 +21,24 @@ struct estimate_result {
   MSGPACK_DEFINE(label, score);
   std::string label;
   double score;
+  estimate_result() {
+  }
+  estimate_result(const std::string& label, double score)
+    : label(label), score(score) {
+  }
+};
+
+struct labeled_datum {
+ public:
+  MSGPACK_DEFINE(label, data);
+  std::string label;
+  jubatus::core::fv_converter::datum data;
+  labeled_datum() {
+  }
+  labeled_datum(const std::string& label,
+      const jubatus::core::fv_converter::datum& data)
+    : label(label), data(data) {
+  }
 };
 
 }  // namespace jubatus

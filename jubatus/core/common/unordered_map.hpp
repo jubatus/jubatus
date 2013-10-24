@@ -24,10 +24,10 @@
 
 namespace msgpack {
 
-template<typename K, typename V>
-inline pfi::data::unordered_map<K, V> operator>>(
+template<typename K, typename V, typename H, typename E, typename A>
+inline pfi::data::unordered_map<K, V, H, E, A> operator>>(
     object o,
-    pfi::data::unordered_map<K, V>& v) {
+    pfi::data::unordered_map<K, V, H, E, A>& v) {
   if (o.type != type::MAP) {
     throw type_error();
   }
@@ -40,13 +40,18 @@ inline pfi::data::unordered_map<K, V> operator>>(
   return v;
 }
 
-template<typename Stream, typename K, typename V>
+template<typename Stream,
+         typename K,
+         typename V,
+         typename H,
+         typename E,
+         typename A>
 inline packer<Stream>& operator<<(
     packer<Stream>& o,
-    const pfi::data::unordered_map<K, V>& v) {
+    const pfi::data::unordered_map<K, V, H, E, A>& v) {
   o.pack_map(v.size());
-  for (typename pfi::data::unordered_map<K, V>::const_iterator it = v.begin();
-      it != v.end(); ++it) {
+  for (typename std::tr1::unordered_map<K, V, H, E, A>::const_iterator
+           it = v.begin(); it != v.end(); ++it) {
     o.pack(it->first);
     o.pack(it->second);
   }

@@ -11,11 +11,22 @@
 #include <vector>
 #include <utility>
 
+#include "jubatus/core/fv_converter/datum.hpp"
 #include <msgpack.hpp>
 
-#include "../../core/fv_converter/datum.hpp"
-
 namespace jubatus {
+
+struct scored_datum {
+ public:
+  MSGPACK_DEFINE(score, data);
+  float score;
+  jubatus::core::fv_converter::datum data;
+  scored_datum() {
+  }
+  scored_datum(float score, const jubatus::core::fv_converter::datum& data)
+    : score(score), data(data) {
+  }
+};
 
 }  // namespace jubatus
 

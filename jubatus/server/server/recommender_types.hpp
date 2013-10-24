@@ -11,13 +11,22 @@
 #include <vector>
 #include <utility>
 
+#include "jubatus/core/fv_converter/datum.hpp"
 #include <msgpack.hpp>
-
-#include "../../core/fv_converter/datum.hpp"
 
 namespace jubatus {
 
-typedef std::vector<std::pair<std::string, float> > similar_result;
+struct id_with_score {
+ public:
+  MSGPACK_DEFINE(id, score);
+  std::string id;
+  float score;
+  id_with_score() {
+  }
+  id_with_score(const std::string& id, float score)
+    : id(id), score(score) {
+  }
+};
 
 }  // namespace jubatus
 

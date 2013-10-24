@@ -2,6 +2,8 @@ open OUnit
 open Cpp
 open Syntax
 
+let assert_equal = OUnit.assert_equal ~printer: Std.dump;;
+
 let _ = run_test_tt_main begin "cpp.ml" >::: [
 
   "test_parse_namespace" >:: begin fun() ->
@@ -12,11 +14,11 @@ let _ = run_test_tt_main begin "cpp.ml" >::: [
     let names = Hashtbl.create 10 in
     assert_equal
       "t<bool, std::string>"
-      (gen_template names "t" [Bool; String]);
+      (gen_template names false "t" [Bool; String]);
 
     assert_equal
       "t<std::vector<bool> >"
-      (gen_template names "t" [List Bool])
+      (gen_template names false "t" [List Bool]);
   end;
 
   "test_gen_type" >:: begin fun() ->
@@ -24,12 +26,15 @@ let _ = run_test_tt_main begin "cpp.ml" >::: [
     Hashtbl.add names "t" "name::t";
     assert_equal
       "name::t"
-      (gen_type names (Struct "t"))
+      (gen_type names false (Struct "t"));
+
+    assert_equal "jubatus::client::common::datum" (gen_type names false Datum);
+    assert_equal "jubatus::core::fv_converter::datum" (gen_type names true Datum);
   end;
 
   "test_gen_argument_type" >:: begin fun() ->
     let names = Hashtbl.create 10 in
-    let gen = gen_argument_type names in
+    let gen = gen_argument_type names false in
     assert_equal "const std::string&" (gen String);
     assert_equal "const std::vector<bool>&" (gen (List Bool));
     assert_equal "const std::map<bool, std::string>&" (gen (Map(Bool, String)));
@@ -37,6 +42,9 @@ let _ = run_test_tt_main begin "cpp.ml" >::: [
     assert_equal "bool" (gen Bool);
     assert_equal "int8_t" (gen (Int(true, 1)));
     assert_equal "float" (gen (Float false));
+    assert_equal "const jubatus::client::common::datum&" (gen Datum);
+
+    assert_equal "const jubatus::core::fv_converter::datum&" (gen_argument_type names true Datum);
   end;
 
   "test_gen_string_literal" >:: begin fun() ->
