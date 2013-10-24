@@ -22,7 +22,6 @@
 #include <string>
 #include <vector>
 #include <pficommon/concurrent/lock.h>
-#include <pficommon/lang/bind.h>
 #include <pficommon/data/string/utility.h>
 #include "jubatus/core/common/exception.hpp"
 
@@ -183,7 +182,13 @@ void my_znode_watcher(
     void* watcherCtx) {
   pfi::lang::function<void(int, int, string)>* fp =
       static_cast<pfi::lang::function<void(int, int, string)>*>(watcherCtx);
-  (*fp)(type, state, string(path));
+  try {
+    (*fp)(type, state, string(path));
+  } catch(const std::exception& e) {
+    LOG(WARNING) << "exception thrown from zk watcher callback: " << e.what();
+  } catch (...) {
+    LOG(WARNING) << "unknown exception thrown from zk watcher callback";
+  }
   delete fp;
 }
 
@@ -193,6 +198,47 @@ bool zk::bind_watcher(
   pfi::lang::function<void(int, int, string)>* fp = new pfi::lang::function<
       void(int, int, string)>(f);
   int rc = zoo_wexists(zh_, path.c_str(), my_znode_watcher, fp, NULL);
+  return rc == ZOK;
+}
+
+void my_znode_delete_watcher(
+    zhandle_t* zh,
+    int type,
+    int state,
+    const char* path,
+    void* watcherCtx) {
+  // state should be checked?
+  if (type == ZOO_DELETED_EVENT) {
+    pfi::lang::function<void(string)>* fp =
+        static_cast<pfi::lang::function<void(string)>*>(watcherCtx);
+    try {
+      (*fp)(string(path));
+    } catch(const std::exception& e) {
+      LOG(WARNING) << "exception thrown from zk watcher callback: " << e.what();
+    } catch (...) {
+      LOG(WARNING) << "unknown exception thrown from zk watcher callback";
+    }
+    delete fp;
+  } else {
+    // if not delete event, re-register
+    DLOG(INFO)
+        << "non-delete event happen in path:["
+        << path << "] type:["
+        << type << "] state:["
+        << state << "]";
+    int rc = zoo_wexists(zh, path, my_znode_delete_watcher, watcherCtx, NULL);
+    if (rc != ZOK) {
+      LOG(WARNING) << "cannot watch the path: " << path;
+    }
+  }
+}
+
+bool zk::bind_delete_watcher(
+    const string& path,
+    pfi::lang::function<void(string)>& f) {
+  pfi::lang::function<void(string)>* fp = new pfi::lang::function<
+      void(string)>(f);
+  int rc = zoo_wexists(zh_, path.c_str(), my_znode_delete_watcher, fp, NULL);
   return rc == ZOK;
 }
 

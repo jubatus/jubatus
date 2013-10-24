@@ -228,7 +228,7 @@ void linear_mixer::mix() {
 
   size_t servers_size = communication_->update_members();
   if (servers_size == 0) {
-    LOG(WARNING) << "no other server. ";
+    LOG(WARNING) << "no other server.";
     return;
   } else {
     try {

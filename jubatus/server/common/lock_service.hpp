@@ -54,6 +54,10 @@ class lock_service {
       const std::string& path,
       pfi::lang::function<void(int, int, std::string)>&) = 0;
 
+  virtual bool bind_delete_watcher(
+      const std::string& path,
+      pfi::lang::function<void(std::string)>&) = 0;
+
   // ephemeral only
   virtual bool create_seq(const std::string& path, std::string&) = 0;
   virtual bool create_id(

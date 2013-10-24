@@ -80,6 +80,11 @@ void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
 #endif
 }
 
+void term_if_deleted(string path) {
+  LOG(INFO) << "My actor [" << path << "] was deleted, preparing for finish";
+  kill(getpid(), SIGINT);
+}
+
 void server_helper_impl::prepare_for_run(const server_argv& a, bool use_cht) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
@@ -90,6 +95,9 @@ void server_helper_impl::prepare_for_run(const server_argv& a, bool use_cht) {
     }
 
     register_actor(*zk_, a.type, a.name, a.eth, a.port);
+
+    // if regestered actor was deleted, this server should finish
+    watch_delete_actor(*zk_, a.type, a.name, a.eth, a.port, term_if_deleted);
     LOG(INFO) << "registered group membership";
   }
 #endif

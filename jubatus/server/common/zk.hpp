@@ -58,6 +58,10 @@ class zk : public lock_service {
       const std::string& path,
       pfi::lang::function<void(int, int, std::string)>&);
 
+  bool bind_delete_watcher(
+      const std::string& path,
+      pfi::lang::function<void(std::string)>&);
+
   // ephemeral only
   bool create_seq(const std::string& path, std::string&);
   bool create_id(const std::string& path, uint32_t prefix, uint64_t& res);
