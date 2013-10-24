@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLUSTERING_TYPES_HPP_
-#define JUBATUS_CLUSTERING_TYPES_HPP_
+#ifndef JUBATUS_CORE_CLUSTERING_TYPES_HPP_
+#define JUBATUS_CORE_CLUSTERING_TYPES_HPP_
 
 #include <algorithm>
 #include <string>
@@ -31,6 +31,12 @@
 namespace jubatus {
 namespace core {
 namespace clustering {
+
+typedef double cluster_weight;
+typedef std::vector<std::pair<cluster_weight,
+            jubatus::core::fv_converter::datum> > cluster_unit;
+typedef std::vector<cluster_unit> cluster_set;
+
 struct weighted_point {
  public:
   MSGPACK_DEFINE(weight, data, original, free_double, free_long);

@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLUSTERING_CLUSTERING_METHOD_GMM_GMM_HPP_
-#define JUBATUS_CLUSTERING_CLUSTERING_METHOD_GMM_GMM_HPP_
+#ifndef JUBATUS_CORE_CLUSTERING_GMM_HPP_
+#define JUBATUS_CORE_CLUSTERING_GMM_HPP_
 
 #include "gmm_types.hpp"
 

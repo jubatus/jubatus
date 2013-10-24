@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLUSTER_ANALYSIS_CLUSTER_ANALYSIS_CONFIG_HPP_
-#define JUBATUS_CLUSTER_ANALYSIS_CLUSTER_ANALYSIS_CONFIG_HPP_
+#ifndef JUBATUS_CORE_CLUSTER_ANALYSIS_CLUSTER_ANALYSIS_CONFIG_HPP_
+#define JUBATUS_CORE_CLUSTER_ANALYSIS_CLUSTER_ANALYSIS_CONFIG_HPP_
 
 #include <string>
 #include <pficommon/data/serialization.h>
@@ -31,9 +31,10 @@ struct cluster_analysis_config {
   double timeout_sec;
   int num_snapshots;
 
-  template<typename Ar>
+  template <typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(name)
+    ar
+        & MEMBER(name)
         & MEMBER(host)
         & MEMBER(port)
         & MEMBER(timeout_sec)

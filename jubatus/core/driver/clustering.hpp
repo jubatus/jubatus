@@ -46,12 +46,11 @@ class clustering {
 
   fv_converter::datum get_nearest_center(
       const fv_converter::datum& point) const;
-  std::vector<std::pair<double, fv_converter::datum> >  get_nearest_members(
+  core::clustering::cluster_unit get_nearest_members(
     const fv_converter::datum& point) const;
 
   std::vector<fv_converter::datum> get_k_center() const;
-  std::vector<std::vector<std::pair<double, fv_converter::datum> > >
-      get_core_members() const;
+  core::clustering::cluster_set get_core_members() const;
 
   size_t get_revision() const;
 
@@ -69,7 +68,7 @@ class clustering {
       const std::vector<common::sfv_t>& src) const;
   std::vector<core::clustering::weighted_point> to_weighted_point_vector(
       const std::vector<fv_converter::datum>& src);
-  std::vector<std::pair<double, fv_converter::datum> > to_weighted_datum_vector(
+  core::clustering::cluster_unit to_weighted_datum_vector(
       const std::vector<core::clustering::weighted_point>& src) const;
 
   pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
