@@ -15,9 +15,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #- argument for set_config(). Example for ``config``:
-#- 
+#-
 #- ::
-#- 
+#-
 #-    {
 #-     "method": "lof",
 #-     "parameter": {
