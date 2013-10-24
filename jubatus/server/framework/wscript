@@ -1,3 +1,4 @@
+# -*- python -*-
 subdirs = 'mixer'
 
 def options(opt):

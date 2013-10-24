@@ -58,7 +58,7 @@ class stat {
   }
 
   double moment(const std::string& name, const std::string& key, int32_t degree,
-       double center) {
+      double center) {
     msgpack::rpc::future f = c_.call("moment", name, key, degree, center);
     return f.get<double>();
   }

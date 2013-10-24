@@ -53,6 +53,9 @@ install:
   - wget http://mecab.googlecode.com/files/mecab-ipadic-2.7.0-20070801.tar.gz && tar xf mecab-ipadic-2.7.0-20070801.tar.gz
   - pushd mecab-ipadic-2.7.0-20070801 && ./configure --with-charset=utf8 && make && sudo make install && popd
   - sudo ldconfig
+  # eigen
+  - wget http://bitbucket.org/eigen/eigen/get/3.1.4.tar.bz2 && tar xvf 3.1.4.tar.bz2
+  - mkdir eigen-eigen-36bf2ceaf8f5/build_dir && pushd eigen-eigen-36bf2ceaf8f5/build_dir && cmake ../ && sudo make install && popd
 
 script:
   - ./waf configure --enable-zookeeper --enable-mecab --enable-ux

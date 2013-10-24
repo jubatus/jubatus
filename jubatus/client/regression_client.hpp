@@ -28,13 +28,13 @@ class regression {
   }
 
   int32_t train(const std::string& name, const std::vector<std::pair<float,
-       datum> >& train_data) {
+      datum> >& train_data) {
     msgpack::rpc::future f = c_.call("train", name, train_data);
     return f.get<int32_t>();
   }
 
   std::vector<float> estimate(const std::string& name,
-       const std::vector<datum>& estimate_data) {
+      const std::vector<datum>& estimate_data) {
     msgpack::rpc::future f = c_.call("estimate", name, estimate_data);
     return f.get<std::vector<float> >();
   }

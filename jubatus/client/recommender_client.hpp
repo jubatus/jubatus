@@ -33,7 +33,7 @@ class recommender {
   }
 
   bool update_row(const std::string& name, const std::string& id,
-       const datum& row) {
+      const datum& row) {
     msgpack::rpc::future f = c_.call("update_row", name, id, row);
     return f.get<bool>();
   }
@@ -54,13 +54,13 @@ class recommender {
   }
 
   similar_result similar_row_from_id(const std::string& name,
-       const std::string& id, uint32_t size) {
+      const std::string& id, uint32_t size) {
     msgpack::rpc::future f = c_.call("similar_row_from_id", name, id, size);
     return f.get<similar_result>();
   }
 
   similar_result similar_row_from_datum(const std::string& name,
-       const datum& row, uint32_t size) {
+      const datum& row, uint32_t size) {
     msgpack::rpc::future f = c_.call("similar_row_from_datum", name, row, size);
     return f.get<similar_result>();
   }
@@ -76,7 +76,7 @@ class recommender {
   }
 
   float calc_similarity(const std::string& name, const datum& lhs,
-       const datum& rhs) {
+      const datum& rhs) {
     msgpack::rpc::future f = c_.call("calc_similarity", name, lhs, rhs);
     return f.get<float>();
   }

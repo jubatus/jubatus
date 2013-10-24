@@ -1,3 +1,4 @@
+# -*- python -*-
 import Options
 from waflib.Errors import TaskNotReady
 import os
@@ -39,7 +40,7 @@ def options(opt):
   opt.recurse(subdirs)
 
 def configure(conf):
-  conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe']
+  conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe'];
 
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
@@ -99,6 +100,8 @@ def configure(conf):
 
     if Options.options.zktest:
       conf.env.INTEGRATION_TEST = True
+
+  conf.check_cfg(package='eigen3', args = '--cflags', atleast_version = '3.1.0')
 
   if Options.options.gcov:
     conf.env.append_value('CXXFLAGS', '-fprofile-arcs')

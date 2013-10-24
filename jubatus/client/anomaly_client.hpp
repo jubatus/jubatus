@@ -38,13 +38,13 @@ class anomaly {
   }
 
   float update(const std::string& name, const std::string& id,
-       const datum& row) {
+      const datum& row) {
     msgpack::rpc::future f = c_.call("update", name, id, row);
     return f.get<float>();
   }
 
   float overwrite(const std::string& name, const std::string& id,
-       const datum& row) {
+      const datum& row) {
     msgpack::rpc::future f = c_.call("overwrite", name, id, row);
     return f.get<float>();
   }

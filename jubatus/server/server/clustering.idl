@@ -1,0 +1,39 @@
+
+%include "../../core/fv_converter/datum.hpp"
+
+message datum(jubatus::core::fv_converter::datum) {
+  0: list<tuple<string, string> >  string_values
+  1: list<tuple<string, double> >  num_values
+}
+
+service clustering {
+  #@random #@analysis #@pass
+  string get_config(0: string name)
+
+  #@random #@update #@all_and
+  bool push(0:string name, 1: list<datum> points)
+
+  #@random #@analysis #@pass
+  uint get_revision(0:string name)
+
+  #@random #@analysis #@pass
+  list<list<tuple<double, datum> > > get_core_members(0: string name)
+
+  #@random #@analysis #@pass
+  list<datum> get_k_center(0: string name)
+
+  #@random #@analysis #@pass
+  datum get_nearest_center(0: string name, 1: datum point)
+
+  #@random #@analysis #@pass
+  list<tuple<double, datum> > get_nearest_members(0: string name, 1: datum point)
+
+  #@broadcast #@update #@all_and
+  bool save(0: string name, 1: string id) # #@broadcast
+
+  #@broadcast #@update #@all_and
+  bool load(0: string name, 1: string id) # //@broadcast
+
+  #@broadcast #@analysis #@merge
+  map<string, map<string, string> >  get_status(0: string name) # //@broadcast
+}

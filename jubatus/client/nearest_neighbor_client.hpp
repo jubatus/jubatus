@@ -33,28 +33,28 @@ class nearest_neighbor {
   }
 
   neighbor_result neighbor_row_from_id(const std::string& name,
-       const std::string& id, uint32_t size) {
+      const std::string& id, uint32_t size) {
     msgpack::rpc::future f = c_.call("neighbor_row_from_id", name, id, size);
     return f.get<neighbor_result>();
   }
 
   neighbor_result neighbor_row_from_data(const std::string& name,
-       const datum& query, uint32_t size) {
+      const datum& query, uint32_t size) {
     msgpack::rpc::future f = c_.call("neighbor_row_from_data", name, query,
-         size);
+        size);
     return f.get<neighbor_result>();
   }
 
   neighbor_result similar_row_from_id(const std::string& name,
-       const std::string& id, int32_t ret_num) {
+      const std::string& id, int32_t ret_num) {
     msgpack::rpc::future f = c_.call("similar_row_from_id", name, id, ret_num);
     return f.get<neighbor_result>();
   }
 
   neighbor_result similar_row_from_data(const std::string& name,
-       const datum& query, int32_t ret_num) {
+      const datum& query, int32_t ret_num) {
     msgpack::rpc::future f = c_.call("similar_row_from_data", name, query,
-         ret_num);
+        ret_num);
     return f.get<neighbor_result>();
   }
 

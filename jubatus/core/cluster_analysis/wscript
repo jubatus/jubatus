@@ -1,0 +1,13 @@
+def options(ctx):
+    pass
+
+def configure(ctx):
+    pass
+
+def build(bld):
+    bld.shlib(
+        source=['cluster_analysis.cpp'],
+        target='jubatus_cluster_analysis',
+        name='jubatus_cluster_analysis',
+        includes='',
+        use='PFICOMMON jubacommon JUBATUS_MSGPACK-RPC')

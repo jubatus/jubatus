@@ -28,13 +28,13 @@ class classifier {
   }
 
   int32_t train(const std::string& name,
-       const std::vector<std::pair<std::string, datum> >& data) {
+      const std::vector<std::pair<std::string, datum> >& data) {
     msgpack::rpc::future f = c_.call("train", name, data);
     return f.get<int32_t>();
   }
 
   std::vector<std::vector<estimate_result> > classify(const std::string& name,
-       const std::vector<datum>& data) {
+      const std::vector<datum>& data) {
     msgpack::rpc::future f = c_.call("classify", name, data);
     return f.get<std::vector<std::vector<estimate_result> > >();
   }
