@@ -76,7 +76,11 @@ void regexp_splitter::split(
       const int len = region->end[group_] - pos;
       bounds.push_back(std::make_pair(pos, len));
 
-      cur += len;
+      if (len > 0) {
+        cur += len;
+      } else {
+        ++cur;
+      }
     }
     onig_region_free(region, 1);
   } catch (...) {
