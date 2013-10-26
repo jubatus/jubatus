@@ -143,7 +143,7 @@ void graph_serv::set_config(const std::string& config) {
 
   core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::common::jsonconfig::config(*conf.parameter);
+    param = *conf.parameter;
   }
 #endif
 

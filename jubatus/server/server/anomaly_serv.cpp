@@ -127,7 +127,7 @@ void anomaly_serv::set_config(const std::string& config) {
 
   jsonconfig::config param;
   if (conf.parameter) {
-    param = jsonconfig::config(*conf.parameter);
+    param = *conf.parameter;
   }
 #endif
 
