@@ -48,7 +48,7 @@ let file_exist path =
 ;;
 
 let rec split_path path =
-  if path = "." or path ="/" then
+  if path = "." || path ="/" then
     [path]
   else
     let dir = Filename.dirname path in

@@ -55,7 +55,7 @@ let rec gen_template names typ args =
 and gen_template_with_strs typ arg_strs =
   let s = String.concat ", " arg_strs in
   let len = String.length s in
-  if len = 0 or s.[len - 1] = '>' then
+  if len = 0 || s.[len - 1] = '>' then
     typ ^ "<" ^ s ^ " >"
   else
     typ ^ "<" ^ s ^ ">"
@@ -660,8 +660,8 @@ let gen_server_template_header_method names m =
 let filter_methods methods =
   List.filter (fun m ->
     not (m.method_name = "save"
-         or m.method_name = "load"
-         or m.method_name = "get_status")
+         || m.method_name = "load"
+         || m.method_name = "get_status")
   ) methods
 ;;
 
