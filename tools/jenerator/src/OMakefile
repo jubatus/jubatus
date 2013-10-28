@@ -60,6 +60,7 @@ FILES[] =
   java
   parse
   main
+  version
 
 
 PROGRAM = jenerator
@@ -75,6 +76,9 @@ PREFIX = $(getenv PREFIX, /usr/local)
 OCamlLibrary($(LIB), $(FILES))
 
 OCamlProgramInstall(install, $(PREFIX)/bin, $(PROGRAM), $(FILES))
+
+version.ml: version.mlp
+  sh -c 'sed -e "s|%%VERSION%%|`head -n 1 ../VERSION`|" version.mlp > version.ml'
 
 uninstall:
   -rm $(PREFIX)/bin/$(PROGRAM)
