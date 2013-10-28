@@ -74,16 +74,6 @@ TEST(regexp_splitter, error) {
   EXPECT_THROW(regexp_splitter("(.+)", -1), converter_exception);
 }
 
-#if 0
-TEST(regexp_splitter, create_error) {
-  std::map<std::string, std::string> p;
-  EXPECT_THROW(create(p), converter_exception);
-  p["pattern"] = "(.+)";
-  p["group"] = "a";
-  EXPECT_THROW(create(p), converter_exception);
-}
-#endif
-
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
