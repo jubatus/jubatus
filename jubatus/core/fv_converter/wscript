@@ -11,7 +11,7 @@ def configure(conf):
     conf.check_cxx(lib = 're2', define_name = 'HAVE_RE2',
                    errmsg = 'not found')
   else:
-    conf.check_cxx(lib = 'onig')
+    conf.check_cxx(lib = 'onig', define_name = 'HAVE_ONIGURUMA')
 
   libpat = conf.env.cxxshlib_PATTERN
   conf.define('LIBSPLITTER_SAMPLE', libpat % 'splitter_sample')
@@ -72,10 +72,12 @@ def build(bld):
   if bld.env.HAVE_RE2:
     source.append('re2_match.cpp')
     source.append('re2_filter.cpp')
+    source.append('re2_splitter.cpp')
     use += ' RE2'
   else:
     source.append('onig_match.cpp')
     source.append('onig_filter.cpp')
+    source.append('onig_splitter.cpp')
     use += ' ONIG'
 
   bld.shlib(
@@ -162,6 +164,7 @@ def build(bld):
       'except_match_test.cpp',
       'regexp_match_test.cpp',
       'regexp_filter_test.cpp',
+      'regexp_splitter_test.cpp',
       ]
   test_use = 'PFICOMMON MSGPACK jubaconverter'
 
