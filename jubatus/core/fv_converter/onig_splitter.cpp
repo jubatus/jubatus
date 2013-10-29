@@ -16,6 +16,9 @@
 
 
 #include "onig_splitter.hpp"
+#include <string>
+#include <utility>
+#include <vector>
 #include <pficommon/lang/cast.h>
 #include "exception.hpp"
 
@@ -65,7 +68,8 @@ void regexp_splitter::split(
   try {
     int cur = 0;
     while (head + cur < end) {
-      int match = onig_match(reg_, head, end, head + cur, region, ONIG_OPTION_NONE);
+      int match
+          = onig_match(reg_, head, end, head + cur, region, ONIG_OPTION_NONE);
       if (match < 0) {
         // did not match
         cur++;

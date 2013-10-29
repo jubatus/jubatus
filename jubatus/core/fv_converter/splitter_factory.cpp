@@ -16,6 +16,7 @@
 
 #include "splitter_factory.hpp"
 
+#include <map>
 #include <string>
 #include "character_ngram.hpp"
 #include "regexp_splitter.hpp"
