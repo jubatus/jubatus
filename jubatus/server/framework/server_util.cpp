@@ -143,7 +143,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
 
 #ifndef HAVE_ZOOKEEPER_H
   p.footer("\nAll " + IGNORED_TAG +
-           " options are for compatibility with distirbuted mode");
+           " options are for compatibility with distributed mode");
 #endif
 
   p.parse_check(args, argv);
