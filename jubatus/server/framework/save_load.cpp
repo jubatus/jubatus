@@ -121,8 +121,10 @@ void save_server(std::ostream& os,
   write_big_endian(jubatus_version_minor, &header_buf[20]);
   write_big_endian(jubatus_version_maintenance, &header_buf[24]);
   // write_big_endian(crc32, &header_buf[28]);  // skipped
-  write_big_endian(system_data_buf.size(), &header_buf[32]);
-  write_big_endian(user_data_buf.size(), &header_buf[40]);
+  write_big_endian(static_cast<uint64_t>(system_data_buf.size()),
+                   &header_buf[32]);
+  write_big_endian(static_cast<uint64_t>(user_data_buf.size()),
+                   &header_buf[40]);
 
   uint32_t crc32 = calc_crc32(header_buf,
       system_data_buf.data(), system_data_buf.size(),
