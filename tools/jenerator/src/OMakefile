@@ -71,14 +71,13 @@ OCAML_OTHER_LIBS += str unix
 # OCAML_LIB_FLAGS +=
 PREFIX = $(getenv PREFIX, /usr/local)
 
+sh gen_version.sh
+
 .DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
 
 OCamlLibrary($(LIB), $(FILES))
 
 OCamlProgramInstall(install, $(PREFIX)/bin, $(PROGRAM), $(FILES))
-
-version.ml: version.mlp
-  sh -c 'sed -e "s|%%VERSION%%|`head -n 1 ../VERSION`|" version.mlp > version.ml'
 
 uninstall:
   -rm $(PREFIX)/bin/$(PROGRAM)
