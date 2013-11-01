@@ -92,7 +92,7 @@ float inverted_index_storage::get_from_tbl(
     return 0.f;
   }
   tbl_t::const_iterator it = tbl.find(row);
-  if (it == inv_.end()) {
+  if (it == tbl.end()) {
     return 0.f;
   } else {
     row_t::const_iterator it_row = it->second.find(column_id);
