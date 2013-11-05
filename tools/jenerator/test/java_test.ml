@@ -108,7 +108,8 @@ let _ = run_test_tt_main begin "java.ml" >::: [
                          Config.outdir = "";
                          Config.internal = false;
                          Config.default_template = false;
-                         Config.include_guard = ""; } );
+                         Config.include_guard = "";
+                         Config.idl_version = None; } );
     assert_equal
       ["us"]
       (split_namespace { Config.namespace = "us";
@@ -116,7 +117,8 @@ let _ = run_test_tt_main begin "java.ml" >::: [
                          Config.outdir = "";
                          Config.internal = false;
                          Config.default_template = false;
-                         Config.include_guard = ""; } );
+                         Config.include_guard = "";
+                         Config.idl_version = None; } );
     assert_equal
       ["us"; "jubat"; "classifier"]
       (split_namespace { Config.namespace = "us.jubat.classifier";
@@ -124,7 +126,8 @@ let _ = run_test_tt_main begin "java.ml" >::: [
                          Config.outdir = "";
                          Config.internal = false;
                          Config.default_template = false;
-                         Config.include_guard = ""; } );
+                         Config.include_guard = "";
+                         Config.idl_version = None; } );
   end;
 
   "test_gen_ret_type" >:: begin fun() ->
