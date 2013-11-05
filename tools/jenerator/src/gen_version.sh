@@ -1,10 +1,12 @@
 #!/bin/sh
 
+rm -f version.ml
 if [ ! $VERSION ]; then
     # Check if it is a git repository
     git status > /dev/null 2>&1
     if [ $? -eq 0 ]; then
-        VERSION=`git describe`/`git name-rev --name-only HEAD`
+        HASH=`git log -1 --format="%H" -- .`
+        VERSION=`git describe ${HASH}`/`git name-rev --name-only ${HASH}`
     else
         VERSION='undefined version'
     fi
