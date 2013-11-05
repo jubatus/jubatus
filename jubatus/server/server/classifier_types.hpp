@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl
+// This file is auto-generated from classifier.idl with jenerator version 0.4.5-372-g123dbd2/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_CLASSIFIER_TYPES_HPP_

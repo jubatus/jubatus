@@ -1,4 +1,4 @@
-// This file is auto-generated from stat.idl
+// This file is auto-generated from stat.idl with jenerator version 0.4.5-372-g123dbd2/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_STAT_CLIENT_HPP_

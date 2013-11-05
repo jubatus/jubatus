@@ -1,4 +1,4 @@
-// This file is auto-generated from graph.idl
+// This file is auto-generated from graph.idl with jenerator version 0.4.5-372-g123dbd2/develop
 // *** DO NOT EDIT ***
 
 #include <map>
