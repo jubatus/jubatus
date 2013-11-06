@@ -6,7 +6,7 @@ if [ ! $VERSION ]; then
     git status > /dev/null 2>&1
     if [ $? -eq 0 ]; then
         HASH=`git log -1 --format="%H" -- .`
-        VERSION=`git describe ${HASH}`/`git name-rev --name-only ${HASH}`
+        VERSION=`git describe ${HASH}`/`git name-rev --name-only HEAD`
     else
         VERSION='undefined version'
     fi
