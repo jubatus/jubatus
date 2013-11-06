@@ -16,6 +16,7 @@
 
 #include "membership.hpp"
 
+#include <signal.h>
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -104,8 +105,7 @@ void register_actor(
     }
   }
 
-  // set exit zlistener here
-  z.push_cleanup(&force_exit);
+  z.push_cleanup(&shutdown_server);
 }
 
 void watch_delete_actor(
@@ -145,8 +145,7 @@ void watch_delete_actor(
     }
   }
 
-  // set exit zlistener here
-  z.push_cleanup(&force_exit);
+  z.push_cleanup(&shutdown_server);
 }
 
 void register_proxy(
@@ -175,8 +174,7 @@ void register_proxy(
         << core::common::exception::error_api_func("lock_service::create"));
   }
 
-  // set exit zlistener here
-  z.push_cleanup(&force_exit);
+  z.push_cleanup(&shutdown_server);
 }
 
 // zk -> name -> list( (ip, rpc_port) )
@@ -205,8 +203,8 @@ bool get_all_actors(
   return true;
 }
 
-void force_exit() {
-  exit(-1);
+void shutdown_server() {
+  ::kill(::getpid(), SIGTERM);
 }
 
 void prepare_jubatus(lock_service& ls, const string& type, const string& name) {
