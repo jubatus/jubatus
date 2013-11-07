@@ -94,7 +94,7 @@ bool get_all_actors(
     const std::string& name,
     std::vector<std::pair<std::string, int> >&);
 
-void force_exit();
+void shutdown_server();
 
 void prepare_jubatus(
     lock_service& ls,
