@@ -5,7 +5,7 @@
 ################################################################################
 
 # Packages to be built, in order of dependencies
-PKGS_DEPENDS="msgpack jubatus-mpio jubatus-msgpack-rpc pficommon zookeeper-client glog re2 ux mecab mecab-ipadic"
+PKGS_DEPENDS="msgpack jubatus-mpio jubatus-msgpack-rpc zookeeper-client glog ux mecab mecab-ipadic"
 PKGS_JUBATUS="jubatus jubatus-release"
 
 # Directories
@@ -36,8 +36,8 @@ Options:
 			${PKGS_DEPENDS}
 
 	-i	Install built packages.
-			If you don't have build-requirement packages (pficommon-devel,
-			msgpack-devel, etc.) installed, use this option to automatically
+			If you don't have build-requirement packages (msgpack-devel,
+			glog-devel, etc.) installed, use this option to automatically
 			install built packages for each time, before going onto next
 			package build process.
 			In general, you only need to use this option for the first time.
