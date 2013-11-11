@@ -112,6 +112,7 @@ bool process::spawn_link(int p) {
       "-e", lexical_cast<std::string, int>(server_option_.loglevel),
       "-s", lexical_cast<std::string, int>(server_option_.interval_sec),
       "-i", lexical_cast<std::string, int>(server_option_.interval_count),
+      "-x", server_option_.mixer,
     };
     std::vector<const char*> arg_list;
     for (size_t i = 0; i < sizeof(argv) / sizeof(*argv); ++i) {
