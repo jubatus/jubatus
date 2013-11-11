@@ -30,12 +30,17 @@ def build(bld):
       use='jubaserv_framework'
       )
 
-  bld.install_files('${PREFIX}/include/jubatus/server/framework', [
+  header_files = [
+    'save_load.hpp',
+    'server_base.hpp',
+    'server_helper.hpp',
+    'server_util.hpp',
+  ]
+  if bld.env.HAVE_ZOOKEEPER_H:
+    header_files += [
       'proxy.hpp',
       'proxy_common.hpp',
-      'save_load.hpp',
-      'server_base.hpp',
-      'server_helper.hpp',
-      'server_util.hpp',
       'aggregators.hpp'
-      ])
+    ]
+
+  bld.install_files('${PREFIX}/include/jubatus/server/framework', header_files)
