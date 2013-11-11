@@ -1,4 +1,4 @@
-// This file is auto-generated from recommender.idl(0.4.3-190-g015c4d5) with jenerator version 0.4.5-267-g5536bc5/feature/coreset
+// This file is auto-generated from recommender.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-375-g07d06b7/develop
 // *** DO NOT EDIT ***
 
 #include <map>
