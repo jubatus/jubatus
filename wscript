@@ -101,8 +101,6 @@ def configure(conf):
     if Options.options.zktest:
       conf.env.INTEGRATION_TEST = True
 
-  conf.check_cfg(package='eigen3', args = '--cflags', atleast_version = '3.1.0')
-
   if Options.options.gcov:
     conf.env.append_value('CXXFLAGS', '-fprofile-arcs')
     conf.env.append_value('CXXFLAGS', '-ftest-coverage')
