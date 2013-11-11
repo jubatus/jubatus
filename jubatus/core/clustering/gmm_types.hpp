@@ -17,11 +17,10 @@
 #ifndef JUBATUS_CORE_CLUSTERING_GMM_TYPES_HPP_
 #define JUBATUS_CORE_CLUSTERING_GMM_TYPES_HPP_
 
-#include <Eigen/Sparse>
-
 #include <algorithm>
 #include <vector>
 #include <pficommon/lang/shared_ptr.h>
+#include "../third_party/Eigen/Sparse"
 
 namespace jubatus {
 namespace core {
