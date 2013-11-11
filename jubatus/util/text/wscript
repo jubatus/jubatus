@@ -37,4 +37,5 @@ def build(bld):
     features = 'gtest',
     source = 'include_test.cpp',
     target = 'include_test',
-    includes = '.')
+    includes = '.',
+    use = 'core_headers')
