@@ -1,4 +1,4 @@
-idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl', 'clustering.idl', 'cluster_analysis.idl']
+idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl', 'clustering.idl']
 
 def options(opt):
   pass
@@ -53,7 +53,5 @@ def build(bld):
   build_one(bld, 'nearest_neighbor', 'column_table')
 
   build_one(bld, "clustering", 'jubaconverter jubatus_clustering')
-
-  build_one(bld, "cluster_analysis", 'jubaconverter jubatus_clustering')
 
   bld.install_files('${PREFIX}/share/jubatus/idl/', idls)
