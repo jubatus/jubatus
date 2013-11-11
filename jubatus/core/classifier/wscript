@@ -15,7 +15,7 @@ def build(bld):
 	passive_aggressive.cpp
 	passive_aggressive_1.cpp
 	passive_aggressive_2.cpp
-	confidence_weighted.cpp	
+	confidence_weighted.cpp
 	arow.cpp
 	normal_herd.cpp
         classifier_factory.cpp
@@ -29,7 +29,7 @@ def build(bld):
      features = 'gtest',
      source = [
          'classifier_test.cpp',
-         'classifier_factory.cpp'   
+         'classifier_factory.cpp'
      ],
      target = "classifier_test",
      includes = '.',

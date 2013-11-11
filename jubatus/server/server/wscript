@@ -1,4 +1,4 @@
-idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl']
+idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl', 'clustering.idl']
 
 def options(opt):
   pass
@@ -11,6 +11,11 @@ def configure(conf):
 
 
 def build_one(bld, name, libraries = '', sources = ''):
+  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+    libassert = " LIBGLOG"
+  else:
+    libassert = ""
+
   __sources = '%s_impl.cpp %s_serv.cpp ' % (name, name)
   __sources += sources
 
@@ -46,5 +51,7 @@ def build(bld):
   build_one(bld, "graph")
 
   build_one(bld, 'nearest_neighbor', 'column_table')
+
+  build_one(bld, "clustering", 'jubaconverter jubatus_clustering')
 
   bld.install_files('${PREFIX}/share/jubatus/idl/', idls)

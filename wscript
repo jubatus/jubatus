@@ -1,3 +1,4 @@
+# -*- python -*-
 import Options
 from waflib.Errors import TaskNotReady
 import os
@@ -39,7 +40,7 @@ def options(opt):
   opt.recurse(subdirs)
 
 def configure(conf):
-  conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe']
+  conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe'];
 
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')

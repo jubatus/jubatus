@@ -1,3 +1,4 @@
+# -*- python -*-
 subdirs = 'fv_converter'
 
 def options(opt):
