@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLUSTERING_CLUSTER_MANAGER_KMEANS_CLUSTER_MANAGER_HPP_
-#define JUBATUS_CLUSTERING_CLUSTER_MANAGER_KMEANS_CLUSTER_MANAGER_HPP_
+#ifndef JUBATUS_CORE_CLUSTERING_KMEANS_CLUSTERING_METHOD_HPP_
+#define JUBATUS_CORE_CLUSTERING_KMEANS_CLUSTERING_METHOD_HPP_
 
 #include <vector>
 #include "clustering_method.hpp"

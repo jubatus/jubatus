@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CLUSTERING_STORAGE_COMPRESSOR_COMPRESSOR_HPP_
-#define JUBATUS_CLUSTERING_STORAGE_COMPRESSOR_COMPRESSOR_HPP_
+#ifndef JUBATUS_CORE_CLUSTERING_COMPRESSOR_HPP_
+#define JUBATUS_CORE_CLUSTERING_COMPRESSOR_HPP_
 
 #include <msgpack.hpp>
 #include "clustering_config.hpp"

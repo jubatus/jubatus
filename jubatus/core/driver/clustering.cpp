@@ -55,7 +55,7 @@ datum clustering::get_nearest_center(
       clustering_->get_nearest_center(to_sfv_const(point)));
 }
 
-vector<pair<double, datum> >
+core::clustering::cluster_unit
     clustering::get_nearest_members(const datum& point) const {
   return to_weighted_datum_vector(
       clustering_->get_nearest_members(to_sfv_const(point)));
@@ -65,12 +65,12 @@ vector<datum> clustering::get_k_center() const {
   return to_datum_vector(clustering_->get_k_center());
 }
 
-vector<vector<pair<double, datum> > >
+core::clustering::cluster_set
 clustering::get_core_members() const {
   vector<vector<core::clustering::weighted_point> > src =
       clustering_->get_core_members();
 
-  vector<vector<pair<double, datum> > >  ret;
+  core::clustering::cluster_set ret;
   ret.reserve(src.size());
   std::transform(
       src.begin(), src.end(), std::back_inserter(ret), pfi::lang::bind(
@@ -140,10 +140,10 @@ vector<core::clustering::weighted_point>
   return ret;
 }
 
-vector<pair<double, datum> >
+core::clustering::cluster_unit
   clustering::to_weighted_datum_vector(
     const vector<core::clustering::weighted_point>& src) const {
-  vector<pair<double, datum> > ret;
+  core::clustering::cluster_unit ret;
   ret.reserve(src.size());
   std::transform(src.begin(), src.end(), std::back_inserter(ret),
       pfi::lang::bind(&clustering::to_weighted_datum, this, pfi::lang::_1));

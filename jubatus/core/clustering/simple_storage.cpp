@@ -17,6 +17,7 @@
 #include "simple_storage.hpp"
 
 #include <string>
+#include <vector>
 
 namespace jubatus {
 namespace core {

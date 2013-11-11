@@ -33,6 +33,11 @@ namespace jubatus {
 namespace core {
 namespace cluster_analysis {
 
+typedef double cluster_weight;
+typedef std::vector<std::pair<cluster_weight,
+            jubatus::core::fv_converter::datum> > cluster_unit;
+typedef std::vector<cluster_unit> cluster_set;
+
 struct cluster_relation {
   MSGPACK_DEFINE(cluster1, cluster2, similarity);
   int32_t cluster1;
@@ -50,8 +55,7 @@ struct change_graph {
 struct clustering_snapshot {
   MSGPACK_DEFINE(name, clusters);
   std::string name;
-  std::vector<std::vector<std::pair<double,
-       jubatus::core::fv_converter::datum> > > clusters;
+  cluster_set clusters;
 };
 
 }  // namespace cluster_analysis
