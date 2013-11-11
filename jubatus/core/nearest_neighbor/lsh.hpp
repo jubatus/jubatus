@@ -20,7 +20,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "bit_vector_nearest_neighbor_base.hpp"
 
 namespace jubatus {
@@ -41,10 +41,10 @@ class lsh : public bit_vector_nearest_neighbor_base {
     }
   };
   lsh(const config& conf,
-      pfi::lang::shared_ptr<table::column_table> table,
+      jubatus::util::lang::shared_ptr<table::column_table> table,
       const std::string& id);
   lsh(const config& conf,
-      pfi::lang::shared_ptr<table::column_table> table,
+      jubatus::util::lang::shared_ptr<table::column_table> table,
       std::vector<table::column_type>& schema,
       const std::string& id);
 

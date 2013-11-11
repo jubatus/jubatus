@@ -21,7 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../framework/mixable.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
@@ -36,18 +36,18 @@ namespace driver {
 class nearest_neighbor {
  public:
   nearest_neighbor(
-      pfi::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
-      pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+      jubatus::util::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
+      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
 
-  pfi::lang::shared_ptr<table::column_table> get_table() {
+  jubatus::util::lang::shared_ptr<table::column_table> get_table() {
     return nn_->get_table();
   }
 
-  pfi::lang::shared_ptr<const table::column_table> get_const_table() const {
+  jubatus::util::lang::shared_ptr<const table::column_table> get_const_table() const {
     return nn_->get_const_table();
   }
 
-  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  jubatus::util::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
     return mixable_holder_;
   }
 
@@ -68,9 +68,9 @@ class nearest_neighbor {
   void clear();
 
  private:
-  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  pfi::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn_;
+  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  jubatus::util::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn_;
 };
 
 }  // namespace driver

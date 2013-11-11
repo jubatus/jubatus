@@ -16,7 +16,7 @@
 
 #include <string>
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 #include "clustering_config.hpp"
 #include "clustering.hpp"
 #include "testutil.hpp"
@@ -39,8 +39,8 @@ class mixable_model_test : public ::testing::Test {
     storage_ = model_->get_storage();
   }
 
-  pfi::lang::scoped_ptr<clustering> model_;
-  pfi::lang::shared_ptr<storage> storage_;
+  jubatus::util::lang::scoped_ptr<clustering> model_;
+  jubatus::util::lang::shared_ptr<storage> storage_;
 };
 
 TEST_F(mixable_model_test, get_diff) {

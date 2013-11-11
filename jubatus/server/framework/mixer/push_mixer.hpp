@@ -20,11 +20,11 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/concurrent/condition.h>
-#include <pficommon/concurrent/mutex.h>
-#include <pficommon/concurrent/thread.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/system/time_util.h>
+#include "jubatus/util/concurrent/condition.h"
+#include "jubatus/util/concurrent/mutex.h"
+#include "jubatus/util/concurrent/thread.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/system/time_util.h"
 #include "../../common/lock_service.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
 #include "mixer.hpp"
@@ -38,8 +38,8 @@ class push_communication {
  public:
   virtual ~push_communication() {}
 
-  static pfi::lang::shared_ptr<push_communication> create(
-      const pfi::lang::shared_ptr<jubatus::server::common::lock_service>& zk,
+  static jubatus::util::lang::shared_ptr<push_communication> create(
+      const jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service>& zk,
       const std::string& type,
       const std::string& name,
       int timeout_sec);
@@ -49,7 +49,7 @@ class push_communication {
 
   // We use shared_ptr instead of auto_ptr/unique_ptr because in C++03
   // specification limits.
-  virtual pfi::lang::shared_ptr<jubatus::server::common::try_lockable>
+  virtual jubatus::util::lang::shared_ptr<jubatus::server::common::try_lockable>
   create_lock() = 0;
 
   virtual const std::vector<std::pair<std::string, int> >& servers_list() const
@@ -74,13 +74,13 @@ class push_communication {
 class push_mixer : public jubatus::server::framework::mixer::mixer {
  public:
   push_mixer(
-      pfi::lang::shared_ptr<push_communication> communication,
+      jubatus::util::lang::shared_ptr<push_communication> communication,
       unsigned int count_threshold, unsigned int tick_threshold,
       const std::pair<std::string, int>& my_id);
 
   void register_api(rpc_server_t& server);
   void set_mixable_holder(
-      pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> holder);
+      jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder> holder);
 
   void start();
   void stop();
@@ -103,21 +103,21 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
   std::vector<std::string> get_pull_argument(int dummy_arg);
   int push(const std::vector<std::string>& diff);
 
-  pfi::lang::shared_ptr<push_communication> communication_;
+  jubatus::util::lang::shared_ptr<push_communication> communication_;
   unsigned int count_threshold_;
   unsigned int tick_threshold_;
   const std::pair<std::string, int> my_id_;
 
   unsigned int counter_;
   unsigned int mix_count_;
-  pfi::system::time::clock_time ticktime_;
+  jubatus::util::system::time::clock_time ticktime_;
 
   volatile bool is_running_;
 
-  pfi::concurrent::thread t_;
-  mutable pfi::concurrent::mutex m_;
-  pfi::concurrent::condition c_;
-  pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder>
+  jubatus::util::concurrent::thread t_;
+  mutable jubatus::util::concurrent::mutex m_;
+  jubatus::util::concurrent::condition c_;
+  jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder>
   mixable_holder_;
 
  private:  // deleted methods

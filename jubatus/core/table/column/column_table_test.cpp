@@ -19,11 +19,11 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/text/json.h"
 #include <msgpack.hpp>
 #include "column_table.hpp"
-#include "pficommon/math/random.h"
-#include "pficommon/lang/shared_ptr.h"
+#include "jubatus/util/math/random.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 using std::string;
 using std::vector;
@@ -167,7 +167,7 @@ TEST(add, bit_vector) {
     schema.push_back(column_type(column_type::ctype##_type));           \
     base.init(schema);                                                  \
     for (size_t i = 0; i < num; ++i) {                                  \
-      ASSERT_EQ(base.add(pfi::lang::lexical_cast<std::string>(i) +      \
+      ASSERT_EQ(base.add(jubatus::util::lang::lexical_cast<std::string>(i) +      \
                          "a", owner("local") , ctype##_t(i)), true);    \
     }                                                                   \
     ASSERT_EQ(num, base.size());                                        \
@@ -186,7 +186,7 @@ TEST(get_column, float) {
   base.init(schema);
   for (size_t i = 0; i < 100; ++i) {
     ASSERT_EQ(base.add(
-        pfi::lang::lexical_cast<std::string>(i) +
+        jubatus::util::lang::lexical_cast<std::string>(i) +
         "a", owner("local"), static_cast<float>(i)), true);
   }
   ASSERT_EQ(base.size(), 100U);
@@ -201,9 +201,9 @@ TEST(get_column, string) {
   base.init(schema);
   for (size_t i = 0; i < 100; ++i) {
     ASSERT_EQ(base.add(
-        pfi::lang::lexical_cast<std::string>(i) + "a",
+        jubatus::util::lang::lexical_cast<std::string>(i) + "a",
         owner("local"),
-        pfi::lang::lexical_cast<std::string>(i)), true);
+        jubatus::util::lang::lexical_cast<std::string>(i)), true);
   }
   const string_column& strings = base.get_string_column(0);
   ASSERT_EQ(strings.size(), 100U);
@@ -223,7 +223,7 @@ TEST(get_column, bit_vector) {
       bv.reverse_bit(j % bit_vector_width);
     }
     ASSERT_EQ(base.add(
-        pfi::lang::lexical_cast<std::string>(i) + "a", owner("local") , bv),
+        jubatus::util::lang::lexical_cast<std::string>(i) + "a", owner("local") , bv),
         true);
   }
   ASSERT_EQ(base.size(), num);
@@ -239,7 +239,7 @@ TEST(get_column, bit_vector) {
     column_table base;                                                  \
     base.init(schema);                                                  \
     for (size_t i = 0; i < num; ++i) {                                  \
-      ASSERT_EQ(base.add(pfi::lang::lexical_cast<std::string>(i) + "a", \
+      ASSERT_EQ(base.add(jubatus::util::lang::lexical_cast<std::string>(i) + "a", \
                          owner("local"),                                \
                          ctype##_t(i)), true);                          \
     }                                                                   \
@@ -263,9 +263,9 @@ TEST(get_and_read_column, string) {
   const size_t num = 120;
   for (size_t i = 0; i < num; ++i) {
     ASSERT_EQ(base.add(
-        pfi::lang::lexical_cast<std::string>(i) + "a",
+        jubatus::util::lang::lexical_cast<std::string>(i) + "a",
         owner("local"),
-        pfi::lang::lexical_cast<std::string>(i)), true);
+        jubatus::util::lang::lexical_cast<std::string>(i)), true);
   }
   ASSERT_EQ(base.size(), num);
   const string_column& strings = base.get_string_column(0);
@@ -283,7 +283,7 @@ TEST(get_and_read_column, bit_vector) {
     bit_vector bv(bit_vector_width);
     bv.set_bit(i % bit_vector_width);
     ASSERT_EQ(base.add(
-        pfi::lang::lexical_cast<std::string>(i) + "a",
+        jubatus::util::lang::lexical_cast<std::string>(i) + "a",
         owner("local"), bv), true);
   }
   ASSERT_EQ(base.size(), num);
@@ -296,7 +296,7 @@ TEST(pfi, lexical_cast) {
   vector<column_type> schema;
   schema.push_back(column_type(column_type::string_type));
   base.init(schema);
-  base.add<std::string>(pfi::lang::lexical_cast<std::string>(10),
+  base.add<std::string>(jubatus::util::lang::lexical_cast<std::string>(10),
                         owner("local"),
                         "hoge");
 }
@@ -309,7 +309,7 @@ TEST(pfi, lexical_cast) {
     column_table base;                                          \
     base.init(schema);                                          \
     for (size_t i = 0; i < num; ++i) {                          \
-      base.add(pfi::lang::lexical_cast<std::string>(i)+"hoge",  \
+      base.add(jubatus::util::lang::lexical_cast<std::string>(i)+"hoge",  \
                owner("local"),                                  \
                ctype##_t(i));                                   \
     }                                                           \
@@ -330,7 +330,7 @@ TEST(base, iterate_float) {
   base.init(schema);
   for (size_t i = 0; i < 1000; ++i) {
     base.add<float>(
-        pfi::lang::lexical_cast<std::string>(i) + "hoge", owner("local"),
+        jubatus::util::lang::lexical_cast<std::string>(i) + "hoge", owner("local"),
         0.8 * i);
   }
   const float_column& ic = base.get_float_column(0);
@@ -346,18 +346,18 @@ TEST(base, iterate_string) {
   base.init(schema);
   for (size_t i = 0; i < 1000; ++i) {
     base.add<std::string>(
-        pfi::lang::lexical_cast<std::string>(i)+"key",
+        jubatus::util::lang::lexical_cast<std::string>(i)+"key",
         owner("local"),
-        pfi::lang::lexical_cast<std::string>(i)+"value");
+        jubatus::util::lang::lexical_cast<std::string>(i)+"value");
   }
   const string_column& ic = base.get_string_column(0);
   for (size_t i = 0; i < 1000; ++i) {
-    ASSERT_EQ(ic[i], pfi::lang::lexical_cast<std::string>(i)+"value");
+    ASSERT_EQ(ic[i], jubatus::util::lang::lexical_cast<std::string>(i)+"value");
   }
 }
 
 TEST(base, iterate_bit_vector) {
-  typedef pfi::math::random::random<pfi::math::random::mersenne_twister> mt;
+  typedef jubatus::util::math::random::random<jubatus::util::math::random::mersenne_twister> mt;
 
   column_table base;
   vector<column_type> schema;
@@ -371,7 +371,7 @@ TEST(base, iterate_bit_vector) {
       bv.reverse_bit((rand1.next_int()*j)%70);
     }
     base.add(
-        pfi::lang::lexical_cast<std::string>(i) + "key", owner("local"), bv);
+        jubatus::util::lang::lexical_cast<std::string>(i) + "key", owner("local"), bv);
   }
   const bit_vector_column& ic = base.get_bit_vector_column(0);
   for (size_t i = 0; i < 1000; ++i) {
@@ -383,7 +383,7 @@ TEST(base, iterate_bit_vector) {
   }
 }
 TEST(column, multi_column) {
-  typedef pfi::math::random::random<pfi::math::random::mersenne_twister> mt;
+  typedef jubatus::util::math::random::random<jubatus::util::math::random::mersenne_twister> mt;
   column_table base;
   vector<column_type> schema;
   schema.push_back(column_type(column_type::bit_vector_type, 70));
@@ -396,7 +396,7 @@ TEST(column, multi_column) {
       bv.reverse_bit((rand1.next_int()*j)%70);
     }
     base.add(
-        pfi::lang::lexical_cast<std::string>(i) + "key", owner("local"), bv,
+        jubatus::util::lang::lexical_cast<std::string>(i) + "key", owner("local"), bv,
         static_cast<int32_t>(rand1.next_int()));
   }
   const bit_vector_column& ic1 = base.get_bit_vector_column(0);
@@ -813,7 +813,7 @@ TEST(table, json_dump) {
     schema.push_back(column_type(column_type::ctype##_type));           \
     base.init(schema);                                                  \
     for (size_t i = 0; i < 3000; i += 20) {                             \
-      base.add("a" + pfi::lang::lexical_cast<string>(i),                \
+      base.add("a" + jubatus::util::lang::lexical_cast<string>(i),                \
                owner("local"),                                          \
                static_cast<ctype##_t>(i));                              \
     }                                                                   \
@@ -821,7 +821,7 @@ TEST(table, json_dump) {
       const uint64_t max_size = base.size();                            \
       size_t cnt = 0;                                                   \
       for (size_t i = 0; base.size(); i += 20) {                        \
-        base.delete_row("a" + pfi::lang::lexical_cast<string>(i));      \
+        base.delete_row("a" + jubatus::util::lang::lexical_cast<string>(i));      \
         ++cnt;                                                          \
         ASSERT_EQ(max_size - cnt, base.size());                         \
         const ctype##_column& ic = base.get_##ctype##_column(0);        \
@@ -842,7 +842,7 @@ TEST(table, json_dump) {
       }                                                                 \
     }                                                                   \
     for (size_t i = 0; i < 300; i += 20) {                              \
-      base.add("a" + pfi::lang::lexical_cast<string>(i),                \
+      base.add("a" + jubatus::util::lang::lexical_cast<string>(i),                \
                owner("local"),                                          \
                static_cast<ctype##_t>(i));                              \
     }                                                                   \

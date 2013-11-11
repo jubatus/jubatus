@@ -20,9 +20,9 @@
 #include <utility>
 #include <vector>
 #include <glog/logging.h>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/text/json.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/vector_util.hpp"
@@ -49,8 +49,8 @@ using std::pair;
 using std::string;
 using std::vector;
 using std::pair;
-using pfi::lang::lexical_cast;
-using pfi::text::json::json;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::text::json::json;
 using jubatus::core::fv_converter::datum;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::server_argv;
@@ -78,7 +78,7 @@ struct anomaly_serv_config {
 
 anomaly_serv::anomaly_serv(
     const server_argv& a,
-    const pfi::lang::shared_ptr<lock_service>& zk)
+    const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
 
@@ -163,12 +163,12 @@ id_with_score anomaly_serv::add(const datum& data) {
   check_set_config();
 
   uint64_t id = idgen_->generate();
-  string id_str = pfi::lang::lexical_cast<string>(id);
+  string id_str = jubatus::util::lang::lexical_cast<string>(id);
 
 #ifdef HAVE_ZOOKEEPER_H
   if (argv().is_standalone()) {
 #endif
-    pfi::concurrent::scoped_wlock lk(rw_mutex());
+    jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
     event_model_updated();
     // TODO(unno): remove conversion code
     pair<string, float> res = anomaly_->add(id_str, data);
@@ -268,7 +268,7 @@ float anomaly_serv::selective_update(
     const datum& d) {
   // nolock context
   if (host == argv().eth && port == argv().port) {
-    pfi::concurrent::scoped_wlock lk(rw_mutex());
+    jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
     event_model_updated();
     return this->update(id, d);
   } else {  // needs no lock

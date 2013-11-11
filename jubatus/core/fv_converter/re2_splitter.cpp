@@ -21,10 +21,10 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 #include "exception.hpp"
 
-using pfi::lang::lexical_cast;
+using jubatus::util::lang::lexical_cast;
 using jubatus::core::fv_converter::converter_exception;
 
 namespace jubatus {

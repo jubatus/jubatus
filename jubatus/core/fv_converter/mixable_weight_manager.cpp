@@ -16,7 +16,7 @@
 
 #include "mixable_weight_manager.hpp"
 
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
 
 #include "../fv_converter/weight_manager.hpp"
 

@@ -24,7 +24,7 @@
 #include "../common/jsonconfig.hpp"
 
 using jubatus::core::common::jsonconfig::config_cast_check;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {

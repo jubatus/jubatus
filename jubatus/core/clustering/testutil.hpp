@@ -20,14 +20,14 @@
 #include <string>
 #include <vector>
 #include <ctime>
-#include <pficommon/lang/cast.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/math/random.h"
 #include "../common/type.hpp"
 #include "clustering.hpp"
 #include "types.hpp"
 
-using pfi::lang::lexical_cast;
-using pfi::math::random::mtrand;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::math::random::mtrand;
 using std::make_pair;
 using std::string;
 

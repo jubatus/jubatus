@@ -16,7 +16,7 @@
 
 #include <string>
 #include <gtest/gtest.h>
-#include <pficommon/lang/demangle.h>
+#include "jubatus/util/lang/demangle.h"
 #include "byte_buffer.hpp"
 
 namespace jubatus {

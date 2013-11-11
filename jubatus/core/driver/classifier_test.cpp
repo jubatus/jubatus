@@ -23,8 +23,8 @@
 
 #include <gtest/gtest.h>
 
-#include <pficommon/lang/cast.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/text/json.h"
 
 #include "../storage/storage_type.hpp"
 #include "../storage/local_storage.hpp"
@@ -44,9 +44,9 @@ using std::numeric_limits;
 using std::cout;
 using std::endl;
 
-using pfi::lang::lexical_cast;
-using pfi::lang::shared_ptr;
-using pfi::data::optional;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
+using jubatus::util::data::optional;
 using jubatus::core::fv_converter::datum;
 using jubatus::core::classifier::classify_result;
 using jubatus::core::classifier::classifier_base;
@@ -67,7 +67,7 @@ datum convert_vector(const vector<double>& vec) {
 }
 
 void make_random_data(
-    pfi::math::random::mtrand& rand,
+    jubatus::util::math::random::mtrand& rand,
     vector<pair<string, datum> >& data,
     size_t size) {
   for (size_t i = 0; i < size; ++i) {
@@ -114,7 +114,7 @@ TEST_P(classifier_test, simple) {
 }
 
 TEST_P(classifier_test, api_train) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   const size_t example_size = 1000;
 
   vector<pair<string, datum> > data;
@@ -125,7 +125,7 @@ TEST_P(classifier_test, api_train) {
 }
 
 void classifier_test::my_test() {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   const size_t example_size = 1000;
 
   vector<pair<string, datum> > data;
@@ -183,7 +183,7 @@ TEST_P(classifier_test, my_test) {
 }
 
 TEST_P(classifier_test, duplicated_keys) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   datum d;
   for (size_t k = 0; k < 10; ++k) {
     uint32_t dim = rand.next_int(100);
@@ -211,7 +211,7 @@ TEST_P(classifier_test, duplicated_keys) {
 }
 
 TEST_P(classifier_test, save_load) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   const size_t example_size = 1000;
 
   vector<pair<string, datum> > data;

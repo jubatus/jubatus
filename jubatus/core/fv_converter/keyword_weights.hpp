@@ -19,7 +19,7 @@
 
 #include <string>
 #include <msgpack.hpp>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/unordered_map.h"
 #include "../common/type.hpp"
 #include "counter.hpp"
 #include "datum.hpp"
@@ -62,7 +62,7 @@ class keyword_weights {
 
   size_t document_count_;
   counter<std::string> document_frequencies_;
-  typedef pfi::data::unordered_map<std::string, float> weight_t;
+  typedef jubatus::util::data::unordered_map<std::string, float> weight_t;
   weight_t weights_;
 };
 

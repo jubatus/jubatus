@@ -87,7 +87,7 @@ void lsh::neighbor_row(
 
 void lsh::clear() {
   orig_.clear();
-  pfi::data::unordered_map<std::string, std::vector<float> >()
+  jubatus::util::data::unordered_map<std::string, std::vector<float> >()
     .swap(column2baseval_);
   mixable_storage_->get_model()->clear();
 }

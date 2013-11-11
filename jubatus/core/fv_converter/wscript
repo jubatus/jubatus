@@ -64,7 +64,7 @@ def build(bld):
     'keyword_weights.cpp',
     'feature_hasher.cpp',
     ]
-  use = 'PFICOMMON MSGPACK DL jubacommon'
+  use = 'jubatus_util MSGPACK DL jubacommon'
 
   if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
     use += ' LIBGLOG'
@@ -166,7 +166,7 @@ def build(bld):
       'regexp_filter_test.cpp',
       'regexp_splitter_test.cpp',
       ]
-  test_use = 'PFICOMMON MSGPACK jubaconverter'
+  test_use = 'jubatus_util MSGPACK jubaconverter'
 
   make_tests(bld, test_use, test_source)
 

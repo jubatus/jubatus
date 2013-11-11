@@ -22,7 +22,7 @@
 #include <utility>
 #include <vector>
 #include <msgpack.hpp>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
 #include "../framework/mixable.hpp"
 #include "recommender_type.hpp"
 
@@ -68,7 +68,7 @@ class recommender_mock_storage {
   typedef std::map<common::sfv_t, std::vector<std::pair<std::string, float> > >
     relation_type;
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(similar_relation_) & MEMBER(neighbor_relation_);

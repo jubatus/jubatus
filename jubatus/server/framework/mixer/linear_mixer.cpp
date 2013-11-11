@@ -21,10 +21,10 @@
 #include <vector>
 
 #include <glog/logging.h>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/lang/bind.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/system/time_util.h>
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/lang/bind.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/system/time_util.h"
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 #include "../../common/membership.hpp"
@@ -35,11 +35,11 @@ using std::vector;
 using std::string;
 using std::pair;
 using jubatus::core::common::byte_buffer;
-using pfi::concurrent::scoped_lock;
-using pfi::concurrent::scoped_rlock;
-using pfi::concurrent::scoped_wlock;
-using pfi::system::time::clock_time;
-using pfi::system::time::get_clock_time;
+using jubatus::util::concurrent::scoped_lock;
+using jubatus::util::concurrent::scoped_rlock;
+using jubatus::util::concurrent::scoped_wlock;
+using jubatus::util::system::time::clock_time;
+using jubatus::util::system::time::get_clock_time;
 
 namespace jubatus {
 namespace server {
@@ -50,18 +50,18 @@ namespace {
 class linear_communication_impl : public linear_communication {
  public:
   linear_communication_impl(
-      const pfi::lang::shared_ptr<common::lock_service>& zk,
+      const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
       const string& type,
       const string& name,
       int timeout_sec);
 
   size_t update_members();
-  pfi::lang::shared_ptr<common::try_lockable> create_lock();
+  jubatus::util::lang::shared_ptr<common::try_lockable> create_lock();
   void get_diff(common::mprpc::rpc_result_object& a) const;
   void put_diff(const vector<byte_buffer>& a) const;
 
  private:
-  pfi::lang::shared_ptr<server::common::lock_service> zk_;
+  jubatus::util::lang::shared_ptr<server::common::lock_service> zk_;
   string type_;
   string name_;
   int timeout_sec_;
@@ -69,7 +69,7 @@ class linear_communication_impl : public linear_communication {
 };
 
 linear_communication_impl::linear_communication_impl(
-    const pfi::lang::shared_ptr<server::common::lock_service>& zk,
+    const jubatus::util::lang::shared_ptr<server::common::lock_service>& zk,
     const string& type, const string& name, int timeout_sec)
     : zk_(zk),
       type_(type),
@@ -77,11 +77,11 @@ linear_communication_impl::linear_communication_impl(
       timeout_sec_(timeout_sec) {
 }
 
-pfi::lang::shared_ptr<common::try_lockable>
+jubatus::util::lang::shared_ptr<common::try_lockable>
 linear_communication_impl::create_lock() {
   string path;
   common::build_actor_path(path, type_, name_);
-  return pfi::lang::shared_ptr<common::try_lockable>(
+  return jubatus::util::lang::shared_ptr<common::try_lockable>(
       new common::lock_service_mutex(*zk_, path + "/master_lock"));
 }
 
@@ -118,17 +118,17 @@ void linear_communication_impl::put_diff(
 
 }  // namespace
 
-pfi::lang::shared_ptr<linear_communication> linear_communication::create(
-    const pfi::lang::shared_ptr<server::common::lock_service>& zk,
+jubatus::util::lang::shared_ptr<linear_communication> linear_communication::create(
+    const jubatus::util::lang::shared_ptr<server::common::lock_service>& zk,
     const string& type,
     const string& name,
     int timeout_sec) {
-  return pfi::lang::shared_ptr<linear_communication_impl>(
+  return jubatus::util::lang::shared_ptr<linear_communication_impl>(
       new linear_communication_impl(zk, type, name, timeout_sec));
 }
 
 linear_mixer::linear_mixer(
-    pfi::lang::shared_ptr<linear_communication> communication,
+    jubatus::util::lang::shared_ptr<linear_communication> communication,
     unsigned int count_threshold,
     unsigned int tick_threshold)
     : communication_(communication),
@@ -138,20 +138,20 @@ linear_mixer::linear_mixer(
       mix_count_(0),
       ticktime_(get_clock_time()),
       is_running_(false),
-      t_(pfi::lang::bind(&linear_mixer::mixer_loop, this)) {
+      t_(jubatus::util::lang::bind(&linear_mixer::mixer_loop, this)) {
 }
 
 void linear_mixer::register_api(rpc_server_t& server) {
   server.add<vector<byte_buffer>(int)>(  // NOLINT
       "get_diff",
-      pfi::lang::bind(&linear_mixer::get_diff, this, pfi::lang::_1));
+      jubatus::util::lang::bind(&linear_mixer::get_diff, this, jubatus::util::lang::_1));
   server.add<int(vector<byte_buffer>)>(
       "put_diff",
-      pfi::lang::bind(&linear_mixer::put_diff, this, pfi::lang::_1));
+      jubatus::util::lang::bind(&linear_mixer::put_diff, this, jubatus::util::lang::_1));
 }
 
 void linear_mixer::set_mixable_holder(
-    pfi::lang::shared_ptr<core::framework::mixable_holder> m) {
+    jubatus::util::lang::shared_ptr<core::framework::mixable_holder> m) {
   mixable_holder_ = m;
 }
 
@@ -184,14 +184,14 @@ void linear_mixer::updated() {
 void linear_mixer::get_status(server_base::status_t& status) const {
   scoped_lock lk(m_);
   status["linear_mixer.count"] =
-    pfi::lang::lexical_cast<string>(counter_);
+    jubatus::util::lang::lexical_cast<string>(counter_);
   status["linear_mixer.ticktime"] =
-    pfi::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
+    jubatus::util::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
 }
 
 void linear_mixer::mixer_loop() {
   while (true) {
-    pfi::lang::shared_ptr<common::try_lockable> zklock = communication_
+    jubatus::util::lang::shared_ptr<common::try_lockable> zklock = communication_
         ->create_lock();
     try {
       common::unique_lock lk(m_);
@@ -220,8 +220,8 @@ void linear_mixer::mixer_loop() {
 }
 
 void linear_mixer::mix() {
-  using pfi::system::time::clock_time;
-  using pfi::system::time::get_clock_time;
+  using jubatus::util::system::time::clock_time;
+  using jubatus::util::system::time::get_clock_time;
 
   clock_time start = get_clock_time();
   size_t s = 0;

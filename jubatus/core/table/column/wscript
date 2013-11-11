@@ -17,7 +17,7 @@ def build(bld):
     ],
     target = 'column_table',
     name = 'column_table',
-    use = 'PFICOMMON'+libassert
+    use = 'jubatus_util'+libassert
   )
 
   def make_test(s):
@@ -26,7 +26,7 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'MSGPACK PFICOMMON column_table jubacommon'+libassert)
+      use = 'MSGPACK jubatus_util column_table jubacommon'+libassert)
 
   tests = [
     'column_table_test.cpp',

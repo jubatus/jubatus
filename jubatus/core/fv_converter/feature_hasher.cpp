@@ -17,8 +17,8 @@
 #include "feature_hasher.hpp"
 
 #include <string>
-#include <pficommon/data/functional_hash.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/data/functional_hash.h"
+#include "jubatus/util/lang/cast.h"
 #include "../common/exception.hpp"
 #include "../common/hash.hpp"
 #include "exception.hpp"
@@ -38,7 +38,7 @@ feature_hasher::feature_hasher(uint64_t max)
 void feature_hasher::hash_feature_keys(common::sfv_t& fv) const {
   for (size_t i = 0, size = fv.size(); i < size; ++i) {
     uint64_t id = common::hash_util::calc_string_hash(fv[i].first) % max_size_;
-    fv[i].first = pfi::lang::lexical_cast<std::string>(id);
+    fv[i].first = jubatus::util::lang::lexical_cast<std::string>(id);
   }
 }
 

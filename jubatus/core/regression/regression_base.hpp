@@ -19,7 +19,7 @@
 
 #include <map>
 #include <string>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../common/type.hpp"
 #include "../driver/linear_function_mixer.hpp"
 
@@ -34,7 +34,7 @@ namespace regression {
 
 class regression_base {
  public:
-  typedef pfi::lang::shared_ptr<storage::storage_base> storage_ptr;
+  typedef jubatus::util::lang::shared_ptr<storage::storage_base> storage_ptr;
   explicit regression_base(storage_ptr storage);
 
   virtual ~regression_base() {
@@ -56,7 +56,7 @@ class regression_base {
   void update(const common::sfv_t& fv, float coeff);
 
  private:
-  pfi::lang::shared_ptr<driver::linear_function_mixer> mixable_;
+  jubatus::util::lang::shared_ptr<driver::linear_function_mixer> mixable_;
 };
 
 }  // namespace regression

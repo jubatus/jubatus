@@ -18,7 +18,7 @@
 #define JUBATUS_CORE_CLUSTERING_DISCRETE_DISTRIBUTION_HPP_
 
 #include <vector>
-#include <pficommon/math/random.h>
+#include "jubatus/util/math/random.h"
 
 namespace jubatus {
 namespace core {
@@ -34,7 +34,7 @@ class discrete_distribution {
 
  private:
   size_t convert_(double d);
-  pfi::math::random::mtrand r_;
+  jubatus::util::math::random::mtrand r_;
   std::vector<double> whist_;
   double sum_;
 };

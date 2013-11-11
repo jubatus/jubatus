@@ -16,7 +16,7 @@
 
 #include <string>
 #include <gtest/gtest.h>
-#include <pficommon/lang/demangle.h>
+#include "jubatus/util/lang/demangle.h"
 #include "exception.hpp"
 
 using std::string;
@@ -38,7 +38,7 @@ namespace common {
 namespace exception {
 typedef error_info<struct test_my_tag_, int> test_my_tag;
 inline string to_string(const test_my_tag& info) {
-  return pfi::lang::lexical_cast<string>(info.value() * 2);
+  return jubatus::util::lang::lexical_cast<string>(info.value() * 2);
 }
 }  // namespace exception
 }  // namespace common
@@ -303,7 +303,7 @@ TEST(exception, catch_unknown_current_exception) {
 TEST(exception, abi_demangle) {
   jubatus::core::common::exception::runtime_error object("a");
   EXPECT_EQ(string("jubatus::core::common::exception::runtime_error"),
-      pfi::lang::demangle(typeid(object).name()));
+      jubatus::util::lang::demangle(typeid(object).name()));
 }
 
 TEST(exception, exception_class_name) {

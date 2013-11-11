@@ -21,7 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/math/random.h>
+#include "jubatus/util/math/random.h"
 #include "push_mixer.hpp"
 
 namespace jubatus {
@@ -32,7 +32,7 @@ namespace mixer {
 class skip_mixer : public push_mixer {
  public:
   skip_mixer(
-      pfi::lang::shared_ptr<push_communication> communication,
+      jubatus::util::lang::shared_ptr<push_communication> communication,
       unsigned int count_threshold,
       unsigned int tick_threshold,
       const std::pair<std::string, int>& my_id)

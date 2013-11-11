@@ -22,7 +22,7 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_random<int32_t, std::vector<scored_datum> >("train");
     k.register_async_random<std::vector<float>,
         std::vector<jubatus::core::fv_converter::datum> >("estimate");
-    k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
+    k.register_async_broadcast<bool>("clear", jubatus::util::lang::function<bool(bool,
         bool)>(&jubatus::server::framework::all_and));
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {

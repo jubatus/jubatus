@@ -24,7 +24,7 @@ namespace core {
 namespace fv_converter {
 
 TEST(fv_converter, key_matcher_factory) {
-  typedef pfi::lang::shared_ptr<key_matcher> m_t;
+  typedef jubatus::util::lang::shared_ptr<key_matcher> m_t;
 
   key_matcher_factory f;
   ASSERT_TRUE(m_t(f.create_matcher("*"))->match("hogehgeo"));

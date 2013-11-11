@@ -18,7 +18,7 @@
 #define JUBATUS_CORE_STORAGE_STORAGE_FACTORY_HPP_
 
 #include <string>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 namespace jubatus {
 namespace core {
@@ -28,7 +28,7 @@ class storage_base;
 
 class storage_factory {
  public:
-  static pfi::lang::shared_ptr<storage_base> create_storage(
+  static jubatus::util::lang::shared_ptr<storage_base> create_storage(
       const std::string& name);
 };
 

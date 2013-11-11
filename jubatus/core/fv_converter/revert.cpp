@@ -18,8 +18,8 @@
 
 #include <string>
 #include <utility>
-#include <pficommon/data/string/utility.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/data/string/utility.h"
+#include "jubatus/util/lang/cast.h"
 #include "datum.hpp"
 
 namespace jubatus {
@@ -58,10 +58,10 @@ bool revert_num_value(
     num_value.first.swap(num_value_key);
     num_value.second = value;
     return true;
-  } else if (pfi::data::string::starts_with(feature_value, str_prefix)) {
+  } else if (jubatus::util::data::string::starts_with(feature_value, str_prefix)) {
     std::string val_string(feature_value.substr(str_prefix.size()));
     try {
-      float val = pfi::lang::lexical_cast<float>(val_string);
+      float val = jubatus::util::lang::lexical_cast<float>(val_string);
       num_value.first.swap(num_value_key);
       num_value.second = val;
       return true;

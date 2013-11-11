@@ -20,8 +20,8 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
 #include "binary_feature.hpp"
 #include "character_ngram.hpp"
 #include "converter_config.hpp"
@@ -36,7 +36,7 @@
 #include "weight_manager.hpp"
 #include "without_split.hpp"
 
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {

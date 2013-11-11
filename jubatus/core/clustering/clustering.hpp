@@ -22,11 +22,11 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/concurrent/rwmutex.h"
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../common/exception.hpp"
 #include "../common/type.hpp"
 #include "../framework/mixable.hpp"
@@ -65,11 +65,11 @@ class clustering {
 
   size_t get_revision() const;
 
-  void set_storage(pfi::lang::shared_ptr<storage> storage);
-  pfi::lang::shared_ptr<storage> get_storage();
+  void set_storage(jubatus::util::lang::shared_ptr<storage> storage);
+  jubatus::util::lang::shared_ptr<storage> get_storage();
 
   void set_clustering_method(
-      pfi::lang::shared_ptr<clustering_method> clustering_method);
+      jubatus::util::lang::shared_ptr<clustering_method> clustering_method);
 
   void register_mixables_to_holder(framework::mixable_holder& mixable_holder);
   std::string type() const;
@@ -83,10 +83,10 @@ class clustering {
   std::string name_;
   std::string method_;
 
-  pfi::lang::shared_ptr<clustering_method> clustering_method_;
-  pfi::lang::shared_ptr<mixable_storage> storage_;
+  jubatus::util::lang::shared_ptr<clustering_method> clustering_method_;
+  jubatus::util::lang::shared_ptr<mixable_storage> storage_;
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Archive>
   void serialize(Archive &ar) {
     ar & config_;

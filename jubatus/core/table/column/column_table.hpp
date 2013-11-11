@@ -25,12 +25,12 @@
 #include <utility>
 #include <iostream>
 
-#include <pficommon/lang/cast.h>
-#include <pficommon/lang/demangle.h>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/lang/demangle.h"
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/concurrent/rwmutex.h"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../../common/assert.hpp"
 #include "../../common/exception.hpp"
 #include "../storage_exception.hpp"
@@ -52,7 +52,7 @@ class invalid_row_set
 
 
 class column_table {
-  typedef pfi::data::unordered_map<std::string, uint64_t> index_table;
+  typedef jubatus::util::data::unordered_map<std::string, uint64_t> index_table;
 
  public:
   typedef std::pair<owner, uint64_t> version_t;
@@ -71,10 +71,10 @@ class column_table {
     if (columns_.size() != 1) {
       throw length_unmatch_exception(
           "tuple's length unmatch, expected " +
-          pfi::lang::lexical_cast<std::string>(tuples_) + " tuples.");
+          jubatus::util::lang::lexical_cast<std::string>(tuples_) + " tuples.");
     }
     // check already exists
-    pfi::concurrent::scoped_wlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_wlock lk(table_lock_);
     index_table::const_iterator it = index_.find(key);
     const bool not_found = it == index_.end();
     if (not_found) {
@@ -101,11 +101,11 @@ class column_table {
     if (columns_.size() != 2) {
       throw length_unmatch_exception(
           "tuple's length unmatch, expected " +
-          pfi::lang::lexical_cast<std::string>(tuples_) + " tuples.");
+          jubatus::util::lang::lexical_cast<std::string>(tuples_) + " tuples.");
     }
 
     // check already exists */
-    pfi::concurrent::scoped_wlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_wlock lk(table_lock_);
     index_table::const_iterator it = index_.find(key);
     const bool not_found = it == index_.end();
     if (not_found) {
@@ -136,7 +136,7 @@ class column_table {
       const owner& o,
       size_t colum_id,
       const T& v) {
-    pfi::concurrent::scoped_wlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_wlock lk(table_lock_);
     index_table::iterator it = index_.find(key);
     if (tuples_ < colum_id || it == index_.end()) {
       return false;
@@ -149,7 +149,7 @@ class column_table {
   }
 
   std::string get_key(uint64_t key_id) const {
-    pfi::concurrent::scoped_rlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     if (tuples_ <= key_id) {
       return "";
     }
@@ -157,7 +157,7 @@ class column_table {
   }
 
   void scan_clock() {
-    pfi::concurrent::scoped_wlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_wlock lk(table_lock_);
     uint64_t max_clock = 0;
     for (std::vector<version_t>::const_iterator it = versions_.begin();
          it != versions_.end(); ++it) {
@@ -198,12 +198,12 @@ class column_table {
   const_bit_vector_column& get_bit_vector_column(size_t column_id) const;
 
   uint64_t size() const {
-    pfi::concurrent::scoped_rlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     return tuples_;
   }
 
   void dump() const {
-    pfi::concurrent::scoped_rlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     std::cout << "schema is ";
     for (std::vector<detail::abstract_column>::const_iterator it =
            columns_.begin();
@@ -213,7 +213,7 @@ class column_table {
     }
   }
   std::string dump_json() const {
-    pfi::concurrent::scoped_rlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     std::stringstream ss;
     ss << tuples_;
     return ss.str();
@@ -222,7 +222,7 @@ class column_table {
   std::pair<bool, uint64_t> exact_match(const std::string& prefix) const;
 
   friend std::ostream& operator<<(std::ostream& os, const column_table& tbl) {
-    pfi::concurrent::scoped_rlock lk(tbl.table_lock_);
+    jubatus::util::concurrent::scoped_rlock lk(tbl.table_lock_);
     os << "total size:" << tbl.tuples_ << std::endl;
     os << "types: vesions|";
     for (size_t j = 0; j < tbl.columns_.size(); ++j) {
@@ -242,7 +242,7 @@ class column_table {
   }
 
   version_t get_version(uint64_t index) const {
-    pfi::concurrent::scoped_rlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     return versions_[index];
   }
 
@@ -251,7 +251,7 @@ class column_table {
     msgpack::packer<msgpack::sbuffer> pk(&sb);
     pk.pack_array(3);  // [key, [owner, id], [data]]
 
-    pfi::concurrent::scoped_rlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     if (tuples_ <= id) {
       return "";
     }
@@ -271,7 +271,7 @@ class column_table {
     const std::string& key = o.via.array.ptr[0].as<std::string>();
     version_t set_version = o.via.array.ptr[1].as<version_t>();
 
-    pfi::concurrent::scoped_wlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_wlock lk(table_lock_);
     const msgpack::object& dat = o.via.array.ptr[2];
     index_table::iterator it = index_.find(key);
     if (it == index_.end()) {  // did not exist, append
@@ -315,7 +315,7 @@ class column_table {
   }
 
   bool update_clock(const std::string& target, const owner& o) {
-    pfi::concurrent::scoped_wlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_wlock lk(table_lock_);
     index_table::const_iterator it = index_.find(target);
     if (it == index_.end()) {
       return false;
@@ -326,7 +326,7 @@ class column_table {
   }
 
   bool update_clock(const uint64_t index, const owner& o) {
-    pfi::concurrent::scoped_wlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_wlock lk(table_lock_);
     if (size() < index) {
       return false;
     }
@@ -336,7 +336,7 @@ class column_table {
   }
 
   version_t get_clock(const std::string& target) const {
-    pfi::concurrent::scoped_rlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     index_table::const_iterator it = index_.find(target);
     if (it == index_.end()) {
       return version_t();
@@ -345,7 +345,7 @@ class column_table {
   }
 
   version_t get_clock(const uint64_t index) const {
-    pfi::concurrent::scoped_rlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     if (size() < index) {
       return version_t();
     }
@@ -353,7 +353,7 @@ class column_table {
   }
 
   bool delete_row(const std::string& target) {
-    pfi::concurrent::scoped_wlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_wlock lk(table_lock_);
     index_table::const_iterator it = index_.find(target);
     if (it == index_.end()) {
       return false;
@@ -363,7 +363,7 @@ class column_table {
   }
 
   bool delete_row(uint64_t index) {
-    pfi::concurrent::scoped_wlock lk(table_lock_);
+    jubatus::util::concurrent::scoped_wlock lk(table_lock_);
     if (size() <= index) {
       return false;
     }
@@ -386,7 +386,7 @@ class column_table {
   std::vector<std::string> keys_;
   std::vector<version_t> versions_;
   std::vector<detail::abstract_column> columns_;
-  mutable pfi::concurrent::rw_mutex table_lock_;
+  mutable jubatus::util::concurrent::rw_mutex table_lock_;
   uint64_t tuples_;
   uint64_t clock_;
   index_table index_;
@@ -423,7 +423,7 @@ class column_table {
     JUBATUS_ASSERT_EQ(tuples_, versions_.size(), "");
   }
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(keys_)

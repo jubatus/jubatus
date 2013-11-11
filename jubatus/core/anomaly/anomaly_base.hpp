@@ -20,8 +20,8 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../common/type.hpp"
 #include "../framework/mixable.hpp"

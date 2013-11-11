@@ -18,7 +18,7 @@
 #define JUBATUS_CORE_FV_CONVERTER_SUFFIX_MATCH_HPP_
 
 #include <string>
-#include <pficommon/data/string/utility.h>
+#include "jubatus/util/data/string/utility.h"
 #include "key_matcher.hpp"
 
 namespace jubatus {
@@ -34,7 +34,7 @@ class suffix_match : public key_matcher {
   }
 
   bool match(const std::string& key) {
-    return pfi::data::string::ends_with(key, suffix_);
+    return jubatus::util::data::string::ends_with(key, suffix_);
   }
 
  private:

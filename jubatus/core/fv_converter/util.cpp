@@ -17,7 +17,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 #include "exception.hpp"
 #include "util.hpp"
 
@@ -53,7 +53,7 @@ int get_int_or_die(
     const std::string& key) {
   const std::string& s = get_or_die(params, key);
   try {
-    return pfi::lang::lexical_cast<int>(s);
+    return jubatus::util::lang::lexical_cast<int>(s);
   } catch (const std::bad_cast& e) {
     throw JUBATUS_EXCEPTION(converter_exception(
         std::string("\"" + key + "\" must be an integer value: " + s)));

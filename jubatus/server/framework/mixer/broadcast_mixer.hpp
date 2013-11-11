@@ -30,7 +30,7 @@ namespace mixer {
 class broadcast_mixer : public push_mixer {
  public:
   broadcast_mixer(
-      pfi::lang::shared_ptr<push_communication> communication,
+      jubatus::util::lang::shared_ptr<push_communication> communication,
       unsigned int count_threshold,
       unsigned int tick_threshold,
       const std::pair<std::string, int>& my_id)

@@ -24,7 +24,7 @@ def build(bld):
     ],
     target = 'jubatus_clustering',
     includes = '.',
-    use = 'PFICOMMON MSGPACK'
+    use = 'jubatus_util MSGPACK'
     )
   test_cases = os.listdir("jubatus/core/clustering");
   for t in test_cases:
@@ -39,5 +39,5 @@ def build(bld):
         ],
         target=target,
         includes=".",
-        use="PFICOMMON jubatus_clustering",
+        use="jubatus_util jubatus_clustering",
       );

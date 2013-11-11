@@ -30,14 +30,14 @@ class clustering_serv : public framework::server_base {
  public:
   clustering_serv(
       const framework::server_argv& a,
-      const pfi::lang::shared_ptr<common::lock_service>& zk);
+      const jubatus::util::lang::shared_ptr<common::lock_service>& zk);
   virtual ~clustering_serv();
 
   framework::mixer::mixer* get_mixer() const {
     return mixer_.get();
   }
 
-  pfi::lang::shared_ptr<core::framework::mixable_holder>
+  jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
       get_mixable_holder() const {
     return clustering_->get_mixable_holder();
   }
@@ -63,8 +63,8 @@ class clustering_serv : public framework::server_base {
   void check_set_config() const;
 
  private:
-  pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<core::driver::clustering> clustering_;
+  jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
+  jubatus::util::lang::shared_ptr<core::driver::clustering> clustering_;
   std::string config_;
 };
 

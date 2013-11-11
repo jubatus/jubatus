@@ -21,7 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 #include "dynamic_loader.hpp"
 #include "binary_feature.hpp"
 
@@ -43,7 +43,7 @@ class dynamic_binary_feature : public binary_feature {
 
  private:
   dynamic_loader loader_;
-  pfi::lang::scoped_ptr<binary_feature> impl_;
+  jubatus::util::lang::scoped_ptr<binary_feature> impl_;
 };
 
 }  // namespace fv_converter

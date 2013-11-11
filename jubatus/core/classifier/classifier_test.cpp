@@ -22,7 +22,7 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 
 #include "classifier_factory.hpp"
 #include "classifier.hpp"
@@ -34,8 +34,8 @@
 using std::pair;
 using std::string;
 using std::vector;
-using pfi::text::json::to_json;
-using pfi::lang::lexical_cast;
+using jubatus::util::text::json::to_json;
+using jubatus::util::lang::lexical_cast;
 using jubatus::core::storage::local_storage;
 
 namespace jubatus {
@@ -92,7 +92,7 @@ common::sfv_t convert(vector<double>& v) {
 }
 
 TYPED_TEST_P(classifier_test, random) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   classifier_base::storage_ptr s(new local_storage);
   TypeParam p(s);
 
@@ -113,7 +113,7 @@ TYPED_TEST_P(classifier_test, random) {
 }
 
 TYPED_TEST_P(classifier_test, random3) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   classifier_base::storage_ptr s(new local_storage);
   TypeParam p(s);
 

@@ -21,9 +21,9 @@
 #include <utility>
 #include <vector>
 #include <msgpack.hpp>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_map.h"
 #include "../common/key_manager.hpp"
 #include "../common/unordered_map.hpp"
 #include "storage_type.hpp"
@@ -56,7 +56,7 @@ class sparse_matrix_storage {
   void clear();
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(tbl_) & MEMBER(column2id_);

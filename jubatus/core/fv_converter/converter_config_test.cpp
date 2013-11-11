@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/text/json.h"
 #include "converter_config.hpp"
 #include "datum.hpp"
 #include "datum_to_fv_converter.hpp"
@@ -29,7 +29,7 @@
 
 using std::map;
 using std::string;
-using pfi::data::optional;
+using jubatus::util::data::optional;
 
 namespace jubatus {
 namespace core {
@@ -39,7 +39,7 @@ TEST(converter_config, config) {
   try {
     std::ifstream ifs("./test_input/config.json");
     converter_config config;
-    ifs >> pfi::text::json::via_json(config);
+    ifs >> jubatus::util::text::json::via_json(config);
 
     datum_to_fv_converter conv;
     initialize_converter(config, conv);
@@ -135,8 +135,8 @@ TEST(converter_config, hash_negative) {
 }
 
 TEST(make_fv_converter, empty_config) {
-  pfi::text::json::json js(new pfi::text::json::json_object);
-  converter_config config = pfi::text::json::json_cast<converter_config>(js);
+  jubatus::util::text::json::json js(new jubatus::util::text::json::json_object);
+  converter_config config = jubatus::util::text::json::json_cast<converter_config>(js);
   datum_to_fv_converter conv;
   initialize_converter(config, conv);
 

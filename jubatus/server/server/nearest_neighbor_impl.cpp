@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../../server/framework.hpp"
 #include "nearest_neighbor_serv.hpp"
@@ -21,36 +21,36 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
     p_(new jubatus::server::framework::server_helper<nearest_neighbor_serv>(a,
         true)) {
 
-    rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(
+    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &nearest_neighbor_impl::clear, this));
     rpc_server::add<bool(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("set_row", pfi::lang::bind(
-        &nearest_neighbor_impl::set_row, this, pfi::lang::_2, pfi::lang::_3));
+        jubatus::core::fv_converter::datum)>("set_row", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::set_row, this, jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
-        std::string, uint32_t)>("neighbor_row_from_id", pfi::lang::bind(
-        &nearest_neighbor_impl::neighbor_row_from_id, this, pfi::lang::_2,
-        pfi::lang::_3));
+        std::string, uint32_t)>("neighbor_row_from_id", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::neighbor_row_from_id, this, jubatus::util::lang::_2,
+        jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
         jubatus::core::fv_converter::datum, uint32_t)>("neighbor_row_from_data",
-        pfi::lang::bind(&nearest_neighbor_impl::neighbor_row_from_data, this,
-        pfi::lang::_2, pfi::lang::_3));
+        jubatus::util::lang::bind(&nearest_neighbor_impl::neighbor_row_from_data, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
-        std::string, int32_t)>("similar_row_from_id", pfi::lang::bind(
-        &nearest_neighbor_impl::similar_row_from_id, this, pfi::lang::_2,
-        pfi::lang::_3));
+        std::string, int32_t)>("similar_row_from_id", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::similar_row_from_id, this, jubatus::util::lang::_2,
+        jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
         jubatus::core::fv_converter::datum, int32_t)>("similar_row_from_data",
-        pfi::lang::bind(&nearest_neighbor_impl::similar_row_from_data, this,
-        pfi::lang::_2, pfi::lang::_3));
+        jubatus::util::lang::bind(&nearest_neighbor_impl::similar_row_from_data, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
 
-    rpc_server::add<std::string(std::string)>("get_config", pfi::lang::bind(
+    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
         &nearest_neighbor_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save", pfi::lang::bind(
-        &nearest_neighbor_impl::save, this, pfi::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", pfi::lang::bind(
-        &nearest_neighbor_impl::load, this, pfi::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::save, this, jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::load, this, jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", pfi::lang::bind(
+        std::string)>("get_status", jubatus::util::lang::bind(
         &nearest_neighbor_impl::get_status, this));
   }
 
@@ -110,10 +110,10 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
   }
 
   int run() { return p_->start(*this); }
-  pfi::lang::shared_ptr<nearest_neighbor_serv> get_p() { return p_->server(); }
+  jubatus::util::lang::shared_ptr<nearest_neighbor_serv> get_p() { return p_->server(); }
 
  private:
-  pfi::lang::shared_ptr<jubatus::server::framework::server_helper<nearest_neighbor_serv> > p_;
+  jubatus::util::lang::shared_ptr<jubatus::server::framework::server_helper<nearest_neighbor_serv> > p_;
 };
 
 }  // namespace server

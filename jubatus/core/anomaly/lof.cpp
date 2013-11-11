@@ -21,17 +21,17 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/data/serialization.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/math/random.h"
 
 #include "../common/hash.hpp"
 #include "../storage/lsh_util.hpp"
 #include "../storage/lsh_vector.hpp"
 
 using jubatus::core::anomaly::lof;
-using pfi::data::unordered_map;
-using pfi::math::random::mtrand;
+using jubatus::util::data::unordered_map;
+using jubatus::util::math::random::mtrand;
 using std::isinf;
 using std::istream;
 using std::ostream;
@@ -72,7 +72,7 @@ lof::lof() {
 
 lof::lof(
     const lof_storage::config& config,
-    pfi::lang::shared_ptr<recommender::recommender_base> nn_engine)
+    jubatus::util::lang::shared_ptr<recommender::recommender_base> nn_engine)
     : mixable_storage_(new mixable_lof_storage),
       nn_engine_(nn_engine) {
   mixable_storage_->set_model(mixable_lof_storage::model_ptr(

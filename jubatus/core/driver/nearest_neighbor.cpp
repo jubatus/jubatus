@@ -25,8 +25,8 @@ namespace core {
 namespace driver {
 
 nearest_neighbor::nearest_neighbor(
-    pfi::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
-    pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
+    jubatus::util::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
+    jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new framework::mixable_holder),
       converter_(converter),
       nn_(nn) {

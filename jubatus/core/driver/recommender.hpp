@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../recommender/recommender_base.hpp"
 #include "../framework/mixable.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
@@ -32,11 +32,11 @@ namespace driver {
 class recommender {
  public:
   recommender(
-      pfi::lang::shared_ptr<core::recommender::recommender_base> method,
-      pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+      jubatus::util::lang::shared_ptr<core::recommender::recommender_base> method,
+      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~recommender();
 
-  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  jubatus::util::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
     return mixable_holder_;
   }
 
@@ -62,10 +62,10 @@ class recommender {
   std::vector<std::string> get_all_rows();
 
  private:
-  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
+  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  pfi::lang::shared_ptr<core::recommender::recommender_base> recommender_;
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  jubatus::util::lang::shared_ptr<core::recommender::recommender_base> recommender_;
 };
 
 }  // namespace driver

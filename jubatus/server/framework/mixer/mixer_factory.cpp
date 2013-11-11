@@ -17,7 +17,7 @@
 #include "mixer_factory.hpp"
 
 #include <string>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #ifdef HAVE_ZOOKEEPER_H
 #include "linear_mixer.hpp"
@@ -35,7 +35,7 @@ namespace mixer {
 
 mixer* create_mixer(
     const server_argv& a,
-    const pfi::lang::shared_ptr<common::lock_service>& zk) {
+    const jubatus::util::lang::shared_ptr<common::lock_service>& zk) {
 #ifdef HAVE_ZOOKEEPER_H
   const std::string& use_mixer = a.mixer;
   if (use_mixer == "linear_mixer") {

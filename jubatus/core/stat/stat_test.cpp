@@ -16,7 +16,7 @@
 
 #include <utility>
 #include <gtest/gtest.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/math/random.h"
 #include "stat.hpp"
 
 namespace jubatus {

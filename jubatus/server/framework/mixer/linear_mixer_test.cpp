@@ -26,7 +26,7 @@
 
 using std::string;
 using std::vector;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 using jubatus::core::common::byte_buffer;
 
 namespace jubatus {
@@ -59,8 +59,8 @@ class linear_communication_stub : public linear_communication {
  public:
   size_t update_members() { return 4; }
 
-  pfi::lang::shared_ptr<common::try_lockable> create_lock() {
-    return pfi::lang::shared_ptr<common::try_lockable>();
+  jubatus::util::lang::shared_ptr<common::try_lockable> create_lock() {
+    return jubatus::util::lang::shared_ptr<common::try_lockable>();
   }
 
   void get_diff(common::mprpc::rpc_result_object& result) const {
@@ -133,11 +133,11 @@ TEST(linear_mixer, mix_order) {
   shared_ptr<linear_communication_stub> com(new linear_communication_stub);
   linear_mixer m(com, 1, 1);
 
-  pfi::lang::shared_ptr<core::framework::mixable_holder> holder(
+  jubatus::util::lang::shared_ptr<core::framework::mixable_holder> holder(
       new core::framework::mixable_holder());
   m.set_mixable_holder(holder);
 
-  pfi::lang::shared_ptr<mixable_string> s(new mixable_string);
+  jubatus::util::lang::shared_ptr<mixable_string> s(new mixable_string);
   holder->register_mixable(s);
 
   m.mix();

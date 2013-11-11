@@ -20,8 +20,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "recommender_base.hpp"
 #include "recommender_mock_storage.hpp"
 
@@ -71,7 +71,7 @@ class recommender_mock : public recommender_base {
   void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack_impl(msgpack::object o);
 
-  pfi::lang::shared_ptr<mixable_recommender_mock_storage> mixable_storage_;
+  jubatus::util::lang::shared_ptr<mixable_recommender_mock_storage> mixable_storage_;
 };
 
 }  // namespace recommender

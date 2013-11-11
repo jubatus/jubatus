@@ -17,7 +17,7 @@
 #include <map>
 #include <string>
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 #include "dynamic_num_feature.hpp"
 #include "num_feature.hpp"
 

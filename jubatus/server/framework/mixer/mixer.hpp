@@ -17,7 +17,7 @@
 #ifndef JUBATUS_SERVER_FRAMEWORK_MIXER_MIXER_HPP_
 #define JUBATUS_SERVER_FRAMEWORK_MIXER_MIXER_HPP_
 
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../server_base.hpp"
 #include "../../common/mprpc/rpc_server.hpp"
 
@@ -45,7 +45,7 @@ class mixer {
 
   virtual void register_api(rpc_server_t& server) = 0;
   virtual void set_mixable_holder(
-      pfi::lang::shared_ptr<core::framework::mixable_holder>) = 0;
+      jubatus::util::lang::shared_ptr<core::framework::mixable_holder>) = 0;
 
   virtual void start() = 0;
   virtual void stop() = 0;

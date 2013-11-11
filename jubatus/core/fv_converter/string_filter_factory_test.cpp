@@ -31,7 +31,7 @@ TEST(string_filter_factory, trivial) {
   p["pattern"] = ".*";
   p["replace"] = "";
 
-  pfi::lang::shared_ptr<string_filter> filter(f.create("regexp", p));
+  jubatus::util::lang::shared_ptr<string_filter> filter(f.create("regexp", p));
   EXPECT_TRUE(typeid(*filter) == typeid(regexp_filter));
 }
 
@@ -53,7 +53,7 @@ TEST(string_filter_factory, dynamic) {
   ASSERT_THROW(f.create("dynamic", p), converter_exception);
 
   p["function"] = "create";
-  pfi::lang::shared_ptr<string_filter> s(f.create("dynamic", p));
+  jubatus::util::lang::shared_ptr<string_filter> s(f.create("dynamic", p));
 
   std::string in("hoge-hoge");
   std::string out;

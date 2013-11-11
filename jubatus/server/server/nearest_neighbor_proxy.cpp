@@ -19,10 +19,10 @@ int run_proxy(int argc, char* argv[]) {
   try {
     jubatus::server::framework::proxy k(
         jubatus::server::framework::proxy_argv(argc, argv, "nearest_neighbor"));
-    k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
+    k.register_async_broadcast<bool>("clear", jubatus::util::lang::function<bool(bool,
         bool)>(&jubatus::server::framework::all_and));
     k.register_async_cht<1, bool, jubatus::core::fv_converter::datum>("set_row",
-        pfi::lang::function<bool(bool, bool)>(
+        jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::pass<bool>));
     k.register_async_random<std::vector<std::pair<std::string, float> >,
         std::string, uint32_t>("neighbor_row_from_id");

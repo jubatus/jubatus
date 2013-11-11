@@ -21,7 +21,7 @@
 #include <string>
 #include <utility>
 
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../regression/regression_base.hpp"
 #include "../framework/mixable.hpp"
 #include "linear_function_mixer.hpp"
@@ -35,12 +35,12 @@ class regression {
  public:
   typedef core::regression::regression_base regression_base;
   regression(
-      pfi::lang::shared_ptr<storage::storage_base> model_storage,
-      pfi::lang::shared_ptr<regression_base> regression_method,
-      pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+      jubatus::util::lang::shared_ptr<storage::storage_base> model_storage,
+      jubatus::util::lang::shared_ptr<regression_base> regression_method,
+      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~regression();
 
-  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  jubatus::util::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
     return mixable_holder_;
   }
 
@@ -51,10 +51,10 @@ class regression {
   void clear();
 
  private:
-  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
+  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  pfi::lang::shared_ptr<jubatus::core::regression::regression_base> regression_;
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  jubatus::util::lang::shared_ptr<jubatus::core::regression::regression_base> regression_;
 };
 
 }  // namespace driver

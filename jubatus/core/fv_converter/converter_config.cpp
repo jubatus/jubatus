@@ -19,7 +19,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <pficommon/text/json.h>
+#include "jubatus/util/text/json.h"
 #include "except_match.hpp"
 #include "datum_to_fv_converter.hpp"
 #include "exception.hpp"
@@ -44,12 +44,12 @@ namespace fv_converter {
 
 namespace {
 
-typedef pfi::lang::shared_ptr<word_splitter> splitter_ptr;
-typedef pfi::lang::shared_ptr<key_matcher> matcher_ptr;
-typedef pfi::lang::shared_ptr<num_feature> num_feature_ptr;
-typedef pfi::lang::shared_ptr<binary_feature> binary_feature_ptr;
-typedef pfi::lang::shared_ptr<string_filter> string_filter_ptr;
-typedef pfi::lang::shared_ptr<num_filter> num_filter_ptr;
+typedef jubatus::util::lang::shared_ptr<word_splitter> splitter_ptr;
+typedef jubatus::util::lang::shared_ptr<key_matcher> matcher_ptr;
+typedef jubatus::util::lang::shared_ptr<num_feature> num_feature_ptr;
+typedef jubatus::util::lang::shared_ptr<binary_feature> binary_feature_ptr;
+typedef jubatus::util::lang::shared_ptr<string_filter> string_filter_ptr;
+typedef jubatus::util::lang::shared_ptr<num_filter> num_filter_ptr;
 
 splitter_weight_type make_weight_type(
     const std::string& sample, const std::string& global) {
@@ -93,7 +93,7 @@ std::string get_or_die(
 
 matcher_ptr create_key_matcher(
     const std::string& key,
-    const pfi::data::optional<std::string>& except) {
+    const jubatus::util::data::optional<std::string>& except) {
   key_matcher_factory f;
   if (except) {
     matcher_ptr m1(f.create_matcher(key));
@@ -346,9 +346,9 @@ void initialize_converter(
   }
 }
 
-pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
+jubatus::util::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
     const converter_config& config) {
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
       new fv_converter::datum_to_fv_converter);
   fv_converter::initialize_converter(config, *converter);
   return converter;

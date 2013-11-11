@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include <pficommon/lang/bind.h>
+#include "jubatus/util/lang/bind.h"
 
 #include "../../server/common/mprpc/rpc_server.hpp"
 #include "nearest_neighbor_types.hpp"
@@ -21,34 +21,34 @@ class nearest_neighbor : public jubatus::server::common::mprpc::rpc_server {
  public:
   explicit nearest_neighbor(double timeout_sec) : rpc_server(timeout_sec) {
     Impl* impl = static_cast<Impl*>(this);
-    rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(&Impl::clear,
-        impl, pfi::lang::_1));
+    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(&Impl::clear,
+        impl, jubatus::util::lang::_1));
     rpc_server::add<bool(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("set_row", pfi::lang::bind(
-        &Impl::set_row, impl, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
+        jubatus::core::fv_converter::datum)>("set_row", jubatus::util::lang::bind(
+        &Impl::set_row, impl, jubatus::util::lang::_1, jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<neighbor_result(std::string, std::string, uint32_t)>(
-        "neighbor_row_from_id", pfi::lang::bind(&Impl::neighbor_row_from_id,
-        impl, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
+        "neighbor_row_from_id", jubatus::util::lang::bind(&Impl::neighbor_row_from_id,
+        impl, jubatus::util::lang::_1, jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<neighbor_result(std::string,
         jubatus::core::fv_converter::datum, uint32_t)>("neighbor_row_from_data",
-        pfi::lang::bind(&Impl::neighbor_row_from_data, impl, pfi::lang::_1,
-        pfi::lang::_2, pfi::lang::_3));
+        jubatus::util::lang::bind(&Impl::neighbor_row_from_data, impl, jubatus::util::lang::_1,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<neighbor_result(std::string, std::string, int32_t)>(
-        "similar_row_from_id", pfi::lang::bind(&Impl::similar_row_from_id, impl,
-        pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
+        "similar_row_from_id", jubatus::util::lang::bind(&Impl::similar_row_from_id, impl,
+        jubatus::util::lang::_1, jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<neighbor_result(std::string,
         jubatus::core::fv_converter::datum, int32_t)>("similar_row_from_data",
-        pfi::lang::bind(&Impl::similar_row_from_data, impl, pfi::lang::_1,
-        pfi::lang::_2, pfi::lang::_3));
-    rpc_server::add<bool(std::string, std::string)>("save", pfi::lang::bind(
-        &Impl::save, impl, pfi::lang::_1, pfi::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", pfi::lang::bind(
-        &Impl::load, impl, pfi::lang::_1, pfi::lang::_2));
+        jubatus::util::lang::bind(&Impl::similar_row_from_data, impl, jubatus::util::lang::_1,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
+    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
+        &Impl::save, impl, jubatus::util::lang::_1, jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
+        &Impl::load, impl, jubatus::util::lang::_1, jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", pfi::lang::bind(&Impl::get_status, impl,
-        pfi::lang::_1));
-    rpc_server::add<std::string(std::string)>("get_config", pfi::lang::bind(
-        &Impl::get_config, impl, pfi::lang::_1));
+        std::string)>("get_status", jubatus::util::lang::bind(&Impl::get_status, impl,
+        jubatus::util::lang::_1));
+    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
+        &Impl::get_config, impl, jubatus::util::lang::_1));
   }
 };
 

@@ -20,14 +20,14 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/text/json.h"
 #include "../common/jsonconfig.hpp"
 #include "../recommender/recommender.hpp"
 #include "lof_storage.hpp"
 
-using pfi::data::unordered_map;
-using pfi::lang::shared_ptr;
+using jubatus::util::data::unordered_map;
+using jubatus::util::lang::shared_ptr;
 using std::pair;
 using std::string;
 using std::vector;

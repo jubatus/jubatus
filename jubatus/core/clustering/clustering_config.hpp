@@ -19,8 +19,8 @@
 
 #include <string>
 #include <msgpack.hpp>
-#include <pficommon/data/serialization.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/text/json.h"
 
 namespace jubatus {
 namespace core {

@@ -20,8 +20,8 @@
 #include <utility>
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/lang/cast.h"
 #include "../common/jsonconfig.hpp"
 #include "nearest_neighbor_base.hpp"
 #include "nearest_neighbor_factory.hpp"
@@ -29,7 +29,7 @@
 using std::map;
 using std::string;
 using std::vector;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -65,12 +65,12 @@ class nearest_neighbor_test
       map<string, string> param = GetParam();
       string name = param["nearest_neighbor:name"];
       param.erase("nearest_neighbor:name");
-      using pfi::text::json::json;
-      json config_js(new pfi::text::json::json_object);
+      using jubatus::util::text::json::json;
+      json config_js(new jubatus::util::text::json::json_object);
       for (map<string, string>::iterator it = param.begin();
            it != param.end(); ++it) {
-        config_js.add(it->first, json(new pfi::text::json::json_integer(
-            pfi::lang::lexical_cast<int>(it->second))));
+        config_js.add(it->first, json(new jubatus::util::text::json::json_integer(
+            jubatus::util::lang::lexical_cast<int>(it->second))));
       }
 
       using common::jsonconfig::config;
@@ -80,7 +80,7 @@ class nearest_neighbor_test
           name, config(config_js, ""), table_, "localhost");
     } catch (common::jsonconfig::cast_check_error& e) {
       std::cout << "In Setup():" <<e.what() << '\n';
-      vector<pfi::lang::shared_ptr<common::jsonconfig::config_error> > v =
+      vector<jubatus::util::lang::shared_ptr<common::jsonconfig::config_error> > v =
           e.errors();
       for (size_t i = 0; i < v.size(); ++i) {
         std::cout << v[i]->what() << '\n';

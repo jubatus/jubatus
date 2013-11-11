@@ -19,7 +19,7 @@
 
 #include <algorithm>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../third_party/Eigen/Sparse"
 
 namespace jubatus {
@@ -31,7 +31,7 @@ typedef Eigen::SparseMatrix<double> eigen_smat_t;
 typedef Eigen::SimplicialCholesky<eigen_smat_t> eigen_solver_t;
 typedef std::vector<eigen_svec_t> eigen_svec_list_t;
 typedef std::vector<eigen_smat_t> eigen_smat_list_t;
-typedef std::vector<pfi::lang::shared_ptr<eigen_solver_t> > eigen_solver_list_t;
+typedef std::vector<jubatus::util::lang::shared_ptr<eigen_solver_t> > eigen_solver_list_t;
 
 struct eigen_wsvec_t {
   double weight;

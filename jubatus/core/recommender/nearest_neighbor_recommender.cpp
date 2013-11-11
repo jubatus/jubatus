@@ -19,7 +19,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
 #include "../common/exception.hpp"
 
 namespace jubatus {
@@ -27,7 +27,7 @@ namespace core {
 namespace recommender {
 
 nearest_neighbor_recommender::nearest_neighbor_recommender(
-    pfi::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+    jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
     nearest_neighbor_engine)
     : nearest_neighbor_engine_(nearest_neighbor_engine) {
 }

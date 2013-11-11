@@ -21,7 +21,7 @@
 #include "dynamic_num_feature.hpp"
 #include "util.hpp"
 
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {

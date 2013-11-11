@@ -52,7 +52,7 @@ void rpc_server::dispatch(msgpack::rpc::request req) {
 }
 
 void rpc_server::add_inner(const std::string& name,
-    pfi::lang::shared_ptr<invoker_base> invoker) {
+    jubatus::util::lang::shared_ptr<invoker_base> invoker) {
   funcs_[name] = invoker;
 }
 

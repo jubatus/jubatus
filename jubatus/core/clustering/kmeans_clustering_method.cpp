@@ -60,7 +60,7 @@ void kmeans_clustering_method::initialize_centers(wplist& points) {
 }
 
 void kmeans_clustering_method::do_batch_update(wplist& points) {
-  static pfi::math::random::mtrand r;
+  static jubatus::util::math::random::mtrand r;
   bool terminated = false;
   if (points.size() < k_) {
     return;

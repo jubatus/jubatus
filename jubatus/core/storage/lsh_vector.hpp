@@ -21,8 +21,8 @@
 #include <ostream>
 #include <utility>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/unordered_map.h"
 
 namespace jubatus {
 namespace core {
@@ -54,8 +54,8 @@ class lsh_vector {
   void swap(lsh_vector& lv);
 
  private:
-  friend class pfi::data::hash<lsh_vector>;
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::hash<lsh_vector>;
+  friend class jubatus::util::data::serialization::access;
 
   template <class Ar>
   void serialize(Ar& ar) {
@@ -76,9 +76,8 @@ inline std::ostream& operator<<(std::ostream& os, const lsh_vector& lv) {
 
 }  // namespace storage
 }  // namespace core
-}  // namespace jubatus
 
-namespace pfi {
+namespace util {
 namespace data {
 
 template<>
@@ -99,6 +98,7 @@ class hash<jubatus::core::storage::lsh_vector> {
 };
 
 }  // namespace data
-}  // namespace pfi
+}  // namespace util
+}  // namespace jubatus
 
 #endif  // JUBATUS_CORE_STORAGE_LSH_VECTOR_HPP_

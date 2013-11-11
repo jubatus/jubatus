@@ -16,7 +16,7 @@
 
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 #include "../common/type.hpp"
 #include "clustering.hpp"
 #include "clustering_config.hpp"
@@ -45,7 +45,7 @@ class model_gmm_test : public ::testing::Test {
     model_.reset(new clustering("test", "gmm", config_));
   }
 
-  pfi::lang::scoped_ptr<clustering> model_;
+  jubatus::util::lang::scoped_ptr<clustering> model_;
   clustering_config config_;
 };
 

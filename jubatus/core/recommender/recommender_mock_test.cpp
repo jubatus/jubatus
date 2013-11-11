@@ -19,7 +19,7 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 
 #include "recommender_mock.hpp"
 #include "recommender_mock_util.hpp"
@@ -27,7 +27,7 @@
 using std::pair;
 using std::string;
 using std::vector;
-using pfi::lang::scoped_ptr;
+using jubatus::util::lang::scoped_ptr;
 
 namespace jubatus {
 namespace core {

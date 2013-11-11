@@ -20,8 +20,8 @@
 #include <map>
 #include <string>
 #include <jubatus/msgpack/rpc/server.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/lang/function.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/lang/function.h"
 
 namespace jubatus {
 namespace server {
@@ -43,7 +43,7 @@ class invoker_base {
 // async var-arg method type
 template<typename Tuple>
 struct async_vmethod {
-  typedef pfi::lang::function<void(invoker_base::request_type, Tuple)> type;
+  typedef jubatus::util::lang::function<void(invoker_base::request_type, Tuple)> type;
 };
 
 // rpc_server
@@ -71,7 +71,7 @@ class rpc_server : public msgpack::rpc::dispatcher {
   // synchronous method registration
   template<typename T> void add(
       const std::string& name,
-      const pfi::lang::function<T>& f);
+      const jubatus::util::lang::function<T>& f);
 
   // *asynchronous* *var-arg* method registration
   //   where var-arg method means a method receive its arguments
@@ -92,11 +92,11 @@ class rpc_server : public msgpack::rpc::dispatcher {
   msgpack::rpc::server instance_;
 
  private:
-  typedef std::map<std::string, pfi::lang::shared_ptr<invoker_base> > func_map;
+  typedef std::map<std::string, jubatus::util::lang::shared_ptr<invoker_base> > func_map;
 
   void add_inner(
       const std::string& name,
-      pfi::lang::shared_ptr<invoker_base> invoker);
+      jubatus::util::lang::shared_ptr<invoker_base> invoker);
 
   func_map funcs_;
 };
@@ -107,7 +107,7 @@ class rpc_server : public msgpack::rpc::dispatcher {
 template<typename R>
 class invoker0 : public invoker_base {
  public:
-  typedef pfi::lang::function<R()> func_type;
+  typedef jubatus::util::lang::function<R()> func_type;
 
   explicit invoker0(const func_type& f)
       : f_(f) {
@@ -122,15 +122,15 @@ class invoker0 : public invoker_base {
 };
 
 template<typename R>
-pfi::lang::shared_ptr<invoker_base> make_invoker(
-    const pfi::lang::function<R()>& f) {
-  return pfi::lang::shared_ptr<invoker_base>(new invoker0<R>(f));
+jubatus::util::lang::shared_ptr<invoker_base> make_invoker(
+    const jubatus::util::lang::function<R()>& f) {
+  return jubatus::util::lang::shared_ptr<invoker_base>(new invoker0<R>(f));
 }
 
 template<typename R, typename A1>
 class invoker1 : public invoker_base {
  public:
-  typedef pfi::lang::function<R(A1)> func_type;
+  typedef jubatus::util::lang::function<R(A1)> func_type;
 
   explicit invoker1(const func_type& f)
       : f_(f) {
@@ -147,15 +147,15 @@ class invoker1 : public invoker_base {
 };
 
 template<typename R, typename A1>
-pfi::lang::shared_ptr<invoker_base> make_invoker(
-    const pfi::lang::function<R(A1)>& f) {
-  return pfi::lang::shared_ptr<invoker_base>(new invoker1<R, A1>(f));
+jubatus::util::lang::shared_ptr<invoker_base> make_invoker(
+    const jubatus::util::lang::function<R(A1)>& f) {
+  return jubatus::util::lang::shared_ptr<invoker_base>(new invoker1<R, A1>(f));
 }
 
 template<typename R, typename A1, typename A2>
 class invoker2 : public invoker_base {
  public:
-  typedef pfi::lang::function<R(A1, A2)> func_type;
+  typedef jubatus::util::lang::function<R(A1, A2)> func_type;
 
   explicit invoker2(const func_type& f)
       : f_(f) {
@@ -172,15 +172,15 @@ class invoker2 : public invoker_base {
 };
 
 template<typename R, typename A1, typename A2>
-pfi::lang::shared_ptr<invoker_base> make_invoker(
-    const pfi::lang::function<R(A1, A2)>& f) {
-  return pfi::lang::shared_ptr<invoker_base>(new invoker2<R, A1, A2>(f));
+jubatus::util::lang::shared_ptr<invoker_base> make_invoker(
+    const jubatus::util::lang::function<R(A1, A2)>& f) {
+  return jubatus::util::lang::shared_ptr<invoker_base>(new invoker2<R, A1, A2>(f));
 }
 
 template<typename R, typename A1, typename A2, typename A3>
 class invoker3 : public invoker_base {
  public:
-  typedef pfi::lang::function<R(A1, A2, A3)> func_type;
+  typedef jubatus::util::lang::function<R(A1, A2, A3)> func_type;
 
   explicit invoker3(const func_type& f)
       : f_(f) {
@@ -200,15 +200,15 @@ class invoker3 : public invoker_base {
 };
 
 template<typename R, typename A1, typename A2, typename A3>
-pfi::lang::shared_ptr<invoker_base> make_invoker(
-    const pfi::lang::function<R(A1, A2, A3)>& f) {
-  return pfi::lang::shared_ptr<invoker_base>(new invoker3<R, A1, A2, A3>(f));
+jubatus::util::lang::shared_ptr<invoker_base> make_invoker(
+    const jubatus::util::lang::function<R(A1, A2, A3)>& f) {
+  return jubatus::util::lang::shared_ptr<invoker_base>(new invoker3<R, A1, A2, A3>(f));
 }
 
 template<typename R, typename A1, typename A2, typename A3, typename A4>
 class invoker4 : public invoker_base {
  public:
-  typedef pfi::lang::function<R(A1, A2, A3, A4)> func_type;
+  typedef jubatus::util::lang::function<R(A1, A2, A3, A4)> func_type;
 
   explicit invoker4(const func_type& f)
       : f_(f) {
@@ -229,9 +229,9 @@ class invoker4 : public invoker_base {
 };
 
 template<typename R, typename A1, typename A2, typename A3, typename A4>
-pfi::lang::shared_ptr<invoker_base> make_invoker(
-    const pfi::lang::function<R(A1, A2, A3, A4)>& f) {
-  return pfi::lang::shared_ptr<invoker_base>(
+jubatus::util::lang::shared_ptr<invoker_base> make_invoker(
+    const jubatus::util::lang::function<R(A1, A2, A3, A4)>& f) {
+  return jubatus::util::lang::shared_ptr<invoker_base>(
       new invoker4<R, A1, A2, A3, A4>(f));
 }
 
@@ -263,9 +263,9 @@ class async_vmethod_invoker1 : public invoker_base {
 };
 
 template<typename Tuple>
-pfi::lang::shared_ptr<invoker_base> make_async_vmethod_invoker(
+jubatus::util::lang::shared_ptr<invoker_base> make_async_vmethod_invoker(
     const typename async_vmethod<Tuple>::type& f) {
-  return pfi::lang::shared_ptr<invoker_base>(
+  return jubatus::util::lang::shared_ptr<invoker_base>(
       new async_vmethod_invoker1<Tuple>(f));
 }
 
@@ -273,7 +273,7 @@ pfi::lang::shared_ptr<invoker_base> make_async_vmethod_invoker(
 template<typename T>
 void rpc_server::add(
     const std::string& name,
-    const pfi::lang::function<T>& f) {
+    const jubatus::util::lang::function<T>& f) {
   add_inner(name, make_invoker(f));
 }
 

@@ -21,7 +21,7 @@
 
 using std::string;
 using std::vector;
-using pfi::data::unordered_map;
+using jubatus::util::data::unordered_map;
 
 namespace jubatus {
 namespace core {
@@ -63,7 +63,7 @@ const string& key_manager::get_key(const uint64_t id) const {
 }
 
 void key_manager::clear() {
-  pfi::data::unordered_map<std::string, uint64_t>().swap(key2id_);
+  jubatus::util::data::unordered_map<std::string, uint64_t>().swap(key2id_);
   std::vector<std::string>().swap(id2key_);
 }
 

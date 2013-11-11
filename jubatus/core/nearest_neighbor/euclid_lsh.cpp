@@ -21,7 +21,7 @@
 #include <vector>
 #include <utility>
 #include <cmath>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 #include "../storage/fixed_size_heap.hpp"
 #include "lsh_function.hpp"
 
@@ -30,7 +30,7 @@ using std::pair;
 using std::make_pair;
 using std::string;
 using std::vector;
-using pfi::lang::lexical_cast;
+using jubatus::util::lang::lexical_cast;
 using jubatus::core::table::column_table;
 using jubatus::core::table::column_type;
 using jubatus::core::table::owner;
@@ -71,7 +71,7 @@ float calc_euclidean_distance(
 
 euclid_lsh::euclid_lsh(
     const config& conf,
-    pfi::lang::shared_ptr<column_table> table,
+    jubatus::util::lang::shared_ptr<column_table> table,
     const std::string& id)
     : nearest_neighbor_base(table, id) {
   set_config(conf);
@@ -83,7 +83,7 @@ euclid_lsh::euclid_lsh(
 
 euclid_lsh::euclid_lsh(
     const config& conf,
-    pfi::lang::shared_ptr<column_table> table,
+    jubatus::util::lang::shared_ptr<column_table> table,
     vector<column_type>& schema,
     const std::string& id)
     : nearest_neighbor_base(table, id) {
@@ -145,7 +145,7 @@ void euclid_lsh::neighbor_row_from_hash(
     float norm,
     vector<pair<string, float> >& ids,
     uint64_t ret_num) const {
-  pfi::lang::shared_ptr<const column_table> table = get_const_table();
+  jubatus::util::lang::shared_ptr<const column_table> table = get_const_table();
 
   jubatus::core::storage::fixed_size_heap<pair<float, size_t> > heap(ret_num);
   {

@@ -18,8 +18,8 @@
 
 #include <string>
 
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
 
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
@@ -28,8 +28,8 @@
 
 using jubatus::core::common::jsonconfig::config;
 using jubatus::core::common::jsonconfig::config_cast_check;
-using pfi::lang::shared_ptr;
-using pfi::text::json::json;
+using jubatus::util::lang::shared_ptr;
+using jubatus::util::text::json::json;
 using std::string;
 
 namespace jubatus {
@@ -77,12 +77,12 @@ shared_ptr<anomaly_base> anomaly_factory::create_anomaly(
     lof_conf.nearest_neighbor_num = conf.nearest_neighbor_num;
     lof_conf.reverse_nearest_neighbor_num = conf.nearest_neighbor_num;
 
-    pfi::lang::shared_ptr<table::column_table> nearest_neighbor_table(
+    jubatus::util::lang::shared_ptr<table::column_table> nearest_neighbor_table(
         new table::column_table);
-    pfi::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+    jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
         nearest_neighbor_engine(nearest_neighbor::create_nearest_neighbor(
             conf.method, conf.parameter, nearest_neighbor_table, id));
-    return pfi::lang::shared_ptr<anomaly_base>(
+    return jubatus::util::lang::shared_ptr<anomaly_base>(
         new light_lof(lof_conf, id, nearest_neighbor_engine));
   } else {
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));

@@ -29,7 +29,7 @@ def build(bld):
               'lsh_vector.cpp',
               'lsh_util.cpp',
               'lsh_index_storage.cpp']
-  use = 'PFICOMMON jubacommon MSGPACK'+libassert
+  use = 'jubatus_util jubacommon MSGPACK'+libassert
 
   bld.shlib(
     source = cppfiles,

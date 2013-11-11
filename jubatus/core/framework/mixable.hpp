@@ -22,8 +22,8 @@
 #include <vector>
 
 #include <msgpack.hpp>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/concurrent/rwmutex.h"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../common/exception.hpp"
 #include "../common/byte_buffer.hpp"
 #include "../common/assert.hpp"
@@ -60,7 +60,7 @@ class mixable0 {
 
 class mixable_holder {
  public:
-  typedef std::vector<pfi::lang::shared_ptr<mixable0> > mixable_list;
+  typedef std::vector<jubatus::util::lang::shared_ptr<mixable0> > mixable_list;
 
   mixable_holder() {
   }
@@ -68,7 +68,7 @@ class mixable_holder {
   virtual ~mixable_holder() {
   }
 
-  void register_mixable(pfi::lang::shared_ptr<mixable0> m) {
+  void register_mixable(jubatus::util::lang::shared_ptr<mixable0> m) {
     mixables_.push_back(m);
   }
 
@@ -76,7 +76,7 @@ class mixable_holder {
     return mixables_;
   }
 
-  pfi::concurrent::rw_mutex& rw_mutex() {
+  jubatus::util::concurrent::rw_mutex& rw_mutex() {
     return rw_mutex_;
   }
 
@@ -100,8 +100,8 @@ class mixable_holder {
   }
 
  protected:
-  pfi::concurrent::rw_mutex rw_mutex_;
-  std::vector<pfi::lang::shared_ptr<mixable0> > mixables_;
+  jubatus::util::concurrent::rw_mutex rw_mutex_;
+  std::vector<jubatus::util::lang::shared_ptr<mixable0> > mixables_;
 };
 
 template<typename Model, typename Diff, typename PullArg = std::string>
@@ -109,7 +109,7 @@ class mixable : public mixable0 {
  public:
   typedef Model model_type;
   typedef Diff diff_type;
-  typedef pfi::lang::shared_ptr<Model> model_ptr;
+  typedef jubatus::util::lang::shared_ptr<Model> model_ptr;
 
   virtual ~mixable() {
   }

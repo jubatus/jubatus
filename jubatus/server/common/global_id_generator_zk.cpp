@@ -16,7 +16,7 @@
 
 #include <string>
 
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "global_id_generator_base.hpp"
@@ -33,7 +33,7 @@ global_id_generator_zk::~global_id_generator_zk() {
 }
 
 void global_id_generator_zk::set_ls(
-    pfi::lang::shared_ptr<lock_service>& ls,
+    jubatus::util::lang::shared_ptr<lock_service>& ls,
     const std::string& path_prefix) {
   path_ = path_prefix + "/id_generator";
   ls_ = ls;

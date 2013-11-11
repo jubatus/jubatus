@@ -23,12 +23,12 @@
 #include <deque>
 #include <string>
 #include <utility>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/lang/enable_shared_from_this.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/concurrent/rwmutex.h"
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/lang/enable_shared_from_this.h"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../common/exception.hpp"
 #include "../common/unordered_map.hpp"
 #include "../framework/mixable.hpp"
@@ -53,7 +53,7 @@ class stat_error : public common::exception::jubaexception<stat_error> {
   std::string msg_;
 };
 
-class stat : public pfi::lang::enable_shared_from_this<stat> {
+class stat : public jubatus::util::lang::enable_shared_from_this<stat> {
  public:
   explicit stat(size_t window_size);
   virtual ~stat();
@@ -155,7 +155,7 @@ class stat : public pfi::lang::enable_shared_from_this<stat> {
       }
     }
 
-    friend class pfi::data::serialization::access;
+    friend class jubatus::util::data::serialization::access;
     template<class Archive>
     void serialize(Archive& ar) {
       ar & n_ & sum_ & sum2_ & max_ & min_;
@@ -171,10 +171,10 @@ class stat : public pfi::lang::enable_shared_from_this<stat> {
   };
 
   std::deque<std::pair<uint64_t, std::pair<std::string, double> > > window_;
-  pfi::data::unordered_map<std::string, stat_val> stats_;
+  jubatus::util::data::unordered_map<std::string, stat_val> stats_;
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
     ar & window_size_ & window_ & stats_ & e_ & n_;

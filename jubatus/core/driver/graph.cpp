@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../graph/graph_factory.hpp"
 #include "../common/vector_util.hpp"
@@ -34,7 +34,7 @@ using jubatus::core::graph::node_id_t;
 using jubatus::core::graph::edge_id_t;
 using jubatus::core::graph::preset_query;
 using jubatus::core::graph::property;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {

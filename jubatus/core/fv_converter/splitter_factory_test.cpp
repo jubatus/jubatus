@@ -45,7 +45,7 @@ TEST(splitter_factory, dynamic) {
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
 
   param["function"] = "create";
-  pfi::lang::shared_ptr<word_splitter> s(f.create("dynamic", param));
+  jubatus::util::lang::shared_ptr<word_splitter> s(f.create("dynamic", param));
 
   std::string d("hoge fuga");
   std::vector<std::pair<size_t, size_t> > bs;
@@ -69,7 +69,7 @@ TEST(splitter_factory, ngram) {
   ASSERT_THROW(f.create("ngram", param), converter_exception);
 
   param["char_num"] = "2";
-  pfi::lang::shared_ptr<word_splitter> s(f.create("ngram", param));
+  jubatus::util::lang::shared_ptr<word_splitter> s(f.create("ngram", param));
 }
 
 TEST(splitter_factory, regexp) {
@@ -87,11 +87,11 @@ TEST(splitter_factory, regexp) {
 
   param["pattern"] = "(.+)";
   param["group"] = "1";
-  pfi::lang::shared_ptr<word_splitter>(f.create("regexp", param));
+  jubatus::util::lang::shared_ptr<word_splitter>(f.create("regexp", param));
 
   param["pattern"] = "(.+)";
   param.erase("group");
-  pfi::lang::shared_ptr<word_splitter>(f.create("regexp", param));
+  jubatus::util::lang::shared_ptr<word_splitter>(f.create("regexp", param));
 }
 
 }  // namespace fv_converter

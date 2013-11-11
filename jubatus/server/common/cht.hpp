@@ -23,8 +23,8 @@
 #include <vector>
 #include <map>
 
-#include <pficommon/lang/cast.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "lock_service.hpp"
 
@@ -46,7 +46,7 @@ class cht {
       const std::string&);
 
   cht(
-      pfi::lang::shared_ptr<lock_service>,
+      jubatus::util::lang::shared_ptr<lock_service>,
       const std::string& type,
       const std::string& name);
 
@@ -61,7 +61,7 @@ class cht {
       const T& t,
       std::vector<std::pair<std::string, int> >& ret,
       size_t s) {
-    std::string k = pfi::lang::lexical_cast<std::string>(t);
+    std::string k = jubatus::util::lang::lexical_cast<std::string>(t);
     return find(k, ret, s);
   }
 
@@ -89,7 +89,7 @@ class cht {
 
   const std::string type_;
   const std::string name_;
-  pfi::lang::shared_ptr<lock_service> lock_service_;
+  jubatus::util::lang::shared_ptr<lock_service> lock_service_;
 };
 
 }  // namespace common

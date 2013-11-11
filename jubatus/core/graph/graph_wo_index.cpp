@@ -21,10 +21,10 @@
 #include <utility>
 #include <vector>
 
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_set.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_set.h"
+#include "jubatus/util/lang/cast.h"
 
 #include "graph_wo_index.hpp"
 
@@ -34,8 +34,8 @@ using std::pair;
 using std::string;
 using std::swap;
 using std::vector;
-using pfi::lang::lexical_cast;
-using pfi::data::unordered_set;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::data::unordered_set;
 
 namespace jubatus {
 namespace core {
@@ -711,9 +711,9 @@ void graph_wo_index::register_mixables_to_holder(
     framework::mixable_holder& holder) const {
   // TODO(beam2d): Remove this workaround. It requires separation of model
   // (storage) from this class.
-  pfi::lang::shared_ptr<mixable_graph_wo_index> mixable(
+  jubatus::util::lang::shared_ptr<mixable_graph_wo_index> mixable(
       new mixable_graph_wo_index);
-  mixable->set_model(pfi::lang::const_pointer_cast<graph_wo_index>(
+  mixable->set_model(jubatus::util::lang::const_pointer_cast<graph_wo_index>(
       shared_from_this()));
   holder.register_mixable(mixable);
 }

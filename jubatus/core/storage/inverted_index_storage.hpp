@@ -21,9 +21,9 @@
 #include <utility>
 #include <vector>
 #include <msgpack.hpp>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_map.h"
 #include "storage_type.hpp"
 #include "../common/type.hpp"
 #include "../common/unordered_map.hpp"
@@ -83,7 +83,7 @@ class inverted_index_storage {
       const tbl_t& tbl,
       bool& exist) const;
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(inv_) & MEMBER(inv_diff_) & MEMBER(column2norm_)
@@ -93,7 +93,7 @@ class inverted_index_storage {
   void add_inp_scores(
       const std::string& row,
       float val,
-      pfi::data::unordered_map<uint64_t, float>& scores) const;
+      jubatus::util::data::unordered_map<uint64_t, float>& scores) const;
 
   tbl_t inv_;
   tbl_t inv_diff_;

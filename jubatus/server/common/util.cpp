@@ -41,14 +41,14 @@
 #include <vector>
 
 #include <glog/logging.h>
-#include <pficommon/lang/exception.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/exception.h"
+#include "jubatus/util/text/json.h"
 
 #include "jubatus/core/common/exception.hpp"
 
 using std::string;
-using pfi::lang::lexical_cast;
-using pfi::lang::parse_error;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::parse_error;
 
 namespace jubatus {
 namespace server {

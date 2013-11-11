@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/core/driver/classifier.hpp"
 #include "classifier_types.hpp"
 #include "../framework/server_base.hpp"
@@ -32,14 +32,14 @@ class classifier_serv : public framework::server_base {
  public:
   classifier_serv(
       const framework::server_argv& a,
-      const pfi::lang::shared_ptr<common::lock_service>& zk);
+      const jubatus::util::lang::shared_ptr<common::lock_service>& zk);
   virtual ~classifier_serv();
 
   framework::mixer::mixer* get_mixer() const {
     return mixer_.get();
   }
 
-  pfi::lang::shared_ptr<core::framework::mixable_holder>
+  jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
     get_mixable_holder() const {
     return classifier_->get_mixable_holder();
   }
@@ -58,8 +58,8 @@ class classifier_serv : public framework::server_base {
   void check_set_config() const;
 
  private:
-  pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<core::driver::classifier> classifier_;
+  jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
+  jubatus::util::lang::shared_ptr<core::driver::classifier> classifier_;
   std::string config_;
 };
 

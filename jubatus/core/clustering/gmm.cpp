@@ -22,10 +22,10 @@
 #include <iostream>
 #include <utility>
 #include <vector>
-#include <pficommon/math/random.h>
+#include "jubatus/util/math/random.h"
 
 
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 using std::max;
 using std::min;
 using std::exp;
@@ -112,7 +112,7 @@ void gmm::initialize(const eigen_wsvec_list_t& data, int d, int k) {
     eye_.insert(i, i) = 1;
   }
 
-  pfi::math::random::mtrand r(time(NULL));
+  jubatus::util::math::random::mtrand r(time(NULL));
   for (int c = 0; c < k; ++c) {
     means_[c] = data[r.next_int(0, data.size()-1)].data;
     for (int i = 0; i < d; ++i) {

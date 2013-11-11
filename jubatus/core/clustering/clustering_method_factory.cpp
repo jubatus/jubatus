@@ -25,14 +25,14 @@ namespace jubatus {
 namespace core {
 namespace clustering {
 
-pfi::lang::shared_ptr<clustering_method> clustering_method_factory::create(
+jubatus::util::lang::shared_ptr<clustering_method> clustering_method_factory::create(
     const std::string& method,
     const clustering_config& config) {
   if (method == "kmeans") {
-    return pfi::lang::shared_ptr<clustering_method>(
+    return jubatus::util::lang::shared_ptr<clustering_method>(
         new kmeans_clustering_method(config.k));
   } else if (method == "gmm") {
-    return pfi::lang::shared_ptr<clustering_method>(
+    return jubatus::util::lang::shared_ptr<clustering_method>(
         new gmm_clustering_method(config.k));
   }
   throw JUBATUS_EXCEPTION(core::common::unsupported_method(method));

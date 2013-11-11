@@ -15,7 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <vector>
-#include <pficommon/math/random.h>
+#include "jubatus/util/math/random.h"
 #include "../common/hash.hpp"
 #include "lsh_function.hpp"
 
@@ -30,7 +30,7 @@ vector<float> random_projection(const common::sfv_t& sfv, uint32_t hash_num) {
   vector<float> proj(hash_num);
   for (size_t i = 0; i < sfv.size(); ++i) {
     const uint32_t seed = common::hash_util::calc_string_hash(sfv[i].first);
-    pfi::math::random::mtrand rnd(seed);
+    jubatus::util::math::random::mtrand rnd(seed);
     for (uint32_t j = 0; j < hash_num; ++j) {
       proj[j] += sfv[i].second * rnd.next_gaussian();
     }

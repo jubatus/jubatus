@@ -17,8 +17,8 @@
 #include <string>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/math/random.h"
 #include "../common/jsonconfig.hpp"
 #include "../nearest_neighbor/euclid_lsh.hpp"
 #include "../nearest_neighbor/lsh.hpp"
@@ -28,8 +28,8 @@
 using std::make_pair;
 using std::string;
 using std::vector;
-using pfi::lang::lexical_cast;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
 using jubatus::core::nearest_neighbor::nearest_neighbor_base;
 
 namespace jubatus {
@@ -51,7 +51,7 @@ vector<common::sfv_t> draw_2d_points_from_gaussian(
     float y_mean,
     float x_deviation,
     float y_deviation,
-    pfi::math::random::mtrand& mtr) {
+    jubatus::util::math::random::mtrand& mtr) {
   vector<common::sfv_t> points(num_points);
   for (size_t i = 0; i < points.size(); ++i) {
     const float x = mtr.next_gaussian(x_mean, x_deviation);
@@ -81,12 +81,12 @@ class light_lof_test : public ::testing::Test {
         typename NearestNeighborMethod::config(), nn_table, ID));
     light_lof_.reset(new light_lof(light_lof::config(), ID, nn_engine));
 
-    mtr_ = pfi::math::random::mtrand(SEED);
+    mtr_ = jubatus::util::math::random::mtrand(SEED);
   }
 
  protected:
   shared_ptr<light_lof> light_lof_;
-  pfi::math::random::mtrand mtr_;
+  jubatus::util::math::random::mtrand mtr_;
 };
 
 TYPED_TEST_CASE_P(light_lof_test);

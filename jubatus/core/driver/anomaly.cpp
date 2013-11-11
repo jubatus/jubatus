@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../anomaly/anomaly_factory.hpp"
 #include "../common/vector_util.hpp"
@@ -35,7 +35,7 @@ using std::vector;
 using std::pair;
 using jubatus::core::framework::mixable_holder;
 using jubatus::core::fv_converter::weight_manager;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {

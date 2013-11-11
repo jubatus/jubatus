@@ -16,7 +16,7 @@
 
 #include <string>
 #include <gtest/gtest.h>
-#include <pficommon/concurrent/lock.h>
+#include "jubatus/util/concurrent/lock.h"
 #include "cached_zk.hpp"
 #include "../common/membership.hpp"
 
@@ -29,10 +29,10 @@ std::string name_, name1_;
 
 class czk_test : public ::testing::Test {
  protected:
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> zk_;
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> zk_;
 
   czk_test() {
-    zk_ = pfi::lang::shared_ptr<jubatus::server::common::lock_service>(
+    zk_ = jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service>(
         common::create_lock_service("zk", "localhost:2181", 1024, "test.log"));
 
     std::string engine_name, engine_root;
@@ -61,8 +61,8 @@ class czk_test : public ::testing::Test {
 };
 
 TEST(czk, cached_zk_trivial) {
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> czk_;
-  czk_ = pfi::lang::shared_ptr<jubatus::server::common::lock_service>(
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> czk_;
+  czk_ = jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service>(
     common::create_lock_service("cached_zk", "localhost:2181", 1024,
     "cached_test.log"));
 

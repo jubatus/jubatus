@@ -49,15 +49,15 @@ proxy::proxy(const proxy_argv& a)
   register_async_random<std::string>("get_config");
   register_async_broadcast<bool, std::string>(
       "save",
-      pfi::lang::function<bool(bool, bool)>(
+      jubatus::util::lang::function<bool(bool, bool)>(
           &jubatus::server::framework::all_and));
   register_async_broadcast<bool, std::string>(
       "load",
-      pfi::lang::function<bool(bool, bool)>(
+      jubatus::util::lang::function<bool(bool, bool)>(
           &jubatus::server::framework::all_and));
   register_async_broadcast<status_type>(
           "get_status",
-          pfi::lang::function<status_type(status_type, status_type)>(
+          jubatus::util::lang::function<status_type(status_type, status_type)>(
               &jubatus::server::framework::merge<std::string, string_map>));
 }
 
@@ -86,7 +86,7 @@ int proxy::run() {
     LOG(INFO) << common::util::get_program_name() << " RPC server startup";
 
     common::util::set_action_on_term(
-        pfi::lang::bind(&stop_rpc_server, pfi::lang::ref(this->instance_)));
+        jubatus::util::lang::bind(&stop_rpc_server, jubatus::util::lang::ref(this->instance_)));
 
     this->instance_.join();
 

@@ -19,7 +19,7 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/math/random.h"
 
 #include "regression.hpp"
 #include "../storage/local_storage.hpp"
@@ -29,8 +29,8 @@ using std::string;
 using std::vector;
 using std::make_pair;
 using jubatus::core::storage::local_storage;
-using pfi::lang::lexical_cast;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -86,7 +86,7 @@ common::sfv_t convert(vector<double>& v) {
 }
 
 void random_test(regression::regression_base& p, float x, float y, size_t dim) {
-  pfi::math::random::mtrand rand_r(0);
+  jubatus::util::math::random::mtrand rand_r(0);
   // learn with 1000 random data
   for (size_t i = 0; i < 1000; ++i) {
     std::pair<float, std::vector<double> > tfv = gen_random_data(x, x, dim);

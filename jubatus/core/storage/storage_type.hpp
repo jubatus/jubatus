@@ -24,20 +24,20 @@
 #include <utility>
 #include <vector>
 #include <msgpack.hpp>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/data/serialization.h"
 #include "bit_vector.hpp"
 
 namespace jubatus {
 namespace core {
 namespace storage {
 
-typedef pfi::data::unordered_map<uint64_t, float> row_t;
-typedef pfi::data::unordered_map<std::string, row_t> tbl_t;
+typedef jubatus::util::data::unordered_map<uint64_t, float> row_t;
+typedef jubatus::util::data::unordered_map<std::string, row_t> tbl_t;
 
-typedef pfi::data::unordered_map<std::string, bit_vector> bit_table_t;
+typedef jubatus::util::data::unordered_map<std::string, bit_vector> bit_table_t;
 
-typedef pfi::data::unordered_map<std::string, float> map_float_t;
+typedef jubatus::util::data::unordered_map<std::string, float> map_float_t;
 typedef std::map<uint64_t, float> imap_float_t;
 
 typedef double val1_t;
@@ -113,7 +113,7 @@ struct val2_t {
   MSGPACK_DEFINE(v1, v2);
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(v1) & MEMBER(v2);
@@ -207,7 +207,7 @@ struct val3_t {
   MSGPACK_DEFINE(v1, v2, v3);
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(v1) & MEMBER(v2) & MEMBER(v3);
@@ -222,9 +222,9 @@ typedef std::vector<std::pair<std::string, feature_val1_t> > features1_t;
 typedef std::vector<std::pair<std::string, feature_val2_t> > features2_t;
 typedef std::vector<std::pair<std::string, feature_val3_t> > features3_t;
 
-typedef pfi::data::unordered_map<std::string, val1_t> map_feature_val1_t;
-typedef pfi::data::unordered_map<std::string, val3_t> map_feature_val3_t;
-typedef pfi::data::unordered_map<std::string, map_feature_val3_t>
+typedef jubatus::util::data::unordered_map<std::string, val1_t> map_feature_val1_t;
+typedef jubatus::util::data::unordered_map<std::string, val3_t> map_feature_val3_t;
+typedef jubatus::util::data::unordered_map<std::string, map_feature_val3_t>
     map_features3_t;
 
 namespace detail {

@@ -22,7 +22,7 @@
 #include <utility>
 #include <vector>
 #include <msgpack.hpp>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
 
 namespace jubatus {
 namespace core {

@@ -18,7 +18,7 @@
 #define JUBATUS_CORE_REGRESSION_PASSIVE_AGGRESSIVE_HPP_
 
 #include <limits>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
 #include "regression_base.hpp"
 
 namespace jubatus {

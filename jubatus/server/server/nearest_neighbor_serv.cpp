@@ -18,9 +18,9 @@
 
 #include <string>
 #include <glog/logging.h>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/text/json.h"
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/fv_converter/converter_config.hpp"
@@ -30,8 +30,8 @@
 #include "../framework/mixer/mixer_factory.hpp"
 
 using std::string;
-using pfi::lang::lexical_cast;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
 using jubatus::core::fv_converter::datum;
 
 namespace jubatus {
@@ -40,7 +40,7 @@ namespace {
 
 struct nearest_neighbor_serv_config {
   std::string method;
-  pfi::data::optional<core::common::jsonconfig::config> parameter;
+  jubatus::util::data::optional<core::common::jsonconfig::config> parameter;
   core::fv_converter::converter_config converter;
 
   template<typename Ar>
@@ -53,7 +53,7 @@ struct nearest_neighbor_serv_config {
 
 nearest_neighbor_serv::nearest_neighbor_serv(
     const framework::server_argv& a,
-    const pfi::lang::shared_ptr<common::lock_service>& zk)
+    const jubatus::util::lang::shared_ptr<common::lock_service>& zk)
     : server_base(a) {
   mixer_.reset(framework::mixer::create_mixer(a, zk));
 }
@@ -78,7 +78,7 @@ uint64_t nearest_neighbor_serv::user_data_version() const {
 
 void nearest_neighbor_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config config_root(
-      lexical_cast<pfi::text::json::json>(config));
+      lexical_cast<jubatus::util::text::json::json>(config));
   nearest_neighbor_serv_config conf =
     core::common::jsonconfig::config_cast_check<nearest_neighbor_serv_config>(
         config_root);
@@ -100,7 +100,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
   my_id = common::build_loc_str(argv().eth, argv().port);
 #endif
 
-  pfi::lang::shared_ptr<jubatus::core::nearest_neighbor::nearest_neighbor_base>
+  jubatus::util::lang::shared_ptr<jubatus::core::nearest_neighbor::nearest_neighbor_base>
       nn(jubatus::core::nearest_neighbor::create_nearest_neighbor(
           conf.method, param, table, my_id));
   nearest_neighbor_.reset(new core::driver::nearest_neighbor(nn, converter));

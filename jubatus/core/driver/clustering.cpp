@@ -19,7 +19,7 @@
 #include <algorithm>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/bind.h>
+#include "jubatus/util/lang/bind.h"
 
 #include "../common/vector_util.hpp"
 #include "../fv_converter/revert.hpp"
@@ -34,7 +34,7 @@ using fv_converter::datum;
 
 clustering::clustering(
     core::clustering::clustering* clustering_method,
-    pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
+    jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new framework::mixable_holder),
       converter_(converter),
       clustering_(clustering_method) {
@@ -73,8 +73,8 @@ clustering::get_core_members() const {
   core::clustering::cluster_set ret;
   ret.reserve(src.size());
   std::transform(
-      src.begin(), src.end(), std::back_inserter(ret), pfi::lang::bind(
-          &clustering::to_weighted_datum_vector, this, pfi::lang::_1));
+      src.begin(), src.end(), std::back_inserter(ret), jubatus::util::lang::bind(
+          &clustering::to_weighted_datum_vector, this, jubatus::util::lang::_1));
 
   return ret;
 }
@@ -126,7 +126,7 @@ vector<datum> clustering::to_datum_vector(
   vector<datum> ret;
   ret.reserve(src.size());
   std::transform(src.begin(), src.end(), std::back_inserter(ret),
-      pfi::lang::bind(&clustering::to_datum, this, pfi::lang::_1));
+      jubatus::util::lang::bind(&clustering::to_datum, this, jubatus::util::lang::_1));
   return ret;
 }
 
@@ -136,7 +136,7 @@ vector<core::clustering::weighted_point>
   vector<core::clustering::weighted_point> ret;
   ret.reserve(src.size());
   std::transform(src.begin(), src.end(), std::back_inserter(ret),
-      pfi::lang::bind(&clustering::to_weighted_point, this, pfi::lang::_1));
+      jubatus::util::lang::bind(&clustering::to_weighted_point, this, jubatus::util::lang::_1));
   return ret;
 }
 
@@ -146,7 +146,7 @@ core::clustering::cluster_unit
   core::clustering::cluster_unit ret;
   ret.reserve(src.size());
   std::transform(src.begin(), src.end(), std::back_inserter(ret),
-      pfi::lang::bind(&clustering::to_weighted_datum, this, pfi::lang::_1));
+      jubatus::util::lang::bind(&clustering::to_weighted_datum, this, jubatus::util::lang::_1));
   return ret;
 }
 

@@ -45,7 +45,7 @@ TEST(num_feature_factory, dynamic) {
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
 
   param["function"] = "create";
-  pfi::lang::shared_ptr<num_feature> s(f.create("dynamic", param));
+  jubatus::util::lang::shared_ptr<num_feature> s(f.create("dynamic", param));
 
   common::sfv_t fv;
   s->add_feature("/path", 1, fv);

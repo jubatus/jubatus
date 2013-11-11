@@ -24,11 +24,11 @@
 
 #include <glog/logging.h>
 #include <msgpack.hpp>
-#include <pficommon/lang/noncopyable.h>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/lang/function.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/noncopyable.h"
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/concurrent/rwmutex.h"
+#include "jubatus/util/lang/function.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "../common/util.hpp"
@@ -126,7 +126,7 @@ struct proxy_argv {
   void set_log_destination(const std::string& progname) const;
 };
 
-void register_lock_service(pfi::lang::shared_ptr<common::lock_service> ls);
+void register_lock_service(jubatus::util::lang::shared_ptr<common::lock_service> ls);
 void close_lock_service();
 
 template<class ImplServerClass>

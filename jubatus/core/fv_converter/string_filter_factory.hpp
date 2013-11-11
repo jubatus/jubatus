@@ -19,7 +19,7 @@
 
 #include <string>
 #include <map>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "string_filter.hpp"
 
 namespace jubatus {
@@ -30,7 +30,7 @@ class string_filter_factory {
  public:
   typedef std::map<std::string, std::string> param_t;
 
-  pfi::lang::shared_ptr<string_filter> create(
+  jubatus::util::lang::shared_ptr<string_filter> create(
       const std::string& name, const param_t& params) const;
 };
 

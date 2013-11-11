@@ -24,8 +24,8 @@
 #include <string>
 #include <vector>
 #include <msgpack.hpp>
-#include <pficommon/lang/demangle.h>
-#include <pficommon/lang/noncopyable.h>
+#include "jubatus/util/lang/demangle.h"
+#include "jubatus/util/lang/noncopyable.h"
 #include "../../common/assert.hpp"
 #include "../storage_exception.hpp"
 #include "bit_vector.hpp"
@@ -37,7 +37,7 @@ namespace table {
 
 namespace detail {
 
-class abstract_column_base : pfi::lang::noncopyable {
+class abstract_column_base : jubatus::util::lang::noncopyable {
  public:
   explicit abstract_column_base(const column_type& type)
       : my_type_(type) {
@@ -54,19 +54,19 @@ class abstract_column_base : pfi::lang::noncopyable {
       throw type_unmatch_exception(                     \
         "column: invalid type in push_back(): "         \
         "expected: " + my_type_.type_as_string() + ", " \
-        "actual: " + pfi::lang::get_typename<tp>());    \
+        "actual: " + jubatus::util::lang::get_typename<tp>());    \
     }                                                   \
     virtual bool insert(uint64_t target, const tp&) {   \
       throw type_unmatch_exception(                     \
         "column: invalid type in insert(): "            \
         "expected: " + my_type_.type_as_string() + ", " \
-        "actual: " + pfi::lang::get_typename<tp>());    \
+        "actual: " + jubatus::util::lang::get_typename<tp>());    \
     }                                                   \
     virtual bool update(uint64_t target, const tp&) {   \
       throw type_unmatch_exception(                     \
         "column: invalid type in update(): "            \
         "expected: " + my_type_.type_as_string() + ", " \
-        "actual: " + pfi::lang::get_typename<tp>());    \
+        "actual: " + jubatus::util::lang::get_typename<tp>());    \
     }
 
     JUBATUS_GEN_FUNCTIONS_(uint8_t);          // NOLINT
@@ -158,9 +158,9 @@ class typed_column : public detail::abstract_column_base {
   const T& operator[](uint64_t index) const {
     if (size() <= index) {
       throw length_unmatch_exception(
-        "invalid index [" + pfi::lang::lexical_cast<std::string>(index) +
+        "invalid index [" + jubatus::util::lang::lexical_cast<std::string>(index) +
         "] for [" +
-        pfi::lang::lexical_cast<std::string>(array_.size()));
+        jubatus::util::lang::lexical_cast<std::string>(array_.size()));
     }
     return array_[index];
   }
@@ -168,9 +168,9 @@ class typed_column : public detail::abstract_column_base {
   T& operator[](uint64_t index) {
     if (size() <= index) {
       throw length_unmatch_exception(
-        "invalid index [" + pfi::lang::lexical_cast<std::string>(index) +
+        "invalid index [" + jubatus::util::lang::lexical_cast<std::string>(index) +
         "] for [" +
-        pfi::lang::lexical_cast<std::string>(array_.size()));
+        jubatus::util::lang::lexical_cast<std::string>(array_.size()));
     }
     return array_[index];
   }
@@ -201,7 +201,7 @@ class typed_column : public detail::abstract_column_base {
   }
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     column_type my_type = type();
@@ -322,7 +322,7 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
   }
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     column_type my_type = type();
@@ -360,9 +360,9 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
     if (tested.bit_num() > bit_num_expected) {
       throw length_unmatch_exception(
         "invalid length of bit_vector (" +
-        pfi::lang::lexical_cast<std::string>(tested.bit_num()) + ", "
+        jubatus::util::lang::lexical_cast<std::string>(tested.bit_num()) + ", "
         "expected " +
-        pfi::lang::lexical_cast<std::string>(bit_num_expected) + ")");
+        jubatus::util::lang::lexical_cast<std::string>(bit_num_expected) + ")");
     }
   }
 };
@@ -539,8 +539,8 @@ class abstract_column {
     } else {
       throw type_unmatch_exception(
         "column: invalid type in serialize(): "
-        "expected: " + pfi::lang::lexical_cast<std::string>(base_->type()) +
-        ", actual: " + pfi::lang::lexical_cast<std::string>(type));
+        "expected: " + jubatus::util::lang::lexical_cast<std::string>(base_->type()) +
+        ", actual: " + jubatus::util::lang::lexical_cast<std::string>(type));
     }
 
     if (type.is(column_type::uint8_type)) {
@@ -575,7 +575,7 @@ class abstract_column {
   }
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
 
   template <class Ar>
   void serialize(Ar& ar) {
@@ -591,8 +591,8 @@ class abstract_column {
       if (type != base_->type()) {
         throw type_unmatch_exception(
           "column: invalid type in serialize(): "
-          "expected: " + pfi::lang::lexical_cast<std::string>(base_->type()) +
-          ", actual: " + pfi::lang::lexical_cast<std::string>(type));
+          "expected: " + jubatus::util::lang::lexical_cast<std::string>(base_->type()) +
+          ", actual: " + jubatus::util::lang::lexical_cast<std::string>(type));
       }
     }
 
@@ -625,7 +625,7 @@ class abstract_column {
     }
   }
 
-  pfi::lang::shared_ptr<abstract_column_base> base_;
+  jubatus::util::lang::shared_ptr<abstract_column_base> base_;
 };
 
 }  // namespace detail

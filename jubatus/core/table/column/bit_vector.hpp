@@ -25,8 +25,8 @@
 #include <vector>
 
 #include <msgpack.hpp>
-#include <pficommon/lang/cast.h>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/data/serialization.h"
 #include "../../common/assert.hpp"
 #include "../../common/exception.hpp"
 #include "../../common/big_endian.hpp"
@@ -164,8 +164,8 @@ struct bit_vector_base {
       if (bit_num_ != orig.bit_num_) {
         throw bit_vector_unmatch_exception(
             "failed copy bit vector from " +
-            pfi::lang::lexical_cast<std::string>(orig.bit_num_) + " to " +
-            pfi::lang::lexical_cast<std::string>(bit_num_));
+            jubatus::util::lang::lexical_cast<std::string>(orig.bit_num_) + " to " +
+            jubatus::util::lang::lexical_cast<std::string>(bit_num_));
       }
       if (bits_ == NULL) {
         alloc_memory();
@@ -182,8 +182,8 @@ struct bit_vector_base {
     if (bit_num_ != x.bit_num_) {
       throw bit_vector_unmatch_exception(
           "failed to swap bit vectors " +
-          pfi::lang::lexical_cast<std::string>(bit_num_) + " and " +
-          pfi::lang::lexical_cast<std::string>(x.bit_num_));
+          jubatus::util::lang::lexical_cast<std::string>(bit_num_) + " and " +
+          jubatus::util::lang::lexical_cast<std::string>(x.bit_num_));
     }
     using std::swap;
     swap(bits_, x.bits_);
@@ -206,8 +206,8 @@ struct bit_vector_base {
     if (static_cast<size_t>(bit_num_) < pos) {
       throw bit_vector_unmatch_exception(
           "set_bit(): invalid posison " +
-          pfi::lang::lexical_cast<std::string>(pos) + " for length: " +
-          pfi::lang::lexical_cast<std::string>(bit_num_));
+          jubatus::util::lang::lexical_cast<std::string>(pos) + " for length: " +
+          jubatus::util::lang::lexical_cast<std::string>(bit_num_));
     }
     bits_[pos / BASE_BITS] |= (1LLU << (pos % BASE_BITS));
   }
@@ -218,8 +218,8 @@ struct bit_vector_base {
     if (bit_num_ < pos) {
       throw bit_vector_unmatch_exception(
           "reverse_bit(): invalid posison " +
-          pfi::lang::lexical_cast<std::string>(pos) + " for length: " +
-          pfi::lang::lexical_cast<std::string>(bit_num_));
+          jubatus::util::lang::lexical_cast<std::string>(pos) + " for length: " +
+          jubatus::util::lang::lexical_cast<std::string>(bit_num_));
     }
     bits_[pos / BASE_BITS] ^= (1LLU << (pos % BASE_BITS));
   }
@@ -246,8 +246,8 @@ struct bit_vector_base {
     if (bit_num() != bv.bit_num()) {
       throw bit_vector_unmatch_exception(
           "calc_hamming_similarity(): bit_vector length unmatch! " +
-          pfi::lang::lexical_cast<std::string>(bit_num()) + " with " +
-          pfi::lang::lexical_cast<std::string>(bv.bit_num()));
+          jubatus::util::lang::lexical_cast<std::string>(bit_num()) + " with " +
+          jubatus::util::lang::lexical_cast<std::string>(bv.bit_num()));
     }
     if (is_empty() && bv.is_empty()) {
       return 0;
@@ -368,8 +368,8 @@ struct bit_vector_base {
     if (data.size != memory_size(bit_num)) {
       throw bit_vector_unmatch_exception(
           "msgpack_unpack(): invalid length of packed data: "
-          "expected: " + pfi::lang::lexical_cast<std::string>(bit_num_) +
-          ", got: " + pfi::lang::lexical_cast<std::string>(data.size));
+          "expected: " + jubatus::util::lang::lexical_cast<std::string>(bit_num_) +
+          ", got: " + jubatus::util::lang::lexical_cast<std::string>(data.size));
     }
     std::vector<bit_base> buf;
     for (size_t i = 0; i < data.size; i += BLOCKSIZE) {
@@ -403,8 +403,8 @@ struct bit_vector_base {
     if (bit_num_ != orig.bit_num_) {
       throw bit_vector_unmatch_exception(
           "failed copy bit vector from " +
-          pfi::lang::lexical_cast<std::string>(orig.bit_num_) + " to " +
-          pfi::lang::lexical_cast<std::string>(bit_num_));
+          jubatus::util::lang::lexical_cast<std::string>(orig.bit_num_) + " to " +
+          jubatus::util::lang::lexical_cast<std::string>(bit_num_));
     }
     if (!own_) {
       alloc_memory();
@@ -412,7 +412,7 @@ struct bit_vector_base {
     memcpy(bits_, orig.bits_, used_bytes());
   }
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     // TODO(beam2d): Serializing a pointer is dangerous.

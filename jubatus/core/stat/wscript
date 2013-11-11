@@ -11,7 +11,7 @@ def build(bld):
     source = ['stat.cpp'],
     target = 'jubatus_stat',
     includes = '.',
-    use = 'PFICOMMON MSGPACK'+libassert
+    use = 'jubatus_util MSGPACK'+libassert
     )
 
   bld.program(

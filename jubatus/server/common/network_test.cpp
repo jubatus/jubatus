@@ -34,7 +34,7 @@ TEST(common, get_network_address) {
 
 #ifndef NDEBUG
   for (size_t i = 0; i < address.size(); i++) {
-    pfi::lang::shared_ptr<network_address> p = address[i];
+    jubatus::util::lang::shared_ptr<network_address> p = address[i];
     EXPECT_NO_THROW({
       cout << "Interface: " << p->interface() << endl;
       cout << "Addr: " << p->address() << endl;

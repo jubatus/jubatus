@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include <pficommon/lang/bind.h>
+#include "jubatus/util/lang/bind.h"
 
 #include "../../server/common/mprpc/rpc_server.hpp"
 #include "anomaly_types.hpp"
@@ -21,33 +21,33 @@ class anomaly : public jubatus::server::common::mprpc::rpc_server {
  public:
   explicit anomaly(double timeout_sec) : rpc_server(timeout_sec) {
     Impl* impl = static_cast<Impl*>(this);
-    rpc_server::add<std::string(std::string)>("get_config", pfi::lang::bind(
-        &Impl::get_config, impl, pfi::lang::_1));
+    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
+        &Impl::get_config, impl, jubatus::util::lang::_1));
     rpc_server::add<bool(std::string, std::string)>("clear_row",
-        pfi::lang::bind(&Impl::clear_row, impl, pfi::lang::_1, pfi::lang::_2));
+        jubatus::util::lang::bind(&Impl::clear_row, impl, jubatus::util::lang::_1, jubatus::util::lang::_2));
     rpc_server::add<std::pair<std::string, float>(std::string,
-        jubatus::core::fv_converter::datum)>("add", pfi::lang::bind(&Impl::add,
-        impl, pfi::lang::_1, pfi::lang::_2));
+        jubatus::core::fv_converter::datum)>("add", jubatus::util::lang::bind(&Impl::add,
+        impl, jubatus::util::lang::_1, jubatus::util::lang::_2));
     rpc_server::add<float(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("update", pfi::lang::bind(
-        &Impl::update, impl, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
+        jubatus::core::fv_converter::datum)>("update", jubatus::util::lang::bind(
+        &Impl::update, impl, jubatus::util::lang::_1, jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<float(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("overwrite", pfi::lang::bind(
-        &Impl::overwrite, impl, pfi::lang::_1, pfi::lang::_2, pfi::lang::_3));
-    rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(&Impl::clear,
-        impl, pfi::lang::_1));
+        jubatus::core::fv_converter::datum)>("overwrite", jubatus::util::lang::bind(
+        &Impl::overwrite, impl, jubatus::util::lang::_1, jubatus::util::lang::_2, jubatus::util::lang::_3));
+    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(&Impl::clear,
+        impl, jubatus::util::lang::_1));
     rpc_server::add<float(std::string, jubatus::core::fv_converter::datum)>(
-        "calc_score", pfi::lang::bind(&Impl::calc_score, impl, pfi::lang::_1,
-        pfi::lang::_2));
+        "calc_score", jubatus::util::lang::bind(&Impl::calc_score, impl, jubatus::util::lang::_1,
+        jubatus::util::lang::_2));
     rpc_server::add<std::vector<std::string>(std::string)>("get_all_rows",
-        pfi::lang::bind(&Impl::get_all_rows, impl, pfi::lang::_1));
-    rpc_server::add<bool(std::string, std::string)>("save", pfi::lang::bind(
-        &Impl::save, impl, pfi::lang::_1, pfi::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", pfi::lang::bind(
-        &Impl::load, impl, pfi::lang::_1, pfi::lang::_2));
+        jubatus::util::lang::bind(&Impl::get_all_rows, impl, jubatus::util::lang::_1));
+    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
+        &Impl::save, impl, jubatus::util::lang::_1, jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
+        &Impl::load, impl, jubatus::util::lang::_1, jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", pfi::lang::bind(&Impl::get_status, impl,
-        pfi::lang::_1));
+        std::string)>("get_status", jubatus::util::lang::bind(&Impl::get_status, impl,
+        jubatus::util::lang::_1));
   }
 };
 

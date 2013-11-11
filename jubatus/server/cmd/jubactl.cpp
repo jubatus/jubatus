@@ -21,7 +21,7 @@
 
 #include <glog/logging.h>
 #include <jubatus/msgpack/rpc/client.h>
-#include <pficommon/lang/function.h>
+#include "jubatus/util/lang/function.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
@@ -182,7 +182,7 @@ void send2supervisor(
     const string& name,
     const string& zkhosts,
     const cmdline::parser& argv) {
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
       jubatus::server::common::create_lock_service(
           "zk", zkhosts, 10, "/dev/null"));
 
@@ -246,7 +246,7 @@ void send2server(
     const string& name,
     const string& id,
     const string& zkhosts) {
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
       jubatus::server::common::create_lock_service(
           "zk", zkhosts, 10, "/dev/null"));
   std::string path;
@@ -294,7 +294,7 @@ void show(
 }
 
 void status(const string& type, const string& name, const string& zkhosts) {
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
       jubatus::server::common::create_lock_service(
           "zk", zkhosts, 10, "/dev/null"));
   show(

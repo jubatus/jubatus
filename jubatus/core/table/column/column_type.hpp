@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
 #include "../storage_exception.hpp"
 #include "bit_vector.hpp"
 
@@ -180,7 +180,7 @@ class column_type {
   }
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     int type = type_;

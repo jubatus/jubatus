@@ -34,7 +34,7 @@ compressive_storage::compressive_storage(
 }
 
 void compressive_storage::set_compressor(
-    pfi::lang::shared_ptr<compressor::compressor> compressor) {
+    jubatus::util::lang::shared_ptr<compressor::compressor> compressor) {
   compressor_ = compressor;
 }
 

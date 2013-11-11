@@ -23,8 +23,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/cast.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/text/json.h"
 #include "jubatus/core/common/exception.hpp"
 
 using std::ifstream;
@@ -90,13 +90,13 @@ void config_tozk(
   }
 
   try {
-    pfi::lang::lexical_cast<pfi::text::json::json>(config);
-  } catch (pfi::lang::parse_error& e) {
+    jubatus::util::lang::lexical_cast<jubatus::util::text::json::json>(config);
+  } catch (jubatus::util::lang::parse_error& e) {
     std::string msg =
         std::string("syntax error in configuration: ") +
         config_src + ":" +
-        pfi::lang::lexical_cast<std::string>(e.lineno()) + ":" +
-        pfi::lang::lexical_cast<std::string>(e.pos()) + " " +
+        jubatus::util::lang::lexical_cast<std::string>(e.lineno()) + ":" +
+        jubatus::util::lang::lexical_cast<std::string>(e.pos()) + " " +
         e.msg();
     throw JUBATUS_EXCEPTION(core::common::exception::runtime_error(msg));
   }

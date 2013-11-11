@@ -21,7 +21,7 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 
 #include "recommender.hpp"
 #include "../classifier/classifier_test_util.hpp"
@@ -32,7 +32,7 @@ using std::sort;
 using std::string;
 using std::stringstream;
 using std::vector;
-using pfi::lang::lexical_cast;
+using jubatus::util::lang::lexical_cast;
 
 namespace jubatus {
 namespace core {
@@ -54,7 +54,7 @@ sfv_diff_t make_vec(const string& c1, const string& c2, const string& c3) {
   return v;
 }
 
-pfi::lang::shared_ptr<framework::mixable0> get_mixable(recommender_base& r) {
+jubatus::util::lang::shared_ptr<framework::mixable0> get_mixable(recommender_base& r) {
   framework::mixable_holder holder;
   r.register_mixables_to_holder(holder);
   return holder.get_mixables().front();
@@ -79,7 +79,7 @@ TYPED_TEST_P(recommender_random_test, trivial) {
 }
 
 TYPED_TEST_P(recommender_random_test, random) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   TypeParam r;
 
   // Generate random data from two norma distributions, N1 and N2.
@@ -138,7 +138,7 @@ TYPED_TEST_P(recommender_random_test, random) {
 }
 
 void update_random(recommender_base& r) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   vector<float> mu(3);
   for (size_t i = 0; i < 100; ++i) {
     vector<double> v;
@@ -247,7 +247,7 @@ TYPED_TEST_P(recommender_random_test, diff) {
 }
 
 TYPED_TEST_P(recommender_random_test, mix) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   TypeParam r1, r2, expect;
   vector<float> mu(10);
   for (size_t i = 0; i < 100; ++i) {

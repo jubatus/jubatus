@@ -21,7 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "nearest_neighbor_base.hpp"
 
 namespace jubatus {
@@ -32,11 +32,11 @@ class bit_vector_nearest_neighbor_base : public nearest_neighbor_base {
  public:
   bit_vector_nearest_neighbor_base(
       uint32_t bitnum,
-      pfi::lang::shared_ptr<table::column_table> table,
+      jubatus::util::lang::shared_ptr<table::column_table> table,
       const std::string& id);
   bit_vector_nearest_neighbor_base(
       uint32_t bitnum,
-      pfi::lang::shared_ptr<table::column_table> table,
+      jubatus::util::lang::shared_ptr<table::column_table> table,
       std::vector<table::column_type>& schema,
       const std::string& id);
 

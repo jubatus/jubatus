@@ -27,7 +27,7 @@
 #include "test_util.hpp"
 
 using std::make_pair;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -58,7 +58,7 @@ class anomaly_test : public ::testing::Test {
     anomaly_.reset();
   }
 
-  pfi::lang::shared_ptr<core::driver::anomaly> anomaly_;
+  jubatus::util::lang::shared_ptr<core::driver::anomaly> anomaly_;
 };
 
 TEST_F(anomaly_test, small) {

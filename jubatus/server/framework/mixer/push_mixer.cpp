@@ -19,9 +19,9 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/lang/bind.h>
-#include <pficommon/system/time_util.h>
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/lang/bind.h"
+#include "jubatus/util/system/time_util.h"
 #include "../../../core/framework/mixable.hpp"
 #include "../../common/membership.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
@@ -30,11 +30,11 @@
 using std::pair;
 using std::string;
 using std::vector;
-using pfi::concurrent::scoped_lock;
-using pfi::lang::bind;
-using pfi::lang::shared_ptr;
-using pfi::system::time::clock_time;
-using pfi::system::time::get_clock_time;
+using jubatus::util::concurrent::scoped_lock;
+using jubatus::util::lang::bind;
+using jubatus::util::lang::shared_ptr;
+using jubatus::util::system::time::clock_time;
+using jubatus::util::system::time::get_clock_time;
 
 namespace jubatus {
 namespace server {
@@ -46,7 +46,7 @@ namespace {
 class push_communication_impl : public push_communication {
  public:
   push_communication_impl(
-      const pfi::lang::shared_ptr<common::lock_service>& zk,
+      const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
       const string& type,
       const string& name,
       int timeout_sec);
@@ -66,14 +66,14 @@ class push_communication_impl : public push_communication {
 
  private:
   vector<pair<string, int> > servers_;
-  pfi::lang::shared_ptr<common::lock_service> zk_;
+  jubatus::util::lang::shared_ptr<common::lock_service> zk_;
   string type_;
   string name_;
   int timeout_sec_;
 };
 
 push_communication_impl::push_communication_impl(
-    const pfi::lang::shared_ptr<common::lock_service>& zk,
+    const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
     const string& type,
     const string& name,
     int timeout_sec)
@@ -140,12 +140,12 @@ void push_communication_impl::push(
 
 }  // namespace
 
-pfi::lang::shared_ptr<push_communication> push_communication::create(
-    const pfi::lang::shared_ptr<common::lock_service>& zk,
+jubatus::util::lang::shared_ptr<push_communication> push_communication::create(
+    const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
     const string& type,
     const string& name,
     int timeout_sec) {
-  return pfi::lang::shared_ptr<push_communication_impl>(
+  return jubatus::util::lang::shared_ptr<push_communication_impl>(
       new push_communication_impl(zk, type, name, timeout_sec));
 }
 
@@ -162,17 +162,17 @@ push_mixer::push_mixer(
       mix_count_(0),
       ticktime_(get_clock_time()),
       is_running_(false),
-      t_(pfi::lang::bind(&push_mixer::mixer_loop, this)) {
+      t_(jubatus::util::lang::bind(&push_mixer::mixer_loop, this)) {
 }
 
 void push_mixer::register_api(rpc_server_t& server) {
   server.add<vector<string>(vector<string>)>(
-      "pull", bind(&push_mixer::pull, this, pfi::lang::_1));
+      "pull", bind(&push_mixer::pull, this, jubatus::util::lang::_1));
   server.add<std::vector<std::string>(int)>(  // NOLINT
       "get_pull_argument", bind(
-          &push_mixer::get_pull_argument, this, pfi::lang::_1));
+          &push_mixer::get_pull_argument, this, jubatus::util::lang::_1));
   server.add<int(vector<string>)>(
-      "push", bind(&push_mixer::push, this, pfi::lang::_1));
+      "push", bind(&push_mixer::push, this, jubatus::util::lang::_1));
 }
 
 void push_mixer::set_mixable_holder(
@@ -208,9 +208,9 @@ void push_mixer::updated() {
 
 void push_mixer::get_status(server_base::status_t& status) const {
   scoped_lock lk(m_);
-  status["push_mixer.count"] = pfi::lang::lexical_cast<string>(counter_);
+  status["push_mixer.count"] = jubatus::util::lang::lexical_cast<string>(counter_);
   status["push_mixer.ticktime"] =
-      pfi::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
+      jubatus::util::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
 }
 
 void push_mixer::mixer_loop() {

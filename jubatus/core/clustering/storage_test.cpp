@@ -17,7 +17,7 @@
 #include <vector>
 #include <string>
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 #include "../common/type.hpp"
 #include "storage.hpp"
 #include "storage_factory.hpp"
@@ -30,7 +30,7 @@ namespace clustering {
 class storage_test
     : public testing::TestWithParam<std::string> {
  protected:
-  typedef pfi::lang::shared_ptr<storage> storage_ptr;
+  typedef jubatus::util::lang::shared_ptr<storage> storage_ptr;
   std::string name;
   clustering_config conf;
 

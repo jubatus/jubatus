@@ -20,9 +20,9 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/unordered_set.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/unordered_set.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../driver/mixable_versioned_table.hpp"
 #include "../nearest_neighbor/nearest_neighbor_base.hpp"
@@ -52,7 +52,7 @@ class light_lof : public anomaly_base {
   light_lof(
       const config& config,
       const std::string& id,
-      pfi::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+      jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
           nearest_neighbor_engine);
 
   virtual ~light_lof();
@@ -91,18 +91,18 @@ class light_lof : public anomaly_base {
 
   void collect_neighbors(
       const std::string& query,
-      pfi::data::unordered_set<uint64_t>& neighbors) const;
-  void update_entries(const pfi::data::unordered_set<uint64_t>& neighbors);
+      jubatus::util::data::unordered_set<uint64_t>& neighbors) const;
+  void update_entries(const jubatus::util::data::unordered_set<uint64_t>& neighbors);
 
   // Gets parameters of given row. If row does not exist, it throws an
   // exception.
   parameter get_row_parameter(const std::string& row) const;
 
-  pfi::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+  jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
       nearest_neighbor_engine_;
 
   // Mixable of score table that contains k-dists and LRDs.
-  pfi::lang::shared_ptr<driver::mixable_versioned_table> mixable_scores_;
+  jubatus::util::lang::shared_ptr<driver::mixable_versioned_table> mixable_scores_;
 
   config config_;
   std::string my_id_;

@@ -21,15 +21,15 @@
 #include <cassert>
 #include <string>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include <pficommon/lang/function.h>
-#include <pficommon/lang/bind.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/lang/function.h"
+#include "jubatus/util/lang/bind.h"
 
 #include "../common/jsonconfig.hpp"
 #include "clustering_method_factory.hpp"
 #include "storage_factory.hpp"
 
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -57,14 +57,14 @@ void clustering::init() {
 
 void clustering::set_storage(shared_ptr<storage> storage) {
   storage->add_event_listener(REVISION_CHANGE,
-      pfi::lang::bind(&clustering::update_clusters, this, pfi::lang::_1, true));
+      jubatus::util::lang::bind(&clustering::update_clusters, this, jubatus::util::lang::_1, true));
   storage->add_event_listener(UPDATE,
-      pfi::lang::bind(&clustering::update_clusters,
-          this, pfi::lang::_1, false));
+      jubatus::util::lang::bind(&clustering::update_clusters,
+          this, jubatus::util::lang::_1, false));
   storage_->set_model(storage);
 }
 
-pfi::lang::shared_ptr<storage> clustering::get_storage() {
+jubatus::util::lang::shared_ptr<storage> clustering::get_storage() {
   return storage_->get_model();
 }
 
@@ -82,7 +82,7 @@ void clustering::set_clustering_method(
 }
 
 bool clustering::push(const std::vector<weighted_point>& points) {
-  pfi::lang::shared_ptr<storage> sto = storage_->get_model();
+  jubatus::util::lang::shared_ptr<storage> sto = storage_->get_model();
   for (std::vector<weighted_point>::const_iterator it = points.begin();
        it != points.end(); ++it) {
     sto->add(*it);

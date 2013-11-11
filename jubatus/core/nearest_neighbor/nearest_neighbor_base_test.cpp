@@ -20,7 +20,7 @@
 #include <vector>
 #include <gtest/gtest.h>
 
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 
 #include "nearest_neighbor_base.hpp"
 
@@ -36,7 +36,7 @@ using std::make_pair;
 class nearest_neighbor_mock : public nearest_neighbor_base {
  public:
   explicit nearest_neighbor_mock(
-      pfi::lang::shared_ptr<table::column_table> table)
+      jubatus::util::lang::shared_ptr<table::column_table> table)
       : nearest_neighbor_base(table, "test") {}
 
   void add_next_answer(const string& id, float dist) {
@@ -80,8 +80,8 @@ class nearest_neighbor_base_test : public testing::Test {
     mock_.reset(new nearest_neighbor_mock(ct_));
   }
 
-  pfi::lang::shared_ptr<table::column_table> ct_;
-  pfi::lang::scoped_ptr<nearest_neighbor_mock> mock_;
+  jubatus::util::lang::shared_ptr<table::column_table> ct_;
+  jubatus::util::lang::scoped_ptr<nearest_neighbor_mock> mock_;
 };
 
 TEST_F(nearest_neighbor_base_test, get_table) {

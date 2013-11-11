@@ -25,7 +25,7 @@
 #include "util.hpp"
 #include "word_splitter.hpp"
 
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -72,7 +72,7 @@ int get_int_with_default(
   }
   std::string s = get(args, key);
   try {
-    return pfi::lang::lexical_cast<int>(s);
+    return jubatus::util::lang::lexical_cast<int>(s);
   } catch (const std::bad_cast&) {
     throw JUBATUS_EXCEPTION(
         converter_exception("is not integer: " + key + " = " + s));

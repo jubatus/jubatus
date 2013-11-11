@@ -18,9 +18,9 @@
 #define JUBATUS_SERVER_COMMON_UNIQUE_LOCK_HPP_
 
 #include <algorithm>
-#include <pficommon/lang/noncopyable.h>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/concurrent/rwmutex.h>
+#include "jubatus/util/lang/noncopyable.h"
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/concurrent/rwmutex.h"
 
 #include "jubatus/core/common/assert.hpp"
 
@@ -41,7 +41,7 @@ class default_lock_functions {
   }
 };
 
-using pfi::concurrent::rw_mutex;
+using jubatus::util::concurrent::rw_mutex;
 
 class rlock_functions {
  public:
@@ -66,7 +66,7 @@ class wlock_functions {
 
 template<class Lockable,
          class LockFunctions = default_lock_functions<Lockable> >
-class basic_unique_lock : pfi::lang::noncopyable {
+class basic_unique_lock : jubatus::util::lang::noncopyable {
  public:
   typedef Lockable lockable_type;
   typedef LockFunctions lock_functions;
@@ -110,7 +110,7 @@ class basic_unique_lock : pfi::lang::noncopyable {
   bool locked_;
 };
 
-typedef basic_unique_lock<pfi::concurrent::lockable> unique_lock;
+typedef basic_unique_lock<jubatus::util::concurrent::lockable> unique_lock;
 typedef basic_unique_lock<rw_mutex, rlock_functions> unique_rlock;
 typedef basic_unique_lock<rw_mutex, wlock_functions> unique_wlock;
 

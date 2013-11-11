@@ -23,7 +23,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../common/type.hpp"
 #include "../driver/linear_function_mixer.hpp"
@@ -36,7 +36,7 @@ namespace classifier {
 
 class classifier_base {
  public:
-  typedef pfi::lang::shared_ptr<storage::storage_base> storage_ptr;
+  typedef jubatus::util::lang::shared_ptr<storage::storage_base> storage_ptr;
 
   classifier_base(storage_ptr storage, bool use_covars);
   virtual ~classifier_base();
@@ -83,7 +83,7 @@ class classifier_base {
   static float squared_norm(const common::sfv_t& sfv);
 
  private:
-  pfi::lang::shared_ptr<driver::linear_function_mixer> mixable_;
+  jubatus::util::lang::shared_ptr<driver::linear_function_mixer> mixable_;
   bool use_covars_;
 };
 

@@ -18,8 +18,8 @@
 #define JUBATUS_CORE_ANOMALY_ANOMALY_FACTORY_HPP_
 
 #include <string>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
 
 namespace jubatus {
 namespace core {
@@ -37,7 +37,7 @@ class anomaly_base;
 
 class anomaly_factory {
  public:
-  static pfi::lang::shared_ptr<anomaly_base> create_anomaly(
+  static jubatus::util::lang::shared_ptr<anomaly_base> create_anomaly(
       const std::string& name,
       const common::jsonconfig::config& param,
       const std::string& id);

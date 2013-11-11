@@ -37,7 +37,7 @@ class compressive_storage : public storage {
   void add(const weighted_point& point);
   wplist get_mine() const;
   void set_compressor(
-      pfi::lang::shared_ptr<compressor::compressor> compressor);
+      jubatus::util::lang::shared_ptr<compressor::compressor> compressor);
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);
@@ -58,7 +58,7 @@ class compressive_storage : public storage {
 
   std::vector<wplist> mine_;
   uint64_t status_;
-  pfi::lang::shared_ptr<compressor::compressor> compressor_;
+  jubatus::util::lang::shared_ptr<compressor::compressor> compressor_;
 
   friend class storage_serializer;
   template <class Ar>

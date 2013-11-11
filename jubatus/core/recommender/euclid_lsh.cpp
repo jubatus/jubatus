@@ -21,9 +21,9 @@
 #include <utility>
 #include <string>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/math/random.h"
 #include "../common/hash.hpp"
 #include "../storage/lsh_util.hpp"
 #include "../storage/lsh_vector.hpp"
@@ -33,7 +33,7 @@ using std::vector;
 using std::pair;
 using std::ostream;
 using std::istream;
-using pfi::math::random::mtrand;
+using jubatus::util::math::random::mtrand;
 
 namespace jubatus {
 namespace core {
@@ -162,7 +162,7 @@ void euclid_lsh::clear() {
   mixable_storage_->get_model()->clear();
 
   // Clear projection cache
-  pfi::data::unordered_map<uint32_t, std::vector<float> >().swap(projection_);
+  jubatus::util::data::unordered_map<uint32_t, std::vector<float> >().swap(projection_);
 }
 
 void euclid_lsh::clear_row(const string& id) {

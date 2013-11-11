@@ -21,10 +21,10 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/data/string/utility.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/data/string/utility.h"
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/math/random.h"
 #include "../common/exception.hpp"
 #include "../common/hash.hpp"
 #include "../common/portable_mixer.hpp"  // TODO(kashihara): use linear_mixer
@@ -34,9 +34,9 @@
 
 using jubatus::core::recommender::make_sfv;
 using jubatus::core::recommender::make_ids;
-using pfi::data::unordered_map;
-using pfi::lang::lexical_cast;
-using pfi::lang::shared_ptr;
+using jubatus::util::data::unordered_map;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
 using std::istringstream;
 using std::string;
 using std::vector;
@@ -173,7 +173,7 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
                           float deviation) {
     common::sfv_t sfv(mean);
     const uint64_t seed = common::hash_util::calc_string_hash(name);
-    pfi::math::random::mtrand r(seed);
+    jubatus::util::math::random::mtrand r(seed);
 
     for (size_t i = 0; i < sfv.size(); ++i) {
       sfv[i].second += r.next_gaussian() * deviation;
@@ -230,8 +230,8 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
     single_storage_.reset();
   }
 
-  vector<pfi::lang::shared_ptr<lof_storage> > storages_;
-  pfi::lang::shared_ptr<lof_storage> single_storage_;
+  vector<jubatus::util::lang::shared_ptr<lof_storage> > storages_;
+  jubatus::util::lang::shared_ptr<lof_storage> single_storage_;
   common::portable_mixer<lof_storage, lof_table_t> portable_mixer_;
 };
 

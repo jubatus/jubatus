@@ -17,11 +17,11 @@
 #include "unique_lock.hpp"
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/noncopyable.h>
-#include <pficommon/concurrent/lock.h>
+#include "jubatus/util/lang/noncopyable.h"
+#include "jubatus/util/concurrent/lock.h"
 #include "jubatus/core/common/assert.hpp"
 
-class lockable_mock : public pfi::concurrent::lockable {
+class lockable_mock : public jubatus::util::concurrent::lockable {
  public:
   lockable_mock()
       : locked_(false) {
@@ -127,13 +127,13 @@ TEST(unique_lock, swap) {
 }
 
 TEST(unique_rlock, simple) {
-  pfi::concurrent::rw_mutex m;
+  jubatus::util::concurrent::rw_mutex m;
   unique_rlock lk(m);
   EXPECT_TRUE(lk.locked());
 }
 
 TEST(unique_wlock, simple) {
-  pfi::concurrent::rw_mutex m;
+  jubatus::util::concurrent::rw_mutex m;
   unique_wlock lk(m);
   EXPECT_TRUE(lk.locked());
 }

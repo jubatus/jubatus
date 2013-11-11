@@ -21,9 +21,9 @@
 #include <utility>
 #include <string>
 #include <vector>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
 #include "recommender_base.hpp"
 #include "../storage/lsh_index_storage.hpp"
 
@@ -100,11 +100,11 @@ class euclid_lsh : public recommender_base {
 
   void initialize_model();
 
-  pfi::lang::shared_ptr<storage::mixable_lsh_index_storage> mixable_storage_;
+  jubatus::util::lang::shared_ptr<storage::mixable_lsh_index_storage> mixable_storage_;
   float bin_width_;
   uint32_t num_probe_;
 
-  pfi::data::unordered_map<uint32_t, std::vector<float> > projection_;
+  jubatus::util::data::unordered_map<uint32_t, std::vector<float> > projection_;
   bool retain_projection_;
 };
 

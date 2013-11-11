@@ -30,11 +30,11 @@
 #include "../recommender/euclid_lsh.hpp"
 #include "../recommender/recommender_factory.hpp"
 
-using pfi::data::serialization::binary_iarchive;
-using pfi::data::serialization::binary_oarchive;
-using pfi::data::unordered_map;
-using pfi::data::unordered_set;
-using pfi::lang::shared_ptr;
+using jubatus::util::data::serialization::binary_iarchive;
+using jubatus::util::data::serialization::binary_oarchive;
+using jubatus::util::data::unordered_map;
+using jubatus::util::data::unordered_set;
+using jubatus::util::lang::shared_ptr;
 using std::istream;
 using std::istringstream;
 using std::max;
@@ -63,7 +63,7 @@ lof_storage::lof_storage()
       reverse_nn_num_(DEFAULT_REVERSE_NN_NUM),
       nn_engine_(recommender::recommender_factory::create_recommender(
           "euclid_lsh",
-          common::jsonconfig::config(pfi::text::json::to_json(
+          common::jsonconfig::config(jubatus::util::text::json::to_json(
               recommender::euclid_lsh::config())), "")) {
 }
 

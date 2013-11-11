@@ -20,8 +20,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "recommender_base.hpp"
 #include "../storage/bit_index_storage.hpp"
@@ -75,9 +75,9 @@ class lsh : public recommender_base {
   void initialize_model();
 
   // bases for lsh
-  pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_;
+  jubatus::util::data::unordered_map<std::string, std::vector<float> > column2baseval_;
 
-  pfi::lang::shared_ptr<storage::mixable_bit_index_storage> mixable_storage_;
+  jubatus::util::lang::shared_ptr<storage::mixable_bit_index_storage> mixable_storage_;
 
   const uint64_t base_num_;
 };

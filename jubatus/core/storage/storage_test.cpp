@@ -18,8 +18,8 @@
 #include <map>
 #include <string>
 #include <gtest/gtest.h>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
 #include "local_storage.hpp"
 #include "local_storage_mixture.hpp"
 
@@ -41,8 +41,8 @@ using jubatus::core::storage::val2_t;
 using jubatus::core::storage::val3_t;
 using jubatus::core::storage::local_storage;
 using jubatus::core::storage::local_storage_mixture;
-using pfi::data::serialization::binary_iarchive;
-using pfi::data::serialization::binary_oarchive;
+using jubatus::util::data::serialization::binary_iarchive;
+using jubatus::util::data::serialization::binary_oarchive;
 
 namespace jubatus {
 namespace core {
@@ -52,7 +52,7 @@ class stub_storage : public storage_base {
  private:
   map<string, map<string, val3_t> > data_;
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(data_);

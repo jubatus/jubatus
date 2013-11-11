@@ -20,9 +20,9 @@
 #include <utility>
 #include <vector>
 
-#include <pficommon/text/json.h>
-#include <pficommon/data/optional.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/data/optional.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/fv_converter/datum.hpp"
@@ -36,9 +36,9 @@
 using std::string;
 using std::vector;
 using std::pair;
-using pfi::lang::shared_ptr;
-using pfi::text::json::json;
-using pfi::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
+using jubatus::util::text::json::json;
+using jubatus::util::lang::lexical_cast;
 
 using jubatus::core::fv_converter::datum;
 using jubatus::server::common::lock_service;
@@ -51,7 +51,7 @@ namespace {
 
 struct regression_serv_config {
   std::string method;
-  pfi::data::optional<core::common::jsonconfig::config> parameter;
+  jubatus::util::data::optional<core::common::jsonconfig::config> parameter;
   core::fv_converter::converter_config converter;
 
   template<typename Ar>
@@ -70,7 +70,7 @@ shared_ptr<core::storage::storage_base> make_model(
 
 regression_serv::regression_serv(
     const framework::server_argv& a,
-    const pfi::lang::shared_ptr<lock_service>& zk)
+    const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
 }

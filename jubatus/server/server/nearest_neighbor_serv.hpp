@@ -36,14 +36,14 @@ class nearest_neighbor_serv : public framework::server_base {
  public:
   nearest_neighbor_serv(
       const framework::server_argv& a,
-      const pfi::lang::shared_ptr<common::lock_service>& zk);
+      const jubatus::util::lang::shared_ptr<common::lock_service>& zk);
   virtual ~nearest_neighbor_serv();
 
   framework::mixer::mixer* get_mixer() const {
     return mixer_.get();
   }
 
-  pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder>
+  jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder>
   get_mixable_holder() const {
     return nearest_neighbor_->get_mixable_holder();
   }
@@ -66,7 +66,7 @@ class nearest_neighbor_serv : public framework::server_base {
 
  private:
   void check_set_config()const;
-  pfi::lang::scoped_ptr<framework::mixer::mixer> mixer_;
+  jubatus::util::lang::scoped_ptr<framework::mixer::mixer> mixer_;
 
   std::string config_;
 
@@ -75,7 +75,7 @@ class nearest_neighbor_serv : public framework::server_base {
   uint64_t build_cnt_;
   uint64_t mix_cnt_;
 
-  pfi::lang::shared_ptr<core::driver::nearest_neighbor> nearest_neighbor_;
+  jubatus::util::lang::shared_ptr<core::driver::nearest_neighbor> nearest_neighbor_;
 };
 
 }  // namespace server

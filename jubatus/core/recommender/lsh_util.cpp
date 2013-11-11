@@ -19,7 +19,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
-#include <pficommon/math/random.h>
+#include "jubatus/util/math/random.h"
 #include "../common/assert.hpp"
 #include "../storage/bit_vector.hpp"
 
@@ -30,10 +30,10 @@ namespace recommender {
 using std::string;
 using std::vector;
 using jubatus::core::storage::bit_vector;
-using pfi::data::unordered_map;
+using jubatus::util::data::unordered_map;
 
 void generate_random_vector(size_t dim, uint32_t seed, vector<float>& ret) {
-  pfi::math::random::mtrand rnd(seed);
+  jubatus::util::math::random::mtrand rnd(seed);
   vector<float> v(dim);
   for (uint64_t i = 0; i < dim; ++i) {
     v[i] = rnd.next_gaussian();

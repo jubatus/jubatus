@@ -21,9 +21,9 @@
 #include <utility>
 #include <iostream>
 #include <gtest/gtest.h>
-#include <pficommon/data/string/utility.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/data/string/utility.h"
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/lang/scoped_ptr.h"
 
 #include "bit_vector_nearest_neighbor_base.hpp"
 
@@ -34,7 +34,7 @@ using std::string;
 using std::make_pair;
 using jubatus::core::table::bit_vector;
 using jubatus::core::table::column_table;
-using pfi::data::string::split;
+using jubatus::util::data::string::split;
 
 namespace jubatus {
 namespace core {
@@ -56,7 +56,7 @@ common::sfv_t make_sfv(const string& in_str) {
   vector<string> cells = split(in_str, ' ');
   for (size_t i = 0; i < cells.size(); ++i) {
     vector<string> pair = split(cells[i], ':');
-    sfv.push_back(make_pair(pair[0], pfi::lang::lexical_cast<float>(pair[1])));
+    sfv.push_back(make_pair(pair[0], jubatus::util::lang::lexical_cast<float>(pair[1])));
   }
   return sfv;
 }
@@ -68,7 +68,7 @@ class bit_vector_nearest_neighbor_mock
  public:
   bit_vector_nearest_neighbor_mock(
       uint64_t bitnum,
-      pfi::lang::shared_ptr<table::column_table> table)
+      jubatus::util::lang::shared_ptr<table::column_table> table)
       : bit_vector_nearest_neighbor_base(bitnum, table, "test"),
         hash_value_(bitnum) {
   }
@@ -102,8 +102,8 @@ class bit_vector_nearest_neighbor_base_test : public testing::Test {
     mock_.reset(new bit_vector_nearest_neighbor_mock(bitnum, ct_));
   }
 
-  pfi::lang::shared_ptr<column_table> ct_;
-  pfi::lang::scoped_ptr<bit_vector_nearest_neighbor_mock> mock_;
+  jubatus::util::lang::shared_ptr<column_table> ct_;
+  jubatus::util::lang::scoped_ptr<bit_vector_nearest_neighbor_mock> mock_;
 };
 
 TEST_F(bit_vector_nearest_neighbor_base_test, get_all_row_ids) {

@@ -26,9 +26,9 @@
 #include "../framework/mixable.hpp"
 
 
-pfi::lang::shared_ptr<jubatus::core::fv_converter::datum_to_fv_converter>
+jubatus::util::lang::shared_ptr<jubatus::core::fv_converter::datum_to_fv_converter>
   make_fv_converter() {
-  pfi::lang::shared_ptr<jubatus::core::fv_converter::datum_to_fv_converter>
+  jubatus::util::lang::shared_ptr<jubatus::core::fv_converter::datum_to_fv_converter>
     converter(
         new jubatus::core::fv_converter::datum_to_fv_converter);
 
@@ -52,7 +52,7 @@ pfi::lang::shared_ptr<jubatus::core::fv_converter::datum_to_fv_converter>
 }
 
 void save_model(
-    pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> holder,
+    jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder> holder,
     std::string& data) {
   msgpack::sbuffer buf;
   msgpack::packer<msgpack::sbuffer> packer(buf);
@@ -61,7 +61,7 @@ void save_model(
 }
 
 void load_model(
-    pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> holder,
+    jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder> holder,
     const std::string& data) {
   msgpack::unpacked unpacked;
   msgpack::unpack(&unpacked, &data[0], data.size());

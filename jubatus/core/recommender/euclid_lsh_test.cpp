@@ -19,9 +19,9 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/data/string/utility.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/data/string/utility.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/math/random.h"
 
 #include "euclid_lsh.hpp"
 #include "../common/hash.hpp"
@@ -33,8 +33,8 @@ using std::make_pair;
 using std::pair;
 using std::string;
 using std::vector;
-using pfi::lang::lexical_cast;
-using pfi::math::random::mtrand;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::math::random::mtrand;
 using jubatus::core::storage::lsh_index_storage;
 
 namespace jubatus {
@@ -140,8 +140,8 @@ class euclid_lsh_mix_test
     }
   }
 
-  vector<pfi::lang::shared_ptr<euclid_lsh> > recoms_;
-  pfi::lang::shared_ptr<euclid_lsh> single_recom_;
+  vector<jubatus::util::lang::shared_ptr<euclid_lsh> > recoms_;
+  jubatus::util::lang::shared_ptr<euclid_lsh> single_recom_;
   common::portable_mixer<lsh_index_storage, storage::lsh_master_table_t>
   portable_mixer_;
 

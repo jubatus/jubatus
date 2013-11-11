@@ -22,7 +22,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../common/type.hpp"
 #include "../driver/mixable_versioned_table.hpp"
 #include "../framework/mixable.hpp"
@@ -35,16 +35,16 @@ namespace nearest_neighbor {
 class nearest_neighbor_base {
  public:
   explicit nearest_neighbor_base(
-      pfi::lang::shared_ptr<table::column_table> table,
+      jubatus::util::lang::shared_ptr<table::column_table> table,
       const std::string& id);
   virtual ~nearest_neighbor_base() {}
 
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
-  pfi::lang::shared_ptr<const table::column_table> get_const_table() const {
+  jubatus::util::lang::shared_ptr<const table::column_table> get_const_table() const {
     return mixable_table_->get_model();
   }
-  pfi::lang::shared_ptr<table::column_table> get_table() {
+  jubatus::util::lang::shared_ptr<table::column_table> get_table() {
     return mixable_table_->get_model();
   }
 
@@ -84,7 +84,7 @@ class nearest_neighbor_base {
   std::string my_id_;
 
  private:
-  pfi::lang::shared_ptr<driver::mixable_versioned_table> mixable_table_;
+  jubatus::util::lang::shared_ptr<driver::mixable_versioned_table> mixable_table_;
 };
 
 }  // namespace nearest_neighbor

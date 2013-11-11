@@ -21,7 +21,7 @@
 #include <string>
 #include <utility>
 
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/driver/stat.hpp"
 #include "../framework/server_base.hpp"
@@ -34,14 +34,14 @@ class stat_serv : public framework::server_base {
  public:
   stat_serv(
       const framework::server_argv&,
-      const pfi::lang::shared_ptr<common::lock_service>& zk);
+      const jubatus::util::lang::shared_ptr<common::lock_service>& zk);
   virtual ~stat_serv();
 
   framework::mixer::mixer* get_mixer() const {
     return mixer_.get();
   }
 
-  pfi::lang::shared_ptr<core::framework::mixable_holder>
+  jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
     get_mixable_holder() const {
     return stat_->get_mixable_holder();
   }
@@ -62,8 +62,8 @@ class stat_serv : public framework::server_base {
   bool clear();
 
  private:
-  pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<core::driver::stat> stat_;
+  jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
+  jubatus::util::lang::shared_ptr<core::driver::stat> stat_;
   std::string config_;
 };
 

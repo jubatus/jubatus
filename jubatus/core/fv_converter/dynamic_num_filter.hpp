@@ -19,7 +19,7 @@
 
 #include <map>
 #include <string>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 #include "dynamic_loader.hpp"
 #include "num_filter.hpp"
 
@@ -38,7 +38,7 @@ class dynamic_num_filter : public num_filter {
 
  private:
   dynamic_loader loader_;
-  pfi::lang::scoped_ptr<num_filter> impl_;
+  jubatus::util::lang::scoped_ptr<num_filter> impl_;
 };
 
 }  // namespace fv_converter

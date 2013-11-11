@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../nearest_neighbor/nearest_neighbor_base.hpp"
 #include "recommender_base.hpp"
 
@@ -32,7 +32,7 @@ namespace recommender {
 class nearest_neighbor_recommender : public recommender_base {
  public:
   explicit nearest_neighbor_recommender(
-      pfi::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+      jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
       nearest_neighbor_engine);
 
   void similar_row(
@@ -56,7 +56,7 @@ class nearest_neighbor_recommender : public recommender_base {
   void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack_impl(msgpack::object o);
 
-  pfi::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+  jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
   nearest_neighbor_engine_;
 };
 

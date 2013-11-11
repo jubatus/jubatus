@@ -22,13 +22,13 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 #include <glog/logging.h>
 #include "jubatus/core/common/exception.hpp"
 
 using std::string;
 using std::vector;
-using pfi::lang::lexical_cast;
+using jubatus::util::lang::lexical_cast;
 
 namespace jubatus {
 namespace server {
@@ -114,7 +114,7 @@ void watch_delete_actor(
     const string& name,
     const string& ip,
     int port,
-    pfi::lang::function<void(string)> callback) {
+    jubatus::util::lang::function<void(string)> callback) {
   bool success = true;
 
   string path;

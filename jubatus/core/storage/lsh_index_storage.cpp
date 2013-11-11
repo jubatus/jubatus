@@ -21,11 +21,11 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/data/unordered_set.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/data/unordered_set.h"
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/math/random.h"
 #include "lsh_util.hpp"
 
 using std::copy;
@@ -40,9 +40,9 @@ using std::vector;
 using std::sort;
 using std::partial_sort;
 using std::lower_bound;
-using pfi::data::unordered_map;
-using pfi::data::unordered_set;
-using pfi::math::random::mtrand;
+using jubatus::util::data::unordered_map;
+using jubatus::util::data::unordered_set;
+using jubatus::util::math::random::mtrand;
 
 namespace jubatus {
 namespace core {
@@ -113,7 +113,7 @@ float calc_euclidean_distance(
 lsh_master_table_t extract_diff(const string& serialized) {
   lsh_master_table_t diff;
   istringstream iss(serialized);
-  pfi::data::serialization::binary_iarchive bi(iss);
+  jubatus::util::data::serialization::binary_iarchive bi(iss);
   bi >> diff;
   return diff;
 }

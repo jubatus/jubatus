@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../../server/framework.hpp"
 #include "recommender_serv.hpp"
@@ -21,48 +21,48 @@ class recommender_impl : public jubatus::server::common::mprpc::rpc_server {
         true)) {
 
     rpc_server::add<bool(std::string, std::string)>("clear_row",
-        pfi::lang::bind(&recommender_impl::clear_row, this, pfi::lang::_2));
+        jubatus::util::lang::bind(&recommender_impl::clear_row, this, jubatus::util::lang::_2));
     rpc_server::add<bool(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("update_row", pfi::lang::bind(
-        &recommender_impl::update_row, this, pfi::lang::_2, pfi::lang::_3));
-    rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(
+        jubatus::core::fv_converter::datum)>("update_row", jubatus::util::lang::bind(
+        &recommender_impl::update_row, this, jubatus::util::lang::_2, jubatus::util::lang::_3));
+    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &recommender_impl::clear, this));
     rpc_server::add<jubatus::core::fv_converter::datum(std::string,
-        std::string)>("complete_row_from_id", pfi::lang::bind(
-        &recommender_impl::complete_row_from_id, this, pfi::lang::_2));
+        std::string)>("complete_row_from_id", jubatus::util::lang::bind(
+        &recommender_impl::complete_row_from_id, this, jubatus::util::lang::_2));
     rpc_server::add<jubatus::core::fv_converter::datum(std::string,
         jubatus::core::fv_converter::datum)>("complete_row_from_datum",
-        pfi::lang::bind(&recommender_impl::complete_row_from_datum, this,
-        pfi::lang::_2));
+        jubatus::util::lang::bind(&recommender_impl::complete_row_from_datum, this,
+        jubatus::util::lang::_2));
     rpc_server::add<std::vector<id_with_score>(std::string, std::string,
-        uint32_t)>("similar_row_from_id", pfi::lang::bind(
-        &recommender_impl::similar_row_from_id, this, pfi::lang::_2,
-        pfi::lang::_3));
+        uint32_t)>("similar_row_from_id", jubatus::util::lang::bind(
+        &recommender_impl::similar_row_from_id, this, jubatus::util::lang::_2,
+        jubatus::util::lang::_3));
     rpc_server::add<std::vector<id_with_score>(std::string,
         jubatus::core::fv_converter::datum, uint32_t)>("similar_row_from_datum",
-        pfi::lang::bind(&recommender_impl::similar_row_from_datum, this,
-        pfi::lang::_2, pfi::lang::_3));
+        jubatus::util::lang::bind(&recommender_impl::similar_row_from_datum, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<jubatus::core::fv_converter::datum(std::string,
-        std::string)>("decode_row", pfi::lang::bind(
-        &recommender_impl::decode_row, this, pfi::lang::_2));
+        std::string)>("decode_row", jubatus::util::lang::bind(
+        &recommender_impl::decode_row, this, jubatus::util::lang::_2));
     rpc_server::add<std::vector<std::string>(std::string)>("get_all_rows",
-        pfi::lang::bind(&recommender_impl::get_all_rows, this));
+        jubatus::util::lang::bind(&recommender_impl::get_all_rows, this));
     rpc_server::add<float(std::string, jubatus::core::fv_converter::datum,
-        jubatus::core::fv_converter::datum)>("calc_similarity", pfi::lang::bind(
-        &recommender_impl::calc_similarity, this, pfi::lang::_2,
-        pfi::lang::_3));
+        jubatus::core::fv_converter::datum)>("calc_similarity", jubatus::util::lang::bind(
+        &recommender_impl::calc_similarity, this, jubatus::util::lang::_2,
+        jubatus::util::lang::_3));
     rpc_server::add<float(std::string, jubatus::core::fv_converter::datum)>(
-        "calc_l2norm", pfi::lang::bind(&recommender_impl::calc_l2norm, this,
-        pfi::lang::_2));
+        "calc_l2norm", jubatus::util::lang::bind(&recommender_impl::calc_l2norm, this,
+        jubatus::util::lang::_2));
 
-    rpc_server::add<std::string(std::string)>("get_config", pfi::lang::bind(
+    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
         &recommender_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save", pfi::lang::bind(
-        &recommender_impl::save, this, pfi::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", pfi::lang::bind(
-        &recommender_impl::load, this, pfi::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
+        &recommender_impl::save, this, jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
+        &recommender_impl::load, this, jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", pfi::lang::bind(
+        std::string)>("get_status", jubatus::util::lang::bind(
         &recommender_impl::get_status, this));
   }
 
@@ -148,10 +148,10 @@ class recommender_impl : public jubatus::server::common::mprpc::rpc_server {
   }
 
   int run() { return p_->start(*this); }
-  pfi::lang::shared_ptr<recommender_serv> get_p() { return p_->server(); }
+  jubatus::util::lang::shared_ptr<recommender_serv> get_p() { return p_->server(); }
 
  private:
-  pfi::lang::shared_ptr<jubatus::server::framework::server_helper<recommender_serv> > p_;
+  jubatus::util::lang::shared_ptr<jubatus::server::framework::server_helper<recommender_serv> > p_;
 };
 
 }  // namespace server

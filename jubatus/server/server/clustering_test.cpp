@@ -24,9 +24,9 @@
 
 #include <gtest/gtest.h>
 
-#include <pficommon/math/random.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/math/random.h"
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/text/json.h"
 
 #include "../core/diffv.hpp"
 #include "clustering_client.hpp"
@@ -47,8 +47,8 @@ using std::stringstream;
 using std::isfinite;
 using std::numeric_limits;
 
-using pfi::lang::lexical_cast;
-using pfi::math::random::mtrand;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::math::random::mtrand;
 using jubatus::datum;
 using jubatus::clustering::clustering_config;
 using jubatus::jsonconfig::config_cast_check;
@@ -158,8 +158,8 @@ size_t get_total_num(const vector<vector<pair<double, datum> > >& points) {
 
 struct clustering_serv_config {
   std::string method;
-  pfi::data::optional<pfi::text::json::json> parameter;
-  pfi::text::json::json converter;
+  jubatus::util::data::optional<jubatus::util::text::json::json> parameter;
+  jubatus::util::text::json::json converter;
 
   template<typename Ar>
   void serialize(Ar& ar) {
@@ -169,7 +169,7 @@ struct clustering_serv_config {
 
 clustering_config get_config(const string& config_str) {
   typedef jubatus::jsonconfig::config jsconf;
-  jsconf config_root(lexical_cast<pfi::text::json::json>(config_str));
+  jsconf config_root(lexical_cast<jubatus::util::text::json::json>(config_str));
   clustering_serv_config conf =
       config_cast_check<clustering_serv_config>(config_root);
   jsconf param;

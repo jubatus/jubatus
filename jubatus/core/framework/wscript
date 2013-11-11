@@ -16,7 +16,7 @@ def build(bld):
       source=t + '.cpp',
       target=t,
       includes='.',
-      use='MSGPACK'+libassert,
+      use='MSGPACK jubatus_util'+libassert,
       )
 
   tests = [

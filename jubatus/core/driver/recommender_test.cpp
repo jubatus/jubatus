@@ -21,7 +21,7 @@
 
 #include <gtest/gtest.h>
 
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/converter_config.hpp"
@@ -39,7 +39,7 @@ using std::pair;
 using std::make_pair;
 using std::stringstream;
 
-using pfi::lang::lexical_cast;
+using jubatus::util::lang::lexical_cast;
 using jubatus::core::fv_converter::datum;
 
 namespace jubatus {
@@ -50,7 +50,7 @@ class recommender_test : public ::testing::Test {
  protected:
   void SetUp() {
     recommender_.reset(new driver::recommender(
-          pfi::lang::shared_ptr<core::recommender::recommender_base>(
+          jubatus::util::lang::shared_ptr<core::recommender::recommender_base>(
             new core::recommender::inverted_index),
           make_fv_converter()));
   }
@@ -59,7 +59,7 @@ class recommender_test : public ::testing::Test {
     recommender_.reset();
   }
 
-  pfi::lang::shared_ptr<core::driver::recommender> recommender_;
+  jubatus::util::lang::shared_ptr<core::driver::recommender> recommender_;
 };
 
 

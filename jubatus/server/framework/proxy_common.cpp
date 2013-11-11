@@ -71,7 +71,7 @@ void proxy_common::get_members_(
   path += "/nodes";
 
   {
-    pfi::concurrent::scoped_lock lk(mutex_);
+    jubatus::util::concurrent::scoped_lock lk(mutex_);
     zk_->list(path, list);
   }
   std::vector<std::string>::const_iterator it;
@@ -96,7 +96,7 @@ void proxy_common::get_members_from_cht_(
     std::vector<std::pair<std::string, int> >& ret,
     size_t n) {
   ret.clear();
-  pfi::concurrent::scoped_lock lk(mutex_);
+  jubatus::util::concurrent::scoped_lock lk(mutex_);
   jubatus::server::common::cht ht(zk_, a_.type, name);
   ht.find(id, ret, n);
 

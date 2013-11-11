@@ -25,9 +25,9 @@
 #include <glog/logging.h>
 #include <jubatus/msgpack/rpc/client.h>
 #include <msgpack.hpp>
-#include <pficommon/concurrent/thread.h>
-#include <pficommon/lang/function.h>
-#include <pficommon/lang/bind.h>
+#include "jubatus/util/concurrent/thread.h"
+#include "jubatus/util/lang/function.h"
+#include "jubatus/util/lang/bind.h"
 
 #include "proxy_common.hpp"
 #include "server_util.hpp"
@@ -102,7 +102,7 @@ class proxy
 
   template<typename R>
   void register_broadcast(std::string method_name,
-                          pfi::lang::function<R(R, R)> agg) {
+                          jubatus::util::lang::function<R(R, R)> agg) {
     using mp::placeholders::_1;
     mp::function<R(std::string)> f = mp::bind(
         &proxy::template broadcast_proxy0<R>, this, method_name, _1, agg);
@@ -111,7 +111,7 @@ class proxy
 
   template<typename R, typename A0>
   void register_broadcast(std::string method_name,
-                          pfi::lang::function<R(R, R)> agg) {
+                          jubatus::util::lang::function<R(R, R)> agg) {
     using mp::placeholders::_1;
     using mp::placeholders::_2;
     mp::function<R(std::string, A0)> f = mp::bind(
@@ -121,7 +121,7 @@ class proxy
   }
 
   template<int N, typename R>
-  void register_cht(std::string method_name, pfi::lang::function<R(R, R)> agg) {
+  void register_cht(std::string method_name, jubatus::util::lang::function<R(R, R)> agg) {
     using mp::placeholders::_1;
     using mp::placeholders::_2;
     mp::function<R(std::string, std::string)> f = mp::bind(
@@ -130,7 +130,7 @@ class proxy
   }
 
   template<int N, typename R, typename A0>
-  void register_cht(std::string method_name, pfi::lang::function<R(R, R)> agg) {
+  void register_cht(std::string method_name, jubatus::util::lang::function<R(R, R)> agg) {
     using mp::placeholders::_1;
     using mp::placeholders::_2;
     using mp::placeholders::_3;
@@ -141,7 +141,7 @@ class proxy
   }
 
   template<int N, typename R, typename A0, typename A1>
-  void register_cht(std::string method_name, pfi::lang::function<R(R, R)> agg) {
+  void register_cht(std::string method_name, jubatus::util::lang::function<R(R, R)> agg) {
     using mp::placeholders::_1;
     using mp::placeholders::_2;
     using mp::placeholders::_3;
@@ -190,7 +190,7 @@ class proxy
   template<typename R>
   void register_async_broadcast(
       const std::string& method_name,
-      pfi::lang::function<R(R, R)> agg) {
+      jubatus::util::lang::function<R(R, R)> agg) {
     typedef typename msgpack::type::tuple<std::string> packed_args_type;
     register_async_vbroadcast_inner<R, packed_args_type>(method_name, agg);
   }
@@ -198,7 +198,7 @@ class proxy
   template<typename R, typename A0>
   void register_async_broadcast(
       const std::string& method_name,
-      pfi::lang::function<R(R, R)> agg) {
+      jubatus::util::lang::function<R(R, R)> agg) {
     typedef typename msgpack::type::tuple<std::string, A0> packed_args_type;
     register_async_vbroadcast_inner<R, packed_args_type>(method_name, agg);
   }
@@ -206,7 +206,7 @@ class proxy
   template<typename R, typename A0, typename A1>
   void register_async_broadcast(
       const std::string& method_name,
-      pfi::lang::function<R(R, R)> agg) {
+      jubatus::util::lang::function<R(R, R)> agg) {
     typedef typename msgpack::type::tuple<std::string, A0, A1> packed_args_type;
     register_async_vbroadcast_inner<R, packed_args_type>(method_name, agg);
   }
@@ -214,7 +214,7 @@ class proxy
   template<typename R, typename A0, typename A1, typename A2>
   void register_async_broadcast(
       const std::string& method_name,
-      pfi::lang::function<R(R, R)> agg) {
+      jubatus::util::lang::function<R(R, R)> agg) {
     typedef typename msgpack::type::tuple<std::string, A0, A1, A2>
       packed_args_type;
     register_async_vbroadcast_inner<R, packed_args_type>(method_name, agg);
@@ -223,7 +223,7 @@ class proxy
   template<typename R, typename A0, typename A1, typename A2, typename A3>
   void register_async_broadcast(
       const std::string& method_name,
-      pfi::lang::function<R(R, R)> agg) {
+      jubatus::util::lang::function<R(R, R)> agg) {
     typedef typename msgpack::type::tuple<std::string, A0, A1, A2, A3>
       packed_args_type;
     register_async_vbroadcast_inner<R, packed_args_type>(method_name, agg);
@@ -233,7 +233,7 @@ class proxy
   template<int N, typename R>
   void register_async_cht(
       const std::string& method_name,
-      pfi::lang::function<R(R, R)> agg) {
+      jubatus::util::lang::function<R(R, R)> agg) {
     typedef typename msgpack::type::tuple<std::string, std::string>
       packed_args_type;
     register_async_vcht_inner<N, R, packed_args_type>(method_name, agg);
@@ -242,7 +242,7 @@ class proxy
   template<int N, typename R, typename A0>
   void register_async_cht(
       const std::string& method_name,
-      pfi::lang::function<R(R, R)> agg) {
+      jubatus::util::lang::function<R(R, R)> agg) {
     typedef typename msgpack::type::tuple<std::string, std::string, A0>
       packed_args_type;
     register_async_vcht_inner<N, R, packed_args_type>(method_name, agg);
@@ -251,7 +251,7 @@ class proxy
   template<int N, typename R, typename A0, typename A1>
   void register_async_cht(
       const std::string& method_name,
-      pfi::lang::function<R(R, R)> agg) {
+      jubatus::util::lang::function<R(R, R)> agg) {
     typedef typename msgpack::type::tuple<std::string, std::string, A0, A1>
       packed_args_type;
     register_async_vcht_inner<N, R, packed_args_type>(method_name, agg);
@@ -260,7 +260,7 @@ class proxy
   template<int N, typename R, typename A0, typename A1, typename A2>
   void register_async_cht(
       const std::string& method_name,
-      pfi::lang::function<R(R, R)> agg) {
+      jubatus::util::lang::function<R(R, R)> agg) {
     typedef typename msgpack::type::tuple<std::string, std::string, A0, A1, A2>
       packed_args_type;
     register_async_vcht_inner<N, R, packed_args_type>(method_name, agg);
@@ -270,7 +270,7 @@ class proxy
            typename A3>
   void register_async_cht(
       const std::string& method_name,
-      pfi::lang::function<R(R, R)> agg) {
+      jubatus::util::lang::function<R(R, R)> agg) {
     typedef typename msgpack::type::tuple<std::string, std::string, A0, A1, A2,
         A3> packed_args_type;
     register_async_vcht_inner<N, R, packed_args_type>(method_name, agg);
@@ -292,7 +292,7 @@ class proxy
   template<typename R, typename Tuple>
   void register_async_vbroadcast_inner(
       const std::string& method_name,
-      const pfi::lang::function<R(R, R)>& agg) {
+      const jubatus::util::lang::function<R(R, R)>& agg) {
     using mp::placeholders::_1;
     using mp::placeholders::_2;
     typedef typename common::mprpc::async_vmethod<Tuple>::type vfunc_type;
@@ -306,7 +306,7 @@ class proxy
   template<int N, typename R, typename Tuple>
   void register_async_vcht_inner(
       const std::string& method_name,
-      const pfi::lang::function<R(R, R)>& agg) {
+      const jubatus::util::lang::function<R(R, R)>& agg) {
     using mp::placeholders::_1;
     using mp::placeholders::_2;
     typedef typename common::mprpc::async_vmethod<Tuple>::type vfunc_type;
@@ -425,7 +425,7 @@ class proxy
   R broadcast_proxy0(
       const std::string& method_name,
       const std::string& name,
-      pfi::lang::function<R(R, R)>& agg) {
+      jubatus::util::lang::function<R(R, R)>& agg) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
@@ -450,7 +450,7 @@ class proxy
       const std::string& method_name,
       const std::string& name,
       const A& arg,
-      pfi::lang::function<R(R, R)>& agg) {
+      jubatus::util::lang::function<R(R, R)>& agg) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_(name, list);
@@ -477,7 +477,7 @@ class proxy
       request_type req,
       const std::string& method_name,
       const Tuple& args,
-      pfi::lang::function<R(R, R)>& agg) {
+      jubatus::util::lang::function<R(R, R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
     std::string name = args.template get<0>();
     get_members_(name, list);
@@ -491,7 +491,7 @@ class proxy
       const std::string& method_name,
       const std::string& name,
       const std::string& id,
-      pfi::lang::function<R(R, R)>& agg) {
+      jubatus::util::lang::function<R(R, R)>& agg) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_from_cht_(name, id, list, N);
@@ -518,7 +518,7 @@ class proxy
       const std::string& name,
       const std::string& id,
       const A0& arg,
-      pfi::lang::function<R(R, R)>& agg) {
+      jubatus::util::lang::function<R(R, R)>& agg) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_from_cht_(name, id, list, N);
@@ -545,7 +545,7 @@ class proxy
       const std::string& id,
       const A0& a0,
       const A1& a1,
-      pfi::lang::function<R(R, R)>& agg) {
+      jubatus::util::lang::function<R(R, R)>& agg) {
     DLOG(INFO) << __func__ << " " << method_name << " " << name;
     std::vector<std::pair<std::string, int> > list;
     get_members_from_cht_(name, id, list, N);
@@ -572,7 +572,7 @@ class proxy
       request_type req,
       const std::string& method_name,
       const Tuple& args,
-      pfi::lang::function<R(R, R)>& agg) {
+      jubatus::util::lang::function<R(R, R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
     std::string name = args.template get<0>();
     std::string id = args.template get<1>();
@@ -602,8 +602,8 @@ class proxy
   template<typename Res>
   class async_task : public mp::enable_shared_from_this<async_task<Res> > {
    public:
-    typedef pfi::lang::shared_ptr<Res> result_ptr;
-    typedef pfi::lang::function<Res(Res, Res)> reducer_type;
+    typedef jubatus::util::lang::shared_ptr<Res> result_ptr;
+    typedef jubatus::util::lang::function<Res(Res, Res)> reducer_type;
 
    public:
     async_task(
@@ -784,7 +784,7 @@ class proxy
       async_task_loop* at_loop = new async_task_loop(a);
 
 #if 0
-      pfi::concurrent::thread thr(pfi::lang::bind(&async_task_loop::run,
+      jubatus::util::concurrent::thread thr(jubatus::util::lang::bind(&async_task_loop::run,
                                                   at_loop));
       thr.start();
 #else

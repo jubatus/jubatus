@@ -21,8 +21,8 @@
 #include <utility>
 #include <vector>
 #include <glog/logging.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/text/json.h"
 #include "../../core/clustering/clustering_config.hpp"
 #include "../../core/common/exception.hpp"
 #include "../../core/common/jsonconfig.hpp"
@@ -35,7 +35,7 @@ namespace {
 
 struct clustering_serv_config {
   std::string method;
-  pfi::data::optional<pfi::text::json::json> parameter;
+  jubatus::util::data::optional<jubatus::util::text::json::json> parameter;
   core::fv_converter::converter_config converter;
 
   template<typename Ar>
@@ -48,7 +48,7 @@ struct clustering_serv_config {
 
 clustering_serv::clustering_serv(
     const framework::server_argv& a,
-    const pfi::lang::shared_ptr<common::lock_service>& zk)
+    const jubatus::util::lang::shared_ptr<common::lock_service>& zk)
     : server_base(a),
       mixer_(framework::mixer::create_mixer(a, zk)) {
 }
@@ -66,13 +66,13 @@ uint64_t clustering_serv::user_data_version() const {
 
 void clustering_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config config_root(
-      pfi::lang::lexical_cast<pfi::text::json::json>(config));
+      jubatus::util::lang::lexical_cast<jubatus::util::text::json::json>(config));
   clustering_serv_config conf =
       core::common::jsonconfig::config_cast_check<clustering_serv_config>(
           config_root);
 
   config_ = config;
-  pfi::lang::shared_ptr<core::fv_converter::datum_to_fv_converter> converter =
+  jubatus::util::lang::shared_ptr<core::fv_converter::datum_to_fv_converter> converter =
       core::fv_converter::make_fv_converter(conf.converter);
 
   core::common::jsonconfig::config param;
@@ -81,7 +81,7 @@ void clustering_serv::set_config(const std::string& config) {
   }
 
   const std::string name =
-      argv().eth + pfi::lang::lexical_cast<std::string>(argv().port);
+      argv().eth + jubatus::util::lang::lexical_cast<std::string>(argv().port);
   core::clustering::clustering_config cluster_conf =
       core::common::jsonconfig::config_cast_check<
           core::clustering::clustering_config>(param);

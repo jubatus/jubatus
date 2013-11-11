@@ -30,7 +30,7 @@ namespace core {
 namespace nearest_neighbor {
 
 nearest_neighbor_base::nearest_neighbor_base(
-    pfi::lang::shared_ptr<table::column_table> table,
+    jubatus::util::lang::shared_ptr<table::column_table> table,
     const std::string& id)
     : my_id_(id),
       mixable_table_(new driver::mixable_versioned_table) {
@@ -39,7 +39,7 @@ nearest_neighbor_base::nearest_neighbor_base(
 
 void nearest_neighbor_base::get_all_row_ids(vector<string>& ids) const {
   vector<string> ret;
-  pfi::lang::shared_ptr<const table::column_table> table = get_const_table();
+  jubatus::util::lang::shared_ptr<const table::column_table> table = get_const_table();
   ret.reserve(table->size());
   for (size_t i = 0; i < table->size(); ++i) {
     ret.push_back(table->get_key(i));

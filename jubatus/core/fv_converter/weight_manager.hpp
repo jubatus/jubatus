@@ -20,7 +20,7 @@
 #include <istream>
 #include <ostream>
 #include <string>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/unordered_map.h"
 #include "../common/type.hpp"
 #include "counter.hpp"
 #include "datum.hpp"

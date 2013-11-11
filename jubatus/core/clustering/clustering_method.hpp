@@ -18,7 +18,7 @@
 #define JUBATUS_CORE_CLUSTERING_CLUSTERING_METHOD_HPP_
 
 #include <vector>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
 #include "types.hpp"
 
 namespace jubatus {
@@ -39,7 +39,7 @@ class clustering_method {
   virtual wplist get_cluster(size_t cluster_id, const wplist& points) const = 0;
   virtual std::vector<wplist> get_clusters(const wplist& points) const = 0;
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Archive>
   void serialize(Archive &ar) {}
 };

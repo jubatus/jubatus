@@ -19,8 +19,8 @@
 #include <string>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/text/json.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/lang/cast.h"
 
 #include "jsonconfig.hpp"
 
@@ -29,14 +29,14 @@ using std::endl;
 using std::string;
 using std::map;
 using std::vector;
-using pfi::lang::lexical_cast;
-using pfi::text::json::json;
-using pfi::text::json::json_array;
-using pfi::text::json::json_bool;
-using pfi::text::json::json_float;
-using pfi::text::json::json_integer;
-using pfi::text::json::json_object;
-using pfi::text::json::json_string;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::text::json::json;
+using jubatus::util::text::json::json_array;
+using jubatus::util::text::json::json_bool;
+using jubatus::util::text::json::json_float;
+using jubatus::util::text::json::json_integer;
+using jubatus::util::text::json::json_object;
+using jubatus::util::text::json::json_string;
 
 namespace jubatus {
 namespace core {
@@ -44,7 +44,7 @@ namespace common {
 namespace jsonconfig {
 
 TEST(jsonconfig, empty) {
-  EXPECT_EQ(pfi::text::json::json::Null, config().get().type());
+  EXPECT_EQ(jubatus::util::text::json::json::Null, config().get().type());
 }
 
 TEST(jsonconfig, bool) {
@@ -215,12 +215,12 @@ TEST(jsonconfig_cast, map) {
 
 TEST(jsonconfig_cast, unordered_map) {
   config conf(lexical_cast<json>("{\"height\": 160, \"weight\": 60}"));
-  pfi::data::unordered_map<string, int> m;
+  jubatus::util::data::unordered_map<string, int> m;
   m["height"] = 160;
   m["weight"] = 60;
 
-  pfi::data::unordered_map<string, int> v =
-    config_cast<pfi::data::unordered_map<string, int> >(conf);
+  jubatus::util::data::unordered_map<string, int> v =
+    config_cast<jubatus::util::data::unordered_map<string, int> >(conf);
   EXPECT_EQ(m["height"], v["height"]);
   EXPECT_EQ(m["weight"], v["weight"]);
 }
@@ -254,7 +254,7 @@ TEST(jsonconfig_cast, error_convert_map) {
 TEST(jsonconfig_cast, error_convert_unordered_map) {
   config conf(lexical_cast<json>("{\"value\": []}"));
   try {
-    config_cast<map<string, pfi::data::unordered_map<string, string> > >(conf);
+    config_cast<map<string, jubatus::util::data::unordered_map<string, string> > >(conf);
     FAIL();
   } catch (const type_error& e) {
     EXPECT_EQ(".value", e.path());
@@ -265,7 +265,7 @@ TEST(jsonconfig_cast, error_convert_unordered_map) {
 
 struct opt1 {
   int abc;
-  pfi::data::optional<int> def;
+  jubatus::util::data::optional<int> def;
 
   template<typename Ar>
   void serialize(Ar& ar) {
@@ -305,7 +305,7 @@ TEST(jsonconfig_cast, named_optional_nullable) {
 
 struct opt2 {
   int abc;
-  pfi::data::optional<int> def;
+  jubatus::util::data::optional<int> def;
 
   struct test {
     int a;
@@ -386,8 +386,8 @@ struct Person {
   double height;
   int age;
   map<string, string> attributes;
-  pfi::data::optional<string> sport;
-  pfi::data::optional<string> hobby;
+  jubatus::util::data::optional<string> sport;
+  jubatus::util::data::optional<string> hobby;
 
   bool operator ==(const Person& p) const {
     return name == p.name && height == p.height && age == p.age

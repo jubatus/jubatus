@@ -18,7 +18,7 @@
 #define JUBATUS_CORE_FV_CONVERTER_EXCEPT_MATCH_HPP_
 
 #include <string>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "key_matcher.hpp"
 
 namespace jubatus {
@@ -28,8 +28,8 @@ namespace fv_converter {
 class except_match : public key_matcher {
  public:
   except_match(
-      pfi::lang::shared_ptr<key_matcher> condition,
-      pfi::lang::shared_ptr<key_matcher> except)
+      jubatus::util::lang::shared_ptr<key_matcher> condition,
+      jubatus::util::lang::shared_ptr<key_matcher> except)
       : condition_(condition), except_(except) {
   }
 
@@ -38,7 +38,7 @@ class except_match : public key_matcher {
   }
 
  private:
-  pfi::lang::shared_ptr<key_matcher> condition_, except_;
+  jubatus::util::lang::shared_ptr<key_matcher> condition_, except_;
 };
 
 }  // namespace fv_converter

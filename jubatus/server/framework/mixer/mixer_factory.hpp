@@ -17,7 +17,7 @@
 #ifndef JUBATUS_SERVER_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
 #define JUBATUS_SERVER_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
 
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../../common/lock_service.hpp"
 #include "../server_util.hpp"
@@ -30,7 +30,7 @@ namespace mixer {
 
 mixer* create_mixer(
     const server_argv& a,
-    const pfi::lang::shared_ptr<common::lock_service>& zk);
+    const jubatus::util::lang::shared_ptr<common::lock_service>& zk);
 
 }  // namespace mixer
 }  // namespace framework

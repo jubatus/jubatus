@@ -20,7 +20,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <pficommon/math/random.h>
+#include "jubatus/util/math/random.h"
 #include "../common/hash.hpp"
 
 namespace jubatus {
@@ -74,7 +74,7 @@ class portable_mixer {
 
  private:
   std::vector<Storage*> storages_;
-  pfi::math::random::mtrand rand_;
+  jubatus::util::math::random::mtrand rand_;
 };
 
 }  // namespace common

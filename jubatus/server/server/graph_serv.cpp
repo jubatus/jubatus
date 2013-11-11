@@ -21,10 +21,10 @@
 #include <utility>
 #include <vector>
 #include <glog/logging.h>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/text/json.h>
-#include <pficommon/system/time_util.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/system/time_util.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/vector_util.hpp"
@@ -51,16 +51,16 @@
 using std::string;
 using std::vector;
 using std::pair;
-using pfi::lang::lexical_cast;
-using pfi::text::json::json;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::text::json::json;
 using jubatus::core::graph::preset_query;
 using jubatus::core::graph::node_info;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::server_argv;
 using jubatus::server::framework::mixer::create_mixer;
 
-using pfi::system::time::clock_time;
-using pfi::system::time::get_clock_time;
+using jubatus::util::system::time::clock_time;
+using jubatus::util::system::time::get_clock_time;
 
 namespace jubatus {
 namespace server {
@@ -84,11 +84,11 @@ struct graph_serv_config {
 };
 
 inline node_id uint642nodeid(uint64_t i) {
-  return pfi::lang::lexical_cast<node_id, uint64_t>(i);
+  return jubatus::util::lang::lexical_cast<node_id, uint64_t>(i);
 }
 
 inline uint64_t nodeid2uint64(const node_id& id) {
-  return pfi::lang::lexical_cast<uint64_t, node_id>(id);
+  return jubatus::util::lang::lexical_cast<uint64_t, node_id>(id);
 }
 
 inline node_id i2n(uint64_t i) {
@@ -103,7 +103,7 @@ inline uint64_t n2i(const node_id& id) {
 
 graph_serv::graph_serv(
     const framework::server_argv& a,
-    const pfi::lang::shared_ptr<lock_service>& zk)
+    const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
 
@@ -131,7 +131,7 @@ graph_serv::~graph_serv() {
 
 void graph_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config conf_root(
-      pfi::lang::lexical_cast<pfi::text::json::json>(config));
+      jubatus::util::lang::lexical_cast<jubatus::util::text::json::json>(config));
   graph_serv_config conf =
     core::common::jsonconfig::config_cast_check<graph_serv_config>(conf_root);
 
@@ -183,7 +183,7 @@ std::string graph_serv::create_node() { /* no lock here */
   check_set_config();
 
   uint64_t nid = idgen_->generate();
-  std::string nid_str = pfi::lang::lexical_cast<std::string>(nid);
+  std::string nid_str = jubatus::util::lang::lexical_cast<std::string>(nid);
 
 #ifdef HAVE_ZOOKEEPER_H
   if (!argv().is_standalone()) {
@@ -213,7 +213,7 @@ std::string graph_serv::create_node() { /* no lock here */
     }
   } else {
 #endif
-    pfi::concurrent::scoped_wlock write_lk(rw_mutex());
+    jubatus::util::concurrent::scoped_wlock write_lk(rw_mutex());
     graph_->create_node(nid);
 #ifdef HAVE_ZOOKEEPER_H
   }
@@ -268,7 +268,7 @@ bool graph_serv::remove_node(const std::string& nid_str) {
         c.call("remove_global_node",
                argv().name,
                nid_str,
-               pfi::lang::function<int(int, int)>(
+               jubatus::util::lang::function<int(int, int)>(
                    &jubatus::server::framework::add<int>));
       } catch (const common::mprpc::rpc_no_result& e) {  // pass through
         DLOG(INFO) << e.diagnostic_information(true);
@@ -300,7 +300,7 @@ edge_id_t graph_serv::create_edge(const std::string& id, const edge& ei) {
     }
     // TODO(kuenishi): assertion: nodes[0] should be myself
     {
-      pfi::concurrent::scoped_wlock wirte_lk(rw_mutex());
+      jubatus::util::concurrent::scoped_wlock wirte_lk(rw_mutex());
       this->create_edge_here(eid, ei);
     }
     for (size_t i = 1; i < nodes.size(); ++i) {
@@ -325,7 +325,7 @@ edge_id_t graph_serv::create_edge(const std::string& id, const edge& ei) {
     }
   } else {
 #endif
-    pfi::concurrent::scoped_wlock write_lk(rw_mutex());
+    jubatus::util::concurrent::scoped_wlock write_lk(rw_mutex());
     graph_->create_edge(eid, n2i(ei.source), n2i(ei.target), ei.property);
 #ifdef HAVE_ZOOKEEPER_H
   }
@@ -494,7 +494,7 @@ void graph_serv::selective_create_node_(
     const std::pair<std::string, int>& target,
     const std::string nid_str) {
   if (target.first == argv().eth && target.second == argv().port) {
-    pfi::concurrent::scoped_wlock write_lk(rw_mutex());
+    jubatus::util::concurrent::scoped_wlock write_lk(rw_mutex());
     this->create_node_here(nid_str);
   } else {
     // must not lock here

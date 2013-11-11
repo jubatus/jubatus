@@ -20,9 +20,9 @@
 #include <cstring>
 #include <string>
 #include <typeinfo>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/lang/demangle.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/lang/demangle.h"
 
 namespace jubatus {
 namespace core {
@@ -47,7 +47,7 @@ class error_info;
 
 template<class Tag, class V>
 inline std::string to_string(const error_info<Tag, V>& info) {
-  return pfi::lang::lexical_cast<std::string, V>(info.value());
+  return jubatus::util::lang::lexical_cast<std::string, V>(info.value());
 }
 
 template<>
@@ -58,7 +58,7 @@ class error_info<struct error_splitter_, void> : public error_info_base {
   }
 
   std::string tag_typeid_name() const {
-    return pfi::lang::demangle(typeid(struct error_splitter_*).name());
+    return jubatus::util::lang::demangle(typeid(struct error_splitter_*).name());
   }
 
   std::string as_string() const {
@@ -96,7 +96,7 @@ inline error_info<Tag, V>::~error_info() throw () {
 
 template<class Tag, class V>
 inline std::string error_info<Tag, V>::tag_typeid_name() const {
-  return pfi::lang::demangle(typeid(Tag*).name());
+  return jubatus::util::lang::demangle(typeid(Tag*).name());
 }
 
 template<class Tag, class V>

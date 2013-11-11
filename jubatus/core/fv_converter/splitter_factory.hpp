@@ -19,7 +19,7 @@
 
 #include <string>
 #include <map>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 namespace jubatus {
 namespace core {
@@ -31,7 +31,7 @@ class splitter_factory {
  public:
   typedef std::map<std::string, std::string> param_t;
 
-  pfi::lang::shared_ptr<word_splitter> create(
+  jubatus::util::lang::shared_ptr<word_splitter> create(
       const std::string& name, const param_t& params) const;
 };
 

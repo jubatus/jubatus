@@ -19,9 +19,9 @@
 
 #include <map>
 #include <string>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_map.h"
 #include "storage_base.hpp"
 #include "../common/key_manager.hpp"
 
@@ -29,8 +29,8 @@ namespace jubatus {
 namespace core {
 namespace storage {
 
-typedef pfi::data::unordered_map<uint64_t, val3_t> id_feature_val3_t;
-typedef pfi::data::unordered_map<std::string, id_feature_val3_t> id_features3_t;
+typedef jubatus::util::data::unordered_map<uint64_t, val3_t> id_feature_val3_t;
+typedef jubatus::util::data::unordered_map<std::string, id_feature_val3_t> id_features3_t;
 
 class local_storage : public storage_base {
  public:
@@ -84,7 +84,7 @@ class local_storage : public storage_base {
   common::key_manager class2id_;
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(tbl_) & MEMBER(class2id_);

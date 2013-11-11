@@ -16,14 +16,14 @@
 
 #include <map>
 #include <string>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 #include "dynamic_num_filter.hpp"
 #include "exception.hpp"
 #include "num_filter_factory.hpp"
 #include "num_filter_impl.hpp"
 #include "util.hpp"
 
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -34,7 +34,7 @@ namespace {
 shared_ptr<add_filter> create_add_filter(
     const std::map<std::string, std::string>& params) {
   const std::string& value = get_or_die(params, "value");
-  double float_val = pfi::lang::lexical_cast<double>(value);
+  double float_val = jubatus::util::lang::lexical_cast<double>(value);
   return shared_ptr<add_filter>(new add_filter(float_val));
 }
 

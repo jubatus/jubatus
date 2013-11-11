@@ -108,7 +108,7 @@ void server_helper_impl::get_config_lock(const server_argv& a, int retry) {
   if (!a.is_standalone()) {
     string lock_path;
     common::build_config_lock_path(lock_path, a.type, a.name);
-    zk_config_lock_ = pfi::lang::shared_ptr<common::try_lockable>(
+    zk_config_lock_ = jubatus::util::lang::shared_ptr<common::try_lockable>(
         new common::lock_service_mutex(*zk_, lock_path));
 
     while (!zk_config_lock_->try_rlock()) {

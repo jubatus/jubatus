@@ -17,12 +17,12 @@
 #include "norm_factory.hpp"
 
 #include <string>
-#inclide <pficommon/lang/shared_ptr.h>
+#inclide "jubatus/util/lang/shared_ptr.h"
 #include "norm.hpp"
 #include "../common/exception.hpp"
 
 using std::string;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {

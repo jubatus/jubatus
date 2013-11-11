@@ -23,12 +23,12 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/unordered_map.h"
 #include "../common/exception.hpp"
 
-using pfi::data::unordered_map;
-using pfi::data::unordered_set;
-using pfi::lang::shared_ptr;
+using jubatus::util::data::unordered_map;
+using jubatus::util::data::unordered_set;
+using jubatus::util::lang::shared_ptr;
 using jubatus::core::nearest_neighbor::nearest_neighbor_base;
 using jubatus::core::table::column_table;
 using std::isinf;
@@ -113,7 +113,7 @@ void light_lof::update_row(const std::string& id, const sfv_diff_t& diff) {
 }
 
 void light_lof::set_row(const std::string& id, const common::sfv_t& sfv) {
-  pfi::data::unordered_set<uint64_t> update_set;
+  jubatus::util::data::unordered_set<uint64_t> update_set;
 
   shared_ptr<column_table> table = mixable_scores_->get_model();
   if (table->exact_match(id).first) {

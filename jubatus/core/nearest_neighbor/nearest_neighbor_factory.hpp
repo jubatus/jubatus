@@ -19,7 +19,7 @@
 
 #include <map>
 #include <string>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../common/jsonconfig.hpp"
 #include "../table/column/column_table.hpp"
 
@@ -29,10 +29,10 @@ namespace nearest_neighbor {
 
 class nearest_neighbor_base;
 
-pfi::lang::shared_ptr<nearest_neighbor_base> create_nearest_neighbor(
+jubatus::util::lang::shared_ptr<nearest_neighbor_base> create_nearest_neighbor(
     const std::string& name,
     const common::jsonconfig::config& config,
-    pfi::lang::shared_ptr<table::column_table> table,
+    jubatus::util::lang::shared_ptr<table::column_table> table,
     const std::string& id);
 
 }  // namespace nearest_neighbor

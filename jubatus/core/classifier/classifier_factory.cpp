@@ -24,7 +24,7 @@
 #include "../storage/storage_base.hpp"
 
 using jubatus::core::common::jsonconfig::config_cast_check;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -33,7 +33,7 @@ namespace classifier {
 shared_ptr<classifier_base> classifier_factory::create_classifier(
     const std::string& name,
     const common::jsonconfig::config& param,
-    pfi::lang::shared_ptr<storage::storage_base> storage) {
+    jubatus::util::lang::shared_ptr<storage::storage_base> storage) {
   if (name == "perceptron") {
     // perceptron doesn't have parameter
     return shared_ptr<classifier_base>(new perceptron(storage));

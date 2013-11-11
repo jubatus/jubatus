@@ -19,22 +19,22 @@ int run_proxy(int argc, char* argv[]) {
   try {
     jubatus::server::framework::proxy k(
         jubatus::server::framework::proxy_argv(argc, argv, "stat"));
-    k.register_async_cht<1, bool, double>("push", pfi::lang::function<bool(bool,
+    k.register_async_cht<1, bool, double>("push", jubatus::util::lang::function<bool(bool,
         bool)>(&jubatus::server::framework::all_and));
-    k.register_async_cht<1, double>("sum", pfi::lang::function<double(double,
+    k.register_async_cht<1, double>("sum", jubatus::util::lang::function<double(double,
         double)>(&jubatus::server::framework::pass<double>));
-    k.register_async_cht<1, double>("stddev", pfi::lang::function<double(double,
+    k.register_async_cht<1, double>("stddev", jubatus::util::lang::function<double(double,
         double)>(&jubatus::server::framework::pass<double>));
-    k.register_async_cht<1, double>("max", pfi::lang::function<double(double,
+    k.register_async_cht<1, double>("max", jubatus::util::lang::function<double(double,
         double)>(&jubatus::server::framework::pass<double>));
-    k.register_async_cht<1, double>("min", pfi::lang::function<double(double,
+    k.register_async_cht<1, double>("min", jubatus::util::lang::function<double(double,
         double)>(&jubatus::server::framework::pass<double>));
-    k.register_async_cht<1, double>("entropy", pfi::lang::function<double(
+    k.register_async_cht<1, double>("entropy", jubatus::util::lang::function<double(
         double, double)>(&jubatus::server::framework::pass<double>));
     k.register_async_cht<1, double, int32_t, double>("moment",
-        pfi::lang::function<double(double, double)>(
+        jubatus::util::lang::function<double(double, double)>(
         &jubatus::server::framework::pass<double>));
-    k.register_async_broadcast<bool>("clear", pfi::lang::function<bool(bool,
+    k.register_async_broadcast<bool>("clear", jubatus::util::lang::function<bool(bool,
         bool)>(&jubatus::server::framework::all_and));
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {

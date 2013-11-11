@@ -27,7 +27,7 @@ using std::string;
 using std::map;
 using std::vector;
 using std::pair;
-using pfi::lang::lexical_cast;
+using jubatus::util::lang::lexical_cast;
 using jubatus::core::table::column_table;
 using jubatus::core::table::bit_vector;
 using jubatus::core::table::column_type;
@@ -102,14 +102,14 @@ float calc_hash(uint64_t a, uint64_t b, float val) {
 
 minhash::minhash(
     const config& conf,
-    pfi::lang::shared_ptr<table::column_table> table,
+    jubatus::util::lang::shared_ptr<table::column_table> table,
     const std::string& id)
     : bit_vector_nearest_neighbor_base(conf.hash_num, table, id) {
 }
 
 minhash::minhash(
     const config& conf,
-    pfi::lang::shared_ptr<table::column_table> table,
+    jubatus::util::lang::shared_ptr<table::column_table> table,
     vector<column_type>& schema,
     const std::string& id)
     : bit_vector_nearest_neighbor_base(conf.hash_num, table, schema, id) {

@@ -21,10 +21,10 @@
 
 #include <string>
 #include <vector>
-#include <pficommon/lang/function.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/concurrent/mutex.h>
-#include <pficommon/concurrent/lock.h>
+#include "jubatus/util/lang/function.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/concurrent/mutex.h"
+#include "jubatus/util/concurrent/lock.h"
 
 namespace jubatus {
 namespace server {
@@ -52,11 +52,11 @@ class lock_service {
 
   virtual bool bind_watcher(
       const std::string& path,
-      pfi::lang::function<void(int, int, std::string)>&) = 0;
+      jubatus::util::lang::function<void(int, int, std::string)>&) = 0;
 
   virtual bool bind_delete_watcher(
       const std::string& path,
-      pfi::lang::function<void(std::string)>&) = 0;
+      jubatus::util::lang::function<void(std::string)>&) = 0;
 
   // ephemeral only
   virtual bool create_seq(const std::string& path, std::string&) = 0;
@@ -71,14 +71,14 @@ class lock_service {
   // reads data (should be smaller than 1024B)
   virtual bool read(const std::string& path, std::string& out) = 0;
 
-  virtual void push_cleanup(const pfi::lang::function<void()>& f) = 0;
+  virtual void push_cleanup(const jubatus::util::lang::function<void()>& f) = 0;
   virtual void run_cleanup() = 0;
 
   virtual const std::string& get_hosts() const = 0;
   virtual const std::string type() const = 0;
 };
 
-class try_lockable : public pfi::concurrent::lockable {
+class try_lockable : public jubatus::util::concurrent::lockable {
  public:
   virtual bool try_lock() = 0;
   virtual bool rlock() = 0;

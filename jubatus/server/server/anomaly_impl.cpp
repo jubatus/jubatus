@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../../server/framework.hpp"
 #include "anomaly_serv.hpp"
@@ -20,32 +20,32 @@ class anomaly_impl : public jubatus::server::common::mprpc::rpc_server {
     p_(new jubatus::server::framework::server_helper<anomaly_serv>(a, true)) {
 
     rpc_server::add<bool(std::string, std::string)>("clear_row",
-        pfi::lang::bind(&anomaly_impl::clear_row, this, pfi::lang::_2));
+        jubatus::util::lang::bind(&anomaly_impl::clear_row, this, jubatus::util::lang::_2));
     rpc_server::add<id_with_score(std::string,
-        jubatus::core::fv_converter::datum)>("add", pfi::lang::bind(
-        &anomaly_impl::add, this, pfi::lang::_2));
+        jubatus::core::fv_converter::datum)>("add", jubatus::util::lang::bind(
+        &anomaly_impl::add, this, jubatus::util::lang::_2));
     rpc_server::add<float(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("update", pfi::lang::bind(
-        &anomaly_impl::update, this, pfi::lang::_2, pfi::lang::_3));
+        jubatus::core::fv_converter::datum)>("update", jubatus::util::lang::bind(
+        &anomaly_impl::update, this, jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<float(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("overwrite", pfi::lang::bind(
-        &anomaly_impl::overwrite, this, pfi::lang::_2, pfi::lang::_3));
-    rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(
+        jubatus::core::fv_converter::datum)>("overwrite", jubatus::util::lang::bind(
+        &anomaly_impl::overwrite, this, jubatus::util::lang::_2, jubatus::util::lang::_3));
+    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &anomaly_impl::clear, this));
     rpc_server::add<float(std::string, jubatus::core::fv_converter::datum)>(
-        "calc_score", pfi::lang::bind(&anomaly_impl::calc_score, this,
-        pfi::lang::_2));
+        "calc_score", jubatus::util::lang::bind(&anomaly_impl::calc_score, this,
+        jubatus::util::lang::_2));
     rpc_server::add<std::vector<std::string>(std::string)>("get_all_rows",
-        pfi::lang::bind(&anomaly_impl::get_all_rows, this));
+        jubatus::util::lang::bind(&anomaly_impl::get_all_rows, this));
 
-    rpc_server::add<std::string(std::string)>("get_config", pfi::lang::bind(
+    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
         &anomaly_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save", pfi::lang::bind(
-        &anomaly_impl::save, this, pfi::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", pfi::lang::bind(
-        &anomaly_impl::load, this, pfi::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
+        &anomaly_impl::save, this, jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
+        &anomaly_impl::load, this, jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", pfi::lang::bind(&anomaly_impl::get_status,
+        std::string)>("get_status", jubatus::util::lang::bind(&anomaly_impl::get_status,
         this));
   }
 
@@ -107,10 +107,10 @@ class anomaly_impl : public jubatus::server::common::mprpc::rpc_server {
   }
 
   int run() { return p_->start(*this); }
-  pfi::lang::shared_ptr<anomaly_serv> get_p() { return p_->server(); }
+  jubatus::util::lang::shared_ptr<anomaly_serv> get_p() { return p_->server(); }
 
  private:
-  pfi::lang::shared_ptr<jubatus::server::framework::server_helper<anomaly_serv> > p_;
+  jubatus::util::lang::shared_ptr<jubatus::server::framework::server_helper<anomaly_serv> > p_;
 };
 
 }  // namespace server

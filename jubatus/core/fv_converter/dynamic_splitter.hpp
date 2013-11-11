@@ -21,7 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 #include "dynamic_loader.hpp"
 #include "word_splitter.hpp"
 
@@ -42,7 +42,7 @@ class dynamic_splitter : public word_splitter {
 
  private:
   dynamic_loader loader_;
-  pfi::lang::scoped_ptr<word_splitter> impl_;
+  jubatus::util::lang::scoped_ptr<word_splitter> impl_;
 };
 
 }  // namespace fv_converter

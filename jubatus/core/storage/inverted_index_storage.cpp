@@ -218,7 +218,7 @@ void inverted_index_storage::calc_scores(
   if (query_norm == 0.f) {
     return;
   }
-  pfi::data::unordered_map<uint64_t, float> i_scores;
+  jubatus::util::data::unordered_map<uint64_t, float> i_scores;
   for (size_t i = 0; i < query.size(); ++i) {
     const string& fid = query[i].first;
     float val = query[i].second;
@@ -226,7 +226,7 @@ void inverted_index_storage::calc_scores(
   }
 
   vector<pair<float, uint64_t> > sorted_scores;
-  for (pfi::data::unordered_map<uint64_t, float>::const_iterator it = i_scores
+  for (jubatus::util::data::unordered_map<uint64_t, float>::const_iterator it = i_scores
       .begin(); it != i_scores.end(); ++it) {
     float norm = calc_columnl2norm(it->first);
     float normed_score = (norm != 0.f) ? it->second / norm / query_norm : 0.f;
@@ -264,7 +264,7 @@ float inverted_index_storage::calc_columnl2norm(uint64_t column_id) const {
 void inverted_index_storage::add_inp_scores(
     const std::string& row,
     float val,
-    pfi::data::unordered_map<uint64_t, float>& scores) const {
+    jubatus::util::data::unordered_map<uint64_t, float>& scores) const {
   tbl_t::const_iterator it_diff = inv_diff_.find(row);
   if (it_diff != inv_diff_.end()) {
     const row_t& row_v = it_diff->second;

@@ -22,8 +22,8 @@
 #include <typeinfo>
 #include <vector>
 
-#include <pficommon/text/json.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../exception.hpp"
 
@@ -55,22 +55,22 @@ class type_error : public config_error {
  public:
   type_error(
       const std::string& path,
-      pfi::text::json::json::json_type_t expect,
-      pfi::text::json::json::json_type_t actual);
+      jubatus::util::text::json::json::json_type_t expect,
+      jubatus::util::text::json::json::json_type_t actual);
 
   ~type_error() throw ();
 
-  pfi::text::json::json::json_type_t expect() const {
+  jubatus::util::text::json::json::json_type_t expect() const {
     return expect_;
   }
 
-  pfi::text::json::json::json_type_t actual() const {
+  jubatus::util::text::json::json::json_type_t actual() const {
     return actual_;
   }
 
  private:
-  const pfi::text::json::json::json_type_t expect_;
-  const pfi::text::json::json::json_type_t actual_;
+  const jubatus::util::text::json::json::json_type_t expect_;
+  const jubatus::util::text::json::json::json_type_t actual_;
 };
 
 class out_of_range : public config_error {
@@ -125,7 +125,7 @@ class cast_check_error
   : public common::exception::jubaexception<cast_check_error> {
  public:
   cast_check_error(
-      const std::vector<pfi::lang::shared_ptr<config_error> >& errors);
+      const std::vector<jubatus::util::lang::shared_ptr<config_error> >& errors);
 
   ~cast_check_error() throw ();
 
@@ -133,12 +133,12 @@ class cast_check_error
     return errors_.size();
   }
 
-  const std::vector<pfi::lang::shared_ptr<config_error> >& errors() const {
+  const std::vector<jubatus::util::lang::shared_ptr<config_error> >& errors() const {
     return errors_;
   }
 
  private:
-  std::vector<pfi::lang::shared_ptr<config_error> > errors_;
+  std::vector<jubatus::util::lang::shared_ptr<config_error> > errors_;
 };
 
 }  // namespace jsonconfig

@@ -20,9 +20,9 @@
 #include <utility>
 #include <vector>
 
-#include <pficommon/text/json.h>
-#include <pficommon/data/optional.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/data/optional.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/vector_util.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
@@ -39,8 +39,8 @@ using std::string;
 using std::vector;
 using std::pair;
 using std::isfinite;
-using pfi::lang::lexical_cast;
-using pfi::text::json::json;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::text::json::json;
 using jubatus::core::fv_converter::datum;
 using jubatus::core::fv_converter::weight_manager;
 using jubatus::server::common::lock_service;
@@ -55,7 +55,7 @@ namespace {
 struct recommender_serv_config {
   std::string method;
   // TODO(unnonouno): if must use parameter
-  pfi::data::optional<core::common::jsonconfig::config> parameter;
+  jubatus::util::data::optional<core::common::jsonconfig::config> parameter;
   core::fv_converter::converter_config converter;
 
   template<typename Ar>
@@ -68,7 +68,7 @@ struct recommender_serv_config {
 
 recommender_serv::recommender_serv(
     const framework::server_argv& a,
-    const pfi::lang::shared_ptr<lock_service>& zk)
+    const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)),
       clear_row_cnt_(),

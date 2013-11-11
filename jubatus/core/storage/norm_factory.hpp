@@ -18,7 +18,7 @@
 #define JUBATUS_CORE_STORAGE_NORM_FACTORY_HPP_
 
 #include <string>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 namespace jubatus {
 namespace core {
@@ -26,7 +26,7 @@ namespace storage {
 
 class norm_base;
 
-pfi::lang::shared_ptr<norm_base> create_norm(const std::string& name);
+jubatus::util::lang::shared_ptr<norm_base> create_norm(const std::string& name);
 
 }  // namespace storage
 }  // namespace core

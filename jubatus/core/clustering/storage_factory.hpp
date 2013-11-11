@@ -18,7 +18,7 @@
 #define JUBATUS_CORE_CLUSTERING_STORAGE_FACTORY_HPP_
 
 #include <string>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "clustering_config.hpp"
 #include "storage.hpp"
 
@@ -28,7 +28,7 @@ namespace clustering {
 
 class storage_factory {
  public:
-  static pfi::lang::shared_ptr<storage> create(
+  static jubatus::util::lang::shared_ptr<storage> create(
       const std::string& name,
       const clustering_config& config);
 };

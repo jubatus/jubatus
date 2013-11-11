@@ -36,8 +36,8 @@ using std::make_pair;
 using std::string;
 using std::cout;
 using std::endl;
-using pfi::lang::lexical_cast;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
 using jubatus::core::fv_converter::datum;
 
 namespace jubatus {
@@ -66,7 +66,7 @@ class regression_test : public ::testing::Test {
 
   void my_test();
 
-  pfi::lang::shared_ptr<core::driver::regression> regression_;
+  jubatus::util::lang::shared_ptr<core::driver::regression> regression_;
 };
 
 datum convert_vector(const vector<double>& vec) {

@@ -19,12 +19,12 @@
 #include <cmath>
 #include <string>
 #include <utility>
-#include <pficommon/system/time_util.h>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/system/time_util.h"
+#include "jubatus/util/data/serialization.h"
 
 using std::string;
-using pfi::system::time::clock_time;
-using pfi::system::time::get_clock_time;
+using jubatus::util::system::time::clock_time;
+using jubatus::util::system::time::get_clock_time;
 
 namespace jubatus {
 namespace core {
@@ -43,7 +43,7 @@ void stat::get_diff(std::pair<double, size_t>& ret) const {
   ret.first = 0;
   ret.second = 0;
 
-  for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+  for (jubatus::util::data::unordered_map<std::string, stat_val>::const_iterator p =
       stats_.begin(); p != stats_.end(); ++p) {
     double pr = p->second.n_;
     ret.first += pr * log(pr);
@@ -82,7 +82,7 @@ void stat::push(const std::string& key, double val) {
 }
 
 double stat::sum(const std::string& key) const {
-  pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+  jubatus::util::data::unordered_map<std::string, stat_val>::const_iterator p =
       stats_.find(key);
   if (p == stats_.end()) {
     throw JUBATUS_EXCEPTION(stat_error("sum: key " + key + " not found"));
@@ -91,7 +91,7 @@ double stat::sum(const std::string& key) const {
 }
 
 double stat::stddev(const std::string& key) const {
-  pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+  jubatus::util::data::unordered_map<std::string, stat_val>::const_iterator p =
       stats_.find(key);
   if (p == stats_.end()) {
     throw JUBATUS_EXCEPTION(stat_error("stddev: key " + key + " not found"));
@@ -101,7 +101,7 @@ double stat::stddev(const std::string& key) const {
 }
 
 double stat::max(const std::string& key) const {
-  pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+  jubatus::util::data::unordered_map<std::string, stat_val>::const_iterator p =
       stats_.find(key);
   if (p == stats_.end()) {
     throw JUBATUS_EXCEPTION(stat_error("max: key " + key + " not found"));
@@ -111,7 +111,7 @@ double stat::max(const std::string& key) const {
 }
 
 double stat::min(const std::string& key) const {
-  pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+  jubatus::util::data::unordered_map<std::string, stat_val>::const_iterator p =
       stats_.find(key);
   if (p == stats_.end()) {
     throw JUBATUS_EXCEPTION(stat_error("min: key " + key + " not found"));
@@ -124,12 +124,12 @@ double stat::entropy() const {
   if (n_ == 0) {
     // not MIXed ever yet
     size_t total = 0;
-    for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+    for (jubatus::util::data::unordered_map<std::string, stat_val>::const_iterator p =
              stats_.begin(); p != stats_.end(); ++p) {
       total += p->second.n_;
     }
     double ret = 0;
-    for (pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+    for (jubatus::util::data::unordered_map<std::string, stat_val>::const_iterator p =
              stats_.begin(); p != stats_.end(); ++p) {
       double pr = p->second.n_ / static_cast<double>(total);
       ret += pr * log(pr);
@@ -144,7 +144,7 @@ double stat::moment(const std::string& key, int n, double c) const {
   if (n < 0) {
     return -1;
   }
-  pfi::data::unordered_map<std::string, stat_val>::const_iterator p =
+  jubatus::util::data::unordered_map<std::string, stat_val>::const_iterator p =
       stats_.find(key);
   if (p == stats_.end()) {
     throw JUBATUS_EXCEPTION(stat_error("min: key " + key + " not found"));
@@ -194,8 +194,8 @@ void stat::register_mixables_to_holder(framework::mixable_holder& holder)
   // TODO(beam2d): Split a part of MIX operations from |stat| to outside of it
   // and use it as a model. |shared_from_this| is a workaround to support this
   // canonical function like other algorithms.
-  pfi::lang::shared_ptr<mixable_stat> mixable(new mixable_stat);
-  mixable->set_model(pfi::lang::const_pointer_cast<stat>(shared_from_this()));
+  jubatus::util::lang::shared_ptr<mixable_stat> mixable(new mixable_stat);
+  mixable->set_model(jubatus::util::lang::const_pointer_cast<stat>(shared_from_this()));
   holder.register_mixable(mixable);
 }
 

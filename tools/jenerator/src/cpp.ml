@@ -407,9 +407,9 @@ let gen_bind s m =
   let func = "&" ^ s.service_name ^ "_impl::" ^ m.method_name in
   let this = "this" in
   (* Ignore the first argument as it is cluster name *)
-  let nums = Array.init num_args (fun n -> Printf.sprintf "pfi::lang::_%d" (n + 2)) in
+  let nums = Array.init num_args (fun n -> Printf.sprintf "jubatus::util::lang::_%d" (n + 2)) in
   let args = func::this::(Array.to_list nums) in
-  "pfi::lang::bind" ^ gen_args args
+  "jubatus::util::lang::bind" ^ gen_args args
 ;;
 
 let gen_server_method names s m =
@@ -446,7 +446,7 @@ let gen_aggregator_function names ret_type aggregator =
   let r = gen_type names true ret_type in
   (* TODO(unnonouno): Too complicated. Make it simple! *)
   let func = Printf.sprintf
-    "pfi::lang::function<%s(%s, %s)>" r r r in
+    "jubatus::util::lang::function<%s(%s, %s)>" r r r in
   func ^ "(&" ^ agg ^ ")"
 ;;
 
@@ -603,13 +603,13 @@ let gen_impl names s =
     indent_lines 2 register_methods;
     [
       (* TODO(unno): use base class? *)
-      (2,   "rpc_server::add<std::string(std::string)>(\"get_config\", pfi::lang::bind(&"
+      (2,   "rpc_server::add<std::string(std::string)>(\"get_config\", jubatus::util::lang::bind(&"
         ^ impl_name ^ "::get_config, this));");
-      (2,   "rpc_server::add<bool(std::string, std::string)>(\"save\", pfi::lang::bind(&"
-        ^ impl_name ^ "::save, this, pfi::lang::_2));");
-      (2,   "rpc_server::add<bool(std::string, std::string)>(\"load\", pfi::lang::bind(&"
-        ^ impl_name ^ "::load, this, pfi::lang::_2));");
-      (2,    "rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(std::string)>(\"get_status\", pfi::lang::bind(&"
+      (2,   "rpc_server::add<bool(std::string, std::string)>(\"save\", jubatus::util::lang::bind(&"
+        ^ impl_name ^ "::save, this, jubatus::util::lang::_2));");
+      (2,   "rpc_server::add<bool(std::string, std::string)>(\"load\", jubatus::util::lang::bind(&"
+        ^ impl_name ^ "::load, this, jubatus::util::lang::_2));");
+      (2,    "rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(std::string)>(\"get_status\", jubatus::util::lang::bind(&"
         ^ impl_name ^ "::get_status, this));");
       (1,   "}");
     ];
@@ -641,10 +641,10 @@ let gen_impl names s =
     ];
     [
       (1,   "int run() { return p_->start(*this); }");
-      (1,   "pfi::lang::shared_ptr<" ^ serv_name ^ "> get_p() { return p_->server(); }");
+      (1,   "jubatus::util::lang::shared_ptr<" ^ serv_name ^ "> get_p() { return p_->server(); }");
       (0, "");
       (0, " private:");
-      (1,   "pfi::lang::shared_ptr<jubatus::server::framework::server_helper<" ^ serv_name ^ "> > p_;");
+      (1,   "jubatus::util::lang::shared_ptr<jubatus::server::framework::server_helper<" ^ serv_name ^ "> > p_;");
       (0, "};")
     ]
   ]
@@ -665,7 +665,7 @@ let gen_impl_file conf names source services =
       (0, "#include <string>");
       (0, "#include <vector>");
       (0, "#include <utility>");
-      (0, "#include <pficommon/lang/shared_ptr.h>");
+      (0, "#include \"jubatus/util/lang/shared_ptr.h\"");
       (0, "");
       (0, gen_jubatus_include conf "server/framework.hpp");
       (0, "#include \"" ^ base ^ "_serv.hpp\"");
@@ -718,11 +718,11 @@ let gen_server_template_header names s =
       (0, " public:");
       (1,   serv_name ^ "(");
       (2,     "const jubatus::server::framework::server_argv& a,");
-      (2,     "const pfi::lang::shared_ptr<jubatus::server::common::lock_service>& zk);  // do not change");
+      (2,     "const jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service>& zk);  // do not change");
       (1,   "virtual ~" ^ serv_name ^ "();  // do not change");
       (0,   "");
       (1,   "virtual jubatus::server::framework::mixer::mixer* get_mixer() const;");
-      (1,   "pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> get_mixable_holder() const;");
+      (1,   "jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder> get_mixable_holder() const;");
       (1,   "std::string get_config() const;");
       (1,   "void get_status(status_t& status) const;");
       (1,   "void set_config(const std::string& config);");
@@ -732,7 +732,7 @@ let gen_server_template_header names s =
     [
       (0, "");
       (0, " private:");
-      (1,   "// add user data here like: pfi::lang::shared_ptr<some_type> some_;");
+      (1,   "// add user data here like: jubatus::util::lang::shared_ptr<some_type> some_;");
       (0, "};")
     ]
   ]
@@ -779,7 +779,7 @@ let gen_server_template_source names s =
     [
       (0, serv_name ^ "::" ^ serv_name ^ "(");
       (1,   "const jubatus::server::framework::server_argv& a,");
-      (1,   "const pfi::lang::shared_ptr<jubatus::server::common::lock_service>& zk)");
+      (1,   "const jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service>& zk)");
       (2,     ": jubatus::server::framework::server_base(a) {");
       (1,   "// somemixable* mi = new somemixable;");
       (1,   "// somemixable_.set_model(mi);");
@@ -792,7 +792,7 @@ let gen_server_template_source names s =
       (0, "jubatus::server::framework::mixer::mixer* " ^ serv_name ^ "::get_mixer() const {");
       (0, "}");
       (0, "");
-      (0, "pfi::lang::shared_ptr<jubatus::core::framework::mixable_holder> "
+      (0, "jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder> "
         ^ serv_name ^ "::get_mixable_holder() const {");
       (0, "}");
       (0, "");

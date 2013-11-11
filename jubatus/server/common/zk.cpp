@@ -21,11 +21,11 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/data/string/utility.h>
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/data/string/utility.h"
 #include "jubatus/core/common/exception.hpp"
 
-using pfi::concurrent::scoped_lock;
+using jubatus::util::concurrent::scoped_lock;
 using std::vector;
 using std::string;
 
@@ -180,8 +180,8 @@ void my_znode_watcher(
     int state,
     const char* path,
     void* watcherCtx) {
-  pfi::lang::function<void(int, int, string)>* fp =
-      static_cast<pfi::lang::function<void(int, int, string)>*>(watcherCtx);
+  jubatus::util::lang::function<void(int, int, string)>* fp =
+      static_cast<jubatus::util::lang::function<void(int, int, string)>*>(watcherCtx);
   try {
     (*fp)(type, state, string(path));
   } catch(const std::exception& e) {
@@ -194,8 +194,8 @@ void my_znode_watcher(
 
 bool zk::bind_watcher(
     const string& path,
-    pfi::lang::function<void(int, int, string)>& f) {
-  pfi::lang::function<void(int, int, string)>* fp = new pfi::lang::function<
+    jubatus::util::lang::function<void(int, int, string)>& f) {
+  jubatus::util::lang::function<void(int, int, string)>* fp = new jubatus::util::lang::function<
       void(int, int, string)>(f);
   int rc = zoo_wexists(zh_, path.c_str(), my_znode_watcher, fp, NULL);
   return rc == ZOK;
@@ -209,8 +209,8 @@ void my_znode_delete_watcher(
     void* watcherCtx) {
   // state should be checked?
   if (type == ZOO_DELETED_EVENT) {
-    pfi::lang::function<void(string)>* fp =
-        static_cast<pfi::lang::function<void(string)>*>(watcherCtx);
+    jubatus::util::lang::function<void(string)>* fp =
+        static_cast<jubatus::util::lang::function<void(string)>*>(watcherCtx);
     try {
       (*fp)(string(path));
     } catch(const std::exception& e) {
@@ -235,8 +235,8 @@ void my_znode_delete_watcher(
 
 bool zk::bind_delete_watcher(
     const string& path,
-    pfi::lang::function<void(string)>& f) {
-  pfi::lang::function<void(string)>* fp = new pfi::lang::function<
+    jubatus::util::lang::function<void(string)>& f) {
+  jubatus::util::lang::function<void(string)>* fp = new jubatus::util::lang::function<
       void(string)>(f);
   int rc = zoo_wexists(zh_, path.c_str(), my_znode_delete_watcher, fp, NULL);
   return rc == ZOK;
@@ -292,7 +292,7 @@ bool zk::read(const string& path, string& out) {
   }
 }
 
-void zk::push_cleanup(const pfi::lang::function<void()>& f) {
+void zk::push_cleanup(const jubatus::util::lang::function<void()>& f) {
   scoped_lock lk(m_);
   cleanups_.push_back(f);
 }
@@ -313,7 +313,7 @@ const string zk::type() const {
 }
 
 bool zkmutex::lock() {
-  pfi::concurrent::scoped_lock lk(m_);
+  jubatus::util::concurrent::scoped_lock lk(m_);
   LOG(ERROR) << "not implemented: " << __func__;
   while (!has_lock_) {
     if (try_lock()) {
@@ -326,7 +326,7 @@ bool zkmutex::lock() {
 }
 
 bool zkmutex::try_lock() {
-  pfi::concurrent::scoped_lock lk(m_);
+  jubatus::util::concurrent::scoped_lock lk(m_);
   if (has_lock_) {
     return has_lock_;
   }
@@ -366,7 +366,7 @@ bool zkmutex::try_lock() {
 }
 
 bool zkmutex::unlock() {
-  pfi::concurrent::scoped_lock lk(m_);
+  jubatus::util::concurrent::scoped_lock lk(m_);
   if (has_lock_) {
     return zk_.remove(seqfile_);
   }
@@ -374,7 +374,7 @@ bool zkmutex::unlock() {
 }
 
 bool zkmutex::rlock() {
-  pfi::concurrent::scoped_lock lk(m_);
+  jubatus::util::concurrent::scoped_lock lk(m_);
   LOG(ERROR) << "not implemented: " << __func__;
   while (!has_rlock_) {
     if (try_rlock()) {
@@ -387,7 +387,7 @@ bool zkmutex::rlock() {
 }
 
 bool zkmutex::try_rlock() {
-  pfi::concurrent::scoped_lock lk(m_);
+  jubatus::util::concurrent::scoped_lock lk(m_);
   if (has_rlock_) {
     return has_rlock_;
   }
@@ -409,7 +409,7 @@ bool zkmutex::try_rlock() {
   has_rlock_ = true;
   for (size_t i = 0; i < list.size(); i++) {
     // not exist write lock less than me.
-    if (pfi::data::string::starts_with(list[i], string("wlock_"))) {
+    if (jubatus::util::data::string::starts_with(list[i], string("wlock_"))) {
       string path1((path_ + '/' + list[i]).c_str(), prefix.size() + 16);
       if (seqfile_.compare(prefix.length(), -1, path1,
                            prefix.length(), -1) > 0) {
@@ -429,7 +429,7 @@ bool zkmutex::try_rlock() {
 }
 
 bool zkmutex::unlock_r() {
-  pfi::concurrent::scoped_lock lk(m_);
+  jubatus::util::concurrent::scoped_lock lk(m_);
   if (has_rlock_) {
     return zk_.remove(seqfile_);
   }

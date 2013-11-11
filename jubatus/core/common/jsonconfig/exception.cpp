@@ -20,7 +20,7 @@
 #include <vector>
 
 using std::string;
-using pfi::text::json::json;
+using jubatus::util::text::json::json;
 
 namespace jubatus {
 namespace core {
@@ -119,7 +119,7 @@ redundant_key::~redundant_key() throw () {
 }
 
 cast_check_error::cast_check_error(
-    const std::vector<pfi::lang::shared_ptr<config_error> >& errors)
+    const std::vector<jubatus::util::lang::shared_ptr<config_error> >& errors)
     : errors_(errors.begin(), errors.end()) {
 }
 

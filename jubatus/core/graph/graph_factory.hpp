@@ -18,7 +18,7 @@
 #define JUBATUS_CORE_GRAPH_GRAPH_FACTORY_HPP_
 
 #include <string>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 namespace jubatus {
 namespace core {
@@ -36,7 +36,7 @@ class graph_base;
 
 class graph_factory {
  public:
-  static pfi::lang::shared_ptr<graph_base> create_graph(
+  static jubatus::util::lang::shared_ptr<graph_base> create_graph(
     const std::string& name,
     const common::jsonconfig::config& param);
 };

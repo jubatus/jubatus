@@ -19,7 +19,7 @@
 
 #include <utility>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../clustering/types.hpp"
 #include "../clustering/clustering.hpp"
 #include "../framework/mixable.hpp"
@@ -35,10 +35,10 @@ class clustering {
  public:
   clustering(
       core::clustering::clustering* clustering_method,
-      pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
   virtual ~clustering();
 
-  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  jubatus::util::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
     return mixable_holder_;
   }
 
@@ -71,10 +71,10 @@ class clustering {
   core::clustering::cluster_unit to_weighted_datum_vector(
       const std::vector<core::clustering::weighted_point>& src) const;
 
-  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
+  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  pfi::lang::shared_ptr<core::clustering::clustering> clustering_;
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  jubatus::util::lang::shared_ptr<core::clustering::clustering> clustering_;
 };
 
 }  // namespace driver

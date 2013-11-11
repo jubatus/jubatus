@@ -21,8 +21,8 @@
 #include <string>
 
 #include <glog/logging.h>
-#include <pficommon/text/json.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
@@ -39,7 +39,7 @@ static const std::string VERSION(JUBATUS_VERSION);
 
 namespace {
   const std::string IGNORED_TAG = "[IGNORED]";
-  pfi::lang::shared_ptr<server::common::lock_service> ls;
+  jubatus::util::lang::shared_ptr<server::common::lock_service> ls;
 }
 
 void print_version(const std::string& progname) {
@@ -446,7 +446,7 @@ void proxy_argv::set_log_destination(const std::string& progname) const {
   }
 }
 
-void register_lock_service(pfi::lang::shared_ptr<common::lock_service> new_ls) {
+void register_lock_service(jubatus::util::lang::shared_ptr<common::lock_service> new_ls) {
   if (ls) {
     throw JUBATUS_EXCEPTION(
         jubatus::core::common::exception::runtime_error(

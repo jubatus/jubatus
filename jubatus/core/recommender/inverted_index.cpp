@@ -35,7 +35,7 @@ namespace recommender {
 inverted_index::inverted_index()
     : mixable_storage_(new storage::mixable_inverted_index_storage) {
   mixable_storage_->set_model(
-      pfi::lang::shared_ptr<storage::inverted_index_storage>(
+      jubatus::util::lang::shared_ptr<storage::inverted_index_storage>(
           new storage::inverted_index_storage));
 }
 

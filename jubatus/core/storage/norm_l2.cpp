@@ -28,7 +28,7 @@ norm_l2::~norm_l2() {
 }
 
 void norm_l2::clear() {
-  pfi::data::unordered_map<std::string, float>().swap(sq_norms_);
+  jubatus::util::data::unordered_map<std::string, float>().swap(sq_norms_);
 }
 
 void norm_l2::notify(const std::string& row, float old_val, float new_val) {
@@ -38,7 +38,7 @@ void norm_l2::notify(const std::string& row, float old_val, float new_val) {
 }
 
 float norm_l2::calc_norm(const std::string& row) const {
-  pfi::data::unordered_map<std::string, float>::const_iterator it = sq_norms_
+  jubatus::util::data::unordered_map<std::string, float>::const_iterator it = sq_norms_
       .find(row);
   if (it == sq_norms_.end()) {
     return 0.f;

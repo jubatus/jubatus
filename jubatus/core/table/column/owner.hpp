@@ -20,7 +20,7 @@
 #include <ostream>
 #include <string>
 #include <msgpack.hpp>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
 
 namespace jubatus {
 namespace core {
@@ -46,7 +46,7 @@ struct owner {
   }
 
   MSGPACK_DEFINE(name);
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(name);

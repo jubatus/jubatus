@@ -21,8 +21,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
 #include "fixed_size_heap.hpp"
 
 using std::greater;

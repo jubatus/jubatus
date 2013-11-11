@@ -25,10 +25,10 @@
 #include <utility>
 #include <vector>
 
-#include <pficommon/math/random.h>
+#include "jubatus/util/math/random.h"
 
 void make_random(
-    pfi::math::random::mtrand& rand,
+    jubatus::util::math::random::mtrand& rand,
     float mu,
     float sigma,
     size_t dim,
@@ -40,7 +40,7 @@ void make_random(
 }
 
 void make_random(
-    pfi::math::random::mtrand& rand,
+    jubatus::util::math::random::mtrand& rand,
     const std::vector<float>& mus,
     float sigma,
     size_t dim,
@@ -52,7 +52,7 @@ void make_random(
 }
 
 std::pair<std::string, std::vector<double> > gen_random_data(
-    pfi::math::random::mtrand& rand) {
+    jubatus::util::math::random::mtrand& rand) {
   const float mu_pos = 1.0;
   const float mu_neg = -1.0;
   const float sigma = 1.5;
@@ -72,7 +72,7 @@ std::pair<std::string, std::vector<double> > gen_random_data(
 }
 
 std::pair<std::string, std::vector<double> > gen_random_data3(
-    pfi::math::random::mtrand& rand) {
+    jubatus::util::math::random::mtrand& rand) {
   const char* labels[] = { "1", "2", "3" };
   std::vector<float> mus;
   mus.push_back(3);

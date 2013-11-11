@@ -19,7 +19,7 @@
 
 #include <map>
 #include <vector>
-#include <pficommon/lang/function.h>
+#include "jubatus/util/lang/function.h"
 
 namespace jubatus {
 namespace core {
@@ -28,7 +28,7 @@ namespace clustering {
 // TODO(beam2d): Delete it or move it to jubatus::common.
 template <typename EventType, typename EventData>
 class event_dispatcher {
-  typedef pfi::lang::function<void (const EventData&)> callback_t;
+  typedef jubatus::util::lang::function<void (const EventData&)> callback_t;
  public:
   virtual ~event_dispatcher() {}
 
@@ -42,7 +42,7 @@ class event_dispatcher {
 template <typename EventType, typename EventData>
 void event_dispatcher<EventType, EventData>::add_event_listener(
     const EventType& type,
-    pfi::lang::function<void(const EventData&)> callback) {
+    jubatus::util::lang::function<void(const EventData&)> callback) {
   events_[type].push_back(callback);
 }
 
@@ -54,7 +54,7 @@ void event_dispatcher<EventType, EventData>::dispatch(
     return;
   }
   typedef typename std::vector<
-    pfi::lang::function<void(const EventData&)> >::const_iterator iter;
+    jubatus::util::lang::function<void(const EventData&)> >::const_iterator iter;
   for (iter it = events_[type].begin(); it != events_[type].end(); ++it) {
     (*it)(data);
   }

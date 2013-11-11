@@ -23,7 +23,7 @@
 #include <vector>
 
 #include <msgpack.hpp>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
 
 #include "../common/type.hpp"
 #include "../fv_converter/datum.hpp"

@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/core/driver/recommender.hpp"
 #include "../framework/server_base.hpp"
 #include "recommender_types.hpp"
@@ -34,7 +34,7 @@ class recommender_serv : public framework::server_base {
  public:
   recommender_serv(
       const framework::server_argv& a,
-      const pfi::lang::shared_ptr<common::lock_service>& zk);
+      const jubatus::util::lang::shared_ptr<common::lock_service>& zk);
   virtual ~recommender_serv();
 
 
@@ -42,7 +42,7 @@ class recommender_serv : public framework::server_base {
     return mixer_.get();
   }
 
-  pfi::lang::shared_ptr<core::framework::mixable_holder>
+  jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
     get_mixable_holder() const {
     return recommender_->get_mixable_holder();
   }
@@ -77,8 +77,8 @@ class recommender_serv : public framework::server_base {
   void check_set_config() const;
 
  private:
-  pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<core::driver::recommender> recommender_;
+  jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
+  jubatus::util::lang::shared_ptr<core::driver::recommender> recommender_;
   std::string config_;
 
   uint64_t clear_row_cnt_;

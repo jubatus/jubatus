@@ -22,8 +22,8 @@
 #include <utility>
 #include <vector>
 #include <msgpack.hpp>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/data/unordered_set.h>
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/data/unordered_set.h"
 #include "lsh_vector.hpp"
 #include "storage_type.hpp"
 #include "../common/key_manager.hpp"
@@ -47,9 +47,9 @@ struct lsh_entry {
   }
 };
 
-typedef pfi::data::unordered_map<std::string, lsh_entry> lsh_master_table_t;
+typedef jubatus::util::data::unordered_map<std::string, lsh_entry> lsh_master_table_t;
 
-typedef pfi::data::unordered_map<uint64_t, std::vector<uint64_t> > lsh_table_t;
+typedef jubatus::util::data::unordered_map<uint64_t, std::vector<uint64_t> > lsh_table_t;
 
 class lsh_index_storage {
  public:
@@ -98,7 +98,7 @@ class lsh_index_storage {
       lsh_table_diff_, shift_, table_num_, key_manager_);
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(master_table_) & MEMBER(master_table_diff_) & MEMBER(lsh_table_)
@@ -115,10 +115,10 @@ class lsh_index_storage {
   bool retrieve_hit_rows(
       uint64_t hash,
       size_t ret_num,
-      pfi::data::unordered_set<uint64_t>& cands) const;
+      jubatus::util::data::unordered_set<uint64_t>& cands) const;
 
   void get_sorted_similar_rows(
-      const pfi::data::unordered_set<uint64_t>& cands,
+      const jubatus::util::data::unordered_set<uint64_t>& cands,
       const bit_vector& query_simhash,
       float query_norm,
       uint64_t ret_num,

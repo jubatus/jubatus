@@ -27,19 +27,19 @@ namespace jubatus {
 namespace core {
 namespace clustering {
 
-pfi::lang::shared_ptr<storage> storage_factory::create(
+jubatus::util::lang::shared_ptr<storage> storage_factory::create(
     const std::string& name,
     const clustering_config& config) {
-  typedef pfi::lang::shared_ptr<storage> ptr;
+  typedef jubatus::util::lang::shared_ptr<storage> ptr;
   ptr ret;
   if (config.compressor_method == "compressive_kmeans") {
     compressive_storage *s = new compressive_storage(name, config);
-    s->set_compressor(pfi::lang::shared_ptr<compressor::compressor>(
+    s->set_compressor(jubatus::util::lang::shared_ptr<compressor::compressor>(
                           new compressor::kmeans_compressor(config)));
     ret.reset(s);
   } else if (config.compressor_method == "compressive_gmm") {
     compressive_storage *s = new compressive_storage(name, config);
-    s->set_compressor(pfi::lang::shared_ptr<compressor::compressor>(
+    s->set_compressor(jubatus::util::lang::shared_ptr<compressor::compressor>(
                           new compressor::gmm_compressor(config)));
     ret.reset(s);
   } else if (config.compressor_method == "simple") {

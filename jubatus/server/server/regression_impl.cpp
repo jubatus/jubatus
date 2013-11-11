@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../../server/framework.hpp"
 #include "regression_serv.hpp"
@@ -21,21 +21,21 @@ class regression_impl : public jubatus::server::common::mprpc::rpc_server {
         false)) {
 
     rpc_server::add<int32_t(std::string, std::vector<scored_datum>)>("train",
-        pfi::lang::bind(&regression_impl::train, this, pfi::lang::_2));
+        jubatus::util::lang::bind(&regression_impl::train, this, jubatus::util::lang::_2));
     rpc_server::add<std::vector<float>(std::string,
         std::vector<jubatus::core::fv_converter::datum>)>("estimate",
-        pfi::lang::bind(&regression_impl::estimate, this, pfi::lang::_2));
-    rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(
+        jubatus::util::lang::bind(&regression_impl::estimate, this, jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &regression_impl::clear, this));
 
-    rpc_server::add<std::string(std::string)>("get_config", pfi::lang::bind(
+    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
         &regression_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save", pfi::lang::bind(
-        &regression_impl::save, this, pfi::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", pfi::lang::bind(
-        &regression_impl::load, this, pfi::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
+        &regression_impl::save, this, jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
+        &regression_impl::load, this, jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", pfi::lang::bind(
+        std::string)>("get_status", jubatus::util::lang::bind(
         &regression_impl::get_status, this));
   }
 
@@ -76,10 +76,10 @@ class regression_impl : public jubatus::server::common::mprpc::rpc_server {
   }
 
   int run() { return p_->start(*this); }
-  pfi::lang::shared_ptr<regression_serv> get_p() { return p_->server(); }
+  jubatus::util::lang::shared_ptr<regression_serv> get_p() { return p_->server(); }
 
  private:
-  pfi::lang::shared_ptr<jubatus::server::framework::server_helper<regression_serv> > p_;
+  jubatus::util::lang::shared_ptr<jubatus::server::framework::server_helper<regression_serv> > p_;
 };
 
 }  // namespace server

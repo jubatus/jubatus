@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 #include <map>
-#include <pficommon/lang/function.h>
+#include "jubatus/util/lang/function.h"
 
 #include "lock_service.hpp"
 
@@ -77,7 +77,7 @@ void watch_delete_actor(
     const std::string& name,
     const std::string& ip,
     int port,
-    pfi::lang::function<void(std::string)> callback);
+    jubatus::util::lang::function<void(std::string)> callback);
 
 
 // zk -> name -> ip -> port -> void

@@ -21,7 +21,7 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 
 #include "graph_wo_index.hpp"
 
@@ -197,11 +197,11 @@ TEST(graph, random) {
 
   map<string, string> status;
   g.get_status(status);
-  ASSERT_EQ(pfi::lang::lexical_cast<string>(local_node_num),
+  ASSERT_EQ(jubatus::util::lang::lexical_cast<string>(local_node_num),
             status["local_node_num"]);
-  ASSERT_EQ(pfi::lang::lexical_cast<string>(node_num),
+  ASSERT_EQ(jubatus::util::lang::lexical_cast<string>(node_num),
             status["global_node_num"]);
-  ASSERT_EQ(pfi::lang::lexical_cast<string>(edge_added_num),
+  ASSERT_EQ(jubatus::util::lang::lexical_cast<string>(edge_added_num),
             status["local_edge_num"]);
 }
 

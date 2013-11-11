@@ -17,8 +17,8 @@
 #include <string>
 
 #ifndef ATOMIC_I8_SUPPORT
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/concurrent/mutex.h>
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/concurrent/mutex.h"
 #endif
 
 #include "jubatus/core/common/exception.hpp"
@@ -34,7 +34,7 @@ struct global_id_generator_standalone::impl {
 
   uint64_t counter;
 #ifndef ATOMIC_I8_SUPPORT
-  pfi::concurrent::mutex counter_mutex;
+  jubatus::util::concurrent::mutex counter_mutex;
 #endif
 };
 
@@ -49,7 +49,7 @@ uint64_t global_id_generator_standalone::generate() {
 #ifdef ATOMIC_I8_SUPPORT
   return __sync_fetch_and_add(&pimpl_->counter, 1);
 #else
-  pfi::concurrent::scoped_lock lk(pimpl_->counter_mutex);
+  jubatus::util::concurrent::scoped_lock lk(pimpl_->counter_mutex);
   return pimpl_->counter++;
 #endif
 }

@@ -19,9 +19,9 @@
 
 #include <map>
 #include <string>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/intern.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/intern.h"
 #include "local_storage.hpp"
 
 namespace jubatus {
@@ -79,7 +79,7 @@ class local_storage_mixture : public storage_base {
   MSGPACK_DEFINE(tbl_, class2id_, tbl_diff_);
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(tbl_) & MEMBER(class2id_) & MEMBER(tbl_diff_);

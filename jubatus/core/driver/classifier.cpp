@@ -39,8 +39,8 @@ namespace core {
 namespace driver {
 
 classifier::classifier(
-    pfi::lang::shared_ptr<core::classifier::classifier_base> classifier_method,
-    pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
+    jubatus::util::lang::shared_ptr<core::classifier::classifier_base> classifier_method,
+    jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       classifier_(classifier_method) {

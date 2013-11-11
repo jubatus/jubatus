@@ -19,8 +19,8 @@
 #include <string>
 
 #include <gtest/gtest.h>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
 #include "local_storage_mixture.hpp"
 
 using std::make_pair;

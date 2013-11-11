@@ -20,9 +20,9 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_map.h"
 #include "../common/key_manager.hpp"
 #include "../common/unordered_map.hpp"
 #include "../framework/mixable.hpp"
@@ -61,7 +61,7 @@ class bit_index_storage {
   MSGPACK_DEFINE(bitvals_, bitvals_diff_);
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(bitvals_) & MEMBER(bitvals_diff_);

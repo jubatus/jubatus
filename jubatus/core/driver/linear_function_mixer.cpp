@@ -17,13 +17,13 @@
 #include <string>
 #include <algorithm>
 
-#include <pficommon/lang/bind.h>
+#include "jubatus/util/lang/bind.h"
 #include "linear_function_mixer.hpp"
 
 using std::string;
-using pfi::lang::bind;
-using pfi::lang::_1;
-using pfi::lang::_2;
+using jubatus::util::lang::bind;
+using jubatus::util::lang::_1;
+using jubatus::util::lang::_2;
 
 using jubatus::core::storage::val3_t;
 using jubatus::core::storage::feature_val3_t;

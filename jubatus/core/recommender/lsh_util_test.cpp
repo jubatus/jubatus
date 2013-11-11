@@ -18,7 +18,7 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/unordered_map.h"
 
 #include "lsh_util.hpp"
 #include "../storage/bit_vector.hpp"
@@ -31,7 +31,7 @@ using std::make_pair;
 using std::string;
 using std::vector;
 using jubatus::core::storage::bit_vector;
-using pfi::data::unordered_map;
+using jubatus::util::data::unordered_map;
 
 TEST(generate_random_vector, empty) {
   vector<float> v;

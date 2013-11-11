@@ -23,7 +23,7 @@ def build(bld):
     target = 'jubatus_classifier',
     name = 'jubatus_classifier',
     includes = '.',
-    use = 'PFICOMMON jubacommon jubatus_mixables'+libassert)
+    use = 'jubatus_util jubacommon jubatus_mixables'+libassert)
 
   bld.program(
      features = 'gtest',

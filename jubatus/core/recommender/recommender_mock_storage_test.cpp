@@ -19,8 +19,8 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/data/string/utility.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/data/string/utility.h"
+#include "jubatus/util/lang/cast.h"
 
 #include "recommender_mock_storage.hpp"
 #include "recommender_mock_util.hpp"

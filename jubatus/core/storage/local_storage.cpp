@@ -19,9 +19,9 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <pficommon/data/intern.h>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
+#include "jubatus/util/data/intern.h"
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
 
 using std::string;
 
@@ -123,8 +123,8 @@ void local_storage::set3(
 }
 
 void local_storage::get_status(std::map<string, std::string>& status) const {
-  status["num_features"] = pfi::lang::lexical_cast<std::string>(tbl_.size());
-  status["num_classes"] = pfi::lang::lexical_cast<std::string>(
+  status["num_features"] = jubatus::util::lang::lexical_cast<std::string>(tbl_.size());
+  status["num_classes"] = jubatus::util::lang::lexical_cast<std::string>(
       class2id_.size());
 }
 

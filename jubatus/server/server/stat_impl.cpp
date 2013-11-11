@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../../server/framework.hpp"
 #include "stat_serv.hpp"
@@ -20,31 +20,31 @@ class stat_impl : public jubatus::server::common::mprpc::rpc_server {
     p_(new jubatus::server::framework::server_helper<stat_serv>(a, true)) {
 
     rpc_server::add<bool(std::string, std::string, double)>("push",
-        pfi::lang::bind(&stat_impl::push, this, pfi::lang::_2, pfi::lang::_3));
-    rpc_server::add<double(std::string, std::string)>("sum", pfi::lang::bind(
-        &stat_impl::sum, this, pfi::lang::_2));
-    rpc_server::add<double(std::string, std::string)>("stddev", pfi::lang::bind(
-        &stat_impl::stddev, this, pfi::lang::_2));
-    rpc_server::add<double(std::string, std::string)>("max", pfi::lang::bind(
-        &stat_impl::max, this, pfi::lang::_2));
-    rpc_server::add<double(std::string, std::string)>("min", pfi::lang::bind(
-        &stat_impl::min, this, pfi::lang::_2));
+        jubatus::util::lang::bind(&stat_impl::push, this, jubatus::util::lang::_2, jubatus::util::lang::_3));
+    rpc_server::add<double(std::string, std::string)>("sum", jubatus::util::lang::bind(
+        &stat_impl::sum, this, jubatus::util::lang::_2));
+    rpc_server::add<double(std::string, std::string)>("stddev", jubatus::util::lang::bind(
+        &stat_impl::stddev, this, jubatus::util::lang::_2));
+    rpc_server::add<double(std::string, std::string)>("max", jubatus::util::lang::bind(
+        &stat_impl::max, this, jubatus::util::lang::_2));
+    rpc_server::add<double(std::string, std::string)>("min", jubatus::util::lang::bind(
+        &stat_impl::min, this, jubatus::util::lang::_2));
     rpc_server::add<double(std::string, std::string)>("entropy",
-        pfi::lang::bind(&stat_impl::entropy, this, pfi::lang::_2));
+        jubatus::util::lang::bind(&stat_impl::entropy, this, jubatus::util::lang::_2));
     rpc_server::add<double(std::string, std::string, int32_t, double)>("moment",
-        pfi::lang::bind(&stat_impl::moment, this, pfi::lang::_2, pfi::lang::_3,
-        pfi::lang::_4));
-    rpc_server::add<bool(std::string)>("clear", pfi::lang::bind(
+        jubatus::util::lang::bind(&stat_impl::moment, this, jubatus::util::lang::_2, jubatus::util::lang::_3,
+        jubatus::util::lang::_4));
+    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &stat_impl::clear, this));
 
-    rpc_server::add<std::string(std::string)>("get_config", pfi::lang::bind(
+    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
         &stat_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save", pfi::lang::bind(
-        &stat_impl::save, this, pfi::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", pfi::lang::bind(
-        &stat_impl::load, this, pfi::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
+        &stat_impl::save, this, jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
+        &stat_impl::load, this, jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", pfi::lang::bind(&stat_impl::get_status,
+        std::string)>("get_status", jubatus::util::lang::bind(&stat_impl::get_status,
         this));
   }
 
@@ -109,10 +109,10 @@ class stat_impl : public jubatus::server::common::mprpc::rpc_server {
   }
 
   int run() { return p_->start(*this); }
-  pfi::lang::shared_ptr<stat_serv> get_p() { return p_->server(); }
+  jubatus::util::lang::shared_ptr<stat_serv> get_p() { return p_->server(); }
 
  private:
-  pfi::lang::shared_ptr<jubatus::server::framework::server_helper<stat_serv> > p_;
+  jubatus::util::lang::shared_ptr<jubatus::server::framework::server_helper<stat_serv> > p_;
 };
 
 }  // namespace server

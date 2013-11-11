@@ -30,13 +30,13 @@
 #include <vector>
 
 #include <glog/logging.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 
 #include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
 #include "../common/util.hpp"
 
-using pfi::lang::lexical_cast;
+using jubatus::util::lang::lexical_cast;
 
 namespace jubatus {
 namespace server {

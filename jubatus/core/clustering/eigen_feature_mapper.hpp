@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/unordered_map.h"
 #include "gmm_types.hpp"
 #include "types.hpp"
 
@@ -46,8 +46,8 @@ class eigen_feature_mapper {
   weighted_point revert(const eigen_wsvec_t& src) const;
 
  private:
-  pfi::data::unordered_map<std::string, size_t> map_;
-  pfi::data::unordered_map<size_t, std::string> rmap_;
+  jubatus::util::data::unordered_map<std::string, size_t> map_;
+  jubatus::util::data::unordered_map<size_t, std::string> rmap_;
   void insert_(std::pair<std::string, float>,
                bool update_map, eigen_svec_t& dst);
   void insertc_(std::pair<std::string, float>,

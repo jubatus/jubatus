@@ -16,7 +16,7 @@
 
 #include "storage_base.hpp"
 #include <string>
-#include <pficommon/text/json.h>
+#include "jubatus/util/text/json.h"
 
 using std::string;
 

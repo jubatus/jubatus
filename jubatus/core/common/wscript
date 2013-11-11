@@ -20,7 +20,7 @@ def build(bld):
     source = src,
     target = 'jubacommon',
     includes = '.',
-    use = 'PFICOMMON'+libassert
+    use = 'jubatus_util'+libassert
     )
 
   test_src = [

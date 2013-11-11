@@ -21,9 +21,9 @@
 #include <csignal>
 
 #include <glog/logging.h>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/concurrent/mutex.h>
-#include <pficommon/concurrent/thread.h>
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/concurrent/mutex.h"
+#include "jubatus/util/concurrent/thread.h"
 
 #include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
@@ -70,8 +70,8 @@ void setup_sigset_for_sigterm(sigset_t* ss) {
 
 bool blocking_sigterm = false;
 bool handling_sigterm = false;
-pfi::lang::function<void()> action_on_term;
-pfi::concurrent::mutex mutex_on_term;
+jubatus::util::lang::function<void()> action_on_term;
+jubatus::util::concurrent::mutex mutex_on_term;
 
 void handle_sigterm() {
   // internal function; do not call this function outside of set_exit_on_term
@@ -101,11 +101,11 @@ void handle_sigterm() {
     }
 
     {
-      pfi::concurrent::scoped_lock lk(mutex_on_term);
+      jubatus::util::concurrent::scoped_lock lk(mutex_on_term);
 
       if (action_on_term) {
         action_on_term();
-        pfi::lang::function<void()>().swap(action_on_term);
+        jubatus::util::lang::function<void()>().swap(action_on_term);
       } else {
         kill(getpid(), signo);  // no signal handler; resend signal
                                 // (the signal will be blocked and pending)
@@ -154,8 +154,8 @@ void prepare_signal_handling() {
   ignore_sigpipe();
 }
 
-void set_action_on_term(pfi::lang::function<void()> action) {
-  pfi::concurrent::scoped_lock lk(mutex_on_term);
+void set_action_on_term(jubatus::util::lang::function<void()> action) {
+  jubatus::util::concurrent::scoped_lock lk(mutex_on_term);
 
   if (!blocking_sigterm) {
     throw JUBATUS_EXCEPTION(
@@ -164,7 +164,7 @@ void set_action_on_term(pfi::lang::function<void()> action) {
   }
 
   if (!handling_sigterm) {
-    pfi::concurrent::thread(&handle_sigterm).start();
+    jubatus::util::concurrent::thread(&handle_sigterm).start();
     handling_sigterm = true;
   }
   action_on_term.swap(action);

@@ -19,8 +19,8 @@
 
 #include <string>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
 #include "../recommender/recommender_base.hpp"
 #include "anomaly_base.hpp"
 #include "lof_storage.hpp"
@@ -34,7 +34,7 @@ class lof : public anomaly_base {
   lof();
   explicit lof(
       const lof_storage::config& config,
-      pfi::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
+      jubatus::util::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
   ~lof();
 
   // return anomaly score of query
@@ -52,8 +52,8 @@ class lof : public anomaly_base {
       const;
 
  private:
-  pfi::lang::shared_ptr<mixable_lof_storage> mixable_storage_;
-  pfi::lang::shared_ptr<recommender::recommender_base> nn_engine_;
+  jubatus::util::lang::shared_ptr<mixable_lof_storage> mixable_storage_;
+  jubatus::util::lang::shared_ptr<recommender::recommender_base> nn_engine_;
 };
 
 }  //  namespace anomaly

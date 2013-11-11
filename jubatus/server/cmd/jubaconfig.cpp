@@ -22,7 +22,7 @@
 #include <utility>
 #include <vector>
 
-#include <pficommon/lang/function.h>
+#include "jubatus/util/lang/function.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
@@ -140,7 +140,7 @@ void set_config(
     const string& type,
     const string& name,
     const string& configfile) {
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
       jubatus::server::common::create_lock_service(
           "zk", zkhosts, 10, "/dev/null"));
 
@@ -155,7 +155,7 @@ void delete_config(
     const string& zkhosts,
     const string& type,
     const string& name) {
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
       jubatus::server::common::create_lock_service(
           "zk", zkhosts, 10, "/dev/null"));
 
@@ -163,7 +163,7 @@ void delete_config(
 }
 
 void get_config(const string& zkhosts, const string& type, const string& name) {
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
       jubatus::server::common::create_lock_service(
           "zk", zkhosts, 10, "/dev/null"));
 
@@ -171,7 +171,7 @@ void get_config(const string& zkhosts, const string& type, const string& name) {
 }
 
 void get_configs(const string& zkhosts) {
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
       jubatus::server::common::create_lock_service(
           "zk", zkhosts, 10, "/dev/null"));
 

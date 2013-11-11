@@ -18,7 +18,7 @@
 #define JUBATUS_CORE_CLUSTERING_CLUSTERING_METHOD_FACTORY_HPP_
 
 #include <string>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "clustering_config.hpp"
 #include "clustering_method.hpp"
 
@@ -28,7 +28,7 @@ namespace clustering {
 
 class clustering_method_factory {
  public:
-  static pfi::lang::shared_ptr<clustering_method> create(
+  static jubatus::util::lang::shared_ptr<clustering_method> create(
       const std::string& method,
       const clustering_config& config);
 };

@@ -21,8 +21,8 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/concurrent/rwmutex.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/framework/mixable.hpp"
 #include "server_util.hpp"
@@ -43,7 +43,7 @@ class server_base {
   virtual ~server_base() {}
 
   virtual mixer::mixer* get_mixer() const = 0;
-  virtual pfi::lang::shared_ptr<core::framework::mixable_holder>
+  virtual jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
       get_mixable_holder() const = 0;
   virtual void get_status(status_t& status) const = 0;
   virtual void set_config(const std::string& config) = 0;
@@ -60,7 +60,7 @@ class server_base {
     return update_count_;
   }
 
-  pfi::concurrent::rw_mutex& rw_mutex() {
+  jubatus::util::concurrent::rw_mutex& rw_mutex() {
     return get_mixable_holder()->rw_mutex();
   }
 

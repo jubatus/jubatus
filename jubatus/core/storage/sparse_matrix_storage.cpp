@@ -21,7 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/unordered_set.h>
+#include "jubatus/util/data/unordered_set.h"
 
 using std::istream;
 using std::ostream;

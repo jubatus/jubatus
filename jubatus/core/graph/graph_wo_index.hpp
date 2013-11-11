@@ -21,11 +21,11 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/data/unordered_set.h>
-#include <pficommon/data/serialization.h>
-#include <pficommon/lang/enable_shared_from_this.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/data/unordered_set.h"
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/lang/enable_shared_from_this.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../common/unordered_map.hpp"
 #include "../framework/mixable.hpp"
@@ -37,7 +37,7 @@ namespace graph {
 
 class graph_wo_index
     : public graph_base,
-      public pfi::lang::enable_shared_from_this<graph_wo_index> {
+      public jubatus::util::lang::enable_shared_from_this<graph_wo_index> {
  public:
   struct diff_type {
     eigen_vector_query_diff eigen_vector_query;
@@ -127,8 +127,8 @@ class graph_wo_index
       global_nodes_, eigen_scores_, spts_);
 
  private:
-  typedef pfi::data::unordered_map<node_id_t, node_info> node_info_map;
-  typedef pfi::data::unordered_map<edge_id_t, edge_info> edge_info_map;
+  typedef jubatus::util::data::unordered_map<node_id_t, node_info> node_info_map;
+  typedef jubatus::util::data::unordered_map<edge_id_t, edge_info> edge_info_map;
 
   static void remove_by_swap(std::vector<edge_id_t>& edges, edge_id_t eid);
 
@@ -136,7 +136,7 @@ class graph_wo_index
   edge_info_map local_edges_;
 
   // value is dummy for serialization
-  pfi::data::unordered_map<node_id_t, uint8_t> global_nodes_;
+  jubatus::util::data::unordered_map<node_id_t, uint8_t> global_nodes_;
 
   // centeralities
   static void mix(

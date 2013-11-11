@@ -19,7 +19,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <pficommon/data/intern.h>
+#include "jubatus/util/data/intern.h"
 
 using std::string;
 
@@ -161,10 +161,10 @@ void local_storage_mixture::set3(
 
 void local_storage_mixture::get_status(
     std::map<std::string, std::string>& status) const {
-  status["num_features"] = pfi::lang::lexical_cast<std::string>(tbl_.size());
-  status["num_classes"] = pfi::lang::lexical_cast<std::string>(
+  status["num_features"] = jubatus::util::lang::lexical_cast<std::string>(tbl_.size());
+  status["num_classes"] = jubatus::util::lang::lexical_cast<std::string>(
       class2id_.size());
-  status["diff_size"] = pfi::lang::lexical_cast<std::string>(tbl_diff_.size());
+  status["diff_size"] = jubatus::util::lang::lexical_cast<std::string>(tbl_diff_.size());
 }
 
 void local_storage_mixture::update(
@@ -203,7 +203,7 @@ void local_storage_mixture::bulk_update(
 
 void local_storage_mixture::get_diff(features3_t& ret) const {
   ret.clear();
-  for (pfi::data::unordered_map<string, id_feature_val3_t>::const_iterator it =
+  for (jubatus::util::data::unordered_map<string, id_feature_val3_t>::const_iterator it =
       tbl_diff_.begin(); it != tbl_diff_.end(); ++it) {
     id_feature_val3_t::const_iterator it2 = it->second.begin();
     feature_val3_t fv3;
