@@ -5,5 +5,6 @@ def configure(conf):
   pass
 
 def build(bld):
+  bld.recurse('common')
   bld.install_files('${PREFIX}/include/jubatus/client',
                     bld.path.ant_glob('*.hpp'))

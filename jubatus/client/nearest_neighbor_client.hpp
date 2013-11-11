@@ -1,4 +1,4 @@
-// This file is auto-generated from nearest_neighbor.idl
+// This file is auto-generated from nearest_neighbor.idl(0.4.5-212-ge1d753d) with jenerator version 0.4.5-267-g5536bc5/feature/coreset
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_NEAREST_NEIGHBOR_CLIENT_HPP_
@@ -7,84 +7,56 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <utility>
-#include <jubatus/msgpack/rpc/client.h>
+#include <jubatus/client/common/client.hpp>
+#include <jubatus/client/common/datum.hpp>
 #include "nearest_neighbor_types.hpp"
 
 namespace jubatus {
 namespace nearest_neighbor {
 namespace client {
 
-class nearest_neighbor {
+class nearest_neighbor : public jubatus::client::common::client {
  public:
-  nearest_neighbor(const std::string& host, uint64_t port, double timeout_sec)
-      : c_(host, port) {
-    c_.set_timeout(timeout_sec);
+  nearest_neighbor(const std::string& host, uint64_t port,
+      const std::string& name, unsigned int timeout_sec)
+      : client(host, port, name, timeout_sec) {
   }
 
-  bool clear(const std::string& name) {
-    msgpack::rpc::future f = c_.call("clear", name);
+  bool clear() {
+    msgpack::rpc::future f = c_.call("clear", name_);
     return f.get<bool>();
   }
 
-  bool set_row(const std::string& name, const std::string& id, const datum& d) {
-    msgpack::rpc::future f = c_.call("set_row", name, id, d);
+  bool set_row(const std::string& id, const jubatus::client::common::datum& d) {
+    msgpack::rpc::future f = c_.call("set_row", name_, id, d);
     return f.get<bool>();
   }
 
-  neighbor_result neighbor_row_from_id(const std::string& name,
-      const std::string& id, uint32_t size) {
-    msgpack::rpc::future f = c_.call("neighbor_row_from_id", name, id, size);
-    return f.get<neighbor_result>();
+  std::vector<id_with_score> neighbor_row_from_id(const std::string& id,
+      uint32_t size) {
+    msgpack::rpc::future f = c_.call("neighbor_row_from_id", name_, id, size);
+    return f.get<std::vector<id_with_score> >();
   }
 
-  neighbor_result neighbor_row_from_data(const std::string& name,
-      const datum& query, uint32_t size) {
-    msgpack::rpc::future f = c_.call("neighbor_row_from_data", name, query,
+  std::vector<id_with_score> neighbor_row_from_data(
+      const jubatus::client::common::datum& query, uint32_t size) {
+    msgpack::rpc::future f = c_.call("neighbor_row_from_data", name_, query,
         size);
-    return f.get<neighbor_result>();
+    return f.get<std::vector<id_with_score> >();
   }
 
-  neighbor_result similar_row_from_id(const std::string& name,
-      const std::string& id, int32_t ret_num) {
-    msgpack::rpc::future f = c_.call("similar_row_from_id", name, id, ret_num);
-    return f.get<neighbor_result>();
+  std::vector<id_with_score> similar_row_from_id(const std::string& id,
+      int32_t ret_num) {
+    msgpack::rpc::future f = c_.call("similar_row_from_id", name_, id, ret_num);
+    return f.get<std::vector<id_with_score> >();
   }
 
-  neighbor_result similar_row_from_data(const std::string& name,
-      const datum& query, int32_t ret_num) {
-    msgpack::rpc::future f = c_.call("similar_row_from_data", name, query,
+  std::vector<id_with_score> similar_row_from_data(
+      const jubatus::client::common::datum& query, int32_t ret_num) {
+    msgpack::rpc::future f = c_.call("similar_row_from_data", name_, query,
         ret_num);
-    return f.get<neighbor_result>();
+    return f.get<std::vector<id_with_score> >();
   }
-
-  bool save(const std::string& name, const std::string& id) {
-    msgpack::rpc::future f = c_.call("save", name, id);
-    return f.get<bool>();
-  }
-
-  bool load(const std::string& name, const std::string& id) {
-    msgpack::rpc::future f = c_.call("load", name, id);
-    return f.get<bool>();
-  }
-
-  std::map<std::string, std::map<std::string, std::string> > get_status(
-      const std::string& name) {
-    msgpack::rpc::future f = c_.call("get_status", name);
-    return f.get<std::map<std::string, std::map<std::string, std::string> > >();
-  }
-
-  std::string get_config(const std::string& name) {
-    msgpack::rpc::future f = c_.call("get_config", name);
-    return f.get<std::string>();
-  }
-
-  msgpack::rpc::client& get_client() {
-    return c_;
-  }
-
- private:
-  msgpack::rpc::client c_;
 };
 
 }  // namespace client

@@ -82,11 +82,17 @@ let rec concat_blocks blocks =
   List.concat (insert_blank blocks)
 ;;
 
-let make_header_message source comment_out_head for_template =
- (*  let file = Filename.basename source in *)
-  let first = comment_out_head ^ " This file is auto-generated from " ^ source in
-  if for_template then
-    [first; ""]
+let make_header_message conf source comment_out_head for_template =
+  (*  let file = Filename.basename source in *)
+  let source = match conf.Config.idl_version with
+    | Some version -> source ^ "(" ^ version ^ ")"
+    | None -> source in
+  let first = comment_out_head ^ " This file is auto-generated from " ^ source
+    ^ " with jenerator version " ^ Version.version in
+  if for_template then [
+    first;
+    ""
+  ]
   else [
     first;
     comment_out_head ^ " *** DO NOT EDIT ***";
@@ -100,7 +106,7 @@ let make_source_impl for_template conf source filename content comment_out_head 
   File_util.mkdir_all dir;
   File_util.safe_open_out path (fun out ->
     let print = (fun s -> output_string out s; output_char out '\n') in
-    let head = make_header_message source comment_out_head for_template in
+    let head = make_header_message conf source comment_out_head for_template in
     List.iter print head;
     print_lines print content
   )
@@ -120,4 +126,18 @@ let get_services idl =
         s::lst
       | _ -> lst) [] idl in
   List.rev services
+;;
+
+let snake_to_lower s =
+  let ss = Str.split (Str.regexp "_") s in
+  match ss with
+    | hd::tl ->
+      hd ^ String.concat "" (List.map String.capitalize tl)
+    | [] ->
+      ""
+;;
+
+let snake_to_upper s =
+  let ss = Str.split (Str.regexp "_") s in
+  String.concat "" (List.map String.capitalize ss)
 ;;

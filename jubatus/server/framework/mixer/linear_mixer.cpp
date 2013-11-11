@@ -238,11 +238,36 @@ void linear_mixer::mix() {
       common::mprpc::rpc_result_object result;
       communication_->get_diff(result);
 
+      if (result.response.empty()) {
+        throw JUBATUS_EXCEPTION(
+            core::common::exception::runtime_error("unexpected response"));
+      }
+
+      if (result.response.front().has_error()) {
+        throw JUBATUS_EXCEPTION(
+            core::common::exception::runtime_error(
+              result.response.front().error().as<string>()));
+      }
+
       vector<byte_buffer> mixed = result.response.front()
           .as<vector<byte_buffer> >();
+
+      if (mixed.size() != mixables.size()) {
+        throw JUBATUS_EXCEPTION(
+            core::common::exception::runtime_error("unexpected response"));
+      }
+
       for (size_t i = 1; i < result.response.size(); ++i) {
+        if (result.response[i].has_error()) {
+          LOG(WARNING) << result.response[i].error().as<string>();
+          continue;
+        }
         vector<byte_buffer> tmp =
             result.response[i].as<vector<byte_buffer> >();
+        if (tmp.size() != mixed.size()) {
+          throw JUBATUS_EXCEPTION(
+              core::common::exception::runtime_error("unexpected response"));
+        }
         for (size_t j = 0; j < tmp.size(); ++j) {
           mixables[j]->mix(tmp[j], mixed[j], mixed[j]);
         }

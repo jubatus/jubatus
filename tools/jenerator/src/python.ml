@@ -29,7 +29,7 @@ let make_header conf source filename content =
   make_source conf source filename content comment_out_head
 ;;
 
-let gen_args args = 
+let gen_args args =
   "(" ^ String.concat ", " args ^ ")"
 ;;
 
@@ -44,46 +44,22 @@ let gen_def func args =
   "def " ^ func ^ gen_args ("self"::args) ^ ":"
 ;;
 
-let gen_typename_with_paren name num = 
-  if num = "" then name
-  else name ^ "[" ^ num ^ "]"
-;;
-
-let gen_typename_with_bar name num = 
-  if num = "" then name
-  else name ^ "_" ^ num ^ "_"
-;;
-
-let rec gen_type t name num = match t with
-  | Object -> raise (Unknown_type("Object is not supported"))
-  | Bool | Int(_, _) | Float(_) | Raw | String -> 
-    gen_typename_with_paren name num
-  | Struct s  -> s ^ ".from_msgpack(" ^ gen_typename_with_paren name num ^ ")"
-  | List t -> 
-    let name_bar = "elem_" ^ (gen_typename_with_bar name num) in
-    let name_paren = gen_typename_with_paren name num in
-    "[" ^ (gen_type t name_bar "") ^ " for " ^ name_bar 
-    ^ " in " ^ name_paren ^ "]"
-  | Map(key, value) -> 
-    let new_name_bar = (gen_typename_with_bar name num) in
-    let new_name_paren = (gen_typename_with_paren name num) in
-    let t1' = (gen_type key ("k_" ^ new_name_bar) "") in
-    let t2' = (gen_type value ("v_" ^ new_name_bar) "") in
-    "{" ^ t1' ^ " : " ^ t2' ^ " for " ^ 
-      ("k_" ^ new_name_bar)  ^ "," ^ ("v_" ^ new_name_bar) ^ 
-      " in " ^ new_name_paren ^ ".items()" ^ "}"
-  | Tuple [t1; t2] -> 
-    " (" ^ gen_type t1 (name ^ "[0]") num ^ ", " ^ gen_type t2 (name ^ "[1]") num ^") "
-  | Tuple(ts) -> raise (Unknown_type "Tuple is not supported")
-  | Nullable(t) -> raise (Unknown_type "Nullable is not supported")
-;;
-
 let gen_string_literal s =
   "\"" ^ String.escaped s ^ "\""
 ;;
 
-let gen_arg_def f =
-  (gen_type f.field_type "retval" "") ^ " " ^ f.field_name
+let gen_typename_with_bar name num =
+  if num = "" then name
+  else name ^ "_" ^ num ^ "_"
+;;
+
+let gen_bool_literal = function
+  | true -> "True"
+  | false -> "False"
+;;
+
+let gen_string_literal s =
+  "\"" ^ String.escaped s ^ "\""
 ;;
 
 let gen_call func args =
@@ -91,59 +67,82 @@ let gen_call func args =
   func ^ gen_args args
 ;;
 
-let gen_ret_type = function
-  | None -> "retval" (* TODO (tsushima): OK? *)
-  | Some typ -> gen_type typ "retval" ""
+let gen_list vars =
+  "[" ^ String.concat ", " vars ^ "]"
+
+let rec gen_type = function
+  | Object -> "TObject()"
+  | Bool -> "TBool()"
+  | Int(signed, bits) -> gen_call "TInt" [gen_bool_literal signed; string_of_int bits]
+  | Float(_) -> "TFloat()"
+  | Raw -> "TRaw()"
+  | String -> "TString()"
+  | Datum -> "TDatum()"
+  | Struct s  -> gen_call "TUserDef" [snake_to_upper s]
+  | List t -> gen_call "TList" [gen_type t]
+  | Map(key, value) -> gen_call "TMap" [gen_type key; gen_type value]
+  | Nullable(t) -> gen_call "TNulallable" [gen_type t]
+;;
+
+let gen_client_call m =
+  let name = m.method_name in
+  let args = List.map (fun f -> f.field_name) m.method_arguments in
+  let arg_types = List.map (fun f -> f.field_type) m.method_arguments in
+
+  let args' = gen_list args in
+  let ret_type' = match m.method_return_type with
+    | None -> "None"
+    | Some t -> gen_type t in
+  let arg_types' = gen_list (List.map gen_type arg_types) in
+  let call_arg = [gen_string_literal name; args'; ret_type'; arg_types'] in
+  gen_call "self.jubatus_client.call" call_arg
 ;;
 
 let gen_client_method m =
   let name = m.method_name in
-  let args = List.map (fun f -> f.field_name) m.method_arguments in 
-  let ret_type = gen_ret_type m.method_return_type in
-  let call =
-    [(0, gen_def name args);
-     (1, gen_retval name args);
-     (1, "return " ^ ret_type)] in
-    call
+  let args = List.map (fun f -> f.field_name) m.method_arguments in
+  match m.method_return_type with
+  | None ->
+    [ (0, gen_def name args);
+      (1,   gen_client_call m);
+    ]
+  | Some typ ->
+    [ (0, gen_def name args);
+      (1,   "return " ^ gen_client_call m);
+    ]
 ;;
 
 let gen_client s =
+  let class_name = snake_to_upper s.service_name in
   let methods = List.map gen_client_method s.service_methods in
   let constructor = [
-    (0, "def __init__ (self, host, port):");
-    (1, "address = msgpackrpc.Address(host, port)");
-    (1, "self.client = msgpackrpc.Client(address)");
+    (0, "def __init__(self, host, port, name, timeout=10):");
+    (1,   "super(" ^ class_name ^ ", self).__init__(host, port, name, timeout)");
     (0, "");
-    (0, "def get_client (self):");
-    (1, "return self.client")
   ] in
   let content = concat_blocks (constructor :: methods) in
     List.concat [
       [
-        (0, "class " ^ s.service_name ^ ":");
+        (0, "class " ^ class_name ^ "(jubatus.common.ClientBase):");
       ];
     indent_lines 1 content
     ]
 ;;
 
-let gen_message_field f =
-  (0, gen_arg_def f ^ ";")
-;;
-
-let gen_self_with_comma field_names =
-  (List.map (fun s -> (0, "self." ^ s ^ ",")) field_names)
+let gen_message_type field_types =
+  "TYPE = " ^ gen_call "TTuple" (List.map gen_type field_types)
 ;;
 
 let gen_self_without_comma field_names =
   (List.map (fun s -> (0, "self." ^ s ^ " = " ^ s)) field_names)
 ;;
 
-let gen_to_msgpack field_names =
-  List.concat [
-    [(0, "def to_msgpack (self):")];
-    [(1, "return (")];
-    indent_lines 2 (gen_self_with_comma field_names);
-    [(1, "  )")]
+let gen_to_msgpack field_names field_types =
+  let vars = List.map (fun v -> "self." ^ v) field_names in
+  [
+    (0, "def to_msgpack(self):");
+    (1,   "t = " ^ gen_call "" vars);
+    (1,   "return " ^ gen_call "self.__class__.TYPE.to_msgpack" ["t"]);
   ]
 ;;
 
@@ -171,16 +170,12 @@ let mapi f lst =
   mapi_impl f 0 lst
 ;;
 
-let rec gen_from_msgpack_types field_types =
-  mapi (fun i t -> gen_type t "arg" (string_of_int i)) field_types
-;;
-
 let gen_from_msgpack field_names field_types s =
-  let args = gen_from_msgpack_types field_types in
   [
-    (0, "@staticmethod");
-    (0, "def from_msgpack (arg):");
-    (1,   "return " ^ s ^ "(" ^ String.concat ", " args ^ ")");
+    (0, "@classmethod");
+    (0, "def from_msgpack(cls, arg):");
+    (1,   "val = cls.TYPE.from_msgpack(arg)");
+    (1,   "return " ^ gen_call (snake_to_upper s) ["*val"]);
   ]
 ;;
 
@@ -189,12 +184,14 @@ let gen_message m =
   let field_types = List.map (fun f -> f.field_type) m.message_fields in
   List.concat [
     [
-      (0, "class " ^ m.message_name ^ ":");
-      (1, gen_def "__init__" field_names);
+      (0, "class " ^ snake_to_upper m.message_name ^ ":");
+      (1,   gen_message_type field_types);
+      (0,   "");
+      (1,   gen_def "__init__" field_names);
     ];
     indent_lines 2 (gen_self_without_comma field_names);
     [(0, "")];
-    indent_lines 1 (gen_to_msgpack field_names);
+    indent_lines 1 (gen_to_msgpack field_names field_types);
     [(0, "")];
     indent_lines 1 (gen_from_msgpack field_names field_types m.message_name);
     [(0, "")];
@@ -203,27 +200,15 @@ let gen_message m =
 ;;
 
 let gen_from_msgpack_for_typedef typ =
-  let arg = gen_type typ "arg" "" in
+  let t = gen_type typ ^ ".from_msgpack" in
   [
     (0, "@staticmethod");
-    (0, "def from_msgpack (arg):");
-    (1,   "return " ^ arg);
+    (0, "def from_msgpack(arg):");
+    (1,   "return " ^ gen_call t ["arg"]);
   ]
 ;;
-
-let gen_typedef' name typ = 
-  List.concat [
-    [
-      (0, "class " ^ name ^ ":");
-    ];
-    indent_lines 1 (gen_from_msgpack_for_typedef typ);
-  ]
-;;
-
 
 let gen_typedef = function
-  | Typedef(name, typ) ->
-      gen_typedef' name typ
   | Message m ->
     gen_message m
   | _ ->
@@ -238,7 +223,9 @@ let gen_client_file conf source services =
     [
       (0, "");
       (0, "import msgpackrpc");
+      (0, "import jubatus.common");
       (0, "from types import *");
+      (0, "from jubatus.common.types import *")
     ];
     (concat_blocks clients)
   ]
@@ -253,7 +240,8 @@ let gen_type_file conf source idl =
     (0, "");
     (0, "import sys");
     (0, "import msgpack");
-    (0, "import jubatus.common")
+    (0, "import jubatus.common");
+    (0, "from jubatus.common.types import *");
   ] in
   let content = concat_blocks [
     includes;

@@ -40,7 +40,7 @@ namespace {
 
 struct nearest_neighbor_serv_config {
   std::string method;
-  pfi::data::optional<pfi::text::json::json> parameter;
+  pfi::data::optional<core::common::jsonconfig::config> parameter;
   core::fv_converter::converter_config converter;
 
   template<typename Ar>
@@ -87,7 +87,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
 
   core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::common::jsonconfig::config(*conf.parameter);
+    param = *conf.parameter;
   }
 
   DLOG(INFO) << __func__;

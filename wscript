@@ -174,7 +174,14 @@ def regenerate(ctx):
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name
     service_name = os.path.splitext(idl)[0]
-    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'server', '-o', '.', '-i', '-n', 'jubatus', '-g', 'JUBATUS_SERVER_SERVER_', idl], cwd=server_node.abspath())
+    jenerator_command = [jenerator_node.abspath(), '-l', 'server', '-o', '.', '-i', '-n', 'jubatus', '-g', 'JUBATUS_SERVER_SERVER_', idl]
+    try:
+      idl_hash = ctx.cmd_and_log(['git', 'log', '-1', '--format=%H', '--', idl], cwd=server_node.abspath()).strip()
+      idl_ver = ctx.cmd_and_log(['git', 'describe', idl_hash], cwd=server_node.abspath()).strip()
+      jenerator_command += ['--idl-version', idl_ver]
+    except Exception:
+      pass
+    ctx.cmd_and_log(jenerator_command, cwd=server_node.abspath())
     print()
     if not service_name in ['graph', 'anomaly']:
       server_node.find_node('%s_client.hpp' % service_name).delete()
@@ -188,5 +195,12 @@ def regenerate_client(ctx):
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name
     service_name = os.path.splitext(idl)[0]
-    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'cpp', '-o', client_node.abspath(), '-i', '-n', 'jubatus::' + service_name, '-g', 'JUBATUS_CLIENT_', idl], cwd=server_node.abspath())
+    jenerator_command = [jenerator_node.abspath(), '-l', 'cpp', '-o', client_node.abspath(), '-i', '-n', 'jubatus::' + service_name, '-g', 'JUBATUS_CLIENT_', idl]
+    try:
+      idl_hash = ctx.cmd_and_log(['git', 'log', '-1', '--format=%H', '--', idl], cwd=server_node.abspath()).strip()
+      idl_ver = ctx.cmd_and_log(['git', 'describe', idl_hash], cwd=server_node.abspath()).strip()
+      jenerator_command += ['--idl-version', idl_ver]
+    except Exception:
+      pass
+    ctx.cmd_and_log(jenerator_command, cwd=server_node.abspath())
     print()

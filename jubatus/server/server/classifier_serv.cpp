@@ -56,7 +56,7 @@ namespace {
 
 struct classifier_serv_config {
   std::string method;
-  pfi::data::optional<pfi::text::json::json> parameter;
+  pfi::data::optional<core::common::jsonconfig::config> parameter;
   core::fv_converter::converter_config converter;
 
   template<typename Ar>
@@ -89,7 +89,7 @@ void classifier_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-bool classifier_serv::set_config(const string& config) {
+void classifier_serv::set_config(const string& config) {
   core::common::jsonconfig::config config_root(lexical_cast<json>(config));
   classifier_serv_config conf =
     core::common::jsonconfig::config_cast_check<classifier_serv_config>(
@@ -99,7 +99,7 @@ bool classifier_serv::set_config(const string& config) {
 
   core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::common::jsonconfig::config(*conf.parameter);
+    param = *conf.parameter;
   }
 
   // Model owner moved to classifier_
@@ -115,7 +115,6 @@ bool classifier_serv::set_config(const string& config) {
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
   LOG(INFO) << "config loaded: " << config;
-  return true;
 }
 
 string classifier_serv::get_config() const {
@@ -127,16 +126,16 @@ uint64_t classifier_serv::user_data_version() const {
   return 1;  // should be inclemented when model data is modified
 }
 
-int classifier_serv::train(
-    const vector<pair<string, jubatus::core::fv_converter::datum> >& data) {
+int classifier_serv::train(const vector<labeled_datum>& data) {
   check_set_config();
 
   int count = 0;
 
   for (size_t i = 0; i < data.size(); ++i) {
-    classifier_->train(data[i]);
+    // TODO(unno): change interface of driver?
+    classifier_->train(make_pair(data[i].label, data[i].data));
 
-    DLOG(INFO) << "trained: " << data[i].first;
+    DLOG(INFO) << "trained: " << data[i].label;
     count++;
   }
   // TODO(kuenishi): send count incrementation to mixer

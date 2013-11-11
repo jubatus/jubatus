@@ -1,4 +1,4 @@
-// This file is auto-generated from cluster_analysis.idl
+// This file is auto-generated from cluster_analysis.idl(0.4.5-347-gbd3e713) with jenerator version 0.4.5-267-g5536bc5/feature/coreset
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -19,7 +19,6 @@ int run_proxy(int argc, char* argv[]) {
   try {
     jubatus::server::framework::proxy k(
         jubatus::server::framework::proxy_argv(argc, argv, "cluster_analysis"));
-    k.register_async_random<std::string>("get_config");
     k.register_async_broadcast<bool, std::string>("add_snapshot",
         pfi::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));

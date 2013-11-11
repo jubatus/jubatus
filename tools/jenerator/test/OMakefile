@@ -8,6 +8,7 @@ FILES[] =
   python_test
   ruby_test
   file_util_test
+  lib_test
 
 USE_OCAMLFIND = true
 OCAMLPACKS[] = oUnit str extlib

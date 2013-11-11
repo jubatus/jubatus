@@ -64,7 +64,7 @@ uint64_t clustering_serv::user_data_version() const {
   return 1;  // should be inclemented when model data is modified
 }
 
-bool clustering_serv::set_config(const std::string& config) {
+void clustering_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config config_root(
       pfi::lang::lexical_cast<pfi::text::json::json>(config));
   clustering_serv_config conf =
@@ -91,7 +91,6 @@ bool clustering_serv::set_config(const std::string& config) {
   mixer_->set_mixable_holder(clustering_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
-  return true;
 }
 
 std::string clustering_serv::get_config() const {

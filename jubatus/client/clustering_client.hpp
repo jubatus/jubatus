@@ -1,4 +1,4 @@
-// This file is auto-generated from clustering.idl
+// This file is auto-generated from clustering.idl(0.4.5-347-gbd3e713) with jenerator version 0.4.5-267-g5536bc5/feature/coreset
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_CLUSTERING_CLIENT_HPP_
@@ -7,80 +7,52 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <utility>
-#include <jubatus/msgpack/rpc/client.h>
+#include <jubatus/client/common/client.hpp>
+#include <jubatus/client/common/datum.hpp>
 #include "clustering_types.hpp"
 
 namespace jubatus {
 namespace clustering {
 namespace client {
 
-class clustering {
+class clustering : public jubatus::client::common::client {
  public:
-  clustering(const std::string& host, uint64_t port, double timeout_sec)
-      : c_(host, port) {
-    c_.set_timeout(timeout_sec);
+  clustering(const std::string& host, uint64_t port, const std::string& name,
+      unsigned int timeout_sec)
+      : client(host, port, name, timeout_sec) {
   }
 
-  std::string get_config(const std::string& name) {
-    msgpack::rpc::future f = c_.call("get_config", name);
-    return f.get<std::string>();
-  }
-
-  bool push(const std::string& name, const std::vector<datum>& points) {
-    msgpack::rpc::future f = c_.call("push", name, points);
+  bool push(const std::vector<jubatus::client::common::datum>& points) {
+    msgpack::rpc::future f = c_.call("push", name_, points);
     return f.get<bool>();
   }
 
-  uint32_t get_revision(const std::string& name) {
-    msgpack::rpc::future f = c_.call("get_revision", name);
+  uint32_t get_revision() {
+    msgpack::rpc::future f = c_.call("get_revision", name_);
     return f.get<uint32_t>();
   }
 
-  std::vector<std::vector<std::pair<double, datum> > > get_core_members(
-      const std::string& name) {
-    msgpack::rpc::future f = c_.call("get_core_members", name);
-    return f.get<std::vector<std::vector<std::pair<double, datum> > > >();
+  std::vector<std::vector<weighted_datum> > get_core_members() {
+    msgpack::rpc::future f = c_.call("get_core_members", name_);
+    return f.get<std::vector<std::vector<weighted_datum> > >();
   }
 
-  std::vector<datum> get_k_center(const std::string& name) {
-    msgpack::rpc::future f = c_.call("get_k_center", name);
-    return f.get<std::vector<datum> >();
+  std::vector<jubatus::client::common::datum> get_k_center() {
+    msgpack::rpc::future f = c_.call("get_k_center", name_);
+    return f.get<std::vector<jubatus::client::common::datum> >();
   }
 
-  datum get_nearest_center(const std::string& name, const datum& point) {
-    msgpack::rpc::future f = c_.call("get_nearest_center", name, point);
-    return f.get<datum>();
+  jubatus::client::common::datum get_nearest_center(
+      const jubatus::client::common::datum& point) {
+    msgpack::rpc::future f = c_.call("get_nearest_center", name_, point);
+    return f.get<jubatus::client::common::datum>();
   }
 
-  std::vector<std::pair<double, datum> > get_nearest_members(
-      const std::string& name, const datum& point) {
-    msgpack::rpc::future f = c_.call("get_nearest_members", name, point);
-    return f.get<std::vector<std::pair<double, datum> > >();
+  std::vector<weighted_datum> get_nearest_members(
+      const jubatus::client::common::datum& point) {
+    msgpack::rpc::future f = c_.call("get_nearest_members", name_, point);
+    return f.get<std::vector<weighted_datum> >();
   }
-
-  bool save(const std::string& name, const std::string& id) {
-    msgpack::rpc::future f = c_.call("save", name, id);
-    return f.get<bool>();
-  }
-
-  bool load(const std::string& name, const std::string& id) {
-    msgpack::rpc::future f = c_.call("load", name, id);
-    return f.get<bool>();
-  }
-
-  std::map<std::string, std::map<std::string, std::string> > get_status(
-      const std::string& name) {
-    msgpack::rpc::future f = c_.call("get_status", name);
-    return f.get<std::map<std::string, std::map<std::string, std::string> > >();
-  }
-
-  msgpack::rpc::client& get_client() {
-    return c_;
-  }
-
- private:
-  msgpack::rpc::client c_;
 };
 
 }  // namespace client

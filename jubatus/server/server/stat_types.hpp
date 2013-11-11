@@ -1,4 +1,4 @@
-// This file is auto-generated from stat.idl
+// This file is auto-generated from stat.idl(0.4.5-331-gd7b15b4) with jenerator version 0.4.5-267-g5536bc5/feature/coreset
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_STAT_TYPES_HPP_
@@ -11,6 +11,7 @@
 #include <vector>
 #include <utility>
 
+#include "jubatus/core/fv_converter/datum.hpp"
 #include <msgpack.hpp>
 
 namespace jubatus {

@@ -88,8 +88,10 @@ void handle_sigterm() {
 
     switch (signo) {
       case SIGINT:
+        LOG(INFO) << "caught SIGINT";
+        break;
       case SIGTERM:
-        // intended signal; continue
+        LOG(INFO) << "caught SIGTERM";
         break;
       default:
         // unintended signal; raise error (assertion may be better?)

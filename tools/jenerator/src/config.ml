@@ -24,6 +24,7 @@ type t = {
   namespace: string;
   default_template: bool;
   include_guard: string;
+  idl_version: string option;
 }
 
 let usage =
@@ -44,6 +45,8 @@ let parse_args () =
   let namespace = ref "" in
   let default_template = ref false in
   let include_guard = ref "" in
+  let idl_version = ref None in
+  let version = ref false in
 
   let specs = [
     ("-l", Arg.Symbol(languages, (fun s -> language := Some s)),
@@ -58,9 +61,18 @@ let parse_args () =
      "Output default template xxx_serv files");
     ("-g", Arg.Set_string include_guard,
      "Prefix of include guard (used in C++)");
+    ("--idl-version", Arg.String (fun s -> idl_version := Some s),
+     "Versioin of IDL");
+    ("--version", Arg.Set version,
+     "Show version");
   ] in
   let rest = ref [] in
   Arg.parse specs (fun arg -> rest := arg::!rest) usage;
+
+  if !version then begin
+    Printf.printf "jenerator %s\n" Version.version;
+    exit 0
+  end;
 
   match !language with
   | None ->
@@ -76,6 +88,7 @@ let parse_args () =
         internal = !internal;
         default_template = !default_template;
         include_guard = !include_guard;
+        idl_version = !idl_version;
       } in
       (conf, !rest)
 ;;

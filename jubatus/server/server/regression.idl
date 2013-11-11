@@ -14,33 +14,20 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-%include "../../core/fv_converter/datum.hpp"
-
-message datum(jubatus::core::fv_converter::datum) {
-  0: list<tuple<string, string> >  string_values
-  1: list<tuple<string, double> >  num_values
+message scored_datum {
+  0: float score
+  1: datum data
 }
 
 service regression {
 
-  #@random #@analysis #@pass
-  string get_config(0: string name) # //@random
-
   #@random #@update #@pass
-  int train(0: string name, 1: list<tuple<float, datum> > train_data) # //@random
+  int train(0: list<scored_datum> train_data) # //@random
 
   #@random #@analysis #@pass
-  list<float>  estimate(0: string name, 1: list<datum>  estimate_data) # //@random
+  list<float>  estimate(0: list<datum>  estimate_data) # //@random
 
   #@broadcast #@update #@all_and
-  bool clear(0: string name) # //@broadcast
+  bool clear() # //@broadcast
 
-  #@broadcast #@update #@all_and
-  bool save(0: string name, 1: string id) # //@broadcast
-
-  #@broadcast #@update #@all_and
-  bool load(0: string name, 1: string id) # //@broadcast
-
-  #@broadcast #@analysis #@merge
-  map<string, map<string, string> >  get_status(0: string name) # //@broadcast
 }

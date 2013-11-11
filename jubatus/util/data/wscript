@@ -64,7 +64,7 @@ def build(bld):
     target = 'jubatus_util_data',
     includes = incdirs,
     vnum = bld.env['VERSION'],
-    use = 'jubatus_util_system')
+    use = 'jubatus_util_system core_headers')
 
   def t(src):
     tgt = src.split('/')[-1].split('.')[0]
@@ -73,7 +73,7 @@ def build(bld):
       source = src,
       target = tgt,
       includes = incdirs,
-      use = 'jubatus_util_data jubatus_util_system jubatus_util_math')
+      use = 'jubatus_util_data jubatus_util_system jubatus_util_math core_headers')
 
   t('code/code_test.cpp')
   t('string/algorithm_test.cpp')

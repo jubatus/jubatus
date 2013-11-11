@@ -14,23 +14,24 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "re2_splitter.hpp"
+
 #include <iostream>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
 #include <pficommon/lang/cast.h>
-#include "jubatus/core/fv_converter/exception.hpp"
-#include "re2_splitter.hpp"
+#include "exception.hpp"
 
 using pfi::lang::lexical_cast;
 using jubatus::core::fv_converter::converter_exception;
 
 namespace jubatus {
-namespace plugin {
+namespace core {
 namespace fv_converter {
 
-re2_splitter::re2_splitter(const std::string& regexp, int group)
+regexp_splitter::regexp_splitter(const std::string& regexp, int group)
     : re_(regexp),
       group_(group) {
   if (group < 0) {
@@ -48,7 +49,7 @@ re2_splitter::re2_splitter(const std::string& regexp, int group)
   }
 }
 
-void re2_splitter::split(
+void regexp_splitter::split(
     const std::string& str,
     std::vector<std::pair<size_t, size_t> >& bounds) const {
   re2::StringPiece input(str.c_str());
@@ -72,41 +73,5 @@ void re2_splitter::split(
 }
 
 }  // namespace fv_converter
-}  // namespace plugin
+}  // namespace core
 }  // namespace jubatus
-
-static const std::string& get(
-    const std::map<std::string, std::string>& args,
-    const std::string& key) {
-  std::map<std::string, std::string>::const_iterator it = args.find(key);
-  if (it == args.end()) {
-    throw JUBATUS_EXCEPTION(converter_exception("not found: " + key));
-  } else {
-    return it->second;
-  }
-}
-
-static int get_int_with_default(
-    const std::map<std::string, std::string>& args,
-    const std::string& key,
-    int default_value) {
-  if (args.count(key) == 0) {
-    return default_value;
-  }
-  std::string s = get(args, key);
-  try {
-    return pfi::lang::lexical_cast<int>(s);
-  } catch (const std::bad_cast&) {
-    throw JUBATUS_EXCEPTION(
-        converter_exception("is not integer: " + key + " = " + s));
-  }
-}
-
-extern "C" {
-jubatus::plugin::fv_converter::re2_splitter* create(
-    const std::map<std::string, std::string>& args) {
-  std::string pattern = get(args, "pattern");
-  int group = get_int_with_default(args, "group", 0);
-  return new jubatus::plugin::fv_converter::re2_splitter(pattern, group);
-}
-}

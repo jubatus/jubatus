@@ -72,6 +72,28 @@ TEST(splitter_factory, ngram) {
   pfi::lang::shared_ptr<word_splitter> s(f.create("ngram", param));
 }
 
+TEST(splitter_factory, regexp) {
+  splitter_factory f;
+  std::map<std::string, std::string> param;
+  ASSERT_THROW(f.create("regexp", param), converter_exception);
+
+  param["pattern"] = "[";
+  param["group"] = "1";
+  ASSERT_THROW(f.create("regexp", param), converter_exception);
+
+  param["pattern"] = "(.+)";
+  param["group"] = "a";
+  ASSERT_THROW(f.create("regexp", param), converter_exception);
+
+  param["pattern"] = "(.+)";
+  param["group"] = "1";
+  pfi::lang::shared_ptr<word_splitter>(f.create("regexp", param));
+
+  param["pattern"] = "(.+)";
+  param.erase("group");
+  pfi::lang::shared_ptr<word_splitter>(f.create("regexp", param));
+}
+
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus

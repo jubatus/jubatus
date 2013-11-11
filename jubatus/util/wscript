@@ -36,6 +36,7 @@ def build(bld):
     target = 'jubatus_util',
     vnum = bld.env['VERSION'],
     use = [
+      'core_headers',
       'jubatus_util_concurrent',
       'jubatus_util_data',
       'jubatus_util_lang',

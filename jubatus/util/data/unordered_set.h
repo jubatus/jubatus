@@ -32,7 +32,7 @@
 #ifndef JUBATUS_UTIL_DATA_UNORDERED_SET_H_
 #define JUBATUS_UTIL_DATA_UNORDERED_SET_H_
 
-#include "../util-config.h"
+#include "jubatus/util/util-config.h"
 
 #include <cmath>
 

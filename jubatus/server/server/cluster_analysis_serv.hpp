@@ -46,7 +46,7 @@ class cluster_analysis_serv : public framework::server_base {
   void get_status(status_t& status) const;
   uint64_t user_data_version() const;
 
-  bool set_config(const std::string& config);
+  void set_config(const std::string& config);
   std::string get_config() const;
 
   bool add_snapshot(const std::string& clustering_name);

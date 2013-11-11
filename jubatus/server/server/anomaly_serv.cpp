@@ -114,7 +114,7 @@ uint64_t anomaly_serv::user_data_version() const {
   return 1;  // should be inclemented when model data is modified
 }
 
-bool anomaly_serv::set_config(const std::string& config) {
+void anomaly_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   anomaly_serv_config conf =
     core::common::jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
@@ -127,7 +127,7 @@ bool anomaly_serv::set_config(const std::string& config) {
 
   jsonconfig::config param;
   if (conf.parameter) {
-    param = jsonconfig::config(*conf.parameter);
+    param = *conf.parameter;
   }
 #endif
 
@@ -144,7 +144,6 @@ bool anomaly_serv::set_config(const std::string& config) {
   mixer_->set_mixable_holder(anomaly_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
-  return true;
 }
 
 string anomaly_serv::get_config() const {
@@ -160,7 +159,7 @@ bool anomaly_serv::clear_row(const string& id) {
 }
 
 // nolock, random
-pair<string, float> anomaly_serv::add(const datum& data) {
+id_with_score anomaly_serv::add(const datum& data) {
   check_set_config();
 
   uint64_t id = idgen_->generate();
@@ -171,7 +170,9 @@ pair<string, float> anomaly_serv::add(const datum& data) {
 #endif
     pfi::concurrent::scoped_wlock lk(rw_mutex());
     event_model_updated();
-    return anomaly_->add(id_str, data);
+    // TODO(unno): remove conversion code
+    pair<string, float> res = anomaly_->add(id_str, data);
+    return id_with_score(res.first, res.second);
 #ifdef HAVE_ZOOKEEPER_H
   } else {
     return add_zk(id_str, data);
@@ -179,7 +180,7 @@ pair<string, float> anomaly_serv::add(const datum& data) {
 #endif
 }
 
-pair<string, float> anomaly_serv::add_zk(const string&id_str, const datum& d) {
+id_with_score anomaly_serv::add_zk(const string&id_str, const datum& d) {
   vector<pair<string, int> > nodes;
   float score = 0;
   find_from_cht(id_str, 2, nodes);
@@ -202,7 +203,7 @@ pair<string, float> anomaly_serv::add_zk(const string&id_str, const datum& d) {
     }
   }
   DLOG(INFO) << "point added: " << id_str;
-  return make_pair(id_str, score);
+  return id_with_score(id_str, score);
 }
 
 float anomaly_serv::update(const string& id, const datum& data) {
@@ -271,8 +272,8 @@ float anomaly_serv::selective_update(
     event_model_updated();
     return this->update(id, d);
   } else {  // needs no lock
-    client::anomaly c(host, port, argv().interconnect_timeout);
-    return c.update(argv().name, id, d);
+    client::anomaly c(host, port, argv().name, argv().interconnect_timeout);
+    return c.update(id, d);
   }
 }
 

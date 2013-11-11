@@ -90,7 +90,7 @@ uint64_t recommender_serv::user_data_version() const {
   return 1;  // should be inclemented when model data is modified
 }
 
-bool recommender_serv::set_config(const std::string &config) {
+void recommender_serv::set_config(const std::string &config) {
   core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   recommender_serv_config conf =
     core::common::jsonconfig::config_cast_check<recommender_serv_config>(
@@ -100,7 +100,7 @@ bool recommender_serv::set_config(const std::string &config) {
 
   core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::common::jsonconfig::config(*conf.parameter);
+    param = *conf.parameter;
   }
 
   std::string my_id;
@@ -116,7 +116,6 @@ bool recommender_serv::set_config(const std::string &config) {
   mixer_->set_mixable_holder(recommender_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
-  return true;
 }
 
 string recommender_serv::get_config() const {
@@ -168,19 +167,36 @@ datum recommender_serv::complete_row_from_datum(datum dat) {
   return recommender_->complete_row_from_datum(dat);
 }
 
-similar_result recommender_serv::similar_row_from_id(
+std::vector<id_with_score> recommender_serv::similar_row_from_id(
     std::string id,
     size_t ret_num) {
   check_set_config();
 
-  return recommender_->similar_row_from_id(id, ret_num);
+  // TODO(unno): remove conversion code
+  vector<pair<string, float> > res(
+      recommender_->similar_row_from_id(id, ret_num));
+  vector<id_with_score> result(res.size());
+  for (size_t i = 0; i < res.size(); ++i) {
+    result[i].id = res[i].first;
+    result[i].score = res[i].second;
+  }
+  return result;
 }
 
-similar_result recommender_serv::similar_row_from_datum(datum data, size_t s) {
+std::vector<id_with_score> recommender_serv::similar_row_from_datum(
+    datum data,
+    size_t s) {
   check_set_config();
 
-  similar_result ret;
-  return recommender_->similar_row_from_datum(data, s);
+  // TODO(unno): remove conversion code
+  vector<pair<string, float> > res(
+      recommender_->similar_row_from_datum(data, s));
+  vector<id_with_score> result(res.size());
+  for (size_t i = 0; i < res.size(); ++i) {
+    result[i].id = res[i].first;
+    result[i].score = res[i].second;
+  }
+  return result;
 }
 
 datum recommender_serv::decode_row(std::string id) {

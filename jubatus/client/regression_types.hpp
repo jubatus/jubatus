@@ -1,4 +1,4 @@
-// This file is auto-generated from regression.idl
+// This file is auto-generated from regression.idl(0.4.3-191-gd1afc2f) with jenerator version 0.4.5-267-g5536bc5/feature/coreset
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_REGRESSION_TYPES_HPP_
@@ -11,16 +11,22 @@
 #include <vector>
 #include <utility>
 
+#include <jubatus/client/common/datum.hpp>
 #include <msgpack.hpp>
 
 namespace jubatus {
 namespace regression {
 
-struct datum {
+struct scored_datum {
  public:
-  MSGPACK_DEFINE(string_values, num_values);
-  std::vector<std::pair<std::string, std::string> > string_values;
-  std::vector<std::pair<std::string, double> > num_values;
+  MSGPACK_DEFINE(score, data);
+  float score;
+  jubatus::client::common::datum data;
+  scored_datum() {
+  }
+  scored_datum(float score, const jubatus::client::common::datum& data)
+    : score(score), data(data) {
+  }
 };
 
 }  // namespace regression

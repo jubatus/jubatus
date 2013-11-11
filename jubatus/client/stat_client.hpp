@@ -1,4 +1,4 @@
-// This file is auto-generated from stat.idl
+// This file is auto-generated from stat.idl(0.4.5-331-gd7b15b4) with jenerator version 0.4.5-267-g5536bc5/feature/coreset
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_STAT_CLIENT_HPP_
@@ -7,89 +7,60 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <utility>
-#include <jubatus/msgpack/rpc/client.h>
+#include <jubatus/client/common/client.hpp>
+#include <jubatus/client/common/datum.hpp>
 #include "stat_types.hpp"
 
 namespace jubatus {
 namespace stat {
 namespace client {
 
-class stat {
+class stat : public jubatus::client::common::client {
  public:
-  stat(const std::string& host, uint64_t port, double timeout_sec)
-      : c_(host, port) {
-    c_.set_timeout(timeout_sec);
+  stat(const std::string& host, uint64_t port, const std::string& name,
+      unsigned int timeout_sec)
+      : client(host, port, name, timeout_sec) {
   }
 
-  std::string get_config(const std::string& name) {
-    msgpack::rpc::future f = c_.call("get_config", name);
-    return f.get<std::string>();
-  }
-
-  bool push(const std::string& name, const std::string& key, double value) {
-    msgpack::rpc::future f = c_.call("push", name, key, value);
+  bool push(const std::string& key, double value) {
+    msgpack::rpc::future f = c_.call("push", name_, key, value);
     return f.get<bool>();
   }
 
-  double sum(const std::string& name, const std::string& key) {
-    msgpack::rpc::future f = c_.call("sum", name, key);
+  double sum(const std::string& key) {
+    msgpack::rpc::future f = c_.call("sum", name_, key);
     return f.get<double>();
   }
 
-  double stddev(const std::string& name, const std::string& key) {
-    msgpack::rpc::future f = c_.call("stddev", name, key);
+  double stddev(const std::string& key) {
+    msgpack::rpc::future f = c_.call("stddev", name_, key);
     return f.get<double>();
   }
 
-  double max(const std::string& name, const std::string& key) {
-    msgpack::rpc::future f = c_.call("max", name, key);
+  double max(const std::string& key) {
+    msgpack::rpc::future f = c_.call("max", name_, key);
     return f.get<double>();
   }
 
-  double min(const std::string& name, const std::string& key) {
-    msgpack::rpc::future f = c_.call("min", name, key);
+  double min(const std::string& key) {
+    msgpack::rpc::future f = c_.call("min", name_, key);
     return f.get<double>();
   }
 
-  double entropy(const std::string& name, const std::string& key) {
-    msgpack::rpc::future f = c_.call("entropy", name, key);
+  double entropy(const std::string& key) {
+    msgpack::rpc::future f = c_.call("entropy", name_, key);
     return f.get<double>();
   }
 
-  double moment(const std::string& name, const std::string& key, int32_t degree,
-      double center) {
-    msgpack::rpc::future f = c_.call("moment", name, key, degree, center);
+  double moment(const std::string& key, int32_t degree, double center) {
+    msgpack::rpc::future f = c_.call("moment", name_, key, degree, center);
     return f.get<double>();
   }
 
-  bool clear(const std::string& name) {
-    msgpack::rpc::future f = c_.call("clear", name);
+  bool clear() {
+    msgpack::rpc::future f = c_.call("clear", name_);
     return f.get<bool>();
   }
-
-  bool save(const std::string& name, const std::string& id) {
-    msgpack::rpc::future f = c_.call("save", name, id);
-    return f.get<bool>();
-  }
-
-  bool load(const std::string& name, const std::string& id) {
-    msgpack::rpc::future f = c_.call("load", name, id);
-    return f.get<bool>();
-  }
-
-  std::map<std::string, std::map<std::string, std::string> > get_status(
-      const std::string& name) {
-    msgpack::rpc::future f = c_.call("get_status", name);
-    return f.get<std::map<std::string, std::map<std::string, std::string> > >();
-  }
-
-  msgpack::rpc::client& get_client() {
-    return c_;
-  }
-
- private:
-  msgpack::rpc::client c_;
 };
 
 }  // namespace client

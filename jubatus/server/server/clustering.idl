@@ -1,39 +1,42 @@
+# Jubatus: Online machine learning framework for distributed environment
+# Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License version 2.1 as published by the Free Software Foundation.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 %include "../../core/fv_converter/datum.hpp"
 
-message datum(jubatus::core::fv_converter::datum) {
-  0: list<tuple<string, string> >  string_values
-  1: list<tuple<string, double> >  num_values
+message weighted_datum("std::pair<double, jubatus::core::fv_converter::datum>") {
+  0: double weight
+  1: datum point
 }
 
 service clustering {
-  #@random #@analysis #@pass
-  string get_config(0: string name)
-
   #@random #@update #@all_and
-  bool push(0:string name, 1: list<datum> points)
+  bool push(0: list<datum> points)
 
   #@random #@analysis #@pass
-  uint get_revision(0:string name)
+  uint get_revision()
 
   #@random #@analysis #@pass
-  list<list<tuple<double, datum> > > get_core_members(0: string name)
+  list<list<weighted_datum > > get_core_members()
 
   #@random #@analysis #@pass
-  list<datum> get_k_center(0: string name)
+  list<datum> get_k_center()
 
   #@random #@analysis #@pass
-  datum get_nearest_center(0: string name, 1: datum point)
+  datum get_nearest_center(0: datum point)
 
   #@random #@analysis #@pass
-  list<tuple<double, datum> > get_nearest_members(0: string name, 1: datum point)
-
-  #@broadcast #@update #@all_and
-  bool save(0: string name, 1: string id) # #@broadcast
-
-  #@broadcast #@update #@all_and
-  bool load(0: string name, 1: string id) # //@broadcast
-
-  #@broadcast #@analysis #@merge
-  map<string, map<string, string> >  get_status(0: string name) # //@broadcast
+  list<weighted_datum > get_nearest_members(0: datum point)
 }

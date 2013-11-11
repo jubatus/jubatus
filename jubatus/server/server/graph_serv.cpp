@@ -129,7 +129,7 @@ graph_serv::graph_serv(
 graph_serv::~graph_serv() {
 }
 
-bool graph_serv::set_config(const std::string& config) {
+void graph_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config conf_root(
       pfi::lang::lexical_cast<pfi::text::json::json>(config));
   graph_serv_config conf =
@@ -143,7 +143,7 @@ bool graph_serv::set_config(const std::string& config) {
 
   core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::common::jsonconfig::config(*conf.parameter);
+    param = *conf.parameter;
   }
 #endif
 
@@ -154,7 +154,6 @@ bool graph_serv::set_config(const std::string& config) {
   mixer_->set_mixable_holder(graph_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
-  return true;
 }
 
 std::string graph_serv::get_config() const {
@@ -308,11 +307,13 @@ edge_id_t graph_serv::create_edge(const std::string& id, const edge& ei) {
       try {
         if (nodes[i].first == argv().eth && nodes[i].second == argv().port) {
         } else {
-          client::graph c(
-              nodes[i].first, nodes[i].second, argv().interconnect_timeout);
+          client::graph c(nodes[i].first,
+                          nodes[i].second,
+                          argv().name,
+                          argv().interconnect_timeout);
           DLOG(INFO) << "request to "
               << nodes[i].first << ":" << nodes[i].second;
-          c.create_edge_here(argv().name, eid, ei);
+          c.create_edge_here(eid, ei);
         }
       } catch (const core::graph::local_node_exists& e) {  // pass through
       } catch (const core::graph::global_node_exists& e) {  // pass through
@@ -497,8 +498,11 @@ void graph_serv::selective_create_node_(
     this->create_node_here(nid_str);
   } else {
     // must not lock here
-    client::graph c(target.first, target.second, argv().interconnect_timeout);
-    c.create_node_here(argv().name, nid_str);
+    client::graph c(target.first,
+                    target.second,
+                    argv().name,
+                    argv().interconnect_timeout);
+    c.create_node_here(nid_str);
   }
 }
 

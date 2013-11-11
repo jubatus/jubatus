@@ -32,7 +32,7 @@
 #ifndef JUBATUS_UTIL_DATA_FUNCTIONAL_HASH_H_
 #define JUBATUS_UTIL_DATA_FUNCTIONAL_HASH_H_
 
-#include "../util-config.h"
+#include "jubatus/util/util-config.h"
 
 #if HAVE_UNORDERED_MAP
 #include <utility>
