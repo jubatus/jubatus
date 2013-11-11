@@ -83,6 +83,7 @@ try {
   p.add<int, cmdline::range_reader<int> >("loglevel", 'E',
       "[start] verbosity of log messages", false, google::INFO,
       cmdline::range(google::INFO, google::FATAL));
+  p.add<std::string>("mixer", 'X', "[start] mixer strategy", false, "");
   p.add("join", 'J', "[start] join to the existing cluster");
   p.add<int>("interval_sec", 'S', "[start] mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'I',
@@ -206,6 +207,7 @@ void send2supervisor(
     server_option.datadir = argv.get<std::string>("datadir");
     server_option.logdir = argv.get<std::string>("logdir");
     server_option.loglevel = argv.get<int>("loglevel");
+    server_option.mixer = argv.get<std::string>("mixer");
     server_option.join = argv.exist("join");
 
     server_option.interval_sec = argv.get<int>("interval_sec");
