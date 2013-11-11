@@ -7,7 +7,7 @@ EXIT_STATUS=0
 CPPLINT="tools/codestyle/cpplint/cpplint.py"
 CPPLINT_ARGS="--filter=-runtime/references,-runtime/rtti"
 
-INCLUDE_GURAD_TOOL="tools/codestyle/include_guard.sh"
+INCLUDE_GURAD_TOOL="tools/codestyle/check_include_guard.sh"
 
 list_target_files() {
   git diff --cached --name-only | grep -v "^jubatus/server/third_party/" | grep -v "^jubatus/server/server/.*_\\(server.[hc]pp\\|impl.cpp\\|types.hpp\\|keeper.cpp\\|client.hpp\\)" | grep -v "^jubatus/client/*"
