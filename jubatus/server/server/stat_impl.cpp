@@ -1,4 +1,4 @@
-// This file is auto-generated from stat.idl(0.4.5-350-g9c67807) with jenerator version 0.4.5-375-g07d06b7/develop
+// This file is auto-generated from stat.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -20,32 +20,41 @@ class stat_impl : public jubatus::server::common::mprpc::rpc_server {
     p_(new jubatus::server::framework::server_helper<stat_serv>(a, true)) {
 
     rpc_server::add<bool(std::string, std::string, double)>("push",
-        jubatus::util::lang::bind(&stat_impl::push, this, jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<double(std::string, std::string)>("sum", jubatus::util::lang::bind(
-        &stat_impl::sum, this, jubatus::util::lang::_2));
-    rpc_server::add<double(std::string, std::string)>("stddev", jubatus::util::lang::bind(
-        &stat_impl::stddev, this, jubatus::util::lang::_2));
-    rpc_server::add<double(std::string, std::string)>("max", jubatus::util::lang::bind(
-        &stat_impl::max, this, jubatus::util::lang::_2));
-    rpc_server::add<double(std::string, std::string)>("min", jubatus::util::lang::bind(
-        &stat_impl::min, this, jubatus::util::lang::_2));
+        jubatus::util::lang::bind(&stat_impl::push, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
+    rpc_server::add<double(std::string, std::string)>("sum",
+        jubatus::util::lang::bind(&stat_impl::sum, this,
+        jubatus::util::lang::_2));
+    rpc_server::add<double(std::string, std::string)>("stddev",
+        jubatus::util::lang::bind(&stat_impl::stddev, this,
+        jubatus::util::lang::_2));
+    rpc_server::add<double(std::string, std::string)>("max",
+        jubatus::util::lang::bind(&stat_impl::max, this,
+        jubatus::util::lang::_2));
+    rpc_server::add<double(std::string, std::string)>("min",
+        jubatus::util::lang::bind(&stat_impl::min, this,
+        jubatus::util::lang::_2));
     rpc_server::add<double(std::string, std::string)>("entropy",
-        jubatus::util::lang::bind(&stat_impl::entropy, this, jubatus::util::lang::_2));
+        jubatus::util::lang::bind(&stat_impl::entropy, this,
+        jubatus::util::lang::_2));
     rpc_server::add<double(std::string, std::string, int32_t, double)>("moment",
-        jubatus::util::lang::bind(&stat_impl::moment, this, jubatus::util::lang::_2, jubatus::util::lang::_3,
+        jubatus::util::lang::bind(&stat_impl::moment, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3,
         jubatus::util::lang::_4));
     rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &stat_impl::clear, this));
 
-    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
-        &stat_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
-        &stat_impl::save, this, jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
-        &stat_impl::load, this, jubatus::util::lang::_2));
+    rpc_server::add<std::string(std::string)>("get_config",
+        jubatus::util::lang::bind(&stat_impl::get_config, this));
+    rpc_server::add<bool(std::string, std::string)>("save",
+        jubatus::util::lang::bind(&stat_impl::save, this,
+        jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load",
+        jubatus::util::lang::bind(&stat_impl::load, this,
+        jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", jubatus::util::lang::bind(&stat_impl::get_status,
-        this));
+        std::string)>("get_status", jubatus::util::lang::bind(
+        &stat_impl::get_status, this));
   }
 
   bool push(const std::string& key, double value) {

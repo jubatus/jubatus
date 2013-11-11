@@ -1,4 +1,4 @@
-// This file is auto-generated from nearest_neighbor.idl(0.4.5-350-g9c67807) with jenerator version 0.4.5-375-g07d06b7/develop
+// This file is auto-generated from nearest_neighbor.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -24,31 +24,35 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
     rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &nearest_neighbor_impl::clear, this));
     rpc_server::add<bool(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("set_row", jubatus::util::lang::bind(
-        &nearest_neighbor_impl::set_row, this, jubatus::util::lang::_2, jubatus::util::lang::_3));
+        jubatus::core::fv_converter::datum)>("set_row",
+        jubatus::util::lang::bind(&nearest_neighbor_impl::set_row, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
-        std::string, uint32_t)>("neighbor_row_from_id", jubatus::util::lang::bind(
-        &nearest_neighbor_impl::neighbor_row_from_id, this, jubatus::util::lang::_2,
-        jubatus::util::lang::_3));
+        std::string, uint32_t)>("neighbor_row_from_id",
+        jubatus::util::lang::bind(&nearest_neighbor_impl::neighbor_row_from_id,
+        this, jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
         jubatus::core::fv_converter::datum, uint32_t)>("neighbor_row_from_data",
-        jubatus::util::lang::bind(&nearest_neighbor_impl::neighbor_row_from_data, this,
+        jubatus::util::lang::bind(
+        &nearest_neighbor_impl::neighbor_row_from_data, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
         std::string, int32_t)>("similar_row_from_id", jubatus::util::lang::bind(
-        &nearest_neighbor_impl::similar_row_from_id, this, jubatus::util::lang::_2,
-        jubatus::util::lang::_3));
+        &nearest_neighbor_impl::similar_row_from_id, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
         jubatus::core::fv_converter::datum, int32_t)>("similar_row_from_data",
-        jubatus::util::lang::bind(&nearest_neighbor_impl::similar_row_from_data, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3));
+        jubatus::util::lang::bind(&nearest_neighbor_impl::similar_row_from_data,
+        this, jubatus::util::lang::_2, jubatus::util::lang::_3));
 
-    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
-        &nearest_neighbor_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
-        &nearest_neighbor_impl::save, this, jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
-        &nearest_neighbor_impl::load, this, jubatus::util::lang::_2));
+    rpc_server::add<std::string(std::string)>("get_config",
+        jubatus::util::lang::bind(&nearest_neighbor_impl::get_config, this));
+    rpc_server::add<bool(std::string, std::string)>("save",
+        jubatus::util::lang::bind(&nearest_neighbor_impl::save, this,
+        jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load",
+        jubatus::util::lang::bind(&nearest_neighbor_impl::load, this,
+        jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
         std::string)>("get_status", jubatus::util::lang::bind(
         &nearest_neighbor_impl::get_status, this));
@@ -110,7 +114,8 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
   }
 
   int run() { return p_->start(*this); }
-  jubatus::util::lang::shared_ptr<nearest_neighbor_serv> get_p() { return p_->server(); }
+  jubatus::util::lang::shared_ptr<nearest_neighbor_serv> get_p(
+      ) { return p_->server(); }
 
  private:
   jubatus::util::lang::shared_ptr<jubatus::server::framework::server_helper<nearest_neighbor_serv> > p_;

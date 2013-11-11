@@ -1,4 +1,4 @@
-// This file is auto-generated from graph.idl(0.4.5-350-g9c67807) with jenerator version 0.4.5-375-g07d06b7/develop
+// This file is auto-generated from graph.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -19,25 +19,29 @@ class graph_impl : public jubatus::server::common::mprpc::rpc_server {
     rpc_server(a.timeout),
     p_(new jubatus::server::framework::server_helper<graph_serv>(a, true)) {
 
-    rpc_server::add<std::string(std::string)>("create_node", jubatus::util::lang::bind(
-        &graph_impl::create_node, this));
+    rpc_server::add<std::string(std::string)>("create_node",
+        jubatus::util::lang::bind(&graph_impl::create_node, this));
     rpc_server::add<bool(std::string, std::string)>("remove_node",
-        jubatus::util::lang::bind(&graph_impl::remove_node, this, jubatus::util::lang::_2));
+        jubatus::util::lang::bind(&graph_impl::remove_node, this,
+        jubatus::util::lang::_2));
     rpc_server::add<bool(std::string, std::string, std::map<std::string,
-        std::string>)>("update_node", jubatus::util::lang::bind(&graph_impl::update_node,
-        this, jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<uint64_t(std::string, std::string, edge)>("create_edge",
-        jubatus::util::lang::bind(&graph_impl::create_edge, this, jubatus::util::lang::_2,
+        std::string>)>("update_node", jubatus::util::lang::bind(
+        &graph_impl::update_node, this, jubatus::util::lang::_2,
         jubatus::util::lang::_3));
+    rpc_server::add<uint64_t(std::string, std::string, edge)>("create_edge",
+        jubatus::util::lang::bind(&graph_impl::create_edge, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<bool(std::string, std::string, uint64_t, edge)>(
         "update_edge", jubatus::util::lang::bind(&graph_impl::update_edge, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3, jubatus::util::lang::_4));
+        jubatus::util::lang::_2, jubatus::util::lang::_3,
+        jubatus::util::lang::_4));
     rpc_server::add<bool(std::string, std::string, uint64_t)>("remove_edge",
-        jubatus::util::lang::bind(&graph_impl::remove_edge, this, jubatus::util::lang::_2,
-        jubatus::util::lang::_3));
+        jubatus::util::lang::bind(&graph_impl::remove_edge, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<double(std::string, std::string, int32_t,
-        jubatus::core::graph::preset_query)>("get_centrality", jubatus::util::lang::bind(
-        &graph_impl::get_centrality, this, jubatus::util::lang::_2, jubatus::util::lang::_3,
+        jubatus::core::graph::preset_query)>("get_centrality",
+        jubatus::util::lang::bind(&graph_impl::get_centrality, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3,
         jubatus::util::lang::_4));
     rpc_server::add<bool(std::string, jubatus::core::graph::preset_query)>(
         "add_centrality_query", jubatus::util::lang::bind(
@@ -50,37 +54,42 @@ class graph_impl : public jubatus::server::common::mprpc::rpc_server {
         &graph_impl::remove_centrality_query, this, jubatus::util::lang::_2));
     rpc_server::add<bool(std::string, jubatus::core::graph::preset_query)>(
         "remove_shortest_path_query", jubatus::util::lang::bind(
-        &graph_impl::remove_shortest_path_query, this, jubatus::util::lang::_2));
+        &graph_impl::remove_shortest_path_query, this,
+        jubatus::util::lang::_2));
     rpc_server::add<std::vector<std::string>(std::string, shortest_path_query)>(
-        "get_shortest_path", jubatus::util::lang::bind(&graph_impl::get_shortest_path,
-        this, jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string)>("update_index", jubatus::util::lang::bind(
-        &graph_impl::update_index, this));
+        "get_shortest_path", jubatus::util::lang::bind(
+        &graph_impl::get_shortest_path, this, jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string)>("update_index",
+        jubatus::util::lang::bind(&graph_impl::update_index, this));
     rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &graph_impl::clear, this));
     rpc_server::add<jubatus::core::graph::node_info(std::string, std::string)>(
         "get_node", jubatus::util::lang::bind(&graph_impl::get_node, this,
         jubatus::util::lang::_2));
     rpc_server::add<edge(std::string, std::string, uint64_t)>("get_edge",
-        jubatus::util::lang::bind(&graph_impl::get_edge, this, jubatus::util::lang::_2,
-        jubatus::util::lang::_3));
+        jubatus::util::lang::bind(&graph_impl::get_edge, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<bool(std::string, std::string)>("create_node_here",
-        jubatus::util::lang::bind(&graph_impl::create_node_here, this, jubatus::util::lang::_2));
+        jubatus::util::lang::bind(&graph_impl::create_node_here, this,
+        jubatus::util::lang::_2));
     rpc_server::add<bool(std::string, std::string)>("remove_global_node",
-        jubatus::util::lang::bind(&graph_impl::remove_global_node, this, jubatus::util::lang::_2));
+        jubatus::util::lang::bind(&graph_impl::remove_global_node, this,
+        jubatus::util::lang::_2));
     rpc_server::add<bool(std::string, uint64_t, edge)>("create_edge_here",
-        jubatus::util::lang::bind(&graph_impl::create_edge_here, this, jubatus::util::lang::_2,
-        jubatus::util::lang::_3));
+        jubatus::util::lang::bind(&graph_impl::create_edge_here, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
 
-    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
-        &graph_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
-        &graph_impl::save, this, jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
-        &graph_impl::load, this, jubatus::util::lang::_2));
+    rpc_server::add<std::string(std::string)>("get_config",
+        jubatus::util::lang::bind(&graph_impl::get_config, this));
+    rpc_server::add<bool(std::string, std::string)>("save",
+        jubatus::util::lang::bind(&graph_impl::save, this,
+        jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load",
+        jubatus::util::lang::bind(&graph_impl::load, this,
+        jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", jubatus::util::lang::bind(&graph_impl::get_status,
-        this));
+        std::string)>("get_status", jubatus::util::lang::bind(
+        &graph_impl::get_status, this));
   }
 
   std::string create_node() {

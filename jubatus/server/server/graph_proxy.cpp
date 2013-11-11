@@ -1,4 +1,4 @@
-// This file is auto-generated from graph.idl(0.4.5-350-g9c67807) with jenerator version 0.4.5-375-g07d06b7/develop
+// This file is auto-generated from graph.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -20,8 +20,9 @@ int run_proxy(int argc, char* argv[]) {
     jubatus::server::framework::proxy k(
         jubatus::server::framework::proxy_argv(argc, argv, "graph"));
     k.register_async_random<std::string>("create_node");
-    k.register_async_cht<2, bool>("remove_node", jubatus::util::lang::function<bool(bool,
-        bool)>(&jubatus::server::framework::pass<bool>));
+    k.register_async_cht<2, bool>("remove_node",
+        jubatus::util::lang::function<bool(bool, bool)>(
+        &jubatus::server::framework::pass<bool>));
     k.register_async_cht<2, bool, std::map<std::string, std::string> >(
         "update_node", jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
@@ -40,20 +41,22 @@ int run_proxy(int argc, char* argv[]) {
         "add_centrality_query", jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_broadcast<bool, jubatus::core::graph::preset_query>(
-        "add_shortest_path_query", jubatus::util::lang::function<bool(bool, bool)>(
-        &jubatus::server::framework::all_and));
+        "add_shortest_path_query", jubatus::util::lang::function<bool(bool,
+        bool)>(&jubatus::server::framework::all_and));
     k.register_async_broadcast<bool, jubatus::core::graph::preset_query>(
-        "remove_centrality_query", jubatus::util::lang::function<bool(bool, bool)>(
-        &jubatus::server::framework::all_and));
+        "remove_centrality_query", jubatus::util::lang::function<bool(bool,
+        bool)>(&jubatus::server::framework::all_and));
     k.register_async_broadcast<bool, jubatus::core::graph::preset_query>(
-        "remove_shortest_path_query", jubatus::util::lang::function<bool(bool, bool)>(
-        &jubatus::server::framework::all_and));
+        "remove_shortest_path_query", jubatus::util::lang::function<bool(bool,
+        bool)>(&jubatus::server::framework::all_and));
     k.register_async_random<std::vector<std::string>, shortest_path_query>(
         "get_shortest_path");
-    k.register_async_broadcast<bool>("update_index", jubatus::util::lang::function<bool(
-        bool, bool)>(&jubatus::server::framework::all_and));
-    k.register_async_broadcast<bool>("clear", jubatus::util::lang::function<bool(bool,
-        bool)>(&jubatus::server::framework::all_and));
+    k.register_async_broadcast<bool>("update_index",
+        jubatus::util::lang::function<bool(bool, bool)>(
+        &jubatus::server::framework::all_and));
+    k.register_async_broadcast<bool>("clear",
+        jubatus::util::lang::function<bool(bool, bool)>(
+        &jubatus::server::framework::all_and));
     k.register_async_cht<2, jubatus::core::graph::node_info>("get_node",
         jubatus::util::lang::function<jubatus::core::graph::node_info(
         jubatus::core::graph::node_info, jubatus::core::graph::node_info)>(

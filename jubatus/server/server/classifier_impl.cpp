@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.4.5-350-g9c67807) with jenerator version 0.4.5-375-g07d06b7/develop
+// This file is auto-generated from classifier.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -21,19 +21,23 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
         false)) {
 
     rpc_server::add<int32_t(std::string, std::vector<labeled_datum>)>("train",
-        jubatus::util::lang::bind(&classifier_impl::train, this, jubatus::util::lang::_2));
+        jubatus::util::lang::bind(&classifier_impl::train, this,
+        jubatus::util::lang::_2));
     rpc_server::add<std::vector<std::vector<estimate_result> >(std::string,
         std::vector<jubatus::core::fv_converter::datum>)>("classify",
-        jubatus::util::lang::bind(&classifier_impl::classify, this, jubatus::util::lang::_2));
+        jubatus::util::lang::bind(&classifier_impl::classify, this,
+        jubatus::util::lang::_2));
     rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &classifier_impl::clear, this));
 
-    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
-        &classifier_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
-        &classifier_impl::save, this, jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
-        &classifier_impl::load, this, jubatus::util::lang::_2));
+    rpc_server::add<std::string(std::string)>("get_config",
+        jubatus::util::lang::bind(&classifier_impl::get_config, this));
+    rpc_server::add<bool(std::string, std::string)>("save",
+        jubatus::util::lang::bind(&classifier_impl::save, this,
+        jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load",
+        jubatus::util::lang::bind(&classifier_impl::load, this,
+        jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
         std::string)>("get_status", jubatus::util::lang::bind(
         &classifier_impl::get_status, this));
@@ -76,7 +80,8 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
   }
 
   int run() { return p_->start(*this); }
-  jubatus::util::lang::shared_ptr<classifier_serv> get_p() { return p_->server(); }
+  jubatus::util::lang::shared_ptr<classifier_serv> get_p() { return p_->server(
+      ); }
 
  private:
   jubatus::util::lang::shared_ptr<jubatus::server::framework::server_helper<classifier_serv> > p_;

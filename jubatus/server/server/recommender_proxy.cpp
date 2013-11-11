@@ -1,4 +1,4 @@
-// This file is auto-generated from recommender.idl(0.4.5-350-g9c67807) with jenerator version 0.4.5-375-g07d06b7/develop
+// This file is auto-generated from recommender.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -19,13 +19,15 @@ int run_proxy(int argc, char* argv[]) {
   try {
     jubatus::server::framework::proxy k(
         jubatus::server::framework::proxy_argv(argc, argv, "recommender"));
-    k.register_async_cht<2, bool>("clear_row", jubatus::util::lang::function<bool(bool,
-        bool)>(&jubatus::server::framework::all_and));
+    k.register_async_cht<2, bool>("clear_row",
+        jubatus::util::lang::function<bool(bool, bool)>(
+        &jubatus::server::framework::all_and));
     k.register_async_cht<2, bool, jubatus::core::fv_converter::datum>(
         "update_row", jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
-    k.register_async_broadcast<bool>("clear", jubatus::util::lang::function<bool(bool,
-        bool)>(&jubatus::server::framework::all_and));
+    k.register_async_broadcast<bool>("clear",
+        jubatus::util::lang::function<bool(bool, bool)>(
+        &jubatus::server::framework::all_and));
     k.register_async_cht<2, jubatus::core::fv_converter::datum>(
         "complete_row_from_id",
         jubatus::util::lang::function<jubatus::core::fv_converter::datum(
@@ -35,7 +37,8 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_random<jubatus::core::fv_converter::datum,
         jubatus::core::fv_converter::datum>("complete_row_from_datum");
     k.register_async_cht<2, std::vector<id_with_score>, uint32_t>(
-        "similar_row_from_id", jubatus::util::lang::function<std::vector<id_with_score>(
+        "similar_row_from_id",
+        jubatus::util::lang::function<std::vector<id_with_score>(
         std::vector<id_with_score>, std::vector<id_with_score>)>(
         &jubatus::server::framework::pass<std::vector<id_with_score> >));
     k.register_async_random<std::vector<id_with_score>,
@@ -46,8 +49,8 @@ int run_proxy(int argc, char* argv[]) {
         jubatus::core::fv_converter::datum)>(
         &jubatus::server::framework::pass<jubatus::core::fv_converter::datum>));
     k.register_async_broadcast<std::vector<std::string> >("get_all_rows",
-        jubatus::util::lang::function<std::vector<std::string>(std::vector<std::string>,
-        std::vector<std::string>)>(
+        jubatus::util::lang::function<std::vector<std::string>(
+        std::vector<std::string>, std::vector<std::string>)>(
         &jubatus::server::framework::concat<std::string>));
     k.register_async_random<float, jubatus::core::fv_converter::datum,
         jubatus::core::fv_converter::datum>("calc_similarity");

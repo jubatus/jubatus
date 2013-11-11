@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl(0.4.5-350-g9c67807) with jenerator version 0.4.5-375-g07d06b7/develop
+// This file is auto-generated from anomaly.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -20,16 +20,19 @@ class anomaly_impl : public jubatus::server::common::mprpc::rpc_server {
     p_(new jubatus::server::framework::server_helper<anomaly_serv>(a, true)) {
 
     rpc_server::add<bool(std::string, std::string)>("clear_row",
-        jubatus::util::lang::bind(&anomaly_impl::clear_row, this, jubatus::util::lang::_2));
+        jubatus::util::lang::bind(&anomaly_impl::clear_row, this,
+        jubatus::util::lang::_2));
     rpc_server::add<id_with_score(std::string,
         jubatus::core::fv_converter::datum)>("add", jubatus::util::lang::bind(
         &anomaly_impl::add, this, jubatus::util::lang::_2));
     rpc_server::add<float(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("update", jubatus::util::lang::bind(
-        &anomaly_impl::update, this, jubatus::util::lang::_2, jubatus::util::lang::_3));
+        jubatus::core::fv_converter::datum)>("update",
+        jubatus::util::lang::bind(&anomaly_impl::update, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<float(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("overwrite", jubatus::util::lang::bind(
-        &anomaly_impl::overwrite, this, jubatus::util::lang::_2, jubatus::util::lang::_3));
+        jubatus::core::fv_converter::datum)>("overwrite",
+        jubatus::util::lang::bind(&anomaly_impl::overwrite, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &anomaly_impl::clear, this));
     rpc_server::add<float(std::string, jubatus::core::fv_converter::datum)>(
@@ -38,15 +41,17 @@ class anomaly_impl : public jubatus::server::common::mprpc::rpc_server {
     rpc_server::add<std::vector<std::string>(std::string)>("get_all_rows",
         jubatus::util::lang::bind(&anomaly_impl::get_all_rows, this));
 
-    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
-        &anomaly_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
-        &anomaly_impl::save, this, jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
-        &anomaly_impl::load, this, jubatus::util::lang::_2));
+    rpc_server::add<std::string(std::string)>("get_config",
+        jubatus::util::lang::bind(&anomaly_impl::get_config, this));
+    rpc_server::add<bool(std::string, std::string)>("save",
+        jubatus::util::lang::bind(&anomaly_impl::save, this,
+        jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load",
+        jubatus::util::lang::bind(&anomaly_impl::load, this,
+        jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", jubatus::util::lang::bind(&anomaly_impl::get_status,
-        this));
+        std::string)>("get_status", jubatus::util::lang::bind(
+        &anomaly_impl::get_status, this));
   }
 
   bool clear_row(const std::string& id) {

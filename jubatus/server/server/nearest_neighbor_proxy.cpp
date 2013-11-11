@@ -1,4 +1,4 @@
-// This file is auto-generated from nearest_neighbor.idl(0.4.5-350-g9c67807) with jenerator version 0.4.5-375-g07d06b7/develop
+// This file is auto-generated from nearest_neighbor.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -19,8 +19,9 @@ int run_proxy(int argc, char* argv[]) {
   try {
     jubatus::server::framework::proxy k(
         jubatus::server::framework::proxy_argv(argc, argv, "nearest_neighbor"));
-    k.register_async_broadcast<bool>("clear", jubatus::util::lang::function<bool(bool,
-        bool)>(&jubatus::server::framework::all_and));
+    k.register_async_broadcast<bool>("clear",
+        jubatus::util::lang::function<bool(bool, bool)>(
+        &jubatus::server::framework::all_and));
     k.register_async_cht<1, bool, jubatus::core::fv_converter::datum>("set_row",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::pass<bool>));

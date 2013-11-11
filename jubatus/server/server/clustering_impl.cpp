@@ -1,4 +1,4 @@
-// This file is auto-generated from clustering.idl(0.4.5-350-g9c67807) with jenerator version 0.4.5-375-g07d06b7/develop
+// This file is auto-generated from clustering.idl(0.4.5-350-g9c67807) with jenerator version 0.4.5-412-g37c57d9/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -22,13 +22,14 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
 
     rpc_server::add<bool(std::string,
         std::vector<jubatus::core::fv_converter::datum>)>("push",
-        jubatus::util::lang::bind(&clustering_impl::push, this, jubatus::util::lang::_2));
-    rpc_server::add<uint32_t(std::string)>("get_revision", jubatus::util::lang::bind(
-        &clustering_impl::get_revision, this));
+        jubatus::util::lang::bind(&clustering_impl::push, this,
+        jubatus::util::lang::_2));
+    rpc_server::add<uint32_t(std::string)>("get_revision",
+        jubatus::util::lang::bind(&clustering_impl::get_revision, this));
     rpc_server::add<std::vector<std::vector<std::pair<double,
         jubatus::core::fv_converter::datum> > >(std::string)>(
-        "get_core_members", jubatus::util::lang::bind(&clustering_impl::get_core_members,
-        this));
+        "get_core_members", jubatus::util::lang::bind(
+        &clustering_impl::get_core_members, this));
     rpc_server::add<std::vector<jubatus::core::fv_converter::datum>(
         std::string)>("get_k_center", jubatus::util::lang::bind(
         &clustering_impl::get_k_center, this));
@@ -42,12 +43,14 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
         jubatus::util::lang::bind(&clustering_impl::get_nearest_members, this,
         jubatus::util::lang::_2));
 
-    rpc_server::add<std::string(std::string)>("get_config", jubatus::util::lang::bind(
-        &clustering_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save", jubatus::util::lang::bind(
-        &clustering_impl::save, this, jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load", jubatus::util::lang::bind(
-        &clustering_impl::load, this, jubatus::util::lang::_2));
+    rpc_server::add<std::string(std::string)>("get_config",
+        jubatus::util::lang::bind(&clustering_impl::get_config, this));
+    rpc_server::add<bool(std::string, std::string)>("save",
+        jubatus::util::lang::bind(&clustering_impl::save, this,
+        jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string, std::string)>("load",
+        jubatus::util::lang::bind(&clustering_impl::load, this,
+        jubatus::util::lang::_2));
     rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
         std::string)>("get_status", jubatus::util::lang::bind(
         &clustering_impl::get_status, this));
@@ -108,7 +111,8 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
   }
 
   int run() { return p_->start(*this); }
-  jubatus::util::lang::shared_ptr<clustering_serv> get_p() { return p_->server(); }
+  jubatus::util::lang::shared_ptr<clustering_serv> get_p() { return p_->server(
+      ); }
 
  private:
   jubatus::util::lang::shared_ptr<jubatus::server::framework::server_helper<clustering_serv> > p_;
