@@ -208,9 +208,10 @@ void push_mixer::updated() {
 
 void push_mixer::get_status(server_base::status_t& status) const {
   scoped_lock lk(m_);
-  status["push_mixer.count"] = jubatus::util::lang::lexical_cast<string>(counter_);
+  status["push_mixer.count"] =
+    jubatus::util::lang::lexical_cast<string>(counter_);
   status["push_mixer.ticktime"] =
-      jubatus::util::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
+    jubatus::util::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
 }
 
 void push_mixer::mixer_loop() {

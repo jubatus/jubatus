@@ -50,7 +50,8 @@ class linear_communication {
 
   // We use shared_ptr instead of auto_ptr/unique_ptr
   // because in C++03 specification limits.
-  virtual jubatus::util::lang::shared_ptr<common::try_lockable> create_lock() = 0;
+  virtual jubatus::util::lang::shared_ptr<common::try_lockable> create_lock()
+      = 0;
 
   // it can throw common::mprpc exception
   virtual void get_diff(common::mprpc::rpc_result_object& result) const = 0;
@@ -101,7 +102,8 @@ class linear_mixer : public mixer {
   mutable jubatus::util::concurrent::mutex m_;
   jubatus::util::concurrent::condition c_;
 
-  jubatus::util::lang::shared_ptr<core::framework::mixable_holder> mixable_holder_;
+  jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
+    mixable_holder_;
   std::vector<core::framework::mixable0*> mixables_;
 };
 

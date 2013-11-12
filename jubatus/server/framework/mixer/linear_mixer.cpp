@@ -118,7 +118,8 @@ void linear_communication_impl::put_diff(
 
 }  // namespace
 
-jubatus::util::lang::shared_ptr<linear_communication> linear_communication::create(
+jubatus::util::lang::shared_ptr<linear_communication>
+linear_communication::create(
     const jubatus::util::lang::shared_ptr<server::common::lock_service>& zk,
     const string& type,
     const string& name,
@@ -144,10 +145,12 @@ linear_mixer::linear_mixer(
 void linear_mixer::register_api(rpc_server_t& server) {
   server.add<vector<byte_buffer>(int)>(  // NOLINT
       "get_diff",
-      jubatus::util::lang::bind(&linear_mixer::get_diff, this, jubatus::util::lang::_1));
+      jubatus::util::lang::bind(
+        &linear_mixer::get_diff, this, jubatus::util::lang::_1));
   server.add<int(vector<byte_buffer>)>(
       "put_diff",
-      jubatus::util::lang::bind(&linear_mixer::put_diff, this, jubatus::util::lang::_1));
+      jubatus::util::lang::bind(
+        &linear_mixer::put_diff, this, jubatus::util::lang::_1));
 }
 
 void linear_mixer::set_mixable_holder(
@@ -191,8 +194,8 @@ void linear_mixer::get_status(server_base::status_t& status) const {
 
 void linear_mixer::mixer_loop() {
   while (true) {
-    jubatus::util::lang::shared_ptr<common::try_lockable> zklock = communication_
-        ->create_lock();
+    jubatus::util::lang::shared_ptr<common::try_lockable> zklock =
+        communication_->create_lock();
     try {
       common::unique_lock lk(m_);
       if (!is_running_) {

@@ -39,7 +39,8 @@ class push_communication {
   virtual ~push_communication() {}
 
   static jubatus::util::lang::shared_ptr<push_communication> create(
-      const jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service>& zk,
+      const jubatus::util::lang::shared_ptr<
+          jubatus::server::common::lock_service>& zk,
       const std::string& type,
       const std::string& name,
       int timeout_sec);
@@ -80,7 +81,8 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
 
   void register_api(rpc_server_t& server);
   void set_mixable_holder(
-      jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder> holder);
+      jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder>
+          holder);
 
   void start();
   void stop();

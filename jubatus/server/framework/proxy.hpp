@@ -121,7 +121,8 @@ class proxy
   }
 
   template<int N, typename R>
-  void register_cht(std::string method_name, jubatus::util::lang::function<R(R, R)> agg) {
+  void register_cht(
+      std::string method_name, jubatus::util::lang::function<R(R, R)> agg) {
     using mp::placeholders::_1;
     using mp::placeholders::_2;
     mp::function<R(std::string, std::string)> f = mp::bind(
@@ -130,7 +131,8 @@ class proxy
   }
 
   template<int N, typename R, typename A0>
-  void register_cht(std::string method_name, jubatus::util::lang::function<R(R, R)> agg) {
+  void register_cht(
+      std::string method_name, jubatus::util::lang::function<R(R, R)> agg) {
     using mp::placeholders::_1;
     using mp::placeholders::_2;
     using mp::placeholders::_3;
@@ -141,7 +143,8 @@ class proxy
   }
 
   template<int N, typename R, typename A0, typename A1>
-  void register_cht(std::string method_name, jubatus::util::lang::function<R(R, R)> agg) {
+  void register_cht(
+      std::string method_name, jubatus::util::lang::function<R(R, R)> agg) {
     using mp::placeholders::_1;
     using mp::placeholders::_2;
     using mp::placeholders::_3;
@@ -784,8 +787,8 @@ class proxy
       async_task_loop* at_loop = new async_task_loop(a);
 
 #if 0
-      jubatus::util::concurrent::thread thr(jubatus::util::lang::bind(&async_task_loop::run,
-                                                  at_loop));
+      jubatus::util::concurrent::thread thr(
+          jubatus::util::lang::bind(&async_task_loop::run, at_loop));
       thr.start();
 #else
       at_loop->pool().start(2);

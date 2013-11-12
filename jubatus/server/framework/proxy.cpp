@@ -86,7 +86,8 @@ int proxy::run() {
     LOG(INFO) << common::util::get_program_name() << " RPC server startup";
 
     common::util::set_action_on_term(
-        jubatus::util::lang::bind(&stop_rpc_server, jubatus::util::lang::ref(this->instance_)));
+        jubatus::util::lang::bind(&stop_rpc_server,
+            jubatus::util::lang::ref(this->instance_)));
 
     this->instance_.join();
 

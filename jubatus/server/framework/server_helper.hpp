@@ -112,7 +112,8 @@ class server_helper {
     {
       jubatus::util::system::sysstat::sysstat_ret sys;
       get_sysstat(sys);
-      result["loadavg"] = jubatus::util::lang::lexical_cast<std::string>(sys.loadavg);
+      result["loadavg"] =
+          jubatus::util::lang::lexical_cast<std::string>(sys.loadavg);
       result["total_memory"] = jubatus::util::lang::lexical_cast<std::string>(
           sys.total_memory);
       result["free_memory"] = jubatus::util::lang::lexical_cast<std::string>(
@@ -128,16 +129,21 @@ class server_helper {
 
     common::util::machine_status_t mt;
     common::util::get_machine_status(mt);
-    data["VIRT"] = jubatus::util::lang::lexical_cast<std::string>(mt.vm_size);
-    data["RSS"] = jubatus::util::lang::lexical_cast<std::string>(mt.vm_resident);
-    data["SHR"] = jubatus::util::lang::lexical_cast<std::string>(mt.vm_share);
+    data["VIRT"] =
+        jubatus::util::lang::lexical_cast<std::string>(mt.vm_size);
+    data["RSS"] =
+        jubatus::util::lang::lexical_cast<std::string>(mt.vm_resident);
+    data["SHR"] =
+        jubatus::util::lang::lexical_cast<std::string>(mt.vm_share);
 
     // TBD: running_time, epoch_time
     // TBD: type(server type), name(instance name: when zookeeper enabled), eth
     data["timeout"] = jubatus::util::lang::lexical_cast<std::string>(a.timeout);
-    data["threadnum"] = jubatus::util::lang::lexical_cast<std::string>(a.threadnum);
+    data["threadnum"] =
+        jubatus::util::lang::lexical_cast<std::string>(a.threadnum);
     data["datadir"] = a.datadir;
-    data["interval_sec"] = jubatus::util::lang::lexical_cast<std::string>(a.interval_sec);
+    data["interval_sec"] =
+        jubatus::util::lang::lexical_cast<std::string>(a.interval_sec);
     data["interval_count"] = jubatus::util::lang::lexical_cast<std::string>(
         a.interval_count);
     data["is_standalone"] = jubatus::util::lang::lexical_cast<std::string>(
@@ -176,7 +182,8 @@ class server_helper {
 
       // Stop RPC server when terminate signal is sent
       common::util::set_action_on_term(
-          jubatus::util::lang::bind(&server_helper::stop, this, jubatus::util::lang::ref(serv)));
+          jubatus::util::lang::bind(
+              &server_helper::stop, this, jubatus::util::lang::ref(serv)));
 
       // wait for termination
       serv.join();

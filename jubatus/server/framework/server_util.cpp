@@ -446,7 +446,8 @@ void proxy_argv::set_log_destination(const std::string& progname) const {
   }
 }
 
-void register_lock_service(jubatus::util::lang::shared_ptr<common::lock_service> new_ls) {
+void register_lock_service(
+    jubatus::util::lang::shared_ptr<common::lock_service> new_ls) {
   if (ls) {
     throw JUBATUS_EXCEPTION(
         jubatus::core::common::exception::runtime_error(
