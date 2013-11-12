@@ -57,7 +57,8 @@ void clustering::init() {
 
 void clustering::set_storage(shared_ptr<storage> storage) {
   storage->add_event_listener(REVISION_CHANGE,
-      jubatus::util::lang::bind(&clustering::update_clusters, this, jubatus::util::lang::_1, true));
+      jubatus::util::lang::bind(&clustering::update_clusters,
+          this, jubatus::util::lang::_1, true));
   storage->add_event_listener(UPDATE,
       jubatus::util::lang::bind(&clustering::update_clusters,
           this, jubatus::util::lang::_1, false));
