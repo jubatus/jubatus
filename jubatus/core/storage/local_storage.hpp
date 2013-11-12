@@ -30,7 +30,8 @@ namespace core {
 namespace storage {
 
 typedef jubatus::util::data::unordered_map<uint64_t, val3_t> id_feature_val3_t;
-typedef jubatus::util::data::unordered_map<std::string, id_feature_val3_t> id_features3_t;
+typedef jubatus::util::data::unordered_map<std::string, id_feature_val3_t>
+  id_features3_t;
 
 class local_storage : public storage_base {
  public:

@@ -222,8 +222,10 @@ typedef std::vector<std::pair<std::string, feature_val1_t> > features1_t;
 typedef std::vector<std::pair<std::string, feature_val2_t> > features2_t;
 typedef std::vector<std::pair<std::string, feature_val3_t> > features3_t;
 
-typedef jubatus::util::data::unordered_map<std::string, val1_t> map_feature_val1_t;
-typedef jubatus::util::data::unordered_map<std::string, val3_t> map_feature_val3_t;
+typedef jubatus::util::data::unordered_map<std::string, val1_t>
+    map_feature_val1_t;
+typedef jubatus::util::data::unordered_map<std::string, val3_t>
+    map_feature_val3_t;
 typedef jubatus::util::data::unordered_map<std::string, map_feature_val3_t>
     map_features3_t;
 

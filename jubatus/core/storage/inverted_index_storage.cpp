@@ -226,8 +226,8 @@ void inverted_index_storage::calc_scores(
   }
 
   vector<pair<float, uint64_t> > sorted_scores;
-  for (jubatus::util::data::unordered_map<uint64_t, float>::const_iterator it = i_scores
-      .begin(); it != i_scores.end(); ++it) {
+  for (jubatus::util::data::unordered_map<uint64_t, float>::
+      const_iterator it = i_scores.begin(); it != i_scores.end(); ++it) {
     float norm = calc_columnl2norm(it->first);
     float normed_score = (norm != 0.f) ? it->second / norm / query_norm : 0.f;
     sorted_scores.push_back(make_pair(normed_score, it->first));

@@ -39,8 +39,8 @@ void norm_l1::notify(const std::string& row, float old_val, float new_val) {
 }
 
 float norm_l1::calc_norm(const std::string& row) const {
-  jubatus::util::data::unordered_map<std::string, float>::const_iterator it = sq_norms_
-      .find(row);
+  jubatus::util::data::unordered_map<std::string, float>::const_iterator it =
+    sq_norms_.find(row);
   if (it == sq_norms_.end()) {
     return 0.f;
   }

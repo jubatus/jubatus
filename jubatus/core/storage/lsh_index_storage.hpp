@@ -47,9 +47,11 @@ struct lsh_entry {
   }
 };
 
-typedef jubatus::util::data::unordered_map<std::string, lsh_entry> lsh_master_table_t;
+typedef jubatus::util::data::unordered_map<std::string, lsh_entry>
+  lsh_master_table_t;
 
-typedef jubatus::util::data::unordered_map<uint64_t, std::vector<uint64_t> > lsh_table_t;
+typedef jubatus::util::data::unordered_map<uint64_t, std::vector<uint64_t> >
+  lsh_table_t;
 
 class lsh_index_storage {
  public:

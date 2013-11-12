@@ -123,9 +123,10 @@ void local_storage::set3(
 }
 
 void local_storage::get_status(std::map<string, std::string>& status) const {
-  status["num_features"] = jubatus::util::lang::lexical_cast<std::string>(tbl_.size());
-  status["num_classes"] = jubatus::util::lang::lexical_cast<std::string>(
-      class2id_.size());
+  status["num_features"] =
+    jubatus::util::lang::lexical_cast<std::string>(tbl_.size());
+  status["num_classes"] =
+    jubatus::util::lang::lexical_cast<std::string>(class2id_.size());
 }
 
 float feature_fabssum(const id_feature_val3_t& f) {
