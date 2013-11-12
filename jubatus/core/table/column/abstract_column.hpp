@@ -158,7 +158,8 @@ class typed_column : public detail::abstract_column_base {
   const T& operator[](uint64_t index) const {
     if (size() <= index) {
       throw length_unmatch_exception(
-        "invalid index [" + jubatus::util::lang::lexical_cast<std::string>(index) +
+        "invalid index [" +
+        jubatus::util::lang::lexical_cast<std::string>(index) +
         "] for [" +
         jubatus::util::lang::lexical_cast<std::string>(array_.size()));
     }
@@ -168,7 +169,8 @@ class typed_column : public detail::abstract_column_base {
   T& operator[](uint64_t index) {
     if (size() <= index) {
       throw length_unmatch_exception(
-        "invalid index [" + jubatus::util::lang::lexical_cast<std::string>(index) +
+        "invalid index [" +
+        jubatus::util::lang::lexical_cast<std::string>(index) +
         "] for [" +
         jubatus::util::lang::lexical_cast<std::string>(array_.size()));
     }
@@ -539,8 +541,10 @@ class abstract_column {
     } else {
       throw type_unmatch_exception(
         "column: invalid type in serialize(): "
-        "expected: " + jubatus::util::lang::lexical_cast<std::string>(base_->type()) +
-        ", actual: " + jubatus::util::lang::lexical_cast<std::string>(type));
+        "expected: " +
+        jubatus::util::lang::lexical_cast<std::string>(base_->type()) +
+        ", actual: " +
+        jubatus::util::lang::lexical_cast<std::string>(type));
     }
 
     if (type.is(column_type::uint8_type)) {
@@ -591,8 +595,10 @@ class abstract_column {
       if (type != base_->type()) {
         throw type_unmatch_exception(
           "column: invalid type in serialize(): "
-          "expected: " + jubatus::util::lang::lexical_cast<std::string>(base_->type()) +
-          ", actual: " + jubatus::util::lang::lexical_cast<std::string>(type));
+          "expected: " +
+          jubatus::util::lang::lexical_cast<std::string>(base_->type()) +
+          ", actual: " +
+          jubatus::util::lang::lexical_cast<std::string>(type));
       }
     }
 

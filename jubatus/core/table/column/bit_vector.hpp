@@ -164,7 +164,8 @@ struct bit_vector_base {
       if (bit_num_ != orig.bit_num_) {
         throw bit_vector_unmatch_exception(
             "failed copy bit vector from " +
-            jubatus::util::lang::lexical_cast<std::string>(orig.bit_num_) + " to " +
+            jubatus::util::lang::lexical_cast<std::string>(orig.bit_num_) +
+            " to " +
             jubatus::util::lang::lexical_cast<std::string>(bit_num_));
       }
       if (bits_ == NULL) {
@@ -206,7 +207,8 @@ struct bit_vector_base {
     if (static_cast<size_t>(bit_num_) < pos) {
       throw bit_vector_unmatch_exception(
           "set_bit(): invalid posison " +
-          jubatus::util::lang::lexical_cast<std::string>(pos) + " for length: " +
+          jubatus::util::lang::lexical_cast<std::string>(pos) +
+          " for length: " +
           jubatus::util::lang::lexical_cast<std::string>(bit_num_));
     }
     bits_[pos / BASE_BITS] |= (1LLU << (pos % BASE_BITS));
@@ -218,7 +220,8 @@ struct bit_vector_base {
     if (bit_num_ < pos) {
       throw bit_vector_unmatch_exception(
           "reverse_bit(): invalid posison " +
-          jubatus::util::lang::lexical_cast<std::string>(pos) + " for length: " +
+          jubatus::util::lang::lexical_cast<std::string>(pos) +
+          " for length: " +
           jubatus::util::lang::lexical_cast<std::string>(bit_num_));
     }
     bits_[pos / BASE_BITS] ^= (1LLU << (pos % BASE_BITS));
@@ -368,8 +371,10 @@ struct bit_vector_base {
     if (data.size != memory_size(bit_num)) {
       throw bit_vector_unmatch_exception(
           "msgpack_unpack(): invalid length of packed data: "
-          "expected: " + jubatus::util::lang::lexical_cast<std::string>(bit_num_) +
-          ", got: " + jubatus::util::lang::lexical_cast<std::string>(data.size));
+          "expected: " +
+          jubatus::util::lang::lexical_cast<std::string>(bit_num_) +
+          ", got: " +
+          jubatus::util::lang::lexical_cast<std::string>(data.size));
     }
     std::vector<bit_base> buf;
     for (size_t i = 0; i < data.size; i += BLOCKSIZE) {
@@ -403,7 +408,8 @@ struct bit_vector_base {
     if (bit_num_ != orig.bit_num_) {
       throw bit_vector_unmatch_exception(
           "failed copy bit vector from " +
-          jubatus::util::lang::lexical_cast<std::string>(orig.bit_num_) + " to " +
+          jubatus::util::lang::lexical_cast<std::string>(orig.bit_num_) +
+          " to " +
           jubatus::util::lang::lexical_cast<std::string>(bit_num_));
     }
     if (!own_) {
