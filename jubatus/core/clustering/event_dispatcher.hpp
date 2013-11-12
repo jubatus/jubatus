@@ -53,8 +53,8 @@ void event_dispatcher<EventType, EventData>::dispatch(
   if (events_.find(type) == events_.end()) {
     return;
   }
-  typedef typename std::vector<jubatus::util::lang::function<
-    void(const EventData&)> > ::const_iterator iter;
+  typedef typename std::vector<jubatus::util::lang::function<void(const EventData&)> >  // NOLINT
+    ::const_iterator iter;
   for (iter it = events_[type].begin(); it != events_[type].end(); ++it) {
     (*it)(data);
   }
