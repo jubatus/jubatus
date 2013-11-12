@@ -20,13 +20,15 @@
 #include <utility>
 #include <vector>
 
+using jubatus::util::lang::shared_ptr;
+
 namespace jubatus {
 namespace core {
 namespace driver {
 
 nearest_neighbor::nearest_neighbor(
-    jubatus::util::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
-    jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
+    shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
+    shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new framework::mixable_holder),
       converter_(converter),
       nn_(nn) {

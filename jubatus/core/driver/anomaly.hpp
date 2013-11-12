@@ -32,11 +32,14 @@ namespace driver {
 class anomaly {
  public:
   anomaly(
-      jubatus::util::lang::shared_ptr<core::anomaly::anomaly_base> anomaly_method,
-      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+      jubatus::util::lang::shared_ptr<core::anomaly::anomaly_base>
+          anomaly_method,
+      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+          converter);
   virtual ~anomaly();
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  jubatus::util::lang::shared_ptr<framework::mixable_holder>
+  get_mixable_holder() const {
     return mixable_holder_;
   }
 
@@ -57,7 +60,8 @@ class anomaly {
  private:
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+    converter_;
   jubatus::util::lang::shared_ptr<core::anomaly::anomaly_base> anomaly_;
 };
 

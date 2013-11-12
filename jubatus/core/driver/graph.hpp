@@ -31,10 +31,12 @@ namespace driver {
 
 class graph {
  public:
-  explicit graph(jubatus::util::lang::shared_ptr<core::graph::graph_base> graph_method);
+  explicit graph(
+      jubatus::util::lang::shared_ptr<core::graph::graph_base> graph_method);
   virtual ~graph();
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  jubatus::util::lang::shared_ptr<framework::mixable_holder>
+  get_mixable_holder() const {
     return mixable_holder_;
   }
 

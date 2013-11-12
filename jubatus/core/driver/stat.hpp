@@ -33,7 +33,8 @@ class stat {
   explicit stat(jubatus::core::stat::stat* stat_method);
   virtual ~stat();
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  jubatus::util::lang::shared_ptr<framework::mixable_holder>
+  get_mixable_holder() const {
     return mixable_holder_;
   }
 

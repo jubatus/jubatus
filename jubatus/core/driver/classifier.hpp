@@ -38,11 +38,14 @@ class classifier {
 
   // TODO(suma): where is the owner of model, mixer, and converter?
   classifier(
-      jubatus::util::lang::shared_ptr<classifier_base> classifier_method,
-      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+      jubatus::util::lang::shared_ptr<classifier_base>
+          classifier_method,
+      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+          converter);
   virtual ~classifier();
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  jubatus::util::lang::shared_ptr<framework::mixable_holder>
+  get_mixable_holder() const {
     return mixable_holder_;
   }
 
@@ -56,7 +59,8 @@ class classifier {
  private:
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+    converter_;
   jubatus::util::lang::shared_ptr<classifier_base> classifier_;
 };
 

@@ -35,12 +35,16 @@ class regression {
  public:
   typedef core::regression::regression_base regression_base;
   regression(
-      jubatus::util::lang::shared_ptr<storage::storage_base> model_storage,
-      jubatus::util::lang::shared_ptr<regression_base> regression_method,
-      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+      jubatus::util::lang::shared_ptr<storage::storage_base>
+          model_storage,
+      jubatus::util::lang::shared_ptr<regression_base>
+          regression_method,
+      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+          converter);
   virtual ~regression();
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  jubatus::util::lang::shared_ptr<framework::mixable_holder>
+  get_mixable_holder() const {
     return mixable_holder_;
   }
 
@@ -53,8 +57,10 @@ class regression {
  private:
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  jubatus::util::lang::shared_ptr<jubatus::core::regression::regression_base> regression_;
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+    converter_;
+  jubatus::util::lang::shared_ptr<jubatus::core::regression::regression_base>
+    regression_;
 };
 
 }  // namespace driver

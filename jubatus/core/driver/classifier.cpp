@@ -31,6 +31,7 @@
 using std::string;
 using std::vector;
 using std::pair;
+using jubatus::util::lang::shared_ptr;
 using jubatus::core::framework::mixable_holder;
 using jubatus::core::fv_converter::weight_manager;
 
@@ -39,8 +40,8 @@ namespace core {
 namespace driver {
 
 classifier::classifier(
-    jubatus::util::lang::shared_ptr<core::classifier::classifier_base> classifier_method,
-    jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
+    shared_ptr<core::classifier::classifier_base> classifier_method,
+    shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       classifier_(classifier_method) {

@@ -30,11 +30,12 @@ namespace driver {
 
 using std::vector;
 using std::pair;
+using jubatus::util::lang::shared_ptr;
 using fv_converter::datum;
 
 clustering::clustering(
     core::clustering::clustering* clustering_method,
-    jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
+    shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new framework::mixable_holder),
       converter_(converter),
       clustering_(clustering_method) {
@@ -73,8 +74,12 @@ clustering::get_core_members() const {
   core::clustering::cluster_set ret;
   ret.reserve(src.size());
   std::transform(
-      src.begin(), src.end(), std::back_inserter(ret), jubatus::util::lang::bind(
-          &clustering::to_weighted_datum_vector, this, jubatus::util::lang::_1));
+      src.begin(),
+      src.end(),
+      std::back_inserter(ret),
+      jubatus::util::lang::bind(
+          &clustering::to_weighted_datum_vector,
+          this, jubatus::util::lang::_1));
 
   return ret;
 }
@@ -125,8 +130,13 @@ vector<datum> clustering::to_datum_vector(
   const vector<common::sfv_t>& src) const {
   vector<datum> ret;
   ret.reserve(src.size());
-  std::transform(src.begin(), src.end(), std::back_inserter(ret),
-      jubatus::util::lang::bind(&clustering::to_datum, this, jubatus::util::lang::_1));
+  std::transform(
+      src.begin(),
+      src.end(),
+      std::back_inserter(ret),
+      jubatus::util::lang::bind(
+          &clustering::to_datum,
+          this, jubatus::util::lang::_1));
   return ret;
 }
 
@@ -135,8 +145,13 @@ vector<core::clustering::weighted_point>
   const vector<datum>& src) {
   vector<core::clustering::weighted_point> ret;
   ret.reserve(src.size());
-  std::transform(src.begin(), src.end(), std::back_inserter(ret),
-      jubatus::util::lang::bind(&clustering::to_weighted_point, this, jubatus::util::lang::_1));
+  std::transform(
+      src.begin(),
+      src.end(),
+      std::back_inserter(ret),
+      jubatus::util::lang::bind(
+          &clustering::to_weighted_point,
+          this, jubatus::util::lang::_1));
   return ret;
 }
 
@@ -145,8 +160,13 @@ core::clustering::cluster_unit
     const vector<core::clustering::weighted_point>& src) const {
   core::clustering::cluster_unit ret;
   ret.reserve(src.size());
-  std::transform(src.begin(), src.end(), std::back_inserter(ret),
-      jubatus::util::lang::bind(&clustering::to_weighted_datum, this, jubatus::util::lang::_1));
+  std::transform(
+      src.begin(),
+      src.end(),
+      std::back_inserter(ret),
+      jubatus::util::lang::bind(
+          &clustering::to_weighted_datum,
+          this, jubatus::util::lang::_1));
   return ret;
 }
 

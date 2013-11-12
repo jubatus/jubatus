@@ -27,7 +27,7 @@
 
 using std::string;
 using std::pair;
-
+using jubatus::util::lang::shared_ptr;
 using jubatus::core::framework::mixable_holder;
 using jubatus::core::fv_converter::weight_manager;
 
@@ -36,9 +36,9 @@ namespace core {
 namespace driver {
 
 regression::regression(
-    jubatus::util::lang::shared_ptr<storage::storage_base> model_storage,
-    jubatus::util::lang::shared_ptr<core::regression::regression_base> regression_method,
-    jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
+    shared_ptr<storage::storage_base> model_storage,
+    shared_ptr<core::regression::regression_base> regression_method,
+    shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new mixable_holder),
       converter_(converter),
       regression_(regression_method) {
