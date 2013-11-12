@@ -43,7 +43,8 @@ class invoker_base {
 // async var-arg method type
 template<typename Tuple>
 struct async_vmethod {
-  typedef jubatus::util::lang::function<void(invoker_base::request_type, Tuple)> type;
+  typedef jubatus::util::lang::function<void(invoker_base::request_type, Tuple)>
+    type;
 };
 
 // rpc_server
@@ -92,7 +93,8 @@ class rpc_server : public msgpack::rpc::dispatcher {
   msgpack::rpc::server instance_;
 
  private:
-  typedef std::map<std::string, jubatus::util::lang::shared_ptr<invoker_base> > func_map;
+  typedef std::map<std::string, jubatus::util::lang::shared_ptr<invoker_base> >
+    func_map;
 
   void add_inner(
       const std::string& name,
@@ -174,7 +176,8 @@ class invoker2 : public invoker_base {
 template<typename R, typename A1, typename A2>
 jubatus::util::lang::shared_ptr<invoker_base> make_invoker(
     const jubatus::util::lang::function<R(A1, A2)>& f) {
-  return jubatus::util::lang::shared_ptr<invoker_base>(new invoker2<R, A1, A2>(f));
+  return jubatus::util::lang::shared_ptr<invoker_base>(
+      new invoker2<R, A1, A2>(f));
 }
 
 template<typename R, typename A1, typename A2, typename A3>
@@ -202,7 +205,8 @@ class invoker3 : public invoker_base {
 template<typename R, typename A1, typename A2, typename A3>
 jubatus::util::lang::shared_ptr<invoker_base> make_invoker(
     const jubatus::util::lang::function<R(A1, A2, A3)>& f) {
-  return jubatus::util::lang::shared_ptr<invoker_base>(new invoker3<R, A1, A2, A3>(f));
+  return jubatus::util::lang::shared_ptr<invoker_base>(
+      new invoker3<R, A1, A2, A3>(f));
 }
 
 template<typename R, typename A1, typename A2, typename A3, typename A4>

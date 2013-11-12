@@ -19,9 +19,9 @@
 
 #include <string>
 #include <utility>
+#include <msgpack.hpp>
 #include <jubatus/msgpack/rpc/client.h>
 #include "jubatus/util/data/serialization.h"
-#include <msgpack.hpp>
 #include "rpc_server.hpp"
 
 namespace jubatus {
@@ -64,7 +64,8 @@ struct result {
   class name : public virtual jubatus::server::common::mprpc::rpc_server { \
   public:                                                                 \
     name() : rpc_server(0) { }                                            \
-    void set_##name(const jubatus::util::lang::function< ret_type param_list> &f) { \
+    void set_##name(                                                      \
+        const jubatus::util::lang::function< ret_type param_list> &f) {   \
       rpc_server::add< ret_type param_list>(#name, f);                    \
     }                                                                     \
   };                                                                      \

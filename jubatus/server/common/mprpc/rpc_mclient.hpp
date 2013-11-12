@@ -22,13 +22,13 @@
 #include <string>
 #include <utility>
 
-#include "jubatus/util/lang/shared_ptr.h"
-#include "jubatus/util/lang/function.h"
-#include "jubatus/util/lang/noncopyable.h"
-
 #include <msgpack.hpp>
 #include <jubatus/msgpack/rpc/client.h>
 #include <jubatus/msgpack/rpc/session_pool.h>
+
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/lang/function.h"
+#include "jubatus/util/lang/noncopyable.h"
 
 #include "rpc_error.hpp"
 #include "rpc_result.hpp"
@@ -58,7 +58,8 @@
           << jubatus::server::common::mprpc::error_method(method) \
           << jubatus::core::common::exception::error_message( \
                  std::string("rpc_server error: " \
-                     + jubatus::util::lang::lexical_cast<std::string>(err.via.u64)))); \
+                     + jubatus::util::lang::lexical_cast<std::string>( \
+                           err.via.u64)))); \
     } else { \
       throw JUBATUS_EXCEPTION( \
           jubatus::server::common::mprpc::rpc_call_error() \
@@ -268,7 +269,8 @@ void rpc_mclient::join_one_(
     if (result.value) {
       *result.value = reducer(*result, method_result);
     } else {
-      result.value = jubatus::util::lang::shared_ptr<Res>(new Res(method_result));
+      result.value =
+        jubatus::util::lang::shared_ptr<Res>(new Res(method_result));
     }
   }
   JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method);
