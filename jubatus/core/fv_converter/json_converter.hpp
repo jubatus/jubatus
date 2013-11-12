@@ -35,7 +35,9 @@ class json_converter {
  public:
   static const char* NULL_STRING;
 
-  static void convert(const jubatus::util::text::json::json& jason, datum& ret_datum);
+  static void convert(
+      const jubatus::util::text::json::json& jason,
+      datum& ret_datum);
 };
 
 }  // namespace fv_converter

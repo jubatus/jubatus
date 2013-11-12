@@ -90,10 +90,12 @@ struct binary_rule {
 };
 
 struct converter_config {
-  jubatus::util::data::optional<std::map<std::string, param_t> > string_filter_types;
+  jubatus::util::data::optional<std::map<std::string, param_t> >
+    string_filter_types;
   jubatus::util::data::optional<std::vector<filter_rule> > string_filter_rules;
 
-  jubatus::util::data::optional<std::map<std::string, param_t> > num_filter_types;
+  jubatus::util::data::optional<std::map<std::string, param_t> >
+    num_filter_types;
   jubatus::util::data::optional<std::vector<filter_rule> > num_filter_rules;
 
   jubatus::util::data::optional<std::map<std::string, param_t> > string_types;

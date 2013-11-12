@@ -21,8 +21,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "jubatus/util/lang/scoped_ptr.h"
 #include <re2/re2.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 #include "word_splitter.hpp"
 
 namespace jubatus {

@@ -348,8 +348,8 @@ void initialize_converter(
 
 jubatus::util::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
     const converter_config& config) {
-  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
-      new fv_converter::datum_to_fv_converter);
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+    converter(new fv_converter::datum_to_fv_converter);
   fv_converter::initialize_converter(config, *converter);
   return converter;
 }

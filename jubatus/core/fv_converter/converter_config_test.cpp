@@ -135,8 +135,10 @@ TEST(converter_config, hash_negative) {
 }
 
 TEST(make_fv_converter, empty_config) {
-  jubatus::util::text::json::json js(new jubatus::util::text::json::json_object);
-  converter_config config = jubatus::util::text::json::json_cast<converter_config>(js);
+  jubatus::util::text::json::json
+    js(new jubatus::util::text::json::json_object);
+  converter_config config =
+    jubatus::util::text::json::json_cast<converter_config>(js);
   datum_to_fv_converter conv;
   initialize_converter(config, conv);
 

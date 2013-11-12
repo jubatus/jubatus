@@ -30,9 +30,10 @@ template<class T>
 class counter {
  public:
   typedef jubatus::util::data::unordered_map<T, unsigned> map_t;
-  typedef typename jubatus::util::data::unordered_map<T, unsigned>::const_iterator
-      const_iterator;
-  typedef typename jubatus::util::data::unordered_map<T, unsigned>::iterator iterator;
+  typedef typename jubatus::util::data::unordered_map<T, unsigned>
+      ::const_iterator const_iterator;
+  typedef typename jubatus::util::data::unordered_map<T, unsigned>
+      ::iterator iterator;
 
   bool contains(const T& key) const {
     return data_.count(key) != 0;

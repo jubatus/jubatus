@@ -22,6 +22,8 @@
 #include "jubatus/util/lang/cast.h"
 #include "datum.hpp"
 
+using jubatus::util::data::string::starts_with;
+
 namespace jubatus {
 namespace core {
 namespace fv_converter {
@@ -58,7 +60,7 @@ bool revert_num_value(
     num_value.first.swap(num_value_key);
     num_value.second = value;
     return true;
-  } else if (jubatus::util::data::string::starts_with(feature_value, str_prefix)) {
+  } else if (starts_with(feature_value, str_prefix)) {
     std::string val_string(feature_value.substr(str_prefix.size()));
     try {
       float val = jubatus::util::lang::lexical_cast<float>(val_string);
