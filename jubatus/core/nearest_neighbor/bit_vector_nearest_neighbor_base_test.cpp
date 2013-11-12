@@ -56,7 +56,8 @@ common::sfv_t make_sfv(const string& in_str) {
   vector<string> cells = split(in_str, ' ');
   for (size_t i = 0; i < cells.size(); ++i) {
     vector<string> pair = split(cells[i], ':');
-    sfv.push_back(make_pair(pair[0], jubatus::util::lang::lexical_cast<float>(pair[1])));
+    sfv.push_back(
+        make_pair(pair[0], jubatus::util::lang::lexical_cast<float>(pair[1])));
   }
   return sfv;
 }

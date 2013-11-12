@@ -41,7 +41,8 @@ class nearest_neighbor_base {
 
   void get_all_row_ids(std::vector<std::string>& ids) const;
 
-  jubatus::util::lang::shared_ptr<const table::column_table> get_const_table() const {
+  jubatus::util::lang::shared_ptr<const table::column_table>
+  get_const_table() const {
     return mixable_table_->get_model();
   }
   jubatus::util::lang::shared_ptr<table::column_table> get_table() {
@@ -84,7 +85,8 @@ class nearest_neighbor_base {
   std::string my_id_;
 
  private:
-  jubatus::util::lang::shared_ptr<driver::mixable_versioned_table> mixable_table_;
+  jubatus::util::lang::shared_ptr<driver::mixable_versioned_table>
+    mixable_table_;
 };
 
 }  // namespace nearest_neighbor

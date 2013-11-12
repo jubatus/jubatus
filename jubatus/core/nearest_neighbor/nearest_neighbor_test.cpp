@@ -69,8 +69,10 @@ class nearest_neighbor_test
       json config_js(new jubatus::util::text::json::json_object);
       for (map<string, string>::iterator it = param.begin();
            it != param.end(); ++it) {
-        config_js.add(it->first, json(new jubatus::util::text::json::json_integer(
-            jubatus::util::lang::lexical_cast<int>(it->second))));
+        config_js.add(
+            it->first,
+            json(new jubatus::util::text::json::json_integer(
+                jubatus::util::lang::lexical_cast<int>(it->second))));
       }
 
       using common::jsonconfig::config;
@@ -80,8 +82,7 @@ class nearest_neighbor_test
           name, config(config_js, ""), table_, "localhost");
     } catch (common::jsonconfig::cast_check_error& e) {
       std::cout << "In Setup():" <<e.what() << '\n';
-      vector<jubatus::util::lang::shared_ptr<common::jsonconfig::config_error> > v =
-          e.errors();
+      vector<shared_ptr<common::jsonconfig::config_error> > v = e.errors();
       for (size_t i = 0; i < v.size(); ++i) {
         std::cout << v[i]->what() << '\n';
       }
