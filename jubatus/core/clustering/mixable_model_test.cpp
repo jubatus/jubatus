@@ -32,8 +32,8 @@ class mixable_model_test : public ::testing::Test {
     clustering_config cfg;
     cfg.k = 3;
     cfg.compressor_method = "compressive_kmeans";
-    cfg.backet_size = 10000;
-    cfg.compressed_backet_size = 400;
+    cfg.bucket_size = 10000;
+    cfg.compressed_bucket_size = 400;
 
     model_.reset(new clustering(name_, "kmeans", cfg));
     storage_ = model_->get_storage();

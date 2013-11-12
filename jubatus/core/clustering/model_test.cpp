@@ -37,11 +37,11 @@ class model_test : public ::testing::Test {
   model_test() {
     config_.k = 3;
     config_.compressor_method = "compressive_kmeans";
-    config_.backet_size = 10000;
-    config_.compressed_backet_size = 100;
+    config_.bucket_size = 10000;
+    config_.compressed_bucket_size = 100;
     config_.forgetting_threshold = 0.05;
     config_.forgetting_factor = 2;
-    config_.backet_length = 4;
+    config_.bucket_length = 4;
 
     model_.reset(new clustering("test", "kmeans", config_));
   }
@@ -68,13 +68,13 @@ TEST_F(model_test, push_small) {
 }
 
 TEST_F(model_test, compression_and_clusteringing) {
-  static const size_t N = config_.backet_size;
+  static const size_t N = config_.bucket_size;
   static const size_t D = 2;
   std::cout << "total adding points : " << N << std::endl;
   model_->push(get_points(N, D));
   vector<weighted_point> coreset = model_->get_coreset();
   ASSERT_EQ(
-      coreset.size(), static_cast<size_t>(config_.compressed_backet_size));
+      coreset.size(), static_cast<size_t>(config_.compressed_bucket_size));
 
   vector<common::sfv_t> centers = model_->get_k_center();
   ASSERT_EQ(centers.size(), static_cast<size_t>(config_.k));
@@ -89,18 +89,18 @@ TEST_F(model_test, compression_and_clusteringing) {
 }
 
 
-TEST_F(model_test, backet_management_and_forgetting) {
-  static const size_t N = config_.backet_size * 4;
+TEST_F(model_test, bucket_management_and_forgetting) {
+  static const size_t N = config_.bucket_size * 4;
   static const size_t D = 2;
   model_->push(get_points(N, D));
   vector<weighted_point> coreset = model_->get_coreset();
   ASSERT_EQ(
-      coreset.size(), static_cast<size_t>(config_.compressed_backet_size));
+      coreset.size(), static_cast<size_t>(config_.compressed_bucket_size));
 
   model_->push(get_points(N, D));
   coreset = model_->get_coreset();
   ASSERT_EQ(
-      coreset.size(), static_cast<size_t>(config_.compressed_backet_size));
+      coreset.size(), static_cast<size_t>(config_.compressed_bucket_size));
 }
 
 }  // namespace clustering

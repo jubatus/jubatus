@@ -32,7 +32,7 @@ simple_storage::simple_storage(
 void simple_storage::add(const weighted_point& point) {
   static size_t cnt = 0;
   ++cnt;
-  if (cnt % config_.backet_size == 0) {
+  if (cnt % config_.bucket_size == 0) {
     increment_revision();
   }
   mine_.push_back(point);

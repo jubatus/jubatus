@@ -41,10 +41,10 @@ void compressive_storage::set_compressor(
 void compressive_storage::add(const weighted_point& point) {
   wplist& c0 = mine_[0];
   c0.push_back(point);
-  if (c0.size() >= static_cast<size_t>(config_.backet_size)) {
+  if (c0.size() >= static_cast<size_t>(config_.bucket_size)) {
     wplist cr;
     compressor_->compress(
-        c0, config_.bicriteria_base_size, config_.compressed_backet_size, cr);
+        c0, config_.bicriteria_base_size, config_.compressed_bucket_size, cr);
     c0.swap(cr);
     status_ += 1;
     carry_up(0);
@@ -70,25 +70,25 @@ void compressive_storage::forget_weight(wplist& points) {
   }
 }
 
-bool compressive_storage::reach_forgetting_threshold(size_t backet_number) {
+bool compressive_storage::reach_forgetting_threshold(size_t bucket_number) {
   double C = config_.forgetting_threshold;
   double lam = config_.forgetting_factor;
-  if (exp(-lam*backet_number) < C) {
+  if (exp(-lam*bucket_number) < C) {
     return true;
   }
   return false;
 }
 
-bool compressive_storage::is_next_backet_full(size_t backet_number) {
-  return digit(status_ - 1, backet_number, config_.backet_length) ==
-      config_.backet_length - 1;
+bool compressive_storage::is_next_bucket_full(size_t bucket_number) {
+  return digit(status_ - 1, bucket_number, config_.bucket_length) ==
+      config_.bucket_length - 1;
 }
 
 void compressive_storage::carry_up(size_t r) {
   if (r >= mine_.size() - 1) {
     mine_.push_back(wplist());
   }
-  if (!is_next_backet_full(r)) {
+  if (!is_next_bucket_full(r)) {
     if (!reach_forgetting_threshold(r + 1) ||
         mine_[r].size() == get_mine().size()) {
       forget_weight(mine_[r]);
@@ -104,8 +104,8 @@ void compressive_storage::carry_up(size_t r) {
     mine_[r].clear();
     mine_[r + 1].clear();
     concat(cr, crr);
-    csize_t dstsize = (r == 0) ? config_.compressed_backet_size :
-        2 * r * r * config_.compressed_backet_size;
+    csize_t dstsize = (r == 0) ? config_.compressed_bucket_size :
+        2 * r * r * config_.compressed_bucket_size;
     compressor_->compress(crr, config_.bicriteria_base_size,
                           dstsize, mine_[r + 1]);
     carry_up(r + 1);

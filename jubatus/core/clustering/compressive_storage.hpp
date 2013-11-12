@@ -52,8 +52,8 @@ class compressive_storage : public storage {
 
  private:
   void carry_up(size_t r);
-  bool is_next_backet_full(size_t backet_number);
-  bool reach_forgetting_threshold(size_t backet_number);
+  bool is_next_bucket_full(size_t bucket_number);
+  bool reach_forgetting_threshold(size_t bucket_number);
   void forget_weight(wplist& points);
 
   std::vector<wplist> mine_;

@@ -185,7 +185,7 @@ TEST_F(clustering_test, small) {
   jubatus::client::clustering c("localhost", PORT, 100);
   clustering_config config = get_config(c.get_config(NAME));
 
-  const uint32_t N = config.backet_size;
+  const uint32_t N = config.bucket_size;
   const uint32_t D = 2;
   using std::cout;
   using std::endl;
@@ -198,7 +198,7 @@ TEST_F(clustering_test, small) {
   ASSERT_EQ(c.get_nearest_center(NAME, get_point(D)).num_values.size(), D);
   ASSERT_TRUE(is_registered(c.get_core_members(NAME), original_points));
   ASSERT_EQ(get_total_num(c.get_core_members(NAME)),
-            config.compressed_backet_size);
+            config.compressed_bucket_size);
   ASSERT_TRUE(is_registered(
       c.get_nearest_members(NAME, get_point(D)), original_points));
 
@@ -212,7 +212,7 @@ TEST_F(clustering_test, load) {
   c.load(NAME, "test");
   ASSERT_EQ(c.get_k_center(NAME).size(), config.k);
   ASSERT_EQ(get_total_num(c.get_core_members(NAME)),
-            config.compressed_backet_size);
+            config.compressed_bucket_size);
 }
 
 }  // namespace jubatus

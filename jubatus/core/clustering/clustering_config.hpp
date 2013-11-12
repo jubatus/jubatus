@@ -29,18 +29,18 @@ namespace clustering {
 struct storage_config {
   std::string method;
 
-  int backet_size;
-  int backet_length;
-  int compressed_backet_size;
+  int bucket_size;
+  int bucket_length;
+  int compressed_bucket_size;
   double forgetting_factor;
   double forgetting_threshold;
 
   template<typename Ar>
   void serialize(Ar& ar) {
     ar & MEMBER(method)
-        & MEMBER(backet_size)
-        & MEMBER(backet_length)
-        & MEMBER(compressed_backet_size)
+        & MEMBER(bucket_size)
+        & MEMBER(bucket_length)
+        & MEMBER(compressed_bucket_size)
         & MEMBER(forgetting_factor)
         & MEMBER(forgetting_threshold);
   }
@@ -50,10 +50,10 @@ struct clustering_config {
   clustering_config()
       : k(2),
         compressor_method("simple"),
-        backet_size(10000),
-        backet_length(2),
+        bucket_size(10000),
+        bucket_length(2),
         bicriteria_base_size(10),
-        compressed_backet_size(200),
+        compressed_bucket_size(200),
         forgetting_factor(2.0),
         forgetting_threshold(0.05) {
   }
@@ -62,20 +62,20 @@ struct clustering_config {
 
   std::string compressor_method;
 
-  int backet_size;
-  int backet_length;
+  int bucket_size;
+  int bucket_length;
   int bicriteria_base_size;
-  int compressed_backet_size;
+  int compressed_bucket_size;
   double forgetting_factor;
   double forgetting_threshold;
 
   MSGPACK_DEFINE(
       k,
       compressor_method,
-      backet_size,
-      backet_length,
+      bucket_size,
+      bucket_length,
       bicriteria_base_size,
-      compressed_backet_size,
+      compressed_bucket_size,
       forgetting_factor,
       forgetting_threshold);
 
@@ -83,10 +83,10 @@ struct clustering_config {
   void serialize(Ar& ar) {
     ar & MEMBER(k)
         & MEMBER(compressor_method)
-        & MEMBER(backet_size)
-        & MEMBER(backet_length)
+        & MEMBER(bucket_size)
+        & MEMBER(bucket_length)
         & MEMBER(bicriteria_base_size)
-        & MEMBER(compressed_backet_size)
+        & MEMBER(compressed_bucket_size)
         & MEMBER(forgetting_factor)
         & MEMBER(forgetting_threshold);
   }
