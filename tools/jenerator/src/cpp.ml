@@ -724,6 +724,7 @@ let gen_server_template_header names s =
       (1,   "virtual jubatus::server::framework::mixer::mixer* get_mixer() const;");
       (1,   "jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder> get_mixable_holder() const;");
       (1,   "std::string get_config() const;");
+      (1,   "uint64_t user_data_version() const;");
       (1,   "void get_status(status_t& status) const;");
       (1,   "void set_config(const std::string& config);");
       (0,   "");
@@ -797,6 +798,9 @@ let gen_server_template_source names s =
       (0, "}");
       (0, "");
       (0, "std::string " ^ serv_name ^ "::get_config() const {");
+      (0, "}");
+      (0, "");
+      (0, "uint64_t " ^ serv_name ^ "::user_data_version() const {");
       (0, "}");
       (0, "");
       (0, "void " ^ serv_name ^ "::get_status(status_t& status) const {");
