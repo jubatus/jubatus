@@ -139,20 +139,20 @@ def cpplint(ctx):
   cpplint = ctx.path.find_node('tools/codestyle/cpplint/cpplint.py')
   src_dir = ctx.path.find_node('jubatus')
   file_list = []
-  excludes = ['jubatus/server/third_party/*', \
-              'jubatus/server/server/*_server.hpp', \
-              'jubatus/server/server/*_impl.cpp', \
-              'jubatus/server/server/*_proxy.cpp', \
-              'jubatus/server/server/*_client.hpp', \
-              'jubatus/server/server/*_types.hpp', \
-              'jubatus/client/*_client.hpp', \
-              'jubatus/client/*_types.hpp', \
-              'jubatus/core/third_party/*', \
-              'jubatus/util/*.h', \
-              'jubatus/util/*.cpp', \
-              'jubatus/util/*/*.h', \
-              'jubatus/util/*/*.cpp', \
-              'jubatus/util/*/*/*.h', \
+  excludes = ['jubatus/server/third_party/*',
+              'jubatus/server/server/*_server.hpp',
+              'jubatus/server/server/*_impl.cpp',
+              'jubatus/server/server/*_proxy.cpp',
+              'jubatus/server/server/*_client.hpp',
+              'jubatus/server/server/*_types.hpp',
+              'jubatus/client/*_client.hpp',
+              'jubatus/client/*_types.hpp',
+              'jubatus/core/third_party/*',
+              'jubatus/util/*.h',
+              'jubatus/util/*.cpp',
+              'jubatus/util/*/*.h',
+              'jubatus/util/*/*.cpp',
+              'jubatus/util/*/*/*.h',
               'jubatus/util/*/*/*.cpp']
   for file in src_dir.ant_glob('**/*.cpp **/*.cc **/*.hpp **/*.h'):
     file_list += [file.path_from(ctx.path)]
