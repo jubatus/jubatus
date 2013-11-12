@@ -181,7 +181,8 @@ void my_znode_watcher(
     const char* path,
     void* watcherCtx) {
   jubatus::util::lang::function<void(int, int, string)>* fp =
-      static_cast<jubatus::util::lang::function<void(int, int, string)>*>(watcherCtx);
+      static_cast<jubatus::util::lang::function<void(int, int, string)>*>(
+          watcherCtx);
   try {
     (*fp)(type, state, string(path));
   } catch(const std::exception& e) {
@@ -195,8 +196,8 @@ void my_znode_watcher(
 bool zk::bind_watcher(
     const string& path,
     jubatus::util::lang::function<void(int, int, string)>& f) {
-  jubatus::util::lang::function<void(int, int, string)>* fp = new jubatus::util::lang::function<
-      void(int, int, string)>(f);
+  jubatus::util::lang::function<void(int, int, string)>* fp =
+    new jubatus::util::lang::function<void(int, int, string)>(f);
   int rc = zoo_wexists(zh_, path.c_str(), my_znode_watcher, fp, NULL);
   return rc == ZOK;
 }
@@ -236,8 +237,8 @@ void my_znode_delete_watcher(
 bool zk::bind_delete_watcher(
     const string& path,
     jubatus::util::lang::function<void(string)>& f) {
-  jubatus::util::lang::function<void(string)>* fp = new jubatus::util::lang::function<
-      void(string)>(f);
+  jubatus::util::lang::function<void(string)>* fp =
+    new jubatus::util::lang::function< void(string)>(f);
   int rc = zoo_wexists(zh_, path.c_str(), my_znode_delete_watcher, fp, NULL);
   return rc == ZOK;
 }

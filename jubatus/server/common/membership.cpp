@@ -22,8 +22,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "jubatus/util/lang/cast.h"
 #include <glog/logging.h>
+#include "jubatus/util/lang/cast.h"
 #include "jubatus/core/common/exception.hpp"
 
 using std::string;

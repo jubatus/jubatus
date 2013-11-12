@@ -20,9 +20,9 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "jubatus/util/text/json.h"
 #include <glog/logging.h>
 
+#include "jubatus/util/text/json.h"
 #include "lock_service.hpp"
 #include "membership.hpp"
 
