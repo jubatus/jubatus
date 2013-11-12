@@ -29,6 +29,9 @@
 #include "../framework/mixer/mixer_factory.hpp"
 #include "../../core/fv_converter/converter_config.hpp"
 
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
+
 namespace jubatus {
 namespace server {
 namespace {
@@ -48,7 +51,7 @@ struct clustering_serv_config {
 
 clustering_serv::clustering_serv(
     const framework::server_argv& a,
-    const jubatus::util::lang::shared_ptr<common::lock_service>& zk)
+    const shared_ptr<common::lock_service>& zk)
     : server_base(a),
       mixer_(framework::mixer::create_mixer(a, zk)) {
 }
@@ -66,14 +69,14 @@ uint64_t clustering_serv::user_data_version() const {
 
 void clustering_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config config_root(
-      jubatus::util::lang::lexical_cast<jubatus::util::text::json::json>(config));
+      lexical_cast<jubatus::util::text::json::json>(config));
   clustering_serv_config conf =
       core::common::jsonconfig::config_cast_check<clustering_serv_config>(
           config_root);
 
   config_ = config;
-  jubatus::util::lang::shared_ptr<core::fv_converter::datum_to_fv_converter> converter =
-      core::fv_converter::make_fv_converter(conf.converter);
+  shared_ptr<core::fv_converter::datum_to_fv_converter> converter =
+    core::fv_converter::make_fv_converter(conf.converter);
 
   core::common::jsonconfig::config param;
   if (conf.parameter) {
@@ -81,7 +84,7 @@ void clustering_serv::set_config(const std::string& config) {
   }
 
   const std::string name =
-      argv().eth + jubatus::util::lang::lexical_cast<std::string>(argv().port);
+      argv().eth + lexical_cast<std::string>(argv().port);
   core::clustering::clustering_config cluster_conf =
       core::common::jsonconfig::config_cast_check<
           core::clustering::clustering_config>(param);

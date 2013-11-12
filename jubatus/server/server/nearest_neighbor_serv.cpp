@@ -53,7 +53,7 @@ struct nearest_neighbor_serv_config {
 
 nearest_neighbor_serv::nearest_neighbor_serv(
     const framework::server_argv& a,
-    const jubatus::util::lang::shared_ptr<common::lock_service>& zk)
+    const shared_ptr<common::lock_service>& zk)
     : server_base(a) {
   mixer_.reset(framework::mixer::create_mixer(a, zk));
 }
@@ -100,7 +100,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
   my_id = common::build_loc_str(argv().eth, argv().port);
 #endif
 
-  jubatus::util::lang::shared_ptr<jubatus::core::nearest_neighbor::nearest_neighbor_base>
+  shared_ptr<jubatus::core::nearest_neighbor::nearest_neighbor_base>
       nn(jubatus::core::nearest_neighbor::create_nearest_neighbor(
           conf.method, param, table, my_id));
   nearest_neighbor_.reset(new core::driver::nearest_neighbor(nn, converter));

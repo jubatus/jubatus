@@ -131,7 +131,7 @@ graph_serv::~graph_serv() {
 
 void graph_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config conf_root(
-      jubatus::util::lang::lexical_cast<jubatus::util::text::json::json>(config));
+      lexical_cast<jubatus::util::text::json::json>(config));
   graph_serv_config conf =
     core::common::jsonconfig::config_cast_check<graph_serv_config>(conf_root);
 

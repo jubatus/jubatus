@@ -75,7 +75,8 @@ class nearest_neighbor_serv : public framework::server_base {
   uint64_t build_cnt_;
   uint64_t mix_cnt_;
 
-  jubatus::util::lang::shared_ptr<core::driver::nearest_neighbor> nearest_neighbor_;
+  jubatus::util::lang::shared_ptr<core::driver::nearest_neighbor>
+    nearest_neighbor_;
 };
 
 }  // namespace server
