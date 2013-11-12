@@ -147,6 +147,7 @@ def cpplint(ctx):
               'jubatus/server/server/*_types.hpp', \
               'jubatus/client/*_client.hpp', \
               'jubatus/client/*_types.hpp', \
+              'jubatus/core/third_party/*', \
               'jubatus/util/*.h', \
               'jubatus/util/*.cpp', \
               'jubatus/util/*/*.h', \
