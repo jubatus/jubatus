@@ -127,8 +127,10 @@ class graph_wo_index
       global_nodes_, eigen_scores_, spts_);
 
  private:
-  typedef jubatus::util::data::unordered_map<node_id_t, node_info> node_info_map;
-  typedef jubatus::util::data::unordered_map<edge_id_t, edge_info> edge_info_map;
+  typedef jubatus::util::data::unordered_map<node_id_t, node_info>
+    node_info_map;
+  typedef jubatus::util::data::unordered_map<edge_id_t, edge_info>
+    edge_info_map;
 
   static void remove_by_swap(std::vector<edge_id_t>& edges, edge_id_t eid);
 

@@ -108,8 +108,8 @@ struct preset_query {
   }
 };
 
-typedef jubatus::util::data::unordered_map<node_id_t, std::pair<uint64_t, node_id_t> >
-  spt_edges;
+typedef jubatus::util::data::unordered_map<
+  node_id_t, std::pair<uint64_t, node_id_t> > spt_edges;
 
 struct shortest_path_tree {
   node_id_t landmark;
@@ -130,7 +130,8 @@ typedef std::vector<shortest_path_tree> spt_diff;
 typedef jubatus::util::data::unordered_map<preset_query, eigen_vector_diff>
   eigen_vector_query_diff;
 
-typedef jubatus::util::data::unordered_map<preset_query, spt_diff> spt_query_diff;
+typedef jubatus::util::data::unordered_map<preset_query, spt_diff>
+  spt_query_diff;
 
 class graph_exception : public jubatus::core::common::exception::runtime_error {
  public:
