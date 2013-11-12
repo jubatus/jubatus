@@ -254,7 +254,8 @@ TEST(jsonconfig_cast, error_convert_map) {
 TEST(jsonconfig_cast, error_convert_unordered_map) {
   config conf(lexical_cast<json>("{\"value\": []}"));
   try {
-    config_cast<map<string, jubatus::util::data::unordered_map<string, string> > >(conf);
+    config_cast<
+      map<string, jubatus::util::data::unordered_map<string, string> > >(conf);
     FAIL();
   } catch (const type_error& e) {
     EXPECT_EQ(".value", e.path());

@@ -33,7 +33,8 @@ namespace core {
 namespace common {
 namespace jsonconfig {
 
-typedef std::vector<jubatus::util::lang::shared_ptr<config_error> > config_error_list;
+typedef std::vector<jubatus::util::lang::shared_ptr<config_error> >
+  config_error_list;
 
 class member_collector {
  public:
@@ -81,7 +82,8 @@ class json_config_iarchive_cast {
   template<class T>
   void push_error(const T& e) {
     if (errors_) {
-      errors_->push_back(jubatus::util::lang::shared_ptr<config_error>(new T(e)));
+      errors_->push_back(
+          jubatus::util::lang::shared_ptr<config_error>(new T(e)));
     }
   }
 
@@ -161,7 +163,8 @@ inline bool check_json_float(json_config_iarchive_cast& js) {
 #define GENERATE_CONFIG_SERIALIZE_DEF(typ, json_typ) \
   template <> \
   inline void serialize(json_config_iarchive_cast& js, typ& v) { \
-    if (detail::check_json_type(js, jubatus::util::text::json::json::json_typ)) { \
+    if (detail::check_json_type( \
+        js, jubatus::util::text::json::json::json_typ)) { \
       v = jubatus::util::text::json::json_cast<typ>(js.get()); \
     } \
   }
@@ -236,7 +239,8 @@ inline void serialize(
 template <typename T>
 inline void serialize(
     json_config_iarchive_cast& js,
-    jubatus::util::data::serialization::named_value<jubatus::util::data::optional<T> >& v) {
+    jubatus::util::data::serialization::named_value<
+        jubatus::util::data::optional<T> >& v) {
   using jubatus::util::text::json::json;
   if (js.get_config().contain(v.name)
       && (js.get_config()[v.name].get().type() != json::Null)) {
@@ -265,7 +269,9 @@ inline void serialize(json_config_iarchive_cast& js,
 }
 
 template<>
-inline void serialize(json_config_iarchive_cast& js, jubatus::util::text::json::json& v) {
+inline void serialize(
+    json_config_iarchive_cast& js,
+    jubatus::util::text::json::json& v) {
   v = js.get();
 }
 

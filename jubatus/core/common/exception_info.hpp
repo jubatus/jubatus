@@ -58,7 +58,8 @@ class error_info<struct error_splitter_, void> : public error_info_base {
   }
 
   std::string tag_typeid_name() const {
-    return jubatus::util::lang::demangle(typeid(struct error_splitter_*).name());
+    return jubatus::util::lang::demangle(
+        typeid(struct error_splitter_*).name());
   }
 
   std::string as_string() const {

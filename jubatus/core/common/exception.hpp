@@ -40,7 +40,8 @@ typedef error_info<struct error_errno_, int> error_errno;
 inline std::string to_string(const error_errno& info) {
   char buf[1024];
   std::string msg(strerror_r(info.value(), buf, 1024));
-  msg += " (" + jubatus::util::lang::lexical_cast<std::string>(info.value()) + ")";
+  msg += " (" +
+    jubatus::util::lang::lexical_cast<std::string>(info.value()) + ")";
   return msg;
 }
 
@@ -71,9 +72,11 @@ struct exception_thrower_binder_type {
     << JUBATUS_CURRENT_ERROR_INFO()
 
 class exception_thrower_base;
-typedef jubatus::util::lang::shared_ptr<exception_thrower_base> exception_thrower_ptr;
+typedef jubatus::util::lang::shared_ptr<exception_thrower_base>
+  exception_thrower_ptr;
 
-typedef std::vector<jubatus::util::lang::shared_ptr<error_info_base> > error_info_list_t;
+typedef std::vector<jubatus::util::lang::shared_ptr<error_info_base> >
+  error_info_list_t;
 
 class jubatus_exception : public std::exception {
  public:
@@ -92,7 +95,8 @@ class jubatus_exception : public std::exception {
   std::string name() const throw () {
     // does not assume multithreading
     if (exception_class_name_.empty()) {
-      exception_class_name_ = jubatus::util::lang::demangle(typeid(*this).name());
+      exception_class_name_ = jubatus::util::lang::demangle(
+          typeid(*this).name());
     }
 
     return exception_class_name_;
@@ -124,7 +128,9 @@ inline const Exception& operator <<(
     const Exception& e,
     const error_info<Tag, V>& info) {
   return add_info(
-      e, jubatus::util::lang::shared_ptr<error_info_base>(new error_info<Tag, V>(info)));
+      e,
+      jubatus::util::lang::shared_ptr<error_info_base>(
+          new error_info<Tag, V>(info)));
 }
 
 template<class Exception>

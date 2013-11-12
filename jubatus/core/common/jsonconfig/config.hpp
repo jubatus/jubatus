@@ -105,12 +105,13 @@ class config {
       return !(*this == it);
     }
 
-    std::pair<const std::string, jubatus::util::text::json::json> operator*() const {
+    std::pair<const std::string, jubatus::util::text::json::json>
+    operator*() const {
       return *it_;
     }
 
-    const std::pair<const std::string, jubatus::util::text::json::json>* operator->()
-        const {
+    const std::pair<const std::string, jubatus::util::text::json::json>*
+    operator->() const {
       return it_.operator->();
     }
     // FowrardIterator

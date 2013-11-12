@@ -125,7 +125,8 @@ class cast_check_error
   : public common::exception::jubaexception<cast_check_error> {
  public:
   cast_check_error(
-      const std::vector<jubatus::util::lang::shared_ptr<config_error> >& errors);
+      const std::vector<jubatus::util::lang::shared_ptr<config_error> >&
+          errors);
 
   ~cast_check_error() throw ();
 
@@ -133,7 +134,8 @@ class cast_check_error
     return errors_.size();
   }
 
-  const std::vector<jubatus::util::lang::shared_ptr<config_error> >& errors() const {
+  const std::vector<jubatus::util::lang::shared_ptr<config_error> >& errors()
+    const {
     return errors_;
   }
 
