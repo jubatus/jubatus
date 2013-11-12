@@ -54,7 +54,8 @@ sfv_diff_t make_vec(const string& c1, const string& c2, const string& c3) {
   return v;
 }
 
-jubatus::util::lang::shared_ptr<framework::mixable0> get_mixable(recommender_base& r) {
+jubatus::util::lang::shared_ptr<framework::mixable0>
+get_mixable(recommender_base& r) {
   framework::mixable_holder holder;
   r.register_mixables_to_holder(holder);
   return holder.get_mixables().front();

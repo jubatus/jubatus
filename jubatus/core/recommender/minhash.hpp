@@ -79,7 +79,8 @@ class minhash : public recommender_base {
 
   static const uint64_t hash_prime;
   uint64_t hash_num_;
-  jubatus::util::lang::shared_ptr<storage::mixable_bit_index_storage> mixable_storage_;
+  jubatus::util::lang::shared_ptr<storage::mixable_bit_index_storage>
+    mixable_storage_;
 };
 
 }  // namespace recommender

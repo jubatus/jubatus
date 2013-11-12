@@ -35,7 +35,9 @@ common::sfv_t make_sfv(const string& repr) {
   common::sfv_t sfv(elems.size());
   for (size_t i = 0; i < elems.size(); ++i) {
     vector<string> parts = split(elems[i], ':');
-    sfv[i] = make_pair(parts[0], jubatus::util::lang::lexical_cast<float>(parts[1]));
+    sfv[i] = make_pair(
+        parts[0],
+        jubatus::util::lang::lexical_cast<float>(parts[1]));
   }
   return sfv;
 }

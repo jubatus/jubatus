@@ -162,7 +162,8 @@ void euclid_lsh::clear() {
   mixable_storage_->get_model()->clear();
 
   // Clear projection cache
-  jubatus::util::data::unordered_map<uint32_t, std::vector<float> >().swap(projection_);
+  jubatus::util::data::unordered_map<uint32_t, std::vector<float> >()
+    .swap(projection_);
 }
 
 void euclid_lsh::clear_row(const string& id) {

@@ -29,6 +29,7 @@
 using std::string;
 using jubatus::util::text::json::json;
 using jubatus::util::lang::shared_ptr;
+using jubatus::util::data::string::starts_with;
 using jubatus::core::common::jsonconfig::config;
 using jubatus::core::common::jsonconfig::config_cast_check;
 
@@ -57,11 +58,11 @@ shared_ptr<recommender_base> recommender_factory::create_recommender(
   } else if (name == "euclid_lsh") {
     return shared_ptr<recommender_base>(
         new euclid_lsh(config_cast_check<euclid_lsh::config>(param)));
-  } else if (jubatus::util::data::string::starts_with(name, NEAREST_NEIGHBOR_PREFIX)) {
+  } else if (starts_with(name, NEAREST_NEIGHBOR_PREFIX)) {
     const std::string nearest_neighbor_method =
         name.substr(NEAREST_NEIGHBOR_PREFIX.size());
-    jubatus::util::lang::shared_ptr<table::column_table> table(new table::column_table);
-    jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+    shared_ptr<table::column_table> table(new table::column_table);
+    shared_ptr<nearest_neighbor::nearest_neighbor_base>
         nearest_neighbor_engine(nearest_neighbor::create_nearest_neighbor(
             nearest_neighbor_method, param, table, id));
     return shared_ptr<recommender_base>(

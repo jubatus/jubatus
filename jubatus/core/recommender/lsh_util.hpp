@@ -38,7 +38,8 @@ void set_bit_vector(
     jubatus::core::storage::bit_vector& bit_vec);
 
 void prod_invert_and_vector(
-    const jubatus::util::data::unordered_map<std::string, std::vector<float> >& matrix,
+    const jubatus::util::data::unordered_map<std::string, std::vector<float> >&
+        matrix,
     const common::sfv_t& vec,
     size_t dim,
     std::vector<float>& ret);

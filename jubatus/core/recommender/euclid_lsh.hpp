@@ -100,7 +100,8 @@ class euclid_lsh : public recommender_base {
 
   void initialize_model();
 
-  jubatus::util::lang::shared_ptr<storage::mixable_lsh_index_storage> mixable_storage_;
+  jubatus::util::lang::shared_ptr<storage::mixable_lsh_index_storage>
+    mixable_storage_;
   float bin_width_;
   uint32_t num_probe_;
 

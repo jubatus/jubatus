@@ -28,6 +28,7 @@
 using std::pair;
 using std::string;
 using std::vector;
+using jubatus::util::lang::shared_ptr;
 using jubatus::core::storage::bit_vector;
 
 namespace jubatus {
@@ -186,8 +187,8 @@ void minhash::register_mixables_to_holder(framework::mixable_holder& holder)
 
 void minhash::initialize_model() {
   mixable_storage_.reset(new storage::mixable_bit_index_storage);
-  mixable_storage_->set_model(jubatus::util::lang::shared_ptr<storage::bit_index_storage>(
-      new storage::bit_index_storage));
+  mixable_storage_->set_model(
+      shared_ptr<storage::bit_index_storage>(new storage::bit_index_storage));
 }
 
 }  // namespace recommender
