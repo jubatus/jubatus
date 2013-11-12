@@ -34,7 +34,8 @@ class lof : public anomaly_base {
   lof();
   explicit lof(
       const lof_storage::config& config,
-      jubatus::util::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
+      jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
+          nn_engine);
   ~lof();
 
   // return anomaly score of query

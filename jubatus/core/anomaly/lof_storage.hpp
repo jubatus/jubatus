@@ -72,12 +72,14 @@ class lof_storage {
 
   lof_storage();
   explicit lof_storage(
-      jubatus::util::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
+      jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
+          nn_engine);
 
   // config contains parameters for the underlying nearest neighbor search
   explicit lof_storage(
       const config& config,
-      jubatus::util::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
+      jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
+          nn_engine);
 
   virtual ~lof_storage();
 
@@ -85,10 +87,12 @@ class lof_storage {
   // calculate lrd of query and lrd values of its neighbors
   float collect_lrds(
       const common::sfv_t& query,
-      jubatus::util::data::unordered_map<std::string, float>& neighbor_lrd) const;
+      jubatus::util::data::unordered_map<std::string, float>&
+          neighbor_lrd) const;
   float collect_lrds(
       const std::string& id,
-      jubatus::util::data::unordered_map<std::string, float>& neighbor_lrd) const;
+      jubatus::util::data::unordered_map<std::string, float>&
+          neighbor_lrd) const;
 
   // For Update
   void remove_row(const std::string& row);
@@ -106,7 +110,8 @@ class lof_storage {
 
   // just for test
   void set_nn_engine(
-      jubatus::util::lang::shared_ptr<core::recommender::recommender_base> nn_engine);
+      jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
+          nn_engine);
 
   void get_diff(lof_table_t& diff) const;
   void set_mixed_and_clear_diff(const lof_table_t& mixed_diff);
@@ -136,13 +141,15 @@ class lof_storage {
 
   float collect_lrds_from_neighbors(
       const std::vector<std::pair<std::string, float> >& neighbors,
-      jubatus::util::data::unordered_map<std::string, float>& neighbor_lrd) const;
+      jubatus::util::data::unordered_map<std::string, float>&
+          neighbor_lrd) const;
 
   void collect_neighbors(
       const std::string& row,
       jubatus::util::data::unordered_set<std::string>& nn) const;
 
-  void update_entries(const jubatus::util::data::unordered_set<std::string>& rows);
+  void update_entries(
+      const jubatus::util::data::unordered_set<std::string>& rows);
   void update_kdist(const std::string& row);
   void update_lrd(const std::string& row);
 
@@ -159,7 +166,8 @@ class lof_storage {
   uint32_t neighbor_num_;  // k of k-nn
   uint32_t reverse_nn_num_;  // ck of ck-nn as an approx. of k-reverse-nn
 
-  jubatus::util::lang::shared_ptr<core::recommender::recommender_base> nn_engine_;
+  jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
+    nn_engine_;
 };
 
 typedef framework::delegating_mixable<lof_storage, lof_table_t>

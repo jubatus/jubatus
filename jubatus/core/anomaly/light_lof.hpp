@@ -92,7 +92,8 @@ class light_lof : public anomaly_base {
   void collect_neighbors(
       const std::string& query,
       jubatus::util::data::unordered_set<uint64_t>& neighbors) const;
-  void update_entries(const jubatus::util::data::unordered_set<uint64_t>& neighbors);
+  void update_entries(
+      const jubatus::util::data::unordered_set<uint64_t>& neighbors);
 
   // Gets parameters of given row. If row does not exist, it throws an
   // exception.
@@ -102,7 +103,8 @@ class light_lof : public anomaly_base {
       nearest_neighbor_engine_;
 
   // Mixable of score table that contains k-dists and LRDs.
-  jubatus::util::lang::shared_ptr<driver::mixable_versioned_table> mixable_scores_;
+  jubatus::util::lang::shared_ptr<driver::mixable_versioned_table>
+      mixable_scores_;
 
   config config_;
   std::string my_id_;
