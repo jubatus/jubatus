@@ -15,8 +15,8 @@ def build(bld):
     source = [
         'column_table.cpp',
     ],
-    target = 'column_table',
-    name = 'column_table',
+    target = 'jubatus_column_table',
+    name = 'jubatus_column_table',
     use = 'jubatus_util'+libassert
   )
 
@@ -26,7 +26,7 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'MSGPACK jubatus_util column_table jubacommon'+libassert)
+      use = 'MSGPACK jubatus_util jubatus_column_table jubacommon'+libassert)
 
   tests = [
     'column_table_test.cpp',

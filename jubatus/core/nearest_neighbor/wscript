@@ -33,7 +33,7 @@ def build(bld):
         'nearest_neighbor_base.cpp',
         'nearest_neighbor_factory.cpp',
         ],
-    use = 'jubatus_util jubastorage column_table jubatus_mixables')
+    use = 'jubatus_util jubastorage jubatus_column_table jubatus_mixables')
 
   bld.program(
     target = 'nearest_neighbor_base_test',
@@ -43,7 +43,7 @@ def build(bld):
       'bit_vector_nearest_neighbor_base_test.cpp',
       'nearest_neighbor_test.cpp',
     ],
-    use = 'nearest_neighbor column_table')
+    use = 'nearest_neighbor jubatus_column_table')
 
   bld.install_files('${PREFIX}/include/jubatus/core/nearest_neighbor/', [
       'bit_vector_nearest_neighbor_base.hpp',

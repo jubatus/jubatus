@@ -17,7 +17,7 @@ def build(bld):
       ],
     target = 'jubatus_mixables',
     includes = '.',
-    use = 'jubatus_util MSGPACK jubastorage column_table'+libassert
+    use = 'jubatus_util MSGPACK jubastorage jubatus_column_table'+libassert
     )
 
   source = [
