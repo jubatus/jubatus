@@ -19,20 +19,6 @@ def build(bld):
     ],
     target = 'jubatus_nearest_neighbor',
     name = 'jubatus_nearest_neighbor',
-    use = 'jubatus_util jubatus_mixables')
-
-  bld.shlib(
-    target = 'nearest_neighbor',
-    source = [
-        'bit_vector_nearest_neighbor_base.cpp',
-        'bit_vector_ranking.cpp',
-        'euclid_lsh.cpp',
-        'lsh.cpp',
-        'lsh_function.cpp',
-        'minhash.cpp',
-        'nearest_neighbor_base.cpp',
-        'nearest_neighbor_factory.cpp',
-        ],
     use = 'jubatus_util jubastorage jubatus_column_table jubatus_mixables')
 
   bld.program(
@@ -43,7 +29,7 @@ def build(bld):
       'bit_vector_nearest_neighbor_base_test.cpp',
       'nearest_neighbor_test.cpp',
     ],
-    use = 'nearest_neighbor jubatus_column_table')
+    use = 'jubatus_nearest_neighbor jubatus_column_table')
 
   bld.install_files('${PREFIX}/include/jubatus/core/nearest_neighbor/', [
       'bit_vector_nearest_neighbor_base.hpp',

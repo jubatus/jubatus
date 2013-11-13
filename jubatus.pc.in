@@ -8,4 +8,4 @@ Description: Framework and Library for Distributed Online Machine Learning
 Version: @VERSION@
 Requires: libglog >= 0.3.3
 Cflags: -I${includedir}
-Libs: -L${libdir} -ljubaserv_framework -ljubaserv_mixer -ljubaserv_common -ljubaserv_common_mprpc -ljubatus_driver -ljubaconverter -ljubatus_column_table -ljubatus_classifier -ljubatus_stat -ljubatus_graph -ljubatus_anomaly -ljubatus_recommender -ljubatus_regression -ljubastorage -ljubacommon -lmsgpack -ljubatus_mpio -ljubatus_msgpack-rpc
+Libs: -L${libdir} -ljubaserv_framework -ljubaserv_mixer -ljubaserv_common -ljubaserv_common_mprpc -ljubatus_driver -ljubaconverter -ljubatus_column_table -ljubatus_classifier -ljubatus_stat -ljubatus_graph -ljubatus_anomaly -ljubatus_recommender -ljubatus_regression -ljubatus_nearest_neighbor -ljubastorage -ljubacommon -lmsgpack -ljubatus_mpio -ljubatus_msgpack-rpc
