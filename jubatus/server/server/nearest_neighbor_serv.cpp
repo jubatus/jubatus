@@ -113,7 +113,7 @@ std::string nearest_neighbor_serv::get_config() const {
   return config_;
 }
 
-int nearest_neighbor_serv::clear() {
+bool nearest_neighbor_serv::clear() {
   DLOG(INFO) << __func__;
   check_set_config();
   clear_row_cnt_ = 0;
@@ -121,7 +121,7 @@ int nearest_neighbor_serv::clear() {
   build_cnt_ = 0;
   mix_cnt_ = 0;
   nearest_neighbor_->clear();
-  return 0;
+  return true;
 }
 
 int nearest_neighbor_serv::set_row(const std::string& id, const datum& d) {
