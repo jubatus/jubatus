@@ -29,33 +29,36 @@ namespace clustering {
 template <typename EventType, typename EventData>
 class event_dispatcher {
   typedef jubatus::util::lang::function<void (const EventData&)> callback_t;
+  typedef std::vector<callback_t> callbacks_t;
+  typedef std::map<EventType, callbacks_t> event_type_table;
+
  public:
   virtual ~event_dispatcher() {}
 
   void add_event_listener(const EventType& type, callback_t callback);
 
  protected:
-  void dispatch(const EventType& type, const EventData& data);
-  std::map<EventType, std::vector<callback_t> > events_;
+  void dispatch(const EventType& type, const EventData& data) const;
+  event_type_table events_;
 };
 
 template <typename EventType, typename EventData>
 void event_dispatcher<EventType, EventData>::add_event_listener(
     const EventType& type,
-    jubatus::util::lang::function<void(const EventData&)> callback) {
+    callback_t callback) {
   events_[type].push_back(callback);
 }
 
 template <typename EventType, typename EventData>
 void event_dispatcher<EventType, EventData>::dispatch(
     const EventType& type,
-    const EventData& data) {
-  if (events_.find(type) == events_.end()) {
+    const EventData& data) const {
+  typename event_type_table::const_iterator ev = events_.find(type);
+  if (ev == events_.end()) {
     return;
   }
-  typedef typename std::vector<jubatus::util::lang::function<void(const EventData&)> >  // NOLINT
-    ::const_iterator iter;
-  for (iter it = events_[type].begin(); it != events_[type].end(); ++it) {
+  typename callbacks_t::const_iterator it;
+  for (it = ev->second.begin(); it != ev->second.end(); ++it) {
     (*it)(data);
   }
 }
