@@ -124,13 +124,13 @@ bool nearest_neighbor_serv::clear() {
   return true;
 }
 
-int nearest_neighbor_serv::set_row(const std::string& id, const datum& d) {
+bool nearest_neighbor_serv::set_row(const std::string& id, const datum& d) {
   // DLOG(INFO) << __func__ << " " << id;
   check_set_config();
 
   ++update_row_cnt_;
   nearest_neighbor_->set_row(id, d);
-  return 0;
+  return true;
 }
 
 neighbor_result nearest_neighbor_serv::neighbor_row_from_id(
