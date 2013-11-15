@@ -35,9 +35,9 @@
 #include "jubatus/util/util-config.h"
 
 #if HAVE_UNORDERED_MAP
-#include <utility>
+#include <functional>
 #elif HAVE_TR1_UNORDERED_MAP
-#include <tr1/unordered_map>
+#include <tr1/functional>
 #else
 #error "There is no hash implementation."
 #endif
