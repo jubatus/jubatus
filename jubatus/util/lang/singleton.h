@@ -46,7 +46,7 @@ public:
     // this may be slow.
     // it may be rewrite by using 'thread-safe Double Checked Locking'.
     using jubatus::util::concurrent::scoped_lock;
-    synchronized(m){
+    juba_synchronized(m){
       if (!p)
         p=new T();
       return *p;
