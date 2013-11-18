@@ -38,7 +38,7 @@ namespace {
 
 struct clustering_serv_config {
   std::string method;
-  jubatus::util::data::optional<jubatus::util::text::json::json> parameter;
+  jubatus::util::data::optional<core::common::jsonconfig::config> parameter;
   core::fv_converter::converter_config converter;
 
   template<typename Ar>
@@ -80,7 +80,7 @@ void clustering_serv::set_config(const std::string& config) {
 
   core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::common::jsonconfig::config(*conf.parameter);
+    param = *conf.parameter;
   }
 
   const std::string name =
