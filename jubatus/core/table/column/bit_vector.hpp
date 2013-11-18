@@ -422,8 +422,9 @@ struct bit_vector_base {
   template <class Ar>
   void serialize(Ar& ar) {
     // TODO(beam2d): Serializing a pointer is dangerous.
-    ar & MEMBER(bits_)
-      & MEMBER(bit_num_);
+    ar
+        & JUBA_MEMBER(bits_)
+        & JUBA_MEMBER(bit_num_);
   }
 
   bit_base* bits_;

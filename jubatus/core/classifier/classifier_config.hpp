@@ -32,7 +32,7 @@ struct classifier_config {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & NAMED_MEMBER("regularization_weight", C);
+    ar & JUBA_NAMED_MEMBER("regularization_weight", C);
   }
 };
 

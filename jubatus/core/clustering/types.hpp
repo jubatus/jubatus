@@ -48,12 +48,12 @@ struct weighted_point {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(weight)
-        & MEMBER(data)
-        & MEMBER(original.num_values_)
-        & MEMBER(original.string_values_)
-        & MEMBER(free_double)
-        & MEMBER(free_long);
+    ar & JUBA_MEMBER(weight)
+        & JUBA_MEMBER(data)
+        & JUBA_MEMBER(original.num_values_)
+        & JUBA_MEMBER(original.string_values_)
+        & JUBA_MEMBER(free_double)
+        & JUBA_MEMBER(free_long);
   }
 };
 

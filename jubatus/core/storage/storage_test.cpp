@@ -55,7 +55,7 @@ class stub_storage : public storage_base {
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(data_);
+    ar & JUBA_MEMBER(data_);
   }
 
  public:

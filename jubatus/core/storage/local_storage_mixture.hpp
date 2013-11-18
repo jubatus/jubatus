@@ -82,7 +82,7 @@ class local_storage_mixture : public storage_base {
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(tbl_) & MEMBER(class2id_) & MEMBER(tbl_diff_);
+    ar & JUBA_MEMBER(tbl_) & JUBA_MEMBER(class2id_) & JUBA_MEMBER(tbl_diff_);
   }
 
   bool get_internal(const std::string& feature, id_feature_val3_t& ret) const;

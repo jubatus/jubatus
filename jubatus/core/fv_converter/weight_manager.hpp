@@ -55,7 +55,7 @@ class weight_manager {
 
   template<class Archiver>
   void serialize(Archiver& ar) {
-    ar & MEMBER(diff_weights_) & MEMBER(master_weights_);
+    ar & JUBA_MEMBER(diff_weights_) & JUBA_MEMBER(master_weights_);
   }
 
   MSGPACK_DEFINE(diff_weights_, master_weights_);

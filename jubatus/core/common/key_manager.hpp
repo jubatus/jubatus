@@ -66,7 +66,7 @@ class key_manager {
   friend class jubatus::util::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(key2id_) & MEMBER(id2key_);
+    ar & JUBA_MEMBER(key2id_) & JUBA_MEMBER(id2key_);
   }
 
   jubatus::util::data::unordered_map<std::string, uint64_t> key2id_;

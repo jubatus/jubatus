@@ -59,7 +59,7 @@ class sparse_matrix_storage {
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(tbl_) & MEMBER(column2id_);
+    ar & JUBA_MEMBER(tbl_) & JUBA_MEMBER(column2id_);
   }
 
   tbl_t tbl_;

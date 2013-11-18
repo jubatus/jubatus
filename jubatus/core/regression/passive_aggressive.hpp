@@ -37,8 +37,8 @@ class passive_aggressive : public regression_base {
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & NAMED_MEMBER("regularization_weight", C)
-          & NAMED_MEMBER("sensitivity", epsilon);
+      ar & JUBA_NAMED_MEMBER("regularization_weight", C)
+          & JUBA_NAMED_MEMBER("sensitivity", epsilon);
     }
   };
 

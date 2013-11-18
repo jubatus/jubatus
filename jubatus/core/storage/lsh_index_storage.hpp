@@ -43,7 +43,7 @@ struct lsh_entry {
 
   template <typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(lsh_hash) & MEMBER(simhash_bv) & MEMBER(norm);
+    ar & JUBA_MEMBER(lsh_hash) & JUBA_MEMBER(simhash_bv) & JUBA_MEMBER(norm);
   }
 };
 
@@ -103,9 +103,14 @@ class lsh_index_storage {
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(master_table_) & MEMBER(master_table_diff_) & MEMBER(lsh_table_)
-        & MEMBER(lsh_table_diff_) & MEMBER(shift_) & MEMBER(table_num_)
-        & MEMBER(key_manager_);
+    ar
+        & JUBA_MEMBER(master_table_)
+        & JUBA_MEMBER(master_table_diff_)
+        & JUBA_MEMBER(lsh_table_)
+        & JUBA_MEMBER(lsh_table_diff_)
+        & JUBA_MEMBER(shift_)
+        & JUBA_MEMBER(table_num_)
+        & JUBA_MEMBER(key_manager_);
   }
 
   lsh_master_table_t::iterator remove_and_get_row(const std::string& row);

@@ -184,8 +184,9 @@ class column_type {
   template <class Ar>
   void serialize(Ar& ar) {
     int type = type_;
-    ar & NAMED_MEMBER("type_", type)
-        & MEMBER(bit_vector_length_);
+    ar
+        & JUBA_NAMED_MEMBER("type_", type)
+        & JUBA_MEMBER(bit_vector_length_);
     type_ = static_cast<type_name>(type);
   }
   type_name type_;

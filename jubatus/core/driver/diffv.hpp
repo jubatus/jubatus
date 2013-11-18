@@ -47,7 +47,7 @@ struct diffv {
 
   template<class Archiver>
   void serialize(Archiver& ar) {
-    ar & MEMBER(count) & MEMBER(v);
+    ar & JUBA_MEMBER(count) & JUBA_MEMBER(v);
   }
 };
 

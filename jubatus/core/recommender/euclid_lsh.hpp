@@ -55,8 +55,13 @@ class euclid_lsh : public recommender_base {
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(hash_num) & MEMBER(table_num) & MEMBER(bin_width) &
-        MEMBER(probe_num) & MEMBER(seed) & MEMBER(retain_projection);
+      ar
+          & JUBA_MEMBER(hash_num)
+          & JUBA_MEMBER(table_num)
+          & JUBA_MEMBER(bin_width)
+          & JUBA_MEMBER(probe_num)
+          & JUBA_MEMBER(seed)
+          & JUBA_MEMBER(retain_projection);
     }
   };
 

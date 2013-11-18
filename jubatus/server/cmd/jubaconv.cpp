@@ -43,7 +43,7 @@ struct server_config {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(converter);
+    ar & JUBA_MEMBER(converter);
   }
 };
 

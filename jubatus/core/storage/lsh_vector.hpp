@@ -59,7 +59,7 @@ class lsh_vector {
 
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(values_);
+    ar & JUBA_MEMBER(values_);
   }
 
   std::vector<int> values_;

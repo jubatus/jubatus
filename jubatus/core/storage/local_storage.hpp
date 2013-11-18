@@ -88,7 +88,7 @@ class local_storage : public storage_base {
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(tbl_) & MEMBER(class2id_);
+    ar & JUBA_MEMBER(tbl_) & JUBA_MEMBER(class2id_);
   }
 };
 

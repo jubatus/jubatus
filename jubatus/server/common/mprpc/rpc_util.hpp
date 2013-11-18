@@ -55,7 +55,7 @@ struct result {
   MSGPACK_DEFINE(success, retval, error);
   template<class Archiver>
   void serialize(Archiver& ar) {
-    ar & MEMBER(success) & MEMBER(retval) & MEMBER(error);
+    ar & JUBA_MEMBER(success) & JUBA_MEMBER(retval) & JUBA_MEMBER(error);
   }
 };
 

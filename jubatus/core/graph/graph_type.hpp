@@ -52,7 +52,7 @@ struct eigen_vector_info {
   friend class jubatus::util::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(score) & MEMBER(out_degree_num);
+    ar & JUBA_MEMBER(score) & JUBA_MEMBER(out_degree_num);
   }
 };
 
@@ -70,7 +70,7 @@ struct node_info {
 
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(property) & MEMBER(in_edges) & MEMBER(out_edges);
+    ar & JUBA_MEMBER(property) & JUBA_MEMBER(in_edges) & JUBA_MEMBER(out_edges);
   }
 };
 
@@ -85,7 +85,7 @@ struct edge_info {
 
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(p) & MEMBER(src) & MEMBER(tgt);
+    ar & JUBA_MEMBER(p) & JUBA_MEMBER(src) & JUBA_MEMBER(tgt);
   }
 };
 
@@ -104,7 +104,7 @@ struct preset_query {
 
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(edge_query) & MEMBER(node_query);
+    ar & JUBA_MEMBER(edge_query) & JUBA_MEMBER(node_query);
   }
 };
 
@@ -121,7 +121,7 @@ struct shortest_path_tree {
   friend class jubatus::util::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(landmark) & MEMBER(from_root) & MEMBER(to_root);
+    ar & JUBA_MEMBER(landmark) & JUBA_MEMBER(from_root) & JUBA_MEMBER(to_root);
   }
 };
 

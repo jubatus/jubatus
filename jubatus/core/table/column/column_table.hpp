@@ -426,11 +426,12 @@ class column_table {
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(keys_)
-      & MEMBER(tuples_)
-      & MEMBER(versions_)
-      & MEMBER(columns_)
-      & MEMBER(clock_);
+    ar
+        & JUBA_MEMBER(keys_)
+        & JUBA_MEMBER(tuples_)
+        & JUBA_MEMBER(versions_)
+        & JUBA_MEMBER(columns_)
+        & JUBA_MEMBER(clock_);
   }
 };
 
