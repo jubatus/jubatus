@@ -116,7 +116,7 @@ struct val2_t {
   friend class jubatus::util::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(v1) & MEMBER(v2);
+    ar & JUBA_MEMBER(v1) & JUBA_MEMBER(v2);
   }
 };
 
@@ -210,7 +210,7 @@ struct val3_t {
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(v1) & MEMBER(v2) & MEMBER(v3);
+    ar & JUBA_MEMBER(v1) & JUBA_MEMBER(v2) & JUBA_MEMBER(v3);
   }
 };
 

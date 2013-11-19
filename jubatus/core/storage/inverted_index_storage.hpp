@@ -45,7 +45,7 @@ class inverted_index_storage {
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(inv) & MEMBER(column2norm);
+      ar & JUBA_MEMBER(inv) & JUBA_MEMBER(column2norm);
     }
   };
 
@@ -86,8 +86,12 @@ class inverted_index_storage {
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(inv_) & MEMBER(inv_diff_) & MEMBER(column2norm_)
-      & MEMBER(column2norm_diff_) & MEMBER(column2id_);
+    ar
+        & JUBA_MEMBER(inv_)
+        & JUBA_MEMBER(inv_diff_)
+        & JUBA_MEMBER(column2norm_)
+        & JUBA_MEMBER(column2norm_diff_)
+        & JUBA_MEMBER(column2id_);
   }
 
   void add_inp_scores(

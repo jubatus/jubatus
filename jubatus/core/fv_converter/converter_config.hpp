@@ -44,11 +44,11 @@ struct string_rule {
   template<class Archive>
   void serialize(Archive& ar) {
     ar
-        & MEMBER(key)
-        & MEMBER(except)
-        & MEMBER(type)
-        & MEMBER(sample_weight)
-        & MEMBER(global_weight);
+        & JUBA_MEMBER(key)
+        & JUBA_MEMBER(except)
+        & JUBA_MEMBER(type)
+        & JUBA_MEMBER(sample_weight)
+        & JUBA_MEMBER(global_weight);
   }
 };
 
@@ -61,7 +61,11 @@ struct filter_rule {
   friend class jubatus::util::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key) & MEMBER(except) & MEMBER(type) & MEMBER(suffix);
+    ar
+        & JUBA_MEMBER(key)
+        & JUBA_MEMBER(except)
+        & JUBA_MEMBER(type)
+        & JUBA_MEMBER(suffix);
   }
 };
 
@@ -73,7 +77,7 @@ struct num_rule {
   friend class jubatus::util::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key) & MEMBER(except) & MEMBER(type);
+    ar & JUBA_MEMBER(key) & JUBA_MEMBER(except) & JUBA_MEMBER(type);
   }
 };
 
@@ -85,7 +89,7 @@ struct binary_rule {
   friend class jubatus::util::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key) & MEMBER(type);
+    ar & JUBA_MEMBER(key) & JUBA_MEMBER(type);
   }
 };
 
@@ -112,11 +116,18 @@ struct converter_config {
   friend class jubatus::util::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(string_filter_types) & MEMBER(string_filter_rules)
-        & MEMBER(num_filter_types) & MEMBER(num_filter_rules)
-        & MEMBER(string_types) & MEMBER(string_rules) & MEMBER(num_types)
-        & MEMBER(num_rules) & MEMBER(binary_types) & MEMBER(binary_rules)
-        & MEMBER(hash_max_size);
+    ar
+        & JUBA_MEMBER(string_filter_types)
+        & JUBA_MEMBER(string_filter_rules)
+        & JUBA_MEMBER(num_filter_types)
+        & JUBA_MEMBER(num_filter_rules)
+        & JUBA_MEMBER(string_types)
+        & JUBA_MEMBER(string_rules)
+        & JUBA_MEMBER(num_types)
+        & JUBA_MEMBER(num_rules)
+        & JUBA_MEMBER(binary_types)
+        & JUBA_MEMBER(binary_rules)
+        & JUBA_MEMBER(hash_max_size);
   }
 };
 

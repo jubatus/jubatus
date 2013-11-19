@@ -207,14 +207,14 @@ class typed_column : public detail::abstract_column_base {
   template <class Ar>
   void serialize(Ar& ar) {
     column_type my_type = type();
-    ar & NAMED_MEMBER("my_type_", my_type);
+    ar & JUBA_NAMED_MEMBER("my_type_", my_type);
     if (my_type != type()) {
       throw type_unmatch_exception(
         "column: invalid type in serialize(): "
         "expected: " + type().type_as_string() + ", "
         "actual: " + my_type.type_as_string());
     }
-    ar & MEMBER(array_);
+    ar & JUBA_MEMBER(array_);
   }
   std::vector<T> array_;
 };
@@ -328,8 +328,8 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
   template <class Ar>
   void serialize(Ar& ar) {
     column_type my_type = type();
-    ar & NAMED_MEMBER("my_type_", my_type);
-    ar & MEMBER(array_);
+    ar & JUBA_NAMED_MEMBER("my_type_", my_type);
+    ar & JUBA_MEMBER(array_);
   }
   std::vector<uint64_t> array_;
 
@@ -587,11 +587,11 @@ class abstract_column {
 
     if (!base_) {
       JUBATUS_ASSERT(ar.is_read);
-      ar & NAMED_MEMBER("my_type_", type);
+      ar & JUBA_NAMED_MEMBER("my_type_", type);
       abstract_column(type).swap(*this);  // NOLINT
     } else {
       type = base_->type();
-      ar & NAMED_MEMBER("my_type_", type);
+      ar & JUBA_NAMED_MEMBER("my_type_", type);
       if (type != base_->type()) {
         throw type_unmatch_exception(
           "column: invalid type in serialize(): "

@@ -85,7 +85,7 @@ class counter {
 
   template<class Archiver>
   void serialize(Archiver& ar) {
-    ar & MEMBER(data_);
+    ar & JUBA_MEMBER(data_);
   }
 
  private:

@@ -92,11 +92,11 @@ private:
 } // jubatus
 
 #ifdef __GNUG__
-#define synchronized(m) \
-  if (const jubatus::util::concurrent::scoped_lock& lock_93259F69_879A_4BB1_9B8C_3AF8923289F8 __attribute__((__unused__)) = jubatus::util::concurrent::scoped_lock(m))
+#define juba_synchronized(m) \
+  if (const jubatus::util::concurrent::scoped_lock& lock_3DDA0B71_8017_4CA1_AF8C_15B904316B58 __attribute__((__unused__)) = jubatus::util::concurrent::scoped_lock(m))
 #else
-#define synchronized(m) \
-  if (const jubatus::util::concurrent::scoped_lock& lock_93259F69_879A_4BB1_9B8C_3AF8923289F8 = jubatus::util::concurrent::scoped_lock(m))
+#define juba_synchronized(m) \
+  if (const jubatus::util::concurrent::scoped_lock& lock_3DDA0B71_8017_4CA1_AF8C_15B904316B58 = jubatus::util::concurrent::scoped_lock(m))
 #endif
 
 #endif // #ifndef JUBATUS_UTIL_CONCURRENT_LOCK_H_

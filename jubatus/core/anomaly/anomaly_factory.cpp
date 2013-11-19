@@ -46,10 +46,10 @@ struct lof_config {
   template <typename Ar>
   void serialize(Ar& ar) {
     ar
-        & MEMBER(nearest_neighbor_num)
-        & MEMBER(reverse_nearest_neighbor_num)
-        & MEMBER(method)
-        & MEMBER(parameter);
+        & JUBA_MEMBER(nearest_neighbor_num)
+        & JUBA_MEMBER(reverse_nearest_neighbor_num)
+        & JUBA_MEMBER(method)
+        & JUBA_MEMBER(parameter);
   }
 };
 }  // namespace

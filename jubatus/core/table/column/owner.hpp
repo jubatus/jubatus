@@ -49,7 +49,7 @@ struct owner {
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(name);
+    ar & JUBA_MEMBER(name);
   }
 };
 

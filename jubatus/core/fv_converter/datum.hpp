@@ -45,9 +45,9 @@ struct datum {
     std::map<std::string, std::string> bv;
     if (ar.is_read) {
       ar
-          & NAMED_MEMBER("string_values", sv)
-          & NAMED_MEMBER("num_values", nv)
-          & NAMED_MEMBER("binary_values", bv);
+          & JUBA_NAMED_MEMBER("string_values", sv)
+          & JUBA_NAMED_MEMBER("num_values", nv)
+          & JUBA_NAMED_MEMBER("binary_values", bv);
       string_values_ = sv_t(sv.begin(), sv.end());
       num_values_ = nv_t(nv.begin(), nv.end());
       binary_values_ = sv_t(bv.begin(), bv.end());
@@ -56,9 +56,9 @@ struct datum {
       nv.insert(num_values_.begin(), num_values_.end());
       bv.insert(binary_values_.begin(), binary_values_.end());
       ar
-          & NAMED_MEMBER("string_values", sv)
-          & NAMED_MEMBER("num_values", nv)
-          & NAMED_MEMBER("binary_values", bv);
+          & JUBA_NAMED_MEMBER("string_values", sv)
+          & JUBA_NAMED_MEMBER("num_values", nv)
+          & JUBA_NAMED_MEMBER("binary_values", bv);
     }
   }
 };

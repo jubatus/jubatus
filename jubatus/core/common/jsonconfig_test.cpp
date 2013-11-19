@@ -270,7 +270,7 @@ struct opt1 {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(abc) & MEMBER(def);
+    ar & JUBA_MEMBER(abc) & JUBA_MEMBER(def);
   }
 };
 
@@ -314,13 +314,13 @@ struct opt2 {
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(a) & MEMBER(b);
+      ar & JUBA_MEMBER(a) & JUBA_MEMBER(b);
     }
   } test;
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(abc) & MEMBER(def) & MEMBER(test);
+    ar & JUBA_MEMBER(abc) & JUBA_MEMBER(def) & JUBA_MEMBER(test);
   }
 };
 
@@ -342,7 +342,7 @@ struct opt3 {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(abc) & MEMBER(conf);
+    ar & JUBA_MEMBER(abc) & JUBA_MEMBER(conf);
   }
 };
 
@@ -362,7 +362,7 @@ struct opt4 {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(abc) & MEMBER(conf);
+    ar & JUBA_MEMBER(abc) & JUBA_MEMBER(conf);
   }
 };
 
@@ -397,8 +397,13 @@ struct Person {
 
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(name) & MEMBER(height) & MEMBER(age) & MEMBER(attributes)
-        & MEMBER(sport) & MEMBER(hobby);
+    ar
+        & JUBA_MEMBER(name)
+        & JUBA_MEMBER(height)
+        & JUBA_MEMBER(age)
+        & JUBA_MEMBER(attributes)
+        & JUBA_MEMBER(sport)
+        & JUBA_MEMBER(hobby);
   }
 };
 
@@ -423,7 +428,7 @@ struct server_conf {
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(host) & MEMBER(port);
+      ar & JUBA_MEMBER(host) & JUBA_MEMBER(port);
     }
   } web_server;
 
@@ -431,7 +436,7 @@ struct server_conf {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(web_server) & MEMBER(users);
+    ar & JUBA_MEMBER(web_server) & JUBA_MEMBER(users);
   }
 };
 

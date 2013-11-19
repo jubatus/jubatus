@@ -42,7 +42,7 @@ struct stat_serv_config {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(window_size);
+    ar & JUBA_MEMBER(window_size);
   }
 };
 

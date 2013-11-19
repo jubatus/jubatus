@@ -60,7 +60,7 @@ struct example1{
       
       template <class Archive>
       void serialize(Archive &ar){
-        ar & MEMBER(Url) & MEMBER(Height) & MEMBER(Width);
+        ar & JUBA_MEMBER(Url) & JUBA_MEMBER(Height) & JUBA_MEMBER(Width);
       }
 
       bool operator==(const tn &r){
@@ -76,8 +76,8 @@ struct example1{
 
     template <class Archive>
       void serialize(Archive &ar){
-        ar & MEMBER(Width) & MEMBER(Height) & MEMBER(Title) 
-          & MEMBER(Thumbnail) & MEMBER(IDs);
+        ar & JUBA_MEMBER(Width) & JUBA_MEMBER(Height) & JUBA_MEMBER(Title) 
+          & JUBA_MEMBER(Thumbnail) & JUBA_MEMBER(IDs);
       }
 
     bool operator==(const img &r){
@@ -92,7 +92,7 @@ struct example1{
 
   template <class Archive>
     void serialize(Archive &ar){
-      ar & MEMBER(Image);
+      ar & JUBA_MEMBER(Image);
     }
 
   bool operator==(const example1 &r){
@@ -113,14 +113,14 @@ struct example2{
   template <class Archive>
   void serialize(Archive &ar){
     ar
-      & MEMBER(precision)
-      & MEMBER(Latitude)
-      & MEMBER(Longitude)
-      & MEMBER(Address)
-      & MEMBER(City)
-      & MEMBER(State)
-      & MEMBER(Zip)
-      & MEMBER(Country);
+      & JUBA_MEMBER(precision)
+      & JUBA_MEMBER(Latitude)
+      & JUBA_MEMBER(Longitude)
+      & JUBA_MEMBER(Address)
+      & JUBA_MEMBER(City)
+      & JUBA_MEMBER(State)
+      & JUBA_MEMBER(Zip)
+      & JUBA_MEMBER(Country);
   }
 
   bool operator==(const example2 &r) const{
@@ -148,11 +148,11 @@ struct example3{
   template <class Archive>
   void serialize(Archive &ar){
     ar
-      & MEMBER(a)
-      & MEMBER(b)
-      & MEMBER(c)
-      & MEMBER(d)
-      & MEMBER(e);
+      & JUBA_MEMBER(a)
+      & JUBA_MEMBER(b)
+      & JUBA_MEMBER(c)
+      & JUBA_MEMBER(d)
+      & JUBA_MEMBER(e);
   }
 
   bool operator==(const example3 &r) const{
@@ -923,7 +923,7 @@ struct opt1{
 
   template <class Archive>
   void serialize(Archive &ar){
-    ar & MEMBER(abc) & MEMBER(def);
+    ar & JUBA_MEMBER(abc) & JUBA_MEMBER(def);
   }
 };
 

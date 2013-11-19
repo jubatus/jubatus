@@ -37,12 +37,12 @@ struct storage_config {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(method)
-        & MEMBER(bucket_size)
-        & MEMBER(bucket_length)
-        & MEMBER(compressed_bucket_size)
-        & MEMBER(forgetting_factor)
-        & MEMBER(forgetting_threshold);
+    ar & JUBA_MEMBER(method)
+        & JUBA_MEMBER(bucket_size)
+        & JUBA_MEMBER(bucket_length)
+        & JUBA_MEMBER(compressed_bucket_size)
+        & JUBA_MEMBER(forgetting_factor)
+        & JUBA_MEMBER(forgetting_threshold);
   }
 };
 
@@ -81,14 +81,14 @@ struct clustering_config {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(k)
-        & MEMBER(compressor_method)
-        & MEMBER(bucket_size)
-        & MEMBER(bucket_length)
-        & MEMBER(bicriteria_base_size)
-        & MEMBER(compressed_bucket_size)
-        & MEMBER(forgetting_factor)
-        & MEMBER(forgetting_threshold);
+    ar & JUBA_MEMBER(k)
+        & JUBA_MEMBER(compressor_method)
+        & JUBA_MEMBER(bucket_size)
+        & JUBA_MEMBER(bucket_length)
+        & JUBA_MEMBER(bicriteria_base_size)
+        & JUBA_MEMBER(compressed_bucket_size)
+        & JUBA_MEMBER(forgetting_factor)
+        & JUBA_MEMBER(forgetting_threshold);
   }
 };
 

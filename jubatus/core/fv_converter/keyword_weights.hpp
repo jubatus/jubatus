@@ -53,8 +53,10 @@ class keyword_weights {
   MSGPACK_DEFINE(document_count_, document_frequencies_, weights_);
   template<class Archiver>
   void serialize(Archiver& ar) {
-    ar & MEMBER(document_count_) & MEMBER(document_frequencies_)
-        & MEMBER(weights_);
+    ar
+        & JUBA_MEMBER(document_count_)
+        & JUBA_MEMBER(document_frequencies_)
+        & JUBA_MEMBER(weights_);
   }
 
  private:

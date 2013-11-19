@@ -71,7 +71,7 @@ class recommender_mock_storage {
   friend class jubatus::util::data::serialization::access;
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(similar_relation_) & MEMBER(neighbor_relation_);
+    ar & JUBA_MEMBER(similar_relation_) & JUBA_MEMBER(neighbor_relation_);
   }
 
   static void get_relation(

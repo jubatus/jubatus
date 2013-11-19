@@ -47,7 +47,7 @@ struct lof_entry {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(kdist) & MEMBER(lrd);
+    ar & JUBA_MEMBER(kdist) & JUBA_MEMBER(lrd);
   }
 };
 
@@ -66,7 +66,9 @@ class lof_storage {
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(nearest_neighbor_num) & MEMBER(reverse_nearest_neighbor_num);
+      ar
+          & JUBA_MEMBER(nearest_neighbor_num)
+          & JUBA_MEMBER(reverse_nearest_neighbor_num);
     }
   };
 
@@ -135,8 +137,8 @@ class lof_storage {
 
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(lof_table_) & MEMBER(lof_table_diff_);
-    ar & MEMBER(neighbor_num_) & MEMBER(reverse_nn_num_);
+    ar & JUBA_MEMBER(lof_table_) & JUBA_MEMBER(lof_table_diff_);
+    ar & JUBA_MEMBER(neighbor_num_) & JUBA_MEMBER(reverse_nn_num_);
   }
 
   float collect_lrds_from_neighbors(

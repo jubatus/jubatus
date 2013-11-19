@@ -74,7 +74,7 @@ class bit_vector {
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(bits_) & MEMBER(bit_num_);
+    ar & JUBA_MEMBER(bits_) & JUBA_MEMBER(bit_num_);
   }
 
   std::vector<uint64_t> bits_;

@@ -52,7 +52,7 @@ class graph_wo_index
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(eigen_vector_query) & MEMBER(spt_query);
+      ar & JUBA_MEMBER(eigen_vector_query) & JUBA_MEMBER(spt_query);
     }
   };
 
@@ -67,7 +67,9 @@ class graph_wo_index
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & NAMED_MEMBER("damping_factor", alpha) & MEMBER(landmark_num);
+      ar
+          & JUBA_NAMED_MEMBER("damping_factor", alpha)
+          & JUBA_MEMBER(landmark_num);
     }
   };
 

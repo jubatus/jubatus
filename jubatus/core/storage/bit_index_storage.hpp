@@ -64,7 +64,7 @@ class bit_index_storage {
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(bitvals_) & MEMBER(bitvals_diff_);
+    ar & JUBA_MEMBER(bitvals_) & JUBA_MEMBER(bitvals_diff_);
   }
 
   bit_table_t bitvals_;
