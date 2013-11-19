@@ -16,15 +16,12 @@
 
 #include "gmm_clustering_method.hpp"
 
-#include <iostream>
 #include <utility>
 #include <vector>
 #include "../common/exception.hpp"
 #include "util.hpp"
 
 using std::vector;
-using std::cout;
-using std::endl;
 
 namespace jubatus {
 namespace core {
@@ -40,7 +37,6 @@ void gmm_clustering_method::batch_update(wplist points) {
   mapper_.clear();
   eigen_wsvec_list_t data = mapper_.convert(points, true);
   gmm_.batch(data, mapper_.get_dimension(), k_);
-  cout << "center[0]" << gmm_.get_centers()[0] << endl;
   kcenters_ = mapper_.revert(gmm_.get_centers());
 }
 

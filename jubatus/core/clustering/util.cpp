@@ -18,7 +18,6 @@
 
 #include <cfloat>
 #include <cmath>
-#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -193,17 +192,6 @@ pair<size_t, double> min_dist(
     }
   }
   return std::make_pair(idx, mindist);
-}
-
-void dump_wplist(const wplist& src) {
-  for (wplist::const_iterator it = src.begin(); it != src.end(); ++it) {
-    std::cout << it->weight << " : ";
-    for (vector<pair<string, float > >::const_iterator itt = it->data.begin();
-         itt != it->data.end(); ++itt) {
-      std::cout << (*itt).second << std::endl;
-    }
-    std::cout << std::endl;
-  }
 }
 
 std::pair<size_t, double> min_dist(const weighted_point& d1, const wplist& P) {
