@@ -65,9 +65,6 @@ class lsh : public recommender_base {
   void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
  private:
-  void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
-  void unpack_impl(msgpack::object o);
-
   void calc_lsh_values(const common::sfv_t& sfv, storage::bit_vector& bv) const;
   void generate_column_base(const std::string& column);
   void generate_column_bases(const common::sfv_t& v);

@@ -161,6 +161,15 @@ void sparse_matrix_storage::clear() {
   // norm_ptr_->clear();
 }
 
+void sparse_matrix_storage::pack(msgpack::packer<msgpack::sbuffer>& packer)
+    const {
+  packer.pack(*this);
+}
+
+void sparse_matrix_storage::unpack(msgpack::object o) {
+  o.convert(this);
+}
+
 }  // namespace storage
 }  // namespace core
 }  // namespace jubatus

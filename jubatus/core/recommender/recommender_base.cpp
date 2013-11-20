@@ -27,6 +27,7 @@ using std::pair;
 using std::string;
 using std::sort;
 using std::vector;
+using jubatus::core::storage::sparse_matrix_storage_mixable;
 
 namespace jubatus {
 namespace core {
@@ -34,7 +35,10 @@ namespace recommender {
 
 const uint64_t recommender_base::complete_row_similar_num_ = 128;
 
-recommender_base::recommender_base() {
+recommender_base::recommender_base()
+    : orig_(new core::storage::sparse_matrix_storage_mixable) {
+  orig_->set_model(sparse_matrix_storage_mixable::model_ptr(
+      new core::storage::sparse_matrix_storage));
 }
 
 recommender_base::~recommender_base() {
@@ -45,7 +49,7 @@ void recommender_base::similar_row(
     size_t ret_num) const {
   ids.clear();
   common::sfv_t sfv;
-  orig_.get_row(id, sfv);
+  orig_->get_model()->get_row(id, sfv);
   similar_row(sfv, ids, ret_num);
 }
 
@@ -55,21 +59,21 @@ void recommender_base::neighbor_row(
     size_t ret_num) const {
   ids.clear();
   common::sfv_t sfv;
-  orig_.get_row(id, sfv);
+  orig_->get_model()->get_row(id, sfv);
   neighbor_row(sfv, ids, ret_num);
 }
 
 void recommender_base::decode_row(const std::string& id,
                                   common::sfv_t& ret) const {
   ret.clear();
-  orig_.get_row(id, ret);
+  orig_->get_model()->get_row(id, ret);
 }
 
 void recommender_base::complete_row(const std::string& id,
                                     common::sfv_t& ret) const {
   ret.clear();
   common::sfv_t sfv;
-  orig_.get_row(id, sfv);
+  orig_->get_model()->get_row(id, sfv);
   complete_row(sfv, ret);
 }
 
@@ -83,9 +87,10 @@ void recommender_base::complete_row(const common::sfv_t& query,
   }
 
   size_t exist_row_num = 0;
+  sparse_matrix_storage_mixable::model_ptr model = orig_->get_model();
   for (size_t i = 0; i < ids.size(); ++i) {
     common::sfv_t row;
-    orig_.get_row(ids[i].first, row);
+    model->get_row(ids[i].first, row);
     if (row.size() == 0) {
       continue;
     } else {
@@ -103,21 +108,6 @@ void recommender_base::complete_row(const common::sfv_t& query,
   for (size_t i = 0; i < ret.size(); ++i) {
     ret[i].second /= exist_row_num;
   }
-}
-
-void recommender_base::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
-  packer.pack_array(2);
-  packer.pack(orig_);
-  pack_impl(packer);
-}
-void recommender_base::unpack(msgpack::object o) {
-  std::vector<msgpack::object> mems;
-  o.convert(&mems);
-  if (mems.size() != 2) {
-    throw msgpack::type_error();
-  }
-  mems[0].convert(&orig_);
-  unpack_impl(mems[1]);
 }
 
 float recommender_base::calc_similality(common::sfv_t& q1, common::sfv_t& q2) {

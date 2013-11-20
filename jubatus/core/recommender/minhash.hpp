@@ -65,9 +65,6 @@ class minhash : public recommender_base {
   void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
  private:
-  void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
-  void unpack_impl(msgpack::object o);
-
   void calc_minhash_values(
       const common::sfv_t& sfv,
       core::storage::bit_vector& bv) const;

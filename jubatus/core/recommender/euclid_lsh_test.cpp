@@ -61,7 +61,7 @@ lsh_index_storage* get_storage(euclid_lsh& r) {
   r.register_mixables_to_holder(holder);
   storage::mixable_lsh_index_storage* mixable_storage =
       dynamic_cast<storage::mixable_lsh_index_storage*>(
-          holder.get_mixables().front().get());
+          holder.get_mixables().back().get());
   return mixable_storage->get_model().get();
 }
 
