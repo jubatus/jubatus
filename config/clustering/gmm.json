@@ -1,0 +1,27 @@
+{
+  "converter" : {
+    "string_filter_types" : {},
+    "string_filter_rules" : [],
+    "num_filter_types" : {},
+    "num_filter_rules" : [],
+    "string_types" : {},
+    "string_rules" : [
+      { "key" : "*", "type" : "str", "sample_weight" : "bin", "global_weight" : "bin" }
+    ],
+    "num_types" : {},
+    "num_rules" : [
+      { "key" : "*", "type" : "num" }
+    ]
+  },
+  "parameter" : {
+    "k" : 3,
+    "compressor_method" : "compressive_gmm",
+    "bucket_size" : 1000,
+    "compressed_bucket_size" : 100,
+    "bicriteria_base_size" : 10,
+    "bucket_length" : 2,
+    "forgetting_factor" : 0,
+    "forgetting_threshold" : 0.5
+  },
+  "method" : "gmm"
+}
