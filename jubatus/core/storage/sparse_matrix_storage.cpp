@@ -163,19 +163,11 @@ void sparse_matrix_storage::clear() {
 
 void sparse_matrix_storage::pack(msgpack::packer<msgpack::sbuffer>& packer)
     const {
-  packer.pack_array(2);
-  packer.pack(tbl_);
-  packer.pack(column2id_);
+  packer.pack(*this);
 }
 
 void sparse_matrix_storage::unpack(msgpack::object o) {
-  std::vector<msgpack::object> mems;
-  o.convert(&mems);
-  if (mems.size() != 2) {
-    throw msgpack::type_error();
-  }
-  mems[0].convert(&tbl_);
-  mems[1].convert(&column2id_);
+  o.convert(this);
 }
 
 }  // namespace storage
