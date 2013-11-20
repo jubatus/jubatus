@@ -74,6 +74,9 @@ do_download() {
 	# Glog
 	download_url http://google-glog.googlecode.com/files/glog-${GLOG_VER}.tar.gz
 
+	# Oniguruma
+	download_url http://www.geocities.jp/kosako3/oniguruma/archive/onig-${ONIG_VER}.tar.gz
+
 	# UX
 	download_url http://ux-trie.googlecode.com/files/ux-${UX_VER}.tar.bz2
 
@@ -82,9 +85,6 @@ do_download() {
 
 	# MeCab IPA Dictionary
 	download_url http://mecab.googlecode.com/files/mecab-ipadic-${IPADIC_VER}.tar.gz
-
-	# re2
-	download_url http://re2.googlecode.com/files/re2-${RE2_VER}.tgz
 
 	# ZooKeeper
 	download_url http://ftp.jaist.ac.jp/pub/apache/zookeeper/zookeeper-${ZK_VER}/zookeeper-${ZK_VER}.tar.gz
@@ -101,13 +101,6 @@ do_download() {
 	git clone https://github.com/jubatus/jubatus-msgpack-rpc.git jubatus-msgpack-rpc
 	pushd jubatus-msgpack-rpc
 	git checkout ${MSGPACK_RPC_VER}
-	popd
-
-	# pficommon
-	rm -rf pficommon
-	git clone https://github.com/pfi/pficommon.git pficommon
-	pushd pficommon
-	git checkout ${PFICOMMON_VER}
 	popd
 
 	# Jubatus
@@ -204,6 +197,16 @@ do_build() {
 	cp -a doc "${DOC_DIR}/glog-${GLOG_VER}"
 	popd
 
+	# Oniguruma
+	tar xzf ${SOURCE_DIR}/onig-${ONIG_VER}.tar.gz
+	pushd onig-${ONIG_VER}
+	./configure --prefix=${PREFIX}
+	make
+	make install DESTDIR=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/oniguruma-${ONIG_VER}"
+	cp -a AUTHORS COPYING HISTORY INSTALL README README.ja index.html index_ja.html "${DOC_DIR}/oniguruma-${ONIG_VER}"
+	popd
+
 	# UX
 	tar jxf ${SOURCE_DIR}/ux-${UX_VER}.tar.bz2
 	pushd ux-${UX_VER}
@@ -233,16 +236,6 @@ do_build() {
 	cp -a AUTHORS ChangeLog COPYING NEWS README "${DOC_DIR}/mecab-ipadic-${IPADIC_VER}"
 	popd
 
-	# re2
-	tar zxf ${SOURCE_DIR}/re2-${RE2_VER}.tgz
-	pushd re2
-	perl -pi -e 's|^(prefix)=(.+)$|$1='${PREFIX}'|' Makefile
-	make
-	make install DESTDIR=${DEST_DIR}
-	mkdir -p "${DOC_DIR}/re2"
-	cp -a doc AUTHORS CONTRIBUTORS LICENSE README "${DOC_DIR}/re2"
-	popd
-
 	# ZooKeeper
 	tar zxf ${SOURCE_DIR}/zookeeper-${ZK_VER}.tar.gz
 	pushd zookeeper-${ZK_VER}/src/c
@@ -251,16 +244,6 @@ do_build() {
 	make install DESTDIR=${DEST_DIR}
 	mkdir -p "${DOC_DIR}/zookeeper-${ZK_VER}"
 	cp -a ChangeLog LICENSE NOTICE.txt README "${DOC_DIR}/zookeeper-${ZK_VER}"
-	popd
-
-	# pficommon
-	cp -rp ${SOURCE_DIR}/pficommon pficommon
-	pushd pficommon
-	LDFLAGS="-L${DEST_DIR}/${PREFIX}/lib" ./waf configure --prefix=${PREFIX} --disable-database --disable-fcgi --disable-magickpp
-	./waf build
-	./waf install --destdir=${DEST_DIR}
-	mkdir -p "${DOC_DIR}/pficommon"
-	cp -a doc LICENSE README.rst "${DOC_DIR}/pficommon"
 	popd
 
 	# Jubatus

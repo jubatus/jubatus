@@ -77,24 +77,6 @@ prepare_rpmbuild() {
 								JUBATUS_MSGPACK_RPC_VERSION \
 								JUBATUS_MSGPACK_RPC_RELEASE
 			;;
-		pficommon )
-			rm -rf pficommon
-			git clone https://github.com/pfi/pficommon.git pficommon
-			pushd pficommon
-			git checkout "${PFICOMMON_CHECKOUT}"
-			if [ "${PFICOMMON_IS_SNAPSHOT}" = "yes" ]; then
-				PFICOMMON_CHECKOUT="$(git rev-parse HEAD)"
-				PFICOMMON_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
-				PFICOMMON_RELEASE="1.${PFICOMMON_CHECKOUT_DATE}git${PFICOMMON_CHECKOUT:0:6}"
-			fi
-			popd
-			tar --create --gzip --exclude-vcs --file "pficommon-${PFICOMMON_VERSION}.tar.gz" pficommon
-			rm -rf pficommon
-
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								PFICOMMON_VERSION \
-								PFICOMMON_RELEASE
-			;;
 		msgpack )
 			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
 								MSGPACK_VERSION \
@@ -109,11 +91,6 @@ prepare_rpmbuild() {
 			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
 								GLOG_VERSION \
 								GLOG_RELEASE
-			;;
-		re2 )
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								RE2_VERSION \
-								RE2_RELEASE
 			;;
 		ux )
 			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
