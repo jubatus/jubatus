@@ -75,12 +75,12 @@ void minhash::neighbor_row(
 }
 
 void minhash::clear() {
-  orig_.clear();
+  orig_->get_model()->clear();
   mixable_storage_->get_model()->clear();
 }
 
 void minhash::clear_row(const string& id) {
-  orig_.remove_row(id);
+  orig_->get_model()->remove_row(id);
   mixable_storage_->get_model()->remove_row(id);
 }
 
@@ -109,10 +109,12 @@ void minhash::calc_minhash_values(const common::sfv_t& sfv,
 }
 
 void minhash::update_row(const string& id, const sfv_diff_t& diff) {
-  orig_.set_row(id, diff);
+  core::storage::sparse_matrix_storage_mixable::model_ptr orig =
+      orig_->get_model();
+  orig->set_row(id, diff);
 
   common::sfv_t row;
-  orig_.get_row(id, row);
+  orig->get_row(id, row);
   bit_vector bv;
   calc_minhash_values(row, bv);
   mixable_storage_->get_model()->set_row(id, bv);
@@ -173,15 +175,10 @@ float minhash::calc_hash(uint64_t a, uint64_t b, float val) {
 string minhash::type() const {
   return string("minhash");
 }
-void minhash::pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const {
-  mixable_storage_->pack(packer);
-}
-void minhash::unpack_impl(msgpack::object o) {
-  mixable_storage_->unpack(o);
-}
 
 void minhash::register_mixables_to_holder(framework::mixable_holder& holder)
     const {
+  holder.register_mixable(orig_);
   holder.register_mixable(mixable_storage_);
 }
 

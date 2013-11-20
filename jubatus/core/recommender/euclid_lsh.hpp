@@ -100,9 +100,6 @@ class euclid_lsh : public recommender_base {
   std::vector<float> calculate_lsh(const common::sfv_t& query);
   std::vector<float> get_projection(uint32_t seed);
 
-  void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
-  void unpack_impl(msgpack::object o);
-
   void initialize_model();
 
   jubatus::util::lang::shared_ptr<storage::mixable_lsh_index_storage>

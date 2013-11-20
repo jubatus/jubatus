@@ -86,14 +86,14 @@ void lsh::neighbor_row(
 }
 
 void lsh::clear() {
-  orig_.clear();
+  orig_->get_model()->clear();
   jubatus::util::data::unordered_map<std::string, std::vector<float> >()
     .swap(column2baseval_);
   mixable_storage_->get_model()->clear();
 }
 
 void lsh::clear_row(const string& id) {
-  orig_.remove_row(id);
+  orig_->get_model()->remove_row(id);
   mixable_storage_->get_model()->remove_row(id);
 }
 
@@ -121,9 +121,11 @@ void lsh::generate_column_base(const string& column) {
 
 void lsh::update_row(const string& id, const sfv_diff_t& diff) {
   generate_column_bases(diff);
-  orig_.set_row(id, diff);
+  core::storage::sparse_matrix_storage_mixable::model_ptr orig =
+      orig_->get_model();
+  orig->set_row(id, diff);
   common::sfv_t row;
-  orig_.get_row(id, row);
+  orig->get_row(id, row);
   bit_vector bv;
   calc_lsh_values(row, bv);
   mixable_storage_->get_model()->set_row(id, bv);
@@ -137,23 +139,8 @@ string lsh::type() const {
   return string("lsh");
 }
 
-void lsh::pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const {
-  packer.pack_array(2);
-  packer.pack(column2baseval_);
-  mixable_storage_->pack(packer);
-}
-
-void lsh::unpack_impl(msgpack::object o) {
-  std::vector<msgpack::object> mems;
-  o.convert(&mems);
-  if (mems.size() != 2) {
-    throw msgpack::type_error();
-  }
-  mems[0].convert(&column2baseval_);
-  mixable_storage_->unpack(mems[1]);
-}
-
 void lsh::register_mixables_to_holder(framework::mixable_holder& holder) const {
+  holder.register_mixable(orig_);
   holder.register_mixable(mixable_storage_);
 }
 

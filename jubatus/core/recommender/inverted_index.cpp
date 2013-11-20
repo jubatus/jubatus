@@ -64,22 +64,22 @@ void inverted_index::neighbor_row(
 }
 
 void inverted_index::clear() {
-  orig_.clear();
+  orig_->get_model()->clear();
   mixable_storage_->get_model()->clear();
 }
 
 void inverted_index::clear_row(const std::string& id) {
   vector<pair<string, float> > columns;
-  orig_.get_row(id, columns);
+  orig_->get_model()->get_row(id, columns);
   storage::inverted_index_storage& inv = *mixable_storage_->get_model();
   for (size_t i = 0; i < columns.size(); ++i) {
     inv.remove(columns[i].first, id);
   }
-  orig_.remove_row(id);
+  orig_->get_model()->remove_row(id);
 }
 
 void inverted_index::update_row(const std::string& id, const sfv_diff_t& diff) {
-  orig_.set_row(id, diff);
+  orig_->get_model()->set_row(id, diff);
   storage::inverted_index_storage& inv = *mixable_storage_->get_model();
   for (size_t i = 0; i < diff.size(); ++i) {
     inv.set(diff[i].first, id, diff[i].second);
@@ -105,6 +105,7 @@ void inverted_index::unpack_impl(msgpack::object o) {
 
 void inverted_index::register_mixables_to_holder(
     framework::mixable_holder& holder) const {
+  holder.register_mixable(orig_);
   holder.register_mixable(mixable_storage_);
 }
 

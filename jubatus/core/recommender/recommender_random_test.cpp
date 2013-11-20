@@ -58,7 +58,9 @@ jubatus::util::lang::shared_ptr<framework::mixable0>
 get_mixable(recommender_base& r) {
   framework::mixable_holder holder;
   r.register_mixables_to_holder(holder);
-  return holder.get_mixables().front();
+  // There are currently two mixables: orig (dummy mixable) and algorithm-
+  // specific mixable.
+  return holder.get_mixables().back();
 }
 
 template<typename T>
@@ -118,13 +120,17 @@ TYPED_TEST_P(recommender_random_test, random) {
   EXPECT_GT(correct, 5u);
 
   // pack and unpack the recommender
+  framework::mixable_holder holder;
+  r.register_mixables_to_holder(holder);
   msgpack::sbuffer buf;
   msgpack::packer<msgpack::sbuffer> packer(buf);
-  r.pack(packer);
+  holder.pack(packer);
   msgpack::unpacked unpacked;
   msgpack::unpack(&unpacked, buf.data(), buf.size());
   TypeParam r2;
-  r2.unpack(unpacked.get());
+  framework::mixable_holder holder2;
+  r2.register_mixables_to_holder(holder2);
+  holder2.unpack(unpacked.get());
 
   // Run the same test
   ids.clear();
@@ -185,13 +191,17 @@ TYPED_TEST_P(recommender_random_test, pack_and_unpack) {
   update_random(r);
 
   // save and load
+  framework::mixable_holder holder;
+  r.register_mixables_to_holder(holder);
   msgpack::sbuffer buf;
   msgpack::packer<msgpack::sbuffer> packer(buf);
-  r.pack(packer);
+  holder.pack(packer);
   msgpack::unpacked unpacked;
   msgpack::unpack(&unpacked, buf.data(), buf.size());
   TypeParam r2;
-  r2.unpack(unpacked.get());
+  framework::mixable_holder holder2;
+  r2.register_mixables_to_holder(holder2);
+  holder2.unpack(unpacked.get());
 
   vector<string> row_ids;
   r2.get_all_row_ids(row_ids);

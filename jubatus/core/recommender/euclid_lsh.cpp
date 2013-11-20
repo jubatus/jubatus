@@ -158,7 +158,7 @@ void euclid_lsh::similar_row(
 }
 
 void euclid_lsh::clear() {
-  orig_.clear();
+  orig_->get_model()->clear();
   mixable_storage_->get_model()->clear();
 
   // Clear projection cache
@@ -167,15 +167,17 @@ void euclid_lsh::clear() {
 }
 
 void euclid_lsh::clear_row(const string& id) {
-  orig_.remove_row(id);
+  orig_->get_model()->remove_row(id);
   mixable_storage_->get_model()->remove_row(id);
 }
 
 void euclid_lsh::update_row(const string& id, const sfv_diff_t& diff) {
   storage::lsh_index_storage& lsh_index = *mixable_storage_->get_model();
-  orig_.set_row(id, diff);
+  core::storage::sparse_matrix_storage_mixable::model_ptr orig =
+      orig_->get_model();
+  orig->set_row(id, diff);
   common::sfv_t row;
-  orig_.get_row(id, row);
+  orig->get_row(id, row);
 
   const vector<float> hash = lsh_function(
       row, lsh_index.all_lsh_num(), bin_width_);
@@ -193,6 +195,7 @@ string euclid_lsh::type() const {
 
 void euclid_lsh::register_mixables_to_holder(framework::mixable_holder& holder)
     const {
+  holder.register_mixable(orig_);
   holder.register_mixable(mixable_storage_);
 }
 
@@ -223,28 +226,6 @@ vector<float> euclid_lsh::get_projection(uint32_t seed) {
     }
   }
   return proj;
-}
-
-void euclid_lsh::pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const {
-  packer.pack_array(5);
-  mixable_storage_->pack(packer);
-  packer.pack(bin_width_);
-  packer.pack(num_probe_);
-  packer.pack(projection_);
-  packer.pack(retain_projection_);
-}
-
-void euclid_lsh::unpack_impl(msgpack::object o) {
-  std::vector<msgpack::object> mems;
-  o.convert(&mems);
-  if (mems.size() != 5) {
-    throw msgpack::type_error();
-  }
-  mixable_storage_->unpack(mems[0]);
-  mems[1].convert(&bin_width_);
-  mems[2].convert(&num_probe_);
-  mems[3].convert(&projection_);
-  mems[4].convert(&retain_projection_);
 }
 
 void euclid_lsh::initialize_model() {

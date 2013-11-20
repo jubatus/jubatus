@@ -47,7 +47,7 @@ void nearest_neighbor_recommender::neighbor_row(
 }
 
 void nearest_neighbor_recommender::clear() {
-  orig_.clear();
+  orig_->get_model()->clear();
   nearest_neighbor_engine_->clear();
 }
 
@@ -58,9 +58,11 @@ void nearest_neighbor_recommender::clear_row(const std::string& id) {
 void nearest_neighbor_recommender::update_row(
     const std::string& id,
     const common::sfv_t& diff) {
-  orig_.set_row(id, diff);
+  core::storage::sparse_matrix_storage_mixable::model_ptr orig =
+      orig_->get_model();
+  orig->set_row(id, diff);
   common::sfv_t row;
-  orig_.get_row(id, row);
+  orig->get_row(id, row);
   nearest_neighbor_engine_->set_row(id, row);
 }
 
@@ -75,16 +77,8 @@ std::string nearest_neighbor_recommender::type() const {
 
 void nearest_neighbor_recommender::register_mixables_to_holder(
     framework::mixable_holder& holder) const {
+  holder.register_mixable(orig_);
   nearest_neighbor_engine_->register_mixables_to_holder(holder);
-}
-
-void nearest_neighbor_recommender::pack_impl(
-    msgpack::packer<msgpack::sbuffer>& packer) const {
-  nearest_neighbor_engine_->pack(packer);
-}
-
-void nearest_neighbor_recommender::unpack_impl(msgpack::object o) {
-  nearest_neighbor_engine_->unpack(o);
 }
 
 }  // namespace recommender
