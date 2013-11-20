@@ -161,7 +161,8 @@ void sparse_matrix_storage::clear() {
   // norm_ptr_->clear();
 }
 
-void sparse_matrix_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void sparse_matrix_storage::pack(msgpack::packer<msgpack::sbuffer>& packer)
+    const {
   packer.pack_array(2);
   packer.pack(tbl_);
   packer.pack(column2id_);
