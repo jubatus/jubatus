@@ -19,7 +19,7 @@ Release 0.5.0 - 2013/11/22
     * New client interface
 
 * Improvements
-    * Replace oniguruma regular-expression library from re2 (#361, #465, #471, #494)
+    * Replace re2 with oniguruma regular expression library (#361, #465, #471, #494)
     * Remove pficommon dependency (#467)
     * Activate options for distributed mode in standalone mode (#445)
     * Report redundant configuration as error (#484, #489)
