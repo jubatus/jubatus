@@ -623,7 +623,7 @@ let gen_impl names s =
     ];
     [
       (1,   "bool save(const std::string& id) {");
-      (2,     "JWLOCK_(p_);");
+      (2,     "JRLOCK_(p_);");
       (2,     "return get_p()->save(id);");
       (1,   "}");
     ];
