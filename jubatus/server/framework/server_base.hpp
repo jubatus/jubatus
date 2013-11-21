@@ -18,6 +18,7 @@
 #define JUBATUS_SERVER_FRAMEWORK_SERVER_BASE_HPP_
 
 #include <stdint.h>
+#include <ext/stdio_filebuf.h>
 #include <map>
 #include <string>
 #include <vector>
