@@ -20,7 +20,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "recommender_base.hpp"
 #include "../storage/bit_index_storage.hpp"
@@ -34,11 +35,11 @@ class lsh : public recommender_base {
   struct config {
     config();
 
-    int64_t bit_num;
+    int64_t hash_num;
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(bit_num);
+      ar & JUBA_MEMBER(hash_num);
     }
   };
 
@@ -60,21 +61,22 @@ class lsh : public recommender_base {
   void update_row(const std::string& id, const sfv_diff_t& diff);
   void get_all_row_ids(std::vector<std::string>& ids) const;
   std::string type() const;
-  core::storage::recommender_storage_base* get_storage();
-  const core::storage::recommender_storage_base* get_const_storage() const;
+
+  void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
  private:
-  bool save_impl(std::ostream&);
-  bool load_impl(std::istream&);
-
   void calc_lsh_values(const common::sfv_t& sfv, storage::bit_vector& bv) const;
   void generate_column_base(const std::string& column);
   void generate_column_bases(const common::sfv_t& v);
 
-  // bases for lsh
-  pfi::data::unordered_map<std::string, std::vector<float> > column2baseval_;
+  void initialize_model();
 
-  core::storage::bit_index_storage row2lshvals_;
+  // bases for lsh
+  jubatus::util::data::unordered_map<std::string, std::vector<float> >
+    column2baseval_;
+
+  jubatus::util::lang::shared_ptr<storage::mixable_bit_index_storage>
+    mixable_storage_;
 
   const uint64_t base_num_;
 };

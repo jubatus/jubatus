@@ -21,5 +21,6 @@
 #include <jubatus/core/fv_converter/string_filter.hpp>
 #include <jubatus/core/fv_converter/num_feature.hpp>
 #include <jubatus/core/fv_converter/num_filter.hpp>
+#include <jubatus/core/fv_converter/binary_feature.hpp>
 
 #endif  // JUBATUS_CORE_PLUGIN_HPP_

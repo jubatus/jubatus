@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <string>
 
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "global_id_generator_base.hpp"
 #include "lock_service.hpp"
@@ -37,12 +37,12 @@ class global_id_generator_zk: public global_id_generator_base {
   uint64_t generate();
 
   void set_ls(
-      pfi::lang::shared_ptr<lock_service>& ls,
+      jubatus::util::lang::shared_ptr<lock_service>& ls,
       const std::string& path_prefix);
 
  private:
   std::string path_;
-  pfi::lang::shared_ptr<lock_service> ls_;
+  jubatus::util::lang::shared_ptr<lock_service> ls_;
 };
 
 }  // namespace common

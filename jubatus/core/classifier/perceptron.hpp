@@ -27,7 +27,7 @@ namespace classifier {
 
 class perceptron : public classifier_base {
  public:
-  explicit perceptron(storage::storage_base* storage);
+  explicit perceptron(classifier_base::storage_ptr storage);
   void train(const common::sfv_t& sfv, const std::string& label);
   std::string name() const;
 };

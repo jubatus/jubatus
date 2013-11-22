@@ -18,7 +18,7 @@
 #include <string>
 
 #include <glog/logging.h>
-#include <pficommon/lang/bind.h>
+#include "jubatus/util/lang/bind.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
@@ -34,11 +34,11 @@ const std::string PROGNAME = "jubavisor";
 using jubatus::server::common::util::set_action_on_term;
 using jubatus::server::jubavisor::jubavisor;
 using jubatus::server::jubavisor::jubavisor_server;
-using pfi::lang::_1;
-using pfi::lang::_2;
-using pfi::lang::_3;
-using pfi::lang::bind;
-using pfi::lang::ref;
+using jubatus::util::lang::_1;
+using jubatus::util::lang::_2;
+using jubatus::util::lang::_3;
+using jubatus::util::lang::bind;
+using jubatus::util::lang::ref;
 
 namespace {
 void stop_on_term(jubavisor_server& serv) {

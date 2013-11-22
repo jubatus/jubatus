@@ -19,9 +19,9 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/concurrent/thread.h>
-#include <pficommon/lang/bind.h>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/concurrent/thread.h"
+#include "jubatus/util/lang/bind.h"
+#include "jubatus/util/lang/scoped_ptr.h"
 #include "jubatus/core/fv_converter/exception.hpp"
 #include "mecab_splitter.hpp"
 
@@ -52,7 +52,7 @@ TEST(mecab_splitter, illegal_argument) {
 
 TEST(mecab_splitter_create, trivial) {
   std::map<std::string, std::string> param;
-  pfi::lang::scoped_ptr<word_splitter> s(create(param));
+  jubatus::util::lang::scoped_ptr<word_splitter> s(create(param));
   std::string d("東京へ行く");
   std::vector<std::pair<size_t, size_t> > bs;
   s->split(d, bs);
@@ -69,7 +69,7 @@ TEST(mecab_splitter_create, illegal_argument) {
   std::map<std::string, std::string> param;
   param["arg"] = "-r unknown_file";
   EXPECT_THROW(
-      pfi::lang::scoped_ptr<word_splitter>(create(param)),
+      jubatus::util::lang::scoped_ptr<word_splitter>(create(param)),
       converter_exception);
 }
 
@@ -102,10 +102,10 @@ void run(mecab_splitter* m) {
 TEST(mecab_spltter, multi_thread) {
   // run mecab_splitter in two threads
   mecab_splitter m;
-  std::vector<pfi::lang::shared_ptr<pfi::concurrent::thread> > ts;
+  std::vector<jubatus::util::lang::shared_ptr<jubatus::util::concurrent::thread> > ts;
   for (int i = 0; i < 100; ++i) {
-    ts.push_back(pfi::lang::shared_ptr<pfi::concurrent::thread>(
-        new pfi::concurrent::thread(pfi::lang::bind(&run , &m))));
+    ts.push_back(jubatus::util::lang::shared_ptr<jubatus::util::concurrent::thread>(
+        new jubatus::util::concurrent::thread(jubatus::util::lang::bind(&run , &m))));
     ts[i]->start();
   }
   for (int i = 0; i < 100; ++i) {

@@ -16,18 +16,16 @@
 
 #include "zk.hpp"
 
-#include <assert.h>
 #include <unistd.h>
 
 #include <algorithm>
 #include <string>
 #include <vector>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/lang/bind.h>
-#include <pficommon/data/string/utility.h>
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/data/string/utility.h"
 #include "jubatus/core/common/exception.hpp"
 
-using pfi::concurrent::scoped_lock;
+using jubatus::util::concurrent::scoped_lock;
 using std::vector;
 using std::string;
 
@@ -128,16 +126,16 @@ bool zk::set(const string& path, const string& payload) {
 // "/some/path" => "/some/path0000012"
 bool zk::create_seq(const string& path, string& seqfile) {
   scoped_lock lk(m_);
-  string path_buffer(path.size() + 16, '\0');
+  std::vector<char> path_buffer(path.size() + 16);
   int rc = zoo_create(zh_, path.c_str(), NULL, 0, &ZOO_OPEN_ACL_UNSAFE,
                       ZOO_EPHEMERAL | ZOO_SEQUENCE, &path_buffer[0],
-                      path.size() + 16);
-  seqfile = "";
+                      path_buffer.size());
   if (rc != ZOK) {
+    seqfile.clear();
     LOG(ERROR) << "failed to create: " << path << " - " << zerror(rc);
     return false;
   } else {
-    seqfile = path_buffer;
+    seqfile.assign(&path_buffer[0]);
     DLOG(INFO) << __func__ << " " << seqfile;
     return true;
   }
@@ -182,18 +180,66 @@ void my_znode_watcher(
     int state,
     const char* path,
     void* watcherCtx) {
-  pfi::lang::function<void(int, int, string)>* fp =
-      static_cast<pfi::lang::function<void(int, int, string)>*>(watcherCtx);
-  (*fp)(type, state, string(path));
+  jubatus::util::lang::function<void(int, int, string)>* fp =
+      static_cast<jubatus::util::lang::function<void(int, int, string)>*>(
+          watcherCtx);
+  try {
+    (*fp)(type, state, string(path));
+  } catch(const std::exception& e) {
+    LOG(WARNING) << "exception thrown from zk watcher callback: " << e.what();
+  } catch (...) {
+    LOG(WARNING) << "unknown exception thrown from zk watcher callback";
+  }
   delete fp;
 }
 
 bool zk::bind_watcher(
     const string& path,
-    pfi::lang::function<void(int, int, string)>& f) {
-  pfi::lang::function<void(int, int, string)>* fp = new pfi::lang::function<
-      void(int, int, string)>(f);
+    jubatus::util::lang::function<void(int, int, string)>& f) {
+  jubatus::util::lang::function<void(int, int, string)>* fp =
+    new jubatus::util::lang::function<void(int, int, string)>(f);
   int rc = zoo_wexists(zh_, path.c_str(), my_znode_watcher, fp, NULL);
+  return rc == ZOK;
+}
+
+void my_znode_delete_watcher(
+    zhandle_t* zh,
+    int type,
+    int state,
+    const char* path,
+    void* watcherCtx) {
+  // state should be checked?
+  if (type == ZOO_DELETED_EVENT) {
+    jubatus::util::lang::function<void(string)>* fp =
+        static_cast<jubatus::util::lang::function<void(string)>*>(watcherCtx);
+    try {
+      (*fp)(string(path));
+    } catch(const std::exception& e) {
+      LOG(WARNING) << "exception thrown from zk watcher callback: " << e.what();
+    } catch (...) {
+      LOG(WARNING) << "unknown exception thrown from zk watcher callback";
+    }
+    delete fp;
+  } else {
+    // if not delete event, re-register
+    DLOG(INFO)
+        << "non-delete event happen in path:["
+        << path << "] type:["
+        << type << "] state:["
+        << state << "]";
+    int rc = zoo_wexists(zh, path, my_znode_delete_watcher, watcherCtx, NULL);
+    if (rc != ZOK) {
+      LOG(WARNING) << "cannot watch the path: " << path;
+    }
+  }
+}
+
+bool zk::bind_delete_watcher(
+    const string& path,
+    jubatus::util::lang::function<void(string)>& f) {
+  jubatus::util::lang::function<void(string)>* fp =
+    new jubatus::util::lang::function< void(string)>(f);
+  int rc = zoo_wexists(zh_, path.c_str(), my_znode_delete_watcher, fp, NULL);
   return rc == ZOK;
 }
 
@@ -247,7 +293,7 @@ bool zk::read(const string& path, string& out) {
   }
 }
 
-void zk::push_cleanup(const pfi::lang::function<void()>& f) {
+void zk::push_cleanup(const jubatus::util::lang::function<void()>& f) {
   scoped_lock lk(m_);
   cleanups_.push_back(f);
 }
@@ -268,7 +314,7 @@ const string zk::type() const {
 }
 
 bool zkmutex::lock() {
-  pfi::concurrent::scoped_lock lk(m_);
+  jubatus::util::concurrent::scoped_lock lk(m_);
   LOG(ERROR) << "not implemented: " << __func__;
   while (!has_lock_) {
     if (try_lock()) {
@@ -281,7 +327,7 @@ bool zkmutex::lock() {
 }
 
 bool zkmutex::try_lock() {
-  pfi::concurrent::scoped_lock lk(m_);
+  jubatus::util::concurrent::scoped_lock lk(m_);
   if (has_lock_) {
     return has_lock_;
   }
@@ -321,7 +367,7 @@ bool zkmutex::try_lock() {
 }
 
 bool zkmutex::unlock() {
-  pfi::concurrent::scoped_lock lk(m_);
+  jubatus::util::concurrent::scoped_lock lk(m_);
   if (has_lock_) {
     return zk_.remove(seqfile_);
   }
@@ -329,7 +375,7 @@ bool zkmutex::unlock() {
 }
 
 bool zkmutex::rlock() {
-  pfi::concurrent::scoped_lock lk(m_);
+  jubatus::util::concurrent::scoped_lock lk(m_);
   LOG(ERROR) << "not implemented: " << __func__;
   while (!has_rlock_) {
     if (try_rlock()) {
@@ -342,7 +388,7 @@ bool zkmutex::rlock() {
 }
 
 bool zkmutex::try_rlock() {
-  pfi::concurrent::scoped_lock lk(m_);
+  jubatus::util::concurrent::scoped_lock lk(m_);
   if (has_rlock_) {
     return has_rlock_;
   }
@@ -364,7 +410,7 @@ bool zkmutex::try_rlock() {
   has_rlock_ = true;
   for (size_t i = 0; i < list.size(); i++) {
     // not exist write lock less than me.
-    if (pfi::data::string::starts_with(list[i], string("wlock_"))) {
+    if (jubatus::util::data::string::starts_with(list[i], string("wlock_"))) {
       string path1((path_ + '/' + list[i]).c_str(), prefix.size() + 16);
       if (seqfile_.compare(prefix.length(), -1, path1,
                            prefix.length(), -1) > 0) {
@@ -384,7 +430,7 @@ bool zkmutex::try_rlock() {
 }
 
 bool zkmutex::unlock_r() {
-  pfi::concurrent::scoped_lock lk(m_);
+  jubatus::util::concurrent::scoped_lock lk(m_);
   if (has_rlock_) {
     return zk_.remove(seqfile_);
   }

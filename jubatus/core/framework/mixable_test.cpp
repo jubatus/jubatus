@@ -33,12 +33,14 @@ struct int_model {
 
   int value;
 
-  void save(std::ostream& ofs) {
-    ofs << value;
-  }
+  MSGPACK_DEFINE(value);
 
-  void load(std::istream& ifs) {
-    ifs >> value;
+  template<class Buffer>
+  void pack(msgpack::packer<Buffer>& packer) const {
+    packer.pack(*this);
+  }
+  void unpack(msgpack::object o) {
+    o.convert(this);
   }
 };
 
@@ -78,15 +80,21 @@ TEST(mixable, config_not_set) {
   EXPECT_THROW(m.put_diff(byte_buffer()), common::config_not_set);
 }
 
-TEST(mixable, save_load) {
+TEST(mixable, pack_and_unpack) {
   mixable_int m;
   m.set_model(mixable_int::model_ptr(new int_model));
   m.get_model()->value = 10;
 
-  stringstream ss;
-  m.save(ss);
+  msgpack::sbuffer buf;
+  msgpack::packer<msgpack::sbuffer> packer(buf);
+  m.pack(packer);
+
   m.get_model()->value = 5;
-  m.load(ss);
+
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, buf.data(), buf.size());
+  m.unpack(unpacked.get());
+
   EXPECT_EQ(10, m.get_model()->value);
 }
 

@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/concurrent/mutex.h>
+#include "jubatus/util/concurrent/mutex.h"
 
 #include "process.hpp"
 #include "../common/lock_service.hpp"
@@ -65,14 +65,14 @@ class jubavisor {
       const framework::server_argv& argv);
   //  int stop_(const std::string&, std::vector<process>&);
 
-  pfi::lang::shared_ptr<common::lock_service> zk_;
+  jubatus::util::lang::shared_ptr<common::lock_service> zk_;
   std::string name_;
   int port_base_;
   std::queue<int> port_pool_;
   child_map_t children_;
 
   std::string logfile_;
-  pfi::concurrent::mutex m_;
+  jubatus::util::concurrent::mutex m_;
   unsigned int max_children_;
 };
 

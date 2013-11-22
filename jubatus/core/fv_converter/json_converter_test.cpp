@@ -19,11 +19,11 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/text/json.h"
 #include "datum.hpp"
 #include "json_converter.hpp"
 
-using pfi::text::json::json;
+using jubatus::util::text::json::json;
 
 namespace jubatus {
 namespace core {
@@ -31,7 +31,7 @@ namespace fv_converter {
 
 json MakeJson(const std::string& string) {
   std::istringstream iss(string);
-  pfi::text::json::json json;
+  jubatus::util::text::json::json json;
   iss >> json;
   return json;
 }

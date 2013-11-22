@@ -24,8 +24,8 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
-perceptron::perceptron(storage::storage_base* storage)
-    : classifier_base(storage) {
+perceptron::perceptron(classifier_base::storage_ptr storage)
+    : classifier_base(storage, false) {
 }
 
 void perceptron::train(const common::sfv_t& sfv, const std::string& label) {

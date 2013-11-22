@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011-2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ class dummy_mixer : public mixer {
   void register_api(rpc_server_t& server) {
   }
   void set_mixable_holder(
-      pfi::lang::shared_ptr<core::framework::mixable_holder>) {
+      jubatus::util::lang::shared_ptr<core::framework::mixable_holder>) {
   }
 
   void start() {

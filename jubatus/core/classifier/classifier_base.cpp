@@ -20,10 +20,13 @@
 #include <float.h>
 
 #include <algorithm>
+#include <map>
 #include <queue>
 #include <string>
 #include <vector>
 
+#include "../common/exception.hpp"
+#include "../driver/linear_function_mixer.hpp"
 #include "classifier_util.hpp"
 
 using std::string;
@@ -35,9 +38,10 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
-classifier_base::classifier_base(storage::storage_base* storage)
-    : storage_(storage),
-      use_covars_(false) {
+classifier_base::classifier_base(storage_ptr storage, bool use_covars)
+    : mixable_(new driver::linear_function_mixer),
+      use_covars_(use_covars) {
+  mixable_->set_model(storage);
 }
 
 classifier_base::~classifier_base() {
@@ -49,7 +53,7 @@ void classifier_base::classify_with_scores(
   scores.clear();
 
   map_feature_val1_t ret;
-  storage_->inp(sfv, ret);
+  get_storage()->inp(sfv, ret);
   for (map_feature_val1_t::const_iterator it = ret.begin(); it != ret.end();
       ++it) {
     scores.push_back(classify_result_elem(it->first, it->second));
@@ -72,7 +76,20 @@ string classifier_base::classify(const common::sfv_t& fv) const {
 }
 
 void classifier_base::clear() {
-  storage_->clear();
+  get_storage()->clear();
+}
+
+void classifier_base::register_mixables_to_holder(
+    framework::mixable_holder& holder) const {
+  if (mixable_) {
+    holder.register_mixable(mixable_);
+  }
+}
+
+void classifier_base::get_status(std::map<string, string>& status) const {
+  const storage::storage_base* sto = get_storage();
+  sto->get_status(status);
+  status["storage"] = sto->type();
 }
 
 void classifier_base::update_weight(
@@ -80,7 +97,7 @@ void classifier_base::update_weight(
     float step_width,
     const string& pos_label,
     const string& neg_label) {
-  storage_->bulk_update(sfv, step_width, pos_label, neg_label);
+  get_storage()->bulk_update(sfv, step_width, pos_label, neg_label);
 }
 
 string classifier_base::get_largest_incorrect_label(
@@ -130,11 +147,12 @@ float classifier_base::calc_margin_and_variance(
   float margin = calc_margin(sfv, label, incorrect_label);
   var = 0.f;
 
+  const storage::storage_base* storage = get_storage();
   for (size_t i = 0; i < sfv.size(); ++i) {
     const string& feature = sfv[i].first;
     const float val = sfv[i].second;
     feature_val2_t weight_covars;
-    storage_->get2(feature, weight_covars);
+    storage->get2(feature, weight_covars);
     float label_covar = 1.f;
     float incorrect_label_covar = 1.f;
     for (size_t j = 0; j < weight_covars.size(); ++j) {
@@ -155,6 +173,22 @@ float classifier_base::squared_norm(const common::sfv_t& fv) {
     ret += fv[i].second * fv[i].second;
   }
   return ret;
+}
+
+storage::storage_base* classifier_base::get_storage() {
+  if (!mixable_) {
+    throw JUBATUS_EXCEPTION(
+        common::exception::runtime_error("mixable not set"));
+  }
+  if (!mixable_->get_model()) {
+    throw JUBATUS_EXCEPTION(common::exception::runtime_error("model not set"));
+  }
+
+  return mixable_->get_model().get();
+}
+
+const storage::storage_base* classifier_base::get_storage() const {
+  return const_cast<classifier_base*>(this)->get_storage();
 }
 
 }  // namespace classifier

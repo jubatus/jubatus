@@ -17,9 +17,9 @@
 #ifndef JUBATUS_CORE_FV_CONVERTER_COUNTER_HPP_
 #define JUBATUS_CORE_FV_CONVERTER_COUNTER_HPP_
 
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_map.h"
 #include "../common/unordered_map.hpp"
 
 namespace jubatus {
@@ -29,10 +29,11 @@ namespace fv_converter {
 template<class T>
 class counter {
  public:
-  typedef pfi::data::unordered_map<T, unsigned> map_t;
-  typedef typename pfi::data::unordered_map<T, unsigned>::const_iterator
-      const_iterator;
-  typedef typename pfi::data::unordered_map<T, unsigned>::iterator iterator;
+  typedef jubatus::util::data::unordered_map<T, unsigned> map_t;
+  typedef typename jubatus::util::data::unordered_map<T, unsigned>
+      ::const_iterator const_iterator;
+  typedef typename jubatus::util::data::unordered_map<T, unsigned>
+      ::iterator iterator;
 
   bool contains(const T& key) const {
     return data_.count(key) != 0;
@@ -71,7 +72,7 @@ class counter {
   }
 
   void clear() {
-    pfi::data::unordered_map<T, unsigned>().swap(data_);
+    jubatus::util::data::unordered_map<T, unsigned>().swap(data_);
   }
 
   void add(const counter<T>& counts) {
@@ -84,11 +85,11 @@ class counter {
 
   template<class Archiver>
   void serialize(Archiver& ar) {
-    ar & MEMBER(data_);
+    ar & JUBA_MEMBER(data_);
   }
 
  private:
-  pfi::data::unordered_map<T, unsigned> data_;
+  jubatus::util::data::unordered_map<T, unsigned> data_;
 };
 
 }  // namespace fv_converter

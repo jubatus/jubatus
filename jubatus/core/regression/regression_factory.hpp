@@ -18,7 +18,8 @@
 #define JUBATUS_CORE_REGRESSION_REGRESSION_FACTORY_HPP_
 
 #include <string>
-#include <pficommon/text/json.h>
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 namespace jubatus {
 namespace core {
@@ -43,10 +44,10 @@ class regression_base;
 
 class regression_factory {
  public:
-  static regression_base* create_regression(
+  static jubatus::util::lang::shared_ptr<regression_base> create_regression(
       const std::string& name,
       const common::jsonconfig::config& param,
-      jubatus::core::storage::storage_base* storage);
+      jubatus::util::lang::shared_ptr<storage::storage_base> storage);
 };
 
 }  // namespace regression

@@ -21,10 +21,10 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/concurrent/thread.h>
-#include <pficommon/lang/bind.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/system/syscall.h>
+#include "jubatus/util/concurrent/thread.h"
+#include "jubatus/util/lang/bind.h"
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/system/syscall.h"
 
 #include "rpc_mclient.hpp"
 #include "rpc_util.hpp"
@@ -33,9 +33,9 @@
 using std::string;
 using std::cout;
 using std::endl;
-using pfi::lang::function;
-using pfi::lang::shared_ptr;
-using pfi::concurrent::thread;
+using jubatus::util::lang::function;
+using jubatus::util::lang::shared_ptr;
+using jubatus::util::concurrent::thread;
 using jubatus::server::common::mprpc::rpc_result;
 using jubatus::server::common::mprpc::rpc_error;
 using jubatus::server::common::mprpc::error_multi_rpc;
@@ -85,9 +85,9 @@ static int add_all(int i, int j, int k) {
   return (i + j + k);
 }
 static std::string various(int i, float f, double d, strw s) {
-  std::string ret = pfi::lang::lexical_cast<std::string>(i)
-      + pfi::lang::lexical_cast<std::string>(f)
-      + pfi::lang::lexical_cast<std::string>(d)
+  std::string ret = jubatus::util::lang::lexical_cast<std::string>(i)
+      + jubatus::util::lang::lexical_cast<std::string>(f)
+      + jubatus::util::lang::lexical_cast<std::string>(d)
       + s.key + s.value;
   return ret;
 }
@@ -140,10 +140,10 @@ static void server_thread(server_ptr srv, unsigned u) {
   srv->start(10, /*no_hang=*/ true);
 }
 
-static const uint16_t PORT0 = 60023;
-static const uint16_t PORT1 = 60024;
-static const uint16_t kPortStart = 60023;
-static const uint16_t kPortEnd = kPortStart + 10;
+static const uint16_t PORT0 = JUBATUS_RPC_TEST_PORT_BASE;
+static const uint16_t PORT1 = JUBATUS_RPC_TEST_PORT_BASE + 1;
+static const uint16_t kPortStart = JUBATUS_RPC_TEST_PORT_BASE;
+static const uint16_t kPortEnd = JUBATUS_RPC_TEST_PORT_BASE + 10;
 
 TEST(rpc_mclient, no_client) {
   std::vector<std::pair<std::string, uint16_t> > hosts;
@@ -269,7 +269,7 @@ void timeout_server(server_socket_t* server_socket) {
 TEST(rpc_mclient, error_multi_rpc) {
   server_socket_t server_socket;
   server_socket.listen(kPortStart);
-  thread t(pfi::lang::bind(&timeout_server, &server_socket));
+  thread t(jubatus::util::lang::bind(&timeout_server, &server_socket));
   t.start();
 
   std::vector<std::pair<std::string, uint16_t> > hosts;
@@ -315,7 +315,7 @@ TEST(rpc_mclient, small) {
     server_ptr ser = server_ptr(new test_mrpc_server(3.0));
     servers.push_back(ser);
     threads.push_back(shared_ptr<thread>(
-        new thread(pfi::lang::bind(&server_thread, ser, port))));
+        new thread(jubatus::util::lang::bind(&server_thread, ser, port))));
     threads.back()->start();
 
     clients.push_back(std::make_pair(std::string("localhost"), port));
@@ -388,7 +388,7 @@ TEST(rpc_mclient, small) {
   }
 
   {
-    pfi::lang::function<std::vector<std::string>
+    jubatus::util::lang::function<std::vector<std::string>
     (const std::vector<std::string>, const std::vector<std::string>)> f =
         &concat_vector;
 
@@ -496,7 +496,7 @@ TEST(rpc_mclient, socket_disconnection) {
   const int kInvalidPort = kPortStart + 1000;
 
   server_ptr ser(new test_mrpc_server(3.0));
-  thread th(pfi::lang::bind(&server_thread, ser, kPortStart));
+  thread th(jubatus::util::lang::bind(&server_thread, ser, kPortStart));
   th.start();
   wait_server(kPortStart);
 

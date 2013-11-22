@@ -20,7 +20,7 @@
 #include <istream>
 #include <ostream>
 #include <string>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/unordered_map.h"
 #include "../common/type.hpp"
 #include "counter.hpp"
 #include "datum.hpp"
@@ -53,20 +53,20 @@ class weight_manager {
     master_weights_.clear();
   }
 
-  void save(std::ostream& os) {
-    pfi::data::serialization::binary_oarchive oa(os);
-    oa << diff_weights_;
-    oa << master_weights_;
-  }
-  void load(std::istream& is) {
-    pfi::data::serialization::binary_iarchive ia(is);
-    ia >> diff_weights_;
-    ia >> master_weights_;
-  }
-
   template<class Archiver>
   void serialize(Archiver& ar) {
-    ar & MEMBER(diff_weights_) & MEMBER(master_weights_);
+    ar & JUBA_MEMBER(diff_weights_) & JUBA_MEMBER(master_weights_);
+  }
+
+  MSGPACK_DEFINE(diff_weights_, master_weights_);
+
+  template<class Packer>
+  void pack(Packer& packer) const {
+    packer.pack(*this);
+  }
+
+  void unpack(msgpack::object o) {
+    o.convert(this);
   }
 
  private:

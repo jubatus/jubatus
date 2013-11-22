@@ -20,59 +20,28 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../recommender/recommender_base.hpp"
 #include "../framework/mixable.hpp"
-#include "diffv.hpp"
-#include "linear_function_mixer.hpp"
-#include "mixable_weight_manager.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 
 namespace jubatus {
 namespace core {
 namespace driver {
 
-struct mixable_recommender : public framework::mixable<
-    jubatus::core::recommender::recommender_base,
-    std::string> {
-  std::string get_diff_impl() const {
-    std::string ret;
-    get_model()->get_const_storage()->get_diff(ret);
-    return ret;
-  }
-
-  void put_diff_impl(const std::string& v) {
-    get_model()->get_storage()->set_mixed_and_clear_diff(v);
-  }
-
-  void mix_impl(
-      const std::string& lhs,
-      const std::string& rhs,
-      std::string& mixed) const {
-    mixed = lhs;
-    get_model()->get_const_storage()->mix(rhs, mixed);
-  }
-
-  void clear() {
-  }
-};
-
 class recommender {
  public:
   recommender(
-      jubatus::core::recommender::recommender_base* recommender_method,
-      pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+      jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
+          method,
+      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+          converter);
   virtual ~recommender();
 
-  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  jubatus::util::lang::shared_ptr<framework::mixable_holder>
+  get_mixable_holder() const {
     return mixable_holder_;
   }
-
-#if 0
-  storage::storage_base* get_model() const {
-    return recommender_.get_model().get();
-  }
-#endif
 
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const fv_converter::datum& dat);
@@ -96,11 +65,12 @@ class recommender {
   std::vector<std::string> get_all_rows();
 
  private:
-  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
+  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  mixable_recommender recommender_;
-  mixable_weight_manager wm_;
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+    converter_;
+  jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
+    recommender_;
 };
 
 }  // namespace driver

@@ -21,7 +21,7 @@
 
 #include <vector>
 #include <string>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 namespace jubatus {
 namespace server {
@@ -40,7 +40,8 @@ class network_address {
   virtual const sockaddr_in6* v6_address() const = 0;
 };
 
-typedef std::vector<pfi::lang::shared_ptr<network_address> > address_list;
+typedef std::vector<jubatus::util::lang::shared_ptr<network_address> >
+  address_list;
 
 address_list get_network_address();
 

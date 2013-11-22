@@ -20,14 +20,15 @@
 #include <utility>
 #include <vector>
 
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
-#include "../recommender/recommender_factory.hpp"
+#include "../common/exception.hpp"
 #include "../common/vector_util.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/revert.hpp"
+#include "../recommender/recommender_factory.hpp"
 #include "../storage/storage_factory.hpp"
 
 using std::string;
@@ -35,33 +36,27 @@ using std::vector;
 using std::pair;
 using jubatus::core::framework::mixable_holder;
 using jubatus::core::fv_converter::weight_manager;
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
 namespace driver {
 
 recommender::recommender(
-    jubatus::core::recommender::recommender_base* recommender_method,
-    pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter)
+    shared_ptr<core::recommender::recommender_base> recommender_method,
+    shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new mixable_holder),
-      converter_(converter) {
-  pfi::lang::shared_ptr<jubatus::core::recommender::recommender_base>
-      recommender_method_p(recommender_method);
-  recommender_.set_model(recommender_method_p);
-  wm_.set_model(mixable_weight_manager::model_ptr(new weight_manager));
-
-  mixable_holder_->register_mixable(&recommender_);
-  mixable_holder_->register_mixable(&wm_);
-
-  (*converter_).set_weight_manager(wm_.get_model());
+      converter_(converter),
+      recommender_(recommender_method) {
+  recommender_->register_mixables_to_holder(*mixable_holder_);
+  converter_->register_mixables_to_holder(*mixable_holder_);
 }
 
 recommender::~recommender() {
 }
 
 void recommender::clear_row(const std::string& id) {
-  recommender_.get_model()->clear_row(id);
+  recommender_->clear_row(id);
 }
 
 void recommender::update_row(
@@ -69,17 +64,17 @@ void recommender::update_row(
     const fv_converter::datum& dat) {
   core::recommender::sfv_diff_t v;
   converter_->convert_and_update_weight(dat, v);
-  recommender_.get_model()->update_row(id, v);
+  recommender_->update_row(id, v);
 }
 
 void recommender::clear() {
-  recommender_.get_model()->clear();
-  wm_.clear();
+  recommender_->clear();
+  converter_->clear_weights();
 }
 
 fv_converter::datum recommender::complete_row_from_id(const std::string& id) {
   common::sfv_t v;
-  recommender_.get_model()->complete_row(id, v);
+  recommender_->complete_row(id, v);
 
   fv_converter::datum ret;
   fv_converter::revert_feature(v, ret);
@@ -90,7 +85,7 @@ fv_converter::datum recommender::complete_row_from_datum(
     const fv_converter::datum& dat) {
   common::sfv_t u, v;
   converter_->convert(dat, u);
-  recommender_.get_model()->complete_row(u, v);
+  recommender_->complete_row(u, v);
 
   fv_converter::datum ret;
   fv_converter::revert_feature(v, ret);
@@ -101,7 +96,7 @@ std::vector<std::pair<std::string, float> > recommender::similar_row_from_id(
     const std::string& id,
     size_t ret_num) {
   std::vector<std::pair<std::string, float> > ret;
-  recommender_.get_model()->similar_row(id, ret, ret_num);
+  recommender_->similar_row(id, ret, ret_num);
   return ret;
 }
 
@@ -113,7 +108,7 @@ recommender::similar_row_from_datum(
   converter_->convert(data, v);
 
   std::vector<std::pair<std::string, float> > ret;
-  recommender_.get_model()->similar_row(v, ret, size);
+  recommender_->similar_row(v, ret, size);
   return ret;
 }
 
@@ -134,7 +129,7 @@ float recommender::calc_l2norm(const fv_converter::datum& q) {
 
 fv_converter::datum recommender::decode_row(const std::string& id) {
   common::sfv_t v;
-  recommender_.get_model()->decode_row(id, v);
+  recommender_->decode_row(id, v);
 
   fv_converter::datum ret;
   fv_converter::revert_feature(v, ret);
@@ -143,7 +138,7 @@ fv_converter::datum recommender::decode_row(const std::string& id) {
 
 std::vector<std::string> recommender::get_all_rows() {
   std::vector<std::string> ret;
-  recommender_.get_model()->get_all_row_ids(ret);
+  recommender_->get_all_row_ids(ret);
   return ret;
 }
 

@@ -21,12 +21,14 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/data/unordered_set.h>
+#include <msgpack.hpp>
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/data/unordered_set.h"
 #include "lsh_vector.hpp"
-#include "recommender_storage_base.hpp"
 #include "storage_type.hpp"
 #include "../common/key_manager.hpp"
+#include "../common/unordered_map.hpp"
+#include "../framework/mixable.hpp"
 
 namespace jubatus {
 namespace core {
@@ -37,17 +39,21 @@ struct lsh_entry {
   bit_vector simhash_bv;
   float norm;
 
+  MSGPACK_DEFINE(lsh_hash, simhash_bv, norm);
+
   template <typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(lsh_hash) & MEMBER(simhash_bv) & MEMBER(norm);
+    ar & JUBA_MEMBER(lsh_hash) & JUBA_MEMBER(simhash_bv) & JUBA_MEMBER(norm);
   }
 };
 
-typedef pfi::data::unordered_map<std::string, lsh_entry> lsh_master_table_t;
+typedef jubatus::util::data::unordered_map<std::string, lsh_entry>
+  lsh_master_table_t;
 
-typedef pfi::data::unordered_map<uint64_t, std::vector<uint64_t> > lsh_table_t;
+typedef jubatus::util::data::unordered_map<uint64_t, std::vector<uint64_t> >
+  lsh_table_t;
 
-class lsh_index_storage : public recommender_storage_base {
+class lsh_index_storage {
  public:
   lsh_index_storage();
   lsh_index_storage(size_t lsh_num, size_t table_num, uint32_t seed);
@@ -83,22 +89,28 @@ class lsh_index_storage : public recommender_storage_base {
     return shift_.size();
   }
 
-  bool save(std::ostream& os);
-  bool load(std::istream& is);
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
 
-  virtual void get_diff(std::string& diff) const;
-  virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
-  virtual void mix(const std::string& lhs, std::string& rhs) const;
+  void get_diff(lsh_master_table_t& diff) const;
+  void set_mixed_and_clear_diff(const lsh_master_table_t& mixed_diff);
+  void mix(const lsh_master_table_t& lhs, lsh_master_table_t& rhs) const;
+
+  MSGPACK_DEFINE(master_table_, master_table_diff_, lsh_table_,
+      lsh_table_diff_, shift_, table_num_, key_manager_);
 
  private:
-  typedef pfi::data::unordered_map<uint64_t, std::vector<uint64_t> >lsh_table_t;
-
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(master_table_) & MEMBER(master_table_diff_) & MEMBER(lsh_table_)
-        & MEMBER(lsh_table_diff_) & MEMBER(shift_) & MEMBER(table_num_)
-        & MEMBER(key_manager_);
+    ar
+        & JUBA_MEMBER(master_table_)
+        & JUBA_MEMBER(master_table_diff_)
+        & JUBA_MEMBER(lsh_table_)
+        & JUBA_MEMBER(lsh_table_diff_)
+        & JUBA_MEMBER(shift_)
+        & JUBA_MEMBER(table_num_)
+        & JUBA_MEMBER(key_manager_);
   }
 
   lsh_master_table_t::iterator remove_and_get_row(const std::string& row);
@@ -110,10 +122,10 @@ class lsh_index_storage : public recommender_storage_base {
   bool retrieve_hit_rows(
       uint64_t hash,
       size_t ret_num,
-      pfi::data::unordered_set<uint64_t>& cands) const;
+      jubatus::util::data::unordered_set<uint64_t>& cands) const;
 
   void get_sorted_similar_rows(
-      const pfi::data::unordered_set<uint64_t>& cands,
+      const jubatus::util::data::unordered_set<uint64_t>& cands,
       const bit_vector& query_simhash,
       float query_norm,
       uint64_t ret_num,
@@ -132,6 +144,9 @@ class lsh_index_storage : public recommender_storage_base {
   uint64_t table_num_;
   common::key_manager key_manager_;
 };
+
+typedef framework::delegating_mixable<lsh_index_storage, lsh_master_table_t>
+    mixable_lsh_index_storage;
 
 }  // namespace storage
 }  // namespace core

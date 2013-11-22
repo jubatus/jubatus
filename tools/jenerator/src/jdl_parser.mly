@@ -31,7 +31,6 @@ let parse_error s = print ("parse_error->"^s);;
 
 %}
 
-%token TYPEDEF
 %token MESSAGE
 %token EXCEPTION
 %token SERVICE
@@ -61,7 +60,6 @@ input:
 
 exp0:
  | include_file { $1 }
- | typedef { $1 }
  | enum    { $1 }
  | msg     { $1 }
  | ex      { $1 }
@@ -70,11 +68,6 @@ exp0:
 
 include_file:
  | INCLUDE STRING { Include($2) }
-;
-
-typedef:
- | TYPEDEF LITERAL DEFINE a_type {
-   Typedef($2, $4) }
 ;
 
 a_type:
@@ -97,6 +90,7 @@ a_type:
    | "double" -> Float true
    | "raw"    -> Raw
    | "string" -> String
+   | "datum"  -> Datum
    | s -> Struct(s)
  }
  | LITERAL LBRACE types RBRACE {
@@ -106,8 +100,6 @@ a_type:
      let left = List.hd $3 in
      let right = List.hd (List.tl $3) in
      Map(left, right);
-   | "tuple" -> Tuple($3);
-   (* user defined types?   hoge<hage, int> *)
    | s ->
      print ("unknown container: " ^ s);
      raise (Syntax.Unknown_type s)
@@ -155,11 +147,8 @@ msg:
 ;
 
 cpp_type:
- | LITERAL {
+ | STRING {
    $1
- }
- | LITERAL COLON_COLON cpp_type {
-   $1 ^ "::" ^ $3
  }
 ;
 

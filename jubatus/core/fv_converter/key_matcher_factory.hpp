@@ -18,6 +18,7 @@
 #define JUBATUS_CORE_FV_CONVERTER_KEY_MATCHER_FACTORY_HPP_
 
 #include <string>
+#include "jubatus/util/lang/shared_ptr.h"
 
 namespace jubatus {
 namespace core {
@@ -27,7 +28,8 @@ class key_matcher;
 
 class key_matcher_factory {
  public:
-  key_matcher* create_matcher(const std::string& matcher);
+  jubatus::util::lang::shared_ptr<key_matcher> create_matcher(
+      const std::string& matcher);
 };
 
 }  // namespace fv_converter

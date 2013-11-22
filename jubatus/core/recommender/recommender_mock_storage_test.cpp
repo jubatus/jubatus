@@ -19,8 +19,8 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/data/string/utility.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/data/string/utility.h"
+#include "jubatus/util/lang/cast.h"
 
 #include "recommender_mock_storage.hpp"
 #include "recommender_mock_util.hpp"
@@ -36,7 +36,7 @@ namespace recommender {
 namespace {
 
 void mix(recommender_mock_storage& s1, recommender_mock_storage& s2) {
-  string diff, mixed;
+  recommender_mock_storage diff, mixed;
   s1.get_diff(diff);
   s2.get_diff(mixed);
   s1.mix(diff, mixed);

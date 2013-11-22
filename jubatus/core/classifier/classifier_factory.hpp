@@ -18,7 +18,8 @@
 #define JUBATUS_CORE_CLASSIFIER_CLASSIFIER_FACTORY_HPP_
 
 #include <string>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
 
 namespace jubatus {
 namespace core {
@@ -42,10 +43,10 @@ class classifier_base;
 
 class classifier_factory {
  public:
-  static classifier_base* create_classifier(
+  static jubatus::util::lang::shared_ptr<classifier_base> create_classifier(
     const std::string& name,
     const common::jsonconfig::config& param,
-    storage::storage_base* storage);
+    jubatus::util::lang::shared_ptr<storage::storage_base> storage);
 };
 
 }  // namespace classifier

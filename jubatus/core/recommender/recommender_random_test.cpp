@@ -21,7 +21,7 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 
 #include "recommender.hpp"
 #include "../classifier/classifier_test_util.hpp"
@@ -32,7 +32,7 @@ using std::sort;
 using std::string;
 using std::stringstream;
 using std::vector;
-using pfi::lang::lexical_cast;
+using jubatus::util::lang::lexical_cast;
 
 namespace jubatus {
 namespace core {
@@ -54,6 +54,15 @@ sfv_diff_t make_vec(const string& c1, const string& c2, const string& c3) {
   return v;
 }
 
+jubatus::util::lang::shared_ptr<framework::mixable0>
+get_mixable(recommender_base& r) {
+  framework::mixable_holder holder;
+  r.register_mixables_to_holder(holder);
+  // There are currently two mixables: orig (dummy mixable) and algorithm-
+  // specific mixable.
+  return holder.get_mixables().back();
+}
+
 template<typename T>
 class recommender_random_test : public testing::Test {
 };
@@ -73,7 +82,7 @@ TYPED_TEST_P(recommender_random_test, trivial) {
 }
 
 TYPED_TEST_P(recommender_random_test, random) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   TypeParam r;
 
   // Generate random data from two norma distributions, N1 and N2.
@@ -110,11 +119,18 @@ TYPED_TEST_P(recommender_random_test, random) {
   }
   EXPECT_GT(correct, 5u);
 
-  // save the recommender
-  stringstream oss;
-  r.save(oss);
+  // pack and unpack the recommender
+  framework::mixable_holder holder;
+  r.register_mixables_to_holder(holder);
+  msgpack::sbuffer buf;
+  msgpack::packer<msgpack::sbuffer> packer(buf);
+  holder.pack(packer);
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, buf.data(), buf.size());
   TypeParam r2;
-  r2.load(oss);
+  framework::mixable_holder holder2;
+  r2.register_mixables_to_holder(holder2);
+  holder2.unpack(unpacked.get());
 
   // Run the same test
   ids.clear();
@@ -129,7 +145,7 @@ TYPED_TEST_P(recommender_random_test, random) {
 }
 
 void update_random(recommender_base& r) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   vector<float> mu(3);
   for (size_t i = 0; i < 100; ++i) {
     vector<double> v;
@@ -168,17 +184,24 @@ void compare_recommenders(recommender_base& r1, recommender_base& r2,
     EXPECT_TRUE(comp1 == comp2);
 }
 
-TYPED_TEST_P(recommender_random_test, save_load) {
+TYPED_TEST_P(recommender_random_test, pack_and_unpack) {
   TypeParam r;
 
   // Generate random data
   update_random(r);
 
   // save and load
-  stringstream ss;
-  r.save(ss);
+  framework::mixable_holder holder;
+  r.register_mixables_to_holder(holder);
+  msgpack::sbuffer buf;
+  msgpack::packer<msgpack::sbuffer> packer(buf);
+  holder.pack(packer);
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, buf.data(), buf.size());
   TypeParam r2;
-  r2.load(ss);
+  framework::mixable_holder holder2;
+  r2.register_mixables_to_holder(holder2);
+  holder2.unpack(unpacked.get());
 
   vector<string> row_ids;
   r2.get_all_row_ids(row_ids);
@@ -226,17 +249,16 @@ TYPED_TEST_P(recommender_random_test, diff) {
   TypeParam r;
   update_random(r);
 
-  string diff;
-  r.get_storage()->get_diff(diff);
+  common::byte_buffer diff = get_mixable(r)->get_diff();
 
   TypeParam r2;
-  r2.get_storage()->set_mixed_and_clear_diff(diff);
+  get_mixable(r2)->put_diff(diff);
 
   compare_recommenders(r, r2, false);
 }
 
 TYPED_TEST_P(recommender_random_test, mix) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   TypeParam r1, r2, expect;
   vector<float> mu(10);
   for (size_t i = 0; i < 100; ++i) {
@@ -249,20 +271,20 @@ TYPED_TEST_P(recommender_random_test, mix) {
     expect.update_row(row, vec);
   }
 
-  string diff1, diff2;
-  r1.get_storage()->get_diff(diff1);
-  r2.get_storage()->get_diff(diff2);
+  common::byte_buffer diff1 = get_mixable(r1)->get_diff();
+  common::byte_buffer diff2 = get_mixable(r2)->get_diff();
 
-  r1.get_storage()->mix(diff1, diff2);
+  common::byte_buffer mixed_diff;
+  get_mixable(r1)->mix(diff1, diff2, mixed_diff);
 
   TypeParam mixed;
-  mixed.get_storage()->set_mixed_and_clear_diff(diff2);
+  get_mixable(mixed)->put_diff(mixed_diff);
 
   compare_recommenders(expect, mixed, false);
 }
 
 REGISTER_TYPED_TEST_CASE_P(recommender_random_test,
-    trivial, random, save_load, get_all_row_ids,
+    trivial, random, pack_and_unpack, get_all_row_ids,
     diff, mix);
 
 typedef testing::Types<inverted_index, lsh, minhash, euclid_lsh>

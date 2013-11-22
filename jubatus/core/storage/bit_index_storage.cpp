@@ -21,8 +21,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
 #include "fixed_size_heap.hpp"
 
 using std::greater;
@@ -88,20 +88,12 @@ void bit_index_storage::get_all_row_ids(std::vector<std::string>& ids) const {
   }
 }
 
-void bit_index_storage::get_diff(string& diff) const {
-  ostringstream os;
-  {
-    pfi::data::serialization::binary_oarchive bo(os);
-    bo << const_cast<bit_table_t&>(bitvals_diff_);
-  }
-  diff = os.str();  // TODO(unknown) remove redudant copy
+void bit_index_storage::get_diff(bit_table_t& diff) const {
+  diff = bitvals_diff_;
 }
 
-void bit_index_storage::set_mixed_and_clear_diff(const string& mixed_diff_str) {
-  istringstream is(mixed_diff_str);
-  pfi::data::serialization::binary_iarchive bi(is);
-  bit_table_t mixed_diff;
-  bi >> mixed_diff;
+void bit_index_storage::set_mixed_and_clear_diff(
+    const bit_table_t& mixed_diff) {
   for (bit_table_t::const_iterator it = mixed_diff.begin();
       it != mixed_diff.end(); ++it) {
     bitvals_[it->first] = it->second;
@@ -109,31 +101,10 @@ void bit_index_storage::set_mixed_and_clear_diff(const string& mixed_diff_str) {
   bitvals_diff_.clear();
 }
 
-void bit_index_storage::mix(const string& lhs, string& rhs) const {
-  bit_table_t lhs_diff;
-  {
-    istringstream is(lhs);
-    pfi::data::serialization::binary_iarchive bi(is);
-    bi >> lhs_diff;
+void bit_index_storage::mix(const bit_table_t& lhs, bit_table_t& rhs) const {
+  for (bit_table_t::const_iterator it = lhs.begin(); it != lhs.end(); ++it) {
+    rhs[it->first] = it->second;
   }
-  bit_table_t rhs_diff;
-  {
-    istringstream is(rhs);
-    pfi::data::serialization::binary_iarchive bi(is);
-    bi >> rhs_diff;
-  }
-
-  for (bit_table_t::const_iterator it = lhs_diff.begin(); it != lhs_diff.end();
-      ++it) {
-    rhs_diff[it->first] = it->second;
-  }
-
-  ostringstream os;
-  {
-    pfi::data::serialization::binary_oarchive bo(os);
-    bo << rhs_diff;
-  }
-  rhs = os.str();  // TODO(unknown) remove redudant copy
 }
 
 typedef fixed_size_heap<pair<uint64_t, string>,
@@ -179,16 +150,12 @@ void bit_index_storage::similar_row(
   }
 }
 
-bool bit_index_storage::save(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
+void bit_index_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
 }
 
-bool bit_index_storage::load(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
-  return true;
+void bit_index_storage::unpack(msgpack::object o) {
+  o.convert(this);
 }
 
 string bit_index_storage::name() const {

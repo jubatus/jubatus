@@ -21,18 +21,21 @@
 #include "dynamic_num_feature.hpp"
 #include "util.hpp"
 
+using jubatus::util::lang::shared_ptr;
+
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-num_feature* create_dynamic_num_feature(
+shared_ptr<num_feature> create_dynamic_num_feature(
     const num_feature_factory::param_t& params) {
   const std::string& path = get_or_die(params, "path");
   const std::string& function = get_or_die(params, "function");
-  return new dynamic_num_feature(path, function, params);
+  return shared_ptr<num_feature>(
+      new dynamic_num_feature(path, function, params));
 }
 
-num_feature* num_feature_factory::create(
+shared_ptr<num_feature> num_feature_factory::create(
     const std::string& name,
     const num_feature_factory::param_t& params) const {
   if (name == "dynamic") {

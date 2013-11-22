@@ -20,8 +20,9 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
+#include "binary_feature.hpp"
 #include "character_ngram.hpp"
 #include "converter_config.hpp"
 #include "datum_to_fv_converter.hpp"
@@ -30,14 +31,12 @@
 #include "match_all.hpp"
 #include "num_feature_impl.hpp"
 #include "num_filter_impl.hpp"
-#ifdef HAVE_RE2
-#  include "re2_filter.hpp"
-#endif
+#include "regexp_filter.hpp"
 #include "space_splitter.hpp"
 #include "weight_manager.hpp"
 #include "without_split.hpp"
 
-using pfi::lang::shared_ptr;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -247,6 +246,51 @@ TEST(datum_to_fv_converter, register_num_rule) {
   }
 }
 
+namespace {
+
+class binary_length_feature : public binary_feature {
+ public:
+  void add_feature(
+      const std::string& key,
+      const std::string& value,
+      std::vector<std::pair<std::string, float> >& ret_fv) const {
+    ret_fv.push_back(std::make_pair(key, value.size()));
+  }
+};
+
+}  // namespace
+
+TEST(datum_to_fv_converter, register_binary_rule) {
+  datum_to_fv_converter conv;
+  init_weight_manager(conv);
+
+  datum datum;
+  datum.binary_values_.push_back(std::make_pair("/bin", "0101"));
+
+  {
+    std::vector<std::pair<std::string, float> > feature;
+    conv.convert(datum, feature);
+    EXPECT_EQ(0u, feature.size());
+  }
+
+  shared_ptr<binary_feature> f(new binary_length_feature());
+  shared_ptr<key_matcher> a(new match_all());
+  conv.register_binary_rule("len", a, f);
+
+  {
+    std::vector<std::pair<std::string, float> > feature;
+    conv.convert(datum, feature);
+    EXPECT_EQ(1u, feature.size());
+
+    std::vector<std::pair<std::string, float> > exp;
+    exp.push_back(std::make_pair("/bin", 4.));
+
+    std::sort(feature.begin(), feature.end());
+    std::sort(exp.begin(), exp.end());
+    ASSERT_EQ(exp, feature);
+  }
+}
+
 TEST(datum_to_fv_converter, register_string_filter) {
   datum_to_fv_converter conv;
   init_weight_manager(conv);
@@ -266,9 +310,8 @@ TEST(datum_to_fv_converter, register_string_filter) {
     EXPECT_EQ(1u, feature.size());
   }
 
-#ifdef HAVE_RE2
   conv.register_string_filter(shared_ptr<key_matcher>(new match_all()),
-      shared_ptr<string_filter>(new re2_filter("<[^>]*>", "")),
+      shared_ptr<string_filter>(new regexp_filter("<[^>]*>", "")),
       "_filtered");
 
   {
@@ -277,7 +320,6 @@ TEST(datum_to_fv_converter, register_string_filter) {
     EXPECT_EQ(2u, feature.size());
     EXPECT_EQ("/text_filtered$aaa@str#bin/bin", feature[1].first);
   }
-#endif
 }
 
 TEST(datum_to_fv_converter, register_num_filter) {

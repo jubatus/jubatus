@@ -20,9 +20,9 @@
 #include <utility>
 #include <vector>
 
-#include <pficommon/text/json.h>
-#include <pficommon/data/optional.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/data/optional.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/fv_converter/datum.hpp"
@@ -36,9 +36,9 @@
 using std::string;
 using std::vector;
 using std::pair;
-using pfi::lang::shared_ptr;
-using pfi::text::json::json;
-using pfi::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
+using jubatus::util::text::json::json;
+using jubatus::util::lang::lexical_cast;
 
 using jubatus::core::fv_converter::datum;
 using jubatus::server::common::lock_service;
@@ -51,16 +51,16 @@ namespace {
 
 struct regression_serv_config {
   std::string method;
-  pfi::data::optional<pfi::text::json::json> parameter;
-  pfi::text::json::json converter;
+  jubatus::util::data::optional<core::common::jsonconfig::config> parameter;
+  core::fv_converter::converter_config converter;
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(method) & MEMBER(parameter) & MEMBER(converter);
+    ar & JUBA_MEMBER(method) & JUBA_MEMBER(parameter) & JUBA_MEMBER(converter);
   }
 };
 
-core::storage::storage_base* make_model(
+shared_ptr<core::storage::storage_base> make_model(
     const framework::server_argv& arg) {
   return core::storage::storage_factory::create_storage(
       (arg.is_standalone()) ? "local" : "local_mixture");
@@ -70,7 +70,7 @@ core::storage::storage_base* make_model(
 
 regression_serv::regression_serv(
     const framework::server_argv& a,
-    const pfi::lang::shared_ptr<lock_service>& zk)
+    const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
 }
@@ -80,15 +80,15 @@ regression_serv::~regression_serv() {
 
 void regression_serv::get_status(status_t& status) const {
   status_t my_status;
-
-  core::storage::storage_base* model = regression_->get_model();
-  model->get_status(my_status);
-  my_status["storage"] = model->type();
-
+  regression_->get_status(my_status);
   status.insert(my_status.begin(), my_status.end());
 }
 
-bool regression_serv::set_config(const string& config) {
+uint64_t regression_serv::user_data_version() const {
+  return 1;  // should be inclemented when model data is modified
+}
+
+void regression_serv::set_config(const string& config) {
   core::common::jsonconfig::config config_root(lexical_cast<json>(config));
   regression_serv_config conf =
     core::common::jsonconfig::config_cast_check<regression_serv_config>(
@@ -98,10 +98,10 @@ bool regression_serv::set_config(const string& config) {
 
   core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::common::jsonconfig::config(*conf.parameter);
+    param = *conf.parameter;
   }
 
-  core::storage::storage_base* model = make_model(argv());
+  shared_ptr<core::storage::storage_base> model = make_model(argv());
 
   regression_.reset(
       new core::driver::regression(
@@ -114,23 +114,23 @@ bool regression_serv::set_config(const string& config) {
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
   LOG(INFO) << "config loaded: " << config;
-  return true;
 }
 
-string regression_serv::get_config() {
+string regression_serv::get_config() const {
   check_set_config();
   return config_;
 }
 
-int regression_serv::train(const vector<pair<float, datum> >& data) {
+int regression_serv::train(const vector<scored_datum>& data) {
   check_set_config();
 
   int count = 0;
 
   core::fv_converter::datum d;
   for (size_t i = 0; i < data.size(); ++i) {
-    regression_->train(data[i]);
-    DLOG(INFO) << "trained: " << data[i].first;
+    // TODO(unno): change interface of driver?
+    regression_->train(std::make_pair(data[i].score, data[i].data));
+    DLOG(INFO) << "trained: " << data[i].score;
     count++;
   }
   // TODO(kuenishi): send count incrementation to mixer
@@ -151,7 +151,7 @@ vector<float> regression_serv::estimate(
 
 bool regression_serv::clear() {
   check_set_config();
-  regression_->get_model()->clear();
+  regression_->clear();
   LOG(INFO) << "model cleared: " << argv().name;
   return true;
 }

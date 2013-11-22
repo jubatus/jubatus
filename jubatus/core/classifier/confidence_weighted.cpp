@@ -28,17 +28,15 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
-confidence_weighted::confidence_weighted(storage::storage_base* storage)
-    : classifier_base(storage) {
-  classifier_base::use_covars_ = true;
+confidence_weighted::confidence_weighted(classifier_base::storage_ptr storage)
+    : classifier_base(storage, true) {
 }
 
 confidence_weighted::confidence_weighted(
     const classifier_config& config,
-    storage::storage_base* storage)
-    : classifier_base(storage),
+    classifier_base::storage_ptr storage)
+    : classifier_base(storage, true),
       config_(config) {
-  classifier_base::use_covars_ = true;
 }
 
 void confidence_weighted::train(const common::sfv_t& sfv, const string& label) {
@@ -62,11 +60,12 @@ void confidence_weighted::update(
     float step_width,
     const string& pos_label,
     const string& neg_label) {
+  storage::storage_base* sto = get_storage();
   for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
     storage::feature_val2_t val2;
-    storage_->get2(feature, val2);
+    sto->get2(feature, val2);
 
     storage::val2_t pos_val(0.f, 1.f);
     storage::val2_t neg_val(0.f, 1.f);
@@ -76,13 +75,13 @@ void confidence_weighted::update(
     float covar_pos_step = 2.f * step_width * val * val * C;
     float covar_neg_step = 2.f * step_width * val * val * C;
 
-    storage_->set2(
+    sto->set2(
         feature,
         pos_label,
         storage::val2_t(pos_val.v1 + step_width * pos_val.v2 * val,
                         1.f / (1.f / pos_val.v2 + covar_pos_step)));
     if (neg_label != "") {
-      storage_->set2(
+      sto->set2(
           feature,
           neg_label,
           storage::val2_t(neg_val.v1 - step_width * neg_val.v2 * val,

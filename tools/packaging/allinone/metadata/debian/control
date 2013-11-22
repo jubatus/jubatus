@@ -9,7 +9,7 @@ Homepage: http://jubat.us/
 Package: jubatus
 Section: misc
 Architecture: any
-Depends: ${misc:Depends}
+Depends: libc6 (>= 2.14), ${misc:Depends}
 Description: Distributed processing framework and streaming machine learning library
  Jubatus is a distributed processing framework and streaming machine
  learning library.

@@ -19,7 +19,7 @@
 
 #include <cmath>
 #include <string>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/unordered_map.h"
 #include "norm_base.hpp"
 
 namespace jubatus {
@@ -35,7 +35,7 @@ class norm_l2 : public norm_base {
   float calc_norm(const std::string& row) const;
 
  private:
-  pfi::data::unordered_map<std::string, float> sq_norms_;
+  jubatus::util::data::unordered_map<std::string, float> sq_norms_;
 };
 
 }  // namespace storage

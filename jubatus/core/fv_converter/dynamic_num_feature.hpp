@@ -19,7 +19,7 @@
 
 #include <map>
 #include <string>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 #include "../common/type.hpp"
 #include "dynamic_loader.hpp"
 #include "num_feature.hpp"
@@ -41,7 +41,7 @@ class dynamic_num_feature : public num_feature {
 
  private:
   dynamic_loader loader_;
-  pfi::lang::scoped_ptr<num_feature> impl_;
+  jubatus::util::lang::scoped_ptr<num_feature> impl_;
 };
 
 }  // namespace fv_converter

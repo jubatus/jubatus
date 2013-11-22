@@ -22,8 +22,8 @@
 #include <typeinfo>
 #include <utility>
 
-#include <pficommon/text/json.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/lang/cast.h"
 
 #include "exception.hpp"
 
@@ -45,11 +45,11 @@ class config {
       : json_() {
   }
 
-  explicit config(const pfi::text::json::json& j)
+  explicit config(const jubatus::util::text::json::json& j)
       : json_(j) {
   }
 
-  config(const pfi::text::json::json& j, const std::string& path)
+  config(const jubatus::util::text::json::json& j, const std::string& path)
       : json_(j),
         path_(path) {
   }
@@ -69,7 +69,7 @@ class config {
   iterator end() const;
 
   size_t size() const;
-  const pfi::text::json::json& get() const {
+  const jubatus::util::text::json::json& get() const {
     return json_;
   }
   const std::string& path() const {
@@ -78,20 +78,20 @@ class config {
 
   template<class T>
   bool is() const {
-    return pfi::text::json::is<T>(json_);
+    return jubatus::util::text::json::is<T>(json_);
   }
 
-  pfi::text::json::json::json_type_t type() const {
+  jubatus::util::text::json::json::json_type_t type() const {
     return json_.type();
   }
 
   class iterator {  // const_iterator
    public:
-    typedef pfi::text::json::json::const_iterator iterator_base;
+    typedef jubatus::util::text::json::json::const_iterator iterator_base;
     iterator(const iterator&);
     iterator(
         const config& parent,
-        const pfi::text::json::json::const_iterator& it);
+        const jubatus::util::text::json::json::const_iterator& it);
 
     const std::string& key() const;
     config value() const;
@@ -105,12 +105,13 @@ class config {
       return !(*this == it);
     }
 
-    std::pair<const std::string, pfi::text::json::json> operator*() const {
+    std::pair<const std::string, jubatus::util::text::json::json>
+    operator*() const {
       return *it_;
     }
 
-    const std::pair<const std::string, pfi::text::json::json>* operator->()
-        const {
+    const std::pair<const std::string, jubatus::util::text::json::json>*
+    operator->() const {
       return it_.operator->();
     }
     // FowrardIterator
@@ -126,11 +127,11 @@ class config {
 
    private:
     const config& parent_;
-    pfi::text::json::json::const_iterator it_;
+    jubatus::util::text::json::json::const_iterator it_;
   };
 
  private:
-  pfi::text::json::json json_;
+  jubatus::util::text::json::json json_;
   std::string path_;
 };
 

@@ -23,9 +23,9 @@
 #include <map>
 #include <string>
 #include <glog/logging.h>
-#include <pficommon/lang/bind.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/system/sysstat.h>
+#include "jubatus/util/lang/bind.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/system/sysstat.h"
 
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "mixer/mixer.hpp"
@@ -49,13 +49,13 @@ class server_helper_impl {
   void prepare_for_run(const server_argv& a, bool use_cht);
   void get_config_lock(const server_argv& a, int retry);
 
-  pfi::lang::shared_ptr<common::lock_service> zk() const {
+  jubatus::util::lang::shared_ptr<common::lock_service> zk() const {
     return zk_;
   }
 
  private:
-  pfi::lang::shared_ptr<common::lock_service> zk_;
-  pfi::lang::shared_ptr<common::try_lockable> zk_config_lock_;
+  jubatus::util::lang::shared_ptr<common::lock_service> zk_;
+  jubatus::util::lang::shared_ptr<common::try_lockable> zk_config_lock_;
 };
 
 template<typename Server>
@@ -82,18 +82,27 @@ class server_helper {
       }
       // send error message to caller
       throw JUBATUS_EXCEPTION(config_error);
-    } catch (const pfi::lang::parse_error& e) {
+    } catch (const jubatus::util::lang::parse_error& e) {
       // exit immediately on JSON parse error with exit-code 1
       std::string msg =
           std::string("syntax error in configuration: ") +
           (a.is_standalone() ?
            a.configpath :
            std::string("<zookeeper>")) + ":" +
-          pfi::lang::lexical_cast<std::string>(e.lineno()) + ":" +
-          pfi::lang::lexical_cast<std::string>(e.pos()) + " " +
+          jubatus::util::lang::lexical_cast<std::string>(e.lineno()) + ":" +
+          jubatus::util::lang::lexical_cast<std::string>(e.pos()) + " " +
           e.msg();
 
       LOG(ERROR) << msg;
+      exit(1);
+    }
+
+    try {
+      // standalone only, is it desirable?
+      if (a.is_standalone() && !a.modelpath.empty()) {
+        server_->load_file(a.modelpath);
+      }
+    } catch (const std::runtime_error& e) {
       exit(1);
     }
   }
@@ -101,12 +110,13 @@ class server_helper {
   std::map<std::string, std::string> get_loads() const {
     std::map<std::string, std::string> result;
     {
-      pfi::system::sysstat::sysstat_ret sys;
+      jubatus::util::system::sysstat::sysstat_ret sys;
       get_sysstat(sys);
-      result["loadavg"] = pfi::lang::lexical_cast<std::string>(sys.loadavg);
-      result["total_memory"] = pfi::lang::lexical_cast<std::string>(
+      result["loadavg"] =
+          jubatus::util::lang::lexical_cast<std::string>(sys.loadavg);
+      result["total_memory"] = jubatus::util::lang::lexical_cast<std::string>(
           sys.total_memory);
-      result["free_memory"] = pfi::lang::lexical_cast<std::string>(
+      result["free_memory"] = jubatus::util::lang::lexical_cast<std::string>(
           sys.free_memory);
     }
     return result;
@@ -119,31 +129,36 @@ class server_helper {
 
     common::util::machine_status_t mt;
     common::util::get_machine_status(mt);
-    data["VIRT"] = pfi::lang::lexical_cast<std::string>(mt.vm_size);
-    data["RSS"] = pfi::lang::lexical_cast<std::string>(mt.vm_resident);
-    data["SHR"] = pfi::lang::lexical_cast<std::string>(mt.vm_share);
+    data["VIRT"] =
+        jubatus::util::lang::lexical_cast<std::string>(mt.vm_size);
+    data["RSS"] =
+        jubatus::util::lang::lexical_cast<std::string>(mt.vm_resident);
+    data["SHR"] =
+        jubatus::util::lang::lexical_cast<std::string>(mt.vm_share);
 
     // TBD: running_time, epoch_time
     // TBD: type(server type), name(instance name: when zookeeper enabled), eth
-    data["timeout"] = pfi::lang::lexical_cast<std::string>(a.timeout);
-    data["threadnum"] = pfi::lang::lexical_cast<std::string>(a.threadnum);
+    data["timeout"] = jubatus::util::lang::lexical_cast<std::string>(a.timeout);
+    data["threadnum"] =
+        jubatus::util::lang::lexical_cast<std::string>(a.threadnum);
     data["datadir"] = a.datadir;
-    data["interval_sec"] = pfi::lang::lexical_cast<std::string>(a.interval_sec);
-    data["interval_count"] = pfi::lang::lexical_cast<std::string>(
+    data["interval_sec"] =
+        jubatus::util::lang::lexical_cast<std::string>(a.interval_sec);
+    data["interval_count"] = jubatus::util::lang::lexical_cast<std::string>(
         a.interval_count);
-    data["is_standalone"] = pfi::lang::lexical_cast<std::string>(
+    data["is_standalone"] = jubatus::util::lang::lexical_cast<std::string>(
         a.is_standalone());
     data["VERSION"] = JUBATUS_VERSION;
     data["PROGNAME"] = a.program_name;
 
-    data["update_count"] = pfi::lang::lexical_cast<std::string>(
+    data["update_count"] = jubatus::util::lang::lexical_cast<std::string>(
         server_->update_count());
 
     server_->get_status(data);
 
     server_->get_mixer()->get_status(data);
     data["zk"] = a.z;
-    data["use_cht"] = pfi::lang::lexical_cast<std::string>(use_cht_);
+    data["use_cht"] = jubatus::util::lang::lexical_cast<std::string>(use_cht_);
 
     return status;
   }
@@ -167,7 +182,8 @@ class server_helper {
 
       // Stop RPC server when terminate signal is sent
       common::util::set_action_on_term(
-          pfi::lang::bind(&server_helper::stop, this, pfi::lang::ref(serv)));
+          jubatus::util::lang::bind(
+              &server_helper::stop, this, jubatus::util::lang::ref(serv)));
 
       // wait for termination
       serv.join();
@@ -198,16 +214,16 @@ class server_helper {
     serv.end();
   }
 
-  pfi::lang::shared_ptr<Server> server() const {
+  jubatus::util::lang::shared_ptr<Server> server() const {
     return server_;
   }
 
-  pfi::concurrent::rw_mutex& rw_mutex() {
+  jubatus::util::concurrent::rw_mutex& rw_mutex() {
     return server_->rw_mutex();
   }
 
  private:
-  pfi::lang::shared_ptr<Server> server_;
+  jubatus::util::lang::shared_ptr<Server> server_;
   server_helper_impl impl_;
   const bool use_cht_;
 };
@@ -217,10 +233,10 @@ class server_helper {
 }  // namespace jubatus
 
 #define JRLOCK_(p) \
-  ::pfi::concurrent::scoped_rlock lk((p)->rw_mutex())
+  ::jubatus::util::concurrent::scoped_rlock lk((p)->rw_mutex())
 
 #define JWLOCK_(p) \
-  ::pfi::concurrent::scoped_wlock lk((p)->rw_mutex()); \
+  ::jubatus::util::concurrent::scoped_wlock lk((p)->rw_mutex()); \
   (p)->server()->event_model_updated()
 
 #define NOLOCK_(p)

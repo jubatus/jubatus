@@ -80,6 +80,11 @@ void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
 #endif
 }
 
+void term_if_deleted(string path) {
+  LOG(INFO) << "My actor [" << path << "] was deleted, preparing for finish";
+  kill(getpid(), SIGINT);
+}
+
 void server_helper_impl::prepare_for_run(const server_argv& a, bool use_cht) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
@@ -90,6 +95,9 @@ void server_helper_impl::prepare_for_run(const server_argv& a, bool use_cht) {
     }
 
     register_actor(*zk_, a.type, a.name, a.eth, a.port);
+
+    // if regestered actor was deleted, this server should finish
+    watch_delete_actor(*zk_, a.type, a.name, a.eth, a.port, term_if_deleted);
     LOG(INFO) << "registered group membership";
   }
 #endif
@@ -100,7 +108,7 @@ void server_helper_impl::get_config_lock(const server_argv& a, int retry) {
   if (!a.is_standalone()) {
     string lock_path;
     common::build_config_lock_path(lock_path, a.type, a.name);
-    zk_config_lock_ = pfi::lang::shared_ptr<common::try_lockable>(
+    zk_config_lock_ = jubatus::util::lang::shared_ptr<common::try_lockable>(
         new common::lock_service_mutex(*zk_, lock_path));
 
     while (!zk_config_lock_->try_rlock()) {

@@ -1,3 +1,46 @@
+Release 0.5.0 - 2013/11/22
+--------------------------
+
+* New machine learning service
+    * Distributed Nearest Neighbor (jubanearest_neighbor)
+    * Distributed Clustering (jubaclustering)
+
+* New Features
+    * Load model data on server startup (#222, #65)
+    * Binary feature in datum (#137, #473)
+    * Provide jubadump command (#178)
+
+      * https://github.com/jubatus/jubadump
+
+* Backward Incompatible Changes
+    * New model data format (#400, #475)
+    * Rename jubakeeper to jubaproxy (#260, #451)
+    * Unify config parameter name to "hash_num", old names were bit_num, bitnum and lsh_num (#446, #454)
+    * New client interface
+
+* Improvements
+    * Replace re2 with oniguruma regular expression library (#361, #465, #471, #494)
+    * Remove pficommon dependency (#467)
+    * Activate options for distributed mode in standalone mode (#445)
+    * Report redundant configuration as error (#484, #489)
+    * Optional configuration (#134, #491)
+    * Action that actor node is deleted from zookeeper should means server shutdown (#492, #499)
+    * Show cause of error when MIX is failed (#478)
+    * Stop loading invalid model file (#468)
+    * Output logs that server was stopped by signal (#505, #515)
+    * Jubatus servers should be terminated gracefully when ZK session expired (#504, #519)
+    * Do not install proxy related headers when disabled zookeeper built (#517, #526)
+    * jenerator (#174, #205, #306, #357, #359, #378, #399, #402, #431, #432, #434, #453, #456, #466, #501)
+    * #412, #450, #447, #438, #426
+
+* Bugfix
+    * Make complete_row not weight similarities (#413, #452)
+    * Fix corrupted DLOG output in zk::remove (#423, #424)
+    * C++ client round down the timeout (#269)
+    * Fix invalid use of iterator in inverted_index_storage (#498)
+    * Check if a plugin dose not return null (#44
+
+
 Release 0.4.5 - 2013/07/22
 --------------------------
 

@@ -21,9 +21,9 @@
 #include <utility>
 #include <string>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
 #include "recommender_base.hpp"
 #include "../storage/lsh_index_storage.hpp"
 
@@ -36,7 +36,7 @@ class euclid_lsh : public recommender_base {
   using recommender_base::similar_row;
   using recommender_base::neighbor_row;
 
-  static const uint64_t DEFAULT_LSH_NUM;
+  static const uint64_t DEFAULT_HASH_NUM;
   static const uint64_t DEFAULT_TABLE_NUM;
   static const float DEFAULT_BIN_WIDTH;
   static const uint32_t DEFAULT_NUM_PROBE;
@@ -46,7 +46,7 @@ class euclid_lsh : public recommender_base {
   struct config {
     config();
 
-    int64_t lsh_num;
+    int64_t hash_num;
     int64_t table_num;
     float bin_width;
     int32_t probe_num;
@@ -55,8 +55,13 @@ class euclid_lsh : public recommender_base {
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(lsh_num) & MEMBER(table_num) & MEMBER(bin_width) &
-        MEMBER(probe_num) & MEMBER(seed) & MEMBER(retain_projection);
+      ar
+          & JUBA_MEMBER(hash_num)
+          & JUBA_MEMBER(table_num)
+          & JUBA_MEMBER(bin_width)
+          & JUBA_MEMBER(probe_num)
+          & JUBA_MEMBER(seed)
+          & JUBA_MEMBER(retain_projection);
     }
   };
 
@@ -88,28 +93,21 @@ class euclid_lsh : public recommender_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const;
 
   virtual std::string type() const;
-  virtual core::storage::lsh_index_storage* get_storage();
-  virtual const core::storage::lsh_index_storage* get_const_storage() const;
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
+      const;
 
  private:
-  friend class pfi::data::serialization::access;
-  template <typename Ar>
-  void serialize(Ar& ar) {
-    ar & MEMBER(lsh_index_) & MEMBER(bin_width_) & MEMBER(num_probe_) &
-      MEMBER(projection_) & MEMBER(retain_projection_);
-  }
-
   std::vector<float> calculate_lsh(const common::sfv_t& query);
   std::vector<float> get_projection(uint32_t seed);
 
-  virtual bool save_impl(std::ostream& os);
-  virtual bool load_impl(std::istream& is);
+  void initialize_model();
 
-  core::storage::lsh_index_storage lsh_index_;
+  jubatus::util::lang::shared_ptr<storage::mixable_lsh_index_storage>
+    mixable_storage_;
   float bin_width_;
   uint32_t num_probe_;
 
-  pfi::data::unordered_map<uint32_t, std::vector<float> > projection_;
+  jubatus::util::data::unordered_map<uint32_t, std::vector<float> > projection_;
   bool retain_projection_;
 };
 

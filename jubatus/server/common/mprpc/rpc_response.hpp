@@ -20,7 +20,7 @@
 #include <msgpack.hpp>
 #include <jubatus/msgpack/rpc/future.h>
 
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 namespace jubatus {
 namespace server {

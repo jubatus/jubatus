@@ -19,7 +19,9 @@
 
 #include <string>
 #include <vector>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
+#include "../recommender/recommender_base.hpp"
 #include "anomaly_base.hpp"
 #include "lof_storage.hpp"
 
@@ -31,8 +33,9 @@ class lof : public anomaly_base {
  public:
   lof();
   explicit lof(
-      const storage::lof_storage::config& config,
-      core::recommender::recommender_base* nn_engine);
+      const lof_storage::config& config,
+      jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
+          nn_engine);
   ~lof();
 
   // return anomaly score of query
@@ -42,23 +45,16 @@ class lof : public anomaly_base {
   virtual void clear();
   virtual void clear_row(const std::string& id);
   virtual void update_row(const std::string& id, const sfv_diff_t& diff);
+  virtual void set_row(const std::string& id, const common::sfv_t& sfv);
+
   virtual void get_all_row_ids(std::vector<std::string>& ids) const;
-
   virtual std::string type() const;
-  virtual storage::anomaly_storage_base* get_storage();
-  virtual const storage::anomaly_storage_base* get_const_storage() const;
-
-  void save(std::ostream&);
-  void load(std::istream&);
-
-  // static float calc_distance(common::sfv_t& q1, common::sfv_t& q2);
-  // static float calc_l2norm(common::sfv_t& q1, common::sfv_t& q2);
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
+      const;
 
  private:
-  virtual bool save_impl(std::ostream& os);
-  virtual bool load_impl(std::istream& is);
-
-  storage::lof_storage lof_index_;
+  jubatus::util::lang::shared_ptr<mixable_lof_storage> mixable_storage_;
+  jubatus::util::lang::shared_ptr<recommender::recommender_base> nn_engine_;
 };
 
 }  //  namespace anomaly

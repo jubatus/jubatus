@@ -21,8 +21,8 @@
 #include <string>
 
 #include <glog/logging.h>
-#include <pficommon/text/json.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
@@ -38,7 +38,8 @@ namespace framework {
 static const std::string VERSION(JUBATUS_VERSION);
 
 namespace {
-  pfi::lang::shared_ptr<server::common::lock_service> ls;
+  const std::string IGNORED_TAG = "[IGNORED]";
+  jubatus::util::lang::shared_ptr<server::common::lock_service> ls;
 }
 
 void print_version(const std::string& progname) {
@@ -78,6 +79,20 @@ void config_json::load_json(const std::string& filepath) {
   jubatus::server::common::config_fromlocal(filepath, config);
 }
 
+void check_ignored_option(const cmdline::parser& p, const std::string& key) {
+  if (p.exist(key)) {
+    LOG(WARNING) << "\"" << key << "\" option is ignored";
+  }
+}
+
+std::string make_ignored_help(const std::string& help) {
+#ifdef HAVE_ZOOKEEPER_H
+  return help;
+#else
+  return IGNORED_TAG + " " + help;
+#endif
+}
+
 server_argv::server_argv(int args, char** argv, const std::string& type)
     : type(type) {
   google::InitGoogleLogging(argv[0]);
@@ -101,21 +116,35 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
       "config option need to specify json file "
       "when standalone mode (without ZK mode)",
       false, "");
+  p.add<std::string>("model_file", 'm',
+                     "model data to load at startup", false, "");
 
-#ifdef HAVE_ZOOKEEPER_H
-  p.add<std::string>("zookeeper", 'z', "zookeeper location", false);
-  p.add<std::string>("name", 'n', "learning machine instance name", false);
-  p.add("join", 'j', "join to the existing cluster");
-  p.add<int>("interval_sec", 's', "mix interval by seconds", false, 16);
-  p.add<int>("interval_count", 'i', "mix interval by update count", false, 512);
-  p.add<int>("zookeeper_timeout", 'Z', "zookeeper time out (sec)", false, 10);
+  p.add<std::string>("zookeeper", 'z',
+                     make_ignored_help("zookeeper location"), false);
+  p.add<std::string>("name", 'n',
+                     make_ignored_help("learning machine instance name"),
+                     false);
+  p.add<std::string>("mixer", 'x',
+                     make_ignored_help("mixer strategy"), false, "");
+  p.add("join", 'j', make_ignored_help("join to the existing cluster"));
+  p.add<int>("interval_sec", 's',
+             make_ignored_help("mix interval by seconds"), false, 16);
+  p.add<int>("interval_count", 'i',
+             make_ignored_help("mix interval by update count"), false, 512);
+  p.add<int>("zookeeper_timeout", 'Z',
+             make_ignored_help("zookeeper time out (sec)"), false, 10);
   p.add<int>("interconnect_timeout", 'I',
-      "interconnect time out between servers (sec)", false, 10);
-#endif
+             make_ignored_help("interconnect time out between servers (sec)"),
+             false, 10);
 
   // APPLY CHANGES TO JUBAVISOR WHEN ARGUMENTS MODIFIED
 
   p.add("version", 'v', "version");
+
+#ifndef HAVE_ZOOKEEPER_H
+  p.footer("\nAll " + IGNORED_TAG +
+           " options are for compatibility with distributed mode");
+#endif
 
   p.parse_check(args, argv);
 
@@ -134,6 +163,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   logdir = p.get<std::string>("logdir");
   loglevel = p.get<int>("loglevel");
   configpath = p.get<std::string>("configpath");
+  modelpath = p.get<std::string>("model_file");
 
   // determine listen-address and IPaddr used as ZK 'node-name'
   // TODO(y-oda-oni-juba): check bind_address is valid format
@@ -149,6 +179,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
 #ifdef HAVE_ZOOKEEPER_H
   z = p.get<std::string>("zookeeper");
   name = p.get<std::string>("name");
+  mixer = p.get<std::string>("mixer");
   join = p.exist("join");
   interval_sec = p.get<int>("interval_sec");
   interval_count = p.get<int>("interval_count");
@@ -194,6 +225,17 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
     exit(1);
   }
   set_log_destination(common::util::get_program_name());
+
+#ifndef HAVE_ZOOKEEPER_H
+  check_ignored_option(p, "zookeeper");
+  check_ignored_option(p, "name");
+  check_ignored_option(p, "mixer");
+  check_ignored_option(p, "join");
+  check_ignored_option(p, "interval_sec");
+  check_ignored_option(p, "interval_count");
+  check_ignored_option(p, "zookeeper_timeout");
+  check_ignored_option(p, "interconnect_timeout");
+#endif
 
   boot_message(common::util::get_program_name());
 }
@@ -275,7 +317,7 @@ std::string get_server_identifier(const server_argv& a) {
   return ss.str();
 }
 
-keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
+proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
     : type(t) {
   google::InitGoogleLogging(argv[0]);
 
@@ -354,7 +396,7 @@ keeper_argv::keeper_argv(int args, char** argv, const std::string& t)
   boot_message(common::util::get_program_name());
 }
 
-keeper_argv::keeper_argv()
+proxy_argv::proxy_argv()
     : port(9199),
       timeout(10),
       zookeeper_timeout(10),
@@ -366,7 +408,7 @@ keeper_argv::keeper_argv()
       eth("") {
 }
 
-void keeper_argv::boot_message(const std::string& progname) const {
+void proxy_argv::boot_message(const std::string& progname) const {
   std::stringstream ss;
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth
       << ":" << port << '\n';
@@ -383,7 +425,7 @@ void keeper_argv::boot_message(const std::string& progname) const {
   LOG(INFO) << ss.str();
 }
 
-void keeper_argv::set_log_destination(const std::string& progname) const {
+void proxy_argv::set_log_destination(const std::string& progname) const {
   if (logdir.empty()) {
     for (int severity = google::INFO; severity < google::NUM_SEVERITIES;
         severity++) {
@@ -404,7 +446,8 @@ void keeper_argv::set_log_destination(const std::string& progname) const {
   }
 }
 
-void register_lock_service(pfi::lang::shared_ptr<common::lock_service> new_ls) {
+void register_lock_service(
+    jubatus::util::lang::shared_ptr<common::lock_service> new_ls) {
   if (ls) {
     throw JUBATUS_EXCEPTION(
         jubatus::core::common::exception::runtime_error(

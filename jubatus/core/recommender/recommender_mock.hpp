@@ -20,7 +20,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "recommender_base.hpp"
 #include "recommender_mock_storage.hpp"
 
@@ -63,21 +64,15 @@ class recommender_mock : public recommender_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const;
 
   virtual std::string type() const;
-  virtual core::storage::recommender_storage_base* get_storage();
-  virtual const core::storage::recommender_storage_base*
-      get_const_storage() const;
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
+      const;
 
  private:
-  virtual bool save_impl(std::ostream&);
-  virtual bool load_impl(std::istream&);
+  void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack_impl(msgpack::object o);
 
-  friend class pfi::data::serialization::access;
-  template<typename Ar>
-  void serialize(Ar& ar) {
-    ar & orig_ & storage_;
-  }
-
-  recommender_mock_storage storage_;
+  jubatus::util::lang::shared_ptr<mixable_recommender_mock_storage>
+    mixable_storage_;
 };
 
 }  // namespace recommender

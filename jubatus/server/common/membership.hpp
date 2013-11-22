@@ -21,6 +21,7 @@
 #include <utility>
 #include <vector>
 #include <map>
+#include "jubatus/util/lang/function.h"
 
 #include "lock_service.hpp"
 
@@ -30,7 +31,7 @@ namespace common {
 
 static const std::string JUBATUS_BASE_PATH = "/jubatus";
 static const std::string JUBAVISOR_BASE_PATH = "/jubatus/supervisors";
-static const std::string JUBAKEEPER_BASE_PATH = "/jubatus/jubakeepers";
+static const std::string JUBAPROXY_BASE_PATH = "/jubatus/jubaproxies";
 static const std::string ACTOR_BASE_PATH = "/jubatus/actors";
 static const std::string CONFIG_BASE_PATH = "/jubatus/config";
 
@@ -70,8 +71,17 @@ void register_actor(
     const std::string& ip,
     int port);
 
+void watch_delete_actor(
+    lock_service& z,
+    const std::string& type,
+    const std::string& name,
+    const std::string& ip,
+    int port,
+    jubatus::util::lang::function<void(std::string)> callback);
+
+
 // zk -> name -> ip -> port -> void
-void register_keeper(
+void register_proxy(
     lock_service&,
     const std::string& type,
     const std::string& ip,
@@ -81,10 +91,10 @@ void register_keeper(
 bool get_all_actors(
     lock_service&,
     const std::string& type,
-    const std::string&,
+    const std::string& name,
     std::vector<std::pair<std::string, int> >&);
 
-void force_exit();
+void shutdown_server();
 
 void prepare_jubatus(
     lock_service& ls,

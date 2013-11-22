@@ -21,6 +21,7 @@
 #include "lsh.hpp"
 #include "euclid_lsh.hpp"
 #include "minhash.hpp"
+#include "nearest_neighbor_recommender.hpp"
 #include "recommender_mock.hpp"
 
 #endif  // JUBATUS_CORE_RECOMMENDER_RECOMMENDER_HPP_

@@ -20,9 +20,9 @@
 #include <utility>
 #include <vector>
 
-#include <pficommon/text/json.h>
-#include <pficommon/data/optional.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/data/optional.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/vector_util.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
@@ -39,8 +39,8 @@ using std::string;
 using std::vector;
 using std::pair;
 using std::isfinite;
-using pfi::lang::lexical_cast;
-using pfi::text::json::json;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::text::json::json;
 using jubatus::core::fv_converter::datum;
 using jubatus::core::fv_converter::weight_manager;
 using jubatus::server::common::lock_service;
@@ -55,12 +55,12 @@ namespace {
 struct recommender_serv_config {
   std::string method;
   // TODO(unnonouno): if must use parameter
-  pfi::data::optional<core::common::jsonconfig::config> parameter;
-  pfi::text::json::json converter;
+  jubatus::util::data::optional<core::common::jsonconfig::config> parameter;
+  core::fv_converter::converter_config converter;
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(method) & MEMBER(parameter) & MEMBER(converter);
+    ar & JUBA_MEMBER(method) & JUBA_MEMBER(parameter) & JUBA_MEMBER(converter);
   }
 };
 
@@ -68,7 +68,7 @@ struct recommender_serv_config {
 
 recommender_serv::recommender_serv(
     const framework::server_argv& a,
-    const pfi::lang::shared_ptr<lock_service>& zk)
+    const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)),
       clear_row_cnt_(),
@@ -86,7 +86,11 @@ void recommender_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-bool recommender_serv::set_config(const std::string &config) {
+uint64_t recommender_serv::user_data_version() const {
+  return 1;  // should be inclemented when model data is modified
+}
+
+void recommender_serv::set_config(const std::string &config) {
   core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   recommender_serv_config conf =
     core::common::jsonconfig::config_cast_check<recommender_serv_config>(
@@ -96,21 +100,25 @@ bool recommender_serv::set_config(const std::string &config) {
 
   core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::common::jsonconfig::config(*conf.parameter);
+    param = *conf.parameter;
   }
+
+  std::string my_id;
+#ifdef HAVE_ZOOKEEPER_H_
+  my_id = common::build_loc_str(argv().eth, argv().port);
+#endif
 
   recommender_.reset(
       new core::driver::recommender(
           core::recommender::recommender_factory::create_recommender(
-              conf.method, param),
+              conf.method, param, my_id),
           core::fv_converter::make_fv_converter(conf.converter)));
   mixer_->set_mixable_holder(recommender_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
-  return true;
 }
 
-string recommender_serv::get_config() {
+string recommender_serv::get_config() const {
   check_set_config();
   return config_;
 }
@@ -159,19 +167,36 @@ datum recommender_serv::complete_row_from_datum(datum dat) {
   return recommender_->complete_row_from_datum(dat);
 }
 
-similar_result recommender_serv::similar_row_from_id(
+std::vector<id_with_score> recommender_serv::similar_row_from_id(
     std::string id,
     size_t ret_num) {
   check_set_config();
 
-  return recommender_->similar_row_from_id(id, ret_num);
+  // TODO(unno): remove conversion code
+  vector<pair<string, float> > res(
+      recommender_->similar_row_from_id(id, ret_num));
+  vector<id_with_score> result(res.size());
+  for (size_t i = 0; i < res.size(); ++i) {
+    result[i].id = res[i].first;
+    result[i].score = res[i].second;
+  }
+  return result;
 }
 
-similar_result recommender_serv::similar_row_from_datum(datum data, size_t s) {
+std::vector<id_with_score> recommender_serv::similar_row_from_datum(
+    datum data,
+    size_t s) {
   check_set_config();
 
-  similar_result ret;
-  return recommender_->similar_row_from_datum(data, s);
+  // TODO(unno): remove conversion code
+  vector<pair<string, float> > res(
+      recommender_->similar_row_from_datum(data, s));
+  vector<id_with_score> result(res.size());
+  for (size_t i = 0; i < res.size(); ++i) {
+    result[i].id = res[i].first;
+    result[i].score = res[i].second;
+  }
+  return result;
 }
 
 datum recommender_serv::decode_row(std::string id) {

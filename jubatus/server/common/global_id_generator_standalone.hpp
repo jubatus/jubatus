@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <string>
 
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 
 #include "global_id_generator_base.hpp"
 
@@ -38,7 +38,7 @@ class global_id_generator_standalone: public global_id_generator_base {
   virtual uint64_t generate();
 
  private:
-  pfi::lang::scoped_ptr<impl> pimpl_;
+  jubatus::util::lang::scoped_ptr<impl> pimpl_;
 };
 
 }  // namespace common

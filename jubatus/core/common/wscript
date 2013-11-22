@@ -8,20 +8,26 @@ def configure(conf):
   conf.recurse(subdirs)
 
 def build(bld):
-  import Options
-  src = 'exception.cpp key_manager.cpp vector_util.cpp'
+  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+    libassert = " LIBGLOG"
+  else:
+    libassert = ""
+
+  src = 'crc32.cpp exception.cpp key_manager.cpp vector_util.cpp'
   src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
 
   bld.shlib(
     source = src,
     target = 'jubacommon',
     includes = '.',
-    use = 'PFICOMMON'
+    use = 'jubatus_util'+libassert
     )
 
   test_src = [
     'exception_test.cpp',
+    'big_endian_test.cpp',
     'byte_buffer_test.cpp',
+    'crc32_test.cpp',
     'key_manager_test.cpp',
     'vector_util_test.cpp',
      'jsonconfig_test.cpp',
@@ -33,13 +39,16 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'jubacommon'
+      use = 'jubacommon'+libassert
       )
   for s in test_src:
     make_test(s)
 
   bld.install_files('${PREFIX}/include/jubatus/core/common/', [
+      'assert.hpp',
+      'big_endian.hpp',
       'byte_buffer.hpp',
+      'crc32.hpp',
       'exception.hpp',
       'exception_info.hpp',
       'hash.hpp',

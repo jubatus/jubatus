@@ -21,11 +21,11 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/data/unordered_set.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/data/unordered_set.h"
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/math/random.h"
 #include "lsh_util.hpp"
 
 using std::copy;
@@ -40,9 +40,9 @@ using std::vector;
 using std::sort;
 using std::partial_sort;
 using std::lower_bound;
-using pfi::data::unordered_map;
-using pfi::data::unordered_set;
-using pfi::math::random::mtrand;
+using jubatus::util::data::unordered_map;
+using jubatus::util::data::unordered_set;
+using jubatus::util::math::random::mtrand;
 
 namespace jubatus {
 namespace core {
@@ -113,16 +113,9 @@ float calc_euclidean_distance(
 lsh_master_table_t extract_diff(const string& serialized) {
   lsh_master_table_t diff;
   istringstream iss(serialized);
-  pfi::data::serialization::binary_iarchive bi(iss);
+  jubatus::util::data::serialization::binary_iarchive bi(iss);
   bi >> diff;
   return diff;
-}
-
-string serialize_diff(const lsh_master_table_t& table) {
-  ostringstream oss;
-  pfi::data::serialization::binary_oarchive bo(oss);
-  bo << const_cast<lsh_master_table_t&>(table);
-  return oss.str();  // TODO(unknown) remove redundant copy
 }
 
 void retrieve_hit_rows_from_table(
@@ -282,25 +275,20 @@ string lsh_index_storage::name() const {
   return "lsh_index_storage";
 }
 
-bool lsh_index_storage::save(ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
+void lsh_index_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
 }
 
-bool lsh_index_storage::load(istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
-  return true;
+void lsh_index_storage::unpack(msgpack::object o) {
+  o.convert(this);
 }
 
-void lsh_index_storage::get_diff(string& diff) const {
-  diff = serialize_diff(master_table_diff_);
+void lsh_index_storage::get_diff(lsh_master_table_t& diff) const {
+  diff = master_table_diff_;
 }
 
-void lsh_index_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
-  lsh_master_table_t diff = extract_diff(mixed_diff);
-
+void lsh_index_storage::set_mixed_and_clear_diff(
+    const lsh_master_table_t& diff) {
   for (lsh_master_table_t::const_iterator it = diff.begin(); it != diff.end();
       ++it) {
     if (it->second.lsh_hash.empty()) {
@@ -319,16 +307,13 @@ void lsh_index_storage::set_mixed_and_clear_diff(const string& mixed_diff) {
   lsh_table_diff_.clear();
 }
 
-void lsh_index_storage::mix(const string& lhs, string& rhs) const {
-  const lsh_master_table_t diff_l = extract_diff(lhs);
-  lsh_master_table_t diff_r = extract_diff(rhs);
-
-  for (lsh_master_table_t::const_iterator it = diff_l.begin();
-      it != diff_l.end(); ++it) {
-    diff_r[it->first] = it->second;
+void lsh_index_storage::mix(
+    const lsh_master_table_t& lhs,
+    lsh_master_table_t& rhs) const {
+  for (lsh_master_table_t::const_iterator it = lhs.begin(); it != lhs.end();
+       ++it) {
+    rhs[it->first] = it->second;
   }
-
-  rhs = serialize_diff(diff_r);
 }
 
 // private

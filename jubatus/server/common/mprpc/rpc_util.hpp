@@ -19,9 +19,9 @@
 
 #include <string>
 #include <utility>
-#include <jubatus/msgpack/rpc/client.h>
-#include <pficommon/data/serialization.h>
 #include <msgpack.hpp>
+#include <jubatus/msgpack/rpc/client.h>
+#include "jubatus/util/data/serialization.h"
 #include "rpc_server.hpp"
 
 namespace jubatus {
@@ -55,7 +55,7 @@ struct result {
   MSGPACK_DEFINE(success, retval, error);
   template<class Archiver>
   void serialize(Archiver& ar) {
-    ar & MEMBER(success) & MEMBER(retval) & MEMBER(error);
+    ar & JUBA_MEMBER(success) & JUBA_MEMBER(retval) & JUBA_MEMBER(error);
   }
 };
 
@@ -64,7 +64,8 @@ struct result {
   class name : public virtual jubatus::server::common::mprpc::rpc_server { \
   public:                                                                 \
     name() : rpc_server(0) { }                                            \
-    void set_##name(const pfi::lang::function< ret_type param_list> &f) { \
+    void set_##name(                                                      \
+        const jubatus::util::lang::function< ret_type param_list> &f) {   \
       rpc_server::add< ret_type param_list>(#name, f);                    \
     }                                                                     \
   };                                                                      \

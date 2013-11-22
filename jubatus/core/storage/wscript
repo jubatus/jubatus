@@ -1,29 +1,35 @@
+# -*- python -*-
 import Options
 
 def options(opt): pass
 
 def configure(conf): pass
 
-def make_test(bld, src):
+def make_test(bld, src, use):
   bld.program(
     features = 'gtest',
     source = src,
     target = src[0:src.rindex('.')],
-    use = 'jubastorage',
+    use = use,
     )
 
-def make_tests(bld, srcs):
+def make_tests(bld, srcs, use):
   for src in srcs:
-    make_test(bld, src)
+    make_test(bld, src, use)
 
 def build(bld):
+  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+    libassert = " LIBGLOG"
+  else:
+    libassert = ""
+
   cppfiles = ['storage_factory.cpp', 'storage_base.cpp', 'local_storage.cpp',
               'local_storage_mixture.cpp',
               'sparse_matrix_storage.cpp', 'inverted_index_storage.cpp', 'bit_vector.cpp', 'bit_index_storage.cpp',
               'lsh_vector.cpp',
               'lsh_util.cpp',
               'lsh_index_storage.cpp']
-  use = 'PFICOMMON jubacommon MSGPACK'
+  use = 'jubatus_util jubacommon MSGPACK'+libassert
 
   bld.shlib(
     source = cppfiles,
@@ -45,7 +51,7 @@ def build(bld):
       'bit_vector_test.cpp',
       'bit_index_storage_test.cpp',
       'storage_type_test.cpp',
-      ])
+      ], 'jubastorage'+libassert)
 
   bld.install_files('${PREFIX}/include/jubatus/core/storage',
                     ['storage_base.hpp',
@@ -53,5 +59,4 @@ def build(bld):
                      'storage_factory.hpp',
                      'bit_vector.hpp',
                      'sparse_matrix_storage.hpp',
-                     'recommender_storage_base.hpp',
                      ])

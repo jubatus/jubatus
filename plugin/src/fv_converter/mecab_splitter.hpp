@@ -22,7 +22,7 @@
 #include <utility>
 #include <vector>
 #include <mecab.h>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 
 #include "jubatus/core/fv_converter/word_splitter.hpp"
 
@@ -39,7 +39,7 @@ class mecab_splitter : public jubatus::core::fv_converter::word_splitter {
              std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
  private:
-  pfi::lang::scoped_ptr<MeCab::Model> model_;
+  jubatus::util::lang::scoped_ptr<MeCab::Model> model_;
 };
 
 }  // namespace fv_converter

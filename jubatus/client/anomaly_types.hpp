@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl
+// This file is auto-generated from anomaly.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_ANOMALY_TYPES_HPP_
@@ -11,16 +11,22 @@
 #include <vector>
 #include <utility>
 
+#include <jubatus/client/common/datum.hpp>
 #include <msgpack.hpp>
 
 namespace jubatus {
 namespace anomaly {
 
-struct datum {
+struct id_with_score {
  public:
-  MSGPACK_DEFINE(string_values, num_values);
-  std::vector<std::pair<std::string, std::string> > string_values;
-  std::vector<std::pair<std::string, double> > num_values;
+  MSGPACK_DEFINE(id, score);
+  std::string id;
+  float score;
+  id_with_score() {
+  }
+  id_with_score(const std::string& id, float score)
+    : id(id), score(score) {
+  }
 };
 
 }  // namespace anomaly

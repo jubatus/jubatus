@@ -23,8 +23,8 @@
 #include <utility>
 #include <vector>
 #include <glog/logging.h>
-#include <pficommon/data/digest/md5.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/data/digest/md5.h"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/core/common/exception.hpp"
 #include "membership.hpp"
 
@@ -35,7 +35,7 @@ namespace common {
 
 std::string make_hash(const std::string& key) {
   std::stringstream ss;
-  ss << pfi::data::digest::md5sum(key);
+  ss << jubatus::util::data::digest::md5sum(key);
   return ss.str();
 }
 
@@ -61,7 +61,7 @@ void cht::setup_cht_dir(
 }
 
 cht::cht(
-    pfi::lang::shared_ptr<lock_service> z,
+    jubatus::util::lang::shared_ptr<lock_service> z,
     const std::string& type,
     const std::string& name)
     : type_(type),

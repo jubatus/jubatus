@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/core/driver/recommender.hpp"
 #include "../framework/server_base.hpp"
 #include "recommender_types.hpp"
@@ -28,11 +28,13 @@
 namespace jubatus {
 namespace server {
 
+typedef std::vector<std::pair<std::string, float> > similar_result;
+
 class recommender_serv : public framework::server_base {
  public:
   recommender_serv(
       const framework::server_argv& a,
-      const pfi::lang::shared_ptr<common::lock_service>& zk);
+      const jubatus::util::lang::shared_ptr<common::lock_service>& zk);
   virtual ~recommender_serv();
 
 
@@ -40,25 +42,29 @@ class recommender_serv : public framework::server_base {
     return mixer_.get();
   }
 
-  pfi::lang::shared_ptr<core::framework::mixable_holder>
+  jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
     get_mixable_holder() const {
     return recommender_->get_mixable_holder();
   }
 
   void get_status(status_t& status) const;
+  uint64_t user_data_version() const;
 
-  bool set_config(const std::string& config);
-  std::string get_config();
+  void set_config(const std::string& config);
+  std::string get_config() const;
 
   bool clear_row(std::string id);
   bool update_row(std::string id, core::fv_converter::datum dat);
   bool clear();
 
-  core::fv_converter::datum complete_row_from_id(std::string id);
+  core::fv_converter::datum complete_row_from_id(
+      std::string id);
   core::fv_converter::datum complete_row_from_datum(
       core::fv_converter::datum dat);
-  similar_result similar_row_from_id(std::string id, size_t ret_num);
-  similar_result similar_row_from_datum(core::fv_converter::datum, size_t);
+  std::vector<id_with_score> similar_row_from_id(
+      std::string id, size_t ret_num);
+  std::vector<id_with_score> similar_row_from_datum(
+      core::fv_converter::datum, size_t);
 
   float calc_similarity(
       const core::fv_converter::datum&,
@@ -71,8 +77,8 @@ class recommender_serv : public framework::server_base {
   void check_set_config() const;
 
  private:
-  pfi::lang::shared_ptr<framework::mixer::mixer> mixer_;
-  pfi::lang::shared_ptr<core::driver::recommender> recommender_;
+  jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
+  jubatus::util::lang::shared_ptr<core::driver::recommender> recommender_;
   std::string config_;
 
   uint64_t clear_row_cnt_;

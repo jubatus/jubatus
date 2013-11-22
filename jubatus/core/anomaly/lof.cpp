@@ -21,17 +21,17 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/data/serialization.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/math/random.h"
 
 #include "../common/hash.hpp"
 #include "../storage/lsh_util.hpp"
 #include "../storage/lsh_vector.hpp"
 
 using jubatus::core::anomaly::lof;
-using pfi::data::unordered_map;
-using pfi::math::random::mtrand;
+using jubatus::util::data::unordered_map;
+using jubatus::util::math::random::mtrand;
 using std::isinf;
 using std::istream;
 using std::ostream;
@@ -71,9 +71,12 @@ lof::lof() {
 }
 
 lof::lof(
-    const storage::lof_storage::config& config,
-    recommender::recommender_base* nn_engine)
-    : lof_index_(config, nn_engine) {
+    const lof_storage::config& config,
+    jubatus::util::lang::shared_ptr<recommender::recommender_base> nn_engine)
+    : mixable_storage_(new mixable_lof_storage),
+      nn_engine_(nn_engine) {
+  mixable_storage_->set_model(mixable_lof_storage::model_ptr(
+      new lof_storage(config, nn_engine)));
 }
 
 lof::~lof() {
@@ -81,56 +84,47 @@ lof::~lof() {
 
 float lof::calc_anomaly_score(const common::sfv_t& query) const {
   unordered_map<string, float> neighbor_lrd;
-  const float lrd = lof_index_.collect_lrds(query, neighbor_lrd);
+  const float lrd = mixable_storage_->get_model()->collect_lrds(
+      query, neighbor_lrd);
 
   return calculate_lof(lrd, neighbor_lrd);
 }
 
 float lof::calc_anomaly_score(const string& id) const {
   unordered_map<string, float> neighbor_lrd;
-  const float lrd = lof_index_.collect_lrds(id, neighbor_lrd);
+  const float lrd = mixable_storage_->get_model()->collect_lrds(
+      id, neighbor_lrd);
 
   return calculate_lof(lrd, neighbor_lrd);
 }
 
 void lof::clear() {
-  lof_index_.clear();
+  mixable_storage_->get_model()->clear();
 }
 
 void lof::clear_row(const string& id) {
-  lof_index_.remove_row(id);
+  mixable_storage_->get_model()->remove_row(id);
 }
 
 void lof::update_row(const string& id, const sfv_diff_t& diff) {
-  lof_index_.update_row(id, diff);
+  mixable_storage_->get_model()->update_row(id, diff);
+}
+
+void lof::set_row(const string& id, const common::sfv_t& sfv) {
+  throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
 }
 
 void lof::get_all_row_ids(vector<string>& ids) const {
-  lof_index_.get_all_row_ids(ids);
+  mixable_storage_->get_model()->get_all_row_ids(ids);
 }
 
 string lof::type() const {
   return "lof";
 }
 
-storage::anomaly_storage_base* lof::get_storage() {
-  return &lof_index_;
-}
-
-const storage::anomaly_storage_base* lof::get_const_storage() const {
-  return &lof_index_;
-}
-
-bool lof::save_impl(ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << lof_index_;
-  return true;
-}
-
-bool lof::load_impl(istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> lof_index_;
-  return true;
+void lof::register_mixables_to_holder(framework::mixable_holder& holder) const {
+  nn_engine_->register_mixables_to_holder(holder);
+  holder.register_mixable(mixable_storage_);
 }
 
 }  // namespace anomaly

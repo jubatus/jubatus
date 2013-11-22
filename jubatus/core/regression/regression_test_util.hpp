@@ -25,14 +25,14 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
-#include <pficommon/math/random.h>
+#include "jubatus/util/math/random.h"
 
 void make_gaussian_random(
     float mu,
     float sigma,
     size_t dim,
     std::vector<double>& v) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   for (size_t i = 0; i < dim; i++) {
     float value = rand.next_gaussian(mu, sigma);
     v.push_back(value);
@@ -40,7 +40,7 @@ void make_gaussian_random(
 }
 
 void make_random(size_t dim, std::vector<double>& v) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   for (size_t i = 0; i < dim; i++) {
     double value = rand.next_double();
     v.push_back(value);

@@ -21,7 +21,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include <cassert>
 #include <cerrno>
 #include <csignal>
 #include <cstdlib>
@@ -31,12 +30,13 @@
 #include <vector>
 
 #include <glog/logging.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 
+#include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
 #include "../common/util.hpp"
 
-using pfi::lang::lexical_cast;
+using jubatus::util::lang::lexical_cast;
 
 namespace jubatus {
 namespace server {
@@ -112,6 +112,7 @@ bool process::spawn_link(int p) {
       "-e", lexical_cast<std::string, int>(server_option_.loglevel),
       "-s", lexical_cast<std::string, int>(server_option_.interval_sec),
       "-i", lexical_cast<std::string, int>(server_option_.interval_count),
+      "-x", server_option_.mixer,
     };
     std::vector<const char*> arg_list;
     for (size_t i = 0; i < sizeof(argv) / sizeof(*argv); ++i) {
@@ -135,8 +136,7 @@ bool process::spawn_link(int p) {
     return false;
   }
 
-  assert(false);
-  // never reaches here
+  JUBATUS_ASSERT_UNREACHABLE();
   return false;
 }
 

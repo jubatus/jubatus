@@ -21,11 +21,10 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/data/string/utility.h>
-#include <pficommon/lang/cast.h>
-#include <pficommon/lang/scoped_ptr.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/data/string/utility.h"
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/math/random.h"
 #include "../common/exception.hpp"
 #include "../common/hash.hpp"
 #include "../common/portable_mixer.hpp"  // TODO(kashihara): use linear_mixer
@@ -35,27 +34,27 @@
 
 using jubatus::core::recommender::make_sfv;
 using jubatus::core::recommender::make_ids;
-using jubatus::core::storage::lof_storage;
-using pfi::data::unordered_map;
-using pfi::lang::lexical_cast;
+using jubatus::util::data::unordered_map;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
 using std::istringstream;
 using std::string;
 using std::vector;
 
 namespace jubatus {
 namespace core {
-namespace storage {
+namespace anomaly {
 
 namespace {
 
-lof_storage* make_storage(
+shared_ptr<lof_storage> make_storage(
     uint32_t k,
     uint32_t ck,
-    recommender::recommender_base* mock_nn_engine) {
+    shared_ptr<recommender::recommender_base> mock_nn_engine) {
   lof_storage::config config;
   config.nearest_neighbor_num = k;
   config.reverse_nearest_neighbor_num = ck;
-  lof_storage* s = new lof_storage(config, mock_nn_engine);
+  shared_ptr<lof_storage> s(new lof_storage(config, mock_nn_engine));
   // s->set_nn_engine(mock_nn_engine);
 
   return s;
@@ -111,8 +110,8 @@ TEST(lof_storage, get_all_row_ids) {
 class lof_storage_one_dimensional_test : public ::testing::Test {
  protected:
   virtual void SetUp() {
-    rmock_ = new recommender::recommender_mock;
-    storage_.reset(make_storage(2, 2, rmock_));
+    rmock_.reset(new recommender::recommender_mock);
+    storage_ = make_storage(2, 2, rmock_);
 
     storage_->update_row("-1", make_sfv("1:-1"));
     storage_->update_row("0", make_sfv("1:0"));
@@ -129,8 +128,8 @@ class lof_storage_one_dimensional_test : public ::testing::Test {
     storage_->update_all();
   }
 
-  recommender::recommender_mock* rmock_;
-  pfi::lang::scoped_ptr<lof_storage> storage_;
+  shared_ptr<recommender::recommender_mock> rmock_;
+  shared_ptr<lof_storage> storage_;
 };
 
 TEST_F(lof_storage_one_dimensional_test, get_kdist) {
@@ -174,7 +173,7 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
                           float deviation) {
     common::sfv_t sfv(mean);
     const uint64_t seed = common::hash_util::calc_string_hash(name);
-    pfi::math::random::mtrand r(seed);
+    jubatus::util::math::random::mtrand r(seed);
 
     for (size_t i = 0; i < sfv.size(); ++i) {
       sfv[i].second += r.next_gaussian() * deviation;
@@ -199,7 +198,7 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
   void mix() {
     portable_mixer_.mix();
 
-    string diff;
+    lof_table_t diff;
     single_storage_->get_diff(diff);
     single_storage_->set_mixed_and_clear_diff(diff);
   }
@@ -212,10 +211,14 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
     storages_.resize(num_models);
     for (int i = 0; i < num_models; ++i) {
       storages_[i].reset(
-        new lof_storage(config, new recommender::recommender_mock));
+        new lof_storage(config,
+          shared_ptr<recommender::recommender_mock>(
+            new recommender::recommender_mock)));
     }
     single_storage_.reset(
-      new lof_storage(config, new recommender::recommender_mock));
+      new lof_storage(config,
+        shared_ptr<recommender::recommender_mock>(
+          new recommender::recommender_mock)));
 
     for (size_t i = 0; i < storages_.size(); ++i) {
       portable_mixer_.add(storages_[i].get());
@@ -227,9 +230,9 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
     single_storage_.reset();
   }
 
-  vector<pfi::lang::shared_ptr<lof_storage> > storages_;
-  pfi::lang::shared_ptr<lof_storage> single_storage_;
-  common::portable_mixer<lof_storage> portable_mixer_;
+  vector<jubatus::util::lang::shared_ptr<lof_storage> > storages_;
+  jubatus::util::lang::shared_ptr<lof_storage> single_storage_;
+  common::portable_mixer<lof_storage, lof_table_t> portable_mixer_;
 };
 
 TEST_P(lof_storage_mix_test, consistency) {

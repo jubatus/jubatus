@@ -18,15 +18,18 @@
 
 #include <string>
 
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
 
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
+#include "../nearest_neighbor/nearest_neighbor_factory.hpp"
 #include "anomaly.hpp"
 
 using jubatus::core::common::jsonconfig::config;
 using jubatus::core::common::jsonconfig::config_cast_check;
-using pfi::text::json::json;
+using jubatus::util::lang::shared_ptr;
+using jubatus::util::text::json::json;
 using std::string;
 
 namespace jubatus {
@@ -34,29 +37,53 @@ namespace core {
 namespace anomaly {
 
 namespace {
-struct anomaly_config {
-  std::string method;  // nest engine name
+struct lof_config {
+  int nearest_neighbor_num;
+  int reverse_nearest_neighbor_num;
+  std::string method;
   jubatus::core::common::jsonconfig::config parameter;
 
-  template<typename Ar>
+  template <typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(method) & MEMBER(parameter);
+    ar
+        & JUBA_MEMBER(nearest_neighbor_num)
+        & JUBA_MEMBER(reverse_nearest_neighbor_num)
+        & JUBA_MEMBER(method)
+        & JUBA_MEMBER(parameter);
   }
 };
-}
+}  // namespace
 
-anomaly_base* anomaly_factory::create_anomaly(
+shared_ptr<anomaly_base> anomaly_factory::create_anomaly(
     const string& name,
-    const config& param) {
+    const config& param,
+    const string& id) {
   if (name == "lof") {
-    anomaly_config conf = config_cast_check<anomaly_config>(param);
-    storage::lof_storage::config config =
-        config_cast_check<storage::lof_storage::config>(param);
-    return new lof(
-        config,
+    lof_config conf = config_cast_check<lof_config>(param);
+
+    lof_storage::config lof_conf;
+    lof_conf.nearest_neighbor_num = conf.nearest_neighbor_num;
+    lof_conf.reverse_nearest_neighbor_num = conf.nearest_neighbor_num;
+
+    return shared_ptr<anomaly_base>(new lof(
+        lof_conf,
         recommender::recommender_factory::create_recommender(
             conf.method,
-            conf.parameter));
+            conf.parameter, id)));
+  } else if (name == "light_lof") {
+    lof_config conf = config_cast_check<lof_config>(param);
+
+    light_lof::config lof_conf;
+    lof_conf.nearest_neighbor_num = conf.nearest_neighbor_num;
+    lof_conf.reverse_nearest_neighbor_num = conf.nearest_neighbor_num;
+
+    jubatus::util::lang::shared_ptr<table::column_table> nearest_neighbor_table(
+        new table::column_table);
+    jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+        nearest_neighbor_engine(nearest_neighbor::create_nearest_neighbor(
+            conf.method, conf.parameter, nearest_neighbor_table, id));
+    return jubatus::util::lang::shared_ptr<anomaly_base>(
+        new light_lof(lof_conf, id, nearest_neighbor_engine));
   } else {
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }
@@ -65,4 +92,3 @@ anomaly_base* anomaly_factory::create_anomaly(
 }  // namespace anomaly
 }  // namespace core
 }  // namespace jubatus
-

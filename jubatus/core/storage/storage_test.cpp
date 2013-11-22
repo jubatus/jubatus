@@ -18,8 +18,8 @@
 #include <map>
 #include <string>
 #include <gtest/gtest.h>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
 #include "local_storage.hpp"
 #include "local_storage_mixture.hpp"
 
@@ -41,8 +41,8 @@ using jubatus::core::storage::val2_t;
 using jubatus::core::storage::val3_t;
 using jubatus::core::storage::local_storage;
 using jubatus::core::storage::local_storage_mixture;
-using pfi::data::serialization::binary_iarchive;
-using pfi::data::serialization::binary_oarchive;
+using jubatus::util::data::serialization::binary_iarchive;
+using jubatus::util::data::serialization::binary_oarchive;
 
 namespace jubatus {
 namespace core {
@@ -52,37 +52,49 @@ class stub_storage : public storage_base {
  private:
   map<string, map<string, val3_t> > data_;
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(data_);
+    ar & JUBA_MEMBER(data_);
   }
 
  public:
-  void get_status(std::map<std::string, std::string>&) {
+  MSGPACK_DEFINE(data_);
+
+  void get_status(std::map<std::string, std::string>&) const {
   }
 
-  void get(const std::string& feature, feature_val1_t& ret) {
-    const map<string, val3_t>& f = data_[feature];
-    for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
-        ++it) {
-      ret.push_back(make_pair(it->first, val1_t(it->second.v1)));
+  void get(const std::string& feature, feature_val1_t& ret) const {
+    map<string, map<string, val3_t> >::const_iterator hit = data_.find(feature);
+    if (hit != data_.end()) {
+      const map<string, val3_t>& f = hit->second;
+      for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
+           ++it) {
+        ret.push_back(make_pair(it->first, val1_t(it->second.v1)));
+      }
     }
   }
 
-  void get2(const std::string& feature, feature_val2_t& ret) {
-    const map<string, val3_t>& f = data_[feature];
-    for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
-        ++it) {
-      ret.push_back(make_pair(it->first, val2_t(it->second.v1, it->second.v2)));
+  void get2(const std::string& feature, feature_val2_t& ret) const {
+    map<string, map<string, val3_t> >::const_iterator hit = data_.find(feature);
+    if (hit != data_.end()) {
+      const map<string, val3_t>& f = hit->second;
+      for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
+           ++it) {
+        ret.push_back(
+            make_pair(it->first, val2_t(it->second.v1, it->second.v2)));
+      }
     }
   }
 
-  void get3(const std::string& feature, feature_val3_t& ret) {
-    const map<string, val3_t>& f = data_[feature];
-    for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
-        ++it) {
-      ret.push_back(*it);
+  void get3(const std::string& feature, feature_val3_t& ret) const {
+    map<string, map<string, val3_t> >::const_iterator hit = data_.find(feature);
+    if (hit != data_.end()) {
+      const map<string, val3_t>& f = hit->second;
+      for (map<string, val3_t>::const_iterator it = f.begin(); it != f.end();
+           ++it) {
+        ret.push_back(*it);
+      }
     }
   }
 
@@ -107,16 +119,12 @@ class stub_storage : public storage_base {
     data_[feature][klass] = w;
   }
 
-  bool save(std::ostream& os) {
-    pfi::data::serialization::binary_oarchive oa(os);
-    oa << *this;
-    return true;
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+    packer.pack(*this);
   }
 
-  bool load(std::istream& is) {
-    pfi::data::serialization::binary_iarchive ia(is);
-    ia >> *this;
-    return true;
+  void unpack(msgpack::object o) {
+    o.convert(this);
   }
 
   void clear() {
@@ -283,6 +291,56 @@ TYPED_TEST_P(storage_test, serialize) {
     binary_iarchive ia(ss);
     ia >> s;
     // unlink(tmp_file_name);
+
+    {
+      feature_val3_t mm;
+      s.get3("a", mm);
+
+      sort(mm.begin(), mm.end());
+
+      feature_val3_t exp;
+      exp.push_back(make_pair("x", val3_t(1, 11, 111)));
+      exp.push_back(make_pair("y", val3_t(2, 22, 222)));
+      exp.push_back(make_pair("z", val3_t(3, 33, 333)));
+      EXPECT_TRUE(exp == mm);
+    }
+
+    {
+      feature_val3_t mm;
+      s.get3("b", mm);
+
+      sort(mm.begin(), mm.end());
+
+      feature_val3_t exp;
+      exp.push_back(make_pair("x", val3_t(12, 1212, 121212)));
+      exp.push_back(make_pair("z", val3_t(45, 4545, 454545)));
+
+      EXPECT_TRUE(exp == mm);
+    }
+  }
+}
+
+TYPED_TEST_P(storage_test, messagepack) {
+  msgpack::sbuffer buf;
+
+  {
+    TypeParam s;
+    s.set3("a", "x", val3_t(1, 11, 111));
+    s.set3("a", "y", val3_t(2, 22, 222));
+    s.set3("a", "z", val3_t(3, 33, 333));
+    s.set3("b", "x", val3_t(12, 1212, 121212));
+    s.set3("b", "z", val3_t(45, 4545, 454545));
+
+    msgpack::pack(&buf, s);
+  }
+
+  {
+    TypeParam s;
+
+    msgpack::unpacked unpacked;
+    msgpack::unpack(&unpacked, buf.data(), buf.size());
+
+    unpacked.get().convert(&s);
 
     {
       feature_val3_t mm;
@@ -547,6 +605,7 @@ REGISTER_TYPED_TEST_CASE_P(storage_test,
                            val2d,
                            val3d,
                            serialize,
+                           messagepack,
                            inp,
                            get_status,
                            update,

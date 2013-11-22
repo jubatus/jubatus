@@ -120,7 +120,7 @@ address_list get_network_address() {
       int family = ifa->ifa_addr->sa_family;
       if (family == AF_INET) {
         result.push_back(
-            pfi::lang::shared_ptr<network_address>(
+            jubatus::util::lang::shared_ptr<network_address>(
                 new ipv4_address(
                     reinterpret_cast<struct sockaddr_in*>(ifa->ifa_addr),
                     ifa->ifa_name)));
@@ -144,7 +144,7 @@ string get_default_v4_address(string hostaddr) {
   const address_list addrs = get_network_address();
   for (address_list::const_iterator it = addrs.begin(), end = addrs.end();
       it != end; ++it) {
-    pfi::lang::shared_ptr<network_address> a(*it);
+    jubatus::util::lang::shared_ptr<network_address> a(*it);
     if (a->v6()) {
       continue;
     }

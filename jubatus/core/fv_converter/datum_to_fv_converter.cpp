@@ -21,15 +21,17 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/optional.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/data/optional.h"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "counter.hpp"
 #include "datum.hpp"
 #include "exception.hpp"
 #include "feature_hasher.hpp"
 #include "match_all.hpp"
+#include "mixable_weight_manager.hpp"
 #include "num_feature.hpp"
 #include "num_filter.hpp"
+#include "binary_feature.hpp"
 #include "space_splitter.hpp"
 #include "string_filter.hpp"
 #include "weight_manager.hpp"
@@ -43,11 +45,11 @@ namespace fv_converter {
 
 class datum_to_fv_converter_impl {
  private:
-  typedef pfi::data::unordered_map<std::string, float> weight_t;
+  typedef jubatus::util::data::unordered_map<std::string, float> weight_t;
 
   struct string_filter_rule {
-    pfi::lang::shared_ptr<key_matcher> matcher_;
-    pfi::lang::shared_ptr<string_filter> filter_;
+    jubatus::util::lang::shared_ptr<key_matcher> matcher_;
+    jubatus::util::lang::shared_ptr<string_filter> filter_;
     std::string suffix_;
 
     void filter(const datum::sv_t& string_values, datum::sv_t& filtered) const {
@@ -64,8 +66,8 @@ class datum_to_fv_converter_impl {
   };
 
   struct num_filter_rule {
-    pfi::lang::shared_ptr<key_matcher> matcher_;
-    pfi::lang::shared_ptr<num_filter> filter_;
+    jubatus::util::lang::shared_ptr<key_matcher> matcher_;
+    jubatus::util::lang::shared_ptr<num_filter> filter_;
     std::string suffix_;
 
     void filter(const datum::nv_t& num_values, datum::nv_t& filtered) const {
@@ -82,14 +84,14 @@ class datum_to_fv_converter_impl {
 
   struct string_feature_rule {
     std::string name_;
-    pfi::lang::shared_ptr<key_matcher> matcher_;
-    pfi::lang::shared_ptr<word_splitter> splitter_;
+    jubatus::util::lang::shared_ptr<key_matcher> matcher_;
+    jubatus::util::lang::shared_ptr<word_splitter> splitter_;
     std::vector<splitter_weight_type> weights_;
 
     string_feature_rule(
         const std::string& name,
-        pfi::lang::shared_ptr<key_matcher> matcher,
-        pfi::lang::shared_ptr<word_splitter> splitter,
+        jubatus::util::lang::shared_ptr<key_matcher> matcher,
+        jubatus::util::lang::shared_ptr<word_splitter> splitter,
         const std::vector<splitter_weight_type>& weights)
         : name_(name),
           matcher_(matcher),
@@ -100,31 +102,51 @@ class datum_to_fv_converter_impl {
 
   struct num_feature_rule {
     std::string name_;
-    pfi::lang::shared_ptr<key_matcher> matcher_;
-    pfi::lang::shared_ptr<num_feature> feature_func_;
+    jubatus::util::lang::shared_ptr<key_matcher> matcher_;
+    jubatus::util::lang::shared_ptr<num_feature> feature_func_;
 
     num_feature_rule(
         const std::string& name,
-        pfi::lang::shared_ptr<key_matcher> matcher,
-        pfi::lang::shared_ptr<num_feature> feature_func)
+        jubatus::util::lang::shared_ptr<key_matcher> matcher,
+        jubatus::util::lang::shared_ptr<num_feature> feature_func)
         : name_(name),
           matcher_(matcher),
           feature_func_(feature_func) {
     }
   };
 
+  struct binary_feature_rule {
+    std::string name_;
+    jubatus::util::lang::shared_ptr<key_matcher> matcher_;
+    jubatus::util::lang::shared_ptr<binary_feature> feature_func_;
+
+    binary_feature_rule(
+        const std::string& name,
+        jubatus::util::lang::shared_ptr<key_matcher> matcher,
+        jubatus::util::lang::shared_ptr<binary_feature> feature_func)
+        : name_(name),
+          matcher_(matcher),
+          feature_func_(feature_func) {
+    }
+  };
+
+  // binarys
+  std::vector<binary_feature_rule> binary_rules_;
+
   std::vector<string_filter_rule> string_filter_rules_;
   std::vector<num_filter_rule> num_filter_rules_;
   std::vector<string_feature_rule> string_rules_;
   std::vector<num_feature_rule> num_rules_;
 
-  pfi::lang::shared_ptr<weight_manager> weights_;
+  jubatus::util::lang::shared_ptr<mixable_weight_manager> mixable_weights_;
 
-  pfi::data::optional<feature_hasher> hasher_;
+  jubatus::util::data::optional<feature_hasher> hasher_;
 
  public:
   datum_to_fv_converter_impl()
-      : weights_() {
+      : mixable_weights_(new mixable_weight_manager) {
+    set_weight_manager(jubatus::util::lang::shared_ptr<weight_manager>(
+        new weight_manager));
   }
 
   void clear_rules() {
@@ -132,19 +154,20 @@ class datum_to_fv_converter_impl {
     num_filter_rules_.clear();
     string_rules_.clear();
     num_rules_.clear();
+    binary_rules_.clear();
   }
 
   void register_string_filter(
-      pfi::lang::shared_ptr<key_matcher> matcher,
-      pfi::lang::shared_ptr<string_filter> filter,
+      jubatus::util::lang::shared_ptr<key_matcher> matcher,
+      jubatus::util::lang::shared_ptr<string_filter> filter,
       const std::string& suffix) {
     string_filter_rule rule = { matcher, filter, suffix };
     string_filter_rules_.push_back(rule);
   }
 
   void register_num_filter(
-      pfi::lang::shared_ptr<key_matcher> matcher,
-      pfi::lang::shared_ptr<num_filter> filter,
+      jubatus::util::lang::shared_ptr<key_matcher> matcher,
+      jubatus::util::lang::shared_ptr<num_filter> filter,
       const std::string& suffix) {
     num_filter_rule rule = { matcher, filter, suffix };
     num_filter_rules_.push_back(rule);
@@ -152,8 +175,8 @@ class datum_to_fv_converter_impl {
 
   void register_string_rule(
       const std::string& name,
-      pfi::lang::shared_ptr<key_matcher> matcher,
-      pfi::lang::shared_ptr<word_splitter> splitter,
+      jubatus::util::lang::shared_ptr<key_matcher> matcher,
+      jubatus::util::lang::shared_ptr<word_splitter> splitter,
       const std::vector<splitter_weight_type>& weights) {
     string_rules_.push_back(
         string_feature_rule(name, matcher, splitter, weights));
@@ -161,22 +184,33 @@ class datum_to_fv_converter_impl {
 
   void register_num_rule(
       const std::string& name,
-      pfi::lang::shared_ptr<key_matcher> matcher,
-      pfi::lang::shared_ptr<num_feature> feature_func) {
+      jubatus::util::lang::shared_ptr<key_matcher> matcher,
+      jubatus::util::lang::shared_ptr<num_feature> feature_func) {
     num_rules_.push_back(num_feature_rule(name, matcher, feature_func));
   }
 
+  void register_binary_rule(
+      const std::string& name,
+      jubatus::util::lang::shared_ptr<key_matcher> matcher,
+      jubatus::util::lang::shared_ptr<binary_feature> feature_func) {
+    binary_rules_.push_back(binary_feature_rule(name, matcher, feature_func));
+  }
+
   void add_weight(const std::string& key, float weight) {
-    if (weights_) {
-      (*weights_).add_weight(key, weight);
+    jubatus::util::lang::shared_ptr<weight_manager> weights =
+        mixable_weights_->get_model();
+    if (weights) {
+      (*weights).add_weight(key, weight);
     }
   }
 
   void convert(const datum& datum, common::sfv_t& ret_fv) const {
     common::sfv_t fv;
     convert_unweighted(datum, fv);
-    if (weights_) {
-      (*weights_).get_weight(fv);
+    jubatus::util::lang::shared_ptr<weight_manager> weights =
+        mixable_weights_->get_model();
+    if (weights) {
+      (*weights).get_weight(fv);
     }
 
     if (hasher_) {
@@ -189,9 +223,11 @@ class datum_to_fv_converter_impl {
   void convert_and_update_weight(const datum& datum, common::sfv_t& ret_fv) {
     common::sfv_t fv;
     convert_unweighted(datum, fv);
-    if (weights_) {
-      (*weights_).update_weight(fv);
-      (*weights_).get_weight(fv);
+    jubatus::util::lang::shared_ptr<weight_manager> weights =
+        mixable_weights_->get_model();
+    if (weights) {
+      (*weights).update_weight(fv);
+      (*weights).get_weight(fv);
     }
 
     if (hasher_) {
@@ -213,6 +249,8 @@ class datum_to_fv_converter_impl {
     filter_nums(datum.num_values_, filtered_nums);
     convert_nums(datum.num_values_, fv);
     convert_nums(filtered_nums, fv);
+
+    convert_binaries(datum.binary_values_, fv);
 
     fv.swap(ret_fv);
   }
@@ -253,8 +291,18 @@ class datum_to_fv_converter_impl {
     hasher_ = feature_hasher(hash_max_size);
   }
 
-  void set_weight_manager(pfi::lang::shared_ptr<weight_manager> wm) {
-    weights_ = wm;
+  void set_weight_manager(jubatus::util::lang::shared_ptr<weight_manager> wm) {
+    mixable_weights_->set_model(wm);
+  }
+
+  void clear_weights() {
+    mixable_weights_->clear();
+  }
+
+  void register_mixables_to_holder(framework::mixable_holder& holder) const {
+    if (mixable_weights_->get_model()) {
+      holder.register_mixable(mixable_weights_);
+    }
   }
 
  private:
@@ -312,6 +360,26 @@ class datum_to_fv_converter_impl {
       for (size_t i = 0; i < splitter.weights_.size(); ++i) {
         make_string_features(
             key, splitter.name_, splitter.weights_[i], counter, ret_fv);
+      }
+    }
+  }
+
+  void convert_binaries(const datum::sv_t& binary_values,
+                         common::sfv_t& ret_fv) const {
+    for (size_t i = 0; i < binary_rules_.size(); ++i) {
+      convert_binaries(binary_rules_[i], binary_values, ret_fv);
+    }
+  }
+
+  void convert_binaries(
+      const binary_feature_rule& feature,
+      const datum::sv_t& binary_values,
+      common::sfv_t& ret_fv) const {
+    for (size_t j = 0; j < binary_values.size(); ++j) {
+      const std::string& key = binary_values[j].first;
+      const std::string& value = binary_values[j].second;
+      if (feature.matcher_->match(key)) {
+        feature.feature_func_->add_feature(key, value, ret_fv);
       }
     }
   }
@@ -455,32 +523,39 @@ void datum_to_fv_converter::clear_rules() {
 }
 
 void datum_to_fv_converter::register_string_filter(
-    pfi::lang::shared_ptr<key_matcher> matcher,
-    pfi::lang::shared_ptr<string_filter> filter,
+    jubatus::util::lang::shared_ptr<key_matcher> matcher,
+    jubatus::util::lang::shared_ptr<string_filter> filter,
     const std::string& suffix) {
   pimpl_->register_string_filter(matcher, filter, suffix);
 }
 
 void datum_to_fv_converter::register_num_filter(
-    pfi::lang::shared_ptr<key_matcher> matcher,
-    pfi::lang::shared_ptr<num_filter> filter,
+    jubatus::util::lang::shared_ptr<key_matcher> matcher,
+    jubatus::util::lang::shared_ptr<num_filter> filter,
     const std::string& suffix) {
   pimpl_->register_num_filter(matcher, filter, suffix);
 }
 
 void datum_to_fv_converter::register_string_rule(
     const std::string& name,
-    pfi::lang::shared_ptr<key_matcher> matcher,
-    pfi::lang::shared_ptr<word_splitter> splitter,
+    jubatus::util::lang::shared_ptr<key_matcher> matcher,
+    jubatus::util::lang::shared_ptr<word_splitter> splitter,
     const std::vector<splitter_weight_type>& weights) {
   pimpl_->register_string_rule(name, matcher, splitter, weights);
 }
 
 void datum_to_fv_converter::register_num_rule(
     const std::string& name,
-    pfi::lang::shared_ptr<key_matcher> matcher,
-    pfi::lang::shared_ptr<num_feature> feature_func) {
+    jubatus::util::lang::shared_ptr<key_matcher> matcher,
+    jubatus::util::lang::shared_ptr<num_feature> feature_func) {
   pimpl_->register_num_rule(name, matcher, feature_func);
+}
+
+void datum_to_fv_converter::register_binary_rule(
+    const std::string& name,
+    jubatus::util::lang::shared_ptr<key_matcher> matcher,
+    jubatus::util::lang::shared_ptr<binary_feature> feature_func) {
+  pimpl_->register_binary_rule(name, matcher, feature_func);
 }
 
 void datum_to_fv_converter::add_weight(const std::string& key, float weight) {
@@ -498,8 +573,17 @@ void datum_to_fv_converter::set_hash_max_size(uint64_t hash_max_size) {
 }
 
 void datum_to_fv_converter::set_weight_manager(
-    pfi::lang::shared_ptr<weight_manager> wm) {
+    jubatus::util::lang::shared_ptr<weight_manager> wm) {
   pimpl_->set_weight_manager(wm);
+}
+
+void datum_to_fv_converter::clear_weights() {
+  pimpl_->clear_weights();
+}
+
+void datum_to_fv_converter::register_mixables_to_holder(
+    framework::mixable_holder& holder) const {
+  pimpl_->register_mixables_to_holder(holder);
 }
 
 }  // namespace fv_converter

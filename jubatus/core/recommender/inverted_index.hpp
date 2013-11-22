@@ -20,8 +20,9 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "recommender_base.hpp"
-#include "../storage/recommender_storage.hpp"
+#include "../storage/inverted_index_storage.hpp"
 
 namespace jubatus {
 namespace core {
@@ -45,13 +46,13 @@ class inverted_index : public recommender_base {
   void update_row(const std::string& id, const sfv_diff_t& diff);
   void get_all_row_ids(std::vector<std::string>& ids) const;
   std::string type() const;
-  core::storage::recommender_storage_base* get_storage();
-  const core::storage::recommender_storage_base* get_const_storage() const;
+  void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
  private:
-  bool save_impl(std::ostream&);
-  bool load_impl(std::istream&);
-  core::storage::inverted_index_storage inv_;
+  void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack_impl(msgpack::object o);
+  jubatus::util::lang::shared_ptr<storage::mixable_inverted_index_storage>
+  mixable_storage_;
 };
 
 }  // namespace recommender

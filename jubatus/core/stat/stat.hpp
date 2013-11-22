@@ -23,11 +23,15 @@
 #include <deque>
 #include <string>
 #include <utility>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/concurrent/rwmutex.h"
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/lang/enable_shared_from_this.h"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../common/exception.hpp"
+#include "../common/unordered_map.hpp"
+#include "../framework/mixable.hpp"
 
 namespace jubatus {
 namespace core {
@@ -49,16 +53,16 @@ class stat_error : public common::exception::jubaexception<stat_error> {
   std::string msg_;
 };
 
-class stat {
+class stat : public jubatus::util::lang::enable_shared_from_this<stat> {
  public:
   explicit stat(size_t window_size);
   virtual ~stat();
 
-  virtual std::pair<double, size_t> get_diff() const {
-    std::pair<double, size_t> ret;
-    return ret;
-  }
-  virtual void put_diff(const std::pair<double, size_t>&) {}
+  virtual void get_diff(std::pair<double, size_t>& ret) const;
+  virtual void set_mixed_and_clear_diff(const std::pair<double, size_t>&);
+  virtual void mix(
+      const std::pair<double, size_t>& lhs,
+      std::pair<double, size_t>& ret) const;
 
   void push(const std::string& key, double val);
 
@@ -72,9 +76,12 @@ class stat {
 
   virtual void clear();
 
-  virtual bool save(std::ostream&);
-  virtual bool load(std::istream&);
+  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  virtual void unpack(msgpack::object o);
   std::string type() const;
+
+  virtual void register_mixables_to_holder(
+      framework::mixable_holder& holder) const;
 
  protected:
   struct stat_val {
@@ -148,7 +155,7 @@ class stat {
       }
     }
 
-    friend class pfi::data::serialization::access;
+    friend class jubatus::util::data::serialization::access;
     template<class Archive>
     void serialize(Archive& ar) {
       ar & n_ & sum_ & sum2_ & max_ & min_;
@@ -159,19 +166,31 @@ class stat {
     double sum_, sum2_;
     double max_;
     double min_;
+
+    MSGPACK_DEFINE(n_, sum_, sum2_, max_, min_);
   };
 
   std::deque<std::pair<uint64_t, std::pair<std::string, double> > > window_;
-  pfi::data::unordered_map<std::string, stat_val> stats_;
+  jubatus::util::data::unordered_map<std::string, stat_val> stats_;
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & window_size_ & window_ & stats_;
+    ar & window_size_ & window_ & stats_ & e_ & n_;
   }
   size_t window_size_;
+
+  double e_;
+  double n_;
+
+ public:
+  MSGPACK_DEFINE(window_size_, window_, stats_, e_, n_);
 };
+
+typedef framework::delegating_mixable<stat, std::pair<double, size_t> >
+    mixable_stat;
+
 }  // namespace stat
 }  // namespace core
 }  // namespace jubatus

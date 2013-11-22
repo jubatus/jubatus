@@ -16,7 +16,7 @@
 
 #include <sstream>
 #include <string>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 #include "datum.hpp"
 #include "exception.hpp"
 #include "libsvm_converter.hpp"
@@ -46,7 +46,7 @@ void libsvm_converter::convert(
           converter_exception("invalid libsvm format: " + s));
     }
     std::string id = s.substr(0, p);
-    float val = pfi::lang::lexical_cast<float>(s.substr(p + 1));
+    float val = jubatus::util::lang::lexical_cast<float>(s.substr(p + 1));
     num_values.push_back(make_pair(id, val));
   }
 

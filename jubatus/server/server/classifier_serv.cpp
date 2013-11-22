@@ -20,9 +20,9 @@
 #include <utility>
 #include <vector>
 
-#include <pficommon/text/json.h>
-#include <pficommon/data/optional.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/data/optional.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/classifier/classifier_factory.hpp"
 #include "jubatus/core/common/vector_util.hpp"
@@ -39,8 +39,9 @@ using std::string;
 using std::vector;
 using std::pair;
 using std::isfinite;
-using pfi::lang::lexical_cast;
-using pfi::text::json::json;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
+using jubatus::util::text::json::json;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::server_argv;
 using jubatus::server::framework::mixer::create_mixer;
@@ -55,16 +56,16 @@ namespace {
 
 struct classifier_serv_config {
   std::string method;
-  pfi::data::optional<pfi::text::json::json> parameter;
-  pfi::text::json::json converter;
+  jubatus::util::data::optional<core::common::jsonconfig::config> parameter;
+  core::fv_converter::converter_config converter;
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(method) & MEMBER(parameter) & MEMBER(converter);
+    ar & JUBA_MEMBER(method) & JUBA_MEMBER(parameter) & JUBA_MEMBER(converter);
   }
 };
 
-core::storage::storage_base* make_model(
+shared_ptr<core::storage::storage_base> make_model(
     const framework::server_argv& arg) {
   return core::storage::storage_factory::create_storage(
       (arg.is_standalone()) ? "local" : "local_mixture");
@@ -74,7 +75,7 @@ core::storage::storage_base* make_model(
 
 classifier_serv::classifier_serv(
     const framework::server_argv& a,
-    const pfi::lang::shared_ptr<lock_service>& zk)
+    const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
 }
@@ -84,15 +85,11 @@ classifier_serv::~classifier_serv() {
 
 void classifier_serv::get_status(status_t& status) const {
   status_t my_status;
-
-  core::storage::storage_base* model = classifier_->get_model();
-  model->get_status(my_status);
-  my_status["storage"] = model->type();
-
+  classifier_->get_status(my_status);
   status.insert(my_status.begin(), my_status.end());
 }
 
-bool classifier_serv::set_config(const string& config) {
+void classifier_serv::set_config(const string& config) {
   core::common::jsonconfig::config config_root(lexical_cast<json>(config));
   classifier_serv_config conf =
     core::common::jsonconfig::config_cast_check<classifier_serv_config>(
@@ -102,15 +99,14 @@ bool classifier_serv::set_config(const string& config) {
 
   core::common::jsonconfig::config param;
   if (conf.parameter) {
-    param = core::common::jsonconfig::config(*conf.parameter);
+    param = *conf.parameter;
   }
 
   // Model owner moved to classifier_
-  core::storage::storage_base* model = make_model(argv());
+  shared_ptr<core::storage::storage_base> model = make_model(argv());
 
   classifier_.reset(
       new core::driver::classifier(
-        model,
         core::classifier::classifier_factory::create_classifier(
           conf.method, param, model),
         core::fv_converter::make_fv_converter(conf.converter)));
@@ -119,24 +115,27 @@ bool classifier_serv::set_config(const string& config) {
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
   LOG(INFO) << "config loaded: " << config;
-  return true;
 }
 
-string classifier_serv::get_config() {
+string classifier_serv::get_config() const {
   check_set_config();
   return config_;
 }
 
-int classifier_serv::train(
-    const vector<pair<string, jubatus::core::fv_converter::datum> >& data) {
+uint64_t classifier_serv::user_data_version() const {
+  return 1;  // should be inclemented when model data is modified
+}
+
+int classifier_serv::train(const vector<labeled_datum>& data) {
   check_set_config();
 
   int count = 0;
 
   for (size_t i = 0; i < data.size(); ++i) {
-    classifier_->train(data[i]);
+    // TODO(unno): change interface of driver?
+    classifier_->train(make_pair(data[i].label, data[i].data));
 
-    DLOG(INFO) << "trained: " << data[i].first;
+    DLOG(INFO) << "trained: " << data[i].label;
     count++;
   }
   // TODO(kuenishi): send count incrementation to mixer
@@ -172,7 +171,7 @@ vector<vector<estimate_result> > classifier_serv::classify(
 bool classifier_serv::clear() {
   check_set_config();
 
-  classifier_->get_model()->clear();
+  classifier_->clear();
   LOG(INFO) << "model cleared: " << argv().name;
   return true;
 }

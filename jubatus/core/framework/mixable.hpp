@@ -22,15 +22,17 @@
 #include <vector>
 
 #include <msgpack.hpp>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/concurrent/rwmutex.h"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../common/exception.hpp"
 #include "../common/byte_buffer.hpp"
+#include "../common/assert.hpp"
 
 namespace jubatus {
 namespace core {
 namespace framework {
 
+// TODO(unknown): split linear_mixable and random_miable
 class mixable0 {
  public:
   mixable0() {
@@ -39,20 +41,26 @@ class mixable0 {
   virtual ~mixable0() {
   }
 
+  // interface for linear_mixer
   virtual common::byte_buffer get_diff() const = 0;
   virtual void put_diff(const common::byte_buffer&) = 0;
   virtual void mix(const common::byte_buffer&,
                    const common::byte_buffer&,
                    common::byte_buffer&) const = 0;
 
-  virtual void save(std::ostream& ofs) = 0;
-  virtual void load(std::istream& ifs) = 0;
+  // interface for random_mixer
+  virtual std::string get_pull_argument() const = 0;
+  virtual std::string pull(const std::string&) const = 0;
+  virtual void push(const std::string&) = 0;
+
+  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
+  virtual void unpack(msgpack::object o) = 0;
   virtual void clear() = 0;
 };
 
 class mixable_holder {
  public:
-  typedef std::vector<mixable0*> mixable_list;
+  typedef std::vector<jubatus::util::lang::shared_ptr<mixable0> > mixable_list;
 
   mixable_holder() {
   }
@@ -60,7 +68,7 @@ class mixable_holder {
   virtual ~mixable_holder() {
   }
 
-  void register_mixable(mixable0* m) {
+  void register_mixable(jubatus::util::lang::shared_ptr<mixable0> m) {
     mixables_.push_back(m);
   }
 
@@ -68,21 +76,40 @@ class mixable_holder {
     return mixables_;
   }
 
-  pfi::concurrent::rw_mutex& rw_mutex() {
+  jubatus::util::concurrent::rw_mutex& rw_mutex() {
     return rw_mutex_;
   }
 
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+    packer.pack_array(mixables_.size());
+    for (size_t i = 0; i < mixables_.size(); ++i) {
+      mixables_[i]->pack(packer);
+    }
+  }
+
+  void unpack(msgpack::object o) {
+    if (o.type != msgpack::type::ARRAY ||
+        o.via.array.size != mixables_.size()) {
+      throw msgpack::type_error();
+    }
+
+    msgpack::object* p = o.via.array.ptr;
+    for (size_t i = 0; i < mixables_.size(); ++i) {
+      mixables_[i]->unpack(p[i]);
+    }
+  }
+
  protected:
-  pfi::concurrent::rw_mutex rw_mutex_;
-  std::vector<mixable0*> mixables_;
+  jubatus::util::concurrent::rw_mutex rw_mutex_;
+  std::vector<jubatus::util::lang::shared_ptr<mixable0> > mixables_;
 };
 
-template<typename Model, typename Diff>
+template<typename Model, typename Diff, typename PullArg = std::string>
 class mixable : public mixable0 {
  public:
   typedef Model model_type;
   typedef Diff diff_type;
-  typedef pfi::lang::shared_ptr<Model> model_ptr;
+  typedef jubatus::util::lang::shared_ptr<Model> model_ptr;
 
   virtual ~mixable() {
   }
@@ -92,6 +119,17 @@ class mixable : public mixable0 {
   virtual Diff get_diff_impl() const = 0;
   virtual void put_diff_impl(const Diff&) = 0;
   virtual void mix_impl(const Diff&, const Diff&, Diff&) const = 0;
+
+  virtual PullArg get_pull_argument_impl() const {
+    throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
+  }
+  virtual Diff pull_impl(const PullArg&) const {
+    throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
+  }
+
+  virtual void push_impl(const Diff&) {
+    throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
+  }
 
   void set_model(model_ptr m) {
     model_ = m;
@@ -128,12 +166,44 @@ class mixable : public mixable0 {
     pack_(mixed, mixed_buf);
   }
 
-  void save(std::ostream& os) {
-    model_->save(os);
+  std::string get_pull_argument() const {
+    if (model_) {
+      std::string buf;
+      pack_(get_pull_argument_impl(), buf);
+      return buf;
+    } else {
+      throw JUBATUS_EXCEPTION(common::config_not_set());
+    }
   }
 
-  void load(std::istream& is) {
-    model_->load(is);
+  std::string pull(const std::string& a) const {
+    if (model_) {
+      std::string buf;
+      PullArg arg;
+      unpack_(a, arg);
+      pack_(pull_impl(arg), buf);
+      return buf;
+    } else {
+      throw JUBATUS_EXCEPTION(common::config_not_set());
+    }
+  }
+
+  void push(const std::string& d) {
+    if (model_) {
+      Diff diff;
+      unpack_(d, diff);
+      push_impl(diff);
+    } else {
+      throw JUBATUS_EXCEPTION(common::config_not_set());
+    }
+  }
+
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+    model_->pack(packer);
+  }
+
+  void unpack(msgpack::object o) {
+    model_->unpack(o);
   }
 
   model_ptr get_model() const {
@@ -153,7 +223,43 @@ class mixable : public mixable0 {
     buf.assign(sbuf.data(), sbuf.size());
   }
 
+  template <class T>
+  void unpack_(const std::string& buf, T& d) const {
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, buf.data(), buf.size());
+    msg.get().convert(&d);
+  }
+
+  template <class T>
+  void pack_(const T& d, std::string& buf) const {
+    msgpack::sbuffer sbuf;
+    msgpack::pack(sbuf, d);
+    buf.assign(sbuf.data(), sbuf.size());
+  }
+
   model_ptr model_;
+};
+
+template<typename Model, typename Diff, typename PullArg = std::string>
+class delegating_mixable : public mixable<Model, Diff, PullArg> {
+ public:
+  Diff get_diff_impl() const {
+    Diff diff;
+    this->get_model()->get_diff(diff);
+    return diff;
+  }
+
+  void put_diff_impl(const Diff& diff) {
+    this->get_model()->set_mixed_and_clear_diff(diff);
+  }
+
+  void mix_impl(const Diff& lhs, const Diff& rhs, Diff& mixed) const {
+    mixed = lhs;
+    this->get_model()->mix(rhs, mixed);
+  }
+
+  void clear() {
+  }
 };
 
 }  // namespace framework

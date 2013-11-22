@@ -1,3 +1,4 @@
+# -*- python -*-
 def options(opt):
   pass
 
@@ -5,12 +6,12 @@ def configure(conf): pass
 
 def build(bld):
   if not bld.env.HAVE_ZOOKEEPER_H: return
-    
+
   bld.program(
     source = 'main.cpp jubavisor.cpp process.cpp',
     target = 'jubavisor',
     includes = '.',
-    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon jubaserv_framework JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
+    use = 'jubatus_util LIBGLOG ZOOKEEPER_MT jubacommon jubaserv_framework JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
     )
 
   bld.program(
@@ -18,5 +19,5 @@ def build(bld):
     source = 'jubavisor.cpp jubavisor_test.cpp process.cpp',
     target = 'jubavisor_test',
     includes = '.',
-    use = 'PFICOMMON LIBGLOG ZOOKEEPER_MT jubacommon jubaserv_framework'
+    use = 'jubatus_util LIBGLOG ZOOKEEPER_MT jubacommon jubaserv_framework'
     )

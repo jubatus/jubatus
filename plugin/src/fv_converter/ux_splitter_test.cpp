@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 #include "jubatus/core/fv_converter/exception.hpp"
 #include "ux_splitter.hpp"
 
@@ -70,7 +70,7 @@ TEST(ux_splitter, create) {
   ASSERT_THROW(create(param), converter_exception);
 
   param["dict_path"] = "../../../../jubatus/core/fv_converter/test_input/keywords";
-  pfi::lang::scoped_ptr<word_splitter> s(create(param));
+  jubatus::util::lang::scoped_ptr<word_splitter> s(create(param));
 
   std::string d("hoge fuga");
   std::vector<std::pair<size_t, size_t> > bs;

@@ -16,15 +16,15 @@
 
 #include "anomaly_serv.hpp"
 
-#include <cassert>
 #include <string>
 #include <utility>
 #include <vector>
 #include <glog/logging.h>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/text/json.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/text/json.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
+#include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/vector_util.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/fv_converter/datum.hpp"
@@ -49,8 +49,8 @@ using std::pair;
 using std::string;
 using std::vector;
 using std::pair;
-using pfi::lang::lexical_cast;
-using pfi::text::json::json;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::text::json::json;
 using jubatus::core::fv_converter::datum;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::server_argv;
@@ -66,11 +66,11 @@ struct anomaly_serv_config {
   // TODO(oda): we should use optional<jsonconfig::config> instead of
   //            jsonconfig::config ?
   core::common::jsonconfig::config parameter;
-  pfi::text::json::json converter;
+  core::fv_converter::converter_config converter;
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(method) & MEMBER(parameter) & MEMBER(converter);
+    ar & JUBA_MEMBER(method) & JUBA_MEMBER(parameter) & JUBA_MEMBER(converter);
   }
 };
 
@@ -78,7 +78,7 @@ struct anomaly_serv_config {
 
 anomaly_serv::anomaly_serv(
     const server_argv& a,
-    const pfi::lang::shared_ptr<lock_service>& zk)
+    const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
 
@@ -110,7 +110,11 @@ void anomaly_serv::get_status(status_t& status) const {
   status.insert(my_status.begin(), my_status.end());
 }
 
-bool anomaly_serv::set_config(const std::string& config) {
+uint64_t anomaly_serv::user_data_version() const {
+  return 1;  // should be inclemented when model data is modified
+}
+
+void anomaly_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   anomaly_serv_config conf =
     core::common::jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
@@ -123,19 +127,23 @@ bool anomaly_serv::set_config(const std::string& config) {
 
   jsonconfig::config param;
   if (conf.parameter) {
-    param = jsonconfig::config(*conf.parameter);
+    param = *conf.parameter;
   }
+#endif
+
+  std::string my_id;
+#ifdef HAVE_ZOOKEEPER_H
+  my_id = common::build_loc_str(argv().eth, argv().port);
 #endif
 
   anomaly_.reset(
       new core::driver::anomaly(
           core::anomaly::anomaly_factory::create_anomaly(
-              conf.method, conf.parameter),
+              conf.method, conf.parameter, my_id),
           core::fv_converter::make_fv_converter(conf.converter)));
   mixer_->set_mixable_holder(anomaly_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
-  return true;
 }
 
 string anomaly_serv::get_config() const {
@@ -151,18 +159,20 @@ bool anomaly_serv::clear_row(const string& id) {
 }
 
 // nolock, random
-pair<string, float> anomaly_serv::add(const datum& data) {
+id_with_score anomaly_serv::add(const datum& data) {
   check_set_config();
 
   uint64_t id = idgen_->generate();
-  string id_str = pfi::lang::lexical_cast<string>(id);
+  string id_str = jubatus::util::lang::lexical_cast<string>(id);
 
 #ifdef HAVE_ZOOKEEPER_H
   if (argv().is_standalone()) {
 #endif
-    pfi::concurrent::scoped_wlock lk(rw_mutex());
+    jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
     event_model_updated();
-    return anomaly_->add(id_str, data);
+    // TODO(unno): remove conversion code
+    pair<string, float> res = anomaly_->add(id_str, data);
+    return id_with_score(res.first, res.second);
 #ifdef HAVE_ZOOKEEPER_H
   } else {
     return add_zk(id_str, data);
@@ -170,7 +180,7 @@ pair<string, float> anomaly_serv::add(const datum& data) {
 #endif
 }
 
-pair<string, float> anomaly_serv::add_zk(const string&id_str, const datum& d) {
+id_with_score anomaly_serv::add_zk(const string&id_str, const datum& d) {
   vector<pair<string, int> > nodes;
   float score = 0;
   find_from_cht(id_str, 2, nodes);
@@ -193,7 +203,7 @@ pair<string, float> anomaly_serv::add_zk(const string&id_str, const datum& d) {
     }
   }
   DLOG(INFO) << "point added: " << id_str;
-  return make_pair(id_str, score);
+  return id_with_score(id_str, score);
 }
 
 float anomaly_serv::update(const string& id, const datum& data) {
@@ -201,6 +211,14 @@ float anomaly_serv::update(const string& id, const datum& data) {
 
   float score = anomaly_->update(id, data);
   DLOG(INFO) << "point updated: " << id;
+  return score;
+}
+
+float anomaly_serv::overwrite(const string& id, const datum& data) {
+  check_set_config();
+
+  float score = anomaly_->overwrite(id, data);
+  DLOG(INFO) << "point overwritten: " << id;
   return score;
 }
 
@@ -237,7 +255,8 @@ void anomaly_serv::find_from_cht(
   ht.find(key, out, n);  // replication number of local_node
 #else
   // cannot reach here, assertion!
-  assert(argv().is_standalone());
+  JUBATUS_ASSERT_UNREACHABLE();
+  // JUBATUS_ASSERT(argv().is_standalone());
   // out.push_back(make_pair(argv().eth, argv().port));
 #endif
 }
@@ -249,12 +268,12 @@ float anomaly_serv::selective_update(
     const datum& d) {
   // nolock context
   if (host == argv().eth && port == argv().port) {
-    pfi::concurrent::scoped_wlock lk(rw_mutex());
+    jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
     event_model_updated();
     return this->update(id, d);
   } else {  // needs no lock
-    client::anomaly c(host, port, argv().interconnect_timeout);
-    return c.update(argv().name, id, d);
+    client::anomaly c(host, port, argv().name, argv().interconnect_timeout);
+    return c.update(id, d);
   }
 }
 

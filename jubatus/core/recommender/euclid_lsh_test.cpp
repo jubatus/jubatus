@@ -19,9 +19,9 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/data/string/utility.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/data/string/utility.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/math/random.h"
 
 #include "euclid_lsh.hpp"
 #include "../common/hash.hpp"
@@ -33,8 +33,8 @@ using std::make_pair;
 using std::pair;
 using std::string;
 using std::vector;
-using pfi::lang::lexical_cast;
-using pfi::math::random::mtrand;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::math::random::mtrand;
 using jubatus::core::storage::lsh_index_storage;
 
 namespace jubatus {
@@ -56,7 +56,45 @@ common::sfv_t make_dense_sfv(const string& s) {
   return sfv;
 }
 
+lsh_index_storage* get_storage(euclid_lsh& r) {
+  framework::mixable_holder holder;
+  r.register_mixables_to_holder(holder);
+  storage::mixable_lsh_index_storage* mixable_storage =
+      dynamic_cast<storage::mixable_lsh_index_storage*>(
+          holder.get_mixables().back().get());
+  return mixable_storage->get_model().get();
+}
+
 }  // namespace
+
+TEST(euclid_lsh, complete_row) {
+  euclid_lsh::config config;
+  config.hash_num = 4;
+  config.table_num = 4;
+  config.bin_width = 10;
+  config.probe_num = 0;
+  config.seed = 1091;
+  config.retain_projection = false;
+
+  euclid_lsh r(config);
+  r.update_row("1", make_dense_sfv("1 1 0 1"));
+  r.update_row("2", make_dense_sfv("1 0 3 1"));
+
+  common::sfv_t ret;
+  r.complete_row(make_dense_sfv("1 0 0 1"), ret);
+
+  EXPECT_EQ(4u, ret.size());
+  EXPECT_EQ("0", ret[0].first);
+  EXPECT_EQ("1", ret[1].first);
+  EXPECT_EQ("2", ret[2].first);
+  EXPECT_EQ("3", ret[3].first);
+
+  // expect unweighted mean of nearest neighbors
+  EXPECT_EQ(1, ret[0].second);
+  EXPECT_EQ(0.5, ret[1].second);
+  EXPECT_EQ(1.5, ret[2].second);
+  EXPECT_EQ(1, ret[3].second);
+}
 
 class euclid_lsh_mix_test
     : public ::testing::TestWithParam<pair<int, euclid_lsh::config> > {
@@ -98,13 +136,14 @@ class euclid_lsh_mix_test
     single_recom_.reset(new euclid_lsh(config));
 
     for (int i = 0; i < num_models; ++i) {
-      portable_mixer_.add(recoms_[i]->get_storage());
+      portable_mixer_.add(get_storage(*recoms_[i]));
     }
   }
 
-  vector<pfi::lang::shared_ptr<euclid_lsh> > recoms_;
-  pfi::lang::shared_ptr<euclid_lsh> single_recom_;
-  common::portable_mixer<lsh_index_storage> portable_mixer_;
+  vector<jubatus::util::lang::shared_ptr<euclid_lsh> > recoms_;
+  jubatus::util::lang::shared_ptr<euclid_lsh> single_recom_;
+  common::portable_mixer<lsh_index_storage, storage::lsh_master_table_t>
+  portable_mixer_;
 
   mtrand rand_;
 };
@@ -143,7 +182,7 @@ TEST_P(euclid_lsh_mix_test, consistency) {
 euclid_lsh::config make_euclid_lsh_config() {
   euclid_lsh::config config;
 
-  config.lsh_num = 16;
+  config.hash_num = 16;
   config.table_num = 4;
   config.bin_width = 1;
   return config;

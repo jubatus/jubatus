@@ -14,10 +14,10 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <utility>
 #include <gtest/gtest.h>
-#include <pficommon/math/random.h>
+#include "jubatus/util/math/random.h"
 #include "stat.hpp"
-#include "mixable_stat.hpp"
 
 namespace jubatus {
 
@@ -83,11 +83,32 @@ TEST(stat_test, entropy) {
   EXPECT_NEAR(p.entropy(), 1.097, 0.01);
 }
 
+TEST(stat_test, mixed_entropy) {
+  core::stat::stat p(1024);
+  p.push("test", 1.0);
+  p.push("test", 2.0);
+  p.push("test", 3.0);
+
+  double e_d = 3 * log(3);
+  double e_e = - e_d / 3 + log(3);
+
+  std::pair<double, size_t> d;
+  p.get_diff(d);
+  ASSERT_DOUBLE_EQ(e_d, d.first);
+  ASSERT_EQ(3u, d.second);
+
+  p.set_mixed_and_clear_diff(d);
+
+  double bias = d.first / d.second;  // bias to suppress cancellation
+  ASSERT_DOUBLE_EQ(e_e + bias, p.entropy() + bias);
+  ASSERT_DOUBLE_EQ(p.entropy() + bias, p.entropy() + bias);
+}
+
 REGISTER_TYPED_TEST_CASE_P(
     stat_test,
     trivial);
 
-typedef testing::Types<core::stat::stat, core::stat::mixable_stat> stat_types;
+typedef testing::Types<core::stat::stat> stat_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(stt, stat_test, stat_types);
 }  // namespace jubatus

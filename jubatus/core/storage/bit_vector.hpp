@@ -21,7 +21,8 @@
 #include <algorithm>
 #include <vector>
 #include <iostream>
-#include <pficommon/data/serialization.h>
+#include <msgpack.hpp>
+#include "jubatus/util/data/serialization.h"
 
 namespace jubatus {
 namespace core {
@@ -67,11 +68,13 @@ class bit_vector {
     std::swap(bit_num_, v.bit_num_);
   }
 
+  MSGPACK_DEFINE(bits_, bit_num_);
+
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(bits_) & MEMBER(bit_num_);
+    ar & JUBA_MEMBER(bits_) & JUBA_MEMBER(bit_num_);
   }
 
   std::vector<uint64_t> bits_;

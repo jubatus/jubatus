@@ -29,7 +29,7 @@ using jubatus::server::common::JUBATUS_BASE_PATH;
 class zk_trivial : public testing::Test {
  protected:
   void SetUp() {
-    zk_ = pfi::lang::shared_ptr<lock_service>(
+    zk_ = jubatus::util::lang::shared_ptr<lock_service>(
         jubatus::server::common::create_lock_service(
             "zk", "localhost:2181", 1024, "test.log"));
 
@@ -63,7 +63,7 @@ class zk_trivial : public testing::Test {
   string root_path;
   string engine_name;
   string engine_root;
-  pfi::lang::shared_ptr<lock_service> zk_;
+  jubatus::util::lang::shared_ptr<lock_service> zk_;
 };
 
 TEST_F(zk_trivial, create_exists_remove) {
@@ -114,6 +114,18 @@ TEST_F(zk_trivial, create_seq) {
   zk_->create_seq(root_path, seqfile);
 
   EXPECT_LT(root_path.size(), seqfile.size());
+
+  struct contains_no_null_character {
+    static bool check(const std::string& s) {
+      for (std::size_t i = 0; i < s.size(); ++i) {
+        if (s[i] == '\0') {
+          return false;
+        }
+      }
+      return true;
+    }
+  };
+  EXPECT_PRED1(contains_no_null_character::check, seqfile);
 
   if (!seqfile.empty()) {
     zk_->remove(seqfile);

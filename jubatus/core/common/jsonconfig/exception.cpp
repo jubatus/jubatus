@@ -20,7 +20,7 @@
 #include <vector>
 
 using std::string;
-using pfi::text::json::json;
+using jubatus::util::text::json::json;
 
 namespace jubatus {
 namespace core {
@@ -75,6 +75,10 @@ std::string MakeNotFoundMessage(const std::string& key) {
   return "\"" + key + "\" is not found";
 }
 
+std::string MakeRedundantKeyMessage(const std::string& key) {
+  return "\"" + key + "\" is not used";
+}
+
 }  // namespace
 
 type_error::type_error(
@@ -106,8 +110,16 @@ not_found::not_found(const std::string& path, const std::string& key)
 not_found::~not_found() throw () {
 }
 
+redundant_key::redundant_key(const std::string& path, const std::string& key)
+    : config_error(path, MakeRedundantKeyMessage(key)),
+      key_(key) {
+}
+
+redundant_key::~redundant_key() throw () {
+}
+
 cast_check_error::cast_check_error(
-    const std::vector<pfi::lang::shared_ptr<config_error> >& errors)
+    const std::vector<jubatus::util::lang::shared_ptr<config_error> >& errors)
     : errors_(errors.begin(), errors.end()) {
 }
 

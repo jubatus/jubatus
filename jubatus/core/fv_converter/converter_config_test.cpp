@@ -17,16 +17,19 @@
 #include <algorithm>
 #include <cmath>
 #include <fstream>
+#include <map>
 #include <string>
+#include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/text/json.h"
 #include "converter_config.hpp"
 #include "datum.hpp"
 #include "datum_to_fv_converter.hpp"
 #include "exception.hpp"
 
+using std::map;
 using std::string;
-using pfi::data::optional;
+using jubatus::util::data::optional;
 
 namespace jubatus {
 namespace core {
@@ -34,13 +37,9 @@ namespace fv_converter {
 
 TEST(converter_config, config) {
   try {
-#ifdef HAVE_RE2
     std::ifstream ifs("./test_input/config.json");
-#else
-    std::ifstream ifs("./test_input/config_wo_re2.json");
-#endif
     converter_config config;
-    ifs >> pfi::text::json::via_json(config);
+    ifs >> jubatus::util::text::json::via_json(config);
 
     datum_to_fv_converter conv;
     initialize_converter(config, conv);
@@ -57,11 +56,11 @@ TEST(converter_config, config) {
 
     common::sfv_t exp;
     exp.push_back(std::make_pair("user/name$Taro Yamada@str#bin/bin", 1.));
-#ifdef HAVE_RE2
-    // only when re2 is enabled, detagging filter works
+
+    // detagging filter
     exp.push_back(
         std::make_pair("user/text-detagged$hoge fuga @str#bin/bin", 1.));
-#endif
+
     exp.push_back(std::make_pair("user/id@str$1000", 1.));
     exp.push_back(std::make_pair("user/age@num", 20.));
     exp.push_back(std::make_pair("user/age@log", log(20.)));
@@ -79,10 +78,40 @@ TEST(converter_config, config) {
   }
 }
 
+TEST(converter_config, binary) {
+  converter_config config;
+  map<string, string> param;
+  param["method"] = "dynamic";
+  param["function"] = "create";
+  param["path"] = LIBBINARY_FEATURE_SAMPLE;
+  config.binary_types = map<string, param_t>();
+  (*config.binary_types)["len"] = param;
+
+  binary_rule r = {"*", optional<string>(), "len"};
+  config.binary_rules = std::vector<binary_rule>();
+  config.binary_rules->push_back(r);
+
+  datum_to_fv_converter conv;
+  initialize_converter(config, conv);
+
+  datum d;
+  d.binary_values_.push_back(std::make_pair("bin", "0101"));
+
+  std::cout << "c" << std::endl;
+  common::sfv_t f;
+  conv.convert(d, f);
+  std::cout << "d" << std::endl;
+
+  ASSERT_EQ(1u, f.size());
+  EXPECT_EQ("bin", f[0].first);
+  EXPECT_EQ(4.0, f[0].second);
+}
+
 TEST(converter_config, hash) {
   converter_config config;
   num_rule r = {"*", optional<string>(), "str"};
-  config.num_rules.push_back(r);
+  config.num_rules = std::vector<num_rule>();
+  config.num_rules->push_back(r);
   config.hash_max_size = 1;
 
   datum_to_fv_converter conv;
@@ -105,20 +134,19 @@ TEST(converter_config, hash_negative) {
   EXPECT_THROW(initialize_converter(config, conv), converter_exception);
 }
 
-TEST(make_fv_converter, empty) {
-  EXPECT_THROW(make_fv_converter(""), fv_converter::converter_exception);
-}
+TEST(make_fv_converter, empty_config) {
+  jubatus::util::text::json::json
+    js(new jubatus::util::text::json::json_object);
+  converter_config config =
+    jubatus::util::text::json::json_cast<converter_config>(js);
+  datum_to_fv_converter conv;
+  initialize_converter(config, conv);
 
-TEST(make_fv_converter, invalid_config_json) {
-  EXPECT_THROW(make_fv_converter("{"), fv_converter::converter_exception);
-}
+  datum d;
+  common::sfv_t f;
+  conv.convert(d, f);
 
-TEST(make_fv_converter, config_json_parse_error) {
-  EXPECT_THROW(make_fv_converter("AA"), fv_converter::converter_exception);
-}
-
-TEST(make_fv_converter, config_cast_error) {
-  EXPECT_THROW(make_fv_converter("{}"), fv_converter::converter_exception);
+  EXPECT_EQ(0u, f.size());
 }
 
 }  // namespace fv_converter

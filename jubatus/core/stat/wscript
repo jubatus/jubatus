@@ -2,24 +2,28 @@ def options(opt): pass
 def configure(conf): pass
 
 def build(bld):
+  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+    libassert = " LIBGLOG"
+  else:
+    libassert = ""
+
   bld.shlib(
-    source = ['stat.cpp', 'mixable_stat.cpp'],
+    source = ['stat.cpp'],
     target = 'jubatus_stat',
     includes = '.',
-    use = 'PFICOMMON'
+    use = 'jubatus_util MSGPACK'+libassert
     )
-  
+
   bld.program(
     features = 'gtest',
     source = [
-      'stat_test.cpp', 'mixable_stat_test.cpp'
+      'stat_test.cpp',
       ],
     target = 'stat_test',
     includes = '.',
-    use = 'jubatus_stat'
+    use = 'jubatus_stat'+libassert
     )
 
   bld.install_files('${PREFIX}/include/jubatus/core/stat', [
-      'stat.hpp',
-      'mixable_stat.hpp',
+      'stat.hpp'
       ])

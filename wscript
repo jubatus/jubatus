@@ -1,9 +1,10 @@
+# -*- python -*-
 import Options
 from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '0.4.5'
+VERSION = '0.5.0'
 APPNAME = 'jubatus'
 
 top = '.'
@@ -31,10 +32,15 @@ def options(opt):
                  action='store_true', default=False, 
                  dest='zktest', help='zk should run in localhost:2181')
 
+  # use (base + 10) ports for RPC module tests
+  opt.add_option('--rpc-test-port-base',
+                 default=60023, choices=map(str, xrange(1024, 65535 - 10)),
+                 help='base port number for RPC module tests')
+
   opt.recurse(subdirs)
 
 def configure(conf):
-  conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe']
+  conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe'];
 
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
@@ -56,7 +62,6 @@ def configure(conf):
   conf.find_program('pkg-config') # make sure that pkg-config command exists
   try:
     conf.check_cfg(package = 'libglog', args = '--cflags --libs')
-    conf.check_cfg(package = 'pficommon', args = '--cflags --libs')
   except conf.errors.ConfigurationError:
     e = sys.exc_info()[1]
     conf.to_log("PKG_CONFIG_PATH: " + os.environ.get('PKG_CONFIG_PATH', ''))
@@ -76,6 +81,7 @@ def configure(conf):
 
   if not Options.options.debug:
     conf.define('NDEBUG', 1)
+    conf.define('JUBATUS_DISABLE_ASSERTIONS', 1)
 
   if Options.options.enable_zookeeper:
     if (conf.check_cxx(header_name = 'c-client-src/zookeeper.h',
@@ -98,6 +104,9 @@ def configure(conf):
     conf.env.append_value('CXXFLAGS', '-fprofile-arcs')
     conf.env.append_value('CXXFLAGS', '-ftest-coverage')
     conf.env.append_value('LINKFLAGS', '-lgcov')
+
+  if Options.options.rpc_test_port_base:
+    conf.define('JUBATUS_RPC_TEST_PORT_BASE', int(Options.options.rpc_test_port_base))
 
   conf.define('BUILD_DIR',  conf.bldnode.abspath())
 
@@ -130,14 +139,21 @@ def cpplint(ctx):
   cpplint = ctx.path.find_node('tools/codestyle/cpplint/cpplint.py')
   src_dir = ctx.path.find_node('jubatus')
   file_list = []
-  excludes = ['jubatus/server/third_party/*', \
-              'jubatus/server/server/*_server.hpp', \
-              'jubatus/server/server/*_impl.cpp', \
-              'jubatus/server/server/*_keeper.cpp', \
-              'jubatus/server/server/*_client.hpp', \
-              'jubatus/server/server/*_types.hpp', \
-              'jubatus/client/*_client.hpp', \
-              'jubatus/client/*_types.hpp']
+  excludes = ['jubatus/server/third_party/*',
+              'jubatus/server/server/*_server.hpp',
+              'jubatus/server/server/*_impl.cpp',
+              'jubatus/server/server/*_proxy.cpp',
+              'jubatus/server/server/*_client.hpp',
+              'jubatus/server/server/*_types.hpp',
+              'jubatus/client/*_client.hpp',
+              'jubatus/client/*_types.hpp',
+              'jubatus/core/third_party/*',
+              'jubatus/util/*.h',
+              'jubatus/util/*.cpp',
+              'jubatus/util/*/*.h',
+              'jubatus/util/*/*.cpp',
+              'jubatus/util/*/*/*.h',
+              'jubatus/util/*/*/*.cpp']
   for file in src_dir.ant_glob('**/*.cpp **/*.cc **/*.hpp **/*.h'):
     file_list += [file.path_from(ctx.path)]
   for exclude in excludes:
@@ -156,7 +172,14 @@ def regenerate(ctx):
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name
     service_name = os.path.splitext(idl)[0]
-    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'server', '-o', '.', '-i', '-n', 'jubatus', '-g', 'JUBATUS_SERVER_SERVER_', idl], cwd=server_node.abspath())
+    jenerator_command = [jenerator_node.abspath(), '-l', 'server', '-o', '.', '-i', '-n', 'jubatus', '-g', 'JUBATUS_SERVER_SERVER_', idl]
+    try:
+      idl_hash = ctx.cmd_and_log(['git', 'log', '-1', '--format=%H', '--', idl], cwd=server_node.abspath()).strip()
+      idl_ver = ctx.cmd_and_log(['git', 'describe', idl_hash], cwd=server_node.abspath()).strip()
+      jenerator_command += ['--idl-version', idl_ver]
+    except Exception:
+      pass
+    ctx.cmd_and_log(jenerator_command, cwd=server_node.abspath())
     print()
     if not service_name in ['graph', 'anomaly']:
       server_node.find_node('%s_client.hpp' % service_name).delete()
@@ -170,5 +193,12 @@ def regenerate_client(ctx):
   for idl_node in server_node.ant_glob('*.idl'):
     idl = idl_node.name
     service_name = os.path.splitext(idl)[0]
-    ctx.cmd_and_log([jenerator_node.abspath(), '-l', 'cpp', '-o', client_node.abspath(), '-i', '-n', 'jubatus::' + service_name, '-g', 'JUBATUS_CLIENT_', idl], cwd=server_node.abspath())
+    jenerator_command = [jenerator_node.abspath(), '-l', 'cpp', '-o', client_node.abspath(), '-i', '-n', 'jubatus::' + service_name, '-g', 'JUBATUS_CLIENT_', idl]
+    try:
+      idl_hash = ctx.cmd_and_log(['git', 'log', '-1', '--format=%H', '--', idl], cwd=server_node.abspath()).strip()
+      idl_ver = ctx.cmd_and_log(['git', 'describe', idl_hash], cwd=server_node.abspath()).strip()
+      jenerator_command += ['--idl-version', idl_ver]
+    except Exception:
+      pass
+    ctx.cmd_and_log(jenerator_command, cwd=server_node.abspath())
     print()

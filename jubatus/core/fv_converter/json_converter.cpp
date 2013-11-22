@@ -18,16 +18,16 @@
 
 #include <sstream>
 #include <string>
-#include <pficommon/text/json.h>
+#include "jubatus/util/text/json.h"
 #include "datum.hpp"
 
-using pfi::text::json::json_array;
-using pfi::text::json::json_bool;
-using pfi::text::json::json_float;
-using pfi::text::json::json_integer;
-using pfi::text::json::json_null;
-using pfi::text::json::json_object;
-using pfi::text::json::json_string;
+using jubatus::util::text::json::json_array;
+using jubatus::util::text::json::json_bool;
+using jubatus::util::text::json::json_float;
+using jubatus::util::text::json::json_integer;
+using jubatus::util::text::json::json_null;
+using jubatus::util::text::json::json_object;
+using jubatus::util::text::json::json_string;
 
 namespace jubatus {
 namespace core {
@@ -38,7 +38,7 @@ const char* json_converter::NULL_STRING = "null";
 namespace {
 
 void iter_convert(
-    const pfi::text::json::json& json,
+    const jubatus::util::text::json::json& json,
     std::string& root_path,
     datum& ret_datum);
 
@@ -80,7 +80,7 @@ void convert_null(
 }
 
 void convert_array(
-    const pfi::text::json::json_array& value,
+    const jubatus::util::text::json::json_array& value,
     std::string& path,
     datum& ret_datum) {
   size_t len = path.size();
@@ -101,7 +101,7 @@ void convert_object(
   for (json_object::const_iterator it = value.begin(); it != value.end();
        ++it) {
     const std::string& key = it->first;
-    const pfi::text::json::json& val = it->second;
+    const jubatus::util::text::json::json& val = it->second;
     path += '/';
     path += key;
     iter_convert(val, path, ret_datum);
@@ -110,10 +110,10 @@ void convert_object(
 }
 
 void iter_convert(
-    const pfi::text::json::json& json,
+    const jubatus::util::text::json::json& json,
     std::string& root_path,
     datum& ret_datum) {
-  pfi::text::json::json_value* value = json.get();
+  jubatus::util::text::json::json_value* value = json.get();
   if (typeid(*value) == typeid(json_integer)) {
     json_integer* int_value = dynamic_cast<json_integer*>(value);
     convert_integer(*int_value, root_path, ret_datum);
@@ -134,7 +134,7 @@ void iter_convert(
     json_null* null_value = dynamic_cast<json_null*>(value);
     convert_null(*null_value, root_path, ret_datum);
 
-  } else if (typeid(*value) == typeid(pfi::text::json::json_array)) {
+  } else if (typeid(*value) == typeid(jubatus::util::text::json::json_array)) {
     json_array* array_value = dynamic_cast<json_array*>(value);
     convert_array(*array_value, root_path, ret_datum);
 
@@ -147,7 +147,7 @@ void iter_convert(
 }  // namespace
 
 void json_converter::convert(
-    const pfi::text::json::json& json,
+    const jubatus::util::text::json::json& json,
     datum& ret_datum) {
   std::string path = "";
   iter_convert(json, path, ret_datum);

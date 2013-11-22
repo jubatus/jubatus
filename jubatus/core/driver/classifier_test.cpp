@@ -23,8 +23,8 @@
 
 #include <gtest/gtest.h>
 
-#include <pficommon/lang/cast.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/cast.h"
+#include "jubatus/util/text/json.h"
 
 #include "../storage/storage_type.hpp"
 #include "../storage/local_storage.hpp"
@@ -44,10 +44,13 @@ using std::numeric_limits;
 using std::cout;
 using std::endl;
 
-using pfi::lang::lexical_cast;
-using pfi::data::optional;
+using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
+using jubatus::util::data::optional;
 using jubatus::core::fv_converter::datum;
 using jubatus::core::classifier::classify_result;
+using jubatus::core::classifier::classifier_base;
+using jubatus::core::storage::storage_base;
 
 namespace jubatus {
 namespace core {
@@ -64,7 +67,7 @@ datum convert_vector(const vector<double>& vec) {
 }
 
 void make_random_data(
-    pfi::math::random::mtrand& rand,
+    jubatus::util::math::random::mtrand& rand,
     vector<pair<string, datum> >& data,
     size_t size) {
   for (size_t i = 0; i < size; ++i) {
@@ -86,15 +89,12 @@ string get_max_label(const classify_result& result) {
 }
 }  // namespace
 
-typedef pair<core::storage::storage_base*, core::classifier::classifier_base*>
-  storage_pair;
-
-class classifier_test : public ::testing::TestWithParam<storage_pair> {
+class classifier_test
+    : public ::testing::TestWithParam<shared_ptr<classifier_base> > {
  protected:
   void SetUp() {
     classifier_.reset(new driver::classifier(
-          GetParam().first,
-          GetParam().second,
+          GetParam(),
           make_fv_converter()));
   }
 
@@ -104,7 +104,7 @@ class classifier_test : public ::testing::TestWithParam<storage_pair> {
 
   void my_test();
 
-  pfi::lang::shared_ptr<core::driver::classifier> classifier_;
+  shared_ptr<core::driver::classifier> classifier_;
 };
 
 TEST_P(classifier_test, simple) {
@@ -114,7 +114,7 @@ TEST_P(classifier_test, simple) {
 }
 
 TEST_P(classifier_test, api_train) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   const size_t example_size = 1000;
 
   vector<pair<string, datum> > data;
@@ -125,7 +125,7 @@ TEST_P(classifier_test, api_train) {
 }
 
 void classifier_test::my_test() {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   const size_t example_size = 1000;
 
   vector<pair<string, datum> > data;
@@ -183,7 +183,7 @@ TEST_P(classifier_test, my_test) {
 }
 
 TEST_P(classifier_test, duplicated_keys) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   datum d;
   for (size_t k = 0; k < 10; ++k) {
     uint32_t dim = rand.next_int(100);
@@ -211,7 +211,7 @@ TEST_P(classifier_test, duplicated_keys) {
 }
 
 TEST_P(classifier_test, save_load) {
-  pfi::math::random::mtrand rand(0);
+  jubatus::util::math::random::mtrand rand(0);
   const size_t example_size = 1000;
 
   vector<pair<string, datum> > data;
@@ -281,30 +281,30 @@ TEST_P(classifier_test, nan) {
   EXPECT_FALSE(isfinite(result[0].score));
 }
 
-vector<storage_pair> create_classifiers() {
-  vector<storage_pair> method;
+vector<shared_ptr<classifier_base> > create_classifiers() {
+  vector<shared_ptr<classifier_base> > method;
 
-  core::storage::storage_base* storage;
+  shared_ptr<core::storage::storage_base> storage;
   core::classifier::classifier_config config;
 
   // TODO(unknown): testing with perceptron?
 
-  storage = new core::storage::local_storage;
-  method.push_back(make_pair(storage,
-        new core::classifier::passive_aggressive(storage)));
+  storage.reset(new core::storage::local_storage);
+  method.push_back(shared_ptr<classifier_base>(
+          new core::classifier::passive_aggressive(storage)));
 
-  storage = new core::storage::local_storage;
-  method.push_back(make_pair(storage,
-        new core::classifier::passive_aggressive_1(config, storage)));
+  storage.reset(new core::storage::local_storage);
+  method.push_back(shared_ptr<classifier_base>(
+          new core::classifier::passive_aggressive_1(config, storage)));
 
-  storage = new core::storage::local_storage;
-  method.push_back(make_pair(storage,
-        new core::classifier::passive_aggressive_2(config, storage)));
+  storage.reset(new core::storage::local_storage);
+  method.push_back(shared_ptr<classifier_base>(
+          new core::classifier::passive_aggressive_2(config, storage)));
 
-  storage = new core::storage::local_storage;
+  storage.reset(new core::storage::local_storage);
   config.C = 0.1f;
-  method.push_back(make_pair(storage,
-        new core::classifier::normal_herd(config, storage)));
+  method.push_back(shared_ptr<classifier_base>(
+          new core::classifier::normal_herd(config, storage)));
 
   return method;
 }

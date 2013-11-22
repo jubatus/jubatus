@@ -17,7 +17,7 @@
 #include "exception.hpp"
 #include <cstring>
 #include <string>
-#include <pficommon/lang/demangle.h>
+#include "jubatus/util/lang/demangle.h"
 
 namespace jubatus {
 namespace core {
@@ -32,7 +32,7 @@ std::string jubatus_exception::diagnostic_information(bool display_what) const {
   std::ostringstream tmp;
 
   tmp << "Dynamic exception type: ";
-  tmp << pfi::lang::demangle(typeid(*this).name());
+  tmp << jubatus::util::lang::demangle(typeid(*this).name());
 
   if (display_what && strcmp(what(), "")) {
     tmp << "::what: " << what();

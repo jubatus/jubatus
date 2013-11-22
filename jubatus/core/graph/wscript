@@ -3,6 +3,11 @@ def options(ctx): pass
 def configure(ctx): pass
 
 def build(bld):
+  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+    libassert = " LIBGLOG"
+  else:
+    libassert = ""
+
   bld.shlib(
     source = [
       'graph_base.cpp',
@@ -12,7 +17,7 @@ def build(bld):
     target = 'jubatus_graph',
     name = 'jubatus_graph',
     includes = '.',
-    use = 'PFICOMMON jubacommon')
+    use = 'jubatus_util MSGPACK jubacommon'+libassert)
 
   def make_test(s):
     bld.program(
@@ -20,7 +25,7 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'PFICOMMON jubacommon jubatus_graph')
+      use = 'jubatus_util jubacommon jubatus_graph'+libassert)
 
   map(make_test, [
       'graph_base_test.cpp',

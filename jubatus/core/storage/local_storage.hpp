@@ -19,9 +19,9 @@
 
 #include <map>
 #include <string>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_map.h"
 #include "storage_base.hpp"
 #include "../common/key_manager.hpp"
 
@@ -29,19 +29,21 @@ namespace jubatus {
 namespace core {
 namespace storage {
 
-typedef pfi::data::unordered_map<uint64_t, val3_t> id_feature_val3_t;
-typedef pfi::data::unordered_map<std::string, id_feature_val3_t> id_features3_t;
+typedef jubatus::util::data::unordered_map<uint64_t, val3_t> id_feature_val3_t;
+typedef jubatus::util::data::unordered_map<std::string, id_feature_val3_t>
+  id_features3_t;
 
 class local_storage : public storage_base {
  public:
   local_storage();
   ~local_storage();
 
-  void get(const std::string &feature, feature_val1_t& ret);
-  void get2(const std::string &feature, feature_val2_t& ret);
-  void get3(const std::string &feature, feature_val3_t& ret);
+  void get(const std::string &feature, feature_val1_t& ret) const;
+  void get2(const std::string &feature, feature_val2_t& ret) const;
+  void get3(const std::string &feature, feature_val3_t& ret) const;
 
-  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret);  // inner product
+  // inner product
+  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const;
 
   void set(
       const std::string& feature,
@@ -56,7 +58,7 @@ class local_storage : public storage_base {
       const std::string& klass,
       const val3_t& w);
 
-  void get_status(std::map<std::string, std::string>&);
+  void get_status(std::map<std::string, std::string>& status) const;
 
   void update(
       const std::string& feature,
@@ -71,9 +73,11 @@ class local_storage : public storage_base {
 
   void clear();
 
-  bool save(std::ostream&);
-  bool load(std::istream&);
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
   std::string type() const;
+
+  MSGPACK_DEFINE(tbl_, class2id_);
 
  protected:
   // map_features3_t tbl_;
@@ -81,10 +85,10 @@ class local_storage : public storage_base {
   common::key_manager class2id_;
 
  private:
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(tbl_) & MEMBER(class2id_);
+    ar & JUBA_MEMBER(tbl_) & JUBA_MEMBER(class2id_);
   }
 };
 

@@ -33,7 +33,7 @@ config::iterator::iterator(const config::iterator& it)
 
 config::iterator::iterator(
     const config& parent,
-    const pfi::text::json::json::const_iterator& it)
+    const jubatus::util::text::json::json::const_iterator& it)
     : parent_(parent),
       it_(it) {
 }
@@ -57,7 +57,7 @@ config config::operator[](size_t index) const {
     }
   } catch (const std::bad_cast& e) {
     throw JUBATUS_EXCEPTION(
-        type_error(path_, pfi::text::json::json::Array, type()));
+        type_error(path_, jubatus::util::text::json::json::Array, type()));
   }
 }
 
@@ -70,14 +70,14 @@ config config::operator[](const std::string& key) const {
     throw JUBATUS_EXCEPTION(not_found(path_, key));
   } catch (const std::bad_cast& e) {
     throw JUBATUS_EXCEPTION(
-        type_error(path_, pfi::text::json::json::Object, type()));
+        type_error(path_, jubatus::util::text::json::json::Object, type()));
   }
 }
 
 bool config::contain(const std::string& key) const {
-  if (type() != pfi::text::json::json::Object) {
+  if (type() != jubatus::util::text::json::json::Object) {
     throw JUBATUS_EXCEPTION(
-        type_error(path_, pfi::text::json::json::Object, type()));
+        type_error(path_, jubatus::util::text::json::json::Object, type()));
   }
   return json_.count(key) > 0;
 }
@@ -87,7 +87,7 @@ size_t config::size() const {
     return json_.size();
   } catch (const std::bad_cast& e) {
     throw JUBATUS_EXCEPTION(
-        type_error(path_, pfi::text::json::json::Array, type()));
+        type_error(path_, jubatus::util::text::json::json::Array, type()));
   }
 }
 

@@ -23,7 +23,6 @@
 
 #include "../storage/norm.hpp"
 #include "recommender_base.hpp"
-#include "../storage/recommender_storage.hpp"
 #include "../storage/norm_none.hpp"
 
 using std::make_pair;
@@ -40,14 +39,14 @@ class recommender_impl : public recommender_base {
   recommender_impl()
       : recommender_base() {
     // make mock
-    orig_.set("r1", "a1", 1.0);
-    orig_.set("r1", "a2", 1.0);
+    orig_->get_model()->set("r1", "a1", 1.0);
+    orig_->get_model()->set("r1", "a2", 1.0);
 
-    orig_.set("r2", "b1", 1.0);
-    orig_.set("r2", "b2", 1.0);
+    orig_->get_model()->set("r2", "b1", 1.0);
+    orig_->get_model()->set("r2", "b2", 1.0);
 
-    orig_.set("r3", "a1", 1.0);
-    orig_.set("r3", "b1", 1.0);
+    orig_->get_model()->set("r3", "a1", 1.0);
+    orig_->get_model()->set("r3", "b1", 1.0);
   }
 
   void similar_row(
@@ -88,20 +87,12 @@ class recommender_impl : public recommender_base {
     return string("recommender_impl");
   }
 
-  bool save_impl(std::ostream&) {
-    return true;
+  void register_mixables_to_holder(framework::mixable_holder&) const {
   }
 
-  bool load_impl(std::istream&) {
-    return true;
+  void pack_impl(msgpack::packer<msgpack::sbuffer>&) const {
   }
-
-  storage::recommender_storage_base* get_storage() {
-    return NULL;
-  }
-
-  const storage::recommender_storage_base* get_const_storage() const {
-    return NULL;
+  void unpack_impl(msgpack::object) {
   }
 };
 

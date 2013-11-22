@@ -17,16 +17,15 @@
 #ifndef JUBATUS_CORE_DRIVER_CLASSIFIER_HPP_
 #define JUBATUS_CORE_DRIVER_CLASSIFIER_HPP_
 
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../classifier/classifier_type.hpp"
 #include "../classifier/classifier_base.hpp"
 #include "../framework/mixable.hpp"
-#include "diffv.hpp"
 #include "linear_function_mixer.hpp"
-#include "mixable_weight_manager.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 
 namespace jubatus {
@@ -35,34 +34,34 @@ namespace driver {
 
 class classifier {
  public:
+  typedef core::classifier::classifier_base classifier_base;
+
   // TODO(suma): where is the owner of model, mixer, and converter?
   classifier(
-      storage::storage_base* model_storage,
-      jubatus::core::classifier::classifier_base* classifier_method,
-      pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter);
+      jubatus::util::lang::shared_ptr<classifier_base>
+          classifier_method,
+      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+          converter);
   virtual ~classifier();
 
-  pfi::lang::shared_ptr<framework::mixable_holder> get_mixable_holder() const {
+  jubatus::util::lang::shared_ptr<framework::mixable_holder>
+  get_mixable_holder() const {
     return mixable_holder_;
-  }
-
-  storage::storage_base* get_model() const {
-    return mixable_classifier_model_.get_model().get();
   }
 
   void train(const std::pair<std::string, fv_converter::datum>& data);
   jubatus::core::classifier::classify_result classify(
       const fv_converter::datum& data) const;
 
+  void get_status(std::map<std::string, std::string>& status) const;
   void clear();
 
  private:
-  pfi::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
+  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter_;
-  pfi::lang::shared_ptr<jubatus::core::classifier::classifier_base> classifier_;
-  linear_function_mixer mixable_classifier_model_;
-  mixable_weight_manager wm_;
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+    converter_;
+  jubatus::util::lang::shared_ptr<classifier_base> classifier_;
 };
 
 }  // namespace driver

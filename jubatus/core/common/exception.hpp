@@ -24,8 +24,8 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/lang/demangle.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/lang/demangle.h"
 #include "exception_info.hpp"
 
 namespace jubatus {
@@ -38,8 +38,10 @@ typedef error_info<struct error_at_func_, std::string> error_at_func;
 typedef error_info<struct error_at_line_, int> error_at_line;
 typedef error_info<struct error_errno_, int> error_errno;
 inline std::string to_string(const error_errno& info) {
-  std::string msg(strerror(info.value()));
-  msg += " (" + pfi::lang::lexical_cast<std::string>(info.value()) + ")";
+  char buf[1024];
+  std::string msg(strerror_r(info.value(), buf, 1024));
+  msg += " (" +
+    jubatus::util::lang::lexical_cast<std::string>(info.value()) + ")";
   return msg;
 }
 
@@ -70,9 +72,11 @@ struct exception_thrower_binder_type {
     << JUBATUS_CURRENT_ERROR_INFO()
 
 class exception_thrower_base;
-typedef pfi::lang::shared_ptr<exception_thrower_base> exception_thrower_ptr;
+typedef jubatus::util::lang::shared_ptr<exception_thrower_base>
+  exception_thrower_ptr;
 
-typedef std::vector<pfi::lang::shared_ptr<error_info_base> > error_info_list_t;
+typedef std::vector<jubatus::util::lang::shared_ptr<error_info_base> >
+  error_info_list_t;
 
 class jubatus_exception : public std::exception {
  public:
@@ -86,12 +90,13 @@ class jubatus_exception : public std::exception {
   template<class Exception>
   friend const Exception& add_info(
       const Exception& e,
-      pfi::lang::shared_ptr<error_info_base> info);
+      jubatus::util::lang::shared_ptr<error_info_base> info);
 
   std::string name() const throw () {
     // does not assume multithreading
     if (exception_class_name_.empty()) {
-      exception_class_name_ = pfi::lang::demangle(typeid(*this).name());
+      exception_class_name_ = jubatus::util::lang::demangle(
+          typeid(*this).name());
     }
 
     return exception_class_name_;
@@ -113,7 +118,7 @@ class jubatus_exception : public std::exception {
 template<class Exception>
 inline const Exception& add_info(
     const Exception& e,
-    pfi::lang::shared_ptr<error_info_base> info) {
+    jubatus::util::lang::shared_ptr<error_info_base> info) {
   e.info_list_.push_back(info);
   return e;
 }
@@ -123,13 +128,15 @@ inline const Exception& operator <<(
     const Exception& e,
     const error_info<Tag, V>& info) {
   return add_info(
-      e, pfi::lang::shared_ptr<error_info_base>(new error_info<Tag, V>(info)));
+      e,
+      jubatus::util::lang::shared_ptr<error_info_base>(
+          new error_info<Tag, V>(info)));
 }
 
 template<class Exception>
 inline const Exception& operator <<(
     const Exception& e,
-    pfi::lang::shared_ptr<error_info_base> info) {
+    jubatus::util::lang::shared_ptr<error_info_base> info) {
   return add_info(e, info);
 }
 

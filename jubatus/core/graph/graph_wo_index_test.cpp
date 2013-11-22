@@ -21,7 +21,7 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/lang/cast.h"
 
 #include "graph_wo_index.hpp"
 
@@ -37,8 +37,10 @@ namespace graph {
 
 namespace {
 
+typedef graph_wo_index::diff_type diff_type;
+
 void mix_graphs(size_t count, vector<graph_wo_index>& gs) {
-  string diff, mixed;
+  diff_type diff, mixed;
   while (count-- > 0) {
     mixed.clear();
     for (size_t i = 0; i < gs.size(); ++i) {
@@ -52,7 +54,7 @@ void mix_graphs(size_t count, vector<graph_wo_index>& gs) {
 }
 
 void mix_graph(size_t count, graph_wo_index& g) {
-  string diff, mixed;
+  diff_type diff, mixed;
   while (count-- > 0) {
     mixed.clear();
     g.get_diff(diff);
@@ -195,19 +197,18 @@ TEST(graph, random) {
 
   map<string, string> status;
   g.get_status(status);
-  ASSERT_EQ(pfi::lang::lexical_cast<string>(local_node_num),
+  ASSERT_EQ(jubatus::util::lang::lexical_cast<string>(local_node_num),
             status["local_node_num"]);
-  ASSERT_EQ(pfi::lang::lexical_cast<string>(node_num),
+  ASSERT_EQ(jubatus::util::lang::lexical_cast<string>(node_num),
             status["global_node_num"]);
-  ASSERT_EQ(pfi::lang::lexical_cast<string>(edge_added_num),
+  ASSERT_EQ(jubatus::util::lang::lexical_cast<string>(edge_added_num),
             status["local_edge_num"]);
 }
 
 TEST(graph, mix) {
   graph_wo_index g;
-  string diff;
+  diff_type diff, mixed;
   g.get_diff(diff);
-  string mixed;
   g.mix(diff, mixed);
   g.set_mixed_and_clear_diff(mixed);
 }
@@ -226,7 +227,7 @@ TEST(graph, shortest_path_line_graph) {
   g.create_edge(13, 1, 3);
   g.create_edge(21, 2, 1);
 
-  string diff, mixed;
+  diff_type diff, mixed;
   g.get_diff(diff);
   g.mix(diff, mixed);
   g.set_mixed_and_clear_diff(mixed);

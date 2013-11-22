@@ -35,27 +35,6 @@ namespace jubatus {
 namespace core {
 namespace storage {
 
-static void convert_diff(
-    sparse_matrix_storage& storage,
-    map_float_t& norm,
-    string& diff) {
-  ostringstream os;
-  pfi::data::serialization::binary_oarchive bo(os);
-  bo << storage;
-  bo << norm;
-  diff = os.str();
-}
-
-static void revert_diff(
-    const string& diff,
-    sparse_matrix_storage& storage,
-    map_float_t& norm) {
-  istringstream is(diff);
-  pfi::data::serialization::binary_iarchive bi(is);
-  bi >> storage;
-  bi >> norm;
-}
-
 inverted_index_storage::inverted_index_storage() {
 }
 
@@ -113,7 +92,7 @@ float inverted_index_storage::get_from_tbl(
     return 0.f;
   }
   tbl_t::const_iterator it = tbl.find(row);
-  if (it == inv_.end()) {
+  if (it == tbl.end()) {
     return 0.f;
   } else {
     row_t::const_iterator it_row = it->second.find(column_id);
@@ -155,8 +134,7 @@ void inverted_index_storage::get_all_column_ids(
   }
 }
 
-void inverted_index_storage::get_diff(std::string& diff_str) const {
-  sparse_matrix_storage diff;
+void inverted_index_storage::get_diff(diff_type& diff) const {
   for (tbl_t::const_iterator it = inv_diff_.begin(); it != inv_diff_.end();
       ++it) {
     vector<pair<string, float> > columns;
@@ -164,31 +142,24 @@ void inverted_index_storage::get_diff(std::string& diff_str) const {
         it2 != it->second.end(); ++it2) {
       columns.push_back(make_pair(column2id_.get_key(it2->first), it2->second));
     }
-    diff.set_row(it->first, columns);
+    diff.inv.set_row(it->first, columns);
   }
 
-  map_float_t column2norm_diff;
   for (imap_float_t::const_iterator it = column2norm_diff_.begin();
       it != column2norm_diff_.end(); ++it) {
-    column2norm_diff[column2id_.get_key(it->first)] = it->second;
+    diff.column2norm[column2id_.get_key(it->first)] = it->second;
   }
-  convert_diff(diff, column2norm_diff, diff_str);
 }
 
 void inverted_index_storage::set_mixed_and_clear_diff(
-    const string& mixed_diff_str) {
-  istringstream is(mixed_diff_str);
-  sparse_matrix_storage mixed_inv;
-  map_float_t mixed_column2norm;
-  revert_diff(mixed_diff_str, mixed_inv, mixed_column2norm);
-
+    const diff_type& mixed_diff) {
   vector<string> ids;
-  mixed_inv.get_all_row_ids(ids);
+  mixed_diff.inv.get_all_row_ids(ids);
   for (size_t i = 0; i < ids.size(); ++i) {
     const string& row = ids[i];
     row_t& v = inv_[row];
     vector<pair<string, float> > columns;
-    mixed_inv.get_row(row, columns);
+    mixed_diff.inv.get_row(row, columns);
     for (size_t j = 0; j < columns.size(); ++j) {
       size_t id = column2id_.get_id(columns[j].first);
       if (columns[j].second == 0.f) {
@@ -200,8 +171,8 @@ void inverted_index_storage::set_mixed_and_clear_diff(
   }
   inv_diff_.clear();
 
-  for (map_float_t::const_iterator it = mixed_column2norm.begin();
-      it != mixed_column2norm.end(); ++it) {
+  for (map_float_t::const_iterator it = mixed_diff.column2norm.begin();
+      it != mixed_diff.column2norm.end(); ++it) {
     uint64_t column_index = column2id_.get_id(it->first);
     column2norm_[column_index] += it->second;
     if (column2norm_[column_index] == 0.f) {
@@ -211,42 +182,32 @@ void inverted_index_storage::set_mixed_and_clear_diff(
   column2norm_diff_.clear();
 }
 
-void inverted_index_storage::mix(const string& lhs, string& rhs) const {
-  sparse_matrix_storage lhs_inv_diff, rhs_inv_diff;
-  map_float_t lhs_column2norm_diff, rhs_column2norm_diff;
-  revert_diff(lhs, lhs_inv_diff, lhs_column2norm_diff);
-  revert_diff(rhs, rhs_inv_diff, rhs_column2norm_diff);
-
+void inverted_index_storage::mix(const diff_type& lhs, diff_type& rhs) const {
   // merge inv diffs
   vector<string> ids;
-  lhs_inv_diff.get_all_row_ids(ids);
+  lhs.inv.get_all_row_ids(ids);
   for (size_t i = 0; i < ids.size(); ++i) {
     const string& row = ids[i];
 
     vector<pair<string, float> > columns;
-    lhs_inv_diff.get_row(row, columns);
-    rhs_inv_diff.set_row(row, columns);
+    lhs.inv.get_row(row, columns);
+    rhs.inv.set_row(row, columns);
   }
 
   // merge norm diffs
-  for (map_float_t::const_iterator it = lhs_column2norm_diff.begin();
-      it != lhs_column2norm_diff.end(); ++it) {
-    rhs_column2norm_diff[it->first] += it->second;
+  for (map_float_t::const_iterator it = lhs.column2norm.begin();
+      it != lhs.column2norm.end(); ++it) {
+    rhs.column2norm[it->first] += it->second;
   }
-
-  convert_diff(rhs_inv_diff, rhs_column2norm_diff, rhs);
 }
 
-bool inverted_index_storage::save(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
+void inverted_index_storage::pack(
+    msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
 }
 
-bool inverted_index_storage::load(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
-  return true;
+void inverted_index_storage::unpack(msgpack::object o) {
+  o.convert(this);
 }
 
 void inverted_index_storage::calc_scores(
@@ -257,7 +218,7 @@ void inverted_index_storage::calc_scores(
   if (query_norm == 0.f) {
     return;
   }
-  pfi::data::unordered_map<uint64_t, float> i_scores;
+  jubatus::util::data::unordered_map<uint64_t, float> i_scores;
   for (size_t i = 0; i < query.size(); ++i) {
     const string& fid = query[i].first;
     float val = query[i].second;
@@ -265,8 +226,8 @@ void inverted_index_storage::calc_scores(
   }
 
   vector<pair<float, uint64_t> > sorted_scores;
-  for (pfi::data::unordered_map<uint64_t, float>::const_iterator it = i_scores
-      .begin(); it != i_scores.end(); ++it) {
+  for (jubatus::util::data::unordered_map<uint64_t, float>::
+      const_iterator it = i_scores.begin(); it != i_scores.end(); ++it) {
     float norm = calc_columnl2norm(it->first);
     float normed_score = (norm != 0.f) ? it->second / norm / query_norm : 0.f;
     sorted_scores.push_back(make_pair(normed_score, it->first));
@@ -303,7 +264,7 @@ float inverted_index_storage::calc_columnl2norm(uint64_t column_id) const {
 void inverted_index_storage::add_inp_scores(
     const std::string& row,
     float val,
-    pfi::data::unordered_map<uint64_t, float>& scores) const {
+    jubatus::util::data::unordered_map<uint64_t, float>& scores) const {
   tbl_t::const_iterator it_diff = inv_diff_.find(row);
   if (it_diff != inv_diff_.end()) {
     const row_t& row_v = it_diff->second;

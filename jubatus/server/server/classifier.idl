@@ -14,59 +14,45 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-%include "../../core/fv_converter/datum.hpp"
-
-message datum(jubatus::core::fv_converter::datum) {
-  0: list<tuple<string, string> >  string_values
-  1: list<tuple<string, double> >  num_values
-}
-
 message estimate_result {
   0: string label
   1: double score
 }
 
+message labeled_datum {
+  0: string label
+  1: datum data
+}
+
 service classifier {
 
-  #@random #@analysis #@pass
-  string get_config(0: string name) # //@random
-
   #- - Parameters:
-  #- 
+  #-
   #-  - ``name`` : a string value to uniquely identifies a task in zookeeper quorum
   #-  - ``data`` : list of tuple of label and datum
-  #- 
+  #-
   #- - Returns:
-  #- 
+  #-
   #-  - Zero if this function updates models successfully.
-  #- 
-  #- Training model at a server chosen randomly. ``tuple<string, datum>`` is a tuple of datum and it's label. 
+  #-
+  #- Training model at a server chosen randomly. ``tuple<string, datum>`` is a tuple of datum and it's label.
   #- This function is designed to allow bulk update with list of tuple of label and datum.
   #@random #@update #@pass
-  int train(0: string name, 1: list<tuple<string, datum> > data) # //@random
+  int train(0: list<labeled_datum> data) # //@random
 
   #- - Parameters:
-  #- 
+  #-
   #-  - ``name`` : a string value to uniquely identifies a task in zookeeper quorum
   #-  - ``data`` : list of datum for classify
-  #- 
+  #-
   #- - Returns:
-  #- 
+  #-
   #-  - List of estimate_results
-  #- 
+  #-
   #- Estimating a result at a server choosen randomly. ``estimate_results`` is a list of tuple of label and it's reliablity value.
   #@random #@analysis #@pass
-  list<list<estimate_result> >  classify(0: string name, 1: list<datum> data) # //@random
+  list<list<estimate_result> > classify(0: list<datum> data) # //@random
 
   #@broadcast #@update #@all_and
-  bool clear(0: string name) # //@broadcast
-
-  #@broadcast #@update #@all_and
-  bool save(0: string name, 1: string id) # //@broadcast
-
-  #@broadcast #@update #@all_and
-  bool load(0: string name, 1: string id) # //@broadcast
-
-  #@broadcast #@analysis #@merge
-  map<string, map<string, string> >  get_status(0: string name) # //@broadcast
+  bool clear() # //@broadcast
 }

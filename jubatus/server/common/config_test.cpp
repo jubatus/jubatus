@@ -27,9 +27,12 @@ using std::string;
 class config_trivial : public testing::Test {
  protected:
   void SetUp() {
-    zk_ = pfi::lang::shared_ptr<jubatus::server::common::lock_service>(
-      jubatus::server::common::create_lock_service("zk", "localhost:2181", 10,
-                                                   "/dev/null"));
+    zk_ =
+      jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service>(
+        jubatus::server::common::create_lock_service("zk",
+                                                     "localhost:2181",
+                                                     10,
+                                                     "/dev/null"));
 
     engine_ = "engine-name";
     name_ = "test-name";
@@ -49,7 +52,7 @@ class config_trivial : public testing::Test {
   string path_;
   string engine_;
   string name_;
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> zk_;
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> zk_;
 };
 
 TEST_F(config_trivial, config_tozk) {

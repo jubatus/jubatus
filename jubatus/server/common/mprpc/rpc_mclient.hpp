@@ -22,13 +22,13 @@
 #include <string>
 #include <utility>
 
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/lang/function.h>
-#include <pficommon/lang/noncopyable.h>
-
 #include <msgpack.hpp>
 #include <jubatus/msgpack/rpc/client.h>
 #include <jubatus/msgpack/rpc/session_pool.h>
+
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/lang/function.h"
+#include "jubatus/util/lang/noncopyable.h"
 
 #include "rpc_error.hpp"
 #include "rpc_result.hpp"
@@ -58,14 +58,15 @@
           << jubatus::server::common::mprpc::error_method(method) \
           << jubatus::core::common::exception::error_message( \
                  std::string("rpc_server error: " \
-                     + pfi::lang::lexical_cast<std::string>(err.via.u64)))); \
+                     + jubatus::util::lang::lexical_cast<std::string>( \
+                           err.via.u64)))); \
     } else { \
       throw JUBATUS_EXCEPTION( \
           jubatus::server::common::mprpc::rpc_call_error() \
           << jubatus::server::common::mprpc::error_method(method) \
           << jubatus::core::common::exception::error_message( \
                  std::string("rpc_server error: " \
-                     + pfi::lang::lexical_cast<std::string>(err)))); \
+                     + jubatus::util::lang::lexical_cast<std::string>(err)))); \
     } \
   } catch(msgpack::rpc::connect_error) { \
     throw JUBATUS_EXCEPTION( \
@@ -96,7 +97,7 @@ namespace server {
 namespace common {
 namespace mprpc {
 
-class rpc_mclient : pfi::lang::noncopyable {
+class rpc_mclient : jubatus::util::lang::noncopyable {
  public:
   typedef std::vector<std::pair<std::string, uint16_t> > host_spec_list_t;
 
@@ -136,13 +137,13 @@ class rpc_mclient : pfi::lang::noncopyable {
   rpc_result<Res> call(
       const std::string& m,
       const A0& a0,
-      const pfi::lang::function<Res(Res, Res)>& reducer);
+      const jubatus::util::lang::function<Res(Res, Res)>& reducer);
   template<typename Res, typename A0, typename A1>
   rpc_result<Res> call(
       const std::string& m,
       const A0& a0,
       const A1& a1,
-      const pfi::lang::function<Res(Res, Res)>& reducer);
+      const jubatus::util::lang::function<Res(Res, Res)>& reducer);
 
   template<typename Res, typename A0, typename A1, typename A2>
   rpc_result<Res> call(
@@ -150,7 +151,7 @@ class rpc_mclient : pfi::lang::noncopyable {
       const A0& a0,
       const A1& a1,
       const A2& a2,
-      const pfi::lang::function<Res(Res, Res)>& reducer);
+      const jubatus::util::lang::function<Res(Res, Res)>& reducer);
   template<typename Res, typename A0, typename A1, typename A2, typename A3>
   rpc_result<Res> call(
       const std::string& m,
@@ -158,7 +159,7 @@ class rpc_mclient : pfi::lang::noncopyable {
       const A1& a1,
       const A2& a2,
       const A3& a3,
-      const pfi::lang::function<Res(Res, Res)>& reducer);
+      const jubatus::util::lang::function<Res(Res, Res)>& reducer);
 
   template<typename A0>
   rpc_result_object call(const std::string&, const A0& a0);
@@ -178,13 +179,13 @@ class rpc_mclient : pfi::lang::noncopyable {
   template<typename Res>
   rpc_result<Res> join_(
       const std::string& method,
-      const pfi::lang::function<Res(Res, Res)>& reducer);
+      const jubatus::util::lang::function<Res(Res, Res)>& reducer);
   template<typename Res>
   void join_one_(
       const std::string& method,
       msgpack::rpc::future& response,
       rpc_result<Res>& result,
-      const pfi::lang::function<Res(Res, Res)>& reducer);
+      const jubatus::util::lang::function<Res(Res, Res)>& reducer);
 
   rpc_result_object wait(const std::string& method);
   rpc_response_t wait_one(const std::string& method, msgpack::rpc::future& f);
@@ -201,7 +202,7 @@ template<typename Res, typename A0>
 rpc_result<Res> rpc_mclient::call(
     const std::string& m,
     const A0& a0,
-    const pfi::lang::function<Res(Res, Res)>& reducer) {
+    const jubatus::util::lang::function<Res(Res, Res)>& reducer) {
   call_(m, msgpack::type::tuple<const A0&>(a0));
   return join_(m, reducer);
 }
@@ -211,7 +212,7 @@ rpc_result<Res> rpc_mclient::call(
     const std::string& m,
     const A0& a0,
     const A1& a1,
-    const pfi::lang::function<Res(Res, Res)>& reducer) {
+    const jubatus::util::lang::function<Res(Res, Res)>& reducer) {
   call_(m, msgpack::type::tuple<const A0&, const A1&>(a0, a1));
   return join_(m, reducer);
 }
@@ -222,7 +223,7 @@ rpc_result<Res> rpc_mclient::call(
     const A0& a0,
     const A1& a1,
     const A2& a2,
-    const pfi::lang::function<Res(Res, Res)>& reducer) {
+    const jubatus::util::lang::function<Res(Res, Res)>& reducer) {
   call_(m, msgpack::type::tuple<const A0&, const A1&, const A2&>(a0, a1, a2));
   return join_(m, reducer);
 }
@@ -234,7 +235,7 @@ rpc_result<Res> rpc_mclient::call(
     const A1& a1,
     const A2& a2,
     const A3& a3,
-    const pfi::lang::function<Res(Res, Res)>& reducer) {
+    const jubatus::util::lang::function<Res(Res, Res)>& reducer) {
   call_(
       m,
       msgpack::type::tuple<const A0&, const A1&, const A2&, const A3&>(
@@ -262,13 +263,14 @@ void rpc_mclient::join_one_(
     const std::string& method,
     msgpack::rpc::future& response,
     rpc_result<Res>& result,
-    const pfi::lang::function<Res(Res, Res)>& reducer) {
+    const jubatus::util::lang::function<Res(Res, Res)>& reducer) {
   try {
     Res method_result = response.get<Res>();
     if (result.value) {
       *result.value = reducer(*result, method_result);
     } else {
-      result.value = pfi::lang::shared_ptr<Res>(new Res(method_result));
+      result.value =
+        jubatus::util::lang::shared_ptr<Res>(new Res(method_result));
     }
   }
   JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method);
@@ -277,7 +279,7 @@ void rpc_mclient::join_one_(
 template<typename Res>
 rpc_result<Res> rpc_mclient::join_(
     const std::string& method,
-    const pfi::lang::function<Res(Res, Res)>& reducer) {
+    const jubatus::util::lang::function<Res(Res, Res)>& reducer) {
   rpc_result<Res> result;
 
   if (futures_.empty()) {

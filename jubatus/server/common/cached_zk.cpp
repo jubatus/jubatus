@@ -19,9 +19,9 @@
 #include <set>
 #include <string>
 #include <vector>
-#include <pficommon/concurrent/lock.h>
+#include "jubatus/util/concurrent/lock.h"
 
-using pfi::concurrent::scoped_lock;
+using jubatus::util::concurrent::scoped_lock;
 using std::vector;
 using std::string;
 

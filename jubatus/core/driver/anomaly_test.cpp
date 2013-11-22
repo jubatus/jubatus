@@ -21,11 +21,13 @@
 #include <gtest/gtest.h>
 
 #include "../anomaly/anomaly.hpp"
+#include "../fv_converter/datum.hpp"
 #include "../recommender/recommender.hpp"
 #include "anomaly.hpp"
 #include "test_util.hpp"
 
 using std::make_pair;
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -34,27 +36,29 @@ namespace driver {
 class anomaly_test : public ::testing::Test {
  protected:
   void SetUp() {
-    core::storage::lof_storage::config lof_config;
+    core::anomaly::lof_storage::config lof_config;
     lof_config.nearest_neighbor_num = 100;
     lof_config.reverse_nearest_neighbor_num = 30;
     core::recommender::euclid_lsh::config lsh_config;
-    lsh_config.lsh_num = 8;
+    lsh_config.hash_num = 8;
     lsh_config.table_num = 8;
     lsh_config.probe_num = 8;
     lsh_config.bin_width = 8.2;
     lsh_config.seed = 1234;
 
     anomaly_.reset(new driver::anomaly(
-          new core::anomaly::lof(lof_config,
-            new core::recommender::euclid_lsh(lsh_config)),
-        make_fv_converter()));
+          shared_ptr<core::anomaly::anomaly_base>(
+            new core::anomaly::lof(lof_config,
+              shared_ptr<core::recommender::recommender_base>(
+                new core::recommender::euclid_lsh(lsh_config)))),
+          make_fv_converter()));
   }
 
   void TearDown() {
     anomaly_.reset();
   }
 
-  pfi::lang::shared_ptr<core::driver::anomaly> anomaly_;
+  jubatus::util::lang::shared_ptr<core::driver::anomaly> anomaly_;
 };
 
 TEST_F(anomaly_test, small) {

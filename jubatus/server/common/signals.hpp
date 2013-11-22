@@ -17,7 +17,7 @@
 #ifndef JUBATUS_SERVER_COMMON_SIGNALS_HPP_
 #define JUBATUS_SERVER_COMMON_SIGNALS_HPP_
 
-#include <pficommon/lang/function.h>
+#include "jubatus/util/lang/function.h"
 
 namespace jubatus {
 namespace server {
@@ -28,7 +28,7 @@ void prepare_signal_handling();  // NOTE: this function won't work well
                                  //   if you have any other threads.
                                  //   you should call this function
                                  //   at the head of program.
-void set_action_on_term(pfi::lang::function<void()> action);
+void set_action_on_term(jubatus::util::lang::function<void()> action);
 
 }  // namespace util
 }  // namespace common

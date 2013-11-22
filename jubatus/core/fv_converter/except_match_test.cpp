@@ -24,7 +24,7 @@ namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-typedef pfi::lang::shared_ptr<key_matcher> matcher_ptr;
+typedef jubatus::util::lang::shared_ptr<key_matcher> matcher_ptr;
 
 TEST(except_match, trivial) {
   except_match m(

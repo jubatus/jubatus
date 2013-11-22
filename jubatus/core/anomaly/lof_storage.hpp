@@ -22,22 +22,38 @@
 #include <utility>
 #include <vector>
 
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/data/unordered_set.h>
-#include <pficommon/lang/scoped_ptr.h>
-#include <pficommon/text/json.h>
+#include <msgpack.hpp>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/data/unordered_set.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
 
-#include "anomaly_storage_base.hpp"
 #include "../common/type.hpp"
+#include "../common/unordered_map.hpp"
+#include "../framework/mixable.hpp"
 #include "../recommender/recommender_base.hpp"
 #include "../recommender/recommender_factory.hpp"
 
 namespace jubatus {
 namespace core {
-namespace storage {
+namespace anomaly {
 
-class lof_storage : public anomaly_storage_base {
+struct lof_entry {
+  float kdist;
+  float lrd;
+
+  MSGPACK_DEFINE(kdist, lrd);
+
+  template<typename Ar>
+  void serialize(Ar& ar) {
+    ar & JUBA_MEMBER(kdist) & JUBA_MEMBER(lrd);
+  }
+};
+
+typedef jubatus::util::data::unordered_map<std::string, lof_entry> lof_table_t;
+
+class lof_storage {
  public:
   static const uint32_t DEFAULT_NEIGHBOR_NUM;
   static const uint32_t DEFAULT_REVERSE_NN_NUM;
@@ -50,17 +66,22 @@ class lof_storage : public anomaly_storage_base {
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & MEMBER(nearest_neighbor_num) & MEMBER(reverse_nearest_neighbor_num);
+      ar
+          & JUBA_MEMBER(nearest_neighbor_num)
+          & JUBA_MEMBER(reverse_nearest_neighbor_num);
     }
   };
 
   lof_storage();
-  explicit lof_storage(core::recommender::recommender_base* nn_engine);
+  explicit lof_storage(
+      jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
+          nn_engine);
 
   // config contains parameters for the underlying nearest neighbor search
   explicit lof_storage(
       const config& config,
-      core::recommender::recommender_base* nn_engine);
+      jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
+          nn_engine);
 
   virtual ~lof_storage();
 
@@ -68,10 +89,12 @@ class lof_storage : public anomaly_storage_base {
   // calculate lrd of query and lrd values of its neighbors
   float collect_lrds(
       const common::sfv_t& query,
-      pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
+      jubatus::util::data::unordered_map<std::string, float>&
+          neighbor_lrd) const;
   float collect_lrds(
       const std::string& id,
-      pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
+      jubatus::util::data::unordered_map<std::string, float>&
+          neighbor_lrd) const;
 
   // For Update
   void remove_row(const std::string& row);
@@ -87,78 +110,48 @@ class lof_storage : public anomaly_storage_base {
   float get_kdist(const std::string& row) const;
   float get_lrd(const std::string& row) const;
 
-  bool save(std::ostream& os);
-  bool load(std::istream& is);
-
   // just for test
-  void set_nn_engine(core::recommender::recommender_base* nn_engine);
+  void set_nn_engine(
+      jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
+          nn_engine);
 
-  virtual void get_diff(std::string& diff) const;
-  virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
-  virtual void mix(const std::string& lhs, std::string& rhs) const;
+  void get_diff(lof_table_t& diff) const;
+  void set_mixed_and_clear_diff(const lof_table_t& mixed_diff);
+  void mix(const lof_table_t& lhs, lof_table_t& rhs) const;
+
+  template<class Buffer>
+  void pack(msgpack::packer<Buffer>& packer) const {
+    packer.pack(*this);
+  }
+  void unpack(msgpack::object o) {
+    o.convert(this);
+  }
+
+  MSGPACK_DEFINE(lof_table_, lof_table_diff_, neighbor_num_, reverse_nn_num_);
 
  private:
-  struct lof_entry {
-    float kdist;
-    float lrd;
-
-    template<typename Ar>
-    void serialize(Ar& ar) {
-      ar & MEMBER(kdist) & MEMBER(lrd);
-    }
-  };
-
-  typedef pfi::data::unordered_map<std::string, lof_entry> lof_table_t;
-
   static void mark_removed(lof_entry& entry);
   static bool is_removed(const lof_entry& entry);
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
 
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(lof_table_) & MEMBER(lof_table_diff_);
-    ar & MEMBER(neighbor_num_) & MEMBER(reverse_nn_num_);
-
-    // TODO(kashihara): Make it more efficient
-    if (ar.is_read) {
-      std::string name;
-      ar & name;
-      nn_engine_->clear();
-
-      std::string impl;
-      ar & impl;
-      std::istringstream iss(impl);
-      nn_engine_->load(iss);
-    } else {
-      std::string name = nn_engine_->type();
-      ar & name;
-
-      std::ostringstream oss;
-      nn_engine_->save(oss);
-      std::string str = oss.str();
-      ar & str;
-    }
+    ar & JUBA_MEMBER(lof_table_) & JUBA_MEMBER(lof_table_diff_);
+    ar & JUBA_MEMBER(neighbor_num_) & JUBA_MEMBER(reverse_nn_num_);
   }
 
   float collect_lrds_from_neighbors(
       const std::vector<std::pair<std::string, float> >& neighbors,
-      pfi::data::unordered_map<std::string, float>& neighbor_lrd) const;
-
-  void serialize_diff(
-      const lof_table_t& table,
-      const std::string& nn_diff,
-      std::ostream& out) const;
-  void deserialize_diff(
-      const std::string& diff,
-      lof_table_t& table,
-      std::string& nn_diff) const;
+      jubatus::util::data::unordered_map<std::string, float>&
+          neighbor_lrd) const;
 
   void collect_neighbors(
       const std::string& row,
-      pfi::data::unordered_set<std::string>& nn) const;
+      jubatus::util::data::unordered_set<std::string>& nn) const;
 
-  void update_entries(const pfi::data::unordered_set<std::string>& rows);
+  void update_entries(
+      const jubatus::util::data::unordered_set<std::string>& rows);
   void update_kdist(const std::string& row);
   void update_lrd(const std::string& row);
 
@@ -175,10 +168,14 @@ class lof_storage : public anomaly_storage_base {
   uint32_t neighbor_num_;  // k of k-nn
   uint32_t reverse_nn_num_;  // ck of ck-nn as an approx. of k-reverse-nn
 
-  pfi::lang::scoped_ptr<core::recommender::recommender_base> nn_engine_;
+  jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
+    nn_engine_;
 };
 
-}  // namespace storage
+typedef framework::delegating_mixable<lof_storage, lof_table_t>
+    mixable_lof_storage;
+
+}  // namespace anomaly
 }  // namespace core
 }  // namespace jubatus
 

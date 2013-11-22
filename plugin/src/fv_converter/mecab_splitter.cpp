@@ -51,12 +51,12 @@ mecab_splitter::mecab_splitter(const char* arg)
 void mecab_splitter::split(
     const std::string& string,
     std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
-  pfi::lang::scoped_ptr<MeCab::Tagger> tagger(model_->createTagger());
+  jubatus::util::lang::scoped_ptr<MeCab::Tagger> tagger(model_->createTagger());
   if (!tagger) {
     // cannot create tagger
     return;
   }
-  pfi::lang::scoped_ptr<MeCab::Lattice> lattice(model_->createLattice());
+  jubatus::util::lang::scoped_ptr<MeCab::Lattice> lattice(model_->createLattice());
   if (!lattice) {
     // cannot create lattice
     return;

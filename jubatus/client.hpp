@@ -39,5 +39,6 @@
 #include <jubatus/client/regression_client.hpp>
 #include <jubatus/client/graph_client.hpp>
 #include <jubatus/client/anomaly_client.hpp>
+#include <jubatus/client/nearest_neighbor_client.hpp>
 
 #endif  // JUBATUS_CLIENT_HPP_

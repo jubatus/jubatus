@@ -7,8 +7,10 @@ EXIT_STATUS=0
 CPPLINT="tools/codestyle/cpplint/cpplint.py"
 CPPLINT_ARGS="--filter=-runtime/references,-runtime/rtti"
 
+INCLUDE_GURAD_TOOL="tools/codestyle/check_include_guard.sh"
+
 list_target_files() {
-  git diff --cached --name-only | grep -v "^jubatus/server/third_party/"
+  git diff --cached --name-only | grep -v "^jubatus/server/third_party/" | grep -v "^jubatus/server/server/.*_\\(server.[hc]pp\\|impl.cpp\\|types.hpp\\|keeper.cpp\\|client.hpp\\)" | grep -v "^jubatus/client/*"
 }
 
 if [ -z "$(list_target_files)" ]; then
@@ -26,18 +28,13 @@ then
 fi
 
 # include guard
-for FILE in $(list_target_files); do
-  case "${FILE}" in
-    *.hpp )
-      GUARD="$(echo ${FILE} | tr a-z/. A-Z__)_"
-      RESULT="$(grep -e "^#ifndef ${GUARD}\$" -e "^#define ${GUARD}\$" -e "^#endif  // ${GUARD}\$" ${FILE})"
-      if [ $(echo "${RESULT}" | wc -l) != 3 ]; then
-        echo "Invalid include guard: ${FILE}: (expects ${GUARD})"
-        EXIT_STATUS=1
-      fi
-    ;;
-  esac
-done
+INCLUDE_GUARD_RESULT="$(list_target_files | xargs "${INCLUDE_GURAD_TOOL}")"
+if [ "$(echo -n "${INCLUDE_GUARD_RESULT}" | wc -l)" != "0" ]
+then
+    echo "Error: Illegal include guard detected"
+    echo "${INCLUDE_GUARD_RESULT}"
+    EXIT_STATUS=1
+fi
 
 # exit
 if [ ${EXIT_STATUS} = 0 ]; then

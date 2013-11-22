@@ -3,6 +3,11 @@ def options(ctx): pass
 def configure(ctx): pass
 
 def build(bld):
+  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+    libassert = " LIBGLOG"
+  else:
+    libassert = ""
+
   bld.shlib(
     source = '''
         classifier_base.cpp
@@ -10,7 +15,7 @@ def build(bld):
 	passive_aggressive.cpp
 	passive_aggressive_1.cpp
 	passive_aggressive_2.cpp
-	confidence_weighted.cpp	
+	confidence_weighted.cpp
 	arow.cpp
 	normal_herd.cpp
         classifier_factory.cpp
@@ -18,17 +23,17 @@ def build(bld):
     target = 'jubatus_classifier',
     name = 'jubatus_classifier',
     includes = '.',
-    use = 'PFICOMMON jubacommon')
+    use = 'jubatus_util jubacommon jubatus_mixables'+libassert)
 
   bld.program(
      features = 'gtest',
      source = [
          'classifier_test.cpp',
-         'classifier_factory.cpp'   
+         'classifier_factory.cpp'
      ],
      target = "classifier_test",
      includes = '.',
-     use = 'jubacommon jubatus_classifier jubastorage')
+     use = 'jubacommon jubatus_classifier jubastorage'+libassert)
 
   bld.install_files('${PREFIX}/include/jubatus/core/classifier', [
       'classifier_base.hpp',

@@ -42,14 +42,15 @@ class graph_test : public ::testing::Test {
     config.alpha = 0.9f;
     config.landmark_num = 5;
     graph_.reset(new core::driver::graph(
-          new core::graph::graph_wo_index(config)));
+          jubatus::util::lang::shared_ptr<core::graph::graph_base>(
+            new core::graph::graph_wo_index(config))));
   }
 
   void TearDown() {
     graph_.reset();
   }
 
-  pfi::lang::shared_ptr<core::driver::graph> graph_;
+  jubatus::util::lang::shared_ptr<core::driver::graph> graph_;
 };
 
 TEST_F(graph_test, simple) {

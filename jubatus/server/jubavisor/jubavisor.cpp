@@ -22,8 +22,8 @@
 #include <string>
 
 #include <glog/logging.h>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/lang/bind.h>
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/lang/bind.h"
 
 #include "jubavisor.hpp"
 #include "jubatus/core/common/exception.hpp"
@@ -32,8 +32,8 @@
 #include "../common/signals.hpp"
 #include "../common/util.hpp"
 
-using pfi::concurrent::scoped_lock;
-using pfi::lang::bind;
+using jubatus::util::concurrent::scoped_lock;
+using jubatus::util::lang::bind;
 
 namespace jubatus {
 namespace server {
@@ -86,7 +86,7 @@ jubavisor::jubavisor(
   std::string path = jubatus::server::common::JUBAVISOR_BASE_PATH + "/" + name_;
   zk_->create(path, "", true);
   // TODO(kumagi):
-  //  pfi::lang::function<void(int,int,std::string)> f
+  //  jubatus::util::lang::function<void(int,int,std::string)> f
   //    = bind(&jubavisor::die_if_deleted, this, _1, _2, _3);
   //  zk_->bind_watcher(path, f);
   DLOG(INFO) << path << " created.";

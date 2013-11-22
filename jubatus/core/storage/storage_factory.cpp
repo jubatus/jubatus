@@ -23,15 +23,18 @@
 #include "local_storage.hpp"
 #include "local_storage_mixture.hpp"
 
+using jubatus::util::lang::shared_ptr;
+
 namespace jubatus {
 namespace core {
 namespace storage {
 
-storage_base* storage_factory::create_storage(const std::string& name) {
+shared_ptr<storage_base> storage_factory::create_storage(
+    const std::string& name) {
   if (name == "local") {
-    return static_cast<storage_base*>(new local_storage);
+    return shared_ptr<storage_base>(new local_storage);
   } else if (name == "local_mixture") {
-    return static_cast<storage_base*>(new local_storage_mixture);
+    return shared_ptr<storage_base>(new local_storage_mixture);
   }
 
   // maybe bug or configuration mistake

@@ -23,11 +23,12 @@
 #include <vector>
 
 #include <msgpack.hpp>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/unordered_map.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/unordered_map.h"
 
 #include "../common/exception.hpp"
 #include "../common/type.hpp"
+#include "../common/unordered_map.hpp"
 
 namespace jubatus {
 namespace core {
@@ -46,18 +47,17 @@ struct eigen_vector_info {
   double score;
   uint64_t out_degree_num;
 
-  friend class pfi::data::serialization::access;
+  MSGPACK_DEFINE(score, out_degree_num);
 
+  friend class jubatus::util::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(score) & MEMBER(out_degree_num);
+    ar & JUBA_MEMBER(score) & JUBA_MEMBER(out_degree_num);
   }
 };
 
-typedef pfi::data::unordered_map<node_id_t, eigen_vector_info>
+typedef jubatus::util::data::unordered_map<node_id_t, eigen_vector_info>
   eigen_vector_diff;
-typedef pfi::data::unordered_map<node_id_t, eigen_vector_info>
-  eigen_vector_mixed;
 
 struct node_info {
   std::map<std::string, std::string> property;
@@ -66,11 +66,11 @@ struct node_info {
 
   MSGPACK_DEFINE(property, in_edges, out_edges);
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
 
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(property) & MEMBER(in_edges) & MEMBER(out_edges);
+    ar & JUBA_MEMBER(property) & JUBA_MEMBER(in_edges) & JUBA_MEMBER(out_edges);
   }
 };
 
@@ -81,11 +81,11 @@ struct edge_info {
 
   MSGPACK_DEFINE(p, src, tgt);
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
 
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(p) & MEMBER(src) & MEMBER(tgt);
+    ar & JUBA_MEMBER(p) & JUBA_MEMBER(src) & JUBA_MEMBER(tgt);
   }
 };
 
@@ -100,40 +100,38 @@ struct preset_query {
 
   MSGPACK_DEFINE(edge_query, node_query);
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
 
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(edge_query) & MEMBER(node_query);
+    ar & JUBA_MEMBER(edge_query) & JUBA_MEMBER(node_query);
   }
 };
 
-typedef pfi::data::unordered_map<node_id_t, std::pair<uint64_t, node_id_t> >
-  spt_edges;
+typedef jubatus::util::data::unordered_map<
+  node_id_t, std::pair<uint64_t, node_id_t> > spt_edges;
 
 struct shortest_path_tree {
   node_id_t landmark;
   spt_edges from_root;
   spt_edges to_root;
 
-  friend class pfi::data::serialization::access;
+  MSGPACK_DEFINE(landmark, from_root, to_root);
 
+  friend class jubatus::util::data::serialization::access;
   template<class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(landmark) & MEMBER(from_root) & MEMBER(to_root);
+    ar & JUBA_MEMBER(landmark) & JUBA_MEMBER(from_root) & JUBA_MEMBER(to_root);
   }
 };
 
-typedef std::vector<shortest_path_tree> spt_mixed;
 typedef std::vector<shortest_path_tree> spt_diff;
 
-typedef pfi::data::unordered_map<preset_query, eigen_vector_mixed>
-  eigen_vector_query_mixed;
-typedef pfi::data::unordered_map<preset_query, eigen_vector_diff>
+typedef jubatus::util::data::unordered_map<preset_query, eigen_vector_diff>
   eigen_vector_query_diff;
 
-typedef pfi::data::unordered_map<preset_query, spt_mixed> spt_query_mixed;
-typedef pfi::data::unordered_map<preset_query, spt_diff> spt_query_diff;
+typedef jubatus::util::data::unordered_map<preset_query, spt_diff>
+  spt_query_diff;
 
 class graph_exception : public jubatus::core::common::exception::runtime_error {
  public:
@@ -214,9 +212,8 @@ class unknown_query : public graph_exception {
 
 }  // namespace graph
 }  // namespace core
-}  // namespace jubatus
 
-namespace pfi {
+namespace util {
 namespace data {
 
 template<> struct hash<jubatus::core::graph::preset_query> {
@@ -245,6 +242,7 @@ template<> struct hash<jubatus::core::graph::preset_query> {
 };
 
 }  // namespace data
-}  // namespace pfi
+}  // namespace util
+}  // namespace jubatus
 
 #endif  // JUBATUS_CORE_GRAPH_GRAPH_TYPE_HPP_

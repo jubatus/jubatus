@@ -22,7 +22,7 @@
 #include <utility>
 #include <vector>
 #include <msgpack.hpp>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
 
 namespace jubatus {
 namespace core {
@@ -34,21 +34,31 @@ struct datum {
 
   sv_t string_values_;
   nv_t num_values_;
+  sv_t binary_values_;
 
-  MSGPACK_DEFINE(string_values_, num_values_);
+  MSGPACK_DEFINE(string_values_, num_values_, binary_values_);
 
   template<class Archiver>
   void serialize(Archiver& ar) {
     std::map<std::string, std::string> sv;
     std::map<std::string, double> nv;
+    std::map<std::string, std::string> bv;
     if (ar.is_read) {
-      ar & NAMED_MEMBER("string_values", sv) & NAMED_MEMBER("num_values", nv);
+      ar
+          & JUBA_NAMED_MEMBER("string_values", sv)
+          & JUBA_NAMED_MEMBER("num_values", nv)
+          & JUBA_NAMED_MEMBER("binary_values", bv);
       string_values_ = sv_t(sv.begin(), sv.end());
       num_values_ = nv_t(nv.begin(), nv.end());
+      binary_values_ = sv_t(bv.begin(), bv.end());
     } else {
       sv.insert(string_values_.begin(), string_values_.end());
       nv.insert(num_values_.begin(), num_values_.end());
-      ar & NAMED_MEMBER("string_values", sv) & NAMED_MEMBER("num_values", nv);
+      bv.insert(binary_values_.begin(), binary_values_.end());
+      ar
+          & JUBA_NAMED_MEMBER("string_values", sv)
+          & JUBA_NAMED_MEMBER("num_values", nv)
+          & JUBA_NAMED_MEMBER("binary_values", bv);
     }
   }
 };

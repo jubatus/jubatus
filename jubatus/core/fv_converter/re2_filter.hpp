@@ -25,14 +25,14 @@ namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-class re2_filter : public string_filter {
+class regexp_filter : public string_filter {
  public:
-  re2_filter(const std::string& regexp, const std::string& replace);
+  regexp_filter(const std::string& regexp, const std::string& replace);
 
   void filter(const std::string& input, std::string& output) const;
 
  private:
-  re2_filter();
+  regexp_filter();
 
   re2::RE2 re_;
   std::string replace_;

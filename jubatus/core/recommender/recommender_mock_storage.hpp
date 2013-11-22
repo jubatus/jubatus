@@ -21,16 +21,16 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include "../storage/recommender_storage_base.hpp"
+#include <msgpack.hpp>
+#include "jubatus/util/data/serialization.h"
+#include "../framework/mixable.hpp"
 #include "recommender_type.hpp"
 
 namespace jubatus {
 namespace core {
 namespace recommender {
 
-class recommender_mock_storage
-    : public core::storage::recommender_storage_base {
+class recommender_mock_storage {
  public:
   virtual ~recommender_mock_storage();
 
@@ -56,18 +56,22 @@ class recommender_mock_storage
 
   std::string name() const;
 
-  virtual void get_diff(std::string& diff) const;
-  virtual void set_mixed_and_clear_diff(const std::string& mixed_diff);
-  virtual void mix(const std::string& lhs, std::string& rhs) const;
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
+
+  void get_diff(recommender_mock_storage& diff) const;
+  void set_mixed_and_clear_diff(const recommender_mock_storage& mixed_diff);
+  void mix(const recommender_mock_storage& lhs, recommender_mock_storage& rhs)
+      const;
 
  private:
   typedef std::map<common::sfv_t, std::vector<std::pair<std::string, float> > >
     relation_type;
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(similar_relation_) & MEMBER(neighbor_relation_);
+    ar & JUBA_MEMBER(similar_relation_) & JUBA_MEMBER(neighbor_relation_);
   }
 
   static void get_relation(
@@ -85,7 +89,14 @@ class recommender_mock_storage
 
   relation_type similar_relation_;
   relation_type neighbor_relation_;
+
+ public:
+  MSGPACK_DEFINE(similar_relation_, neighbor_relation_);
 };
+
+typedef framework::delegating_mixable<
+    recommender_mock_storage, recommender_mock_storage>
+    mixable_recommender_mock_storage;
 
 }  // namespace recommender
 }  // namespace core

@@ -21,7 +21,7 @@
 
 #include <glog/logging.h>
 #include <jubatus/msgpack/rpc/client.h>
-#include <pficommon/lang/function.h>
+#include "jubatus/util/lang/function.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
@@ -83,6 +83,7 @@ try {
   p.add<int, cmdline::range_reader<int> >("loglevel", 'E',
       "[start] verbosity of log messages", false, google::INFO,
       cmdline::range(google::INFO, google::FATAL));
+  p.add<std::string>("mixer", 'X', "[start] mixer strategy", false, "");
   p.add("join", 'J', "[start] join to the existing cluster");
   p.add<int>("interval_sec", 'S', "[start] mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'I',
@@ -181,7 +182,7 @@ void send2supervisor(
     const string& name,
     const string& zkhosts,
     const cmdline::parser& argv) {
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
       jubatus::server::common::create_lock_service(
           "zk", zkhosts, 10, "/dev/null"));
 
@@ -206,6 +207,7 @@ void send2supervisor(
     server_option.datadir = argv.get<std::string>("datadir");
     server_option.logdir = argv.get<std::string>("logdir");
     server_option.loglevel = argv.get<int>("loglevel");
+    server_option.mixer = argv.get<std::string>("mixer");
     server_option.join = argv.exist("join");
 
     server_option.interval_sec = argv.get<int>("interval_sec");
@@ -244,7 +246,7 @@ void send2server(
     const string& name,
     const string& id,
     const string& zkhosts) {
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
       jubatus::server::common::create_lock_service(
           "zk", zkhosts, 10, "/dev/null"));
   std::string path;
@@ -292,13 +294,13 @@ void show(
 }
 
 void status(const string& type, const string& name, const string& zkhosts) {
-  pfi::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
+  jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service> ls_(
       jubatus::server::common::create_lock_service(
           "zk", zkhosts, 10, "/dev/null"));
   show(
       *ls_,
-      jubatus::server::common::JUBAKEEPER_BASE_PATH + "/" + type,
-      "jubakeeper");
+      jubatus::server::common::JUBAPROXY_BASE_PATH + "/" + type,
+      "jubaproxy");
   show(*ls_, jubatus::server::common::JUBAVISOR_BASE_PATH, "jubavisor");
   std::string path;
   jubatus::server::common::build_actor_path(path, type, name);

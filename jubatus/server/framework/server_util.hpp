@@ -24,11 +24,11 @@
 
 #include <glog/logging.h>
 #include <msgpack.hpp>
-#include <pficommon/lang/noncopyable.h>
-#include <pficommon/concurrent/lock.h>
-#include <pficommon/concurrent/rwmutex.h>
-#include <pficommon/lang/function.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/noncopyable.h"
+#include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/concurrent/rwmutex.h"
+#include "jubatus/util/lang/function.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "../common/util.hpp"
@@ -82,14 +82,16 @@ struct server_argv {
   std::string logdir;
   int loglevel;
   std::string configpath;
+  std::string modelpath;
   std::string eth;
   int interval_sec;
   int interval_count;
+  std::string mixer;
 
   MSGPACK_DEFINE(join, port, bind_address, bind_if, timeout,
       zookeeper_timeout, interconnect_timeout, threadnum,
       program_name, type, z, name, datadir, logdir, loglevel, eth,
-      interval_sec, interval_count);
+      interval_sec, interval_count, mixer);
 
   bool is_standalone() const {
     return (z == "");
@@ -100,9 +102,9 @@ struct server_argv {
 
 std::string get_server_identifier(const server_argv& a);
 
-struct keeper_argv {
-  keeper_argv(int args, char** argv, const std::string& t);
-  keeper_argv();
+struct proxy_argv {
+  proxy_argv(int args, char** argv, const std::string& t);
+  proxy_argv();
 
   int port;
   std::string bind_address;
@@ -124,7 +126,8 @@ struct keeper_argv {
   void set_log_destination(const std::string& progname) const;
 };
 
-void register_lock_service(pfi::lang::shared_ptr<common::lock_service> ls);
+void register_lock_service(
+    jubatus::util::lang::shared_ptr<common::lock_service> ls);
 void close_lock_service();
 
 template<class ImplServerClass>

@@ -17,7 +17,7 @@
 #ifndef JUBATUS_CORE_CLASSIFIER_CLASSIFIER_CONFIG_HPP_
 #define JUBATUS_CORE_CLASSIFIER_CLASSIFIER_CONFIG_HPP_
 
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
 
 namespace jubatus {
 namespace core {
@@ -32,7 +32,7 @@ struct classifier_config {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & NAMED_MEMBER("regularization_weight", C);
+    ar & JUBA_NAMED_MEMBER("regularization_weight", C);
   }
 };
 

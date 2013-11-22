@@ -18,7 +18,7 @@
 #define JUBATUS_CORE_REGRESSION_PASSIVE_AGGRESSIVE_HPP_
 
 #include <limits>
-#include <pficommon/data/serialization.h>
+#include "jubatus/util/data/serialization.h"
 #include "regression_base.hpp"
 
 namespace jubatus {
@@ -37,13 +37,15 @@ class passive_aggressive : public regression_base {
 
     template<typename Ar>
     void serialize(Ar& ar) {
-      ar & NAMED_MEMBER("regularization_weight", C)
-          & NAMED_MEMBER("sensitivity", epsilon);
+      ar & JUBA_NAMED_MEMBER("regularization_weight", C)
+          & JUBA_NAMED_MEMBER("sensitivity", epsilon);
     }
   };
 
-  passive_aggressive(const config& config, storage::storage_base* storage);
-  explicit passive_aggressive(storage::storage_base* storage);
+  passive_aggressive(
+      const config& config,
+      regression_base::storage_ptr storage);
+  explicit passive_aggressive(regression_base::storage_ptr storage);
 
   void train(const common::sfv_t& fv, float value);
 

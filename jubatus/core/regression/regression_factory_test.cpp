@@ -17,8 +17,7 @@
 #include <stdexcept>
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/text/json.h"
 
 #include "regression_factory.hpp"
 #include "regression.hpp"
@@ -26,25 +25,27 @@
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
 
+using jubatus::util::lang::shared_ptr;
+
 namespace jubatus {
 namespace core {
 namespace regression {
 
 TEST(regression_factory, trivial) {
   regression::regression_factory f;
-  storage::local_storage s;
-  common::jsonconfig::config param(pfi::text::json::to_json(
+  shared_ptr<storage::local_storage> s(new storage::local_storage);
+  common::jsonconfig::config param(jubatus::util::text::json::to_json(
       regression::passive_aggressive::config()));
-  pfi::lang::scoped_ptr<regression::regression_base>
-    r(f.create_regression("PA", param, &s));
+  shared_ptr<regression::regression_base> r =
+      f.create_regression("PA", param, s);
   EXPECT_EQ(typeid(*r), typeid(regression::passive_aggressive&));
 }
 
 TEST(regression_factory, unknown) {
   regression::regression_factory f;
-  storage::local_storage s;
+  shared_ptr<storage::local_storage> s(new storage::local_storage);
   common::jsonconfig::config param;
-  ASSERT_THROW(f.create_regression("unknown_regression", param, &s),
+  ASSERT_THROW(f.create_regression("unknown_regression", param, s),
                common::unsupported_method);
 }
 

@@ -15,7 +15,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
 #include "exception.hpp"
 #include "key_matcher_factory.hpp"
 #include "key_matcher.hpp"
@@ -25,7 +24,7 @@ namespace core {
 namespace fv_converter {
 
 TEST(fv_converter, key_matcher_factory) {
-  typedef pfi::lang::scoped_ptr<key_matcher> m_t;
+  typedef jubatus::util::lang::shared_ptr<key_matcher> m_t;
 
   key_matcher_factory f;
   ASSERT_TRUE(m_t(f.create_matcher("*"))->match("hogehgeo"));
@@ -39,12 +38,7 @@ TEST(fv_converter, key_matcher_factory) {
   ASSERT_FALSE(m_t(f.create_matcher("hogehoge"))->match("hogefuga"));
   ASSERT_TRUE(m_t(f.create_matcher("hogehoge"))->match("hogehoge"));
 
-#ifdef HAVE_RE2
   ASSERT_TRUE(m_t(f.create_matcher("/.*/hoge/"))->match("fuga/hoge"));
-#else
-  ASSERT_THROW(m_t(f.create_matcher("/.*/hoge/"))->match("fuga/hoge"),
-      converter_exception);
-#endif
 }
 
 }  // namespace fv_converter

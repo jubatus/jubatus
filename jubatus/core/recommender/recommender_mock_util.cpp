@@ -17,14 +17,14 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/string/utility.h>
-#include <pficommon/lang/cast.h>
+#include "jubatus/util/data/string/utility.h"
+#include "jubatus/util/lang/cast.h"
 #include "recommender_mock_util.hpp"
 
 using std::pair;
 using std::string;
 using std::vector;
-using pfi::data::string::split;
+using jubatus::util::data::string::split;
 
 namespace jubatus {
 namespace core {
@@ -35,7 +35,9 @@ common::sfv_t make_sfv(const string& repr) {
   common::sfv_t sfv(elems.size());
   for (size_t i = 0; i < elems.size(); ++i) {
     vector<string> parts = split(elems[i], ':');
-    sfv[i] = make_pair(parts[0], pfi::lang::lexical_cast<float>(parts[1]));
+    sfv[i] = make_pair(
+        parts[0],
+        jubatus::util::lang::lexical_cast<float>(parts[1]));
   }
   return sfv;
 }

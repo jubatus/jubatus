@@ -20,10 +20,10 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/optional.h>
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/optional.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
 
 namespace jubatus {
 namespace core {
@@ -35,70 +35,99 @@ typedef std::map<std::string, std::string> param_t;
 
 struct string_rule {
   std::string key;
-  pfi::data::optional<std::string> except;
+  jubatus::util::data::optional<std::string> except;
   std::string type;
   std::string sample_weight;
   std::string global_weight;
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
     ar
-        & MEMBER(key)
-        & MEMBER(except)
-        & MEMBER(type)
-        & MEMBER(sample_weight)
-        & MEMBER(global_weight);
+        & JUBA_MEMBER(key)
+        & JUBA_MEMBER(except)
+        & JUBA_MEMBER(type)
+        & JUBA_MEMBER(sample_weight)
+        & JUBA_MEMBER(global_weight);
   }
 };
 
 struct filter_rule {
   std::string key;
-  pfi::data::optional<std::string> except;
+  jubatus::util::data::optional<std::string> except;
   std::string type;
   std::string suffix;
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key) & MEMBER(except) & MEMBER(type) & MEMBER(suffix);
+    ar
+        & JUBA_MEMBER(key)
+        & JUBA_MEMBER(except)
+        & JUBA_MEMBER(type)
+        & JUBA_MEMBER(suffix);
   }
 };
 
 struct num_rule {
   std::string key;
-  pfi::data::optional<std::string> except;
+  jubatus::util::data::optional<std::string> except;
   std::string type;
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(key) & MEMBER(except) & MEMBER(type);
+    ar & JUBA_MEMBER(key) & JUBA_MEMBER(except) & JUBA_MEMBER(type);
+  }
+};
+
+struct binary_rule {
+  std::string key;
+  jubatus::util::data::optional<std::string> except;
+  std::string type;
+
+  friend class jubatus::util::data::serialization::access;
+  template<class Archive>
+  void serialize(Archive& ar) {
+    ar & JUBA_MEMBER(key) & JUBA_MEMBER(type);
   }
 };
 
 struct converter_config {
-  std::map<std::string, param_t> string_filter_types;
-  std::vector<filter_rule> string_filter_rules;
+  jubatus::util::data::optional<std::map<std::string, param_t> >
+    string_filter_types;
+  jubatus::util::data::optional<std::vector<filter_rule> > string_filter_rules;
 
-  std::map<std::string, param_t> num_filter_types;
-  std::vector<filter_rule> num_filter_rules;
+  jubatus::util::data::optional<std::map<std::string, param_t> >
+    num_filter_types;
+  jubatus::util::data::optional<std::vector<filter_rule> > num_filter_rules;
 
-  std::map<std::string, param_t> string_types;
-  std::vector<string_rule> string_rules;
+  jubatus::util::data::optional<std::map<std::string, param_t> > string_types;
+  jubatus::util::data::optional<std::vector<string_rule> > string_rules;
 
-  std::map<std::string, param_t> num_types;
-  std::vector<num_rule> num_rules;
+  jubatus::util::data::optional<std::map<std::string, param_t> > num_types;
+  jubatus::util::data::optional<std::vector<num_rule> > num_rules;
 
-  pfi::data::optional<int64_t> hash_max_size;
+  jubatus::util::data::optional<std::map<std::string, param_t> > binary_types;
+  jubatus::util::data::optional<std::vector<binary_rule> > binary_rules;
 
-  friend class pfi::data::serialization::access;
+  jubatus::util::data::optional<int64_t> hash_max_size;
+
+  friend class jubatus::util::data::serialization::access;
   template<class Archive>
   void serialize(Archive& ar) {
-    ar & MEMBER(string_filter_types) & MEMBER(string_filter_rules)
-        & MEMBER(num_filter_types) & MEMBER(num_filter_rules)
-        & MEMBER(string_types) & MEMBER(string_rules) & MEMBER(num_types)
-        & MEMBER(num_rules) & MEMBER(hash_max_size);
+    ar
+        & JUBA_MEMBER(string_filter_types)
+        & JUBA_MEMBER(string_filter_rules)
+        & JUBA_MEMBER(num_filter_types)
+        & JUBA_MEMBER(num_filter_rules)
+        & JUBA_MEMBER(string_types)
+        & JUBA_MEMBER(string_rules)
+        & JUBA_MEMBER(num_types)
+        & JUBA_MEMBER(num_rules)
+        & JUBA_MEMBER(binary_types)
+        & JUBA_MEMBER(binary_rules)
+        & JUBA_MEMBER(hash_max_size);
   }
 };
 
@@ -106,11 +135,8 @@ void initialize_converter(
     const converter_config& config,
     datum_to_fv_converter& converter);
 
-pfi::lang::shared_ptr<datum_to_fv_converter>
-make_fv_converter(const std::string& config);
-
-pfi::lang::shared_ptr<datum_to_fv_converter>
-make_fv_converter(const pfi::text::json::json& config);
+jubatus::util::lang::shared_ptr<datum_to_fv_converter>
+make_fv_converter(const converter_config& config);
 
 }  // namespace fv_converter
 }  // namespace core

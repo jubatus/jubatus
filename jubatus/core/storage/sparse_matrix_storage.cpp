@@ -21,7 +21,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/unordered_set.h>
+#include "jubatus/util/data/unordered_set.h"
 
 using std::istream;
 using std::ostream;
@@ -161,16 +161,13 @@ void sparse_matrix_storage::clear() {
   // norm_ptr_->clear();
 }
 
-bool sparse_matrix_storage::save(ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
+void sparse_matrix_storage::pack(msgpack::packer<msgpack::sbuffer>& packer)
+    const {
+  packer.pack(*this);
 }
 
-bool sparse_matrix_storage::load(istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
-  return true;
+void sparse_matrix_storage::unpack(msgpack::object o) {
+  o.convert(this);
 }
 
 }  // namespace storage

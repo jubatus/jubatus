@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "rpc_response.hpp"
 #include "rpc_error.hpp"
 
@@ -38,7 +38,7 @@ struct rpc_result {
     return !error.empty();
   }
 
-  pfi::lang::shared_ptr<Res> value;
+  jubatus::util::lang::shared_ptr<Res> value;
   std::vector<rpc_error> error;
 };
 

@@ -19,7 +19,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <pficommon/text/json.h>
+#include "jubatus/util/text/json.h"
 #include "except_match.hpp"
 #include "datum_to_fv_converter.hpp"
 #include "exception.hpp"
@@ -30,6 +30,8 @@
 #include "num_feature_factory.hpp"
 #include "num_filter.hpp"
 #include "num_filter_factory.hpp"
+#include "binary_feature.hpp"
+#include "binary_feature_factory.hpp"
 #include "space_splitter.hpp"
 #include "splitter_factory.hpp"
 #include "string_filter.hpp"
@@ -42,11 +44,12 @@ namespace fv_converter {
 
 namespace {
 
-typedef pfi::lang::shared_ptr<word_splitter> splitter_ptr;
-typedef pfi::lang::shared_ptr<key_matcher> matcher_ptr;
-typedef pfi::lang::shared_ptr<num_feature> num_feature_ptr;
-typedef pfi::lang::shared_ptr<string_filter> string_filter_ptr;
-typedef pfi::lang::shared_ptr<num_filter> num_filter_ptr;
+typedef jubatus::util::lang::shared_ptr<word_splitter> splitter_ptr;
+typedef jubatus::util::lang::shared_ptr<key_matcher> matcher_ptr;
+typedef jubatus::util::lang::shared_ptr<num_feature> num_feature_ptr;
+typedef jubatus::util::lang::shared_ptr<binary_feature> binary_feature_ptr;
+typedef jubatus::util::lang::shared_ptr<string_filter> string_filter_ptr;
+typedef jubatus::util::lang::shared_ptr<num_filter> num_filter_ptr;
 
 splitter_weight_type make_weight_type(
     const std::string& sample, const std::string& global) {
@@ -90,7 +93,7 @@ std::string get_or_die(
 
 matcher_ptr create_key_matcher(
     const std::string& key,
-    const pfi::data::optional<std::string>& except) {
+    const jubatus::util::data::optional<std::string>& except) {
   key_matcher_factory f;
   if (except) {
     matcher_ptr m1(f.create_matcher(key));
@@ -149,13 +152,15 @@ void init_num_filter_rules(
   }
 }
 
+void register_default_string_types(
+    std::map<std::string, splitter_ptr>& splitters) {
+  splitters["str"] = splitter_ptr(new without_split());
+  splitters["space"] = splitter_ptr(new space_splitter());
+}
+
 void init_string_types(
     const std::map<std::string, param_t>& string_types,
     std::map<std::string, splitter_ptr>& splitters) {
-  // default
-  splitters["str"] = splitter_ptr(new without_split());
-  splitters["space"] = splitter_ptr(new space_splitter());
-
   splitter_factory f;
   for (std::map<std::string, param_t>::const_iterator it = string_types.begin();
       it != string_types.end(); ++it) {
@@ -206,14 +211,16 @@ void init_string_rules(
   }
 }
 
-void init_num_types(
-    const std::map<std::string, param_t>& num_types,
+void register_default_num_types(
     std::map<std::string, num_feature_ptr>& num_features) {
-  // default
   num_features["num"] = num_feature_ptr(new num_value_feature());
   num_features["log"] = num_feature_ptr(new num_log_feature());
   num_features["str"] = num_feature_ptr(new num_string_feature());
+}
 
+void init_num_types(
+    const std::map<std::string, param_t>& num_types,
+    std::map<std::string, num_feature_ptr>& num_features) {
   num_feature_factory f;
   for (std::map<std::string, param_t>::const_iterator it = num_types.begin();
       it != num_types.end(); ++it) {
@@ -244,6 +251,40 @@ void init_num_rules(
   }
 }
 
+void init_binary_types(
+    const std::map<std::string, param_t>& binary_types,
+    std::map<std::string, binary_feature_ptr>& binary_features) {
+  binary_feature_factory f;
+  for (std::map<std::string, param_t>::const_iterator it = binary_types.begin();
+       it != binary_types.end(); ++it) {
+    const std::string& name = it->first;
+    const std::map<std::string, std::string>& param = it->second;
+
+    std::string method = get_or_die(param, "method");
+    binary_feature_ptr feature(f.create(method, param));
+    binary_features[name] = feature;
+  }
+}
+
+void init_binary_rules(
+    const std::vector<binary_rule>& binary_rules,
+    const std::map<std::string, binary_feature_ptr>& binary_features,
+    datum_to_fv_converter& conv) {
+  key_matcher_factory f;
+  for (size_t i = 0; i < binary_rules.size(); ++i) {
+    const binary_rule& rule = binary_rules[i];
+    matcher_ptr m(f.create_matcher(rule.key));
+    std::map<std::string, binary_feature_ptr>::const_iterator it =
+        binary_features.find(rule.type);
+    if (it == binary_features.end()) {
+      throw JUBATUS_EXCEPTION(
+          converter_exception("unknown type: " + rule.type));
+    }
+
+    conv.register_binary_rule(rule.type, m, it->second);
+  }
+}
+
 }  // namespace
 
 void initialize_converter(
@@ -257,64 +298,59 @@ void initialize_converter(
   }
 
   std::map<std::string, string_filter_ptr> string_filters;
-  init_string_filter_types(config.string_filter_types, string_filters);
+  if (config.string_filter_types) {
+    init_string_filter_types(*config.string_filter_types, string_filters);
+  }
+
   std::map<std::string, num_filter_ptr> num_filters;
-  init_num_filter_types(config.num_filter_types, num_filters);
+  if (config.num_filter_types) {
+    init_num_filter_types(*config.num_filter_types, num_filters);
+  }
+
   std::map<std::string, splitter_ptr> splitters;
-  init_string_types(config.string_types, splitters);
+  register_default_string_types(splitters);
+  if (config.string_types) {
+    init_string_types(*config.string_types, splitters);
+  }
+
   std::map<std::string, num_feature_ptr> num_features;
-  init_num_types(config.num_types, num_features);
+  register_default_num_types(num_features);
+  if (config.num_types) {
+    init_num_types(*config.num_types, num_features);
+  }
+
+  std::map<std::string, binary_feature_ptr> binary_features;
+  if (config.binary_types) {
+    init_binary_types(*config.binary_types, binary_features);
+  }
 
   conv.clear_rules();
-  init_string_filter_rules(config.string_filter_rules, string_filters, conv);
-  init_num_filter_rules(config.num_filter_rules, num_filters, conv);
-  init_string_rules(config.string_rules, splitters, conv);
-  init_num_rules(config.num_rules, num_features, conv);
+  if (config.string_filter_rules) {
+    init_string_filter_rules(*config.string_filter_rules, string_filters, conv);
+  }
+  if (config.num_filter_rules) {
+    init_num_filter_rules(*config.num_filter_rules, num_filters, conv);
+  }
+  if (config.string_rules) {
+    init_string_rules(*config.string_rules, splitters, conv);
+  }
+  if (config.num_rules) {
+    init_num_rules(*config.num_rules, num_features, conv);
+  }
+  if (config.binary_rules) {
+    init_binary_rules(*config.binary_rules, binary_features, conv);
+  }
 
   if (config.hash_max_size.bool_test()) {
     conv.set_hash_max_size(*config.hash_max_size.get());
   }
 }
 
-pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
-    const std::string& config) {
-  if (config == "") {
-    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(
-            "Config of feature vector converter is empty"));
-  }
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
-      new fv_converter::datum_to_fv_converter);
-  converter_config c;
-  std::stringstream ss(config);
-  try {
-    ss >> pfi::text::json::via_json(c);
-  } catch (const pfi::lang::end_of_data& e) {
-    std::string msg = std::string("Unexpected end of string is detected: ")
-        + e.what();
-    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
-  } catch (const pfi::lang::parse_error& e) {
-    std::string msg = std::string("Cannot parse config JSON: ") + e.what();
-    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
-  } catch (const std::bad_cast& e) {
-    std::string msg = std::string("Invalid config format: ") + e.what();
-    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
-  }
-  fv_converter::initialize_converter(c, *converter);
-  return converter;
-}
-
-pfi::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
-    const pfi::text::json::json& config) {
-  converter_config c;
-  try {
-    c = pfi::text::json::json_cast<converter_config>(config);
-  } catch (const std::bad_cast& e) {
-    std::string msg = std::string("Invalid config format: ") + e.what();
-    throw JUBATUS_EXCEPTION(fv_converter::converter_exception(msg.c_str()));
-  }
-  pfi::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter(
-      new fv_converter::datum_to_fv_converter);
-  fv_converter::initialize_converter(c, *converter);
+jubatus::util::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
+    const converter_config& config) {
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+    converter(new fv_converter::datum_to_fv_converter);
+  fv_converter::initialize_converter(config, *converter);
   return converter;
 }
 

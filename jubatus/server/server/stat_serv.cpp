@@ -19,16 +19,16 @@
 #include <algorithm>
 #include <string>
 
-#include <pficommon/lang/shared_ptr.h>
-#include <pficommon/text/json.h>
+#include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/text/json.h"
 
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
 using std::string;
 using std::make_pair;
-using pfi::text::json::json;
-using pfi::lang::lexical_cast;
+using jubatus::util::text::json::json;
+using jubatus::util::lang::lexical_cast;
 
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::server_argv;
@@ -42,12 +42,12 @@ struct stat_serv_config {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(window_size);
+    ar & JUBA_MEMBER(window_size);
   }
 };
 
 stat_serv::stat_serv(const server_argv& a,
-                     const pfi::lang::shared_ptr<lock_service>& zk)
+                     const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
 }
@@ -59,20 +59,21 @@ void stat_serv::get_status(status_t& status) const {
   status.insert(make_pair("storage", stat_->get_model()->type()));
 }
 
-bool stat_serv::set_config(const string& config) {
+uint64_t stat_serv::user_data_version() const {
+  return 1;  // should be inclemented when model data is modified
+}
+
+void stat_serv::set_config(const string& config) {
   core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   stat_serv_config conf =
       core::common::jsonconfig::config_cast_check<stat_serv_config>(conf_root);
 
   config_ = config;
   stat_.reset(
-      new core::driver::stat(
-          argv().is_standalone() ? new core::stat::stat(conf.window_size)
-          : new core::stat::mixable_stat(conf.window_size)));
+      new core::driver::stat(new core::stat::stat(conf.window_size)));
   mixer_->set_mixable_holder(stat_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
-  return true;
 }
 
 string stat_serv::get_config() const {

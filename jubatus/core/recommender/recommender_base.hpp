@@ -20,11 +20,12 @@
 #include <vector>
 #include <string>
 #include <utility>
-#include <pficommon/data/unordered_map.h>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "../table/column/column_table.hpp"
 #include "../common/type.hpp"
+#include "../framework/mixable.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
-#include "../storage/recommender_storage_base.hpp"
 #include "recommender_type.hpp"
 
 namespace jubatus {
@@ -52,9 +53,6 @@ class recommender_base {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
 
   virtual std::string type() const = 0;
-  virtual core::storage::recommender_storage_base* get_storage() = 0;
-  virtual const core::storage::recommender_storage_base* get_const_storage()
-      const = 0;
 
   virtual void similar_row(
       const std::string& id,
@@ -68,18 +66,17 @@ class recommender_base {
   void complete_row(const common::sfv_t& query, common::sfv_t& ret) const;
   void decode_row(const std::string& id, common::sfv_t& ret) const;
 
-  void save(std::ostream&);
-  void load(std::istream&);
+  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
+      const = 0;
 
   static float calc_similality(common::sfv_t& q1, common::sfv_t& q2);
   static float calc_l2norm(const common::sfv_t& query);
 
  protected:
-  virtual bool save_impl(std::ostream&) = 0;
-  virtual bool load_impl(std::istream&) = 0;
-
   static const uint64_t complete_row_similar_num_;
-  core::storage::sparse_matrix_storage orig_;
+
+  // TODO(beam2d): Workaround to correctly store the storage on save.
+  util::lang::shared_ptr<core::storage::sparse_matrix_storage_mixable> orig_;
 };
 
 }  // namespace recommender

@@ -20,21 +20,35 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
-#include <pficommon/data/unordered_map.h>
+#include <msgpack.hpp>
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
+#include "jubatus/util/data/unordered_map.h"
 #include "storage_type.hpp"
 #include "../common/type.hpp"
+#include "../common/unordered_map.hpp"
 #include "../common/key_manager.hpp"
+#include "../framework/mixable.hpp"
 #include "sparse_matrix_storage.hpp"
-#include "recommender_storage_base.hpp"
 
 namespace jubatus {
 namespace core {
 namespace storage {
 
-class inverted_index_storage : public recommender_storage_base {
+class inverted_index_storage {
  public:
+  struct diff_type {
+    sparse_matrix_storage inv;
+    map_float_t column2norm;
+
+    MSGPACK_DEFINE(inv, column2norm);
+
+    template<typename Ar>
+    void serialize(Ar& ar) {
+      ar & JUBA_MEMBER(inv) & JUBA_MEMBER(column2norm);
+    }
+  };
+
   inverted_index_storage();
   ~inverted_index_storage();
 
@@ -49,14 +63,16 @@ class inverted_index_storage : public recommender_storage_base {
       std::vector<std::pair<std::string, float> >& scores,
       size_t ret_num) const;
 
-  void get_diff(std::string& diff_str) const;
-  void set_mixed_and_clear_diff(const std::string& mixed_diff);
-  void mix(const std::string& lhs_str, std::string& rhs_str) const;
+  void get_diff(diff_type& diff_str) const;
+  void set_mixed_and_clear_diff(const diff_type& mixed_diff);
+  void mix(const diff_type& lhs_str, diff_type& rhs_str) const;
 
   std::string name() const;
 
-  bool save(std::ostream& os);
-  bool load(std::istream& is);
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
+
+  MSGPACK_DEFINE(inv_, inv_diff_, column2norm_, column2norm_diff_, column2id_);
 
  private:
   static float calc_l2norm(const common::sfv_t& sfv);
@@ -67,17 +83,21 @@ class inverted_index_storage : public recommender_storage_base {
       const tbl_t& tbl,
       bool& exist) const;
 
-  friend class pfi::data::serialization::access;
+  friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(inv_) & MEMBER(inv_diff_) & MEMBER(column2norm_)
-      & MEMBER(column2norm_diff_) & MEMBER(column2id_);
+    ar
+        & JUBA_MEMBER(inv_)
+        & JUBA_MEMBER(inv_diff_)
+        & JUBA_MEMBER(column2norm_)
+        & JUBA_MEMBER(column2norm_diff_)
+        & JUBA_MEMBER(column2id_);
   }
 
   void add_inp_scores(
       const std::string& row,
       float val,
-      pfi::data::unordered_map<uint64_t, float>& scores) const;
+      jubatus::util::data::unordered_map<uint64_t, float>& scores) const;
 
   tbl_t inv_;
   tbl_t inv_diff_;
@@ -85,6 +105,10 @@ class inverted_index_storage : public recommender_storage_base {
   imap_float_t column2norm_diff_;
   common::key_manager column2id_;
 };
+
+typedef framework::delegating_mixable<
+    inverted_index_storage, inverted_index_storage::diff_type>
+    mixable_inverted_index_storage;
 
 }  // namespace storage
 }  // namespace core

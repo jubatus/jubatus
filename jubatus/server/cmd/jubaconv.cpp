@@ -16,7 +16,7 @@
 
 #include <string>
 
-#include <pficommon/text/json.h>
+#include "jubatus/util/text/json.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/fv_converter/datum_to_fv_converter.hpp"
@@ -32,7 +32,7 @@ using std::cout;
 using std::endl;
 using std::ifstream;
 using std::string;
-using pfi::text::json::json;
+using jubatus::util::text::json::json;
 using jubatus::core::fv_converter::converter_config;
 using jubatus::core::fv_converter::datum;
 using jubatus::core::fv_converter::datum_to_fv_converter;
@@ -43,7 +43,7 @@ struct server_config {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(converter);
+    ar & JUBA_MEMBER(converter);
   }
 };
 
@@ -59,7 +59,7 @@ void output_json(const json& json) {
 }
 
 void output_datum(const datum& datum) {
-  pfi::text::json::to_json(datum).pretty(cout, false);
+  jubatus::util::text::json::to_json(datum).pretty(cout, false);
 }
 
 int read_config(const string& conf_file, converter_config& conf) {
@@ -69,7 +69,7 @@ int read_config(const string& conf_file, converter_config& conf) {
     return -1;
   }
   server_config config;
-  ifs >> pfi::text::json::via_json(config);
+  ifs >> jubatus::util::text::json::via_json(config);
   conf = config.converter;
   return 0;
 }
@@ -95,7 +95,7 @@ void output_fv(const jubatus::core::common::sfv_t& fv) {
   }
 }
 
-void read_json(pfi::text::json::json& json) {
+void read_json(jubatus::util::text::json::json& json) {
   try {
     cin >> json;
   } catch (const bad_cast& e) {
@@ -106,7 +106,7 @@ void read_json(pfi::text::json::json& json) {
 
 void read_datum(datum& datum) {
   try {
-    cin >> pfi::text::json::via_json(datum);
+    cin >> jubatus::util::text::json::via_json(datum);
   } catch (const bad_cast& e) {
     cerr << "invalid datum format" << endl;
     exit(-1);
@@ -124,7 +124,7 @@ try {
   p.set_program_name("jubaconv");
   p.parse_check(argc, argv);
 
-  pfi::text::json::json json;
+  jubatus::util::text::json::json json;
   datum datum;
   jubatus::core::common::sfv_t fv;
 

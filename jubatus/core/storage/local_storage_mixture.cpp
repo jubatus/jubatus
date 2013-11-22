@@ -19,7 +19,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <pficommon/data/intern.h>
+#include "jubatus/util/data/intern.h"
 
 using std::string;
 
@@ -69,7 +69,7 @@ bool local_storage_mixture::get_internal(
 
 void local_storage_mixture::get(
     const std::string& feature,
-    feature_val1_t& ret) {
+    feature_val1_t& ret) const {
   ret.clear();
   id_feature_val3_t m3;
   get_internal(feature, m3);
@@ -81,7 +81,7 @@ void local_storage_mixture::get(
 
 void local_storage_mixture::get2(
     const std::string& feature,
-    feature_val2_t& ret) {
+    feature_val2_t& ret) const {
   ret.clear();
   id_feature_val3_t m3;
   get_internal(feature, m3);
@@ -95,7 +95,7 @@ void local_storage_mixture::get2(
 
 void local_storage_mixture::get3(
     const std::string& feature,
-    feature_val3_t& ret) {
+    feature_val3_t& ret) const {
   ret.clear();
   id_feature_val3_t m3;
   get_internal(feature, m3);
@@ -106,7 +106,7 @@ void local_storage_mixture::get3(
 }
 
 void local_storage_mixture::inp(const common::sfv_t& sfv,
-                                map_feature_val1_t& ret) {
+                                map_feature_val1_t& ret) const {
   ret.clear();
 
   std::vector<float> ret_id(class2id_.size());
@@ -160,11 +160,13 @@ void local_storage_mixture::set3(
 }
 
 void local_storage_mixture::get_status(
-    std::map<std::string, std::string>& status) {
-  status["num_features"] = pfi::lang::lexical_cast<std::string>(tbl_.size());
-  status["num_classes"] = pfi::lang::lexical_cast<std::string>(
+    std::map<std::string, std::string>& status) const {
+  status["num_features"] =
+    jubatus::util::lang::lexical_cast<std::string>(tbl_.size());
+  status["num_classes"] = jubatus::util::lang::lexical_cast<std::string>(
       class2id_.size());
-  status["diff_size"] = pfi::lang::lexical_cast<std::string>(tbl_diff_.size());
+  status["diff_size"] =
+    jubatus::util::lang::lexical_cast<std::string>(tbl_diff_.size());
 }
 
 void local_storage_mixture::update(
@@ -203,8 +205,8 @@ void local_storage_mixture::bulk_update(
 
 void local_storage_mixture::get_diff(features3_t& ret) const {
   ret.clear();
-  for (pfi::data::unordered_map<string, id_feature_val3_t>::const_iterator it =
-      tbl_diff_.begin(); it != tbl_diff_.end(); ++it) {
+  for (jubatus::util::data::unordered_map<string, id_feature_val3_t>::
+      const_iterator it = tbl_diff_.begin(); it != tbl_diff_.end(); ++it) {
     id_feature_val3_t::const_iterator it2 = it->second.begin();
     feature_val3_t fv3;
     for (; it2 != it->second.end(); ++it2) {
@@ -236,16 +238,13 @@ void local_storage_mixture::clear() {
   id_features3_t().swap(tbl_diff_);
 }
 
-bool local_storage_mixture::save(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
+void local_storage_mixture::pack(
+    msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
 }
 
-bool local_storage_mixture::load(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
-  return true;
+void local_storage_mixture::unpack(msgpack::object o) {
+  o.convert(this);
 }
 
 std::string local_storage_mixture::type() const {

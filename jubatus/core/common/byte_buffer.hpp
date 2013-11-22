@@ -21,7 +21,7 @@
 #include <vector>
 #include <cstring>
 #include <msgpack.hpp>
-#include <pficommon/lang/shared_ptr.h>
+#include "jubatus/util/lang/shared_ptr.h"
 
 namespace jubatus {
 namespace core {
@@ -48,12 +48,12 @@ class byte_buffer {
 
   void swap(byte_buffer& other) {
     this->buf_.swap(other.buf_);
-    // pfi::lang::shared_ptr provides no non-member swap;
+    // jubatus::util::lang::shared_ptr provides no non-member swap;
     // `swap(this->buf_, other.buf_);' may be inefficient.
-    // when pfi::lang::shared_ptr provide non-member swap,
+    // when jubatus::util::lang::shared_ptr provide non-member swap,
     // this function should be rewritten with it
     // because if new data members are added to
-    // pfi::lang::shared_ptr, member function swap
+    // jubatus::util::lang::shared_ptr, member function swap
     // (currently derived from base) may cause object slicing.
   }
 
@@ -89,7 +89,7 @@ class byte_buffer {
   }
 
  private:
-  pfi::lang::shared_ptr<std::vector<char> > buf_;
+  jubatus::util::lang::shared_ptr<std::vector<char> > buf_;
 };
 
 inline void swap(byte_buffer& one, byte_buffer& another) {  // NOLINT

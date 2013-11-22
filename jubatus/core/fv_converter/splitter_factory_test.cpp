@@ -19,7 +19,6 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include <pficommon/lang/scoped_ptr.h>
 #include "exception.hpp"
 #include "splitter_factory.hpp"
 #include "word_splitter.hpp"
@@ -46,7 +45,7 @@ TEST(splitter_factory, dynamic) {
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
 
   param["function"] = "create";
-  pfi::lang::scoped_ptr<word_splitter> s(f.create("dynamic", param));
+  jubatus::util::lang::shared_ptr<word_splitter> s(f.create("dynamic", param));
 
   std::string d("hoge fuga");
   std::vector<std::pair<size_t, size_t> > bs;
@@ -70,7 +69,29 @@ TEST(splitter_factory, ngram) {
   ASSERT_THROW(f.create("ngram", param), converter_exception);
 
   param["char_num"] = "2";
-  pfi::lang::scoped_ptr<word_splitter> s(f.create("ngram", param));
+  jubatus::util::lang::shared_ptr<word_splitter> s(f.create("ngram", param));
+}
+
+TEST(splitter_factory, regexp) {
+  splitter_factory f;
+  std::map<std::string, std::string> param;
+  ASSERT_THROW(f.create("regexp", param), converter_exception);
+
+  param["pattern"] = "[";
+  param["group"] = "1";
+  ASSERT_THROW(f.create("regexp", param), converter_exception);
+
+  param["pattern"] = "(.+)";
+  param["group"] = "a";
+  ASSERT_THROW(f.create("regexp", param), converter_exception);
+
+  param["pattern"] = "(.+)";
+  param["group"] = "1";
+  jubatus::util::lang::shared_ptr<word_splitter>(f.create("regexp", param));
+
+  param["pattern"] = "(.+)";
+  param.erase("group");
+  jubatus::util::lang::shared_ptr<word_splitter>(f.create("regexp", param));
 }
 
 }  // namespace fv_converter

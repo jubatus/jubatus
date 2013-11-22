@@ -35,6 +35,8 @@ class dynamic_loader {
   void* handle_;
 };
 
+void check_null_instance(void* inst);
+
 template<typename T>
 T* load_object(
     const dynamic_loader& loader,
@@ -42,7 +44,9 @@ T* load_object(
     const std::map<std::string, std::string>& params) {
   typedef T* (*func_t)(const std::map<std::string, std::string>&);
   func_t func = reinterpret_cast<func_t>(loader.load_symbol(function));
-  return (*func)(params);
+  T* inst = (*func)(params);
+  check_null_instance(inst);
+  return inst;
 }
 
 }  // namespace fv_converter

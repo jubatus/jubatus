@@ -36,7 +36,7 @@ class stat_test : public ::testing::Test {
     stat_.reset();
   }
 
-  pfi::lang::shared_ptr<core::driver::stat> stat_;
+  jubatus::util::lang::shared_ptr<core::driver::stat> stat_;
 };
 
 TEST_F(stat_test, small) {

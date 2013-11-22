@@ -6,7 +6,7 @@ clean:
 
 USE_OCAMLFIND = true
 #
-# OCAMLPACKS[] =
+OCAMLPACKS[] = extlib
 #    pack1
 #    pack2
 #
@@ -60,6 +60,7 @@ FILES[] =
   java
   parse
   main
+  version
 
 
 PROGRAM = jenerator
@@ -69,6 +70,8 @@ LIB = target
 OCAML_OTHER_LIBS += str unix
 # OCAML_LIB_FLAGS +=
 PREFIX = $(getenv PREFIX, /usr/local)
+
+sh gen_version.sh
 
 .DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
 

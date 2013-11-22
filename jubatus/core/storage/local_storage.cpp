@@ -19,9 +19,9 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <pficommon/data/intern.h>
-#include <pficommon/data/serialization.h>
-#include <pficommon/data/serialization/unordered_map.h>
+#include "jubatus/util/data/intern.h"
+#include "jubatus/util/data/serialization.h"
+#include "jubatus/util/data/serialization/unordered_map.h"
 
 using std::string;
 
@@ -35,7 +35,7 @@ local_storage::local_storage() {
 local_storage::~local_storage() {
 }
 
-void local_storage::get(const string& feature, feature_val1_t& ret) {
+void local_storage::get(const string& feature, feature_val1_t& ret) const {
   ret.clear();
   id_features3_t::const_iterator cit = tbl_.find(feature);
   if (cit == tbl_.end()) {
@@ -47,7 +47,7 @@ void local_storage::get(const string& feature, feature_val1_t& ret) {
   }
 }
 
-void local_storage::get2(const string& feature, feature_val2_t& ret) {
+void local_storage::get2(const string& feature, feature_val2_t& ret) const {
   ret.clear();
   id_features3_t::const_iterator cit = tbl_.find(feature);
   if (cit == tbl_.end()) {
@@ -60,7 +60,7 @@ void local_storage::get2(const string& feature, feature_val2_t& ret) {
   }
 }
 
-void local_storage::get3(const string& feature, feature_val3_t& ret) {
+void local_storage::get3(const string& feature, feature_val3_t& ret) const {
   ret.clear();
   id_features3_t::const_iterator cit = tbl_.find(feature);
   if (cit == tbl_.end()) {
@@ -72,7 +72,8 @@ void local_storage::get3(const string& feature, feature_val3_t& ret) {
   }
 }
 
-void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret) {
+void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret)
+    const {
   ret.clear();
 
   std::vector<float> ret_id(class2id_.size());
@@ -121,10 +122,11 @@ void local_storage::set3(
   tbl_[feature][class2id_.get_id(klass)] = w;
 }
 
-void local_storage::get_status(std::map<string, std::string>& status) {
-  status["num_features"] = pfi::lang::lexical_cast<std::string>(tbl_.size());
-  status["num_classes"] = pfi::lang::lexical_cast<std::string>(
-      class2id_.size());
+void local_storage::get_status(std::map<string, std::string>& status) const {
+  status["num_features"] =
+    jubatus::util::lang::lexical_cast<std::string>(tbl_.size());
+  status["num_classes"] =
+    jubatus::util::lang::lexical_cast<std::string>(class2id_.size());
 }
 
 float feature_fabssum(const id_feature_val3_t& f) {
@@ -175,16 +177,12 @@ void local_storage::clear() {
   common::key_manager().swap(class2id_);
 }
 
-bool local_storage::save(std::ostream& os) {
-  pfi::data::serialization::binary_oarchive oa(os);
-  oa << *this;
-  return true;
+void local_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack(*this);
 }
 
-bool local_storage::load(std::istream& is) {
-  pfi::data::serialization::binary_iarchive ia(is);
-  ia >> *this;
-  return true;
+void local_storage::unpack(msgpack::object o) {
+  o.convert(this);
 }
 
 std::string local_storage::type() const {
