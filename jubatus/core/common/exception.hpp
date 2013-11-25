@@ -17,6 +17,8 @@
 #ifndef JUBATUS_CORE_COMMON_EXCEPTION_HPP_
 #define JUBATUS_CORE_COMMON_EXCEPTION_HPP_
 
+#include <string.h>
+
 #include <exception>
 #include <stdexcept>
 #include <ios>
@@ -39,7 +41,14 @@ typedef error_info<struct error_at_line_, int> error_at_line;
 typedef error_info<struct error_errno_, int> error_errno;
 inline std::string to_string(const error_errno& info) {
   char buf[1024];
-  std::string msg(strerror_r(info.value(), buf, 1024));
+#if defined(__linux__)
+  std::string msg(strerror_r(info.value(), buf, sizeof(buf)));
+#elif defined(__sparcv8) || defined(__sparcv9) || defined(__APPLE__)
+  strerror_r(info.value(), buf, sizeof(buf));
+  std::string msg(buf);
+#else
+#error cpp_strerror_r
+#endif
   msg += " (" +
     jubatus::util::lang::lexical_cast<std::string>(info.value()) + ")";
   return msg;
