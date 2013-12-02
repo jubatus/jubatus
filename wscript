@@ -140,7 +140,6 @@ def cpplint(ctx):
   src_dir = ctx.path.find_node('jubatus')
   file_list = []
   excludes = ['jubatus/server/third_party/*',
-              'jubatus/server/server/*_server.hpp',
               'jubatus/server/server/*_impl.cpp',
               'jubatus/server/server/*_proxy.cpp',
               'jubatus/server/server/*_client.hpp',
