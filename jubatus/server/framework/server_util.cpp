@@ -118,6 +118,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
       false, "");
   p.add<std::string>("model_file", 'm',
                      "model data to load at startup", false, "");
+  p.add("daemon", 'D', "launch in daemon mode (ignores SIGHUP)");
 
   p.add<std::string>("zookeeper", 'z',
                      make_ignored_help("zookeeper location"), false);
@@ -164,6 +165,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   loglevel = p.get<int>("loglevel");
   configpath = p.get<std::string>("configpath");
   modelpath = p.get<std::string>("model_file");
+  daemon = p.exist("daemon");
 
   // determine listen-address and IPaddr used as ZK 'node-name'
   // TODO(y-oda-oni-juba): check bind_address is valid format

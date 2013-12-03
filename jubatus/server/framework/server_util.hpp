@@ -87,11 +87,12 @@ struct server_argv {
   int interval_sec;
   int interval_count;
   std::string mixer;
+  bool daemon;
 
   MSGPACK_DEFINE(join, port, bind_address, bind_if, timeout,
       zookeeper_timeout, interconnect_timeout, threadnum,
       program_name, type, z, name, datadir, logdir, loglevel, eth,
-      interval_sec, interval_count, mixer);
+      interval_sec, interval_count, mixer, daemon);
 
   bool is_standalone() const {
     return (z == "");
