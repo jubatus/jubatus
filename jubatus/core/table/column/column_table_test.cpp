@@ -616,6 +616,8 @@ TEST(table, unpack) {
   ASSERT_FLOAT_EQ(fc[0], 21.1f);
   ASSERT_FLOAT_EQ(fc[1], 232.1f);
   ASSERT_FLOAT_EQ(fc[2], 2.0f);
+  // Check whether `index_` is loaded
+  ASSERT_TRUE(loaded.exact_match("aa").first);
 }
 
 TEST(table, bv_unpack) {
