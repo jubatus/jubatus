@@ -33,6 +33,7 @@
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../../common/assert.hpp"
 #include "../../common/exception.hpp"
+#include "../../common/unordered_map.hpp"
 #include "../storage_exception.hpp"
 #include "bit_vector.hpp"
 #include "column_type.hpp"
@@ -371,7 +372,7 @@ class column_table {
     return true;
   }
 
-  MSGPACK_DEFINE(keys_, tuples_, versions_, columns_, clock_);
+  MSGPACK_DEFINE(keys_, tuples_, versions_, columns_, clock_, index_);
 
   template<class Packer>
   void pack(Packer& packer) const {
