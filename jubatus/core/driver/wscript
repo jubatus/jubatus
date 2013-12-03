@@ -55,6 +55,7 @@ def build(bld):
     'regression_test',
     'recommender_test',
     'stat_test',
+    'nearest_neighbor_test',
     ]
 
   for t in tests:
