@@ -16,6 +16,7 @@
 
 #include "server_helper.hpp"
 
+#include <unistd.h>
 #include <signal.h>
 #include <string>
 
@@ -49,7 +50,12 @@ string make_logfile_name(const server_argv& a) {
 server_helper_impl::server_helper_impl(const server_argv& a) {
   common::util::prepare_signal_handling();
   if (a.daemon) {
-    ::signal(SIGHUP, SIG_IGN);
+    if (a.logdir == "" && ::isatty(::fileno(stderr))) {
+      LOG(WARNING) << "output tty in daemon mode";
+    }
+    if (::signal(SIGHUP, SIG_IGN) == SIG_ERR) {
+      LOG(FATAL) << "Failed to ignore SIGHUP";
+    }
     LOG(INFO) << "set daemon mode (SIGHUP is now ignored)";
   }
 
