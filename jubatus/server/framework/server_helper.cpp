@@ -16,6 +16,7 @@
 
 #include "server_helper.hpp"
 
+#include <signal.h>
 #include <string>
 
 #include "../common/cht.hpp"
@@ -47,6 +48,10 @@ string make_logfile_name(const server_argv& a) {
 
 server_helper_impl::server_helper_impl(const server_argv& a) {
   common::util::prepare_signal_handling();
+  if (a.daemon) {
+    ::signal(SIGHUP, SIG_IGN);
+    LOG(INFO) << "set daemon mode (SIGHUP is now ignored)";
+  }
 
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
