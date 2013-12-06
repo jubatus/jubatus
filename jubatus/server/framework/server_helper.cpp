@@ -16,8 +16,6 @@
 
 #include "server_helper.hpp"
 
-#include <unistd.h>
-#include <signal.h>
 #include <string>
 
 #include "../common/cht.hpp"
@@ -103,15 +101,8 @@ void server_helper_impl::prepare_for_run(const server_argv& a, bool use_cht) {
     LOG(INFO) << "registered group membership";
   }
 #endif
-
   if (a.daemon) {
-    if (a.logdir == "" && ::isatty(::fileno(stderr))) {
-      LOG(WARNING) << "output tty in daemon mode";
-    }
-    if (::signal(SIGHUP, SIG_IGN) == SIG_ERR) {
-      LOG(FATAL) << "Failed to ignore SIGHUP";
-    }
-    LOG(INFO) << "set daemon mode (SIGHUP is now ignored)";
+    daemonize_process(a.logdir);
   }
 }
 

@@ -101,6 +101,7 @@ struct server_argv {
   void set_log_destination(const std::string& progname) const;
 };
 
+void daemonize_process(const std::string& logdir);
 std::string get_server_identifier(const server_argv& a);
 
 struct proxy_argv {

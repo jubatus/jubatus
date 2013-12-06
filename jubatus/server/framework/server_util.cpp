@@ -16,6 +16,8 @@
 
 #include "server_util.hpp"
 
+#include <unistd.h>
+#include <signal.h>
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -309,6 +311,16 @@ void server_argv::set_log_destination(const std::string& progname) const {
     google::SetLogSymlink(loglevel, symlink.str().c_str());
     google::SetStderrLogging(google::FATAL);
   }
+}
+
+void daemonize_process(const std::string& logdir) {
+  if (logdir == "" && ::isatty(::fileno(stderr))) {
+    LOG(WARNING) << "output tty in daemon mode";
+  }
+  if (::signal(SIGHUP, SIG_IGN) == SIG_ERR) {
+    LOG(FATAL) << "Failed to ignore SIGHUP";
+  }
+  LOG(INFO) << "set daemon mode (SIGHUP is now ignored)";
 }
 
 std::string get_server_identifier(const server_argv& a) {
