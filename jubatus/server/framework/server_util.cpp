@@ -344,6 +344,7 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   p.add<int>("zookeeper_timeout", 'Z', "zookeeper time out (sec)", false, 10);
   p.add<int>("interconnect_timeout", 'I',
       "interconnect time out between servers (sec)", false, 10);
+  p.add("daemon", 'D', "launch in daemon mode (ignores SIGHUP)");
 
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false,
                      "localhost:2181");
@@ -370,6 +371,7 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   timeout = p.get<int>("timeout");
   zookeeper_timeout = p.get<int>("zookeeper_timeout");
   interconnect_timeout = p.get<int>("interconnect_timeout");
+  daemon = p.exist("daemon");
   program_name = common::util::get_program_name();
   z = p.get<std::string>("zookeeper");
   session_pool_expire = p.get<int>("pool_expire");

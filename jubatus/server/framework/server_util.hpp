@@ -123,6 +123,7 @@ struct proxy_argv {
   const std::string type;
   int session_pool_expire;
   int session_pool_size;
+  bool daemon;
 
   void boot_message(const std::string& progname) const;
   void set_log_destination(const std::string& progname) const;
