@@ -97,7 +97,6 @@ bool server_base::save(const std::string& id) {
   try {
     LOG(INFO) << "starting save to " << path;
     framework::save_server(ofs, *this, id);
-    flock(fd, LOCK_UN);  // unlock
     ofs.close();
     LOG(INFO) << "saved to " << path;
   } catch (const std::runtime_error& e) {
