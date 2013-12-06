@@ -49,15 +49,6 @@ string make_logfile_name(const server_argv& a) {
 
 server_helper_impl::server_helper_impl(const server_argv& a) {
   common::util::prepare_signal_handling();
-  if (a.daemon) {
-    if (a.logdir == "" && ::isatty(::fileno(stderr))) {
-      LOG(WARNING) << "output tty in daemon mode";
-    }
-    if (::signal(SIGHUP, SIG_IGN) == SIG_ERR) {
-      LOG(FATAL) << "Failed to ignore SIGHUP";
-    }
-    LOG(INFO) << "set daemon mode (SIGHUP is now ignored)";
-  }
 
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
@@ -112,6 +103,16 @@ void server_helper_impl::prepare_for_run(const server_argv& a, bool use_cht) {
     LOG(INFO) << "registered group membership";
   }
 #endif
+
+  if (a.daemon) {
+    if (a.logdir == "" && ::isatty(::fileno(stderr))) {
+      LOG(WARNING) << "output tty in daemon mode";
+    }
+    if (::signal(SIGHUP, SIG_IGN) == SIG_ERR) {
+      LOG(FATAL) << "Failed to ignore SIGHUP";
+    }
+    LOG(INFO) << "set daemon mode (SIGHUP is now ignored)";
+  }
 }
 
 void server_helper_impl::get_config_lock(const server_argv& a, int retry) {
