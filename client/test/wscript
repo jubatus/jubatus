@@ -1,0 +1,44 @@
+import Options
+import os
+import sys
+
+def options(opt):
+    opt.load('compiler_cxx')
+    opt.load('unittest_gtest')
+    pass
+
+def configure(conf):
+    conf.env.CXXFLAGS += ['-O2', '-pipe']
+    conf.load('compiler_cxx')
+    conf.load('unittest_gtest')
+    conf.load('gnu_dirs')
+
+    # pkg-config tests
+    conf.find_program('pkg-config') # make sure that pkg-config command exists
+    try:
+        conf.check_cfg(package = 'jubatus-client',
+          args = ['jubatus-client >= 0.5.0', '--cflags', '--libs'],
+          msg = 'Checking for jubatus-client >= 0.5.0',
+          uselib_store = 'JUBA')
+    except conf.errors.ConfigurationError:
+        e = sys.exc_info()[1]
+        conf.to_log("PKG_CONFIG_PATH: " + os.environ.get('PKG_CONFIG_PATH', ''))
+        conf.fatal("Failed to find the library. Please confirm that PKG_CONFIG_PATH environment variable is correctly set.", e)
+
+    pass
+
+def build(bld):
+    def make_test(bldk, name):
+        bld.program(features = 'gtest',
+                source = '%s_test.cpp' % name,
+                target = '%s_test' % name,
+                use = 'JUBA')
+
+    make_test(bld, 'anomaly')
+    make_test(bld, 'classifier')
+    make_test(bld, 'clustering')
+    make_test(bld, 'graph')
+    make_test(bld, 'nearest_neighbor')
+    make_test(bld, 'recommender')
+    make_test(bld, 'regression')
+    make_test(bld, 'stat')
