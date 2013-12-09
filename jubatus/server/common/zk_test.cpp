@@ -196,3 +196,6 @@ TEST_F(zk_trivial, trivial_with_membershp) {
   zk_->remove(path);
 }
 
+TEST_F(zk_trivial, get_connected_host_and_port) {
+  ASSERT_EQ("127.0.0.1:2181", zk_->get_connected_host_and_port());
+}

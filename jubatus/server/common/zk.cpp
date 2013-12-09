@@ -17,7 +17,8 @@
 #include "zk.hpp"
 
 #include <unistd.h>
-
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -73,6 +74,20 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
 
   zoo_set_context(zh_, this);
   zoo_set_watcher(zh_, mywatcher);
+
+  // wait for ZOO_CONNECTED_STATE
+  int retry = timeout;
+  while ((state_ =zoo_state(zh_)) != ZOO_CONNECTED_STATE) {
+    if (retry == 0) {
+      throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("cannot connect zk in "
+            + jubatus::util::lang::lexical_cast<std::string, int>(timeout)
+            + " sec:" + hosts));
+    } else {
+      retry--;
+      sleep(1);  // 1 sec
+    }
+  }
 }
 
 zk::~zk() {
@@ -311,6 +326,30 @@ const string& zk::get_hosts() const {
 
 const string zk::type() const {
   return "zk";
+}
+
+const std::string zk::get_connected_host_and_port() const {
+  std::stringstream ret;
+  struct sockaddr sock_addr;
+  socklen_t sock_len = sizeof(sock_addr);
+
+  // This return NULL when state is not ZOO_CONNECTED_STATE
+  if (zookeeper_get_connected_host(zh_, &sock_addr, &sock_len) == NULL) {
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error("cannot get connected host")
+      << core::common::exception::error_api_func("zookeeper_get_connected_host")
+      << core::common::exception::error_message(zerror(errno)));
+  }
+
+  // TODO(@rimms): add this code to common::util
+  if (sock_addr.sa_family == AF_INET) {  // Only IPv4
+      struct sockaddr_in* sock_addr_in = (struct sockaddr_in *) &sock_addr;
+      char host[INET_ADDRSTRLEN];
+      inet_ntop(AF_INET, &(sock_addr_in->sin_addr), host, sizeof(host));
+      ret << host << ":" << ntohs(sock_addr_in->sin_port);
+  }
+
+  return ret.str();
 }
 
 bool zkmutex::lock() {
