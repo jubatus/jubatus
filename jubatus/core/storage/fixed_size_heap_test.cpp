@@ -26,7 +26,7 @@ namespace jubatus {
 namespace core {
 namespace storage {
 
-TEST(fixed_size_heap, empyt) {
+TEST(fixed_size_heap, empty) {
   fixed_size_heap<int> h(10);
   EXPECT_EQ(0u, h.size());
   EXPECT_EQ(10u, h.get_max_size());
