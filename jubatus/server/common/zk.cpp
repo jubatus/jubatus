@@ -88,6 +88,8 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
       sleep(1);  // 1 sec
     }
   }
+  LOG(INFO) << "connected to zk: "
+        << get_connected_host_and_port();
 }
 
 zk::~zk() {

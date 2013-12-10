@@ -54,8 +54,6 @@ server_helper_impl::server_helper_impl(const server_argv& a) {
                                           a.z, a.zookeeper_timeout,
                                           make_logfile_name(a)));
     register_lock_service(zk_);
-    LOG(INFO) << "connected to zookeeper: "
-        << zk_->get_connected_host_and_port();
   }
 #endif
 }
