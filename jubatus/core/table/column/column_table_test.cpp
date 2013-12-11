@@ -610,14 +610,18 @@ TEST(table, unpack) {
 
   const int32_column& ic = loaded.get_int32_column(0);
   const double_column& fc = loaded.get_double_column(1);
-  ASSERT_EQ(ic[0], 54);
-  ASSERT_EQ(ic[1], 899);
-  ASSERT_EQ(ic[2], 21);
-  ASSERT_FLOAT_EQ(fc[0], 21.1f);
-  ASSERT_FLOAT_EQ(fc[1], 232.1f);
-  ASSERT_FLOAT_EQ(fc[2], 2.0f);
   // Check whether `index_` is loaded
   ASSERT_TRUE(loaded.exact_match("aa").first);
+  ASSERT_TRUE(loaded.exact_match("bb").first);
+  ASSERT_TRUE(loaded.exact_match("cc").first);
+
+  // Check column values
+  ASSERT_EQ(ic[loaded.exact_match("aa").second], 54);
+  ASSERT_EQ(ic[loaded.exact_match("bb").second], 899);
+  ASSERT_EQ(ic[loaded.exact_match("cc").second], 21);
+  ASSERT_FLOAT_EQ(fc[loaded.exact_match("aa").second], 21.1f);
+  ASSERT_FLOAT_EQ(fc[loaded.exact_match("bb").second], 232.1f);
+  ASSERT_FLOAT_EQ(fc[loaded.exact_match("cc").second], 2.0f);
 }
 
 TEST(table, bv_unpack) {
