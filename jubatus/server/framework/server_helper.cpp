@@ -101,9 +101,6 @@ void server_helper_impl::prepare_for_run(const server_argv& a, bool use_cht) {
     LOG(INFO) << "registered group membership";
   }
 #endif
-  if (a.daemon) {
-    daemonize_process(a.logdir);
-  }
 }
 
 void server_helper_impl::get_config_lock(const server_argv& a, int retry) {
