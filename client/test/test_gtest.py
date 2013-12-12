@@ -59,10 +59,8 @@ class ClientGoogleTestBase():
         proc = LocalSubprocess(args, env)
         proc.start()
         returncode = proc.wait()
-        if returncode != 0:
-            # TODO: Report gtest result when error occured
-            print proc.stdout
-        self.assertEquals(0, returncode)
+        # Report gtest result when error occured
+        self.assertEqual(0, returncode, proc.stdout)
 
 
 class ClientStandaloneTest(JubaTestCase, ClientGoogleTestBase):
