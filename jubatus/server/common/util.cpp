@@ -16,15 +16,10 @@
 
 #include "util.hpp"
 
-#include <arpa/inet.h>
 #ifdef __APPLE__
 #include <libproc.h>
 #endif
-#include <net/if.h>
-#include <netinet/in.h>
 #include <pwd.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -54,37 +49,6 @@ namespace jubatus {
 namespace server {
 namespace common {
 namespace util {
-
-// TODO(kashihara): AF_INET does not specify IPv6
-void get_ip(const char* nic, string& out) {
-  int fd;
-  struct ifreq ifr;
-
-  fd = socket(AF_INET, SOCK_DGRAM, 0);
-  if (fd == -1) {
-    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
-          "Failed to create socket(AF_INET, SOCK_DGRAM)")
-        << jubatus::core::common::exception::error_errno(errno));
-  }
-
-  ifr.ifr_addr.sa_family = AF_INET;
-  strncpy(ifr.ifr_name, nic, IFNAMSIZ - 1);
-  if (ioctl(fd, SIOCGIFADDR, &ifr) == -1) {
-    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
-          "Failed to get IP address from interface")
-        << jubatus::core::common::exception::error_errno(errno));
-  }
-  close(fd);
-
-  struct sockaddr_in* sin = (struct sockaddr_in*) (&(ifr.ifr_addr));
-  out = inet_ntoa((struct in_addr) (sin->sin_addr));
-}
-
-string get_ip(const char* nic) {
-  string ret;
-  get_ip(nic, ret);
-  return ret;
-}
 
 string base_name(const string& path) {
   size_t found = path.rfind('/');

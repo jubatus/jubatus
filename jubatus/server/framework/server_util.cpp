@@ -173,7 +173,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   if (!bind_address.empty()) {
     eth = bind_address;
   } else if (!bind_if.empty()) {
-    bind_address = eth = common::util::get_ip(bind_if.c_str());
+    bind_address = eth = common::get_ip(bind_if.c_str());
   } else {
     bind_address = "0.0.0.0";
     eth = jubatus::server::common::get_default_v4_address();
@@ -384,7 +384,7 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   if (!bind_address.empty()) {
     eth = bind_address;
   } else if (!bind_if.empty()) {
-    bind_address = eth = common::util::get_ip(bind_if.c_str());
+    bind_address = eth = common::get_ip(bind_if.c_str());
   } else {
     bind_address = "0.0.0.0";
     eth = jubatus::server::common::get_default_v4_address();

@@ -16,6 +16,7 @@
 
 #include "network.hpp"
 
+#include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -27,6 +28,7 @@
 
 #include <errno.h>
 
+#include <cstring>
 #include <string>
 #include <glog/logging.h>
 #include "jubatus/core/common/exception.hpp"
@@ -99,6 +101,37 @@ class ipv4_address : public network_address {
 // TODO(kashihara): implement ipv6_address
 
 }  // namespace
+
+// TODO(kashihara): AF_INET does not specify IPv6
+void get_ip(const char* nic, string& out) {
+  int fd;
+  struct ifreq ifr;
+
+  fd = socket(AF_INET, SOCK_DGRAM, 0);
+  if (fd == -1) {
+    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
+          "Failed to create socket(AF_INET, SOCK_DGRAM)")
+        << jubatus::core::common::exception::error_errno(errno));
+  }
+
+  ifr.ifr_addr.sa_family = AF_INET;
+  std::strncpy(ifr.ifr_name, nic, IFNAMSIZ - 1);
+  if (ioctl(fd, SIOCGIFADDR, &ifr) == -1) {
+    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
+          "Failed to get IP address from interface")
+        << jubatus::core::common::exception::error_errno(errno));
+  }
+  close(fd);
+
+  struct sockaddr_in* sin = (struct sockaddr_in*) (&(ifr.ifr_addr));
+  out = inet_ntoa((struct in_addr) (sin->sin_addr));
+}
+
+string get_ip(const char* nic) {
+  string ret;
+  get_ip(nic, ret);
+  return ret;
+}
 
 address_list get_network_address() {
   address_list result;
