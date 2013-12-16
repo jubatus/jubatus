@@ -32,7 +32,6 @@
 #include "jubatus/core/recommender/recommender_factory.hpp"
 #include "jubatus/core/storage/storage_factory.hpp"
 
-#include "../common/util.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
 using std::string;
