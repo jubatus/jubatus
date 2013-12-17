@@ -50,7 +50,7 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
     zoo_set_log_stream(logfilep_);
   }
 
-  zh_ = zookeeper_init(hosts.c_str(), NULL, timeout * 1000, 0, NULL, 0);
+  zh_ = zookeeper_init(hosts.c_str(), mywatcher, timeout * 1000, 0, this, 0);
   if (!zh_) {
     perror("");
     throw JUBATUS_EXCEPTION(
@@ -73,16 +73,6 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
       sleep(1);  // 1 sec
     }
   }
-
-  if (is_unrecoverable(zh_) == ZINVALIDSTATE) {
-    throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("cannot connect zk:" + hosts)
-      << core::common::exception::error_api_func("is_unrecoverable")
-      << core::common::exception::error_message(zerror(errno)));
-  }
-
-  zoo_set_context(zh_, this);
-  zoo_set_watcher(zh_, mywatcher);
 
   LOG(INFO) << "connected to zk: "
         << get_connected_host_and_port();
