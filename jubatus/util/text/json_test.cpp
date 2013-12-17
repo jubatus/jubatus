@@ -931,7 +931,30 @@ struct opt1{
   void serialize(Archive &ar){
     ar & JUBA_MEMBER(abc) & JUBA_MEMBER(def);
   }
+
+  bool is_json_rep(const string& s) const {
+    ostringstream oss1, oss2;
+    oss1 << "{\"abc\":" << abc << ",\"def\":" << stringify_def() << "}";
+    oss2 << "{\"def\":" << stringify_def() << ",\"abc\":" << abc << "}";
+    return s == oss1.str() || s == oss2.str();
+  }
+
+  string stringify_def() const {
+    if (def) {
+      return lexical_cast<string>(*def);
+    } else {
+      return "null";
+    }
+  }
+
+  friend std::ostream& operator<<(std::ostream& os, const opt1& x) {
+    os << "abc: " << x.abc << ", def: " << x.stringify_def();
+    return os;
+  }
 };
+bool is_json_rep(const string& s, const opt1& x) {
+  return x.is_json_rep(s);
+}
 
 TEST(json, optional)
 {
@@ -973,14 +996,14 @@ TEST(json, optional)
     opt1 a;
     a.abc=123;
     ostringstream oss; oss<<to_json(a);
-    EXPECT_EQ(oss.str(), "{\"abc\":123,\"def\":null}");
+    EXPECT_PRED2(&is_json_rep, oss.str(), a);
   }
   {
     opt1 a;
     a.abc=123;
     a.def=456;
     ostringstream oss; oss<<to_json(a);
-    EXPECT_EQ(oss.str(), "{\"abc\":123,\"def\":456}");
+    EXPECT_PRED2(&is_json_rep, oss.str(), a);
   }
 }
 
