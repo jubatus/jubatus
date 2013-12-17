@@ -45,7 +45,7 @@ class fixed_size_heap {
         std::make_heap(data_.begin(), data_.end(), comp_);
       }
     } else {
-      if (comp_(v, data_.front())) {
+      if (max_size_ > 0 && comp_(v, data_.front())) {
         std::pop_heap(data_.begin(), data_.end(), comp_);
         data_.back() = v;
         std::push_heap(data_.begin(), data_.end(), comp_);
