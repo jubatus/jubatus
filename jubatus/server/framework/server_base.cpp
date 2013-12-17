@@ -16,6 +16,8 @@
 
 #include "server_base.hpp"
 
+#include <sys/file.h>
+#include <ext/stdio_filebuf.h>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -82,6 +84,17 @@ bool server_base::save(const std::string& id) {
         << core::common::exception::error_file_name(path)
         << core::common::exception::error_errno(errno));
   }
+
+  // use gcc-specific extension
+  int fd = static_cast<__gnu_cxx::stdio_filebuf<char> *>(ofs.rdbuf())->fd();
+  if (flock(fd, LOCK_EX | LOCK_NB) < 0) {  // try exclusive lock
+    throw
+      JUBATUS_EXCEPTION(core::common::exception::runtime_error(
+          "cannot get the lock of file; any RPC is saving to same file?")
+        << core::common::exception::error_file_name(path)
+        << core::common::exception::error_errno(errno));
+  }
+
   try {
     LOG(INFO) << "starting save to " << path;
     framework::save_server(ofs, *this, id);
