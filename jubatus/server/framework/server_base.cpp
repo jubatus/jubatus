@@ -17,6 +17,7 @@
 #include "server_base.hpp"
 
 #include <sys/file.h>
+#include <ext/stdio_filebuf.h>
 #include <fstream>
 #include <sstream>
 #include <string>
