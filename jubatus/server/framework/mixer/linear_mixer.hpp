@@ -111,7 +111,6 @@ class linear_mixer : public mixer {
 
   // true means the model is delayed from cluster
   bool is_obsolete_;
-  bool is_updated_;
 
   jubatus::util::concurrent::thread t_;
   mutable jubatus::util::concurrent::mutex m_;

@@ -219,7 +219,6 @@ linear_mixer::linear_mixer(
       ticktime_(get_clock_time()),
       is_running_(false),
       is_obsolete_(true),
-      is_updated_(false),
       t_(jubatus::util::lang::bind(&linear_mixer::stabilizer_loop, this)) {
 }
 
@@ -308,7 +307,7 @@ void linear_mixer::stabilizer_loop() {
         }
       }
 
-      if (is_obsolete_ && !is_updated_) {
+      if (is_obsolete_) {
         LOG(INFO) << "I'm obsolete, start trying to get new model";
         if (zklock->try_lock()) {
           if (is_obsolete_) {
@@ -431,11 +430,13 @@ void linear_mixer::mix() {
     }
   }
 
-  clock_time end = get_clock_time();
-  LOG(INFO) << "mixed with " << servers_size << " servers in "
-      << static_cast<double>(end - start) << " secs, " << s
-      << " bytes (serialized data) has been put.";
-  mix_count_++;
+  {
+    clock_time finish = get_clock_time();
+    LOG(INFO) << "mixed with " << servers_size << " servers in "
+              << static_cast<double>(finish - start) << " secs, " << s
+              << " bytes (serialized data) has been put.";
+    mix_count_++;
+  }
 }
 
 
@@ -474,7 +475,6 @@ void linear_mixer::update_model() {
   if (model_serialized == "") {
     // it means "no other server"
     LOG(INFO) << "no other server available, I become active";
-    is_updated_ = true;
     communication_->register_active_list();
     return;
   }
@@ -483,7 +483,6 @@ void linear_mixer::update_model() {
   {
     scoped_wlock lk_write(mixable_holder_->rw_mutex());
     mixable_holder_->unpack(unpacked.get());
-    is_updated_ = true;
   }
 }
 
@@ -517,7 +516,6 @@ int linear_mixer::put_diff(
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
                 << "my model is still up to date";
     }
-    is_updated_ = true;
   } else {
     if (!is_obsolete_) {  // it it was not obslete, delete from active list
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
@@ -527,7 +525,6 @@ int linear_mixer::put_diff(
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
                 << "my model is still obsolete";
     }
-    is_updated_ = false;
   }
   is_obsolete_ = !not_obsolete;
 
