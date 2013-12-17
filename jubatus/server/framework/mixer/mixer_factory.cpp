@@ -17,6 +17,7 @@
 #include "mixer_factory.hpp"
 
 #include <string>
+#include <utility>
 #include "jubatus/util/lang/shared_ptr.h"
 
 #ifdef HAVE_ZOOKEEPER_H
@@ -28,6 +29,9 @@
 #include "dummy_mixer.hpp"
 #endif
 
+using std::make_pair;
+using std::string;
+
 namespace jubatus {
 namespace server {
 namespace framework {
@@ -37,30 +41,41 @@ mixer* create_mixer(
     const server_argv& a,
     const jubatus::util::lang::shared_ptr<common::lock_service>& zk) {
 #ifdef HAVE_ZOOKEEPER_H
-  const std::string& use_mixer = a.mixer;
+  const string& use_mixer = a.mixer;
   if (use_mixer == "linear_mixer") {
     return new linear_mixer(
         linear_communication::create(
-            zk, a.type, a.name, a.interconnect_timeout),
+            zk,
+            a.type,
+            a.name,
+            a.interconnect_timeout,
+            std::make_pair(a.eth, a.port)),
         a.interval_count, a.interval_sec);
   } else if (use_mixer == "random_mixer") {
     return new random_mixer(
         push_communication::create(
-            zk, a.type, a.name, a.interconnect_timeout),
-        a.interval_count, a.interval_sec, std::make_pair(a.eth, a.port));
+            zk,
+            a.type,
+            a.name,
+            a.interconnect_timeout),
+        a.interval_count, a.interval_sec, make_pair(a.eth, a.port));
   } else if (use_mixer == "broadcast_mixer") {
     return new broadcast_mixer(
         push_communication::create(zk, a.type, a.name, a.interconnect_timeout),
-        a.interval_count, a.interval_sec, std::make_pair(a.eth, a.port));
+        a.interval_count, a.interval_sec, make_pair(a.eth, a.port));
   } else if (use_mixer == "skip_mixer") {
     return new skip_mixer(
         push_communication::create(zk, a.type, a.name, a.interconnect_timeout),
-        a.interval_count, a.interval_sec, std::make_pair(a.eth, a.port));
+        a.interval_count, a.interval_sec, make_pair(a.eth, a.port));
   } else {
     // TODO(beam2d): fix to throw
     return new linear_mixer(
         linear_communication::create(
-            zk, a.type, a.name, a.interconnect_timeout),
+            zk,
+            a.type,
+            a.name,
+            a.interconnect_timeout,
+            make_pair(a.eth, a.port)),
         a.interval_count, a.interval_sec);
   }
 #else

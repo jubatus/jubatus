@@ -294,7 +294,6 @@ rpc_result<Res> rpc_mclient::join_(
     } catch (...) {
       // continue process next result when exception thrown.
       // store exception_thrower to list of errors
-
       result.error.push_back(
           rpc_error(hosts_[i].first, hosts_[i].second,
               jubatus::core::common::exception::get_current_exception()));

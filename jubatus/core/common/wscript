@@ -13,7 +13,7 @@ def build(bld):
   else:
     libassert = ""
 
-  src = 'crc32.cpp exception.cpp key_manager.cpp vector_util.cpp'
+  src = 'crc32.cpp exception.cpp key_manager.cpp vector_util.cpp version.cpp'
   src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
 
   bld.shlib(

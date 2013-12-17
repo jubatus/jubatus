@@ -57,9 +57,10 @@ class mixable_int : public mixable<int_model, int> {
     return diff_;
   }
 
-  void put_diff_impl(const int& n) {
+  bool put_diff_impl(const int& n) {
     get_model()->value += n;
     diff_ = 0;
+    return true;
   }
 
   void mix_impl(const int& lhs, const int& rhs, int& mixed) const {

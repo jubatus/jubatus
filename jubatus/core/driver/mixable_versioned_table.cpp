@@ -31,10 +31,11 @@ std::vector<std::string> mixable_versioned_table::get_diff_impl() const {
   return pull_impl(vc_);
 }
 
-void mixable_versioned_table::put_diff_impl(
+bool mixable_versioned_table::put_diff_impl(
     const std::vector<std::string>& diff) {
   // TODO(beam2d): Skip rows whose owner is this server.
   push_impl(diff);
+  return true;
 }
 
 void mixable_versioned_table::mix_impl(

@@ -30,7 +30,7 @@ class mixable_weight_manager : public framework::mixable<
  public:
   fv_converter::keyword_weights get_diff_impl() const;
 
-  void put_diff_impl(const fv_converter::keyword_weights& diff);
+  bool put_diff_impl(const fv_converter::keyword_weights& diff);
 
   void mix_impl(
       const fv_converter::keyword_weights& lhs,

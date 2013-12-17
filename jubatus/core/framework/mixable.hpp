@@ -43,7 +43,7 @@ class mixable0 {
 
   // interface for linear_mixer
   virtual common::byte_buffer get_diff() const = 0;
-  virtual void put_diff(const common::byte_buffer&) = 0;
+  virtual bool put_diff(const common::byte_buffer&) = 0;
   virtual void mix(const common::byte_buffer&,
                    const common::byte_buffer&,
                    common::byte_buffer&) const = 0;
@@ -117,7 +117,7 @@ class mixable : public mixable0 {
   virtual void clear() = 0;
 
   virtual Diff get_diff_impl() const = 0;
-  virtual void put_diff_impl(const Diff&) = 0;
+  virtual bool put_diff_impl(const Diff&) = 0;
   virtual void mix_impl(const Diff&, const Diff&, Diff&) const = 0;
 
   virtual PullArg get_pull_argument_impl() const {
@@ -145,11 +145,11 @@ class mixable : public mixable0 {
     }
   }
 
-  void put_diff(const common::byte_buffer& d) {
+  bool put_diff(const common::byte_buffer& d) {
     if (model_) {
       Diff diff;
       unpack_(d, diff);
-      put_diff_impl(diff);
+      return put_diff_impl(diff);
     } else {
       throw JUBATUS_EXCEPTION(common::config_not_set());
     }
@@ -249,8 +249,8 @@ class delegating_mixable : public mixable<Model, Diff, PullArg> {
     return diff;
   }
 
-  void put_diff_impl(const Diff& diff) {
-    this->get_model()->set_mixed_and_clear_diff(diff);
+  bool put_diff_impl(const Diff& diff) {
+    return this->get_model()->set_mixed_and_clear_diff(diff);
   }
 
   void mix_impl(const Diff& lhs, const Diff& rhs, Diff& mixed) const {

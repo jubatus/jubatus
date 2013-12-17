@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,45 +14,23 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_DRIVER_DIFFV_HPP_
-#define JUBATUS_CORE_DRIVER_DIFFV_HPP_
-
-#include "../storage/storage_type.hpp"
+#include "version.hpp"
 
 namespace jubatus {
 namespace core {
-namespace driver {
+namespace storage {
 
-struct diffv {
- public:
-  diffv(int c, const storage::diff_t& w)
-      : count(c),
-        v(w) {
-  }
+version::version()
+    : version_number_(0LLU) {}
 
-  diffv()
-      : count(0),
-        v() {
-  }
+void version::increment() {
+  ++version_number_;
+}
 
-  int count;
-  storage::diff_t v;
+uint64_t version::get_version() const {
+  return version_number_;
+}
 
-  diffv& operator/=(double d) {
-    this->v.diff /= d;
-    return *this;
-  }
-
-  MSGPACK_DEFINE(count, v);
-
-  template<class Archiver>
-  void serialize(Archiver& ar) {
-    ar & JUBA_MEMBER(count) & JUBA_MEMBER(v);
-  }
-};
-
-}  // namespace driver
+}  // namespace storage
 }  // namespace core
 }  // namespace jubatus
-
-#endif  // JUBATUS_CORE_DRIVER_DIFFV_HPP_

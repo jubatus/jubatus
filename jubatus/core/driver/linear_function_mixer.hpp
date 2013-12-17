@@ -33,7 +33,7 @@ class linear_function_mixer : public jubatus::core::framework::mixable<
 
   void mix_impl(const diffv& lhs, const diffv& rhs, diffv& mixed) const;
 
-  void put_diff_impl(const diffv& v);
+  bool put_diff_impl(const diffv& v);
 
   void clear();
 };

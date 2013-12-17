@@ -79,7 +79,7 @@ class storage_mock_base : public storage::storage_base {
       const std::string& dec_class) {
   }
 
-  virtual void get_diff(features3_t&) const = 0;
+  virtual void get_diff(diff_t&) const = 0;
   void set_average_and_clear_diff(const features3_t&) {
   }
 
@@ -93,10 +93,10 @@ class storage_mock_base : public storage::storage_base {
 
 class storage_mock_1 : public storage_mock_base {
  public:
-  void get_diff(features3_t& v) const {
+  void get_diff(diff_t& v) const {
     feature_val3_t c;
     c.push_back(make_pair(string("l1"), val3_t(1.0, 2.0, 3.0)));
-    v.push_back(make_pair(string("f1"), c));
+    v.diff.push_back(make_pair(string("f1"), c));
   }
 };
 
@@ -110,20 +110,22 @@ TEST(linear_function_mixer, diff) {
 
   diffv d = m.get_diff_impl();
   EXPECT_EQ(1, d.count);
-  ASSERT_EQ(1u, d.v.size());
-  EXPECT_EQ("f1", d.v[0].first);
-  ASSERT_EQ(1u, d.v[0].second.size());
-  EXPECT_EQ("l1", d.v[0].second[0].first);
-  EXPECT_EQ(1.0, d.v[0].second[0].second.v1);
-  EXPECT_EQ(2.0, d.v[0].second[0].second.v2);
-  EXPECT_EQ(3.0, d.v[0].second[0].second.v3);
+  ASSERT_EQ(1u, d.v.diff.size());
+  EXPECT_EQ("f1", d.v.diff[0].first);
+  ASSERT_EQ(1u, d.v.diff[0].second.size());
+  EXPECT_EQ("l1", d.v.diff[0].second[0].first);
+  EXPECT_EQ(1.0, d.v.diff[0].second[0].second.v1);
+  EXPECT_EQ(2.0, d.v.diff[0].second[0].second.v2);
+  EXPECT_EQ(3.0, d.v.diff[0].second[0].second.v3);
 }
 
-diffv make_diff(float v1, float v2, float v3, size_t count) {
+
+diffv make_diff(float v1, float v2, float v3, uint64_t version, size_t count) {
   diffv diff;
   storage::feature_val3_t c;
   c.push_back(make_pair(string("l1"), storage::val3_t(v1, v2, v3)));
-  diff.v.push_back(make_pair(string("f1"), c));
+  diff.v.diff.push_back(make_pair(string("f1"), c));
+  diff.v.version = version;
   diff.count = count;
   return diff;
 }
@@ -131,21 +133,41 @@ diffv make_diff(float v1, float v2, float v3, size_t count) {
 TEST(linear_function_mixer, mix) {
   linear_function_mixer m;
 
-  diffv d1 = make_diff(1, 2, 3, 5);
-  diffv d2 = make_diff(2, 3, 4, 3);
+  diffv d1 = make_diff(1, 2, 3, 1, 5);
+  diffv d2 = make_diff(2, 3, 4, 1, 3);
   diffv d;
   m.mix_impl(d1, d2, d);
   EXPECT_EQ(8, d.count);
-  ASSERT_EQ(1u, d.v.size());
-  EXPECT_EQ("f1", d.v[0].first);
-  ASSERT_EQ(1u, d.v[0].second.size());
-  EXPECT_EQ("l1", d.v[0].second[0].first);
+  ASSERT_EQ(1u, d.v.diff.size());
+  EXPECT_EQ("f1", d.v.diff[0].first);
+  ASSERT_EQ(1u, d.v.diff[0].second.size());
+  EXPECT_EQ("l1", d.v.diff[0].second[0].first);
   // (1 * 5 + 2 * 3) / (5 + 3)
-  EXPECT_EQ(11./8., d.v[0].second[0].second.v1);
+  EXPECT_EQ(11./8., d.v.diff[0].second[0].second.v1);
   // min(2, 3)
-  EXPECT_EQ(2., d.v[0].second[0].second.v2);
+  EXPECT_EQ(2., d.v.diff[0].second[0].second.v2);
   // (3 * 5 + 4 * 3) / (5 + 3)
-  EXPECT_EQ(27./8., d.v[0].second[0].second.v3);
+  EXPECT_EQ(27./8., d.v.diff[0].second[0].second.v3);
+}
+
+TEST(linear_function_mixer, different_version_check) {
+  linear_function_mixer m;
+
+  diffv d1 = make_diff(1, 2, 3, 2, 5);
+  diffv d2 = make_diff(2, 3, 4, 1, 3);  // should not mix
+  diffv d;
+  m.mix_impl(d1, d2, d);
+  EXPECT_EQ(5, d.count);
+  ASSERT_EQ(1u, d.v.diff.size());
+  EXPECT_EQ("f1", d.v.diff[0].first);
+  ASSERT_EQ(1u, d.v.diff[0].second.size());
+  EXPECT_EQ("l1", d.v.diff[0].second[0].first);
+  // (1 * 5) / 5
+  EXPECT_EQ(5./5., d.v.diff[0].second[0].second.v1);
+  // 2
+  EXPECT_EQ(2., d.v.diff[0].second[0].second.v2);
+  // 3 * 5 / 5
+  EXPECT_EQ(15./5., d.v.diff[0].second[0].second.v3);
 }
 
 }  // namespace driver

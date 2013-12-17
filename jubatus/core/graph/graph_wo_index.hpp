@@ -111,7 +111,7 @@ class graph_wo_index
   void get_edge(edge_id_t eid, edge_info& ret) const;
 
   void get_diff(diff_type& diff) const;
-  void set_mixed_and_clear_diff(const diff_type& mixed);
+  bool set_mixed_and_clear_diff(const diff_type& mixed);
 
   std::string type() const;
 

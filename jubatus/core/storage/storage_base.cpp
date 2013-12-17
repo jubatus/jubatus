@@ -84,11 +84,12 @@ void storage_base::bulk_update(
   }
 }
 
-void storage_base::get_diff(features3_t& v) const {
-  v.clear();
+void storage_base::get_diff(diff_t& v) const {
+  v.diff.clear();
 }
 
-void storage_base::set_average_and_clear_diff(const features3_t&) {
+bool storage_base::set_average_and_clear_diff(const diff_t&) {
+  return true;
 }
 
 }  // namespace storage

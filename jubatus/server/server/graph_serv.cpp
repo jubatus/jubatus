@@ -525,7 +525,7 @@ void graph_serv::find_from_cht_(
 void graph_serv::get_members_(std::vector<std::pair<std::string, int> >& ret) {
   ret.clear();
 #ifdef HAVE_ZOOKEEPER_H
-  common::get_all_actors(*zk_, argv().type, argv().name, ret);
+  common::get_all_nodes(*zk_, argv().type, argv().name, ret);
 
   if (ret.empty()) {
     return;
