@@ -249,7 +249,13 @@ TEST(json, to_json)
     ostringstream oss;
     oss<<to_json(mm);
 
-    EXPECT_EQ("{\"abc\":1.23,\"hoge\":3.14}", oss.str());
+    struct compare_helper {
+      static bool invoke(const string& s) {
+        return s == "{\"abc\":1.23,\"hoge\":3.14}" ||
+            s == "{\"hoge\":3.14,\"abc\":1.23}";
+      }
+    };
+    EXPECT_PRED1(&compare_helper::invoke, oss.str());
   }
 }
 
