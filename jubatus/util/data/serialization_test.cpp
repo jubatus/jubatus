@@ -32,7 +32,7 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
-#include <fstream>
+#include <sstream>
 #include <climits>
 #include <stdint.h>
 
@@ -71,10 +71,10 @@ template<typename T> void check(binary_iarchive& ia, T expected) {
 
 TEST(serialization, serial) {
   // TODO: float, double, long double's test
+  stringstream ss;
 
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
 
     oa<<CHAR_MIN<<CHAR_MAX;
     oa<<UCHAR_MAX;
@@ -87,8 +87,7 @@ TEST(serialization, serial) {
     oa<<ULLONG_MAX;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
 
     check(ia,CHAR_MIN);
     check(ia,CHAR_MAX);
@@ -111,15 +110,14 @@ TEST(serialization, array) {
   srandom(time(NULL));
   int vs1[N],vs2[N];
   for (size_t i=0;i<N;++i) vs1[i]=random();
-  
+
+  stringstream ss;
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
     oa<<vs1;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
     ia>>vs2;
   }
   for (size_t i=0;i<N;++i) EXPECT_EQ(vs1[i],vs2[i]);
@@ -129,14 +127,14 @@ TEST(serialization, deque) {
   srandom(time(NULL));
   deque<int> vs1,vs2;
   for (size_t i=0;i<N;++i) vs1.push_back(random());
+
+  stringstream ss;
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
     oa<<vs1;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
     ia>>vs2;
   }
   EXPECT_EQ(vs1.size(),vs2.size());
@@ -147,14 +145,14 @@ TEST(serialization, list) {
   srandom(time(NULL));
   list<int> vs1,vs2;
   for (size_t i=0;i<N;++i) vs1.push_back(random());
+
+  stringstream ss;
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
     oa<<vs1;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
     ia>>vs2;
   }
   EXPECT_EQ(vs1.size(),vs2.size());
@@ -165,14 +163,14 @@ TEST(serialization, map) {
   srandom(time(NULL));
   map<int,int> vs1,vs2;
   for (size_t i=0;i<N;++i) vs1.insert(make_pair(random(),random()));
+
+  stringstream ss;
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
     oa<<vs1;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
     ia>>vs2;
   }
   EXPECT_EQ(vs1.size(),vs2.size());
@@ -187,14 +185,14 @@ TEST(serialization, pair) {
   pair<int,int> vs1,vs2;
   vs1.first=random();
   vs1.second=random();
+
+  stringstream ss;
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
     oa<<vs1;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
     ia>>vs2;
   }
   EXPECT_EQ(vs1.first,vs2.first);
@@ -206,14 +204,14 @@ TEST(serialization, set) {
   srandom(time(NULL));
   set<int> vs1,vs2;
   for (size_t i=0;i<N;++i) vs1.insert(random());
+
+  stringstream ss;
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
     oa<<vs1;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
     ia>>vs2;
   }
   EXPECT_EQ(vs1.size(),vs2.size());
@@ -224,14 +222,14 @@ TEST(serialization, string) {
   srandom(time(NULL));
   string vs1,vs2;
   for (size_t i=0;i<N;++i) vs1+=random()%CHAR_MAX;
+
+  stringstream ss;
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
     oa<<vs1;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
     ia>>vs2;
   }
   EXPECT_EQ(vs1.size(),vs2.size());
@@ -244,14 +242,14 @@ TEST(serialization, tr1_unordered_map) {
   srandom(time(NULL));
   std::tr1::unordered_map<int,int> vs1,vs2;
   for (size_t i=0;i<N;++i) vs1.insert(make_pair(random(),random()));
+
+  stringstream ss;
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
     oa<<vs1;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
     ia>>vs2;
   }
   EXPECT_EQ(vs1.size(),vs2.size());
@@ -267,14 +265,14 @@ TEST(serialization, pficommon_unordered_map){
   srandom(time(NULL));
   jubatus::util::data::unordered_map<int,int> vs1,vs2;
   for (size_t i=0;i<N;++i) vs1.insert(make_pair(random(),random()));
+
+  stringstream ss;
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
     oa<<vs1;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
     ia>>vs2;
   }
   EXPECT_EQ(vs1.size(),vs2.size());
@@ -290,14 +288,14 @@ TEST(serialization, tr1_unordered_set) {
   srandom(time(NULL));
   std::tr1::unordered_set<int> vs1,vs2;
   for (size_t i=0;i<N;++i) vs1.insert(random());
+
+  stringstream ss;
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
     oa<<vs1;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
     ia>>vs2;
   }
   EXPECT_EQ(vs1.size(),vs2.size());
@@ -312,14 +310,14 @@ TEST(serialization, pficommon_unordered_set) {
   srandom(time(NULL));
   jubatus::util::data::unordered_set<int> vs1,vs2;
   for (size_t i=0;i<N;++i) vs1.insert(random());
+
+  stringstream ss;
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
     oa<<vs1;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
     ia>>vs2;
   }
   EXPECT_EQ(vs1.size(),vs2.size());
@@ -332,14 +330,14 @@ TEST(serialization, vector) {
   srandom(time(NULL));
   vector<int> vs1,vs2;
   for (size_t i=0;i<N;++i) vs1.push_back(random());
+
+  stringstream ss;
   {
-    ofstream ofs("./tmp");
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(ss);
     oa<<vs1;
   }
   {
-    ifstream ifs("./tmp");
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(ss);
     ia>>vs2;
   }
   EXPECT_EQ(vs1.size(),vs2.size());
