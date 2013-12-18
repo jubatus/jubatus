@@ -33,14 +33,13 @@
 
 #include "code.h"
 
+#include <stdio.h>
 #include <climits>
 #include <fstream>
 #include <algorithm>
 
 using namespace std;
 using namespace jubatus::util::data::code;
-
-static const char* tmp_file="./tmp";
 
 unsigned int get_len(unsigned int v) {
   return 32-__builtin_clz(v);
@@ -226,6 +225,9 @@ TEST(code_test, index)
     ec.rice(vs[i],3);
     ec.prefix_code(vs[i]);
   }
+
+  char* tmp_file = tempnam(NULL, "jubat");
+
   ec.flush(tmp_file);
   dc.attach(tmp_file);
   
@@ -238,4 +240,5 @@ TEST(code_test, index)
   }
 
   unlink(tmp_file);
+  free(tmp_file);  // not exception safe; we need C++11 unique_ptr
 }
