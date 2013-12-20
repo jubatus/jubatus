@@ -281,9 +281,9 @@ inline exception_thrower_ptr get_current_exception() {
     ptr = detail::current_std_exception(e);
   } catch (const std::underflow_error& e) {  // runtime_error
     ptr = detail::current_std_exception(e);
-  } catch (const std::runtime_error& e) {  // exception
-    ptr = detail::current_std_exception(e);
   } catch (const std::ios_base::failure& e) {  // exception
+    ptr = detail::current_std_exception(e);
+  } catch (const std::runtime_error& e) {  // exception
     ptr = detail::current_std_exception(e);
   } catch (const jubatus_exception& e) {
     ptr = e.thrower();
