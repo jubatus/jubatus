@@ -33,12 +33,24 @@ namespace core {
 namespace common {
 namespace exception {
 
+#ifdef _MSC_VER
+namespace {
+
+char* strerror_r(int errnum, char *buf, size_t buflen) {
+	strerror_s(buf, buflen, errnum);
+	return buf;
+}
+
+}  // namespace
+#endif
+
 typedef error_info<struct error_at_file_, std::string> error_at_file;
 typedef error_info<struct error_at_func_, std::string> error_at_func;
 typedef error_info<struct error_at_line_, int> error_at_line;
 typedef error_info<struct error_errno_, int> error_errno;
 inline std::string to_string(const error_errno& info) {
-  std::string msg(strerror(info.value()));
+  char buf[1024];
+  std::string msg(strerror_r(info.value(), buf, 1024));
   msg += " (" + pfi::lang::lexical_cast<std::string>(info.value()) + ")";
   return msg;
 }
