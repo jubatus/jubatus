@@ -1,8 +1,7 @@
 language: cpp
 
 compiler:
-# Disable gcc until Travis successes in 64-bit environment (see #120)
-#  - gcc
+  - gcc
   - clang
 
 before_install:
@@ -56,8 +55,7 @@ script:
 
 branches:
   only:
-    # Disable still #396 mereged to master (release 0.4.5)
-#    - master
+    - master
     - develop
 
 notifications:
