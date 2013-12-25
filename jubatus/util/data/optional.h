@@ -89,7 +89,7 @@ public:
   }
 
   bool bool_test() const{
-    return dat;
+    return dat != NULL;
   }
 
   T &operator*() const { return *get(); }
