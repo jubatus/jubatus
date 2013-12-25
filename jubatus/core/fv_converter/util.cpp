@@ -54,7 +54,7 @@ int get_int_or_die(
   const std::string& s = get_or_die(params, key);
   try {
     return jubatus::util::lang::lexical_cast<int>(s);
-  } catch (const std::bad_cast& e) {
+  } catch (const std::bad_cast&) {
     throw JUBATUS_EXCEPTION(converter_exception(
         std::string("\"" + key + "\" must be an integer value: " + s)));
   }
