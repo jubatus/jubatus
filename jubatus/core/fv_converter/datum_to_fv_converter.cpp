@@ -390,6 +390,10 @@ class datum_to_fv_converter_impl {
       const std::string& splitter,
       const std::string& sample_weight,
       const std::string& global_weight) {
+    if (key.find('$') != std::string::npos) {
+      throw JUBATUS_EXCEPTION(
+          converter_exception("feature key cannot contain '$'"));
+    }
     return key + "$" + value + "@" + splitter + "#" + sample_weight + "/" +
         global_weight;
   }
@@ -398,6 +402,10 @@ class datum_to_fv_converter_impl {
       const std::string& key,
       const std::string& value,
       const std::string& splitter) {
+    if (key.find('$') != std::string::npos) {
+      throw JUBATUS_EXCEPTION(
+          converter_exception("feature key must cannot contain '$'"));
+    }
     return key + "$" + value + "@" + splitter;
   }
 

@@ -391,6 +391,26 @@ TEST(datum_to_fv_converter, hasher) {
   EXPECT_EQ("0", feature[i].first);
 }
 
+TEST(datum_to_fv_converter, check_datum_key) {
+  datum_to_fv_converter conv;
+  init_weight_manager(conv);
+
+  {
+    shared_ptr<key_matcher> match(new match_all());
+    shared_ptr<word_splitter> s(new space_splitter());
+    std::vector<splitter_weight_type> p;
+    p.push_back(splitter_weight_type(FREQ_BINARY, TERM_BINARY));
+    p.push_back(splitter_weight_type(TERM_FREQUENCY, IDF));
+    p.push_back(splitter_weight_type(LOG_TERM_FREQUENCY, IDF));
+    conv.register_string_rule("space", match, s, p);
+  }
+
+  datum datum;
+  datum.string_values_.push_back(std::make_pair("bad$key", "doc0"));
+  std::vector<std::pair<std::string, float> > feature;
+  ASSERT_THROW(conv.convert(datum, feature), converter_exception);
+}
+
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
