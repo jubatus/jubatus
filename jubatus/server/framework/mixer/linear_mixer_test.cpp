@@ -147,6 +147,22 @@ TEST(linear_mixer, mix_order) {
   EXPECT_EQ("(4+(3+(2+1)))", mixed[0]);
 }
 
+TEST(linear_mixer, destruct_running_mixer) {
+  shared_ptr<linear_communication_stub> com(new linear_communication_stub);
+  linear_mixer m(com, 1, 1);
+
+  jubatus::util::lang::shared_ptr<core::framework::mixable_holder> holder(
+      new core::framework::mixable_holder());
+  m.set_mixable_holder(holder);
+
+  jubatus::util::lang::shared_ptr<mixable_string> s(new mixable_string);
+  holder->register_mixable(s);
+
+  m.start();
+
+  // destruct without calling m.stop()
+}
+
 }  // namespace mixer
 }  // namespace framework
 }  // namespace server

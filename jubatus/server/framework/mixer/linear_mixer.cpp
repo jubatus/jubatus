@@ -142,6 +142,10 @@ linear_mixer::linear_mixer(
       t_(jubatus::util::lang::bind(&linear_mixer::mixer_loop, this)) {
 }
 
+linear_mixer::~linear_mixer() {
+  stop();
+}
+
 void linear_mixer::register_api(rpc_server_t& server) {
   server.add<vector<byte_buffer>(int)>(  // NOLINT
       "get_diff",
