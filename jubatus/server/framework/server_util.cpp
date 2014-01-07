@@ -16,6 +16,8 @@
 
 #include "server_util.hpp"
 
+#include <unistd.h>
+#include <signal.h>
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -118,6 +120,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
       false, "");
   p.add<std::string>("model_file", 'm',
                      "model data to load at startup", false, "");
+  p.add("daemon", 'D', "launch in daemon mode (ignores SIGHUP)");
 
   p.add<std::string>("zookeeper", 'z',
                      make_ignored_help("zookeeper location"), false);
@@ -164,6 +167,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   loglevel = p.get<int>("loglevel");
   configpath = p.get<std::string>("configpath");
   modelpath = p.get<std::string>("model_file");
+  daemon = p.exist("daemon");
 
   // determine listen-address and IPaddr used as ZK 'node-name'
   // TODO(y-oda-oni-juba): check bind_address is valid format
@@ -309,6 +313,16 @@ void server_argv::set_log_destination(const std::string& progname) const {
   }
 }
 
+void daemonize_process(const std::string& logdir) {
+  if (logdir == "" && ::isatty(::fileno(stderr))) {
+    LOG(WARNING) << "output tty in daemon mode";
+  }
+  if (::signal(SIGHUP, SIG_IGN) == SIG_ERR) {
+    LOG(FATAL) << "Failed to ignore SIGHUP";
+  }
+  LOG(INFO) << "set daemon mode (SIGHUP is now ignored)";
+}
+
 std::string get_server_identifier(const server_argv& a) {
   std::stringstream ss;
   ss << a.eth;
@@ -330,6 +344,7 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   p.add<int>("zookeeper_timeout", 'Z', "zookeeper time out (sec)", false, 10);
   p.add<int>("interconnect_timeout", 'I',
       "interconnect time out between servers (sec)", false, 10);
+  p.add("daemon", 'D', "launch in daemon mode (ignores SIGHUP)");
 
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false,
                      "localhost:2181");
@@ -356,6 +371,7 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   timeout = p.get<int>("timeout");
   zookeeper_timeout = p.get<int>("zookeeper_timeout");
   interconnect_timeout = p.get<int>("interconnect_timeout");
+  daemon = p.exist("daemon");
   program_name = common::util::get_program_name();
   z = p.get<std::string>("zookeeper");
   session_pool_expire = p.get<int>("pool_expire");
