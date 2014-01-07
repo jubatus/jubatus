@@ -78,6 +78,7 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
       jubatus::util::lang::shared_ptr<push_communication> communication,
       unsigned int count_threshold, unsigned int tick_threshold,
       const std::pair<std::string, int>& my_id);
+  ~push_mixer();
 
   void register_api(rpc_server_t& server);
   void set_mixable_holder(
