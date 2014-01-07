@@ -113,6 +113,7 @@ def configure(conf):
     conf.define('JUBATUS_RPC_TEST_PORT_BASE', int(Options.options.rpc_test_port_base))
 
   conf.define('BUILD_DIR',  conf.bldnode.abspath())
+
   conf.env.USE_EIGEN = not Options.options.disable_eigen
   if conf.env.USE_EIGEN:
     conf.define('JUBATUS_USE_EIGEN', 1)
