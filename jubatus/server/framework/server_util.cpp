@@ -16,7 +16,6 @@
 
 #include "server_util.hpp"
 
-#include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
 #include <iostream>
@@ -318,28 +317,10 @@ void daemonize_process(const std::string& logdir) {
   if (logdir == "" && ::isatty(::fileno(stderr))) {
     LOG(WARNING) << "output tty in daemon mode";
   }
-
   if (::signal(SIGHUP, SIG_IGN) == SIG_ERR) {
     LOG(FATAL) << "Failed to ignore SIGHUP";
   }
   LOG(INFO) << "set daemon mode (SIGHUP is now ignored)";
-
-  {  // do fork
-    const pid_t pid = ::fork();
-    if (pid == -1) {
-      LOG(FATAL) << "Failed to fork()";
-    }
-    if (pid != 0) {
-      _exit(EXIT_SUCCESS);
-    }
-    if (::setsid() == -1) {
-      LOG(FATAL) << "Failed to setsid()";
-    }
-  }
-
-  if (::chdir("/") != 0) {
-    LOG(FATAL) << "Failed to chdir to /";
-  }
 }
 
 std::string get_server_identifier(const server_argv& a) {

@@ -171,10 +171,6 @@ class server_helper {
     }
 
     try {
-      if (a.daemon) {
-        daemonize_process(a.logdir);
-      }
-
       serv.listen(a.port, a.bind_address);
       LOG(INFO) << "start listening at port " << a.port;
 
