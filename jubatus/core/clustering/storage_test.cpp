@@ -80,7 +80,11 @@ TEST_P(storage_test, pack_unpack) {
 }
 
 INSTANTIATE_TEST_CASE_P(storage_test_instance, storage_test,
-    testing::Values("compressive_kmeans", "compressive_gmm", "simple"));
+    testing::Values("compressive_kmeans",
+#ifdef JUBATUS_USE_EIGEN
+		    "compressive_gmm",
+#endif
+		    "simple"));
 
 }  // namespace clustering
 }  // namespace core

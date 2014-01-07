@@ -37,11 +37,13 @@ jubatus::util::lang::shared_ptr<storage> storage_factory::create(
     s->set_compressor(jubatus::util::lang::shared_ptr<compressor::compressor>(
                           new compressor::kmeans_compressor(config)));
     ret.reset(s);
+#ifdef JUBATUS_USE_EIGEN
   } else if (config.compressor_method == "compressive_gmm") {
     compressive_storage *s = new compressive_storage(name, config);
     s->set_compressor(jubatus::util::lang::shared_ptr<compressor::compressor>(
                           new compressor::gmm_compressor(config)));
     ret.reset(s);
+#endif
   } else if (config.compressor_method == "simple") {
     simple_storage *s = new simple_storage(name, config);
     ret.reset(s);

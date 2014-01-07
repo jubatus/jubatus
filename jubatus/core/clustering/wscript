@@ -5,28 +5,42 @@ def options(opt): pass
 def configure(conf):
     pass
 def build(bld):
+  source = [
+    'clustering.cpp',
+    'storage.cpp',
+    'compressive_storage.cpp',
+    'simple_storage.cpp',
+    'storage_factory.cpp',
+    'kmeans_compressor.cpp',
+    'kmeans_clustering_method.cpp',
+    'clustering_method_factory.cpp',
+    'discrete_distribution.cpp',
+    'util.cpp'
+  ]
+  if bld.env.USE_EIGEN:
+    source += [
+      'eigen_feature_mapper.cpp',
+      'gmm_compressor.cpp',
+      'gmm_clustering_method.cpp',
+      'gmm.cpp',
+    ]
+
   bld.shlib(
-    source = [
-        'clustering.cpp',
-        'storage.cpp',
-        'compressive_storage.cpp',
-        'simple_storage.cpp',
-        'storage_factory.cpp',
-        'kmeans_compressor.cpp',
-        'gmm_compressor.cpp',
-        'kmeans_clustering_method.cpp',
-        'gmm_clustering_method.cpp',
-        'gmm.cpp',
-        'eigen_feature_mapper.cpp',
-        'clustering_method_factory.cpp',
-        'discrete_distribution.cpp',
-        'util.cpp'
-    ],
+    source = source,
     target = 'jubatus_clustering',
     includes = '.',
     use = 'jubatus_util MSGPACK'
     )
-  test_cases = os.listdir("jubatus/core/clustering");
+
+  test_cases = [
+    'mixable_model_test.cpp',
+    'model_test.cpp',
+    'storage_test.cpp'
+  ]
+  if bld.env.USE_EIGEN:
+    test_cases += [
+      'model_gmm_test.cpp'
+    ]
   for t in test_cases:
     ret = re.compile("^(\w+)_test.cpp$").match(t);
     if ret is not None:
