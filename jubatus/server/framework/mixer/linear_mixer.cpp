@@ -69,7 +69,7 @@ class linear_communication_impl : public linear_communication {
   void put_diff(
       const vector<byte_buffer>& a,
       common::mprpc::rpc_result_object& result) const;
-  string get_model();
+  byte_buffer get_model();
 
   bool register_active_list() const {
     register_active(*zk_.get(), type_, name_, my_id_.first, my_id_.second);
@@ -123,17 +123,17 @@ size_t linear_communication_impl::update_members() {
   return servers_.size();
 }
 
-string linear_communication_impl::get_model() {
+byte_buffer linear_communication_impl::get_model() {
   update_members();
   if (servers_.empty() || servers_.size() == 1) {
-    return "";
+    return byte_buffer();
   }
 
   for (;;) {
     // use time as pseudo random number(it should enough)
     const jubatus::util::system::time::clock_time now(get_clock_time());
     const size_t target = now.usec % servers_.size();
-    const string ip = servers_[target].first;
+    const string& ip = servers_[target].first;
     const int port = servers_[target].second;
     if (ip == my_id_.first && port == my_id_.second) {
       // avoid get model from myself
@@ -142,9 +142,9 @@ string linear_communication_impl::get_model() {
 
     try {
       msgpack::rpc::client cli(ip, port);
-      msgpack::rpc::future result = cli.call("get_model", 0);
-      const std::string got_model_data = result.get<string>();
-      LOG(INFO) << "got model(serialized data) " << got_model_data.length()
+      msgpack::rpc::future result(cli.call("get_model", 0));
+      const byte_buffer got_model_data(result.get<byte_buffer>());
+      LOG(INFO) << "got model(serialized data) " << got_model_data.size()
                 << " from server[" << ip << ":" << port << "] ";
       return got_model_data;
     } catch (const std::exception& e) {
@@ -232,7 +232,7 @@ void linear_mixer::register_api(rpc_server_t& server) {
       jubatus::util::lang::bind(&linear_mixer::put_diff,
                                 this,
                                 jubatus::util::lang::_1));
-  server.add<string(int)>(  // NOLINT
+  server.add<byte_buffer(int)>(  // NOLINT
       "get_model",
       jubatus::util::lang::bind(&linear_mixer::get_model,
                                 this,
@@ -457,7 +457,7 @@ vector<byte_buffer> linear_mixer::get_diff(int a) {
   return o;
 }
 
-string linear_mixer::get_model(int a) const {
+byte_buffer linear_mixer::get_model(int a) const {
   scoped_rlock lk_read(mixable_holder_->rw_mutex());
   msgpack::sbuffer packed;
   msgpack::packer<msgpack::sbuffer> pk(packed);
@@ -466,20 +466,20 @@ string linear_mixer::get_model(int a) const {
   LOG(INFO) << "sending leaning-model. size = "
             << jubatus::util::lang::lexical_cast<string>(packed.size());
 
-  return string(packed.data(), packed.size());
+  return byte_buffer(packed.data(), packed.size());
 }
 
 void linear_mixer::update_model() {
-  string model_serialized = communication_->get_model();
+  byte_buffer model_serialized = communication_->get_model();
 
-  if (model_serialized == "") {
+  if (model_serialized.size() == 0) {
     // it means "no other server"
     LOG(INFO) << "no other server available, I become active";
     communication_->register_active_list();
     return;
   }
   msgpack::unpacked unpacked;
-  msgpack::unpack(&unpacked, &model_serialized[0], model_serialized.size());
+  msgpack::unpack(&unpacked, model_serialized.ptr(), model_serialized.size());
   {
     scoped_wlock lk_write(mixable_holder_->rw_mutex());
     mixable_holder_->unpack(unpacked.get());

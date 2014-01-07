@@ -27,10 +27,11 @@ class version {
   version();
   void increment();
   uint64_t get_version() const;
-  uint64_t version_number_;
   MSGPACK_DEFINE(version_number_);
 
  private:
+  uint64_t version_number_;
+
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {

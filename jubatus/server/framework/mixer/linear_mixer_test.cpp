@@ -106,8 +106,8 @@ class linear_communication_stub : public linear_communication {
     return mixed;
   }
 
-  string get_model() {
-    return "";
+  byte_buffer get_model() {
+    return byte_buffer();
   }
 
   bool register_active_list() const {
