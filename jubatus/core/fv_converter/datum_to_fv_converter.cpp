@@ -379,6 +379,10 @@ class datum_to_fv_converter_impl {
       const std::string& key = binary_values[j].first;
       const std::string& value = binary_values[j].second;
       if (feature.matcher_->match(key)) {
+        if (key.find('$') != std::string::npos) {
+          throw JUBATUS_EXCEPTION(
+              converter_exception("feature key cannot contain '$'"));
+        }
         feature.feature_func_->add_feature(key, value, ret_fv);
       }
     }
@@ -501,6 +505,10 @@ class datum_to_fv_converter_impl {
     for (size_t i = 0; i < num_rules_.size(); ++i) {
       const num_feature_rule& r = num_rules_[i];
       if (r.matcher_->match(key)) {
+        if (key.find('$') != std::string::npos) {
+          throw JUBATUS_EXCEPTION(
+              converter_exception("feature key cannot contain '$'"));
+        }
         std::string k = key + "@" + r.name_;
         r.feature_func_->add_feature(k, value, ret_fv);
       }

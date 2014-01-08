@@ -391,7 +391,7 @@ TEST(datum_to_fv_converter, hasher) {
   EXPECT_EQ("0", feature[i].first);
 }
 
-TEST(datum_to_fv_converter, check_datum_key) {
+TEST(datum_to_fv_converter, check_datum_key_in_string) {
   datum_to_fv_converter conv;
   init_weight_manager(conv);
 
@@ -407,6 +407,35 @@ TEST(datum_to_fv_converter, check_datum_key) {
 
   datum datum;
   datum.string_values_.push_back(std::make_pair("bad$key", "doc0"));
+  std::vector<std::pair<std::string, float> > feature;
+  ASSERT_THROW(conv.convert(datum, feature), converter_exception);
+}
+
+TEST(datum_to_fv_converter, check_datum_key_in_number) {
+  datum_to_fv_converter conv;
+  init_weight_manager(conv);
+
+  shared_ptr<num_feature> f(new num_string_feature());
+  shared_ptr<key_matcher> a(new match_all());
+  conv.register_num_rule("str", a, f);
+
+  datum datum;
+  datum.num_values_.push_back(std::make_pair("bad$key", 20));
+
+  std::vector<std::pair<std::string, float> > feature;
+  ASSERT_THROW(conv.convert(datum, feature), converter_exception);
+}
+
+TEST(datum_to_fv_converter, check_datum_key_in_binary) {
+  datum_to_fv_converter conv;
+  init_weight_manager(conv);
+
+  shared_ptr<binary_feature> f(new binary_length_feature());
+  shared_ptr<key_matcher> a(new match_all());
+  conv.register_binary_rule("len", a, f);
+
+  datum datum;
+  datum.binary_values_.push_back(std::make_pair("bad$key", "0101"));
   std::vector<std::pair<std::string, float> > feature;
   ASSERT_THROW(conv.convert(datum, feature), converter_exception);
 }
