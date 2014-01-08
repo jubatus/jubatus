@@ -404,7 +404,7 @@ class datum_to_fv_converter_impl {
       const std::string& splitter) {
     if (key.find('$') != std::string::npos) {
       throw JUBATUS_EXCEPTION(
-          converter_exception("feature key must cannot contain '$'"));
+          converter_exception("feature key cannot contain '$'"));
     }
     return key + "$" + value + "@" + splitter;
   }
