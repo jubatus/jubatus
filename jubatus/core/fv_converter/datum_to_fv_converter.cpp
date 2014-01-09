@@ -402,7 +402,7 @@ class datum_to_fv_converter_impl {
 
       std::string global_weight_name = get_global_weight_name(
           weight_type.term_weight_type_);
-      float v = sample_weight;
+      float v = static_cast<float>(sample_weight);
       if (v != 0.0) {
         std::string f = make_feature(
             key, it->first, splitter_name, sample_weight_name,
