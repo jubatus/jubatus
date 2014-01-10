@@ -224,6 +224,12 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
     exit(1);
   }
 
+  if ((!datadir.empty()) && (!common::util::is_writable(datadir.c_str()))) {
+    std::cerr << "can't use datadir: " << strerror(errno) << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
+  }
+
   if ((!logdir.empty()) && (!common::util::is_writable(logdir.c_str()))) {
     std::cerr << "can't create log file: " << strerror(errno) << std::endl;
     exit(1);
