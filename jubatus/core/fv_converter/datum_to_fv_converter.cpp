@@ -379,6 +379,7 @@ class datum_to_fv_converter_impl {
       const std::string& key = binary_values[j].first;
       const std::string& value = binary_values[j].second;
       if (feature.matcher_->match(key)) {
+        check_key(key);
         feature.feature_func_->add_feature(key, value, ret_fv);
       }
     }
@@ -390,6 +391,7 @@ class datum_to_fv_converter_impl {
       const std::string& splitter,
       const std::string& sample_weight,
       const std::string& global_weight) {
+    check_key(key);
     return key + "$" + value + "@" + splitter + "#" + sample_weight + "/" +
         global_weight;
   }
@@ -398,7 +400,15 @@ class datum_to_fv_converter_impl {
       const std::string& key,
       const std::string& value,
       const std::string& splitter) {
+    check_key(key);
     return key + "$" + value + "@" + splitter;
+  }
+
+  static void check_key(const std::string& key) {
+    if (key.find('$') != std::string::npos) {
+      throw JUBATUS_EXCEPTION(
+          converter_exception("feature key cannot contain '$': " + key));
+    }
   }
 
   void count_words(
@@ -493,6 +503,7 @@ class datum_to_fv_converter_impl {
     for (size_t i = 0; i < num_rules_.size(); ++i) {
       const num_feature_rule& r = num_rules_[i];
       if (r.matcher_->match(key)) {
+        check_key(key);
         std::string k = key + "@" + r.name_;
         r.feature_func_->add_feature(k, value, ret_fv);
       }
