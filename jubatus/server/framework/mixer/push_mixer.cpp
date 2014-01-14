@@ -84,7 +84,7 @@ push_communication_impl::push_communication_impl(
 }
 
 size_t push_communication_impl::update_members() {
-  common::get_all_actors(*zk_, type_, name_, servers_);
+  common::get_all_nodes(*zk_, type_, name_, servers_);
   return servers_.size();
 }
 

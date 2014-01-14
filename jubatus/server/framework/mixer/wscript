@@ -21,8 +21,7 @@ def build(bld):
       features='gtest',
       source = 'linear_mixer_test.cpp',
       target = 'linear_mixer_test',
-      use = 'jubaserv_mixer'
-      )
+      use = 'jubaserv_mixer')
 
   bld.install_files('${PREFIX}/include/jubatus/server/framework/mixer', [
       'broadcast_mixer.hpp',
@@ -33,4 +32,4 @@ def build(bld):
       'push_mixer.hpp',
       'random_mixer.hpp',
       'skip_mixer.hpp',
-      ])
+  ])

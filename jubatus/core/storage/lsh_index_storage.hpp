@@ -93,7 +93,7 @@ class lsh_index_storage {
   void unpack(msgpack::object o);
 
   void get_diff(lsh_master_table_t& diff) const;
-  void set_mixed_and_clear_diff(const lsh_master_table_t& mixed_diff);
+  bool set_mixed_and_clear_diff(const lsh_master_table_t& mixed_diff);
   void mix(const lsh_master_table_t& lhs, lsh_master_table_t& rhs) const;
 
   MSGPACK_DEFINE(master_table_, master_table_diff_, lsh_table_,

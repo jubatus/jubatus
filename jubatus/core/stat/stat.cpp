@@ -51,9 +51,10 @@ void stat::get_diff(std::pair<double, size_t>& ret) const {
   }
 }
 
-void stat::set_mixed_and_clear_diff(const std::pair<double, size_t>& e) {
+bool stat::set_mixed_and_clear_diff(const std::pair<double, size_t>& e) {
   e_ = e.first;
   n_ = e.second;
+  return true;
 }
 
 void stat::mix(

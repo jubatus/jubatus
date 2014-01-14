@@ -129,7 +129,6 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
                      false);
   p.add<std::string>("mixer", 'x',
                      make_ignored_help("mixer strategy"), false, "");
-  p.add("join", 'j', make_ignored_help("join to the existing cluster"));
   p.add<int>("interval_sec", 's',
              make_ignored_help("mix interval by seconds"), false, 16);
   p.add<int>("interval_count", 'i',
@@ -184,7 +183,6 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   z = p.get<std::string>("zookeeper");
   name = p.get<std::string>("name");
   mixer = p.get<std::string>("mixer");
-  join = p.exist("join");
   interval_sec = p.get<int>("interval_sec");
   interval_count = p.get<int>("interval_count");
   zookeeper_timeout = p.get<int>("zookeeper_timeout");
@@ -192,7 +190,6 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
 #else
   z = "";
   name = "";
-  join = false;
   interval_sec = 16;
   interval_count = 512;
 #endif
@@ -234,7 +231,6 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   check_ignored_option(p, "zookeeper");
   check_ignored_option(p, "name");
   check_ignored_option(p, "mixer");
-  check_ignored_option(p, "join");
   check_ignored_option(p, "interval_sec");
   check_ignored_option(p, "interval_count");
   check_ignored_option(p, "zookeeper_timeout");
@@ -245,8 +241,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
 }
 
 server_argv::server_argv()
-    : join(false),
-      port(9199),
+    : port(9199),
       timeout(10),
       zookeeper_timeout(10),
       interconnect_timeout(10),
@@ -282,7 +277,6 @@ void server_argv::boot_message(const std::string& progname) const {
 #ifdef HAVE_ZOOKEEPER_H
   ss << "    zookeeper            : " << z << '\n';
   ss << "    name                 : " << name << '\n';
-  ss << "    join                 : " << std::boolalpha << join << '\n';
   ss << "    interval sec         : " << interval_sec << '\n';
   ss << "    interval count       : " << interval_count << '\n';
   ss << "    zookeeper timeout    : " << zookeeper_timeout << '\n';

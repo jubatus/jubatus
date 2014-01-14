@@ -34,6 +34,9 @@ rpc_result_object rpc_mclient::wait(const std::string& method) {
   for (size_t i = 0; i < futures_.size(); ++i) {
     try {
       result.response.push_back(wait_one(method, futures_[i]));
+      result.error.push_back(
+          rpc_error(hosts_[i].first,
+                    hosts_[i].second));
     } catch(...) {
       // store exception_thrower to list of error
       result.error.push_back(

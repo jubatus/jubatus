@@ -71,11 +71,7 @@ void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
     common::prepare_jubatus(*zk_, a.type, a.name);
-
-    if (a.join) {  // join to the existing cluster with -j option
-      LOG(INFO) << "joining to the cluseter " << a.name;
-      LOG(ERROR) << "join is not supported yet :(";
-    }
+    LOG(INFO) << "joining to the cluseter " << a.name;
   }
 #endif
 }

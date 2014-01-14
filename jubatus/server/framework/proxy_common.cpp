@@ -72,7 +72,7 @@ void proxy_common::get_members_(
   std::vector<std::string> list;
   std::string path;
   common::build_actor_path(path, a_.type, name);
-  path += "/nodes";
+  path += "/actives";
 
   {
     jubatus::util::concurrent::scoped_lock lk(mutex_);

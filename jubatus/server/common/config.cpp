@@ -190,7 +190,7 @@ void remove_config_fromzk(
 
 bool is_no_workers(lock_service& z, const string& type, const string& name) {
   std::vector<std::pair<std::string, int> > nodes;
-  get_all_actors(z, type, name, nodes);
+  get_all_nodes(z, type, name, nodes);
   if (nodes.empty()) {
     return true;
   } else {
