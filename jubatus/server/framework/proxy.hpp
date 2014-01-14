@@ -417,8 +417,13 @@ class proxy
       const Tuple& args) {
     std::vector<std::pair<std::string, int> > list;
     std::string name = args.template get<0>();
+
+    update_request_counter();
+
     get_members_(name, list);
     const std::pair<std::string, int>& c = list[rng_(list.size())];
+
+    update_forward_counter();
 
     async_task_loop::template call_apply<R, Tuple>(
         c.first, c.second, method_name, args, a_, a_.interconnect_timeout, req);
@@ -483,7 +488,12 @@ class proxy
       jubatus::util::lang::function<R(R, R)>& agg) {
     std::vector<std::pair<std::string, int> > list;
     std::string name = args.template get<0>();
+
+    update_request_counter();
+
     get_members_(name, list);
+
+    update_forward_counter(list.size());
 
     async_task_loop::template call_apply<R, Tuple>(
         list, method_name, args, a_, a_.interconnect_timeout, req, agg);
@@ -579,7 +589,12 @@ class proxy
     std::vector<std::pair<std::string, int> > list;
     std::string name = args.template get<0>();
     std::string id = args.template get<1>();
+
+    update_request_counter();
+
     get_members_from_cht_(name, id, list, N);
+
+    update_forward_counter(list.size());
 
     async_task_loop::template call_apply<R, Tuple>(
         list, method_name, args, a_, a_.interconnect_timeout, req, agg);

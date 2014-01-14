@@ -17,6 +17,7 @@
 #ifndef JUBATUS_SERVER_FRAMEWORK_PROXY_COMMON_HPP_
 #define JUBATUS_SERVER_FRAMEWORK_PROXY_COMMON_HPP_
 
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,6 +27,7 @@
 #include "jubatus/util/concurrent/rwmutex.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/math/random.h"
+#include "jubatus/util/system/time_util.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "server_util.hpp"
@@ -45,6 +47,9 @@ class no_worker : public jubatus::core::common::exception::runtime_error {
 
 class proxy_common {
  public:
+  typedef std::map<std::string, std::string> string_map;
+  typedef std::map<std::string, string_map> status_type;
+
   explicit proxy_common(const proxy_argv& a);
   virtual ~proxy_common();
 
@@ -59,7 +64,15 @@ class proxy_common {
       std::vector<std::pair<std::string, int> >& ret,
       size_t n);
 
+  status_type get_status();
+
+  void update_request_counter();
+  void update_forward_counter(const uint64_t = 1);
+
   proxy_argv a_;
+  uint64_t request_counter_;
+  uint64_t forward_counter_;
+  jubatus::util::system::time::clock_time start_time_;
   jubatus::util::math::random::mtrand rng_;
   jubatus::util::concurrent::mutex mutex_;
   jubatus::util::lang::shared_ptr<common::lock_service> zk_;
