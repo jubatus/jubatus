@@ -31,7 +31,7 @@
 #include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/exception.hpp"
-#include "../common/util.hpp"
+#include "../common/system.hpp"
 #include "../common/lock_service.hpp"
 
 namespace cmdline {

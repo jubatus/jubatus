@@ -34,7 +34,6 @@
 
 #include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
-#include "../common/util.hpp"
 
 using jubatus::util::lang::lexical_cast;
 

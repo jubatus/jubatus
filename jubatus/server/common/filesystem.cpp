@@ -14,23 +14,42 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_COMMON_SIGNALS_HPP_
-#define JUBATUS_SERVER_COMMON_SIGNALS_HPP_
+#include "filesystem.hpp"
 
-#include "jubatus/util/lang/function.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <cerrno>
+
+using std::string;
 
 namespace jubatus {
 namespace server {
 namespace common {
 
-void prepare_signal_handling();  // NOTE: this function won't work well
-                                 //   if you have any other threads.
-                                 //   you should call this function
-                                 //   at the head of program.
-void set_action_on_term(jubatus::util::lang::function<void()> action);
+bool is_writable(const char* dir_path) {
+  struct stat st_buf;
+  if (stat(dir_path, &st_buf) < 0) {
+    return false;
+  }
+
+  if (!S_ISDIR(st_buf.st_mode)) {
+    errno = ENOTDIR;
+    return false;
+  }
+
+  if (access(dir_path, W_OK) < 0) {
+    return false;
+  }
+
+  return true;
+}
+
+string base_name(const string& path) {
+  size_t found = path.rfind('/');
+  return found != string::npos ? path.substr(found + 1) : path;
+}
 
 }  // namespace common
 }  // namespace server
 }  // namespace jubatus
-
-#endif  // JUBATUS_SERVER_COMMON_SIGNALS_HPP_

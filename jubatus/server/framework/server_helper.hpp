@@ -127,8 +127,8 @@ class server_helper {
     const server_argv& a = server_->argv();
     status_t& data = status[get_server_identifier(a)];
 
-    common::util::machine_status_t mt;
-    common::util::get_machine_status(mt);
+    common::machine_status_t mt;
+    common::get_machine_status(mt);
     data["VIRT"] =
         jubatus::util::lang::lexical_cast<std::string>(mt.vm_size);
     data["RSS"] =
@@ -178,10 +178,10 @@ class server_helper {
 
       // RPC server started, then register group membership
       impl_.prepare_for_run(a, use_cht_);
-      LOG(INFO) << common::util::get_program_name() << " RPC server startup";
+      LOG(INFO) << common::get_program_name() << " RPC server startup";
 
       // Stop RPC server when terminate signal is sent
-      common::util::set_action_on_term(
+      common::set_action_on_term(
           jubatus::util::lang::bind(
               &server_helper::stop, this, jubatus::util::lang::ref(serv)));
 

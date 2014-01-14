@@ -14,15 +14,15 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "util.hpp"
+#include "system.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <string>
 #include <gtest/gtest.h>
 
-TEST(common, util) {
+TEST(system, env_path) {
   const std::string env = getenv("PATH");
-  jubatus::server::common::util::append_env_path("PATH", "./path/to/hoge");
+  jubatus::server::common::append_env_path("PATH", "./path/to/hoge");
   const std::string env2 = getenv("PATH");
   ASSERT_TRUE(env.size() < env2.size());
   //  std::cout << env << std::endl;
@@ -30,9 +30,9 @@ TEST(common, util) {
   ASSERT_NE(env, env2);
 }
 
-TEST(common, util2) {
+TEST(system, append_server_path) {
   const std::string env = getenv("PATH");
-  jubatus::server::common::util::append_server_path("./path/to/hoge");
+  jubatus::server::common::append_server_path("./path/to/hoge");
   const std::string env2 = getenv("PATH");
   ASSERT_TRUE(env.size() < env2.size());
   //  std::cout << env << std::endl;
@@ -40,38 +40,25 @@ TEST(common, util2) {
   ASSERT_NE(env, env2);
 }
 
-TEST(common, base_name) {
-  EXPECT_EQ("test", jubatus::server::common::util::base_name("/path/to/test"));
-  EXPECT_EQ("basename", jubatus::server::common::util::base_name("basename"));
-  EXPECT_EQ("", jubatus::server::common::util::base_name("/path/to/"));
-}
-
-TEST(common, util_get_program_name) {
+TEST(system, get_program_name) {
   std::string path;
   EXPECT_NO_THROW({
-    path = jubatus::server::common::util::get_program_name();
+    path = jubatus::server::common::get_program_name();
   });
-  EXPECT_EQ(std::string("util_test"), path);
+  EXPECT_EQ(std::string("system_test"), path);
 }
 
-TEST(common, util_get_user_name) {
+TEST(system, get_user_name) {
   std::string user;
   EXPECT_NO_THROW({
-    user = jubatus::server::common::util::get_user_name();
+    user = jubatus::server::common::get_user_name();
   });
   EXPECT_NE(std::string(""), user);
 }
 
-TEST(common, util_is_writable) {
-  std::string path = "tmp_test_directory";
-  mkdir(path.c_str(), S_IWUSR);
-  EXPECT_EQ(true, jubatus::server::common::util::is_writable(path.c_str()));
-  rmdir(path.c_str());
-}
-
-TEST(common, util_get_machine_status) {
-  jubatus::server::common::util::machine_status_t status;
+TEST(system, get_machine_status) {
+  jubatus::server::common::machine_status_t status;
   EXPECT_NO_THROW({
-    jubatus::server::common::util::get_machine_status(status);
+    jubatus::server::common::get_machine_status(status);
   });
 }

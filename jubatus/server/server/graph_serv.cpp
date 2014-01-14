@@ -36,7 +36,6 @@
 #endif
 #include "../common/global_id_generator_standalone.hpp"
 #include "../common/unique_lock.hpp"
-#include "../common/util.hpp"
 #ifdef HAVE_ZOOKEEPER_H
 #include "../common/global_id_generator_zk.hpp"
 #include "../common/membership.hpp"
