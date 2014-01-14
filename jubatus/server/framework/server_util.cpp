@@ -222,7 +222,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
     exit(1);
   }
 
-  if ((!datadir.empty()) && (!common::util::is_writable(datadir.c_str()))) {
+  if ((!datadir.empty()) && (!common::is_writable(datadir.c_str()))) {
     std::cerr << "can't use datadir: " << strerror(errno) << std::endl;
     std::cerr << p.usage() << std::endl;
     exit(1);
