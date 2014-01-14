@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,42 +14,20 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_COMMON_UTIL_HPP_
-#define JUBATUS_SERVER_COMMON_UTIL_HPP_
+#ifndef JUBATUS_SERVER_COMMON_FILESYSTEM_HPP_
+#define JUBATUS_SERVER_COMMON_FILESYSTEM_HPP_
 
-#include <stdint.h>
-
-#include <map>
 #include <string>
-#include <utility>
-#include <vector>
 
 namespace jubatus {
 namespace server {
 namespace common {
-namespace util {
 
-struct machine_status_t {
-  uint64_t vm_size;  // VIRT
-  uint64_t vm_resident;  // RSS
-  uint64_t vm_share;  // SHR
-};
-
-std::string base_name(const std::string&);
-std::string get_program_name();
-std::string get_user_name();
 bool is_writable(const char* dir_path);
+std::string base_name(const std::string&);
 
-int daemonize();
-
-void append_env_path(const std::string& env_, const std::string& argv0);
-void append_server_path(const std::string& argv0);
-
-void get_machine_status(machine_status_t& status);
-
-}  // namespace util
 }  // namespace common
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_COMMON_UTIL_HPP_
+#endif  // JUBATUS_SERVER_COMMON_FILESYSTEM_HPP_

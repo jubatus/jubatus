@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,23 +14,38 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_COMMON_SIGNALS_HPP_
-#define JUBATUS_SERVER_COMMON_SIGNALS_HPP_
+#ifndef JUBATUS_SERVER_COMMON_SYSTEM_HPP_
+#define JUBATUS_SERVER_COMMON_SYSTEM_HPP_
 
-#include "jubatus/util/lang/function.h"
+#include <stdint.h>
+
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace jubatus {
 namespace server {
 namespace common {
 
-void prepare_signal_handling();  // NOTE: this function won't work well
-                                 //   if you have any other threads.
-                                 //   you should call this function
-                                 //   at the head of program.
-void set_action_on_term(jubatus::util::lang::function<void()> action);
+struct machine_status_t {
+  uint64_t vm_size;  // VIRT
+  uint64_t vm_resident;  // RSS
+  uint64_t vm_share;  // SHR
+};
+
+std::string get_program_name();
+std::string get_user_name();
+
+int daemonize();
+
+void append_env_path(const std::string& env_, const std::string& argv0);
+void append_server_path(const std::string& argv0);
+
+void get_machine_status(machine_status_t& status);
 
 }  // namespace common
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_COMMON_SIGNALS_HPP_
+#endif  // JUBATUS_SERVER_COMMON_SYSTEM_HPP_

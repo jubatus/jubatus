@@ -26,7 +26,7 @@
 #include "aggregators.hpp"
 #include "../common/membership.hpp"
 #include "../common/signals.hpp"
-#include "../common/util.hpp"
+#include "../common/system.hpp"
 #include "server_util.hpp"
 
 namespace jubatus {
@@ -83,9 +83,9 @@ int proxy::run() {
     register_proxy(*zk_, a_.type, a_.eth, a_.port);
     LOG(INFO) << "registered group membership";
 
-    LOG(INFO) << common::util::get_program_name() << " RPC server startup";
+    LOG(INFO) << common::get_program_name() << " RPC server startup";
 
-    common::util::set_action_on_term(
+    common::set_action_on_term(
         jubatus::util::lang::bind(&stop_rpc_server,
             jubatus::util::lang::ref(this->instance_)));
 

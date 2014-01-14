@@ -24,7 +24,7 @@ int main() {
 
 def build(bld):
   import Options
-  src = 'network.cpp global_id_generator_standalone.cpp config.cpp signals.cpp util.cpp'
+  src = 'network.cpp global_id_generator_standalone.cpp config.cpp signals.cpp system.cpp filesystem.cpp'
 
   if bld.env.HAVE_ZOOKEEPER_H:
     src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp global_id_generator_zk.cpp'
@@ -40,7 +40,8 @@ def build(bld):
     'network_test.cpp',
     'global_id_generator_test.cpp',
     'unique_lock_test.cpp',
-    'util_test.cpp',
+    'system_test.cpp',
+    'filesystem_test.cpp',
     ]
 
   if bld.env.HAVE_ZOOKEEPER_H:
@@ -70,6 +71,7 @@ def build(bld):
       'network.hpp',
       'signals.hpp',
       'unique_lock.hpp',
-      'util.hpp',
+      'system.hpp',
+      'filesystem.hpp',
       ])
   bld.recurse(subdirs)

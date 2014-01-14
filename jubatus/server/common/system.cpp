@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "util.hpp"
+#include "system.hpp"
 
 #ifdef __APPLE__
 #include <libproc.h>
@@ -40,6 +40,7 @@
 #include "jubatus/util/text/json.h"
 
 #include "jubatus/core/common/exception.hpp"
+#include "filesystem.hpp"
 
 using std::string;
 using jubatus::util::lang::lexical_cast;
@@ -48,12 +49,6 @@ using jubatus::util::lang::parse_error;
 namespace jubatus {
 namespace server {
 namespace common {
-namespace util {
-
-string base_name(const string& path) {
-  size_t found = path.rfind('/');
-  return found != string::npos ? path.substr(found + 1) : path;
-}
 
 std::string get_program_name() {
   // WARNING: this code will only work on linux or OS X
@@ -83,7 +78,7 @@ std::string get_program_name() {
   }
 
   // get basename
-  const string program_base_name = base_name(path);
+  const string program_base_name = common::base_name(path);
   if (program_base_name == path) {
     throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
           string("Failed to get program name from path: ") + path)
@@ -113,23 +108,6 @@ std::string get_user_name() {
       << jubatus::core::common::exception::error_errno(ret));
 }
 
-bool is_writable(const char* dir_path) {
-  struct stat st_buf;
-  if (stat(dir_path, &st_buf) < 0) {
-    return false;
-  }
-
-  if (!S_ISDIR(st_buf.st_mode)) {
-    errno = ENOTDIR;
-    return false;
-  }
-
-  if (access(dir_path, W_OK) < 0) {
-    return false;
-  }
-
-  return true;
-}
 
 int daemonize() {
   return daemon(0, 0);
@@ -189,7 +167,6 @@ void get_machine_status(machine_status_t& status) {
   status.vm_share = vm_shr;  // shared
 }
 
-}  // namespace util
 }  // namespace common
 }  // namespace server
 }  // namespace jubatus

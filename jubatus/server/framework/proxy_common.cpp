@@ -26,7 +26,6 @@
 #include "server_util.hpp"
 #include "../common/membership.hpp"
 #include "../common/signals.hpp"
-#include "../common/util.hpp"
 
 namespace jubatus {
 namespace server {
@@ -50,7 +49,7 @@ std::string make_logfile_name(const proxy_argv& a) {
 
 proxy_common::proxy_common(const proxy_argv& a)
     : a_(a) {
-  common::util::prepare_signal_handling();
+  common::prepare_signal_handling();
 
   zk_.reset(common::create_lock_service(
       "cached_zk", a.z, a.zookeeper_timeout, make_logfile_name(a)));

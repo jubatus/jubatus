@@ -29,9 +29,10 @@
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
 #include "../common/config.hpp"
+#include "../common/filesystem.hpp"
 #include "../common/membership.hpp"
 #include "../common/network.hpp"
-#include "../common/util.hpp"
+#include "../common/system.hpp"
 
 namespace jubatus {
 namespace server {
@@ -151,7 +152,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.parse_check(args, argv);
 
   if (p.exist("version")) {
-    print_version(common::util::get_program_name());
+    print_version(common::get_program_name());
     exit(0);
   }
 
@@ -160,7 +161,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   bind_if = p.get<std::string>("listen_if");
   threadnum = p.get<int>("thread");
   timeout = p.get<int>("timeout");
-  program_name = common::util::get_program_name();
+  program_name = common::get_program_name();
   datadir = p.get<std::string>("datadir");
   logdir = p.get<std::string>("logdir");
   loglevel = p.get<int>("loglevel");
@@ -227,11 +228,11 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
     exit(1);
   }
 
-  if ((!logdir.empty()) && (!common::util::is_writable(logdir.c_str()))) {
+  if ((!logdir.empty()) && (!common::is_writable(logdir.c_str()))) {
     std::cerr << "can't create log file: " << strerror(errno) << std::endl;
     exit(1);
   }
-  set_log_destination(common::util::get_program_name());
+  set_log_destination(common::get_program_name());
 
 #ifndef HAVE_ZOOKEEPER_H
   check_ignored_option(p, "zookeeper");
@@ -243,7 +244,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   check_ignored_option(p, "interconnect_timeout");
 #endif
 
-  boot_message(common::util::get_program_name());
+  boot_message(common::get_program_name());
 }
 
 server_argv::server_argv()
@@ -267,7 +268,7 @@ void server_argv::boot_message(const std::string& progname) const {
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth
       << ":" << port << '\n';
   ss << "    pid                  : " << getpid() << '\n';
-  ss << "    user                 : " << common::util::get_user_name() << '\n';
+  ss << "    user                 : " << common::get_user_name() << '\n';
   ss << "    mode                 : ";
   if (is_standalone()) {
     ss << "standalone mode\n";
@@ -360,7 +361,7 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   p.parse_check(args, argv);
 
   if (p.exist("version")) {
-    print_version(common::util::get_program_name());
+    print_version(common::get_program_name());
     exit(0);
   }
 
@@ -372,7 +373,7 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   zookeeper_timeout = p.get<int>("zookeeper_timeout");
   interconnect_timeout = p.get<int>("interconnect_timeout");
   daemon = p.exist("daemon");
-  program_name = common::util::get_program_name();
+  program_name = common::get_program_name();
   z = p.get<std::string>("zookeeper");
   session_pool_expire = p.get<int>("pool_expire");
   session_pool_size = p.get<int>("pool_size");
@@ -403,13 +404,13 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
     exit(1);
   }
 
-  if ((!logdir.empty()) && (!common::util::is_writable(logdir.c_str()))) {
+  if ((!logdir.empty()) && (!common::is_writable(logdir.c_str()))) {
     std::cerr << "can't create log file: " << strerror(errno) << std::endl;
     exit(1);
   }
-  set_log_destination(common::util::get_program_name());
+  set_log_destination(common::get_program_name());
 
-  boot_message(common::util::get_program_name());
+  boot_message(common::get_program_name());
 }
 
 proxy_argv::proxy_argv()
@@ -429,7 +430,7 @@ void proxy_argv::boot_message(const std::string& progname) const {
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth
       << ":" << port << '\n';
   ss << "    pid                  : " << getpid() << '\n';
-  ss << "    user                 : " << common::util::get_user_name() << '\n';
+  ss << "    user                 : " << common::get_user_name() << '\n';
   ss << "    timeout              : " << timeout << '\n';
   ss << "    zookeeper timeout    : " << zookeeper_timeout << '\n';
   ss << "    interconnect timeout : " << interconnect_timeout << '\n';

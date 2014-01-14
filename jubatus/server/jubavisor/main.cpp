@@ -23,7 +23,6 @@
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
 #include "../common/signals.hpp"
-#include "../common/util.hpp"
 
 #include "jubavisor.hpp"
 
@@ -31,7 +30,7 @@ namespace {
 const std::string PROGNAME = "jubavisor";
 }  // namespace
 
-using jubatus::server::common::util::set_action_on_term;
+using jubatus::server::common::set_action_on_term;
 using jubatus::server::jubavisor::jubavisor;
 using jubatus::server::jubavisor::jubavisor_server;
 using jubatus::util::lang::_1;
@@ -60,10 +59,10 @@ int main(int argc, char* argv[]) try {
   std::string logfile = "";
 
   if (p.exist("daemon")) {
-    jubatus::server::common::util::append_server_path(argv[0]);
+    jubatus::server::common::append_server_path(argv[0]);
     logfile = p.get<std::string>("logdir") + "/" + PROGNAME + ".";
 
-    int r = jubatus::server::common::util::daemonize();
+    int r = jubatus::server::common::daemonize();
 
     google::InitGoogleLogging(argv[0]);
     if (r == -1) {
