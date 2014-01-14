@@ -30,7 +30,6 @@
 #include "../common/membership.hpp"
 #include "../common/network.hpp"
 #include "../common/signals.hpp"
-#include "../common/util.hpp"
 
 using jubatus::util::concurrent::scoped_lock;
 using jubatus::util::lang::bind;
@@ -61,7 +60,7 @@ jubavisor::jubavisor(
     : port_base_(port),
       logfile_(logfile),
       max_children_(max) {
-  common::util::prepare_signal_handling();
+  common::prepare_signal_handling();
   ::atexit(jubavisor::atexit_);
 
   zk_.reset(create_lock_service("zk", hosts, 1024, logfile));

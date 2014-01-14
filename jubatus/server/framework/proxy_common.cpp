@@ -26,7 +26,6 @@
 #include "server_util.hpp"
 #include "../common/membership.hpp"
 #include "../common/signals.hpp"
-#include "../common/util.hpp"
 
 using jubatus::util::system::time::clock_time;
 using jubatus::util::system::time::get_clock_time;
@@ -56,7 +55,7 @@ proxy_common::proxy_common(const proxy_argv& a)
       request_counter_(0),
       forward_counter_(0),
       start_time_(get_clock_time()) {
-  common::util::prepare_signal_handling();
+  common::prepare_signal_handling();
 
   zk_.reset(common::create_lock_service(
       "cached_zk", a.z, a.zookeeper_timeout, make_logfile_name(a)));
