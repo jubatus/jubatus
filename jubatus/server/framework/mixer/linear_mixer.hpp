@@ -75,6 +75,7 @@ class linear_mixer : public mixer {
       jubatus::util::lang::shared_ptr<linear_communication> communicaiton,
       unsigned int count_threshold,
       unsigned int tick_threshold);
+  ~linear_mixer();
 
   void register_api(rpc_server_t& server);
   void set_mixable_holder(
