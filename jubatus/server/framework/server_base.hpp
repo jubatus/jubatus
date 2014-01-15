@@ -21,11 +21,14 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "jubatus/util/system/time_util.h"
 #include "jubatus/util/concurrent/rwmutex.h"
 #include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/framework/mixable.hpp"
 #include "server_util.hpp"
+
+using jubatus::util::system::time::clock_time;
 
 namespace jubatus {
 namespace server {
@@ -52,6 +55,8 @@ class server_base {
   virtual bool load(const std::string& id);
   void load_file(const std::string& path);
   void event_model_updated();
+  void update_saved_status(const std::string& path);
+  void update_loaded_status(const std::string& path);
 
   virtual std::string get_config() const = 0;
   virtual uint64_t user_data_version() const = 0;
@@ -68,9 +73,29 @@ class server_base {
     return argv_;
   }
 
+  uint64_t last_saved_sec() const {
+    return last_saved_.sec;
+  }
+
+  std::string last_saved_path() const {
+    return last_saved_path_;
+  }
+
+  uint64_t last_loaded_sec() const {
+    return last_loaded_.sec;
+  }
+
+  std::string last_loaded_path() const {
+    return last_loaded_path_;
+  }
+
  private:
   const server_argv argv_;
   uint64_t update_count_;
+  clock_time last_saved_;
+  std::string last_saved_path_;
+  clock_time last_loaded_;
+  std::string last_loaded_path_;
 };
 
 }  // namespace framework
