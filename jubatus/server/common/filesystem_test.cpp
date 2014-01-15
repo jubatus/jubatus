@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "filesystem.hpp"
+#include <string>
 #include <gtest/gtest.h>
 
 TEST(filesystem, base_name) {
