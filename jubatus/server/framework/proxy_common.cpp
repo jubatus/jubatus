@@ -27,6 +27,9 @@
 #include "../common/membership.hpp"
 #include "../common/signals.hpp"
 
+using jubatus::util::system::time::clock_time;
+using jubatus::util::system::time::get_clock_time;
+
 namespace jubatus {
 namespace server {
 namespace framework {
@@ -48,7 +51,10 @@ std::string make_logfile_name(const proxy_argv& a) {
 }  // namespace
 
 proxy_common::proxy_common(const proxy_argv& a)
-    : a_(a) {
+    : a_(a),
+      request_counter_(0),
+      forward_counter_(0),
+      start_time_(get_clock_time()) {
   common::prepare_signal_handling();
 
   zk_.reset(common::create_lock_service(
@@ -106,6 +112,74 @@ void proxy_common::get_members_from_cht_(
   if (ret.empty()) {
     throw JUBATUS_EXCEPTION(no_worker(name));
   }
+}
+
+void proxy_common::update_request_counter() {
+  jubatus::util::concurrent::scoped_lock lk(mutex_);
+  ++request_counter_;
+}
+
+void proxy_common::update_forward_counter(const uint64_t count) {
+  jubatus::util::concurrent::scoped_lock lk(mutex_);
+  forward_counter_ += count;
+}
+
+proxy_common::status_type proxy_common::get_status() {
+  update_request_counter();
+
+  status_type status;
+  string_map& data = status[get_proxy_identifier(a_)];
+
+  clock_time ct = get_clock_time();
+  data["clock_time"] =
+      jubatus::util::lang::lexical_cast<std::string>(ct.sec);
+  data["start_time"] =
+      jubatus::util::lang::lexical_cast<std::string>(start_time_.sec);
+  data["uptime"] =
+      jubatus::util::lang::lexical_cast<std::string>(ct - start_time_);
+
+  common::util::machine_status_t mt;
+  common::util::get_machine_status(mt);
+  data["VIRT"] =
+      jubatus::util::lang::lexical_cast<std::string>(mt.vm_size);
+  data["RSS"] =
+      jubatus::util::lang::lexical_cast<std::string>(mt.vm_resident);
+  data["SHR"] =
+      jubatus::util::lang::lexical_cast<std::string>(mt.vm_share);
+
+  data["VERSION"] = JUBATUS_VERSION;
+  data["PROGNAME"] = a_.program_name;
+  data["pid"] =
+      jubatus::util::lang::lexical_cast<std::string>(getpid());
+  data["user"] = jubatus::server::common::util::get_user_name();
+
+  data["threadnum"] =
+      jubatus::util::lang::lexical_cast<std::string>(a_.threadnum);
+  data["timeout"] =
+      jubatus::util::lang::lexical_cast<std::string>(a_.timeout);
+
+  data["logdir"] = a_.logdir.empty() ? "/dev/stderr" : a_.logdir;
+  data["loglevel"] = google::GetLogSeverityName(a_.loglevel);
+
+  data["zookeeper"] = a_.z;
+  data["connected_zookeeper"] = zk_->get_connected_host_and_port();
+  data["zookeeper_timeout"] =
+      jubatus::util::lang::lexical_cast<std::string>(a_.zookeeper_timeout);
+  data["interconnect_timeout"] =
+      jubatus::util::lang::lexical_cast<std::string>
+      (a_.interconnect_timeout);
+
+  data["session_pool_expire"] =
+      jubatus::util::lang::lexical_cast<std::string>(a_.session_pool_expire);
+  data["session_pool_size"] =
+      jubatus::util::lang::lexical_cast<std::string>(a_.session_pool_size);
+
+  data["request_count"] =
+      jubatus::util::lang::lexical_cast<std::string>(request_counter_);
+  data["forward_count"] =
+      jubatus::util::lang::lexical_cast<std::string>(forward_counter_);
+
+  return status;
 }
 
 }  // namespace framework

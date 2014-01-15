@@ -463,6 +463,14 @@ void proxy_argv::set_log_destination(const std::string& progname) const {
   }
 }
 
+std::string get_proxy_identifier(const proxy_argv& a) {
+  std::stringstream ss;
+  ss << a.eth;
+  ss << "_";
+  ss << a.port;
+  return ss.str();
+}
+
 void register_lock_service(
     jubatus::util::lang::shared_ptr<common::lock_service> new_ls) {
   if (ls) {
