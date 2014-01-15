@@ -165,6 +165,10 @@ push_mixer::push_mixer(
       t_(jubatus::util::lang::bind(&push_mixer::mixer_loop, this)) {
 }
 
+push_mixer::~push_mixer() {
+  stop();
+}
+
 void push_mixer::register_api(rpc_server_t& server) {
   server.add<vector<string>(vector<string>)>(
       "pull", bind(&push_mixer::pull, this, jubatus::util::lang::_1));
