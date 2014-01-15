@@ -60,6 +60,12 @@ class client {
     return f.get<std::map<std::string, std::map<std::string, std::string> > >();
   }
 
+  std::map<std::string, std::map<std::string, std::string> >
+      get_proxy_status() {
+    msgpack::rpc::future f = c_.call("get_proxy_status");
+    return f.get<std::map<std::string, std::map<std::string, std::string> > >();
+  }
+
  protected:
   msgpack::rpc::client c_;
   std::string name_;
