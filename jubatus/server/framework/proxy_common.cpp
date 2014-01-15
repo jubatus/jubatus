@@ -138,8 +138,8 @@ proxy_common::status_type proxy_common::get_status() {
   data["uptime"] =
       jubatus::util::lang::lexical_cast<std::string>(ct - start_time_);
 
-  common::util::machine_status_t mt;
-  common::util::get_machine_status(mt);
+  common::machine_status_t mt;
+  common::get_machine_status(mt);
   data["VIRT"] =
       jubatus::util::lang::lexical_cast<std::string>(mt.vm_size);
   data["RSS"] =
@@ -151,7 +151,7 @@ proxy_common::status_type proxy_common::get_status() {
   data["PROGNAME"] = a_.program_name;
   data["pid"] =
       jubatus::util::lang::lexical_cast<std::string>(getpid());
-  data["user"] = jubatus::server::common::util::get_user_name();
+  data["user"] = jubatus::server::common::get_user_name();
 
   data["threadnum"] =
       jubatus::util::lang::lexical_cast<std::string>(a_.threadnum);
