@@ -475,6 +475,7 @@ void linear_mixer::update_model() {
   if (model_serialized.size() == 0) {
     // it means "no other server"
     LOG(INFO) << "no other server available, I become active";
+    is_obsolete_ = false;
     communication_->register_active_list();
     return;
   }
