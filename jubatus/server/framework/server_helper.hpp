@@ -203,11 +203,9 @@ class server_helper {
             (a.interconnect_timeout);
         data["connected_zookeeper"] = impl_.zk()->get_connected_host_and_port();
 
-        std::stringstream use_cht, join;
+        std::stringstream use_cht;
         use_cht << std::boolalpha << use_cht_;
         data["use_cht"] = use_cht.str();
-        join << std::boolalpha << a.join;
-        data["join"] = join.str();
 
         // TODO(@rimms): get name form mixer's status
         data["mixer"] = a.mixer.empty() ? "linear_mixer" : a.mixer;
