@@ -207,8 +207,7 @@ class server_helper {
         use_cht << std::boolalpha << use_cht_;
         data["use_cht"] = use_cht.str();
 
-        // TODO(@rimms): get name form mixer's status
-        data["mixer"] = a.mixer.empty() ? "linear_mixer" : a.mixer;
+        data["mixer"] = a.mixer;
         server_->get_mixer()->get_status(data);
     }
 
