@@ -39,7 +39,7 @@ mixer* create_mixer(
     const jubatus::util::lang::shared_ptr<common::lock_service>& zk) {
 #ifdef HAVE_ZOOKEEPER_H
   const std::string& use_mixer = a.mixer;
-  if (use_mixer.empty() || use_mixer == "linear_mixer") {
+  if (use_mixer == "linear_mixer") {
     return new linear_mixer(
         linear_communication::create(
             zk, a.type, a.name, a.interconnect_timeout),

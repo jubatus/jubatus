@@ -128,7 +128,8 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
                      make_ignored_help("learning machine instance name"),
                      false);
   p.add<std::string>("mixer", 'x',
-                     make_ignored_help("mixer strategy"), false, "");
+                     make_ignored_help("mixer strategy"), false,
+                     "linear_mixer");
   p.add("join", 'j', make_ignored_help("join to the existing cluster"));
   p.add<int>("interval_sec", 's',
              make_ignored_help("mix interval by seconds"), false, 16);
