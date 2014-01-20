@@ -20,7 +20,7 @@
 
 #include "../common/cht.hpp"
 #include "../common/membership.hpp"
-#include "../common/util.hpp"
+#include "../common/signals.hpp"
 
 namespace jubatus {
 namespace server {
@@ -46,7 +46,7 @@ string make_logfile_name(const server_argv& a) {
 }  // namespace
 
 server_helper_impl::server_helper_impl(const server_argv& a) {
-  common::util::prepare_signal_handling();
+  common::prepare_signal_handling();
 
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
@@ -71,11 +71,7 @@ void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
     common::prepare_jubatus(*zk_, a.type, a.name);
-
-    if (a.join) {  // join to the existing cluster with -j option
-      LOG(INFO) << "joining to the cluseter " << a.name;
-      LOG(ERROR) << "join is not supported yet :(";
-    }
+    LOG(INFO) << "joining to the cluseter " << a.name;
   }
 #endif
 }
@@ -101,6 +97,9 @@ void server_helper_impl::prepare_for_run(const server_argv& a, bool use_cht) {
     LOG(INFO) << "registered group membership";
   }
 #endif
+  if (a.daemon) {
+    daemonize_process(a.logdir);
+  }
 }
 
 void server_helper_impl::get_config_lock(const server_argv& a, int retry) {

@@ -59,11 +59,21 @@ void linear_function_mixer::mix_impl(
     const diffv& lhs,
     const diffv& rhs,
     diffv& mixed) const {
-  features3_t l(lhs.v);
-  const features3_t& r(rhs.v);
-  storage::detail::binop(l, r, bind(mix_feature, lhs.count, rhs.count, _1, _2));
-  mixed.v.swap(l);
-  mixed.count = lhs.count + rhs.count;
+  if (lhs.v.version == rhs.v.version) {
+    features3_t l(lhs.v.diff);
+    const features3_t& r(rhs.v.diff);
+    storage::detail::binop(
+        l,
+        r,
+        bind(mix_feature, lhs.count, rhs.count, _1, _2));
+    mixed.v.diff.swap(l);
+    mixed.count = lhs.count + rhs.count;
+    mixed.v.version = lhs.v.version;
+  } else if (lhs.v.version < rhs.v.version) {
+    mixed = rhs;
+  } else {
+    mixed = lhs;
+  }
 }
 
 diffv linear_function_mixer::get_diff_impl() const {
@@ -73,8 +83,8 @@ diffv linear_function_mixer::get_diff_impl() const {
   return ret;
 }
 
-void linear_function_mixer::put_diff_impl(const diffv& v) {
-  get_model()->set_average_and_clear_diff(v.v);
+bool linear_function_mixer::put_diff_impl(const diffv& v) {
+  return get_model()->set_average_and_clear_diff(v.v);
 }
 
 void linear_function_mixer::clear() {

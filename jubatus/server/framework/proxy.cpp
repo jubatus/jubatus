@@ -26,7 +26,7 @@
 #include "aggregators.hpp"
 #include "../common/membership.hpp"
 #include "../common/signals.hpp"
-#include "../common/util.hpp"
+#include "../common/system.hpp"
 #include "server_util.hpp"
 
 namespace jubatus {
@@ -43,8 +43,6 @@ __thread proxy::async_task_loop*
 proxy::proxy(const proxy_argv& a)
     : proxy_common(a),
       jubatus::server::common::mprpc::rpc_server(a.timeout) {
-  typedef std::map<std::string, std::string> string_map;
-  typedef std::map<std::string, string_map> status_type;
   // register default methods
   register_async_random<std::string>("get_config");
   register_async_broadcast<bool, std::string>(
@@ -56,9 +54,12 @@ proxy::proxy(const proxy_argv& a)
       jubatus::util::lang::function<bool(bool, bool)>(
           &jubatus::server::framework::all_and));
   register_async_broadcast<status_type>(
-          "get_status",
-          jubatus::util::lang::function<status_type(status_type, status_type)>(
-              &jubatus::server::framework::merge<std::string, string_map>));
+      "get_status",
+      jubatus::util::lang::function<status_type(status_type, status_type)>(
+          &jubatus::server::framework::merge<std::string, string_map>));
+  rpc_server::add<status_type()>(
+      "get_proxy_status",
+      jubatus::util::lang::bind(&proxy::get_status, this));
 }
 
 proxy::~proxy() {
@@ -83,11 +84,13 @@ int proxy::run() {
     register_proxy(*zk_, a_.type, a_.eth, a_.port);
     LOG(INFO) << "registered group membership";
 
-    LOG(INFO) << common::util::get_program_name() << " RPC server startup";
+    LOG(INFO) << common::get_program_name() << " RPC server startup";
 
-    common::util::set_action_on_term(
+    common::set_action_on_term(
         jubatus::util::lang::bind(&stop_rpc_server,
             jubatus::util::lang::ref(this->instance_)));
+
+    start_time_= jubatus::util::system::time::get_clock_time();
 
     this->instance_.join();
 

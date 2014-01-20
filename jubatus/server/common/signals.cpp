@@ -31,7 +31,6 @@
 namespace jubatus {
 namespace server {
 namespace common {
-namespace util {
 
 namespace {
 
@@ -170,7 +169,6 @@ void set_action_on_term(jubatus::util::lang::function<void()> action) {
   action_on_term.swap(action);
 }
 
-}  // namespace util
 }  // namespace common
 }  // namespace server
 }  // namespace jubatus

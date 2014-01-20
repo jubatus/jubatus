@@ -64,7 +64,7 @@ class inverted_index_storage {
       size_t ret_num) const;
 
   void get_diff(diff_type& diff_str) const;
-  void set_mixed_and_clear_diff(const diff_type& mixed_diff);
+  bool set_mixed_and_clear_diff(const diff_type& mixed_diff);
   void mix(const diff_type& lhs_str, diff_type& rhs_str) const;
 
   std::string name() const;

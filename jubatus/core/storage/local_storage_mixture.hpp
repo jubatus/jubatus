@@ -17,12 +17,14 @@
 #ifndef JUBATUS_CORE_STORAGE_LOCAL_STORAGE_MIXTURE_HPP_
 #define JUBATUS_CORE_STORAGE_LOCAL_STORAGE_MIXTURE_HPP_
 
+#include <stdint.h>
 #include <map>
 #include <string>
 #include "jubatus/util/data/serialization.h"
 #include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/intern.h"
 #include "local_storage.hpp"
+#include "../common/version.hpp"
 
 namespace jubatus {
 namespace core {
@@ -40,8 +42,8 @@ class local_storage_mixture : public storage_base {
   /// inner product
   void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const;
 
-  void get_diff(features3_t& ret) const;
-  void set_average_and_clear_diff(const features3_t& average);
+  void get_diff(diff_t& ret) const;
+  bool set_average_and_clear_diff(const diff_t& average);
 
   void set(
       const std::string& feature,
@@ -74,15 +76,24 @@ class local_storage_mixture : public storage_base {
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);
+
+  uint64_t get_version() const {
+    return model_version_.get_version();
+  }
+
   std::string type() const;
 
-  MSGPACK_DEFINE(tbl_, class2id_, tbl_diff_);
+  MSGPACK_DEFINE(tbl_, class2id_, tbl_diff_, model_version_);
 
  private:
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(tbl_) & JUBA_MEMBER(class2id_) & JUBA_MEMBER(tbl_diff_);
+    ar
+      & JUBA_MEMBER(tbl_)
+      & JUBA_MEMBER(class2id_)
+      & JUBA_MEMBER(tbl_diff_)
+      & JUBA_MEMBER(model_version_);
   }
 
   bool get_internal(const std::string& feature, id_feature_val3_t& ret) const;
@@ -90,6 +101,7 @@ class local_storage_mixture : public storage_base {
   id_features3_t tbl_;
   common::key_manager class2id_;
   id_features3_t tbl_diff_;
+  version model_version_;
 };
 
 }  // namespace storage

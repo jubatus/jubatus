@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,45 +14,43 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_DRIVER_DIFFV_HPP_
-#define JUBATUS_CORE_DRIVER_DIFFV_HPP_
+#include "filesystem.hpp"
 
-#include "../storage/storage_type.hpp"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <cerrno>
+#include <string>
+
+using std::string;
 
 namespace jubatus {
-namespace core {
-namespace driver {
+namespace server {
+namespace common {
 
-struct diffv {
- public:
-  diffv(int c, const storage::diff_t& w)
-      : count(c),
-        v(w) {
+bool is_writable(const char* dir_path) {
+  struct stat st_buf;
+  if (stat(dir_path, &st_buf) < 0) {
+    return false;
   }
 
-  diffv()
-      : count(0),
-        v() {
+  if (!S_ISDIR(st_buf.st_mode)) {
+    errno = ENOTDIR;
+    return false;
   }
 
-  int count;
-  storage::diff_t v;
-
-  diffv& operator/=(double d) {
-    this->v.diff /= d;
-    return *this;
+  if (access(dir_path, W_OK) < 0) {
+    return false;
   }
 
-  MSGPACK_DEFINE(count, v);
+  return true;
+}
 
-  template<class Archiver>
-  void serialize(Archiver& ar) {
-    ar & JUBA_MEMBER(count) & JUBA_MEMBER(v);
-  }
-};
+string base_name(const string& path) {
+  size_t found = path.rfind('/');
+  return found != string::npos ? path.substr(found + 1) : path;
+}
 
-}  // namespace driver
-}  // namespace core
+}  // namespace common
+}  // namespace server
 }  // namespace jubatus
-
-#endif  // JUBATUS_CORE_DRIVER_DIFFV_HPP_

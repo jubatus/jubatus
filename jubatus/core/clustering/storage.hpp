@@ -44,7 +44,7 @@ class storage : public event_dispatcher<storage_event_type, wplist> {
   storage(const std::string& name, const clustering_config& config);
 
   void get_diff(diff_t& d) const;
-  void set_mixed_and_clear_diff(const diff_t& d);
+  bool set_mixed_and_clear_diff(const diff_t& d);
   void mix(const diff_t&, diff_t& ret);
 
   size_t get_revision();

@@ -203,8 +203,8 @@ void local_storage_mixture::bulk_update(
   }
 }
 
-void local_storage_mixture::get_diff(features3_t& ret) const {
-  ret.clear();
+void local_storage_mixture::get_diff(diff_t& ret) const {
+  ret.diff.clear();
   for (jubatus::util::data::unordered_map<string, id_feature_val3_t>::
       const_iterator it = tbl_diff_.begin(); it != tbl_diff_.end(); ++it) {
     id_feature_val3_t::const_iterator it2 = it->second.begin();
@@ -212,23 +212,31 @@ void local_storage_mixture::get_diff(features3_t& ret) const {
     for (; it2 != it->second.end(); ++it2) {
       fv3.push_back(make_pair(class2id_.get_key(it2->first), it2->second));
     }
-    ret.push_back(make_pair(it->first, fv3));
+    ret.diff.push_back(make_pair(it->first, fv3));
   }
+  ret.version = model_version_.get_version();
 }
 
-void local_storage_mixture::set_average_and_clear_diff(
-    const features3_t& average) {
-  for (features3_t::const_iterator it = average.begin(); it != average.end();
-      ++it) {
-    const feature_val3_t& avg = it->second;
-    id_feature_val3_t& orig = tbl_[it->first];
-    for (feature_val3_t::const_iterator it2 = avg.begin(); it2 != avg.end();
-        ++it2) {
-      val3_t& triple = orig[class2id_.get_id(it2->first)];  // may create
-      increase(triple, it2->second);
+bool local_storage_mixture::set_average_and_clear_diff(
+    const diff_t& average) {
+  if (average.version == model_version_.get_version()) {
+    for (features3_t::const_iterator it = average.diff.begin();
+         it != average.diff.end();
+         ++it) {
+      const feature_val3_t& avg = it->second;
+      id_feature_val3_t& orig = tbl_[it->first];
+      for (feature_val3_t::const_iterator it2 = avg.begin(); it2 != avg.end();
+           ++it2) {
+        val3_t& triple = orig[class2id_.get_id(it2->first)];  // may create
+        increase(triple, it2->second);
+      }
     }
+    model_version_.increment();
+    tbl_diff_.clear();
+    return true;
+  } else {
+    return false;
   }
-  tbl_diff_.clear();
 }
 
 void local_storage_mixture::clear() {

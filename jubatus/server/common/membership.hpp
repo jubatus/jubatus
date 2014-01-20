@@ -71,6 +71,21 @@ void register_actor(
     const std::string& ip,
     int port);
 
+void register_active(
+    lock_service& z,
+    const std::string& type,
+    const std::string& name,
+    const std::string& ip,
+    int port);
+
+void unregister_active(
+    lock_service& z,
+    const std::string& type,
+    const std::string& name,
+    const std::string& ip,
+    int port);
+
+
 void watch_delete_actor(
     lock_service& z,
     const std::string& type,
@@ -78,7 +93,6 @@ void watch_delete_actor(
     const std::string& ip,
     int port,
     jubatus::util::lang::function<void(std::string)> callback);
-
 
 // zk -> name -> ip -> port -> void
 void register_proxy(
@@ -88,13 +102,15 @@ void register_proxy(
     int);
 
 // zk -> name -> list( (ip, rpc_port) )
-bool get_all_actors(
+bool get_all_nodes(
     lock_service&,
     const std::string& type,
     const std::string& name,
     std::vector<std::pair<std::string, int> >&);
 
 void shutdown_server();
+void force_exit();
+
 
 void prepare_jubatus(
     lock_service& ls,

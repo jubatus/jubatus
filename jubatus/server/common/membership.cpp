@@ -57,6 +57,10 @@ void build_actor_path(string& path, const string& type, const string& name) {
   path = ACTOR_BASE_PATH + "/" + type + "/" + name;
 }
 
+void build_active_path(string& path, const string& type, const string& name) {
+  path = ACTOR_BASE_PATH + "/" + type + "/" + name;
+}
+
 void build_config_path(string& path, const string& type, const string& name) {
   path = CONFIG_BASE_PATH + "/" + type + "/" + name;
 }
@@ -107,6 +111,66 @@ void register_actor(
 
   z.push_cleanup(&shutdown_server);
 }
+
+// zk -> name -> ip -> port -> void
+void register_active(
+    lock_service& z,
+    const string& type,
+    const string& name,
+    const string& ip,
+    int port) {
+  bool success = true;
+
+  string path;
+  build_actor_path(path, type, name);
+  success = success && z.create(path);
+  success = success && z.create(path + "/master_lock", "");
+  path += "/actives";
+  success = success && z.create(path);
+
+  {
+    string path1;
+    build_existence_path(path, ip, port, path1);
+    success = success && z.create(path1, "", true);
+    if (success) {
+      LOG(INFO) << "active created: " << path1;
+    } else {
+      throw JUBATUS_EXCEPTION(
+          core::common::exception::runtime_error("Failed to register_active")
+          << core::common::exception::error_api_func("lock_service::create"));
+    }
+  }
+
+  // set exit zlistener here
+  z.push_cleanup(&force_exit);
+}
+
+void unregister_active(
+    lock_service& z,
+    const std::string& type,
+    const std::string& name,
+    const std::string& ip,
+    int port) {
+  bool success = true;
+
+  string path;
+  build_actor_path(path, type, name);
+  path += "/actives";
+  {
+    string path1;
+    build_existence_path(path, ip, port, path1);
+    success = success && z.remove(path1);
+    if (success) {
+      LOG(INFO) << "active removed: " << path1;
+    } else {
+      throw JUBATUS_EXCEPTION(
+          core::common::exception::runtime_error("Failed to unregister_active")
+          << core::common::exception::error_api_func("lock_service::remove"));
+    }
+  }
+}
+
+
 
 void watch_delete_actor(
     lock_service& z,
@@ -177,21 +241,17 @@ void register_proxy(
   z.push_cleanup(&shutdown_server);
 }
 
-// zk -> name -> list( (ip, rpc_port) )
-bool get_all_actors(
+static bool get_all_node(
     lock_service& z,
-    const string& type,
-    const string& name,
+    const string& path,
     std::vector<std::pair<string, int> >& ret) {
   ret.clear();
-  string path;
-  build_actor_path(path, type, name);
-  path += "/nodes";
   std::vector<string> list;
   if (!z.list(path, list)) {
     return false;
   }
 
+  // split "xxx.xxx.xxx.xxx:ppp" -> ["xxx.xxx.xxx.xxx", ppp]
   for (std::vector<string>::const_iterator it = list.begin();
        it != list.end();
       ++it) {
@@ -205,6 +265,36 @@ bool get_all_actors(
 
 void shutdown_server() {
   ::kill(::getpid(), SIGTERM);
+}
+
+// zk -> name -> list( (ip, rpc_port) )
+bool get_all_nodes(
+    lock_service& z,
+    const string& type,
+    const string& name,
+    std::vector<std::pair<string, int> >& ret) {
+  ret.clear();
+  string path;
+  build_actor_path(path, type, name);
+  path += "/nodes";
+  return get_all_node(z, path, ret);
+}
+
+// zk -> name -> list( (ip, rpc_port) )
+bool get_all_actives(
+    lock_service& z,
+    const string& type,
+    const string& name,
+    std::vector<std::pair<string, int> >& ret) {
+  ret.clear();
+  string path;
+  build_active_path(path, type, name);
+  path += "/actives";
+  return get_all_node(z, path, ret);
+}
+
+void force_exit() {
+  exit(-1);
 }
 
 void prepare_jubatus(lock_service& ls, const string& type, const string& name) {

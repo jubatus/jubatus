@@ -31,7 +31,7 @@
 #include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/exception.hpp"
-#include "../common/util.hpp"
+#include "../common/system.hpp"
 #include "../common/lock_service.hpp"
 
 namespace cmdline {
@@ -87,11 +87,12 @@ struct server_argv {
   int interval_sec;
   int interval_count;
   std::string mixer;
+  bool daemon;
 
   MSGPACK_DEFINE(join, port, bind_address, bind_if, timeout,
       zookeeper_timeout, interconnect_timeout, threadnum,
       program_name, type, z, name, datadir, logdir, loglevel, eth,
-      interval_sec, interval_count, mixer);
+      interval_sec, interval_count, mixer, daemon);
 
   bool is_standalone() const {
     return (z == "");
@@ -100,6 +101,7 @@ struct server_argv {
   void set_log_destination(const std::string& progname) const;
 };
 
+void daemonize_process(const std::string& logdir);
 std::string get_server_identifier(const server_argv& a);
 
 struct proxy_argv {
@@ -121,10 +123,13 @@ struct proxy_argv {
   const std::string type;
   int session_pool_expire;
   int session_pool_size;
+  bool daemon;
 
   void boot_message(const std::string& progname) const;
   void set_log_destination(const std::string& progname) const;
 };
+
+std::string get_proxy_identifier(const proxy_argv& a);
 
 void register_lock_service(
     jubatus::util::lang::shared_ptr<common::lock_service> ls);

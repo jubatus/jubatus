@@ -35,7 +35,7 @@ class mixable_versioned_table : public jubatus::core::framework::mixable<
     version_clock> {
  public:
   std::vector<std::string> get_diff_impl() const;
-  void put_diff_impl(const std::vector<std::string>& diff);
+  bool put_diff_impl(const std::vector<std::string>& diff);
   void mix_impl(
       const std::vector<std::string>& lhs,
       const std::vector<std::string>& rhs,

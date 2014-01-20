@@ -84,7 +84,7 @@ push_communication_impl::push_communication_impl(
 }
 
 size_t push_communication_impl::update_members() {
-  common::get_all_actors(*zk_, type_, name_, servers_);
+  common::get_all_nodes(*zk_, type_, name_, servers_);
   return servers_.size();
 }
 
@@ -163,6 +163,10 @@ push_mixer::push_mixer(
       ticktime_(get_clock_time()),
       is_running_(false),
       t_(jubatus::util::lang::bind(&push_mixer::mixer_loop, this)) {
+}
+
+push_mixer::~push_mixer() {
+  stop();
 }
 
 void push_mixer::register_api(rpc_server_t& server) {

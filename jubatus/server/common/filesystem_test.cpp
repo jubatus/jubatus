@@ -14,45 +14,20 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_DRIVER_DIFFV_HPP_
-#define JUBATUS_CORE_DRIVER_DIFFV_HPP_
+#include "filesystem.hpp"
+#include <string>
+#include <gtest/gtest.h>
 
-#include "../storage/storage_type.hpp"
+TEST(filesystem, base_name) {
+  EXPECT_EQ("test", jubatus::server::common::base_name("/path/to/test"));
+  EXPECT_EQ("basename", jubatus::server::common::base_name("basename"));
+  EXPECT_EQ("", jubatus::server::common::base_name("/path/to/"));
+}
 
-namespace jubatus {
-namespace core {
-namespace driver {
+TEST(filesystem, is_writable) {
+  std::string path = "tmp_test_directory";
+  mkdir(path.c_str(), S_IWUSR);
+  EXPECT_EQ(true, jubatus::server::common::is_writable(path.c_str()));
+  rmdir(path.c_str());
+}
 
-struct diffv {
- public:
-  diffv(int c, const storage::diff_t& w)
-      : count(c),
-        v(w) {
-  }
-
-  diffv()
-      : count(0),
-        v() {
-  }
-
-  int count;
-  storage::diff_t v;
-
-  diffv& operator/=(double d) {
-    this->v.diff /= d;
-    return *this;
-  }
-
-  MSGPACK_DEFINE(count, v);
-
-  template<class Archiver>
-  void serialize(Archiver& ar) {
-    ar & JUBA_MEMBER(count) & JUBA_MEMBER(v);
-  }
-};
-
-}  // namespace driver
-}  // namespace core
-}  // namespace jubatus
-
-#endif  // JUBATUS_CORE_DRIVER_DIFFV_HPP_

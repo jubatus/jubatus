@@ -30,7 +30,6 @@
 #include "jubatus/core/fv_converter/converter_config.hpp"
 #include "jubatus/core/storage/storage_factory.hpp"
 #include "jubatus/core/regression/regression_factory.hpp"
-#include "../common/util.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
 using std::string;

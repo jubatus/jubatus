@@ -17,6 +17,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 #include <gtest/gtest.h>
 #include "../../../core/common/byte_buffer.hpp"
@@ -26,6 +27,7 @@
 
 using std::string;
 using std::vector;
+using std::make_pair;
 using jubatus::util::lang::shared_ptr;
 using jubatus::core::common::byte_buffer;
 
@@ -68,9 +70,14 @@ class linear_communication_stub : public linear_communication {
     result.response.push_back(make_response("2"));
     result.response.push_back(make_response("3"));
     result.response.push_back(make_response("4"));
+    result.error.push_back(common::mprpc::rpc_error("1", 1));
+    result.error.push_back(common::mprpc::rpc_error("2", 2));
+    result.error.push_back(common::mprpc::rpc_error("3", 3));
+    result.error.push_back(common::mprpc::rpc_error("4", 4));
   }
 
-  void put_diff(const vector<byte_buffer>& mixed) const {
+  void put_diff(const vector<byte_buffer>& mixed,
+                common::mprpc::rpc_result_object& result) const {
     vector<string> tmp;
     tmp.reserve(mixed.size());
     typedef vector<byte_buffer>::const_iterator iter_t;
@@ -99,6 +106,17 @@ class linear_communication_stub : public linear_communication {
     return mixed;
   }
 
+  byte_buffer get_model() {
+    return byte_buffer();
+  }
+
+  bool register_active_list() const {
+    return true;
+  }
+  bool unregister_active_list() const {
+    return true;
+  }
+
  private:
   mutable vector<string> mixed_;
 };
@@ -109,7 +127,8 @@ struct mixable_string : public core::framework::mixable<
   core::common::byte_buffer get_diff_impl() const {
     return core::common::byte_buffer();
   }
-  void put_diff_impl(const byte_buffer&) {
+  bool put_diff_impl(const byte_buffer&) {
+    return true;
   }
   void mix_impl(
       const byte_buffer& lhs,
@@ -147,7 +166,24 @@ TEST(linear_mixer, mix_order) {
   EXPECT_EQ("(4+(3+(2+1)))", mixed[0]);
 }
 
+TEST(linear_mixer, destruct_running_mixer) {
+  shared_ptr<linear_communication_stub> com(new linear_communication_stub);
+  linear_mixer m(com, 1, 1);
+
+  jubatus::util::lang::shared_ptr<core::framework::mixable_holder> holder(
+      new core::framework::mixable_holder());
+  m.set_mixable_holder(holder);
+
+  jubatus::util::lang::shared_ptr<mixable_string> s(new mixable_string);
+  holder->register_mixable(s);
+
+  m.start();
+
+  // destruct without calling m.stop()
+}
+
 }  // namespace mixer
 }  // namespace framework
 }  // namespace server
 }  // namespace jubatus
+

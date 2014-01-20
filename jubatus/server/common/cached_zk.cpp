@@ -19,6 +19,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <iostream>
 #include "jubatus/util/concurrent/lock.h"
 
 using jubatus::util::concurrent::scoped_lock;

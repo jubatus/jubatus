@@ -14,45 +14,38 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_DRIVER_DIFFV_HPP_
-#define JUBATUS_CORE_DRIVER_DIFFV_HPP_
+#ifndef JUBATUS_SERVER_COMMON_SYSTEM_HPP_
+#define JUBATUS_SERVER_COMMON_SYSTEM_HPP_
 
-#include "../storage/storage_type.hpp"
+#include <stdint.h>
+
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace jubatus {
-namespace core {
-namespace driver {
+namespace server {
+namespace common {
 
-struct diffv {
- public:
-  diffv(int c, const storage::diff_t& w)
-      : count(c),
-        v(w) {
-  }
-
-  diffv()
-      : count(0),
-        v() {
-  }
-
-  int count;
-  storage::diff_t v;
-
-  diffv& operator/=(double d) {
-    this->v.diff /= d;
-    return *this;
-  }
-
-  MSGPACK_DEFINE(count, v);
-
-  template<class Archiver>
-  void serialize(Archiver& ar) {
-    ar & JUBA_MEMBER(count) & JUBA_MEMBER(v);
-  }
+struct machine_status_t {
+  uint64_t vm_size;  // VIRT
+  uint64_t vm_resident;  // RSS
+  uint64_t vm_share;  // SHR
 };
 
-}  // namespace driver
-}  // namespace core
+std::string get_program_name();
+std::string get_user_name();
+
+int daemonize();
+
+void append_env_path(const std::string& env_, const std::string& argv0);
+void append_server_path(const std::string& argv0);
+
+void get_machine_status(machine_status_t& status);
+
+}  // namespace common
+}  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_DRIVER_DIFFV_HPP_
+#endif  // JUBATUS_SERVER_COMMON_SYSTEM_HPP_
