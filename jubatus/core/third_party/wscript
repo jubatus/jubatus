@@ -1,0 +1,15 @@
+import os
+
+def options(opt):
+  pass
+
+def configure(conf):
+  pass
+
+def build(bld):
+  for node in bld.path.ant_glob('Eigen/**/*'):
+      path = node.path_from(bld.path)
+      directory = os.path.dirname(path)
+      bld.install_files(
+          os.path.join('${PREFIX}/include/jubatus/core/third_party', directory),
+          path)
