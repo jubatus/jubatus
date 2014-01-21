@@ -289,7 +289,7 @@ bool zk::read(const string& path, string& out) {
   Stat stat;
   int rc = zoo_exists(zh_, path.c_str(), 0, &stat);
   if (rc != ZOK) {
-    LOG(ERROR) << "failed to get data: " << path << " - " << zerror(rc);
+    LOG(ERROR) << "failed to get info: " << path << " - " << zerror(rc);
     return false;
   }
 
