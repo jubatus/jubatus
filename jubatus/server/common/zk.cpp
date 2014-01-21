@@ -284,12 +284,12 @@ bool zk::hd_list(const string& path, string& out) {
 
 bool zk::read(const string& path, string& out) {
   scoped_lock lk(m_);
-  char buf[1024];
-  int buflen = 1024;
-  int rc = zoo_get(zh_, path.c_str(), 0, buf, &buflen, NULL);
+  std::vector<char> buf(1024*1024);
+  int buflen = buf.size();
+  int rc = zoo_get(zh_, path.c_str(), 0, &buf[0], &buflen, NULL);
   if (rc == ZOK) {
-    out = string(buf, buflen);
-    return buflen <= 1024;
+    out = string(&buf[0], buflen);
+    return buflen <= buf.size();
   } else {
     LOG(ERROR) << "failed to get data: " << path << " - " << zerror(rc);
     return false;
