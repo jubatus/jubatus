@@ -284,8 +284,16 @@ void server_argv::boot_message(const std::string& progname) const {
 #ifdef HAVE_ZOOKEEPER_H
   ss << "    zookeeper            : " << z << '\n';
   ss << "    name                 : " << name << '\n';
-  ss << "    interval sec         : " << interval_sec << '\n';
-  ss << "    interval count       : " << interval_count << '\n';
+  if (0 < interval_sec) {
+    ss << "    interval sec         : " << interval_sec << '\n';
+  } else {
+    ss << "    interval sec         : disabled" << '\n';
+  }
+  if (0 < interval_count) {
+    ss << "    interval count       : " << interval_count << '\n';
+  } else {
+    ss << "    interval count       : disabled" << '\n';
+  }
   ss << "    zookeeper timeout    : " << zookeeper_timeout << '\n';
   ss << "    interconnect timeout : " << interconnect_timeout << '\n';
 #endif
