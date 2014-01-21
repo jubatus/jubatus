@@ -288,8 +288,13 @@ bool zk::read(const string& path, string& out) {
   int buflen = buf.size();
   int rc = zoo_get(zh_, path.c_str(), 0, &buf[0], &buflen, NULL);
   if (rc == ZOK) {
-    out = string(&buf[0], buflen);
-    return buflen <= buf.size();
+    if (0 <= buflen) {
+      out.assign(&buf[0], buflen);
+      return true;
+    } else {
+      LOG(ERROR) << "failed to get data: " << path << " - data is NULL";
+      return false;
+    }
   } else {
     LOG(ERROR) << "failed to get data: " << path << " - " << zerror(rc);
     return false;
