@@ -317,6 +317,8 @@ bool zk::read(const string& path, string& out) {
       out.assign(&buf[0], buflen);
       return true;
     }
+
+    LOG(INFO) << "failed to get all data: " << path << "; retry to load";
   }
 }
 
