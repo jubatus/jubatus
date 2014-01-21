@@ -118,6 +118,16 @@ TEST_F(zk_trivial, read_more_than_1kiB) {
   zk_->remove(root_path);
 }
 
+TEST_F(zk_trivial, read_empty) {
+  zk_->create(root_path, "", true);
+
+  string dat;
+  zk_->read(root_path, dat);
+  ASSERT_EQ("", dat);
+
+  zk_->remove(root_path);
+}
+
 TEST_F(zk_trivial, read_unknown_path) {
   string dat;
   ASSERT_FALSE(zk_->read("/zktest_non_exists_path", dat));

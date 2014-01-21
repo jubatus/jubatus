@@ -297,6 +297,9 @@ bool zk::read(const string& path, string& out) {
   if (buflen < 0) {
     LOG(ERROR) << "failed to get data: " << path << " - data is NULL";
     return false;
+  } else if (buflen == 0) {
+    out.clear();
+    return true;
   }
 
   std::vector<char> buf(buflen);
