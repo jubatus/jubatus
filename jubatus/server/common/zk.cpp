@@ -24,6 +24,7 @@
 #include <vector>
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/data/string/utility.h"
+#include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
 
 using jubatus::util::concurrent::scoped_lock;
@@ -284,21 +285,31 @@ bool zk::hd_list(const string& path, string& out) {
 
 bool zk::read(const string& path, string& out) {
   scoped_lock lk(m_);
-  std::vector<char> buf(1024*1024);
-  int buflen = buf.size();
-  int rc = zoo_get(zh_, path.c_str(), 0, &buf[0], &buflen, NULL);
-  if (rc == ZOK) {
-    if (0 <= buflen) {
-      out.assign(&buf[0], buflen);
-      return true;
-    } else {
-      LOG(ERROR) << "failed to get data: " << path << " - data is NULL";
-      return false;
-    }
-  } else {
+
+  Stat stat;
+  int rc = zoo_exists(zh_, path.c_str(), 0, &stat);
+  if (rc != ZOK) {
     LOG(ERROR) << "failed to get data: " << path << " - " << zerror(rc);
     return false;
   }
+
+  int buflen = stat.dataLength;
+  if (buflen < 0) {
+    LOG(ERROR) << "failed to get data: " << path << " - data is NULL";
+    return false;
+  }
+
+  std::vector<char> buf(buflen);
+  rc = zoo_get(zh_, path.c_str(), 0, &buf[0], &buflen, NULL);
+  if (rc != ZOK) {
+    LOG(ERROR) << "failed to get data: " << path << " - " << zerror(rc);
+    return false;
+  }
+  JUBATUS_ASSERT_GE(buflen, 0, "NULL data should have been checked");
+  JUBATUS_ASSERT_LE(buflen, static_cast<int>(buf.size()), "");
+
+  out.assign(&buf[0], buflen);
+  return true;
 }
 
 void zk::push_cleanup(const jubatus::util::lang::function<void()>& f) {
