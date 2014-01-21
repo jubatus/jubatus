@@ -43,6 +43,22 @@ static const std::string VERSION(JUBATUS_VERSION);
 namespace {
   const std::string IGNORED_TAG = "[IGNORED]";
   jubatus::util::lang::shared_ptr<server::common::lock_service> ls;
+
+struct lower_bound_reader {
+  lower_bound_reader(int l)
+    : low(l) {}
+  int operator()(const std::string& s) const {
+    int ret = cmdline::default_reader<int>()(s);
+    if (ret < low) {
+      throw
+        cmdline::cmdline_error("value should be more than " +
+                               cmdline::detail::lexical_cast<std::string>(low));
+    }
+    return ret;
+  }
+ private:
+  int low;
+};
 }
 
 void print_version(const std::string& progname) {
@@ -131,9 +147,11 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add<std::string>("mixer", 'x',
                      make_ignored_help("mixer strategy"), false, "");
   p.add<int>("interval_sec", 's',
-             make_ignored_help("mix interval by seconds"), false, 16);
+             make_ignored_help("mix interval by seconds"), false, 16,
+             lower_bound_reader(0));
   p.add<int>("interval_count", 'i',
-             make_ignored_help("mix interval by update count"), false, 512);
+             make_ignored_help("mix interval by update count"), false, 512,
+             lower_bound_reader(0));
   p.add<int>("zookeeper_timeout", 'Z',
              make_ignored_help("zookeeper time out (sec)"), false, 10);
   p.add<int>("interconnect_timeout", 'I',
