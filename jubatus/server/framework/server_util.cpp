@@ -101,7 +101,8 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   google::InitGoogleLogging(argv[0]);
 
   cmdline::parser p;
-  p.add<int>("rpc-port", 'p', "port number", false, 9199);
+  p.add<int>("rpc-port", 'p', "port number", false, 9199,
+             cmdline::range(1, 65535));
   p.add<std::string>("listen_addr", 'b', "bind IP address", false, "");
   p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
   p.add<int>("thread", 'c', "concurrency = thread number", false, 2);
@@ -337,7 +338,8 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   google::InitGoogleLogging(argv[0]);
 
   cmdline::parser p;
-  p.add<int>("rpc-port", 'p', "port number", false, 9199);
+  p.add<int>("rpc-port", 'p', "port number", false, 9199,
+             cmdline::range(1, 65535));
   p.add<std::string>("listen_addr", 'b', "bind IP address", false, "");
   p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
   p.add<int>("thread", 'c', "concurrency = thread number", false, 16);

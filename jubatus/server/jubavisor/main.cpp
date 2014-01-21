@@ -48,7 +48,8 @@ void stop_on_term(jubavisor_server& serv) {
 
 int main(int argc, char* argv[]) try {
   cmdline::parser p;
-  p.add<int>("rpc-port", 'p', "port number", false, 9198);
+  p.add<int>("rpc-port", 'p', "port number", false, 9198,
+             cmdline::range(1, 65535));
   p.add<std::string>("zookeeper", 'z', "zookeeper location", true);
   p.add<std::string>("logdir", 'l', "log to output all child process' log",
                      false, "/tmp");
