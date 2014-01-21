@@ -293,26 +293,31 @@ bool zk::read(const string& path, string& out) {
     return false;
   }
 
-  int buflen = stat.dataLength;
-  if (buflen < 0) {
-    LOG(ERROR) << "failed to get data: " << path << " - data is NULL";
-    return false;
-  } else if (buflen == 0) {
-    out.clear();
-    return true;
-  }
+  for (;;) {
+    int buflen = stat.dataLength;
 
-  std::vector<char> buf(buflen);
-  rc = zoo_get(zh_, path.c_str(), 0, &buf[0], &buflen, NULL);
-  if (rc != ZOK) {
-    LOG(ERROR) << "failed to get data: " << path << " - " << zerror(rc);
-    return false;
-  }
-  JUBATUS_ASSERT_GE(buflen, 0, "NULL data should have been checked");
-  JUBATUS_ASSERT_LE(buflen, static_cast<int>(buf.size()), "");
+    if (buflen < 0) {
+      LOG(ERROR) << "failed to get data: " << path << " - data is NULL";
+      return false;
+    } else if (buflen == 0) {
+      out.clear();
+      return true;
+    }
 
-  out.assign(&buf[0], buflen);
-  return true;
+    std::vector<char> buf(buflen);
+    rc = zoo_get(zh_, path.c_str(), 0, &buf[0], &buflen, &stat);
+    if (rc != ZOK) {
+      LOG(ERROR) << "failed to get data: " << path << " - " << zerror(rc);
+      return false;
+    }
+    JUBATUS_ASSERT_GE(buflen, 0, "NULL data should have been checked");
+    JUBATUS_ASSERT_LE(buflen, static_cast<int>(buf.size()), "");
+
+    if (buflen == stat.dataLength) {
+      out.assign(&buf[0], buflen);
+      return true;
+    }
+  }
 }
 
 void zk::push_cleanup(const jubatus::util::lang::function<void()>& f) {
