@@ -19,6 +19,7 @@
 #include <string>
 #include <utility>
 #include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/core/common/exception.hpp"
 
 #ifdef HAVE_ZOOKEEPER_H
 #include "linear_mixer.hpp"
@@ -68,15 +69,8 @@ mixer* create_mixer(
         push_communication::create(zk, a.type, a.name, a.interconnect_timeout),
         a.interval_count, a.interval_sec, make_pair(a.eth, a.port));
   } else {
-    // TODO(beam2d): fix to throw
-    return new linear_mixer(
-        linear_communication::create(
-            zk,
-            a.type,
-            a.name,
-            a.interconnect_timeout,
-            make_pair(a.eth, a.port)),
-        a.interval_count, a.interval_sec);
+    throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
+          "unsupported mix type (" + use_mixer + ")"));
   }
 #else
   return new dummy_mixer;
