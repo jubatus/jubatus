@@ -117,9 +117,6 @@ bool process::spawn_link(int p) {
     for (size_t i = 0; i < sizeof(argv) / sizeof(*argv); ++i) {
       arg_list.push_back(argv[i].c_str());
     }
-    if (server_option_.join) {
-      arg_list.push_back("-j");
-    }
     arg_list.push_back(NULL);
 
     execvp(cmd.c_str(), (char* const *) &arg_list[0]);
