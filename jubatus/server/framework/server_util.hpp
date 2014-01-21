@@ -66,7 +66,6 @@ struct server_argv {
   server_argv(int args, char** argv, const std::string& type);
   server_argv();
 
-  bool join;
   int port;
   std::string bind_address;
   std::string bind_if;
@@ -89,7 +88,7 @@ struct server_argv {
   std::string mixer;
   bool daemon;
 
-  MSGPACK_DEFINE(join, port, bind_address, bind_if, timeout,
+  MSGPACK_DEFINE(port, bind_address, bind_if, timeout,
       zookeeper_timeout, interconnect_timeout, threadnum,
       program_name, type, z, name, datadir, logdir, loglevel, eth,
       interval_sec, interval_count, mixer, daemon);
