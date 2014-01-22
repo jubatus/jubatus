@@ -223,6 +223,7 @@ class server_helper {
       serv.listen(a.port, a.bind_address);
       LOG(INFO) << "start listening at port " << a.port;
 
+      start_time_ = get_clock_time();
       serv.start(a.threadnum, true);
 
       // RPC server started, then register group membership
@@ -233,8 +234,6 @@ class server_helper {
       common::set_action_on_term(
           jubatus::util::lang::bind(
               &server_helper::stop, this, jubatus::util::lang::ref(serv)));
-
-      start_time_ = get_clock_time();
 
       // wait for termination
       serv.join();
