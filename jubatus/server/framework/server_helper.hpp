@@ -158,7 +158,7 @@ class server_helper {
     data["VERSION"] = JUBATUS_VERSION;
     data["PROGNAME"] = a.program_name;
     data["type"] = a.type;
-    data["logdir"] = a.logdir.empty() ? "/dev/stderr" : a.logdir;
+    data["logdir"] = a.logdir;
     data["loglevel"] = google::GetLogSeverityName(a.loglevel);
 
     std::string configpath;

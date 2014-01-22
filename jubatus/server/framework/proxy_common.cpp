@@ -158,7 +158,7 @@ proxy_common::status_type proxy_common::get_status() {
   data["timeout"] =
       jubatus::util::lang::lexical_cast<std::string>(a_.timeout);
 
-  data["logdir"] = a_.logdir.empty() ? "/dev/stderr" : a_.logdir;
+  data["logdir"] = a_.logdir;
   data["loglevel"] = google::GetLogSeverityName(a_.loglevel);
 
   data["zookeeper"] = a_.z;
