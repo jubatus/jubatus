@@ -202,10 +202,8 @@ class server_helper {
             jubatus::util::lang::lexical_cast<std::string>
             (a.interconnect_timeout);
         data["connected_zookeeper"] = impl_.zk()->get_connected_host_and_port();
-
-        std::stringstream use_cht;
-        use_cht << std::boolalpha << use_cht_;
-        data["use_cht"] = use_cht.str();
+        data["use_cht"] = jubatus::util::lang::lexical_cast<std::string>(
+            use_cht_);
 
         data["mixer"] = a.mixer;
         server_->get_mixer()->get_status(data);
