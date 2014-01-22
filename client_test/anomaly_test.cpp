@@ -17,6 +17,7 @@
 #include <gtest/gtest.h>
 #include <jubatus/client/anomaly_client.hpp>
 #include "util.hpp"
+#include "status_test.hpp"
 
 using std::string;
 using std::vector;
@@ -34,6 +35,18 @@ TEST(anomaly_test, get_status) {
 
   std::map<std::string, std::map<std::string, std::string> >
     res = cli.get_status();
+
+  ASSERT_NE(0, res.size());
+
+  std::map<std::string, std::map<std::string, std::string> >
+      ::iterator it = res.begin();
+  while(it != res.end()) {
+    ASSERT_NE(0, it->second.size());
+    ASSERT_NO_FATAL_FAILURE(assert_common_status(it->second));
+    ASSERT_TRUE(has_key(it->second, "type"));
+    ASSERT_EQ("anomaly", it->second["type"]);
+    ++it;
+  }
 }
 
 TEST(anomaly_test, save_load) {

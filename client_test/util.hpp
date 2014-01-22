@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <cstdlib>
+#include <map>
 #include <string>
 #include <stdexcept>
 
@@ -41,5 +42,9 @@ unsigned int timeout() {
     return 5;
   }
   return std::strtoul(str, NULL, 0);
+}
+
+bool has_key(std::map<std::string, std::string>& map, const std::string key) {
+  return map.count(key);
 }
 }
