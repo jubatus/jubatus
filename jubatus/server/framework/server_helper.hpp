@@ -132,13 +132,13 @@ class server_helper {
     const server_argv& a = server_->argv();
     status_t& data = status[get_server_identifier(a)];
 
-    clock_time ct = get_clock_time();
+    const clock_time ct = get_clock_time();
     data["clock_time"] =
        jubatus::util::lang::lexical_cast<std::string>(ct.sec);
     data["start_time"] =
        jubatus::util::lang::lexical_cast<std::string>(start_time_.sec);
     data["uptime"] =
-       jubatus::util::lang::lexical_cast<std::string>(ct - start_time_);
+       jubatus::util::lang::lexical_cast<std::string>((ct - start_time_).sec);
 
     common::machine_status_t mt;
     common::get_machine_status(mt);
