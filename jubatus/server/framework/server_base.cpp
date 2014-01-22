@@ -65,13 +65,18 @@ void load_file_impl(server_base& server,
     LOG(ERROR) << e.what();
     throw;
   }
+  server.update_loaded_status(path);
 }
 
 }  // namespace
 
 server_base::server_base(const server_argv& a)
     : argv_(a),
-      update_count_(0) {
+      update_count_(0),
+      last_saved_(0, 0),
+      last_saved_path_(""),
+      last_loaded_(0, 0),
+      last_loaded_path_("") {
 }
 
 bool server_base::save(const std::string& id) {
@@ -105,6 +110,7 @@ bool server_base::save(const std::string& id) {
     LOG(ERROR) << e.what();
     throw;
   }
+  update_saved_status(path);
   return true;
 }
 
@@ -122,6 +128,16 @@ void server_base::event_model_updated() {
   if (mixer::mixer* m = get_mixer()) {
     m->updated();
   }
+}
+
+void server_base::update_saved_status(const std::string& path) {
+  last_saved_ = jubatus::util::system::time::get_clock_time();
+  last_saved_path_ = path;
+}
+
+void server_base::update_loaded_status(const std::string& path) {
+  last_loaded_ = jubatus::util::system::time::get_clock_time();
+  last_loaded_path_ = path;
 }
 
 }  // namespace framework

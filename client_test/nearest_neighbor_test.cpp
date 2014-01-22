@@ -17,6 +17,7 @@
 #include <gtest/gtest.h>
 #include <jubatus/client/nearest_neighbor_client.hpp>
 #include "util.hpp"
+#include "status_test.hpp"
 
 using std::vector;
 using jubatus::client::common::datum;
@@ -33,6 +34,18 @@ TEST(nearest_neighbor_test, get_status) {
 
   std::map<std::string, std::map<std::string, std::string> >
     res = cli.get_status();
+
+  ASSERT_NE(0, res.size());
+
+  std::map<std::string, std::map<std::string, std::string> >
+      ::iterator it = res.begin();
+  while(it != res.end()) {
+    ASSERT_NE(0, it->second.size());
+    ASSERT_NO_FATAL_FAILURE(assert_common_status(it->second));
+    ASSERT_TRUE(has_key(it->second, "type"));
+    ASSERT_EQ("nearest_neighbor", it->second["type"]);
+    ++it;
+  }
 }
 
 TEST(nearest_neighbor_test, save_load) {

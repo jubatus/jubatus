@@ -78,6 +78,7 @@ int proxy::run() {
   try {
     this->instance_.listen(a_.bind_address, a_.port);
     LOG(INFO) << "start listening at port " << a_.port;
+    start_time_= jubatus::util::system::time::get_clock_time();
     this->instance_.start(a_.threadnum);
 
     // RPC server started, then register group membership
@@ -89,8 +90,6 @@ int proxy::run() {
     common::set_action_on_term(
         jubatus::util::lang::bind(&stop_rpc_server,
             jubatus::util::lang::ref(this->instance_)));
-
-    start_time_= jubatus::util::system::time::get_clock_time();
 
     this->instance_.join();
 

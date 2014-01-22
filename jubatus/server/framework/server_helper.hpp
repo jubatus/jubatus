@@ -26,6 +26,7 @@
 #include "jubatus/util/lang/bind.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/system/sysstat.h"
+#include "jubatus/util/system/time_util.h"
 
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "mixer/mixer.hpp"
@@ -35,6 +36,9 @@
 #include "../common/mprpc/rpc_server.hpp"
 #include "../common/signals.hpp"
 #include "../common/config.hpp"
+
+using jubatus::util::system::time::clock_time;
+using jubatus::util::system::time::get_clock_time;
 
 namespace jubatus {
 namespace server {
@@ -65,6 +69,7 @@ class server_helper {
 
   explicit server_helper(const server_argv& a, bool use_cht = false)
       : impl_(a),
+        start_time_(get_clock_time()),
         use_cht_(use_cht) {
     impl_.prepare_for_start(a, use_cht);
     server_.reset(new Server(a, impl_.zk()));
@@ -127,6 +132,14 @@ class server_helper {
     const server_argv& a = server_->argv();
     status_t& data = status[get_server_identifier(a)];
 
+    const clock_time ct = get_clock_time();
+    data["clock_time"] =
+       jubatus::util::lang::lexical_cast<std::string>(ct.sec);
+    data["start_time"] =
+       jubatus::util::lang::lexical_cast<std::string>(start_time_.sec);
+    data["uptime"] =
+       jubatus::util::lang::lexical_cast<std::string>((ct - start_time_).sec);
+
     common::machine_status_t mt;
     common::get_machine_status(mt);
     data["VIRT"] =
@@ -136,29 +149,65 @@ class server_helper {
     data["SHR"] =
         jubatus::util::lang::lexical_cast<std::string>(mt.vm_share);
 
-    // TBD: running_time, epoch_time
-    // TBD: type(server type), name(instance name: when zookeeper enabled), eth
     data["timeout"] = jubatus::util::lang::lexical_cast<std::string>(a.timeout);
     data["threadnum"] =
         jubatus::util::lang::lexical_cast<std::string>(a.threadnum);
     data["datadir"] = a.datadir;
-    data["interval_sec"] =
-        jubatus::util::lang::lexical_cast<std::string>(a.interval_sec);
-    data["interval_count"] = jubatus::util::lang::lexical_cast<std::string>(
-        a.interval_count);
     data["is_standalone"] = jubatus::util::lang::lexical_cast<std::string>(
         a.is_standalone());
     data["VERSION"] = JUBATUS_VERSION;
     data["PROGNAME"] = a.program_name;
+    data["type"] = a.type;
+    data["logdir"] = a.logdir;
+    data["loglevel"] = google::GetLogSeverityName(a.loglevel);
+
+    std::string configpath;
+    if (a.is_standalone()) {
+        configpath = a.configpath;
+    } else {
+        // return zookeeper node name
+        jubatus::server::common::build_config_path(configpath, a.type, a.name);
+    }
+    data["configpath"] = configpath;
+
+    data["pid"] =
+        jubatus::util::lang::lexical_cast<std::string>(getpid());
+    data["user"] = jubatus::server::common::get_user_name();
 
     data["update_count"] = jubatus::util::lang::lexical_cast<std::string>(
         server_->update_count());
 
+    data["last_saved"] =
+        jubatus::util::lang::lexical_cast<std::string>
+        (server_->last_saved_sec());
+    data["last_saved_path"] = server_->last_saved_path();
+    data["last_loaded"] =
+        jubatus::util::lang::lexical_cast<std::string>
+        (server_->last_loaded_sec());
+    data["last_loaded_path"] = server_->last_loaded_path();
+
     server_->get_status(data);
 
-    server_->get_mixer()->get_status(data);
-    data["zk"] = a.z;
-    data["use_cht"] = jubatus::util::lang::lexical_cast<std::string>(use_cht_);
+    // distributed mode only
+    if (!a.is_standalone()) {
+        data["zk"] = a.z;
+        data["name"] = a.name;
+        data["interval_sec"] =
+            jubatus::util::lang::lexical_cast<std::string>(a.interval_sec);
+        data["interval_count"] = jubatus::util::lang::lexical_cast<std::string>(
+            a.interval_count);
+        data["zookeeper_timeout"] =
+            jubatus::util::lang::lexical_cast<std::string>(a.zookeeper_timeout);
+        data["interconnect_timeout"] =
+            jubatus::util::lang::lexical_cast<std::string>
+            (a.interconnect_timeout);
+        data["connected_zookeeper"] = impl_.zk()->get_connected_host_and_port();
+        data["use_cht"] = jubatus::util::lang::lexical_cast<std::string>(
+            use_cht_);
+
+        data["mixer"] = a.mixer;
+        server_->get_mixer()->get_status(data);
+    }
 
     return status;
   }
@@ -174,6 +223,7 @@ class server_helper {
       serv.listen(a.port, a.bind_address);
       LOG(INFO) << "start listening at port " << a.port;
 
+      start_time_ = get_clock_time();
       serv.start(a.threadnum, true);
 
       // RPC server started, then register group membership
@@ -225,6 +275,7 @@ class server_helper {
  private:
   jubatus::util::lang::shared_ptr<Server> server_;
   server_helper_impl impl_;
+  clock_time start_time_;
   const bool use_cht_;
 };
 

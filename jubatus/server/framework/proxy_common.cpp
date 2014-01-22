@@ -130,13 +130,13 @@ proxy_common::status_type proxy_common::get_status() {
   status_type status;
   string_map& data = status[get_proxy_identifier(a_)];
 
-  clock_time ct = get_clock_time();
+  const clock_time ct = get_clock_time();
   data["clock_time"] =
       jubatus::util::lang::lexical_cast<std::string>(ct.sec);
   data["start_time"] =
       jubatus::util::lang::lexical_cast<std::string>(start_time_.sec);
   data["uptime"] =
-      jubatus::util::lang::lexical_cast<std::string>(ct - start_time_);
+      jubatus::util::lang::lexical_cast<std::string>((ct - start_time_).sec);
 
   common::machine_status_t mt;
   common::get_machine_status(mt);
@@ -158,7 +158,7 @@ proxy_common::status_type proxy_common::get_status() {
   data["timeout"] =
       jubatus::util::lang::lexical_cast<std::string>(a_.timeout);
 
-  data["logdir"] = a_.logdir.empty() ? "/dev/stderr" : a_.logdir;
+  data["logdir"] = a_.logdir;
   data["loglevel"] = google::GetLogSeverityName(a_.loglevel);
 
   data["zookeeper"] = a_.z;
