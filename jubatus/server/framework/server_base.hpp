@@ -77,7 +77,7 @@ class server_base {
     return last_saved_.sec;
   }
 
-  std::string last_saved_path() const {
+  const std::string& last_saved_path() const {
     return last_saved_path_;
   }
 
@@ -85,7 +85,7 @@ class server_base {
     return last_loaded_.sec;
   }
 
-  std::string last_loaded_path() const {
+  const std::string& last_loaded_path() const {
     return last_loaded_path_;
   }
 
