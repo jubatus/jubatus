@@ -121,8 +121,10 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
              cmdline::range(1, 65535));
   p.add<std::string>("listen_addr", 'b', "bind IP address", false, "");
   p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
-  p.add<int>("thread", 'c', "concurrency = thread number", false, 2);
-  p.add<int>("timeout", 't', "time out (sec)", false, 10);
+  p.add<int>("thread", 'c', "concurrency = thread number", false, 2,
+             lower_bound_reader(1));
+  p.add<int>("timeout", 't', "time out (sec)", false, 10,
+             lower_bound_reader(0));
   p.add<std::string>("datadir", 'd', "directory to save and load models", false,
                      "/tmp");
   p.add<std::string>("logdir", 'l',
@@ -369,8 +371,10 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
              cmdline::range(1, 65535));
   p.add<std::string>("listen_addr", 'b', "bind IP address", false, "");
   p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
-  p.add<int>("thread", 'c', "concurrency = thread number", false, 16);
-  p.add<int>("timeout", 't', "time out (sec)", false, 10);
+  p.add<int>("thread", 'c', "concurrency = thread number", false, 16,
+             lower_bound_reader(1));
+  p.add<int>("timeout", 't', "time out (sec)", false, 10,
+             lower_bound_reader(0));
   p.add<int>("zookeeper_timeout", 'Z', "zookeeper time out (sec)", false, 10);
   p.add<int>("interconnect_timeout", 'I',
       "interconnect time out between servers (sec)", false, 10);
@@ -379,7 +383,8 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false,
                      "localhost:2181");
   p.add<int>("pool_expire", 'E', "session-pool expire time (sec)", false, 60);
-  p.add<int>("pool_size", 'S', "session-pool maximum size", false, 0);
+  p.add<int>("pool_size", 'S', "session-pool maximum size", false, 0,
+             lower_bound_reader(0));
   p.add<std::string>("logdir", 'l',
                      "directory to output logs (instead of stderr)", false, "");
   p.add<int, cmdline::range_reader<int> >(
