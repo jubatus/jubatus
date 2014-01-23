@@ -378,7 +378,8 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
 
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false,
                      "localhost:2181");
-  p.add<int>("pool_expire", 'E', "session-pool expire time (sec)", false, 60);
+  p.add<int>("pool_expire", 'E', "session-pool expire time (sec)", false, 60,
+             lower_bound_reader(0));
   p.add<int>("pool_size", 'S', "session-pool maximum size", false, 0);
   p.add<std::string>("logdir", 'l',
                      "directory to output logs (instead of stderr)", false, "");
