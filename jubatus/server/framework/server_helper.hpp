@@ -165,8 +165,10 @@ class server_helper {
     if (a.is_standalone()) {
         configpath = a.configpath;
     } else {
+#ifdef HAVE_ZOOKEEPER_H
         // return zookeeper node name
         jubatus::server::common::build_config_path(configpath, a.type, a.name);
+#endif
     }
     data["configpath"] = configpath;
 
