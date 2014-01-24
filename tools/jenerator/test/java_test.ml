@@ -172,11 +172,7 @@ let _ = run_test_tt_main begin "java.ml" >::: [
   "test_gen_client_method" >:: begin fun() ->
     assert_equal
       [ (0, "public void fun() {");
-        (1,   "try {");	
-        (2,     "iface.fun(this.name);");
-        (1,   "} catch(RemoteError remoteError) {");
-        (2,     "throw super.translateError(remoteError);");
-        (1,   "}");
+        (1,   "this.call(\"fun\", TNull.instance);");
         (0, "}"); ]
       (gen_client_method { method_return_type = None;
                            method_name = "fun";
@@ -184,11 +180,7 @@ let _ = run_test_tt_main begin "java.ml" >::: [
                            method_decorators = []; });
     assert_equal
       [ (0, "public String fun() {");
-        (1,   "try {");
-        (2,     "return iface.fun(this.name);");
-        (1,   "} catch(RemoteError remoteError) {");
-        (2,     "throw super.translateError(remoteError);");
-        (1,   "}");
+        (1,   "return this.call(\"fun\", TString.instance);");
         (0, "}"); ]
       (gen_client_method { method_return_type = Some String;
                            method_name = "fun";

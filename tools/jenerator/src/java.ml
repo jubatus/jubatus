@@ -117,34 +117,33 @@ and gen_object_type = function
 ;;
 
 let rec gen_type_class = function
-  | Object -> Some "TObject.instance"
   | Bool
   | Int _
-  | Float _ -> None
-  | Raw -> Some "TRaw.instance"
-  | String -> Some "TString.instance"
-  | Datum -> Some "TDatum.instance"
-  | Struct s ->
-    let t = snake_to_upper s in
-    Some (gen_call ("new " ^ gen_template "TUserDef" [t]) [])
-  | List t ->
-    let tlist = gen_template "TList" [gen_object_type t] in
-    Some (gen_call ("new " ^ tlist) [gen_object_type_class t])
-  | Map(key, value) ->
-    let tmap = gen_template "TMap" [gen_object_type key; gen_object_type value] in
-    Some (gen_call ("new " ^ tmap) [gen_object_type_class key; gen_object_type_class value])
-  | Nullable t ->
-    let tnullable = gen_template "TNullable" [gen_object_type t] in
-    Some (gen_call ("new " ^ tnullable) [gen_object_type_class t])
+  | Float _ ->
+    None
+  | _ as t ->
+    Some (gen_object_type_class t)
 and gen_object_type_class = function
+  | Object -> "TObject.instance"
   | Bool -> "TBool.instance"
   | Int(_, n) -> if n <= 4 then "TInt.instance" else "TLong.instance"
   | Float false -> "TFloat.instance"
   | Float true -> "TDouble.instance"
-  | _ as t ->
-    match gen_type_class t with
-    | Some t -> t
-    | None -> ""
+  | Raw -> "TRaw.instance"
+  | String -> "TString.instance"
+  | Datum -> "TDatum.instance"
+  | Struct s ->
+    let t = snake_to_upper s in
+    t ^ ".Type.instance"
+  | List t ->
+    let tlist = gen_template "TList" [gen_object_type t] in
+    gen_call ("new " ^ tlist) [gen_object_type_class t]
+  | Map(key, value) ->
+    let tmap = gen_template "TMap" [gen_object_type key; gen_object_type value] in
+    gen_call ("new " ^ tmap) [gen_object_type_class key; gen_object_type_class value]
+  | Nullable t ->
+    let tnullable = gen_template "TNullable" [gen_object_type t] in
+    gen_call ("new " ^ tnullable) [gen_object_type_class t]
 ;;
 
 let gen_default_value = function
@@ -213,22 +212,23 @@ let gen_client_method m =
     match gen_type_class f.field_type with
     | None -> None
     | Some t -> Some (1, gen_call (t ^ ".check") [gen_var_name f] ^ ";")) args in
-  let vars = "this.name":: (List.map gen_var_name m.method_arguments) in
+  let vars = List.map gen_var_name m.method_arguments in
+  let method_name = gen_string_literal m.method_name in
+  let return_type =
+    match m.method_return_type with
+    | None ->
+      "TNull.instance"
+    | Some ret ->
+      gen_object_type_class ret in
+  let call = gen_call "this.call" (method_name::return_type::vars) in
   let call =
     match m.method_return_type with
     | None ->
-      gen_call ("iface."^ m.method_name) vars ^ ";"
+      call ^ ";"
     | Some ret ->
-      "return " ^ gen_call ("iface."^ m.method_name)  vars ^ ";"
+      "return " ^ call ^ ";"
   in
-  let call = [
-    (1, "try {");
-    (2,   call);
-    (1, "} catch(RemoteError remoteError) {");
-    (2,   "throw super.translateError(remoteError);");
-    (1, "}")
-  ] in
-  gen_public m.method_return_type name args ""  (checks @ call)
+  gen_public m.method_return_type name args ""  (checks @ [(1, call)])
 ;;
 
 let gen_interface m =
@@ -241,25 +241,27 @@ let gen_interface m =
 let gen_client s name =
   let constructor = [
     (0, "public " ^ name ^ "Client(String host, int port, String name, int timeoutSec) throws UnknownHostException {");
-    (1,   "super(RPCInterface.class, host, port, name, timeoutSec);");
+    (1,   "super(host, port, name, timeoutSec);");
     (0, "}");
     (0, "")
   ] in
+(*
   let interfaces =
     List.concat [
       [ (0, "public static interface RPCInterface extends ClientBase.RPCInterfaceBase {") ];
       List.map (fun i -> (1, gen_interface i)) s.service_methods;
       [ (0, "}"); ]
     ] in
+*)
   let methods = List.map gen_client_method s.service_methods in
   let content = concat_blocks methods in
   let name = snake_to_upper s.service_name ^ "Client" in
   concat_blocks [
     [
-      (0, "public class " ^ name ^ " extends ClientBase<" ^ name ^ ".RPCInterface> {");
+      (0, "public class " ^ name ^ " extends ClientBase {");
     ];
     indent_lines 1 constructor;
-    indent_lines 1 interfaces;
+    (*indent_lines 1 interfaces;*)
     indent_lines 1 content;
     [
       (0, "}")
@@ -286,6 +288,30 @@ let gen_to_string m =
     [ (1,   "gen.close();");
       (1,   "return gen.toString();");
       (0, "}"); ]
+  ]
+;;
+
+let gen_message_type m =
+  let message_class = snake_to_upper m.message_name in
+  let num_vars = List.length m.message_fields in
+  let args = List.mapi (fun i f ->
+    let t = gen_object_type_class f.field_type in
+    gen_call (t ^ ".revert") [gen_call "value.get" [string_of_int i]]
+  ) m.message_fields in
+  let create = gen_call ("new " ^ message_class) args in
+  [
+    (0, "public static class Type extends TUserDef<" ^ message_class ^ "> {");
+    (1,   "public static Type instance = new Type();");
+    (0, "");
+    (1,   "private Type() {");
+    (2,     "super(" ^ string_of_int num_vars ^ ");");
+    (1,   "}");
+    (0, "");
+    (1,   "@Override");
+    (1,   "public " ^ message_class ^ " create(ArrayValue value) {");
+    (2,     "return "^ create ^ ";");
+    (1,   "}");
+    (0, "}");
   ]
 ;;
 
@@ -331,6 +357,7 @@ let gen_message m conf source =
        gen_import_for_message field_types;
        [
          (0, "import org.msgpack.annotation.Message;");
+         (0, "import org.msgpack.type.ArrayValue;");
          (0, "import us.jubat.common.MessageStringGenerator;");
          (0, "import us.jubat.common.UserDefinedMessage;");
          (0, "import us.jubat.common.type.*;");
@@ -341,13 +368,13 @@ let gen_message m conf source =
   let constructor =
     [ (0, "public " ^ class_name ^ "() {");
       (0, "}"); ] in
-  let to_string = gen_to_string m in
   let class_content = concat_blocks [
     field_defs;
     constructor;
     gen_message_constructor m;
     gen_message_check m;
-    to_string;
+    gen_to_string m;
+    gen_message_type m;
   ] in
   let content =
     (0, "@Message") ::
@@ -386,7 +413,6 @@ let gen_client_file conf source services =
     gen_import_for_client types;
     [
       (0, "import java.net.UnknownHostException;");
-      (0, "import org.msgpack.rpc.error.RemoteError;");
       (0, "import us.jubat.common.ClientBase;");
       (0, "import us.jubat.common.type.*;");
     ];
