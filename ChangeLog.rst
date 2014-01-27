@@ -1,3 +1,26 @@
+Release 0.5.1 - 2014/01/27
+--------------------------
+
+* Improvements
+    * Add get_status to proxy (#78, #612)
+    * Daemon option (#409)
+    * Add a build option to disable including Eigen (#542)
+    * Fix compile error in Mac OS X (#553)
+    * online model copy in classifier (#590)
+    * Check permission of directory specified by --datadir (#599)
+    * Raise exception if unsupported mix strategy name is specified (#611, #600)
+    * Disabling mix if parameter 0 is given (#623)
+    * Validate range of command-line option (#626)
+    * #270, #477, #574, #622
+
+* Bugfix
+    * Segfault related with ZooKeeper connection (#483, #486, #484)
+    * fixed_size_heap may cause access violation (#573)
+    * save/load of nearest_neighbor does not work correctly (#567)
+    * nearest_neighbor_num is set to reverse_nearest_neighbor_num in lof (#563)
+    * Not work correctly when specified --rpc-port=0 (#605)
+
+
 Release 0.5.0 - 2013/11/22
 --------------------------
 
