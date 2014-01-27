@@ -79,6 +79,8 @@ class zk : public lock_service {
   const std::string& get_hosts() const;
   const std::string type() const;
 
+  const std::string get_connected_host_and_port() const;
+
  protected:
   bool list_(const std::string& path, std::vector<std::string>& out);
 

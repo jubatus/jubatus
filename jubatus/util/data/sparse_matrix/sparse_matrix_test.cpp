@@ -42,16 +42,22 @@
 using namespace std;
 using namespace jubatus::util::data::sparse_matrix;
 
-static const string tmp_file="./tmp";
+string make_tmp_file() {
+  char* tmp_file = tempnam(NULL, "jubat");
+  std::string s = tmp_file;
+  free(tmp_file);
+  return s;
+}
 
-void clean() {
+void clean(const string& tmp_file) {
   unlink(tmp_file.c_str());
   unlink((tmp_file+".offset").c_str());
 }
 
 // create empty index
 TEST(sparse_matrix, index_with_no_item) {
-  clean();
+  string tmp_file = make_tmp_file();
+  clean(tmp_file);
 
   {
     sparse_matrix_writer smw;
@@ -64,11 +70,12 @@ TEST(sparse_matrix, index_with_no_item) {
     smr.close();
   }
 
-  clean();
+  clean(tmp_file);
 }
 
 TEST(sparse_matrix_test, index) {
-  clean();
+  string tmp_file = make_tmp_file();
+  clean(tmp_file);
 
   srandom(time(NULL));
 
@@ -132,6 +139,6 @@ TEST(sparse_matrix_test, index) {
     }
   }
 
-  clean();
+  clean(tmp_file);
 }
 

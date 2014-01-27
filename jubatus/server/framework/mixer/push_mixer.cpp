@@ -84,7 +84,7 @@ push_communication_impl::push_communication_impl(
 }
 
 size_t push_communication_impl::update_members() {
-  common::get_all_actors(*zk_, type_, name_, servers_);
+  common::get_all_nodes(*zk_, type_, name_, servers_);
   return servers_.size();
 }
 
@@ -165,6 +165,10 @@ push_mixer::push_mixer(
       t_(jubatus::util::lang::bind(&push_mixer::mixer_loop, this)) {
 }
 
+push_mixer::~push_mixer() {
+  stop();
+}
+
 void push_mixer::register_api(rpc_server_t& server) {
   server.add<vector<string>(vector<string>)>(
       "pull", bind(&push_mixer::pull, this, jubatus::util::lang::_1));
@@ -224,8 +228,8 @@ void push_mixer::mixer_loop() {
 
       c_.wait(m_, 0.5);
       clock_time new_ticktime = get_clock_time();
-      if (counter_ >= count_threshold_
-          || new_ticktime - ticktime_ > tick_threshold_) {
+      if ((0 < count_threshold_ &&  counter_ >= count_threshold_)
+          || (0 < tick_threshold_ && new_ticktime - ticktime_ > tick_threshold_)) {
         DLOG(INFO) << "starting mix because of "
                    << (count_threshold_ <= counter_ ? "counter" : "tick_time")
                    << " threshold";

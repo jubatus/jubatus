@@ -151,7 +151,7 @@ void inverted_index_storage::get_diff(diff_type& diff) const {
   }
 }
 
-void inverted_index_storage::set_mixed_and_clear_diff(
+bool inverted_index_storage::set_mixed_and_clear_diff(
     const diff_type& mixed_diff) {
   vector<string> ids;
   mixed_diff.inv.get_all_row_ids(ids);
@@ -180,6 +180,7 @@ void inverted_index_storage::set_mixed_and_clear_diff(
     }
   }
   column2norm_diff_.clear();
+  return true;
 }
 
 void inverted_index_storage::mix(const diff_type& lhs, diff_type& rhs) const {

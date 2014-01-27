@@ -16,6 +16,8 @@
 
 #include "server_util.hpp"
 
+#include <unistd.h>
+#include <signal.h>
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -27,9 +29,10 @@
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
 #include "../common/config.hpp"
+#include "../common/filesystem.hpp"
 #include "../common/membership.hpp"
 #include "../common/network.hpp"
-#include "../common/util.hpp"
+#include "../common/system.hpp"
 
 namespace jubatus {
 namespace server {
@@ -40,6 +43,22 @@ static const std::string VERSION(JUBATUS_VERSION);
 namespace {
   const std::string IGNORED_TAG = "[IGNORED]";
   jubatus::util::lang::shared_ptr<server::common::lock_service> ls;
+
+struct lower_bound_reader {
+  lower_bound_reader(int l)
+    : low(l) {}
+  int operator()(const std::string& s) const {
+    int ret = cmdline::default_reader<int>()(s);
+    if (ret < low) {
+      throw
+        cmdline::cmdline_error("value should be more than " +
+                               cmdline::detail::lexical_cast<std::string>(low));
+    }
+    return ret;
+  }
+ private:
+  int low;
+};
 }
 
 void print_version(const std::string& progname) {
@@ -98,11 +117,14 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   google::InitGoogleLogging(argv[0]);
 
   cmdline::parser p;
-  p.add<int>("rpc-port", 'p', "port number", false, 9199);
+  p.add<int>("rpc-port", 'p', "port number", false, 9199,
+             cmdline::range(1, 65535));
   p.add<std::string>("listen_addr", 'b', "bind IP address", false, "");
   p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
-  p.add<int>("thread", 'c', "concurrency = thread number", false, 2);
-  p.add<int>("timeout", 't', "time out (sec)", false, 10);
+  p.add<int>("thread", 'c', "concurrency = thread number", false, 2,
+             lower_bound_reader(1));
+  p.add<int>("timeout", 't', "time out (sec)", false, 10,
+             lower_bound_reader(0));
   p.add<std::string>("datadir", 'd', "directory to save and load models", false,
                      "/tmp");
   p.add<std::string>("logdir", 'l',
@@ -118,6 +140,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
       false, "");
   p.add<std::string>("model_file", 'm',
                      "model data to load at startup", false, "");
+  p.add("daemon", 'D', "launch in daemon mode (ignores SIGHUP)");
 
   p.add<std::string>("zookeeper", 'z',
                      make_ignored_help("zookeeper location"), false);
@@ -125,12 +148,14 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
                      make_ignored_help("learning machine instance name"),
                      false);
   p.add<std::string>("mixer", 'x',
-                     make_ignored_help("mixer strategy"), false, "");
-  p.add("join", 'j', make_ignored_help("join to the existing cluster"));
+                     make_ignored_help("mixer strategy"), false,
+                     "linear_mixer");
   p.add<int>("interval_sec", 's',
-             make_ignored_help("mix interval by seconds"), false, 16);
+             make_ignored_help("mix interval by seconds"), false, 16,
+             lower_bound_reader(0));
   p.add<int>("interval_count", 'i',
-             make_ignored_help("mix interval by update count"), false, 512);
+             make_ignored_help("mix interval by update count"), false, 512,
+             lower_bound_reader(0));
   p.add<int>("zookeeper_timeout", 'Z',
              make_ignored_help("zookeeper time out (sec)"), false, 10);
   p.add<int>("interconnect_timeout", 'I',
@@ -149,7 +174,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.parse_check(args, argv);
 
   if (p.exist("version")) {
-    print_version(common::util::get_program_name());
+    print_version(common::get_program_name());
     exit(0);
   }
 
@@ -158,19 +183,20 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   bind_if = p.get<std::string>("listen_if");
   threadnum = p.get<int>("thread");
   timeout = p.get<int>("timeout");
-  program_name = common::util::get_program_name();
+  program_name = common::get_program_name();
   datadir = p.get<std::string>("datadir");
   logdir = p.get<std::string>("logdir");
   loglevel = p.get<int>("loglevel");
   configpath = p.get<std::string>("configpath");
   modelpath = p.get<std::string>("model_file");
+  daemon = p.exist("daemon");
 
   // determine listen-address and IPaddr used as ZK 'node-name'
   // TODO(y-oda-oni-juba): check bind_address is valid format
   if (!bind_address.empty()) {
     eth = bind_address;
   } else if (!bind_if.empty()) {
-    bind_address = eth = common::util::get_ip(bind_if.c_str());
+    bind_address = eth = common::get_ip(bind_if.c_str());
   } else {
     bind_address = "0.0.0.0";
     eth = jubatus::server::common::get_default_v4_address();
@@ -180,7 +206,6 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   z = p.get<std::string>("zookeeper");
   name = p.get<std::string>("name");
   mixer = p.get<std::string>("mixer");
-  join = p.exist("join");
   interval_sec = p.get<int>("interval_sec");
   interval_count = p.get<int>("interval_count");
   zookeeper_timeout = p.get<int>("zookeeper_timeout");
@@ -188,7 +213,6 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
 #else
   z = "";
   name = "";
-  join = false;
   interval_sec = 16;
   interval_count = 512;
 #endif
@@ -220,29 +244,33 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
     exit(1);
   }
 
-  if ((!logdir.empty()) && (!common::util::is_writable(logdir.c_str()))) {
+  if ((!datadir.empty()) && (!common::is_writable(datadir.c_str()))) {
+    std::cerr << "can't use datadir: " << strerror(errno) << std::endl;
+    std::cerr << p.usage() << std::endl;
+    exit(1);
+  }
+
+  if ((!logdir.empty()) && (!common::is_writable(logdir.c_str()))) {
     std::cerr << "can't create log file: " << strerror(errno) << std::endl;
     exit(1);
   }
-  set_log_destination(common::util::get_program_name());
+  set_log_destination(common::get_program_name());
 
 #ifndef HAVE_ZOOKEEPER_H
   check_ignored_option(p, "zookeeper");
   check_ignored_option(p, "name");
   check_ignored_option(p, "mixer");
-  check_ignored_option(p, "join");
   check_ignored_option(p, "interval_sec");
   check_ignored_option(p, "interval_count");
   check_ignored_option(p, "zookeeper_timeout");
   check_ignored_option(p, "interconnect_timeout");
 #endif
 
-  boot_message(common::util::get_program_name());
+  boot_message(common::get_program_name());
 }
 
 server_argv::server_argv()
-    : join(false),
-      port(9199),
+    : port(9199),
       timeout(10),
       zookeeper_timeout(10),
       interconnect_timeout(10),
@@ -262,7 +290,7 @@ void server_argv::boot_message(const std::string& progname) const {
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth
       << ":" << port << '\n';
   ss << "    pid                  : " << getpid() << '\n';
-  ss << "    user                 : " << common::util::get_user_name() << '\n';
+  ss << "    user                 : " << common::get_user_name() << '\n';
   ss << "    mode                 : ";
   if (is_standalone()) {
     ss << "standalone mode\n";
@@ -278,9 +306,16 @@ void server_argv::boot_message(const std::string& progname) const {
 #ifdef HAVE_ZOOKEEPER_H
   ss << "    zookeeper            : " << z << '\n';
   ss << "    name                 : " << name << '\n';
-  ss << "    join                 : " << std::boolalpha << join << '\n';
-  ss << "    interval sec         : " << interval_sec << '\n';
-  ss << "    interval count       : " << interval_count << '\n';
+  if (0 < interval_sec) {
+    ss << "    interval sec         : " << interval_sec << '\n';
+  } else {
+    ss << "    interval sec         : disabled" << '\n';
+  }
+  if (0 < interval_count) {
+    ss << "    interval count       : " << interval_count << '\n';
+  } else {
+    ss << "    interval count       : disabled" << '\n';
+  }
   ss << "    zookeeper timeout    : " << zookeeper_timeout << '\n';
   ss << "    interconnect timeout : " << interconnect_timeout << '\n';
 #endif
@@ -309,6 +344,16 @@ void server_argv::set_log_destination(const std::string& progname) const {
   }
 }
 
+void daemonize_process(const std::string& logdir) {
+  if (logdir == "" && ::isatty(::fileno(stderr))) {
+    LOG(WARNING) << "output tty in daemon mode";
+  }
+  if (::signal(SIGHUP, SIG_IGN) == SIG_ERR) {
+    LOG(FATAL) << "Failed to ignore SIGHUP";
+  }
+  LOG(INFO) << "set daemon mode (SIGHUP is now ignored)";
+}
+
 std::string get_server_identifier(const server_argv& a) {
   std::stringstream ss;
   ss << a.eth;
@@ -322,19 +367,25 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   google::InitGoogleLogging(argv[0]);
 
   cmdline::parser p;
-  p.add<int>("rpc-port", 'p', "port number", false, 9199);
+  p.add<int>("rpc-port", 'p', "port number", false, 9199,
+             cmdline::range(1, 65535));
   p.add<std::string>("listen_addr", 'b', "bind IP address", false, "");
   p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
-  p.add<int>("thread", 'c', "concurrency = thread number", false, 16);
-  p.add<int>("timeout", 't', "time out (sec)", false, 10);
+  p.add<int>("thread", 'c', "concurrency = thread number", false, 16,
+             lower_bound_reader(1));
+  p.add<int>("timeout", 't', "time out (sec)", false, 10,
+             lower_bound_reader(0));
   p.add<int>("zookeeper_timeout", 'Z', "zookeeper time out (sec)", false, 10);
   p.add<int>("interconnect_timeout", 'I',
       "interconnect time out between servers (sec)", false, 10);
+  p.add("daemon", 'D', "launch in daemon mode (ignores SIGHUP)");
 
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false,
                      "localhost:2181");
-  p.add<int>("pool_expire", 'E', "session-pool expire time (sec)", false, 60);
-  p.add<int>("pool_size", 'S', "session-pool maximum size", false, 0);
+  p.add<int>("pool_expire", 'E', "session-pool expire time (sec)", false, 60,
+             lower_bound_reader(0));
+  p.add<int>("pool_size", 'S', "session-pool maximum size", false, 0,
+             lower_bound_reader(0));
   p.add<std::string>("logdir", 'l',
                      "directory to output logs (instead of stderr)", false, "");
   p.add<int, cmdline::range_reader<int> >(
@@ -345,7 +396,7 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   p.parse_check(args, argv);
 
   if (p.exist("version")) {
-    print_version(common::util::get_program_name());
+    print_version(common::get_program_name());
     exit(0);
   }
 
@@ -356,7 +407,8 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   timeout = p.get<int>("timeout");
   zookeeper_timeout = p.get<int>("zookeeper_timeout");
   interconnect_timeout = p.get<int>("interconnect_timeout");
-  program_name = common::util::get_program_name();
+  daemon = p.exist("daemon");
+  program_name = common::get_program_name();
   z = p.get<std::string>("zookeeper");
   session_pool_expire = p.get<int>("pool_expire");
   session_pool_size = p.get<int>("pool_size");
@@ -368,7 +420,7 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   if (!bind_address.empty()) {
     eth = bind_address;
   } else if (!bind_if.empty()) {
-    bind_address = eth = common::util::get_ip(bind_if.c_str());
+    bind_address = eth = common::get_ip(bind_if.c_str());
   } else {
     bind_address = "0.0.0.0";
     eth = jubatus::server::common::get_default_v4_address();
@@ -387,13 +439,13 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
     exit(1);
   }
 
-  if ((!logdir.empty()) && (!common::util::is_writable(logdir.c_str()))) {
+  if ((!logdir.empty()) && (!common::is_writable(logdir.c_str()))) {
     std::cerr << "can't create log file: " << strerror(errno) << std::endl;
     exit(1);
   }
-  set_log_destination(common::util::get_program_name());
+  set_log_destination(common::get_program_name());
 
-  boot_message(common::util::get_program_name());
+  boot_message(common::get_program_name());
 }
 
 proxy_argv::proxy_argv()
@@ -413,7 +465,7 @@ void proxy_argv::boot_message(const std::string& progname) const {
   ss << "starting " << progname << " " << VERSION << " RPC server at " << eth
       << ":" << port << '\n';
   ss << "    pid                  : " << getpid() << '\n';
-  ss << "    user                 : " << common::util::get_user_name() << '\n';
+  ss << "    user                 : " << common::get_user_name() << '\n';
   ss << "    timeout              : " << timeout << '\n';
   ss << "    zookeeper timeout    : " << zookeeper_timeout << '\n';
   ss << "    interconnect timeout : " << interconnect_timeout << '\n';
@@ -444,6 +496,14 @@ void proxy_argv::set_log_destination(const std::string& progname) const {
     google::SetLogSymlink(loglevel, symlink.str().c_str());
     google::SetStderrLogging(google::FATAL);
   }
+}
+
+std::string get_proxy_identifier(const proxy_argv& a) {
+  std::stringstream ss;
+  ss << a.eth;
+  ss << "_";
+  ss << a.port;
+  return ss.str();
 }
 
 void register_lock_service(

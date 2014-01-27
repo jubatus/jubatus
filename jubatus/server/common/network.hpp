@@ -43,6 +43,9 @@ class network_address {
 typedef std::vector<jubatus::util::lang::shared_ptr<network_address> >
   address_list;
 
+void get_ip(const char* nic, std::string& out);
+std::string get_ip(const char* nic);
+
 address_list get_network_address();
 
 std::string get_default_v4_address(

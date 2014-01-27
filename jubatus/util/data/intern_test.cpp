@@ -34,7 +34,7 @@
 #include "./intern.h"
 
 #include <climits>
-#include <fstream>
+#include <sstream>
 #include <string>
 #include <algorithm>
 
@@ -43,8 +43,6 @@
 using namespace std;
 using namespace jubatus::util::data;
 using namespace jubatus::util::data::serialization;
-
-static const char* tmp_file="./tmp";
 
 TEST(intern_test, string) {
   srandom(time(NULL));
@@ -87,20 +85,20 @@ TEST(intern_test, serialize) {
   sort(ss.begin(),ss.end());
   ss.erase(unique(ss.begin(),ss.end()),ss.end());
 
+  stringstream stream;
+
   {
     // serialize
     intern<string> im;
     for (size_t i=0;i<ss.size();++i) im.key2id(ss[i]);
-    ofstream ofs(tmp_file);
-    binary_oarchive oa(ofs);
+    binary_oarchive oa(stream);
     oa<<im;
   }
   
   {
     // deserialize
     intern<string> im;
-    ifstream ifs(tmp_file);
-    binary_iarchive ia(ifs);
+    binary_iarchive ia(stream);
     ia>>im;
     EXPECT_EQ(ss.size(),im.size());
     for (size_t i=0;i<ss.size();++i) EXPECT_EQ(int(i),im.key2id(ss[i],false));

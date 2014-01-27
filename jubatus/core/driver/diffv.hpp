@@ -25,7 +25,7 @@ namespace driver {
 
 struct diffv {
  public:
-  diffv(int c, const storage::features3_t& w)
+  diffv(int c, const storage::diff_t& w)
       : count(c),
         v(w) {
   }
@@ -36,10 +36,10 @@ struct diffv {
   }
 
   int count;
-  storage::features3_t v;
+  storage::diff_t v;
 
   diffv& operator/=(double d) {
-    this->v /= d;
+    this->v.diff /= d;
     return *this;
   }
 

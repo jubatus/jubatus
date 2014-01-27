@@ -48,7 +48,7 @@ void weight_manager::update_weight(const common::sfv_t& fv) {
 void weight_manager::get_weight(common::sfv_t& fv) const {
   for (common::sfv_t::iterator it = fv.begin(); it != fv.end(); ++it) {
     double global_weight = get_global_weight(it->first);
-    it->second *= global_weight;
+    it->second = static_cast<float>(it->second * global_weight);
   }
   fv.erase(remove_if(fv.begin(), fv.end(), is_zero()), fv.end());
 }

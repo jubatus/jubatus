@@ -628,9 +628,10 @@ void graph_wo_index::get_diff(diff_type& diff) const {
   get_diff_shortest_path_tree(diff.spt_query);
 }
 
-void graph_wo_index::set_mixed_and_clear_diff(const diff_type& mixed) {
+bool graph_wo_index::set_mixed_and_clear_diff(const diff_type& mixed) {
   set_mixed_and_clear_diff_eigen_score(mixed.eigen_vector_query);
   set_mixed_and_clear_diff_shortest_path_tree(mixed.spt_query);
+  return true;
 }
 
 void graph_wo_index::get_status(map<string, string>& status) const {

@@ -84,7 +84,8 @@ class sparse_matrix_storage_mixable
     return true;
   }
 
-  void put_diff_impl(const bool&) {
+  bool put_diff_impl(const bool&) {
+    return true;
   }
 
   void mix_impl(const bool&, const bool&, bool&) const {

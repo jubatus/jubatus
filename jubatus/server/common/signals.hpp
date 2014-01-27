@@ -22,7 +22,6 @@
 namespace jubatus {
 namespace server {
 namespace common {
-namespace util {
 
 void prepare_signal_handling();  // NOTE: this function won't work well
                                  //   if you have any other threads.
@@ -30,7 +29,6 @@ void prepare_signal_handling();  // NOTE: this function won't work well
                                  //   at the head of program.
 void set_action_on_term(jubatus::util::lang::function<void()> action);
 
-}  // namespace util
 }  // namespace common
 }  // namespace server
 }  // namespace jubatus

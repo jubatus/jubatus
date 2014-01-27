@@ -229,6 +229,12 @@ typedef jubatus::util::data::unordered_map<std::string, val3_t>
 typedef jubatus::util::data::unordered_map<std::string, map_feature_val3_t>
     map_features3_t;
 
+struct diff_t {
+  features3_t diff;
+  uint64_t version;
+  MSGPACK_DEFINE(diff, version);
+};
+
 namespace detail {
 
 template <class E, class F>

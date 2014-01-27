@@ -4,7 +4,7 @@ from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '0.5.0'
+VERSION = '0.5.1'
 APPNAME = 'jubatus'
 
 top = '.'
@@ -36,6 +36,10 @@ def options(opt):
   opt.add_option('--rpc-test-port-base',
                  default=60023, choices=map(str, xrange(1024, 65535 - 10)),
                  help='base port number for RPC module tests')
+
+  opt.add_option('--disable-eigen',
+                 action='store_true', default=False,
+                 dest='disable_eigen', help='disable internal Eigen and algorithms using it')
 
   opt.recurse(subdirs)
 
@@ -110,6 +114,10 @@ def configure(conf):
 
   conf.define('BUILD_DIR',  conf.bldnode.abspath())
 
+  conf.env.USE_EIGEN = not Options.options.disable_eigen
+  if conf.env.USE_EIGEN:
+    conf.define('JUBATUS_USE_EIGEN', 1)
+
   conf.recurse(subdirs)
 
 def build(bld):
@@ -140,7 +148,6 @@ def cpplint(ctx):
   src_dir = ctx.path.find_node('jubatus')
   file_list = []
   excludes = ['jubatus/server/third_party/*',
-              'jubatus/server/server/*_server.hpp',
               'jubatus/server/server/*_impl.cpp',
               'jubatus/server/server/*_proxy.cpp',
               'jubatus/server/server/*_client.hpp',

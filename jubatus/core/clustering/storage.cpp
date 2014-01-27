@@ -52,7 +52,7 @@ void storage::get_diff(diff_t& d) const {
   d.push_back(make_pair(name_, coreset));
 }
 
-void storage::set_mixed_and_clear_diff(const diff_t& diff) {
+bool storage::set_mixed_and_clear_diff(const diff_t& diff) {
   common_.clear();
   for (diff_t::const_iterator it = diff.begin(); it != diff.end(); ++it) {
     if (it->first != name_) {
@@ -61,6 +61,9 @@ void storage::set_mixed_and_clear_diff(const diff_t& diff) {
   }
   wplist all = get_all();
   increment_revision();
+
+  // TODO(kumagi): return false if we want reject the diff
+  return true;
 }
 
 void storage::mix(const diff_t& lhs, diff_t& ret) {

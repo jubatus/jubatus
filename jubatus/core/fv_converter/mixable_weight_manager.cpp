@@ -28,9 +28,11 @@ keyword_weights mixable_weight_manager::get_diff_impl() const {
   return get_model()->get_diff();
 }
 
-void mixable_weight_manager::put_diff_impl(
+bool mixable_weight_manager::put_diff_impl(
     const fv_converter::keyword_weights& diff) {
   get_model()->put_diff(diff);
+  // TODO(kumagi): should it be version aware?
+  return true;
 }
 
 void mixable_weight_manager::mix_impl(

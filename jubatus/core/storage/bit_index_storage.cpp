@@ -92,13 +92,14 @@ void bit_index_storage::get_diff(bit_table_t& diff) const {
   diff = bitvals_diff_;
 }
 
-void bit_index_storage::set_mixed_and_clear_diff(
+bool bit_index_storage::set_mixed_and_clear_diff(
     const bit_table_t& mixed_diff) {
   for (bit_table_t::const_iterator it = mixed_diff.begin();
       it != mixed_diff.end(); ++it) {
     bitvals_[it->first] = it->second;
   }
   bitvals_diff_.clear();
+  return true;
 }
 
 void bit_index_storage::mix(const bit_table_t& lhs, bit_table_t& rhs) const {

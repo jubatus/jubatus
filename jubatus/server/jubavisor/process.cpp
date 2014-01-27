@@ -34,7 +34,6 @@
 
 #include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
-#include "../common/util.hpp"
 
 using jubatus::util::lang::lexical_cast;
 
@@ -117,9 +116,6 @@ bool process::spawn_link(int p) {
     std::vector<const char*> arg_list;
     for (size_t i = 0; i < sizeof(argv) / sizeof(*argv); ++i) {
       arg_list.push_back(argv[i].c_str());
-    }
-    if (server_option_.join) {
-      arg_list.push_back("-j");
     }
     arg_list.push_back(NULL);
 

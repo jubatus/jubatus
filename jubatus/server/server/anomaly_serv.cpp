@@ -33,7 +33,6 @@
 #include "jubatus/core/anomaly/anomaly_factory.hpp"
 
 #include "../common/global_id_generator_standalone.hpp"
-#include "../common/util.hpp"
 #ifdef HAVE_ZOOKEEPER_H
 #include "../common/cht.hpp"
 #include "../common/global_id_generator_zk.hpp"

@@ -82,15 +82,15 @@ TEST(local_storage_mixture, get_diff) {
   s.set("b", "x", 123);
   s.set("b", "z", 456);
 
-  features3_t diff;
+  diff_t diff;
   s.get_diff(diff);
 
-  sort(diff.begin(), diff.end());
+  sort(diff.diff.begin(), diff.diff.end());
 
-  ASSERT_EQ(2u, diff.size());
+  ASSERT_EQ(2u, diff.diff.size());
 
-  EXPECT_EQ("a", diff[0].first);
-  feature_val3_t& a = diff[0].second;
+  EXPECT_EQ("a", diff.diff[0].first);
+  feature_val3_t& a = diff.diff[0].second;
   sort(a.begin(), a.end());
   ASSERT_EQ(3u, a.size());
   EXPECT_EQ("x", a[0].first);
@@ -100,8 +100,8 @@ TEST(local_storage_mixture, get_diff) {
   EXPECT_EQ("z", a[2].first);
   EXPECT_EQ(3, a[2].second.v1);
 
-  EXPECT_EQ("b", diff[1].first);
-  feature_val3_t& b = diff[1].second;
+  EXPECT_EQ("b", diff.diff[1].first);
+  feature_val3_t& b = diff.diff[1].second;
   sort(b.begin(), b.end());
   ASSERT_EQ(2u, b.size());
   EXPECT_EQ("x", b[0].first);
@@ -113,16 +113,18 @@ TEST(local_storage_mixture, get_diff) {
   s.set_average_and_clear_diff(diff);
 
   // update with average diff
-  features3_t avg_diff;
+  diff_t avg_diff;
   feature_val3_t a_diff;
   a_diff.push_back(make_pair("x", val3_t(2, 0, 0)));
   a_diff.push_back(make_pair("w", val3_t(4, 0, 0)));
-  avg_diff.push_back(make_pair("a", a_diff));
+  avg_diff.diff.push_back(make_pair("a", a_diff));
 
   feature_val3_t c_diff;
   c_diff.push_back(make_pair("x", val3_t(1, 0, 0)));
-  avg_diff.push_back(make_pair("c", c_diff));
+  avg_diff.diff.push_back(make_pair("c", c_diff));
 
+  // version should be adjusted if you want mix
+  avg_diff.version = s.get_version();
   s.set_average_and_clear_diff(avg_diff);
 
   // now the feature vector is expected as below
@@ -169,9 +171,9 @@ TEST(local_storage_mixture, get_diff) {
     EXPECT_EQ(1, v[0].second);
   }
   {
-    features3_t diff;
+    diff_t diff;
     s.get_diff(diff);
-    ASSERT_EQ(0u, diff.size());
+    ASSERT_EQ(0u, diff.diff.size());
   }
 }
 

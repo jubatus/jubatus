@@ -40,5 +40,6 @@
 #include <jubatus/client/graph_client.hpp>
 #include <jubatus/client/anomaly_client.hpp>
 #include <jubatus/client/nearest_neighbor_client.hpp>
+#include <jubatus/client/clustering_client.hpp>
 
 #endif  // JUBATUS_CLIENT_HPP_

@@ -63,7 +63,7 @@ shared_ptr<anomaly_base> anomaly_factory::create_anomaly(
 
     lof_storage::config lof_conf;
     lof_conf.nearest_neighbor_num = conf.nearest_neighbor_num;
-    lof_conf.reverse_nearest_neighbor_num = conf.nearest_neighbor_num;
+    lof_conf.reverse_nearest_neighbor_num = conf.reverse_nearest_neighbor_num;
 
     return shared_ptr<anomaly_base>(new lof(
         lof_conf,
@@ -75,7 +75,7 @@ shared_ptr<anomaly_base> anomaly_factory::create_anomaly(
 
     light_lof::config lof_conf;
     lof_conf.nearest_neighbor_num = conf.nearest_neighbor_num;
-    lof_conf.reverse_nearest_neighbor_num = conf.nearest_neighbor_num;
+    lof_conf.reverse_nearest_neighbor_num = conf.reverse_nearest_neighbor_num;
 
     jubatus::util::lang::shared_ptr<table::column_table> nearest_neighbor_table(
         new table::column_table);

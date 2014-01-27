@@ -90,7 +90,8 @@ class graph_impl : public graph_base {
   void get_diff(std::string& diff) {
   }
 
-  void set_mixed_and_clear_diff(std::string& mixed) {
+  bool set_mixed_and_clear_diff(std::string& mixed) {
+    return true;
   }
 };
 
