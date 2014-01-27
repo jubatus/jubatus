@@ -7,6 +7,7 @@ RPM Packaging
 
   sudo yum groupinstall 'Development Tools'
   sudo yum install git-core ruby rpm-build rpmdevtools spectool createrepo
+  sudo yum install oniguruma-devel
 
 2. Modify ``package-config`` to specify which version to build. See below for details.
 
