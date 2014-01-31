@@ -29,14 +29,14 @@ namespace core {
 namespace classifier {
 
 normal_herd::normal_herd(classifier_base::storage_ptr storage)
-    : classifier_base(storage, true) {
+    : classifier_base(storage) {
   config_.C = 0.1f;
 }
 
 normal_herd::normal_herd(
     const classifier_config& config,
     classifier_base::storage_ptr storage)
-    : classifier_base(storage, true),
+    : classifier_base(storage),
       config_(config) {
 }
 

@@ -38,7 +38,7 @@ class classifier_base {
  public:
   typedef jubatus::util::lang::shared_ptr<storage::storage_base> storage_ptr;
 
-  classifier_base(storage_ptr storage, bool use_covars);
+  classifier_base(storage_ptr storage);
   virtual ~classifier_base();
   virtual void train(const common::sfv_t& fv, const std::string& label) = 0;
 
@@ -84,7 +84,6 @@ class classifier_base {
 
  private:
   jubatus::util::lang::shared_ptr<driver::linear_function_mixer> mixable_;
-  bool use_covars_;
 };
 
 }  // namespace classifier

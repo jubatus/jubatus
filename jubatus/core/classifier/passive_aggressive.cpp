@@ -25,7 +25,7 @@ namespace core {
 namespace classifier {
 
 passive_aggressive::passive_aggressive(classifier_base::storage_ptr storage)
-    : classifier_base(storage, false) {
+    : classifier_base(storage) {
 }
 
 void passive_aggressive::train(const common::sfv_t& sfv, const string& label) {
