@@ -68,9 +68,6 @@ class anomaly_base {
   virtual std::string type() const = 0;
   virtual void register_mixables_to_holder(
       framework::mixable_holder& holder) const = 0;
-
- protected:
-  static const uint32_t NEIGHBOR_NUM;
 };
 
 }  // namespace anomaly

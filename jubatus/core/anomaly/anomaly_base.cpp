@@ -25,8 +25,6 @@ namespace jubatus {
 namespace core {
 namespace anomaly {
 
-const uint32_t anomaly_base::NEIGHBOR_NUM = 10;
-
 anomaly_base::anomaly_base() {
 }
 
