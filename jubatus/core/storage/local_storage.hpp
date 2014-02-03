@@ -79,12 +79,11 @@ class local_storage : public storage_base {
 
   MSGPACK_DEFINE(tbl_, class2id_);
 
- protected:
+ private:
   // map_features3_t tbl_;
   id_features3_t tbl_;
   common::key_manager class2id_;
 
- private:
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
