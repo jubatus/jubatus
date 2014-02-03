@@ -52,10 +52,9 @@ class bit_vector_nearest_neighbor_base : public nearest_neighbor_base {
       std::vector<std::pair<std::string, float> >& ids,
       uint64_t ret_num) const;
 
- protected:
+ private:
   virtual table::bit_vector hash(const common::sfv_t& sfv) const = 0;
 
- private:
   void fill_schema(std::vector<table::column_type>& schema);
   table::const_bit_vector_column& bit_vector_column() const;
 

@@ -56,7 +56,7 @@ class minhash : public bit_vector_nearest_neighbor_base {
     return "minhash";
   }
 
- protected:
+ private:
   virtual table::bit_vector hash(const common::sfv_t& sfv) const;
 };
 
