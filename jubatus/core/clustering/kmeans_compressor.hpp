@@ -31,13 +31,14 @@ class kmeans_compressor : public compressor {
 
   void compress(const wplist& src, csize_t bsize, csize_t dstsize, wplist& dst);
 
- protected:
+ public:
   virtual double get_probability(
       const weighted_point& p,
       const weighted_point& nearest_bp,
       double weight_sum,
       double squared_min_dist_sum);
 
+ private:
   void get_bicriteria(
       const wplist& src,
       csize_t bsize,
