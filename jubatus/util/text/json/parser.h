@@ -154,7 +154,6 @@ private:
 
   void error(const std::string& msg);
 
-  std::istream& is;
   std::istreambuf_iterator<char> it, end;
 
   int lineno, charno;

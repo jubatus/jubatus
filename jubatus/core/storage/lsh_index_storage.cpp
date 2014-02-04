@@ -110,14 +110,6 @@ float calc_euclidean_distance(
   return std::sqrt(norm * norm + entry.norm * entry.norm - 2 * dot);
 }
 
-lsh_master_table_t extract_diff(const string& serialized) {
-  lsh_master_table_t diff;
-  istringstream iss(serialized);
-  jubatus::util::data::serialization::binary_iarchive bi(iss);
-  bi >> diff;
-  return diff;
-}
-
 void retrieve_hit_rows_from_table(
     uint64_t hash,
     const lsh_table_t& table,

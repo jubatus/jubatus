@@ -117,7 +117,7 @@ public:
 };
 
 json_parser::json_parser(std::istream& is)
-  : is(is), it(is), end(), lineno(1), charno(1), cbuf(-1)
+  : it(is), end(), lineno(1), charno(1), cbuf(-1)
 {
   buf_len = 256;
   if ((buf = static_cast<char*>(malloc(buf_len))) == 0)
