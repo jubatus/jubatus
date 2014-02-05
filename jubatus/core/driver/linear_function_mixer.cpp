@@ -87,6 +87,10 @@ bool linear_function_mixer::put_diff_impl(const diffv& v) {
   return get_model()->set_average_and_clear_diff(v.v);
 }
 
+storage::version linear_function_mixer::get_version() const {
+  return get_model()->get_version();
+}
+
 void linear_function_mixer::clear() {
 }
 

@@ -119,6 +119,10 @@ class lof_storage {
   bool set_mixed_and_clear_diff(const lof_table_t& mixed_diff);
   void mix(const lof_table_t& lhs, lof_table_t& rhs) const;
 
+  storage::version get_version() const {
+    return storage::version();
+  }
+
   template<class Buffer>
   void pack(msgpack::packer<Buffer>& packer) const {
     packer.pack(*this);

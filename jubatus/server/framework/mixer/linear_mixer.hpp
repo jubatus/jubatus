@@ -105,7 +105,6 @@ class linear_mixer : public mixer {
   unsigned int tick_threshold_;
 
   unsigned int counter_;
-  unsigned int mix_count_;
   jubatus::util::system::time::clock_time ticktime_;
 
   bool is_running_;

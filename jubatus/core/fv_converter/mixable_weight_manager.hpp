@@ -36,6 +36,12 @@ class mixable_weight_manager : public framework::mixable<
       const fv_converter::keyword_weights& lhs,
       const fv_converter::keyword_weights& rhs,
       fv_converter::keyword_weights& acc) const;
+
+  storage::version get_version() const {
+    // TODO(kumagi): it should return precise version
+    return storage::version();
+  }
+
   void clear();
 };
 
