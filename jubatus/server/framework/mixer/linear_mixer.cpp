@@ -57,20 +57,20 @@ namespace mixer {
 namespace {
 
 class linear_communication_impl : public linear_communication {
-public:
+ public:
   linear_communication_impl(
-    const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
-    const string& type,
-    const string& name,
-    int timeout_sec,
-    const pair<string, int>& my_id);
+      const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
+      const string& type,
+      const string& name,
+      int timeout_sec,
+      const pair<string, int>& my_id);
 
   size_t update_members();
   jubatus::util::lang::shared_ptr<common::try_lockable> create_lock();
   void get_diff(common::mprpc::rpc_result_object& a) const;
   void put_diff(
-    const vector<byte_buffer>& a,
-    common::mprpc::rpc_result_object& result) const;
+      const vector<byte_buffer>& a,
+      common::mprpc::rpc_result_object& result) const;
   byte_buffer get_model();
 
   bool register_active_list() const {
@@ -83,7 +83,7 @@ public:
     return true;
   }
 
-private:
+ private:
   jubatus::util::lang::shared_ptr<server::common::lock_service> zk_;
   string type_;
   string name_;
@@ -93,16 +93,16 @@ private:
 };
 
 linear_communication_impl::linear_communication_impl(
-  const jubatus::util::lang::shared_ptr<server::common::lock_service>& zk,
-  const string& type,
-  const string& name,
-  int timeout_sec,
-  const pair<string, int>& my_id)
-  : zk_(zk),
-    type_(type),
-    name_(name),
-    timeout_sec_(timeout_sec),
-    my_id_(my_id) {
+    const jubatus::util::lang::shared_ptr<server::common::lock_service>& zk,
+    const string& type,
+    const string& name,
+    int timeout_sec,
+    const pair<string, int>& my_id)
+    : zk_(zk),
+      type_(type),
+      name_(name),
+      timeout_sec_(timeout_sec),
+      my_id_(my_id) {
 }
 
 jubatus::util::lang::shared_ptr<common::try_lockable>
@@ -110,7 +110,7 @@ linear_communication_impl::create_lock() {
   string path;
   common::build_actor_path(path, type_, name_);
   return jubatus::util::lang::shared_ptr<common::try_lockable>(
-    new common::lock_service_mutex(*zk_, path + "/master_lock"));
+      new common::lock_service_mutex(*zk_, path + "/master_lock"));
 }
 
 size_t linear_communication_impl::update_members() {
@@ -119,7 +119,7 @@ size_t linear_communication_impl::update_members() {
   string members = "";
   for (size_t i = 0; i < servers_.size(); ++i) {
     members += "[" + servers_[i].first + ":"
-      + jubatus::util::lang::lexical_cast<string>(servers_[i].second) + "] ";
+        + jubatus::util::lang::lexical_cast<string>(servers_[i].second) + "] ";
   }
 #endif
   return servers_.size();
@@ -159,7 +159,7 @@ byte_buffer linear_communication_impl::get_model() {
 }
 
 void linear_communication_impl::get_diff(
-  common::mprpc::rpc_result_object& result) const {
+    common::mprpc::rpc_result_object& result) const {
   // TODO(beam2d): to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
 #ifndef NDEBUG
@@ -172,8 +172,8 @@ void linear_communication_impl::get_diff(
 }
 
 void linear_communication_impl::put_diff(
-  const vector<byte_buffer>& mixed,
-  common::mprpc::rpc_result_object& result) const {
+    const vector<byte_buffer>& mixed,
+    common::mprpc::rpc_result_object& result) const {
   // TODO(beam2d): to be replaced to new client with socket connection pooling
   server::common::mprpc::rpc_mclient client(servers_, timeout_sec_);
 #ifndef NDEBUG
@@ -200,27 +200,27 @@ string server_list(const vector<pair<string, uint16_t> >& servers) {
 
 jubatus::util::lang::shared_ptr<linear_communication>
 linear_communication::create(
-  const jubatus::util::lang::shared_ptr<server::common::lock_service>& zk,
-  const string& type,
-  const string& name,
-  int timeout_sec,
-  const pair<string, int>& my_id) {
-  return jubatus::util::lang::shared_ptr<linear_communication_impl>(
-    new linear_communication_impl(zk, type, name, timeout_sec, my_id));
+    const jubatus::util::lang::shared_ptr<server::common::lock_service>& zk,
+    const string& type,
+    const string& name,
+    int timeout_sec,
+    const pair<string, int>& my_id) {
+    return jubatus::util::lang::shared_ptr<linear_communication_impl>(
+        new linear_communication_impl(zk, type, name, timeout_sec, my_id));
 }
 
 linear_mixer::linear_mixer(
-  jubatus::util::lang::shared_ptr<linear_communication> communication,
-  unsigned int count_threshold,
-  unsigned int tick_threshold)
-  : communication_(communication),
-    count_threshold_(count_threshold),
-    tick_threshold_(tick_threshold),
-    counter_(0),
-    ticktime_(get_clock_time()),
-    is_running_(false),
-    is_obsolete_(true),
-    t_(jubatus::util::lang::bind(&linear_mixer::stabilizer_loop, this)) {
+    jubatus::util::lang::shared_ptr<linear_communication> communication,
+    unsigned int count_threshold,
+    unsigned int tick_threshold)
+    : communication_(communication),
+      count_threshold_(count_threshold),
+      tick_threshold_(tick_threshold),
+      counter_(0),
+      ticktime_(get_clock_time()),
+      is_running_(false),
+      is_obsolete_(true),
+      t_(jubatus::util::lang::bind(&linear_mixer::stabilizer_loop, this)) {
 }
 
 linear_mixer::~linear_mixer() {
@@ -245,7 +245,7 @@ void linear_mixer::register_api(rpc_server_t& server) {
 }
 
 void linear_mixer::set_mixable_holder(
-  jubatus::util::lang::shared_ptr<core::framework::mixable_holder> m) {
+    jubatus::util::lang::shared_ptr<core::framework::mixable_holder> m) {
   mixable_holder_ = m;
 }
 
