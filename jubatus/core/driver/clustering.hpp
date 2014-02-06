@@ -34,7 +34,7 @@ namespace driver {
 class clustering {
  public:
   clustering(
-      core::clustering::clustering* clustering_method,
+      jubatus::util::lang::shared_ptr<core::clustering::clustering> clustering_method,
       jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
           converter);
   virtual ~clustering();

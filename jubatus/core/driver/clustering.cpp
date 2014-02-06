@@ -34,7 +34,7 @@ using jubatus::util::lang::shared_ptr;
 using fv_converter::datum;
 
 clustering::clustering(
-    core::clustering::clustering* clustering_method,
+    shared_ptr<core::clustering::clustering> clustering_method,
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : mixable_holder_(new framework::mixable_holder),
       converter_(converter),
