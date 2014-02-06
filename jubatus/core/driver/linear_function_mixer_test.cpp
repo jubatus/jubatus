@@ -129,7 +129,7 @@ diffv make_diff(float v1, float v2, float v3, uint64_t version, size_t count) {
   storage::feature_val3_t c;
   c.push_back(make_pair(string("l1"), storage::val3_t(v1, v2, v3)));
   diff.v.diff.push_back(make_pair(string("f1"), c));
-  diff.v.version = version;
+  diff.v.expect_version.set_number_unsafe(version);
   diff.count = count;
   return diff;
 }

@@ -18,6 +18,8 @@
 
 #include <sstream>
 #include <gtest/gtest.h>
+#include "../../util/lang/shared_ptr.h"
+#include "../common/version.hpp"
 
 using std::stringstream;
 using jubatus::core::common::byte_buffer;
@@ -72,7 +74,9 @@ class mixable_int : public mixable<int_model, int> {
   }
 
   storage::version get_version() const {
-    return storage::version();
+    storage::version v;
+    v.set_number_unsafe(100);
+    return v;
   }
 
  private:
@@ -118,6 +122,13 @@ TEST(mixable, trivial) {
   m.put_diff(mixed);
 
   EXPECT_EQ(20, m.get_model()->value);
+}
+
+TEST(mixable, get_version_override) {
+  jubatus::util::lang::shared_ptr<mixable0> m(new mixable_int);
+  storage::version v;
+  v.set_number_unsafe(100u);
+  EXPECT_EQ(m->get_version(), v);
 }
 
 }  // namespace framework

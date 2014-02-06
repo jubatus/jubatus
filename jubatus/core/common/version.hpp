@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <msgpack.hpp>
+#include <ostream>
 #include "jubatus/util/data/serialization.h"
 
 namespace jubatus {
@@ -31,6 +32,23 @@ class version {
   void increment();
   uint64_t get_number() const;
   MSGPACK_DEFINE(version_number_);
+
+  friend std::ostream& operator<<(std::ostream& os, const version& v) {
+    os << "(version)" << v.version_number_;
+    return os;
+  }
+
+  void set_number_unsafe(uint64_t n) {
+    // used for test only
+    version_number_ = n;
+  }
+
+  friend bool operator==(const version& lhs, const version& rhs) {
+    return lhs.version_number_ == rhs.version_number_;
+  }
+  friend bool operator<(const version& lhs, const version& rhs) {
+    return lhs.version_number_ < rhs.version_number_;
+  }
 
  private:
   uint64_t version_number_;
