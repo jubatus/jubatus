@@ -71,6 +71,10 @@ class mixable_int : public mixable<int_model, int> {
     diff_ += n;
   }
 
+  storage::version get_version() const {
+    return storage::version();
+  }
+
  private:
   int diff_;
 };

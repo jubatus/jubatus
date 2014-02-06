@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
+#include "../../../core/common/version.hpp"
 #include "../../../core/common/byte_buffer.hpp"
 #include "../../../core/framework/mixable.hpp"
 #include "linear_mixer.hpp"
@@ -145,6 +146,9 @@ struct mixable_string : public core::framework::mixable<
   void push(const string&) {}
   void save(std::ostream&) {}
   void load(std::istream&) {}
+  core::storage::version get_version() const {
+    return core::storage::version();
+  }
   void clear() {}
 };
 

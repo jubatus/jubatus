@@ -316,7 +316,7 @@ void linear_mixer::stabilizer_loop() {
             ss << "[";
             std::vector<version> versions = mixable_holder_->get_versions();
             for (size_t i = 0; i < versions.size(); ++i) {
-              ss << versions[i].get_version();
+              ss << versions[i].get_number();
               if (i < versions.size() - 1) {
                 ss << ", ";
               }

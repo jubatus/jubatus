@@ -124,7 +124,7 @@ TEST(local_storage_mixture, get_diff) {
   avg_diff.diff.push_back(make_pair("c", c_diff));
 
   // version should be adjusted if you want mix
-  avg_diff.version = s.get_version();
+  avg_diff.version = s.get_version().get_number();
   s.set_average_and_clear_diff(avg_diff);
 
   // now the feature vector is expected as below

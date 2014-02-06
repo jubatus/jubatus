@@ -213,6 +213,7 @@ class column_table {
       it->dump();
     }
   }
+
   std::string dump_json() const {
     jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     std::stringstream ss;

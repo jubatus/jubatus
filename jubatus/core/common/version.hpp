@@ -29,7 +29,7 @@ class version {
  public:
   version();
   void increment();
-  uint64_t get_version() const;
+  uint64_t get_number() const;
   MSGPACK_DEFINE(version_number_);
 
  private:

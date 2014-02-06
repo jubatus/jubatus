@@ -54,9 +54,7 @@ class mixable0 {
   virtual std::string get_pull_argument() const = 0;
   virtual std::string pull(const std::string&) const = 0;
   virtual void push(const std::string&) = 0;
-  virtual storage::version get_version() const {
-    return storage::version();
-  }
+  virtual storage::version get_version() const = 0;
 
   virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
   virtual void unpack(msgpack::object o) = 0;
@@ -212,7 +210,7 @@ class mixable : public mixable0 {
     }
   }
 
-  virtual storage::version get_version() const = 0;
+  storage::version get_version() const = 0;
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
     model_->pack(packer);

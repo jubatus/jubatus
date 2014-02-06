@@ -83,6 +83,10 @@ class storage_mock_base : public storage::storage_base {
   void set_average_and_clear_diff(const features3_t&) {
   }
 
+  storage::version get_version() const {
+    return storage::version();
+  }
+
   virtual void clear() {
   }
 
