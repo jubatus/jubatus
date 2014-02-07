@@ -88,10 +88,10 @@ class linear_communication_impl : public linear_communication {
  private:
   jubatus::util::lang::shared_ptr<server::common::lock_service> zk_;
   mutable jubatus::util::concurrent::mutex m_;
-  string type_;
-  string name_;
-  int timeout_sec_;
-  pair<string, int> my_id_;
+  const string type_;
+  const string name_;
+  const int timeout_sec_;
+  const pair<string, int> my_id_;
   vector<pair<string, int> > servers_;
 };
 
@@ -403,10 +403,10 @@ void linear_mixer::mix() {
   using jubatus::util::system::time::clock_time;
   using jubatus::util::system::time::get_clock_time;
 
-  clock_time start = get_clock_time();
+  const clock_time start = get_clock_time();
   size_t s = 0;
 
-  size_t servers_size = communication_->update_members();
+  const size_t servers_size = communication_->update_members();
   if (servers_size == 0) {
     LOG(WARNING) << "no other server.";
     communication_->register_active_list();
