@@ -38,7 +38,7 @@ class classifier_base {
  public:
   typedef jubatus::util::lang::shared_ptr<storage::storage_base> storage_ptr;
 
-  classifier_base(storage_ptr storage);
+  explicit classifier_base(storage_ptr storage);
   virtual ~classifier_base();
   virtual void train(const common::sfv_t& fv, const std::string& label) = 0;
 
