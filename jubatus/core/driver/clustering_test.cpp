@@ -43,12 +43,23 @@ namespace core {
 namespace driver {
 
 class clustering_test
-    : public ::testing::TestWithParam<shared_ptr<driver::clustering> > {
+    : public ::testing::TestWithParam<pair<string, string> > {
  protected:
   void SetUp() {
-    clustering_ = GetParam();
+    std::cout << GetParam().first << ": " << GetParam().second << std::endl;
+    const pair<string, string> param = GetParam();
+    clustering_config conf;  // TODO(kumagi): is default enough?
+    conf.compressor_method = param.first;
+    clustering_.reset(
+        new driver::clustering(
+            shared_ptr<core::clustering::clustering>(
+                new core::clustering::clustering("dummy",
+                                                 param.second,
+                                                 conf)),
+            make_fv_converter()));
   }
   void TearDown() {
+    clustering_.reset();
   }
   shared_ptr<driver::clustering> clustering_;
 };
@@ -81,34 +92,45 @@ TEST_P(clustering_test, push) {
   }
 }
 
-vector<shared_ptr<driver::clustering> > create_clusterings() {
-  vector<shared_ptr<driver::clustering> > method;
-
-  vector<pair<string, string> > method_pattern;
-  method_pattern.push_back(make_pair("simple", "kmeans"));
-  method_pattern.push_back(make_pair("simple", "gmm"));
-  method_pattern.push_back(make_pair("compressive_kmeans", "kmeans"));
-  method_pattern.push_back(make_pair("compressive_gmm", "gmm"));
-
-  for (size_t i = 0; i < method_pattern.size(); ++i) {
-    clustering_config conf;  // TODO(kumagi): is default  enough?
-    conf.compressor_method = method_pattern[i].first;
-    method.push_back(
-        shared_ptr<driver::clustering>(
-            new driver::clustering(
-                shared_ptr<core::clustering::clustering>(
-                    new core::clustering::clustering("dummy",
-                                                     method_pattern[i].second,
-                                                     conf)),
-                make_fv_converter())
-        ));
+TEST_F(clustering_test, save_load) {
+  {
+    core::fv_converter::datum d;
+    vector<datum> datums;
+    datums.push_back(single_datum("a", 1));
+    clustering_->push(datums);
   }
-  return method;
+
+  // save to a buffer
+  msgpack::sbuffer sbuf;
+  msgpack::packer<msgpack::sbuffer> packer(sbuf);
+  clustering_->get_mixable_holder()->pack(packer);
+
+  // restart the driver
+  TearDown();
+  SetUp();
+
+  // unpack the buffer
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, sbuf.data(), sbuf.size());
+  clustering_->get_mixable_holder()->unpack(unpacked.get());
+
+  // TODO(kumagi): it should check whether unpacked model is valid
+}
+
+vector<pair<string, string> > parameter_list() {
+  vector<pair<string, string> > ret;
+  ret.push_back(make_pair("simple", "kmeans"));
+  ret.push_back(make_pair("compressive_kmeans", "kmeans"));
+#ifdef JUBATUS_USE_EIGEN
+  ret.push_back(make_pair("simple", "gmm"));
+  ret.push_back(make_pair("compressive_gmm", "gmm"));
+#endif
+  return ret;
 }
 
 INSTANTIATE_TEST_CASE_P(clustering_test_instance,
     clustering_test,
-    testing::ValuesIn(create_clusterings()));
+    testing::ValuesIn(parameter_list()));
 
 }  // namespace driver
 }  // namespace core
