@@ -74,17 +74,20 @@ class linear_communication_impl : public linear_communication {
   byte_buffer get_model();
 
   bool register_active_list() const {
+    common::unique_lock lk(m_);
     register_active(*zk_.get(), type_, name_, my_id_.first, my_id_.second);
     return true;
   }
 
   bool unregister_active_list() const {
+    common::unique_lock lk(m_);
     unregister_active(*zk_.get(), type_, name_, my_id_.first, my_id_.second);
     return true;
   }
 
  private:
   jubatus::util::lang::shared_ptr<server::common::lock_service> zk_;
+  mutable jubatus::util::concurrent::mutex m_;
   string type_;
   string name_;
   int timeout_sec_;
@@ -108,12 +111,14 @@ linear_communication_impl::linear_communication_impl(
 jubatus::util::lang::shared_ptr<common::try_lockable>
 linear_communication_impl::create_lock() {
   string path;
+  common::unique_lock lk(m_);
   common::build_actor_path(path, type_, name_);
   return jubatus::util::lang::shared_ptr<common::try_lockable>(
       new common::lock_service_mutex(*zk_, path + "/master_lock"));
 }
 
 size_t linear_communication_impl::update_members() {
+  common::unique_lock lk(m_);
   common::get_all_nodes(*zk_, type_, name_, servers_);
 #ifndef NDEBUG
   string members = "";
@@ -127,11 +132,14 @@ size_t linear_communication_impl::update_members() {
 
 byte_buffer linear_communication_impl::get_model() {
   update_members();
-  if (servers_.empty() || servers_.size() == 1) {
-    return byte_buffer();
-  }
 
   for (;;) {
+    common::unique_lock lk(m_);
+
+    if (servers_.empty() || servers_.size() == 1) {
+      return byte_buffer();
+    }
+
     // use time as pseudo random number(it should enough)
     const jubatus::util::system::time::clock_time now(get_clock_time());
     string server_ip;
@@ -163,6 +171,7 @@ byte_buffer linear_communication_impl::get_model() {
 void linear_communication_impl::get_diff(
     common::mprpc::rpc_result_object& result) const {
   // TODO(beam2d): to be replaced to new client with socket connection pooling
+  common::unique_lock lk(m_);
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
 #ifndef NDEBUG
   for (size_t i = 0; i < servers_.size(); i++) {
@@ -176,6 +185,7 @@ void linear_communication_impl::get_diff(
 void linear_communication_impl::put_diff(
     const vector<byte_buffer>& mixed,
     common::mprpc::rpc_result_object& result) const {
+  common::unique_lock lk(m_);
   // TODO(beam2d): to be replaced to new client with socket connection pooling
   server::common::mprpc::rpc_mclient client(servers_, timeout_sec_);
 #ifndef NDEBUG
@@ -258,6 +268,10 @@ void linear_mixer::register_api(rpc_server_t& server) {
       jubatus::util::lang::bind(&linear_mixer::get_model,
                                 this,
                                 jubatus::util::lang::_1));
+  server.add<bool(void)>(  // NOLINT
+      "do_mix",
+      jubatus::util::lang::bind(&linear_mixer::do_mix,
+                                this));
 }
 
 void linear_mixer::set_mixable_holder(
@@ -280,6 +294,33 @@ void linear_mixer::stop() {
     lk.unlock();
     t_.join();
   }
+}
+
+bool linear_mixer::do_mix() {
+  {
+    common::unique_lock lk(m_);
+    counter_ = 0;
+    ticktime_ = get_clock_time();
+    lk.unlock();
+  }
+  try {
+    LOG(INFO) << "forced to mix by user RPC";
+    jubatus::util::lang::shared_ptr<common::try_lockable> zklock =
+        communication_->create_lock();
+    while (true) {
+      if (zklock->try_lock()) {
+        mix();
+        return true;
+      }
+    }
+  } catch (const jubatus::core::common::exception::jubatus_exception& e) {
+    LOG(ERROR) << e.diagnostic_information(true);
+  } catch (const std::exception& e) {
+    LOG(WARNING) << "exception in mix: " << e.what();
+  } catch (...) {
+    LOG(ERROR) << "unexpected error";
+  }
+  return false;
 }
 
 void linear_mixer::updated() {
@@ -358,6 +399,7 @@ void linear_mixer::stabilizer_loop() {
 }
 
 void linear_mixer::mix() {
+  // this method is thread safe
   using jubatus::util::system::time::clock_time;
   using jubatus::util::system::time::get_clock_time;
 
