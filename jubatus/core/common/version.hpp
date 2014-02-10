@@ -18,8 +18,8 @@
 #define JUBATUS_CORE_COMMON_VERSION_HPP_
 
 #include <stdint.h>
-#include <msgpack.hpp>
 #include <ostream>
+#include <msgpack.hpp>
 #include "jubatus/util/data/serialization.h"
 
 namespace jubatus {
