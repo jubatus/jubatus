@@ -205,8 +205,8 @@ linear_communication::create(
     const string& name,
     int timeout_sec,
     const pair<string, int>& my_id) {
-    return jubatus::util::lang::shared_ptr<linear_communication_impl>(
-        new linear_communication_impl(zk, type, name, timeout_sec, my_id));
+  return jubatus::util::lang::shared_ptr<linear_communication_impl>(
+      new linear_communication_impl(zk, type, name, timeout_sec, my_id));
 }
 
 linear_mixer::linear_mixer(
@@ -229,19 +229,19 @@ linear_mixer::~linear_mixer() {
 
 void linear_mixer::register_api(rpc_server_t& server) {
   server.add<vector<byte_buffer>(int)>(  // NOLINT
-    "get_diff",
-    jubatus::util::lang::bind(
-      &linear_mixer::get_diff, this, jubatus::util::lang::_1));
+      "get_diff",
+      jubatus::util::lang::bind(
+          &linear_mixer::get_diff, this, jubatus::util::lang::_1));
   server.add<int(vector<byte_buffer>)>(
-    "put_diff",
-    jubatus::util::lang::bind(&linear_mixer::put_diff,
-                              this,
-                              jubatus::util::lang::_1));
+      "put_diff",
+      jubatus::util::lang::bind(&linear_mixer::put_diff,
+                                this,
+                                jubatus::util::lang::_1));
   server.add<byte_buffer(int)>(  // NOLINT
-    "get_model",
-    jubatus::util::lang::bind(&linear_mixer::get_model,
-                              this,
-                              jubatus::util::lang::_1));
+      "get_model",
+      jubatus::util::lang::bind(&linear_mixer::get_model,
+                                this,
+                                jubatus::util::lang::_1));
 }
 
 void linear_mixer::set_mixable_holder(
@@ -278,15 +278,15 @@ void linear_mixer::updated() {
 void linear_mixer::get_status(server_base::status_t& status) const {
   scoped_lock lk(m_);
   status["linear_mixer.count"] =
-    jubatus::util::lang::lexical_cast<string>(counter_);
+      jubatus::util::lang::lexical_cast<string>(counter_);
   status["linear_mixer.ticktime"] =
-    jubatus::util::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
+      jubatus::util::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
 }
 
 void linear_mixer::stabilizer_loop() {
   while (true) {
     jubatus::util::lang::shared_ptr<common::try_lockable> zklock =
-      communication_->create_lock();
+        communication_->create_lock();
     try {
       common::unique_lock lk(m_);
       if (!is_running_) {
@@ -387,7 +387,7 @@ void linear_mixer::mix() {
           }
           diffs.push_back(result.response[i].as<vector<byte_buffer> >());
           successes.push_back(
-            make_pair(result.error[i].host(), result.error[i].port()));
+              make_pair(result.error[i].host(), result.error[i].port()));
         }
 
         {  // success info message
@@ -451,7 +451,7 @@ void linear_mixer::mix() {
   }
 
   {
-    clock_time finish = get_clock_time();
+    const clock_time finish = get_clock_time();
     LOG(INFO) << "mixed with " << servers_size << " servers in "
               << static_cast<double>(finish - start) << " secs, " << s
               << " bytes (serialized data) has been put.";
@@ -489,7 +489,7 @@ byte_buffer linear_mixer::get_model(int a) const {
 }
 
 void linear_mixer::update_model() {
-  byte_buffer model_serialized = communication_->get_model();
+  const byte_buffer model_serialized = communication_->get_model();
 
   if (model_serialized.size() == 0) {
     // it means "no other server"
