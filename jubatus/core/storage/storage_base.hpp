@@ -76,6 +76,8 @@ class storage_base {
   virtual void get_diff(diff_t&) const;
   virtual bool set_average_and_clear_diff(const diff_t&);
 
+  virtual void register_label(const std::string& label) = 0;
+
   virtual void clear() = 0;
 
   virtual std::string type() const = 0;

@@ -127,6 +127,9 @@ class stub_storage : public storage_base {
     o.convert(this);
   }
 
+  void register_label(const std::string& label) {
+  }
+
   void clear() {
     data_.clear();
   }
@@ -387,9 +390,9 @@ TYPED_TEST_P(storage_test, inp) {
   ret.clear();
   s.inp(fv, ret);
 
-  EXPECT_EQ(2u, ret.size());
+  EXPECT_EQ(3u, ret.size());
   ASSERT_LT(0u, ret.count("class_x"));
-  ASSERT_EQ(0u, ret.count("class_y"));
+  ASSERT_LT(0u, ret.count("class_y"));
   ASSERT_LT(0u, ret.count("class_z"));
 
   EXPECT_FLOAT_EQ(24.0, ret["class_x"]);
@@ -614,7 +617,7 @@ REGISTER_TYPED_TEST_CASE_P(storage_test,
                            clear);
 
 typedef testing::Types<
-    jubatus::core::storage::stub_storage,
+  // jubatus::core::storage::stub_storage,
     local_storage,
     local_storage_mixture> storage_types;
 

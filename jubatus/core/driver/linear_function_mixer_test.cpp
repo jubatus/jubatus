@@ -83,6 +83,9 @@ class storage_mock_base : public storage::storage_base {
   void set_average_and_clear_diff(const features3_t&) {
   }
 
+  void register_label(const std::string& label) {
+  }
+
   virtual void clear() {
   }
 

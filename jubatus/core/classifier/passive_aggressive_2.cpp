@@ -43,10 +43,12 @@ void passive_aggressive_2::train(const common::sfv_t& sfv,
   float loss = 1.f + margin;
 
   if (loss < 0.f) {
+    get_storage()->register_label(label);
     return;
   }
   float sfv_norm = squared_norm(sfv);
   if (sfv_norm == 0.f) {
+    get_storage()->register_label(label);
     return;
   }
   update_weight(
