@@ -134,15 +134,19 @@ byte_buffer linear_communication_impl::get_model() {
   for (;;) {
     // use time as pseudo random number(it should enough)
     const jubatus::util::system::time::clock_time now(get_clock_time());
-    const size_t target = now.usec % servers_.size();
-    const string& ip = servers_[target].first;
-    const int port = servers_[target].second;
-    if (ip == my_id_.first && port == my_id_.second) {
-      // avoid get model from myself
-      continue;
-    }
-
+    string ip_;
+    int port_;
     try {
+      const size_t target = now.usec % servers_.size();
+      const string& ip = servers_[target].first;
+      const int port = servers_[target].second;
+      ip_ = ip;
+      port_ = port;
+      if (ip == my_id_.first && port == my_id_.second) {
+        // avoid get model from myself
+        continue;
+      }
+
       msgpack::rpc::client cli(ip, port);
       msgpack::rpc::future result(cli.call("get_model", 0));
       const byte_buffer got_model_data(result.get<byte_buffer>());
@@ -150,7 +154,7 @@ byte_buffer linear_communication_impl::get_model() {
                 << " from server[" << ip << ":" << port << "] ";
       return got_model_data;
     } catch (const std::exception& e) {
-      LOG(ERROR) << "get_model from " << ip << ":" << port
+      LOG(ERROR) << "get_model from " << ip_ << ":" << port_
                  << " failed: " << e.what();
     } catch (...) {
       LOG(ERROR) << "get_model: failed with unknown error";
@@ -195,6 +199,20 @@ string server_list(const vector<pair<string, uint16_t> >& servers) {
   }
   return out.str();
 }
+
+string version_list(const std::vector<version>& versions)  {
+  stringstream ss;
+  ss << "[";
+  for (size_t i = 0; i < versions.size(); ++i) {
+    ss << versions[i].get_number();
+    if (i < versions.size() - 1) {
+      ss << ", ";
+    }
+  }
+  ss << "]";
+  return ss.str();
+}
+
 
 }  // namespace
 
@@ -311,19 +329,8 @@ void linear_mixer::stabilizer_loop() {
           mix();
 
           // print versions of mixables
-          {
-            stringstream ss;
-            ss << "[";
-            std::vector<version> versions = mixable_holder_->get_versions();
-            for (size_t i = 0; i < versions.size(); ++i) {
-              ss << versions[i].get_number();
-              if (i < versions.size() - 1) {
-                ss << ", ";
-              }
-            }
-            ss << "]";
-            LOG(INFO) << ".... mix done. versions" << ss.str();
-          }
+          LOG(INFO) << ".... mix done. versions"
+                    << version_list(mixable_holder_->get_versions());
         }
       }
 
@@ -526,24 +533,31 @@ int linear_mixer::put_diff(
     total_size += unpacked[i].size();
   }
 
+  // print versions of mixables
+  const string versions = version_list(mixable_holder_->get_versions());
+
   // if all put_diff returns true, this model is not obsolete
   if (not_obsolete) {
     if (is_obsolete_) {  // if it was obsolete, register as active
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
-                << "I got latest model. So I become active" << std::flush;
+                << "I got latest model. So I become active. "
+                << "versions" << versions;
       communication_->register_active_list();
     } else {
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
-                << "my model is still up to date";
+                << "my model is still up to date. "
+                << "versions" << versions;
     }
   } else {
     if (!is_obsolete_) {  // it it was not obslete, delete from active list
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
-                << "I'm obsolete. I become inactive" << std::flush;
+                << "I'm obsolete. I become inactive. "
+                << "versions" << versions;
       communication_->unregister_active_list();
     } else {
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
-                << "my model is still obsolete";
+                << "my model is still obsolete. "
+                << "versions" << versions;
     }
   }
   is_obsolete_ = !not_obsolete;
