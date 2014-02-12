@@ -19,30 +19,43 @@
 
 #include "../framework/mixable.hpp"
 #include "weight_manager.hpp"
+#include "../common/version.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
+struct versioned_weight_diff {
+  versioned_weight_diff();
+  explicit versioned_weight_diff(const fv_converter::keyword_weights& w);
+  versioned_weight_diff(const fv_converter::keyword_weights& w,
+                        const storage::version& v);
+  versioned_weight_diff& merge(const versioned_weight_diff& target);
+
+  MSGPACK_DEFINE(weights_, version_);
+
+  fv_converter::keyword_weights weights_;
+  storage::version version_;
+};
+
 class mixable_weight_manager : public framework::mixable<
     fv_converter::weight_manager,
-    fv_converter::keyword_weights> {
+    fv_converter::versioned_weight_diff> {
  public:
-  fv_converter::keyword_weights get_diff_impl() const;
+  fv_converter::versioned_weight_diff get_diff_impl() const;
 
-  bool put_diff_impl(const fv_converter::keyword_weights& diff);
+  bool put_diff_impl(const versioned_weight_diff& diff);
 
   void mix_impl(
-      const fv_converter::keyword_weights& lhs,
-      const fv_converter::keyword_weights& rhs,
-      fv_converter::keyword_weights& acc) const;
-
-  storage::version get_version() const {
-    // TODO(kumagi): it should return precise version
-    return storage::version();
-  }
-
+      const versioned_weight_diff& lhs,
+      const versioned_weight_diff& rhs,
+      versioned_weight_diff& acc) const;
   void clear();
+
+  storage::version get_version() const;
+
+ private:
+  storage::version version_;
 };
 
 }  // namespace fv_converter
