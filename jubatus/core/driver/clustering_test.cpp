@@ -43,18 +43,17 @@ namespace core {
 namespace driver {
 
 class clustering_test
-    : public ::testing::TestWithParam<pair<string, string> > {
+    : public ::testing::TestWithParam<shared_ptr<pair<string, string> > > {
  protected:
   void SetUp() {
-    std::cout << GetParam().first << ": " << GetParam().second << std::endl;
-    const pair<string, string> param = GetParam();
+    shared_ptr<pair<string, string> > param = GetParam();
     clustering_config conf;  // TODO(kumagi): is default enough?
-    conf.compressor_method = param.first;
+    conf.compressor_method = param->first;
     clustering_.reset(
         new driver::clustering(
             shared_ptr<core::clustering::clustering>(
                 new core::clustering::clustering("dummy",
-                                                 param.second,
+                                                 param->second,
                                                  conf)),
             make_fv_converter()));
   }
@@ -92,7 +91,7 @@ TEST_P(clustering_test, push) {
   }
 }
 
-TEST_F(clustering_test, save_load) {
+TEST_P(clustering_test, save_load) {
   {
     core::fv_converter::datum d;
     vector<datum> datums;
@@ -117,14 +116,21 @@ TEST_F(clustering_test, save_load) {
   // TODO(kumagi): it should check whether unpacked model is valid
 }
 
-vector<pair<string, string> > parameter_list() {
-  vector<pair<string, string> > ret;
-  ret.push_back(make_pair("simple", "kmeans"));
-  ret.push_back(make_pair("compressive_kmeans", "kmeans"));
+vector<shared_ptr<pair<string, string> > > parameter_list() {
+  vector<shared_ptr<pair<string, string> > > ret;
+  ret.push_back(shared_ptr<pair<string, string> >(
+                  new pair<string, string>("simple", "kmeans")));
+  ret.push_back(shared_ptr<pair<string, string> >(
+                  new pair<string, string>("compressive_kmeans", "kmeans")));
 #ifdef JUBATUS_USE_EIGEN
-  ret.push_back(make_pair("simple", "gmm"));
-  ret.push_back(make_pair("compressive_gmm", "gmm"));
+  ret.push_back(shared_ptr<pair<string, string> >(
+                  new pair<string, string>("simple", "gmm")));
+  ret.push_back(shared_ptr<pair<string, string> >(
+                  new pair<string, string>("compressive_gmm", "gmm")));
 #endif
+  for (size_t i = 0; i < ret.size(); ++i) {
+    std::cout << ret[i]->first << ":" << ret[i]->second << std::endl;
+  }
   return ret;
 }
 
