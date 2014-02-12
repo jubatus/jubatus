@@ -111,6 +111,32 @@ TEST_P(nearest_neighbor_test, neighbor_row2_from_data) {
   ASSERT_EQ("b", result[1].first);
 }
 
+TEST_P(nearest_neighbor_test, neighbor_row_and_similar_row) {
+  // neighbor_row and similar_row should return the same order result
+  const size_t num = 200;
+  for (size_t i = 0; i < num; ++i) {
+    const string key = lexical_cast<string>(i);
+    datum d = single_str_datum("x" + key, "a");
+    d.string_values_.push_back(make_pair("y", "b"));
+    d.string_values_.push_back(make_pair("z" + key + key, "c"));
+    nearest_neighbor_->set_row(key, d);
+  }
+
+  for (size_t i = 0; i < 200; ++i) {
+    const string key = lexical_cast<string>(i);
+    datum d = single_str_datum("x", key);
+
+    vector<pair<string, float> > nr_result =
+        nearest_neighbor_->neighbor_row_from_data(d, 100);
+    vector<pair<string, float> > sr_result =
+        nearest_neighbor_->similar_row(d, 100);
+    ASSERT_EQ(nr_result.size(), sr_result.size());
+    for (size_t j = 0; j < nr_result.size(); ++j) {
+      ASSERT_EQ(nr_result[j].first, sr_result[j].first);
+    }
+  }
+}
+
 TEST_P(nearest_neighbor_test, clear) {
   for (int i = 0; i < 100; ++i) {
     nearest_neighbor_->set_row("a" + lexical_cast<string>(i),
