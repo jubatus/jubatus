@@ -68,6 +68,8 @@ class anomaly_base {
   virtual std::string type() const = 0;
   virtual void register_mixables_to_holder(
       framework::mixable_holder& holder) const = 0;
+
+  virtual uint64_t find_max_int_id() const;
 };
 
 }  // namespace anomaly
