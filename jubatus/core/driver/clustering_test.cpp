@@ -116,6 +116,46 @@ TEST_P(clustering_test, save_load) {
   // TODO(kumagi): it should check whether unpacked model is valid
 }
 
+TEST_P(clustering_test, do_clustering) {
+  jubatus::util::math::random::mtrand r;
+  vector<datum> one;
+  vector<datum> two;
+
+  for (int j = 0; j < 100 ; ++j) {
+    datum a, b;
+    a.num_values_.push_back(make_pair("a", -10 + r.next_gaussian() * 20));
+    a.num_values_.push_back(make_pair("b", -200 + r.next_gaussian() * 400));
+    b.num_values_.push_back(make_pair("c", -50 + r.next_gaussian() * 100));
+    b.num_values_.push_back(make_pair("d", -25 + r.next_gaussian() * 50));
+    one.push_back(a);
+    two.push_back(b);
+  }
+  clustering_->push(one);
+  clustering_->push(two);
+
+  clustering_->do_clustering();
+  {
+    vector<datum> result = clustering_->get_k_center();
+    ASSERT_EQ(2, result.size());
+    if (result[0].num_values_[0].first == "a"
+        || result[0].num_values_[0].first == "b") {
+      // result[0] is {"a":xx, "b":yy} cluster
+      if (result[0].num_values_[0].first == "a") {
+        ASSERT_EQ("b", result[0].num_values_[1].first);
+      } else {
+        ASSERT_EQ("a", result[0].num_values_[1].first);
+      }
+    } else {
+      // result[1] is {"a":xx, "b":yy} cluster
+      if (result[1].num_values_[0].first == "a") {
+        ASSERT_EQ("b", result[1].num_values_[1].first);
+      } else {
+        ASSERT_EQ("a", result[1].num_values_[1].first);
+      }
+    }
+  }
+}
+
 vector<shared_ptr<pair<string, string> > > parameter_list() {
   vector<shared_ptr<pair<string, string> > > ret;
   ret.push_back(shared_ptr<pair<string, string> >(

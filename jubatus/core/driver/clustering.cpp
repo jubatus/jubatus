@@ -88,6 +88,10 @@ size_t clustering::get_revision() const {
   return clustering_->get_revision();
 }
 
+void clustering::do_clustering() {
+  clustering_->do_clustering();
+}
+
 // private
 
 common::sfv_t clustering::to_sfv(const datum& dat) {

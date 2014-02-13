@@ -56,6 +56,9 @@ class clustering {
 
   size_t get_revision() const;
 
+  // for test only
+  void do_clustering();
+
   // TODO(beam2d): Implement clear().
 
  private:
