@@ -141,15 +141,20 @@ byte_buffer linear_communication_impl::get_model() {
     }
 
     // use time as pseudo random number(it should enough)
-    const jubatus::util::system::time::clock_time now(get_clock_time());
     string server_ip;
     int server_port;
     try {
+
+      if (servers_.empty() || servers_.size() == 1) {
+        return byte_buffer();
+      }
+
+      const jubatus::util::system::time::clock_time now(get_clock_time());
       const size_t target = now.usec % servers_.size();
       server_ip = servers_[target].first;
       server_port = servers_[target].second;
       if (server_ip == my_id_.first && server_port == my_id_.second) {
-        // avoid get model from myself
+        // avoid get model from itself
         continue;
       }
 
@@ -529,7 +534,7 @@ byte_buffer linear_mixer::get_model(int a) const {
   msgpack::packer<msgpack::sbuffer> pk(packed);
   mixable_holder_->pack(pk);
 
-  LOG(INFO) << "sending leaning-model. size = "
+  LOG(INFO) << "sending learning-model. size = "
             << jubatus::util::lang::lexical_cast<string>(packed.size());
 
   return byte_buffer(packed.data(), packed.size());

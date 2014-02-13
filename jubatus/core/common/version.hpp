@@ -50,6 +50,16 @@ class version {
     version_number_ = 0;
   }
 
+  template<class Packer>
+  void pack(Packer& packer) const {
+    std::cerr << "packed:" << version_number_ << std::endl;
+    packer.pack(*this);
+  }
+
+  void unpack(msgpack::object o) {
+    o.convert(this);
+  }
+
  private:
   uint64_t version_number_;
 

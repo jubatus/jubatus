@@ -19,24 +19,10 @@
 
 #include "../framework/mixable.hpp"
 #include "weight_manager.hpp"
-#include "../common/version.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
-
-struct versioned_weight_diff {
-  versioned_weight_diff();
-  explicit versioned_weight_diff(const fv_converter::keyword_weights& w);
-  versioned_weight_diff(const fv_converter::keyword_weights& w,
-                        const storage::version& v);
-  versioned_weight_diff& merge(const versioned_weight_diff& target);
-
-  MSGPACK_DEFINE(weights_, version_);
-
-  fv_converter::keyword_weights weights_;
-  storage::version version_;
-};
 
 class mixable_weight_manager : public framework::mixable<
     fv_converter::weight_manager,
@@ -52,10 +38,9 @@ class mixable_weight_manager : public framework::mixable<
       versioned_weight_diff& acc) const;
   void clear();
 
-  storage::version get_version() const;
-
- private:
-  storage::version version_;
+  storage::version get_version() const {
+    return get_model()->get_version();
+  }
 };
 
 }  // namespace fv_converter
