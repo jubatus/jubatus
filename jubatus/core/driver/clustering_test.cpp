@@ -47,7 +47,7 @@ class clustering_test
  protected:
   void SetUp() {
     shared_ptr<pair<string, string> > param = GetParam();
-    clustering_config conf;  // TODO(kumagi): is default enough?
+    clustering_config conf;
     conf.compressor_method = param->first;
     clustering_.reset(
         new driver::clustering(
@@ -112,11 +112,9 @@ TEST_P(clustering_test, save_load) {
   msgpack::unpacked unpacked;
   msgpack::unpack(&unpacked, sbuf.data(), sbuf.size());
   clustering_->get_mixable_holder()->unpack(unpacked.get());
-
-  // TODO(kumagi): it should check whether unpacked model is valid
 }
 
-TEST_P(clustering_test, do_clustering) {
+TEST_P(clustering_test, get_k_center) {
   jubatus::util::math::random::mtrand r;
   vector<datum> one;
   vector<datum> two;
@@ -156,6 +154,51 @@ TEST_P(clustering_test, do_clustering) {
   }
 }
 
+TEST_P(clustering_test, get_nearest_center) {
+  jubatus::util::math::random::mtrand r;
+  vector<datum> one;
+  vector<datum> two;
+
+  for (int i = 0; i < 1000 ; ++i) {
+    datum x, y;
+    x.num_values_.push_back(make_pair("a", 10 + r.next_gaussian() * 20));
+    x.num_values_.push_back(make_pair("b", 1000 + r.next_gaussian() * 400));
+    y.num_values_.push_back(make_pair("c", -500000 - r.next_gaussian() * 100));
+    y.num_values_.push_back(make_pair("d", -10000 - r.next_gaussian() * 50));
+    one.push_back(x);
+    two.push_back(y);
+  }
+  clustering_->push(one);
+  clustering_->push(two);
+
+  clustering_->do_clustering();
+
+  {
+    vector<datum> result = clustering_->get_k_center();
+    ASSERT_EQ(2, result.size());
+  }
+
+  for (int i = 0; i < 100; ++i) {
+    {
+      datum x;
+      x.num_values_.push_back(make_pair("a", 10 + r.next_gaussian() * 20));
+      x.num_values_.push_back(make_pair("b", 1000 + r.next_gaussian() * 400));
+      datum expect_near_x = clustering_->get_nearest_center(x);
+      const vector<pair<string, double> >& result = expect_near_x.num_values_;
+      for (size_t i = 0; i < result.size(); ++i) {
+        if (result[i].first == "a") {
+          const double diff = result[i].second - 100;
+          ASSERT_GT(10, diff * diff);
+        } else if (result[i].first == "b") {
+          const double diff = result[i].second - 1000;
+          ASSERT_GT(1000, diff * diff);
+        }
+      }
+    }
+  }
+}
+
+
 vector<shared_ptr<pair<string, string> > > parameter_list() {
   vector<shared_ptr<pair<string, string> > > ret;
   ret.push_back(shared_ptr<pair<string, string> >(
@@ -168,9 +211,6 @@ vector<shared_ptr<pair<string, string> > > parameter_list() {
   ret.push_back(shared_ptr<pair<string, string> >(
                   new pair<string, string>("compressive_gmm", "gmm")));
 #endif
-  for (size_t i = 0; i < ret.size(); ++i) {
-    std::cout << ret[i]->first << ":" << ret[i]->second << std::endl;
-  }
   return ret;
 }
 
