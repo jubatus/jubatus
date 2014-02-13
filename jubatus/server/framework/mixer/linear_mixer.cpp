@@ -295,8 +295,9 @@ void linear_mixer::get_status(server_base::status_t& status) const {
   scoped_lock lk(m_);
   status["linear_mixer.count"] =
       jubatus::util::lang::lexical_cast<string>(counter_);
+  // since last mix
   status["linear_mixer.ticktime"] =
-      jubatus::util::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
+      jubatus::util::lang::lexical_cast<string>(ticktime_.sec);
 }
 
 void linear_mixer::stabilizer_loop() {
