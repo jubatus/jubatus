@@ -134,30 +134,28 @@ byte_buffer linear_communication_impl::get_model() {
   for (;;) {
     // use time as pseudo random number(it should enough)
     const jubatus::util::system::time::clock_time now(get_clock_time());
-    string ip_;
-    int port_;
+    string server_ip;
+    int server_port;
     try {
       const size_t target = now.usec % servers_.size();
-      const string& ip = servers_[target].first;
-      const int port = servers_[target].second;
-      ip_ = ip;
-      port_ = port;
-      if (ip == my_id_.first && port == my_id_.second) {
+      server_ip = servers_[target].first;
+      server_port = servers_[target].second;
+      if (server_ip == my_id_.first && server_port == my_id_.second) {
         // avoid get model from myself
         continue;
       }
 
-      msgpack::rpc::client cli(ip, port);
+      msgpack::rpc::client cli(server_ip, server_port);
       msgpack::rpc::future result(cli.call("get_model", 0));
       const byte_buffer got_model_data(result.get<byte_buffer>());
       LOG(INFO) << "got model(serialized data) " << got_model_data.size()
-                << " from server[" << ip << ":" << port << "] ";
+                << " from server[" << server_ip << ":" << server_port << "] ";
       return got_model_data;
     } catch (const std::exception& e) {
-      LOG(ERROR) << "get_model from " << ip_ << ":" << port_
-                 << " failed: " << e.what();
+      LOG(ERROR) << "get_model from " << server_ip << ":" << server_port
+                 << " failed: " << e.what() << " and retry.";
     } catch (...) {
-      LOG(ERROR) << "get_model: failed with unknown error";
+      LOG(ERROR) << "get_model: failed with unknown error. retry.";
     }
   }
 }
