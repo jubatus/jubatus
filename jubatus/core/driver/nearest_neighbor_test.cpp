@@ -122,9 +122,9 @@ TEST_P(nearest_neighbor_test, neighbor_row_and_similar_row) {
     nearest_neighbor_->set_row(key, d);
   }
 
-  for (size_t i = 0; i < 200; ++i) {
+  for (size_t i = 0; i < num; ++i) {
     const string key = lexical_cast<string>(i);
-    datum d = single_str_datum("x", key);
+    datum d = single_str_datum("x" + key, "a");
 
     vector<pair<string, float> > nr_result =
         nearest_neighbor_->neighbor_row_from_data(d, 100);
