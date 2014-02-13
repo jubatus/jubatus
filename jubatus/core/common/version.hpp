@@ -14,7 +14,11 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#ifndef JUBATUS_CORE_COMMON_VERSION_HPP_
+#define JUBATUS_CORE_COMMON_VERSION_HPP_
+
 #include <stdint.h>
+#include <ostream>
 #include <msgpack.hpp>
 #include "jubatus/util/data/serialization.h"
 
@@ -26,8 +30,25 @@ class version {
  public:
   version();
   void increment();
-  uint64_t get_version() const;
+  uint64_t get_number() const;
   MSGPACK_DEFINE(version_number_);
+
+  friend std::ostream& operator<<(std::ostream& os, const version& v) {
+    os << "(version)" << v.version_number_;
+    return os;
+  }
+
+  void set_number_unsafe(uint64_t n) {
+    // used for test only
+    version_number_ = n;
+  }
+
+  friend bool operator==(const version& lhs, const version& rhs) {
+    return lhs.version_number_ == rhs.version_number_;
+  }
+  friend bool operator<(const version& lhs, const version& rhs) {
+    return lhs.version_number_ < rhs.version_number_;
+  }
 
  private:
   uint64_t version_number_;
@@ -42,3 +63,5 @@ class version {
 }  // namespace storage
 }  // namespace core
 }  // namespace jubatus
+
+#endif  // JUBATUS_CORE_COMMON_VERSION_HPP_

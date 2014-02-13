@@ -27,7 +27,7 @@ void version::increment() {
   ++version_number_;
 }
 
-uint64_t version::get_version() const {
+uint64_t version::get_number() const {
   return version_number_;
 }
 

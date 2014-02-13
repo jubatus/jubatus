@@ -29,7 +29,7 @@ def build(bld):
     source = source,
     target = 'jubatus_clustering',
     includes = '.',
-    use = 'jubatus_util MSGPACK'
+    use = 'jubatus_util jubacommon MSGPACK'
     )
 
   test_cases = [

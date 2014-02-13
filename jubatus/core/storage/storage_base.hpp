@@ -24,6 +24,7 @@
 #include <utility>
 #include <stdexcept>
 #include "storage_type.hpp"
+#include "../common/version.hpp"
 #include "../common/exception.hpp"
 #include "../common/type.hpp"
 
@@ -60,6 +61,8 @@ class storage_base {
 
   virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
   virtual void unpack(msgpack::object o) = 0;
+
+  virtual version get_version() const = 0;
 
   virtual void update(
       const std::string& feature,

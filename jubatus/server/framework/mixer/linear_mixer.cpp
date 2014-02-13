@@ -29,6 +29,7 @@
 #include "jubatus/util/lang/bind.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/system/time_util.h"
+#include "jubatus/core/common/version.hpp"
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 #include "../../common/membership.hpp"
@@ -42,6 +43,7 @@ using std::stringstream;
 using std::pair;
 using std::make_pair;
 using jubatus::core::common::byte_buffer;
+using jubatus::core::storage::version;
 using jubatus::util::concurrent::scoped_lock;
 using jubatus::util::concurrent::scoped_rlock;
 using jubatus::util::concurrent::scoped_wlock;
@@ -117,7 +119,7 @@ size_t linear_communication_impl::update_members() {
   string members = "";
   for (size_t i = 0; i < servers_.size(); ++i) {
     members += "[" + servers_[i].first + ":"
-      + jubatus::util::lang::lexical_cast<string>(servers_[i].second) + "] ";
+        + jubatus::util::lang::lexical_cast<string>(servers_[i].second) + "] ";
   }
 #endif
   return servers_.size();
@@ -132,26 +134,28 @@ byte_buffer linear_communication_impl::get_model() {
   for (;;) {
     // use time as pseudo random number(it should enough)
     const jubatus::util::system::time::clock_time now(get_clock_time());
-    const size_t target = now.usec % servers_.size();
-    const string& ip = servers_[target].first;
-    const int port = servers_[target].second;
-    if (ip == my_id_.first && port == my_id_.second) {
-      // avoid get model from myself
-      continue;
-    }
-
+    string server_ip;
+    int server_port;
     try {
-      msgpack::rpc::client cli(ip, port);
+      const size_t target = now.usec % servers_.size();
+      server_ip = servers_[target].first;
+      server_port = servers_[target].second;
+      if (server_ip == my_id_.first && server_port == my_id_.second) {
+        // avoid get model from myself
+        continue;
+      }
+
+      msgpack::rpc::client cli(server_ip, server_port);
       msgpack::rpc::future result(cli.call("get_model", 0));
       const byte_buffer got_model_data(result.get<byte_buffer>());
       LOG(INFO) << "got model(serialized data) " << got_model_data.size()
-                << " from server[" << ip << ":" << port << "] ";
+                << " from server[" << server_ip << ":" << server_port << "] ";
       return got_model_data;
     } catch (const std::exception& e) {
-      LOG(ERROR) << "get_model from " << ip << ":" << port
-                   << " failed: " << e.what();
+      LOG(ERROR) << "get_model from " << server_ip << ":" << server_port
+                 << " failed: " << e.what() << " and retry.";
     } catch (...) {
-      LOG(ERROR) << "get_model: failed with unknown error";
+      LOG(ERROR) << "get_model: failed with unknown error. retry.";
     }
   }
 }
@@ -163,7 +167,7 @@ void linear_communication_impl::get_diff(
 #ifndef NDEBUG
   for (size_t i = 0; i < servers_.size(); i++) {
     DLOG(INFO) << "get diff from " << servers_[i].first << ":"
-        << servers_[i].second;
+               << servers_[i].second;
   }
 #endif
   result = client.call("get_diff", 0);
@@ -177,7 +181,7 @@ void linear_communication_impl::put_diff(
 #ifndef NDEBUG
   for (size_t i = 0; i < servers_.size(); i++) {
     DLOG(INFO) << "put diff to " << servers_[i].first << ":"
-        << servers_[i].second;
+               << servers_[i].second;
   }
 #endif
   result = client.call("put_diff", mixed);
@@ -193,6 +197,20 @@ string server_list(const vector<pair<string, uint16_t> >& servers) {
   }
   return out.str();
 }
+
+string version_list(const std::vector<version>& versions)  {
+  stringstream ss;
+  ss << "[";
+  for (size_t i = 0; i < versions.size(); ++i) {
+    ss << versions[i].get_number();
+    if (i < versions.size() - 1) {
+      ss << ", ";
+    }
+  }
+  ss << "]";
+  return ss.str();
+}
+
 
 }  // namespace
 
@@ -215,7 +233,6 @@ linear_mixer::linear_mixer(
       count_threshold_(count_threshold),
       tick_threshold_(tick_threshold),
       counter_(0),
-      mix_count_(0),
       ticktime_(get_clock_time()),
       is_running_(false),
       is_obsolete_(true),
@@ -230,7 +247,7 @@ void linear_mixer::register_api(rpc_server_t& server) {
   server.add<vector<byte_buffer>(int)>(  // NOLINT
       "get_diff",
       jubatus::util::lang::bind(
-        &linear_mixer::get_diff, this, jubatus::util::lang::_1));
+          &linear_mixer::get_diff, this, jubatus::util::lang::_1));
   server.add<int(vector<byte_buffer>)>(
       "put_diff",
       jubatus::util::lang::bind(&linear_mixer::put_diff,
@@ -277,9 +294,9 @@ void linear_mixer::updated() {
 void linear_mixer::get_status(server_base::status_t& status) const {
   scoped_lock lk(m_);
   status["linear_mixer.count"] =
-    jubatus::util::lang::lexical_cast<string>(counter_);
+      jubatus::util::lang::lexical_cast<string>(counter_);
   status["linear_mixer.ticktime"] =
-    jubatus::util::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
+      jubatus::util::lang::lexical_cast<string>(ticktime_.sec);  // since last mix
 }
 
 void linear_mixer::stabilizer_loop() {
@@ -308,7 +325,10 @@ void linear_mixer::stabilizer_loop() {
 
           lk.unlock();
           mix();
-          LOG(INFO) << ".... " << mix_count_ << "th mix done.";
+
+          // print versions of mixables
+          LOG(INFO) << ".... mix done. versions"
+                    << version_list(mixable_holder_->get_versions());
         }
       }
 
@@ -372,7 +392,7 @@ void linear_mixer::mix() {
           }
           diffs.push_back(result.response[i].as<vector<byte_buffer> >());
           successes.push_back(
-            make_pair(result.error[i].host(), result.error[i].port()));
+              make_pair(result.error[i].host(), result.error[i].port()));
         }
 
         {  // success info message
@@ -436,11 +456,10 @@ void linear_mixer::mix() {
   }
 
   {
-    clock_time finish = get_clock_time();
+    const clock_time finish = get_clock_time();
     LOG(INFO) << "mixed with " << servers_size << " servers in "
               << static_cast<double>(finish - start) << " secs, " << s
               << " bytes (serialized data) has been put.";
-    mix_count_++;
   }
 }
 
@@ -475,7 +494,7 @@ byte_buffer linear_mixer::get_model(int a) const {
 }
 
 void linear_mixer::update_model() {
-  byte_buffer model_serialized = communication_->get_model();
+  const byte_buffer model_serialized = communication_->get_model();
 
   if (model_serialized.size() == 0) {
     // it means "no other server"
@@ -512,24 +531,31 @@ int linear_mixer::put_diff(
     total_size += unpacked[i].size();
   }
 
+  // print versions of mixables
+  const string versions = version_list(mixable_holder_->get_versions());
+
   // if all put_diff returns true, this model is not obsolete
   if (not_obsolete) {
     if (is_obsolete_) {  // if it was obsolete, register as active
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
-                << "I got latest model. So I become active" << std::flush;
+                << "I got latest model. So I become active. "
+                << "versions" << versions;
       communication_->register_active_list();
     } else {
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
-                << "my model is still up to date";
+                << "my model is still up to date. "
+                << "versions" << versions;
     }
   } else {
     if (!is_obsolete_) {  // it it was not obslete, delete from active list
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
-                << "I'm obsolete. I become inactive" << std::flush;
+                << "I'm obsolete. I become inactive. "
+                << "versions" << versions;
       communication_->unregister_active_list();
     } else {
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
-                << "my model is still obsolete";
+                << "my model is still obsolete. "
+                << "versions" << versions;
     }
   }
   is_obsolete_ = !not_obsolete;

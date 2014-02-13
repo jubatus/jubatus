@@ -88,6 +88,9 @@ class lsh_index_storage {
   size_t all_lsh_num() const {
     return shift_.size();
   }
+  storage::version get_version() const {
+    return storage::version();
+  }
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);

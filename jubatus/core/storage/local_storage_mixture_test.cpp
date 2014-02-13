@@ -124,7 +124,7 @@ TEST(local_storage_mixture, get_diff) {
   avg_diff.diff.push_back(make_pair("c", c_diff));
 
   // version should be adjusted if you want mix
-  avg_diff.version = s.get_version();
+  avg_diff.expect_version = s.get_version();
   s.set_average_and_clear_diff(avg_diff);
 
   // now the feature vector is expected as below
@@ -175,6 +175,25 @@ TEST(local_storage_mixture, get_diff) {
     s.get_diff(diff);
     ASSERT_EQ(0u, diff.diff.size());
   }
+}
+
+TEST(local_storage_mixture, put_diff) {
+  local_storage_mixture s;
+  ASSERT_EQ(0u, s.get_version().get_number());
+  diff_t empty_diff;
+
+  // this update will increment version
+  s.set_average_and_clear_diff(empty_diff);
+  ASSERT_EQ(1u, s.get_version().get_number());
+
+  // this update will NOT increment version
+  s.set_average_and_clear_diff(empty_diff);
+  ASSERT_EQ(1u, s.get_version().get_number());
+
+  // this update will increment version
+  empty_diff.expect_version.set_number_unsafe(1LLU);
+  s.set_average_and_clear_diff(empty_diff);
+  ASSERT_EQ(2u, s.get_version().get_number());
 }
 
 }  // namespace storage
