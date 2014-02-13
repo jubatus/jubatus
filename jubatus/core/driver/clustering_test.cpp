@@ -16,6 +16,7 @@
 
 #include <vector>
 #include <string>
+#include <set>
 #include <utility>
 #include <gtest/gtest.h>
 
@@ -32,6 +33,7 @@
 using std::vector;
 using std::string;
 using std::pair;
+using std::set;
 using std::make_pair;
 using jubatus::util::lang::shared_ptr;
 using jubatus::core::fv_converter::datum;
@@ -153,6 +155,85 @@ TEST_P(clustering_test, get_k_center) {
     }
   }
 }
+struct check_points {
+  float a;
+  float b;
+  check_points(float a_, float b_)
+    : a(a_), b(b_) {}
+  bool operator<(const check_points& rhs) const {
+    if (a < rhs.a) {
+      return true;
+    } else if (rhs.a < a) {
+      return false;
+    } else if (b < rhs.b) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
+
+struct check_point_compare {
+  bool operator()(const check_points& lhs, const check_points& rhs) {
+    return lhs < rhs;
+  }
+};
+
+
+TEST_P(clustering_test, get_nearest_members) {
+  jubatus::util::math::random::mtrand r;
+  vector<datum> one;
+  vector<datum> two;
+
+  set<check_points, check_point_compare> points;
+
+  for (int i = 0; i < 1000 ; ++i) {
+    datum x, y;
+    float a = 10 + r.next_gaussian() * 20;
+    float b = 1000 + r.next_gaussian() * 400;
+    points.insert(check_points(a, b));
+
+    x.num_values_.push_back(make_pair("a", a));
+    x.num_values_.push_back(make_pair("b", b));
+    y.num_values_.push_back(make_pair("c", -500000 - r.next_gaussian() * 100));
+    y.num_values_.push_back(make_pair("d", -10000 - r.next_gaussian() * 50));
+    one.push_back(x);
+    two.push_back(y);
+  }
+  clustering_->push(one);
+  clustering_->push(two);
+
+  clustering_->do_clustering();
+
+  {
+    vector<datum> result = clustering_->get_k_center();
+    ASSERT_EQ(2u, result.size());
+  }
+
+  for (set<check_points>::const_iterator it = points.begin();
+       it != points.end();
+       ++it) {
+    datum x;
+    x.num_values_.push_back(make_pair("a", it->a));
+    x.num_values_.push_back(make_pair("b", it->b));
+    core::clustering::cluster_unit result =
+        clustering_->get_nearest_members(x);
+
+    ASSERT_LT(1, result.size());
+    for (size_t i = 0; i < result.size(); ++i) {
+      const vector<pair<string, double> >& near_points =
+          result[i].second.num_values_;
+      ASSERT_EQ(2u, near_points.size());
+      ASSERT_EQ("a", near_points[0].first);
+      ASSERT_EQ("b", near_points[1].first);
+      ASSERT_NE(points.end(),
+                points.find(check_points(near_points[0].second,
+                                         near_points[1].second)));
+    }
+  }
+}
+
+
 
 TEST_P(clustering_test, get_nearest_center) {
   jubatus::util::math::random::mtrand r;
@@ -197,7 +278,6 @@ TEST_P(clustering_test, get_nearest_center) {
     }
   }
 }
-
 
 vector<shared_ptr<pair<string, string> > > parameter_list() {
   vector<shared_ptr<pair<string, string> > > ret;
