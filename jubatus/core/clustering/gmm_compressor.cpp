@@ -25,12 +25,14 @@ namespace compressor {
 
 double gmm_compressor::get_probability(
     const weighted_point& p,
+    double min_dist,
     const weighted_point& bp,
+    double bp_score,
     double weight_sum,
     double squared_min_dist_sum) {
   return std::ceil(weight_sum * (
-      5.0 / bp.free_double + std::pow(p.free_double, 2) *
-      p.weight / squared_min_dist_sum));
+      5.0 / bp_score
+      + min_dist * min_dist * p.weight / squared_min_dist_sum));
 }
 
 }  // namespace compressor

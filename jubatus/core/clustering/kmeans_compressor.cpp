@@ -34,15 +34,29 @@ namespace core {
 namespace clustering {
 namespace compressor {
 
-bool compare_weight(weighted_point a, weighted_point b) {
-  return a.free_double > b.free_double;
-}
+namespace {
 
-kmeans_compressor::kmeans_compressor(const clustering_config& cfg)
-  : compressor(cfg) {
-}
+template <typename T, typename S>
+struct sort_by_first {
+  bool operator() (
+      const std::pair<T, S>& p1,
+      const std::pair<T, S>& p2) const {
+    return p1.first < p2.first;
+  }
+};
 
-kmeans_compressor::~kmeans_compressor() {
+template <typename T>
+void sort_by(const std::vector<double>& scores, std::vector<T>& array) {
+  assert(scores.size() == array.size());
+  std::vector<std::pair<double, T> > pairs(scores.size());
+  for (size_t i = 0; i < scores.size(); ++i) {
+    pairs[i].first = scores[i];
+    swap(pairs[i].second, array[i]);
+  }
+  std::sort(pairs.begin(), pairs.end(), sort_by_first<double, T>());
+  for (size_t i = 0; i < scores.size(); ++i) {
+    swap(pairs[i].second, array[i]);
+  }
 }
 
 void bicriteria_as_coreset(
@@ -50,6 +64,8 @@ void bicriteria_as_coreset(
     wplist bic,
     const size_t dstsize,
     wplist& dst) {
+  assert(dstsize >= dst.size());
+
   typedef wplist::const_iterator citer;
   typedef wplist::iterator iter;
   bic.resize(dstsize - dst.size());
@@ -70,6 +86,15 @@ void bicriteria_as_coreset(
       it->weight = 0;
     }
   }
+}
+
+}  // namespace
+
+kmeans_compressor::kmeans_compressor(const clustering_config& cfg)
+  : compressor(cfg) {
+}
+
+kmeans_compressor::~kmeans_compressor() {
 }
 
 void kmeans_compressor::compress(
@@ -107,9 +132,11 @@ void kmeans_compressor::get_bicriteria(
   std::vector<size_t> ind(bsize);
   while (resid.size() > 1 && dst.size() < dstsize) {
     weights.resize(resid.size());
-    for (wplist::iterator it = resid.begin(); it != resid.end(); ++it) {
+    for (wplist::const_iterator it = resid.begin(); it != resid.end(); ++it) {
       weights[it - resid.begin()] = it->weight;
     }
+
+    // Sample `bsize` points and insert them to the result
     discrete_distribution d(weights.begin(), weights.end());
     std::generate(ind.begin(), ind.end(), d);
 
@@ -118,15 +145,16 @@ void kmeans_compressor::get_bicriteria(
 
     for (std::vector<size_t>::iterator it = ind.begin();
          it != ind.end(); ++it) {
-      weighted_point p = resid[*it];
-      p.free_long = 0;
-      dst.push_back(p);
+      dst.push_back(resid[*it]);
     }
 
+    // Remove `r` nearest points from `resid`
+    std::vector<double> distances;
     for (wplist::iterator itr = resid.begin(); itr != resid.end(); ++itr) {
-      (*itr).free_double = min_dist(*itr, dst).second;
+      distances.push_back(-min_dist(*itr, dst).second);
     }
-    std::sort(resid.begin(), resid.end(), compare_weight);
+    // TODO(unno): use partial sort
+    sort_by(distances, resid);
     // TODO(unno): Is `r` lesser than 1.0?
     size_t size = std::min(resid.size(),
                            static_cast<size_t>(resid.size() * r));
@@ -140,16 +168,18 @@ void kmeans_compressor::get_bicriteria(
 
 double kmeans_compressor::get_probability(
     const weighted_point& p,
+    double min_dist,
     const weighted_point& bp,
+    double bp_score,
     double weight_sum,
     double squared_min_dist_sum) {
   return ceil(weight_sum * (
-      pow(p.free_double, 2) * p.weight / squared_min_dist_sum)) + 1;
+      min_dist * min_dist * p.weight / squared_min_dist_sum)) + 1;
 }
 
 void kmeans_compressor::bicriteria_to_coreset(
-    wplist& src,
-    wplist& bicriteria,
+    const wplist& src,
+    const wplist& bicriteria,
     size_t dstsize,
     wplist& dst) {
   if (bicriteria.size() == 0) {
@@ -158,22 +188,28 @@ void kmeans_compressor::bicriteria_to_coreset(
   }
   double weight_sum = 0;
   double squared_min_dist_sum = 0;
-  for (wplist::iterator it = src.begin(); it != src.end(); ++it) {
-    std::pair<int, double> m = min_dist(*it, bicriteria);
-    (*it).free_long = m.first;
-    (*it).free_double = m.second;
-    bicriteria.at((*it).free_long).free_double += (*it).weight;
-    squared_min_dist_sum += pow((*it).free_double, 2) * (*it).weight;
-    weight_sum += (*it).weight;
+  std::vector<size_t> nearest_indexes(src.size());
+  std::vector<double> nearest_distances(src.size());
+  std::vector<double> bicriteria_scores(bicriteria.size());
+  for (size_t i = 0; i < src.size(); ++i) {
+    std::pair<int, double> m = min_dist(src[i], bicriteria);
+    nearest_indexes[i] = m.first;
+    nearest_distances[i] = m.second;
+
+    bicriteria_scores[m.first] += src[i].weight;
+    squared_min_dist_sum += m.second * m.second * src[i].weight;
+    weight_sum += src[i].weight;
   }
   std::vector<double> weights;
   double sumw = 0;
-  double prob = 0;
-  for (wplist::iterator it = src.begin(); it != src.end(); ++it) {
-    weighted_point p = *it;
-    weighted_point bp = bicriteria.at(p.free_long);
-    prob = get_probability(p, bp, weight_sum, squared_min_dist_sum);
-    (*it).free_double = prob;
+  for (size_t i = 0; i < src.size(); ++i) {
+    double prob = get_probability(
+        src[i],
+        nearest_distances[i],
+        bicriteria[nearest_indexes[i]],
+        bicriteria_scores[nearest_indexes[i]],
+        weight_sum,
+        squared_min_dist_sum);
     weights.push_back(prob);
     sumw += prob;
   }
@@ -184,10 +220,10 @@ void kmeans_compressor::bicriteria_to_coreset(
   std::generate(ind.begin(), ind.end(), d);
 
   for (std::vector<size_t>::iterator it = ind.begin(); it != ind.end(); ++it) {
-    weighted_point sample = src.at(*it);
-    sample.weight = 1.0 / dstsize * sumw / sample.free_double * sample.weight;
-    sample.free_double = 0;
-    sample.free_long = 0;
+    size_t index = *it;
+    weighted_point sample = src[index];
+    double prob = weights[index] / sumw;
+    sample.weight *= 1.0 / dstsize / prob;
     dst.push_back(sample);
   }
 }
