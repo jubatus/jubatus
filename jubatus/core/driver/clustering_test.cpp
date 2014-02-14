@@ -45,17 +45,17 @@ namespace core {
 namespace driver {
 
 class clustering_test
-    : public ::testing::TestWithParam<shared_ptr<pair<string, string> > > {
+    : public ::testing::TestWithParam<pair<string, string> > {
  protected:
   void SetUp() {
-    shared_ptr<pair<string, string> > param = GetParam();
+    pair<string, string> param = GetParam();
     clustering_config conf;
-    conf.compressor_method = param->first;
+    conf.compressor_method = param.first;
     clustering_.reset(
         new driver::clustering(
             shared_ptr<core::clustering::clustering>(
                 new core::clustering::clustering("dummy",
-                                                 param->second,
+                                                 param.second,
                                                  conf)),
             make_fv_converter()));
   }
@@ -279,17 +279,13 @@ TEST_P(clustering_test, get_nearest_center) {
   }
 }
 
-vector<shared_ptr<pair<string, string> > > parameter_list() {
-  vector<shared_ptr<pair<string, string> > > ret;
-  ret.push_back(shared_ptr<pair<string, string> >(
-                  new pair<string, string>("simple", "kmeans")));
-  ret.push_back(shared_ptr<pair<string, string> >(
-                  new pair<string, string>("compressive_kmeans", "kmeans")));
+vector<pair<string, string> > parameter_list() {
+  vector<pair<string, string> > ret;
+  ret.push_back(make_pair("simple", "kmeans"));
+  ret.push_back(make_pair("compressive_kmeans", "kmeans"));
 #ifdef JUBATUS_USE_EIGEN
-  ret.push_back(shared_ptr<pair<string, string> >(
-                  new pair<string, string>("simple", "gmm")));
-  ret.push_back(shared_ptr<pair<string, string> >(
-                  new pair<string, string>("compressive_gmm", "gmm")));
+  ret.push_back(make_pair("simple", "gmm"));
+  ret.push_back(make_pair("compressive_gmm", "gmm"));
 #endif
   return ret;
 }
