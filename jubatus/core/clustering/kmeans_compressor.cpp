@@ -16,8 +16,6 @@
 
 #include "kmeans_compressor.hpp"
 
-#include <sys/time.h>
-
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
@@ -30,21 +28,6 @@ using std::max;
 using std::stack;
 using std::pair;
 using std::vector;
-
-stack<struct timeval> start_points;
-void timer_start() {
-  struct timeval s;
-  gettimeofday(&s, NULL);
-  start_points.push(s);
-}
-
-double timer_end() {
-  struct timeval e;
-  gettimeofday(&e, NULL);
-  struct timeval s = start_points.top();
-  start_points.pop();
-  return (e.tv_sec - s.tv_sec) + (e.tv_usec - s.tv_usec)*1.0E-6;
-}
 
 namespace jubatus {
 namespace core {
@@ -102,13 +85,10 @@ void kmeans_compressor::compress(
     concat(src, dst);
     return;
   }
-  timer_start();
   wplist bicriteria;
-  timer_start();
   get_bicriteria(src, bsize, dstsize, bicriteria);
   if (bicriteria.size() < dstsize) {
     wplist srcclone = src;
-    timer_start();
     bicriteria_to_coreset(srcclone, bicriteria,
                           dstsize - bicriteria.size(), dst);
   }
@@ -119,7 +99,6 @@ void kmeans_compressor::compress(
 
 void kmeans_compressor::get_bicriteria(
     const wplist& src, csize_t bsize, csize_t dstsize, wplist& dst) {
-  timer_start();
   dst.clear();
   wplist resid = src;
   vector<double> weights(src.size());
@@ -127,7 +106,6 @@ void kmeans_compressor::get_bicriteria(
   r = max(0.1, r);
   std::vector<size_t> ind(bsize);
   while (resid.size() > 1 && dst.size() < dstsize) {
-    timer_start();
     weights.resize(resid.size());
     for (wplist::iterator it = resid.begin(); it != resid.end(); ++it) {
       weights[it - resid.begin()] = it->weight;
