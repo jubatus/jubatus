@@ -29,12 +29,21 @@ struct recommender_similar_result_elem {
 };
 
 struct recommender_similar_result {
-  uint64_t size;
+  size_t size;
   struct recommender_similar_result_elem** results;
+};
+
+struct recommender_rows {
+  size_t size;
+  char** rows;
 };
 
 JUBATUS_PUBLIC_API
 const JUBATUS_HANDLE recommender_create();
+
+JUBATUS_PUBLIC_API
+const JUBATUS_HANDLE recommender_create_with_converter(
+    const JUBATUS_CONVERTER converter);
 
 JUBATUS_PUBLIC_API
 void recommender_dispose(const JUBATUS_HANDLE recommender);
@@ -52,14 +61,33 @@ struct recommender_similar_result recommender_similar_row_from_datum(
     size_t size);
 
 JUBATUS_PUBLIC_API
-void recommender_similar_result_dispose(struct recommender_similar_result* result);
-
-/* Note: caller is responsible to free the returned pointer */
-JUBATUS_PUBLIC_API
-void recommender_save(const JUBATUS_HANDLE recommender, char** data, size_t* length);
+void recommender_similar_result_dispose(
+    struct recommender_similar_result* result);
 
 JUBATUS_PUBLIC_API
-void recommender_load(const JUBATUS_HANDLE recommender, const char* data, const size_t length);
+struct recommender_rows recommender_get_all_rows(
+    const JUBATUS_HANDLE recommender);
+
+JUBATUS_PUBLIC_API
+void recommender_rows_dispose(struct recommender_rows* rows);
+
+JUBATUS_PUBLIC_API
+void recommender_clear_row(const JUBATUS_HANDLE recommender, const char* id);
+
+JUBATUS_PUBLIC_API
+void recommender_save(
+    const JUBATUS_HANDLE recommender,
+    char** data,
+    size_t* length);
+
+JUBATUS_PUBLIC_API
+void recommender_load(
+    const JUBATUS_HANDLE recommender,
+    const char* data,
+    const size_t length);
+
+JUBATUS_PUBLIC_API
+void recommender_save_data_dispose(char** data);
 
 JUBATUS_PUBLIC_API
 void recommender_clear(const JUBATUS_HANDLE recommender);

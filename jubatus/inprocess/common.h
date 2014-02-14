@@ -12,22 +12,23 @@ extern "C" {
 #include <stdint.h>
 
 typedef void* JUBATUS_HANDLE;
+typedef void* JUBATUS_CONVERTER;
 
 struct jubatus_pair_sv {
-  const char* key;
-  const char* value;
+  char* key;
+  char* value;
 };
 
 struct jubatus_pair_nv {
-  const char* key;
+  char* key;
   float value;
 };
 
 struct jubatus_datum {
-  uint64_t string_values_size;
+  size_t string_values_size;
   struct jubatus_pair_sv* string_values;
 
-  uint64_t num_values_size;
+  size_t num_values_size;
   struct jubatus_pair_nv* num_values;
 };
 

@@ -16,26 +16,35 @@ namespace inprocess {
 namespace recommender {
 
 recommender::recommender() {
+  // Create defualt config
   jubatus::core::fv_converter::converter_config config;
-
-  // create num rules
   jubatus::core::fv_converter::num_rule rule;
   rule.key = "*";
   rule.type = "num";
   config.num_rules.push_back(rule);
 
-  pfi::lang::shared_ptr<jubatus::core::fv_converter::datum_to_fv_converter> converter(
-      new jubatus::core::fv_converter::datum_to_fv_converter);
-  jubatus::core::fv_converter::initialize_converter(config, *converter);
-
-  driver_.reset(
-      new jubatus::core::driver::recommender(
-          jubatus::core::recommender::recommender_factory::create_recommender(),
-              converter));
+  initialize(config);
 }
 
-pfi::lang::shared_ptr<jubatus::core::driver::recommender> recommender::get_driver() {
-	return driver_;
+recommender::recommender(
+    jubatus::core::fv_converter::converter_config& config) {
+  initialize(config);
+}
+
+void recommender::initialize(
+    jubatus::core::fv_converter::converter_config& config) {
+  pfi::lang::shared_ptr<jubatus::core::fv_converter::datum_to_fv_converter>
+      converter(new jubatus::core::fv_converter::datum_to_fv_converter);
+  jubatus::core::fv_converter::initialize_converter(config, *converter);
+
+  driver_.reset(new jubatus::core::driver::recommender(
+      jubatus::core::recommender::recommender_factory::create_recommender(),
+      converter));
+}
+
+pfi::lang::shared_ptr<jubatus::core::driver::recommender>
+    recommender::get_driver() {
+  return driver_;
 }
 
 void recommender::save(std::ostream& os) {
