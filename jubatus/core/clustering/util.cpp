@@ -196,7 +196,7 @@ pair<size_t, double> min_dist(
 
 std::pair<size_t, double> min_dist(const weighted_point& d1, const wplist& P) {
   double md = DBL_MAX;
-  csize_t midx = 0;
+  size_t midx = 0;
   for (wplist::const_iterator it = P.begin(); it != P.end(); ++it) {
     double d = dist((*it), d1);
     if (md > d) {

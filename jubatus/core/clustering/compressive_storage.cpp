@@ -104,7 +104,7 @@ void compressive_storage::carry_up(size_t r) {
     mine_[r].clear();
     mine_[r + 1].clear();
     concat(cr, crr);
-    csize_t dstsize = (r == 0) ? config_.compressed_bucket_size :
+    size_t dstsize = (r == 0) ? config_.compressed_bucket_size :
         2 * r * r * config_.compressed_bucket_size;
     compressor_->compress(crr, config_.bicriteria_base_size,
                           dstsize, mine_[r + 1]);

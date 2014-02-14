@@ -29,7 +29,7 @@ class kmeans_compressor : public compressor {
   explicit kmeans_compressor(const clustering_config& cfg);
   ~kmeans_compressor();
 
-  void compress(const wplist& src, csize_t bsize, csize_t dstsize, wplist& dst);
+  void compress(const wplist& src, size_t bsize, size_t dstsize, wplist& dst);
 
  public:
   virtual double get_probability(
@@ -41,14 +41,14 @@ class kmeans_compressor : public compressor {
  private:
   void get_bicriteria(
       const wplist& src,
-      csize_t bsize,
-      csize_t dstsize,
+      size_t bsize,
+      size_t dstsize,
       wplist& dst);
 
   void bicriteria_to_coreset(
       wplist& src,
       wplist& bicriteria,
-      csize_t dstsize,
+      size_t dstsize,
       wplist& dst);
 };
 

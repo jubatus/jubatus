@@ -50,7 +50,7 @@ kmeans_compressor::~kmeans_compressor() {
 void bicriteria_as_coreset(
     const wplist& src,
     wplist bic,
-    const csize_t dstsize,
+    const size_t dstsize,
     wplist& dst) {
   typedef wplist::const_iterator citer;
   typedef wplist::iterator iter;
@@ -77,8 +77,8 @@ void bicriteria_as_coreset(
 
 void kmeans_compressor::compress(
     const wplist& src,
-    csize_t bsize,
-    csize_t dstsize,
+    size_t bsize,
+    size_t dstsize,
     wplist& dst) {
 
   if (dstsize >= src.size()) {
@@ -98,7 +98,7 @@ void kmeans_compressor::compress(
 }
 
 void kmeans_compressor::get_bicriteria(
-    const wplist& src, csize_t bsize, csize_t dstsize, wplist& dst) {
+    const wplist& src, size_t bsize, size_t dstsize, wplist& dst) {
   dst.clear();
   wplist resid = src;
   vector<double> weights(src.size());
@@ -127,8 +127,8 @@ void kmeans_compressor::get_bicriteria(
        (*itr).free_double = min_dist(*itr, dst).second;
     }
     std::sort(resid.begin(), resid.end(), compare_weight);
-    csize_t size = (csize_t)std::min(static_cast<double>(resid.size()),
-                                     static_cast<double>(resid.size()*r));
+    size_t size = (size_t)std::min(static_cast<double>(resid.size()),
+                                   static_cast<double>(resid.size()*r));
     if (size  == 0) {
       size = 1;
     }
@@ -149,7 +149,7 @@ double kmeans_compressor::get_probability(
 void kmeans_compressor::bicriteria_to_coreset(
     wplist& src,
     wplist& bicriteria,
-    csize_t dstsize,
+    size_t dstsize,
     wplist& dst) {
   if (bicriteria.size() == 0) {
     dst = src;
