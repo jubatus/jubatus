@@ -179,12 +179,12 @@ double dist(const weighted_point &d1, const weighted_point &d2) {
 }
 
 pair<size_t, double> min_dist(
-    const common::sfv_t& p, const vector<common::sfv_t>& P) {
+    const common::sfv_t& p,
+    const vector<common::sfv_t>& P) {
   size_t idx = 0;
   double mindist = DBL_MAX;
   for (vector<common::sfv_t>::const_iterator it = P.begin();
-       it != P.end();
-       ++it) {
+       it != P.end(); ++it) {
     double d = dist(p, *it);
     if (mindist > d) {
       idx = it - P.begin();
