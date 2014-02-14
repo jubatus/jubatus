@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <ctime>
 #include <cfloat>
+#include <cmath>
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -144,7 +145,7 @@ eigen_svec_t gmm::cluster_probs(
   eigen_svec_t ret(k_);
   for (int i = 0; i < k_; ++i) {
     eigen_svec_t dif = x - means[i];
-    double det = abs(cov_solvers[i]->determinant());
+    double det = std::abs(cov_solvers[i]->determinant());
     double quad = (dif.transpose() * cov_solvers[i]->solve(dif)).sum();
     double lp = -1/2.*(log(det) + quad);
     ret.coeffRef(i) = lp;
