@@ -288,7 +288,7 @@ void anomaly_serv::load_file(const std::string&path) {
 
 void anomaly_serv::reset_id_generator() {
 #ifdef HAVE_ZOOKEEPER_H
-  if (server_base.is_standalone()) {
+  if (argv().is_standalone()) {
 #endif
     uint64_t counter = anomaly_->find_max_int_id() + 1;
     idgen_.reset(
