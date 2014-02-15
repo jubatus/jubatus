@@ -48,8 +48,8 @@ class gmm {
       const eigen_svec_list_t& mean,
       const eigen_smat_list_t& cov,
       const eigen_solver_list_t& solvers) const;
-  eigen_svec_list_t   means_;
-  eigen_smat_list_t   covs_;
+  eigen_svec_list_t means_;
+  eigen_smat_list_t covs_;
   eigen_smat_t eye_;
   eigen_solver_list_t cov_solvers_;
   int d_;
