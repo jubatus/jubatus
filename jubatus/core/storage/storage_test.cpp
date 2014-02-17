@@ -134,6 +134,22 @@ class stub_storage : public storage_base {
     data_.clear();
   }
 
+  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const {
+    ret.clear();
+    for (common::sfv_t::const_iterator it = sfv.begin();
+         it != sfv.end(); ++it) {
+      const string& feature = it->first;
+      const float val = it->second;
+      feature_val1_t fval1;
+      get(feature, fval1);
+      for (feature_val1_t::const_iterator it2 = fval1.begin();
+           it2 != fval1.end();
+           ++it2) {
+        ret[it2->first] += it2->second * val;
+      }
+    }
+  }
+
   std::string type() const {
     return "stub_storage";
   }
@@ -617,7 +633,7 @@ REGISTER_TYPED_TEST_CASE_P(storage_test,
                            clear);
 
 typedef testing::Types<
-  // jubatus::core::storage::stub_storage,
+    jubatus::core::storage::stub_storage,
     local_storage,
     local_storage_mixture> storage_types;
 
