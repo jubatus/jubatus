@@ -63,10 +63,10 @@ wplist compressive_storage::get_mine() const {
 }
 
 void compressive_storage::forget_weight(wplist& points) {
-  double lam = config_.forgetting_threshold;
+  double factor = exp(-config_.forgetting_factor);
   typedef wplist::iterator iter;
   for (iter it = points.begin(); it != points.end(); ++it) {
-    it->weight *= exp(-lam);
+    it->weight *= factor;
   }
 }
 
