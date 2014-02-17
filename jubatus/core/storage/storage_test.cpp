@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <map>
+#include <set>
 #include <string>
 #include <gtest/gtest.h>
 #include "jubatus/util/data/serialization.h"
@@ -51,15 +52,16 @@ namespace storage {
 class stub_storage : public storage_base {
  private:
   map<string, map<string, val3_t> > data_;
+  std::set<string> labels_;
 
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(data_);
+    ar & JUBA_MEMBER(data_) & JUBA_MEMBER(labels_);
   }
 
  public:
-  MSGPACK_DEFINE(data_);
+  MSGPACK_DEFINE(data_, labels_);
 
   void get_status(std::map<std::string, std::string>&) const {
   }
@@ -103,6 +105,7 @@ class stub_storage : public storage_base {
       const std::string& klass,
       const val1_t& w) {
     data_[feature][klass] = val3_t(w, 0, 0);
+    labels_.insert(klass);
   }
 
   void set2(
@@ -110,6 +113,7 @@ class stub_storage : public storage_base {
       const std::string& klass,
       const val2_t& w) {
     data_[feature][klass] = val3_t(w.v1, w.v2, 0);
+    labels_.insert(klass);
   }
 
   void set3(
@@ -117,6 +121,7 @@ class stub_storage : public storage_base {
       const std::string& klass,
       const val3_t& w) {
     data_[feature][klass] = w;
+    labels_.insert(klass);
   }
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
@@ -128,6 +133,7 @@ class stub_storage : public storage_base {
   }
 
   void register_label(const std::string& label) {
+    labels_.insert(label);
   }
 
   void clear() {
@@ -136,6 +142,10 @@ class stub_storage : public storage_base {
 
   void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const {
     ret.clear();
+    for (std::set<std::string>::const_iterator it = labels_.begin();
+         it != labels_.end(); ++it) {
+      ret[*it] = 0.0;
+    }
     for (common::sfv_t::const_iterator it = sfv.begin();
          it != sfv.end(); ++it) {
       const string& feature = it->first;
