@@ -357,10 +357,10 @@ const std::string zk::get_connected_host_and_port() const {
 
   // TODO(@rimms): add this code to common::util
   if (sock_addr.sa_family == AF_INET) {  // Only IPv4
-      struct sockaddr_in* sock_addr_in = (struct sockaddr_in *) &sock_addr;
-      char host[INET_ADDRSTRLEN];
-      inet_ntop(AF_INET, &(sock_addr_in->sin_addr), host, sizeof(host));
-      ret << host << ":" << ntohs(sock_addr_in->sin_port);
+    struct sockaddr_in* sock_addr_in = (struct sockaddr_in *) &sock_addr;
+    char host[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(sock_addr_in->sin_addr), host, sizeof(host));
+    ret << host << ":" << ntohs(sock_addr_in->sin_port);
   }
 
   return ret.str();
