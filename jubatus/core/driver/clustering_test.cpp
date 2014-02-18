@@ -267,12 +267,15 @@ TEST_P(clustering_test, get_nearest_center) {
       datum expect_near_x = clustering_->get_nearest_center(x);
       const vector<pair<string, double> >& result = expect_near_x.num_values_;
       for (size_t i = 0; i < result.size(); ++i) {
+        // Check if the result is belonging to the same cluster.
+        // Difference of the value and the mean of its distribution are expected
+        // to be lesser than 2-sigma.
         if (result[i].first == "a") {
-          const double diff = result[i].second - 100;
-          ASSERT_GT(10, diff * diff);
+          const double diff = std::abs(result[i].second - 10);
+          ASSERT_GT(20 * 2, diff);
         } else if (result[i].first == "b") {
-          const double diff = result[i].second - 1000;
-          ASSERT_GT(1000, diff * diff);
+          const double diff = std::abs(result[i].second - 1000);
+          ASSERT_GT(400 * 2, diff);
         }
       }
     }
