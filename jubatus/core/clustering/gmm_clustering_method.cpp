@@ -60,10 +60,13 @@ common::sfv_t gmm_clustering_method::get_nearest_center(
 wplist gmm_clustering_method::get_cluster(
     size_t cluster_id,
     const wplist& points) const {
+  if (k_ <= cluster_id) {
+    return wplist();
+  }
   return get_clusters(points)[cluster_id];
 }
 
-std::vector<wplist> gmm_clustering_method::get_clusters(
+vector<wplist> gmm_clustering_method::get_clusters(
     const wplist& points) const {
   std::vector<wplist> ret(k_);
   for (wplist::const_iterator it = points.begin(); it != points.end(); ++it) {
