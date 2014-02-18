@@ -93,22 +93,34 @@ void kmeans_clustering_method::online_update(wplist points) {
 }
 
 vector<common::sfv_t> kmeans_clustering_method::get_k_center() const {
+  if (kcenters_.empty()) {
+    throw no_cluster_exception("get_k_center");
+  }
   return kcenters_;
 }
 
 int64_t kmeans_clustering_method::get_nearest_center_index(
     const common::sfv_t& point) const {
+  if (kcenters_.empty()) {
+    throw no_cluster_exception("get_nearest_center_index");
+  }
   return min_dist(point, kcenters_).first;
 }
 
 common::sfv_t kmeans_clustering_method::get_nearest_center(
     const common::sfv_t& point) const {
+  if (kcenters_.empty()) {
+    throw no_cluster_exception("get_nearest_center");
+  }
   return kcenters_[get_nearest_center_index(point)];
 }
 
 wplist kmeans_clustering_method::get_cluster(
     size_t cluster_id,
     const wplist& points) const {
+  if (kcenters_.empty()) {
+    throw no_cluster_exception("get_cluster");
+  }
   if (cluster_id >= k_) {
     return wplist();
   }
@@ -117,6 +129,9 @@ wplist kmeans_clustering_method::get_cluster(
 
 vector<wplist> kmeans_clustering_method::get_clusters(
     const wplist& points) const {
+  if (kcenters_.empty()) {
+    throw no_cluster_exception("get_clusters");
+  }
   vector<wplist> ret(k_);
   for (wplist::const_iterator it = points.begin(); it != points.end(); ++it) {
     pair<int64_t, double> m = min_dist(it->data, kcenters_);

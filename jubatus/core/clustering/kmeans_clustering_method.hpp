@@ -25,6 +25,18 @@ namespace core {
 namespace clustering {
 
 class clustering_method_serializer;
+class no_cluster_exception : public std::exception {
+ public:
+  no_cluster_exception(const std::string& msg)
+    : what_(msg) {}
+  const char *what() const throw() {
+    return what_.c_str();
+  }
+  ~no_cluster_exception() throw() {}
+
+ private:
+  std::string what_;
+};
 
 class kmeans_clustering_method : public clustering_method {
  public:
