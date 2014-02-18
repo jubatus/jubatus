@@ -24,6 +24,7 @@
 #include <vector>
 #include <msgpack.hpp>
 #include "../framework/mixable.hpp"
+#include "../common/version.hpp"
 #include "clustering_config.hpp"
 #include "types.hpp"
 #include "event_dispatcher.hpp"
@@ -54,6 +55,10 @@ class storage : public event_dispatcher<storage_event_type, wplist> {
 
   virtual wplist get_all() const;
   virtual wplist get_common() const;
+
+  core::storage::version get_version() const {
+    return core::storage::version();
+  }
 
   virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   virtual void unpack(msgpack::object o);

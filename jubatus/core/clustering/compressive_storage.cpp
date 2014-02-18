@@ -73,7 +73,7 @@ void compressive_storage::forget_weight(wplist& points) {
 bool compressive_storage::reach_forgetting_threshold(size_t bucket_number) {
   double C = config_.forgetting_threshold;
   double lam = config_.forgetting_factor;
-  if (exp(-lam*bucket_number) < C) {
+  if (exp(-lam * bucket_number) < C) {
     return true;
   }
   return false;
@@ -104,7 +104,7 @@ void compressive_storage::carry_up(size_t r) {
     mine_[r].clear();
     mine_[r + 1].clear();
     concat(cr, crr);
-    csize_t dstsize = (r == 0) ? config_.compressed_bucket_size :
+    size_t dstsize = (r == 0) ? config_.compressed_bucket_size :
         2 * r * r * config_.compressed_bucket_size;
     compressor_->compress(crr, config_.bicriteria_base_size,
                           dstsize, mine_[r + 1]);
@@ -120,6 +120,7 @@ void compressive_storage::pack(
   packer.pack(status_);
   packer.pack(*compressor_);
 }
+
 void compressive_storage::unpack(msgpack::object o) {
   std::vector<msgpack::object> mems;
   o.convert(&mems);
@@ -131,7 +132,6 @@ void compressive_storage::unpack(msgpack::object o) {
   mems[2].convert(&status_);
   mems[3].convert(compressor_.get());
 }
-
 
 }  // namespace clustering
 }  // namespace core

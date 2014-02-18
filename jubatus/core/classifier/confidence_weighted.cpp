@@ -29,13 +29,13 @@ namespace core {
 namespace classifier {
 
 confidence_weighted::confidence_weighted(classifier_base::storage_ptr storage)
-    : classifier_base(storage, true) {
+    : classifier_base(storage) {
 }
 
 confidence_weighted::confidence_weighted(
     const classifier_config& config,
     classifier_base::storage_ptr storage)
-    : classifier_base(storage, true),
+    : classifier_base(storage),
       config_(config) {
 }
 

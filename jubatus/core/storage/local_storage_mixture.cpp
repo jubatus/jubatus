@@ -212,12 +212,12 @@ void local_storage_mixture::get_diff(diff_t& ret) const {
     }
     ret.diff.push_back(make_pair(it->first, fv3));
   }
-  ret.version = model_version_.get_version();
+  ret.expect_version = model_version_;
 }
 
 bool local_storage_mixture::set_average_and_clear_diff(
     const diff_t& average) {
-  if (average.version == model_version_.get_version()) {
+  if (average.expect_version == model_version_) {
     for (features3_t::const_iterator it = average.diff.begin();
          it != average.diff.end();
          ++it) {

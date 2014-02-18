@@ -229,7 +229,8 @@ void push_mixer::mixer_loop() {
       c_.wait(m_, 0.5);
       clock_time new_ticktime = get_clock_time();
       if ((0 < count_threshold_ &&  counter_ >= count_threshold_)
-          || (0 < tick_threshold_ && new_ticktime - ticktime_ > tick_threshold_)) {
+          || (0 < tick_threshold_ && new_ticktime - ticktime_ > tick_threshold_)
+          ) {
         DLOG(INFO) << "starting mix because of "
                    << (count_threshold_ <= counter_ ? "counter" : "tick_time")
                    << " threshold";

@@ -38,7 +38,7 @@ config::iterator::iterator(
       it_(it) {
 }
 
-const std::string& config::iterator::iterator::key() const {
+const std::string& config::iterator::key() const {
   return it_->first;
 }
 

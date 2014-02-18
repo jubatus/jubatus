@@ -24,6 +24,7 @@
 #include <msgpack.hpp>
 #include "jubatus/util/data/serialization.h"
 #include "../framework/mixable.hpp"
+#include "../common/version.hpp"
 #include "recommender_type.hpp"
 
 namespace jubatus {
@@ -55,6 +56,10 @@ class recommender_mock_storage {
   void clear();
 
   std::string name() const;
+
+  storage::version get_version() const {
+    return storage::version();
+  }
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);

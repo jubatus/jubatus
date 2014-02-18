@@ -45,7 +45,7 @@ namespace {
   jubatus::util::lang::shared_ptr<server::common::lock_service> ls;
 
 struct lower_bound_reader {
-  lower_bound_reader(int l)
+  explicit lower_bound_reader(int l)
     : low(l) {}
   int operator()(const std::string& s) const {
     int ret = cmdline::default_reader<int>()(s);

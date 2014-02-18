@@ -136,6 +136,10 @@ class stub_storage : public storage_base {
     labels_.insert(label);
   }
 
+  storage::version get_version() const {
+    return storage::version();
+  }
+
   void clear() {
     data_.clear();
   }

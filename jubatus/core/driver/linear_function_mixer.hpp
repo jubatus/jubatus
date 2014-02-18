@@ -18,6 +18,7 @@
 #define JUBATUS_CORE_DRIVER_LINEAR_FUNCTION_MIXER_HPP_
 
 #include "../framework/mixable.hpp"
+#include "../common/version.hpp"
 #include "../storage/storage_base.hpp"
 
 #include "diffv.hpp"
@@ -34,6 +35,8 @@ class linear_function_mixer : public jubatus::core::framework::mixable<
   void mix_impl(const diffv& lhs, const diffv& rhs, diffv& mixed) const;
 
   bool put_diff_impl(const diffv& v);
+
+  storage::version get_version() const;
 
   void clear();
 };

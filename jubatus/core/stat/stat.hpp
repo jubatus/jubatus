@@ -29,6 +29,7 @@
 #include "jubatus/util/data/unordered_map.h"
 #include "jubatus/util/lang/enable_shared_from_this.h"
 #include "jubatus/util/lang/shared_ptr.h"
+#include "../common/version.hpp"
 #include "../common/exception.hpp"
 #include "../common/unordered_map.hpp"
 #include "../framework/mixable.hpp"
@@ -75,6 +76,9 @@ class stat : public jubatus::util::lang::enable_shared_from_this<stat> {
   double moment(const std::string& key, int n, double c) const;
 
   virtual void clear();
+  storage::version get_version() const {
+    return storage::version();
+  }
 
   virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   virtual void unpack(msgpack::object o);

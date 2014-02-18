@@ -26,6 +26,7 @@
 #include <msgpack.hpp>
 #include "jubatus/util/data/unordered_map.h"
 #include "jubatus/util/data/serialization.h"
+#include "../common/version.hpp"
 #include "bit_vector.hpp"
 
 namespace jubatus {
@@ -231,8 +232,8 @@ typedef jubatus::util::data::unordered_map<std::string, map_feature_val3_t>
 
 struct diff_t {
   features3_t diff;
-  uint64_t version;
-  MSGPACK_DEFINE(diff, version);
+  version expect_version;
+  MSGPACK_DEFINE(diff, expect_version);
 };
 
 namespace detail {

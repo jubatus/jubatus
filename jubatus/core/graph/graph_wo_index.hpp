@@ -122,6 +122,11 @@ class graph_wo_index
 
   void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
+  storage::version get_version() const {
+    // TODO(kumagi): it should return correct version of model
+    return storage::version();
+  }
+
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);
 
