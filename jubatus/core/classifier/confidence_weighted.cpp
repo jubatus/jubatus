@@ -49,6 +49,7 @@ void confidence_weighted::train(const common::sfv_t& sfv, const string& label) {
   float gamma = -b + sqrt(b * b - 8 * C * (margin - C * variance));
 
   if (gamma <= 0.f) {
+    get_storage()->register_label(label);
     return;
   }
   gamma /= 4 * C * variance;

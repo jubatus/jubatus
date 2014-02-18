@@ -77,9 +77,7 @@ TYPED_TEST_P(classifier_test, sfv_err) {
   p.train(fv, string("label2"));
   classify_result scores;
   p.classify_with_scores(fv, scores);
-  ASSERT_EQ(1u, scores.size());
-  // TODO(kuenishi) why not
-  // ASSERT_EQ(2u, scores.size());
+  ASSERT_EQ(2u, scores.size());
 }
 
 common::sfv_t convert(vector<double>& v) {

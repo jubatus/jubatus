@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <map>
+#include <set>
 #include <string>
 #include <gtest/gtest.h>
 #include "jubatus/util/data/serialization.h"
@@ -51,15 +52,16 @@ namespace storage {
 class stub_storage : public storage_base {
  private:
   map<string, map<string, val3_t> > data_;
+  std::set<string> labels_;
 
   friend class jubatus::util::data::serialization::access;
   template <class Ar>
   void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(data_);
+    ar & JUBA_MEMBER(data_) & JUBA_MEMBER(labels_);
   }
 
  public:
-  MSGPACK_DEFINE(data_);
+  MSGPACK_DEFINE(data_, labels_);
 
   void get_status(std::map<std::string, std::string>&) const {
   }
@@ -103,6 +105,7 @@ class stub_storage : public storage_base {
       const std::string& klass,
       const val1_t& w) {
     data_[feature][klass] = val3_t(w, 0, 0);
+    labels_.insert(klass);
   }
 
   void set2(
@@ -110,6 +113,7 @@ class stub_storage : public storage_base {
       const std::string& klass,
       const val2_t& w) {
     data_[feature][klass] = val3_t(w.v1, w.v2, 0);
+    labels_.insert(klass);
   }
 
   void set3(
@@ -117,6 +121,7 @@ class stub_storage : public storage_base {
       const std::string& klass,
       const val3_t& w) {
     data_[feature][klass] = w;
+    labels_.insert(klass);
   }
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
@@ -127,12 +132,36 @@ class stub_storage : public storage_base {
     o.convert(this);
   }
 
+  void register_label(const std::string& label) {
+    labels_.insert(label);
+  }
+
   storage::version get_version() const {
     return storage::version();
   }
 
   void clear() {
     data_.clear();
+  }
+
+  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const {
+    ret.clear();
+    for (std::set<std::string>::const_iterator it = labels_.begin();
+         it != labels_.end(); ++it) {
+      ret[*it] = 0.0;
+    }
+    for (common::sfv_t::const_iterator it = sfv.begin();
+         it != sfv.end(); ++it) {
+      const string& feature = it->first;
+      const float val = it->second;
+      feature_val1_t fval1;
+      get(feature, fval1);
+      for (feature_val1_t::const_iterator it2 = fval1.begin();
+           it2 != fval1.end();
+           ++it2) {
+        ret[it2->first] += it2->second * val;
+      }
+    }
   }
 
   std::string type() const {
@@ -391,9 +420,9 @@ TYPED_TEST_P(storage_test, inp) {
   ret.clear();
   s.inp(fv, ret);
 
-  EXPECT_EQ(2u, ret.size());
+  EXPECT_EQ(3u, ret.size());
   ASSERT_LT(0u, ret.count("class_x"));
-  ASSERT_EQ(0u, ret.count("class_y"));
+  ASSERT_LT(0u, ret.count("class_y"));
   ASSERT_LT(0u, ret.count("class_z"));
 
   EXPECT_FLOAT_EQ(24.0, ret["class_x"]);

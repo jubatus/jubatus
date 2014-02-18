@@ -46,6 +46,7 @@ void normal_herd::train(const common::sfv_t& sfv, const string& label) {
   float margin = -calc_margin_and_variance(sfv, label, incorrect_label,
                                            variance);
   if (margin >= 1.f) {
+    get_storage()->register_label(label);
     return;
   }
   update(sfv, margin, variance, label, incorrect_label);
