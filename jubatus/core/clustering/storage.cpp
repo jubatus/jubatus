@@ -95,7 +95,6 @@ void storage::increment_revision() {
   dispatch(REVISION_CHANGE, get_all());
 }
 
-
 void storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack(*this);
 }

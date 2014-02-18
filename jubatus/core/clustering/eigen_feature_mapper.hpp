@@ -48,11 +48,20 @@ class eigen_feature_mapper {
  private:
   jubatus::util::data::unordered_map<std::string, size_t> map_;
   jubatus::util::data::unordered_map<size_t, std::string> rmap_;
-  void insert_(std::pair<std::string, float>,
-               bool update_map, eigen_svec_t& dst);
-  void insertc_(std::pair<std::string, float>,
-                eigen_svec_t& dst) const;
-  void rinsert_(std::pair<int, float>, common::sfv_t& dst) const;
+
+  void insert(
+      const std::pair<std::string, float>& item,
+      bool update_map,
+      eigen_svec_t& dst);
+
+  void insertc(
+      const std::pair<std::string, float>&,
+      eigen_svec_t& dst) const;
+
+  void rinsert(
+      const std::pair<int, float>&,
+      common::sfv_t& dst) const;
+
   int d_;
 };
 

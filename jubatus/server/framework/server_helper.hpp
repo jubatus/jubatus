@@ -163,11 +163,11 @@ class server_helper {
 
     std::string configpath;
     if (a.is_standalone()) {
-        configpath = a.configpath;
+      configpath = a.configpath;
     } else {
 #ifdef HAVE_ZOOKEEPER_H
-        // return zookeeper node name
-        jubatus::server::common::build_config_path(configpath, a.type, a.name);
+      // return zookeeper node name
+      jubatus::server::common::build_config_path(configpath, a.type, a.name);
 #endif
     }
     data["configpath"] = configpath;
@@ -192,23 +192,23 @@ class server_helper {
 
     // distributed mode only
     if (!a.is_standalone()) {
-        data["zk"] = a.z;
-        data["name"] = a.name;
-        data["interval_sec"] =
-            jubatus::util::lang::lexical_cast<std::string>(a.interval_sec);
-        data["interval_count"] = jubatus::util::lang::lexical_cast<std::string>(
-            a.interval_count);
-        data["zookeeper_timeout"] =
-            jubatus::util::lang::lexical_cast<std::string>(a.zookeeper_timeout);
-        data["interconnect_timeout"] =
-            jubatus::util::lang::lexical_cast<std::string>
-            (a.interconnect_timeout);
-        data["connected_zookeeper"] = impl_.zk()->get_connected_host_and_port();
-        data["use_cht"] = jubatus::util::lang::lexical_cast<std::string>(
-            use_cht_);
+      data["zk"] = a.z;
+      data["name"] = a.name;
+      data["interval_sec"] =
+          jubatus::util::lang::lexical_cast<std::string>(a.interval_sec);
+      data["interval_count"] = jubatus::util::lang::lexical_cast<std::string>(
+          a.interval_count);
+      data["zookeeper_timeout"] =
+          jubatus::util::lang::lexical_cast<std::string>(a.zookeeper_timeout);
+      data["interconnect_timeout"] =
+          jubatus::util::lang::lexical_cast<std::string>
+          (a.interconnect_timeout);
+      data["connected_zookeeper"] = impl_.zk()->get_connected_host_and_port();
+      data["use_cht"] = jubatus::util::lang::lexical_cast<std::string>(
+          use_cht_);
 
-        data["mixer"] = a.mixer;
-        server_->get_mixer()->get_status(data);
+      data["mixer"] = a.mixer;
+      server_->get_mixer()->get_status(data);
     }
 
     return status;

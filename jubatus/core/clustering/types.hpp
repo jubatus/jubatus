@@ -71,8 +71,6 @@ typedef std::vector<weighted_point> wplist;
 typedef std::vector<common::sfv_t> plist;
 typedef std::vector<std::pair<std::string, wplist> > diff_t;
 
-typedef uint64_t csize_t;
-
 }  // namespace clustering
 }  // namespace core
 }  // namespace jubatus

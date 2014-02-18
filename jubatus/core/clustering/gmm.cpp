@@ -19,18 +19,17 @@
 #include <algorithm>
 #include <ctime>
 #include <cfloat>
+#include <cmath>
 #include <iostream>
 #include <utility>
 #include <vector>
 #include "jubatus/util/math/random.h"
-
 
 using jubatus::util::lang::shared_ptr;
 using std::max;
 using std::min;
 using std::exp;
 using std::vector;
-
 
 namespace jubatus {
 namespace core {
@@ -40,8 +39,8 @@ void gmm::batch(const eigen_wsvec_list_t& data, int d, int k) {
   typedef eigen_wsvec_list_t::const_iterator data_iter;
   initialize(data, d, k);
 
-  eigen_svec_list_t   old_means;
-  eigen_smat_list_t   old_covs;
+  eigen_svec_list_t old_means;
+  eigen_smat_list_t old_covs;
   eigen_solver_list_t old_solvers;
   double old_obj = 0, obj = 0;
   vector<double> weights(k);
@@ -62,19 +61,19 @@ void gmm::batch(const eigen_wsvec_list_t& data, int d, int k) {
       eigen_svec_t cps =
           cluster_probs(i->data, old_means, old_covs, old_solvers);
       for (int c = 0; c < k; ++c) {
-        double cp  = i->weight * cps.coeff(c);
-        means_[c]  += cp * i->data;
-        covs_[c]   += i->data * (i->data.transpose()) * cp;
+        double cp = i->weight * cps.coeff(c);
+        means_[c] += cp * i->data;
+        covs_[c] += i->data * (i->data.transpose()) * cp;
         weights[c] += cp;
-        obj        += - log(cp);
+        obj -= log(cp);
       }
     }
     for (int c = 0; c < k; ++c) {
       means_[c] /= weights[c];
-      covs_[c]  /= weights[c];
+      covs_[c] /= weights[c];
       double eps = 0.1;
-      covs_[c]  -= means_[c] * means_[c].transpose();
-      covs_[c]  += eps * eye_;
+      covs_[c] -= means_[c] * means_[c].transpose();
+      covs_[c] += eps * eye_;
       cov_solvers_[c] =
           shared_ptr<eigen_solver_t>(new eigen_solver_t(covs_[c]));
     }
@@ -144,9 +143,9 @@ eigen_svec_t gmm::cluster_probs(
   eigen_svec_t ret(k_);
   for (int i = 0; i < k_; ++i) {
     eigen_svec_t dif = x - means[i];
-    double det = abs(cov_solvers[i]->determinant());
+    double det = std::abs(cov_solvers[i]->determinant());
     double quad = (dif.transpose() * cov_solvers[i]->solve(dif)).sum();
-    double lp = -1/2.*(log(det) + quad);
+    double lp = -1 / 2. * (log(det) + quad);
     ret.coeffRef(i) = lp;
     den = (den == DBL_MIN) ?
         lp : max(den, lp)+log(1 + exp(min(den, lp)-max(den, lp)));

@@ -47,6 +47,7 @@ void simple_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack(static_cast<const storage&>(*this));
   packer.pack(mine_);
 }
+
 void simple_storage::unpack(msgpack::object o) {
   std::vector<msgpack::object> mems;
   o.convert(&mems);
