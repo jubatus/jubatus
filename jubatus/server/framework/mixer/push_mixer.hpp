@@ -87,6 +87,7 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
 
   void start();
   void stop();
+  bool do_mix();
 
   void updated();
 
