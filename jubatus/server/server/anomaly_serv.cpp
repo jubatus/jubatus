@@ -275,13 +275,15 @@ float anomaly_serv::selective_update(
   }
 }
 
-bool anomaly_serv::load(const std::string&id) {
-  bool b = server_base::load(id);
-  reset_id_generator();
-  return b;
+bool anomaly_serv::load(const std::string& id) {
+  if (server_base::load(id)) {
+    reset_id_generator();
+    return true;
+  }
+  return false;
 }
 
-void anomaly_serv::load_file(const std::string&path) {
+void anomaly_serv::load_file(const std::string& path) {
   server_base::load_file(path);
   reset_id_generator();
 }

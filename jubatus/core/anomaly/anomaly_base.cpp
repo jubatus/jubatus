@@ -39,8 +39,8 @@ uint64_t anomaly_base::find_max_int_id() const {
   uint64_t max_id = 0;
   std::vector<std::string> ids;
   get_all_row_ids(ids);
-  std::vector<std::string>::const_iterator it = ids.begin();
-  for (; it != ids.end(); ++it) {
+  for (std::vector<std::string>::const_iterator it = ids.begin();
+      it != ids.end(); ++it) {
     size_t npos = (*it).find_first_not_of(numbers);
     if (npos == std::string::npos) {
       uint64_t id = jubatus::util::lang::lexical_cast<uint64_t>(*it);
