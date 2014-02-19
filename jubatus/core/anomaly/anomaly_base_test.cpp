@@ -60,8 +60,9 @@ class anomaly_impl : public anomaly_base {
   void get_all_row_ids(std::vector<std::string>& ids) const {
     ids.clear();
     ids.push_back("100");
+    ids.push_back("99.0");
     ids.push_back("-200");
-    ids.push_back("300a");
+    ids.push_back("A300");
   }
 
   std::string type() const {
@@ -78,8 +79,9 @@ TEST(anomaly_base, find_max_int_id) {
   a.get_all_row_ids(ids);
   uint64_t max_id = a.find_max_int_id();
   EXPECT_EQ("100", ids[0]);
-  EXPECT_EQ("-200", ids[1]);
-  EXPECT_EQ("300a", ids[2]);
+  EXPECT_EQ("99.0", ids[1]);
+  EXPECT_EQ("-200", ids[2]);
+  EXPECT_EQ("A300", ids[3]);
   EXPECT_EQ(100u, max_id);
 }
 
