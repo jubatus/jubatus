@@ -52,7 +52,6 @@ class version {
 
   template<class Packer>
   void pack(Packer& packer) const {
-    std::cerr << "packed:" << version_number_ << std::endl;
     packer.pack(*this);
   }
 
