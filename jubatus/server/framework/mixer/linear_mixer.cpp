@@ -301,7 +301,6 @@ bool linear_mixer::do_mix() {
     common::unique_lock lk(m_);
     counter_ = 0;
     ticktime_ = get_clock_time();
-    lk.unlock();
   }
   try {
     LOG(INFO) << "forced to mix by user RPC";
