@@ -294,7 +294,7 @@ void anomaly_serv::reset_id_generator() {
     idgen_.reset(
         new common::global_id_generator_standalone(counter));
   } else {
-    // TODOo(hido): support ID check for distributed mode
+    // TODO(hido): support ID check for distributed mode
   }
 }
 

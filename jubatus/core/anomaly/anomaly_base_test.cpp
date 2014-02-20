@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -61,7 +61,6 @@ class anomaly_impl : public anomaly_base {
     ids.clear();
     ids.push_back("100");
     ids.push_back("99.0");
-    ids.push_back("-200");
     ids.push_back("A300");
   }
 
@@ -80,8 +79,7 @@ TEST(anomaly_base, find_max_int_id) {
   uint64_t max_id = a.find_max_int_id();
   EXPECT_EQ("100", ids[0]);
   EXPECT_EQ("99.0", ids[1]);
-  EXPECT_EQ("-200", ids[2]);
-  EXPECT_EQ("A300", ids[3]);
+  EXPECT_EQ("A300", ids[2]);
   EXPECT_EQ(100u, max_id);
 }
 
