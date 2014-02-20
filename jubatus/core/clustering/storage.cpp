@@ -26,7 +26,8 @@ namespace core {
 namespace clustering {
 
 storage::storage(const std::string& name, const clustering_config& config)
-    : name_(name),
+    : revision_ (0),
+      name_(name),
       config_(config) {
 }
 
@@ -62,7 +63,7 @@ bool storage::set_mixed_and_clear_diff(const diff_t& diff) {
   wplist all = get_all();
   increment_revision();
 
-  // TODO(kumagi): return false if we want reject the diff
+  // TODO(kumagi): return false if we want to reject the diff
   return true;
 }
 

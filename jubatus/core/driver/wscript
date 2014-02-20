@@ -56,6 +56,7 @@ def build(bld):
     'recommender_test',
     'stat_test',
     'nearest_neighbor_test',
+    'clustering_test',
     ]
 
   for t in tests:
@@ -72,4 +73,5 @@ def build(bld):
       'linear_function_mixer.hpp',
       'mixable_versioned_table.hpp',
       'nearest_neighbor.hpp',
+      'clustering.hpp',
       ])

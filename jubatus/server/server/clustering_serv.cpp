@@ -89,8 +89,12 @@ void clustering_serv::set_config(const std::string& config) {
       core::common::jsonconfig::config_cast_check<
           core::clustering::clustering_config>(param);
   clustering_.reset(new core::driver::clustering(
-      new core::clustering::clustering(name, conf.method, cluster_conf),
-      converter));
+                        shared_ptr<core::clustering::clustering>(
+                            new core::clustering::clustering(
+                                name,
+                                conf.method,
+                                cluster_conf)),
+                        converter));
   mixer_->set_mixable_holder(clustering_->get_mixable_holder());
 
   LOG(INFO) << "config loaded: " << config;
