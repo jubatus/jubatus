@@ -90,15 +90,16 @@ TEST_F(versioned_weight_diff_test, fixture) {
   ASSERT_EQ(8, kw2.get_document_frequency("c"));
 }
 
-TEST_F(versioned_weight_diff_test, merge) {
+TEST_F(versioned_weight_diff_test, merge_success) {
   versioned_weight_diff vw1(kw1);
   versioned_weight_diff vw2(kw2);
 
   vw1.version_.increment();
   vw2.version_.increment();
   vw1.merge(vw2);
-  EXPECT_EQ(1, vw1.weights_.get_document_frequency("a"));
-  EXPECT_EQ(6, vw1.weights_.get_document_frequency("b"));
+  ASSERT_EQ(15, vw1.weights_.get_document_count());
+  ASSERT_EQ(1, vw1.weights_.get_document_frequency("a"));
+  ASSERT_EQ(6, vw1.weights_.get_document_frequency("b"));
   ASSERT_EQ(8, vw1.weights_.get_document_frequency("c"));
 }
 
@@ -108,9 +109,10 @@ TEST_F(versioned_weight_diff_test, merge_vw1_win) {
 
   vw1.version_.increment();
   vw1.merge(vw2);
-  EXPECT_EQ(1, vw1.weights_.get_document_frequency("a"));
-  EXPECT_EQ(2, vw1.weights_.get_document_frequency("b"));
-  EXPECT_EQ(0, vw1.weights_.get_document_frequency("c"));
+  ASSERT_EQ(3, vw1.weights_.get_document_count());
+  ASSERT_EQ(1, vw1.weights_.get_document_frequency("a"));
+  ASSERT_EQ(2, vw1.weights_.get_document_frequency("b"));
+  ASSERT_EQ(0, vw1.weights_.get_document_frequency("c"));
 }
 
 TEST_F(versioned_weight_diff_test, merge_vw2_win) {
@@ -119,9 +121,10 @@ TEST_F(versioned_weight_diff_test, merge_vw2_win) {
 
   vw2.version_.increment();
   vw1.merge(vw2);
-  EXPECT_EQ(0, vw1.weights_.get_document_frequency("a"));
-  EXPECT_EQ(4, vw1.weights_.get_document_frequency("b"));
-  EXPECT_EQ(8, vw1.weights_.get_document_frequency("c"));
+  ASSERT_EQ(12, vw1.weights_.get_document_count());
+  ASSERT_EQ(0, vw1.weights_.get_document_frequency("a"));
+  ASSERT_EQ(4, vw1.weights_.get_document_frequency("b"));
+  ASSERT_EQ(8, vw1.weights_.get_document_frequency("c"));
 }
 
 class mixable_weight_manager_test : public ::testing::Test {
@@ -152,10 +155,10 @@ TEST_F(mixable_weight_manager_test, fixture) {
 
 TEST_F(mixable_weight_manager_test, get_diff) {
   versioned_weight_diff got = mw->get_diff_impl();
-  EXPECT_EQ(0, got.version_.get_number());
-  EXPECT_EQ(1, got.weights_.get_document_count());
-  EXPECT_EQ(1, got.weights_.get_document_frequency("a"));
-  EXPECT_EQ(1, got.weights_.get_document_frequency("b"));
+  ASSERT_EQ(0, got.version_.get_number());
+  ASSERT_EQ(1, got.weights_.get_document_count());
+  ASSERT_EQ(1, got.weights_.get_document_frequency("a"));
+  ASSERT_EQ(1, got.weights_.get_document_frequency("b"));
 }
 
 TEST_F(mixable_weight_manager_test, put_diff) {
@@ -170,20 +173,22 @@ TEST_F(mixable_weight_manager_test, put_diff) {
   versioned_weight_diff appender(w);
   mw->put_diff_impl(appender);
   versioned_weight_diff got = mw->get_diff_impl();
-  EXPECT_EQ(1, got.version_.get_number());  // should be incremented
+  ASSERT_EQ(1, got.version_.get_number());  // should be incremented
 
-  EXPECT_EQ(0, got.weights_.get_document_count());
-  EXPECT_EQ(0, got.weights_.get_document_frequency("a"));
-  EXPECT_EQ(0, got.weights_.get_document_frequency("b"));
+  ASSERT_EQ(0, got.weights_.get_document_count());
+  ASSERT_EQ(0, got.weights_.get_document_frequency("a"));
+  ASSERT_EQ(0, got.weights_.get_document_frequency("b"));
 
   common::sfv_t result;
   result.push_back(make_pair("a", 2));
   result.push_back(make_pair("b", 3));
 
   mw->get_model()->get_weight(result);
-  EXPECT_EQ(2, result.size());
-  // EXPECT_EQ(2, result[0].second);
-  // EXPECT_EQ(3, result[1].second);
+  ASSERT_EQ(2, result.size());
+  ASSERT_EQ("a", result[0].first);
+  ASSERT_EQ(2, result[0].second);
+  ASSERT_EQ("b", result[1].first);
+  ASSERT_EQ(3, result[1].second);
 }
 
 
