@@ -48,22 +48,22 @@ TEST(weight_manager, trivial) {
     EXPECT_FLOAT_EQ(1.5, fv[3].second);
   }
 
-  keyword_weights w = m.get_diff();
-  EXPECT_EQ(2u, w.get_document_count());
-  EXPECT_EQ(1u, w.get_document_frequency("/title$this@space#bin/idf"));
-  EXPECT_EQ(1.5, w.get_user_weight("/address$tokyo@str"));
+  versioned_weight_diff w = m.get_diff();
+  EXPECT_EQ(2u, w.weights_.get_document_count());
+  EXPECT_EQ(1u, w.weights_.get_document_frequency("/title$this@space#bin/idf"));
+  EXPECT_EQ(1.5, w.weights_.get_user_weight("/address$tokyo@str"));
 
   {
     common::sfv_t fv;
     fv.push_back(std::make_pair("/title$this@space#bin/idf", 1.0));
 
     // df = 2, |D| = 3
-    w.update_document_frequency(fv);
-    w.add_weight("/title$hoge@str", 2.0);
+    w.weights_.update_document_frequency(fv);
+    w.weights_.add_weight("/title$hoge@str", 2.0);
 
     m.put_diff(w);
 
-    EXPECT_EQ(0u, m.get_diff().get_document_count());
+    EXPECT_EQ(0u, m.get_diff().weights_.get_document_count());
 
     // df = 3, |D| = 4
     m.update_weight(fv);

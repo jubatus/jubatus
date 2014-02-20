@@ -36,6 +36,28 @@ struct is_zero {
 
 }  // namespace
 
+versioned_weight_diff::versioned_weight_diff() {
+}
+
+versioned_weight_diff::versioned_weight_diff(const keyword_weights& w)
+  : weights_(w) {
+}
+
+versioned_weight_diff::versioned_weight_diff(const keyword_weights& w,
+                                             const storage::version& v)
+  : weights_(w), version_(v) {
+}
+
+versioned_weight_diff& versioned_weight_diff::merge(const versioned_weight_diff& target) {
+  if (version_ == target.version_) {
+    weights_.merge(target.weights_);
+  } else if (version_ < target.version_) {
+    weights_ = target.weights_;
+    version_ = target.version_;
+  }
+  return *this;
+}
+
 weight_manager::weight_manager()
     : diff_weights_(),
       master_weights_() {
