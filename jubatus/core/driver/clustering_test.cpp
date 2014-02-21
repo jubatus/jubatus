@@ -29,6 +29,7 @@
 #include "../clustering/gmm_clustering_method.hpp"
 #include "test_util.hpp"
 #include "../fv_converter/datum.hpp"
+#include "../clustering/types.hpp"
 
 using std::vector;
 using std::string;
@@ -37,6 +38,7 @@ using std::set;
 using std::make_pair;
 using jubatus::util::lang::shared_ptr;
 using jubatus::core::fv_converter::datum;
+using jubatus::core::clustering::no_cluster_exception;
 using jubatus::core::clustering::clustering_method;
 using jubatus::core::clustering::clustering_config;
 
@@ -114,6 +116,17 @@ TEST_P(clustering_test, save_load) {
   msgpack::unpacked unpacked;
   msgpack::unpack(&unpacked, sbuf.data(), sbuf.size());
   clustering_->get_mixable_holder()->unpack(unpacked.get());
+}
+
+TEST_P(clustering_test, no_cluster) {
+  core::fv_converter::datum d;
+  vector<datum> datums;
+  datums.push_back(single_datum("a", 1));
+  clustering_->push(datums);
+
+  ASSERT_THROW(clustering_->get_nearest_members(d), no_cluster_exception);
+  ASSERT_THROW(clustering_->get_nearest_center(d), no_cluster_exception);
+  ASSERT_THROW(clustering_->get_core_members(), no_cluster_exception);
 }
 
 TEST_P(clustering_test, get_k_center) {

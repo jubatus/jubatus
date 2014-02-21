@@ -26,6 +26,7 @@
 #include "jubatus/util/data/serialization.h"
 
 #include "../common/type.hpp"
+#include "../common/exception.hpp"
 #include "../fv_converter/datum.hpp"
 
 namespace jubatus {
@@ -36,6 +37,20 @@ typedef double cluster_weight;
 typedef std::vector<std::pair<cluster_weight,
             jubatus::core::fv_converter::datum> > cluster_unit;
 typedef std::vector<cluster_unit> cluster_set;
+
+class no_cluster_exception
+  : public common::exception::jubaexception<no_cluster_exception> {
+ public:
+  explicit no_cluster_exception(const std::string& msg)
+    : what_(msg) {}
+  const char *what() const throw() {
+    return what_.c_str();
+  }
+  ~no_cluster_exception() throw() {}
+
+ private:
+  std::string what_;
+};
 
 struct weighted_point {
  public:
