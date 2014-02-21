@@ -67,6 +67,9 @@ class anomaly_serv : public framework::server_base {
 
   void check_set_config() const;
 
+  virtual bool load(const std::string& id);
+  void load_file(const std::string& path);
+
  private:
   id_with_score add_zk(
       const std::string& id,
@@ -82,6 +85,8 @@ class anomaly_serv : public framework::server_base {
       int port,
       const std::string& id,
       const core::fv_converter::datum& d);
+
+  void reset_id_generator();
 
   jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
   jubatus::util::lang::shared_ptr<core::driver::anomaly> anomaly_;

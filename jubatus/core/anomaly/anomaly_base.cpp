@@ -18,8 +18,13 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string>
+#include <vector>
 
+#include "jubatus/util/lang/cast.h"
 #include "../common/vector_util.hpp"
+
+using jubatus::util::lang::lexical_cast;
 
 namespace jubatus {
 namespace core {
@@ -29,6 +34,25 @@ anomaly_base::anomaly_base() {
 }
 
 anomaly_base::~anomaly_base() {
+}
+
+uint64_t anomaly_base::find_max_int_id() const {
+  uint64_t max_id = 0;
+  std::vector<std::string> ids;
+  get_all_row_ids(ids);
+  for (std::vector<std::string>::const_iterator it = ids.begin();
+      it != ids.end(); ++it) {
+    try {
+      uint64_t id = lexical_cast<uint64_t>(*it);
+      if (id > max_id) {
+        max_id = id;
+      }
+    } catch (const std::bad_cast& e) {
+      // Do nothing for non-numeric IDs
+      continue;
+    }
+  }
+  return max_id;
 }
 
 }  // namespace anomaly

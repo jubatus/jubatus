@@ -20,8 +20,6 @@
 #include <utility>
 #include <vector>
 
-#include "jubatus/util/lang/shared_ptr.h"
-
 #include "../anomaly/anomaly_factory.hpp"
 #include "../common/vector_util.hpp"
 #include "../fv_converter/datum.hpp"
@@ -96,6 +94,10 @@ vector<string> anomaly::get_all_rows() const {
   vector<string> ids;
   anomaly_->get_all_row_ids(ids);
   return ids;
+}
+
+uint64_t anomaly::find_max_int_id() const {
+  return anomaly_->find_max_int_id();
 }
 
 }  // namespace driver

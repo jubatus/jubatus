@@ -20,6 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../anomaly/anomaly_base.hpp"
 #include "../framework/mixable.hpp"
@@ -56,6 +57,7 @@ class anomaly {
   void clear();
   float calc_score(const fv_converter::datum& d) const;
   std::vector<std::string> get_all_rows() const;
+  uint64_t find_max_int_id() const;
 
  private:
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
