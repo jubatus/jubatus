@@ -137,6 +137,25 @@ TEST(bit_index_storage, mix) {
   EXPECT_TRUE(v == make_vector("1100"));
   s3.get_row("r4", v);
   EXPECT_TRUE(v == bit_vector());
+
+  std::vector<std::string> ids;
+
+  s3.get_all_row_ids(ids);
+  EXPECT_EQ(3u, ids.size());
+
+  s3.remove_row("r3");
+
+  // Once MIXed, remove_row does not take affect until next MIX.
+  s3.get_all_row_ids(ids);
+  EXPECT_EQ(3u, ids.size());
+
+  // do MIX
+  bit_table_t d3;
+  s3.get_diff(d3);
+  s3.set_mixed_and_clear_diff(d3);
+
+  s3.get_all_row_ids(ids);
+  EXPECT_EQ(2u, ids.size());
 }
 
 }  // namespace storage
