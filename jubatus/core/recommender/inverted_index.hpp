@@ -52,7 +52,7 @@ class inverted_index : public recommender_base {
   void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack_impl(msgpack::object o);
   jubatus::util::lang::shared_ptr<storage::mixable_inverted_index_storage>
-  mixable_storage_;
+      mixable_storage_;
 };
 
 }  // namespace recommender
