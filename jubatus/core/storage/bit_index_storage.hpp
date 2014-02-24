@@ -50,6 +50,9 @@ class bit_index_storage {
       std::vector<std::pair<std::string, float> >& ids,
       uint64_t ret_num) const;
   std::string name() const;
+  storage::version get_version() const {
+    return storage::version();
+  }
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);

@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "../../core/common/version.hpp"
 #include "../../core/framework/mixable.hpp"
 #include "../../core/table/column/column_table.hpp"
 
@@ -44,6 +45,10 @@ class mixable_versioned_table : public jubatus::core::framework::mixable<
   version_clock get_pull_argument_impl() const;
   std::vector<std::string> pull_impl(const version_clock& vc) const;
   void push_impl(const std::vector<std::string>& diff);
+
+  storage::version get_version() const {
+    return storage::version();
+  }
 
   void clear() {}
 

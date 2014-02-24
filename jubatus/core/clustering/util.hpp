@@ -43,9 +43,11 @@ common::sfv_t scalar_dot(const common::sfv_t& p, double s);
 double dist(const common::sfv_t& p1, const common::sfv_t& p2);
 double dist(const weighted_point& p1, const weighted_point& p2);
 std::pair<size_t, double> min_dist(
-    const common::sfv_t& p, const std::vector<common::sfv_t>& P);
+    const common::sfv_t& p,
+    const std::vector<common::sfv_t>& P);
 std::pair<size_t, double> min_dist(
-    const weighted_point& p, const wplist& P);
+    const weighted_point& p,
+    const wplist& P);
 
 void dump_wplist(const wplist& src);
 

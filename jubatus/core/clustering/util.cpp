@@ -61,9 +61,10 @@ double sum2(const common::sfv_t& p) {
 
 void scalar_mul_and_add(
     const common::sfv_t& left,
-    float s, common::sfv_t& right) {
+    float s,
+    common::sfv_t& right) {
   common::sfv_t::const_iterator l = left.begin();
-  common::sfv_t::iterator       r = right.begin();
+  common::sfv_t::iterator r = right.begin();
   while (l != left.end() && r != right.end()) {
     if (l->first < r->first) {
       std::pair<std::string, float> p = *l;
@@ -179,12 +180,12 @@ double dist(const weighted_point &d1, const weighted_point &d2) {
 }
 
 pair<size_t, double> min_dist(
-    const common::sfv_t& p, const vector<common::sfv_t>& P) {
+    const common::sfv_t& p,
+    const vector<common::sfv_t>& P) {
   size_t idx = 0;
   double mindist = DBL_MAX;
   for (vector<common::sfv_t>::const_iterator it = P.begin();
-       it != P.end();
-       ++it) {
+       it != P.end(); ++it) {
     double d = dist(p, *it);
     if (mindist > d) {
       idx = it - P.begin();
@@ -196,7 +197,7 @@ pair<size_t, double> min_dist(
 
 std::pair<size_t, double> min_dist(const weighted_point& d1, const wplist& P) {
   double md = DBL_MAX;
-  csize_t midx = 0;
+  size_t midx = 0;
   for (wplist::const_iterator it = P.begin(); it != P.end(); ++it) {
     double d = dist((*it), d1);
     if (md > d) {

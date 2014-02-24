@@ -56,6 +56,10 @@ class sparse_matrix_storage {
   void get_all_row_ids(std::vector<std::string>& ids) const;
   void clear();
 
+  storage::version get_version() const {
+    return storage::version();
+  }
+
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);
 
@@ -68,6 +72,7 @@ class sparse_matrix_storage {
 
   tbl_t tbl_;
   common::key_manager column2id_;
+  storage::version version_;
 
  public:
   MSGPACK_DEFINE(tbl_, column2id_);
@@ -86,6 +91,11 @@ class sparse_matrix_storage_mixable
 
   bool put_diff_impl(const bool&) {
     return true;
+  }
+
+  storage::version get_version() const {
+    // TODO(kumagi): we should return correct version of storage
+    return storage::version();
   }
 
   void mix_impl(const bool&, const bool&, bool&) const {

@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011-2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -122,8 +122,6 @@ void local_storage_mixture::inp(const common::sfv_t& sfv,
   }
 
   for (size_t i = 0; i < ret_id.size(); ++i) {
-    if (ret_id[i] == 0.f)
-      continue;
     ret[class2id_.get_key(i)] = ret_id[i];
   }
 }
@@ -214,12 +212,12 @@ void local_storage_mixture::get_diff(diff_t& ret) const {
     }
     ret.diff.push_back(make_pair(it->first, fv3));
   }
-  ret.version = model_version_.get_version();
+  ret.expect_version = model_version_;
 }
 
 bool local_storage_mixture::set_average_and_clear_diff(
     const diff_t& average) {
-  if (average.version == model_version_.get_version()) {
+  if (average.expect_version == model_version_) {
     for (features3_t::const_iterator it = average.diff.begin();
          it != average.diff.end();
          ++it) {
@@ -237,6 +235,11 @@ bool local_storage_mixture::set_average_and_clear_diff(
   } else {
     return false;
   }
+}
+
+void local_storage_mixture::register_label(const std::string& label) {
+  // get_id method creates an entry when the label doesn't exist
+  class2id_.get_id(label);
 }
 
 void local_storage_mixture::clear() {

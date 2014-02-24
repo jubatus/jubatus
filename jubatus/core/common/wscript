@@ -57,5 +57,6 @@ def build(bld):
       'type.hpp',
       'unordered_map.hpp',
       'vector_util.hpp',
+      'version.hpp',
       ])
   bld.recurse(subdirs)

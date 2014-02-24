@@ -30,17 +30,18 @@ namespace clustering {
 class clustering_method_serializer {
  public:
   template <class Archive, class ConcreteMethodType>
-  static void do_serialize(Archive &ar, clustering_method &method) {
-    ConcreteMethodType *t = dynamic_cast<ConcreteMethodType *>(&method);
+  static void do_serialize(Archive& ar, clustering_method& method) {
+    ConcreteMethodType *t = dynamic_cast<ConcreteMethodType*>(&method);
     if (t == NULL) {
       throw JUBATUS_EXCEPTION(
           common::exception::runtime_error("Bad method type"));
     }
     t->serialize(ar);
   }
+
   template <class Archive>
   static void serialize(
-      const std::string& method_name, Archive &ar, clustering_method &method) {
+      const std::string& method_name, Archive& ar, clustering_method& method) {
     if (method_name == "kmeans") {
       do_serialize<Archive, kmeans_clustering_method>(ar, method);
     } else {

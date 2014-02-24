@@ -29,13 +29,13 @@ namespace core {
 namespace classifier {
 
 confidence_weighted::confidence_weighted(classifier_base::storage_ptr storage)
-    : classifier_base(storage, true) {
+    : classifier_base(storage) {
 }
 
 confidence_weighted::confidence_weighted(
     const classifier_config& config,
     classifier_base::storage_ptr storage)
-    : classifier_base(storage, true),
+    : classifier_base(storage),
       config_(config) {
 }
 
@@ -49,6 +49,7 @@ void confidence_weighted::train(const common::sfv_t& sfv, const string& label) {
   float gamma = -b + sqrt(b * b - 8 * C * (margin - C * variance));
 
   if (gamma <= 0.f) {
+    get_storage()->register_label(label);
     return;
   }
   gamma /= 4 * C * variance;

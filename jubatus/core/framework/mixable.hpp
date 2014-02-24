@@ -23,7 +23,9 @@
 
 #include <msgpack.hpp>
 #include "jubatus/util/concurrent/rwmutex.h"
+#include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/lang/shared_ptr.h"
+#include "../common/version.hpp"
 #include "../common/exception.hpp"
 #include "../common/byte_buffer.hpp"
 #include "../common/assert.hpp"
@@ -52,6 +54,7 @@ class mixable0 {
   virtual std::string get_pull_argument() const = 0;
   virtual std::string pull(const std::string&) const = 0;
   virtual void push(const std::string&) = 0;
+  virtual storage::version get_version() const = 0;
 
   virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
   virtual void unpack(msgpack::object o) = 0;
@@ -78,6 +81,15 @@ class mixable_holder {
 
   jubatus::util::concurrent::rw_mutex& rw_mutex() {
     return rw_mutex_;
+  }
+
+  std::vector<storage::version> get_versions() {
+    jubatus::util::concurrent::scoped_rlock lk_read(rw_mutex_);
+    std::vector<storage::version> ret;
+    for (size_t i = 0; i < mixables_.size(); ++i) {
+      ret.push_back(mixables_[i]->get_version());
+    }
+    return ret;
   }
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
@@ -198,6 +210,8 @@ class mixable : public mixable0 {
     }
   }
 
+  storage::version get_version() const = 0;
+
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
     model_->pack(packer);
   }
@@ -251,6 +265,10 @@ class delegating_mixable : public mixable<Model, Diff, PullArg> {
 
   bool put_diff_impl(const Diff& diff) {
     return this->get_model()->set_mixed_and_clear_diff(diff);
+  }
+
+  storage::version get_version() const {
+    return this->get_model()->get_version();
   }
 
   void mix_impl(const Diff& lhs, const Diff& rhs, Diff& mixed) const {

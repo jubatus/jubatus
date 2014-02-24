@@ -29,13 +29,13 @@ namespace core {
 namespace classifier {
 
 arow::arow(classifier_base::storage_ptr storage)
-    : classifier_base(storage, true) {
+    : classifier_base(storage) {
 }
 
 arow::arow(
     const classifier_config& config,
     classifier_base::storage_ptr storage)
-    : classifier_base(storage, true),
+    : classifier_base(storage),
       config_(config) {
 }
 
@@ -45,6 +45,7 @@ void arow::train(const common::sfv_t& sfv, const string& label) {
   float margin = -calc_margin_and_variance(sfv, label, incorrect_label,
                                            variance);
   if (margin >= 1.f) {
+    get_storage()->register_label(label);
     return;
   }
 

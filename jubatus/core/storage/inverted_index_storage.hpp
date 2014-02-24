@@ -25,6 +25,7 @@
 #include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/unordered_map.h"
 #include "storage_type.hpp"
+#include "../common/version.hpp"
 #include "../common/type.hpp"
 #include "../common/unordered_map.hpp"
 #include "../common/key_manager.hpp"
@@ -66,6 +67,10 @@ class inverted_index_storage {
   void get_diff(diff_type& diff_str) const;
   bool set_mixed_and_clear_diff(const diff_type& mixed_diff);
   void mix(const diff_type& lhs_str, diff_type& rhs_str) const;
+
+  storage::version get_version() const {
+    return storage::version();
+  }
 
   std::string name() const;
 

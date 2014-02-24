@@ -87,12 +87,11 @@ class bit_vector_nearest_neighbor_mock
     return "bv_mock";
   }
 
- protected:
+ private:
   virtual bit_vector hash(const common::sfv_t&) const {
     return hash_value_;
   }
 
- private:
   bit_vector hash_value_;
 };
 

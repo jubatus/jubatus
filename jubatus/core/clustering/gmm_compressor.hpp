@@ -29,7 +29,7 @@ class gmm_compressor : public kmeans_compressor {
   explicit gmm_compressor(const clustering_config& cfg)
       : kmeans_compressor(cfg) {}
 
- protected:
+ public:
   double get_probability(
       const weighted_point& p,
       const weighted_point& nearest_bp,

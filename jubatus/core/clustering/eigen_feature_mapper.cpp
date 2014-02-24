@@ -37,11 +37,12 @@ int eigen_feature_mapper::get_dimension() {
   return d_;
 }
 
-eigen_svec_t eigen_feature_mapper::convert(const common::sfv_t& src,
-                                           bool update_map) {
+eigen_svec_t eigen_feature_mapper::convert(
+    const common::sfv_t& src,
+    bool update_map) {
   eigen_svec_t ret(d_);
   for (common::sfv_t::const_iterator it = src.begin(); it != src.end(); ++it) {
-    insert_(*it, update_map, ret);
+    insert(*it, update_map, ret);
   }
   return ret;
 }
@@ -49,13 +50,14 @@ eigen_svec_t eigen_feature_mapper::convert(const common::sfv_t& src,
 eigen_svec_t eigen_feature_mapper::convertc(const common::sfv_t& src) const {
   eigen_svec_t ret(d_);
   for (common::sfv_t::const_iterator it = src.begin(); it != src.end(); ++it) {
-    insertc_(*it, ret);
+    insertc(*it, ret);
   }
   return ret;
 }
 
-eigen_wsvec_t eigen_feature_mapper::convert(const weighted_point& src,
-                                            bool update_map) {
+eigen_wsvec_t eigen_feature_mapper::convert(
+    const weighted_point& src,
+    bool update_map) {
   eigen_wsvec_t ret;
   ret.data = convert(src.data, update_map);
   ret.weight = src.weight;
@@ -67,7 +69,7 @@ eigen_svec_list_t eigen_feature_mapper::convert(
     bool update_map) {
   eigen_svec_list_t ret(src.size());
   eigen_svec_list_t::iterator ob = ret.begin();
-  vector<common::sfv_t>::const_iterator  ib = src.begin();
+  vector<common::sfv_t>::const_iterator ib = src.begin();
   while (ib != src.end()) {
     *ob = convert(*ib, update_map);
     ++ob;
@@ -79,11 +81,12 @@ eigen_svec_list_t eigen_feature_mapper::convert(
   return ret;
 }
 
-eigen_wsvec_list_t eigen_feature_mapper::convert(const wplist& src,
-                                                 bool update_map) {
+eigen_wsvec_list_t eigen_feature_mapper::convert(
+    const wplist& src,
+    bool update_map) {
   eigen_wsvec_list_t ret(src.size());
   eigen_wsvec_list_t::iterator ob = ret.begin();
-  wplist::const_iterator       ib = src.begin();
+  wplist::const_iterator ib = src.begin();
   while (ib != src.end()) {
     *ob = convert(*ib, update_map);
     ++ob;
@@ -102,7 +105,7 @@ eigen_wsvec_list_t eigen_feature_mapper::convert(const wplist& src,
 common::sfv_t eigen_feature_mapper::revert(const eigen_svec_t& src) const {
   common::sfv_t ret;
   for (eigen_svec_t::InnerIterator it(src); it; ++it) {
-    rinsert_(std::make_pair(it.row(), static_cast<float>(it.value())), ret);
+    rinsert(std::make_pair(it.row(), static_cast<float>(it.value())), ret);
   }
   return ret;
 }
@@ -118,8 +121,8 @@ weighted_point eigen_feature_mapper::revert(
 std::vector<common::sfv_t> eigen_feature_mapper::revert(
     const eigen_svec_list_t& src) const {
   std::vector<common::sfv_t> ret(src.size());
-  eigen_svec_list_t::const_iterator  ib = src.begin();
-  std::vector<common::sfv_t>::iterator       ob = ret.begin();
+  eigen_svec_list_t::const_iterator ib = src.begin();
+  std::vector<common::sfv_t>::iterator ob = ret.begin();
   while (ib != src.end()) {
     *ob = revert(*ib);
     ++ob;
@@ -131,8 +134,8 @@ std::vector<common::sfv_t> eigen_feature_mapper::revert(
 wplist eigen_feature_mapper::revert(
     const eigen_wsvec_list_t& src) const {
   wplist ret(src.size());
-  eigen_wsvec_list_t::const_iterator  ib = src.begin();
-  wplist::iterator                    ob = ret.begin();
+  eigen_wsvec_list_t::const_iterator ib = src.begin();
+  wplist::iterator ob = ret.begin();
   while (ib != src.end()) {
     *ob = revert(*ib);
     ++ob;
@@ -141,8 +144,10 @@ wplist eigen_feature_mapper::revert(
   return ret;
 }
 
-void eigen_feature_mapper::insert_(pair<std::string, float> item,
-                                   bool update_map, eigen_svec_t& dst) {
+void eigen_feature_mapper::insert(
+    const pair<std::string, float>& item,
+    bool update_map,
+    eigen_svec_t& dst) {
   if (dst.rows() < d_) {
     dst.resize(d_);
   }
@@ -151,12 +156,13 @@ void eigen_feature_mapper::insert_(pair<std::string, float> item,
   } else if (update_map) {
     rmap_[d_] = item.first;
     map_[item.first] = d_++;
-    insert_(item, update_map, dst);
+    insert(item, update_map, dst);
   }
 }
 
-void eigen_feature_mapper::insertc_(pair<std::string, float> item,
-                                    eigen_svec_t& dst) const {
+void eigen_feature_mapper::insertc(
+    const pair<std::string, float>& item,
+    eigen_svec_t& dst) const {
   if (dst.rows() < d_) {
     dst.resize(d_);
   }
@@ -165,8 +171,9 @@ void eigen_feature_mapper::insertc_(pair<std::string, float> item,
   }
 }
 
-void eigen_feature_mapper::rinsert_(pair<int, float> item,
-                                    common::sfv_t& dst) const {
+void eigen_feature_mapper::rinsert(
+    const pair<int, float>& item,
+    common::sfv_t& dst) const {
   if (rmap_.find(item.first) != rmap_.end()) {
     dst.push_back(
         make_pair((rmap_.find(item.first))->second, item.second));

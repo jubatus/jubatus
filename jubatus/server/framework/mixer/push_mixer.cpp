@@ -67,9 +67,10 @@ class push_communication_impl : public push_communication {
  private:
   vector<pair<string, int> > servers_;
   jubatus::util::lang::shared_ptr<common::lock_service> zk_;
-  string type_;
-  string name_;
-  int timeout_sec_;
+  mutable jubatus::util::concurrent::mutex m_;  // saves servers_ and zk_
+  const string type_;
+  const string name_;
+  const int timeout_sec_;
 };
 
 push_communication_impl::push_communication_impl(
@@ -84,16 +85,20 @@ push_communication_impl::push_communication_impl(
 }
 
 size_t push_communication_impl::update_members() {
+  common::unique_lock lk(m_);
   common::get_all_nodes(*zk_, type_, name_, servers_);
   return servers_.size();
 }
 
 size_t push_communication_impl::size() const {
+  common::unique_lock lk(m_);
   return servers_.size();
 }
 
 shared_ptr<common::try_lockable> push_communication_impl::create_lock() {
+  // TODO(kumagi): push_mixer does not use zk_lock
   string path;
+  common::unique_lock lk(m_);
   common::build_actor_path(path, type_, name_);
   return shared_ptr<common::try_lockable>(
       new common::lock_service_mutex(*zk_, path + "/master_lock"));
@@ -101,6 +106,7 @@ shared_ptr<common::try_lockable> push_communication_impl::create_lock() {
 
 const vector<pair<string, int> >& push_communication_impl::servers_list()
     const {
+  common::unique_lock lk(m_);
   return servers_;
 }
 
@@ -177,6 +183,8 @@ void push_mixer::register_api(rpc_server_t& server) {
           &push_mixer::get_pull_argument, this, jubatus::util::lang::_1));
   server.add<int(vector<string>)>(
       "push", bind(&push_mixer::push, this, jubatus::util::lang::_1));
+  server.add<bool(void)>(
+      "do_mix", bind(&push_mixer::do_mix, this));
 }
 
 void push_mixer::set_mixable_holder(
@@ -199,6 +207,27 @@ void push_mixer::stop() {
     lk.unlock();
     t_.join();
   }
+}
+
+bool push_mixer::do_mix() {
+  {
+    common::unique_lock lk(m_);
+    counter_ = 0;
+    ticktime_ = get_clock_time();
+    lk.unlock();
+  }
+  try {
+    LOG(INFO) << "forced to mix by user RPC";
+    mix();
+    return true;
+  } catch (const jubatus::core::common::exception::jubatus_exception& e) {
+    LOG(ERROR) << e.diagnostic_information(true);
+  } catch (const std::exception& e) {
+    LOG(WARNING) << "exception in mix: " << e.what();
+  } catch (...) {
+    LOG(ERROR) << "unexpected error";
+  }
+  return false;
 }
 
 void push_mixer::updated() {
@@ -229,7 +258,8 @@ void push_mixer::mixer_loop() {
       c_.wait(m_, 0.5);
       clock_time new_ticktime = get_clock_time();
       if ((0 < count_threshold_ &&  counter_ >= count_threshold_)
-          || (0 < tick_threshold_ && new_ticktime - ticktime_ > tick_threshold_)) {
+          || (0 < tick_threshold_ && new_ticktime - ticktime_ > tick_threshold_)
+          ) {
         DLOG(INFO) << "starting mix because of "
                    << (count_threshold_ <= counter_ ? "counter" : "tick_time")
                    << " threshold";

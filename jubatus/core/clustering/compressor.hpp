@@ -35,8 +35,8 @@ class compressor {
 
   virtual void compress(
       const wplist& src,
-      csize_t bsize,
-      csize_t dstsize,
+      size_t bsize,
+      size_t dstsize,
       wplist& dst) = 0;
 
   MSGPACK_DEFINE(config_);

@@ -27,13 +27,13 @@ namespace core {
 namespace classifier {
 
 passive_aggressive_1::passive_aggressive_1(classifier_base::storage_ptr storage)
-    : classifier_base(storage, false) {
+    : classifier_base(storage) {
 }
 
 passive_aggressive_1::passive_aggressive_1(
     const classifier_config& config,
     classifier_base::storage_ptr storage)
-    : classifier_base(storage, false),
+    : classifier_base(storage),
       config_(config) {
 }
 
@@ -43,10 +43,12 @@ void passive_aggressive_1::train(const common::sfv_t& sfv,
   float margin = calc_margin(sfv, label, incorrect_label);
   float loss = 1.f + margin;
   if (loss < 0.f) {
+    get_storage()->register_label(label);
     return;
   }
   float sfv_norm = squared_norm(sfv);
   if (sfv_norm == 0.f) {
+    get_storage()->register_label(label);
     return;
   }
 

@@ -24,28 +24,33 @@ namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-keyword_weights mixable_weight_manager::get_diff_impl() const {
+versioned_weight_diff mixable_weight_manager::get_diff_impl() const {
   return get_model()->get_diff();
 }
 
 bool mixable_weight_manager::put_diff_impl(
-    const fv_converter::keyword_weights& diff) {
-  get_model()->put_diff(diff);
-  // TODO(kumagi): should it be version aware?
-  return true;
+    const versioned_weight_diff& diff) {
+  return get_model()->put_diff(diff);
 }
 
 void mixable_weight_manager::mix_impl(
-    const keyword_weights& lhs,
-    const keyword_weights& rhs,
-    keyword_weights& acc) const {
-  acc = rhs;
-  acc.merge(lhs);
+    const versioned_weight_diff& lhs,
+    const versioned_weight_diff& rhs,
+    versioned_weight_diff& acc) const {
+  if (lhs.version_ == rhs.version_) {
+    acc = rhs;
+    acc.weights_.merge(lhs.weights_);
+  } else if (lhs.version_ < rhs.version_) {
+    acc = rhs;
+  } else {
+    acc = lhs;
+  }
 }
 
 void mixable_weight_manager::clear() {
   get_model()->clear();
 }
+
 
 }  // namespace driver
 }  // namespace core

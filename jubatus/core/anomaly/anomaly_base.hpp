@@ -69,8 +69,7 @@ class anomaly_base {
   virtual void register_mixables_to_holder(
       framework::mixable_holder& holder) const = 0;
 
- protected:
-  static const uint32_t NEIGHBOR_NUM;
+  uint64_t find_max_int_id() const;
 };
 
 }  // namespace anomaly

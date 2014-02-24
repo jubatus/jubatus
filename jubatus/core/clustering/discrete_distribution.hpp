@@ -33,7 +33,7 @@ class discrete_distribution {
   size_t operator() ();
 
  private:
-  size_t convert_(double d);
+  size_t convert(double d);
   jubatus::util::math::random::mtrand r_;
   std::vector<double> whist_;
   double sum_;

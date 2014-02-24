@@ -25,7 +25,7 @@ namespace core {
 namespace classifier {
 
 passive_aggressive::passive_aggressive(classifier_base::storage_ptr storage)
-    : classifier_base(storage, false) {
+    : classifier_base(storage) {
 }
 
 void passive_aggressive::train(const common::sfv_t& sfv, const string& label) {
@@ -37,6 +37,7 @@ void passive_aggressive::train(const common::sfv_t& sfv, const string& label) {
   }
   float sfv_norm = squared_norm(sfv);
   if (sfv_norm == 0.f) {
+    get_storage()->register_label(label);
     return;
   }
   update_weight(sfv, loss / (2 * sfv_norm), label, incorrect_label);

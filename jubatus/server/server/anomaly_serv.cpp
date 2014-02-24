@@ -80,7 +80,6 @@ anomaly_serv::anomaly_serv(
     const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk)) {
-
 #ifdef HAVE_ZOOKEEPER_H
   if (a.is_standalone()) {
 #endif
@@ -273,6 +272,29 @@ float anomaly_serv::selective_update(
   } else {  // needs no lock
     client::anomaly c(host, port, argv().name, argv().interconnect_timeout);
     return c.update(id, d);
+  }
+}
+
+bool anomaly_serv::load(const std::string& id) {
+  if (server_base::load(id)) {
+    reset_id_generator();
+    return true;
+  }
+  return false;
+}
+
+void anomaly_serv::load_file(const std::string& path) {
+  server_base::load_file(path);
+  reset_id_generator();
+}
+
+void anomaly_serv::reset_id_generator() {
+  if (argv().is_standalone()) {
+    uint64_t counter = anomaly_->find_max_int_id() + 1;
+    idgen_.reset(
+        new common::global_id_generator_standalone(counter));
+  } else {
+    // TODO(hido): support ID check for distributed mode
   }
 }
 

@@ -72,13 +72,14 @@ class local_storage_mixture : public storage_base {
       const std::string& inc_class,
       const std::string& dec_class);
 
+  void register_label(const std::string& label);
   void clear();
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);
 
-  uint64_t get_version() const {
-    return model_version_.get_version();
+  version get_version() const {
+    return model_version_;
   }
 
   std::string type() const;

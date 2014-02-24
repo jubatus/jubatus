@@ -27,10 +27,10 @@ class gmm {
  public:
   void batch(const eigen_wsvec_list_t& data, int d, int k);
   eigen_svec_list_t get_centers() {
-      return means_;
+    return means_;
   }
   eigen_smat_list_t get_covs() {
-      return covs_;
+    return covs_;
   }
   eigen_svec_t get_nearest_center(const eigen_svec_t& p) const;
   int64_t get_nearest_center_index(const eigen_svec_t& p) const;
@@ -48,8 +48,8 @@ class gmm {
       const eigen_svec_list_t& mean,
       const eigen_smat_list_t& cov,
       const eigen_solver_list_t& solvers) const;
-  eigen_svec_list_t   means_;
-  eigen_smat_list_t   covs_;
+  eigen_svec_list_t means_;
+  eigen_smat_list_t covs_;
   eigen_smat_t eye_;
   eigen_solver_list_t cov_solvers_;
   int d_;

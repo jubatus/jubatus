@@ -38,6 +38,7 @@ struct eigen_wsvec_t {
   double weight;
   eigen_svec_t data;
 };
+
 typedef std::vector<eigen_wsvec_t> eigen_wsvec_list_t;
 
 }  // namespace clustering
