@@ -54,7 +54,7 @@ void passive_aggressive::train(const common::sfv_t& fv, float value) {
   sq_sum_ += value * value;
   count_ += 1;
   float avg = sum_ / count_;
-  float std_dev = sqrt(sq_sum_ / count_ -  avg * avg);
+  float std_dev = std::sqrt(sq_sum_ / count_ -  avg * avg);
 
   float predict = estimate(fv);
   float error = value - predict;

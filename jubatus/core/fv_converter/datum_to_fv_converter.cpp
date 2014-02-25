@@ -444,7 +444,7 @@ class datum_to_fv_converter_impl {
 
       case LOG_TERM_FREQUENCY:
         name = "log_tf";
-        return log(1. + tf);
+        return std::log(1. + tf);
 
       default:
         return 0;

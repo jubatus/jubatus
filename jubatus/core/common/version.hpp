@@ -17,8 +17,8 @@
 #ifndef JUBATUS_CORE_COMMON_VERSION_HPP_
 #define JUBATUS_CORE_COMMON_VERSION_HPP_
 
-#include <ostream>
 #include <stdint.h>
+#include <ostream>
 #include <msgpack.hpp>
 #include "jubatus/util/data/serialization.h"
 

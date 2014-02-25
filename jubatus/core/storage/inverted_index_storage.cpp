@@ -246,7 +246,7 @@ float inverted_index_storage::calc_l2norm(const common::sfv_t& sfv) {
   for (size_t i = 0; i < sfv.size(); ++i) {
     ret += sfv[i].second * sfv[i].second;
   }
-  return sqrt(ret);
+  return std::sqrt(ret);
 }
 
 float inverted_index_storage::calc_columnl2norm(uint64_t column_id) const {
@@ -259,7 +259,7 @@ float inverted_index_storage::calc_columnl2norm(uint64_t column_id) const {
   if (it != column2norm_.end()) {
     ret += it->second;
   }
-  return sqrt(ret);
+  return std::sqrt(ret);
 }
 
 void inverted_index_storage::add_inp_scores(

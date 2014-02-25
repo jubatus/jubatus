@@ -89,8 +89,8 @@ TEST(stat_test, mixed_entropy) {
   p.push("test", 2.0);
   p.push("test", 3.0);
 
-  double e_d = 3 * log(3);
-  double e_e = - e_d / 3 + log(3);
+  double e_d = 3 * std::log(3);
+  double e_e = - e_d / 3 + std::log(3);
 
   std::pair<double, size_t> d;
   p.get_diff(d);

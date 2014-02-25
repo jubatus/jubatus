@@ -144,7 +144,6 @@ byte_buffer linear_communication_impl::get_model() {
     string server_ip;
     int server_port;
     try {
-
       if (servers_.empty() || servers_.size() == 1) {
         return byte_buffer();
       }

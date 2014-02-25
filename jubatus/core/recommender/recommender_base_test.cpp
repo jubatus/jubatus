@@ -139,7 +139,7 @@ TEST(recommender_base, calc_l2norm) {
   q.push_back(make_pair("a2", 2.0));
   q.push_back(make_pair("a3", 3.0));
 
-  EXPECT_FLOAT_EQ(sqrt(1.0 + 4.0 + 9.0), r.calc_l2norm(q));
+  EXPECT_FLOAT_EQ(std::sqrt(1.0 + 4.0 + 9.0), r.calc_l2norm(q));
 }
 
 TEST(recommender_base, calc_similality) {

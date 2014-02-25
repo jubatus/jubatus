@@ -126,8 +126,8 @@ struct example2{
   bool operator==(const example2 &r) const{
     return
       precision==r.precision &&
-      abs(Latitude-r.Latitude)<1e-10 &&
-      abs(Longitude-r.Longitude)<1e-10 &&
+      std::abs(Latitude-r.Latitude)<1e-10 &&
+      std::abs(Longitude-r.Longitude)<1e-10 &&
       Address==r.Address &&
       City==r.City &&
       State==r.State &&

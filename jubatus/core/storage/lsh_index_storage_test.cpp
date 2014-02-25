@@ -48,7 +48,7 @@ vector<float> make_hash(const string& b) {
 float distance(float norm1, float norm2, float angle_ratio) {
   return std::sqrt(
       norm1 * norm1 + norm2 * norm2
-          - 2 * norm1 * norm2 * cos(angle_ratio * M_PI));
+          - 2 * norm1 * norm2 * std::cos(angle_ratio * M_PI));
 }
 
 }  // namespace

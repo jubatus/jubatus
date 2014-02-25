@@ -55,11 +55,11 @@ TEST(inverted_index_storage, trivial) {
   s.calc_scores(v, scores, 100);
 
   ASSERT_EQ(3u, scores.size());
-  EXPECT_FLOAT_EQ(2.0 / sqrt(3) / sqrt(2), scores[0].second);
+  EXPECT_FLOAT_EQ(2.0 / std::sqrt(3) / std::sqrt(2), scores[0].second);
   EXPECT_EQ("r1", scores[0].first);
-  EXPECT_FLOAT_EQ(1.0 / sqrt(2) / sqrt(2), scores[1].second);
+  EXPECT_FLOAT_EQ(1.0 / std::sqrt(2) / std::sqrt(2), scores[1].second);
   EXPECT_EQ("r3", scores[1].first);
-  EXPECT_FLOAT_EQ(1.0 / sqrt(2) / sqrt(3), scores[2].second);
+  EXPECT_FLOAT_EQ(1.0 / std::sqrt(2) / std::sqrt(3), scores[2].second);
   EXPECT_EQ("r2", scores[2].first);
 
   msgpack::sbuffer buf;
@@ -73,11 +73,11 @@ TEST(inverted_index_storage, trivial) {
   s.calc_scores(v, scores2, 100);
   // expect to get same result
   ASSERT_EQ(3u, scores2.size());
-  EXPECT_FLOAT_EQ(2.0 / sqrt(3) / sqrt(2), scores2[0].second);
+  EXPECT_FLOAT_EQ(2.0 / std::sqrt(3) / std::sqrt(2), scores2[0].second);
   EXPECT_EQ("r1", scores2[0].first);
-  EXPECT_FLOAT_EQ(1.0 / sqrt(2) / sqrt(2), scores2[1].second);
+  EXPECT_FLOAT_EQ(1.0 / std::sqrt(2) / std::sqrt(2), scores2[1].second);
   EXPECT_EQ("r3", scores2[1].first);
-  EXPECT_FLOAT_EQ(1.0 / sqrt(2) / sqrt(3), scores2[2].second);
+  EXPECT_FLOAT_EQ(1.0 / std::sqrt(2) / std::sqrt(3), scores2[2].second);
   EXPECT_EQ("r2", scores2[2].first);
 }
 

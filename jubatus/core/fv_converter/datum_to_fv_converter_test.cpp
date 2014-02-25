@@ -71,10 +71,10 @@ TEST(datum_to_fv_converter, num_feature) {
 
   std::vector<std::pair<std::string, float> > expected;
   expected.push_back(std::make_pair("/val1@num", 1.1));
-  expected.push_back(std::make_pair("/val1@log", log(1.1)));
+  expected.push_back(std::make_pair("/val1@log", std::log(1.1)));
   // elements with zero are removed
   // expected.push_back(std::make_pair("/val2@num", 0.));
-  // expected.push_back(std::make_pair("/val2@log", log(1.)));
+  // expected.push_back(std::make_pair("/val2@log", std::log(1.)));
 
   ASSERT_EQ(expected, feature);
 }
@@ -138,8 +138,8 @@ TEST(datum_to_fv_converter, string_feature) {
   expected.push_back(std::make_pair("/title$it@space#bin/bin", 1.));
   expected.push_back(std::make_pair("/title$.@space#bin/bin", 1.));
 
-  double idf1 = log((2. + 1) / (1. + 1));
-  // double idf2 = log(2. / 2.);
+  double idf1 = std::log((2. + 1) / (1. + 1));
+  // double idf2 = std::log(2. / 2.);
   expected.push_back(std::make_pair("/name$doc1@space#tf/idf", 1. * idf1));
   // expected.push_back(std::make_pair("/title$this@space#tf/idf", 1. * idf2));
   // expected.push_back(std::make_pair("/title$is@space#tf/idf",   2. * idf2));
@@ -147,15 +147,15 @@ TEST(datum_to_fv_converter, string_feature) {
   expected.push_back(std::make_pair("/title$.@space#tf/idf", 2. * idf1));
 
   expected.push_back(
-      std::make_pair("/name$doc1@space#log_tf/idf", log(2.) * idf1));
+      std::make_pair("/name$doc1@space#log_tf/idf", std::log(2.) * idf1));
   // expected.push_back(
-  //     std::make_pair("/title$this@space#log_tf/idf", log(2.) * idf2));
+  //     std::make_pair("/title$this@space#log_tf/idf", std::log(2.) * idf2));
   // expected.push_back(
-  //     std::make_pair("/title$is@space#log_tf/idf",   log(3.) * idf2));
+  //     std::make_pair("/title$is@space#log_tf/idf",   std::log(3.) * idf2));
   expected.push_back(
-      std::make_pair("/title$it@space#log_tf/idf", log(4.) * idf1));
+      std::make_pair("/title$it@space#log_tf/idf", std::log(4.) * idf1));
   expected.push_back(
-      std::make_pair("/title$.@space#log_tf/idf", log(3.) * idf1));
+      std::make_pair("/title$.@space#log_tf/idf", std::log(3.) * idf1));
 
   // expected.push_back(std::make_pair("/title$is@ux#tf/bin", 3.));
 

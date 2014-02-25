@@ -129,7 +129,7 @@ void local_storage::get_status(std::map<string, std::string>& status) const {
 float feature_fabssum(const id_feature_val3_t& f) {
   float sum = 0.f;
   for (id_feature_val3_t::const_iterator it = f.begin(); it != f.end(); ++it) {
-    sum += fabs(it->second.v1);
+    sum += std::fabs(it->second.v1);
   }
   return sum;
 }

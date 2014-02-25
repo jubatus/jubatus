@@ -209,3 +209,6 @@ def regenerate_client(ctx):
       pass
     ctx.cmd_and_log(jenerator_command, cwd=server_node.abspath())
     print()
+
+def check_cmath(ctx):
+  ctx.cmd_and_log('tools/codestyle/cmath_finder.sh')

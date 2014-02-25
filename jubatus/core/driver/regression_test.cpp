@@ -111,7 +111,7 @@ void regression_test::my_test() {
   size_t count = 0;
   for (it = result.begin(), it0 = values.begin();
       it != result.end() && it0 != values.end(); ++it, ++it0) {
-    if (fabs(*it0 - *it) < 2.0) {
+    if (std::fabs(*it0 - *it) < 2.0) {
       count++;
     }
   }
