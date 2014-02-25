@@ -130,7 +130,7 @@ CPPEND
   ///default value of \\a a is 1
   #{template_dec} 
     #{mytype} normalize(const #{mytype} &a, #{scalar} b=1){
-    return (b/std::abs(a)) * (a);
+    return (b/abs(a)) * (a);
   }
 
   ///projection factor of vector \\a a in direction of \\a b
