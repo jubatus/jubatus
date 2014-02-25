@@ -168,7 +168,7 @@ namespace component_by_name{
   ///default value of \a a is 1
   template<class t> 
     vector2<t> normalize(const vector2<t> &a, t b=1){
-    return (b/abs(a)) * (a);
+    return (b/std::abs(a)) * (a);
   }
 
   ///projection factor of vector \a a in direction of \a b
@@ -181,7 +181,7 @@ namespace component_by_name{
   /// normalization also provided as class method
   template<class t>
     vector2<t> vector2<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 
@@ -335,7 +335,7 @@ namespace component_by_array{
   ///default value of \a a is 1
   template<class t> 
     vector2<t> normalize(const vector2<t> &a, t b=1){
-    return (b/abs(a)) * (a);
+    return (b/std::abs(a)) * (a);
   }
 
   ///projection factor of vector \a a in direction of \a b
@@ -348,7 +348,7 @@ namespace component_by_array{
   /// normalization also provided as class method
   template<class t>
     vector2<t> vector2<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 
@@ -498,7 +498,7 @@ namespace component_by_name{
   ///default value of \a a is 1
   template<class t> 
     vector3<t> normalize(const vector3<t> &a, t b=1){
-    return (b/abs(a)) * (a);
+    return (b/std::abs(a)) * (a);
   }
 
   ///projection factor of vector \a a in direction of \a b
@@ -511,7 +511,7 @@ namespace component_by_name{
   /// normalization also provided as class method
   template<class t>
     vector3<t> vector3<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 
@@ -667,7 +667,7 @@ namespace component_by_array{
   ///default value of \a a is 1
   template<class t> 
     vector3<t> normalize(const vector3<t> &a, t b=1){
-    return (b/abs(a)) * (a);
+    return (b/std::abs(a)) * (a);
   }
 
   ///projection factor of vector \a a in direction of \a b
@@ -680,7 +680,7 @@ namespace component_by_array{
   /// normalization also provided as class method
   template<class t>
     vector3<t> vector3<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 
@@ -827,7 +827,7 @@ namespace component_by_name{
   ///default value of \a a is 1
   template<class t> 
     vector4<t> normalize(const vector4<t> &a, t b=1){
-    return (b/abs(a)) * (a);
+    return (b/std::abs(a)) * (a);
   }
 
   ///projection factor of vector \a a in direction of \a b
@@ -840,7 +840,7 @@ namespace component_by_name{
   /// normalization also provided as class method
   template<class t>
     vector4<t> vector4<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 
@@ -993,7 +993,7 @@ namespace component_by_array{
   ///default value of \a a is 1
   template<class t> 
     vector4<t> normalize(const vector4<t> &a, t b=1){
-    return (b/abs(a)) * (a);
+    return (b/std::abs(a)) * (a);
   }
 
   ///projection factor of vector \a a in direction of \a b
@@ -1006,7 +1006,7 @@ namespace component_by_array{
   /// normalization also provided as class method
   template<class t>
     vector4<t> vector4<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 
@@ -1161,7 +1161,7 @@ namespace component_by_array{
   ///default value of \a a is 1
   template<class t> 
     vector5<t> normalize(const vector5<t> &a, t b=1){
-    return (b/abs(a)) * (a);
+    return (b/std::abs(a)) * (a);
   }
 
   ///projection factor of vector \a a in direction of \a b
@@ -1174,7 +1174,7 @@ namespace component_by_array{
   /// normalization also provided as class method
   template<class t>
     vector5<t> vector5<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 
@@ -1331,7 +1331,7 @@ namespace component_by_array{
   ///default value of \a a is 1
   template<class t> 
     vector6<t> normalize(const vector6<t> &a, t b=1){
-    return (b/abs(a)) * (a);
+    return (b/std::abs(a)) * (a);
   }
 
   ///projection factor of vector \a a in direction of \a b
@@ -1344,7 +1344,7 @@ namespace component_by_array{
   /// normalization also provided as class method
   template<class t>
     vector6<t> vector6<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 
@@ -1503,7 +1503,7 @@ namespace component_by_array{
   ///default value of \a a is 1
   template<class t> 
     vector7<t> normalize(const vector7<t> &a, t b=1){
-    return (b/abs(a)) * (a);
+    return (b/std::abs(a)) * (a);
   }
 
   ///projection factor of vector \a a in direction of \a b
@@ -1516,7 +1516,7 @@ namespace component_by_array{
   /// normalization also provided as class method
   template<class t>
     vector7<t> vector7<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 
@@ -1677,7 +1677,7 @@ namespace component_by_array{
   ///default value of \a a is 1
   template<class t> 
     vector8<t> normalize(const vector8<t> &a, t b=1){
-    return (b/abs(a)) * (a);
+    return (b/std::abs(a)) * (a);
   }
 
   ///projection factor of vector \a a in direction of \a b
@@ -1690,7 +1690,7 @@ namespace component_by_array{
   /// normalization also provided as class method
   template<class t>
     vector8<t> vector8<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 
@@ -1853,7 +1853,7 @@ namespace component_by_array{
   ///default value of \a a is 1
   template<class t> 
     vector9<t> normalize(const vector9<t> &a, t b=1){
-    return (b/abs(a)) * (a);
+    return (b/std::abs(a)) * (a);
   }
 
   ///projection factor of vector \a a in direction of \a b
@@ -1866,7 +1866,7 @@ namespace component_by_array{
   /// normalization also provided as class method
   template<class t>
     vector9<t> vector9<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 
@@ -2031,7 +2031,7 @@ namespace component_by_array{
   ///default value of \a a is 1
   template<class t> 
     vector10<t> normalize(const vector10<t> &a, t b=1){
-    return (b/abs(a)) * (a);
+    return (b/std::abs(a)) * (a);
   }
 
   ///projection factor of vector \a a in direction of \a b
@@ -2044,7 +2044,7 @@ namespace component_by_array{
   /// normalization also provided as class method
   template<class t>
     vector10<t> vector10<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 

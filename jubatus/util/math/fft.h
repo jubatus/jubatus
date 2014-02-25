@@ -51,7 +51,7 @@ inline void fft_inner(Iterator a, Iterator b, int flip)
 
   ssize_t n=b-a;
 
-  value_type pi=atan(1.0)*4;
+  value_type pi=std::atan(1.0)*4;
   value_type theta=2.0*pi/n*flip;
 
   for (ssize_t i=0, j=1; j<n-1; j++){

@@ -128,7 +128,7 @@ bool is_standard_deviation(jubatus::util::lang::function<double()> f, bool expec
     }else{
       expect_moment=ctr;
     }
-    double err=abs(mom[n]-expect_moment);
+    double err=std::abs(mom[n]-expect_moment);
     double tor=5.0 * std::exp(n)/std::sqrt(size);
     debug << "mom[" << n << "] = " << mom[n] << " " 
           << err << " " << tor

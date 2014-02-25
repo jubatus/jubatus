@@ -92,7 +92,7 @@ CPPEND
   /// normalization also provided as class method
   template<class t>
     #{myname}<t> #{myname}<t>::normalize(t a){
-    return (a/abs(*this))*(*this);
+    return (a/std::abs(*this))*(*this);
   }
 
 

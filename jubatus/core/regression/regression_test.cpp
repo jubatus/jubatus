@@ -96,7 +96,7 @@ void random_test(regression::regression_base& p, float x, float y, size_t dim) {
   size_t ok = 0;
   for (size_t i = 0; i < 100; ++i) {
     std::pair<float, std::vector<double> > tfv = gen_random_data(x, x, dim);
-    if (fabs(p.estimate(convert(tfv.second)) - tfv.first) < 2.0 * y * x)
+    if (std::fabs(p.estimate(convert(tfv.second)) - tfv.first) < 2.0 * y * x)
       ++ok;
   }
   EXPECT_GT(ok, 90u);
