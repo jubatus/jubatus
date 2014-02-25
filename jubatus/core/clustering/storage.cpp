@@ -26,7 +26,7 @@ namespace core {
 namespace clustering {
 
 storage::storage(const std::string& name, const clustering_config& config)
-    : revision_ (0),
+    : revision_(0),
       name_(name),
       config_(config) {
 }

@@ -70,13 +70,13 @@ vector<t> moment(int max_mom, int size, jubatus::util::lang::function<t()> &val)
 double uniform(){
   // unform distribution
   static jubatus::util::math::random::random<mersenne_twister> r;
-  return r.next_double(-sqrt(3.0),sqrt(3.0));
+  return r.next_double(-std::sqrt(3.0),std::sqrt(3.0));
 }
 
 double piled_uniform(int n){
   double sum=0;
   for(int i=0;i<n;++i) sum+=uniform(); 
-  return sum/sqrt((double)n);
+  return sum/std::sqrt((double)n);
 }
 
 double gauss(){
@@ -93,7 +93,7 @@ double gauss_diff(){
   static jubatus::util::math::random::random<mersenne_twister> r;
   static double last_val = r.next_gaussian();
   double cur_val = r.next_gaussian();
-  double ret = (last_val-cur_val)/sqrt(2.0);
+  double ret = (last_val-cur_val)/std::sqrt(2.0);
   last_val=cur_val;
   return ret;
 }
@@ -129,7 +129,7 @@ bool is_standard_deviation(jubatus::util::lang::function<double()> f, bool expec
       expect_moment=ctr;
     }
     double err=abs(mom[n]-expect_moment);
-    double tor=5.0 * exp(n)/sqrt(size);
+    double tor=5.0 * std::exp(n)/std::sqrt(size);
     debug << "mom[" << n << "] = " << mom[n] << " " 
           << err << " " << tor
           << endl;

@@ -95,7 +95,7 @@ float calc_hash(uint64_t a, uint64_t b, float val) {
   hash_mix64(a, b, c);
   hash_mix64(a, b, c);
   float r = static_cast<float>(a) / static_cast<float>(0xFFFFFFFFFFFFFFFFLLU);
-  return - log(r) / val;
+  return - std::log(r) / val;
 }
 
 }  // namespace

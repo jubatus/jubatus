@@ -167,12 +167,12 @@ double dist(const common::sfv_t& p1, const common::sfv_t& p2) {
     }
   }
   for (; it1 != p1.end(); ++it1) {
-    ret += pow(it1->second, 2);
+    ret += std::pow(it1->second, 2);
   }
   for (; it2 != p2.end(); ++it2) {
-    ret += pow(it2->second, 2);
+    ret += std::pow(it2->second, 2);
   }
-  return sqrt(ret);
+  return std::sqrt(ret);
 }
 
 double dist(const weighted_point &d1, const weighted_point &d2) {

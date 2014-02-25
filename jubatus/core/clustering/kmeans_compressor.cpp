@@ -102,7 +102,9 @@ void kmeans_compressor::get_bicriteria(
   dst.clear();
   wplist resid = src;
   vector<double> weights(src.size());
-  double r = (1 - exp(bsize * (log(bsize) - log(src.size())) / dstsize)) / 2;
+  double r =
+    (1 - std::exp(bsize * (std::log(bsize) - std::log(src.size())) / dstsize))
+      / 2;
   r = max(0.1, r);
   std::vector<size_t> ind(bsize);
   while (resid.size() > 1 && dst.size() < dstsize) {
@@ -143,8 +145,8 @@ double kmeans_compressor::get_probability(
     const weighted_point& bp,
     double weight_sum,
     double squared_min_dist_sum) {
-  return ceil(weight_sum * (
-      pow(p.free_double, 2) * p.weight / squared_min_dist_sum)) + 1;
+  return std::ceil(weight_sum * (
+      std::pow(p.free_double, 2) * p.weight / squared_min_dist_sum)) + 1;
 }
 
 void kmeans_compressor::bicriteria_to_coreset(
@@ -163,7 +165,7 @@ void kmeans_compressor::bicriteria_to_coreset(
     (*it).free_long = m.first;
     (*it).free_double = m.second;
     bicriteria.at((*it).free_long).free_double += (*it).weight;
-    squared_min_dist_sum += pow((*it).free_double, 2) * (*it).weight;
+    squared_min_dist_sum += std::pow((*it).free_double, 2) * (*it).weight;
     weight_sum += (*it).weight;
   }
   std::vector<double> weights;

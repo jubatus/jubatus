@@ -52,7 +52,7 @@ float squared_l2norm(const common::sfv_t& sfv) {
 }
 
 float l2norm(const common::sfv_t& sfv) {
-  return sqrt(squared_l2norm(sfv));
+  return std::sqrt(squared_l2norm(sfv));
 }
 
 }  // namespace
@@ -144,7 +144,8 @@ void euclid_lsh::neighbor_row_from_hash(
     for (size_t i = 0; i < table->size(); ++i) {
       const size_t hamm_dist = bv.calc_hamming_distance(bv_col[i]);
       const float theta = hamm_dist * M_PI / denom;
-      const float score = norm_col[i] * (norm_col[i] - 2 * norm * cos(theta));
+      const float score =
+          norm_col[i] * (norm_col[i] - 2 * norm * std::cos(theta));
       heap.push(make_pair(score, i));
     }
   }
@@ -156,7 +157,7 @@ void euclid_lsh::neighbor_row_from_hash(
   const float squared_norm = norm * norm;
   for (size_t i = 0; i < sorted.size(); ++i) {
     ids.push_back(make_pair(table->get_key(sorted[i].second),
-                            sqrt(squared_norm + sorted[i].first)));
+                            std::sqrt(squared_norm + sorted[i].first)));
   }
 }
 

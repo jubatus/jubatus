@@ -65,7 +65,7 @@ void gmm::batch(const eigen_wsvec_list_t& data, int d, int k) {
         means_[c] += cp * i->data;
         covs_[c] += i->data * (i->data.transpose()) * cp;
         weights[c] += cp;
-        obj -= log(cp);
+        obj -= std::log(cp);
       }
     }
     for (int c = 0; c < k; ++c) {
@@ -145,13 +145,14 @@ eigen_svec_t gmm::cluster_probs(
     eigen_svec_t dif = x - means[i];
     double det = std::abs(cov_solvers[i]->determinant());
     double quad = (dif.transpose() * cov_solvers[i]->solve(dif)).sum();
-    double lp = -1 / 2. * (log(det) + quad);
+    double lp = -1 / 2. * (std::log(det) + quad);
     ret.coeffRef(i) = lp;
     den = (den == DBL_MIN) ?
-        lp : max(den, lp)+log(1 + exp(min(den, lp)-max(den, lp)));
+        lp : std::max(den, lp) +
+            std::log(1 + std::exp(min(den, lp) - std::max(den, lp)));
   }
   for (int i = 0; i < k_; ++i) {
-    ret.coeffRef(i) = exp(ret.coeff(i) - den);
+    ret.coeffRef(i) = std::exp(ret.coeff(i) - den);
   }
   return ret;
 }

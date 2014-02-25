@@ -144,7 +144,7 @@ float recommender_base::calc_l2norm(const common::sfv_t& query) {
   for (size_t i = 0; i < query.size(); ++i) {
     ret += query[i].second * query[i].second;
   }
-  return sqrt(ret);
+  return std::sqrt(ret);
 }
 
 }  // namespace recommender
