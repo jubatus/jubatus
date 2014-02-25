@@ -45,11 +45,6 @@ std::vector<T> concat(const std::vector<T>& lhs, const std::vector<T>& rhs) {
 }
 
 template<typename T>
-T random(T lhs, T rhs) {
-  return lhs;  // TODO( ): make random? or left(change fun name)?
-}
-
-template<typename T>
 T pass(T lhs, T rhs) {
   return lhs;  // TODO( ):
 }
