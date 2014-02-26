@@ -60,7 +60,7 @@ class keyword_weights {
  private:
   double get_global_weight(const std::string& key) const;
 
-  size_t document_count_;
+  uint64_t document_count_;
   counter<std::string> document_frequencies_;
   typedef pfi::data::unordered_map<std::string, float> weight_t;
   weight_t weights_;
