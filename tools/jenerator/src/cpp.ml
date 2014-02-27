@@ -546,9 +546,8 @@ let gen_proxy_file conf names source services =
 
 let gen_impl_method names m =
   let name = m.method_name in
-  let args_def = gen_function_args_def names true m.method_arguments in
-  let args = List.map (fun f -> f.field_name) m.method_arguments in
-  let ret_type = gen_ret_type names true m.method_return_type in
+  let args = List.mapi
+    (fun i _ -> "params.get<" ^ string_of_int (i + 1) ^ ">()") m.method_arguments in
 
   let _, request, _ = get_decorator m in
   let lock_type =
@@ -561,16 +560,49 @@ let gen_impl_method names m =
   let call =
     match m.method_return_type with
     | None ->
-      call
+      [
+        (1, lock);
+        (1, call);
+      ]
     | Some typ ->
-      "return " ^ call
+      let t = gen_type names true typ in
+      [
+        (1, lock);
+        (1, t ^ " retval = " ^ call);
+        (1, "req.result(retval);")
+      ]
   in
+  let call =
+    if m.method_exceptions = [] then
+      call
+    else
+      let error_handler = List.concat (List.map (fun e ->
+        let exception_name = e in
+        [
+          (1, "} catch(const "^exception_name^"& e) {");
+          (2,   "req.error(e);");
+        ]
+      ) m.method_exceptions) in
+      List.concat [
+        [ (1,   "try {"); ];
+        indent_lines 1 call;
+        error_handler;
+        [ (1,   "}"); ];
+      ] in
 
-  [
-    (0, Printf.sprintf "%s %s%s {" ret_type name args_def);
-    (1,   lock);
-    (1,   call);
-    (0, "}");
+  let arg_types = String::(List.map (fun f -> f.field_type) m.method_arguments) in
+  let tuple_type = gen_template names true "msgpack::type::tuple" arg_types in
+
+  List.concat [
+    [
+      (0, Printf.sprintf "void %s(msgpack::rpc::request& req) {" name);
+      (1,   tuple_type ^ " params;");
+      (1,   "req.params().convert(&params);");
+    ];
+    call;
+    [
+      (0, "}");
+    ]
   ]
 ;;
 

@@ -34,6 +34,7 @@ let parse_error s = print ("parse_error->"^s);;
 %token MESSAGE
 %token EXCEPTION
 %token SERVICE
+%token THROW
 
 %token INCLUDE
 %token RPAREN LPAREN COMMA COLON COLON_COLON
@@ -197,15 +198,38 @@ api_def:
      { { method_return_type = $2;
          method_name = $3;
          method_arguments = $4;
-         method_decorators = $1; }
+         method_decorators = $1;
+         method_exceptions = []; }
      }
  | ret_type LITERAL cfields
      { { method_return_type = $1;
          method_name = $2;
          method_arguments = $3;
-         method_decorators = []; }
+         method_decorators = [];
+         method_exceptions = []; }
+     }
+ | decorators ret_type LITERAL cfields throws
+     { { method_return_type = $2;
+         method_name = $3;
+         method_arguments = $4;
+         method_decorators = $1;
+         method_exceptions = $5; }
+     }
+ | ret_type LITERAL cfields throws
+     { { method_return_type = $1;
+         method_name = $2;
+         method_arguments = $3;
+         method_decorators = [];
+         method_exceptions = $4; }
      }
 ;
+throws:
+ | THROW LPAREN RPAREN { [] }
+ | THROW LPAREN LITERAL exception_types_rest { $3::$4 }
+;
+exception_types_rest:
+ | COMMA LITERAL exception_types_rest { $2::$3 }
+ | RPAREN { [] }
 
 decorators:
  | DECORATOR

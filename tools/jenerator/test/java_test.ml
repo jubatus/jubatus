@@ -177,7 +177,8 @@ let _ = run_test_tt_main begin "java.ml" >::: [
       (gen_client_method { method_return_type = None;
                            method_name = "fun";
                            method_arguments = [];
-                           method_decorators = []; });
+                           method_decorators = [];
+                           method_exceptions = []; });
     assert_equal
       [ (0, "public String fun() {");
         (1,   "return this.call(\"fun\", TString.instance);");
@@ -185,7 +186,8 @@ let _ = run_test_tt_main begin "java.ml" >::: [
       (gen_client_method { method_return_type = Some String;
                            method_name = "fun";
                            method_arguments = [];
-                           method_decorators = []; });
+                           method_decorators = [];
+                           method_exceptions = []; });
   end;
 
   "test_gen_interface" >:: begin fun() ->
@@ -201,7 +203,8 @@ let _ = run_test_tt_main begin "java.ml" >::: [
                            field_type = String;
                            field_name = "s"; };
                        ];
-                       method_decorators = []
+                       method_decorators = [];
+                       method_exceptions = [];
                      });
 
     assert_equal
@@ -209,7 +212,8 @@ let _ = run_test_tt_main begin "java.ml" >::: [
       (gen_interface { method_return_type = None;
                        method_name = "f";
                        method_arguments = [];
-                       method_decorators = []
+                       method_decorators = [];
+                       method_exceptions = [];
                      });
   end;
 

@@ -56,6 +56,7 @@ type method_type = {
   method_name: string;
   method_arguments: field_type list;
   method_decorators: decorator_type list;
+  method_exceptions: string list;
 } [@@deriving show];;
 
 let get_decorator m =

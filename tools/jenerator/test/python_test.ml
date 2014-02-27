@@ -71,7 +71,8 @@ let _ = run_test_tt_main begin "python.ml" >::: [
           { field_number = 0; field_type = Bool; field_name = "x" };
           { field_number = 1; field_type = Float false; field_name = "y" };
         ];
-        method_decorators = []
+        method_decorators = [];
+        method_exceptions = [];
        })
   end;
 

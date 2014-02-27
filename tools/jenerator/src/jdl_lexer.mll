@@ -58,6 +58,7 @@ rule token = parse
   | "message" { MESSAGE }
   | "enum" { ENUM }
   | "service" { SERVICE }
+  | "throw" { THROW }
   | literal as s { LITERAL(s) }
   | ','       { COMMA }
   | '<'       { LBRACE }
