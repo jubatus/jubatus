@@ -24,8 +24,6 @@ namespace jubatus {
 namespace core {
 namespace clustering {
 
-class clustering_method_serializer;
-
 class kmeans_clustering_method : public clustering_method {
  public:
   explicit kmeans_clustering_method(size_t k);
@@ -45,12 +43,6 @@ class kmeans_clustering_method : public clustering_method {
 
   std::vector<common::sfv_t> kcenters_;
   size_t k_;
-
-  friend class clustering_method_serializer;
-  template <class Ar>
-  void serialize(Ar &ar) {
-    ar & k_ & kcenters_;
-  }
 };
 
 }  // namespace clustering
