@@ -52,20 +52,14 @@ void load_file_impl(server_base& server,
 
   std::ifstream ifs(path.c_str(), std::ios::binary);
   if (!ifs) {
-    LOG(ERROR) << "failed to load: " << path;
     throw JUBATUS_EXCEPTION(
       core::common::exception::runtime_error("cannot open input file")
       << core::common::exception::error_file_name(path)
       << core::common::exception::error_errno(errno));
   }
 
-  try {
-    framework::load_server(ifs, server, id);
-    ifs.close();
-  } catch (...) {
-    LOG(ERROR) << "failed to load: " << path;
-    throw;
-  }
+  framework::load_server(ifs, server, id);
+  ifs.close();
 
   server.update_loaded_status(path);
   LOG(INFO) << "loaded from " << path;
@@ -105,15 +99,12 @@ bool server_base::save(const std::string& id) {
     framework::save_server(ofs, *this, id);
     ofs.close();
   } catch (const std::ios_base::failure&) {
-    LOG(ERROR) << "failed to save: " << path;
     throw JUBATUS_EXCEPTION(
       core::common::exception::runtime_error("cannot write output file")
       << core::common::exception::error_file_name(path)
       << core::common::exception::error_errno(errno));
-  } catch (...) {
-    LOG(ERROR) << "failed to save: " << path;
-    throw;
   }
+
   update_saved_status(path);
   LOG(INFO) << "saved to " << path;
   return true;
