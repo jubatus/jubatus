@@ -80,22 +80,26 @@ bool server_base::save(const std::string& id) {
   const std::string path = build_local_path(argv_, "jubatus", id);
   LOG(INFO) << "starting save to " << path;
 
-  std::ofstream ofs;
+  std::ofstream ofs(path.c_str(), std::ios::trunc | std::ios::binary);
+  if (!ofs) {
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error("cannot open output file")
+      << core::common::exception::error_file_name(path)
+      << core::common::exception::error_errno(errno));
+  }
+
+  // use gcc-specific extension
+  int fd = static_cast<__gnu_cxx::stdio_filebuf<char> *>(ofs.rdbuf())->fd();
+  if (flock(fd, LOCK_EX | LOCK_NB) < 0) {  // try exclusive lock
+    throw
+      JUBATUS_EXCEPTION(core::common::exception::runtime_error(
+          "cannot get the lock of file; any RPC is saving to same file?")
+        << core::common::exception::error_file_name(path)
+        << core::common::exception::error_errno(errno));
+  }
+
   ofs.exceptions(std::ios_base::failbit | std::ios_base::badbit);
-
   try {
-    ofs.open(path.c_str(), std::ios::trunc | std::ios::binary);
-
-    // use gcc-specific extension
-    int fd = static_cast<__gnu_cxx::stdio_filebuf<char> *>(ofs.rdbuf())->fd();
-    if (flock(fd, LOCK_EX | LOCK_NB) < 0) {  // try exclusive lock
-      throw
-        JUBATUS_EXCEPTION(core::common::exception::runtime_error(
-            "cannot get the lock of file; any RPC is saving to same file?")
-          << core::common::exception::error_file_name(path)
-          << core::common::exception::error_errno(errno));
-    }
-
     framework::save_server(ofs, *this, id);
     ofs.close();
   } catch (const std::ios_base::failure&) {
