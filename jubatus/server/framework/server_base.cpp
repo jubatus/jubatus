@@ -58,8 +58,16 @@ void load_file_impl(server_base& server,
       << core::common::exception::error_errno(errno));
   }
 
-  framework::load_server(ifs, server, id);
-  ifs.close();
+  ifs.exceptions(std::ios_base::failbit | std::ios_base::badbit);
+  try {
+    framework::load_server(ifs, server, id);
+    ifs.close();
+  } catch (const std::ios_base::failure&) {
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error("cannot read output file")
+      << core::common::exception::error_file_name(path)
+      << core::common::exception::error_errno(errno));
+  }
 
   server.update_loaded_status(path);
   LOG(INFO) << "loaded from " << path;
