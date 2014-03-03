@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,40 +14,40 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_FV_CONVERTER_WORD_SPLITTER_HPP_
-#define JUBATUS_CORE_FV_CONVERTER_WORD_SPLITTER_HPP_
+#ifndef JUBATUS_CORE_FV_CONVERTER_STRING_FEATURE_FACTORY_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_STRING_FEATURE_FACTORY_HPP_
 
 #include <string>
-#include <utility>
-#include <vector>
-
-#include "string_feature.hpp"
+#include "jubatus/util/lang/function.h"
+#include "jubatus/util/lang/shared_ptr.h"
+#include "type.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-class word_splitter : public string_feature {
+class string_feature;
+
+class string_feature_factory {
  public:
-  word_splitter() {
-  }
-  virtual ~word_splitter() {
+  typedef jubatus::util::lang::function<
+    string_feature*(const std::string&, const param_t&)> create_function;
+
+  string_feature_factory() {
   }
 
-  // Returns all word boundaries this splitter found.
-  // Each baoudary is represented as a pair of a beginning position
-  // and its length.
-  virtual void split(
-      const std::string& string,
-      std::vector<std::pair<size_t, size_t> >& ret_boundaries) const = 0;
+  explicit string_feature_factory(const create_function& ext)
+    : ext_(ext) {
+  }
 
-  void extract(
-      const std::string& text,
-      std::vector<string_feature_element>& result) const;
+  jubatus::util::lang::shared_ptr<string_feature> create(
+      const std::string& name, const param_t& params) const;
+ private:
+  create_function ext_;
 };
 
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_FV_CONVERTER_WORD_SPLITTER_HPP_
+#endif  // JUBATUS_CORE_FV_CONVERTER_STRING_FEATURE_FACTORY_HPP_

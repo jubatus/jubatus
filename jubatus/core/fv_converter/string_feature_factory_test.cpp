@@ -20,21 +20,21 @@
 #include <vector>
 #include <gtest/gtest.h>
 #include "exception.hpp"
-#include "splitter_factory.hpp"
-#include "word_splitter.hpp"
+#include "string_feature.hpp"
+#include "string_feature_factory.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-TEST(splitter_factory, trivial) {
-  splitter_factory f;
+TEST(string_feature_factory, trivial) {
+  string_feature_factory f;
   std::map<std::string, std::string> param;
   ASSERT_THROW(f.create("hoge", param), converter_exception);
 }
 
-TEST(splitter_factory, ngram) {
-  splitter_factory f;
+TEST(string_feature_factory, ngram) {
+  string_feature_factory f;
   std::map<std::string, std::string> param;
   ASSERT_THROW(f.create("ngram", param), converter_exception);
 
@@ -45,11 +45,11 @@ TEST(splitter_factory, ngram) {
   ASSERT_THROW(f.create("ngram", param), converter_exception);
 
   param["char_num"] = "2";
-  jubatus::util::lang::shared_ptr<word_splitter> s(f.create("ngram", param));
+  jubatus::util::lang::shared_ptr<string_feature> s(f.create("ngram", param));
 }
 
-TEST(splitter_factory, regexp) {
-  splitter_factory f;
+TEST(string_feature_factory, regexp) {
+  string_feature_factory f;
   std::map<std::string, std::string> param;
   ASSERT_THROW(f.create("regexp", param), converter_exception);
 
@@ -63,11 +63,11 @@ TEST(splitter_factory, regexp) {
 
   param["pattern"] = "(.+)";
   param["group"] = "1";
-  jubatus::util::lang::shared_ptr<word_splitter>(f.create("regexp", param));
+  jubatus::util::lang::shared_ptr<string_feature>(f.create("regexp", param));
 
   param["pattern"] = "(.+)";
   param.erase("group");
-  jubatus::util::lang::shared_ptr<word_splitter>(f.create("regexp", param));
+  jubatus::util::lang::shared_ptr<string_feature>(f.create("regexp", param));
 }
 
 }  // namespace fv_converter

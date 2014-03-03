@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,40 +14,38 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_FV_CONVERTER_WORD_SPLITTER_HPP_
-#define JUBATUS_CORE_FV_CONVERTER_WORD_SPLITTER_HPP_
+#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_STRING_FEATURE_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_STRING_FEATURE_HPP_
 
+#include <map>
 #include <string>
-#include <utility>
-#include <vector>
-
+#include <pficommon/lang/scoped_ptr.h>
+#include "../common/type.hpp"
+#include "dynamic_loader.hpp"
 #include "string_feature.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-class word_splitter : public string_feature {
+class dynamic_string_feature : public string_feature {
  public:
-  word_splitter() {
-  }
-  virtual ~word_splitter() {
-  }
-
-  // Returns all word boundaries this splitter found.
-  // Each baoudary is represented as a pair of a beginning position
-  // and its length.
-  virtual void split(
-      const std::string& string,
-      std::vector<std::pair<size_t, size_t> >& ret_boundaries) const = 0;
+  dynamic_string_feature(
+      const std::string& path,
+      const std::string& function,
+      const std::map<std::string, std::string>& params);
 
   void extract(
       const std::string& text,
       std::vector<string_feature_element>& result) const;
+
+ private:
+  dynamic_loader loader_;
+  pfi::lang::scoped_ptr<string_feature> impl_;
 };
 
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_FV_CONVERTER_WORD_SPLITTER_HPP_
+#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_STRING_FEATURE_HPP_

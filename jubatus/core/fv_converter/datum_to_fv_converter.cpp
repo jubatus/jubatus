@@ -33,6 +33,7 @@
 #include "num_filter.hpp"
 #include "binary_feature.hpp"
 #include "space_splitter.hpp"
+#include "string_feature.hpp"
 #include "string_filter.hpp"
 #include "weight_manager.hpp"
 #include "without_split.hpp"
@@ -85,13 +86,13 @@ class datum_to_fv_converter_impl {
   struct string_feature_rule {
     std::string name_;
     jubatus::util::lang::shared_ptr<key_matcher> matcher_;
-    jubatus::util::lang::shared_ptr<word_splitter> splitter_;
+    jubatus::util::lang::shared_ptr<string_feature> splitter_;
     std::vector<splitter_weight_type> weights_;
 
     string_feature_rule(
         const std::string& name,
         jubatus::util::lang::shared_ptr<key_matcher> matcher,
-        jubatus::util::lang::shared_ptr<word_splitter> splitter,
+        jubatus::util::lang::shared_ptr<string_feature> splitter,
         const std::vector<splitter_weight_type>& weights)
         : name_(name),
           matcher_(matcher),
@@ -176,7 +177,7 @@ class datum_to_fv_converter_impl {
   void register_string_rule(
       const std::string& name,
       jubatus::util::lang::shared_ptr<key_matcher> matcher,
-      jubatus::util::lang::shared_ptr<word_splitter> splitter,
+      jubatus::util::lang::shared_ptr<string_feature> splitter,
       const std::vector<splitter_weight_type>& weights) {
     string_rules_.push_back(
         string_feature_rule(name, matcher, splitter, weights));
@@ -417,21 +418,18 @@ class datum_to_fv_converter_impl {
       const std::string& value,
       counter<std::string>& counter) const {
     if (splitter.matcher_->match(key)) {
-      std::vector<std::pair<size_t, size_t> > boundaries;
-      splitter.splitter_->split(value, boundaries);
+      std::vector<string_feature_element> elements;
+      splitter.splitter_->extract(value, elements);
 
-      for (size_t i = 0; i < boundaries.size(); i++) {
-        size_t begin = boundaries[i].first;
-        size_t len = boundaries[i].second;
-        std::string word = value.substr(begin, len);
-        ++counter[word];
+      for (size_t i = 0; i < elements.size(); i++) {
+        counter[elements[i].value] += elements[i].score;
       }
     }
   }
 
   double get_sample_weight(
       frequency_weight_type type,
-      unsigned tf,
+      double tf,
       std::string& name) const {
     switch (type) {
       case FREQ_BINARY:
@@ -550,7 +548,7 @@ void datum_to_fv_converter::register_num_filter(
 void datum_to_fv_converter::register_string_rule(
     const std::string& name,
     jubatus::util::lang::shared_ptr<key_matcher> matcher,
-    jubatus::util::lang::shared_ptr<word_splitter> splitter,
+    jubatus::util::lang::shared_ptr<string_feature> splitter,
     const std::vector<splitter_weight_type>& weights) {
   pimpl_->register_string_rule(name, matcher, splitter, weights);
 }
