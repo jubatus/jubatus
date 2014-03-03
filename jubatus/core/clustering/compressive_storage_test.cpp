@@ -49,6 +49,7 @@ TEST(compressive_storage, carry_up) {
   config.bicriteria_base_size = 1;
   config.bucket_length = 2;
   config.forgetting_factor = 1.0;
+  config.forgetting_threshold = 0.0;  // don't remove
 
   compressive_storage s("", config);
   s.set_compressor(
