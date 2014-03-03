@@ -23,6 +23,8 @@
 #include <vector>
 #include <stack>
 
+#include "../common/assert.hpp"
+
 using std::min;
 using std::max;
 using std::stack;
@@ -36,8 +38,8 @@ namespace compressor {
 
 namespace {
 
-template <typename T, typename S>
-struct sort_by_first {
+struct compare_by_first {
+  template <typename T, typename S>
   bool operator() (
       const std::pair<T, S>& p1,
       const std::pair<T, S>& p2) const {
@@ -47,13 +49,16 @@ struct sort_by_first {
 
 template <typename T>
 void sort_by(const std::vector<double>& scores, std::vector<T>& array) {
-  assert(scores.size() == array.size());
+  JUBATUS_ASSERT_EQ(scores.size(),
+                    array.size(),
+                    "lengths of scores and data must be same.");
+
   std::vector<std::pair<double, T> > pairs(scores.size());
   for (size_t i = 0; i < scores.size(); ++i) {
     pairs[i].first = scores[i];
     swap(pairs[i].second, array[i]);
   }
-  std::sort(pairs.begin(), pairs.end(), sort_by_first<double, T>());
+  std::sort(pairs.begin(), pairs.end(), compare_by_first());
   for (size_t i = 0; i < scores.size(); ++i) {
     swap(pairs[i].second, array[i]);
   }
@@ -64,7 +69,7 @@ void bicriteria_as_coreset(
     wplist bic,
     const size_t dstsize,
     wplist& dst) {
-  assert(dstsize >= dst.size());
+  JUBATUS_ASSERT_GE(dstsize, dst.size(), "");
 
   typedef wplist::const_iterator citer;
   typedef wplist::iterator iter;
