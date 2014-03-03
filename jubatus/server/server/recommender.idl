@@ -45,7 +45,7 @@ service recommender {
   #@cht #@analysis #@pass
   datum decode_row(0: string id) # //@cht
 
-  #@broadcast #@analysis #@concat
+  #@random #@analysis #@pass
   list<string> get_all_rows() # //@broadcast
 
   #@random #@analysis #@pass
