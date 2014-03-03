@@ -111,10 +111,12 @@ bool server_base::save(const std::string& id) {
     framework::save_server(ofs, *this, id);
     ofs.close();
   } catch (const std::ios_base::failure&) {
+    int tmperrno = errno;
+    remove(path.c_str());  // ignore failure
     throw JUBATUS_EXCEPTION(
       core::common::exception::runtime_error("cannot write output file")
       << core::common::exception::error_file_name(path)
-      << core::common::exception::error_errno(errno));
+      << core::common::exception::error_errno(tmperrno));
   }
 
   update_saved_status(path);
