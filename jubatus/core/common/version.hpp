@@ -46,6 +46,7 @@ class version {
   friend bool operator<(const version& lhs, const version& rhs) {
     return lhs.version_number_ < rhs.version_number_;
   }
+
   void reset() {
     version_number_ = 0;
   }

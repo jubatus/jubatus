@@ -216,7 +216,7 @@ string version_list(const std::vector<version>& versions)  {
   stringstream ss;
   ss << "[";
   for (size_t i = 0; i < versions.size(); ++i) {
-    ss << versions[i].get_number();
+    ss << versions[i];
     if (i < versions.size() - 1) {
       ss << ", ";
     }
@@ -585,23 +585,23 @@ int linear_mixer::put_diff(
     if (is_obsolete_) {  // if it was obsolete, register as active
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
                 << "I got latest model. So I become active. "
-                << "versions" << versions;
+                << "versions " << versions;
       communication_->register_active_list();
     } else {
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
                 << "my model is still up to date. "
-                << "versions" << versions;
+                << "versions " << versions;
     }
   } else {
     if (!is_obsolete_) {  // it it was not obslete, delete from active list
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
                 << "I'm obsolete. I become inactive. "
-                << "versions" << versions;
+                << "versions " << versions;
       communication_->unregister_active_list();
     } else {
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
                 << "my model is still obsolete. "
-                << "versions" << versions;
+                << "versions " << versions;
     }
   }
   is_obsolete_ = !not_obsolete;
