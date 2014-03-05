@@ -53,6 +53,26 @@ service classifier {
   #@random #@analysis #@pass
   list<list<estimate_result> > classify(0: list<datum> data) # //@random
 
+  #- - Returns:
+  #-
+  #-  - List of Label
+  #-
+  #-  Get all labels in the model
+  #@random #@analysis #@pass
+  list<string> get_labels() # //@random
+
+  #- - Parameters:
+  #-
+  #-  - ``label`` : name of the new label
+  #-
+  #- - Returns:
+  #-
+  #-  - Zero if this function appends label successfully.
+  #-
+  #-  Append new label with no datum
+  #@random #@update #@pass
+  bool set_label(0: string label) # //@random
+
   #@broadcast #@update #@all_and
   bool clear() # //@broadcast
 }

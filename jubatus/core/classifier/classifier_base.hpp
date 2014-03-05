@@ -48,6 +48,9 @@ class classifier_base {
 
   void clear();
 
+  std::vector<std::string> get_labels() const;
+  bool set_label(const std::string& label);
+
   virtual std::string name() const = 0;
 
   virtual void register_mixables_to_holder(framework::mixable_holder& holder)

@@ -1,4 +1,4 @@
-// This file is auto-generated from regression.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-472-g0c36f76/develop
+// This file is auto-generated from regression.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -65,7 +65,7 @@ class regression_impl : public jubatus::server::common::mprpc::rpc_server {
   }
 
   bool save(const std::string& id) {
-    JRLOCK_(p_);
+    JWLOCK_(p_);
     return get_p()->save(id);
   }
 
