@@ -71,7 +71,7 @@ service classifier {
   #-
   #-  Append new label with no datum
   #@random #@update #@pass
-  int set_label(0: string label) # //@random
+  bool set_label(0: string label) # //@random
 
   #@broadcast #@update #@all_and
   bool clear() # //@broadcast

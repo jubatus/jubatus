@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
+// This file is auto-generated from classifier.idl(0.5.2-25-g99593f0) with jenerator version 0.4.5-412-g37c57d9/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -29,7 +29,7 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
         jubatus::util::lang::_2));
     rpc_server::add<std::vector<std::string>(std::string)>("get_labels",
         jubatus::util::lang::bind(&classifier_impl::get_labels, this));
-    rpc_server::add<int32_t(std::string, std::string)>("set_label",
+    rpc_server::add<bool(std::string, std::string)>("set_label",
         jubatus::util::lang::bind(&classifier_impl::set_label, this,
         jubatus::util::lang::_2));
     rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
@@ -64,7 +64,7 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->get_labels();
   }
 
-  int32_t set_label(const std::string& label) {
+  bool set_label(const std::string& label) {
     JWLOCK_(p_);
     return get_p()->set_label(label);
   }

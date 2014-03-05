@@ -186,13 +186,9 @@ vector<string> classifier_serv::get_labels() const {
   return classifier_->get_labels();
 }
 
-int classifier_serv::set_label(const std::string& label) {
+bool classifier_serv::set_label(const std::string& label) {
   check_set_config();
-  if (classifier_->set_label(label)) {
-    return 0;
-  } else {
-    return 1;
-  }
+  return classifier_->set_label(label);
 }
 
 }  // namespace server
