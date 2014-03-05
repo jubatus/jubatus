@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <fstream>
 #include <string>
+#include <vector>
 
 #include <gtest/gtest.h>
 #include "jubatus/util/data/serialization.h"
@@ -26,6 +27,8 @@
 using std::make_pair;
 using std::stringstream;
 using std::sort;
+using std::string;
+using std::vector;
 
 // common tests for storages are written in storage_test.cpp
 
@@ -194,6 +197,13 @@ TEST(local_storage_mixture, put_diff) {
   empty_diff.expect_version.set_number_unsafe(1LLU);
   s.set_average_and_clear_diff(empty_diff);
   ASSERT_EQ(2u, s.get_version().get_number());
+}
+
+TEST(local_storage_mixture, set_get_label) {
+  local_storage_mixture s;
+  ASSERT_EQ(0u, s.get_labels().size());
+  s.set_label("hoge");
+  ASSERT_EQ(1u, s.get_labels().size());
 }
 
 }  // namespace storage

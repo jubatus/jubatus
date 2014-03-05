@@ -249,6 +249,14 @@ void local_storage_mixture::clear() {
   id_features3_t().swap(tbl_diff_);
 }
 
+std::vector<std::string> local_storage_mixture::get_labels() const {
+  return class2id_.get_all_id2key();
+}
+
+bool local_storage_mixture::set_label(const std::string& label) {
+  return class2id_.set_key(label);
+}
+
 void local_storage_mixture::pack(
     msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack(*this);

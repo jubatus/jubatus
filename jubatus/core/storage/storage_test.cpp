@@ -18,6 +18,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 #include <gtest/gtest.h>
 #include "jubatus/util/data/serialization.h"
 #include "jubatus/util/data/serialization/unordered_map.h"
@@ -28,9 +29,11 @@ using std::istream;
 using std::make_pair;
 using std::map;
 using std::ofstream;
+using std::set;
 using std::sort;
 using std::stringstream;
 using std::string;
+using std::vector;
 using jubatus::core::common::key_manager;
 using jubatus::core::common::sfv_t;
 using jubatus::core::storage::feature_val1_t;
@@ -63,10 +66,10 @@ class stub_storage : public storage_base {
  public:
   MSGPACK_DEFINE(data_, labels_);
 
-  void get_status(std::map<std::string, std::string>&) const {
+  void get_status(map<string, string>&) const {
   }
 
-  void get(const std::string& feature, feature_val1_t& ret) const {
+  void get(const string& feature, feature_val1_t& ret) const {
     map<string, map<string, val3_t> >::const_iterator hit = data_.find(feature);
     if (hit != data_.end()) {
       const map<string, val3_t>& f = hit->second;
@@ -77,7 +80,7 @@ class stub_storage : public storage_base {
     }
   }
 
-  void get2(const std::string& feature, feature_val2_t& ret) const {
+  void get2(const string& feature, feature_val2_t& ret) const {
     map<string, map<string, val3_t> >::const_iterator hit = data_.find(feature);
     if (hit != data_.end()) {
       const map<string, val3_t>& f = hit->second;
@@ -89,7 +92,7 @@ class stub_storage : public storage_base {
     }
   }
 
-  void get3(const std::string& feature, feature_val3_t& ret) const {
+  void get3(const string& feature, feature_val3_t& ret) const {
     map<string, map<string, val3_t> >::const_iterator hit = data_.find(feature);
     if (hit != data_.end()) {
       const map<string, val3_t>& f = hit->second;
@@ -142,6 +145,24 @@ class stub_storage : public storage_base {
 
   void clear() {
     data_.clear();
+  }
+
+  vector<string> get_labels() const {
+    vector<string> ret;
+    for (std::set<string>::iterator it = labels_.begin();
+         it != labels_.end();
+         ++it) {
+      ret.push_back(*it);
+    }
+    return ret;
+  }
+
+  bool set_label(const std::string& label) {
+    if (labels_.find(label) == labels_.end()) {
+      labels_.insert(label);
+      return true;
+    }
+    return false;
   }
 
   void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const {
@@ -633,6 +654,19 @@ TYPED_TEST_P(storage_test, clear) {
   }
 }
 
+TYPED_TEST_P(storage_test, set_get_label) {
+  TypeParam s;
+  ASSERT_TRUE(s.get_labels().empty());
+  ASSERT_TRUE(s.set_label("a"));
+  ASSERT_EQ(1u, s.get_labels().size());
+  ASSERT_FALSE(s.set_label("a"));
+  ASSERT_TRUE(s.set_label("b"));
+  vector<string> labels = s.get_labels();
+  ASSERT_EQ(2u, labels.size());
+  ASSERT_EQ("a", labels[0]);
+  ASSERT_EQ("b", labels[1]);
+}
+
 REGISTER_TYPED_TEST_CASE_P(storage_test,
                            val1d,
                            val2d,
@@ -644,7 +678,8 @@ REGISTER_TYPED_TEST_CASE_P(storage_test,
                            update,
                            bulk_update,
                            bulk_update_no_decrease,
-                           clear);
+                           clear,
+                           set_get_label);
 
 typedef testing::Types<
     jubatus::core::storage::stub_storage,

@@ -74,6 +74,8 @@ class local_storage : public storage_base {
 
   void register_label(const std::string& label);
   void clear();
+  std::vector<std::string> get_labels() const;
+  bool set_label(const std::string& label);
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);

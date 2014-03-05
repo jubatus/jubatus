@@ -83,6 +83,9 @@ class storage_base {
 
   virtual void clear() = 0;
 
+  virtual std::vector<std::string> get_labels() const = 0;
+  virtual bool set_label(const std::string& label) = 0;
+
   virtual std::string type() const = 0;
 };
 

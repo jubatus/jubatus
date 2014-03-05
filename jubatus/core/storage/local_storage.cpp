@@ -24,6 +24,7 @@
 #include "jubatus/util/data/serialization/unordered_map.h"
 
 using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace core {
@@ -76,7 +77,7 @@ void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret)
     const {
   ret.clear();
 
-  std::vector<float> ret_id(class2id_.size());
+  vector<float> ret_id(class2id_.size());
   for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     const float val = it->second;
@@ -171,6 +172,14 @@ void local_storage::update(
 void local_storage::register_label(const std::string& label) {
   // get_id method creates an entry when the label doesn't exist
   class2id_.get_id(label);
+}
+
+vector<string> local_storage::get_labels() const {
+  return class2id_.get_all_id2key();
+}
+
+bool local_storage::set_label(const std::string& label) {
+  return class2id_.set_key(label);
 }
 
 void local_storage::clear() {
