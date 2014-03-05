@@ -23,6 +23,7 @@
 #include <string>
 #include <utility>
 #include <stdexcept>
+#include <vector>
 #include "storage_type.hpp"
 #include "../common/version.hpp"
 #include "../common/exception.hpp"
