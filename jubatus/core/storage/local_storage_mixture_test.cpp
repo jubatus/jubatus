@@ -199,13 +199,6 @@ TEST(local_storage_mixture, put_diff) {
   ASSERT_EQ(2u, s.get_version().get_number());
 }
 
-TEST(local_storage_mixture, set_get_label) {
-  local_storage_mixture s;
-  ASSERT_EQ(0u, s.get_labels().size());
-  s.set_label("hoge");
-  ASSERT_EQ(1u, s.get_labels().size());
-}
-
 }  // namespace storage
 }  // namespace core
 }  // namespace jubatus
