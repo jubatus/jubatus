@@ -27,6 +27,7 @@
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
+#include "jubatus/util/system/syscall.h"
 #include "mixer/mixer.hpp"
 #include "save_load.hpp"
 
@@ -112,7 +113,10 @@ bool server_base::save(const std::string& id) {
     ofs.close();
   } catch (const std::ios_base::failure&) {
     int tmperrno = errno;
-    remove(path.c_str());  // ignore failure
+    if (remove(path.c_str()) < 0) {
+      LOG(WARNING) << "failed to remove " << path << ": "
+        << jubatus::util::system::syscall::get_error_msg(errno);
+    }
     throw JUBATUS_EXCEPTION(
       core::common::exception::runtime_error("cannot write output file")
       << core::common::exception::error_file_name(path)
