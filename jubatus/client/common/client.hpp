@@ -66,6 +66,14 @@ class client {
     return f.get<std::map<std::string, std::map<std::string, std::string> > >();
   }
 
+  std::string get_name() const {
+    return name_;
+  }
+
+  void set_name(const std::string& name) {
+    name_ = name;
+  }
+
  protected:
   msgpack::rpc::client c_;
   std::string name_;
