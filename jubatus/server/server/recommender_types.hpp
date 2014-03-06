@@ -1,4 +1,4 @@
-// This file is auto-generated from recommender.idl(0.5.2-5-g71b404e) with jenerator version 0.4.5-412-g37c57d9/develop
+// This file is auto-generated from recommender.idl(0.5.2-5-g71b404e) with jenerator version 0.5.2-17-g8a5dca4/feature/set_get_labels
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_RECOMMENDER_TYPES_HPP_

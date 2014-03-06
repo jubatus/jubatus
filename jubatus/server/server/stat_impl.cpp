@@ -1,4 +1,4 @@
-// This file is auto-generated from stat.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
+// This file is auto-generated from stat.idl(0.4.5-347-g86989a6) with jenerator version 0.5.2-17-g8a5dca4/feature/set_get_labels
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -103,7 +103,7 @@ class stat_impl : public jubatus::server::common::mprpc::rpc_server {
   }
 
   bool save(const std::string& id) {
-    JWLOCK_(p_);
+    JRLOCK_(p_);
     return get_p()->save(id);
   }
 
