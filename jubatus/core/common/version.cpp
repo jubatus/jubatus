@@ -27,11 +27,14 @@ version::version()
 std::ostream& operator<<(std::ostream& os, const version& v) {
   os << v.version_number_;
   // cardinal number output
-  if ((v.version_number_ % 10) == 1 && (v.version_number_ != 11)) {
+  if ((v.version_number_ % 10) == 1
+      && ((v.version_number_ % 100) != 11)) {
     os << "st";
-  } else if ((v.version_number_ % 10) == 2 && (v.version_number_ != 12)) {
+  } else if ((v.version_number_ % 10) == 2
+             && ((v.version_number_ % 100) != 12)) {
     os << "nd";
-  } else if ((v.version_number_ % 10) == 3 && (v.version_number_ != 13)) {
+  } else if ((v.version_number_ % 10) == 3
+             && ((v.version_number_ % 100) != 13)) {
     os << "rd";
   } else {
     os << "th";
