@@ -138,7 +138,7 @@ TEST(bit_index_storage, mix) {
   s3.get_row("r4", v);
   EXPECT_TRUE(v == bit_vector());
 
-  std::vector<std::string> ids;
+  vector<string> ids;
 
   s3.get_all_row_ids(ids);
   EXPECT_EQ(3u, ids.size());
