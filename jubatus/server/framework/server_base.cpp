@@ -65,7 +65,7 @@ void load_file_impl(server_base& server,
     ifs.close();
   } catch (const std::ios_base::failure&) {
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("cannot read output file")
+      core::common::exception::runtime_error("cannot read input file")
       << core::common::exception::error_file_name(path)
       << core::common::exception::error_errno(errno));
   }
