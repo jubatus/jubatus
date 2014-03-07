@@ -95,7 +95,7 @@ class weight_manager {
   }
 
  private:
-  size_t get_document_count() const {
+  uint64_t get_document_count() const {
     return diff_weights_.get_document_count() +
         master_weights_.get_document_count();
   }
