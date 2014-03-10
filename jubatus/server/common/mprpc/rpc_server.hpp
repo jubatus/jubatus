@@ -74,6 +74,10 @@ class rpc_server : public msgpack::rpc::dispatcher {
       const std::string& name,
       const jubatus::util::lang::function<T>& f);
 
+  void add(
+      const std::string& name,
+      const jubatus::util::lang::function<void(msgpack::rpc::request&)>& f);
+
   // *asynchronous* *var-arg* method registration
   //   where var-arg method means a method receive its arguments
   //   by one packed tuple

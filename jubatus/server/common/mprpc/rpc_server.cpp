@@ -24,6 +24,24 @@ namespace server {
 namespace common {
 namespace mprpc {
 
+namespace {
+
+class msgpack_invoker : public invoker_base {
+ public:
+  typedef jubatus::util::lang::function<void(msgpack::rpc::request&)> func_type;
+
+  msgpack_invoker(const func_type& func) : func_(func) {}
+
+  virtual void invoke(msgpack::rpc::request& req) {
+    func_(req);
+  }
+
+ private:
+  func_type func_;
+};
+
+}  // namespace
+
 // rpc_server
 //   Msgpack-RPC based server with 'hashed' dispatcher.
 //   rpc_server can add RPC method on-the-fly.
@@ -51,6 +69,13 @@ void rpc_server::dispatch(msgpack::rpc::request req) {
                << e.what();
     req.error(std::string(e.what()));
   }
+}
+
+void rpc_server::add(
+    const std::string& name,
+    const jubatus::util::lang::function<void(msgpack::rpc::request&)>& f) {
+  add_inner(name, jubatus::util::lang::shared_ptr<invoker_base>(
+      new msgpack_invoker(f)));
 }
 
 void rpc_server::add_inner(const std::string& name,
