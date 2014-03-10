@@ -16,6 +16,7 @@
 
 #include "server_base.hpp"
 
+#include <stdio.h>
 #include <sys/file.h>
 #include <ext/stdio_filebuf.h>
 #include <cerrno>
