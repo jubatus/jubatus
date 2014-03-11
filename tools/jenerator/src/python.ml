@@ -224,7 +224,7 @@ let gen_client_file conf source services =
       (0, "");
       (0, "import msgpackrpc");
       (0, "import jubatus.common");
-      (0, "from types import *");
+      (0, "from .types import *");
       (0, "from jubatus.common.types import *")
     ];
     (concat_blocks clients)
