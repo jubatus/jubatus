@@ -135,10 +135,6 @@ byte_buffer linear_communication_impl::get_model() {
     update_members();
     common::unique_lock lk(m_);
 
-    if (servers_.empty() || servers_.size() == 1) {
-      return byte_buffer();
-    }
-
     // use time as pseudo random number(it should enough)
     if (servers_.empty() || servers_.size() == 1) {
       return byte_buffer();
