@@ -360,9 +360,10 @@ void linear_mixer::stabilizer_loop() {
         return;
       }
       const clock_time new_ticktime = get_clock_time();
-      if ((0 < count_threshold_ && counter_ >= count_threshold_)
-          || (0 < tick_threshold_ && new_ticktime - ticktime_ > tick_threshold_)
-          ) {
+      if (((0 < count_threshold_ && counter_ >= count_threshold_)
+          || (0 < tick_threshold_
+              && new_ticktime - ticktime_ > tick_threshold_))
+          && (0 < counter_)) {
         if (zklock->try_lock()) {
           LOG(INFO) << "starting mix:";
           counter_ = 0;
