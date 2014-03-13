@@ -21,20 +21,22 @@ namespace jubatus {
 namespace core {
 namespace storage {
 
-version::version()
-    : version_number_(0LLU) {}
-
 std::ostream& operator<<(std::ostream& os, const version& v) {
-  os << "(version)" << v.version_number_;
+  os << v.version_number_;
+  // cardinal number output
+  if ((v.version_number_ % 10) == 1
+      && ((v.version_number_ % 100) != 11)) {
+    os << "st";
+  } else if ((v.version_number_ % 10) == 2
+             && ((v.version_number_ % 100) != 12)) {
+    os << "nd";
+  } else if ((v.version_number_ % 10) == 3
+             && ((v.version_number_ % 100) != 13)) {
+    os << "rd";
+  } else {
+    os << "th";
+  }
   return os;
-}
-
-void version::increment() {
-  ++version_number_;
-}
-
-uint64_t version::get_number() const {
-  return version_number_;
 }
 
 }  // namespace storage

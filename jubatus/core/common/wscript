@@ -31,6 +31,7 @@ def build(bld):
     'key_manager_test.cpp',
     'vector_util_test.cpp',
     'jsonconfig_test.cpp',
+    'version_test.cpp',
     ]
 
   def make_test(s):

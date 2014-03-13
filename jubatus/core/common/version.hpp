@@ -28,9 +28,16 @@ namespace storage {
 
 class version {
  public:
-  version();
-  void increment();
-  uint64_t get_number() const;
+  version() : version_number_(0LLU) {}
+
+  void increment() {
+    ++version_number_;
+  }
+
+  uint64_t get_number() const {
+    return version_number_;
+  }
+
   MSGPACK_DEFINE(version_number_);
 
   friend std::ostream& operator<<(std::ostream& os, const version& v);
@@ -43,9 +50,22 @@ class version {
   friend bool operator==(const version& lhs, const version& rhs) {
     return lhs.version_number_ == rhs.version_number_;
   }
+  friend bool operator!=(const version& lhs, const version& rhs) {
+    return !(lhs == rhs);
+  }
   friend bool operator<(const version& lhs, const version& rhs) {
     return lhs.version_number_ < rhs.version_number_;
   }
+  friend bool operator>(const version& lhs, const version& rhs) {
+    return rhs < lhs;
+  }
+  friend bool operator>=(const version& lhs, const version& rhs) {
+    return !(lhs < rhs);
+  }
+  friend bool operator<=(const version& lhs, const version& rhs) {
+    return !(lhs > rhs);
+  }
+
   void reset() {
     version_number_ = 0;
   }
