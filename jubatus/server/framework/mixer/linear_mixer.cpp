@@ -131,9 +131,8 @@ size_t linear_communication_impl::update_members() {
 }
 
 byte_buffer linear_communication_impl::get_model() {
-  update_members();
-
   for (;;) {
+    update_members();
     common::unique_lock lk(m_);
 
     if (servers_.empty() || servers_.size() == 1) {
@@ -141,34 +140,25 @@ byte_buffer linear_communication_impl::get_model() {
     }
 
     // use time as pseudo random number(it should enough)
-    string server_ip;
-    int server_port;
-    try {
-      if (servers_.empty() || servers_.size() == 1) {
-        return byte_buffer();
-      }
-
-      const jubatus::util::system::time::clock_time now(get_clock_time());
-      const size_t target = now.usec % servers_.size();
-      server_ip = servers_[target].first;
-      server_port = servers_[target].second;
-      if (server_ip == my_id_.first && server_port == my_id_.second) {
-        // avoid get model from itself
-        continue;
-      }
-
-      msgpack::rpc::client cli(server_ip, server_port);
-      msgpack::rpc::future result(cli.call("get_model", 0));
-      const byte_buffer got_model_data(result.get<byte_buffer>());
-      LOG(INFO) << "got model(serialized data) " << got_model_data.size()
-                << " from server[" << server_ip << ":" << server_port << "] ";
-      return got_model_data;
-    } catch (const std::exception& e) {
-      LOG(ERROR) << "get_model from " << server_ip << ":" << server_port
-                 << " failed: " << e.what() << " and retry.";
-    } catch (...) {
-      LOG(ERROR) << "get_model: failed with unknown error. retry.";
+    if (servers_.empty() || servers_.size() == 1) {
+      return byte_buffer();
     }
+
+    const jubatus::util::system::time::clock_time now(get_clock_time());
+    const size_t target = now.usec % servers_.size();
+    const string server_ip = servers_[target].first;
+    const int server_port = servers_[target].second;
+    if (server_ip == my_id_.first && server_port == my_id_.second) {
+      // avoid get model from itself
+      continue;
+    }
+
+    msgpack::rpc::client cli(server_ip, server_port);
+    msgpack::rpc::future result(cli.call("get_model", 0));
+    const byte_buffer got_model_data(result.get<byte_buffer>());
+    LOG(INFO) << "got model(serialized data) " << got_model_data.size()
+              << " from server[" << server_ip << ":" << server_port << "] ";
+    return got_model_data;
   }
 }
 
@@ -364,7 +354,7 @@ void linear_mixer::stabilizer_loop() {
           || (0 < tick_threshold_ && new_ticktime - ticktime_ > tick_threshold_)
           ) {
         if (zklock->try_lock()) {
-          LOG(INFO) << "starting mix:";
+          LOG(INFO) << "getting zk_lock ok, starting mix:";
           counter_ = 0;
           ticktime_ = new_ticktime;
 
@@ -378,17 +368,15 @@ void linear_mixer::stabilizer_loop() {
       }
 
       if (is_obsolete_) {
-        LOG(INFO) << "I'm obsolete, start trying to get new model";
         if (zklock->try_lock()) {
           if (is_obsolete_) {
             LOG(INFO) << "start to get model from other server";
             lk.unlock();
             update_model();
             mix();
-            LOG(INFO) << "model update finished";
           }
         } else {
-          LOG(INFO) << "failed to get zklock, wait..";
+          LOG(INFO) << "failed to get zklock, waiting..";
         }
       }
     } catch (const jubatus::core::common::exception::jubatus_exception& e) {
