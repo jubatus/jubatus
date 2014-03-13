@@ -131,8 +131,8 @@ size_t linear_communication_impl::update_members() {
 }
 
 byte_buffer linear_communication_impl::get_model() {
+  update_members();
   for (;;) {
-    update_members();
     common::unique_lock lk(m_);
 
     // use time as pseudo random number(it should enough)
