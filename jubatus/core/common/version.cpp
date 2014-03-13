@@ -21,9 +21,6 @@ namespace jubatus {
 namespace core {
 namespace storage {
 
-version::version()
-    : version_number_(0LLU) {}
-
 std::ostream& operator<<(std::ostream& os, const version& v) {
   os << v.version_number_;
   // cardinal number output
@@ -40,14 +37,6 @@ std::ostream& operator<<(std::ostream& os, const version& v) {
     os << "th";
   }
   return os;
-}
-
-void version::increment() {
-  ++version_number_;
-}
-
-uint64_t version::get_number() const {
-  return version_number_;
 }
 
 }  // namespace storage
