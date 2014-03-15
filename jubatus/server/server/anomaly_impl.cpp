@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl(0.5.2-68-g68e898d) with jenerator version 0.5.4-224-g49229fa/develop
+// This file is auto-generated from anomaly.idl(0.6.4-60-gdff9eb0) with jenerator version 0.6.4-107-ge23137f/undefined
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -19,96 +19,122 @@ class anomaly_impl : public jubatus::server::common::mprpc::rpc_server {
     rpc_server(a.timeout),
     p_(new jubatus::server::framework::server_helper<anomaly_serv>(a, true)) {
 
-    rpc_server::add<bool(std::string, std::string)>("clear_row",
-        jubatus::util::lang::bind(&anomaly_impl::clear_row, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<id_with_score(std::string,
-        jubatus::core::fv_converter::datum)>("add", jubatus::util::lang::bind(
-        &anomaly_impl::add, this, jubatus::util::lang::_2));
-    rpc_server::add<float(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("update",
-        jubatus::util::lang::bind(&anomaly_impl::update, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<float(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("overwrite",
-        jubatus::util::lang::bind(&anomaly_impl::overwrite, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
-        &anomaly_impl::clear, this));
-    rpc_server::add<float(std::string, jubatus::core::fv_converter::datum)>(
-        "calc_score", jubatus::util::lang::bind(&anomaly_impl::calc_score, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<std::vector<std::string>(std::string)>("get_all_rows",
-        jubatus::util::lang::bind(&anomaly_impl::get_all_rows, this));
+    rpc_server::add("clear_row", jubatus::util::lang::bind(
+        &anomaly_impl::clear_row, this, jubatus::util::lang::_1));
+    rpc_server::add("add", jubatus::util::lang::bind(&anomaly_impl::add, this,
+        jubatus::util::lang::_1));
+    rpc_server::add("update", jubatus::util::lang::bind(&anomaly_impl::update,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("overwrite", jubatus::util::lang::bind(
+        &anomaly_impl::overwrite, this, jubatus::util::lang::_1));
+    rpc_server::add("clear", jubatus::util::lang::bind(&anomaly_impl::clear,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("calc_score", jubatus::util::lang::bind(
+        &anomaly_impl::calc_score, this, jubatus::util::lang::_1));
+    rpc_server::add("get_all_rows", jubatus::util::lang::bind(
+        &anomaly_impl::get_all_rows, this, jubatus::util::lang::_1));
 
-    rpc_server::add<std::string(std::string)>("get_config",
-        jubatus::util::lang::bind(&anomaly_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save",
-        jubatus::util::lang::bind(&anomaly_impl::save, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load",
-        jubatus::util::lang::bind(&anomaly_impl::load, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", jubatus::util::lang::bind(
-        &anomaly_impl::get_status, this));
+    rpc_server::add("get_config", jubatus::util::lang::bind(
+        &anomaly_impl::get_config, this, jubatus::util::lang::_1));
+    rpc_server::add("save", jubatus::util::lang::bind(&anomaly_impl::save, this,
+        jubatus::util::lang::_1));
+    rpc_server::add("load", jubatus::util::lang::bind(&anomaly_impl::load, this,
+        jubatus::util::lang::_1));
+    rpc_server::add("get_status", jubatus::util::lang::bind(
+        &anomaly_impl::get_status, this, jubatus::util::lang::_1));
   }
 
-  bool clear_row(const std::string& id) {
+  void clear_row(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->clear_row(id);
+    bool retval = get_p()->clear_row(params.get<1>());
+    req.result(retval);
   }
 
-  id_with_score add(const jubatus::core::fv_converter::datum& row) {
+  void add(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string,
+        jubatus::core::fv_converter::datum> params;
+    req.params().convert(&params);
     NOLOCK_(p_);
-    return get_p()->add(row);
+    id_with_score retval = get_p()->add(params.get<1>());
+    req.result(retval);
   }
 
-  float update(const std::string& id,
-      const jubatus::core::fv_converter::datum& row) {
+  void update(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string,
+        jubatus::core::fv_converter::datum> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->update(id, row);
+    float retval = get_p()->update(params.get<1>(), params.get<2>());
+    req.result(retval);
   }
 
-  float overwrite(const std::string& id,
-      const jubatus::core::fv_converter::datum& row) {
+  void overwrite(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string,
+        jubatus::core::fv_converter::datum> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->overwrite(id, row);
+    float retval = get_p()->overwrite(params.get<1>(), params.get<2>());
+    req.result(retval);
   }
 
-  bool clear() {
+  void clear(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->clear();
+    bool retval = get_p()->clear();
+    req.result(retval);
   }
 
-  float calc_score(const jubatus::core::fv_converter::datum& row) {
+  void calc_score(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string,
+        jubatus::core::fv_converter::datum> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->calc_score(row);
+    float retval = get_p()->calc_score(params.get<1>());
+    req.result(retval);
   }
 
-  std::vector<std::string> get_all_rows() {
+  void get_all_rows(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_all_rows();
+    std::vector<std::string> retval = get_p()->get_all_rows();
+    req.result(retval);
   }
 
-  std::string get_config() {
+  void get_config(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_config();
+    std::string retval = get_p()->get_config();
+    req.result(retval);
   }
 
-  bool save(const std::string& id) {
+  void save(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->save(id);
+    bool retval = get_p()->save(params.get<1>());
+    req.result(retval);
   }
 
-  bool load(const std::string& id) {
+  void load(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->load(id);
+    bool retval = get_p()->load(params.get<1>());
+    req.result(retval);
   }
 
-  std::map<std::string, std::map<std::string, std::string> > get_status() {
+  void get_status(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return p_->get_status();
+    std::map<std::string, std::map<std::string,
+        std::string> > retval = p_->get_status();
+    req.result(retval);
   }
 
   int run() { return p_->start(*this); }

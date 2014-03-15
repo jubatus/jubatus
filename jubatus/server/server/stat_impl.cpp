@@ -1,4 +1,4 @@
-// This file is auto-generated from stat.idl(0.5.2-68-g68e898d) with jenerator version 0.5.4-224-g49229fa/develop
+// This file is auto-generated from stat.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-107-ge23137f/undefined
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -19,102 +19,129 @@ class stat_impl : public jubatus::server::common::mprpc::rpc_server {
     rpc_server(a.timeout),
     p_(new jubatus::server::framework::server_helper<stat_serv>(a, true)) {
 
-    rpc_server::add<bool(std::string, std::string, double)>("push",
-        jubatus::util::lang::bind(&stat_impl::push, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<double(std::string, std::string)>("sum",
-        jubatus::util::lang::bind(&stat_impl::sum, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<double(std::string, std::string)>("stddev",
-        jubatus::util::lang::bind(&stat_impl::stddev, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<double(std::string, std::string)>("max",
-        jubatus::util::lang::bind(&stat_impl::max, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<double(std::string, std::string)>("min",
-        jubatus::util::lang::bind(&stat_impl::min, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<double(std::string, std::string)>("entropy",
-        jubatus::util::lang::bind(&stat_impl::entropy, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<double(std::string, std::string, int32_t, double)>("moment",
-        jubatus::util::lang::bind(&stat_impl::moment, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3,
-        jubatus::util::lang::_4));
-    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
-        &stat_impl::clear, this));
+    rpc_server::add("push", jubatus::util::lang::bind(&stat_impl::push, this,
+        jubatus::util::lang::_1));
+    rpc_server::add("sum", jubatus::util::lang::bind(&stat_impl::sum, this,
+        jubatus::util::lang::_1));
+    rpc_server::add("stddev", jubatus::util::lang::bind(&stat_impl::stddev,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("max", jubatus::util::lang::bind(&stat_impl::max, this,
+        jubatus::util::lang::_1));
+    rpc_server::add("min", jubatus::util::lang::bind(&stat_impl::min, this,
+        jubatus::util::lang::_1));
+    rpc_server::add("entropy", jubatus::util::lang::bind(&stat_impl::entropy,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("moment", jubatus::util::lang::bind(&stat_impl::moment,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("clear", jubatus::util::lang::bind(&stat_impl::clear, this,
+        jubatus::util::lang::_1));
 
-    rpc_server::add<std::string(std::string)>("get_config",
-        jubatus::util::lang::bind(&stat_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save",
-        jubatus::util::lang::bind(&stat_impl::save, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load",
-        jubatus::util::lang::bind(&stat_impl::load, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", jubatus::util::lang::bind(
-        &stat_impl::get_status, this));
+    rpc_server::add("get_config", jubatus::util::lang::bind(
+        &stat_impl::get_config, this, jubatus::util::lang::_1));
+    rpc_server::add("save", jubatus::util::lang::bind(&stat_impl::save, this,
+        jubatus::util::lang::_1));
+    rpc_server::add("load", jubatus::util::lang::bind(&stat_impl::load, this,
+        jubatus::util::lang::_1));
+    rpc_server::add("get_status", jubatus::util::lang::bind(
+        &stat_impl::get_status, this, jubatus::util::lang::_1));
   }
 
-  bool push(const std::string& key, double value) {
+  void push(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string, double> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->push(key, value);
+    bool retval = get_p()->push(params.get<1>(), params.get<2>());
+    req.result(retval);
   }
 
-  double sum(const std::string& key) {
+  void sum(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->sum(key);
+    double retval = get_p()->sum(params.get<1>());
+    req.result(retval);
   }
 
-  double stddev(const std::string& key) {
+  void stddev(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->stddev(key);
+    double retval = get_p()->stddev(params.get<1>());
+    req.result(retval);
   }
 
-  double max(const std::string& key) {
+  void max(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->max(key);
+    double retval = get_p()->max(params.get<1>());
+    req.result(retval);
   }
 
-  double min(const std::string& key) {
+  void min(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->min(key);
+    double retval = get_p()->min(params.get<1>());
+    req.result(retval);
   }
 
-  double entropy(const std::string& key) {
+  void entropy(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->entropy(key);
+    double retval = get_p()->entropy(params.get<1>());
+    req.result(retval);
   }
 
-  double moment(const std::string& key, int32_t degree, double center) {
+  void moment(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string, int32_t, double> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->moment(key, degree, center);
+    double retval = get_p()->moment(params.get<1>(), params.get<2>(),
+        params.get<3>());
+    req.result(retval);
   }
 
-  bool clear() {
+  void clear(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->clear();
+    bool retval = get_p()->clear();
+    req.result(retval);
   }
 
-  std::string get_config() {
+  void get_config(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_config();
+    std::string retval = get_p()->get_config();
+    req.result(retval);
   }
 
-  bool save(const std::string& id) {
+  void save(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->save(id);
+    bool retval = get_p()->save(params.get<1>());
+    req.result(retval);
   }
 
-  bool load(const std::string& id) {
+  void load(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->load(id);
+    bool retval = get_p()->load(params.get<1>());
+    req.result(retval);
   }
 
-  std::map<std::string, std::map<std::string, std::string> > get_status() {
+  void get_status(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return p_->get_status();
+    std::map<std::string, std::map<std::string,
+        std::string> > retval = p_->get_status();
+    req.result(retval);
   }
 
   int run() { return p_->start(*this); }

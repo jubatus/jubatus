@@ -393,31 +393,18 @@ let gen_type_file conf names server source idl =
   make_header conf source name content
 ;;
 
-let get_func_type names m =
-  let ret_type = gen_ret_type names true m.method_return_type in
-  let ts = List.map (fun f -> f.field_type) m.method_arguments in
-  (* Insert String to the first argument, which represents the cluster name *)
-  let arg_types = List.map (fun t -> gen_type names true t) (String::ts) in
-  let args = gen_args arg_types in
-  ret_type ^ args
-;;
-
 let gen_bind s m =
-  let num_args = List.length m.method_arguments in
   let func = "&" ^ s.service_name ^ "_impl::" ^ m.method_name in
   let this = "this" in
-  (* Ignore the first argument as it is cluster name *)
-  let nums = Array.init num_args (fun n -> Printf.sprintf "jubatus::util::lang::_%d" (n + 2)) in
-  let args = func::this::(Array.to_list nums) in
+  let args = [func; this; "jubatus::util::lang::_1"] in
   "jubatus::util::lang::bind" ^ gen_args args
 ;;
 
 let gen_server_method names s m =
-  let func_type = get_func_type names m in
   let method_name_str = gen_string_literal m.method_name in
   let bind = gen_bind s m in
-  let line = Printf.sprintf "rpc_server::add<%s>(%s, %s);"
-    func_type method_name_str bind in
+  let line = Printf.sprintf "rpc_server::add(%s, %s);"
+    method_name_str bind in
   (0, line)
 ;;
 
@@ -635,40 +622,52 @@ let gen_impl names s =
     indent_lines 2 register_methods;
     [
       (* TODO(unno): use base class? *)
-      (2,   "rpc_server::add<std::string(std::string)>(\"get_config\", jubatus::util::lang::bind(&"
-        ^ impl_name ^ "::get_config, this));");
-      (2,   "rpc_server::add<bool(std::string, std::string)>(\"save\", jubatus::util::lang::bind(&"
-        ^ impl_name ^ "::save, this, jubatus::util::lang::_2));");
-      (2,   "rpc_server::add<bool(std::string, std::string)>(\"load\", jubatus::util::lang::bind(&"
-        ^ impl_name ^ "::load, this, jubatus::util::lang::_2));");
-      (2,    "rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(std::string)>(\"get_status\", jubatus::util::lang::bind(&"
-        ^ impl_name ^ "::get_status, this));");
+      (2,   "rpc_server::add(\"get_config\", jubatus::util::lang::bind(&"
+        ^ impl_name ^ "::get_config, this, jubatus::util::lang::_1));");
+      (2,   "rpc_server::add(\"save\", jubatus::util::lang::bind(&"
+        ^ impl_name ^ "::save, this, jubatus::util::lang::_1));");
+      (2,   "rpc_server::add(\"load\", jubatus::util::lang::bind(&"
+        ^ impl_name ^ "::load, this, jubatus::util::lang::_1));");
+      (2,    "rpc_server::add(\"get_status\", jubatus::util::lang::bind(&"
+        ^ impl_name ^ "::get_status, this, jubatus::util::lang::_1));");
       (1,   "}");
     ];
     indent_lines 1 (concat_blocks methods);
     [
       (* TODO(unno): use base class? *)
-      (1,   "std::string get_config() {");
+      (1,   "void get_config(msgpack::rpc::request& req) {");
+      (2,     "msgpack::type::tuple<std::string> params;");
+      (2,     "req.params().convert(&params);");
       (2,     "JRLOCK_(p_);");
-      (2,     "return get_p()->get_config();");
+      (2,     "std::string retval = get_p()->get_config();");
+      (2,     "req.result(retval);");
       (1,   "}");
     ];
     [
-      (1,   "bool save(const std::string& id) {");
+      (1,   "void save(msgpack::rpc::request& req) {");
+      (2,     "msgpack::type::tuple<std::string, std::string> params;");
+      (2,     "req.params().convert(&params);");
       (2,     "JRLOCK_(p_);");
-      (2,     "return get_p()->save(id);");
+      (2,     "bool retval = get_p()->save(params.get<1>());");
+      (2,     "req.result(retval);");
       (1,   "}");
     ];
     [
-      (1,   "bool load(const std::string& id) {");
+      (1,   "void load(msgpack::rpc::request& req) {");
+      (2,     "msgpack::type::tuple<std::string, std::string> params;");
+      (2,     "req.params().convert(&params);");
       (2,     "JWLOCK_(p_);");
-      (2,     "return get_p()->load(id);");
+      (2,     "bool retval = get_p()->load(params.get<1>());");
+      (2,     "req.result(retval);");
       (1,   "}");
     ];
     [
-      (1,   "std::map<std::string, std::map<std::string, std::string> > get_status() {");
+      (1,   "void get_status(msgpack::rpc::request& req) {");
+      (2,     "msgpack::type::tuple<std::string> params;");
+      (2,     "req.params().convert(&params);");
       (2,     "JRLOCK_(p_);");
-      (2,     "return p_->get_status();");
+      (2,     "std::map<std::string, std::map<std::string, std::string> > retval = p_->get_status();");
+      (2,     "req.result(retval);");
       (1,   "}");
     ];
     [

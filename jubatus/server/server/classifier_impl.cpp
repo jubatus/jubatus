@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.5.4-148-gfea5e25) with jenerator version 0.5.4-224-g49229fa/develop
+// This file is auto-generated from classifier.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-107-ge23137f/undefined
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -20,86 +20,110 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
     p_(new jubatus::server::framework::server_helper<classifier_serv>(a,
         false)) {
 
-    rpc_server::add<int32_t(std::string, std::vector<labeled_datum>)>("train",
-        jubatus::util::lang::bind(&classifier_impl::train, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<std::vector<std::vector<estimate_result> >(std::string,
-        std::vector<jubatus::core::fv_converter::datum>)>("classify",
-        jubatus::util::lang::bind(&classifier_impl::classify, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<std::vector<std::string>(std::string)>("get_labels",
-        jubatus::util::lang::bind(&classifier_impl::get_labels, this));
-    rpc_server::add<bool(std::string, std::string)>("set_label",
-        jubatus::util::lang::bind(&classifier_impl::set_label, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
-        &classifier_impl::clear, this));
-    rpc_server::add<bool(std::string, std::string)>("delete_label",
-        jubatus::util::lang::bind(&classifier_impl::delete_label, this,
-        jubatus::util::lang::_2));
+    rpc_server::add("train", jubatus::util::lang::bind(&classifier_impl::train,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("classify", jubatus::util::lang::bind(
+        &classifier_impl::classify, this, jubatus::util::lang::_1));
+    rpc_server::add("get_labels", jubatus::util::lang::bind(
+        &classifier_impl::get_labels, this, jubatus::util::lang::_1));
+    rpc_server::add("set_label", jubatus::util::lang::bind(
+        &classifier_impl::set_label, this, jubatus::util::lang::_1));
+    rpc_server::add("clear", jubatus::util::lang::bind(&classifier_impl::clear,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("delete_label", jubatus::util::lang::bind(
+        &classifier_impl::delete_label, this, jubatus::util::lang::_1));
 
-    rpc_server::add<std::string(std::string)>("get_config",
-        jubatus::util::lang::bind(&classifier_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save",
-        jubatus::util::lang::bind(&classifier_impl::save, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load",
-        jubatus::util::lang::bind(&classifier_impl::load, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", jubatus::util::lang::bind(
-        &classifier_impl::get_status, this));
+    rpc_server::add("get_config", jubatus::util::lang::bind(
+        &classifier_impl::get_config, this, jubatus::util::lang::_1));
+    rpc_server::add("save", jubatus::util::lang::bind(&classifier_impl::save,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("load", jubatus::util::lang::bind(&classifier_impl::load,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("get_status", jubatus::util::lang::bind(
+        &classifier_impl::get_status, this, jubatus::util::lang::_1));
   }
 
-  int32_t train(const std::vector<labeled_datum>& data) {
+  void train(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::vector<labeled_datum> > params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->train(data);
+    int32_t retval = get_p()->train(params.get<1>());
+    req.result(retval);
   }
 
-  std::vector<std::vector<estimate_result> > classify(
-      const std::vector<jubatus::core::fv_converter::datum>& data) {
+  void classify(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string,
+        std::vector<jubatus::core::fv_converter::datum> > params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->classify(data);
+    std::vector<std::vector<estimate_result> > retval = get_p()->classify(
+        params.get<1>());
+    req.result(retval);
   }
 
-  std::vector<std::string> get_labels() {
+  void get_labels(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_labels();
+    std::vector<std::string> retval = get_p()->get_labels();
+    req.result(retval);
   }
 
-  bool set_label(const std::string& new_label) {
+  void set_label(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->set_label(new_label);
+    bool retval = get_p()->set_label(params.get<1>());
+    req.result(retval);
   }
 
-  bool clear() {
+  void clear(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->clear();
+    bool retval = get_p()->clear();
+    req.result(retval);
   }
 
-  bool delete_label(const std::string& target_label) {
+  void delete_label(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->delete_label(target_label);
+    bool retval = get_p()->delete_label(params.get<1>());
+    req.result(retval);
   }
 
-  std::string get_config() {
+  void get_config(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_config();
+    std::string retval = get_p()->get_config();
+    req.result(retval);
   }
 
-  bool save(const std::string& id) {
+  void save(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->save(id);
+    bool retval = get_p()->save(params.get<1>());
+    req.result(retval);
   }
 
-  bool load(const std::string& id) {
+  void load(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->load(id);
+    bool retval = get_p()->load(params.get<1>());
+    req.result(retval);
   }
 
-  std::map<std::string, std::map<std::string, std::string> > get_status() {
+  void get_status(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return p_->get_status();
+    std::map<std::string, std::map<std::string,
+        std::string> > retval = p_->get_status();
+    req.result(retval);
   }
 
   int run() { return p_->start(*this); }

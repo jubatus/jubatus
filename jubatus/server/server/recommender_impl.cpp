@@ -1,4 +1,4 @@
-// This file is auto-generated from recommender.idl(0.5.2-68-g68e898d) with jenerator version 0.5.4-224-g49229fa/develop
+// This file is auto-generated from recommender.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-107-ge23137f/undefined
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -20,136 +20,171 @@ class recommender_impl : public jubatus::server::common::mprpc::rpc_server {
     p_(new jubatus::server::framework::server_helper<recommender_serv>(a,
         true)) {
 
-    rpc_server::add<bool(std::string, std::string)>("clear_row",
-        jubatus::util::lang::bind(&recommender_impl::clear_row, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("update_row",
-        jubatus::util::lang::bind(&recommender_impl::update_row, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
-        &recommender_impl::clear, this));
-    rpc_server::add<jubatus::core::fv_converter::datum(std::string,
-        std::string)>("complete_row_from_id", jubatus::util::lang::bind(
+    rpc_server::add("clear_row", jubatus::util::lang::bind(
+        &recommender_impl::clear_row, this, jubatus::util::lang::_1));
+    rpc_server::add("update_row", jubatus::util::lang::bind(
+        &recommender_impl::update_row, this, jubatus::util::lang::_1));
+    rpc_server::add("clear", jubatus::util::lang::bind(&recommender_impl::clear,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("complete_row_from_id", jubatus::util::lang::bind(
         &recommender_impl::complete_row_from_id, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<jubatus::core::fv_converter::datum(std::string,
-        jubatus::core::fv_converter::datum)>("complete_row_from_datum",
-        jubatus::util::lang::bind(&recommender_impl::complete_row_from_datum,
-        this, jubatus::util::lang::_2));
-    rpc_server::add<std::vector<id_with_score>(std::string, std::string,
-        uint32_t)>("similar_row_from_id", jubatus::util::lang::bind(
-        &recommender_impl::similar_row_from_id, this, jubatus::util::lang::_2,
-        jubatus::util::lang::_3));
-    rpc_server::add<std::vector<id_with_score>(std::string,
-        jubatus::core::fv_converter::datum, uint32_t)>("similar_row_from_datum",
-        jubatus::util::lang::bind(&recommender_impl::similar_row_from_datum,
-        this, jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<jubatus::core::fv_converter::datum(std::string,
-        std::string)>("decode_row", jubatus::util::lang::bind(
-        &recommender_impl::decode_row, this, jubatus::util::lang::_2));
-    rpc_server::add<std::vector<std::string>(std::string)>("get_all_rows",
-        jubatus::util::lang::bind(&recommender_impl::get_all_rows, this));
-    rpc_server::add<float(std::string, jubatus::core::fv_converter::datum,
-        jubatus::core::fv_converter::datum)>("calc_similarity",
-        jubatus::util::lang::bind(&recommender_impl::calc_similarity, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<float(std::string, jubatus::core::fv_converter::datum)>(
-        "calc_l2norm", jubatus::util::lang::bind(&recommender_impl::calc_l2norm,
-        this, jubatus::util::lang::_2));
+        jubatus::util::lang::_1));
+    rpc_server::add("complete_row_from_datum", jubatus::util::lang::bind(
+        &recommender_impl::complete_row_from_datum, this,
+        jubatus::util::lang::_1));
+    rpc_server::add("similar_row_from_id", jubatus::util::lang::bind(
+        &recommender_impl::similar_row_from_id, this, jubatus::util::lang::_1));
+    rpc_server::add("similar_row_from_datum", jubatus::util::lang::bind(
+        &recommender_impl::similar_row_from_datum, this,
+        jubatus::util::lang::_1));
+    rpc_server::add("decode_row", jubatus::util::lang::bind(
+        &recommender_impl::decode_row, this, jubatus::util::lang::_1));
+    rpc_server::add("get_all_rows", jubatus::util::lang::bind(
+        &recommender_impl::get_all_rows, this, jubatus::util::lang::_1));
+    rpc_server::add("calc_similarity", jubatus::util::lang::bind(
+        &recommender_impl::calc_similarity, this, jubatus::util::lang::_1));
+    rpc_server::add("calc_l2norm", jubatus::util::lang::bind(
+        &recommender_impl::calc_l2norm, this, jubatus::util::lang::_1));
 
-    rpc_server::add<std::string(std::string)>("get_config",
-        jubatus::util::lang::bind(&recommender_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save",
-        jubatus::util::lang::bind(&recommender_impl::save, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load",
-        jubatus::util::lang::bind(&recommender_impl::load, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", jubatus::util::lang::bind(
-        &recommender_impl::get_status, this));
+    rpc_server::add("get_config", jubatus::util::lang::bind(
+        &recommender_impl::get_config, this, jubatus::util::lang::_1));
+    rpc_server::add("save", jubatus::util::lang::bind(&recommender_impl::save,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("load", jubatus::util::lang::bind(&recommender_impl::load,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("get_status", jubatus::util::lang::bind(
+        &recommender_impl::get_status, this, jubatus::util::lang::_1));
   }
 
-  bool clear_row(const std::string& id) {
+  void clear_row(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->clear_row(id);
+    bool retval = get_p()->clear_row(params.get<1>());
+    req.result(retval);
   }
 
-  bool update_row(const std::string& id,
-      const jubatus::core::fv_converter::datum& row) {
+  void update_row(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string,
+        jubatus::core::fv_converter::datum> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->update_row(id, row);
+    bool retval = get_p()->update_row(params.get<1>(), params.get<2>());
+    req.result(retval);
   }
 
-  bool clear() {
+  void clear(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->clear();
+    bool retval = get_p()->clear();
+    req.result(retval);
   }
 
-  jubatus::core::fv_converter::datum complete_row_from_id(
-      const std::string& id) {
+  void complete_row_from_id(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->complete_row_from_id(id);
+    jubatus::core::fv_converter::datum retval = get_p()->complete_row_from_id(
+        params.get<1>());
+    req.result(retval);
   }
 
-  jubatus::core::fv_converter::datum complete_row_from_datum(
-      const jubatus::core::fv_converter::datum& row) {
+  void complete_row_from_datum(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string,
+        jubatus::core::fv_converter::datum> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->complete_row_from_datum(row);
+    jubatus::core::fv_converter::datum retval = get_p(
+        )->complete_row_from_datum(params.get<1>());
+    req.result(retval);
   }
 
-  std::vector<id_with_score> similar_row_from_id(const std::string& id,
-      uint32_t size) {
+  void similar_row_from_id(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string, uint32_t> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->similar_row_from_id(id, size);
+    std::vector<id_with_score> retval = get_p()->similar_row_from_id(
+        params.get<1>(), params.get<2>());
+    req.result(retval);
   }
 
-  std::vector<id_with_score> similar_row_from_datum(
-      const jubatus::core::fv_converter::datum& row, uint32_t size) {
+  void similar_row_from_datum(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, jubatus::core::fv_converter::datum,
+        uint32_t> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->similar_row_from_datum(row, size);
+    std::vector<id_with_score> retval = get_p()->similar_row_from_datum(
+        params.get<1>(), params.get<2>());
+    req.result(retval);
   }
 
-  jubatus::core::fv_converter::datum decode_row(const std::string& id) {
+  void decode_row(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->decode_row(id);
+    jubatus::core::fv_converter::datum retval = get_p()->decode_row(
+        params.get<1>());
+    req.result(retval);
   }
 
-  std::vector<std::string> get_all_rows() {
+  void get_all_rows(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_all_rows();
+    std::vector<std::string> retval = get_p()->get_all_rows();
+    req.result(retval);
   }
 
-  float calc_similarity(const jubatus::core::fv_converter::datum& lhs,
-      const jubatus::core::fv_converter::datum& rhs) {
+  void calc_similarity(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, jubatus::core::fv_converter::datum,
+        jubatus::core::fv_converter::datum> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->calc_similarity(lhs, rhs);
+    float retval = get_p()->calc_similarity(params.get<1>(), params.get<2>());
+    req.result(retval);
   }
 
-  float calc_l2norm(const jubatus::core::fv_converter::datum& row) {
+  void calc_l2norm(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string,
+        jubatus::core::fv_converter::datum> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->calc_l2norm(row);
+    float retval = get_p()->calc_l2norm(params.get<1>());
+    req.result(retval);
   }
 
-  std::string get_config() {
+  void get_config(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_config();
+    std::string retval = get_p()->get_config();
+    req.result(retval);
   }
 
-  bool save(const std::string& id) {
+  void save(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->save(id);
+    bool retval = get_p()->save(params.get<1>());
+    req.result(retval);
   }
 
-  bool load(const std::string& id) {
+  void load(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->load(id);
+    bool retval = get_p()->load(params.get<1>());
+    req.result(retval);
   }
 
-  std::map<std::string, std::map<std::string, std::string> > get_status() {
+  void get_status(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return p_->get_status();
+    std::map<std::string, std::map<std::string,
+        std::string> > retval = p_->get_status();
+    req.result(retval);
   }
 
   int run() { return p_->start(*this); }

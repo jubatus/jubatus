@@ -1,4 +1,4 @@
-// This file is auto-generated from clustering.idl(0.5.4-179-gb59b61b) with jenerator version 0.5.4-224-g49229fa/develop
+// This file is auto-generated from clustering.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-107-ge23137f/undefined
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -20,101 +20,127 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
     p_(new jubatus::server::framework::server_helper<clustering_serv>(a,
         false)) {
 
-    rpc_server::add<bool(std::string,
-        std::vector<jubatus::core::fv_converter::datum>)>("push",
-        jubatus::util::lang::bind(&clustering_impl::push, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<uint32_t(std::string)>("get_revision",
-        jubatus::util::lang::bind(&clustering_impl::get_revision, this));
-    rpc_server::add<std::vector<std::vector<std::pair<double,
-        jubatus::core::fv_converter::datum> > >(std::string)>(
-        "get_core_members", jubatus::util::lang::bind(
-        &clustering_impl::get_core_members, this));
-    rpc_server::add<std::vector<jubatus::core::fv_converter::datum>(
-        std::string)>("get_k_center", jubatus::util::lang::bind(
-        &clustering_impl::get_k_center, this));
-    rpc_server::add<jubatus::core::fv_converter::datum(std::string,
-        jubatus::core::fv_converter::datum)>("get_nearest_center",
-        jubatus::util::lang::bind(&clustering_impl::get_nearest_center, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<std::vector<std::pair<double,
-        jubatus::core::fv_converter::datum> >(std::string,
-        jubatus::core::fv_converter::datum)>("get_nearest_members",
-        jubatus::util::lang::bind(&clustering_impl::get_nearest_members, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
-        &clustering_impl::clear, this));
+    rpc_server::add("push", jubatus::util::lang::bind(&clustering_impl::push,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("get_revision", jubatus::util::lang::bind(
+        &clustering_impl::get_revision, this, jubatus::util::lang::_1));
+    rpc_server::add("get_core_members", jubatus::util::lang::bind(
+        &clustering_impl::get_core_members, this, jubatus::util::lang::_1));
+    rpc_server::add("get_k_center", jubatus::util::lang::bind(
+        &clustering_impl::get_k_center, this, jubatus::util::lang::_1));
+    rpc_server::add("get_nearest_center", jubatus::util::lang::bind(
+        &clustering_impl::get_nearest_center, this, jubatus::util::lang::_1));
+    rpc_server::add("get_nearest_members", jubatus::util::lang::bind(
+        &clustering_impl::get_nearest_members, this, jubatus::util::lang::_1));
+    rpc_server::add("clear", jubatus::util::lang::bind(&clustering_impl::clear,
+        this, jubatus::util::lang::_1));
 
-    rpc_server::add<std::string(std::string)>("get_config",
-        jubatus::util::lang::bind(&clustering_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save",
-        jubatus::util::lang::bind(&clustering_impl::save, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load",
-        jubatus::util::lang::bind(&clustering_impl::load, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", jubatus::util::lang::bind(
-        &clustering_impl::get_status, this));
+    rpc_server::add("get_config", jubatus::util::lang::bind(
+        &clustering_impl::get_config, this, jubatus::util::lang::_1));
+    rpc_server::add("save", jubatus::util::lang::bind(&clustering_impl::save,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("load", jubatus::util::lang::bind(&clustering_impl::load,
+        this, jubatus::util::lang::_1));
+    rpc_server::add("get_status", jubatus::util::lang::bind(
+        &clustering_impl::get_status, this, jubatus::util::lang::_1));
   }
 
-  bool push(const std::vector<jubatus::core::fv_converter::datum>& points) {
+  void push(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string,
+        std::vector<jubatus::core::fv_converter::datum> > params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->push(points);
+    bool retval = get_p()->push(params.get<1>());
+    req.result(retval);
   }
 
-  uint32_t get_revision() {
+  void get_revision(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_revision();
+    uint32_t retval = get_p()->get_revision();
+    req.result(retval);
   }
 
-  std::vector<std::vector<std::pair<double,
-      jubatus::core::fv_converter::datum> > > get_core_members() {
+  void get_core_members(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_core_members();
+    std::vector<std::vector<std::pair<double,
+        jubatus::core::fv_converter::datum> > > retval = get_p(
+        )->get_core_members();
+    req.result(retval);
   }
 
-  std::vector<jubatus::core::fv_converter::datum> get_k_center() {
+  void get_k_center(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_k_center();
+    std::vector<jubatus::core::fv_converter::datum> retval = get_p(
+        )->get_k_center();
+    req.result(retval);
   }
 
-  jubatus::core::fv_converter::datum get_nearest_center(
-      const jubatus::core::fv_converter::datum& point) {
+  void get_nearest_center(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string,
+        jubatus::core::fv_converter::datum> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_nearest_center(point);
+    jubatus::core::fv_converter::datum retval = get_p()->get_nearest_center(
+        params.get<1>());
+    req.result(retval);
   }
 
-  std::vector<std::pair<double,
-      jubatus::core::fv_converter::datum> > get_nearest_members(
-      const jubatus::core::fv_converter::datum& point) {
+  void get_nearest_members(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string,
+        jubatus::core::fv_converter::datum> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_nearest_members(point);
+    std::vector<std::pair<double,
+        jubatus::core::fv_converter::datum> > retval = get_p(
+        )->get_nearest_members(params.get<1>());
+    req.result(retval);
   }
 
-  bool clear() {
+  void clear(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->clear();
+    bool retval = get_p()->clear();
+    req.result(retval);
   }
 
-  std::string get_config() {
+  void get_config(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_config();
+    std::string retval = get_p()->get_config();
+    req.result(retval);
   }
 
-  bool save(const std::string& id) {
+  void save(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->save(id);
+    bool retval = get_p()->save(params.get<1>());
+    req.result(retval);
   }
 
-  bool load(const std::string& id) {
+  void load(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->load(id);
+    bool retval = get_p()->load(params.get<1>());
+    req.result(retval);
   }
 
-  std::map<std::string, std::map<std::string, std::string> > get_status() {
+  void get_status(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return p_->get_status();
+    std::map<std::string, std::map<std::string,
+        std::string> > retval = p_->get_status();
+    req.result(retval);
   }
 
   int run() { return p_->start(*this); }

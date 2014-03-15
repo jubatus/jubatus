@@ -1,4 +1,4 @@
-// This file is auto-generated from nearest_neighbor.idl(0.5.4-186-g163c6bd) with jenerator version 0.5.4-224-g49229fa/develop
+// This file is auto-generated from nearest_neighbor.idl(0.6.4-33-gf65b203) with jenerator version 0.6.4-107-ge23137f/undefined
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -21,104 +21,129 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
     p_(new jubatus::server::framework::server_helper<nearest_neighbor_serv>(a,
         true)) {
 
-    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
-        &nearest_neighbor_impl::clear, this));
-    rpc_server::add<bool(std::string, std::string,
-        jubatus::core::fv_converter::datum)>("set_row",
-        jubatus::util::lang::bind(&nearest_neighbor_impl::set_row, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
-        std::string, uint32_t)>("neighbor_row_from_id",
-        jubatus::util::lang::bind(&nearest_neighbor_impl::neighbor_row_from_id,
-        this, jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
-        jubatus::core::fv_converter::datum, uint32_t)>(
-        "neighbor_row_from_datum", jubatus::util::lang::bind(
+    rpc_server::add("clear", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::clear, this, jubatus::util::lang::_1));
+    rpc_server::add("set_row", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::set_row, this, jubatus::util::lang::_1));
+    rpc_server::add("neighbor_row_from_id", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::neighbor_row_from_id, this,
+        jubatus::util::lang::_1));
+    rpc_server::add("neighbor_row_from_datum", jubatus::util::lang::bind(
         &nearest_neighbor_impl::neighbor_row_from_datum, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
-        std::string, int32_t)>("similar_row_from_id", jubatus::util::lang::bind(
+        jubatus::util::lang::_1));
+    rpc_server::add("similar_row_from_id", jubatus::util::lang::bind(
         &nearest_neighbor_impl::similar_row_from_id, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
-        jubatus::core::fv_converter::datum, int32_t)>("similar_row_from_datum",
-        jubatus::util::lang::bind(
+        jubatus::util::lang::_1));
+    rpc_server::add("similar_row_from_datum", jubatus::util::lang::bind(
         &nearest_neighbor_impl::similar_row_from_datum, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<std::vector<std::string>(std::string)>("get_all_rows",
-        jubatus::util::lang::bind(&nearest_neighbor_impl::get_all_rows, this));
+        jubatus::util::lang::_1));
+    rpc_server::add("get_all_rows", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::get_all_rows, this, jubatus::util::lang::_1));
 
-    rpc_server::add<std::string(std::string)>("get_config",
-        jubatus::util::lang::bind(&nearest_neighbor_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save",
-        jubatus::util::lang::bind(&nearest_neighbor_impl::save, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<bool(std::string, std::string)>("load",
-        jubatus::util::lang::bind(&nearest_neighbor_impl::load, this,
-        jubatus::util::lang::_2));
-    rpc_server::add<std::map<std::string, std::map<std::string, std::string> >(
-        std::string)>("get_status", jubatus::util::lang::bind(
-        &nearest_neighbor_impl::get_status, this));
+    rpc_server::add("get_config", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::get_config, this, jubatus::util::lang::_1));
+    rpc_server::add("save", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::save, this, jubatus::util::lang::_1));
+    rpc_server::add("load", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::load, this, jubatus::util::lang::_1));
+    rpc_server::add("get_status", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::get_status, this, jubatus::util::lang::_1));
   }
 
-  bool clear() {
+  void clear(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->clear();
+    bool retval = get_p()->clear();
+    req.result(retval);
   }
 
-  bool set_row(const std::string& id,
-      const jubatus::core::fv_converter::datum& d) {
+  void set_row(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string,
+        jubatus::core::fv_converter::datum> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->set_row(id, d);
+    bool retval = get_p()->set_row(params.get<1>(), params.get<2>());
+    req.result(retval);
   }
 
-  std::vector<std::pair<std::string, float> > neighbor_row_from_id(
-      const std::string& id, uint32_t size) {
+  void neighbor_row_from_id(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string, uint32_t> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->neighbor_row_from_id(id, size);
+    std::vector<std::pair<std::string, float> > retval = get_p(
+        )->neighbor_row_from_id(params.get<1>(), params.get<2>());
+    req.result(retval);
   }
 
-  std::vector<std::pair<std::string, float> > neighbor_row_from_datum(
-      const jubatus::core::fv_converter::datum& query, uint32_t size) {
+  void neighbor_row_from_datum(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, jubatus::core::fv_converter::datum,
+        uint32_t> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->neighbor_row_from_datum(query, size);
+    std::vector<std::pair<std::string, float> > retval = get_p(
+        )->neighbor_row_from_datum(params.get<1>(), params.get<2>());
+    req.result(retval);
   }
 
-  std::vector<std::pair<std::string, float> > similar_row_from_id(
-      const std::string& id, int32_t ret_num) {
+  void similar_row_from_id(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string, int32_t> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->similar_row_from_id(id, ret_num);
+    std::vector<std::pair<std::string, float> > retval = get_p(
+        )->similar_row_from_id(params.get<1>(), params.get<2>());
+    req.result(retval);
   }
 
-  std::vector<std::pair<std::string, float> > similar_row_from_datum(
-      const jubatus::core::fv_converter::datum& query, int32_t ret_num) {
+  void similar_row_from_datum(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, jubatus::core::fv_converter::datum,
+        int32_t> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->similar_row_from_datum(query, ret_num);
+    std::vector<std::pair<std::string, float> > retval = get_p(
+        )->similar_row_from_datum(params.get<1>(), params.get<2>());
+    req.result(retval);
   }
 
-  std::vector<std::string> get_all_rows() {
+  void get_all_rows(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_all_rows();
+    std::vector<std::string> retval = get_p()->get_all_rows();
+    req.result(retval);
   }
 
-  std::string get_config() {
+  void get_config(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->get_config();
+    std::string retval = get_p()->get_config();
+    req.result(retval);
   }
 
-  bool save(const std::string& id) {
+  void save(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return get_p()->save(id);
+    bool retval = get_p()->save(params.get<1>());
+    req.result(retval);
   }
 
-  bool load(const std::string& id) {
+  void load(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string, std::string> params;
+    req.params().convert(&params);
     JWLOCK_(p_);
-    return get_p()->load(id);
+    bool retval = get_p()->load(params.get<1>());
+    req.result(retval);
   }
 
-  std::map<std::string, std::map<std::string, std::string> > get_status() {
+  void get_status(msgpack::rpc::request& req) {
+    msgpack::type::tuple<std::string> params;
+    req.params().convert(&params);
     JRLOCK_(p_);
-    return p_->get_status();
+    std::map<std::string, std::map<std::string,
+        std::string> > retval = p_->get_status();
+    req.result(retval);
   }
 
   int run() { return p_->start(*this); }
