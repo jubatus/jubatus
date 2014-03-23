@@ -98,6 +98,44 @@ TEST(inverted_index_storage, diff) {
   EXPECT_EQ(0.0, t.get("c1", "r2"));
 }
 
+TEST(inverted_index_storage, column_operations) {
+  std::vector<std::string> ids;
+  inverted_index_storage s1;
+
+  s1.set("c1", "r1", 1);
+  s1.set("c1", "r2", 1);
+  s1.set("c1", "r3", 1);
+  s1.get_all_column_ids(ids);
+  EXPECT_EQ(3u, ids.size());
+
+  s1.remove("c1", "r1");
+  s1.get_all_column_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  // do MIX
+  inverted_index_storage::diff_type d1;
+  s1.get_diff(d1);
+  s1.set_mixed_and_clear_diff(d1);
+
+  s1.get_all_column_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  // Once MIXed, removing column does not take affect
+  // until next MIX.
+  s1.remove("c1", "r2");
+  s1.get_all_column_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  // do MIX
+  inverted_index_storage::diff_type d2;
+  s1.get_diff(d2);
+  s1.set_mixed_and_clear_diff(d2);
+
+  s1.get_all_column_ids(ids);
+  ASSERT_EQ(1u, ids.size());
+  EXPECT_EQ("r3", ids[0]);
+}
+
 TEST(inverted_index_storage, mix) {
   inverted_index_storage s1;
   // c1: (1, 1, 0)
