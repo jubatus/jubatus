@@ -22,7 +22,6 @@ def build(bld):
     'clustering.hpp',
     'clustering_method_factory.hpp',
     'clustering_method.hpp',
-    'clustering_method_serializer.hpp',
     'compressive_storage.hpp',
     'compressor.hpp',
     'discrete_distribution.hpp',
@@ -37,7 +36,6 @@ def build(bld):
     'simple_storage.hpp',
     'storage_factory.hpp',
     'storage.hpp',
-    'storage_serializer.hpp',
     'types.hpp',
     'util.hpp',
   ]

@@ -23,6 +23,7 @@
 #include "clustering.hpp"
 
 #include "../../util/lang/shared_ptr.h"
+#include "../../util/math/random.h"
 #include "../clustering/clustering_config.hpp"
 #include "../clustering/clustering.hpp"
 #include "../clustering/kmeans_clustering_method.hpp"
