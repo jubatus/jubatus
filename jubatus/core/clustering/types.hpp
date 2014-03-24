@@ -23,7 +23,6 @@
 #include <vector>
 
 #include <msgpack.hpp>
-#include "jubatus/util/data/serialization.h"
 
 #include "../common/type.hpp"
 #include "../fv_converter/datum.hpp"
@@ -43,14 +42,6 @@ struct weighted_point {
   double weight;
   common::sfv_t data;
   fv_converter::datum original;
-
-  template<typename Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(weight)
-        & JUBA_MEMBER(data)
-        & JUBA_MEMBER(original.num_values_)
-        & JUBA_MEMBER(original.string_values_);
-  }
 };
 
 inline void swap(weighted_point& p1, weighted_point& p2) {
