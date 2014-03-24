@@ -199,13 +199,14 @@ void kmeans_compressor::bicriteria_to_coreset(
   std::vector<double> nearest_distances(src.size());
   std::vector<double> bicriteria_scores(bicriteria.size());
   for (size_t i = 0; i < src.size(); ++i) {
+    double weight = src[i].weight;
     std::pair<int, double> m = min_dist(src[i], bicriteria);
     nearest_indexes[i] = m.first;
     nearest_distances[i] = m.second;
 
-    bicriteria_scores[m.first] += src[i].weight;
-    squared_min_dist_sum += m.second * m.second * src[i].weight;
-    weight_sum += src[i].weight;
+    bicriteria_scores[m.first] += weight;
+    squared_min_dist_sum += m.second * m.second * weight;
+    weight_sum += weight;
   }
   std::vector<double> weights;
   double sumw = 0;
