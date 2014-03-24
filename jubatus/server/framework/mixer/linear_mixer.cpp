@@ -29,6 +29,7 @@
 #include "jubatus/util/lang/bind.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/system/time_util.h"
+#include "jubatus/util/system/syscall.h"
 #include "jubatus/core/common/version.hpp"
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
@@ -213,6 +214,40 @@ string version_list(const std::vector<version>& versions)  {
   return ss.str();
 }
 
+// MessagePack-RPC server error (positive integer)
+const unsigned int NO_METHOD_ERROR = 1;
+const unsigned int ARGUMENT_ERROR = 2;
+
+string create_error_string(const msgpack::object& error) {
+  switch (error.type) {
+    case msgpack::type::RAW:
+      return error.as<string>();
+
+    case msgpack::type::POSITIVE_INTEGER:
+      switch (error.as<unsigned int>()) {
+        case NO_METHOD_ERROR:
+          return "no method error";
+        case ARGUMENT_ERROR:
+          return "argument error";
+        default:
+          return "unknown error";
+      }
+
+    case msgpack::type::NEGATIVE_INTEGER:
+      // local errno(system error) carried as negative_integer
+      {
+        const int error_code = -error.as<int>();
+        string msg("system error: ");
+        msg += jubatus::util::system::syscall::get_error_msg(error_code);
+        msg += " (" +
+          jubatus::util::lang::lexical_cast<string>(error_code) + ")";
+        return msg;
+      }
+
+    default:
+      return "unknown error";
+  }
+}
 
 }  // namespace
 
@@ -416,7 +451,8 @@ void linear_mixer::mix() {
         vector<server> successes;
         for (size_t i = 0; i < result.response.size(); ++i) {
           if (result.response[i].has_error()) {
-            const string error_text(result.response[i].error().as<string>());
+            const string error_text(
+                create_error_string(result.response[i].error()));
             LOG(WARNING) << "get_diff failed at "
                          << result.error[i].host() << ":"
                          << result.error[i].port()
@@ -468,7 +504,8 @@ void linear_mixer::mix() {
           vector<server> successes;
           for (size_t i = 0; i < result.response.size(); ++i) {
             if (result.response[i].has_error()) {
-              const string error_text(result.response[i].error().as<string>());
+              const string error_text(
+                  create_error_string(result.response[i].error()));
               LOG(WARNING) << "put_diff failed at "
                            << result.error[i].host() << ":"
                            << result.error[i].port()
