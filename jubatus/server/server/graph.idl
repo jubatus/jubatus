@@ -51,25 +51,25 @@ message shortest_path_query {
 service graph {
 
   #@random #@nolock #@pass
-  string create_node() # //@cht
+  string create_node()
 
   #@cht(2) #@nolock #@pass
-  bool remove_node(0: string node_id) # //@cht
+  bool remove_node(0: string node_id)
 
   #@cht #@update #@all_and
-  bool update_node(0: string node_id, 1: map<string, string> property) # //@cht
+  bool update_node(0: string node_id, 1: map<string, string> property)
 
   #@cht(1) #@nolock #@pass
-  ulong create_edge(0: string node_id, 1: edge e) # //@cht
+  ulong create_edge(0: string node_id, 1: edge e)
 
   #@cht #@update #@all_and
-  bool update_edge(0: string node_id, 1: ulong edge_id, 2: edge e) # //@cht
+  bool update_edge(0: string node_id, 1: ulong edge_id, 2: edge e)
 
   #@cht #@update #@all_and
-  bool remove_edge(0: string node_id, 1: ulong edge_id) # //@cht
+  bool remove_edge(0: string node_id, 1: ulong edge_id)
 
   #@random #@analysis #@pass
-  double get_centrality(0: string node_id, 1: int centrality_type, 2: preset_query query) # //@random
+  double get_centrality(0: string node_id, 1: int centrality_type, 2: preset_query query)
 
   #@broadcast #@update #@all_and
   bool add_centrality_query(0: preset_query query)
@@ -81,19 +81,19 @@ service graph {
   bool remove_shortest_path_query(0: preset_query query)
 
   #@random #@analysis #@pass
-  list<string> get_shortest_path(0: shortest_path_query query) # //@random
+  list<string> get_shortest_path(0: shortest_path_query query)
 
   #@broadcast #@update #@all_and
-  bool update_index() # //@broadcast
+  bool update_index()
 
   #@broadcast #@update #@all_and
-  bool clear() # //@broadcast
+  bool clear()
 
   #@cht #@analysis #@pass
-  node get_node(0: string node_id) # //@cht
+  node get_node(0: string node_id)
 
   #@cht #@analysis #@pass
-  edge get_edge(0: string node_id, 1: ulong edge_id) # //@cht
+  edge get_edge(0: string node_id, 1: ulong edge_id)
 
 
   #@internal #@update #@pass

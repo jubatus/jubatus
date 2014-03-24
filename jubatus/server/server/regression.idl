@@ -22,12 +22,12 @@ message scored_datum {
 service regression {
 
   #@random #@update #@pass
-  int train(0: list<scored_datum> train_data) # //@random
+  int train(0: list<scored_datum> train_data)
 
   #@random #@analysis #@pass
-  list<float>  estimate(0: list<datum>  estimate_data) # //@random
+  list<float>  estimate(0: list<datum>  estimate_data)
 
   #@broadcast #@update #@all_and
-  bool clear() # //@broadcast
+  bool clear()
 
 }
