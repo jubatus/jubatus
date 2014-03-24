@@ -56,6 +56,9 @@ class classifier {
   void get_status(std::map<std::string, std::string>& status) const;
   void clear();
 
+  std::vector<std::string> get_labels() const;
+  bool set_label(const std::string& label);
+
  private:
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 

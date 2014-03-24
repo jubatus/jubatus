@@ -22,36 +22,36 @@ message id_with_score {
 service recommender {
 
   #@cht #@update #@all_and
-  bool clear_row(0: string id) # //@cht
+  bool clear_row(0: string id)
 
   #@cht #@update #@all_and
-  bool update_row(0: string id, 1: datum row) # //@cht
+  bool update_row(0: string id, 1: datum row)
 
   #@broadcast #@update #@all_and
-  bool clear() # //@broadcast
+  bool clear()
 
   #@cht #@analysis #@pass
-  datum complete_row_from_id(0: string id) # //@cht
+  datum complete_row_from_id(0: string id)
 
   #@random #@analysis #@pass
-  datum complete_row_from_datum(0: datum row) # //@random
+  datum complete_row_from_datum(0: datum row)
 
   #@cht #@analysis #@pass
-  list<id_with_score> similar_row_from_id(0: string id, 1: uint size) # //@cht
+  list<id_with_score> similar_row_from_id(0: string id, 1: uint size)
 
   #@random #@analysis #@pass
-  list<id_with_score> similar_row_from_datum(0: datum row, 1: uint size) # //@random
+  list<id_with_score> similar_row_from_datum(0: datum row, 1: uint size)
 
   #@cht #@analysis #@pass
-  datum decode_row(0: string id) # //@cht
-
-  #@broadcast #@analysis #@concat
-  list<string> get_all_rows() # //@broadcast
+  datum decode_row(0: string id)
 
   #@random #@analysis #@pass
-  float calc_similarity(0: datum lhs, 1:datum rhs) # //@random
+  list<string> get_all_rows()
 
   #@random #@analysis #@pass
-  float calc_l2norm(0: datum row) # //@random
+  float calc_similarity(0: datum lhs, 1:datum rhs)
+
+  #@random #@analysis #@pass
+  float calc_l2norm(0: datum row)
 
 }

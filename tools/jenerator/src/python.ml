@@ -149,7 +149,7 @@ let gen_to_msgpack field_names field_types =
 let gen_str name field_names =
   List.concat [
     [
-      (0, "def __str__(self):");
+      (0, "def __repr__(self):");
       (1,   "gen = jubatus.common.MessageStringGenerator()");
       (1,   gen_call "gen.open" [gen_string_literal name])
     ];
@@ -224,7 +224,7 @@ let gen_client_file conf source services =
       (0, "");
       (0, "import msgpackrpc");
       (0, "import jubatus.common");
-      (0, "from types import *");
+      (0, "from .types import *");
       (0, "from jubatus.common.types import *")
     ];
     (concat_blocks clients)

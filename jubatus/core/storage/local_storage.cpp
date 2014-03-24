@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011-2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@
 #include "jubatus/util/data/serialization/unordered_map.h"
 
 using std::string;
+using std::vector;
 
 namespace jubatus {
 namespace core {
@@ -76,7 +77,7 @@ void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret)
     const {
   ret.clear();
 
-  std::vector<float> ret_id(class2id_.size());
+  vector<float> ret_id(class2id_.size());
   for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     const float val = it->second;
@@ -92,9 +93,6 @@ void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret)
   }
 
   for (size_t i = 0; i < ret_id.size(); ++i) {
-    if (ret_id[i] == 0.f) {
-      continue;
-    }
     ret[class2id_.get_key(i)] = ret_id[i];
   }
 }
@@ -132,7 +130,7 @@ void local_storage::get_status(std::map<string, std::string>& status) const {
 float feature_fabssum(const id_feature_val3_t& f) {
   float sum = 0.f;
   for (id_feature_val3_t::const_iterator it = f.begin(); it != f.end(); ++it) {
-    sum += fabs(it->second.v1);
+    sum += std::fabs(it->second.v1);
   }
   return sum;
 }
@@ -169,6 +167,19 @@ void local_storage::update(
   id_feature_val3_t& feature_row = tbl_[feature];
   feature_row[class2id_.get_id(inc_class)].v1 += v;
   feature_row[class2id_.get_id(dec_class)].v1 -= v;
+}
+
+void local_storage::register_label(const std::string& label) {
+  // get_id method creates an entry when the label doesn't exist
+  class2id_.get_id(label);
+}
+
+vector<string> local_storage::get_labels() const {
+  return class2id_.get_all_id2key();
+}
+
+bool local_storage::set_label(const std::string& label) {
+  return class2id_.set_key(label);
 }
 
 void local_storage::clear() {

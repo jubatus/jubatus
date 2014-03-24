@@ -128,6 +128,10 @@ std::string clustering::type() const {
   return "clustering";
 }
 
+void clustering::do_clustering() {
+  clustering_method_->batch_update(storage_->get_model()->get_all());
+}
+
 }  // namespace clustering
 }  // namespace core
 }  // namespace jubatus

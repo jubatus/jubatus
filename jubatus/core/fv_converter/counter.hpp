@@ -17,6 +17,8 @@
 #ifndef JUBATUS_CORE_FV_CONVERTER_COUNTER_HPP_
 #define JUBATUS_CORE_FV_CONVERTER_COUNTER_HPP_
 
+#include <ostream>
+
 #include "jubatus/util/data/serialization.h"
 #include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/unordered_map.h"
@@ -86,6 +88,19 @@ class counter {
   template<class Archiver>
   void serialize(Archiver& ar) {
     ar & JUBA_MEMBER(data_);
+  }
+
+  friend std::ostream& operator<<(std::ostream& os, const counter<T>& c) {
+    os << "{";
+    for (typename
+             jubatus::util::data::unordered_map<T, unsigned>::const_iterator it
+                 = c.data_.begin();
+         it != c.data_.end();
+         ++it) {
+      os << it->first << ":" << it->second << ", ";
+    }
+    os << "}";
+    return os;
   }
 
  private:

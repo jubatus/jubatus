@@ -79,7 +79,7 @@ void kmeans_clustering_method::do_batch_update(wplist& points) {
         kcenters_new[i] = kcenters_[i];
         continue;
       }
-      kcenters_new[i] = scalar_dot(kcenters_new[i], 1.0/center_count[i]);
+      kcenters_new[i] = scalar_dot(kcenters_new[i], 1.0 / center_count[i]);
       double d = dist(kcenters_new[i], kcenters_[i]);
       if (d > 1e-9) {
         terminated = false;

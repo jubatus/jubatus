@@ -15,20 +15,28 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "version.hpp"
+#include <ostream>
 
 namespace jubatus {
 namespace core {
 namespace storage {
 
-version::version()
-    : version_number_(0LLU) {}
-
-void version::increment() {
-  ++version_number_;
-}
-
-uint64_t version::get_number() const {
-  return version_number_;
+std::ostream& operator<<(std::ostream& os, const version& v) {
+  os << v.version_number_;
+  // cardinal number output
+  if ((v.version_number_ % 10) == 1
+      && ((v.version_number_ % 100) != 11)) {
+    os << "st";
+  } else if ((v.version_number_ % 10) == 2
+             && ((v.version_number_ % 100) != 12)) {
+    os << "nd";
+  } else if ((v.version_number_ % 10) == 3
+             && ((v.version_number_ % 100) != 13)) {
+    os << "rd";
+  } else {
+    os << "th";
+  }
+  return os;
 }
 
 }  // namespace storage

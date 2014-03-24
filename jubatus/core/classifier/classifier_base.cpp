@@ -78,6 +78,14 @@ void classifier_base::clear() {
   get_storage()->clear();
 }
 
+vector<string> classifier_base::get_labels() const {
+  return get_storage()->get_labels();
+}
+
+bool classifier_base::set_label(const string& label) {
+  return get_storage()->set_label(label);
+}
+
 void classifier_base::register_mixables_to_holder(
     framework::mixable_holder& holder) const {
   if (mixable_) {

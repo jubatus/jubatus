@@ -66,7 +66,15 @@ void bit_index_storage::get_row(const string& row, bit_vector& bv) const {
 }
 
 void bit_index_storage::remove_row(const string& row) {
-  bitvals_diff_[row] = bit_vector();
+  if (bitvals_.find(row) == bitvals_.end()) {
+    // The row is not in the master table; we can
+    // immedeately remove it from the diff table.
+    bitvals_diff_.erase(row);
+  } else {
+    // Keep the row in the diff table until next MIX to
+    // propagate the removal of this row to other nodes.
+    bitvals_diff_[row] = bit_vector();
+  }
 }
 
 void bit_index_storage::clear() {
@@ -96,7 +104,11 @@ bool bit_index_storage::set_mixed_and_clear_diff(
     const bit_table_t& mixed_diff) {
   for (bit_table_t::const_iterator it = mixed_diff.begin();
       it != mixed_diff.end(); ++it) {
-    bitvals_[it->first] = it->second;
+    if (it->second.bit_num() == 0) {
+      bitvals_.erase(it->first);
+    } else {
+      bitvals_[it->first] = it->second;
+    }
   }
   bitvals_diff_.clear();
   return true;

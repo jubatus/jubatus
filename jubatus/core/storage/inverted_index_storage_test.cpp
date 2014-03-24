@@ -55,11 +55,11 @@ TEST(inverted_index_storage, trivial) {
   s.calc_scores(v, scores, 100);
 
   ASSERT_EQ(3u, scores.size());
-  EXPECT_FLOAT_EQ(2.0 / sqrt(3) / sqrt(2), scores[0].second);
+  EXPECT_FLOAT_EQ(2.0 / std::sqrt(3) / std::sqrt(2), scores[0].second);
   EXPECT_EQ("r1", scores[0].first);
-  EXPECT_FLOAT_EQ(1.0 / sqrt(2) / sqrt(2), scores[1].second);
+  EXPECT_FLOAT_EQ(1.0 / std::sqrt(2) / std::sqrt(2), scores[1].second);
   EXPECT_EQ("r3", scores[1].first);
-  EXPECT_FLOAT_EQ(1.0 / sqrt(2) / sqrt(3), scores[2].second);
+  EXPECT_FLOAT_EQ(1.0 / std::sqrt(2) / std::sqrt(3), scores[2].second);
   EXPECT_EQ("r2", scores[2].first);
 
   msgpack::sbuffer buf;
@@ -73,11 +73,11 @@ TEST(inverted_index_storage, trivial) {
   s.calc_scores(v, scores2, 100);
   // expect to get same result
   ASSERT_EQ(3u, scores2.size());
-  EXPECT_FLOAT_EQ(2.0 / sqrt(3) / sqrt(2), scores2[0].second);
+  EXPECT_FLOAT_EQ(2.0 / std::sqrt(3) / std::sqrt(2), scores2[0].second);
   EXPECT_EQ("r1", scores2[0].first);
-  EXPECT_FLOAT_EQ(1.0 / sqrt(2) / sqrt(2), scores2[1].second);
+  EXPECT_FLOAT_EQ(1.0 / std::sqrt(2) / std::sqrt(2), scores2[1].second);
   EXPECT_EQ("r3", scores2[1].first);
-  EXPECT_FLOAT_EQ(1.0 / sqrt(2) / sqrt(3), scores2[2].second);
+  EXPECT_FLOAT_EQ(1.0 / std::sqrt(2) / std::sqrt(3), scores2[2].second);
   EXPECT_EQ("r2", scores2[2].first);
 }
 
@@ -96,6 +96,44 @@ TEST(inverted_index_storage, diff) {
   EXPECT_EQ(1.0, t.get("c2", "r1"));
   EXPECT_EQ(0.0, t.get("c3", "r1"));
   EXPECT_EQ(0.0, t.get("c1", "r2"));
+}
+
+TEST(inverted_index_storage, column_operations) {
+  std::vector<std::string> ids;
+  inverted_index_storage s1;
+
+  s1.set("c1", "r1", 1);
+  s1.set("c1", "r2", 1);
+  s1.set("c1", "r3", 1);
+  s1.get_all_column_ids(ids);
+  EXPECT_EQ(3u, ids.size());
+
+  s1.remove("c1", "r1");
+  s1.get_all_column_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  // do MIX
+  inverted_index_storage::diff_type d1;
+  s1.get_diff(d1);
+  s1.set_mixed_and_clear_diff(d1);
+
+  s1.get_all_column_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  // Once MIXed, removing column does not take affect
+  // until next MIX.
+  s1.remove("c1", "r2");
+  s1.get_all_column_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  // do MIX
+  inverted_index_storage::diff_type d2;
+  s1.get_diff(d2);
+  s1.set_mixed_and_clear_diff(d2);
+
+  s1.get_all_column_ids(ids);
+  ASSERT_EQ(1u, ids.size());
+  EXPECT_EQ("r3", ids[0]);
 }
 
 TEST(inverted_index_storage, mix) {

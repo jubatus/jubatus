@@ -181,5 +181,15 @@ void classifier_serv::check_set_config() const {
   }
 }
 
+vector<string> classifier_serv::get_labels() const {
+  check_set_config();
+  return classifier_->get_labels();
+}
+
+bool classifier_serv::set_label(const std::string& label) {
+  check_set_config();
+  return classifier_->set_label(label);
+}
+
 }  // namespace server
 }  // namespace jubatus

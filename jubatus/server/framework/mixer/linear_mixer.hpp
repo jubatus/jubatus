@@ -83,6 +83,7 @@ class linear_mixer : public mixer {
 
   void start();
   void stop();
+  bool do_mix();
 
   void updated();
 

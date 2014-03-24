@@ -31,6 +31,7 @@ namespace common {
 
 struct global_id_generator_standalone::impl {
   impl() : counter(0) {}
+  explicit impl(uint64_t c) : counter(c) {}
 
   uint64_t counter;
 #ifndef ATOMIC_I8_SUPPORT
@@ -40,6 +41,10 @@ struct global_id_generator_standalone::impl {
 
 global_id_generator_standalone::global_id_generator_standalone()
     : pimpl_(new impl) {
+}
+
+global_id_generator_standalone::global_id_generator_standalone(
+    uint64_t counter) : pimpl_(new impl(counter)) {
 }
 
 global_id_generator_standalone::~global_id_generator_standalone() {

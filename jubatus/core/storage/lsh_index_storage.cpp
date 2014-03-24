@@ -106,7 +106,7 @@ float calc_euclidean_distance(
     return std::fabs(norm - entry.norm);
   }
   const float angle = (1 - static_cast<float>(hamm) / bv.bit_num()) * M_PI;
-  const float dot = entry.norm * norm * cos(angle);
+  const float dot = entry.norm * norm * std::cos(angle);
   return std::sqrt(norm * norm + entry.norm * entry.norm - 2 * dot);
 }
 
@@ -186,7 +186,7 @@ void lsh_index_storage::get_all_row_ids(vector<string>& ids) const {
 
   unordered_set<std::string> id_set;
   // equivalent to id_set.reserve(size_upper_bound) in C++11
-  id_set.rehash(ceil(size_upper_bound / id_set.max_load_factor()));
+  id_set.rehash(std::ceil(size_upper_bound / id_set.max_load_factor()));
 
   for (lsh_master_table_t::const_iterator it = master_table_.begin();
       it != master_table_.end(); ++it) {

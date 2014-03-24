@@ -132,7 +132,9 @@ void kmeans_compressor::get_bicriteria(
   dst.clear();
   wplist resid = src;
   vector<double> weights(src.size());
-  double r = (1 - exp(bsize * (log(bsize) - log(src.size())) / dstsize)) / 2;
+  double r =
+    (1 - std::exp(bsize * (std::log(bsize) - std::log(src.size())) / dstsize))
+      / 2;
   r = max(0.1, r);
   std::vector<size_t> ind(bsize);
   while (resid.size() > 1 && dst.size() < dstsize) {
@@ -178,7 +180,7 @@ double kmeans_compressor::get_probability(
     double bp_score,
     double weight_sum,
     double squared_min_dist_sum) {
-  return ceil(weight_sum * (
+  return std::ceil(weight_sum * (
       min_dist * min_dist * p.weight / squared_min_dist_sum)) + 1;
 }
 

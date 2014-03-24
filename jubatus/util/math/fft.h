@@ -51,7 +51,7 @@ inline void fft_inner(Iterator a, Iterator b, int flip)
 
   ssize_t n=b-a;
 
-  value_type pi=atan(1.0)*4;
+  value_type pi=std::atan(1.0)*4;
   value_type theta=2.0*pi/n*flip;
 
   for (ssize_t i=0, j=1; j<n-1; j++){
@@ -62,7 +62,7 @@ inline void fft_inner(Iterator a, Iterator b, int flip)
   for (ssize_t m=0, mh=1; (m=(mh<<1))<=n; mh=m){
     int irev=0;
     for (ssize_t i=0; i<n; i+=m){
-      Complex w(cos(theta*irev), sin(theta*irev));
+      Complex w(std::cos(theta*irev), std::sin(theta*irev));
       for (ssize_t k=n>>2; k>(irev^=k); k>>=1);
       for (ssize_t j=i; j<mh+i; j++){
         ssize_t k=j+mh;

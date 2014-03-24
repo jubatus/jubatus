@@ -58,7 +58,7 @@ void partition(
 void threshold(const vector<float>& hash, lsh_vector& lv) {
   lv.resize_and_clear(hash.size());
   for (size_t j = 0; j < hash.size(); ++j) {
-    lv.set(j, floor(hash[j]));
+    lv.set(j, std::floor(hash[j]));
   }
 }
 

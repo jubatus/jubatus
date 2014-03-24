@@ -17,6 +17,28 @@ def build(bld):
     'discrete_distribution.cpp',
     'util.cpp'
   ]
+  headers = [
+    'clustering_config.hpp',
+    'clustering.hpp',
+    'clustering_method_factory.hpp',
+    'clustering_method.hpp',
+    'compressive_storage.hpp',
+    'compressor.hpp',
+    'discrete_distribution.hpp',
+    'eigen_feature_mapper.hpp',
+    'event_dispatcher.hpp',
+    'gmm_clustering_method.hpp',
+    'gmm_compressor.hpp',
+    'gmm.hpp',
+    'gmm_types.hpp',
+    'kmeans_clustering_method.hpp',
+    'kmeans_compressor.hpp',
+    'simple_storage.hpp',
+    'storage_factory.hpp',
+    'storage.hpp',
+    'types.hpp',
+    'util.hpp',
+  ]
   if bld.env.USE_EIGEN:
     source += [
       'eigen_feature_mapper.cpp',
@@ -55,3 +77,4 @@ def build(bld):
         includes=".",
         use="jubatus_util jubatus_clustering",
       );
+  bld.install_files('${PREFIX}/include/jubatus/core/clustering', headers)

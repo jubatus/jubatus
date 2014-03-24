@@ -26,23 +26,21 @@ namespace fv_converter {
 
 class mixable_weight_manager : public framework::mixable<
     fv_converter::weight_manager,
-    fv_converter::keyword_weights> {
+    fv_converter::versioned_weight_diff> {
  public:
-  fv_converter::keyword_weights get_diff_impl() const;
+  fv_converter::versioned_weight_diff get_diff_impl() const;
 
-  bool put_diff_impl(const fv_converter::keyword_weights& diff);
+  bool put_diff_impl(const versioned_weight_diff& diff);
 
   void mix_impl(
-      const fv_converter::keyword_weights& lhs,
-      const fv_converter::keyword_weights& rhs,
-      fv_converter::keyword_weights& acc) const;
+      const versioned_weight_diff& lhs,
+      const versioned_weight_diff& rhs,
+      versioned_weight_diff& acc) const;
+  void clear();
 
   storage::version get_version() const {
-    // TODO(kumagi): it should return precise version
-    return storage::version();
+    return get_model()->get_version();
   }
-
-  void clear();
 };
 
 }  // namespace fv_converter

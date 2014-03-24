@@ -75,7 +75,7 @@ void md5sum::calc(itr_buf_base &buf)
   static uint32_t tbl[65];
 
   for (int i=0;i<=64;i++){
-    double r=4294967296.0*abs(sin((double)i));
+    double r=4294967296.0*std::abs(std::sin((double)i));
     tbl[i]=(unsigned int)r;
   }
 

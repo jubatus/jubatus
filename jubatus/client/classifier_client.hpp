@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-412-g37c57d9/develop
+// This file is auto-generated from classifier.idl(0.5.2-28-gd87300a) with jenerator version 0.5.2-17-g8a5dca4/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_CLASSIFIER_CLIENT_HPP_
@@ -31,6 +31,16 @@ class classifier : public jubatus::client::common::client {
       const std::vector<jubatus::client::common::datum>& data) {
     msgpack::rpc::future f = c_.call("classify", name_, data);
     return f.get<std::vector<std::vector<estimate_result> > >();
+  }
+
+  std::vector<std::string> get_labels() {
+    msgpack::rpc::future f = c_.call("get_labels", name_);
+    return f.get<std::vector<std::string> >();
+  }
+
+  bool set_label(const std::string& label) {
+    msgpack::rpc::future f = c_.call("set_label", name_, label);
+    return f.get<bool>();
   }
 
   bool clear() {

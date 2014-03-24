@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <map>
 #include <string>
+#include <vector>
 #include "jubatus/util/data/serialization.h"
 #include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/intern.h"
@@ -72,7 +73,10 @@ class local_storage_mixture : public storage_base {
       const std::string& inc_class,
       const std::string& dec_class);
 
+  void register_label(const std::string& label);
   void clear();
+  std::vector<std::string> get_labels() const;
+  bool set_label(const std::string& label);
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);

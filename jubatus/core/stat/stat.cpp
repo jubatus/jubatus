@@ -46,7 +46,7 @@ void stat::get_diff(std::pair<double, size_t>& ret) const {
   for (jubatus::util::data::unordered_map<std::string, stat_val>::
       const_iterator p = stats_.begin(); p != stats_.end(); ++p) {
     double pr = p->second.n_;
-    ret.first += pr * log(pr);
+    ret.first += pr * std::log(pr);
     ret.second += pr;
   }
 }
@@ -98,7 +98,7 @@ double stat::stddev(const std::string& key) const {
     throw JUBATUS_EXCEPTION(stat_error("stddev: key " + key + " not found"));
   }
   const stat_val& st = p->second;
-  return sqrt(moment(key, 2, st.sum_ / st.n_));
+  return std::sqrt(moment(key, 2, st.sum_ / st.n_));
 }
 
 double stat::max(const std::string& key) const {
@@ -133,7 +133,7 @@ double stat::entropy() const {
     for (jubatus::util::data::unordered_map<std::string, stat_val>::
         const_iterator p = stats_.begin(); p != stats_.end(); ++p) {
       double pr = p->second.n_ / static_cast<double>(total);
-      ret += pr * log(pr);
+      ret += pr * std::log(pr);
     }
     return -1.0 * ret;
   }
@@ -170,7 +170,7 @@ double stat::moment(const std::string& key, int n, double c) const {
     if (window_[i].second.first != key) {
       continue;
     }
-    ret += pow(window_[i].second.second - c, n);
+    ret += std::pow(window_[i].second.second - c, n);
   }
   return ret / st.n_;
 }

@@ -23,6 +23,7 @@
 #include <string>
 #include <utility>
 #include <stdexcept>
+#include <vector>
 #include "storage_type.hpp"
 #include "../common/version.hpp"
 #include "../common/exception.hpp"
@@ -42,7 +43,7 @@ class storage_base {
   virtual void get3(const std::string& feature, feature_val3_t& ret) const = 0;
 
   // inner product
-  virtual void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const;
+  virtual void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const = 0;
 
   virtual void set(
       const std::string& feature,
@@ -79,7 +80,12 @@ class storage_base {
   virtual void get_diff(diff_t&) const;
   virtual bool set_average_and_clear_diff(const diff_t&);
 
+  virtual void register_label(const std::string& label) = 0;
+
   virtual void clear() = 0;
+
+  virtual std::vector<std::string> get_labels() const = 0;
+  virtual bool set_label(const std::string& label) = 0;
 
   virtual std::string type() const = 0;
 };

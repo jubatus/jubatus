@@ -78,6 +78,14 @@ void classifier::clear() {
   converter_->clear_weights();
 }
 
+std::vector<std::string> classifier::get_labels() const {
+  return classifier_->get_labels();
+}
+bool classifier::set_label(const std::string& label) {
+  return classifier_->set_label(label);
+}
+
+
 }  // namespace driver
 }  // namespace core
 }  // namespace jubatus

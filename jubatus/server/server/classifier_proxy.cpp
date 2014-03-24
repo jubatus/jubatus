@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-472-g0c36f76/develop
+// This file is auto-generated from classifier.idl(0.5.2-28-gd87300a) with jenerator version 0.5.2-17-g8a5dca4/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -22,6 +22,8 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_random<int32_t, std::vector<labeled_datum> >("train");
     k.register_async_random<std::vector<std::vector<estimate_result> >,
         std::vector<jubatus::core::fv_converter::datum> >("classify");
+    k.register_async_random<std::vector<std::string> >("get_labels");
+    k.register_async_random<bool, std::string>("set_label");
     k.register_async_broadcast<bool>("clear",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));

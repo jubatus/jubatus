@@ -23,18 +23,14 @@
 #include <string>
 #include <vector>
 #include "jubatus/util/concurrent/rwmutex.h"
-#include "jubatus/util/data/serialization.h"
-#include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/unordered_map.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../common/exception.hpp"
 #include "../common/type.hpp"
 #include "../framework/mixable.hpp"
 #include "clustering_method.hpp"
-#include "clustering_method_serializer.hpp"
 #include "clustering_config.hpp"
 #include "storage.hpp"
-#include "storage_serializer.hpp"
 #include "types.hpp"
 
 namespace jubatus {
@@ -74,6 +70,9 @@ class clustering {
   void register_mixables_to_holder(framework::mixable_holder& mixable_holder);
   std::string type() const;
 
+  // for test only
+  void do_clustering();
+
  private:
   void init();
   void update_clusters(const wplist& points, bool batch);
@@ -85,19 +84,6 @@ class clustering {
 
   jubatus::util::lang::shared_ptr<clustering_method> clustering_method_;
   jubatus::util::lang::shared_ptr<mixable_storage> storage_;
-
-  friend class jubatus::util::data::serialization::access;
-  template <class Archive>
-  void serialize(Archive &ar) {
-    ar & config_;
-    if (ar.is_read) {
-      init();
-    }
-    storage_serializer::serialize<Archive>(
-        config_, ar, *storage_->get_model());
-    clustering_method_serializer::serialize<Archive>(
-        method_, ar, *clustering_method_);
-  }
 };
 
 }  // namespace clustering

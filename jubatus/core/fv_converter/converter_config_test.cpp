@@ -63,7 +63,7 @@ TEST(converter_config, config) {
 
     exp.push_back(std::make_pair("user/id@str$1000", 1.));
     exp.push_back(std::make_pair("user/age@num", 20.));
-    exp.push_back(std::make_pair("user/age@log", log(20.)));
+    exp.push_back(std::make_pair("user/age@log", std::log(20.)));
     exp.push_back(std::make_pair("user/age+1@num", 21.));
 
     std::sort(f.begin(), f.end());

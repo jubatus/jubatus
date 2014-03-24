@@ -53,6 +53,9 @@ class classifier_serv : public framework::server_base {
   std::vector<std::vector<estimate_result> > classify(
       const std::vector<jubatus::core::fv_converter::datum>& data) const;
 
+  std::vector<std::string> get_labels() const;
+  bool set_label(const std::string& label);
+
   bool clear();
 
   void check_set_config() const;

@@ -1,3 +1,28 @@
+Release 0.5.2 - 2014/02/24
+--------------------------
+
+* Improvements
+    * Fault-tolerant weight-manager (#660)
+    * Add do_mix RPC to manually trigger MIX in distributed mode (#653)
+    * Allow config file more than 1 KiB in distributed mode (#617, #624)
+    * Print model version on MIX (#479, #649)
+    * ``classifier`` does not return results whose scores are zero (#216)
+    * Remove unused fields and functions (#639, #643)
+    * More test code added for nearest neighbor (#529, #652)
+    * More test code added for clustering (#650)
+    * Code style and portability fix (#632, #647)
+    * Automatically test if all the IDL elements exist in API reference (#175)
+
+* Bug fix
+    * IDs are mistakenly reused after save/load in jubaanomaly (#613, #661)
+    * Fix forgetting parameter in jubaclustering (#673)
+    * Fix misuse of C math functions (#663, #664)
+    * Some header files are not installed (#666, #674, #678)
+    * jubatus_clustering library is missing in pkg-config (#631, #665)
+    * Fix JSON unit test failure under 32-bit Linux environment (#636)
+    * Jubatus logo is broken (#635)
+
+
 Release 0.5.1 - 2014/01/27
 --------------------------
 

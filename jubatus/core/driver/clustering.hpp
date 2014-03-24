@@ -34,7 +34,8 @@ namespace driver {
 class clustering {
  public:
   clustering(
-      core::clustering::clustering* clustering_method,
+      jubatus::util::lang::shared_ptr<core::clustering::clustering>
+          clustering_method,
       jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
           converter);
   virtual ~clustering();
@@ -55,6 +56,9 @@ class clustering {
   core::clustering::cluster_set get_core_members() const;
 
   size_t get_revision() const;
+
+  // for test only
+  void do_clustering();
 
   // TODO(beam2d): Implement clear().
 

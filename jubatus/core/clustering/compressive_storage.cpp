@@ -63,17 +63,17 @@ wplist compressive_storage::get_mine() const {
 }
 
 void compressive_storage::forget_weight(wplist& points) {
-  double lam = config_.forgetting_threshold;
+  double factor = std::exp(-config_.forgetting_factor);
   typedef wplist::iterator iter;
   for (iter it = points.begin(); it != points.end(); ++it) {
-    it->weight *= exp(-lam);
+    it->weight *= factor;
   }
 }
 
 bool compressive_storage::reach_forgetting_threshold(size_t bucket_number) {
   double C = config_.forgetting_threshold;
   double lam = config_.forgetting_factor;
-  if (exp(-lam*bucket_number) < C) {
+  if (std::exp(-lam * bucket_number) < C) {
     return true;
   }
   return false;
@@ -120,6 +120,7 @@ void compressive_storage::pack(
   packer.pack(status_);
   packer.pack(*compressor_);
 }
+
 void compressive_storage::unpack(msgpack::object o) {
   std::vector<msgpack::object> mems;
   o.convert(&mems);
@@ -131,7 +132,6 @@ void compressive_storage::unpack(msgpack::object o) {
   mems[2].convert(&status_);
   mems[3].convert(compressor_.get());
 }
-
 
 }  // namespace clustering
 }  // namespace core

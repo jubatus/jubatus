@@ -83,6 +83,45 @@ TEST(bit_index_storage, trivial) {
   EXPECT_TRUE(ids.empty());
 }
 
+TEST(bit_index_storage, row_operations) {
+  std::vector<std::string> ids;
+  bit_index_storage s1;
+
+  s1.set_row("r1", make_vector("0101"));
+  s1.set_row("r2", make_vector("1010"));
+  s1.set_row("r3", make_vector("1100"));
+
+  s1.get_all_row_ids(ids);
+  EXPECT_EQ(3u, ids.size());
+
+  s1.remove_row("r1");
+  s1.get_all_row_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  // do MIX
+  bit_table_t d1;
+  s1.get_diff(d1);
+  s1.set_mixed_and_clear_diff(d1);
+
+  s1.get_all_row_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  // Once MIXed, removing row does not take affect
+  // until next MIX.
+  s1.remove_row("r2");
+  s1.get_all_row_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  // do MIX
+  bit_table_t d2;
+  s1.get_diff(d2);
+  s1.set_mixed_and_clear_diff(d2);
+
+  s1.get_all_row_ids(ids);
+  ASSERT_EQ(1u, ids.size());
+  EXPECT_EQ("r3", ids[0]);
+}
+
 TEST(bit_index_storage, diff) {
   bit_index_storage s1, s2;
   s1.set_row("r1", make_vector("0101"));
@@ -137,6 +176,25 @@ TEST(bit_index_storage, mix) {
   EXPECT_TRUE(v == make_vector("1100"));
   s3.get_row("r4", v);
   EXPECT_TRUE(v == bit_vector());
+
+  vector<string> ids;
+
+  s3.get_all_row_ids(ids);
+  EXPECT_EQ(3u, ids.size());
+
+  s3.remove_row("r3");
+
+  // Once MIXed, remove_row does not take affect until next MIX.
+  s3.get_all_row_ids(ids);
+  EXPECT_EQ(3u, ids.size());
+
+  // do MIX
+  bit_table_t d3;
+  s3.get_diff(d3);
+  s3.set_mixed_and_clear_diff(d3);
+
+  s3.get_all_row_ids(ids);
+  EXPECT_EQ(2u, ids.size());
 }
 
 }  // namespace storage

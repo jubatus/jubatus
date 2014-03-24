@@ -74,21 +74,24 @@ class linear_communication_impl : public linear_communication {
   byte_buffer get_model();
 
   bool register_active_list() const {
+    common::unique_lock lk(m_);
     register_active(*zk_.get(), type_, name_, my_id_.first, my_id_.second);
     return true;
   }
 
   bool unregister_active_list() const {
+    common::unique_lock lk(m_);
     unregister_active(*zk_.get(), type_, name_, my_id_.first, my_id_.second);
     return true;
   }
 
  private:
   jubatus::util::lang::shared_ptr<server::common::lock_service> zk_;
-  string type_;
-  string name_;
-  int timeout_sec_;
-  pair<string, int> my_id_;
+  mutable jubatus::util::concurrent::mutex m_;
+  const string type_;
+  const string name_;
+  const int timeout_sec_;
+  const pair<string, int> my_id_;
   vector<pair<string, int> > servers_;
 };
 
@@ -108,12 +111,14 @@ linear_communication_impl::linear_communication_impl(
 jubatus::util::lang::shared_ptr<common::try_lockable>
 linear_communication_impl::create_lock() {
   string path;
+  common::unique_lock lk(m_);
   common::build_actor_path(path, type_, name_);
   return jubatus::util::lang::shared_ptr<common::try_lockable>(
       new common::lock_service_mutex(*zk_, path + "/master_lock"));
 }
 
 size_t linear_communication_impl::update_members() {
+  common::unique_lock lk(m_);
   common::get_all_nodes(*zk_, type_, name_, servers_);
 #ifndef NDEBUG
   string members = "";
@@ -127,42 +132,36 @@ size_t linear_communication_impl::update_members() {
 
 byte_buffer linear_communication_impl::get_model() {
   update_members();
-  if (servers_.empty() || servers_.size() == 1) {
-    return byte_buffer();
-  }
-
   for (;;) {
-    // use time as pseudo random number(it should enough)
-    const jubatus::util::system::time::clock_time now(get_clock_time());
-    string server_ip;
-    int server_port;
-    try {
-      const size_t target = now.usec % servers_.size();
-      server_ip = servers_[target].first;
-      server_port = servers_[target].second;
-      if (server_ip == my_id_.first && server_port == my_id_.second) {
-        // avoid get model from myself
-        continue;
-      }
+    common::unique_lock lk(m_);
 
-      msgpack::rpc::client cli(server_ip, server_port);
-      msgpack::rpc::future result(cli.call("get_model", 0));
-      const byte_buffer got_model_data(result.get<byte_buffer>());
-      LOG(INFO) << "got model(serialized data) " << got_model_data.size()
-                << " from server[" << server_ip << ":" << server_port << "] ";
-      return got_model_data;
-    } catch (const std::exception& e) {
-      LOG(ERROR) << "get_model from " << server_ip << ":" << server_port
-                 << " failed: " << e.what() << " and retry.";
-    } catch (...) {
-      LOG(ERROR) << "get_model: failed with unknown error. retry.";
+    // use time as pseudo random number(it should enough)
+    if (servers_.empty() || servers_.size() == 1) {
+      return byte_buffer();
     }
+
+    const jubatus::util::system::time::clock_time now(get_clock_time());
+    const size_t target = now.usec % servers_.size();
+    const string server_ip = servers_[target].first;
+    const int server_port = servers_[target].second;
+    if (server_ip == my_id_.first && server_port == my_id_.second) {
+      // avoid get model from itself
+      continue;
+    }
+
+    msgpack::rpc::client cli(server_ip, server_port);
+    msgpack::rpc::future result(cli.call("get_model", 0));
+    const byte_buffer got_model_data(result.get<byte_buffer>());
+    LOG(INFO) << "got model(serialized data) " << got_model_data.size()
+              << " from server[" << server_ip << ":" << server_port << "] ";
+    return got_model_data;
   }
 }
 
 void linear_communication_impl::get_diff(
     common::mprpc::rpc_result_object& result) const {
   // TODO(beam2d): to be replaced to new client with socket connection pooling
+  common::unique_lock lk(m_);
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
 #ifndef NDEBUG
   for (size_t i = 0; i < servers_.size(); i++) {
@@ -176,6 +175,7 @@ void linear_communication_impl::get_diff(
 void linear_communication_impl::put_diff(
     const vector<byte_buffer>& mixed,
     common::mprpc::rpc_result_object& result) const {
+  common::unique_lock lk(m_);
   // TODO(beam2d): to be replaced to new client with socket connection pooling
   server::common::mprpc::rpc_mclient client(servers_, timeout_sec_);
 #ifndef NDEBUG
@@ -202,7 +202,7 @@ string version_list(const std::vector<version>& versions)  {
   stringstream ss;
   ss << "[";
   for (size_t i = 0; i < versions.size(); ++i) {
-    ss << versions[i].get_number();
+    ss << versions[i];
     if (i < versions.size() - 1) {
       ss << ", ";
     }
@@ -258,6 +258,10 @@ void linear_mixer::register_api(rpc_server_t& server) {
       jubatus::util::lang::bind(&linear_mixer::get_model,
                                 this,
                                 jubatus::util::lang::_1));
+  server.add<bool(void)>(  // NOLINT
+      "do_mix",
+      jubatus::util::lang::bind(&linear_mixer::do_mix,
+                                this));
 }
 
 void linear_mixer::set_mixable_holder(
@@ -280,6 +284,32 @@ void linear_mixer::stop() {
     lk.unlock();
     t_.join();
   }
+}
+
+bool linear_mixer::do_mix() {
+  {
+    common::unique_lock lk(m_);
+    counter_ = 0;
+    ticktime_ = get_clock_time();
+  }
+  try {
+    LOG(INFO) << "forced to mix by user RPC";
+    jubatus::util::lang::shared_ptr<common::try_lockable> zklock =
+        communication_->create_lock();
+    while (true) {
+      if (zklock->try_lock()) {
+        mix();
+        return true;
+      }
+    }
+  } catch (const jubatus::core::common::exception::jubatus_exception& e) {
+    LOG(ERROR) << e.diagnostic_information(true);
+  } catch (const std::exception& e) {
+    LOG(WARNING) << "exception in mix: " << e.what();
+  } catch (...) {
+    LOG(ERROR) << "unexpected error";
+  }
+  return false;
 }
 
 void linear_mixer::updated() {
@@ -316,11 +346,12 @@ void linear_mixer::stabilizer_loop() {
         return;
       }
       const clock_time new_ticktime = get_clock_time();
-      if ((0 < count_threshold_ && counter_ >= count_threshold_)
-          || (0 < tick_threshold_ && new_ticktime - ticktime_ > tick_threshold_)
-          ) {
+      if (((0 < count_threshold_ && counter_ >= count_threshold_)
+          || (0 < tick_threshold_
+              && new_ticktime - ticktime_ > tick_threshold_))
+          && (0 < counter_)) {
         if (zklock->try_lock()) {
-          LOG(INFO) << "starting mix:";
+          LOG(INFO) << "getting zk_lock ok, starting mix:";
           counter_ = 0;
           ticktime_ = new_ticktime;
 
@@ -334,17 +365,15 @@ void linear_mixer::stabilizer_loop() {
       }
 
       if (is_obsolete_) {
-        LOG(INFO) << "I'm obsolete, start trying to get new model";
         if (zklock->try_lock()) {
           if (is_obsolete_) {
             LOG(INFO) << "start to get model from other server";
             lk.unlock();
             update_model();
             mix();
-            LOG(INFO) << "model update finished";
           }
         } else {
-          LOG(INFO) << "failed to get zklock, wait..";
+          LOG(INFO) << "failed to get zklock, waiting..";
         }
       }
     } catch (const jubatus::core::common::exception::jubatus_exception& e) {
@@ -358,13 +387,14 @@ void linear_mixer::stabilizer_loop() {
 }
 
 void linear_mixer::mix() {
+  // this method is thread safe
   using jubatus::util::system::time::clock_time;
   using jubatus::util::system::time::get_clock_time;
 
-  clock_time start = get_clock_time();
+  const clock_time start = get_clock_time();
   size_t s = 0;
 
-  size_t servers_size = communication_->update_members();
+  const size_t servers_size = communication_->update_members();
   if (servers_size == 0) {
     LOG(WARNING) << "no other server.";
     communication_->register_active_list();
@@ -488,7 +518,7 @@ byte_buffer linear_mixer::get_model(int a) const {
   msgpack::packer<msgpack::sbuffer> pk(packed);
   mixable_holder_->pack(pk);
 
-  LOG(INFO) << "sending leaning-model. size = "
+  LOG(INFO) << "sending learning-model. size = "
             << jubatus::util::lang::lexical_cast<string>(packed.size());
 
   return byte_buffer(packed.data(), packed.size());
@@ -540,23 +570,23 @@ int linear_mixer::put_diff(
     if (is_obsolete_) {  // if it was obsolete, register as active
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
                 << "I got latest model. So I become active. "
-                << "versions" << versions;
+                << "versions " << versions;
       communication_->register_active_list();
     } else {
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
                 << "my model is still up to date. "
-                << "versions" << versions;
+                << "versions " << versions;
     }
   } else {
     if (!is_obsolete_) {  // it it was not obslete, delete from active list
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
                 << "I'm obsolete. I become inactive. "
-                << "versions" << versions;
+                << "versions " << versions;
       communication_->unregister_active_list();
     } else {
       LOG(INFO) << "put_diff with " << total_size << " bytes finished "
                 << "my model is still obsolete. "
-                << "versions" << versions;
+                << "versions " << versions;
     }
   }
   is_obsolete_ = !not_obsolete;

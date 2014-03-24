@@ -39,7 +39,7 @@ typedef jubatus::util::data::unordered_map<std::string, row_t> tbl_t;
 typedef jubatus::util::data::unordered_map<std::string, bit_vector> bit_table_t;
 
 typedef jubatus::util::data::unordered_map<std::string, float> map_float_t;
-typedef std::map<uint64_t, float> imap_float_t;
+typedef jubatus::util::data::unordered_map<uint64_t, float> imap_float_t;
 
 typedef double val1_t;
 

@@ -16,8 +16,10 @@
 
 #include "server_base.hpp"
 
+#include <stdio.h>
 #include <sys/file.h>
 #include <ext/stdio_filebuf.h>
+#include <cerrno>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -26,6 +28,7 @@
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
+#include "jubatus/util/system/syscall.h"
 #include "mixer/mixer.hpp"
 #include "save_load.hpp"
 
@@ -47,6 +50,8 @@ std::string build_local_path(
 
 void load_file_impl(server_base& server,
     const std::string& path, const std::string& id) {
+  LOG(INFO) << "starting load from " << path;
+
   std::ifstream ifs(path.c_str(), std::ios::binary);
   if (!ifs) {
     throw JUBATUS_EXCEPTION(
@@ -54,18 +59,20 @@ void load_file_impl(server_base& server,
       << core::common::exception::error_file_name(path)
       << core::common::exception::error_errno(errno));
   }
+
+  ifs.exceptions(std::ios_base::failbit | std::ios_base::badbit);
   try {
-    LOG(INFO) << "starting load from " << path;
     framework::load_server(ifs, server, id);
     ifs.close();
-    LOG(INFO) << "loaded from " << path;
-  } catch (const std::runtime_error& e) {
-    ifs.close();
-    LOG(ERROR) << "failed to load: " << path;
-    LOG(ERROR) << e.what();
-    throw;
+  } catch (const std::ios_base::failure&) {
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error("cannot read input file")
+      << core::common::exception::error_file_name(path)
+      << core::common::exception::error_errno(errno));
   }
+
   server.update_loaded_status(path);
+  LOG(INFO) << "loaded from " << path;
 }
 
 }  // namespace
@@ -81,13 +88,14 @@ server_base::server_base(const server_argv& a)
 
 bool server_base::save(const std::string& id) {
   const std::string path = build_local_path(argv_, "jubatus", id);
+  LOG(INFO) << "starting save to " << path;
+
   std::ofstream ofs(path.c_str(), std::ios::trunc | std::ios::binary);
   if (!ofs) {
-    throw
-      JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("cannot open output file")
-        << core::common::exception::error_file_name(path)
-        << core::common::exception::error_errno(errno));
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error("cannot open output file")
+      << core::common::exception::error_file_name(path)
+      << core::common::exception::error_errno(errno));
   }
 
   // use gcc-specific extension
@@ -100,17 +108,24 @@ bool server_base::save(const std::string& id) {
         << core::common::exception::error_errno(errno));
   }
 
+  ofs.exceptions(std::ios_base::failbit | std::ios_base::badbit);
   try {
-    LOG(INFO) << "starting save to " << path;
     framework::save_server(ofs, *this, id);
     ofs.close();
-    LOG(INFO) << "saved to " << path;
-  } catch (const std::runtime_error& e) {
-    LOG(ERROR) << "failed to save: " << path;
-    LOG(ERROR) << e.what();
-    throw;
+  } catch (const std::ios_base::failure&) {
+    int tmperrno = errno;
+    if (remove(path.c_str()) < 0) {
+      LOG(WARNING) << "failed to remove " << path << ": "
+        << jubatus::util::system::syscall::get_error_msg(errno);
+    }
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error("cannot write output file")
+      << core::common::exception::error_file_name(path)
+      << core::common::exception::error_errno(tmperrno));
   }
+
   update_saved_status(path);
+  LOG(INFO) << "saved to " << path;
   return true;
 }
 

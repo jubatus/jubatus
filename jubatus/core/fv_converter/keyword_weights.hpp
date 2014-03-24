@@ -38,7 +38,7 @@ class keyword_weights {
     return document_frequencies_[key];
   }
 
-  size_t get_document_count() const {
+  uint64_t get_document_count() const {
     return document_count_;
   }
 
@@ -62,7 +62,7 @@ class keyword_weights {
  private:
   double get_global_weight(const std::string& key) const;
 
-  size_t document_count_;
+  uint64_t document_count_;
   counter<std::string> document_frequencies_;
   typedef jubatus::util::data::unordered_map<std::string, float> weight_t;
   weight_t weights_;

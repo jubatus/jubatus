@@ -55,6 +55,9 @@ void inverted_index_storage::set(
   }
   inv_diff_[row][column_id] = val;
   column2norm_diff_[column_id] += val * val;
+  if (column2norm_diff_[column_id] == 0) {
+    column2norm_diff_.erase(column_id);
+  }
 }
 
 float inverted_index_storage::get(
@@ -108,7 +111,36 @@ float inverted_index_storage::get_from_tbl(
 void inverted_index_storage::remove(
     const std::string& row,
     const std::string& column) {
+  uint64_t column_id = column2id_.get_id_const(column);
+  if (column_id == common::key_manager::NOTFOUND) {
+    return;
+  }
+
   set(row, column, 0.f);
+
+  // Test if the data exists in the master table.
+  bool exist = false;
+  get_from_tbl(row, column_id, inv_, exist);
+
+  // If the data exists in the master table, we should
+  // keep it in the diff table until next MIX to propagate
+  // the removal of this data to other nodes.
+  // Otherwise we can immediately remove the row from
+  // the diff table.
+  if (!exist) {
+    tbl_t::iterator it = inv_diff_.find(row);
+    if (it != inv_diff_.end()) {
+      row_t::iterator it_row = it->second.find(column_id);
+      if (it_row != it->second.end()) {
+        it->second.erase(it_row);
+        if (it->second.empty()) {
+          // There are no columns that belongs to this row,
+          // so we can remove the row itself.
+          inv_diff_.erase(it);
+        }
+      }
+    }
+  }
 }
 
 void inverted_index_storage::clear() {
@@ -246,7 +278,7 @@ float inverted_index_storage::calc_l2norm(const common::sfv_t& sfv) {
   for (size_t i = 0; i < sfv.size(); ++i) {
     ret += sfv[i].second * sfv[i].second;
   }
-  return sqrt(ret);
+  return std::sqrt(ret);
 }
 
 float inverted_index_storage::calc_columnl2norm(uint64_t column_id) const {
@@ -259,7 +291,7 @@ float inverted_index_storage::calc_columnl2norm(uint64_t column_id) const {
   if (it != column2norm_.end()) {
     ret += it->second;
   }
-  return sqrt(ret);
+  return std::sqrt(ret);
 }
 
 void inverted_index_storage::add_inp_scores(

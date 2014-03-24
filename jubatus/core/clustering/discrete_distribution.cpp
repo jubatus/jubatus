@@ -38,10 +38,10 @@ discrete_distribution::discrete_distribution(
 
 size_t discrete_distribution::operator()() {
   double d = r_.next_double() * sum_;
-  return convert_(d);
+  return convert(d);
 }
 
-size_t discrete_distribution::convert_(double d) {
+size_t discrete_distribution::convert(double d) {
   size_t low = 0;
   size_t high = whist_.size() - 1;
   size_t mid = 0;

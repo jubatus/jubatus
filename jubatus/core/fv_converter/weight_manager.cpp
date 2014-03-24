@@ -36,6 +36,29 @@ struct is_zero {
 
 }  // namespace
 
+versioned_weight_diff::versioned_weight_diff() {
+}
+
+versioned_weight_diff::versioned_weight_diff(const keyword_weights& w)
+  : weights_(w) {
+}
+
+versioned_weight_diff::versioned_weight_diff(const keyword_weights& w,
+                                             const storage::version& v)
+  : weights_(w), version_(v) {
+}
+
+versioned_weight_diff&
+versioned_weight_diff::merge(const versioned_weight_diff& target) {
+  if (version_ == target.version_) {
+    weights_.merge(target.weights_);
+  } else if (version_ < target.version_) {
+    weights_ = target.weights_;
+    version_ = target.version_;
+  }
+  return *this;
+}
+
 weight_manager::weight_manager()
     : diff_weights_(),
       master_weights_() {
@@ -64,7 +87,7 @@ double weight_manager::get_global_weight(const std::string& key) const {
   } else if (type == "idf") {
     double doc_count = get_document_count();
     double doc_freq = get_document_frequency(key);
-    return log((doc_count + 1) / (doc_freq + 1));
+    return std::log((doc_count + 1) / (doc_freq + 1));
   } else if (type == "weight") {
     p = key.find_last_of('#');
     if (p == std::string::npos) {

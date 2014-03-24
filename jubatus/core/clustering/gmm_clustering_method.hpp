@@ -27,8 +27,6 @@ namespace jubatus {
 namespace core {
 namespace clustering {
 
-class clustering_method_serializer;
-
 class gmm_clustering_method : public clustering_method {
  public:
   explicit gmm_clustering_method(size_t k);
@@ -47,12 +45,6 @@ class gmm_clustering_method : public clustering_method {
   std::vector<common::sfv_t> kcenters_;
   eigen_feature_mapper mapper_;
   gmm gmm_;
-
-  friend class clustering_method_serializer;
-  template <class Ar>
-  void serialize(Ar &ar) {
-    // TODO(akira) : serialize me
-  }
 };
 
 }  // namespace clustering
