@@ -163,6 +163,7 @@ void linear_communication_impl::get_diff(
   // TODO(beam2d): to be replaced to new client with socket connection pooling
   common::unique_lock lk(m_);
   common::mprpc::rpc_mclient client(servers_, timeout_sec_);
+
 #ifndef NDEBUG
   for (size_t i = 0; i < servers_.size(); i++) {
     DLOG(INFO) << "get diff from " << servers_[i].first << ":"
@@ -184,6 +185,7 @@ void linear_communication_impl::put_diff(
                << servers_[i].second;
   }
 #endif
+  lk.unlock();  // unlock for re-entrant lock aquisition over RPC
   result = client.call("put_diff", mixed);
 }
 
