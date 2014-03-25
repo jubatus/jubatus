@@ -48,7 +48,10 @@ struct compare_by_first {
 };
 
 template <typename T>
-void sort_by(const std::vector<double>& scores, std::vector<T>& array) {
+void partial_sort_by(
+    const std::vector<double>& scores,
+    std::vector<T>& array,
+    size_t size) {
   JUBATUS_ASSERT_EQ(scores.size(),
                     array.size(),
                     "lengths of scores and data must be same.");
@@ -58,8 +61,13 @@ void sort_by(const std::vector<double>& scores, std::vector<T>& array) {
     pairs[i].first = scores[i];
     swap(pairs[i].second, array[i]);
   }
-  std::sort(pairs.begin(), pairs.end(), compare_by_first());
-  for (size_t i = 0; i < scores.size(); ++i) {
+  size = std::min(size, pairs.size());
+  std::partial_sort(pairs.begin(),
+                    pairs.begin() + size,
+                    pairs.end(),
+                    compare_by_first());
+  array.resize(size);
+  for (size_t i = 0; i < size; ++i) {
     swap(pairs[i].second, array[i]);
   }
 }
@@ -160,8 +168,6 @@ void kmeans_compressor::get_bicriteria(
     for (wplist::iterator itr = resid.begin(); itr != resid.end(); ++itr) {
       distances.push_back(-min_dist(*itr, dst).second);
     }
-    // TODO(unno): use partial sort
-    sort_by(distances, resid);
     // TODO(unno): Is `r` lesser than 1.0?
     size_t size = std::min(resid.size(),
                            static_cast<size_t>(resid.size() * r));
@@ -169,7 +175,7 @@ void kmeans_compressor::get_bicriteria(
       size = 1;
     }
 
-    resid.resize(size);
+    partial_sort_by(distances, resid, size);
   }
 }
 
