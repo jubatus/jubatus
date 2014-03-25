@@ -63,7 +63,7 @@ service classifier {
 
   #- - Parameters:
   #-
-  #-  - ``label`` : name of the new label
+  #-  - ``new_label`` : name of the new label
   #-
   #- - Returns:
   #-
@@ -71,7 +71,7 @@ service classifier {
   #-
   #-  Append new label with no datum
   #@random #@update #@pass
-  bool set_label(0: string label)
+  bool set_label(0: string new_label)
 
   #@broadcast #@update #@all_and
   bool clear()
