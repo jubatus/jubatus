@@ -230,7 +230,13 @@ string create_error_string(const msgpack::object& error) {
         case ARGUMENT_ERROR:
           return "argument error";
         default:
-          return "unknown error";
+          {
+            string msg = "unknown remote error (";
+            msg += jubatus::util::lang::lexical_cast<string>(
+                error.as<unsigned int>());
+            msg += ")";
+            return msg;
+          }
       }
 
     case msgpack::type::NEGATIVE_INTEGER:
