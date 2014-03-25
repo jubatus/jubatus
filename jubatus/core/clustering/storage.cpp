@@ -86,6 +86,11 @@ void storage::mix(const diff_t& lhs, diff_t& ret) {
   std::copy(lb, le, std::back_inserter(ret));
 };
 
+void storage::clear() {
+  // TODO(gintenlabo): consider revisions
+  common_.clear();
+}
+
 size_t storage::get_revision() {
   return revision_;
 }
