@@ -20,6 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <map>
 
 #include <gtest/gtest.h>
 
@@ -267,6 +268,31 @@ TEST_P(classifier_test, save_load_2) {
   // The classifier works well
   ASSERT_EQ("pos", get_max_label(classifier_->classify(pos)));
   ASSERT_EQ("neg", get_max_label(classifier_->classify(neg)));
+}
+
+TEST_P(classifier_test, save_load_3) {
+  jubatus::util::math::random::mtrand rand(0);
+  const size_t example_size = 1000;
+
+  std::string save_data;
+  save_model(classifier_->get_mixable_holder(), save_data);
+
+  vector<pair<string, datum> > data;
+  make_random_data(rand, data, example_size);
+  for (size_t i = 0; i < example_size; i++) {
+    classifier_->train(data[i]);
+  }
+
+  load_model(classifier_->get_mixable_holder(), save_data);
+
+  vector<string> labels_expected;
+  EXPECT_EQ(labels_expected, classifier_->get_labels());
+
+  std::map<string, string> status;
+  classifier_->get_status(status);
+  EXPECT_EQ("0", status["num_classes"]);
+
+  my_test();
 }
 
 TEST_P(classifier_test, nan) {
