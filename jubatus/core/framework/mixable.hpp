@@ -217,6 +217,7 @@ class mixable : public mixable0 {
   }
 
   void unpack(msgpack::object o) {
+    clear();
     model_->unpack(o);
   }
 
@@ -277,6 +278,7 @@ class delegating_mixable : public mixable<Model, Diff, PullArg> {
   }
 
   void clear() {
+    this->get_model()->clear();
   }
 };
 

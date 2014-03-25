@@ -92,6 +92,7 @@ storage::version linear_function_mixer::get_version() const {
 }
 
 void linear_function_mixer::clear() {
+  get_model()->clear();
 }
 
 }  // namespace driver
