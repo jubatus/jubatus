@@ -105,6 +105,10 @@ class mixable_holder {
       throw msgpack::type_error();
     }
 
+    for (size_t i = 0; i < mixables_.size(); ++i) {
+      mixables_[i]->clear();
+    }
+
     msgpack::object* p = o.via.array.ptr;
     for (size_t i = 0; i < mixables_.size(); ++i) {
       mixables_[i]->unpack(p[i]);
@@ -217,7 +221,6 @@ class mixable : public mixable0 {
   }
 
   void unpack(msgpack::object o) {
-    clear();
     model_->unpack(o);
   }
 
