@@ -243,7 +243,6 @@ TEST_P(classifier_test, save_load_2) {
   save_model(classifier_->get_mixable_holder(), save_empty);
 
   // Train
-  vector<pair<string, datum> > data;
   classifier_->train(make_pair("pos", pos));
   classifier_->train(make_pair("neg", neg));
 
@@ -258,9 +257,8 @@ TEST_P(classifier_test, save_load_2) {
   load_model(classifier_->get_mixable_holder(), save_empty);
 
   // And the classifier classify data improperly, but cannot expect results
-  string pos_max = get_max_label(classifier_->classify(pos));
-  string neg_max = get_max_label(classifier_->classify(neg));
-  ASSERT_EQ(0, pos_max.compare(neg_max));
+  ASSERT_EQ(0u, classifier_->classify(pos).size());
+  ASSERT_EQ(0u, classifier_->classify(neg).size());
 
   // Reload server
   load_model(classifier_->get_mixable_holder(), save_test);
@@ -285,12 +283,16 @@ TEST_P(classifier_test, save_load_3) {
 
   load_model(classifier_->get_mixable_holder(), save_data);
 
-  vector<string> labels_expected;
-  EXPECT_EQ(labels_expected, classifier_->get_labels());
+  {
+    vector<string> labels_expected;  // empty
+    EXPECT_EQ(labels_expected, classifier_->get_labels());
+  }
 
-  std::map<string, string> status;
-  classifier_->get_status(status);
-  EXPECT_EQ("0", status["num_classes"]);
+  {
+    std::map<string, string> status;
+    classifier_->get_status(status);
+    EXPECT_EQ("0", status["num_classes"]);
+  }
 
   my_test();
 }
