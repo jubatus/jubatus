@@ -117,7 +117,7 @@ class lsh_index_storage {
   }
 
   lsh_master_table_t::iterator remove_and_get_row(const std::string& row);
-  void put_empty_entry(const uint64_t& row_id, lsh_entry& entry);
+  void put_empty_entry(uint64_t row_id, const lsh_entry& entry);
 
 
   std::vector<float> make_entry(

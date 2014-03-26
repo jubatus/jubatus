@@ -38,7 +38,7 @@ service classifier {
   #- Training model at a server chosen randomly. ``tuple<string, datum>`` is a tuple of datum and it's label.
   #- This function is designed to allow bulk update with list of tuple of label and datum.
   #@random #@update #@pass
-  int train(0: list<labeled_datum> data) # //@random
+  int train(0: list<labeled_datum> data)
 
   #- - Parameters:
   #-
@@ -51,7 +51,7 @@ service classifier {
   #-
   #- Estimating a result at a server choosen randomly. ``estimate_results`` is a list of tuple of label and it's reliablity value.
   #@random #@analysis #@pass
-  list<list<estimate_result> > classify(0: list<datum> data) # //@random
+  list<list<estimate_result> > classify(0: list<datum> data)
 
   #- - Returns:
   #-
@@ -59,11 +59,11 @@ service classifier {
   #-
   #-  Get all labels in the model
   #@random #@analysis #@pass
-  list<string> get_labels() # //@random
+  list<string> get_labels()
 
   #- - Parameters:
   #-
-  #-  - ``label`` : name of the new label
+  #-  - ``new_label`` : name of the new label
   #-
   #- - Returns:
   #-
@@ -71,8 +71,8 @@ service classifier {
   #-
   #-  Append new label with no datum
   #@random #@update #@pass
-  bool set_label(0: string label) # //@random
+  bool set_label(0: string new_label)
 
   #@broadcast #@update #@all_and
-  bool clear() # //@broadcast
+  bool clear()
 }

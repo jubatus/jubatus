@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.5.2-28-gd87300a) with jenerator version 0.5.2-17-g8a5dca4/develop
+// This file is auto-generated from classifier.idl(0.5.2-72-g2390b50) with jenerator version 0.5.2-45-gc4cfc98/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -64,9 +64,9 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->get_labels();
   }
 
-  bool set_label(const std::string& label) {
+  bool set_label(const std::string& new_label) {
     JWLOCK_(p_);
-    return get_p()->set_label(label);
+    return get_p()->set_label(new_label);
   }
 
   bool clear() {

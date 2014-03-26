@@ -36,7 +36,7 @@ namespace core {
 namespace clustering {
 
 inline weighted_point get_point(size_t d) {
-  static mtrand r_(time(NULL));
+  static mtrand r_(0);
   weighted_point ret;
   for (size_t i = 0; i < d; ++i) {
     ret.data.push_back(make_pair(
@@ -49,7 +49,7 @@ inline weighted_point get_point(size_t d) {
 }
 
 inline weighted_point get_point(size_t d, const std::vector<double>& c) {
-  static mtrand r_(time(NULL));
+  static mtrand r_(0);
   weighted_point ret;
   for (size_t i = 0; i < d; ++i) {
     ret.data.push_back(std::make_pair(

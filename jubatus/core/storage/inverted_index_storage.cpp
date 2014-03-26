@@ -127,7 +127,7 @@ void inverted_index_storage::remove(
   // the removal of this data to other nodes.
   // Otherwise we can immediately remove the row from
   // the diff table.
-  if (! exist) {
+  if (!exist) {
     tbl_t::iterator it = inv_diff_.find(row);
     if (it != inv_diff_.end()) {
       row_t::iterator it_row = it->second.find(column_id);

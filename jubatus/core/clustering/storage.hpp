@@ -45,6 +45,7 @@ class storage : public event_dispatcher<storage_event_type, wplist> {
   void get_diff(diff_t& d) const;
   bool set_mixed_and_clear_diff(const diff_t& d);
   void mix(const diff_t&, diff_t& ret);
+  void clear();
 
   size_t get_revision();
 
