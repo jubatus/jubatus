@@ -241,6 +241,48 @@ TEST(lsh_index_storage, get_and_set_diff) {
   EXPECT_EQ(expect, ids);
 }
 
+TEST(lsh_index_storage, clear_row_before_mix) {
+  const vector<float> h1 = make_hash("1 2 3 4");
+  const vector<float> h2 = make_hash("2 3 4 5");
+
+  lsh_index_storage s1(4, 1, 0), s2(4, 1, 0);
+
+  s1.set_row("r1", h1, 1);
+  lsh_master_table_t d1;
+  s1.get_diff(d1);
+
+  s2.set_row("r2", h2, 1);
+  lsh_master_table_t d2;
+  s2.get_diff(d2);
+
+  vector<string> ids;
+
+  s1.mix(d1, d2);
+  s1.set_mixed_and_clear_diff(d2);
+
+  // Expect size = 2 after initial MIX
+  ids.clear();
+  s1.get_all_row_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  s1.remove_row("r1");
+
+  // Expect size = 2 before MIX after remove
+  ids.clear();
+  s1.get_all_row_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  s1.get_diff(d1);
+  s2.get_diff(d2);
+  s1.mix(d1, d2);
+  s1.set_mixed_and_clear_diff(d2);
+
+  // Expect size = 1 after MIX after remove
+  ids.clear();
+  s1.get_all_row_ids(ids);
+  EXPECT_EQ(1u, ids.size());
+}
+
 TEST(lsh_index_storage, mix) {
   const vector<float> h1 = make_hash("1 2 3 4");
   const vector<float> h2 = make_hash("2 3 4 5");
@@ -291,7 +333,7 @@ TEST(lsh_index_storage, mix) {
   EXPECT_EQ(expect, ids);
 }
 
-TEST(lsh_index_storage, set_and_remove_arround_mix) {
+TEST(lsh_index_storage, set_and_remove_around_mix) {
   const vector<float> h1 = make_hash("1 2 3 4");
   const vector<float> h2 = make_hash("2 2 3 4");
 
@@ -320,6 +362,45 @@ TEST(lsh_index_storage, set_and_remove_arround_mix) {
   EXPECT_EQ("r1", ids[0].first) << "score: " << ids[0].second;
   EXPECT_EQ("r2", ids[1].first) << "score: " << ids[1].second;
   ids.clear();
+}
+
+TEST(lsh_index_storage, row_operations) {
+  vector<string> ids;
+  lsh_index_storage s1(4, 1, 0);
+
+  s1.set_row("r1", make_hash("1 2 3 4"), 1);
+  s1.set_row("r2", make_hash("1 1 2 3"), 1);
+  s1.set_row("r3", make_hash("1 1 1 2"), 1);
+
+  s1.get_all_row_ids(ids);
+  EXPECT_EQ(3u, ids.size());
+
+  s1.remove_row("r1");
+  s1.get_all_row_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  // do MIX
+  lsh_master_table_t d1;
+  s1.get_diff(d1);
+  s1.set_mixed_and_clear_diff(d1);
+
+  s1.get_all_row_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  // Once MIXed, removing row does not take affect
+  // until next MIX.
+  s1.remove_row("r2");
+  s1.get_all_row_ids(ids);
+  EXPECT_EQ(2u, ids.size());
+
+  // do MIX
+  lsh_master_table_t d2;
+  s1.get_diff(d2);
+  s1.set_mixed_and_clear_diff(d2);
+
+  s1.get_all_row_ids(ids);
+  ASSERT_EQ(1u, ids.size());
+  EXPECT_EQ("r3", ids[0]);
 }
 
 }  // namespace storage

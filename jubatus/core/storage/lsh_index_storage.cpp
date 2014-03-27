@@ -169,7 +169,25 @@ void lsh_index_storage::set_row(
 }
 
 void lsh_index_storage::remove_row(const string& row) {
-  remove_and_get_row(row);
+  const uint64_t row_id = key_manager_.get_id_const(row);
+  if (row_id == common::key_manager::NOTFOUND) {
+    // Non-existence row
+    return;
+  }
+
+  lsh_master_table_t::iterator entry_it = master_table_.find(row);
+  if (entry_it == master_table_.end()) {
+    // Since the row is not yet mixed, it can be immediately erased.
+    master_table_diff_.erase(row);
+    return;
+  }
+
+  // Otherwise, keep the row with empty entry until next MIX.
+  master_table_diff_.insert(make_pair(row, lsh_entry()));
+  lsh_entry& entry = entry_it->second;
+  put_empty_entry(row_id, entry);
+
+  return;
 }
 
 void lsh_index_storage::clear() {
@@ -328,7 +346,14 @@ lsh_master_table_t::iterator lsh_index_storage::remove_and_get_row(
     }
   }
   lsh_entry& entry = entry_it->second;
+  put_empty_entry(row_id, entry);
 
+  return ret_it;
+}
+
+void lsh_index_storage::put_empty_entry(
+    uint64_t row_id, 
+    const lsh_entry& entry) {
   for (size_t i = 0; i < entry.lsh_hash.size(); ++i) {
     lsh_table_t::iterator it = lsh_table_diff_.find(entry.lsh_hash[i]);
     if (it != lsh_table_diff_.end()) {
@@ -344,9 +369,6 @@ lsh_master_table_t::iterator lsh_index_storage::remove_and_get_row(
       }
     }
   }
-  entry = lsh_entry();
-
-  return ret_it;
 }
 
 vector<float> lsh_index_storage::make_entry(
