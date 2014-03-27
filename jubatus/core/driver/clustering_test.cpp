@@ -296,20 +296,15 @@ TEST_P(clustering_test, get_nearest_center) {
 TEST_P(clustering_test, clustering_when_bucket_size_exceeded) {
   jubatus::util::math::random::mtrand r(0);
 
-  vector<datum> one;
-  vector<datum> two;
+  vector<datum> points;
 
-  for (int i = 0; i < 1000 ; ++i) {
-    datum x, y;
-    x.num_values_.push_back(make_pair("a", 10 + r.next_gaussian() * 20));
-    x.num_values_.push_back(make_pair("b", 1000 + r.next_gaussian() * 400));
-    y.num_values_.push_back(make_pair("c", -500000 - r.next_gaussian() * 100));
-    y.num_values_.push_back(make_pair("d", -10000 - r.next_gaussian() * 50));
-    one.push_back(x);
-    two.push_back(y);
+  for (int i = 0; i < 5000 ; ++i) {
+    datum x;
+    x.num_values_.push_back(make_pair("a", 10 + r.next_gaussian() * 2));
+    x.num_values_.push_back(make_pair("b", 1000 + r.next_gaussian() * 40));
+    points.push_back(x);
   }
-  clustering_->push(one);
-  clustering_->push(two);
+  clustering_->push(points);
 
   // clustering does not happen yet
   {
@@ -317,31 +312,19 @@ TEST_P(clustering_test, clustering_when_bucket_size_exceeded) {
     ASSERT_EQ(0, result.size());
   }
 
-  one.clear();
-  two.clear();
-  for (int i = 0; i < 10000 ; ++i) {
-    datum x, y;
-    x.num_values_.push_back(make_pair("a", 10 + r.next_gaussian() * 20));
-    x.num_values_.push_back(make_pair("b", 1000 + r.next_gaussian() * 400));
-    y.num_values_.push_back(make_pair("c", -500000 - r.next_gaussian() * 100));
-    y.num_values_.push_back(make_pair("d", -10000 - r.next_gaussian() * 50));
-    one.push_back(x);
-    two.push_back(y);
+  points.clear();
+  for (int i = 0; i < 5001 ; ++i) {
+    datum x;
+    x.num_values_.push_back(make_pair("a", 10 + r.next_gaussian() * 2));
+    x.num_values_.push_back(make_pair("b", 1000 + r.next_gaussian() * 40));
+    points.push_back(x);
   }
-  clustering_->push(one);
-  clustering_->push(two);
+  clustering_->push(points);
 
   // clustering is done without MIX or do_clustering()
   {
     vector<datum> result = clustering_->get_k_center();
     ASSERT_EQ(2, result.size());
-    datum z;
-    z.num_values_.push_back(make_pair("a", 10 + r.next_gaussian() * 20));
-    z.num_values_.push_back(make_pair("b", 1000 + r.next_gaussian() * 400));
-    datum expect_near_z = clustering_->get_nearest_center(z);
-    const vector<pair<string, double> >& nearest = expect_near_z.num_values_;
-    ASSERT_EQ("a", nearest[0].first);
-    ASSERT_EQ("b", nearest[1].first);
   }
 }
 
