@@ -55,6 +55,10 @@ uint64_t anomaly_base::find_max_int_id() const {
   return max_id;
 }
 
+bool anomaly_base::is_updatable() const {
+  return false;
+}
+
 }  // namespace anomaly
 }  // namespace core
 }  // namespace jubatus

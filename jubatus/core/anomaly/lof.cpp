@@ -127,6 +127,10 @@ void lof::register_mixables_to_holder(framework::mixable_holder& holder) const {
   holder.register_mixable(mixable_storage_);
 }
 
+bool lof::is_updatable() const {
+  return true;
+}
+
 }  // namespace anomaly
 }  // namespace core
 }  // namespace jubatus

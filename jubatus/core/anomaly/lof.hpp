@@ -51,6 +51,7 @@ class lof : public anomaly_base {
   virtual std::string type() const;
   virtual void register_mixables_to_holder(framework::mixable_holder& holder)
       const;
+  bool is_updatable() const;
 
  private:
   jubatus::util::lang::shared_ptr<mixable_lof_storage> mixable_storage_;
