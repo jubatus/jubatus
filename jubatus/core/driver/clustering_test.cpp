@@ -85,9 +85,9 @@ TEST_P(clustering_test, get_revision) {
 
 
 TEST_P(clustering_test, get_revision_incremented) {
+  vector<datum> datums;
+  datums.push_back(single_datum("a", 1));
   for (int i = 0; i < 10001; ++i) {
-    vector<datum> datums;
-    datums.push_back(single_datum("a", 1));
     clustering_->push(datums);
   }
   ASSERT_EQ(1, clustering_->get_revision());
