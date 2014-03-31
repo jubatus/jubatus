@@ -16,6 +16,8 @@
 
 #include <map>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include <gtest/gtest.h>
 
@@ -24,6 +26,7 @@
 
 using std::string;
 using std::make_pair;
+using std::vector;
 
 namespace jubatus {
 namespace core {
@@ -91,6 +94,14 @@ class storage_mock_base : public storage::storage_base {
   }
 
   virtual void clear() {
+  }
+
+  vector<string> get_labels() const {
+    return vector<string>();
+  }
+
+  bool set_label(const string& label) {
+    return true;
   }
 
   std::string type() const {

@@ -38,8 +38,6 @@ enum storage_event_type {
   UPDATE
 };
 
-class storage_serializer;
-
 class storage : public event_dispatcher<storage_event_type, wplist> {
  public:
   storage(const std::string& name, const clustering_config& config);
@@ -47,6 +45,7 @@ class storage : public event_dispatcher<storage_event_type, wplist> {
   void get_diff(diff_t& d) const;
   bool set_mixed_and_clear_diff(const diff_t& d);
   void mix(const diff_t&, diff_t& ret);
+  void clear();
 
   size_t get_revision();
 
@@ -73,11 +72,6 @@ class storage : public event_dispatcher<storage_event_type, wplist> {
   clustering_config config_;
 
   std::vector<std::pair<std::string, wplist> > common_;
-
- private:
-  friend class storage_serializer;
-  template <class Archive>
-  void serialize(Archive &ar) {}
 };
 
 typedef framework::delegating_mixable<storage, diff_t> mixable_storage;

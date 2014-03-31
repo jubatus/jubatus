@@ -54,7 +54,7 @@ float calc_norm(const common::sfv_t& sfv) {
   for (size_t i = 0; i < sfv.size(); ++i) {
     sqnorm += sfv[i].second * sfv[i].second;
   }
-  return sqrt(sqnorm);
+  return std::sqrt(sqnorm);
 }
 
 vector<float> lsh_function(

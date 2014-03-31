@@ -76,8 +76,8 @@ double frand(double low, double high)
 
 inline bool double_eq(double a, double b)
 {
-  double err=abs(a-b);
-  return (err/abs(a))<1e-8;
+  double err=std::abs(a-b);
+  return (err/std::abs(a))<1e-8;
 }
 
 #define ASSERT_COMPLEX_VECTOR_EQ(a, b)			\

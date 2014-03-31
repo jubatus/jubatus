@@ -60,7 +60,7 @@ public:
 private:
   T num_, den_;
   static T gcd(T a, T b){
-    a=abs(a); b=abs(b);
+    a=std::abs(a); b=std::abs(b);
     while(true){
       a=a%b;
       if(a==0) return b;

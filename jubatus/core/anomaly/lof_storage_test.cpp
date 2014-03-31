@@ -95,7 +95,7 @@ TEST(lof_storage, get_all_row_ids) {
 
   vector<string> ids;
   s.get_all_row_ids(ids);
-  sort(ids.begin(), ids.end());
+  std::sort(ids.begin(), ids.end());
 
   vector<string> expect;
   expect.push_back("r1");

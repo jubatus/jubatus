@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <fstream>
 #include <string>
+#include <vector>
 
 #include <gtest/gtest.h>
 #include "jubatus/util/data/serialization.h"
@@ -26,6 +27,8 @@
 using std::make_pair;
 using std::stringstream;
 using std::sort;
+using std::string;
+using std::vector;
 
 // common tests for storages are written in storage_test.cpp
 

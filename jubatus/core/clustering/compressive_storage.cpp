@@ -63,7 +63,7 @@ wplist compressive_storage::get_mine() const {
 }
 
 void compressive_storage::forget_weight(wplist& points) {
-  double factor = exp(-config_.forgetting_factor);
+  double factor = std::exp(-config_.forgetting_factor);
   typedef wplist::iterator iter;
   for (iter it = points.begin(); it != points.end(); ++it) {
     it->weight *= factor;
@@ -73,7 +73,7 @@ void compressive_storage::forget_weight(wplist& points) {
 bool compressive_storage::reach_forgetting_threshold(size_t bucket_number) {
   double C = config_.forgetting_threshold;
   double lam = config_.forgetting_factor;
-  if (exp(-lam * bucket_number) < C) {
+  if (std::exp(-lam * bucket_number) < C) {
     return true;
   }
   return false;

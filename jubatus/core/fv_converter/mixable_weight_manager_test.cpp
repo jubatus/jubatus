@@ -141,7 +141,6 @@ class mixable_weight_manager_test : public ::testing::Test {
     }
 
     mw->set_model(m);
-
   }
   void TearDown() {
     mw.reset();

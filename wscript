@@ -4,7 +4,7 @@ from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '0.5.2'
+VERSION = '0.5.3'
 APPNAME = 'jubatus'
 
 top = '.'
@@ -209,3 +209,6 @@ def regenerate_client(ctx):
       pass
     ctx.cmd_and_log(jenerator_command, cwd=server_node.abspath())
     print()
+
+def check_cmath(ctx):
+  ctx.cmd_and_log('tools/codestyle/cmath_finder.sh')

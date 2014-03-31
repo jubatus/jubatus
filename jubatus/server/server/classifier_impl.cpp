@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.4.5-347-g86989a6) with jenerator version 0.4.5-472-g0c36f76/develop
+// This file is auto-generated from classifier.idl(0.5.2-72-g2390b50) with jenerator version 0.5.2-45-gc4cfc98/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -27,6 +27,11 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
         std::vector<jubatus::core::fv_converter::datum>)>("classify",
         jubatus::util::lang::bind(&classifier_impl::classify, this,
         jubatus::util::lang::_2));
+    rpc_server::add<std::vector<std::string>(std::string)>("get_labels",
+        jubatus::util::lang::bind(&classifier_impl::get_labels, this));
+    rpc_server::add<bool(std::string, std::string)>("set_label",
+        jubatus::util::lang::bind(&classifier_impl::set_label, this,
+        jubatus::util::lang::_2));
     rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &classifier_impl::clear, this));
 
@@ -52,6 +57,16 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
       const std::vector<jubatus::core::fv_converter::datum>& data) {
     JRLOCK_(p_);
     return get_p()->classify(data);
+  }
+
+  std::vector<std::string> get_labels() {
+    JRLOCK_(p_);
+    return get_p()->get_labels();
+  }
+
+  bool set_label(const std::string& new_label) {
+    JWLOCK_(p_);
+    return get_p()->set_label(new_label);
   }
 
   bool clear() {

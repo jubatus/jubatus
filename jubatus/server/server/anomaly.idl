@@ -44,29 +44,29 @@ service anomaly {
 
   #- clear a point.
   #@cht #@update #@all_and
-  bool clear_row(0: string id) # //@cht
+  bool clear_row(0: string id)
 
   #- add a point.
   #@random #@nolock #@pass
-  id_with_score add(0: datum row) # //@random
+  id_with_score add(0: datum row)
 
   #- update a point.
   #@cht #@update #@pass
-  float update(0: string id, 1: datum row) # //@cht
+  float update(0: string id, 1: datum row)
 
   #- overwrite a point.
   #@cht #@update #@pass
-  float overwrite(0: string id, 1: datum row) # //@cht
+  float overwrite(0: string id, 1: datum row)
 
   #- clear whole data.
   #@broadcast #@update #@all_and
-  bool clear() # //@broadcast
+  bool clear()
 
   #- calculate an anomaly measure value without adding a point.
   #@random #@analysis #@pass
-  float calc_score(0: datum row) # //@random
+  float calc_score(0: datum row)
 
   #@broadcast #@analysis #@concat
-  list<string> get_all_rows() # //@broadcast
+  list<string> get_all_rows()
 
 }

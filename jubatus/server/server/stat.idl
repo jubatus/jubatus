@@ -33,6 +33,6 @@ service stat {
   double moment(0: string key, 1: int degree, 2: double center)
 
   #@broadcast #@update #@all_and
-  bool clear() # //@broadcast
+  bool clear()
 
 }

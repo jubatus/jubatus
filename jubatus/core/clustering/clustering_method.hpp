@@ -18,7 +18,6 @@
 #define JUBATUS_CORE_CLUSTERING_CLUSTERING_METHOD_HPP_
 
 #include <vector>
-#include "jubatus/util/data/serialization.h"
 #include "types.hpp"
 
 namespace jubatus {
@@ -38,10 +37,6 @@ class clustering_method {
       get_nearest_center_index(const common::sfv_t& point) const = 0;
   virtual wplist get_cluster(size_t cluster_id, const wplist& points) const = 0;
   virtual std::vector<wplist> get_clusters(const wplist& points) const = 0;
- private:
-  friend class jubatus::util::data::serialization::access;
-  template <class Archive>
-  void serialize(Archive &ar) {}
 };
 
 }  // namespace clustering

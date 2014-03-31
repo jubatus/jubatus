@@ -43,6 +43,17 @@ uint64_t key_manager::get_id(const string& key) {
   return new_id;
 }
 
+bool key_manager::set_key(const string& key) {
+  cit it = key2id_.find(key);
+  if (it != key2id_.end()) {
+    return false;
+  }
+  uint64_t new_id = static_cast<uint64_t>(key2id_.size());
+  key2id_[key] = new_id;
+  id2key_.push_back(key);
+  return true;
+}
+
 uint64_t key_manager::get_id_const(const string& key) const {
   cit it = key2id_.find(key);
   if (it != key2id_.end()) {

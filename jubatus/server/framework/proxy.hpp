@@ -672,6 +672,13 @@ class proxy
     }
 
     Res aggregate_results() {
+      if (errors_.size() != 0) {
+        LOG(WARNING) << "error occurred in " << errors_.size()
+                     << " out of " << futures_.size() << " requests";
+        LOG(WARNING) << jubatus::server::common::mprpc::to_string(
+            jubatus::server::common::mprpc::error_multi_rpc(errors_));
+      }
+
       if (results_.size() == 0) {
         return Res();  // TODO(kmaehashi): we should raise exception ?
       }

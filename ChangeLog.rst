@@ -1,3 +1,35 @@
+Release 0.5.3 - 2014/03/31
+--------------------------
+
+* New Features
+    * classifier: Getter/setter methods to labelset of classifier (#655)
+    * client: Add accessors to get/set cluster name in C++ client (#668)
+    * client: Add do_mix RPC method in client (#700)
+
+* Improvements
+    * core: Eliminate cmath (#677)
+    * fv_converter: Avoid using types depends on CPU arch (64-bit/32-bit) for serialized members (#692)
+    * jenerator: Use relative import for python 3 (#712)
+    * server: Disable checking ID when loading models (#679)
+    * server: Detect IO errors in save (#698)
+    * server: Refine mix counting message (#552)
+    * server: MIX runs only updated model (#181)
+    * server: Remove unused annotations in IDL (#714)
+    * proxy: Print log when error occurred during proxy is forwarding requests (#733)
+
+* Bugfix
+    * clustering: Fix clustering test (#690)
+    * clustering: Eliminate random number without seed in clustering tests (#718)
+    * recommender: Fix recommender get_all_rows distribution mode to random (#683)
+    * recommender: Fix bit_index_storage to erase rows with empty vector on MIX (#684)
+    * recommender: Fix bit_index and inverted_index erase rows locally (#659)
+    * recommender: Modify behavior of remove_row of lsh_index_storage before/after MIX (#681)
+    * server: Fix mixer can go to infinite loop (#711)
+    * server: Fix dead-lock caused by re-entrant lock acquisition over put_diff RPC (#723)
+    * server: Fix RPC error handling in linear_mixer (#729)
+    * server: Fix load RPC breaks model  (#721)
+
+
 Release 0.5.2 - 2014/02/24
 --------------------------
 

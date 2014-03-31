@@ -106,7 +106,7 @@ float calc_euclidean_distance(
     return std::fabs(norm - entry.norm);
   }
   const float angle = (1 - static_cast<float>(hamm) / bv.bit_num()) * M_PI;
-  const float dot = entry.norm * norm * cos(angle);
+  const float dot = entry.norm * norm * std::cos(angle);
   return std::sqrt(norm * norm + entry.norm * entry.norm - 2 * dot);
 }
 
@@ -169,7 +169,25 @@ void lsh_index_storage::set_row(
 }
 
 void lsh_index_storage::remove_row(const string& row) {
-  remove_and_get_row(row);
+  const uint64_t row_id = key_manager_.get_id_const(row);
+  if (row_id == common::key_manager::NOTFOUND) {
+    // Non-existence row
+    return;
+  }
+
+  lsh_master_table_t::iterator entry_it = master_table_.find(row);
+  if (entry_it == master_table_.end()) {
+    // Since the row is not yet mixed, it can be immediately erased.
+    master_table_diff_.erase(row);
+    return;
+  }
+
+  // Otherwise, keep the row with empty entry until next MIX.
+  master_table_diff_.insert(make_pair(row, lsh_entry()));
+  lsh_entry& entry = entry_it->second;
+  put_empty_entry(row_id, entry);
+
+  return;
 }
 
 void lsh_index_storage::clear() {
@@ -186,7 +204,7 @@ void lsh_index_storage::get_all_row_ids(vector<string>& ids) const {
 
   unordered_set<std::string> id_set;
   // equivalent to id_set.reserve(size_upper_bound) in C++11
-  id_set.rehash(ceil(size_upper_bound / id_set.max_load_factor()));
+  id_set.rehash(std::ceil(size_upper_bound / id_set.max_load_factor()));
 
   for (lsh_master_table_t::const_iterator it = master_table_.begin();
       it != master_table_.end(); ++it) {
@@ -328,7 +346,14 @@ lsh_master_table_t::iterator lsh_index_storage::remove_and_get_row(
     }
   }
   lsh_entry& entry = entry_it->second;
+  put_empty_entry(row_id, entry);
 
+  return ret_it;
+}
+
+void lsh_index_storage::put_empty_entry(
+    uint64_t row_id, 
+    const lsh_entry& entry) {
   for (size_t i = 0; i < entry.lsh_hash.size(); ++i) {
     lsh_table_t::iterator it = lsh_table_diff_.find(entry.lsh_hash[i]);
     if (it != lsh_table_diff_.end()) {
@@ -344,9 +369,6 @@ lsh_master_table_t::iterator lsh_index_storage::remove_and_get_row(
       }
     }
   }
-  entry = lsh_entry();
-
-  return ret_it;
 }
 
 vector<float> lsh_index_storage::make_entry(

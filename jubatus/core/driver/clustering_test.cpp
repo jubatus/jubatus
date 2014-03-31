@@ -23,6 +23,7 @@
 #include "clustering.hpp"
 
 #include "../../util/lang/shared_ptr.h"
+#include "../../util/math/random.h"
 #include "../clustering/clustering_config.hpp"
 #include "../clustering/clustering.hpp"
 #include "../clustering/kmeans_clustering_method.hpp"
@@ -117,7 +118,7 @@ TEST_P(clustering_test, save_load) {
 }
 
 TEST_P(clustering_test, get_k_center) {
-  jubatus::util::math::random::mtrand r;
+  jubatus::util::math::random::mtrand r(0);
   vector<datum> one;
   vector<datum> two;
 
@@ -181,7 +182,7 @@ struct check_point_compare {
 
 
 TEST_P(clustering_test, get_nearest_members) {
-  jubatus::util::math::random::mtrand r;
+  jubatus::util::math::random::mtrand r(0);
   vector<datum> one;
   vector<datum> two;
 
@@ -236,7 +237,7 @@ TEST_P(clustering_test, get_nearest_members) {
 
 
 TEST_P(clustering_test, get_nearest_center) {
-  jubatus::util::math::random::mtrand r;
+  jubatus::util::math::random::mtrand r(0);
   vector<datum> one;
   vector<datum> two;
 
