@@ -1,7 +1,7 @@
 # ==============================================================================
 # Jubatus
 # ==============================================================================
-JUBATUS_VERSION="0.5.2"
+JUBATUS_VERSION="0.5.3"
 JUBATUS_RELEASE="1"
 JUBATUS_IS_SNAPSHOT="no"
 JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
