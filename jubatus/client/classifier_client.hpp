@@ -33,9 +33,9 @@ class classifier : public jubatus::client::common::client {
     return f.get<std::vector<std::vector<estimate_result> > >();
   }
 
-  bool delete_class(const std::string& name,
+  bool delete_label(const std::string& name,
       const std::vector<std::string>& names) {
-    msgpack::rpc::future f = c_.call("delete_class", name_, name, names);
+    msgpack::rpc::future f = c_.call("delete_label", name_, name, names);
     return f.get<bool>();
   }
 

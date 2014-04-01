@@ -54,7 +54,7 @@ class classifier {
       const fv_converter::datum& data) const;
 
   void get_status(std::map<std::string, std::string>& status) const;
-  void delete_class(const std::string& name);
+  void delete_label(const std::string& name);
 
   void clear();
 

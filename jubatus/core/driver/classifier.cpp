@@ -75,8 +75,8 @@ void classifier::get_status(std::map<string, string>& status) const {
   classifier_->get_status(status);
 }
 
-void classifier::delete_class(const std::string& name) {
-  classifier_->delete_class(name);
+void classifier::delete_label(const std::string& label) {
+  classifier_->delete_label(label);
 }
 
 void classifier::clear() {

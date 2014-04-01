@@ -307,22 +307,6 @@ INSTANTIATE_TEST_CASE_P(nearest_neighbor_test_instance,
     nearest_neighbor_test,
     testing::ValuesIn(create_nearest_neighbors()));
 
-TEST_P(nearest_neighbor_test, small) {
-  nn_driver_->set_row("id1", create_datum_2d(2.f, 0.f));
-  nn_driver_->set_row("id2", create_datum_2d(2.f, 1.f));
-  nn_driver_->set_row("id3", create_datum_2d(0.f, 2.f));
-
-  nn_driver_->neighbor_row_from_id("id1", 2);
-  nn_driver_->neighbor_row_from_id("id2", 2);
-  nn_driver_->neighbor_row_from_id("id3", 2);
-
-  nn_driver_->neighbor_row_from_data(create_datum_2d(1.f, 1.f), 2);
-}
-
-INSTANTIATE_TEST_CASE_P(
-    nearest_neighbor_test_instance, nearest_neighbor_test,
-    testing::ValuesIn(create_nearest_neighbors()));
-
 class nearest_neighbor_with_unlearning_test
     : public ::testing::TestWithParam<
           std::tr1::tuple<

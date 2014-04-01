@@ -52,7 +52,7 @@ void classifier_base::set_label_unlearner(
   label_unlearner_ = label_unlearner;
   if (label_unlearner_) {
     label_unlearner_->set_callback(jubatus::util::lang::bind(
-        &classifier_base::delete_class, this, jubatus::util::lang::_1));
+        &classifier_base::delete_label, this, jubatus::util::lang::_1));
   }
 }
 
@@ -215,7 +215,7 @@ void classifier_base::touch(const std::string& label) {
 }
 
 void classifier_base::delete_label(const std::string& label) {
-  storage_->delete_label(label);
+  get_storage()->delete_label(label);
 }
 
 }  // namespace classifier

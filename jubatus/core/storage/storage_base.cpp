@@ -87,9 +87,6 @@ void storage_base::get_diff(diff_t& v) const {
   v.diff.clear();
 }
 
-void storage_base::delete_class(const std::string& name) {
-}
-
 bool storage_base::set_average_and_clear_diff(const diff_t&) {
   return true;
 }
