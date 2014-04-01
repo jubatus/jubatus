@@ -69,6 +69,11 @@ class rpc_server : public msgpack::rpc::dispatcher {
 
   virtual void dispatch(msgpack::rpc::request req);
 
+  // synchronous method registration
+  template<typename T> void add(
+      const std::string& name,
+      const jubatus::util::lang::function<T>& f);        
+
   void add(
       const std::string& name,
       const jubatus::util::lang::function<void(msgpack::rpc::request&)>& f);
@@ -273,6 +278,13 @@ jubatus::util::lang::shared_ptr<invoker_base> make_async_vmethod_invoker(
 }
 
 // shortcut
+template<typename T>
+void rpc_server::add(
+    const std::string& name,
+    const jubatus::util::lang::function<T>& f) {
+  add_inner(name, make_invoker(f));
+}
+
 template<typename Tuple>
 void rpc_server::add_async_vmethod(
     const std::string& name,
