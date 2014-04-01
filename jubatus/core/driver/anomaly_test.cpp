@@ -116,13 +116,13 @@ class light_lof_test : public ::testing::Test {
     unlearner::lru_unlearner::config unlearner_config;
     unlearner_config.max_size = 5;
     jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner(
-      new unlearner::lru_unlearner(unlearner_config));
+        new unlearner::lru_unlearner(unlearner_config));
 
     anomaly_.reset(new anomaly(
-                     shared_ptr<anomaly_base>(
-                         new core::anomaly::light_lof(
-                             lof_config, "id", lsh, unlearner)),
-                     make_fv_converter()));
+                       shared_ptr<anomaly_base>(
+                           new core::anomaly::light_lof(
+                               lof_config, "id", lsh, unlearner)),
+                           make_fv_converter()));
   }
 
   jubatus::util::lang::shared_ptr<core::driver::anomaly> anomaly_;

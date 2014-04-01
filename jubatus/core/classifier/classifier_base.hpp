@@ -53,7 +53,7 @@ class classifier_base {
   std::string classify(const common::sfv_t& fv) const;
   void classify_with_scores(const common::sfv_t& fv,
                             classify_result& scores) const;
-  void delete_class(const std::string& name);
+  void delete_label(const std::string& label);
   void clear();
 
   std::vector<std::string> get_labels() const;

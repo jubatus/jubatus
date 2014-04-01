@@ -118,8 +118,7 @@ void local_storage_mixture::inp(const common::sfv_t& sfv,
                                 map_feature_val1_t& ret) const {
   ret.clear();
 
-  // Use uin64_t map instead of string map as hash function for string is slow
-  jubatus::util::data::unordered_map<uint64_t, float> ret_id;
+  std::vector<float> ret_id(class2id_.size());
   for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     const float val = it->second;
@@ -131,15 +130,8 @@ void local_storage_mixture::inp(const common::sfv_t& sfv,
     }
   }
 
-  std::vector<std::string> labels = class2id_.get_all_id2key();
-  for (size_t i = 0; i < labels.size(); ++i) {
-    const std::string& label = labels[i];
-    uint64_t id = class2id_.get_id_const(label);
-    if (id == common::key_manager::NOTFOUND || ret_id.count(id) == 0) {
-      ret[label] = 0.0;
-    } else {
-      ret[label] = ret_id[id];
-    }
+  for (size_t i = 0; i < ret_id.size(); ++i) {
+    ret[class2id_.get_key(i)] = ret_id[i];
   }
 }
 

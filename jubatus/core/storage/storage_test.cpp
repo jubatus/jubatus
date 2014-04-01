@@ -609,7 +609,7 @@ TYPED_TEST_P(storage_test, set_get_label) {
   ASSERT_EQ("b", labels[1]);
 }
 
-TYPED_TEST_P(storage_test, delete_class) {
+TYPED_TEST_P(storage_test, delete_label) {
   TypeParam s;
   s.set("f1", "c1", 1.0);
   {
@@ -618,7 +618,7 @@ TYPED_TEST_P(storage_test, delete_class) {
     EXPECT_EQ(1u, val.size());
   }
 
-  s.delete_class("c1");
+  s.delete_label("c1");
 
   {
     feature_val1_t val;
@@ -661,7 +661,7 @@ REGISTER_TYPED_TEST_CASE_P(storage_test,
                            bulk_update_no_decrease,
                            clear,
                            set_get_label,
-                           delete_class,
+                           delete_label,
                            inp_after_clear);
 
 typedef testing::Types<
