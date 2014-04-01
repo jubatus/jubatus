@@ -24,6 +24,7 @@
 
 #include <gtest/gtest.h>
 #include "jubatus/util/lang/cast.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "classifier_factory.hpp"
 #include "classifier.hpp"
@@ -38,6 +39,7 @@ using std::string;
 using std::vector;
 using jubatus::util::text::json::to_json;
 using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
 using jubatus::core::storage::local_storage;
 
 namespace jubatus {
@@ -93,7 +95,7 @@ common::sfv_t convert(vector<double>& v) {
 
 TYPED_TEST_P(classifier_test, random) {
   jubatus::util::math::random::mtrand rand(0);
-  classifier_base::storage_ptr s(new local_storage);
+  shared_ptr<local_storage> s(new local_storage);
   TypeParam p(s);
 
   srand(0);
@@ -114,7 +116,7 @@ TYPED_TEST_P(classifier_test, random) {
 
 TYPED_TEST_P(classifier_test, random3) {
   jubatus::util::math::random::mtrand rand(0);
-  classifier_base::storage_ptr s(new local_storage);
+  shared_ptr<local_storage> s(new local_storage);
   TypeParam p(s);
 
   srand(0);
@@ -134,8 +136,8 @@ TYPED_TEST_P(classifier_test, random3) {
 }
 
 TYPED_TEST_P(classifier_test, delete_class) {
-  local_storage s;
-  TypeParam p(&s);
+  shared_ptr<local_storage> s(new local_storage);
+  TypeParam p(s);
 
   common::sfv_t fv;
   fv.push_back(std::make_pair("f1", 1.f));
@@ -159,8 +161,8 @@ TYPED_TEST_P(classifier_test, delete_class) {
 }
 
 TYPED_TEST_P(classifier_test, unlearning) {
-  local_storage s;
-  TypeParam p(&s);
+  shared_ptr<local_storage> s(new local_storage);
+  TypeParam p(s);
 
   unlearner::lru_unlearner::config config;
   config.max_size = 2;

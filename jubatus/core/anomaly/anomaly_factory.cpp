@@ -53,8 +53,8 @@ struct lof_config {
         & JUBA_MEMBER(nearest_neighbor_num)
         & JUBA_MEMBER(reverse_nearest_neighbor_num)
         & JUBA_MEMBER(method)
-        & JUBA_MEMBER(parameter);
-        & JUBA_MEMBER(unlearner);
+        & JUBA_MEMBER(parameter)
+        & JUBA_MEMBER(unlearner)
         & JUBA_MEMBER(unlearner_parameter);
   }
 };
@@ -98,11 +98,12 @@ shared_ptr<anomaly_base> anomaly_factory::create_anomaly(
           unlearner::create_unlearner(
               *conf.unlearner,
               common::jsonconfig::config(*conf.unlearner_parameter)));
-      return new light_lof(lof_config, id, nearest_neighbor_engine, unlearner);
+      return shared_ptr<anomaly_base>(
+          new light_lof(lof_conf, id, nearest_neighbor_engine, unlearner));
+    } else {
+      return shared_ptr<anomaly_base>(
+          new light_lof(lof_conf, id, nearest_neighbor_engine));
     }
-
-    return jubatus::util::lang::shared_ptr<anomaly_base>(
-        new light_lof(lof_conf, id, nearest_neighbor_engine));
   } else {
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }

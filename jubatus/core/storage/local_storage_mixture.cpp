@@ -118,8 +118,7 @@ void local_storage_mixture::inp(const common::sfv_t& sfv,
                                 map_feature_val1_t& ret) const {
   ret.clear();
 
-  jubatus::util::data::unordered_map<uint64_t, float> ret_id;
-
+  std::vector<float> ret_id(class2id_.size());
   for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     const float val = it->second;
@@ -131,13 +130,8 @@ void local_storage_mixture::inp(const common::sfv_t& sfv,
     }
   }
 
-  for (jubatus::util::data::unordered_map<uint64_t, float>::const_iterator it =
-           ret_id.begin();
-       it != ret_id.end();
-       ++it) {
-    if (it->second != 0.f) {
-      ret[class2id_.get_key(it->first)] = it->second;
-    }
+  for (size_t i = 0; i < ret_id.size(); ++i) {
+    ret[class2id_.get_key(i)] = ret_id[i];
   }
 }
 

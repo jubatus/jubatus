@@ -87,7 +87,7 @@ class nearest_neighbor_base {
 
  private:
   jubatus::util::lang::shared_ptr<driver::mixable_versioned_table>
-    mixable_table_;
+      mixable_table_;
 };
 
 }  // namespace nearest_neighbor

@@ -192,7 +192,6 @@ float classifier_base::squared_norm(const common::sfv_t& fv) {
   return ret;
 }
 
-<<<<<<< HEAD
 storage::storage_base* classifier_base::get_storage() {
   if (!mixable_) {
     throw JUBATUS_EXCEPTION(
@@ -207,7 +206,8 @@ storage::storage_base* classifier_base::get_storage() {
 
 const storage::storage_base* classifier_base::get_storage() const {
   return const_cast<classifier_base*>(this)->get_storage();
-=======
+}
+
 void classifier_base::touch(const std::string& label) {
   if (label_unlearner_) {
     label_unlearner_->touch(label);
@@ -215,8 +215,7 @@ void classifier_base::touch(const std::string& label) {
 }
 
 void classifier_base::delete_class(const std::string& name) {
-  storage_->delete_class(name);
->>>>>>> squash
+  get_storage()->delete_class(name);
 }
 
 }  // namespace classifier

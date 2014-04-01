@@ -38,8 +38,10 @@ shared_ptr<nearest_neighbor_base> create_nearest_neighbor(
   using common::jsonconfig::config_cast_check;
 
   if (name == "euclid_lsh") {
-    return shared_ptr<nearest_neighbor_base>(new euclid_lsh(
-        config_cast_check<euclid_lsh::config>(config), table, id));
+    return shared_ptr<nearest_neighbor_base>(
+        new euclid_lsh(config_cast_check<euclid_lsh::config>(config),
+                       table,
+                       id));
   } else if (name == "lsh") {
     return shared_ptr<nearest_neighbor_base>(
         new lsh(config_cast_check<lsh::config>(config), table, id));

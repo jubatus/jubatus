@@ -67,9 +67,6 @@ class nearest_neighbor_recommender : public recommender_base {
  private:
   class unlearning_callback;
 
-  bool save_impl(std::ostream& os);
-  bool load_impl(std::istream& is);
-
   jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
       nearest_neighbor_engine_;
   jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner_;
