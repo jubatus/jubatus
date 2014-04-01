@@ -72,7 +72,7 @@ class rpc_server : public msgpack::rpc::dispatcher {
   // synchronous method registration
   template<typename T> void add(
       const std::string& name,
-      const jubatus::util::lang::function<T>& f);        
+      const jubatus::util::lang::function<T>& f);
 
   void add(
       const std::string& name,

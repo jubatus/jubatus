@@ -30,7 +30,7 @@ class msgpack_invoker : public invoker_base {
  public:
   typedef jubatus::util::lang::function<void(msgpack::rpc::request&)> func_type;
 
-  msgpack_invoker(const func_type& func) : func_(func) {}
+  explicit msgpack_invoker(const func_type& func) : func_(func) {}
 
   virtual void invoke(msgpack::rpc::request& req) {
     func_(req);
