@@ -92,6 +92,7 @@ void arow::update(
               neg_val.v2 - beta * neg_val.v2 * neg_val.v2 * val * val));
     }
   }
+  touch(pos_label);
 }
 
 string arow::name() const {

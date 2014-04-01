@@ -70,6 +70,8 @@ class anomaly_base {
       framework::mixable_holder& holder) const = 0;
 
   uint64_t find_max_int_id() const;
+ protected:
+  // static const uint32_t NEIGHBOR_NUM;
 };
 
 }  // namespace anomaly

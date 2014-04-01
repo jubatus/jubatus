@@ -32,6 +32,38 @@ nearest_neighbor_recommender::nearest_neighbor_recommender(
     : nearest_neighbor_engine_(nearest_neighbor_engine) {
 }
 
+class nearest_neighbor_recommender::unlearning_callback {
+ public:
+  explicit unlearning_callback(nearest_neighbor_recommender* recommender)
+      : recommender_(recommender),
+        table_(recommender_->get_table()) {
+  }
+
+  void operator()(const std::string& id) {
+    recommender_->orig_.remove_row(id);
+    table_->delete_row(id);
+  }
+
+ private:
+  nearest_neighbor_recommender* recommender_;
+  jubatus::util::lang::shared_ptr<table::column_table> table_;
+};
+
+nearest_neighbor_recommender::nearest_neighbor_recommender(
+    jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+        nearest_neighbor_engine)
+    : nearest_neighbor_engine_(nearest_neighbor_engine) {
+}
+
+nearest_neighbor_recommender::nearest_neighbor_recommender(
+    jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+        nearest_neighbor_engine,
+    jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner)
+    : nearest_neighbor_engine_(nearest_neighbor_engine),
+      unlearner_(unlearner) {
+  unlearner_->set_callback(unlearning_callback(this));
+}
+
 void nearest_neighbor_recommender::similar_row(
     const common::sfv_t& query,
     std::vector<std::pair<std::string, float> >& ids,
@@ -58,6 +90,9 @@ void nearest_neighbor_recommender::clear_row(const std::string& id) {
 void nearest_neighbor_recommender::update_row(
     const std::string& id,
     const common::sfv_t& diff) {
+  if (unlearner_) {
+    unlearner_->touch(id);
+  }
   core::storage::sparse_matrix_storage_mixable::model_ptr orig =
       orig_->get_model();
   orig->set_row(id, diff);
@@ -79,6 +114,35 @@ void nearest_neighbor_recommender::register_mixables_to_holder(
     framework::mixable_holder& holder) const {
   holder.register_mixable(orig_);
   nearest_neighbor_engine_->register_mixables_to_holder(holder);
+jubatus::util::lang::shared_ptr<table::column_table>
+nearest_neighbor_recommender::get_table() {
+  return nearest_neighbor_engine_->get_table();
+}
+
+jubatus::util::lang::shared_ptr<const table::column_table>
+nearest_neighbor_recommender::get_const_table() const {
+  return nearest_neighbor_engine_->get_const_table();
+}
+
+jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
+nearest_neighbor_recommender::get_unlearner() {
+  return unlearner_;
+}
+
+bool nearest_neighbor_recommender::save_impl(std::ostream& os) {
+  nearest_neighbor_engine_->save(os);
+  if (unlearner_) {
+    unlearner_->save(os);
+  }
+  return true;
+}
+
+bool nearest_neighbor_recommender::load_impl(std::istream& is) {
+  nearest_neighbor_engine_->load(is);
+  if (unlearner_) {
+    unlearner_->load(is);
+  }
+  return true;
 }
 
 }  // namespace recommender

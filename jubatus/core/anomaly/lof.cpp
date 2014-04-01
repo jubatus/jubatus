@@ -31,7 +31,6 @@
 using jubatus::core::anomaly::lof;
 using jubatus::util::data::unordered_map;
 using jubatus::util::math::random::mtrand;
-using std::isinf;
 using std::istream;
 using std::ostream;
 using std::numeric_limits;
@@ -98,7 +97,6 @@ float lof::calc_anomaly_score(const common::sfv_t& query) const {
   unordered_map<string, float> neighbor_lrd;
   const float lrd = mixable_storage_->get_model()->collect_lrds(
       query, neighbor_lrd);
-
   return calculate_lof(lrd, neighbor_lrd);
 }
 
@@ -128,6 +126,7 @@ void lof::set_row(const string& id, const common::sfv_t& sfv) {
 
 void lof::get_all_row_ids(vector<string>& ids) const {
   mixable_storage_->get_model()->get_all_row_ids(ids);
+}
 }
 
 string lof::type() const {

@@ -23,6 +23,7 @@
 #include "../nearest_neighbor/nearest_neighbor_factory.hpp"
 #include "../storage/norm_factory.hpp"
 #include "../table/column/column_table.hpp"
+#include "../unlearner/unlearner_factory.hpp"
 #include "recommender_factory.hpp"
 #include "recommender.hpp"
 
@@ -39,7 +40,18 @@ namespace recommender {
 namespace {
 
 const std::string NEAREST_NEIGHBOR_PREFIX("nearest_neighbor_recommender:");
+struct nearest_neighbor_recommender_config {
+  std::string method;
+  config parameter;
+  jubatus::util::data::optional<std::string> unlearner;
+  jubatus::util::data::optional<jubatus::util::text::json::json> unlearner_parameter;
 
+  template<typename Ar>
+  void serialize(Ar& ar) {
+    ar & MEMBER(method) & MEMBER(parameter) &
+        MEMBER(unlearner) & MEMBER(unlearner_parameter);
+  }
+};
 }  // namespace
 
 shared_ptr<recommender_base> recommender_factory::create_recommender(
@@ -65,6 +77,17 @@ shared_ptr<recommender_base> recommender_factory::create_recommender(
     shared_ptr<nearest_neighbor::nearest_neighbor_base>
         nearest_neighbor_engine(nearest_neighbor::create_nearest_neighbor(
             nearest_neighbor_method, param, table, id));
+    if (conf.unlearner) {
+      if (!conf.unlearner_parameter) {
+        throw JUBATUS_EXCEPTION(
+            common::config_exception() << common::exception::error_message(
+                "unlearner is set but unlearner_parameter is not found"));
+      }
+      shared_ptr<unlearner::unlearner_base> unl(unlearner::create_unlearner(
+          *conf.unlearner, common::jsonconfig::config(
+              *conf.unlearner_parameter)));
+      return new nearest_neighbor_recommender(nearest_neighbor_engine, unl);
+    }
     return shared_ptr<recommender_base>(
         new nearest_neighbor_recommender(nearest_neighbor_engine));
   } else {

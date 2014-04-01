@@ -29,13 +29,15 @@ def build(bld):
       'graph.cpp',
       'nearest_neighbor.cpp',
       'clustering.cpp',
+      'linear_function_mixer.cpp',
+      'nearest_neighbor.cpp',
       ]
 
   bld.shlib(
     source = source,
     target = 'jubatus_driver',
     includes = '.',
-    use = 'jubatus_util jubacommon MSGPACK jubaconverter jubastorage jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph jubatus_clustering jubatus_mixables'+libassert
+    use = 'jubatus_util jubacommon MSGPACK jubaconverter jubastorage jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph jubatus_clustering jubatus_mixables unlearner'+libassert
     )
 
   def make_test(t):
@@ -52,6 +54,7 @@ def build(bld):
     'anomaly_test',
     'classifier_test',
     'graph_test',
+    'nearest_neighbor_test',
     'regression_test',
     'recommender_test',
     'stat_test',
@@ -71,7 +74,9 @@ def build(bld):
       'graph.hpp',
       'diffv.hpp',
       'linear_function_mixer.hpp',
+      'mixable_weight_manager.hpp',
       'mixable_versioned_table.hpp',
       'nearest_neighbor.hpp',
       'clustering.hpp',
+      'nearest_neighbor.hpp',
       ])

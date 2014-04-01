@@ -63,7 +63,7 @@ class anomaly {
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-    converter_;
+      converter_;
   jubatus::util::lang::shared_ptr<core::anomaly::anomaly_base> anomaly_;
 };
 

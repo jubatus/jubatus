@@ -1,4 +1,4 @@
-// This file is auto-generated from graph.idl(0.5.1-49-ge0eb85f) with jenerator version 0.5.2-17-g8a5dca4/develop
+// This file is auto-generated from graph.idl(0.5.2-68-g68e898d) with jenerator version 0.5.2-45-gc4cfc98/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_GRAPH_CLIENT_HPP_

@@ -42,7 +42,6 @@ class storage_mock_base : public storage::storage_base {
   }
 
   void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const {
-  }
 
   void set(
       const std::string& feature,
@@ -91,6 +90,7 @@ class storage_mock_base : public storage::storage_base {
 
   storage::version get_version() const {
     return storage::version();
+  void delete_class(const std::string& name) {
   }
 
   virtual void clear() {

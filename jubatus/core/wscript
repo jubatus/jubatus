@@ -1,6 +1,7 @@
 import Options
 
-subdirs = "common anomaly classifier driver framework fv_converter graph recommender regression stat storage nearest_neighbor table clustering third_party"
+subdirs = "common anomaly classifier driver framework fv_converter graph recommender regression stat storage nearest_neighbor table clustering unlearner third_party"
+
 def options(opt):
   opt.recurse(subdirs)
 

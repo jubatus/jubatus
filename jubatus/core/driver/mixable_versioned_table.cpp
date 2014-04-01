@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <msgpack.hpp>
 #include "../../core/common/exception.hpp"
 
 typedef jubatus::core::table::column_table::version_t version_t;
@@ -26,6 +27,15 @@ typedef jubatus::core::table::column_table::version_t version_t;
 namespace jubatus {
 namespace core {
 namespace driver {
+namespace {
+
+std::string get_row_key(const std::string& packed) {
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, packed.c_str(), packed.size());
+  return unpacked.get().via.array.ptr[0].as<std::string>();
+}
+
+}  // namespace
 
 std::vector<std::string> mixable_versioned_table::get_diff_impl() const {
   return pull_impl(vc_);
@@ -71,6 +81,7 @@ void mixable_versioned_table::push_impl(
     const std::vector<std::string>& diff) {
   model_ptr table = get_model();
   for (uint64_t i = 0; i < diff.size(); ++i) {
+    unlearner_->touch(get_row_key(diff[i]));
     const version_t version = table->set_row(diff[i]);
     update_version(version);
   }

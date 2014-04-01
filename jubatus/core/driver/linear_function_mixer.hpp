@@ -20,6 +20,7 @@
 #include "../framework/mixable.hpp"
 #include "../common/version.hpp"
 #include "../storage/storage_base.hpp"
+#include "../unlearner/unlearner_base.hpp"
 
 #include "diffv.hpp"
 
@@ -30,6 +31,11 @@ namespace driver {
 class linear_function_mixer : public jubatus::core::framework::mixable<
     storage::storage_base, diffv> {
  public:
+  void set_label_unlearner(
+      jubatus::util::lang::shared_ptr<unlearner::unlearner_base> label_unlearner) {
+    label_unlearner_ = label_unlearner;
+  }
+
   diffv get_diff_impl() const;
 
   void mix_impl(const diffv& lhs, const diffv& rhs, diffv& mixed) const;
@@ -39,6 +45,9 @@ class linear_function_mixer : public jubatus::core::framework::mixable<
   storage::version get_version() const;
 
   void clear();
+
+ private:
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> label_unlearner_;
 };
 
 }  // namespace driver

@@ -25,7 +25,7 @@ def build(bld):
     target = 'jubatus_recommender',
     name = 'jubatus_recommender',
     includes = '.',
-    use = 'jubatus_util jubastorage jubacommon jubatus_nearest_neighbor jubatus_mixables'+libassert)
+    use = 'jubatus_util jubastorage jubacommon jubatus_nearest_neighbor jubatus_mixables unlearner'+libassert)
 
   def make_test(s):
     bld.program(

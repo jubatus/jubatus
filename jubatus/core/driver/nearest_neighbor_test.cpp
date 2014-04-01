@@ -218,6 +218,74 @@ INSTANTIATE_TEST_CASE_P(nearest_neighbor_test_instance,
     nearest_neighbor_test,
     testing::ValuesIn(create_nearest_neighbors()));
 
+TEST_P(nearest_neighbor_test, small) {
+  nn_driver_->set_row("id1", create_datum_2d(2.f, 0.f));
+  nn_driver_->set_row("id2", create_datum_2d(2.f, 1.f));
+  nn_driver_->set_row("id3", create_datum_2d(0.f, 2.f));
+
+  nn_driver_->neighbor_row_from_id("id1", 2);
+  nn_driver_->neighbor_row_from_id("id2", 2);
+  nn_driver_->neighbor_row_from_id("id3", 2);
+
+  nn_driver_->neighbor_row_from_data(create_datum_2d(1.f, 1.f), 2);
+}
+
+INSTANTIATE_TEST_CASE_P(
+    nearest_neighbor_test_instance, nearest_neighbor_test,
+    testing::ValuesIn(create_nearest_neighbors()));
+
+class nearest_neighbor_with_unlearning_test
+    : public ::testing::TestWithParam<
+          std::tr1::tuple<
+              shared_ptr<nearest_neighbor_base>,
+              shared_ptr<unlearner_base> > > {
+ protected:
+  void SetUp() {
+    nn_driver_.reset(new nearest_neighbor(
+        std::tr1::get<0>(GetParam()), make_fv_converter(),
+        std::tr1::get<1>(GetParam())));
+  }
+
+  bool is_hit(
+      const std::string& should_hit_id,
+      const fv_converter::datum& d,
+      size_t size) const {
+    std::vector<std::pair<std::string, float> > hit =
+        nn_driver_->neighbor_row_from_data(d, size);
+    for (size_t i = 0; i < hit.size(); ++i) {
+      if (hit[i].first == should_hit_id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  shared_ptr<nearest_neighbor> nn_driver_;
+};
+
+TEST_P(nearest_neighbor_with_unlearning_test, unlearning) {
+  nn_driver_->set_row("id1", create_datum_2d(2.f, 0.f));
+  nn_driver_->set_row("id2", create_datum_2d(2.f, 1.f));
+  nn_driver_->set_row("id3", create_datum_2d(0.f, 2.f));
+  EXPECT_TRUE(is_hit("id1", create_datum_2d(1.f, 1.f), 3));
+
+  nn_driver_->set_row("id2", create_datum_2d(2.f, 2.f));
+  EXPECT_TRUE(is_hit("id1", create_datum_2d(1.f, 1.f), 3));
+
+  nn_driver_->set_row("id4", create_datum_2d(1.f, 2.f));
+  size_t hit_count = 0;
+  hit_count += is_hit("id1", create_datum_2d(1.f, 1.f), 3);
+  hit_count += is_hit("id2", create_datum_2d(1.f, 1.f), 3);
+  hit_count += is_hit("id3", create_datum_2d(1.f, 1.f), 3);
+  EXPECT_EQ(2u, hit_count);
+}
+
+INSTANTIATE_TEST_CASE_P(
+    nearest_neighbor_with_unlearning_test_instance,
+    nearest_neighbor_with_unlearning_test,
+    ::testing::Combine(
+        ::testing::ValuesIn(create_nearest_neighbors()),
+        ::testing::ValuesIn(create_unlearners())));
 
 }  // namespace driver
 }  // namespace core

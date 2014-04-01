@@ -26,6 +26,7 @@
 #include "../common/type.hpp"
 #include "../driver/mixable_versioned_table.hpp"
 #include "../framework/mixable.hpp"
+#include "../common/type.hpp"
 #include "../table/column/column_table.hpp"
 
 namespace jubatus {
