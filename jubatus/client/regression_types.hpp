@@ -1,4 +1,4 @@
-// This file is auto-generated from regression.idl(0.4.5-347-g86989a6) with jenerator version 0.5.2-17-g8a5dca4/develop
+// This file is auto-generated from regression.idl(0.5.2-68-g68e898d) with jenerator version 0.5.2-45-gc4cfc98/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_REGRESSION_TYPES_HPP_

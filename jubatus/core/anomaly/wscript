@@ -21,7 +21,7 @@ def build(bld):
     target = 'jubatus_anomaly',
     name = 'jubatus_anomaly',
     includes = '.',
-    use = 'jubatus_util jubastorage jubacommon jubatus_recommender jubatus_column_table'+libassert)
+    use = 'jubatus_util jubastorage jubacommon jubatus_recommender jubatus_column_table unlearner'+libassert)
 
   def make_test(s):
     bld.program(

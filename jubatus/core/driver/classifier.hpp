@@ -54,6 +54,8 @@ class classifier {
       const fv_converter::datum& data) const;
 
   void get_status(std::map<std::string, std::string>& status) const;
+  void delete_class(const std::string& name);
+
   void clear();
 
   std::vector<std::string> get_labels() const;
@@ -63,7 +65,7 @@ class classifier {
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-    converter_;
+      converter_;
   jubatus::util::lang::shared_ptr<classifier_base> classifier_;
 };
 

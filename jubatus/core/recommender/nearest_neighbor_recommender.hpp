@@ -22,6 +22,7 @@
 #include <vector>
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../nearest_neighbor/nearest_neighbor_base.hpp"
+#include "../unlearner/unlearner_base.hpp"
 #include "recommender_base.hpp"
 
 namespace jubatus {
@@ -34,6 +35,11 @@ class nearest_neighbor_recommender : public recommender_base {
   explicit nearest_neighbor_recommender(
       jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
       nearest_neighbor_engine);
+
+  nearest_neighbor_recommender(
+      jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+          nearest_neighbor_engine,
+      jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner);
 
   void similar_row(
       const common::sfv_t& query,
@@ -53,8 +59,20 @@ class nearest_neighbor_recommender : public recommender_base {
   void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
  private:
+  jubatus::util::lang::shared_ptr<table::column_table> get_table();
+  jubatus::util::lang::shared_ptr<const table::column_table> get_const_table() const;
+
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> get_unlearner();
+
+ private:
+  class unlearning_callback;
+
+  bool save_impl(std::ostream& os);
+  bool load_impl(std::istream& is);
+
   jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
-  nearest_neighbor_engine_;
+      nearest_neighbor_engine_;
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner_;
 };
 
 }  // namespace recommender

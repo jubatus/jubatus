@@ -44,6 +44,20 @@ void storage_base::update(
   set(feature, dec_class, dec_class_val);
 }
 
+void storage_base::inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const {
+  ret.clear();
+  for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
+    const string& feature = it->first;
+    const float val = it->second;
+    feature_val1_t fval1;
+    get(feature, fval1);
+    for (feature_val1_t::const_iterator it2 = fval1.begin(); it2 != fval1.end();
+        ++it2) {
+      ret[it2->first] += it2->second * val;
+    }
+  }
+}
+
 void storage_base::bulk_update(
     const common::sfv_t& sfv,
     float step_width,
@@ -71,6 +85,9 @@ void storage_base::bulk_update(
 
 void storage_base::get_diff(diff_t& v) const {
   v.diff.clear();
+}
+
+void storage_base::delete_class(const std::string& name) {
 }
 
 bool storage_base::set_average_and_clear_diff(const diff_t&) {

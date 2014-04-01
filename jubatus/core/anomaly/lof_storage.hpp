@@ -105,6 +105,8 @@ class lof_storage {
   float get_kdist(const std::string& row) const;
   float get_lrd(const std::string& row) const;
 
+  bool has_row(const std::string& row) const;
+
   // just for test
   void set_nn_engine(
       jubatus::util::lang::shared_ptr<core::recommender::recommender_base>

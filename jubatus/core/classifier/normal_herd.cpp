@@ -96,6 +96,7 @@ void normal_herd::update(
                       * val * val)));
     }
   }
+  touch(pos_label);
 }
 
 std::string normal_herd::name() const {

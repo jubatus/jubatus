@@ -19,6 +19,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <glog/logging.h>
 #include "jubatus/util/data/intern.h"
 
 using std::string;
@@ -75,7 +76,7 @@ void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret)
     const {
   ret.clear();
 
-  vector<float> ret_id(class2id_.size());
+  jubatus::util::data::unordered_map<uint64_t, float> ret_id;
   for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     const float val = it->second;
@@ -90,8 +91,13 @@ void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret)
     }
   }
 
-  for (size_t i = 0; i < ret_id.size(); ++i) {
-    ret[class2id_.get_key(i)] = ret_id[i];
+  for (jubatus::util::data::unordered_map<uint64_t, float>::const_iterator it =
+           ret_id.begin();
+       it != ret_id.end();
+       ++it) {
+    if (it->second != 0.f) {
+      ret[class2id_.get_key(it->first)] = it->second;
+    }
   }
 }
 
@@ -178,6 +184,20 @@ vector<string> local_storage::get_labels() const {
 
 bool local_storage::set_label(const std::string& label) {
   return class2id_.set_key(label);
+}
+void local_storage::delete_class(const std::string& name) {
+  uint64_t delete_id = class2id_.get_id_const(name);
+  if (delete_id == common::key_manager::NOTFOUND)
+    return;
+  for (id_features3_t::iterator it = tbl_.begin();
+       it != tbl_.end();
+       ++it) {
+    it->second.erase(delete_id);
+    if (it->second.empty()) {
+      tbl_.erase(it);
+    }
+  }
+  class2id_.delete_key(name);
 }
 
 void local_storage::clear() {

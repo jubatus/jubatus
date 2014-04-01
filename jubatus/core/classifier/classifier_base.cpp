@@ -24,6 +24,7 @@
 #include <queue>
 #include <string>
 #include <vector>
+#include "jubatus/util/lang/bind.h"
 
 #include "../common/exception.hpp"
 #include "../driver/linear_function_mixer.hpp"
@@ -44,6 +45,15 @@ classifier_base::classifier_base(storage_ptr storage)
 }
 
 classifier_base::~classifier_base() {
+}
+
+void classifier_base::set_label_unlearner(
+    jubatus::util::lang::shared_ptr<unlearner::unlearner_base> label_unlearner) {
+  label_unlearner_ = label_unlearner;
+  if (label_unlearner_) {
+    label_unlearner_->set_callback(jubatus::util::lang::bind(
+        &classifier_base::delete_class, this, jubatus::util::lang::_1));
+  }
 }
 
 void classifier_base::classify_with_scores(
@@ -182,6 +192,7 @@ float classifier_base::squared_norm(const common::sfv_t& fv) {
   return ret;
 }
 
+<<<<<<< HEAD
 storage::storage_base* classifier_base::get_storage() {
   if (!mixable_) {
     throw JUBATUS_EXCEPTION(
@@ -196,6 +207,16 @@ storage::storage_base* classifier_base::get_storage() {
 
 const storage::storage_base* classifier_base::get_storage() const {
   return const_cast<classifier_base*>(this)->get_storage();
+=======
+void classifier_base::touch(const std::string& label) {
+  if (label_unlearner_) {
+    label_unlearner_->touch(label);
+  }
+}
+
+void classifier_base::delete_class(const std::string& name) {
+  storage_->delete_class(name);
+>>>>>>> squash
 }
 
 }  // namespace classifier

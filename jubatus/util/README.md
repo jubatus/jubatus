@@ -14,7 +14,7 @@ Forked from: [1194ad42e4615fccdc5340bc6b3f6718c8d0fcc0](https://github.com/pfi/p
 
 ### Modifications
 
-- Changed namespace `pfi::` to `jubatus::util`
+- Changed namespace `jubatus::util::` to `jubatus::util`
 - Changed include guards for avoiding conflict original pficommon
 
 ## Copyrights and License

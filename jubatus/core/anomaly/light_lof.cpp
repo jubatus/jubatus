@@ -24,6 +24,7 @@
 #include <utility>
 #include <vector>
 #include "jubatus/util/data/unordered_map.h"
+#include "jubatus/util/lang/bind.h"
 #include "../common/exception.hpp"
 
 using jubatus::util::data::unordered_map;
@@ -31,7 +32,6 @@ using jubatus::util::data::unordered_set;
 using jubatus::util::lang::shared_ptr;
 using jubatus::core::nearest_neighbor::nearest_neighbor_base;
 using jubatus::core::table::column_table;
-using std::isinf;
 
 namespace jubatus {
 namespace core {
@@ -44,6 +44,14 @@ const uint32_t DEFAULT_REVERSE_NN_NUM = 30;
 const size_t KDIST_COLUMN_INDEX = 0;
 const size_t LRD_COLUMN_INDEX = 1;
 
+shared_ptr<column_table> create_lof_table() {
+  shared_ptr<column_table> table(new column_table);
+  std::vector<table::column_type> schema(
+      2, table::column_type(table::column_type::float_type));
+  table->init(schema);
+  return table;
+}
+
 float calculate_lof(float lrd, const std::vector<float>& neighbor_lrds) {
   if (neighbor_lrds.empty()) {
     return lrd == 0 ? 1 : std::numeric_limits<float>::infinity();
@@ -52,7 +60,7 @@ float calculate_lof(float lrd, const std::vector<float>& neighbor_lrds) {
   const float sum_neighbor_lrd = std::accumulate(
       neighbor_lrds.begin(), neighbor_lrds.end(), 0.0f);
 
-  if (isinf(sum_neighbor_lrd) && isinf(lrd)) {
+  if (std::isinf(sum_neighbor_lrd) && std::isinf(lrd)) {
     return 1;
   }
 
@@ -71,15 +79,30 @@ light_lof::light_lof(
     const std::string& id,
     shared_ptr<nearest_neighbor_base> nearest_neighbor_engine)
     : nearest_neighbor_engine_(nearest_neighbor_engine),
-      mixable_scores_(new driver::mixable_versioned_table),
       config_(conf),
       my_id_(id) {
-  shared_ptr<column_table> table(new column_table);
-  std::vector<table::column_type> schema(
-      2, table::column_type(table::column_type::float_type));
-  table->init(schema);
+  mixable_nearest_neighbor_.set_model(nearest_neighbor_engine_->get_table());
+  mixable_scores_.set_model(create_lof_table());
+}
 
-  mixable_scores_->set_model(table);
+light_lof::light_lof(
+    const config& conf,
+    const std::string& id,
+    shared_ptr<nearest_neighbor_base> nearest_neighbor_engine,
+    shared_ptr<unlearner::unlearner_base> unlearner)
+    : nearest_neighbor_engine_(nearest_neighbor_engine),
+      unlearner_(unlearner),
+      config_(conf),
+      my_id_(id) {
+  shared_ptr<column_table> nn_table = nearest_neighbor_engine_->get_table();
+  shared_ptr<column_table> lof_table = create_lof_table();
+  unlearner_->set_callback(jubatus::util::lang::bind(
+      &light_lof::unlearn, this, jubatus::util::lang::_1));
+
+  mixable_nearest_neighbor_.set_model(nn_table);
+  mixable_nearest_neighbor_.set_unlearner(unlearner_);
+  mixable_scores_.set_model(lof_table);
+  mixable_scores_.set_unlearner(unlearner_);
 }
 
 light_lof::~light_lof() {
@@ -101,7 +124,7 @@ float light_lof::calc_anomaly_score(const std::string& id) const {
 
 void light_lof::clear() {
   nearest_neighbor_engine_->clear();
-  mixable_scores_->get_model()->clear();
+  mixable_scores_.get_model()->clear();
 }
 
 void light_lof::clear_row(const std::string& id) {
@@ -113,13 +136,14 @@ void light_lof::update_row(const std::string& id, const sfv_diff_t& diff) {
 }
 
 void light_lof::set_row(const std::string& id, const common::sfv_t& sfv) {
-  jubatus::util::data::unordered_set<uint64_t> update_set;
+  unordered_set<std::string> update_set;
 
-  shared_ptr<column_table> table = mixable_scores_->get_model();
+  shared_ptr<column_table> table = mixable_scores_.get_model();
   if (table->exact_match(id).first) {
     collect_neighbors(id, update_set);
   }
 
+  touch(id);
   nearest_neighbor_engine_->set_row(id, sfv);
   collect_neighbors(id, update_set);
 
@@ -132,8 +156,12 @@ void light_lof::set_row(const std::string& id, const common::sfv_t& sfv) {
     throw JUBATUS_EXCEPTION(common::exception::runtime_error(
         "Failed to add a row to lof table (key = " + id + ')'));
   }
-  update_set.insert(index.second);
+  for (unordered_set<std::string>::const_iterator it = update_set.begin();
+       it != update_set.end(); ++it) {
+    touch(*it);
+  }
 
+  update_set.insert(id);
   update_entries(update_set);
 }
 
@@ -152,6 +180,32 @@ void light_lof::register_mixables_to_holder(framework::mixable_holder& holder)
 }
 
 // private
+
+void light_lof::touch(const std::string& id) {
+  if (unlearner_) {
+    unlearner_->touch(id);
+  }
+}
+
+// Unlearning callback function of light_lof.
+//
+// It removes a row and updates parameters of its reverse k-nearest neighbors.
+// This behavior is similar to ``light_lof::set_row``, which updates reverse
+// k-NNs if given id exists already.
+//
+// It is necessary to update reverse k-NNs of the point to be removed for model
+// correctness: if this procedure is omitted, ``light_lof`` no longer runs
+// correctly.
+void light_lof::unlearn(const std::string& key) {
+  unordered_set<std::string> reverse_knn;
+  collect_neighbors(key, reverse_knn);
+  reverse_knn.erase(key);
+
+  mixable_nearest_neighbor_.get_model()->delete_row(key);
+  mixable_scores_.get_model()->delete_row(key);
+
+  update_entries(reverse_knn);
+}
 
 float light_lof::collect_lrds(
     const common::sfv_t& query,
@@ -219,7 +273,7 @@ float light_lof::collect_lrds_from_neighbors(
 
 void light_lof::collect_neighbors(
     const std::string& query,
-    unordered_set<uint64_t>& neighbors) const {
+    unordered_set<std::string>& neighbors) const {
   std::vector<std::pair<std::string, float> > nn_result;
   nearest_neighbor_engine_->neighbor_row(
       query, nn_result, config_.reverse_nearest_neighbor_num);

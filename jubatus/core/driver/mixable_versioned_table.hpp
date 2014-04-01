@@ -23,6 +23,9 @@
 #include "../../core/common/version.hpp"
 #include "../../core/framework/mixable.hpp"
 #include "../../core/table/column/column_table.hpp"
+#include "../../core/framework/mixable.hpp"
+#include "../../core/table/column/column_table.hpp"
+#include "../../core/unlearner/unlearner_base.hpp"
 
 namespace jubatus {
 namespace core {
@@ -35,6 +38,11 @@ class mixable_versioned_table : public jubatus::core::framework::mixable<
     std::vector<std::string>,
     version_clock> {
  public:
+  void set_unlearner(
+      jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner) {
+    unlearner_ = unlearner;
+  }
+
   std::vector<std::string> get_diff_impl() const;
   bool put_diff_impl(const std::vector<std::string>& diff);
   void mix_impl(
@@ -54,7 +62,7 @@ class mixable_versioned_table : public jubatus::core::framework::mixable<
 
  private:
   void update_version(const table::column_table::version_t& version);
-
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner_;
   version_clock vc_;
 };
 

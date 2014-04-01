@@ -55,18 +55,20 @@ class key_manager {
   uint64_t get_id(const std::string& key);
   uint64_t get_id_const(const std::string& key) const;
   const std::string& get_key(const uint64_t id) const;
+  std::vector<std::string> get_all_id2key() const;
   void clear();
   bool set_key(const std::string& key);
 
   void init_by_id2key(const std::vector<std::string>& id2key);
-  std::vector<std::string> get_all_id2key() const;
+  void delete_key(const std::string& name);
 
  private:
   jubatus::util::data::unordered_map<std::string, uint64_t> key2id_;
-  std::vector<std::string> id2key_;
+  jubatus::util::data::unordered_map<uint64_t, std::string> id2key_;
 
  public:
   MSGPACK_DEFINE(key2id_, id2key_);
+  uint64_t next_id_;
 };
 
 inline void swap(key_manager& l, key_manager& r) {  // NOLINT

@@ -16,6 +16,7 @@
 
 #include <string>
 #include <algorithm>
+#include <glog/logging.h>
 
 #include "jubatus/util/lang/bind.h"
 #include "linear_function_mixer.hpp"
@@ -83,12 +84,40 @@ diffv linear_function_mixer::get_diff_impl() const {
   return ret;
 }
 
-bool linear_function_mixer::put_diff_impl(const diffv& v) {
-  return get_model()->set_average_and_clear_diff(v.v);
-}
 
 storage::version linear_function_mixer::get_version() const {
   return get_model()->get_version();
+}
+
+bool linear_function_mixer::put_diff_impl(const diffv& v) {
+  if (label_unlearner_) {
+    for (size_t i = 0; i < v.v.size(); ++i) {
+      const feature_val3_t& classes = v.v[i].second;
+      for (size_t j = 0; j < classes.size(); ++j) {
+        label_unlearner_->touch(classes[j].first);
+      }
+    }
+
+    features3_t parameters(v.v.size());
+    for (size_t i = 0; i < v.v.size(); ++i) {
+      parameters[i].first = v.v[i].first;
+
+      // Copy weights of classes except unlearned classes.
+      const feature_val3_t& source_classes = v.v[i].second;
+      feature_val3_t& target_classes = parameters[i].second;
+
+      target_classes.reserve(source_classes.size());
+      for (size_t j = 0; j < source_classes.size(); ++j) {
+        if (label_unlearner_->exists_in_memory(source_classes[j].first)) {
+          target_classes.push_back(source_classes[j]);
+        }
+      }
+    }
+
+    return get_model()->set_average_and_clear_diff(parameters);
+  } else {
+    return get_model()->set_average_and_clear_diff(v.v);
+  }
 }
 
 void linear_function_mixer::clear() {

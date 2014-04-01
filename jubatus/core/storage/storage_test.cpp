@@ -130,6 +130,13 @@ class stub_storage : public storage_base {
     return storage::version();
   }
 
+  void delete_class(const string& name) {
+    for (map<string, map<string, val3_t> >::iterator it = data_.begin();
+         it != data_.end(); ++it) {
+      it->second.erase(name);
+    }
+  }
+
   void clear() {
     data_.clear();
   }
@@ -601,6 +608,24 @@ TYPED_TEST_P(storage_test, set_get_label) {
   ASSERT_EQ("b", labels[1]);
 }
 
+TYPED_TEST_P(storage_test, delete_class) {
+  TypeParam s;
+  s.set("f1", "c1", 1.0);
+  {
+    feature_val1_t val;
+    s.get("f1", val);
+    EXPECT_EQ(1u, val.size());
+  }
+
+  s.delete_class("c1");
+
+  {
+    feature_val1_t val;
+    s.get("f1", val);
+    EXPECT_EQ(0u, val.size());
+  }
+}
+
 REGISTER_TYPED_TEST_CASE_P(storage_test,
                            val1d,
                            val2d,
@@ -612,7 +637,8 @@ REGISTER_TYPED_TEST_CASE_P(storage_test,
                            bulk_update,
                            bulk_update_no_decrease,
                            clear,
-                           set_get_label);
+                           set_get_label,
+                           delete_class);
 
 typedef testing::Types<
     jubatus::core::storage::stub_storage,

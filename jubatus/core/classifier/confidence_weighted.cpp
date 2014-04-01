@@ -89,6 +89,7 @@ void confidence_weighted::update(
                           1.f / (1.f / neg_val.v2 + covar_neg_step)));
     }
   }
+  touch(pos_label);
 }
 
 string confidence_weighted::name() const {

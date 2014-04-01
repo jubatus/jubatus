@@ -20,6 +20,7 @@
 #include <utility>
 
 #include <gtest/gtest.h>
+#include "jubatus/util/lang/scoped_ptr.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/lang/cast.h"
 #include "../common/jsonconfig.hpp"
@@ -29,6 +30,7 @@
 using std::map;
 using std::string;
 using std::vector;
+using jubatus::util::lang::scoped_ptr;
 using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
@@ -99,7 +101,7 @@ class nearest_neighbor_test
 
  private:
   shared_ptr<table::column_table> table_;
-  shared_ptr<nearest_neighbor_base> nn_;
+  scoped_ptr<nearest_neighbor_base> nn_;
 };
 
 TEST_P(nearest_neighbor_test, type) {

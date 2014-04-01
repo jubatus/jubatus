@@ -24,6 +24,7 @@
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
 #include "../nearest_neighbor/nearest_neighbor_factory.hpp"
+#include "../unlearner/unlearner_factory.hpp"
 #include "anomaly.hpp"
 
 using jubatus::core::common::jsonconfig::config;
@@ -42,6 +43,9 @@ struct lof_config {
   int reverse_nearest_neighbor_num;
   std::string method;
   jubatus::core::common::jsonconfig::config parameter;
+  jubatus::util::data::optional<std::string> unlearner;
+  jubatus::util::data::optional<jubatus::util::text::json::json>
+      unlearner_parameter;
 
   template <typename Ar>
   void serialize(Ar& ar) {
@@ -50,6 +54,8 @@ struct lof_config {
         & JUBA_MEMBER(reverse_nearest_neighbor_num)
         & JUBA_MEMBER(method)
         & JUBA_MEMBER(parameter);
+        & JUBA_MEMBER(unlearner);
+        & JUBA_MEMBER(unlearner_parameter);
   }
 };
 }  // namespace
@@ -82,6 +88,19 @@ shared_ptr<anomaly_base> anomaly_factory::create_anomaly(
     jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
         nearest_neighbor_engine(nearest_neighbor::create_nearest_neighbor(
             conf.method, conf.parameter, nearest_neighbor_table, id));
+
+    if (conf.unlearner) {
+      if (!conf.unlearner_parameter) {
+        throw JUBATUS_EXCEPTION(common::exception::runtime_error(
+            "unlearner is set but unlearner_parameter is not found"));
+      }
+      jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner(
+          unlearner::create_unlearner(
+              *conf.unlearner,
+              common::jsonconfig::config(*conf.unlearner_parameter)));
+      return new light_lof(lof_config, id, nearest_neighbor_engine, unlearner);
+    }
+
     return jubatus::util::lang::shared_ptr<anomaly_base>(
         new light_lof(lof_conf, id, nearest_neighbor_engine));
   } else {

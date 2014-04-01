@@ -53,6 +53,7 @@ void passive_aggressive_2::train(const common::sfv_t& sfv,
   }
   update_weight(
       sfv, loss / (2 * sfv_norm + 1 / (2 * config_.C)), label, incorrect_label);
+  touch(label);
 }
 
 string passive_aggressive_2::name() const {

@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <algorithm>
+#include <cassert>
 #include <cstring>
 #include <string>
 #include <utility>
@@ -45,7 +46,7 @@ void column_table::init(const std::vector<column_type>& schema) {
 }
 
 void column_table::clear() {
-  jutil::concurrent::scoped_lock lk(wlock(table_lock_));
+  jubatus::util::concurrent::scoped_lock lk(wlock(table_lock_));
   // it keeps schema
   keys_.clear();
   versions_.clear();
@@ -59,7 +60,7 @@ void column_table::clear() {
 
 std::pair<bool, uint64_t> column_table::exact_match(
     const std::string& prefix) const {
-  jutil::concurrent::scoped_lock lk(jutil::concurrent::rlock(table_lock_));
+  jubatus::util::concurrent::scoped_lock lk(jubatus::util::concurrent::rlock(table_lock_));
   index_table::const_iterator it = index_.find(prefix);
   if (it == index_.end()) {
     return std::make_pair(false, 0LLU);

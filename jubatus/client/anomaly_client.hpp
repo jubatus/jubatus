@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl(0.4.5-347-g86989a6) with jenerator version 0.5.2-17-g8a5dca4/develop
+// This file is auto-generated from anomaly.idl(0.5.2-68-g68e898d) with jenerator version 0.5.2-45-gc4cfc98/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_ANOMALY_CLIENT_HPP_
@@ -41,6 +41,12 @@ class anomaly : public jubatus::client::common::client {
   float overwrite(const std::string& id,
       const jubatus::client::common::datum& row) {
     msgpack::rpc::future f = c_.call("overwrite", name_, id, row);
+    return f.get<float>();
+  }
+
+  float overwrite(const std::string& name, const std::string& id,
+      const jubatus::client::common::datum& row) {
+    msgpack::rpc::future f = c_.call("overwrite", name_, name, id, row);
     return f.get<float>();
   }
 
