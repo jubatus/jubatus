@@ -69,9 +69,6 @@ class recommender_mock : public recommender_base {
  private:
   void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack_impl(msgpack::object o);
-  virtual core::storage::recommender_storage_base* get_storage();
-  virtual const core::storage::recommender_storage_base*
-      get_const_storage() const;
 
  private:
   jubatus::util::lang::shared_ptr<mixable_recommender_mock_storage>

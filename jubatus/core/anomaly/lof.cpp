@@ -127,7 +127,6 @@ void lof::set_row(const string& id, const common::sfv_t& sfv) {
 void lof::get_all_row_ids(vector<string>& ids) const {
   mixable_storage_->get_model()->get_all_row_ids(ids);
 }
-}
 
 string lof::type() const {
   return "lof";

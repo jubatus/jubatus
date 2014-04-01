@@ -140,7 +140,7 @@ float light_lof::calc_anomaly_score(const std::string& id) const {
 
 void light_lof::clear() {
   nearest_neighbor_engine_->clear();
-  mixable_scores_.get_model()->clear();
+  mixable_scores_->get_model()->clear();
 }
 
 void light_lof::clear_row(const std::string& id) {
@@ -156,7 +156,7 @@ void light_lof::set_row(const std::string& id, const common::sfv_t& sfv) {
 
   shared_ptr<column_table> table = mixable_scores_->get_model();
   std::pair<bool, uint64_t> index = table->exact_match(id);
-  if (index.first) {
+  if (table->exact_match(id).first) {
     collect_neighbors(id, update_set);
   }
 
@@ -180,7 +180,6 @@ void light_lof::set_row(const std::string& id, const common::sfv_t& sfv) {
     touch(*it);
   }
 
-  update_set.insert(id);
   update_entries(update_set);
 }
 
@@ -216,28 +215,19 @@ void light_lof::touch(const std::string& id) {
 // correctness: if this procedure is omitted, ``light_lof`` no longer runs
 // correctly.
 void light_lof::unlearn(const std::string& key) {
-<<<<<<< HEAD
-  unordered_set<uint64_t> reverse_knn;
+  unordered_set<std::string> reverse_knn;
   collect_neighbors(key, reverse_knn);
-    shared_ptr<column_table> table = mixable_scores_->get_model();
+  shared_ptr<column_table> table = mixable_scores_->get_model();
   const std::pair<bool, uint64_t> index = table->exact_match(key);
 
   if (index.first) {
-    reverse_knn.erase(index.second);
+    reverse_knn.erase(table->get_row(index.second));
   } else {
     // TODO(kumagi): assertion failure
   }
 
   mixable_nearest_neighbor_->get_model()->delete_row(key);
   mixable_scores_->get_model()->delete_row(key);
-=======
-  unordered_set<std::string> reverse_knn;
-  collect_neighbors(key, reverse_knn);
-  reverse_knn.erase(key);
-
-  mixable_nearest_neighbor_.get_model()->delete_row(key);
-  mixable_scores_.get_model()->delete_row(key);
->>>>>>> new feature unlearning
 
   update_entries(reverse_knn);
 }

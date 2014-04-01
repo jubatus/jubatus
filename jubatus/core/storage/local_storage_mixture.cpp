@@ -35,7 +35,7 @@ void increase(val3_t& a, const val3_t& b) {
   a.v3 += b.v3;
 }
 
-void delete_class_from_weight(uint64_t delete_id, id_features3_t& tbl) {
+void delete_label_from_weight(uint64_t delete_id, id_features3_t& tbl) {
   for (id_features3_t::iterator it = tbl.begin(); it != tbl.end(); ++it) {
     it->second.erase(delete_id);
     if (it->second.empty()) {
@@ -251,14 +251,14 @@ void local_storage_mixture::register_label(const std::string& label) {
   class2id_.get_id(label);
 }
 
-void local_storage_mixture::delete_class(const std::string& name) {
-  uint64_t delete_id = class2id_.get_id_const(name);
+void local_storage_mixture::delete_label(const std::string& label) {
+  uint64_t delete_id = class2id_.get_id_const(label);
   if (delete_id == common::key_manager::NOTFOUND) {
     return;
   }
-  delete_class_from_weight(delete_id, tbl_);
-  delete_class_from_weight(delete_id, tbl_diff_);
-  class2id_.delete_key(name);
+  delete_label_from_weight(delete_id, tbl_);
+  delete_label_from_weight(delete_id, tbl_diff_);
+  class2id_.delete_key(label);
 }
 
 void local_storage_mixture::clear() {

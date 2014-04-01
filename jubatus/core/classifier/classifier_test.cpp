@@ -136,7 +136,7 @@ TYPED_TEST_P(classifier_test, random3) {
   EXPECT_GT(correct, 95u);
 }
 
-TYPED_TEST_P(classifier_test, delete_class) {
+TYPED_TEST_P(classifier_test, delete_label) {
   shared_ptr<local_storage> s(new local_storage);
   TypeParam p(s);
 
@@ -153,7 +153,7 @@ TYPED_TEST_P(classifier_test, delete_class) {
   fv.push_back(std::make_pair("f3", 1.f));
   p.train(fv, "C");
 
-  p.delete_class("B");
+  p.delete_label("B");
 
   fv.clear();
   fv.push_back(std::make_pair("f1", 1.f));
@@ -192,7 +192,7 @@ REGISTER_TYPED_TEST_CASE_P(
     sfv_err,
     random,
     random3,
-    delete_class,
+    delete_label,
     unlearning);
 
 typedef testing::Types<

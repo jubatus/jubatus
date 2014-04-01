@@ -265,7 +265,6 @@ TEST(construct, vector_resize) {
   std::vector<bit_vector> bv(10, bit_vector(10));
   bv.resize(100, bit_vector(19));
 }
-<<<<<<< HEAD
 
 TEST(msgpack_pack, empty) {
   const bit_vector bv(10);

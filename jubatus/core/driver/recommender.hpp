@@ -75,10 +75,6 @@ class recommender {
     converter_;
   jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
     recommender_;
-
-  mixable_versioned_table mixable_versioned_table_;
-
-  fv_converter::mixable_weight_manager wm_;
 };
 
 }  // namespace driver
