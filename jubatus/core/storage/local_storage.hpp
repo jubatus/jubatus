@@ -72,7 +72,7 @@ class local_storage : public storage_base {
       const std::string& dec_class);
 
   void register_label(const std::string& label);
-  void delete_class(const std::string& name);
+  void delete_label(const std::string& label);
 
   void clear();
   std::vector<std::string> get_labels() const;

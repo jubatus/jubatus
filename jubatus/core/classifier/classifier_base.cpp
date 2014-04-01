@@ -214,8 +214,8 @@ void classifier_base::touch(const std::string& label) {
   }
 }
 
-void classifier_base::delete_class(const std::string& name) {
-  get_storage()->delete_class(name);
+void classifier_base::delete_label(const std::string& label) {
+  storage_->delete_label(label);
 }
 
 }  // namespace classifier

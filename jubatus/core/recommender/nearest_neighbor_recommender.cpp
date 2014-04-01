@@ -20,7 +20,10 @@
 #include <utility>
 #include <vector>
 #include "jubatus/util/data/serialization.h"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../common/exception.hpp"
+
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
@@ -109,7 +112,6 @@ void nearest_neighbor_recommender::register_mixables_to_holder(
   holder.register_mixable(orig_);
   nearest_neighbor_engine_->register_mixables_to_holder(holder);
 }
-
 
 jubatus::util::lang::shared_ptr<table::column_table>
 nearest_neighbor_recommender::get_table() {

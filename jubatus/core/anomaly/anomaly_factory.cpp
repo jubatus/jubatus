@@ -98,12 +98,20 @@ shared_ptr<anomaly_base> anomaly_factory::create_anomaly(
           unlearner::create_unlearner(
               *conf.unlearner,
               common::jsonconfig::config(*conf.unlearner_parameter)));
+<<<<<<< HEAD
       return shared_ptr<anomaly_base>(
           new light_lof(lof_conf, id, nearest_neighbor_engine, unlearner));
     } else {
       return shared_ptr<anomaly_base>(
           new light_lof(lof_conf, id, nearest_neighbor_engine));
     }
+=======
+      return new light_lof(lof_config, id, nearest_neighbor_engine, unlearner);
+    }
+
+    return jubatus::util::lang::shared_ptr<anomaly_base>(
+        new light_lof(lof_conf, id, nearest_neighbor_engine));
+>>>>>>> new feature unlearning
   } else {
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }

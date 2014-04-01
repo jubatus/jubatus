@@ -70,6 +70,7 @@ void recommender::update_row(
 void recommender::clear() {
   recommender_->clear();
   converter_->clear_weights();
+  wm_.clear();
 }
 
 fv_converter::datum recommender::complete_row_from_id(const std::string& id) {
