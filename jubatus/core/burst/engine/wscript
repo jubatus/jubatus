@@ -1,0 +1,17 @@
+def options(ctx): pass
+
+def configure(ctx): pass
+
+def build(bld):
+  bld.shlib(
+    source = [
+        'burst_detect.cpp',
+	],
+    target = 'jubatus_burst_engine',
+    name = 'jubatus_burst_engine',
+    includes = '.',
+    use = 'PFICOMMON')
+
+  bld.install_files('${PREFIX}/include/jubatus/core/burst/engine', [
+        'burst_detect.hpp',
+      ])

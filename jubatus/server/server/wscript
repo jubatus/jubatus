@@ -1,4 +1,4 @@
-idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl', 'clustering.idl']
+idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl', 'burst.idl', 'clustering.idl']
 
 def options(opt):
   pass
@@ -36,6 +36,9 @@ def build_one(bld, name, libraries = '', sources = ''):
 def build(bld):
   #new classifier
   build_one(bld, "classifier", 'jubaconverter jubastorage')
+
+  #new burst
+  build_one(bld, "burst", 'jubaconverter jubastorage')
 
   # #new regression
   build_one(bld, "regression", 'jubaconverter jubastorage')

@@ -1,0 +1,57 @@
+def options(ctx): pass
+
+def configure(ctx): pass
+
+def build(bld):
+  bld.shlib(
+    source = [
+        'batch.cpp',
+        'window.cpp',
+        'window_helper.cpp',
+        'stage_base.cpp',
+        'inserting_stage.cpp',
+        'proceeded_stage.cpp',
+        'keyword_filter_stage.cpp',
+        'calculating_stage.cpp',
+        'waiting_mix_stage.cpp',
+        'batch_weight_reset_stage.cpp',
+	],
+    target = 'jubatus_burst_system',
+    name = 'jubatus_burst_system',
+    includes = '.',
+    use = 'PFICOMMON jubacommon jubatus_burst_engine LIBGLOG')
+
+  test_src = [
+    'batch_test.cpp',
+    'batch_weight_reset_stage_test.cpp',
+    'calculating_stage_test.cpp',
+    'inserting_stage_test.cpp',
+    'keyword_filter_stage_test.cpp',
+    'proceeded_stage_test.cpp',
+    'stage_test_tool_test.cpp',
+    'waiting_mix_stage_test.cpp',
+    'window_test.cpp',
+  ]
+
+  def make_test(s):
+    bld.program(
+      features = 'gtest',
+      source = s,
+      target = s[0:s.rfind('.')],
+      includes = '.',
+      use = 'jubatus_burst_system jubatus_burst')
+  for s in test_src:
+    make_test(s)
+
+  bld.install_files('${PREFIX}/include/jubatus/core/burst', [
+        'batch.hpp',
+        'window.hpp',
+        'window_helper.hpp',
+        'stage_base.hpp',
+        'inserting_stage.hpp',
+        'proceeded_stage.hpp',
+        'keyword_filter_stage.hpp',
+        'calculating_stage.hpp',
+        'waiting_mix_stage.hpp',
+        'batch_weight_reset_stage.hpp',
+      ])

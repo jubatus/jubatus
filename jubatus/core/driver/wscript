@@ -27,6 +27,7 @@ def build(bld):
       'stat.cpp',
       'anomaly.cpp',
       'graph.cpp',
+      'burst.cpp',
       'nearest_neighbor.cpp',
       'clustering.cpp',
       ]
@@ -35,7 +36,7 @@ def build(bld):
     source = source,
     target = 'jubatus_driver',
     includes = '.',
-    use = 'jubatus_util jubacommon MSGPACK jubaconverter jubastorage jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph jubatus_clustering jubatus_mixables'+libassert
+    use = 'jubatus_util jubacommon MSGPACK jubaconverter jubastorage jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph jubatus_burst jubatus_clustering jubatus_mixables'+libassert
     )
 
   def make_test(t):
@@ -69,6 +70,7 @@ def build(bld):
       'stat.hpp',
       'anomaly.hpp',
       'graph.hpp',
+      'burst.hpp',
       'diffv.hpp',
       'linear_function_mixer.hpp',
       'mixable_versioned_table.hpp',
