@@ -97,8 +97,8 @@ light_lof::light_lof(
   std::vector<table::column_type> schema(
       2, table::column_type(table::column_type::float_type));
   table->init(schema);
-  mixable_nearest_neighbor_.set_model(nearest_neighbor_engine_->get_table());
-  mixable_scores_.set_model(create_lof_table());
+  mixable_nearest_neighbor_->set_model(nearest_neighbor_engine_->get_table());
+  mixable_scores_->set_model(create_lof_table());
 }
 
 light_lof::light_lof(
@@ -115,10 +115,10 @@ light_lof::light_lof(
   unlearner_->set_callback(jubatus::util::lang::bind(
       &light_lof::unlearn, this, jubatus::util::lang::_1));
 
-  mixable_nearest_neighbor_.set_model(nn_table);
-  mixable_nearest_neighbor_.set_unlearner(unlearner_);
-  mixable_scores_.set_model(lof_table);
-  mixable_scores_.set_unlearner(unlearner_);
+  mixable_nearest_neighbor_->set_model(nn_table);
+  mixable_nearest_neighbor_->set_unlearner(unlearner_);
+  mixable_scores_->set_model(lof_table);
+  mixable_scores_->set_unlearner(unlearner_);
 }
 
 light_lof::~light_lof() {
@@ -140,7 +140,7 @@ float light_lof::calc_anomaly_score(const std::string& id) const {
 
 void light_lof::clear() {
   nearest_neighbor_engine_->clear();
-  mixable_scores_.get_model()->clear();
+  mixable_scores_->get_model()->clear();
 }
 
 void light_lof::clear_row(const std::string& id) {
@@ -152,9 +152,9 @@ void light_lof::update_row(const std::string& id, const sfv_diff_t& diff) {
 }
 
 void light_lof::set_row(const std::string& id, const common::sfv_t& sfv) {
-  unordered_set<std::string> update_set;
+  unordered_set<uint64_t> update_set;
 
-  shared_ptr<column_table> table = mixable_scores_.get_model();
+  shared_ptr<column_table> table = mixable_scores_->get_model();
   if (table->exact_match(id).first) {
     collect_neighbors(id, update_set);
   }
@@ -171,13 +171,15 @@ void light_lof::set_row(const std::string& id, const common::sfv_t& sfv) {
   if (!index.first) {
     throw JUBATUS_EXCEPTION(common::exception::runtime_error(
         "Failed to add a row to lof table (key = " + id + ')'));
-  }
-  for (unordered_set<std::string>::const_iterator it = update_set.begin();
-       it != update_set.end(); ++it) {
-    touch(*it);
+  } else {
+    update_set.insert(index.second);
   }
 
-  update_set.insert(id);
+  for (unordered_set<uint64_t>::const_iterator it = update_set.begin();
+       it != update_set.end(); ++it) {
+    touch(table->get_key(*it));
+  }
+
   update_entries(update_set);
 }
 
@@ -213,12 +215,19 @@ void light_lof::touch(const std::string& id) {
 // correctness: if this procedure is omitted, ``light_lof`` no longer runs
 // correctly.
 void light_lof::unlearn(const std::string& key) {
-  unordered_set<std::string> reverse_knn;
+  unordered_set<uint64_t> reverse_knn;
   collect_neighbors(key, reverse_knn);
-  reverse_knn.erase(key);
+    shared_ptr<column_table> table = mixable_scores_->get_model();
+  const std::pair<bool, uint64_t> index = table->exact_match(key);
 
-  mixable_nearest_neighbor_.get_model()->delete_row(key);
-  mixable_scores_.get_model()->delete_row(key);
+  if (index.first) {
+    reverse_knn.erase(index.second);
+  } else {
+    // TODO(kumagi): assertion failure
+  }
+
+  mixable_nearest_neighbor_->get_model()->delete_row(key);
+  mixable_scores_->get_model()->delete_row(key);
 
   update_entries(reverse_knn);
 }
@@ -289,7 +298,7 @@ float light_lof::collect_lrds_from_neighbors(
 
 void light_lof::collect_neighbors(
     const std::string& query,
-    unordered_set<std::string>& neighbors) const {
+    unordered_set<uint64_t>& neighbors) const {
   std::vector<std::pair<std::string, float> > nn_result;
   nearest_neighbor_engine_->neighbor_row(
       query, nn_result, config_.reverse_nearest_neighbor_num);

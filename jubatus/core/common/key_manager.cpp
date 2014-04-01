@@ -76,6 +76,18 @@ const string& key_manager::get_key(const uint64_t id) const {
   }
 }
 
+
+std::vector<std::string> key_manager::get_all_id2key() const {
+  std::vector<std::string> ret;
+  ret.reserve(id2key_.size());
+  for (unordered_map<uint64_t, string>::const_iterator it = id2key_.begin();
+       it != id2key_.end();
+       ++it) {
+    ret.push_back(it->second);
+  }
+  return ret;
+}
+
 void key_manager::clear() {
   jubatus::util::data::unordered_map<std::string, uint64_t>().swap(key2id_);
   jubatus::util::data::unordered_map<uint64_t, std::string>().swap(id2key_);

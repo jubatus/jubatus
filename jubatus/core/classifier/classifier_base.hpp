@@ -92,18 +92,12 @@ class classifier_base {
   const storage::storage_base* get_storage() const;
 
   static float squared_norm(const common::sfv_t& sfv);
-<<<<<<< HEAD
+  void touch(const std::string& label);
 
  private:
   jubatus::util::lang::shared_ptr<driver::linear_function_mixer> mixable_;
-=======
-
-  void touch(const std::string& label);
-
-  jubatus::core::storage::storage_base* storage_;
   jubatus::util::lang::shared_ptr<unlearner::unlearner_base> label_unlearner_;
   bool use_covars_;
->>>>>>> squash
 };
 
 }  // namespace classifier

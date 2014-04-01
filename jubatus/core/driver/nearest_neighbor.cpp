@@ -39,29 +39,18 @@ nearest_neighbor::nearest_neighbor(
   // does not support mixing with push_mixer.
   // TODO(beam2d): Support mixing weight manager with push_mixer and register
   // mixables of fv converter here.
-  mixable_table_.set_model(nn->get_table());
-  mixable_holder_.reset(new framework::mixable_holder);
-  mixable_holder_->register_mixable(&mixable_table_);
-  converter_ = converter;
-  nn_ = nn;
 }
 
 nearest_neighbor::nearest_neighbor(
     jubatus::util::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
     jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter,
     jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner)
-    : converter_(converter),
+    : mixable_holder_(new framework::mixable_holder),
+      converter_(converter),
       nn_(nn),
       unlearner_(unlearner) {
   nn_->register_mixables_to_holder(*mixable_holder_);
-  jubatus::util::lang::shared_ptr<table::column_table> table = nn_->get_table();
-  unlearner->set_callback(table::row_deleter(table));
-
-  mixable_table_.set_model(table);
-  mixable_table_.set_unlearner(unlearner);
-
-  mixable_holder_.reset(new framework::mixable_holder);
-  mixable_holder_->register_mixable(&mixable_table_);
+  unlearner->set_callback(table::row_deleter(nn_->get_table()));
 }
 
 void nearest_neighbor::set_row(

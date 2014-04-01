@@ -31,6 +31,8 @@
 
 using std::make_pair;
 using jubatus::util::lang::shared_ptr;
+using jubatus::core::fv_converter::datum_to_fv_converter;
+using jubatus::core::anomaly::anomaly_base;
 
 namespace jubatus {
 namespace core {
@@ -50,7 +52,7 @@ class anomaly_test : public ::testing::Test {
     lsh_config.seed = 1234;
 
     anomaly_.reset(new driver::anomaly(
-          shared_ptr<core::anomaly::anomaly_base>(
+          shared_ptr<anomaly_base>(
             new core::anomaly::lof(lof_config,
               shared_ptr<core::recommender::recommender_base>(
                 new core::recommender::euclid_lsh(lsh_config)))),
@@ -105,20 +107,22 @@ class light_lof_test : public ::testing::Test {
     lof_config.nearest_neighbor_num = 3;
     lof_config.reverse_nearest_neighbor_num = 3;
 
-    jubatus::util::lang::shared_ptr<table::column_table> lsh_table(
+    shared_ptr<table::column_table> lsh_table(
         new table::column_table);
     core::nearest_neighbor::euclid_lsh::config lsh_config;
-    jubatus::util::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> lsh(
+    shared_ptr<core::nearest_neighbor::nearest_neighbor_base> lsh(
         new core::nearest_neighbor::euclid_lsh(lsh_config, lsh_table, "id"));
 
     unlearner::lru_unlearner::config unlearner_config;
     unlearner_config.max_size = 5;
     jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner(
-        new unlearner::lru_unlearner(unlearner_config));
+      new unlearner::lru_unlearner(unlearner_config));
 
     anomaly_.reset(new anomaly(
-        new core::anomaly::light_lof(lof_config, "id", lsh, unlearner),
-        make_fv_converter()));
+                     shared_ptr<anomaly_base>(
+                         new core::anomaly::light_lof(
+                             lof_config, "id", lsh, unlearner)),
+                     make_fv_converter()));
   }
 
   jubatus::util::lang::shared_ptr<core::driver::anomaly> anomaly_;

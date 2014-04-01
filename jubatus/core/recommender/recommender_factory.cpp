@@ -48,8 +48,8 @@ struct nearest_neighbor_recommender_config {
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & MEMBER(method) & MEMBER(parameter) &
-        MEMBER(unlearner) & MEMBER(unlearner_parameter);
+    ar & JUBA_MEMBER(method) & JUBA_MEMBER(parameter) &
+        JUBA_MEMBER(unlearner) & JUBA_MEMBER(unlearner_parameter);
   }
 };
 }  // namespace
@@ -71,6 +71,8 @@ shared_ptr<recommender_base> recommender_factory::create_recommender(
     return shared_ptr<recommender_base>(
         new euclid_lsh(config_cast_check<euclid_lsh::config>(param)));
   } else if (starts_with(name, NEAREST_NEIGHBOR_PREFIX)) {
+    nearest_neighbor_recommender_config conf =
+        config_cast_check<nearest_neighbor_recommender_config>(param);
     const std::string nearest_neighbor_method =
         name.substr(NEAREST_NEIGHBOR_PREFIX.size());
     shared_ptr<table::column_table> table(new table::column_table);
@@ -86,7 +88,8 @@ shared_ptr<recommender_base> recommender_factory::create_recommender(
       shared_ptr<unlearner::unlearner_base> unl(unlearner::create_unlearner(
           *conf.unlearner, common::jsonconfig::config(
               *conf.unlearner_parameter)));
-      return new nearest_neighbor_recommender(nearest_neighbor_engine, unl);
+      return shared_ptr<recommender_base>(
+          new nearest_neighbor_recommender(nearest_neighbor_engine, unl));
     }
     return shared_ptr<recommender_base>(
         new nearest_neighbor_recommender(nearest_neighbor_engine));

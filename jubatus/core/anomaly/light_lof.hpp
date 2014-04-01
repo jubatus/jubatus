@@ -117,9 +117,9 @@ class light_lof : public anomaly_base {
   jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner_;
 
   // Mixable of nearest neighbor model.
-  driver::mixable_versioned_table mixable_nearest_neighbor_;
+  jubatus::util::lang::shared_ptr<driver::mixable_versioned_table> mixable_nearest_neighbor_;
   // Mixable of score table that contains k-dists and LRDs.
-  driver::mixable_versioned_table mixable_scores_;
+  jubatus::util::lang::shared_ptr<driver::mixable_versioned_table> mixable_scores_;
 
   config config_;
   std::string my_id_;
