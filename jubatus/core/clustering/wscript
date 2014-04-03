@@ -55,6 +55,7 @@ def build(bld):
     )
 
   test_cases = [
+    'compressive_storage_test.cpp',
     'mixable_model_test.cpp',
     'model_test.cpp',
     'storage_test.cpp'
