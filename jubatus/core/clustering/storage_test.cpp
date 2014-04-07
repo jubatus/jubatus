@@ -73,8 +73,6 @@ TEST_P(storage_test, pack_unpack) {
       EXPECT_EQ(all1[i].weight, all2[i].weight);
       EXPECT_EQ(all1[i].data, all2[i].data);
       // EXPECT_EQ(all1[i].original, all2[i].original);
-      EXPECT_EQ(all1[i].free_double, all2[i].free_double);
-      EXPECT_EQ(all1[i].free_long, all2[i].free_long);
     }
   }
 }

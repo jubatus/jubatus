@@ -32,7 +32,9 @@ class gmm_compressor : public kmeans_compressor {
  public:
   double get_probability(
       const weighted_point& p,
+      double min_dist,
       const weighted_point& nearest_bp,
+      double bp_score,
       double weight_sum,
       double squared_min_dist_sum);
 };
