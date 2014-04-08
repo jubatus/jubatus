@@ -5,21 +5,20 @@ def configure(conf):
     pass
 
 def build(bld):
-    if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
-        libassert = " LIBGLOG"
-    else:
-        libassert = ""
+    source = [
+        'regression_base.cpp',
+        'passive_aggressive.cpp',
+        'regression_factory.cpp'
+        ]
+    headers = [
+          'regression_base.hpp',
+          'regression_factory.hpp',
+          ]
+    use = ['jubatus_util']
 
-    bld.shlib(
-        source = [
-            'regression_base.cpp',
-            'passive_aggressive.cpp',
-            'regression_factory.cpp'
-            ],
-        target = 'jubatus_regression',
-        includes = '.',
-        use = 'jubatus_util jubacommon jubatus_mixables'+libassert
-        )
+    bld.core_sources.extend(bld.add_prefix(source))
+    bld.core_headers.extend(bld.add_prefix(headers))
+    bld.core_use.extend(use)
 
     def make_test(s):
         bld.program(
@@ -27,7 +26,7 @@ def build(bld):
             source = s,
             target = s[0: s.rfind('.')],
             includes = '.',
-            use = 'jubatus_regression jubastorage'+libassert
+            use = ['jubatus_util', 'jubatus_core']
             )
 
     test_source = [
@@ -37,7 +36,3 @@ def build(bld):
     for s in test_source:
         make_test(s)
 
-    bld.install_files('${PREFIX}/include/jubatus/core/regression', [
-        'regression_base.hpp',
-        'regression_factory.hpp',
-        ])

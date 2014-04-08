@@ -1,6 +1,7 @@
 # -*- python -*-
 import Options
 from waflib.Errors import TaskNotReady
+from functools import partial
 import os
 import sys
 
@@ -20,22 +21,9 @@ def options(opt):
                  action='store_true', default=False,
                  dest='debug', help='build for debug')
 
-  opt.add_option('--enable-zookeeper',
-                 action='store_true', default=False, # dest='nozk',
-                 help='use ZooKeeper')
-
   opt.add_option('--enable-gcov',
                  action='store_true', default=False,
                  dest='gcov', help='only for debug')
-
-  opt.add_option('--enable-zktest',
-                 action='store_true', default=False, 
-                 dest='zktest', help='zk should run in localhost:2181')
-
-  # use (base + 10) ports for RPC module tests
-  opt.add_option('--rpc-test-port-base',
-                 default=60023, choices=map(str, xrange(1024, 65535 - 10)),
-                 help='base port number for RPC module tests')
 
   opt.add_option('--disable-eigen',
                  action='store_true', default=False,
@@ -122,6 +110,28 @@ def configure(conf):
 
 def build(bld):
 
+  bld(name = 'core_headers', export_includes = './')
+
+  def add_prefix(bld, paths):
+    prefix_dir = os.path.dirname(bld.cur_script.relpath())
+    return [os.path.join(prefix_dir, str(path)) for path in paths]
+
+  bld.add_prefix = partial(add_prefix, bld)
+
+  bld.core_sources = []
+  bld.core_headers = []
+  bld.core_use = []
+
+  bld.recurse(subdirs)
+
+  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
+    bld.core_use = ['LIBGLOG']
+
+  # core
+  bld.shlib(source=list(set(bld.core_sources)), target='jubatus_core', use=list(set(bld.core_use)), vnum = bld.env['JUBATUS_VERSION'])
+  bld.install_files('${PREFIX}/include/', list(set(bld.core_headers)), relative_trick=True)
+
+
   bld(source = 'jubatus.pc.in',
       prefix = bld.env['PREFIX'],
       exec_prefix = '${prefix}',
@@ -137,10 +147,6 @@ def build(bld):
       includedir = '${prefix}/include',
       PACKAGE = APPNAME,
       VERSION = VERSION)
-
-  bld(name = 'core_headers', export_includes = './')
-
-  bld.recurse(subdirs)
 
 def cpplint(ctx):
   import fnmatch, tempfile

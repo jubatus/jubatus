@@ -6,19 +6,21 @@ def configure(conf):
     pass
 
 def build(bld):
-  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
-    libassert = " LIBGLOG"
-  else:
-    libassert = ""
+  source = [
+      'column_table.cpp',
+  ]
+  headers = [
+      'abstract_column.hpp',
+      'bit_vector.hpp',
+      'column_table.hpp',
+      'column_type.hpp',
+      'owner.hpp',
+      ]
+  use = ['jubatus_util']
 
-  bld.shlib(
-    source = [
-        'column_table.cpp',
-    ],
-    target = 'jubatus_column_table',
-    name = 'jubatus_column_table',
-    use = 'jubatus_util'+libassert
-  )
+  bld.core_sources.extend(bld.add_prefix(source))
+  bld.core_headers.extend(bld.add_prefix(headers))
+  bld.core_use.extend(use)
 
   def make_test(s):
     bld.program(
@@ -26,7 +28,7 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'MSGPACK jubatus_util jubatus_column_table jubacommon'+libassert)
+      use = ['jubatus_util', 'jubatus_core'])
 
   tests = [
     'column_table_test.cpp',
@@ -36,11 +38,3 @@ def build(bld):
   ]
   for test in tests:
     make_test(test)
-
-  bld.install_files('${PREFIX}/include/jubatus/core/table/column/', [
-      'abstract_column.hpp',
-      'bit_vector.hpp',
-      'column_table.hpp',
-      'column_type.hpp',
-      'owner.hpp',
-      ])

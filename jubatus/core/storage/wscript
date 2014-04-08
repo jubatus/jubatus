@@ -18,25 +18,31 @@ def make_tests(bld, srcs, use):
     make_test(bld, src, use)
 
 def build(bld):
-  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
-    libassert = " LIBGLOG"
-  else:
-    libassert = ""
+  source = [
+      'storage_factory.cpp',
+      'storage_base.cpp',
+      'local_storage.cpp',
+      'local_storage_mixture.cpp',
+      'sparse_matrix_storage.cpp',
+      'inverted_index_storage.cpp',
+      'bit_vector.cpp',
+      'bit_index_storage.cpp',
+      'lsh_vector.cpp',
+      'lsh_util.cpp',
+      'lsh_index_storage.cpp'
+      ]
+  headers = [
+      'storage_base.hpp',
+      'storage_type.hpp',
+      'storage_factory.hpp',
+      'bit_vector.hpp',
+      'sparse_matrix_storage.hpp',
+      ]
+  use = ['jubatus_util', 'MSGPACK']
 
-  cppfiles = ['storage_factory.cpp', 'storage_base.cpp', 'local_storage.cpp',
-              'local_storage_mixture.cpp',
-              'sparse_matrix_storage.cpp', 'inverted_index_storage.cpp', 'bit_vector.cpp', 'bit_index_storage.cpp',
-              'lsh_vector.cpp',
-              'lsh_util.cpp',
-              'lsh_index_storage.cpp']
-  use = 'jubatus_util jubacommon MSGPACK'+libassert
-
-  bld.shlib(
-    source = cppfiles,
-    target = 'jubastorage',
-    includes = '.',
-    use = use
-    )
+  bld.core_sources.extend(bld.add_prefix(source))
+  bld.core_headers.extend(bld.add_prefix(headers))
+  bld.core_use.extend(use)
 
   make_tests(bld, [
       'storage_test.cpp',
@@ -51,12 +57,5 @@ def build(bld):
       'bit_vector_test.cpp',
       'bit_index_storage_test.cpp',
       'storage_type_test.cpp',
-      ], 'jubastorage'+libassert)
+      ], ['jubatus_util', 'jubatus_core'])
 
-  bld.install_files('${PREFIX}/include/jubatus/core/storage',
-                    ['storage_base.hpp',
-                     'storage_type.hpp',
-                     'storage_factory.hpp',
-                     'bit_vector.hpp',
-                     'sparse_matrix_storage.hpp',
-                     ])

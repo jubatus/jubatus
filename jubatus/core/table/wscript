@@ -12,7 +12,8 @@ def configure(conf):
   conf.recurse(subdirs)
 
 def build(bld):
-  bld.install_files('${PREFIX}/include/jubatus/core/table/', [
+  headers = [
       'storage_exception.hpp',
-      ])
+      ]
+  bld.core_headers.extend(bld.add_prefix(headers))
   bld.recurse(subdirs)

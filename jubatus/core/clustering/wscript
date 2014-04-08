@@ -47,12 +47,11 @@ def build(bld):
       'gmm.cpp',
     ]
 
-  bld.shlib(
-    source = source,
-    target = 'jubatus_clustering',
-    includes = '.',
-    use = 'jubatus_util jubacommon MSGPACK'
-    )
+  use = ['jubatus_util', 'MSGPACK']
+
+  bld.core_sources.extend(bld.add_prefix(source))
+  bld.core_headers.extend(bld.add_prefix(headers))
+  bld.core_use.extend(use)
 
   test_cases = [
     'compressive_storage_test.cpp',
@@ -76,6 +75,5 @@ def build(bld):
         ],
         target=target,
         includes=".",
-        use="jubatus_util jubatus_clustering",
+        use=['jubatus_util', 'jubatus_core'],
       );
-  bld.install_files('${PREFIX}/include/jubatus/core/clustering', headers)

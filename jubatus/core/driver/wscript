@@ -5,22 +5,9 @@ def configure(conf):
   pass
 
 def build(bld):
-  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
-    libassert = " LIBGLOG"
-  else:
-    libassert = ""
-
-  bld.shlib(
-    source = [
+  source = [
       'mixable_versioned_table.cpp',
       'linear_function_mixer.cpp',
-      ],
-    target = 'jubatus_mixables',
-    includes = '.',
-    use = 'jubatus_util MSGPACK jubastorage jubatus_column_table'+libassert
-    )
-
-  source = [
       'classifier.cpp',
       'regression.cpp',
       'recommender.cpp',
@@ -30,13 +17,25 @@ def build(bld):
       'nearest_neighbor.cpp',
       'clustering.cpp',
       ]
+  headers = [
+      'classifier.hpp',
+      'regression.hpp',
+      'recommender.hpp',
+      'stat.hpp',
+      'anomaly.hpp',
+      'graph.hpp',
+      'diffv.hpp',
+      'linear_function_mixer.hpp',
+      'mixable_versioned_table.hpp',
+      'nearest_neighbor.hpp',
+      'clustering.hpp',
+      ]
+  use = ['jubatus_util', 'MSGPACK']
 
-  bld.shlib(
-    source = source,
-    target = 'jubatus_driver',
-    includes = '.',
-    use = 'jubatus_util jubacommon MSGPACK jubaconverter jubastorage jubatus_classifier jubatus_regression jubatus_recommender jubatus_stat jubatus_anomaly jubatus_graph jubatus_clustering jubatus_mixables'+libassert
-    )
+
+  bld.core_sources.extend(bld.add_prefix(source))
+  bld.core_headers.extend(bld.add_prefix(headers))
+  bld.core_use.extend(use)
 
   def make_test(t):
     bld.program(
@@ -44,7 +43,7 @@ def build(bld):
       source=t + '.cpp',
       target=t,
       includes='.',
-      use='jubatus_driver'+libassert
+      use = ['jubatus_util', 'jubatus_core']
       )
 
   tests = [

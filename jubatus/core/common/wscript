@@ -1,27 +1,44 @@
 
-subdirs = ['jsonconfig']
-
 def options(opt):
-  opt.recurse(subdirs)
+  pass
 
 def configure(conf):
-  conf.recurse(subdirs)
+  pass
 
 def build(bld):
-  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
-    libassert = " LIBGLOG"
-  else:
-    libassert = ""
+  source = [
+      'crc32.cpp',
+      'exception.cpp',
+      'key_manager.cpp',
+      'vector_util.cpp',
+      'version.cpp',
+      'jsonconfig/config.cpp',
+      'jsonconfig/exception.cpp',
+      ]
 
-  src = 'crc32.cpp exception.cpp key_manager.cpp vector_util.cpp version.cpp'
-  src += ' jsonconfig/config.cpp jsonconfig/exception.cpp'
+  headers = [
+      'assert.hpp',
+      'big_endian.hpp',
+      'byte_buffer.hpp',
+      'crc32.hpp',
+      'exception.hpp',
+      'exception_info.hpp',
+      'hash.hpp',
+      'jsonconfig.hpp',
+      'key_manager.hpp',
+      'type.hpp',
+      'unordered_map.hpp',
+      'vector_util.hpp',
+      'version.hpp',
+      'jsonconfig/cast.hpp',
+      'jsonconfig/config.hpp',
+      'jsonconfig/exception.hpp',
+      ]
+  use = ['jubatus_util']
 
-  bld.shlib(
-    source = src,
-    target = 'jubacommon',
-    includes = '.',
-    use = 'jubatus_util'+libassert
-    )
+  bld.core_sources.extend(bld.add_prefix(source))
+  bld.core_headers.extend(bld.add_prefix(headers))
+  bld.core_use.extend(use)
 
   test_src = [
     'exception_test.cpp',
@@ -40,24 +57,7 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = 'jubacommon'+libassert
+      use = ['jubatus_util', 'jubatus_core']
       )
   for s in test_src:
     make_test(s)
-
-  bld.install_files('${PREFIX}/include/jubatus/core/common/', [
-      'assert.hpp',
-      'big_endian.hpp',
-      'byte_buffer.hpp',
-      'crc32.hpp',
-      'exception.hpp',
-      'exception_info.hpp',
-      'hash.hpp',
-      'jsonconfig.hpp',
-      'key_manager.hpp',
-      'type.hpp',
-      'unordered_map.hpp',
-      'vector_util.hpp',
-      'version.hpp',
-      ])
-  bld.recurse(subdirs)
