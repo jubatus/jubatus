@@ -30,12 +30,17 @@
 #include "../common/byte_buffer.hpp"
 #include "../common/assert.hpp"
 
+// TODO(suma): Rename new_mixable.hpp to mixable.hpp when
+// mixable0/deprecated_mixable/delegating_mixable deleted
+#include "new_mixable.hpp"
+#include "model.hpp"
+
 namespace jubatus {
 namespace core {
 namespace framework {
 
 // TODO(unknown): split linear_mixable and random_miable
-class mixable0 {
+class mixable0 : public model {
  public:
   mixable0() {
   }
@@ -59,6 +64,15 @@ class mixable0 {
   virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
   virtual void unpack(msgpack::object o) = 0;
   virtual void clear() = 0;
+
+  virtual void save(packer& pk) const {
+    // mixable0 will be deleted
+    throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
+  }
+  virtual void load(const msgpack::object& o) {
+    // mixable0 will be deleted
+    unpack(o);
+  }
 };
 
 class mixable_holder {

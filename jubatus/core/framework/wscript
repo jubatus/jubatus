@@ -10,13 +10,21 @@ def build(bld):
   else:
     libassert = ""
 
+  src = 'model.cpp mixable.cpp push_mixable.cpp linear_mixable.cpp mixable_helper.cpp'
+  bld.shlib(
+    source = src,
+    target = 'jubacore',
+    includes = '.',
+    use = 'jubatus_util'+libassert
+    )
+
   def make_test(t):
     bld.program(
       features='gtest',
       source=t + '.cpp',
       target=t,
       includes='.',
-      use='MSGPACK jubacommon jubatus_util'+libassert,
+      use='MSGPACK jubacore jubacommon jubatus_util'+libassert,
       )
 
   tests = [
