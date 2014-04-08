@@ -121,13 +121,13 @@ class mixable_holder {
 };
 
 template<typename Model, typename Diff, typename PullArg = std::string>
-class mixable : public mixable0 {
+class __attribute__ ((deprecated)) deprecated_mixable : public mixable0 {
  public:
   typedef Model model_type;
   typedef Diff diff_type;
   typedef jubatus::util::lang::shared_ptr<Model> model_ptr;
 
-  virtual ~mixable() {
+  virtual ~deprecated_mixable() {
   }
 
   virtual void clear() = 0;
@@ -259,7 +259,7 @@ class mixable : public mixable0 {
 };
 
 template<typename Model, typename Diff, typename PullArg = std::string>
-class delegating_mixable : public mixable<Model, Diff, PullArg> {
+class __attribute__((__deprecated__)) delegating_mixable : public deprecated_mixable<Model, Diff, PullArg> {
  public:
   Diff get_diff_impl() const {
     Diff diff;

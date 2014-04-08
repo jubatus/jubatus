@@ -27,7 +27,7 @@ namespace jubatus {
 namespace core {
 namespace driver {
 
-class linear_function_mixer : public jubatus::core::framework::mixable<
+class linear_function_mixer : public jubatus::core::framework::deprecated_mixable<
     storage::storage_base, diffv> {
  public:
   diffv get_diff_impl() const;

@@ -30,7 +30,7 @@ namespace driver {
 
 typedef std::map<table::owner, uint64_t> version_clock;
 
-class mixable_versioned_table : public jubatus::core::framework::mixable<
+class mixable_versioned_table : public jubatus::core::framework::deprecated_mixable<
     table::column_table,
     std::vector<std::string>,
     version_clock> {

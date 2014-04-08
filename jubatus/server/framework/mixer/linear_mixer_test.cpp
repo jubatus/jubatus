@@ -122,7 +122,7 @@ class linear_communication_stub : public linear_communication {
   mutable vector<string> mixed_;
 };
 
-struct mixable_string : public core::framework::mixable<
+struct mixable_string : public core::framework::deprecated_mixable<
     mixable_string, core::common::byte_buffer> {
  public:
   core::common::byte_buffer get_diff_impl() const {

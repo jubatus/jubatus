@@ -83,7 +83,7 @@ class sparse_matrix_storage {
 // that should be saved as a part of the model and mixable that is involved in
 // MIX.
 class sparse_matrix_storage_mixable
-    : public framework::mixable<sparse_matrix_storage, bool> {
+    : public framework::deprecated_mixable<sparse_matrix_storage, bool> {
  public:
   bool get_diff_impl() const {
     return true;

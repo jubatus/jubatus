@@ -24,7 +24,7 @@ namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-class mixable_weight_manager : public framework::mixable<
+class mixable_weight_manager : public framework::deprecated_mixable<
     fv_converter::weight_manager,
     fv_converter::versioned_weight_diff> {
  public:
