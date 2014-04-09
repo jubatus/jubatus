@@ -26,7 +26,6 @@
 #include <vector>
 
 #include "../common/exception.hpp"
-#include "../driver/linear_function_mixer.hpp"
 #include "classifier_util.hpp"
 
 using std::string;
@@ -39,8 +38,7 @@ namespace core {
 namespace classifier {
 
 classifier_base::classifier_base(storage_ptr storage)
-    : mixable_(new driver::linear_function_mixer) {
-  mixable_->set_model(storage);
+    : mixable_(new framework::linear_function_mixer(storage)) {
 }
 
 classifier_base::~classifier_base() {

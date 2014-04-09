@@ -25,8 +25,7 @@ namespace core {
 namespace regression {
 
 regression_base::regression_base(storage_ptr storage)
-    : mixable_(new framework::linear_function_mixer) {
-  mixable_->set_model(storage);
+    : mixable_(new framework::linear_function_mixer(storage)) {
 }
 
 float regression_base::estimate(const common::sfv_t& fv) const {

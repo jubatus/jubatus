@@ -25,7 +25,6 @@
 #include "../classifier/classifier_type.hpp"
 #include "../classifier/classifier_base.hpp"
 #include "../framework/mixable.hpp"
-#include "linear_function_mixer.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 
 namespace jubatus {

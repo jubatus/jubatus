@@ -44,13 +44,13 @@ class linear_function_mixer : public linear_mixable {
 
   void mix(const diffv& lhs, diffv& mixed) const;
   void get_diff(diffv&) const;
-  void put_diff(const diffv& v);
+  bool put_diff(const diffv& v);
 
   // linear mixable
   diff_object convert_diff_object(const msgpack::object&) const;
   void mix(const msgpack::object& obj, diff_object) const;
-  void get_diff(msgpack_writer&) const;
-  void put_diff(const diff_object& obj);
+  void get_diff(packer&) const;
+  bool put_diff(const diff_object& obj);
 
  private:
   model_ptr model_;
