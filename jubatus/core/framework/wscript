@@ -11,10 +11,12 @@ def build(bld):
       'mixable.cpp',
       'push_mixable.cpp',
       'linear_mixable.cpp',
+      'linear_function_mixer.cpp',
       'mixable_helper.cpp',
       ]
   headers = [
       'linear_mixable.hpp',
+      'linear_function_mixer.hpp',
       'mixable.hpp',
       'mixable_helper.hpp',
       'model.hpp',
@@ -38,6 +40,7 @@ def build(bld):
 
   tests = [
     'mixable_test',
+    'linear_function_mixer_test',
     ]
 
   for t in tests:

@@ -7,7 +7,6 @@ def configure(conf):
 def build(bld):
   source = [
       'mixable_versioned_table.cpp',
-      'linear_function_mixer.cpp',
       'classifier.cpp',
       'regression.cpp',
       'recommender.cpp',
@@ -25,7 +24,6 @@ def build(bld):
       'anomaly.hpp',
       'graph.hpp',
       'diffv.hpp',
-      'linear_function_mixer.hpp',
       'mixable_versioned_table.hpp',
       'nearest_neighbor.hpp',
       'clustering.hpp',
@@ -47,7 +45,6 @@ def build(bld):
       )
 
   tests = [
-    'linear_function_mixer_test',
     'anomaly_test',
     'classifier_test',
     'graph_test',
@@ -60,17 +57,3 @@ def build(bld):
 
   for t in tests:
     make_test(t)
-
-  bld.install_files('${PREFIX}/include/jubatus/core/driver', [
-      'classifier.hpp',
-      'regression.hpp',
-      'recommender.hpp',
-      'stat.hpp',
-      'anomaly.hpp',
-      'graph.hpp',
-      'diffv.hpp',
-      'linear_function_mixer.hpp',
-      'mixable_versioned_table.hpp',
-      'nearest_neighbor.hpp',
-      'clustering.hpp',
-      ])

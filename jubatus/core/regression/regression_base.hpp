@@ -21,7 +21,7 @@
 #include <string>
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../common/type.hpp"
-#include "../driver/linear_function_mixer.hpp"
+#include "../framework/linear_function_mixer.hpp"
 
 namespace jubatus {
 namespace core {
@@ -56,7 +56,7 @@ class regression_base {
   void update(const common::sfv_t& fv, float coeff);
 
  private:
-  jubatus::util::lang::shared_ptr<driver::linear_function_mixer> mixable_;
+  jubatus::util::lang::shared_ptr<framework::linear_function_mixer> mixable_;
 };
 
 }  // namespace regression

@@ -25,7 +25,7 @@ namespace core {
 namespace regression {
 
 regression_base::regression_base(storage_ptr storage)
-    : mixable_(new driver::linear_function_mixer) {
+    : mixable_(new framework::linear_function_mixer) {
   mixable_->set_model(storage);
 }
 
@@ -45,7 +45,7 @@ void regression_base::clear() {
 
 void regression_base::get_status(std::map<std::string, std::string>& status)
     const {
-  driver::linear_function_mixer::model_ptr model = mixable_->get_model();
+  framework::linear_function_mixer::model_ptr model = mixable_->get_model();
   model->get_status(status);
   status["storage"] = model->type();
 }
