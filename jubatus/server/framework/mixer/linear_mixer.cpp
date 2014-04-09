@@ -45,6 +45,10 @@ using std::pair;
 using std::make_pair;
 using jubatus::core::common::byte_buffer;
 using jubatus::core::storage::version;
+using jubatus::core::framework::diff_object;
+using jubatus::core::framework::linear_mixable;
+using jubatus::core::framework::msgpack_writer;
+using jubatus::core::framework::packer;
 using jubatus::util::concurrent::scoped_lock;
 using jubatus::util::concurrent::scoped_rlock;
 using jubatus::util::concurrent::scoped_wlock;
@@ -70,7 +74,7 @@ class linear_communication_impl : public linear_communication {
   jubatus::util::lang::shared_ptr<common::try_lockable> create_lock();
   void get_diff(common::mprpc::rpc_result_object& a) const;
   void put_diff(
-      const vector<byte_buffer>& a,
+      const byte_buffer& a,
       common::mprpc::rpc_result_object& result) const;
   byte_buffer get_model();
 
@@ -175,7 +179,7 @@ void linear_communication_impl::get_diff(
 }
 
 void linear_communication_impl::put_diff(
-    const vector<byte_buffer>& mixed,
+    const byte_buffer& mixed,
     common::mprpc::rpc_result_object& result) const {
   common::unique_lock lk(m_);
   // TODO(beam2d): to be replaced to new client with socket connection pooling
@@ -255,6 +259,24 @@ string create_error_string(const msgpack::object& error) {
   }
 }
 
+template <class T>
+class stream_writer : public core::framework::msgpack_writer {
+ public:
+  explicit stream_writer(T& stream)
+    : stream_(stream) {
+  }
+
+  void write(const char*buf, unsigned int len) {
+    stream_.write(buf, len);
+  }
+
+  T& stream() {
+    return stream_;
+  }
+ private:
+  T& stream_;
+};
+
 }  // namespace
 
 jubatus::util::lang::shared_ptr<linear_communication>
@@ -287,11 +309,12 @@ linear_mixer::~linear_mixer() {
 }
 
 void linear_mixer::register_api(rpc_server_t& server) {
-  server.add<vector<byte_buffer>(int)>(  // NOLINT
+  server.add<byte_buffer(int)>(  // NOLINT
       "get_diff",
       jubatus::util::lang::bind(
           &linear_mixer::get_diff, this, jubatus::util::lang::_1));
-  server.add<int(vector<byte_buffer>)>(
+
+  server.add<int(vector<msgpack::object>)>(
       "put_diff",
       jubatus::util::lang::bind(&linear_mixer::put_diff,
                                 this,
@@ -444,10 +467,18 @@ void linear_mixer::mix() {
     return;
   } else {
     try {
-      core::framework::mixable_holder::mixable_list mixables =
+      core::framework::mixable_holder::mixable_list mm =
           mixable_holder_->get_mixables();
 
-      vector<vector<byte_buffer> > diffs;
+      vector<linear_mixable*> mixables;
+      for (size_t i = 0; i < mm.size(); i++) {
+        linear_mixable* mixable = dynamic_cast<linear_mixable*>(mm[i].get());
+        if (mixable) {
+          mixables.push_back(mixable);
+        }
+      }
+
+      vector<msgpack::object> diffs;
       {  // get_diff() -> diffs
         common::mprpc::rpc_result_object result;
         communication_->get_diff(result);
@@ -465,7 +496,7 @@ void linear_mixer::mix() {
                          << " : " << error_text;
             continue;
           }
-          diffs.push_back(result.response[i].as<vector<byte_buffer> >());
+          diffs.push_back(result.response[i].as<msgpack::object>());
           successes.push_back(
               make_pair(result.error[i].host(), result.error[i].port()));
         }
@@ -481,30 +512,23 @@ void linear_mixer::mix() {
             core::common::exception::runtime_error("no diff available"));
       }
 
-      vector<byte_buffer> mixed = diffs.front();
-      diffs.erase(diffs.begin());
       {  // diffs -(mix)-> mixed
-        // it's doing foldr on diffs
-        for (size_t i = 0; i < diffs.size(); ++i) {
-          if (diffs[i].size() != mixed.size()) {
-            throw JUBATUS_EXCEPTION(
-                core::common::exception::runtime_error(
-                    "got mixables length is invalid"));
-          }
-          for (size_t j = 0; j < diffs[i].size(); ++j) {
-            mixables[j]->mix(diffs[i][j], mixed[j], mixed[j]);
-          }
-        }
-      }
+        msgpack::sbuffer sbuf;
+        stream_writer<msgpack::sbuffer> st(sbuf);
+        core::framework::msgpack_packer mp(st);
+        packer pk(mp);
 
-      {  // do put_diff
+        // TODO:
+        mixable_holder_->mix(diffs, pk);
+        byte_buffer mixed(sbuf.data(), sbuf.size());
+
+        // do put_diff
+
         common::mprpc::rpc_result_object result;
         communication_->put_diff(mixed, result);
 
         {  // log output
-          for (size_t i = 0; i < mixed.size(); ++i) {
-            s += mixed[i].size();
-          }
+          s += sbuf.size();
 
           typedef pair<string, uint16_t> server;
           vector<server> successes;
@@ -540,7 +564,7 @@ void linear_mixer::mix() {
 }
 
 
-vector<byte_buffer> linear_mixer::get_diff(int a) {
+byte_buffer linear_mixer::get_diff(int a) {
   scoped_rlock lk_read(mixable_holder_->rw_mutex());
   scoped_lock lk(m_);
 
@@ -550,11 +574,13 @@ vector<byte_buffer> linear_mixer::get_diff(int a) {
     throw JUBATUS_EXCEPTION(core::common::config_not_set());  // nothing to mix
   }
 
-  vector<byte_buffer> o;
-  for (size_t i = 0; i < mixables.size(); ++i) {
-    o.push_back(mixables[i]->get_diff());
-  }
-  return o;
+  msgpack::sbuffer sbuf;
+  stream_writer<msgpack::sbuffer> st(sbuf);
+  core::framework::msgpack_packer mp(st);
+  packer pk(mp);
+  mixable_holder_->get_diff(pk);
+  byte_buffer bytes(sbuf.data(), sbuf.size());
+  return bytes;
 }
 
 byte_buffer linear_mixer::get_model(int a) const {
@@ -588,7 +614,7 @@ void linear_mixer::update_model() {
 }
 
 int linear_mixer::put_diff(
-    const vector<byte_buffer>& unpacked) {
+    const vector<msgpack::object>& unpacked) {
   scoped_wlock lk_write(mixable_holder_->rw_mutex());
   scoped_lock lk(m_);
 
@@ -603,8 +629,12 @@ int linear_mixer::put_diff(
   bool not_obsolete = true;
   for (size_t i = 0; i < mixables.size(); ++i) {
     // put_diff() returns true if put_diff succeeded
-    not_obsolete = mixables[i]->put_diff(unpacked[i]) && not_obsolete;
-    total_size += unpacked[i].size();
+    linear_mixable* m = dynamic_cast<linear_mixable*>(mixables[i].get());
+    if (!m) {
+      continue;
+    }
+    not_obsolete = m->put_diff(m->convert_diff_object(unpacked[i])) && not_obsolete;
+    //TODO(suma): total_size += unpacked[i].size();
   }
 
   // print versions of mixables

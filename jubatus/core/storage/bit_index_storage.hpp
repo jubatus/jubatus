@@ -25,7 +25,7 @@
 #include "jubatus/util/data/unordered_map.h"
 #include "../common/key_manager.hpp"
 #include "../common/unordered_map.hpp"
-#include "../framework/mixable.hpp"
+#include "../framework/mixable_helper.hpp"
 #include "storage_type.hpp"
 #include "sparse_matrix_storage.hpp"
 #include "bit_vector.hpp"
@@ -34,7 +34,7 @@ namespace jubatus {
 namespace core {
 namespace storage {
 
-class bit_index_storage {
+class bit_index_storage : public framework::model {
  public:
   bit_index_storage();
   ~bit_index_storage();
@@ -74,7 +74,7 @@ class bit_index_storage {
   bit_table_t bitvals_diff_;
 };
 
-typedef framework::delegating_mixable<bit_index_storage, bit_table_t>
+typedef framework::linear_mixable_helper<bit_index_storage, bit_table_t>
     mixable_bit_index_storage;
 
 }  // namespace storage

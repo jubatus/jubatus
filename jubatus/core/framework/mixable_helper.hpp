@@ -63,12 +63,12 @@ class linear_mixable_crtp_helper : public linear_mixable {
     pk.pack(diff);
   }
 
-  void put_diff(const diff_object& ptr) {
+  bool put_diff(const diff_object& ptr) {
     internal_diff_object* diff_obj = dynamic_cast<internal_diff_object*>(ptr.get());
     if (!diff_obj) {
       throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("bad diff_object"));
     }
-    static_cast<Model&>(*this).put_diff(diff_obj->diff_);
+    return static_cast<Model&>(*this).put_diff(diff_obj->diff_);
   }
 
  private:
@@ -92,11 +92,19 @@ class linear_mixable_helper : public linear_mixable {
   typedef Diff diff_type;
   typedef jubatus::util::lang::shared_ptr<Model> model_ptr;
 
-  linear_mixable_helper(model_ptr model) 
+  linear_mixable_helper() {
+  }
+
+  linear_mixable_helper(model_ptr model)
     : model_(model) {
     if (!model) {
       throw JUBATUS_EXCEPTION(common::config_not_set());
     }
+  }
+
+  // Implement set_model function for temporal core separation
+  void set_model(model_ptr m) __attribute__ ((deprecated)) {
+    model_ = m;
   }
 
   virtual ~linear_mixable_helper() {
@@ -129,12 +137,12 @@ class linear_mixable_helper : public linear_mixable {
     pk.pack(diff);
   }
 
-  void put_diff(const diff_object& ptr) {
+  bool put_diff(const diff_object& ptr) {
     internal_diff_object* diff_obj = dynamic_cast<internal_diff_object*>(ptr.get());
     if (!diff_obj) {
       throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("bad diff_object"));
     }
-    model_->put_diff(diff_obj->diff_);
+    return model_->set_mixed_and_clear_diff(diff_obj->diff_);
   }
 
  private:

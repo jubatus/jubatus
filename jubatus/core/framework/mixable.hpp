@@ -32,6 +32,7 @@
 
 // TODO(suma): Rename new_mixable.hpp to mixable.hpp when
 // mixable0/deprecated_mixable/delegating_mixable deleted
+#include "linear_mixable.hpp"
 #include "new_mixable.hpp"
 #include "model.hpp"
 
@@ -40,9 +41,9 @@ namespace core {
 namespace framework {
 
 // TODO(unknown): split linear_mixable and random_miable
-class mixable0 : public model {
+class mixable0 : public mixable, public model {
  public:
-  mixable0() {
+  mixable0() : mixable("TODO(linear and pushpull)") {
   }
 
   virtual ~mixable0() {
@@ -59,16 +60,16 @@ class mixable0 : public model {
   virtual std::string get_pull_argument() const = 0;
   virtual std::string pull(const std::string&) const = 0;
   virtual void push(const std::string&) = 0;
-  virtual storage::version get_version() const = 0;
 
   virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
   virtual void unpack(msgpack::object o) = 0;
   virtual void clear() = 0;
 };
 
+// TODO(suma): separate other header
 class mixable_holder {
  public:
-  typedef std::vector<jubatus::util::lang::shared_ptr<mixable0> > mixable_list;
+  typedef std::vector<jubatus::util::lang::shared_ptr<mixable> > mixable_list;
 
   mixable_holder() {
   }
@@ -76,7 +77,7 @@ class mixable_holder {
   virtual ~mixable_holder() {
   }
 
-  void register_mixable(jubatus::util::lang::shared_ptr<mixable0> m) {
+  void register_mixable(jubatus::util::lang::shared_ptr<mixable> m) {
     mixables_.push_back(m);
   }
 
@@ -100,7 +101,11 @@ class mixable_holder {
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
     packer.pack_array(mixables_.size());
     for (size_t i = 0; i < mixables_.size(); ++i) {
-      mixables_[i]->pack(packer);
+      // TODO(suma): extract model function from mixable0
+      model* m = dynamic_cast<model*>(mixables_[i].get());
+      if (m) {
+        m->pack(packer);
+      }
     }
   }
 
@@ -111,18 +116,75 @@ class mixable_holder {
     }
 
     for (size_t i = 0; i < mixables_.size(); ++i) {
-      mixables_[i]->clear();
+      // TODO(suma): extract model function from mixable0
+      model* m = dynamic_cast<model*>(mixables_[i].get());
+      if (m) {
+        m->clear();
+      }
     }
 
     msgpack::object* p = o.via.array.ptr;
     for (size_t i = 0; i < mixables_.size(); ++i) {
-      mixables_[i]->unpack(p[i]);
+      // TODO(suma): extract model function from mixable0
+      model* m = dynamic_cast<model*>(mixables_[i].get());
+      if (m) {
+        m->unpack(p[i]);
+      }
+    }
+  }
+
+  // for linear_mixable
+  void mix(const std::vector<msgpack::object>& objs, packer& pk) {
+    std::vector<linear_mixable*> mixables;
+    for (size_t i = 0; i < mixables_.size(); i++) {
+      linear_mixable* mixable = dynamic_cast<linear_mixable*>(mixables_[i].get());
+      mixables.push_back(mixable);
+    }
+
+    std::vector<diff_object> diffs;
+    for (size_t i = 0; i < objs.size(); i++) {
+      if (objs[i].type != msgpack::type::ARRAY || objs[i].via.array.size != mixables.size()) {
+        //throw msgpack::type_error();
+        throw JUBATUS_EXCEPTION(common::exception::runtime_error("size: " + 
+          jubatus::util::lang::lexical_cast<std::string>(objs[i].via.array.size) + " mixables: " +
+          jubatus::util::lang::lexical_cast<std::string>(mixables.size())
+          ));
+      }
+    }
+
+    // convert internal raw object (front)
+    for (size_t i = 0; i < mixables.size(); i++) {
+      diffs.push_back(mixables[i]->convert_diff_object(objs[0].via.array.ptr[i]));
+    }
+
+    // do mix
+    for (size_t i = 1; i < objs.size(); i++) {
+      msgpack::object* o = objs[i].via.array.ptr;
+      for (size_t j = 0; j < mixables.size(); j++) {
+        mixables[i]->mix(o[j], diffs[j]);
+      }
+    }
+
+    // output mixed buffer
+    pk.pack_array(mixables.size());
+    for (size_t i = 0; i < mixables.size(); i++) {
+      diffs[i]->convert_binary(pk);
+    }
+  }
+
+  void get_diff(packer& pk) const {
+    pk.pack_array(mixables_.size());
+    for (size_t i = 0; i < mixables_.size(); ++i) {
+      linear_mixable* mixable = dynamic_cast<linear_mixable*>(mixables_[i].get());
+      if (mixable) {
+        mixable->get_diff(pk);
+      }
     }
   }
 
  protected:
   jubatus::util::concurrent::rw_mutex rw_mutex_;
-  std::vector<jubatus::util::lang::shared_ptr<mixable0> > mixables_;
+  std::vector<jubatus::util::lang::shared_ptr<mixable> > mixables_;
 };
 
 template<typename Model, typename Diff, typename PullArg = std::string>
@@ -218,8 +280,6 @@ class __attribute__ ((deprecated)) deprecated_mixable : public mixable0 {
       throw JUBATUS_EXCEPTION(common::config_not_set());
     }
   }
-
-  storage::version get_version() const = 0;
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
     model_->pack(packer);

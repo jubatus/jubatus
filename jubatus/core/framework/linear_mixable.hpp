@@ -19,7 +19,7 @@
 #include <msgpack.hpp>
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../common/exception.hpp"
-#include "mixable.hpp"
+#include "new_mixable.hpp"
 #include "packer.hpp"
 
 namespace jubatus {
@@ -44,7 +44,7 @@ class linear_mixable : public mixable {
   // mix assumes fold left?
   virtual void mix(const msgpack::object& obj, diff_object) const = 0;
   virtual void get_diff(packer&) const = 0;
-  virtual void put_diff(const diff_object& obj) = 0;
+  virtual bool put_diff(const diff_object& obj) = 0;
 };
 
 

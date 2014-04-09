@@ -62,7 +62,7 @@ class linear_communication {
   virtual void get_diff(common::mprpc::rpc_result_object& result) const = 0;
   // it can throw common::mprpc exception
   virtual void put_diff(
-      const std::vector<core::common::byte_buffer>& mixed,
+      const core::common::byte_buffer& mixed,
       common::mprpc::rpc_result_object& result) const = 0;
 
   virtual bool register_active_list() const = 0;
@@ -97,8 +97,8 @@ class linear_mixer : public mixer {
 
   void clear();
 
-  std::vector<core::common::byte_buffer> get_diff(int a);
-  int put_diff(const std::vector<core::common::byte_buffer>& unpacked);
+  core::common::byte_buffer get_diff(int a);
+  int put_diff(const std::vector<msgpack::object>& unpacked);
   core::common::byte_buffer get_model(int d) const;
 
   jubatus::util::lang::shared_ptr<linear_communication> communication_;

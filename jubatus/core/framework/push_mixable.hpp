@@ -25,6 +25,12 @@ namespace jubatus {
 namespace core {
 namespace framework {
 
+class pull_result_raw {
+ public:
+   virtual ~pull_result_raw() {};
+   virtual void convert_binary(packer&) = 0;
+};
+
 // public interface for Jubatus users
 class push_mixable : public mixable {
  public:

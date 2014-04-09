@@ -17,6 +17,7 @@
 #ifndef JUBATUS_CORE_FRAMEWORK_MODEL_HPP_
 #define JUBATUS_CORE_FRAMEWORK_MODEL_HPP_
 
+#include "../common/version.hpp"
 #include "packer.hpp"
 
 namespace jubatus {

@@ -31,6 +31,10 @@ std::set<std::string> mixable::mixables() const {
   return mixables_;
 }
 
+storage::version mixable::get_version() const {
+  return storage::version();
+}
+
 }  // namespace framework
 }  // namespace core
 }  // namespace jubatus

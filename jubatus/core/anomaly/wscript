@@ -16,7 +16,6 @@ def build(bld):
   headers = [
       'anomaly_base.hpp',
       'anomaly_type.hpp',
-      'anomaly_storage_base.hpp',
       'light_lof.hpp',
       'lof.hpp',
       'lof_storage.hpp',

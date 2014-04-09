@@ -344,7 +344,9 @@ vector<string> push_mixer::pull(const vector<string>& arg) {
       mixable_holder_->get_mixables();
   // TODO(beam2d): check arg.size()==mixables.size()
   for (size_t i = 0; i < mixables.size(); ++i) {
-    o.push_back(mixables[i]->pull(arg[i]));
+    // FIXME: to push_mixable
+    core::framework::mixable0* mixable = dynamic_cast<core::framework::mixable0*>(mixables[i].get());
+    o.push_back(mixable->pull(arg[i]));
   }
   return o;
 }
@@ -357,7 +359,9 @@ vector<string> push_mixer::get_pull_argument(int dummy_arg) {
   core::framework::mixable_holder::mixable_list mixables =
       mixable_holder_->get_mixables();
   for (size_t i = 0; i < mixables.size(); ++i) {
-    o.push_back(mixables[i]->get_pull_argument());
+    // FIXME: to push_mixable
+    core::framework::mixable0* mixable = dynamic_cast<core::framework::mixable0*>(mixables[i].get());
+    o.push_back(mixable->get_pull_argument());
   }
   return o;
 }
@@ -372,7 +376,9 @@ int push_mixer::push(const vector<string>& diff) {
     return -1;
   }
   for (size_t i = 0; i < mixables.size(); ++i) {
-    mixables[i]->push(diff[i]);
+    // FIXME: to push_mixable
+    core::framework::mixable0* mixable = dynamic_cast<core::framework::mixable0*>(mixables[i].get());
+    mixable->push(diff[i]);
   }
   counter_ = 0;
   ticktime_ = get_clock_time();
