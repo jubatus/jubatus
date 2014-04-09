@@ -64,15 +64,6 @@ class mixable0 : public model {
   virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
   virtual void unpack(msgpack::object o) = 0;
   virtual void clear() = 0;
-
-  virtual void save(packer& pk) const {
-    // mixable0 will be deleted
-    throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
-  }
-  virtual void load(const msgpack::object& o) {
-    // mixable0 will be deleted
-    unpack(o);
-  }
 };
 
 class mixable_holder {

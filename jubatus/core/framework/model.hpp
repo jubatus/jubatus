@@ -27,8 +27,11 @@ namespace framework {
 class model {
  public:
   virtual ~model();
-  virtual void save(packer&) const = 0;
-  virtual void load(const msgpack::object&) = 0;
+  // TODO(unknown): Replace pack/unpack arguments
+  //virtual void save(packer&) const = 0;
+  //virtual void load(const msgpack::object&) = 0;
+  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
+  virtual void unpack(msgpack::object o) = 0;
   virtual void clear();
 };
 
