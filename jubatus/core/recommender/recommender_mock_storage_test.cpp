@@ -40,8 +40,8 @@ void mix(recommender_mock_storage& s1, recommender_mock_storage& s2) {
   s1.get_diff(diff);
   s2.get_diff(mixed);
   s1.mix(diff, mixed);
-  s1.set_mixed_and_clear_diff(mixed);
-  s2.set_mixed_and_clear_diff(mixed);
+  s1.put_diff(mixed);
+  s2.put_diff(mixed);
 }
 
 }  // namespace

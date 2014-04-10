@@ -297,7 +297,7 @@ void lsh_index_storage::get_diff(lsh_master_table_t& diff) const {
   diff = master_table_diff_;
 }
 
-bool lsh_index_storage::set_mixed_and_clear_diff(
+bool lsh_index_storage::put_diff(
     const lsh_master_table_t& diff) {
   for (lsh_master_table_t::const_iterator it = diff.begin(); it != diff.end();
       ++it) {

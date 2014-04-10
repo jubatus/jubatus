@@ -53,7 +53,7 @@ void storage::get_diff(diff_t& d) const {
   d.push_back(make_pair(name_, coreset));
 }
 
-bool storage::set_mixed_and_clear_diff(const diff_t& diff) {
+bool storage::put_diff(const diff_t& diff) {
   common_.clear();
   for (diff_t::const_iterator it = diff.begin(); it != diff.end(); ++it) {
     if (it->first != name_) {

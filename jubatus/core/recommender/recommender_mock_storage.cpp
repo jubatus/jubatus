@@ -92,7 +92,7 @@ void recommender_mock_storage::get_diff(recommender_mock_storage& diff) const {
   diff = *this;
 }
 
-bool recommender_mock_storage::set_mixed_and_clear_diff(
+bool recommender_mock_storage::put_diff(
     const recommender_mock_storage& mixed_diff) {
   *this = mixed_diff;
   return true;

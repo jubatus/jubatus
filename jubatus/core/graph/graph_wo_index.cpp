@@ -382,7 +382,7 @@ void graph_wo_index::update_index() {
   update_spt();
   diff_type diff;
   get_diff(diff);
-  set_mixed_and_clear_diff(diff);
+  put_diff(diff);
 }
 
 void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
@@ -497,7 +497,7 @@ void graph_wo_index::get_diff_eigen_score(eigen_vector_query_diff& diff) const {
   }
 }
 
-void graph_wo_index::set_mixed_and_clear_diff_eigen_score(
+void graph_wo_index::put_diff_eigen_score(
     const eigen_vector_query_diff& mixed) {
   eigen_scores_ = mixed;
   if (eigen_scores_.size() == 0) {
@@ -615,7 +615,7 @@ void graph_wo_index::get_diff_shortest_path_tree(
   }
 }
 
-void graph_wo_index::set_mixed_and_clear_diff_shortest_path_tree(
+void graph_wo_index::put_diff_shortest_path_tree(
     const spt_query_diff& mixed) {
   spts_ = mixed;
 }
@@ -628,9 +628,9 @@ void graph_wo_index::get_diff(diff_type& diff) const {
   get_diff_shortest_path_tree(diff.spt_query);
 }
 
-bool graph_wo_index::set_mixed_and_clear_diff(const diff_type& mixed) {
-  set_mixed_and_clear_diff_eigen_score(mixed.eigen_vector_query);
-  set_mixed_and_clear_diff_shortest_path_tree(mixed.spt_query);
+bool graph_wo_index::put_diff(const diff_type& mixed) {
+  put_diff_eigen_score(mixed.eigen_vector_query);
+  put_diff_shortest_path_tree(mixed.spt_query);
   return true;
 }
 

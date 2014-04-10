@@ -60,7 +60,7 @@ class stat : public jubatus::util::lang::enable_shared_from_this<stat> {
   virtual ~stat();
 
   virtual void get_diff(std::pair<double, size_t>& ret) const;
-  virtual bool set_mixed_and_clear_diff(const std::pair<double, size_t>&);
+  virtual bool put_diff(const std::pair<double, size_t>&);
   virtual void mix(
       const std::pair<double, size_t>& lhs,
       std::pair<double, size_t>& ret) const;

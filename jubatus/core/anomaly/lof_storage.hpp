@@ -116,7 +116,7 @@ class lof_storage {
           nn_engine);
 
   void get_diff(lof_table_t& diff) const;
-  bool set_mixed_and_clear_diff(const lof_table_t& mixed_diff);
+  bool put_diff(const lof_table_t& mixed_diff);
   void mix(const lof_table_t& lhs, lof_table_t& rhs) const;
 
   storage::version get_version() const {

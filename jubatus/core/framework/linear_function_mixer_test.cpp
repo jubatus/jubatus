@@ -16,6 +16,8 @@
 
 #include <map>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include <gtest/gtest.h>
 
@@ -24,6 +26,7 @@
 
 using std::string;
 using std::make_pair;
+using std::vector;
 
 namespace jubatus {
 namespace core {
@@ -31,14 +34,14 @@ namespace storage {
 
 class storage_mock_base : public storage::storage_base {
  public:
-  void get(const std::string& feature, feature_val1_t& ret) {
+  void get(const std::string& feature, feature_val1_t& ret) const {
   }
-  void get2(const std::string& feature, feature_val2_t& ret) {
+  void get2(const std::string& feature, feature_val2_t& ret) const {
   }
-  void get3(const std::string& feature, feature_val3_t& ret) {
+  void get3(const std::string& feature, feature_val3_t& ret) const {
   }
 
-  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) {
+  void inp(const common::sfv_t& sfv, map_feature_val1_t& ret) const {
   }
 
   void set(
@@ -57,13 +60,13 @@ class storage_mock_base : public storage::storage_base {
       const val3_t& w) {
   }
 
-  void get_status(std::map<std::string, std::string>&) {
+  void get_status(std::map<std::string, std::string>&) const {
   }
 
-  void save(framework::msgpack_writer&) const {
+  void pack(msgpack::packer<msgpack::sbuffer>&) const {
   }
 
-  void load(msgpack::object&) {
+  void unpack(msgpack::object) {
   }
 
   void update(
@@ -80,11 +83,24 @@ class storage_mock_base : public storage::storage_base {
       const std::string& dec_class) {
   }
 
-  virtual void get_diff(features3_t&) const = 0;
-  void set_average_and_clear_diff(const features3_t&) {
+  virtual void get_diff(diff_t&) const = 0;
+
+  vector<string> get_labels() const {
+    return vector<string>();
+  }
+
+  void register_label(const std::string& label) {
+  }
+
+  storage::version get_version() const {
+    return storage::version();
   }
 
   virtual void clear() {
+  }
+
+  bool set_label(const string& label) {
+    return true;
   }
 
   std::string type() const {
@@ -94,10 +110,10 @@ class storage_mock_base : public storage::storage_base {
 
 class storage_mock_1 : public storage_mock_base {
  public:
-  void get_diff(features3_t& v) const {
+  void get_diff(diff_t& v) const {
     feature_val3_t c;
     c.push_back(make_pair(string("l1"), val3_t(1.0, 2.0, 3.0)));
-    v.push_back(make_pair(string("f1"), c));
+    v.diff.push_back(make_pair(string("f1"), c));
   }
 };
 
@@ -112,20 +128,20 @@ TEST(linear_function_mixer, diff) {
   diffv d;
   m.get_diff(d);
   EXPECT_EQ(1, d.count);
-  ASSERT_EQ(1u, d.v.size());
-  EXPECT_EQ("f1", d.v[0].first);
-  ASSERT_EQ(1u, d.v[0].second.size());
-  EXPECT_EQ("l1", d.v[0].second[0].first);
-  EXPECT_EQ(1.0, d.v[0].second[0].second.v1);
-  EXPECT_EQ(2.0, d.v[0].second[0].second.v2);
-  EXPECT_EQ(3.0, d.v[0].second[0].second.v3);
+  ASSERT_EQ(1u, d.v.diff.size());
+  EXPECT_EQ("f1", d.v.diff[0].first);
+  ASSERT_EQ(1u, d.v.diff[0].second.size());
+  EXPECT_EQ("l1", d.v.diff[0].second[0].first);
+  EXPECT_EQ(1.0, d.v.diff[0].second[0].second.v1);
+  EXPECT_EQ(2.0, d.v.diff[0].second[0].second.v2);
+  EXPECT_EQ(3.0, d.v.diff[0].second[0].second.v3);
 }
 
 diffv make_diff(float v1, float v2, float v3, size_t count) {
   diffv diff;
   storage::feature_val3_t c;
   c.push_back(make_pair(string("l1"), storage::val3_t(v1, v2, v3)));
-  diff.v.push_back(make_pair(string("f1"), c));
+  diff.v.diff.push_back(make_pair(string("f1"), c));
   diff.count = count;
   return diff;
 }
@@ -138,16 +154,16 @@ TEST(linear_function_mixer, mix) {
   diffv d = make_diff(2, 3, 4, 3);
   m.mix(d1, d);
   EXPECT_EQ(8, d.count);
-  ASSERT_EQ(1u, d.v.size());
-  EXPECT_EQ("f1", d.v[0].first);
-  ASSERT_EQ(1u, d.v[0].second.size());
-  EXPECT_EQ("l1", d.v[0].second[0].first);
+  ASSERT_EQ(1u, d.v.diff.size());
+  EXPECT_EQ("f1", d.v.diff[0].first);
+  ASSERT_EQ(1u, d.v.diff[0].second.size());
+  EXPECT_EQ("l1", d.v.diff[0].second[0].first);
   // (1 * 5 + 2 * 3) / (5 + 3)
-  EXPECT_EQ(11./8., d.v[0].second[0].second.v1);
+  EXPECT_EQ(11./8., d.v.diff[0].second[0].second.v1);
   // min(2, 3)
-  EXPECT_EQ(2., d.v[0].second[0].second.v2);
+  EXPECT_EQ(2., d.v.diff[0].second[0].second.v2);
   // (3 * 5 + 4 * 3) / (5 + 3)
-  EXPECT_EQ(27./8., d.v[0].second[0].second.v3);
+  EXPECT_EQ(27./8., d.v.diff[0].second[0].second.v3);
 }
 
 }  // namespace framework

@@ -58,7 +58,7 @@ class bit_index_storage : public framework::model {
   void unpack(msgpack::object o);
 
   void get_diff(bit_table_t& diff) const;
-  bool set_mixed_and_clear_diff(const bit_table_t& mixed_diff);
+  bool put_diff(const bit_table_t& mixed_diff);
   void mix(const bit_table_t& lhs, bit_table_t& rhs) const;
 
   MSGPACK_DEFINE(bitvals_, bitvals_diff_);

@@ -91,7 +91,7 @@ TEST_F(mixable_model_test, put_diff) {
   storage_->get_diff(df2);
   df2[0].first = "name2";
   storage_->mix(df, df2);
-  storage_->set_mixed_and_clear_diff(df2);
+  storage_->put_diff(df2);
 
   wplist coreset = model_->get_coreset();
   ASSERT_EQ(coreset.size(), 2*N);

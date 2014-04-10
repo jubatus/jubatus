@@ -14,7 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "mixable.hpp"
+#include "mixable_helper.hpp"
+#include "stream_writer.hpp"
 
 #include <sstream>
 #include <gtest/gtest.h>
@@ -28,107 +29,92 @@ namespace jubatus {
 namespace core {
 namespace framework {
 
-struct int_model {
+struct int_model : public model {
   int_model()
-      : value(0) {
+      : value(0), diff_(0) {
   }
 
   int value;
 
-  MSGPACK_DEFINE(value);
-
-  template<class Buffer>
-  void pack(msgpack::packer<Buffer>& packer) const {
-    packer.pack(*this);
+  // TODO(suma): replace packer
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+    packer.pack(value);
   }
+
   void unpack(msgpack::object o) {
-    o.convert(this);
-  }
-};
-
-class mixable_int : public mixable<int_model, int> {
- public:
-  mixable_int()
-      : diff_() {
+    o.convert(&value);
   }
 
   void clear() {
   }
 
-  int get_diff_impl() const {
-    return diff_;
+  // for linear_mixable
+  void get_diff(int& diff) const {
+    diff = diff_;
   }
 
-  bool put_diff_impl(const int& n) {
-    get_model()->value += n;
+  bool put_diff(const int& n) {
+    value += n;
     diff_ = 0;
     return true;
   }
 
-  void mix_impl(const int& lhs, const int& rhs, int& mixed) const {
-    mixed = lhs + rhs;
+  void mix(const int& lhs, int& mixed) const {
+    mixed += lhs;
   }
 
   void add(int n) {
     diff_ += n;
   }
 
-  storage::version get_version() const {
-    storage::version v;
-    v.set_number_unsafe(100);
-    return v;
-  }
-
  private:
   int diff_;
 };
 
+typedef linear_mixable_helper<int_model, int> mixable_int;
+
 TEST(mixable, config_not_set) {
-  mixable_int m;
-  EXPECT_THROW(m.get_diff(), common::config_not_set);
-  EXPECT_THROW(m.put_diff(byte_buffer()), common::config_not_set);
+  //EXPECT_THROW(mixable_int(),common::config_not_set);
 }
 
-TEST(mixable, pack_and_unpack) {
-  mixable_int m;
-  m.set_model(mixable_int::model_ptr(new int_model));
+TEST(mixable, pack_unpack) {
+  mixable_int m(mixable_int::model_ptr(new int_model));
   m.get_model()->value = 10;
 
   msgpack::sbuffer buf;
-  msgpack::packer<msgpack::sbuffer> packer(buf);
-  m.pack(packer);
+  msgpack::packer<msgpack::sbuffer> pk(buf);
+  m.get_model()->pack(pk);
 
-  m.get_model()->value = 5;
+   m.get_model()->value = 5;
 
   msgpack::unpacked unpacked;
   msgpack::unpack(&unpacked, buf.data(), buf.size());
-  m.unpack(unpacked.get());
+  m.get_model()->unpack(unpacked.get());
 
-  EXPECT_EQ(10, m.get_model()->value);
+   EXPECT_EQ(10, m.get_model()->value);
 }
 
 TEST(mixable, trivial) {
-  mixable_int m;
-  m.set_model(mixable_int::model_ptr(new int_model));
+  mixable_int m(mixable_int::model_ptr(new int_model));
 
-  m.add(10);
+  m.get_model()->add(10);
 
-  byte_buffer diff1 = m.get_diff();
-  byte_buffer diff2 = m.get_diff();
+  msgpack::sbuffer diff1, diff2;
+  stream_writer<msgpack::sbuffer> sw1(diff1), sw2(diff2);
+  core::framework::msgpack_packer mp1(sw1), mp2(sw2);
+  packer pk1(mp1), pk2(mp2);
+  m.get_diff(pk1);
+  m.get_diff(pk2);
 
-  byte_buffer mixed;
-  m.mix(diff1, diff2, mixed);
+  msgpack::unpacked m1, m2;
+  msgpack::unpack(&m1, diff1.data(), diff1.size());
+  msgpack::unpack(&m2, diff2.data(), diff2.size());
 
-  m.put_diff(mixed);
+  diff_object diff_obj_mixed = m.convert_diff_object(m1.get());
+  m.mix(m2.get(), diff_obj_mixed);
+  m.put_diff(diff_obj_mixed);
 
   EXPECT_EQ(20, m.get_model()->value);
-}
-
-TEST(mixable, get_version_override) {
-  jubatus::util::lang::shared_ptr<mixable0> m(new mixable_int);
-  storage::version v;
-  v.set_number_unsafe(100u);
-  EXPECT_EQ(m->get_version(), v);
 }
 
 }  // namespace framework

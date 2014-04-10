@@ -111,7 +111,7 @@ class graph_wo_index
   void get_edge(edge_id_t eid, edge_info& ret) const;
 
   void get_diff(diff_type& diff) const;
-  bool set_mixed_and_clear_diff(const diff_type& mixed);
+  bool put_diff(const diff_type& mixed);
 
   std::string type() const;
 
@@ -153,7 +153,7 @@ class graph_wo_index
       eigen_vector_query_diff& mixed);
 
   void get_diff_eigen_score(eigen_vector_query_diff& diff) const;
-  void set_mixed_and_clear_diff_eigen_score(
+  void put_diff_eigen_score(
       const eigen_vector_query_diff& mixed);
 
   eigen_vector_query_diff eigen_scores_;
@@ -171,7 +171,7 @@ class graph_wo_index
 
   void get_diff_shortest_path_tree(spt_query_diff& diff) const;
 
-  void set_mixed_and_clear_diff_shortest_path_tree(
+  void put_diff_shortest_path_tree(
       const spt_query_diff& mixed);
 
   void update_spt();

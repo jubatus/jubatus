@@ -68,7 +68,7 @@ class portable_mixer {
     }
 
     for (size_t i = 0; i < storages_.size(); ++i) {
-      storages_[i]->set_mixed_and_clear_diff(mixed);
+      storages_[i]->put_diff(mixed);
     }
   }
 

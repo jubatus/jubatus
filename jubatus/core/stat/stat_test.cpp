@@ -97,7 +97,7 @@ TEST(stat_test, mixed_entropy) {
   ASSERT_DOUBLE_EQ(e_d, d.first);
   ASSERT_EQ(3u, d.second);
 
-  p.set_mixed_and_clear_diff(d);
+  p.put_diff(d);
 
   double bias = d.first / d.second;  // bias to suppress cancellation
   ASSERT_DOUBLE_EQ(e_e + bias, p.entropy() + bias);

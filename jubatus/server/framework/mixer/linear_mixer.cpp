@@ -33,6 +33,7 @@
 #include "jubatus/core/common/version.hpp"
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
+#include "jubatus/core/framework/stream_writer.hpp"
 #include "../../common/membership.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
 #include "../../common/unique_lock.hpp"
@@ -47,7 +48,7 @@ using jubatus::core::common::byte_buffer;
 using jubatus::core::storage::version;
 using jubatus::core::framework::diff_object;
 using jubatus::core::framework::linear_mixable;
-using jubatus::core::framework::msgpack_writer;
+using jubatus::core::framework::stream_writer;
 using jubatus::core::framework::packer;
 using jubatus::util::concurrent::scoped_lock;
 using jubatus::util::concurrent::scoped_rlock;
@@ -258,24 +259,6 @@ string create_error_string(const msgpack::object& error) {
       return "unknown error";
   }
 }
-
-template <class T>
-class stream_writer : public core::framework::msgpack_writer {
- public:
-  explicit stream_writer(T& stream)
-    : stream_(stream) {
-  }
-
-  void write(const char*buf, unsigned int len) {
-    stream_.write(buf, len);
-  }
-
-  T& stream() {
-    return stream_;
-  }
- private:
-  T& stream_;
-};
 
 }  // namespace
 

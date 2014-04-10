@@ -101,7 +101,7 @@ TEST(bit_index_storage, row_operations) {
   // do MIX
   bit_table_t d1;
   s1.get_diff(d1);
-  s1.set_mixed_and_clear_diff(d1);
+  s1.put_diff(d1);
 
   s1.get_all_row_ids(ids);
   EXPECT_EQ(2u, ids.size());
@@ -115,7 +115,7 @@ TEST(bit_index_storage, row_operations) {
   // do MIX
   bit_table_t d2;
   s1.get_diff(d2);
-  s1.set_mixed_and_clear_diff(d2);
+  s1.put_diff(d2);
 
   s1.get_all_row_ids(ids);
   ASSERT_EQ(1u, ids.size());
@@ -129,7 +129,7 @@ TEST(bit_index_storage, diff) {
   bit_table_t d1;
   s1.get_diff(d1);
 
-  s2.set_mixed_and_clear_diff(d1);
+  s2.put_diff(d1);
   bit_vector v;
   s2.get_row("r1", v);
   EXPECT_TRUE(make_vector("0101") == v);
@@ -162,7 +162,7 @@ TEST(bit_index_storage, mix) {
   s3.set_row("r2", make_vector("1111"));
   s3.set_row("r3", make_vector("1111"));
   s3.set_row("r4", make_vector("1111"));
-  s3.set_mixed_and_clear_diff(d2);
+  s3.put_diff(d2);
 
   // r1, r2 and r3 are overwritten by d2
   // r4 is no longer retained
@@ -191,7 +191,7 @@ TEST(bit_index_storage, mix) {
   // do MIX
   bit_table_t d3;
   s3.get_diff(d3);
-  s3.set_mixed_and_clear_diff(d3);
+  s3.put_diff(d3);
 
   s3.get_all_row_ids(ids);
   EXPECT_EQ(2u, ids.size());

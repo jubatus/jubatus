@@ -333,7 +333,7 @@ class __attribute__((__deprecated__)) delegating_mixable : public deprecated_mix
   }
 
   bool put_diff_impl(const Diff& diff) {
-    return this->get_model()->set_mixed_and_clear_diff(diff);
+    return this->get_model()->put_diff(diff);
   }
 
   storage::version get_version() const {

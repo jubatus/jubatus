@@ -48,7 +48,7 @@ void mix_graphs(size_t count, vector<graph_wo_index>& gs) {
       gs[0].mix(diff, mixed);
     }
     for (size_t i = 0; i < gs.size(); ++i) {
-      gs[i].set_mixed_and_clear_diff(mixed);
+      gs[i].put_diff(mixed);
     }
   }
 }
@@ -59,7 +59,7 @@ void mix_graph(size_t count, graph_wo_index& g) {
     mixed.clear();
     g.get_diff(diff);
     g.mix(diff, mixed);
-    g.set_mixed_and_clear_diff(mixed);
+    g.put_diff(mixed);
   }
 }
 
@@ -210,7 +210,7 @@ TEST(graph, mix) {
   diff_type diff, mixed;
   g.get_diff(diff);
   g.mix(diff, mixed);
-  g.set_mixed_and_clear_diff(mixed);
+  g.put_diff(mixed);
 }
 
 TEST(graph, shortest_path_line_graph) {
@@ -230,7 +230,7 @@ TEST(graph, shortest_path_line_graph) {
   diff_type diff, mixed;
   g.get_diff(diff);
   g.mix(diff, mixed);
-  g.set_mixed_and_clear_diff(mixed);
+  g.put_diff(mixed);
 
   vector<node_id_t> path;
   g.shortest_path(2, 3, 3, path, preset_query());

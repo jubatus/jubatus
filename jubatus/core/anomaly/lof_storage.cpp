@@ -207,7 +207,7 @@ void lof_storage::get_diff(lof_table_t& diff) const {
   diff = lof_table_diff_;
 }
 
-bool lof_storage::set_mixed_and_clear_diff(const lof_table_t& mixed_diff) {
+bool lof_storage::put_diff(const lof_table_t& mixed_diff) {
   for (lof_table_t::const_iterator it = mixed_diff.begin();
        it != mixed_diff.end(); ++it) {
     if (is_removed(it->second)) {

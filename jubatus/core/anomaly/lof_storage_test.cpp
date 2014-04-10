@@ -200,7 +200,7 @@ class lof_storage_mix_test : public ::testing::TestWithParam<
 
     lof_table_t diff;
     single_storage_->get_diff(diff);
-    single_storage_->set_mixed_and_clear_diff(diff);
+    single_storage_->put_diff(diff);
   }
 
   virtual void SetUp() {

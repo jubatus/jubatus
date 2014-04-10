@@ -142,7 +142,7 @@ class linear_mixable_helper : public linear_mixable {
     if (!diff_obj) {
       throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("bad diff_object"));
     }
-    return model_->set_mixed_and_clear_diff(diff_obj->diff_);
+    return model_->put_diff(diff_obj->diff_);
   }
 
  private:

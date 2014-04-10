@@ -230,7 +230,7 @@ TEST(lsh_index_storage, get_and_set_diff) {
   lsh_master_table_t d1;
   s1.get_diff(d1);
 
-  s2.set_mixed_and_clear_diff(d1);
+  s2.put_diff(d1);
 
   vector<pair<string, float> > ids;
   s2.similar_row(make_hash("1 2 3 4"), 1, 0, 1, ids);
@@ -258,7 +258,7 @@ TEST(lsh_index_storage, clear_row_before_mix) {
   vector<string> ids;
 
   s1.mix(d1, d2);
-  s1.set_mixed_and_clear_diff(d2);
+  s1.put_diff(d2);
 
   // Expect size = 2 after initial MIX
   ids.clear();
@@ -275,7 +275,7 @@ TEST(lsh_index_storage, clear_row_before_mix) {
   s1.get_diff(d1);
   s2.get_diff(d2);
   s1.mix(d1, d2);
-  s1.set_mixed_and_clear_diff(d2);
+  s1.put_diff(d2);
 
   // Expect size = 1 after MIX after remove
   ids.clear();
@@ -310,7 +310,7 @@ TEST(lsh_index_storage, mix) {
   s3.set_row("r2", h0, 1);
   s3.set_row("r3", h0, 1);
   s3.set_row("r4", h0, 1);
-  s3.set_mixed_and_clear_diff(d2);
+  s3.put_diff(d2);
 
   // r1, r2 and r3 are overwritten by d2
 
@@ -352,7 +352,7 @@ TEST(lsh_index_storage, set_and_remove_around_mix) {
 
   s1.mix(d1, d2);
 
-  s1.set_mixed_and_clear_diff(d2);
+  s1.put_diff(d2);
   s1.remove_row("r3");
 
   vector<pair<string, float> > ids;
@@ -382,7 +382,7 @@ TEST(lsh_index_storage, row_operations) {
   // do MIX
   lsh_master_table_t d1;
   s1.get_diff(d1);
-  s1.set_mixed_and_clear_diff(d1);
+  s1.put_diff(d1);
 
   s1.get_all_row_ids(ids);
   EXPECT_EQ(2u, ids.size());
@@ -396,7 +396,7 @@ TEST(lsh_index_storage, row_operations) {
   // do MIX
   lsh_master_table_t d2;
   s1.get_diff(d2);
-  s1.set_mixed_and_clear_diff(d2);
+  s1.put_diff(d2);
 
   s1.get_all_row_ids(ids);
   ASSERT_EQ(1u, ids.size());

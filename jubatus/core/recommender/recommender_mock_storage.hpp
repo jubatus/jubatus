@@ -65,7 +65,7 @@ class recommender_mock_storage {
   void unpack(msgpack::object o);
 
   void get_diff(recommender_mock_storage& diff) const;
-  bool set_mixed_and_clear_diff(const recommender_mock_storage& mixed_diff);
+  bool put_diff(const recommender_mock_storage& mixed_diff);
   void mix(const recommender_mock_storage& lhs, recommender_mock_storage& rhs)
       const;
 
