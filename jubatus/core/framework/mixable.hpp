@@ -133,7 +133,7 @@ class mixable_holder {
     }
   }
 
-  // for linear_mixable
+  // for linear_mixable implemented in mixable.cpp
   void mix(const std::vector<msgpack::object>& objs, packer& pk);
 
   void get_diff(packer& pk) const {

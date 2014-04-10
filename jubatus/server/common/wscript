@@ -55,7 +55,7 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = ['jubatus_core']
+      use = ['jubatus_util', 'jubatus_core', 'jubaserv_common']
       )
   for s in test_src:
     make_test(s)
