@@ -22,6 +22,7 @@
 #include "../../util/lang/shared_ptr.h"
 #include "../common/version.hpp"
 
+using std::string;
 using std::stringstream;
 using jubatus::core::common::byte_buffer;
 
@@ -73,6 +74,50 @@ struct int_model : public model {
 
 typedef linear_mixable_helper<int_model, int> mixable_int;
 
+struct str_model : public model {
+  str_model()
+      : value(""), diff_("") {
+  }
+
+  string value;
+
+  // TODO(suma): replace packer
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+    packer.pack(value);
+  }
+
+  void unpack(msgpack::object o) {
+    o.convert(&value);
+  }
+
+  void clear() {
+  }
+
+  // for linear_mixable
+  void get_diff(string& diff) const {
+    diff = diff_;
+  }
+
+  bool put_diff(const std::string& n) {
+    value += n;
+    diff_ = "";
+    return true;
+  }
+
+  void mix(const string& lhs, string& mixed) const {
+    mixed += lhs;
+  }
+
+  void add(const string& n) {
+    diff_ += n;
+  }
+
+ private:
+  string diff_;
+};
+
+typedef linear_mixable_helper<str_model, string> mixable_str;
+
 TEST(mixable, config_not_set) {
   //EXPECT_THROW(mixable_int(),common::config_not_set);
 }
@@ -116,6 +161,77 @@ TEST(mixable, trivial) {
 
   EXPECT_EQ(20, m.get_model()->value);
 }
+
+TEST(mixable, string) {
+  mixable_str m(mixable_str::model_ptr(new str_model));
+
+  m.get_model()->add("add");
+  EXPECT_EQ("", m.get_model()->value);
+
+  msgpack::sbuffer diff1, diff2;
+  stream_writer<msgpack::sbuffer> sw1(diff1), sw2(diff2);
+  core::framework::msgpack_packer mp1(sw1), mp2(sw2);
+  packer pk1(mp1), pk2(mp2);
+  m.get_diff(pk1);
+  m.get_diff(pk2);
+
+  msgpack::unpacked m1, m2;
+  msgpack::unpack(&m1, diff1.data(), diff1.size());
+  msgpack::unpack(&m2, diff2.data(), diff2.size());
+
+  diff_object diff_obj_mixed = m.convert_diff_object(m1.get());
+  m.mix(m2.get(), diff_obj_mixed);// "add" + "add"
+  m.put_diff(diff_obj_mixed);
+
+  EXPECT_EQ("addadd", m.get_model()->value);
+}
+
+struct mixable_string : public core::framework::linear_mixable_crtp_helper<
+    mixable_string, string> {
+ public:
+   void get_diff(string& diff) const {
+    diff = string("test");
+  }
+  bool put_diff(const string&) {
+    return true;
+  }
+  void mix( const string& lhs, string& mixed) const {
+    std::stringstream ss;
+    ss << "(" << lhs << "+" << mixed << ")";
+    mixed = ss.str();
+  }
+};
+
+TEST(mixable, mixable_string) {
+  mixable_string mixable;
+  linear_mixable& m = mixable;
+
+  msgpack::sbuffer diff1, diff2;
+  stream_writer<msgpack::sbuffer> sw1(diff1), sw2(diff2);
+  core::framework::msgpack_packer mp1(sw1), mp2(sw2);
+  packer pk1(mp1), pk2(mp2);
+  m.get_diff(pk1);
+  m.get_diff(pk2);
+
+  msgpack::unpacked m1, m2;
+  msgpack::unpack(&m1, diff1.data(), diff1.size());
+  msgpack::unpack(&m2, diff2.data(), diff2.size());
+
+  diff_object diff_obj_mixed = m.convert_diff_object(m1.get());
+  m.mix(m2.get(), diff_obj_mixed);// "test" + "test"
+  m.put_diff(diff_obj_mixed);
+
+  msgpack::sbuffer resbuf;
+  stream_writer<msgpack::sbuffer> sw(resbuf);
+  core::framework::msgpack_packer mp(sw);
+  packer pk(mp);
+  diff_obj_mixed->convert_binary(pk);
+  msgpack::unpacked mixed;
+  msgpack::unpack(&mixed, resbuf.data(), resbuf.size());
+
+  EXPECT_EQ("(test+test)", mixed.get().as<string>());
+}
+
 
 }  // namespace framework
 }  // namespace core
