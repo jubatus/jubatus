@@ -32,7 +32,7 @@ def options(opt):
   opt.recurse(subdirs)
 
 def configure(conf):
-  conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe'];
+  conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe', '-fPIC'];
 
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
