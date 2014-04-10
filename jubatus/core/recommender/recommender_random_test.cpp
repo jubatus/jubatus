@@ -60,7 +60,10 @@ get_mixable(recommender_base& r) {
   r.register_mixables_to_holder(holder);
   // There are currently two mixables: orig (dummy mixable) and algorithm-
   // specific mixable.
-  return holder.get_mixables().back();
+
+  // TODO: this cast is temporaly
+  return jubatus::util::lang::shared_ptr<framework::mixable0>
+    (dynamic_cast<framework::mixable0*>(holder.get_mixables().back().get()));
 }
 
 template<typename T>
