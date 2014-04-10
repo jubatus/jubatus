@@ -23,6 +23,7 @@
 #include "../../../core/common/version.hpp"
 #include "../../../core/common/byte_buffer.hpp"
 #include "../../../core/framework/mixable.hpp"
+#include "../../../core/framework/mixable_helper.hpp"
 #include "linear_mixer.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 
@@ -32,19 +33,18 @@ using std::make_pair;
 using jubatus::util::lang::shared_ptr;
 using jubatus::core::common::byte_buffer;
 
+using namespace std;
+
 namespace jubatus {
 namespace server {
 namespace framework {
 namespace mixer {
 namespace {
 
-vector<byte_buffer> make_packed_vector(const string& s) {
-    vector<byte_buffer> v;
+vector<string> make_packed_vector(const string& s) {
+    vector<string> v;
     // pack mix-internal
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, s);
-    v.push_back(byte_buffer(sbuf.data(), sbuf.size()));
-
+    v.push_back(s);
     return v;
 }
 
@@ -52,6 +52,7 @@ common::mprpc::rpc_response_t make_response(const string& s) {
   common::mprpc::rpc_response_t res;
   res.zone = mp::shared_ptr<msgpack::zone>(new msgpack::zone);
   res.response.a3 = msgpack::object(make_packed_vector(s), res.zone.get());
+  cout << "response: " << res.response.a3 << endl;
 
   return res;
 }
@@ -67,6 +68,7 @@ class linear_communication_stub : public linear_communication {
   }
 
   void get_diff(common::mprpc::rpc_result_object& result) const {
+    cout << "get_diff called" << endl;
     result.response.push_back(make_response("1"));
     result.response.push_back(make_response("2"));
     result.response.push_back(make_response("3"));
@@ -77,23 +79,41 @@ class linear_communication_stub : public linear_communication {
     result.error.push_back(common::mprpc::rpc_error("4", 4));
   }
 
-  void put_diff(const vector<byte_buffer>& mixed,
+  void put_diff(const byte_buffer& mixed,
                 common::mprpc::rpc_result_object& result) const {
+    cout << "put_diff " << mixed.size() << endl;
+
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, mixed.ptr(), mixed.size());
+    vector<string> tmp = msg.get().as<vector<string> >();
+    mixed_.swap(tmp);
+
+    cout << "msg:" << msg.get() << endl;
+
+    /*
+    msgpack::sbuffer sbuf;
+    msgpack::packer<msgpack::sbuffer> pk(sbuf);
+    pk.pack_array(1);
+    pk.pack(mixed);
     vector<string> tmp;
+
     tmp.reserve(mixed.size());
     typedef vector<byte_buffer>::const_iterator iter_t;
     for (iter_t it = mixed.begin(); it != mixed.end(); ++it) {
       if (const char* p = it->ptr()) {
         size_t size = it->size();
-        tmp.push_back(std::string(p, size));
+        tmp.push_back(string(p, size));
       } else {
         tmp.push_back("");
       }
     }
     mixed_.swap(tmp);
+  */
   }
 
   vector<string> get_mixed() const {
+    return mixed_;
+#if 0
     vector<string> mixed;
     mixed.reserve(mixed_.size());
 
@@ -105,6 +125,7 @@ class linear_communication_stub : public linear_communication {
     }
 
     return mixed;
+#endif
   }
 
   byte_buffer get_model() {
@@ -122,34 +143,22 @@ class linear_communication_stub : public linear_communication {
   mutable vector<string> mixed_;
 };
 
-struct mixable_string : public core::framework::deprecated_mixable<
-    mixable_string, core::common::byte_buffer> {
+struct mixable_string : public core::framework::linear_mixable_crtp_helper<
+    mixable_string, string> {
  public:
-  core::common::byte_buffer get_diff_impl() const {
-    return core::common::byte_buffer();
+   void get_diff(string& diff) const {
+    diff = string();
   }
-  bool put_diff_impl(const byte_buffer&) {
+  bool put_diff(const string&) {
     return true;
   }
-  void mix_impl(
-      const byte_buffer& lhs,
-      const byte_buffer& rhs,
-      byte_buffer& mixed) const {
+  void mix( const string& lhs, string& mixed) const {
+    cout << "lhs: "<< lhs << endl;
+    cout << "mixed: "<< mixed << endl;
     std::stringstream ss;
-    ss << "(" << string(lhs.ptr(), lhs.size()) << "+"
-       << string(rhs.ptr(), rhs.size()) << ")";
-    string s = ss.str();
-    mixed.assign(s.data(), s.size());
+    ss << "(" << lhs << "+" << mixed << ")";
+    mixed = ss.str();
   }
-  string get_pull_argument() const { return string(); }
-  string pull(const string&) const { return string(); }
-  void push(const string&) {}
-  void save(std::ostream&) {}
-  void load(std::istream&) {}
-  core::storage::version get_version() const {
-    return core::storage::version();
-  }
-  void clear() {}
 };
 
 TEST(linear_mixer, mix_order) {

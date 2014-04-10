@@ -461,27 +461,27 @@ void linear_mixer::mix() {
         }
       }
 
+      common::mprpc::rpc_result_object diff_result;
       vector<msgpack::object> diffs;
       {  // get_diff() -> diffs
-        common::mprpc::rpc_result_object result;
-        communication_->get_diff(result);
+        communication_->get_diff(diff_result);
 
         // convert from rpc_result_object to vector<vector<bite_buffer> >
         typedef pair<string, uint16_t> server;
         vector<server> successes;
-        for (size_t i = 0; i < result.response.size(); ++i) {
-          if (result.response[i].has_error()) {
+        for (size_t i = 0; i < diff_result.response.size(); ++i) {
+          if (diff_result.response[i].has_error()) {
             const string error_text(
-                create_error_string(result.response[i].error()));
+                create_error_string(diff_result.response[i].error()));
             LOG(WARNING) << "get_diff failed at "
-                         << result.error[i].host() << ":"
-                         << result.error[i].port()
+                         << diff_result.error[i].host() << ":"
+                         << diff_result.error[i].port()
                          << " : " << error_text;
             continue;
           }
-          diffs.push_back(result.response[i].as<msgpack::object>());
+          diffs.push_back(diff_result.response[i].as<msgpack::object>());
           successes.push_back(
-              make_pair(result.error[i].host(), result.error[i].port()));
+              make_pair(diff_result.error[i].host(), diff_result.error[i].port()));
         }
 
         {  // success info message
