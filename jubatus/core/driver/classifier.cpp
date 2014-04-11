@@ -42,11 +42,17 @@ namespace driver {
 classifier::classifier(
     shared_ptr<core::classifier::classifier_base> classifier_method,
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    : mixable_holder_(new mixable_holder),
-      converter_(converter),
-      classifier_(classifier_method) {
-  classifier_->register_mixables_to_holder(*mixable_holder_);
-  converter_->register_mixables_to_holder(*mixable_holder_);
+    : mixable_holder_(new mixable_holder)
+    , converter_(converter)
+    , classifier_(classifier_method)
+    , mixable_classifier_model_(classifier_method->get_storage())
+    , wm_(core::fv_converter::mixable_weight_manager::model_ptr(new weight_manager)) {
+
+  //TODO
+  //mixable_holder->register_mixable(classifier_method->get_storage().get());
+  //mixable_holder->register_mixable(wm_);
+
+  converter_->set_weight_manager(wm_.get_model());
 }
 
 classifier::~classifier() {
@@ -85,6 +91,23 @@ bool classifier::set_label(const std::string& label) {
   return classifier_->set_label(label);
 }
 
+void classifier::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+  pk.pack_array(2);
+  classifier_->get_storage()->pack(pk);
+  wm_.get_model()->pack(pk);
+}
+
+void classifier::unpack(msgpack::object& o) {
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
+    throw msgpack::type_error();
+  }
+
+  // clear before load
+  classifier_->clear();
+  converter_->clear_weights();
+  classifier_->get_storage()->unpack(o.via.array.ptr[0]);
+  wm_.get_model()->unpack(o.via.array.ptr[1]);
+}
 
 }  // namespace driver
 }  // namespace core

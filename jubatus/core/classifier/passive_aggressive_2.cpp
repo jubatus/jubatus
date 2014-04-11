@@ -25,13 +25,13 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
-passive_aggressive_2::passive_aggressive_2(classifier_base::storage_ptr storage)
+passive_aggressive_2::passive_aggressive_2(storage_ptr storage)
     : classifier_base(storage) {
 }
 
 passive_aggressive_2::passive_aggressive_2(
     const classifier_config& config,
-    classifier_base::storage_ptr storage)
+    storage_ptr storage)
     : classifier_base(storage),
       config_(config) {
 }
@@ -43,12 +43,12 @@ void passive_aggressive_2::train(const common::sfv_t& sfv,
   float loss = 1.f + margin;
 
   if (loss < 0.f) {
-    get_storage()->register_label(label);
+    storage_->register_label(label);
     return;
   }
   float sfv_norm = squared_norm(sfv);
   if (sfv_norm == 0.f) {
-    get_storage()->register_label(label);
+    storage_->register_label(label);
     return;
   }
   update_weight(

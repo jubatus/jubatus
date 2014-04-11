@@ -26,6 +26,7 @@
 #include "../classifier/classifier_base.hpp"
 #include "../framework/mixable.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../fv_converter/mixable_weight_manager.hpp"
 
 namespace jubatus {
 namespace core {
@@ -54,6 +55,8 @@ class classifier {
 
   void get_status(std::map<std::string, std::string>& status) const;
   void clear();
+  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void unpack(msgpack::object& o);
 
   std::vector<std::string> get_labels() const;
   bool set_label(const std::string& label);
@@ -64,6 +67,8 @@ class classifier {
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
     converter_;
   jubatus::util::lang::shared_ptr<classifier_base> classifier_;
+  framework::linear_function_mixer mixable_classifier_model_;
+  fv_converter::mixable_weight_manager wm_;
 };
 
 }  // namespace driver

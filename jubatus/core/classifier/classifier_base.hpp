@@ -30,13 +30,14 @@
 #include "../storage/storage_base.hpp"
 #include "classifier_type.hpp"
 
+typedef jubatus::util::lang::shared_ptr<jubatus::core::storage::storage_base> storage_ptr;
+
 namespace jubatus {
 namespace core {
 namespace classifier {
 
 class classifier_base {
  public:
-  typedef jubatus::util::lang::shared_ptr<storage::storage_base> storage_ptr;
 
   explicit classifier_base(storage_ptr storage);
   virtual ~classifier_base();
@@ -61,6 +62,9 @@ class classifier_base {
   // storages.
   virtual void get_status(std::map<std::string, std::string>& status) const;
 
+  // TODO: I(suma) made get_storage() public
+  storage_ptr get_storage();
+
  protected:
   void update_weight(
       const common::sfv_t& sfv,
@@ -80,13 +84,11 @@ class classifier_base {
       const common::sfv_t& sfv,
       const std::string& label,
       classify_result& scores) const;
-  storage::storage_base* get_storage();
   const storage::storage_base* get_storage() const;
 
   static float squared_norm(const common::sfv_t& sfv);
 
- private:
-  jubatus::util::lang::shared_ptr<framework::linear_function_mixer> mixable_;
+  storage_ptr storage_;
 };
 
 }  // namespace classifier

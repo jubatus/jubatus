@@ -27,10 +27,10 @@ namespace classifier {
 
 class normal_herd : public classifier_base {
  public:
-  explicit normal_herd(classifier_base::storage_ptr storage);
+  explicit normal_herd(storage_ptr storage);
   normal_herd(
       const classifier_config& config,
-      classifier_base::storage_ptr storage);
+      storage_ptr storage);
   void train(const common::sfv_t& fv, const std::string& label);
   std::string name() const;
  private:

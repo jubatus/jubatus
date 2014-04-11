@@ -221,17 +221,22 @@ TEST_P(classifier_test, save_load) {
     classifier_->train(data[i]);
   }
 
-  std::string save_data;
+  msgpack::sbuffer sbuf;
+  msgpack::packer<msgpack::sbuffer> pk(sbuf);
+  classifier_->pack(pk);
 
-  save_model(classifier_->get_mixable_holder(), save_data);
   classifier_->clear();
-  load_model(classifier_->get_mixable_holder(), save_data);
+
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+  classifier_->unpack(msg.get());
 
   my_test();
 }
 
 TEST_P(classifier_test, save_load_2) {
-  std::string save_empty, save_test;
+  msgpack::sbuffer save_empty, save_test;
+  msgpack::packer<msgpack::sbuffer> empty_pk(save_empty), test_pk(save_test);
 
   // Test data
   datum pos;
@@ -240,7 +245,7 @@ TEST_P(classifier_test, save_load_2) {
   neg.num_values_.push_back(make_pair("value", -10.0));
 
   // Save empty state
-  save_model(classifier_->get_mixable_holder(), save_empty);
+  classifier_->pack(empty_pk);
 
   // Train
   classifier_->train(make_pair("pos", pos));
@@ -251,17 +256,25 @@ TEST_P(classifier_test, save_load_2) {
   ASSERT_EQ("neg", get_max_label(classifier_->classify(neg)));
 
   // Save current state
-  save_model(classifier_->get_mixable_holder(), save_test);
+  classifier_->pack(test_pk);
 
   // Load empty
-  load_model(classifier_->get_mixable_holder(), save_empty);
+  {
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, save_empty.data(), save_empty.size());
+    classifier_->unpack(msg.get());
+  }
 
   // And the classifier classify data improperly, but cannot expect results
   ASSERT_EQ(0u, classifier_->classify(pos).size());
   ASSERT_EQ(0u, classifier_->classify(neg).size());
 
   // Reload server
-  load_model(classifier_->get_mixable_holder(), save_test);
+  {
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, save_test.data(), save_test.size());
+    classifier_->unpack(msg.get());
+  }
 
   // The classifier works well
   ASSERT_EQ("pos", get_max_label(classifier_->classify(pos)));
@@ -272,8 +285,9 @@ TEST_P(classifier_test, save_load_3) {
   jubatus::util::math::random::mtrand rand(0);
   const size_t example_size = 1000;
 
-  std::string save_data;
-  save_model(classifier_->get_mixable_holder(), save_data);
+  msgpack::sbuffer save_data;
+  msgpack::packer<msgpack::sbuffer> save_pk(save_data);
+  classifier_->pack(save_pk);
 
   vector<pair<string, datum> > data;
   make_random_data(rand, data, example_size);
@@ -281,7 +295,11 @@ TEST_P(classifier_test, save_load_3) {
     classifier_->train(data[i]);
   }
 
-  load_model(classifier_->get_mixable_holder(), save_data);
+  {
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, save_data.data(), save_data.size());
+    classifier_->unpack(msg.get());
+  }
 
   {
     vector<string> labels_expected;  // empty

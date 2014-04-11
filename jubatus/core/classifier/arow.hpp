@@ -27,8 +27,8 @@ namespace classifier {
 
 class arow : public classifier_base {
  public:
-  explicit arow(classifier_base::storage_ptr storage);
-  arow(const classifier_config& config, classifier_base::storage_ptr storage);
+  explicit arow(storage_ptr storage);
+  arow(const classifier_config& config, storage_ptr storage);
   void train(const common::sfv_t& fv, const std::string& label);
   std::string name() const;
  private:

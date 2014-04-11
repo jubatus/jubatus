@@ -28,13 +28,13 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
-arow::arow(classifier_base::storage_ptr storage)
+arow::arow(storage_ptr storage)
     : classifier_base(storage) {
 }
 
 arow::arow(
     const classifier_config& config,
-    classifier_base::storage_ptr storage)
+    storage_ptr storage)
     : classifier_base(storage),
       config_(config) {
 }
@@ -45,7 +45,7 @@ void arow::train(const common::sfv_t& sfv, const string& label) {
   float margin = -calc_margin_and_variance(sfv, label, incorrect_label,
                                            variance);
   if (margin >= 1.f) {
-    get_storage()->register_label(label);
+    storage_->register_label(label);
     return;
   }
 
@@ -60,25 +60,24 @@ void arow::update(
     float beta,
     const std::string& pos_label,
     const std::string& neg_label) {
-  storage::storage_base* sto = get_storage();
   for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     float val = it->second;
     storage::feature_val2_t ret;
-    sto->get2(feature, ret);
+    storage_->get2(feature, ret);
 
     storage::val2_t pos_val(0.f, 1.f);
     storage::val2_t neg_val(0.f, 1.f);
     ClassifierUtil::get_two(ret, pos_label, neg_label, pos_val, neg_val);
 
-    sto->set2(
+    storage_->set2(
         feature,
         pos_label,
         storage::val2_t(
             pos_val.v1 + alpha * pos_val.v2 * val,
             pos_val.v2 - beta * pos_val.v2 * pos_val.v2 * val * val));
     if (neg_label != "") {
-      sto->set2(
+      storage_->set2(
           feature,
           neg_label,
           storage::val2_t(

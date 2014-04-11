@@ -24,7 +24,7 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
-perceptron::perceptron(classifier_base::storage_ptr storage)
+perceptron::perceptron(storage_ptr storage)
     : classifier_base(storage) {
 }
 

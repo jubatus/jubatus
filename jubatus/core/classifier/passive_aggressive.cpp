@@ -24,7 +24,7 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
-passive_aggressive::passive_aggressive(classifier_base::storage_ptr storage)
+passive_aggressive::passive_aggressive(storage_ptr storage)
     : classifier_base(storage) {
 }
 
@@ -37,7 +37,7 @@ void passive_aggressive::train(const common::sfv_t& sfv, const string& label) {
   }
   float sfv_norm = squared_norm(sfv);
   if (sfv_norm == 0.f) {
-    get_storage()->register_label(label);
+    storage_->register_label(label);
     return;
   }
   update_weight(sfv, loss / (2 * sfv_norm), label, incorrect_label);
