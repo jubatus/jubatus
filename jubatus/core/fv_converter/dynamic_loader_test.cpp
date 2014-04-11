@@ -14,6 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <stdlib.h>
 #include <map>
 #include <string>
 #include <gtest/gtest.h>
@@ -49,6 +50,22 @@ TEST(dynamic_loader, null) {
   EXPECT_THROW(load_object<word_splitter>(
       l, std::string("create"), std::map<std::string, std::string>()),
                converter_exception);
+}
+
+TEST(dynamic_loader, absolute_path) {
+  ASSERT_EQ('/', BUILD_DIR[0]);
+  const char* absolute_path
+      = BUILD_DIR "/jubatus/core/fv_converter/" LIBSPLITTER_SAMPLE;
+  dynamic_loader l(absolute_path);
+  l.load_symbol("create");
+}
+
+TEST(dynamic_loader, load_from_env) {
+  ASSERT_EQ('/', BUILD_DIR[0]);
+  const char* plugin_dir = BUILD_DIR "/jubatus/core/fv_converter";
+  ASSERT_EQ(0, ::setenv("JUBATUS_PLUGIN_PATH", plugin_dir, 1));
+  dynamic_loader l(LIBSPLITTER_SAMPLE);
+  l.load_symbol("create");
 }
 
 }  // namespace fv_converter
