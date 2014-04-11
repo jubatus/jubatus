@@ -51,10 +51,10 @@ class server_base {
   virtual void get_status(status_t& status) const = 0;
   virtual void set_config(const std::string& config) = 0;
 
+  virtual bool clear();
   virtual bool save(const std::string& id);
   virtual bool load(const std::string& id);
   void load_file(const std::string& path);
-  void clear();
   void event_model_updated();
   void update_saved_status(const std::string& path);
   void update_loaded_status(const std::string& path);

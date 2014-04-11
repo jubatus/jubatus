@@ -86,6 +86,11 @@ server_base::server_base(const server_argv& a)
       last_loaded_path_("") {
 }
 
+bool server_base::clear() {
+  get_mixable_holder()->clear_each_mixables();
+  return true;
+}
+
 bool server_base::save(const std::string& id) {
   const std::string path = build_local_path(argv_, "jubatus", id);
   LOG(INFO) << "starting save to " << path;
@@ -136,10 +141,6 @@ bool server_base::load(const std::string& id) {
 
 void server_base::load_file(const std::string& path) {
   load_file_impl(*this, path, "");
-}
-
-void server_base::clear() {
-  get_mixable_holder()->clear_each_mixables();
 }
 
 void server_base::event_model_updated() {
