@@ -39,4 +39,7 @@ service clustering {
 
   #@random #@analysis #@pass
   list<weighted_datum > get_nearest_members(0: datum point)
+
+  #@broadcast #@update #@all_and
+  bool clear()
 }
