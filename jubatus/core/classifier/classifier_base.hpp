@@ -23,14 +23,12 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "jubatus/util/lang/shared_ptr.h"
 
 #include "../common/type.hpp"
 #include "../framework/linear_function_mixer.hpp"
 #include "../storage/storage_base.hpp"
 #include "classifier_type.hpp"
 
-typedef jubatus::util::lang::shared_ptr<jubatus::core::storage::storage_base> storage_ptr;
 
 namespace jubatus {
 namespace core {

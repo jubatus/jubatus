@@ -25,6 +25,7 @@
 #include "../regression/regression_base.hpp"
 #include "../framework/mixable.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../fv_converter/mixable_weight_manager.hpp"
 
 namespace jubatus {
 namespace core {
@@ -60,6 +61,8 @@ class regression {
     converter_;
   jubatus::util::lang::shared_ptr<jubatus::core::regression::regression_base>
     regression_;
+  framework::linear_function_mixer mixable_regression_model_;
+  fv_converter::mixable_weight_manager wm_;
 };
 
 }  // namespace driver

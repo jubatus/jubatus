@@ -34,7 +34,6 @@ namespace regression {
 
 class regression_base {
  public:
-  typedef jubatus::util::lang::shared_ptr<storage::storage_base> storage_ptr;
   explicit regression_base(storage_ptr storage);
 
   virtual ~regression_base() {
@@ -52,11 +51,13 @@ class regression_base {
   // storages.
   virtual void get_status(std::map<std::string, std::string>& status) const;
 
+  storage_ptr get_storage();
+
  protected:
   void update(const common::sfv_t& fv, float coeff);
 
- private:
-  jubatus::util::lang::shared_ptr<framework::linear_function_mixer> mixable_;
+  storage_ptr storage_;
+
 };
 
 }  // namespace regression

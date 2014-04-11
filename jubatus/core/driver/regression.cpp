@@ -39,11 +39,15 @@ regression::regression(
     shared_ptr<storage::storage_base> model_storage,
     shared_ptr<core::regression::regression_base> regression_method,
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    : mixable_holder_(new mixable_holder),
-      converter_(converter),
-      regression_(regression_method) {
-  regression_->register_mixables_to_holder(*mixable_holder_);
-  converter_->register_mixables_to_holder(*mixable_holder_);
+    : mixable_holder_(new mixable_holder)
+    , converter_(converter)
+    , regression_(regression_method)
+    , mixable_regression_model_(regression_method->get_storage())
+    , wm_(core::fv_converter::mixable_weight_manager::model_ptr(new weight_manager)) {
+  // TODO: register mixable holder
+  //regression_->register_mixables_to_holder(*mixable_holder_);
+  //converter_->register_mixables_to_holder(*mixable_holder_);
+  converter_->set_weight_manager(wm_.get_model());
 }
 
 regression::~regression() {

@@ -24,6 +24,7 @@
 #include <utility>
 #include <stdexcept>
 #include <vector>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "storage_type.hpp"
 #include "../common/version.hpp"
 #include "../common/exception.hpp"
@@ -106,7 +107,11 @@ class storage_exception
 };
 
 }  // namespace storage
+
+typedef jubatus::util::lang::shared_ptr<jubatus::core::storage::storage_base> storage_ptr;
+
 }  // namespace core
 }  // namespace jubatus
+
 
 #endif  // JUBATUS_CORE_STORAGE_STORAGE_BASE_HPP_
