@@ -156,6 +156,7 @@ class nearest_neighbor_test
     nn_driver_ = GetParam();
   }
   void TearDown() {
+    nn_driver_->clear();
   }
   shared_ptr<core::driver::nearest_neighbor> nn_driver_;
 };
@@ -317,6 +318,10 @@ class nearest_neighbor_with_unlearning_test
     nn_driver_.reset(new nearest_neighbor(
         std::tr1::get<0>(GetParam()), make_fv_converter(),
         std::tr1::get<1>(GetParam())));
+  }
+
+  void TearDown() {
+    nn_driver_->clear();
   }
 
   bool is_hit(
