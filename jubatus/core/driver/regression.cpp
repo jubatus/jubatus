@@ -76,6 +76,24 @@ void regression::clear() {
   converter_->clear_weights();
 }
 
+void regression::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+  pk.pack_array(2);
+  regression_->get_storage()->pack(pk);
+  wm_.get_model()->pack(pk);
+}
+
+void regression::unpack(msgpack::object& o) {
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
+    throw msgpack::type_error();
+  }
+
+  // clear before load
+  regression_->clear();
+  converter_->clear_weights();
+  regression_->get_storage()->unpack(o.via.array.ptr[0]);
+  wm_.get_model()->unpack(o.via.array.ptr[1]);
+}
+
 }  // namespace driver
 }  // namespace core
 }  // namespace jubatus
