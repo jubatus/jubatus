@@ -138,6 +138,10 @@ void server_base::load_file(const std::string& path) {
   load_file_impl(*this, path, "");
 }
 
+void server_base::clear() {
+  get_mixable_holder()->clear_each_mixables();
+}
+
 void server_base::event_model_updated() {
   ++update_count_;
   if (mixer::mixer* m = get_mixer()) {
