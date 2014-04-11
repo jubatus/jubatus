@@ -102,7 +102,7 @@ class linear_mixable_helper : public linear_mixable {
     }
   }
 
-  // Implement set_model function for temporal core separation
+  // TODO: Implement set_model function for temporal core separation
   void set_model(model_ptr m) __attribute__ ((deprecated)) {
     model_ = m;
   }
@@ -112,6 +112,11 @@ class linear_mixable_helper : public linear_mixable {
 
   model_ptr get_model() const {
     return model_;
+  }
+
+  // TODO: Implement set_model function for temporal core separation
+  void clear() __attribute__ ((deprecated)) {
+    model_->clear();
   }
 
   diff_object convert_diff_object(const msgpack::object& obj) const {

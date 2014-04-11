@@ -20,7 +20,9 @@
 #include <istream>
 #include <ostream>
 #include <string>
+#include <msgpack.hpp>
 #include "jubatus/util/data/unordered_map.h"
+#include "../framework/model.hpp"
 #include "../common/type.hpp"
 #include "../common/version.hpp"
 #include "counter.hpp"
@@ -44,7 +46,7 @@ struct versioned_weight_diff {
   storage::version version_;
 };
 
-class weight_manager {
+class weight_manager : public framework::model {
  public:
   weight_manager();
 
@@ -53,8 +55,8 @@ class weight_manager {
 
   void add_weight(const std::string& key, float weight);
 
-  versioned_weight_diff get_diff() const {
-    return versioned_weight_diff(diff_weights_, version_);
+  void get_diff(versioned_weight_diff& diff) const {
+    diff = versioned_weight_diff(diff_weights_, version_);
   }
 
   bool put_diff(const versioned_weight_diff& diff) {
@@ -65,6 +67,16 @@ class weight_manager {
       return true;
     } else {
       return false;
+    }
+  }
+
+  void mix(
+      const versioned_weight_diff& lhs,
+      versioned_weight_diff& acc) const {
+    if (lhs.version_ == acc.version_) {
+      acc.weights_.merge(lhs.weights_);
+    } else if (lhs.version_ > acc.version_) {
+      acc = lhs;
     }
   }
 
@@ -85,9 +97,8 @@ class weight_manager {
 
   MSGPACK_DEFINE(version_, diff_weights_, master_weights_);
 
-  template<class Packer>
-  void pack(Packer& packer) const {
-    packer.pack(*this);
+  void pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+    pk.pack(*this);
   }
 
   void unpack(msgpack::object o) {

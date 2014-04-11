@@ -18,30 +18,14 @@
 #define JUBATUS_CORE_FV_CONVERTER_MIXABLE_WEIGHT_MANAGER_HPP_
 
 #include "../framework/mixable.hpp"
+#include "../framework/mixable_helper.hpp"
 #include "weight_manager.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-class mixable_weight_manager : public framework::deprecated_mixable<
-    fv_converter::weight_manager,
-    fv_converter::versioned_weight_diff> {
- public:
-  fv_converter::versioned_weight_diff get_diff_impl() const;
-
-  bool put_diff_impl(const versioned_weight_diff& diff);
-
-  void mix_impl(
-      const versioned_weight_diff& lhs,
-      const versioned_weight_diff& rhs,
-      versioned_weight_diff& acc) const;
-  void clear();
-
-  storage::version get_version() const {
-    return get_model()->get_version();
-  }
-};
+typedef framework::linear_mixable_helper<weight_manager, versioned_weight_diff> mixable_weight_manager;
 
 }  // namespace fv_converter
 }  // namespace core

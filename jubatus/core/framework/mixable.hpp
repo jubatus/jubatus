@@ -105,6 +105,9 @@ class mixable_holder {
       model* m = dynamic_cast<model*>(mixables_[i].get());
       if (m) {
         m->pack(packer);
+      } else if (mixable0* m = dynamic_cast<mixable0*>(mixables_[i].get())) {
+        // TODO: unify model to pack/unpack
+        m->pack(packer);
       }
     }
   }
@@ -128,6 +131,9 @@ class mixable_holder {
       // TODO(suma): extract model function from mixable0
       model* m = dynamic_cast<model*>(mixables_[i].get());
       if (m) {
+        m->unpack(p[i]);
+      } else if (mixable0* m = dynamic_cast<mixable0*>(mixables_[i].get())) {
+        // TODO: unify model to pack/unpack
         m->unpack(p[i]);
       }
     }
