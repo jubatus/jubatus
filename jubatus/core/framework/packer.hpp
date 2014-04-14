@@ -31,14 +31,14 @@ class msgpack_writer {
 
 class msgpack_packer {
  public:
-   // implicit
-   msgpack_packer(msgpack_writer& w) : writer_(w) {
-   }
-   void write(const char* buf, unsigned int len) {
-     writer_.write(buf, len);
-   }
+  // implicit
+  msgpack_packer(msgpack_writer& w) : writer_(w) {
+  }
+  void write(const char* buf, unsigned int len) {
+    writer_.write(buf, len);
+  }
  private:
-   msgpack_writer& writer_;
+  msgpack_writer& writer_;
 };
 
 typedef msgpack::packer<msgpack_packer> packer;
