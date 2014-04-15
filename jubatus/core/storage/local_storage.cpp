@@ -190,13 +190,14 @@ bool local_storage::set_label(const std::string& label) {
 }
 void local_storage::delete_label(const std::string& label) {
   uint64_t delete_id = class2id_.get_id_const(label);
-  if (delete_id == common::key_manager::NOTFOUND)
+  if (delete_id == common::key_manager::NOTFOUND) {
     return;
+  }
   for (id_features3_t::iterator it = tbl_.begin();
        it != tbl_.end();
        ++it) {
-    it->second.erase(delete_id);
-    if (it->second.empty()) {
+    const bool deleted = it->second.erase(delete_id);
+    if (deleted && it->second.empty()) {
       tbl_.erase(it);
     }
   }
