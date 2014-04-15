@@ -21,6 +21,7 @@
 #include <string>
 
 #include "classifier_util.hpp"
+#include "../common/exception.hpp"
 
 using std::string;
 
@@ -37,6 +38,11 @@ confidence_weighted::confidence_weighted(
     classifier_base::storage_ptr storage)
     : classifier_base(storage),
       config_(config) {
+
+  if (config_.C <= 0.f) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("0.0 < regularization_weight"));
+  }
 }
 
 void confidence_weighted::train(const common::sfv_t& sfv, const string& label) {

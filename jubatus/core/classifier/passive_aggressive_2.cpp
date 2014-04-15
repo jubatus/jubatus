@@ -19,6 +19,8 @@
 #include <algorithm>
 #include <string>
 
+#include "../common/exception.hpp"
+
 using std::string;
 
 namespace jubatus {
@@ -34,6 +36,11 @@ passive_aggressive_2::passive_aggressive_2(
     classifier_base::storage_ptr storage)
     : classifier_base(storage),
       config_(config) {
+
+  if (config_.C <= 0.f) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("0.0 < regularization_weight"));
+  }
 }
 
 void passive_aggressive_2::train(const common::sfv_t& sfv,
