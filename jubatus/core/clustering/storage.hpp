@@ -67,6 +67,7 @@ class storage : public event_dispatcher<storage_event_type, wplist> {
 
  protected:
   void increment_revision();
+  virtual void clear_mine() = 0;
 
   size_t revision_;
   std::string name_;
