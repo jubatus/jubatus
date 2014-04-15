@@ -240,11 +240,6 @@ class server_helper {
       // wait for termination
       serv.join();
 
-      // RPC server stopped, then stop mixer
-      if (!a.is_standalone()) {
-        server_->get_mixer()->stop();
-      }
-
       return 0;
     } catch (const mp::system_error& e) {
       if (e.code == EADDRINUSE) {
@@ -262,6 +257,13 @@ class server_helper {
   }
 
   void stop(common::mprpc::rpc_server& serv) {
+    // stop mixer before RPC server stopped for avoiding mixer RPC call to the
+    // server itself
+    LOG(INFO) << "stopping mixer thread";
+    if (!server_->argv().is_standalone()) {
+      server_->get_mixer()->stop();
+    }
+
     LOG(INFO) << "stopping RPC server";
     serv.end();
   }
