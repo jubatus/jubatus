@@ -62,6 +62,18 @@ class key_manager {
   void init_by_id2key(const std::vector<std::string>& id2key);
   void delete_key(const std::string& name);
 
+  friend std::ostream& operator<<(std::ostream& os, const key_manager& km) {
+    typedef jubatus::util::data::unordered_map<std::string, uint64_t> key2id_t;
+    os << "[";
+    for (key2id_t::const_iterator it = km.key2id_.begin();
+         it != km.key2id_.end();
+         ++it) {
+      os << it->first << ":" << it->second << ", ";
+    }
+    os << "]";
+    return os;
+  }
+
  private:
   jubatus::util::data::unordered_map<std::string, uint64_t> key2id_;
   jubatus::util::data::unordered_map<uint64_t, std::string> id2key_;

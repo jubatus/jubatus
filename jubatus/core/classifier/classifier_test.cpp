@@ -140,25 +140,33 @@ TYPED_TEST_P(classifier_test, delete_label) {
   shared_ptr<local_storage> s(new local_storage);
   TypeParam p(s);
 
-  common::sfv_t fv;
-  fv.push_back(std::make_pair("f1", 1.f));
-  p.train(fv, "A");
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f1", 1.f));
+    p.train(fv, "A");
+  }
 
-  fv.clear();
-  fv.push_back(std::make_pair("f1", 1.f));
-  fv.push_back(std::make_pair("f2", 1.f));
-  p.train(fv, "B");
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f1", 1.f));
+    fv.push_back(std::make_pair("f2", 1.f));
+    p.train(fv, "B");
+  }
 
-  fv.clear();
-  fv.push_back(std::make_pair("f3", 1.f));
-  p.train(fv, "C");
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f3", 1.f));
+    p.train(fv, "C");
+  }
 
   p.delete_label("B");
 
-  fv.clear();
-  fv.push_back(std::make_pair("f1", 1.f));
-  fv.push_back(std::make_pair("f2", 1.f));
-  EXPECT_EQ("A", p.classify(fv));
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f1", 1.f));
+    fv.push_back(std::make_pair("f2", 1.f));
+    EXPECT_EQ("A", p.classify(fv));
+  }
 }
 
 TYPED_TEST_P(classifier_test, unlearning) {
@@ -171,19 +179,25 @@ TYPED_TEST_P(classifier_test, unlearning) {
       new unlearner::lru_unlearner(config));
   p.set_label_unlearner(unlearner);
 
-  common::sfv_t fv;
-  fv.push_back(std::make_pair("f1", 10.f));
-  p.train(fv, "A");
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f1", 10.f));
+    p.train(fv, "A");
+  }
 
-  fv.clear();
-  fv.push_back(std::make_pair("f2", 1.f));
-  p.train(fv, "B");
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f2", 1.f));
+    p.train(fv, "B");
+  }
 
-  fv.clear();
-  fv.push_back(std::make_pair("f1", 1.f));
-  p.train(fv, "C");
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f1", 1.f));
+    p.train(fv, "C");
 
-  EXPECT_EQ("C", p.classify(fv));
+    EXPECT_EQ("C", p.classify(fv));
+  }
 }
 
 REGISTER_TYPED_TEST_CASE_P(
