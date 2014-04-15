@@ -156,6 +156,32 @@ TEST(classifier_factory, exception) {
       common::unsupported_method);
 }
 
+TEST(classifier_config_test, regularization_weight) {
+  classifier_base::storage_ptr s(new local_storage);
+  classifier_config c;
+
+  c.C = -0.1f;
+  ASSERT_THROW(passive_aggressive_1(c, s), common::invalid_parameter);
+  ASSERT_THROW(passive_aggressive_2(c, s), common::invalid_parameter);
+  ASSERT_THROW(confidence_weighted(c, s), common::invalid_parameter);
+  ASSERT_THROW(arow(c, s), common::invalid_parameter);
+  ASSERT_THROW(normal_herd(c, s), common::invalid_parameter);
+
+  c.C = 0.f;
+  ASSERT_THROW(passive_aggressive_1(c, s), common::invalid_parameter);
+  ASSERT_THROW(passive_aggressive_2(c, s), common::invalid_parameter);
+  ASSERT_THROW(confidence_weighted(c, s), common::invalid_parameter);
+  ASSERT_THROW(arow(c, s), common::invalid_parameter);
+  ASSERT_THROW(normal_herd(c, s), common::invalid_parameter);
+
+  c.C = 0.1f;
+  ASSERT_NO_THROW(passive_aggressive_1(c, s));
+  ASSERT_NO_THROW(passive_aggressive_2(c, s));
+  ASSERT_NO_THROW(confidence_weighted(c, s));
+  ASSERT_NO_THROW(arow(c, s));
+  ASSERT_NO_THROW(normal_herd(c, s));
+}
+
 }  // namespace classifier
 }  // namespace core
 }  // namespace jubatus
