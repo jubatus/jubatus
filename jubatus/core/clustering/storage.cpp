@@ -89,6 +89,7 @@ void storage::mix(const diff_t& lhs, diff_t& ret) {
 void storage::clear() {
   // TODO(gintenlabo): consider revisions
   common_.clear();
+  increment_revision();
 }
 
 size_t storage::get_revision() {
