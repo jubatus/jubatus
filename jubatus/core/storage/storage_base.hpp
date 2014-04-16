@@ -29,12 +29,13 @@
 #include "../common/version.hpp"
 #include "../common/exception.hpp"
 #include "../common/type.hpp"
+#include "../framework/model.hpp"
 
 namespace jubatus {
 namespace core {
 namespace storage {
 
-class storage_base {
+class storage_base : public framework::model {
  public:
   virtual ~storage_base() {
   }
