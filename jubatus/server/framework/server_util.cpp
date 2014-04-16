@@ -224,11 +224,18 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
     exit(1);
   }
 
-  if (is_standalone() && configpath.empty()) {
-    std::cerr << "can't start standalone mode without configpath specified"
-        << std::endl;
-    std::cerr << p.usage() << std::endl;
-    exit(1);
+  if (is_standalone()) {
+    if (configpath.empty()) {
+      std::cerr << "can't start standalone mode without configpath specified"
+          << std::endl;
+      std::cerr << p.usage() << std::endl;
+      exit(1);
+    }
+    configpath = common::real_path(configpath);
+  }
+
+  if (!modelpath.empty()) {
+    modelpath = common::real_path(modelpath);
   }
 
   if (!is_standalone() && zookeeper_timeout < 1) {
@@ -244,15 +251,21 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
     exit(1);
   }
 
-  if ((!datadir.empty()) && (!common::is_writable(datadir.c_str()))) {
-    std::cerr << "can't use datadir: " << strerror(errno) << std::endl;
-    std::cerr << p.usage() << std::endl;
-    exit(1);
+  if (!datadir.empty()) {
+    datadir = common::real_path(datadir);
+    if (!common::is_writable(datadir.c_str())) {
+      std::cerr << "can't use datadir: " << strerror(errno) << std::endl;
+      std::cerr << p.usage() << std::endl;
+      exit(1);
+    }
   }
 
-  if ((!logdir.empty()) && (!common::is_writable(logdir.c_str()))) {
-    std::cerr << "can't create log file: " << strerror(errno) << std::endl;
-    exit(1);
+  if (!logdir.empty()) {
+    logdir = common::real_path(logdir);
+    if (!common::is_writable(logdir.c_str())) {
+      std::cerr << "can't create log file: " << strerror(errno) << std::endl;
+      exit(1);
+    }
   }
   set_log_destination(common::get_program_name());
 
