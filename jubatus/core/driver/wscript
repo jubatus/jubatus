@@ -6,6 +6,7 @@ def configure(conf):
 
 def build(bld):
   source = [
+      'driver.cpp',
       'mixable_versioned_table.cpp',
       'classifier.cpp',
       'regression.cpp',
@@ -17,6 +18,7 @@ def build(bld):
       'clustering.cpp',
       ]
   headers = [
+      'driver.hpp',
       'classifier.hpp',
       'regression.hpp',
       'recommender.hpp',

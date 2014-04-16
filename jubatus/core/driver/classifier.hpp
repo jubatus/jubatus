@@ -27,12 +27,13 @@
 #include "../framework/mixable.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/mixable_weight_manager.hpp"
+#include "driver.hpp"
 
 namespace jubatus {
 namespace core {
 namespace driver {
 
-class classifier {
+class classifier : public driver_base {
  public:
   typedef core::classifier::classifier_base classifier_base;
 
@@ -45,7 +46,9 @@ class classifier {
   virtual ~classifier();
 
   jubatus::util::lang::shared_ptr<framework::mixable_holder>
-  get_mixable_holder() const {
+
+  // TODO: remove
+  get_mixable_holder() const __attribute__((deprecated)) {
     return mixable_holder_;
   }
 
@@ -62,6 +65,7 @@ class classifier {
   bool set_label(const std::string& label);
 
  private:
+  // TODO: remove mixable_holder
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
