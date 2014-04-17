@@ -305,6 +305,14 @@ inline void serialize(json& js, jubatus::util::data::serialization::named_value<
 }
 
 template <class T>
+inline void serialize(json& js, jubatus::util::data::serialization::named_value<jubatus::util::data::optional<T> >& v)
+{
+  if (v.v) {
+    js.add(v.name, to_json(v.v));
+  }
+}
+
+template <class T>
 inline void serialize(json& js, jubatus::util::data::optional<T>& v)
 {
   if (v)
