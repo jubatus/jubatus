@@ -933,10 +933,16 @@ struct opt1{
   }
 
   bool is_json_rep(const string& s) const {
-    ostringstream oss1, oss2;
-    oss1 << "{\"abc\":" << abc << ",\"def\":" << stringify_def() << "}";
-    oss2 << "{\"def\":" << stringify_def() << ",\"abc\":" << abc << "}";
-    return s == oss1.str() || s == oss2.str();
+    if (def) {
+      ostringstream oss1, oss2;
+      oss1 << "{\"abc\":" << abc << ",\"def\":" << stringify_def() << "}";
+      oss2 << "{\"def\":" << stringify_def() << ",\"abc\":" << abc << "}";
+      return s == oss1.str() || s == oss2.str();
+    } else {
+      ostringstream oss;
+      oss << "{\"abc\":" << abc << "}";
+      return s == oss.str();
+    }
   }
 
   string stringify_def() const {
@@ -948,7 +954,10 @@ struct opt1{
   }
 
   friend std::ostream& operator<<(std::ostream& os, const opt1& x) {
-    os << "abc: " << x.abc << ", def: " << x.stringify_def();
+    os << "abc: " << x.abc;
+    if (x.def) {
+      os << ", def: " << x.stringify_def();
+    }
     return os;
   }
 };
