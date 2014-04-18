@@ -44,6 +44,11 @@ class lru_unlearner : public unlearner_base {
     return "lru_unlearner";
   }
 
+  void clear() {
+    lru_.clear();
+    entry_map_.clear();
+  }
+
   explicit lru_unlearner(const config& conf);
 
   void touch(const std::string& id);

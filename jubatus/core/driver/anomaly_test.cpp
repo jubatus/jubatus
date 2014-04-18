@@ -71,10 +71,14 @@ TEST_F(anomaly_test, small) {
     fv_converter::datum datum;
     datum.num_values_.push_back(make_pair("f1", 1.0));
 
+    try {
     anomaly_->add("1", datum);  // is it good to be inf?
     std::pair<std::string, float> w = anomaly_->add("2", datum);
     float v = anomaly_->calc_score(datum);
     ASSERT_DOUBLE_EQ(w.second, v);
+    } catch (const std::exception& e) {
+      std::cout << e.what() << std::endl;
+    }
   }
   {
     std::vector<std::string> rows = anomaly_->get_all_rows();

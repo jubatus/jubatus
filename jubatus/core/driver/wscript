@@ -52,7 +52,6 @@ def build(bld):
     'anomaly_test',
     'classifier_test',
     'graph_test',
-    'nearest_neighbor_test',
     'regression_test',
     'recommender_test',
     'stat_test',

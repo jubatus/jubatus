@@ -46,6 +46,11 @@ class random_unlearner : public unlearner_base {
     return "random_unlearner";
   }
 
+  void clear() {
+    id_set_.clear();
+    ids_.clear();
+  }
+
   explicit random_unlearner(const config& conf);
 
   void touch(const std::string& id);
@@ -80,3 +85,4 @@ class random_unlearner : public unlearner_base {
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_UNLEARNER_RANDOM_UNLEARNER_HPP_
+

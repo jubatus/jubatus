@@ -30,6 +30,8 @@ class mock_unlearner : public unlearner_base {
   std::string type() const {
     return "mock_unlearner";
   }
+  void clear() {
+  }
 
   void touch(const std::string& id) {
   }

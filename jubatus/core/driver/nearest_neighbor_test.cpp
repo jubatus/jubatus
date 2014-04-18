@@ -87,50 +87,6 @@ fv_converter::datum create_datum_2d(float x, float y) {
   return create_datum(vec, vec + 2);
 }
 
-/*
-std::vector<shared_ptr<nearest_neighbor_base> > create_nearest_neighbor_bases() {
-  const std::string id("my_id");
-  std::vector<shared_ptr<nearest_neighbor_base> > nearest_neighbors;
-
-  vector<pair<string, int> > pattern;
-  for (size_t i = 8; i < 3000; i = i << 1) {  // up to 2048
-    pattern.push_back(make_pair("lsh", i));
-    pattern.push_back(make_pair("euclid_lsh", i));
-    pattern.push_back(make_pair("minhash", i));
-  }
-  for (size_t i = 0; i < pattern.size(); ++i) {
-    shared_ptr<core::table::column_table> table(new core::table::column_table);
-
-    json jsconf(new json_object);
-    jsconf["hash_num"] = new json_integer(pattern[i].second);
-    common::jsonconfig::config conf(jsconf);
-    nearest_neighbors.push_back(
-        core::nearest_neighbor::create_nearest_neighbor(
-            pattern[i].first,
-            conf,
-            table,
-            id));
-  }
-  return nearest_neighbors;
-}
-*/
-
-std::vector<shared_ptr<nearest_neighbor_base> > create_nearest_neighbor_bases() {
-  const std::string id("my_id");
-  std::vector<shared_ptr<nearest_neighbor_base> > nearest_neighbors;
-
-  nearest_neighbors.push_back(shared_ptr<nearest_neighbor_base>(new euclid_lsh(
-      euclid_lsh::config(), shared_ptr<column_table>(new column_table), id)));
-
-  nearest_neighbors.push_back(shared_ptr<nearest_neighbor_base>(new lsh(
-      lsh::config(), shared_ptr<column_table>(new column_table), id)));
-
-  nearest_neighbors.push_back(shared_ptr<nearest_neighbor_base>(new minhash(
-      minhash::config(), shared_ptr<column_table>(new column_table), id)));
-
-  return nearest_neighbors;
-}
-
 const size_t MAX_SIZE = 3;
 
 std::vector<shared_ptr<unlearner_base> > create_unlearners() {
@@ -141,7 +97,7 @@ std::vector<shared_ptr<unlearner_base> > create_unlearners() {
     config.max_size = MAX_SIZE;
     unlearners.push_back(shared_ptr<unlearner_base>(new lru_unlearner(config)));
   }
-  for (int i = 1091; i < 1095; ++i) {
+  for (int i = 1091; i < 1092; ++i) {
     random_unlearner::config config;
     config.max_size = MAX_SIZE;
     config.seed = i;
@@ -374,6 +330,7 @@ TEST_P(nearest_neighbor_with_unlearning_test, unlearning) {
   hit_count += is_hit("id2", create_datum_2d(1.f, 1.f), 3);
   hit_count += is_hit("id3", create_datum_2d(1.f, 1.f), 3);
   EXPECT_EQ(2u, hit_count);
+  nn_driver_->clear();  // TODO(kumagi): It should not be needed because of TearDown()
 }
 
 INSTANTIATE_TEST_CASE_P(
