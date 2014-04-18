@@ -31,6 +31,9 @@ class driver_base {
     return &holder_;
   }
 
+  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
+  virtual void unpack(msgpack::object o) = 0;
+
  protected:
   void register_mixable(framework::mixable* mixable);
 
