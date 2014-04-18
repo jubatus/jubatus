@@ -63,13 +63,10 @@ void classifier_base::classify_with_scores(
 
   map_feature_val1_t ret;
   get_storage()->inp(sfv, ret);
-  std::cout << "{";
   for (map_feature_val1_t::const_iterator it = ret.begin(); it != ret.end();
       ++it) {
-    std::cout << it->first << ":" << it->second << ", ";
     scores.push_back(classify_result_elem(it->first, it->second));
   }
-  std::cout << "}";
 }
 
 string classifier_base::classify(const common::sfv_t& fv) const {

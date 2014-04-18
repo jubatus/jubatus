@@ -23,10 +23,12 @@
 #include "jubatus/core/fv_converter/datum.hpp"
 #include "../common/jsonconfig.hpp"
 
+#include "../fv_converter/datum.hpp"
+#include "../nearest_neighbor/nearest_neighbor.hpp"
 #include "../nearest_neighbor/nearest_neighbor_factory.hpp"
+#include "../unlearner/unlearner.hpp"
 #include "nearest_neighbor.hpp"
 #include "test_util.hpp"
-#include "../unlearner/unlearner.hpp"
 
 using std::vector;
 using std::pair;
@@ -39,6 +41,10 @@ using jubatus::util::text::json::json_object;
 using jubatus::util::text::json::json_integer;
 using jubatus::util::text::json::json_string;
 using jubatus::util::text::json::json_float;
+using jubatus::core::nearest_neighbor::euclid_lsh;
+using jubatus::core::nearest_neighbor::lsh;
+using jubatus::core::nearest_neighbor::minhash;
+using jubatus::core::table::column_table;
 using jubatus::core::fv_converter::datum;
 using jubatus::core::nearest_neighbor::nearest_neighbor_base;
 using jubatus::core::unlearner::unlearner_base;
@@ -47,6 +53,16 @@ using jubatus::core::unlearner::random_unlearner;
 
 namespace jubatus {
 namespace core {
+namespace nearest_neighbor {
+void PrintTo(const shared_ptr<nearest_neighbor_base> base, ::std::ostream* os) {
+  *os << "<" << base->type() << ">";
+}
+}  // namespace nearest_neighbor
+namespace unlearner {
+void PrintTo(const shared_ptr<unlearner_base> base, ::std::ostream* os) {
+  *os << "<" << base->type() << ">";
+}
+}  // namespace unlearner
 namespace driver {
 
 namespace {
@@ -71,34 +87,7 @@ fv_converter::datum create_datum_2d(float x, float y) {
   return create_datum(vec, vec + 2);
 }
 
-vector<shared_ptr<driver::nearest_neighbor> > create_nearest_neighbors() {
-  vector<shared_ptr<driver::nearest_neighbor> > method;
-
-  vector<pair<string, int> > pattern;
-  for (size_t i = 8; i < 3000; i = i << 1) {  // up to 2048
-    pattern.push_back(make_pair("lsh", i));
-    pattern.push_back(make_pair("euclid_lsh", i));
-    pattern.push_back(make_pair("minhash", i));
-  }
-  for (size_t i = 0; i < pattern.size(); ++i) {
-    shared_ptr<core::table::column_table> table(new core::table::column_table);
-
-    json jsconf(new json_object);
-    jsconf["hash_num"] = new json_integer(pattern[i].second);
-    common::jsonconfig::config conf(jsconf);
-    method.push_back(
-        shared_ptr<driver::nearest_neighbor>(
-            new driver::nearest_neighbor(
-                core::nearest_neighbor::create_nearest_neighbor(
-                    pattern[i].first,
-                    conf,
-                    table,
-                    ""),
-                make_fv_converter())));
-  }
-  return method;
-}
-
+/*
 std::vector<shared_ptr<nearest_neighbor_base> > create_nearest_neighbor_bases() {
   const std::string id("my_id");
   std::vector<shared_ptr<nearest_neighbor_base> > nearest_neighbors;
@@ -120,8 +109,25 @@ std::vector<shared_ptr<nearest_neighbor_base> > create_nearest_neighbor_bases() 
             pattern[i].first,
             conf,
             table,
-            ""));
+            id));
   }
+  return nearest_neighbors;
+}
+*/
+
+std::vector<shared_ptr<nearest_neighbor_base> > create_nearest_neighbor_bases() {
+  const std::string id("my_id");
+  std::vector<shared_ptr<nearest_neighbor_base> > nearest_neighbors;
+
+  nearest_neighbors.push_back(shared_ptr<nearest_neighbor_base>(new euclid_lsh(
+      euclid_lsh::config(), shared_ptr<column_table>(new column_table), id)));
+
+  nearest_neighbors.push_back(shared_ptr<nearest_neighbor_base>(new lsh(
+      lsh::config(), shared_ptr<column_table>(new column_table), id)));
+
+  nearest_neighbors.push_back(shared_ptr<nearest_neighbor_base>(new minhash(
+      minhash::config(), shared_ptr<column_table>(new column_table), id)));
+
   return nearest_neighbors;
 }
 
@@ -135,10 +141,10 @@ std::vector<shared_ptr<unlearner_base> > create_unlearners() {
     config.max_size = MAX_SIZE;
     unlearners.push_back(shared_ptr<unlearner_base>(new lru_unlearner(config)));
   }
-  {
+  for (int i = 1091; i < 1095; ++i) {
     random_unlearner::config config;
     config.max_size = MAX_SIZE;
-    config.seed = 1091;
+    config.seed = i;
     unlearners.push_back(shared_ptr<unlearner_base>(new random_unlearner(
         config)));
   }
@@ -150,10 +156,13 @@ std::vector<shared_ptr<unlearner_base> > create_unlearners() {
 
 
 class nearest_neighbor_test
-    : public ::testing::TestWithParam<shared_ptr<driver::nearest_neighbor> > {
+    : public ::testing::TestWithParam<
+        shared_ptr<core::nearest_neighbor::nearest_neighbor_base> > {
  protected:
   void SetUp() {
-    nn_driver_ = GetParam();
+    nn_driver_ = shared_ptr<core::driver::nearest_neighbor>(
+      new core::driver::nearest_neighbor(GetParam(), make_fv_converter())
+    );
   }
   void TearDown() {
     nn_driver_->clear();
@@ -306,7 +315,7 @@ TEST_P(nearest_neighbor_test, small) {
 
 INSTANTIATE_TEST_CASE_P(nearest_neighbor_test_instance,
     nearest_neighbor_test,
-    testing::ValuesIn(create_nearest_neighbors()));
+    testing::ValuesIn(create_nearest_neighbor_bases()));
 
 class nearest_neighbor_with_unlearning_test
     : public ::testing::TestWithParam<
@@ -316,8 +325,12 @@ class nearest_neighbor_with_unlearning_test
  protected:
   void SetUp() {
     nn_driver_.reset(new nearest_neighbor(
-        std::tr1::get<0>(GetParam()), make_fv_converter(),
+        std::tr1::get<0>(GetParam()),
+        make_fv_converter(),
         std::tr1::get<1>(GetParam())));
+  }
+  void TearDown() {
+    nn_driver_.reset();
   }
 
   void TearDown() {
@@ -330,11 +343,16 @@ class nearest_neighbor_with_unlearning_test
       size_t size) const {
     std::vector<std::pair<std::string, float> > hit =
         nn_driver_->neighbor_row_from_data(d, size);
+    std::cout << "{";
     for (size_t i = 0; i < hit.size(); ++i) {
+      std::cout << hit[i].first << ", ";
       if (hit[i].first == should_hit_id) {
+        std::cout << "}";
         return true;
       }
     }
+    std::cout << "}";
+
     return false;
   }
 

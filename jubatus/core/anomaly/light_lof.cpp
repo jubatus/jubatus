@@ -81,6 +81,7 @@ light_lof::light_lof(
     : nearest_neighbor_engine_(nearest_neighbor_engine),
       config_(conf),
       my_id_(id) {
+  nearest_neighbor_engine_->get_table();
   mixable_nearest_neighbor_->set_model(nearest_neighbor_engine_->get_table());
   mixable_scores_->set_model(create_lof_table());
 }

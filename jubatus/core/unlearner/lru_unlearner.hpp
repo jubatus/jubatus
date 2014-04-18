@@ -40,6 +40,10 @@ class lru_unlearner : public unlearner_base {
     }
   };
 
+  std::string type() const {
+    return "lru_unlearner";
+  }
+
   explicit lru_unlearner(const config& conf);
 
   void touch(const std::string& id);

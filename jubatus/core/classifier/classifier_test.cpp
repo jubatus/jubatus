@@ -164,7 +164,23 @@ TYPED_TEST_P(classifier_test, delete_label) {
     common::sfv_t fv;
     fv.push_back(std::make_pair("f1", 1.f));
     fv.push_back(std::make_pair("f2", 1.f));
-    EXPECT_EQ("A", p.classify(fv));
+    EXPECT_EQ("B", p.classify(fv));
+  }
+
+  p.delete_class("B");
+
+  for (size_t i = 0; i < 8; ++i) {
+    common::sfv_t fv;
+    if (i & 1) {
+      fv.push_back(std::make_pair("f1", 1.f));
+    }
+    if (i & 2) {
+      fv.push_back(std::make_pair("f2", 1.f));
+    }
+    if (i & 4) {
+      fv.push_back(std::make_pair("f3", 1.f));
+    }
+    EXPECT_NE("B", p.classify(fv));
   }
 }
 
@@ -218,11 +234,11 @@ INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
 TEST(classifier_factory, exception) {
   common::jsonconfig::config param(to_json(classifier_config()));
   classifier_base::storage_ptr p(new local_storage);
-  ASSERT_THROW(classifier_factory::create_classifier("pa", param, p),
+  EXPECT_THROW(classifier_factory::create_classifier("pa", param, p),
       common::unsupported_method);
-  ASSERT_THROW(classifier_factory::create_classifier("", param, p),
+  EXPECT_THROW(classifier_factory::create_classifier("", param, p),
       common::unsupported_method);
-  ASSERT_THROW(classifier_factory::create_classifier("saitama", param, p),
+  EXPECT_THROW(classifier_factory::create_classifier("saitama", param, p),
       common::unsupported_method);
 }
 
