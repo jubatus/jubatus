@@ -95,7 +95,7 @@ void classifier::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
   wm_.get_model()->pack(pk);
 }
 
-void classifier::unpack(msgpack::object& o) {
+void classifier::unpack(msgpack::object o) {
   if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
     throw msgpack::type_error();
   }

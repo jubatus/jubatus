@@ -59,7 +59,7 @@ class classifier : public driver_base {
   void get_status(std::map<std::string, std::string>& status) const;
   void clear();
   void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
-  void unpack(msgpack::object& o);
+  void unpack(msgpack::object o);
 
   std::vector<std::string> get_labels() const;
   bool set_label(const std::string& label);
