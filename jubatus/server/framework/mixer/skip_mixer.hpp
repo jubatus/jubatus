@@ -54,6 +54,10 @@ class skip_mixer : public push_mixer {
     }
     return result;
   }
+
+  std::string type() const {
+    return "skip_mixer";
+  }
 };
 
 }  // namespace mixer

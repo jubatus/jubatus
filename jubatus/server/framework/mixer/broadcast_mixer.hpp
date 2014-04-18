@@ -50,6 +50,10 @@ class broadcast_mixer : public push_mixer {
     }
     return result;
   }
+
+  std::string type() const {
+    return "broadcast_mixer";
+  }
 };
 
 }  // namespace mixer
