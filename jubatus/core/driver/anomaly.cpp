@@ -59,7 +59,7 @@ void anomaly::clear_row(const std::string& id) {
 pair<string, float> anomaly::add(
     const string& id,
     const fv_converter::datum& d) {
-  float score = this->overwrite(id, d);
+  float score = this->update(id, d);
   return make_pair(id, score);
 }
 

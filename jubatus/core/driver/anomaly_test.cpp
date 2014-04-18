@@ -71,14 +71,10 @@ TEST_F(anomaly_test, small) {
     fv_converter::datum datum;
     datum.num_values_.push_back(make_pair("f1", 1.0));
 
-    try {
     anomaly_->add("1", datum);  // is it good to be inf?
     std::pair<std::string, float> w = anomaly_->add("2", datum);
     float v = anomaly_->calc_score(datum);
     ASSERT_DOUBLE_EQ(w.second, v);
-    } catch (const std::exception& e) {
-      std::cout << e.what() << std::endl;
-    }
   }
   {
     std::vector<std::string> rows = anomaly_->get_all_rows();
@@ -120,7 +116,7 @@ class light_lof_test : public ::testing::Test {
     unlearner::lru_unlearner::config unlearner_config;
     unlearner_config.max_size = 5;
     jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner(
-      new unlearner::lru_unlearner(unlearner_config));
+        new unlearner::lru_unlearner(unlearner_config));
 
     anomaly_.reset(new anomaly(
                        shared_ptr<anomaly_base>(
@@ -138,13 +134,15 @@ TEST_F(light_lof_test, unlearning) {
 
   for (int i = 0; i < 5; ++i) {
     datum.num_values_[0].second = i;
-    anomaly_->add(jubatus::util::lang::lexical_cast<std::string>(i), datum);
+    anomaly_->overwrite(
+        "row" + jubatus::util::lang::lexical_cast<std::string>(i),
+        datum);
     std::vector<std::string> rows = anomaly_->get_all_rows();
     EXPECT_EQ(i + 1, rows.size());
   }
 
-  anomaly_->add("0", datum);
-  anomaly_->add("10", datum);
+  anomaly_->overwrite("0", datum);
+  anomaly_->overwrite("10", datum);
   std::vector<std::string> rows = anomaly_->get_all_rows();
   EXPECT_EQ(5u, rows.size());
 }

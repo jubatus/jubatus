@@ -79,6 +79,8 @@ light_lof::light_lof(
     const std::string& id,
     shared_ptr<nearest_neighbor_base> nearest_neighbor_engine)
     : nearest_neighbor_engine_(nearest_neighbor_engine),
+      mixable_nearest_neighbor_(new driver::mixable_versioned_table),
+      mixable_scores_(new driver::mixable_versioned_table),
       config_(conf),
       my_id_(id) {
   nearest_neighbor_engine_->get_table();
@@ -93,6 +95,8 @@ light_lof::light_lof(
     shared_ptr<unlearner::unlearner_base> unlearner)
     : nearest_neighbor_engine_(nearest_neighbor_engine),
       unlearner_(unlearner),
+      mixable_nearest_neighbor_(new driver::mixable_versioned_table),
+      mixable_scores_(new driver::mixable_versioned_table),
       config_(conf),
       my_id_(id) {
   shared_ptr<column_table> nn_table = nearest_neighbor_engine_->get_table();
