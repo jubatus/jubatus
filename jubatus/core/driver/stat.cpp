@@ -21,14 +21,13 @@
 
 #include "../framework/mixable.hpp"
 
-using jubatus::core::framework::mixable_holder;
 
 namespace jubatus {
 namespace core {
 namespace driver {
 
 stat::stat(jubatus::core::stat::stat* stat_method)
-    : mixable_holder_(new mixable_holder),
+    : mixable_holder_(new framework::mixable_holder),
       stat_(stat_method) {
   stat_->register_mixables_to_holder(*mixable_holder_);
 }
@@ -62,6 +61,14 @@ double stat::entropy() const {
 
 double stat::moment(const std::string& key, int n, double c) const {
   return stat_->moment(key, n, c);
+}
+
+void stat::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+  // TODO: implement
+}
+
+void stat::unpack(msgpack::object o) {
+  // TODO: implement
 }
 
 }  // namespace driver

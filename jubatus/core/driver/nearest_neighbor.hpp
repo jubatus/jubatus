@@ -28,12 +28,13 @@
 #include "../nearest_neighbor/nearest_neighbor_base.hpp"
 #include "../table/column/column_table.hpp"
 #include "mixable_versioned_table.hpp"
+#include "driver.hpp"
 
 namespace jubatus {
 namespace core {
 namespace driver {
 
-class nearest_neighbor {
+class nearest_neighbor : public driver_base {
  public:
   nearest_neighbor(
       jubatus::util::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,  // NOLINT
@@ -69,6 +70,8 @@ class nearest_neighbor {
   similar_row(const core::fv_converter::datum& datum, size_t ret_num);
 
   void clear();
+  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void unpack(msgpack::object o);
 
  private:
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;

@@ -24,12 +24,13 @@
 #include "../recommender/recommender_base.hpp"
 #include "../framework/mixable.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
+#include "driver.hpp"
 
 namespace jubatus {
 namespace core {
 namespace driver {
 
-class recommender {
+class recommender : public driver_base {
  public:
   recommender(
       jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
@@ -46,6 +47,8 @@ class recommender {
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const fv_converter::datum& dat);
   void clear();
+  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void unpack(msgpack::object o);
 
   fv_converter::datum complete_row_from_id(const std::string& id);
   fv_converter::datum complete_row_from_datum(const fv_converter::datum& dat);

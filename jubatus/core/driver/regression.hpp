@@ -26,12 +26,13 @@
 #include "../framework/mixable.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/mixable_weight_manager.hpp"
+#include "driver.hpp"
 
 namespace jubatus {
 namespace core {
 namespace driver {
 
-class regression {
+class regression : public driver_base {
  public:
   typedef core::regression::regression_base regression_base;
   regression(

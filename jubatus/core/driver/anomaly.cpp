@@ -31,7 +31,6 @@
 using std::string;
 using std::vector;
 using std::pair;
-using jubatus::core::framework::mixable_holder;
 using jubatus::core::fv_converter::weight_manager;
 using jubatus::util::lang::shared_ptr;
 
@@ -42,7 +41,7 @@ namespace driver {
 anomaly::anomaly(
     shared_ptr<jubatus::core::anomaly::anomaly_base> anomaly_method,
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    : mixable_holder_(new mixable_holder),
+    : mixable_holder_(new framework::mixable_holder),
       converter_(converter),
       anomaly_(anomaly_method) {
   anomaly_->register_mixables_to_holder(*mixable_holder_);
@@ -98,6 +97,14 @@ vector<string> anomaly::get_all_rows() const {
 
 uint64_t anomaly::find_max_int_id() const {
   return anomaly_->find_max_int_id();
+}
+
+void anomaly::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+  // TODO: implement
+}
+
+void anomaly::unpack(msgpack::object o) {
+  // TODO: implement
 }
 
 }  // namespace driver

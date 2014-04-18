@@ -25,12 +25,13 @@
 #include "../anomaly/anomaly_base.hpp"
 #include "../framework/mixable.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
+#include "driver.hpp"
 
 namespace jubatus {
 namespace core {
 namespace driver {
 
-class anomaly {
+class anomaly : public driver_base {
  public:
   anomaly(
       jubatus::util::lang::shared_ptr<core::anomaly::anomaly_base>
@@ -55,6 +56,8 @@ class anomaly {
   float update(const std::string& id, const fv_converter::datum& d);
   float overwrite(const std::string& id, const fv_converter::datum& d);
   void clear();
+  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void unpack(msgpack::object o);
   float calc_score(const fv_converter::datum& d) const;
   std::vector<std::string> get_all_rows() const;
   uint64_t find_max_int_id() const;

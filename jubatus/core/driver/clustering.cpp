@@ -172,6 +172,14 @@ core::clustering::cluster_unit
   return ret;
 }
 
+void clustering::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+  // TODO: implement
+}
+
+void clustering::unpack(msgpack::object o) {
+  // TODO: implement
+}
+
 }  // namespace driver
 }  // namespace core
 }  // namespace jubatus

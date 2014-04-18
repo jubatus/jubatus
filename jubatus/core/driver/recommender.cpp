@@ -34,7 +34,6 @@
 using std::string;
 using std::vector;
 using std::pair;
-using jubatus::core::framework::mixable_holder;
 using jubatus::core::fv_converter::weight_manager;
 using jubatus::util::lang::shared_ptr;
 
@@ -45,7 +44,7 @@ namespace driver {
 recommender::recommender(
     shared_ptr<core::recommender::recommender_base> recommender_method,
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    : mixable_holder_(new mixable_holder),
+    : mixable_holder_(new framework::mixable_holder),
       converter_(converter),
       recommender_(recommender_method) {
   recommender_->register_mixables_to_holder(*mixable_holder_);
@@ -140,6 +139,14 @@ std::vector<std::string> recommender::get_all_rows() {
   std::vector<std::string> ret;
   recommender_->get_all_row_ids(ret);
   return ret;
+}
+
+void recommender::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+  // TODO: implement
+}
+
+void recommender::unpack(msgpack::object o) {
+  // TODO: implement
 }
 
 }  // namespace driver

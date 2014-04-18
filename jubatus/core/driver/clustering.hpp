@@ -26,12 +26,13 @@
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/mixable_weight_manager.hpp"
+#include "driver.hpp"
 
 namespace jubatus {
 namespace core {
 namespace driver {
 
-class clustering {
+class clustering : public driver_base {
  public:
   clustering(
       jubatus::util::lang::shared_ptr<core::clustering::clustering>
@@ -56,6 +57,8 @@ class clustering {
   core::clustering::cluster_set get_core_members() const;
 
   size_t get_revision() const;
+  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void unpack(msgpack::object o);
 
   // for test only
   void do_clustering();

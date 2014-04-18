@@ -23,12 +23,13 @@
 
 #include "../stat/stat.hpp"
 #include "../framework/mixable.hpp"
+#include "driver.hpp"
 
 namespace jubatus {
 namespace core {
 namespace driver {
 
-class stat {
+class stat : public driver_base {
  public:
   explicit stat(jubatus::core::stat::stat* stat_method);
   virtual ~stat();
@@ -49,6 +50,9 @@ class stat {
   double min(const std::string&) const;
   double entropy() const;
   double moment(const std::string&, int, double) const;
+
+  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void unpack(msgpack::object o);
 
  private:
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;

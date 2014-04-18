@@ -111,7 +111,7 @@ void save_server(std::ostream& os,
 
     uint64_t user_data_version = server.user_data_version();
     packer.pack(user_data_version);
-    server.get_mixable_holder()->pack(packer);
+    server.get_driver()->pack(packer);
   }
 
   char header_buf[48];
@@ -242,7 +242,7 @@ void load_server(std::istream& is,
             lexical_cast<string>(user_data_version_expected)));
     }
 
-    server.get_mixable_holder()->unpack(objs[1]);
+    server.get_driver()->unpack(objs[1]);
   }
 }
 

@@ -24,12 +24,13 @@
 #include "../graph/graph_base.hpp"
 #include "../graph/graph_type.hpp"
 #include "../framework/mixable.hpp"
+#include "driver.hpp"
 
 namespace jubatus {
 namespace core {
 namespace driver {
 
-class graph {
+class graph : public driver_base {
  public:
   explicit graph(
       jubatus::util::lang::shared_ptr<core::graph::graph_base> graph_method);
@@ -77,6 +78,8 @@ class graph {
       jubatus::core::graph::edge_id_t eid) const;
   void update_index();
   void clear();
+  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void unpack(msgpack::object o);
 
   // internal apis used between servers
   void create_node_here(jubatus::core::graph::node_id_t id);

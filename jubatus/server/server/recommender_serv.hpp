@@ -47,6 +47,10 @@ class recommender_serv : public framework::server_base {
     return recommender_->get_mixable_holder();
   }
 
+  core::driver::driver_base* get_driver() const {
+    return recommender_.get();
+  }
+
   void get_status(status_t& status) const;
   uint64_t user_data_version() const;
 

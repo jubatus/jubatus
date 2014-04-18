@@ -89,6 +89,14 @@ void nearest_neighbor::clear() {
   nn_->clear();
 }
 
+void nearest_neighbor::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+  // TODO: implement
+}
+
+void nearest_neighbor::unpack(msgpack::object o) {
+  // TODO: implement
+}
+
 }  // namespace driver
 }  // namespace core
 }  // namespace jubatus

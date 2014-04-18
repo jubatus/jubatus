@@ -53,6 +53,10 @@ class graph_serv : public framework::server_base {
     return graph_->get_mixable_holder();
   }
 
+  core::driver::driver_base* get_driver() const {
+    return graph_.get();
+  }
+
   void set_config(const std::string& config);
   std::string get_config() const;
 

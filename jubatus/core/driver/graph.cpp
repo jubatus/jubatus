@@ -29,7 +29,6 @@
 using std::string;
 using std::vector;
 using std::pair;
-using jubatus::core::framework::mixable_holder;
 using jubatus::core::graph::node_id_t;
 using jubatus::core::graph::edge_id_t;
 using jubatus::core::graph::preset_query;
@@ -41,7 +40,7 @@ namespace core {
 namespace driver {
 
 graph::graph(shared_ptr<jubatus::core::graph::graph_base> graph_method)
-    : mixable_holder_(new mixable_holder),
+    : mixable_holder_(new framework::mixable_holder),
       graph_(graph_method) {
   graph_->register_mixables_to_holder(*mixable_holder_);
 }
@@ -164,6 +163,14 @@ void graph::create_edge_here(
   } catch (const jubatus::core::graph::graph_exception& e) {
     throw;
   }
+}
+
+void graph::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+  // TODO: implement
+}
+
+void graph::unpack(msgpack::object o) {
+  // TODO: implement
 }
 
 }  // namespace driver
