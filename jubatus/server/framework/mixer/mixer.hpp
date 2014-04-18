@@ -54,6 +54,8 @@ class mixer : util::lang::noncopyable {
   virtual void updated() = 0;
 
   virtual void get_status(server_base::status_t& status) const = 0;
+
+  virtual std::string type() const = 0;
 };
 
 }  // namespace mixer

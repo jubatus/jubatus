@@ -92,6 +92,10 @@ class linear_mixer : public mixer {
   void mix();
   void update_model();
 
+  std::string type() const {
+    return "linear_mixer";
+  }
+
  private:
   void stabilizer_loop();
 

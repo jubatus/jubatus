@@ -47,6 +47,10 @@ class random_mixer : public push_mixer {
     return result;
   }
 
+  std::string type() const {
+    return "random_mixer";
+  }
+
  private:
   jubatus::util::math::random::mtrand rand_;
 };
