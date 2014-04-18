@@ -55,7 +55,7 @@ class regression {
   void clear();
 
   void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
-  void unpack(msgpack::object& o);
+  void unpack(msgpack::object o);
 
  private:
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
