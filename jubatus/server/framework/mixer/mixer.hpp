@@ -58,6 +58,14 @@ class mixer : util::lang::noncopyable {
   virtual std::string type() const = 0;
 };
 
+class unsupported_mixables : public core::common::exception::runtime_error {
+ public:
+  explicit unsupported_mixables(const std::string& type)
+      : jubatus::core::common::exception::runtime_error(
+          std::string(type + " does not support this configuration")) {
+  }
+};
+
 }  // namespace mixer
 }  // namespace framework
 }  // namespace server
