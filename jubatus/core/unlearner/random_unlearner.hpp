@@ -42,6 +42,10 @@ class random_unlearner : public unlearner_base {
     }
   };
 
+  std::string type() const {
+    return "random_unlearner";
+  }
+
   explicit random_unlearner(const config& conf);
 
   void touch(const std::string& id);

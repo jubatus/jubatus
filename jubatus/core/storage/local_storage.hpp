@@ -91,6 +91,43 @@ class local_storage : public storage_base {
   // map_features3_t tbl_;
   id_features3_t tbl_;
   common::key_manager class2id_;
+
+  // used for dump data
+  friend std::ostream& operator<<(std::ostream& os, const local_storage& ls) {
+    os << "{" << std::endl;
+    for (id_features3_t::const_iterator it = ls.tbl_.begin();
+         it != ls.tbl_.end();
+         ++it) {
+      os << "  {" << it->first << ": " << "{" << std::endl;
+      const id_feature_val3_t val = it->second;
+      for (id_feature_val3_t::const_iterator jt = val.begin();
+           jt != val.end();
+           ++jt) {
+        os << "    " << ls.class2id_.get_key(jt->first) << ": " << jt->second;
+
+        {
+          id_feature_val3_t::const_iterator jt_next = jt;
+          ++jt_next;
+          if (jt_next != val.end()) {
+            os << ", ";
+          }
+        }
+        os << std::endl;
+      }
+      os << "  }";
+
+      {
+        id_features3_t::const_iterator it_next = it;
+        ++it_next;
+        if (it_next != ls.tbl_.end()) {
+          os << ",";
+        }
+      }
+      os << std::endl;
+    }
+    os << "}";
+    return os;
+  }
 };
 
 }  // namespace storage

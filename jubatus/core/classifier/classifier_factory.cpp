@@ -48,8 +48,12 @@ shared_ptr<classifier_base> classifier_factory::create_classifier(
     const std::string& name,
     const common::jsonconfig::config& param,
     jubatus::util::lang::shared_ptr<storage::storage_base> storage) {
-  unlearner_config conf = config_cast_check<unlearner_config>(param);
-
+  unlearner_config conf;
+  try {
+    conf = config_cast_check<unlearner_config>(param);
+  } catch (const common::jsonconfig::cast_check_error& e) {
+    // do nothing
+  }
   jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner;
   if (conf.unlearner) {
     if (!conf.unlearner_parameter) {

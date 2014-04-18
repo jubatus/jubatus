@@ -102,6 +102,16 @@ void local_storage::inp(const common::sfv_t& sfv, map_feature_val1_t& ret)
       ret[label] = ret_id[id];
     }
   }
+
+  /*  debug out
+  std::cout << "{";
+  for (map_feature_val1_t::const_iterator it = ret.begin();
+       it != ret.end();
+       ++it) {
+    std::cout << it->first << "->" << it->second << ", ";
+  }
+  std::cout << "}" << std::endl;
+  //  */
 }
 
 void local_storage::set(

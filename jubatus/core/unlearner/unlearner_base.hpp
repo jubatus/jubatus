@@ -41,6 +41,8 @@ class unlearner_base {
     callback_ = callback;
   }
 
+  virtual std::string type() const = 0;
+
   // Informs that the item of given id is updated in the model.
   //
   // If the number of unique ids reaches to the predefined upper bound, one or
