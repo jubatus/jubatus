@@ -103,6 +103,9 @@ nearest_neighbor::similar_row(
 void nearest_neighbor::clear() {
   converter_->clear_weights();
   nn_->clear();
+  if (unlearner_) {
+    unlearner_->clear();
+  }
 }
 
 }  // namespace driver

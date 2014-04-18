@@ -52,8 +52,9 @@ shared_ptr<classifier_base> classifier_factory::create_classifier(
   try {
     conf = config_cast_check<unlearner_config>(param);
   } catch (const common::jsonconfig::cast_check_error& e) {
-    // do nothing
+    // ignore
   }
+
   jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner;
   if (conf.unlearner) {
     if (!conf.unlearner_parameter) {

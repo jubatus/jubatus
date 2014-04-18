@@ -42,6 +42,7 @@ class unlearner_base {
   }
 
   virtual std::string type() const = 0;
+  virtual void clear() = 0;
 
   // Informs that the item of given id is updated in the model.
   //
