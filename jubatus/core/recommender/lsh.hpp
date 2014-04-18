@@ -73,10 +73,10 @@ class lsh : public recommender_base {
 
   // bases for lsh
   jubatus::util::data::unordered_map<std::string, std::vector<float> >
-    column2baseval_;
+      column2baseval_;
 
   jubatus::util::lang::shared_ptr<storage::mixable_bit_index_storage>
-    mixable_storage_;
+      mixable_storage_;
 
   const uint64_t base_num_;
 };

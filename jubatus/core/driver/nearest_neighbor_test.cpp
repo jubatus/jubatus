@@ -299,16 +299,11 @@ class nearest_neighbor_with_unlearning_test
       size_t size) const {
     std::vector<std::pair<std::string, float> > hit =
         nn_driver_->neighbor_row_from_data(d, size);
-    std::cout << "{";
     for (size_t i = 0; i < hit.size(); ++i) {
-      std::cout << hit[i].first << ", ";
       if (hit[i].first == should_hit_id) {
-        std::cout << "}";
         return true;
       }
     }
-    std::cout << "}";
-
     return false;
   }
 

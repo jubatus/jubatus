@@ -176,12 +176,15 @@ void compare_recommenders(recommender_base& r1, recommender_base& r2,
   // ID order could not be same if there are score ties.
   // EXPECT_TRUE(ids1 == ids2);
   ASSERT_EQ(ids1.size(), ids2.size());
+
   for (size_t i = 0; i < ids1.size(); ++i) {
+    EXPECT_EQ(ids1[i].first, ids2[i].first);
     EXPECT_FLOAT_EQ(ids1[i].second, ids2[i].second);
   }
 
-  if (compare_complete_row)
+  if (compare_complete_row) {
     EXPECT_TRUE(comp1 == comp2);
+  }
 }
 
 TYPED_TEST_P(recommender_random_test, pack_and_unpack) {
@@ -266,7 +269,7 @@ TYPED_TEST_P(recommender_random_test, mix) {
     make_random(rand, mu, 1.0, 3, v);
     common::sfv_t vec = make_vec(v[0], v[1], v[2]);
 
-    string row = "r_" + lexical_cast<string>(i);
+    const string row = "r_" + lexical_cast<string>(i);
     (i < 50 ? r1 : r2).update_row(row, vec);
     expect.update_row(row, vec);
   }
