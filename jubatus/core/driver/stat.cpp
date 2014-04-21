@@ -71,6 +71,10 @@ void stat::unpack(msgpack::object o) {
   // TODO: implement
 }
 
+void stat::clear() {
+  stat_->clear();
+}
+
 }  // namespace driver
 }  // namespace core
 }  // namespace jubatus

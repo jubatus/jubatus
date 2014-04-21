@@ -63,7 +63,7 @@ class clustering : public driver_base {
   // for test only
   void do_clustering();
 
-  // TODO(beam2d): Implement clear().
+  void clear();
 
  private:
   common::sfv_t to_sfv(const fv_converter::datum& dat);

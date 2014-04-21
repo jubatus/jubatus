@@ -180,6 +180,10 @@ void clustering::unpack(msgpack::object o) {
   // TODO: implement
 }
 
+void clustering::clear() {
+  // TODO(beam2d): Implement clear().
+}
+
 }  // namespace driver
 }  // namespace core
 }  // namespace jubatus

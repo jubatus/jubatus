@@ -53,6 +53,7 @@ class stat : public driver_base {
 
   void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
   void unpack(msgpack::object o);
+  void clear();
 
  private:
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
