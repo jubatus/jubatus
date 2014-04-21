@@ -17,6 +17,8 @@
 #ifndef JUBATUS_SERVER_FRAMEWORK_MIXER_MIXER_HPP_
 #define JUBATUS_SERVER_FRAMEWORK_MIXER_MIXER_HPP_
 
+#include <string>
+
 #include "jubatus/util/lang/noncopyable.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../server_base.hpp"
