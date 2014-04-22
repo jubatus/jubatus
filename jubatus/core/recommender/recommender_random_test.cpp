@@ -269,7 +269,7 @@ TYPED_TEST_P(recommender_random_test, mix) {
     make_random(rand, mu, 1.0, 3, v);
     common::sfv_t vec = make_vec(v[0], v[1], v[2]);
 
-    const string row = "r_" + lexical_cast<string>(i);
+    string row = "r_" + lexical_cast<string>(i);
     (i < 50 ? r1 : r2).update_row(row, vec);
     expect.update_row(row, vec);
   }

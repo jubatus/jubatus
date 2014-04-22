@@ -79,7 +79,7 @@ class key_manager {
   jubatus::util::data::unordered_map<uint64_t, std::string> id2key_;
 
  public:
-  MSGPACK_DEFINE(key2id_, id2key_);
+  MSGPACK_DEFINE(key2id_, id2key_, next_id_);
   uint64_t next_id_;
 };
 
