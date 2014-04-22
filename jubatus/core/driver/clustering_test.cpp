@@ -162,6 +162,12 @@ TEST_P(clustering_test, get_k_center) {
       }
     }
   }
+
+  clustering_->clear();
+  {
+    vector<datum> result = clustering_->get_k_center();
+    ASSERT_EQ(0u, result.size());
+  }
 }
 struct check_points {
   float a;
