@@ -198,6 +198,7 @@ vector<string> local_storage::get_labels() const {
 bool local_storage::set_label(const std::string& label) {
   return class2id_.set_key(label);
 }
+
 void local_storage::delete_label(const std::string& label) {
   uint64_t delete_id = class2id_.get_id_const(label);
   if (delete_id == common::key_manager::NOTFOUND) {

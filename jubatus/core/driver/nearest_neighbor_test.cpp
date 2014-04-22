@@ -317,10 +317,6 @@ class nearest_neighbor_with_unlearning_test
     nn_driver_.reset();
   }
 
-  void TearDown() {
-    nn_driver_->clear();
-  }
-
   bool is_hit(
       const std::string& should_hit_id,
       const fv_converter::datum& d,

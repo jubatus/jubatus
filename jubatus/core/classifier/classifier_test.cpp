@@ -168,7 +168,7 @@ TYPED_TEST_P(classifier_test, delete_label) {
     EXPECT_EQ("B", p.classify(fv));
   }
 
-  p.delete_class("B");
+  p.delete_label("B");
 
   for (size_t i = 0; i < 8; ++i) {
     common::sfv_t fv;
