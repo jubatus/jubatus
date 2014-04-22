@@ -49,7 +49,7 @@ class classifier_base {
 
   jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
   label_unlearner() const {
-    return label_unlearner_;
+    return mixable_->get_unlearner();
   }
 
   std::string classify(const common::sfv_t& fv) const;
@@ -98,7 +98,6 @@ class classifier_base {
 
  private:
   jubatus::util::lang::shared_ptr<driver::linear_function_mixer> mixable_;
-  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> label_unlearner_;
   bool use_covars_;
 };
 

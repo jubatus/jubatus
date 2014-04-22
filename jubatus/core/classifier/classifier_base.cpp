@@ -50,11 +50,10 @@ classifier_base::~classifier_base() {
 void classifier_base::set_label_unlearner(
     jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
         label_unlearner) {
-  label_unlearner_ = label_unlearner;
-  if (label_unlearner_) {
-    label_unlearner_->set_callback(jubatus::util::lang::bind(
-        &classifier_base::delete_label, this, jubatus::util::lang::_1));
-  }
+  mixable_->set_label_unlearner(label_unlearner);
+  label_unlearner->set_callback(
+      jubatus::util::lang::bind(
+          &classifier_base::delete_label, this, jubatus::util::lang::_1));
 }
 
 void classifier_base::classify_with_scores(
@@ -210,8 +209,10 @@ const storage::storage_base* classifier_base::get_storage() const {
 }
 
 void classifier_base::touch(const std::string& label) {
-  if (label_unlearner_) {
-    label_unlearner_->touch(label);
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner =
+      mixable_->get_unlearner();
+  if (unlearner) {
+    unlearner->touch(label);
   }
 }
 
