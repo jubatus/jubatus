@@ -69,12 +69,13 @@ class recommender_base {
   virtual jubatus::util::lang::shared_ptr<table::column_table> get_table() {
     return jubatus::util::lang::shared_ptr<table::column_table>();
   }
-  virtual jubatus::util::lang::shared_ptr<const table::column_table> get_const_table()
-      const {
+  virtual jubatus::util::lang::shared_ptr<const table::column_table>
+      get_const_table() const {
     return jubatus::util::lang::shared_ptr<const table::column_table>();
   }
 
-  virtual jubatus::util::lang::shared_ptr<unlearner::unlearner_base> get_unlearner() {
+  virtual jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
+      get_unlearner() {
     return jubatus::util::lang::shared_ptr<unlearner::unlearner_base>();
   }
 

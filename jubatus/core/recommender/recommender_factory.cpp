@@ -44,7 +44,8 @@ struct nearest_neighbor_recommender_config {
   std::string method;
   config parameter;
   jubatus::util::data::optional<std::string> unlearner;
-  jubatus::util::data::optional<jubatus::util::text::json::json> unlearner_parameter;
+  jubatus::util::data::optional<jubatus::util::text::json::json>
+      unlearner_parameter;
 
   template<typename Ar>
   void serialize(Ar& ar) {

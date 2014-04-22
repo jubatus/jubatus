@@ -48,7 +48,8 @@ classifier_base::~classifier_base() {
 }
 
 void classifier_base::set_label_unlearner(
-    jubatus::util::lang::shared_ptr<unlearner::unlearner_base> label_unlearner) {
+    jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
+        label_unlearner) {
   label_unlearner_ = label_unlearner;
   if (label_unlearner_) {
     label_unlearner_->set_callback(jubatus::util::lang::bind(

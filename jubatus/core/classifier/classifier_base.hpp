@@ -44,9 +44,11 @@ class classifier_base {
   virtual void train(const common::sfv_t& fv, const std::string& label) = 0;
 
   void set_label_unlearner(
-      jubatus::util::lang::shared_ptr<unlearner::unlearner_base> label_unlearner);
+      jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
+          label_unlearner);
 
-  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> label_unlearner() const {
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
+  label_unlearner() const {
     return label_unlearner_;
   }
 

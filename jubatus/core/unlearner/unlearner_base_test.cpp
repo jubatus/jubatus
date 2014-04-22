@@ -26,7 +26,6 @@ namespace {
 
 class mock_unlearner : public unlearner_base {
  public:
-
   std::string type() const {
     return "mock_unlearner";
   }

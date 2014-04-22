@@ -42,9 +42,9 @@ nearest_neighbor::nearest_neighbor(
 }
 
 nearest_neighbor::nearest_neighbor(
-    jubatus::util::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
-    jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter> converter,
-    jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner)
+    shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
+    shared_ptr<fv_converter::datum_to_fv_converter> converter,
+    shared_ptr<unlearner::unlearner_base> unlearner)
     : mixable_holder_(new framework::mixable_holder),
       converter_(converter),
       nn_(nn),
