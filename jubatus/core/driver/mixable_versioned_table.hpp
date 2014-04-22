@@ -23,8 +23,6 @@
 #include "../../core/common/version.hpp"
 #include "../../core/framework/mixable.hpp"
 #include "../../core/table/column/column_table.hpp"
-#include "../../core/framework/mixable.hpp"
-#include "../../core/table/column/column_table.hpp"
 #include "../../core/unlearner/unlearner_base.hpp"
 
 namespace jubatus {

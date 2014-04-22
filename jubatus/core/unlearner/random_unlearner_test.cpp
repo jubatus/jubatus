@@ -21,6 +21,8 @@
 #include "random_unlearner.hpp"
 #include "test_util.hpp"
 
+using jubatus::util::data::unordered_set;
+
 namespace jubatus {
 namespace core {
 namespace unlearner {
@@ -34,7 +36,7 @@ TEST(random_unlearner, max_size_must_be_positive) {
 }
 
 TEST(random_unlearner, trivial) {
-  jubatus::util::data::unordered_set<std::string> keys;
+  unordered_set<std::string> keys;
   keys.insert("id1");
   keys.insert("id2");
   keys.insert("id3");
@@ -46,7 +48,7 @@ TEST(random_unlearner, trivial) {
   mock_callback callback;
   unlearner.set_callback(callback);
 
-  for (jubatus::util::data::unordered_set<std::string>::iterator it = keys.begin();
+  for (unordered_set<std::string>::iterator it = keys.begin();
        it != keys.end(); ++it) {
     unlearner.touch(*it);
     EXPECT_EQ("", callback.unlearned_id());

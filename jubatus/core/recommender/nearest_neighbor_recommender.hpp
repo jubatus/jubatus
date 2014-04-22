@@ -60,7 +60,8 @@ class nearest_neighbor_recommender : public recommender_base {
 
  private:
   jubatus::util::lang::shared_ptr<table::column_table> get_table();
-  jubatus::util::lang::shared_ptr<const table::column_table> get_const_table() const;
+  jubatus::util::lang::shared_ptr<const table::column_table>
+      get_const_table() const;
 
   jubatus::util::lang::shared_ptr<unlearner::unlearner_base> get_unlearner();
 

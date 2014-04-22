@@ -41,8 +41,9 @@ class nearest_neighbor {
   typedef jubatus::util::lang::shared_ptr<fvc_t> fvc_ptr;
   typedef unlearner::unlearner_base unlearner_t;
   typedef jubatus::util::lang::shared_ptr<unlearner_t> unlearner_ptr;
+
  public:
-  nearest_neighbor( nn_base_ptr nn, fvc_ptr converter);
+  nearest_neighbor(nn_base_ptr nn, fvc_ptr converter);
 
   nearest_neighbor(
       nn_base_ptr nn,

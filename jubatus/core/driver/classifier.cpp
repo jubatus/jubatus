@@ -47,8 +47,6 @@ classifier::classifier(
       classifier_(classifier_method) {
   classifier_->register_mixables_to_holder(*mixable_holder_);
   converter_->register_mixables_to_holder(*mixable_holder_);
-  //mixable_classifier_model_.set_label_unlearner(
-  //    classifier_method->label_unlearner());
 }
 
 classifier::~classifier() {

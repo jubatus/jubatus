@@ -60,7 +60,8 @@ void column_table::clear() {
 
 std::pair<bool, uint64_t> column_table::exact_match(
     const std::string& prefix) const {
-  jubatus::util::concurrent::scoped_lock lk(jubatus::util::concurrent::rlock(table_lock_));
+  jubatus::util::concurrent::scoped_lock
+      lk(jubatus::util::concurrent::rlock(table_lock_));
   index_table::const_iterator it = index_.find(prefix);
   if (it == index_.end()) {
     return std::make_pair(false, 0LLU);

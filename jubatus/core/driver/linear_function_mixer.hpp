@@ -32,7 +32,8 @@ class linear_function_mixer : public jubatus::core::framework::mixable<
     storage::storage_base, diffv> {
  public:
   void set_label_unlearner(
-      jubatus::util::lang::shared_ptr<unlearner::unlearner_base> label_unlearner) {
+      jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
+          label_unlearner) {
     label_unlearner_ = label_unlearner;
   }
 

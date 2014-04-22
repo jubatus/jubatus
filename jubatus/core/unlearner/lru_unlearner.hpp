@@ -59,7 +59,8 @@ class lru_unlearner : public unlearner_base {
 
  private:
   typedef std::list<std::string> lru;
-  typedef jubatus::util::data::unordered_map<std::string, lru::iterator> entry_map;
+  typedef jubatus::util::data::unordered_map<std::string, lru::iterator>
+      entry_map;
 
   friend class jubatus::util::data::serialization::access;
   template<typename Ar>
