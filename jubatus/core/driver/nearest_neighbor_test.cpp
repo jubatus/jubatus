@@ -314,6 +314,7 @@ class nearest_neighbor_with_unlearning_test
         std::tr1::get<1>(GetParam())));
   }
   void TearDown() {
+    nn_driver_->clear();
     nn_driver_.reset();
   }
 
@@ -349,9 +350,6 @@ TEST_P(nearest_neighbor_with_unlearning_test, unlearning) {
   hit_count += is_hit("id2", create_datum_2d(1.f, 1.f), 3);
   hit_count += is_hit("id3", create_datum_2d(1.f, 1.f), 3);
   EXPECT_EQ(2u, hit_count);
-
-  // TODO(kumagi): It should not be needed because of TearDown()
-  nn_driver_->clear();
 }
 
 INSTANTIATE_TEST_CASE_P(
