@@ -24,6 +24,8 @@
 #include "column_table.hpp"
 #include "jubatus/util/math/random.h"
 #include "jubatus/util/lang/shared_ptr.h"
+#include "../../framework/packer.hpp"
+#include "../../framework/stream_writer.hpp"
 
 using std::string;
 using std::vector;
@@ -58,6 +60,10 @@ using jubatus::core::table::uint16_column;
 using jubatus::core::table::uint32_column;
 using jubatus::core::table::uint64_column;
 using jubatus::core::table::string_column;
+
+using jubatus::core::framework::stream_writer;
+using jubatus::core::framework::msgpack_writer;
+using jubatus::core::framework::packer;
 
 namespace jutil = jubatus::util;
 
@@ -668,20 +674,18 @@ TEST(table, get_row) {
   base.init(schema);
 
   base.add("key", owner("self"), 333, std::string("hoge"));
-  std::string data = base.get_row(0);
+
+  msgpack::sbuffer data;  // stored packed data
+  stream_writer<msgpack::sbuffer> sw(data);
+  jubatus::core::framework::msgpack_packer mp(sw);
+  packer pk(mp);
+  base.get_row(0, pk);
+
   msgpack::unpacked unp;
-  msgpack::unpack(&unp, data.c_str(), data.size());
-
-  // object o = unp.get();
-  // std::cout << o << std::endl;
-
-  msgpack::unpacker pac;
-  pac.reserve_buffer(data.size());
-  std::memcpy(pac.buffer(), data.c_str(), data.size());
-  pac.buffer_consumed(data.size());
+  msgpack::unpack(&unp, data.data(), data.size());
 
   // now starts streaming deserialization.
-  msgpack::unpacked result;
+  //msgpack::unpacked result;
   {
     msgpack::object o = unp.get();
     std::string key;
@@ -717,7 +721,15 @@ TEST(table, set_row) {
 
   from.add("key", owner("self"), 333, std::string("hoge"));
 
-  const std::string data = from.get_row(0);  // packed data
+  msgpack::sbuffer sb;  // stored packed data
+  stream_writer<msgpack::sbuffer> sw(sb);
+  jubatus::core::framework::msgpack_packer mp(sw);
+  packer pk(mp);
+  from.get_row(0, pk);
+
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, sb.data(), sb.size());
+  const msgpack::object& data = msg.get();
 
   column_table to;
   to.init(schema);
@@ -744,15 +756,19 @@ TEST(table, set_bit_vector_row) {
   bv.set_bit(22);
   from.add("key", owner("self"), std::string("hoge"), bv);
 
-  std::string data = from.get_row(0);  // packed data
+  msgpack::sbuffer data;  // stored packed data
+  stream_writer<msgpack::sbuffer> sw(data);
+  jubatus::core::framework::msgpack_packer mp(sw);
+  packer pk(mp);
+  from.get_row(0, pk);
 
-  // msgpack::unpacked unp;
-  // msgpack::unpack(&unp, data.c_str(), data.size());
-  // const msgpack::object& o = unp.get();
+  msgpack::unpacked unp;
+  msgpack::unpack(&unp, data.data(), data.size());
+  const msgpack::object& o = unp.get();
 
   column_table to;
   to.init(schema);
-  column_table::version_t v = to.set_row(data);
+  column_table::version_t v = to.set_row(o);
   ASSERT_EQ(v.first, owner("self"));
   ASSERT_EQ(v.second, 0U);
   ASSERT_EQ(to.size(), 1U);
@@ -770,10 +786,21 @@ TEST(table, set_row_overwrite) {
   schema.push_back(column_type(column_type::int32_type));
   from.init(schema);
 
+  msgpack::sbuffer sb1, sb2;  // stored packed data
+  stream_writer<msgpack::sbuffer> sw1(sb1), sw2(sb2);
+  jubatus::core::framework::msgpack_packer mp1(sw1), mp2(sw2);
+  packer pk1(mp1), pk2(mp2);
+
   from.add("key1", owner("self1"), std::string("hoge1"), 1);
-  std::string pack1 = from.get_row(0);  // packed data
+  from.get_row(0, pk1);
   from.add("key1", owner("self2"), std::string("hoge2"), 2);
-  std::string pack2 = from.get_row(0);  // packed data
+  from.get_row(0, pk2);
+
+  msgpack::unpacked msg1, msg2;
+  msgpack::unpack(&msg1, sb1.data(), sb1.size());
+  msgpack::unpack(&msg2, sb2.data(), sb2.size());
+  const msgpack::object& pack1 = msg1.get();
+  const msgpack::object& pack2 = msg2.get();
 
   column_table to;
   to.init(schema);

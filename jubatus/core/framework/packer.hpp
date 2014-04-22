@@ -29,6 +29,7 @@ class msgpack_writer {
   virtual void write(const char* buf, unsigned int len) = 0;
 };
 
+// TODO: this name conflicts msgpack_packer struct of msgpack-c
 class msgpack_packer {
  public:
   // implicit

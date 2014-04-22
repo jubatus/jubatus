@@ -27,6 +27,7 @@
 #include "jubatus/util/lang/demangle.h"
 #include "jubatus/util/lang/noncopyable.h"
 #include "../../common/assert.hpp"
+#include "../../framework/packer.hpp"
 #include "../storage_exception.hpp"
 #include "bit_vector.hpp"
 #include "column_type.hpp"
@@ -87,7 +88,7 @@ class abstract_column_base : jubatus::util::lang::noncopyable {
   virtual bool remove(uint64_t target) = 0;
   virtual void clear() = 0;
   virtual void pack_with_index(
-      const uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
+      const uint64_t index, framework::packer& pk) const {
   }
   virtual void dump() const = 0;
   virtual void dump(std::ostream& os, uint64_t target) const = 0;
@@ -178,7 +179,7 @@ class typed_column : public detail::abstract_column_base {
   }
 
   void pack_with_index(
-      const uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
+      const uint64_t index, framework::packer& pk) const {
     pk.pack((*this)[index]);
   }
 
@@ -300,7 +301,7 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
     array_.clear();
   }
   void pack_with_index(
-      const uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
+      const uint64_t index, framework::packer& pk) const {
     pk.pack((*this)[index]);
   }
   void dump() const {
@@ -462,7 +463,7 @@ class abstract_column {
     base_->clear();
   }
   void pack_with_index(
-      uint64_t index, msgpack::packer<msgpack::sbuffer>& pk) const {
+      uint64_t index, framework::packer& pk) const {
     JUBATUS_ASSERT(base_ != NULL);
     base_->pack_with_index(index, pk);
   }

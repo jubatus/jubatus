@@ -24,6 +24,7 @@
 #include <vector>
 #include <utility>
 #include <iostream>
+#include <msgpack.hpp>
 
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/lang/demangle.h"
@@ -34,6 +35,7 @@
 #include "../../common/assert.hpp"
 #include "../../common/exception.hpp"
 #include "../../common/unordered_map.hpp"
+#include "../../framework/packer.hpp"
 #include "../storage_exception.hpp"
 #include "bit_vector.hpp"
 #include "column_type.hpp"
@@ -248,28 +250,28 @@ class column_table {
     return versions_[index];
   }
 
-  std::string get_row(const uint64_t id) const {
-    msgpack::sbuffer sb;
-    msgpack::packer<msgpack::sbuffer> pk(&sb);
-    pk.pack_array(3);  // [key, [owner, id], [data]]
+  void get_row(const uint64_t id, framework::packer& pk) const {
 
     jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     if (tuples_ <= id) {
-      return "";
+      // TODO: Should we return nil object?
+      // or raise assertion?
+      return;
     }
+    pk.pack_array(3);  // [key, [owner, id], [data]]
     pk.pack(keys_[id]);  // key
     pk.pack(versions_[id]);  // [version]
     pk.pack_array(columns_.size());
     for (size_t i = 0; i < columns_.size(); ++i) {
       columns_[i].pack_with_index(id, pk);
     }
-    return std::string(sb.data(), sb.size());
   }
 
-  version_t set_row(const std::string& packed) {
-    msgpack::unpacked unp;
-    msgpack::unpack(&unp, packed.c_str(), packed.size());
-    const msgpack::object& o = unp.get();
+  version_t set_row(const msgpack::object& o) {
+    if (o.type != msgpack::type::ARRAY || o.via.array.size != 3) {
+      throw msgpack::type_error();
+    }
+
     const std::string& key = o.via.array.ptr[0].as<std::string>();
     version_t set_version = o.via.array.ptr[1].as<version_t>();
 
