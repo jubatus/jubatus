@@ -67,9 +67,6 @@ float calculate_lof(
 
 }  // namespace
 
-lof::lof() {
-}
-
 lof::lof(
     const lof_storage::config& config,
     jubatus::util::lang::shared_ptr<recommender::recommender_base> nn_engine)
