@@ -96,6 +96,51 @@ TEST(euclid_lsh, complete_row) {
   EXPECT_EQ(1, ret[3].second);
 }
 
+TEST(euclid_lsh, config_validation) {
+  jubatus::util::lang::shared_ptr<euclid_lsh> r;
+  euclid_lsh::config c;
+
+  // 1 <= hash_num
+  c.hash_num = 0;
+  ASSERT_THROW(r.reset(new euclid_lsh(c)), common::invalid_parameter);
+  c.hash_num = 1;
+  ASSERT_NO_THROW(r.reset(new euclid_lsh(c)));
+  c.hash_num = 2;
+  ASSERT_NO_THROW(r.reset(new euclid_lsh(c)));
+
+  // 1 <= table_num
+  c.table_num = 0;
+  ASSERT_THROW(r.reset(new euclid_lsh(c)), common::invalid_parameter);
+  c.table_num = 1;
+  ASSERT_NO_THROW(r.reset(new euclid_lsh(c)));
+  c.table_num = 2;
+  ASSERT_NO_THROW(r.reset(new euclid_lsh(c)));
+
+  // 0.0 < bin_width
+  c.bin_width = -1.f;
+  ASSERT_THROW(r.reset(new euclid_lsh(c)), common::invalid_parameter);
+  c.bin_width = 0.f;
+  ASSERT_THROW(r.reset(new euclid_lsh(c)), common::invalid_parameter);
+  c.bin_width = 1.f;
+  ASSERT_NO_THROW(r.reset(new euclid_lsh(c)));
+
+  // 0 <= probe_num
+  c.probe_num = -1;
+  ASSERT_THROW(r.reset(new euclid_lsh(c)), common::invalid_parameter);
+  c.probe_num = 0;
+  ASSERT_NO_THROW(r.reset(new euclid_lsh(c)));
+  c.probe_num = 1;
+  ASSERT_NO_THROW(r.reset(new euclid_lsh(c)));
+
+  // 0 <= seed
+  c.seed = -1;
+  ASSERT_THROW(r.reset(new euclid_lsh(c)), common::invalid_parameter);
+  c.seed = 0;
+  ASSERT_NO_THROW(r.reset(new euclid_lsh(c)));
+  c.seed = 1;
+  ASSERT_NO_THROW(r.reset(new euclid_lsh(c)));
+}
+
 class euclid_lsh_mix_test
     : public ::testing::TestWithParam<pair<int, euclid_lsh::config> > {
  protected:

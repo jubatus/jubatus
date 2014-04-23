@@ -44,6 +44,12 @@ minhash::minhash()
 
 minhash::minhash(const config& config)
     : hash_num_(config.hash_num) {
+
+  if (config.hash_num < 1) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("1 <= hash_num"));
+  }
+
   initialize_model();
 }
 
