@@ -74,6 +74,19 @@ light_lof::light_lof(
       mixable_scores_(new driver::mixable_versioned_table),
       config_(conf),
       my_id_(id) {
+
+  if (conf.nearest_neighbor_num < 2) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("2 <= nearest_neighbor_num"));
+  }
+
+  if (conf.reverse_nearest_neighbor_num
+      < conf.nearest_neighbor_num) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter(
+            "nearest_neighbor_num <= reverse_nearest_neighbor_num"));
+  }
+
   shared_ptr<column_table> table(new column_table);
   std::vector<table::column_type> schema(
       2, table::column_type(table::column_type::float_type));

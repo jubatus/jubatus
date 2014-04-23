@@ -77,14 +77,15 @@ class light_lof_test : public ::testing::Test {
   static const int K = 0;
   void SetUp() {
     shared_ptr<table::column_table> nn_table(new table::column_table);
-    shared_ptr<nearest_neighbor_base> nn_engine(new NearestNeighborMethod(
+    nn_engine_.reset(new NearestNeighborMethod(
         typename NearestNeighborMethod::config(), nn_table, ID));
-    light_lof_.reset(new light_lof(light_lof::config(), ID, nn_engine));
+    light_lof_.reset(new light_lof(light_lof::config(), ID, nn_engine_));
 
     mtr_ = jubatus::util::math::random::mtrand(SEED);
   }
 
  protected:
+  shared_ptr<nearest_neighbor_base> nn_engine_;
   shared_ptr<light_lof> light_lof_;
   jubatus::util::math::random::mtrand mtr_;
 };
@@ -131,11 +132,42 @@ TYPED_TEST_P(light_lof_test, calc_anomaly_score_on_gaussian_random_samples) {
   EXPECT_LT(2.f, this->light_lof_->calc_anomaly_score(outlier_query));
 }
 
+TYPED_TEST_P(light_lof_test, config_validation) {
+  light_lof::config c;
+
+  c.reverse_nearest_neighbor_num = 10;
+
+  // nearest_neighbor_num <= 2
+  c.nearest_neighbor_num = 1;
+  ASSERT_THROW(
+      this->light_lof_.reset(new light_lof(c, ID, this->nn_engine_)),
+      common::invalid_parameter);
+
+  c.nearest_neighbor_num = 2;
+  ASSERT_NO_THROW(
+      this->light_lof_.reset(new light_lof(c, ID, this->nn_engine_)));
+
+  c.nearest_neighbor_num = 3;
+  ASSERT_NO_THROW(
+      this->light_lof_.reset(new light_lof(c, ID, this->nn_engine_)));
+
+  // nearest_neighbor_num <= reverse_nearest_neighbor_num
+  c.reverse_nearest_neighbor_num = 2;
+  ASSERT_THROW(
+      this->light_lof_.reset(new light_lof(c, ID, this->nn_engine_)),
+      common::invalid_parameter);
+
+  c.reverse_nearest_neighbor_num = 3;
+  ASSERT_NO_THROW
+    (this->light_lof_.reset(new light_lof(c, ID, this->nn_engine_)));
+}
+
 REGISTER_TYPED_TEST_CASE_P(
     light_lof_test,
     name,
     get_all_row_ids,
-    calc_anomaly_score_on_gaussian_random_samples);
+    calc_anomaly_score_on_gaussian_random_samples,
+    config_validation);
 
 INSTANTIATE_TYPED_TEST_CASE_P(
     usual_case, light_lof_test, nearest_neighbor_types);
