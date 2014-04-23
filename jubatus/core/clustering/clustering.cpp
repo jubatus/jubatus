@@ -43,6 +43,44 @@ clustering::clustering(
       name_(name),
       method_(method),
       storage_(new mixable_storage) {
+
+  if (cfg.k < 1) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("1 <= k"));
+  }
+
+  if (cfg.bucket_size < 2) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("2 <= bucket_size"));
+  }
+
+  if (cfg.bucket_length < 2) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("2 <= bucket_length"));
+  }
+
+  if (cfg.bicriteria_base_size < 1 ||
+      cfg.compressed_bucket_size <= cfg.bicriteria_base_size) {
+    throw JUBATUS_EXCEPTION(common::invalid_parameter(
+        "1 <= bicriteria_base_size < compressed_bucket_size"));
+  }
+
+  if (cfg.bucket_size <= cfg.compressed_bucket_size) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("compressed_bucket_size < bucket_size"));
+  }
+
+  if (cfg.forgetting_factor < 0.f) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("0.0 <= forgetting_factor"));
+  }
+
+  if (cfg.forgetting_threshold < 0.f ||
+      1.f < cfg.forgetting_threshold) {
+    throw JUBATUS_EXCEPTION(common::invalid_parameter(
+        "0.0 <= forgetting_threshold <= 1.0"));
+  }
+
   init();
 }
 

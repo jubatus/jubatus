@@ -38,6 +38,7 @@ class model_gmm_test : public ::testing::Test {
     config_.compressor_method = "compressive_kmeans";
     config_.bucket_size = 100;
     config_.compressed_bucket_size = 5;
+    config_.bicriteria_base_size = 1;
     config_.forgetting_threshold = 0.05;
     config_.forgetting_factor = 2;
     config_.bucket_length = 4;
