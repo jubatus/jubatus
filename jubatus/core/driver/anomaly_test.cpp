@@ -23,35 +23,25 @@
 #include "../anomaly/anomaly.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../recommender/recommender.hpp"
+#include "../nearest_neighbor/nearest_neighbor.hpp"
 #include "anomaly.hpp"
 #include "test_util.hpp"
 
+using std::vector;
 using std::make_pair;
 using jubatus::util::lang::shared_ptr;
+using jubatus::core::anomaly::anomaly_base;
 
 namespace jubatus {
 namespace core {
 namespace driver {
 
-class anomaly_test : public ::testing::Test {
+class anomaly_test
+    : public ::testing::TestWithParam<shared_ptr<anomaly_base> > {
  protected:
   void SetUp() {
-    core::anomaly::lof_storage::config lof_config;
-    lof_config.nearest_neighbor_num = 100;
-    lof_config.reverse_nearest_neighbor_num = 30;
-    core::recommender::euclid_lsh::config lsh_config;
-    lsh_config.hash_num = 8;
-    lsh_config.table_num = 8;
-    lsh_config.probe_num = 8;
-    lsh_config.bin_width = 8.2;
-    lsh_config.seed = 1234;
-
     anomaly_.reset(new driver::anomaly(
-          shared_ptr<core::anomaly::anomaly_base>(
-            new core::anomaly::lof(lof_config,
-              shared_ptr<core::recommender::recommender_base>(
-                new core::recommender::euclid_lsh(lsh_config)))),
-          make_fv_converter()));
+        GetParam(), make_fv_converter()));
   }
 
   void TearDown() {
@@ -61,7 +51,7 @@ class anomaly_test : public ::testing::Test {
   jubatus::util::lang::shared_ptr<core::driver::anomaly> anomaly_;
 };
 
-TEST_F(anomaly_test, small) {
+TEST_P(anomaly_test, small) {
   {
     fv_converter::datum datum;
     datum.num_values_.push_back(make_pair("f1", 1.0));
@@ -95,6 +85,50 @@ TEST_F(anomaly_test, small) {
   }
 }
 
-}  // driver namespace
-}  // core namespace
-}  // jubatus namespace
+vector<shared_ptr<anomaly_base> > create_anomaly_base() {
+  vector<shared_ptr<anomaly_base> > method;
+
+  const std::string ID;
+
+
+  // lof
+  core::anomaly::lof_storage::config lof_config;
+  lof_config.nearest_neighbor_num = 10;
+  lof_config.reverse_nearest_neighbor_num = 30;
+  core::recommender::euclid_lsh::config lof_lsh_config;
+  lof_lsh_config.hash_num = 8;
+  lof_lsh_config.table_num = 8;
+  lof_lsh_config.probe_num = 8;
+  lof_lsh_config.bin_width = 8;
+  lof_lsh_config.seed = 1234;
+
+  method.push_back(shared_ptr<anomaly_base>(
+      new core::anomaly::lof(lof_config,
+          shared_ptr<core::recommender::recommender_base>(
+              new core::recommender::euclid_lsh(lof_lsh_config)))));
+
+  // light_lof
+  core::anomaly::light_lof::config light_lof_config;
+  light_lof_config.nearest_neighbor_num = 10;
+  light_lof_config.reverse_nearest_neighbor_num = 30;
+  core::nearest_neighbor::euclid_lsh::config light_lof_lsh_config;
+  light_lof_lsh_config.hash_num = 8;
+
+  shared_ptr<table::column_table> nn_table(new table::column_table);
+  shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn_engine(
+      new core::nearest_neighbor::euclid_lsh(
+          light_lof_lsh_config, nn_table, ID));
+
+  method.push_back(shared_ptr<anomaly_base>(
+      new core::anomaly::light_lof(light_lof_config, ID, nn_engine)));
+
+  return method;
+}
+
+INSTANTIATE_TEST_CASE_P(anomaly_test_instance,
+    anomaly_test,
+    testing::ValuesIn(create_anomaly_base()));
+
+}  // namespace driver
+}  // namespace core
+}  // namespace jubatus
