@@ -120,9 +120,35 @@ TYPED_TEST_P(regression_test, random) {
   }
 }
 
+TYPED_TEST_P(regression_test, config_validation) {
+  shared_ptr<local_storage> s(new local_storage);
+  typename TypeParam::config c;
+
+  // 0.0 < regularization_weight
+  c.C = -1.f;
+  ASSERT_THROW(TypeParam p(c, s), common::invalid_parameter);
+
+  c.C = 0.f;
+  ASSERT_THROW(TypeParam p(c, s), common::invalid_parameter);
+
+  c.C = 1.f;
+  ASSERT_NO_THROW(TypeParam p(c, s));
+
+  // 0.0 <= sensitivity
+  c.epsilon = -1.f;
+  ASSERT_THROW(TypeParam p(c, s), common::invalid_parameter);
+
+  c.epsilon = 0.f;
+  ASSERT_NO_THROW(TypeParam p(c, s));
+
+  c.epsilon = 1.f;
+  ASSERT_NO_THROW(TypeParam p(c, s));
+}
+
 REGISTER_TYPED_TEST_CASE_P(
     regression_test,
-    trivial, random);
+    trivial, random,
+    config_validation);
 
 typedef testing::Types<regression::passive_aggressive> regression_types;
 
