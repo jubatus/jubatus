@@ -67,9 +67,6 @@ float calculate_lof(
 
 }  // namespace
 
-lof::lof() {
-}
-
 lof::lof(
     const lof_storage::config& config,
     jubatus::util::lang::shared_ptr<recommender::recommender_base> nn_engine)
@@ -125,6 +122,25 @@ string lof::type() const {
 void lof::register_mixables_to_holder(framework::mixable_holder& holder) const {
   nn_engine_->register_mixables_to_holder(holder);
   holder.register_mixable(mixable_storage_);
+}
+
+void lof::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack_array(2);
+  mixable_storage_->pack(packer);
+  nn_engine_->pack(packer);
+}
+
+void lof::unpack(msgpack::object o) {
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
+    throw msgpack::type_error();
+  }
+
+  // clear before load
+  mixable_storage_->clear();
+  nn_engine_->clear();
+
+  mixable_storage_->unpack(o.via.array.ptr[0]);
+  nn_engine_->unpack(o.via.array.ptr[1]);
 }
 
 }  // namespace anomaly

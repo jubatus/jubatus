@@ -188,6 +188,14 @@ void minhash::initialize_model() {
       shared_ptr<storage::bit_index_storage>(new storage::bit_index_storage));
 }
 
+void minhash::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  // TODO: implement
+}
+
+void minhash::unpack(msgpack::object o) {
+  // TODO: implement
+}
+
 }  // namespace recommender
 }  // namespace core
 }  // namespace jubatus

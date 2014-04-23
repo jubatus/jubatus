@@ -67,10 +67,10 @@ class recommender_mock : public recommender_base {
   virtual void register_mixables_to_holder(framework::mixable_holder& holder)
       const;
 
- private:
-  void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
-  void unpack_impl(msgpack::object o);
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
 
+ private:
   jubatus::util::lang::shared_ptr<mixable_recommender_mock_storage>
     mixable_storage_;
 };

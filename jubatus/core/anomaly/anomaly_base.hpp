@@ -25,6 +25,7 @@
 
 #include "../common/type.hpp"
 #include "../framework/mixable.hpp"
+#include "../framework/model.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
 #include "anomaly_type.hpp"
 
@@ -32,7 +33,7 @@ namespace jubatus {
 namespace core {
 namespace anomaly {
 
-class anomaly_base {
+class anomaly_base : public framework::model {
  public:
   anomaly_base();
   virtual ~anomaly_base();

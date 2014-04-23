@@ -304,6 +304,25 @@ light_lof::parameter light_lof::get_row_parameter(const std::string& row)
   return param;
 }
 
+void light_lof::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack_array(2);
+  nearest_neighbor_engine_->pack(packer);
+  mixable_scores_->pack(packer);
+}
+
+void light_lof::unpack(msgpack::object o) {
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
+    throw msgpack::type_error();
+  }
+
+  // clear before load
+  nearest_neighbor_engine_->clear();
+  mixable_scores_->clear();
+
+  nearest_neighbor_engine_->unpack(o.via.array.ptr[0]);
+  mixable_scores_->unpack(o.via.array.ptr[1]);
+}
+
 }  // namespace anomaly
 }  // namespace core
 }  // namespace jubatus

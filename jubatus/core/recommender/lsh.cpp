@@ -150,6 +150,14 @@ void lsh::initialize_model() {
       new storage::bit_index_storage));
 }
 
+void lsh::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  // TODO: implement
+}
+
+void lsh::unpack(msgpack::object o) {
+  // TODO: implement
+}
+
 }  // namespace recommender
 }  // namespace core
 }  // namespace jubatus

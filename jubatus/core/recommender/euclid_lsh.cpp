@@ -234,6 +234,14 @@ void euclid_lsh::initialize_model() {
       new storage::lsh_index_storage));
 }
 
+void euclid_lsh::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  // TODO: implement
+}
+
+void euclid_lsh::unpack(msgpack::object o) {
+  // TODO: implement
+}
+
 }  // namespace recommender
 }  // namespace core
 }  // namespace jubatus

@@ -70,6 +70,11 @@ class anomaly_impl : public anomaly_base {
 
   void register_mixables_to_holder(framework::mixable_holder&) const {
   }
+
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  }
+  void unpack(msgpack::object o){
+  }
 };
 
 TEST(anomaly_base, find_max_int_id) {
