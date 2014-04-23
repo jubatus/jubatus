@@ -48,9 +48,10 @@ class inverted_index : public recommender_base {
   std::string type() const;
   void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
+
  private:
-  void pack_impl(msgpack::packer<msgpack::sbuffer>& packer) const;
-  void unpack_impl(msgpack::object o);
   jubatus::util::lang::shared_ptr<storage::mixable_inverted_index_storage>
       mixable_storage_;
 };

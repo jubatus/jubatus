@@ -113,13 +113,13 @@ string recommender_mock::type() const {
   return "recommender_mock";
 }
 
-void recommender_mock::pack_impl(
+void recommender_mock::pack(
     msgpack::packer<msgpack::sbuffer>& packer) const {
   orig_->pack(packer);
   mixable_storage_->pack(packer);
 }
 
-void recommender_mock::unpack_impl(msgpack::object o) {
+void recommender_mock::unpack(msgpack::object o) {
   std::vector<msgpack::object> mems;
   o.convert(&mems);
   if (mems.size() != 2) {

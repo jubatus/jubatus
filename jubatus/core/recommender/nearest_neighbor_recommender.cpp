@@ -81,6 +81,15 @@ void nearest_neighbor_recommender::register_mixables_to_holder(
   nearest_neighbor_engine_->register_mixables_to_holder(holder);
 }
 
+void nearest_neighbor_recommender::pack(
+    msgpack::packer<msgpack::sbuffer>& packer) const {
+  // TODO: implement
+}
+
+void nearest_neighbor_recommender::unpack(msgpack::object o) {
+  // TODO: implement
+}
+
 }  // namespace recommender
 }  // namespace core
 }  // namespace jubatus

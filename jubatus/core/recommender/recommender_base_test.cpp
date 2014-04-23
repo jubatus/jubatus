@@ -90,9 +90,9 @@ class recommender_impl : public recommender_base {
   void register_mixables_to_holder(framework::mixable_holder&) const {
   }
 
-  void pack_impl(msgpack::packer<msgpack::sbuffer>&) const {
+  void pack(msgpack::packer<msgpack::sbuffer>&) const {
   }
-  void unpack_impl(msgpack::object) {
+  void unpack(msgpack::object) {
   }
 };
 

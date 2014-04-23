@@ -25,6 +25,7 @@
 #include "../table/column/column_table.hpp"
 #include "../common/type.hpp"
 #include "../framework/mixable.hpp"
+#include "../framework/model.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
 #include "recommender_type.hpp"
 
@@ -32,7 +33,7 @@ namespace jubatus {
 namespace core {
 namespace recommender {
 
-class recommender_base {
+class recommender_base : public framework::model {
  public:
   recommender_base();
   virtual ~recommender_base();

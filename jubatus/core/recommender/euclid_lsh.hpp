@@ -96,6 +96,9 @@ class euclid_lsh : public recommender_base {
   virtual void register_mixables_to_holder(framework::mixable_holder& holder)
       const;
 
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void unpack(msgpack::object o);
+
  private:
   std::vector<float> calculate_lsh(const common::sfv_t& query);
   std::vector<float> get_projection(uint32_t seed);
