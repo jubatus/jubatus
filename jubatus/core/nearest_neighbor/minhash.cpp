@@ -105,6 +105,11 @@ minhash::minhash(
     jubatus::util::lang::shared_ptr<table::column_table> table,
     const std::string& id)
     : bit_vector_nearest_neighbor_base(conf.hash_num, table, id) {
+
+  if (conf.hash_num < 1) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("1 <= hash_num"));
+  }
 }
 
 minhash::minhash(
@@ -113,6 +118,11 @@ minhash::minhash(
     vector<column_type>& schema,
     const std::string& id)
     : bit_vector_nearest_neighbor_base(conf.hash_num, table, schema, id) {
+
+  if (conf.hash_num < 1) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("1 <= hash_num"));
+  }
 }
 
 bit_vector minhash::hash(const common::sfv_t& sfv) const {

@@ -29,6 +29,11 @@ lsh::lsh(
     jubatus::util::lang::shared_ptr<table::column_table> table,
     const std::string& id)
     : bit_vector_nearest_neighbor_base(conf.hash_num, table, id) {
+
+  if (conf.hash_num < 1) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("1 <= hash_num"));
+  }
 }
 
 lsh::lsh(
@@ -37,6 +42,11 @@ lsh::lsh(
     std::vector<table::column_type>& schema,
     const std::string& id)
     : bit_vector_nearest_neighbor_base(conf.hash_num, table, schema, id) {
+
+  if (conf.hash_num < 1) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("1 <= hash_num"));
+  }
 }
 
 table::bit_vector lsh::hash(const common::sfv_t& sfv) const {

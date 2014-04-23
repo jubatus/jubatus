@@ -111,6 +111,11 @@ void euclid_lsh::neighbor_row(
 }
 
 void euclid_lsh::set_config(const config& conf) {
+  if (conf.hash_num < 1) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("1 <= hash_num"));
+  }
+
   hash_num_ = conf.hash_num;
 }
 
