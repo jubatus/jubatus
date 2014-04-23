@@ -99,6 +99,17 @@ void normalize(eigen_vector_diff& v) {
 
 graph_wo_index::graph_wo_index(const config& config)
     : config_(config) {
+
+  if (config.alpha <= 0.0 || 1.0 <= config.alpha) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("0.0 < damping_factor < 1.0"));
+  }
+
+  if (config.landmark_num < 0) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("0 <= landmark_num"));
+  }
+
   clear();
 }
 
