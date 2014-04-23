@@ -37,7 +37,7 @@ passive_aggressive_2::passive_aggressive_2(
     : classifier_base(storage),
       config_(config) {
 
-  if (config_.C <= 0.f) {
+  if (config.C <= 0.f) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("0.0 < regularization_weight"));
   }
