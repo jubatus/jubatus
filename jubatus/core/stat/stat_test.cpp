@@ -104,6 +104,12 @@ TEST(stat_test, mixed_entropy) {
   ASSERT_DOUBLE_EQ(p.entropy() + bias, p.entropy() + bias);
 }
 
+TEST(stat_test, config_validation) {
+  // 1 <= window_size
+  ASSERT_THROW(core::stat::stat p0(0), core::common::invalid_parameter);
+  ASSERT_NO_THROW(core::stat::stat p1(1));
+}
+
 REGISTER_TYPED_TEST_CASE_P(
     stat_test,
     trivial);
