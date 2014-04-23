@@ -100,11 +100,21 @@ uint64_t anomaly::find_max_int_id() const {
 }
 
 void anomaly::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
-  // TODO: implement
+  pk.pack_array(1);
+  anomaly_->pack(pk);
+  // TODO: Is weight_manager required?
 }
 
 void anomaly::unpack(msgpack::object o) {
-  // TODO: implement
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != 1) {
+    throw msgpack::type_error();
+  }
+
+  // clear before load
+  anomaly_->clear();
+  converter_->clear_weights();
+  anomaly_->unpack(o.via.array.ptr[0]);
+  // TODO: Is weight_manager required?
 }
 
 }  // namespace driver
