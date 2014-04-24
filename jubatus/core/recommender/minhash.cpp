@@ -75,12 +75,12 @@ void minhash::neighbor_row(
 }
 
 void minhash::clear() {
-  orig_->get_model()->clear();
+  orig_.clear();
   mixable_storage_->get_model()->clear();
 }
 
 void minhash::clear_row(const string& id) {
-  orig_->get_model()->remove_row(id);
+  orig_.remove_row(id);
   mixable_storage_->get_model()->remove_row(id);
 }
 
@@ -109,12 +109,10 @@ void minhash::calc_minhash_values(const common::sfv_t& sfv,
 }
 
 void minhash::update_row(const string& id, const sfv_diff_t& diff) {
-  core::storage::sparse_matrix_storage_mixable::model_ptr orig =
-      orig_->get_model();
-  orig->set_row(id, diff);
+  orig_.set_row(id, diff);
 
   common::sfv_t row;
-  orig->get_row(id, row);
+  orig_.get_row(id, row);
   bit_vector bv;
   calc_minhash_values(row, bv);
   mixable_storage_->get_model()->set_row(id, bv);
@@ -178,7 +176,6 @@ string minhash::type() const {
 
 void minhash::register_mixables_to_holder(framework::mixable_holder& holder)
     const {
-  holder.register_mixable(orig_);
   holder.register_mixable(mixable_storage_);
 }
 

@@ -83,7 +83,7 @@ void recommender_mock::neighbor_row(
 
 void recommender_mock::clear() {
   mixable_storage_->get_model()->clear();
-  orig_->get_model()->clear();
+  orig_.clear();
 }
 
 void recommender_mock::clear_row(const string& id) {
@@ -91,22 +91,22 @@ void recommender_mock::clear_row(const string& id) {
   decode_row(id, sfv);
   mixable_storage_->get_model()->remove(sfv);
 
-  orig_->get_model()->remove_row(id);
+  orig_.remove_row(id);
 }
 
 void recommender_mock::update_row(const string& id, const sfv_diff_t& diff) {
   common::sfv_t old_sfv;
-  orig_->get_model()->get_row(id, old_sfv);
+  orig_.get_row(id, old_sfv);
 
-  orig_->get_model()->set_row(id, diff);
+  orig_.set_row(id, diff);
   common::sfv_t new_sfv;
-  orig_->get_model()->get_row(id, new_sfv);
+  orig_.get_row(id, new_sfv);
 
   mixable_storage_->get_model()->update(old_sfv, new_sfv);
 }
 
 void recommender_mock::get_all_row_ids(vector<string>& ids) const {
-  orig_->get_model()->get_all_row_ids(ids);
+  orig_.get_all_row_ids(ids);
 }
 
 string recommender_mock::type() const {
@@ -115,7 +115,7 @@ string recommender_mock::type() const {
 
 void recommender_mock::pack(
     msgpack::packer<msgpack::sbuffer>& packer) const {
-  orig_->pack(packer);
+  orig_.pack(packer);
   mixable_storage_->pack(packer);
 }
 
@@ -125,13 +125,12 @@ void recommender_mock::unpack(msgpack::object o) {
   if (mems.size() != 2) {
     throw msgpack::type_error();
   }
-  orig_->unpack(mems[0]);
+  orig_.unpack(mems[0]);
   mixable_storage_->unpack(mems[1]);
 }
 
 void recommender_mock::register_mixables_to_holder(
     framework::mixable_holder& holder) const {
-  holder.register_mixable(orig_);
   holder.register_mixable(mixable_storage_);
 }
 

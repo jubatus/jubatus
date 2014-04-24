@@ -39,14 +39,14 @@ class recommender_impl : public recommender_base {
   recommender_impl()
       : recommender_base() {
     // make mock
-    orig_->get_model()->set("r1", "a1", 1.0);
-    orig_->get_model()->set("r1", "a2", 1.0);
+    orig_.set("r1", "a1", 1.0);
+    orig_.set("r1", "a2", 1.0);
 
-    orig_->get_model()->set("r2", "b1", 1.0);
-    orig_->get_model()->set("r2", "b2", 1.0);
+    orig_.set("r2", "b1", 1.0);
+    orig_.set("r2", "b2", 1.0);
 
-    orig_->get_model()->set("r3", "a1", 1.0);
-    orig_->get_model()->set("r3", "b1", 1.0);
+    orig_.set("r3", "a1", 1.0);
+    orig_.set("r3", "b1", 1.0);
   }
 
   void similar_row(

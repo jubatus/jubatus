@@ -26,14 +26,14 @@
 #include "jubatus/util/data/unordered_map.h"
 #include "../common/key_manager.hpp"
 #include "../common/unordered_map.hpp"
-#include "../framework/mixable.hpp"
+#include "../framework/model.hpp"
 #include "storage_type.hpp"
 
 namespace jubatus {
 namespace core {
 namespace storage {
 
-class sparse_matrix_storage {
+class sparse_matrix_storage : public framework::model {
  public:
   sparse_matrix_storage();
   ~sparse_matrix_storage();
@@ -76,33 +76,6 @@ class sparse_matrix_storage {
 
  public:
   MSGPACK_DEFINE(tbl_, column2id_);
-};
-
-// TODO(beam2d): Workaround to correctly store recommender's storage that is not
-// involved in MIX. We should redesign the classes to separate data structures
-// that should be saved as a part of the model and mixable that is involved in
-// MIX.
-class sparse_matrix_storage_mixable
-    : public framework::deprecated_mixable<sparse_matrix_storage, bool> {
- public:
-  bool get_diff_impl() const {
-    return true;
-  }
-
-  bool put_diff_impl(const bool&) {
-    return true;
-  }
-
-  storage::version get_version() const {
-    // TODO(kumagi): we should return correct version of storage
-    return storage::version();
-  }
-
-  void mix_impl(const bool&, const bool&, bool&) const {
-  }
-
-  void clear() {
-  }
 };
 
 }  // namespace storage

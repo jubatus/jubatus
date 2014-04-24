@@ -77,7 +77,7 @@ class recommender_base : public framework::model {
   static const uint64_t complete_row_similar_num_;
 
   // TODO(beam2d): Workaround to correctly store the storage on save.
-  util::lang::shared_ptr<core::storage::sparse_matrix_storage_mixable> orig_;
+  core::storage::sparse_matrix_storage orig_;
 };
 
 }  // namespace recommender

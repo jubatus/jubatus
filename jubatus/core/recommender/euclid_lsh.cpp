@@ -158,7 +158,7 @@ void euclid_lsh::similar_row(
 }
 
 void euclid_lsh::clear() {
-  orig_->get_model()->clear();
+  orig_.clear();
   mixable_storage_->get_model()->clear();
 
   // Clear projection cache
@@ -167,17 +167,15 @@ void euclid_lsh::clear() {
 }
 
 void euclid_lsh::clear_row(const string& id) {
-  orig_->get_model()->remove_row(id);
+  orig_.remove_row(id);
   mixable_storage_->get_model()->remove_row(id);
 }
 
 void euclid_lsh::update_row(const string& id, const sfv_diff_t& diff) {
   storage::lsh_index_storage& lsh_index = *mixable_storage_->get_model();
-  core::storage::sparse_matrix_storage_mixable::model_ptr orig =
-      orig_->get_model();
-  orig->set_row(id, diff);
+  orig_.set_row(id, diff);
   common::sfv_t row;
-  orig->get_row(id, row);
+  orig_.get_row(id, row);
 
   const vector<float> hash = lsh_function(
       row, lsh_index.all_lsh_num(), bin_width_);
@@ -195,7 +193,6 @@ string euclid_lsh::type() const {
 
 void euclid_lsh::register_mixables_to_holder(framework::mixable_holder& holder)
     const {
-  holder.register_mixable(orig_);
   holder.register_mixable(mixable_storage_);
 }
 
