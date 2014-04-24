@@ -28,7 +28,7 @@
 #include "jubatus/util/lang/shared_ptr.h"
 
 #include "../common/unordered_map.hpp"
-#include "../framework/mixable.hpp"
+#include "../framework/mixable_helper.hpp"
 #include "graph_base.hpp"
 
 namespace jubatus {
@@ -195,7 +195,7 @@ class graph_wo_index
   config config_;
 };
 
-typedef framework::delegating_mixable<graph_wo_index, graph_wo_index::diff_type>
+typedef framework::linear_mixable_helper<graph_wo_index, graph_wo_index::diff_type>
     mixable_graph_wo_index;
 
 }  // namespace graph
