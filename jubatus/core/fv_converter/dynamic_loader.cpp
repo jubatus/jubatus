@@ -15,16 +15,21 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <dlfcn.h>
+#include <stdlib.h>
 #include <iostream>
 #include <string>
 #include "exception.hpp"
 #include "dynamic_loader.hpp"
 
 namespace {
-std::string base_name(const std::string& path) {
-  size_t found = path.rfind('/');
-  return found != std::string::npos ? path.substr(found + 1) : path;
+bool is_absolute_or_relative_path(const std::string& path) {
+  return path.find('/') != std::string::npos;
 }
+
+const char* get_plugin_path() {
+  return ::getenv("JUBATUS_PLUGIN_PATH");
+}
+
 }  // namespace
 
 namespace jubatus {
@@ -33,14 +38,27 @@ namespace fv_converter {
 
 dynamic_loader::dynamic_loader(const std::string& path)
     : handle_(0) {
-  void* handle = dlopen(path.c_str(), RTLD_LAZY);
+  void* handle = NULL;
+  if (is_absolute_or_relative_path(path)) {
+    // Load the plugin with the given path
+    handle = ::dlopen(path.c_str(), RTLD_LAZY);
 
-  if (!handle) {
-    // dlopen from JUBATUS_PLUGIN_DIR
-    const std::string plugin_name = base_name(path);
-    const std::string plugin_path =
-        std::string(JUBATUS_PLUGIN_DIR) + "/" + plugin_name;
-    handle = dlopen(plugin_path.c_str(), RTLD_LAZY);
+  } else {
+    // Try to load the plugin from the plugin path environment
+    const char* plugin_dir = get_plugin_path();
+    if (plugin_dir) {
+      const std::string plugin_path =
+          std::string(plugin_dir) + "/" + path;
+      handle = ::dlopen(plugin_path.c_str(), RTLD_LAZY);
+    }
+
+    // If failed, try to load it from the plugin directory specified on
+    // configure.
+    if (!handle) {
+      const std::string plugin_path =
+          std::string(JUBATUS_PLUGIN_DIR) + "/" + path;
+      handle = ::dlopen(plugin_path.c_str(), RTLD_LAZY);
+    }
   }
 
   if (!handle) {

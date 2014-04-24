@@ -352,7 +352,7 @@ lsh_master_table_t::iterator lsh_index_storage::remove_and_get_row(
 }
 
 void lsh_index_storage::put_empty_entry(
-    uint64_t row_id, 
+    uint64_t row_id,
     const lsh_entry& entry) {
   for (size_t i = 0; i < entry.lsh_hash.size(); ++i) {
     lsh_table_t::iterator it = lsh_table_diff_.find(entry.lsh_hash[i]);
