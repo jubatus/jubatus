@@ -25,6 +25,7 @@ namespace common {
 
 bool is_writable(const char* dir_path);
 std::string base_name(const std::string&);
+std::string real_path(const std::string&);
 
 }  // namespace common
 }  // namespace server
