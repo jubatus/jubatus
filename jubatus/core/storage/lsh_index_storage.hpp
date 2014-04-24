@@ -28,7 +28,7 @@
 #include "storage_type.hpp"
 #include "../common/key_manager.hpp"
 #include "../common/unordered_map.hpp"
-#include "../framework/mixable.hpp"
+#include "../framework/mixable_helper.hpp"
 
 namespace jubatus {
 namespace core {
@@ -150,7 +150,7 @@ class lsh_index_storage {
   common::key_manager key_manager_;
 };
 
-typedef framework::delegating_mixable<lsh_index_storage, lsh_master_table_t>
+typedef framework::linear_mixable_helper<lsh_index_storage, lsh_master_table_t>
     mixable_lsh_index_storage;
 
 }  // namespace storage
