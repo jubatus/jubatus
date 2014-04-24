@@ -60,7 +60,8 @@ string real_path(const string& relative_path) {
   char *buf = ::realpath(relative_path.c_str(), NULL);
   if (buf == NULL) {
     throw JUBATUS_EXCEPTION(
-        jubatus::core::common::exception::runtime_error("Failed to get realpath")
+        jubatus::core::common::exception::runtime_error(
+            "Failed to get realpath")
         << jubatus::core::common::exception::error_api_func("realpath")
         << jubatus::core::common::exception::error_file_name(relative_path)
         << jubatus::core::common::exception::error_errno(errno));
