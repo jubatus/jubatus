@@ -108,6 +108,7 @@ TEST(stat_test, config_validation) {
   // 1 <= window_size
   ASSERT_THROW(core::stat::stat p0(0), core::common::invalid_parameter);
   ASSERT_NO_THROW(core::stat::stat p1(1));
+  ASSERT_NO_THROW(core::stat::stat p2(2));
 }
 
 REGISTER_TYPED_TEST_CASE_P(
