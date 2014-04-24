@@ -29,7 +29,7 @@
 #include "../common/type.hpp"
 #include "../common/unordered_map.hpp"
 #include "../common/key_manager.hpp"
-#include "../framework/mixable.hpp"
+#include "../framework/mixable_helper.hpp"
 #include "sparse_matrix_storage.hpp"
 
 namespace jubatus {
@@ -111,7 +111,7 @@ class inverted_index_storage {
   common::key_manager column2id_;
 };
 
-typedef framework::delegating_mixable<
+typedef framework::linear_mixable_helper<
     inverted_index_storage, inverted_index_storage::diff_type>
     mixable_inverted_index_storage;
 

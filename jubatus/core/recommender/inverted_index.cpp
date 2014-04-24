@@ -96,11 +96,11 @@ string inverted_index::type() const {
 
 void inverted_index::pack(
     msgpack::packer<msgpack::sbuffer>& packer) const {
-  mixable_storage_->pack(packer);
+  mixable_storage_->get_model()->pack(packer);
 }
 
 void inverted_index::unpack(msgpack::object o) {
-  mixable_storage_->unpack(o);
+  mixable_storage_->get_model()->unpack(o);
 }
 
 void inverted_index::register_mixables_to_holder(
