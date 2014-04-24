@@ -116,7 +116,7 @@ string recommender_mock::type() const {
 void recommender_mock::pack(
     msgpack::packer<msgpack::sbuffer>& packer) const {
   orig_.pack(packer);
-  mixable_storage_->pack(packer);
+  mixable_storage_->get_model()->pack(packer);
 }
 
 void recommender_mock::unpack(msgpack::object o) {
@@ -126,7 +126,7 @@ void recommender_mock::unpack(msgpack::object o) {
     throw msgpack::type_error();
   }
   orig_.unpack(mems[0]);
-  mixable_storage_->unpack(mems[1]);
+  mixable_storage_->get_model()->unpack(mems[1]);
 }
 
 void recommender_mock::register_mixables_to_holder(

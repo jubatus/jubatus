@@ -23,7 +23,7 @@
 #include <vector>
 #include <msgpack.hpp>
 #include "jubatus/util/data/serialization.h"
-#include "../framework/mixable.hpp"
+#include "../framework/mixable_helper.hpp"
 #include "../common/version.hpp"
 #include "recommender_type.hpp"
 
@@ -99,7 +99,7 @@ class recommender_mock_storage {
   MSGPACK_DEFINE(similar_relation_, neighbor_relation_);
 };
 
-typedef framework::delegating_mixable<
+typedef framework::linear_mixable_helper<
     recommender_mock_storage, recommender_mock_storage>
     mixable_recommender_mock_storage;
 
