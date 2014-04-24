@@ -143,8 +143,7 @@ class linear_communication_stub : public linear_communication {
   mutable vector<string> mixed_;
 };
 
-struct mixable_string : public core::framework::linear_mixable_crtp_helper<
-    mixable_string, string> {
+struct my_string {
  public:
    void get_diff(string& diff) const {
     diff = string();
@@ -160,6 +159,8 @@ struct mixable_string : public core::framework::linear_mixable_crtp_helper<
     mixed = ss.str();
   }
 };
+
+typedef core::framework::linear_mixable_helper<my_string, string> mixable_string;
 
 TEST(linear_mixer, mix_order) {
   shared_ptr<linear_communication_stub> com(new linear_communication_stub);

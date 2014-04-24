@@ -186,52 +186,6 @@ TEST(mixable, string) {
   EXPECT_EQ("addadd", m.get_model()->value);
 }
 
-struct mixable_string : public core::framework::linear_mixable_crtp_helper<
-    mixable_string, string> {
- public:
-   void get_diff(string& diff) const {
-    diff = string("test");
-  }
-  bool put_diff(const string&) {
-    return true;
-  }
-  void mix( const string& lhs, string& mixed) const {
-    std::stringstream ss;
-    ss << "(" << lhs << "+" << mixed << ")";
-    mixed = ss.str();
-  }
-};
-
-TEST(mixable, mixable_string) {
-  mixable_string mixable;
-  linear_mixable& m = mixable;
-
-  msgpack::sbuffer diff1, diff2;
-  stream_writer<msgpack::sbuffer> sw1(diff1), sw2(diff2);
-  core::framework::msgpack_packer mp1(sw1), mp2(sw2);
-  packer pk1(mp1), pk2(mp2);
-  m.get_diff(pk1);
-  m.get_diff(pk2);
-
-  msgpack::unpacked m1, m2;
-  msgpack::unpack(&m1, diff1.data(), diff1.size());
-  msgpack::unpack(&m2, diff2.data(), diff2.size());
-
-  diff_object diff_obj_mixed = m.convert_diff_object(m1.get());
-  m.mix(m2.get(), diff_obj_mixed);// "test" + "test"
-  m.put_diff(diff_obj_mixed);
-
-  msgpack::sbuffer resbuf;
-  stream_writer<msgpack::sbuffer> sw(resbuf);
-  core::framework::msgpack_packer mp(sw);
-  packer pk(mp);
-  diff_obj_mixed->convert_binary(pk);
-  msgpack::unpacked mixed;
-  msgpack::unpack(&mixed, resbuf.data(), resbuf.size());
-
-  EXPECT_EQ("(test+test)", mixed.get().as<string>());
-}
-
 
 }  // namespace framework
 }  // namespace core
