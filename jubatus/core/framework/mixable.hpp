@@ -57,11 +57,6 @@ class mixable0 : public mixable, public model {
                    const common::byte_buffer&,
                    common::byte_buffer&) const = 0;
 
-  // interface for random_mixer
-  virtual std::string get_pull_argument() const = 0;
-  virtual std::string pull(const std::string&) const = 0;
-  virtual void push(const std::string&) = 0;
-
   virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
   virtual void unpack(msgpack::object o) = 0;
   virtual void clear() = 0;
@@ -174,17 +169,6 @@ class __attribute__ ((deprecated)) deprecated_mixable : public mixable0 {
   virtual bool put_diff_impl(const Diff&) = 0;
   virtual void mix_impl(const Diff&, const Diff&, Diff&) const = 0;
 
-  virtual PullArg get_pull_argument_impl() const {
-    throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
-  }
-  virtual Diff pull_impl(const PullArg&) const {
-    throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
-  }
-
-  virtual void push_impl(const Diff&) {
-    throw JUBATUS_EXCEPTION(common::unsupported_method(__func__));
-  }
-
   void set_model(model_ptr m) {
     model_ = m;
   }
@@ -220,38 +204,6 @@ class __attribute__ ((deprecated)) deprecated_mixable : public mixable0 {
     pack_(mixed, mixed_buf);
   }
 
-  std::string get_pull_argument() const {
-    if (model_) {
-      std::string buf;
-      pack_(get_pull_argument_impl(), buf);
-      return buf;
-    } else {
-      throw JUBATUS_EXCEPTION(common::config_not_set());
-    }
-  }
-
-  std::string pull(const std::string& a) const {
-    if (model_) {
-      std::string buf;
-      PullArg arg;
-      unpack_(a, arg);
-      pack_(pull_impl(arg), buf);
-      return buf;
-    } else {
-      throw JUBATUS_EXCEPTION(common::config_not_set());
-    }
-  }
-
-  void push(const std::string& d) {
-    if (model_) {
-      Diff diff;
-      unpack_(d, diff);
-      push_impl(diff);
-    } else {
-      throw JUBATUS_EXCEPTION(common::config_not_set());
-    }
-  }
-
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
     model_->pack(packer);
   }
@@ -277,19 +229,6 @@ class __attribute__ ((deprecated)) deprecated_mixable : public mixable0 {
     buf.assign(sbuf.data(), sbuf.size());
   }
 
-  template <class T>
-  void unpack_(const std::string& buf, T& d) const {
-    msgpack::unpacked msg;
-    msgpack::unpack(&msg, buf.data(), buf.size());
-    msg.get().convert(&d);
-  }
-
-  template <class T>
-  void pack_(const T& d, std::string& buf) const {
-    msgpack::sbuffer sbuf;
-    msgpack::pack(sbuf, d);
-    buf.assign(sbuf.data(), sbuf.size());
-  }
 
   model_ptr model_;
 };
