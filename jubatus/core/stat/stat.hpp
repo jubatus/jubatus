@@ -32,7 +32,7 @@
 #include "../common/version.hpp"
 #include "../common/exception.hpp"
 #include "../common/unordered_map.hpp"
-#include "../framework/mixable.hpp"
+#include "../framework/mixable_helper.hpp"
 
 namespace jubatus {
 namespace core {
@@ -192,7 +192,7 @@ class stat : public jubatus::util::lang::enable_shared_from_this<stat> {
   MSGPACK_DEFINE(window_size_, window_, stats_, e_, n_);
 };
 
-typedef framework::delegating_mixable<stat, std::pair<double, size_t> >
+typedef framework::linear_mixable_helper<stat, std::pair<double, size_t> >
     mixable_stat;
 
 }  // namespace stat
