@@ -33,6 +33,7 @@
 // TODO(suma): Rename new_mixable.hpp to mixable.hpp when
 // mixable0/deprecated_mixable/delegating_mixable deleted
 #include "linear_mixable.hpp"
+#include "push_mixable.hpp"
 #include "new_mixable.hpp"
 #include "model.hpp"
 

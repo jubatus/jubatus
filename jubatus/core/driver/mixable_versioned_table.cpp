@@ -28,13 +28,16 @@ namespace core {
 namespace driver {
 
 std::vector<std::string> mixable_versioned_table::get_diff_impl() const {
-  return pull_impl(vc_);
+  //return pull_impl(vc_);
+  // FIXME: support linear_mixable
+  return std::vector<std::string>();
 }
 
 bool mixable_versioned_table::put_diff_impl(
     const std::vector<std::string>& diff) {
   // TODO(beam2d): Skip rows whose owner is this server.
-  push_impl(diff);
+  // FIXME: support linear_mixable
+  //push_impl(diff);
   return true;
 }
 
@@ -47,31 +50,44 @@ void mixable_versioned_table::mix_impl(
   copy(rhs.begin(), rhs.end(), mixed.begin() + lhs.size());
 }
 
-version_clock mixable_versioned_table::get_pull_argument_impl() const {
-  return vc_;
+void mixable_versioned_table::get_argument(framework::packer& pk) const {
+  pk.pack(vc_);
 }
 
-std::vector<std::string> mixable_versioned_table::pull_impl(
-    const version_clock& vc) const {
-  std::vector<std::string> diff;
+void mixable_versioned_table::pull(const msgpack::object& arg, framework::packer& pk) const {
+  version_clock vc;
+  arg.convert(&vc);
+  pull_impl(vc, pk);
+}
+
+void mixable_versioned_table::push(const msgpack::object& diff) {
+  push_impl(diff);
+}
+
+void mixable_versioned_table::pull_impl(
+    const version_clock& vc, framework::packer& pk) const {
 
   model_ptr table = get_model();
   const uint64_t table_size = table->size();
+  pk.pack_array(table_size);
   for (uint64_t i = 0; i < table_size; ++i) {
     const version_t version = table->get_version(i);
     version_clock::const_iterator it = vc.find(version.first);
     if (it == vc.end() || it->second < version.second) {
-      diff.push_back(table->get_row(i));
+      table->get_row(i, pk);
     }
   }
-  return diff;
 }
 
 void mixable_versioned_table::push_impl(
-    const std::vector<std::string>& diff) {
+    const msgpack::object& o) {
   model_ptr table = get_model();
-  for (uint64_t i = 0; i < diff.size(); ++i) {
-    const version_t version = table->set_row(diff[i]);
+  const uint64_t table_size = table->size();
+  if (o.type != msgpack::type::ARRAY) {
+    throw msgpack::type_error();
+  }
+  for (uint64_t i = 0; i < table_size; ++i) {
+    const version_t version = table->set_row(o.via.array.ptr[i]);
     update_version(version);
   }
 }

@@ -22,7 +22,8 @@
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/lang/bind.h"
 #include "jubatus/util/system/time_util.h"
-#include "../../../core/framework/mixable.hpp"
+#include "jubatus/core/framework/stream_writer.hpp"
+#include "jubatus/core/framework/mixable.hpp"
 #include "../../common/membership.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
 #include "../../common/unique_lock.hpp"
@@ -35,6 +36,10 @@ using jubatus::util::lang::bind;
 using jubatus::util::lang::shared_ptr;
 using jubatus::util::system::time::clock_time;
 using jubatus::util::system::time::get_clock_time;
+
+using jubatus::core::common::byte_buffer;
+using jubatus::core::framework::stream_writer;
+using jubatus::core::framework::packer;
 
 namespace jubatus {
 namespace server {
@@ -57,12 +62,12 @@ class push_communication_impl : public push_communication {
   const vector<pair<string, int> >& servers_list() const;
   void pull(
       const pair<string, int>& server,
-      const vector<string>& arg,
+      const byte_buffer& arg,
       common::mprpc::rpc_result_object& result) const;
   void get_pull_argument(
       const pair<string, int>& server,
       common::mprpc::rpc_result_object& result) const;
-  void push(const pair<string, int>& server, const vector<string>& diff) const;
+  void push(const pair<string, int>& server, const byte_buffer& diff) const;
 
  private:
   vector<pair<string, int> > servers_;
@@ -112,7 +117,7 @@ const vector<pair<string, int> >& push_communication_impl::servers_list()
 
 void push_communication_impl::pull(
     const pair<string, int>& server,
-    const vector<string>& arg,
+    const byte_buffer& arg,
     common::mprpc::rpc_result_object& result) const {
   vector<pair<string, int> > servers;
   servers.push_back(server);
@@ -135,7 +140,7 @@ void push_communication_impl::get_pull_argument(
 
 void push_communication_impl::push(
     const pair<string, int>& server,
-    const vector<string>& diff) const {
+    const byte_buffer& diff) const {
   vector<pair<string, int> > servers;
   servers.push_back(server);
 
@@ -176,12 +181,12 @@ push_mixer::~push_mixer() {
 }
 
 void push_mixer::register_api(rpc_server_t& server) {
-  server.add<vector<string>(vector<string>)>(
+  server.add<byte_buffer(vector<msgpack::object>)>(
       "pull", bind(&push_mixer::pull, this, jubatus::util::lang::_1));
-  server.add<std::vector<std::string>(int)>(  // NOLINT
+  server.add<byte_buffer(int)>(  // NOLINT
       "get_pull_argument", bind(
           &push_mixer::get_pull_argument, this, jubatus::util::lang::_1));
-  server.add<int(vector<string>)>(
+  server.add<int(vector<msgpack::object>)>(
       "push", bind(&push_mixer::push, this, jubatus::util::lang::_1));
   server.add<bool(void)>(
       "do_mix", bind(&push_mixer::do_mix, this));
@@ -294,18 +299,19 @@ void push_mixer::mix() {
         const pair<string, int>& she = *candidates[i];
 
         // pull from her
-        vector<string> my_args = get_pull_argument(0);
+        byte_buffer my_args = get_pull_argument(0);
+        //vector<string> 
         common::mprpc::rpc_result_object pull_result;
         communication_->pull(she, my_args, pull_result);
-        vector<string> her_diff =
-            pull_result.response.front().as<vector<string> >();
+        vector<msgpack::object> her_diff =
+            pull_result.response.front().as<vector<msgpack::object> >();
 
         // pull from me
         common::mprpc::rpc_result_object args_result;
         communication_->get_pull_argument(she, args_result);
-        vector<string> her_args =
-            args_result.response.front().as<vector<string> >();
-        vector<string> my_diff = pull(her_args);
+        vector<msgpack::object> her_args =
+            args_result.response.front().as<vector<msgpack::object> >();
+        byte_buffer my_diff = pull(her_args);
 
         // push to her and me
         communication_->push(she, my_diff);
@@ -313,10 +319,10 @@ void push_mixer::mix() {
 
         // count size
         for (size_t j = 0; j < her_diff.size(); ++j) {
-          s_pull += her_diff[j].size();
+          //s_pull += her_diff[j].size();
         }
         for (size_t j = 0; j < my_diff.size(); ++j) {
-          s_push += my_diff[j].size();
+          //s_push += my_diff[j].size();
         }
       }
       if (candidates.size() == 0U) {
@@ -335,49 +341,67 @@ void push_mixer::mix() {
   mix_count_++;
 }
 
-vector<string> push_mixer::pull(const vector<string>& arg) {
-  vector<string> o;
-
+byte_buffer push_mixer::pull(const vector<msgpack::object>& arg) {
   scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
   core::framework::mixable_holder::mixable_list mixables =
       mixable_holder_->get_mixables();
+
+  msgpack::sbuffer sbuf;
+  stream_writer<msgpack::sbuffer> st(sbuf);
+  core::framework::msgpack_packer mp(st);
+  packer pk(mp);
+
   // TODO(beam2d): check arg.size()==mixables.size()
   for (size_t i = 0; i < mixables.size(); ++i) {
-    // FIXME: to push_mixable
-    core::framework::mixable0* mixable = dynamic_cast<core::framework::mixable0*>(mixables[i].get());
-    o.push_back(mixable->pull(arg[i]));
+    core::framework::push_mixable* mixable = dynamic_cast<core::framework::push_mixable*>(mixables[i].get());
+    mixable->pull(arg[i], pk);
   }
-  return o;
+
+  return byte_buffer(sbuf.data(), sbuf.size());
 }
 
-vector<string> push_mixer::get_pull_argument(int dummy_arg) {
-  vector<string> o;
-
+//vector<string> push_mixer::get_pull_argument(int dummy_arg) {
+byte_buffer push_mixer::get_pull_argument(int dummy_arg) {
   scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
+
   core::framework::mixable_holder::mixable_list mixables =
       mixable_holder_->get_mixables();
+
+  msgpack::sbuffer sbuf;
+  stream_writer<msgpack::sbuffer> st(sbuf);
+  core::framework::msgpack_packer mp(st);
+  packer pk(mp);
+
+  pk.pack_array(mixables.size());
   for (size_t i = 0; i < mixables.size(); ++i) {
     // FIXME: to push_mixable
-    core::framework::mixable0* mixable = dynamic_cast<core::framework::mixable0*>(mixables[i].get());
-    o.push_back(mixable->get_pull_argument());
+    core::framework::push_mixable* mixable = dynamic_cast<core::framework::push_mixable*>(mixables[i].get());
+    mixable->get_argument(pk);
   }
-  return o;
+
+  return byte_buffer(sbuf.data(), sbuf.size());
 }
 
-int push_mixer::push(const vector<string>& diff) {
+int push_mixer::push(const vector<msgpack::object>& diff) {
   scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
   scoped_lock lk(m_);
   core::framework::mixable_holder::mixable_list mixables =
       mixable_holder_->get_mixables();
+
   if (diff.size() != mixables.size()) {
     // deserialization error
     return -1;
   }
+
+  msgpack::sbuffer sbuf;
+  stream_writer<msgpack::sbuffer> st(sbuf);
+  core::framework::msgpack_packer mp(st);
+  packer pk(mp);
+
   for (size_t i = 0; i < mixables.size(); ++i) {
-    // FIXME: to push_mixable
-    core::framework::mixable0* mixable = dynamic_cast<core::framework::mixable0*>(mixables[i].get());
+    core::framework::push_mixable* mixable = dynamic_cast<core::framework::push_mixable*>(mixables[i].get());
     mixable->push(diff[i]);
   }
   counter_ = 0;

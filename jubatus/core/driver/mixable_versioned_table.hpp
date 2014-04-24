@@ -30,11 +30,12 @@ namespace driver {
 
 typedef std::map<table::owner, uint64_t> version_clock;
 
-class mixable_versioned_table : public jubatus::core::framework::deprecated_mixable<
-    table::column_table,
-    std::vector<std::string>,
-    version_clock> {
+class mixable_versioned_table : public core::framework::push_mixable {
+// TODO: add linear_mixable
  public:
+
+  typedef jubatus::util::lang::shared_ptr<table::column_table> model_ptr;
+
   std::vector<std::string> get_diff_impl() const;
   bool put_diff_impl(const std::vector<std::string>& diff);
   void mix_impl(
@@ -42,12 +43,24 @@ class mixable_versioned_table : public jubatus::core::framework::deprecated_mixa
       const std::vector<std::string>& rhs,
       std::vector<std::string>& mixed) const;
 
-  version_clock get_pull_argument_impl() const;
-  std::vector<std::string> pull_impl(const version_clock& vc) const;
-  void push_impl(const std::vector<std::string>& diff);
+  void pull_impl(const version_clock& vc, framework::packer&) const;
+  void push_impl(const msgpack::object&);
+
+  // push mixable
+  void get_argument(framework::packer& pk) const;
+  void pull(const msgpack::object& arg, framework::packer& pk) const;
+  void push(const msgpack::object& diff);
 
   storage::version get_version() const {
     return storage::version();
+  }
+
+  void set_model(model_ptr m) {
+    model_ = m;
+  }
+
+  model_ptr get_model() const {
+    return model_;
   }
 
   void clear() {}
@@ -55,6 +68,7 @@ class mixable_versioned_table : public jubatus::core::framework::deprecated_mixa
  private:
   void update_version(const table::column_table::version_t& version);
 
+  model_ptr model_;
   version_clock vc_;
 };
 

@@ -25,6 +25,7 @@
 #include "jubatus/util/concurrent/thread.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/system/time_util.h"
+#include "jubatus/core/common/byte_buffer.hpp"
 #include "../../common/lock_service.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
 #include "mixer.hpp"
@@ -59,7 +60,7 @@ class push_communication {
   // it can throw common::mprpc exception
   virtual void pull(
       const std::pair<std::string, int>& server,
-      const std::vector<std::string>& arg,
+      const core::common::byte_buffer& arg,
       jubatus::server::common::mprpc::rpc_result_object& result) const = 0;
 
   virtual void get_pull_argument(
@@ -69,7 +70,7 @@ class push_communication {
   // it can throw common::mprpc exception
   virtual void push(
       const std::pair<std::string, int>& server,
-      const std::vector<std::string>& diff) const = 0;
+      const core::common::byte_buffer& diff) const = 0;
 };
 
 class push_mixer : public jubatus::server::framework::mixer::mixer {
@@ -103,9 +104,9 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
   void mixer_loop();
   void mix();
 
-  std::vector<std::string> pull(const std::vector<std::string>& arg);
-  std::vector<std::string> get_pull_argument(int dummy_arg);
-  int push(const std::vector<std::string>& diff);
+  core::common::byte_buffer pull(const std::vector<msgpack::object>& arg);
+  core::common::byte_buffer get_pull_argument(int dummy_arg);
+  int push(const std::vector<msgpack::object>& diff);
 
   jubatus::util::lang::shared_ptr<push_communication> communication_;
   unsigned int count_threshold_;
