@@ -31,7 +31,6 @@
 #include "../common/assert.hpp"
 
 // TODO(suma): Rename new_mixable.hpp to mixable.hpp when
-// mixable0/deprecated_mixable/delegating_mixable deleted
 #include "linear_mixable.hpp"
 #include "push_mixable.hpp"
 #include "new_mixable.hpp"
@@ -94,7 +93,7 @@ class mixable_holder {
     return ret;
   }
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const __attribute__ ((deprecated)) {
     packer.pack_array(mixables_.size());
     for (size_t i = 0; i < mixables_.size(); ++i) {
       // TODO(suma): extract model function from mixable0
@@ -108,7 +107,7 @@ class mixable_holder {
     }
   }
 
-  void unpack(msgpack::object o) {
+  void unpack(msgpack::object o) __attribute__ ((deprecated)) {
     if (o.type != msgpack::type::ARRAY ||
         o.via.array.size != mixables_.size()) {
       throw msgpack::type_error();
