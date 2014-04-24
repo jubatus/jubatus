@@ -23,7 +23,7 @@
 #include <utility>
 #include <vector>
 #include <msgpack.hpp>
-#include "../framework/mixable.hpp"
+#include "../framework/mixable_helper.hpp"
 #include "../common/version.hpp"
 #include "clustering_config.hpp"
 #include "types.hpp"
@@ -75,7 +75,7 @@ class storage : public event_dispatcher<storage_event_type, wplist> {
   std::vector<std::pair<std::string, wplist> > common_;
 };
 
-typedef framework::delegating_mixable<storage, diff_t> mixable_storage;
+typedef framework::linear_mixable_helper<storage, diff_t> mixable_storage;
 
 }  // namespace clustering
 }  // namespace core
