@@ -847,22 +847,22 @@ TEST(graph_wo_index, config_validation) {
   graph_wo_index::config c;
 
   // 0.0 < alpha (a.k.a damping_factor) < 1.0
-  c.alpha = 0.0;
+  c.alpha = -1.f;
   ASSERT_THROW(g.reset(new graph_wo_index(c)), common::invalid_parameter);
-
-  c.alpha = 1.0;
+  c.alpha = 0.f;
   ASSERT_THROW(g.reset(new graph_wo_index(c)), common::invalid_parameter);
-
-  c.alpha = 0.5;
+  c.alpha = 1.f;
+  ASSERT_THROW(g.reset(new graph_wo_index(c)), common::invalid_parameter);
+  c.alpha = 2.f;
+  ASSERT_THROW(g.reset(new graph_wo_index(c)), common::invalid_parameter);
+  c.alpha = 0.5f;
   ASSERT_NO_THROW(g.reset(new graph_wo_index(c)));
 
   // 0 <= landmark_num
   c.landmark_num = -1;
   ASSERT_THROW(g.reset(new graph_wo_index(c)), common::invalid_parameter);
-
   c.landmark_num = 0;
   ASSERT_NO_THROW(g.reset(new graph_wo_index(c)));
-
   c.landmark_num = 1;
   ASSERT_NO_THROW(g.reset(new graph_wo_index(c)));
 }
