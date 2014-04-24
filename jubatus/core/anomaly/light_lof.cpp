@@ -307,7 +307,7 @@ light_lof::parameter light_lof::get_row_parameter(const std::string& row)
 void light_lof::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack_array(2);
   nearest_neighbor_engine_->pack(packer);
-  mixable_scores_->pack(packer);
+  mixable_scores_->get_model()->pack(packer);
 }
 
 void light_lof::unpack(msgpack::object o) {
@@ -320,7 +320,7 @@ void light_lof::unpack(msgpack::object o) {
   mixable_scores_->clear();
 
   nearest_neighbor_engine_->unpack(o.via.array.ptr[0]);
-  mixable_scores_->unpack(o.via.array.ptr[1]);
+  mixable_scores_->get_model()->unpack(o.via.array.ptr[1]);
 }
 
 }  // namespace anomaly
