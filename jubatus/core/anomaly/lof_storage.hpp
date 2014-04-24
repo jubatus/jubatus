@@ -31,7 +31,7 @@
 
 #include "../common/type.hpp"
 #include "../common/unordered_map.hpp"
-#include "../framework/mixable.hpp"
+#include "../framework/mixable_helper.hpp"
 #include "../recommender/recommender_base.hpp"
 #include "../recommender/recommender_factory.hpp"
 
@@ -176,7 +176,7 @@ class lof_storage {
     nn_engine_;
 };
 
-typedef framework::delegating_mixable<lof_storage, lof_table_t>
+typedef framework::linear_mixable_helper<lof_storage, lof_table_t>
     mixable_lof_storage;
 
 }  // namespace anomaly

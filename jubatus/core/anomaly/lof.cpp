@@ -126,7 +126,7 @@ void lof::register_mixables_to_holder(framework::mixable_holder& holder) const {
 
 void lof::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
   packer.pack_array(2);
-  mixable_storage_->pack(packer);
+  mixable_storage_->get_model()->pack(packer);
   nn_engine_->pack(packer);
 }
 
@@ -136,10 +136,10 @@ void lof::unpack(msgpack::object o) {
   }
 
   // clear before load
-  mixable_storage_->clear();
+  mixable_storage_->get_model()->clear();
   nn_engine_->clear();
 
-  mixable_storage_->unpack(o.via.array.ptr[0]);
+  mixable_storage_->get_model()->unpack(o.via.array.ptr[0]);
   nn_engine_->unpack(o.via.array.ptr[1]);
 }
 
