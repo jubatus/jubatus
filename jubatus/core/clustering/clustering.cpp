@@ -44,6 +44,20 @@ clustering::clustering(
       method_(method),
       storage_(new mixable_storage) {
 
+  // TODO(@rimms): move to factory
+  if (method =="gmm" &&
+      cfg.compressor_method == "compressive_kmeans") {
+    throw JUBATUS_EXCEPTION(common::invalid_parameter(
+        "method = gmm, compressor_method != compressive_kmeans"));
+  }
+
+  // TODO(@rimms): move to factory
+  if (method =="kmeans" &&
+      cfg.compressor_method == "compressive_gmm") {
+    throw JUBATUS_EXCEPTION(common::invalid_parameter(
+        "method = kmeans, compressor_method != compressive_gmm"));
+  }
+
   if (cfg.k < 1) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("1 <= k"));

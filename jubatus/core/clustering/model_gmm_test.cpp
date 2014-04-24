@@ -35,7 +35,7 @@ class model_gmm_test : public ::testing::Test {
 
   model_gmm_test() {
     config_.k = k_;
-    config_.compressor_method = "compressive_kmeans";
+    config_.compressor_method = "compressive_gmm";
     config_.bucket_size = 100;
     config_.compressed_bucket_size = 5;
     config_.bicriteria_base_size = 1;

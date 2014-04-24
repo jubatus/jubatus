@@ -15,19 +15,59 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <string>
+#include <map>
+#include <utility>
+
 #include <gtest/gtest.h>
 
 #include "clustering.hpp"
 #include "clustering_config.hpp"
 
+using std::map;
+using std::string;
+
 namespace jubatus {
 namespace core {
 namespace clustering {
 
-TEST(clustering_test, config_validation) {
-  std::string n("name");
-  std::string m("kmeans");
+namespace {
+
+class make_case_type {
+ public:
+  make_case_type& operator()(const string& key, const string& value) {
+    cases_.insert(make_pair(key, value));
+    return *this;
+  }
+
+  map<string, string> operator()() {
+    map<string, string> ret;
+    ret.swap(cases_);
+    return ret;
+  }
+
+ private:
+  map<string, string> cases_;
+} make_case;
+
+}  // namespace
+
+class clustering_test
+    : public ::testing::TestWithParam<map<string, string> > {
+};
+
+TEST_P(clustering_test, config_validation) {
+  string n("name");
+  map<string, string> param = GetParam();
+  string m = param["method"];
   clustering_config c;
+  c.compressor_method = param["compressor_method"];
+
+  if (param["result"] == "true") {
+    ASSERT_NO_THROW(clustering k(n, m, c));
+  } else {
+    ASSERT_THROW(clustering k(n, m, c), common::invalid_parameter);
+    return;
+  }
 
   // 1 <= k
   c.k = 0;
@@ -99,6 +139,34 @@ TEST(clustering_test, config_validation) {
   c.forgetting_threshold = 2.f;
   ASSERT_THROW(clustering k(n, m, c), common::invalid_parameter);
 }
+
+const map<string, string> test_cases[] = {
+#ifdef JUBATUS_USE_EIGEN
+  make_case("method", "gmm")
+    ("compressor_method", "compressive_kmeans")
+    ("result", "false")(),
+  make_case("method", "gmm")
+    ("compressor_method", "compressive_gmm")
+    ("result", "true")(),
+  make_case("method", "gmm")
+    ("compressor_method", "simple")
+    ("result", "true")(),
+#endif
+  make_case("method", "kmeans")
+    ("compressor_method", "compressive_kmeans")
+    ("result", "true")(),
+  make_case("method", "kmeans")
+    ("compressor_method", "compressive_gmm")
+    ("result", "false")(),
+  make_case("method", "kmeans")
+    ("compressor_method", "simple")
+    ("result", "true")()
+};
+
+INSTANTIATE_TEST_CASE_P(
+    clustering_tests,
+    clustering_test,
+    ::testing::ValuesIn(test_cases));
 
 }  // namespace clustering
 }  // namespace core
