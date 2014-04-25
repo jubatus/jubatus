@@ -119,7 +119,6 @@ class linear_mixer : public mixer {
 
   jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
     mixable_holder_;
-  std::vector<core::framework::mixable0*> mixables_;
 };
 
 }  // namespace mixer

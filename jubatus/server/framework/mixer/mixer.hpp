@@ -27,7 +27,6 @@ namespace jubatus {
 namespace core {
 namespace framework {
 
-class mixable0;
 class mixable_holder;
 
 }  // namespace framework

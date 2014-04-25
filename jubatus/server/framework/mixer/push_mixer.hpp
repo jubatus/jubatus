@@ -94,7 +94,6 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
 
   void get_status(jubatus::server::framework::server_base::status_t& status)
       const;
-  std::vector<jubatus::core::framework::mixable0*> get_mixables() const;
 
   // design space for push strategy
   virtual std::vector<const std::pair<std::string, int>*> filter_candidates(
