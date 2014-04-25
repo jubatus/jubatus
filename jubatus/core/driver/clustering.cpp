@@ -92,6 +92,10 @@ void clustering::do_clustering() {
   clustering_->do_clustering();
 }
 
+void clustering::clear() {
+  mixable_holder_->clear_each_mixables();
+}
+
 // private
 
 common::sfv_t clustering::to_sfv(const datum& dat) {

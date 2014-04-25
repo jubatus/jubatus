@@ -77,6 +77,22 @@ TEST_P(storage_test, pack_unpack) {
   }
 }
 
+TEST_P(storage_test, clear) {
+  storage_ptr s = storage_factory::create(name, conf);
+  ASSERT_TRUE(s != NULL);
+  for (size_t i = 0; i < 10; ++i) {
+    s->add(get_point(3));
+  }
+
+  wplist all1 = s->get_all();
+  ASSERT_EQ(10u, all1.size());
+
+  s->clear();
+
+  wplist all2 = s->get_all();
+  ASSERT_EQ(0u, all2.size());
+}
+
 INSTANTIATE_TEST_CASE_P(storage_test_instance, storage_test,
     testing::Values("compressive_kmeans",
 #ifdef JUBATUS_USE_EIGEN
