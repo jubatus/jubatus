@@ -231,12 +231,24 @@ void euclid_lsh::initialize_model() {
       new storage::lsh_index_storage));
 }
 
-void euclid_lsh::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
-  // TODO: implement
+void euclid_lsh::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+  pk.pack_array(5);
+  mixable_storage_->get_model()->pack(pk);
+  pk.pack(bin_width_);
+  pk.pack(num_probe_);
+  pk.pack(projection_);
+  pk.pack(retain_projection_);
 }
 
 void euclid_lsh::unpack(msgpack::object o) {
-  // TODO: implement
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != 5) {
+    throw msgpack::type_error();
+  }
+  mixable_storage_->get_model()->unpack(o.via.array.ptr[0]);
+  o.via.array.ptr[1].convert(&bin_width_);
+  o.via.array.ptr[2].convert(&num_probe_);
+  o.via.array.ptr[3].convert(&projection_);
+  o.via.array.ptr[4].convert(&retain_projection_);
 }
 
 }  // namespace recommender
