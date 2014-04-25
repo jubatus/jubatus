@@ -76,9 +76,11 @@ TEST_F(anomaly_test, small) {
     ASSERT_EQ(2u, rows.size());
   }
 
+
   // save
-  std::string data;
-  save_model(anomaly_->get_mixable_holder(), data);
+  msgpack::sbuffer sbuf;
+  msgpack::packer<msgpack::sbuffer> pk(sbuf);
+  anomaly_->pack(pk);
 
   // clear
   anomaly_->clear();
@@ -87,12 +89,14 @@ TEST_F(anomaly_test, small) {
     ASSERT_EQ(0u, rows.size());
   }
 
-
   { // load
-    load_model(anomaly_->get_mixable_holder(), data);
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+    anomaly_->unpack(msg.get());
     std::vector<std::string> rows = anomaly_->get_all_rows();
     ASSERT_EQ(2u, rows.size());
   }
+
 }
 
 }  // driver namespace
