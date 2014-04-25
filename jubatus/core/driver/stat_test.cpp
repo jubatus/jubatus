@@ -50,9 +50,13 @@ TEST_F(stat_test, small) {
 
   ASSERT_DOUBLE_EQ(0., stat_->entropy());
 
-  std::string save_data;
-  save_model(stat_->get_mixable_holder(), save_data);
-  load_model(stat_->get_mixable_holder(), save_data);
+  msgpack::sbuffer sbuf;
+  msgpack::packer<msgpack::sbuffer> pk(sbuf);
+  stat_->pack(pk);
+
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+  stat_->unpack(msg.get());
 }
 
 }  // driver namespace

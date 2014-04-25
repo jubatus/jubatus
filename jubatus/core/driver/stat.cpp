@@ -64,11 +64,11 @@ double stat::moment(const std::string& key, int n, double c) const {
 }
 
 void stat::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
-  // TODO: implement
+  stat_->pack(pk);
 }
 
 void stat::unpack(msgpack::object o) {
-  // TODO: implement
+  stat_->unpack(o);
 }
 
 void stat::clear() {
