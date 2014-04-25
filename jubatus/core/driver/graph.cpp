@@ -166,11 +166,11 @@ void graph::create_edge_here(
 }
 
 void graph::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
-  // TODO: implement
+  graph_->pack(pk);
 }
 
 void graph::unpack(msgpack::object o) {
-  // TODO: implement
+  graph_->unpack(o);
 }
 
 }  // namespace driver
