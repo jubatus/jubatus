@@ -70,6 +70,9 @@ class clustering {
   void register_mixables_to_holder(framework::mixable_holder& mixable_holder);
   std::string type() const;
 
+  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void unpack(msgpack::object o);
+
   // for test only
   void do_clustering();
 

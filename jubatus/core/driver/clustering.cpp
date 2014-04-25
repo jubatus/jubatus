@@ -173,11 +173,11 @@ core::clustering::cluster_unit
 }
 
 void clustering::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
-  // TODO: implement
+  clustering_->pack(pk);
 }
 
 void clustering::unpack(msgpack::object o) {
-  // TODO: implement
+  clustering_->unpack(o);
 }
 
 void clustering::clear() {

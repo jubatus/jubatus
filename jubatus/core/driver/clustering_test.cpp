@@ -105,7 +105,7 @@ TEST_P(clustering_test, save_load) {
   // save to a buffer
   msgpack::sbuffer sbuf;
   msgpack::packer<msgpack::sbuffer> packer(sbuf);
-  clustering_->get_mixable_holder()->pack(packer);
+  clustering_->pack(packer);
 
   // restart the driver
   TearDown();
@@ -114,7 +114,7 @@ TEST_P(clustering_test, save_load) {
   // unpack the buffer
   msgpack::unpacked unpacked;
   msgpack::unpack(&unpacked, sbuf.data(), sbuf.size());
-  clustering_->get_mixable_holder()->unpack(unpacked.get());
+  clustering_->unpack(unpacked.get());
 }
 
 TEST_P(clustering_test, get_k_center) {

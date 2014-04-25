@@ -128,6 +128,14 @@ std::string clustering::type() const {
   return "clustering";
 }
 
+void clustering::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+  storage_->get_model()->pack(pk);
+}
+
+void clustering::unpack(msgpack::object o) {
+  storage_->get_model()->unpack(o);
+}
+
 void clustering::do_clustering() {
   clustering_method_->batch_update(storage_->get_model()->get_all());
 }
