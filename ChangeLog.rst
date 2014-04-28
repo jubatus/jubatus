@@ -1,3 +1,16 @@
+Release 0.5.4 - 2014/04/28
+--------------------------
+
+* New Features  
+    * clustering: Add clear RPC method (#579)
+* Improvements  
+    * server: Fix loading order of plugin (#743)
+    * server: Result of get_status RPC now contains absolute path (#749)
+    * clustering: Remove unneeded debug code(#671)
+* Bug fixes  
+    * server: Linear mixer did not terminated in correct order (#732)
+    * clustering: Fix forgetting factor's behavior (#704)
+
 Release 0.5.3 - 2014/03/31
 --------------------------
 
