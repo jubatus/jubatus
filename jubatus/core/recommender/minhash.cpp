@@ -186,11 +186,17 @@ void minhash::initialize_model() {
 }
 
 void minhash::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
-  // TODO: implement
+  packer.pack_array(2);
+  orig_.pack(packer);
+  mixable_storage_->get_model()->pack(packer);
 }
 
 void minhash::unpack(msgpack::object o) {
-  // TODO: implement
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
+    throw msgpack::type_error();
+  }
+  orig_.unpack(o.via.array.ptr[0]);
+  mixable_storage_->get_model()->unpack(o.via.array.ptr[1]);
 }
 
 }  // namespace recommender

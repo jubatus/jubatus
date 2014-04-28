@@ -96,11 +96,17 @@ string inverted_index::type() const {
 
 void inverted_index::pack(
     msgpack::packer<msgpack::sbuffer>& packer) const {
+  packer.pack_array(2);
+  orig_.pack(packer);
   mixable_storage_->get_model()->pack(packer);
 }
 
 void inverted_index::unpack(msgpack::object o) {
-  mixable_storage_->get_model()->unpack(o);
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
+    throw msgpack::type_error();
+  }
+  orig_.unpack(o.via.array.ptr[0]);
+  mixable_storage_->get_model()->unpack(o.via.array.ptr[1]);
 }
 
 void inverted_index::register_mixables_to_holder(
