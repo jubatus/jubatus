@@ -43,8 +43,6 @@ inline weighted_point get_point(size_t d) {
         lexical_cast<string, int>(i), r_.next_gaussian(0, 10)));
   }
   ret.weight = 1;
-  ret.free_long = 0;
-  ret.free_double = 0;
   return ret;
 }
 
@@ -57,8 +55,6 @@ inline weighted_point get_point(size_t d, const std::vector<double>& c) {
         c[i] + r_.next_gaussian(0, 10)));
   }
   ret.weight = 1;
-  ret.free_long = 0;
-  ret.free_double = 0;
   return ret;
 }
 

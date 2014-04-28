@@ -23,7 +23,6 @@
 #include <vector>
 
 #include <msgpack.hpp>
-#include "jubatus/util/data/serialization.h"
 
 #include "../common/type.hpp"
 #include "../fv_converter/datum.hpp"
@@ -39,22 +38,10 @@ typedef std::vector<cluster_unit> cluster_set;
 
 struct weighted_point {
  public:
-  MSGPACK_DEFINE(weight, data, original, free_double, free_long);
+  MSGPACK_DEFINE(weight, data, original);
   double weight;
   common::sfv_t data;
   fv_converter::datum original;
-  double free_double;
-  uint64_t free_long;
-
-  template<typename Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(weight)
-        & JUBA_MEMBER(data)
-        & JUBA_MEMBER(original.num_values_)
-        & JUBA_MEMBER(original.string_values_)
-        & JUBA_MEMBER(free_double)
-        & JUBA_MEMBER(free_long);
-  }
 };
 
 inline void swap(weighted_point& p1, weighted_point& p2) {
@@ -63,8 +50,6 @@ inline void swap(weighted_point& p1, weighted_point& p2) {
   swap(p1.data, p2.data);
   swap(p1.original.string_values_, p2.original.string_values_);
   swap(p1.original.num_values_, p2.original.num_values_);
-  swap(p1.free_double, p2.free_double);
-  swap(p1.free_long, p2.free_long);
 }
 
 typedef std::vector<weighted_point> wplist;

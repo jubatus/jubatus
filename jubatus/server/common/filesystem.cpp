@@ -19,8 +19,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <cstdlib>
 #include <cerrno>
 #include <string>
+
+#include "jubatus/core/common/exception.hpp"
 
 using std::string;
 
@@ -49,6 +52,23 @@ bool is_writable(const char* dir_path) {
 string base_name(const string& path) {
   size_t found = path.rfind('/');
   return found != string::npos ? path.substr(found + 1) : path;
+}
+
+string real_path(const string& relative_path) {
+  // Resolve the given relative path to absolute path.
+  string absolute_path;
+  char *buf = ::realpath(relative_path.c_str(), NULL);
+  if (buf == NULL) {
+    throw JUBATUS_EXCEPTION(
+        jubatus::core::common::exception::runtime_error(
+            "Failed to get realpath")
+        << jubatus::core::common::exception::error_api_func("realpath")
+        << jubatus::core::common::exception::error_file_name(relative_path)
+        << jubatus::core::common::exception::error_errno(errno));
+  }
+  absolute_path = string(buf);
+  free(buf);
+  return absolute_path;
 }
 
 }  // namespace common

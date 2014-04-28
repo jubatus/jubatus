@@ -88,10 +88,10 @@ void compressive_storage::carry_up(size_t r) {
   if (r >= mine_.size() - 1) {
     mine_.push_back(wplist());
   }
+  forget_weight(mine_[r]);
   if (!is_next_bucket_full(r)) {
     if (!reach_forgetting_threshold(r + 1) ||
         mine_[r].size() == get_mine().size()) {
-      forget_weight(mine_[r]);
       concat(mine_[r], mine_[r + 1]);
       mine_[r].clear();
     } else {
@@ -131,6 +131,12 @@ void compressive_storage::unpack(msgpack::object o) {
   mems[1].convert(&mine_);
   mems[2].convert(&status_);
   mems[3].convert(compressor_.get());
+}
+
+void compressive_storage::clear_mine() {
+  mine_.clear();
+  mine_.push_back(wplist());
+  status_ = 0;
 }
 
 }  // namespace clustering

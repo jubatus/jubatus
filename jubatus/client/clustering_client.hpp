@@ -1,4 +1,4 @@
-// This file is auto-generated from clustering.idl(0.4.5-350-g9c67807) with jenerator version 0.5.2-17-g8a5dca4/develop
+// This file is auto-generated from clustering.idl(0.5.3-20-gc68eb49) with jenerator version 0.5.2-45-gc4cfc98/implement-clear
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_CLUSTERING_CLIENT_HPP_
@@ -52,6 +52,11 @@ class clustering : public jubatus::client::common::client {
       const jubatus::client::common::datum& point) {
     msgpack::rpc::future f = c_.call("get_nearest_members", name_, point);
     return f.get<std::vector<weighted_datum> >();
+  }
+
+  bool clear() {
+    msgpack::rpc::future f = c_.call("clear", name_);
+    return f.get<bool>();
   }
 };
 

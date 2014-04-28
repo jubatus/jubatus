@@ -34,7 +34,9 @@ class kmeans_compressor : public compressor {
  public:
   virtual double get_probability(
       const weighted_point& p,
+      double min_dist,
       const weighted_point& nearest_bp,
+      double bp_score,
       double weight_sum,
       double squared_min_dist_sum);
 
@@ -46,8 +48,8 @@ class kmeans_compressor : public compressor {
       wplist& dst);
 
   void bicriteria_to_coreset(
-      wplist& src,
-      wplist& bicriteria,
+      const wplist& src,
+      const wplist& bicriteria,
       size_t dstsize,
       wplist& dst);
 };

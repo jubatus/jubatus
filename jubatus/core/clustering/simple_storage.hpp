@@ -43,6 +43,8 @@ class simple_storage : public storage {
   }
 
  private:
+  void clear_mine();
+
   wplist mine_;
 };
 

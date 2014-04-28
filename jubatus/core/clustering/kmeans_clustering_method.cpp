@@ -43,6 +43,10 @@ void kmeans_clustering_method::batch_update(wplist points) {
 
 void kmeans_clustering_method::initialize_centers(wplist& points) {
   if (points.size() < k_) {
+    kcenters_.clear();
+    for (wplist::iterator it = points.begin(); it != points.end(); ++it) {
+      kcenters_.push_back(it->data);
+    }
     return;
   }
   kcenters_.clear();

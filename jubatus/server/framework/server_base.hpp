@@ -51,6 +51,7 @@ class server_base {
   virtual void get_status(status_t& status) const = 0;
   virtual void set_config(const std::string& config) = 0;
 
+  virtual bool clear();
   virtual bool save(const std::string& id);
   virtual bool load(const std::string& id);
   void load_file(const std::string& path);

@@ -92,6 +92,10 @@ void clustering::do_clustering() {
   clustering_->do_clustering();
 }
 
+void clustering::clear() {
+  mixable_holder_->clear_each_mixables();
+}
+
 // private
 
 common::sfv_t clustering::to_sfv(const datum& dat) {
@@ -119,8 +123,6 @@ core::clustering::weighted_point clustering::to_weighted_point(
   core::clustering::weighted_point ret;
   ret.data = to_sfv(src);
   ret.weight = 1;
-  ret.free_long = 1;
-  ret.free_double = 1;
   ret.original = src;
   return ret;
 }

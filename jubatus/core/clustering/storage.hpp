@@ -41,6 +41,7 @@ enum storage_event_type {
 class storage : public event_dispatcher<storage_event_type, wplist> {
  public:
   storage(const std::string& name, const clustering_config& config);
+  virtual ~storage() {}
 
   void get_diff(diff_t& d) const;
   bool set_mixed_and_clear_diff(const diff_t& d);
@@ -66,6 +67,7 @@ class storage : public event_dispatcher<storage_event_type, wplist> {
 
  protected:
   void increment_revision();
+  virtual void clear_mine() = 0;
 
   size_t revision_;
   std::string name_;

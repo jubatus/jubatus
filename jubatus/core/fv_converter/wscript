@@ -14,12 +14,12 @@ def configure(conf):
     conf.check_cxx(lib = 'onig', define_name = 'HAVE_ONIGURUMA')
 
   libpat = conf.env.cxxshlib_PATTERN
-  conf.define('LIBSPLITTER_SAMPLE', libpat % 'splitter_sample')
-  conf.define('LIBSPLITTER_NULL', libpat % 'splitter_null')
-  conf.define('LIBFILTER_SAMPLE', libpat % 'filter_sample')
-  conf.define('LIBNUM_FEATURE_SAMPLE', libpat % 'num_feature_sample')
-  conf.define('LIBNUM_FILTER_SAMPLE', libpat % 'num_filter_sample')
-  conf.define('LIBBINARY_FEATURE_SAMPLE', libpat % 'binary_feature_sample')
+  conf.define('LIBSPLITTER_SAMPLE', './' + libpat % 'splitter_sample')
+  conf.define('LIBSPLITTER_NULL', './' + libpat % 'splitter_null')
+  conf.define('LIBFILTER_SAMPLE', './' + libpat % 'filter_sample')
+  conf.define('LIBNUM_FEATURE_SAMPLE', './' + libpat % 'num_feature_sample')
+  conf.define('LIBNUM_FILTER_SAMPLE', './' + libpat % 'num_filter_sample')
+  conf.define('LIBBINARY_FEATURE_SAMPLE', './' + libpat % 'binary_feature_sample')
 
 def make_test(bld, use, src):
   bld.program(

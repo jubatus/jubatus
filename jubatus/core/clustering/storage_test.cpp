@@ -73,10 +73,24 @@ TEST_P(storage_test, pack_unpack) {
       EXPECT_EQ(all1[i].weight, all2[i].weight);
       EXPECT_EQ(all1[i].data, all2[i].data);
       // EXPECT_EQ(all1[i].original, all2[i].original);
-      EXPECT_EQ(all1[i].free_double, all2[i].free_double);
-      EXPECT_EQ(all1[i].free_long, all2[i].free_long);
     }
   }
+}
+
+TEST_P(storage_test, clear) {
+  storage_ptr s = storage_factory::create(name, conf);
+  ASSERT_TRUE(s != NULL);
+  for (size_t i = 0; i < 10; ++i) {
+    s->add(get_point(3));
+  }
+
+  wplist all1 = s->get_all();
+  ASSERT_EQ(10u, all1.size());
+
+  s->clear();
+
+  wplist all2 = s->get_all();
+  ASSERT_EQ(0u, all2.size());
 }
 
 INSTANTIATE_TEST_CASE_P(storage_test_instance, storage_test,

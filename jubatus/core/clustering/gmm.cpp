@@ -36,6 +36,11 @@ namespace core {
 namespace clustering {
 
 void gmm::batch(const eigen_wsvec_list_t& data, int d, int k) {
+  if (data.empty()) {
+    *this = gmm();
+    return;
+  }
+
   typedef eigen_wsvec_list_t::const_iterator data_iter;
   initialize(data, d, k);
 
