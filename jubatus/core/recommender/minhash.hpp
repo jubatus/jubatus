@@ -62,7 +62,8 @@ class minhash : public recommender_base {
   void update_row(const std::string& id, const sfv_diff_t& diff);
   void get_all_row_ids(std::vector<std::string>& ids) const;
   std::string type() const;
-  void register_mixables_to_holder(framework::mixable_holder& holder) const;
+
+  framework::mixable* get_mixable() const;
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);

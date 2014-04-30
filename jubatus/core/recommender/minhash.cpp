@@ -174,9 +174,8 @@ string minhash::type() const {
   return string("minhash");
 }
 
-void minhash::register_mixables_to_holder(framework::mixable_holder& holder)
-    const {
-  holder.register_mixable(mixable_storage_);
+framework::mixable* minhash::get_mixable() const {
+  return mixable_storage_.get();
 }
 
 void minhash::initialize_model() {

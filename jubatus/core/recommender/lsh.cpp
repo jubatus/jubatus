@@ -137,8 +137,8 @@ string lsh::type() const {
   return string("lsh");
 }
 
-void lsh::register_mixables_to_holder(framework::mixable_holder& holder) const {
-  holder.register_mixable(mixable_storage_);
+framework::mixable* lsh::get_mixable() const {
+  return mixable_storage_.get();
 }
 
 void lsh::initialize_model() {

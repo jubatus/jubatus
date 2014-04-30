@@ -25,6 +25,7 @@
 
 #include "recommender.hpp"
 #include "../classifier/classifier_test_util.hpp"
+#include "../framework/stream_writer.hpp"
 
 using std::make_pair;
 using std::pair;
@@ -54,16 +55,9 @@ sfv_diff_t make_vec(const string& c1, const string& c2, const string& c3) {
   return v;
 }
 
-jubatus::util::lang::shared_ptr<framework::mixable0>
+framework::linear_mixable*
 get_mixable(recommender_base& r) {
-  framework::mixable_holder holder;
-  r.register_mixables_to_holder(holder);
-  // There are currently two mixables: orig (dummy mixable) and algorithm-
-  // specific mixable.
-
-  // TODO: this cast is temporaly
-  return jubatus::util::lang::shared_ptr<framework::mixable0>
-    (dynamic_cast<framework::mixable0*>(holder.get_mixables().back().get()));
+  return dynamic_cast<framework::linear_mixable*>(r.get_mixable());
 }
 
 template<typename T>
@@ -123,17 +117,13 @@ TYPED_TEST_P(recommender_random_test, random) {
   EXPECT_GT(correct, 5u);
 
   // pack and unpack the recommender
-  framework::mixable_holder holder;
-  r.register_mixables_to_holder(holder);
   msgpack::sbuffer buf;
   msgpack::packer<msgpack::sbuffer> packer(buf);
-  holder.pack(packer);
+  r.pack(packer);
   msgpack::unpacked unpacked;
   msgpack::unpack(&unpacked, buf.data(), buf.size());
   TypeParam r2;
-  framework::mixable_holder holder2;
-  r2.register_mixables_to_holder(holder2);
-  holder2.unpack(unpacked.get());
+  r2.unpack(unpacked.get());
 
   // Run the same test
   ids.clear();
@@ -194,17 +184,15 @@ TYPED_TEST_P(recommender_random_test, pack_and_unpack) {
   update_random(r);
 
   // save and load
-  framework::mixable_holder holder;
-  r.register_mixables_to_holder(holder);
   msgpack::sbuffer buf;
   msgpack::packer<msgpack::sbuffer> packer(buf);
-  holder.pack(packer);
+  r.pack(packer);
+
   msgpack::unpacked unpacked;
   msgpack::unpack(&unpacked, buf.data(), buf.size());
+
   TypeParam r2;
-  framework::mixable_holder holder2;
-  r2.register_mixables_to_holder(holder2);
-  holder2.unpack(unpacked.get());
+  r2.unpack(unpacked.get());
 
   vector<string> row_ids;
   r2.get_all_row_ids(row_ids);
@@ -252,8 +240,15 @@ TYPED_TEST_P(recommender_random_test, diff) {
   TypeParam r;
   update_random(r);
 
-  common::byte_buffer diff = get_mixable(r)->get_diff();
+  msgpack::sbuffer sbuf;
+  core::framework::stream_writer<msgpack::sbuffer> st(sbuf);
+  core::framework::msgpack_packer mp(st);
+  core::framework::packer pk(mp);
+  get_mixable(r)->get_diff(pk);
 
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+  framework::diff_object diff = get_mixable(r)->convert_diff_object(msg.get());
   TypeParam r2;
   get_mixable(r2)->put_diff(diff);
 
@@ -274,14 +269,31 @@ TYPED_TEST_P(recommender_random_test, mix) {
     expect.update_row(row, vec);
   }
 
-  common::byte_buffer diff1 = get_mixable(r1)->get_diff();
-  common::byte_buffer diff2 = get_mixable(r2)->get_diff();
+  msgpack::unpacked msg1;
+  msgpack::sbuffer sbuf1;
+  {
+    framework::stream_writer<msgpack::sbuffer> st(sbuf1);
+    framework::msgpack_packer mp(st);
+    framework::packer pk(mp);
+    get_mixable(r1)->get_diff(pk);
+    msgpack::unpack(&msg1, sbuf1.data(), sbuf1.size());
+  }
 
-  common::byte_buffer mixed_diff;
-  get_mixable(r1)->mix(diff1, diff2, mixed_diff);
+  msgpack::unpacked msg2;
+  msgpack::sbuffer sbuf2;
+  {
+    framework::stream_writer<msgpack::sbuffer> st(sbuf2);
+    framework::msgpack_packer mp(st);
+    framework::packer pk(mp);
+    get_mixable(r2)->get_diff(pk);
+    msgpack::unpack(&msg2, sbuf2.data(), sbuf2.size());
+  }
+
+  framework::diff_object diff = get_mixable(r1)->convert_diff_object(msg1.get());
+  get_mixable(r1)->mix(msg2.get(), diff);
 
   TypeParam mixed;
-  get_mixable(mixed)->put_diff(mixed_diff);
+  get_mixable(mixed)->put_diff(diff);
 
   compare_recommenders(expect, mixed, false);
 }

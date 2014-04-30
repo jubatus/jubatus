@@ -47,7 +47,7 @@ recommender::recommender(
     : mixable_holder_(new framework::mixable_holder),
       converter_(converter),
       recommender_(recommender_method) {
-  recommender_->register_mixables_to_holder(*mixable_holder_);
+  register_mixable(recommender_->get_mixable());
   converter_->register_mixables_to_holder(*mixable_holder_);
 }
 

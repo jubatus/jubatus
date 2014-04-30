@@ -73,9 +73,10 @@ std::string nearest_neighbor_recommender::type() const {
   return "nearest_neighbor_recommender:" + nearest_neighbor_engine_->type();
 }
 
-void nearest_neighbor_recommender::register_mixables_to_holder(
-    framework::mixable_holder& holder) const {
-  nearest_neighbor_engine_->register_mixables_to_holder(holder);
+framework::mixable* nearest_neighbor_recommender::get_mixable() const {
+  // TODO: implement
+  //return nearest_neighbor_engine_->get_mixable();
+  return 0;
 }
 
 void nearest_neighbor_recommender::pack(
