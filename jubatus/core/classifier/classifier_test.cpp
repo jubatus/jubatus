@@ -159,8 +159,6 @@ TYPED_TEST_P(classifier_test, delete_label) {
     p.train(fv, "C");
   }
 
-  p.delete_label("B");
-
   {
     common::sfv_t fv;
     fv.push_back(std::make_pair("f1", 1.f));
