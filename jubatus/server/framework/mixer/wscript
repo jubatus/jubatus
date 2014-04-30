@@ -6,7 +6,7 @@ def configure(conf):
   pass
 
 def build(bld):
-  mixer_framework = 'jubatus_util MSGPACK LIBGLOG core_headers'
+  mixer_framework = 'jubatus_core jubatus_util MSGPACK LIBGLOG core_headers'
   mixer_source = 'mixer_factory.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
     mixer_framework += ' jubacommon jubaserv_common jubaserv_common_mprpc'
