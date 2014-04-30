@@ -44,7 +44,7 @@ struct lof_config {
   std::string method;
   jubatus::core::common::jsonconfig::config parameter;
   jubatus::util::data::optional<std::string> unlearner;
-  jubatus::util::data::optional<jubatus::util::text::json::json>
+  jubatus::util::data::optional<config>
       unlearner_parameter;
 
   template <typename Ar>
