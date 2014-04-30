@@ -197,6 +197,10 @@ void push_mixer::set_mixable_holder(
   mixable_holder_ = holder;
 }
 
+void push_mixer::set_driver(core::driver::driver_base* driver) {
+  driver_ = driver;
+}
+
 void push_mixer::start() {
   scoped_lock lk(m_);
   if (!is_running_) {

@@ -19,6 +19,7 @@
 
 #include "jubatus/util/lang/noncopyable.h"
 #include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/core/driver/driver.hpp"
 #include "../server_base.hpp"
 #include "../../common/mprpc/rpc_server.hpp"
 
@@ -46,6 +47,7 @@ class mixer : util::lang::noncopyable {
   virtual void register_api(rpc_server_t& server) = 0;
   virtual void set_mixable_holder(
       jubatus::util::lang::shared_ptr<core::framework::mixable_holder>) = 0;
+  virtual void set_driver(core::driver::driver_base*) = 0;
 
   virtual void start() = 0;
   virtual void stop() = 0;

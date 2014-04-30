@@ -80,6 +80,7 @@ class linear_mixer : public mixer {
   void register_api(rpc_server_t& server);
   void set_mixable_holder(
       jubatus::util::lang::shared_ptr<core::framework::mixable_holder> m);
+  void set_driver(core::driver::driver_base*);
 
   void start();
   void stop();
@@ -119,6 +120,7 @@ class linear_mixer : public mixer {
 
   jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
     mixable_holder_;
+  core::driver::driver_base* driver_;
 };
 
 }  // namespace mixer

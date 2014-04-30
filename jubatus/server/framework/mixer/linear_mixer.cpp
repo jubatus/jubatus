@@ -318,6 +318,10 @@ void linear_mixer::set_mixable_holder(
   mixable_holder_ = m;
 }
 
+void linear_mixer::set_driver(core::driver::driver_base* driver) {
+  driver_ = driver;
+}
+
 void linear_mixer::start() {
   scoped_lock lk(m_);
   if (!is_running_) {
