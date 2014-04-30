@@ -57,11 +57,9 @@ common::sfv_t make_dense_sfv(const string& s) {
 }
 
 lsh_index_storage* get_storage(euclid_lsh& r) {
-  framework::mixable_holder holder;
-  r.register_mixables_to_holder(holder);
   storage::mixable_lsh_index_storage* mixable_storage =
       dynamic_cast<storage::mixable_lsh_index_storage*>(
-          holder.get_mixables().back().get());
+          r.get_mixable());
   return mixable_storage->get_model().get();
 }
 

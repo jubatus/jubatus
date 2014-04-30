@@ -129,9 +129,8 @@ void recommender_mock::unpack(msgpack::object o) {
   mixable_storage_->get_model()->unpack(mems[1]);
 }
 
-void recommender_mock::register_mixables_to_holder(
-    framework::mixable_holder& holder) const {
-  holder.register_mixable(mixable_storage_);
+framework::mixable* recommender_mock::get_mixable() const {
+  return mixable_storage_.get();
 }
 
 }  // namespace recommender
