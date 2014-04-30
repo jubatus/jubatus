@@ -55,18 +55,6 @@ float l2norm(const common::sfv_t& sfv) {
   return std::sqrt(squared_l2norm(sfv));
 }
 
-float calc_euclidean_distance(
-    size_t hash_num,
-    size_t hamming_similarity,
-    float norm1,
-    float norm2) {
-  if (hash_num == hamming_similarity) {
-    return abs(norm1 - norm2);
-  }
-  const float theta = (hash_num - hamming_similarity) * M_PI / hash_num;
-  return norm1 * (norm1 - 2 * norm2 * cos(theta));
-}
-
 }  // namespace
 
 euclid_lsh::euclid_lsh(

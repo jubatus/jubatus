@@ -24,6 +24,7 @@
 #include "../storage/storage_base.hpp"
 #include "../unlearner/unlearner_factory.hpp"
 
+using jubatus::core::common::jsonconfig::config;;
 using jubatus::core::common::jsonconfig::config_cast_check;
 using jubatus::util::lang::shared_ptr;
 
@@ -34,7 +35,7 @@ namespace {
 
 struct unlearner_config {
   jubatus::util::data::optional<std::string> unlearner;
-  jubatus::util::data::optional<jubatus::util::text::json::json>
+  jubatus::util::data::optional<config>
       unlearner_parameter;
 
   template<typename Ar>

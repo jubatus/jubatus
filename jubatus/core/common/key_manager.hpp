@@ -73,15 +73,13 @@ class key_manager {
     os << "]";
     return os;
   }
+  MSGPACK_DEFINE(key2id_, id2key_, next_id_);
 
  private:
   uint64_t append_key(const std::string& key);
 
   jubatus::util::data::unordered_map<std::string, uint64_t> key2id_;
   jubatus::util::data::unordered_map<uint64_t, std::string> id2key_;
-
- public:
-  MSGPACK_DEFINE(key2id_, id2key_, next_id_);
   uint64_t next_id_;
 };
 

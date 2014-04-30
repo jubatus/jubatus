@@ -48,7 +48,7 @@ class linear_function_mixer : public jubatus::core::framework::mixable<
   void clear();
 
   jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
-  get_unlearner() {
+  get_unlearner() const {
     return label_unlearner_;
   }
 
