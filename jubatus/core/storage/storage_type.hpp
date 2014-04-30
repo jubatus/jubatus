@@ -199,7 +199,7 @@ struct val3_t {
 
   MSGPACK_DEFINE(v1, v2, v3);
 
-  friend std::ostream& operator<<(std::ostream& os, const val3_t v) {
+  friend std::ostream& operator<<(std::ostream& os, const val3_t& v) {
     os << "{v1: " << v.v1 << ", v2: " << v.v2 << ", v3: " << v.v3 << "}";
     return os;
   }

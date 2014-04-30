@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "key_manager.hpp"
+#include "assert.hpp"
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -35,6 +36,9 @@ key_manager::key_manager()
 }
 
 uint64_t key_manager::append_key(const string& key) {
+  JUBATUS_ASSERT_EQ(true,  // must not exist
+                    key2id_.end() == key2id_.find(key),
+                    "existing key appended");
   key2id_[key] = next_id_;
   id2key_[next_id_] = key;
   return next_id_++;

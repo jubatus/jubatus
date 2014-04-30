@@ -98,7 +98,6 @@ class classifier_base {
 
  private:
   jubatus::util::lang::shared_ptr<driver::linear_function_mixer> mixable_;
-  bool use_covars_;
 };
 
 }  // namespace classifier
