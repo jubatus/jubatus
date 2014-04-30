@@ -31,7 +31,13 @@ namespace common {
 typedef unordered_map<string, uint64_t>::const_iterator cit;
 
 key_manager::key_manager()
-    : next_id_() {
+    : next_id_(0u) {
+}
+
+uint64_t key_manager::append_key(const string& key) {
+  key2id_[key] = next_id_;
+  id2key_[next_id_] = key;
+  return next_id_++;
 }
 
 uint64_t key_manager::get_id(const string& key) {
@@ -40,9 +46,7 @@ uint64_t key_manager::get_id(const string& key) {
     return it->second;
   }
   // TODO(beam2d): Make it exception safe.
-  key2id_[key] = next_id_;
-  id2key_[next_id_] = key;
-  return next_id_++;
+  return append_key(key);
 }
 
 bool key_manager::set_key(const string& key) {
@@ -50,9 +54,8 @@ bool key_manager::set_key(const string& key) {
   if (it != key2id_.end()) {
     return false;
   }
-  uint64_t new_id = static_cast<uint64_t>(key2id_.size());
-  key2id_[key] = new_id;
-  id2key_[new_id] = key;
+  // TODO(kumagi): Make it exception safe.
+  append_key(key);
   return true;
 }
 
@@ -76,7 +79,6 @@ const string& key_manager::get_key(const uint64_t id) const {
   }
 }
 
-
 std::vector<std::string> key_manager::get_all_id2key() const {
   std::vector<std::string> ret;
   ret.reserve(id2key_.size());
@@ -91,6 +93,7 @@ std::vector<std::string> key_manager::get_all_id2key() const {
 void key_manager::clear() {
   jubatus::util::data::unordered_map<std::string, uint64_t>().swap(key2id_);
   jubatus::util::data::unordered_map<uint64_t, std::string>().swap(id2key_);
+  next_id_ = 0u;
 }
 
 void key_manager::init_by_id2key(const std::vector<std::string>& id2key) {
