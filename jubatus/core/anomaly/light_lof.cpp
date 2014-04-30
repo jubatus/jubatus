@@ -17,7 +17,6 @@
 #include "light_lof.hpp"
 
 #include <algorithm>
-#include <cmath>
 #include <limits>
 #include <numeric>
 #include <string>
@@ -25,11 +24,14 @@
 #include <vector>
 #include "jubatus/util/data/unordered_map.h"
 #include "jubatus/util/lang/bind.h"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../common/exception.hpp"
 
 using jubatus::util::data::unordered_map;
 using jubatus::util::data::unordered_set;
 using jubatus::util::lang::shared_ptr;
+using jubatus::util::lang::bind;
+using jubatus::util::lang::weak_ptr;
 using jubatus::core::nearest_neighbor::nearest_neighbor_base;
 using jubatus::core::table::column_table;
 
@@ -83,7 +85,6 @@ light_lof::light_lof(
       mixable_scores_(new driver::mixable_versioned_table),
       config_(conf),
       my_id_(id) {
-  nearest_neighbor_engine_->get_table();
   mixable_nearest_neighbor_->set_model(nearest_neighbor_engine_->get_table());
   mixable_scores_->set_model(create_lof_table());
 }
@@ -101,7 +102,7 @@ light_lof::light_lof(
       my_id_(id) {
   shared_ptr<column_table> nn_table = nearest_neighbor_engine_->get_table();
   shared_ptr<column_table> lof_table = create_lof_table();
-  unlearner_->set_callback(jubatus::util::lang::bind(
+  unlearner_->set_callback(bind(
       &light_lof::unlearn, this, jubatus::util::lang::_1));
 
   mixable_nearest_neighbor_->set_model(nn_table);
@@ -144,7 +145,6 @@ void light_lof::set_row(const std::string& id, const common::sfv_t& sfv) {
   unordered_set<std::string> update_set;
 
   shared_ptr<column_table> table = mixable_scores_->get_model();
-  std::pair<bool, uint64_t> index = table->exact_match(id);
   if (table->exact_match(id).first) {
     collect_neighbors(id, update_set);
   }
@@ -157,18 +157,12 @@ void light_lof::set_row(const std::string& id, const common::sfv_t& sfv) {
   // update_entries() below overwrites this row.
   table->add(id, table::owner(my_id_), -1.f, -1.f);
 
-  if (!index.first) {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error(
-        "Failed to add a row to lof table (key = " + id + ')'));
-  } else {
-    update_set.insert(table->get_row(index.second));
-  }
-
   for (unordered_set<std::string>::const_iterator it = update_set.begin();
        it != update_set.end(); ++it) {
     touch(*it);
   }
 
+  update_set.insert(id);
   update_entries(update_set);
 }
 
@@ -180,9 +174,9 @@ std::string light_lof::type() const {
   return "light_lof";
 }
 
-void light_lof::register_mixables_to_holder(framework::mixable_holder& holder)
-    const {
-  nearest_neighbor_engine_->register_mixables_to_holder(holder);
+void light_lof::register_mixables_to_holder(
+    framework::mixable_holder& holder) const {
+  holder.register_mixable(mixable_nearest_neighbor_);
   holder.register_mixable(mixable_scores_);
 }
 
@@ -206,14 +200,7 @@ void light_lof::touch(const std::string& id) {
 void light_lof::unlearn(const std::string& key) {
   unordered_set<std::string> reverse_knn;
   collect_neighbors(key, reverse_knn);
-  shared_ptr<column_table> table = mixable_scores_->get_model();
-  const std::pair<bool, uint64_t> index = table->exact_match(key);
-
-  if (index.first) {
-    reverse_knn.erase(table->get_row(index.second));
-  } else {
-    // TODO(kumagi): assertion failure
-  }
+  reverse_knn.erase(key);
 
   mixable_nearest_neighbor_->get_model()->delete_row(key);
   mixable_scores_->get_model()->delete_row(key);
@@ -292,13 +279,8 @@ void light_lof::collect_neighbors(
   nearest_neighbor_engine_->neighbor_row(
       query, nn_result, config_.reverse_nearest_neighbor_num);
 
-  shared_ptr<column_table> table = mixable_scores_->get_model();
   for (size_t i = 0; i < nn_result.size(); ++i) {
-    const std::pair<bool, uint64_t> hit =
-        table->exact_match(nn_result[i].first);
-    if (hit.first) {
-      neighbors.insert(table->get_row(hit.second));
-    }
+    neighbors.insert(nn_result[i].first);
   }
 }
 
@@ -308,16 +290,26 @@ void light_lof::update_entries(const unordered_set<std::string>& neighbors) {
       table->get_float_column(KDIST_COLUMN_INDEX);
   table::float_column& lrd_column = table->get_float_column(LRD_COLUMN_INDEX);
 
-  unordered_map<std::string, std::vector<std::pair<uint64_t, float> > >
+  std::vector<uint64_t> ids;
+  ids.reserve(neighbors.size());
+  for (unordered_set<std::string>::const_iterator it = neighbors.begin();
+       it != neighbors.end(); ++it) {
+    const std::pair<bool, uint64_t> hit = table->exact_match(*it);
+    if (hit.first) {
+      ids.push_back(hit.second);
+    }
+  }
+
+  unordered_map<uint64_t, std::vector<std::pair<uint64_t, float> > >
       nested_neighbors;
 
   // Gather k-nearest neighbors of each member of neighbors and update their
   // k-dists.
   std::vector<std::pair<std::string, float> > nn_result;
-  for (unordered_set<std::string>::const_iterator it = neighbors.begin();
-       it != neighbors.end(); ++it) {
+  for (std::vector<uint64_t>::const_iterator it = ids.begin();
+       it != ids.end(); ++it) {
     nearest_neighbor_engine_->neighbor_row(
-        *it, nn_result, config_.nearest_neighbor_num);
+        table->get_key(*it), nn_result, config_.nearest_neighbor_num);
     std::vector<std::pair<uint64_t, float> >& nn_indexes =
         nested_neighbors[*it];
 
@@ -330,15 +322,13 @@ void light_lof::update_entries(const unordered_set<std::string>& neighbors) {
       }
     }
 
-    std::pair<bool, uint64_t> row_info = table->exact_match(*it);
-    JUBATUS_ASSERT_EQ(true, row_info.first, "");
-    kdist_column[row_info.second] = nn_result.back().second;
+    kdist_column[*it] = nn_result.back().second;
   }
 
   // Calculate LRDs of neighbors.
   const table::owner owner(my_id_);
-  for (unordered_set<std::string>::const_iterator it = neighbors.begin();
-       it != neighbors.end(); ++it) {
+  for (std::vector<uint64_t>::const_iterator it = ids.begin();
+       it != ids.end(); ++it) {
     const std::vector<std::pair<uint64_t, float> >& nn = nested_neighbors[*it];
     float lrd = 1;
     if (!nn.empty()) {
@@ -355,14 +345,8 @@ void light_lof::update_entries(const unordered_set<std::string>& neighbors) {
         lrd = length / sum_reachability;
       }
     }
-
-    {
-      std::pair<bool, uint64_t> row_info = table->exact_match(*it);
-      JUBATUS_ASSERT_EQ(true, row_info.first, "");
-
-      lrd_column[row_info.second] = lrd;
-      table->update_clock(*it, owner);
-    }
+    lrd_column[*it] = lrd;
+    table->update_clock(*it, owner);
   }
 }
 
