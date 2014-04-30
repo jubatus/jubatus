@@ -98,7 +98,7 @@ class linear_mixer : public mixer {
   void clear();
 
   core::common::byte_buffer get_diff(int a);
-  int put_diff(const std::vector<msgpack::object>& unpacked);
+  int put_diff(const core::common::byte_buffer&);
   core::common::byte_buffer get_model(int d) const;
 
   jubatus::util::lang::shared_ptr<linear_communication> communication_;

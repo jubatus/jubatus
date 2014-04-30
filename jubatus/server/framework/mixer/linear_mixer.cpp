@@ -297,7 +297,7 @@ void linear_mixer::register_api(rpc_server_t& server) {
       jubatus::util::lang::bind(
           &linear_mixer::get_diff, this, jubatus::util::lang::_1));
 
-  server.add<int(vector<msgpack::object>)>(
+  server.add<int(byte_buffer)>(
       "put_diff",
       jubatus::util::lang::bind(&linear_mixer::put_diff,
                                 this,
@@ -596,10 +596,14 @@ void linear_mixer::update_model() {
   }
 }
 
-int linear_mixer::put_diff(
-    const vector<msgpack::object>& unpacked) {
+int linear_mixer::put_diff(const byte_buffer& diff) {
   scoped_wlock lk_write(mixable_holder_->rw_mutex());
   scoped_lock lk(m_);
+
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, diff.ptr(), diff.size());
+  vector<msgpack::object> unpacked;
+  msg.get().convert(&unpacked);
 
   core::framework::mixable_holder::mixable_list mixables =
       mixable_holder_->get_mixables();
