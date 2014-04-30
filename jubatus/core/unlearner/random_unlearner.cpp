@@ -58,16 +58,6 @@ bool random_unlearner::exists_in_memory(const std::string& id) const {
   return id_set_.count(id) > 0;
 }
 
-void random_unlearner::save(std::ostream& os) const {
-  jubatus::util::data::serialization::binary_oarchive bo(os);
-  bo << const_cast<random_unlearner&>(*this);
-}
-
-void random_unlearner::load(std::istream& is) {
-  jubatus::util::data::serialization::binary_iarchive bi(is);
-  bi >> *this;
-}
-
 }  // namespace unlearner
 }  // namespace core
 }  // namespace jubatus

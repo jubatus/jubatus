@@ -56,23 +56,7 @@ class random_unlearner : public unlearner_base {
   void touch(const std::string& id);
   bool exists_in_memory(const std::string& id) const;
 
-  void save(std::ostream& os) const;
-  void load(std::istream& is);
-
  private:
-  friend class jubatus::util::data::serialization::access;
-  template<typename Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(ids_) & JUBA_MEMBER(max_size_);
-
-    if (ar.is_read) {
-      id_set_.clear();
-      for (size_t i = 0; i < ids_.size(); ++i) {
-        id_set_.insert(ids_[i]);
-      }
-    }
-  }
-
   jubatus::util::data::unordered_set<std::string> id_set_;
   std::vector<std::string> ids_;
   size_t max_size_;

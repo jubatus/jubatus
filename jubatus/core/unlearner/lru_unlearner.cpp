@@ -58,16 +58,6 @@ bool lru_unlearner::exists_in_memory(const std::string& id) const {
   return entry_map_.count(id) > 0;
 }
 
-void lru_unlearner::save(std::ostream& os) const {
-  jubatus::util::data::serialization::binary_oarchive bo(os);
-  bo << const_cast<lru_unlearner&>(*this);
-}
-
-void lru_unlearner::load(std::istream& is) {
-  jubatus::util::data::serialization::binary_iarchive bi(is);
-  bi >> *this;
-}
-
 // private
 
 void lru_unlearner::rebuild_entry_map() {
