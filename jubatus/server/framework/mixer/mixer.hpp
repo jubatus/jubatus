@@ -17,6 +17,8 @@
 #ifndef JUBATUS_SERVER_FRAMEWORK_MIXER_MIXER_HPP_
 #define JUBATUS_SERVER_FRAMEWORK_MIXER_MIXER_HPP_
 
+#include <string>
+
 #include "jubatus/util/lang/noncopyable.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../server_base.hpp"
@@ -54,6 +56,16 @@ class mixer : util::lang::noncopyable {
   virtual void updated() = 0;
 
   virtual void get_status(server_base::status_t& status) const = 0;
+
+  virtual std::string type() const = 0;
+};
+
+class unsupported_mixables : public core::common::exception::runtime_error {
+ public:
+  explicit unsupported_mixables(const std::string& type)
+      : jubatus::core::common::exception::runtime_error(
+          std::string(type + " does not support this configuration")) {
+  }
 };
 
 }  // namespace mixer

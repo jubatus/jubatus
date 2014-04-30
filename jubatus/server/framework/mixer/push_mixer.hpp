@@ -99,6 +99,8 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
   virtual std::vector<const std::pair<std::string, int>*> filter_candidates(
       const std::vector<std::pair<std::string, int> >&) = 0;
 
+  virtual std::string type() const = 0;
+
  protected:
   void mixer_loop();
   void mix();

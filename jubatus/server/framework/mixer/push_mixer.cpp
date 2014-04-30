@@ -189,6 +189,24 @@ void push_mixer::register_api(rpc_server_t& server) {
 
 void push_mixer::set_mixable_holder(
     shared_ptr<jubatus::core::framework::mixable_holder> holder) {
+
+  // check mixables
+  core::framework::mixable_holder::mixable_list mixables =
+      holder->get_mixables();
+
+  if (mixables.empty()) {
+    throw JUBATUS_EXCEPTION(core::common::config_not_set());
+  }
+
+  try {
+    for (size_t i = 0; i < mixables.size(); ++i) {
+      // raise unsupported_method if not supported
+      mixables[i]->get_pull_argument();
+    }
+  } catch (core::common::unsupported_method&) {
+    throw JUBATUS_EXCEPTION(unsupported_mixables(type()));
+  }
+
   mixable_holder_ = holder;
 }
 
