@@ -57,15 +57,6 @@ void mixable_versioned_table::get_argument(framework::packer& pk) const {
 void mixable_versioned_table::pull(const msgpack::object& arg, framework::packer& pk) const {
   version_clock vc;
   arg.convert(&vc);
-  pull_impl(vc, pk);
-}
-
-void mixable_versioned_table::push(const msgpack::object& diff) {
-  push_impl(diff);
-}
-
-void mixable_versioned_table::pull_impl(
-    const version_clock& vc, framework::packer& pk) const {
 
   model_ptr table = get_model();
   const uint64_t table_size = table->size();
@@ -79,8 +70,7 @@ void mixable_versioned_table::pull_impl(
   }
 }
 
-void mixable_versioned_table::push_impl(
-    const msgpack::object& o) {
+void mixable_versioned_table::push(const msgpack::object& o) {
   model_ptr table = get_model();
   const uint64_t table_size = table->size();
   if (o.type != msgpack::type::ARRAY) {

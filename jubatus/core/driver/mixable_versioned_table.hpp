@@ -43,9 +43,6 @@ class mixable_versioned_table : public core::framework::push_mixable {
       const std::vector<std::string>& rhs,
       std::vector<std::string>& mixed) const;
 
-  void pull_impl(const version_clock& vc, framework::packer&) const;
-  void push_impl(const msgpack::object&);
-
   // push mixable
   void get_argument(framework::packer& pk) const;
   void pull(const msgpack::object& arg, framework::packer& pk) const;
