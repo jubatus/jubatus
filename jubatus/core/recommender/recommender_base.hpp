@@ -67,8 +67,7 @@ class recommender_base : public framework::model {
   void complete_row(const common::sfv_t& query, common::sfv_t& ret) const;
   void decode_row(const std::string& id, common::sfv_t& ret) const;
 
-  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
-      const = 0;
+  virtual framework::mixable* get_mixable() const = 0;
 
   static float calc_similality(common::sfv_t& q1, common::sfv_t& q2);
   static float calc_l2norm(const common::sfv_t& query);

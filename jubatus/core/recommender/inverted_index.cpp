@@ -109,9 +109,8 @@ void inverted_index::unpack(msgpack::object o) {
   mixable_storage_->get_model()->unpack(o.via.array.ptr[1]);
 }
 
-void inverted_index::register_mixables_to_holder(
-    framework::mixable_holder& holder) const {
-  holder.register_mixable(mixable_storage_);
+framework::mixable* inverted_index::get_mixable() const {
+  return mixable_storage_.get();
 }
 
 }  // namespace recommender

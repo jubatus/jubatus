@@ -120,7 +120,8 @@ string lof::type() const {
 }
 
 void lof::register_mixables_to_holder(framework::mixable_holder& holder) const {
-  nn_engine_->register_mixables_to_holder(holder);
+  // TODO: this method is deprecated
+  //nn_engine_->register_mixables_to_holder(holder);
   holder.register_mixable(mixable_storage_);
 }
 
