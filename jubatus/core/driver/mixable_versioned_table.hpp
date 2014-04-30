@@ -30,18 +30,18 @@ namespace driver {
 
 typedef std::map<table::owner, uint64_t> version_clock;
 
-class mixable_versioned_table : public core::framework::push_mixable {
-// TODO: add linear_mixable
+class mixable_versioned_table : public core::framework::push_mixable,
+  public core::framework::linear_mixable {
  public:
 
   typedef jubatus::util::lang::shared_ptr<table::column_table> model_ptr;
 
-  std::vector<std::string> get_diff_impl() const;
-  bool put_diff_impl(const std::vector<std::string>& diff);
-  void mix_impl(
-      const std::vector<std::string>& lhs,
-      const std::vector<std::string>& rhs,
-      std::vector<std::string>& mixed) const;
+  // linear mixable
+  // TODO: add test
+  framework::diff_object convert_diff_object(const msgpack::object&) const;
+  void mix(const msgpack::object& obj, framework::diff_object) const;
+  void get_diff(framework::packer&) const;
+  bool put_diff(const framework::diff_object& obj);
 
   // push mixable
   void get_argument(framework::packer& pk) const;
@@ -63,6 +63,9 @@ class mixable_versioned_table : public core::framework::push_mixable {
   void clear() {}
 
  private:
+  void pull_impl(const version_clock& vc, framework::packer&) const;
+  void push_impl(const msgpack::object&);
+
   void update_version(const table::column_table::version_t& version);
 
   model_ptr model_;
