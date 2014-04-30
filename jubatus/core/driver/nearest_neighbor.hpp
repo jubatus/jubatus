@@ -35,20 +35,19 @@ namespace core {
 namespace driver {
 
 class nearest_neighbor {
-  typedef core::nearest_neighbor::nearest_neighbor_base nnbase_t;
-  typedef jubatus::util::lang::shared_ptr<nnbase_t> nn_base_ptr;
-  typedef fv_converter::datum_to_fv_converter fvc_t;
-  typedef jubatus::util::lang::shared_ptr<fvc_t> fvc_ptr;
-  typedef unlearner::unlearner_base unlearner_t;
-  typedef jubatus::util::lang::shared_ptr<unlearner_t> unlearner_ptr;
-
  public:
-  nearest_neighbor(nn_base_ptr nn, fvc_ptr converter);
+  nearest_neighbor(
+    jubatus::util::lang::shared_ptr<
+        core::nearest_neighbor::nearest_neighbor_base> nn,
+    jubatus::util::lang::shared_ptr<
+        fv_converter::datum_to_fv_converter> converter);
 
   nearest_neighbor(
-      nn_base_ptr nn,
-      fvc_ptr converter,
-      unlearner_ptr unlearner);
+    jubatus::util::lang::shared_ptr<
+        core::nearest_neighbor::nearest_neighbor_base> nn,
+    jubatus::util::lang::shared_ptr<
+        fv_converter::datum_to_fv_converter> converter,
+    jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner);
 
   jubatus::util::lang::shared_ptr<table::column_table> get_table() {
     return nn_->get_table();
@@ -82,9 +81,11 @@ class nearest_neighbor {
 
  private:
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
-  fvc_ptr converter_;
-  nn_base_ptr nn_;
-  unlearner_ptr unlearner_;
+  jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
+      converter_;
+  jubatus::util::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base>
+      nn_;
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner_;
 };
 
 }  // namespace driver
