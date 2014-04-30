@@ -43,12 +43,6 @@ class mock_unlearner : public unlearner_base {
     // mock unlearner does not remember anything
     return false;
   }
-
-  void save(std::ostream& os) const {
-  }
-
-  void load(std::istream& is) {
-  }
 };
 
 }  // namespace
