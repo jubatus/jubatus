@@ -58,9 +58,6 @@ class unlearner_base {
   // touched and not unlearned since then, it returns true.
   virtual bool exists_in_memory(const std::string& id) const = 0;
 
-  virtual void save(std::ostream& os) const = 0;
-  virtual void load(std::istream& is) = 0;
-
  protected:
   void unlearn(const std::string& id) const {
     callback_(id);

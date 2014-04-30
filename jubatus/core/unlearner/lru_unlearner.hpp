@@ -54,23 +54,10 @@ class lru_unlearner : public unlearner_base {
   void touch(const std::string& id);
   bool exists_in_memory(const std::string& id) const;
 
-  void save(std::ostream& os) const;
-  void load(std::istream& is);
-
  private:
   typedef std::list<std::string> lru;
   typedef jubatus::util::data::unordered_map<std::string, lru::iterator>
       entry_map;
-
-  friend class jubatus::util::data::serialization::access;
-  template<typename Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(lru_) & JUBA_MEMBER(max_size_);
-
-    if (ar.is_read) {
-      rebuild_entry_map();
-    }
-  }
 
   void rebuild_entry_map();
 
