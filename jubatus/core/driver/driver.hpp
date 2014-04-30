@@ -38,7 +38,7 @@ class driver_base {
  protected:
   void register_mixable(framework::mixable* mixable);
 
-  class mixable_holder : public framework::linear_mixable {
+  class mixable_holder : public virtual framework::linear_mixable {
    public:
     // TODO: inherit push pull mixable
     std::set<std::string> mixables() const;
