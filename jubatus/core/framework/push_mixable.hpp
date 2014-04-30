@@ -26,7 +26,7 @@ namespace core {
 namespace framework {
 
 // public interface for Jubatus users
-class push_mixable : public mixable {
+class push_mixable : public virtual mixable {
  public:
   push_mixable();
   virtual ~push_mixable();

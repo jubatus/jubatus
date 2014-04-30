@@ -20,6 +20,9 @@ namespace jubatus {
 namespace core {
 namespace framework {
 
+mixable::mixable() {
+}
+
 mixable::mixable(const std::string& name) {
   mixables_.insert(name);
 }

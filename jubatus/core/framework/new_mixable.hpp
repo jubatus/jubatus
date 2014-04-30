@@ -28,6 +28,7 @@ namespace framework {
 
 class mixable {
  public:
+  mixable();
   mixable(const std::string& name);
   virtual std::set<std::string> mixables() const;
   virtual ~mixable();

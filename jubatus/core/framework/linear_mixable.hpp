@@ -35,7 +35,7 @@ class diff_object_raw {
 typedef jubatus::util::lang::shared_ptr<diff_object_raw> diff_object;
 
 // public interface for Jubatus users
-class linear_mixable : public mixable {
+class linear_mixable : public virtual mixable {
  public:
   linear_mixable();
   virtual ~linear_mixable();
