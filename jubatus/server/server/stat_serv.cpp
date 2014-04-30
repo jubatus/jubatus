@@ -55,6 +55,10 @@ stat_serv::stat_serv(const server_argv& a,
 stat_serv::~stat_serv() {
 }
 
+std::string stat_serv::type() const {
+  return "stat";
+}
+
 void stat_serv::get_status(status_t& status) const {
   status.insert(make_pair("storage", stat_->get_model()->type()));
 }

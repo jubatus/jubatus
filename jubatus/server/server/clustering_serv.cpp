@@ -59,6 +59,10 @@ clustering_serv::clustering_serv(
 clustering_serv::~clustering_serv() {
 }
 
+std::string clustering_serv::type() const {
+  return "clustering";
+}
+
 void clustering_serv::get_status(status_t& status) const {
   // TODO(beam2d): Add some status of clustering
 }

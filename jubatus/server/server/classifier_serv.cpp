@@ -82,6 +82,10 @@ classifier_serv::classifier_serv(
 classifier_serv::~classifier_serv() {
 }
 
+std::string classifier_serv::type() const {
+  return "classifier";
+}
+
 void classifier_serv::get_status(status_t& status) const {
   status_t my_status;
   classifier_->get_status(my_status);
