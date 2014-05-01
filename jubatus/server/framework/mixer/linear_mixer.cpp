@@ -467,7 +467,7 @@ void linear_mixer::mix() {
         // get_diff() and mix() each diffs
         communication_->get_diff(diff_result);
 
-        // convert from rpc_result_object to vector<vector<bite_buffer> >
+        // convert from rpc_result_object to diff_object
         typedef pair<string, uint16_t> server;
         vector<server> successes;
         for (size_t i = 0; i < diff_result.response.size(); ++i) {
