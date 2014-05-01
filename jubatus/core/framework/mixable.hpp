@@ -40,27 +40,6 @@ namespace jubatus {
 namespace core {
 namespace framework {
 
-// TODO(unknown): split linear_mixable and random_miable
-class mixable0 : public mixable, public model {
- public:
-  mixable0() : mixable("TODO(linear and pushpull)") {
-  }
-
-  virtual ~mixable0() {
-  }
-
-  // interface for linear_mixer
-  virtual common::byte_buffer get_diff() const = 0;
-  virtual bool put_diff(const common::byte_buffer&) = 0;
-  virtual void mix(const common::byte_buffer&,
-                   const common::byte_buffer&,
-                   common::byte_buffer&) const = 0;
-
-  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
-  virtual void unpack(msgpack::object o) = 0;
-  virtual void clear() = 0;
-};
-
 // TODO(suma): separate other header
 class mixable_holder {
  public:
