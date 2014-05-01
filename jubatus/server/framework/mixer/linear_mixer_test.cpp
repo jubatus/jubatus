@@ -164,7 +164,8 @@ typedef core::framework::linear_mixable_helper<my_string, string> mixable_string
 
 TEST(linear_mixer, mix_order) {
   shared_ptr<linear_communication_stub> com(new linear_communication_stub);
-  linear_mixer m(com, 1, 1);
+  jubatus::util::concurrent::rw_mutex mutex;
+  linear_mixer m(com, mutex, 1, 1);
 
   jubatus::util::lang::shared_ptr<core::framework::mixable_holder> holder(
       new core::framework::mixable_holder());
@@ -182,7 +183,8 @@ TEST(linear_mixer, mix_order) {
 
 TEST(linear_mixer, destruct_running_mixer) {
   shared_ptr<linear_communication_stub> com(new linear_communication_stub);
-  linear_mixer m(com, 1, 1);
+  jubatus::util::concurrent::rw_mutex mutex;
+  linear_mixer m(com, mutex, 1, 1);
 
   jubatus::util::lang::shared_ptr<core::framework::mixable_holder> holder(
       new core::framework::mixable_holder());
