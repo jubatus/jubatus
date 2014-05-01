@@ -275,9 +275,11 @@ linear_communication::create(
 
 linear_mixer::linear_mixer(
     jubatus::util::lang::shared_ptr<linear_communication> communication,
+    jubatus::util::concurrent::rw_mutex& mutex,
     unsigned int count_threshold,
     unsigned int tick_threshold)
     : communication_(communication),
+      model_mutex_(mutex),
       count_threshold_(count_threshold),
       tick_threshold_(tick_threshold),
       counter_(0),
@@ -566,7 +568,7 @@ void linear_mixer::mix() {
 
 
 byte_buffer linear_mixer::get_diff(int a) {
-  scoped_rlock lk_read(mixable_holder_->rw_mutex());
+  scoped_rlock lk_read(model_mutex_);
   scoped_lock lk(m_);
 
   core::framework::linear_mixable* mixable =
@@ -585,7 +587,7 @@ byte_buffer linear_mixer::get_diff(int a) {
 }
 
 byte_buffer linear_mixer::get_model(int a) const {
-  scoped_rlock lk_read(mixable_holder_->rw_mutex());
+  scoped_rlock lk_read(model_mutex_);
   msgpack::sbuffer packed;
   msgpack::packer<msgpack::sbuffer> pk(packed);
   driver_->pack(pk);
@@ -609,13 +611,13 @@ void linear_mixer::update_model() {
   msgpack::unpacked unpacked;
   msgpack::unpack(&unpacked, model_serialized.ptr(), model_serialized.size());
   {
-    scoped_wlock lk_write(mixable_holder_->rw_mutex());
+    scoped_wlock lk_write(model_mutex_);
     driver_->unpack(unpacked.get());
   }
 }
 
 int linear_mixer::put_diff(const byte_buffer& diff) {
-  scoped_wlock lk_write(mixable_holder_->rw_mutex());
+  scoped_wlock lk_write(model_mutex_);
   scoped_lock lk(m_);
 
   msgpack::unpacked msg;

@@ -77,6 +77,7 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
  public:
   push_mixer(
       jubatus::util::lang::shared_ptr<push_communication> communication,
+      jubatus::util::concurrent::rw_mutex& mutex,
       unsigned int count_threshold, unsigned int tick_threshold,
       const std::pair<std::string, int>& my_id);
   ~push_mixer();
@@ -121,6 +122,7 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
 
   jubatus::util::concurrent::thread t_;
   mutable jubatus::util::concurrent::mutex m_;
+  jubatus::util::concurrent::rw_mutex& model_mutex_;
   jubatus::util::concurrent::condition c_;
   jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder>
   mixable_holder_;

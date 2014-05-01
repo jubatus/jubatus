@@ -69,7 +69,7 @@ class server_base {
   }
 
   jubatus::util::concurrent::rw_mutex& rw_mutex() {
-    return get_mixable_holder()->rw_mutex();
+    return rw_mutex_;
   }
 
   const server_argv& argv() const {
@@ -99,6 +99,7 @@ class server_base {
   std::string last_saved_path_;
   clock_time last_loaded_;
   std::string last_loaded_path_;
+  jubatus::util::concurrent::rw_mutex rw_mutex_;
 };
 
 }  // namespace framework

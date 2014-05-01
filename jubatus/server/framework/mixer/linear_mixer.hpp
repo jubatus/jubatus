@@ -73,6 +73,7 @@ class linear_mixer : public mixer {
  public:
   linear_mixer(
       jubatus::util::lang::shared_ptr<linear_communication> communicaiton,
+      jubatus::util::concurrent::rw_mutex& mutex,
       unsigned int count_threshold,
       unsigned int tick_threshold);
   ~linear_mixer();
@@ -116,6 +117,7 @@ class linear_mixer : public mixer {
 
   jubatus::util::concurrent::thread t_;
   mutable jubatus::util::concurrent::mutex m_;
+  jubatus::util::concurrent::rw_mutex& model_mutex_;
   jubatus::util::concurrent::condition c_;
 
   jubatus::util::lang::shared_ptr<core::framework::mixable_holder>

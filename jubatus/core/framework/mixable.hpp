@@ -22,7 +22,6 @@
 #include <vector>
 
 #include <msgpack.hpp>
-#include "jubatus/util/concurrent/rwmutex.h"
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../common/version.hpp"
@@ -55,12 +54,7 @@ class mixable_holder {
     mixables_.push_back(m);
   }
 
-  jubatus::util::concurrent::rw_mutex& rw_mutex() __attribute__ ((deprecated)) {
-    return rw_mutex_;
-  }
-
   std::vector<storage::version> get_versions() {
-    jubatus::util::concurrent::scoped_rlock lk_read(rw_mutex_);
     std::vector<storage::version> ret;
     for (size_t i = 0; i < mixables_.size(); ++i) {
       ret.push_back(mixables_[i]->get_version());
@@ -69,7 +63,6 @@ class mixable_holder {
   }
 
  protected:
-  jubatus::util::concurrent::rw_mutex rw_mutex_;
   std::vector<jubatus::util::lang::shared_ptr<mixable> > mixables_;
 };
 

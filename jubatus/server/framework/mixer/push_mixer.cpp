@@ -32,6 +32,8 @@ using std::pair;
 using std::string;
 using std::vector;
 using jubatus::util::concurrent::scoped_lock;
+using jubatus::util::concurrent::scoped_rlock;
+using jubatus::util::concurrent::scoped_wlock;
 using jubatus::util::lang::bind;
 using jubatus::util::lang::shared_ptr;
 using jubatus::util::system::time::clock_time;
@@ -162,10 +164,12 @@ jubatus::util::lang::shared_ptr<push_communication> push_communication::create(
 
 push_mixer::push_mixer(
     shared_ptr<push_communication> communication,
+    jubatus::util::concurrent::rw_mutex& mutex,
     unsigned int count_threshold,
     unsigned int tick_threshold,
     const std::pair<std::string, int>& my_id)
     : communication_(communication),
+      model_mutex_(mutex),
       count_threshold_(count_threshold),
       tick_threshold_(tick_threshold),
       my_id_(my_id),
@@ -348,7 +352,7 @@ byte_buffer push_mixer::pull(const msgpack::object& arg_obj) {
   msgpack::unpack(&msg, arg_obj.via.raw.ptr, arg_obj.via.raw.size);
   msgpack::object arg = msg.get();
 
-  scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
+  scoped_rlock lk_read(model_mutex_);
   scoped_lock lk(m_);
 
   core::framework::push_mixable* mixable =
@@ -365,7 +369,7 @@ byte_buffer push_mixer::pull(const msgpack::object& arg_obj) {
 }
 
 byte_buffer push_mixer::get_pull_argument(int dummy_arg) {
-  scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
+  scoped_rlock lk_read(model_mutex_);
   scoped_lock lk(m_);
 
   core::framework::push_mixable* mixable =
@@ -390,7 +394,7 @@ int push_mixer::push(const msgpack::object& diff_obj) {
   msgpack::unpack(&msg, diff_obj.via.raw.ptr, diff_obj.via.raw.size);
   msgpack::object diff = msg.get();
 
-  scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
+  scoped_wlock lk_write(model_mutex_);
   scoped_lock lk(m_);
   core::framework::push_mixable* mixable =
     dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());

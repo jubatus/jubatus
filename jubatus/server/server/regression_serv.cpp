@@ -71,7 +71,7 @@ regression_serv::regression_serv(
     const framework::server_argv& a,
     const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk)) {
+      mixer_(create_mixer(a, zk, rw_mutex())) {
 }
 
 regression_serv::~regression_serv() {

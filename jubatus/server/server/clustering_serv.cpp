@@ -31,6 +31,7 @@
 
 using jubatus::util::lang::lexical_cast;
 using jubatus::util::lang::shared_ptr;
+using jubatus::server::framework::mixer::create_mixer;
 
 namespace jubatus {
 namespace server {
@@ -53,7 +54,7 @@ clustering_serv::clustering_serv(
     const framework::server_argv& a,
     const shared_ptr<common::lock_service>& zk)
     : server_base(a),
-      mixer_(framework::mixer::create_mixer(a, zk)) {
+      mixer_(create_mixer(a, zk, rw_mutex())) {
 }
 
 clustering_serv::~clustering_serv() {
