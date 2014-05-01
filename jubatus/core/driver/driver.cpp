@@ -65,7 +65,7 @@ int count_mixable(const vector<mixable*>& mixables) {
 set<string> driver_base::mixable_holder::mixables() const {
   set<string> s;
 
-  if (mixables_.size() > 0) {
+  if (count_mixable<linear_mixable>(mixables_) > 0) {
     s.insert("linear_mixable");
   }
 
