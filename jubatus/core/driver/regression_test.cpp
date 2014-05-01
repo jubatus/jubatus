@@ -131,10 +131,17 @@ TEST_F(regression_test, small) {
   pair<float, datum> data(10, d);
   regression_->train(data);
 
-  std::string save_data;
+  // save
+  msgpack::sbuffer save_data;
+  msgpack::packer<msgpack::sbuffer> save_pk(save_data);
+  regression_->pack(save_pk);
 
-  save_model(regression_->get_mixable_holder(), save_data);
-  load_model(regression_->get_mixable_holder(), save_data);
+  regression_->clear();
+
+  // load
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, save_data.data(), save_data.size());
+  regression_->unpack(msg.get());
 
   cout << "estimate" << endl;
   float res = regression_->estimate(d);
