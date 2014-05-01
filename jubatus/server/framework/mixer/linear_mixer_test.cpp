@@ -158,10 +158,12 @@ TEST(linear_mixer, mix_order) {
 
   jubatus::util::lang::shared_ptr<core::framework::mixable_holder> holder(
       new core::framework::mixable_holder());
-  m.set_mixable_holder(holder);
 
   jubatus::util::lang::shared_ptr<mixable_string> s(new mixable_string);
+  s->set_model(s);  // TODO(kumagi): why does mixable needs model externally?
   holder->register_mixable(s);
+
+  m.set_mixable_holder(holder);
 
   m.mix();
 
@@ -176,13 +178,14 @@ TEST(linear_mixer, destruct_running_mixer) {
 
   jubatus::util::lang::shared_ptr<core::framework::mixable_holder> holder(
       new core::framework::mixable_holder());
-  m.set_mixable_holder(holder);
 
   jubatus::util::lang::shared_ptr<mixable_string> s(new mixable_string);
+  s->set_model(s);  // TODO(kumagi): why does mixable needs model externally?
   holder->register_mixable(s);
 
-  m.start();
+  m.set_mixable_holder(holder);
 
+  m.start();
   // destruct without calling m.stop()
 }
 
