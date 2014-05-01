@@ -169,7 +169,7 @@ TEST_P(nearest_neighbor_test, save_load) {
   // save to a buffer
   msgpack::sbuffer sbuf;
   msgpack::packer<msgpack::sbuffer> packer(sbuf);
-  nearest_neighbor_->get_mixable_holder()->pack(packer);
+  nearest_neighbor_->pack(packer);
 
   // restart the driver
   TearDown();
@@ -178,7 +178,7 @@ TEST_P(nearest_neighbor_test, save_load) {
   // unpack the buffer
   msgpack::unpacked unpacked;
   msgpack::unpack(&unpacked, sbuf.data(), sbuf.size());
-  nearest_neighbor_->get_mixable_holder()->unpack(unpacked.get());
+  nearest_neighbor_->unpack(unpacked.get());
 
   vector<pair<string, float> > res
       = nearest_neighbor_->similar_row("1", 1);
