@@ -19,6 +19,7 @@
 
 #include "../framework/model.hpp"
 #include "../framework/linear_mixable.hpp"
+#include "../framework/push_mixable.hpp"
 
 namespace jubatus {
 namespace core {
@@ -38,7 +39,8 @@ class driver_base {
  protected:
   void register_mixable(framework::mixable* mixable);
 
-  class mixable_holder : public virtual framework::linear_mixable {
+  class mixable_holder : public framework::linear_mixable,
+    public framework::push_mixable {
    public:
     // TODO: inherit push pull mixable
     std::set<std::string> mixables() const;
@@ -50,6 +52,11 @@ class driver_base {
     void get_diff(framework::packer&) const;
     bool put_diff(const framework::diff_object& obj);
 
+    // push_mixable
+    void get_argument(framework::packer&) const;
+    void pull(const msgpack::object& arg, framework::packer&) const;
+    void push(const msgpack::object&);
+    //storage::version get_version();
 
     // TODO: implement get_versions() interface
    private:

@@ -104,9 +104,9 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
   void mixer_loop();
   void mix();
 
-  core::common::byte_buffer pull(const std::vector<msgpack::object>& arg);
+  core::common::byte_buffer pull(const msgpack::object& arg);
   core::common::byte_buffer get_pull_argument(int dummy_arg);
-  int push(const std::vector<msgpack::object>& diff);
+  int push(const msgpack::object& diff);
 
   jubatus::util::lang::shared_ptr<push_communication> communication_;
   unsigned int count_threshold_;

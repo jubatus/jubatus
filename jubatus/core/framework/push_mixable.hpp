@@ -34,7 +34,7 @@ class push_mixable : public virtual mixable {
   virtual void get_argument(packer&) const = 0;
   virtual void pull(const msgpack::object& arg, packer&) const = 0;
   virtual void push(const msgpack::object&) = 0;
-  virtual storage::version get_version() const = 0;
+  //virtual storage::version get_version() const = 0;
 };
 
 }  // namespace framework

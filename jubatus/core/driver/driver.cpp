@@ -26,6 +26,7 @@ using jubatus::core::framework::diff_object_raw;
 using jubatus::core::framework::mixable;
 using jubatus::core::framework::packer;
 using jubatus::core::framework::linear_mixable;
+using jubatus::core::framework::push_mixable;
 
 namespace jubatus {
 namespace core {
@@ -67,6 +68,10 @@ set<string> driver_base::mixable_holder::mixables() const {
 
   if (count_mixable<linear_mixable>(mixables_) > 0) {
     s.insert("linear_mixable");
+  }
+
+  if (count_mixable<push_mixable>(mixables_) > 0) {
+    s.insert("push_mixable");
   }
 
   return s;
@@ -151,6 +156,48 @@ bool driver_base::mixable_holder::put_diff(const diff_object& obj) {
   }
 
   return success;
+}
+
+void driver_base::mixable_holder::get_argument(packer& pk) const {
+  pk.pack_array(count_mixable<push_mixable>(mixables_));
+  for (size_t i = 0; i < mixables_.size(); i++) {
+    const push_mixable* mixable = dynamic_cast<const push_mixable*>(mixables_[i]);
+    if (!mixable) {
+      continue;
+    }
+    mixable->get_argument(pk);
+  }
+}
+
+void driver_base::mixable_holder::pull(const msgpack::object& arg, packer& pk) const {
+  if (arg.type != msgpack::type::ARRAY || arg.via.array.size != count_mixable<push_mixable>(mixables_)) {
+    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("pull array failed"));
+  }
+
+  pk.pack_array(count_mixable<push_mixable>(mixables_));
+  for (size_t i = 0, obj_index = 0; i < mixables_.size(); i++) {
+    const push_mixable* mixable = dynamic_cast<const push_mixable*>(mixables_[i]);
+    if (!mixable) {
+      continue;
+    }
+    mixable->pull(arg.via.array.ptr[obj_index], pk);
+    obj_index++;
+  }
+}
+
+void driver_base::mixable_holder::push(const msgpack::object& o) {
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != count_mixable<push_mixable>(mixables_)) {
+    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("push failed"));
+  }
+
+  for (size_t i = 0, obj_index = 0; i < mixables_.size(); i++) {
+    push_mixable* mixable = dynamic_cast<push_mixable*>(mixables_[i]);
+    if (!mixable) {
+      continue;
+    }
+    mixable->push(o.via.array.ptr[obj_index]);
+    obj_index++;
+  }
 }
 
 void driver_base::register_mixable(framework::mixable* mixable) {
