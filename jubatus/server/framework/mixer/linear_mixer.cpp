@@ -464,9 +464,8 @@ void linear_mixer::mix() {
       size_t diffs = 0;
       core::framework::diff_object diff;
       {
-        // get_diff() -> diffs
+        // get_diff() and mix() each diffs
         communication_->get_diff(diff_result);
-        //msgs.resize(diff_result.response.size());
 
         // convert from rpc_result_object to vector<vector<bite_buffer> >
         typedef pair<string, uint16_t> server;
