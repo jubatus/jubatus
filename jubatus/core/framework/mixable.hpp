@@ -93,60 +93,6 @@ class mixable_holder {
     return ret;
   }
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const __attribute__ ((deprecated)) {
-    packer.pack_array(mixables_.size());
-    for (size_t i = 0; i < mixables_.size(); ++i) {
-      // TODO(suma): extract model function from mixable0
-      model* m = dynamic_cast<model*>(mixables_[i].get());
-      if (m) {
-        m->pack(packer);
-      } else if (mixable0* m = dynamic_cast<mixable0*>(mixables_[i].get())) {
-        // TODO: unify model to pack/unpack
-        m->pack(packer);
-      }
-    }
-  }
-
-  void unpack(msgpack::object o) __attribute__ ((deprecated)) {
-    if (o.type != msgpack::type::ARRAY ||
-        o.via.array.size != mixables_.size()) {
-      throw msgpack::type_error();
-    }
-
-    for (size_t i = 0; i < mixables_.size(); ++i) {
-      // TODO(suma): extract model function from mixable0
-      model* m = dynamic_cast<model*>(mixables_[i].get());
-      if (m) {
-        m->clear();
-      }
-    }
-
-    msgpack::object* p = o.via.array.ptr;
-    for (size_t i = 0; i < mixables_.size(); ++i) {
-      // TODO(suma): extract model function from mixable0
-      model* m = dynamic_cast<model*>(mixables_[i].get());
-      if (m) {
-        m->unpack(p[i]);
-      } else if (mixable0* m = dynamic_cast<mixable0*>(mixables_[i].get())) {
-        // TODO: unify model to pack/unpack
-        m->unpack(p[i]);
-      }
-    }
-  }
-
-  // for linear_mixable implemented in mixable.cpp
-  void mix(const std::vector<msgpack::object>& objs, packer& pk);
-
-  void get_diff(packer& pk) const {
-    pk.pack_array(mixables_.size());
-    for (size_t i = 0; i < mixables_.size(); ++i) {
-      linear_mixable* mixable = dynamic_cast<linear_mixable*>(mixables_[i].get());
-      if (mixable) {
-        mixable->get_diff(pk);
-      }
-    }
-  }
-
  protected:
   jubatus::util::concurrent::rw_mutex rw_mutex_;
   std::vector<jubatus::util::lang::shared_ptr<mixable> > mixables_;

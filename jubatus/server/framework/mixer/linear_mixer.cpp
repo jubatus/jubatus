@@ -454,21 +454,19 @@ void linear_mixer::mix() {
     return;
   } else {
     try {
-      core::framework::mixable_holder::mixable_list mm =
-          mixable_holder_->get_mixables();
-
-      vector<linear_mixable*> mixables;
-      for (size_t i = 0; i < mm.size(); i++) {
-        linear_mixable* mixable = dynamic_cast<linear_mixable*>(mm[i].get());
-        if (mixable) {
-          mixables.push_back(mixable);
-        }
+      core::framework::linear_mixable* mixable =
+        dynamic_cast<core::framework::linear_mixable*>(driver_->get_mixable());
+      if (!mixable) {
+        throw JUBATUS_EXCEPTION(core::common::config_not_set());  // nothing to mix
       }
 
       common::mprpc::rpc_result_object diff_result;
-      vector<msgpack::object> diffs;
-      {  // get_diff() -> diffs
+      size_t diffs = 0;
+      core::framework::diff_object diff;
+      {
+        // get_diff() -> diffs
         communication_->get_diff(diff_result);
+        //msgs.resize(diff_result.response.size());
 
         // convert from rpc_result_object to vector<vector<bite_buffer> >
         typedef pair<string, uint16_t> server;
@@ -483,7 +481,24 @@ void linear_mixer::mix() {
                          << " : " << error_text;
             continue;
           }
-          diffs.push_back(diff_result.response[i].as<msgpack::object>());
+
+          msgpack::object res = diff_result.response[i]();
+          if (res.type != msgpack::type::RAW) {
+            LOG(WARNING) << "bad object: " << res;
+            continue;
+          }
+
+          msgpack::unpacked msg;
+          msgpack::unpack(&msg, res.via.raw.ptr, res.via.raw.size);
+          msgpack::object o = msg.get();
+
+          diffs++;
+          if (!diff) {
+            diff = mixable->convert_diff_object(o);
+          } else {
+            mixable->mix(o, diff);
+          }
+
           successes.push_back(
               make_pair(diff_result.error[i].host(), diff_result.error[i].port()));
         }
@@ -494,23 +509,23 @@ void linear_mixer::mix() {
         }
       }
 
-      if (diffs.empty()) {
+      if (diffs == 0) {
         throw JUBATUS_EXCEPTION(
             core::common::exception::runtime_error("no diff available"));
       }
 
-      {  // diffs -(mix)-> mixed
+      { // put mixed data
+
+        // convert diff_object to binary
         msgpack::sbuffer sbuf;
         stream_writer<msgpack::sbuffer> st(sbuf);
         core::framework::msgpack_packer mp(st);
         packer pk(mp);
+        diff->convert_binary(pk);
 
-        // TODO:
-        mixable_holder_->mix(diffs, pk);
         byte_buffer mixed(sbuf.data(), sbuf.size());
 
         // do put_diff
-
         common::mprpc::rpc_result_object result;
         communication_->put_diff(mixed, result);
 
@@ -555,9 +570,9 @@ byte_buffer linear_mixer::get_diff(int a) {
   scoped_rlock lk_read(mixable_holder_->rw_mutex());
   scoped_lock lk(m_);
 
-  core::framework::mixable_holder::mixable_list mixables =
-      mixable_holder_->get_mixables();
-  if (mixables.empty()) {
+  core::framework::linear_mixable* mixable =
+    dynamic_cast<core::framework::linear_mixable*>(driver_->get_mixable());
+  if (!mixable) {
     throw JUBATUS_EXCEPTION(core::common::config_not_set());  // nothing to mix
   }
 
@@ -565,7 +580,7 @@ byte_buffer linear_mixer::get_diff(int a) {
   stream_writer<msgpack::sbuffer> st(sbuf);
   core::framework::msgpack_packer mp(st);
   packer pk(mp);
-  mixable_holder_->get_diff(pk);
+  mixable->get_diff(pk);
   byte_buffer bytes(sbuf.data(), sbuf.size());
   return bytes;
 }
@@ -574,7 +589,7 @@ byte_buffer linear_mixer::get_model(int a) const {
   scoped_rlock lk_read(mixable_holder_->rw_mutex());
   msgpack::sbuffer packed;
   msgpack::packer<msgpack::sbuffer> pk(packed);
-  mixable_holder_->pack(pk);
+  driver_->pack(pk);
 
   LOG(INFO) << "sending learning-model. size = "
             << jubatus::util::lang::lexical_cast<string>(packed.size());
@@ -596,7 +611,7 @@ void linear_mixer::update_model() {
   msgpack::unpack(&unpacked, model_serialized.ptr(), model_serialized.size());
   {
     scoped_wlock lk_write(mixable_holder_->rw_mutex());
-    mixable_holder_->unpack(unpacked.get());
+    driver_->unpack(unpacked.get());
   }
 }
 
@@ -606,27 +621,15 @@ int linear_mixer::put_diff(const byte_buffer& diff) {
 
   msgpack::unpacked msg;
   msgpack::unpack(&msg, diff.ptr(), diff.size());
-  vector<msgpack::object> unpacked;
-  msg.get().convert(&unpacked);
 
-  core::framework::mixable_holder::mixable_list mixables =
-      mixable_holder_->get_mixables();
-  if (unpacked.size() != mixables.size()) {
-    // deserialization error
-    return -1;
+  core::framework::linear_mixable* mixable =
+    dynamic_cast<core::framework::linear_mixable*>(driver_->get_mixable());
+  if (!mixable) {
+    throw JUBATUS_EXCEPTION(core::common::config_not_set());  // nothing to mix
   }
 
   size_t total_size = 0;
-  bool not_obsolete = true;
-  for (size_t i = 0; i < mixables.size(); ++i) {
-    // put_diff() returns true if put_diff succeeded
-    linear_mixable* m = dynamic_cast<linear_mixable*>(mixables[i].get());
-    if (!m) {
-      continue;
-    }
-    not_obsolete = m->put_diff(m->convert_diff_object(unpacked[i])) && not_obsolete;
-    //TODO(suma): total_size += unpacked[i].size();
-  }
+  const bool not_obsolete = mixable->put_diff(mixable->convert_diff_object(msg.get()));
 
   // print versions of mixables
   const string versions = version_list(mixable_holder_->get_versions());

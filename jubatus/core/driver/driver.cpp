@@ -48,8 +48,16 @@ struct internal_diff_object : diff_object_raw {
   vector<diff_object> diffs_;
 };
 
-int is_linear_mixable(int i, mixable* m) {
-  return i + (dynamic_cast<linear_mixable*>(m) ? 1 : 0);
+template <class T>
+int count_mixable(const vector<mixable*>& mixables) {
+  int count = 0;
+  for (int i = 0; i < mixables.size(); i++) {
+    if (dynamic_cast<T*>(mixables[i])) {
+      count++;
+    }
+  }
+
+  return count;
 }
 
 }
@@ -57,7 +65,7 @@ int is_linear_mixable(int i, mixable* m) {
 set<string> driver_base::mixable_holder::mixables() const {
   set<string> s;
 
-  if (mixables_.size() == std::accumulate(mixables_.begin(), mixables_.end(), 0, is_linear_mixable)) {
+  if (mixables_.size() > 0) {
     s.insert("linear_mixable");
   }
 
@@ -71,7 +79,8 @@ void driver_base::mixable_holder::register_mixable(mixable* mixable) {
 }
 
 diff_object driver_base::mixable_holder::convert_diff_object(const msgpack::object& o) const {
-  if (o.type != msgpack::type::ARRAY || o.via.array.size != mixables_.size()) {
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != count_mixable<linear_mixable>(mixables_)) {
+    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("conversion failed"));
     throw msgpack::type_error();
   }
 
@@ -79,7 +88,7 @@ diff_object driver_base::mixable_holder::convert_diff_object(const msgpack::obje
   for (size_t i = 0; i < mixables_.size(); i++) {
     const linear_mixable* mixable = dynamic_cast<const linear_mixable*>(mixables_[i]);
     if (!mixable) {
-      throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("does not support linear_mixable"));
+      continue;
     }
     diffs.push_back(mixable->convert_diff_object(o.via.array.ptr[i]));
   }
@@ -88,7 +97,8 @@ diff_object driver_base::mixable_holder::convert_diff_object(const msgpack::obje
 }
 
 void driver_base::mixable_holder::mix(const msgpack::object& o, diff_object ptr) const {
-  if (o.type != msgpack::type::ARRAY || o.via.array.size != mixables_.size()) {
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != count_mixable<linear_mixable>(mixables_)) {
+    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("mix failed"));
     throw msgpack::type_error();
   }
 
@@ -104,17 +114,18 @@ void driver_base::mixable_holder::mix(const msgpack::object& o, diff_object ptr)
   for (size_t i = 0; i < mixables_.size(); i++) {
     const linear_mixable* mixable = dynamic_cast<const linear_mixable*>(mixables_[i]);
     if (!mixable) {
-      throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("does not support linear_mixable"));
+      continue;
     }
     mixable->mix(o.via.array.ptr[i], diff_obj->diffs_[i]);
   }
 }
 
 void driver_base::mixable_holder::get_diff(packer& pk) const {
+  pk.pack_array(count_mixable<linear_mixable>(mixables_));
   for (size_t i = 0; i < mixables_.size(); i++) {
     const linear_mixable* mixable = dynamic_cast<const linear_mixable*>(mixables_[i]);
     if (!mixable) {
-      throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("does not support linear_mixable"));
+      continue;
     }
     mixable->get_diff(pk);
   }
@@ -126,7 +137,7 @@ bool driver_base::mixable_holder::put_diff(const diff_object& obj) {
     throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("bad diff_object"));
   }
 
-  if (mixables_.size() != diff_obj->diffs_.size()) {
+  if (count_mixable<linear_mixable>(mixables_) != diff_obj->diffs_.size()) {
     throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("diff size is wrong"));
   }
 
@@ -134,7 +145,7 @@ bool driver_base::mixable_holder::put_diff(const diff_object& obj) {
   for (size_t i = 0; i < mixables_.size(); i++) {
     linear_mixable* mixable = dynamic_cast<linear_mixable*>(mixables_[i]);
     if (!mixable) {
-      throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("does not support linear_mixable"));
+      continue;
     }
     success = mixable->put_diff(diff_obj->diffs_[i]) && success;
   }

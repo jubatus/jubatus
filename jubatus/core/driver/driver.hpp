@@ -49,6 +49,9 @@ class driver_base {
     void mix(const msgpack::object& obj, framework::diff_object) const;
     void get_diff(framework::packer&) const;
     bool put_diff(const framework::diff_object& obj);
+
+
+    // TODO: implement get_versions() interface
    private:
     std::vector<mixable*> mixables_;
   };
