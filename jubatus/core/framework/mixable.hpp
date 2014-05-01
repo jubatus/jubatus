@@ -50,7 +50,7 @@ class mixable_holder {
   virtual ~mixable_holder() {
   }
 
-  void register_mixable(jubatus::util::lang::shared_ptr<mixable> m) {
+  void register_mixable(jubatus::util::lang::shared_ptr<mixable> m) __attribute__ ((deprecated)) {
     mixables_.push_back(m);
   }
 
