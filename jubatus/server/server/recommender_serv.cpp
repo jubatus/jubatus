@@ -113,6 +113,7 @@ void recommender_serv::set_config(const std::string &config) {
               conf.method, param, my_id),
           core::fv_converter::make_fv_converter(conf.converter)));
   mixer_->set_mixable_holder(recommender_->get_mixable_holder());
+  mixer_->set_driver(recommender_.get());
 
   LOG(INFO) << "config loaded: " << config;
 }

@@ -96,6 +96,7 @@ void clustering_serv::set_config(const std::string& config) {
                                 cluster_conf)),
                         converter));
   mixer_->set_mixable_holder(clustering_->get_mixable_holder());
+  mixer_->set_driver(clustering_.get());
 
   LOG(INFO) << "config loaded: " << config;
 }

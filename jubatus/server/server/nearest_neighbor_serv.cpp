@@ -105,6 +105,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
           conf.method, param, table, my_id));
   nearest_neighbor_.reset(new core::driver::nearest_neighbor(nn, converter));
   mixer_->set_mixable_holder(nearest_neighbor_->get_mixable_holder());
+  mixer_->set_driver(nearest_neighbor_.get());
 }
 
 std::string nearest_neighbor_serv::get_config() const {

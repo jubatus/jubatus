@@ -110,6 +110,7 @@ void classifier_serv::set_config(const string& config) {
           conf.method, param, model),
         core::fv_converter::make_fv_converter(conf.converter)));
   mixer_->set_mixable_holder(classifier_->get_mixable_holder());
+  mixer_->set_driver(classifier_.get());
 
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...

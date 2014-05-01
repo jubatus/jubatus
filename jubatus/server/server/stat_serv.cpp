@@ -72,6 +72,7 @@ void stat_serv::set_config(const string& config) {
   stat_.reset(
       new core::driver::stat(new core::stat::stat(conf.window_size)));
   mixer_->set_mixable_holder(stat_->get_mixable_holder());
+  mixer_->set_driver(stat_.get());
 
   LOG(INFO) << "config loaded: " << config;
 }
