@@ -76,10 +76,6 @@ class mixable_holder {
     mixables_.push_back(m);
   }
 
-  mixable_list get_mixables() const __attribute__ ((deprecated)) {
-    return mixables_;
-  }
-
   jubatus::util::concurrent::rw_mutex& rw_mutex() __attribute__ ((deprecated)) {
     return rw_mutex_;
   }
