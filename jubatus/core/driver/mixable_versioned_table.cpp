@@ -21,6 +21,7 @@
 #include <vector>
 #include <memory>
 #include "../../core/common/exception.hpp"
+#include "../../core/common/byte_buffer.hpp"
 #include "../../core/framework/packer.hpp"
 #include "../../core/framework/stream_writer.hpp"
 

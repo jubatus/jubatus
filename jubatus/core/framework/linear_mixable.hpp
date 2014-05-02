@@ -19,7 +19,7 @@
 #include <msgpack.hpp>
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../common/exception.hpp"
-#include "new_mixable.hpp"
+#include "mixable.hpp"
 #include "packer.hpp"
 
 namespace jubatus {

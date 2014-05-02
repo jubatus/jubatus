@@ -24,7 +24,6 @@
 
 using std::string;
 using std::stringstream;
-using jubatus::core::common::byte_buffer;
 
 namespace jubatus {
 namespace core {

@@ -21,7 +21,8 @@
 #include <string>
 #include <vector>
 #include "../../core/common/version.hpp"
-#include "../../core/framework/mixable.hpp"
+#include "../../core/framework/push_mixable.hpp"
+#include "../../core/framework/linear_mixable.hpp"
 #include "../../core/table/column/column_table.hpp"
 
 namespace jubatus {

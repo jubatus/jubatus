@@ -21,7 +21,6 @@ def build(bld):
       'mixable.hpp',
       'mixable_helper.hpp',
       'model.hpp',
-      'new_mixable.hpp',
       'packer.hpp',
       'push_mixable.hpp',
       ]

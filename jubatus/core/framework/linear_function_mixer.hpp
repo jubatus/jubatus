@@ -17,9 +17,12 @@
 #ifndef JUBATUS_CORE_FRAMEWORK_LINEAR_FUNCTION_MIXER_HPP_
 #define JUBATUS_CORE_FRAMEWORK_LINEAR_FUNCTION_MIXER_HPP_
 
-#include "mixable.hpp"
+#include "jubatus/util/lang/shared_ptr.h"
+
+#include "../common/exception.hpp"
 #include "../storage/storage_base.hpp"
 
+#include "linear_mixable.hpp"
 #include "diffv.hpp"
 
 namespace jubatus {

@@ -17,43 +17,26 @@
 #ifndef JUBATUS_CORE_FRAMEWORK_MIXABLE_HPP_
 #define JUBATUS_CORE_FRAMEWORK_MIXABLE_HPP_
 
-#include <iostream>
+#include <set>
 #include <string>
-#include <vector>
 
-#include <msgpack.hpp>
-#include "jubatus/util/concurrent/lock.h"
-#include "jubatus/util/lang/shared_ptr.h"
 #include "../common/version.hpp"
-#include "../common/exception.hpp"
-#include "../common/byte_buffer.hpp"
-#include "../common/assert.hpp"
-
-// TODO(suma): Rename new_mixable.hpp to mixable.hpp when
-#include "linear_mixable.hpp"
-#include "push_mixable.hpp"
-#include "new_mixable.hpp"
-#include "model.hpp"
 
 namespace jubatus {
 namespace core {
 namespace framework {
 
-// TODO(suma): separate other header
-class mixable_holder {
+class mixable {
  public:
-  typedef std::vector<jubatus::util::lang::shared_ptr<mixable> > mixable_list;
+  mixable();
+  mixable(const std::string& name);
+  virtual std::set<std::string> mixables() const;
+  virtual ~mixable();
 
-  mixable_holder() {
-  }
-
-  virtual ~mixable_holder() {
-  }
-
-  void register_mixable(jubatus::util::lang::shared_ptr<mixable> m) __attribute__ ((deprecated)) {
-  }
+  virtual storage::version get_version() const;
+ protected:
+   std::set<std::string> mixables_;
 };
-
 
 }  // namespace framework
 }  // namespace core
