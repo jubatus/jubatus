@@ -48,7 +48,7 @@ class lof : public anomaly_base {
 
   void get_all_row_ids(std::vector<std::string>& ids) const;
   std::string type() const;
-  void register_mixables_to_holder(framework::mixable_holder& holder) const;
+  std::vector<framework::mixable*> get_mixables() const;
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);

@@ -78,8 +78,6 @@ class nearest_neighbor_base {
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
   void unpack(msgpack::object o);
 
-  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
-      const;
   framework::mixable* get_mixable() const;
 
  protected:

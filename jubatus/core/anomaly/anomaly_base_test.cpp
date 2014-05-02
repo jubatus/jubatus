@@ -68,7 +68,8 @@ class anomaly_impl : public anomaly_base {
     return std::string("anomaly_impl");
   }
 
-  void register_mixables_to_holder(framework::mixable_holder&) const {
+  std::vector<framework::mixable*> get_mixables() const {
+    return std::vector<framework::mixable*>();
   }
 
   void pack(msgpack::packer<msgpack::sbuffer>& packer) const {

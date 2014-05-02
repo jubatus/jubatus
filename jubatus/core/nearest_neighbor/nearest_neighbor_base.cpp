@@ -81,13 +81,6 @@ void nearest_neighbor_base::unpack(msgpack::object o) {
   get_table()->unpack(o);
 }
 
-void nearest_neighbor_base::register_mixables_to_holder(
-    framework::mixable_holder& holder) const {
-  if (mixable_table_) {
-    holder.register_mixable(mixable_table_);
-  }
-}
-
 framework::mixable* nearest_neighbor_base::get_mixable() const {
   return mixable_table_.get();
 }

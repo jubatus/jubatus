@@ -67,8 +67,7 @@ class anomaly_base : public framework::model {
 
   virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
   virtual std::string type() const = 0;
-  virtual void register_mixables_to_holder(
-      framework::mixable_holder& holder) const = 0;
+  virtual std::vector<framework::mixable*> get_mixables() const = 0;
 
   uint64_t find_max_int_id() const;
 };

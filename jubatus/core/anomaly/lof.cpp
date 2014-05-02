@@ -119,10 +119,11 @@ string lof::type() const {
   return "lof";
 }
 
-void lof::register_mixables_to_holder(framework::mixable_holder& holder) const {
-  // TODO: this method is deprecated
-  //nn_engine_->register_mixables_to_holder(holder);
-  holder.register_mixable(mixable_storage_);
+std::vector<framework::mixable*> lof::get_mixables() const {
+  std::vector<framework::mixable*> mixables;
+  mixables.push_back(mixable_storage_.get());
+  mixables.push_back(nn_engine_->get_mixable());
+  return mixables;
 }
 
 void lof::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
