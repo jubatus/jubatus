@@ -113,8 +113,6 @@ class datum_to_fv_converter {
   void set_weight_manager(jubatus::util::lang::shared_ptr<weight_manager> wm);
   void clear_weights();
 
-  void register_mixables_to_holder(framework::mixable_holder& holder) const;
-
  private:
   jubatus::util::lang::scoped_ptr<datum_to_fv_converter_impl> pimpl_;
 };
