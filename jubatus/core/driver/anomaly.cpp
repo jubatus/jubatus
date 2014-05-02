@@ -43,7 +43,10 @@ anomaly::anomaly(
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : converter_(converter),
       anomaly_(anomaly_method) {
-  // TODO: register driver_base::mixable_holder
+  vector<framework::mixable*> mixables = anomaly_->get_mixables();
+  for (size_t i = 0; i < mixables.size(); i++) {
+    register_mixable(mixables[i]);
+  }
 }
 
 anomaly::~anomaly() {
