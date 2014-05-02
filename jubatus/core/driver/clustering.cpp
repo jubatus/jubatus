@@ -38,7 +38,7 @@ clustering::clustering(
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : converter_(converter),
       clustering_(clustering_method) {
-  // TODO: register driver_base::mixable_holder (clustering_, converter_)
+  register_mixable(clustering_->get_mixable());
 }
 
 clustering::~clustering() {
