@@ -42,7 +42,10 @@ regression::regression(
     , regression_(regression_method)
     , mixable_regression_model_(regression_method->get_storage())
     , wm_(core::fv_converter::mixable_weight_manager::model_ptr(new weight_manager)) {
-  // TODO: register mixable holder (regresion_, wm_)
+
+  register_mixable(&mixable_regression_model_);
+  register_mixable(&wm_);
+
   converter_->set_weight_manager(wm_.get_model());
 }
 
