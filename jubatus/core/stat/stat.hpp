@@ -84,9 +84,6 @@ class stat : public jubatus::util::lang::enable_shared_from_this<stat> {
   virtual void unpack(msgpack::object o);
   std::string type() const;
 
-  virtual void register_mixables_to_holder(
-      framework::mixable_holder& holder) const;
-
  protected:
   struct stat_val {
     stat_val()

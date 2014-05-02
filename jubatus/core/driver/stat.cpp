@@ -27,8 +27,9 @@ namespace core {
 namespace driver {
 
 stat::stat(jubatus::core::stat::stat* stat_method)
-    : stat_(stat_method) {
-  // TODO: register mixable holder (stat_)
+    : stat_(stat_method),
+      mixable_stat_(stat_) {
+  register_mixable(&mixable_stat_);
 }
 
 stat::~stat() {

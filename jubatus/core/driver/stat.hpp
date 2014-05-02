@@ -52,6 +52,7 @@ class stat : public driver_base {
 
  private:
   jubatus::util::lang::shared_ptr<jubatus::core::stat::stat> stat_;
+  core::stat::mixable_stat mixable_stat_;
 };
 
 }  // namespace driver
