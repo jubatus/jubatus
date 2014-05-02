@@ -32,7 +32,7 @@ class mixable {
   mixable(const std::string& name);
   virtual std::set<std::string> mixables() const;
   virtual ~mixable();
-  // (suma): Can get_version be eliminated?
+
   virtual storage::version get_version() const;
  protected:
    std::set<std::string> mixables_;

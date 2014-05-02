@@ -415,7 +415,7 @@ void linear_mixer::stabilizer_loop() {
 
           // print versions of mixables
           LOG(INFO) << ".... mix done. versions"
-                    << version_list(mixable_holder_->get_versions());
+                    << version_list(driver_->get_versions());
         }
       }
 
@@ -633,7 +633,7 @@ int linear_mixer::put_diff(const byte_buffer& diff) {
   const bool not_obsolete = mixable->put_diff(mixable->convert_diff_object(msg.get()));
 
   // print versions of mixables
-  const string versions = version_list(mixable_holder_->get_versions());
+  const string versions = version_list(driver_->get_versions());
 
   // if all put_diff returns true, this model is not obsolete
   if (not_obsolete) {

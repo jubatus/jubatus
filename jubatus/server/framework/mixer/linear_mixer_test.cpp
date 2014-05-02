@@ -158,6 +158,10 @@ struct my_string {
     ss << "(" << lhs << "+" << mixed << ")";
     mixed = ss.str();
   }
+
+  core::storage::version get_version() const {
+    return core::storage::version();
+  }
 };
 
 typedef core::framework::linear_mixable_helper<my_string, string> mixable_string;

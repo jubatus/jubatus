@@ -54,14 +54,6 @@ class mixable_holder {
     mixables_.push_back(m);
   }
 
-  std::vector<storage::version> get_versions() {
-    std::vector<storage::version> ret;
-    for (size_t i = 0; i < mixables_.size(); ++i) {
-      ret.push_back(mixables_[i]->get_version());
-    }
-    return ret;
-  }
-
  protected:
   std::vector<jubatus::util::lang::shared_ptr<mixable> > mixables_;
 };

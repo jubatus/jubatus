@@ -64,6 +64,10 @@ struct int_model : public model {
     mixed += lhs;
   }
 
+  storage::version get_version() const {
+    return storage::version();
+  }
+
   void add(int n) {
     diff_ += n;
   }
@@ -106,6 +110,10 @@ struct str_model : public model {
 
   void mix(const string& lhs, string& mixed) const {
     mixed += lhs;
+  }
+
+  storage::version get_version() const {
+    return storage::version();
   }
 
   void add(const string& n) {

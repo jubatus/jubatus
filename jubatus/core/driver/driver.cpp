@@ -200,6 +200,18 @@ void driver_base::mixable_holder::push(const msgpack::object& o) {
   }
 }
 
+std::vector<storage::version> driver_base::mixable_holder::get_versions() const {
+  std::vector<storage::version> ret;
+  for (size_t i = 0; i < mixables_.size(); ++i) {
+    ret.push_back(mixables_[i]->get_version());
+  }
+  return ret;
+}
+
+std::vector<storage::version> driver_base::get_versions() const {
+  return holder_.get_versions();
+}
+
 void driver_base::register_mixable(framework::mixable* mixable) {
   holder_.register_mixable(mixable);
 }

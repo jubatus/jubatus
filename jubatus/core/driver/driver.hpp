@@ -31,6 +31,7 @@ class driver_base {
   virtual framework::mixable* get_mixable() {
     return &holder_;
   }
+  std::vector<storage::version> get_versions() const;
 
   virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
   virtual void unpack(msgpack::object o) = 0;
@@ -57,6 +58,8 @@ class driver_base {
     void pull(const msgpack::object& arg, framework::packer&) const;
     void push(const msgpack::object&);
     //storage::version get_version();
+
+    std::vector<storage::version> get_versions() const;
 
     // TODO: implement get_versions() interface
    private:

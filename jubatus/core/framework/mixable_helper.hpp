@@ -101,6 +101,10 @@ class linear_mixable_helper : public linear_mixable {
     return model_->put_diff(diff_obj->diff_);
   }
 
+  storage::version get_version() const {
+    return model_->get_version();
+  }
+
  private:
   struct internal_diff_object : diff_object_raw {
     void convert_binary(packer& pk) const {
