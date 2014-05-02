@@ -88,11 +88,12 @@ void nearest_neighbor::clear() {
 }
 
 void nearest_neighbor::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
-  // TODO: implement
+  nn_->pack(pk);
 }
 
 void nearest_neighbor::unpack(msgpack::object o) {
-  // TODO: implement
+  nn_->clear();
+  nn_->unpack(o);
 }
 
 }  // namespace driver
