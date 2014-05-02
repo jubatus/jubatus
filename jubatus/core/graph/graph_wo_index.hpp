@@ -29,15 +29,14 @@
 
 #include "../common/unordered_map.hpp"
 #include "../framework/mixable_helper.hpp"
-#include "graph_base.hpp"
+#include "graph_type.hpp"
 
 namespace jubatus {
 namespace core {
 namespace graph {
 
 class graph_wo_index
-    : public graph_base,
-      public jubatus::util::lang::enable_shared_from_this<graph_wo_index> {
+    : public jubatus::util::lang::enable_shared_from_this<graph_wo_index> {
  public:
   struct diff_type {
     eigen_vector_query_diff eigen_vector_query;
@@ -119,8 +118,6 @@ class graph_wo_index
   void update_index();
 
   void mix(const diff_type& diff, diff_type& mixed);
-
-  void register_mixables_to_holder(framework::mixable_holder& holder) const;
 
   storage::version get_version() const {
     // TODO(kumagi): it should return correct version of model

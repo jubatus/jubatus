@@ -39,9 +39,10 @@ namespace jubatus {
 namespace core {
 namespace driver {
 
-graph::graph(shared_ptr<jubatus::core::graph::graph_base> graph_method)
-    : graph_(graph_method) {
-  // TODO: register driver_base::mixable_holder (graph_)
+graph::graph(shared_ptr<jubatus::core::graph::graph_wo_index> graph_method)
+    : graph_(graph_method),
+      mixable_(graph_method) {
+  register_mixable(&mixable_);
 }
 
 graph::~graph() {

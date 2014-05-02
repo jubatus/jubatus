@@ -32,11 +32,11 @@ class config;
 
 namespace graph {
 
-class graph_base;
+class graph_wo_index;
 
 class graph_factory {
  public:
-  static jubatus::util::lang::shared_ptr<graph_base> create_graph(
+  static jubatus::util::lang::shared_ptr<graph_wo_index> create_graph(
     const std::string& name,
     const common::jsonconfig::config& param);
 };

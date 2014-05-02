@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 #include "jubatus/util/lang/shared_ptr.h"
-#include "../graph/graph_base.hpp"
+#include "../graph/graph_wo_index.hpp"
 #include "../graph/graph_type.hpp"
 #include "../framework/mixable.hpp"
 #include "driver.hpp"
@@ -33,10 +33,10 @@ namespace driver {
 class graph : public driver_base {
  public:
   explicit graph(
-      jubatus::util::lang::shared_ptr<core::graph::graph_base> graph_method);
+      jubatus::util::lang::shared_ptr<core::graph::graph_wo_index> graph_method);
   virtual ~graph();
 
-  jubatus::core::graph::graph_base* get_model() const {
+  jubatus::core::graph::graph_wo_index* get_model() const {
     return graph_.get();
   }
 
@@ -86,7 +86,8 @@ class graph : public driver_base {
       const jubatus::core::graph::property& p);
 
  private:
-  jubatus::util::lang::shared_ptr<core::graph::graph_base> graph_;
+  jubatus::util::lang::shared_ptr<core::graph::graph_wo_index> graph_;
+  jubatus::core::graph::mixable_graph_wo_index mixable_;
 };
 
 }  // namespace driver

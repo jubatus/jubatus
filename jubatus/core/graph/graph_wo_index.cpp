@@ -708,17 +708,6 @@ void graph_wo_index::mix(
   }
 }
 
-void graph_wo_index::register_mixables_to_holder(
-    framework::mixable_holder& holder) const {
-  // TODO(beam2d): Remove this workaround. It requires separation of model
-  // (storage) from this class.
-  jubatus::util::lang::shared_ptr<mixable_graph_wo_index> mixable(
-      new mixable_graph_wo_index);
-  mixable->set_model(jubatus::util::lang::const_pointer_cast<graph_wo_index>(
-      shared_from_this()));
-  holder.register_mixable(mixable);
-}
-
 void graph_wo_index::remove_by_swap(
     std::vector<edge_id_t>& edges,
     edge_id_t eid) {
