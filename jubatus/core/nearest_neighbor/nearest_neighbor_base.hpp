@@ -49,11 +49,6 @@ class nearest_neighbor_base {
     return mixable_table_->get_model();
   }
 
-  jubatus::util::lang::shared_ptr<driver::mixable_versioned_table>
-    get_mixable_versioned_table() {
-    return mixable_table_;
-  }
-
   virtual std::string type() const = 0;
 
   virtual void clear();
@@ -85,6 +80,7 @@ class nearest_neighbor_base {
 
   virtual void register_mixables_to_holder(framework::mixable_holder& holder)
       const;
+  framework::mixable* get_mixable() const;
 
  protected:
   std::string my_id_;

@@ -88,6 +88,10 @@ void nearest_neighbor_base::register_mixables_to_holder(
   }
 }
 
+framework::mixable* nearest_neighbor_base::get_mixable() const {
+  return mixable_table_.get();
+}
+
 }  // namespace nearest_neighbor
 }  // namespcae core
 }  // namespace jubatus

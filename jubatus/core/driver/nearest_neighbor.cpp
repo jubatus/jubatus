@@ -31,7 +31,7 @@ nearest_neighbor::nearest_neighbor(
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : converter_(converter),
       nn_(nn) {
-  register_mixable(nn_->get_mixable_versioned_table().get());
+  register_mixable(nn_->get_mixable());
   // We cannot register mixables of fv converter, because mixable_weight_manager
   // does not support mixing with push_mixer.
   // TODO(beam2d): Support mixing weight manager with push_mixer and register
