@@ -85,13 +85,6 @@ bool classifier_base::set_label(const string& label) {
   return storage_->set_label(label);
 }
 
-void classifier_base::register_mixables_to_holder(
-    framework::mixable_holder& holder) const {
-//  if (mixable_) {
-//    holder.register_mixable(mixable_);
-//  }
-}
-
 void classifier_base::get_status(std::map<string, string>& status) const {
   storage_->get_status(status);
   status["storage"] = storage_->type();

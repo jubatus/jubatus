@@ -52,9 +52,6 @@ class classifier_base {
 
   virtual std::string name() const = 0;
 
-  virtual void register_mixables_to_holder(framework::mixable_holder& holder)
-      const;
-
   // TODO(beam2d): Think the objective of this function and where it should be
   // defined. Algorithms have |get_status| tentatively to extract status from
   // storages.
