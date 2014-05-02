@@ -41,8 +41,7 @@ namespace driver {
 classifier::classifier(
     shared_ptr<core::classifier::classifier_base> classifier_method,
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    : mixable_holder_(new framework::mixable_holder)
-    , converter_(converter)
+    : converter_(converter)
     , classifier_(classifier_method)
     , mixable_classifier_model_(classifier_method->get_storage())
     , wm_(core::fv_converter::mixable_weight_manager::model_ptr(new weight_manager)) {

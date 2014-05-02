@@ -44,11 +44,6 @@ class regression : public driver_base {
           converter);
   virtual ~regression();
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder>
-  get_mixable_holder() const {
-    return mixable_holder_;
-  }
-
   void train(const std::pair<float, fv_converter::datum>& data);
   float estimate(const fv_converter::datum& data) const;
 
@@ -59,8 +54,6 @@ class regression : public driver_base {
   void unpack(msgpack::object o);
 
  private:
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
-
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
     converter_;
   jubatus::util::lang::shared_ptr<jubatus::core::regression::regression_base>

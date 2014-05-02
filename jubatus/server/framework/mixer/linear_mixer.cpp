@@ -315,11 +315,6 @@ void linear_mixer::register_api(rpc_server_t& server) {
                                 this));
 }
 
-void linear_mixer::set_mixable_holder(
-    jubatus::util::lang::shared_ptr<core::framework::mixable_holder> m) {
-  mixable_holder_ = m;
-}
-
 void linear_mixer::set_driver(core::driver::driver_base* driver) {
   driver_ = driver;
 }

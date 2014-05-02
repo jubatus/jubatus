@@ -41,11 +41,9 @@ namespace driver {
 anomaly::anomaly(
     shared_ptr<jubatus::core::anomaly::anomaly_base> anomaly_method,
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    : mixable_holder_(new framework::mixable_holder),
-      converter_(converter),
+    : converter_(converter),
       anomaly_(anomaly_method) {
-  anomaly_->register_mixables_to_holder(*mixable_holder_);
-  converter_->register_mixables_to_holder(*mixable_holder_);
+  // TODO: register driver_base::mixable_holder
 }
 
 anomaly::~anomaly() {

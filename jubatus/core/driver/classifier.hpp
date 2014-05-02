@@ -45,13 +45,6 @@ class classifier : public driver_base {
           converter);
   virtual ~classifier();
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder>
-
-  // TODO: remove
-  get_mixable_holder() const __attribute__((deprecated)) {
-    return mixable_holder_;
-  }
-
   void train(const std::pair<std::string, fv_converter::datum>& data);
   jubatus::core::classifier::classify_result classify(
       const fv_converter::datum& data) const;
@@ -65,9 +58,6 @@ class classifier : public driver_base {
   bool set_label(const std::string& label);
 
  private:
-  // TODO: remove mixable_holder
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
-
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
     converter_;
   jubatus::util::lang::shared_ptr<classifier_base> classifier_;

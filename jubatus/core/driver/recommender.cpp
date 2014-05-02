@@ -44,11 +44,10 @@ namespace driver {
 recommender::recommender(
     shared_ptr<core::recommender::recommender_base> recommender_method,
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    : mixable_holder_(new framework::mixable_holder),
-      converter_(converter),
+    : converter_(converter),
       recommender_(recommender_method) {
   register_mixable(recommender_->get_mixable());
-  converter_->register_mixables_to_holder(*mixable_holder_);
+  // TODO: register driver_base::mixable_holder (converter_)
 }
 
 recommender::~recommender() {

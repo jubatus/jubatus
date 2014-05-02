@@ -40,11 +40,6 @@ class anomaly : public driver_base {
           converter);
   virtual ~anomaly();
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder>
-  get_mixable_holder() const {
-    return mixable_holder_;
-  }
-
   jubatus::core::anomaly::anomaly_base* get_model() const {
     return anomaly_.get();
   }
@@ -63,8 +58,6 @@ class anomaly : public driver_base {
   uint64_t find_max_int_id() const;
 
  private:
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
-
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
     converter_;
   jubatus::util::lang::shared_ptr<core::anomaly::anomaly_base> anomaly_;

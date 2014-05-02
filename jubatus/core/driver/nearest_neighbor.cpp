@@ -29,11 +29,8 @@ namespace driver {
 nearest_neighbor::nearest_neighbor(
     shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    : mixable_holder_(new framework::mixable_holder),
-      converter_(converter),
+    : converter_(converter),
       nn_(nn) {
-  nn_->register_mixables_to_holder(*mixable_holder_);
-
   register_mixable(nn_->get_mixable_versioned_table().get());
   // We cannot register mixables of fv converter, because mixable_weight_manager
   // does not support mixing with push_mixer.

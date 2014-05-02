@@ -44,7 +44,6 @@ using jubatus::util::text::json::json;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::server_argv;
 using jubatus::server::framework::mixer::create_mixer;
-using jubatus::core::framework::mixable_holder;
 using jubatus::core::fv_converter::weight_manager;
 using jubatus::core::classifier::classify_result;
 
@@ -109,7 +108,6 @@ void classifier_serv::set_config(const string& config) {
         core::classifier::classifier_factory::create_classifier(
           conf.method, param, model),
         core::fv_converter::make_fv_converter(conf.converter)));
-  mixer_->set_mixable_holder(classifier_->get_mixable_holder());
   mixer_->set_driver(classifier_.get());
 
   // TODO(kuenishi): switch the function when set_config is done

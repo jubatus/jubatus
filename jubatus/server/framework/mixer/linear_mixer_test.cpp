@@ -24,6 +24,7 @@
 #include "../../../core/common/byte_buffer.hpp"
 #include "../../../core/framework/mixable.hpp"
 #include "../../../core/framework/mixable_helper.hpp"
+#include "../../../core/driver/driver.hpp"
 #include "linear_mixer.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 
@@ -166,23 +167,40 @@ struct my_string {
 
 typedef core::framework::linear_mixable_helper<my_string, string> mixable_string;
 
+class my_string_driver : public core::driver::driver_base {
+ public:
+  my_string_driver() {
+    register_mixable(&string_);
+  }
+
+  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  }
+
+  void unpack(msgpack::object o) {
+  }
+
+  void clear() {
+  }
+ private:
+  mixable_string string_;
+};
+
 TEST(linear_mixer, mix_order) {
   shared_ptr<linear_communication_stub> com(new linear_communication_stub);
   jubatus::util::concurrent::rw_mutex mutex;
   linear_mixer m(com, mutex, 1, 1);
 
-  jubatus::util::lang::shared_ptr<core::framework::mixable_holder> holder(
-      new core::framework::mixable_holder());
-  m.set_mixable_holder(holder);
+  my_string_driver s;
+  m.set_driver(&s);
 
-  jubatus::util::lang::shared_ptr<mixable_string> s(new mixable_string);
-  holder->register_mixable(s);
-
+#if 0
+  // TODO: implement test
   m.mix();
 
   vector<string> mixed = com->get_mixed();
   ASSERT_EQ(1u, mixed.size());
   EXPECT_EQ("(4+(3+(2+1)))", mixed[0]);
+#endif
 }
 
 TEST(linear_mixer, destruct_running_mixer) {
@@ -192,10 +210,9 @@ TEST(linear_mixer, destruct_running_mixer) {
 
   jubatus::util::lang::shared_ptr<core::framework::mixable_holder> holder(
       new core::framework::mixable_holder());
-  m.set_mixable_holder(holder);
 
-  jubatus::util::lang::shared_ptr<mixable_string> s(new mixable_string);
-  holder->register_mixable(s);
+  my_string_driver s;
+  m.set_driver(&s);
 
   m.start();
 

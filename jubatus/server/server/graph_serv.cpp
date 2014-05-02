@@ -150,7 +150,6 @@ void graph_serv::set_config(const std::string& config) {
       new core::driver::graph(
           core::graph::graph_factory::create_graph(
               conf.method, conf.parameter)));
-  mixer_->set_mixable_holder(graph_->get_mixable_holder());
   mixer_->set_driver(graph_.get());
 
   LOG(INFO) << "config loaded: " << config;

@@ -196,11 +196,6 @@ void push_mixer::register_api(rpc_server_t& server) {
       "do_mix", bind(&push_mixer::do_mix, this));
 }
 
-void push_mixer::set_mixable_holder(
-    shared_ptr<jubatus::core::framework::mixable_holder> holder) {
-  mixable_holder_ = holder;
-}
-
 void push_mixer::set_driver(core::driver::driver_base* driver) {
   driver_ = driver;
 }

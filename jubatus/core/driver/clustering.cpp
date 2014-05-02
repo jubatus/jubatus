@@ -36,11 +36,9 @@ using fv_converter::datum;
 clustering::clustering(
     shared_ptr<core::clustering::clustering> clustering_method,
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
-    : mixable_holder_(new framework::mixable_holder),
-      converter_(converter),
+    : converter_(converter),
       clustering_(clustering_method) {
-  clustering_->register_mixables_to_holder(*mixable_holder_);
-  converter_->register_mixables_to_holder(*mixable_holder_);
+  // TODO: register driver_base::mixable_holder (clustering_, converter_)
 }
 
 clustering::~clustering() {

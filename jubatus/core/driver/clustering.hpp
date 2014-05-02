@@ -41,11 +41,6 @@ class clustering : public driver_base {
           converter);
   virtual ~clustering();
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder>
-  get_mixable_holder() const {
-    return mixable_holder_;
-  }
-
   void push(const std::vector<fv_converter::datum>& points);
 
   fv_converter::datum get_nearest_center(
@@ -79,8 +74,6 @@ class clustering : public driver_base {
       const std::vector<fv_converter::datum>& src);
   core::clustering::cluster_unit to_weighted_datum_vector(
       const std::vector<core::clustering::weighted_point>& src) const;
-
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
 
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
     converter_;

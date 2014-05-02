@@ -34,11 +34,6 @@ class stat : public driver_base {
   explicit stat(jubatus::core::stat::stat* stat_method);
   virtual ~stat();
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder>
-  get_mixable_holder() const {
-    return mixable_holder_;
-  }
-
   jubatus::core::stat::stat* get_model() const {
     return stat_.get();
   }
@@ -56,8 +51,6 @@ class stat : public driver_base {
   void clear();
 
  private:
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
-
   jubatus::util::lang::shared_ptr<jubatus::core::stat::stat> stat_;
 };
 

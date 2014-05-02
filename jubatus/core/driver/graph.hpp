@@ -36,11 +36,6 @@ class graph : public driver_base {
       jubatus::util::lang::shared_ptr<core::graph::graph_base> graph_method);
   virtual ~graph();
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder>
-  get_mixable_holder() const {
-    return mixable_holder_;
-  }
-
   jubatus::core::graph::graph_base* get_model() const {
     return graph_.get();
   }
@@ -91,8 +86,6 @@ class graph : public driver_base {
       const jubatus::core::graph::property& p);
 
  private:
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
-
   jubatus::util::lang::shared_ptr<core::graph::graph_base> graph_;
 };
 

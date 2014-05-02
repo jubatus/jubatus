@@ -25,7 +25,6 @@
 #include "jubatus/util/concurrent/rwmutex.h"
 #include "jubatus/util/lang/shared_ptr.h"
 
-#include "jubatus/core/framework/mixable.hpp"
 #include "jubatus/core/driver/driver.hpp"
 #include "server_util.hpp"
 
@@ -47,8 +46,6 @@ class server_base {
   virtual ~server_base() {}
 
   virtual mixer::mixer* get_mixer() const = 0;
-  virtual jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
-      get_mixable_holder() const = 0;
 
   virtual core::driver::driver_base* get_driver() const = 0;
   virtual void get_status(status_t& status) const = 0;

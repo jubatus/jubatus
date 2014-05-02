@@ -39,13 +39,6 @@ class recommender : public driver_base {
           converter);
   virtual ~recommender();
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder>
-
-  // TODO: remove
-  get_mixable_holder() const __attribute__((deprecated)) {
-    return mixable_holder_;
-  }
-
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const fv_converter::datum& dat);
   void clear();
@@ -70,9 +63,6 @@ class recommender : public driver_base {
   std::vector<std::string> get_all_rows();
 
  private:
-  // TODO: remove mixable_holder
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
-
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
     converter_;
   jubatus::util::lang::shared_ptr<core::recommender::recommender_base>

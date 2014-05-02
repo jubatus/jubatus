@@ -83,9 +83,6 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
   ~push_mixer();
 
   void register_api(rpc_server_t& server);
-  void set_mixable_holder(
-      jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder>
-          holder);
   void set_driver(core::driver::driver_base*);
 
   void start();
@@ -124,8 +121,6 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
   mutable jubatus::util::concurrent::mutex m_;
   jubatus::util::concurrent::rw_mutex& model_mutex_;
   jubatus::util::concurrent::condition c_;
-  jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder>
-  mixable_holder_;
   core::driver::driver_base* driver_;
 
  private:  // deleted methods

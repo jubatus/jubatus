@@ -50,11 +50,6 @@ class nearest_neighbor : public driver_base {
     return nn_->get_const_table();
   }
 
-  jubatus::util::lang::shared_ptr<framework::mixable_holder>
-  get_mixable_holder() const {
-    return mixable_holder_;
-  }
-
   void set_row(const std::string& id, const fv_converter::datum& datum);
 
   std::vector<std::pair<std::string, float> >
@@ -74,7 +69,6 @@ class nearest_neighbor : public driver_base {
   void unpack(msgpack::object o);
 
  private:
-  jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
     converter_;
   jubatus::util::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base>
