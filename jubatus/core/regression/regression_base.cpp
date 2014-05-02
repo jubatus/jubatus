@@ -48,12 +48,6 @@ void regression_base::get_status(std::map<std::string, std::string>& status)
   status["storage"] = storage_->type();
 }
 
-void regression_base::register_mixables_to_holder(
-    framework::mixable_holder& holder) const {
-  // FIXME
-  //holder.register_mixable(mixable_);
-}
-
 storage_ptr regression_base::get_storage() {
   return storage_;
 }
