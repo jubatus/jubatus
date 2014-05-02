@@ -119,9 +119,8 @@ size_t clustering::get_revision() const {
   return storage_->get_model()->get_revision();
 }
 
-void clustering::register_mixables_to_holder(
-    framework::mixable_holder& mixable_holder) {
-  mixable_holder.register_mixable(storage_);
+framework::mixable* clustering::get_mixable() const {
+  return storage_.get();
 }
 
 std::string clustering::type() const {

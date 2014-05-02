@@ -67,7 +67,7 @@ class clustering {
   void set_clustering_method(
       jubatus::util::lang::shared_ptr<clustering_method> clustering_method);
 
-  void register_mixables_to_holder(framework::mixable_holder& mixable_holder);
+  framework::mixable* get_mixable() const;
   std::string type() const;
 
   void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
