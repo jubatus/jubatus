@@ -25,7 +25,6 @@
 #include <vector>
 #include <msgpack.hpp>
 #include "jubatus/util/data/unordered_map.h"
-#include "jubatus/util/data/serialization.h"
 #include "../common/version.hpp"
 #include "bit_vector.hpp"
 
@@ -112,13 +111,6 @@ struct val2_t {
   }
 
   MSGPACK_DEFINE(v1, v2);
-
- private:
-  friend class jubatus::util::data::serialization::access;
-  template<class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(v1) & JUBA_MEMBER(v2);
-  }
 };
 
 struct val3_t {
@@ -206,13 +198,6 @@ struct val3_t {
   }
 
   MSGPACK_DEFINE(v1, v2, v3);
-
- private:
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(v1) & JUBA_MEMBER(v2) & JUBA_MEMBER(v3);
-  }
 };
 
 typedef std::vector<std::pair<std::string, val1_t> > feature_val1_t;

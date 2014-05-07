@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <ostream>
 #include <msgpack.hpp>
-#include "jubatus/util/data/serialization.h"
 
 namespace jubatus {
 namespace core {
@@ -81,12 +80,6 @@ class version {
 
  private:
   uint64_t version_number_;
-
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(version_number_);
-  }
 };
 
 }  // namespace storage

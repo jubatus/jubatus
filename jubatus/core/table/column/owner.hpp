@@ -20,7 +20,6 @@
 #include <ostream>
 #include <string>
 #include <msgpack.hpp>
-#include "jubatus/util/data/serialization.h"
 
 namespace jubatus {
 namespace core {
@@ -46,11 +45,6 @@ struct owner {
   }
 
   MSGPACK_DEFINE(name);
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(name);
-  }
 };
 
 }  // namespace table

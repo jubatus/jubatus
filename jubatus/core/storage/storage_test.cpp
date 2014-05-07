@@ -20,18 +20,13 @@
 #include <string>
 #include <vector>
 #include <gtest/gtest.h>
-#include "jubatus/util/data/serialization.h"
-#include "jubatus/util/data/serialization/unordered_map.h"
 #include "local_storage.hpp"
 #include "local_storage_mixture.hpp"
 
-using std::istream;
 using std::make_pair;
 using std::map;
-using std::ofstream;
 using std::set;
 using std::sort;
-using std::stringstream;
 using std::string;
 using std::vector;
 using jubatus::core::common::key_manager;
@@ -45,8 +40,6 @@ using jubatus::core::storage::val2_t;
 using jubatus::core::storage::val3_t;
 using jubatus::core::storage::local_storage;
 using jubatus::core::storage::local_storage_mixture;
-using jubatus::util::data::serialization::binary_iarchive;
-using jubatus::util::data::serialization::binary_oarchive;
 
 namespace jubatus {
 namespace core {
@@ -56,12 +49,6 @@ class stub_storage : public storage_base {
  private:
   map<string, map<string, val3_t> > data_;
   std::set<string> labels_;
-
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(data_) & JUBA_MEMBER(labels_);
-  }
 
  public:
   MSGPACK_DEFINE(data_, labels_);
@@ -199,10 +186,9 @@ TEST(key_manager, trivial) {
   ASSERT_EQ(0u, km.get_id("x"));
   ASSERT_EQ(1u, km.get_id("y"));
   ASSERT_EQ(2u, km.get_id("z"));
-  const char* tmp_file_name = "./tmp_key_manager";
-  ofstream ofs(tmp_file_name);
-  binary_oarchive oa(ofs);
-  oa << km;
+
+  msgpack::sbuffer buf;
+  msgpack::pack(&buf, km);
 }
 
 template <typename T>
@@ -319,58 +305,6 @@ TYPED_TEST_P(storage_test, val3d) {
     exp.push_back(make_pair("z", val3_t(45, 4545, 454545)));
 
     EXPECT_TRUE(exp == mm);
-  }
-}
-
-TYPED_TEST_P(storage_test, serialize) {
-  // const char* tmp_file_name = "./tmp_local_storage";
-
-  stringstream ss;
-  {
-    TypeParam s;
-    s.set3("a", "x", val3_t(1, 11, 111));
-    s.set3("a", "y", val3_t(2, 22, 222));
-    s.set3("a", "z", val3_t(3, 33, 333));
-    s.set3("b", "x", val3_t(12, 1212, 121212));
-    s.set3("b", "z", val3_t(45, 4545, 454545));
-
-    // ofstream ofs(tmp_file_name);
-    binary_oarchive oa(ss);
-    oa << s;
-  }
-
-  {
-    TypeParam s;
-    // ifstream ifs(tmp_file_name);
-    binary_iarchive ia(ss);
-    ia >> s;
-    // unlink(tmp_file_name);
-
-    {
-      feature_val3_t mm;
-      s.get3("a", mm);
-
-      sort(mm.begin(), mm.end());
-
-      feature_val3_t exp;
-      exp.push_back(make_pair("x", val3_t(1, 11, 111)));
-      exp.push_back(make_pair("y", val3_t(2, 22, 222)));
-      exp.push_back(make_pair("z", val3_t(3, 33, 333)));
-      EXPECT_TRUE(exp == mm);
-    }
-
-    {
-      feature_val3_t mm;
-      s.get3("b", mm);
-
-      sort(mm.begin(), mm.end());
-
-      feature_val3_t exp;
-      exp.push_back(make_pair("x", val3_t(12, 1212, 121212)));
-      exp.push_back(make_pair("z", val3_t(45, 4545, 454545)));
-
-      EXPECT_TRUE(exp == mm);
-    }
   }
 }
 
@@ -671,7 +605,6 @@ REGISTER_TYPED_TEST_CASE_P(storage_test,
                            val1d,
                            val2d,
                            val3d,
-                           serialize,
                            messagepack,
                            inp,
                            get_status,

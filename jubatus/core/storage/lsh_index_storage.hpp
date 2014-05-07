@@ -40,11 +40,6 @@ struct lsh_entry {
   float norm;
 
   MSGPACK_DEFINE(lsh_hash, simhash_bv, norm);
-
-  template <typename Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(lsh_hash) & JUBA_MEMBER(simhash_bv) & JUBA_MEMBER(norm);
-  }
 };
 
 typedef jubatus::util::data::unordered_map<std::string, lsh_entry>
@@ -103,19 +98,6 @@ class lsh_index_storage {
       lsh_table_diff_, shift_, table_num_, key_manager_);
 
  private:
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar
-        & JUBA_MEMBER(master_table_)
-        & JUBA_MEMBER(master_table_diff_)
-        & JUBA_MEMBER(lsh_table_)
-        & JUBA_MEMBER(lsh_table_diff_)
-        & JUBA_MEMBER(shift_)
-        & JUBA_MEMBER(table_num_)
-        & JUBA_MEMBER(key_manager_);
-  }
-
   lsh_master_table_t::iterator remove_and_get_row(const std::string& row);
   void put_empty_entry(uint64_t row_id, const lsh_entry& entry);
 

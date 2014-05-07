@@ -20,8 +20,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "jubatus/util/data/serialization.h"
-#include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/unordered_map.h"
 #include "../common/key_manager.hpp"
 #include "../common/unordered_map.hpp"
@@ -64,12 +62,6 @@ class bit_index_storage : public framework::model {
   MSGPACK_DEFINE(bitvals_, bitvals_diff_);
 
  private:
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(bitvals_) & JUBA_MEMBER(bitvals_diff_);
-  }
-
   bit_table_t bitvals_;
   bit_table_t bitvals_diff_;
 };

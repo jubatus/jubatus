@@ -21,7 +21,6 @@
 #include <ostream>
 #include <utility>
 #include <vector>
-#include "jubatus/util/data/serialization.h"
 #include "jubatus/util/data/unordered_map.h"
 
 namespace jubatus {
@@ -55,12 +54,6 @@ class lsh_vector {
 
  private:
   friend class jubatus::util::data::hash<lsh_vector>;
-  friend class jubatus::util::data::serialization::access;
-
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(values_);
-  }
 
   std::vector<int> values_;
 };

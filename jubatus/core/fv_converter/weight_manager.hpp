@@ -89,12 +89,6 @@ class weight_manager : public framework::model {
     return version_;
   }
 
-
-  template<class Archiver>
-  void serialize(Archiver& ar) {
-    ar & JUBA_MEMBER(diff_weights_) & JUBA_MEMBER(master_weights_);
-  }
-
   MSGPACK_DEFINE(version_, diff_weights_, master_weights_);
 
   void pack(msgpack::packer<msgpack::sbuffer>& pk) const {

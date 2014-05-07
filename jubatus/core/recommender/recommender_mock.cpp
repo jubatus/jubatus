@@ -17,7 +17,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "jubatus/util/data/serialization.h"
 #include "recommender_mock.hpp"
 
 using std::istream;

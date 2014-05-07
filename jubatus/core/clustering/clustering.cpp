@@ -21,7 +21,6 @@
 #include <cassert>
 #include <string>
 #include <vector>
-#include "jubatus/util/data/serialization.h"
 #include "jubatus/util/lang/function.h"
 #include "jubatus/util/lang/bind.h"
 

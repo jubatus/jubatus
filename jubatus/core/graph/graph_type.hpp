@@ -23,7 +23,6 @@
 #include <vector>
 
 #include <msgpack.hpp>
-#include "jubatus/util/data/serialization.h"
 #include "jubatus/util/data/unordered_map.h"
 
 #include "../common/exception.hpp"
@@ -48,12 +47,6 @@ struct eigen_vector_info {
   uint64_t out_degree_num;
 
   MSGPACK_DEFINE(score, out_degree_num);
-
-  friend class jubatus::util::data::serialization::access;
-  template<class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(score) & JUBA_MEMBER(out_degree_num);
-  }
 };
 
 typedef jubatus::util::data::unordered_map<node_id_t, eigen_vector_info>
@@ -65,13 +58,6 @@ struct node_info {
   std::vector<edge_id_t> out_edges;
 
   MSGPACK_DEFINE(property, in_edges, out_edges);
-
-  friend class jubatus::util::data::serialization::access;
-
-  template<class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(property) & JUBA_MEMBER(in_edges) & JUBA_MEMBER(out_edges);
-  }
 };
 
 struct edge_info {
@@ -80,13 +66,6 @@ struct edge_info {
   node_id_t tgt;
 
   MSGPACK_DEFINE(p, src, tgt);
-
-  friend class jubatus::util::data::serialization::access;
-
-  template<class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(p) & JUBA_MEMBER(src) & JUBA_MEMBER(tgt);
-  }
 };
 
 struct preset_query {
@@ -99,13 +78,6 @@ struct preset_query {
   }
 
   MSGPACK_DEFINE(edge_query, node_query);
-
-  friend class jubatus::util::data::serialization::access;
-
-  template<class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(edge_query) & JUBA_MEMBER(node_query);
-  }
 };
 
 typedef jubatus::util::data::unordered_map<
@@ -117,12 +89,6 @@ struct shortest_path_tree {
   spt_edges to_root;
 
   MSGPACK_DEFINE(landmark, from_root, to_root);
-
-  friend class jubatus::util::data::serialization::access;
-  template<class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(landmark) & JUBA_MEMBER(from_root) & JUBA_MEMBER(to_root);
-  }
 };
 
 typedef std::vector<shortest_path_tree> spt_diff;

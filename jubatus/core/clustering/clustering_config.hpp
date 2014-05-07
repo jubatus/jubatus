@@ -26,26 +26,6 @@ namespace jubatus {
 namespace core {
 namespace clustering {
 
-struct storage_config {
-  std::string method;
-
-  int bucket_size;
-  int bucket_length;
-  int compressed_bucket_size;
-  double forgetting_factor;
-  double forgetting_threshold;
-
-  template<typename Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(method)
-        & JUBA_MEMBER(bucket_size)
-        & JUBA_MEMBER(bucket_length)
-        & JUBA_MEMBER(compressed_bucket_size)
-        & JUBA_MEMBER(forgetting_factor)
-        & JUBA_MEMBER(forgetting_threshold);
-  }
-};
-
 struct clustering_config {
   clustering_config()
       : k(2),

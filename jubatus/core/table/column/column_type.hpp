@@ -22,7 +22,6 @@
 #include <string>
 #include <vector>
 
-#include "jubatus/util/data/serialization.h"
 #include "../storage_exception.hpp"
 #include "bit_vector.hpp"
 
@@ -180,15 +179,6 @@ class column_type {
   }
 
  private:
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    int type = type_;
-    ar
-        & JUBA_NAMED_MEMBER("type_", type)
-        & JUBA_MEMBER(bit_vector_length_);
-    type_ = static_cast<type_name>(type);
-  }
   type_name type_;
   int bit_vector_length_;
 };

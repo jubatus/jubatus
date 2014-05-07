@@ -21,7 +21,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/unordered_map.h"
 #include "jubatus/util/data/unordered_set.h"
 #include "jubatus/util/lang/cast.h"

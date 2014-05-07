@@ -21,8 +21,6 @@
 #include <utility>
 #include <vector>
 #include <msgpack.hpp>
-#include "jubatus/util/data/serialization.h"
-#include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/unordered_map.h"
 #include "../common/key_manager.hpp"
 #include "../common/unordered_map.hpp"
@@ -64,12 +62,6 @@ class sparse_matrix_storage : public framework::model {
   void unpack(msgpack::object o);
 
  private:
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(tbl_) & JUBA_MEMBER(column2id_);
-  }
-
   tbl_t tbl_;
   common::key_manager column2id_;
   storage::version version_;

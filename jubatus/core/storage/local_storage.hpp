@@ -20,8 +20,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "jubatus/util/data/serialization.h"
-#include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/unordered_map.h"
 #include "storage_base.hpp"
 #include "../common/key_manager.hpp"
@@ -91,12 +89,6 @@ class local_storage : public storage_base {
   // map_features3_t tbl_;
   id_features3_t tbl_;
   common::key_manager class2id_;
-
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(tbl_) & JUBA_MEMBER(class2id_);
-  }
 };
 
 }  // namespace storage

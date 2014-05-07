@@ -28,7 +28,6 @@
 
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/lang/demangle.h"
-#include "jubatus/util/data/serialization.h"
 #include "jubatus/util/data/unordered_map.h"
 #include "jubatus/util/concurrent/rwmutex.h"
 #include "jubatus/util/lang/shared_ptr.h"
@@ -425,17 +424,6 @@ class column_table {
     JUBATUS_ASSERT_EQ(tuples_, index_.size(), "");
     JUBATUS_ASSERT_EQ(tuples_, keys_.size(), "");
     JUBATUS_ASSERT_EQ(tuples_, versions_.size(), "");
-  }
-
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar
-        & JUBA_MEMBER(keys_)
-        & JUBA_MEMBER(tuples_)
-        & JUBA_MEMBER(versions_)
-        & JUBA_MEMBER(columns_)
-        & JUBA_MEMBER(clock_);
   }
 };
 

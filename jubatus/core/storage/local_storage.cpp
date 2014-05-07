@@ -20,8 +20,6 @@
 #include <string>
 #include <vector>
 #include "jubatus/util/data/intern.h"
-#include "jubatus/util/data/serialization.h"
-#include "jubatus/util/data/serialization/unordered_map.h"
 
 using std::string;
 using std::vector;

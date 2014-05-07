@@ -204,19 +204,6 @@ class typed_column : public detail::abstract_column_base {
   }
 
  private:
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    column_type my_type = type();
-    ar & JUBA_NAMED_MEMBER("my_type_", my_type);
-    if (my_type != type()) {
-      throw type_unmatch_exception(
-        "column: invalid type in serialize(): "
-        "expected: " + type().type_as_string() + ", "
-        "actual: " + my_type.type_as_string());
-    }
-    ar & JUBA_MEMBER(array_);
-  }
   std::vector<T> array_;
 };
 
@@ -325,13 +312,6 @@ class typed_column<bit_vector> : public detail::abstract_column_base {
   }
 
  private:
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    column_type my_type = type();
-    ar & JUBA_NAMED_MEMBER("my_type_", my_type);
-    ar & JUBA_MEMBER(array_);
-  }
   std::vector<uint64_t> array_;
 
   size_t bytes_per_value_() const {
@@ -580,58 +560,6 @@ class abstract_column {
   }
 
  private:
-  friend class jubatus::util::data::serialization::access;
-
-  template <class Ar>
-  void serialize(Ar& ar) {
-    column_type type;
-
-    if (!base_) {
-      JUBATUS_ASSERT(ar.is_read);
-      ar & JUBA_NAMED_MEMBER("my_type_", type);
-      abstract_column(type).swap(*this);  // NOLINT
-    } else {
-      type = base_->type();
-      ar & JUBA_NAMED_MEMBER("my_type_", type);
-      if (type != base_->type()) {
-        throw type_unmatch_exception(
-          "column: invalid type in serialize(): "
-          "expected: " +
-          jubatus::util::lang::lexical_cast<std::string>(base_->type()) +
-          ", actual: " +
-          jubatus::util::lang::lexical_cast<std::string>(type));
-      }
-    }
-
-    if (type.is(column_type::uint8_type)) {
-      ar & static_cast<uint8_column&>(*base_);
-    } else if (type.is(column_type::uint16_type)) {
-      ar & static_cast<uint16_column&>(*base_);
-    } else if (type.is(column_type::uint32_type)) {
-      ar & static_cast<uint32_column&>(*base_);
-    } else if (type.is(column_type::uint64_type)) {
-      ar & static_cast<uint64_column&>(*base_);
-    } else if (type.is(column_type::int8_type)) {
-      ar & static_cast<int8_column&>(*base_);
-    } else if (type.is(column_type::int16_type)) {
-      ar & static_cast<int16_column&>(*base_);
-    } else if (type.is(column_type::int32_type)) {
-      ar & static_cast<int32_column&>(*base_);
-    } else if (type.is(column_type::int64_type)) {
-      ar & static_cast<int64_column&>(*base_);
-    } else if (type.is(column_type::float_type)) {
-      ar & static_cast<float_column&>(*base_);
-    } else if (type.is(column_type::double_type)) {
-      ar & static_cast<double_column&>(*base_);
-    } else if (type.is(column_type::string_type)) {
-      ar & static_cast<string_column&>(*base_);
-    } else if (type.is(column_type::bit_vector_type)) {
-      ar & static_cast<bit_vector_column&>(*base_);
-    } else {
-      JUBATUS_ASSERT_UNREACHABLE();
-    }
-  }
-
   jubatus::util::lang::shared_ptr<abstract_column_base> base_;
 };
 
