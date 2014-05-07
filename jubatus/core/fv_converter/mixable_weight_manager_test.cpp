@@ -21,8 +21,6 @@
 
 #include <gtest/gtest.h>
 #include "jubatus/util/lang/shared_ptr.h"
-#include "jubatus/util/data/serialization.h"
-#include "jubatus/util/data/serialization/unordered_map.h"
 #include "mixable_weight_manager.hpp"
 
 using std::make_pair;

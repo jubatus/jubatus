@@ -49,11 +49,6 @@ class graph_wo_index
     }
 
     MSGPACK_DEFINE(eigen_vector_query, spt_query);
-
-    template<typename Ar>
-    void serialize(Ar& ar) {
-      ar & JUBA_MEMBER(eigen_vector_query) & JUBA_MEMBER(spt_query);
-    }
   };
 
   struct config {

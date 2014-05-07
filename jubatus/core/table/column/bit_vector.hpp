@@ -26,7 +26,6 @@
 
 #include <msgpack.hpp>
 #include "jubatus/util/lang/cast.h"
-#include "jubatus/util/data/serialization.h"
 #include "../../common/assert.hpp"
 #include "../../common/exception.hpp"
 #include "../../common/big_endian.hpp"
@@ -416,15 +415,6 @@ struct bit_vector_base {
       alloc_memory();
     }
     memcpy(bits_, orig.bits_, used_bytes());
-  }
-
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    // TODO(beam2d): Serializing a pointer is dangerous.
-    ar
-        & JUBA_MEMBER(bits_)
-        & JUBA_MEMBER(bit_num_);
   }
 
   bit_base* bits_;

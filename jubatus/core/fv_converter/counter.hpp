@@ -19,8 +19,6 @@
 
 #include <ostream>
 
-#include "jubatus/util/data/serialization.h"
-#include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/unordered_map.h"
 #include "../common/unordered_map.hpp"
 
@@ -84,11 +82,6 @@ class counter {
   }
 
   MSGPACK_DEFINE(data_);
-
-  template<class Archiver>
-  void serialize(Archiver& ar) {
-    ar & JUBA_MEMBER(data_);
-  }
 
   friend std::ostream& operator<<(std::ostream& os, const counter<T>& c) {
     os << "{";

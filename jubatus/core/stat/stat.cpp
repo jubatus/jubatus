@@ -20,7 +20,6 @@
 #include <string>
 #include <utility>
 #include "jubatus/util/system/time_util.h"
-#include "jubatus/util/data/serialization.h"
 
 using std::string;
 using jubatus::util::system::time::clock_time;

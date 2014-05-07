@@ -44,11 +44,6 @@ struct lof_entry {
   float lrd;
 
   MSGPACK_DEFINE(kdist, lrd);
-
-  template<typename Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(kdist) & JUBA_MEMBER(lrd);
-  }
 };
 
 typedef jubatus::util::data::unordered_map<std::string, lof_entry> lof_table_t;
@@ -136,14 +131,6 @@ class lof_storage {
  private:
   static void mark_removed(lof_entry& entry);
   static bool is_removed(const lof_entry& entry);
-
-  friend class jubatus::util::data::serialization::access;
-
-  template<class Ar>
-  void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(lof_table_) & JUBA_MEMBER(lof_table_diff_);
-    ar & JUBA_MEMBER(neighbor_num_) & JUBA_MEMBER(reverse_nn_num_);
-  }
 
   float collect_lrds_from_neighbors(
       const std::vector<std::pair<std::string, float> >& neighbors,

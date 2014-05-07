@@ -16,8 +16,6 @@
 
 #include "mixable_weight_manager.hpp"
 
-#include "jubatus/util/data/serialization.h"
-
 #include "../fv_converter/weight_manager.hpp"
 
 namespace jubatus {

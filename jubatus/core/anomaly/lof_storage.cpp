@@ -30,8 +30,6 @@
 #include "../recommender/euclid_lsh.hpp"
 #include "../recommender/recommender_factory.hpp"
 
-using jubatus::util::data::serialization::binary_iarchive;
-using jubatus::util::data::serialization::binary_oarchive;
 using jubatus::util::data::unordered_map;
 using jubatus::util::data::unordered_set;
 using jubatus::util::lang::shared_ptr;

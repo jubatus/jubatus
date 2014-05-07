@@ -21,8 +21,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "jubatus/util/data/serialization.h"
-#include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/intern.h"
 #include "local_storage.hpp"
 #include "../common/version.hpp"
@@ -90,16 +88,6 @@ class local_storage_mixture : public storage_base {
   MSGPACK_DEFINE(tbl_, class2id_, tbl_diff_, model_version_);
 
  private:
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar
-      & JUBA_MEMBER(tbl_)
-      & JUBA_MEMBER(class2id_)
-      & JUBA_MEMBER(tbl_diff_)
-      & JUBA_MEMBER(model_version_);
-  }
-
   bool get_internal(const std::string& feature, id_feature_val3_t& ret) const;
 
   id_features3_t tbl_;

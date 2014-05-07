@@ -21,8 +21,6 @@
 #include <utility>
 #include <vector>
 #include <msgpack.hpp>
-#include "jubatus/util/data/serialization.h"
-#include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/unordered_map.h"
 #include "storage_type.hpp"
 #include "../common/version.hpp"
@@ -43,11 +41,6 @@ class inverted_index_storage {
     map_float_t column2norm;
 
     MSGPACK_DEFINE(inv, column2norm);
-
-    template<typename Ar>
-    void serialize(Ar& ar) {
-      ar & JUBA_MEMBER(inv) & JUBA_MEMBER(column2norm);
-    }
   };
 
   inverted_index_storage();
@@ -87,17 +80,6 @@ class inverted_index_storage {
       uint64_t column_id,
       const tbl_t& tbl,
       bool& exist) const;
-
-  friend class jubatus::util::data::serialization::access;
-  template <class Ar>
-  void serialize(Ar& ar) {
-    ar
-        & JUBA_MEMBER(inv_)
-        & JUBA_MEMBER(inv_diff_)
-        & JUBA_MEMBER(column2norm_)
-        & JUBA_MEMBER(column2norm_diff_)
-        & JUBA_MEMBER(column2id_);
-  }
 
   void add_inp_scores(
       const std::string& row,

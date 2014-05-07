@@ -44,11 +44,6 @@ struct diffv {
   }
 
   MSGPACK_DEFINE(count, v);
-
-  template<class Archiver>
-  void serialize(Archiver& ar) {
-    ar & JUBA_MEMBER(count) & JUBA_MEMBER(v);
-  }
 };
 
 }  // namespace driver

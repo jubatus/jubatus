@@ -21,7 +21,6 @@
 #include <string>
 #include <vector>
 
-#include "jubatus/util/data/serialization.h"
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/math/random.h"
 

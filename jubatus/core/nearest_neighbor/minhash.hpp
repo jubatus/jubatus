@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "jubatus/util/data/serialization.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "bit_vector_nearest_neighbor_base.hpp"
 

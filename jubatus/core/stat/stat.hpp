@@ -24,8 +24,6 @@
 #include <string>
 #include <utility>
 #include "jubatus/util/concurrent/rwmutex.h"
-#include "jubatus/util/data/serialization.h"
-#include "jubatus/util/data/serialization/unordered_map.h"
 #include "jubatus/util/data/unordered_map.h"
 #include "jubatus/util/lang/enable_shared_from_this.h"
 #include "jubatus/util/lang/shared_ptr.h"
@@ -159,12 +157,6 @@ class stat : public jubatus::util::lang::enable_shared_from_this<stat> {
       }
     }
 
-    friend class jubatus::util::data::serialization::access;
-    template<class Archive>
-    void serialize(Archive& ar) {
-      ar & n_ & sum_ & sum2_ & max_ & min_;
-    }
-
     size_t n_;
 
     double sum_, sum2_;
@@ -178,11 +170,6 @@ class stat : public jubatus::util::lang::enable_shared_from_this<stat> {
   jubatus::util::data::unordered_map<std::string, stat_val> stats_;
 
  private:
-  friend class jubatus::util::data::serialization::access;
-  template<class Archive>
-  void serialize(Archive& ar) {
-    ar & window_size_ & window_ & stats_ & e_ & n_;
-  }
   size_t window_size_;
 
   double e_;

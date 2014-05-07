@@ -20,7 +20,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "jubatus/util/data/serialization.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "recommender_base.hpp"
 #include "recommender_mock_storage.hpp"
