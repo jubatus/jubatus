@@ -14,6 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <limits>
 #include <string>
 #include <map>
 #include <utility>
@@ -120,23 +121,27 @@ TEST_P(clustering_test, config_validation) {
   ASSERT_NO_THROW(clustering k(n, m, c));
 
   // 0.0 <= forgetting_factor
-  c.forgetting_factor = -1.f;
+  c.forgetting_factor = std::numeric_limits<double>::quiet_NaN();
   ASSERT_THROW(clustering k(n, m, c), common::invalid_parameter);
-  c.forgetting_factor = 0.f;
+  c.forgetting_factor = -1.0;
+  ASSERT_THROW(clustering k(n, m, c), common::invalid_parameter);
+  c.forgetting_factor = 0.0;
   ASSERT_NO_THROW(clustering k(n, m, c));
-  c.forgetting_factor = 1.f;
+  c.forgetting_factor = 1.0;
   ASSERT_NO_THROW(clustering k(n, m, c));
 
   // 0.0 <= forgetting_threshold <= 1.0
-  c.forgetting_threshold = -1.f;
+  c.forgetting_threshold = std::numeric_limits<double>::quiet_NaN();
   ASSERT_THROW(clustering k(n, m, c), common::invalid_parameter);
-  c.forgetting_threshold = 0.f;
+  c.forgetting_threshold = -1.0;
+  ASSERT_THROW(clustering k(n, m, c), common::invalid_parameter);
+  c.forgetting_threshold = 0.0;
   ASSERT_NO_THROW(clustering k(n, m, c));
-  c.forgetting_threshold = 0.5f;
+  c.forgetting_threshold = 0.5;
   ASSERT_NO_THROW(clustering k(n, m, c));
-  c.forgetting_threshold = 1.f;
+  c.forgetting_threshold = 1.0;
   ASSERT_NO_THROW(clustering k(n, m, c));
-  c.forgetting_threshold = 2.f;
+  c.forgetting_threshold = 2.0;
   ASSERT_THROW(clustering k(n, m, c), common::invalid_parameter);
 }
 

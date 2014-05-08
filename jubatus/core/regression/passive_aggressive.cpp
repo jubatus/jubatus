@@ -33,12 +33,12 @@ passive_aggressive::passive_aggressive(
       sq_sum_(0.f),
       count_(0.f) {
 
-  if (config.C <= 0.f) {
+  if (!(0.f < config.C)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("0.0 < regularization_weight"));
   }
 
-  if (config.epsilon < 0.f) {
+  if (!(0.f <= config.epsilon)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("0.0 <= sensitivity"));
   }

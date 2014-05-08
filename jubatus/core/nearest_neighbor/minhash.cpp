@@ -106,7 +106,7 @@ minhash::minhash(
     const std::string& id)
     : bit_vector_nearest_neighbor_base(conf.hash_num, table, id) {
 
-  if (conf.hash_num < 1) {
+  if (!(1 <= conf.hash_num)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("1 <= hash_num"));
   }
@@ -119,7 +119,7 @@ minhash::minhash(
     const std::string& id)
     : bit_vector_nearest_neighbor_base(conf.hash_num, table, schema, id) {
 
-  if (conf.hash_num < 1) {
+  if (!(1 <= conf.hash_num)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("1 <= hash_num"));
   }

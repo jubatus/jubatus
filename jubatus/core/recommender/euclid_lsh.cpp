@@ -109,27 +109,27 @@ euclid_lsh::euclid_lsh(const config& config)
       num_probe_(config.probe_num),
       retain_projection_(config.retain_projection) {
 
-  if (config.hash_num < 1) {
+  if (!(1 <= config.hash_num)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("1 <= hash_num"));
   }
 
-  if (config.table_num < 1) {
+  if (!(1 <= config.table_num)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("1 <= table_num"));
   }
 
-  if (config.bin_width <= 0.f) {
+  if (!(0.f < config.bin_width)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("0.0 < bin_width"));
   }
 
-  if (config.probe_num < 0) {
+  if (!(0 <= config.probe_num)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("0 <= probe_num"));
   }
 
-  if (config.seed < 0) {
+  if (!(0 <= config.seed)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("0 <= seed"));
   }

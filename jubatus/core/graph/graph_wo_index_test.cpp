@@ -14,6 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <limits>
 #include <map>
 #include <set>
 #include <stdexcept>
@@ -847,15 +848,17 @@ TEST(graph_wo_index, config_validation) {
   graph_wo_index::config c;
 
   // 0.0 < alpha (a.k.a damping_factor) < 1.0
-  c.alpha = -1.f;
+  c.alpha = std::numeric_limits<double>::quiet_NaN();
   ASSERT_THROW(g.reset(new graph_wo_index(c)), common::invalid_parameter);
-  c.alpha = 0.f;
+  c.alpha = -1.0;
   ASSERT_THROW(g.reset(new graph_wo_index(c)), common::invalid_parameter);
-  c.alpha = 1.f;
+  c.alpha = 0.0;
   ASSERT_THROW(g.reset(new graph_wo_index(c)), common::invalid_parameter);
-  c.alpha = 2.f;
+  c.alpha = 1.0;
   ASSERT_THROW(g.reset(new graph_wo_index(c)), common::invalid_parameter);
-  c.alpha = 0.5f;
+  c.alpha = 2.0;
+  ASSERT_THROW(g.reset(new graph_wo_index(c)), common::invalid_parameter);
+  c.alpha = 0.5;
   ASSERT_NO_THROW(g.reset(new graph_wo_index(c)));
 
   // 0 <= landmark_num

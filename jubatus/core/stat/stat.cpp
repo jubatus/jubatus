@@ -34,7 +34,7 @@ stat::stat(size_t window_size)
     : window_size_(window_size),
       e_(0),
       n_(0) {
-  if (window_size < 1) {
+  if (!(1 <= window_size)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("1 <= window_size"));
   }

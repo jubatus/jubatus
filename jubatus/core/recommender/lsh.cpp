@@ -42,7 +42,7 @@ lsh::config::config()
 
 lsh::lsh(uint64_t base_num)
     : base_num_(base_num) {
-  if (base_num == 0) {
+  if (!(1 <= base_num)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("1 <= base_num"));
   }
@@ -52,7 +52,7 @@ lsh::lsh(uint64_t base_num)
 lsh::lsh(const config& config)
     : base_num_(config.hash_num) {
 
-  if (config.hash_num < 1) {
+  if (!(1 <= config.hash_num)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("1 <= hash_num"));
   }

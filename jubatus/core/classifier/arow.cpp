@@ -39,7 +39,7 @@ arow::arow(
     : classifier_base(storage),
       config_(config) {
 
-  if (config.C <= 0.f) {
+  if (!(0.f < config.C)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("0.0 < regularization_weight"));
   }

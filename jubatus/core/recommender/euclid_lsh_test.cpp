@@ -14,6 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -117,6 +118,8 @@ TEST(euclid_lsh, config_validation) {
   ASSERT_NO_THROW(r.reset(new euclid_lsh(c)));
 
   // 0.0 < bin_width
+  c.bin_width = std::numeric_limits<float>::quiet_NaN();
+  ASSERT_THROW(r.reset(new euclid_lsh(c)), common::invalid_parameter);
   c.bin_width = -1.f;
   ASSERT_THROW(r.reset(new euclid_lsh(c)), common::invalid_parameter);
   c.bin_width = 0.f;

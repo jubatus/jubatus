@@ -14,6 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <limits>
 #include <utility>
 #include <string>
 #include <vector>
@@ -125,6 +126,9 @@ TYPED_TEST_P(regression_test, config_validation) {
   typename TypeParam::config c;
 
   // 0.0 < regularization_weight
+  c.C = std::numeric_limits<float>::quiet_NaN();
+  ASSERT_THROW(TypeParam p(c, s), common::invalid_parameter);
+
   c.C = -1.f;
   ASSERT_THROW(TypeParam p(c, s), common::invalid_parameter);
 
@@ -135,6 +139,9 @@ TYPED_TEST_P(regression_test, config_validation) {
   ASSERT_NO_THROW(TypeParam p(c, s));
 
   // 0.0 <= sensitivity
+  c.epsilon = std::numeric_limits<float>::quiet_NaN();
+  ASSERT_THROW(TypeParam p(c, s), common::invalid_parameter);
+
   c.epsilon = -1.f;
   ASSERT_THROW(TypeParam p(c, s), common::invalid_parameter);
 

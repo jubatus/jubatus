@@ -75,13 +75,13 @@ light_lof::light_lof(
       config_(conf),
       my_id_(id) {
 
-  if (conf.nearest_neighbor_num < 2) {
+  if (!(2 <= conf.nearest_neighbor_num)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter("2 <= nearest_neighbor_num"));
   }
 
-  if (conf.reverse_nearest_neighbor_num
-      < conf.nearest_neighbor_num) {
+  if (!(conf.nearest_neighbor_num
+      <= conf.reverse_nearest_neighbor_num)) {
     throw JUBATUS_EXCEPTION(
         common::invalid_parameter(
             "nearest_neighbor_num <= reverse_nearest_neighbor_num"));
