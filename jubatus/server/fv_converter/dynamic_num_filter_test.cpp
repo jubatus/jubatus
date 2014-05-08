@@ -17,30 +17,39 @@
 #include <map>
 #include <string>
 #include <gtest/gtest.h>
-#include "jubatus/util/lang/scoped_ptr.h"
-#include "dynamic_num_feature.hpp"
-#include "num_feature.hpp"
+#include "dynamic_num_filter.hpp"
+#include "jubatus/core/fv_converter/exception.hpp"
+
+using jubatus::core::fv_converter::converter_exception;
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-TEST(dynamic_num_feature, trivial) {
+TEST(dynamic_num_filter, trivial) {
   std::map<std::string, std::string> params;
 
-  {
-    dynamic_num_feature f(LIBNUM_FEATURE_SAMPLE,
-        "create",
-        params);
-    common::sfv_t fv;
-    f.add_feature("/path", 1, fv);
+  dynamic_num_filter f(LIBNUM_FILTER_SAMPLE,
+      "create",
+      params);
+  EXPECT_EQ(6.0, f.filter(3.0));
+}
 
-    ASSERT_EQ(1u, fv.size());
-    EXPECT_EQ("/path", fv[0].first);
-    EXPECT_EQ(2., fv[0].second);
-  }
+TEST(dynamic_num_filter, unknown_file) {
+  std::map<std::string, std::string> params;
+  EXPECT_THROW(dynamic_num_filter f("unkonwn_file.so",
+          "create",
+          params),
+      converter_exception);
+}
+
+TEST(dynamic_num_filter, unknown_function) {
+  std::map<std::string, std::string> params;
+  EXPECT_THROW(
+      dynamic_num_filter f(LIBNUM_FILTER_SAMPLE, "unknown_function", params),
+      converter_exception);
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

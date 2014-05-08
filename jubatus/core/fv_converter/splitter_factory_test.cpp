@@ -33,30 +33,6 @@ TEST(splitter_factory, trivial) {
   ASSERT_THROW(f.create("hoge", param), converter_exception);
 }
 
-TEST(splitter_factory, dynamic) {
-  splitter_factory f;
-  std::map<std::string, std::string> param;
-  ASSERT_THROW(f.create("dynamic", param), converter_exception);
-
-  param["path"] = "unknown_file_name";
-  ASSERT_THROW(f.create("dynamic", param), converter_exception);
-
-  param["path"] = LIBSPLITTER_SAMPLE;
-  ASSERT_THROW(f.create("dynamic", param), converter_exception);
-
-  param["function"] = "create";
-  jubatus::util::lang::shared_ptr<word_splitter> s(f.create("dynamic", param));
-
-  std::string d("hoge fuga");
-  std::vector<std::pair<size_t, size_t> > bs;
-  s->split(d, bs);
-  ASSERT_EQ(2u, bs.size());
-  ASSERT_EQ(0u, bs[0].first);
-  ASSERT_EQ(4u, bs[0].second);
-  ASSERT_EQ(5u, bs[1].first);
-  ASSERT_EQ(4u, bs[1].second);
-}
-
 TEST(splitter_factory, ngram) {
   splitter_factory f;
   std::map<std::string, std::string> param;

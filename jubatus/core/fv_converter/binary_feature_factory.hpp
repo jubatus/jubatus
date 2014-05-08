@@ -17,8 +17,8 @@
 #ifndef JUBATUS_CORE_FV_CONVERTER_BINARY_FEATURE_FACTORY_HPP_
 #define JUBATUS_CORE_FV_CONVERTER_BINARY_FEATURE_FACTORY_HPP_
 
-#include <map>
 #include <string>
+#include "jubatus/util/lang/function.h"
 #include "type.hpp"
 
 namespace jubatus {
@@ -29,8 +29,21 @@ class binary_feature;
 
 class binary_feature_factory {
  public:
-  typedef std::map<std::string, std::string> param_t;
+  typedef
+    jubatus::util::lang::function<binary_feature*(const std::string&, const param_t&)>
+    create_function;
+
+  binary_feature_factory() {
+  }
+
+  binary_feature_factory(const create_function& ext)
+    : ext_(ext) {
+  }
+
   binary_feature* create(const std::string& name, const param_t& params) const;
+
+ private:
+  create_function ext_;
 };
 
 }  // namespace fv_converter

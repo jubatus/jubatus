@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,32 +14,35 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <map>
+#ifndef JUBATUS_CORE_FV_CONVERTER_FACTORY_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_FACTORY_HPP_
+
 #include <string>
-#include <utility>
-#include <vector>
-#include "binary_feature.hpp"
+#include "converter_config.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-class my_binary_feature : public binary_feature {
- public:
-  void add_feature(
-      const std::string& key,
-      const std::string& value,
-      std::vector<std::pair<std::string, float> >& ret_fv) const {
-    ret_fv.push_back(std::make_pair(key, value.size()));
-  }
-};
+class binary_feature;
+class num_filter;
+class num_feature;
+class word_splitter;
+class string_filter;
 
-extern "C" {
-  binary_feature* create(const std::map<std::string, std::string>& params) {
-  return new my_binary_feature();
-}
-}
+class factory_extender {
+ public:
+  virtual ~factory_extender() {}
+
+  virtual binary_feature* create_binary_feature(const std::string& name, const param_t&) const = 0;
+  virtual num_filter* create_num_filter(const std::string& name, const param_t&) const = 0;
+  virtual num_feature* create_num_feature(const std::string& name, const param_t&) const = 0;
+  virtual word_splitter* create_word_splitter(const std::string& name, const param_t&) const = 0;
+  virtual string_filter* create_string_filter(const std::string& name, const param_t&) const = 0;
+};
 
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
+
+#endif  // JUBATUS_CORE_FV_CONVERTER_FACTORY_HPP_

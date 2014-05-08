@@ -19,11 +19,14 @@
 #include <string>
 #include <gtest/gtest.h>
 #include "dynamic_loader.hpp"
-#include "exception.hpp"
-#include "word_splitter.hpp"
+#include "jubatus/core/fv_converter/exception.hpp"
+#include "jubatus/core/fv_converter/word_splitter.hpp"
+
+using jubatus::core::fv_converter::converter_exception;
+using jubatus::core::fv_converter::word_splitter;
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
 TEST(dynamic_loader, trivial) {
@@ -55,19 +58,19 @@ TEST(dynamic_loader, null) {
 TEST(dynamic_loader, absolute_path) {
   ASSERT_EQ('/', BUILD_DIR[0]);
   const char* absolute_path
-      = BUILD_DIR "/jubatus/core/fv_converter/" LIBSPLITTER_SAMPLE;
+      = BUILD_DIR "/jubatus/server/fv_converter/" LIBSPLITTER_SAMPLE;
   dynamic_loader l(absolute_path);
   l.load_symbol("create");
 }
 
 TEST(dynamic_loader, load_from_env) {
   ASSERT_EQ('/', BUILD_DIR[0]);
-  const char* plugin_dir = BUILD_DIR "/jubatus/core/fv_converter";
+  const char* plugin_dir = BUILD_DIR "/jubatus/server/fv_converter";
   ASSERT_EQ(0, ::setenv("JUBATUS_PLUGIN_PATH", plugin_dir, 1));
   dynamic_loader l(LIBSPLITTER_SAMPLE);
   l.load_symbol("create");
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

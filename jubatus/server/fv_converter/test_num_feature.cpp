@@ -16,43 +16,30 @@
 
 #include <map>
 #include <string>
-#include <gtest/gtest.h>
-#include "dynamic_string_filter.hpp"
-#include "exception.hpp"
+#include <utility>
+#include <vector>
+#include "jubatus/core/fv_converter/num_feature.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-TEST(dynamic_string_filter, trivial) {
-  std::map<std::string, std::string> params;
+class my_num_feature : public core::fv_converter::num_feature {
+ public:
+  void add_feature(
+      const std::string& key,
+      double value,
+      std::vector<std::pair<std::string, float> >& ret_fv) const {
+    ret_fv.push_back(std::make_pair(key, value + 1));
+  }
+};
 
-  dynamic_string_filter f(LIBFILTER_SAMPLE,
-      "create",
-      params);
-  std::string out;
-  f.filter("hoge-hoge", out);
-  EXPECT_EQ("hoge hoge", out);
+extern "C" {
+core::fv_converter::num_feature* create(const std::map<std::string, std::string>& params) {
+  return new my_num_feature();
 }
-
-TEST(dynamic_string_filter, unknown_file) {
-  std::map<std::string, std::string> params;
-  EXPECT_THROW(
-      dynamic_string_filter f("unkonwn_file.so",
-          "create",
-          params),
-      converter_exception);
-}
-
-TEST(dynamic_string_filter, unknown_function) {
-  std::map<std::string, std::string> params;
-  EXPECT_THROW(
-      dynamic_string_filter f(LIBFILTER_SAMPLE,
-          "unknown_function",
-          params),
-      converter_exception);
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

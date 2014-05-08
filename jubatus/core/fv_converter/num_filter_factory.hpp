@@ -18,6 +18,7 @@
 #define JUBATUS_CORE_FV_CONVERTER_NUM_FILTER_FACTORY_HPP_
 
 #include <string>
+#include <map>
 #include "jubatus/util/lang/function.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "type.hpp"
@@ -30,9 +31,21 @@ class num_filter;
 
 class num_filter_factory {
  public:
+  typedef jubatus::util::lang::function<num_filter*(const std::string&, const param_t&)>
+    create_function;
+
+  num_filter_factory() {
+  }
+
+  num_filter_factory(const create_function& ext)
+    : ext_(ext) {
+  }
+
   jubatus::util::lang::shared_ptr<num_filter> create(
       const std::string& name,
-      param_t& params) const;
+      const param_t& params) const;
+ private:
+  create_function ext_;
 };
 
 }  // namespace fv_converter

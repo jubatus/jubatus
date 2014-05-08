@@ -19,6 +19,7 @@
 
 #include <string>
 #include <map>
+#include "jubatus/util/lang/function.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "string_filter.hpp"
 #include "type.hpp"
@@ -29,8 +30,21 @@ namespace fv_converter {
 
 class string_filter_factory {
  public:
+  typedef jubatus::util::lang::function<string_filter*(const std::string&, const param_t&)>
+    create_function;
+
+  string_filter_factory() {
+  }
+
+  string_filter_factory(const create_function& ext)
+    : ext_(ext) {
+  }
+
   jubatus::util::lang::shared_ptr<string_filter> create(
       const std::string& name, const param_t& params) const;
+
+ private:
+  create_function ext_;
 };
 
 }  // namespace fv_converter

@@ -14,38 +14,43 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
-#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
-
 #include <map>
 #include <string>
-#include "jubatus/util/lang/scoped_ptr.h"
-#include "../common/type.hpp"
-#include "dynamic_loader.hpp"
-#include "num_feature.hpp"
+#include <utility>
+#include <vector>
+#include "jubatus/core/fv_converter/word_splitter.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-class dynamic_num_feature : public num_feature {
+class my_splitter : public core::fv_converter::word_splitter {
  public:
-  dynamic_num_feature(
-      const std::string& path,
-      const std::string& function,
-      const std::map<std::string, std::string>& params);
-
-  void add_feature(const std::string& key,
-                   double value,
-                   common::sfv_t& ret_fv) const;
-
- private:
-  dynamic_loader loader_;
-  jubatus::util::lang::scoped_ptr<num_feature> impl_;
+  void split(
+      const std::string& str,
+      std::vector<std::pair<size_t, size_t> >& bounds) const {
+    size_t p = 0;
+    while (true) {
+      size_t b = str.find_first_not_of(' ', p);
+      if (b == std::string::npos) {
+        break;
+      }
+      size_t e = str.find_first_of(' ', b);
+      if (e == std::string::npos) {
+        e = str.size();
+      }
+      bounds.push_back(std::make_pair(b, e - b));
+      p = e;
+    }
+  }
 };
 
-}  // namespace fv_converter
-}  // namespace core
-}  // namespace jubatus
+extern "C" {
+core::fv_converter::word_splitter* create(const std::map<std::string, std::string>& params) {
+  return new my_splitter();
+}
+}
 
-#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
+}  // namespace fv_converter
+}  // namespace server
+}  // namespace jubatus

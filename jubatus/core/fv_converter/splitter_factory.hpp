@@ -18,6 +18,7 @@
 #define JUBATUS_CORE_FV_CONVERTER_SPLITTER_FACTORY_HPP_
 
 #include <string>
+#include "jubatus/util/lang/function.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "type.hpp"
 
@@ -29,8 +30,20 @@ class word_splitter;
 
 class splitter_factory {
  public:
+   typedef jubatus::util::lang::function<word_splitter*(const std::string&, const param_t&)>
+     create_function;
+
+  splitter_factory() {
+  }
+
+  splitter_factory(const create_function& ext)
+    : ext_(ext) {
+  }
+
   jubatus::util::lang::shared_ptr<word_splitter> create(
       const std::string& name, const param_t& params) const;
+ private:
+  create_function ext_;
 };
 
 }  // namespace fv_converter

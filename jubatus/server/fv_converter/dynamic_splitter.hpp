@@ -14,40 +14,39 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_SPLITTER_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_SPLITTER_HPP_
+
 #include <map>
 #include <string>
-#include <gtest/gtest.h>
-#include "dynamic_num_filter.hpp"
-#include "exception.hpp"
+#include <utility>
+#include <vector>
+#include "jubatus/util/lang/scoped_ptr.h"
+#include "dynamic_loader.hpp"
+#include "jubatus/core/fv_converter/word_splitter.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-TEST(dynamic_num_filter, trivial) {
-  std::map<std::string, std::string> params;
+class dynamic_splitter : public core::fv_converter::word_splitter {
+ public:
+  dynamic_splitter(
+      const std::string& path,
+      const std::string& function,
+      const std::map<std::string, std::string>& params);
 
-  dynamic_num_filter f(LIBNUM_FILTER_SAMPLE,
-      "create",
-      params);
-  EXPECT_EQ(6.0, f.filter(3.0));
-}
+  void split(
+      const std::string& string,
+      std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
-TEST(dynamic_num_filter, unknown_file) {
-  std::map<std::string, std::string> params;
-  EXPECT_THROW(dynamic_num_filter f("unkonwn_file.so",
-          "create",
-          params),
-      converter_exception);
-}
-
-TEST(dynamic_num_filter, unknown_function) {
-  std::map<std::string, std::string> params;
-  EXPECT_THROW(
-      dynamic_num_filter f(LIBNUM_FILTER_SAMPLE, "unknown_function", params),
-      converter_exception);
-}
+ private:
+  dynamic_loader loader_;
+  jubatus::util::lang::scoped_ptr<core::fv_converter::word_splitter> impl_;
+};
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus
+
+#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_SPLITTER_HPP_

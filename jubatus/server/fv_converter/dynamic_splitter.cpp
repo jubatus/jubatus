@@ -14,30 +14,31 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "dynamic_num_feature.hpp"
+#include "dynamic_splitter.hpp"
 
 #include <map>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-dynamic_num_feature::dynamic_num_feature(
+dynamic_splitter::dynamic_splitter(
     const std::string& path,
     const std::string& function,
     const std::map<std::string, std::string>& params)
     : loader_(path),
-      impl_(load_object<num_feature>(loader_, function, params)) {
+      impl_(load_object<word_splitter>(loader_, function, params)) {
 }
 
-void dynamic_num_feature::add_feature(
-    const std::string& key,
-    double value,
-    common::sfv_t& ret_fv) const {
-  impl_->add_feature(key, value, ret_fv);
+void dynamic_splitter::split(
+    const std::string& string,
+    std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
+  impl_->split(string, ret_boundaries);
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

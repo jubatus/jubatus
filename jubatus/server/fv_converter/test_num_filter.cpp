@@ -16,13 +16,13 @@
 
 #include <map>
 #include <string>
-#include "num_filter.hpp"
+#include "jubatus/core/fv_converter/num_filter.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-class my_num_filter : public num_filter {
+class my_num_filter : public core::fv_converter::num_filter {
  public:
   double filter(double value) const {
     return value * 2;
@@ -30,11 +30,11 @@ class my_num_filter : public num_filter {
 };
 
 extern "C" {
-num_filter* create(const std::map<std::string, std::string>& params) {
+core::fv_converter::num_filter* create(const std::map<std::string, std::string>& params) {
   return new my_num_filter();
 }
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

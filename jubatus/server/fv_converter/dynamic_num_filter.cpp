@@ -14,32 +14,27 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "dynamic_num_filter.hpp"
+
 #include <map>
 #include <string>
-#include "string_filter.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-class my_filter : public string_filter {
- public:
-  void filter(const std::string& input, std::string& output) const {
-    output = input;
-    for (size_t i = 0; i < output.size(); ++i) {
-      if (output[i] == '-') {
-        output[i] = ' ';
-      }
-    }
-  }
-};
-
-extern "C" {
-string_filter* create(const std::map<std::string, std::string>& params) {
-  return new my_filter();
+dynamic_num_filter::dynamic_num_filter(
+    const std::string& path,
+    const std::string& function,
+    const std::map<std::string, std::string>& params)
+    : loader_(path),
+      impl_(load_object<num_filter>(loader_, function, params)) {
 }
+
+double dynamic_num_filter::filter(double value) const {
+  return impl_->filter(value);
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

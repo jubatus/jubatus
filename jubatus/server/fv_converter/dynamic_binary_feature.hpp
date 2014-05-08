@@ -23,13 +23,13 @@
 #include <vector>
 #include "jubatus/util/lang/scoped_ptr.h"
 #include "dynamic_loader.hpp"
-#include "binary_feature.hpp"
+#include "jubatus/core/fv_converter/binary_feature.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-class dynamic_binary_feature : public binary_feature {
+class dynamic_binary_feature : public core::fv_converter::binary_feature {
  public:
   dynamic_binary_feature(
       const std::string& path,
@@ -43,11 +43,11 @@ class dynamic_binary_feature : public binary_feature {
 
  private:
   dynamic_loader loader_;
-  jubatus::util::lang::scoped_ptr<binary_feature> impl_;
+  jubatus::util::lang::scoped_ptr<core::fv_converter::binary_feature> impl_;
 };
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_

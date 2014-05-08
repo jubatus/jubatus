@@ -17,7 +17,6 @@
 #include "string_filter_factory.hpp"
 
 #include <string>
-#include "dynamic_string_filter.hpp"
 #include "exception.hpp"
 #include "regexp_filter.hpp"
 #include "string_filter.hpp"
@@ -38,22 +37,16 @@ shared_ptr<regexp_filter> create_regexp_filter(
   return shared_ptr<regexp_filter>(new regexp_filter(pattern, replace));
 }
 
-shared_ptr<string_filter> create_dynamic_filter(const param_t& params) {
-  const std::string& path = get_or_die(params, "path");
-  const std::string& function = get_or_die(params, "function");
-  return shared_ptr<string_filter>(
-      new dynamic_string_filter(path, function, params));
-}
-
 }  // namespace
 
 shared_ptr<string_filter> string_filter_factory::create(
     const std::string& name,
     const param_t& params) const {
+  string_filter* p;
   if (name == "regexp") {
     return create_regexp_filter(params);
-  } else if (name == "dynamic") {
-    return create_dynamic_filter(params);
+  } else if (ext_ != NULL && (p = ext_(name, params))) {
+    return shared_ptr<string_filter>(p);
   } else {
     throw JUBATUS_EXCEPTION(
         converter_exception("unknown filter name: " + name));

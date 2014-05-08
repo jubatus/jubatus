@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,32 +17,44 @@
 #include <map>
 #include <string>
 #include <gtest/gtest.h>
-#include "jubatus/util/lang/scoped_ptr.h"
-#include "../common/type.hpp"
-#include "dynamic_binary_feature.hpp"
+#include "dynamic_string_filter.hpp"
+#include "jubatus/core/fv_converter/exception.hpp"
+
+using jubatus::core::fv_converter::converter_exception;
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-TEST(dynamic_binary_feature, trivial) {
+TEST(dynamic_string_filter, trivial) {
   std::map<std::string, std::string> params;
 
-  {
-    dynamic_binary_feature f(
-        LIBBINARY_FEATURE_SAMPLE,
-        "create",
-        params);
-    common::sfv_t fv;
-    f.add_feature("/path", "value", fv);
+  dynamic_string_filter f(LIBFILTER_SAMPLE,
+      "create",
+      params);
+  std::string out;
+  f.filter("hoge-hoge", out);
+  EXPECT_EQ("hoge hoge", out);
+}
 
-    ASSERT_EQ(1u, fv.size());
-    EXPECT_EQ("/path", fv[0].first);
-    // This plugin returns length of a given value.
-    EXPECT_EQ(5., fv[0].second);
-  }
+TEST(dynamic_string_filter, unknown_file) {
+  std::map<std::string, std::string> params;
+  EXPECT_THROW(
+      dynamic_string_filter f("unkonwn_file.so",
+          "create",
+          params),
+      converter_exception);
+}
+
+TEST(dynamic_string_filter, unknown_function) {
+  std::map<std::string, std::string> params;
+  EXPECT_THROW(
+      dynamic_string_filter f(LIBFILTER_SAMPLE,
+          "unknown_function",
+          params),
+      converter_exception);
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

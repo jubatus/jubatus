@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,18 +16,30 @@
 
 #include <map>
 #include <string>
-#include "word_splitter.hpp"
+#include "jubatus/core/fv_converter/string_filter.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
+class my_filter : public core::fv_converter::string_filter {
+ public:
+  void filter(const std::string& input, std::string& output) const {
+    output = input;
+    for (size_t i = 0; i < output.size(); ++i) {
+      if (output[i] == '-') {
+        output[i] = ' ';
+      }
+    }
+  }
+};
+
 extern "C" {
-word_splitter* create(const std::map<std::string, std::string>& params) {
-  return 0;
+core::fv_converter::string_filter* create(const std::map<std::string, std::string>& params) {
+  return new my_filter();
 }
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

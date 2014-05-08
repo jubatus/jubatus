@@ -18,8 +18,10 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
-#include "exception.hpp"
+#include "jubatus/core/fv_converter/exception.hpp"
 #include "dynamic_loader.hpp"
+
+using jubatus::core::fv_converter::converter_exception;
 
 namespace {
 bool is_absolute_or_relative_path(const std::string& path) {
@@ -33,7 +35,7 @@ const char* get_plugin_path() {
 }  // namespace
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
 dynamic_loader::dynamic_loader(const std::string& path)
@@ -99,5 +101,5 @@ void check_null_instance(void* inst) {
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

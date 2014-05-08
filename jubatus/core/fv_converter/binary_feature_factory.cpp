@@ -19,28 +19,18 @@
 #include <map>
 #include <string>
 #include "exception.hpp"
-#include "dynamic_binary_feature.hpp"
 #include "util.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
-namespace {
-
-binary_feature* create_dynamic_binary_feature(
-    const binary_feature_factory::param_t& params) {
-  const std::string& path = get_or_die(params, "path");
-  const std::string& function = get_or_die(params, "function");
-  return new dynamic_binary_feature(path, function, params);
-}
-
-}  // namespace
 
 binary_feature* binary_feature_factory::create(
     const std::string& name,
     const param_t& params) const {
-  if (name == "dynamic") {
-    return create_dynamic_binary_feature(params);
+  binary_feature* p;
+  if (ext_ != NULL && (p = ext_(name, params))) {
+    return p;
   } else {
     throw JUBATUS_EXCEPTION(
         converter_exception("unknown binary feature name: " + name));
