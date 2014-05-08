@@ -18,8 +18,8 @@
 #define JUBATUS_CORE_FV_CONVERTER_SPLITTER_FACTORY_HPP_
 
 #include <string>
-#include <map>
 #include "jubatus/util/lang/shared_ptr.h"
+#include "type.hpp"
 
 namespace jubatus {
 namespace core {
@@ -29,8 +29,6 @@ class word_splitter;
 
 class splitter_factory {
  public:
-  typedef std::map<std::string, std::string> param_t;
-
   jubatus::util::lang::shared_ptr<word_splitter> create(
       const std::string& name, const param_t& params) const;
 };

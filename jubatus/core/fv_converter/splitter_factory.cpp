@@ -34,7 +34,7 @@ namespace fv_converter {
 namespace {
 
 shared_ptr<character_ngram> create_character_ngram(
-    const splitter_factory::param_t& params) {
+    const param_t& params) {
   int n = get_int_or_die(params, "char_num");
   if (n <= 0) {
     throw JUBATUS_EXCEPTION(
@@ -45,7 +45,7 @@ shared_ptr<character_ngram> create_character_ngram(
 }
 
 shared_ptr<word_splitter> create_dynamic_splitter(
-    const splitter_factory::param_t& params) {
+    const param_t& params) {
   const std::string& path = get_or_die(params, "path");
   const std::string& function = get_or_die(params, "function");
   return shared_ptr<word_splitter>(

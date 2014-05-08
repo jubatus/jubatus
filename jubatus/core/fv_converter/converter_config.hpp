@@ -24,14 +24,13 @@
 #include "jubatus/util/data/optional.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/text/json.h"
+#include "type.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
 class datum_to_fv_converter;
-
-typedef std::map<std::string, std::string> param_t;
 
 struct string_rule {
   std::string key;
