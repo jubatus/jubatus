@@ -101,10 +101,6 @@ anomaly_serv::anomaly_serv(
 anomaly_serv::~anomaly_serv() {
 }
 
-std::string anomaly_serv::type() const {
-  return "anomaly";
-}
-
 void anomaly_serv::get_status(status_t& status) const {
   status_t my_status;
   my_status["storage"] = anomaly_->get_model()->type();

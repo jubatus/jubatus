@@ -61,10 +61,6 @@ nearest_neighbor_serv::nearest_neighbor_serv(
 nearest_neighbor_serv::~nearest_neighbor_serv() {
 }
 
-std::string nearest_neighbor_serv::type() const {
-  return "nearest_neighbor";
-}
-
 void nearest_neighbor_serv::get_status(status_t& status) const {
   status_t my_status;
   my_status["clear_row_cnt"] = lexical_cast<string>(clear_row_cnt_);

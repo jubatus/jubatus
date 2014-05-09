@@ -77,10 +77,6 @@ regression_serv::regression_serv(
 regression_serv::~regression_serv() {
 }
 
-std::string regression_serv::type() const {
-  return "regression";
-}
-
 void regression_serv::get_status(status_t& status) const {
   status_t my_status;
   regression_->get_status(my_status);

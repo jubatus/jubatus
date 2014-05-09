@@ -166,10 +166,6 @@ void graph_serv::check_set_config() const {
   }
 }
 
-std::string graph_serv::type() const {
-  return "graph";
-}
-
 void graph_serv::get_status(status_t& status) const {
   check_set_config();
 

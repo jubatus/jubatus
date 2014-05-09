@@ -38,7 +38,6 @@ class classifier_serv : public framework::server_base {
   framework::mixer::mixer* get_mixer() const {
     return mixer_.get();
   }
-  std::string type() const;
 
   jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
     get_mixable_holder() const {
