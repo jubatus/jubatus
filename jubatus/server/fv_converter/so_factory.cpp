@@ -86,7 +86,7 @@ string_filter* so_factory::create_string_filter(
   if (name == "dynamic") {
     const std::string& path = get_or_die(params, "path");
     const std::string& function = get_or_die(params, "function");
-    new dynamic_string_filter(path, function, params);
+    return new dynamic_string_filter(path, function, params);
   }
   return NULL;
 }
