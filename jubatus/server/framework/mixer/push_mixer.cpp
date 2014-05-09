@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 #include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/concurrent/rwmutex.h"
 #include "jubatus/util/lang/bind.h"
 #include "jubatus/util/system/time_util.h"
 #include "../../../core/framework/mixable.hpp"
@@ -31,6 +32,8 @@ using std::pair;
 using std::string;
 using std::vector;
 using jubatus::util::concurrent::scoped_lock;
+using jubatus::util::concurrent::scoped_wlock;
+using jubatus::util::concurrent::scoped_rlock;
 using jubatus::util::lang::bind;
 using jubatus::util::lang::shared_ptr;
 using jubatus::util::system::time::clock_time;
@@ -356,7 +359,7 @@ void push_mixer::mix() {
 vector<string> push_mixer::pull(const vector<string>& arg) {
   vector<string> o;
 
-  scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
+  scoped_rlock lk_read(mixable_holder_->rw_mutex());
   scoped_lock lk(m_);
   core::framework::mixable_holder::mixable_list mixables =
       mixable_holder_->get_mixables();
@@ -370,7 +373,7 @@ vector<string> push_mixer::pull(const vector<string>& arg) {
 vector<string> push_mixer::get_pull_argument(int dummy_arg) {
   vector<string> o;
 
-  scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
+  scoped_rlock lk_read(mixable_holder_->rw_mutex());
   scoped_lock lk(m_);
   core::framework::mixable_holder::mixable_list mixables =
       mixable_holder_->get_mixables();
@@ -381,7 +384,7 @@ vector<string> push_mixer::get_pull_argument(int dummy_arg) {
 }
 
 int push_mixer::push(const vector<string>& diff) {
-  scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
+  scoped_wlock lk_write(mixable_holder_->rw_mutex());
   scoped_lock lk(m_);
   core::framework::mixable_holder::mixable_list mixables =
       mixable_holder_->get_mixables();
