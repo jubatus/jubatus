@@ -312,34 +312,49 @@ void initialize_converter(
 
   std::map<std::string, string_filter_ptr> string_filters;
   if (config.string_filter_types) {
-    init_string_filter_types(*config.string_filter_types, string_filters,
-        bind(&factory_extender::create_string_filter, ext, _1, _2));
+    string_filter_factory::create_function f;
+    if (ext) {
+      f = bind(&factory_extender::create_string_filter, ext, _1, _2);
+    }
+    init_string_filter_types(*config.string_filter_types, string_filters, f);
   }
 
   std::map<std::string, num_filter_ptr> num_filters;
   if (config.num_filter_types) {
-    init_num_filter_types(*config.num_filter_types, num_filters,
-        bind(&factory_extender::create_num_filter, ext, _1, _2));
+    num_filter_factory::create_function f;
+    if (ext) {
+      f = bind(&factory_extender::create_num_filter, ext, _1, _2);
+    }
+    init_num_filter_types(*config.num_filter_types, num_filters, f);
   }
 
   std::map<std::string, splitter_ptr> splitters;
   register_default_string_types(splitters);
   if (config.string_types) {
-    init_string_types(*config.string_types, splitters,
-        bind(&factory_extender::create_word_splitter, ext, _1, _2));
+    splitter_factory::create_function f;
+    if (ext) {
+      f = bind(&factory_extender::create_word_splitter, ext, _1, _2);
+    }
+    init_string_types(*config.string_types, splitters, f);
   }
 
   std::map<std::string, num_feature_ptr> num_features;
   register_default_num_types(num_features);
   if (config.num_types) {
-    init_num_types(*config.num_types, num_features,
-        bind(&factory_extender::create_num_feature, ext, _1, _2));
+    num_feature_factory::create_function f;
+    if (ext) {
+      f = bind(&factory_extender::create_num_feature, ext, _1, _2);
+    }
+    init_num_types(*config.num_types, num_features, f);
   }
 
   std::map<std::string, binary_feature_ptr> binary_features;
   if (config.binary_types) {
-    init_binary_types(*config.binary_types, binary_features,
-        bind(&factory_extender::create_binary_feature, ext, _1, _2));
+    binary_feature_factory::create_function f;
+    if (ext) {
+      f = bind(&factory_extender::create_binary_feature, ext, _1, _2);
+    }
+    init_binary_types(*config.binary_types, binary_features, f);
   }
 
   conv.clear_rules();
