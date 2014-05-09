@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FA12D78E-7480-432B-BE42-25B8ABFD9317}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>jubatus</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_EXPORTING_JUBATUS_DLL;_DEBUG;_WINDOWS;_USRDLL;JUBATUS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)/msgpack/include;$(SolutionDir)/pficommon/pficommon-private;jubatus-private/posix_includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(OutDir)/pficommon.lib;$(OutDir)/MessagePack.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;_EXPORTING_JUBATUS_DLL;NDEBUG;_WINDOWS;_USRDLL;JUBATUS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)/msgpack/include;$(SolutionDir)/pficommon/pficommon-private;jubatus-private/posix_includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>$(OutDir)/pficommon.lib;$(OutDir)/MessagePack.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="jubatus-private\jubatus\core\common\byte_buffer.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\common\exception.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\common\exception_info.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\common\hash.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\common\key_manager.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\common\type.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\common\unordered_map.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\common\vector_util.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\driver\diffv.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\driver\mixable_weight_manager.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\driver\recommender.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\framework\mixable.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\character_ngram.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\converter_config.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\counter.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\datum.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\datum_to_fv_converter.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\exact_match.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\exception.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\except_match.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\feature_hasher.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\keyword_weights.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\key_matcher.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\key_matcher_factory.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\match_all.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\num_feature.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\num_feature_factory.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\num_feature_impl.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\num_filter.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\num_filter_factory.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\num_filter_impl.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\prefix_match.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\revert.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\space_splitter.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\splitter_factory.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\string_filter.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\string_filter_factory.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\suffix_match.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\util.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\weight_manager.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\without_split.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\fv_converter\word_splitter.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\recommender\inverted_index.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\recommender\recommender.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\recommender\recommender_base.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\recommender\recommender_factory.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\recommender\recommender_type.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\storage\fixed_size_heap.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\storage\inverted_index_storage.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\storage\recommender_storage.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\storage\recommender_storage_base.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\storage\sparse_matrix_storage.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\core\storage\storage_type.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\inprocess\common.h" />
+    <ClInclude Include="jubatus-private\jubatus\inprocess\datum.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\inprocess\recommender\recommender_wrapper.hpp" />
+    <ClInclude Include="jubatus-private\jubatus\inprocess\recommender\recommender_wrapper_c.h" />
+    <ClInclude Include="jubatus-private\posix_includes\stdint.h" />
+    <ClInclude Include="jubatus-private\posix_includes\unistd.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="jubatus-private\jubatus\core\common\exception.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\common\key_manager.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\common\vector_util.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\driver\mixable_weight_manager.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\driver\recommender.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\character_ngram.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\converter_config.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\datum_to_fv_converter.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\feature_hasher.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\keyword_weights.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\key_matcher_factory.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\num_feature_factory.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\num_filter_factory.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\revert.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\space_splitter.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\splitter_factory.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\string_filter_factory.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\util.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\weight_manager.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\fv_converter\without_split.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\recommender\inverted_index.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\recommender\recommender_base.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\recommender\recommender_factory.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\storage\inverted_index_storage.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\core\storage\sparse_matrix_storage.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\inprocess\recommender\recommender_wrapper.cpp" />
+    <ClCompile Include="jubatus-private\jubatus\inprocess\recommender\recommender_wrapper_c.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

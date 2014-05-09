@@ -1,0 +1,15 @@
+def configure(conf):
+  pass
+
+def build(bld):
+  bld.install_files('${HPREFIX}/system', [
+      'endian_util.h',
+      ])
+
+  bld.shlib(
+    source = [
+      'endian_util.cpp',
+      ],
+    target = 'pficommon_system',
+    vnum = bld.env['VERSION'],
+    includes = '.')

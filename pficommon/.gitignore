@@ -1,0 +1,13 @@
+*~
+*.o
+*.pyc
+.waf*
+build/
+.lock-waf*
+.unittest-gtest/
+
+# GNU GLOBAL
+GPATH
+GRTAGS
+GSYMS
+GTAGS

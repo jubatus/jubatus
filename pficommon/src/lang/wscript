@@ -1,0 +1,16 @@
+subdirs = [ ]
+
+def configure(conf):
+  conf.recurse(subdirs)
+
+def build(bld):
+  bld.install_files('${HPREFIX}/lang', [
+      'cast.h',
+      'demangle.h',
+      'function.h',
+      'safe_bool.h',
+      'scoped_ptr.h',
+      'shared_ptr.h',
+      ])
+
+  bld.recurse(subdirs)

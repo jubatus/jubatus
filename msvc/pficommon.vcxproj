@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{52D14829-FBDB-4A3B-A434-8C3E15783ECF}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>pficommon</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pficommon-private\src\data\functional_hash.h" />
+    <ClInclude Include="pficommon-private\src\data\optional.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\array.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\base.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\deque.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\iostream.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\list.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\map.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\pair.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\reflect.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\set.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\string.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\tr1_unordered_map.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\tr1_unordered_set.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\unordered_map.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\unordered_set.h" />
+    <ClInclude Include="pficommon-private\src\data\serialization\vector.h" />
+    <ClInclude Include="pficommon-private\src\data\string\utility.h" />
+    <ClInclude Include="pficommon-private\src\data\unordered_map.h" />
+    <ClInclude Include="pficommon-private\src\data\unordered_set.h" />
+    <ClInclude Include="pficommon-private\src\lang\cast.h" />
+    <ClInclude Include="pficommon-private\src\lang\demangle.h" />
+    <ClInclude Include="pficommon-private\src\lang\function.h" />
+    <ClInclude Include="pficommon-private\src\lang\safe_bool.h" />
+    <ClInclude Include="pficommon-private\src\lang\scoped_ptr.h" />
+    <ClInclude Include="pficommon-private\src\lang\shared_ptr.h" />
+    <ClInclude Include="pficommon-private\src\pfi-config.h" />
+    <ClInclude Include="pficommon-private\src\system\endian_util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pficommon-private\src\system\endian_util.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

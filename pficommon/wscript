@@ -1,0 +1,102 @@
+APPNAME = 'pficommon'
+VERSION = '1.3.1'
+
+top = '.'
+out = 'build'
+
+from waflib import Options
+import sys
+import os
+import re
+import waflib
+
+subdirs = 'src'
+
+def options(opt):
+  opt.load('compiler_cxx')
+  opt.load('unittest_gtest')
+  opt.load('gnu_dirs')
+  
+  opt.recurse(subdirs)
+
+def configure(conf):
+  conf.load('compiler_cxx')
+  conf.load('unittest_gtest')
+  conf.load('gnu_dirs')
+
+  env = conf.env
+  env.append_unique('CXXFLAGS', ['-O2', '-Wall', '-g', '-pipe', '-D_REENTRANT', '-fno-omit-frame-pointer'])
+  ver = env.CC_VERSION
+  if env.COMPILER_CXX != 'g++' or int(ver[0]) < 4 or (int(ver[0]) == 4 and int(ver[1]) < 6):
+    env.append_unique('CXXFLAGS', '-D_FORTIFY_SOURCE=1')
+
+  env.HPREFIX = env.PREFIX + '/include/pficommon'
+
+  conf.recurse(subdirs)
+
+  conf.define('PFICOMMON_VERSION', VERSION)
+
+  conf.env['VERSION'] = VERSION
+  
+  conf.write_config_header('src/pfi-config.h')
+  
+  Options.options.disable_database = True
+
+  print("""
+pficommon has been configured as follows:
+
+[Modules]
+FCGI module:             %s
+Database module:         %s
+  have MySQL lib:          %s
+  have PostgreSQL lib:     %s
+MessagePack RPC module:  %s
+
+[Visualization]
+Magick++ impl:           %s
+
+[Build information]
+Package:                 %s
+build (compile on):      %s
+host endian:             %s
+Compiler:                %s
+Compiler version:        %s
+CXXFLAGS:                %s
+""" % (conf.env.BUILD_FCGI and 'yes' or 'no',
+       (not Options.options.disable_database) and 'yes' or 'no',
+       conf.env.BUILD_MYSQL and 'yes' or 'no',
+       conf.env.BUILD_PGSQL and 'yes' or 'no',
+       conf.env.BUILD_MPRPC and 'yes' or 'no',
+       conf.env.BUILD_MAGICKPP and 'yes' or 'no',
+       APPNAME + '-' + VERSION,
+       conf.env.DEST_CPU + '-' + conf.env.DEST_OS,
+       sys.byteorder,
+       conf.env.COMPILER_CXX,
+       '.'.join(conf.env.CC_VERSION),
+       ' '.join(conf.env.CXXFLAGS)))
+
+def build(bld):
+  bld.install_files('${PREFIX}/include/pficommon', [
+      'src/pfi-config.h',
+      ])
+
+  bld.recurse(subdirs)
+  libs = []
+  for tasks in bld.get_build_iterator():
+    if tasks == []:
+      break
+    for task in tasks:
+      if isinstance(task.generator, waflib.TaskGen.task_gen) and 'cxxshlib' in task.generator.features:
+        libs.append(task.generator.target)
+  ls = ''
+  for l in set(libs):
+    ls = ls + ' -l' + l
+
+  bld(source = 'pficommon.pc.in',
+      prefix = bld.env['PREFIX'],
+      exec_prefix = '${prefix}',
+      libdir = bld.env['LIBDIR'],
+      libs = ls,
+      includedir = '${prefix}/include',
+      PACKAGE = APPNAME,
+      VERSION = VERSION)
