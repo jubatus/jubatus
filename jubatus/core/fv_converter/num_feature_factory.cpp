@@ -19,6 +19,7 @@
 #include <string>
 #include "exception.hpp"
 #include "util.hpp"
+#include "num_feature.hpp"
 
 using jubatus::util::lang::shared_ptr;
 
