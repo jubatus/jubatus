@@ -22,7 +22,6 @@
 #include <vector>
 
 #include <msgpack.hpp>
-#include <pficommon/concurrent/rwmutex.h>
 #include <pficommon/lang/shared_ptr.h>
 #include "../common/exception.hpp"
 #include "../common/byte_buffer.hpp"
@@ -68,12 +67,7 @@ class mixable_holder {
     return mixables_;
   }
 
-  pfi::concurrent::rw_mutex& rw_mutex() {
-    return rw_mutex_;
-  }
-
  protected:
-  pfi::concurrent::rw_mutex rw_mutex_;
   std::vector<mixable0*> mixables_;
 };
 

@@ -17,7 +17,6 @@
 #include <map>
 #include <string>
 #include <pficommon/lang/cast.h>
-#include "dynamic_num_filter.hpp"
 #include "exception.hpp"
 #include "num_filter_factory.hpp"
 #include "num_filter_impl.hpp"
@@ -36,13 +35,6 @@ add_filter* create_add_filter(
   return new add_filter(float_val);
 }
 
-num_filter* create_dynamic_filter(
-    const std::map<std::string, std::string>& params) {
-  const std::string& path = get_or_die(params, "path");
-  const std::string& function = get_or_die(params, "function");
-  return new dynamic_num_filter(path, function, params);
-}
-
 }  // namespace
 
 num_filter* num_filter_factory::create(
@@ -50,8 +42,6 @@ num_filter* num_filter_factory::create(
     const std::map<std::string, std::string>& params) const {
   if (name == "add") {
     return create_add_filter(params);
-  } else if (name == "dynamic") {
-    return create_dynamic_filter(params);
   } else {
     throw JUBATUS_EXCEPTION(
         converter_exception("unknonw num filter name: " + name));

@@ -18,7 +18,6 @@
 
 #include <string>
 #include "character_ngram.hpp"
-#include "dynamic_splitter.hpp"
 #include "exception.hpp"
 #include "util.hpp"
 #include "word_splitter.hpp"
@@ -40,13 +39,6 @@ character_ngram* create_character_ngram(
   return new character_ngram(m);
 }
 
-word_splitter* create_dynamic_splitter(
-    const splitter_factory::param_t& params) {
-  const std::string& path = get_or_die(params, "path");
-  const std::string& function = get_or_die(params, "function");
-  return new dynamic_splitter(path, function, params);
-}
-
 }  // namespace
 
 word_splitter* splitter_factory::create(
@@ -54,8 +46,6 @@ word_splitter* splitter_factory::create(
     const param_t& params) const {
   if (name == "ngram") {
     return create_character_ngram(params);
-  } else if (name == "dynamic") {
-    return create_dynamic_splitter(params);
   } else {
     throw JUBATUS_EXCEPTION(
         converter_exception(std::string("unknown splitter name: ") + name));

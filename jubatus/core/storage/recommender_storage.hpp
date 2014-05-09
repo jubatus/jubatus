@@ -17,7 +17,6 @@
 #ifndef JUBATUS_CORE_STORAGE_RECOMMENDER_STORAGE_HPP_
 #define JUBATUS_CORE_STORAGE_RECOMMENDER_STORAGE_HPP_
 
-#include "bit_index_storage.hpp"
 #include "inverted_index_storage.hpp"
 
 #endif  // JUBATUS_CORE_STORAGE_RECOMMENDER_STORAGE_HPP_

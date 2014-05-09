@@ -18,7 +18,6 @@
 
 #include <map>
 #include <string>
-#include "dynamic_string_filter.hpp"
 #include "exception.hpp"
 #ifdef HAVE_RE2
 #  include "re2_filter.hpp"
@@ -39,13 +38,6 @@ re2_filter* create_re2_filter(const string_filter_factory::param_t& params) {
 }
 #endif
 
-static string_filter* create_dynamic_filter(
-    const string_filter_factory::param_t& params) {
-  const std::string& path = get_or_die(params, "path");
-  const std::string& function = get_or_die(params, "function");
-  return new dynamic_string_filter(path, function, params);
-}
-
 string_filter* string_filter_factory::create(
     const std::string& name,
     const std::map<std::string, std::string>& params) const {
@@ -54,12 +46,8 @@ string_filter* string_filter_factory::create(
     return create_re2_filter(params);
   }
 #endif
-  if (name == "dynamic") {
-    return create_dynamic_filter(params);
-  } else {
     throw JUBATUS_EXCEPTION(
         converter_exception("unknown filter name: " + name));
-  }
 }
 
 }  // namespace fv_converter

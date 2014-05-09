@@ -1,7 +1,0 @@
-*.a
-*.cmxa
-jdl_lexer.ml
-jdl_parser.ml
-jdl_parser.mli
-jenerator
-jenerator.opt

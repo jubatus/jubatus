@@ -1,6 +1,6 @@
-import Options
+#!/usr/bin/env python
 
-subdirs = "common driver framework fv_converter recommender storage"
+subdirs = ['recommender']
 
 def options(opt):
   opt.recurse(subdirs)
@@ -9,4 +9,6 @@ def configure(conf):
   conf.recurse(subdirs)
 
 def build(bld):
+  bld.install_files('${INCLUDEDIR}/jubatus/inprocess', 'common.h')
+
   bld.recurse(subdirs)

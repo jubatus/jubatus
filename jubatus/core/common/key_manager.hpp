@@ -31,7 +31,7 @@ namespace common {
 class key_manager {
  public:
   enum {
-    NOTFOUND = 0xFFFFFFFFFFFFFFFFLLU
+    NOTFOUND = 0xFFFFFFFFFFFFFFFFULL
   };
 
   key_manager();

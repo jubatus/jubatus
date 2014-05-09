@@ -28,7 +28,6 @@
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/revert.hpp"
-#include "../storage/storage_factory.hpp"
 
 using std::string;
 using std::vector;

@@ -18,9 +18,5 @@
 #define JUBATUS_CORE_RECOMMENDER_RECOMMENDER_HPP_
 
 #include "inverted_index.hpp"
-#include "lsh.hpp"
-#include "euclid_lsh.hpp"
-#include "minhash.hpp"
-#include "recommender_mock.hpp"
 
 #endif  // JUBATUS_CORE_RECOMMENDER_RECOMMENDER_HPP_

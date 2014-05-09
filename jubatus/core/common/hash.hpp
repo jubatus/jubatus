@@ -28,9 +28,9 @@ class hash_util {
  public:
   static uint64_t calc_string_hash(const std::string& s) {
     // FNV-1 hash function
-    uint64_t hash = 14695981039346656037LLU;
+    uint64_t hash = 14695981039346656037ULL;
     for (size_t i = 0; i < s.size(); ++i) {
-      hash *= 1099511628211LLU;
+      hash *= 1099511628211ULL;
       hash ^= s[i];
     }
     return hash;

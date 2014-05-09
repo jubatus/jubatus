@@ -56,6 +56,9 @@ struct exception_thrower_binder_type {
 #if defined(__GNUC__)
 #define JUBATUS_ERROR_FUNC \
   jubatus::core::common::exception::error_at_func(__PRETTY_FUNCTION__)
+#elif defined(_MSC_VER)
+#define JUBATUS_ERROR_FUNC \
+  jubatus::core::common::exception::error_at_func(__FUNCTION__)
 #else
 #define JUBATUS_ERROR_FUNC \
   jubatus::core::common::exception::error_at_func(__func__)
