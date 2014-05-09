@@ -63,31 +63,31 @@ shared_ptr<classifier_base> classifier_factory::create_classifier(
       throw JUBATUS_EXCEPTION(common::exception::runtime_error(
           "Unlearner is set but unlearner_parameter is not found"));
     }
-    unlearner.reset(unlearner::create_unlearner(
+    unlearner = unlearner::create_unlearner(
         *conf.unlearner, common::jsonconfig::config(
-            *conf.unlearner_parameter)));
+            *conf.unlearner_parameter));
   }
   shared_ptr<classifier_base> res;
   if (name == "perceptron") {
     // perceptron doesn't have parameter
-    res = shared_ptr<classifier_base>(new perceptron(storage));
+    res.reset(new perceptron(storage));
   } else if (name == "PA" || name == "passive_aggressive") {
     // passive_aggressive doesn't have parameter
-    res = shared_ptr<classifier_base>(new passive_aggressive(storage));
+    res.reset(new passive_aggressive(storage));
   } else if (name == "PA1" || name == "passive_aggressive_1") {
-    res = shared_ptr<classifier_base>(new passive_aggressive_1(
+    res.reset(new passive_aggressive_1(
         config_cast_check<classifier_config>(param), storage));
   } else if (name == "PA2" || name == "passive_aggressive_2") {
-    res = shared_ptr<classifier_base>(new passive_aggressive_2(
+    res.reset(new passive_aggressive_2(
         config_cast_check<classifier_config>(param), storage));
   } else if (name == "CW" || name == "confidence_weighted") {
-    res = shared_ptr<classifier_base>(new confidence_weighted(
+    res.reset(new confidence_weighted(
         config_cast_check<classifier_config>(param), storage));
   } else if (name == "AROW" || name == "arow") {
-    res = shared_ptr<classifier_base>(new arow(
+    res.reset(new arow(
         config_cast_check<classifier_config>(param), storage));
   } else if (name == "NHERD" || name == "normal_herd") {
-    res = shared_ptr<classifier_base>(new normal_herd(
+    res.reset(new normal_herd(
         config_cast_check<classifier_config>(param), storage));
   } else {
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));

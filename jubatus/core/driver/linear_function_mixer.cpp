@@ -16,7 +16,6 @@
 
 #include <string>
 #include <algorithm>
-#include <glog/logging.h>
 
 #include "jubatus/util/lang/bind.h"
 #include "linear_function_mixer.hpp"

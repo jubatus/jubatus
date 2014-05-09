@@ -19,6 +19,8 @@
 
 #include <string>
 #include "../common/jsonconfig.hpp"
+#include "jubatus/util/lang/shared_ptr.h"
+
 
 namespace jubatus {
 namespace core {
@@ -26,7 +28,7 @@ namespace unlearner {
 
 class unlearner_base;
 
-unlearner_base* create_unlearner(
+util::lang::shared_ptr<unlearner_base> create_unlearner(
     const std::string& name,
     const common::jsonconfig::config& config);
 

@@ -19,7 +19,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <glog/logging.h>
 #include "jubatus/util/data/intern.h"
 
 using std::string;
