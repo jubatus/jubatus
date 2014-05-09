@@ -19,7 +19,6 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include <glog/logging.h>
 
 using std::string;
 using std::vector;
@@ -103,10 +102,12 @@ void key_manager::clear() {
 void key_manager::init_by_id2key(const std::vector<std::string>& id2key) {
   key2id_.clear();
   id2key_.clear();
+
   for (size_t i = 0; i < id2key.size(); ++i) {
     key2id_[id2key[i]] = i;
     id2key_[i] = id2key[i];
   }
+  next_id_ = id2key.size();
 }
 
 void key_manager::delete_key(const std::string& name) {

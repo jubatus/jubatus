@@ -17,24 +17,28 @@
 #include "unlearner_factory.hpp"
 
 #include <string>
+#include "jubatus/util/lang/shared_ptr.h"
 #include "../common/exception.hpp"
 #include "lru_unlearner.hpp"
 #include "random_unlearner.hpp"
+
+using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
 namespace core {
 namespace unlearner {
 
-unlearner_base* create_unlearner(
+shared_ptr<unlearner_base> create_unlearner(
     const std::string& name,
     const common::jsonconfig::config& config) {
   if (name == "lru") {
-    return new lru_unlearner(
-        common::jsonconfig::config_cast_check<lru_unlearner::config>(config));
+    return shared_ptr<unlearner_base>(
+        new lru_unlearner(common::jsonconfig::config_cast_check<
+                          lru_unlearner::config>(config)));
   } else if (name == "random") {
-    return new random_unlearner(
-        common::jsonconfig::config_cast_check<random_unlearner::config>(
-            config));
+    return shared_ptr<unlearner_base>(
+      new random_unlearner(common::jsonconfig::config_cast_check<
+                           random_unlearner::config>(config)));
   }
   throw JUBATUS_EXCEPTION(common::unsupported_method(
       "unlearner(" + name + ')'));
