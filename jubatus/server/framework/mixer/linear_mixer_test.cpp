@@ -34,7 +34,8 @@ using std::make_pair;
 using jubatus::util::lang::shared_ptr;
 using jubatus::core::common::byte_buffer;
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 namespace jubatus {
 namespace server {
@@ -42,18 +43,19 @@ namespace framework {
 namespace mixer {
 namespace {
 
-vector<string> make_packed_vector(const string& s) {
-    vector<string> v;
-    // pack mix-internal
-    v.push_back(s);
-    return v;
+byte_buffer make_packed(const string& s) {
+  vector<string> v;
+  v.push_back(s);
+  // pack mix-internal
+  msgpack::sbuffer sbuf;
+  msgpack::pack(sbuf, v);
+  return byte_buffer(sbuf.data(), sbuf.size());
 }
 
 common::mprpc::rpc_response_t make_response(const string& s) {
   common::mprpc::rpc_response_t res;
   res.zone = mp::shared_ptr<msgpack::zone>(new msgpack::zone);
-  res.response.a3 = msgpack::object(make_packed_vector(s), res.zone.get());
-  cout << "response: " << res.response.a3 << endl;
+  res.response.a3 = msgpack::object(make_packed(s), res.zone.get());
 
   return res;
 }
@@ -88,45 +90,10 @@ class linear_communication_stub : public linear_communication {
     msgpack::unpack(&msg, mixed.ptr(), mixed.size());
     vector<string> tmp = msg.get().as<vector<string> >();
     mixed_.swap(tmp);
-
-    cout << "msg:" << msg.get() << endl;
-
-    /*
-    msgpack::sbuffer sbuf;
-    msgpack::packer<msgpack::sbuffer> pk(sbuf);
-    pk.pack_array(1);
-    pk.pack(mixed);
-    vector<string> tmp;
-
-    tmp.reserve(mixed.size());
-    typedef vector<byte_buffer>::const_iterator iter_t;
-    for (iter_t it = mixed.begin(); it != mixed.end(); ++it) {
-      if (const char* p = it->ptr()) {
-        size_t size = it->size();
-        tmp.push_back(string(p, size));
-      } else {
-        tmp.push_back("");
-      }
-    }
-    mixed_.swap(tmp);
-  */
   }
 
   vector<string> get_mixed() const {
     return mixed_;
-#if 0
-    vector<string> mixed;
-    mixed.reserve(mixed_.size());
-
-    typedef vector<string>::const_iterator iter_t;
-    for (iter_t it = mixed_.begin(); it != mixed_.end(); ++it) {
-      msgpack::unpacked msg;
-      msgpack::unpack(&msg, it->data(), it->size());
-      mixed.push_back(msg.get().as<string>());
-    }
-
-    return mixed;
-#endif
   }
 
   byte_buffer get_model() {
@@ -185,7 +152,6 @@ class my_string_driver : public core::driver::driver_base {
   mixable_string string_;
 };
 
-#if 0
 TEST(linear_mixer, mix_order) {
   shared_ptr<linear_communication_stub> com(new linear_communication_stub);
   jubatus::util::concurrent::rw_mutex mutex;
@@ -195,7 +161,6 @@ TEST(linear_mixer, mix_order) {
   m.set_driver(&s);
 
   // TODO: implement test. We have already removed mixable_holder.
-  //
   m.mix();
 
   vector<string> mixed = com->get_mixed();
@@ -208,9 +173,6 @@ TEST(linear_mixer, destruct_running_mixer) {
   jubatus::util::concurrent::rw_mutex mutex;
   linear_mixer m(com, mutex, 1, 1);
 
-  jubatus::util::lang::shared_ptr<core::framework::mixable_holder> holder(
-      new core::framework::mixable_holder());
-
   my_string_driver s;
   m.set_driver(&s);
 
@@ -218,7 +180,6 @@ TEST(linear_mixer, destruct_running_mixer) {
 
   // destruct without calling m.stop()
 }
-#endif
 
 }  // namespace mixer
 }  // namespace framework
