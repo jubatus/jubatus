@@ -24,6 +24,7 @@
 #include "jubatus/core/table/column/column_table.hpp"
 #include "../common/lock_service.hpp"
 #include "../framework/server_base.hpp"
+#include "../fv_converter/so_factory.hpp"
 #include "nearest_neighbor_types.hpp"
 
 namespace jubatus {
@@ -77,6 +78,7 @@ class nearest_neighbor_serv : public framework::server_base {
 
   jubatus::util::lang::shared_ptr<core::driver::nearest_neighbor>
     nearest_neighbor_;
+  fv_converter::so_factory so_loader_;
 };
 
 }  // namespace server

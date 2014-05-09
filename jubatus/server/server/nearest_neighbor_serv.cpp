@@ -92,7 +92,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
 
   DLOG(INFO) << __func__;
   shared_ptr<core::fv_converter::datum_to_fv_converter> converter =
-      core::fv_converter::make_fv_converter(conf.converter);
+      core::fv_converter::make_fv_converter(conf.converter, &so_loader_);
 
   shared_ptr<core::table::column_table> table(new core::table::column_table);
   std::string my_id;
