@@ -34,8 +34,6 @@ namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-/*
-
 class versioned_weight_diff_test : public ::testing::Test {
  public:
   void SetUp() {
@@ -153,7 +151,8 @@ TEST_F(mixable_weight_manager_test, fixture) {
 }
 
 TEST_F(mixable_weight_manager_test, get_diff) {
-  versioned_weight_diff got = mw->get_diff_impl();
+  versioned_weight_diff got;
+  mw->get_model()->get_diff(got);
   ASSERT_EQ(0, got.version_.get_number());
   ASSERT_EQ(1, got.weights_.get_document_count());
   ASSERT_EQ(1, got.weights_.get_document_frequency("a"));
@@ -170,8 +169,9 @@ TEST_F(mixable_weight_manager_test, put_diff) {
   }
 
   versioned_weight_diff appender(w);
-  mw->put_diff_impl(appender);
-  versioned_weight_diff got = mw->get_diff_impl();
+  mw->get_model()->put_diff(appender);
+  versioned_weight_diff got;
+  mw->get_model()->get_diff(got);
   ASSERT_EQ(1, got.version_.get_number());  // should be incremented
 
   ASSERT_EQ(0, got.weights_.get_document_count());
@@ -189,8 +189,6 @@ TEST_F(mixable_weight_manager_test, put_diff) {
   ASSERT_EQ("b", result[1].first);
   ASSERT_EQ(3, result[1].second);
 }
-*/
-
 
 }  // namespace fv_converter
 }  // namespace core
