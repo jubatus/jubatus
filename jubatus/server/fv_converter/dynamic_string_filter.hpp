@@ -27,7 +27,8 @@ namespace jubatus {
 namespace server {
 namespace fv_converter {
 
-class dynamic_string_filter : public jubatus::core::fv_converter::string_filter {
+class dynamic_string_filter
+  : public jubatus::core::fv_converter::string_filter {
  public:
   dynamic_string_filter(
       const std::string& path,
@@ -38,7 +39,8 @@ class dynamic_string_filter : public jubatus::core::fv_converter::string_filter 
 
  private:
   dynamic_loader loader_;
-  jubatus::util::lang::scoped_ptr<jubatus::core::fv_converter::string_filter> impl_;
+  jubatus::util::lang::scoped_ptr<jubatus::core::fv_converter::string_filter>
+    impl_;
 };
 
 }  // namespace fv_converter

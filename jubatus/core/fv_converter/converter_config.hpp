@@ -138,8 +138,9 @@ void initialize_converter(
     datum_to_fv_converter& converter,
     const factory_extender* = NULL);
 
-jubatus::util::lang::shared_ptr<datum_to_fv_converter>
-make_fv_converter(const converter_config& config, const factory_extender* = NULL);
+jubatus::util::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
+    const converter_config& config,
+    const factory_extender* = NULL);
 
 }  // namespace fv_converter
 }  // namespace core

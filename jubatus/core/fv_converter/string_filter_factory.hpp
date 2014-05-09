@@ -30,13 +30,13 @@ namespace fv_converter {
 
 class string_filter_factory {
  public:
-  typedef jubatus::util::lang::function<string_filter*(const std::string&, const param_t&)>
-    create_function;
+  typedef jubatus::util::lang::function<
+    string_filter*(const std::string&, const param_t&)> create_function;
 
   string_filter_factory() {
   }
 
-  string_filter_factory(const create_function& ext)
+  explicit string_filter_factory(const create_function& ext)
     : ext_(ext) {
   }
 

@@ -30,7 +30,8 @@ class my_num_filter : public core::fv_converter::num_filter {
 };
 
 extern "C" {
-core::fv_converter::num_filter* create(const std::map<std::string, std::string>& params) {
+core::fv_converter::num_filter* create(
+    const std::map<std::string, std::string>& params) {
   return new my_num_filter();
 }
 }

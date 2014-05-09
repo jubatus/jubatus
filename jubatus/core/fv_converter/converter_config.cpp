@@ -299,7 +299,9 @@ void initialize_converter(
     const converter_config& config,
     datum_to_fv_converter& conv,
     const factory_extender* ext) {
-  using namespace jubatus::util::lang;
+  using jubatus::util::lang::bind;
+  using jubatus::util::lang::_1;
+  using jubatus::util::lang::_2;
 
   if (config.hash_max_size.bool_test() && *config.hash_max_size.get() <= 0) {
     std::stringstream msg;
@@ -311,38 +313,33 @@ void initialize_converter(
   std::map<std::string, string_filter_ptr> string_filters;
   if (config.string_filter_types) {
     init_string_filter_types(*config.string_filter_types, string_filters,
-        bind(&factory_extender::create_string_filter, ext, _1, _2)
-        );
+        bind(&factory_extender::create_string_filter, ext, _1, _2));
   }
 
   std::map<std::string, num_filter_ptr> num_filters;
   if (config.num_filter_types) {
     init_num_filter_types(*config.num_filter_types, num_filters,
-        bind(&factory_extender::create_num_filter, ext, _1, _2)
-        );
+        bind(&factory_extender::create_num_filter, ext, _1, _2));
   }
 
   std::map<std::string, splitter_ptr> splitters;
   register_default_string_types(splitters);
   if (config.string_types) {
     init_string_types(*config.string_types, splitters,
-        bind(&factory_extender::create_word_splitter, ext, _1, _2)
-        );
+        bind(&factory_extender::create_word_splitter, ext, _1, _2));
   }
 
   std::map<std::string, num_feature_ptr> num_features;
   register_default_num_types(num_features);
   if (config.num_types) {
     init_num_types(*config.num_types, num_features,
-        bind(&factory_extender::create_num_feature, ext, _1, _2)
-        );
+        bind(&factory_extender::create_num_feature, ext, _1, _2));
   }
 
   std::map<std::string, binary_feature_ptr> binary_features;
   if (config.binary_types) {
     init_binary_types(*config.binary_types, binary_features,
-        bind(&factory_extender::create_binary_feature, ext, _1, _2)
-        );
+        bind(&factory_extender::create_binary_feature, ext, _1, _2));
   }
 
   conv.clear_rules();

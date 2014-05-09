@@ -23,7 +23,8 @@ namespace server {
 namespace fv_converter {
 
 extern "C" {
-core::fv_converter::word_splitter* create(const std::map<std::string, std::string>& params) {
+core::fv_converter::word_splitter* create(
+    const std::map<std::string, std::string>& params) {
   return 0;
 }
 }

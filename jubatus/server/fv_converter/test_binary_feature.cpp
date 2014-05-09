@@ -35,7 +35,8 @@ class my_binary_feature : public core::fv_converter::binary_feature {
 };
 
 extern "C" {
-core::fv_converter::binary_feature* create(const std::map<std::string, std::string>& params) {
+core::fv_converter::binary_feature* create(
+    const std::map<std::string, std::string>& params) {
   return new my_binary_feature();
 }
 }

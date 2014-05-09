@@ -31,20 +31,19 @@ class num_feature;
 
 class num_feature_factory {
  public:
-  typedef
-    jubatus::util::lang::function<num_feature*(const std::string&, const param_t&)>
-    create_function;
+  typedef jubatus::util::lang::function<
+    num_feature*(const std::string&, const param_t&)> create_function;
 
   num_feature_factory() {
   }
 
-  num_feature_factory(const create_function& ext)
+  explicit num_feature_factory(const create_function& ext)
     : ext_(ext) {
   }
 
   jubatus::util::lang::shared_ptr<num_feature> create(
       const std::string& name, const param_t& params) const;
-private:
+ private:
   create_function ext_;
 };
 

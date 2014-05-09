@@ -35,7 +35,8 @@ class my_filter : public core::fv_converter::string_filter {
 };
 
 extern "C" {
-core::fv_converter::string_filter* create(const std::map<std::string, std::string>& params) {
+core::fv_converter::string_filter* create(
+    const std::map<std::string, std::string>& params) {
   return new my_filter();
 }
 }

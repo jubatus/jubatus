@@ -31,13 +31,13 @@ class num_filter;
 
 class num_filter_factory {
  public:
-  typedef jubatus::util::lang::function<num_filter*(const std::string&, const param_t&)>
-    create_function;
+  typedef jubatus::util::lang::function<
+    num_filter*(const std::string&, const param_t&)> create_function;
 
   num_filter_factory() {
   }
 
-  num_filter_factory(const create_function& ext)
+  explicit num_filter_factory(const create_function& ext)
     : ext_(ext) {
   }
 

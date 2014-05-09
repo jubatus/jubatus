@@ -34,11 +34,21 @@ class factory_extender {
  public:
   virtual ~factory_extender() {}
 
-  virtual binary_feature* create_binary_feature(const std::string& name, const param_t&) const = 0;
-  virtual num_filter* create_num_filter(const std::string& name, const param_t&) const = 0;
-  virtual num_feature* create_num_feature(const std::string& name, const param_t&) const = 0;
-  virtual word_splitter* create_word_splitter(const std::string& name, const param_t&) const = 0;
-  virtual string_filter* create_string_filter(const std::string& name, const param_t&) const = 0;
+  virtual binary_feature* create_binary_feature(
+      const std::string& name,
+      const param_t&) const = 0;
+  virtual num_filter* create_num_filter(
+      const std::string& name,
+      const param_t&) const = 0;
+  virtual num_feature* create_num_feature(
+      const std::string& name,
+      const param_t&) const = 0;
+  virtual word_splitter* create_word_splitter(
+      const std::string& name,
+      const param_t&) const = 0;
+  virtual string_filter* create_string_filter(
+      const std::string& name,
+      const param_t&) const = 0;
 };
 
 }  // namespace fv_converter

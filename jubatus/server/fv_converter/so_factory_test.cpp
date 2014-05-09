@@ -16,6 +16,8 @@
 
 #include <map>
 #include <string>
+#include <utility>
+#include <vector>
 #include <gtest/gtest.h>
 #include "jubatus/util/lang/scoped_ptr.h"
 #include "jubatus/util/lang/bind.h"
@@ -150,7 +152,6 @@ TEST(so_factory, binary) {
 
 TEST(so_factory, string_filter_factory) {
   so_factory fa;
-  //string_filter_factory f;
   string_filter_factory f(
         bind(&so_factory::create_string_filter, &fa, _1, _2));
   std::map<std::string, std::string> p;
@@ -174,7 +175,7 @@ TEST(so_factory, string_filter_factory) {
 TEST(so_factory, num_filter_factory) {
   so_factory fa;
   num_filter_factory f(
-        bind(&so_factory::create_num_filter, &fa, _1, _2)); 
+        bind(&so_factory::create_num_filter, &fa, _1, _2));
   std::map<std::string, std::string> params;
   EXPECT_THROW(f.create("dynamic", params), converter_exception);
 

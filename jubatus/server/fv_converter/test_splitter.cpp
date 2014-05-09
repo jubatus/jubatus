@@ -46,7 +46,8 @@ class my_splitter : public core::fv_converter::word_splitter {
 };
 
 extern "C" {
-core::fv_converter::word_splitter* create(const std::map<std::string, std::string>& params) {
+core::fv_converter::word_splitter* create(
+    const std::map<std::string, std::string>& params) {
   return new my_splitter();
 }
 }

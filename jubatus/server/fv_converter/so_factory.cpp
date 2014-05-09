@@ -15,6 +15,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "so_factory.hpp"
+#include <string>
 #include "jubatus/core/fv_converter/util.hpp"
 
 #include "dynamic_string_filter.hpp"

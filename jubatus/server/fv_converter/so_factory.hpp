@@ -17,6 +17,7 @@
 #ifndef JUBATUS_SERVER_FV_CONVERTER_FVC_FACTORY_HPP_
 #define JUBATUS_SERVER_FV_CONVERTER_FVC_FACTORY_HPP_
 
+#include <string>
 #include "jubatus/core/fv_converter/factory.hpp"
 
 namespace jubatus {
@@ -25,30 +26,30 @@ namespace fv_converter {
 
 class so_factory : public core::fv_converter::factory_extender {
  public:
-   core::fv_converter::binary_feature*
-     create_binary_feature(
-         const std::string& name,
-         const core::fv_converter::param_t&) const;
+  core::fv_converter::binary_feature*
+    create_binary_feature(
+        const std::string& name,
+        const core::fv_converter::param_t&) const;
 
-   core::fv_converter::num_filter*
-     create_num_filter(
-         const std::string& name,
-         const core::fv_converter::param_t&) const;
+  core::fv_converter::num_filter*
+    create_num_filter(
+        const std::string& name,
+        const core::fv_converter::param_t&) const;
 
-    core::fv_converter::num_feature*
-      create_num_feature(
-          const std::string& name,
-          const core::fv_converter::param_t&) const;
+  core::fv_converter::num_feature*
+    create_num_feature(
+        const std::string& name,
+        const core::fv_converter::param_t&) const;
 
-   core::fv_converter::word_splitter*
-     create_word_splitter(
-         const std::string& name,
-         const core::fv_converter::param_t&) const;
+  core::fv_converter::word_splitter*
+    create_word_splitter(
+        const std::string& name,
+        const core::fv_converter::param_t&) const;
 
-   core::fv_converter::string_filter*
-     create_string_filter(
-         const std::string& name,
-         const core::fv_converter::param_t&) const;
+  core::fv_converter::string_filter*
+    create_string_filter(
+        const std::string& name,
+        const core::fv_converter::param_t&) const;
 };
 
 }  // namespace fv_converter

@@ -30,13 +30,13 @@ class word_splitter;
 
 class splitter_factory {
  public:
-   typedef jubatus::util::lang::function<word_splitter*(const std::string&, const param_t&)>
-     create_function;
+  typedef jubatus::util::lang::function<
+    word_splitter*(const std::string&, const param_t&)> create_function;
 
   splitter_factory() {
   }
 
-  splitter_factory(const create_function& ext)
+  explicit splitter_factory(const create_function& ext)
     : ext_(ext) {
   }
 

@@ -29,14 +29,13 @@ class binary_feature;
 
 class binary_feature_factory {
  public:
-  typedef
-    jubatus::util::lang::function<binary_feature*(const std::string&, const param_t&)>
-    create_function;
+  typedef jubatus::util::lang::function<
+    binary_feature*(const std::string&, const param_t&)> create_function;
 
   binary_feature_factory() {
   }
 
-  binary_feature_factory(const create_function& ext)
+  explicit binary_feature_factory(const create_function& ext)
     : ext_(ext) {
   }
 
