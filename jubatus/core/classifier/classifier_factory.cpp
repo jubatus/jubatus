@@ -64,8 +64,7 @@ shared_ptr<classifier_base> classifier_factory::create_classifier(
           "Unlearner is set but unlearner_parameter is not found"));
     }
     unlearner = unlearner::create_unlearner(
-        *conf.unlearner, common::jsonconfig::config(
-            *conf.unlearner_parameter));
+        *conf.unlearner, *conf.unlearner_parameter);
   }
   shared_ptr<classifier_base> res;
   if (name == "perceptron") {
