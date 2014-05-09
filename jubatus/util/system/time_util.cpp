@@ -49,6 +49,7 @@ clock_time::clock_time(const calendar_time &ct)
   t.tm_mday=ct.mday;
   t.tm_mon=ct.mon-1;
   t.tm_year=ct.year-1900;
+  t.tm_isdst=ct.isdst;
 
   time_t r=mktime(&t);
 
