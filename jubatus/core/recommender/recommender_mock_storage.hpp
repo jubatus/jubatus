@@ -60,7 +60,7 @@ class recommender_mock_storage {
     return storage::version();
   }
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void pack(framework::packer& packer) const;
   void unpack(msgpack::object o);
 
   void get_diff(recommender_mock_storage& diff) const;

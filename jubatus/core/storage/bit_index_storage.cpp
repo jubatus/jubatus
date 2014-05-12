@@ -161,7 +161,7 @@ void bit_index_storage::similar_row(
   }
 }
 
-void bit_index_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void bit_index_storage::pack(framework::packer& packer) const {
   packer.pack(*this);
 }
 

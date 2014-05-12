@@ -184,7 +184,7 @@ void minhash::initialize_model() {
       shared_ptr<storage::bit_index_storage>(new storage::bit_index_storage));
 }
 
-void minhash::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void minhash::pack(framework::packer& packer) const {
   packer.pack_array(2);
   orig_.pack(packer);
   mixable_storage_->get_model()->pack(packer);

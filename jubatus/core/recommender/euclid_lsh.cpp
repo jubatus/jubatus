@@ -230,7 +230,7 @@ void euclid_lsh::initialize_model() {
       new storage::lsh_index_storage));
 }
 
-void euclid_lsh::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void euclid_lsh::pack(framework::packer& packer) const {
   packer.pack_array(2);
   orig_.pack(packer);
   mixable_storage_->get_model()->pack(packer);

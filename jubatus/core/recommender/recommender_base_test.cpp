@@ -89,7 +89,7 @@ class recommender_impl : public recommender_base {
 
   framework::mixable* get_mixable() const {}
 
-  void pack(msgpack::packer<msgpack::sbuffer>&) const {
+  void pack(framework::packer&) const {
   }
   void unpack(msgpack::object) {
   }

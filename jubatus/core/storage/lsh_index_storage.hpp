@@ -87,7 +87,7 @@ class lsh_index_storage {
     return storage::version();
   }
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void pack(framework::packer& packer) const;
   void unpack(msgpack::object o);
 
   void get_diff(lsh_master_table_t& diff) const;

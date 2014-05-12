@@ -234,8 +234,7 @@ void inverted_index_storage::mix(const diff_type& lhs, diff_type& rhs) const {
   }
 }
 
-void inverted_index_storage::pack(
-    msgpack::packer<msgpack::sbuffer>& packer) const {
+void inverted_index_storage::pack(framework::packer& packer) const {
   packer.pack(*this);
 }
 

@@ -79,8 +79,7 @@ framework::mixable* nearest_neighbor_recommender::get_mixable() const {
   return 0;
 }
 
-void nearest_neighbor_recommender::pack(
-    msgpack::packer<msgpack::sbuffer>& packer) const {
+void nearest_neighbor_recommender::pack(framework::packer& packer) const {
   // TODO: implement
 }
 

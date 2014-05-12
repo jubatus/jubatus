@@ -28,6 +28,7 @@
 #include "../recommender/recommender.hpp"
 #include "../recommender/recommender_type.hpp"
 #include "../classifier/classifier_test_util.hpp"
+#include "../framework/stream_writer.hpp"
 #include "recommender.hpp"
 
 #include "test_util.hpp"

@@ -65,7 +65,7 @@ class recommender_mock : public recommender_base {
   virtual std::string type() const;
   framework::mixable* get_mixable() const;
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void pack(framework::packer& packer) const;
   void unpack(msgpack::object o);
 
  private:

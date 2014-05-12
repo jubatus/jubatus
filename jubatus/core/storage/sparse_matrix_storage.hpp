@@ -58,7 +58,7 @@ class sparse_matrix_storage : public framework::model {
     return storage::version();
   }
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void pack(framework::packer& packer) const;
   void unpack(msgpack::object o);
 
  private:

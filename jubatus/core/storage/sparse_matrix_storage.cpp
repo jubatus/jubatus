@@ -161,7 +161,7 @@ void sparse_matrix_storage::clear() {
   // norm_ptr_->clear();
 }
 
-void sparse_matrix_storage::pack(msgpack::packer<msgpack::sbuffer>& packer)
+void sparse_matrix_storage::pack(framework::packer& packer)
     const {
   packer.pack(*this);
 }

@@ -63,7 +63,9 @@ TEST(inverted_index_storage, trivial) {
   EXPECT_EQ("r2", scores[2].first);
 
   msgpack::sbuffer buf;
-  msgpack::packer<msgpack::sbuffer> packer(buf);
+  stream_writer<msgpack::sbuffer> st(sbuf);
+  framework::jubatus_packer jp(st);
+  framework::packer packer(jp);
   s.pack(packer);
   inverted_index_storage s2;
   msgpack::unpacked unpacked;

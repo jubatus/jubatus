@@ -284,7 +284,7 @@ string lsh_index_storage::name() const {
   return "lsh_index_storage";
 }
 
-void lsh_index_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void lsh_index_storage::pack(framework::packer& packer) const {
   packer.pack(*this);
 }
 

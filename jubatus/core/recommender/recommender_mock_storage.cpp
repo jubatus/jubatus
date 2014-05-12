@@ -79,8 +79,7 @@ string recommender_mock_storage::name() const {
   return "recommender_mock_storage";
 }
 
-void recommender_mock_storage::pack(
-    msgpack::packer<msgpack::sbuffer>& packer) const {
+void recommender_mock_storage::pack(framework::packer& packer) const {
   packer.pack(*this);
 }
 

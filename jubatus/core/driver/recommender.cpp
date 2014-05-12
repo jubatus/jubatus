@@ -140,7 +140,7 @@ std::vector<std::string> recommender::get_all_rows() {
   return ret;
 }
 
-void recommender::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+void recommender::pack(framework::packer& pk) const {
   // TODO: implement
 }
 

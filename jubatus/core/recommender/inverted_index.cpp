@@ -94,8 +94,7 @@ string inverted_index::type() const {
   return string("inverted_index");
 }
 
-void inverted_index::pack(
-    msgpack::packer<msgpack::sbuffer>& packer) const {
+void inverted_index::pack(framework::packer& packer) const {
   packer.pack_array(2);
   orig_.pack(packer);
   mixable_storage_->get_model()->pack(packer);

@@ -96,7 +96,7 @@ class euclid_lsh : public recommender_base {
 
   framework::mixable* get_mixable() const;
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void pack(framework::packer& packer) const;
   void unpack(msgpack::object o);
 
  private:

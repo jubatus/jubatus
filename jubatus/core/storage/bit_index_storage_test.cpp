@@ -61,7 +61,9 @@ TEST(bit_index_storage, trivial) {
   EXPECT_FLOAT_EQ(0.75, ids[1].second);
 
   msgpack::sbuffer buf;
-  msgpack::packer<msgpack::sbuffer> packer(buf);
+  stream_writer<msgpack::sbuffer> st(sbuf);
+  framework::jubatus_packer jp(st);
+  framework::packer packer(jp);
   s.pack(packer);
   bit_index_storage t;
   msgpack::unpacked unpacked;

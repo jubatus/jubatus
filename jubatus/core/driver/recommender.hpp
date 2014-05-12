@@ -42,7 +42,7 @@ class recommender : public driver_base {
   void clear_row(const std::string& id);
   void update_row(const std::string& id, const fv_converter::datum& dat);
   void clear();
-  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void pack(framework::packer& pk) const;
   void unpack(msgpack::object o);
 
   fv_converter::datum complete_row_from_id(const std::string& id);
