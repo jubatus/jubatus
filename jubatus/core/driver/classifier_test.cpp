@@ -32,6 +32,7 @@
 #include "../classifier/classifier_test_util.hpp"
 #include "../classifier/classifier.hpp"
 #include "../fv_converter/datum.hpp"
+#include "../framework/stream_writer.hpp"
 #include "classifier.hpp"
 
 #include "test_util.hpp"
@@ -222,7 +223,9 @@ TEST_P(classifier_test, save_load) {
   }
 
   msgpack::sbuffer sbuf;
-  msgpack::packer<msgpack::sbuffer> pk(sbuf);
+  framework::stream_writer<msgpack::sbuffer> st(sbuf);
+  framework::jubatus_packer jp(st);
+  framework::packer packer(jp);
   classifier_->pack(pk);
 
   classifier_->clear();
@@ -236,7 +239,9 @@ TEST_P(classifier_test, save_load) {
 
 TEST_P(classifier_test, save_load_2) {
   msgpack::sbuffer save_empty, save_test;
-  msgpack::packer<msgpack::sbuffer> empty_pk(save_empty), test_pk(save_test);
+  framework::stream_writer<msgpack::sbuffer> empty_sw(save_empty), test_sw(save_test);
+  framework::jubatus_packer empty_jp(empty_st), test_jp(test_sw);
+  framework::packer empty_pk(empty_st), test_sk(test_jp);
 
   // Test data
   datum pos;

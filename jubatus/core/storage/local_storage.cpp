@@ -186,7 +186,7 @@ void local_storage::clear() {
   common::key_manager().swap(class2id_);
 }
 
-void local_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void local_storage::pack(framework::packer& packer) const {
   packer.pack(*this);
 }
 

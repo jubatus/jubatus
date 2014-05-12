@@ -62,7 +62,7 @@ class storage_base : public framework::model {
 
   virtual void get_status(std::map<std::string, std::string>&) const = 0;
 
-  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
+  virtual void pack(framework::packer& packer) const = 0;
   virtual void unpack(msgpack::object o) = 0;
 
   virtual version get_version() const = 0;

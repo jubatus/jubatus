@@ -21,6 +21,7 @@
 
 #include <gtest/gtest.h>
 #include "local_storage_mixture.hpp"
+#include "../framework/stream_writer.hpp"
 
 using std::make_pair;
 using std::stringstream;
@@ -46,7 +47,9 @@ TEST(local_storage_mixture, pack_and_unpack) {
 
   msgpack::sbuffer buf;
   {
-    msgpack::packer<msgpack::sbuffer> packer(buf);
+    framework::stream_writer<msgpack::sbuffer> st(buf);
+    framework::jubatus_packer jp(st);
+    framework::packer packer(jp);
     st.pack(packer);
   }
 

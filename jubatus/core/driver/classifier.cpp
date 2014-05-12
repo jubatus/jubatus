@@ -88,7 +88,7 @@ bool classifier::set_label(const std::string& label) {
   return classifier_->set_label(label);
 }
 
-void classifier::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+void classifier::pack(framework::packer& pk) const {
   pk.pack_array(2);
   classifier_->get_storage()->pack(pk);
   wm_.get_model()->pack(pk);

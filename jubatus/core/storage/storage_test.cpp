@@ -114,7 +114,7 @@ class stub_storage : public storage_base {
     labels_.insert(klass);
   }
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  void pack(framework::packer& packer) const {
     packer.pack(*this);
   }
 

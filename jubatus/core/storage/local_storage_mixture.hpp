@@ -76,7 +76,7 @@ class local_storage_mixture : public storage_base {
   std::vector<std::string> get_labels() const;
   bool set_label(const std::string& label);
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void pack(framework::packer& packer) const;
   void unpack(msgpack::object o);
 
   version get_version() const {

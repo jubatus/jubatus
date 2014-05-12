@@ -257,8 +257,7 @@ bool local_storage_mixture::set_label(const std::string& label) {
   return class2id_.set_key(label);
 }
 
-void local_storage_mixture::pack(
-    msgpack::packer<msgpack::sbuffer>& packer) const {
+void local_storage_mixture::pack(framework::packer& packer) const {
   packer.pack(*this);
 }
 
