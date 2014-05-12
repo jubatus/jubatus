@@ -37,16 +37,8 @@ class compressive_storage : public storage {
   void set_compressor(
       jubatus::util::lang::shared_ptr<compressor::compressor> compressor);
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void pack(framework::packer& packer) const;
   void unpack(msgpack::object o);
-
-  // hide storage::msgpack_pack and msgpack_unpack
-  void msgpack_pack(msgpack::packer<msgpack::sbuffer>& packer) const {
-    pack(packer);
-  }
-  void msgpack_unpack(msgpack::object o) {
-    unpack(o);
-  }
 
  private:
   void carry_up(size_t r);

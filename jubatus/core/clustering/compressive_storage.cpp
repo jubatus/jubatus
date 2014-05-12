@@ -112,8 +112,7 @@ void compressive_storage::carry_up(size_t r) {
   }
 }
 
-void compressive_storage::pack(
-    msgpack::packer<msgpack::sbuffer>& packer) const {
+void compressive_storage::pack(framework::packer& packer) const {
   packer.pack_array(4);
   packer.pack(static_cast<const storage&>(*this));
   packer.pack(mine_);

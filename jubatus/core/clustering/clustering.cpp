@@ -126,7 +126,7 @@ std::string clustering::type() const {
   return "clustering";
 }
 
-void clustering::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+void clustering::pack(framework::packer& pk) const {
   storage_->get_model()->pack(pk);
 }
 

@@ -170,7 +170,7 @@ core::clustering::cluster_unit
   return ret;
 }
 
-void clustering::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+void clustering::pack(framework::packer& pk) const {
   clustering_->pack(pk);
 }
 

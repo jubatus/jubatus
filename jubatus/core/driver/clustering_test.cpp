@@ -28,6 +28,7 @@
 #include "../clustering/clustering.hpp"
 #include "../clustering/kmeans_clustering_method.hpp"
 #include "../clustering/gmm_clustering_method.hpp"
+#include "../framework/stream_writer.hpp"
 #include "test_util.hpp"
 #include "../fv_converter/datum.hpp"
 
@@ -104,7 +105,9 @@ TEST_P(clustering_test, save_load) {
 
   // save to a buffer
   msgpack::sbuffer sbuf;
-  msgpack::packer<msgpack::sbuffer> packer(sbuf);
+  framework::stream_writer<msgpack::sbuffer> st(sbuf);
+  framework::jubatus_packer jp(st);
+  framework::packer packer(jp);
   clustering_->pack(packer);
 
   // restart the driver

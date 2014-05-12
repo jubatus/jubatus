@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 #include "jubatus/util/lang/scoped_ptr.h"
 #include "../common/type.hpp"
+#include "../framework/stream_writer.hpp"
 #include "storage.hpp"
 #include "storage_factory.hpp"
 #include "testutil.hpp"
@@ -50,7 +51,9 @@ TEST_P(storage_test, pack_unpack) {
   // pack
   msgpack::sbuffer buf;
   {
-    msgpack::packer<msgpack::sbuffer> packer(buf);
+    framework::stream_writer<msgpack::sbuffer> st(buf);
+    framework::jubatus_packer jp(st);
+    framework::packer packer(jp);
     s->pack(packer);
   }
 

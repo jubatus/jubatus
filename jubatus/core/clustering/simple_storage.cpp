@@ -42,7 +42,7 @@ wplist simple_storage::get_mine() const {
   return mine_;
 }
 
-void simple_storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void simple_storage::pack(framework::packer& packer) const {
   packer.pack_array(2);
   packer.pack(static_cast<const storage&>(*this));
   packer.pack(mine_);

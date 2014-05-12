@@ -60,7 +60,7 @@ class storage : public event_dispatcher<storage_event_type, wplist> {
     return core::storage::version();
   }
 
-  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  virtual void pack(framework::packer& packer) const;
   virtual void unpack(msgpack::object o);
 
   MSGPACK_DEFINE(revision_, name_, config_, common_);

@@ -100,7 +100,7 @@ void storage::increment_revision() {
   dispatch(REVISION_CHANGE, get_all());
 }
 
-void storage::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void storage::pack(framework::packer& packer) const {
   packer.pack(*this);
 }
 void storage::unpack(msgpack::object o) {

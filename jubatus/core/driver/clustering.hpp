@@ -52,7 +52,7 @@ class clustering : public driver_base {
   core::clustering::cluster_set get_core_members() const;
 
   size_t get_revision() const;
-  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void pack(framework::packer& pk) const;
   void unpack(msgpack::object o);
 
   // for test only
