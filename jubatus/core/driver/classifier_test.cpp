@@ -291,7 +291,9 @@ TEST_P(classifier_test, save_load_3) {
   const size_t example_size = 1000;
 
   msgpack::sbuffer save_data;
-  msgpack::packer<msgpack::sbuffer> save_pk(save_data);
+  framework::stream_writer<msgpack::sbuffer> st(save_data);
+  framework::jubatus_packer jp(st);
+  framework::packer save_pk(jp);
   classifier_->pack(save_pk);
 
   vector<pair<string, datum> > data;
