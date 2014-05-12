@@ -583,8 +583,11 @@ byte_buffer linear_mixer::get_diff(int a) {
 
 byte_buffer linear_mixer::get_model(int a) const {
   scoped_rlock lk_read(model_mutex_);
+
   msgpack::sbuffer packed;
-  msgpack::packer<msgpack::sbuffer> pk(packed);
+  stream_writer<msgpack::sbuffer> st(packed);
+  core::framework::jubatus_packer jp(st);
+  packer pk(jp);
   driver_->pack(pk);
 
   LOG(INFO) << "sending learning-model. size = "

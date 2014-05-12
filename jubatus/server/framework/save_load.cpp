@@ -27,6 +27,7 @@
 #include "jubatus/core/common/big_endian.hpp"
 #include "jubatus/core/common/crc32.hpp"
 #include "jubatus/core/framework/mixable.hpp"
+#include "jubatus/core/framework/stream_writer.hpp"
 
 using jubatus::core::common::write_big_endian;
 using jubatus::core::common::read_big_endian;
@@ -106,7 +107,9 @@ void save_server(std::ostream& os,
 
   msgpack::sbuffer user_data_buf;
   {
-    msgpack::packer<msgpack::sbuffer> packer(user_data_buf);
+    core::framework::stream_writer<msgpack::sbuffer> st(user_data_buf);
+    core::framework::jubatus_packer jp(st);
+    core::framework::packer packer(jp);
     packer.pack_array(2);
 
     uint64_t user_data_version = server.user_data_version();

@@ -33,7 +33,7 @@ class driver_base {
   }
   std::vector<storage::version> get_versions() const;
 
-  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const = 0;
+  virtual void pack(framework::packer& packer) const = 0;
   virtual void unpack(msgpack::object o) = 0;
   virtual void clear() = 0;
 
