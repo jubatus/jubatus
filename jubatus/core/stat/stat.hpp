@@ -78,7 +78,7 @@ class stat : public jubatus::util::lang::enable_shared_from_this<stat> {
     return storage::version();
   }
 
-  virtual void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  virtual void pack(framework::packer& packer) const;
   virtual void unpack(msgpack::object o);
   std::string type() const;
 

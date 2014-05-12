@@ -179,7 +179,7 @@ void stat::clear() {
   stats_.clear();
 }
 
-void stat::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void stat::pack(framework::packer& packer) const {
   packer.pack(*this);
 }
 void stat::unpack(msgpack::object o) {

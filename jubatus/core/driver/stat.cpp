@@ -63,7 +63,7 @@ double stat::moment(const std::string& key, int n, double c) const {
   return stat_->moment(key, n, c);
 }
 
-void stat::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+void stat::pack(framework::packer& pk) const {
   stat_->pack(pk);
 }
 

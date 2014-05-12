@@ -17,6 +17,7 @@
 #include <string>
 #include <gtest/gtest.h>
 
+#include "../framework/stream_writer.hpp"
 #include "../stat/stat.hpp"
 #include "stat.hpp"
 #include "test_util.hpp"
@@ -51,7 +52,9 @@ TEST_F(stat_test, small) {
   ASSERT_DOUBLE_EQ(0., stat_->entropy());
 
   msgpack::sbuffer sbuf;
-  msgpack::packer<msgpack::sbuffer> pk(sbuf);
+  framework::stream_writer<msgpack::sbuffer> st(sbuf);
+  framework::jubatus_packer jp(st);
+  framework::packer pk(jp);
   stat_->pack(pk);
 
   msgpack::unpacked msg;

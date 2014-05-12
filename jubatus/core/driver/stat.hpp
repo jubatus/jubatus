@@ -46,7 +46,7 @@ class stat : public driver_base {
   double entropy() const;
   double moment(const std::string&, int, double) const;
 
-  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void pack(framework::packer& pk) const;
   void unpack(msgpack::object o);
   void clear();
 
