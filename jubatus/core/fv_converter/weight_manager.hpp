@@ -91,7 +91,7 @@ class weight_manager : public framework::model {
 
   MSGPACK_DEFINE(version_, diff_weights_, master_weights_);
 
-  void pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+  void pack(framework::packer& pk) const {
     pk.pack(*this);
   }
 
