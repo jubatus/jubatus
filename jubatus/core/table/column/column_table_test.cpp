@@ -587,7 +587,9 @@ TEST(table, pack) {
   ASSERT_TRUE(base.add("bb", owner("local"), 899, 232.1f));
   ASSERT_TRUE(base.add("cc", owner("local"), 21, 2.0f));
   msgpack::sbuffer buf;
-  msgpack::packer<msgpack::sbuffer> packer(buf);
+  stream_writer<msgpack::sbuffer> sw(buf);
+  jubatus::core::framework::jubatus_packer jp(sw);
+  packer packer(jp);
   base.pack(packer);
 }
 
@@ -603,7 +605,9 @@ TEST(table, unpack) {
 
   msgpack::sbuffer buf;
   {
-    msgpack::packer<msgpack::sbuffer> packer(buf);
+    stream_writer<msgpack::sbuffer> sw(buf);
+    jubatus::core::framework::jubatus_packer jp(sw);
+    packer packer(jp);
     base.pack(packer);
   }
 
@@ -645,7 +649,9 @@ TEST(table, bv_unpack) {
 
   msgpack::sbuffer buf;
   {
-    msgpack::packer<msgpack::sbuffer> packer(buf);
+    stream_writer<msgpack::sbuffer> sw(buf);
+    jubatus::core::framework::jubatus_packer jp(sw);
+    packer packer(jp);
     base.pack(packer);
   }
 

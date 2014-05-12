@@ -140,7 +140,7 @@ class my_string_driver : public core::driver::driver_base {
     register_mixable(&string_);
   }
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  void pack(core::framework::packer& packer) const {
   }
 
   void unpack(msgpack::object o) {

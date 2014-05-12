@@ -23,6 +23,7 @@
 #include "../anomaly/anomaly.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../recommender/recommender.hpp"
+#include "../framework/stream_writer.hpp"
 #include "anomaly.hpp"
 #include "test_util.hpp"
 
@@ -79,7 +80,7 @@ TEST_F(anomaly_test, small) {
 
   // save
   msgpack::sbuffer sbuf;
-  stream_writer<msgpack::sbuffer> st(sbuf);
+  framework::stream_writer<msgpack::sbuffer> st(sbuf);
   framework::jubatus_packer jp(st);
   framework::packer pk(jp);
   anomaly_->pack(pk);

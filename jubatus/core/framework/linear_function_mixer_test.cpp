@@ -63,7 +63,7 @@ class storage_mock_base : public storage::storage_base {
   void get_status(std::map<std::string, std::string>&) const {
   }
 
-  void pack(msgpack::packer<msgpack::sbuffer>&) const {
+  void pack(framework::packer&) const {
   }
 
   void unpack(msgpack::object) {

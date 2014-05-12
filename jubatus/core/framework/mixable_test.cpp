@@ -36,8 +36,7 @@ struct int_model : public model {
 
   int value;
 
-  // TODO(suma): replace packer
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  void pack(framework::packer& packer) const {
     packer.pack(value);
   }
 
@@ -84,8 +83,7 @@ struct str_model : public model {
 
   string value;
 
-  // TODO(suma): replace packer
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  void pack(framework::packer& packer) const {
     packer.pack(value);
   }
 
@@ -134,7 +132,9 @@ TEST(mixable, pack_unpack) {
   m.get_model()->value = 10;
 
   msgpack::sbuffer buf;
-  msgpack::packer<msgpack::sbuffer> pk(buf);
+  framework::stream_writer<msgpack::sbuffer> sw(buf);
+  framework::jubatus_packer jp(sw);
+  framework::packer pk(jp);
   m.get_model()->pack(pk);
 
    m.get_model()->value = 5;

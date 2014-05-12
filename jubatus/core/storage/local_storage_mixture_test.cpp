@@ -47,8 +47,8 @@ TEST(local_storage_mixture, pack_and_unpack) {
 
   msgpack::sbuffer buf;
   {
-    framework::stream_writer<msgpack::sbuffer> st(buf);
-    framework::jubatus_packer jp(st);
+    framework::stream_writer<msgpack::sbuffer> sw(buf);
+    framework::jubatus_packer jp(sw);
     framework::packer packer(jp);
     st.pack(packer);
   }

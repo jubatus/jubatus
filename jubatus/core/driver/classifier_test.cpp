@@ -225,7 +225,7 @@ TEST_P(classifier_test, save_load) {
   msgpack::sbuffer sbuf;
   framework::stream_writer<msgpack::sbuffer> st(sbuf);
   framework::jubatus_packer jp(st);
-  framework::packer packer(jp);
+  framework::packer pk(jp);
   classifier_->pack(pk);
 
   classifier_->clear();
@@ -240,8 +240,8 @@ TEST_P(classifier_test, save_load) {
 TEST_P(classifier_test, save_load_2) {
   msgpack::sbuffer save_empty, save_test;
   framework::stream_writer<msgpack::sbuffer> empty_sw(save_empty), test_sw(save_test);
-  framework::jubatus_packer empty_jp(empty_st), test_jp(test_sw);
-  framework::packer empty_pk(empty_st), test_sk(test_jp);
+  framework::jubatus_packer empty_jp(empty_sw), test_jp(test_sw);
+  framework::packer empty_pk(empty_jp), test_pk(test_jp);
 
   // Test data
   datum pos;

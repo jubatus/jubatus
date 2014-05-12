@@ -72,7 +72,7 @@ class anomaly_impl : public anomaly_base {
     return std::vector<framework::mixable*>();
   }
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+  void pack(framework::packer& packer) const {
   }
   void unpack(msgpack::object o){
   }

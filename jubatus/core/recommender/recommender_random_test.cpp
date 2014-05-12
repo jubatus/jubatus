@@ -118,7 +118,7 @@ TYPED_TEST_P(recommender_random_test, random) {
 
   // pack and unpack the recommender
   msgpack::sbuffer buf;
-  framework::stream_writer<msgpack::sbuffer> st(sbuf);
+  framework::stream_writer<msgpack::sbuffer> st(buf);
   framework::jubatus_packer jp(st);
   framework::packer packer(jp);
   r.pack(packer);
@@ -187,7 +187,7 @@ TYPED_TEST_P(recommender_random_test, pack_and_unpack) {
 
   // save and load
   msgpack::sbuffer buf;
-  stream_writer<msgpack::sbuffer> st(buf);
+  framework::stream_writer<msgpack::sbuffer> st(buf);
   framework::jubatus_packer jp(st);
   framework::packer packer(jp);
   r.pack(packer);

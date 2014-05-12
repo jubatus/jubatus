@@ -134,7 +134,7 @@ TEST_F(regression_test, small) {
 
   // save
   msgpack::sbuffer save_data;
-  stream_writer<msgpack::sbuffer> st(saved_data);
+  framework::stream_writer<msgpack::sbuffer> st(save_data);
   framework::jubatus_packer jp(st);
   framework::packer save_pk(jp);
   regression_->pack(save_pk);

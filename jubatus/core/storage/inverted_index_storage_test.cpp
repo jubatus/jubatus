@@ -20,6 +20,7 @@
 #include <vector>
 #include <gtest/gtest.h>
 #include "inverted_index_storage.hpp"
+#include "../framework/stream_writer.hpp"
 
 using std::make_pair;
 using std::pair;
@@ -63,7 +64,7 @@ TEST(inverted_index_storage, trivial) {
   EXPECT_EQ("r2", scores[2].first);
 
   msgpack::sbuffer buf;
-  stream_writer<msgpack::sbuffer> st(sbuf);
+  framework::stream_writer<msgpack::sbuffer> st(buf);
   framework::jubatus_packer jp(st);
   framework::packer packer(jp);
   s.pack(packer);
