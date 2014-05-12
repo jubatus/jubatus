@@ -73,7 +73,7 @@ class graph : public driver_base {
       jubatus::core::graph::edge_id_t eid) const;
   void update_index();
   void clear();
-  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void pack(framework::packer& pk) const;
   void unpack(msgpack::object o);
 
   // internal apis used between servers

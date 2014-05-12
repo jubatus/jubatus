@@ -165,7 +165,7 @@ void graph::create_edge_here(
   }
 }
 
-void graph::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+void graph::pack(framework::packer& pk) const {
   graph_->pack(pk);
 }
 

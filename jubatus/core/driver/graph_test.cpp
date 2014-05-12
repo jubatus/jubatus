@@ -20,6 +20,7 @@
 #include <gtest/gtest.h>
 
 #include "../graph/graph.hpp"
+#include "../framework/stream_writer.hpp"
 #include "graph.hpp"
 #include "test_util.hpp"
 
@@ -73,7 +74,9 @@ TEST_F(graph_test, simple) {
   }
   {
     msgpack::sbuffer sbuf;
-    msgpack::packer<msgpack::sbuffer> pk(sbuf);
+    framework::stream_writer<msgpack::sbuffer> st(sbuf);
+    framework::jubatus_packer jp(st);
+    framework::packer pk(jp);
     graph_->pack(pk);
     graph_->clear();
 

@@ -368,7 +368,7 @@ string graph_wo_index::type() const {
   return string("graph_wo_index");
 }
 
-void graph_wo_index::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void graph_wo_index::pack(framework::packer& packer) const {
   packer.pack(*this);
 }
 

@@ -119,7 +119,7 @@ class graph_wo_index
     return storage::version();
   }
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void pack(framework::packer& packer) const;
   void unpack(msgpack::object o);
 
   MSGPACK_DEFINE(local_nodes_, local_edges_,
