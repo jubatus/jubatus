@@ -75,7 +75,7 @@ void regression::clear() {
   converter_->clear_weights();
 }
 
-void regression::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+void regression::pack(framework::packer& pk) const {
   pk.pack_array(2);
   regression_->get_storage()->pack(pk);
   wm_.get_model()->pack(pk);

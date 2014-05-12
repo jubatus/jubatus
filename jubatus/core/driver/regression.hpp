@@ -50,7 +50,7 @@ class regression : public driver_base {
   void get_status(std::map<std::string, std::string>& status) const;
   void clear();
 
-  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void pack(framework::packer& pk) const;
   void unpack(msgpack::object o);
 
  private:

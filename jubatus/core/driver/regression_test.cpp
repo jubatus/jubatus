@@ -26,6 +26,7 @@
 #include "../regression/regression_test_util.hpp"
 #include "../fv_converter/datum.hpp"
 #include "../fv_converter/converter_config.hpp"
+#include "../framework/stream_writer.hpp"
 #include "regression.hpp"
 
 #include "test_util.hpp"
@@ -133,7 +134,9 @@ TEST_F(regression_test, small) {
 
   // save
   msgpack::sbuffer save_data;
-  msgpack::packer<msgpack::sbuffer> save_pk(save_data);
+  stream_writer<msgpack::sbuffer> st(saved_data);
+  framework::jubatus_packer jp(st);
+  framework::packer save_pk(jp);
   regression_->pack(save_pk);
 
   regression_->clear();
