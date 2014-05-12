@@ -242,8 +242,8 @@ TYPED_TEST_P(recommender_random_test, diff) {
 
   msgpack::sbuffer sbuf;
   core::framework::stream_writer<msgpack::sbuffer> st(sbuf);
-  core::framework::msgpack_packer mp(st);
-  core::framework::packer pk(mp);
+  core::framework::jubatus_packer jp(st);
+  core::framework::packer pk(jp);
   get_mixable(r)->get_diff(pk);
 
   msgpack::unpacked msg;
@@ -273,8 +273,8 @@ TYPED_TEST_P(recommender_random_test, mix) {
   msgpack::sbuffer sbuf1;
   {
     framework::stream_writer<msgpack::sbuffer> st(sbuf1);
-    framework::msgpack_packer mp(st);
-    framework::packer pk(mp);
+    framework::jubatus_packer jp(st);
+    framework::packer pk(jp);
     get_mixable(r1)->get_diff(pk);
     msgpack::unpack(&msg1, sbuf1.data(), sbuf1.size());
   }
@@ -283,8 +283,8 @@ TYPED_TEST_P(recommender_random_test, mix) {
   msgpack::sbuffer sbuf2;
   {
     framework::stream_writer<msgpack::sbuffer> st(sbuf2);
-    framework::msgpack_packer mp(st);
-    framework::packer pk(mp);
+    framework::jubatus_packer jp(st);
+    framework::packer pk(jp);
     get_mixable(r2)->get_diff(pk);
     msgpack::unpack(&msg2, sbuf2.data(), sbuf2.size());
   }

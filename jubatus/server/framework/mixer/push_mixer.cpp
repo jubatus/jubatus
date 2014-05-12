@@ -355,8 +355,8 @@ byte_buffer push_mixer::pull(const msgpack::object& arg_obj) {
 
   msgpack::sbuffer sbuf;
   stream_writer<msgpack::sbuffer> st(sbuf);
-  core::framework::msgpack_packer mp(st);
-  packer pk(mp);
+  core::framework::jubatus_packer jp(st);
+  packer pk(jp);
 
   mixable->pull(arg, pk);
 
@@ -372,8 +372,8 @@ byte_buffer push_mixer::get_pull_argument(int dummy_arg) {
 
   msgpack::sbuffer sbuf;
   stream_writer<msgpack::sbuffer> st(sbuf);
-  core::framework::msgpack_packer mp(st);
-  packer pk(mp);
+  core::framework::jubatus_packer jp(st);
+  packer pk(jp);
 
   mixable->get_argument(pk);
 
@@ -396,8 +396,8 @@ int push_mixer::push(const msgpack::object& diff_obj) {
 
   msgpack::sbuffer sbuf;
   stream_writer<msgpack::sbuffer> st(sbuf);
-  core::framework::msgpack_packer mp(st);
-  packer pk(mp);
+  core::framework::jubatus_packer jp(st);
+  packer pk(jp);
 
   mixable->push(diff);
 

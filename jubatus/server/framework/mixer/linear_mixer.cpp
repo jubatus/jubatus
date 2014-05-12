@@ -515,8 +515,8 @@ void linear_mixer::mix() {
         // convert diff_object to binary
         msgpack::sbuffer sbuf;
         stream_writer<msgpack::sbuffer> st(sbuf);
-        core::framework::msgpack_packer mp(st);
-        packer pk(mp);
+        core::framework::jubatus_packer jp(st);
+        packer pk(jp);
         diff->convert_binary(pk);
 
         byte_buffer mixed(sbuf.data(), sbuf.size());
@@ -574,8 +574,8 @@ byte_buffer linear_mixer::get_diff(int a) {
 
   msgpack::sbuffer sbuf;
   stream_writer<msgpack::sbuffer> st(sbuf);
-  core::framework::msgpack_packer mp(st);
-  packer pk(mp);
+  core::framework::jubatus_packer jp(st);
+  packer pk(jp);
   mixable->get_diff(pk);
   byte_buffer bytes(sbuf.data(), sbuf.size());
   return bytes;

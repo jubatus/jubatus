@@ -62,7 +62,7 @@ using jubatus::core::table::uint64_column;
 using jubatus::core::table::string_column;
 
 using jubatus::core::framework::stream_writer;
-using jubatus::core::framework::msgpack_writer;
+using jubatus::core::framework::jubatus_writer;
 using jubatus::core::framework::packer;
 
 namespace jutil = jubatus::util;
@@ -677,8 +677,8 @@ TEST(table, get_row) {
 
   msgpack::sbuffer data;  // stored packed data
   stream_writer<msgpack::sbuffer> sw(data);
-  jubatus::core::framework::msgpack_packer mp(sw);
-  packer pk(mp);
+  jubatus::core::framework::jubatus_packer jp(sw);
+  packer pk(jp);
   base.get_row(0, pk);
 
   msgpack::unpacked unp;
@@ -723,8 +723,8 @@ TEST(table, set_row) {
 
   msgpack::sbuffer sb;  // stored packed data
   stream_writer<msgpack::sbuffer> sw(sb);
-  jubatus::core::framework::msgpack_packer mp(sw);
-  packer pk(mp);
+  jubatus::core::framework::jubatus_packer jp(sw);
+  packer pk(jp);
   from.get_row(0, pk);
 
   msgpack::unpacked msg;
@@ -758,8 +758,8 @@ TEST(table, set_bit_vector_row) {
 
   msgpack::sbuffer data;  // stored packed data
   stream_writer<msgpack::sbuffer> sw(data);
-  jubatus::core::framework::msgpack_packer mp(sw);
-  packer pk(mp);
+  jubatus::core::framework::jubatus_packer jp(sw);
+  packer pk(jp);
   from.get_row(0, pk);
 
   msgpack::unpacked unp;
@@ -788,7 +788,7 @@ TEST(table, set_row_overwrite) {
 
   msgpack::sbuffer sb1, sb2;  // stored packed data
   stream_writer<msgpack::sbuffer> sw1(sb1), sw2(sb2);
-  jubatus::core::framework::msgpack_packer mp1(sw1), mp2(sw2);
+  jubatus::core::framework::jubatus_packer mp1(sw1), mp2(sw2);
   packer pk1(mp1), pk2(mp2);
 
   from.add("key1", owner("self1"), std::string("hoge1"), 1);

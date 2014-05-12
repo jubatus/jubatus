@@ -153,8 +153,8 @@ TEST(mixable, trivial) {
 
   msgpack::sbuffer diff1, diff2;
   stream_writer<msgpack::sbuffer> sw1(diff1), sw2(diff2);
-  core::framework::msgpack_packer mp1(sw1), mp2(sw2);
-  packer pk1(mp1), pk2(mp2);
+  core::framework::jubatus_packer jp1(sw1), jp2(sw2);
+  packer pk1(jp1), pk2(jp2);
   m.get_diff(pk1);
   m.get_diff(pk2);
 
@@ -177,8 +177,8 @@ TEST(mixable, string) {
 
   msgpack::sbuffer diff1, diff2;
   stream_writer<msgpack::sbuffer> sw1(diff1), sw2(diff2);
-  core::framework::msgpack_packer mp1(sw1), mp2(sw2);
-  packer pk1(mp1), pk2(mp2);
+  core::framework::jubatus_packer jp1(sw1), jp2(sw2);
+  packer pk1(jp1), pk2(jp2);
   m.get_diff(pk1);
   m.get_diff(pk2);
 

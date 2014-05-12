@@ -24,7 +24,7 @@ namespace core {
 namespace framework {
 
 template <class T>
-class stream_writer : public core::framework::msgpack_writer {
+class stream_writer : public core::framework::jubatus_writer {
  public:
   explicit stream_writer(T& stream)
     : stream_(stream) {
