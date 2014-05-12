@@ -50,7 +50,7 @@ class lof : public anomaly_base {
   std::string type() const;
   std::vector<framework::mixable*> get_mixables() const;
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void pack(framework::packer& packer) const;
   void unpack(msgpack::object o);
 
  private:

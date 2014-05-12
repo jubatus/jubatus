@@ -125,7 +125,7 @@ std::vector<framework::mixable*> lof::get_mixables() const {
   return mixables;
 }
 
-void lof::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void lof::pack(framework::packer& packer) const {
   packer.pack_array(2);
   mixable_storage_->get_model()->pack(packer);
   nn_engine_->pack(packer);

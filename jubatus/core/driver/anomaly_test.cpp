@@ -79,7 +79,9 @@ TEST_F(anomaly_test, small) {
 
   // save
   msgpack::sbuffer sbuf;
-  msgpack::packer<msgpack::sbuffer> pk(sbuf);
+  stream_writer<msgpack::sbuffer> st(sbuf);
+  framework::jubatus_packer jp(st);
+  framework::packer pk(jp);
   anomaly_->pack(pk);
 
   // clear

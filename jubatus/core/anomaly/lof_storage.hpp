@@ -118,8 +118,7 @@ class lof_storage {
     return storage::version();
   }
 
-  template<class Buffer>
-  void pack(msgpack::packer<Buffer>& packer) const {
+  void pack(framework::packer& packer) const {
     packer.pack(*this);
   }
   void unpack(msgpack::object o) {

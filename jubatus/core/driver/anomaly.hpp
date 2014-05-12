@@ -51,7 +51,7 @@ class anomaly : public driver_base {
   float update(const std::string& id, const fv_converter::datum& d);
   float overwrite(const std::string& id, const fv_converter::datum& d);
   void clear();
-  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void pack(framework::packer& pk) const;
   void unpack(msgpack::object o);
   float calc_score(const fv_converter::datum& d) const;
   std::vector<std::string> get_all_rows() const;

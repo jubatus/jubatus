@@ -44,6 +44,9 @@ class anomaly_base : public framework::model {
   // Returns anomaly score of the row corresponding to given id.
   virtual float calc_anomaly_score(const std::string& id) const = 0;
 
+  virtual void pack(framework::packer& packer) const = 0;
+  virtual void unpack(msgpack::object o) = 0;
+
   // Clears all rows.
   virtual void clear() = 0;
 

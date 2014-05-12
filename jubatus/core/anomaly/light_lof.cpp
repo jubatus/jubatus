@@ -305,7 +305,7 @@ light_lof::parameter light_lof::get_row_parameter(const std::string& row)
   return param;
 }
 
-void light_lof::pack(msgpack::packer<msgpack::sbuffer>& packer) const {
+void light_lof::pack(framework::packer& packer) const {
   packer.pack_array(2);
   nearest_neighbor_engine_->pack(packer);
   mixable_scores_->get_model()->pack(packer);

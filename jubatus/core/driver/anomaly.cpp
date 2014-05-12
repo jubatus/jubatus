@@ -100,7 +100,7 @@ uint64_t anomaly::find_max_int_id() const {
   return anomaly_->find_max_int_id();
 }
 
-void anomaly::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+void anomaly::pack(framework::packer& pk) const {
   pk.pack_array(1);
   anomaly_->pack(pk);
   // TODO: Is weight_manager required?
