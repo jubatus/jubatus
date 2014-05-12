@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <cmath>
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/data/string/utility.h"
 #include "jubatus/core/common/assert.hpp"
@@ -30,6 +31,46 @@
 using jubatus::util::concurrent::scoped_lock;
 using std::vector;
 using std::string;
+
+namespace {
+
+const char* zk_type2str(int type) {
+  if (type == ZOO_CREATED_EVENT) {
+    return "CREATED_EVENT";
+  } else if (type == ZOO_DELETED_EVENT) {
+    return "DELETED_EVENT";
+  } else if (type == ZOO_CHANGED_EVENT) {
+    return "CHANGED_EVENT";
+  } else if (type == ZOO_CHILD_EVENT) {
+    return "CHILD_EVENT";
+  } else if (type == ZOO_SESSION_EVENT) {
+    return "SESSION_EVENT";
+  } else if (type == ZOO_NOTWATCHING_EVENT) {
+    return "NOTWATCHING_EVENT";
+  }
+
+  return "UNKNOWN_EVENT_TYPE";
+}
+
+const char* zk_state2str(int state){
+  if (state == 0) {
+    return "CLOSED_STATE";
+  } else if (state == ZOO_CONNECTING_STATE) {
+    return "CONNECTING_STATE";
+  } else if (state == ZOO_ASSOCIATING_STATE) {
+    return "ASSOCIATING_STATE";
+  } else if (state == ZOO_CONNECTED_STATE) {
+    return "CONNECTED_STATE";
+  } else if (state == ZOO_EXPIRED_SESSION_STATE) {
+    return "EXPIRED_SESSION_STATE";
+  } else if (state == ZOO_AUTH_FAILED_STATE) {
+    return "AUTH_FAILED_STATE";
+  }
+
+  return "INVALID_STATE";
+}
+
+}  // namespace
 
 namespace jubatus {
 namespace server {
@@ -61,18 +102,11 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
       << core::common::exception::error_errno(errno));
   }
 
-  // wait for ZOO_CONNECTED_STATE until timeout sec
-  int retry = timeout;
-  while ((state_ =zoo_state(zh_)) != ZOO_CONNECTED_STATE) {
-    if (retry == 0) {
-      throw JUBATUS_EXCEPTION(
+  if (!wait_until_connected(timeout)) {
+    throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("cannot connect zk in "
             + jubatus::util::lang::lexical_cast<std::string, int>(timeout)
             + " sec:" + hosts));
-    } else {
-      retry--;
-      sleep(1);  // 1 sec
-    }
   }
 
   LOG(INFO) << "connected to zk: "
@@ -85,6 +119,24 @@ zk::~zk() {
     fclose(logfilep_);
     logfilep_ = NULL;
   }
+}
+
+/**
+ * Wait until ZooKeeper session to be established (ZOO_CONNECTED_STATE), for
+ * up to `timeout` seconds.  Returns true when succeed, false when timed out.
+ */
+bool zk::wait_until_connected(int timeout) {
+  scoped_lock lk(m_);
+  int retry = timeout;
+  while (zoo_state(zh_) != ZOO_CONNECTED_STATE) {
+    if (retry <= 0) {
+      return false;
+    } else {
+      retry--;
+      ::sleep(1);  // 1 sec
+    }
+  }
+  return true;
 }
 
 void zk::force_close() {
@@ -492,20 +544,45 @@ bool zkmutex::unlock_r() {
 
 void mywatcher(zhandle_t* zh, int type, int state, const char* path, void* p) {
   zk* zk_ = static_cast<zk*>(p);
+
+  LOG(INFO) << "got ZooKeeper event: "
+            << "type " << zk_type2str(type) << "(" << type << "), "
+            << "state " << zk_state2str(state) << "(" << state << ")";
+
   // ZOO_* cannot use switch because it const int.
   if (type == ZOO_CREATED_EVENT) {
   } else if (type == ZOO_DELETED_EVENT) {
   } else if (type == ZOO_CHANGED_EVENT) {
   } else if (type == ZOO_CHILD_EVENT) {
   } else if (type == ZOO_SESSION_EVENT) {
-    if (state != ZOO_CONNECTED_STATE && state != ZOO_ASSOCIATING_STATE) {
-      LOG(ERROR) << "zk connection expiration - type: " << type << ", state: "
-                 << state;
+    if (state == ZOO_CONNECTED_STATE) {
+      LOG(INFO) << "ZooKeeper session established, negotiated timeout "
+                << zoo_recv_timeout(zh) << " ms";
+    } else if (state == ZOO_CONNECTING_STATE) {
+      LOG(WARNING) << "ZooKeeper session lost";
+
+      // Wait to expect the ZooKeeper master failover.
+      // `zoo_recv_timeout` returns the timeout negotiated between the
+      // last-connected ZooKeeper cluster and the client.
+      if (zk_->wait_until_connected(::ceil(zoo_recv_timeout(zh) / 1000.f))) {
+        LOG(INFO) << "ZooKeeper session recovered before timeout";
+      } else {
+        int final_state = zoo_state(zh);
+        LOG(ERROR) << "ZooKeeper session recovery timed out: "
+                   << "state " << zk_state2str(final_state) << "(" << final_state << ")";
+        zk_->run_cleanup();
+      }
+    } else if (state == ZOO_EXPIRED_SESSION_STATE) {
+      LOG(ERROR) << "ZooKeeper session expired";
       zk_->run_cleanup();
+    } else if (state == ZOO_ASSOCIATING_STATE) {
+    } else if (state == ZOO_AUTH_FAILED_STATE) {
+    } else {
+      LOG(ERROR) << "unknown ZooKeeper session state: " << state;
     }
   } else if (type == ZOO_NOTWATCHING_EVENT) {
   } else {
-    LOG(ERROR) << "unknown event type - type: " << type << ", state: " << state;
+    LOG(ERROR) << "unknown ZooKeeper event: type " << type << ", state " << state;
   }
 }
 
