@@ -29,7 +29,7 @@ binary_feature* binary_feature_factory::create(
     const std::string& name,
     const param_t& params) const {
   binary_feature* p;
-  if (ext_ != NULL && (p = ext_(name, params))) {
+  if (ext_ && (p = ext_(name, params))) {
     return p;
   } else {
     throw JUBATUS_EXCEPTION(

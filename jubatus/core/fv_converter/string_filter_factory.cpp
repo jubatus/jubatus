@@ -45,7 +45,7 @@ shared_ptr<string_filter> string_filter_factory::create(
   string_filter* p;
   if (name == "regexp") {
     return create_regexp_filter(params);
-  } else if (ext_ != NULL && (p = ext_(name, params))) {
+  } else if (ext_ && (p = ext_(name, params))) {
     return shared_ptr<string_filter>(p);
   } else {
     throw JUBATUS_EXCEPTION(

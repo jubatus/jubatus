@@ -87,7 +87,7 @@ shared_ptr<word_splitter> splitter_factory::create(
     return create_character_ngram(params);
   } else if (name == "regexp") {
     return create_regexp(params);
-  } else if (ext_ != NULL && (p = ext_(name, params))) {
+  } else if (ext_ && (p = ext_(name, params))) {
     return shared_ptr<word_splitter>(p);
   } else {
     throw JUBATUS_EXCEPTION(

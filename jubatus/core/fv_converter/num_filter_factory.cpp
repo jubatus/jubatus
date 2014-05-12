@@ -45,7 +45,7 @@ shared_ptr<num_filter> num_filter_factory::create(
   num_filter* p;
   if (name == "add") {
     return create_add_filter(params);
-  } else if (ext_ != NULL && (p = ext_(name, params))) {
+  } else if (ext_ && (p = ext_(name, params))) {
     return shared_ptr<num_filter>(p);
   } else {
     throw JUBATUS_EXCEPTION(

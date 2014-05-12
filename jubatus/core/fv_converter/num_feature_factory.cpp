@@ -31,7 +31,7 @@ shared_ptr<num_feature> num_feature_factory::create(
     const std::string& name,
     const param_t& params) const {
   num_feature* p;
-  if (ext_ != NULL && (p = ext_(name, params))) {
+  if (ext_ && (p = ext_(name, params))) {
     return shared_ptr<num_feature>(p);
   } else {
     throw JUBATUS_EXCEPTION(
