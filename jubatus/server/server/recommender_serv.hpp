@@ -37,7 +37,6 @@ class recommender_serv : public framework::server_base {
       const jubatus::util::lang::shared_ptr<common::lock_service>& zk);
   virtual ~recommender_serv();
 
-
   framework::mixer::mixer* get_mixer() const {
     return mixer_.get();
   }
