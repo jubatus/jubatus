@@ -376,8 +376,7 @@ class column_table {
 
   MSGPACK_DEFINE(keys_, tuples_, versions_, columns_, clock_, index_);
 
-  template<class Packer>
-  void pack(Packer& packer) const {
+  void pack(framework::packer& packer) const {
     packer.pack(*this);
   }
 
