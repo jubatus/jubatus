@@ -72,8 +72,7 @@ void nearest_neighbor_base::similar_row(
   }
 }
 
-void nearest_neighbor_base::pack(
-    msgpack::packer<msgpack::sbuffer>& packer) const {
+void nearest_neighbor_base::pack(framework::packer& packer) const {
   get_const_table()->pack(packer);
 }
 

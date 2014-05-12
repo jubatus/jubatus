@@ -87,7 +87,7 @@ void nearest_neighbor::clear() {
   nn_->clear();
 }
 
-void nearest_neighbor::pack(msgpack::packer<msgpack::sbuffer>& pk) const {
+void nearest_neighbor::pack(framework::packer& pk) const {
   nn_->pack(pk);
 }
 

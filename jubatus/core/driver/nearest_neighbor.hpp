@@ -65,7 +65,7 @@ class nearest_neighbor : public driver_base {
   similar_row(const core::fv_converter::datum& datum, size_t ret_num);
 
   void clear();
-  void pack(msgpack::packer<msgpack::sbuffer>& pk) const;
+  void pack(framework::packer& pk) const;
   void unpack(msgpack::object o);
 
  private:

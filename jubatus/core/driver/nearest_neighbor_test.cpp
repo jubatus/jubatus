@@ -22,6 +22,7 @@
 
 #include "jubatus/core/fv_converter/datum.hpp"
 #include "../common/jsonconfig.hpp"
+#include "../framework/stream_writer.hpp"
 
 #include "../nearest_neighbor/nearest_neighbor_factory.hpp"
 #include "nearest_neighbor.hpp"
@@ -168,7 +169,9 @@ TEST_P(nearest_neighbor_test, save_load) {
 
   // save to a buffer
   msgpack::sbuffer sbuf;
-  msgpack::packer<msgpack::sbuffer> packer(sbuf);
+  framework::stream_writer<msgpack::sbuffer> st(sbuf);
+  framework::jubatus_packer jp(st);
+  framework::packer packer(jp);
   nearest_neighbor_->pack(packer);
 
   // restart the driver

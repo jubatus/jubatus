@@ -75,7 +75,7 @@ class nearest_neighbor_base {
       std::vector<std::pair<std::string, float> >& ids,
       uint64_t ret_num) const;
 
-  void pack(msgpack::packer<msgpack::sbuffer>& packer) const;
+  void pack(framework::packer& packer) const;
   void unpack(msgpack::object o);
 
   framework::mixable* get_mixable() const;
