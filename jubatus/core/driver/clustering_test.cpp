@@ -41,7 +41,6 @@ using jubatus::util::lang::shared_ptr;
 using jubatus::core::fv_converter::datum;
 using jubatus::core::clustering::clustering_method;
 using jubatus::core::clustering::clustering_config;
-using jubatus::core::framework::mixable_holder;
 
 namespace jubatus {
 namespace core {
@@ -294,24 +293,37 @@ TEST_P(clustering_test, get_nearest_center) {
 }
 
 TEST_P(clustering_test, empty_mix) {
+  framework::linear_mixable* clustering_mixable =
+    dynamic_cast<framework::linear_mixable*>(clustering_->get_mixable());
   shared_ptr<driver::clustering> other = create_driver();
-  shared_ptr<mixable_holder> holder1 = clustering_->get_mixable_holder();
-  shared_ptr<mixable_holder> holder2 = other->get_mixable_holder();
+  framework::linear_mixable* other_mixable =
+    dynamic_cast<framework::linear_mixable*>(other->get_mixable());
+  ASSERT_TRUE(clustering_mixable);
+  ASSERT_TRUE(other_mixable);
 
-  std::vector<common::byte_buffer> data;
+  msgpack::sbuffer data;
   {
-    mixable_holder::mixable_list mixables1 = holder1->get_mixables();
-    for (size_t i = 0; i < mixables1.size(); ++i) {
-      data.push_back(mixables1[i]->get_diff());
-    }
+    core::framework::stream_writer<msgpack::sbuffer> st(data);
+    core::framework::jubatus_packer jp(st);
+    core::framework::packer pk(jp);
+    clustering_mixable->get_diff(pk);
   }
   {
-    mixable_holder::mixable_list mixables2 = holder2->get_mixables();
-    ASSERT_EQ(data.size(), mixables2.size());
-    for (size_t i = 0; i < data.size(); ++i) {
-      mixables2[i]->mix(mixables2[i]->get_diff(), data[i], data[i]);
-      mixables2[i]->put_diff(data[i]);
-    }
+    msgpack::sbuffer sbuf;
+    core::framework::stream_writer<msgpack::sbuffer> st(sbuf);
+    core::framework::jubatus_packer jp(st);
+    core::framework::packer pk(jp);
+    other_mixable->get_diff(pk);
+
+    msgpack::unpacked msg;
+    msgpack::unpack(&msg, sbuf.data(), sbuf.size());
+    framework::diff_object diff = other_mixable->convert_diff_object(msg.get());
+
+    msgpack::unpacked data_msg;
+    msgpack::unpack(&data_msg, data.data(), data.size());
+
+    other_mixable->mix(data_msg.get(), diff);
+    other_mixable->put_diff(diff);
   }
 }
 
