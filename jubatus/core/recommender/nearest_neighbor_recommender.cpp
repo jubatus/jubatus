@@ -74,17 +74,21 @@ std::string nearest_neighbor_recommender::type() const {
 }
 
 framework::mixable* nearest_neighbor_recommender::get_mixable() const {
-  // TODO: implement
-  //return nearest_neighbor_engine_->get_mixable();
-  return 0;
+  return nearest_neighbor_engine_->get_mixable();
 }
 
 void nearest_neighbor_recommender::pack(framework::packer& packer) const {
-  // TODO: implement
+  packer.pack_array(2);
+  orig_.pack(packer);
+  nearest_neighbor_engine_->pack(packer);
 }
 
 void nearest_neighbor_recommender::unpack(msgpack::object o) {
-  // TODO: implement
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
+    throw msgpack::type_error();
+  }
+  orig_.unpack(o.via.array.ptr[0]);
+  nearest_neighbor_engine_->unpack(o.via.array.ptr[1]);
 }
 
 }  // namespace recommender
