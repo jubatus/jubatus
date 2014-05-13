@@ -25,6 +25,7 @@
 #include "jubatus/core/driver/anomaly.hpp"
 #include "../common/global_id_generator_base.hpp"
 #include "../common/lock_service.hpp"
+#include "../fv_converter/so_factory.hpp"
 #include "../framework/server_base.hpp"
 #include "anomaly_types.hpp"
 
@@ -94,6 +95,7 @@ class anomaly_serv : public framework::server_base {
 
   jubatus::util::lang::shared_ptr<common::lock_service> zk_;
   jubatus::util::lang::shared_ptr<common::global_id_generator_base> idgen_;
+  fv_converter::so_factory so_loader_;
 };
 
 }  // namespace server

@@ -14,24 +14,31 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <string>
+#include "dynamic_splitter.hpp"
+
 #include <map>
-#include <gtest/gtest.h>
-#include "../common/type.hpp"
-#include "exception.hpp"
-#include "num_feature.hpp"
-#include "num_feature_factory.hpp"
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-TEST(num_feature_factory, trivial) {
-  num_feature_factory f;
-  std::map<std::string, std::string> param;
-  ASSERT_THROW(f.create("hoge", param), converter_exception);
+dynamic_splitter::dynamic_splitter(
+    const std::string& path,
+    const std::string& function,
+    const std::map<std::string, std::string>& params)
+    : loader_(path),
+      impl_(load_object<word_splitter>(loader_, function, params)) {
+}
+
+void dynamic_splitter::split(
+    const std::string& string,
+    std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
+  impl_->split(string, ret_boundaries);
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

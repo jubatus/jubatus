@@ -14,35 +14,34 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <map>
-#include <string>
-#include <gtest/gtest.h>
-#include "jubatus/util/lang/scoped_ptr.h"
-#include "../common/type.hpp"
 #include "dynamic_binary_feature.hpp"
 
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
+using std::string;
+
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-TEST(dynamic_binary_feature, trivial) {
-  std::map<std::string, std::string> params;
+dynamic_binary_feature::dynamic_binary_feature(
+    const string& path,
+    const string& function,
+    const std::map<string, string>& params)
+    : loader_(path),
+      impl_(load_object<binary_feature>(loader_, function, params)) {
+}
 
-  {
-    dynamic_binary_feature f(
-        LIBBINARY_FEATURE_SAMPLE,
-        "create",
-        params);
-    common::sfv_t fv;
-    f.add_feature("/path", "value", fv);
-
-    ASSERT_EQ(1u, fv.size());
-    EXPECT_EQ("/path", fv[0].first);
-    // This plugin returns length of a given value.
-    EXPECT_EQ(5., fv[0].second);
-  }
+void dynamic_binary_feature::add_feature(
+    const string& key,
+    const string& value,
+    std::vector<std::pair<string, float> >& ret_fv) const {
+  impl_->add_feature(key, value, ret_fv);
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

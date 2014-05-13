@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,38 +16,19 @@
 
 #include <map>
 #include <string>
-#include <gtest/gtest.h>
-#include "dynamic_num_filter.hpp"
-#include "exception.hpp"
+#include "jubatus/core/fv_converter/word_splitter.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-TEST(dynamic_num_filter, trivial) {
-  std::map<std::string, std::string> params;
-
-  dynamic_num_filter f(LIBNUM_FILTER_SAMPLE,
-      "create",
-      params);
-  EXPECT_EQ(6.0, f.filter(3.0));
+extern "C" {
+core::fv_converter::word_splitter* create(
+    const std::map<std::string, std::string>& params) {
+  return 0;
 }
-
-TEST(dynamic_num_filter, unknown_file) {
-  std::map<std::string, std::string> params;
-  EXPECT_THROW(dynamic_num_filter f("unkonwn_file.so",
-          "create",
-          params),
-      converter_exception);
-}
-
-TEST(dynamic_num_filter, unknown_function) {
-  std::map<std::string, std::string> params;
-  EXPECT_THROW(
-      dynamic_num_filter f(LIBNUM_FILTER_SAMPLE, "unknown_function", params),
-      converter_exception);
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

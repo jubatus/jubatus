@@ -13,14 +13,6 @@ def configure(conf):
   else:
     conf.check_cxx(lib = 'onig', define_name = 'HAVE_ONIGURUMA')
 
-  libpat = conf.env.cxxshlib_PATTERN
-  conf.define('LIBSPLITTER_SAMPLE', './' + libpat % 'splitter_sample')
-  conf.define('LIBSPLITTER_NULL', './' + libpat % 'splitter_null')
-  conf.define('LIBFILTER_SAMPLE', './' + libpat % 'filter_sample')
-  conf.define('LIBNUM_FEATURE_SAMPLE', './' + libpat % 'num_feature_sample')
-  conf.define('LIBNUM_FILTER_SAMPLE', './' + libpat % 'num_filter_sample')
-  conf.define('LIBBINARY_FEATURE_SAMPLE', './' + libpat % 'binary_feature_sample')
-
 def make_test(bld, use, src):
   bld.program(
     features = 'gtest',
@@ -52,12 +44,6 @@ def build(bld):
     'libsvm_converter.cpp',
     'string_filter_factory.cpp',
     'num_filter_factory.cpp',
-    'dynamic_loader.cpp',
-    'dynamic_splitter.cpp',
-    'dynamic_num_feature.cpp',
-    'dynamic_binary_feature.cpp',
-    'dynamic_string_filter.cpp',
-    'dynamic_num_filter.cpp',
     'revert.cpp',
     'weight_manager.cpp',
     'mixable_weight_manager.cpp',
@@ -93,48 +79,6 @@ def build(bld):
       source = bld.path.ant_glob('test_input/*'),
       target = n)
 
-  bld.shlib(
-    source = 'test_splitter.cpp',
-    target = 'splitter_sample',
-    install_path = None,
-    name = 'splitter_sample',
-    )
-
-  bld.shlib(
-    source = 'test_splitter_null.cpp',
-    target = 'splitter_null',
-    install_path = None,
-    name = 'splitter_null',
-    )
-
-  bld.shlib(
-    source = 'test_num_feature.cpp',
-    target = 'num_feature_sample',
-    install_path = None,
-    name = 'num_feature_sample',
-    )
-
-  bld.shlib(
-    source = 'test_num_filter.cpp',
-    target = 'num_filter_sample',
-    install_path = None,
-    name = 'num_filter_sample',
-    )
-
-  bld.shlib(
-    source = 'test_binary_feature.cpp',
-    target = 'binary_feature_sample',
-    install_path = None,
-    name = 'binary_feature_sample',
-    )
-
-  bld.shlib(
-    source = 'test_string_filter.cpp',
-    target = 'filter_sample',
-    install_path = None,
-    name = 'filter_sample',
-    )
-
   test_source = [
       'json_converter_test.cpp',
       'msgpack_converter_test.cpp',
@@ -147,15 +91,9 @@ def build(bld):
       'num_feature_factory_test.cpp',
       'converter_config_test.cpp',
       'libsvm_converter_test.cpp',
-      'dynamic_splitter_test.cpp',
-      'dynamic_num_feature_test.cpp',
-      'dynamic_binary_feature_test.cpp',
-      'dynamic_string_filter_test.cpp',
-      'dynamic_num_filter_test.cpp',
       'string_filter_factory_test.cpp',
       'num_filter_impl_test.cpp',
       'num_filter_factory_test.cpp',
-      'dynamic_loader_test.cpp',
       'counter_test.cpp',
       'revert_test.cpp',
       'weight_manager_test.cpp',

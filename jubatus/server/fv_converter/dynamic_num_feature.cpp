@@ -14,43 +14,30 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_LOADER_HPP_
-#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_LOADER_HPP_
+#include "dynamic_num_feature.hpp"
 
 #include <map>
 #include <string>
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-class dynamic_loader {
- public:
-  explicit dynamic_loader(const std::string& path);
-  ~dynamic_loader();
-
-  void* load_symbol(const std::string& name) const;
-
- private:
-  void* handle_;
-};
-
-void check_null_instance(void* inst);
-
-template<typename T>
-T* load_object(
-    const dynamic_loader& loader,
+dynamic_num_feature::dynamic_num_feature(
+    const std::string& path,
     const std::string& function,
-    const std::map<std::string, std::string>& params) {
-  typedef T* (*func_t)(const std::map<std::string, std::string>&);
-  func_t func = reinterpret_cast<func_t>(loader.load_symbol(function));
-  T* inst = (*func)(params);
-  check_null_instance(inst);
-  return inst;
+    const std::map<std::string, std::string>& params)
+    : loader_(path),
+      impl_(load_object<num_feature>(loader_, function, params)) {
+}
+
+void dynamic_num_feature::add_feature(
+    const std::string& key,
+    double value,
+    jubatus::core::common::sfv_t& ret_fv) const {
+  impl_->add_feature(key, value, ret_fv);
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus
-
-#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_LOADER_HPP_

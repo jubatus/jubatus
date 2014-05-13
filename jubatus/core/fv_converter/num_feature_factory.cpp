@@ -18,8 +18,8 @@
 
 #include <string>
 #include "exception.hpp"
-#include "dynamic_num_feature.hpp"
 #include "util.hpp"
+#include "num_feature.hpp"
 
 using jubatus::util::lang::shared_ptr;
 
@@ -27,19 +27,12 @@ namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-shared_ptr<num_feature> create_dynamic_num_feature(
-    const num_feature_factory::param_t& params) {
-  const std::string& path = get_or_die(params, "path");
-  const std::string& function = get_or_die(params, "function");
-  return shared_ptr<num_feature>(
-      new dynamic_num_feature(path, function, params));
-}
-
 shared_ptr<num_feature> num_feature_factory::create(
     const std::string& name,
-    const num_feature_factory::param_t& params) const {
-  if (name == "dynamic") {
-    return create_dynamic_num_feature(params);
+    const param_t& params) const {
+  num_feature* p;
+  if (ext_ && (p = ext_(name, params))) {
+    return shared_ptr<num_feature>(p);
   } else {
     throw JUBATUS_EXCEPTION(
         converter_exception(std::string("unknonwn num feature name: ") + name));

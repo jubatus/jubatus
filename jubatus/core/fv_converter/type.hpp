@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,45 +14,22 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#ifndef JUBATUS_CORE_FV_CONVERTER_TYPE_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_TYPE_HPP_
+
 #include <map>
 #include <string>
-#include <gtest/gtest.h>
-#include "dynamic_string_filter.hpp"
-#include "exception.hpp"
+#include <vector>
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-TEST(dynamic_string_filter, trivial) {
-  std::map<std::string, std::string> params;
+typedef std::map<std::string, std::string> param_t;
 
-  dynamic_string_filter f(LIBFILTER_SAMPLE,
-      "create",
-      params);
-  std::string out;
-  f.filter("hoge-hoge", out);
-  EXPECT_EQ("hoge hoge", out);
-}
-
-TEST(dynamic_string_filter, unknown_file) {
-  std::map<std::string, std::string> params;
-  EXPECT_THROW(
-      dynamic_string_filter f("unkonwn_file.so",
-          "create",
-          params),
-      converter_exception);
-}
-
-TEST(dynamic_string_filter, unknown_function) {
-  std::map<std::string, std::string> params;
-  EXPECT_THROW(
-      dynamic_string_filter f(LIBFILTER_SAMPLE,
-          "unknown_function",
-          params),
-      converter_exception);
-}
 
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
+
+#endif  // JUBATUS_CORE_FV_CONVERTER_TYPE_HPP_

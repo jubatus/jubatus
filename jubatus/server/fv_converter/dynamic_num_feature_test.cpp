@@ -14,38 +14,33 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
-#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_
-
 #include <map>
 #include <string>
+#include <gtest/gtest.h>
 #include "jubatus/util/lang/scoped_ptr.h"
-#include "../common/type.hpp"
-#include "dynamic_loader.hpp"
-#include "num_feature.hpp"
+#include "dynamic_num_feature.hpp"
+#include "jubatus/core/fv_converter/num_feature.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-class dynamic_num_feature : public num_feature {
- public:
-  dynamic_num_feature(
-      const std::string& path,
-      const std::string& function,
-      const std::map<std::string, std::string>& params);
+TEST(dynamic_num_feature, trivial) {
+  std::map<std::string, std::string> params;
 
-  void add_feature(const std::string& key,
-                   double value,
-                   common::sfv_t& ret_fv) const;
+  {
+    dynamic_num_feature f(LIBNUM_FEATURE_SAMPLE,
+        "create",
+        params);
+    jubatus::core::common::sfv_t fv;
+    f.add_feature("/path", 1, fv);
 
- private:
-  dynamic_loader loader_;
-  jubatus::util::lang::scoped_ptr<num_feature> impl_;
-};
+    ASSERT_EQ(1u, fv.size());
+    EXPECT_EQ("/path", fv[0].first);
+    EXPECT_EQ(2., fv[0].second);
+  }
+}
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus
-
-#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_NUM_FEATURE_HPP_

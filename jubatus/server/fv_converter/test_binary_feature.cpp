@@ -14,40 +14,33 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_
-#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_
-
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
-#include "jubatus/util/lang/scoped_ptr.h"
-#include "dynamic_loader.hpp"
-#include "binary_feature.hpp"
+#include "jubatus/core/fv_converter/binary_feature.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-class dynamic_binary_feature : public binary_feature {
+class my_binary_feature : public core::fv_converter::binary_feature {
  public:
-  dynamic_binary_feature(
-      const std::string& path,
-      const std::string& function,
-      const std::map<std::string, std::string>& params);
-
   void add_feature(
       const std::string& key,
       const std::string& value,
-      std::vector<std::pair<std::string, float> >& ret_fv) const;
-
- private:
-  dynamic_loader loader_;
-  jubatus::util::lang::scoped_ptr<binary_feature> impl_;
+      std::vector<std::pair<std::string, float> >& ret_fv) const {
+    ret_fv.push_back(std::make_pair(key, value.size()));
+  }
 };
 
-}  // namespace fv_converter
-}  // namespace core
-}  // namespace jubatus
+extern "C" {
+core::fv_converter::binary_feature* create(
+    const std::map<std::string, std::string>& params) {
+  return new my_binary_feature();
+}
+}
 
-#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_
+}  // namespace fv_converter
+}  // namespace server
+}  // namespace jubatus

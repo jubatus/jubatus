@@ -41,26 +41,6 @@ TEST(string_filter_factory, unknown) {
   EXPECT_THROW(f.create("unknown", p), converter_exception);
 }
 
-TEST(string_filter_factory, dynamic) {
-  string_filter_factory f;
-  std::map<std::string, std::string> p;
-  ASSERT_THROW(f.create("dynamic", p), converter_exception);
-
-  p["path"] = "unknown_file_name";
-  ASSERT_THROW(f.create("dynamic", p), converter_exception);
-
-  p["path"] = LIBFILTER_SAMPLE;
-  ASSERT_THROW(f.create("dynamic", p), converter_exception);
-
-  p["function"] = "create";
-  jubatus::util::lang::shared_ptr<string_filter> s(f.create("dynamic", p));
-
-  std::string in("hoge-hoge");
-  std::string out;
-  s->filter(in, out);
-  EXPECT_EQ("hoge hoge", out);
-}
-
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
