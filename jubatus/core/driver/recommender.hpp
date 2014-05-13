@@ -24,6 +24,7 @@
 #include "../recommender/recommender_base.hpp"
 #include "../framework/mixable.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
+#include "../fv_converter/mixable_weight_manager.hpp"
 #include "driver.hpp"
 
 namespace jubatus {
@@ -67,6 +68,7 @@ class recommender : public driver_base {
     converter_;
   jubatus::util::lang::shared_ptr<core::recommender::recommender_base>
     recommender_;
+  fv_converter::mixable_weight_manager wm_;
 };
 
 }  // namespace driver

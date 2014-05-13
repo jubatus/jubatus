@@ -45,9 +45,10 @@ recommender::recommender(
     shared_ptr<core::recommender::recommender_base> recommender_method,
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : converter_(converter),
-      recommender_(recommender_method) {
+      recommender_(recommender_method),
+      wm_(core::fv_converter::mixable_weight_manager::model_ptr(new weight_manager)) {
   register_mixable(recommender_->get_mixable());
-  // TODO: register driver_base::mixable_holder (converter_)
+  register_mixable(&wm_);
 }
 
 recommender::~recommender() {
@@ -141,11 +142,21 @@ std::vector<std::string> recommender::get_all_rows() {
 }
 
 void recommender::pack(framework::packer& pk) const {
-  // TODO: implement
+  pk.pack_array(2);
+  recommender_->pack(pk);
+  wm_.get_model()->pack(pk);
 }
 
 void recommender::unpack(msgpack::object o) {
-  // TODO: implement
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
+    throw msgpack::type_error();
+  }
+
+  // clear before load
+  recommender_->clear();
+  converter_->clear_weights();
+  recommender_->unpack(o.via.array.ptr[0]);
+  wm_.get_model()->unpack(o.via.array.ptr[1]);
 }
 
 }  // namespace driver
