@@ -296,7 +296,7 @@ class datum_to_fv_converter_impl {
   }
 
   void clear_weights() {
-    mixable_weights_->clear();
+    mixable_weights_->get_model()->clear();
   }
 
  private:

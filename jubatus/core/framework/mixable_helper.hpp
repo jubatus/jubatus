@@ -43,7 +43,7 @@ class linear_mixable_helper : public linear_mixable {
   typedef Diff diff_type;
   typedef jubatus::util::lang::shared_ptr<Model> model_ptr;
 
-  linear_mixable_helper() __attribute__ ((deprecated)) {
+  linear_mixable_helper() {
   }
 
   linear_mixable_helper(model_ptr model)
@@ -53,8 +53,7 @@ class linear_mixable_helper : public linear_mixable {
     }
   }
 
-  // TODO: Implement set_model function for temporal core separation
-  void set_model(model_ptr m) __attribute__ ((deprecated)) {
+  void set_model(model_ptr m) {
     model_ = m;
   }
 
@@ -63,11 +62,6 @@ class linear_mixable_helper : public linear_mixable {
 
   model_ptr get_model() const {
     return model_;
-  }
-
-  // TODO: Implement set_model function for temporal core separation
-  void clear() __attribute__ ((deprecated)) {
-    model_->clear();
   }
 
   diff_object convert_diff_object(const msgpack::object& obj) const {
