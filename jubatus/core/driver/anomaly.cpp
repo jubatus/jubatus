@@ -42,11 +42,13 @@ anomaly::anomaly(
     shared_ptr<jubatus::core::anomaly::anomaly_base> anomaly_method,
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : converter_(converter),
-      anomaly_(anomaly_method) {
+      anomaly_(anomaly_method),
+      wm_(core::fv_converter::mixable_weight_manager::model_ptr(new weight_manager)) {
   vector<framework::mixable*> mixables = anomaly_->get_mixables();
   for (size_t i = 0; i < mixables.size(); i++) {
     register_mixable(mixables[i]);
   }
+  register_mixable(&wm_);
 }
 
 anomaly::~anomaly() {
@@ -101,13 +103,13 @@ uint64_t anomaly::find_max_int_id() const {
 }
 
 void anomaly::pack(framework::packer& pk) const {
-  pk.pack_array(1);
+  pk.pack_array(2);
   anomaly_->pack(pk);
-  // TODO: Is weight_manager required?
+  wm_.get_model()->pack(pk);
 }
 
 void anomaly::unpack(msgpack::object o) {
-  if (o.type != msgpack::type::ARRAY || o.via.array.size != 1) {
+  if (o.type != msgpack::type::ARRAY || o.via.array.size != 2) {
     throw msgpack::type_error();
   }
 
@@ -115,7 +117,7 @@ void anomaly::unpack(msgpack::object o) {
   anomaly_->clear();
   converter_->clear_weights();
   anomaly_->unpack(o.via.array.ptr[0]);
-  // TODO: Is weight_manager required?
+  wm_.get_model()->unpack(o.via.array.ptr[1]);
 }
 
 }  // namespace driver
