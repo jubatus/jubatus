@@ -43,7 +43,6 @@ class driver_base {
   class mixable_holder : public framework::linear_mixable,
     public framework::push_mixable {
    public:
-    // TODO: inherit push pull mixable
     std::set<std::string> mixables() const;
     void register_mixable(framework::mixable* mixable);
 
@@ -57,11 +56,8 @@ class driver_base {
     void get_argument(framework::packer&) const;
     void pull(const msgpack::object& arg, framework::packer&) const;
     void push(const msgpack::object&);
-    //storage::version get_version();
 
     std::vector<storage::version> get_versions() const;
-
-    // TODO: implement get_versions() interface
    private:
     std::vector<mixable*> mixables_;
   };
