@@ -52,7 +52,7 @@ const char* zk_type2str(int type) {
   return "UNKNOWN_EVENT_TYPE";
 }
 
-const char* zk_state2str(int state){
+const char* zk_state2str(int state) {
   if (state == 0) {
     return "CLOSED_STATE";
   } else if (state == ZOO_CONNECTING_STATE) {
@@ -569,7 +569,8 @@ void mywatcher(zhandle_t* zh, int type, int state, const char* path, void* p) {
       } else {
         int final_state = zoo_state(zh);
         LOG(ERROR) << "ZooKeeper session recovery timed out: "
-                   << "state " << zk_state2str(final_state) << "(" << final_state << ")";
+                   << "state " << zk_state2str(final_state)
+                   << "(" << final_state << ")";
         zk_->run_cleanup();
       }
     } else if (state == ZOO_EXPIRED_SESSION_STATE) {
@@ -582,7 +583,8 @@ void mywatcher(zhandle_t* zh, int type, int state, const char* path, void* p) {
     }
   } else if (type == ZOO_NOTWATCHING_EVENT) {
   } else {
-    LOG(ERROR) << "unknown ZooKeeper event: type " << type << ", state " << state;
+    LOG(ERROR) << "unknown ZooKeeper event: "
+               << "type " << type << ", state " << state;
   }
 }
 
