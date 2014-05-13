@@ -17,7 +17,6 @@
 #include "classifier_serv.hpp"
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "jubatus/util/text/json.h"
@@ -36,7 +35,6 @@
 
 using std::string;
 using std::vector;
-using std::pair;
 using std::isfinite;
 using jubatus::util::lang::lexical_cast;
 using jubatus::util::lang::shared_ptr;
@@ -131,7 +129,7 @@ int classifier_serv::train(const vector<labeled_datum>& data) {
 
   for (size_t i = 0; i < data.size(); ++i) {
     // TODO(unno): change interface of driver?
-    classifier_->train(make_pair(data[i].label, data[i].data));
+    classifier_->train(data[i].label, data[i].data);
 
     DLOG(INFO) << "trained: " << data[i].label;
     count++;

@@ -111,7 +111,7 @@ class classifier_test
 
 TEST_P(classifier_test, simple) {
   datum d;
-  classifier_->train(make_pair(string("hoge"), d));
+  classifier_->train("hoge", d);
   classifier_->classify(d);
 }
 
@@ -122,7 +122,7 @@ TEST_P(classifier_test, api_train) {
   vector<pair<string, datum> > data;
   make_random_data(rand, data, example_size);
   for (size_t i = 0; i < example_size; i++) {
-    classifier_->train(data[i]);
+    classifier_->train(data[i].first, data[i].second);
   }
 }
 
@@ -133,7 +133,7 @@ void classifier_test::my_test() {
   vector<pair<string, datum> > data;
   make_random_data(rand, data, example_size);
   for (size_t i = 0; i < example_size; i++) {
-    classifier_->train(data[i]);
+    classifier_->train(data[i].first, data[i].second);
   }
 
   vector<string> labels;
@@ -194,10 +194,9 @@ TEST_P(classifier_test, duplicated_keys) {
     for (size_t j = 0; j < 100; ++j)
     d.num_values_.push_back(feature);
   }
-  pair<string, datum> data("", d);
   for (size_t i = 0; i < 100; ++i) {
-    data.first = i % 2 == 0 ? "P" : "N";
-    classifier_->train(data);
+    string label = i % 2 == 0 ? "P" : "N";
+    classifier_->train(label, d);
   }
 
   {
@@ -219,7 +218,7 @@ TEST_P(classifier_test, save_load) {
   vector<pair<string, datum> > data;
   make_random_data(rand, data, example_size);
   for (size_t i = 0; i < example_size; i++) {
-    classifier_->train(data[i]);
+    classifier_->train(data[i].first, data[i].second);
   }
 
   msgpack::sbuffer sbuf;
@@ -253,8 +252,8 @@ TEST_P(classifier_test, save_load_2) {
   classifier_->pack(empty_pk);
 
   // Train
-  classifier_->train(make_pair("pos", pos));
-  classifier_->train(make_pair("neg", neg));
+  classifier_->train("pos", pos);
+  classifier_->train("neg", neg);
 
   // Now, the classifier can classify properly
   ASSERT_EQ("pos", get_max_label(classifier_->classify(pos)));
@@ -299,7 +298,7 @@ TEST_P(classifier_test, save_load_3) {
   vector<pair<string, datum> > data;
   make_random_data(rand, data, example_size);
   for (size_t i = 0; i < example_size; i++) {
-    classifier_->train(data[i]);
+    classifier_->train(data[i].first, data[i].second);
   }
 
   {
@@ -326,7 +325,7 @@ TEST_P(classifier_test, nan) {
   datum d;
   d.num_values_.push_back(
       make_pair("value", numeric_limits<float>::quiet_NaN()));
-  classifier_->train(make_pair(string("l1"), d));
+  classifier_->train("l1", d);
 
 
   classify_result result = classifier_->classify(d);

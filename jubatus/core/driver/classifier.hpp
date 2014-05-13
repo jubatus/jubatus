@@ -19,7 +19,6 @@
 
 #include <map>
 #include <string>
-#include <utility>
 #include <vector>
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../classifier/classifier_type.hpp"
@@ -45,7 +44,7 @@ class classifier : public driver_base {
           converter);
   virtual ~classifier();
 
-  void train(const std::pair<std::string, fv_converter::datum>& data);
+  void train(const std::string&, const fv_converter::datum&);
   jubatus::core::classifier::classify_result classify(
       const fv_converter::datum& data) const;
 
