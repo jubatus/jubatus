@@ -20,11 +20,13 @@
 #include <vector>
 #include <gtest/gtest.h>
 #include "dynamic_splitter.hpp"
-#include "exception.hpp"
-#include "word_splitter.hpp"
+#include "jubatus/core/fv_converter/exception.hpp"
+#include "jubatus/core/fv_converter/word_splitter.hpp"
+
+using jubatus::core::fv_converter::converter_exception;
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
 TEST(dynamic_splitter, trivial) {
@@ -58,5 +60,5 @@ TEST(dynamic_splitter, unknown_function) {
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

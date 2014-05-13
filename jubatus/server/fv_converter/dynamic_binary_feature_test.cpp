@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,25 +16,33 @@
 
 #include <map>
 #include <string>
-#include "num_filter.hpp"
+#include <gtest/gtest.h>
+#include "jubatus/util/lang/scoped_ptr.h"
+#include "jubatus/core/fv_converter/../common/type.hpp"
+#include "dynamic_binary_feature.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-class my_num_filter : public num_filter {
- public:
-  double filter(double value) const {
-    return value * 2;
-  }
-};
+TEST(dynamic_binary_feature, trivial) {
+  std::map<std::string, std::string> params;
 
-extern "C" {
-num_filter* create(const std::map<std::string, std::string>& params) {
-  return new my_num_filter();
-}
+  {
+    dynamic_binary_feature f(
+        LIBBINARY_FEATURE_SAMPLE,
+        "create",
+        params);
+    jubatus::core::common::sfv_t fv;
+    f.add_feature("/path", "value", fv);
+
+    ASSERT_EQ(1u, fv.size());
+    EXPECT_EQ("/path", fv[0].first);
+    // This plugin returns length of a given value.
+    EXPECT_EQ(5., fv[0].second);
+  }
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

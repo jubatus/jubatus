@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_SPLITTER_HPP_
-#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_SPLITTER_HPP_
+#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_
 
 #include <map>
 #include <string>
@@ -23,30 +23,31 @@
 #include <vector>
 #include "jubatus/util/lang/scoped_ptr.h"
 #include "dynamic_loader.hpp"
-#include "word_splitter.hpp"
+#include "jubatus/core/fv_converter/binary_feature.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-class dynamic_splitter : public word_splitter {
+class dynamic_binary_feature : public core::fv_converter::binary_feature {
  public:
-  dynamic_splitter(
+  dynamic_binary_feature(
       const std::string& path,
       const std::string& function,
       const std::map<std::string, std::string>& params);
 
-  void split(
-      const std::string& string,
-      std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
+  void add_feature(
+      const std::string& key,
+      const std::string& value,
+      std::vector<std::pair<std::string, float> >& ret_fv) const;
 
  private:
   dynamic_loader loader_;
-  jubatus::util::lang::scoped_ptr<word_splitter> impl_;
+  jubatus::util::lang::scoped_ptr<core::fv_converter::binary_feature> impl_;
 };
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_SPLITTER_HPP_
+#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_

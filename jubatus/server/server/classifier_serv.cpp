@@ -107,7 +107,7 @@ void classifier_serv::set_config(const string& config) {
       new core::driver::classifier(
         core::classifier::classifier_factory::create_classifier(
           conf.method, param, model),
-        core::fv_converter::make_fv_converter(conf.converter)));
+        core::fv_converter::make_fv_converter(conf.converter, &so_loader_)));
   mixer_->set_driver(classifier_.get());
 
   // TODO(kuenishi): switch the function when set_config is done

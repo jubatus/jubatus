@@ -14,12 +14,17 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "dynamic_loader.hpp"
+
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <iostream>
 #include <string>
-#include "exception.hpp"
-#include "dynamic_loader.hpp"
+#include <glog/logging.h>
+#include "jubatus/core/fv_converter/exception.hpp"
+#include "../common/filesystem.hpp"
+
+using jubatus::core::fv_converter::converter_exception;
 
 namespace {
 bool is_absolute_or_relative_path(const std::string& path) {
@@ -33,15 +38,17 @@ const char* get_plugin_path() {
 }  // namespace
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
 dynamic_loader::dynamic_loader(const std::string& path)
     : handle_(0) {
   void* handle = NULL;
+  std::string loaded_path;
   if (is_absolute_or_relative_path(path)) {
     // Load the plugin with the given path
     handle = ::dlopen(path.c_str(), RTLD_LAZY);
+    loaded_path = path;
 
   } else {
     // Try to load the plugin from the plugin path environment
@@ -50,6 +57,7 @@ dynamic_loader::dynamic_loader(const std::string& path)
       const std::string plugin_path =
           std::string(plugin_dir) + "/" + path;
       handle = ::dlopen(plugin_path.c_str(), RTLD_LAZY);
+      loaded_path = plugin_path;
     }
 
     // If failed, try to load it from the plugin directory specified on
@@ -58,6 +66,7 @@ dynamic_loader::dynamic_loader(const std::string& path)
       const std::string plugin_path =
           std::string(JUBATUS_PLUGIN_DIR) + "/" + path;
       handle = ::dlopen(plugin_path.c_str(), RTLD_LAZY);
+      loaded_path = plugin_path;
     }
   }
 
@@ -69,6 +78,8 @@ dynamic_loader::dynamic_loader(const std::string& path)
         << jubatus::core::common::exception::error_api_func("dlopen")
         << jubatus::core::common::exception::error_file_name(path)
         << jubatus::core::common::exception::error_message(error));
+  } else {
+    LOG(INFO) << "plugin loaded: " << common::real_path(loaded_path);
   }
   handle_ = handle;
 }
@@ -99,5 +110,5 @@ void check_null_instance(void* inst) {
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

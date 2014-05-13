@@ -111,7 +111,7 @@ void recommender_serv::set_config(const std::string &config) {
       new core::driver::recommender(
           core::recommender::recommender_factory::create_recommender(
               conf.method, param, my_id),
-          core::fv_converter::make_fv_converter(conf.converter)));
+          core::fv_converter::make_fv_converter(conf.converter, &so_loader_)));
   mixer_->set_driver(recommender_.get());
 
   LOG(INFO) << "config loaded: " << config;

@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,42 +14,45 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_FV_CONVERTER_NUM_FILTER_FACTORY_HPP_
-#define JUBATUS_CORE_FV_CONVERTER_NUM_FILTER_FACTORY_HPP_
+#ifndef JUBATUS_CORE_FV_CONVERTER_FACTORY_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_FACTORY_HPP_
 
 #include <string>
-#include <map>
-#include "jubatus/util/lang/function.h"
-#include "jubatus/util/lang/shared_ptr.h"
-#include "type.hpp"
+#include "converter_config.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
+class binary_feature;
 class num_filter;
+class num_feature;
+class word_splitter;
+class string_filter;
 
-class num_filter_factory {
+class factory_extender {
  public:
-  typedef jubatus::util::lang::function<
-    num_filter*(const std::string&, const param_t&)> create_function;
+  virtual ~factory_extender() {}
 
-  num_filter_factory() {
-  }
-
-  explicit num_filter_factory(const create_function& ext)
-    : ext_(ext) {
-  }
-
-  jubatus::util::lang::shared_ptr<num_filter> create(
+  virtual binary_feature* create_binary_feature(
       const std::string& name,
-      const param_t& params) const;
- private:
-  create_function ext_;
+      const param_t&) const = 0;
+  virtual num_filter* create_num_filter(
+      const std::string& name,
+      const param_t&) const = 0;
+  virtual num_feature* create_num_feature(
+      const std::string& name,
+      const param_t&) const = 0;
+  virtual word_splitter* create_word_splitter(
+      const std::string& name,
+      const param_t&) const = 0;
+  virtual string_filter* create_string_filter(
+      const std::string& name,
+      const param_t&) const = 0;
 };
 
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_FV_CONVERTER_NUM_FILTER_FACTORY_HPP_
+#endif  // JUBATUS_CORE_FV_CONVERTER_FACTORY_HPP_

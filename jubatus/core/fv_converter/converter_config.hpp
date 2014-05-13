@@ -24,14 +24,13 @@
 #include "jubatus/util/data/optional.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/text/json.h"
+#include "type.hpp"
 
 namespace jubatus {
 namespace core {
 namespace fv_converter {
 
 class datum_to_fv_converter;
-
-typedef std::map<std::string, std::string> param_t;
 
 struct string_rule {
   std::string key;
@@ -131,12 +130,17 @@ struct converter_config {
   }
 };
 
+
+class factory_extender;
+
 void initialize_converter(
     const converter_config& config,
-    datum_to_fv_converter& converter);
+    datum_to_fv_converter& converter,
+    const factory_extender* = NULL);
 
-jubatus::util::lang::shared_ptr<datum_to_fv_converter>
-make_fv_converter(const converter_config& config);
+jubatus::util::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
+    const converter_config& config,
+    const factory_extender* = NULL);
 
 }  // namespace fv_converter
 }  // namespace core

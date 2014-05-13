@@ -20,9 +20,12 @@
 #include <string>
 #include <vector>
 #include "jubatus/util/text/json.h"
+#include "jubatus/util/lang/bind.h"
+#include "jubatus/util/lang/function.h"
 #include "except_match.hpp"
 #include "datum_to_fv_converter.hpp"
 #include "exception.hpp"
+#include "factory.hpp"
 #include "key_matcher.hpp"
 #include "key_matcher_factory.hpp"
 #include "num_feature.hpp"
@@ -106,8 +109,9 @@ matcher_ptr create_key_matcher(
 
 void init_string_filter_types(
     const std::map<std::string, param_t>& filter_types,
-    std::map<std::string, string_filter_ptr>& filters) {
-  string_filter_factory f;
+    std::map<std::string, string_filter_ptr>& filters,
+    const string_filter_factory::create_function ext) {
+  string_filter_factory f(ext);
   for (std::map<std::string, param_t>::const_iterator it = filter_types.begin();
       it != filter_types.end(); ++it) {
     const std::string& name = it->first;
@@ -121,8 +125,9 @@ void init_string_filter_types(
 
 void init_num_filter_types(
     const std::map<std::string, param_t>& filter_types,
-    std::map<std::string, num_filter_ptr>& filters) {
-  num_filter_factory f;
+    std::map<std::string, num_filter_ptr>& filters,
+    const num_filter_factory::create_function& ext) {
+  num_filter_factory f(ext);
   for (std::map<std::string, param_t>::const_iterator it = filter_types.begin();
       it != filter_types.end(); ++it) {
     const std::string& name = it->first;
@@ -160,8 +165,9 @@ void register_default_string_types(
 
 void init_string_types(
     const std::map<std::string, param_t>& string_types,
-    std::map<std::string, splitter_ptr>& splitters) {
-  splitter_factory f;
+    std::map<std::string, splitter_ptr>& splitters,
+    splitter_factory::create_function ext) {
+  splitter_factory f(ext);
   for (std::map<std::string, param_t>::const_iterator it = string_types.begin();
       it != string_types.end(); ++it) {
     const std::string& name = it->first;
@@ -220,8 +226,9 @@ void register_default_num_types(
 
 void init_num_types(
     const std::map<std::string, param_t>& num_types,
-    std::map<std::string, num_feature_ptr>& num_features) {
-  num_feature_factory f;
+    std::map<std::string, num_feature_ptr>& num_features,
+    num_feature_factory::create_function ext) {
+  num_feature_factory f(ext);
   for (std::map<std::string, param_t>::const_iterator it = num_types.begin();
       it != num_types.end(); ++it) {
     const std::string& name = it->first;
@@ -253,8 +260,9 @@ void init_num_rules(
 
 void init_binary_types(
     const std::map<std::string, param_t>& binary_types,
-    std::map<std::string, binary_feature_ptr>& binary_features) {
-  binary_feature_factory f;
+    std::map<std::string, binary_feature_ptr>& binary_features,
+    binary_feature_factory::create_function ext) {
+  binary_feature_factory f(ext);
   for (std::map<std::string, param_t>::const_iterator it = binary_types.begin();
        it != binary_types.end(); ++it) {
     const std::string& name = it->first;
@@ -289,7 +297,12 @@ void init_binary_rules(
 
 void initialize_converter(
     const converter_config& config,
-    datum_to_fv_converter& conv) {
+    datum_to_fv_converter& conv,
+    const factory_extender* ext) {
+  using jubatus::util::lang::bind;
+  using jubatus::util::lang::_1;
+  using jubatus::util::lang::_2;
+
   if (config.hash_max_size.bool_test() && *config.hash_max_size.get() <= 0) {
     std::stringstream msg;
     msg << "hash_max_size must be positive, but is "
@@ -299,29 +312,49 @@ void initialize_converter(
 
   std::map<std::string, string_filter_ptr> string_filters;
   if (config.string_filter_types) {
-    init_string_filter_types(*config.string_filter_types, string_filters);
+    string_filter_factory::create_function f;
+    if (ext) {
+      f = bind(&factory_extender::create_string_filter, ext, _1, _2);
+    }
+    init_string_filter_types(*config.string_filter_types, string_filters, f);
   }
 
   std::map<std::string, num_filter_ptr> num_filters;
   if (config.num_filter_types) {
-    init_num_filter_types(*config.num_filter_types, num_filters);
+    num_filter_factory::create_function f;
+    if (ext) {
+      f = bind(&factory_extender::create_num_filter, ext, _1, _2);
+    }
+    init_num_filter_types(*config.num_filter_types, num_filters, f);
   }
 
   std::map<std::string, splitter_ptr> splitters;
   register_default_string_types(splitters);
   if (config.string_types) {
-    init_string_types(*config.string_types, splitters);
+    splitter_factory::create_function f;
+    if (ext) {
+      f = bind(&factory_extender::create_word_splitter, ext, _1, _2);
+    }
+    init_string_types(*config.string_types, splitters, f);
   }
 
   std::map<std::string, num_feature_ptr> num_features;
   register_default_num_types(num_features);
   if (config.num_types) {
-    init_num_types(*config.num_types, num_features);
+    num_feature_factory::create_function f;
+    if (ext) {
+      f = bind(&factory_extender::create_num_feature, ext, _1, _2);
+    }
+    init_num_types(*config.num_types, num_features, f);
   }
 
   std::map<std::string, binary_feature_ptr> binary_features;
   if (config.binary_types) {
-    init_binary_types(*config.binary_types, binary_features);
+    binary_feature_factory::create_function f;
+    if (ext) {
+      f = bind(&factory_extender::create_binary_feature, ext, _1, _2);
+    }
+    init_binary_types(*config.binary_types, binary_features, f);
   }
 
   conv.clear_rules();
@@ -347,10 +380,10 @@ void initialize_converter(
 }
 
 jubatus::util::lang::shared_ptr<datum_to_fv_converter> make_fv_converter(
-    const converter_config& config) {
+    const converter_config& config, const factory_extender* extender) {
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
     converter(new fv_converter::datum_to_fv_converter);
-  fv_converter::initialize_converter(config, *converter);
+  fv_converter::initialize_converter(config, *converter, extender);
   return converter;
 }
 

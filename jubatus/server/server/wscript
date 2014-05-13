@@ -23,14 +23,14 @@ def build_one(bld, name, libraries = '', sources = ''):
     source = __sources,
     target = 'juba'+name,
     includes = '.',
-    use = 'jubatus_core jubaserv_framework jubaserv_common jubaserv_mprpc_common jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
+    use = 'jubatus_core jubaserv_framework jubaserv_fv_converter jubaserv_common jubaserv_mprpc_common jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
       source = '%s_proxy.cpp ' % name,
       target = 'juba%s_proxy' % name,
       includes = '.',
-      use = 'jubatus_util jubatus_core jubaserv_framework jubaserv_common jubaserv_mprpc_common JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
+      use = 'jubatus_util jubatus_core jubaserv_framework jubaserv_fv_converter jubaserv_common jubaserv_mprpc_common JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
       )
 
 def build(bld):

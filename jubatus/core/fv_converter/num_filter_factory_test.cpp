@@ -50,27 +50,6 @@ TEST(num_filter_factory, create_add_filter) {
   EXPECT_EQ(20.0, filter->filter(10.0));
 }
 
-TEST(num_filter_factory, create_dynamic) {
-  num_filter_factory f;
-
-  std::map<std::string, std::string> params;
-  EXPECT_THROW(f.create("dynamic", params), converter_exception);
-
-  params["path"] = "unknown_file_name";
-  EXPECT_THROW(f.create("dynamic", params), converter_exception);
-
-  params["path"] = LIBNUM_FILTER_SAMPLE;
-  EXPECT_THROW(f.create("dynamic", params), converter_exception);
-
-  params["function"] = "unknown_func";
-  EXPECT_THROW(f.create("dynamic", params), converter_exception);
-
-  params["function"] = "create";
-  jubatus::util::lang::shared_ptr<num_filter> s(f.create("dynamic", params));
-
-  EXPECT_EQ(6.0, s->filter(3.0));
-}
-
 }  // namespace fv_converter
 }  // namespace core
 }  // namespace jubatus

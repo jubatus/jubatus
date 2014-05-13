@@ -14,35 +14,42 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_STRING_FILTER_HPP_
-#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_STRING_FILTER_HPP_
-
 #include <map>
 #include <string>
-#include "jubatus/util/lang/scoped_ptr.h"
-#include "dynamic_loader.hpp"
-#include "string_filter.hpp"
+#include <gtest/gtest.h>
+#include "dynamic_num_filter.hpp"
+#include "jubatus/core/fv_converter/exception.hpp"
+
+using jubatus::core::fv_converter::converter_exception;
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-class dynamic_string_filter : public string_filter {
- public:
-  dynamic_string_filter(
-      const std::string& path,
-      const std::string& function,
-      const std::map<std::string, std::string>& params);
+TEST(dynamic_num_filter, trivial) {
+  std::map<std::string, std::string> params;
 
-  void filter(const std::string& input, std::string& output) const;
+  dynamic_num_filter f(LIBNUM_FILTER_SAMPLE,
+      "create",
+      params);
+  EXPECT_EQ(6.0, f.filter(3.0));
+}
 
- private:
-  dynamic_loader loader_;
-  jubatus::util::lang::scoped_ptr<string_filter> impl_;
-};
+TEST(dynamic_num_filter, unknown_file) {
+  std::map<std::string, std::string> params;
+  EXPECT_THROW(dynamic_num_filter f("unkonwn_file.so",
+          "create",
+          params),
+      converter_exception);
+}
+
+TEST(dynamic_num_filter, unknown_function) {
+  std::map<std::string, std::string> params;
+  EXPECT_THROW(
+      dynamic_num_filter f(LIBNUM_FILTER_SAMPLE, "unknown_function", params),
+      converter_exception);
+}
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus
-
-#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_STRING_FILTER_HPP_

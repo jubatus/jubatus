@@ -77,7 +77,7 @@ void clustering_serv::set_config(const std::string& config) {
 
   config_ = config;
   shared_ptr<core::fv_converter::datum_to_fv_converter> converter =
-    core::fv_converter::make_fv_converter(conf.converter);
+    core::fv_converter::make_fv_converter(conf.converter, &so_loader_);
 
   core::common::jsonconfig::config param;
   if (conf.parameter) {

@@ -17,7 +17,6 @@
 #include <map>
 #include <string>
 #include "jubatus/util/lang/cast.h"
-#include "dynamic_num_filter.hpp"
 #include "exception.hpp"
 #include "num_filter_factory.hpp"
 #include "num_filter_impl.hpp"
@@ -38,23 +37,16 @@ shared_ptr<add_filter> create_add_filter(
   return shared_ptr<add_filter>(new add_filter(float_val));
 }
 
-shared_ptr<num_filter> create_dynamic_filter(
-    const std::map<std::string, std::string>& params) {
-  const std::string& path = get_or_die(params, "path");
-  const std::string& function = get_or_die(params, "function");
-  return shared_ptr<num_filter>(
-      new dynamic_num_filter(path, function, params));
-}
-
 }  // namespace
 
 shared_ptr<num_filter> num_filter_factory::create(
     const std::string& name,
-    const std::map<std::string, std::string>& params) const {
+    const param_t& params) const {
+  num_filter* p;
   if (name == "add") {
     return create_add_filter(params);
-  } else if (name == "dynamic") {
-    return create_dynamic_filter(params);
+  } else if (ext_ && (p = ext_(name, params))) {
+    return shared_ptr<num_filter>(p);
   } else {
     throw JUBATUS_EXCEPTION(
         converter_exception("unknonw num filter name: " + name));

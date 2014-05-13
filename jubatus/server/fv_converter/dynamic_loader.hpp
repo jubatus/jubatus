@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2013 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,32 +14,43 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#ifndef JUBATUS_SERVER_FV_CONVERTER_DYNAMIC_LOADER_HPP_
+#define JUBATUS_SERVER_FV_CONVERTER_DYNAMIC_LOADER_HPP_
+
 #include <map>
 #include <string>
-#include <utility>
-#include <vector>
-#include "binary_feature.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-class my_binary_feature : public binary_feature {
+class dynamic_loader {
  public:
-  void add_feature(
-      const std::string& key,
-      const std::string& value,
-      std::vector<std::pair<std::string, float> >& ret_fv) const {
-    ret_fv.push_back(std::make_pair(key, value.size()));
-  }
+  explicit dynamic_loader(const std::string& path);
+  ~dynamic_loader();
+
+  void* load_symbol(const std::string& name) const;
+
+ private:
+  void* handle_;
 };
 
-extern "C" {
-  binary_feature* create(const std::map<std::string, std::string>& params) {
-  return new my_binary_feature();
-}
+void check_null_instance(void* inst);
+
+template<typename T>
+T* load_object(
+    const dynamic_loader& loader,
+    const std::string& function,
+    const std::map<std::string, std::string>& params) {
+  typedef T* (*func_t)(const std::map<std::string, std::string>&);
+  func_t func = reinterpret_cast<func_t>(loader.load_symbol(function));
+  T* inst = (*func)(params);
+  check_null_instance(inst);
+  return inst;
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus
+
+#endif  // JUBATUS_SERVER_FV_CONVERTER_DYNAMIC_LOADER_HPP_

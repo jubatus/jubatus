@@ -138,7 +138,7 @@ void anomaly_serv::set_config(const std::string& config) {
       new core::driver::anomaly(
           core::anomaly::anomaly_factory::create_anomaly(
               conf.method, conf.parameter, my_id),
-          core::fv_converter::make_fv_converter(conf.converter)));
+          core::fv_converter::make_fv_converter(conf.converter, &so_loader_)));
   mixer_->set_driver(anomaly_.get());
 
   LOG(INFO) << "config loaded: " << config;

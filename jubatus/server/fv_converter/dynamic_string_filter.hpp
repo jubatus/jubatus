@@ -14,32 +14,37 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_STRING_FILTER_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_STRING_FILTER_HPP_
+
 #include <map>
 #include <string>
-#include <utility>
-#include <vector>
-#include "num_feature.hpp"
+#include "jubatus/util/lang/scoped_ptr.h"
+#include "dynamic_loader.hpp"
+#include "jubatus/core/fv_converter/string_filter.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-class my_num_feature : public num_feature {
+class dynamic_string_filter
+  : public jubatus::core::fv_converter::string_filter {
  public:
-  void add_feature(
-      const std::string& key,
-      double value,
-      std::vector<std::pair<std::string, float> >& ret_fv) const {
-    ret_fv.push_back(std::make_pair(key, value + 1));
-  }
+  dynamic_string_filter(
+      const std::string& path,
+      const std::string& function,
+      const std::map<std::string, std::string>& params);
+
+  void filter(const std::string& input, std::string& output) const;
+
+ private:
+  dynamic_loader loader_;
+  jubatus::util::lang::scoped_ptr<jubatus::core::fv_converter::string_filter>
+    impl_;
 };
 
-extern "C" {
-  num_feature* create(const std::map<std::string, std::string>& params) {
-  return new my_num_feature();
-}
-}
-
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus
+
+#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_STRING_FILTER_HPP_

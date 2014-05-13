@@ -22,6 +22,7 @@
 #include <vector>
 #include "../../core/driver/clustering.hpp"
 #include "../framework/server_base.hpp"
+#include "../fv_converter/so_factory.hpp"
 
 namespace jubatus {
 namespace server {
@@ -65,6 +66,7 @@ class clustering_serv : public framework::server_base {
   jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
   jubatus::util::lang::shared_ptr<core::driver::clustering> clustering_;
   std::string config_;
+  fv_converter::so_factory so_loader_;
 };
 
 }  // namespace server

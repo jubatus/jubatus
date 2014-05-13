@@ -14,27 +14,35 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "dynamic_num_filter.hpp"
+#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_NUM_FILTER_HPP_
+#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_NUM_FILTER_HPP_
 
 #include <map>
 #include <string>
+#include "jubatus/util/lang/scoped_ptr.h"
+#include "dynamic_loader.hpp"
+#include "jubatus/core/fv_converter/num_filter.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
-dynamic_num_filter::dynamic_num_filter(
-    const std::string& path,
-    const std::string& function,
-    const std::map<std::string, std::string>& params)
-    : loader_(path),
-      impl_(load_object<num_filter>(loader_, function, params)) {
-}
+class dynamic_num_filter : public core::fv_converter::num_filter {
+ public:
+  dynamic_num_filter(
+      const std::string& path,
+      const std::string& function,
+      const std::map<std::string, std::string>& params);
 
-double dynamic_num_filter::filter(double value) const {
-  return impl_->filter(value);
-}
+  double filter(double value) const;
+
+ private:
+  dynamic_loader loader_;
+  jubatus::util::lang::scoped_ptr<core::fv_converter::num_filter> impl_;
+};
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus
+
+#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_NUM_FILTER_HPP_
