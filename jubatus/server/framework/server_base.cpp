@@ -87,7 +87,7 @@ server_base::server_base(const server_argv& a)
 }
 
 bool server_base::save(const std::string& id) {
-  const std::string path = build_local_path(argv_, "jubatus", id);
+  const std::string path = build_local_path(argv_, argv_.type, id);
   LOG(INFO) << "starting save to " << path;
 
   std::ofstream ofs(path.c_str(), std::ios::trunc | std::ios::binary);
@@ -130,7 +130,7 @@ bool server_base::save(const std::string& id) {
 }
 
 bool server_base::load(const std::string& id) {
-  load_file_impl(*this, build_local_path(argv_, "jubatus", id), id);
+  load_file_impl(*this, build_local_path(argv_, argv_.type, id), id);
   return true;
 }
 
