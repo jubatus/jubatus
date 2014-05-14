@@ -38,7 +38,6 @@ class mixable_versioned_table : public core::framework::push_mixable,
   typedef jubatus::util::lang::shared_ptr<table::column_table> model_ptr;
 
   // linear mixable
-  // TODO: add test
   framework::diff_object convert_diff_object(const msgpack::object&) const;
   void mix(const msgpack::object& obj, framework::diff_object) const;
   void get_diff(framework::packer&) const;

@@ -253,7 +253,7 @@ class column_table {
 
     jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     if (tuples_ <= id) {
-      // TODO: Should we return nil object?
+      // TODO(kumagi): Should we return nil object?
       // or raise assertion?
       return;
     }
