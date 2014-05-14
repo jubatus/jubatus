@@ -54,9 +54,9 @@ struct internal_diff_object : diff_object_raw {
 };
 
 template <class T>
-int count_mixable(const vector<mixable*>& mixables) {
-  int count = 0;
-  for (int i = 0; i < mixables.size(); i++) {
+size_t count_mixable(const vector<mixable*>& mixables) {
+  size_t count = 0;
+  for (size_t i = 0; i < mixables.size(); i++) {
     if (dynamic_cast<T*>(mixables[i])) {
       count++;
     }
