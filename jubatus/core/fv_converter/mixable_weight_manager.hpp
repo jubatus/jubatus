@@ -25,7 +25,8 @@ namespace jubatus {
 namespace core {
 namespace fv_converter {
 
-typedef framework::linear_mixable_helper<weight_manager, versioned_weight_diff> mixable_weight_manager;
+typedef framework::linear_mixable_helper<weight_manager, versioned_weight_diff>
+  mixable_weight_manager;
 
 }  // namespace fv_converter
 }  // namespace core
