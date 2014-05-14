@@ -35,6 +35,7 @@ using std::string;
 using std::vector;
 using std::pair;
 using jubatus::core::fv_converter::weight_manager;
+using jubatus::core::fv_converter::mixable_weight_manager;
 using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
@@ -46,7 +47,7 @@ recommender::recommender(
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : converter_(converter),
       recommender_(recommender_method),
-      wm_(core::fv_converter::mixable_weight_manager::model_ptr(new weight_manager)) {
+      wm_(mixable_weight_manager::model_ptr(new weight_manager)) {
   register_mixable(recommender_->get_mixable());
   register_mixable(&wm_);
 }

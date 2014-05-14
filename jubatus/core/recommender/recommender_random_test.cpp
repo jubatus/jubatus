@@ -293,7 +293,8 @@ TYPED_TEST_P(recommender_random_test, mix) {
     msgpack::unpack(&msg2, sbuf2.data(), sbuf2.size());
   }
 
-  framework::diff_object diff = get_mixable(r1)->convert_diff_object(msg1.get());
+  framework::diff_object diff =
+    get_mixable(r1)->convert_diff_object(msg1.get());
   get_mixable(r1)->mix(msg2.get(), diff);
 
   TypeParam mixed;
