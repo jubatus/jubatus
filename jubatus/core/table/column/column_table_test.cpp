@@ -691,7 +691,6 @@ TEST(table, get_row) {
   msgpack::unpack(&unp, data.data(), data.size());
 
   // now starts streaming deserialization.
-  //msgpack::unpacked result;
   {
     msgpack::object o = unp.get();
     std::string key;

@@ -250,7 +250,6 @@ class column_table {
   }
 
   void get_row(const uint64_t id, framework::packer& pk) const {
-
     jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     if (tuples_ <= id) {
       // TODO(kumagi): Should we return nil object?
