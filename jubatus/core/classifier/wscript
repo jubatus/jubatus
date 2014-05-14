@@ -29,9 +29,19 @@ def build(bld):
      features = 'gtest',
      source = [
          'classifier_test.cpp',
-         'classifier_factory.cpp'
+         'classifier_factory.cpp',
      ],
      target = "classifier_test",
+     includes = '.',
+     use = 'jubacommon jubatus_classifier jubastorage'+libassert)
+
+  bld.program(
+     features = 'gtest',
+     source = [
+         'classifier_factory.cpp',
+         'classifier_factory_test.cpp',
+     ],
+     target = "classifier_factory_test",
      includes = '.',
      use = 'jubacommon jubatus_classifier jubastorage'+libassert)
 
