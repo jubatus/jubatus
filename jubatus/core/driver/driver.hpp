@@ -17,6 +17,9 @@
 #ifndef JUBATUS_CORE_DRIVER_DRIVER_HPP_
 #define JUBATUS_CORE_DRIVER_DRIVER_HPP_
 
+#include <string>
+#include <set>
+#include <vector>
 #include "../framework/model.hpp"
 #include "../framework/linear_mixable.hpp"
 #include "../framework/push_mixable.hpp"
@@ -27,7 +30,7 @@ namespace driver {
 
 class driver_base {
  public:
-  ~driver_base() {}
+  virtual ~driver_base() {}
   virtual framework::mixable* get_mixable() {
     return &holder_;
   }
