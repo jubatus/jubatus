@@ -91,18 +91,23 @@ bool linear_function_mixer::put_diff(const diffv& diff) {
   return true;
 }
 
-diff_object linear_function_mixer::convert_diff_object(const msgpack::object& obj) const {
+diff_object linear_function_mixer::convert_diff_object(
+    const msgpack::object& obj) const {
   internal_diff_object* diff = new internal_diff_object;
   diff_object diff_obj(diff);
   obj.convert(&diff->diff_);
   return diff_obj;
 }
 
-void linear_function_mixer::mix(const msgpack::object& obj, diff_object ptr) const {
+void linear_function_mixer::mix(
+    const msgpack::object& obj,
+    diff_object ptr) const {
   diffv diff;
-  internal_diff_object* diff_obj = dynamic_cast<internal_diff_object*>(ptr.get());
+  internal_diff_object* diff_obj =
+    dynamic_cast<internal_diff_object*>(ptr.get());
   if (!diff_obj) {
-    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("bad diff_object"));
+    throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("bad diff_object"));
   }
   obj.convert(&diff);
   mix(diff, diff_obj->diff_);
@@ -115,9 +120,11 @@ void linear_function_mixer::get_diff(packer& pk) const {
 }
 
 bool linear_function_mixer::put_diff(const diff_object& ptr) {
-  internal_diff_object* diff_obj = dynamic_cast<internal_diff_object*>(ptr.get());
+  internal_diff_object* diff_obj =
+    dynamic_cast<internal_diff_object*>(ptr.get());
   if (!diff_obj) {
-    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("bad diff_object"));
+    throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("bad diff_object"));
   }
   return put_diff(diff_obj->diff_);
 }

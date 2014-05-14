@@ -34,7 +34,7 @@ class linear_function_mixer : public linear_mixable {
   typedef storage::storage_base model_type;
   typedef jubatus::util::lang::shared_ptr<model_type> model_ptr;
 
-  linear_function_mixer(model_ptr model)
+  explicit linear_function_mixer(model_ptr model)
     : model_(model) {
     if (!model) {
       throw JUBATUS_EXCEPTION(common::config_not_set());
