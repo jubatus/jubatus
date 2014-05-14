@@ -346,6 +346,14 @@ class argv_error : public exception::runtime_error {
   }
 };
 
+class invalid_parameter : public exception::runtime_error {
+ public:
+  explicit invalid_parameter(const std::string& expected)
+      : jubatus::core::common::exception::runtime_error(
+          std::string("invalid parameter (expected: ") + expected + ")") {
+  }
+};
+
 }  // namespace common
 }  // namespace core
 }  // namespace jubatus

@@ -21,6 +21,7 @@
 #include <string>
 
 #include "classifier_util.hpp"
+#include "../common/exception.hpp"
 
 using std::string;
 
@@ -38,6 +39,11 @@ normal_herd::normal_herd(
     storage_ptr storage)
     : classifier_base(storage),
       config_(config) {
+
+  if (!(0.f < config.C)) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("0.0 < regularization_weight"));
+  }
 }
 
 void normal_herd::train(const common::sfv_t& sfv, const string& label) {

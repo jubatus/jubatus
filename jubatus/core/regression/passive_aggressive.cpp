@@ -32,6 +32,16 @@ passive_aggressive::passive_aggressive(
       sum_(0.f),
       sq_sum_(0.f),
       count_(0.f) {
+
+  if (!(0.f < config.C)) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("0.0 < regularization_weight"));
+  }
+
+  if (!(0.f <= config.epsilon)) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("0.0 <= sensitivity"));
+  }
 }
 
 passive_aggressive::passive_aggressive(storage_ptr storage)

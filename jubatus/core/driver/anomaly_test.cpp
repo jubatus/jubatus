@@ -38,7 +38,7 @@ class anomaly_test : public ::testing::Test {
  protected:
   void SetUp() {
     core::anomaly::lof_storage::config lof_config;
-    lof_config.nearest_neighbor_num = 100;
+    lof_config.nearest_neighbor_num = 10;
     lof_config.reverse_nearest_neighbor_num = 30;
     core::recommender::euclid_lsh::config lsh_config;
     lsh_config.hash_num = 8;

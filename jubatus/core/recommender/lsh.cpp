@@ -42,14 +42,21 @@ lsh::config::config()
 
 lsh::lsh(uint64_t base_num)
     : base_num_(base_num) {
-  if (base_num == 0) {
-    throw JUBATUS_EXCEPTION(common::exception::runtime_error("base_num == 0"));
+  if (!(1 <= base_num)) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("1 <= base_num"));
   }
   initialize_model();
 }
 
 lsh::lsh(const config& config)
     : base_num_(config.hash_num) {
+
+  if (!(1 <= config.hash_num)) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("1 <= hash_num"));
+  }
+
   initialize_model();
 }
 

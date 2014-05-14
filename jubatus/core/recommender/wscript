@@ -42,4 +42,6 @@ def build(bld):
       'recommender_random_test.cpp',
       'lsh_util_test.cpp',
       'euclid_lsh_test.cpp',
+      'minhash_test.cpp',
+      'lsh_test.cpp',
       ])

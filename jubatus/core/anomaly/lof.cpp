@@ -71,6 +71,19 @@ lof::lof(
     jubatus::util::lang::shared_ptr<recommender::recommender_base> nn_engine)
     : mixable_storage_(new mixable_lof_storage),
       nn_engine_(nn_engine) {
+
+  if (!(2 <= config.nearest_neighbor_num)) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("2 <= nearest_neighbor_num"));
+  }
+
+  if (!(config.nearest_neighbor_num
+      <= config.reverse_nearest_neighbor_num)) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter(
+            "nearest_neighbor_num <= reverse_nearest_neighbor_num"));
+  }
+
   mixable_storage_->set_model(mixable_lof_storage::model_ptr(
       new lof_storage(config, nn_engine)));
 }

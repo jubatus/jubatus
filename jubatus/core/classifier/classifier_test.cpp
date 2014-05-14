@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -154,6 +155,39 @@ TEST(classifier_factory, exception) {
       common::unsupported_method);
   ASSERT_THROW(classifier_factory::create_classifier("saitama", param, p),
       common::unsupported_method);
+}
+
+TEST(classifier_config_test, regularization_weight) {
+  classifier_base::storage_ptr s(new local_storage);
+  classifier_config c;
+
+  c.C = std::numeric_limits<float>::quiet_NaN();
+  ASSERT_THROW(passive_aggressive_1 p1(c, s), common::invalid_parameter);
+  ASSERT_THROW(passive_aggressive_2 p2(c, s), common::invalid_parameter);
+  ASSERT_THROW(confidence_weighted cw(c, s), common::invalid_parameter);
+  ASSERT_THROW(arow ar(c, s), common::invalid_parameter);
+  ASSERT_THROW(normal_herd nh(c, s), common::invalid_parameter);
+
+  c.C = -0.1f;
+  ASSERT_THROW(passive_aggressive_1 p1(c, s), common::invalid_parameter);
+  ASSERT_THROW(passive_aggressive_2 p2(c, s), common::invalid_parameter);
+  ASSERT_THROW(confidence_weighted cw(c, s), common::invalid_parameter);
+  ASSERT_THROW(arow ar(c, s), common::invalid_parameter);
+  ASSERT_THROW(normal_herd nh(c, s), common::invalid_parameter);
+
+  c.C = 0.f;
+  ASSERT_THROW(passive_aggressive_1 p1(c, s), common::invalid_parameter);
+  ASSERT_THROW(passive_aggressive_2 p2(c, s), common::invalid_parameter);
+  ASSERT_THROW(confidence_weighted cw(c, s), common::invalid_parameter);
+  ASSERT_THROW(arow ar(c, s), common::invalid_parameter);
+  ASSERT_THROW(normal_herd nh(c, s), common::invalid_parameter);
+
+  c.C = 0.1f;
+  ASSERT_NO_THROW(passive_aggressive_1 p1(c, s));
+  ASSERT_NO_THROW(passive_aggressive_2 p2(c, s));
+  ASSERT_NO_THROW(confidence_weighted cw(c, s));
+  ASSERT_NO_THROW(arow ar(c, s));
+  ASSERT_NO_THROW(normal_herd nh(c, s));
 }
 
 }  // namespace classifier
