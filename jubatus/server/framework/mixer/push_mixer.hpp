@@ -69,7 +69,8 @@ class push_communication {
   // it can throw common::mprpc exception
   virtual void push(
       const std::pair<std::string, int>& server,
-      const std::vector<std::string>& diff) const = 0;
+      const std::vector<std::string>& diff,
+      jubatus::server::common::mprpc::rpc_result_object& result) const = 0;
 };
 
 class push_mixer : public jubatus::server::framework::mixer::mixer {
