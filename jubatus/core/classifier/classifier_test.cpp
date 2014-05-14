@@ -158,7 +158,7 @@ TEST(classifier_factory, exception) {
 }
 
 TEST(classifier_config_test, regularization_weight) {
-  classifier_base::storage_ptr s(new local_storage);
+  storage_ptr s(new local_storage);
   classifier_config c;
 
   c.C = std::numeric_limits<float>::quiet_NaN();
