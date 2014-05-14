@@ -33,7 +33,8 @@ namespace driver {
 class graph : public driver_base {
  public:
   explicit graph(
-      jubatus::util::lang::shared_ptr<core::graph::graph_wo_index> graph_method);
+      jubatus::util::lang::shared_ptr<core::graph::graph_wo_index>
+      graph_method);
   virtual ~graph();
 
   jubatus::core::graph::graph_wo_index* get_model() const {

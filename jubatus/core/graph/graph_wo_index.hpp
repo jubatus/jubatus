@@ -187,8 +187,8 @@ class graph_wo_index
   config config_;
 };
 
-typedef framework::linear_mixable_helper<graph_wo_index, graph_wo_index::diff_type>
-    mixable_graph_wo_index;
+typedef framework::linear_mixable_helper
+  <graph_wo_index, graph_wo_index::diff_type> mixable_graph_wo_index;
 
 }  // namespace graph
 }  // namespace core
