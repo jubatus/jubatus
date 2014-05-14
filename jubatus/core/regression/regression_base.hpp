@@ -55,7 +55,6 @@ class regression_base {
   void update(const common::sfv_t& fv, float coeff);
 
   storage_ptr storage_;
-
 };
 
 }  // namespace regression

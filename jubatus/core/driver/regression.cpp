@@ -29,6 +29,7 @@ using std::string;
 using std::pair;
 using jubatus::util::lang::shared_ptr;
 using jubatus::core::fv_converter::weight_manager;
+using jubatus::core::fv_converter::mixable_weight_manager;
 
 namespace jubatus {
 namespace core {
@@ -41,8 +42,7 @@ regression::regression(
     : converter_(converter)
     , regression_(regression_method)
     , mixable_regression_model_(regression_method->get_storage())
-    , wm_(core::fv_converter::mixable_weight_manager::model_ptr(new weight_manager)) {
-
+    , wm_(mixable_weight_manager::model_ptr(new weight_manager)) {
   register_mixable(&mixable_regression_model_);
   register_mixable(&wm_);
 
