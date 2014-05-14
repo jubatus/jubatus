@@ -31,8 +31,7 @@ class jubatus_writer {
 
 class jubatus_packer {
  public:
-  // implicit
-  jubatus_packer(jubatus_writer& w) : writer_(w) {
+  explicit jubatus_packer(jubatus_writer& w) : writer_(w) {
   }
   void write(const char* buf, unsigned int len) {
     writer_.write(buf, len);
