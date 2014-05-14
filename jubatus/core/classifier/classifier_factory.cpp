@@ -111,7 +111,8 @@ shared_ptr<classifier_base> classifier_factory::create_classifier(
     unlearner = create_unlearner(conf);
     res.reset(new normal_herd(conf, storage));
   } else {
-    throw JUBATUS_EXCEPTION(common::unsupported_method(name));
+    throw JUBATUS_EXCEPTION(
+        common::unsupported_method("classifier(" + name + ")"));
   }
 
   if (unlearner) {

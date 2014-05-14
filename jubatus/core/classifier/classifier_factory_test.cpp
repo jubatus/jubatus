@@ -28,6 +28,7 @@ namespace jubatus {
 namespace core {
 namespace classifier {
 
+
 TEST(classifier_factory, create_without_unlearner) {
   jubatus::util::lang::shared_ptr<storage::storage_base>
       s(new storage::local_storage);
@@ -35,7 +36,7 @@ TEST(classifier_factory, create_without_unlearner) {
   {
     json js(new json_object);
     common::jsonconfig::config conf(js);
-  
+
     EXPECT_NO_THROW(classifier_factory::create_classifier("perceptron", conf, s));
     EXPECT_NO_THROW(classifier_factory::create_classifier("PA", conf, s));
   }
@@ -43,7 +44,7 @@ TEST(classifier_factory, create_without_unlearner) {
     json js(new json_object);
     js["regularization_weight"] = to_json(1.0);
     common::jsonconfig::config conf(js);
-  
+
     EXPECT_NO_THROW(classifier_factory::create_classifier("PA1", conf, s));
     EXPECT_NO_THROW(classifier_factory::create_classifier("PA2", conf, s));
     EXPECT_NO_THROW(classifier_factory::create_classifier("CW", conf, s));
@@ -51,6 +52,7 @@ TEST(classifier_factory, create_without_unlearner) {
     EXPECT_NO_THROW(classifier_factory::create_classifier("NHERD", conf, s));
   }
 }
+
 
 TEST(classifier_factory, create_with_unlearner) {
   jubatus::util::lang::shared_ptr<storage::storage_base>
@@ -62,7 +64,7 @@ TEST(classifier_factory, create_with_unlearner) {
     js["unlearner_parameter"] = new json_object;
     js["unlearner_parameter"]["max_size"] = to_json(1);
     common::jsonconfig::config conf(js);
-  
+
     EXPECT_NO_THROW(classifier_factory::create_classifier("perceptron", conf, s));
     EXPECT_NO_THROW(classifier_factory::create_classifier("PA", conf, s));
   }
@@ -73,7 +75,7 @@ TEST(classifier_factory, create_with_unlearner) {
     js["unlearner_parameter"] = new json_object;
     js["unlearner_parameter"]["max_size"] = to_json(1);
     common::jsonconfig::config conf(js);
-  
+
     EXPECT_NO_THROW(classifier_factory::create_classifier("PA1", conf, s));
     EXPECT_NO_THROW(classifier_factory::create_classifier("PA2", conf, s));
     EXPECT_NO_THROW(classifier_factory::create_classifier("CW", conf, s));
@@ -82,36 +84,77 @@ TEST(classifier_factory, create_with_unlearner) {
   }
 }
 
-TEST(classifier_factory, invalid_unlearner) {
-  jubatus::util::lang::shared_ptr<storage::storage_base>
-      s(new storage::local_storage);
+// --- validation test ---
 
-  {
-    json js(new json_object);
-    js["unlearner"] = to_json(std::string("lru"));
-    common::jsonconfig::config conf(js);
-  
-    EXPECT_THROW(classifier_factory::create_classifier("perceptron", conf, s),
-                 common::exception::runtime_error);
-    EXPECT_THROW(classifier_factory::create_classifier("PA", conf, s),
-                 common::exception::runtime_error);
-  }
-  {
+TEST(classifier_factory, invalid_unlearner_config) {
+  jubatus::util::lang::shared_ptr<storage::storage_base>
+    s(new storage::local_storage);
+  json js(new json_object);
+  js["unlearner"] = to_json(std::string("lru"));
+  common::jsonconfig::config conf(js);
+
+  EXPECT_THROW(classifier_factory::create_classifier("perceptron", conf, s),
+               common::exception::runtime_error);
+  EXPECT_THROW(classifier_factory::create_classifier("PA", conf, s),
+               common::exception::runtime_error);
+}
+
+TEST(classifier_factory, invalid_unlearner_name) {
+  jubatus::util::lang::shared_ptr<storage::storage_base>
+    s(new storage::local_storage);
+  json js(new json_object);
+  js["regularization_weight"] = to_json(1.0);
+  js["unlearner"] = to_json(std::string("Jubatus"));  // not exist
+  js["unlearner_parameter"] = new json_object;
+  js["unlearner_parameter"]["max_size"] = to_json(1);
+  common::jsonconfig::config param(js);
+
+  EXPECT_THROW(classifier_factory::create_classifier("PA1", param, s),
+               common::unsupported_method);
+  EXPECT_THROW(classifier_factory::create_classifier("PA2", param, s),
+               common::unsupported_method);
+  EXPECT_THROW(classifier_factory::create_classifier("AROw", param, s),
+               common::unsupported_method);
+}
+
+TEST(classifier_factory, invalid_unlearner_parameter) {
+  jubatus::util::lang::shared_ptr<storage::storage_base>
+    s(new storage::local_storage);
+  json js(new json_object);
+  js["regularization_weight"] = to_json(1.0);
+  js["unlearner"] = to_json(std::string("lru"));
+  common::jsonconfig::config conf(js);
+
+  EXPECT_THROW(classifier_factory::create_classifier("PA1", conf, s),
+               common::exception::runtime_error);
+  EXPECT_THROW(classifier_factory::create_classifier("PA2", conf, s),
+               common::exception::runtime_error);
+  EXPECT_THROW(classifier_factory::create_classifier("CW", conf, s),
+               common::exception::runtime_error);
+  EXPECT_THROW(classifier_factory::create_classifier("AROW", conf, s),
+               common::exception::runtime_error);
+  EXPECT_THROW(classifier_factory::create_classifier("NHERD", conf, s),
+               common::exception::runtime_error);
+}
+
+TEST(classifier_factory, invalid_algorithm) {
+  jubatus::util::lang::shared_ptr<storage::storage_base>
+    s(new storage::local_storage);
+
+  {  // invalid classifier name
     json js(new json_object);
     js["regularization_weight"] = to_json(1.0);
     js["unlearner"] = to_json(std::string("lru"));
-    common::jsonconfig::config conf(js);
-  
-    EXPECT_THROW(classifier_factory::create_classifier("PA1", conf, s),
-                 common::exception::runtime_error);
-    EXPECT_THROW(classifier_factory::create_classifier("PA2", conf, s),
-                 common::exception::runtime_error);
-    EXPECT_THROW(classifier_factory::create_classifier("CW", conf, s),
-                 common::exception::runtime_error);
-    EXPECT_THROW(classifier_factory::create_classifier("AROW", conf, s),
-                 common::exception::runtime_error);
-    EXPECT_THROW(classifier_factory::create_classifier("NHERD", conf, s),
-                 common::exception::runtime_error);
+    js["unlearner_parameter"] = new json_object;
+    js["unlearner_parameter"]["max_size"] = to_json(1);
+    common::jsonconfig::config param(js);
+
+    EXPECT_THROW(classifier_factory::create_classifier("pa", param, s),
+                 common::unsupported_method);
+    EXPECT_THROW(classifier_factory::create_classifier("", param, s),
+                 common::unsupported_method);
+    EXPECT_THROW(classifier_factory::create_classifier("saitama", param, s),
+                 common::unsupported_method);
   }
 }
 
