@@ -17,7 +17,7 @@ def build(bld):
   src = [
       'so_factory.cpp',
       'dynamic_loader.cpp',
-      'dynamic_splitter.cpp',
+      'dynamic_string_feature.cpp',
       'dynamic_num_feature.cpp',
       'dynamic_binary_feature.cpp',
       'dynamic_string_filter.cpp',
@@ -81,7 +81,7 @@ def build(bld):
 
   test_src = [
       'dynamic_loader_test.cpp',
-      'dynamic_splitter_test.cpp',
+      'dynamic_string_feature_test.cpp',
       'dynamic_num_feature_test.cpp',
       'dynamic_binary_feature_test.cpp',
       'dynamic_string_filter_test.cpp',

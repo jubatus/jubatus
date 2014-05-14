@@ -24,8 +24,8 @@
 #include "jubatus/core/fv_converter/exception.hpp"
 #include "jubatus/core/fv_converter/num_feature.hpp"
 #include "jubatus/core/fv_converter/num_feature_factory.hpp"
+#include "jubatus/core/fv_converter/string_feature.hpp"
 #include "jubatus/core/fv_converter/string_feature_factory.hpp"
-#include "jubatus/core/fv_converter/word_splitter.hpp"
 
 #include "jubatus/core/fv_converter/converter_config.hpp"
 #include "jubatus/core/fv_converter/datum.hpp"
@@ -89,7 +89,7 @@ TEST(so_factory, num_feature_factory) {
 TEST(so_factory, string_feature_factory) {
   so_factory fa;
   string_feature_factory f(
-        bind(&so_factory::create_word_splitter, &fa, _1, _2));
+        bind(&so_factory::create_string_feature, &fa, _1, _2));
   std::map<std::string, std::string> param;
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
 

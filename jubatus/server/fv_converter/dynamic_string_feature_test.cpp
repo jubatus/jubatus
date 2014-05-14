@@ -20,18 +20,19 @@
 #include <vector>
 #include <gtest/gtest.h>
 #include "dynamic_string_feature.hpp"
-#include "exception.hpp"
-#include "word_splitter.hpp"
+#include "jubatus/core/fv_converter/exception.hpp"
+
+using jubatus::core::fv_converter::converter_exception;
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace fv_converter {
 
 TEST(dynamic_string_feature, trivial) {
   dynamic_string_feature s(LIBSPLITTER_SAMPLE,
       "create",
       std::map<std::string, std::string>());
-  std::vector<string_feature_element> elements;
+  std::vector<core::fv_converter::string_feature_element> elements;
   s.extract(" test test", elements);
 
   ASSERT_EQ(2u, elements.size());
@@ -62,5 +63,5 @@ TEST(dynamic_string_feature, unknown_function) {
 }
 
 }  // namespace fv_converter
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

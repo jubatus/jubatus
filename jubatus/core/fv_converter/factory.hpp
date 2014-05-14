@@ -27,7 +27,7 @@ namespace fv_converter {
 class binary_feature;
 class num_filter;
 class num_feature;
-class word_splitter;
+class string_feature;
 class string_filter;
 
 class factory_extender {
@@ -43,7 +43,7 @@ class factory_extender {
   virtual num_feature* create_num_feature(
       const std::string& name,
       const param_t&) const = 0;
-  virtual word_splitter* create_word_splitter(
+  virtual string_feature* create_string_feature(
       const std::string& name,
       const param_t&) const = 0;
   virtual string_filter* create_string_filter(

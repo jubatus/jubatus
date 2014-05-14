@@ -333,7 +333,7 @@ void initialize_converter(
   if (config.string_types) {
     string_feature_factory::create_function f;
     if (ext) {
-      f = bind(&factory_extender::create_word_splitter, ext, _1, _2);
+      f = bind(&factory_extender::create_string_feature, ext, _1, _2);
     }
     init_string_types(*config.string_types, splitters, f);
   }
