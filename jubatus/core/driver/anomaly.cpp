@@ -32,6 +32,7 @@ using std::string;
 using std::vector;
 using std::pair;
 using jubatus::core::fv_converter::weight_manager;
+using jubatus::core::fv_converter::mixable_weight_manager;
 using jubatus::util::lang::shared_ptr;
 
 namespace jubatus {
@@ -43,7 +44,7 @@ anomaly::anomaly(
     shared_ptr<fv_converter::datum_to_fv_converter> converter)
     : converter_(converter),
       anomaly_(anomaly_method),
-      wm_(core::fv_converter::mixable_weight_manager::model_ptr(new weight_manager)) {
+      wm_(mixable_weight_manager::model_ptr(new weight_manager)) {
   vector<framework::mixable*> mixables = anomaly_->get_mixables();
   for (size_t i = 0; i < mixables.size(); i++) {
     register_mixable(mixables[i]);

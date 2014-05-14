@@ -99,7 +99,6 @@ TEST_F(anomaly_test, small) {
     std::vector<std::string> rows = anomaly_->get_all_rows();
     ASSERT_EQ(2u, rows.size());
   }
-
 }
 
 }  // driver namespace

@@ -74,7 +74,7 @@ class anomaly_impl : public anomaly_base {
 
   void pack(framework::packer& packer) const {
   }
-  void unpack(msgpack::object o){
+  void unpack(msgpack::object o) {
   }
 };
 
