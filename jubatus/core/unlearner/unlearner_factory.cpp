@@ -31,17 +31,19 @@ namespace unlearner {
 shared_ptr<unlearner_base> create_unlearner(
     const std::string& name,
     const common::jsonconfig::config& config) {
+  std::cout << "create unlearner for " << name << std::endl;
   if (name == "lru") {
     return shared_ptr<unlearner_base>(
         new lru_unlearner(common::jsonconfig::config_cast_check<
                           lru_unlearner::config>(config)));
   } else if (name == "random") {
     return shared_ptr<unlearner_base>(
-      new random_unlearner(common::jsonconfig::config_cast_check<
-                           random_unlearner::config>(config)));
+        new random_unlearner(common::jsonconfig::config_cast_check<
+                             random_unlearner::config>(config)));
+  } else {
+    throw JUBATUS_EXCEPTION(common::unsupported_method(
+                                "unlearner(" + name + ')'));
   }
-  throw JUBATUS_EXCEPTION(common::unsupported_method(
-      "unlearner(" + name + ')'));
 }
 
 }  // namespace unlearner

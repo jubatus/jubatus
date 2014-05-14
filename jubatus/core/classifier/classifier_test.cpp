@@ -26,7 +26,6 @@
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/lang/shared_ptr.h"
 
-#include "classifier_factory.hpp"
 #include "classifier.hpp"
 #include "../storage/local_storage.hpp"
 #include "../common/exception.hpp"
@@ -229,16 +228,6 @@ typedef testing::Types<
 
 INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
 
-TEST(classifier_factory, exception) {
-  common::jsonconfig::config param(to_json(classifier_config()));
-  classifier_base::storage_ptr p(new local_storage);
-  EXPECT_THROW(classifier_factory::create_classifier("pa", param, p),
-      common::unsupported_method);
-  EXPECT_THROW(classifier_factory::create_classifier("", param, p),
-      common::unsupported_method);
-  EXPECT_THROW(classifier_factory::create_classifier("saitama", param, p),
-      common::unsupported_method);
-}
 
 }  // namespace classifier
 }  // namespace core
