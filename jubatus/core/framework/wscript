@@ -12,7 +12,6 @@ def build(bld):
       'push_mixable.cpp',
       'linear_mixable.cpp',
       'linear_function_mixer.cpp',
-      'mixable_helper.cpp',
       ]
   headers = [
       'diffv.hpp',
