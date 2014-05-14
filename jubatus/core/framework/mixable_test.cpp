@@ -14,13 +14,14 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "mixable_helper.hpp"
-#include "stream_writer.hpp"
-
 #include <sstream>
+#include <string>
 #include <gtest/gtest.h>
+
 #include "../../util/lang/shared_ptr.h"
 #include "../common/version.hpp"
+#include "mixable_helper.hpp"
+#include "stream_writer.hpp"
 
 using std::string;
 using std::stringstream;
@@ -143,13 +144,13 @@ TEST(mixable, pack_unpack) {
   framework::packer pk(jp);
   m.get_model()->pack(pk);
 
-   m.get_model()->value = 5;
+  m.get_model()->value = 5;
 
   msgpack::unpacked unpacked;
   msgpack::unpack(&unpacked, buf.data(), buf.size());
   m.get_model()->unpack(unpacked.get());
 
-   EXPECT_EQ(10, m.get_model()->value);
+  EXPECT_EQ(10, m.get_model()->value);
 }
 
 TEST(mixable, trivial) {
@@ -193,7 +194,7 @@ TEST(mixable, string) {
   msgpack::unpack(&m2, diff2.data(), diff2.size());
 
   diff_object diff_obj_mixed = m.convert_diff_object(m1.get());
-  m.mix(m2.get(), diff_obj_mixed);// "add" + "add"
+  m.mix(m2.get(), diff_obj_mixed);  // "add" + "add"
   m.put_diff(diff_obj_mixed);
 
   EXPECT_EQ("addadd", m.get_model()->value);

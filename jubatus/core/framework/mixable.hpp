@@ -29,13 +29,13 @@ namespace framework {
 class mixable {
  public:
   mixable();
-  mixable(const std::string& name);
+  explicit mixable(const std::string& name);
   virtual std::set<std::string> mixables() const;
   virtual ~mixable();
 
   virtual storage::version get_version() const;
  protected:
-   std::set<std::string> mixables_;
+  std::set<std::string> mixables_;
 };
 
 }  // namespace framework
