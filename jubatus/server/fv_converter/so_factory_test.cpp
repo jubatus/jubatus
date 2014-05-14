@@ -24,7 +24,7 @@
 #include "jubatus/core/fv_converter/exception.hpp"
 #include "jubatus/core/fv_converter/num_feature.hpp"
 #include "jubatus/core/fv_converter/num_feature_factory.hpp"
-#include "jubatus/core/fv_converter/splitter_factory.hpp"
+#include "jubatus/core/fv_converter/string_feature_factory.hpp"
 #include "jubatus/core/fv_converter/word_splitter.hpp"
 
 #include "jubatus/core/fv_converter/converter_config.hpp"
@@ -46,8 +46,8 @@ using jubatus::core::fv_converter::param_t;
 using jubatus::core::fv_converter::converter_exception;
 using jubatus::core::fv_converter::num_feature;
 using jubatus::core::fv_converter::num_feature_factory;
-using jubatus::core::fv_converter::splitter_factory;
-using jubatus::core::fv_converter::word_splitter;
+using jubatus::core::fv_converter::string_feature_factory;
+using jubatus::core::fv_converter::string_feature;
 using jubatus::core::fv_converter::string_filter;
 using jubatus::core::fv_converter::string_filter_factory;
 using jubatus::core::fv_converter::num_filter;
@@ -86,9 +86,9 @@ TEST(so_factory, num_feature_factory) {
   EXPECT_EQ(2., fv[0].second);
 }
 
-TEST(so_factory, splitter_factory) {
+TEST(so_factory, string_feature_factory) {
   so_factory fa;
-  splitter_factory f(
+  string_feature_factory f(
         bind(&so_factory::create_word_splitter, &fa, _1, _2));
   std::map<std::string, std::string> param;
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
@@ -100,16 +100,18 @@ TEST(so_factory, splitter_factory) {
   ASSERT_THROW(f.create("dynamic", param), converter_exception);
 
   param["function"] = "create";
-  jubatus::util::lang::shared_ptr<word_splitter> s(f.create("dynamic", param));
+  jubatus::util::lang::shared_ptr<string_feature> s(f.create("dynamic", param));
 
   std::string d("hoge fuga");
-  std::vector<std::pair<size_t, size_t> > bs;
-  s->split(d, bs);
+  std::vector<jubatus::core::fv_converter::string_feature_element> bs;
+  s->extract(d, bs);
   ASSERT_EQ(2u, bs.size());
-  ASSERT_EQ(0u, bs[0].first);
-  ASSERT_EQ(4u, bs[0].second);
-  ASSERT_EQ(5u, bs[1].first);
-  ASSERT_EQ(4u, bs[1].second);
+  ASSERT_EQ(0u, bs[0].begin);
+  ASSERT_EQ(4u, bs[0].length);
+  ASSERT_EQ("hoge", bs[0].value);
+  ASSERT_EQ(5u, bs[1].begin);
+  ASSERT_EQ(4u, bs[1].length);
+  ASSERT_EQ("fuga", bs[1].value);
 }
 
 TEST(so_factory, binary) {
