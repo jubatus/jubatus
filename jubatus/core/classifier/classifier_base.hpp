@@ -36,7 +36,6 @@ namespace classifier {
 
 class classifier_base {
  public:
-
   explicit classifier_base(storage_ptr storage);
   virtual ~classifier_base();
   virtual void train(const common::sfv_t& fv, const std::string& label) = 0;
@@ -57,7 +56,6 @@ class classifier_base {
   // storages.
   virtual void get_status(std::map<std::string, std::string>& status) const;
 
-  // TODO: I(suma) made get_storage() public
   storage_ptr get_storage();
 
  protected:

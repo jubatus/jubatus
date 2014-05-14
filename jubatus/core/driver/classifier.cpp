@@ -32,6 +32,7 @@ using std::string;
 using std::vector;
 using jubatus::util::lang::shared_ptr;
 using jubatus::core::fv_converter::weight_manager;
+using jubatus::core::fv_converter::mixable_weight_manager;
 
 namespace jubatus {
 namespace core {
@@ -43,8 +44,7 @@ classifier::classifier(
     : converter_(converter)
     , classifier_(classifier_method)
     , mixable_classifier_model_(classifier_method->get_storage())
-    , wm_(core::fv_converter::mixable_weight_manager::model_ptr(new weight_manager)) {
-
+    , wm_(mixable_weight_manager::model_ptr(new weight_manager)) {
   register_mixable(&mixable_classifier_model_);
   register_mixable(&wm_);
 

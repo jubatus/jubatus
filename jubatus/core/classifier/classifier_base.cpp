@@ -39,7 +39,6 @@ namespace classifier {
 
 classifier_base::classifier_base(storage_ptr storage)
   : storage_(storage) {
-    //: mixable_(new framework::linear_function_mixer(storage)) {
 }
 
 classifier_base::~classifier_base() {
