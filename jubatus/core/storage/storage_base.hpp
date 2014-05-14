@@ -17,7 +17,6 @@
 #ifndef JUBATUS_CORE_STORAGE_STORAGE_BASE_HPP_
 #define JUBATUS_CORE_STORAGE_STORAGE_BASE_HPP_
 
-
 #include <iostream>
 #include <map>
 #include <string>
@@ -109,10 +108,10 @@ class storage_exception
 
 }  // namespace storage
 
-typedef jubatus::util::lang::shared_ptr<jubatus::core::storage::storage_base> storage_ptr;
+typedef jubatus::util::lang::shared_ptr<jubatus::core::storage::storage_base>
+  storage_ptr;
 
 }  // namespace core
 }  // namespace jubatus
-
 
 #endif  // JUBATUS_CORE_STORAGE_STORAGE_BASE_HPP_
