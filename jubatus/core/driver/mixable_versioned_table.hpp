@@ -34,7 +34,6 @@ typedef std::map<table::owner, uint64_t> version_clock;
 class mixable_versioned_table : public core::framework::push_mixable,
   public core::framework::linear_mixable {
  public:
-
   typedef jubatus::util::lang::shared_ptr<table::column_table> model_ptr;
 
   // linear mixable

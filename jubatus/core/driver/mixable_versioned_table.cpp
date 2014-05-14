@@ -46,9 +46,10 @@ struct internal_diff : framework::diff_object_raw {
   vector<common::byte_buffer> diffs;
 };
 
-}
+}  // namespace
 
-framework::diff_object mixable_versioned_table::convert_diff_object(const msgpack::object& obj) const {
+framework::diff_object mixable_versioned_table::convert_diff_object(
+    const msgpack::object& obj) const {
   internal_diff* diff = new internal_diff;
   diff_object diff_obj(diff);
   obj.convert(&diff->diffs);
@@ -62,7 +63,8 @@ void mixable_versioned_table::get_diff(framework::packer& pk) const {
 bool mixable_versioned_table::put_diff(const framework::diff_object& ptr) {
   internal_diff* diff_obj = dynamic_cast<internal_diff*>(ptr.get());
   if (!diff_obj) {
-    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("bad diff_object"));
+    throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("bad diff_object"));
   }
   // unique_ptr
   std::auto_ptr<msgpack::zone> z(new msgpack::zone);
@@ -72,10 +74,13 @@ bool mixable_versioned_table::put_diff(const framework::diff_object& ptr) {
   return true;
 }
 
-void mixable_versioned_table::mix(const msgpack::object& obj, framework::diff_object ptr) const {
+void mixable_versioned_table::mix(
+    const msgpack::object& obj,
+    framework::diff_object ptr) const {
   internal_diff* diff_obj = dynamic_cast<internal_diff*>(ptr.get());
   if (!diff_obj) {
-    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("bad diff_object"));
+    throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("bad diff_object"));
   }
 
   vector<common::byte_buffer> data;
@@ -87,7 +92,9 @@ void mixable_versioned_table::get_argument(framework::packer& pk) const {
   pk.pack(vc_);
 }
 
-void mixable_versioned_table::pull(const msgpack::object& arg, framework::packer& pk) const {
+void mixable_versioned_table::pull(
+    const msgpack::object& arg,
+    framework::packer& pk) const {
   version_clock vc;
   arg.convert(&vc);
   pull_impl(vc, pk);
