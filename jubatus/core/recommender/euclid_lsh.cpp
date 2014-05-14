@@ -108,6 +108,32 @@ euclid_lsh::euclid_lsh(const config& config)
       bin_width_(config.bin_width),
       num_probe_(config.probe_num),
       retain_projection_(config.retain_projection) {
+
+  if (!(1 <= config.hash_num)) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("1 <= hash_num"));
+  }
+
+  if (!(1 <= config.table_num)) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("1 <= table_num"));
+  }
+
+  if (!(0.f < config.bin_width)) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("0.0 < bin_width"));
+  }
+
+  if (!(0 <= config.probe_num)) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("0 <= probe_num"));
+  }
+
+  if (!(0 <= config.seed)) {
+    throw JUBATUS_EXCEPTION(
+        common::invalid_parameter("0 <= seed"));
+  }
+
   mixable_storage_->set_model(storage::mixable_lsh_index_storage::model_ptr(
       new storage::lsh_index_storage(
           config.hash_num, config.table_num, config.seed)));

@@ -50,7 +50,32 @@ TYPED_TEST_P(lof_test, update_row) {
   l.calc_anomaly_score(id);
 }
 
-REGISTER_TYPED_TEST_CASE_P(lof_test, update_row);
+TYPED_TEST_P(lof_test, config_validation) {
+  shared_ptr<TypeParam> nn_engine(new TypeParam);
+  shared_ptr<lof> l;
+  lof_storage::config c;
+
+  c.reverse_nearest_neighbor_num = 10;
+
+  // nearest_neighbor_num <= 2
+  c.nearest_neighbor_num = 1;
+  ASSERT_THROW(l.reset(new lof(c, nn_engine)), common::invalid_parameter);
+
+  c.nearest_neighbor_num = 2;
+  ASSERT_NO_THROW(l.reset(new lof(c, nn_engine)));
+
+  c.nearest_neighbor_num = 3;
+  ASSERT_NO_THROW(l.reset(new lof(c, nn_engine)));
+
+  // nearest_neighbor_num <= reverse_nearest_neighbor_num
+  c.reverse_nearest_neighbor_num = 2;
+  ASSERT_THROW(l.reset(new lof(c, nn_engine)), common::invalid_parameter);
+
+  c.reverse_nearest_neighbor_num = 3;
+  ASSERT_NO_THROW(l.reset(new lof(c, nn_engine)));
+}
+
+REGISTER_TYPED_TEST_CASE_P(lof_test, update_row, config_validation);
 
 typedef testing::Types<recommender::inverted_index, recommender::lsh,
   recommender::minhash, recommender::euclid_lsh> recommender_types;

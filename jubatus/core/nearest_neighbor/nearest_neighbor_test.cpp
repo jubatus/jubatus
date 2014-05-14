@@ -23,6 +23,7 @@
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/lang/cast.h"
 #include "../common/jsonconfig.hpp"
+#include "nearest_neighbor.hpp"
 #include "nearest_neighbor_base.hpp"
 #include "nearest_neighbor_factory.hpp"
 
@@ -162,6 +163,48 @@ INSTANTIATE_TEST_CASE_P(
     lsh_test,
     nearest_neighbor_test,
     ::testing::ValuesIn(configs));
+
+template<typename T>
+class nearest_neighbor_config_test : public testing::Test {
+};
+
+TYPED_TEST_CASE_P(nearest_neighbor_config_test);
+
+TYPED_TEST_P(nearest_neighbor_config_test, config_validation) {
+  string id("ID");
+  vector<table::column_type> schema;
+  typename TypeParam::config c;
+
+  // 1 <= hash_num
+  c.hash_num = 0;
+  ASSERT_THROW(TypeParam n(c,
+      shared_ptr<table::column_table>(new table::column_table), id),
+      common::invalid_parameter);
+  ASSERT_THROW(TypeParam n(c,
+      shared_ptr<table::column_table>(new table::column_table), schema, id),
+      common::invalid_parameter);
+
+  c.hash_num = 1;
+  ASSERT_NO_THROW(TypeParam n(c,
+      shared_ptr<table::column_table>(new table::column_table), id));
+  ASSERT_NO_THROW(TypeParam n(c,
+      shared_ptr<table::column_table>(new table::column_table), schema, id));
+
+  c.hash_num = 2;
+  ASSERT_NO_THROW(TypeParam n(c,
+      shared_ptr<table::column_table>(new table::column_table), id));
+  ASSERT_NO_THROW(TypeParam n(c,
+      shared_ptr<table::column_table>(new table::column_table), schema, id));
+}
+
+REGISTER_TYPED_TEST_CASE_P(
+    nearest_neighbor_config_test, config_validation);
+
+typedef testing::Types<nearest_neighbor::lsh,
+  nearest_neighbor::minhash, nearest_neighbor::euclid_lsh> nn_types;
+
+INSTANTIATE_TYPED_TEST_CASE_P(nn_config_test,
+  nearest_neighbor_config_test, nn_types);
 
 }  // namespace nearest_neighbor
 }  // namespace core
