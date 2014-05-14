@@ -124,7 +124,13 @@ struct str_model : public model {
 typedef linear_mixable_helper<str_model, string> mixable_str;
 
 TEST(mixable, config_not_set) {
-  //EXPECT_THROW(mixable_int(),common::config_not_set);
+  msgpack::sbuffer diff;
+  stream_writer<msgpack::sbuffer> sw(diff);
+  core::framework::jubatus_packer jp(sw);
+  packer pk(jp);
+  EXPECT_THROW(mixable_int().get_diff(pk), common::config_not_set);
+
+  EXPECT_THROW(mixable_int().put_diff(diff_object()), common::config_not_set);
 }
 
 TEST(mixable, pack_unpack) {

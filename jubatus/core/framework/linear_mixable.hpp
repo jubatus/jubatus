@@ -45,7 +45,6 @@ class linear_mixable : public virtual mixable {
   virtual void mix(const msgpack::object& obj, diff_object) const = 0;
   virtual void get_diff(packer&) const = 0;
   virtual bool put_diff(const diff_object& obj) = 0;
-  virtual storage::version get_version() const;
 };
 
 

@@ -29,10 +29,6 @@ linear_mixable::linear_mixable() : mixable("linear_mixable") {
 linear_mixable::~linear_mixable() {
 }
 
-storage::version linear_mixable::get_version() const {
-  return storage::version();
-}
-
 }  // namespace framework
 }  // namespace core
 }  // namespace jubatus

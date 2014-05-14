@@ -82,6 +82,10 @@ class linear_mixable_helper : public linear_mixable {
   }
 
   void get_diff(packer& pk) const {
+    if (!model_) {
+      throw JUBATUS_EXCEPTION(common::config_not_set());
+    }
+
     Diff diff;
     model_->get_diff(diff);
     pk.pack(diff);
@@ -89,6 +93,10 @@ class linear_mixable_helper : public linear_mixable {
 
   bool put_diff(const diff_object& ptr) {
     internal_diff_object* diff_obj = dynamic_cast<internal_diff_object*>(ptr.get());
+    if (!model_) {
+      throw JUBATUS_EXCEPTION(common::config_not_set());
+    }
+
     if (!diff_obj) {
       throw JUBATUS_EXCEPTION(core::common::exception::runtime_error("bad diff_object"));
     }
