@@ -44,6 +44,7 @@ def build(bld):
       'euclid_lsh_test.cpp',
       'minhash_test.cpp',
       'lsh_test.cpp',
+      'recommender_factory_test.cpp',
       ])
 
   bld.install_files('${PREFIX}/include/jubatus/core/recommender', [
