@@ -73,6 +73,51 @@ TEST(recommender_factory, create_without_unlearner) {
             conf,
             "id"));
   }
+  {
+    json js(new json_object);
+    js["method"] = to_json(std::string("minhash"));
+    js["parameter"] = json(new json_object);
+    js["parameter"]["hash_num"] = to_json(64);
+    common::jsonconfig::config conf(js);
+    EXPECT_NO_THROW(
+        recommender_factory::create_recommender(
+            "nearest_neighbor_recommender",
+            conf,
+            "id"));
+  }
+}
+
+TEST(recommender_factory, create_with_unlearner) {
+  {
+    json js(new json_object);
+    js["method"] = to_json(std::string("minhash"));
+    js["parameter"] = json(new json_object);
+    js["parameter"]["hash_num"] = to_json(64);
+    js["unlearner"] = to_json(std::string("lru"));
+    js["unlearner_parameter"] = new json_object;
+    js["unlearner_parameter"]["max_size"] = to_json(1);
+    common::jsonconfig::config conf(js);
+    EXPECT_NO_THROW(
+        recommender_factory::create_recommender(
+            "nearest_neighbor_recommender",
+            conf,
+            "id"));
+  }
+}
+
+TEST(recommender_factory, no_unlearner_parameter) {
+    json js(new json_object);
+    js["method"] = to_json(std::string("minhash"));
+    js["parameter"] = json(new json_object);
+    js["parameter"]["hash_num"] = to_json(64);
+    js["unlearner"] = to_json(std::string("lru"));
+    common::jsonconfig::config conf(js);
+    EXPECT_THROW(
+        recommender_factory::create_recommender(
+            "nearest_neighbor_recommender",
+            conf,
+            "id"),
+        common::config_exception);
 }
 
 }  // namespace recommender
