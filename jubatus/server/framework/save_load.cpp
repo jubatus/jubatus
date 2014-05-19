@@ -196,7 +196,7 @@ void load_server(std::istream& is,
     msgpack::unpacked unpacked;
     msgpack::unpack(&unpacked, &system_data_buf[0], system_data_size);
     unpacked.get().convert(&system_data_actual);
-  } catch (msgpack::type_error) {
+  } catch (const msgpack::type_error&) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error(
           "system data is broken"));
@@ -247,7 +247,7 @@ void load_server(std::istream& is,
     }
 
     server.get_mixable_holder()->unpack(objs[1]);
-  } catch (msgpack::type_error) {
+  } catch (const msgpack::type_error&) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error(
           "user data is broken"));
