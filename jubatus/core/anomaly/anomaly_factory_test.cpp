@@ -63,6 +63,23 @@ TEST(anomaly_factory, create_light_lof_with_unlearner) {
   EXPECT_NO_THROW(anomaly_factory::create_anomaly("light_lof", conf, "id"));
 }
 
+TEST(anomaly_factory, create_lof_with_unlearner) {
+  // LOF does not support unleaner
+  json js(new json_object);
+  js["method"] = to_json(std::string("lsh"));
+  js["parameter"] = json(new json_object);
+  js["parameter"]["hash_num"] = to_json(64);
+  js["nearest_neighbor_num"] = to_json(10);
+  js["reverse_nearest_neighbor_num"] = to_json(10);
+  js["unlearner"] = to_json(std::string("lru"));
+  js["unlearner_parameter"] = new json_object;
+  js["unlearner_parameter"]["max_size"] = to_json(1);
+  common::jsonconfig::config conf(js);
+  EXPECT_THROW(anomaly_factory::create_anomaly("lof", conf, "id"),
+               common::jsonconfig::cast_check_error);
+}
+
+
 
 }  // namespace anomaly
 }  // namespace core
