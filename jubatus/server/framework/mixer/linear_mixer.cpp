@@ -466,7 +466,8 @@ void linear_mixer::mix() {
           mixable_holder_->get_mixables();
 
       vector<vector<byte_buffer> > diffs;
-      {  // get_diff() -> diffs
+      // get_diff() -> diffs
+      {
         common::mprpc::rpc_result_object result;
         communication_->get_diff(result);
 
@@ -488,16 +489,16 @@ void linear_mixer::mix() {
               make_pair(result.error[i].host(), result.error[i].port()));
         }
 
-        {  // success info message
-          LOG(INFO) << "success to get_diff from ["
-                    << server_list(successes) << "]";
+        if (diffs.empty()) {
+          throw JUBATUS_EXCEPTION(
+              core::common::exception::runtime_error("no diff available"));
         }
+
+        // success info message
+        LOG(INFO) << "success to get_diff from ["
+                  << server_list(successes) << "]";
       }
 
-      if (diffs.empty()) {
-        throw JUBATUS_EXCEPTION(
-            core::common::exception::runtime_error("no diff available"));
-      }
 
       vector<byte_buffer> mixed = diffs.front();
       diffs.erase(diffs.begin());
