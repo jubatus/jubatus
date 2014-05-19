@@ -157,10 +157,17 @@ byte_buffer linear_communication_impl::get_model() {
 
     msgpack::rpc::client cli(server_ip, server_port);
     msgpack::rpc::future result(cli.call("get_model", 0));
-    const byte_buffer got_model_data(result.get<byte_buffer>());
-    LOG(INFO) << "got model(serialized data) " << got_model_data.size()
-              << " from server[" << server_ip << ":" << server_port << "] ";
-    return got_model_data;
+
+    try {
+      const byte_buffer got_model_data(result.get<byte_buffer>());
+      LOG(INFO) << "got model(serialized data) " << got_model_data.size()
+                << " from server[" << server_ip << ":" << server_port << "] ";
+      return got_model_data;
+    } catch (const std::runtime_error& e) {
+      LOG(WARNING) << "get_model failed (" << e.what() << "): "
+                   << server_ip << ":" << server_port;
+      throw;
+    }
   }
 }
 
