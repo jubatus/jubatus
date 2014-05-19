@@ -505,16 +505,6 @@ void linear_mixer::mix() {
           successes.push_back(
               make_pair(diff_result.error[i].host(), diff_result.error[i].port()));
         }
-
-        {  // success info message
-          LOG(INFO) << "success to get_diff from ["
-                    << server_list(successes) << "]";
-        }
-      }
-
-      if (diffs == 0) {
-        throw JUBATUS_EXCEPTION(
-            core::common::exception::runtime_error("no diff available"));
       }
 
       { // put mixed data
