@@ -38,20 +38,30 @@ namespace core {
 namespace anomaly {
 
 namespace {
-struct lof_config {
-  int nearest_neighbor_num;
-  int reverse_nearest_neighbor_num;
+struct lof_config : public lof_storage::config {
+  std::string method;
+  jubatus::core::common::jsonconfig::config parameter;
+
+  template <typename Ar>
+  void serialize(Ar& ar) {
+    lof_storage::config::serialize(ar);
+    ar
+        & JUBA_MEMBER(method)
+        & JUBA_MEMBER(parameter);
+  }
+};
+
+struct light_lof_config : public light_lof::config {
   std::string method;
   jubatus::core::common::jsonconfig::config parameter;
   jubatus::util::data::optional<std::string> unlearner;
-  jubatus::util::data::optional<config>
+  jubatus::util::data::optional<jubatus::core::common::jsonconfig::config>
       unlearner_parameter;
 
   template <typename Ar>
   void serialize(Ar& ar) {
+    light_lof::config::serialize(ar);
     ar
-        & JUBA_MEMBER(nearest_neighbor_num)
-        & JUBA_MEMBER(reverse_nearest_neighbor_num)
         & JUBA_MEMBER(method)
         & JUBA_MEMBER(parameter)
         & JUBA_MEMBER(unlearner)
@@ -67,21 +77,13 @@ shared_ptr<anomaly_base> anomaly_factory::create_anomaly(
   if (name == "lof") {
     lof_config conf = config_cast_check<lof_config>(param);
 
-    lof_storage::config lof_conf;
-    lof_conf.nearest_neighbor_num = conf.nearest_neighbor_num;
-    lof_conf.reverse_nearest_neighbor_num = conf.reverse_nearest_neighbor_num;
-
     return shared_ptr<anomaly_base>(new lof(
-        lof_conf,
+        conf,
         recommender::recommender_factory::create_recommender(
             conf.method,
             conf.parameter, id)));
   } else if (name == "light_lof") {
-    lof_config conf = config_cast_check<lof_config>(param);
-
-    light_lof::config lof_conf;
-    lof_conf.nearest_neighbor_num = conf.nearest_neighbor_num;
-    lof_conf.reverse_nearest_neighbor_num = conf.reverse_nearest_neighbor_num;
+    light_lof_config conf = config_cast_check<light_lof_config>(param);
 
     jubatus::util::lang::shared_ptr<table::column_table> nearest_neighbor_table(
         new table::column_table);
@@ -97,13 +99,13 @@ shared_ptr<anomaly_base> anomaly_factory::create_anomaly(
       jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner(
           unlearner::create_unlearner(
               *conf.unlearner,
-              common::jsonconfig::config(*conf.unlearner_parameter)));
+              *conf.unlearner_parameter));
       return shared_ptr<anomaly_base>(
-          new light_lof(lof_conf, id, nearest_neighbor_engine, unlearner));
+          new light_lof(conf, id, nearest_neighbor_engine, unlearner));
     }
 
     return jubatus::util::lang::shared_ptr<anomaly_base>(
-        new light_lof(lof_conf, id, nearest_neighbor_engine));
+        new light_lof(conf, id, nearest_neighbor_engine));
   } else {
     throw JUBATUS_EXCEPTION(common::unsupported_method(name));
   }
