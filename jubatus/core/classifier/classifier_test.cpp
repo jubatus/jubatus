@@ -229,7 +229,6 @@ typedef testing::Types<
 
 INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
 
-
 TEST(classifier_config_test, regularization_weight) {
   classifier_base::storage_ptr s(new local_storage);
   classifier_config c;
