@@ -41,6 +41,7 @@ void PrintTo(const recommender_parameter& rec, ::std::ostream* os) {
   rec.second.get().print(*os, false);
   *os << " }";
 }
+
 }  // namespace std
 namespace jubatus {
 namespace core {
@@ -68,7 +69,7 @@ std::vector<recommender_parameter> generate_parameters() {
           "inverted_index",
           common::jsonconfig::config(js)));
     {  // unlearn
-      // TODO(kumagi): is it valid?
+      // TODO(kumagi): it would not run correctly
       json js_unlearn(js.clone());
       js_unlearn["unlearner"] = to_json(std::string("lru"));
       js_unlearn["unlearner_parameter"] = new json_object;
@@ -100,7 +101,7 @@ std::vector<recommender_parameter> generate_parameters() {
     ret.push_back(make_pair("euclid_lsh", common::jsonconfig::config(js)));
   }
 
-  {  // nearest_neighbor_recommender
+  {  // nearest_neighbor_recommender with out unlearn
     json js(new json_object);
     js["method"] = to_json(std::string("minhash"));
     js["parameter"] = json(new json_object);
@@ -123,10 +124,10 @@ std::vector<recommender_parameter> generate_parameters() {
 
 TEST_P(recommender_factory_test, create_normal) {
   EXPECT_NO_THROW(
-    recommender_factory::create_recommender(
-      this->name_,
-      this->conf_,
-      "id"));
+      recommender_factory::create_recommender(
+          this->name_,
+          this->conf_,
+          "id"));
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -142,11 +143,11 @@ TEST(recommender_factory, no_unlearner_parameter) {
   js["unlearner"] = to_json(std::string("lru"));
   common::jsonconfig::config conf(js);
   EXPECT_THROW(
-    recommender_factory::create_recommender(
-      "nearest_neighbor_recommender",
-      conf,
-      "id"),
-    common::config_exception);
+      recommender_factory::create_recommender(
+          "nearest_neighbor_recommender",
+          conf,
+          "id"),
+      common::config_exception);
 }
 
 }  // namespace recommender
