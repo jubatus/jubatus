@@ -101,7 +101,7 @@ std::vector<recommender_parameter> generate_parameters() {
     ret.push_back(make_pair("euclid_lsh", common::jsonconfig::config(js)));
   }
 
-  {  // nearest_neighbor_recommender with out unlearn
+  {  // nearest_neighbor_recommender without unlearn
     json js(new json_object);
     js["method"] = to_json(std::string("minhash"));
     js["parameter"] = json(new json_object);
