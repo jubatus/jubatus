@@ -91,13 +91,15 @@ shared_ptr<anomaly_base> anomaly_factory::create_anomaly(
 
     if (conf.unlearner) {
       if (!conf.unlearner_parameter) {
-        throw JUBATUS_EXCEPTION(common::exception::runtime_error(
-            "unlearner is set but unlearner_parameter is not found"));
+        throw JUBATUS_EXCEPTION(
+            common::config_exception()
+            << common::exception::error_message(
+              "unlearner is set but unlearner_parameter is not found"));
       }
       jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner(
           unlearner::create_unlearner(
               *conf.unlearner,
-              common::jsonconfig::config(*conf.unlearner_parameter)));
+              *conf.unlearner_parameter));
       return shared_ptr<anomaly_base>(
           new light_lof(lof_conf, id, nearest_neighbor_engine, unlearner));
     }
