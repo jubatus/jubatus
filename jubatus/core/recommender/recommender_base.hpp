@@ -58,9 +58,6 @@ class recommender_base {
 
   // Either get_(const)_storage or get_(const)_table should return non-null
   // pointer.
-  virtual core::storage::recommender_storage_base* get_storage() {
-    return NULL;
-  }
   virtual const core::storage::recommender_storage_base* get_const_storage()
       const {
     return NULL;
