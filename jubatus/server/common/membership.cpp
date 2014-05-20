@@ -170,8 +170,6 @@ void unregister_active(
   }
 }
 
-
-
 void watch_delete_actor(
     lock_service& z,
     const string& type,

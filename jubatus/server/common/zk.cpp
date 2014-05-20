@@ -224,6 +224,10 @@ void my_znode_delete_watcher(
       LOG(WARNING) << "unknown exception thrown from zk watcher callback";
     }
     delete fp;
+  } else if (type == ZOO_SESSION_EVENT) {
+    LOG(WARNING) << "ZK session has been lost, retry to connect";
+  } else if (type == ZOO_CHANGED_EVENT) {
+    LOG(INFO) << "ZK path: " << path << " has changed";
   } else {
     // if not delete event, re-register
     DLOG(INFO)
