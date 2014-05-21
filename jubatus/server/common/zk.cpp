@@ -228,17 +228,23 @@ void my_znode_delete_watcher(
     LOG(WARNING) << "ZK session has been lost, retry to connect";
   } else if (type == ZOO_CHANGED_EVENT) {
     LOG(INFO) << "ZK path: " << path << " has changed";
+  } else if (type == ZOO_CREATED_EVENT) {
+    LOG(WARNING) << "ZK created event arrived, something wrong";
+  } else if (type == ZOO_CHANGED_EVENT) {
+    LOG(WARNING) << "ZK changed event arrived, something wrong";
+  } else if (type == ZOO_CHILD_EVENT) {
+    LOG(WARNING) << "ZK child event arrived, something wrong";
   } else {
-    // if not delete event, re-register
-    DLOG(INFO)
-        << "non-delete event happen in path:["
+    DLOG(FATAL)
+        << "unknown event happen in path:["
         << path << "] type:["
         << type << "] state:["
         << state << "]";
-    int rc = zoo_wexists(zh, path, my_znode_delete_watcher, watcherCtx, NULL);
-    if (rc != ZOK) {
-      LOG(WARNING) << "cannot watch the path: " << path;
-    }
+  }
+
+  int rc = zoo_wexists(zh, path, my_znode_delete_watcher, watcherCtx, NULL);
+  if (rc != ZOK) {
+    LOG(WARNING) << "cannot watch the path: " << path;
   }
 }
 
