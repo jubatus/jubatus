@@ -14,10 +14,10 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <gtest/gtest.h>
 #include <string>
 #include <vector>
 #include <utility>
+#include <gtest/gtest.h>
 
 #include "recommender_factory.hpp"
 #include "../common/jsonconfig.hpp"
@@ -32,7 +32,8 @@ using jubatus::util::text::json::json_object;
 using jubatus::util::text::json::to_json;
 
 typedef std::pair<
-    std::string,jubatus::core::common::jsonconfig::config> recommender_parameter;
+    std::string, jubatus::core::common::jsonconfig::config>
+        recommender_parameter;
 
 namespace std {
 void PrintTo(const recommender_parameter& rec, ::std::ostream* os) {
@@ -86,8 +87,8 @@ std::vector<recommender_parameter> generate_parameters() {
     json js_unlearn(js.clone());
     js["hash_num"] = to_json(64);
     common::jsonconfig::config conf(js);
-    ret.push_back(make_pair("minhash",conf));
-    ret.push_back(make_pair("lsh",conf));
+    ret.push_back(make_pair("minhash", conf));
+    ret.push_back(make_pair("lsh", conf));
   }
 
   {  // euclid_lsh

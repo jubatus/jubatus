@@ -14,6 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <string>
 #include <gtest/gtest.h>
 
 #include "classifier_factory.hpp"
@@ -36,8 +37,8 @@ TEST(classifier_factory, create_without_unlearner) {
   {
     json js(new json_object);
     common::jsonconfig::config conf(js);
-
-    EXPECT_NO_THROW(classifier_factory::create_classifier("perceptron", conf, s));
+    EXPECT_NO_THROW(
+        classifier_factory::create_classifier("perceptron", conf, s));
     EXPECT_NO_THROW(classifier_factory::create_classifier("PA", conf, s));
   }
   {
@@ -64,7 +65,8 @@ TEST(classifier_factory, create_with_unlearner) {
     js["unlearner_parameter"]["max_size"] = to_json(1);
     common::jsonconfig::config conf(js);
 
-    EXPECT_NO_THROW(classifier_factory::create_classifier("perceptron", conf, s));
+    EXPECT_NO_THROW(
+        classifier_factory::create_classifier("perceptron", conf, s));
     EXPECT_NO_THROW(classifier_factory::create_classifier("PA", conf, s));
   }
   {

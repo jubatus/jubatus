@@ -15,10 +15,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "key_manager.hpp"
-#include "assert.hpp"
+
 #include <algorithm>
 #include <string>
 #include <vector>
+
+#include "assert.hpp"
 
 using std::string;
 using std::vector;

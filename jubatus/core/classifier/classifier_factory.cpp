@@ -24,7 +24,7 @@
 #include "../storage/storage_base.hpp"
 #include "../unlearner/unlearner_factory.hpp"
 
-using jubatus::core::common::jsonconfig::config;;
+using jubatus::core::common::jsonconfig::config;
 using jubatus::core::common::jsonconfig::config_cast_check;
 using jubatus::util::lang::shared_ptr;
 
