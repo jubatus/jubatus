@@ -188,9 +188,9 @@ id_with_score anomaly_serv::add_zk(const string&id_str, const datum& d) {
   }
   // this sequences MUST success,
   // in case of failures the whole request should be canceled
+  DLOG(INFO) << "initial add request to "
+             << nodes[0].first << ":" << nodes[0].second;
   try {
-    DLOG(INFO) << "initial add request to "
-               << nodes[0].first << ":" << nodes[0].second;
     score = selective_update(nodes[0].first, nodes[0].second, id_str, d);
   } catch (const std::runtime_error& e) {
     throw JUBATUS_EXCEPTION(core::common::exception::runtime_error(
@@ -199,9 +199,9 @@ id_with_score anomaly_serv::add_zk(const string&id_str, const datum& d) {
   }
 
   for (size_t i = 1; i < nodes.size(); ++i) {
+    DLOG(INFO) << "replica add request to "
+               << nodes[i].first << ":" << nodes[i].second;
     try {
-      DLOG(INFO) << "replica add request to "
-                 << nodes[i].first << ":" << nodes[i].second;
       selective_update(nodes[i].first, nodes[i].second, id_str, d);
     } catch (const std::runtime_error& e) {
       LOG(WARNING) << "cannot create " << i << "th replica "
