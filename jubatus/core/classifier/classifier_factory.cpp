@@ -76,13 +76,17 @@ shared_ptr<classifier_base> classifier_factory::create_classifier(
   shared_ptr<classifier_base> res;
   if (name == "perceptron") {
     // perceptron doesn't have parameter
-    unlearner_config conf = config_cast_check<unlearner_config>(param);
-    unlearner = create_unlearner(conf);
+    if (param.type() != jubatus::util::text::json::json::Null) {
+      unlearner_config conf = config_cast_check<unlearner_config>(param);
+      unlearner = create_unlearner(conf);
+    }
     res.reset(new perceptron(storage));
   } else if (name == "PA" || name == "passive_aggressive") {
     // passive_aggressive doesn't have parameter
-    unlearner_config conf = config_cast_check<unlearner_config>(param);
-    unlearner = create_unlearner(conf);
+    if (param.type() != jubatus::util::text::json::json::Null) {
+      unlearner_config conf = config_cast_check<unlearner_config>(param);
+      unlearner = create_unlearner(conf);
+    }
     res.reset(new passive_aggressive(storage));
   } else if (name == "PA1" || name == "passive_aggressive_1") {
     unlearning_classifier_config conf
