@@ -188,16 +188,25 @@ id_with_score anomaly_serv::add_zk(const string&id_str, const datum& d) {
   }
   // this sequences MUST success,
   // in case of failures the whole request should be canceled
-  score = selective_update(nodes[0].first, nodes[0].second, id_str, d);
+  DLOG(INFO) << "initial add request to "
+             << nodes[0].first << ":" << nodes[0].second;
+  try {
+    score = selective_update(nodes[0].first, nodes[0].second, id_str, d);
+  } catch (const std::runtime_error& e) {
+    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error(
+        "failed to add ID " + id_str + " (" + e.what() + "): " +
+            nodes[0].first + ":" + lexical_cast<string>(nodes[0].second)));
+  }
 
   for (size_t i = 1; i < nodes.size(); ++i) {
+    DLOG(INFO) << "replica add request to "
+               << nodes[i].first << ":" << nodes[i].second;
     try {
-      DLOG(INFO) << "request to " << nodes[i].first << ":" << nodes[i].second;
       selective_update(nodes[i].first, nodes[i].second, id_str, d);
     } catch (const std::runtime_error& e) {
-      LOG(WARNING) << "cannot create " << i << "th replica: "
-          << nodes[i].first << ":" << nodes[i].second;
-      LOG(WARNING) << e.what();
+      LOG(WARNING) << "cannot create " << i << "th replica "
+                   << "(" << e.what() << "): "
+                   << nodes[i].first << ":" << nodes[i].second;
     }
   }
   DLOG(INFO) << "point added: " << id_str;
@@ -259,6 +268,13 @@ void anomaly_serv::find_from_cht(
 #endif
 }
 
+/*
+ * Updates the model on the specified node and returns the score.
+ * If the host/port of the current process is specified, update
+ * is processed locally.
+ * Caller is responsible for handling exceptions including RPC
+ * errors.
+ */
 float anomaly_serv::selective_update(
     const string& host,
     int port,
