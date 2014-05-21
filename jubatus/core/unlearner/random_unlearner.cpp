@@ -17,7 +17,6 @@
 #include "random_unlearner.hpp"
 
 #include <string>
-#include "jubatus/util/data/serialization.h"
 #include "../common/exception.hpp"
 
 namespace jubatus {

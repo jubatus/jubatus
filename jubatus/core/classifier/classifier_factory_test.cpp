@@ -14,9 +14,10 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include "classifier_factory.hpp"
+#include "classifier_base.hpp"
 #include "../common/jsonconfig.hpp"
 #include "../storage/local_storage.hpp"
 
@@ -30,8 +31,7 @@ namespace classifier {
 
 
 TEST(classifier_factory, create_without_unlearner) {
-  jubatus::util::lang::shared_ptr<storage::storage_base>
-      s(new storage::local_storage);
+  classifier_base::storage_ptr s(new storage::local_storage);
 
   {
     json js(new json_object);
@@ -55,8 +55,7 @@ TEST(classifier_factory, create_without_unlearner) {
 
 
 TEST(classifier_factory, create_with_unlearner) {
-  jubatus::util::lang::shared_ptr<storage::storage_base>
-      s(new storage::local_storage);
+  classifier_base::storage_ptr s(new storage::local_storage);
 
   {
     json js(new json_object);
@@ -87,8 +86,7 @@ TEST(classifier_factory, create_with_unlearner) {
 // --- validation test ---
 
 TEST(classifier_factory, invalid_unlearner_config) {
-  jubatus::util::lang::shared_ptr<storage::storage_base>
-    s(new storage::local_storage);
+  classifier_base::storage_ptr s(new storage::local_storage);
   json js(new json_object);
   js["unlearner"] = to_json(std::string("lru"));
   common::jsonconfig::config conf(js);
@@ -100,8 +98,7 @@ TEST(classifier_factory, invalid_unlearner_config) {
 }
 
 TEST(classifier_factory, invalid_unlearner_name) {
-  jubatus::util::lang::shared_ptr<storage::storage_base>
-    s(new storage::local_storage);
+  classifier_base::storage_ptr s(new storage::local_storage);
   json js(new json_object);
   js["regularization_weight"] = to_json(1.0);
   js["unlearner"] = to_json(std::string("Jubatus"));  // not exist
@@ -118,8 +115,7 @@ TEST(classifier_factory, invalid_unlearner_name) {
 }
 
 TEST(classifier_factory, invalid_unlearner_parameter) {
-  jubatus::util::lang::shared_ptr<storage::storage_base>
-    s(new storage::local_storage);
+  classifier_base::storage_ptr s(new storage::local_storage);
   json js(new json_object);
   js["regularization_weight"] = to_json(1.0);
   js["unlearner"] = to_json(std::string("lru"));
@@ -138,8 +134,7 @@ TEST(classifier_factory, invalid_unlearner_parameter) {
 }
 
 TEST(classifier_factory, invalid_algorithm) {
-  jubatus::util::lang::shared_ptr<storage::storage_base>
-    s(new storage::local_storage);
+  classifier_base::storage_ptr s(new storage::local_storage);
 
   {  // invalid classifier name
     json js(new json_object);

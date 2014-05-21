@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include <algorithm>
-#include <cassert>
 #include <cstring>
 #include <string>
 #include <vector>

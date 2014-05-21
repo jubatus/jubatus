@@ -27,11 +27,11 @@
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../common/exception.hpp"
 
+using std::isinf;
 using jubatus::util::data::unordered_map;
 using jubatus::util::data::unordered_set;
 using jubatus::util::lang::shared_ptr;
 using jubatus::util::lang::bind;
-using jubatus::util::lang::weak_ptr;
 using jubatus::core::nearest_neighbor::nearest_neighbor_base;
 using jubatus::core::table::column_table;
 
@@ -62,7 +62,7 @@ float calculate_lof(float lrd, const std::vector<float>& neighbor_lrds) {
   const float sum_neighbor_lrd = std::accumulate(
       neighbor_lrds.begin(), neighbor_lrds.end(), 0.0f);
 
-  if (std::isinf(sum_neighbor_lrd) && std::isinf(lrd)) {
+  if (isinf(sum_neighbor_lrd) && isinf(lrd)) {
     return 1;
   }
 

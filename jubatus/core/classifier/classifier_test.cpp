@@ -17,7 +17,6 @@
 #include <algorithm>
 #include <fstream>
 #include <limits>
-#include <set>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -95,7 +94,7 @@ common::sfv_t convert(vector<double>& v) {
 
 TYPED_TEST_P(classifier_test, random) {
   jubatus::util::math::random::mtrand rand(0);
-  shared_ptr<local_storage> s(new local_storage);
+  classifier_base::storage_ptr s(new local_storage);
   TypeParam p(s);
 
   srand(0);
@@ -116,7 +115,7 @@ TYPED_TEST_P(classifier_test, random) {
 
 TYPED_TEST_P(classifier_test, random3) {
   jubatus::util::math::random::mtrand rand(0);
-  shared_ptr<local_storage> s(new local_storage);
+  classifier_base::storage_ptr s(new local_storage);
   TypeParam p(s);
 
   srand(0);
@@ -136,7 +135,7 @@ TYPED_TEST_P(classifier_test, random3) {
 }
 
 TYPED_TEST_P(classifier_test, delete_label) {
-  shared_ptr<local_storage> s(new local_storage);
+  classifier_base::storage_ptr s(new local_storage);
   TypeParam p(s);
 
   {
@@ -183,7 +182,7 @@ TYPED_TEST_P(classifier_test, delete_label) {
 }
 
 TYPED_TEST_P(classifier_test, unlearning) {
-  shared_ptr<local_storage> s(new local_storage);
+  classifier_base::storage_ptr s(new local_storage);
   TypeParam p(s);
 
   unlearner::lru_unlearner::config config;

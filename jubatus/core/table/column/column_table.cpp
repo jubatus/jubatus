@@ -15,7 +15,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <algorithm>
-#include <cassert>
 #include <cstring>
 #include <string>
 #include <utility>
@@ -31,7 +30,7 @@ namespace core {
 namespace table {
 
 void column_table::init(const std::vector<column_type>& schema) {
-  jubatus::util::concurrent::scoped_lock lk(wlock(table_lock_));
+  jutil::concurrent::scoped_wlock lk(table_lock_);
   /* defining tuple */
   if (!columns_.empty()) {
     throw storage_exception(
@@ -46,7 +45,7 @@ void column_table::init(const std::vector<column_type>& schema) {
 }
 
 void column_table::clear() {
-  jubatus::util::concurrent::scoped_lock lk(wlock(table_lock_));
+  jutil::concurrent::scoped_wlock lk(table_lock_);
   // it keeps schema
   keys_.clear();
   versions_.clear();
@@ -60,8 +59,7 @@ void column_table::clear() {
 
 std::pair<bool, uint64_t> column_table::exact_match(
     const std::string& prefix) const {
-  jubatus::util::concurrent::scoped_lock
-      lk(jubatus::util::concurrent::rlock(table_lock_));
+  jutil::concurrent::scoped_rlock lk(table_lock_);
   index_table::const_iterator it = index_.find(prefix);
   if (it == index_.end()) {
     return std::make_pair(false, 0LLU);

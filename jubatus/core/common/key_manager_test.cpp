@@ -66,7 +66,9 @@ TEST(key_manager, delete_key) {
 
 TEST(key_manager, delete_unknown_key) {
   key_manager m;
-  m.delete_key("key1");
+  EXPECT_EQ(0, m.size());
+  EXPECT_NO_THROW(m.delete_key("key1"));  // no modification
+  EXPECT_EQ(0, m.size());
 }
 
 }  // namespace common
