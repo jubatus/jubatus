@@ -65,6 +65,7 @@ def build(bld):
       'counter.hpp',
       'revert.hpp',
       'exception.hpp',
+      'type.hpp',
       ]
   use = ['jubatus_util', 'MSGPACK']
 
