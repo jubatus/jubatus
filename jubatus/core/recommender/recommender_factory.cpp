@@ -21,7 +21,6 @@
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
 #include "../nearest_neighbor/nearest_neighbor_factory.hpp"
-#include "../storage/norm_factory.hpp"
 #include "../table/column/column_table.hpp"
 #include "recommender_factory.hpp"
 #include "recommender.hpp"
