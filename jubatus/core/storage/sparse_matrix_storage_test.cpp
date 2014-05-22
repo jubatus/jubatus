@@ -21,7 +21,6 @@
 #include <vector>
 #include <gtest/gtest.h>
 #include "sparse_matrix_storage.hpp"
-#include "norm.hpp"
 
 using std::make_pair;
 using std::pair;

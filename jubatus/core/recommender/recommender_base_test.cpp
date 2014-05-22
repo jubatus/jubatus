@@ -21,9 +21,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../storage/norm.hpp"
 #include "recommender_base.hpp"
-#include "../storage/norm_none.hpp"
 
 using std::make_pair;
 using std::pair;
