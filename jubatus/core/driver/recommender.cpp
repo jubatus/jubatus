@@ -29,7 +29,6 @@
 #include "../fv_converter/converter_config.hpp"
 #include "../fv_converter/revert.hpp"
 #include "../recommender/recommender_factory.hpp"
-#include "../storage/storage_factory.hpp"
 
 using std::string;
 using std::vector;
