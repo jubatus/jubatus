@@ -17,7 +17,6 @@
 #ifndef JUBATUS_CORE_UNLEARNER_UNLEARNER_BASE_HPP_
 #define JUBATUS_CORE_UNLEARNER_UNLEARNER_BASE_HPP_
 
-#include <iosfwd>
 #include <string>
 #include "jubatus/util/lang/function.h"
 
