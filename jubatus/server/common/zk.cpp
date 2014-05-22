@@ -225,7 +225,12 @@ void my_znode_delete_watcher(
     }
     delete fp;
   } else if (type == ZOO_SESSION_EVENT) {
-    LOG(WARNING) << "ZK session has been lost, retry to connect";
+    /* - ignore
+       the ZK server may down, and Jubatus will retry other ZK.
+       Jubatus handles SESSION_EVENT in `mywatcher` correctly,
+       so this delete_watcher does not need to anything for SESSION_EVENT.
+     */
+    return;  // don't re-register
   } else if (type == ZOO_CHANGED_EVENT) {
     LOG(INFO) << "ZK path: " << path << " has changed";
   } else if (type == ZOO_CREATED_EVENT) {
