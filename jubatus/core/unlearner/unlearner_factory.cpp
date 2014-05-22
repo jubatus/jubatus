@@ -31,7 +31,6 @@ namespace unlearner {
 shared_ptr<unlearner_base> create_unlearner(
     const std::string& name,
     const common::jsonconfig::config& config) {
-  std::cout << "create unlearner for " << name << std::endl;
   if (name == "lru") {
     return shared_ptr<unlearner_base>(
         new lru_unlearner(common::jsonconfig::config_cast_check<
