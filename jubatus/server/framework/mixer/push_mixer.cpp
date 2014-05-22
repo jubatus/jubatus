@@ -341,7 +341,7 @@ void push_mixer::mix() {
         common::mprpc::rpc_result_object pull_result;
         communication_->pull(she, my_args, pull_result);
         if (handle_communication_error("pull", pull_result)) {
-          break;
+          continue;
         }
         vector<string> her_diff =
             pull_result.response.front().as<vector<string> >();
@@ -350,7 +350,7 @@ void push_mixer::mix() {
         common::mprpc::rpc_result_object args_result;
         communication_->get_pull_argument(she, args_result);
         if (handle_communication_error("get_pull_argument", args_result)) {
-          break;
+          continue;
         }
         vector<string> her_args =
             args_result.response.front().as<vector<string> >();
@@ -360,7 +360,7 @@ void push_mixer::mix() {
         common::mprpc::rpc_result_object push_result;
         communication_->push(she, my_diff, push_result);
         if (handle_communication_error("push", push_result)) {
-          break;
+          continue;
         }
         push(her_diff);
 
