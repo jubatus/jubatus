@@ -276,17 +276,30 @@ void my_znode_delete_watcher(
       LOG(WARNING) << "unknown exception thrown from zk watcher callback";
     }
     delete fp;
+  } else if (type == ZOO_SESSION_EVENT) {
+    /* - ignore
+       the ZK server may down, and Jubatus will retry other ZK.
+       Jubatus handles SESSION_EVENT in `mywatcher` correctly,
+       so this delete_watcher does not need to anything for SESSION_EVENT.
+     */
+    return;  // don't re-register
+  } else if (type == ZOO_CHANGED_EVENT) {
+    LOG(INFO) << "ZK path: " << path << " has changed";
+  } else if (type == ZOO_CREATED_EVENT) {
+    LOG(WARNING) << "ZK created event arrived, something wrong";
+  } else if (type == ZOO_CHILD_EVENT) {
+    LOG(WARNING) << "ZK child event arrived, something wrong";
   } else {
-    // if not delete event, re-register
-    DLOG(INFO)
-        << "non-delete event happen in path:["
+    DLOG(FATAL)
+        << "unknown event happen in path:["
         << path << "] type:["
         << type << "] state:["
         << state << "]";
-    int rc = zoo_wexists(zh, path, my_znode_delete_watcher, watcherCtx, NULL);
-    if (rc != ZOK) {
-      LOG(WARNING) << "cannot watch the path: " << path;
-    }
+  }
+
+  int rc = zoo_wexists(zh, path, my_znode_delete_watcher, watcherCtx, NULL);
+  if (rc != ZOK) {
+    LOG(WARNING) << "cannot watch the path: " << path;
   }
 }
 
