@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "splitter_factory.hpp"
+#include "string_feature_factory.hpp"
 
 #include <map>
 #include <string>
@@ -22,7 +22,6 @@
 #include "regexp_splitter.hpp"
 #include "exception.hpp"
 #include "util.hpp"
-#include "word_splitter.hpp"
 
 using jubatus::util::lang::shared_ptr;
 
@@ -79,16 +78,16 @@ shared_ptr<regexp_splitter >create_regexp(
 
 }  // namespace
 
-shared_ptr<word_splitter> splitter_factory::create(
+shared_ptr<string_feature> string_feature_factory::create(
     const std::string& name,
     const param_t& params) const {
-  word_splitter* p;
+  string_feature* p;
   if (name == "ngram") {
     return create_character_ngram(params);
   } else if (name == "regexp") {
     return create_regexp(params);
   } else if (ext_ && (p = ext_(name, params))) {
-    return shared_ptr<word_splitter>(p);
+    return shared_ptr<string_feature>(p);
   } else {
     throw JUBATUS_EXCEPTION(
         converter_exception(std::string("unknown splitter name: ") + name));

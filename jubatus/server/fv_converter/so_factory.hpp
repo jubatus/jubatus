@@ -41,8 +41,8 @@ class so_factory : public core::fv_converter::factory_extender {
         const std::string& name,
         const core::fv_converter::param_t&) const;
 
-  core::fv_converter::word_splitter*
-    create_word_splitter(
+  core::fv_converter::string_feature*
+    create_string_feature(
         const std::string& name,
         const core::fv_converter::param_t&) const;
 

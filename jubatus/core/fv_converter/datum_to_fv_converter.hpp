@@ -56,12 +56,12 @@ struct splitter_weight_type {
 
 struct datum;
 class datum_to_fv_converter_impl;
-class word_splitter;
 class key_matcher;
 class num_feature;
 class binary_feature;
 class string_filter;
 class num_filter;
+class string_feature;
 class weight_manager;
 
 class datum_to_fv_converter {
@@ -89,7 +89,7 @@ class datum_to_fv_converter {
   void register_string_rule(
       const std::string& name,
       jubatus::util::lang::shared_ptr<key_matcher> matcher,
-      jubatus::util::lang::shared_ptr<word_splitter> splitter,
+      jubatus::util::lang::shared_ptr<string_feature> splitter,
       const std::vector<splitter_weight_type>& weights);
 
   void register_num_rule(

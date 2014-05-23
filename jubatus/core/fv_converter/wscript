@@ -37,7 +37,7 @@ def build(bld):
     'character_ngram.cpp',
     'without_split.cpp',
     'key_matcher_factory.cpp',
-    'splitter_factory.cpp',
+    'string_feature_factory.cpp',
     'num_feature_factory.cpp',
     'binary_feature_factory.cpp',
     'converter_config.cpp',
@@ -49,6 +49,7 @@ def build(bld):
     'mixable_weight_manager.cpp',
     'keyword_weights.cpp',
     'feature_hasher.cpp',
+    'word_splitter.cpp',
     ]
   use = 'jubatus_util MSGPACK jubacommon'
 
@@ -87,7 +88,7 @@ def build(bld):
       'character_ngram_test.cpp',
       'key_matcher_test.cpp',
       'key_matcher_factory_test.cpp',
-      'splitter_factory_test.cpp',
+      'string_feature_factory_test.cpp',
       'num_feature_factory_test.cpp',
       'converter_config_test.cpp',
       'libsvm_converter_test.cpp',
