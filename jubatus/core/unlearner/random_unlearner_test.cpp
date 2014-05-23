@@ -35,6 +35,20 @@ TEST(random_unlearner, max_size_must_be_positive) {
   EXPECT_THROW(random_unlearner unlearner(config), common::config_exception);
 }
 
+TEST(random_unlearner, seed_must_positive) {
+  random_unlearner::config config;
+  config.max_size = 1;
+  config.seed = -1;
+  EXPECT_THROW(random_unlearner unlearner(config), common::config_exception);
+}
+
+TEST(random_unlearner, seed_must_be_within_32bit) {
+  random_unlearner::config config;
+  config.max_size = 1;
+  config.seed = 0xffffffffLLU + 1;
+  EXPECT_THROW(random_unlearner unlearner(config), common::config_exception);
+}
+
 TEST(random_unlearner, trivial) {
   unordered_set<std::string> keys;
   keys.insert("id1");
