@@ -259,14 +259,15 @@ void local_storage_mixture::register_label(const std::string& label) {
   class2id_.get_id(label);
 }
 
-void local_storage_mixture::delete_label(const std::string& label) {
+bool local_storage_mixture::delete_label(const std::string& label) {
   uint64_t delete_id = class2id_.get_id_const(label);
   if (delete_id == common::key_manager::NOTFOUND) {
-    return;
+    return false;
   }
   delete_label_from_weight(delete_id, tbl_);
   delete_label_from_weight(delete_id, tbl_diff_);
   class2id_.delete_key(label);
+  return true;
 }
 
 void local_storage_mixture::clear() {

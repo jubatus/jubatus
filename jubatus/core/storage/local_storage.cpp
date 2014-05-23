@@ -188,10 +188,10 @@ bool local_storage::set_label(const std::string& label) {
   return class2id_.set_key(label);
 }
 
-void local_storage::delete_label(const std::string& label) {
+bool local_storage::delete_label(const std::string& label) {
   uint64_t delete_id = class2id_.get_id_const(label);
   if (delete_id == common::key_manager::NOTFOUND) {
-    return;
+    return true;
   }
   for (id_features3_t::iterator it = tbl_.begin();
        it != tbl_.end();
@@ -202,6 +202,7 @@ void local_storage::delete_label(const std::string& label) {
     }
   }
   class2id_.delete_key(label);
+  return false;
 }
 
 void local_storage::clear() {

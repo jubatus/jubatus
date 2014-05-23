@@ -130,11 +130,12 @@ class stub_storage : public storage_base {
     return storage::version();
   }
 
-  void delete_label(const string& name) {
+  bool delete_label(const string& name) {
     for (map<string, map<string, val3_t> >::iterator it = data_.begin();
          it != data_.end(); ++it) {
       it->second.erase(name);
     }
+    return true;
   }
 
   void clear() {
