@@ -37,6 +37,7 @@ def build(bld):
 
   map(make_test, [
       'anomaly_base_test.cpp',
+      'anomaly_factory_test.cpp',
       'light_lof_test.cpp',
       'lof_storage_test.cpp',
       'lof_test.cpp',

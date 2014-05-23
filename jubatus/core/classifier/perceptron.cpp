@@ -34,6 +34,7 @@ void perceptron::train(const common::sfv_t& sfv, const std::string& label) {
     return;
   }
   update_weight(sfv, 1.f, label, predicted_label);
+  touch(label);
 }
 
 string perceptron::name() const {

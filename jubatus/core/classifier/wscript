@@ -30,7 +30,17 @@ def build(bld):
      features = 'gtest',
      source = [
          'classifier_test.cpp',
-         'classifier_factory.cpp'
+         'classifier_factory.cpp',
+     ],
+     target = "classifier_test",
+     includes = '.',
+     use = ['jubatus_util', 'jubatus_core'])
+
+  bld.program(
+     features = 'gtest',
+     source = [
+         'classifier_factory.cpp',
+         'classifier_factory_test.cpp',
      ],
      target = "classifier_test",
      includes = '.',

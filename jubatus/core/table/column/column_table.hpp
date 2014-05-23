@@ -208,7 +208,7 @@ class column_table {
     jubatus::util::concurrent::scoped_rlock lk(table_lock_);
     std::cout << "schema is ";
     for (std::vector<detail::abstract_column>::const_iterator it =
-           columns_.begin();
+             columns_.begin();
          it != columns_.end();
          ++it) {
       it->dump();

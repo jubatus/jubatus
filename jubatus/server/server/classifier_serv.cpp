@@ -188,5 +188,10 @@ bool classifier_serv::set_label(const std::string& label) {
   return classifier_->set_label(label);
 }
 
+bool classifier_serv::delete_label(const std::string& label) {
+  check_set_config();
+  return classifier_->delete_label(label);
+}
+
 }  // namespace server
 }  // namespace jubatus

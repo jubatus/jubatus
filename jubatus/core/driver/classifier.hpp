@@ -49,6 +49,8 @@ class classifier : public driver_base {
       const fv_converter::datum& data) const;
 
   void get_status(std::map<std::string, std::string>& status) const;
+  bool delete_label(const std::string& name);
+
   void clear();
   void pack(framework::packer& pk) const;
   void unpack(msgpack::object o);
@@ -58,7 +60,7 @@ class classifier : public driver_base {
 
  private:
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-    converter_;
+      converter_;
   jubatus::util::lang::shared_ptr<classifier_base> classifier_;
   framework::linear_function_mixer mixable_classifier_model_;
   fv_converter::mixable_weight_manager wm_;

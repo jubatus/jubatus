@@ -17,7 +17,7 @@
 #include <vector>
 #include <string>
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 #include "bit_vector.hpp"
 
 using jubatus::core::table::bit_vector;

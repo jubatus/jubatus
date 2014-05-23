@@ -48,6 +48,7 @@ classifier::classifier(
   register_mixable(&mixable_classifier_model_);
   register_mixable(&wm_);
 
+  mixable_classifier_model_.set_label_unlearner(classifier_->label_unlearner());
   converter_->set_weight_manager(wm_.get_model());
 }
 
@@ -73,6 +74,10 @@ jubatus::core::classifier::classify_result classifier::classify(
 
 void classifier::get_status(std::map<string, string>& status) const {
   classifier_->get_status(status);
+}
+
+bool classifier::delete_label(const std::string& label) {
+  return classifier_->delete_label(label);
 }
 
 void classifier::clear() {

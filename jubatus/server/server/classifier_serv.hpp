@@ -55,6 +55,7 @@ class classifier_serv : public framework::server_base {
 
   std::vector<std::string> get_labels() const;
   bool set_label(const std::string& label);
+  bool delete_label(const std::string& label);
 
   bool clear();
 

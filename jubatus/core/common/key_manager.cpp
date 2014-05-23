@@ -15,9 +15,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "key_manager.hpp"
+
 #include <algorithm>
 #include <string>
 #include <vector>
+
+#include "assert.hpp"
 
 using std::string;
 using std::vector;
@@ -29,7 +32,17 @@ namespace common {
 
 typedef unordered_map<string, uint64_t>::const_iterator cit;
 
-key_manager::key_manager() {
+key_manager::key_manager()
+    : next_id_(0u) {
+}
+
+uint64_t key_manager::append_key(const string& key) {
+  JUBATUS_ASSERT_EQ(true,  // must not exist
+                    key2id_.end() == key2id_.find(key),
+                    "existing key appended");
+  key2id_[key] = next_id_;
+  id2key_[next_id_] = key;
+  return next_id_++;
 }
 
 uint64_t key_manager::get_id(const string& key) {
@@ -37,10 +50,8 @@ uint64_t key_manager::get_id(const string& key) {
   if (it != key2id_.end()) {
     return it->second;
   }
-  uint64_t new_id = static_cast<uint64_t>(key2id_.size());
-  key2id_[key] = new_id;
-  id2key_.push_back(key);
-  return new_id;
+  // TODO(beam2d): Make it exception safe.
+  return append_key(key);
 }
 
 bool key_manager::set_key(const string& key) {
@@ -48,9 +59,8 @@ bool key_manager::set_key(const string& key) {
   if (it != key2id_.end()) {
     return false;
   }
-  uint64_t new_id = static_cast<uint64_t>(key2id_.size());
-  key2id_[key] = new_id;
-  id2key_.push_back(key);
+  // TODO(kumagi): Make it exception safe.
+  append_key(key);
   return true;
 }
 
@@ -66,29 +76,48 @@ uint64_t key_manager::get_id_const(const string& key) const {
 const std::string key_not_found = "";  // const object has internal linkage
 
 const string& key_manager::get_key(const uint64_t id) const {
-  if (id < id2key_.size()) {
-    return id2key_[id];
+  unordered_map<uint64_t, string>::const_iterator it = id2key_.find(id);
+  if (it != id2key_.end()) {
+    return it->second;
   } else {
     return key_not_found;
   }
 }
 
+std::vector<std::string> key_manager::get_all_id2key() const {
+  std::vector<std::string> ret;
+  ret.reserve(id2key_.size());
+  for (unordered_map<uint64_t, string>::const_iterator it = id2key_.begin();
+       it != id2key_.end();
+       ++it) {
+    ret.push_back(it->second);
+  }
+  return ret;
+}
+
 void key_manager::clear() {
   jubatus::util::data::unordered_map<std::string, uint64_t>().swap(key2id_);
-  std::vector<std::string>().swap(id2key_);
+  jubatus::util::data::unordered_map<uint64_t, std::string>().swap(id2key_);
+  next_id_ = 0u;
 }
 
 void key_manager::init_by_id2key(const std::vector<std::string>& id2key) {
   key2id_.clear();
   id2key_.clear();
+
   for (size_t i = 0; i < id2key.size(); ++i) {
     key2id_[id2key[i]] = i;
+    id2key_[i] = id2key[i];
   }
-  id2key_ = id2key;
+  next_id_ = id2key.size();
 }
 
-vector<string> key_manager::get_all_id2key() const {
-  return id2key_;
+void key_manager::delete_key(const std::string& name) {
+  const uint64_t id = get_id_const(name);
+  if (id != NOTFOUND) {
+    key2id_.erase(name);
+    id2key_.erase(id);
+  }
 }
 
 }  // namespace common

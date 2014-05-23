@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.5.2-72-g2390b50) with jenerator version 0.5.2-45-gc4cfc98/develop
+// This file is auto-generated from jubatus/server/server/classifier.idl with jenerator version 0.5.2-45-gc4cfc98/core
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_CLASSIFIER_CLIENT_HPP_
@@ -45,6 +45,11 @@ class classifier : public jubatus::client::common::client {
 
   bool clear() {
     msgpack::rpc::future f = c_.call("clear", name_);
+    return f.get<bool>();
+  }
+
+  bool delete_label(const std::string& target_label) {
+    msgpack::rpc::future f = c_.call("delete_label", name_, target_label);
     return f.get<bool>();
   }
 };

@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.5.2-28-gd87300a) with jenerator version 0.5.2-17-g8a5dca4/develop
+// This file is auto-generated from classifier.idl(0.5.2-72-g8fd4dbd) with jenerator version 0.5.2-45-gc4cfc98/core
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -27,6 +27,9 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_broadcast<bool>("clear",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
+    k.register_async_broadcast<bool, std::string>("delete_label",
+        jubatus::util::lang::function<bool(bool, bool)>(
+        &jubatus::server::framework::all_or));
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);

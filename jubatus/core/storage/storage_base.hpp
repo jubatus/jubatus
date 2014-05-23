@@ -87,6 +87,7 @@ class storage_base : public framework::model {
 
   virtual std::vector<std::string> get_labels() const = 0;
   virtual bool set_label(const std::string& label) = 0;
+  virtual bool delete_label(const std::string& label) = 0;
 
   virtual std::string type() const = 0;
 };

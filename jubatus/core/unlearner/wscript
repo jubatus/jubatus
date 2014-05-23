@@ -1,0 +1,26 @@
+def options(opt):
+  pass
+
+def configure(conf):
+  pass
+
+def build(bld):
+  source = [
+      'lru_unlearner.cpp',
+      'random_unlearner.cpp',
+      'unlearner_factory.cpp',
+      ]
+
+  use = ['jubatus_util']
+
+  bld.core_use.extend(use)
+  bld.core_sources.extend(bld.add_prefix(source))
+
+  bld.program(
+    features = 'gtest',
+    target = 'unlearner_test',
+    source = [
+      'lru_unlearner_test.cpp',
+      'random_unlearner_test.cpp',
+      'unlearner_base_test.cpp'],
+    use = ['jubatus_util', 'jubatus_core'])

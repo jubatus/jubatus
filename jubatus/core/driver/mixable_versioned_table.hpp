@@ -24,6 +24,7 @@
 #include "../../core/framework/push_mixable.hpp"
 #include "../../core/framework/linear_mixable.hpp"
 #include "../../core/table/column/column_table.hpp"
+#include "../../core/unlearner/unlearner_base.hpp"
 
 namespace jubatus {
 namespace core {
@@ -35,6 +36,11 @@ class mixable_versioned_table : public core::framework::push_mixable,
   public core::framework::linear_mixable {
  public:
   typedef jubatus::util::lang::shared_ptr<table::column_table> model_ptr;
+
+  void set_unlearner(
+      jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner) {
+    unlearner_ = unlearner;
+  }
 
   // linear mixable
   framework::diff_object convert_diff_object(const msgpack::object&) const;
@@ -68,6 +74,7 @@ class mixable_versioned_table : public core::framework::push_mixable,
   void update_version(const table::column_table::version_t& version);
 
   model_ptr model_;
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner_;
   version_clock vc_;
 };
 

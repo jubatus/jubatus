@@ -27,6 +27,7 @@
 #include "../common/type.hpp"
 #include "../framework/linear_function_mixer.hpp"
 #include "../storage/storage_base.hpp"
+#include "../unlearner/unlearner_base.hpp"
 #include "classifier_type.hpp"
 
 
@@ -40,10 +41,19 @@ class classifier_base {
   virtual ~classifier_base();
   virtual void train(const common::sfv_t& fv, const std::string& label) = 0;
 
+  void set_label_unlearner(
+      jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
+          label_unlearner);
+
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
+  label_unlearner() const {
+    return unlearner_;
+  }
+
   std::string classify(const common::sfv_t& fv) const;
   void classify_with_scores(const common::sfv_t& fv,
                             classify_result& scores) const;
-
+  bool delete_label(const std::string& label);
   void clear();
 
   std::vector<std::string> get_labels() const;
@@ -80,8 +90,10 @@ class classifier_base {
   const storage::storage_base* get_storage() const;
 
   static float squared_norm(const common::sfv_t& sfv);
+  void touch(const std::string& label);
 
   storage_ptr storage_;
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner_;
 };
 
 }  // namespace classifier

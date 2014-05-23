@@ -21,6 +21,7 @@
 
 #include "../common/exception.hpp"
 #include "../storage/storage_base.hpp"
+#include "../unlearner/unlearner_base.hpp"
 
 #include "linear_mixable.hpp"
 #include "diffv.hpp"
@@ -41,6 +42,12 @@ class linear_function_mixer : public linear_mixable {
     }
   }
 
+  void set_label_unlearner(
+      jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
+          label_unlearner) {
+    label_unlearner_ = label_unlearner;
+  }
+
   model_ptr get_model() const {
     return model_;
   }
@@ -55,8 +62,14 @@ class linear_function_mixer : public linear_mixable {
   void get_diff(packer&) const;
   bool put_diff(const diff_object& obj);
 
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
+  get_unlearner() const {
+    return label_unlearner_;
+  }
+
  private:
   model_ptr model_;
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> label_unlearner_;
 };
 
 }  // namespace framework

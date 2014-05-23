@@ -92,6 +92,7 @@ class bit_vector_nearest_neighbor_mock
     return hash_value_;
   }
 
+ private:
   bit_vector hash_value_;
 };
 

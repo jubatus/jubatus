@@ -130,8 +130,17 @@ class stub_storage : public storage_base {
     return storage::version();
   }
 
+  bool delete_label(const string& name) {
+    for (map<string, map<string, val3_t> >::iterator it = data_.begin();
+         it != data_.end(); ++it) {
+      it->second.erase(name);
+    }
+    return true;
+  }
+
   void clear() {
     data_.clear();
+    labels_.clear();
   }
 
   vector<string> get_labels() const {
@@ -601,6 +610,46 @@ TYPED_TEST_P(storage_test, set_get_label) {
   ASSERT_EQ("b", labels[1]);
 }
 
+TYPED_TEST_P(storage_test, delete_label) {
+  TypeParam s;
+  s.set("f1", "c1", 1.0);
+  {
+    feature_val1_t val;
+    s.get("f1", val);
+    EXPECT_EQ(1u, val.size());
+  }
+
+  s.delete_label("c1");
+
+  {
+    feature_val1_t val;
+    s.get("f1", val);
+    EXPECT_EQ(0u, val.size());
+  }
+}
+
+TYPED_TEST_P(storage_test, inp_after_clear) {
+  TypeParam s;
+  // Set lable "c1"
+  s.set("f1", "c1", 1.0);
+  // And, clear
+  s.clear();
+  // Now, the storage has no label
+  ASSERT_EQ(0u, s.get_labels().size());
+  // Set a new label "c2"
+  s.set("f1", "c2", 1.0);
+  // Now, the storage has one label
+  ASSERT_EQ(1u, s.get_labels().size());
+  // And, inp method must return one result for "c2"
+  sfv_t fv;
+  fv.push_back(make_pair("f1", 1.0));
+  map_feature_val1_t res;
+  s.inp(fv, res);
+
+  ASSERT_EQ(1u, res.size());
+  EXPECT_EQ("c2", res.begin()->first);
+}
+
 REGISTER_TYPED_TEST_CASE_P(storage_test,
                            val1d,
                            val2d,
@@ -612,7 +661,9 @@ REGISTER_TYPED_TEST_CASE_P(storage_test,
                            bulk_update,
                            bulk_update_no_decrease,
                            clear,
-                           set_get_label);
+                           set_get_label,
+                           delete_label,
+                           inp_after_clear);
 
 typedef testing::Types<
     jubatus::core::storage::stub_storage,

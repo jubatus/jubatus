@@ -182,6 +182,10 @@ float lof_storage::get_lrd(const string& row) const {
   return it->second.lrd;
 }
 
+bool lof_storage::has_row(const string& row) const {
+  return lof_table_diff_.count(row) > 0 || lof_table_.count(row) > 0;
+}
+
 void lof_storage::update_all() {
   vector<string> ids;
   get_all_row_ids(ids);

@@ -60,7 +60,7 @@ class anomaly : public driver_base {
 
  private:
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-    converter_;
+      converter_;
   jubatus::util::lang::shared_ptr<core::anomaly::anomaly_base> anomaly_;
   fv_converter::mixable_weight_manager wm_;
 };

@@ -22,6 +22,7 @@
 #include "../common/jsonconfig.hpp"
 #include "../nearest_neighbor/nearest_neighbor_factory.hpp"
 #include "../table/column/column_table.hpp"
+#include "../unlearner/unlearner_factory.hpp"
 #include "recommender_factory.hpp"
 #include "recommender.hpp"
 
@@ -38,7 +39,18 @@ namespace recommender {
 namespace {
 
 const std::string NEAREST_NEIGHBOR_PREFIX("nearest_neighbor_recommender:");
+struct nearest_neighbor_recommender_config {
+  std::string method;
+  config parameter;
+  jubatus::util::data::optional<std::string> unlearner;
+  jubatus::util::data::optional<config> unlearner_parameter;
 
+  template<typename Ar>
+  void serialize(Ar& ar) {
+    ar & JUBA_MEMBER(method) & JUBA_MEMBER(parameter) &
+        JUBA_MEMBER(unlearner) & JUBA_MEMBER(unlearner_parameter);
+  }
+};
 }  // namespace
 
 shared_ptr<recommender_base> recommender_factory::create_recommender(
@@ -57,13 +69,25 @@ shared_ptr<recommender_base> recommender_factory::create_recommender(
   } else if (name == "euclid_lsh") {
     return shared_ptr<recommender_base>(
         new euclid_lsh(config_cast_check<euclid_lsh::config>(param)));
-  } else if (starts_with(name, NEAREST_NEIGHBOR_PREFIX)) {
-    const std::string nearest_neighbor_method =
-        name.substr(NEAREST_NEIGHBOR_PREFIX.size());
+  } else if (name == "nearest_neighbor_recommender") {
+    nearest_neighbor_recommender_config conf =
+        config_cast_check<nearest_neighbor_recommender_config>(param);
     shared_ptr<table::column_table> table(new table::column_table);
     shared_ptr<nearest_neighbor::nearest_neighbor_base>
         nearest_neighbor_engine(nearest_neighbor::create_nearest_neighbor(
-            nearest_neighbor_method, param, table, id));
+            conf.method, conf.parameter, table, id));
+    if (conf.unlearner) {
+      if (!conf.unlearner_parameter) {
+        throw JUBATUS_EXCEPTION(
+            common::config_exception() << common::exception::error_message(
+                "unlearner is set but unlearner_parameter is not found"));
+      }
+      shared_ptr<unlearner::unlearner_base> unl(unlearner::create_unlearner(
+          *conf.unlearner, common::jsonconfig::config(
+              *conf.unlearner_parameter)));
+      return shared_ptr<recommender_base>(
+          new nearest_neighbor_recommender(nearest_neighbor_engine, unl));
+    }
     return shared_ptr<recommender_base>(
         new nearest_neighbor_recommender(nearest_neighbor_engine));
   } else {

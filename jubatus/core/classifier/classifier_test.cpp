@@ -24,12 +24,13 @@
 
 #include <gtest/gtest.h>
 #include "jubatus/util/lang/cast.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
-#include "classifier_factory.hpp"
 #include "classifier.hpp"
 #include "../storage/local_storage.hpp"
 #include "../common/exception.hpp"
 #include "../common/jsonconfig.hpp"
+#include "../unlearner/lru_unlearner.hpp"
 #include "classifier_test_util.hpp"
 
 using std::pair;
@@ -37,6 +38,7 @@ using std::string;
 using std::vector;
 using jubatus::util::text::json::to_json;
 using jubatus::util::lang::lexical_cast;
+using jubatus::util::lang::shared_ptr;
 using jubatus::core::storage::local_storage;
 
 namespace jubatus {
@@ -132,12 +134,92 @@ TYPED_TEST_P(classifier_test, random3) {
   EXPECT_GT(correct, 95u);
 }
 
+TYPED_TEST_P(classifier_test, delete_label) {
+  storage_ptr s(new local_storage);
+  TypeParam p(s);
+
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f1", 1.f));
+    p.train(fv, "A");
+  }
+
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f1", 1.f));
+    fv.push_back(std::make_pair("f2", 1.f));
+    p.train(fv, "B");
+  }
+
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f3", 1.f));
+    p.train(fv, "C");
+  }
+
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f1", 1.f));
+    fv.push_back(std::make_pair("f2", 1.f));
+    EXPECT_EQ("B", p.classify(fv));
+  }
+
+  p.delete_label("B");
+
+  for (size_t i = 0; i < 8; ++i) {
+    common::sfv_t fv;
+    if (i & 1) {
+      fv.push_back(std::make_pair("f1", 1.f));
+    }
+    if (i & 2) {
+      fv.push_back(std::make_pair("f2", 1.f));
+    }
+    if (i & 4) {
+      fv.push_back(std::make_pair("f3", 1.f));
+    }
+    EXPECT_NE("B", p.classify(fv));
+  }
+}
+
+TYPED_TEST_P(classifier_test, unlearning) {
+  storage_ptr s(new local_storage);
+  TypeParam p(s);
+
+  unlearner::lru_unlearner::config config;
+  config.max_size = 2;
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner(
+      new unlearner::lru_unlearner(config));
+  p.set_label_unlearner(unlearner);
+
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f1", 10.f));
+    p.train(fv, "A");
+  }
+
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f2", 1.f));
+    p.train(fv, "B");
+  }
+
+  {
+    common::sfv_t fv;
+    fv.push_back(std::make_pair("f1", 1.f));
+    p.train(fv, "C");
+
+    EXPECT_EQ("C", p.classify(fv));
+  }
+}
+
 REGISTER_TYPED_TEST_CASE_P(
     classifier_test,
     trivial,
     sfv_err,
     random,
-    random3);
+    random3,
+    delete_label,
+    unlearning);
 
 typedef testing::Types<
   perceptron, passive_aggressive, passive_aggressive_1, passive_aggressive_2,
@@ -145,17 +227,6 @@ typedef testing::Types<
   classifier_types;
 
 INSTANTIATE_TYPED_TEST_CASE_P(cl, classifier_test, classifier_types);
-
-TEST(classifier_factory, exception) {
-  common::jsonconfig::config param(to_json(classifier_config()));
-  storage_ptr p(new local_storage);
-  ASSERT_THROW(classifier_factory::create_classifier("pa", param, p),
-      common::unsupported_method);
-  ASSERT_THROW(classifier_factory::create_classifier("", param, p),
-      common::unsupported_method);
-  ASSERT_THROW(classifier_factory::create_classifier("saitama", param, p),
-      common::unsupported_method);
-}
 
 TEST(classifier_config_test, regularization_weight) {
   storage_ptr s(new local_storage);

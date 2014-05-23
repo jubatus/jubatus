@@ -27,6 +27,8 @@
 #include "../framework/mixable.hpp"
 #include "../framework/model.hpp"
 #include "../storage/sparse_matrix_storage.hpp"
+#include "../storage/recommender_storage_base.hpp"
+#include "../unlearner/unlearner_base.hpp"
 #include "recommender_type.hpp"
 
 namespace jubatus {
@@ -54,6 +56,26 @@ class recommender_base : public framework::model {
   virtual void get_all_row_ids(std::vector<std::string>& ids) const = 0;
 
   virtual std::string type() const = 0;
+
+  // Either get_(const)_storage or get_(const)_table should return non-null
+  // pointer.
+  virtual const core::storage::recommender_storage_base* get_const_storage()
+      const {
+    return NULL;
+  }
+
+  virtual jubatus::util::lang::shared_ptr<table::column_table> get_table() {
+    return jubatus::util::lang::shared_ptr<table::column_table>();
+  }
+  virtual jubatus::util::lang::shared_ptr<const table::column_table>
+      get_const_table() const {
+    return jubatus::util::lang::shared_ptr<const table::column_table>();
+  }
+
+  virtual jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
+      get_unlearner() {
+    return jubatus::util::lang::shared_ptr<unlearner::unlearner_base>();
+  }
 
   virtual void similar_row(
       const std::string& id,
