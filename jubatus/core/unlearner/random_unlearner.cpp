@@ -17,6 +17,7 @@
 #include "random_unlearner.hpp"
 
 #include <string>
+#include <limits>
 #include "../common/exception.hpp"
 
 namespace jubatus {
@@ -31,6 +32,11 @@ random_unlearner::random_unlearner(const config& conf)
             "max_size must be a positive integer"));
   }
   if (conf.seed) {
+    if (*conf.seed < 0 || std::numeric_limits<uint32_t>::max() < *conf.seed) {
+      throw JUBATUS_EXCEPTION(
+          common::config_exception() << common::exception::error_message(
+              "unlearner seed must be within unsigned 32 bit integer"));
+    }
     mtr_ = jubatus::util::math::random::mtrand(*conf.seed);
   }
   id_set_.reserve(max_size_);

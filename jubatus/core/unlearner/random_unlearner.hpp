@@ -34,7 +34,7 @@ class random_unlearner : public unlearner_base {
  public:
   struct config {
     int32_t max_size;
-    jubatus::util::data::optional<int32_t> seed;
+    jubatus::util::data::optional<int64_t> seed;
 
     template<typename Ar>
     void serialize(Ar& ar) {
