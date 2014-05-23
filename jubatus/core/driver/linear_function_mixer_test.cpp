@@ -92,6 +92,9 @@ class storage_mock_base : public storage::storage_base {
   storage::version get_version() const {
     return storage::version();
   }
+  bool delete_label(const std::string& name) {
+    return true;
+  }
 
   virtual void clear() {
   }

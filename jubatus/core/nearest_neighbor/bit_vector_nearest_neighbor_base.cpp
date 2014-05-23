@@ -59,6 +59,9 @@ bit_vector_nearest_neighbor_base::bit_vector_nearest_neighbor_base(
 void bit_vector_nearest_neighbor_base::set_row(
     const string& id,
     const common::sfv_t& sfv) {
+  // TODO(beam2d): support nested algorithm, e.g. when used by lof and then
+  // we cannot suppose that the first column is assigned
+  // to bit_vector_nearest_neighbor_base.
   get_table()->add(id, owner(my_id_), hash(sfv));
 }
 

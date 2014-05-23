@@ -24,6 +24,7 @@
 #include <queue>
 #include <string>
 #include <vector>
+#include "jubatus/util/lang/bind.h"
 
 #include "../common/exception.hpp"
 #include "../driver/linear_function_mixer.hpp"
@@ -44,6 +45,15 @@ classifier_base::classifier_base(storage_ptr storage)
 }
 
 classifier_base::~classifier_base() {
+}
+
+void classifier_base::set_label_unlearner(
+    jubatus::util::lang::shared_ptr<unlearner::unlearner_base>
+        label_unlearner) {
+  mixable_->set_label_unlearner(label_unlearner);
+  label_unlearner->set_callback(
+      jubatus::util::lang::bind(
+          &classifier_base::delete_label, this, jubatus::util::lang::_1));
 }
 
 void classifier_base::classify_with_scores(
@@ -196,6 +206,18 @@ storage::storage_base* classifier_base::get_storage() {
 
 const storage::storage_base* classifier_base::get_storage() const {
   return const_cast<classifier_base*>(this)->get_storage();
+}
+
+void classifier_base::touch(const std::string& label) {
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner =
+      mixable_->get_unlearner();
+  if (unlearner) {
+    unlearner->touch(label);
+  }
+}
+
+bool classifier_base::delete_label(const std::string& label) {
+  return get_storage()->delete_label(label);
 }
 
 }  // namespace classifier

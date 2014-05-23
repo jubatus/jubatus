@@ -25,7 +25,7 @@ def build(bld):
     target = 'jubatus_recommender',
     name = 'jubatus_recommender',
     includes = '.',
-    use = 'jubatus_util jubastorage jubacommon jubatus_nearest_neighbor jubatus_mixables'+libassert)
+    use = 'jubatus_util jubastorage jubacommon jubatus_nearest_neighbor jubatus_mixables unlearner'+libassert)
 
   def make_test(s):
     bld.program(
@@ -44,6 +44,7 @@ def build(bld):
       'euclid_lsh_test.cpp',
       'minhash_test.cpp',
       'lsh_test.cpp',
+      'recommender_factory_test.cpp',
       ])
 
   bld.install_files('${PREFIX}/include/jubatus/core/recommender', [

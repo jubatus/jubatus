@@ -58,6 +58,10 @@ bool all_and(bool l, bool r) {
   return l && r;
 }
 
+bool all_or(bool l, bool r) {
+  return l || r;
+}
+
 }  // namespace framework
 }  // namespace server
 }  // namespace jubatus

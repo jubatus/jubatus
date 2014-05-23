@@ -27,6 +27,7 @@
 #include "../driver/mixable_versioned_table.hpp"
 #include "../nearest_neighbor/nearest_neighbor_base.hpp"
 #include "../table/column/column_table.hpp"
+#include "../unlearner/unlearner_base.hpp"
 #include "anomaly_base.hpp"
 
 namespace jubatus {
@@ -57,6 +58,13 @@ class light_lof : public anomaly_base {
       jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
           nearest_neighbor_engine);
 
+  light_lof(
+      const config& config,
+      const std::string& id,
+      jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
+          nearest_neighbor_engine,
+      jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner);
+
   virtual ~light_lof();
 
   // anomaly_base interface
@@ -81,6 +89,9 @@ class light_lof : public anomaly_base {
     float lrd;
   };
 
+  void touch(const std::string& id);
+  void unlearn(const std::string& id);
+
   float collect_lrds(
       const common::sfv_t& query,
       std::vector<float>& neighbor_lrds) const;
@@ -93,9 +104,9 @@ class light_lof : public anomaly_base {
 
   void collect_neighbors(
       const std::string& query,
-      jubatus::util::data::unordered_set<uint64_t>& neighbors) const;
+      jubatus::util::data::unordered_set<std::string>& neighbors) const;
   void update_entries(
-      const jubatus::util::data::unordered_set<uint64_t>& neighbors);
+      const jubatus::util::data::unordered_set<std::string>& neighbors);
 
   // Gets parameters of given row. If row does not exist, it throws an
   // exception.
@@ -103,7 +114,11 @@ class light_lof : public anomaly_base {
 
   jubatus::util::lang::shared_ptr<nearest_neighbor::nearest_neighbor_base>
       nearest_neighbor_engine_;
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner_;
 
+  // Mixable of nearest neighbor model.
+  jubatus::util::lang::shared_ptr<driver::mixable_versioned_table>
+      mixable_nearest_neighbor_;
   // Mixable of score table that contains k-dists and LRDs.
   jubatus::util::lang::shared_ptr<driver::mixable_versioned_table>
       mixable_scores_;

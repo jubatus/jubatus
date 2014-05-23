@@ -19,6 +19,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "../table/column/row_deleter.hpp"
 
 using jubatus::util::lang::shared_ptr;
 
@@ -40,9 +41,24 @@ nearest_neighbor::nearest_neighbor(
   // mixables of fv converter here.
 }
 
+nearest_neighbor::nearest_neighbor(
+    shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,
+    shared_ptr<fv_converter::datum_to_fv_converter> converter,
+    shared_ptr<unlearner::unlearner_base> unlearner)
+    : mixable_holder_(new framework::mixable_holder),
+      converter_(converter),
+      nn_(nn),
+      unlearner_(unlearner) {
+  nn_->register_mixables_to_holder(*mixable_holder_);
+  unlearner->set_callback(table::row_deleter(nn_->get_table()));
+}
+
 void nearest_neighbor::set_row(
     const std::string& id,
     const fv_converter::datum& datum) {
+  if (unlearner_) {
+    unlearner_->touch(id);
+  }
   common::sfv_t v;
   converter_->convert(datum, v);
   nn_->set_row(id, v);
@@ -87,6 +103,9 @@ nearest_neighbor::similar_row(
 void nearest_neighbor::clear() {
   converter_->clear_weights();
   nn_->clear();
+  if (unlearner_) {
+    unlearner_->clear();
+  }
 }
 
 }  // namespace driver

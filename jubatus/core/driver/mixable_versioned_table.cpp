@@ -19,13 +19,31 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <msgpack.hpp>
 #include "../../core/common/exception.hpp"
+#include "../../core/common/assert.hpp"
 
 typedef jubatus::core::table::column_table::version_t version_t;
 
 namespace jubatus {
 namespace core {
 namespace driver {
+namespace {
+
+std::string get_row_key(const std::string& packed) {
+  msgpack::unpacked unpacked;
+  msgpack::unpack(&unpacked, packed.c_str(), packed.size());
+  JUBATUS_ASSERT_EQ(msgpack::type::ARRAY,
+                    unpacked.get().type,
+                    "packed value must be array here");
+  JUBATUS_ASSERT_GE(1, unpacked.get().via.array.size,
+                    "array's length must be more than 1");
+  JUBATUS_ASSERT_GE(msgpack::type::RAW, unpacked.get().via.array.ptr[0].type,
+                    "first item of array must be string");
+  return unpacked.get().via.array.ptr[0].as<std::string>();
+}
+
+}  // namespace
 
 std::vector<std::string> mixable_versioned_table::get_diff_impl() const {
   return pull_impl(vc_);
@@ -71,6 +89,7 @@ void mixable_versioned_table::push_impl(
     const std::vector<std::string>& diff) {
   model_ptr table = get_model();
   for (uint64_t i = 0; i < diff.size(); ++i) {
+    unlearner_->touch(get_row_key(diff[i]));
     const version_t version = table->set_row(diff[i]);
     update_version(version);
   }

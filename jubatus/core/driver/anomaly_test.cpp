@@ -19,15 +19,20 @@
 #include <vector>
 
 #include <gtest/gtest.h>
+#include "jubatus/util/lang/cast.h"
 
 #include "../anomaly/anomaly.hpp"
 #include "../fv_converter/datum.hpp"
+#include "../nearest_neighbor/nearest_neighbor.hpp"
 #include "../recommender/recommender.hpp"
+#include "../unlearner/unlearner.hpp"
 #include "anomaly.hpp"
 #include "test_util.hpp"
 
 using std::make_pair;
 using jubatus::util::lang::shared_ptr;
+using jubatus::core::fv_converter::datum_to_fv_converter;
+using jubatus::core::anomaly::anomaly_base;
 
 namespace jubatus {
 namespace core {
@@ -47,10 +52,10 @@ class anomaly_test : public ::testing::Test {
     lsh_config.seed = 1234;
 
     anomaly_.reset(new driver::anomaly(
-          shared_ptr<core::anomaly::anomaly_base>(
-            new core::anomaly::lof(lof_config,
-              shared_ptr<core::recommender::recommender_base>(
-                new core::recommender::euclid_lsh(lsh_config)))),
+          shared_ptr<anomaly_base>(
+              new core::anomaly::lof(lof_config,
+                  shared_ptr<core::recommender::recommender_base>(
+                      new core::recommender::euclid_lsh(lsh_config)))),
           make_fv_converter()));
   }
 
@@ -93,6 +98,53 @@ TEST_F(anomaly_test, small) {
     std::vector<std::string> rows = anomaly_->get_all_rows();
     ASSERT_EQ(2u, rows.size());
   }
+}
+
+class light_lof_test : public ::testing::Test {
+ protected:
+  void SetUp() {
+    core::anomaly::light_lof::config lof_config;
+    lof_config.nearest_neighbor_num = 3;
+    lof_config.reverse_nearest_neighbor_num = 3;
+
+    shared_ptr<table::column_table> lsh_table(
+        new table::column_table);
+    core::nearest_neighbor::euclid_lsh::config lsh_config;
+    shared_ptr<core::nearest_neighbor::nearest_neighbor_base> lsh(
+        new core::nearest_neighbor::euclid_lsh(lsh_config, lsh_table, "id"));
+
+    unlearner::lru_unlearner::config unlearner_config;
+    unlearner_config.max_size = 5;
+    jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner(
+        new unlearner::lru_unlearner(unlearner_config));
+
+    anomaly_.reset(new anomaly(
+                       shared_ptr<anomaly_base>(
+                           new core::anomaly::light_lof(
+                               lof_config, "id", lsh, unlearner)),
+                           make_fv_converter()));
+  }
+
+  jubatus::util::lang::shared_ptr<core::driver::anomaly> anomaly_;
+};
+
+TEST_F(light_lof_test, unlearning) {
+  fv_converter::datum datum;
+  datum.num_values_.push_back(make_pair("f1", 1.0));
+
+  for (int i = 0; i < 5; ++i) {
+    datum.num_values_[0].second = i;
+    anomaly_->overwrite(
+        "row" + jubatus::util::lang::lexical_cast<std::string>(i),
+        datum);
+    std::vector<std::string> rows = anomaly_->get_all_rows();
+    EXPECT_EQ(i + 1, rows.size());
+  }
+
+  anomaly_->overwrite("0", datum);
+  anomaly_->overwrite("10", datum);
+  std::vector<std::string> rows = anomaly_->get_all_rows();
+  EXPECT_EQ(5u, rows.size());
 }
 
 }  // driver namespace

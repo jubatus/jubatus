@@ -27,6 +27,7 @@
 #include "../fv_converter/datum_to_fv_converter.hpp"
 #include "../nearest_neighbor/nearest_neighbor_base.hpp"
 #include "../table/column/column_table.hpp"
+#include "../unlearner/unlearner_base.hpp"
 #include "mixable_versioned_table.hpp"
 
 namespace jubatus {
@@ -36,9 +37,17 @@ namespace driver {
 class nearest_neighbor {
  public:
   nearest_neighbor(
-      jubatus::util::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base> nn,  // NOLINT
-      jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-          converter);
+    jubatus::util::lang::shared_ptr<
+        core::nearest_neighbor::nearest_neighbor_base> nn,
+    jubatus::util::lang::shared_ptr<
+        fv_converter::datum_to_fv_converter> converter);
+
+  nearest_neighbor(
+    jubatus::util::lang::shared_ptr<
+        core::nearest_neighbor::nearest_neighbor_base> nn,
+    jubatus::util::lang::shared_ptr<
+        fv_converter::datum_to_fv_converter> converter,
+    jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner);
 
   jubatus::util::lang::shared_ptr<table::column_table> get_table() {
     return nn_->get_table();
@@ -73,9 +82,10 @@ class nearest_neighbor {
  private:
   jubatus::util::lang::shared_ptr<framework::mixable_holder> mixable_holder_;
   jubatus::util::lang::shared_ptr<fv_converter::datum_to_fv_converter>
-    converter_;
+      converter_;
   jubatus::util::lang::shared_ptr<core::nearest_neighbor::nearest_neighbor_base>
-    nn_;
+      nn_;
+  jubatus::util::lang::shared_ptr<unlearner::unlearner_base> unlearner_;
 };
 
 }  // namespace driver

@@ -29,7 +29,7 @@ def options(opt):
                  dest='gcov', help='only for debug')
 
   opt.add_option('--enable-zktest',
-                 action='store_true', default=False, 
+                 action='store_true', default=False,
                  dest='zktest', help='zk should run in localhost:2181')
 
   # use (base + 10) ports for RPC module tests

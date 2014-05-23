@@ -23,6 +23,10 @@
 #include "jubatus/util/lang/shared_ptr.h"
 #include "../recommender/recommender_base.hpp"
 #include "../framework/mixable.hpp"
+#include "diffv.hpp"
+#include "linear_function_mixer.hpp"
+#include "mixable_versioned_table.hpp"
+#include "../fv_converter/mixable_weight_manager.hpp"
 #include "../fv_converter/datum_to_fv_converter.hpp"
 
 namespace jubatus {

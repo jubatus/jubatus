@@ -35,6 +35,15 @@ void increase(val3_t& a, const val3_t& b) {
   a.v3 += b.v3;
 }
 
+void delete_label_from_weight(uint64_t delete_id, id_features3_t& tbl) {
+  for (id_features3_t::iterator it = tbl.begin(); it != tbl.end(); ++it) {
+    it->second.erase(delete_id);
+    if (it->second.empty()) {
+      tbl.erase(it);
+    }
+  }
+}
+
 }  // namespace
 
 local_storage_mixture::local_storage_mixture() {
@@ -109,7 +118,8 @@ void local_storage_mixture::inp(const common::sfv_t& sfv,
                                 map_feature_val1_t& ret) const {
   ret.clear();
 
-  std::vector<float> ret_id(class2id_.size());
+  // Use uin64_t map instead of string map as hash function for string is slow
+  jubatus::util::data::unordered_map<uint64_t, float> ret_id;
   for (common::sfv_t::const_iterator it = sfv.begin(); it != sfv.end(); ++it) {
     const string& feature = it->first;
     const float val = it->second;
@@ -121,8 +131,15 @@ void local_storage_mixture::inp(const common::sfv_t& sfv,
     }
   }
 
-  for (size_t i = 0; i < ret_id.size(); ++i) {
-    ret[class2id_.get_key(i)] = ret_id[i];
+  std::vector<std::string> labels = class2id_.get_all_id2key();
+  for (size_t i = 0; i < labels.size(); ++i) {
+    const std::string& label = labels[i];
+    uint64_t id = class2id_.get_id_const(label);
+    if (id == common::key_manager::NOTFOUND || ret_id.count(id) == 0) {
+      ret[label] = 0.0;
+    } else {
+      ret[label] = ret_id[id];
+    }
   }
 }
 
@@ -240,6 +257,17 @@ bool local_storage_mixture::set_average_and_clear_diff(
 void local_storage_mixture::register_label(const std::string& label) {
   // get_id method creates an entry when the label doesn't exist
   class2id_.get_id(label);
+}
+
+bool local_storage_mixture::delete_label(const std::string& label) {
+  uint64_t delete_id = class2id_.get_id_const(label);
+  if (delete_id == common::key_manager::NOTFOUND) {
+    return false;
+  }
+  delete_label_from_weight(delete_id, tbl_);
+  delete_label_from_weight(delete_id, tbl_diff_);
+  class2id_.delete_key(label);
+  return true;
 }
 
 void local_storage_mixture::clear() {

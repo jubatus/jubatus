@@ -80,6 +80,8 @@ euclid_lsh::euclid_lsh(
 }
 
 void euclid_lsh::set_row(const string& id, const common::sfv_t& sfv) {
+  // TODO(beam2d): support nested algorithm, e.g. when used by lof and then we
+  // cannot suppose that the first two columns are assigned to euclid_lsh.
   get_table()->add(id, owner(my_id_), cosine_lsh(sfv, hash_num_), l2norm(sfv));
 }
 

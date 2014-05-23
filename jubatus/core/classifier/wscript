@@ -23,15 +23,25 @@ def build(bld):
     target = 'jubatus_classifier',
     name = 'jubatus_classifier',
     includes = '.',
-    use = 'jubatus_util jubacommon jubatus_mixables'+libassert)
+    use = 'jubatus_util jubacommon jubatus_mixables unlearner'+libassert)
 
   bld.program(
      features = 'gtest',
      source = [
          'classifier_test.cpp',
-         'classifier_factory.cpp'
+         'classifier_factory.cpp',
      ],
      target = "classifier_test",
+     includes = '.',
+     use = 'jubacommon jubatus_classifier jubastorage'+libassert)
+
+  bld.program(
+     features = 'gtest',
+     source = [
+         'classifier_factory.cpp',
+         'classifier_factory_test.cpp',
+     ],
+     target = "classifier_factory_test",
      includes = '.',
      use = 'jubacommon jubatus_classifier jubastorage'+libassert)
 

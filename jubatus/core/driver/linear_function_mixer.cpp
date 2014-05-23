@@ -83,12 +83,44 @@ diffv linear_function_mixer::get_diff_impl() const {
   return ret;
 }
 
-bool linear_function_mixer::put_diff_impl(const diffv& v) {
-  return get_model()->set_average_and_clear_diff(v.v);
-}
 
 storage::version linear_function_mixer::get_version() const {
   return get_model()->get_version();
+}
+
+bool linear_function_mixer::put_diff_impl(const diffv& v) {
+  if (label_unlearner_) {
+    for (size_t i = 0; i < v.v.diff.size(); ++i) {
+      const feature_val3_t& classes = v.v.diff[i].second;
+      for (size_t j = 0; j < classes.size(); ++j) {
+        label_unlearner_->touch(classes[j].first);
+      }
+    }
+
+    features3_t parameters(v.v.diff.size());
+    for (size_t i = 0; i < v.v.diff.size(); ++i) {
+      parameters[i].first = v.v.diff[i].first;
+
+      // Copy weights of classes except unlearned classes.
+      const feature_val3_t& source_classes = v.v.diff[i].second;
+      feature_val3_t& target_classes = parameters[i].second;
+
+      target_classes.reserve(source_classes.size());
+      for (size_t j = 0; j < source_classes.size(); ++j) {
+        if (label_unlearner_->exists_in_memory(source_classes[j].first)) {
+          target_classes.push_back(source_classes[j]);
+        }
+      }
+    }
+
+    storage::diff_t unlearned_diff;
+    std::swap(unlearned_diff.diff, parameters);
+    unlearned_diff.expect_version = v.v.expect_version;
+
+    return get_model()->set_average_and_clear_diff(unlearned_diff);
+  } else {
+    return get_model()->set_average_and_clear_diff(v.v);
+  }
 }
 
 void linear_function_mixer::clear() {

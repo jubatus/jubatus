@@ -47,6 +47,30 @@ TEST(key_manager, get_key) {
   EXPECT_EQ("key1", m.get_key(0));
 }
 
+TEST(key_manager, delete_key) {
+  key_manager m;
+  uint64_t id1 = m.get_id("key1");
+  m.get_id("key2");
+  uint64_t id3 = m.get_id("key3");
+
+  m.delete_key("key2");
+  EXPECT_EQ(2u, m.size());
+  EXPECT_EQ(id1, m.get_id_const("key1"));
+  EXPECT_EQ(id3, m.get_id_const("key3"));
+
+  uint64_t id4 = m.get_id("key4");
+  EXPECT_EQ(3u, m.size());
+  EXPECT_NE(id1, id4);
+  EXPECT_NE(id3, id4);
+}
+
+TEST(key_manager, delete_unknown_key) {
+  key_manager m;
+  EXPECT_EQ(0, m.size());
+  EXPECT_NO_THROW(m.delete_key("key1"));  // no modification
+  EXPECT_EQ(0, m.size());
+}
+
 }  // namespace common
 }  // namespace core
 }  // namespace jubatus
