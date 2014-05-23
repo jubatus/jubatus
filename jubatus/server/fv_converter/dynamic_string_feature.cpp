@@ -14,49 +14,29 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "dynamic_string_feature.hpp"
+
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
-#include <gtest/gtest.h>
-#include "dynamic_splitter.hpp"
-#include "jubatus/core/fv_converter/exception.hpp"
-#include "jubatus/core/fv_converter/word_splitter.hpp"
-
-using jubatus::core::fv_converter::converter_exception;
 
 namespace jubatus {
 namespace server {
 namespace fv_converter {
 
-TEST(dynamic_splitter, trivial) {
-  dynamic_splitter s(LIBSPLITTER_SAMPLE,
-      "create",
-      std::map<std::string, std::string>());
-  std::vector<std::pair<size_t, size_t> > bounds;
-  s.split(" test test", bounds);
-
-  ASSERT_EQ(2u, bounds.size());
-  EXPECT_EQ(1u, bounds[0].first);
-  EXPECT_EQ(4u, bounds[0].second);
-  EXPECT_EQ(6u, bounds[1].first);
-  EXPECT_EQ(4u, bounds[1].second);
+dynamic_string_feature::dynamic_string_feature(
+    const std::string& path,
+    const std::string& function,
+    const std::map<std::string, std::string>& params)
+    : loader_(path),
+      impl_(load_object<string_feature>(loader_, function, params)) {
 }
 
-TEST(dynamic_splitter, unknown_file) {
-  EXPECT_THROW(
-      dynamic_splitter s("unknown_file.so",
-          "create",
-          std::map<std::string, std::string>()),
-      converter_exception);
-}
-
-TEST(dynamic_splitter, unknown_function) {
-  EXPECT_THROW(
-      dynamic_splitter s(LIBSPLITTER_SAMPLE,
-          "unknown_function",
-          std::map<std::string, std::string>()),
-      converter_exception);
+void dynamic_string_feature::extract(
+    const std::string& string,
+    std::vector<core::fv_converter::string_feature_element>& result) const {
+  impl_->extract(string, result);
 }
 
 }  // namespace fv_converter

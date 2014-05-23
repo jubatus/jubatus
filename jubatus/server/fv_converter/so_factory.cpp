@@ -22,12 +22,12 @@
 #include "dynamic_binary_feature.hpp"
 #include "dynamic_num_feature.hpp"
 #include "dynamic_num_filter.hpp"
-#include "dynamic_splitter.hpp"
+#include "dynamic_string_feature.hpp"
 
 using jubatus::core::fv_converter::binary_feature;
 using jubatus::core::fv_converter::num_filter;
 using jubatus::core::fv_converter::num_feature;
-using jubatus::core::fv_converter::word_splitter;
+using jubatus::core::fv_converter::string_feature;
 using jubatus::core::fv_converter::string_filter;
 using jubatus::core::fv_converter::param_t;
 using jubatus::core::fv_converter::get_or_die;
@@ -70,13 +70,13 @@ num_feature* so_factory::create_num_feature(
   return NULL;
 }
 
-word_splitter* so_factory::create_word_splitter(
+string_feature* so_factory::create_string_feature(
     const std::string& name,
     const param_t& params) const {
   if (name == "dynamic") {
     const std::string& path = get_or_die(params, "path");
     const std::string& function = get_or_die(params, "function");
-    return new dynamic_splitter(path, function, params);
+    return new dynamic_string_feature(path, function, params);
   }
   return NULL;
 }

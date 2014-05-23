@@ -36,7 +36,7 @@
 #include "binary_feature.hpp"
 #include "binary_feature_factory.hpp"
 #include "space_splitter.hpp"
-#include "splitter_factory.hpp"
+#include "string_feature_factory.hpp"
 #include "string_filter.hpp"
 #include "string_filter_factory.hpp"
 #include "without_split.hpp"
@@ -47,7 +47,7 @@ namespace fv_converter {
 
 namespace {
 
-typedef jubatus::util::lang::shared_ptr<word_splitter> splitter_ptr;
+typedef jubatus::util::lang::shared_ptr<string_feature> string_feature_ptr;
 typedef jubatus::util::lang::shared_ptr<key_matcher> matcher_ptr;
 typedef jubatus::util::lang::shared_ptr<num_feature> num_feature_ptr;
 typedef jubatus::util::lang::shared_ptr<binary_feature> binary_feature_ptr;
@@ -158,23 +158,23 @@ void init_num_filter_rules(
 }
 
 void register_default_string_types(
-    std::map<std::string, splitter_ptr>& splitters) {
-  splitters["str"] = splitter_ptr(new without_split());
-  splitters["space"] = splitter_ptr(new space_splitter());
+    std::map<std::string, string_feature_ptr>& splitters) {
+  splitters["str"] = string_feature_ptr(new without_split());
+  splitters["space"] = string_feature_ptr(new space_splitter());
 }
 
 void init_string_types(
     const std::map<std::string, param_t>& string_types,
-    std::map<std::string, splitter_ptr>& splitters,
-    splitter_factory::create_function ext) {
-  splitter_factory f(ext);
+    std::map<std::string, string_feature_ptr>& splitters,
+    string_feature_factory::create_function ext) {
+  string_feature_factory f(ext);
   for (std::map<std::string, param_t>::const_iterator it = string_types.begin();
       it != string_types.end(); ++it) {
     const std::string& name = it->first;
     const std::map<std::string, std::string>& param = it->second;
 
     std::string method = get_or_die(param, "method");
-    splitter_ptr splitter(f.create(method, param));
+    string_feature_ptr splitter(f.create(method, param));
     splitters[name] = splitter;
   }
 }
@@ -199,12 +199,12 @@ void init_string_filter_rules(
 
 void init_string_rules(
     const std::vector<string_rule>& string_rules,
-    const std::map<std::string, splitter_ptr>& splitters,
+    const std::map<std::string, string_feature_ptr>& splitters,
     datum_to_fv_converter& conv) {
   for (size_t i = 0; i < string_rules.size(); ++i) {
     const string_rule& rule = string_rules[i];
     matcher_ptr m(create_key_matcher(rule.key, rule.except));
-    std::map<std::string, splitter_ptr>::const_iterator it =
+    std::map<std::string, string_feature_ptr>::const_iterator it =
         splitters.find(rule.type);
     if (it == splitters.end()) {
       throw JUBATUS_EXCEPTION(
@@ -328,12 +328,12 @@ void initialize_converter(
     init_num_filter_types(*config.num_filter_types, num_filters, f);
   }
 
-  std::map<std::string, splitter_ptr> splitters;
+  std::map<std::string, string_feature_ptr> splitters;
   register_default_string_types(splitters);
   if (config.string_types) {
-    splitter_factory::create_function f;
+    string_feature_factory::create_function f;
     if (ext) {
-      f = bind(&factory_extender::create_word_splitter, ext, _1, _2);
+      f = bind(&factory_extender::create_string_feature, ext, _1, _2);
     }
     init_string_types(*config.string_types, splitters, f);
   }
