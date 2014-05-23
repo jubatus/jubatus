@@ -235,8 +235,6 @@ void my_znode_delete_watcher(
     LOG(INFO) << "ZK path: " << path << " has changed";
   } else if (type == ZOO_CREATED_EVENT) {
     LOG(WARNING) << "ZK created event arrived, something wrong";
-  } else if (type == ZOO_CHANGED_EVENT) {
-    LOG(WARNING) << "ZK changed event arrived, something wrong";
   } else if (type == ZOO_CHILD_EVENT) {
     LOG(WARNING) << "ZK child event arrived, something wrong";
   } else {
