@@ -18,6 +18,7 @@
 #define JUBATUS_SERVER_FRAMEWORK_MIXER_DUMMY_MIXER_HPP_
 
 #include <vector>
+#include <string>
 #include "jubatus/core/framework/mixable.hpp"
 #include "mixer.hpp"
 

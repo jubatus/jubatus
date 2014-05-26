@@ -420,7 +420,8 @@ void linear_mixer::mix() {
       core::framework::linear_mixable* mixable =
         dynamic_cast<core::framework::linear_mixable*>(driver_->get_mixable());
       if (!mixable) {
-        throw JUBATUS_EXCEPTION(core::common::config_not_set());  // nothing to mix
+        // don't mix
+        return;
       }
 
       common::mprpc::rpc_result_object diff_result;
@@ -464,13 +465,12 @@ void linear_mixer::mix() {
             mixable->mix(o, diff);
           }
 
-          successes.push_back(
-              make_pair(diff_result.error[i].host(), diff_result.error[i].port()));
+          successes.push_back(make_pair(
+                diff_result.error[i].host(), diff_result.error[i].port()));
         }
       }
 
       { // put mixed data
-
         // convert diff_object to binary
         msgpack::sbuffer sbuf;
         stream_writer<msgpack::sbuffer> st(sbuf);
@@ -587,7 +587,8 @@ int linear_mixer::put_diff(const byte_buffer& diff) {
   }
 
   size_t total_size = 0;
-  const bool not_obsolete = mixable->put_diff(mixable->convert_diff_object(msg.get()));
+  const bool not_obsolete =
+      mixable->put_diff(mixable->convert_diff_object(msg.get()));
 
   // print versions of mixables
   const string versions = version_list(driver_->get_versions());

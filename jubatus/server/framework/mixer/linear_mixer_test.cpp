@@ -20,13 +20,12 @@
 #include <utility>
 #include <vector>
 #include <gtest/gtest.h>
-#include "../../../core/common/version.hpp"
-#include "../../../core/common/byte_buffer.hpp"
-#include "../../../core/framework/mixable.hpp"
-#include "../../../core/framework/mixable_helper.hpp"
-#include "../../../core/driver/driver.hpp"
-#include "linear_mixer.hpp"
+#include "jubatus/core/common/version.hpp"
+#include "jubatus/core/common/byte_buffer.hpp"
 #include "jubatus/core/framework/mixable.hpp"
+#include "jubatus/core/framework/mixable_helper.hpp"
+#include "jubatus/core/driver/driver.hpp"
+#include "linear_mixer.hpp"
 
 using std::string;
 using std::vector;
@@ -113,13 +112,13 @@ class linear_communication_stub : public linear_communication {
 
 struct my_string {
  public:
-   void get_diff(string& diff) const {
+  void get_diff(string& diff) const {
     diff = string();
   }
   bool put_diff(const string&) {
     return true;
   }
-  void mix( const string& lhs, string& mixed) const {
+  void mix(const string& lhs, string& mixed) const {
     cout << "lhs: "<< lhs << endl;
     cout << "mixed: "<< mixed << endl;
     std::stringstream ss;
@@ -132,7 +131,8 @@ struct my_string {
   }
 };
 
-typedef core::framework::linear_mixable_helper<my_string, string> mixable_string;
+typedef core::framework::linear_mixable_helper<my_string, string>
+  mixable_string;
 
 class my_string_driver : public core::driver::driver_base {
  public:
@@ -160,7 +160,6 @@ TEST(linear_mixer, mix_order) {
   my_string_driver s;
   m.set_driver(&s);
 
-  // TODO: implement test. We have already removed mixable_holder.
   m.mix();
 
   vector<string> mixed = com->get_mixed();
