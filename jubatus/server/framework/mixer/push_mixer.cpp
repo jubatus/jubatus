@@ -65,7 +65,10 @@ class push_communication_impl : public push_communication {
   void get_pull_argument(
       const pair<string, int>& server,
       common::mprpc::rpc_result_object& result) const;
-  void push(const pair<string, int>& server, const vector<string>& diff) const;
+  void push(
+      const pair<string, int>& server,
+      const vector<string>& diff,
+      common::mprpc::rpc_result_object& result) const;
 
  private:
   vector<pair<string, int> > servers_;
@@ -138,13 +141,32 @@ void push_communication_impl::get_pull_argument(
 
 void push_communication_impl::push(
     const pair<string, int>& server,
-    const vector<string>& diff) const {
+    const vector<string>& diff,
+    common::mprpc::rpc_result_object& result) const {
   vector<pair<string, int> > servers;
   servers.push_back(server);
 
   // TODO(beam2d): to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers, timeout_sec_);
-  client.call("push", diff);
+  result = client.call("push", diff);
+}
+
+bool handle_communication_error(
+    const std::string& function,
+    common::mprpc::rpc_result_object& result) {
+  bool has_error = false;
+  for (size_t i = 0; i < result.response.size(); ++i) {
+    if (result.response[i].has_error()) {
+      const string error_text(common::mprpc::create_error_string(
+          result.response[i].error()));
+       LOG(WARNING) << function << " failed at "
+                    << result.error[i].host() << ":"
+                    << result.error[i].port()
+                    << " : " << error_text;
+      has_error = true;
+    }
+  }
+  return has_error;
 }
 
 }  // namespace
@@ -318,18 +340,28 @@ void push_mixer::mix() {
         vector<string> my_args = get_pull_argument(0);
         common::mprpc::rpc_result_object pull_result;
         communication_->pull(she, my_args, pull_result);
+        if (handle_communication_error("pull", pull_result)) {
+          continue;
+        }
         vector<string> her_diff =
             pull_result.response.front().as<vector<string> >();
 
         // pull from me
         common::mprpc::rpc_result_object args_result;
         communication_->get_pull_argument(she, args_result);
+        if (handle_communication_error("get_pull_argument", args_result)) {
+          continue;
+        }
         vector<string> her_args =
             args_result.response.front().as<vector<string> >();
         vector<string> my_diff = pull(her_args);
 
         // push to her and me
-        communication_->push(she, my_diff);
+        common::mprpc::rpc_result_object push_result;
+        communication_->push(she, my_diff, push_result);
+        if (handle_communication_error("push", push_result)) {
+          continue;
+        }
         push(her_diff);
 
         // count size
