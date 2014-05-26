@@ -44,6 +44,10 @@ class dummy_mixer : public mixer {
 
   void get_status(server_base::status_t& status) const {
   }
+
+  std::string type() const {
+    return "dummy_mixer";
+  }
 };
 
 }  // namespace mixer
