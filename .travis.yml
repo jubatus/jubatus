@@ -49,6 +49,10 @@ install:
   - wget http://mecab.googlecode.com/files/mecab-ipadic-2.7.0-20070801.tar.gz && tar xf mecab-ipadic-2.7.0-20070801.tar.gz
   - pushd mecab-ipadic-2.7.0-20070801 && ./configure --with-charset=utf8 && make && sudo make install && popd
   - sudo ldconfig
+  # jubatus_core
+  - https://github.com/jubatus/jubatus_core.git
+  - pushed jubatus_core && ./waf configure && ./waf install && popd
+
 
 script:
   - ./waf configure --enable-zookeeper --enable-mecab --enable-ux
