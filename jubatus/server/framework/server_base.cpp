@@ -87,8 +87,7 @@ server_base::server_base(const server_argv& a)
 }
 
 bool server_base::clear() {
-  get_mixable_holder()->clear_each_mixables();
-  LOG(INFO) << "model cleared: " << argv().name;
+  get_driver()->clear();
   return true;
 }
 

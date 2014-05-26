@@ -79,7 +79,7 @@ anomaly_serv::anomaly_serv(
     const server_argv& a,
     const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk)) {
+      mixer_(create_mixer(a, zk, rw_mutex())) {
 #ifdef HAVE_ZOOKEEPER_H
   if (a.is_standalone()) {
 #endif
@@ -139,7 +139,7 @@ void anomaly_serv::set_config(const std::string& config) {
           core::anomaly::anomaly_factory::create_anomaly(
               conf.method, conf.parameter, my_id),
           core::fv_converter::make_fv_converter(conf.converter, &so_loader_)));
-  mixer_->set_mixable_holder(anomaly_->get_mixable_holder());
+  mixer_->set_driver(anomaly_.get());
 
   LOG(INFO) << "config loaded: " << config;
 }

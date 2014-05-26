@@ -33,6 +33,7 @@ using std::string;
 using jubatus::util::lang::lexical_cast;
 using jubatus::util::lang::shared_ptr;
 using jubatus::core::fv_converter::datum;
+using jubatus::server::framework::mixer::create_mixer;
 
 namespace jubatus {
 namespace server {
@@ -54,8 +55,8 @@ struct nearest_neighbor_serv_config {
 nearest_neighbor_serv::nearest_neighbor_serv(
     const framework::server_argv& a,
     const shared_ptr<common::lock_service>& zk)
-    : server_base(a) {
-  mixer_.reset(framework::mixer::create_mixer(a, zk));
+    : server_base(a),
+      mixer_(create_mixer(a, zk, rw_mutex())) {
 }
 
 nearest_neighbor_serv::~nearest_neighbor_serv() {
@@ -104,7 +105,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
       nn(jubatus::core::nearest_neighbor::create_nearest_neighbor(
           conf.method, param, table, my_id));
   nearest_neighbor_.reset(new core::driver::nearest_neighbor(nn, converter));
-  mixer_->set_mixable_holder(nearest_neighbor_->get_mixable_holder());
+  mixer_->set_driver(nearest_neighbor_.get());
 }
 
 std::string nearest_neighbor_serv::get_config() const {

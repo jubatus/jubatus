@@ -1,6 +1,6 @@
 import Options
 
-subdirs = "util core server client"
+subdirs = "server client"
 
 def options(opt):
   opt.recurse(subdirs)

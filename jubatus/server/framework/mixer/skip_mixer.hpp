@@ -33,10 +33,11 @@ class skip_mixer : public push_mixer {
  public:
   skip_mixer(
       jubatus::util::lang::shared_ptr<push_communication> communication,
+      jubatus::util::concurrent::rw_mutex& mutex,
       unsigned int count_threshold,
       unsigned int tick_threshold,
       const std::pair<std::string, int>& my_id)
-      : push_mixer(communication, count_threshold, tick_threshold, my_id) {
+      : push_mixer(communication, mutex, count_threshold, tick_threshold, my_id) {
   }
   virtual ~skip_mixer() {
   }

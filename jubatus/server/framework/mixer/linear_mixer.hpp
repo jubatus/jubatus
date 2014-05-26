@@ -62,7 +62,7 @@ class linear_communication {
   virtual void get_diff(common::mprpc::rpc_result_object& result) const = 0;
   // it can throw common::mprpc exception
   virtual void put_diff(
-      const std::vector<core::common::byte_buffer>& mixed,
+      const core::common::byte_buffer& mixed,
       common::mprpc::rpc_result_object& result) const = 0;
 
   virtual bool register_active_list() const = 0;
@@ -73,13 +73,13 @@ class linear_mixer : public mixer {
  public:
   linear_mixer(
       jubatus::util::lang::shared_ptr<linear_communication> communicaiton,
+      jubatus::util::concurrent::rw_mutex& mutex,
       unsigned int count_threshold,
       unsigned int tick_threshold);
   ~linear_mixer();
 
   void register_api(rpc_server_t& server);
-  void set_mixable_holder(
-      jubatus::util::lang::shared_ptr<core::framework::mixable_holder> m);
+  void set_driver(core::driver::driver_base*);
 
   void start();
   void stop();
@@ -101,8 +101,8 @@ class linear_mixer : public mixer {
 
   void clear();
 
-  std::vector<core::common::byte_buffer> get_diff(int a);
-  int put_diff(const std::vector<core::common::byte_buffer>& unpacked);
+  core::common::byte_buffer get_diff(int a);
+  int put_diff(const core::common::byte_buffer&);
   core::common::byte_buffer get_model(int d) const;
 
   jubatus::util::lang::shared_ptr<linear_communication> communication_;
@@ -119,11 +119,10 @@ class linear_mixer : public mixer {
 
   jubatus::util::concurrent::thread t_;
   mutable jubatus::util::concurrent::mutex m_;
+  jubatus::util::concurrent::rw_mutex& model_mutex_;
   jubatus::util::concurrent::condition c_;
 
-  jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
-    mixable_holder_;
-  std::vector<core::framework::mixable0*> mixables_;
+  core::driver::driver_base* driver_;
 };
 
 }  // namespace mixer

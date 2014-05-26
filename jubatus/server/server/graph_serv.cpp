@@ -104,7 +104,7 @@ graph_serv::graph_serv(
     const framework::server_argv& a,
     const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk)) {
+      mixer_(create_mixer(a, zk, rw_mutex())) {
 
 #ifdef HAVE_ZOOKEEPER_H
   if (a.is_standalone()) {
@@ -150,7 +150,7 @@ void graph_serv::set_config(const std::string& config) {
       new core::driver::graph(
           core::graph::graph_factory::create_graph(
               conf.method, conf.parameter)));
-  mixer_->set_mixable_holder(graph_->get_mixable_holder());
+  mixer_->set_driver(graph_.get());
 
   LOG(INFO) << "config loaded: " << config;
 }

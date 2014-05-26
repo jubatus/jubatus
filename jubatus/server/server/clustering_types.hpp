@@ -1,4 +1,4 @@
-// This file is auto-generated from clustering.idl(0.5.3-34-g6eb49d0) with jenerator version 0.5.2-45-gc4cfc98/feature/unlearning
+// This file is auto-generated from clustering.idl(0.5.3-34-g6eb49d0) with jenerator version 0.5.2-45-gc4cfc98/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_CLUSTERING_TYPES_HPP_
@@ -14,7 +14,7 @@
 #include "jubatus/core/fv_converter/datum.hpp"
 #include <msgpack.hpp>
 
-#include "../../core/fv_converter/datum.hpp"
+#include "jubatus/core/fv_converter/datum.hpp"
 
 namespace jubatus {
 

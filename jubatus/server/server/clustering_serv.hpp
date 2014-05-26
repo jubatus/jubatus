@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "../../core/driver/clustering.hpp"
+#include "jubatus/core/driver/clustering.hpp"
 #include "../framework/server_base.hpp"
 #include "../fv_converter/so_factory.hpp"
 
@@ -38,9 +38,8 @@ class clustering_serv : public framework::server_base {
     return mixer_.get();
   }
 
-  jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
-      get_mixable_holder() const {
-    return clustering_->get_mixable_holder();
+  core::driver::driver_base* get_driver() const {
+    return clustering_.get();
   }
 
   void get_status(status_t& status) const;

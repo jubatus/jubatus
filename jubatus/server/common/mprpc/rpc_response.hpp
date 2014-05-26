@@ -58,6 +58,9 @@ class rpc_response_t {
   template<typename T> const T as() const {
     return response.a3.as<T>();
   }
+  msgpack::object operator()() const {
+    return response.a3;
+  }
 };
 
 }  // namespace mprpc

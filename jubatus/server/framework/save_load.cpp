@@ -27,6 +27,7 @@
 #include "jubatus/core/common/big_endian.hpp"
 #include "jubatus/core/common/crc32.hpp"
 #include "jubatus/core/framework/mixable.hpp"
+#include "jubatus/core/framework/stream_writer.hpp"
 
 using jubatus::core::common::write_big_endian;
 using jubatus::core::common::read_big_endian;
@@ -106,12 +107,14 @@ void save_server(std::ostream& os,
 
   msgpack::sbuffer user_data_buf;
   {
-    msgpack::packer<msgpack::sbuffer> packer(user_data_buf);
+    core::framework::stream_writer<msgpack::sbuffer> st(user_data_buf);
+    core::framework::jubatus_packer jp(st);
+    core::framework::packer packer(jp);
     packer.pack_array(2);
 
     uint64_t user_data_version = server.user_data_version();
     packer.pack(user_data_version);
-    server.get_mixable_holder()->pack(packer);
+    server.get_driver()->pack(packer);
   }
 
   char header_buf[48];
@@ -246,7 +249,7 @@ void load_server(std::istream& is,
             lexical_cast<string>(user_data_version_expected)));
     }
 
-    server.get_mixable_holder()->unpack(objs[1]);
+    server.get_driver()->unpack(objs[1]);
   } catch (const msgpack::type_error&) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error(

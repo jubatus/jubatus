@@ -66,6 +66,7 @@ def configure(conf):
   conf.find_program('pkg-config') # make sure that pkg-config command exists
   try:
     conf.check_cfg(package = 'libglog', args = '--cflags --libs')
+    conf.check_cfg(package = 'jubatus_core', args = '--cflags --libs')
   except conf.errors.ConfigurationError:
     e = sys.exc_info()[1]
     conf.to_log("PKG_CONFIG_PATH: " + os.environ.get('PKG_CONFIG_PATH', ''))

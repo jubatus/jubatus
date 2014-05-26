@@ -23,14 +23,15 @@
 #include <glog/logging.h>
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/text/json.h"
-#include "../../core/clustering/clustering_config.hpp"
-#include "../../core/common/exception.hpp"
-#include "../../core/common/jsonconfig.hpp"
+#include "jubatus/core/clustering/clustering_config.hpp"
+#include "jubatus/core/common/exception.hpp"
+#include "jubatus/core/common/jsonconfig.hpp"
+#include "jubatus/core/fv_converter/converter_config.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
-#include "../../core/fv_converter/converter_config.hpp"
 
 using jubatus::util::lang::lexical_cast;
 using jubatus::util::lang::shared_ptr;
+using jubatus::server::framework::mixer::create_mixer;
 
 namespace jubatus {
 namespace server {
@@ -53,7 +54,7 @@ clustering_serv::clustering_serv(
     const framework::server_argv& a,
     const shared_ptr<common::lock_service>& zk)
     : server_base(a),
-      mixer_(framework::mixer::create_mixer(a, zk)) {
+      mixer_(create_mixer(a, zk, rw_mutex())) {
 }
 
 clustering_serv::~clustering_serv() {
@@ -95,7 +96,7 @@ void clustering_serv::set_config(const std::string& config) {
                                 conf.method,
                                 cluster_conf)),
                         converter));
-  mixer_->set_mixable_holder(clustering_->get_mixable_holder());
+  mixer_->set_driver(clustering_.get());
 
   LOG(INFO) << "config loaded: " << config;
 }

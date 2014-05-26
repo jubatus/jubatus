@@ -25,7 +25,7 @@
 #include "jubatus/util/concurrent/rwmutex.h"
 #include "jubatus/util/lang/shared_ptr.h"
 
-#include "jubatus/core/framework/mixable.hpp"
+#include "jubatus/core/driver/driver.hpp"
 #include "server_util.hpp"
 
 using jubatus::util::system::time::clock_time;
@@ -46,8 +46,8 @@ class server_base {
   virtual ~server_base() {}
 
   virtual mixer::mixer* get_mixer() const = 0;
-  virtual jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
-      get_mixable_holder() const = 0;
+
+  virtual core::driver::driver_base* get_driver() const = 0;
   virtual void get_status(status_t& status) const = 0;
   virtual void set_config(const std::string& config) = 0;
 
@@ -68,7 +68,7 @@ class server_base {
   }
 
   jubatus::util::concurrent::rw_mutex& rw_mutex() {
-    return get_mixable_holder()->rw_mutex();
+    return rw_mutex_;
   }
 
   const server_argv& argv() const {
@@ -98,6 +98,7 @@ class server_base {
   std::string last_saved_path_;
   clock_time last_loaded_;
   std::string last_loaded_path_;
+  jubatus::util::concurrent::rw_mutex rw_mutex_;
 };
 
 }  // namespace framework

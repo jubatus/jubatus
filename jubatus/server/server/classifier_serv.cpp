@@ -17,7 +17,6 @@
 #include "classifier_serv.hpp"
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "jubatus/util/text/json.h"
@@ -36,7 +35,6 @@
 
 using std::string;
 using std::vector;
-using std::pair;
 using std::isfinite;
 using jubatus::util::lang::lexical_cast;
 using jubatus::util::lang::shared_ptr;
@@ -44,7 +42,6 @@ using jubatus::util::text::json::json;
 using jubatus::server::common::lock_service;
 using jubatus::server::framework::server_argv;
 using jubatus::server::framework::mixer::create_mixer;
-using jubatus::core::framework::mixable_holder;
 using jubatus::core::fv_converter::weight_manager;
 using jubatus::core::classifier::classify_result;
 
@@ -76,7 +73,7 @@ classifier_serv::classifier_serv(
     const framework::server_argv& a,
     const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk)) {
+      mixer_(create_mixer(a, zk, rw_mutex())) {
 }
 
 classifier_serv::~classifier_serv() {
@@ -109,7 +106,7 @@ void classifier_serv::set_config(const string& config) {
         core::classifier::classifier_factory::create_classifier(
           conf.method, param, model),
         core::fv_converter::make_fv_converter(conf.converter, &so_loader_)));
-  mixer_->set_mixable_holder(classifier_->get_mixable_holder());
+  mixer_->set_driver(classifier_.get());
 
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...
@@ -132,7 +129,7 @@ int classifier_serv::train(const vector<labeled_datum>& data) {
 
   for (size_t i = 0; i < data.size(); ++i) {
     // TODO(unno): change interface of driver?
-    classifier_->train(make_pair(data[i].label, data[i].data));
+    classifier_->train(data[i].label, data[i].data);
 
     DLOG(INFO) << "trained: " << data[i].label;
     count++;

@@ -48,9 +48,8 @@ class graph_serv : public framework::server_base {
     return mixer_.get();
   }
 
-  jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
-    get_mixable_holder() const {
-    return graph_->get_mixable_holder();
+  core::driver::driver_base* get_driver() const {
+    return graph_.get();
   }
 
   void set_config(const std::string& config);
