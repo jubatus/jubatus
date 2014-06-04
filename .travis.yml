@@ -52,6 +52,7 @@ install:
   # jubatus_core
   - git clone https://github.com/jubatus/jubatus_core.git
   - pushd jubatus_core && ./waf configure && sudo ./waf install && popd
+  - sudo ldconfig
 
 
 script:
