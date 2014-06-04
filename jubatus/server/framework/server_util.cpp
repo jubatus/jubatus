@@ -384,7 +384,7 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
              cmdline::range(1, 65535));
   p.add<std::string>("listen_addr", 'b', "bind IP address", false, "");
   p.add<std::string>("listen_if", 'B', "bind network interfance", false, "");
-  p.add<int>("thread", 'c', "concurrency = thread number", false, 16,
+  p.add<int>("thread", 'c', "concurrency = thread number", false, 4,
              lower_bound_reader(1));
   p.add<int>("timeout", 't', "time out (sec)", false, 10,
              lower_bound_reader(0));
@@ -466,7 +466,7 @@ proxy_argv::proxy_argv()
       timeout(10),
       zookeeper_timeout(10),
       interconnect_timeout(10),
-      threadnum(16),
+      threadnum(4),
       z("localhost:2181"),
       logdir(""),
       loglevel(google::INFO),
