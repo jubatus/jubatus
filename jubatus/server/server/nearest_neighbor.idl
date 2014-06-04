@@ -14,11 +14,11 @@ service nearest_neighbor {
   list<id_with_score> neighbor_row_from_id(0: string id, 1: uint size)
 
   #@random #@analysis #@pass
-  list<id_with_score> neighbor_row_from_data(0: datum query, 1: uint size)
+  list<id_with_score> neighbor_row_from_datum(0: datum query, 1: uint size)
 
   #@random #@analysis #@pass
   list<id_with_score> similar_row_from_id(0: string id, 1: int ret_num)
 
   #@random #@analysis #@pass
-  list<id_with_score> similar_row_from_data(0: datum query, 1: int ret_num)
+  list<id_with_score> similar_row_from_datum(0: datum query, 1: int ret_num)
 }

@@ -143,13 +143,13 @@ neighbor_result nearest_neighbor_serv::neighbor_row_from_id(
   return nearest_neighbor_->neighbor_row_from_id(id, size);
 }
 
-neighbor_result nearest_neighbor_serv::neighbor_row_from_data(
+neighbor_result nearest_neighbor_serv::neighbor_row_from_datum(
     const datum& d,
     size_t size) {
   // DLOG(INFO) << __func__;
   check_set_config();
 
-  return nearest_neighbor_->neighbor_row_from_data(d, size);
+  return nearest_neighbor_->neighbor_row_from_datum(d, size);
 }
 
 neighbor_result nearest_neighbor_serv::similar_row_from_id(
@@ -161,7 +161,7 @@ neighbor_result nearest_neighbor_serv::similar_row_from_id(
   return nearest_neighbor_->similar_row(id, ret_num);
 }
 
-neighbor_result nearest_neighbor_serv::similar_row_from_data(
+neighbor_result nearest_neighbor_serv::similar_row_from_datum(
     const datum& d,
     size_t ret_num) {
   DLOG(INFO) << __func__;

@@ -58,10 +58,10 @@ class nearest_neighbor_serv : public framework::server_base {
   bool set_row(const std::string& id, const core::fv_converter::datum& dat);
 
   neighbor_result neighbor_row_from_id(const std::string& id, size_t size);
-  neighbor_result neighbor_row_from_data(const core::fv_converter::datum& dat,
+  neighbor_result neighbor_row_from_datum(const core::fv_converter::datum& dat,
       size_t size);
   neighbor_result similar_row_from_id(const std::string& id, size_t ret_num);
-  neighbor_result similar_row_from_data(const core::fv_converter::datum&,
+  neighbor_result similar_row_from_datum(const core::fv_converter::datum&,
       size_t);
 
  private:

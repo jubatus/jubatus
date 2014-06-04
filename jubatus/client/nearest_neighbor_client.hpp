@@ -1,4 +1,4 @@
-// This file is auto-generated from nearest_neighbor.idl(0.4.5-347-g86989a6) with jenerator version 0.5.2-45-gc4cfc98/feature/unlearning
+// This file is auto-generated from nearest_neighbor.idl(0.4.5-347-g86989a6) with jenerator version 0.5.2-45-gc4cfc98/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_NEAREST_NEIGHBOR_CLIENT_HPP_
@@ -38,9 +38,9 @@ class nearest_neighbor : public jubatus::client::common::client {
     return f.get<std::vector<id_with_score> >();
   }
 
-  std::vector<id_with_score> neighbor_row_from_data(
+  std::vector<id_with_score> neighbor_row_from_datum(
       const jubatus::client::common::datum& query, uint32_t size) {
-    msgpack::rpc::future f = c_.call("neighbor_row_from_data", name_, query,
+    msgpack::rpc::future f = c_.call("neighbor_row_from_datum", name_, query,
         size);
     return f.get<std::vector<id_with_score> >();
   }
@@ -51,9 +51,9 @@ class nearest_neighbor : public jubatus::client::common::client {
     return f.get<std::vector<id_with_score> >();
   }
 
-  std::vector<id_with_score> similar_row_from_data(
+  std::vector<id_with_score> similar_row_from_datum(
       const jubatus::client::common::datum& query, int32_t ret_num) {
-    msgpack::rpc::future f = c_.call("similar_row_from_data", name_, query,
+    msgpack::rpc::future f = c_.call("similar_row_from_datum", name_, query,
         ret_num);
     return f.get<std::vector<id_with_score> >();
   }

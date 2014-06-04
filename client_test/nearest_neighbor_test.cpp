@@ -69,27 +69,27 @@ TEST(nearest_neighbor_test, neighbor_row_from_id) {
   cli.neighbor_row_from_id("neighbor_row_from_id", 1);
 }
 
-TEST(nearest_neighbor_test, neighbor_row_from_data) {
+TEST(nearest_neighbor_test, neighbor_row_from_datum) {
   nearest_neighbor cli(host(), port(), cluster_name(), timeout());
   datum d;
-  d.add_number("neighbor_row_from_data", 1.0);
-  ASSERT_TRUE(cli.set_row("neighbor_row_from_data", d));
-  cli.neighbor_row_from_data(d, 1);
+  d.add_number("neighbor_row_from_datum", 1.0);
+  ASSERT_TRUE(cli.set_row("neighbor_row_from_datum", d));
+  cli.neighbor_row_from_datum(d, 1);
 }
 
 TEST(nearest_neighbor_test, similar_row_from_id) {
   nearest_neighbor cli(host(), port(), cluster_name(), timeout());
   datum d;
-  d.add_number("neighbor_row_from_data", 1.0);
+  d.add_number("neighbor_row_from_datum", 1.0);
   ASSERT_TRUE(cli.set_row("similar_row_from_id", d));
   cli.similar_row_from_id("similar_row_from_id", 1);
 }
 
-TEST(nearest_neighbor_test, similar_row_from_data) {
+TEST(nearest_neighbor_test, similar_row_from_datum) {
   nearest_neighbor cli(host(), port(), cluster_name(), timeout());
   datum d;
-  d.add_number("neighbor_row_from_data", 1.0);
-  cli.similar_row_from_data(d, 1);
+  d.add_number("neighbor_row_from_datum", 1.0);
+  cli.similar_row_from_datum(d, 1);
 }
 
 TEST(nearest_neighbor_test, clear) {
