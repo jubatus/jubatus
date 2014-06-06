@@ -1,7 +1,7 @@
 Source: jubatus
 Priority: extra
 Maintainer: PFI & NTT <jubatus@googlegroups.com>
-Build-Depends: debhelper (>= 8.0.0), autotools-dev, pkg-config, python (>= 2.6)
+Build-Depends: debhelper (>= 8.0.0), autotools-dev, pkg-config, python (>= 2.6), liblog4cxx10-dev
 Standards-Version: 3.9.3
 Section: misc
 Homepage: http://jubat.us/
@@ -9,7 +9,7 @@ Homepage: http://jubat.us/
 Package: jubatus
 Section: misc
 Architecture: any
-Depends: libc6 (>= 2.14), ${misc:Depends}
+Depends: libc6 (>= 2.14), liblog4cxx10, ${misc:Depends}
 Description: Distributed processing framework and streaming machine learning library
  Jubatus is a distributed processing framework and streaming machine
  learning library.
