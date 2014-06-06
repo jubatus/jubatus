@@ -76,6 +76,16 @@ void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
 #endif
 }
 
+void server_helper_impl::prepare_for_stop(const server_argv& a) {
+#ifdef HAVE_ZOOKEEPER_H
+  if (!a.is_standalone()) {
+    zk_config_lock_.reset();
+    zk_.reset();
+    LOG(INFO) << "leaving from the cluseter " << a.name;
+  }
+#endif
+}
+
 void term_if_deleted(string path) {
   LOG(INFO) << "My actor [" << path << "] was deleted, preparing for finish";
   kill(getpid(), SIGINT);
