@@ -137,8 +137,11 @@ void close_lock_service();
 template<class ImplServerClass>
 int run_server(int args, char** argv, const std::string& type) {
   try {
-    ImplServerClass impl_server(server_argv(args, argv, type));
-    impl_server.get_p()->get_mixer()->register_api(impl_server);
+    server_argv parsed_argv(args, argv, type);
+    ImplServerClass impl_server(parsed_argv);
+    if (!parsed_argv.is_standalone()) {
+      impl_server.get_p()->get_mixer()->register_api(impl_server);
+    }
     return impl_server.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
