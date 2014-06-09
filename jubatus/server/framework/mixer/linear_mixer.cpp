@@ -450,10 +450,6 @@ void linear_mixer::mix() {
             continue;
           }
 
-          // success info message
-          LOG(INFO) << "success to get_diff from ["
-                    << server_list(successes) << "]";
-
           msgpack::unpacked msg;
           msgpack::unpack(&msg, res.via.raw.ptr, res.via.raw.size);
           msgpack::object o = msg.get();
@@ -468,6 +464,10 @@ void linear_mixer::mix() {
           successes.push_back(make_pair(
                 diff_result.error[i].host(), diff_result.error[i].port()));
         }
+
+        // success info message
+        LOG(INFO) << "success to get_diff from ["
+                  << server_list(successes) << "]";
       }
 
       { // put mixed data
