@@ -1,0 +1,64 @@
+%define package_version @LOG4CXX_VERSION@
+%define package_release @LOG4CXX_RELEASE@
+
+Name:		apache-log4cxx
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	A port to C++ of the Log4j project
+Group:		System Environment/Libraries
+License:	ASL 2.0
+URL:		http://logging.apache.org/log4cxx/
+Source0:	http://www.apache.org/dist/logging/log4cxx/%{version}/%{name}-%{version}.tar.gz
+Patch0:     log4cxx-gcc4.4.patch
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+BuildRequires: apr-devel, apr-util-devel
+
+%package devel
+Summary:	Headers and libraries for %{name}
+Requires:	%{name} = %{version}-%{release}
+
+%description
+Log4cxx is a popular logging package written in C++. One of its distinctive
+features is the notion of inheritance in loggers. Using a logger hierarchy it
+is possible to control which log statements are output at arbitrary
+granularity. This helps reduce the volume of logged output and minimize the
+cost of logging.
+
+%description devel
+This package provides headers and libraries needed to develop applications using %{name}.
+
+%prep
+%setup -q -n %{name}-%{version}
+%patch0 -p1
+
+%build
+sed -i.libdir_syssearch -e \
+ '/sys_lib_dlsearch_path_spec/s|/usr/lib |/usr/lib /usr/lib64 /lib /lib64 |' \
+ configure
+%configure --disable-doxygen
+%{__make} %{?_smp_mflags}
+
+%install
+%{__rm} -rf %{buildroot}
+%makeinstall
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc NOTICE LICENSE KEYS
+%{_libdir}/liblog4cxx.so.*
+
+%files devel
+%defattr(-,root,root,-)
+%exclude %{_libdir}/*.a
+%exclude %{_libdir}/*.la
+%{_includedir}/log4cxx
+%{_libdir}/liblog4cxx.so
+%{_libdir}/pkgconfig/liblog4cxx.pc
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig

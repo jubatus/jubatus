@@ -1,0 +1,69 @@
+%define package_version @JUBATUS_CORE_VERSION@
+%define package_release @JUBATUS_CORE_RELEASE@
+
+%define __waf ./waf
+
+Name:		jubatus-core
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	Core Machine Learning Library of Jubatus
+Vendor:		PFI & NTT
+Group:		System Environment/Daemons
+License:	LGPL 2.1
+URL:		http://jubat.us/
+Source0:	%{name}-%{version}.tar.gz
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+BuildRequires:	msgpack-devel
+BuildRequires:	oniguruma-devel >= 5.9
+BuildRequires:	pkgconfig
+BuildRequires:	python >= 2.4
+
+Requires:		msgpack
+Requires:		oniguruma >= 5.9
+
+%package devel
+Summary:	Headers and libraries of Jubatus Core
+Group:		Development/Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	msgpack-devel
+Requires:	oniguruma-devel >= 5.9
+
+%description
+Jubatus Core provides machine learning libraries in C++.
+
+%description devel
+Jubatus Core provides machine learning libraries in C++.
+This package provides headers and libraries needed of Jubatus Core.
+
+%prep
+%setup -q -n %{name}
+
+%build
+%{__waf} configure --prefix=%{_prefix} --libdir=%{_libdir}
+%{__waf} build
+
+%install
+%{__rm} -rf %{buildroot}
+%{__waf} install --destdir=%{buildroot}
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc README.rst LICENSE LICENSE.MPL2 ChangeLog.rst
+%{_libdir}/libjubatus_core.so.*
+# As utils has no SONAME defined, include shared library without version number here.
+%{_libdir}/libjubatus_util.so
+%{_libdir}/libjubatus_util_*.so
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/libjubatus_core.so
+%{_libdir}/pkgconfig/jubatus_core.pc
+%{_includedir}/jubatus
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
