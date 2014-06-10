@@ -44,7 +44,8 @@ class push_communication {
           jubatus::server::common::lock_service>& zk,
       const std::string& type,
       const std::string& name,
-      int timeout_sec);
+      int timeout_sec,
+      const std::pair<std::string, int>& my_id);
 
   // Call update_members once before using get_diff and put_diff
   virtual size_t update_members() = 0;
@@ -72,6 +73,9 @@ class push_communication {
       const std::pair<std::string, int>& server,
       const core::common::byte_buffer& diff,
       jubatus::server::common::mprpc::rpc_result_object& result) const = 0;
+
+  virtual bool register_active_list() const = 0;
+  virtual bool unregister_active_list() const = 0;
 };
 
 class push_mixer : public jubatus::server::framework::mixer::mixer {
