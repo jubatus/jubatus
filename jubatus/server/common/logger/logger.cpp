@@ -7,6 +7,8 @@
 #include <string.h>
 
 #include <log4cxx/logger.h>
+#include <log4cxx/patternlayout.h>
+#include <log4cxx/consoleappender.h>
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/xml/domconfigurator.h>
 
@@ -58,7 +60,9 @@ void setup_parameters(const char* progname, const char* host, const int port) {
 }
 
 void configure() {
-  log4cxx::BasicConfigurator::configure();
+  log4cxx::LayoutPtr layout(new log4cxx::PatternLayout("%d %X{tid} %-5p [%F:%L] %m%n"));
+  log4cxx::AppenderPtr appender(new log4cxx::ConsoleAppender(layout));
+  log4cxx::BasicConfigurator::configure(appender);
 }
 
 void configure(const std::string& config_file) {
