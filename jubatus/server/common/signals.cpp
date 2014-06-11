@@ -20,7 +20,7 @@
 #include <cerrno>
 #include <csignal>
 
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/concurrent/mutex.h"
 #include "jubatus/util/concurrent/thread.h"

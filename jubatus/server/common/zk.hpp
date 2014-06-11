@@ -19,7 +19,7 @@
 
 #include <string>
 #include <vector>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 
 #include "jubatus/util/lang/function.h"
 #include "jubatus/util/lang/shared_ptr.h"

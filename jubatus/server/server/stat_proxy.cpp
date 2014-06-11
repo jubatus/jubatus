@@ -6,7 +6,7 @@
 #include <vector>
 #include <utility>
 
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 
 #include "jubatus/core/common/exception.hpp"
 #include "../../server/framework/aggregators.hpp"

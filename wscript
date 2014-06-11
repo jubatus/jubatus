@@ -65,7 +65,6 @@ def configure(conf):
   # pkg-config tests
   conf.find_program('pkg-config') # make sure that pkg-config command exists
   try:
-    conf.check_cfg(package = 'libglog', args = '--cflags --libs') #TODO(kmaeahshi) remove after transition
     conf.check_cfg(package = 'liblog4cxx', args = '--cflags --libs')
     conf.check_cfg(package = 'jubatus_core', args = '--cflags --libs')
   except conf.errors.ConfigurationError:

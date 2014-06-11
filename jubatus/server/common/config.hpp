@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 
 #include "jubatus/util/text/json.h"
 #include "lock_service.hpp"

@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 
 #include "jubatus/core/common/exception.hpp"
 #include "server_util.hpp"
@@ -159,7 +159,7 @@ proxy_common::status_type proxy_common::get_status() {
       jubatus::util::lang::lexical_cast<std::string>(a_.timeout);
 
   data["logdir"] = a_.logdir;
-  data["loglevel"] = google::GetLogSeverityName(a_.loglevel);
+  data["log_config"] = a_.log_config;
 
   data["zookeeper"] = a_.z;
   data["connected_zookeeper"] = zk_->get_connected_host_and_port();

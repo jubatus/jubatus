@@ -22,7 +22,7 @@
 #include <utility>
 #include <vector>
 
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include <msgpack.hpp>
 
 #include "jubatus/util/concurrent/lock.h"
