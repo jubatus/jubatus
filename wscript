@@ -143,6 +143,8 @@ def build(bld):
 
   bld.recurse(subdirs)
 
+  bld.install_files('${PREFIX}/share/jubatus/example/log', 'log4cxx.xml')
+
 def cpplint(ctx):
   import fnmatch, tempfile
   cpplint = ctx.path.find_node('tools/codestyle/cpplint/cpplint.py')
