@@ -8,19 +8,20 @@
 
 #define LOG(level) LOG_##level(level)
 
-#define FATAL ::log4cxx::Level::FATAL_INT
-#define ERROR ::log4cxx::Level::ERROR_INT
-#define WARN  ::log4cxx::Level::WARN_INT
-#define INFO  ::log4cxx::Level::INFO_INT
-#define DEBUG ::log4cxx::Level::DEBUG_INT
-#define TRACE ::log4cxx::Level::TRACE_INT
+#define FATAL ::log4cxx::Level::getFatal()
+#define ERROR ::log4cxx::Level::getError()
+#define WARN  ::log4cxx::Level::getWarn()
+#define INFO  ::log4cxx::Level::getInfo()
+#define DEBUG ::log4cxx::Level::getDebug()
+#define TRACE ::log4cxx::Level::getTrace()
 
 // Internal macros
 #define STREAM_LOGGER(level) \
     ::jubatus::server::common::logger::stream_logger(level, __FILE__, __LINE__)
 
 #ifdef NDEBUG
-#define DEBUG_ONLY true ? (void) 0 : ::logger::voidify() & // compile away
+#define DEBUG_ONLY true ? (void) 0 : \
+                          ::jubatus::server::common::logger::voidify() &
 #else
 #define DEBUG_ONLY
 #endif
@@ -32,6 +33,11 @@
 #define LOG_DEBUG(level) DEBUG_ONLY STREAM_LOGGER(level)
 #define LOG_TRACE(level) DEBUG_ONLY STREAM_LOGGER(level)
 
+// Deprecated (for glog transition)
+#define WARNING WARN
+#define LOG_WARNING LOG_WARN
+#define DLOG(level) LOG(DEBUG)
+
 namespace jubatus {
 namespace server {
 namespace common {
@@ -39,7 +45,10 @@ namespace logger {
 
 class stream_logger : jubatus::util::lang::noncopyable {
  public:
-  stream_logger(const int level, const char* file, const int line);
+  stream_logger(
+      const log4cxx::LevelPtr level,
+      const char* file,
+      const int line);
   ~stream_logger();
 
   template <typename T>
@@ -49,9 +58,10 @@ class stream_logger : jubatus::util::lang::noncopyable {
   }
 
  private:
-  const int level_;
+  const log4cxx::LevelPtr level_;
   const char* file_;
   const int line_;
+  const int thread_id_;
   std::ostringstream buf_;
 
 };
@@ -63,14 +73,20 @@ class voidify {
 };
 
 /**
- * Initializes the logging library. (standard output)
+ * Bind parameters for the logging library.
+ * Must be called before `configure` to take effect.
  */
-void init();
+void setup_parameters(const char* progname, const char* host, const int port);
 
 /**
- * Initializes the logging library with given config file.
+ * Configures the logging library. (standard output)
  */
-void init(const std::string&);
+void configure();
+
+/**
+ * Configures the logging library with given config file.
+ */
+void configure(const std::string&);
 
 }  // namespace logger
 }  // namespace common

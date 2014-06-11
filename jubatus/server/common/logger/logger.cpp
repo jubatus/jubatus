@@ -1,8 +1,10 @@
 #include "logger.hpp"
 
-#include <sys/types.h>
 #include <unistd.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <log4cxx/logger.h>
 #include <log4cxx/basicconfigurator.h>
@@ -12,81 +14,54 @@
 
 #define LOGGER_NAME "jubatus"
 
+using jubatus::util::lang::lexical_cast;
+
 namespace jubatus {
 namespace server {
 namespace common {
 namespace logger {
 
-#define DEFINE_LOG_LEVEL(level, likeliness) \
-    void log##level( \
-        const std::string& msg, \
-        const char* file, \
-        const int line) { \
-      log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger(LOGGER_NAME); \
-      if (likeliness(logger->is##level##Enabled())) { \
-        logger->forcedLog( \
-            log4cxx::Level::get##level(), \
-            msg, \
-            log4cxx::spi::LocationInfo(file, "", line)); \
-      } \
-    }
-
-#define LOGGER_LIKELY
-#define LOGGER_UNLIKELY LOG4CXX_UNLIKELY
-
-DEFINE_LOG_LEVEL(Fatal, LOGGER_LIKELY)
-DEFINE_LOG_LEVEL(Error, LOGGER_LIKELY)
-DEFINE_LOG_LEVEL(Warn,  LOGGER_LIKELY)
-DEFINE_LOG_LEVEL(Info,  LOGGER_LIKELY)
-DEFINE_LOG_LEVEL(Debug, LOGGER_UNLIKELY)
-DEFINE_LOG_LEVEL(Trace, LOGGER_UNLIKELY)
-
 namespace {
 
-void setup_environment() {
-  std::string pid = jubatus::util::lang::lexical_cast<std::string>(::getpid());
-  ::setenv("JUBATUS_PID", pid.c_str(), 1); // overwrite environment variable
+inline const char* const_basename(const char* path) {
+  const char* base = ::strrchr(path, '/');
+  return base ? (base + 1) : path;
 }
 
 }  // namespace
 
 stream_logger::stream_logger(
-    const int level,
+    const log4cxx::LevelPtr level,
     const char* file,
     const int line)
-    : level_(level), file_(file), line_(line) {}
+    : level_(level),
+      file_(file),
+      line_(line),
+      thread_id_(syscall(SYS_gettid)) {}
 
 stream_logger::~stream_logger() {
-  switch(level_) {
-  case FATAL:
-    logFatal(buf_.str(), file_, line_);
-    break;
-  case ERROR:
-    logError(buf_.str(), file_, line_);
-    break;
-  case WARN:
-    logWarn(buf_.str(), file_, line_);
-    break;
-  case INFO:
-    logInfo(buf_.str(), file_, line_);
-    break;
-  case DEBUG:
-    logDebug(buf_.str(), file_, line_);
-    break;
-  case TRACE:
-    logTrace(buf_.str(), file_, line_);
-    break;
+  log4cxx::MDC::put("tid", lexical_cast<std::string>(thread_id_));
+  log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger(LOGGER_NAME);
+  if (logger->isEnabledFor(level_)) {
+    logger->forcedLog(
+        level_,
+        buf_.str(),
+        log4cxx::spi::LocationInfo(const_basename(file_), "", line_));
   }
 }
 
-void init() {
-  setup_environment();
+void setup_parameters(const char* progname, const char* host, const int port) {
+  ::setenv("JUBATUS_PID", lexical_cast<std::string>(::getpid()).c_str(), 1);
+  ::setenv("JUBATUS_PROCESS", progname, 1);
+  ::setenv("JUBATUS_HOST", host, 1);
+  ::setenv("JUBATUS_PORT", lexical_cast<std::string>(port).c_str(), 1);
+}
+
+void configure() {
   log4cxx::BasicConfigurator::configure();
 }
 
-void init(const std::string& config_file) {
-  setup_environment();
-
+void configure(const std::string& config_file) {
   // Exception will not be thrown even if there is an error in config file.
   log4cxx::xml::DOMConfigurator::configure(config_file);
 }
