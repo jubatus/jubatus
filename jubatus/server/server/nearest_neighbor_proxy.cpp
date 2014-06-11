@@ -28,11 +28,12 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_random<std::vector<std::pair<std::string, float> >,
         std::string, uint32_t>("neighbor_row_from_id");
     k.register_async_random<std::vector<std::pair<std::string, float> >,
-        jubatus::core::fv_converter::datum, uint32_t>("neighbor_row_from_data");
+        jubatus::core::fv_converter::datum, uint32_t>(
+        "neighbor_row_from_datum");
     k.register_async_random<std::vector<std::pair<std::string, float> >,
         std::string, int32_t>("similar_row_from_id");
     k.register_async_random<std::vector<std::pair<std::string, float> >,
-        jubatus::core::fv_converter::datum, int32_t>("similar_row_from_data");
+        jubatus::core::fv_converter::datum, int32_t>("similar_row_from_datum");
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << e.diagnostic_information(true);
