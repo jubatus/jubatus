@@ -1,3 +1,19 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 #include "logger.hpp"
 
 #include <unistd.h>
@@ -13,6 +29,8 @@
 #include <log4cxx/xml/domconfigurator.h>
 
 #include <jubatus/util/lang/cast.h>
+
+#include <string>
 
 #define LOGGER_NAME "jubatus"
 
@@ -33,9 +51,9 @@ inline const char* const_basename(const char* path) {
 }  // namespace
 
 stream_logger::stream_logger(
-    const log4cxx::LevelPtr level,
+    const log4cxx::LevelPtr& level,
     const char* file,
-    const int line)
+    int line)
     : level_(level),
       file_(file),
       line_(line),
@@ -52,7 +70,7 @@ stream_logger::~stream_logger() {
   }
 }
 
-void setup_parameters(const char* progname, const char* host, const int port) {
+void setup_parameters(const char* progname, const char* host, int port) {
   ::setenv("JUBATUS_PID", lexical_cast<std::string>(::getpid()).c_str(), 1);
   ::setenv("JUBATUS_PROCESS", progname, 1);
   ::setenv("JUBATUS_HOST", host, 1);
@@ -60,7 +78,8 @@ void setup_parameters(const char* progname, const char* host, const int port) {
 }
 
 void configure() {
-  log4cxx::LayoutPtr layout(new log4cxx::PatternLayout("%d %X{tid} %-5p [%F:%L] %m%n"));
+  log4cxx::LayoutPtr layout(
+      new log4cxx::PatternLayout("%d %X{tid} %-5p [%F:%L] %m%n"));
   log4cxx::AppenderPtr appender(new log4cxx::ConsoleAppender(layout));
   log4cxx::BasicConfigurator::configure(appender);
 }

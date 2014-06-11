@@ -1,10 +1,27 @@
+// Jubatus: Online machine learning framework for distributed environment
+// Copyright (C) 2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License version 2.1 as published by the Free Software Foundation.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 #ifndef JUBATUS_SERVER_COMMON_LOGGER_LOGGER_HPP_
 #define JUBATUS_SERVER_COMMON_LOGGER_LOGGER_HPP_
 
-#include <sstream>
 #include <log4cxx/level.h>
-
 #include <jubatus/util/lang/noncopyable.h>
+
+#include <string>
+#include <sstream>
 
 #define LOG(level) LOG_##level(level)
 
@@ -46,9 +63,9 @@ namespace logger {
 class stream_logger : jubatus::util::lang::noncopyable {
  public:
   stream_logger(
-      const log4cxx::LevelPtr level,
+      const log4cxx::LevelPtr& level,
       const char* file,
-      const int line);
+      int line);
   ~stream_logger();
 
   template <typename T>
@@ -63,7 +80,6 @@ class stream_logger : jubatus::util::lang::noncopyable {
   const int line_;
   const int thread_id_;
   std::ostringstream buf_;
-
 };
 
 class voidify {
@@ -76,7 +92,7 @@ class voidify {
  * Bind parameters for the logging library.
  * Must be called before `configure` to take effect.
  */
-void setup_parameters(const char* progname, const char* host, const int port);
+void setup_parameters(const char* progname, const char* host, int port);
 
 /**
  * Configures the logging library. (standard output)
