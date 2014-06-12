@@ -12,7 +12,7 @@ before_install:
 
 install:
   # msgpack
-  - sudo apt-get -qq install libmsgpack-dev
+  - sudo apt-get -qq install libmsgpack-dev liblog4cxx10-dev
   # jubatus-mpio
   - git clone https://github.com/jubatus/jubatus-mpio.git
   - pushd jubatus-mpio && git checkout develop && ./bootstrap && ./configure && make && sudo make install && popd
