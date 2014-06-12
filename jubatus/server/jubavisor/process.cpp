@@ -127,9 +127,8 @@ bool process::spawn_link(int p) {
   } else {
     perror("failed on forking new process");
     perror(cmd.c_str());
-    LOG(ERROR) << cmd;
-    LOG(ERROR) << getenv("PATH");
-    LOG(ERROR) << strerror(errno);
+    LOG(ERROR) << "failed to fork new server process: " << cmd
+               << ": " << strerror(errno) << " (PATH=" << getenv("PATH") << ")";
     return false;
   }
 

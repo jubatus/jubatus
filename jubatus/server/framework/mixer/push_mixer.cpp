@@ -252,11 +252,12 @@ bool push_mixer::do_mix() {
     mix();
     return true;
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
-    LOG(ERROR) << e.diagnostic_information(true);
+    LOG(ERROR) << "exception in manual mix: "
+               << e.diagnostic_information(true);
   } catch (const std::exception& e) {
-    LOG(WARNING) << "exception in mix: " << e.what();
+    LOG(WARNING) << "error in manual mix: " << e.what();
   } catch (...) {
-    LOG(ERROR) << "unexpected error";
+    LOG(ERROR) << "unexpected error in manual mix";
   }
   return false;
 }
@@ -302,7 +303,8 @@ void push_mixer::mixer_loop() {
         DLOG(INFO) << ".... " << mix_count_ << "th mix done.";
       }
     } catch (const core::common::exception::jubatus_exception& e) {
-      LOG(ERROR) << e.diagnostic_information(true);
+      LOG(ERROR) << "exception in mix thread: "
+                 << e.diagnostic_information(true);
     }
   }
 }
@@ -313,7 +315,7 @@ void push_mixer::mix() {
 
   size_t servers_size = communication_->update_members();
   if (servers_size == 0) {
-    LOG(WARNING) << "no other server. ";
+    LOG(WARNING) << "no server exists, skipping mix";
     return;
   } else {
     try {
@@ -357,10 +359,10 @@ void push_mixer::mix() {
         s_push += my_diff.size();
       }
       if (candidates.size() == 0U) {
-        LOG(WARNING) << "no server selected";
+        LOG(WARNING) << "no mix peer selected in mix strategy";
       }
     } catch (const std::exception& e) {
-      LOG(WARNING) << e.what() << " : mix failed";
+      LOG(WARNING) << "error in mix process: " << e.what();
       return;
     }
   }

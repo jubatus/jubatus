@@ -120,7 +120,7 @@ bool server_base::save(const std::string& id) {
   } catch (const std::ios_base::failure&) {
     int tmperrno = errno;
     if (remove(path.c_str()) < 0) {
-      LOG(WARNING) << "failed to remove " << path << ": "
+      LOG(WARNING) << "failed to cleanup dirty model file: " << path << ": "
         << jubatus::util::system::syscall::get_error_msg(errno);
     }
     throw JUBATUS_EXCEPTION(

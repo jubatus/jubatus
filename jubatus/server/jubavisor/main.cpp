@@ -82,10 +82,10 @@ int main(int argc, char* argv[]) try {
       return -1;
     }
     logfile += "zklog";
-    LOG(INFO) << " starting at daemon mode: port=" << port;
-    LOG(INFO) << " zk logging to " << logfile;
+    LOG(INFO) << "starting with daemon mode on port " << port;
+    LOG(INFO) << "writing ZooKeeper logs to " << logfile;
   } else {
-    LOG(INFO) << " starting at standalone mode " << port;
+    LOG(INFO) << " starting with interactive mode on port " << port;
   }
 
   jubavisor j(p.get<std::string>("zookeeper"), port, 16, logfile);
@@ -101,12 +101,14 @@ int main(int argc, char* argv[]) try {
       serv.rpc_join();
     } catch (const mp::system_error& e) {
       if (e.code == EADDRINUSE) {
-        LOG(ERROR) << "server failed to start: any process using port "
-                   << port << "?";
+        LOG(ERROR) << "server failed to start: " << e.what()
+                   << " (any process using port " << port << "?)";
       } else {
         LOG(FATAL) << "server failed to start: " << e.what();
       }
       return -1;
+    } catch (const std::exception& e) {
+      LOG(FATAL) << "error when starting RPC server: " << e.what();
     }
   }
   return 0;

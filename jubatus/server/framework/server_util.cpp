@@ -78,7 +78,8 @@ std::string get_conf(const server_argv& a) {
 #endif
     }
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
-    LOG(ERROR) << e.what();
+    LOG(ERROR) << "exception when loading config file: "
+               << e.diagnostic_information(true);
     exit(1);
   }
   return conf.config;
@@ -345,7 +346,8 @@ void server_argv::boot_message(const std::string& progname) const {
 
 void daemonize_process(const std::string& logdir) {
   if (logdir == "" && ::isatty(::fileno(stderr))) {
-    LOG(WARNING) << "output tty in daemon mode";
+    LOG(WARNING) << "logs may be lost because started "
+                 << "in daemon mode without log directory";
   }
   if (::signal(SIGHUP, SIG_IGN) == SIG_ERR) {
     LOG(FATAL) << "Failed to ignore SIGHUP";

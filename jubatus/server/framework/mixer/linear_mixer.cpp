@@ -319,11 +319,12 @@ bool linear_mixer::do_mix() {
       }
     }
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
-    LOG(ERROR) << e.diagnostic_information(true);
+    LOG(ERROR) << "exception in manual mix: "
+               << e.diagnostic_information(true);
   } catch (const std::exception& e) {
-    LOG(WARNING) << "exception in mix: " << e.what();
+    LOG(WARNING) << "error in manual mix: " << e.what();
   } catch (...) {
-    LOG(ERROR) << "unexpected error";
+    LOG(ERROR) << "unexpected error in manual mix";
   }
   return false;
 }
@@ -367,7 +368,7 @@ void linear_mixer::stabilizer_loop() {
               && new_ticktime - ticktime_ > tick_threshold_))
           && (0 < counter_)) {
         if (zklock->try_lock()) {
-          LOG(INFO) << "getting zk_lock ok, starting mix:";
+          LOG(INFO) << "got ZooKeeper lock, starting mix";
           counter_ = 0;
           ticktime_ = new_ticktime;
 
@@ -389,15 +390,16 @@ void linear_mixer::stabilizer_loop() {
             mix();
           }
         } else {
-          LOG(INFO) << "failed to get zklock, waiting..";
+          LOG(INFO) << "failed to get ZooKeeper lock, waiting";
         }
       }
     } catch (const jubatus::core::common::exception::jubatus_exception& e) {
-      LOG(ERROR) << e.diagnostic_information(true);
+      LOG(ERROR) << "exception in mix thread: "
+                 << e.diagnostic_information(true);
     } catch (const std::exception& e) {
-      LOG(WARNING) << "stabilizer exception: " << e.what();
+      LOG(WARNING) << "error in mix thread: " << e.what();
     } catch (...) {
-      LOG(ERROR) << "unexpected error";
+      LOG(ERROR) << "unexpected error in mix thread";
     }
   }
 }
@@ -412,7 +414,8 @@ void linear_mixer::mix() {
 
   const size_t servers_size = communication_->update_members();
   if (servers_size == 0) {
-    LOG(WARNING) << "no other server.";
+    LOG(WARNING) << "no server exists, assuming myself as up-to-date "
+                 << "and becoming active node";
     communication_->register_active_list();
     return;
   } else {
@@ -507,7 +510,7 @@ void linear_mixer::mix() {
         }
       }
     } catch (const std::exception& e) {
-      LOG(WARNING) << "mix failed :" << e.what();
+      LOG(WARNING) << "error in mix master process: " << e.what();
       return;
     }
   }
