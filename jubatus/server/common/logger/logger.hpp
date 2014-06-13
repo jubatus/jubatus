@@ -33,8 +33,9 @@
 #define TRACE ::log4cxx::Level::getTrace()
 
 // Internal macros
-#define STREAM_LOGGER(level) \
-    ::jubatus::server::common::logger::stream_logger(level, __FILE__, __LINE__)
+#define STREAM_LOGGER(level, abort) \
+    ::jubatus::server::common::logger::stream_logger( \
+        level, __FILE__, __LINE__, abort)
 
 #ifdef NDEBUG
 #define DEBUG_ONLY true ? (void) 0 : \
@@ -43,12 +44,12 @@
 #define DEBUG_ONLY
 #endif
 
-#define LOG_FATAL(level) STREAM_LOGGER(level)
-#define LOG_ERROR(level) STREAM_LOGGER(level)
-#define LOG_WARN(level)  STREAM_LOGGER(level)
-#define LOG_INFO(level)  STREAM_LOGGER(level)
-#define LOG_DEBUG(level) DEBUG_ONLY STREAM_LOGGER(level)
-#define LOG_TRACE(level) DEBUG_ONLY STREAM_LOGGER(level)
+#define LOG_FATAL(level) STREAM_LOGGER(level, true)
+#define LOG_ERROR(level) STREAM_LOGGER(level, false)
+#define LOG_WARN(level)  STREAM_LOGGER(level, false)
+#define LOG_INFO(level)  STREAM_LOGGER(level, false)
+#define LOG_DEBUG(level) DEBUG_ONLY STREAM_LOGGER(level, false)
+#define LOG_TRACE(level) DEBUG_ONLY STREAM_LOGGER(level, false)
 
 // Deprecated (for glog transition)
 #define WARNING WARN
@@ -65,7 +66,8 @@ class stream_logger : jubatus::util::lang::noncopyable {
   stream_logger(
       const log4cxx::LevelPtr& level,
       const char* file,
-      int line);
+      int line,
+      bool abort);
   ~stream_logger();
 
   template <typename T>
@@ -78,6 +80,7 @@ class stream_logger : jubatus::util::lang::noncopyable {
   const log4cxx::LevelPtr level_;
   const char* file_;
   const int line_;
+  const bool abort_;
   const int thread_id_;
   std::ostringstream buf_;
 };
