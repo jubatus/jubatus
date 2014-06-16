@@ -63,7 +63,7 @@ def build(bld):
       source = 'ux_splitter.cpp',
       target = 'ux_splitter',
       install_path = bld.env.JUBATUS_PLUGIN_DIR,
-      use = 'UX LIBGLOG JUBATUS_CORE core_headers',
+      use = 'UX JUBATUS_CORE jubaserv_common_logger core_headers',
       )
     make_test(bld, 'ux_splitter', 'ux_splitter_test.cpp')
 
