@@ -22,7 +22,6 @@
 #include <string>
 #include <sstream>
 
-#include <glog/logging.h>
 #include <msgpack.hpp>
 #include "jubatus/util/lang/noncopyable.h"
 #include "jubatus/util/concurrent/lock.h"
@@ -31,6 +30,7 @@
 #include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/exception.hpp"
+#include "jubatus/server/common/logger/logger.hpp"
 #include "../common/system.hpp"
 #include "../common/lock_service.hpp"
 
@@ -79,7 +79,7 @@ struct server_argv {
   std::string name;
   std::string datadir;
   std::string logdir;
-  int loglevel;
+  std::string log_config;
   std::string configpath;
   std::string modelpath;
   std::string eth;
@@ -90,7 +90,7 @@ struct server_argv {
 
   MSGPACK_DEFINE(port, bind_address, bind_if, timeout,
       zookeeper_timeout, interconnect_timeout, threadnum,
-      program_name, type, z, name, datadir, logdir, loglevel, eth,
+      program_name, type, z, name, datadir, logdir, log_config, eth,
       interval_sec, interval_count, mixer, daemon);
 
   bool is_standalone() const {
@@ -117,7 +117,7 @@ struct proxy_argv {
   std::string program_name;
   std::string z;
   std::string logdir;
-  int loglevel;
+  std::string log_config;
   std::string eth;
   const std::string type;
   int session_pool_expire;

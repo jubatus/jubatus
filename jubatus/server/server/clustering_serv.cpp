@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/text/json.h"
 #include "jubatus/core/clustering/clustering_config.hpp"

@@ -19,8 +19,8 @@
 #include <iostream>
 #include <cstring>
 
-#include <glog/logging.h>
 #include <jubatus/msgpack/rpc/client.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/function.h"
 
 #include "jubatus/core/common/exception.hpp"
@@ -54,6 +54,11 @@ void status(const string& type, const string& name, const string& zkhosts);
 
 int main(int argc, char** argv)
 try {
+  // Configures the logger.
+  // We don't provide logging configuration feature for command line tools;
+  // just print logs to standard output.
+  jubatus::server::common::logger::configure();
+
   cmdline::parser p;
 
   p.add<std::string>("cmd", 'c',
@@ -80,9 +85,8 @@ try {
       "[start] directory to load and save models", false, "/tmp");
   p.add<std::string>("logdir", 'L',
       "[start] directory to output logs (instead of stderr)", false, "");
-  p.add<int, cmdline::range_reader<int> >("loglevel", 'E',
-      "[start] verbosity of log messages", false, google::INFO,
-      cmdline::range(google::INFO, google::FATAL));
+  p.add<std::string>("log_config", 'G',
+      "[start] log4cxx XML configuration file", false, "");
   p.add<std::string>("mixer", 'X', "[start] mixer strategy", false, "");
   p.add<int>("interval_sec", 'S', "[start] mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'I',
@@ -92,14 +96,9 @@ try {
   p.add<int>("interconnect_timeout", 'R',
       "[start] interconnect time out between servers (sec)", false, 10);
 
-  p.add("debug", 'd', "debug mode");
+  p.add("debug", 'd', "debug mode (obsolete)");
 
   p.parse_check(argc, argv);
-
-  google::InitGoogleLogging(argv[0]);
-  if (p.exist("debug")) {
-    google::LogToStderr();  // only when debug
-  }
 
   string cmd = p.get<std::string>("cmd");
   string name = p.get<std::string>("server") + "/" + p.get<std::string>("name");
@@ -205,7 +204,7 @@ void send2supervisor(
     server_option.name = name;
     server_option.datadir = argv.get<std::string>("datadir");
     server_option.logdir = argv.get<std::string>("logdir");
-    server_option.loglevel = argv.get<int>("loglevel");
+    server_option.log_config = argv.get<std::string>("log_config");
     server_option.mixer = argv.get<std::string>("mixer");
 
     server_option.interval_sec = argv.get<int>("interval_sec");

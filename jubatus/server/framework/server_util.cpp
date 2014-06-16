@@ -17,12 +17,13 @@
 #include "server_util.hpp"
 
 #include <unistd.h>
+#include <errno.h>
 #include <signal.h>
 #include <iostream>
 #include <iomanip>
 #include <string>
 
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/text/json.h"
 #include "jubatus/util/lang/shared_ptr.h"
 
@@ -114,8 +115,6 @@ std::string make_ignored_help(const std::string& help) {
 
 server_argv::server_argv(int args, char** argv, const std::string& type)
     : type(type) {
-  google::InitGoogleLogging(argv[0]);
-
   cmdline::parser p;
   p.add<int>("rpc-port", 'p', "port number", false, 9199,
              cmdline::range(1, 65535));
@@ -128,10 +127,10 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   p.add<std::string>("datadir", 'd', "directory to save and load models", false,
                      "/tmp");
   p.add<std::string>("logdir", 'l',
-                     "directory to output logs (instead of stderr)", false, "");
-  p.add<int, cmdline::range_reader<int> >(
-      "loglevel", 'e', "verbosity of log messages", false, google::INFO,
-      cmdline::range(google::INFO, google::FATAL));
+                     "directory to output ZooKeeper logs (instead of stderr)",
+                     false, "");
+  p.add<std::string>("log_config", 'g',
+                     "log4cxx XML configuration file", false, "");
   p.add<std::string>(
       "configpath",
       'f',
@@ -186,7 +185,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   program_name = common::get_program_name();
   datadir = p.get<std::string>("datadir");
   logdir = p.get<std::string>("logdir");
-  loglevel = p.get<int>("loglevel");
+  log_config = p.get<std::string>("log_config");
   configpath = p.get<std::string>("configpath");
   modelpath = p.get<std::string>("model_file");
   daemon = p.exist("daemon");
@@ -200,6 +199,16 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   } else {
     bind_address = "0.0.0.0";
     eth = jubatus::server::common::get_default_v4_address();
+  }
+
+  // Configure the logger.
+  common::logger::setup_parameters(
+      common::get_program_name().c_str(), eth.c_str(), port);
+  if (log_config.empty()) {
+    common::logger::configure();
+  } else {
+    log_config = common::real_path(log_config);
+    common::logger::configure(log_config);
   }
 
 #ifdef HAVE_ZOOKEEPER_H
@@ -263,11 +272,11 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   if (!logdir.empty()) {
     logdir = common::real_path(logdir);
     if (!common::is_writable(logdir.c_str())) {
-      std::cerr << "can't create log file: " << strerror(errno) << std::endl;
+      std::cerr << "can't write to the ZooKeeper log directory: "
+                << strerror(errno) << std::endl;
       exit(1);
     }
   }
-  set_log_destination(common::get_program_name());
 
 #ifndef HAVE_ZOOKEEPER_H
   check_ignored_option(p, "zookeeper");
@@ -292,7 +301,7 @@ server_argv::server_argv()
       name(""),
       datadir("/tmp"),
       logdir(""),
-      loglevel(google::INFO),
+      log_config(""),
       eth("localhost"),
       interval_sec(5),
       interval_count(1024) {
@@ -314,8 +323,7 @@ void server_argv::boot_message(const std::string& progname) const {
   ss << "    thread               : " << threadnum << '\n';
   ss << "    datadir              : " << datadir << '\n';
   ss << "    logdir               : " << logdir << '\n';
-  ss << "    loglevel             : " << google::GetLogSeverityName(loglevel)
-      << '(' << loglevel << ')' << '\n';
+  ss << "    log config           : " << log_config << '\n';
 #ifdef HAVE_ZOOKEEPER_H
   ss << "    zookeeper            : " << z << '\n';
   ss << "    name                 : " << name << '\n';
@@ -333,28 +341,6 @@ void server_argv::boot_message(const std::string& progname) const {
   ss << "    interconnect timeout : " << interconnect_timeout << '\n';
 #endif
   LOG(INFO) << ss.str();
-}
-
-void server_argv::set_log_destination(const std::string& progname) const {
-  if (logdir.empty()) {
-    for (int severity = google::INFO; severity < google::NUM_SEVERITIES;
-        severity++) {
-      google::SetLogDestination(severity, "");
-    }
-    google::SetStderrLogging(loglevel);
-  } else {
-    for (int severity = google::INFO; severity < loglevel; severity++) {
-      google::SetLogDestination(severity, "");
-    }
-    std::ostringstream basename, logdest, symlink;
-    basename << progname << "." << eth << "_" << port;
-    logdest << logdir << "/" << basename.str() << "."
-        << (name.empty() ? "" : name + ".") << "log.";
-    symlink << basename.str() << "." << getpid();
-    google::SetLogDestination(loglevel, logdest.str().c_str());
-    google::SetLogSymlink(loglevel, symlink.str().c_str());
-    google::SetStderrLogging(google::FATAL);
-  }
 }
 
 void daemonize_process(const std::string& logdir) {
@@ -377,8 +363,6 @@ std::string get_server_identifier(const server_argv& a) {
 
 proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
     : type(t) {
-  google::InitGoogleLogging(argv[0]);
-
   cmdline::parser p;
   p.add<int>("rpc-port", 'p', "port number", false, 9199,
              cmdline::range(1, 65535));
@@ -400,10 +384,10 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   p.add<int>("pool_size", 'S', "session-pool maximum size", false, 0,
              lower_bound_reader(0));
   p.add<std::string>("logdir", 'l',
-                     "directory to output logs (instead of stderr)", false, "");
-  p.add<int, cmdline::range_reader<int> >(
-      "loglevel", 'e', "verbosity of log messages", false, google::INFO,
-      cmdline::range(google::INFO, google::FATAL));
+                     "directory to output ZooKeeper logs (instead of stderr)",
+                     false, "");
+  p.add<std::string>("log_config", 'g',
+                     "log4cxx XML configuration file", false, "");
   p.add("version", 'v', "version");
 
   p.parse_check(args, argv);
@@ -426,7 +410,7 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   session_pool_expire = p.get<int>("pool_expire");
   session_pool_size = p.get<int>("pool_size");
   logdir = p.get<std::string>("logdir");
-  loglevel = p.get<int>("loglevel");
+  log_config = p.get<std::string>("log_config");
 
   // determine listen-address and IPaddr used as ZK 'node-name'
   // TODO(y-oda-oni-juba): check bind_address is valid format
@@ -437,6 +421,16 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   } else {
     bind_address = "0.0.0.0";
     eth = jubatus::server::common::get_default_v4_address();
+  }
+
+  // Configure the logger.
+  common::logger::setup_parameters(
+      common::get_program_name().c_str(), eth.c_str(), port);
+  if (log_config.empty()) {
+    common::logger::configure();
+  } else {
+    log_config = common::real_path(log_config);
+    common::logger::configure(log_config);
   }
 
   if (zookeeper_timeout < 1) {
@@ -456,7 +450,6 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
     std::cerr << "can't create log file: " << strerror(errno) << std::endl;
     exit(1);
   }
-  set_log_destination(common::get_program_name());
 
   boot_message(common::get_program_name());
 }
@@ -469,7 +462,7 @@ proxy_argv::proxy_argv()
       threadnum(4),
       z("localhost:2181"),
       logdir(""),
-      loglevel(google::INFO),
+      log_config(""),
       eth("") {
 }
 
@@ -484,31 +477,9 @@ void proxy_argv::boot_message(const std::string& progname) const {
   ss << "    interconnect timeout : " << interconnect_timeout << '\n';
   ss << "    thread               : " << threadnum << '\n';
   ss << "    logdir               : " << logdir << '\n';
-  ss << "    loglevel             : " << google::GetLogSeverityName(loglevel)
-      << '(' << loglevel << ')' << '\n';
+  ss << "    log config           : " << log_config << '\n';
   ss << "    zookeeper            : " << z << '\n';
   LOG(INFO) << ss.str();
-}
-
-void proxy_argv::set_log_destination(const std::string& progname) const {
-  if (logdir.empty()) {
-    for (int severity = google::INFO; severity < google::NUM_SEVERITIES;
-        severity++) {
-      google::SetLogDestination(severity, "");
-    }
-    google::SetStderrLogging(loglevel);
-  } else {
-    for (int severity = google::INFO; severity < loglevel; severity++) {
-      google::SetLogDestination(severity, "");
-    }
-    std::ostringstream basename, logdest, symlink;
-    basename << progname << "." << eth << "_" << port;
-    logdest << logdir << "/" << basename.str() << ".log.";
-    symlink << basename.str() << "." << getpid();
-    google::SetLogDestination(loglevel, logdest.str().c_str());
-    google::SetLogSymlink(loglevel, symlink.str().c_str());
-    google::SetStderrLogging(google::FATAL);
-  }
 }
 
 std::string get_proxy_identifier(const proxy_argv& a) {

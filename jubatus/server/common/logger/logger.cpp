@@ -53,10 +53,12 @@ inline const char* const_basename(const char* path) {
 stream_logger::stream_logger(
     const log4cxx::LevelPtr& level,
     const char* file,
-    int line)
+    int line,
+    bool abort)
     : level_(level),
       file_(file),
       line_(line),
+      abort_(abort),
       thread_id_(syscall(SYS_gettid)) {}
 
 stream_logger::~stream_logger() {
@@ -67,6 +69,9 @@ stream_logger::~stream_logger() {
         level_,
         buf_.str(),
         log4cxx::spi::LocationInfo(const_basename(file_), "", line_));
+  }
+  if (abort_) {
+    abort();
   }
 }
 

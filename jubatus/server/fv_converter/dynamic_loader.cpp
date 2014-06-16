@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/core/fv_converter/exception.hpp"
 #include "../common/filesystem.hpp"
 

@@ -16,6 +16,7 @@
 
 #include "process.hpp"
 
+#include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -29,7 +30,7 @@
 #include <string>
 #include <vector>
 
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/cast.h"
 
 #include "jubatus/core/common/assert.hpp"
@@ -108,7 +109,7 @@ bool process::spawn_link(int p) {
       "-I", lexical_cast<std::string, int>(server_option_.interconnect_timeout),
       "-d", server_option_.datadir,
       "-l", server_option_.logdir,
-      "-e", lexical_cast<std::string, int>(server_option_.loglevel),
+      "-g", server_option_.log_config,
       "-s", lexical_cast<std::string, int>(server_option_.interval_sec),
       "-i", lexical_cast<std::string, int>(server_option_.interval_count),
       "-x", server_option_.mixer,

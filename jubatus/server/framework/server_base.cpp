@@ -24,7 +24,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"

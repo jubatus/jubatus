@@ -17,7 +17,7 @@
 #include "nearest_neighbor_serv.hpp"
 
 #include <string>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/text/json.h"

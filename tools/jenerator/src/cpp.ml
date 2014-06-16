@@ -509,9 +509,8 @@ let gen_proxy_file conf names source services =
       (0, "#include <vector>");
       (0, "#include <utility>");
       (0, "");
-      (0, "#include <glog/logging.h>");
-      (0, "");
       (0, gen_jubatus_core_include conf "common/exception.hpp");
+      (0, gen_jubatus_include conf "server/common/logger/logger.hpp");
       (0, gen_jubatus_include conf "server/framework/aggregators.hpp");
       (0, gen_jubatus_include conf "server/framework/proxy.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");

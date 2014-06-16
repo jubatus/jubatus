@@ -22,7 +22,7 @@
 
 #include <map>
 #include <string>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/bind.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/system/sysstat.h"
@@ -159,7 +159,7 @@ class server_helper {
     data["PROGNAME"] = a.program_name;
     data["type"] = a.type;
     data["logdir"] = a.logdir;
-    data["loglevel"] = google::GetLogSeverityName(a.loglevel);
+    data["log_config"] = a.log_config;
 
     std::string configpath;
     if (a.is_standalone()) {
