@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl(0.5.2-68-g68e898d) with jenerator version 0.5.2-45-gc4cfc98/develop
+// This file is auto-generated from anomaly.idl(0.5.2-68-g68e898d) with jenerator version 0.5.4-185-gd468fe8/migrate-logger
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -6,9 +6,8 @@
 #include <vector>
 #include <utility>
 
-#include "jubatus/server/common/logger/logger.hpp"
-
 #include "jubatus/core/common/exception.hpp"
+#include "../../server/common/logger/logger.hpp"
 #include "../../server/framework/aggregators.hpp"
 #include "../../server/framework/proxy.hpp"
 #include "anomaly_types.hpp"
