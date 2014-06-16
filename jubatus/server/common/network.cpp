@@ -26,6 +26,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <unistd.h>
 #include <errno.h>
 
 #include <cstring>

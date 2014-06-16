@@ -272,7 +272,8 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   if (!logdir.empty()) {
     logdir = common::real_path(logdir);
     if (!common::is_writable(logdir.c_str())) {
-      std::cerr << "can't write to the ZooKeeper log directory: " << strerror(errno) << std::endl;
+      std::cerr << "can't write to the ZooKeeper log directory: "
+                << strerror(errno) << std::endl;
       exit(1);
     }
   }

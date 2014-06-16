@@ -22,12 +22,12 @@
 #include <utility>
 #include <vector>
 
-#include "jubatus/server/common/logger/logger.hpp"
 #include <jubatus/msgpack/rpc/client.h>
 #include <msgpack.hpp>
 #include "jubatus/util/concurrent/thread.h"
 #include "jubatus/util/lang/function.h"
 #include "jubatus/util/lang/bind.h"
+#include "jubatus/server/common/logger/logger.hpp"
 
 #include "proxy_common.hpp"
 #include "server_util.hpp"
