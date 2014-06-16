@@ -6,6 +6,7 @@ compiler:
   - clang
 
 before_install:
+  - env
   - lsb_release -a
   - uname -a
   - sudo apt-get -qq update
@@ -51,7 +52,7 @@ install:
   - sudo ldconfig
   # jubatus_core
   - git clone https://github.com/jubatus/jubatus_core.git
-  - pushd jubatus_core && ./waf configure && sudo ./waf install && popd
+  - pushd jubatus_core && git checkout ${TRAVIS_BRANCH} && ./waf configure && sudo ./waf install && popd
   - sudo ldconfig
 
 
