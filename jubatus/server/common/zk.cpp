@@ -107,7 +107,7 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("cannot connect zk in "
             + jubatus::util::lang::lexical_cast<std::string, int>(timeout)
-            + " sec:" + hosts));
+            + " sec: " + hosts));
   }
 
   LOG(INFO) << "connected to zk: " << get_connected_host_and_port();
