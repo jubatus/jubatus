@@ -16,6 +16,8 @@
 
 #include "proxy_common.hpp"
 
+#include <sys/types.h>
+#include <unistd.h>
 #include <iostream>
 #include <string>
 #include <utility>
