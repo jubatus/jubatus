@@ -58,7 +58,7 @@ void config_fromzk(
 
   if (!z.exists(path)) {
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("config is not exists: " + path));
+      core::common::exception::runtime_error("config does not exist: " + path));
   }
 
   if (!z.read(path, config)) {
@@ -107,7 +107,7 @@ void config_tozk(
   if (!z.exists(lock_path)) {
     throw JUBATUS_EXCEPTION(
       core::common::exception::runtime_error(
-        "node is not exists: " + lock_path));
+        "node does not exist: " + lock_path));
   }
 
   common::lock_service_mutex zk_config_lock(z, lock_path);
@@ -152,7 +152,7 @@ void remove_config_fromzk(
   if (!z.exists(lock_path)) {
     throw JUBATUS_EXCEPTION(
       core::common::exception::runtime_error(
-        "node is not exists: " + lock_path));
+        "node does not exist: " + lock_path));
   }
 
   common::lock_service_mutex zk_config_lock(z, lock_path);
@@ -176,7 +176,7 @@ void remove_config_fromzk(
 
   if (!z.exists(path)) {
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("config is not exists: " + path));
+      core::common::exception::runtime_error("config does not exist: " + path));
   }
 
   if (!z.remove(path)) {
