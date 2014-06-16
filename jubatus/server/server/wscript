@@ -25,7 +25,8 @@ def build_one(bld, name, libraries = '', sources = ''):
       source = '%s_proxy.cpp ' % name,
       target = 'juba%s_proxy' % name,
       includes = '.',
-      use = 'jubatus_util JUBATUS_CORE jubaserv_framework jubaserv_fv_converter jubaserv_common jubaserv_mprpc_common JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
+      use = 'jubatus_util JUBATUS_CORE jubaserv_framework jubaserv_fv_converter jubaserv_common jubaserv_mprpc_common JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK',
+      linkflags = '-lpthread'
       )
 
 def build(bld):
