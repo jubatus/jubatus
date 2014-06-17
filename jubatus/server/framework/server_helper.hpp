@@ -52,6 +52,7 @@ class server_helper_impl {
   void prepare_for_start(const server_argv& a, bool use_cht);
   void prepare_for_run(const server_argv& a, bool use_cht);
   void get_config_lock(const server_argv& a, int retry);
+  void prepare_for_stop(const server_argv& a);
 
   jubatus::util::lang::shared_ptr<common::lock_service> zk() const {
     return zk_;
@@ -262,6 +263,7 @@ class server_helper {
     LOG(INFO) << "stopping mixer thread";
     if (!server_->argv().is_standalone()) {
       server_->get_mixer()->stop();
+      impl_.prepare_for_stop(server_->argv());
     }
 
     LOG(INFO) << "stopping RPC server";
