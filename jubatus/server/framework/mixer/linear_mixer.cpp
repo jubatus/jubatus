@@ -589,7 +589,7 @@ int linear_mixer::put_diff(const byte_buffer& diff) {
     throw JUBATUS_EXCEPTION(core::common::config_not_set());  // nothing to mix
   }
 
-  size_t total_size = 0;
+  const size_t total_size = diff.size();
   const bool not_obsolete =
       mixable->put_diff(mixable->convert_diff_object(msg.get()));
 
