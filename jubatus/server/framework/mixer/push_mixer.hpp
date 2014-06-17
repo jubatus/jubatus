@@ -123,6 +123,7 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
   jubatus::util::system::time::clock_time ticktime_;
 
   volatile bool is_running_;
+  bool is_obsolete_;
 
   jubatus::util::concurrent::thread t_;
   mutable jubatus::util::concurrent::mutex m_;
