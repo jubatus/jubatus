@@ -192,7 +192,6 @@ push_mixer::push_mixer(
     unsigned int tick_threshold,
     const std::pair<std::string, int>& my_id)
     : communication_(communication),
-      model_mutex_(mutex),
       count_threshold_(count_threshold),
       tick_threshold_(tick_threshold),
       my_id_(my_id),
@@ -200,7 +199,8 @@ push_mixer::push_mixer(
       mix_count_(0),
       ticktime_(get_clock_time()),
       is_running_(false),
-      t_(jubatus::util::lang::bind(&push_mixer::mixer_loop, this)) {
+      t_(jubatus::util::lang::bind(&push_mixer::mixer_loop, this)),
+      model_mutex_(mutex) {
 }
 
 push_mixer::~push_mixer() {
