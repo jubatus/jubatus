@@ -7,7 +7,7 @@ Building Debian Package
 On Ubuntu 12.04 LTS (x86\_64), the following packages are required.
 
 ```
-sudo apt-get install ssh git build-essential ruby1.9.3 pkg-config autoconf libtool devscripts debhelper
+sudo apt-get install ssh git build-essential ruby1.9.3 pkg-config autoconf libtool devscripts debhelper liblog4cxx10-dev
 ```
 
 Now you can build the package as follows:
