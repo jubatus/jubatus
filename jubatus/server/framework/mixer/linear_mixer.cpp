@@ -245,14 +245,14 @@ linear_mixer::linear_mixer(
     unsigned int count_threshold,
     unsigned int tick_threshold)
     : communication_(communication),
-      model_mutex_(mutex),
       count_threshold_(count_threshold),
       tick_threshold_(tick_threshold),
       counter_(0),
       ticktime_(get_clock_time()),
       is_running_(false),
       is_obsolete_(true),
-      t_(jubatus::util::lang::bind(&linear_mixer::stabilizer_loop, this)) {
+      t_(jubatus::util::lang::bind(&linear_mixer::stabilizer_loop, this)),
+      model_mutex_(mutex) {
 }
 
 linear_mixer::~linear_mixer() {
