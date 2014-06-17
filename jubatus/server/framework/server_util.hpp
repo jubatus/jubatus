@@ -144,8 +144,11 @@ int run_server(int args, char** argv, const std::string& type) {
     }
     return impl_server.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
-    LOG(FATAL) << e.diagnostic_information(true);
+    LOG(FATAL) << "exception in main thread: "
+               << e.diagnostic_information(true);
     return -1;
+  } catch (const std::exception& e) {
+    LOG(FATAL) << "error in main thread: " << e.what();
   }
 }
 

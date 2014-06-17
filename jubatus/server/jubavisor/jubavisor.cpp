@@ -164,7 +164,7 @@ int jubavisor::start(
     unsigned int N,
     framework::server_argv argv) {
   scoped_lock lk(m_);
-  LOG(INFO) << str << " " << N;
+  LOG(INFO) << "starting " << N << " processes on " << str;
   return start_(str, N, argv);
 }
 

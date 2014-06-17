@@ -85,10 +85,10 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
     logfilep_ = fopen(logfile.c_str(), "a+");
     if (!logfilep_) {
       throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("cannot open zk logfile")
-        << core::common::exception::error_file_name(logfile.c_str())
-        << core::common::exception::error_errno(errno)
-        << core::common::exception::error_api_func("fopen"));
+          core::common::exception::runtime_error("cannot open zk logfile")
+          << core::common::exception::error_file_name(logfile.c_str())
+          << core::common::exception::error_errno(errno)
+          << core::common::exception::error_api_func("fopen"));
     }
     zoo_set_log_stream(logfilep_);
   }
@@ -97,21 +97,20 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
   if (!zh_) {
     perror("");
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error(
-        "failed to initialize zk: " + hosts)
-      << core::common::exception::error_api_func("zookeeper_init")
-      << core::common::exception::error_errno(errno));
+        core::common::exception::runtime_error(
+            "failed to initialize zk: " + hosts)
+        << core::common::exception::error_api_func("zookeeper_init")
+        << core::common::exception::error_errno(errno));
   }
 
   if (!wait_until_connected(timeout)) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("cannot connect zk in "
             + jubatus::util::lang::lexical_cast<std::string, int>(timeout)
-            + " sec:" + hosts));
+            + " sec: " + hosts));
   }
 
-  LOG(INFO) << "connected to zk: "
-        << get_connected_host_and_port();
+  LOG(INFO) << "connected to zk: " << get_connected_host_and_port();
 }
 
 zk::~zk() {
@@ -155,12 +154,14 @@ bool zk::create(const string& path, const string& payload, bool ephemeral) {
                       NULL, 0);
   if (ephemeral) {
     if (rc != ZOK) {
-      LOG(ERROR) << "failed to create: " << path << " - " << zerror(rc);
+      LOG(ERROR) << "failed to create ZooKeeper ephemeral node: "
+                 << path << ": " << zerror(rc) << " (" << rc << ")";
       return false;
     }
   } else {
     if (rc != ZOK && rc != ZNODEEXISTS) {
-      LOG(ERROR) << "failed to create: " << path << " - " << zerror(rc);
+      LOG(ERROR) << "failed to create ZooKeeper node: "
+                 << path << ": " << zerror(rc) << " (" << rc << ")";
       return false;
     }
   }
@@ -173,7 +174,8 @@ bool zk::set(const string& path, const string& payload) {
   scoped_lock lk(m_);
   int rc = zoo_set(zh_, path.c_str(), payload.c_str(), payload.length(), -1);
   if (rc != ZOK) {
-    LOG(ERROR) << path << " failed in setting " << rc << " " << zerror(rc);
+    LOG(ERROR) << "failed to write to ZooKeeper node: "
+               << path << ": " << zerror(rc) << " (" << rc << ")";
     return false;
   }
   DLOG(INFO) << __func__ << " " << path << " - " << payload;
@@ -189,7 +191,8 @@ bool zk::create_seq(const string& path, string& seqfile) {
                       path_buffer.size());
   if (rc != ZOK) {
     seqfile.clear();
-    LOG(ERROR) << "failed to create: " << path << " - " << zerror(rc);
+    LOG(ERROR) << "failed to create ZooKeeper sequencial node: "
+               << path << ": " << zerror(rc) << " (" << rc << ")";
     return false;
   } else {
     seqfile.assign(&path_buffer[0]);
@@ -204,7 +207,8 @@ bool zk::create_id(const string& path, uint32_t prefix, uint64_t& res) {
   int rc = zoo_set2(zh_, path.c_str(), "dummy", 6, -1, &st);
 
   if (rc != ZOK) {
-    LOG(ERROR) << "failed to set data: " << path << " - " << zerror(rc);
+    LOG(ERROR) << "failed to increment version of ZooKeeper node: "
+               << path << ": " << zerror(rc) << " (" << rc << ")";
     return false;
   }
 
@@ -217,7 +221,8 @@ bool zk::remove(const string& path) {
   scoped_lock lk(m_);
   int rc = zoo_delete(zh_, path.c_str(), -1);
   if (rc != ZOK && rc != ZNONODE) {
-    LOG(ERROR) << "failed to remove: " << path << " - " << zerror(rc);
+    LOG(ERROR) << "failed to remove ZooKeeper node: "
+               << path << ": " << zerror(rc) << " (" << rc << ")";
     return false;
   }
 
@@ -285,14 +290,16 @@ void my_znode_delete_watcher(
      */
     return;  // don't re-register
   } else if (type == ZOO_CHANGED_EVENT) {
-    LOG(INFO) << "ZK path: " << path << " has changed";
+    LOG(INFO) << "ZK delete watcher got CHANGED event: " << path;
   } else if (type == ZOO_CREATED_EVENT) {
-    LOG(WARNING) << "ZK created event arrived, something wrong";
+    LOG(WARNING) << "ZK delete watcher got CREATED event, "
+                 << "something wrong: " << path;
   } else if (type == ZOO_CHILD_EVENT) {
-    LOG(WARNING) << "ZK child event arrived, something wrong";
+    LOG(WARNING) << "ZK delete watcher got CHILD event, "
+                 << "something wrong: " << path;
   } else {
     DLOG(FATAL)
-        << "unknown event happen in path:["
+        << "unknown ZK event happen in path: ["
         << path << "] type:["
         << type << "] state:["
         << state << "]";
@@ -300,7 +307,8 @@ void my_znode_delete_watcher(
 
   int rc = zoo_wexists(zh, path, my_znode_delete_watcher, watcherCtx, NULL);
   if (rc != ZOK) {
-    LOG(WARNING) << "cannot watch the path: " << path;
+    LOG(WARNING) << "failed to reregister ZK delete watcher: "
+                 << path << ": " << zerror(rc) << " (" << rc << ")";
   }
 }
 
@@ -330,7 +338,8 @@ bool zk::list_(const string& path, vector<string>& out) {
   } else if (rc == ZNONODE) {
     return true;
   } else {
-    LOG(ERROR) << "failed to get children: " << path << " - " << zerror(rc);
+    LOG(ERROR) << "failed to get all child nodes of ZooKeeper node: "
+               << path << ": " << zerror(rc) << " (" << rc << ")";
     return false;
   }
 }
@@ -345,7 +354,8 @@ bool zk::hd_list(const string& path, string& out) {
     }
     return true;
   }
-  LOG(ERROR) << "failed to get children: " << path << " - " << zerror(rc);
+  LOG(ERROR) << "failed to get a child node of ZooKeeper node: "
+             << path << ": " << zerror(rc) << " (" << rc << ")";
   return false;
 }
 
@@ -355,7 +365,8 @@ bool zk::read(const string& path, string& out) {
   Stat stat;
   int rc = zoo_exists(zh_, path.c_str(), 0, &stat);
   if (rc != ZOK) {
-    LOG(ERROR) << "failed to get info: " << path << " - " << zerror(rc);
+    LOG(ERROR) << "failed to get info of ZooKeeper node: "
+               << path << ": " << zerror(rc) << " (" << rc << ")";
     return false;
   }
 
@@ -363,7 +374,8 @@ bool zk::read(const string& path, string& out) {
     int buflen = stat.dataLength;
 
     if (buflen < 0) {
-      LOG(ERROR) << "failed to get data: " << path << " - data is NULL";
+      LOG(ERROR) << "ZooKeeper node length is invalid (" << buflen << "): "
+                 << path;
       return false;
     } else if (buflen == 0) {
       out.clear();
@@ -373,7 +385,8 @@ bool zk::read(const string& path, string& out) {
     std::vector<char> buf(buflen);
     rc = zoo_get(zh_, path.c_str(), 0, &buf[0], &buflen, &stat);
     if (rc != ZOK) {
-      LOG(ERROR) << "failed to get data: " << path << " - " << zerror(rc);
+      LOG(ERROR) << "failed to read from ZooKeeper node: "
+                 << path << ": " << zerror(rc) << " (" << rc << ")";
       return false;
     }
     JUBATUS_ASSERT_GE(buflen, 0, "NULL data should have been checked");
@@ -384,7 +397,9 @@ bool zk::read(const string& path, string& out) {
       return true;
     }
 
-    LOG(INFO) << "failed to get all data: " << path << "; retry to load";
+    LOG(INFO) << "failed to read from ZooKeeper node; "
+              << "length changed while reading, retrying: "
+              << path << ": " << zerror(rc) << " (" << rc << ")";
   }
 }
 

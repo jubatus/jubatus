@@ -78,7 +78,8 @@ bool cached_zk::list_(const string& path, std::set<std::string>& out) {
     }
     return true;
   } else {
-    LOG(ERROR) << "failed to get children: " << path << " - " << zerror(rc);
+    LOG(ERROR) << "failed to get all child nodes of ZooKeeper node: "
+               << path << ": " << zerror(rc) << " (" << rc << ")";
     return false;
   }
 }
@@ -160,7 +161,8 @@ void cached_zk::update_cache(
     // update cache
 
     {
-      LOG(INFO) << "ZOO_CHILD_EVENT: " << path;
+      LOG(INFO) << "ZK cache watcher got CHILD event, reloading cache: "
+                << path;
     }
     zk->reload_cache(path);
 
@@ -169,7 +171,8 @@ void cached_zk::update_cache(
       type == ZOO_SESSION_EVENT) {  // path == NULL, clear all cache
       // clear cache
     {
-      LOG(INFO) << "ZOO_(DELETED|NOTWATCHING|SESSION)_EVENT: " << path;
+      LOG(INFO) << "ZK cache watcher got (DELETED|NOTWATCHING|SESSION) event, "
+                << "clearing cache: " << path;
     }
     zk->clear_cache(path);
   }

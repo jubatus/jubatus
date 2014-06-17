@@ -234,7 +234,7 @@ void register_proxy(
 
   if (!success) {
     throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("Failed to register_actor")
+        core::common::exception::runtime_error("Failed to register_proxy")
         << core::common::exception::error_api_func("lock_service::create"));
   }
 

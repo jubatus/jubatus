@@ -167,11 +167,11 @@ void load_server(std::istream& is,
       jubatus_maintenance_read != jubatus_version_maintenance) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error(
-          "jubatus version mismatched: current version: " JUBATUS_VERSION
-          ", saved version: " +
+          "jubatus version mismatched: " +
           lexical_cast<std::string>(jubatus_major_read) + "." +
           lexical_cast<std::string>(jubatus_minor_read) + "." +
-          lexical_cast<std::string>(jubatus_maintenance_read)));
+          lexical_cast<std::string>(jubatus_maintenance_read) +
+          ", expected (current) version: " JUBATUS_VERSION));
   }
   uint32_t crc32_expected = read_big_endian<uint32_t>(&header_buf[28]);
   uint64_t system_data_size = read_big_endian<uint64_t>(&header_buf[32]);
@@ -189,7 +189,7 @@ void load_server(std::istream& is,
   if (crc32_actual != crc32_expected) {
     std::ostringstream ss;
     ss << "invalid crc32 checksum: " << std::hex << crc32_actual;
-    ss << ", read " << crc32_expected;
+    ss << ", expected " << crc32_expected;
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error(ss.str()));
   }
@@ -222,7 +222,7 @@ void load_server(std::istream& is,
   if (system_data_actual.config != system_data_expected.config) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error(
-          "server config mismatched" + system_data_actual.config +
+          "server config mismatched: " + system_data_actual.config +
           ", expected " + system_data_expected.config));
   }
 

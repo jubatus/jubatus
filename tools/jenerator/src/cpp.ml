@@ -527,7 +527,8 @@ let gen_proxy_file conf names source services =
         [
           (2,     "return k.run();");
           (1,   "} catch (const jubatus::core::common::exception::jubatus_exception& e) {");
-          (2,     "LOG(FATAL) << e.diagnostic_information(true);");
+          (2,     "LOG(FATAL) << \"exception in proxy main thread: \"");
+          (2,     "           << e.diagnostic_information(true);");
           (2,     "return -1;");
           (1,   "}");
           (0, "}")

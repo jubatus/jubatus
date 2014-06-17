@@ -107,7 +107,7 @@ void config_tozk(
   if (!z.exists(lock_path)) {
     throw JUBATUS_EXCEPTION(
       core::common::exception::runtime_error(
-        "node is not exists: " + lock_path));
+        "ZooKeeper node is not exists: " + lock_path));
   }
 
   common::lock_service_mutex zk_config_lock(z, lock_path);
@@ -135,7 +135,7 @@ void config_tozk(
 
   if (!success) {
     throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
-          "failed to set config to zookeeper:" + path)
+          "failed to set config to zookeeper: " + path)
         << core::common::exception::error_api_func("lock_service::set"));
   }
 
@@ -181,7 +181,7 @@ void remove_config_fromzk(
 
   if (!z.remove(path)) {
     throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
-          "failed to remove config from zookeeper:" + path)
+          "failed to remove config from zookeeper: " + path)
         << core::common::exception::error_api_func("lock_service::remove"));
   }
 
