@@ -103,7 +103,45 @@ bool cht::find(
 // return at most n nodes, if theres nodes less than n, return size is also less
 // than n.
 // find(hash) :: lock_service -> key -> [node]
-//   where hash(node0) <= hash(ke
+//   where hash(node0) <= hash(key) < hash(node1)
+bool cht::find(
+    const std::string& key,
+    std::vector<std::pair<std::string, int> >& out,
+    size_t n) {
+  out.clear();
+  std::vector<std::string> hlist;
+  if (!get_hashlist_(key, hlist)) {
+    throw JUBATUS_EXCEPTION(core::common::not_found(
+        "failed to fetch list of CHT entry: " + key));
+  }
+  std::string hash = make_hash(key);
+  std::string path;
+  build_actor_path(path, type_, name_);
+  path += "/cht";
+
+  std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(),
+                                                              hlist.end(),
+                                                              hash);
+
+  size_t idx = static_cast<int>(node0 - hlist.begin()) % hlist.size();
+  std::string loc;
+  for (size_t i = 0; i < n; ++i) {
+    std::string ip;
+    int port;
+    if (lock_service_->read(path + "/" + hlist[idx], loc)) {
+      revert(loc, ip, port);
+      out.push_back(make_pair(ip, port));
+    } else {
+      // TODO(kuenishi): output log
+      throw JUBATUS_EXCEPTION(core::common::not_found(
+          "failed to read CHT entry: " + path));
+    }
+    idx++;
+    idx %= hlist.size();
+  }
+  return !hlist.size();
+}
+
 /**
  * Get list of CHT entries in my cluster.
  * Returns true when succeed to fetch one or more CHT entries.
