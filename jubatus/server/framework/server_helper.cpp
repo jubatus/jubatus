@@ -77,10 +77,11 @@ void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
 }
 
 void server_helper_impl::prepare_for_stop(const server_argv& a) {
+  zk_config_lock_.reset();
+  zk_.reset();
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
-    zk_config_lock_.reset();
-    zk_.reset();
+    close_lock_service();
     LOG(INFO) << "leaving from the cluseter " << a.name;
   }
 #endif
