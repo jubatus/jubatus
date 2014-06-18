@@ -29,6 +29,24 @@ prepare_rpmbuild() {
 								JUBATUS_VERSION \
 								JUBATUS_RELEASE
 			;;
+		jubatus-core )
+			rm -rf jubatus_core
+			git clone https://github.com/jubatus/jubatus_core.git jubatus-core
+			pushd jubatus-core
+			git checkout "${JUBATUS_CORE_CHECKOUT}"
+			if [ "${JUBATUS_CORE_IS_SNAPSHOT}" = "yes" ]; then
+				JUBATUS_CORE_CHECKOUT="$(git rev-parse HEAD)"
+				JUBATUS_CORE_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
+				JUBATUS_CORE_RELEASE="${JUBATUS_CORE_RELEASE}.${JUBATUS_CORE_CHECKOUT_DATE}git${JUBATUS_CORE_CHECKOUT:0:6}"
+			fi
+			popd
+			tar --create --gzip --exclude-vcs --file "jubatus-core-${JUBATUS_CORE_VERSION}.tar.gz" jubatus-core
+			rm -rf jubatus-core
+
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								JUBATUS_CORE_VERSION \
+								JUBATUS_CORE_RELEASE
+			;;
 		jubatus-client )
 			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
 								JUBATUS_CLIENT_VERSION \
@@ -87,10 +105,10 @@ prepare_rpmbuild() {
 								ZOOKEEPER_VERSION \
 								ZOOKEEPER_RELEASE
 			;;
-		glog )
+		apache-log4cxx )
 			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								GLOG_VERSION \
-								GLOG_RELEASE
+								LOG4CXX_VERSION \
+								LOG4CXX_RELEASE
 			;;
 		ux )
 			spec_substitute "${SPECINFILE}" "${SPECFILE}" \

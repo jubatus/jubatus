@@ -7,7 +7,7 @@ RPM Packaging
 
   sudo yum groupinstall 'Development Tools'
   sudo yum install git-core ruby rpm-build rpmdevtools spectool createrepo
-  sudo yum install oniguruma-devel
+  sudo yum install oniguruma-devel apr-devel apr-util-devel
 
 2. Modify ``package-config`` to specify which version to build. See below for details.
 
@@ -45,8 +45,8 @@ General
   - Package version.
   - Must be incremented to release new RPM with the same ``*_VERSION``.
 
-For jubatus, jubatus-mpio, jubatus-msgpack-rpc
----------------------------------------------------------
+For jubatus, jubatus-core, jubatus-mpio, jubatus-msgpack-rpc
+------------------------------------------------------------------
 
 * ``*_IS_SNAPSHOT``
 
