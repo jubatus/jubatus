@@ -14,6 +14,7 @@ URL:		http://jubat.us/
 Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
+BuildRequires:	jubatus-core-devel >= 0.0.1
 BuildRequires:	jubatus-mpio-devel >= 0.4.2
 BuildRequires:	jubatus-msgpack-rpc-devel >= 0.4.2
 BuildRequires:	msgpack-devel
@@ -25,6 +26,7 @@ BuildRequires:	mecab-devel >= 0.99
 BuildRequires:	pkgconfig
 BuildRequires:	python >= 2.4
 
+Requires:		jubatus-core >= 0.0.1
 Requires:		jubatus-mpio >= 0.4.2
 Requires:		jubatus-msgpack-rpc >= 0.4.2
 Requires:		msgpack
