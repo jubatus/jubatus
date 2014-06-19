@@ -8,4 +8,4 @@ Description: Framework and Library for Distributed Online Machine Learning
 Version: @VERSION@
 Requires: liblog4cxx >= 0.10.0
 Cflags: -I${includedir}
-Libs: -L${libdir} -ljubaserv_framework -ljubaserv_mixer -ljubaserv_common -ljubaserv_common_mprpc -lmsgpack -ljubatus_mpio -ljubatus_msgpack-rpc
+Libs: -L${libdir} -ljubaserv_framework -ljubaserv_mixer -ljubaserv_common -ljubaserv_common_mprpc -ljubaserv_common_logger -lmsgpack -ljubatus_mpio -ljubatus_msgpack-rpc
