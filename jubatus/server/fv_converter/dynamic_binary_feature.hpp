@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_CORE_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_
-#define JUBATUS_CORE_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_
+#ifndef JUBATUS_SERVER_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_
+#define JUBATUS_SERVER_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_
 
 #include <map>
 #include <string>
@@ -50,4 +50,4 @@ class dynamic_binary_feature : public core::fv_converter::binary_feature {
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_CORE_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_
+#endif  // JUBATUS_SERVER_FV_CONVERTER_DYNAMIC_BINARY_FEATURE_HPP_
