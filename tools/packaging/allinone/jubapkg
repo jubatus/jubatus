@@ -104,7 +104,7 @@ do_download() {
 	rm -rf jubatus_core
 	git clone https://github.com/jubatus/jubatus_core.git jubatus_core
 	pushd jubatus_core
-	git checkout ${JUBATUS_VER}
+	git checkout ${JUBATUS_CORE_VER}
 	popd
 
 	# Jubatus
