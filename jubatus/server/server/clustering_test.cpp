@@ -28,7 +28,7 @@
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/text/json.h"
 
-#include "../core/diffv.hpp"
+#include "jubatus/core/framework/diffv.hpp"
 #include "clustering_client.hpp"
 #include "clustering_serv.hpp"
 #include "../clustering/clustering_config.hpp"

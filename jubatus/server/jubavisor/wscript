@@ -11,7 +11,7 @@ def build(bld):
     source = 'main.cpp jubavisor.cpp process.cpp',
     target = 'jubavisor',
     includes = '.',
-    use = 'jubatus_util LIBGLOG ZOOKEEPER_MT jubacommon jubaserv_framework JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
+    use = 'jubatus_util ZOOKEEPER_MT JUBATUS_CORE jubaserv_framework jubaserv_common_logger JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
     )
 
   bld.program(
@@ -19,5 +19,5 @@ def build(bld):
     source = 'jubavisor.cpp jubavisor_test.cpp process.cpp',
     target = 'jubavisor_test',
     includes = '.',
-    use = 'jubatus_util LIBGLOG ZOOKEEPER_MT jubacommon jubaserv_framework'
+    use = 'jubatus_util ZOOKEEPER_MT JUBATUS_CORE jubaserv_framework jubaserv_common_logger'
     )

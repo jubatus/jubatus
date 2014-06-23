@@ -23,6 +23,7 @@
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/core/driver/recommender.hpp"
 #include "../framework/server_base.hpp"
+#include "../fv_converter/so_factory.hpp"
 #include "recommender_types.hpp"
 
 namespace jubatus {
@@ -37,14 +38,12 @@ class recommender_serv : public framework::server_base {
       const jubatus::util::lang::shared_ptr<common::lock_service>& zk);
   virtual ~recommender_serv();
 
-
   framework::mixer::mixer* get_mixer() const {
     return mixer_.get();
   }
 
-  jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
-    get_mixable_holder() const {
-    return recommender_->get_mixable_holder();
+  core::driver::driver_base* get_driver() const {
+    return recommender_.get();
   }
 
   void get_status(status_t& status) const;
@@ -80,6 +79,7 @@ class recommender_serv : public framework::server_base {
   jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
   jubatus::util::lang::shared_ptr<core::driver::recommender> recommender_;
   std::string config_;
+  fv_converter::so_factory so_loader_;
 
   uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;

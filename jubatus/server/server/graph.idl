@@ -14,7 +14,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-%include "../../core/graph/graph_type.hpp"
+%include "jubatus/core/graph/graph_type.hpp"
 
 message node("jubatus::core::graph::node_info") {
   0: map<string, string> property

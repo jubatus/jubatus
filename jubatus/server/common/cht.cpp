@@ -22,7 +22,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/data/digest/md5.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/core/common/exception.hpp"
@@ -111,7 +111,8 @@ bool cht::find(
   out.clear();
   std::vector<std::string> hlist;
   if (!get_hashlist_(key, hlist)) {
-    throw JUBATUS_EXCEPTION(core::common::not_found(key));
+    throw JUBATUS_EXCEPTION(core::common::not_found(
+        "failed to fetch list of CHT entry: " + key));
   }
   std::string hash = make_hash(key);
   std::string path;
@@ -132,7 +133,8 @@ bool cht::find(
       out.push_back(make_pair(ip, port));
     } else {
       // TODO(kuenishi): output log
-      throw JUBATUS_EXCEPTION(core::common::not_found(path));
+      throw JUBATUS_EXCEPTION(core::common::not_found(
+          "failed to read CHT entry: " + path));
     }
     idx++;
     idx %= hlist.size();
@@ -140,40 +142,10 @@ bool cht::find(
   return !hlist.size();
 }
 
-std::pair<std::string, int> cht::find_predecessor(
-    const std::string& host,
-    int port) {
-  return find_predecessor(build_loc_str(host, port));
-}
-
-std::pair<std::string, int> cht::find_predecessor(const std::string& key) {
-  std::vector<std::string> hlist;
-  get_hashlist_(key, hlist);
-
-  std::string hash = make_hash(key);
-  std::string path;
-  build_actor_path(path, type_, name_);
-  path += "/cht";
-
-  std::vector<std::string>::iterator node0 = std::lower_bound(hlist.begin(),
-                                                              hlist.end(),
-                                                              hash);
-
-  size_t idx = (static_cast<int>(node0 - hlist.begin()) + hlist.size() - 1)
-    % hlist.size();
-
-  std::string ip;
-  int port;
-  std::string loc;
-  if (lock_service_->read(path + "/" + hlist[idx], loc)) {
-    revert(loc, ip, port);
-    return make_pair(ip, port);
-  } else {
-    throw JUBATUS_EXCEPTION(core::common::not_found(path));
-    // TODO(kuenishi): output log and throw exception
-  }
-}
-
+/**
+ * Get list of CHT entries in my cluster.
+ * Returns true when succeed to fetch one or more CHT entries.
+ */
 bool cht::get_hashlist_(
     const std::string& key,
     std::vector<std::string>& hlist) {

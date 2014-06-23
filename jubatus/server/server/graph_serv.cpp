@@ -20,7 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/text/json.h"
 #include "jubatus/util/system/time_util.h"
@@ -104,7 +104,7 @@ graph_serv::graph_serv(
     const framework::server_argv& a,
     const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk)) {
+      mixer_(create_mixer(a, zk, rw_mutex())) {
 
 #ifdef HAVE_ZOOKEEPER_H
   if (a.is_standalone()) {
@@ -150,7 +150,7 @@ void graph_serv::set_config(const std::string& config) {
       new core::driver::graph(
           core::graph::graph_factory::create_graph(
               conf.method, conf.parameter)));
-  mixer_->set_mixable_holder(graph_->get_mixable_holder());
+  mixer_->set_driver(graph_.get());
 
   LOG(INFO) << "config loaded: " << config;
 }
@@ -196,7 +196,13 @@ std::string graph_serv::create_node() { /* no lock here */
             jubatus::core::common::exception::runtime_error(
                 "no server found in cht: " + argv().name));
       }
-      selective_create_node_(nodes[0], nid_str);
+      try {
+        selective_create_node_(nodes[0], nid_str);
+      } catch (const std::runtime_error& e) {
+        throw JUBATUS_EXCEPTION(core::common::exception::runtime_error(
+            "failed to create node " + nid_str + " (" + e.what() + "): " +
+            nodes[0].first + ":" + lexical_cast<std::string>(nodes[0].second)));
+      }
 
       for (size_t i = 1; i < nodes.size(); ++i) {
         try {
@@ -204,9 +210,9 @@ std::string graph_serv::create_node() { /* no lock here */
         } catch (const core::graph::local_node_exists& e) {  // pass through
         } catch (const core::graph::global_node_exists& e) {  // pass through
         } catch (const std::runtime_error& e) {  // error !
-          LOG(WARNING) << "cannot create " << i << "th replica: "
-              << nodes[i].first << ":" << nodes[i].second;
-          LOG(WARNING) << e.what();
+          LOG(WARNING) << "cannot create " << i << "th replica "
+                       << "(" << e.what() << "): "
+                       << nodes[i].first << ":" << nodes[i].second;
         }
       }
     }
@@ -317,9 +323,9 @@ edge_id_t graph_serv::create_edge(const std::string& id, const edge& ei) {
       } catch (const core::graph::local_node_exists& e) {  // pass through
       } catch (const core::graph::global_node_exists& e) {  // pass through
       } catch (const std::runtime_error& e) {  // error !
-        LOG(WARNING) << "cannot create " << i << "th replica: "
-            << nodes[i].first << ":" << nodes[i].second;
-        LOG(WARNING) << e.what();
+        LOG(WARNING) << "cannot create " << i << "th replica "
+                     << "(" << e.what() << "): "
+                     << nodes[i].first << ":" << nodes[i].second;
       }
     }
   } else {
@@ -489,6 +495,13 @@ bool graph_serv::create_edge_here(edge_id_t eid, const edge& ei) {
   return true;
 }
 
+/*
+ * Updates the model on the specified node.
+ * If the host/port of the current process is specified, update
+ * is processed locally.
+ * Caller is responsible for handling exceptions including RPC
+ * errors.
+ */
 void graph_serv::selective_create_node_(
     const std::pair<std::string, int>& target,
     const std::string nid_str) {

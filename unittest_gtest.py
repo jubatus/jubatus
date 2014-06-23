@@ -164,6 +164,7 @@ class utest(Task.Task):
     Execute a unit test
     """
     color = 'PINK'
+    after = ['vnum','inst']
     ext_in = ['.bin']
     vars = []
     def runnable_status(self):

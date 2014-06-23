@@ -69,7 +69,7 @@ recommender_serv::recommender_serv(
     const framework::server_argv& a,
     const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk)),
+      mixer_(create_mixer(a, zk, rw_mutex())),
       clear_row_cnt_(),
       update_row_cnt_() {
 }
@@ -111,8 +111,8 @@ void recommender_serv::set_config(const std::string &config) {
       new core::driver::recommender(
           core::recommender::recommender_factory::create_recommender(
               conf.method, param, my_id),
-          core::fv_converter::make_fv_converter(conf.converter)));
-  mixer_->set_mixable_holder(recommender_->get_mixable_holder());
+          core::fv_converter::make_fv_converter(conf.converter, &so_loader_)));
+  mixer_->set_driver(recommender_.get());
 
   LOG(INFO) << "config loaded: " << config;
 }

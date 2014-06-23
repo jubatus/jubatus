@@ -17,7 +17,7 @@
 #include <iostream>
 #include <string>
 
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/bind.h"
 
 #include "jubatus/core/common/exception.hpp"
@@ -53,11 +53,23 @@ int main(int argc, char* argv[]) try {
   p.add<std::string>("zookeeper", 'z', "zookeeper location", true);
   p.add<std::string>("logdir", 'l', "log to output all child process' log",
                      false, "/tmp");
+  p.add<std::string>("log_config", 'g',
+                     "log4cxx XML configuration file", false, "");
   p.add<int>("timeout", 't', "rpc timeout", false, 10);
   p.add("daemon", 'd', "daemonize the process");
   p.parse_check(argc, argv);
   int port = p.get<int>("rpc-port");
   std::string logfile = "";
+  std::string log_config = p.get<std::string>("log_config");
+
+  // Configure the logger.
+  jubatus::server::common::logger::setup_parameters(
+      jubatus::server::common::get_program_name().c_str(), "", port);
+  if (log_config.empty()) {
+    jubatus::server::common::logger::configure();
+  } else {
+    jubatus::server::common::logger::configure(log_config);
+  }
 
   if (p.exist("daemon")) {
     jubatus::server::common::append_server_path(argv[0]);
@@ -65,18 +77,15 @@ int main(int argc, char* argv[]) try {
 
     int r = jubatus::server::common::daemonize();
 
-    google::InitGoogleLogging(argv[0]);
     if (r == -1) {
       LOG(ERROR) << "failed at daemon(3): errno=" << errno;
       return -1;
     }
     logfile += "zklog";
-    LOG(INFO) << " starting at daemon mode: port=" << port;
-    LOG(INFO) << " zk logging to " << logfile;
+    LOG(INFO) << "starting with daemon mode on port " << port;
+    LOG(INFO) << "writing ZooKeeper logs to " << logfile;
   } else {
-    google::InitGoogleLogging(argv[0]);
-    google::LogToStderr();  // only when debug
-    LOG(INFO) << " starting at standalone mode " << port;
+    LOG(INFO) << " starting with interactive mode on port " << port;
   }
 
   jubavisor j(p.get<std::string>("zookeeper"), port, 16, logfile);
@@ -92,12 +101,14 @@ int main(int argc, char* argv[]) try {
       serv.rpc_join();
     } catch (const mp::system_error& e) {
       if (e.code == EADDRINUSE) {
-        LOG(ERROR) << "server failed to start: any process using port "
-                   << port << "?";
+        LOG(ERROR) << "server failed to start: " << e.what()
+                   << " (any process using port " << port << "?)";
       } else {
         LOG(FATAL) << "server failed to start: " << e.what();
       }
       return -1;
+    } catch (const std::exception& e) {
+      LOG(FATAL) << "error when starting RPC server: " << e.what();
     }
   }
   return 0;

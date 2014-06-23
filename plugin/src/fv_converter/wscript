@@ -43,12 +43,18 @@ def make_test(bld, use, src):
 
 def build(bld):
 
+  n = bld.path.get_bld().make_node('test_input')
+  n.mkdir()
+  bld(rule = 'cp ${SRC} ${TGT}',
+      source = bld.path.ant_glob('test_input/*'),
+      target = n)
+
   if bld.env.HAVE_MECAB:
     bld.shlib(
       source = 'mecab_splitter.cpp',
       target = 'mecab_splitter',
       install_path = bld.env.JUBATUS_PLUGIN_DIR,
-      use = 'MECAB jubaconverter core_headers',
+      use = 'MECAB JUBATUS_CORE core_headers',
       )
     make_test(bld, 'jubatus_util mecab_splitter', 'mecab_splitter_test.cpp')
 
@@ -57,7 +63,7 @@ def build(bld):
       source = 'ux_splitter.cpp',
       target = 'ux_splitter',
       install_path = bld.env.JUBATUS_PLUGIN_DIR,
-      use = 'UX LIBGLOG jubaconverter core_headers',
+      use = 'UX JUBATUS_CORE jubaserv_common_logger core_headers',
       )
     make_test(bld, 'ux_splitter', 'ux_splitter_test.cpp')
 

@@ -17,7 +17,9 @@
 #include "rpc_mclient.hpp"
 #include <string>
 #include <utility>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
+
+#include "jubatus/util/system/syscall.h"
 
 namespace jubatus {
 namespace server {
@@ -66,6 +68,43 @@ rpc_response_t rpc_mclient::wait_one(
     return rpc_resp;
   }
   JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method);
+}
+
+std::string create_error_string(const msgpack::object& error) {
+  switch (error.type) {
+    case msgpack::type::RAW:
+      return error.as<std::string>();
+
+    case msgpack::type::POSITIVE_INTEGER:
+      switch (error.as<unsigned int>()) {
+        case msgpack::rpc::NO_METHOD_ERROR:
+          return "no method error";
+        case msgpack::rpc::ARGUMENT_ERROR:
+          return "argument error";
+        default:
+          {
+            std::string msg = "unknown remote error (";
+            msg += jubatus::util::lang::lexical_cast<std::string>(
+                error.as<unsigned int>());
+            msg += ")";
+            return msg;
+          }
+      }
+
+    case msgpack::type::NEGATIVE_INTEGER:
+      // local errno(system error) carried as negative_integer
+      {
+        const int error_code = -error.as<int>();
+        std::string msg("system error: ");
+        msg += jubatus::util::system::syscall::get_error_msg(error_code);
+        msg += " (" +
+          jubatus::util::lang::lexical_cast<std::string>(error_code) + ")";
+        return msg;
+      }
+
+    default:
+      return "unknown error";
+  }
 }
 
 }  // namespace mprpc

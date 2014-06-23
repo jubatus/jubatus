@@ -18,6 +18,7 @@
 #define JUBATUS_SERVER_FRAMEWORK_MIXER_DUMMY_MIXER_HPP_
 
 #include <vector>
+#include <string>
 #include "jubatus/core/framework/mixable.hpp"
 #include "mixer.hpp"
 
@@ -30,8 +31,8 @@ class dummy_mixer : public mixer {
  public:
   void register_api(rpc_server_t& server) {
   }
-  void set_mixable_holder(
-      jubatus::util::lang::shared_ptr<core::framework::mixable_holder>) {
+
+  void set_driver(core::driver::driver_base*) {
   }
 
   void start() {
@@ -43,6 +44,10 @@ class dummy_mixer : public mixer {
   }
 
   void get_status(server_base::status_t& status) const {
+  }
+
+  std::string type() const {
+    return "dummy_mixer";
   }
 };
 

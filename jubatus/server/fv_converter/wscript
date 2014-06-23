@@ -1,0 +1,104 @@
+
+def options(opt):
+  pass
+
+def configure(conf):
+  libpat = conf.env.cxxshlib_PATTERN
+  conf.define('LIBSPLITTER_SAMPLE', './' + libpat % 'splitter_sample')
+  conf.define('LIBSPLITTER_NULL', './' + libpat % 'splitter_null')
+  conf.define('LIBFILTER_SAMPLE', './' + libpat % 'filter_sample')
+  conf.define('LIBNUM_FEATURE_SAMPLE', './' + libpat % 'num_feature_sample')
+  conf.define('LIBNUM_FILTER_SAMPLE', './' + libpat % 'num_filter_sample')
+  conf.define('LIBBINARY_FEATURE_SAMPLE', './' + libpat % 'binary_feature_sample')
+  pass
+
+def build(bld):
+  import Options
+  src = [
+      'so_factory.cpp',
+      'dynamic_loader.cpp',
+      'dynamic_string_feature.cpp',
+      'dynamic_num_feature.cpp',
+      'dynamic_binary_feature.cpp',
+      'dynamic_string_filter.cpp',
+      'dynamic_num_filter.cpp',
+      ]
+
+  bld.shlib(
+    source = src,
+    target = 'jubaserv_fv_converter',
+    includes = '.',
+    use = 'jubatus_util ZOOKEEPER_MT DL jubaserv_common jubaserv_common_logger jubaconverter jubacommon core_headers'
+    )
+
+  bld.shlib(
+    source = 'test_splitter.cpp',
+    target = 'splitter_sample',
+    install_path = None,
+    name = 'splitter_sample',
+    use = 'jubatus_util jubaserv_fv_converter jubaconverter'
+    )
+
+  bld.shlib(
+    source = 'test_splitter_null.cpp',
+    target = 'splitter_null',
+    install_path = None,
+    name = 'splitter_null',
+    use = 'jubatus_util jubaserv_fv_converter jubaconverter'
+    )
+
+  bld.shlib(
+    source = 'test_num_feature.cpp',
+    target = 'num_feature_sample',
+    install_path = None,
+    name = 'num_feature_sample',
+    use = 'jubatus_util jubaserv_fv_converter jubaconverter'
+    )
+
+  bld.shlib(
+    source = 'test_num_filter.cpp',
+    target = 'num_filter_sample',
+    install_path = None,
+    name = 'num_filter_sample',
+    use = 'jubatus_util jubaserv_fv_converter jubaconverter'
+    )
+
+  bld.shlib(
+    source = 'test_binary_feature.cpp',
+    target = 'binary_feature_sample',
+    install_path = None,
+    name = 'binary_feature_sample',
+    use = 'jubatus_util jubaserv_fv_converter jubaconverter'
+    )
+
+  bld.shlib(
+    source = 'test_string_filter.cpp',
+    target = 'filter_sample',
+    install_path = None,
+    name = 'filter_sample',
+    use = 'jubatus_util jubaserv_fv_converter jubaconverter'
+    )
+
+  test_src = [
+      'dynamic_loader_test.cpp',
+      'dynamic_string_feature_test.cpp',
+      'dynamic_num_feature_test.cpp',
+      'dynamic_binary_feature_test.cpp',
+      'dynamic_string_filter_test.cpp',
+      'dynamic_num_filter_test.cpp',
+      'so_factory_test.cpp',
+    ]
+
+  def make_test(s):
+    bld.program(
+      features = 'gtest',
+      source = s,
+      target = s[0:s.rfind('.')],
+      includes = '.',
+      use = ['jubacommon', 'jubaserv_fv_converter', 'jubaconverter']
+      )
+  for s in test_src:
+    make_test(s)
+
+  bld.install_files('${PREFIX}/include/jubatus/server/fv_conveter/', [
+      ])

@@ -17,7 +17,7 @@
 #include "nearest_neighbor_serv.hpp"
 
 #include <string>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/text/json.h"
@@ -33,6 +33,7 @@ using std::string;
 using jubatus::util::lang::lexical_cast;
 using jubatus::util::lang::shared_ptr;
 using jubatus::core::fv_converter::datum;
+using jubatus::server::framework::mixer::create_mixer;
 
 namespace jubatus {
 namespace server {
@@ -54,8 +55,8 @@ struct nearest_neighbor_serv_config {
 nearest_neighbor_serv::nearest_neighbor_serv(
     const framework::server_argv& a,
     const shared_ptr<common::lock_service>& zk)
-    : server_base(a) {
-  mixer_.reset(framework::mixer::create_mixer(a, zk));
+    : server_base(a),
+      mixer_(create_mixer(a, zk, rw_mutex())) {
 }
 
 nearest_neighbor_serv::~nearest_neighbor_serv() {
@@ -92,7 +93,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
 
   DLOG(INFO) << __func__;
   shared_ptr<core::fv_converter::datum_to_fv_converter> converter =
-      core::fv_converter::make_fv_converter(conf.converter);
+      core::fv_converter::make_fv_converter(conf.converter, &so_loader_);
 
   shared_ptr<core::table::column_table> table(new core::table::column_table);
   std::string my_id;
@@ -104,7 +105,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
       nn(jubatus::core::nearest_neighbor::create_nearest_neighbor(
           conf.method, param, table, my_id));
   nearest_neighbor_.reset(new core::driver::nearest_neighbor(nn, converter));
-  mixer_->set_mixable_holder(nearest_neighbor_->get_mixable_holder());
+  mixer_->set_driver(nearest_neighbor_.get());
 }
 
 std::string nearest_neighbor_serv::get_config() const {
@@ -142,13 +143,13 @@ neighbor_result nearest_neighbor_serv::neighbor_row_from_id(
   return nearest_neighbor_->neighbor_row_from_id(id, size);
 }
 
-neighbor_result nearest_neighbor_serv::neighbor_row_from_data(
+neighbor_result nearest_neighbor_serv::neighbor_row_from_datum(
     const datum& d,
     size_t size) {
   // DLOG(INFO) << __func__;
   check_set_config();
 
-  return nearest_neighbor_->neighbor_row_from_data(d, size);
+  return nearest_neighbor_->neighbor_row_from_datum(d, size);
 }
 
 neighbor_result nearest_neighbor_serv::similar_row_from_id(
@@ -160,7 +161,7 @@ neighbor_result nearest_neighbor_serv::similar_row_from_id(
   return nearest_neighbor_->similar_row(id, ret_num);
 }
 
-neighbor_result nearest_neighbor_serv::similar_row_from_data(
+neighbor_result nearest_neighbor_serv::similar_row_from_datum(
     const datum& d,
     size_t ret_num) {
   DLOG(INFO) << __func__;

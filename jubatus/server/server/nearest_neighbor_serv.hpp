@@ -24,6 +24,7 @@
 #include "jubatus/core/table/column/column_table.hpp"
 #include "../common/lock_service.hpp"
 #include "../framework/server_base.hpp"
+#include "../fv_converter/so_factory.hpp"
 #include "nearest_neighbor_types.hpp"
 
 namespace jubatus {
@@ -43,9 +44,8 @@ class nearest_neighbor_serv : public framework::server_base {
     return mixer_.get();
   }
 
-  jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder>
-  get_mixable_holder() const {
-    return nearest_neighbor_->get_mixable_holder();
+  core::driver::driver_base* get_driver() const {
+    return nearest_neighbor_.get();
   }
 
   void get_status(status_t& status) const;
@@ -58,10 +58,10 @@ class nearest_neighbor_serv : public framework::server_base {
   bool set_row(const std::string& id, const core::fv_converter::datum& dat);
 
   neighbor_result neighbor_row_from_id(const std::string& id, size_t size);
-  neighbor_result neighbor_row_from_data(const core::fv_converter::datum& dat,
+  neighbor_result neighbor_row_from_datum(const core::fv_converter::datum& dat,
       size_t size);
   neighbor_result similar_row_from_id(const std::string& id, size_t ret_num);
-  neighbor_result similar_row_from_data(const core::fv_converter::datum&,
+  neighbor_result similar_row_from_datum(const core::fv_converter::datum&,
       size_t);
 
  private:
@@ -77,6 +77,7 @@ class nearest_neighbor_serv : public framework::server_base {
 
   jubatus::util::lang::shared_ptr<core::driver::nearest_neighbor>
     nearest_neighbor_;
+  fv_converter::so_factory so_loader_;
 };
 
 }  // namespace server

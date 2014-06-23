@@ -26,10 +26,10 @@
 #include <vector>
 #include <cerrno>
 
-#include <glog/logging.h>
-
 #include "jubatus/core/fv_converter/util.hpp"
 #include "jubatus/core/fv_converter/exception.hpp"
+
+#include "jubatus/server/common/logger/logger.hpp"
 
 namespace jubatus {
 namespace plugin {

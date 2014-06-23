@@ -18,6 +18,7 @@
 #define JUBATUS_SERVER_FRAMEWORK_MIXER_MIXER_FACTORY_HPP_
 
 #include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/concurrent/rwmutex.h"
 
 #include "../../common/lock_service.hpp"
 #include "../server_util.hpp"
@@ -30,7 +31,8 @@ namespace mixer {
 
 mixer* create_mixer(
     const server_argv& a,
-    const jubatus::util::lang::shared_ptr<common::lock_service>& zk);
+    const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
+    jubatus::util::concurrent::rw_mutex& model_mutex);
 
 }  // namespace mixer
 }  // namespace framework

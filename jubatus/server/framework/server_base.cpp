@@ -24,7 +24,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
@@ -87,13 +87,12 @@ server_base::server_base(const server_argv& a)
 }
 
 bool server_base::clear() {
-  get_mixable_holder()->clear_each_mixables();
-  LOG(INFO) << "model cleared: " << argv().name;
+  get_driver()->clear();
   return true;
 }
 
 bool server_base::save(const std::string& id) {
-  const std::string path = build_local_path(argv_, "jubatus", id);
+  const std::string path = build_local_path(argv_, argv_.type, id);
   LOG(INFO) << "starting save to " << path;
 
   std::ofstream ofs(path.c_str(), std::ios::trunc | std::ios::binary);
@@ -121,7 +120,7 @@ bool server_base::save(const std::string& id) {
   } catch (const std::ios_base::failure&) {
     int tmperrno = errno;
     if (remove(path.c_str()) < 0) {
-      LOG(WARNING) << "failed to remove " << path << ": "
+      LOG(WARNING) << "failed to cleanup dirty model file: " << path << ": "
         << jubatus::util::system::syscall::get_error_msg(errno);
     }
     throw JUBATUS_EXCEPTION(
@@ -136,7 +135,7 @@ bool server_base::save(const std::string& id) {
 }
 
 bool server_base::load(const std::string& id) {
-  load_file_impl(*this, build_local_path(argv_, "jubatus", id), id);
+  load_file_impl(*this, build_local_path(argv_, argv_.type, id), id);
   return true;
 }
 

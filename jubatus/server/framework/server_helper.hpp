@@ -22,7 +22,7 @@
 
 #include <map>
 #include <string>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/bind.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/system/sysstat.h"
@@ -52,6 +52,7 @@ class server_helper_impl {
   void prepare_for_start(const server_argv& a, bool use_cht);
   void prepare_for_run(const server_argv& a, bool use_cht);
   void get_config_lock(const server_argv& a, int retry);
+  void prepare_for_stop(const server_argv& a);
 
   jubatus::util::lang::shared_ptr<common::lock_service> zk() const {
     return zk_;
@@ -159,7 +160,7 @@ class server_helper {
     data["PROGNAME"] = a.program_name;
     data["type"] = a.type;
     data["logdir"] = a.logdir;
-    data["loglevel"] = google::GetLogSeverityName(a.loglevel);
+    data["log_config"] = a.log_config;
 
     std::string configpath;
     if (a.is_standalone()) {
@@ -262,6 +263,7 @@ class server_helper {
     LOG(INFO) << "stopping mixer thread";
     if (!server_->argv().is_standalone()) {
       server_->get_mixer()->stop();
+      impl_.prepare_for_stop(server_->argv());
     }
 
     LOG(INFO) << "stopping RPC server";

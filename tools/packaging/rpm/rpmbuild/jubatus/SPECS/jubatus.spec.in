@@ -14,10 +14,11 @@ URL:		http://jubat.us/
 Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
+BuildRequires:	jubatus-core-devel >= 0.0.1
 BuildRequires:	jubatus-mpio-devel >= 0.4.2
 BuildRequires:	jubatus-msgpack-rpc-devel >= 0.4.2
 BuildRequires:	msgpack-devel
-BuildRequires:	glog-devel >= 0.3.0
+BuildRequires:	apache-log4cxx-devel >= 0.10.0
 BuildRequires:	zookeeper-client-devel
 BuildRequires:	oniguruma-devel >= 5.9
 BuildRequires:	ux-devel
@@ -25,10 +26,11 @@ BuildRequires:	mecab-devel >= 0.99
 BuildRequires:	pkgconfig
 BuildRequires:	python >= 2.4
 
+Requires:		jubatus-core >= 0.0.1
 Requires:		jubatus-mpio >= 0.4.2
 Requires:		jubatus-msgpack-rpc >= 0.4.2
 Requires:		msgpack
-Requires:		glog >= 0.3.0
+Requires:		apache-log4cxx >= 0.10.0
 Requires:		zookeeper-client
 Requires:		oniguruma >= 5.9
 Requires:		ux
@@ -41,7 +43,7 @@ Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	jubatus-msgpack-rpc-devel
 Requires:	msgpack-devel
-Requires:	glog-devel >= 0.3.0
+Requires:	apache-log4cxx-devel >= 0.10.0
 Requires:	oniguruma-devel >= 5.9
 
 %package client

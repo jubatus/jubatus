@@ -16,13 +16,15 @@
 
 #include "membership.hpp"
 
+#include <sys/types.h>
+#include <unistd.h>
 #include <signal.h>
 #include <cstdlib>
 #include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/core/common/exception.hpp"
 
@@ -170,8 +172,6 @@ void unregister_active(
   }
 }
 
-
-
 void watch_delete_actor(
     lock_service& z,
     const string& type,
@@ -234,7 +234,7 @@ void register_proxy(
 
   if (!success) {
     throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("Failed to register_actor")
+        core::common::exception::runtime_error("Failed to register_proxy")
         << core::common::exception::error_api_func("lock_service::create"));
   }
 

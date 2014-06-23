@@ -24,6 +24,7 @@
 #include "jubatus/core/driver/classifier.hpp"
 #include "classifier_types.hpp"
 #include "../framework/server_base.hpp"
+#include "../fv_converter/so_factory.hpp"
 
 namespace jubatus {
 namespace server {
@@ -39,9 +40,8 @@ class classifier_serv : public framework::server_base {
     return mixer_.get();
   }
 
-  jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
-    get_mixable_holder() const {
-    return classifier_->get_mixable_holder();
+  core::driver::driver_base* get_driver() const {
+    return classifier_.get();
   }
 
   void get_status(status_t& status) const;
@@ -55,6 +55,7 @@ class classifier_serv : public framework::server_base {
 
   std::vector<std::string> get_labels() const;
   bool set_label(const std::string& label);
+  bool delete_label(const std::string& label);
 
   bool clear();
 
@@ -64,6 +65,7 @@ class classifier_serv : public framework::server_base {
   jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
   jubatus::util::lang::shared_ptr<core::driver::classifier> classifier_;
   std::string config_;
+  fv_converter::so_factory so_loader_;
 };
 
 }  // namespace server

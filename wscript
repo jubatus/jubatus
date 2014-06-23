@@ -4,7 +4,7 @@ from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '0.5.4'
+VERSION = '0.6.0'
 APPNAME = 'jubatus'
 
 top = '.'
@@ -29,7 +29,7 @@ def options(opt):
                  dest='gcov', help='only for debug')
 
   opt.add_option('--enable-zktest',
-                 action='store_true', default=False, 
+                 action='store_true', default=False,
                  dest='zktest', help='zk should run in localhost:2181')
 
   # use (base + 10) ports for RPC module tests
@@ -44,7 +44,8 @@ def options(opt):
   opt.recurse(subdirs)
 
 def configure(conf):
-  conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe'];
+  conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe', '-pthread'];
+  conf.env.LINKFLAGS += ['-pthread']
 
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
@@ -65,7 +66,8 @@ def configure(conf):
   # pkg-config tests
   conf.find_program('pkg-config') # make sure that pkg-config command exists
   try:
-    conf.check_cfg(package = 'libglog', args = '--cflags --libs')
+    conf.check_cfg(package = 'liblog4cxx', args = '--cflags --libs')
+    conf.check_cfg(package = 'jubatus_core', args = '--cflags --libs')
   except conf.errors.ConfigurationError:
     e = sys.exc_info()[1]
     conf.to_log("PKG_CONFIG_PATH: " + os.environ.get('PKG_CONFIG_PATH', ''))
@@ -141,6 +143,8 @@ def build(bld):
   bld(name = 'core_headers', export_includes = './')
 
   bld.recurse(subdirs)
+
+  bld.install_files('${PREFIX}/share/jubatus/example/log', 'log4cxx.xml')
 
 def cpplint(ctx):
   import fnmatch, tempfile

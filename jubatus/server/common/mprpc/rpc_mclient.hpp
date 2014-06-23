@@ -317,6 +317,8 @@ rpc_result_object rpc_mclient::call(const std::string& m, const A0& a0) {
   return wait(m);
 }
 
+std::string create_error_string(const msgpack::object& error);
+
 }  // namespace mprpc
 }  // namespace common
 }  // namespace server

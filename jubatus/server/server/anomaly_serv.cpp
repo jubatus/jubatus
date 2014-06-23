@@ -19,7 +19,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/text/json.h"
 #include "jubatus/util/lang/shared_ptr.h"
@@ -79,7 +79,7 @@ anomaly_serv::anomaly_serv(
     const server_argv& a,
     const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk)) {
+      mixer_(create_mixer(a, zk, rw_mutex())) {
 #ifdef HAVE_ZOOKEEPER_H
   if (a.is_standalone()) {
 #endif
@@ -138,8 +138,8 @@ void anomaly_serv::set_config(const std::string& config) {
       new core::driver::anomaly(
           core::anomaly::anomaly_factory::create_anomaly(
               conf.method, conf.parameter, my_id),
-          core::fv_converter::make_fv_converter(conf.converter)));
-  mixer_->set_mixable_holder(anomaly_->get_mixable_holder());
+          core::fv_converter::make_fv_converter(conf.converter, &so_loader_)));
+  mixer_->set_driver(anomaly_.get());
 
   LOG(INFO) << "config loaded: " << config;
 }
@@ -188,16 +188,25 @@ id_with_score anomaly_serv::add_zk(const string&id_str, const datum& d) {
   }
   // this sequences MUST success,
   // in case of failures the whole request should be canceled
-  score = selective_update(nodes[0].first, nodes[0].second, id_str, d);
+  DLOG(INFO) << "initial add request to "
+             << nodes[0].first << ":" << nodes[0].second;
+  try {
+    score = selective_update(nodes[0].first, nodes[0].second, id_str, d);
+  } catch (const std::runtime_error& e) {
+    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error(
+        "failed to add ID " + id_str + " (" + e.what() + "): " +
+            nodes[0].first + ":" + lexical_cast<string>(nodes[0].second)));
+  }
 
   for (size_t i = 1; i < nodes.size(); ++i) {
+    DLOG(INFO) << "replica add request to "
+               << nodes[i].first << ":" << nodes[i].second;
     try {
-      DLOG(INFO) << "request to " << nodes[i].first << ":" << nodes[i].second;
       selective_update(nodes[i].first, nodes[i].second, id_str, d);
     } catch (const std::runtime_error& e) {
-      LOG(WARNING) << "cannot create " << i << "th replica: "
-          << nodes[i].first << ":" << nodes[i].second;
-      LOG(WARNING) << e.what();
+      LOG(WARNING) << "cannot create " << i << "th replica "
+                   << "(" << e.what() << "): "
+                   << nodes[i].first << ":" << nodes[i].second;
     }
   }
   DLOG(INFO) << "point added: " << id_str;
@@ -259,6 +268,13 @@ void anomaly_serv::find_from_cht(
 #endif
 }
 
+/*
+ * Updates the model on the specified node and returns the score.
+ * If the host/port of the current process is specified, update
+ * is processed locally.
+ * Caller is responsible for handling exceptions including RPC
+ * errors.
+ */
 float anomaly_serv::selective_update(
     const string& host,
     int port,

@@ -20,7 +20,7 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include <glog/logging.h>
+#include "jubatus/server/common/logger/logger.hpp"
 
 #include "jubatus/core/common/exception.hpp"
 #include "aggregators.hpp"
@@ -95,16 +95,17 @@ int proxy::run() {
 
     return 0;
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
-    LOG(FATAL) << e.diagnostic_information(true);
+    LOG(FATAL) << "exception when starting RPC server: "
+               << e.diagnostic_information(true);
   } catch (const mp::system_error& e) {
     if (e.code == EADDRINUSE) {
-      LOG(FATAL) << "server failed to start: any process using port " << a_.port
-          << "?";
+      LOG(FATAL) << "server failed to start: " << e.what()
+                 << " (any process using port " << a_.port << "?)";
     } else {
       LOG(FATAL) << "server failed to start: " << e.what();
     }
   } catch (const std::exception& e) {
-    LOG(FATAL) << "server failed to start:" << e.what();
+    LOG(FATAL) << "error when starting RPC server: " << e.what();
   }
   return -1;
 }

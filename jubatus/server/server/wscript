@@ -11,11 +11,6 @@ def configure(conf):
 
 
 def build_one(bld, name, libraries = '', sources = ''):
-  if not bld.is_defined('JUBATUS_DISABLE_ASSERTIONS'):
-    libassert = " LIBGLOG"
-  else:
-    libassert = ""
-
   __sources = '%s_impl.cpp %s_serv.cpp ' % (name, name)
   __sources += sources
 
@@ -23,14 +18,14 @@ def build_one(bld, name, libraries = '', sources = ''):
     source = __sources,
     target = 'juba'+name,
     includes = '.',
-    use = 'jubatus_driver jubaserv_framework jubaserv_common jubaserv_mprpc_common jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
+    use = 'JUBATUS_CORE jubaserv_framework jubaserv_fv_converter jubaserv_common jubaserv_mprpc_common jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
       source = '%s_proxy.cpp ' % name,
       target = 'juba%s_proxy' % name,
       includes = '.',
-      use = 'jubatus_util jubaserv_framework jubaserv_common jubaserv_mprpc_common JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
+      use = 'jubatus_util JUBATUS_CORE jubaserv_framework jubaserv_fv_converter jubaserv_common jubaserv_mprpc_common JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK'
       )
 
 def build(bld):

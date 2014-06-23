@@ -78,12 +78,6 @@ class cht {
       std::vector<std::pair<std::string, int> >&,
       size_t);
 
-  std::pair<std::string, int> find_predecessor(
-      const std::string& host,
-      int port);
-
-  std::pair<std::string, int> find_predecessor(const std::string&);
-
  private:
   bool get_hashlist_(const std::string& key, std::vector<std::string>&);
 

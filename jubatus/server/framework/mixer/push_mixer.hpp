@@ -25,6 +25,7 @@
 #include "jubatus/util/concurrent/thread.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/system/time_util.h"
+#include "jubatus/core/common/byte_buffer.hpp"
 #include "../../common/lock_service.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
 #include "mixer.hpp"
@@ -59,7 +60,7 @@ class push_communication {
   // it can throw common::mprpc exception
   virtual void pull(
       const std::pair<std::string, int>& server,
-      const std::vector<std::string>& arg,
+      const core::common::byte_buffer& arg,
       jubatus::server::common::mprpc::rpc_result_object& result) const = 0;
 
   virtual void get_pull_argument(
@@ -69,21 +70,21 @@ class push_communication {
   // it can throw common::mprpc exception
   virtual void push(
       const std::pair<std::string, int>& server,
-      const std::vector<std::string>& diff) const = 0;
+      const core::common::byte_buffer& diff,
+      jubatus::server::common::mprpc::rpc_result_object& result) const = 0;
 };
 
 class push_mixer : public jubatus::server::framework::mixer::mixer {
  public:
   push_mixer(
       jubatus::util::lang::shared_ptr<push_communication> communication,
+      jubatus::util::concurrent::rw_mutex& mutex,
       unsigned int count_threshold, unsigned int tick_threshold,
       const std::pair<std::string, int>& my_id);
   ~push_mixer();
 
   void register_api(rpc_server_t& server);
-  void set_mixable_holder(
-      jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder>
-          holder);
+  void set_driver(core::driver::driver_base*);
 
   void start();
   void stop();
@@ -93,19 +94,20 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
 
   void get_status(jubatus::server::framework::server_base::status_t& status)
       const;
-  std::vector<jubatus::core::framework::mixable0*> get_mixables() const;
 
   // design space for push strategy
   virtual std::vector<const std::pair<std::string, int>*> filter_candidates(
       const std::vector<std::pair<std::string, int> >&) = 0;
 
+  virtual std::string type() const = 0;
+
  protected:
   void mixer_loop();
   void mix();
 
-  std::vector<std::string> pull(const std::vector<std::string>& arg);
-  std::vector<std::string> get_pull_argument(int dummy_arg);
-  int push(const std::vector<std::string>& diff);
+  core::common::byte_buffer pull(const msgpack::object& arg);
+  core::common::byte_buffer get_pull_argument(int dummy_arg);
+  int push(const msgpack::object& diff);
 
   jubatus::util::lang::shared_ptr<push_communication> communication_;
   unsigned int count_threshold_;
@@ -120,9 +122,9 @@ class push_mixer : public jubatus::server::framework::mixer::mixer {
 
   jubatus::util::concurrent::thread t_;
   mutable jubatus::util::concurrent::mutex m_;
+  jubatus::util::concurrent::rw_mutex& model_mutex_;
   jubatus::util::concurrent::condition c_;
-  jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder>
-  mixable_holder_;
+  core::driver::driver_base* driver_;
 
  private:  // deleted methods
   push_mixer();
