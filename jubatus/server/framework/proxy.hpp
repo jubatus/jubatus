@@ -483,22 +483,12 @@ class proxy
       return pool_;
     }
 
-    static async_task_loop* startup(const proxy_argv& a) {
-      async_task_loop* at_loop = new async_task_loop(a);
-
-#if 0
-      jubatus::util::concurrent::thread thr(
-          jubatus::util::lang::bind(&async_task_loop::run, at_loop));
-      thr.start();
-#else
-      at_loop->pool().start(2);
-      // Use mpio's event loop instead of async_task_loop's one.
-      // Note: mpio's event loop start() requires thread_num > 1. ( mpio bug? )
-#endif
-
-      return at_loop;
-    }
-
+    /*
+     * Returns async_task_loop for this thread (note that async_task_loop
+     * is in the thread local storage).
+     * If async_task_loop is not yet created for this thread, starts a new
+     * one and returns it.
+     */
     static async_task_loop* get_private_async_task_loop(const proxy_argv& a) {
       if (!private_async_task_loop_) {
         private_async_task_loop_ = startup(a);
@@ -507,6 +497,9 @@ class proxy
       return private_async_task_loop_;
     }
 
+    /*
+     * call_apply (for multiple servers)
+     */
     template<typename Res, typename Args>
     static void call_apply(
         const host_list_type& hosts,
@@ -523,6 +516,9 @@ class proxy
       task->template call_apply<Args>(method_name, args, timeout_sec);
     }
 
+    /*
+     * call_apply (for single server)
+     */
     template<typename Res, typename Args>
     static void call_apply(
         const std::string& host,
@@ -538,6 +534,23 @@ class proxy
       hosts.push_back(std::make_pair(host, port));
       call_apply<Res, Args>(hosts, method_name, args, a, timeout_sec, req,
                             reducer);
+    }
+
+   private:
+    static async_task_loop* startup(const proxy_argv& a) {
+      async_task_loop* at_loop = new async_task_loop(a);
+
+#if 0
+      jubatus::util::concurrent::thread thr(
+          jubatus::util::lang::bind(&async_task_loop::run, at_loop));
+      thr.start();
+#else
+      at_loop->pool().start(2);
+      // Use mpio's event loop instead of async_task_loop's one.
+      // Note: mpio's event loop start() requires thread_num > 1. ( mpio bug? )
+#endif
+
+      return at_loop;
     }
 
    protected:
