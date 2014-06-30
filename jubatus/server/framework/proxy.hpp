@@ -396,8 +396,12 @@ class proxy
         cancelled_ = true;
         for (size_t i = 0; i < futures_.size(); ++i) {
           if (!futures_[i].is_finished()) {
+            // cancel the request
             futures_[i].cancel();
-            // TODO(kmaehashi) remove from session pool (issue #507)
+
+            // cancelled sessions (e.g., connections) cannot be reused,
+            // so remove them from the session pool.
+            at_loop_->pool().remove_session(sessions_[i]);
           }
         }
 
@@ -430,6 +434,7 @@ class proxy
         // apply async method call and set its callback
         msgpack::rpc::future f = s.call_apply(method_name, args);
         futures_.push_back(f);
+        sessions_.push_back(s);
         f.attach_callback(
             mp::bind(&async_task<Res>::done_one, this->shared_from_this(),
                      mp::placeholders::_1, i));
@@ -449,6 +454,7 @@ class proxy
     int timer_id_;
 
     std::vector<msgpack::rpc::future> futures_;
+    std::vector<msgpack::rpc::session> sessions_;
     std::vector<result_ptr> results_;
     std::vector<jubatus::server::common::mprpc::rpc_error> errors_;
 
