@@ -60,101 +60,6 @@ class proxy
 
   int run();
 
-  template<typename R>
-  void register_random(const std::string& method_name) {
-    using mp::placeholders::_1;
-    mp::function<R(std::string)> f = mp::bind(
-        &proxy::template random_proxy0<R>, this, method_name, _1);
-    add(method_name, f);
-  }
-
-  template<typename R, typename A0>
-  void register_random(const std::string& method_name) {
-    using mp::placeholders::_1;
-    using mp::placeholders::_2;
-    mp::function<R(std::string, A0)> f = mp::bind(
-        &proxy::template random_proxy1<R, A0>, this, method_name, _1, _2);
-    add(method_name, f);
-  }
-
-  template<typename R, typename A0, typename A1>
-  void register_random(const std::string& method_name) {
-    using mp::placeholders::_1;
-    using mp::placeholders::_2;
-    using mp::placeholders::_3;
-    mp::function<R(std::string, A0, A1)> f = mp::bind(
-        &proxy::template random_proxy2<R, A0, A1>,
-        this, method_name, _1, _2, _3);
-    add(method_name, f);
-  }
-
-  template<typename R, typename A0, typename A1, typename A2>
-  void register_random(const std::string& method_name) {
-    using mp::placeholders::_1;
-    using mp::placeholders::_2;
-    using mp::placeholders::_3;
-    using mp::placeholders::_4;
-    mp::function<R(std::string, A0, A1, A2)> f = mp::bind(
-        &proxy::template random_proxy3<R, A0, A1, A2>,
-        this, method_name, _1, _2, _3, _4);
-    add(method_name, f);
-  }
-
-  template<typename R>
-  void register_broadcast(std::string method_name,
-                          jubatus::util::lang::function<R(R, R)> agg) {
-    using mp::placeholders::_1;
-    mp::function<R(std::string)> f = mp::bind(
-        &proxy::template broadcast_proxy0<R>, this, method_name, _1, agg);
-    add(method_name, f);
-  }
-
-  template<typename R, typename A0>
-  void register_broadcast(std::string method_name,
-                          jubatus::util::lang::function<R(R, R)> agg) {
-    using mp::placeholders::_1;
-    using mp::placeholders::_2;
-    mp::function<R(std::string, A0)> f = mp::bind(
-        &proxy::template broadcast_proxy1<R, A0>,
-        this, method_name, _1, _2, agg);
-    add(method_name, f);
-  }
-
-  template<int N, typename R>
-  void register_cht(
-      std::string method_name, jubatus::util::lang::function<R(R, R)> agg) {
-    using mp::placeholders::_1;
-    using mp::placeholders::_2;
-    mp::function<R(std::string, std::string)> f = mp::bind(
-        &proxy::template cht_proxy0<N, R>, this, method_name, _1, _2, agg);
-    add(method_name, f);
-  }
-
-  template<int N, typename R, typename A0>
-  void register_cht(
-      std::string method_name, jubatus::util::lang::function<R(R, R)> agg) {
-    using mp::placeholders::_1;
-    using mp::placeholders::_2;
-    using mp::placeholders::_3;
-    mp::function<R(std::string, std::string, A0)> f = mp::bind(
-        &proxy::template cht_proxy1<N, R, A0>,
-        this, method_name, _1, _2, _3, agg);
-    add(method_name, f);
-  }
-
-  template<int N, typename R, typename A0, typename A1>
-  void register_cht(
-      std::string method_name, jubatus::util::lang::function<R(R, R)> agg) {
-    using mp::placeholders::_1;
-    using mp::placeholders::_2;
-    using mp::placeholders::_3;
-    using mp::placeholders::_4;
-    mp::function<R(std::string, std::string, A0, A1)> f = mp::bind(
-        &proxy::template cht_proxy2<N, R, A0, A1>,
-        this, method_name, _1, _2, _3, _4, agg);
-    add(method_name, f);
-  }
-
   // async random method ( arity 0-4 )
   template<typename R>
   void register_async_random(const std::string& method_name) {
@@ -321,95 +226,6 @@ class proxy
   }
 
  private:
-  template<typename R>
-  R random_proxy0(const std::string& method_name, const std::string& name) {
-    DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector<std::pair<std::string, int> > list;
-    get_members_(name, list);
-
-    const std::pair<std::string, int>& c = list[rng_(list.size())];
-    DLOG(INFO) << "request to " << c.first << ":" << c.second;
-
-    try {
-      msgpack::rpc::client cli(c.first, c.second);
-      cli.set_timeout(a_.interconnect_timeout);
-      return cli.call(method_name, name).template get<R>();
-    } catch (const std::exception& e) {
-      LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
-      throw;
-    }
-  }
-
-  template<typename R, typename A>
-  R random_proxy1(
-      const std::string& method_name,
-      const std::string& name,
-      const A& arg) {
-    DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector<std::pair<std::string, int> > list;
-    get_members_(name, list);
-
-    const std::pair<std::string, int>& c = list[rng_(list.size())];
-    DLOG(INFO) << "request to " << c.first << ":" << c.second;
-
-    try {
-      msgpack::rpc::client cli(c.first, c.second);
-      cli.set_timeout(a_.interconnect_timeout);
-      return cli.call(method_name, name, arg).template get<R>();
-    } catch (const std::exception& e) {
-      LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
-      throw;
-    }
-  }
-
-  template<typename R, typename A0, typename A1>
-  R random_proxy2(
-      const std::string& method_name,
-      const std::string& name,
-      const A0& a0,
-      const A1& a1) {
-    DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector<std::pair<std::string, int> > list;
-    get_members_(name, list);
-
-    const std::pair<std::string, int>& c = list[rng_(list.size())];
-    DLOG(INFO) << "request to " << c.first << ":" << c.second;
-
-    try {
-      msgpack::rpc::client cli(c.first, c.second);
-      cli.set_timeout(a_.interconnect_timeout);
-      return cli.call(method_name, name, a0, a1).template get<R>();
-    } catch (const std::exception& e) {
-      LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
-      throw;
-    }
-  }
-
-  template<typename R, typename A0, typename A1, typename A2>
-  R random_proxy3(
-      const std::string& method_name,
-      const std::string& name,
-      const A0& a0,
-      const A1& a1,
-      const A2& a2) {
-    DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector<std::pair<std::string, int> > list;
-    get_members_(name, list);
-
-    const std::pair<std::string, int>& c = list[rng_(list.size())];
-    DLOG(INFO) << "request to " << c.first << ":" << c.second;
-
-    try {
-      msgpack::rpc::client cli(c.first, c.second);
-      cli.set_timeout(a_.interconnect_timeout);
-      return cli.call(method_name, name, a0, a1, a2).template get<R>();
-    } catch (const std::exception& e) {
-      LOG(ERROR) << e.what() << " from " << c.first << ":" << c.second;
-      throw;
-    }
-  }
-
-  //// async version
   template<typename R, typename Tuple>
   void random_async_vproxy(
       request_type req,
@@ -429,57 +245,6 @@ class proxy
         c.first, c.second, method_name, args, a_, a_.interconnect_timeout, req);
   }
 
-  template<typename R>
-  R broadcast_proxy0(
-      const std::string& method_name,
-      const std::string& name,
-      jubatus::util::lang::function<R(R, R)>& agg) {
-    DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector<std::pair<std::string, int> > list;
-    get_members_(name, list);
-
-#ifndef NDEBUG
-    for (size_t i = 0; i < list.size(); i++) {
-      DLOG(INFO) << "request to " << list[i].first << ":" << list[i].second;
-    }
-#endif
-
-    try {
-      jubatus::server::common::mprpc::rpc_mclient c(list,
-          a_.interconnect_timeout, get_private_session_pool());
-      return *(c.call(method_name, name, agg));
-    } catch (const std::exception& e) {
-      LOG(ERROR) << e.what();  // << " from " << c.first << ":" << c.second;
-      throw;
-    }
-  }
-  template<typename R, typename A>
-  R broadcast_proxy1(
-      const std::string& method_name,
-      const std::string& name,
-      const A& arg,
-      jubatus::util::lang::function<R(R, R)>& agg) {
-    DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector<std::pair<std::string, int> > list;
-    get_members_(name, list);
-
-#ifndef NDEBUG
-    for (size_t i = 0; i < list.size(); i++) {
-      DLOG(INFO) << "request to " << list[i].first << ":" << list[i].second;
-    }
-#endif
-
-    try {
-      jubatus::server::common::mprpc::rpc_mclient c(list,
-          a_.interconnect_timeout, get_private_session_pool());
-      return *(c.call(method_name, name, arg, agg));
-    } catch (const std::exception& e) {
-      LOG(ERROR) << e.what();  // << " from " << c.first << ":" << c.second;
-      throw;
-    }
-  }
-
-  // async task version
   template<typename R, typename Tuple>
   void broadcast_async_vproxy(
       request_type req,
@@ -499,87 +264,6 @@ class proxy
         list, method_name, args, a_, a_.interconnect_timeout, req, agg);
   }
 
-  template<int N, typename R>
-  R cht_proxy0(
-      const std::string& method_name,
-      const std::string& name,
-      const std::string& id,
-      jubatus::util::lang::function<R(R, R)>& agg) {
-    DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector<std::pair<std::string, int> > list;
-    get_members_from_cht_(name, id, list, N);
-
-#ifndef NDEBUG
-    for (size_t i = 0; i < list.size(); i++) {
-      DLOG(INFO) << "request to " << list[i].first << ":" << list[i].second;
-    }
-#endif
-
-    try {
-      jubatus::server::common::mprpc::rpc_mclient c(list,
-          a_.interconnect_timeout, get_private_session_pool());
-      return *(c.call(method_name, name, id, agg));
-    } catch (const std::exception& e) {
-      LOG(ERROR) << N << " " << e.what();
-      // << " from " << c.first << ":" << c.second;
-      throw;
-    }
-  }
-  template<int N, typename R, typename A0>
-  R cht_proxy1(
-      const std::string& method_name,
-      const std::string& name,
-      const std::string& id,
-      const A0& arg,
-      jubatus::util::lang::function<R(R, R)>& agg) {
-    DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector<std::pair<std::string, int> > list;
-    get_members_from_cht_(name, id, list, N);
-
-#ifndef NDEBUG
-    for (size_t i = 0; i < list.size(); i++) {
-      DLOG(INFO) << "request to " << list[i].first << ":" << list[i].second;
-    }
-#endif
-
-    try {
-      jubatus::server::common::mprpc::rpc_mclient c(list,
-          a_.interconnect_timeout, get_private_session_pool());
-      return *(c.call(method_name, name, id, arg, agg));
-    } catch (const std::exception& e) {
-      LOG(ERROR) << e.what();  // << " from " << c.first << ":" << c.second;
-      throw;
-    }
-  }
-  template<int N, typename R, typename A0, typename A1>
-  R cht_proxy2(
-      const std::string& method_name,
-      const std::string& name,
-      const std::string& id,
-      const A0& a0,
-      const A1& a1,
-      jubatus::util::lang::function<R(R, R)>& agg) {
-    DLOG(INFO) << __func__ << " " << method_name << " " << name;
-    std::vector<std::pair<std::string, int> > list;
-    get_members_from_cht_(name, id, list, N);
-
-#ifndef NDEBUG
-    for (size_t i = 0; i < list.size(); i++) {
-      DLOG(INFO) << "request to " << list[i].first << ":" << list[i].second;
-    }
-#endif
-
-    try {
-      jubatus::server::common::mprpc::rpc_mclient c(list,
-          a_.interconnect_timeout, get_private_session_pool());
-      return *(c.call(method_name, name, id, a0, a1, agg));
-    } catch (const std::exception& e) {
-      LOG(ERROR) << e.what();  // << " from " << c.first << ":" << c.second;
-      throw;
-    }
-  }
-
-  //// async version
   template<int N, typename R, typename Tuple>
   void cht_async_vproxy(
       request_type req,
@@ -612,11 +296,13 @@ class proxy
     return private_session_pool_;
   }
 
-  // async task
  public:
   class async_task_loop;
 
  public:
+  /*
+   * async_task manages the context of proxy session.
+   */
   template<typename Res>
   class async_task : public mp::enable_shared_from_this<async_task<Res> > {
    public:
@@ -639,10 +325,14 @@ class proxy
           cancelled_(false),
           timer_id_(-1) {
     }
+
     virtual ~async_task() {
       cancel_timeout();
     }
 
+    /*
+     * Called each time when one response is received from remote server.
+     */
     void done_one(msgpack::rpc::future f, int future_index) {
       namespace jcm = jubatus::server::common::mprpc;
 
@@ -719,6 +409,7 @@ class proxy
         for (size_t i = 0; i < futures_.size(); ++i) {
           if (!futures_[i].is_finished()) {
             futures_[i].cancel();
+            // TODO(kmaehashi) remove from session pool (issue #507)
           }
         }
 
@@ -784,9 +475,8 @@ class proxy
       }
       JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method_name_);
     }
-  };
+  };  // class async_task
 
-  // async task loop
  public:
   class async_task_loop : public mp::enable_shared_from_this<async_task_loop> {
    public:
@@ -866,8 +556,8 @@ class proxy
     msgpack::rpc::session_pool pool_;
 
     static __thread async_task_loop* private_async_task_loop_;
-  };
-};
+  };  // class async_task_loop
+};  // class proxy
 
 }  // namespace framework
 }  // namespace server
