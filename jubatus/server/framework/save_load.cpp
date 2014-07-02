@@ -91,9 +91,13 @@ uint32_t calc_crc32(const char* header,  // header size is 28 (fixed)
   return crc32;
 }
 
+bool fwrite_helper(const char* buffer, size_t size, FILE* fp) {
+  return fwrite(buffer, 1, size, fp) == size;
+}
+
 }  // namespace
 
-void save_server(std::ostream& os,
+void save_server(FILE* fp,
     const server_base& server, const std::string& id) {
   if (id == "") {
     throw JUBATUS_EXCEPTION(
@@ -134,9 +138,15 @@ void save_server(std::ostream& os,
       user_data_buf.data(), user_data_buf.size());
   write_big_endian(crc32, &header_buf[28]);
 
-  os.write(header_buf, 48);
-  os.write(system_data_buf.data(), system_data_buf.size());
-  os.write(user_data_buf.data(), user_data_buf.size());
+  if (!fwrite_helper(header_buf, sizeof(header_buf), fp)) {
+    throw std::ios_base::failure("Failed to write header_buf.");
+  }
+  if (!fwrite_helper(system_data_buf.data(), system_data_buf.size(), fp)) {
+    throw std::ios_base::failure("Failed to write system_data_buf.");
+  }
+  if (!fwrite_helper(user_data_buf.data(), user_data_buf.size(), fp)) {
+    throw std::ios_base::failure("Failed to write user_data_buf.");
+  }
 }
 
 void load_server(std::istream& is,
