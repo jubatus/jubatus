@@ -153,21 +153,24 @@ bool server_base::save(const std::string& id) {
   } catch (const std::ios_base::failure&) {
     goto write_failure;
   }
+  // putting error handling code here is to prevent skipping variable initialization.
+  // skipping variable declaration causes undefined behavior.
+  if (0) {
+   write_failure:
+    int tmperrno = errno;
+    if (remove(path.c_str()) < 0) {
+      LOG(WARNING) << "failed to cleanup dirty model file: " << path << ": "
+        << jubatus::util::system::syscall::get_error_msg(errno);
+    }
+    throw JUBATUS_EXCEPTION(
+      core::common::exception::runtime_error("cannot write output file")
+      << core::common::exception::error_file_name(path)
+      << core::common::exception::error_errno(tmperrno));
+  }
 
   update_saved_status(path);
   LOG(INFO) << "saved to " << path;
   return true;
-
- write_failure:
-  int tmperrno = errno;
-  if (remove(path.c_str()) < 0) {
-    LOG(WARNING) << "failed to cleanup dirty model file: " << path << ": "
-      << jubatus::util::system::syscall::get_error_msg(errno);
-  }
-  throw JUBATUS_EXCEPTION(
-    core::common::exception::runtime_error("cannot write output file")
-    << core::common::exception::error_file_name(path)
-    << core::common::exception::error_errno(tmperrno));
 }
 
 bool server_base::load(const std::string& id) {
