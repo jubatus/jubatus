@@ -75,16 +75,16 @@ void load_file_impl(server_base& server,
 }
 
 class fp_holder {
-public:
+ public:
   explicit fp_holder(FILE* fp)
     : fp_(fp)
   {}
 
-private:
+ private:
   fp_holder(const fp_holder&);
   void operator=(const fp_holder&);
 
-public:
+ public:
   ~fp_holder() {
     close();
   }
@@ -104,7 +104,7 @@ public:
     return ret;
   }
 
-private:
+ private:
   FILE* fp_;
 };
 
@@ -158,7 +158,7 @@ bool server_base::save(const std::string& id) {
   LOG(INFO) << "saved to " << path;
   return true;
 
-write_failure:
+ write_failure:
   int tmperrno = errno;
   if (remove(path.c_str()) < 0) {
     LOG(WARNING) << "failed to cleanup dirty model file: " << path << ": "
