@@ -33,7 +33,6 @@ namespace jubatus {
 namespace server {
 namespace framework {
 
-__thread msgpack::rpc::session_pool* private_session_pool_ = NULL;
 __thread proxy::async_task_loop*
   proxy::async_task_loop::private_async_task_loop_ = NULL;
 
