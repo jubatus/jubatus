@@ -153,8 +153,8 @@ bool server_base::save(const std::string& id) {
   } catch (const std::ios_base::failure&) {
     goto write_failure;
   }
-  // putting error handling code here is to prevent skipping variable initialization.
-  // skipping variable declaration causes undefined behavior.
+  // putting error handling code here is to prevent skipping variable
+  // initialization. skipping variable declaration causes undefined behavior.
   if (0) {
    write_failure:
     int tmperrno = errno;
