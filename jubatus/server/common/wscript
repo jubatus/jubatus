@@ -33,7 +33,8 @@ def build(bld):
     source = src,
     target = 'jubaserv_common',
     includes = '.',
-    use = 'jubatus_util ZOOKEEPER_MT JUBATUS_CORE jubaserv_common_logger core_headers'
+    use = 'jubatus_util ZOOKEEPER_MT JUBATUS_CORE jubaserv_common_logger core_headers',
+    vnum = bld.env['ABI_VERSION'],
     )
 
   test_src = [

@@ -5,6 +5,7 @@ import os
 import sys
 
 VERSION = '0.6.0'
+ABI_VERSION = VERSION
 APPNAME = 'jubatus'
 
 top = '.'
@@ -61,6 +62,10 @@ def configure(conf):
   conf.define('JUBATUS_APPNAME', APPNAME)
   conf.define('JUBATUS_PLUGIN_DIR', conf.env.JUBATUS_PLUGIN_DIR)
   conf.write_config_header('jubatus/config.hpp', guard="JUBATUS_CONFIG_HPP_", remove=False)
+
+  # Version constants
+  conf.env.VERSION = VERSION
+  conf.env.ABI_VERSION = ABI_VERSION
 
   conf.check_cxx(lib = 'msgpack')
   conf.check_cxx(lib = 'jubatus_mpio')

@@ -9,7 +9,8 @@ def build(bld):
   bld.shlib(
     source = src,
     target = 'jubaserv_common_mprpc',
-    use = 'jubatus_util ZOOKEEPER_MT JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK JUBATUS_CORE jubaserv_common_logger core_headers'
+    use = 'jubatus_util ZOOKEEPER_MT JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK JUBATUS_CORE jubaserv_common_logger core_headers',
+    vnum = bld.env['ABI_VERSION'],
     )
 
   bld.program(
