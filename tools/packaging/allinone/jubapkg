@@ -65,9 +65,6 @@ do_download() {
 	mkdir -p "${SOURCE_DIR}"
 	pushd "${SOURCE_DIR}"
 
-	# pkg-config
-	download_url http://pkgconfig.freedesktop.org/releases/pkg-config-${PKG_VER}.tar.gz
-
 	# MessagePack
 	download_url http://msgpack.org/releases/cpp/msgpack-${MSGPACK_VER}.tar.gz
 
@@ -141,7 +138,7 @@ do_build() {
 	export PATH="${DEST_DIR}/${PREFIX}/bin:${PATH}"
 	export CPLUS_INCLUDE_PATH="${DEST_DIR}/${PREFIX}/include"
 	export LD_LIBRARY_PATH="${DEST_DIR}/${PREFIX}/lib"
-	export PKG_CONFIG_PATH="${DEST_DIR}/${PREFIX}/lib/pkgconfig:/usr/lib64/pkgconfig:/usr/lib/pkgconfig"
+	export PKG_CONFIG_PATH="${DEST_DIR}/${PREFIX}/lib/pkgconfig"
 
 	mkdir -p "${BUILD_DIR}"
 	pushd "${BUILD_DIR}"
@@ -149,16 +146,6 @@ do_build() {
 	# Documentation directory
 	DOC_DIR="${DEST_DIR}/${PREFIX}/share/doc"
 	mkdir -p "${DOC_DIR}"
-
-	# pkg-config
-	tar zxf ${SOURCE_DIR}/pkg-config-${PKG_VER}.tar.gz
-	pushd pkg-config-${PKG_VER}
-	./configure --prefix=${PREFIX}
-	make
-	make install DESTDIR=${DEST_DIR}
-	mkdir -p "${DOC_DIR}/pkg-config-${PKG_VER}"
-	cp -a AUTHORS ChangeLog COPYING NEWS README "${DOC_DIR}/pkg-config-${PKG_VER}"
-	popd
 
 	# MessagePack
 	tar zxf ${SOURCE_DIR}/msgpack-${MSGPACK_VER}.tar.gz
