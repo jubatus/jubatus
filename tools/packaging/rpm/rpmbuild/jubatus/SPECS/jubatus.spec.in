@@ -81,13 +81,13 @@ This package provides Jubatus C++ client headers.
 %defattr(-,root,root,-)
 %doc README.rst LICENSE ChangeLog.rst
 %{_bindir}/juba*
-# As Jubatus has no SONAME defined, include shared library without version number here.
-%{_libdir}/libjuba*.so
+%{_libdir}/libjuba*.so.*
 %{_libdir}/jubatus/plugin
 %{_datarootdir}/jubatus
 
 %files devel
 %defattr(-,root,root,-)
+%{_libdir}/libjuba*.so
 %{_libdir}/pkgconfig/jubatus.pc
 %{_includedir}/jubatus
 

@@ -54,13 +54,14 @@ This package provides headers and libraries needed of Jubatus Core.
 %defattr(-,root,root,-)
 %doc README.rst LICENSE LICENSE.MPL2 ChangeLog.rst
 %{_libdir}/libjubatus_core.so.*
-# As utils has no SONAME defined, include shared library without version number here.
-%{_libdir}/libjubatus_util.so
-%{_libdir}/libjubatus_util_*.so
+%{_libdir}/libjubatus_util.so.*
+%{_libdir}/libjubatus_util_*.so.*
 
 %files devel
 %defattr(-,root,root,-)
 %{_libdir}/libjubatus_core.so
+%{_libdir}/libjubatus_util.so
+%{_libdir}/libjubatus_util_*.so
 %{_libdir}/pkgconfig/jubatus_core.pc
 %{_includedir}/jubatus
 
