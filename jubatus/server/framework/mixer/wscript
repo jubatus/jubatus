@@ -14,7 +14,9 @@ def build(bld):
 
   bld.shlib(target = 'jubaserv_mixer',
             source = mixer_source,
-            use = mixer_framework)
+            use = mixer_framework,
+            vnum = bld.env['ABI_VERSION'],
+            )
 
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(

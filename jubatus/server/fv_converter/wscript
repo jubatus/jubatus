@@ -28,8 +28,13 @@ def build(bld):
     source = src,
     target = 'jubaserv_fv_converter',
     includes = '.',
-    use = 'jubatus_util ZOOKEEPER_MT DL jubaserv_common jubaserv_common_logger jubaconverter jubacommon core_headers'
+    use = 'jubatus_util ZOOKEEPER_MT DL jubaserv_common jubaserv_common_logger jubaconverter jubacommon core_headers',
+    vnum = bld.env['ABI_VERSION'],
     )
+
+  # Note: If you specify `vnum` for shared libraries
+  #       whose install_path = None, waf cause an error
+  #       when doing ./waf install.
 
   bld.shlib(
     source = 'test_splitter.cpp',

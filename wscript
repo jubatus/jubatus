@@ -4,7 +4,8 @@ from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '0.6.0'
+VERSION = '0.6.1'
+ABI_VERSION = VERSION
 APPNAME = 'jubatus'
 
 top = '.'
@@ -41,6 +42,10 @@ def options(opt):
                  action='store_true', default=False,
                  dest='disable_eigen', help='disable internal Eigen and algorithms using it')
 
+  opt.add_option('--fsanitize',
+                 action='store', default="",
+                 dest='fsanitize', help='specify sanitizer')
+
   opt.recurse(subdirs)
 
 def configure(conf):
@@ -57,6 +62,10 @@ def configure(conf):
   conf.define('JUBATUS_APPNAME', APPNAME)
   conf.define('JUBATUS_PLUGIN_DIR', conf.env.JUBATUS_PLUGIN_DIR)
   conf.write_config_header('jubatus/config.hpp', guard="JUBATUS_CONFIG_HPP_", remove=False)
+
+  # Version constants
+  conf.env.VERSION = VERSION
+  conf.env.ABI_VERSION = ABI_VERSION
 
   conf.check_cxx(lib = 'msgpack')
   conf.check_cxx(lib = 'jubatus_mpio')
@@ -119,6 +128,11 @@ def configure(conf):
   conf.env.USE_EIGEN = not Options.options.disable_eigen
   if conf.env.USE_EIGEN:
     conf.define('JUBATUS_USE_EIGEN', 1)
+
+  sanitizer_names = Options.options.fsanitize
+  if len(sanitizer_names) > 0:
+    conf.env.append_unique('CXXFLAGS', '-fsanitize=' + sanitizer_names)
+    conf.env.append_unique('LINKFLAGS', '-fsanitize=' + sanitizer_names)
 
   conf.recurse(subdirs)
 

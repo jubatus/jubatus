@@ -9,7 +9,8 @@ def build(bld):
   bld.shlib(
     source = src,
     target = 'jubaserv_common_logger',
-    use = 'jubatus_util LIBLOG4CXX'
+    use = 'jubatus_util LIBLOG4CXX',
+    vnum = bld.env['ABI_VERSION'],
     )
 
   bld.install_files('${PREFIX}/include/jubatus/server/common/logger', bld.path.ant_glob('*.hpp'))

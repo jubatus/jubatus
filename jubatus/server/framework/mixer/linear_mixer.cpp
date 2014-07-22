@@ -156,6 +156,7 @@ byte_buffer linear_communication_impl::get_model() {
     }
 
     msgpack::rpc::client cli(server_ip, server_port);
+    cli.set_timeout(timeout_sec_);
     msgpack::rpc::future result(cli.call("get_model", 0));
 
     try {

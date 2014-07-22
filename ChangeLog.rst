@@ -1,3 +1,15 @@
+Release 0.6.1 - 2014/07/22
+--------------------------
+
+* Improvements
+    * Support for OS X Mavericks (#833)
+    * Add sanity check configure option (#835)
+    * Fix linear_mixer to use interconnect_timeout (#720)
+    * Add ABI version number to object file (#812)
+    * #825, #832, #847
+* Bug fixes
+    * Fix timed-out connection instances are left in the pool (#836, #837)
+
 Release 0.6.0 - 2014/06/23
 --------------------------
 
