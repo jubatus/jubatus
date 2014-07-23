@@ -28,7 +28,7 @@ def build(bld):
     source = src,
     target = 'jubaserv_fv_converter',
     includes = '.',
-    use = 'JUBATUS_CORE ZOOKEEPER_MT DL jubaserv_common jubaserv_common_logger jubaconverter jubacommon',
+    use = 'JUBATUS_CORE ZOOKEEPER_MT DL jubaserv_common jubaserv_common_logger jubaconverter',
     vnum = bld.env['ABI_VERSION'],
     )
 
@@ -100,7 +100,7 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = ['jubacommon', 'jubaserv_fv_converter', 'jubaconverter']
+      use = ['jubaserv_fv_converter', 'jubaconverter']
       )
   for s in test_src:
     make_test(s)
