@@ -28,7 +28,7 @@ def build(bld):
     source = src,
     target = 'jubaserv_fv_converter',
     includes = '.',
-    use = 'jubatus_util ZOOKEEPER_MT DL jubaserv_common jubaserv_common_logger jubaconverter jubacommon core_headers',
+    use = 'JUBATUS_CORE ZOOKEEPER_MT DL jubaserv_common jubaserv_common_logger jubaconverter jubacommon core_headers',
     vnum = bld.env['ABI_VERSION'],
     )
 
@@ -41,7 +41,7 @@ def build(bld):
     target = 'splitter_sample',
     install_path = None,
     name = 'splitter_sample',
-    use = 'jubatus_util jubaserv_fv_converter jubaconverter'
+    use = 'JUBATUS_CORE jubaserv_fv_converter jubaconverter'
     )
 
   bld.shlib(
@@ -49,7 +49,7 @@ def build(bld):
     target = 'splitter_null',
     install_path = None,
     name = 'splitter_null',
-    use = 'jubatus_util jubaserv_fv_converter jubaconverter'
+    use = 'JUBATUS_CORE jubaserv_fv_converter jubaconverter'
     )
 
   bld.shlib(
@@ -57,7 +57,7 @@ def build(bld):
     target = 'num_feature_sample',
     install_path = None,
     name = 'num_feature_sample',
-    use = 'jubatus_util jubaserv_fv_converter jubaconverter'
+    use = 'JUBATUS_CORE jubaserv_fv_converter jubaconverter'
     )
 
   bld.shlib(
@@ -65,7 +65,7 @@ def build(bld):
     target = 'num_filter_sample',
     install_path = None,
     name = 'num_filter_sample',
-    use = 'jubatus_util jubaserv_fv_converter jubaconverter'
+    use = 'JUBATUS_CORE jubaserv_fv_converter jubaconverter'
     )
 
   bld.shlib(
@@ -73,7 +73,7 @@ def build(bld):
     target = 'binary_feature_sample',
     install_path = None,
     name = 'binary_feature_sample',
-    use = 'jubatus_util jubaserv_fv_converter jubaconverter'
+    use = 'JUBATUS_CORE jubaserv_fv_converter jubaconverter'
     )
 
   bld.shlib(
@@ -81,7 +81,7 @@ def build(bld):
     target = 'filter_sample',
     install_path = None,
     name = 'filter_sample',
-    use = 'jubatus_util jubaserv_fv_converter jubaconverter'
+    use = 'JUBATUS_CORE jubaserv_fv_converter jubaconverter'
     )
 
   test_src = [

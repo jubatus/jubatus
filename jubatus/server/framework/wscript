@@ -18,7 +18,7 @@ def build(bld):
     source = framework_source,
     target = 'jubaserv_framework',
     includes = '.',
-    use = 'jubatus_util JUBATUS_CORE MSGPACK JUBATUS_MPIO JUBATUS_MSGPACK_RPC MSGPACK jubaserv_mixer jubaserv_common jubaserv_common_mprpc jubaserv_common_logger core_headers',
+    use = 'JUBATUS_CORE MSGPACK JUBATUS_MPIO JUBATUS_MSGPACK_RPC MSGPACK jubaserv_mixer jubaserv_common jubaserv_common_mprpc jubaserv_common_logger core_headers',
     vnum = bld.env['ABI_VERSION'],
     )
 

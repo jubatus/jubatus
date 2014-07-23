@@ -33,7 +33,7 @@ def build(bld):
     source = src,
     target = 'jubaserv_common',
     includes = '.',
-    use = 'jubatus_util ZOOKEEPER_MT JUBATUS_CORE jubaserv_common_logger core_headers',
+    use = 'ZOOKEEPER_MT JUBATUS_CORE jubaserv_common_logger core_headers',
     vnum = bld.env['ABI_VERSION'],
     )
 
@@ -56,7 +56,7 @@ def build(bld):
       source = s,
       target = s[0:s.rfind('.')],
       includes = '.',
-      use = ['jubatus_util', 'JUBATUS_CORE', 'jubaserv_common']
+      use = ['JUBATUS_CORE', 'jubaserv_common']
       )
   for s in test_src:
     make_test(s)

@@ -57,7 +57,7 @@ def build(bld):
       use = 'MECAB JUBATUS_CORE core_headers',
       vnum = bld.env['ABI_VERSION'],
       )
-    make_test(bld, 'jubatus_util mecab_splitter', 'mecab_splitter_test.cpp')
+    make_test(bld, 'JUBATUS_CORE mecab_splitter', 'mecab_splitter_test.cpp')
 
   if bld.env.HAVE_UX:
     bld.shlib(
