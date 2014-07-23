@@ -20,5 +20,5 @@ def build(bld):
   bld.program(
     source = 'jubaconv.cpp',
     target = 'jubaconv',
-    use = 'JUBATUS_CORE jubaconverter jubaserv_common'
+    use = 'JUBATUS_CORE jubaserv_common'
     )

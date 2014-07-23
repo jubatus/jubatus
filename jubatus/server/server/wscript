@@ -30,16 +30,16 @@ def build_one(bld, name, libraries = '', sources = ''):
 
 def build(bld):
   #new classifier
-  build_one(bld, "classifier", 'jubaconverter jubastorage')
+  build_one(bld, "classifier", 'jubastorage')
 
   # #new regression
-  build_one(bld, "regression", 'jubaconverter jubastorage')
+  build_one(bld, "regression", 'jubastorage')
 
   # #new recommender
-  build_one(bld, "recommender", 'jubaconverter jubastorage')
+  build_one(bld, "recommender", 'jubastorage')
 
   # #new anomaly
-  build_one(bld, "anomaly", 'jubaconverter jubastorage jubatus_recommender' )
+  build_one(bld, "anomaly", 'jubastorage jubatus_recommender' )
 
   build_one(bld, "stat")
 
@@ -47,6 +47,6 @@ def build(bld):
 
   build_one(bld, 'nearest_neighbor', 'column_table')
 
-  build_one(bld, "clustering", 'jubaconverter jubatus_clustering')
+  build_one(bld, "clustering", 'jubatus_clustering')
 
   bld.install_files('${PREFIX}/share/jubatus/idl/', idls)
