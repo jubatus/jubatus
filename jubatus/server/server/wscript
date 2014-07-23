@@ -18,7 +18,7 @@ def build_one(bld, name, libraries = '', sources = ''):
     source = __sources,
     target = 'juba'+name,
     includes = '.',
-    use = 'JUBATUS_CORE client_headers jubaserv_framework jubaserv_fv_converter jubaserv_common jubaserv_mprpc_common jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
+    use = 'JUBATUS_CORE client_headers jubaserv_framework jubaserv_fv_converter jubaserv_common jubaserv_mprpc_common %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % libraries
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(
@@ -30,23 +30,23 @@ def build_one(bld, name, libraries = '', sources = ''):
 
 def build(bld):
   #new classifier
-  build_one(bld, "classifier", 'jubastorage')
+  build_one(bld, "classifier")
 
   # #new regression
-  build_one(bld, "regression", 'jubastorage')
+  build_one(bld, "regression")
 
   # #new recommender
-  build_one(bld, "recommender", 'jubastorage')
+  build_one(bld, "recommender")
 
   # #new anomaly
-  build_one(bld, "anomaly", 'jubastorage jubatus_recommender' )
+  build_one(bld, "anomaly")
 
   build_one(bld, "stat")
 
   build_one(bld, "graph")
 
-  build_one(bld, 'nearest_neighbor', 'column_table')
+  build_one(bld, 'nearest_neighbor')
 
-  build_one(bld, "clustering", 'jubatus_clustering')
+  build_one(bld, "clustering")
 
   bld.install_files('${PREFIX}/share/jubatus/idl/', idls)
