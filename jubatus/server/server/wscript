@@ -18,7 +18,7 @@ def build_one(bld, name, libraries = '', sources = ''):
     source = __sources,
     target = 'juba'+name,
     includes = '.',
-    use = 'JUBATUS_CORE jubaserv_framework jubaserv_fv_converter jubaserv_common jubaserv_mprpc_common jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
+    use = 'JUBATUS_CORE client_headers jubaserv_framework jubaserv_fv_converter jubaserv_common jubaserv_mprpc_common jubatus_%s %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % (name, libraries)
     )
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(

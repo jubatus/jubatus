@@ -17,9 +17,9 @@
 #include "rpc_mclient.hpp"
 #include <string>
 #include <utility>
-#include "jubatus/server/common/logger/logger.hpp"
 
 #include "jubatus/util/system/syscall.h"
+#include "../logger/logger.hpp"
 
 namespace jubatus {
 namespace server {

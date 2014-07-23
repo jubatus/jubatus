@@ -19,7 +19,6 @@
 
 #include <string>
 #include <vector>
-#include "jubatus/server/common/logger/logger.hpp"
 
 #include "jubatus/util/lang/function.h"
 #include "jubatus/util/lang/shared_ptr.h"
@@ -28,6 +27,7 @@
 #include "jubatus/util/concurrent/threading_model.h"
 
 #include "lock_service.hpp"
+#include "logger/logger.hpp"
 #include ZOOKEEPER_HEADER
 
 namespace jubatus {

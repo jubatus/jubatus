@@ -154,7 +154,8 @@ def build(bld):
       PACKAGE = APPNAME,
       VERSION = VERSION)
 
-  bld(name = 'core_headers', export_includes = './')
+  bld(name = 'server_headers', export_includes = './')
+  bld(name = 'client_headers', export_includes = './')
 
   bld.recurse(subdirs)
 

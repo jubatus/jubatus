@@ -20,9 +20,9 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/core/fv_converter/exception.hpp"
 #include "../common/filesystem.hpp"
+#include "../common/logger/logger.hpp"
 
 using jubatus::core::fv_converter::converter_exception;
 

@@ -28,7 +28,7 @@ def build(bld):
     source = src,
     target = 'jubaserv_fv_converter',
     includes = '.',
-    use = 'JUBATUS_CORE ZOOKEEPER_MT DL jubaserv_common jubaserv_common_logger jubaconverter jubacommon core_headers',
+    use = 'JUBATUS_CORE ZOOKEEPER_MT DL jubaserv_common jubaserv_common_logger jubaconverter jubacommon',
     vnum = bld.env['ABI_VERSION'],
     )
 

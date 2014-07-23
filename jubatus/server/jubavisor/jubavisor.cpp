@@ -21,12 +21,12 @@
 #include <csignal>
 #include <string>
 
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/lang/bind.h"
 
 #include "jubavisor.hpp"
 #include "jubatus/core/common/exception.hpp"
+#include "../logger/logger.hpp"
 #include "../common/membership.hpp"
 #include "../common/network.hpp"
 #include "../common/signals.hpp"

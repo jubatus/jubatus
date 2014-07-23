@@ -20,7 +20,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/cast.h"
 
 #include "jubatus/core/common/exception.hpp"
@@ -28,6 +27,8 @@
 #include "jubatus/core/common/crc32.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 #include "jubatus/core/framework/stream_writer.hpp"
+
+#include "../common/logger/logger.hpp"
 
 using jubatus::core::common::write_big_endian;
 using jubatus::core::common::read_big_endian;
