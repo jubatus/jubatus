@@ -26,7 +26,7 @@
 
 #include "jubavisor.hpp"
 #include "jubatus/core/common/exception.hpp"
-#include "../logger/logger.hpp"
+#include "../common/logger/logger.hpp"
 #include "../common/membership.hpp"
 #include "../common/network.hpp"
 #include "../common/signals.hpp"
