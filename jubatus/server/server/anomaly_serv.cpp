@@ -284,10 +284,18 @@ float anomaly_serv::selective_update(
   if (host == argv().eth && port == argv().port) {
     jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
     event_model_updated();
-    return this->update(id, d);
+    if (anomaly_->is_updatable()) {
+      return this->update(id, d);
+    } else {
+      return this->overwrite(id, d);
+    }
   } else {  // needs no lock
     client::anomaly c(host, port, argv().name, argv().interconnect_timeout);
-    return c.update(id, d);
+    if (anomaly_->is_updatable()) {
+      return c.update(id, d);
+    } else {
+      return c.overwrite(id, d);
+    }
   }
 }
 
