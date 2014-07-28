@@ -22,7 +22,6 @@
 
 #include <map>
 #include <string>
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/bind.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/system/sysstat.h"
@@ -36,6 +35,7 @@
 #include "../common/mprpc/rpc_server.hpp"
 #include "../common/signals.hpp"
 #include "../common/config.hpp"
+#include "../common/logger/logger.hpp"
 
 using jubatus::util::system::time::clock_time;
 using jubatus::util::system::time::get_clock_time;

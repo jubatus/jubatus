@@ -23,7 +23,6 @@
 #include <iomanip>
 #include <string>
 
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/text/json.h"
 #include "jubatus/util/lang/shared_ptr.h"
 
@@ -31,6 +30,7 @@
 #include "../third_party/cmdline/cmdline.h"
 #include "../common/config.hpp"
 #include "../common/filesystem.hpp"
+#include "../common/logger/logger.hpp"
 #include "../common/membership.hpp"
 #include "../common/network.hpp"
 #include "../common/system.hpp"

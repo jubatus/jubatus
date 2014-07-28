@@ -35,12 +35,12 @@
 #include <utility>
 #include <vector>
 
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/exception.h"
 #include "jubatus/util/text/json.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "filesystem.hpp"
+#include "logger/logger.hpp"
 
 using std::string;
 using jubatus::util::lang::lexical_cast;

@@ -26,6 +26,7 @@
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/text/json.h"
 #include "jubatus/core/common/exception.hpp"
+#include "logger/logger.hpp"
 
 using std::ifstream;
 using std::string;

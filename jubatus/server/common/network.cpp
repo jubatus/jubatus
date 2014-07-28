@@ -31,8 +31,8 @@
 
 #include <cstring>
 #include <string>
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/core/common/exception.hpp"
+#include "logger/logger.hpp"
 
 using std::string;
 

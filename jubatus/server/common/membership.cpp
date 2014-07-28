@@ -24,9 +24,9 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/core/common/exception.hpp"
+#include "logger/logger.hpp"
 
 using std::string;
 using std::vector;

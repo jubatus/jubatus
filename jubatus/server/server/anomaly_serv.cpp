@@ -19,7 +19,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/text/json.h"
 #include "jubatus/util/lang/shared_ptr.h"
@@ -36,6 +35,7 @@
 #ifdef HAVE_ZOOKEEPER_H
 #include "../common/cht.hpp"
 #include "../common/global_id_generator_zk.hpp"
+#include "../common/logger/logger.hpp"
 #include "../common/membership.hpp"
 #endif
 #include "../framework/mixer/mixer_factory.hpp"

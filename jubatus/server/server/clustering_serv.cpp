@@ -20,13 +20,13 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/text/json.h"
 #include "jubatus/core/clustering/clustering_config.hpp"
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/fv_converter/converter_config.hpp"
+#include "../common/logger/logger.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
 using jubatus::util::lang::lexical_cast;

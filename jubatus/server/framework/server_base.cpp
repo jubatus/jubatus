@@ -23,13 +23,13 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "jubatus/server/common/logger/logger.hpp"
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 #include "jubatus/util/system/syscall.h"
 #include "mixer/mixer.hpp"
 #include "save_load.hpp"
+#include "../common/logger/logger.hpp"
 
 namespace jubatus {
 namespace server {

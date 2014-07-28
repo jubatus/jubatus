@@ -27,10 +27,10 @@
 #include "jubatus/util/concurrent/thread.h"
 #include "jubatus/util/lang/function.h"
 #include "jubatus/util/lang/bind.h"
-#include "jubatus/server/common/logger/logger.hpp"
 
 #include "proxy_common.hpp"
 #include "server_util.hpp"
+#include "../common/logger/logger.hpp"
 #include "../common/mprpc/rpc_mclient.hpp"
 #include "../common/mprpc/rpc_server.hpp"
 #include "../common/mprpc/exception.hpp"

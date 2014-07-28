@@ -33,10 +33,10 @@
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 #include "jubatus/core/framework/stream_writer.hpp"
-#include "jubatus/server/common/logger/logger.hpp"
 #include "../../common/membership.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
 #include "../../common/unique_lock.hpp"
+#include "../../common/logger/logger.hpp"
 
 using std::map;
 using std::vector;
