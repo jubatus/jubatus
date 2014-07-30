@@ -57,7 +57,8 @@ class push_communication_impl : public push_communication {
       const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
       const string& type,
       const string& name,
-      int timeout_sec);
+      int timeout_sec,
+      const pair<string, int>& my_id);
 
   size_t update_members();
   size_t size() const;
@@ -74,6 +75,16 @@ class push_communication_impl : public push_communication {
       const pair<string, int>& server,
       const byte_buffer& diff,
       common::mprpc::rpc_result_object& result) const;
+  bool register_active_list() const {
+    common::unique_lock lk(m_);
+    register_active(*zk_.get(), type_, name_, my_id_.first, my_id_.second);
+    return true;
+  }
+  bool unregister_active_list() const {
+    common::unique_lock lk(m_);
+    unregister_active(*zk_.get(), type_, name_, my_id_.first, my_id_.second);
+    return true;
+  }
 
  private:
   vector<pair<string, int> > servers_;
@@ -82,17 +93,20 @@ class push_communication_impl : public push_communication {
   const string type_;
   const string name_;
   const int timeout_sec_;
+  const pair<string, int> my_id_;
 };
 
 push_communication_impl::push_communication_impl(
     const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
     const string& type,
     const string& name,
-    int timeout_sec)
+    int timeout_sec,
+    const pair<string, int>& my_id)
     : zk_(zk),
       type_(type),
       name_(name),
-      timeout_sec_(timeout_sec) {
+      timeout_sec_(timeout_sec),
+      my_id_(my_id) {
 }
 
 size_t push_communication_impl::update_members() {
@@ -180,9 +194,10 @@ jubatus::util::lang::shared_ptr<push_communication> push_communication::create(
     const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
     const string& type,
     const string& name,
-    int timeout_sec) {
+    int timeout_sec,
+    const pair<string, int>& my_id) {
   return jubatus::util::lang::shared_ptr<push_communication_impl>(
-      new push_communication_impl(zk, type, name, timeout_sec));
+      new push_communication_impl(zk, type, name, timeout_sec, my_id));
 }
 
 push_mixer::push_mixer(
@@ -199,6 +214,7 @@ push_mixer::push_mixer(
       mix_count_(0),
       ticktime_(get_clock_time()),
       is_running_(false),
+      is_obsolete_(true),
       t_(jubatus::util::lang::bind(&push_mixer::mixer_loop, this)),
       model_mutex_(mutex) {
 }
@@ -228,6 +244,8 @@ void push_mixer::start() {
   if (!is_running_) {
     is_running_ = true;
     t_.start();
+    m_.unlock();
+    mix();
   }
 }
 
@@ -288,6 +306,11 @@ void push_mixer::mixer_loop() {
       }
 
       c_.wait(m_, 0.5);
+
+      if (!is_running_) {
+        return;
+      }
+
       clock_time new_ticktime = get_clock_time();
       if ((0 < count_threshold_ &&  counter_ >= count_threshold_)
           || (0 < tick_threshold_ && new_ticktime - ticktime_ > tick_threshold_)
@@ -316,12 +339,14 @@ void push_mixer::mix() {
   size_t servers_size = communication_->update_members();
   if (servers_size == 0) {
     LOG(WARNING) << "no server exists, skipping mix";
+    communication_->register_active_list();
+    is_obsolete_ = false;
     return;
   } else {
     try {
       // call virtual function to select push candidate
       vector<const pair<string, int>*> candidates =
-        filter_candidates(communication_->servers_list());
+          filter_candidates(communication_->servers_list());
 
       for (size_t i = 0; i < candidates.size(); ++i) {
         const pair<string, int>& she = *candidates[i];
@@ -364,6 +389,11 @@ void push_mixer::mix() {
     } catch (const std::exception& e) {
       LOG(WARNING) << "error in mix process: " << e.what();
       return;
+    }
+
+    if (is_obsolete_) {
+      communication_->register_active_list();
+      is_obsolete_ = false;
     }
   }
 
