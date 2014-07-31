@@ -14,7 +14,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-%include "../../core/fv_converter/datum.hpp"
+%include "jubatus/core/fv_converter/datum.hpp"
 
 message weighted_datum("std::pair<double, jubatus::core::fv_converter::datum>") {
   0: double weight
@@ -39,4 +39,7 @@ service clustering {
 
   #@random #@analysis #@pass
   list<weighted_datum > get_nearest_members(0: datum point)
+
+  #@broadcast #@update #@all_and
+  bool clear()
 }

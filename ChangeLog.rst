@@ -1,3 +1,55 @@
+Release 0.6.1 - 2014/07/22
+--------------------------
+
+* Improvements
+    * Support for OS X Mavericks (#833)
+    * Add sanity check configure option (#835)
+    * Fix linear_mixer to use interconnect_timeout (#720)
+    * Add ABI version number to object file (#812)
+    * #825, #832, #847
+* Bug fixes
+    * Fix timed-out connection instances are left in the pool (#836, #837)
+
+Release 0.6.0 - 2014/06/23
+--------------------------
+
+* New Features
+    * Add unlearning feature with sticky ID handling (#741, #756)
+    * Extend string_rules plug-in interface to support arbitrary values (#658, #703)
+    * classifier: Add delete_class RPC method (#364)
+    * recommender: Support clear_row RPC method when using nearest_neighbor_recommender (#797)
+* Improvements
+    * Separate algorithm components as jubatus_core repository
+    * Change logging library to log4cxx (#746, #807, #821)
+    * Improve availability when ZooKeeper failover occurs (#52, #776)
+    * Strict validation of configuration parameter (#547, #627, #754, #755)
+    * Improve error handling regarding RPC connection errors (#734, #782, #783)
+    * Default number of threads for proxies changed to 4 (#753, #810)
+    * Name of saved model files now contain engine name (#709, #765)
+    * Log message improvements (#791, #822)
+    * Log path of loaded plugins (#713, #771)
+    * More example config files added (#795, #818)
+    * nearest_neighbor: method name changed from {similar,neighbor}_row_from_data to {similar,neighbor}_row_from_datum to be consistent with recommender (#564, #809)
+    * anomaly: add RPC method now works with both lof and light_lof (#737)
+    * #645, #742, #767, #772, #773, #774, #777, #784, #789, #794, #823, #830
+* Bug fixes
+    * binary_rule now accept ``except`` key (#792)
+    * Calling do_mix RPC method for standalone mode now returns error correctly (#798, #808)
+    * Jubatus servers now leave cluster before RPC server shutdown (#593, #813)
+
+Release 0.5.4 - 2014/04/28
+--------------------------
+
+* New Features  
+    * clustering: Add clear RPC method (#579)
+* Improvements  
+    * server: Fix loading order of plugin (#743)
+    * server: Result of get_status RPC now contains absolute path (#749)
+    * clustering: Remove unneeded debug code(#671)
+* Bug fixes  
+    * server: Linear mixer did not terminated in correct order (#732)
+    * clustering: Fix forgetting factor's behavior (#704)
+
 Release 0.5.3 - 2014/03/31
 --------------------------
 

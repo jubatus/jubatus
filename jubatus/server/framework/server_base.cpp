@@ -18,19 +18,18 @@
 
 #include <stdio.h>
 #include <sys/file.h>
-#include <ext/stdio_filebuf.h>
 #include <cerrno>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <glog/logging.h>
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 #include "jubatus/util/system/syscall.h"
 #include "mixer/mixer.hpp"
 #include "save_load.hpp"
+#include "../common/logger/logger.hpp"
 
 namespace jubatus {
 namespace server {
@@ -75,6 +74,40 @@ void load_file_impl(server_base& server,
   LOG(INFO) << "loaded from " << path;
 }
 
+class fp_holder {
+ public:
+  explicit fp_holder(FILE* fp)
+    : fp_(fp)
+  {}
+
+ private:
+  fp_holder(const fp_holder&);
+  void operator=(const fp_holder&);
+
+ public:
+  ~fp_holder() {
+    close();
+  }
+
+  FILE* get() const {
+    return fp_;
+  }
+
+  int close() {
+    int ret = 0;
+
+    if (fp_) {
+      ret = fclose(fp_);
+      fp_ = 0;
+    }
+
+    return ret;
+  }
+
+ private:
+  FILE* fp_;
+};
+
 }  // namespace
 
 server_base::server_base(const server_argv& a)
@@ -86,20 +119,24 @@ server_base::server_base(const server_argv& a)
       last_loaded_path_("") {
 }
 
+bool server_base::clear() {
+  get_driver()->clear();
+  return true;
+}
+
 bool server_base::save(const std::string& id) {
-  const std::string path = build_local_path(argv_, "jubatus", id);
+  const std::string path = build_local_path(argv_, argv_.type, id);
   LOG(INFO) << "starting save to " << path;
 
-  std::ofstream ofs(path.c_str(), std::ios::trunc | std::ios::binary);
-  if (!ofs) {
+  fp_holder fp(fopen(path.c_str(), "wb"));
+  if (fp.get() == 0) {
     throw JUBATUS_EXCEPTION(
       core::common::exception::runtime_error("cannot open output file")
       << core::common::exception::error_file_name(path)
       << core::common::exception::error_errno(errno));
   }
 
-  // use gcc-specific extension
-  int fd = static_cast<__gnu_cxx::stdio_filebuf<char> *>(ofs.rdbuf())->fd();
+  int fd = fileno(fp.get());
   if (flock(fd, LOCK_EX | LOCK_NB) < 0) {  // try exclusive lock
     throw
       JUBATUS_EXCEPTION(core::common::exception::runtime_error(
@@ -108,14 +145,21 @@ bool server_base::save(const std::string& id) {
         << core::common::exception::error_errno(errno));
   }
 
-  ofs.exceptions(std::ios_base::failbit | std::ios_base::badbit);
   try {
-    framework::save_server(ofs, *this, id);
-    ofs.close();
+    framework::save_server(fp.get(), *this, id);
+    if (fp.close()) {
+      goto write_failure;
+    }
   } catch (const std::ios_base::failure&) {
+    goto write_failure;
+  }
+  // putting error handling code here is to prevent skipping variable
+  // initialization. skipping variable declaration causes undefined behavior.
+  if (0) {
+   write_failure:
     int tmperrno = errno;
     if (remove(path.c_str()) < 0) {
-      LOG(WARNING) << "failed to remove " << path << ": "
+      LOG(WARNING) << "failed to cleanup dirty model file: " << path << ": "
         << jubatus::util::system::syscall::get_error_msg(errno);
     }
     throw JUBATUS_EXCEPTION(
@@ -130,7 +174,7 @@ bool server_base::save(const std::string& id) {
 }
 
 bool server_base::load(const std::string& id) {
-  load_file_impl(*this, build_local_path(argv_, "jubatus", id), id);
+  load_file_impl(*this, build_local_path(argv_, argv_.type, id), id);
   return true;
 }
 

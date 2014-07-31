@@ -26,6 +26,7 @@
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/text/json.h"
 #include "jubatus/core/common/exception.hpp"
+#include "logger/logger.hpp"
 
 using std::ifstream;
 using std::string;
@@ -58,7 +59,7 @@ void config_fromzk(
 
   if (!z.exists(path)) {
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("config is not exists: " + path));
+      core::common::exception::runtime_error("config does not exist: " + path));
   }
 
   if (!z.read(path, config)) {
@@ -107,7 +108,7 @@ void config_tozk(
   if (!z.exists(lock_path)) {
     throw JUBATUS_EXCEPTION(
       core::common::exception::runtime_error(
-        "node is not exists: " + lock_path));
+        "ZooKeeper node does not exist: " + lock_path));
   }
 
   common::lock_service_mutex zk_config_lock(z, lock_path);
@@ -135,7 +136,7 @@ void config_tozk(
 
   if (!success) {
     throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
-          "failed to set config to zookeeper:" + path)
+          "failed to set config to zookeeper: " + path)
         << core::common::exception::error_api_func("lock_service::set"));
   }
 
@@ -152,7 +153,7 @@ void remove_config_fromzk(
   if (!z.exists(lock_path)) {
     throw JUBATUS_EXCEPTION(
       core::common::exception::runtime_error(
-        "node is not exists: " + lock_path));
+        "ZooKeeper node does not exist: " + lock_path));
   }
 
   common::lock_service_mutex zk_config_lock(z, lock_path);
@@ -176,12 +177,12 @@ void remove_config_fromzk(
 
   if (!z.exists(path)) {
     throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error("config is not exists: " + path));
+      core::common::exception::runtime_error("config does not exist: " + path));
   }
 
   if (!z.remove(path)) {
     throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
-          "failed to remove config from zookeeper:" + path)
+          "failed to remove config from zookeeper: " + path)
         << core::common::exception::error_api_func("lock_service::remove"));
   }
 

@@ -20,9 +20,11 @@
 #include <utility>
 #include <vector>
 #include "jubatus/util/concurrent/lock.h"
+#include "jubatus/util/concurrent/rwmutex.h"
 #include "jubatus/util/lang/bind.h"
 #include "jubatus/util/system/time_util.h"
-#include "../../../core/framework/mixable.hpp"
+#include "jubatus/core/framework/stream_writer.hpp"
+#include "jubatus/core/framework/mixable.hpp"
 #include "../../common/membership.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
 #include "../../common/unique_lock.hpp"
@@ -31,10 +33,16 @@ using std::pair;
 using std::string;
 using std::vector;
 using jubatus::util::concurrent::scoped_lock;
+using jubatus::util::concurrent::scoped_wlock;
+using jubatus::util::concurrent::scoped_rlock;
 using jubatus::util::lang::bind;
 using jubatus::util::lang::shared_ptr;
 using jubatus::util::system::time::clock_time;
 using jubatus::util::system::time::get_clock_time;
+
+using jubatus::core::common::byte_buffer;
+using jubatus::core::framework::stream_writer;
+using jubatus::core::framework::packer;
 
 namespace jubatus {
 namespace server {
@@ -49,7 +57,8 @@ class push_communication_impl : public push_communication {
       const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
       const string& type,
       const string& name,
-      int timeout_sec);
+      int timeout_sec,
+      const pair<string, int>& my_id);
 
   size_t update_members();
   size_t size() const;
@@ -57,12 +66,25 @@ class push_communication_impl : public push_communication {
   const vector<pair<string, int> >& servers_list() const;
   void pull(
       const pair<string, int>& server,
-      const vector<string>& arg,
+      const byte_buffer& arg,
       common::mprpc::rpc_result_object& result) const;
   void get_pull_argument(
       const pair<string, int>& server,
       common::mprpc::rpc_result_object& result) const;
-  void push(const pair<string, int>& server, const vector<string>& diff) const;
+  void push(
+      const pair<string, int>& server,
+      const byte_buffer& diff,
+      common::mprpc::rpc_result_object& result) const;
+  bool register_active_list() const {
+    common::unique_lock lk(m_);
+    register_active(*zk_.get(), type_, name_, my_id_.first, my_id_.second);
+    return true;
+  }
+  bool unregister_active_list() const {
+    common::unique_lock lk(m_);
+    unregister_active(*zk_.get(), type_, name_, my_id_.first, my_id_.second);
+    return true;
+  }
 
  private:
   vector<pair<string, int> > servers_;
@@ -71,17 +93,20 @@ class push_communication_impl : public push_communication {
   const string type_;
   const string name_;
   const int timeout_sec_;
+  const pair<string, int> my_id_;
 };
 
 push_communication_impl::push_communication_impl(
     const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
     const string& type,
     const string& name,
-    int timeout_sec)
+    int timeout_sec,
+    const pair<string, int>& my_id)
     : zk_(zk),
       type_(type),
       name_(name),
-      timeout_sec_(timeout_sec) {
+      timeout_sec_(timeout_sec),
+      my_id_(my_id) {
 }
 
 size_t push_communication_impl::update_members() {
@@ -112,7 +137,7 @@ const vector<pair<string, int> >& push_communication_impl::servers_list()
 
 void push_communication_impl::pull(
     const pair<string, int>& server,
-    const vector<string>& arg,
+    const byte_buffer& arg,
     common::mprpc::rpc_result_object& result) const {
   vector<pair<string, int> > servers;
   servers.push_back(server);
@@ -135,13 +160,32 @@ void push_communication_impl::get_pull_argument(
 
 void push_communication_impl::push(
     const pair<string, int>& server,
-    const vector<string>& diff) const {
+    const byte_buffer& diff,
+    common::mprpc::rpc_result_object& result) const {
   vector<pair<string, int> > servers;
   servers.push_back(server);
 
   // TODO(beam2d): to be replaced to new client with socket connection pooling
   common::mprpc::rpc_mclient client(servers, timeout_sec_);
-  client.call("push", diff);
+  result = client.call("push", diff);
+}
+
+bool handle_communication_error(
+    const std::string& function,
+    common::mprpc::rpc_result_object& result) {
+  bool has_error = false;
+  for (size_t i = 0; i < result.response.size(); ++i) {
+    if (result.response[i].has_error()) {
+      const string error_text(common::mprpc::create_error_string(
+          result.response[i].error()));
+       LOG(WARNING) << function << " failed at "
+                    << result.error[i].host() << ":"
+                    << result.error[i].port()
+                    << " : " << error_text;
+      has_error = true;
+    }
+  }
+  return has_error;
 }
 
 }  // namespace
@@ -150,13 +194,15 @@ jubatus::util::lang::shared_ptr<push_communication> push_communication::create(
     const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
     const string& type,
     const string& name,
-    int timeout_sec) {
+    int timeout_sec,
+    const pair<string, int>& my_id) {
   return jubatus::util::lang::shared_ptr<push_communication_impl>(
-      new push_communication_impl(zk, type, name, timeout_sec));
+      new push_communication_impl(zk, type, name, timeout_sec, my_id));
 }
 
 push_mixer::push_mixer(
     shared_ptr<push_communication> communication,
+    jubatus::util::concurrent::rw_mutex& mutex,
     unsigned int count_threshold,
     unsigned int tick_threshold,
     const std::pair<std::string, int>& my_id)
@@ -168,7 +214,9 @@ push_mixer::push_mixer(
       mix_count_(0),
       ticktime_(get_clock_time()),
       is_running_(false),
-      t_(jubatus::util::lang::bind(&push_mixer::mixer_loop, this)) {
+      is_obsolete_(true),
+      t_(jubatus::util::lang::bind(&push_mixer::mixer_loop, this)),
+      model_mutex_(mutex) {
 }
 
 push_mixer::~push_mixer() {
@@ -176,20 +224,19 @@ push_mixer::~push_mixer() {
 }
 
 void push_mixer::register_api(rpc_server_t& server) {
-  server.add<vector<string>(vector<string>)>(
+  server.add<byte_buffer(msgpack::object)>(
       "pull", bind(&push_mixer::pull, this, jubatus::util::lang::_1));
-  server.add<std::vector<std::string>(int)>(  // NOLINT
+  server.add<byte_buffer(int)>(  // NOLINT
       "get_pull_argument", bind(
           &push_mixer::get_pull_argument, this, jubatus::util::lang::_1));
-  server.add<int(vector<string>)>(
+  server.add<int(msgpack::object)>(
       "push", bind(&push_mixer::push, this, jubatus::util::lang::_1));
   server.add<bool(void)>(
       "do_mix", bind(&push_mixer::do_mix, this));
 }
 
-void push_mixer::set_mixable_holder(
-    shared_ptr<jubatus::core::framework::mixable_holder> holder) {
-  mixable_holder_ = holder;
+void push_mixer::set_driver(core::driver::driver_base* driver) {
+  driver_ = driver;
 }
 
 void push_mixer::start() {
@@ -197,6 +244,8 @@ void push_mixer::start() {
   if (!is_running_) {
     is_running_ = true;
     t_.start();
+    m_.unlock();
+    mix();
   }
 }
 
@@ -221,11 +270,12 @@ bool push_mixer::do_mix() {
     mix();
     return true;
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
-    LOG(ERROR) << e.diagnostic_information(true);
+    LOG(ERROR) << "exception in manual mix: "
+               << e.diagnostic_information(true);
   } catch (const std::exception& e) {
-    LOG(WARNING) << "exception in mix: " << e.what();
+    LOG(WARNING) << "error in manual mix: " << e.what();
   } catch (...) {
-    LOG(ERROR) << "unexpected error";
+    LOG(ERROR) << "unexpected error in manual mix";
   }
   return false;
 }
@@ -256,6 +306,11 @@ void push_mixer::mixer_loop() {
       }
 
       c_.wait(m_, 0.5);
+
+      if (!is_running_) {
+        return;
+      }
+
       clock_time new_ticktime = get_clock_time();
       if ((0 < count_threshold_ &&  counter_ >= count_threshold_)
           || (0 < tick_threshold_ && new_ticktime - ticktime_ > tick_threshold_)
@@ -271,7 +326,8 @@ void push_mixer::mixer_loop() {
         DLOG(INFO) << ".... " << mix_count_ << "th mix done.";
       }
     } catch (const core::common::exception::jubatus_exception& e) {
-      LOG(ERROR) << e.diagnostic_information(true);
+      LOG(ERROR) << "exception in mix thread: "
+                 << e.diagnostic_information(true);
     }
   }
 }
@@ -282,49 +338,62 @@ void push_mixer::mix() {
 
   size_t servers_size = communication_->update_members();
   if (servers_size == 0) {
-    LOG(WARNING) << "no other server. ";
+    LOG(WARNING) << "no server exists, skipping mix";
+    communication_->register_active_list();
+    is_obsolete_ = false;
     return;
   } else {
     try {
       // call virtual function to select push candidate
       vector<const pair<string, int>*> candidates =
-        filter_candidates(communication_->servers_list());
+          filter_candidates(communication_->servers_list());
 
       for (size_t i = 0; i < candidates.size(); ++i) {
         const pair<string, int>& she = *candidates[i];
 
         // pull from her
-        vector<string> my_args = get_pull_argument(0);
+        byte_buffer my_args = get_pull_argument(0);
+
         common::mprpc::rpc_result_object pull_result;
         communication_->pull(she, my_args, pull_result);
-        vector<string> her_diff =
-            pull_result.response.front().as<vector<string> >();
+        if (handle_communication_error("pull", pull_result)) {
+          continue;
+        }
+        msgpack::object her_diff = pull_result.response.front()();
 
         // pull from me
         common::mprpc::rpc_result_object args_result;
         communication_->get_pull_argument(she, args_result);
-        vector<string> her_args =
-            args_result.response.front().as<vector<string> >();
-        vector<string> my_diff = pull(her_args);
+        if (handle_communication_error("get_pull_argument", args_result)) {
+          continue;
+        }
+        msgpack::object her_args =
+            args_result.response.front()();
+        byte_buffer my_diff = pull(her_args);
 
         // push to her and me
-        communication_->push(she, my_diff);
+        common::mprpc::rpc_result_object push_result;
+        communication_->push(she, my_diff, push_result);
+        if (handle_communication_error("push", push_result)) {
+          continue;
+        }
         push(her_diff);
 
         // count size
-        for (size_t j = 0; j < her_diff.size(); ++j) {
-          s_pull += her_diff[j].size();
-        }
-        for (size_t j = 0; j < my_diff.size(); ++j) {
-          s_push += my_diff[j].size();
-        }
+        s_pull += her_diff.via.raw.size;
+        s_push += my_diff.size();
       }
       if (candidates.size() == 0U) {
-        LOG(WARNING) << "no server selected";
+        LOG(WARNING) << "no mix peer selected in mix strategy";
       }
     } catch (const std::exception& e) {
-      LOG(WARNING) << e.what() << " : mix failed";
+      LOG(WARNING) << "error in mix process: " << e.what();
       return;
+    }
+
+    if (is_obsolete_) {
+      communication_->register_active_list();
+      is_obsolete_ = false;
     }
   }
 
@@ -335,45 +404,68 @@ void push_mixer::mix() {
   mix_count_++;
 }
 
-vector<string> push_mixer::pull(const vector<string>& arg) {
-  vector<string> o;
-
-  scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
-  scoped_lock lk(m_);
-  core::framework::mixable_holder::mixable_list mixables =
-      mixable_holder_->get_mixables();
-  // TODO(beam2d): check arg.size()==mixables.size()
-  for (size_t i = 0; i < mixables.size(); ++i) {
-    o.push_back(mixables[i]->pull(arg[i]));
+byte_buffer push_mixer::pull(const msgpack::object& arg_obj) {
+  if (arg_obj.type != msgpack::type::RAW) {
+    throw msgpack::rpc::argument_error();
   }
-  return o;
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, arg_obj.via.raw.ptr, arg_obj.via.raw.size);
+  msgpack::object arg = msg.get();
+
+  scoped_rlock lk_read(model_mutex_);
+  scoped_lock lk(m_);
+
+  core::framework::push_mixable* mixable =
+    dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
+
+  msgpack::sbuffer sbuf;
+  stream_writer<msgpack::sbuffer> st(sbuf);
+  core::framework::jubatus_packer jp(st);
+  packer pk(jp);
+
+  mixable->pull(arg, pk);
+
+  return byte_buffer(sbuf.data(), sbuf.size());
 }
 
-vector<string> push_mixer::get_pull_argument(int dummy_arg) {
-  vector<string> o;
-
-  scoped_lock lk_read(rlock(mixable_holder_->rw_mutex()));
+byte_buffer push_mixer::get_pull_argument(int dummy_arg) {
+  scoped_rlock lk_read(model_mutex_);
   scoped_lock lk(m_);
-  core::framework::mixable_holder::mixable_list mixables =
-      mixable_holder_->get_mixables();
-  for (size_t i = 0; i < mixables.size(); ++i) {
-    o.push_back(mixables[i]->get_pull_argument());
-  }
-  return o;
+
+  core::framework::push_mixable* mixable =
+    dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
+
+  msgpack::sbuffer sbuf;
+  stream_writer<msgpack::sbuffer> st(sbuf);
+  core::framework::jubatus_packer jp(st);
+  packer pk(jp);
+
+  mixable->get_argument(pk);
+
+  return byte_buffer(sbuf.data(), sbuf.size());
 }
 
-int push_mixer::push(const vector<string>& diff) {
-  scoped_lock lk_write(wlock(mixable_holder_->rw_mutex()));
+int push_mixer::push(const msgpack::object& diff_obj) {
+  if (diff_obj.type != msgpack::type::RAW) {
+    throw msgpack::rpc::argument_error();
+  }
+
+  msgpack::unpacked msg;
+  msgpack::unpack(&msg, diff_obj.via.raw.ptr, diff_obj.via.raw.size);
+  msgpack::object diff = msg.get();
+
+  scoped_wlock lk_write(model_mutex_);
   scoped_lock lk(m_);
-  core::framework::mixable_holder::mixable_list mixables =
-      mixable_holder_->get_mixables();
-  if (diff.size() != mixables.size()) {
-    // deserialization error
-    return -1;
-  }
-  for (size_t i = 0; i < mixables.size(); ++i) {
-    mixables[i]->push(diff[i]);
-  }
+  core::framework::push_mixable* mixable =
+    dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
+
+  msgpack::sbuffer sbuf;
+  stream_writer<msgpack::sbuffer> st(sbuf);
+  core::framework::jubatus_packer jp(st);
+  packer pk(jp);
+
+  mixable->push(diff);
+
   counter_ = 0;
   ticktime_ = get_clock_time();
   return 0;

@@ -6,13 +6,14 @@ compiler:
   - clang
 
 before_install:
+  - env
   - lsb_release -a
   - uname -a
   - sudo apt-get -qq update
 
 install:
   # msgpack
-  - sudo apt-get -qq install libmsgpack-dev
+  - sudo apt-get -qq install libmsgpack-dev liblog4cxx10-dev
   # jubatus-mpio
   - git clone https://github.com/jubatus/jubatus-mpio.git
   - pushd jubatus-mpio && git checkout develop && ./bootstrap && ./configure && make && sudo make install && popd
@@ -20,10 +21,6 @@ install:
   # jubatus-msgpack-rpc
   - git clone https://github.com/jubatus/jubatus-msgpack-rpc.git
   - pushd jubatus-msgpack-rpc/cpp && git checkout develop && ./bootstrap && ./configure --with-jubatus-mpio=/usr/local && make && sudo make install && popd
-  - sudo ldconfig
-  # glog
-  - wget http://google-glog.googlecode.com/files/glog-0.3.3.tar.gz && tar xf glog-0.3.3.tar.gz
-  - pushd glog-0.3.3 && ./configure && make && sudo make install && popd
   - sudo ldconfig
   # zookeeper
   - wget http://apache.openmirror.de/zookeeper/zookeeper-3.4.5/zookeeper-3.4.5.tar.gz && tar xf zookeeper-3.4.5.tar.gz
@@ -49,6 +46,11 @@ install:
   - wget http://mecab.googlecode.com/files/mecab-ipadic-2.7.0-20070801.tar.gz && tar xf mecab-ipadic-2.7.0-20070801.tar.gz
   - pushd mecab-ipadic-2.7.0-20070801 && ./configure --with-charset=utf8 && make && sudo make install && popd
   - sudo ldconfig
+  # jubatus_core
+  - git clone https://github.com/jubatus/jubatus_core.git
+  - pushd jubatus_core && git checkout ${TRAVIS_BRANCH} && ./waf configure && sudo ./waf install && popd
+  - sudo ldconfig
+
 
 script:
   - ./waf configure --enable-zookeeper --enable-mecab --enable-ux

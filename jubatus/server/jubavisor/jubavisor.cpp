@@ -21,12 +21,12 @@
 #include <csignal>
 #include <string>
 
-#include <glog/logging.h>
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/lang/bind.h"
 
 #include "jubavisor.hpp"
 #include "jubatus/core/common/exception.hpp"
+#include "../common/logger/logger.hpp"
 #include "../common/membership.hpp"
 #include "../common/network.hpp"
 #include "../common/signals.hpp"
@@ -164,7 +164,7 @@ int jubavisor::start(
     unsigned int N,
     framework::server_argv argv) {
   scoped_lock lk(m_);
-  LOG(INFO) << str << " " << N;
+  LOG(INFO) << "starting " << N << " processes on " << str;
   return start_(str, N, argv);
 }
 

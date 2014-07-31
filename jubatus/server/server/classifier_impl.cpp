@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.5.2-72-g2390b50) with jenerator version 0.5.2-45-gc4cfc98/develop
+// This file is auto-generated from classifier.idl(0.5.4-148-gfea5e25) with jenerator version 0.5.4-224-g49229fa/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -34,6 +34,9 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
         jubatus::util::lang::_2));
     rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &classifier_impl::clear, this));
+    rpc_server::add<bool(std::string, std::string)>("delete_label",
+        jubatus::util::lang::bind(&classifier_impl::delete_label, this,
+        jubatus::util::lang::_2));
 
     rpc_server::add<std::string(std::string)>("get_config",
         jubatus::util::lang::bind(&classifier_impl::get_config, this));
@@ -72,6 +75,11 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
   bool clear() {
     JWLOCK_(p_);
     return get_p()->clear();
+  }
+
+  bool delete_label(const std::string& target_label) {
+    JWLOCK_(p_);
+    return get_p()->delete_label(target_label);
   }
 
   std::string get_config() {

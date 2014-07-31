@@ -1,4 +1,4 @@
-// This file is auto-generated from clustering.idl(0.4.5-350-g9c67807) with jenerator version 0.5.2-17-g8a5dca4/develop
+// This file is auto-generated from clustering.idl(0.5.4-179-gb59b61b) with jenerator version 0.5.4-224-g49229fa/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -42,6 +42,8 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
         jubatus::core::fv_converter::datum)>("get_nearest_members",
         jubatus::util::lang::bind(&clustering_impl::get_nearest_members, this,
         jubatus::util::lang::_2));
+    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
+        &clustering_impl::clear, this));
 
     rpc_server::add<std::string(std::string)>("get_config",
         jubatus::util::lang::bind(&clustering_impl::get_config, this));
@@ -88,6 +90,11 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
       const jubatus::core::fv_converter::datum& point) {
     JRLOCK_(p_);
     return get_p()->get_nearest_members(point);
+  }
+
+  bool clear() {
+    JWLOCK_(p_);
+    return get_p()->clear();
   }
 
   std::string get_config() {

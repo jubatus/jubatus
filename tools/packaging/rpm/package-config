@@ -1,10 +1,18 @@
 # ==============================================================================
 # Jubatus
 # ==============================================================================
-JUBATUS_VERSION="0.5.3"
+JUBATUS_VERSION="0.6.1"
 JUBATUS_RELEASE="1"
 JUBATUS_IS_SNAPSHOT="no"
 JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
+
+# ==============================================================================
+# Jubatus Core
+# ==============================================================================
+JUBATUS_CORE_VERSION="0.0.2"
+JUBATUS_CORE_RELEASE="1"
+JUBATUS_CORE_IS_SNAPSHOT="no"
+JUBATUS_CORE_CHECKOUT="${JUBATUS_CORE_VERSION}"
 
 # ==============================================================================
 # msgpack
@@ -15,7 +23,7 @@ MSGPACK_RELEASE="1"
 # ==============================================================================
 # jubatus-mpio
 # ==============================================================================
-JUBATUS_MPIO_VERSION="0.4.2"
+JUBATUS_MPIO_VERSION="0.4.3"
 JUBATUS_MPIO_RELEASE="1"
 JUBATUS_MPIO_IS_SNAPSHOT="no"
 JUBATUS_MPIO_CHECKOUT="${JUBATUS_MPIO_VERSION}"
@@ -23,16 +31,16 @@ JUBATUS_MPIO_CHECKOUT="${JUBATUS_MPIO_VERSION}"
 # ==============================================================================
 # jubatus-msgpack-rpc
 # ==============================================================================
-JUBATUS_MSGPACK_RPC_VERSION="0.4.2"
+JUBATUS_MSGPACK_RPC_VERSION="0.4.3"
 JUBATUS_MSGPACK_RPC_RELEASE="1"
 JUBATUS_MSGPACK_RPC_IS_SNAPSHOT="no"
-JUBATUS_MSGPACK_RPC_CHECKOUT="0.4.2"
+JUBATUS_MSGPACK_RPC_CHECKOUT="${JUBATUS_MSGPACK_RPC_VERSION}"
 
 # ==============================================================================
-# glog
+# log4cxx
 # ==============================================================================
-GLOG_VERSION="0.3.3"
-GLOG_RELEASE="1"
+LOG4CXX_VERSION="0.10.0"
+LOG4CXX_RELEASE="1"
 
 # ==============================================================================
 # ux

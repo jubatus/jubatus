@@ -1,0 +1,16 @@
+
+def options(opt): pass
+
+def configure(conf): pass
+
+def build(bld):
+  src = 'logger.cpp'
+
+  bld.shlib(
+    source = src,
+    target = 'jubaserv_common_logger',
+    use = 'JUBATUS_CORE LIBLOG4CXX',
+    vnum = bld.env['ABI_VERSION'],
+    )
+
+  bld.install_files('${PREFIX}/include/jubatus/server/common/logger', bld.path.ant_glob('*.hpp'))

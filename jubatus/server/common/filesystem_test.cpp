@@ -15,7 +15,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "filesystem.hpp"
+#include <limits.h>
 #include <string>
+#include <cstdlib>
 #include <gtest/gtest.h>
 
 TEST(filesystem, base_name) {
@@ -31,3 +33,8 @@ TEST(filesystem, is_writable) {
   rmdir(path.c_str());
 }
 
+TEST(filesystem, real_path) {
+  char buf[PATH_MAX];
+  EXPECT_EQ(getcwd(buf, PATH_MAX), jubatus::server::common::real_path("."));
+  EXPECT_EQ("/", jubatus::server::common::real_path("/"));
+}

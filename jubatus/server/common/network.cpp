@@ -26,12 +26,13 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <unistd.h>
 #include <errno.h>
 
 #include <cstring>
 #include <string>
-#include <glog/logging.h>
 #include "jubatus/core/common/exception.hpp"
+#include "logger/logger.hpp"
 
 using std::string;
 

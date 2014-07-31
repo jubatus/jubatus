@@ -6,15 +6,17 @@ def configure(conf):
   pass
 
 def build(bld):
-  mixer_framework = 'jubatus_util MSGPACK LIBGLOG core_headers'
+  mixer_framework = 'JUBATUS_CORE MSGPACK jubaserv_common_logger'
   mixer_source = 'mixer_factory.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
-    mixer_framework += ' jubacommon jubaserv_common jubaserv_common_mprpc'
+    mixer_framework += ' jubaserv_common jubaserv_common_mprpc'
     mixer_source += ' linear_mixer.cpp push_mixer.cpp'
 
   bld.shlib(target = 'jubaserv_mixer',
             source = mixer_source,
-            use = mixer_framework)
+            use = mixer_framework,
+            vnum = bld.env['ABI_VERSION'],
+            )
 
   if bld.env.HAVE_ZOOKEEPER_H:
     bld.program(

@@ -509,9 +509,8 @@ let gen_proxy_file conf names source services =
       (0, "#include <vector>");
       (0, "#include <utility>");
       (0, "");
-      (0, "#include <glog/logging.h>");
-      (0, "");
       (0, gen_jubatus_core_include conf "common/exception.hpp");
+      (0, gen_jubatus_include conf "server/common/logger/logger.hpp");
       (0, gen_jubatus_include conf "server/framework/aggregators.hpp");
       (0, gen_jubatus_include conf "server/framework/proxy.hpp");
       (0, "#include \"" ^ base ^ "_types.hpp\"");
@@ -528,7 +527,8 @@ let gen_proxy_file conf names source services =
         [
           (2,     "return k.run();");
           (1,   "} catch (const jubatus::core::common::exception::jubatus_exception& e) {");
-          (2,     "LOG(FATAL) << e.diagnostic_information(true);");
+          (2,     "LOG(FATAL) << \"exception in proxy main thread: \"");
+          (2,     "           << e.diagnostic_information(true);");
           (2,     "return -1;");
           (1,   "}");
           (0, "}")
@@ -722,7 +722,7 @@ let gen_server_template_header names s =
       (1,   "virtual ~" ^ serv_name ^ "();  // do not change");
       (0,   "");
       (1,   "virtual jubatus::server::framework::mixer::mixer* get_mixer() const;");
-      (1,   "jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder> get_mixable_holder() const;");
+      (1,   "virtual jubatus::core::driver::driver_base* get_driver() const;");
       (1,   "std::string get_config() const;");
       (1,   "uint64_t user_data_version() const;");
       (1,   "void get_status(status_t& status) const;");
@@ -733,7 +733,7 @@ let gen_server_template_header names s =
     [
       (0, "");
       (0, " private:");
-      (1,   "// add user data here like: jubatus::util::lang::shared_ptr<some_type> some_;");
+      (1,   "// add user defined driver like: jubatus::util::lang::shared_ptr<some_type> some_;");
       (0, "};")
     ]
   ]
@@ -782,9 +782,6 @@ let gen_server_template_source names s =
       (1,   "const jubatus::server::framework::server_argv& a,");
       (1,   "const jubatus::util::lang::shared_ptr<jubatus::server::common::lock_service>& zk)");
       (2,     ": jubatus::server::framework::server_base(a) {");
-      (1,   "// somemixable* mi = new somemixable;");
-      (1,   "// somemixable_.set_model(mi);");
-      (1,   "// get_mixable_holder()->register_mixable(mi);");
       (0, "}");
       (0, "");
       (0, serv_name ^ "::~" ^ serv_name ^ "() {");
@@ -793,8 +790,7 @@ let gen_server_template_source names s =
       (0, "jubatus::server::framework::mixer::mixer* " ^ serv_name ^ "::get_mixer() const {");
       (0, "}");
       (0, "");
-      (0, "jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder> "
-        ^ serv_name ^ "::get_mixable_holder() const {");
+      (0, "jubatus::core::driver::driver_base* " ^ serv_name ^ "::get_driver() const {");
       (0, "}");
       (0, "");
       (0, "std::string " ^ serv_name ^ "::get_config() const {");

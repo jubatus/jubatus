@@ -19,7 +19,6 @@
 
 #include <string>
 #include <vector>
-#include <glog/logging.h>
 
 #include "jubatus/util/lang/function.h"
 #include "jubatus/util/lang/shared_ptr.h"
@@ -28,6 +27,7 @@
 #include "jubatus/util/concurrent/threading_model.h"
 
 #include "lock_service.hpp"
+#include "logger/logger.hpp"
 #include ZOOKEEPER_HEADER
 
 namespace jubatus {
@@ -45,6 +45,7 @@ class zk : public lock_service {
 
   virtual ~zk();
 
+  bool wait_until_connected(int timeout);
   void force_close();
   bool create(
       const std::string& path,
@@ -86,7 +87,6 @@ class zk : public lock_service {
 
   zhandle_t* zh_;
   clientid_t* cid_;
-  int state_;
   const std::string hosts_;
 
   jubatus::util::concurrent::mutex m_;

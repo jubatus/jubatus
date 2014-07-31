@@ -1,8 +1,0 @@
-{
-  "string_types": {},
-  "string_rules": [],
-  "num_types": {},
-  "num_rules": [
-    { "key": "*", "type": "num" }
-  ]
-}

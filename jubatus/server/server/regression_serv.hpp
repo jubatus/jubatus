@@ -24,6 +24,7 @@
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/core/driver/regression.hpp"
 #include "../framework/server_base.hpp"
+#include "../fv_converter/so_factory.hpp"
 #include "regression_types.hpp"
 
 namespace jubatus {
@@ -40,9 +41,8 @@ class regression_serv : public framework::server_base {
     return mixer_.get();
   }
 
-  jubatus::util::lang::shared_ptr<core::framework::mixable_holder>
-    get_mixable_holder() const {
-    return regression_->get_mixable_holder();
+  core::driver::driver_base* get_driver() const {
+    return regression_.get();
   }
 
   void get_status(status_t& status) const;
@@ -63,6 +63,7 @@ class regression_serv : public framework::server_base {
   jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
   jubatus::util::lang::shared_ptr<core::driver::regression> regression_;
   std::string config_;
+  fv_converter::so_factory so_loader_;
 };
 
 }  // namespace server

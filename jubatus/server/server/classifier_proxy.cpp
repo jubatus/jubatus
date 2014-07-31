@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.5.2-28-gd87300a) with jenerator version 0.5.2-17-g8a5dca4/develop
+// This file is auto-generated from classifier.idl(0.5.4-148-gfea5e25) with jenerator version 0.5.4-224-g49229fa/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -6,9 +6,8 @@
 #include <vector>
 #include <utility>
 
-#include <glog/logging.h>
-
 #include "jubatus/core/common/exception.hpp"
+#include "../../server/common/logger/logger.hpp"
 #include "../../server/framework/aggregators.hpp"
 #include "../../server/framework/proxy.hpp"
 #include "classifier_types.hpp"
@@ -27,9 +26,13 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_broadcast<bool>("clear",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
+    k.register_async_broadcast<bool, std::string>("delete_label",
+        jubatus::util::lang::function<bool(bool, bool)>(
+        &jubatus::server::framework::all_or));
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
-    LOG(FATAL) << e.diagnostic_information(true);
+    LOG(FATAL) << "exception in proxy main thread: "
+               << e.diagnostic_information(true);
     return -1;
   }
 }

@@ -71,7 +71,7 @@ regression_serv::regression_serv(
     const framework::server_argv& a,
     const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk)) {
+      mixer_(create_mixer(a, zk, rw_mutex())) {
 }
 
 regression_serv::~regression_serv() {
@@ -107,8 +107,8 @@ void regression_serv::set_config(const string& config) {
           model,
           core::regression::regression_factory::create_regression(
               conf.method, param, model),
-          core::fv_converter::make_fv_converter(conf.converter)));
-  mixer_->set_mixable_holder(regression_->get_mixable_holder());
+          core::fv_converter::make_fv_converter(conf.converter, &so_loader_)));
+  mixer_->set_driver(regression_.get());
 
   // TODO(kuenishi): switch the function when set_config is done
   // because mixing method differs btwn PA, CW, etc...

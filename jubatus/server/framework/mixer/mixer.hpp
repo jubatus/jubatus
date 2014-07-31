@@ -17,22 +17,15 @@
 #ifndef JUBATUS_SERVER_FRAMEWORK_MIXER_MIXER_HPP_
 #define JUBATUS_SERVER_FRAMEWORK_MIXER_MIXER_HPP_
 
+#include <string>
+
 #include "jubatus/util/lang/noncopyable.h"
 #include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/core/driver/driver.hpp"
 #include "../server_base.hpp"
 #include "../../common/mprpc/rpc_server.hpp"
 
 namespace jubatus {
-
-namespace core {
-namespace framework {
-
-class mixable0;
-class mixable_holder;
-
-}  // namespace framework
-}  // namespace core
-
 namespace server {
 namespace framework {
 namespace mixer {
@@ -45,8 +38,7 @@ class mixer : util::lang::noncopyable {
   }
 
   virtual void register_api(rpc_server_t& server) = 0;
-  virtual void set_mixable_holder(
-      jubatus::util::lang::shared_ptr<core::framework::mixable_holder>) = 0;
+  virtual void set_driver(core::driver::driver_base*) = 0;
 
   virtual void start() = 0;
   virtual void stop() = 0;
@@ -54,6 +46,16 @@ class mixer : util::lang::noncopyable {
   virtual void updated() = 0;
 
   virtual void get_status(server_base::status_t& status) const = 0;
+
+  virtual std::string type() const = 0;
+};
+
+class unsupported_mixables : public core::common::exception::runtime_error {
+ public:
+  explicit unsupported_mixables(const std::string& type)
+      : jubatus::core::common::exception::runtime_error(
+          std::string(type + " does not support this configuration")) {
+  }
 };
 
 }  // namespace mixer

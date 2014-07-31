@@ -1,4 +1,4 @@
-// This file is auto-generated from graph.idl(0.5.1-49-ge0eb85f) with jenerator version 0.5.2-17-g8a5dca4/develop
+// This file is auto-generated from graph.idl(0.5.4-179-gb59b61b) with jenerator version 0.5.4-224-g49229fa/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_GRAPH_TYPES_HPP_
@@ -14,7 +14,7 @@
 #include "jubatus/core/fv_converter/datum.hpp"
 #include <msgpack.hpp>
 
-#include "../../core/graph/graph_type.hpp"
+#include "jubatus/core/graph/graph_type.hpp"
 
 namespace jubatus {
 

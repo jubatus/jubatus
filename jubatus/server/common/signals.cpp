@@ -20,13 +20,14 @@
 #include <cerrno>
 #include <csignal>
 
-#include <glog/logging.h>
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/concurrent/mutex.h"
 #include "jubatus/util/concurrent/thread.h"
 
 #include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
+
+#include "logger/logger.hpp"
 
 namespace jubatus {
 namespace server {
@@ -115,9 +116,10 @@ void handle_sigterm() {
 
     return;  // signal handling is successfully done.
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
-    LOG(FATAL) << e.diagnostic_information(true);
+    LOG(FATAL) << "exception in sigwait thread: "
+               << e.diagnostic_information(true);
   } catch (const std::exception& e) {
-    LOG(FATAL) << e.what();
+    LOG(FATAL) << "error in sigwait thread: " << e.what();
   }
   JUBATUS_ASSERT_UNREACHABLE();
 }

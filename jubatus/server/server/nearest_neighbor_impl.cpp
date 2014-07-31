@@ -1,4 +1,4 @@
-// This file is auto-generated from nearest_neighbor.idl(0.4.5-347-g86989a6) with jenerator version 0.5.2-17-g8a5dca4/develop
+// This file is auto-generated from nearest_neighbor.idl(0.5.4-186-g163c6bd) with jenerator version 0.5.4-224-g49229fa/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -32,18 +32,19 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
         jubatus::util::lang::bind(&nearest_neighbor_impl::neighbor_row_from_id,
         this, jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
-        jubatus::core::fv_converter::datum, uint32_t)>("neighbor_row_from_data",
-        jubatus::util::lang::bind(
-        &nearest_neighbor_impl::neighbor_row_from_data, this,
+        jubatus::core::fv_converter::datum, uint32_t)>(
+        "neighbor_row_from_datum", jubatus::util::lang::bind(
+        &nearest_neighbor_impl::neighbor_row_from_datum, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
         std::string, int32_t)>("similar_row_from_id", jubatus::util::lang::bind(
         &nearest_neighbor_impl::similar_row_from_id, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
-        jubatus::core::fv_converter::datum, int32_t)>("similar_row_from_data",
-        jubatus::util::lang::bind(&nearest_neighbor_impl::similar_row_from_data,
-        this, jubatus::util::lang::_2, jubatus::util::lang::_3));
+        jubatus::core::fv_converter::datum, int32_t)>("similar_row_from_datum",
+        jubatus::util::lang::bind(
+        &nearest_neighbor_impl::similar_row_from_datum, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
 
     rpc_server::add<std::string(std::string)>("get_config",
         jubatus::util::lang::bind(&nearest_neighbor_impl::get_config, this));
@@ -75,10 +76,10 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
     return get_p()->neighbor_row_from_id(id, size);
   }
 
-  std::vector<std::pair<std::string, float> > neighbor_row_from_data(
+  std::vector<std::pair<std::string, float> > neighbor_row_from_datum(
       const jubatus::core::fv_converter::datum& query, uint32_t size) {
     JRLOCK_(p_);
-    return get_p()->neighbor_row_from_data(query, size);
+    return get_p()->neighbor_row_from_datum(query, size);
   }
 
   std::vector<std::pair<std::string, float> > similar_row_from_id(
@@ -87,10 +88,10 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
     return get_p()->similar_row_from_id(id, ret_num);
   }
 
-  std::vector<std::pair<std::string, float> > similar_row_from_data(
+  std::vector<std::pair<std::string, float> > similar_row_from_datum(
       const jubatus::core::fv_converter::datum& query, int32_t ret_num) {
     JRLOCK_(p_);
-    return get_p()->similar_row_from_data(query, ret_num);
+    return get_p()->similar_row_from_datum(query, ret_num);
   }
 
   std::string get_config() {

@@ -75,4 +75,7 @@ service classifier {
 
   #@broadcast #@update #@all_and
   bool clear()
+
+  #@broadcast #@update #@all_or
+  bool delete_label(0: string target_label)
 }

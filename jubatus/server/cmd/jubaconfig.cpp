@@ -62,6 +62,11 @@ void get_all_config_paths(
 
 int main(int argc, char** argv)
 try {
+  // Configures the logger.
+  // We don't provide logging configuration feature for command line tools;
+  // just print logs to standard output.
+  jubatus::server::common::logger::configure();
+
   cmdline::parser p;
   p.add<std::string>("cmd", 'c',
       "command to operate config (write|read|delete|list)", true);
@@ -73,14 +78,9 @@ try {
   p.add<std::string>("zookeeper", 'z',
       "ZooKeeper location environment: 'ZK' is available instead", false);
 
-  p.add("debug", 'd', "debug mode");
+  p.add("debug", 'd', "debug mode (obsolete)");
 
   p.parse_check(argc, argv);
-
-  google::InitGoogleLogging(argv[0]);
-  if (p.exist("debug")) {
-    google::LogToStderr();  // only when debug
-  }
 
   string zk;
   char* zkenv = std::getenv("ZK");

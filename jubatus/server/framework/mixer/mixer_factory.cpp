@@ -40,7 +40,8 @@ namespace mixer {
 
 mixer* create_mixer(
     const server_argv& a,
-    const jubatus::util::lang::shared_ptr<common::lock_service>& zk) {
+    const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
+    jubatus::util::concurrent::rw_mutex& model_mutex) {
 #ifdef HAVE_ZOOKEEPER_H
   const string& use_mixer = a.mixer;
   if (use_mixer == "linear_mixer") {
@@ -50,7 +51,8 @@ mixer* create_mixer(
             a.type,
             a.name,
             a.interconnect_timeout,
-            std::make_pair(a.eth, a.port)),
+            make_pair(a.eth, a.port)),
+        model_mutex,
         a.interval_count, a.interval_sec);
   } else if (use_mixer == "random_mixer") {
     return new random_mixer(
@@ -58,15 +60,29 @@ mixer* create_mixer(
             zk,
             a.type,
             a.name,
-            a.interconnect_timeout),
+            a.interconnect_timeout,
+            make_pair(a.eth, a.port)),
+        model_mutex,
         a.interval_count, a.interval_sec, make_pair(a.eth, a.port));
   } else if (use_mixer == "broadcast_mixer") {
     return new broadcast_mixer(
-        push_communication::create(zk, a.type, a.name, a.interconnect_timeout),
+        push_communication::create(
+            zk,
+            a.type,
+            a.name,
+            a.interconnect_timeout,
+            make_pair(a.eth, a.port)),
+        model_mutex,
         a.interval_count, a.interval_sec, make_pair(a.eth, a.port));
   } else if (use_mixer == "skip_mixer") {
     return new skip_mixer(
-        push_communication::create(zk, a.type, a.name, a.interconnect_timeout),
+        push_communication::create(
+            zk,
+            a.type,
+            a.name,
+            a.interconnect_timeout,
+            make_pair(a.eth, a.port)),
+        model_mutex,
         a.interval_count, a.interval_sec, make_pair(a.eth, a.port));
   } else {
     throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(

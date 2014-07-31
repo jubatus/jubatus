@@ -22,7 +22,6 @@
 #include <string>
 #include <sstream>
 
-#include <glog/logging.h>
 #include <msgpack.hpp>
 #include "jubatus/util/lang/noncopyable.h"
 #include "jubatus/util/concurrent/lock.h"
@@ -31,6 +30,7 @@
 #include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/common/exception.hpp"
+#include "../common/logger/logger.hpp"
 #include "../common/system.hpp"
 #include "../common/lock_service.hpp"
 
@@ -79,7 +79,7 @@ struct server_argv {
   std::string name;
   std::string datadir;
   std::string logdir;
-  int loglevel;
+  std::string log_config;
   std::string configpath;
   std::string modelpath;
   std::string eth;
@@ -90,7 +90,7 @@ struct server_argv {
 
   MSGPACK_DEFINE(port, bind_address, bind_if, timeout,
       zookeeper_timeout, interconnect_timeout, threadnum,
-      program_name, type, z, name, datadir, logdir, loglevel, eth,
+      program_name, type, z, name, datadir, logdir, log_config, eth,
       interval_sec, interval_count, mixer, daemon);
 
   bool is_standalone() const {
@@ -117,7 +117,7 @@ struct proxy_argv {
   std::string program_name;
   std::string z;
   std::string logdir;
-  int loglevel;
+  std::string log_config;
   std::string eth;
   const std::string type;
   int session_pool_expire;
@@ -137,11 +137,18 @@ void close_lock_service();
 template<class ImplServerClass>
 int run_server(int args, char** argv, const std::string& type) {
   try {
-    ImplServerClass impl_server(server_argv(args, argv, type));
-    impl_server.get_p()->get_mixer()->register_api(impl_server);
+    server_argv parsed_argv(args, argv, type);
+    ImplServerClass impl_server(parsed_argv);
+    if (!parsed_argv.is_standalone()) {
+      impl_server.get_p()->get_mixer()->register_api(impl_server);
+    }
     return impl_server.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
-    LOG(FATAL) << e.diagnostic_information(true);
+    LOG(FATAL) << "exception in main thread: "
+               << e.diagnostic_information(true);
+    return -1;
+  } catch (const std::exception& e) {
+    LOG(FATAL) << "error in main thread: " << e.what();
     return -1;
   }
 }

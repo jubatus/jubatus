@@ -65,14 +65,8 @@ do_download() {
 	mkdir -p "${SOURCE_DIR}"
 	pushd "${SOURCE_DIR}"
 
-	# pkg-config
-	download_url http://pkgconfig.freedesktop.org/releases/pkg-config-${PKG_VER}.tar.gz
-
 	# MessagePack
 	download_url http://msgpack.org/releases/cpp/msgpack-${MSGPACK_VER}.tar.gz
-
-	# Glog
-	download_url http://google-glog.googlecode.com/files/glog-${GLOG_VER}.tar.gz
 
 	# Oniguruma
 	download_url http://www.geocities.jp/kosako3/oniguruma/archive/onig-${ONIG_VER}.tar.gz
@@ -101,6 +95,13 @@ do_download() {
 	git clone https://github.com/jubatus/jubatus-msgpack-rpc.git jubatus-msgpack-rpc
 	pushd jubatus-msgpack-rpc
 	git checkout ${MSGPACK_RPC_VER}
+	popd
+
+	# Jubatus Core
+	rm -rf jubatus_core
+	git clone https://github.com/jubatus/jubatus_core.git jubatus_core
+	pushd jubatus_core
+	git checkout ${JUBATUS_CORE_VER}
 	popd
 
 	# Jubatus
@@ -146,16 +147,6 @@ do_build() {
 	DOC_DIR="${DEST_DIR}/${PREFIX}/share/doc"
 	mkdir -p "${DOC_DIR}"
 
-	# pkg-config
-	tar zxf ${SOURCE_DIR}/pkg-config-${PKG_VER}.tar.gz
-	pushd pkg-config-${PKG_VER}
-	./configure --prefix=${PREFIX}
-	make
-	make install DESTDIR=${DEST_DIR}
-	mkdir -p "${DOC_DIR}/pkg-config-${PKG_VER}"
-	cp -a AUTHORS ChangeLog COPYING NEWS README "${DOC_DIR}/pkg-config-${PKG_VER}"
-	popd
-
 	# MessagePack
 	tar zxf ${SOURCE_DIR}/msgpack-${MSGPACK_VER}.tar.gz
 	pushd msgpack-${MSGPACK_VER}
@@ -186,15 +177,6 @@ do_build() {
 	make install DESTDIR=${DEST_DIR}
 	mkdir -p "${DOC_DIR}/jubatus-msgpack-rpc"
 	cp -a AUTHORS ChangeLog COPYING NEWS NOTICE README README.md "${DOC_DIR}/jubatus-msgpack-rpc"
-	popd
-
-	# Glog
-	tar zxf ${SOURCE_DIR}/glog-${GLOG_VER}.tar.gz
-	pushd glog-${GLOG_VER}
-	./configure --prefix=${PREFIX}
-	make
-	make install DESTDIR=${DEST_DIR}
-	cp -a doc "${DOC_DIR}/glog-${GLOG_VER}"
 	popd
 
 	# Oniguruma
@@ -244,6 +226,16 @@ do_build() {
 	make install DESTDIR=${DEST_DIR}
 	mkdir -p "${DOC_DIR}/zookeeper-${ZK_VER}"
 	cp -a ChangeLog LICENSE NOTICE.txt README "${DOC_DIR}/zookeeper-${ZK_VER}"
+	popd
+
+	# Jubatus Core
+	cp -rp ${SOURCE_DIR}/jubatus_core jubatus_core
+	pushd jubatus_core
+	LDFLAGS="-L${DEST_DIR}/${PREFIX}/lib" ./waf configure --prefix=${PREFIX}
+	./waf build
+	./waf install --destdir=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/jubatus_core"
+	cp -a LICENSE README.rst ChangeLog.rst "${DOC_DIR}/jubatus_core"
 	popd
 
 	# Jubatus

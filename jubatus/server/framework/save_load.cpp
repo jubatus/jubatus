@@ -20,13 +20,15 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <glog/logging.h>
 #include "jubatus/util/lang/cast.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/common/big_endian.hpp"
 #include "jubatus/core/common/crc32.hpp"
 #include "jubatus/core/framework/mixable.hpp"
+#include "jubatus/core/framework/stream_writer.hpp"
+
+#include "../common/logger/logger.hpp"
 
 using jubatus::core::common::write_big_endian;
 using jubatus::core::common::read_big_endian;
@@ -90,9 +92,13 @@ uint32_t calc_crc32(const char* header,  // header size is 28 (fixed)
   return crc32;
 }
 
+bool fwrite_helper(const char* buffer, size_t size, FILE* fp) {
+  return fwrite(buffer, 1, size, fp) == size;
+}
+
 }  // namespace
 
-void save_server(std::ostream& os,
+void save_server(FILE* fp,
     const server_base& server, const std::string& id) {
   if (id == "") {
     throw JUBATUS_EXCEPTION(
@@ -106,12 +112,14 @@ void save_server(std::ostream& os,
 
   msgpack::sbuffer user_data_buf;
   {
-    msgpack::packer<msgpack::sbuffer> packer(user_data_buf);
+    core::framework::stream_writer<msgpack::sbuffer> st(user_data_buf);
+    core::framework::jubatus_packer jp(st);
+    core::framework::packer packer(jp);
     packer.pack_array(2);
 
     uint64_t user_data_version = server.user_data_version();
     packer.pack(user_data_version);
-    server.get_mixable_holder()->pack(packer);
+    server.get_driver()->pack(packer);
   }
 
   char header_buf[48];
@@ -131,9 +139,15 @@ void save_server(std::ostream& os,
       user_data_buf.data(), user_data_buf.size());
   write_big_endian(crc32, &header_buf[28]);
 
-  os.write(header_buf, 48);
-  os.write(system_data_buf.data(), system_data_buf.size());
-  os.write(user_data_buf.data(), user_data_buf.size());
+  if (!fwrite_helper(header_buf, sizeof(header_buf), fp)) {
+    throw std::ios_base::failure("Failed to write header_buf.");
+  }
+  if (!fwrite_helper(system_data_buf.data(), system_data_buf.size(), fp)) {
+    throw std::ios_base::failure("Failed to write system_data_buf.");
+  }
+  if (!fwrite_helper(user_data_buf.data(), user_data_buf.size(), fp)) {
+    throw std::ios_base::failure("Failed to write user_data_buf.");
+  }
 }
 
 void load_server(std::istream& is,
@@ -164,11 +178,11 @@ void load_server(std::istream& is,
       jubatus_maintenance_read != jubatus_version_maintenance) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error(
-          "jubatus version mismatched: current version: " JUBATUS_VERSION
-          ", saved version: " +
+          "jubatus version mismatched: " +
           lexical_cast<std::string>(jubatus_major_read) + "." +
           lexical_cast<std::string>(jubatus_minor_read) + "." +
-          lexical_cast<std::string>(jubatus_maintenance_read)));
+          lexical_cast<std::string>(jubatus_maintenance_read) +
+          ", expected (current) version: " JUBATUS_VERSION));
   }
   uint32_t crc32_expected = read_big_endian<uint32_t>(&header_buf[28]);
   uint64_t system_data_size = read_big_endian<uint64_t>(&header_buf[32]);
@@ -186,16 +200,20 @@ void load_server(std::istream& is,
   if (crc32_actual != crc32_expected) {
     std::ostringstream ss;
     ss << "invalid crc32 checksum: " << std::hex << crc32_actual;
-    ss << ", read " << crc32_expected;
+    ss << ", expected " << crc32_expected;
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error(ss.str()));
   }
 
   system_data_container system_data_actual;
-  {
+  try {
     msgpack::unpacked unpacked;
     msgpack::unpack(&unpacked, &system_data_buf[0], system_data_size);
     unpacked.get().convert(&system_data_actual);
+  } catch (const msgpack::type_error&) {
+    throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error(
+          "system data is broken"));
   }
   system_data_container system_data_expected(server, id);
   if (system_data_actual.version != system_data_expected.version) {
@@ -215,11 +233,11 @@ void load_server(std::istream& is,
   if (system_data_actual.config != system_data_expected.config) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error(
-          "server config mismatched" + system_data_actual.config +
+          "server config mismatched: " + system_data_actual.config +
           ", expected " + system_data_expected.config));
   }
 
-  {
+  try {
     msgpack::unpacked unpacked;
     msgpack::unpack(&unpacked, &user_data_buf[0], user_data_size);
 
@@ -242,7 +260,11 @@ void load_server(std::istream& is,
             lexical_cast<string>(user_data_version_expected)));
     }
 
-    server.get_mixable_holder()->unpack(objs[1]);
+    server.get_driver()->unpack(objs[1]);
+  } catch (const msgpack::type_error&) {
+    throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error(
+          "user data is broken"));
   }
 }
 

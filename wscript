@@ -4,7 +4,8 @@ from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '0.5.3'
+VERSION = '0.6.1'
+ABI_VERSION = VERSION
 APPNAME = 'jubatus'
 
 top = '.'
@@ -29,7 +30,7 @@ def options(opt):
                  dest='gcov', help='only for debug')
 
   opt.add_option('--enable-zktest',
-                 action='store_true', default=False, 
+                 action='store_true', default=False,
                  dest='zktest', help='zk should run in localhost:2181')
 
   # use (base + 10) ports for RPC module tests
@@ -41,10 +42,15 @@ def options(opt):
                  action='store_true', default=False,
                  dest='disable_eigen', help='disable internal Eigen and algorithms using it')
 
+  opt.add_option('--fsanitize',
+                 action='store', default="",
+                 dest='fsanitize', help='specify sanitizer')
+
   opt.recurse(subdirs)
 
 def configure(conf):
-  conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe'];
+  conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe', '-pthread'];
+  conf.env.LINKFLAGS += ['-pthread']
 
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
@@ -57,6 +63,10 @@ def configure(conf):
   conf.define('JUBATUS_PLUGIN_DIR', conf.env.JUBATUS_PLUGIN_DIR)
   conf.write_config_header('jubatus/config.hpp', guard="JUBATUS_CONFIG_HPP_", remove=False)
 
+  # Version constants
+  conf.env.VERSION = VERSION
+  conf.env.ABI_VERSION = ABI_VERSION
+
   conf.check_cxx(lib = 'msgpack')
   conf.check_cxx(lib = 'jubatus_mpio')
   conf.check_cxx(lib = 'jubatus_msgpack-rpc')
@@ -65,7 +75,8 @@ def configure(conf):
   # pkg-config tests
   conf.find_program('pkg-config') # make sure that pkg-config command exists
   try:
-    conf.check_cfg(package = 'libglog', args = '--cflags --libs')
+    conf.check_cfg(package = 'liblog4cxx', args = '--cflags --libs')
+    conf.check_cfg(package = 'jubatus_core', args = '--cflags --libs')
   except conf.errors.ConfigurationError:
     e = sys.exc_info()[1]
     conf.to_log("PKG_CONFIG_PATH: " + os.environ.get('PKG_CONFIG_PATH', ''))
@@ -118,6 +129,11 @@ def configure(conf):
   if conf.env.USE_EIGEN:
     conf.define('JUBATUS_USE_EIGEN', 1)
 
+  sanitizer_names = Options.options.fsanitize
+  if len(sanitizer_names) > 0:
+    conf.env.append_unique('CXXFLAGS', '-fsanitize=' + sanitizer_names)
+    conf.env.append_unique('LINKFLAGS', '-fsanitize=' + sanitizer_names)
+
   conf.recurse(subdirs)
 
 def build(bld):
@@ -138,9 +154,12 @@ def build(bld):
       PACKAGE = APPNAME,
       VERSION = VERSION)
 
-  bld(name = 'core_headers', export_includes = './')
+  bld(name = 'server_headers', export_includes = './')
+  bld(name = 'client_headers', export_includes = './')
 
   bld.recurse(subdirs)
+
+  bld.install_files('${PREFIX}/share/jubatus/example/log', 'log4cxx.xml')
 
 def cpplint(ctx):
   import fnmatch, tempfile

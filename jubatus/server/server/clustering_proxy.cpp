@@ -1,4 +1,4 @@
-// This file is auto-generated from clustering.idl(0.4.5-350-g9c67807) with jenerator version 0.5.2-17-g8a5dca4/develop
+// This file is auto-generated from clustering.idl(0.5.4-179-gb59b61b) with jenerator version 0.5.4-224-g49229fa/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -6,9 +6,8 @@
 #include <vector>
 #include <utility>
 
-#include <glog/logging.h>
-
 #include "jubatus/core/common/exception.hpp"
+#include "../../server/common/logger/logger.hpp"
 #include "../../server/framework/aggregators.hpp"
 #include "../../server/framework/proxy.hpp"
 #include "clustering_types.hpp"
@@ -31,9 +30,13 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_random<std::vector<std::pair<double,
         jubatus::core::fv_converter::datum> >,
         jubatus::core::fv_converter::datum>("get_nearest_members");
+    k.register_async_broadcast<bool>("clear",
+        jubatus::util::lang::function<bool(bool, bool)>(
+        &jubatus::server::framework::all_and));
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
-    LOG(FATAL) << e.diagnostic_information(true);
+    LOG(FATAL) << "exception in proxy main thread: "
+               << e.diagnostic_information(true);
     return -1;
   }
 }
