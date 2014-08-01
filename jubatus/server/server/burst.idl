@@ -38,8 +38,8 @@ message st_document {
 
 service burst {
 
-  #@broadcast #@update #@all_and
-  bool add_documents(0: list<st_document> data) # //@broadcast
+  #@broadcast #@update #@pass
+  int add_documents(0: list<st_document> data) # //@broadcast
 
   #@cht #@analysis #@pass
   st_window get_result(0: string keyword) # //@cht

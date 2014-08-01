@@ -48,7 +48,7 @@ class burst_serv : public jubatus::server::framework::server_base {
   void set_config(const std::string& config);
 
   std::string get_config() const;
-  bool add_documents(const std::vector<st_document>& data);
+  int add_documents(const std::vector<st_document>& data);
   st_window get_result(const std::string& keyword) const;
   st_window get_result_at(const std::string& keyword, double pos) const;
   std::map<std::string, st_window> get_all_bursted_results() const;

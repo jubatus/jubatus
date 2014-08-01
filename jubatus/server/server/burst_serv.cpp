@@ -111,7 +111,7 @@ std::string burst_serv::get_config() const {
   return config_;
 }
 
-bool burst_serv::add_documents(const std::vector<st_document>& data) {
+int burst_serv::add_documents(const std::vector<st_document>& data) {
   size_t processed = 0;
   for (size_t i = 0; i < data.size(); i++) {
     const st_document& doc = data[i];
@@ -129,7 +129,7 @@ bool burst_serv::add_documents(const std::vector<st_document>& data) {
   if (processed > 0) {
     burst_->calculate_results();
   }
-  return processed == data.size();
+  return processed;
 }
 
 st_window burst_serv::get_result(const std::string& keyword) const {
