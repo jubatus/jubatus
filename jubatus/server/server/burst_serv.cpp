@@ -116,12 +116,6 @@ bool burst_serv::add_documents(const std::vector<st_document>& data) {
   for (size_t i = 0; i < data.size(); i++) {
     const st_document& doc = data[i];
     if (burst_->add_document(doc.text, doc.pos)) {
-      DLOG(INFO) << "add_document done: "
-                 << "pos="
-                 << doc.pos
-                 << ", "
-                 << "document="
-                 << doc.text;
       ++processed;
     } else {
       DLOG(INFO) << "add_document failed: "
