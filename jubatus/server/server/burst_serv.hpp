@@ -40,20 +40,22 @@ class burst_serv : public jubatus::server::framework::server_base {
     return mixer_.get();
   }
 
-  jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder>
-      get_mixable_holder() const;
+  core::driver::driver_base* get_driver() const {
+    return burst_.get();
+  }
+
   void get_status(status_t& status) const;
   void set_config(const std::string& config);
 
   std::string get_config() const;
   bool add_documents(const std::vector<st_document>& data);
-  st_window get_result(const std::string& keyword_txt) const;
-  st_window get_result_at(const std::string& keyword_txt, double pos) const;
+  st_window get_result(const std::string& keyword) const;
+  st_window get_result_at(const std::string& keyword, double pos) const;
   std::map<std::string, st_window> get_all_bursted_results() const;
   std::map<std::string, st_window> get_all_bursted_results_at(double pos) const;
   std::vector<st_keyword> get_all_keywords() const;
   bool add_keyword(const st_keyword& keyword);
-  bool remove_keyword(const std::string& keyword_txt);
+  bool remove_keyword(const std::string& keyword);
   bool remove_all_keywords();
   uint64_t user_data_version() const;
 

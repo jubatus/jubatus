@@ -24,7 +24,12 @@
 using jubatus::util::lang::lexical_cast;
 using jubatus::util::lang::shared_ptr;
 using jubatus::util::text::json::json;
+using jubatus::core::common::jsonconfig::config_cast_check;
+using jubatus::core::burst::burst_options;
+using jubatus::core::burst::burst_result;
+using jubatus::core::burst::batch_result;
 using jubatus::server::framework::server_argv;
+using jubatus::server::framework::mixer::create_mixer;
 
 namespace jubatus {
 namespace server {
@@ -33,13 +38,40 @@ namespace {
 
 struct burst_serv_config {
   std::string method;
-  jubatus::util::data::optional<jubatus::util::text::json::json> parameter;
+  core::common::jsonconfig::config parameter;
 
   template<typename Ar>
   void serialize(Ar& ar) {
     ar & JUBA_MEMBER(method) & JUBA_MEMBER(parameter);
   }
 };
+
+st_window to_st_window(const burst_result& x) {
+  st_window result;
+  result.start_pos = x.get_start_pos();
+  const std::vector<batch_result>& batches = x.get_batches();
+
+  result.batches.reserve(batches.size());
+  for (size_t i = 0; i < batches.size(); ++i) {
+    st_batch batch;
+    batch.d = batches[i].d;
+    batch.r = batches[i].r;
+    batch.burst_weight = batches[i].burst_weight;
+    result.batches.push_back(batch);
+  }
+
+  return result;
+}
+
+std::map<std::string, st_window>
+    to_st_window_map(const core::driver::burst::result_map& x) {
+  std::map<std::string, st_window> result;
+  for (core::driver::burst::result_map::const_iterator iter = x.begin();
+       iter != x.end(); ++iter) {
+    result.insert(std::make_pair(iter->first, to_st_window(iter->second)));
+  }
+  return result;
+}
 
 }  // namespace
 
@@ -49,7 +81,7 @@ burst_serv::burst_serv(
     const jubatus::util::lang::shared_ptr<
         jubatus::server::common::lock_service>& zk)
     : jubatus::server::framework::server_base(a),
-      mixer_(jubatus::server::framework::mixer::create_mixer(a, zk)) {
+      mixer_(create_mixer(a, zk, rw_mutex())) {
   // somemixable* mi = new somemixable;
   // somemixable_.set_model(mi);
   // get_mixable_holder()->register_mixable(mi);
@@ -58,31 +90,19 @@ burst_serv::burst_serv(
 burst_serv::~burst_serv() {
 }
 
-jubatus::util::lang::shared_ptr<jubatus::core::framework::mixable_holder>
-burst_serv::get_mixable_holder() const {
-  return burst_->get_mixable_holder();
-}
-
 void burst_serv::get_status(status_t& status) const {
   burst_->get_status(status);
 }
 
 void burst_serv::set_config(const std::string& config) {
   core::common::jsonconfig::config config_root(lexical_cast<json>(config));
-  burst_serv_config conf
-      = core::common::jsonconfig::config_cast_check<
-          burst_serv_config>(config_root);
+  burst_serv_config conf = config_cast_check<burst_serv_config>(config_root);
 
   config_ = config;
 
-  core::common::jsonconfig::config param;
-  if (conf.parameter) {
-    param = core::common::jsonconfig::config(*conf.parameter);
-  }
+  burst_options options = config_cast_check<burst_options>(conf.parameter);
 
-  burst_.reset(new core::driver::burst(param, argv()));
-
-  mixer_->set_mixable_holder(burst_->get_mixable_holder());
+  burst_.reset(new core::driver::burst(new core::burst::burst(options)));
 
   LOG(INFO) << "config loaded: " << config;
 }
@@ -92,48 +112,74 @@ std::string burst_serv::get_config() const {
 }
 
 bool burst_serv::add_documents(const std::vector<st_document>& data) {
-  bool ret = true;
+  size_t processed = 0;
   for (size_t i = 0; i < data.size(); i++) {
     const st_document& doc = data[i];
-    ret = ret && burst_->add_document(doc.pos, doc.txt);
-    DLOG(INFO) << "add_document done: "
-               << "pos="
-               << data.at(i).pos
-               << ", "
-               << "document="
-               << data.at(i).txt.string_values_.at(0).second;
+    if (burst_->add_document(doc.text, doc.pos)) {
+      DLOG(INFO) << "add_document done: "
+                 << "pos="
+                 << doc.pos
+                 << ", "
+                 << "document="
+                 << doc.text;
+      ++processed;
+    } else {
+      DLOG(INFO) << "add_document failed: "
+                 << "pos="
+                 << doc.pos
+                 << ", "
+                 << "document="
+                 << doc.text;
+    }
   }
-  return ret;
+  if (processed > 0) {
+    burst_->calculate_results();
+  }
+  return processed == data.size();
 }
 
-st_window burst_serv::get_result(const std::string& keyword_txt) const {
-  return burst_->get_result(keyword_txt);
+st_window burst_serv::get_result(const std::string& keyword) const {
+  return to_st_window(burst_->get_result(keyword));
 }
 
-st_window burst_serv::get_result_at(const std::string& keyword_txt,
+st_window burst_serv::get_result_at(const std::string& keyword,
                                     double pos) const {
-  return burst_->get_result_at(keyword_txt, pos);
+  return to_st_window(burst_->get_result_at(keyword, pos));
 }
 
 std::map<std::string, st_window> burst_serv::get_all_bursted_results() const {
-  return burst_->get_all_bursted_results();
+  return to_st_window_map(burst_->get_all_bursted_results());
 }
 
 std::map<std::string, st_window> burst_serv::get_all_bursted_results_at(
     double pos) const {
-  return burst_->get_all_bursted_results_at(pos);
+  return to_st_window_map(burst_->get_all_bursted_results_at(pos));
 }
 
 std::vector<st_keyword> burst_serv::get_all_keywords() const {
-  return burst_->get_all_keywords();
+  core::driver::burst::keyword_list keywords = burst_->get_all_keywords();
+
+  std::vector<st_keyword> result;
+  result.reserve(keywords.size());
+
+  for (size_t i = 0; i < keywords.size(); ++i) {
+    result.push_back(
+        st_keyword(keywords[i].keyword,
+                   keywords[i].scaling_param,
+                   keywords[i].gamma));
+  }
+
+  return result;
 }
 
 bool burst_serv::add_keyword(const st_keyword& keyword) {
-  return burst_->add_keyword(keyword);
+  core::burst::keyword_params params = {keyword.scaling_param, keyword.gamma};
+  // TODO(gintenlabo): implement distributed
+  return burst_->add_keyword(keyword.keyword, params, true);
 }
 
-bool burst_serv::remove_keyword(const std::string& keyword_txt) {
-  return burst_->remove_keyword(keyword_txt);
+bool burst_serv::remove_keyword(const std::string& keyword) {
+  return burst_->remove_keyword(keyword);
 }
 
 bool burst_serv::remove_all_keywords() {
