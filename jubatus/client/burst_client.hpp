@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.4.5-405-gf5f59de) with jenerator version 0.4.5-418-gd2d5f04/follow-up-0.5.x
+// This file is auto-generated from burst.idl(0.6.1-19-gfaa73d5) with jenerator version 0.5.4-224-g49229fa/feature/burst
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_BURST_CLIENT_HPP_
@@ -27,13 +27,13 @@ class burst : public jubatus::client::common::client {
     return f.get<bool>();
   }
 
-  st_window get_result(const std::string& keyword_txt) {
-    msgpack::rpc::future f = c_.call("get_result", name_, keyword_txt);
+  st_window get_result(const std::string& keyword) {
+    msgpack::rpc::future f = c_.call("get_result", name_, keyword);
     return f.get<st_window>();
   }
 
-  st_window get_result_at(const std::string& keyword_txt, double pos) {
-    msgpack::rpc::future f = c_.call("get_result_at", name_, keyword_txt, pos);
+  st_window get_result_at(const std::string& keyword, double pos) {
+    msgpack::rpc::future f = c_.call("get_result_at", name_, keyword, pos);
     return f.get<st_window>();
   }
 
@@ -57,8 +57,8 @@ class burst : public jubatus::client::common::client {
     return f.get<bool>();
   }
 
-  bool remove_keyword(const std::string& keyword_txt) {
-    msgpack::rpc::future f = c_.call("remove_keyword", name_, keyword_txt);
+  bool remove_keyword(const std::string& keyword) {
+    msgpack::rpc::future f = c_.call("remove_keyword", name_, keyword);
     return f.get<bool>();
   }
 

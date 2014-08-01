@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.4.5-405-gf5f59de) with jenerator version 0.4.5-418-gd2d5f04/follow-up-0.5.x
+// This file is auto-generated from burst.idl(0.6.1-19-gfaa73d5) with jenerator version 0.5.4-224-g49229fa/feature/burst
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -64,14 +64,14 @@ class burst_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->add_documents(data);
   }
 
-  st_window get_result(const std::string& keyword_txt) {
+  st_window get_result(const std::string& keyword) {
     JRLOCK_(p_);
-    return get_p()->get_result(keyword_txt);
+    return get_p()->get_result(keyword);
   }
 
-  st_window get_result_at(const std::string& keyword_txt, double pos) {
+  st_window get_result_at(const std::string& keyword, double pos) {
     JRLOCK_(p_);
-    return get_p()->get_result_at(keyword_txt, pos);
+    return get_p()->get_result_at(keyword, pos);
   }
 
   std::map<std::string, st_window> get_all_bursted_results() {
@@ -94,9 +94,9 @@ class burst_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->add_keyword(keyword);
   }
 
-  bool remove_keyword(const std::string& keyword_txt) {
+  bool remove_keyword(const std::string& keyword) {
     JWLOCK_(p_);
-    return get_p()->remove_keyword(keyword_txt);
+    return get_p()->remove_keyword(keyword);
   }
 
   bool remove_all_keywords() {
@@ -110,7 +110,7 @@ class burst_impl : public jubatus::server::common::mprpc::rpc_server {
   }
 
   bool save(const std::string& id) {
-    JWLOCK_(p_);
+    JRLOCK_(p_);
     return get_p()->save(id);
   }
 

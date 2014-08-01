@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.4.5-405-gf5f59de) with jenerator version 0.4.5-418-gd2d5f04/follow-up-0.5.x
+// This file is auto-generated from burst.idl(0.6.1-19-gfaa73d5) with jenerator version 0.5.4-224-g49229fa/feature/burst
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -6,9 +6,8 @@
 #include <vector>
 #include <utility>
 
-#include <glog/logging.h>
-
 #include "jubatus/core/common/exception.hpp"
+#include "../../server/common/logger/logger.hpp"
 #include "../../server/framework/aggregators.hpp"
 #include "../../server/framework/proxy.hpp"
 #include "burst_types.hpp"
@@ -50,7 +49,8 @@ int run_proxy(int argc, char* argv[]) {
         &jubatus::server::framework::all_and));
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
-    LOG(FATAL) << e.diagnostic_information(true);
+    LOG(FATAL) << "exception in proxy main thread: "
+               << e.diagnostic_information(true);
     return -1;
   }
 }

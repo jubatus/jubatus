@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.4.5-405-gf5f59de) with jenerator version 0.4.5-418-gd2d5f04/follow-up-0.5.x
+// This file is auto-generated from burst.idl(0.6.1-19-gfaa73d5) with jenerator version 0.5.4-224-g49229fa/feature/burst
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_BURST_TYPES_HPP_
@@ -19,51 +19,51 @@ namespace burst {
 
 struct st_keyword {
  public:
-  MSGPACK_DEFINE(txt, scaling_param, gamma);
-  std::string txt;
+  MSGPACK_DEFINE(keyword, scaling_param, gamma);
+  std::string keyword;
   double scaling_param;
   double gamma;
   st_keyword() {
   }
-  st_keyword(const std::string& txt, double scaling_param, double gamma)
-    : txt(txt), scaling_param(scaling_param), gamma(gamma) {
+  st_keyword(const std::string& keyword, double scaling_param, double gamma)
+    : keyword(keyword), scaling_param(scaling_param), gamma(gamma) {
   }
 };
 
 struct st_batch {
  public:
-  MSGPACK_DEFINE(d, r, batch_weight);
+  MSGPACK_DEFINE(d, r, burst_weight);
   int32_t d;
   int32_t r;
-  double batch_weight;
+  double burst_weight;
   st_batch() {
   }
-  st_batch(int32_t d, int32_t r, double batch_weight)
-    : d(d), r(r), batch_weight(batch_weight) {
+  st_batch(int32_t d, int32_t r, double burst_weight)
+    : d(d), r(r), burst_weight(burst_weight) {
   }
 };
 
 struct st_window {
  public:
   MSGPACK_DEFINE(start_pos, batches);
-  int32_t start_pos;
+  double start_pos;
   std::vector<st_batch> batches;
   st_window() {
   }
-  st_window(int32_t start_pos, const std::vector<st_batch>& batches)
+  st_window(double start_pos, const std::vector<st_batch>& batches)
     : start_pos(start_pos), batches(batches) {
   }
 };
 
 struct st_document {
  public:
-  MSGPACK_DEFINE(pos, txt);
+  MSGPACK_DEFINE(pos, text);
   double pos;
-  jubatus::client::common::datum txt;
+  std::string text;
   st_document() {
   }
-  st_document(double pos, const jubatus::client::common::datum& txt)
-    : pos(pos), txt(txt) {
+  st_document(double pos, const std::string& text)
+    : pos(pos), text(text) {
   }
 };
 
