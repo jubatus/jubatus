@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.1-19-gfaa73d5) with jenerator version 0.5.4-224-g49229fa/feature/burst
+// This file is auto-generated from burst.idl(0.6.1-24-g3a65019) with jenerator version 0.5.4-224-g49229fa/feature/burst
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_BURST_CLIENT_HPP_
@@ -22,9 +22,9 @@ class burst : public jubatus::client::common::client {
       : client(host, port, name, timeout_sec) {
   }
 
-  bool add_documents(const std::vector<st_document>& data) {
+  int32_t add_documents(const std::vector<st_document>& data) {
     msgpack::rpc::future f = c_.call("add_documents", name_, data);
-    return f.get<bool>();
+    return f.get<int32_t>();
   }
 
   st_window get_result(const std::string& keyword) {

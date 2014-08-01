@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.1-19-gfaa73d5) with jenerator version 0.5.4-224-g49229fa/feature/burst
+// This file is auto-generated from burst.idl(0.6.1-24-g3a65019) with jenerator version 0.5.4-224-g49229fa/feature/burst
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -18,9 +18,9 @@ int run_proxy(int argc, char* argv[]) {
   try {
     jubatus::server::framework::proxy k(
         jubatus::server::framework::proxy_argv(argc, argv, "burst"));
-    k.register_async_broadcast<bool, std::vector<st_document> >("add_documents",
-        jubatus::util::lang::function<bool(bool, bool)>(
-        &jubatus::server::framework::all_and));
+    k.register_async_broadcast<int32_t, std::vector<st_document> >(
+        "add_documents", jubatus::util::lang::function<int32_t(int32_t,
+        int32_t)>(&jubatus::server::framework::pass<int32_t>));
     k.register_async_cht<2, st_window>("get_result",
         jubatus::util::lang::function<st_window(st_window, st_window)>(
         &jubatus::server::framework::pass<st_window>));

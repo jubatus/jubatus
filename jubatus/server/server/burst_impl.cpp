@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.1-19-gfaa73d5) with jenerator version 0.5.4-224-g49229fa/feature/burst
+// This file is auto-generated from burst.idl(0.6.1-24-g3a65019) with jenerator version 0.5.4-224-g49229fa/feature/burst
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -19,7 +19,7 @@ class burst_impl : public jubatus::server::common::mprpc::rpc_server {
     rpc_server(a.timeout),
     p_(new jubatus::server::framework::server_helper<burst_serv>(a, true)) {
 
-    rpc_server::add<bool(std::string, std::vector<st_document>)>(
+    rpc_server::add<int32_t(std::string, std::vector<st_document>)>(
         "add_documents", jubatus::util::lang::bind(&burst_impl::add_documents,
         this, jubatus::util::lang::_2));
     rpc_server::add<st_window(std::string, std::string)>("get_result",
@@ -59,7 +59,7 @@ class burst_impl : public jubatus::server::common::mprpc::rpc_server {
         &burst_impl::get_status, this));
   }
 
-  bool add_documents(const std::vector<st_document>& data) {
+  int32_t add_documents(const std::vector<st_document>& data) {
     JWLOCK_(p_);
     return get_p()->add_documents(data);
   }
