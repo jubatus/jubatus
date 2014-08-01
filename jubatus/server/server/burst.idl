@@ -1,5 +1,5 @@
 # Jubatus: Online machine learning framework for distributed environment
-# Copyright (C) 2011,2012 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+# Copyright (C) 2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,7 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 message st_keyword {
-  0: string txt
+  0: string keyword
   1: double scaling_param
   2: double gamma
 }
@@ -23,17 +23,17 @@ message st_keyword {
 message st_batch {
   0: int d
   1: int r
-  2: double batch_weight
+  2: double burst_weight
 }
 
 message st_window {
-  0: int start_pos
+  0: double start_pos
   1: list<st_batch> batches
 }
 
 message st_document {
   0: double pos
-  1: datum txt
+  1: string text
 }
 
 service burst {
@@ -42,10 +42,10 @@ service burst {
   bool add_documents(0: list<st_document> data) # //@broadcast
 
   #@cht #@analysis #@pass
-  st_window get_result(0: string keyword_txt) # //@cht
+  st_window get_result(0: string keyword) # //@cht
 
   #@cht #@analysis #@pass
-  st_window get_result_at(0: string keyword_txt, 2: double pos) # //@cht
+  st_window get_result_at(0: string keyword, 2: double pos) # //@cht
 
   #@broadcast #@analysis #@merge
   map<string, st_window > get_all_bursted_results() # //@broadcast
@@ -60,7 +60,7 @@ service burst {
   bool add_keyword(0: st_keyword keyword) # //@broadcast
 
   #@broadcast #@update #@all_and
-  bool remove_keyword(0: string keyword_txt) # //@broadcast
+  bool remove_keyword(0: string keyword) # //@broadcast
 
   #@broadcast #@update #@all_and
   bool remove_all_keywords() # //@broadcast
