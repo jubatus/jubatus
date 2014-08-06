@@ -21,8 +21,16 @@
 #include "../framework/mixer/mixer_factory.hpp"
 #include "jubatus/core/storage/storage_factory.hpp"
 
+#ifdef HAVE_ZOOKEEPER_H
+#include ZOOKEEPER_HEADER
+#endif
+
 using jubatus::util::lang::lexical_cast;
 using jubatus::util::lang::shared_ptr;
+using jubatus::util::lang::bind;
+using jubatus::util::lang::_1;
+using jubatus::util::lang::_2;
+using jubatus::util::lang::_3;
 using jubatus::util::text::json::json;
 using jubatus::core::common::jsonconfig::config_cast_check;
 using jubatus::core::burst::burst_options;
@@ -79,7 +87,11 @@ std::map<std::string, st_window>
 burst_serv::burst_serv(const server_argv& a,
                        const shared_ptr<common::lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk, rw_mutex())) {
+      mixer_(create_mixer(a, zk, rw_mutex())),
+      zk_(zk) {
+#ifdef HAVE_ZOOKEEPER_H
+  bind_watcher_();
+#endif
 }
 
 burst_serv::~burst_serv() {
@@ -178,6 +190,34 @@ bool burst_serv::remove_all_keywords() {
 
 uint64_t burst_serv::user_data_version() const {
   return 1;  // should be inclemented when model data is modified
+}
+
+void burst_serv::bind_watcher_() {
+#ifdef HAVE_ZOOKEEPER_H
+  const server_argv& a = argv();
+  if (!a.is_standalone()) {
+    std::string path;
+    common::build_actor_path(path, a.type, a.name);
+    path += "/nodes";
+    zk_->bind_child_watcher(
+        path, bind(&burst_serv::watcher_impl_, this, _1, _2, _3));
+  }
+#endif
+}
+
+void burst_serv::watcher_impl_(int type, int state, const std::string& path) {
+#ifdef HAVE_ZOOKEEPER_H
+  if (type == ZOO_CHILD_EVENT) {
+    LOG(INFO) << "watcher_impl_: ANOTHER NODE ADDED OR DELETED";
+    // TODO(gintenlabo): implement keyword rehasing
+  } else {
+    LOG(WARNING) << "burst_serv::watcher_impl_ got unexpected event ("
+                 << type << "), something wrong: " << path;
+  }
+
+  // reregister
+  bind_watcher_();
+#endif
 }
 
 }  // namespace server

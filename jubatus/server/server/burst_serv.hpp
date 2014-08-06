@@ -62,6 +62,11 @@ class burst_serv : public jubatus::server::framework::server_base {
   jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
   jubatus::util::lang::shared_ptr<core::driver::burst> burst_;
   std::string config_;
+
+  jubatus::util::lang::shared_ptr<common::lock_service> zk_;
+
+  void bind_watcher_();
+  void watcher_impl_(int type, int state, const std::string& path);
 };
 
 }  // namespace server
