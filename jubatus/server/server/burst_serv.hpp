@@ -31,9 +31,8 @@ namespace server {
 class burst_serv : public jubatus::server::framework::server_base {
  public:
   burst_serv(
-      const jubatus::server::framework::server_argv& a,
-      const jubatus::util::lang::shared_ptr<
-          jubatus::server::common::lock_service>& zk);
+      const framework::server_argv& a,
+      const jubatus::util::lang::shared_ptr<common::lock_service>& zk);
   virtual ~burst_serv();
 
   framework::mixer::mixer* get_mixer() const {
@@ -46,8 +45,8 @@ class burst_serv : public jubatus::server::framework::server_base {
 
   void get_status(status_t& status) const;
   void set_config(const std::string& config);
-
   std::string get_config() const;
+
   int add_documents(const std::vector<st_document>& data);
   st_window get_result(const std::string& keyword) const;
   st_window get_result_at(const std::string& keyword, double pos) const;

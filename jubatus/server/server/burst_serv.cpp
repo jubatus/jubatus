@@ -76,15 +76,10 @@ std::map<std::string, st_window>
 }  // namespace
 
 
-burst_serv::burst_serv(
-    const jubatus::server::framework::server_argv& a,
-    const jubatus::util::lang::shared_ptr<
-        jubatus::server::common::lock_service>& zk)
-    : jubatus::server::framework::server_base(a),
+burst_serv::burst_serv(const server_argv& a,
+                       const shared_ptr<common::lock_service>& zk)
+    : server_base(a),
       mixer_(create_mixer(a, zk, rw_mutex())) {
-  // somemixable* mi = new somemixable;
-  // somemixable_.set_model(mi);
-  // get_mixable_holder()->register_mixable(mi);
 }
 
 burst_serv::~burst_serv() {
