@@ -103,6 +103,7 @@ void burst_serv::set_config(const std::string& config) {
   burst_options options = config_cast_check<burst_options>(conf.parameter);
 
   burst_.reset(new core::driver::burst(new core::burst::burst(options)));
+  mixer_->set_driver(burst_.get());
 
   LOG(INFO) << "config loaded: " << config;
 }
