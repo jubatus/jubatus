@@ -264,6 +264,15 @@ bool zk::bind_watcher(
   return rc == ZOK;
 }
 
+bool zk::bind_child_watcher(
+    const string& path,
+    const jubatus::util::lang::function<void(int, int, string)>& f) {
+  jubatus::util::lang::function<void(int, int, string)>* fp =
+    new jubatus::util::lang::function<void(int, int, string)>(f);
+  int rc = zoo_wget_children(zh_, path.c_str(), my_znode_watcher, fp, NULL);
+  return rc == ZOK;
+}
+
 void my_znode_delete_watcher(
     zhandle_t* zh,
     int type,

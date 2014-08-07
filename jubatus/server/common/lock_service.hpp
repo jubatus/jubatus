@@ -54,6 +54,10 @@ class lock_service {
       const std::string& path,
       jubatus::util::lang::function<void(int, int, std::string)>&) = 0;
 
+  virtual bool bind_child_watcher(
+      const std::string& path,
+      const jubatus::util::lang::function<void(int, int, std::string)>&) = 0;
+
   virtual bool bind_delete_watcher(
       const std::string& path,
       jubatus::util::lang::function<void(std::string)>&) = 0;
