@@ -29,6 +29,8 @@
 
 #include "logger/logger.hpp"
 
+using jubatus::util::lang::lexical_cast;
+
 namespace jubatus {
 namespace server {
 namespace common {
@@ -66,55 +68,64 @@ void setup_sigset_for_sigterm(sigset_t* ss) {
   clear_sigset(ss);
   add_signal(ss, SIGTERM);
   add_signal(ss, SIGINT);
+  add_signal(ss, SIGHUP);
 }
 
-bool blocking_sigterm = false;
-bool handling_sigterm = false;
+bool handling_signals = false;
 jubatus::util::lang::function<void()> action_on_term;
-jubatus::util::concurrent::mutex mutex_on_term;
+jubatus::util::lang::function<void()> action_on_hup;
+jubatus::util::concurrent::mutex mutex_on_signal;
 
-void handle_sigterm() {
-  // internal function; do not call this function outside of set_exit_on_term
+void handle_signal(jubatus::util::lang::function<void()>& action) {
+  jubatus::util::lang::function<void()> f;
+  {
+    jubatus::util::concurrent::scoped_lock lk(mutex_on_signal);
+    f = action;
+    jubatus::util::lang::function<void()>().swap(action);
+  }
+
+  // Execute the action without the mutex lock so that the action
+  // can re-register the action via set_action_on_hup etc.
+  if (f) {
+    f();
+  }
+}
+
+void handle_signals() {
   try {
     sigset_t ss;
     setup_sigset_for_sigterm(&ss);
 
-    int signo;
-    if (sigwait(&ss, &signo) != 0) {
-      throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("failed to call sigwait")
-        << core::common::exception::error_api_func("sigwait"));
-    }
-
-    switch (signo) {
-      case SIGINT:
-        LOG(INFO) << "caught SIGINT";
-        break;
-      case SIGTERM:
-        LOG(INFO) << "caught SIGTERM";
-        break;
-      default:
-        // unintended signal; raise error (assertion may be better?)
+    while(1) {
+      int signo;
+      if (sigwait(&ss, &signo) != 0) {
         throw JUBATUS_EXCEPTION(
-          core::common::exception::runtime_error(
-              "unknown signal caught by sigwait (possibily logic error)"));
-    }
-
-    {
-      jubatus::util::concurrent::scoped_lock lk(mutex_on_term);
-
-      if (action_on_term) {
-        action_on_term();
-        jubatus::util::lang::function<void()>().swap(action_on_term);
-      } else {
-        kill(getpid(), signo);  // no signal handler; resend signal
-                                // (the signal will be blocked and pending)
+          core::common::exception::runtime_error("failed to call sigwait")
+          << core::common::exception::error_api_func("sigwait"));
       }
 
-      handling_sigterm = false;
+      switch (signo) {
+        case SIGTERM:
+          LOG(INFO) << "caught SIGTERM";
+          handle_signal(action_on_term);
+          break;
+        case SIGINT:  // behave the same way as SIGTERM
+          LOG(INFO) << "caught SIGINT";
+          handle_signal(action_on_term);
+          break;
+        case SIGHUP:
+          LOG(INFO) << "caught SIGHUP";
+          handle_signal(action_on_hup);
+          break;
+        default:
+          // unintended signal; raise error (assertion may be better?)
+          throw JUBATUS_EXCEPTION(
+            core::common::exception::runtime_error(
+                "unknown signal (" + lexical_cast<std::string>(signo) +
+                ") caught by sigwait (possibily logic error)"));
+      }
+      continue;
     }
-
-    return;  // signal handling is successfully done.
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << "exception in sigwait thread: "
                << e.diagnostic_information(true);
@@ -122,20 +133,6 @@ void handle_sigterm() {
     LOG(FATAL) << "error in sigwait thread: " << e.what();
   }
   JUBATUS_ASSERT_UNREACHABLE();
-}
-
-void prepare_sigterm_handling() {
-  if (handling_sigterm) {
-    throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error(
-          "start_sigterm_handling() is already called."));
-  }
-
-  sigset_t ss;
-  setup_sigset_for_sigterm(&ss);
-  block_signals(&ss);
-
-  blocking_sigterm = true;
 }
 
 void ignore_sigpipe() {
@@ -151,24 +148,32 @@ void ignore_sigpipe() {
 }  // anonymous namespace
 
 void prepare_signal_handling() {
-  prepare_sigterm_handling();
+  sigset_t ss;
+  setup_sigset_for_sigterm(&ss);
+  block_signals(&ss);
+
   ignore_sigpipe();
+
+  if (!handling_signals) {
+    jubatus::util::concurrent::thread(&handle_signals).start();
+    handling_signals = true;
+  }
 }
 
+/**
+ * Bind one-shot action to SIGTERM and SIGINT signal.
+ */
 void set_action_on_term(jubatus::util::lang::function<void()> action) {
-  jubatus::util::concurrent::scoped_lock lk(mutex_on_term);
-
-  if (!blocking_sigterm) {
-    throw JUBATUS_EXCEPTION(
-      core::common::exception::runtime_error(
-        "prepare_signal_handling must be called before set_action_on_term."));
-  }
-
-  if (!handling_sigterm) {
-    jubatus::util::concurrent::thread(&handle_sigterm).start();
-    handling_sigterm = true;
-  }
+  jubatus::util::concurrent::scoped_lock lk(mutex_on_signal);
   action_on_term.swap(action);
+}
+
+/**
+ * Bind one-shot action to SIGHUP signal.
+ */
+void set_action_on_hup(jubatus::util::lang::function<void()> action) {
+  jubatus::util::concurrent::scoped_lock lk(mutex_on_signal);
+  action_on_hup.swap(action);
 }
 
 }  // namespace common

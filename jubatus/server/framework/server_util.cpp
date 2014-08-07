@@ -25,6 +25,7 @@
 
 #include "jubatus/util/text/json.h"
 #include "jubatus/util/lang/shared_ptr.h"
+#include "jubatus/util/lang/bind.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
@@ -34,6 +35,7 @@
 #include "../common/membership.hpp"
 #include "../common/network.hpp"
 #include "../common/system.hpp"
+#include "../common/signals.hpp"
 
 namespace jubatus {
 namespace server {
@@ -60,6 +62,18 @@ struct lower_bound_reader {
  private:
   int low;
 };
+
+void configure_logger(const std::string& log_config) {
+  if (log_config.empty()) {
+    common::logger::configure();
+  } else {
+    LOG(INFO) << "loading log configuration: " << log_config;
+    common::logger::configure(log_config);
+  }
+  common::set_action_on_hup(jubatus::util::lang::bind(
+      configure_logger, jubatus::util::lang::ref(log_config)));
+}
+
 }
 
 void print_version(const std::string& progname) {
@@ -203,14 +217,12 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   }
 
   // Configure the logger.
+  if (!log_config.empty()) {
+    log_config = common::real_path(log_config);
+  }
   common::logger::setup_parameters(
       common::get_program_name().c_str(), eth.c_str(), port);
-  if (log_config.empty()) {
-    common::logger::configure();
-  } else {
-    log_config = common::real_path(log_config);
-    common::logger::configure(log_config);
-  }
+  configure_logger(log_config);
 
 #ifdef HAVE_ZOOKEEPER_H
   z = p.get<std::string>("zookeeper");
@@ -426,14 +438,12 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   }
 
   // Configure the logger.
+  if (!log_config.empty()) {
+    log_config = common::real_path(log_config);
+  }
   common::logger::setup_parameters(
       common::get_program_name().c_str(), eth.c_str(), port);
-  if (log_config.empty()) {
-    common::logger::configure();
-  } else {
-    log_config = common::real_path(log_config);
-    common::logger::configure(log_config);
-  }
+  configure_logger(log_config);
 
   if (zookeeper_timeout < 1) {
     std::cerr << "can't start with zookeeper_timeout less than 1" << std::endl;
