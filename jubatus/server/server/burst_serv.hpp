@@ -46,6 +46,7 @@ class burst_serv : public jubatus::server::framework::server_base {
   void get_status(status_t& status) const;
   void set_config(const std::string& config);
   std::string get_config() const;
+  uint64_t user_data_version() const;
 
   int add_documents(const std::vector<st_document>& data);
   st_window get_result(const std::string& keyword) const;
@@ -56,7 +57,9 @@ class burst_serv : public jubatus::server::framework::server_base {
   bool add_keyword(const st_keyword& keyword);
   bool remove_keyword(const std::string& keyword);
   bool remove_all_keywords();
-  uint64_t user_data_version() const;
+
+  bool will_process(const std::string& keyword) const;
+  void rehash_keywords();
 
  private:
   jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
@@ -64,6 +67,7 @@ class burst_serv : public jubatus::server::framework::server_base {
   std::string config_;
 
   jubatus::util::lang::shared_ptr<common::lock_service> zk_;
+  bool watcher_binded_;
 
   void bind_watcher_();
   void watcher_impl_(int type, int state, const std::string& path);

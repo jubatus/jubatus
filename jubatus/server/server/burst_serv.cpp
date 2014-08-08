@@ -17,12 +17,14 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <utility>
 #include "burst_serv.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
-#include "jubatus/core/storage/storage_factory.hpp"
+#include "jubatus/core/common/assert.hpp"
 
 #ifdef HAVE_ZOOKEEPER_H
 #include ZOOKEEPER_HEADER
+#include "../common/cht.hpp"
 #endif
 
 using jubatus::util::lang::lexical_cast;
@@ -81,6 +83,25 @@ std::map<std::string, st_window>
   return result;
 }
 
+#ifdef HAVE_ZOOKEEPER_H
+const int replication_level = 2;
+
+bool is_assigned(
+    common::cht& cht,
+    const std::string& keyword,
+    const std::string& host,
+    int port) {
+  std::vector<std::pair<std::string, int> > nodes;
+  cht.find(keyword, nodes, replication_level);
+  for (size_t i = 0; i < nodes.size(); ++i) {
+    if (nodes[i].first == host && nodes[i].second == port) {
+      return true;
+    }
+  }
+  return false;
+}
+#endif
+
 }  // namespace
 
 
@@ -88,10 +109,8 @@ burst_serv::burst_serv(const server_argv& a,
                        const shared_ptr<common::lock_service>& zk)
     : server_base(a),
       mixer_(create_mixer(a, zk, rw_mutex())),
-      zk_(zk) {
-#ifdef HAVE_ZOOKEEPER_H
-  bind_watcher_();
-#endif
+      zk_(zk),
+      watcher_binded_(false) {
 }
 
 burst_serv::~burst_serv() {
@@ -119,7 +138,20 @@ std::string burst_serv::get_config() const {
   return config_;
 }
 
+uint64_t burst_serv::user_data_version() const {
+  return 1;  // should be inclemented when model data is modified
+}
+
+
 int burst_serv::add_documents(const std::vector<st_document>& data) {
+#ifdef HAVE_ZOOKEEPER_H
+  if (!watcher_binded_ && burst_->has_been_mixed()) {
+    rehash_keywords();
+    bind_watcher_();
+    watcher_binded_ = true;
+  }
+#endif
+
   size_t processed = 0;
   for (size_t i = 0; i < data.size(); i++) {
     const st_document& doc = data[i];
@@ -176,8 +208,13 @@ std::vector<st_keyword> burst_serv::get_all_keywords() const {
 
 bool burst_serv::add_keyword(const st_keyword& keyword) {
   core::burst::keyword_params params = {keyword.scaling_param, keyword.gamma};
-  // TODO(gintenlabo): implement distributed
-  return burst_->add_keyword(keyword.keyword, params, true);
+  bool processed_in_this_server = will_process(keyword.keyword);
+  if (!processed_in_this_server) {
+    LOG(INFO) << "keyword `" << keyword.keyword
+              << "' will not be processed in this server";
+  }
+  return burst_->add_keyword(keyword.keyword, params,
+                             processed_in_this_server);
 }
 
 bool burst_serv::remove_keyword(const std::string& keyword) {
@@ -188,9 +225,42 @@ bool burst_serv::remove_all_keywords() {
   return burst_->remove_all_keywords();
 }
 
-uint64_t burst_serv::user_data_version() const {
-  return 1;  // should be inclemented when model data is modified
+
+bool burst_serv::will_process(const std::string& keyword) const {
+#ifdef HAVE_ZOOKEEPER_H
+  const server_argv& a = argv();
+  if (a.is_standalone()) {
+#endif
+    return true;
+#ifdef HAVE_ZOOKEEPER_H
+  } else {
+    common::cht cht(zk_, a.type, a.name);
+    return is_assigned(cht, keyword, a.eth, a.port);
+  }
+#endif
 }
+
+void burst_serv::rehash_keywords() {
+#ifdef HAVE_ZOOKEEPER_H
+  if (argv().is_standalone()) {
+    return;
+  }
+
+  core::driver::burst::keyword_list keywords = burst_->get_all_keywords();
+  std::vector<std::string> processed_keywords;
+
+  for (core::driver::burst::keyword_list::iterator iter = keywords.begin();
+       iter != keywords.end(); ++iter) {
+    if (will_process(iter->keyword)) {
+      LOG(INFO) << "this server will now process " << iter->keyword;
+      processed_keywords.push_back(iter->keyword);
+    }
+  }
+
+  burst_->set_processed_keywords(processed_keywords);
+#endif
+}
+
 
 void burst_serv::bind_watcher_() {
 #ifdef HAVE_ZOOKEEPER_H
@@ -207,9 +277,12 @@ void burst_serv::bind_watcher_() {
 
 void burst_serv::watcher_impl_(int type, int state, const std::string& path) {
 #ifdef HAVE_ZOOKEEPER_H
+  JUBATUS_ASSERT(!argv().is_standalone());
+
   if (type == ZOO_CHILD_EVENT) {
     LOG(INFO) << "watcher_impl_: ANOTHER NODE ADDED OR DELETED";
-    // TODO(gintenlabo): implement keyword rehasing
+    jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
+    rehash_keywords();
   } else {
     LOG(WARNING) << "burst_serv::watcher_impl_ got unexpected event ("
                  << type << "), something wrong: " << path;
