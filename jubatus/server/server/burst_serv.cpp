@@ -209,10 +209,6 @@ std::vector<st_keyword> burst_serv::get_all_keywords() const {
 bool burst_serv::add_keyword(const st_keyword& keyword) {
   core::burst::keyword_params params = {keyword.scaling_param, keyword.gamma};
   bool processed_in_this_server = will_process(keyword.keyword);
-  if (!processed_in_this_server) {
-    LOG(INFO) << "keyword `" << keyword.keyword
-              << "' will not be processed in this server";
-  }
   return burst_->add_keyword(keyword.keyword, params,
                              processed_in_this_server);
 }
@@ -252,7 +248,6 @@ void burst_serv::rehash_keywords() {
   for (core::driver::burst::keyword_list::iterator iter = keywords.begin();
        iter != keywords.end(); ++iter) {
     if (will_process(iter->keyword)) {
-      LOG(INFO) << "this server will now process " << iter->keyword;
       processed_keywords.push_back(iter->keyword);
     }
   }
@@ -280,7 +275,6 @@ void burst_serv::watcher_impl_(int type, int state, const std::string& path) {
   JUBATUS_ASSERT(!argv().is_standalone());
 
   if (type == ZOO_CHILD_EVENT) {
-    LOG(INFO) << "watcher_impl_: ANOTHER NODE ADDED OR DELETED";
     jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
     rehash_keywords();
   } else {
