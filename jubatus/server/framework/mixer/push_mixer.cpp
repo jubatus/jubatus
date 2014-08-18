@@ -112,6 +112,14 @@ push_communication_impl::push_communication_impl(
 size_t push_communication_impl::update_members() {
   common::unique_lock lk(m_);
   common::get_all_nodes(*zk_, type_, name_, servers_);
+
+  // remove itself from push candidate list
+  // std::vector's erase-remove idiom
+  servers_.erase(std::remove(servers_.begin(),
+                             servers_.end(),
+                             my_id_),
+                 servers_.end());
+
   return servers_.size();
 }
 
