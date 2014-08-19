@@ -17,6 +17,7 @@
 #include "signals.hpp"
 
 #include <unistd.h>
+#include <string>
 #include <cerrno>
 #include <csignal>
 
@@ -96,7 +97,7 @@ void handle_signals() {
     sigset_t ss;
     setup_sigset_for_sigterm(&ss);
 
-    while(1) {
+    while (1) {
       int signo;
       if (sigwait(&ss, &signo) != 0) {
         throw JUBATUS_EXCEPTION(

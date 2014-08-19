@@ -44,6 +44,7 @@ namespace framework {
 static const std::string VERSION(JUBATUS_VERSION);
 
 namespace {
+
   const std::string IGNORED_TAG = "[IGNORED]";
   jubatus::util::lang::shared_ptr<server::common::lock_service> ls;
 
@@ -74,7 +75,7 @@ void configure_logger(const std::string& log_config) {
       configure_logger, jubatus::util::lang::ref(log_config)));
 }
 
-}
+}  // namespace
 
 void print_version(const std::string& progname) {
   std::cout << "jubatus-" << VERSION << " (" << progname << ")" << std::endl;
