@@ -70,7 +70,9 @@ dynamic_loader::dynamic_loader(const std::string& path)
     }
   }
 
-  if (!handle) {
+  handle_ = handle;
+
+  if (!handle_) {
     char* error = dlerror();
     throw JUBATUS_EXCEPTION(
         converter_exception(
@@ -79,9 +81,12 @@ dynamic_loader::dynamic_loader(const std::string& path)
         << jubatus::core::common::exception::error_file_name(path)
         << jubatus::core::common::exception::error_message(error));
   } else {
-    LOG(INFO) << "plugin loaded: " << common::real_path(loaded_path);
+    typedef std::string (*func_t)(void);
+    func_t version = reinterpret_cast<func_t>(load_symbol("version"));
+
+    LOG(INFO) << "plugin loaded: " << common::real_path(loaded_path)
+              << " version: " << version();
   }
-  handle_ = handle;
 }
 
 dynamic_loader::~dynamic_loader() {
