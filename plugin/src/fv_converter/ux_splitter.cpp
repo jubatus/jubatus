@@ -105,4 +105,9 @@ jubatus::plugin::fv_converter::ux_splitter* create(
 
   return new jubatus::plugin::fv_converter::ux_splitter(lines);
 }
+
+std::string version() {
+  return JUBATUS_VERSION;
+}
+
 }
