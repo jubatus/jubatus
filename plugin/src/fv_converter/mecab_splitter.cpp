@@ -95,4 +95,9 @@ jubatus::plugin::fv_converter::mecab_splitter* create(
       jubatus::core::fv_converter::get_with_default(params, "arg", "");
   return new jubatus::plugin::fv_converter::mecab_splitter(param.c_str());
 }
+
+std::string version() {
+  return JUBATUS_VERSION;
+}
+
 }

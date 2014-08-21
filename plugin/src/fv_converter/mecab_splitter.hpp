@@ -49,9 +49,7 @@ class mecab_splitter : public jubatus::core::fv_converter::word_splitter {
 extern "C" {
 jubatus::plugin::fv_converter::mecab_splitter* create(
     const std::map<std::string, std::string>& params);
-std::string version() {
-  return "0.6.1";
-}
+std::string version();
 }
 
 #endif  // JUBATUS_PLUGIN_FV_CONVERTER_MECAB_SPLITTER_HPP_
