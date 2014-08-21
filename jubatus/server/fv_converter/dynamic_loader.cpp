@@ -81,11 +81,15 @@ dynamic_loader::dynamic_loader(const std::string& path)
         << jubatus::core::common::exception::error_file_name(path)
         << jubatus::core::common::exception::error_message(error));
   } else {
-    typedef std::string (*func_t)(void);
-    func_t version = reinterpret_cast<func_t>(load_symbol("version"));
-
-    LOG(INFO) << "plugin loaded: " << common::real_path(loaded_path)
-              << " version: " << version();
+    try {
+      typedef std::string (*func_t)(void);
+      func_t version = reinterpret_cast<func_t>(load_symbol("version"));
+      LOG(INFO) << "plugin loaded: " << common::real_path(loaded_path)
+                << " version: " << version();
+    } catch (converter_exception) {
+      LOG(WARN) << "plugin loaded: " << common::real_path(loaded_path)
+                << " but version information is unavailable";
+    }
   }
 }
 
