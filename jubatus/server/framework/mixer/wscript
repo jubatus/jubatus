@@ -19,11 +19,12 @@ def build(bld):
             )
 
   if bld.env.HAVE_ZOOKEEPER_H:
-    bld.program(
-      features='gtest',
-      source = 'linear_mixer_test.cpp',
-      target = 'linear_mixer_test',
-      use = 'jubaserv_mixer')
+    for name in ['linear_mixer_test', 'push_mixer_test']:
+      bld.program(
+        features='gtest',
+        source = name + '.cpp',
+        target = name,
+        use = 'jubaserv_mixer')
 
   bld.install_files('${PREFIX}/include/jubatus/server/framework/mixer', [
       'broadcast_mixer.hpp',
