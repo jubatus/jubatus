@@ -27,7 +27,7 @@ def build(bld):
   src = 'network.cpp global_id_generator_standalone.cpp config.cpp signals.cpp system.cpp filesystem.cpp'
 
   if bld.env.HAVE_ZOOKEEPER_H:
-    src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp global_id_generator_zk.cpp'
+    src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp global_id_generator_zk.cpp crc32.cpp'
 
   bld.shlib(
     source = src,
@@ -41,6 +41,7 @@ def build(bld):
     'network_test.cpp',
     'global_id_generator_test.cpp',
     'unique_lock_test.cpp',
+    'crc32_test.cpp'
     'system_test.cpp',
     'filesystem_test.cpp',
     ]
@@ -69,6 +70,7 @@ def build(bld):
       'global_id_generator_zk.hpp',
       'lock_service.hpp',
       'membership.hpp',
+      'crc32.hpp',
       'network.hpp',
       'signals.hpp',
       'unique_lock.hpp',
