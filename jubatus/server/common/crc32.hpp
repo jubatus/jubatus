@@ -21,13 +21,13 @@
 #include <cstddef>
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace common {
 
 uint32_t calc_crc32(const char* data, size_t size, uint32_t crc = 0);
 
 }  // namespace common
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus
 
 #endif  // JUBATUS_CORE_COMMON_CRC32_HPP_

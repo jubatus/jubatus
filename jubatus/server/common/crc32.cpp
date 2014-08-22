@@ -17,7 +17,7 @@
 #include "crc32.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace common {
 
 namespace {
@@ -56,5 +56,5 @@ uint32_t calc_crc32(const char* data, size_t size, uint32_t crc) {
 }
 
 }  // namespace common
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus

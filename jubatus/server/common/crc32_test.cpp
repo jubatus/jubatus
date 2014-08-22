@@ -19,7 +19,7 @@
 #include "crc32.hpp"
 
 namespace jubatus {
-namespace core {
+namespace server {
 namespace common {
 
 TEST(calc_crc32, simple) {
@@ -51,5 +51,5 @@ TEST(calc_crc32, piecewise) {
 }
 
 }  // namespace common
-}  // namespace core
+}  // namespace server
 }  // namespace jubatus
