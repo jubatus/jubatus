@@ -24,11 +24,11 @@
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/common/big_endian.hpp"
-#include "jubatus/core/common/crc32.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 #include "jubatus/core/framework/stream_writer.hpp"
 
 #include "../common/logger/logger.hpp"
+#include "../common/crc32.hpp"
 
 using jubatus::core::common::write_big_endian;
 using jubatus::core::common::read_big_endian;
