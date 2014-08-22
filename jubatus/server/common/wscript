@@ -41,7 +41,7 @@ def build(bld):
     'network_test.cpp',
     'global_id_generator_test.cpp',
     'unique_lock_test.cpp',
-    'crc32_test.cpp'
+    'crc32_test.cpp',
     'system_test.cpp',
     'filesystem_test.cpp',
     ]
