@@ -85,10 +85,10 @@ struct system_data_container {
 uint32_t calc_crc32(const char* header,  // header size is 28 (fixed)
     const char* system_data, uint64_t system_data_size,
     const char* user_data, uint64_t user_data_size) {
-  uint32_t crc32 = core::common::calc_crc32(header, 28);
-  crc32 = core::common::calc_crc32(&header[32], 16, crc32);
-  crc32 = core::common::calc_crc32(system_data, system_data_size, crc32);
-  crc32 = core::common::calc_crc32(user_data, user_data_size, crc32);
+  uint32_t crc32 = common::calc_crc32(header, 28);
+  crc32 = common::calc_crc32(&header[32], 16, crc32);
+  crc32 = common::calc_crc32(system_data, system_data_size, crc32);
+  crc32 = common::calc_crc32(user_data, user_data_size, crc32);
   return crc32;
 }
 
