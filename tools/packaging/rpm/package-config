@@ -1,7 +1,7 @@
 # ==============================================================================
 # Jubatus
 # ==============================================================================
-JUBATUS_VERSION="0.6.1"
+JUBATUS_VERSION="0.6.2"
 JUBATUS_RELEASE="1"
 JUBATUS_IS_SNAPSHOT="no"
 JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
@@ -72,4 +72,4 @@ ZOOKEEPER_RELEASE="1"
 # Jubatus Release (Yum Repository)
 # ==============================================================================
 JUBATUS_RELEASE_VERSION="6" # RHEL version
-JUBATUS_RELEASE_RELEASE="1"
+JUBATUS_RELEASE_RELEASE="2"
