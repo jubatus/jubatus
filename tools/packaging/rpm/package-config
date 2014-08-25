@@ -1,7 +1,7 @@
 # ==============================================================================
 # Jubatus
 # ==============================================================================
-JUBATUS_VERSION="0.6.1"
+JUBATUS_VERSION="0.6.2"
 JUBATUS_RELEASE="1"
 JUBATUS_IS_SNAPSHOT="no"
 JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
@@ -65,11 +65,11 @@ MECAB_IPADIC_ARCHIVE_DIR="mecab-ipadic-2.7.0-20070801"
 # ==============================================================================
 # ZooKeeper
 # ==============================================================================
-ZOOKEEPER_VERSION="3.4.5"
+ZOOKEEPER_VERSION="3.4.6"
 ZOOKEEPER_RELEASE="1"
 
 # ==============================================================================
 # Jubatus Release (Yum Repository)
 # ==============================================================================
 JUBATUS_RELEASE_VERSION="6" # RHEL version
-JUBATUS_RELEASE_RELEASE="1"
+JUBATUS_RELEASE_RELEASE="2"
