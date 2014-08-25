@@ -33,7 +33,7 @@ service classifier {
   #-
   #- - Returns:
   #-
-  #-  - Zero if this function updates models successfully.
+  #-  - Number of trained datum if this function updates models successfully.
   #-
   #- Training model at a server chosen randomly. ``tuple<string, datum>`` is a tuple of datum and it's label.
   #- This function is designed to allow bulk update with list of tuple of label and datum.
@@ -67,7 +67,7 @@ service classifier {
   #-
   #- - Returns:
   #-
-  #-  - Zero if this function appends label successfully.
+  #-  - True if this function appends label successfully.
   #-
   #-  Append new label with no datum
   #@random #@update #@pass
