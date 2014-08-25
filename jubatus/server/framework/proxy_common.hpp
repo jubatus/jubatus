@@ -22,7 +22,6 @@
 #include <utility>
 #include <vector>
 
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/concurrent/rwmutex.h"
 #include "jubatus/util/lang/shared_ptr.h"
@@ -33,6 +32,7 @@
 #include "server_util.hpp"
 #include "../common/lock_service.hpp"
 #include "../common/cht.hpp"
+#include "../common/logger/logger.hpp"
 
 namespace jubatus {
 namespace server {

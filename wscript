@@ -4,7 +4,7 @@ from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '0.6.1'
+VERSION = '0.6.2'
 ABI_VERSION = VERSION
 APPNAME = 'jubatus'
 
@@ -154,7 +154,8 @@ def build(bld):
       PACKAGE = APPNAME,
       VERSION = VERSION)
 
-  bld(name = 'core_headers', export_includes = './')
+  bld(name = 'server_headers', export_includes = './')
+  bld(name = 'client_headers', export_includes = './')
 
   bld.recurse(subdirs)
 

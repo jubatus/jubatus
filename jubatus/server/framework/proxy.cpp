@@ -20,10 +20,10 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include "jubatus/server/common/logger/logger.hpp"
 
 #include "jubatus/core/common/exception.hpp"
 #include "aggregators.hpp"
+#include "../common/logger/logger.hpp"
 #include "../common/membership.hpp"
 #include "../common/signals.hpp"
 #include "../common/system.hpp"

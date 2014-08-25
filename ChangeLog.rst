@@ -1,3 +1,18 @@
+Release 0.6.2 - 2014/08/25
+--------------------------
+
+* Improvements
+    * Reload logging configuration on SIGHUP (#838, #861)
+    * Display plugin version when loaded (#740, #865)
+    * Register itself as active after server is started (#854, #863)
+    * Push mixers now excludes himself from MIX peer candidates (#842, #860)
+* Bug fixes
+    * anomaly: Fix add requets returing error when using light_lof (#849, #853)
+    * Fix proxies does not work with push_mixer (#803)
+    * Do not block update RPC request while acquiring ZooKeeper lock (#618, #862)
+    * Fix IDL errors (#851, #858, #859)
+    * Remove unused core_headers reference (#811, #848)
+
 Release 0.6.1 - 2014/07/22
 --------------------------
 

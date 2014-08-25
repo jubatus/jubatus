@@ -16,8 +16,8 @@
 
 #include "rpc_server.hpp"
 #include <string>
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/core/common/exception.hpp"
+#include "../logger/logger.hpp"
 
 namespace jubatus {
 namespace server {

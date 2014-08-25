@@ -19,7 +19,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/text/json.h"
 #include "jubatus/util/lang/shared_ptr.h"
@@ -36,6 +35,7 @@
 #ifdef HAVE_ZOOKEEPER_H
 #include "../common/cht.hpp"
 #include "../common/global_id_generator_zk.hpp"
+#include "../common/logger/logger.hpp"
 #include "../common/membership.hpp"
 #endif
 #include "../framework/mixer/mixer_factory.hpp"
@@ -284,10 +284,18 @@ float anomaly_serv::selective_update(
   if (host == argv().eth && port == argv().port) {
     jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
     event_model_updated();
-    return this->update(id, d);
+    if (anomaly_->is_updatable()) {
+      return this->update(id, d);
+    } else {
+      return this->overwrite(id, d);
+    }
   } else {  // needs no lock
     client::anomaly c(host, port, argv().name, argv().interconnect_timeout);
-    return c.update(id, d);
+    if (anomaly_->is_updatable()) {
+      return c.update(id, d);
+    } else {
+      return c.overwrite(id, d);
+    }
   }
 }
 

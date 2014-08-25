@@ -17,7 +17,6 @@
 #include "nearest_neighbor_serv.hpp"
 
 #include <string>
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/text/json.h"
@@ -27,6 +26,7 @@
 #include "jubatus/core/fv_converter/datum.hpp"
 #include "jubatus/core/fv_converter/revert.hpp"
 #include "jubatus/core/nearest_neighbor/nearest_neighbor_factory.hpp"
+#include "../common/logger/logger.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
 using std::string;

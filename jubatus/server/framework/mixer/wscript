@@ -6,10 +6,10 @@ def configure(conf):
   pass
 
 def build(bld):
-  mixer_framework = 'JUBATUS_CORE jubatus_util MSGPACK jubaserv_common_logger core_headers'
+  mixer_framework = 'JUBATUS_CORE MSGPACK jubaserv_common_logger'
   mixer_source = 'mixer_factory.cpp'
   if bld.env.HAVE_ZOOKEEPER_H:
-    mixer_framework += ' jubacommon jubaserv_common jubaserv_common_mprpc'
+    mixer_framework += ' jubaserv_common jubaserv_common_mprpc'
     mixer_source += ' linear_mixer.cpp push_mixer.cpp'
 
   bld.shlib(target = 'jubaserv_mixer',
@@ -19,11 +19,12 @@ def build(bld):
             )
 
   if bld.env.HAVE_ZOOKEEPER_H:
-    bld.program(
-      features='gtest',
-      source = 'linear_mixer_test.cpp',
-      target = 'linear_mixer_test',
-      use = 'jubaserv_mixer')
+    for name in ['linear_mixer_test', 'push_mixer_test']:
+      bld.program(
+        features='gtest',
+        source = name + '.cpp',
+        target = name,
+        use = 'jubaserv_mixer')
 
   bld.install_files('${PREFIX}/include/jubatus/server/framework/mixer', [
       'broadcast_mixer.hpp',

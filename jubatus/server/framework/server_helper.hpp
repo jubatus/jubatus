@@ -22,7 +22,6 @@
 
 #include <map>
 #include <string>
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/bind.h"
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/util/system/sysstat.h"
@@ -36,6 +35,7 @@
 #include "../common/mprpc/rpc_server.hpp"
 #include "../common/signals.hpp"
 #include "../common/config.hpp"
+#include "../common/logger/logger.hpp"
 
 using jubatus::util::system::time::clock_time;
 using jubatus::util::system::time::get_clock_time;
@@ -218,10 +218,6 @@ class server_helper {
   int start(common::mprpc::rpc_server& serv) {
     const server_argv& a = server_->argv();
 
-    if (!a.is_standalone()) {
-      server_->get_mixer()->start();
-    }
-
     try {
       serv.listen(a.port, a.bind_address);
       LOG(INFO) << "start listening at port " << a.port;
@@ -237,6 +233,11 @@ class server_helper {
       common::set_action_on_term(
           jubatus::util::lang::bind(
               &server_helper::stop, this, jubatus::util::lang::ref(serv)));
+
+      if (!a.is_standalone()) {
+        // Start mixer and register active membership
+        server_->get_mixer()->start();
+      }
 
       // wait for termination
       serv.join();

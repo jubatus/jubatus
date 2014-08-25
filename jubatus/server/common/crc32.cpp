@@ -14,24 +14,47 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_COMMON_SIGNALS_HPP_
-#define JUBATUS_SERVER_COMMON_SIGNALS_HPP_
-
-#include "jubatus/util/lang/function.h"
+#include "crc32.hpp"
 
 namespace jubatus {
 namespace server {
 namespace common {
 
-void prepare_signal_handling();  // NOTE: this function won't work well
-                                 //   if you have any other threads.
-                                 //   you should call this function
-                                 //   at the head of program.
-void set_action_on_term(jubatus::util::lang::function<void()> action);
-void set_action_on_hup(jubatus::util::lang::function<void()> action);
+namespace {
+
+class crc32_calculator {
+ public:
+  crc32_calculator() {
+    for (int i = 0; i < 256; ++i) {
+      uint32_t c = i;
+      for (int j = 0; j < 8; ++j) {
+        c = (c >> 1) ^ (c & 1 ? 0xEDB88320 : 0);
+      }
+      crc_table_[i] = c;
+    }
+  }
+
+  uint32_t operator()(const char* buf, size_t size, uint32_t crc) const {
+    crc ^= 0xFFFFFFFF;
+    for (size_t i = 0; i < size; ++i) {
+      size_t idx = (buf[i] ^ crc) & 0xFF;
+      crc = (crc >> 8) ^ crc_table_[idx];
+    }
+    return crc ^ 0xFFFFFFFF;
+  }
+
+ private:
+  uint32_t crc_table_[256];
+};
+
+const crc32_calculator calc_;
+
+}  // namespace
+
+uint32_t calc_crc32(const char* data, size_t size, uint32_t crc) {
+  return calc_(data, size, crc);
+}
 
 }  // namespace common
 }  // namespace server
 }  // namespace jubatus
-
-#endif  // JUBATUS_SERVER_COMMON_SIGNALS_HPP_

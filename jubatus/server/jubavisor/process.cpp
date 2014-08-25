@@ -30,11 +30,12 @@
 #include <string>
 #include <vector>
 
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/cast.h"
 
 #include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
+
+#include "../common/logger/logger.hpp"
 
 using jubatus::util::lang::lexical_cast;
 

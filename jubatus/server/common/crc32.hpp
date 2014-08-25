@@ -14,24 +14,20 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_COMMON_SIGNALS_HPP_
-#define JUBATUS_SERVER_COMMON_SIGNALS_HPP_
+#ifndef JUBATUS_CORE_COMMON_CRC32_HPP_
+#define JUBATUS_CORE_COMMON_CRC32_HPP_
 
-#include "jubatus/util/lang/function.h"
+#include <stdint.h>
+#include <cstddef>
 
 namespace jubatus {
 namespace server {
 namespace common {
 
-void prepare_signal_handling();  // NOTE: this function won't work well
-                                 //   if you have any other threads.
-                                 //   you should call this function
-                                 //   at the head of program.
-void set_action_on_term(jubatus::util::lang::function<void()> action);
-void set_action_on_hup(jubatus::util::lang::function<void()> action);
+uint32_t calc_crc32(const char* data, size_t size, uint32_t crc = 0);
 
 }  // namespace common
 }  // namespace server
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_COMMON_SIGNALS_HPP_
+#endif  // JUBATUS_CORE_COMMON_CRC32_HPP_

@@ -22,7 +22,7 @@ message weighted_datum("std::pair<double, jubatus::core::fv_converter::datum>") 
 }
 
 service clustering {
-  #@random #@update #@all_and
+  #@random #@update #@pass
   bool push(0: list<datum> points)
 
   #@random #@analysis #@pass

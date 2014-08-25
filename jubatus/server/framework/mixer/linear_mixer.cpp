@@ -33,10 +33,10 @@
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
 #include "jubatus/core/framework/stream_writer.hpp"
-#include "jubatus/server/common/logger/logger.hpp"
 #include "../../common/membership.hpp"
 #include "../../common/mprpc/rpc_mclient.hpp"
 #include "../../common/unique_lock.hpp"
+#include "../../common/logger/logger.hpp"
 
 using std::map;
 using std::vector;
@@ -368,8 +368,10 @@ void linear_mixer::stabilizer_loop() {
           || (0 < tick_threshold_
               && new_ticktime - ticktime_ > tick_threshold_))
           && (0 < counter_)) {
+        lk.unlock();
         if (zklock->try_lock()) {
           LOG(INFO) << "got ZooKeeper lock, starting mix";
+          common::unique_lock lk(m_);
           counter_ = 0;
           ticktime_ = new_ticktime;
 
@@ -383,7 +385,9 @@ void linear_mixer::stabilizer_loop() {
       }
 
       if (is_obsolete_) {
+        lk.unlock();
         if (zklock->try_lock()) {
+          common::unique_lock lk(m_);
           if (is_obsolete_) {
             LOG(INFO) << "start to get model from other server";
             lk.unlock();

@@ -14,24 +14,42 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_SERVER_COMMON_SIGNALS_HPP_
-#define JUBATUS_SERVER_COMMON_SIGNALS_HPP_
-
-#include "jubatus/util/lang/function.h"
+#include <cstdlib>
+#include <gtest/gtest.h>
+#include "crc32.hpp"
 
 namespace jubatus {
 namespace server {
 namespace common {
 
-void prepare_signal_handling();  // NOTE: this function won't work well
-                                 //   if you have any other threads.
-                                 //   you should call this function
-                                 //   at the head of program.
-void set_action_on_term(jubatus::util::lang::function<void()> action);
-void set_action_on_hup(jubatus::util::lang::function<void()> action);
+TEST(calc_crc32, simple) {
+  EXPECT_EQ(0u, calc_crc32("", 0));
+  EXPECT_EQ(0x41918955u, calc_crc32("jubatus", 7));
+}
+
+TEST(calc_crc32, piecewise) {
+  std::srand(testing::UnitTest::GetInstance()->random_seed());
+
+  char data[128];
+  for (size_t i = 0; i < sizeof(data); ++i) {
+    data[i] = static_cast<int>((std::rand() / (RAND_MAX + 1.0)) * 256);
+  }
+
+  uint32_t crc_expected = calc_crc32(data, sizeof(data));
+
+  uint32_t crc_actual = 0;
+  for (size_t i = 0; i < sizeof(data); ) {
+    size_t n = static_cast<int>((std::rand() / (RAND_MAX + 1.0)) * 32);
+    if (i + n > sizeof(data)) {
+      n = sizeof(data) - i;
+    }
+    crc_actual = calc_crc32(data + i, n, crc_actual);
+    i += n;
+  }
+
+  EXPECT_EQ(crc_expected, crc_actual);
+}
 
 }  // namespace common
 }  // namespace server
 }  // namespace jubatus
-
-#endif  // JUBATUS_SERVER_COMMON_SIGNALS_HPP_

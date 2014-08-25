@@ -17,12 +17,13 @@
 #include <iostream>
 #include <string>
 
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/bind.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
+#include "../common/logger/logger.hpp"
 #include "../common/signals.hpp"
+#include "../common/filesystem.hpp"
 
 #include "jubavisor.hpp"
 
@@ -40,10 +41,23 @@ using jubatus::util::lang::bind;
 using jubatus::util::lang::ref;
 
 namespace {
+
 void stop_on_term(jubavisor_server& serv) {
   LOG(INFO) << "stopping RPC server";
   serv.rpc_end();
 }
+
+void configure_logger(const std::string& log_config) {
+  if (log_config.empty()) {
+    jubatus::server::common::logger::configure();
+  } else {
+    LOG(INFO) << "loading log configuration: " << log_config;
+    jubatus::server::common::logger::configure(log_config);
+  }
+  jubatus::server::common::set_action_on_hup(jubatus::util::lang::bind(
+      configure_logger, jubatus::util::lang::ref(log_config)));
+}
+
 }  // namespace
 
 int main(int argc, char* argv[]) try {
@@ -63,13 +77,12 @@ int main(int argc, char* argv[]) try {
   std::string log_config = p.get<std::string>("log_config");
 
   // Configure the logger.
+  if (!log_config.empty()) {
+    log_config = jubatus::server::common::real_path(log_config);
+  }
   jubatus::server::common::logger::setup_parameters(
       jubatus::server::common::get_program_name().c_str(), "", port);
-  if (log_config.empty()) {
-    jubatus::server::common::logger::configure();
-  } else {
-    jubatus::server::common::logger::configure(log_config);
-  }
+  configure_logger(log_config);
 
   if (p.exist("daemon")) {
     jubatus::server::common::append_server_path(argv[0]);

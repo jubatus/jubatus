@@ -20,13 +20,13 @@
 #include <cstring>
 
 #include <jubatus/msgpack/rpc/client.h>
-#include "jubatus/server/common/logger/logger.hpp"
 #include "jubatus/util/lang/function.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "../third_party/cmdline/cmdline.h"
 #include "../common/zk.hpp"
 #include "../common/membership.hpp"
+#include "../common/logger/logger.hpp"
 #include "../framework/server_util.hpp"
 
 static const std::string PROGNAME(JUBATUS_APPNAME "ctl");
