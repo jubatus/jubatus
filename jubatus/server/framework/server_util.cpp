@@ -47,6 +47,7 @@ namespace {
 
   const std::string IGNORED_TAG = "[IGNORED]";
   jubatus::util::lang::shared_ptr<server::common::lock_service> ls;
+  bool logger_configured_ = false;
 
 struct lower_bound_reader {
   explicit lower_bound_reader(int l)
@@ -68,9 +69,12 @@ void configure_logger(const std::string& log_config) {
   if (log_config.empty()) {
     common::logger::configure();
   } else {
-    LOG(INFO) << "loading log configuration: " << log_config;
+    if (logger_configured_) {
+      LOG(INFO) << "reloading log configuration: " << log_config;
+    }
     common::logger::configure(log_config);
   }
+  logger_configured_ = true;
   common::set_action_on_hup(jubatus::util::lang::bind(
       configure_logger, jubatus::util::lang::ref(log_config)));
 }
