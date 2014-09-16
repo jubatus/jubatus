@@ -45,9 +45,9 @@ static const std::string VERSION(JUBATUS_VERSION);
 
 namespace {
 
-  const std::string IGNORED_TAG = "[IGNORED]";
-  jubatus::util::lang::shared_ptr<server::common::lock_service> ls;
-  bool logger_configured_ = false;
+const std::string IGNORED_TAG = "[IGNORED]";
+jubatus::util::lang::shared_ptr<server::common::lock_service> ls;
+bool logger_configured_ = false;
 
 struct lower_bound_reader {
   explicit lower_bound_reader(int l)
