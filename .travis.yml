@@ -48,7 +48,7 @@ install:
   - sudo ldconfig
   # jubatus_core
   - git clone https://github.com/jubatus/jubatus_core.git
-  - pushd jubatus_core && git checkout ${TRAVIS_BRANCH} && ./waf configure && sudo ./waf install && popd
+  - pushd jubatus_core && git checkout ${TRAVIS_BRANCH} && ./waf configure && ./waf && sudo ./waf install && popd
   - sudo ldconfig
 
 
