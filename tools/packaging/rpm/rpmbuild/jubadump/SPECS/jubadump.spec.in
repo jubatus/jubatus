@@ -41,5 +41,5 @@ jubadump converts saved jubatus internal model to json.
 
 %files
 %defattr(-,root,root,-)
-%doc README.rst
+%doc README.rst LICENSE
 %{_bindir}/jubadump

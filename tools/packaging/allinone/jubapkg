@@ -262,7 +262,7 @@ do_build() {
 	./waf build
 	./waf install --destdir=${DEST_DIR}
 	mkdir -p "${DOC_DIR}/jubadump"
-	cp -a README.rst "${DOC_DIR}/jubadump"
+	cp -a LICENSE README.rst "${DOC_DIR}/jubadump"
 	popd
 
 	# Profile
