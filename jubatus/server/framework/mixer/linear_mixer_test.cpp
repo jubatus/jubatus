@@ -29,6 +29,7 @@
 
 using std::string;
 using std::vector;
+using std::pair;
 using std::make_pair;
 using jubatus::util::lang::shared_ptr;
 using jubatus::core::common::byte_buffer;
@@ -95,8 +96,8 @@ class linear_communication_stub : public linear_communication {
     return mixed_;
   }
 
-  byte_buffer get_model() {
-    return byte_buffer();
+  pair<uint64_t,byte_buffer> get_model() {
+    return make_pair(1, byte_buffer());
   }
 
   bool register_active_list() const {
@@ -155,7 +156,7 @@ class my_string_driver : public core::driver::driver_base {
 TEST(linear_mixer, mix_order) {
   shared_ptr<linear_communication_stub> com(new linear_communication_stub);
   jubatus::util::concurrent::rw_mutex mutex;
-  linear_mixer m(com, mutex, 1, 1);
+  linear_mixer m(com, mutex, 1, 1, 1);
 
   my_string_driver s;
   m.set_driver(&s);
@@ -170,7 +171,7 @@ TEST(linear_mixer, mix_order) {
 TEST(linear_mixer, destruct_running_mixer) {
   shared_ptr<linear_communication_stub> com(new linear_communication_stub);
   jubatus::util::concurrent::rw_mutex mutex;
-  linear_mixer m(com, mutex, 1, 1);
+  linear_mixer m(com, mutex, 1, 1, 1);
 
   my_string_driver s;
   m.set_driver(&s);

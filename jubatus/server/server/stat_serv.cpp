@@ -49,7 +49,7 @@ struct stat_serv_config {
 stat_serv::stat_serv(const server_argv& a,
                      const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk, rw_mutex())) {
+      mixer_(create_mixer(a, zk, rw_mutex(), user_data_version())) {
 }
 
 stat_serv::~stat_serv() {

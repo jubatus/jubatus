@@ -41,7 +41,8 @@ namespace mixer {
 mixer* create_mixer(
     const server_argv& a,
     const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
-    jubatus::util::concurrent::rw_mutex& model_mutex) {
+    jubatus::util::concurrent::rw_mutex& model_mutex,
+    uint64_t protocol_version) {
 #ifdef HAVE_ZOOKEEPER_H
   const string& use_mixer = a.mixer;
   if (use_mixer == "linear_mixer") {
@@ -53,7 +54,9 @@ mixer* create_mixer(
             a.interconnect_timeout,
             make_pair(a.eth, a.port)),
         model_mutex,
-        a.interval_count, a.interval_sec);
+        a.interval_count,
+        a.interval_sec,
+        protocol_version);
   } else if (use_mixer == "random_mixer") {
     return new random_mixer(
         push_communication::create(
