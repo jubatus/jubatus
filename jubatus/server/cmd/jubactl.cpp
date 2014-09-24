@@ -87,7 +87,8 @@ try {
       "[start] directory to output logs (instead of stderr)", false, "");
   p.add<std::string>("log_config", 'G',
       "[start] log4cxx XML configuration file", false, "");
-  p.add<std::string>("mixer", 'X', "[start] mixer strategy", false, "");
+  p.add<std::string>("mixer", 'X',
+      "[start] mixer strategy", false, "linear_mixer");
   p.add<int>("interval_sec", 'S', "[start] mix interval by seconds", false, 16);
   p.add<int>("interval_count", 'I',
       "[start] mix interval by update count", false, 512);
