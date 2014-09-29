@@ -1,3 +1,13 @@
+Release 0.6.3 - 2014/09/29
+--------------------------
+
+* Improvements
+    * Add jubadump to RPM / DEB package (#856)
+
+* Bug fixes
+    * Fix jubactl to work without specifying "-X" option (#872)
+    * Fix log4cxx error message displayed on startup (#873)
+
 Release 0.6.2 - 2014/08/25
 --------------------------
 
