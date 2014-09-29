@@ -15,6 +15,14 @@ JUBATUS_CORE_IS_SNAPSHOT="no"
 JUBATUS_CORE_CHECKOUT="${JUBATUS_CORE_VERSION}"
 
 # ==============================================================================
+# jubadump
+# ==============================================================================
+JUBADUMP_VERSION="0.6.2"
+JUBADUMP_RELEASE="1"
+JUBADUMP_IS_SNAPSHOT="no"
+JUBADUMP_CHECKOUT="${JUBADUMP_VERSION}"
+
+# ==============================================================================
 # msgpack
 # ==============================================================================
 MSGPACK_VERSION="0.5.7"
@@ -72,4 +80,4 @@ ZOOKEEPER_RELEASE="1"
 # Jubatus Release (Yum Repository)
 # ==============================================================================
 JUBATUS_RELEASE_VERSION="6" # RHEL version
-JUBATUS_RELEASE_RELEASE="2"
+JUBATUS_RELEASE_RELEASE="1"

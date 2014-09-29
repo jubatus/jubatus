@@ -111,6 +111,13 @@ do_download() {
 	git checkout ${JUBATUS_VER}
 	popd
 
+    # jubadump
+    rm -rf jubadump
+    git clone https://github.com/jubatus/jubadump.git jubadump
+    pushd jubadump
+    git checkout ${JUBADUMP_VER}
+    popd
+
 	popd
 	echo "----- Download Completed -----"
 	return 0
@@ -246,6 +253,16 @@ do_build() {
 	./waf install --destdir=${DEST_DIR}
 	mkdir -p "${DOC_DIR}/jubatus"
 	cp -a LICENSE README.rst ChangeLog.rst "${DOC_DIR}/jubatus"
+	popd
+
+    # jubadump
+    cp -rp ${SOURCE_DIR}/jubadump jubadump
+    pushd jubadump
+	LDFLAGS="-L${DEST_DIR}/${PREFIX}/lib" ./waf configure --prefix=${PREFIX}
+	./waf build
+	./waf install --destdir=${DEST_DIR}
+	mkdir -p "${DOC_DIR}/jubadump"
+	cp -a LICENSE README.rst "${DOC_DIR}/jubadump"
 	popd
 
 	# Profile

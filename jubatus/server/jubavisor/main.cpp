@@ -42,6 +42,8 @@ using jubatus::util::lang::ref;
 
 namespace {
 
+bool logger_configured_ = false;
+
 void stop_on_term(jubavisor_server& serv) {
   LOG(INFO) << "stopping RPC server";
   serv.rpc_end();
@@ -51,9 +53,12 @@ void configure_logger(const std::string& log_config) {
   if (log_config.empty()) {
     jubatus::server::common::logger::configure();
   } else {
-    LOG(INFO) << "loading log configuration: " << log_config;
+    if (logger_configured_) {
+      LOG(INFO) << "reloading log configuration: " << log_config;
+    }
     jubatus::server::common::logger::configure(log_config);
   }
+  logger_configured_ = true;
   jubatus::server::common::set_action_on_hup(jubatus::util::lang::bind(
       configure_logger, jubatus::util::lang::ref(log_config)));
 }

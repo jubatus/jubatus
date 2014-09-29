@@ -45,8 +45,8 @@ General
   - Package version.
   - Must be incremented to release new RPM with the same ``*_VERSION``.
 
-For jubatus, jubatus-core, jubatus-mpio, jubatus-msgpack-rpc
-------------------------------------------------------------------
+For jubatus, jubatus-core, jubatus-mpio, jubatus-msgpack-rpc, jubadump
+---------------------------------------------------------------------------------
 
 * ``*_IS_SNAPSHOT``
 

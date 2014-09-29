@@ -1,0 +1,45 @@
+%define package_version @JUBADUMP_VERSION@
+%define package_release @JUBADUMP_RELEASE@
+
+%define __waf ./waf
+
+Name:		jubadump
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	Dump Jubatus Model Files
+Vendor:		PFI & NTT
+Group:		System Environment/Daemons
+License:	LGPL 2.1
+URL:		http://jubat.us/
+Source0:	%{name}-%{version}.tar.gz
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+BuildRequires:	msgpack-devel
+BuildRequires:	jubatus-core-devel
+BuildRequires:	pkgconfig
+BuildRequires:	python >= 2.4
+
+Requires:		msgpack
+Requires:		jubatus-core
+
+%description
+jubadump converts saved jubatus internal model to json.
+
+%prep
+%setup -q -n %{name}
+
+%build
+%{__waf} configure --prefix=%{_prefix}
+%{__waf} build
+
+%install
+%{__rm} -rf %{buildroot}
+%{__waf} install --destdir=%{buildroot}
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc README.rst LICENSE
+%{_bindir}/jubadump

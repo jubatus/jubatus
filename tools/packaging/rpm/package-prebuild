@@ -47,6 +47,24 @@ prepare_rpmbuild() {
 								JUBATUS_CORE_VERSION \
 								JUBATUS_CORE_RELEASE
 			;;
+        jubadump )
+            rm -rf jubadump
+            git clone https://github.com/jubatus/jubadump.git jubadump
+            pushd jubadump
+			git checkout "${JUBADUMP_CHECKOUT}"
+			if [ "${JUBADUMP_IS_SNAPSHOT}" = "yes" ]; then
+				JUBADUMP_CHECKOUT="$(git rev-parse HEAD)"
+				JUBADUMP_CHECKOUT_DATE="$(git log --pretty=format:'%ad' --date=short --max-count=1 HEAD | tr -d '-')"
+				JUBADUMP_RELEASE="${JUBADUMP_RELEASE}.${JUBADUMP_CHECKOUT_DATE}git${JUBADUMP_CHECKOUT:0:6}"
+			fi
+			popd
+			tar --create --gzip --exclude-vcs --file "jubadump-${JUBADUMP_VERSION}.tar.gz" jubadump
+			rm -rf jubadump
+
+			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+								JUBADUMP_VERSION \
+								JUBADUMP_RELEASE
+			;;
 		jubatus-client )
 			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
 								JUBATUS_CLIENT_VERSION \
