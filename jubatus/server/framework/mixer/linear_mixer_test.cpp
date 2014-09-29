@@ -96,7 +96,7 @@ class linear_communication_stub : public linear_communication {
     return mixed_;
   }
 
-  pair<uint64_t,byte_buffer> get_model() {
+  pair<uint64_t, byte_buffer> get_model() {
     return make_pair(1, byte_buffer());
   }
 

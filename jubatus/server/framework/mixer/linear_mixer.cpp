@@ -77,7 +77,7 @@ class linear_communication_impl : public linear_communication {
   void put_diff(
       const byte_buffer& a,
       common::mprpc::rpc_result_object& result) const;
-  std::pair<uint64_t,byte_buffer> get_model();
+  std::pair<uint64_t, byte_buffer> get_model();
 
   bool register_active_list() const {
     common::unique_lock lk(m_);
@@ -136,7 +136,7 @@ size_t linear_communication_impl::update_members() {
   return servers_.size();
 }
 
-std::pair<uint64_t,byte_buffer> linear_communication_impl::get_model() {
+std::pair<uint64_t, byte_buffer> linear_communication_impl::get_model() {
   update_members();
   for (;;) {
     common::unique_lock lk(m_);
@@ -160,8 +160,8 @@ std::pair<uint64_t,byte_buffer> linear_communication_impl::get_model() {
     msgpack::rpc::future result(cli.call("get_model", 0));
 
     try {
-      const std::pair<uint64_t,byte_buffer> got_model_data(
-          result.get<std::pair<uint64_t,byte_buffer> >());
+      const std::pair<uint64_t, byte_buffer> got_model_data(
+          result.get<std::pair<uint64_t, byte_buffer> >());
       LOG(INFO) << "got model(serialized data) "
                 << got_model_data.second.size()
                 << " from server[" << server_ip << ":" << server_port << "] ";
@@ -552,7 +552,7 @@ byte_buffer linear_mixer::get_diff(int a) {
   return bytes;
 }
 
-std::pair<uint64_t,byte_buffer> linear_mixer::get_model(int a) const {
+std::pair<uint64_t, byte_buffer> linear_mixer::get_model(int a) const {
   scoped_rlock lk_read(model_mutex_);
 
   msgpack::sbuffer packed;
@@ -569,7 +569,7 @@ std::pair<uint64_t,byte_buffer> linear_mixer::get_model(int a) const {
 }
 
 void linear_mixer::update_model() {
-  std::pair<uint64_t,byte_buffer> got_model =
+  std::pair<uint64_t, byte_buffer> got_model =
       communication_->get_model();
 
   uint64_t got_protocol_version = got_model.first;
