@@ -1,7 +1,7 @@
 # ==============================================================================
 # Jubatus
 # ==============================================================================
-JUBATUS_VERSION="0.6.2"
+JUBATUS_VERSION="0.6.3"
 JUBATUS_RELEASE="1"
 JUBATUS_IS_SNAPSHOT="no"
 JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
@@ -9,7 +9,7 @@ JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
 # ==============================================================================
 # Jubatus Core
 # ==============================================================================
-JUBATUS_CORE_VERSION="0.0.3"
+JUBATUS_CORE_VERSION="0.0.4"
 JUBATUS_CORE_RELEASE="1"
 JUBATUS_CORE_IS_SNAPSHOT="no"
 JUBATUS_CORE_CHECKOUT="${JUBATUS_CORE_VERSION}"
@@ -17,7 +17,7 @@ JUBATUS_CORE_CHECKOUT="${JUBATUS_CORE_VERSION}"
 # ==============================================================================
 # jubadump
 # ==============================================================================
-JUBADUMP_VERSION="0.6.2"
+JUBADUMP_VERSION="0.6.3"
 JUBADUMP_RELEASE="1"
 JUBADUMP_IS_SNAPSHOT="no"
 JUBADUMP_CHECKOUT="${JUBADUMP_VERSION}"
@@ -31,7 +31,7 @@ MSGPACK_RELEASE="1"
 # ==============================================================================
 # jubatus-mpio
 # ==============================================================================
-JUBATUS_MPIO_VERSION="0.4.3"
+JUBATUS_MPIO_VERSION="0.4.4"
 JUBATUS_MPIO_RELEASE="1"
 JUBATUS_MPIO_IS_SNAPSHOT="no"
 JUBATUS_MPIO_CHECKOUT="${JUBATUS_MPIO_VERSION}"
@@ -39,7 +39,7 @@ JUBATUS_MPIO_CHECKOUT="${JUBATUS_MPIO_VERSION}"
 # ==============================================================================
 # jubatus-msgpack-rpc
 # ==============================================================================
-JUBATUS_MSGPACK_RPC_VERSION="0.4.3"
+JUBATUS_MSGPACK_RPC_VERSION="0.4.4"
 JUBATUS_MSGPACK_RPC_RELEASE="1"
 JUBATUS_MSGPACK_RPC_IS_SNAPSHOT="no"
 JUBATUS_MSGPACK_RPC_CHECKOUT="${JUBATUS_MSGPACK_RPC_VERSION}"
