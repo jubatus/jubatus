@@ -45,7 +45,7 @@ service burst {
   st_window get_result(0: string keyword) # //@cht
 
   #@cht #@analysis #@pass
-  st_window get_result_at(0: string keyword, 2: double pos) # //@cht
+  st_window get_result_at(0: string keyword, 1: double pos) # //@cht
 
   #@broadcast #@analysis #@merge
   map<string, st_window > get_all_bursted_results() # //@broadcast
