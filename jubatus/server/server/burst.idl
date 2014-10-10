@@ -14,24 +14,24 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-message st_keyword {
+message keyword_with_params {
   0: string keyword
   1: double scaling_param
   2: double gamma
 }
 
-message st_batch {
+message batch {
   0: int d
   1: int r
   2: double burst_weight
 }
 
-message st_window {
+message window {
   0: double start_pos
-  1: list<st_batch> batches
+  1: list<batch> batches
 }
 
-message st_document {
+message document {
   0: double pos
   1: string text
 }
@@ -39,25 +39,25 @@ message st_document {
 service burst {
 
   #@broadcast #@update #@pass
-  int add_documents(0: list<st_document> data) # //@broadcast
+  int add_documents(0: list<document> data) # //@broadcast
 
   #@cht #@analysis #@pass
-  st_window get_result(0: string keyword) # //@cht
+  window get_result(0: string keyword) # //@cht
 
   #@cht #@analysis #@pass
-  st_window get_result_at(0: string keyword, 1: double pos) # //@cht
+  window get_result_at(0: string keyword, 1: double pos) # //@cht
 
   #@broadcast #@analysis #@merge
-  map<string, st_window > get_all_bursted_results() # //@broadcast
+  map<string, window> get_all_bursted_results() # //@broadcast
 
   #@broadcast #@analysis #@merge
-  map<string, st_window > get_all_bursted_results_at(0: double pos) # //@broadcast
+  map<string, window> get_all_bursted_results_at(0: double pos) # //@broadcast
 
   #@random #@analysis #@pass
-  list<st_keyword> get_all_keywords() # //@random
+  list<keyword_with_params> get_all_keywords() # //@random
 
   #@broadcast #@update #@all_and
-  bool add_keyword(0: st_keyword keyword) # //@broadcast
+  bool add_keyword(0: keyword_with_params keyword) # //@broadcast
 
   #@broadcast #@update #@all_and
   bool remove_keyword(0: string keyword) # //@broadcast
