@@ -21,8 +21,8 @@ message keyword_with_params {
 }
 
 message batch {
-  0: int d
-  1: int r
+  0: int all_data_count
+  1: int relevant_data_count
   2: double burst_weight
 }
 
