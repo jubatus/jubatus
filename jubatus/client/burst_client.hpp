@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.1-24-g3a65019) with jenerator version 0.5.4-224-g49229fa/feature/burst
+// This file is auto-generated from burst.idl(0.6.1-34-gb64049d) with jenerator version 0.5.4-224-g49229fa/feature/burst
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_BURST_CLIENT_HPP_
@@ -22,37 +22,37 @@ class burst : public jubatus::client::common::client {
       : client(host, port, name, timeout_sec) {
   }
 
-  int32_t add_documents(const std::vector<st_document>& data) {
+  int32_t add_documents(const std::vector<document>& data) {
     msgpack::rpc::future f = c_.call("add_documents", name_, data);
     return f.get<int32_t>();
   }
 
-  st_window get_result(const std::string& keyword) {
+  window get_result(const std::string& keyword) {
     msgpack::rpc::future f = c_.call("get_result", name_, keyword);
-    return f.get<st_window>();
+    return f.get<window>();
   }
 
-  st_window get_result_at(const std::string& keyword, double pos) {
+  window get_result_at(const std::string& keyword, double pos) {
     msgpack::rpc::future f = c_.call("get_result_at", name_, keyword, pos);
-    return f.get<st_window>();
+    return f.get<window>();
   }
 
-  std::map<std::string, st_window> get_all_bursted_results() {
+  std::map<std::string, window> get_all_bursted_results() {
     msgpack::rpc::future f = c_.call("get_all_bursted_results", name_);
-    return f.get<std::map<std::string, st_window> >();
+    return f.get<std::map<std::string, window> >();
   }
 
-  std::map<std::string, st_window> get_all_bursted_results_at(double pos) {
+  std::map<std::string, window> get_all_bursted_results_at(double pos) {
     msgpack::rpc::future f = c_.call("get_all_bursted_results_at", name_, pos);
-    return f.get<std::map<std::string, st_window> >();
+    return f.get<std::map<std::string, window> >();
   }
 
-  std::vector<st_keyword> get_all_keywords() {
+  std::vector<keyword_with_params> get_all_keywords() {
     msgpack::rpc::future f = c_.call("get_all_keywords", name_);
-    return f.get<std::vector<st_keyword> >();
+    return f.get<std::vector<keyword_with_params> >();
   }
 
-  bool add_keyword(const st_keyword& keyword) {
+  bool add_keyword(const keyword_with_params& keyword) {
     msgpack::rpc::future f = c_.call("add_keyword", name_, keyword);
     return f.get<bool>();
   }

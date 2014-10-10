@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.1-24-g3a65019) with jenerator version 0.5.4-224-g49229fa/feature/burst
+// This file is auto-generated from burst.idl(0.6.1-34-gb64049d) with jenerator version 0.5.4-224-g49229fa/feature/burst
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -19,25 +19,26 @@ class burst_impl : public jubatus::server::common::mprpc::rpc_server {
     rpc_server(a.timeout),
     p_(new jubatus::server::framework::server_helper<burst_serv>(a, true)) {
 
-    rpc_server::add<int32_t(std::string, std::vector<st_document>)>(
+    rpc_server::add<int32_t(std::string, std::vector<document>)>(
         "add_documents", jubatus::util::lang::bind(&burst_impl::add_documents,
         this, jubatus::util::lang::_2));
-    rpc_server::add<st_window(std::string, std::string)>("get_result",
+    rpc_server::add<window(std::string, std::string)>("get_result",
         jubatus::util::lang::bind(&burst_impl::get_result, this,
         jubatus::util::lang::_2));
-    rpc_server::add<st_window(std::string, std::string, double)>(
-        "get_result_at", jubatus::util::lang::bind(&burst_impl::get_result_at,
-        this, jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<std::map<std::string, st_window>(std::string)>(
+    rpc_server::add<window(std::string, std::string, double)>("get_result_at",
+        jubatus::util::lang::bind(&burst_impl::get_result_at, this,
+        jubatus::util::lang::_2, jubatus::util::lang::_3));
+    rpc_server::add<std::map<std::string, window>(std::string)>(
         "get_all_bursted_results", jubatus::util::lang::bind(
         &burst_impl::get_all_bursted_results, this));
-    rpc_server::add<std::map<std::string, st_window>(std::string, double)>(
+    rpc_server::add<std::map<std::string, window>(std::string, double)>(
         "get_all_bursted_results_at", jubatus::util::lang::bind(
         &burst_impl::get_all_bursted_results_at, this,
         jubatus::util::lang::_2));
-    rpc_server::add<std::vector<st_keyword>(std::string)>("get_all_keywords",
-        jubatus::util::lang::bind(&burst_impl::get_all_keywords, this));
-    rpc_server::add<bool(std::string, st_keyword)>("add_keyword",
+    rpc_server::add<std::vector<keyword_with_params>(std::string)>(
+        "get_all_keywords", jubatus::util::lang::bind(
+        &burst_impl::get_all_keywords, this));
+    rpc_server::add<bool(std::string, keyword_with_params)>("add_keyword",
         jubatus::util::lang::bind(&burst_impl::add_keyword, this,
         jubatus::util::lang::_2));
     rpc_server::add<bool(std::string, std::string)>("remove_keyword",
@@ -59,37 +60,37 @@ class burst_impl : public jubatus::server::common::mprpc::rpc_server {
         &burst_impl::get_status, this));
   }
 
-  int32_t add_documents(const std::vector<st_document>& data) {
+  int32_t add_documents(const std::vector<document>& data) {
     JWLOCK_(p_);
     return get_p()->add_documents(data);
   }
 
-  st_window get_result(const std::string& keyword) {
+  window get_result(const std::string& keyword) {
     JRLOCK_(p_);
     return get_p()->get_result(keyword);
   }
 
-  st_window get_result_at(const std::string& keyword, double pos) {
+  window get_result_at(const std::string& keyword, double pos) {
     JRLOCK_(p_);
     return get_p()->get_result_at(keyword, pos);
   }
 
-  std::map<std::string, st_window> get_all_bursted_results() {
+  std::map<std::string, window> get_all_bursted_results() {
     JRLOCK_(p_);
     return get_p()->get_all_bursted_results();
   }
 
-  std::map<std::string, st_window> get_all_bursted_results_at(double pos) {
+  std::map<std::string, window> get_all_bursted_results_at(double pos) {
     JRLOCK_(p_);
     return get_p()->get_all_bursted_results_at(pos);
   }
 
-  std::vector<st_keyword> get_all_keywords() {
+  std::vector<keyword_with_params> get_all_keywords() {
     JRLOCK_(p_);
     return get_p()->get_all_keywords();
   }
 
-  bool add_keyword(const st_keyword& keyword) {
+  bool add_keyword(const keyword_with_params& keyword) {
     JWLOCK_(p_);
     return get_p()->add_keyword(keyword);
   }

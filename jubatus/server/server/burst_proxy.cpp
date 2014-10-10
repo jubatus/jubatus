@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.1-24-g3a65019) with jenerator version 0.5.4-224-g49229fa/feature/burst
+// This file is auto-generated from burst.idl(0.6.1-34-gb64049d) with jenerator version 0.5.4-224-g49229fa/feature/burst
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -18,27 +18,28 @@ int run_proxy(int argc, char* argv[]) {
   try {
     jubatus::server::framework::proxy k(
         jubatus::server::framework::proxy_argv(argc, argv, "burst"));
-    k.register_async_broadcast<int32_t, std::vector<st_document> >(
-        "add_documents", jubatus::util::lang::function<int32_t(int32_t,
-        int32_t)>(&jubatus::server::framework::pass<int32_t>));
-    k.register_async_cht<2, st_window>("get_result",
-        jubatus::util::lang::function<st_window(st_window, st_window)>(
-        &jubatus::server::framework::pass<st_window>));
-    k.register_async_cht<2, st_window, double>("get_result_at",
-        jubatus::util::lang::function<st_window(st_window, st_window)>(
-        &jubatus::server::framework::pass<st_window>));
-    k.register_async_broadcast<std::map<std::string, st_window> >(
+    k.register_async_broadcast<int32_t, std::vector<document> >("add_documents",
+        jubatus::util::lang::function<int32_t(int32_t, int32_t)>(
+        &jubatus::server::framework::pass<int32_t>));
+    k.register_async_cht<2, window>("get_result",
+        jubatus::util::lang::function<window(window, window)>(
+        &jubatus::server::framework::pass<window>));
+    k.register_async_cht<2, window, double>("get_result_at",
+        jubatus::util::lang::function<window(window, window)>(
+        &jubatus::server::framework::pass<window>));
+    k.register_async_broadcast<std::map<std::string, window> >(
         "get_all_bursted_results",
-        jubatus::util::lang::function<std::map<std::string, st_window>(
-        std::map<std::string, st_window>, std::map<std::string, st_window>)>(
-        &jubatus::server::framework::merge<std::string, st_window>));
-    k.register_async_broadcast<std::map<std::string, st_window>, double>(
+        jubatus::util::lang::function<std::map<std::string, window>(
+        std::map<std::string, window>, std::map<std::string, window>)>(
+        &jubatus::server::framework::merge<std::string, window>));
+    k.register_async_broadcast<std::map<std::string, window>, double>(
         "get_all_bursted_results_at",
-        jubatus::util::lang::function<std::map<std::string, st_window>(
-        std::map<std::string, st_window>, std::map<std::string, st_window>)>(
-        &jubatus::server::framework::merge<std::string, st_window>));
-    k.register_async_random<std::vector<st_keyword> >("get_all_keywords");
-    k.register_async_broadcast<bool, st_keyword>("add_keyword",
+        jubatus::util::lang::function<std::map<std::string, window>(
+        std::map<std::string, window>, std::map<std::string, window>)>(
+        &jubatus::server::framework::merge<std::string, window>));
+    k.register_async_random<std::vector<keyword_with_params> >(
+        "get_all_keywords");
+    k.register_async_broadcast<bool, keyword_with_params>("add_keyword",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_broadcast<bool, std::string>("remove_keyword",
