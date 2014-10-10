@@ -56,29 +56,29 @@ struct burst_serv_config {
   }
 };
 
-st_window to_st_window(const burst_result& x) {
-  st_window result;
+window to_window(const burst_result& x) {
+  window result;
   result.start_pos = x.get_start_pos();
   const std::vector<batch_result>& batches = x.get_batches();
 
   result.batches.reserve(batches.size());
   for (size_t i = 0; i < batches.size(); ++i) {
-    st_batch batch;
-    batch.d = batches[i].d;
-    batch.r = batches[i].r;
-    batch.burst_weight = batches[i].burst_weight;
-    result.batches.push_back(batch);
+    batch b;
+    b.all_data_count = batches[i].d;
+    b.relevant_data_count = batches[i].r;
+    b.burst_weight = batches[i].burst_weight;
+    result.batches.push_back(b);
   }
 
   return result;
 }
 
-std::map<std::string, st_window>
-    to_st_window_map(const core::driver::burst::result_map& x) {
-  std::map<std::string, st_window> result;
+std::map<std::string, window>
+    to_window_map(const core::driver::burst::result_map& x) {
+  std::map<std::string, window> result;
   for (core::driver::burst::result_map::const_iterator iter = x.begin();
        iter != x.end(); ++iter) {
-    result.insert(std::make_pair(iter->first, to_st_window(iter->second)));
+    result.insert(std::make_pair(iter->first, to_window(iter->second)));
   }
   return result;
 }
@@ -143,7 +143,7 @@ uint64_t burst_serv::user_data_version() const {
 }
 
 
-int burst_serv::add_documents(const std::vector<st_document>& data) {
+int burst_serv::add_documents(const std::vector<document>& data) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!watcher_binded_ && burst_->has_been_mixed()) {
     rehash_keywords();
@@ -154,7 +154,7 @@ int burst_serv::add_documents(const std::vector<st_document>& data) {
 
   size_t processed = 0;
   for (size_t i = 0; i < data.size(); i++) {
-    const st_document& doc = data[i];
+    const document& doc = data[i];
     if (burst_->add_document(doc.text, doc.pos)) {
       ++processed;
     } else {
@@ -172,41 +172,41 @@ int burst_serv::add_documents(const std::vector<st_document>& data) {
   return processed;
 }
 
-st_window burst_serv::get_result(const std::string& keyword) const {
-  return to_st_window(burst_->get_result(keyword));
+window burst_serv::get_result(const std::string& keyword) const {
+  return to_window(burst_->get_result(keyword));
 }
 
-st_window burst_serv::get_result_at(const std::string& keyword,
-                                    double pos) const {
-  return to_st_window(burst_->get_result_at(keyword, pos));
+window burst_serv::get_result_at(const std::string& keyword,
+                                 double pos) const {
+  return to_window(burst_->get_result_at(keyword, pos));
 }
 
-std::map<std::string, st_window> burst_serv::get_all_bursted_results() const {
-  return to_st_window_map(burst_->get_all_bursted_results());
+std::map<std::string, window> burst_serv::get_all_bursted_results() const {
+  return to_window_map(burst_->get_all_bursted_results());
 }
 
-std::map<std::string, st_window> burst_serv::get_all_bursted_results_at(
+std::map<std::string, window> burst_serv::get_all_bursted_results_at(
     double pos) const {
-  return to_st_window_map(burst_->get_all_bursted_results_at(pos));
+  return to_window_map(burst_->get_all_bursted_results_at(pos));
 }
 
-std::vector<st_keyword> burst_serv::get_all_keywords() const {
+std::vector<keyword_with_params> burst_serv::get_all_keywords() const {
   core::driver::burst::keyword_list keywords = burst_->get_all_keywords();
 
-  std::vector<st_keyword> result;
+  std::vector<keyword_with_params> result;
   result.reserve(keywords.size());
 
   for (size_t i = 0; i < keywords.size(); ++i) {
     result.push_back(
-        st_keyword(keywords[i].keyword,
-                   keywords[i].scaling_param,
-                   keywords[i].gamma));
+        keyword_with_params(keywords[i].keyword,
+                            keywords[i].scaling_param,
+                            keywords[i].gamma));
   }
 
   return result;
 }
 
-bool burst_serv::add_keyword(const st_keyword& keyword) {
+bool burst_serv::add_keyword(const keyword_with_params& keyword) {
   core::burst::keyword_params params = {keyword.scaling_param, keyword.gamma};
   bool processed_in_this_server = will_process(keyword.keyword);
   return burst_->add_keyword(keyword.keyword, params,
