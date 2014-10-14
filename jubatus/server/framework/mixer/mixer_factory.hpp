@@ -32,7 +32,8 @@ namespace mixer {
 mixer* create_mixer(
     const server_argv& a,
     const jubatus::util::lang::shared_ptr<common::lock_service>& zk,
-    jubatus::util::concurrent::rw_mutex& model_mutex);
+    jubatus::util::concurrent::rw_mutex& model_mutex,
+    uint64_t protocol_version);
 
 }  // namespace mixer
 }  // namespace framework

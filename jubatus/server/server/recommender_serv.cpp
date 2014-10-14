@@ -69,7 +69,7 @@ recommender_serv::recommender_serv(
     const framework::server_argv& a,
     const jubatus::util::lang::shared_ptr<lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk, rw_mutex())),
+      mixer_(create_mixer(a, zk, rw_mutex(), user_data_version())),
       clear_row_cnt_(),
       update_row_cnt_() {
 }
