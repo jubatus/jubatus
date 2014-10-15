@@ -59,6 +59,10 @@ class zk : public lock_service {
       const std::string& path,
       jubatus::util::lang::function<void(int, int, std::string)>&);
 
+  bool bind_child_watcher(
+      const std::string& path,
+      const jubatus::util::lang::function<void(int, int, std::string)>&);
+
   bool bind_delete_watcher(
       const std::string& path,
       jubatus::util::lang::function<void(std::string)>&);

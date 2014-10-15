@@ -1,0 +1,67 @@
+# Jubatus: Online machine learning framework for distributed environment
+# Copyright (C) 2014 Preferred Infrastructure and Nippon Telegraph and Telephone Corporation.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License version 2.1 as published by the Free Software Foundation.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+message keyword_with_params {
+  0: string keyword
+  1: double scaling_param
+  2: double gamma
+}
+
+message batch {
+  0: int all_data_count
+  1: int relevant_data_count
+  2: double burst_weight
+}
+
+message window {
+  0: double start_pos
+  1: list<batch> batches
+}
+
+message document {
+  0: double pos
+  1: string text
+}
+
+service burst {
+
+  #@broadcast #@update #@pass
+  int add_documents(0: list<document> data) # //@broadcast
+
+  #@cht #@analysis #@pass
+  window get_result(0: string keyword) # //@cht
+
+  #@cht #@analysis #@pass
+  window get_result_at(0: string keyword, 1: double pos) # //@cht
+
+  #@broadcast #@analysis #@merge
+  map<string, window> get_all_bursted_results() # //@broadcast
+
+  #@broadcast #@analysis #@merge
+  map<string, window> get_all_bursted_results_at(0: double pos) # //@broadcast
+
+  #@random #@analysis #@pass
+  list<keyword_with_params> get_all_keywords() # //@random
+
+  #@broadcast #@update #@all_and
+  bool add_keyword(0: keyword_with_params keyword) # //@broadcast
+
+  #@broadcast #@update #@all_and
+  bool remove_keyword(0: string keyword) # //@broadcast
+
+  #@broadcast #@update #@all_and
+  bool remove_all_keywords() # //@broadcast
+}
