@@ -108,7 +108,7 @@ bool is_assigned(
 burst_serv::burst_serv(const server_argv& a,
                        const shared_ptr<common::lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk, rw_mutex())),
+      mixer_(create_mixer(a, zk, rw_mutex(), user_data_version())),
       zk_(zk),
       watcher_binded_(false) {
 }
