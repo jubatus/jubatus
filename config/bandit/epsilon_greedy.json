@@ -1,0 +1,6 @@
+{
+  "method": "epsilon_greedy",
+  "parameter": {
+    "epsilon" : 0.1
+  }
+}
