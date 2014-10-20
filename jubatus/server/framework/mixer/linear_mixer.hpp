@@ -51,7 +51,7 @@ class linear_communication {
   virtual size_t update_members() = 0;
 
   // Get random one model from another server
-  virtual core::common::byte_buffer get_model() = 0;
+  virtual std::pair<uint64_t, core::common::byte_buffer> get_model() = 0;
 
   // We use shared_ptr instead of auto_ptr/unique_ptr
   // because in C++03 specification limits.
@@ -75,7 +75,8 @@ class linear_mixer : public mixer {
       jubatus::util::lang::shared_ptr<linear_communication> communicaiton,
       jubatus::util::concurrent::rw_mutex& mutex,
       unsigned int count_threshold,
-      unsigned int tick_threshold);
+      unsigned int tick_threshold,
+      uint64_t protocol_version);
   ~linear_mixer();
 
   void register_api(rpc_server_t& server);
@@ -103,11 +104,12 @@ class linear_mixer : public mixer {
 
   core::common::byte_buffer get_diff(int a);
   int put_diff(const core::common::byte_buffer&);
-  core::common::byte_buffer get_model(int d) const;
+  std::pair<uint64_t, core::common::byte_buffer> get_model(int d) const;
 
   jubatus::util::lang::shared_ptr<linear_communication> communication_;
   unsigned int count_threshold_;
   unsigned int tick_threshold_;
+  uint64_t protocol_version_;
 
   unsigned int counter_;
   jubatus::util::system::time::clock_time ticktime_;

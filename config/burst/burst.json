@@ -1,0 +1,11 @@
+{
+  "parameter" : {
+    "window_batch_size": 5,
+    "batch_interval": 10,
+    "max_reuse_batch_num": 5,
+    "costcut_threshold": -1,
+    "result_window_rotate_size": 5
+  },
+
+  "method" : "burst"
+}

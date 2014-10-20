@@ -1,4 +1,4 @@
-idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl', 'clustering.idl']
+idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl', 'burst.idl', 'clustering.idl']
 
 def options(opt):
   pass
@@ -37,5 +37,6 @@ def build(bld):
   build_one(bld, "graph")
   build_one(bld, "nearest_neighbor")
   build_one(bld, "clustering")
+  build_one(bld, "burst")
 
   bld.install_files('${PREFIX}/share/jubatus/idl/', idls)
