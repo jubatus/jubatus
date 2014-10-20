@@ -1,3 +1,12 @@
+Release 0.6.4 - 2014/10/20
+--------------------------
+
+* New machine learning service
+    * Distributed Burst Detection (jubaburst)
+
+* Improvements
+    * Compatibility verification when joining to cluster (#864, #882)
+
 Release 0.6.3 - 2014/09/29
 --------------------------
 
