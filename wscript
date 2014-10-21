@@ -94,7 +94,9 @@ def configure(conf):
   conf.check_cxx(header_name = 'arpa/inet.h')
   conf.check_cxx(header_name = 'dlfcn.h')
 
-  if not Options.options.debug:
+  if Options.options.debug:
+    conf.define('_GLIBCXX_DEBUG', 1)
+  else:
     conf.define('NDEBUG', 1)
     conf.define('JUBATUS_DISABLE_ASSERTIONS', 1)
 
