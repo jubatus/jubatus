@@ -137,7 +137,7 @@ typedef core::framework::linear_mixable_helper<my_string, string>
 
 class my_string_driver : public core::driver::driver_base {
  public:
-  my_string_driver() {
+  my_string_driver() : string_(shared_ptr<my_string>(new my_string)) {
     register_mixable(&string_);
   }
 
