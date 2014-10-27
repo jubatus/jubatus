@@ -50,7 +50,7 @@ class bandit_serv : public framework::server_base {
   std::string select_arm(const std::string& player_id);
   bool register_reward(const std::string& player_id, const std::string& arm_id,
       double reward);
-  std::map<std::string, registered_reward> get_registered_rewards(
+  std::map<std::string, arm_info> get_arm_info(
       const std::string& player_id) const;
   bool reset(const std::string& player_id);
   bool clear();

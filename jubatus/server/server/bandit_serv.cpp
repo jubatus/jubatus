@@ -23,7 +23,7 @@
 using jubatus::util::lang::shared_ptr;
 using jubatus::util::lang::lexical_cast;
 using jubatus::util::text::json::json;
-using jubatus::core::bandit::registered_rewards;
+using jubatus::core::bandit::arm_info_map;
 using jubatus::server::framework::mixer::create_mixer;
 
 namespace jubatus {
@@ -97,20 +97,19 @@ std::string bandit_serv::select_arm(const std::string& player_id) {
 bool bandit_serv::register_reward(const std::string& player_id,
                                   const std::string& arm_id,
                                   double reward) {
-  bandit_->register_reward(player_id, arm_id, reward);
-  return true;
+  return bandit_->register_reward(player_id, arm_id, reward);
 }
 
-std::map<std::string, registered_reward> bandit_serv::get_registered_rewards(
+std::map<std::string, arm_info> bandit_serv::get_arm_info(
     const std::string& player_id) const {
-  registered_rewards rs = bandit_->get_registered_rewards(player_id);
-  std::map<std::string, registered_reward> result;
-  for (registered_rewards::const_iterator iter = rs.begin();
-       iter != rs.end(); ++iter) {
-    registered_reward r;
-    r.trial_count = iter->second.trial_count;
-    r.total_reward = iter->second.total_reward;
-    result.insert(std::make_pair(iter->first, r));
+  arm_info_map as = bandit_->get_arm_info(player_id);
+  std::map<std::string, arm_info> result;
+  for (arm_info_map::const_iterator iter = as.begin();
+       iter != as.end(); ++iter) {
+    arm_info a;
+    a.trial_count = iter->second.trial_count;
+    a.weight = iter->second.weight;
+    result.insert(std::make_pair(iter->first, a));
   }
   return result;
 }
