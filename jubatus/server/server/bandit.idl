@@ -1,6 +1,6 @@
-message registered_reward {
+message arm_info {
   0: int trial_count
-  1: double total_reward
+  1: double weight
 }
 
 service bandit {
@@ -66,7 +66,7 @@ service bandit {
   #-
   #- Retrieve the states of slot machines, assigned to a designated player.
   #@cht #@analysis #@pass
-  map<string, registered_reward> get_registered_rewards(0: string player_id)
+  map<string, arm_info> get_arm_info(0: string player_id)
 
   #- - Parameters:
   #-
