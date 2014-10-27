@@ -1,4 +1,4 @@
-// This file is auto-generated from bandit.idl(0.6.3-32-g70e4707) with jenerator version 0.5.4-224-g49229fa/feature/bandit
+// This file is auto-generated from bandit.idl(0.6.4-14-g3b68062) with jenerator version 0.5.4-224-g49229fa/feature/bandit
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -30,13 +30,10 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_cht<2, bool, std::string, double>("register_reward",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
-    k.register_async_cht<2, std::map<std::string, registered_reward> >(
-        "get_registered_rewards",
-        jubatus::util::lang::function<std::map<std::string, registered_reward>(
-        std::map<std::string, registered_reward>, std::map<std::string,
-        registered_reward>)>(
-        &jubatus::server::framework::pass<std::map<std::string,
-        registered_reward> >));
+    k.register_async_cht<2, std::map<std::string, arm_info> >("get_arm_info",
+        jubatus::util::lang::function<std::map<std::string, arm_info>(
+        std::map<std::string, arm_info>, std::map<std::string, arm_info>)>(
+        &jubatus::server::framework::pass<std::map<std::string, arm_info> >));
     k.register_async_broadcast<bool, std::string>("reset",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));

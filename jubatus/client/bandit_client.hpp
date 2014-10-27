@@ -1,4 +1,4 @@
-// This file is auto-generated from bandit.idl(0.6.3-32-g70e4707) with jenerator version 0.5.4-224-g49229fa/feature/bandit
+// This file is auto-generated from bandit.idl(0.6.4-14-g3b68062) with jenerator version 0.5.4-224-g49229fa/feature/bandit
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_BANDIT_CLIENT_HPP_
@@ -44,11 +44,9 @@ class bandit : public jubatus::client::common::client {
     return f.get<bool>();
   }
 
-  std::map<std::string, registered_reward> get_registered_rewards(
-      const std::string& player_id) {
-    msgpack::rpc::future f = c_.call("get_registered_rewards", name_,
-        player_id);
-    return f.get<std::map<std::string, registered_reward> >();
+  std::map<std::string, arm_info> get_arm_info(const std::string& player_id) {
+    msgpack::rpc::future f = c_.call("get_arm_info", name_, player_id);
+    return f.get<std::map<std::string, arm_info> >();
   }
 
   bool reset(const std::string& player_id) {

@@ -1,4 +1,4 @@
-// This file is auto-generated from bandit.idl(0.6.3-32-g70e4707) with jenerator version 0.5.4-224-g49229fa/feature/bandit
+// This file is auto-generated from bandit.idl(0.6.4-14-g3b68062) with jenerator version 0.5.4-224-g49229fa/feature/bandit
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -32,9 +32,9 @@ class bandit_impl : public jubatus::server::common::mprpc::rpc_server {
         "register_reward", jubatus::util::lang::bind(
         &bandit_impl::register_reward, this, jubatus::util::lang::_2,
         jubatus::util::lang::_3, jubatus::util::lang::_4));
-    rpc_server::add<std::map<std::string, registered_reward>(std::string,
-        std::string)>("get_registered_rewards", jubatus::util::lang::bind(
-        &bandit_impl::get_registered_rewards, this, jubatus::util::lang::_2));
+    rpc_server::add<std::map<std::string, arm_info>(std::string, std::string)>(
+        "get_arm_info", jubatus::util::lang::bind(&bandit_impl::get_arm_info,
+        this, jubatus::util::lang::_2));
     rpc_server::add<bool(std::string, std::string)>("reset",
         jubatus::util::lang::bind(&bandit_impl::reset, this,
         jubatus::util::lang::_2));
@@ -75,10 +75,9 @@ class bandit_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->register_reward(player_id, arm_id, reward);
   }
 
-  std::map<std::string, registered_reward> get_registered_rewards(
-      const std::string& player_id) {
+  std::map<std::string, arm_info> get_arm_info(const std::string& player_id) {
     JRLOCK_(p_);
-    return get_p()->get_registered_rewards(player_id);
+    return get_p()->get_arm_info(player_id);
   }
 
   bool reset(const std::string& player_id) {

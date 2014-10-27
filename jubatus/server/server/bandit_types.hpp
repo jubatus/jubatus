@@ -1,4 +1,4 @@
-// This file is auto-generated from bandit.idl(0.6.3-32-g70e4707) with jenerator version 0.5.4-224-g49229fa/feature/bandit
+// This file is auto-generated from bandit.idl(0.6.4-14-g3b68062) with jenerator version 0.5.4-224-g49229fa/feature/bandit
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_BANDIT_TYPES_HPP_
@@ -16,15 +16,15 @@
 
 namespace jubatus {
 
-struct registered_reward {
+struct arm_info {
  public:
-  MSGPACK_DEFINE(trial_count, total_reward);
+  MSGPACK_DEFINE(trial_count, weight);
   int32_t trial_count;
-  double total_reward;
-  registered_reward() {
+  double weight;
+  arm_info() {
   }
-  registered_reward(int32_t trial_count, double total_reward)
-    : trial_count(trial_count), total_reward(total_reward) {
+  arm_info(int32_t trial_count, double weight)
+    : trial_count(trial_count), weight(weight) {
   }
 };
 
