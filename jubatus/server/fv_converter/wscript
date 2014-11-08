@@ -13,7 +13,7 @@ def configure(conf):
   pass
 
 def build(bld):
-  import Options
+  import waflib.Options as Options
   src = [
       'so_factory.cpp',
       'dynamic_loader.cpp',

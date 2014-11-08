@@ -1,5 +1,5 @@
 # -*- python -*-
-import Options
+import waflib.Options as Options
 
 def options(opt):
   opt.add_option('--enable-mecab',

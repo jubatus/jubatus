@@ -1,5 +1,5 @@
 # -*- python -*-
-import Options
+import waflib.Options as Options
 from waflib.Errors import TaskNotReady
 import os
 import sys

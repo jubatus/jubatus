@@ -1,5 +1,3 @@
-import Options
-
 subdirs = '''
 common framework cmd jubavisor server fv_converter third_party
 '''

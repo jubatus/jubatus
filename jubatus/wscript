@@ -1,5 +1,3 @@
-import Options
-
 subdirs = "server client"
 
 def options(opt):
