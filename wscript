@@ -38,10 +38,6 @@ def options(opt):
                  default=60023, choices=map(str, xrange(1024, 65535 - 10)),
                  help='base port number for RPC module tests')
 
-  opt.add_option('--disable-eigen',
-                 action='store_true', default=False,
-                 dest='disable_eigen', help='disable internal Eigen and algorithms using it')
-
   opt.add_option('--fsanitize',
                  action='store', default="",
                  dest='fsanitize', help='specify sanitizer')
@@ -126,10 +122,6 @@ def configure(conf):
     conf.define('JUBATUS_RPC_TEST_PORT_BASE', int(Options.options.rpc_test_port_base))
 
   conf.define('BUILD_DIR',  conf.bldnode.abspath())
-
-  conf.env.USE_EIGEN = not Options.options.disable_eigen
-  if conf.env.USE_EIGEN:
-    conf.define('JUBATUS_USE_EIGEN', 1)
 
   sanitizer_names = Options.options.fsanitize
   if len(sanitizer_names) > 0:
