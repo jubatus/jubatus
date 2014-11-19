@@ -80,18 +80,9 @@ namespace common {
 zk::zk(const string& hosts, int timeout, const string& logfile)
     : zh_(NULL),
       hosts_(hosts),
-      logfilep_(NULL) {
-  if (logfile != "") {
-    logfilep_ = fopen(logfile.c_str(), "a+");
-    if (!logfilep_) {
-      throw JUBATUS_EXCEPTION(
-          core::common::exception::runtime_error("cannot open zk logfile")
-          << core::common::exception::error_file_name(logfile.c_str())
-          << core::common::exception::error_errno(errno)
-          << core::common::exception::error_api_func("fopen"));
-    }
-    zoo_set_log_stream(logfilep_);
-  }
+      log_file_(logfile),
+      log_fp_(NULL) {
+  reopen_logfile();
 
   zh_ = zookeeper_init(hosts.c_str(), mywatcher, timeout * 1000, 0, this, 0);
   if (!zh_) {
@@ -115,9 +106,33 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
 
 zk::~zk() {
   force_close();
-  if (logfilep_) {
-    fclose(logfilep_);
-    logfilep_ = NULL;
+  if (log_fp_) {
+    zoo_set_log_stream(NULL); // print to stderr
+    fclose(log_fp_);
+    log_fp_ = NULL;
+  }
+}
+
+/**
+ * Open ZooKeeper log file and assign the stream to ZK library.
+ * If the stream is already open, reopen it and close the old stream.
+ * This is expected for log rotation upon receiving signal.
+ */
+void zk::reopen_logfile() {
+  if (log_file_ != "") {
+    FILE* old_log_fp_ = log_fp_;
+    log_fp_ = ::fopen(log_file_.c_str(), "a+");
+    if (!log_fp_) {
+      throw JUBATUS_EXCEPTION(
+          core::common::exception::runtime_error("cannot open zk logfile")
+          << core::common::exception::error_file_name(log_file_)
+          << core::common::exception::error_errno(errno)
+          << core::common::exception::error_api_func("fopen"));
+    }
+    ::zoo_set_log_stream(log_fp_);
+    if (old_log_fp_ != NULL) {
+      ::fclose(old_log_fp_);
+    }
   }
 }
 
