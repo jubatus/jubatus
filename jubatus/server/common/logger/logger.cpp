@@ -34,6 +34,16 @@
 
 #define LOGGER_NAME "jubatus"
 
+namespace {
+
+#ifdef __APPLE__
+const int gettid = SYS_thread_selfid;
+#else
+const int gettid = SYS_gettid;
+#endif
+
+}  // namespace
+
 using jubatus::util::lang::lexical_cast;
 
 namespace jubatus {
@@ -59,7 +69,7 @@ stream_logger::stream_logger(
       file_(file),
       line_(line),
       abort_(abort),
-      thread_id_(syscall(SYS_gettid)) {}
+      thread_id_(::syscall(gettid)) {}
 
 stream_logger::~stream_logger() {
   log4cxx::MDC::put("tid", lexical_cast<std::string>(thread_id_));
