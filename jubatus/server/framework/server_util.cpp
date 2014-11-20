@@ -74,6 +74,12 @@ void configure_logger(const std::string& log_config) {
     }
     common::logger::configure(log_config);
   }
+
+  if (!common::logger::is_configured()) {
+    std::cerr << "failed to configure logger" << std::endl;
+    ::abort();
+  }
+
   logger_configured_ = true;
   common::set_action_on_hup(jubatus::util::lang::bind(
       configure_logger, jubatus::util::lang::ref(log_config)));

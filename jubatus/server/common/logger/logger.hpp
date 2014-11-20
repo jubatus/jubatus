@@ -104,8 +104,19 @@ void configure();
 
 /**
  * Configures the logging library with given config file.
+ * Note: even if the configuration file contains an error,
+ * exception will not be thrown and just ignored; in that
+ * case, if you are reconfiguring the logger, the original
+ * logger configuration remains active.
  */
 void configure(const std::string&);
+
+/**
+ * Returns if the logging library is configured with at least 1 logger.
+ *
+ * @return true when at least one logger is configured, false if not.
+ */
+bool is_configured();
 
 }  // namespace logger
 }  // namespace common
