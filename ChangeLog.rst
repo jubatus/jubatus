@@ -1,3 +1,13 @@
+Release 0.6.5 - 2014/11/25
+--------------------------
+
+* Improvements
+    * Enable libstdc++ debug mode when configured using `--enable-debug` (#887, #889)
+
+* Buf fixes
+    * Fix thread ID in logs not printed properly on OS X (#874, #894)
+    * Remove unused `--disable-eigen` configure option (#890, #893)
+
 Release 0.6.4 - 2014/10/20
 --------------------------
 
