@@ -104,6 +104,11 @@ void configure(const std::string& config_file) {
   log4cxx::xml::DOMConfigurator::configure(config_file);
 }
 
+bool is_configured() {
+  log4cxx::LoggerPtr rootLogger = log4cxx::Logger::getRootLogger();
+  return rootLogger->getAllAppenders().size() != 0;
+}
+
 }  // namespace logger
 }  // namespace common
 }  // namespace server
