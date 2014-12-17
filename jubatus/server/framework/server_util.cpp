@@ -77,7 +77,7 @@ void configure_logger(const std::string& log_config) {
 
   if (!common::logger::is_configured()) {
     std::cerr << "failed to configure logger" << std::endl;
-    ::abort();
+    ::exit(1);
   }
 
   logger_configured_ = true;
