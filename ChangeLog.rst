@@ -1,3 +1,9 @@
+Release 0.6.6 - 2014/12/22
+--------------------------
+
+* Improvements
+    * Detect logger configuration error on startup (#895, #902)
+
 Release 0.6.5 - 2014/11/25
 --------------------------
 
