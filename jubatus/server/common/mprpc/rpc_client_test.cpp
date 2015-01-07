@@ -336,6 +336,7 @@ TEST(rpc_mclient, small) {
         "test_bool",
         73684,
         function<bool(bool, bool)>(&jubatus::server::framework::all_and));
+    EXPECT_FALSE(r.has_error());
     EXPECT_FALSE(*r);
   }
   {
@@ -344,6 +345,7 @@ TEST(rpc_mclient, small) {
         "test_twice",
         73684,
         function<int(int, int)>(&jubatus::server::framework::add<int>));
+    EXPECT_FALSE(r.has_error());
     EXPECT_EQ(ans, *r);
   }
   {
@@ -354,6 +356,7 @@ TEST(rpc_mclient, small) {
         21,
         -234,
         function<int(int, int)>(&jubatus::server::framework::add<int>));
+    EXPECT_FALSE(r.has_error());
     EXPECT_EQ(ans, *r);
   }
   {
@@ -374,6 +377,7 @@ TEST(rpc_mclient, small) {
         d,
         s,
         function<std::string(std::string, std::string)>(&concat));
+    EXPECT_FALSE(r.has_error());
     EXPECT_EQ(ans, *r);
   }
   {
@@ -384,6 +388,7 @@ TEST(rpc_mclient, small) {
         "sum",
         hoge,
         function<int(int, int)>(&jubatus::server::framework::add<int>));
+    EXPECT_FALSE(r.has_error());
     EXPECT_EQ(ans, *r);
   }
 
@@ -394,6 +399,7 @@ TEST(rpc_mclient, small) {
 
     rpc_result<std::vector<std::string> > r =
         cli.call("vec", std::string("a"), 200, f);
+    EXPECT_FALSE(r.has_error());
     EXPECT_EQ(200 * kServerSize, r.value->size());
   }
 
