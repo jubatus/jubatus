@@ -312,7 +312,7 @@ TEST(rpc_mclient, small) {
   thread_list threads;
 
   for (uint16_t port = kPortStart; port <= kPortEnd; port++) {
-    server_ptr ser = server_ptr(new test_mrpc_server(3.0));
+    server_ptr ser = server_ptr(new test_mrpc_server(10.0));
     servers.push_back(ser);
     threads.push_back(shared_ptr<thread>(
         new thread(jubatus::util::lang::bind(&server_thread, ser, port))));
@@ -330,7 +330,7 @@ TEST(rpc_mclient, small) {
     EXPECT_EQ(24, cli1.call_test_twice(12));
   }
 
-  jubatus::server::common::mprpc::rpc_mclient cli(clients, 3.0);
+  jubatus::server::common::mprpc::rpc_mclient cli(clients, 10.0);
   {
     rpc_result<bool> r = cli.call(
         "test_bool",
