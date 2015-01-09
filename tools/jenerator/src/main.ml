@@ -51,6 +51,7 @@ let _ =
     | "python" -> Python.generate
     | "java" -> Java.generate
     | "ruby" -> Ruby.generate
+    | "go" -> Go.generate
     | _ ->
       print_endline ("Unsupported language: \"" ^ conf.Config.language ^ "\"");
       exit 1 in

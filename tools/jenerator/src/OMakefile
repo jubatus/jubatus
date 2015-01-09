@@ -57,6 +57,7 @@ FILES[] =
   cpp
   python
   ruby
+  go
   java
   parse
   main
