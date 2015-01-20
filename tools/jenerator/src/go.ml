@@ -58,7 +58,7 @@ let gen_client_struct module_name =
   [
     (0, "type " ^ (snake_to_upper module_name) ^ "Client struct {");
     (2,     "client rpc.Client");
-    (2,     "name string");
+    (2,     "name   string");
     (0, "}");
   ]
 ;;
@@ -68,14 +68,10 @@ let rec gen_type = function
   | Bool -> "bool"
   | Int(signed, bytes) -> begin
     match signed, bytes with
-    | true, 1 -> "int8"
-    | true, 2 -> "int16"
-    | true, 4 -> "int32"
-    | true, 8 -> "int64"
-    | false, 1 -> "int8"
-    | false, 2 -> "int16"
-    | false, 4 -> "int32"
-    | false, 8 -> "int64"
+    | _, 1 -> "int8"
+    | _, 2 -> "int16"
+    | _, 4 -> "int32"
+    | _, 8 -> "int64"
     | _ -> raise (Unknown_type (Printf.sprintf "unknown int type: %b, %d" signed bytes))
   end
   | Float(_) -> "float64"
@@ -84,7 +80,7 @@ let rec gen_type = function
   | Datum -> "common.Datum"
   | Struct s  -> snake_to_upper s
   | List t -> "[]" ^ gen_type t
-  | Map(key, value) -> gen_call "TMap.new" [gen_type key; gen_type value]
+  | Map(key, value) -> "map[" ^ gen_type key ^ "]" ^ (gen_type value)
   | Nullable(t) -> gen_call "TNullable.new" [gen_type t]
 ;;
 
@@ -98,18 +94,11 @@ let gen_client_call m =
 ;;
 
 let gen_result m =
-  match m.method_return_type with
-  | None -> ""
-  | Some t -> "var result " ^ gen_type t
+  Option.default "" (Option.map (fun f -> "var result " ^ gen_type f) m.method_return_type)
 ;;
 
 let gen_def service func args return_type =
-  let arg_list = List.map (fun f ->
-                           let (name, type_name) = f in
-                           name ^ " " ^ gen_type type_name
-                          )
-                          (List.combine (List.map (fun f -> f.field_name) args)
-                                        (List.map (fun f -> f.field_type) args)) in
+  let arg_list = List.map (fun a -> a.field_name ^ " " ^ gen_type a.field_type) args in
   "func (c *" ^ service ^ "Client) " ^
     snake_to_upper func ^ "(" ^
       String.concat ", "
@@ -135,9 +124,7 @@ let gen_constructor service =
 ;;
 
 let gen_return_type m =
-  match m.method_return_type with
-  | None -> ""
-  | Some t -> gen_type t
+  Option.default "" (Option.map gen_type m.method_return_type)
 ;;
 
 let gen_client_method service_name m =
@@ -185,8 +172,7 @@ let gen_message m =
   let fields = List.map (fun f -> (f.field_name, f.field_type) ) m.message_fields in
   List.concat [
       [(0, "type " ^ snake_to_upper m.message_name ^ " struct {")];
-      List.map (fun f ->
-                let (name, type_name) = f in
+      List.map (fun (name, type_name) ->
                 (2, snake_to_upper name ^ " " ^ gen_type type_name) ) fields;
       [(0, "}")]
   ]
@@ -214,15 +200,15 @@ let gen_client_file conf source services =
     [ (0, "package jubatus_client")];
     [
       (0, "import (");
+      (2, "common \"../common\"");
+      (2, "\"github.com/ugorji/go/codec\"");
       (2, "\"net\"");
       (2, "\"net/rpc\"");
-      (2, "\"github.com/ugorji/go/codec\"");
-      (2, "common \"../common\"");
       (0, ")");
     ];
     concat_blocks clients;
-  ]
-  in make_header conf source filename content
+  ] in
+  make_header conf source filename content
 ;;
 
 let gen_type_file conf source idl =
