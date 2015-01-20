@@ -123,9 +123,10 @@ let gen_constructor service =
           camel_name ^ "Client, error) {");
 	  (2,   "conn, err := net.Dial(\"tcp\", host)");
 	  (2,   "if err != nil {");
-		(2,   "return nil, err");
+		(4,   "return nil, err");
 	  (2,   "}");
 	  (2,   "mh := new(codec.MsgpackHandle)");
+	  (2,   "mh.StructToArray = true");
 	  (2,   "rpcCodec := codec.MsgpackSpecRpc.ClientCodec(conn, mh)");
 	  (2,   "client := rpc.NewClientWithCodec(rpcCodec)");
 	  (2,   "return &" ^ camel_name ^ "Client{*client, name}, nil");
