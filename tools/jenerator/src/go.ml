@@ -230,7 +230,11 @@ let gen_type_file conf source idl =
   let types = List.map gen_typedef idl in
 
   let content = concat_blocks [
-    [ (0, "package jubatus_client")];
+    [ (0, "package jubatus_client");
+      (0, "import (");
+      (2, "common \"../common\"");
+      (0, ")");
+    ];
     concat_blocks types;
   ] in
   make_header conf source name content
