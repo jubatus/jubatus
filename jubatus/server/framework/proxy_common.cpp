@@ -24,13 +24,18 @@
 #include <vector>
 
 #include "jubatus/core/common/exception.hpp"
+#include "jubatus/util/lang/shared_ptr.h"
 #include "server_util.hpp"
 #include "../common/logger/logger.hpp"
+#include "../common/lock_service.hpp"
 #include "../common/membership.hpp"
 #include "../common/signals.hpp"
 
+
 using jubatus::util::system::time::clock_time;
 using jubatus::util::system::time::get_clock_time;
+using jubatus::util::lang::shared_ptr;
+using std::string;
 
 namespace jubatus {
 namespace server {
@@ -99,6 +104,20 @@ void proxy_common::get_members_(
     common::revert(*it, ip, port);
     ret.push_back(make_pair(ip, port));
   }
+}
+
+shared_ptr<common::lock_service_mutex>
+create_lock(shared_ptr<common::lock_service>& zk,
+            const string& type,
+            const string& name) {
+  string path;
+  common::build_actor_path(path, type, name);
+  return jubatus::util::lang::shared_ptr<common::lock_service_mutex>(
+      new common::lock_service_mutex(*zk, path + "/master_lock"));
+}
+
+shared_ptr<common::lock_service_mutex> proxy_common::get_master_lockable(const string& name) {
+  return create_lock(zk_, a_.type, name);
 }
 
 void proxy_common::get_members_from_cht_(
