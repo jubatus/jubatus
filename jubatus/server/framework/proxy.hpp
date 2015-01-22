@@ -255,6 +255,11 @@ class proxy
         do_nothing);
   }
 
+  static void unlock_zk(
+      util::lang::shared_ptr<common::lock_service_mutex> lock) {
+    lock->unlock();
+  }
+
   template<typename R, typename Tuple>
   void broadcast_async_vproxy(
       request_type req,
@@ -269,13 +274,13 @@ class proxy
     get_members_(name, list);
     util::lang::shared_ptr<common::lock_service_mutex> zk_lock =
         get_master_lockable(name);
-    zk_lock->lock();
+    while (!zk_lock->try_lock());  // get lock
 
     update_forward_counter(list.size());
 
     async_task_loop::template call_apply<R, Tuple>(
         list, method_name, args, a_, a_.interconnect_timeout, req, mp::bind(
-            &common::lock_service_mutex::unlock, zk_lock.get()), agg);
+            &proxy::unlock_zk, zk_lock), agg);
   }
 
   template<int N, typename R, typename Tuple>
@@ -295,7 +300,14 @@ class proxy
     update_forward_counter(list.size());
 
     async_task_loop::template call_apply<R, Tuple>(
-        list, method_name, args, a_, a_.interconnect_timeout, req, do_nothing, agg);
+        list,
+        method_name,
+        args,
+        a_,
+        a_.interconnect_timeout,
+        req,
+        do_nothing,
+        agg);
   }
 
  public:
@@ -323,6 +335,7 @@ class proxy
           hosts_(hosts),
           method_name_(method_name),
           req_(req),
+          finish_callback_(finish_callback),
           reducer_(reducer),
           running_count_(0),
           cancelled_(false),
@@ -361,6 +374,7 @@ class proxy
       if (!cancelled_ && running_count_ <= 0) {
         cancel_timeout();
         req_.result<Res>(aggregate_results());
+        finish_callback_();
       }
     }
 
@@ -462,6 +476,7 @@ class proxy
     host_list_type hosts_;
     std::string method_name_;
     request_type req_;
+    jubatus::util::lang::function<void(void)> finish_callback_;
     reducer_type reducer_;
 
     int running_count_;
@@ -556,7 +571,13 @@ class proxy
         typename async_task<Res>::reducer_type()) {
       host_list_type hosts;
       hosts.push_back(std::make_pair(host, port));
-      call_apply<Res, Args>(hosts, method_name, args, a, timeout_sec, req, finish_callback,
+      call_apply<Res, Args>(hosts,
+                            method_name,
+                            args,
+                            a,
+                            timeout_sec,
+                            req,
+                            finish_callback,
                             reducer);
     }
 

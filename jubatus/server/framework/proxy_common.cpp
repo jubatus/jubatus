@@ -116,7 +116,8 @@ create_lock(shared_ptr<common::lock_service>& zk,
       new common::lock_service_mutex(*zk, path + "/master_lock"));
 }
 
-shared_ptr<common::lock_service_mutex> proxy_common::get_master_lockable(const string& name) {
+shared_ptr<common::lock_service_mutex>
+proxy_common::get_master_lockable(const string& name) {
   return create_lock(zk_, a_.type, name);
 }
 
