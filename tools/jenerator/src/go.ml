@@ -24,6 +24,14 @@ open Lib
 
 let comment_out_head = "//"
 
+(* Golang-ish identifier converter used instead of snake_to_upper *)
+let snake_to_go_ident s =
+  let ss = Str.split (Str.regexp "_") s in
+  String.concat "" (List.map (fun x ->
+    match x with
+    | "id" -> "ID"
+    | _ -> String.capitalize x) ss)
+
 let make_header conf source filename content =
   make_source conf source filename content comment_out_head
 ;;
@@ -56,7 +64,7 @@ let gen_msgpack_arg_list args =
 
 let gen_client_struct module_name =
   [
-    (0, "type " ^ (snake_to_upper module_name) ^ "Client struct {");
+    (0, "type " ^ (snake_to_go_ident module_name) ^ "Client struct {");
     (2,     "client rpc.Client");
     (2,     "name   string");
     (0, "}");
@@ -78,7 +86,7 @@ let rec gen_type = function
   | Raw -> "[]bytes"
   | String -> "string"
   | Datum -> "common.Datum"
-  | Struct s  -> snake_to_upper s
+  | Struct s  -> snake_to_go_ident s
   | List t -> "[]" ^ gen_type t
   | Map(key, value) -> "map[" ^ gen_type key ^ "]" ^ (gen_type value)
   | Nullable(t) -> gen_call "TNullable.new" [gen_type t]
@@ -100,14 +108,14 @@ let gen_result m =
 let gen_def service func args return_type =
   let arg_list = List.map (fun a -> a.field_name ^ " " ^ gen_type a.field_type) args in
   "func (c *" ^ service ^ "Client) " ^
-    snake_to_upper func ^ "(" ^
+    snake_to_go_ident func ^ "(" ^
       String.concat ", "
                     arg_list ^
       ") " ^ return_type ^ " {"
 ;;
 
 let gen_constructor service =
-  let camel_name = snake_to_upper service in
+  let camel_name = snake_to_go_ident service in
   [ (0, "func New" ^ camel_name ^ "Client(host string, name string) (*" ^
           camel_name ^ "Client, error) {");
 	  (2,   "conn, err := net.Dial(\"tcp\", host)");
@@ -129,7 +137,7 @@ let gen_return_type m =
 
 let gen_client_method service_name m =
   let name = m.method_name in
-  [ (0, gen_def (snake_to_upper service_name) name m.method_arguments (gen_return_type m));
+  [ (0, gen_def (snake_to_go_ident service_name) name m.method_arguments (gen_return_type m));
     (2,   gen_result m);
     (2,   gen_client_call m);
     (2,   "return result");
@@ -171,9 +179,9 @@ let gen_str name field_names =
 let gen_message m =
   let fields = List.map (fun f -> (f.field_name, f.field_type) ) m.message_fields in
   List.concat [
-      [(0, "type " ^ snake_to_upper m.message_name ^ " struct {")];
+      [(0, "type " ^ snake_to_go_ident m.message_name ^ " struct {")];
       List.map (fun (name, type_name) ->
-                (2, snake_to_upper name ^ " " ^ gen_type type_name) ) fields;
+                (2, snake_to_go_ident name ^ " " ^ gen_type type_name) ) fields;
       [(0, "}")]
   ]
 ;;
