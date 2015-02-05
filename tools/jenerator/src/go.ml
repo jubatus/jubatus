@@ -116,15 +116,15 @@ let gen_constructor service =
   let camel_name = snake_to_go_ident service in
   [ (0, "func New" ^ camel_name ^ "Client(host string, name string) (*" ^
           camel_name ^ "Client, error) {");
-	  (2,   "conn, err := net.Dial(\"tcp\", host)");
-	  (2,   "if err != nil {");
-		(4,   "return nil, err");
-	  (2,   "}");
-	  (2,   "mh := new(codec.MsgpackHandle)");
-	  (2,   "mh.StructToArray = true");
-	  (2,   "rpcCodec := codec.MsgpackSpecRpc.ClientCodec(conn, mh)");
-	  (2,   "client := rpc.NewClientWithCodec(rpcCodec)");
-	  (2,   "return &" ^ camel_name ^ "Client{*client, name}, nil");
+    (2,   "conn, err := net.Dial(\"tcp\", host)");
+    (2,   "if err != nil {");
+    (4,   "return nil, err");
+    (2,   "}");
+    (2,   "mh := new(codec.MsgpackHandle)");
+    (2,   "mh.StructToArray = true");
+    (2,   "rpcCodec := codec.MsgpackSpecRpc.ClientCodec(conn, mh)");
+    (2,   "client := rpc.NewClientWithCodec(rpcCodec)");
+    (2,   "return &" ^ camel_name ^ "Client{*client, name}, nil");
     (0, "}");
   ]
 ;;
@@ -206,7 +206,7 @@ let gen_client_file conf source services =
     [ (0, "package jubatus_client")];
     [
       (0, "import (");
-      (2, "common \"../common\"");
+      (2, "common \"github.com/jubatus/jubatus-go-client/lib/common\"");
       (2, "\"github.com/ugorji/go/codec\"");
       (2, "\"net\"");
       (2, "\"net/rpc\"");
@@ -225,7 +225,7 @@ let gen_type_file conf source idl =
   let content = concat_blocks [
     [ (0, "package jubatus_client");
       (0, "import (");
-      (2, "common \"../common\"");
+      (2, "common \"github.com/jubatus/jubatus-go-client/lib/common\"");
       (0, ")");
     ];
     concat_blocks types;
