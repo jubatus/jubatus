@@ -340,8 +340,7 @@ namespace {
 class string_vector_holder {
  public:
   string_vector_holder()
-    : v_()  // set null (deallocate_String_vector does nothing
-            // when null is passed.)
+    : v_()  // set null
   {}
 
   ~string_vector_holder() {
@@ -349,11 +348,9 @@ class string_vector_holder {
   }
 
   int zoo_get_children(zhandle_t* zh, const char* path, int watch) {
-    if (v_.data != 0) {
-      // this behavior may break strong exception safety,
-      // but such case is user's fault.
-      release();
-    }
+    // releasing memory here may break strong exception safety,
+    // but such case is user's fault.
+    release();
     return ::zoo_get_children(zh, path, watch, &v_);
   }
 
@@ -366,7 +363,10 @@ class string_vector_holder {
   }
 
   void release() {
-    deallocate_String_vector(&v_);
+    if (v_.data != 0) {
+      deallocate_String_vector(&v_);
+      v_.data = 0;
+    }
   }
 
  private:
