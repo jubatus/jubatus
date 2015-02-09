@@ -26,6 +26,7 @@
 #include <cmath>
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/data/string/utility.h"
+#include "jubatus/util/lang/noncopyable.h"
 #include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
 
@@ -337,7 +338,7 @@ bool zk::list(const string& path, vector<string>& out) {
 
 namespace {
 
-class string_vector_holder {
+class string_vector_holder : util::lang::noncopyable {
  public:
   string_vector_holder()
     : v_()  // set null
