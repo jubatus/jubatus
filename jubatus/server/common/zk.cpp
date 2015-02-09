@@ -367,6 +367,7 @@ class string_vector_holder : util::lang::noncopyable {
     if (v_.data != 0) {
       deallocate_String_vector(&v_);
       v_.data = 0;
+      v_.count = 0;
     }
   }
 
