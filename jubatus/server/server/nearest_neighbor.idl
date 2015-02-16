@@ -21,4 +21,7 @@ service nearest_neighbor {
 
   #@random #@analysis #@pass
   list<id_with_score> similar_row_from_datum(0: datum query, 1: int ret_num)
+
+  #@random #@analysis #@pass
+  list<string> get_all_rows()
 }

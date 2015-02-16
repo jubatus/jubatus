@@ -33,6 +33,7 @@ int run_proxy(int argc, char* argv[]) {
         std::string, int32_t>("similar_row_from_id");
     k.register_async_random<std::vector<std::pair<std::string, float> >,
         jubatus::core::fv_converter::datum, int32_t>("similar_row_from_datum");
+    k.register_async_random<std::vector<std::string> >("get_all_rows");
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << "exception in proxy main thread: "
