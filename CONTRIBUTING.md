@@ -10,4 +10,4 @@ In Japanese: http://jubat.us/ja/howtocontribute.html
 
 Copyright
 ---------
-(C) PFI & NTT
+(C) PFN & NTT

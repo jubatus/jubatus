@@ -14,7 +14,7 @@ Now you can build the package as follows:
 
 ```
 export DEBEMAIL="jubatus@googlegroups.com"
-export DEBFULLNAME="PFI & NTT"
+export DEBFULLNAME="PFN & NTT"
 ./jubapkg -f -c -d -b -p deb
 ```
 
