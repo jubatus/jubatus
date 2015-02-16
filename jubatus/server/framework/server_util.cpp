@@ -80,6 +80,10 @@ void configure_logger(const std::string& log_config) {
     ::exit(1);
   }
 
+  if (ls) {
+    ls->reopen_logfile();
+  }
+
   logger_configured_ = true;
   common::set_action_on_hup(jubatus::util::lang::bind(
       configure_logger, jubatus::util::lang::ref(log_config)));
