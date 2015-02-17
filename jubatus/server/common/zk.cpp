@@ -26,6 +26,7 @@
 #include <cmath>
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/data/string/utility.h"
+#include "jubatus/util/lang/noncopyable.h"
 #include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
 
@@ -335,18 +336,61 @@ bool zk::list(const string& path, vector<string>& out) {
   return list_(path, out);
 }
 
+namespace {
+
+class string_vector_holder : util::lang::noncopyable {
+ public:
+  string_vector_holder()
+    : v_()  // set null
+  {}
+
+  ~string_vector_holder() {
+    release();
+  }
+
+  int zoo_get_children(zhandle_t* zh, const char* path, int watch) {
+    // releasing memory here may break strong exception safety,
+    // but such case is user's fault.
+    release();
+    return ::zoo_get_children(zh, path, watch, &v_);
+  }
+
+  int32_t size() const {
+    return v_.count;
+  }
+
+  const char* operator[](int32_t n) const {
+    return v_.data[n];
+  }
+
+  void release() {
+    if (v_.data != 0) {
+      deallocate_String_vector(&v_);
+      v_.data = 0;
+      v_.count = 0;
+    }
+  }
+
+ private:
+  String_vector v_;
+};
+}  // namespcae
+
 bool zk::list_(const string& path, vector<string>& out) {
-  struct String_vector s;
-  int rc = zoo_get_children(zh_, path.c_str(), 0, &s);
-  if (rc == ZOK) {
-    for (int i = 0; i < s.count; ++i) {
-      out.push_back(s.data[i]);  // full path => #{path}/#{s.data[i]}
+  string_vector_holder sv;
+  int rc = sv.zoo_get_children(zh_, path.c_str(), 0);
+  switch (rc) {
+  case ZOK:
+    for (int32_t i = 0; i < sv.size(); ++i) {
+      out.push_back(sv[i]);  // full path => #{path}/#{s.data[i]}
     }
     std::sort(out.begin(), out.end());
     return true;
-  } else if (rc == ZNONODE) {
+
+  case ZNONODE:
     return true;
-  } else {
+
+  default:
     LOG(ERROR) << "failed to get all child nodes of ZooKeeper node: "
                << path << ": " << zerror(rc) << " (" << rc << ")";
     return false;
@@ -354,12 +398,12 @@ bool zk::list_(const string& path, vector<string>& out) {
 }
 
 bool zk::hd_list(const string& path, string& out) {
-  struct String_vector s;
+  string_vector_holder sv;
   scoped_lock lk(m_);
-  int rc = zoo_get_children(zh_, path.c_str(), 0, &s);
+  int rc = sv.zoo_get_children(zh_, path.c_str(), 0);
   if (rc == ZOK) {
-    if (0 < s.count) {
-      out = s.data[0];
+    if (sv.size() > 0) {
+      out = sv[0];
     }
     return true;
   }
