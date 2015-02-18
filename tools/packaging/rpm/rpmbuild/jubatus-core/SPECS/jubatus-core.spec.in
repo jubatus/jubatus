@@ -7,7 +7,7 @@ Name:		jubatus-core
 Version:	%{package_version}
 Release:	%{package_release}%{?dist}
 Summary:	Core Machine Learning Library of Jubatus
-Vendor:		PFI & NTT
+Vendor:		PFN & NTT
 Group:		System Environment/Daemons
 License:	LGPL 2.1
 URL:		http://jubat.us/

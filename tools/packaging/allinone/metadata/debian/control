@@ -1,6 +1,6 @@
 Source: jubatus
 Priority: extra
-Maintainer: PFI & NTT <jubatus@googlegroups.com>
+Maintainer: PFN & NTT <jubatus@googlegroups.com>
 Build-Depends: debhelper (>= 8.0.0), autotools-dev, pkg-config, python (>= 2.6), liblog4cxx10-dev
 Standards-Version: 3.9.3
 Section: misc

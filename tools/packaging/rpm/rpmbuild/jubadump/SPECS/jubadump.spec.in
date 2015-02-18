@@ -7,7 +7,7 @@ Name:		jubadump
 Version:	%{package_version}
 Release:	%{package_release}%{?dist}
 Summary:	Dump Jubatus Model Files
-Vendor:		PFI & NTT
+Vendor:		PFN & NTT
 Group:		System Environment/Daemons
 License:	LGPL 2.1
 URL:		http://jubat.us/

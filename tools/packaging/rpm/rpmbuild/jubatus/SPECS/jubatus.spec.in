@@ -7,7 +7,7 @@ Name:		jubatus
 Version:	%{package_version}
 Release:	%{package_release}%{?dist}
 Summary:	Distributed Online Machine Learning Framework
-Vendor:		PFI & NTT
+Vendor:		PFN & NTT
 Group:		System Environment/Daemons
 License:	LGPL 2.1
 URL:		http://jubat.us/
