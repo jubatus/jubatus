@@ -17,6 +17,7 @@
 #include "nearest_neighbor_serv.hpp"
 
 #include <string>
+#include <vector>
 #include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/text/json.h"

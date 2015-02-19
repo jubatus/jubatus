@@ -29,7 +29,8 @@ namespace jubatus {
 namespace server {
 namespace fv_converter {
 
-class dynamic_combination_feature : public core::fv_converter::combination_feature {
+class dynamic_combination_feature
+    : public core::fv_converter::combination_feature {
  public:
   dynamic_combination_feature(
       const std::string& path,
@@ -44,7 +45,8 @@ class dynamic_combination_feature : public core::fv_converter::combination_featu
 
  private:
   dynamic_loader loader_;
-  jubatus::util::lang::scoped_ptr<core::fv_converter::combination_feature> impl_;
+  jubatus::util::lang::scoped_ptr<core::fv_converter::combination_feature>
+      impl_;
 };
 
 }  // namespace fv_converter
