@@ -22,6 +22,7 @@ def build(bld):
       'dynamic_binary_feature.cpp',
       'dynamic_string_filter.cpp',
       'dynamic_num_filter.cpp',
+      'dynamic_combination_feature.cpp',
       ]
 
   bld.shlib(

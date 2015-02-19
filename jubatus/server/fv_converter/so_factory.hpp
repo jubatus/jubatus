@@ -31,6 +31,10 @@ class so_factory : public core::fv_converter::factory_extender {
         const std::string& name,
         const core::fv_converter::param_t&) const;
 
+  core::fv_converter::combination_feature* create_combination_feature(
+      const std::string& name,
+      const core::fv_converter::param_t&) const;
+
   core::fv_converter::num_filter*
     create_num_filter(
         const std::string& name,
