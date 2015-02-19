@@ -155,25 +155,6 @@ let gen_self_with_equal field_names =
   List.map (fun s -> (0, "@" ^ s ^ " = " ^ s)) field_names
 ;;
 
-let gen_str name field_names =
-  List.concat [
-    [
-      (0, "def to_s");
-      (1,   "gen = Jubatus::Common::MessageStringGenerator.new");
-      (1,   gen_call "gen.open" [gen_string_literal name])
-    ];
-    List.map (fun f ->
-      (1,   gen_call "gen.add" [gen_string_literal f; "@" ^ f])
-    ) field_names;
-    [
-      (1,   "gen.close()");
-      (1,   "return gen.to_s");
-      (0, "end")
-    ]
-  ]
-;;
-
-
 let gen_message m =
   let fields = List.map (fun f -> (f.field_name, f.field_type) ) m.message_fields in
   List.concat [
@@ -191,6 +172,59 @@ let gen_typedef = function
      [(0, "")]
 ;;
 
+let common_functions name =
+  [
+    (* save func *)
+    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) Save(id string) bool {");
+    (2,   "var result bool");
+    (2,   "c.client.Call(\"save\", codec.MsgpackSpecRpcMultiArgs{c.name, id}, &result)");
+    (2,   "return result");
+    (0, "}");
+    (0, "");
+
+    (* load func *)
+    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) Load(id string) bool {");
+    (2,   "var result bool");
+    (2,   "c.client.Call(\"load\", codec.MsgpackSpecRpcMultiArgs{c.name, id}, &result)");
+    (2,   "return result");
+    (0, "}");
+    (0, "");
+
+    (* get_config *)
+    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) GetConfig() map[string]map[string]string {");
+    (2,   "var result map[string]map[string]string");
+    (2,   "c.client.Call(\"get_config\", codec.MsgpackSpecRpcMultiArgs{c.name}, &result)");
+    (2,   "return result");
+    (0, "}");
+    (0, "");
+
+    (* do_mix func *)
+    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) DoMix() bool {");
+    (2,   "var result bool");
+    (2,   "c.client.Call(\"do_mix\", codec.MsgpackSpecRpcMultiArgs{c.name}, &result)");
+    (2,   "return result");
+    (0, "}");
+    (0, "");
+
+    (* get_name func *)
+    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) GetName() string {");
+    (2,   "return c.name");
+    (0, "}");
+    (0, "");
+
+    (* set_name func *)
+    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) SetName(new_name string) {");
+    (2,   "c.name = new_name");
+    (0, "}");
+    (0, "");
+
+    (* get_client func *)
+    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) GetClient() rpc.Client {");
+    (2,   "return c.client");
+    (0, "}");
+  ]
+;;
+
 let gen_client_file conf source services =
   let base = File_util.take_base source in
   let filename = Filename.concat base "client.go" in
@@ -199,6 +233,7 @@ let gen_client_file conf source services =
       gen_client_struct s.service_name;
       gen_constructor s.service_name;
       gen_client s;
+      common_functions s.service_name;
     ]
   ) services in
 
@@ -206,10 +241,10 @@ let gen_client_file conf source services =
     [ (0, "package jubatus_client")];
     [
       (0, "import (");
-      (2, "common \"github.com/jubatus/jubatus-go-client/lib/common\"");
-      (2, "\"github.com/ugorji/go/codec\"");
-      (2, "\"net\"");
-      (2, "\"net/rpc\"");
+      (2,   "common \"github.com/jubatus/jubatus-go-client/lib/common\"");
+      (2,   "\"github.com/ugorji/go/codec\"");
+      (2,   "\"net\"");
+      (2,   "\"net/rpc\"");
       (0, ")");
     ];
     concat_blocks clients;
@@ -225,7 +260,7 @@ let gen_type_file conf source idl =
   let content = concat_blocks [
     [ (0, "package jubatus_client");
       (0, "import (");
-      (2, "common \"github.com/jubatus/jubatus-go-client/lib/common\"");
+      (2,   "common \"github.com/jubatus/jubatus-go-client/lib/common\"");
       (0, ")");
     ];
     concat_blocks types;
