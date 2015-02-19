@@ -64,6 +64,8 @@ class nearest_neighbor_serv : public framework::server_base {
   neighbor_result similar_row_from_datum(const core::fv_converter::datum&,
       size_t);
 
+  std::vector<std::string> get_all_rows() const;
+
  private:
   void check_set_config()const;
   jubatus::util::lang::scoped_ptr<framework::mixer::mixer> mixer_;

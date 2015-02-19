@@ -1,4 +1,4 @@
-// This file is auto-generated from nearest_neighbor.idl(0.4.5-347-g86989a6) with jenerator version 0.5.2-45-gc4cfc98/develop
+// This file is auto-generated from nearest_neighbor.idl(0.5.4-186-g163c6bd) with jenerator version 0.5.4-224-g49229fa/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_NEAREST_NEIGHBOR_TYPES_HPP_

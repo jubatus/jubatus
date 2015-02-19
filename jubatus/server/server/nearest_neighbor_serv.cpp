@@ -170,6 +170,12 @@ neighbor_result nearest_neighbor_serv::similar_row_from_datum(
   return nearest_neighbor_->similar_row(d, ret_num);
 }
 
+std::vector<std::string> nearest_neighbor_serv::get_all_rows() const {
+  check_set_config();
+
+  return nearest_neighbor_->get_all_rows();
+}
+
 void nearest_neighbor_serv::check_set_config() const {
   if (!nearest_neighbor_) {
     throw JUBATUS_EXCEPTION(core::common::config_not_set());

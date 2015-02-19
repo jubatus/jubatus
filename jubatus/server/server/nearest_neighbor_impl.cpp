@@ -45,6 +45,8 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
         jubatus::util::lang::bind(
         &nearest_neighbor_impl::similar_row_from_datum, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
+    rpc_server::add<std::vector<std::string>(std::string)>("get_all_rows",
+        jubatus::util::lang::bind(&nearest_neighbor_impl::get_all_rows, this));
 
     rpc_server::add<std::string(std::string)>("get_config",
         jubatus::util::lang::bind(&nearest_neighbor_impl::get_config, this));
@@ -92,6 +94,11 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
       const jubatus::core::fv_converter::datum& query, int32_t ret_num) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_datum(query, ret_num);
+  }
+
+  std::vector<std::string> get_all_rows() {
+    JRLOCK_(p_);
+    return get_p()->get_all_rows();
   }
 
   std::string get_config() {
