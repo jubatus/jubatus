@@ -90,8 +90,8 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error(
             "failed to initialize zk: " + hosts)
-        << core::common::exception::error_api_func("zookeeper_init")
-        << core::common::exception::error_errno(errno));
+            << core::common::exception::error_api_func("zookeeper_init")
+            << core::common::exception::error_errno(errno));
   }
 
   if (!wait_until_connected(timeout)) {
@@ -107,7 +107,7 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
 zk::~zk() {
   force_close();
   if (log_fp_) {
-    zoo_set_log_stream(NULL); // print to stderr
+    zoo_set_log_stream(NULL);  // print to stderr
     fclose(log_fp_);
     log_fp_ = NULL;
   }
@@ -125,9 +125,9 @@ void zk::reopen_logfile() {
     if (!log_fp_) {
       throw JUBATUS_EXCEPTION(
           core::common::exception::runtime_error("cannot open zk logfile")
-          << core::common::exception::error_file_name(log_file_)
-          << core::common::exception::error_errno(errno)
-          << core::common::exception::error_api_func("fopen"));
+              << core::common::exception::error_file_name(log_file_)
+              << core::common::exception::error_errno(errno)
+              << core::common::exception::error_api_func("fopen"));
     }
     ::zoo_set_log_stream(log_fp_);
     if (old_log_fp_ != NULL) {
@@ -456,8 +456,9 @@ const std::string zk::get_connected_host_and_port() const {
   if (zookeeper_get_connected_host(zh_, &sock_addr, &sock_len) == NULL) {
     throw JUBATUS_EXCEPTION(
       core::common::exception::runtime_error("cannot get connected host")
-      << core::common::exception::error_api_func("zookeeper_get_connected_host")
-      << core::common::exception::error_message(zerror(errno)));
+          << core::common::exception::error_api_func(
+              "zookeeper_get_connected_host")
+          << core::common::exception::error_message(zerror(errno)));
   }
 
   // TODO(@rimms): add this code to common::util
