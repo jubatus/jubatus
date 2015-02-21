@@ -1,3 +1,4 @@
+# -*- python -*-
 subdirs = "src"
 
 def options(opt):

@@ -1,3 +1,4 @@
+# -*- python -*-
 subdirs = ['cmdline']
 
 def options(opt):

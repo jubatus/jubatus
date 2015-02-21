@@ -1,3 +1,4 @@
+# -*- python -*-
 def options(opt): pass
 
 def configure(conf): pass

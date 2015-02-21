@@ -1,3 +1,4 @@
+# -*- python -*-
 def build(bld):
   bld.install_files('${PREFIX}/include/jubatus/client/common',
                     bld.path.ant_glob('*.hpp'))

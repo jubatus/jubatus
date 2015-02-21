@@ -1,3 +1,4 @@
+# -*- python -*-
 idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl', 'bandit.idl', 'burst.idl', 'clustering.idl']
 
 def options(opt):
