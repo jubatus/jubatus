@@ -5,11 +5,7 @@ type result =
   | Success of idl
   | LexError of int * int * char
   | ParseError of int * int
-
-let result_to_string = function
-  | Success(_) -> "Success(<abst>)" (* TODO: implement idl_to_string *)
-  | LexError(lnum, cnum, ch) -> Printf.sprintf "LexError(%n, %n, '%c')" lnum cnum ch
-  | ParseError(lnum, cnum) -> Printf.sprintf "ParseError(%n, %n)" lnum cnum
+  [@@deriving show]
 
 let parse program =
   let lexbuf = Lexing.from_string program in
@@ -27,7 +23,7 @@ let parse program =
 ;;
 
 let parse_test program expected =
-  assert_equal ~printer:result_to_string expected @@ parse program
+  assert_equal ~printer:show_result expected @@ parse program
 ;;
 
 let parse_error_position_test program lnum cnum =
