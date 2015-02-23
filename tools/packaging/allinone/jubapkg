@@ -66,7 +66,7 @@ do_download() {
 	pushd "${SOURCE_DIR}"
 
 	# MessagePack
-	download_url http://msgpack.org/releases/cpp/msgpack-${MSGPACK_VER}.tar.gz
+	download_url http://github.com/msgpack/msgpack-c/archive/cpp-${MSGPACK_VER}.tar.gz
 
 	# Oniguruma
 	download_url http://www.geocities.jp/kosako3/oniguruma/archive/onig-${ONIG_VER}.tar.gz
@@ -155,13 +155,14 @@ do_build() {
 	mkdir -p "${DOC_DIR}"
 
 	# MessagePack
-	tar zxf ${SOURCE_DIR}/msgpack-${MSGPACK_VER}.tar.gz
-	pushd msgpack-${MSGPACK_VER}
+	tar zxf ${SOURCE_DIR}/cpp-${MSGPACK_VER}.tar.gz
+	pushd msgpack-c-cpp-${MSGPACK_VER}
+	./bootstrap
 	./configure --prefix=${PREFIX}
 	make
 	make install DESTDIR=${DEST_DIR}
-	mkdir -p "${DOC_DIR}/msgpack-${MSGPACK_VER}"
-	cp -a AUTHORS ChangeLog COPYING LICENSE NEWS NOTICE README README.md "${DOC_DIR}/msgpack-${MSGPACK_VER}"
+	mkdir -p "${DOC_DIR}/msgpack-c-cpp-${MSGPACK_VER}"
+	cp -a AUTHORS ChangeLog COPYING LICENSE NEWS NOTICE README README.md "${DOC_DIR}/msgpack-c-cpp-${MSGPACK_VER}"
 	popd
 
 	# Jubatus MPIO
