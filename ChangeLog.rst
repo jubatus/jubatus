@@ -1,3 +1,21 @@
+Release 0.7.0 - 2015/02/23
+--------------------------
+
+* New machine learning service
+    * Distributed Multi-Armed Bandit (jubabandit) (#932)
+
+* Improvements
+    * Add golang client (experimental) (#870, #907, #909, #923, )
+    * Add support for combination feature (#925)
+    * nearest_neighbor: Implement get_all_rows API (#918)
+    * classifier: Add example file for NN-based classifier (#921)
+    * Upgrade to MessagePack 0.5.9 (#926)
+    * Update copyright (#906, #920, #927)
+
+* Bug fixes
+    * Fix memory leak when doing MIX (#914)
+    * Fix RPC tests occasionally fails (#905)
+
 Release 0.6.6 - 2014/12/22
 --------------------------
 
