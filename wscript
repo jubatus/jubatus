@@ -4,7 +4,7 @@ from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '0.6.6'
+VERSION = '0.7.0'
 ABI_VERSION = VERSION
 APPNAME = 'jubatus'
 
