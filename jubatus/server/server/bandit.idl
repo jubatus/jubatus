@@ -1,0 +1,92 @@
+message arm_info {
+  0: int trial_count
+  1: double weight
+}
+
+service bandit {
+  #- - Parameters:
+  #-
+  #-  - ``arm_id``: a string value to designate a slot machine to be registered.
+  #-
+  #- - Returns:
+  #-
+  #-  - 1 when successfully registered, 0 when failed to register.
+  #-
+  #- Register a slot machine to each player.
+  #@broadcast #@update #@all_and
+  bool register_arm(0: string arm_id)
+
+  #- - Parameters:
+  #-
+  #-  - ``arm_id``: a string value to designate a slot machine to be deleted.
+  #-
+  #- - Returns:
+  #-
+  #-  - 1 when successfully deleted, 0 when failed to delete.
+  #-
+  #- Delete designated slot machines.
+  #@broadcast #@update #@all_and
+  bool delete_arm(0: string arm_id)
+
+  #- - Parameters:
+  #-
+  #-  - ``player_id``: a string value to designate a player, to whom a slot machine will be recommended from a set of slot machines.
+  #-
+  #- - Returns:
+  #-
+  #-  - arm (slot machine) ID.
+  #-
+  #- Each player is assigned a set of slot machines.
+  #- When asked, the server determines which arm (slot mechine) would be the best to pull, based on a multi-armed bandit algorithm.
+  #@cht #@update #@pass
+  string select_arm(0: string player_id)
+
+  #- - Parameters:
+  #-
+  #-  - ``player_id``: a string value to designate a player.
+  #-  - ``arm_id``: a string value to tell the server which slot machine's reward is to be registered.
+  #-  - ``reward``: a double value to indicate the amount of reward.
+  #-
+  #- - Returns:
+  #-
+  #-  - 1 when successfully registered, 0 when failed to register.
+  #-
+  #- Register observed reward to the server.
+  #- When a reward is zero, there is no need to register it.
+  #@cht #@update #@all_and
+  bool register_reward(0: string player_id, 1: string arm_id, 2: double reward)
+
+  #- - Parameters:
+  #-
+  #-  - ``player_id``: a string value to designate a player.
+  #-
+  #- - Returns:
+  #-
+  #-  - list of slot machine states.
+  #-
+  #- Retrieve the states of slot machines, assigned to a designated player.
+  #@cht #@analysis #@pass
+  map<string, arm_info> get_arm_info(0: string player_id)
+
+  #- - Parameters:
+  #-
+  #-  - ``player_id``: a string value to designate a player.
+  #-
+  #- - Returns:
+  #-
+  #-  - 1 when succesfully reset, 0 when failed to reset.
+  #-
+  #- Initialise the state of a slot machine set for a player.
+  #@broadcast #@update #@all_and
+  bool reset(0: string player_id)
+
+  #- - Parameters:
+  #-
+  #- - Returns:
+  #-
+  #-  - 1 when succesfully cleared, 0 when failed to clear.
+  #-
+  #- Initialise the state of all the slot machines.
+  #@broadcast #@update #@all_and
+  bool clear()
+}

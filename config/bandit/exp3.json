@@ -1,0 +1,6 @@
+{
+  "method": "exp3",
+  "parameter": {
+    "gamma" : 0.1
+  }
+}
