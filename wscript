@@ -35,7 +35,7 @@ def options(opt):
 
   # use (base + 10) ports for RPC module tests
   opt.add_option('--rpc-test-port-base',
-                 default=60023, choices=map(str, xrange(1024, 65535 - 10)),
+                 default=61023, choices=map(str, xrange(1024, 65535 - 10)),
                  help='base port number for RPC module tests')
 
   opt.add_option('--fsanitize',
