@@ -97,7 +97,6 @@ struct server_argv {
     return (z == "");
   }
   void boot_message(const std::string& progname) const;
-  void set_log_destination(const std::string& progname) const;
 };
 
 void daemonize_process(const std::string& logdir);
@@ -125,7 +124,6 @@ struct proxy_argv {
   bool daemon;
 
   void boot_message(const std::string& progname) const;
-  void set_log_destination(const std::string& progname) const;
 };
 
 std::string get_proxy_identifier(const proxy_argv& a);
