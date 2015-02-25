@@ -1,4 +1,4 @@
-// This file is auto-generated from bandit.idl(0.6.4-14-g3b68062) with jenerator version 0.5.4-224-g49229fa/feature/bandit
+// This file is auto-generated from bandit.idl(0.6.4-37-g8b6a586) with jenerator version 0.6.4-60-gdff9eb0/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -51,5 +51,5 @@ int run_proxy(int argc, char* argv[]) {
 }  // namespace jubatus
 
 int main(int argc, char* argv[]) {
-  jubatus::run_proxy(argc, argv);
+  return jubatus::run_proxy(argc, argv);
 }
