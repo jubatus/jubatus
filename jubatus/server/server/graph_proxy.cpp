@@ -1,4 +1,4 @@
-// This file is auto-generated from graph.idl(0.5.4-179-gb59b61b) with jenerator version 0.5.4-224-g49229fa/develop
+// This file is auto-generated from graph.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-60-gdff9eb0/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -74,5 +74,5 @@ int run_proxy(int argc, char* argv[]) {
 }  // namespace jubatus
 
 int main(int argc, char* argv[]) {
-  jubatus::run_proxy(argc, argv);
+  return jubatus::run_proxy(argc, argv);
 }

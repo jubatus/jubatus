@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.1-34-gb64049d) with jenerator version 0.5.4-224-g49229fa/feature/burst
+// This file is auto-generated from burst.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-60-gdff9eb0/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -59,5 +59,5 @@ int run_proxy(int argc, char* argv[]) {
 }  // namespace jubatus
 
 int main(int argc, char* argv[]) {
-  jubatus::run_proxy(argc, argv);
+  return jubatus::run_proxy(argc, argv);
 }
