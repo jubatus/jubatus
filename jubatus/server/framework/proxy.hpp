@@ -25,6 +25,7 @@
 #include <jubatus/msgpack/rpc/client.h>
 #include <msgpack.hpp>
 #include "jubatus/util/concurrent/thread.h"
+#include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/lang/function.h"
 #include "jubatus/util/lang/bind.h"
 
@@ -47,6 +48,8 @@ extern const object TIMEOUT_ERROR;
 namespace jubatus {
 namespace server {
 namespace framework {
+
+void do_nothing(void) {}
 
 class proxy
     : public proxy_common, jubatus::server::common::mprpc::rpc_server {
@@ -242,7 +245,19 @@ class proxy
     update_forward_counter();
 
     async_task_loop::template call_apply<R, Tuple>(
-        c.first, c.second, method_name, args, a_, a_.interconnect_timeout, req);
+        c.first,
+        c.second,
+        method_name,
+        args,
+        a_,
+        a_.interconnect_timeout,
+        req,
+        do_nothing);
+  }
+
+  static void unlock_zk(
+      util::lang::shared_ptr<common::lock_service_mutex> lock) {
+    lock->unlock();
   }
 
   template<typename R, typename Tuple>
@@ -257,11 +272,15 @@ class proxy
     update_request_counter();
 
     get_members_(name, list);
+    util::lang::shared_ptr<common::lock_service_mutex> zk_lock =
+        get_master_lockable(name);
+    while (!zk_lock->try_lock());  // get lock
 
     update_forward_counter(list.size());
 
     async_task_loop::template call_apply<R, Tuple>(
-        list, method_name, args, a_, a_.interconnect_timeout, req, agg);
+        list, method_name, args, a_, a_.interconnect_timeout, req, mp::bind(
+            &proxy::unlock_zk, zk_lock), agg);
   }
 
   template<int N, typename R, typename Tuple>
@@ -281,7 +300,14 @@ class proxy
     update_forward_counter(list.size());
 
     async_task_loop::template call_apply<R, Tuple>(
-        list, method_name, args, a_, a_.interconnect_timeout, req, agg);
+        list,
+        method_name,
+        args,
+        a_,
+        a_.interconnect_timeout,
+        req,
+        do_nothing,
+        agg);
   }
 
  public:
@@ -303,11 +329,13 @@ class proxy
         const host_list_type& hosts,
         const std::string& method_name,
         request_type req,
+        jubatus::util::lang::function<void(void)> finish_callback = do_nothing,
         reducer_type reducer = reducer_type())
         : at_loop_(at_loop),
           hosts_(hosts),
           method_name_(method_name),
           req_(req),
+          finish_callback_(finish_callback),
           reducer_(reducer),
           running_count_(0),
           cancelled_(false),
@@ -346,6 +374,7 @@ class proxy
       if (!cancelled_ && running_count_ <= 0) {
         cancel_timeout();
         req_.result<Res>(aggregate_results());
+        finish_callback_();
       }
     }
 
@@ -447,6 +476,7 @@ class proxy
     host_list_type hosts_;
     std::string method_name_;
     request_type req_;
+    jubatus::util::lang::function<void(void)> finish_callback_;
     reducer_type reducer_;
 
     int running_count_;
@@ -514,11 +544,13 @@ class proxy
         const proxy_argv& a,
         int timeout_sec,
         request_type req,
+        jubatus::util::lang::function<void(void)> finish_callback = do_nothing,
         typename async_task<Res>::reducer_type reducer =
         typename async_task<Res>::reducer_type()) {
       async_task_loop* at_loop = get_private_async_task_loop(a);
       mp::shared_ptr<async_task<Res> > task(
-          new async_task<Res>(at_loop, hosts, method_name, req, reducer));
+          new async_task<Res>(
+              at_loop, hosts, method_name, req, finish_callback, reducer));
       task->template call_apply<Args>(method_name, args, timeout_sec);
     }
 
@@ -534,11 +566,18 @@ class proxy
         const proxy_argv& a,
         int timeout_sec,
         request_type req,
+        jubatus::util::lang::function<void(void)> finish_callback = do_nothing,
         typename async_task<Res>::reducer_type reducer =
         typename async_task<Res>::reducer_type()) {
       host_list_type hosts;
       hosts.push_back(std::make_pair(host, port));
-      call_apply<Res, Args>(hosts, method_name, args, a, timeout_sec, req,
+      call_apply<Res, Args>(hosts,
+                            method_name,
+                            args,
+                            a,
+                            timeout_sec,
+                            req,
+                            finish_callback,
                             reducer);
     }
 
