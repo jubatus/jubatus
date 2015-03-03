@@ -64,4 +64,7 @@ service burst {
 
   #@broadcast #@update #@all_and
   bool remove_all_keywords() # //@broadcast
+
+  #@broadcast #@update #@all_and
+  bool clear()
 }
