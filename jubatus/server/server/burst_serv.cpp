@@ -221,6 +221,10 @@ bool burst_serv::remove_all_keywords() {
   return burst_->remove_all_keywords();
 }
 
+bool burst_serv::clear() {
+  burst_->clear();
+  return true;
+}
 
 bool burst_serv::will_process(const std::string& keyword) const {
 #ifdef HAVE_ZOOKEEPER_H
