@@ -44,10 +44,6 @@
 using std::string;
 using std::vector;
 using std::pair;
-
-using std::string;
-using std::vector;
-using std::pair;
 using jubatus::util::lang::lexical_cast;
 using jubatus::util::text::json::json;
 using jubatus::core::fv_converter::datum;
