@@ -30,6 +30,7 @@
 #include "jubatus/core/fv_converter/datum_to_fv_converter.hpp"
 #include "jubatus/core/fv_converter/converter_config.hpp"
 #include "jubatus/core/anomaly/anomaly_factory.hpp"
+#include "jubatus/core/anomaly/anomaly_base.hpp"  // for model()->type()
 
 #include "../common/global_id_generator_standalone.hpp"
 #ifdef HAVE_ZOOKEEPER_H
