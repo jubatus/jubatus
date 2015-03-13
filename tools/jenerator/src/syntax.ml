@@ -29,24 +29,26 @@ type decl_type =
   | List of decl_type
   | Map of decl_type * decl_type
   | Nullable of decl_type
+  [@@deriving show]
 ;;
 
 type field_type = {
   field_number: int;
   field_type: decl_type;
   field_name: string;
-};;
+} [@@deriving show];;
 
-type routing_type = | Random | Cht of int | Broadcast | Internal;;
+type routing_type = | Random | Cht of int | Broadcast | Internal [@@deriving show];;
 
-type reqtype = | Update | Analysis | Nolock;;
+type reqtype = | Update | Analysis | Nolock [@@deriving show];;
 
-type aggtype = | All_and | All_or | Concat | Merge | Ignore | Pass;;
+type aggtype = | All_and | All_or | Concat | Merge | Ignore | Pass [@@deriving show];;
 
 type decorator_type =
   | Routing of routing_type
   | Reqtype of reqtype
   | Aggtype of aggtype
+  [@@deriving show]
 ;;
 
 type method_type = {
@@ -54,7 +56,7 @@ type method_type = {
   method_name: string;
   method_arguments: field_type list;
   method_decorators: decorator_type list;
-};;
+} [@@deriving show];;
 
 let get_decorator m =
   match m.method_decorators with
@@ -67,24 +69,24 @@ let get_decorator m =
 type service_type = {
   service_name: string;
   service_methods: method_type list;
-};;
+} [@@deriving show];;
 
 type enum_type = {
   enum_name: string;
   enum_values: (int * string) list;
-};;
+} [@@deriving show];;
 
 type message_type = {
   message_name: string;
   message_fields: field_type list;
   message_raw: string option;
-};;
+} [@@deriving show];;
 
 type exception_type = {
   exception_name: string;
   exception_fields: field_type list;
   exception_super: string option;
-};;
+} [@@deriving show];;
 
 type statement =
   | Include of string
@@ -92,16 +94,17 @@ type statement =
   | Message of message_type
   | Exception of exception_type
   | Service of service_type
+  [@@deriving show]
 ;;
 
-type idl = statement list;;
+type idl = statement list [@@deriving show];;
 
 type program = {
   enums: enum_type list;
   messages: message_type list;
   exceptions: exception_type list;
   services: service_type list;
-};;
+} [@@deriving show];;
 
 exception Unknown_type of string;;
 
