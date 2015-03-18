@@ -71,7 +71,7 @@ void server_helper_impl::prepare_for_start(const server_argv& a, bool use_cht) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
     common::prepare_jubatus(*zk_, a.type, a.name);
-    LOG(INFO) << "joining to the cluseter " << a.name;
+    LOG(INFO) << "joining to the cluster " << a.name;
   }
 #endif
 }
@@ -82,7 +82,7 @@ void server_helper_impl::prepare_for_stop(const server_argv& a) {
 #ifdef HAVE_ZOOKEEPER_H
   if (!a.is_standalone()) {
     close_lock_service();
-    LOG(INFO) << "leaving from the cluseter " << a.name;
+    LOG(INFO) << "leaving from the cluster " << a.name;
   }
 #endif
 }
