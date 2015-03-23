@@ -128,6 +128,8 @@ class zk_stub : public common::lock_service {
   virtual const std::string get_connected_host_and_port() const {
     return "";
   }
+  virtual void reopen_logfile() {
+  }
 };
 
 }  // namespace
