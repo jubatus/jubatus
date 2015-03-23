@@ -476,6 +476,11 @@ void linear_mixer::mix() {
                 diff_result.error[i].host(), diff_result.error[i].port()));
         }
 
+        if (!diff) {  // all get_diffs fail
+          LOG(WARNING) << "mix fails (all get_diffs fail)";
+          return;
+        }
+
         // success info message
         LOG(INFO) << "success to get_diff from ["
                   << server_list(successes) << "]";
