@@ -58,9 +58,6 @@ class proxy_common {
       const std::string& name,
       std::vector<std::pair<std::string, int> >& ret);
 
-  util::lang::shared_ptr<common::lock_service_mutex> get_master_lockable(
-      const std::string& name);
-
   void get_members_from_cht_(
       const std::string& name,
       const std::string& id,
