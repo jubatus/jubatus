@@ -25,6 +25,8 @@
 #include "jubatus/core/fv_converter/converter_config.hpp"
 #include "../third_party/cmdline/cmdline.h"
 
+#include "../fv_converter/so_factory.hpp"
+
 using std::bad_cast;
 using std::cerr;
 using std::cin;
@@ -84,8 +86,9 @@ void convert_datum(
   }
   datum_to_fv_converter conv;
   converter_config conf;
+  jubatus::server::fv_converter::so_factory so_loader;
   read_config(conf_file, conf);
-  initialize_converter(conf, conv);
+  initialize_converter(conf, conv, &so_loader);
   conv.convert(datum, fv);
 }
 
