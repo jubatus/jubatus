@@ -81,8 +81,7 @@ void handle_signal(jubatus::util::lang::function<void()>& action) {
   jubatus::util::lang::function<void()> f;
   {
     jubatus::util::concurrent::scoped_lock lk(mutex_on_signal);
-    f = action;
-    jubatus::util::lang::function<void()>().swap(action);
+    f.swap(action);
   }
 
   // Execute the action without the mutex lock so that the action
