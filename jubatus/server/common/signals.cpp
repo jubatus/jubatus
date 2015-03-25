@@ -77,6 +77,10 @@ jubatus::util::lang::function<void()> action_on_term;
 jubatus::util::lang::function<void()> action_on_hup;
 jubatus::util::concurrent::mutex mutex_on_signal;
 
+void default_action_on_term() {
+  exit(1);
+}
+
 void handle_signal(jubatus::util::lang::function<void()>& action) {
   jubatus::util::lang::function<void()> f;
   {
@@ -154,6 +158,7 @@ void prepare_signal_handling() {
   ignore_sigpipe();
 
   if (!handling_signals) {
+    set_action_on_term(&default_action_on_term);
     jubatus::util::concurrent::thread(&handle_signals).start();
     handling_signals = true;
   }
