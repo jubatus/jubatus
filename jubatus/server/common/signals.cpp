@@ -65,7 +65,7 @@ void block_signals(const sigset_t* ss) {
   }
 }
 
-void setup_sigset_for_sigterm(sigset_t* ss) {
+void setup_sigset(sigset_t* ss) {
   clear_sigset(ss);
   add_signal(ss, SIGTERM);
   add_signal(ss, SIGINT);
@@ -94,7 +94,7 @@ void handle_signal(jubatus::util::lang::function<void()>& action) {
 void handle_signals() {
   try {
     sigset_t ss;
-    setup_sigset_for_sigterm(&ss);
+    setup_sigset(&ss);
 
     while (1) {
       int signo;
@@ -148,7 +148,7 @@ void ignore_sigpipe() {
 
 void prepare_signal_handling() {
   sigset_t ss;
-  setup_sigset_for_sigterm(&ss);
+  setup_sigset(&ss);
   block_signals(&ss);
 
   ignore_sigpipe();
