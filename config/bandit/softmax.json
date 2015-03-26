@@ -1,6 +1,7 @@
 {
   "method": "softmax",
   "parameter": {
+    "assume_unrewarded" : false,
     "tau" : 0.05
   }
 }
