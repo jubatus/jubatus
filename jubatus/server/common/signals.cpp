@@ -65,7 +65,7 @@ void block_signals(const sigset_t* ss) {
   }
 }
 
-void setup_sigset_for_sigterm(sigset_t* ss) {
+void setup_sigset(sigset_t* ss) {
   clear_sigset(ss);
   add_signal(ss, SIGTERM);
   add_signal(ss, SIGINT);
@@ -77,12 +77,15 @@ jubatus::util::lang::function<void()> action_on_term;
 jubatus::util::lang::function<void()> action_on_hup;
 jubatus::util::concurrent::mutex mutex_on_signal;
 
+void default_action_on_term() {
+  exit(1);
+}
+
 void handle_signal(jubatus::util::lang::function<void()>& action) {
   jubatus::util::lang::function<void()> f;
   {
     jubatus::util::concurrent::scoped_lock lk(mutex_on_signal);
-    f = action;
-    jubatus::util::lang::function<void()>().swap(action);
+    f.swap(action);
   }
 
   // Execute the action without the mutex lock so that the action
@@ -95,7 +98,7 @@ void handle_signal(jubatus::util::lang::function<void()>& action) {
 void handle_signals() {
   try {
     sigset_t ss;
-    setup_sigset_for_sigterm(&ss);
+    setup_sigset(&ss);
 
     while (1) {
       int signo;
@@ -149,12 +152,13 @@ void ignore_sigpipe() {
 
 void prepare_signal_handling() {
   sigset_t ss;
-  setup_sigset_for_sigterm(&ss);
+  setup_sigset(&ss);
   block_signals(&ss);
 
   ignore_sigpipe();
 
   if (!handling_signals) {
+    set_action_on_term(&default_action_on_term);
     jubatus::util::concurrent::thread(&handle_signals).start();
     handling_signals = true;
   }
