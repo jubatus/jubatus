@@ -142,9 +142,6 @@ void register_active(
           << core::common::exception::error_api_func("lock_service::create"));
     }
   }
-
-  // set exit zlistener here
-  z.push_cleanup(&force_exit);
 }
 
 void unregister_active(
@@ -291,10 +288,6 @@ bool get_all_actives(
   build_active_path(path, type, name);
   path += "/actives";
   return get_all_node(z, path, ret);
-}
-
-void force_exit() {
-  exit(-1);
 }
 
 void prepare_jubatus(lock_service& ls, const string& type, const string& name) {
