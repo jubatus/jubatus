@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-60-gdff9eb0/develop
+// This file is auto-generated from burst.idl(0.6.4-96-g66ed74d) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -46,6 +46,9 @@ int run_proxy(int argc, char* argv[]) {
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     k.register_async_broadcast<bool>("remove_all_keywords",
+        jubatus::util::lang::function<bool(bool, bool)>(
+        &jubatus::server::framework::all_and));
+    k.register_async_broadcast<bool>("clear",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
     return k.run();

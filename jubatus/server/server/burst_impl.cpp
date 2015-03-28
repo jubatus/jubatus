@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.1-34-gb64049d) with jenerator version 0.5.4-224-g49229fa/feature/burst
+// This file is auto-generated from burst.idl(0.6.4-96-g66ed74d) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -46,6 +46,8 @@ class burst_impl : public jubatus::server::common::mprpc::rpc_server {
         jubatus::util::lang::_2));
     rpc_server::add<bool(std::string)>("remove_all_keywords",
         jubatus::util::lang::bind(&burst_impl::remove_all_keywords, this));
+    rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
+        &burst_impl::clear, this));
 
     rpc_server::add<std::string(std::string)>("get_config",
         jubatus::util::lang::bind(&burst_impl::get_config, this));
@@ -103,6 +105,11 @@ class burst_impl : public jubatus::server::common::mprpc::rpc_server {
   bool remove_all_keywords() {
     JWLOCK_(p_);
     return get_p()->remove_all_keywords();
+  }
+
+  bool clear() {
+    JWLOCK_(p_);
+    return get_p()->clear();
   }
 
   std::string get_config() {
