@@ -4,7 +4,7 @@ from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '0.7.0'
+VERSION = '0.7.1'
 ABI_VERSION = VERSION
 APPNAME = 'jubatus'
 
@@ -181,7 +181,10 @@ def cpplint(ctx):
   tmp_file = tempfile.NamedTemporaryFile(delete=True);
   tmp_file.write("\n".join(file_list));
   tmp_file.flush()
-  ctx.exec_command('cat ' + tmp_file.name + ' | xargs "' + cpplint.abspath() + '" --filter=-runtime/references,-runtime/rtti 2>&1')
+  sys.stderr.write('Running cpplint...\n')
+  ctx.exec_command('cat ' + tmp_file.name +
+                   ' | xargs "' + cpplint.abspath() + '" --filter=-runtime/references,-runtime/rtti 2>&1' +
+                   ' | grep -v "^Done processing "')
   tmp_file.close()
 
 def regenerate(ctx):

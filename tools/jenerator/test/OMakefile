@@ -11,7 +11,7 @@ FILES[] =
   lib_test
 
 USE_OCAMLFIND = true
-OCAMLPACKS[] = oUnit str extlib
+OCAMLPACKS[] = oUnit str extlib ppx_deriving.show
 
 PROGRAM = test
 OCAML_LIBS += ../src/target

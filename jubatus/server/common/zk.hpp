@@ -85,6 +85,7 @@ class zk : public lock_service {
   const std::string type() const;
 
   const std::string get_connected_host_and_port() const;
+  void reopen_logfile();
 
  protected:
   bool list_(const std::string& path, std::vector<std::string>& out);
@@ -96,7 +97,8 @@ class zk : public lock_service {
   jubatus::util::concurrent::mutex m_;
   std::vector<jubatus::util::lang::function<void()> > cleanups_;
 
-  FILE* logfilep_;
+  const std::string log_file_;
+  FILE* log_fp_;
 };
 
 // TODO(kashihara): write zk mock and test them all?

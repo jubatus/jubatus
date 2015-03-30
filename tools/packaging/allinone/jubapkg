@@ -111,12 +111,12 @@ do_download() {
 	git checkout ${JUBATUS_VER}
 	popd
 
-    # jubadump
-    rm -rf jubadump
-    git clone https://github.com/jubatus/jubadump.git jubadump
-    pushd jubadump
-    git checkout ${JUBADUMP_VER}
-    popd
+	# jubadump
+	rm -rf jubadump
+	git clone https://github.com/jubatus/jubadump.git jubadump
+	pushd jubadump
+	git checkout ${JUBADUMP_VER}
+	popd
 
 	popd
 	echo "----- Download Completed -----"

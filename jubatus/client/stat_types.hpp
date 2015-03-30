@@ -1,4 +1,4 @@
-// This file is auto-generated from stat.idl(0.5.2-68-g68e898d) with jenerator version 0.5.2-45-gc4cfc98/feature/unlearning
+// This file is auto-generated from stat.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_STAT_TYPES_HPP_

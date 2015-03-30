@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.1-34-gb64049d) with jenerator version 0.5.4-224-g49229fa/feature/burst
+// This file is auto-generated from burst.idl(0.6.4-96-g66ed74d) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -48,6 +48,9 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_broadcast<bool>("remove_all_keywords",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
+    k.register_async_broadcast<bool>("clear",
+        jubatus::util::lang::function<bool(bool, bool)>(
+        &jubatus::server::framework::all_and));
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << "exception in proxy main thread: "
@@ -59,5 +62,5 @@ int run_proxy(int argc, char* argv[]) {
 }  // namespace jubatus
 
 int main(int argc, char* argv[]) {
-  jubatus::run_proxy(argc, argv);
+  return jubatus::run_proxy(argc, argv);
 }

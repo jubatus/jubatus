@@ -57,6 +57,7 @@ class burst_serv : public jubatus::server::framework::server_base {
   bool add_keyword(const keyword_with_params& keyword);
   bool remove_keyword(const std::string& keyword);
   bool remove_all_keywords();
+  bool clear();
 
   bool will_process(const std::string& keyword) const;
   void rehash_keywords();

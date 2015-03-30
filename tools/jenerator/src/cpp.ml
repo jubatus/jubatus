@@ -537,7 +537,7 @@ let gen_proxy_file conf names source services =
     );
     [
       (0, "int main(int argc, char* argv[]) {");
-      (1,   func ^ "(argc, argv);");
+      (1,   "return " ^ func ^ "(argc, argv);");
       (0, "}")
     ]
   ] in

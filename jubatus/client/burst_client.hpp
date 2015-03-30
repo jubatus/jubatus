@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.1-34-gb64049d) with jenerator version 0.5.4-224-g49229fa/feature/burst
+// This file is auto-generated from burst.idl(0.6.4-96-g66ed74d) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_BURST_CLIENT_HPP_
@@ -64,6 +64,11 @@ class burst : public jubatus::client::common::client {
 
   bool remove_all_keywords() {
     msgpack::rpc::future f = c_.call("remove_all_keywords", name_);
+    return f.get<bool>();
+  }
+
+  bool clear() {
+    msgpack::rpc::future f = c_.call("clear", name_);
     return f.get<bool>();
   }
 };

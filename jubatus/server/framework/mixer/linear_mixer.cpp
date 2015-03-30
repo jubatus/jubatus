@@ -344,7 +344,6 @@ void linear_mixer::updated() {
 }
 
 void linear_mixer::get_status(server_base::status_t& status) const {
-  scoped_lock lk(m_);
   status["linear_mixer.count"] =
       jubatus::util::lang::lexical_cast<string>(counter_);
   // since last mix
@@ -475,6 +474,11 @@ void linear_mixer::mix() {
 
           successes.push_back(make_pair(
                 diff_result.error[i].host(), diff_result.error[i].port()));
+        }
+
+        if (!diff) {  // all get_diffs fail
+          LOG(WARNING) << "mix fails (all get_diffs fail)";
+          return;
         }
 
         // success info message

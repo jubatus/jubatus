@@ -109,8 +109,6 @@ bool get_all_nodes(
     std::vector<std::pair<std::string, int> >&);
 
 void shutdown_server();
-void force_exit();
-
 
 void prepare_jubatus(
     lock_service& ls,

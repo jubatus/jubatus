@@ -23,6 +23,7 @@
 #include "jubatus/util/text/json.h"
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
+#include "jubatus/core/storage/column_table.hpp"
 #include "jubatus/core/fv_converter/converter_config.hpp"
 #include "jubatus/core/fv_converter/datum.hpp"
 #include "jubatus/core/fv_converter/revert.hpp"
@@ -96,7 +97,8 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
   shared_ptr<core::fv_converter::datum_to_fv_converter> converter =
       core::fv_converter::make_fv_converter(conf.converter, &so_loader_);
 
-  shared_ptr<core::table::column_table> table(new core::table::column_table);
+  shared_ptr<core::storage::column_table>
+      table(new core::storage::column_table);
   std::string my_id;
 #ifdef HAVE_ZOOKEEPER_H_
   my_id = common::build_loc_str(argv().eth, argv().port);

@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl(0.5.2-68-g68e898d) with jenerator version 0.5.4-224-g49229fa/develop
+// This file is auto-generated from anomaly.idl(0.6.4-60-gdff9eb0) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -49,5 +49,5 @@ int run_proxy(int argc, char* argv[]) {
 }  // namespace jubatus
 
 int main(int argc, char* argv[]) {
-  jubatus::run_proxy(argc, argv);
+  return jubatus::run_proxy(argc, argv);
 }

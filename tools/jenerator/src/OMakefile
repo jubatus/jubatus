@@ -6,7 +6,7 @@ clean:
 
 USE_OCAMLFIND = true
 #
-OCAMLPACKS[] = extlib
+OCAMLPACKS[] = extlib ppx_deriving.show
 #    pack1
 #    pack2
 #

@@ -261,8 +261,8 @@ class server_helper {
   void stop(common::mprpc::rpc_server& serv) {
     // stop mixer before RPC server stopped for avoiding mixer RPC call to the
     // server itself
-    LOG(INFO) << "stopping mixer thread";
     if (!server_->argv().is_standalone()) {
+      LOG(INFO) << "stopping mixer thread";
       server_->get_mixer()->stop();
       impl_.prepare_for_stop(server_->argv());
     }
