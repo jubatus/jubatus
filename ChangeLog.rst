@@ -1,3 +1,24 @@
+Release 0.7.1 - 2015/03/30
+--------------------------
+
+* Improvements
+    * burst: Add clear API (#919, #946)
+    * ZooKeeper logs can be rotated on SIGHUP (#876, #896)
+    * get_status and get_diff can work in parallel (#912, #941)
+    * jenerator refactoring (#929)
+    * Change default ports used for RPC tests (#934)
+    * Codes cleanup (#917, #922, #938, #942, #965)
+    * Add language declarations to wscript (#925, #930)
+    * Update to the latest waf-unittest (#952)
+
+* Bug fixes
+    * Fix segmentation fault on MIX failure (#949)
+    * Fix RPC server to shutdown gracefully when ZK session expired (#954, #960)
+    * Fix signal handling to always accept SIGTERM / SIGINT (#956, #966)
+    * Fix proxies to exit with correct status (#928, #936)
+    * Fix "stopping mixer thread" log displayed in standalone mode (#916, #935)
+    * Fix jenerator test to work (#937)
+
 Release 0.7.0 - 2015/02/23
 --------------------------
 
