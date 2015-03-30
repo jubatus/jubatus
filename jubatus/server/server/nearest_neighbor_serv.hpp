@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 #include "jubatus/core/driver/nearest_neighbor.hpp"
-#include "jubatus/core/table/column/column_table.hpp"
+#include "jubatus/core/storage/column_table.hpp"
 #include "../common/lock_service.hpp"
 #include "../framework/server_base.hpp"
 #include "../fv_converter/so_factory.hpp"
