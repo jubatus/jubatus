@@ -52,7 +52,7 @@ class server_base {
   virtual void set_config(const std::string& config) = 0;
 
   virtual bool clear();
-  virtual std::pair<std::string, std::string> save(const std::string& id);
+  virtual std::map<std::string, std::string> save(const std::string& id);
   virtual bool load(const std::string& id);
 
   void load_file(const std::string& path);

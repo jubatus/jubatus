@@ -130,7 +130,7 @@ bool server_base::clear() {
   return true;
 }
 
-std::pair<std::string, std::string> server_base::save(const std::string& id) {
+std::map<std::string, std::string> server_base::save(const std::string& id) {
   const std::string path = build_local_path(argv_, argv_.type, id);
   LOG(INFO) << "starting save to " << path;
 
@@ -176,7 +176,10 @@ std::pair<std::string, std::string> server_base::save(const std::string& id) {
 
   update_saved_status(path);
   LOG(INFO) << "saved to " << path;
-  return std::make_pair(build_id(argv_), path);
+
+  std::map<std::string, std::string> ret;
+  ret.insert(std::make_pair(build_id(argv_), path));
+  return ret;
 }
 
 bool server_base::load(const std::string& id) {
