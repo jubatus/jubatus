@@ -395,6 +395,9 @@ void linear_mixer::stabilizer_loop() {
             LOG(INFO) << "start to get model from other server";
             lk.unlock();
             update_model();
+            if (!is_running_) {
+              return;
+            }
             mix();
           }
         } else {
@@ -591,6 +594,7 @@ void linear_mixer::update_model() {
     LOG(ERROR) << "MIX protocol version mismatch detected, going down; "
                << "expected " << protocol_version_
                << ", got " << got_protocol_version;
+    stop();
     jubatus::server::common::shutdown_server();
   }
 
