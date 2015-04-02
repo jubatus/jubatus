@@ -1,4 +1,4 @@
-// This file is auto-generated from bandit.idl(0.6.4-37-g8b6a586) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
+// This file is auto-generated from bandit.idl(0.6.4-37-g8b6a586) with jenerator version 0.6.4-104-g3698e11/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -43,9 +43,9 @@ class bandit_impl : public jubatus::server::common::mprpc::rpc_server {
 
     rpc_server::add<std::string(std::string)>("get_config",
         jubatus::util::lang::bind(&bandit_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save",
-        jubatus::util::lang::bind(&bandit_impl::save, this,
-        jubatus::util::lang::_2));
+    rpc_server::add<std::pair<std::string, std::string>(std::string,
+        std::string)>("save", jubatus::util::lang::bind(&bandit_impl::save,
+        this, jubatus::util::lang::_2));
     rpc_server::add<bool(std::string, std::string)>("load",
         jubatus::util::lang::bind(&bandit_impl::load, this,
         jubatus::util::lang::_2));
@@ -95,7 +95,7 @@ class bandit_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->get_config();
   }
 
-  bool save(const std::string& id) {
+  std::pair<std::string, std::string> save(const std::string& id) {
     JRLOCK_(p_);
     return get_p()->save(id);
   }

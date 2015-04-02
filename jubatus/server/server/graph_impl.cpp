@@ -1,4 +1,4 @@
-// This file is auto-generated from graph.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
+// This file is auto-generated from graph.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-104-g3698e11/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -81,8 +81,8 @@ class graph_impl : public jubatus::server::common::mprpc::rpc_server {
 
     rpc_server::add<std::string(std::string)>("get_config",
         jubatus::util::lang::bind(&graph_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save",
-        jubatus::util::lang::bind(&graph_impl::save, this,
+    rpc_server::add<std::pair<std::string, std::string>(std::string,
+        std::string)>("save", jubatus::util::lang::bind(&graph_impl::save, this,
         jubatus::util::lang::_2));
     rpc_server::add<bool(std::string, std::string)>("load",
         jubatus::util::lang::bind(&graph_impl::load, this,
@@ -198,7 +198,7 @@ class graph_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->get_config();
   }
 
-  bool save(const std::string& id) {
+  std::pair<std::string, std::string> save(const std::string& id) {
     JRLOCK_(p_);
     return get_p()->save(id);
   }

@@ -47,6 +47,12 @@ std::string build_local_path(
   return path.str();
 }
 
+std::string build_id(const server_argv& a) {
+  std::ostringstream id;
+  id << a.eth << '_' << a.port;
+  return id.str();
+}
+
 void load_file_impl(server_base& server,
     const std::string& path, const std::string& id) {
   LOG(INFO) << "starting load from " << path;
@@ -124,7 +130,7 @@ bool server_base::clear() {
   return true;
 }
 
-bool server_base::save(const std::string& id) {
+std::pair<std::string, std::string> server_base::save(const std::string& id) {
   const std::string path = build_local_path(argv_, argv_.type, id);
   LOG(INFO) << "starting save to " << path;
 
@@ -170,7 +176,7 @@ bool server_base::save(const std::string& id) {
 
   update_saved_status(path);
   LOG(INFO) << "saved to " << path;
-  return true;
+  return std::make_pair(build_id(argv_), path);
 }
 
 bool server_base::load(const std::string& id) {

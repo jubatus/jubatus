@@ -605,7 +605,7 @@ let gen_impl names s =
       (* TODO(unno): use base class? *)
       (2,   "rpc_server::add<std::string(std::string)>(\"get_config\", jubatus::util::lang::bind(&"
         ^ impl_name ^ "::get_config, this));");
-      (2,   "rpc_server::add<bool(std::string, std::string)>(\"save\", jubatus::util::lang::bind(&"
+      (2,   "rpc_server::add<std::pair<std::string, std::string>(std::string, std::string)>(\"save\", jubatus::util::lang::bind(&"
         ^ impl_name ^ "::save, this, jubatus::util::lang::_2));");
       (2,   "rpc_server::add<bool(std::string, std::string)>(\"load\", jubatus::util::lang::bind(&"
         ^ impl_name ^ "::load, this, jubatus::util::lang::_2));");
@@ -622,7 +622,7 @@ let gen_impl names s =
       (1,   "}");
     ];
     [
-      (1,   "bool save(const std::string& id) {");
+      (1,   "std::pair<std::string, std::string> save(const std::string& id) {");
       (2,     "JRLOCK_(p_);");
       (2,     "return get_p()->save(id);");
       (1,   "}");
