@@ -48,12 +48,6 @@ std::string build_local_path(
   return path.str();
 }
 
-std::string build_id(const server_argv& a) {
-  std::ostringstream id;
-  id << a.eth << '_' << a.port;
-  return id.str();
-}
-
 void load_file_impl(server_base& server,
     const std::string& path, const std::string& id) {
   LOG(INFO) << "starting load from " << path;
@@ -179,7 +173,7 @@ std::map<std::string, std::string> server_base::save(const std::string& id) {
   LOG(INFO) << "saved to " << path;
 
   std::map<std::string, std::string> ret;
-  ret.insert(std::make_pair(build_id(argv_), path));
+  ret.insert(std::make_pair(get_server_identifier(argv_), path));
   return ret;
 }
 
