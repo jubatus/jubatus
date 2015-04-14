@@ -72,10 +72,7 @@ class nearest_neighbor_serv : public framework::server_base {
 
   std::string config_;
 
-  uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;
-  uint64_t build_cnt_;
-  uint64_t mix_cnt_;
 
   jubatus::util::lang::shared_ptr<core::driver::nearest_neighbor>
     nearest_neighbor_;
