@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.6.4-145-g5c1292f) with jenerator version 0.6.4-146-g79178f8/feature/save_returns_id_and_path
+// This file is auto-generated from classifier.idl(0.7.2-27-ge903f57) with jenerator version 0.6.4-146-g79178f8/develop
 // *** DO NOT EDIT ***
 
 #include <map>
