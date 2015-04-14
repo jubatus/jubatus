@@ -70,7 +70,7 @@ service classifier {
   #-  - True if this function appends label successfully.
   #-
   #-  Append new label with no datum
-  #@random #@update #@pass
+  #@broadcast #@update #@pass
   bool set_label(0: string new_label)
 
   #@broadcast #@update #@all_and
