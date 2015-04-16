@@ -1,5 +1,5 @@
 # -*- python -*-
-import Options
+from waflib import Options
 from waflib.Errors import TaskNotReady
 import os
 import sys
@@ -63,32 +63,25 @@ def configure(conf):
   conf.env.VERSION = VERSION
   conf.env.ABI_VERSION = ABI_VERSION
 
-  conf.check_cxx(lib = 'msgpack')
-  conf.check_cxx(lib = 'jubatus_mpio')
-  conf.check_cxx(lib = 'jubatus_msgpack-rpc')
-  conf.check_cxx(lib = 'dl')
+  conf.check_cfg(package = 'msgpack', args = '--cflags --libs')
+  conf.check_cfg(package = 'jubatus_core', args = '--cflags --libs')
+  conf.check_cfg(package = 'liblog4cxx', args = '--cflags --libs')
 
-  # pkg-config tests
-  conf.find_program('pkg-config') # make sure that pkg-config command exists
-  try:
-    conf.check_cfg(package = 'liblog4cxx', args = '--cflags --libs')
-    conf.check_cfg(package = 'jubatus_core', args = '--cflags --libs')
-  except conf.errors.ConfigurationError:
-    e = sys.exc_info()[1]
-    conf.to_log("PKG_CONFIG_PATH: " + os.environ.get('PKG_CONFIG_PATH', ''))
-    conf.fatal("Failed to find the library. Please confirm that PKG_CONFIG_PATH environment variable is correctly set.", e)
+  conf.check(lib = 'jubatus_mpio')
+  conf.check(lib = 'jubatus_msgpack-rpc')
+  conf.check(lib = 'dl')
 
-  conf.check_cxx(header_name = 'unistd.h')
-  conf.check_cxx(header_name = 'sys/types.h')
-  conf.check_cxx(header_name = 'sys/wait.h')
-  conf.check_cxx(header_name = 'sys/stat.h')
-  conf.check_cxx(header_name = 'cxxabi.h')
-  conf.check_cxx(header_name = 'sys/socket.h net/if.h')
-  conf.check_cxx(header_name = 'sys/ioctl.h')
-  conf.check_cxx(header_name = 'fcntl.h')
-  conf.check_cxx(header_name = 'netinet/in.h')
-  conf.check_cxx(header_name = 'arpa/inet.h')
-  conf.check_cxx(header_name = 'dlfcn.h')
+  conf.check(header_name = 'unistd.h')
+  conf.check(header_name = 'sys/types.h')
+  conf.check(header_name = 'sys/wait.h')
+  conf.check(header_name = 'sys/stat.h')
+  conf.check(header_name = 'cxxabi.h')
+  conf.check(header_name = 'sys/socket.h net/if.h')
+  conf.check(header_name = 'sys/ioctl.h')
+  conf.check(header_name = 'fcntl.h')
+  conf.check(header_name = 'netinet/in.h')
+  conf.check(header_name = 'arpa/inet.h')
+  conf.check(header_name = 'dlfcn.h')
 
   if Options.options.debug:
     conf.define('_GLIBCXX_DEBUG', 1)
@@ -97,18 +90,19 @@ def configure(conf):
     conf.define('JUBATUS_DISABLE_ASSERTIONS', 1)
 
   if Options.options.enable_zookeeper:
-    if (conf.check_cxx(header_name = 'c-client-src/zookeeper.h',
-                           define_name = 'HAVE_ZOOKEEPER_H',
-                           mandatory = False)):
+    if (conf.check(header_name = 'c-client-src/zookeeper.h',
+                   define_name = 'HAVE_ZOOKEEPER_H',
+                   mandatory = False)):
       conf.define('ZOOKEEPER_HEADER', 'c-client-src/zookeeper.h')
     else:
-      conf.check_cxx(header_name = 'zookeeper/zookeeper.h',
-                     define_name = 'HAVE_ZOOKEEPER_H',
-                     errmsg = 'ZooKeeper c-binding is not found. Please install c-binding.',
-                     mandatory = True)
+      conf.check(header_name = 'zookeeper/zookeeper.h',
+                 errmsg = 'ZooKeeper c-binding is not found. Please install c-binding.',
+                 define_name = 'HAVE_ZOOKEEPER_H',
+                 mandatory = True)
       conf.define('ZOOKEEPER_HEADER', 'zookeeper/zookeeper.h')
 
-    conf.check_cxx(lib = 'zookeeper_mt', errmsg = 'ZK not found')
+    conf.check(lib = 'zookeeper_mt',
+               errmsg = 'ZooKeeper library (with multi-thread support)  not found')
 
     if Options.options.zktest:
       conf.env.INTEGRATION_TEST = True

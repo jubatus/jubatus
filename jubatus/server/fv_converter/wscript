@@ -13,7 +13,6 @@ def configure(conf):
   pass
 
 def build(bld):
-  import Options
   src = [
       'so_factory.cpp',
       'dynamic_loader.cpp',

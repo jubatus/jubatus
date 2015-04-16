@@ -1,5 +1,5 @@
 # -*- python -*-
-import Options
+from waflib import Options
 
 def options(opt):
   opt.add_option('--enable-mecab',
@@ -14,9 +14,9 @@ def options(opt):
 
 def configure(conf):
   if Options.options.enable_mecab:
-    conf.check_cxx(header_name = 'mecab.h')
-    conf.check_cxx(lib = 'mecab',
-                   fragment='''
+    conf.check(header_name = 'mecab.h')
+    conf.check(lib = 'mecab',
+               fragment='''
 #include <mecab.h>
 int main() {
   MeCab::Model* (*p)(const char*) = MeCab::createModel;
@@ -24,8 +24,8 @@ int main() {
   &MeCab::Model::createLattice;
 }
 ''',
-                   define_name = 'HAVE_MECAB',
-                   errmsg = 'mecab 0.99 or later is required (remove "--enable-mecab" option if not necessary)')
+               define_name = 'HAVE_MECAB',
+               errmsg = 'mecab 0.99 or later is required (remove "--enable-mecab" option if not necessary)')
 
   if Options.options.enable_ux:
     conf.check_cfg(package = 'ux',
@@ -49,7 +49,7 @@ def build(bld):
       source = bld.path.ant_glob('test_input/*'),
       target = n)
 
-  if bld.env.HAVE_MECAB:
+  if bld.is_defined('HAVE_MECAB'):
     bld.shlib(
       source = 'mecab_splitter.cpp',
       target = 'mecab_splitter',
@@ -59,7 +59,7 @@ def build(bld):
       )
     make_test(bld, 'JUBATUS_CORE mecab_splitter', 'mecab_splitter_test.cpp')
 
-  if bld.env.HAVE_UX:
+  if bld.is_defined('HAVE_UX'):
     bld.shlib(
       source = 'ux_splitter.cpp',
       target = 'ux_splitter',

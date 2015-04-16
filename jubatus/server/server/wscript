@@ -5,10 +5,10 @@ def options(opt):
   pass
 
 def configure(conf):
-  if conf.env.HAVE_ZOOKEEPER_H:
-    conf.check_cxx(msg = 'Checking for compiler TLS extension support',
-                   fragment='__thread int i; int main() { return 0; }',
-                   errmsg = 'no (Jubatus officially support GCC 4.4 or later)')
+  if conf.is_defined('HAVE_ZOOKEEPER_H'):
+    conf.check(msg = 'Checking for compiler TLS extension support',
+               fragment='__thread int i; int main() { return 0; }',
+               errmsg = 'no (Jubatus officially support GCC 4.4 or later)')
 
 
 def build_one(bld, name, libraries = '', sources = ''):
@@ -21,7 +21,7 @@ def build_one(bld, name, libraries = '', sources = ''):
     includes = '.',
     use = 'JUBATUS_CORE client_headers jubaserv_framework jubaserv_fv_converter jubaserv_common jubaserv_mprpc_common %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % libraries
     )
-  if bld.env.HAVE_ZOOKEEPER_H:
+  if bld.is_defined('HAVE_ZOOKEEPER_H'):
     bld.program(
       source = '%s_proxy.cpp ' % name,
       target = 'juba%s_proxy' % name,

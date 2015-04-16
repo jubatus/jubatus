@@ -1,5 +1,5 @@
 # -*- python -*-
-import Options
+
 import os
 import sys
 
