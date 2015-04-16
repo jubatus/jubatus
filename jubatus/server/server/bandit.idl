@@ -52,7 +52,7 @@ service bandit {
   #-  - 1 when successfully registered, 0 when failed to register.
   #-
   #- Register observed reward to the server.
-  #- When a reward is zero, there is no need to register it.
+  #- If assume_unrewarded option is true, there is no need to register reward when it is zero.
   #@cht #@update #@all_and
   bool register_reward(0: string player_id, 1: string arm_id, 2: double reward)
 
