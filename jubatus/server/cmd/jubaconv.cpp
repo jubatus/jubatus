@@ -14,6 +14,10 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <log4cxx/basicconfigurator.h>
+#include <log4cxx/patternlayout.h>
+#include <log4cxx/fileappender.h>
+
 #include <string>
 
 #include "jubatus/util/text/json.h"
@@ -26,10 +30,6 @@
 #include "../third_party/cmdline/cmdline.h"
 
 #include "../fv_converter/so_factory.hpp"
-
-#include <log4cxx/basicconfigurator.h>
-#include <log4cxx/patternlayout.h>
-#include <log4cxx/fileappender.h>
 
 using std::bad_cast;
 using std::cerr;
@@ -123,7 +123,8 @@ void read_datum(datum& datum) {
 void disable_log4cxx() {
     log4cxx::LayoutPtr layout(
         new log4cxx::PatternLayout(""));
-    log4cxx::AppenderPtr appender(new log4cxx::FileAppender(layout, "/dev/null"));
+    log4cxx::AppenderPtr appender(
+        new log4cxx::FileAppender(layout, "/dev/null"));
     log4cxx::BasicConfigurator::configure(appender);
 }
 
