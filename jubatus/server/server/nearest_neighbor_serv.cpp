@@ -58,7 +58,8 @@ nearest_neighbor_serv::nearest_neighbor_serv(
     const framework::server_argv& a,
     const shared_ptr<common::lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk, rw_mutex(), user_data_version())) {
+      mixer_(create_mixer(a, zk, rw_mutex(), user_data_version())),
+      update_row_cnt_(0) {
 }
 
 nearest_neighbor_serv::~nearest_neighbor_serv() {
@@ -66,10 +67,7 @@ nearest_neighbor_serv::~nearest_neighbor_serv() {
 
 void nearest_neighbor_serv::get_status(status_t& status) const {
   status_t my_status;
-  my_status["clear_row_cnt"] = lexical_cast<string>(clear_row_cnt_);
   my_status["update_row_cnt"] = lexical_cast<string>(update_row_cnt_);
-  my_status["build_cnt"] = lexical_cast<string>(build_cnt_);
-  my_status["mix_cnt"] = lexical_cast<string>(mix_cnt_);
   my_status["data"] = lexical_cast<string>(
       nearest_neighbor_->get_table()->dump_json());
   status.insert(my_status.begin(), my_status.end());
@@ -120,10 +118,7 @@ std::string nearest_neighbor_serv::get_config() const {
 bool nearest_neighbor_serv::clear() {
   DLOG(INFO) << __func__;
   check_set_config();
-  clear_row_cnt_ = 0;
   update_row_cnt_ = 0;
-  build_cnt_ = 0;
-  mix_cnt_ = 0;
   nearest_neighbor_->clear();
   return true;
 }
