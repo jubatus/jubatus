@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl(0.6.4-60-gdff9eb0) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
+// This file is auto-generated from anomaly.idl(0.6.4-60-gdff9eb0) with jenerator version 0.6.4-104-g3698e11/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -34,10 +34,7 @@ int run_proxy(int argc, char* argv[]) {
         &jubatus::server::framework::all_and));
     k.register_async_random<float, jubatus::core::fv_converter::datum>(
         "calc_score");
-    k.register_async_broadcast<std::vector<std::string> >("get_all_rows",
-        jubatus::util::lang::function<std::vector<std::string>(
-        std::vector<std::string>, std::vector<std::string>)>(
-        &jubatus::server::framework::concat<std::string>));
+    k.register_async_random<std::vector<std::string> >("get_all_rows");
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << "exception in proxy main thread: "
