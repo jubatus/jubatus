@@ -101,8 +101,6 @@ zk::zk(const string& hosts, int timeout, const string& logfile)
             + jubatus::util::lang::lexical_cast<std::string, int>(timeout)
             + " sec: " + hosts));
   }
-
-  LOG(INFO) << "connected to zk: " << get_connected_host_and_port();
 }
 
 zk::~zk() {
@@ -654,7 +652,8 @@ void mywatcher(zhandle_t* zh, int type, int state, const char* path, void* p) {
   } else if (type == ZOO_CHILD_EVENT) {
   } else if (type == ZOO_SESSION_EVENT) {
     if (state == ZOO_CONNECTED_STATE) {
-      LOG(INFO) << "ZooKeeper session established, negotiated timeout "
+      LOG(INFO) << "ZooKeeper session established: connected to "
+                << zk_->get_connected_host_and_port() << ", negotiated timeout "
                 << zoo_recv_timeout(zh) << " ms";
     } else if (state == ZOO_CONNECTING_STATE) {
       LOG(WARNING) << "ZooKeeper session lost";

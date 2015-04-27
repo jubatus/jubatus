@@ -1,3 +1,18 @@
+Release 0.7.2 - 2015/04/27
+--------------------------
+
+* Improvements
+    * Improve jubaconv to accept configurations using plug-ins (#963)
+    * Add example configuration files for combination feature (#953, #983)
+    * bandit: update example configuration files to use assume_unrewarded option (#972)
+    * classifier: fix set_label to use broadcast distribution (#850, #979)
+    * Improve ZooKeeper connection log on reconnection (#913, #977)
+
+* Bug fixes
+    * nearest_neighbor: fix uninitialized status values (#883, #978)
+    * anomaly: fix get_all_rows API returning duplicated rows (#974, #975)
+    * Fix server does not stop when MIX protocol version mismatch was detected (#955, #961)
+
 Release 0.7.1 - 2015/03/30
 --------------------------
 

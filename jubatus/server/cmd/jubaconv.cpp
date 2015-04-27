@@ -14,6 +14,10 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <log4cxx/basicconfigurator.h>
+#include <log4cxx/patternlayout.h>
+#include <log4cxx/fileappender.h>
+
 #include <string>
 
 #include "jubatus/util/text/json.h"
@@ -24,6 +28,8 @@
 #include "jubatus/core/fv_converter/json_converter.hpp"
 #include "jubatus/core/fv_converter/converter_config.hpp"
 #include "../third_party/cmdline/cmdline.h"
+
+#include "../fv_converter/so_factory.hpp"
 
 using std::bad_cast;
 using std::cerr;
@@ -84,8 +90,9 @@ void convert_datum(
   }
   datum_to_fv_converter conv;
   converter_config conf;
+  jubatus::server::fv_converter::so_factory so_loader;
   read_config(conf_file, conf);
-  initialize_converter(conf, conv);
+  initialize_converter(conf, conv, &so_loader);
   conv.convert(datum, fv);
 }
 
@@ -113,6 +120,14 @@ void read_datum(datum& datum) {
   }
 }
 
+void disable_log4cxx() {
+    log4cxx::LayoutPtr layout(
+        new log4cxx::PatternLayout(""));
+    log4cxx::AppenderPtr appender(
+        new log4cxx::FileAppender(layout, "/dev/null"));
+    log4cxx::BasicConfigurator::configure(appender);
+}
+
 int main(int argc, char* argv[])
 try {
   cmdline::parser p;
@@ -131,6 +146,8 @@ try {
   bool proc = false;
   string input_format = p.get<string>("input-format");
   string output_format = p.get<string>("output-format");
+
+  disable_log4cxx();
 
   if (input_format == "json") {
     read_json(json);
