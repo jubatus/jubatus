@@ -28,6 +28,7 @@
 #include "jubatus/core/fv_converter/datum.hpp"
 #include "jubatus/core/fv_converter/revert.hpp"
 #include "jubatus/core/nearest_neighbor/nearest_neighbor_factory.hpp"
+#include "../common/membership.hpp"
 #include "../common/logger/logger.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
@@ -98,7 +99,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
   shared_ptr<core::storage::column_table>
       table(new core::storage::column_table);
   std::string my_id;
-#ifdef HAVE_ZOOKEEPER_H_
+#ifdef HAVE_ZOOKEEPER_H
   my_id = common::build_loc_str(argv().eth, argv().port);
 #endif
 
