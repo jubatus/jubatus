@@ -350,24 +350,8 @@ class proxy
                        << " out of " << futures_.size() << " requests";
           LOG(WARNING) << jubatus::server::common::mprpc::to_string(
               jubatus::server::common::mprpc::error_multi_rpc(errors_));
-          try {
-            errors_[0].throw_exception();
-          } catch (const jubatus::server::common::mprpc::rpc_call_error& e) {
-            jubatus::core::common::exception::error_info_list_t info =
-                e.error_info();
-            std::string msg;
-            for (size_t i = 0; i < info.size(); ++i) {
-              using jubatus::core::common::exception::error_message;
-              error_message* m = dynamic_cast<error_message*>(info[i].get());
-              if (m) {
-                msg = m->value();
-                break;
-              }
-            }
-            req_.error(msg);
-          } catch (const std::exception& e) {
-            req_.error(std::string(e.what()));
-          }
+
+          req_.error(get_error_message(errors_[0]));
         } else {
           req_.result<Res>(aggregate_results());
         }
@@ -488,6 +472,10 @@ class proxy
       JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method_name_);
     }
   };  // class async_task
+
+ private:
+  static std::string get_error_message(
+      const jubatus::server::common::mprpc::rpc_error& err);
 
  public:
   class async_task_loop : public mp::enable_shared_from_this<async_task_loop> {
