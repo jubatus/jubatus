@@ -345,18 +345,36 @@ class proxy
       --running_count_;
       if (!cancelled_ && running_count_ <= 0) {
         cancel_timeout();
-        req_.result<Res>(aggregate_results());
+        if (errors_.size() > 0) {
+          LOG(WARNING) << "error occurred in " << errors_.size()
+                       << " out of " << futures_.size() << " requests";
+          LOG(WARNING) << jubatus::server::common::mprpc::to_string(
+              jubatus::server::common::mprpc::error_multi_rpc(errors_));
+          try {
+            errors_[0].throw_exception();
+          } catch (const jubatus::server::common::mprpc::rpc_call_error& e) {
+            jubatus::core::common::exception::error_info_list_t info =
+                e.error_info();
+            std::string msg;
+            for (size_t i = 0; i < info.size(); ++i) {
+              using jubatus::core::common::exception::error_message;
+              error_message* m = dynamic_cast<error_message*>(info[i].get());
+              if (m) {
+                msg = m->value();
+                break;
+              }
+            }
+            req_.error(msg);
+          } catch (const std::exception& e) {
+            req_.error(std::string(e.what()));
+          }
+        } else {
+          req_.result<Res>(aggregate_results());
+        }
       }
     }
 
     Res aggregate_results() {
-      if (errors_.size() != 0) {
-        LOG(WARNING) << "error occurred in " << errors_.size()
-                     << " out of " << futures_.size() << " requests";
-        LOG(WARNING) << jubatus::server::common::mprpc::to_string(
-            jubatus::server::common::mprpc::error_multi_rpc(errors_));
-      }
-
       if (results_.size() == 0) {
         return Res();  // TODO(kmaehashi): we should raise exception ?
       }
