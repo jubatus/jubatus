@@ -1,0 +1,54 @@
+%define package_version @ONIGURUMA_VERSION@
+%define package_release @ONIGURUMA_RELEASE@
+
+Name:		oniguruma
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:    Regular expression library
+Group:		Development/Libraries
+License:	BSD
+URL:		http://www.geocities.jp/kosako3/oniguruma/
+Source0:	http://www.geocities.jp/kosako3/oniguruma/archive/onig-%{version}.tar.gz
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+%package devel
+Summary:	Headers and libraries for Oniguruma
+Requires:	%{name} = %{version}-%{release}
+
+%description
+Oniguruma is a regular expression library.
+
+%description devel
+This package provides headers and libraries needed to develop applications using Oniguruma.
+
+%prep
+%setup -q -n onig-%{version}
+
+%build
+%configure --prefix=%{_prefix} --libdir=%{_libdir} --disable-static
+%{__make} %{?_smp_mflags}
+
+%install
+%{__rm} -rf %{buildroot}
+%makeinstall
+find %{buildroot} -name libonig.la -delete
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc AUTHORS HISTORY README
+%doc COPYING
+%{_libdir}/libonig.so.*
+
+%files devel
+%defattr(-,root,root,-)
+%{_bindir}/onig-config
+%{_libdir}/libonig.so
+%{_libdir}/pkgconfig/oniguruma.pc
+%{_includedir}/onig*.h
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
