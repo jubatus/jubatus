@@ -43,6 +43,12 @@ class dynamic_combination_feature
       double value_right,
       std::vector<std::pair<std::string, float> >& ret_fv) const;
 
+  /**
+   * Return true if the add_feature function is commutative with any
+   * left/right key.
+   */
+  bool is_commutative() const;
+
  private:
   dynamic_loader loader_;
   jubatus::util::lang::scoped_ptr<core::fv_converter::combination_feature>

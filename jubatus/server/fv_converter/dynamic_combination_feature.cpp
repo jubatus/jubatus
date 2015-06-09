@@ -41,6 +41,10 @@ void dynamic_combination_feature::add_feature(
   impl_->add_feature(key, value_left, value_right, ret_fv);
 }
 
+bool dynamic_combination_feature::is_commutative() const {
+  return impl_->is_commutative();
+}
+
 }  // namespace fv_converter
 }  // namespace server
 }  // namespace jubatus
