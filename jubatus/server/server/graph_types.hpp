@@ -1,4 +1,4 @@
-// This file is auto-generated from graph.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-145-g9341cb5/feature/save_returns_id_and_path
+// This file is auto-generated from graph.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-146-g79178f8/feature/save_returns_id_and_path
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_GRAPH_TYPES_HPP_
