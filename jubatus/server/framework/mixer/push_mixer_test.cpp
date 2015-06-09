@@ -140,12 +140,9 @@ TEST(push_communication, update_members) {
   jubatus::util::lang::shared_ptr<push_communication> com =
     push_communication::create(zk, "test_type", "test_name", 1, my_id);
 
-  ASSERT_EQ(3, com->update_members());  // must not be 4
+  ASSERT_EQ(4u, com->update_members());
   vector<pair<string, int> > list = com->servers_list();
-  ASSERT_EQ(3, list.size());
-  for (size_t i = 0; i < list.size(); ++i) {
-    ASSERT_NE(list[i], my_id);  // must not include "127.0.0.1:1112"
-  }
+  ASSERT_EQ(4u, list.size());
 }
 
 }  // namespace mixer
