@@ -19,7 +19,7 @@ def build(bld):
             )
 
   if bld.env.HAVE_ZOOKEEPER_H:
-    for name in ['linear_mixer_test', 'push_mixer_test']:
+    for name in ['linear_mixer_test', 'push_mixer_test', 'skip_mixer_test']:
       bld.program(
         features='gtest',
         source = name + '.cpp',
