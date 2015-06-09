@@ -85,5 +85,5 @@ ZOOKEEPER_RELEASE="1"
 # ==============================================================================
 # Jubatus Release (Yum Repository)
 # ==============================================================================
-JUBATUS_RELEASE_VERSION="6" # RHEL version
+JUBATUS_RELEASE_VERSION="$(rpm -q --qf '%{version}' --whatprovides redhat-release)" # RHEL version
 JUBATUS_RELEASE_RELEASE="1"

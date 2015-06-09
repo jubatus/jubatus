@@ -103,7 +103,10 @@ build_package() {
 		echo "Building package for ${PACKAGE}..."
 		pushd "${PACKAGER_RPM_DIR}/${PACKAGE}"
 		prepare_rpmbuild "${PACKAGE}"
-		cleanroom rpmbuild --define "%_topdir "${PACKAGER_RPM_DIR}"/"${PACKAGE}"" -ba SPECS/${PACKAGE}.spec
+		cleanroom rpmbuild \
+			--define "%dist .el${JUBATUS_RELEASE_VERSION}" \
+			--define "%_topdir "${PACKAGER_RPM_DIR}"/"${PACKAGE}"" \
+			-ba SPECS/${PACKAGE}.spec
 		[ "${AUTO_INSTALL}" = "yes" ] && "${RUN_AS_ROOT}" ${YUM} -y install RPMS/*/*.rpm
 		popd
 	done
