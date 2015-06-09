@@ -108,6 +108,8 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
           conf.method, param, table, my_id));
   nearest_neighbor_.reset(new core::driver::nearest_neighbor(nn, converter));
   mixer_->set_driver(nearest_neighbor_.get());
+
+  LOG(INFO) << "config loaded: " << config;
 }
 
 std::string nearest_neighbor_serv::get_config() const {
