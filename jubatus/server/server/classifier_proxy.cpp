@@ -22,7 +22,9 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_random<std::vector<std::vector<estimate_result> >,
         std::vector<jubatus::core::fv_converter::datum> >("classify");
     k.register_async_random<std::vector<std::string> >("get_labels");
-    k.register_async_random<bool, std::string>("set_label");
+    k.register_async_broadcast<bool, std::string>("set_label",
+        jubatus::util::lang::function<bool(bool, bool)>(
+        &jubatus::server::framework::pass<bool>));
     k.register_async_broadcast<bool>("clear",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));

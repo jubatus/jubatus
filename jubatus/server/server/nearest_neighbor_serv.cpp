@@ -28,6 +28,7 @@
 #include "jubatus/core/fv_converter/datum.hpp"
 #include "jubatus/core/fv_converter/revert.hpp"
 #include "jubatus/core/nearest_neighbor/nearest_neighbor_factory.hpp"
+#include "../common/membership.hpp"
 #include "../common/logger/logger.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
@@ -58,7 +59,8 @@ nearest_neighbor_serv::nearest_neighbor_serv(
     const framework::server_argv& a,
     const shared_ptr<common::lock_service>& zk)
     : server_base(a),
-      mixer_(create_mixer(a, zk, rw_mutex(), user_data_version())) {
+      mixer_(create_mixer(a, zk, rw_mutex(), user_data_version())),
+      update_row_cnt_(0) {
 }
 
 nearest_neighbor_serv::~nearest_neighbor_serv() {
@@ -66,10 +68,7 @@ nearest_neighbor_serv::~nearest_neighbor_serv() {
 
 void nearest_neighbor_serv::get_status(status_t& status) const {
   status_t my_status;
-  my_status["clear_row_cnt"] = lexical_cast<string>(clear_row_cnt_);
   my_status["update_row_cnt"] = lexical_cast<string>(update_row_cnt_);
-  my_status["build_cnt"] = lexical_cast<string>(build_cnt_);
-  my_status["mix_cnt"] = lexical_cast<string>(mix_cnt_);
   my_status["data"] = lexical_cast<string>(
       nearest_neighbor_->get_table()->dump_json());
   status.insert(my_status.begin(), my_status.end());
@@ -100,7 +99,7 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
   shared_ptr<core::storage::column_table>
       table(new core::storage::column_table);
   std::string my_id;
-#ifdef HAVE_ZOOKEEPER_H_
+#ifdef HAVE_ZOOKEEPER_H
   my_id = common::build_loc_str(argv().eth, argv().port);
 #endif
 
@@ -109,6 +108,8 @@ void nearest_neighbor_serv::set_config(const std::string& config) {
           conf.method, param, table, my_id));
   nearest_neighbor_.reset(new core::driver::nearest_neighbor(nn, converter));
   mixer_->set_driver(nearest_neighbor_.get());
+
+  LOG(INFO) << "config loaded: " << config;
 }
 
 std::string nearest_neighbor_serv::get_config() const {
@@ -120,10 +121,7 @@ std::string nearest_neighbor_serv::get_config() const {
 bool nearest_neighbor_serv::clear() {
   DLOG(INFO) << __func__;
   check_set_config();
-  clear_row_cnt_ = 0;
   update_row_cnt_ = 0;
-  build_cnt_ = 0;
-  mix_cnt_ = 0;
   nearest_neighbor_->clear();
   return true;
 }
