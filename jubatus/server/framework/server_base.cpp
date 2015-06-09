@@ -29,6 +29,7 @@
 #include "jubatus/util/system/syscall.h"
 #include "mixer/mixer.hpp"
 #include "save_load.hpp"
+#include "../framework/server_util.hpp"
 #include "../common/logger/logger.hpp"
 
 namespace jubatus {
@@ -124,7 +125,7 @@ bool server_base::clear() {
   return true;
 }
 
-bool server_base::save(const std::string& id) {
+std::map<std::string, std::string> server_base::save(const std::string& id) {
   const std::string path = build_local_path(argv_, argv_.type, id);
   LOG(INFO) << "starting save to " << path;
 
@@ -170,11 +171,14 @@ bool server_base::save(const std::string& id) {
 
   update_saved_status(path);
   LOG(INFO) << "saved to " << path;
-  return true;
+
+  std::map<std::string, std::string> ret;
+  ret.insert(std::make_pair(get_server_identifier(argv_), path));
+  return ret;
 }
 
 bool server_base::load(const std::string& id) {
-  load_file_impl(*this, build_local_path(argv_, argv_.type, id), id);
+  load_file_impl(*this, get_server_identifier(argv_), id);
   return true;
 }
 
