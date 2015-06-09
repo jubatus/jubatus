@@ -87,7 +87,7 @@ prepare_rpmbuild() {
 			;;
 		zookeeper-client )
 			;;
-		apache-log4cxx )
+		log4cxx )
 			;;
 		oniguruma )
 			;;

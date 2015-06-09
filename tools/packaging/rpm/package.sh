@@ -5,7 +5,7 @@
 ################################################################################
 
 # Packages to be built, in order of dependencies
-PKGS_DEPENDS="msgpack jubatus-mpio jubatus-msgpack-rpc zookeeper-client apache-log4cxx oniguruma ux mecab mecab-ipadic"
+PKGS_DEPENDS="msgpack jubatus-mpio jubatus-msgpack-rpc zookeeper-client log4cxx oniguruma ux mecab mecab-ipadic"
 PKGS_JUBATUS="jubatus-core jubatus jubadump jubatus-release"
 
 # Directories

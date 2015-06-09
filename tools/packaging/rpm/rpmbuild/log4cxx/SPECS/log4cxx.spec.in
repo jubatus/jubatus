@@ -1,18 +1,20 @@
 %define package_version @LOG4CXX_VERSION@
 %define package_release @LOG4CXX_RELEASE@
 
-Name:		apache-log4cxx
+Name:		log4cxx
 Version:	%{package_version}
 Release:	%{package_release}%{?dist}
 Summary:	A port to C++ of the Log4j project
 Group:		System Environment/Libraries
 License:	ASL 2.0
 URL:		http://logging.apache.org/log4cxx/
-Source0:	http://www.apache.org/dist/logging/log4cxx/%{version}/%{name}-%{version}.tar.gz
+Source0:	http://www.apache.org/dist/logging/log4cxx/%{version}/apache-%{name}-%{version}.tar.gz
 Patch0:     log4cxx-gcc4.4.patch
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 BuildRequires: apr-devel, apr-util-devel
+
+Obsoletes:	apache-log4cxx <= %{version}-%{release}
 
 %package devel
 Summary:	Headers and libraries for %{name}
@@ -29,7 +31,7 @@ cost of logging.
 This package provides headers and libraries needed to develop applications using %{name}.
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q -n apache-%{name}-%{version}
 %patch0 -p1
 
 %build
