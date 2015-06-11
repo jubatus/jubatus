@@ -5,6 +5,13 @@ gpgcheck=0
 enabled=1
 #priority=99
 
+[jubatus-optional]
+name=Jubatus Packages for Enterprise Linux $releasever - $basearch - Optional
+baseurl=http://download.jubat.us/yum/rhel/$releasever/optional/$basearch/
+gpgcheck=0
+enabled=0
+#priority=99
+
 [jubatus-source]
 name=Jubatus Packages for Enterprise Linux $releasever - $basearch - Source
 baseurl=http://download.jubat.us/yum/rhel/$releasever/stable/SRPMS/
