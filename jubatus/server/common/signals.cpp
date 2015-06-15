@@ -112,11 +112,11 @@ void handle_signals() {
         case SIGTERM:
           LOG(INFO) << "caught SIGTERM";
           handle_signal(action_on_term);
-          break;
+          return;
         case SIGINT:  // behave the same way as SIGTERM
           LOG(INFO) << "caught SIGINT";
           handle_signal(action_on_term);
-          break;
+          return;
         case SIGHUP:
           LOG(INFO) << "caught SIGHUP";
           handle_signal(action_on_hup);
