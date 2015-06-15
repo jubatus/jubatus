@@ -11,3 +11,12 @@ omake man
 popd
 cp -a "${WEBSITE_DIR}"/build/man/* .
 rm -rf "${WEBSITE_DIR}"
+
+for LANG in */; do
+  pushd "${LANG}"
+  for ENGINE in anomaly bandit burst classifier clustering graph nearest_neighbor recommender regression; do
+    ln -sf "jubatus_server.8" "juba${ENGINE}.8"
+    ln -sf "jubatus_proxy.8"  "juba${ENGINE}_proxy.8"
+  done
+  popd
+done
