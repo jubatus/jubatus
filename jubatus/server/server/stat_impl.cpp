@@ -1,4 +1,4 @@
-// This file is auto-generated from stat.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-146-g79178f8/feature/save_returns_id_and_path
+// This file is auto-generated from stat.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.7.1-14-g79178f8/develop
 // *** DO NOT EDIT ***
 
 #include <map>
