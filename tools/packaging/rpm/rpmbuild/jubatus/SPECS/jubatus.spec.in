@@ -85,6 +85,8 @@ find %{buildroot}/%{_libdir} -name "lib*.so*" -exec chmod 755 {} \;
 %{_libdir}/libjuba*.so.*
 %{_libdir}/jubatus/plugin
 %{_datarootdir}/jubatus
+%{_mandir}/man*/*
+%{_mandir}/*/man*/*
 
 %files devel
 %defattr(-,root,root,-)
