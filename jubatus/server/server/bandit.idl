@@ -77,7 +77,7 @@ service bandit {
   #-  - 1 when succesfully reset, 0 when failed to reset.
   #-
   #- Initialise the state of a slot machine set for a player.
-  #@broadcast #@update #@all_and
+  #@broadcast #@update #@all_or
   bool reset(0: string player_id)
 
   #- - Parameters:

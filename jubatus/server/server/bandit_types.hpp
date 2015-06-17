@@ -1,4 +1,4 @@
-// This file is auto-generated from bandit.idl(0.6.4-127-g7cf38b7) with jenerator version 0.6.4-146-g79178f8/feature/save_returns_id_and_path
+// This file is auto-generated from bandit.idl(0.7.2-33-g6c0f737) with jenerator version 0.7.1-14-g79178f8/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_BANDIT_TYPES_HPP_
