@@ -14,13 +14,13 @@ URL:		http://jubat.us/
 Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires:	msgpack-devel
-BuildRequires:	jubatus-core-devel
+BuildRequires:	msgpack-devel = @MSGPACK_VERSION@
+BuildRequires:	jubatus-core-devel = @JUBATUS_CORE_VERSION@
 BuildRequires:	pkgconfig
 BuildRequires:	python >= 2.4
 
-Requires:		msgpack
-Requires:		jubatus-core
+Requires:		msgpack = @MSGPACK_VERSION@
+Requires:		jubatus-core = @JUBATUS_CORE_VERSION@
 
 %description
 jubadump converts saved jubatus internal model to json.

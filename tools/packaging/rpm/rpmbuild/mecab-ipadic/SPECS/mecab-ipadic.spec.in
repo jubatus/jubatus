@@ -19,9 +19,9 @@ Source0:	http://mecab.googlecode.com/files/%{target_archive}
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 # mecab-config command (in mecab package) is required to configure mecab-ipadic
-BuildRequires:	mecab
+BuildRequires:	mecab = @MECAB_VERSION@
 
-Requires:		mecab
+Requires:		mecab = @MECAB_VERSION@
 
 %description
 IPA Dictionary for MeCab.
