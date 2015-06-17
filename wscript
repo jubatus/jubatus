@@ -8,6 +8,18 @@ VERSION = '0.7.2'
 ABI_VERSION = VERSION
 APPNAME = 'jubatus'
 
+JUBATUS_ENGINES = [
+                   'anomaly',
+                   'bandit',
+                   'burst',
+                   'classifier',
+                   'clustering',
+                   'graph',
+                   'nearest_neighbor',
+                   'recommender',
+                   'regression',
+                  ]
+
 top = '.'
 out = 'build'
 subdirs = ['config', 'jubatus', 'plugin']
@@ -62,6 +74,7 @@ def configure(conf):
   # Version constants
   conf.env.VERSION = VERSION
   conf.env.ABI_VERSION = ABI_VERSION
+  conf.env.JUBATUS_ENGINES = JUBATUS_ENGINES
 
   conf.check_cxx(lib = 'msgpack')
   conf.check_cxx(lib = 'jubatus_mpio')

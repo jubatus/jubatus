@@ -1,5 +1,4 @@
 # -*- python -*-
-idls = ['classifier.idl', 'regression.idl', 'recommender.idl', 'stat.idl', 'graph.idl', 'anomaly.idl', 'bandit.idl', 'burst.idl', 'clustering.idl']
 
 def options(opt):
   pass
@@ -41,4 +40,5 @@ def build(bld):
   build_one(bld, "burst")
   build_one(bld, "bandit")
 
-  bld.install_files('${PREFIX}/share/jubatus/idl/', idls)
+  bld.install_files('${PREFIX}/share/jubatus/idl/',
+                    map(lambda x: x + '.idl', bld.env['JUBATUS_ENGINES']))
