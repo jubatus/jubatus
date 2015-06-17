@@ -18,11 +18,12 @@ JUBATUS_ENGINES = [
                    'nearest_neighbor',
                    'recommender',
                    'regression',
+                   'stat',
                   ]
 
 top = '.'
 out = 'build'
-subdirs = ['config', 'jubatus', 'plugin']
+subdirs = ['config', 'man', 'jubatus', 'plugin']
 
 def options(opt):
   opt.load('compiler_cxx')
