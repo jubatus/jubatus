@@ -1,0 +1,235 @@
+.\" Man page generated from reStructuredText.
+.
+.TH "JUBACTL" "8" " " "" "Jubatus"
+.SH NAME
+jubactl \- jubactl
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.SH SYNOPSIS
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+jubactl [options ...]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH DESCRIPTION
+.sp
+\fBjubactl\fP is a command to manage server processes in distributed environment.
+.SS Options
+.INDENT 0.0
+.IP \(bu 2
+\fB[]\fP indicates the default value.
+.IP \(bu 2
+\fB<zookeeper_list>\fP is a comma\-separated list of \fBhost:port\fP of ZooKeeper servers (e.g., \fB10.0.0.1:2181,10.0.0.2:2181,10.0.0.3:2181\fP).
+No spaces between values are allowed.
+If you have only one ZooKeeper server, just specify \fBhost:port\fP without comma (e.g., \fB10.0.0.1:2181\fP).
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-c <command>, \-\-cmd <command>
+Send specified command to jubavisors registered to ZooKeeper.
+\fB<command>\fP should be one of the following.
+.TS
+center;
+|l|l|.
+_
+T{
+Command
+T}	T{
+Description
+T}
+_
+T{
+start
+T}	T{
+Start Jubatus servers
+T}
+_
+T{
+stop
+T}	T{
+Stop Jubatus servers
+T}
+_
+T{
+save
+T}	T{
+Save the model to directory specified by \fBjubatus_server \-d\fP
+T}
+_
+T{
+load
+T}	T{
+Load the model from directory specified by \fBjubatus_server \-d\fP
+T}
+_
+T{
+status
+T}	T{
+Print the status of servers, proxies and jubavisors
+T}
+_
+.TE
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-s <program>, \-\-server <program>
+Executable file of the server program (e.g., \fBjubaclassifier\fP, \fBjubarecommender\fP, ...).
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-n <name>, \-\-name <name>
+The instance name, which is a value to uniquely identify a task in the ZooKeeper cluster.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-t <type>, \-\-type <type>
+Type of the server program (e.g., \fBclassifier\fP, \fBrecommender\fP, ...).
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-N <num>, \-\-num <num>
+Number of processes in the whole cluster.
+.sp
+Effective only when used with \fB\-\-cmd start\fP\&.
+.sp
+When \fB0\fP is specified, start 1 process on each jubavisor.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-z <zookeeper_list>, \-\-zookeeper <zookeeper_list>
+List of ZooKeeper server(s).
+.sp
+If not specified, environment variable \fBZK\fP will be used.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-i <id>, \-\-id <id>
+ID of file name to save or load.
+.sp
+Effective only when used with \fB\-\-cmd save\fP and \fB\-\-cmd load\fP\&.
+.sp
+If not specified, the value that specified by \fB\-\-name\fP will be used.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-B <interface>, \-\-listen_if <interface>
+Option given when starting new server process (\fBjubatus_server \-B\fP).
+.sp
+Effective only when used with \fB\-\-cmd start\fP\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-C <num>, \-\-thread <num>
+Option given when starting new server process (\fBjubatus_server \-c\fP).
+.sp
+Effective only when used with \fB\-\-cmd start\fP\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-T <seconds>, \-\-timeout <seconds>
+Option given when starting new server process (\fBjubatus_server \-t\fP).
+.sp
+Effective only when used with \fB\-\-cmd start\fP\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-D <dirpath>, \-\-datadir <dirpath>
+Option given when starting new server process (\fBjubatus_server \-d\fP).
+.sp
+Effective only when used with \fB\-\-cmd start\fP\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-L <dirpath>, \-\-logdir <dirpath>
+Option given when starting new server process (\fBjubatus_server \-l\fP).
+.sp
+Effective only when used with \fB\-\-cmd start\fP\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-G <log_config>, \-\-log_config <log_config>
+Option given when starting new server process (\fBjubatus_server \-g\fP).
+.sp
+Effective only when used with \fB\-\-cmd start\fP\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-X <mixer>, \-\-mixer <mixer>
+Option given when starting new server process (\fBjubatus_server \-x\fP).
+.sp
+Effective only when used with \fB\-\-cmd start\fP\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-S <seconds>, \-\-interval_sec <seconds>
+Option given when starting new server process (\fBjubatus_server \-s\fP).
+.sp
+Effective only when used with \fB\-\-cmd start\fP\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-I <count>, \-\-interval_count <count>
+Option given when starting new server process (\fBjubatus_server \-i\fP).
+.sp
+Effective only when used with \fB\-\-cmd start\fP\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-Z <seconds>, \-\-zookeeper_timeout <seconds>
+Option given when starting new server process (\fBjubatus_server \-Z\fP).
+.sp
+Effective only when used with \fB\-\-cmd start\fP\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-R <seconds>, \-\-interconnect_timeout <seconds>
+Option given when starting new server process (\fBjubatus_server \-I\fP).
+.sp
+Effective only when used with \fB\-\-cmd start\fP\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-d, \-\-debug
+This option is deprecated and is no longer be used.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-?, \-\-help
+Print the brief usage of the command.
+.UNINDENT
+.SH AUTHOR
+PFN & NTT
+.SH COPYRIGHT
+2011-2015 PFN & NTT
+.\" Generated by docutils manpage writer.
+.
