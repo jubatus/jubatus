@@ -416,7 +416,6 @@ byte_buffer push_mixer::pull(const msgpack::object& arg_obj) {
   msgpack::object arg = msg.get();
 
   scoped_rlock lk_read(model_mutex_);
-  scoped_lock lk(m_);
 
   core::framework::push_mixable* mixable =
     dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
@@ -433,7 +432,6 @@ byte_buffer push_mixer::pull(const msgpack::object& arg_obj) {
 
 byte_buffer push_mixer::get_pull_argument(int dummy_arg) {
   scoped_rlock lk_read(model_mutex_);
-  scoped_lock lk(m_);
 
   core::framework::push_mixable* mixable =
     dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
@@ -458,7 +456,6 @@ int push_mixer::push(const msgpack::object& diff_obj) {
   msgpack::object diff = msg.get();
 
   scoped_wlock lk_write(model_mutex_);
-  scoped_lock lk(m_);
   core::framework::push_mixable* mixable =
     dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
 
