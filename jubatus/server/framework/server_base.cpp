@@ -29,7 +29,6 @@
 #include "jubatus/util/system/syscall.h"
 #include "mixer/mixer.hpp"
 #include "save_load.hpp"
-#include "../framework/server_util.hpp"
 #include "../common/logger/logger.hpp"
 
 namespace jubatus {
@@ -178,7 +177,7 @@ std::map<std::string, std::string> server_base::save(const std::string& id) {
 }
 
 bool server_base::load(const std::string& id) {
-  load_file_impl(*this, get_server_identifier(argv_), id);
+  load_file_impl(*this, build_local_path(argv_, argv_.type, id), id);
   return true;
 }
 
