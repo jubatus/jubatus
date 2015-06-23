@@ -55,7 +55,7 @@ TEST(graph_test, get_status) {
 
 TEST(graph_test, save_load) {
   graph cli(host(), port(), cluster_name(), timeout());
-  ASSERT_TRUE(cli.save("graph.save_test.model"));
+  ASSERT_EQ(1, cli.save("graph.save_test.model").size());
   ASSERT_TRUE(cli.load("graph.save_test.model"));
 }
 

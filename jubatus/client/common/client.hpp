@@ -45,9 +45,9 @@ class client {
     return f.get<std::string>();
   }
 
-  bool save(const std::string& id) {
+  std::map<std::string, std::string> save(const std::string& id) {
     msgpack::rpc::future f = c_.call("save", name_, id);
-    return f.get<bool>();
+    return f.get<std::map<std::string, std::string> >();
   }
 
   bool load(const std::string& id) {

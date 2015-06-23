@@ -63,7 +63,7 @@ TEST(regression_test, get_status) {
 
 TEST(regression_test, save_load) {
   regression cli(host(), port(), cluster_name(), timeout());
-  ASSERT_TRUE(cli.save("regression.save_test.model"));
+  ASSERT_EQ(1, cli.save("regression.save_test.model").size());
   ASSERT_TRUE(cli.load("regression.save_test.model"));
 }
 

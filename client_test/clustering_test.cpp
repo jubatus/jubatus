@@ -50,7 +50,7 @@ TEST(clustering_test, get_status) {
 
 TEST(clustering_test, save_load) {
   clustering cli(host(), port(), cluster_name(), timeout());
-  ASSERT_TRUE(cli.save("clustering.save_test.model"));
+  ASSERT_EQ(1, cli.save("clustering.save_test.model").size());
   ASSERT_TRUE(cli.load("clustering.save_test.model"));
 }
 

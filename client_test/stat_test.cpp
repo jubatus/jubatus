@@ -47,7 +47,7 @@ TEST(stat_test, get_status) {
 
 TEST(stat_test, save_load) {
   stat_client cli(host(), port(), cluster_name(), timeout());
-  ASSERT_TRUE(cli.save("stat.save_test.model"));
+  ASSERT_EQ(1, cli.save("stat.save_test.model").size());
   ASSERT_TRUE(cli.load("stat.save_test.model"));
 }
 

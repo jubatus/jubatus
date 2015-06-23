@@ -63,7 +63,7 @@ TEST(classifier_test, get_status) {
 
 TEST(classifier_test, save_load) {
   classifier cli(host(), port(), cluster_name(), timeout());
-  ASSERT_TRUE(cli.save("classifier.save_test.model"));
+  ASSERT_EQ(1, cli.save("classifier.save_test.model").size());
   ASSERT_TRUE(cli.load("classifier.save_test.model"));
 }
 
