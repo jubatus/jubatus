@@ -46,8 +46,10 @@ proxy::proxy(const proxy_argv& a)
   register_async_random<std::string>("get_config");
   register_async_broadcast<std::map<std::string, std::string>, std::string>(
       "save",
-      jubatus::util::lang::function<std::map<std::string, std::string>(
-          std::map<std::string, std::string>, std::map<std::string, std::string>)>(
+      jubatus::util::lang::function<
+          std::map<std::string, std::string>(
+            std::map<std::string, std::string>,
+            std::map<std::string, std::string>)>(
           &jubatus::server::framework::merge<std::string, std::string>));
   register_async_broadcast<bool, std::string>(
       "load",
