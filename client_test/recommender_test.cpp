@@ -51,7 +51,7 @@ TEST(recommender_test, get_status) {
 
 TEST(recommender_test, save_load) {
   recommender cli(host(), port(), cluster_name(), timeout());
-  ASSERT_TRUE(cli.save("recommender.save_test.model"));
+  ASSERT_EQ(1, cli.save("recommender.save_test.model").size());
   ASSERT_TRUE(cli.load("recommender.save_test.model"));
 }
 

@@ -50,7 +50,7 @@ TEST(nearest_neighbor_test, get_status) {
 
 TEST(nearest_neighbor_test, save_load) {
   nearest_neighbor cli(host(), port(), cluster_name(), timeout());
-  ASSERT_TRUE(cli.save("nearest_neighbor.save_test.model"));
+  ASSERT_EQ(1, cli.save("nearest_neighbor.save_test.model").size());
   ASSERT_TRUE(cli.load("nearest_neighbor.save_test.model"));
 }
 
