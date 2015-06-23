@@ -45,7 +45,17 @@ jubadump \-i <file> [options ...]
 .sp
 \fBjubadump\fP is a tools to convert Jubatus model files saved using \fBsave\fP RPC to JSON.
 .sp
-Currently, only \fBclassifier\fP and \fBinverted_index\fP of \fBrecommender\fP are supported.
+Currently, following models are supported:
+.INDENT 0.0
+.IP \(bu 2
+\fBclassifier\fP
+.IP \(bu 2
+\fBregression\fP
+.IP \(bu 2
+\fBrecommender\fP (\fBinverted_index\fP only)
+.IP \(bu 2
+\fBanomaly\fP (\fBlof\fP with \fBinverted_index\fP backend only)
+.UNINDENT
 .SS Options
 .INDENT 0.0
 .IP \(bu 2
@@ -55,13 +65,6 @@ Currently, only \fBclassifier\fP and \fBinverted_index\fP of \fBrecommender\fP a
 .TP
 .B \-i <file>, \-\-input <file>
 Path of the model file to convert.
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-t <format>, \-\-type <format>
-Format of the input file [classifier]
-.sp
-\fB<format>\fP must be one of \fBclassifier\fP or \fBinverted_index\fP\&.
 .UNINDENT
 .SH AUTHOR
 PFN & NTT
