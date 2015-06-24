@@ -15,9 +15,9 @@ URL:		http://jubat.us/
 Source0:	jubatus.repo
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires:	redhat-release = %{package_version}
+BuildRequires:	redhat-release >= %{package_version}
 
-Requires:		redhat-release = %{package_version}
+Requires:		redhat-release >= %{package_version}
 
 %description
 Yum Repository for Jubatus and its dependencies.
