@@ -25,6 +25,7 @@
 #include <jubatus/msgpack/rpc/client.h>
 #include <msgpack.hpp>
 #include "jubatus/util/concurrent/thread.h"
+#include "jubatus/util/data/optional.h"
 #include "jubatus/util/lang/function.h"
 #include "jubatus/util/lang/bind.h"
 
@@ -328,7 +329,19 @@ class proxy
 
       if (!cancelled_) {
         try {
-          done_one_inner(f, future_index);
+          try {
+            done_one_inner(f, future_index);
+          } catch (const jubatus::server::common::mprpc::rpc_io_error&) {
+            if (!transport_error_) {
+              transport_error_ = "connect error in proxy";
+            }
+            throw;
+          } catch (const jubatus::server::common::mprpc::rpc_timeout_error&) {
+            if (!transport_error_) {
+              transport_error_ = "timeout error in proxy";
+            }
+            throw;
+          }
         } catch (...) {
           // continue process next result when exception thrown.
           // store exception_thrower to list of errors
@@ -345,18 +358,24 @@ class proxy
       --running_count_;
       if (!cancelled_ && running_count_ <= 0) {
         cancel_timeout();
-        req_.result<Res>(aggregate_results());
+        if (errors_.size() > 0) {
+          LOG(WARNING) << "error occurred in " << errors_.size()
+                       << " out of " << futures_.size() << " requests";
+          LOG(WARNING) << jubatus::server::common::mprpc::to_string(
+              jubatus::server::common::mprpc::error_multi_rpc(errors_));
+
+          if (transport_error_) {
+            req_.error(*transport_error_);
+          } else {
+            req_.error(get_error_message(errors_[0]));
+          }
+        } else {
+          req_.result<Res>(aggregate_results());
+        }
       }
     }
 
     Res aggregate_results() {
-      if (errors_.size() != 0) {
-        LOG(WARNING) << "error occurred in " << errors_.size()
-                     << " out of " << futures_.size() << " requests";
-        LOG(WARNING) << jubatus::server::common::mprpc::to_string(
-            jubatus::server::common::mprpc::error_multi_rpc(errors_));
-      }
-
       if (results_.size() == 0) {
         return Res();  // TODO(kmaehashi): we should raise exception ?
       }
@@ -457,6 +476,7 @@ class proxy
     std::vector<msgpack::rpc::session> sessions_;
     std::vector<result_ptr> results_;
     std::vector<jubatus::server::common::mprpc::rpc_error> errors_;
+    jubatus::util::data::optional<std::string> transport_error_;
 
     mp::pthread_recursive_mutex lock_;
 
@@ -470,6 +490,10 @@ class proxy
       JUBATUS_MSGPACKRPC_EXCEPTION_DEFAULT_HANDLER(method_name_);
     }
   };  // class async_task
+
+ private:
+  static std::string get_error_message(
+      const jubatus::server::common::mprpc::rpc_error& err);
 
  public:
   class async_task_loop : public mp::enable_shared_from_this<async_task_loop> {
