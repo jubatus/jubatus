@@ -6,7 +6,7 @@ WEBSITE_DIR="tmp-website"
 rm -rf "${WEBSITE_DIR}"
 git clone https://github.com/jubatus/website.git "${WEBSITE_DIR}"
 pushd "${WEBSITE_DIR}"
-[ ! -z "${BRANCH}" ] && git co "${BRANCH}"
+[ ! -z "${BRANCH}" ] && git checkout "${BRANCH}"
 omake man
 popd
 cp -a "${WEBSITE_DIR}"/build/man/* .
