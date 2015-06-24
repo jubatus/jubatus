@@ -1,13 +1,20 @@
 [jubatus]
-name=Jubatus Packages for Enterprise Linux 6 - $basearch
-baseurl=http://download.jubat.us/yum/rhel/6/stable/$basearch/
+name=Jubatus Packages for Enterprise Linux $releasever - $basearch
+baseurl=http://download.jubat.us/yum/rhel/$releasever/stable/$basearch/
 gpgcheck=0
 enabled=1
 #priority=99
 
+[jubatus-optional]
+name=Jubatus Packages for Enterprise Linux $releasever - $basearch - Optional
+baseurl=http://download.jubat.us/yum/rhel/$releasever/optional/$basearch/
+gpgcheck=0
+enabled=0
+#priority=99
+
 [jubatus-source]
-name=Jubatus Packages for Enterprise Linux 6 - $basearch - Source
-baseurl=http://download.jubat.us/yum/rhel/6/stable/SRPMS/
+name=Jubatus Packages for Enterprise Linux $releasever - $basearch - Source
+baseurl=http://download.jubat.us/yum/rhel/$releasever/stable/SRPMS/
 gpgcheck=0
 enabled=0
 #priority=99

@@ -1,17 +1,17 @@
 RPM Packaging
 =============
 
-1. On RHEL 6, install the following packages.
+1. On RHEL 6 or 7, install the following packages.
 
 ::
 
   sudo yum groupinstall 'Development Tools'
   sudo yum install git-core ruby rpm-build rpmdevtools spectool createrepo
-  sudo yum install oniguruma-devel apr-devel apr-util-devel
+  sudo yum install apr-devel apr-util-devel
 
 2. Modify ``package-config`` to specify which version to build. See below for details.
 
-3. Now build the package:
+3. Now build the package. Note that this command can be run only by users who have passwordless sudo privilege.
 
 ::
 
@@ -44,6 +44,13 @@ General
 
   - Package version.
   - Must be incremented to release new RPM with the same ``*_VERSION``.
+
+For jubatus-release
+-------------------
+
+* ``*_VERSION``
+
+  - This value is computed automatically to match with the RHEL major version (i.e., 6 or 7) of the build environment.
 
 For jubatus, jubatus-core, jubatus-mpio, jubatus-msgpack-rpc, jubadump
 ---------------------------------------------------------------------------------

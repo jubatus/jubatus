@@ -87,7 +87,9 @@ prepare_rpmbuild() {
 			;;
 		zookeeper-client )
 			;;
-		apache-log4cxx )
+		log4cxx )
+			;;
+		oniguruma )
 			;;
 		ux )
 			;;
@@ -119,6 +121,8 @@ prepare_rpmbuild() {
 		ZOOKEEPER_RELEASE \
 		LOG4CXX_VERSION \
 		LOG4CXX_RELEASE \
+		ONIGURUMA_VERSION \
+		ONIGURUMA_RELEASE \
 		UX_VERSION \
 		UX_RELEASE \
 		MECAB_VERSION \
