@@ -38,7 +38,7 @@ service bandit {
   #-
   #- Each player is assigned a set of slot machines.
   #- When asked, the server determines which arm (slot mechine) would be the best to pull, based on a multi-armed bandit algorithm.
-  #@cht #@update #@pass
+  #@cht(1) #@update #@pass
   string select_arm(0: string player_id)
 
   #- - Parameters:
@@ -53,7 +53,7 @@ service bandit {
   #-
   #- Register observed reward to the server.
   #- If assume_unrewarded option is true, there is no need to register reward when it is zero.
-  #@cht #@update #@all_and
+  #@cht(1) #@update #@all_and
   bool register_reward(0: string player_id, 1: string arm_id, 2: double reward)
 
   #- - Parameters:
@@ -65,7 +65,7 @@ service bandit {
   #-  - list of slot machine states.
   #-
   #- Retrieve the states of slot machines, assigned to a designated player.
-  #@cht #@analysis #@pass
+  #@cht(1) #@analysis #@pass
   map<string, arm_info> get_arm_info(0: string player_id)
 
   #- - Parameters:
