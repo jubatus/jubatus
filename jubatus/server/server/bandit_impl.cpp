@@ -1,4 +1,4 @@
-// This file is auto-generated from bandit.idl(0.7.2-33-g6c0f737) with jenerator version 0.7.1-14-g79178f8/develop
+// This file is auto-generated from bandit.idl(0.7.2-79-g2db27d7) with jenerator version 0.6.4-146-g79178f8/develop
 // *** DO NOT EDIT ***
 
 #include <map>
