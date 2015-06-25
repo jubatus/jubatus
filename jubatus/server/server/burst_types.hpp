@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.4-96-g66ed74d) with jenerator version 0.7.1-14-g79178f8/develop
+// This file is auto-generated from burst.idl(0.6.4-96-g66ed74d) with jenerator version 0.6.4-146-g79178f8/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_BURST_TYPES_HPP_

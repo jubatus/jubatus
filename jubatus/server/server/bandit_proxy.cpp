@@ -1,4 +1,4 @@
-// This file is auto-generated from bandit.idl(0.7.2-33-g6c0f737) with jenerator version 0.7.1-14-g79178f8/develop
+// This file is auto-generated from bandit.idl(0.7.2-79-g2db27d7) with jenerator version 0.6.4-146-g79178f8/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -24,13 +24,13 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_broadcast<bool, std::string>("delete_arm",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
-    k.register_async_cht<2, std::string>("select_arm",
+    k.register_async_cht<1, std::string>("select_arm",
         jubatus::util::lang::function<std::string(std::string, std::string)>(
         &jubatus::server::framework::pass<std::string>));
-    k.register_async_cht<2, bool, std::string, double>("register_reward",
+    k.register_async_cht<1, bool, std::string, double>("register_reward",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
-    k.register_async_cht<2, std::map<std::string, arm_info> >("get_arm_info",
+    k.register_async_cht<1, std::map<std::string, arm_info> >("get_arm_info",
         jubatus::util::lang::function<std::map<std::string, arm_info>(
         std::map<std::string, arm_info>, std::map<std::string, arm_info>)>(
         &jubatus::server::framework::pass<std::map<std::string, arm_info> >));
