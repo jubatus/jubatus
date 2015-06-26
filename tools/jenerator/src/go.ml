@@ -175,8 +175,8 @@ let gen_typedef = function
 let common_functions name =
   [
     (* save func *)
-    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) Save(id string) bool {");
-    (2,   "var result bool");
+    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) Save(id string) map[string]string {");
+    (2,   "var result map[string]string");
     (2,   "c.client.Call(\"save\", codec.MsgpackSpecRpcMultiArgs{c.name, id}, &result)");
     (2,   "return result");
     (0, "}");
@@ -190,10 +190,18 @@ let common_functions name =
     (0, "}");
     (0, "");
 
-    (* get_config *)
-    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) GetConfig() map[string]map[string]string {");
-    (2,   "var result map[string]map[string]string");
+    (* get_config func *)
+    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) GetConfig() string {");
+    (2,   "var result string");
     (2,   "c.client.Call(\"get_config\", codec.MsgpackSpecRpcMultiArgs{c.name}, &result)");
+    (2,   "return result");
+    (0, "}");
+    (0, "");
+
+    (* get_status func *)
+    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) GetStatus() map[string]map[string]string {");
+    (2,   "var result map[string]map[string]string");
+    (2,   "c.client.Call(\"get_status\", codec.MsgpackSpecRpcMultiArgs{c.name}, &result)");
     (2,   "return result");
     (0, "}");
     (0, "");
@@ -202,6 +210,14 @@ let common_functions name =
     (0, "func (c *" ^ snake_to_go_ident name ^ "Client) DoMix() bool {");
     (2,   "var result bool");
     (2,   "c.client.Call(\"do_mix\", codec.MsgpackSpecRpcMultiArgs{c.name}, &result)");
+    (2,   "return result");
+    (0, "}");
+    (0, "");
+
+    (* get_proxy_status func *)
+    (0, "func (c *" ^ snake_to_go_ident name ^ "Client) GetProxyStatus() map[string]map[string]string {");
+    (2,   "var result map[string]map[string]string");
+    (2,   "c.client.Call(\"get_proxy_status\", codec.MsgpackSpecRpcMultiArgs{c.name}, &result)");
     (2,   "return result");
     (0, "}");
     (0, "");
