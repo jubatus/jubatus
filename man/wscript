@@ -1,0 +1,14 @@
+# -*- python -*-
+def options(opt):
+  pass
+
+def configure(conf):
+  pass
+
+def build(bld):
+  for (dest_dir, lang) in [('${MANDIR}', 'en'), ('${MANDIR}/ja', 'ja')]:
+    bld.install_files(dest_dir + '/man1/', bld.path.ant_glob(lang + '/*.1'))
+    bld.install_files(dest_dir + '/man8/', bld.path.ant_glob(lang + '/*.8'))
+    for engine in bld.env['JUBATUS_ENGINES']:
+      bld.symlink_as(dest_dir + '/man8/juba' + engine + '.8',       'jubatus_server.8')
+      bld.symlink_as(dest_dir + '/man8/juba' + engine + '_proxy.8', 'jubatus_proxy.8')

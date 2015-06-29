@@ -5,7 +5,7 @@
 ################################################################################
 
 # Packages to be built, in order of dependencies
-PKGS_DEPENDS="msgpack jubatus-mpio jubatus-msgpack-rpc zookeeper-client apache-log4cxx ux mecab mecab-ipadic"
+PKGS_DEPENDS="msgpack jubatus-mpio jubatus-msgpack-rpc zookeeper-client log4cxx oniguruma ux mecab mecab-ipadic"
 PKGS_JUBATUS="jubatus-core jubatus jubadump jubatus-release"
 
 # Directories
@@ -103,7 +103,10 @@ build_package() {
 		echo "Building package for ${PACKAGE}..."
 		pushd "${PACKAGER_RPM_DIR}/${PACKAGE}"
 		prepare_rpmbuild "${PACKAGE}"
-		cleanroom rpmbuild --define "%_topdir "${PACKAGER_RPM_DIR}"/"${PACKAGE}"" -ba SPECS/${PACKAGE}.spec
+		cleanroom rpmbuild \
+			--define "%dist .el${JUBATUS_RELEASE_VERSION}" \
+			--define "%_topdir "${PACKAGER_RPM_DIR}"/"${PACKAGE}"" \
+			-ba SPECS/${PACKAGE}.spec
 		[ "${AUTO_INSTALL}" = "yes" ] && "${RUN_AS_ROOT}" ${YUM} -y install RPMS/*/*.rpm
 		popd
 	done

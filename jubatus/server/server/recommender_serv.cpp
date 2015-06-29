@@ -32,6 +32,7 @@
 #include "jubatus/core/recommender/recommender_factory.hpp"
 #include "jubatus/core/storage/storage_factory.hpp"
 
+#include "../common/membership.hpp"
 #include "../framework/mixer/mixer_factory.hpp"
 
 using std::string;
@@ -103,7 +104,7 @@ void recommender_serv::set_config(const std::string &config) {
   }
 
   std::string my_id;
-#ifdef HAVE_ZOOKEEPER_H_
+#ifdef HAVE_ZOOKEEPER_H
   my_id = common::build_loc_str(argv().eth, argv().port);
 #endif
 

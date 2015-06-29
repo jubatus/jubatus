@@ -1,4 +1,4 @@
-// This file is auto-generated from bandit.idl(0.6.4-37-g8b6a586) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
+// This file is auto-generated from bandit.idl(0.7.2-79-g2db27d7) with jenerator version 0.6.4-146-g79178f8/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_BANDIT_TYPES_HPP_

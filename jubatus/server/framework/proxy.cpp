@@ -21,6 +21,7 @@
 #include <map>
 #include <string>
 
+#include "jubatus/core/common/assert.hpp"
 #include "jubatus/core/common/exception.hpp"
 #include "aggregators.hpp"
 #include "../common/logger/logger.hpp"
@@ -44,10 +45,13 @@ proxy::proxy(const proxy_argv& a)
       jubatus::server::common::mprpc::rpc_server(a.timeout) {
   // register default methods
   register_async_random<std::string>("get_config");
-  register_async_broadcast<bool, std::string>(
+  register_async_broadcast<std::map<std::string, std::string>, std::string>(
       "save",
-      jubatus::util::lang::function<bool(bool, bool)>(
-          &jubatus::server::framework::all_and));
+      jubatus::util::lang::function<
+          std::map<std::string, std::string>(
+            std::map<std::string, std::string>,
+            std::map<std::string, std::string>)>(
+          &jubatus::server::framework::merge<std::string, std::string>));
   register_async_broadcast<bool, std::string>(
       "load",
       jubatus::util::lang::function<bool(bool, bool)>(
@@ -107,6 +111,29 @@ int proxy::run() {
     LOG(FATAL) << "error when starting RPC server: " << e.what();
   }
   return -1;
+}
+
+std::string proxy::get_error_message(
+    const jubatus::server::common::mprpc::rpc_error& err) {
+  try {
+    err.throw_exception();
+    JUBATUS_ASSERT_UNREACHABLE();
+  } catch (const jubatus::server::common::mprpc::rpc_call_error& e) {
+    jubatus::core::common::exception::error_info_list_t info =
+        e.error_info();
+    for (size_t i = 0; i < info.size(); ++i) {
+      using jubatus::core::common::exception::error_message;
+      error_message* m = dynamic_cast<error_message*>(info[i].get());
+      if (m) {
+        return m->value();
+      }
+    }
+    return e.what();
+  } catch (const std::exception& e) {
+    return e.what();
+  } catch (...) {
+    return "unknown error";
+  }
 }
 
 }  // namespace framework

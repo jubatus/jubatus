@@ -24,10 +24,6 @@ prepare_rpmbuild() {
 			popd
 			tar --create --gzip --exclude-vcs --file "jubatus-${JUBATUS_VERSION}.tar.gz" jubatus
 			rm -rf jubatus
-
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								JUBATUS_VERSION \
-								JUBATUS_RELEASE
 			;;
 		jubatus-core )
 			rm -rf jubatus_core
@@ -42,10 +38,6 @@ prepare_rpmbuild() {
 			popd
 			tar --create --gzip --exclude-vcs --file "jubatus-core-${JUBATUS_CORE_VERSION}.tar.gz" jubatus-core
 			rm -rf jubatus-core
-
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								JUBATUS_CORE_VERSION \
-								JUBATUS_CORE_RELEASE
 			;;
         jubadump )
             rm -rf jubadump
@@ -60,22 +52,8 @@ prepare_rpmbuild() {
 			popd
 			tar --create --gzip --exclude-vcs --file "jubadump-${JUBADUMP_VERSION}.tar.gz" jubadump
 			rm -rf jubadump
-
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								JUBADUMP_VERSION \
-								JUBADUMP_RELEASE
-			;;
-		jubatus-client )
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								JUBATUS_CLIENT_VERSION \
-								JUBATUS_CLIENT_RELEASE \
-								JUBATUS_CLIENT_ARCHIVE \
-								JUBATUS_CLIENT_ARCHIVE_DIR
 			;;
 		jubatus-release )
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								JUBATUS_RELEASE_VERSION \
-								JUBATUS_RELEASE_RELEASE
 			;;
 		jubatus-mpio )
 			rm -rf jubatus-mpio
@@ -90,10 +68,6 @@ prepare_rpmbuild() {
 			popd
 			tar --create --gzip --exclude-vcs --file "jubatus-mpio-${JUBATUS_MPIO_VERSION}.tar.gz" jubatus-mpio
 			rm -rf jubatus-mpio
-
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								JUBATUS_MPIO_VERSION \
-								JUBATUS_MPIO_RELEASE
 			;;
 		jubatus-msgpack-rpc )
 			rm -rf jubatus-msgpack-rpc
@@ -108,47 +82,55 @@ prepare_rpmbuild() {
 			popd
 			tar --create --gzip --exclude-vcs --file "jubatus-msgpack-rpc-${JUBATUS_MSGPACK_RPC_VERSION}.tar.gz" jubatus-msgpack-rpc
 			rm -rf jubatus-msgpack-rpc
-
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								JUBATUS_MSGPACK_RPC_VERSION \
-								JUBATUS_MSGPACK_RPC_RELEASE
 			;;
 		msgpack )
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								MSGPACK_VERSION \
-								MSGPACK_RELEASE
 			;;
 		zookeeper-client )
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								ZOOKEEPER_VERSION \
-								ZOOKEEPER_RELEASE
 			;;
-		apache-log4cxx )
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								LOG4CXX_VERSION \
-								LOG4CXX_RELEASE
+		log4cxx )
+			;;
+		oniguruma )
 			;;
 		ux )
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								UX_VERSION \
-								UX_RELEASE
 			;;
 		mecab )
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								MECAB_VERSION \
-								MECAB_RELEASE
 			;;
 		mecab-ipadic )
-			spec_substitute "${SPECINFILE}" "${SPECFILE}" \
-								MECAB_IPADIC_VERSION \
-								MECAB_IPADIC_RELEASE \
-								MECAB_IPADIC_ARCHIVE \
-								MECAB_IPADIC_ARCHIVE_DIR
 			;;
 		* )
 			echo "Unknown package: "${PACKAGE}""
 			return 1
 	esac
+
+	spec_substitute "${SPECINFILE}" "${SPECFILE}" \
+		JUBATUS_VERSION \
+		JUBATUS_RELEASE \
+		JUBATUS_CORE_VERSION \
+		JUBATUS_CORE_RELEASE \
+		JUBADUMP_VERSION \
+		JUBADUMP_RELEASE \
+		JUBATUS_RELEASE_VERSION \
+		JUBATUS_RELEASE_RELEASE \
+		JUBATUS_MPIO_VERSION \
+		JUBATUS_MPIO_RELEASE \
+		JUBATUS_MSGPACK_RPC_VERSION \
+		JUBATUS_MSGPACK_RPC_RELEASE \
+		MSGPACK_VERSION \
+		MSGPACK_RELEASE \
+		ZOOKEEPER_VERSION \
+		ZOOKEEPER_RELEASE \
+		LOG4CXX_VERSION \
+		LOG4CXX_RELEASE \
+		ONIGURUMA_VERSION \
+		ONIGURUMA_RELEASE \
+		UX_VERSION \
+		UX_RELEASE \
+		MECAB_VERSION \
+		MECAB_RELEASE \
+		MECAB_IPADIC_VERSION \
+		MECAB_IPADIC_RELEASE \
+		MECAB_IPADIC_ARCHIVE \
+		MECAB_IPADIC_ARCHIVE_DIR
 
 	# Download Sources & Patches if the URL is provided in SPEC file
 	spectool -g "${SPECFILE}"

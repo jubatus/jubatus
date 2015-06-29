@@ -23,6 +23,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/framework/mixable.hpp"
@@ -124,7 +125,7 @@ bool server_base::clear() {
   return true;
 }
 
-bool server_base::save(const std::string& id) {
+std::map<std::string, std::string> server_base::save(const std::string& id) {
   const std::string path = build_local_path(argv_, argv_.type, id);
   LOG(INFO) << "starting save to " << path;
 
@@ -170,7 +171,10 @@ bool server_base::save(const std::string& id) {
 
   update_saved_status(path);
   LOG(INFO) << "saved to " << path;
-  return true;
+
+  std::map<std::string, std::string> ret;
+  ret.insert(std::make_pair(get_server_identifier(argv_), path));
+  return ret;
 }
 
 bool server_base::load(const std::string& id) {

@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
+// This file is auto-generated from classifier.idl(0.7.2-49-g5a6436d) with jenerator version 0.6.4-146-g79178f8/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -40,9 +40,9 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
 
     rpc_server::add<std::string(std::string)>("get_config",
         jubatus::util::lang::bind(&classifier_impl::get_config, this));
-    rpc_server::add<bool(std::string, std::string)>("save",
-        jubatus::util::lang::bind(&classifier_impl::save, this,
-        jubatus::util::lang::_2));
+    rpc_server::add<std::map<std::string, std::string>(std::string,
+        std::string)>("save", jubatus::util::lang::bind(&classifier_impl::save,
+        this, jubatus::util::lang::_2));
     rpc_server::add<bool(std::string, std::string)>("load",
         jubatus::util::lang::bind(&classifier_impl::load, this,
         jubatus::util::lang::_2));
@@ -52,33 +52,33 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
   }
 
   int32_t train(const std::vector<labeled_datum>& data) {
-    JWLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->train(data);
   }
 
   std::vector<std::vector<estimate_result> > classify(
       const std::vector<jubatus::core::fv_converter::datum>& data) {
-    JRLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->classify(data);
   }
 
   std::vector<std::string> get_labels() {
-    JRLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->get_labels();
   }
 
   bool set_label(const std::string& new_label) {
-    JWLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->set_label(new_label);
   }
 
   bool clear() {
-    JWLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->clear();
   }
 
   bool delete_label(const std::string& target_label) {
-    JWLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->delete_label(target_label);
   }
 
@@ -87,7 +87,7 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->get_config();
   }
 
-  bool save(const std::string& id) {
+  std::map<std::string, std::string> save(const std::string& id) {
     JRLOCK_(p_);
     return get_p()->save(id);
   }

@@ -53,6 +53,7 @@ server_helper_impl::server_helper_impl(const server_argv& a) {
     zk_.reset(common::create_lock_service("zk",
                                           a.z, a.zookeeper_timeout,
                                           make_logfile_name(a)));
+    zk_->push_cleanup(&jubatus::server::common::shutdown_server);
     register_lock_service(zk_);
   }
 #endif

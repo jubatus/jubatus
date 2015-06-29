@@ -112,14 +112,6 @@ push_communication_impl::push_communication_impl(
 size_t push_communication_impl::update_members() {
   common::unique_lock lk(m_);
   common::get_all_nodes(*zk_, type_, name_, servers_);
-
-  // remove itself from push candidate list
-  // std::vector's erase-remove idiom
-  servers_.erase(std::remove(servers_.begin(),
-                             servers_.end(),
-                             my_id_),
-                 servers_.end());
-
   return servers_.size();
 }
 
@@ -345,7 +337,8 @@ void push_mixer::mix() {
   size_t s_pull = 0, s_push = 0;
 
   size_t servers_size = communication_->update_members();
-  if (servers_size == 0) {
+  if (servers_size == 0 ||
+      (servers_size == 1 && communication_->servers_list()[0] == my_id_)) {
     if (is_obsolete_) {
       LOG(INFO) << "no server exists, skipping mix";
       communication_->register_active_list();
@@ -423,7 +416,6 @@ byte_buffer push_mixer::pull(const msgpack::object& arg_obj) {
   msgpack::object arg = msg.get();
 
   scoped_rlock lk_read(model_mutex_);
-  scoped_lock lk(m_);
 
   core::framework::push_mixable* mixable =
     dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
@@ -440,7 +432,6 @@ byte_buffer push_mixer::pull(const msgpack::object& arg_obj) {
 
 byte_buffer push_mixer::get_pull_argument(int dummy_arg) {
   scoped_rlock lk_read(model_mutex_);
-  scoped_lock lk(m_);
 
   core::framework::push_mixable* mixable =
     dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
@@ -465,7 +456,6 @@ int push_mixer::push(const msgpack::object& diff_obj) {
   msgpack::object diff = msg.get();
 
   scoped_wlock lk_write(model_mutex_);
-  scoped_lock lk(m_);
   core::framework::push_mixable* mixable =
     dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
 

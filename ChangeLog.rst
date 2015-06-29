@@ -1,3 +1,34 @@
+Release 0.8.0 - 2015/06/29
+--------------------------
+
+* Changes to Supported Systems
+    * Red Hat Enterprise Linux (RHEL) 7 is now officially supported (#940, #1004)
+
+* Improvements
+    * save RPC now returns the path to the saved model file (#562, #971, #1015, #1020)
+    * Support non-commutative functions in combination feature plug-in (#999)
+    * classifier: improve performance by removing giant lock (#968, #976)
+    * Improve push mixer performance (#989, #1008)
+    * Improve error handling of proxies (#985, #993)
+    * Add man pages for commands (#1005, #1011)
+    * Code cleanup (#1003)
+
+* Bug fixes
+    * bandit: fix reset API returns false when called before MIX (#994, #1007)
+    * bandit: CHT replication level changed to 1 to avoid double counting (#1017)
+    * classifier: set_label is now merged using all_and in distributed environment (#1002, #1006)
+    * nearest_neighbor: fix to print config on startup (#984, #986)
+    * bandit: fix bandit client is not included in client.hpp (#996)
+    * Fix push mixer not mixing rows correctly (#990, #991)
+    * Fix skip mixer not choosing peers correctly (#915, #995, #997)
+    * Fix error reporting of failures occured before initializing logger (#982, #987)
+    * Fix sigwait thread race condition (#988, #992)
+    * Fix cleanup race condition when ZooKeeper session expiry (#967, #998)
+    * Fix IDL files missing from installation (#1009, #1010)
+    * Fix C++ client tests not working (#959, #1018)
+    * Fix RPM packages does not declare clear version dependency (#933, #1001)
+    * Fix RPM packages to correctly generate debuginfo packages (#970, #1000)
+
 Release 0.7.2 - 2015/04/27
 --------------------------
 

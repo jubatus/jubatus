@@ -110,8 +110,6 @@ void register_actor(
           << core::common::exception::error_api_func("lock_service::create"));
     }
   }
-
-  z.push_cleanup(&shutdown_server);
 }
 
 // zk -> name -> ip -> port -> void
@@ -205,8 +203,6 @@ void watch_delete_actor(
               "lock_service::watch_delete_actor"));
     }
   }
-
-  z.push_cleanup(&shutdown_server);
 }
 
 void register_proxy(
@@ -234,8 +230,6 @@ void register_proxy(
         core::common::exception::runtime_error("Failed to register_proxy")
         << core::common::exception::error_api_func("lock_service::create"));
   }
-
-  z.push_cleanup(&shutdown_server);
 }
 
 static bool get_all_node(

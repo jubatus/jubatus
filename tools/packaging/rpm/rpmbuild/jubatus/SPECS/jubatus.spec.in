@@ -14,43 +14,43 @@ URL:		http://jubat.us/
 Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
-BuildRequires:	jubatus-core-devel >= 0.0.1
-BuildRequires:	jubatus-mpio-devel >= 0.4.2
-BuildRequires:	jubatus-msgpack-rpc-devel >= 0.4.2
-BuildRequires:	msgpack-devel
-BuildRequires:	apache-log4cxx-devel >= 0.10.0
-BuildRequires:	zookeeper-client-devel
+BuildRequires:	jubatus-core-devel = @JUBATUS_CORE_VERSION@
+BuildRequires:	jubatus-mpio-devel = @JUBATUS_MPIO_VERSION@
+BuildRequires:	jubatus-msgpack-rpc-devel = @JUBATUS_MSGPACK_RPC_VERSION@
+BuildRequires:	msgpack-devel = @MSGPACK_VERSION@
+BuildRequires:	log4cxx-devel = @LOG4CXX_VERSION@
+BuildRequires:	zookeeper-client-devel = @ZOOKEEPER_VERSION@
 BuildRequires:	oniguruma-devel >= 5.9
-BuildRequires:	ux-devel
-BuildRequires:	mecab-devel >= 0.99
+BuildRequires:	ux-devel = @UX_VERSION@
+BuildRequires:	mecab-devel = @MECAB_VERSION@
 BuildRequires:	pkgconfig
 BuildRequires:	python >= 2.4
 
-Requires:		jubatus-core >= 0.0.1
-Requires:		jubatus-mpio >= 0.4.2
-Requires:		jubatus-msgpack-rpc >= 0.4.2
-Requires:		msgpack
-Requires:		apache-log4cxx >= 0.10.0
-Requires:		zookeeper-client
+Requires:		jubatus-core = @JUBATUS_CORE_VERSION@
+Requires:		jubatus-mpio = @JUBATUS_MPIO_VERSION@
+Requires:		jubatus-msgpack-rpc = @JUBATUS_MSGPACK_RPC_VERSION@
+Requires:		msgpack = @MSGPACK_VERSION@
+Requires:		log4cxx = @LOG4CXX_VERSION@
+Requires:		zookeeper-client = @ZOOKEEPER_VERSION@
 Requires:		oniguruma >= 5.9
-Requires:		ux
-Requires:		mecab >= 0.99
-Requires:		mecab-ipadic
+Requires:		ux = @UX_VERSION@
+Requires:		mecab = @MECAB_VERSION@
+Requires:		mecab-ipadic = @MECAB_IPADIC_VERSION@
 
 %package devel
 Summary:	Headers and libraries to develop engines and plugins for Jubatus Framework
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	jubatus-msgpack-rpc-devel
-Requires:	msgpack-devel
-Requires:	apache-log4cxx-devel >= 0.10.0
+Requires:	jubatus-msgpack-rpc-devel = @JUBATUS_MSGPACK_RPC_VERSION@
+Requires:	msgpack-devel = @MSGPACK_VERSION@
+Requires:	log4cxx-devel = @LOG4CXX_VERSION@
 Requires:	oniguruma-devel >= 5.9
 
 %package client
 Summary:	Jubatus C++ Client
 Group:		Development/Libraries
-Requires:	msgpack-devel
-Requires:	jubatus-msgpack-rpc-devel
+Requires:	msgpack-devel = @MSGPACK_VERSION@
+Requires:	jubatus-msgpack-rpc-devel = @JUBATUS_MSGPACK_RPC_VERSION@
 
 %description
 Jubatus is a distributed processing framework and streaming machine learning library.
@@ -73,6 +73,7 @@ This package provides Jubatus C++ client headers.
 %install
 %{__rm} -rf %{buildroot}
 %{__waf} install --destdir=%{buildroot}
+find %{buildroot}/%{_libdir} -name "lib*.so*" -exec chmod 755 {} \;
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -84,6 +85,8 @@ This package provides Jubatus C++ client headers.
 %{_libdir}/libjuba*.so.*
 %{_libdir}/jubatus/plugin
 %{_datarootdir}/jubatus
+%{_mandir}/man*/*
+%{_mandir}/*/man*/*
 
 %files devel
 %defattr(-,root,root,-)

@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-104-g3698e11/develop
+// This file is auto-generated from classifier.idl(0.7.2-49-g5a6436d) with jenerator version 0.6.4-146-g79178f8/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -24,7 +24,7 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_random<std::vector<std::string> >("get_labels");
     k.register_async_broadcast<bool, std::string>("set_label",
         jubatus::util::lang::function<bool(bool, bool)>(
-        &jubatus::server::framework::pass<bool>));
+        &jubatus::server::framework::all_and));
     k.register_async_broadcast<bool>("clear",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));

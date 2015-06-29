@@ -47,7 +47,9 @@ class broadcast_mixer : public push_mixer {
     std::vector<const std::pair<std::string, int>*> result;
     // returns all pointer
     for (size_t i = 0; i < candidate.size(); ++i) {
-      result.push_back(&candidate[i]);
+      if (candidate[i] != my_id_) {
+        result.push_back(&candidate[i]);
+      }
     }
     return result;
   }

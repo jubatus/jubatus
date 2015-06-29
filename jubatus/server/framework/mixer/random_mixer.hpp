@@ -44,9 +44,18 @@ class random_mixer : public push_mixer {
 
   std::vector<const std::pair<std::string, int>*> filter_candidates(
       const std::vector<std::pair<std::string, int> >& candidate) {
-    std::vector<const std::pair<std::string, int>*> result;
-    result.push_back(&candidate[rand_(candidate.size())]);
-    return result;
+    if (candidate.empty() ||
+        (candidate.size() == 1 && candidate[0] == my_id_)) {
+      return std::vector<const std::pair<std::string, int>*>();
+    }
+
+    for (;;) {
+      std::vector<const std::pair<std::string, int>*> result;
+      result.push_back(&candidate[rand_(candidate.size())]);
+      if (*result.back() != my_id_) {
+        return result;
+      }
+    }
   }
 
   std::string type() const {
