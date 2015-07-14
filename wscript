@@ -48,8 +48,8 @@ def options(opt):
 
   # use (base + 10) ports for RPC module tests
   opt.add_option('--rpc-test-port-base',
-                 default=61023, choices=map(str, xrange(1024, 65535 - 10)),
-                 help='base port number for RPC module tests')
+                 default=61023, type=int,
+                 help='base port number for RPC module tests: [1024,' + str(65535-10) + ']')
 
   opt.add_option('--fsanitize',
                  action='store', default="",
@@ -133,6 +133,8 @@ def configure(conf):
     conf.env.append_value('LINKFLAGS', '-lgcov')
 
   if Options.options.rpc_test_port_base:
+    if Options.options.rpc_test_port_base < 1024 or (65535-10) < Options.options.rpc_test_port_base:
+      conf.fatal("rpc_test_port_base out of range")
     conf.define('JUBATUS_RPC_TEST_PORT_BASE', int(Options.options.rpc_test_port_base))
 
   conf.define('BUILD_DIR',  conf.bldnode.abspath())
