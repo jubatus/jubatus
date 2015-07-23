@@ -349,6 +349,10 @@ void linear_mixer::get_status(server_base::status_t& status) const {
   // since last mix
   status["linear_mixer.ticktime"] =
       jubatus::util::lang::lexical_cast<string>(ticktime_.sec);
+  status["linear_mixer.is_obsolete"] =
+      jubatus::util::lang::lexical_cast<string>(is_obsolete_);
+  status["linear_mixer.is_running"] =
+      jubatus::util::lang::lexical_cast<string>(is_running_);
 }
 
 void linear_mixer::stabilizer_loop() {
