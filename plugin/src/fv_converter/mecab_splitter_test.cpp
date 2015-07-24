@@ -102,10 +102,13 @@ void run(mecab_splitter* m) {
 TEST(mecab_spltter, multi_thread) {
   // run mecab_splitter in two threads
   mecab_splitter m;
-  std::vector<jubatus::util::lang::shared_ptr<jubatus::util::concurrent::thread> > ts;
+  std::vector<
+      jubatus::util::lang::shared_ptr<jubatus::util::concurrent::thread> > ts;
   for (int i = 0; i < 100; ++i) {
-    ts.push_back(jubatus::util::lang::shared_ptr<jubatus::util::concurrent::thread>(
-        new jubatus::util::concurrent::thread(jubatus::util::lang::bind(&run , &m))));
+    ts.push_back(
+        jubatus::util::lang::shared_ptr<jubatus::util::concurrent::thread>(
+            new jubatus::util::concurrent::thread(
+                jubatus::util::lang::bind(&run , &m))));
     ts[i]->start();
   }
   for (int i = 0; i < 100; ++i) {
