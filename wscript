@@ -4,7 +4,7 @@ from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '0.8.0'
+VERSION = '0.8.1'
 ABI_VERSION = VERSION
 APPNAME = 'jubatus'
 
@@ -48,8 +48,8 @@ def options(opt):
 
   # use (base + 10) ports for RPC module tests
   opt.add_option('--rpc-test-port-base',
-                 default=61023, choices=map(str, xrange(1024, 65535 - 10)),
-                 help='base port number for RPC module tests')
+                 default=61023, type=int,
+                 help='base port number for RPC module tests: [1024,' + str(65535-10) + ']')
 
   opt.add_option('--fsanitize',
                  action='store', default="",
@@ -133,6 +133,8 @@ def configure(conf):
     conf.env.append_value('LINKFLAGS', '-lgcov')
 
   if Options.options.rpc_test_port_base:
+    if Options.options.rpc_test_port_base < 1024 or (65535-10) < Options.options.rpc_test_port_base:
+      conf.fatal("rpc_test_port_base out of range")
     conf.define('JUBATUS_RPC_TEST_PORT_BASE', int(Options.options.rpc_test_port_base))
 
   conf.define('BUILD_DIR',  conf.bldnode.abspath())
@@ -170,36 +172,8 @@ def build(bld):
   bld.install_files('${PREFIX}/share/jubatus/example/log', 'log4cxx.xml')
 
 def cpplint(ctx):
-  import fnmatch, tempfile
-  cpplint = ctx.path.find_node('tools/codestyle/cpplint/cpplint.py')
-  src_dir = ctx.path.find_node('jubatus')
-  file_list = []
-  excludes = ['jubatus/server/third_party/*',
-              'jubatus/server/server/*_impl.cpp',
-              'jubatus/server/server/*_proxy.cpp',
-              'jubatus/server/server/*_client.hpp',
-              'jubatus/server/server/*_types.hpp',
-              'jubatus/client/*_client.hpp',
-              'jubatus/client/*_types.hpp',
-              'jubatus/core/third_party/*',
-              'jubatus/util/*.h',
-              'jubatus/util/*.cpp',
-              'jubatus/util/*/*.h',
-              'jubatus/util/*/*.cpp',
-              'jubatus/util/*/*/*.h',
-              'jubatus/util/*/*/*.cpp']
-  for file in src_dir.ant_glob('**/*.cpp **/*.cc **/*.hpp **/*.h'):
-    file_list += [file.path_from(ctx.path)]
-  for exclude in excludes:
-    file_list = [f for f in file_list if not fnmatch.fnmatch(f, exclude)]
-  tmp_file = tempfile.NamedTemporaryFile(delete=True);
-  tmp_file.write("\n".join(file_list));
-  tmp_file.flush()
   sys.stderr.write('Running cpplint...\n')
-  ctx.exec_command('cat ' + tmp_file.name +
-                   ' | xargs "' + cpplint.abspath() + '" --filter=-runtime/references,-runtime/rtti 2>&1' +
-                   ' | grep -v "^Done processing "')
-  tmp_file.close()
+  ctx.cmd_and_log(['tools/codestyle/run_cpplint.sh'] + subdirs)
 
 def regenerate(ctx):
   server_node = ctx.path.find_node('jubatus/server/server')

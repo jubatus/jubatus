@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 
+#include "jubatus/util/concurrent/lock.h"
 #include "jubatus/util/text/json.h"
 #include "jubatus/util/data/optional.h"
 #include "jubatus/util/lang/shared_ptr.h"
@@ -125,6 +126,11 @@ uint64_t classifier_serv::user_data_version() const {
 int classifier_serv::train(const vector<labeled_datum>& data) {
   check_set_config();
 
+  {
+    jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
+    event_model_updated();
+  }
+
   int count = 0;
 
   for (size_t i = 0; i < data.size(); ++i) {
@@ -167,6 +173,11 @@ vector<vector<estimate_result> > classifier_serv::classify(
 bool classifier_serv::clear() {
   check_set_config();
 
+  {
+    jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
+    event_model_updated();
+  }
+
   classifier_->clear();
   LOG(INFO) << "model cleared: " << argv().name;
   return true;
@@ -185,11 +196,23 @@ vector<string> classifier_serv::get_labels() const {
 
 bool classifier_serv::set_label(const std::string& label) {
   check_set_config();
+
+  {
+    jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
+    event_model_updated();
+  }
+
   return classifier_->set_label(label);
 }
 
 bool classifier_serv::delete_label(const std::string& label) {
   check_set_config();
+
+  {
+    jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
+    event_model_updated();
+  }
+
   return classifier_->delete_label(label);
 }
 

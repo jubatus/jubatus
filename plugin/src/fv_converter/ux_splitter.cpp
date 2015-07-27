@@ -109,5 +109,4 @@ jubatus::plugin::fv_converter::ux_splitter* create(
 std::string version() {
   return JUBATUS_VERSION;
 }
-
-}
+}  // extern "C"

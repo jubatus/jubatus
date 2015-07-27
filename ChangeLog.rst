@@ -1,3 +1,15 @@
+Release 0.8.1 - 2015/07/27
+--------------------------
+
+* Improvements
+    * Expose status information of linear_mixer (#1030)
+    * Support building with Python 3.x (#841, #1025)
+    * Add example config file for recommender inverted_index with unlearner (#1031)
+    * Code cleanup (#1032)
+
+* Bug fixes
+    * classifier: fix MIX not triggered by update count (#1023, #1024)
+
 Release 0.8.0 - 2015/06/29
 --------------------------
 

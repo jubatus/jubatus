@@ -56,7 +56,8 @@ void mecab_splitter::split(
     // cannot create tagger
     return;
   }
-  jubatus::util::lang::scoped_ptr<MeCab::Lattice> lattice(model_->createLattice());
+  jubatus::util::lang::scoped_ptr<MeCab::Lattice> lattice(
+      model_->createLattice());
   if (!lattice) {
     // cannot create lattice
     return;
@@ -99,5 +100,4 @@ jubatus::plugin::fv_converter::mecab_splitter* create(
 std::string version() {
   return JUBATUS_VERSION;
 }
-
-}
+}  // extern "C"
