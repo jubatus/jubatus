@@ -77,6 +77,7 @@ class ClientStandaloneTest(JubaTestCase, ClientGoogleTestBase):
     def tearDown(self):
         self.server1.stop()
 
+"""
 class ClientDistributedTest(JubaTestCase, ClientGoogleTestBase):
     def lazySetUp(self, service):
         self.node0 = self.env.get_node(0)
@@ -94,3 +95,4 @@ class ClientDistributedTest(JubaTestCase, ClientGoogleTestBase):
     def tearDown(self):
         for server in [self.keeper1, self.server1, self.server2]:
             server.stop()
+"""
