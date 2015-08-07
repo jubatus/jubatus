@@ -24,6 +24,17 @@ using jubatus::client::common::datum;
 using jubatus::clustering::client::clustering;
 using jubatus::clustering::weighted_datum;
 
+void push_random_data(clustering& cli) {
+  for (int i = 0; i < 1000; ++i) {
+    datum d;
+    d.add_number("neky1", i);
+    d.add_number("neky2", -i);
+    vector<datum> v;
+    v.push_back(d);
+    cli.push(v);
+  }
+}
+
 TEST(clustering_test, get_config) {
   clustering cli(host(), port(), cluster_name(), timeout());
   ASSERT_NE("", cli.get_config());
@@ -63,27 +74,32 @@ TEST(clustering_test, push) {
 
 TEST(clustering_test, get_revision) {
   clustering cli(host(), port(), cluster_name(), timeout());
+  push_random_data(cli);
   cli.get_revision();
 }
 
 TEST(clustering_test, get_core_members) {
   clustering cli(host(), port(), cluster_name(), timeout());
+  push_random_data(cli);
   vector<vector<weighted_datum> > result = cli.get_core_members();
 }
 
 TEST(clustering_test, get_k_center) {
   clustering cli(host(), port(), cluster_name(), timeout());
+  push_random_data(cli);
   vector<datum> result = cli.get_k_center();
 }
 
 TEST(clustering_test, get_nearest_center) {
   clustering cli(host(), port(), cluster_name(), timeout());
+  push_random_data(cli);
   datum d;
   cli.get_nearest_center(d);
 }
 
 TEST(clustering_test, get_nearest_members) {
   clustering cli(host(), port(), cluster_name(), timeout());
+  push_random_data(cli);
   datum d;
   vector<weighted_datum> result = cli.get_nearest_members(d);
 }
