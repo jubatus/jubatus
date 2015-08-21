@@ -46,8 +46,9 @@ download_url() {
 	@require_commands wget
 
 	URL="${1}"
-	if [ ! -s "$(basename "${URL}")" ]; then
-		wget "${URL}"
+	OUT_FILE="${2:-$(basename "${URL}")}"
+	if [ ! -s "${OUT_FILE}" ]; then
+		wget -O "${OUT_FILE}" "${URL}"
 	fi
 }
 
@@ -72,7 +73,7 @@ do_download() {
 	download_url http://www.geocities.jp/kosako3/oniguruma/archive/onig-${ONIG_VER}.tar.gz
 
 	# UX
-	download_url http://ux-trie.googlecode.com/files/ux-${UX_VER}.tar.bz2
+	download_url https://github.com/hillbig/ux-trie/archive/${UX_VER}.tar.gz "ux-trie-${UX_VER}.tar.gz"
 
 	# MeCab
 	download_url http://mecab.googlecode.com/files/mecab-${MECAB_VER}.tar.gz
@@ -198,8 +199,8 @@ do_build() {
 	popd
 
 	# UX
-	tar jxf ${SOURCE_DIR}/ux-${UX_VER}.tar.bz2
-	pushd ux-${UX_VER}
+	tar xf ${SOURCE_DIR}/ux-trie-${UX_VER}.tar.gz
+	pushd ux-trie-${UX_VER}
 	./waf configure --prefix=${PREFIX}
 	./waf build
 	./waf install --destdir=${DEST_DIR}
