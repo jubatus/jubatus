@@ -431,6 +431,8 @@ let gen_aggregator names ret_type aggregator =
     gen_template names true "jubatus::server::framework::concat" [t]
   | Map (k, v), Merge ->
     gen_template names true "jubatus::server::framework::merge" [k; v]
+  | Int _, Add | Float _, Add ->
+    gen_template names true "jubatus::server::framework::add" [ret_type]
   | _, Pass ->
     gen_template names true "jubatus::server::framework::pass" [ret_type]
   | _, _ ->

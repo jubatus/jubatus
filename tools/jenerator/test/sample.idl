@@ -10,4 +10,10 @@ service sample {
 
   #@random #@analysis #@merge
   list<string> random_analysis_merge(0: string name)
+
+  #@broadcast #@analysis #@add
+  float broadcast_analysis_add(0: string name)
+
+  #@cht #@analysis #@add
+  int cht_analysis_add(0: string name)
 }
