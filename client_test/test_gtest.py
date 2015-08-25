@@ -58,7 +58,10 @@ class ClientGoogleTestBase():
         args = [ test_program, '--gtest_filter=%s' % test ]
         env = { 'JUBATUS_HOST': self.client_node.get_host(),
                 'JUBATUS_PORT': str(self.target.get_host_port()[1]),
-                'JUBATUS_CLUSTER_NAME': self.name }
+                'JUBATUS_CLUSTER_NAME': self.name,
+                'JUBATUS_TIMEOUT': str(5),
+                'JUBATUS_SERVERS_COUNT': str(self.servers_count()),
+              }
         env.update(os.environ)
         proc = LocalSubprocess(args, env)
         proc.start()
@@ -67,6 +70,9 @@ class ClientGoogleTestBase():
         self.assertEqual(0, returncode, proc.stdout)
 
 class ClientStandaloneTest(JubaTestCase, ClientGoogleTestBase):
+    def servers_count(self):
+        return 1
+
     def lazySetUp(self, service):
         self.server1 = self.env.server_standalone(self.env.get_node(0), service, default_config(service))
         self.target = self.server1
@@ -77,7 +83,11 @@ class ClientStandaloneTest(JubaTestCase, ClientGoogleTestBase):
     def tearDown(self):
         self.server1.stop()
 
+"""
 class ClientDistributedTest(JubaTestCase, ClientGoogleTestBase):
+    def servers_count(self):
+        return 2
+
     def lazySetUp(self, service):
         self.node0 = self.env.get_node(0)
         self.cluster = self.env.cluster(service, default_config(service))
@@ -94,3 +104,4 @@ class ClientDistributedTest(JubaTestCase, ClientGoogleTestBase):
     def tearDown(self):
         for server in [self.keeper1, self.server1, self.server2]:
             server.stop()
+"""

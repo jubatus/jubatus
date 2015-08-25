@@ -20,31 +20,42 @@
 #include <stdexcept>
 
 namespace {
+
+std::string get_or_die(const char* key) {
+  const char* str = std::getenv(key);
+  if (!str) {
+    throw std::runtime_error(std::string(key) + " is unset");
+  }
+  return str;
+}
+
 std::string host() {
-  return std::getenv("JUBATUS_HOST");
+  return get_or_die("JUBATUS_HOST");
 }
 
 unsigned int port() {
-  char* str = std::getenv("JUBATUS_PORT");
-  if (!str) {
-    throw std::runtime_error("JUBATUS_PORT is unset");
-  }
-  return std::strtoul(str, NULL, 0);
+  const char* v = get_or_die("JUBATUS_PORT").c_str();
+  return std::strtoul(v, NULL, 0);
 }
 
 std::string cluster_name() {
-  return std::getenv("JUBATUS_CLUSTER_NAME");
+  return get_or_die("JUBATUS_CLUSTER_NAME");
 }
 
 unsigned int timeout() {
-  char* str = std::getenv("TIMEOUT");
-  if (!str) {
-    return 5;
-  }
-  return std::strtoul(str, NULL, 0);
+  return std::strtoul(get_or_die("JUBATUS_TIMEOUT").c_str(), NULL, 0);
+}
+
+unsigned int servers_count() {
+  return std::strtoul(get_or_die("JUBATUS_SERVERS_COUNT").c_str(), NULL, 0);
+}
+
+bool is_standalone() {
+  return cluster_name().length() == 0;
 }
 
 bool has_key(std::map<std::string, std::string>& map, const std::string key) {
   return map.count(key);
 }
-}
+
+}  // namespace
