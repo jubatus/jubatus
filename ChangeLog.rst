@@ -1,3 +1,17 @@
+Release 0.8.2 - 2015/08/31
+--------------------------
+
+* Improvements
+    * Add Dockerfile (#904)
+    * Support add aggregator in jenerator (#1022, #1040)
+    * Migrate ux-trie packaging from Google Code to GitHub (#1037)
+
+* Bug fixes
+    * Fix proxies incorrectly create negative cache (#1035, #1036)
+    * Fix save RPC creating empty file when empty ID is given (#1038, #1039)
+    * clustering: fix ID conflict in distributed mode (#1041)
+    * Fix C++ client test conditions (#1019, #1034)
+
 Release 0.8.1 - 2015/07/27
 --------------------------
 
