@@ -85,8 +85,7 @@ void clustering_serv::set_config(const std::string& config) {
     param = *conf.parameter;
   }
 
-  const std::string name =
-      argv().eth + lexical_cast<std::string>(argv().port);
+  const std::string name = get_server_identifier(argv());
   core::clustering::clustering_config cluster_conf =
       core::common::jsonconfig::config_cast_check<
           core::clustering::clustering_config>(param);

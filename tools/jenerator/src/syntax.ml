@@ -42,7 +42,7 @@ type routing_type = | Random | Cht of int | Broadcast | Internal [@@deriving sho
 
 type reqtype = | Update | Analysis | Nolock [@@deriving show];;
 
-type aggtype = | All_and | All_or | Concat | Merge | Ignore | Pass [@@deriving show];;
+type aggtype = | All_and | All_or | Concat | Merge | Add | Ignore | Pass [@@deriving show];;
 
 type decorator_type =
   | Routing of routing_type
@@ -122,6 +122,7 @@ let make_decorator = function
   | "#@all_or"    -> Aggtype(All_or)
   | "#@concat"    -> Aggtype(Concat)
   | "#@merge"     -> Aggtype(Merge)
+  | "#@add"       -> Aggtype(Add)
   | "#@ignore"    -> Aggtype(Ignore)
   | "#@pass"      -> Aggtype(Pass)
   | other ->
@@ -147,6 +148,7 @@ let aggtype_to_string = function
   | All_or  -> "all_or"
   | Concat  -> "concat"
   | Merge   -> "merge"
+  | Add     -> "add"
   | Ignore  -> "ignore" (* or raise sth? *)
   | Pass    -> "pass"
 ;;

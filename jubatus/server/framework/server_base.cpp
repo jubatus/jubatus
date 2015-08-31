@@ -50,6 +50,11 @@ std::string build_local_path(
 
 void load_file_impl(server_base& server,
     const std::string& path, const std::string& id) {
+  if (id == "") {
+    throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("empty id is not allowed"));
+  }
+
   LOG(INFO) << "starting load from " << path;
 
   std::ifstream ifs(path.c_str(), std::ios::binary);
@@ -126,6 +131,11 @@ bool server_base::clear() {
 }
 
 std::map<std::string, std::string> server_base::save(const std::string& id) {
+  if (id == "") {
+    throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("empty id is not allowed"));
+  }
+
   const std::string path = build_local_path(argv_, argv_.type, id);
   LOG(INFO) << "starting save to " << path;
 

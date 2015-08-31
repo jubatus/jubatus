@@ -100,11 +100,6 @@ bool fwrite_helper(const char* buffer, size_t size, FILE* fp) {
 
 void save_server(FILE* fp,
     const server_base& server, const std::string& id) {
-  if (id == "") {
-    throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("empty id is not allowed"));
-  }
-
   init_versions();
 
   msgpack::sbuffer system_data_buf;
