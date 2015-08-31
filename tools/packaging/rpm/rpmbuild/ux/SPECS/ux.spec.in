@@ -25,7 +25,7 @@ UX is a library for managing string collections, and support several string oper
 This package provides headers and libraries needed to develop applications using UX.
 
 %prep
-%setup -q
+%setup -q -n ux-trie-%{version}
 %patch0 -p0
 
 %build
