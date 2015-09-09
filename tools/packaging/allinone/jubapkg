@@ -70,7 +70,7 @@ do_download() {
 	download_url http://github.com/msgpack/msgpack-c/archive/cpp-${MSGPACK_VER}.tar.gz
 
 	# Oniguruma
-	download_url http://www.geocities.jp/kosako3/oniguruma/archive/onig-${ONIG_VER}.tar.gz
+	download_url https://github.com/kkos/oniguruma/releases/download/v${ONIG_VER}/onig-${ONIG_VER}.tar.gz
 
 	# UX
 	download_url https://github.com/hillbig/ux-trie/archive/${UX_VER}.tar.gz "ux-trie-${UX_VER}.tar.gz"
