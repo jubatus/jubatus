@@ -1,4 +1,4 @@
-// This file is auto-generated from nearest_neighbor.idl(0.6.4-33-gf65b203) with jenerator version 0.6.4-146-g79178f8/develop
+// This file is auto-generated from nearest_neighbor.idl(0.8.2-13-gf1bcd08) with jenerator version 0.8.1-11-g6aaff17/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -37,11 +37,11 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
         &nearest_neighbor_impl::neighbor_row_from_datum, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
-        std::string, int32_t)>("similar_row_from_id", jubatus::util::lang::bind(
-        &nearest_neighbor_impl::similar_row_from_id, this,
-        jubatus::util::lang::_2, jubatus::util::lang::_3));
+        std::string, uint32_t)>("similar_row_from_id",
+        jubatus::util::lang::bind(&nearest_neighbor_impl::similar_row_from_id,
+        this, jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
-        jubatus::core::fv_converter::datum, int32_t)>("similar_row_from_datum",
+        jubatus::core::fv_converter::datum, uint32_t)>("similar_row_from_datum",
         jubatus::util::lang::bind(
         &nearest_neighbor_impl::similar_row_from_datum, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
@@ -85,13 +85,13 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
   }
 
   std::vector<std::pair<std::string, float> > similar_row_from_id(
-      const std::string& id, int32_t ret_num) {
+      const std::string& id, uint32_t ret_num) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_id(id, ret_num);
   }
 
   std::vector<std::pair<std::string, float> > similar_row_from_datum(
-      const jubatus::core::fv_converter::datum& query, int32_t ret_num) {
+      const jubatus::core::fv_converter::datum& query, uint32_t ret_num) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_datum(query, ret_num);
   }

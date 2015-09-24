@@ -1,4 +1,4 @@
-// This file is auto-generated from nearest_neighbor.idl(0.6.4-33-gf65b203) with jenerator version 0.6.4-146-g79178f8/develop
+// This file is auto-generated from nearest_neighbor.idl(0.8.2-13-gf1bcd08) with jenerator version 0.8.1-11-g6aaff17/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -30,9 +30,9 @@ int run_proxy(int argc, char* argv[]) {
         jubatus::core::fv_converter::datum, uint32_t>(
         "neighbor_row_from_datum");
     k.register_async_random<std::vector<std::pair<std::string, float> >,
-        std::string, int32_t>("similar_row_from_id");
+        std::string, uint32_t>("similar_row_from_id");
     k.register_async_random<std::vector<std::pair<std::string, float> >,
-        jubatus::core::fv_converter::datum, int32_t>("similar_row_from_datum");
+        jubatus::core::fv_converter::datum, uint32_t>("similar_row_from_datum");
     k.register_async_random<std::vector<std::string> >("get_all_rows");
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
