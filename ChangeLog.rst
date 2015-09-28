@@ -1,3 +1,13 @@
+Release 0.8.3 - 2015/09/28
+--------------------------
+
+* Improvements
+    * clustering: add seed option to example configuration files (#1047)
+    * Fix packaging tools to use new oniguruma URL (#1045, #1046)
+
+* Bug fixes
+    * nearest_neighbor: fix argument type (#1042, #1049, #1050)
+
 Release 0.8.2 - 2015/08/31
 --------------------------
 
