@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.7.2-49-g5a6436d) with jenerator version 0.6.4-146-g79178f8/develop
+// This file is auto-generated from classifier.idl(0.7.2-49-g5a6436d) with jenerator version 0.8.1-11-g6aaff17/develop
 // *** DO NOT EDIT ***
 
 #include <map>
