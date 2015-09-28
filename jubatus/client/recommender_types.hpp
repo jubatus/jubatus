@@ -1,4 +1,4 @@
-// This file is auto-generated from recommender.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
+// This file is auto-generated from recommender.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.8.1-11-g6aaff17/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_RECOMMENDER_TYPES_HPP_
