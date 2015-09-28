@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl(0.6.4-60-gdff9eb0) with jenerator version 0.6.4-104-g3698e11/gintenlabo-fix-956
+// This file is auto-generated from anomaly.idl(0.7.2-50-gbcc1e21) with jenerator version 0.8.1-11-g6aaff17/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_ANOMALY_TYPES_HPP_
