@@ -48,13 +48,12 @@ std::string build_local_path(
   return path.str();
 }
 
+/**
+ * Load a model file.
+ * `id` is an empty string for standalone mode.
+ */
 void load_file_impl(server_base& server,
     const std::string& path, const std::string& id) {
-  if (id == "") {
-    throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("empty id is not allowed"));
-  }
-
   LOG(INFO) << "starting load from " << path;
 
   std::ifstream ifs(path.c_str(), std::ios::binary);
@@ -188,6 +187,11 @@ std::map<std::string, std::string> server_base::save(const std::string& id) {
 }
 
 bool server_base::load(const std::string& id) {
+  if (id == "") {
+    throw JUBATUS_EXCEPTION(
+        core::common::exception::runtime_error("empty id is not allowed"));
+  }
+
   load_file_impl(*this, build_local_path(argv_, argv_.type, id), id);
   return true;
 }
