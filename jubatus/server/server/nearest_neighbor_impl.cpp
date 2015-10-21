@@ -1,4 +1,4 @@
-// This file is auto-generated from nearest_neighbor.idl(0.8.2-13-gf1bcd08) with jenerator version 0.8.1-11-g6aaff17/develop
+// This file is auto-generated from nearest_neighbor.idl(0.8.2-20-g8e4dc3b) with jenerator version 0.8.1-11-g6aaff17/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -74,30 +74,30 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
 
   std::vector<std::pair<std::string, float> > neighbor_row_from_id(
       const std::string& id, uint32_t size) {
-    JRLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->neighbor_row_from_id(id, size);
   }
 
   std::vector<std::pair<std::string, float> > neighbor_row_from_datum(
       const jubatus::core::fv_converter::datum& query, uint32_t size) {
-    JRLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->neighbor_row_from_datum(query, size);
   }
 
   std::vector<std::pair<std::string, float> > similar_row_from_id(
       const std::string& id, uint32_t ret_num) {
-    JRLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->similar_row_from_id(id, ret_num);
   }
 
   std::vector<std::pair<std::string, float> > similar_row_from_datum(
       const jubatus::core::fv_converter::datum& query, uint32_t ret_num) {
-    JRLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->similar_row_from_datum(query, ret_num);
   }
 
   std::vector<std::string> get_all_rows() {
-    JRLOCK_(p_);
+    NOLOCK_(p_);
     return get_p()->get_all_rows();
   }
 
