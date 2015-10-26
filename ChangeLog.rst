@@ -1,3 +1,12 @@
+Release 0.8.4 - 2015/10/26
+--------------------------
+
+* Improvements
+    * nearest_neighbor: improve analysis methods performance by eliminating giant lock (#1051)
+
+* Bug fixes
+    * Fix loading model files via command line option not working (#1055, #1057)
+
 Release 0.8.3 - 2015/09/28
 --------------------------
 
