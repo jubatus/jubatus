@@ -93,6 +93,8 @@ find %{buildroot}/%{_libdir} -name "lib*.so*" -exec chmod 755 {} \;
 %{_libdir}/libjuba*.so
 %{_libdir}/pkgconfig/jubatus.pc
 %{_includedir}/jubatus
+%exclude %{_includedir}/jubatus/client
+%exclude %{_includedir}/jubatus/client.hpp
 
 %files client
 %{_libdir}/pkgconfig/jubatus-client.pc
