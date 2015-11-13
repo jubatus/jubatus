@@ -29,16 +29,6 @@ def build_one(bld, name, libraries = '', sources = ''):
       )
 
 def build(bld):
-  build_one(bld, "classifier")
-  build_one(bld, "regression")
-  build_one(bld, "recommender")
-  build_one(bld, "anomaly")
-  build_one(bld, "stat")
-  build_one(bld, "graph")
-  build_one(bld, "nearest_neighbor")
-  build_one(bld, "clustering")
-  build_one(bld, "burst")
-  build_one(bld, "bandit")
-
-  bld.install_files('${PREFIX}/share/jubatus/idl/',
-                    map(lambda x: x + '.idl', bld.env['JUBATUS_ENGINES']))
+  for engine in bld.env['JUBATUS_ENGINES']:
+    build_one(bld, engine)
+    bld.install_files('${PREFIX}/share/jubatus/idl/', engine + '.idl')
