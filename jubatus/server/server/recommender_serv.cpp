@@ -214,7 +214,7 @@ std::vector<std::string> recommender_serv::get_all_rows() {
 float recommender_serv::calc_similarity(const datum& l, const datum& r) {
   check_set_config();
 
-  return recommender_->calc_similality(l, r);
+  return recommender_->calc_similarity(l, r);
 }
 
 float recommender_serv::calc_l2norm(const datum& q) {
