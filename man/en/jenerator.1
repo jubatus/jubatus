@@ -54,13 +54,14 @@ jenerator \-l <lang> [options ...] idl ...
 .INDENT 0.0
 .TP
 .B \-l <lang>
-Language of the client code to generate. Currently \fBcpp\fP, \fBjava\fP, \fBpython\fP, and \fBruby\fP are supported.
+Specify a language of the client code to generate.
+Currently \fBcpp\fP, \fBjava\fP, \fBpython\fP, \fBruby\fP and \fBgo\fP are supported.
 Specify \fBserver\fP if you need to generate servers and proxies.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-o <dirpath>
-Directory to output the generated source files.
+Specify a directory to output the generated source files.
 .sp
 If not specified, the current directory will be used.
 .UNINDENT
@@ -76,7 +77,9 @@ You don\(aqt need this option except you\(aqre going to build generated code ins
 .INDENT 0.0
 .TP
 .B \-n <namespace>
-Declare the specified namespace for generated source.
+Specify a namespace for generated source.
+.sp
+If not specified, the global namespace will be used.
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -88,9 +91,18 @@ Effective only when generating servers and proxies.
 .INDENT 0.0
 .TP
 .B \-g <guard>
-Prefix used for include guards in header files.
+Specify a prefix used for include guards in header files.
 .sp
 Effective only when generating C++ code (servers, proxies and C++ clients).
+If not specified, include guards will not be prefixed.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-idl\-version <version>
+Specify a version number of the IDL file.
+If specified, the version number will be embedded into the generated source code.
+.sp
+If not specified, version number will not be embedded.
 .UNINDENT
 .INDENT 0.0
 .TP
