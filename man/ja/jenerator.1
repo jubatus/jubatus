@@ -54,13 +54,14 @@ jenerator \-l <lang> [options ...] idl ...
 .INDENT 0.0
 .TP
 .B \-l <lang>
-生成するクライアントコードの言語。現在は \fBcpp\fP, \fBjava\fP, \fBpython\fP, \fBruby\fP がサポートされている。
+生成するクライアントコードの言語を指定する。
+現在は \fBcpp\fP, \fBjava\fP, \fBpython\fP, \fBruby\fP, \fBgo\fP がサポートされている。
 サーバ/Proxy を生成したい場合は \fBserver\fP を指定する。
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-o <dirpath>
-生成されたソースファイルを出力するディレクトリ。
+生成されたソースファイルを出力するディレクトリを指定する。
 .sp
 指定されない場合は、カレントディレクトリが使用される。
 .UNINDENT
@@ -76,7 +77,9 @@ C++ コード (サーバ/Proxy/C++ クライアント) を生成する場合の�
 .INDENT 0.0
 .TP
 .B \-n <namespace>
-生成されたソースで指定された名前空間を宣言する。
+生成されるソースの名前空間を指定する。
+.sp
+指定されない場合は、グローバル名前空間が使用される。
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -91,6 +94,15 @@ C++ コード (サーバ/Proxy/C++ クライアント) を生成する場合の�
 ヘッダファイルに使用するインクルードガードのプレフィックスを指定する。
 .sp
 C++ コード (サーバ/Proxy/C++ クライアント) を生成する場合のみ有効である。
+指定されない場合は、インクルードガードにプレフィックスは付与されない。
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-idl\-version <version>
+IDL ファイルのバージョンを指定する。
+指定されたバージョンは生成されたソースコードに埋め込まれる。
+.sp
+指定されない場合は、バージョン番号は埋め込まれない。
 .UNINDENT
 .INDENT 0.0
 .TP
