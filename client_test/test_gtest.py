@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os
 import re
-from cStringIO import StringIO
 import time
+
+try:
+    # for Python 3.x
+    from io import StringIO
+except ImportError:
+    # for Python 2.x
+    from cStringIO import StringIO
 
 from jubatest import *
 from jubatest.unit import JubaSkipTest
@@ -23,11 +31,11 @@ class ClientGoogleTestBase():
             raise JubaSkipTest('%s cannot list testcases' % test_program)
 
         # read input
-        stri = StringIO(proc.stdout)
+        stri = StringIO(proc.stdout.decode())
         testcases = []
         current_test = None
-        re_test = re.compile('^([a-zA-Z0-9_]+\.)')
-        re_testcase = re.compile('^  ([a-zA-Z0-9_]+)')
+        re_test = re.compile(r'^([a-zA-Z0-9_]+\.)')
+        re_testcase = re.compile(r'^  ([a-zA-Z0-9_]+)')
         while True:
             line = stri.readline()
             if line == '': break

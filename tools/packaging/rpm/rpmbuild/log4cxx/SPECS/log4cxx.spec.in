@@ -20,6 +20,8 @@ Obsoletes:	apache-log4cxx <= %{version}-%{release}
 Summary:	Headers and libraries for %{name}
 Requires:	%{name} = %{version}-%{release}
 
+Obsoletes:	apache-log4cxx-devel <= %{version}-%{release}
+
 %description
 Log4cxx is a popular logging package written in C++. One of its distinctive
 features is the notion of inheritance in loggers. Using a logger hierarchy it
