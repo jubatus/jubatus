@@ -1,3 +1,16 @@
+Release 0.8.5 - 2015/11/30
+--------------------------
+
+* Improvements
+    * improve client tests to work on Python 3 (#1043, #1063)
+    * improve build script (#1064)
+    * recommender: fix typo of calc_similarity function name (#1065)
+    * recommender: add example config for LSH with unlearner (#1066)
+    * update man pages (#1067)
+
+* Bug fixes
+    * Fix RPM package errors (#1059, #1060, #1061, #1062)
+
 Release 0.8.4 - 2015/10/26
 --------------------------
 
