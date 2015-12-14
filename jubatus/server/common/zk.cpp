@@ -205,7 +205,7 @@ bool zk::create_seq(const string& path, string& seqfile) {
                       path_buffer.size());
   if (rc != ZOK) {
     seqfile.clear();
-    LOG(ERROR) << "failed to create ZooKeeper sequencial node: "
+    LOG(ERROR) << "failed to create ZooKeeper sequential node: "
                << path << ": " << zerror(rc) << " (" << rc << ")";
     return false;
   } else {
