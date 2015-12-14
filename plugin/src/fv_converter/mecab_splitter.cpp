@@ -28,6 +28,7 @@ namespace plugin {
 namespace fv_converter {
 
 using core::fv_converter::converter_exception;
+using core::fv_converter::string_feature_element;
 
 static MeCab::Model* create_mecab_model(const char* arg) {
   MeCab::Model* t = MeCab::createModel(arg);
@@ -41,16 +42,22 @@ static MeCab::Model* create_mecab_model(const char* arg) {
 }
 
 mecab_splitter::mecab_splitter()
-    : model_(create_mecab_model("")) {
+    : model_(create_mecab_model("")),
+      ngram_(1) {
 }
 
-mecab_splitter::mecab_splitter(const char* arg)
-    : model_(create_mecab_model(arg)) {
+mecab_splitter::mecab_splitter(const char* arg, size_t ngram)
+    : model_(create_mecab_model(arg)),
+      ngram_(ngram) {
+  if (ngram == 0) {
+    throw JUBATUS_EXCEPTION(
+        converter_exception("ngram must be a positive number"));
+  }
 }
 
-void mecab_splitter::split(
+void mecab_splitter::extract(
     const std::string& string,
-    std::vector<std::pair<size_t, size_t> >& ret_boundaries) const {
+    std::vector<string_feature_element>& result) const {
   jubatus::util::lang::scoped_ptr<MeCab::Tagger> tagger(model_->createTagger());
   if (!tagger) {
     // cannot create tagger
@@ -82,7 +89,34 @@ void mecab_splitter::split(
     p += node->length;
   }
 
-  bounds.swap(ret_boundaries);
+  // Need at least N surfaces to extract N-gram.
+  if (bounds.size() < ngram_) {
+    return;
+  }
+
+  // Number of features: e.g., 2-gram for 4 surfaces (bounds) like "a,b,c,d"
+  // will produce 3 features ({"a,b", "b,c", "c,d"}.)
+  size_t num_features = bounds.size() - ngram_ + 1;
+
+  std::vector<string_feature_element> feature_elems;
+  feature_elems.reserve(num_features);
+  for (size_t i = 0; i < num_features; ++i) {
+    size_t begin = bounds[i].first;
+    size_t length = bounds[i].second;
+    std::string feature = std::string(string, begin, length);
+
+    for (size_t j = 1; j < ngram_; ++j) {
+      size_t begin_j = bounds[i+j].first;
+      size_t length_j = bounds[i+j].second;
+      length += length_j;
+      feature += "," + std::string(string, begin_j, length_j);
+    }
+
+    feature_elems.push_back(
+        string_feature_element(begin, length, feature, 1.0));
+  }
+
+  feature_elems.swap(result);
 }
 
 }  // namespace fv_converter
@@ -94,7 +128,10 @@ jubatus::plugin::fv_converter::mecab_splitter* create(
     const std::map<std::string, std::string>& params) {
   std::string param =
       jubatus::core::fv_converter::get_with_default(params, "arg", "");
-  return new jubatus::plugin::fv_converter::mecab_splitter(param.c_str());
+  size_t ngram = jubatus::util::lang::lexical_cast<size_t>(
+      jubatus::core::fv_converter::get_with_default(params, "ngram", "1"));
+  return new jubatus::plugin::fv_converter::mecab_splitter(
+      param.c_str(), ngram);
 }
 
 std::string version() {
