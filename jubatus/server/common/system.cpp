@@ -65,7 +65,7 @@ std::string get_program_name() {
   if (ret != -1) {
     if (ret == PATH_MAX) {
       throw JUBATUS_EXCEPTION(jubatus::core::common::exception::runtime_error(
-            "Failed to get program name. Path size overed PATH_MAX.")
+            "Failed to get program name. Path size exceeded PATH_MAX.")
           << jubatus::core::common::exception::error_errno(errno));
     }
     path[ret] = '\0';

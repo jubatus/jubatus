@@ -126,7 +126,7 @@ void handle_signals() {
           throw JUBATUS_EXCEPTION(
             core::common::exception::runtime_error(
                 "unknown signal (" + lexical_cast<std::string>(signo) +
-                ") caught by sigwait (possibily logic error)"));
+                ") caught by sigwait (possibly logic error)"));
       }
     }
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
