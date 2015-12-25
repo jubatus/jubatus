@@ -96,7 +96,7 @@ and gen_type names server = function
     | false, 2 -> "uint16_t"
     | false, 4 -> "uint32_t"
     | false, 8 -> "uint64_t"
-    | _ -> raise (Unknown_type (Printf.sprintf "unknonw int type: %b, %d" signed bytes))
+    | _ -> raise (Unknown_type (Printf.sprintf "unknown int type: %b, %d" signed bytes))
   end
   | Float false -> "float"
   | Float true -> "double"

@@ -24,22 +24,26 @@
 #include <mecab.h>
 #include "jubatus/util/lang/scoped_ptr.h"
 
-#include "jubatus/core/fv_converter/word_splitter.hpp"
+#include "jubatus/core/fv_converter/string_feature.hpp"
 
 namespace jubatus {
 namespace plugin {
 namespace fv_converter {
 
-class mecab_splitter : public jubatus::core::fv_converter::word_splitter {
+using core::fv_converter::string_feature_element;
+
+class mecab_splitter : public jubatus::core::fv_converter::string_feature {
  public:
   mecab_splitter();
-  explicit mecab_splitter(const char* arg);
+  explicit mecab_splitter(const char* arg, size_t ngram);
 
-  void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
+  void extract(
+      const std::string& string,
+      std::vector<string_feature_element>& result) const;
 
  private:
   jubatus::util::lang::scoped_ptr<MeCab::Model> model_;
+  size_t ngram_;
 };
 
 }  // namespace fv_converter

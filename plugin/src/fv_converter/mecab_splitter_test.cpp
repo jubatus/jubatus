@@ -29,73 +29,118 @@ namespace jubatus {
 namespace plugin {
 namespace fv_converter {
 
-using core::fv_converter::word_splitter;
+using core::fv_converter::string_feature;
+using core::fv_converter::string_feature_element;
 using core::fv_converter::converter_exception;
+
+void assert_elements_eq(std::vector<string_feature_element> expected,
+                        std::vector<string_feature_element> actual) {
+  ASSERT_EQ(expected.size(), actual.size());
+  for (size_t i = 0; i < expected.size(); ++i) {
+    ASSERT_EQ(expected[i].begin, actual[i].begin);
+    ASSERT_EQ(expected[i].length, actual[i].length);
+    ASSERT_EQ(expected[i].value, actual[i].value);
+    ASSERT_EQ(expected[i].score, actual[i].score);
+  }
+}
 
 TEST(mecab_splitter, trivial) {
   mecab_splitter m;
-  std::vector<std::pair<size_t, size_t> > bs;
-  m.split("本日は晴天なり", bs);
-  std::vector<std::pair<size_t, size_t> > exp;
+  std::vector<string_feature_element> elems;
+  m.extract("本日は晴天なり", elems);
+  std::vector<string_feature_element> exp;
 
-  exp.push_back(std::make_pair(0, 6));
-  exp.push_back(std::make_pair(6, 3));
-  exp.push_back(std::make_pair(9, 6));
-  exp.push_back(std::make_pair(15, 6));
+  exp.push_back(string_feature_element(0, 6, "本日", 1.0));
+  exp.push_back(string_feature_element(6, 3, "は", 1.0));
+  exp.push_back(string_feature_element(9, 6, "晴天", 1.0));
+  exp.push_back(string_feature_element(15, 6, "なり", 1.0));
 
-  ASSERT_EQ(exp, bs);
+  assert_elements_eq(exp, elems);
+}
+
+TEST(mecab_splitter, bigram) {
+  mecab_splitter m("", 2);
+  std::vector<string_feature_element> elems;
+  m.extract("本日は晴天なり", elems);
+  std::vector<string_feature_element> exp;
+
+  exp.push_back(string_feature_element(0, 9, "本日,は", 1.0));
+  exp.push_back(string_feature_element(6, 9, "は,晴天", 1.0));
+  exp.push_back(string_feature_element(9, 12, "晴天,なり", 1.0));
+
+  assert_elements_eq(exp, elems);
+}
+
+TEST(mecab_splitter, bigram_with_single_surface) {
+  mecab_splitter m("", 2);
+  std::vector<string_feature_element> elems;
+  m.extract("本日", elems);
+
+  ASSERT_EQ(0u, elems.size());
 }
 
 TEST(mecab_splitter, illegal_argument) {
-  EXPECT_THROW(mecab_splitter("-r unknown_file"), converter_exception);
+  // Invalid MeCab argument
+  EXPECT_THROW(mecab_splitter("-r unknown_file", 1), converter_exception);
+
+  // Invalid N-gram
+  EXPECT_THROW(mecab_splitter("", 0), converter_exception);
 }
 
 TEST(mecab_splitter_create, trivial) {
   std::map<std::string, std::string> param;
-  jubatus::util::lang::scoped_ptr<word_splitter> s(create(param));
+  jubatus::util::lang::scoped_ptr<string_feature> s(create(param));
   std::string d("東京へ行く");
-  std::vector<std::pair<size_t, size_t> > bs;
-  s->split(d, bs);
-  ASSERT_EQ(3u, bs.size());
-  ASSERT_EQ(0u, bs[0].first);
-  ASSERT_EQ(6u, bs[0].second);
-  ASSERT_EQ(6u, bs[1].first);
-  ASSERT_EQ(3u, bs[1].second);
-  ASSERT_EQ(9u, bs[2].first);
-  ASSERT_EQ(6u, bs[2].second);
+  std::vector<string_feature_element> elems;
+  s->extract(d, elems);
+  ASSERT_EQ(3u, elems.size());
+  ASSERT_EQ(0u, elems[0].begin);
+  ASSERT_EQ(6u, elems[0].length);
+  ASSERT_EQ(6u, elems[1].begin);
+  ASSERT_EQ(3u, elems[1].length);
+  ASSERT_EQ(9u, elems[2].begin);
+  ASSERT_EQ(6u, elems[2].length);
 }
 
 TEST(mecab_splitter_create, illegal_argument) {
-  std::map<std::string, std::string> param;
-  param["arg"] = "-r unknown_file";
+  // Invalid MeCab argument
+  std::map<std::string, std::string> param1;
+  param1["arg"] = "-r unknown_file";
   EXPECT_THROW(
-      jubatus::util::lang::scoped_ptr<word_splitter>(create(param)),
+      jubatus::util::lang::scoped_ptr<string_feature>(create(param1)),
+      converter_exception);
+
+  // Invalid N-gram
+  std::map<std::string, std::string> param2;
+  param2["ngram"] = "0";
+  EXPECT_THROW(
+      jubatus::util::lang::scoped_ptr<string_feature>(create(param2)),
       converter_exception);
 }
 
 TEST(mecab_splitter, with_space) {
   mecab_splitter m;
-  std::vector<std::pair<size_t, size_t> > bs;
-  m.split(" テスト テスト ", bs);
-  std::vector<std::pair<size_t, size_t> > exp;
+  std::vector<string_feature_element> elems;
+  m.extract(" テスト テスト ", elems);
+  std::vector<string_feature_element> exp;
 
-  exp.push_back(std::make_pair(1, 9));
-  exp.push_back(std::make_pair(11, 9));
+  exp.push_back(string_feature_element(1, 9, "テスト", 1.0));
+  exp.push_back(string_feature_element(11, 9, "テスト", 1.0));
 
-  ASSERT_EQ(exp, bs);
+  assert_elements_eq(exp, elems);
 }
 
 void run(mecab_splitter* m) {
-  std::vector<std::pair<size_t, size_t> > exp;
-  exp.push_back(std::make_pair(0, 6));
-  exp.push_back(std::make_pair(6, 3));
-  exp.push_back(std::make_pair(9, 6));
-  exp.push_back(std::make_pair(15, 6));
+  std::vector<string_feature_element> exp;
+  exp.push_back(string_feature_element(0, 6, "本日", 1.0));
+  exp.push_back(string_feature_element(6, 3, "は", 1.0));
+  exp.push_back(string_feature_element(9, 6, "晴天", 1.0));
+  exp.push_back(string_feature_element(15, 6, "なり", 1.0));
 
   for (int i = 0; i < 1000; ++i) {
-    std::vector<std::pair<size_t, size_t> > bs;
-    m->split("本日は晴天なり", bs);
-    ASSERT_EQ(exp, bs);
+    std::vector<string_feature_element> elems;
+    m->extract("本日は晴天なり", elems);
+    assert_elements_eq(exp, elems);
   }
 }
 
