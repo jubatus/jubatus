@@ -17,7 +17,7 @@ JUBATUS_CORE_CHECKOUT="${JUBATUS_CORE_VERSION}"
 # ==============================================================================
 # jubadump
 # ==============================================================================
-JUBADUMP_VERSION="0.8.0"
+JUBADUMP_VERSION="0.8.6"
 JUBADUMP_RELEASE="1"
 JUBADUMP_IS_SNAPSHOT="no"
 JUBADUMP_CHECKOUT="${JUBADUMP_VERSION}"
