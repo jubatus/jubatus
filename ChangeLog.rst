@@ -1,3 +1,12 @@
+Release 0.8.6 - 2015/12/25
+--------------------------
+
+* Improvements
+    * Support morpheme n-gram in mecab plugin (#1054, #1070)
+
+* Bug fixes
+    * Fix typos in exception and log messages (#1068, #1069)
+
 Release 0.8.5 - 2015/11/30
 --------------------------
 
