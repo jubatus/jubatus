@@ -1,0 +1,127 @@
+#!/bin/bash
+#
+# jubatus-server      Jubatus Server
+#
+# chkconfig: 2345 80 30
+# description: Jubatus Server: Distributed Online Machine Learning Framework
+
+### BEGIN INIT INFO
+# Provides: jubatus-server
+# Required-Start: $local_fs $network $remote_fs
+# Required-Stop: $local_fs $network $remote_fs
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: start and stop jubatus-server
+# Description: Jubatus Server: Distributed Online Machine Learning Framework
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source sysconfig settings.
+. /etc/sysconfig/jubatus-server || exit 1
+
+RETVAL=0
+name="juba${ENGINE}"
+prog="/usr/bin/${name}"
+pidfile="/var/run/${name}.pid"
+
+check_config() {
+  if [ ! -e "${prog}" ]; then
+    echo $"Error: ${prog} not found"
+    return 1
+  fi
+
+  if [ "${DISTRIBUTED}" != "yes" -a "${DISTRIBUTED}" != "no" ]; then
+    echo $"Error: invalid distributed mode: ${DISTRIBUTED}"
+    return 1
+  fi
+
+  return 0
+}
+
+start() {
+  check_config || return 1
+
+  OPTS="--log_config ${LOG_CONFIG_FILE}"
+  if [ "${DISTRIBUTED}" = "yes" ]; then
+    OPTS="${OPTS} --zookeeper ${ZOOKEEPER} --name ${CLUSTER_NAME}"
+  else
+    OPTS="${OPTS} --configpath ${CONFIG_FILE}"
+  fi
+  OPTS="${OPTS} ${EXTRA_ARGS}"
+
+  RETVAL=0
+  echo -n $"Starting ${name}: "
+  if status -p "${pidfile}" &>/dev/null; then
+    failure $"$prog already running"
+    RETVAL=2
+  else
+    ${prog} --daemon --rpc-port "${PORT}" ${OPTS} &
+    JUBA_PID="$!"
+    success
+    echo "${JUBA_PID}" > "${pidfile}"
+  fi
+  echo
+
+  return "${RETVAL}"
+}
+
+stop() {
+  check_config || return 1
+
+  RETVAL=0
+  echo -n $"Shutting down ${name}: "
+  if status -p "${pidfile}" &>/dev/null; then
+    killproc -p "${pidfile}" "${prog}" -TERM && success || failure $"$prog stop"
+    RETVAL="$?"
+  else
+    failure $"$prog not running"
+    RETVAL=2
+  fi
+  echo
+
+  rm -f "${pidfile}"
+
+  return "${RETVAL}"
+}
+
+reload() {
+  check_config || return 1
+
+  echo -n $"Reloading ${name}: "
+
+  killproc -p "${pidfile}" "${prog}" -HUP && success || failure $"$prog reload"
+  RETVAL="$?"
+  echo
+
+  return "${RETVAL}"
+}
+
+# See how we were called.
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    stop
+    start
+    ;;
+  reload)
+    reload
+    ;;
+  status)
+    status -p "${pidfile}" "${prog}"
+    ;;
+  configtest)
+    check_config
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|restart|reload|status|configtest}"
+    exit 2
+esac
+
+exit $?

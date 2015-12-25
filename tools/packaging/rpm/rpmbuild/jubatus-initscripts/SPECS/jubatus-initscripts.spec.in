@@ -1,0 +1,64 @@
+# Disable *-debuginfo for this package as we don't have any ELF binaries
+%global debug_package %{nil}
+
+%define package_version @JUBATUS_VERSION@
+%define package_release @JUBATUS_RELEASE@
+
+Name:		jubatus-initscripts
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	Init scripts for Jubatus server and proxy
+Vendor:		PFN & NTT
+Group:		System Environment/Daemons
+License:	LGPL 2.1
+URL:		http://jubat.us/
+Source0:	jubatus-server.init
+Source1:	jubatus-proxy.init
+Source2:	jubatus-server.sysconfig
+Source3:	jubatus-proxy.sysconfig
+Source4:	log4cxx-system.xml
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+Requires:	jubatus = @JUBATUS_VERSION@
+
+%description
+This package provides init scripts for Jubatus server and proxy.
+
+%prep
+%setup -q -T -c
+
+%build
+
+%install
+%{__rm} -rf %{buildroot}
+%{__install} -d %{buildroot}%{_sysconfdir}/rc.d/init.d
+%{__install} -d %{buildroot}%{_sysconfdir}/sysconfig
+%{__install} -d %{buildroot}%{_localstatedir}/log/jubatus
+%{__install} -d %{buildroot}%{_datarootdir}/jubatus/example/log
+%{__cp} %{SOURCE0} %{buildroot}%{_sysconfdir}/rc.d/init.d/jubatus-server
+%{__cp} %{SOURCE1} %{buildroot}%{_sysconfdir}/rc.d/init.d/jubatus-proxy
+%{__cp} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/jubatus-server
+%{__cp} %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/jubatus-proxy
+%{__cp} %{SOURCE4} %{buildroot}%{_datarootdir}/jubatus/example/log/log4cxx-system.xml
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%{_sysconfdir}/rc.d/init.d/jubatus-*
+%config(noreplace) %{_sysconfdir}/sysconfig/jubatus-*
+%config(noreplace) %{_datarootdir}/jubatus/example/log/log4cxx-system.xml
+%attr(0700,root,root) %dir %{_localstatedir}/log/jubatus
+
+%post
+/sbin/chkconfig --add jubatus-server
+/sbin/chkconfig --add jubatus-proxy
+
+%preun
+if [ $1 = 0 ]; then  # uninstall, not update
+  /sbin/service jubatus-service stop &> /dev/null
+  /sbin/service jubatus-proxy stop &> /dev/null
+  /sbin/chkconfig --del jubatus-server
+  /sbin/chkconfig --del jubatus-proxy
+fi

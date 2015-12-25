@@ -6,7 +6,7 @@
 
 # Packages to be built, in order of dependencies
 PKGS_DEPENDS="msgpack jubatus-mpio jubatus-msgpack-rpc zookeeper-client log4cxx oniguruma ux mecab mecab-ipadic"
-PKGS_JUBATUS="jubatus-core jubatus jubadump jubatus-release"
+PKGS_JUBATUS="jubatus-core jubatus jubadump jubatus-release jubatus-initscripts"
 
 # Directories
 PACKAGER="$(basename "${0}")"

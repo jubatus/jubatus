@@ -1,0 +1,17 @@
+#####################################################################
+# Jubatus Server Configuration
+#####################################################################
+ENGINE="classifier"
+PORT="19199"
+LOG_CONFIG_FILE="/usr/share/jubatus/example/log/log4cxx-system.xml"
+EXTRA_ARGS=""
+
+DISTRIBUTED="no"
+#DISTRIBUTED="yes"
+
+# For standalone mode:
+CONFIG_FILE="/usr/share/jubatus/example/config/classifier/arow.json"
+
+# For distributed mode:
+CLUSTER_NAME="my_cluster"
+ZOOKEEPER="localhost:2181"

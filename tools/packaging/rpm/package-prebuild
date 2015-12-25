@@ -55,6 +55,8 @@ prepare_rpmbuild() {
 			;;
 		jubatus-release )
 			;;
+		jubatus-initscripts )
+			;;
 		jubatus-mpio )
 			rm -rf jubatus-mpio
 			git clone https://github.com/jubatus/jubatus-mpio.git jubatus-mpio

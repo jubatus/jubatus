@@ -1,0 +1,8 @@
+#####################################################################
+## Jubatus Proxy Configuration
+######################################################################
+ENGINE="classifier"
+PORT="9199"
+LOG_CONFIG_FILE="/usr/share/jubatus/example/log/log4cxx-system.xml"
+ZOOKEEPER="localhost:2181"
+EXTRA_ARGS=""
