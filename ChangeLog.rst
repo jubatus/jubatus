@@ -1,3 +1,10 @@
+Release 0.8.7 - 2016/01/25
+--------------------------
+
+* Improvements
+    * Add example configuration file for Recommender (MinHash with unlearner) (#1077)
+    * Add example configuration file for Recommender and Anomaly (inverted_index_euclid) (#1079)
+
 Release 0.8.6 - 2015/12/25
 --------------------------
 
