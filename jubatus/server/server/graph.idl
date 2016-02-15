@@ -89,10 +89,10 @@ service graph {
   #@broadcast #@update #@all_and
   bool clear()
 
-  #@cht #@analysis #@pass
+  #@random #@analysis #@pass
   node get_node(0: string node_id)
 
-  #@cht #@analysis #@pass
+  #@random #@analysis #@pass
   edge get_edge(0: string node_id, 1: ulong edge_id)
 
 
