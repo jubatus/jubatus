@@ -1,4 +1,4 @@
-// This file is auto-generated from graph.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.8.1-11-g6aaff17/develop
+// This file is auto-generated from graph.idl(0.8.7-8-g376eb77) with jenerator version 0.8.5-6-g5a2c923/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -56,13 +56,9 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_broadcast<bool>("clear",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));
-    k.register_async_cht<2, jubatus::core::graph::node_info>("get_node",
-        jubatus::util::lang::function<jubatus::core::graph::node_info(
-        jubatus::core::graph::node_info, jubatus::core::graph::node_info)>(
-        &jubatus::server::framework::pass<jubatus::core::graph::node_info>));
-    k.register_async_cht<2, edge, uint64_t>("get_edge",
-        jubatus::util::lang::function<edge(edge, edge)>(
-        &jubatus::server::framework::pass<edge>));
+    k.register_async_random<jubatus::core::graph::node_info, std::string>(
+        "get_node");
+    k.register_async_random<edge, std::string, uint64_t>("get_edge");
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {
     LOG(FATAL) << "exception in proxy main thread: "
