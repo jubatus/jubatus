@@ -51,7 +51,9 @@ void stop_on_term(jubavisor_server& serv) {
 
 void configure_logger(const std::string& log_config) {
   if (log_config.empty()) {
-    jubatus::server::common::logger::configure();
+    if (!logger_configured_) {
+      jubatus::server::common::logger::configure();
+    }
   } else {
     if (logger_configured_) {
       LOG(INFO) << "reloading log configuration: " << log_config;
