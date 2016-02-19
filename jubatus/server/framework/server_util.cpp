@@ -67,7 +67,9 @@ struct lower_bound_reader {
 
 void configure_logger(const std::string& log_config) {
   if (log_config.empty()) {
-    common::logger::configure();
+    if (!logger_configured_) {
+      common::logger::configure();
+    }
   } else {
     if (logger_configured_) {
       LOG(INFO) << "reloading log configuration: " << log_config;
