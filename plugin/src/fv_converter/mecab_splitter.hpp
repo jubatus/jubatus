@@ -35,7 +35,7 @@ using core::fv_converter::string_feature_element;
 class mecab_splitter : public jubatus::core::fv_converter::string_feature {
  public:
   mecab_splitter();
-  explicit mecab_splitter(const char* arg, size_t ngram);
+  explicit mecab_splitter(const char* arg, size_t ngram, bool base);
 
   void extract(
       const std::string& string,
@@ -44,6 +44,7 @@ class mecab_splitter : public jubatus::core::fv_converter::string_feature {
  private:
   jubatus::util::lang::scoped_ptr<MeCab::Model> model_;
   size_t ngram_;
+  bool base_;
 };
 
 }  // namespace fv_converter

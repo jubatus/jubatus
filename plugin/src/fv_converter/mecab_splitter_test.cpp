@@ -37,10 +37,10 @@ void assert_elements_eq(std::vector<string_feature_element> expected,
                         std::vector<string_feature_element> actual) {
   ASSERT_EQ(expected.size(), actual.size());
   for (size_t i = 0; i < expected.size(); ++i) {
-    ASSERT_EQ(expected[i].begin, actual[i].begin);
-    ASSERT_EQ(expected[i].length, actual[i].length);
-    ASSERT_EQ(expected[i].value, actual[i].value);
-    ASSERT_EQ(expected[i].score, actual[i].score);
+    EXPECT_EQ(expected[i].begin, actual[i].begin);
+    EXPECT_EQ(expected[i].length, actual[i].length);
+    EXPECT_EQ(expected[i].value, actual[i].value);
+    EXPECT_EQ(expected[i].score, actual[i].score);
   }
 }
 
@@ -59,7 +59,7 @@ TEST(mecab_splitter, trivial) {
 }
 
 TEST(mecab_splitter, bigram) {
-  mecab_splitter m("", 2);
+  mecab_splitter m("", 2, false);
   std::vector<string_feature_element> elems;
   m.extract("本日は晴天なり", elems);
   std::vector<string_feature_element> exp;
@@ -72,19 +72,48 @@ TEST(mecab_splitter, bigram) {
 }
 
 TEST(mecab_splitter, bigram_with_single_surface) {
-  mecab_splitter m("", 2);
+  mecab_splitter m("", 2, false);
   std::vector<string_feature_element> elems;
   m.extract("本日", elems);
 
   ASSERT_EQ(0u, elems.size());
 }
 
+TEST(mecab_splitter, base) {
+  mecab_splitter m("", 1, true);
+  std::vector<string_feature_element> elems;
+  m.extract("今日は晴れた", elems);
+  std::vector<string_feature_element> exp;
+
+  exp.push_back(string_feature_element(0, 6, "今日", 1.0));    // 今日
+  exp.push_back(string_feature_element(6, 3, "は", 1.0));      // は
+  exp.push_back(string_feature_element(9, 6, "晴れる", 1.0));  // 晴れ
+  exp.push_back(string_feature_element(15, 3, "た", 1.0));     // た
+
+  assert_elements_eq(exp, elems);
+}
+
+TEST(mecab_splitter, base_with_no_base) {
+  mecab_splitter m("", 1, true);
+  std::vector<string_feature_element> elems;
+  m.extract("Jubatusを使った", elems);  // word "Jubatus" has no base form
+  std::vector<string_feature_element> exp;
+
+  exp.push_back(string_feature_element(0, 7, "Jubatus", 1.0));  // Jubatus
+  exp.push_back(string_feature_element(7, 3, "を", 1.0));       // を
+  exp.push_back(string_feature_element(10, 6, "使う", 1.0));    // 使っ
+  exp.push_back(string_feature_element(16, 3, "た", 1.0));      // た
+
+  assert_elements_eq(exp, elems);
+}
+
 TEST(mecab_splitter, illegal_argument) {
   // Invalid MeCab argument
-  EXPECT_THROW(mecab_splitter("-r unknown_file", 1), converter_exception);
+  EXPECT_THROW(mecab_splitter("-r unknown_file", 1, false),
+      converter_exception);
 
   // Invalid N-gram
-  EXPECT_THROW(mecab_splitter("", 0), converter_exception);
+  EXPECT_THROW(mecab_splitter("", 0, false), converter_exception);
 }
 
 TEST(mecab_splitter_create, trivial) {
@@ -115,6 +144,13 @@ TEST(mecab_splitter_create, illegal_argument) {
   param2["ngram"] = "0";
   EXPECT_THROW(
       jubatus::util::lang::scoped_ptr<string_feature>(create(param2)),
+      converter_exception);
+
+  // Invalid base
+  std::map<std::string, std::string> param3;
+  param3["base"] = "TRUE";  // it should be lower case
+  EXPECT_THROW(
+      jubatus::util::lang::scoped_ptr<string_feature>(create(param3)),
       converter_exception);
 }
 
