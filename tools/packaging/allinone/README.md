@@ -13,7 +13,7 @@ sudo apt-get install ssh git build-essential ruby1.9.3 pkg-config autoconf libto
 Now you can build the package as follows:
 
 ```
-export DEBEMAIL="jubatus@googlegroups.com"
+export DEBEMAIL="jubatus-team@googlegroups.com"
 export DEBFULLNAME="PFN & NTT"
 ./jubapkg -f -c -d -b -p deb
 ```
