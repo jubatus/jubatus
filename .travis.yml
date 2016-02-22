@@ -23,8 +23,8 @@ install:
   - pushd jubatus-msgpack-rpc/cpp && git checkout develop && ./bootstrap && ./configure --with-jubatus-mpio=/usr/local && make && sudo make install && popd
   - sudo ldconfig
   # zookeeper
-  - wget http://apache.openmirror.de/zookeeper/zookeeper-3.4.7/zookeeper-3.4.7.tar.gz && tar xf zookeeper-3.4.7.tar.gz
-  - pushd zookeeper-3.4.7/src/c && ./configure && make && sudo make install && popd
+  - wget http://apache.openmirror.de/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz && tar xf zookeeper-3.4.8.tar.gz
+  - pushd zookeeper-3.4.8/src/c && ./configure && make && sudo make install && popd
   - sudo ldconfig
   # oniguruma
   - wget https://github.com/kkos/oniguruma/releases/download/v5.9.6/onig-5.9.6.tar.gz && tar xvf onig-5.9.6.tar.gz
