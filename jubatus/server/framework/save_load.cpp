@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 #include "jubatus/util/lang/cast.h"
+#include "jubatus/util/text/json.h"
 
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/common/big_endian.hpp"
@@ -94,6 +95,17 @@ uint32_t calc_crc32(const char* header,  // header size is 28 (fixed)
 
 bool fwrite_helper(const char* buffer, size_t size, FILE* fp) {
   return fwrite(buffer, 1, size, fp) == size;
+}
+
+/**
+ * Compare the given two config strings.  Returns true if they are
+ * semantically the same (i.e., ignoring spaces and line breaks etc.)
+ */
+bool compare_config(const std::string& left, const std::string& right) {
+  using jubatus::util::text::json::json;
+  return
+      lexical_cast<std::string>(lexical_cast<json>(left)) ==
+      lexical_cast<std::string>(lexical_cast<json>(right));
 }
 
 }  // namespace
@@ -225,7 +237,8 @@ void load_server(std::istream& is,
           "server type mismatched: " + system_data_actual.type +
           ", expected " + system_data_expected.type));
   }
-  if (system_data_actual.config != system_data_expected.config) {
+  if (!compare_config(
+      system_data_actual.config, system_data_expected.config)) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error(
           "server config mismatched: " + system_data_actual.config +

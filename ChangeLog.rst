@@ -1,3 +1,15 @@
+Release 0.8.8 - 2016/02/29
+--------------------------
+
+* Improvements
+    * Support extracting base form in MeCab plugin (#1074, #1085)
+    * Compare configuration string semantically on load (#1080, 1087)
+    * Add example configuration file for Recommender (inverted_index_euclid with unlearner) (#1090)
+    * Fix email address of DEB package (#1082, #1088)
+
+* Bug fixes
+    * Fix printing logs multiple times after receiving SIGHUP (#962, #1084, #1086)
+
 Release 0.8.7 - 2016/01/25
 --------------------------
 

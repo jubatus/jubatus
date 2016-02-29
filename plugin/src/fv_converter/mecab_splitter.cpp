@@ -43,12 +43,14 @@ static MeCab::Model* create_mecab_model(const char* arg) {
 
 mecab_splitter::mecab_splitter()
     : model_(create_mecab_model("")),
-      ngram_(1) {
+      ngram_(1),
+      base_(false) {
 }
 
-mecab_splitter::mecab_splitter(const char* arg, size_t ngram)
+mecab_splitter::mecab_splitter(const char* arg, size_t ngram, bool base)
     : model_(create_mecab_model(arg)),
-      ngram_(ngram) {
+      ngram_(ngram),
+      base_(base) {
   if (ngram == 0) {
     throw JUBATUS_EXCEPTION(
         converter_exception("ngram must be a positive number"));
@@ -78,38 +80,59 @@ void mecab_splitter::extract(
   const MeCab::Node* node = lattice->bos_node();
   size_t p = 0;
 
-  std::vector<std::pair<size_t, size_t> > bounds;
+  // List of words and its bounds (start position and length of the surface.)
+  // e.g., [ ("word1", (0, 5)), ("word2", (5, 5)), ... ]
+  std::vector<std::pair<std::string, std::pair<size_t, size_t> > > words;
   for (; node; node = node->next) {
     if (node->stat == MECAB_BOS_NODE || node->stat == MECAB_EOS_NODE) {
       continue;
     }
 
     p += node->rlength - node->length;
-    bounds.push_back(std::make_pair(p, node->length));
+    std::string word;
+    if (base_) {
+      // Use the base form of the word.
+      // The 7th field of `node->feature` (CSV) contains the base form.
+      std::string features = node->feature;
+      size_t begin = 0, end = 0;
+      for (size_t i = 0; i < 6; ++i) {
+        begin = features.find(',', begin) + 1;
+      }
+      end = features.find(',', begin);
+      word = std::string(features, begin, end - begin);
+
+      if (word == "*") {
+        // The base form is not available; use the surface.
+        word = std::string(string, p, node->length);
+      }
+    } else {
+      // Use surface (the original form of the word that appears in the
+      // original sentence.)
+      word = std::string(string, p, node->length);
+    }
+    words.push_back(std::make_pair(word, std::make_pair(p, node->length)));
     p += node->length;
   }
 
-  // Need at least N surfaces to extract N-gram.
-  if (bounds.size() < ngram_) {
+  // Need at least N words to extract N-gram.
+  if (words.size() < ngram_) {
     return;
   }
 
-  // Number of features: e.g., 2-gram for 4 surfaces (bounds) like "a,b,c,d"
+  // Number of features: e.g., 2-gram for 4 words (bounds) like "a,b,c,d"
   // will produce 3 features ({"a,b", "b,c", "c,d"}.)
-  size_t num_features = bounds.size() - ngram_ + 1;
+  size_t num_features = words.size() - ngram_ + 1;
 
   std::vector<string_feature_element> feature_elems;
   feature_elems.reserve(num_features);
   for (size_t i = 0; i < num_features; ++i) {
-    size_t begin = bounds[i].first;
-    size_t length = bounds[i].second;
-    std::string feature = std::string(string, begin, length);
+    std::string feature = words[i].first;
+    size_t begin = words[i].second.first;
+    size_t length = words[i].second.second;
 
     for (size_t j = 1; j < ngram_; ++j) {
-      size_t begin_j = bounds[i+j].first;
-      size_t length_j = bounds[i+j].second;
-      length += length_j;
-      feature += "," + std::string(string, begin_j, length_j);
+      feature += "," + words[i+j].first;
+      length += words[i+j].second.second;
     }
 
     feature_elems.push_back(
@@ -130,8 +153,16 @@ jubatus::plugin::fv_converter::mecab_splitter* create(
       jubatus::core::fv_converter::get_with_default(params, "arg", "");
   size_t ngram = jubatus::util::lang::lexical_cast<size_t>(
       jubatus::core::fv_converter::get_with_default(params, "ngram", "1"));
+  std::string base_str = jubatus::core::fv_converter::get_with_default(
+      params, "base", "false");
+  if (base_str != "true" && base_str != "false") {
+    throw JUBATUS_EXCEPTION(jubatus::core::fv_converter::converter_exception(
+        "base must be a boolean value"));
+  }
+  bool base = (base_str == "true");
+
   return new jubatus::plugin::fv_converter::mecab_splitter(
-      param.c_str(), ngram);
+      param.c_str(), ngram, base);
 }
 
 std::string version() {
