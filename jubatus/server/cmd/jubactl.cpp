@@ -273,7 +273,11 @@ void send2server(
         << *it << "..." << std::flush;
 
     try {
-      c.call(cmd, name, id).get<bool>();
+      if (cmd == "save") {
+        c.call(cmd, name, id).get<std::map<string, string> >();
+      } else {
+        c.call(cmd, name, id).get<bool>();
+      }
       cout << "ok." << endl;
     } catch (msgpack::rpc::rpc_error& e) {
       cout << "failed." << endl;
