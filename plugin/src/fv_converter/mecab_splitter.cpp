@@ -50,8 +50,8 @@ mecab_splitter::mecab_splitter(
     const char* arg,
     size_t ngram,
     bool base,
-    const std::string& include,
-    const std::string& exclude)
+    const std::string& include_features,
+    const std::string& exclude_features)
     : model_(create_mecab_model(arg)),
       ngram_(ngram),
       base_(base) {
@@ -60,25 +60,25 @@ mecab_splitter::mecab_splitter(
         converter_exception("ngram must be a positive number"));
   }
 
-  if (include.empty()) {
+  if (include_features.empty()) {
     throw JUBATUS_EXCEPTION(
-        converter_exception("include must not be empty"));
+        converter_exception("include_features must not be empty"));
   }
 
   jubatus::core::fv_converter::key_matcher_factory factory;
 
-  std::vector<std::string> include_features =
-      jubatus::util::data::string::split(include, '|');
+  std::vector<std::string> include_patterns =
+      jubatus::util::data::string::split(include_features, '|');
   for (std::vector<std::string>::const_iterator
-       it = include_features.begin(); it != include_features.end(); ++it) {
+       it = include_patterns.begin(); it != include_patterns.end(); ++it) {
     include_matchers_.push_back(factory.create_matcher(*it));
   }
 
-  if (!exclude.empty()) {
-    std::vector<std::string> exclude_features =
-        jubatus::util::data::string::split(exclude, '|');
+  if (!exclude_features.empty()) {
+    std::vector<std::string> exclude_patterns =
+        jubatus::util::data::string::split(exclude_features, '|');
     for (std::vector<std::string>::const_iterator
-         it = exclude_features.begin(); it != exclude_features.end(); ++it) {
+         it = exclude_patterns.begin(); it != exclude_patterns.end(); ++it) {
       exclude_matchers_.push_back(factory.create_matcher(*it));
     }
   }
@@ -209,8 +209,10 @@ jubatus::plugin::fv_converter::mecab_splitter* create(
   std::string param = get_with_default(params, "arg", "");
   size_t ngram = lexical_cast<size_t>(get_with_default(params, "ngram", "1"));
   std::string base_str = get_with_default(params, "base", "false");
-  std::string include = get_with_default(params, "include_features", "*");
-  std::string exclude = get_with_default(params, "exclude_features", "");
+  std::string include_features =
+      get_with_default(params, "include_features", "*");
+  std::string exclude_features =
+      get_with_default(params, "exclude_features", "");
 
   if (base_str != "true" && base_str != "false") {
     throw JUBATUS_EXCEPTION(jubatus::core::fv_converter::converter_exception(
@@ -219,7 +221,7 @@ jubatus::plugin::fv_converter::mecab_splitter* create(
   bool base = (base_str == "true");
 
   return new jubatus::plugin::fv_converter::mecab_splitter(
-      param.c_str(), ngram, base, include, exclude);
+      param.c_str(), ngram, base, include_features, exclude_features);
 }
 
 std::string version() {

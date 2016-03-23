@@ -41,8 +41,8 @@ class mecab_splitter : public jubatus::core::fv_converter::string_feature {
       const char* arg = "",
       size_t ngram = 1,
       bool base = false,
-      const std::string& include = "*",
-      const std::string& exclude = "");
+      const std::string& include_features = "*",
+      const std::string& exclude_features = "");
 
   void extract(
       const std::string& string,
