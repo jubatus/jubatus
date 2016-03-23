@@ -107,6 +107,32 @@ TEST(mecab_splitter, base_with_no_base) {
   assert_elements_eq(exp, elems);
 }
 
+TEST(mecab_splitter, included_and_not_excluded) {
+  mecab_splitter m("", 1, false, "名詞,*|動詞,*", "");
+
+  std::vector<string_feature_element> elems;
+  m.extract("寿司を食べる", elems);
+
+  std::vector<string_feature_element> exp;
+  exp.push_back(string_feature_element(0, 6, "寿司", 1.0));
+  exp.push_back(string_feature_element(9, 9, "食べる", 1.0));
+
+  assert_elements_eq(exp, elems);
+}
+
+TEST(mecab_splitter, included_and_excluded) {
+  mecab_splitter m("", 1, false, "*", "助詞,*");
+
+  std::vector<string_feature_element> elems;
+  m.extract("噂の真相", elems);
+
+  std::vector<string_feature_element> exp;
+  exp.push_back(string_feature_element(0, 3, "噂", 1.0));
+  exp.push_back(string_feature_element(6, 6, "真相", 1.0));
+
+  assert_elements_eq(exp, elems);
+}
+
 TEST(mecab_splitter, illegal_argument) {
   // Invalid MeCab argument
   EXPECT_THROW(mecab_splitter("-r unknown_file", 1, false),
