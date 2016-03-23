@@ -421,6 +421,9 @@ class proxy
             // cancelled sessions (e.g., connections) cannot be reused,
             // so remove them from the session pool.
             at_loop_->pool().remove_session(sessions_[i]);
+
+            LOG(WARNING) << "request timeout occurred: " << hosts_[i].first
+                         << ":" << hosts_[i].second;
           }
         }
 
