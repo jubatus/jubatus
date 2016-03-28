@@ -23,28 +23,41 @@
 #include <vector>
 #include <mecab.h>
 #include "jubatus/util/lang/scoped_ptr.h"
+#include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/fv_converter/string_feature.hpp"
+#include "jubatus/core/fv_converter/key_matcher.hpp"
 
 namespace jubatus {
 namespace plugin {
 namespace fv_converter {
 
 using core::fv_converter::string_feature_element;
+using util::lang::shared_ptr;
 
 class mecab_splitter : public jubatus::core::fv_converter::string_feature {
  public:
-  mecab_splitter();
-  explicit mecab_splitter(const char* arg, size_t ngram, bool base);
+  mecab_splitter(
+      const char* arg = "",
+      size_t ngram = 1,
+      bool base = false,
+      const std::string& include_features = "*",
+      const std::string& exclude_features = "");
 
   void extract(
       const std::string& string,
       std::vector<string_feature_element>& result) const;
 
  private:
+  bool is_included(const std::string&) const;
+
   jubatus::util::lang::scoped_ptr<MeCab::Model> model_;
   size_t ngram_;
   bool base_;
+  std::vector<shared_ptr<jubatus::core::fv_converter::key_matcher> >
+      include_matchers_;
+  std::vector<shared_ptr<jubatus::core::fv_converter::key_matcher> >
+      exclude_matchers_;
 };
 
 }  // namespace fv_converter
