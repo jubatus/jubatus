@@ -1,3 +1,13 @@
+Release 0.8.9 - 2016/03/28
+--------------------------
+
+* Improvements
+    * Support extracting specific part-of-speech in MeCab plugin (#1073, #1098)
+    * Improved proxy to log timeout errors (#1048, #1095)
+
+* Bug fixes
+    * Fix "jubactl -c save" not working (#1094)
+
 Release 0.8.8 - 2016/02/29
 --------------------------
 
