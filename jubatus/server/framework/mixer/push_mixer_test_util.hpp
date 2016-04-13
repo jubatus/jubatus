@@ -14,6 +14,9 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#ifndef JUBATUS_SERVER_FRAMEWORK_MIXER_PUSH_MIXER_TEST_UTIL_HPP_
+#define JUBATUS_SERVER_FRAMEWORK_MIXER_PUSH_MIXER_TEST_UTIL_HPP_
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -127,3 +130,5 @@ class zk_stub : public common::lock_service {
 }  // namespace framework
 }  // namespace server
 }  // namespace jubatus
+
+#endif  // JUBATUS_SERVER_FRAMEWORK_MIXER_PUSH_MIXER_TEST_UTIL_HPP_

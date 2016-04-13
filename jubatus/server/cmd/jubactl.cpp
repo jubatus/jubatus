@@ -18,6 +18,7 @@
 #include <vector>
 #include <iostream>
 #include <cstring>
+#include <map>
 
 #include <jubatus/msgpack/rpc/client.h>
 #include "jubatus/util/lang/function.h"
