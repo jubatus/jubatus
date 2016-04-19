@@ -60,6 +60,9 @@ def options(opt):
 def configure(conf):
   conf.env.CXXFLAGS += ['-O2', '-Wall', '-g', '-pipe', '-pthread'];
   conf.env.LINKFLAGS += ['-pthread']
+#  if sys.platform.startswith("freebsd"):
+#    conf.env.CXXFLAGS += ['-I/usr/local/include']
+#    conf.env.LINKFLAGS += ['-L/usr/local/lib']
 
   conf.load('compiler_cxx')
   conf.load('unittest_gtest')
@@ -80,7 +83,6 @@ def configure(conf):
   conf.check_cxx(lib = 'msgpack')
   conf.check_cxx(lib = 'jubatus_mpio')
   conf.check_cxx(lib = 'jubatus_msgpack-rpc')
-  conf.check_cxx(lib = 'dl')
 
   # pkg-config tests
   conf.find_program('pkg-config') # make sure that pkg-config command exists

@@ -19,6 +19,9 @@
 #ifdef __APPLE__
 #include <libproc.h>
 #endif
+#if defined(__FreeBSD__)
+#include <sys/sysctl.h>
+#endif
 #include <pwd.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -55,6 +58,16 @@ std::string get_program_name() {
 #ifdef __APPLE__
   char path[PROC_PIDPATHINFO_MAXSIZE];
   int ret = proc_pidpath(getpid(), path, PROC_PIDPATHINFO_MAXSIZE);
+#elif defined(__FreeBSD__)
+  char path[PATH_MAX];
+  int mib[4];
+  mib[0] = CTL_KERN;
+  mib[1] = KERN_PROC;
+  mib[2] = KERN_PROC_PATHNAME;
+  mib[3] = -1;
+  size_t len = sizeof(path);
+  sysctl(mib, 4, path, &len, NULL, 0);
+  int ret = 1;
 #else
   const char* exe_sym_path = "/proc/self/exe";
   // when BSD: /proc/curproc/file
@@ -88,6 +101,11 @@ std::string get_program_name() {
 }
 
 std::string get_user_name() {
+#if defined(__FreeBSD__)
+  struct passwd *pw;
+  pw = getpwuid(getuid());
+  return pw->pw_name;
+#else
   uid_t uid = getuid();
   int64_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
   std::vector<char> buf(buflen);
@@ -106,6 +124,7 @@ std::string get_user_name() {
       jubatus::core::common::exception::runtime_error("Failed to get user name")
       << jubatus::core::common::exception::error_api_func("getpwuid_r")
       << jubatus::core::common::exception::error_errno(ret));
+#endif
 }
 
 
