@@ -114,7 +114,7 @@ class server_helper {
     } catch (const std::runtime_error& e) {
       throw;
     }
- }
+  }
 
   std::map<std::string, std::string> get_loads() const {
     std::map<std::string, std::string> result;
