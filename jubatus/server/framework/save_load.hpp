@@ -27,10 +27,15 @@ namespace jubatus {
 namespace server {
 namespace framework {
 
-void save_server(FILE* fp,
-    const server_base& server, const std::string& id);
-void load_server(std::istream& is,
-    server_base& server, const std::string& id);
+void save_server(
+    FILE* fp,
+    const server_base& server,
+    const std::string& id);
+void load_server(
+    std::istream& is,
+    server_base& server,
+    const std::string& id,
+    bool overwrite_config);
 
 }  // namespace framework
 }  // namespace server

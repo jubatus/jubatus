@@ -78,7 +78,17 @@ class server_helper {
     impl_.get_config_lock(a, 3);
 
     try {
-      server_->set_config(get_conf(a));
+      if (a.is_standalone() && !a.modelpath.empty()) {
+        // Load from a specified model file.
+        // `load_file` implies `set_config`; no further actions needed.
+        if (!a.configpath.empty()) {
+          LOG(INFO) << "both model file and configuration are specified; "
+                    << "using configuration from model file";
+        }
+        server_->load_file(a.modelpath);
+      } else {
+        server_->set_config(get_conf(a));
+      }
     } catch (const core::common::jsonconfig::cast_check_error& e) {
       core::common::config_exception config_error;
       const core::common::jsonconfig::config_error_list& errors = e.errors();
@@ -101,17 +111,10 @@ class server_helper {
 
       LOG(ERROR) << msg;
       exit(1);
-    }
-
-    try {
-      // standalone only, is it desirable?
-      if (a.is_standalone() && !a.modelpath.empty()) {
-        server_->load_file(a.modelpath);
-      }
     } catch (const std::runtime_error& e) {
-      exit(1);
+      throw;
     }
-  }
+ }
 
   std::map<std::string, std::string> get_loads() const {
     std::map<std::string, std::string> result;
