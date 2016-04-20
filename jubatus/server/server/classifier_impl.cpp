@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.7.2-49-g5a6436d) with jenerator version 0.8.1-11-g6aaff17/develop
+// This file is auto-generated from classifier.idl(0.8.9-17-gd4c007f) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -27,7 +27,7 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
         std::vector<jubatus::core::fv_converter::datum>)>("classify",
         jubatus::util::lang::bind(&classifier_impl::classify, this,
         jubatus::util::lang::_2));
-    rpc_server::add<std::vector<std::string>(std::string)>("get_labels",
+    rpc_server::add<std::map<std::string, uint64_t>(std::string)>("get_labels",
         jubatus::util::lang::bind(&classifier_impl::get_labels, this));
     rpc_server::add<bool(std::string, std::string)>("set_label",
         jubatus::util::lang::bind(&classifier_impl::set_label, this,
@@ -62,7 +62,7 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->classify(data);
   }
 
-  std::vector<std::string> get_labels() {
+  std::map<std::string, uint64_t> get_labels() {
     NOLOCK_(p_);
     return get_p()->get_labels();
   }
