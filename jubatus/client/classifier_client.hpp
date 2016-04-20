@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.7.2-49-g5a6436d) with jenerator version 0.8.1-11-g6aaff17/develop
+// This file is auto-generated from classifier.idl(0.8.9-17-gd4c007f) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_CLASSIFIER_CLIENT_HPP_
@@ -33,9 +33,9 @@ class classifier : public jubatus::client::common::client {
     return f.get<std::vector<std::vector<estimate_result> > >();
   }
 
-  std::vector<std::string> get_labels() {
+  std::map<std::string, uint64_t> get_labels() {
     msgpack::rpc::future f = c_.call("get_labels", name_);
-    return f.get<std::vector<std::string> >();
+    return f.get<std::map<std::string, uint64_t> >();
   }
 
   bool set_label(const std::string& new_label) {
