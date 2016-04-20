@@ -30,10 +30,11 @@
 
 #include <jubatus/util/lang/cast.h>
 
-#include <string>
 #if defined(__FreeBSD__)
 #include <sys/thr.h>
 #endif
+
+#include <string>
 
 #define LOGGER_NAME "jubatus"
 
@@ -43,9 +44,9 @@ inline int gettid() {
 #ifdef __APPLE__
   return ::syscall(SYS_thread_selfid);
 #elif defined(__FreeBSD__)
-  long lwpid;
+  long lwpid;  // NOLINT
   thr_self(&lwpid);
-  return (int) lwpid;
+  return static_cast<int>(lwpid);
 #else
   return ::syscall(SYS_gettid);
 #endif

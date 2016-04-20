@@ -101,13 +101,11 @@ std::string get_program_name() {
 }
 
 std::string get_user_name() {
-#if defined(__FreeBSD__)
-  struct passwd *pw;
-  pw = getpwuid(getuid());
-  return pw->pw_name;
-#else
   uid_t uid = getuid();
   int64_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+  if (buflen == -1) {
+    buflen = 1024;
+  }
   std::vector<char> buf(buflen);
   struct passwd pwd;
   struct passwd* result;
@@ -124,7 +122,6 @@ std::string get_user_name() {
       jubatus::core::common::exception::runtime_error("Failed to get user name")
       << jubatus::core::common::exception::error_api_func("getpwuid_r")
       << jubatus::core::common::exception::error_errno(ret));
-#endif
 }
 
 
