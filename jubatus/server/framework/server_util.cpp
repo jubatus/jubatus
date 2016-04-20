@@ -264,12 +264,15 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   }
 
   if (is_standalone()) {
-    if (configpath.empty()) {
-      std::cerr << "can't start standalone mode without configpath specified"
-          << std::endl;
+    if (configpath.empty() && modelpath.empty()) {
+      std::cerr << "config path or model file must be specified "
+                << "for standalone mode" << std::endl;
       std::cerr << p.usage() << std::endl;
       exit(1);
     }
+  }
+
+  if (!configpath.empty()) {
     configpath = common::real_path(configpath);
   }
 

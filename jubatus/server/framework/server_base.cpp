@@ -52,8 +52,11 @@ std::string build_local_path(
  * Load a model file.
  * `id` is an empty string for standalone mode.
  */
-void load_file_impl(server_base& server,
-    const std::string& path, const std::string& id) {
+void load_file_impl(
+    server_base& server,
+    const std::string& path,
+    const std::string& id,
+    bool overwrite_config) {
   LOG(INFO) << "starting load from " << path;
 
   std::ifstream ifs(path.c_str(), std::ios::binary);
@@ -66,7 +69,7 @@ void load_file_impl(server_base& server,
 
   ifs.exceptions(std::ios_base::failbit | std::ios_base::badbit);
   try {
-    framework::load_server(ifs, server, id);
+    framework::load_server(ifs, server, id, overwrite_config);
     ifs.close();
   } catch (const std::ios_base::failure&) {
     throw JUBATUS_EXCEPTION(
@@ -186,18 +189,26 @@ std::map<std::string, std::string> server_base::save(const std::string& id) {
   return ret;
 }
 
+/**
+ * Handles `load` RPC call.
+ * `load` RPC cannot load model files that have different config.
+ */
 bool server_base::load(const std::string& id) {
   if (id == "") {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("empty id is not allowed"));
   }
 
-  load_file_impl(*this, build_local_path(argv_, argv_.type, id), id);
+  load_file_impl(*this, build_local_path(argv_, argv_.type, id), id, false);
   return true;
 }
 
+/**
+ * Load a model from local file `path`.
+ * This method allows loading model files that have different config.
+ */
 void server_base::load_file(const std::string& path) {
-  load_file_impl(*this, path, "");
+  load_file_impl(*this, path, "", true);
 }
 
 void server_base::event_model_updated() {
