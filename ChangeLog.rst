@@ -1,3 +1,25 @@
+Release 0.9.0 - 2016/04/25
+--------------------------
+
+* New feature
+    * [jubakit](https://github.com/jubatus/jubakit): Python module to easily evaluate precision of models (#1044)
+
+* Changes to Supported Systems
+    * Ubuntu 14.04 LTS is now officially supported (#1071)
+
+* Improvements
+    * classifier: improve get_labels API to return number of trained instances (#1109)
+    * Add example configuration file for Nearest Neighbor (multi-threaded LSH) (#1111)
+    * Add example configuration file for Classifier (cosine / euclidean) (#1108)
+    * Add example configuration file for Recommender (euclid_lsh with unlearner) (#1108)
+    * Configuration in model is used when loading model file on startup (#1081, #1107)
+    * Improve compatibility with FreeBSD 9 (#1099)
+    * Update manpages (#1112)
+    * Code cleanup (#1102)
+
+* Bug fixes
+    * Fix jenerator test (#1103)
+
 Release 0.8.9 - 2016/03/28
 --------------------------
 
