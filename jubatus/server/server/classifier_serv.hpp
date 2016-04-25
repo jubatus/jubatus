@@ -17,6 +17,7 @@
 #ifndef JUBATUS_SERVER_SERVER_CLASSIFIER_SERV_HPP_
 #define JUBATUS_SERVER_SERVER_CLASSIFIER_SERV_HPP_
 
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -53,7 +54,7 @@ class classifier_serv : public framework::server_base {
   std::vector<std::vector<estimate_result> > classify(
       const std::vector<jubatus::core::fv_converter::datum>& data) const;
 
-  std::vector<std::string> get_labels() const;
+  std::map<std::string, uint64_t> get_labels() const;
   bool set_label(const std::string& label);
   bool delete_label(const std::string& label);
 

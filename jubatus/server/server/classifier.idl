@@ -59,7 +59,7 @@ service classifier {
   #-
   #-  Get all labels in the model
   #@random #@nolock #@pass
-  list<string> get_labels()
+  map<string, ulong> get_labels()
 
   #- - Parameters:
   #-

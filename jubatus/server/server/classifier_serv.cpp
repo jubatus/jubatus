@@ -16,6 +16,7 @@
 
 #include "classifier_serv.hpp"
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,7 @@
 #include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/classifier/classifier_factory.hpp"
+#include "jubatus/core/classifier/classifier_type.hpp"
 #include "jubatus/core/common/vector_util.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/fv_converter/datum.hpp"
@@ -189,9 +191,15 @@ void classifier_serv::check_set_config() const {
   }
 }
 
-vector<string> classifier_serv::get_labels() const {
+std::map<string, uint64_t> classifier_serv::get_labels() const {
   check_set_config();
-  return classifier_->get_labels();
+  std::map<string, uint64_t> result;
+  core::classifier::labels_t labels = classifier_->get_labels();
+  for (core::classifier::labels_t::const_iterator it = labels.begin();
+       it != labels.end(); ++it) {
+    result.insert(std::make_pair(it->first, it->second));
+  }
+  return result;
 }
 
 bool classifier_serv::set_label(const std::string& label) {

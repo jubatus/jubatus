@@ -157,8 +157,11 @@ void save_server(FILE* fp,
   }
 }
 
-void load_server(std::istream& is,
-    server_base& server, const std::string& id) {
+void load_server(
+    std::istream& is,
+    server_base& server,
+    const std::string& id,
+    bool overwrite_config) {
   init_versions();
 
   char header_buf[48];
@@ -222,6 +225,11 @@ void load_server(std::istream& is,
         core::common::exception::runtime_error(
           "system data is broken"));
   }
+
+  if (overwrite_config) {
+    server.set_config(system_data_actual.config);
+  }
+
   system_data_container system_data_expected(server, id);
   if (system_data_actual.version != system_data_expected.version) {
     throw JUBATUS_EXCEPTION(
@@ -237,6 +245,7 @@ void load_server(std::istream& is,
           "server type mismatched: " + system_data_actual.type +
           ", expected " + system_data_expected.type));
   }
+
   if (!compare_config(
       system_data_actual.config, system_data_expected.config)) {
     throw JUBATUS_EXCEPTION(
