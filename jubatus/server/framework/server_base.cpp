@@ -219,11 +219,13 @@ void server_base::event_model_updated() {
 }
 
 void server_base::update_saved_status(const std::string& path) {
+  jubatus::util::concurrent::scoped_wlock lock(status_mutex_);
   last_saved_ = jubatus::util::system::time::get_clock_time();
   last_saved_path_ = path;
 }
 
 void server_base::update_loaded_status(const std::string& path) {
+  jubatus::util::concurrent::scoped_wlock lock(status_mutex_);
   last_loaded_ = jubatus::util::system::time::get_clock_time();
   last_loaded_path_ = path;
 }
