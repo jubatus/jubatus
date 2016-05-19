@@ -1,0 +1,26 @@
+{
+  "converter": {
+    "string_filter_types": {},
+    "string_filter_rules": [],
+    "num_filter_types": {
+      "linear":   { "method": "linear_normalization",   "min": "0", "max": "100" },
+      "gaussian": { "method": "gaussian_normalization", "average": "80", "standard_deviation": "2.3" },
+      "sigmoid":  { "method": "sigmoid_normalization",  "gain": "0.05", "bias": "5" }
+    },
+    "num_filter_rules": [],
+    "string_types": {
+      "unigram": { "method": "ngram", "char_num": "1" },
+      "bigram":  { "method": "ngram", "char_num": "2" },
+      "trigram": { "method": "ngram", "char_num": "3" }
+    },
+    "string_rules": [
+      { "key": "*", "type": "unigram", "sample_weight": "tf", "global_weight": "idf" }
+    ],
+    "num_types": {},
+    "num_rules": [
+      { "key": "*", "type": "num" }
+    ],
+    "binary_types": {},
+    "binary_rules": []
+  }
+}
