@@ -23,7 +23,6 @@ int main() {
   conf.recurse(subdirs)
 
 def build(bld):
-  import Options
   src = 'network.cpp global_id_generator_standalone.cpp config.cpp signals.cpp system.cpp filesystem.cpp crc32.cpp'
 
   if bld.env.HAVE_ZOOKEEPER_H:
