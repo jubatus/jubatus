@@ -1,0 +1,6 @@
+{
+  "method": "ucb1",
+  "parameter": {
+    "assume_unrewarded" : false
+  }
+}
