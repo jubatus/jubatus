@@ -80,7 +80,7 @@ class server_base {
     return last_saved_.sec;
   }
 
-  const std::string& last_saved_path() const {
+  const std::string last_saved_path() const {
     jubatus::util::concurrent::scoped_rlock lock(status_mutex_);
     return last_saved_path_;
   }
@@ -90,7 +90,7 @@ class server_base {
     return last_loaded_.sec;
   }
 
-  const std::string& last_loaded_path() const {
+  const std::string last_loaded_path() const {
     jubatus::util::concurrent::scoped_rlock lock(status_mutex_);
     return last_loaded_path_;
   }
