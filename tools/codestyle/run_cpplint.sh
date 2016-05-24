@@ -16,3 +16,5 @@ find ${@} '(' \
     ')' \
 | xargs "$(dirname ${0})/cpplint/cpplint.py" --filter=-runtime/references,-runtime/rtti 2>&1 \
 | grep -v '^Done processing '
+
+"$(dirname ${0})/check_include_guard.sh" $(find ${@} -name "*.hpp")
