@@ -1,0 +1,32 @@
+{
+  "converter" : {
+    "string_filter_types" : {},
+    "string_filter_rules" : [],
+    "num_filter_types" : {},
+    "num_filter_rules" : [],
+    "string_types" : {
+      "unigram": { "method": "ngram", "char_num": "1" },
+      "bigram":  { "method": "ngram", "char_num": "2" },
+      "trigram": { "method": "ngram", "char_num": "3" }
+    },
+    "string_rules" : [
+      { "key" : "*", "type" : "bigram", "sample_weight" : "tf", "global_weight" : "idf" }
+    ],
+    "num_types" : {},
+    "num_rules" : [
+      { "key" : "*", "type" : "num" }
+    ]
+  },
+  "parameter" : {
+    "k" : 3,
+    "compressor_method" : "simple",
+    "bucket_size" : 1000,
+    "compressed_bucket_size" : 100,
+    "bicriteria_base_size" : 10,
+    "bucket_length" : 2,
+    "forgetting_factor" : 0,
+    "forgetting_threshold" : 0.5,
+    "seed": 0
+  },
+  "method" : "kmeans"
+}
