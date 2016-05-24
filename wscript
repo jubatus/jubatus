@@ -19,6 +19,7 @@ JUBATUS_ENGINES = [
                    'recommender',
                    'regression',
                    'stat',
+                   'weight',
                   ]
 
 top = '.'
