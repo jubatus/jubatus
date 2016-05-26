@@ -46,6 +46,9 @@ jubaconv [options ...]
 \fBjubaconv\fP is a tool to test your fv_converter configuration.
 .sp
 \fBjubaconv\fP simulates the internal behavior of fv_converter and displays the result of conversion on the command\-line.
+.sp
+As \fBjubaconv\fP only processes 1 record, \fBglobal_weight\fP of string feature extraction rules (\fBstring_rules\fP) will not be calculated.
+Use \&../api_weight if you need a simulation including \fBglobal_weight\fP\&.
 .SS Options
 .INDENT 0.0
 .IP \(bu 2
@@ -56,14 +59,14 @@ jubaconv [options ...]
 .B \-i <format>, \-\-input\-format <format>
 Format of the input. [json]
 .sp
-\fB<format>\fP must be one of \fBjson\fP or \fBdatum\fP\&.
+\fB<format>\fP must be one of \fBdatum\fP or \fBjson\fP\&.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-o <format>, \-\-output\-format <format>
 Format of the output. [fv]
 .sp
-\fB<format>\fP must be one of \fBjson\fP, \fBdatum\fP or \fBfv\fP\&.
+\fB<format>\fP must be one of \fBfv\fP, \fBdatum\fP or \fBjson\fP\&.
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -71,6 +74,31 @@ Format of the output. [fv]
 Jubatus server configuration file in JSON.
 .sp
 This option must be given only if \fBfv\fP is specified for \fI\%\-o\fP\&.
+.UNINDENT
+.SH FILE FORMATS
+.SS Input
+.sp
+Supported formats are \fBdatum\fP and \fBjson\fP\&.
+See the Examples section for details.
+.INDENT 0.0
+.IP \(bu 2
+\fBdatum\fP is a Datum\-styled JSON data structure.
+The root must have 3 keys (\fBstring_values\fP, \fBnum_values\fP and \fBbinary_values\fP), and whose values must be a flat object, whose keys are string and values are string (for \fBstring_values\fP and \fBbinary_values\fP) or integer/float (for \fBnum_values\fP).
+.IP \(bu 2
+\fBjson\fP is an arbitrary JSON data structure.
+JSON data structure will be flatten to key\-value format by joining keys with \fB/\fP separator.
+.UNINDENT
+.SS Output
+.sp
+Supported formats are \fBfv\fP, \fBdatum\fP and \fBjson\fP\&.
+.INDENT 0.0
+.IP \(bu 2
+\fBfv\fP prints the feature vectors extracted from the input record by fv_converter.
+.IP \(bu 2
+\fBdatum\fP prints the input record converted to Datum as Datum\-styled JSON data structure.
+.IP \(bu 2
+\fBjson\fP pretty\-prints the input record without any conversion.
+This can only be used if the input format is \fBjson\fP\&.
 .UNINDENT
 .SH EXAMPLES
 .INDENT 0.0
@@ -92,6 +120,8 @@ $ cat datum.json
   },
   "num_values": {
     "age": 31
+  },
+  "binary_values": {
   }
 }
 
