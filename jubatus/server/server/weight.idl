@@ -16,7 +16,7 @@
 
 message feature {
   0: string key
-  1: float  value
+  1: float value
 }
 
 service weight {
