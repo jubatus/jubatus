@@ -19,7 +19,6 @@
     "seed" : 1091,
     "probe_num" : 64,
     "bin_width" : 100,
-    "retain_projection" : false,
     "unlearner" : "lru",
     "unlearner_parameter" : {
       "max_size" : 2048
