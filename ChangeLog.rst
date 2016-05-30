@@ -17,7 +17,7 @@ Release 0.9.0 - 2016/04/25
 --------------------------
 
 * New feature
-    * [jubakit](https://github.com/jubatus/jubakit): Python module to easily evaluate precision of models (#1044)
+    * `jubakit <https://github.com/jubatus/jubakit>`_: Python module to easily evaluate precision of models (#1044)
 
 * Changes to Supported Systems
     * Ubuntu 14.04 LTS is now officially supported (#1071)
