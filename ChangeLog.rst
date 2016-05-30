@@ -1,3 +1,18 @@
+Release 0.9.1 - 2016/05/30
+--------------------------
+
+* New feature
+    * weight: server that returns raw results of fv_converter (#1105, #1116)
+
+* Improvements
+    * Add `default.json` config files (#1117, #1120)
+    * Add example config file for Anomaly (lof with unlearner) (#1118)
+    * Update manpage (#1123)
+
+* Bug fixes
+    * Fix thread safetiness issue in save/load RPC (#1113, #1115)
+    * Fix `dl` link error on some distributions (#1121, #1122)
+
 Release 0.9.0 - 2016/04/25
 --------------------------
 
