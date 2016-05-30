@@ -1,0 +1,7 @@
+{
+  "parameter" : {
+    "damping_factor" : 0.9,
+    "landmark_num" : 5
+  },
+  "method" : "graph_wo_index"
+}

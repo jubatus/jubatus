@@ -23,6 +23,10 @@
       "seed" : 1091,
       "probe_num" : 64,
       "bin_width" : 100
+    },
+    "unlearner" : "lru",
+    "unlearner_parameter" : {
+        "max_size" : 4096
     }
   },
   "method" : "lof"

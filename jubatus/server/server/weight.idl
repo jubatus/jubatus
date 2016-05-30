@@ -1,5 +1,5 @@
 # Jubatus: Online machine learning framework for distributed environment
-# Copyright (C) 2012 Preferred Networks and Nippon Telegraph and Telephone Corporation.
+# Copyright (C) 2016 Preferred Networks and Nippon Telegraph and Telephone Corporation.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -14,38 +14,18 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-message id_with_score {
-  0: string id
-  1: float score
+message feature {
+  0: string key
+  1: float value
 }
 
-service anomaly {
-
-  #- clear a point.
-  #@cht #@update #@all_and
-  bool clear_row(0: string id)
-
-  #- add a point.
+service weight {
   #@random #@nolock #@pass
-  id_with_score add(0: datum row)
+  list<feature> update(0: datum d)
 
-  #- update a point.
-  #@cht #@update #@pass
-  float update(0: string id, 1: datum row)
+  #@random #@nolock #@pass
+  list<feature> calc_weight(0: datum d)
 
-  #- overwrite a point.
-  #@cht #@update #@pass
-  float overwrite(0: string id, 1: datum row)
-
-  #- clear whole data.
-  #@broadcast #@update #@all_and
+  #@broadcast #@nolock #@all_and
   bool clear()
-
-  #- calculate an anomaly measure value without adding a point.
-  #@random #@analysis #@pass
-  float calc_score(0: datum row)
-
-  #@random #@analysis #@pass
-  list<string> get_all_rows()
-
 }

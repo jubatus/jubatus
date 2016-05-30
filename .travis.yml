@@ -30,10 +30,6 @@ install:
   - wget https://github.com/kkos/oniguruma/releases/download/v5.9.6/onig-5.9.6.tar.gz && tar xvf onig-5.9.6.tar.gz
   - pushd onig-5.9.6 && ./configure && make && sudo make install && popd
   - sudo ldconfig
-  # re2
-  - hg clone https://re2.googlecode.com/hg re2
-  - pushd re2 && make && sudo make install && popd
-  - sudo ldconfig
   # ux
   - wget http://ux-trie.googlecode.com/files/ux-0.1.9.tar.bz2 && tar xf ux-0.1.9.tar.bz2
   - pushd ux-0.1.9 && ./waf configure && ./waf build && sudo ./waf install && popd

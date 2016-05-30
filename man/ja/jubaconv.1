@@ -46,6 +46,9 @@ jubaconv [options ...]
 \fBjubaconv\fP は fv_converter の設定をテストするためのツールである。
 .sp
 \fBjubaconv\fP は fv_converter 内部の動作をシミュレーションし、変換結果をコマンドラインで表示することができる。
+.sp
+\fBjubaconv\fP は 1 件のデータだけを対象に処理を行うため、文字列特徴抽出ルール (\fBstring_rules\fP) の \fBglobal_weight\fP は計算されない。
+\fBglobal_weight\fP も含めたシミュレーションが必要な場合は \&../api_weight を使用すること。
 .SS Options
 .INDENT 0.0
 .IP \(bu 2
@@ -56,14 +59,14 @@ jubaconv [options ...]
 .B \-i <format>, \-\-input\-format <format>
 入力のフォーマット。 [json]
 .sp
-\fB<format>\fP には \fBjson\fP または \fBdatum\fP のいずれかを指定する。
+\fB<format>\fP には \fBdatum\fP または \fBjson\fP のいずれかを指定する。
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-o <format>, \-\-output\-format <format>
 出力のフォーマット。 [fv]
 .sp
-\fB<format>\fP には \fBjson\fP, \fBdatum\fP または \fBfv\fP のいずれかを指定する。
+\fB<format>\fP には \fBfv\fP, \fBdatum\fP または \fBjson\fP のいずれかを指定する。
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -71,6 +74,31 @@ jubaconv [options ...]
 JSON で記述された Jubatus サーバの設定ファイル。
 .sp
 \fI\%\-o\fP に \fBfv\fP が指定されている場合のみ、このオプションを指定する必要がある。
+.UNINDENT
+.SH FILE FORMATS
+.SS Input
+.sp
+\fBdatum\fP または \fBjson\fP がサポートされています。
+詳細は Examples セクションを参照してください。
+.INDENT 0.0
+.IP \(bu 2
+\fBdatum\fP は Datum 形式の JSON データ構造です。
+ルートには 3 つのキー (\fBstring_values\fP, \fBnum_values\fP および \fBbinary_values\fP) を指定する必要があります。また、それぞれの値はフラットなオブジェクトで、そのキーは String 型、値は String 型 (\fBstring_values\fP と \fBbinary_values\fP の場合) または整数/浮動小数点型 (\fBnum_values\fP の場合) である必要があります。
+.IP \(bu 2
+\fBjson\fP は任意の JSON データ構造です。
+JSON データ構造はキーを \fB/\fP で結合することによってフラットな key\-value データ構造に変換されます。
+.UNINDENT
+.SS Output
+.sp
+\fBfv\fP, \fBdatum\fP または \fBjson\fP がサポートされています。
+.INDENT 0.0
+.IP \(bu 2
+\fBfv\fP は fv_converter によって入力データから抽出された特徴ベクトルを出力します。
+.IP \(bu 2
+\fBdatum\fP は入力データを Datum 形式の JSON データ構造に変換したものを出力します。
+.IP \(bu 2
+\fBjson\fP は入力データをそのまま、フォーマットした形で出力します。
+このオプションは入力データのフォーマットが \fBjson\fP の場合のみ利用できます。
 .UNINDENT
 .SH EXAMPLES
 .INDENT 0.0
@@ -92,6 +120,8 @@ $ cat datum.json
   },
   "num_values": {
     "age": 31
+  },
+  "binary_values": {
   }
 }
 

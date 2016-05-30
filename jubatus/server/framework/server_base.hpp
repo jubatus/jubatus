@@ -76,18 +76,22 @@ class server_base {
   }
 
   uint64_t last_saved_sec() const {
+    jubatus::util::concurrent::scoped_rlock lock(status_mutex_);
     return last_saved_.sec;
   }
 
-  const std::string& last_saved_path() const {
+  const std::string last_saved_path() const {
+    jubatus::util::concurrent::scoped_rlock lock(status_mutex_);
     return last_saved_path_;
   }
 
   uint64_t last_loaded_sec() const {
+    jubatus::util::concurrent::scoped_rlock lock(status_mutex_);
     return last_loaded_.sec;
   }
 
-  const std::string& last_loaded_path() const {
+  const std::string last_loaded_path() const {
+    jubatus::util::concurrent::scoped_rlock lock(status_mutex_);
     return last_loaded_path_;
   }
 
@@ -99,6 +103,9 @@ class server_base {
   clock_time last_loaded_;
   std::string last_loaded_path_;
   jubatus::util::concurrent::rw_mutex rw_mutex_;
+
+  // Mutex that protect save/load status values.
+  mutable jubatus::util::concurrent::rw_mutex status_mutex_;
 };
 
 }  // namespace framework
