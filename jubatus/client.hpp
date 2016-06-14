@@ -43,5 +43,6 @@
 #include <jubatus/client/nearest_neighbor_client.hpp>
 #include <jubatus/client/clustering_client.hpp>
 #include <jubatus/client/bandit_client.hpp>
+#include <jubatus/client/weight_client.hpp>
 
 #endif  // JUBATUS_CLIENT_HPP_
