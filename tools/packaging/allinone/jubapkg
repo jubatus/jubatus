@@ -76,10 +76,12 @@ do_download() {
 	download_url https://github.com/hillbig/ux-trie/archive/${UX_VER}.tar.gz "ux-trie-${UX_VER}.tar.gz"
 
 	# MeCab
-	download_url http://mecab.googlecode.com/files/mecab-${MECAB_VER}.tar.gz
+	# Note: Using Google Drive URL from http://taku910.github.io/mecab/#download
+	download_url "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7cENtOXlicTFaRUE" "mecab-${MECAB_VER}.tar.gz"
 
 	# MeCab IPA Dictionary
-	download_url http://mecab.googlecode.com/files/mecab-ipadic-${IPADIC_VER}.tar.gz
+	# Note: Using Google Drive URL from http://taku910.github.io/mecab/#download
+	download_url "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7MWVlSDBCSXZMTXM" "mecab-ipadic-${IPADIC_VER}.tar.gz"
 
 	# ZooKeeper
 	download_url http://ftp.jaist.ac.jp/pub/apache/zookeeper/zookeeper-${ZK_VER}/zookeeper-${ZK_VER}.tar.gz

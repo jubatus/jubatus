@@ -7,8 +7,9 @@ Release:	%{package_release}%{?dist}
 Summary:	Yet Another Part-of-Speech and Morphological Analyzer
 Group:		Applications/Text
 License:	BSD / LGPL 2.1 / GPL 2
-URL:		http://code.google.com/p/mecab/
-Source0:	http://mecab.googlecode.com/files/%{name}-%{version}.tar.gz
+URL:		http://taku910.github.io/mecab/
+# Note: Using Google Drive URL from http://taku910.github.io/mecab/#download
+Source0:	https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7cENtOXlicTFaRUE
 Patch0:		mecab-fix-dicdir.patch
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 

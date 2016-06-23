@@ -14,8 +14,9 @@ Summary:	IPA Dictionary for MeCab
 Group:		Applications/Text
 # License is "mecab-ipadic": http://fedoraproject.org/wiki/Licensing#Good_Licenses
 License:	mecab-ipadic
-URL:		http://code.google.com/p/mecab/
-Source0:	http://mecab.googlecode.com/files/%{target_archive}
+URL:		http://taku910.github.io/mecab/
+# Note: Using Google Drive URL from http://taku910.github.io/mecab/#download
+Source0:	https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7MWVlSDBCSXZMTXM
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 # mecab-config command (in mecab package) is required to configure mecab-ipadic

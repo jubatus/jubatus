@@ -9,7 +9,7 @@ Release:	%{package_release}%{?dist}
 Summary:	More Succinct Trie Data structure
 Group:		Development/Libraries
 License:	New BSD License
-URL:		http://code.google.com/p/ux-trie/
+URL:		https://github.com/hillbig/ux-trie/
 Source0:	https://github.com/hillbig/ux-trie/archive/%{version}.tar.gz
 Patch0:		ux-fix-waf-libdir.patch
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
