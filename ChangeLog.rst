@@ -1,3 +1,12 @@
+Release 0.9.2 - 2016/06/27
+--------------------------
+
+* Improvements
+    * Update README.rst (#1126, #1129)
+
+* Bug fixes
+    * Fix `weight_client.hpp` not included in `client.hpp` (#1127, #1128)
+
 Release 0.9.1 - 2016/05/30
 --------------------------
 
