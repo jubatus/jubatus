@@ -8,18 +8,23 @@ See http://jubat.us/ for details.
 Quick Start
 -----------
 
-We officially support Ubuntu Server 12.04 LTS (x86_64) and Red Hat Enterprise Linux 6.2 or later (x86_64).
+We officially support Red Hat Enterprise Linux (RHEL) 6.2 or later (64-bit) and Ubuntu Server 12.04 LTS / 14.04 LTS (64-bit).
+On supported systems, you can install all components of Jubatus using binary packages.
 
 See `QuickStart <http://jubat.us/en/quickstart.html>`_ for detailed description.
 
-Red Hat Enterprise Linux 6.2 or later (x86_64)
+Red Hat Enterprise Linux 6.2 or later (64-bit)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Run the following command to register Jubatus Yum repository to the system.
 
 ::
 
-  $ sudo rpm -Uvh http://download.jubat.us/yum/rhel/6/stable/x86_64/jubatus-release-6-1.el6.x86_64.rpm
+  // For RHEL 6
+  $ sudo rpm -Uvh http://download.jubat.us/yum/rhel/6/stable/x86_64/jubatus-release-6-2.el6.x86_64.rpm
+
+  // For RHEL 7
+  $ sudo rpm -Uvh http://download.jubat.us/yum/rhel/7/stable/x86_64/jubatus-release-7-2.el7.x86_64.rpm
 
 Then install ``jubatus`` and ``jubatus-client`` package.
 
@@ -33,21 +38,25 @@ Now Jubatus is installed in ``/usr/bin/juba*``.
 
   $ jubaclassifier -f /usr/share/jubatus/example/config/classifier/pa.json
 
-Ubuntu Server 12.04 LTS (x86_64)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Ubuntu Server (64-bit)
+~~~~~~~~~~~~~~~~~~~~~~
 
 Write the following line to ``/etc/apt/sources.list.d/jubatus.list`` to register Jubatus Apt repository to the system.
 
 ::
 
-  deb http://download.jubat.us/apt binary/
+  // For Ubuntu 12.04 (Precise)
+  deb http://download.jubat.us/apt/ubuntu/precise binary/
+
+  // For Ubuntu 14.04 (Trusty)
+  deb http://download.jubat.us/apt/ubuntu/trusty binary/
 
 Now install ``jubatus`` package.
 
 ::
 
   $ sudo apt-get update
-  $ sudo apt-get install -y --force-yes jubatus
+  $ sudo apt-get install jubatus
 
 Now Jubatus is installed in ``/opt/jubatus/bin/juba*``.
 
