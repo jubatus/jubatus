@@ -103,6 +103,7 @@ void weight_serv::set_config(const std::string& config) {
       conf.converter, &so_loader_)));
 
   config_ = config;
+  LOG(INFO) << "config loaded: " << config;
 }
 
 std::vector<feature> weight_serv::update(
