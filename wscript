@@ -106,7 +106,13 @@ def configure(conf):
   conf.check_cxx(header_name = 'dlfcn.h')
 
   if Options.options.debug:
-    conf.define('_GLIBCXX_DEBUG', 1)
+    """
+    You can uncomment the following line to enable debug mode (useful to
+    check STL-related bugs).  Note that dependency libraries (log4cxx and
+    jubatus_core) must be recompiled with this option.
+    """
+    # conf.define('_GLIBCXX_DEBUG', 1)
+    pass
   else:
     conf.define('NDEBUG', 1)
     conf.define('JUBATUS_DISABLE_ASSERTIONS', 1)
