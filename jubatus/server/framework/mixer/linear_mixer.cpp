@@ -93,7 +93,10 @@ class linear_communication_impl : public linear_communication {
 
  private:
   jubatus::util::lang::shared_ptr<server::common::lock_service> zk_;
+
+  // This mutex is used to protect zk operation and `servers_`.
   mutable jubatus::util::concurrent::mutex m_;
+
   const string type_;
   const string name_;
   const int timeout_sec_;
@@ -201,7 +204,7 @@ void linear_communication_impl::put_diff(
                << servers_[i].second;
   }
 #endif
-  lk.unlock();  // unlock for re-entrant lock aquisition over RPC
+  lk.unlock();  // unlock for re-entrant lock acquisition over RPC
   result = client.call("put_diff", mixed);
 }
 
@@ -365,24 +368,28 @@ void linear_mixer::stabilizer_loop() {
         return;
       }
 
+      // Release the lock and wait for signal or 0.5 secs.
+      // If meet the conditions, acquire the lock again.
       c_.wait(m_, 0.5);
 
       if (!is_running_) {
         return;
       }
+
       const clock_time new_ticktime = get_clock_time();
       if (((0 < count_threshold_ && counter_ >= count_threshold_)
           || (0 < tick_threshold_
               && new_ticktime - ticktime_ > tick_threshold_))
           && (0 < counter_)) {
-        lk.unlock();
+        lk.unlock();  // Release the lock during tring to get zk lock.
         if (zklock->try_lock()) {
           LOG(INFO) << "got ZooKeeper lock, starting mix";
-          common::unique_lock lk(m_);
+
+          lk.lock();
           counter_ = 0;
           ticktime_ = new_ticktime;
-
           lk.unlock();
+
           mix();
 
           // print versions of mixables
@@ -391,17 +398,23 @@ void linear_mixer::stabilizer_loop() {
         }
       }
 
+      lk.lock();
       if (is_obsolete_) {
-        lk.unlock();
+        lk.unlock();  // Release the lock during tring to get zk lock.
         if (zklock->try_lock()) {
-          common::unique_lock lk(m_);
+          lk.lock();
           if (is_obsolete_) {
-            LOG(INFO) << "start to get model from other server";
             lk.unlock();
+
+            LOG(INFO) << "start to get model from other server";
             update_model();
+
+            lk.lock();
             if (!is_running_) {
               return;
             }
+            lk.unlock();
+
             mix();
           }
         } else {
@@ -546,7 +559,7 @@ void linear_mixer::mix() {
 
 byte_buffer linear_mixer::get_diff(int a) {
   scoped_rlock lk_read(model_mutex_);
-  scoped_lock lk(m_);
+  scoped_lock lk(m_);  // Prevent `stabilizer_loop` to awake from `wait`.
 
   core::framework::linear_mixable* mixable =
     dynamic_cast<core::framework::linear_mixable*>(driver_->get_mixable());
@@ -565,6 +578,7 @@ byte_buffer linear_mixer::get_diff(int a) {
 
 std::pair<uint64_t, byte_buffer> linear_mixer::get_model(int a) const {
   scoped_rlock lk_read(model_mutex_);
+  scoped_lock lk(m_);  // Prevent `stabilizer_loop` to awake from `wait`.
 
   msgpack::sbuffer packed;
   stream_writer<msgpack::sbuffer> st(packed);
@@ -589,7 +603,12 @@ void linear_mixer::update_model() {
   if (model_serialized.size() == 0) {
     // it means "no other server"
     LOG(INFO) << "no other server available, I become active";
-    is_obsolete_ = false;
+
+    {
+      scoped_lock lk(m_);
+      is_obsolete_ = false;
+    }
+
     communication_->register_active_list();
     return;
   }
@@ -612,6 +631,9 @@ void linear_mixer::update_model() {
 
 int linear_mixer::put_diff(const byte_buffer& diff) {
   scoped_wlock lk_write(model_mutex_);
+
+  // Prevent `stabilizer_loop` to awake from `wait` and protect
+  // status values.
   scoped_lock lk(m_);
 
   msgpack::unpacked msg;
