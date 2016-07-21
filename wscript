@@ -106,9 +106,21 @@ def configure(conf):
   conf.check_cxx(header_name = 'dlfcn.h')
 
   if Options.options.debug:
-    conf.define('_GLIBCXX_DEBUG', 1)
+    """
+    You can compile "debug-enabled" version of Jubatus by ``./waf configure --enable-debug ...``.
+    In debug-enabled Jubatus, DEBUG-level logs and assertions are enabled.
+
+    In addition, if you want to enable Glibc C++ debugging feature (useful to debug STL-related
+    issues), you can uncomment the following line.  Note that dependency libraries (log4cxx and
+    jubatus_core) must be recompiled with this option.
+    """
+    # conf.define('_GLIBCXX_DEBUG', 1)
+    pass
   else:
+    # Disable DEBUG logs and standard assertions
     conf.define('NDEBUG', 1)
+
+    # Disable Jubatus specific assertions
     conf.define('JUBATUS_DISABLE_ASSERTIONS', 1)
 
   if Options.options.enable_zookeeper:
