@@ -83,7 +83,18 @@ void configure_logger(const std::string& log_config) {
   }
 
   if (ls) {
-    ls->reopen_logfile();
+    try {
+      ls->reopen_logfile();
+    } catch (const jubatus::core::common::exception::jubatus_exception& e) {
+      // If cannot reopen zk logfile, keep running with error log.
+      if (logger_configured_) {
+        LOG(ERROR) << "failed to reopen zk logfile: "
+                   << e.diagnostic_information(true);
+      } else {
+        // If cannot open zk logfile, stop to run
+        throw;
+      }
+    }
   }
 
   logger_configured_ = true;
