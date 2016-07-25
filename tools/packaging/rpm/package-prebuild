@@ -133,7 +133,7 @@ prepare_rpmbuild() {
 		MECAB_IPADIC_ARCHIVE_DIR
 
 	# Download Sources & Patches if the URL is provided in SPEC file
-	spectool -g "${SPECFILE}"
+	spectool -v -v -v -g "${SPECFILE}"
 
 	popd
 }
