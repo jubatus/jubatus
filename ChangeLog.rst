@@ -1,3 +1,15 @@
+Release 0.9.3 - 2016/07/25
+--------------------------
+
+* Improvements
+    * Improve behavior when ZooKeeper log files cannot be reopened (#1026, #1133)
+    * Remove Glibc C++ debug flag in debug mode (#910, #1136)
+    * Improve packaging tools to remove dependency to Google Code (#980, #1130)
+
+* Bug fixes
+    * weight: fix to display config on startup (#1131, #1132)
+    * Fix missing lock in get_status of linear_mixer (#1093, #1134)
+
 Release 0.9.2 - 2016/06/27
 --------------------------
 
