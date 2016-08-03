@@ -118,7 +118,7 @@ main() {
 
 	# Check if commands required to run this script exist.
 	# Commands not included in coreutils package must be listed here.
-	test_command_exists git tar perl yum rpmbuild spectool || exit 1
+	test_command_exists git tar perl yum rpmbuild spectool sudo wget || exit 1
 
 	# See how we're called.
 	AUTO_INSTALL="no"
