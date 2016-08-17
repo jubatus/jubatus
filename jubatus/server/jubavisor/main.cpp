@@ -14,6 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <locale.h>
+
 #include <iostream>
 #include <string>
 
@@ -74,6 +76,9 @@ void configure_logger(const std::string& log_config) {
 }  // namespace
 
 int main(int argc, char* argv[]) try {
+  // Explicitly set the current locale to support Unicode output in logs.
+  ::setlocale(LC_ALL, "");
+
   cmdline::parser p;
   p.add<int>("rpc-port", 'p', "port number", false, 9198,
              cmdline::range(1, 65535));
