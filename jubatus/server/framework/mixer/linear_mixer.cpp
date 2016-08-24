@@ -368,8 +368,8 @@ void linear_mixer::stabilizer_loop() {
         return;
       }
 
-      // Release the lock and wait for signal or 0.5 secs.
-      // If meet the conditions, acquire the lock again.
+      // Release the lock and wait for ``c_.notify`` or 0.5 secs.
+      // After waiting, acquire the lock again.
       c_.wait(m_, 0.5);
 
       if (!is_running_) {
