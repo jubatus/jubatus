@@ -19,6 +19,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <signal.h>
+#include <locale.h>
+
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -180,6 +182,9 @@ std::string make_ignored_help(const std::string& help) {
 
 server_argv::server_argv(int args, char** argv, const std::string& type)
     : type(type) {
+  // Explicitly set the current locale to support Unicode output in logs.
+  ::setlocale(LC_ALL, "");
+
   cmdline::parser p;
   p.add<int>("rpc-port", 'p', "port number", false, 9199,
              cmdline::range(1, 65535));
@@ -430,6 +435,9 @@ std::string get_server_identifier(const server_argv& a) {
 
 proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
     : type(t) {
+  // Explicitly set the current locale to support Unicode output in logs.
+  ::setlocale(LC_ALL, "");
+
   cmdline::parser p;
   p.add<int>("rpc-port", 'p', "port number", false, 9199,
              cmdline::range(1, 65535));

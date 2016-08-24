@@ -14,6 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <locale.h>
+
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -62,6 +64,9 @@ void get_all_config_paths(
 
 int main(int argc, char** argv)
 try {
+  // Explicitly set the current locale to support Unicode output in logs.
+  ::setlocale(LC_ALL, "");
+
   // Configures the logger.
   // We don't provide logging configuration feature for command line tools;
   // just print logs to standard output.

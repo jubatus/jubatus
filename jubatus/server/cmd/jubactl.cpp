@@ -14,6 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <locale.h>
+
 #include <string>
 #include <vector>
 #include <iostream>
@@ -55,6 +57,9 @@ void status(const string& type, const string& name, const string& zkhosts);
 
 int main(int argc, char** argv)
 try {
+  // Explicitly set the current locale to support Unicode output in logs.
+  ::setlocale(LC_ALL, "");
+
   // Configures the logger.
   // We don't provide logging configuration feature for command line tools;
   // just print logs to standard output.
