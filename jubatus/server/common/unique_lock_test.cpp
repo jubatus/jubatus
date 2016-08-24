@@ -74,20 +74,20 @@ TEST(unique_lock, lock) {
   ASSERT_FALSE(m.locked());
 
   unique_lock lk(m);
-  ASSERT_TRUE(lk.locked());
-  ASSERT_TRUE(m.locked());
+  EXPECT_TRUE(lk.locked());
+  EXPECT_TRUE(m.locked());
 
   lk.lock();
-  ASSERT_TRUE(lk.locked());
-  ASSERT_TRUE(m.locked());
+  EXPECT_TRUE(lk.locked());
+  EXPECT_TRUE(m.locked());
 
   lk.unlock();
   EXPECT_FALSE(lk.locked());
   EXPECT_FALSE(m.locked());
 
   lk.lock();
-  ASSERT_TRUE(lk.locked());
-  ASSERT_TRUE(m.locked());
+  EXPECT_TRUE(lk.locked());
+  EXPECT_TRUE(m.locked());
 }
 
 TEST(unique_lock, unlock) {
