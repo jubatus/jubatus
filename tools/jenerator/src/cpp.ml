@@ -677,7 +677,7 @@ let gen_impl_file conf names source services =
       (0, "int main(int argc, char* argv[]) {");
       (1,   "return");
       (* TODO(unnonouno): does not work when service name is not equal to a source file*)
-      (2,     "jubatus::server::framework::run_server<" ^ namespace_str ^ "::" ^ base ^ "_impl>");
+      (2,     "jubatus::server::framework::run_server<" ^ namespace_str ^ "::" ^ base ^ "_impl, " ^ namespace_str ^ "::" ^ base ^ "_serv>");
       (3,       "(argc, argv, " ^ name_str ^ ");");
       (0, "}")
     ]
