@@ -398,7 +398,6 @@ void linear_mixer::stabilizer_loop() {
         }
       }
 
-      lk.lock();
       if (is_obsolete_) {
         lk.unlock();  // Release the lock during trying to get zk lock.
         if (zklock->try_lock()) {
