@@ -74,7 +74,29 @@ void configure_logger(const std::string& log_config) {
     if (logger_configured_) {
       LOG(INFO) << "reloading log configuration: " << log_config;
     }
-    common::logger::configure(log_config);
+    std::string token;
+    try {
+      std::ifstream f(log_config.c_str());
+      f >> token;
+      f.close();
+    } catch (const std::exception& e) {
+      if (logger_configured_) {
+        LOG(ERROR) << "failed to validate contents of log configuration file";
+      } else {
+        throw;
+      }
+    }
+    if (token.empty()) {
+      if (logger_configured_) {
+        LOG(ERROR) << "invalid log configuration; reload aborted";
+      } else {
+        throw JUBATUS_EXCEPTION(
+            jubatus::core::common::exception::runtime_error(
+                "invalid log configuration"));
+      }
+    } else {
+      common::logger::configure(log_config);
+    }
   }
 
   if (!common::logger::is_configured()) {
