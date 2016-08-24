@@ -25,9 +25,7 @@ namespace server {
 namespace common {
 namespace mprpc {
 
-typedef jubatus::core::common::exception::error_info<
-    struct error_method_,
-    std::string> error_method;
+DEFINE_ERROR_TAG(error_method, "Method", std::string)
 
 class rpc_no_client
   : public core::common::exception::jubaexception<rpc_no_client> {

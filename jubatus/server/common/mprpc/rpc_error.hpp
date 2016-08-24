@@ -69,9 +69,7 @@ class rpc_error {
   jubatus::core::common::exception::exception_thrower_ptr exception_;
 };
 
-typedef jubatus::core::common::exception::error_info<
-    struct error_multi_rpc_,
-    std::vector<rpc_error> > error_multi_rpc;
+DEFINE_ERROR_TAG(error_multi_rpc, "Multi RPC", std::vector<rpc_error>)
 
 inline std::string to_string(const error_multi_rpc& info) {
   std::ostringstream result;
