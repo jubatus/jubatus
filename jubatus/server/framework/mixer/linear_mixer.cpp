@@ -395,6 +395,8 @@ void linear_mixer::stabilizer_loop() {
           // print versions of mixables
           LOG(INFO) << ".... mix done. versions"
                     << version_list(driver_->get_versions());
+
+          lk.lock();
         }
       }
 
