@@ -1,4 +1,4 @@
-// This file is auto-generated from nearest_neighbor.idl(0.8.2-20-g8e4dc3b) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from nearest_neighbor.idl(0.8.2-20-g8e4dc3b) with jenerator version 0.8.5-6-g5a2c923/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -134,6 +134,6 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
 
 int main(int argc, char* argv[]) {
   return
-    jubatus::server::framework::run_server<jubatus::server::nearest_neighbor_impl>
+    jubatus::server::framework::run_server<jubatus::server::nearest_neighbor_impl, jubatus::server::nearest_neighbor_serv>
       (argc, argv, "nearest_neighbor");
 }
