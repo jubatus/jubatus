@@ -381,7 +381,7 @@ void linear_mixer::stabilizer_loop() {
           || (0 < tick_threshold_
               && new_ticktime - ticktime_ > tick_threshold_))
           && (0 < counter_)) {
-        lk.unlock();  // Release the lock during tring to get zk lock.
+        lk.unlock();  // Release the lock during trying to get zk lock.
         if (zklock->try_lock()) {
           LOG(INFO) << "got ZooKeeper lock, starting mix";
 
@@ -400,7 +400,7 @@ void linear_mixer::stabilizer_loop() {
 
       lk.lock();
       if (is_obsolete_) {
-        lk.unlock();  // Release the lock during tring to get zk lock.
+        lk.unlock();  // Release the lock during trying to get zk lock.
         if (zklock->try_lock()) {
           lk.lock();
           if (is_obsolete_) {
