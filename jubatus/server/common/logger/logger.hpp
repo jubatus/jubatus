@@ -48,7 +48,7 @@
 #define LOG_ERROR(level) STREAM_LOGGER(level, false)
 #define LOG_WARN(level)  STREAM_LOGGER(level, false)
 #define LOG_INFO(level)  STREAM_LOGGER(level, false)
-#define LOG_DEBUG(level) DEBUG_ONLY STREAM_LOGGER(level, false)
+#define LOG_DEBUG(level) STREAM_LOGGER(level, false)
 #define LOG_TRACE(level) DEBUG_ONLY STREAM_LOGGER(level, false)
 
 // Deprecated (for glog transition)
