@@ -429,15 +429,15 @@ void push_mixer::mix() {
 }
 
 byte_buffer push_mixer::pull(const msgpack::object& arg_obj) {
-  scoped_rlock lk_read(model_mutex_);
-  scoped_lock lk(m_);  // Prevent `stabilizer_loop` to awake from `wait`.
-
   if (arg_obj.type != msgpack::type::RAW) {
     throw msgpack::rpc::argument_error();
   }
   msgpack::unpacked msg;
   msgpack::unpack(&msg, arg_obj.via.raw.ptr, arg_obj.via.raw.size);
   msgpack::object arg = msg.get();
+
+  scoped_rlock lk_read(model_mutex_);
+  scoped_lock lk(m_);  // Prevent `stabilizer_loop` to awake from `wait`.
 
   core::framework::push_mixable* mixable =
     dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
@@ -470,11 +470,6 @@ byte_buffer push_mixer::get_pull_argument(int dummy_arg) {
 }
 
 int push_mixer::push(const msgpack::object& diff_obj) {
-  scoped_wlock lk_write(model_mutex_);
-  // Prevent `stabilizer_loop` to awake from `wait` and protect
-  // status values.
-  scoped_lock lk(m_);
-
   if (diff_obj.type != msgpack::type::RAW) {
     throw msgpack::rpc::argument_error();
   }
@@ -482,6 +477,11 @@ int push_mixer::push(const msgpack::object& diff_obj) {
   msgpack::unpacked msg;
   msgpack::unpack(&msg, diff_obj.via.raw.ptr, diff_obj.via.raw.size);
   msgpack::object diff = msg.get();
+
+  scoped_wlock lk_write(model_mutex_);
+  // Prevent `stabilizer_loop` to awake from `wait` and protect
+  // status values.
+  scoped_lock lk(m_);
 
   core::framework::push_mixable* mixable =
     dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
@@ -495,6 +495,7 @@ int push_mixer::push(const msgpack::object& diff_obj) {
 
   counter_ = 0;
   ticktime_ = get_clock_time();
+
   return 0;
 }
 
