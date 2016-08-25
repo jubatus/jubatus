@@ -93,6 +93,14 @@ class basic_unique_lock : jubatus::util::lang::noncopyable {
     l.swap(r);
   }
 
+  void lock() {
+    if (!locked_) {
+      JUBATUS_ASSERT(lp_ != NULL);
+      lock_functions::lock(*lp_);
+      locked_ = true;
+    }
+  }
+
   void unlock() {
     if (locked_) {
       JUBATUS_ASSERT(lp_ != NULL);

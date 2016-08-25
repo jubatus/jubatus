@@ -89,7 +89,10 @@ class push_communication_impl : public push_communication {
  private:
   vector<pair<string, int> > servers_;
   jubatus::util::lang::shared_ptr<common::lock_service> zk_;
-  mutable jubatus::util::concurrent::mutex m_;  // saves servers_ and zk_
+
+  // This mutex is used to protect zk operation and `servers_`.
+  mutable jubatus::util::concurrent::mutex m_;
+
   const string type_;
   const string name_;
   const int timeout_sec_;
@@ -298,13 +301,15 @@ void push_mixer::get_status(server_base::status_t& status) const {
 }
 
 void push_mixer::mixer_loop() {
-  while (is_running_) {
+  while (true) {
     try {
       common::unique_lock lk(m_);
       if (!is_running_) {
         return;
       }
 
+      // Release the lock and wait for ``c_.notify`` or 0.5 secs.
+      // After waiting, acquire the lock again.
       c_.wait(m_, 0.5);
 
       if (!is_running_) {
@@ -323,6 +328,8 @@ void push_mixer::mixer_loop() {
 
         lk.unlock();
         mix();
+
+        lk.lock();
         DLOG(INFO) << ".... " << mix_count_ << "th mix done.";
       }
     } catch (const core::common::exception::jubatus_exception& e) {
@@ -339,9 +346,14 @@ void push_mixer::mix() {
   size_t servers_size = communication_->update_members();
   if (servers_size == 0 ||
       (servers_size == 1 && communication_->servers_list()[0] == my_id_)) {
+    common::unique_lock lk(m_);
     if (is_obsolete_) {
+      lk.unlock();
+
       LOG(INFO) << "no server exists, skipping mix";
       communication_->register_active_list();
+
+      lk.lock();
       is_obsolete_ = false;
     }
     return;
@@ -394,8 +406,13 @@ void push_mixer::mix() {
       return;
     }
 
+    common::unique_lock lk(m_);
     if (is_obsolete_) {
+      lk.unlock();
+
       communication_->register_active_list();
+
+      lk.lock();
       is_obsolete_ = false;
     }
   }
@@ -404,7 +421,11 @@ void push_mixer::mix() {
   LOG(INFO) << (end - start) << " time elapsed "
             << s_pull << " pulled  "
             << s_push << " pushed";
-  mix_count_++;
+
+  {
+    scoped_lock lk(m_);
+    mix_count_++;
+  }
 }
 
 byte_buffer push_mixer::pull(const msgpack::object& arg_obj) {
@@ -416,6 +437,7 @@ byte_buffer push_mixer::pull(const msgpack::object& arg_obj) {
   msgpack::object arg = msg.get();
 
   scoped_rlock lk_read(model_mutex_);
+  scoped_lock lk(m_);  // Prevent `stabilizer_loop` to awake from `wait`.
 
   core::framework::push_mixable* mixable =
     dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
@@ -432,6 +454,7 @@ byte_buffer push_mixer::pull(const msgpack::object& arg_obj) {
 
 byte_buffer push_mixer::get_pull_argument(int dummy_arg) {
   scoped_rlock lk_read(model_mutex_);
+  scoped_lock lk(m_);  // Prevent `stabilizer_loop` to awake from `wait`.
 
   core::framework::push_mixable* mixable =
     dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
@@ -456,6 +479,10 @@ int push_mixer::push(const msgpack::object& diff_obj) {
   msgpack::object diff = msg.get();
 
   scoped_wlock lk_write(model_mutex_);
+  // Prevent `stabilizer_loop` to awake from `wait` and protect
+  // status values.
+  scoped_lock lk(m_);
+
   core::framework::push_mixable* mixable =
     dynamic_cast<core::framework::push_mixable*>(driver_->get_mixable());
 
@@ -468,6 +495,7 @@ int push_mixer::push(const msgpack::object& diff_obj) {
 
   counter_ = 0;
   ticktime_ = get_clock_time();
+
   return 0;
 }
 
