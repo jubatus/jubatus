@@ -67,6 +67,7 @@ UX_RELEASE="1"
 # ==============================================================================
 MECAB_VERSION="0.996"
 MECAB_RELEASE="1"
+MECAB_URL="https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7cENtOXlicTFaRUE"
 
 # ==============================================================================
 # mecab-ipadic
@@ -75,6 +76,7 @@ MECAB_IPADIC_VERSION="2.7.0.20070801"
 MECAB_IPADIC_RELEASE="1"
 MECAB_IPADIC_ARCHIVE="mecab-ipadic-2.7.0-20070801.tar.gz"
 MECAB_IPADIC_ARCHIVE_DIR="mecab-ipadic-2.7.0-20070801"
+MECAB_IPADIC_URL="https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7MWVlSDBCSXZMTXM"
 
 # ==============================================================================
 # ZooKeeper

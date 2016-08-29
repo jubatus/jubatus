@@ -19,6 +19,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <signal.h>
+#include <locale.h>
+
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -74,7 +76,29 @@ void configure_logger(const std::string& log_config) {
     if (logger_configured_) {
       LOG(INFO) << "reloading log configuration: " << log_config;
     }
-    common::logger::configure(log_config);
+    std::string token;
+    try {
+      std::ifstream f(log_config.c_str());
+      f >> token;
+      f.close();
+    } catch (const std::exception& e) {
+      if (logger_configured_) {
+        LOG(ERROR) << "failed to validate contents of log configuration file";
+      } else {
+        throw;
+      }
+    }
+    if (token.empty()) {
+      if (logger_configured_) {
+        LOG(ERROR) << "invalid log configuration; reload aborted";
+      } else {
+        throw JUBATUS_EXCEPTION(
+            jubatus::core::common::exception::runtime_error(
+                "invalid log configuration"));
+      }
+    } else {
+      common::logger::configure(log_config);
+    }
   }
 
   if (!common::logger::is_configured()) {
@@ -158,6 +182,9 @@ std::string make_ignored_help(const std::string& help) {
 
 server_argv::server_argv(int args, char** argv, const std::string& type)
     : type(type) {
+  // Explicitly set the current locale to support Unicode output in logs.
+  ::setlocale(LC_ALL, "");
+
   cmdline::parser p;
   p.add<int>("rpc-port", 'p', "port number", false, 9199,
              cmdline::range(1, 65535));
@@ -408,6 +435,9 @@ std::string get_server_identifier(const server_argv& a) {
 
 proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
     : type(t) {
+  // Explicitly set the current locale to support Unicode output in logs.
+  ::setlocale(LC_ALL, "");
+
   cmdline::parser p;
   p.add<int>("rpc-port", 'p', "port number", false, 9199,
              cmdline::range(1, 65535));

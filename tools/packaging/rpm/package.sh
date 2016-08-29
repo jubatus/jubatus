@@ -62,7 +62,7 @@ _EOF_
 # Test if the given command(s) exists in PATH
 test_command_exists() {
 	for CMD in "$@"; do
-		if ! which "${CMD}" > /dev/null 2>&1; then
+		if ! type "${CMD}" > /dev/null 2>&1; then
 			echo "ERROR: Cannot detect '$CMD' command."
 			echo "Try \`yum provides '*/$CMD'\` to find package."
 			return 1
@@ -118,7 +118,7 @@ main() {
 
 	# Check if commands required to run this script exist.
 	# Commands not included in coreutils package must be listed here.
-	test_command_exists git tar perl yum rpmbuild spectool || exit 1
+	test_command_exists git tar perl yum rpmbuild spectool sudo wget || exit 1
 
 	# See how we're called.
 	AUTO_INSTALL="no"

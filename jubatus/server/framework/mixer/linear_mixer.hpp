@@ -120,8 +120,17 @@ class linear_mixer : public mixer {
   bool is_obsolete_;
 
   jubatus::util::concurrent::thread t_;
+
+  // This mutex is used to protect status values (`counter_`, `ticktime_`,
+  // `is_running_`, `is_obsolete_`) and to prevent `stabilizer_loop` while
+  // MIX-RPC is being called.
   mutable jubatus::util::concurrent::mutex m_;
+
+  // This mutex is used to protect model.
+  // We should acquire the lock in the order of ``model_mutex_``, ``m_``
+  // as the same order of ``JRLOCK_`` and `` JWLOCK_``.
   jubatus::util::concurrent::rw_mutex& model_mutex_;
+
   jubatus::util::concurrent::condition c_;
 
   core::driver::driver_base* driver_;

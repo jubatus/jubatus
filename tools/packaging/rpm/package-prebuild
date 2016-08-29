@@ -94,8 +94,10 @@ prepare_rpmbuild() {
 		ux )
 			;;
 		mecab )
+			wget "${MECAB_URL}" -O "mecab-${MECAB_VERSION}.tar.gz"
 			;;
 		mecab-ipadic )
+			wget "${MECAB_IPADIC_URL}" -O "${MECAB_IPADIC_ARCHIVE}"
 			;;
 		* )
 			echo "Unknown package: "${PACKAGE}""
@@ -133,7 +135,7 @@ prepare_rpmbuild() {
 		MECAB_IPADIC_ARCHIVE_DIR
 
 	# Download Sources & Patches if the URL is provided in SPEC file
-	spectool -g "${SPECFILE}"
+	spectool -v -v -v -g "${SPECFILE}"
 
 	popd
 }

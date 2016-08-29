@@ -69,6 +69,27 @@ TEST(unique_lock, simple_lock) {
   EXPECT_FALSE(m.locked());
 }
 
+TEST(unique_lock, lock) {
+  lockable_mock m;
+  ASSERT_FALSE(m.locked());
+
+  unique_lock lk(m);
+  EXPECT_TRUE(lk.locked());
+  EXPECT_TRUE(m.locked());
+
+  lk.lock();
+  EXPECT_TRUE(lk.locked());
+  EXPECT_TRUE(m.locked());
+
+  lk.unlock();
+  EXPECT_FALSE(lk.locked());
+  EXPECT_FALSE(m.locked());
+
+  lk.lock();
+  EXPECT_TRUE(lk.locked());
+  EXPECT_TRUE(m.locked());
+}
+
 TEST(unique_lock, unlock) {
   lockable_mock m;
   ASSERT_FALSE(m.locked());

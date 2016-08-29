@@ -4,7 +4,7 @@ from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '0.9.3'
+VERSION = '0.9.4'
 ABI_VERSION = VERSION
 APPNAME = 'jubatus'
 
@@ -112,7 +112,7 @@ def configure(conf):
 
     In addition, if you want to enable Glibc C++ debugging feature (useful to debug STL-related
     issues), you can uncomment the following line.  Note that dependency libraries (log4cxx and
-    jubatus_core) must be recompiled with this option.
+    jubatus_core) and optional library (ux-trie) must be recompiled with this option.
     """
     # conf.define('_GLIBCXX_DEBUG', 1)
     pass
