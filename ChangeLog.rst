@@ -1,3 +1,16 @@
+Release 0.9.4 - 2016/08/29
+--------------------------
+
+* Improvements
+    * Improve error detection of log4cxx config file (#891, #1142)
+    * Print DEBUG logs by default (#947, #1143)
+    * Support printing logs in UTF-8 (#1078, #1140)
+    * Improve comment in wscript (#1138, #1139)
+
+* Bug fixes
+    * Fix missing locks in mixer (#1092, #1135)
+    * Fix RPM packaging tool to work on RHEL 6.x (#1137)
+
 Release 0.9.3 - 2016/07/25
 --------------------------
 
