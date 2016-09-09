@@ -1,8 +1,9 @@
 # jubatus base image
-FROM ubuntu:12.04
+FROM ubuntu:14.04
+MAINTAINER PFN & NTT <jubatus-team@googlegroups.com>
 
 # install the latest jubatus
-RUN echo "deb http://download.jubat.us/apt binary/" >> /etc/apt/sources.list.d/jubatus.list
+RUN echo "deb http://download.jubat.us/apt/ubuntu/trusty binary/" >> /etc/apt/sources.list.d/jubatus.list
 RUN apt-get -y update
 RUN apt-get --force-yes -y install jubatus
 
