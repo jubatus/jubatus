@@ -209,7 +209,7 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
       false, "");
   p.add<std::string>("model_file", 'm',
                      "model data to load at startup", false, "");
-  p.add("daemon", 'D', "launch in daemon mode (ignores SIGHUP)");
+  p.add("daemon", 'D', "launch in daemon mode");
 
   p.add<std::string>("zookeeper", 'z',
                      make_ignored_help("zookeeper location"), false);
@@ -359,6 +359,19 @@ server_argv::server_argv(int args, char** argv, const std::string& type)
   check_ignored_option(p, "interconnect_timeout");
 #endif
 
+  // Daemonize the process.
+  if (daemon) {
+    if (log_config == "" && ::isatty(::fileno(stderr))) {
+      LOG(WARNING) << "server logs will be lost because started "
+                   << "in daemon mode without log config specified";
+    }
+    if (!is_standalone() && logdir == "" && ::isatty(::fileno(stderr))) {
+      LOG(WARNING) << "ZooKeeper logs will be lost because started "
+                   << "in daemon mode without log directory specified";
+    }
+    common::daemonize();
+  }
+
   boot_message(common::get_program_name());
 }
 
@@ -414,17 +427,6 @@ void server_argv::boot_message(const std::string& progname) const {
   LOG(INFO) << ss.str();
 }
 
-void daemonize_process(const std::string& logdir) {
-  if (logdir == "" && ::isatty(::fileno(stderr))) {
-    LOG(WARNING) << "logs may be lost because started "
-                 << "in daemon mode without log directory";
-  }
-  if (::signal(SIGHUP, SIG_IGN) == SIG_ERR) {
-    LOG(FATAL) << "Failed to ignore SIGHUP";
-  }
-  LOG(INFO) << "set daemon mode (SIGHUP is now ignored)";
-}
-
 std::string get_server_identifier(const server_argv& a) {
   std::stringstream ss;
   ss << a.eth;
@@ -450,7 +452,7 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   p.add<int>("zookeeper_timeout", 'Z', "zookeeper time out (sec)", false, 10);
   p.add<int>("interconnect_timeout", 'I',
       "interconnect time out between servers (sec)", false, 10);
-  p.add("daemon", 'D', "launch in daemon mode (ignores SIGHUP)");
+  p.add("daemon", 'D', "launch in daemon mode");
 
   p.add<std::string>("zookeeper", 'z', "zookeeper location", false,
                      "localhost:2181");
@@ -522,6 +524,19 @@ proxy_argv::proxy_argv(int args, char** argv, const std::string& t)
   if ((!logdir.empty()) && (!common::is_writable(logdir.c_str()))) {
     std::cerr << "can't create log file: " << strerror(errno) << std::endl;
     exit(1);
+  }
+
+  // Daemonize the process.
+  if (daemon) {
+    if (log_config == "" && ::isatty(::fileno(stderr))) {
+      LOG(WARNING) << "proxy logs will be lost because started "
+                   << "in daemon mode without log config specified";
+    }
+    if (logdir == "" && ::isatty(::fileno(stderr))) {
+      LOG(WARNING) << "ZooKeeper logs will be lost because started "
+                   << "in daemon mode without log directory specified";
+    }
+    common::daemonize();
   }
 
   boot_message(common::get_program_name());
