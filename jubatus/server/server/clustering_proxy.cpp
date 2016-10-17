@@ -1,4 +1,4 @@
-// This file is auto-generated from clustering.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from clustering.idl with jenerator version 0.8.5-6-g5a2c923/master
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -6,10 +6,10 @@
 #include <vector>
 #include <utility>
 
-#include "jubatus/core/common/exception.hpp"
-#include "../../server/common/logger/logger.hpp"
-#include "../../server/framework/aggregators.hpp"
-#include "../../server/framework/proxy.hpp"
+#include <jubatus/core/common/exception.hpp>
+#include <../../server/common/logger/logger.hpp>
+#include <../../server/framework/aggregators.hpp>
+#include <../../server/framework/proxy.hpp>
 #include "clustering_types.hpp"
 
 namespace jubatus {
@@ -18,11 +18,12 @@ int run_proxy(int argc, char* argv[]) {
   try {
     jubatus::server::framework::proxy k(
         jubatus::server::framework::proxy_argv(argc, argv, "clustering"));
-    k.register_async_random<bool,
-        std::vector<jubatus::core::fv_converter::datum> >("push");
+    k.register_async_random<bool, std::vector<indexed_point> >("push");
     k.register_async_random<uint32_t>("get_revision");
     k.register_async_random<std::vector<std::vector<std::pair<double,
         jubatus::core::fv_converter::datum> > > >("get_core_members");
+    k.register_async_random<std::vector<std::vector<std::pair<double,
+        std::string> > > >("get_core_members_light");
     k.register_async_random<std::vector<jubatus::core::fv_converter::datum> >(
         "get_k_center");
     k.register_async_random<jubatus::core::fv_converter::datum,
@@ -30,6 +31,8 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_random<std::vector<std::pair<double,
         jubatus::core::fv_converter::datum> >,
         jubatus::core::fv_converter::datum>("get_nearest_members");
+    k.register_async_random<std::vector<std::pair<double, std::string> >,
+        jubatus::core::fv_converter::datum>("get_nearest_members_light");
     k.register_async_broadcast<bool>("clear",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::all_and));

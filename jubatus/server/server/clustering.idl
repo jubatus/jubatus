@@ -21,15 +21,28 @@ message weighted_datum("std::pair<double, jubatus::core::fv_converter::datum>") 
   1: datum point
 }
 
+message indexed_point {
+  0: string id
+  1: datum point
+}
+
+message weighted_index("std::pair<double, std::string>") {
+  0: double weight
+  1: string id
+}
+
 service clustering {
   #@random #@update #@pass
-  bool push(0: list<datum> points)
+  bool push(0: list<indexed_point> points)
 
   #@random #@analysis #@pass
   uint get_revision()
 
   #@random #@analysis #@pass
   list<list<weighted_datum > > get_core_members()
+
+  #@random #@analysis #@pass
+  list<list<weighted_index > > get_core_members_light()
 
   #@random #@analysis #@pass
   list<datum> get_k_center()
@@ -40,6 +53,9 @@ service clustering {
   #@random #@analysis #@pass
   list<weighted_datum > get_nearest_members(0: datum point)
 
+  #@random #@analysis #@pass
+  list<weighted_index > get_nearest_members_light(0: datum point)
+  
   #@broadcast #@update #@all_and
   bool clear()
 }

@@ -21,8 +21,10 @@
 #include <utility>
 #include <vector>
 #include "jubatus/core/driver/clustering.hpp"
+#include "jubatus/core/clustering/types.hpp"
 #include "../framework/server_base.hpp"
 #include "../fv_converter/so_factory.hpp"
+#include "clustering_types.hpp"
 
 namespace jubatus {
 namespace server {
@@ -48,21 +50,28 @@ class clustering_serv : public framework::server_base {
   void set_config(const std::string& config);
   std::string get_config() const;
 
-  bool push(const std::vector<core::fv_converter::datum>& points);
+  bool push(const std::vector<indexed_point>& points);
 
   core::fv_converter::datum get_nearest_center(
       const core::fv_converter::datum& point) const;
   std::vector<std::pair<double, core::fv_converter::datum> >
       get_nearest_members(const core::fv_converter::datum& point) const;
+  std::vector<std::pair<double, std::string> >
+      get_nearest_members_light(const core::fv_converter::datum& point) const;
 
   std::vector<core::fv_converter::datum> get_k_center() const;
   std::vector<std::vector<std::pair<double, core::fv_converter::datum> > >
       get_core_members() const;
+  std::vector<std::vector<std::pair<double, std::string> > >
+      get_core_members_light() const;
+
   size_t get_revision() const;
 
   void check_set_config() const;
 
  private:
+  core::clustering::indexed_point to_indexed_point(const indexed_point p);
+  
   jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
   jubatus::util::lang::shared_ptr<core::driver::clustering> clustering_;
   std::string config_;

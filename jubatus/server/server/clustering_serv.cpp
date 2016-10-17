@@ -22,8 +22,10 @@
 #include <vector>
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/text/json.h"
+#include "jubatus/util/lang/bind.h"
 #include "jubatus/core/clustering/clustering_config.hpp"
 #include "jubatus/core/clustering/clustering.hpp"
+#include "jubatus/core/clustering/types.hpp"
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/fv_converter/converter_config.hpp"
@@ -106,10 +108,29 @@ std::string clustering_serv::get_config() const {
 }
 
 bool clustering_serv::push(
-    const std::vector<core::fv_converter::datum>& points) {
+    const std::vector<indexed_point>& points) {
   check_set_config();
-  clustering_->push(points);
+  std::vector<core::clustering::indexed_point> p;
+  p.reserve((points.size()));
+  std::transform(
+      points.begin(),
+      points.end(),
+      std::back_inserter(p),
+      jubatus::util::lang::bind(
+          &clustering_serv::to_indexed_point,
+          this, jubatus::util::lang::_1));
+
+  clustering_->push(p);
+
   return true;
+}
+
+core::clustering::indexed_point clustering_serv::to_indexed_point(
+    const indexed_point p) {
+  core::clustering::indexed_point ret;
+  ret.id = p.id;
+  ret.point = p.point;
+  return ret;
 }
 
 core::fv_converter::datum clustering_serv::get_nearest_center(
@@ -125,6 +146,13 @@ std::vector<std::pair<double, core::fv_converter::datum> >
   return clustering_->get_nearest_members(point);
 }
 
+std::vector<std::pair<double, std::string> >
+    clustering_serv::get_nearest_members_light(
+        const core::fv_converter::datum& point) const {
+  check_set_config();
+  return clustering_->get_nearest_members_light(point);
+}
+
 std::vector<core::fv_converter::datum> clustering_serv::get_k_center() const {
   check_set_config();
   return clustering_->get_k_center();
@@ -134,6 +162,12 @@ std::vector<std::vector<std::pair<double, core::fv_converter::datum> > >
 clustering_serv::get_core_members() const {
   check_set_config();
   return clustering_->get_core_members();
+}
+
+std::vector<std::vector<std::pair<double, std::string> > >
+clustering_serv::get_core_members_light() const {
+  check_set_config();
+  return clustering_->get_core_members_light();
 }
 
 size_t clustering_serv::get_revision() const {

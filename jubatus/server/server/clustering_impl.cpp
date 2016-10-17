@@ -1,4 +1,4 @@
-// This file is auto-generated from clustering.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from clustering.idl with jenerator version 0.8.5-6-g5a2c923/master
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -7,7 +7,7 @@
 #include <utility>
 #include "jubatus/util/lang/shared_ptr.h"
 
-#include "../../server/framework.hpp"
+#include <jubatus/server/framework.hpp>
 #include "clustering_serv.hpp"
 
 namespace jubatus {
@@ -20,8 +20,7 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
     p_(new jubatus::server::framework::server_helper<clustering_serv>(a,
         false)) {
 
-    rpc_server::add<bool(std::string,
-        std::vector<jubatus::core::fv_converter::datum>)>("push",
+    rpc_server::add<bool(std::string, std::vector<indexed_point>)>("push",
         jubatus::util::lang::bind(&clustering_impl::push, this,
         jubatus::util::lang::_2));
     rpc_server::add<uint32_t(std::string)>("get_revision",
@@ -30,6 +29,9 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
         jubatus::core::fv_converter::datum> > >(std::string)>(
         "get_core_members", jubatus::util::lang::bind(
         &clustering_impl::get_core_members, this));
+    rpc_server::add<std::vector<std::vector<std::pair<double, std::string> > >(
+        std::string)>("get_core_members_light", jubatus::util::lang::bind(
+        &clustering_impl::get_core_members_light, this));
     rpc_server::add<std::vector<jubatus::core::fv_converter::datum>(
         std::string)>("get_k_center", jubatus::util::lang::bind(
         &clustering_impl::get_k_center, this));
@@ -42,6 +44,10 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
         jubatus::core::fv_converter::datum)>("get_nearest_members",
         jubatus::util::lang::bind(&clustering_impl::get_nearest_members, this,
         jubatus::util::lang::_2));
+    rpc_server::add<std::vector<std::pair<double, std::string> >(std::string,
+        jubatus::core::fv_converter::datum)>("get_nearest_members_light",
+        jubatus::util::lang::bind(&clustering_impl::get_nearest_members_light,
+        this, jubatus::util::lang::_2));
     rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &clustering_impl::clear, this));
 
@@ -58,7 +64,7 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
         &clustering_impl::get_status, this));
   }
 
-  bool push(const std::vector<jubatus::core::fv_converter::datum>& points) {
+  bool push(const std::vector<indexed_point>& points) {
     JWLOCK_(p_);
     return get_p()->push(points);
   }
@@ -72,6 +78,12 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
       jubatus::core::fv_converter::datum> > > get_core_members() {
     JRLOCK_(p_);
     return get_p()->get_core_members();
+  }
+
+  std::vector<std::vector<std::pair<double,
+      std::string> > > get_core_members_light() {
+    JRLOCK_(p_);
+    return get_p()->get_core_members_light();
   }
 
   std::vector<jubatus::core::fv_converter::datum> get_k_center() {
@@ -90,6 +102,12 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
       const jubatus::core::fv_converter::datum& point) {
     JRLOCK_(p_);
     return get_p()->get_nearest_members(point);
+  }
+
+  std::vector<std::pair<double, std::string> > get_nearest_members_light(
+      const jubatus::core::fv_converter::datum& point) {
+    JRLOCK_(p_);
+    return get_p()->get_nearest_members_light(point);
   }
 
   bool clear() {

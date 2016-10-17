@@ -1,8 +1,8 @@
-// This file is auto-generated from clustering.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from clustering.idl with jenerator version 0.8.5-6-g5a2c923/master
 // *** DO NOT EDIT ***
 
-#ifndef JUBATUS_SERVER_SERVER_CLUSTERING_TYPES_HPP_
-#define JUBATUS_SERVER_SERVER_CLUSTERING_TYPES_HPP_
+#ifndef CLUSTERING_TYPES_HPP_
+#define CLUSTERING_TYPES_HPP_
 
 #include <stdint.h>
 
@@ -11,13 +11,26 @@
 #include <vector>
 #include <utility>
 
-#include "jubatus/core/fv_converter/datum.hpp"
+#include <jubatus/core/fv_converter/datum.hpp>
 #include <msgpack.hpp>
 
 #include "jubatus/core/fv_converter/datum.hpp"
 
 namespace jubatus {
 
+struct indexed_point {
+ public:
+  MSGPACK_DEFINE(id, point);
+  std::string id;
+  jubatus::core::fv_converter::datum point;
+  indexed_point() {
+  }
+  indexed_point(const std::string& id,
+      const jubatus::core::fv_converter::datum& point)
+    : id(id), point(point) {
+  }
+};
+
 }  // namespace jubatus
 
-#endif  // JUBATUS_SERVER_SERVER_CLUSTERING_TYPES_HPP_
+#endif  // CLUSTERING_TYPES_HPP_
