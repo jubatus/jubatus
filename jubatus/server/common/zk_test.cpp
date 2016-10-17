@@ -173,7 +173,7 @@ TEST_F(zk_trivial, create_id) {
 
 // TODO(kashihara): test lock_service_mutex
 
-TEST_F(zk_trivial, trivial_with_membershp) {
+TEST_F(zk_trivial, trivial_with_membership) {
   using jubatus::server::common::build_actor_path;
   using jubatus::server::common::build_loc_str;
 
