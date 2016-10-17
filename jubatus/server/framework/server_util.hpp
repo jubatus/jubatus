@@ -99,7 +99,6 @@ struct server_argv {
   void boot_message(const std::string& progname) const;
 };
 
-void daemonize_process(const std::string& logdir);
 std::string get_server_identifier(const server_argv& a);
 
 struct proxy_argv {
