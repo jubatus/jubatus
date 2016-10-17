@@ -19,8 +19,9 @@
 
   <root>
     <priority value="info" />
-    <!-- <appender-ref ref="stdout" /> -->
     <appender-ref ref="file" />
+    <!-- <priority value="debug" /> -->
+    <!-- <appender-ref ref="stdout" /> -->
   </root>
 
 </log4j:configuration>
