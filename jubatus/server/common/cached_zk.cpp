@@ -87,17 +87,6 @@ bool cached_zk::list_(const string& path, std::set<std::string>& out) {
   }
 }
 
-bool cached_zk::hd_list(const string& path, string& out) {
-  out.clear();
-  scoped_lock lk(m_);
-  const std::set<string>& list(list_cache_[path]);
-  if (!list.empty()) {
-    out = *(list.begin());
-  }
-
-  return true;
-}
-
 const string cached_zk::type() const {
   return "cached_zk";
 }

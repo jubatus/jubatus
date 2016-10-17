@@ -70,7 +70,6 @@ class lock_service {
       uint64_t& res) = 0;
 
   virtual bool list(const std::string& path, std::vector<std::string>& out) = 0;
-  virtual bool hd_list(const std::string& path, std::string& out) = 0;
 
   // reads data (should be smaller than 1024B)
   virtual bool read(const std::string& path, std::string& out) = 0;

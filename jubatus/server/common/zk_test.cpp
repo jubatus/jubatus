@@ -133,8 +133,6 @@ TEST_F(zk_trivial, read_unknown_path) {
   ASSERT_FALSE(zk_->read("/zktest_non_exists_path", dat));
 }
 
-// TODO(kashihara): test lock_service::hd_list()
-
 TEST_F(zk_trivial, create_seq) {
   string seqfile;
   zk_->create_seq(root_path, seqfile);
@@ -209,10 +207,6 @@ TEST_F(zk_trivial, trivial_with_membershp) {
 
   zk_->list(engine_root, pathlist);
   ASSERT_EQ(engine_root_initial_size + 2, pathlist.size());
-
-  string name_e;
-  zk_->hd_list(engine_root, name_e);
-  ASSERT_EQ(name_e , name_);
 
   ASSERT_EQ("zk", zk_->type());
 
