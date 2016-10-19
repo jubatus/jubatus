@@ -104,6 +104,7 @@ class graph_serv : public framework::server_base {
       std::vector<std::pair<std::string, int> >& out);
   void get_members_(std::vector<std::pair<std::string, int> >& ret);
 
+  void reset_id_generator();
 
   jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
   jubatus::util::lang::shared_ptr<core::driver::graph> graph_;

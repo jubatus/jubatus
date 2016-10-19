@@ -558,5 +558,28 @@ void graph_serv::get_members_(std::vector<std::pair<std::string, int> >& ret) {
 #endif
 }
 
+bool graph_serv::load(const std::string& id) {
+  if (server_base::load(id)) {
+    reset_id_generator();
+    return true;
+  }
+  return false;
+}
+
+void graph_serv::load_file(const std::string& path) {
+  server_base::load_file(path);
+  reset_id_generator();
+}
+
+void graph_serv::reset_id_generator() {
+  if (argv().is_standalone()) {
+    uint64_t counter = graph_->find_max_int_id() + 1;
+    idgen_.reset(
+        new common::global_id_generator_standalone(counter));
+  } else {
+    // TODO(kmaehashi): support ID check for distributed mode
+  }
+}
+
 }  // namespace server
 }  // namespace jubatus
