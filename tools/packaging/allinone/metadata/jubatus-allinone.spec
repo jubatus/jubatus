@@ -7,6 +7,12 @@ Group:		System Environment/Daemons
 License:	LGPL 2.1
 URL:		http://jubat.us/
 
+BuildRequires:  log4cxx-devel = 0.10.0
+BuildRequires:  opencv-devel >= 2.3
+
+Requires:       log4cxx = 0.10.0
+Requires:       opencv >= 2.3
+
 %description
 Jubatus is a distributed processing framework and streaming machine learning library.
 

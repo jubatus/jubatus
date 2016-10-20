@@ -12,6 +12,9 @@ prepare_rpmbuild() {
 
 	case "${PACKAGE}" in
 		jubatus )
+			# SPEC file for jubatus package is defined for each RHEL version.
+			SPECINFILE="${SPECFILE}.el${JUBATUS_RELEASE_VERSION}.in"
+
 			rm -rf jubatus
 			git clone https://github.com/jubatus/jubatus.git jubatus
 			pushd jubatus
