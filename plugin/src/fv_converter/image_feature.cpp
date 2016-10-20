@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Networks and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2016 Preferred Networks and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,9 +14,9 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-
 #include "image_feature.hpp"
 
+#include <opencv2/opencv.hpp>
 #include <map>
 #include <string>
 #include <utility>
@@ -58,7 +58,6 @@ void image_feature::dense_sampler(
   }
 }
 
-
 void image_feature::add_feature(
   const std::string& key,
   const std::string& value,
@@ -69,6 +68,8 @@ void image_feature::add_feature(
   cv::Mat mat_orig = cv::imdecode(cv::Mat(buf), cv::IMREAD_COLOR);
 #elif(CV_MAJOR_VERSION == 2)
   cv::Mat mat_orig = cv::imdecode(cv::Mat(buf), CV_LOAD_IMAGE_COLOR);
+#else
+#error "opencv2.0.0 or later is required"
 #endif
 
   // mat resize and gray scale for DENSE sampling
@@ -87,6 +88,8 @@ void image_feature::add_feature(
   cv::cvtColor(mat_resize, mat_gray, cv::COLOR_BGR2GRAY);
 #elif(CV_MAJOR_VERSION == 2)
   cv::cvtColor(mat_resize, mat_gray, CV_BGR2GRAY);
+#else
+#error "opencv2.0.0 or later is required"
 #endif
 
   // feature extractors
@@ -113,6 +116,8 @@ void image_feature::add_feature(
 #elif(CV_MAJOR_VERSION == 2)
     cv::OrbDescriptorExtractor extractor;
     extractor.compute(mat_gray, kp_vec, descriptors);
+#else
+#error "opencv2.0.0 or later is required"
 #endif
     for (int i = 0; i < descriptors.rows; ++i) {
       for (int j = 0; j < descriptors.cols; ++j) {

@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Networks and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2016 Preferred Networks and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,6 @@
 
 #ifndef JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_HPP_
 #define JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_HPP_
-
-#define CV_MAJOR_VERSION CV_MAJOR_VERSION
 
 #include <opencv2/opencv.hpp>
 #include <map>
