@@ -12,6 +12,11 @@ def options(opt):
                  default=False,
                  help='build ux feature plugin')
 
+  opt.add_option('--enable-opencv',
+                action='store_true',
+                default=False,
+                help='build image feature plugin')
+
 def configure(conf):
   if Options.options.enable_mecab:
     conf.check_cxx(header_name = 'mecab.h')
@@ -32,6 +37,13 @@ int main() {
                    args = '--cflags --libs',
                    define_name = 'HAVE_UX',
                    errmsg = 'not found (remove "--enable-ux" option if not necessary)')
+
+  if Options.options.enable_opencv:
+    conf.check_cfg(package = 'opencv',
+                   args = '--cflags --libs',
+                   atleast_version = '2.0.0',
+                   define_name = 'HAVE_OPENCV',
+                   errmsg = 'opencv2.0.0 or later is required (remove "--enable-opencv" option if not necessary)')
 
 def make_test(bld, use, src):
   bld.program(
@@ -69,3 +81,12 @@ def build(bld):
       )
     make_test(bld, 'ux_splitter', 'ux_splitter_test.cpp')
 
+  if bld.env.HAVE_OPENCV:
+    bld.shlib(
+      source = 'image_feature.cpp',
+      target = 'image_feature',
+      install_path = bld.env.JUBATUS_PLUGIN_DIR,
+      use='OPENCV JUBATUS_CORE server_headers',
+      vnum = bld.env['ABI_VERSION']
+      )
+    make_test(bld, 'image_feature', 'image_feature_test.cpp')
