@@ -1,4 +1,4 @@
-// This file is auto-generated from clustering.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from clustering.idl(0.9.4-19-gc665909) with jenerator version 0.8.5-6-g5a2c923/feature/refactoring_clustering_api
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_CLUSTERING_CLIENT_HPP_
@@ -22,7 +22,7 @@ class clustering : public jubatus::client::common::client {
       : client(host, port, name, timeout_sec) {
   }
 
-  bool push(const std::vector<jubatus::client::common::datum>& points) {
+  bool push(const std::vector<indexed_point>& points) {
     msgpack::rpc::future f = c_.call("push", name_, points);
     return f.get<bool>();
   }
@@ -35,6 +35,11 @@ class clustering : public jubatus::client::common::client {
   std::vector<std::vector<weighted_datum> > get_core_members() {
     msgpack::rpc::future f = c_.call("get_core_members", name_);
     return f.get<std::vector<std::vector<weighted_datum> > >();
+  }
+
+  std::vector<std::vector<weighted_index> > get_core_members_light() {
+    msgpack::rpc::future f = c_.call("get_core_members_light", name_);
+    return f.get<std::vector<std::vector<weighted_index> > >();
   }
 
   std::vector<jubatus::client::common::datum> get_k_center() {
@@ -52,6 +57,12 @@ class clustering : public jubatus::client::common::client {
       const jubatus::client::common::datum& point) {
     msgpack::rpc::future f = c_.call("get_nearest_members", name_, point);
     return f.get<std::vector<weighted_datum> >();
+  }
+
+  std::vector<weighted_index> get_nearest_members_light(
+      const jubatus::client::common::datum& point) {
+    msgpack::rpc::future f = c_.call("get_nearest_members_light", name_, point);
+    return f.get<std::vector<weighted_index> >();
   }
 
   bool clear() {
