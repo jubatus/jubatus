@@ -38,7 +38,6 @@ class cached_zk : public zk {
   virtual ~cached_zk();
 
   bool list(const std::string& path, std::vector<std::string>& out);
-  bool hd_list(const std::string& path, std::string& out);
 
   // reads data (should be smaller than 1024B)
   bool read(const std::string& path, std::string& out);

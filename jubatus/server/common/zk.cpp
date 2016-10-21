@@ -410,21 +410,6 @@ bool zk::list_(const string& path, vector<string>& out) {
   }
 }
 
-bool zk::hd_list(const string& path, string& out) {
-  string_vector_holder sv;
-  scoped_lock lk(m_);
-  int rc = sv.zoo_get_children(zh_, path.c_str(), 0);
-  if (rc == ZOK) {
-    if (sv.size() > 0) {
-      out = sv[0];
-    }
-    return true;
-  }
-  LOG(ERROR) << "failed to get a child node of ZooKeeper node: "
-             << path << ": " << zerror(rc) << " (" << rc << ")";
-  return false;
-}
-
 bool zk::read(const string& path, string& out) {
   scoped_lock lk(m_);
 
