@@ -49,8 +49,8 @@ void image_feature::dense_sampler(
   const cv::Mat mat,
   const int step,
   std::vector<cv::KeyPoint>& kp_vec) const {
-  for (int y = step; y < mat.rows-step; y += step) {
-    for (int x = step; x < mat.cols-step; x += step) {
+  for (int y = 0; y < mat.rows-step+1; y += step) {
+    for (int x = 0; x < mat.cols-step+1; x += step) {
       kp_vec.push_back(cv::KeyPoint(static_cast<float>(x),
                                     static_cast<float>(y),
                                     static_cast<float>(step)));
