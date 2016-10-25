@@ -33,7 +33,7 @@ namespace fv_converter {
 TEST(image_feature, trivial) {
   jubatus::plugin::fv_converter::image_feature im;
   cv::Mat img = cv::imread("test_input/jubatus.jpg");
-  int correct = img.cols * img.rows * 3;
+  unsigned int correct = img.cols * img.rows * 3;
   // read a file
   std::ifstream ifs("test_input/jubatus.jpg");
   if (!ifs) {
@@ -48,28 +48,25 @@ TEST(image_feature, trivial) {
   ASSERT_EQ(correct, ret_fv.size());
 }
 
-TEST(image_feature, ORBdefault) {
-  jubatus::plugin::fv_converter::image_feature im("ORB");
+TEST(image_feature, Dense_Sampler) {
   cv::Mat img = cv::imread("test_input/jubatus.jpg");
-  int correct = (img.cols-62) * (img.rows-62) * 32;
+  jubatus::plugin::fv_converter::image_feature im;
+  unsigned int correct = (img.cols) * (img.rows);
   // read a file
   std::ifstream ifs("test_input/jubatus.jpg");
   if (!ifs) {
-    std::cerr << "cannot open : test_input/jubatus.jpg" << std::endl;
+    std::cerr << "cannot open : test_input/jubatus.jpg"  << std::endl;
     exit(1);
   }
-  std::stringstream buffer;
-  buffer << ifs.rdbuf();
-
-  std::vector<std::pair<std::string, float> > ret_fv;
-  im.add_feature("jubatus", buffer.str(), ret_fv);
-  ASSERT_EQ(correct, ret_fv.size());
+  std::vector<cv::KeyPoint> kp_vec;
+  im.dense_sampler(img, 1, kp_vec);
+  ASSERT_EQ(correct, kp_vec.size());
 }
 
-TEST(image_feature, RGB_resize) {
+TEST(image_feature, resize) {
   jubatus::plugin::fv_converter::image_feature im("RGB", true);
   cv::Mat img = cv::imread("test_input/jubatus.jpg");
-  int correct = 64 * 64 * 3;
+  unsigned int correct = 64 * 64 * 3;
   // read a file
   std::ifstream ifs("test_input/jubatus.jpg");
   if (!ifs) {
@@ -84,28 +81,10 @@ TEST(image_feature, RGB_resize) {
   ASSERT_EQ(correct, ret_fv.size());
 }
 
-TEST(image_feature, ORB_resize) {
-  jubatus::plugin::fv_converter::image_feature im("ORB", true);
+TEST(image_feature, ORB) {
+  jubatus::plugin::fv_converter::image_feature im("ORB", true, 100, 100);
   cv::Mat img = cv::imread("test_input/jubatus.jpg");
-  int correct = (64-62) * (64-62) * 32;
-  // read a file
-  std::ifstream ifs("test_input/jubatus.jpg");
-  if (!ifs) {
-    std::cerr << "cannot open : test_input/jubatus.jpg" << std::endl;
-  exit(1);
-  }
-  std::stringstream buffer;
-  buffer << ifs.rdbuf();
-
-  std::vector<std::pair<std::string, float> > ret_fv;
-  im.add_feature("jubatus", buffer.str(), ret_fv);
-  ASSERT_EQ(correct, ret_fv.size());
-}
-
-TEST(image_feature, size_designate) {
-  jubatus::plugin::fv_converter::image_feature im("ORB", true, 70, 80);
-  cv::Mat img = cv::imread("test_input/jubatus.jpg");
-  int correct = (70-62) * (80-62) * 32;
+  unsigned int compare = 0;
   // read a file
   std::ifstream ifs("test_input/jubatus.jpg");
   if (!ifs) {
@@ -117,9 +96,8 @@ TEST(image_feature, size_designate) {
 
   std::vector<std::pair<std::string, float> > ret_fv;
   im.add_feature("jubatus", buffer.str(), ret_fv);
-  ASSERT_EQ(correct, ret_fv.size());
+  ASSERT_LE(compare, ret_fv.size());
 }
-
 }  // namespace fv_converter
 }  // namespace plugin
 }  // namespace jubatus
