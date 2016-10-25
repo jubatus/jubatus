@@ -64,7 +64,6 @@ proxy_common::proxy_common(const proxy_argv& a)
   zk_->push_cleanup(&jubatus::server::common::shutdown_server);
   register_lock_service(zk_);
   jubatus::server::common::prepare_jubatus(*zk_, a_.type, "");
-
 }
 
 proxy_common::~proxy_common() {
