@@ -91,6 +91,10 @@ class graph_serv : public framework::server_base {
 
   bool create_edge_here(edge_id_t eid, const edge& ei);
 
+  // overrides to restore global_id_generator when loading model
+  bool load(const std::string& id);
+  void load_file(const std::string& path);
+
  private:
   void check_set_config() const;
 
