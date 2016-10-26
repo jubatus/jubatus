@@ -15,7 +15,11 @@
   },
   "parameter" : {
     "k" : 3,
-    "compressor_method" : "compressive_gmm",
+    "seed": 0
+  },
+  "method" : "gmm",
+  "compressor_method" : "compressive",
+  "compressor_parameter" : {
     "bucket_size" : 1000,
     "compressed_bucket_size" : 100,
     "bicriteria_base_size" : 10,
@@ -23,6 +27,5 @@
     "forgetting_factor" : 0,
     "forgetting_threshold" : 0.5,
     "seed": 0
-  },
-  "method" : "gmm"
+  }
 }
