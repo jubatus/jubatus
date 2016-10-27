@@ -41,9 +41,9 @@ int main() {
   if Options.options.enable_opencv:
     conf.check_cfg(package = 'opencv',
                    args = '--cflags --libs',
-                   atleast_version = '2.0.0',
+                   atleast_version = '2.3.0',
                    define_name = 'HAVE_OPENCV',
-                   errmsg = 'opencv2.0.0 or later is required (remove "--enable-opencv" option if not necessary)')
+                   errmsg = 'opencv 2.3.0 or later is required (remove "--enable-opencv" option if not necessary)')
 
 def make_test(bld, use, src):
   bld.program(
