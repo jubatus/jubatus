@@ -54,8 +54,8 @@ class server_base {
   virtual bool clear();
   virtual std::map<std::string, std::string> save(const std::string& id);
   virtual bool load(const std::string& id);
+  virtual void load_file(const std::string& path);
 
-  void load_file(const std::string& path);
   void event_model_updated();
   void update_saved_status(const std::string& path);
   void update_loaded_status(const std::string& path);
