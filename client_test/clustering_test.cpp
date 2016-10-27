@@ -116,5 +116,12 @@ TEST(clustering_test, get_nearest_members) {
   vector<weighted_datum> result = cli.get_nearest_members(d);
 }
 
+TEST(clustering_test, get_nearest_members_light) {
+  clustering cli(host(), port(), cluster_name(), timeout());
+  push_random_data(cli);
+  datum d;
+  vector<weighted_index> result = cli.get_nearest_members_light(d);
+}
+
 // There is no `clear` method in clustering.
 
