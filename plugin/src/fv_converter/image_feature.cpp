@@ -69,7 +69,7 @@ void image_feature::add_feature(
 #elif(CV_MAJOR_VERSION == 2)
   cv::Mat mat_orig = cv::imdecode(cv::Mat(buf), CV_LOAD_IMAGE_COLOR);
 #else
-#error "opencv2.0.0 or later is required"
+#error "opencv 2.3.0 or later is required"
 #endif
 
   // mat resize and gray scale for DENSE sampling
@@ -89,7 +89,7 @@ void image_feature::add_feature(
 #elif(CV_MAJOR_VERSION == 2)
   cv::cvtColor(mat_resize, mat_gray, CV_BGR2GRAY);
 #else
-#error "opencv2.0.0 or later is required"
+#error "opencv 2.3.0 or later is required"
 #endif
 
   // feature extractors
@@ -117,7 +117,7 @@ void image_feature::add_feature(
     cv::OrbDescriptorExtractor extractor;
     extractor.compute(mat_gray, kp_vec, descriptors);
 #else
-#error "opencv2.0.0 or later is required"
+#error "opencv 2.3.0 or later is required"
 #endif
     for (int i = 0; i < descriptors.rows; ++i) {
       for (int j = 0; j < descriptors.cols; ++j) {
