@@ -1,3 +1,10 @@
+###
+### jubatus.spec.el6.in is a SPEC file for RHEL 6.  It is equivalent to
+### jubatus.spec.el7.in (RHEL 7) except that OpenCV support is excluded
+### as OpenCV shipped with RHEL 6 is too old and our plugin doesn't
+### support it.
+###
+
 %define package_version @JUBATUS_VERSION@
 %define package_release @JUBATUS_RELEASE@
 
@@ -33,9 +40,25 @@ Requires:		msgpack = @MSGPACK_VERSION@
 Requires:		log4cxx = @LOG4CXX_VERSION@
 Requires:		zookeeper-client = @ZOOKEEPER_VERSION@
 Requires:		oniguruma >= 5.9
-Requires:		ux = @UX_VERSION@
-Requires:		mecab = @MECAB_VERSION@
-Requires:		mecab-ipadic = @MECAB_IPADIC_VERSION@
+
+%package plugin-ux
+Summary:	UX-trie feature extraction plug-in
+Group:		Development/Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	ux = @UX_VERSION@
+
+%package plugin-mecab
+Summary:	MeCab feature extraction plug-in
+Group:		Development/Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	mecab = @MECAB_VERSION@
+Requires:	mecab-ipadic = @MECAB_IPADIC_VERSION@
+
+%package client
+Summary:	Jubatus C++ Client
+Group:		Development/Libraries
+Requires:	msgpack-devel = @MSGPACK_VERSION@
+Requires:	jubatus-msgpack-rpc-devel = @JUBATUS_MSGPACK_RPC_VERSION@
 
 %package devel
 Summary:	Headers and libraries to develop engines and plugins for Jubatus Framework
@@ -46,22 +69,24 @@ Requires:	msgpack-devel = @MSGPACK_VERSION@
 Requires:	log4cxx-devel = @LOG4CXX_VERSION@
 Requires:	oniguruma-devel >= 5.9
 
-%package client
-Summary:	Jubatus C++ Client
-Group:		Development/Libraries
-Requires:	msgpack-devel = @MSGPACK_VERSION@
-Requires:	jubatus-msgpack-rpc-devel = @JUBATUS_MSGPACK_RPC_VERSION@
-
 %description
 Jubatus is a distributed processing framework and streaming machine learning library.
 
-%description devel
+%description plugin-ux
 Jubatus is a distributed processing framework and streaming machine learning library.
-This package provides headers and libraries needed to develop new engines or plugins for Jubatus Framework.
+This package provides UX-trie feature extraction plug-in.
+
+%description plugin-mecab
+Jubatus is a distributed processing framework and streaming machine learning library.
+This package provides MeCab feature extraction (morphological analysis for Japanese text) plug-in.
 
 %description client
 Jubatus is a distributed processing framework and streaming machine learning library.
 This package provides Jubatus C++ client headers.
+
+%description devel
+Jubatus is a distributed processing framework and streaming machine learning library.
+This package provides headers and libraries needed to develop new engines or plugins for Jubatus Framework.
 
 %prep
 %setup -q -n %{name}
@@ -83,7 +108,6 @@ find %{buildroot}/%{_libdir} -name "lib*.so*" -exec chmod 755 {} \;
 %doc README.rst LICENSE ChangeLog.rst
 %{_bindir}/juba*
 %{_libdir}/libjuba*.so.*
-%{_libdir}/jubatus/plugin
 %{_datarootdir}/jubatus
 %{_mandir}/man*/*
 %{_mandir}/*/man*/*
@@ -95,6 +119,12 @@ find %{buildroot}/%{_libdir} -name "lib*.so*" -exec chmod 755 {} \;
 %{_includedir}/jubatus
 %exclude %{_includedir}/jubatus/client
 %exclude %{_includedir}/jubatus/client.hpp
+
+%files plugin-ux
+%{_libdir}/jubatus/plugin/libux_splitter.so*
+
+%files plugin-mecab
+%{_libdir}/jubatus/plugin/libmecab_splitter.so*
 
 %files client
 %{_libdir}/pkgconfig/jubatus-client.pc
