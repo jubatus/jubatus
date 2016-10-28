@@ -100,22 +100,13 @@ Jubatus Proxy と Jubatus サーバ間の RPC リクエストのタイムアウ�
 .UNINDENT
 .INDENT 0.0
 .TP
+.B \-D, \-\-daemon
+デーモンモードで起動する (コンソールから切り離す)。
+.UNINDENT
+.INDENT 0.0
+.TP
 .B \-z <zookeeper_list>, \-\-zookeeper <zookeeper_list>
 ZooKeeper サーバの一覧。
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-l <dirpath>, \-\-logdir <dirpath>
-ZooKeeper のログファイルを出力するディレクトリ。
-.sp
-指定されていない場合、ログは標準エラーに出力される。
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-g <log_config>, \-\-log_config <log_config>
-ログの出力設定を log4cxx 設定ファイル (XML) で指定する。
-.sp
-指定されていない場合、ログは標準出力に出力される。
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -130,6 +121,20 @@ ZooKeeper のログファイルを出力するディレクトリ。
 スレッドごとに保持するセッション・プールの最大数。 [0]
 .sp
 \fB0\fP は制限を設定しないことを示す。
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-l <dirpath>, \-\-logdir <dirpath>
+ZooKeeper のログファイルを出力するディレクトリ。
+.sp
+指定されていない場合、ログは標準エラーに出力される。
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-g <log_config>, \-\-log_config <log_config>
+ログの出力設定を log4cxx 設定ファイル (XML) で指定する。
+.sp
+指定されていない場合、ログは標準出力に出力される。
 .UNINDENT
 .INDENT 0.0
 .TP

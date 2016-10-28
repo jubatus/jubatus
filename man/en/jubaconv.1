@@ -48,7 +48,7 @@ jubaconv [options ...]
 \fBjubaconv\fP simulates the internal behavior of fv_converter and displays the result of conversion on the command\-line.
 .sp
 As \fBjubaconv\fP only processes 1 record, \fBglobal_weight\fP of string feature extraction rules (\fBstring_rules\fP) will not be calculated.
-Use \&../api_weight if you need a simulation including \fBglobal_weight\fP\&.
+Use \&../api/api_weight if you need a simulation including \fBglobal_weight\fP\&.
 .SS Options
 .INDENT 0.0
 .IP \(bu 2
@@ -74,6 +74,19 @@ Format of the output. [fv]
 Jubatus server configuration file in JSON.
 .sp
 This option must be given only if \fBfv\fP is specified for \fI\%\-o\fP\&.
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+.INDENT 2.0
+.TP
+.B Note: If the input format is \fBjson\fP, we have to add a slash symbol \fB/\fP at the start of \fBkey\fP in jubatus server config files.
+.INDENT 7.0
+.IP \(bu 2
+If the input format is \fBdatum\fP: \fB"num_rules" : [{"key": "number", "type": "num"}]\fP
+.IP \(bu 2
+If the input format is \fBjson\fP:  \fB"num_rules" : [{"key": "/number", "type": "num"}]\fP
+.UNINDENT
+.UNINDENT
 .UNINDENT
 .SH FILE FORMATS
 .SS Input

@@ -100,22 +100,13 @@ Timeout of RPC between Jubatus Proxy and Jubatus Servers in seconds. [10]
 .UNINDENT
 .INDENT 0.0
 .TP
+.B \-D, \-\-daemon
+Launch in daemon mode (detach from console).
+.UNINDENT
+.INDENT 0.0
+.TP
 .B \-z <zookeeper_list>, \-\-zookeeper <zookeeper_list>
 List of ZooKeeper server(s).
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-l <dirpath>, \-\-logdir <dirpath>
-Path of directory to output ZooKeeper log files.
-.sp
-If not specified, logs are dumped to the standard error.
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-g <log_config>, \-\-log_config <log_config>
-Path of the logging configuration file in log4cxx (XML) format.
-.sp
-If not specified, logs are dumped to the standard output.
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -130,6 +121,20 @@ Session pool timeout in seconds. [60]
 Maximum size of session pool for each thread. [0]
 .sp
 \fB0\fP means unlimited.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-l <dirpath>, \-\-logdir <dirpath>
+Path of directory to output ZooKeeper log files.
+.sp
+If not specified, logs are dumped to the standard error.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-g <log_config>, \-\-log_config <log_config>
+Path of the logging configuration file in log4cxx (XML) format.
+.sp
+If not specified, logs are dumped to the standard output.
 .UNINDENT
 .INDENT 0.0
 .TP
