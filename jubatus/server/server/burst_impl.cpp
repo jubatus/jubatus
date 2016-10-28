@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.4-96-g66ed74d) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from burst.idl(0.6.4-96-g66ed74d) with jenerator version 0.8.5-6-g5a2c923/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -144,6 +144,7 @@ class burst_impl : public jubatus::server::common::mprpc::rpc_server {
 
 int main(int argc, char* argv[]) {
   return
-    jubatus::server::framework::run_server<jubatus::server::burst_impl>
+    jubatus::server::framework::run_server<jubatus::server::burst_impl,
+        jubatus::server::burst_serv>
       (argc, argv, "burst");
 }

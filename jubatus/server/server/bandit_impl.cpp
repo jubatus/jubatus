@@ -1,4 +1,4 @@
-// This file is auto-generated from bandit.idl(0.7.2-79-g2db27d7) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from bandit.idl(0.7.2-79-g2db27d7) with jenerator version 0.8.5-6-g5a2c923/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -122,6 +122,7 @@ class bandit_impl : public jubatus::server::common::mprpc::rpc_server {
 
 int main(int argc, char* argv[]) {
   return
-    jubatus::server::framework::run_server<jubatus::server::bandit_impl>
+    jubatus::server::framework::run_server<jubatus::server::bandit_impl,
+        jubatus::server::bandit_serv>
       (argc, argv, "bandit");
 }

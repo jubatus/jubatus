@@ -1,5 +1,4 @@
 // This file is auto-generated from clustering.idl(0.9.4-19-gc665909) with jenerator version 0.8.5-6-g5a2c923/feature/refactoring_clustering_api
-// *** DO NOT EDIT ***
 
 #include <map>
 #include <string>
@@ -150,6 +149,7 @@ class clustering_impl : public jubatus::server::common::mprpc::rpc_server {
 
 int main(int argc, char* argv[]) {
   return
-    jubatus::server::framework::run_server<jubatus::server::clustering_impl>
+    jubatus::server::framework::run_server<jubatus::server::clustering_impl,
+        jubatus::server::clustering_serv>
       (argc, argv, "clustering");
 }

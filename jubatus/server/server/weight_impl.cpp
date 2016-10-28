@@ -1,4 +1,4 @@
-// This file is auto-generated from weight.idl with jenerator version 0.8.5-6-g5a2c923/develop
+// This file is auto-generated from weight.idl(0.9.0-24-gda61383) with jenerator version 0.8.5-6-g5a2c923/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -91,6 +91,7 @@ class weight_impl : public jubatus::server::common::mprpc::rpc_server {
 
 int main(int argc, char* argv[]) {
   return
-    jubatus::server::framework::run_server<jubatus::server::weight_impl>
+    jubatus::server::framework::run_server<jubatus::server::weight_impl,
+        jubatus::server::weight_serv>
       (argc, argv, "weight");
 }

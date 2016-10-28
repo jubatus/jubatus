@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl(0.7.2-50-gbcc1e21) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from anomaly.idl(0.9.0-26-g051b301) with jenerator version 0.8.5-6-g5a2c923/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -123,6 +123,7 @@ class anomaly_impl : public jubatus::server::common::mprpc::rpc_server {
 
 int main(int argc, char* argv[]) {
   return
-    jubatus::server::framework::run_server<jubatus::server::anomaly_impl>
+    jubatus::server::framework::run_server<jubatus::server::anomaly_impl,
+        jubatus::server::anomaly_serv>
       (argc, argv, "anomaly");
 }
