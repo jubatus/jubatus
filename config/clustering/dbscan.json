@@ -14,10 +14,10 @@
     ]
   },
   "parameter" : {
-    "k" : 3,
-    "seed": 0
+    "eps" : 2.0,
+    "min_core_point": 3
   },
-  "method" : "kmeans",
+  "method" : "dbscan",
   "compressor_method": "simple",
   "compressor_parameter": {
     "bucket_size": 100

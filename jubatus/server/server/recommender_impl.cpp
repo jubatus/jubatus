@@ -1,4 +1,4 @@
-// This file is auto-generated from recommender.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from recommender.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.8.5-6-g5a2c923/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -165,6 +165,7 @@ class recommender_impl : public jubatus::server::common::mprpc::rpc_server {
 
 int main(int argc, char* argv[]) {
   return
-    jubatus::server::framework::run_server<jubatus::server::recommender_impl>
+    jubatus::server::framework::run_server<jubatus::server::recommender_impl,
+        jubatus::server::recommender_serv>
       (argc, argv, "recommender");
 }

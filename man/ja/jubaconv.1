@@ -48,7 +48,7 @@ jubaconv [options ...]
 \fBjubaconv\fP は fv_converter 内部の動作をシミュレーションし、変換結果をコマンドラインで表示することができる。
 .sp
 \fBjubaconv\fP は 1 件のデータだけを対象に処理を行うため、文字列特徴抽出ルール (\fBstring_rules\fP) の \fBglobal_weight\fP は計算されない。
-\fBglobal_weight\fP も含めたシミュレーションが必要な場合は \&../api_weight を使用すること。
+\fBglobal_weight\fP も含めたシミュレーションが必要な場合は \&../api/api_weight を使用すること。
 .SS Options
 .INDENT 0.0
 .IP \(bu 2
@@ -74,6 +74,19 @@ jubaconv [options ...]
 JSON で記述された Jubatus サーバの設定ファイル。
 .sp
 \fI\%\-o\fP に \fBfv\fP が指定されている場合のみ、このオプションを指定する必要がある。
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+.INDENT 2.0
+.TP
+.B 注意: 入力のフォーマットに \fBjson\fP を指定した場合、 Jubatusサーバ設定ファイルの \fBkey\fP の先頭には、スラッシュ \fB/\fP をつける必要がある。
+.INDENT 7.0
+.IP \(bu 2
+入力フォーマットが \fBdatum\fP の場合: \fB"num_rules" : [{"key": "number": "type": "num"}]\fP
+.IP \(bu 2
+入力フォーマットが \fBjson\fP の場合: \fB"num_rules" : [{"key": "/number": "type": "num"}]\fP
+.UNINDENT
+.UNINDENT
 .UNINDENT
 .SH FILE FORMATS
 .SS Input

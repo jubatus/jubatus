@@ -49,6 +49,9 @@ class datum_to_fv_converter;
 namespace server {
 namespace framework {
 
+template <class S>
+class server_helper;
+
 struct config_json {
   config_json() {
   }
@@ -87,11 +90,12 @@ struct server_argv {
   int interval_count;
   std::string mixer;
   bool daemon;
+  bool config_test;
 
   MSGPACK_DEFINE(port, bind_address, bind_if, timeout,
       zookeeper_timeout, interconnect_timeout, threadnum,
       program_name, type, z, name, datadir, logdir, log_config, eth,
-      interval_sec, interval_count, mixer, daemon);
+      interval_sec, interval_count, mixer, daemon, config_test);
 
   bool is_standalone() const {
     return (z == "");
@@ -99,7 +103,6 @@ struct server_argv {
   void boot_message(const std::string& progname) const;
 };
 
-void daemonize_process(const std::string& logdir);
 std::string get_server_identifier(const server_argv& a);
 
 struct proxy_argv {
@@ -132,10 +135,22 @@ void register_lock_service(
     jubatus::util::lang::shared_ptr<common::lock_service> ls);
 void close_lock_service();
 
-template<class ImplServerClass>
+template<class ImplServerClass, class ServerClass>
 int run_server(int args, char** argv, const std::string& type) {
   try {
     server_argv parsed_argv(args, argv, type);
+    if (parsed_argv.config_test) {
+      try {
+        jubatus::server::framework::server_helper<ServerClass> sh(parsed_argv);
+      } catch (const jubatus::core::common::exception::jubatus_exception& e) {
+        std::cerr << "Configuration error:" << std::endl
+                  << e.diagnostic_information(true);
+        return 1;
+      }
+      std::cerr << "Configuration OK" << std::endl;
+      return 0;
+    }
+
     ImplServerClass impl_server(parsed_argv);
     if (!parsed_argv.is_standalone()) {
       impl_server.get_p()->get_mixer()->register_api(impl_server);

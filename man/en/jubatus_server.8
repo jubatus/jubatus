@@ -116,15 +116,25 @@ This option must be given when \fB\-\-zookeeper\fP is not specified (i.e., runni
 .UNINDENT
 .INDENT 0.0
 .TP
+.B \-m <model>, \-\-model_file <model>
+Path of the model file to load at startup.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-D, \-\-daemon
+Launch in daemon mode (detach from console).
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-T, \-\-config_test
+Validate the contents of configuration file and exit immediately.
+.UNINDENT
+.INDENT 0.0
+.TP
 .B \-z <zookeeper_list>, \-\-zookeeper <zookeeper_list>
 List of ZooKeeper server(s).
 .sp
 If not specified, Jubatus servers run in standalone mode.
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-m <model>, \-\-model_file <model>
-Path of the model file to load at startup.
 .UNINDENT
 .INDENT 0.0
 .TP

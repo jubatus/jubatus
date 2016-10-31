@@ -116,15 +116,25 @@ ZooKeeper のログファイルを出力するディレクトリ。
 .UNINDENT
 .INDENT 0.0
 .TP
+.B \-m <model>, \-\-model_file <model>
+サーバ起動時に読み込むモデルファイルへのパスを指定する。
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-D, \-\-daemon
+デーモンモードで起動する (コンソールから切り離す)。
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-T, \-\-config_test
+設定ファイルの内容の妥当性を確認して、すぐに終了する。
+.UNINDENT
+.INDENT 0.0
+.TP
 .B \-z <zookeeper_list>, \-\-zookeeper <zookeeper_list>
 ZooKeeper サーバの一覧。
 .sp
 指定されていない場合、Jubatus サーバはスタンドアローンモードで動作する。
-.UNINDENT
-.INDENT 0.0
-.TP
-.B \-m <model>, \-\-model_file <model>
-サーバ起動時に読み込むモデルファイルへのパスを指定する。
 .UNINDENT
 .INDENT 0.0
 .TP

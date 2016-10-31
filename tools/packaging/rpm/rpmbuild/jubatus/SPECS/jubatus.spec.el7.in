@@ -1,0 +1,148 @@
+###
+### jubatus.spec.el7.in is a SPEC file for RHEL 7.  Also see the header
+### comment in jubatus.spec.el6.in.
+###
+
+%define package_version @JUBATUS_VERSION@
+%define package_release @JUBATUS_RELEASE@
+
+%define __waf ./waf
+
+Name:		jubatus
+Version:	%{package_version}
+Release:	%{package_release}%{?dist}
+Summary:	Distributed Online Machine Learning Framework
+Vendor:		PFN & NTT
+Group:		System Environment/Daemons
+License:	LGPL 2.1
+URL:		http://jubat.us/
+Source0:	%{name}-%{version}.tar.gz
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+BuildRequires:	jubatus-core-devel = @JUBATUS_CORE_VERSION@
+BuildRequires:	jubatus-mpio-devel = @JUBATUS_MPIO_VERSION@
+BuildRequires:	jubatus-msgpack-rpc-devel = @JUBATUS_MSGPACK_RPC_VERSION@
+BuildRequires:	msgpack-devel = @MSGPACK_VERSION@
+BuildRequires:	log4cxx-devel = @LOG4CXX_VERSION@
+BuildRequires:	zookeeper-client-devel = @ZOOKEEPER_VERSION@
+BuildRequires:	oniguruma-devel >= 5.9
+BuildRequires:	ux-devel = @UX_VERSION@
+BuildRequires:	mecab-devel = @MECAB_VERSION@
+BuildRequires:	opencv-devel >= 2.3
+BuildRequires:	pkgconfig
+BuildRequires:	python >= 2.4
+
+Requires:		jubatus-core = @JUBATUS_CORE_VERSION@
+Requires:		jubatus-mpio = @JUBATUS_MPIO_VERSION@
+Requires:		jubatus-msgpack-rpc = @JUBATUS_MSGPACK_RPC_VERSION@
+Requires:		msgpack = @MSGPACK_VERSION@
+Requires:		log4cxx = @LOG4CXX_VERSION@
+Requires:		zookeeper-client = @ZOOKEEPER_VERSION@
+Requires:		oniguruma >= 5.9
+
+%package plugin-ux
+Summary:	UX-trie feature extraction plug-in
+Group:		Development/Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	ux = @UX_VERSION@
+
+%package plugin-mecab
+Summary:	MeCab feature extraction plug-in
+Group:		Development/Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	mecab = @MECAB_VERSION@
+Requires:	mecab-ipadic = @MECAB_IPADIC_VERSION@
+
+%package plugin-image
+Summary:	Image feature extraction plug-in
+Group:		Development/Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	opencv >= 2.3
+
+%package client
+Summary:	Jubatus C++ Client
+Group:		Development/Libraries
+Requires:	msgpack-devel = @MSGPACK_VERSION@
+Requires:	jubatus-msgpack-rpc-devel = @JUBATUS_MSGPACK_RPC_VERSION@
+
+%package devel
+Summary:	Headers and libraries to develop engines and plugins for Jubatus Framework
+Group:		Development/Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	jubatus-msgpack-rpc-devel = @JUBATUS_MSGPACK_RPC_VERSION@
+Requires:	msgpack-devel = @MSGPACK_VERSION@
+Requires:	log4cxx-devel = @LOG4CXX_VERSION@
+Requires:	oniguruma-devel >= 5.9
+
+%description
+Jubatus is a distributed processing framework and streaming machine learning library.
+
+%description plugin-ux
+Jubatus is a distributed processing framework and streaming machine learning library.
+This package provides UX-trie feature extraction plug-in.
+
+%description plugin-mecab
+Jubatus is a distributed processing framework and streaming machine learning library.
+This package provides MeCab feature extraction (morphological analysis for Japanese text) plug-in.
+
+%description plugin-image
+Jubatus is a distributed processing framework and streaming machine learning library.
+This package provides OpenCV image feature extraction plug-in.
+
+%description client
+Jubatus is a distributed processing framework and streaming machine learning library.
+This package provides Jubatus C++ client headers.
+
+%description devel
+Jubatus is a distributed processing framework and streaming machine learning library.
+This package provides headers and libraries needed to develop new engines or plugins for Jubatus Framework.
+
+%prep
+%setup -q -n %{name}
+
+%build
+%{__waf} configure --prefix=%{_prefix} --libdir=%{_libdir} --enable-zookeeper --enable-ux --enable-mecab --enable-opencv
+%{__waf} build
+
+%install
+%{__rm} -rf %{buildroot}
+%{__waf} install --destdir=%{buildroot}
+find %{buildroot}/%{_libdir} -name "lib*.so*" -exec chmod 755 {} \;
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc README.rst LICENSE ChangeLog.rst
+%{_bindir}/juba*
+%{_libdir}/libjuba*.so.*
+%{_datarootdir}/jubatus
+%{_mandir}/man*/*
+%{_mandir}/*/man*/*
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/libjuba*.so
+%{_libdir}/pkgconfig/jubatus.pc
+%{_includedir}/jubatus
+%exclude %{_includedir}/jubatus/client
+%exclude %{_includedir}/jubatus/client.hpp
+
+%files plugin-ux
+%{_libdir}/jubatus/plugin/libux_splitter.so*
+
+%files plugin-mecab
+%{_libdir}/jubatus/plugin/libmecab_splitter.so*
+
+%files plugin-image
+%{_libdir}/jubatus/plugin/libimage_feature.so*
+
+%files client
+%{_libdir}/pkgconfig/jubatus-client.pc
+%{_includedir}/jubatus/client
+%{_includedir}/jubatus/client.hpp
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig

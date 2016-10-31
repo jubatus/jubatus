@@ -61,8 +61,7 @@ struct regression_serv_config {
 
 shared_ptr<core::storage::storage_base> make_model(
     const framework::server_argv& arg) {
-  return core::storage::storage_factory::create_storage(
-      (arg.is_standalone()) ? "local" : "local_mixture");
+  return core::storage::storage_factory::create_storage("local_mixture");
 }
 
 }  // namespace
@@ -104,7 +103,6 @@ void regression_serv::set_config(const string& config) {
 
   regression_.reset(
       new core::driver::regression(
-          model,
           core::regression::regression_factory::create_regression(
               conf.method, param, model),
           core::fv_converter::make_fv_converter(conf.converter, &so_loader_)));

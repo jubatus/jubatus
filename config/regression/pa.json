@@ -17,5 +17,5 @@
     "sensitivity" : 0.1,
     "regularization_weight" : 3.402823e+38
   },
-  "method": "PA"
+  "method": "PA1"
 }

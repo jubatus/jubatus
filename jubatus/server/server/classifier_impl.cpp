@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.8.9-17-gd4c007f) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from classifier.idl(0.8.9-17-gd4c007f) with jenerator version 0.8.5-6-g5a2c923/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -115,6 +115,7 @@ class classifier_impl : public jubatus::server::common::mprpc::rpc_server {
 
 int main(int argc, char* argv[]) {
   return
-    jubatus::server::framework::run_server<jubatus::server::classifier_impl>
+    jubatus::server::framework::run_server<jubatus::server::classifier_impl,
+        jubatus::server::classifier_serv>
       (argc, argv, "classifier");
 }

@@ -147,7 +147,7 @@ TEST(so_factory, binary) {
   std::cout << "d" << std::endl;
 
   ASSERT_EQ(1u, f.size());
-  EXPECT_EQ("bin", f[0].first);
+  EXPECT_EQ("bin@len", f[0].first);
   EXPECT_EQ(4.0, f[0].second);
 }
 

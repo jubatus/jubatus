@@ -15,22 +15,27 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <gtest/gtest.h>
+#include <jubatus/util/lang/cast.h>
 #include <jubatus/client/clustering_client.hpp>
 #include "util.hpp"
 #include "status_test.hpp"
 
 using std::vector;
+using std::string;
+using jubatus::util::lang::lexical_cast;
 using jubatus::client::common::datum;
 using jubatus::clustering::client::clustering;
 using jubatus::clustering::weighted_datum;
+using jubatus::clustering::indexed_point;
+using jubatus::clustering::weighted_index;
 
 void push_random_data(clustering& cli) {
   for (int i = 0; i < 1000; ++i) {
     datum d;
     d.add_number("neky1", i);
     d.add_number("neky2", -i);
-    vector<datum> v;
-    v.push_back(d);
+    vector<indexed_point> v;
+    v.push_back(indexed_point(lexical_cast<string>(i), d));
     cli.push(v);
   }
 }
@@ -68,7 +73,8 @@ TEST(clustering_test, save_load) {
 TEST(clustering_test, push) {
   clustering cli(host(), port(), cluster_name(), timeout());
   datum d;
-  vector<datum> points(1, d);
+  vector<indexed_point> points;
+  points.push_back(indexed_point("test", d));
   ASSERT_TRUE(cli.push(points));
 }
 
@@ -82,6 +88,12 @@ TEST(clustering_test, get_core_members) {
   clustering cli(host(), port(), cluster_name(), timeout());
   push_random_data(cli);
   vector<vector<weighted_datum> > result = cli.get_core_members();
+}
+
+TEST(clustering_test, get_core_members_light) {
+  clustering cli(host(), port(), cluster_name(), timeout());
+  push_random_data(cli);
+  vector<vector<weighted_index> > result = cli.get_core_members_light();
 }
 
 TEST(clustering_test, get_k_center) {
@@ -102,6 +114,13 @@ TEST(clustering_test, get_nearest_members) {
   push_random_data(cli);
   datum d;
   vector<weighted_datum> result = cli.get_nearest_members(d);
+}
+
+TEST(clustering_test, get_nearest_members_light) {
+  clustering cli(host(), port(), cluster_name(), timeout());
+  push_random_data(cli);
+  datum d;
+  vector<weighted_index> result = cli.get_nearest_members_light(d);
 }
 
 // There is no `clear` method in clustering.

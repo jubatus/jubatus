@@ -107,6 +107,8 @@ void configure() {
       new log4cxx::PatternLayout("%d %X{tid} %-5p [%F:%L] %m%n"));
   log4cxx::AppenderPtr appender(new log4cxx::ConsoleAppender(layout));
   log4cxx::BasicConfigurator::configure(appender);
+  log4cxx::LoggerPtr logger = log4cxx::Logger::getLogger(LOGGER_NAME);
+  logger->setLevel(log4cxx::Level::getInfo());
 }
 
 void configure(const std::string& config_file) {

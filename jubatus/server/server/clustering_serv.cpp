@@ -22,8 +22,10 @@
 #include <vector>
 #include "jubatus/util/lang/cast.h"
 #include "jubatus/util/text/json.h"
-#include "jubatus/core/clustering/clustering_config.hpp"
+#include "jubatus/util/lang/bind.h"
 #include "jubatus/core/clustering/clustering.hpp"
+#include "jubatus/core/clustering/clustering_factory.hpp"
+#include "jubatus/core/clustering/types.hpp"
 #include "jubatus/core/common/exception.hpp"
 #include "jubatus/core/common/jsonconfig.hpp"
 #include "jubatus/core/fv_converter/converter_config.hpp"
@@ -40,12 +42,19 @@ namespace {
 
 struct clustering_serv_config {
   std::string method;
+  std::string compressor_method;
   jubatus::util::data::optional<core::common::jsonconfig::config> parameter;
+  jubatus::util::data::optional<core::common::jsonconfig::config>
+                                                       compressor_parameter;
   core::fv_converter::converter_config converter;
 
   template<typename Ar>
   void serialize(Ar& ar) {
-    ar & JUBA_MEMBER(method) & JUBA_MEMBER(parameter) & JUBA_MEMBER(converter);
+    ar & JUBA_MEMBER(method)
+      & JUBA_MEMBER(parameter)
+      & JUBA_MEMBER(converter)
+      & JUBA_MEMBER(compressor_method)
+      & JUBA_MEMBER(compressor_parameter);
   }
 };
 
@@ -75,27 +84,32 @@ void clustering_serv::set_config(const std::string& config) {
   clustering_serv_config conf =
       core::common::jsonconfig::config_cast_check<clustering_serv_config>(
           config_root);
-
   config_ = config;
   shared_ptr<core::fv_converter::datum_to_fv_converter> converter =
     core::fv_converter::make_fv_converter(conf.converter, &so_loader_);
 
+  std::string method = conf.method;
+  std::string compressor_method = conf.compressor_method;
   core::common::jsonconfig::config param;
+  core::common::jsonconfig::config compressor_param;
   if (conf.parameter) {
     param = *conf.parameter;
   }
 
+  if (conf.compressor_parameter) {
+    compressor_param = *conf.compressor_parameter;
+  }
+
   const std::string name = get_server_identifier(argv());
-  core::clustering::clustering_config cluster_conf =
-      core::common::jsonconfig::config_cast_check<
-          core::clustering::clustering_config>(param);
+
   clustering_.reset(new core::driver::clustering(
-                        shared_ptr<core::clustering::clustering>(
-                            new core::clustering::clustering(
-                                name,
-                                conf.method,
-                                cluster_conf)),
-                        converter));
+      core::clustering::clustering_factory::create(
+          name,
+          method,
+          compressor_method,
+          param,
+          compressor_param),
+      converter));
   mixer_->set_driver(clustering_.get());
 
   LOG(INFO) << "config loaded: " << config;
@@ -106,7 +120,7 @@ std::string clustering_serv::get_config() const {
 }
 
 bool clustering_serv::push(
-    const std::vector<core::fv_converter::datum>& points) {
+    const std::vector<core::clustering::indexed_point>& points) {
   check_set_config();
   clustering_->push(points);
   return true;
@@ -125,6 +139,13 @@ std::vector<std::pair<double, core::fv_converter::datum> >
   return clustering_->get_nearest_members(point);
 }
 
+std::vector<std::pair<double, std::string> >
+    clustering_serv::get_nearest_members_light(
+        const core::fv_converter::datum& point) const {
+  check_set_config();
+  return clustering_->get_nearest_members_light(point);
+}
+
 std::vector<core::fv_converter::datum> clustering_serv::get_k_center() const {
   check_set_config();
   return clustering_->get_k_center();
@@ -134,6 +155,12 @@ std::vector<std::vector<std::pair<double, core::fv_converter::datum> > >
 clustering_serv::get_core_members() const {
   check_set_config();
   return clustering_->get_core_members();
+}
+
+std::vector<std::vector<std::pair<double, std::string> > >
+clustering_serv::get_core_members_light() const {
+  check_set_config();
+  return clustering_->get_core_members_light();
 }
 
 size_t clustering_serv::get_revision() const {

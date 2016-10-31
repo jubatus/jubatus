@@ -73,7 +73,6 @@ class zk : public lock_service {
 
   // returns unsorted list
   bool list(const std::string& path, std::vector<std::string>& out);
-  bool hd_list(const std::string& path, std::string& out);
 
   // reads data (should be smaller than 1024B)
   bool read(const std::string& path, std::string& out);

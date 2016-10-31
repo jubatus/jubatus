@@ -66,8 +66,7 @@ struct classifier_serv_config {
 
 shared_ptr<core::storage::storage_base> make_model(
     const framework::server_argv& arg) {
-  return core::storage::storage_factory::create_storage(
-      (arg.is_standalone()) ? "local" : "local_mixture");
+  return core::storage::storage_factory::create_storage("local_mixture");
 }
 
 }  // namespace

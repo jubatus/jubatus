@@ -12,8 +12,8 @@ before_install:
   - sudo apt-get -qq update
 
 install:
-  # msgpack
-  - sudo apt-get -qq install libmsgpack-dev liblog4cxx10-dev
+  # dependency libraries
+  - sudo apt-get -qq install libmsgpack-dev liblog4cxx10-dev libopencv-*-dev
   # jubatus-mpio
   - git clone https://github.com/jubatus/jubatus-mpio.git
   - pushd jubatus-mpio && git checkout develop && ./bootstrap && ./configure && make && sudo make install && popd
@@ -23,7 +23,7 @@ install:
   - pushd jubatus-msgpack-rpc/cpp && git checkout develop && ./bootstrap && ./configure --with-jubatus-mpio=/usr/local && make && sudo make install && popd
   - sudo ldconfig
   # zookeeper
-  - wget http://apache.openmirror.de/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz && tar xf zookeeper-3.4.8.tar.gz
+  - wget http://mirrors.ocf.berkeley.edu/apache/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz && tar xf zookeeper-3.4.8.tar.gz
   - pushd zookeeper-3.4.8/src/c && ./configure && make && sudo make install && popd
   - sudo ldconfig
   # oniguruma
@@ -51,7 +51,7 @@ install:
 
 
 script:
-  - ./waf configure --enable-zookeeper --enable-mecab --enable-ux
+  - ./waf configure --enable-zookeeper --enable-mecab --enable-ux --enable-opencv
   - ./waf build --checkall
 
 branches:

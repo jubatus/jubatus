@@ -99,9 +99,6 @@ class zk_stub : public common::lock_service {
     out.push_back("127.0.0.1_1114");
     return true;
   }
-  virtual bool hd_list(const std::string& path, std::string& out) {
-    return true;
-  }
 
   // reads data (should be smaller than 1024B)
   virtual bool read(const std::string& path, std::string& out) {
