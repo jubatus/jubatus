@@ -1,3 +1,23 @@
+Release 1.0.0 - 2016/10/31
+--------------------------
+
+* New Features
+    * Add image extraction plug-in (#843, #1150)
+    * Add configuration validation feature (#973, #1144)
+
+* Improvements
+    * clustering: change APIs to accept ID-based datum (#1155)
+    * Update Dockerfile to use Ubuntu 14.04 (#1146)
+    * Improve ``--daemon`` option of server and proxy to detach from console (#1072, #1148)
+    * classifier: models are now compatible in standalone and distributed mode (#469, #1153)
+    * Change the default log level to INFO instead of DEBUG (#1152)
+    * Update example configurations (#1165)
+    * Update manpages (#1167)
+    * Update packaging tools (#1157)
+
+* Bug fixes
+    * graph: fix IDs being reused when loading model file to other server instance in standalone mode (#1149, #1156)
+
 Release 0.9.4 - 2016/08/29
 --------------------------
 
