@@ -22,8 +22,8 @@
 #include <vector>
 #include "jubatus/core/driver/clustering.hpp"
 #include "jubatus/core/clustering/types.hpp"
+#include "jubatus/core/fv_converter/so_factory.hpp"
 #include "../framework/server_base.hpp"
-#include "../fv_converter/so_factory.hpp"
 #include "clustering_types.hpp"
 
 namespace jubatus {
@@ -73,7 +73,7 @@ class clustering_serv : public framework::server_base {
   jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
   jubatus::util::lang::shared_ptr<core::driver::clustering> clustering_;
   std::string config_;
-  fv_converter::so_factory so_loader_;
+  jubatus::core::fv_converter::so_factory so_loader_;
 };
 
 }  // namespace server

@@ -23,9 +23,9 @@
 #include <vector>
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/core/driver/classifier.hpp"
+#include "jubatus/core/fv_converter/so_factory.hpp"
 #include "classifier_types.hpp"
 #include "../framework/server_base.hpp"
-#include "../fv_converter/so_factory.hpp"
 
 namespace jubatus {
 namespace server {
@@ -66,7 +66,7 @@ class classifier_serv : public framework::server_base {
   jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
   jubatus::util::lang::shared_ptr<core::driver::classifier> classifier_;
   std::string config_;
-  fv_converter::so_factory so_loader_;
+  jubatus::core::fv_converter::so_factory so_loader_;
 };
 
 }  // namespace server
