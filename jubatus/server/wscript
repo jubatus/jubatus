@@ -2,7 +2,7 @@
 import Options
 
 subdirs = '''
-common framework cmd jubavisor server fv_converter third_party
+common framework cmd jubavisor server third_party
 '''
 
 def options(opt):

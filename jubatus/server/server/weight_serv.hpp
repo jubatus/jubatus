@@ -23,7 +23,7 @@
 #include "jubatus/util/lang/shared_ptr.h"
 
 #include "jubatus/core/driver/weight.hpp"
-#include "../fv_converter/so_factory.hpp"
+#include "jubatus/core/fv_converter/so_factory.hpp"
 #include "../../server/framework.hpp"
 #include "weight_types.hpp"
 
@@ -56,7 +56,7 @@ class weight_serv : public framework::server_base {
   shared_ptr<jubatus::core::driver::weight> weight_;
   shared_ptr<jubatus::server::framework::mixer::mixer> mixer_;
   std::string config_;
-  fv_converter::so_factory so_loader_;
+  jubatus::core::fv_converter::so_factory so_loader_;
 };
 
 }  // namespace server
