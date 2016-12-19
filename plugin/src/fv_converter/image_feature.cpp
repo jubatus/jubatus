@@ -16,7 +16,11 @@
 
 #include "image_feature.hpp"
 
+#include <cv.h>
+#include <highgui.h>
+#if(CV_MAJOR_VERSION == 3 || (CV_MAJOR_VERSION == 2 && CV_MINOR_VERSION > 1))
 #include <opencv2/opencv.hpp>
+#endif
 #include <map>
 #include <string>
 #include <utility>
@@ -69,7 +73,7 @@ void image_feature::add_feature(
 #elif(CV_MAJOR_VERSION == 2)
   cv::Mat mat_orig = cv::imdecode(cv::Mat(buf), CV_LOAD_IMAGE_COLOR);
 #else
-#error "opencv 2.3.0 or later is required"
+#error "opencv 2.0.0 or later is required"
 #endif
 
   // mat resize and gray scale for DENSE sampling
@@ -89,7 +93,7 @@ void image_feature::add_feature(
 #elif(CV_MAJOR_VERSION == 2)
   cv::cvtColor(mat_resize, mat_gray, CV_BGR2GRAY);
 #else
-#error "opencv 2.3.0 or later is required"
+#error "opencv 2.0.0 or later is required"
 #endif
 
   // feature extractors
@@ -106,6 +110,7 @@ void image_feature::add_feature(
         }
       }
     }
+#if (CV_MAJOR_VERSION == 3 || (CV_MAJOR_VERSION ==2 && CV_MINOR_VERSION > 2))
   } else if (algorithm_ == "ORB") {
     cv::Mat descriptors;
     std::vector<cv::KeyPoint> kp_vec;
@@ -116,8 +121,6 @@ void image_feature::add_feature(
 #elif(CV_MAJOR_VERSION == 2)
     cv::OrbDescriptorExtractor extractor;
     extractor.compute(mat_gray, kp_vec, descriptors);
-#else
-#error "opencv 2.3.0 or later is required"
 #endif
     for (int i = 0; i < descriptors.rows; ++i) {
       for (int j = 0; j < descriptors.cols; ++j) {
@@ -128,9 +131,11 @@ void image_feature::add_feature(
         ret_fv.push_back(std::make_pair(oss.str(), p));
       }
     }
+#endif
   } else {
       throw JUBATUS_EXCEPTION(
-        converter_exception("input algorithm among these : RGB or ORB"));
+        converter_exception(
+        "input algorithm among these : RGB, ORB(opencv2.3 or later)"));
   }
 }
 

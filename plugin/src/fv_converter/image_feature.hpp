@@ -17,7 +17,11 @@
 #ifndef JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_HPP_
 #define JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_HPP_
 
+#include <cv.h>
+#include <highgui.h>
+#if(CV_MAJOR_VERSION == 3 || (CV_MAJOR_VERSION == 2 && CV_MINOR_VERSION > 1))
 #include <opencv2/opencv.hpp>
+#endif
 #include <map>
 #include <string>
 #include <utility>
