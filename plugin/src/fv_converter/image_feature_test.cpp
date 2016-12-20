@@ -81,6 +81,7 @@ TEST(image_feature, resize) {
   ASSERT_EQ(correct, ret_fv.size());
 }
 
+#if OPENCV_WITH_ORB
 TEST(image_feature, ORB) {
   jubatus::plugin::fv_converter::image_feature im("ORB", true, 100, 100);
   cv::Mat img = cv::imread("test_input/jubatus.jpg");
@@ -98,6 +99,8 @@ TEST(image_feature, ORB) {
   im.add_feature("jubatus", buffer.str(), ret_fv);
   ASSERT_LE(compare, ret_fv.size());
 }
+#endif
+
 }  // namespace fv_converter
 }  // namespace plugin
 }  // namespace jubatus
