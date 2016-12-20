@@ -16,15 +16,12 @@
 
 #include "image_feature.hpp"
 
-#include <cv.h>
-#include <highgui.h>
-#if(CV_MAJOR_VERSION == 3 || (CV_MAJOR_VERSION == 2 && CV_MINOR_VERSION > 1))
-#include <opencv2/opencv.hpp>
-#endif
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
+
+#include OPENCV_HEADER
 
 #include "jubatus/util/data/string/utility.h"
 #include "jubatus/core/fv_converter/exception.hpp"
@@ -68,12 +65,10 @@ void image_feature::add_feature(
   std::vector<std::pair<std::string, float> >& ret_fv) const {
   std::vector<unsigned char> buf(value.begin(), value.end());
 
-#if(CV_MAJOR_VERSION == 3)
-  cv::Mat mat_orig = cv::imdecode(cv::Mat(buf), cv::IMREAD_COLOR);
-#elif(CV_MAJOR_VERSION == 2)
+#if(CV_MAJOR_VERSION == 2)
   cv::Mat mat_orig = cv::imdecode(cv::Mat(buf), CV_LOAD_IMAGE_COLOR);
 #else
-#error "opencv 2.0.0 or later is required"
+  cv::Mat mat_orig = cv::imdecode(cv::Mat(buf), cv::IMREAD_COLOR);
 #endif
 
   // mat resize and gray scale for DENSE sampling
@@ -88,12 +83,10 @@ void image_feature::add_feature(
   }
 
 
-#if(CV_MAJOR_VERSION == 3)
-  cv::cvtColor(mat_resize, mat_gray, cv::COLOR_BGR2GRAY);
-#elif(CV_MAJOR_VERSION == 2)
+#if(CV_MAJOR_VERSION == 2)
   cv::cvtColor(mat_resize, mat_gray, CV_BGR2GRAY);
 #else
-#error "opencv 2.0.0 or later is required"
+  cv::cvtColor(mat_resize, mat_gray, cv::COLOR_BGR2GRAY);
 #endif
 
   // feature extractors
@@ -110,17 +103,17 @@ void image_feature::add_feature(
         }
       }
     }
-#if (CV_MAJOR_VERSION == 3 || (CV_MAJOR_VERSION ==2 && CV_MINOR_VERSION > 2))
   } else if (algorithm_ == "ORB") {
+#if OPENCV_WITH_ORB
     cv::Mat descriptors;
     std::vector<cv::KeyPoint> kp_vec;
     dense_sampler(mat_gray, 1, kp_vec);
-#if(CV_MAJOR_VERSION == 3)
-    cv::Ptr<cv::Feature2D> extractor = cv::ORB::create();
-    extractor->compute(mat_gray, kp_vec, descriptors);
-#elif(CV_MAJOR_VERSION == 2)
+#if(CV_MAJOR_VERSION == 2)
     cv::OrbDescriptorExtractor extractor;
     extractor.compute(mat_gray, kp_vec, descriptors);
+#else
+    cv::Ptr<cv::Feature2D> extractor = cv::ORB::create();
+    extractor->compute(mat_gray, kp_vec, descriptors);
 #endif
     for (int i = 0; i < descriptors.rows; ++i) {
       for (int j = 0; j < descriptors.cols; ++j) {
@@ -131,6 +124,10 @@ void image_feature::add_feature(
         ret_fv.push_back(std::make_pair(oss.str(), p));
       }
     }
+#else
+    throw JUBATUS_EXCEPTION(
+      converter_exception(
+      "plugin built without ORB support (requires OpenCV 2.3 or later)"));
 #endif
   } else {
       throw JUBATUS_EXCEPTION(
