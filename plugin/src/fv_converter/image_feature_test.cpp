@@ -81,7 +81,7 @@ TEST(image_feature, resize) {
   ASSERT_EQ(correct, ret_fv.size());
 }
 
-#if(CV_MAJOR_VERSION == 3 || (CV_MAJOR_VERSION == 2 && CV_MINOR_VERSION > 2))
+#if OPENCV_WITH_ORB
 TEST(image_feature, ORB) {
   jubatus::plugin::fv_converter::image_feature im("ORB", true, 100, 100);
   cv::Mat img = cv::imread("test_input/jubatus.jpg");
