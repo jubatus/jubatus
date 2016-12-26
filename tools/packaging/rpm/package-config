@@ -1,7 +1,7 @@
 # ==============================================================================
 # Jubatus
 # ==============================================================================
-JUBATUS_VERSION="1.0.0"
+JUBATUS_VERSION="1.0.1"
 JUBATUS_RELEASE="1"
 JUBATUS_IS_SNAPSHOT="no"
 JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
@@ -9,15 +9,15 @@ JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
 # ==============================================================================
 # Jubatus Core
 # ==============================================================================
-JUBATUS_CORE_VERSION="1.0.0"
+JUBATUS_CORE_VERSION="1.0.1"
 JUBATUS_CORE_RELEASE="1"
 JUBATUS_CORE_IS_SNAPSHOT="no"
-JUBATUS_CORE_CHECKOUT="${JUBATUS_CORE_VERSION}"
+JUBATUS_CORE_CHECKOUT="1.0.1-p1"
 
 # ==============================================================================
 # jubadump
 # ==============================================================================
-JUBADUMP_VERSION="0.9.4"
+JUBADUMP_VERSION="1.0.1"
 JUBADUMP_RELEASE="1"
 JUBADUMP_IS_SNAPSHOT="no"
 JUBADUMP_CHECKOUT="${JUBADUMP_VERSION}"
