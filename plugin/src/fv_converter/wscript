@@ -43,7 +43,25 @@ int main() {
                    args = '--cflags --libs',
                    atleast_version = '2.3.0',
                    define_name = 'HAVE_OPENCV',
-                   errmsg = 'opencv 2.3.0 or later is required (remove "--enable-opencv" option if not necessary)')
+                   mandatory = False)
+    if conf.env.HAVE_OPENCV:
+      conf.define('OPENCV_HEADER', 'opencv2/opencv.hpp')
+      conf.define('OPENCV_WITH_ORB', 1)
+    else:
+      conf.check_cfg(package = 'opencv',
+                     args = '--cflags --libs',
+                     atleast_version = '2.2.0',
+                     define_name = 'HAVE_OPENCV',
+                     mandatory = False)
+      if conf.env.HAVE_OPENCV:
+        conf.define('OPENCV_HEADER', 'opencv2/opencv.hpp')
+      else:
+        conf.check_cfg(package = 'opencv',
+                       args = '--cflags --libs',
+                       atleast_version = '2.0.0',
+                       define_name = 'HAVE_OPENCV',
+                       errmsg = 'opencv 2.0.0 or later is required (remove "--enable-opencv" option if not necessary)')
+        conf.define('OPENCV_HEADER', 'image_feature_opencv.hpp')
 
 def make_test(bld, use, src):
   bld.program(

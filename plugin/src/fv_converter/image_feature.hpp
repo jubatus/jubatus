@@ -17,12 +17,13 @@
 #ifndef JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_HPP_
 #define JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_HPP_
 
-#include <opencv2/opencv.hpp>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
 #include <iostream>
+
+#include OPENCV_HEADER
 
 #include "jubatus/core/fv_converter/binary_feature.hpp"
 #include "jubatus/core/fv_converter/exception.hpp"

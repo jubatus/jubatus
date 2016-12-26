@@ -4,7 +4,7 @@ from waflib.Errors import TaskNotReady
 import os
 import sys
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 ABI_VERSION = VERSION
 APPNAME = 'jubatus'
 
@@ -81,7 +81,6 @@ def configure(conf):
   conf.check_cxx(lib = 'msgpack')
   conf.check_cxx(lib = 'jubatus_mpio')
   conf.check_cxx(lib = 'jubatus_msgpack-rpc')
-  conf.check_cxx(lib = 'dl', mandatory = False)
 
   # pkg-config tests
   conf.find_program('pkg-config') # make sure that pkg-config command exists
@@ -103,7 +102,6 @@ def configure(conf):
   conf.check_cxx(header_name = 'fcntl.h')
   conf.check_cxx(header_name = 'netinet/in.h')
   conf.check_cxx(header_name = 'arpa/inet.h')
-  conf.check_cxx(header_name = 'dlfcn.h')
 
   if Options.options.debug:
     """

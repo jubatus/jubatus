@@ -1,3 +1,11 @@
+Release 1.0.1 - 2016/12/26
+--------------------------
+
+* Improvements
+    * Support OpenCV 2.0 in image extraction plugin (#1168, #1174, #1175)
+    * fv_converter plugin loading code moved to Jubatus Core (#1171)
+    * Improve Dockerfile (#1170, #1172, #1173)
+
 Release 1.0.0 - 2016/10/31
 --------------------------
 

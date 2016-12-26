@@ -22,8 +22,8 @@
 #include <vector>
 #include "jubatus/util/lang/shared_ptr.h"
 #include "jubatus/core/driver/recommender.hpp"
+#include "jubatus/core/fv_converter/so_factory.hpp"
 #include "../framework/server_base.hpp"
-#include "../fv_converter/so_factory.hpp"
 #include "recommender_types.hpp"
 
 namespace jubatus {
@@ -79,7 +79,7 @@ class recommender_serv : public framework::server_base {
   jubatus::util::lang::shared_ptr<framework::mixer::mixer> mixer_;
   jubatus::util::lang::shared_ptr<core::driver::recommender> recommender_;
   std::string config_;
-  fv_converter::so_factory so_loader_;
+  jubatus::core::fv_converter::so_factory so_loader_;
 
   uint64_t clear_row_cnt_;
   uint64_t update_row_cnt_;

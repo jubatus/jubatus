@@ -3,9 +3,11 @@ FROM ubuntu:14.04
 MAINTAINER PFN & NTT <jubatus-team@googlegroups.com>
 
 # install the latest jubatus
-RUN echo "deb http://download.jubat.us/apt/ubuntu/trusty binary/" >> /etc/apt/sources.list.d/jubatus.list
-RUN apt-get -y update
-RUN apt-get --force-yes -y install jubatus
+RUN echo "deb http://download.jubat.us/apt/ubuntu/trusty binary/" >> /etc/apt/sources.list.d/jubatus.list && \
+    apt-get -y update && \
+    apt-get --force-yes -y install jubatus && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # set environment variables from /opt/jubatus/profile
 ENV JUBATUS_HOME /opt/jubatus
