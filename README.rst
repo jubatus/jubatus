@@ -68,7 +68,7 @@ Now Jubatus is installed in ``/opt/jubatus/bin/juba*``.
 Other Platforms
 ~~~~~~~~~~~~~~~
 
-For other platforms, refer to the `documentation <http://jubat.us/en/build.html>`_.
+For other platforms, refer to the `documentation <http://jubat.us/en/developers/build.html>`_.
 
 License
 -------
