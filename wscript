@@ -1,5 +1,5 @@
 # -*- python -*-
-import Options
+from waflib import Options
 from waflib.Errors import TaskNotReady
 import os
 import sys
@@ -142,6 +142,7 @@ def configure(conf):
     conf.env.append_value('CXXFLAGS', '-fprofile-arcs')
     conf.env.append_value('CXXFLAGS', '-ftest-coverage')
     conf.env.append_value('LINKFLAGS', '-lgcov')
+    conf.env.append_value('LINKFLAGS', '--coverage')
 
   if Options.options.rpc_test_port_base:
     if Options.options.rpc_test_port_base < 1024 or (65535-10) < Options.options.rpc_test_port_base:

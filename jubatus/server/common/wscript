@@ -23,10 +23,9 @@ int main() {
   conf.recurse(subdirs)
 
 def build(bld):
-  import Options
   src = 'network.cpp global_id_generator_standalone.cpp config.cpp signals.cpp system.cpp filesystem.cpp crc32.cpp'
 
-  if bld.env.HAVE_ZOOKEEPER_H:
+  if 'HAVE_ZOOKEEPER_H' in bld.env.define_key:
     src += ' cached_zk.cpp zk.cpp membership.cpp cht.cpp lock_service.cpp global_id_generator_zk.cpp'
 
   bld.shlib(
@@ -46,9 +45,9 @@ def build(bld):
     'filesystem_test.cpp',
     ]
 
-  if bld.env.HAVE_ZOOKEEPER_H:
+  if 'HAVE_ZOOKEEPER_H' in bld.env.define_key:
     test_src += ['membership_test.cpp', 'cht_test.cpp']
-    if bld.env.INTEGRATION_TEST:
+    if 'INTEGRATION_TEST' in bld.env.define_key:
       test_src += ['zk_test.cpp', 'cached_zk_test.cpp', 'config_test.cpp']
 
   def make_test(s):

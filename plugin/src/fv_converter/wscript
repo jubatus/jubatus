@@ -1,5 +1,5 @@
 # -*- python -*-
-import Options
+from waflib import Options
 
 def options(opt):
   opt.add_option('--enable-mecab',
@@ -79,31 +79,31 @@ def build(bld):
       source = bld.path.ant_glob('test_input/*'),
       target = n)
 
-  if bld.env.HAVE_MECAB:
+  if 'HAVE_MECAB' in bld.env.define_key:
     bld.shlib(
       source = 'mecab_splitter.cpp',
       target = 'mecab_splitter',
-      install_path = bld.env.JUBATUS_PLUGIN_DIR,
+      install_path = bld.env['JUBATUS_PLUGIN_DIR'],
       use = 'MECAB JUBATUS_CORE server_headers',
       vnum = bld.env['ABI_VERSION'],
       )
     make_test(bld, 'JUBATUS_CORE mecab_splitter', 'mecab_splitter_test.cpp')
 
-  if bld.env.HAVE_UX:
+  if 'HAVE_UX' in bld.env.define_key:
     bld.shlib(
       source = 'ux_splitter.cpp',
       target = 'ux_splitter',
-      install_path = bld.env.JUBATUS_PLUGIN_DIR,
+      install_path = bld.env['JUBATUS_PLUGIN_DIR'],
       use = 'UX JUBATUS_CORE jubaserv_common_logger server_headers',
       vnum = bld.env['ABI_VERSION'],
       )
     make_test(bld, 'ux_splitter', 'ux_splitter_test.cpp')
 
-  if bld.env.HAVE_OPENCV:
+  if 'HAVE_OPENCV' in bld.env.define_key:
     bld.shlib(
       source = 'image_feature.cpp',
       target = 'image_feature',
-      install_path = bld.env.JUBATUS_PLUGIN_DIR,
+      install_path = bld.env['JUBATUS_PLUGIN_DIR'],
       use='OPENCV JUBATUS_CORE server_headers',
       vnum = bld.env['ABI_VERSION']
       )

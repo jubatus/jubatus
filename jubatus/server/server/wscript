@@ -20,7 +20,7 @@ def build_one(bld, name, libraries = '', sources = ''):
     includes = '.',
     use = 'JUBATUS_CORE client_headers jubaserv_framework jubaserv_fv_converter jubaserv_common jubaserv_mprpc_common %s JUBATUS_MPIO JUBATUS_MSGPACK-RPC MSGPACK' % libraries
     )
-  if bld.env.HAVE_ZOOKEEPER_H:
+  if 'HAVE_ZOOKEEPER_H' in bld.env.define_key:
     bld.program(
       source = '%s_proxy.cpp ' % name,
       target = 'juba%s_proxy' % name,
