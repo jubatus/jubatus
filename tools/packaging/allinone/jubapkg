@@ -130,7 +130,7 @@ do_download() {
 # do_build
 # -------------------------------
 do_build() {
-	@require_commands mkdir tar make cp perl cat ruby libtool
+	@require_commands mkdir tar make cp perl cat ruby
 
 	if [ -z "${FORCE}" -a -d "${BUILD_DIR}" ]; then
 		echo "${BUILD_DIR} directory already exists; remove it and try again."
