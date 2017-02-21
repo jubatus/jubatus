@@ -11,7 +11,7 @@ def build(bld):
   bld.recurse(subdirs)
 
   framework_source = 'save_load.cpp server_util.cpp server_base.cpp server_helper.cpp'
-  if bld.env.HAVE_ZOOKEEPER_H:
+  if 'HAVE_ZOOKEEPER_H' in bld.env.define_key:
     framework_source +=  ' proxy_common.cpp proxy.cpp'
 
   bld.shlib(
@@ -37,7 +37,7 @@ def build(bld):
     'server_helper.hpp',
     'server_util.hpp',
   ]
-  if bld.env.HAVE_ZOOKEEPER_H:
+  if 'HAVE_ZOOKEEPER_H' in bld.env.define_key:
     header_files += [
       'proxy.hpp',
       'proxy_common.hpp',
