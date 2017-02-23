@@ -6,7 +6,7 @@ Building Debian Package with Docker
 
 You can build DEB packages in Docker.
 
-First create a container for building packages:
+First create Docker images for building package:
 
 ```
 docker build -t jubatus-debbuild-ubuntu12 -f docker/Dockerfile.ubuntu12 .
