@@ -1,5 +1,4 @@
 # -*- python -*-
-import Options
 
 subdirs = '''
 common framework cmd jubavisor server third_party

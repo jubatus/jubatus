@@ -8,7 +8,7 @@ See http://jubat.us/ for details.
 Quick Start
 -----------
 
-We officially support Red Hat Enterprise Linux (RHEL) 6.2 or later (64-bit) and Ubuntu Server 12.04 LTS / 14.04 LTS (64-bit).
+We officially support Red Hat Enterprise Linux (RHEL) 6.2 or later (64-bit) and Ubuntu Server 12.04 LTS / 14.04 LTS / 16.04 LTS (64-bit).
 On supported systems, you can install all components of Jubatus using binary packages.
 
 See `QuickStart <http://jubat.us/en/quickstart.html>`_ for detailed description.
@@ -51,6 +51,9 @@ Write the following line to ``/etc/apt/sources.list.d/jubatus.list`` to register
   // For Ubuntu 14.04 (Trusty)
   deb http://download.jubat.us/apt/ubuntu/trusty binary/
 
+  // For Ubuntu 16.04 (Xenial)
+  deb http://download.jubat.us/apt/ubuntu/xenial binary/
+
 Now install ``jubatus`` package.
 
 ::
@@ -68,7 +71,7 @@ Now Jubatus is installed in ``/opt/jubatus/bin/juba*``.
 Other Platforms
 ~~~~~~~~~~~~~~~
 
-For other platforms, refer to the `documentation <http://jubat.us/en/build.html>`_.
+For other platforms, refer to the `documentation <http://jubat.us/en/developers/build.html>`_.
 
 License
 -------

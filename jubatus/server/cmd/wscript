@@ -4,7 +4,7 @@ def options(opt): pass
 def configure(conf): pass
 
 def build(bld):
-  if bld.env.HAVE_ZOOKEEPER_H:
+  if 'HAVE_ZOOKEEPER_H' in bld.env.define_key:
     bld.program(
       source = 'jubactl.cpp',
       target = 'jubactl',

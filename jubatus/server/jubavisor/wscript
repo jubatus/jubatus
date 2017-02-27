@@ -5,7 +5,7 @@ def options(opt):
 def configure(conf): pass
 
 def build(bld):
-  if not bld.env.HAVE_ZOOKEEPER_H: return
+  if not 'HAVE_ZOOKEEPER_H' in bld.env.define_key: return
 
   bld.program(
     source = 'main.cpp jubavisor.cpp process.cpp',
