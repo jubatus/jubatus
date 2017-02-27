@@ -1,3 +1,9 @@
+Release 1.0.2 - 2017/02/27
+--------------------------
+
+* Changes to Supported Systems
+    * Ubuntu 16.04 LTS is now officially supported (#1180, #1181)
+
 Release 1.0.1 - 2016/12/26
 --------------------------
 
