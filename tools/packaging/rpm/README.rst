@@ -1,6 +1,33 @@
 RPM Packaging
 =============
 
+Building RPM Packages with Docker
+---------------------------------
+
+You can build RPM packages in Docker.
+
+First create Docker images for building package:
+
+::
+
+  docker build -t jubatus-rpmbuild-centos6 -f docker/Dockerfile.centos6 .
+  docker build -t jubatus-rpmbuild-centos7 -f docker/Dockerfile.centos7 .
+
+Modify ``package-config`` as appropriate (see below).
+
+Then build packages:
+
+::
+
+  docker run --rm -v $PWD:/pkg jubatus-rpmbuild-centos6 sh -c "cd pkg && chown root: -R rpmbuild && ./package.sh -cai"
+  docker run --rm -v $PWD:/pkg jubatus-rpmbuild-centos7 sh -c "cd pkg && chown root: -R rpmbuild && ./package.sh -cai"
+
+Do not run these commands simultaneously!
+These two ``docker run`` commands share the current directory.
+
+Building RPM Packages without Docker
+------------------------------------
+
 1. On RHEL 6 or 7, install the following packages.
 
 ::
