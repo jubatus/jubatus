@@ -183,16 +183,13 @@ void load_server(
   uint32_t jubatus_minor_read = read_big_endian<uint32_t>(&header_buf[20]);
   uint32_t jubatus_maintenance_read =
       read_big_endian<uint32_t>(&header_buf[24]);
-  if (jubatus_major_read != jubatus_version_major ||
-      jubatus_minor_read != jubatus_version_minor ||
-      jubatus_maintenance_read != jubatus_version_maintenance) {
+  if (jubatus_major_read != 1) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error(
-          "jubatus version mismatched: " +
+          "cannot load model file created before v1.0.0: " +
           lexical_cast<std::string>(jubatus_major_read) + "." +
           lexical_cast<std::string>(jubatus_minor_read) + "." +
-          lexical_cast<std::string>(jubatus_maintenance_read) +
-          ", expected (current) version: " JUBATUS_VERSION));
+          lexical_cast<std::string>(jubatus_maintenance_read)));
   }
   uint32_t crc32_expected = read_big_endian<uint32_t>(&header_buf[28]);
   uint64_t system_data_size = read_big_endian<uint64_t>(&header_buf[32]);
