@@ -1,6 +1,9 @@
 Jubatus
 =======
 
+.. image:: https://api.travis-ci.org/jubatus/jubatus.svg?branch=master
+    :target: https://api.travis-ci.org/jubatus/jubatus
+
 The Jubatus library is an online machine learning framework which runs in distributed environment.
 
 See http://jubat.us/ for details.
