@@ -137,8 +137,8 @@ std::map<std::string, std::string> server_base::save(const std::string& id) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("empty id is not allowed"));
   } else if (!validate_model_id(id)) {
-    throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("model ID contains invalid character"));
+    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error(
+        "model ID contains invalid character"));
   }
 
   const std::string path = build_local_path(argv_, argv_.type, id);
@@ -201,8 +201,8 @@ bool server_base::load(const std::string& id) {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("empty id is not allowed"));
   } else if (!validate_model_id(id)) {
-    throw JUBATUS_EXCEPTION(
-        core::common::exception::runtime_error("model ID contains invalid character"));
+    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error(
+        "model ID contains invalid character"));
   }
 
   load_file_impl(*this, build_local_path(argv_, argv_.type, id), id, false);
