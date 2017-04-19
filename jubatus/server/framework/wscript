@@ -22,14 +22,21 @@ def build(bld):
     vnum = bld.env['ABI_VERSION'],
     )
 
+  test_source = [
+    'server_base_test.cpp',
+  ]
+
   def make_test(t):
     bld.program(
       features='gtest',
-      source=t + '.cpp',
-      target=t,
+      source=t,
+      target = s[0:s.rfind('.')],
       includes='.',
       use='jubaserv_framework'
       )
+
+  for s in test_source:
+    make_test(s)
 
   header_files = [
     'save_load.hpp',

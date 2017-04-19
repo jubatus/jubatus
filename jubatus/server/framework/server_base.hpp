@@ -108,6 +108,8 @@ class server_base {
   mutable jubatus::util::concurrent::rw_mutex status_mutex_;
 };
 
+bool validate_model_id(const std::string& id);
+
 }  // namespace framework
 }  // namespace server
 }  // namespace jubatus

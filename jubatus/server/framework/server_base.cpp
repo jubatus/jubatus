@@ -136,6 +136,9 @@ std::map<std::string, std::string> server_base::save(const std::string& id) {
   if (id == "") {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("empty id is not allowed"));
+  } else if (!validate_model_id(id)) {
+    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error(
+        "model ID contains invalid character"));
   }
 
   const std::string path = build_local_path(argv_, argv_.type, id);
@@ -197,6 +200,9 @@ bool server_base::load(const std::string& id) {
   if (id == "") {
     throw JUBATUS_EXCEPTION(
         core::common::exception::runtime_error("empty id is not allowed"));
+  } else if (!validate_model_id(id)) {
+    throw JUBATUS_EXCEPTION(core::common::exception::runtime_error(
+        "model ID contains invalid character"));
   }
 
   load_file_impl(*this, build_local_path(argv_, argv_.type, id), id, false);
@@ -228,6 +234,15 @@ void server_base::update_loaded_status(const std::string& path) {
   jubatus::util::concurrent::scoped_wlock lock(status_mutex_);
   last_loaded_ = jubatus::util::system::time::get_clock_time();
   last_loaded_path_ = path;
+}
+
+bool validate_model_id(const std::string& id) {
+    for (size_t i = 0; i < id.length(); ++i) {
+        if (id[i] == '/' || id[i] < ' ' || '~' < id[i]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 }  // namespace framework
