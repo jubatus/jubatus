@@ -1,3 +1,17 @@
+Release 1.0.3 - 2017/04/24
+--------------------------
+
+* Changes to Supported Systems
+    * Deprecate Ubuntu 12.04 LTS support (#1189)
+
+* Improvements
+    * Validate save/load RPC arguments (#1188, #1192)
+    * Model files generated in earlier versions of Jubatus can now be loaded (#1179, #1187)
+    * Improve packaging process (#1185, #1186)
+
+* Bug fixes
+    * classifier/regression: fix performance regression in standalone mode (#1190, #1193)
+
 Release 1.0.2 - 2017/02/27
 --------------------------
 
