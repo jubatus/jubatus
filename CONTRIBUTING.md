@@ -1,12 +1,10 @@
-How to contribute
-======================
+How to Contribute
+=================
 
-Please check our Contibution guideline first.
+Please check our Contibution Guideline first.
 
-In English : http://jubat.us/en/howtocontribute.html
-
-In Japanese: http://jubat.us/ja/howtocontribute.html
-
+* English : http://jubat.us/en/developers/howtocontribute.html
+* Japanese: http://jubat.us/ja/developers/howtocontribute.html
 
 Copyright
 ---------
