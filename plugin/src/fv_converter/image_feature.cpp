@@ -20,6 +20,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <bitset>
 
 #include OPENCV_HEADER
 
@@ -119,9 +120,12 @@ void image_feature::add_feature(
       for (int j = 0; j < descriptors.cols; ++j) {
         std::ostringstream oss;
         int p = descriptors.at<uchar>(i, j);
-        oss << key << '#' << algorithm_
-            <<'/'<< i << "-" << j << "-" << p;
-        ret_fv.push_back(std::make_pair(oss.str(), p));
+        std::bitset<8> p_bit(p);
+        for (int k = 0; k < 8; ++k) {
+          oss << key << '#' << algorithm_
+              <<'/'<< i << '-' << 8*j+k;
+          ret_fv.push_back(std::make_pair(oss.str(), p_bit[k]));
+        }
       }
     }
 #else
