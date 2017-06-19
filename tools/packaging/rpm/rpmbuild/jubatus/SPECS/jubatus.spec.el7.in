@@ -101,13 +101,12 @@ This package provides headers and libraries needed to develop new engines or plu
 %setup -q -n %{name}
 
 %build
-%{__waf} configure --prefix=%{_prefix} --libdir=%{_libdir} --enable-zookeeper --enable-ux --enable-mecab --enable-opencv
+%{__waf} configure --prefix=%{_prefix} --enable-zookeeper --enable-ux --enable-mecab --enable-opencv
 %{__waf} build
 
 %install
 %{__rm} -rf %{buildroot}
 %{__waf} install --destdir=%{buildroot}
-find %{buildroot}/%{_libdir} -name "lib*.so*" -exec chmod 755 {} \;
 
 %clean
 %{__rm} -rf %{buildroot}
