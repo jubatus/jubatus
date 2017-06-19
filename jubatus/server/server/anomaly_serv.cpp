@@ -100,8 +100,7 @@ anomaly_serv::~anomaly_serv() {
 
 void anomaly_serv::get_status(status_t& status) const {
   status_t my_status;
-  my_status["storage"] = anomaly_->get_model()->type();
-
+  anomaly_->get_status(my_status);
   status.insert(my_status.begin(), my_status.end());
 }
 
