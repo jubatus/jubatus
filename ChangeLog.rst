@@ -1,3 +1,13 @@
+Release 1.0.4 - 2017/06/26
+--------------------------
+
+* Improvements
+    * anomaly: imporve ``get_status`` to return additional metrics (#1194, #1203)
+    * Remove workaround code in RPM package builder (#1195, #1202)
+
+* Bug fixes
+    * Fix output of ORB plugin (#1196, #1201)
+
 Release 1.0.3 - 2017/04/24
 --------------------------
 
