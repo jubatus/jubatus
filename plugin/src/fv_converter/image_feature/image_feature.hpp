@@ -14,8 +14,8 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_HPP_
-#define JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_HPP_
+#ifndef JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_IMAGE_FEATURE_HPP_
+#define JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_IMAGE_FEATURE_HPP_
 
 #include <map>
 #include <string>
@@ -69,4 +69,4 @@ jubatus::plugin::fv_converter::image_feature* create(
 std::string version();
 }  // extern "C"
 
-#endif  // JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_HPP_
+#endif  // JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_IMAGE_FEATURE_HPP_
