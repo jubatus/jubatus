@@ -3,6 +3,7 @@ subdirs = [
     'mecab_splitter',
     'ux_splitter',
     'image_feature',
+    'python_bridge',
 ]
 
 
