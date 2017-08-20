@@ -16,12 +16,12 @@
 
 #include "pb_word_splitter.hpp"
 
+#include <Python.h>
+
 #include <string>
 #include <vector>
 #include <map>
 #include <utility>
-
-#include <Python.h>
 
 #include "python_bridge.hpp"
 
@@ -78,19 +78,16 @@ void pb_word_splitter::split(
 
     result.push_back(std::make_pair(
         PyLong_AsSsize_t(begin2.get()),
-        PyLong_AsSsize_t(length2.get())
-    ));
+        PyLong_AsSsize_t(length2.get())));
   }
 }
 
 extern "C" {
-
 jubatus::core::fv_converter::word_splitter* word_splitter(
     const std::map<std::string, std::string>& params) {
   initialize();
   return new pb_word_splitter(setup(params));
 }
-
 }  // extern "C"
 
 }  // namespace python

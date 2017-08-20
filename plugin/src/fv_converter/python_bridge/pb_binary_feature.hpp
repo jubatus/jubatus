@@ -19,6 +19,10 @@
 
 #include <Python.h>
 
+#include <utility>
+#include <string>
+#include <vector>
+
 #include "jubatus/core/fv_converter/binary_feature.hpp"
 
 #include "python_bridge.hpp"
@@ -45,7 +49,7 @@ class pb_binary_feature
   explicit pb_binary_feature(PyObject* ins)
       : name_("extract"),
         ins_(ins),
-        method_(pb_unicode_from_string(name_)) {};
+        method_(pb_unicode_from_string(name_)) {}
 
   void add_feature(
       const std::string& key,
@@ -53,9 +57,9 @@ class pb_binary_feature
       std::vector<std::pair<std::string, float> >& ret_fv) const;
 
  private:
-   std::string name_;
-   pb_object ins_;
-   pb_object method_;
+  std::string name_;
+  pb_object ins_;
+  pb_object method_;
 };
 
 }  // namespace python

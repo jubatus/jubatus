@@ -16,12 +16,12 @@
 
 #include "pb_binary_feature.hpp"
 
+#include <Python.h>
+
 #include <string>
 #include <vector>
 #include <map>
 #include <utility>
-
-#include <Python.h>
 
 #include "python_bridge.hpp"
 
@@ -85,19 +85,16 @@ void pb_binary_feature::add_feature(
 
     ret_fv.push_back(std::make_pair(
         std::string(PyBytes_AsString(f_key_enc.get())),
-        PyFloat_AsDouble(f_val_float.get())
-    ));
+        PyFloat_AsDouble(f_val_float.get())));
   }
 }
 
 extern "C" {
-
 jubatus::core::fv_converter::binary_feature* binary_feature(
     const std::map<std::string, std::string>& params) {
   initialize();
   return new pb_binary_feature(setup(params));
 }
-
 }  // extern "C"
 
 }  // namespace python

@@ -19,6 +19,10 @@
 
 #include <Python.h>
 
+#include <utility>
+#include <string>
+#include <vector>
+
 #include "jubatus/core/fv_converter/word_splitter.hpp"
 
 #include "python_bridge.hpp"
@@ -46,16 +50,16 @@ class pb_word_splitter : public word_splitter {
   explicit pb_word_splitter(PyObject* ins)
       : name_("split"),
         ins_(ins),
-        method_(pb_unicode_from_string(name_)) {};
+        method_(pb_unicode_from_string(name_)) {}
 
   void split(
       const std::string& string,
       std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
 
  private:
-   std::string name_;
-   pb_object ins_;
-   pb_object method_;
+  std::string name_;
+  pb_object ins_;
+  pb_object method_;
 };
 
 }  // namespace python

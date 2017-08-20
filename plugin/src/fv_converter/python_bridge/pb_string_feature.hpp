@@ -19,6 +19,9 @@
 
 #include <Python.h>
 
+#include <string>
+#include <vector>
+
 #include "jubatus/core/fv_converter/string_feature.hpp"
 
 #include "python_bridge.hpp"
@@ -49,16 +52,16 @@ class pb_string_feature : public string_feature {
   explicit pb_string_feature(PyObject* ins)
       : name_("extract"),
         ins_(ins),
-        method_(pb_unicode_from_string(name_)) {};
+        method_(pb_unicode_from_string(name_)) {}
 
   void extract(
       const std::string& text,
       std::vector<string_feature_element>& result) const;
 
  private:
-   std::string name_;
-   pb_object ins_;
-   pb_object method_;
+  std::string name_;
+  pb_object ins_;
+  pb_object method_;
 };
 
 }  // namespace python

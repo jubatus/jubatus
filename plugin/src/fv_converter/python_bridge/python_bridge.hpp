@@ -17,10 +17,10 @@
 #ifndef JUBATUS_PLUGIN_FV_CONVERTER_PYTHON_BRIDGE_PYTHON_BRIDGE_HPP_
 #define JUBATUS_PLUGIN_FV_CONVERTER_PYTHON_BRIDGE_PYTHON_BRIDGE_HPP_
 
+#include <Python.h>
+
 #include <string>
 #include <map>
-
-#include <Python.h>
 
 #include "jubatus/core/fv_converter/exception.hpp"
 #include "jubatus/util/lang/noncopyable.h"
@@ -84,11 +84,11 @@ PyObject* setup(const std::map<std::string, std::string>&);
 class scoped_gil : jubatus::util::lang::noncopyable {
  public:
   scoped_gil()
-      : gstate_(PyGILState_Ensure()) {};
+      : gstate_(PyGILState_Ensure()) {}
 
   ~scoped_gil() {
     PyGILState_Release(gstate_);
-  };
+  }
 
  private:
   PyGILState_STATE gstate_;
@@ -99,14 +99,14 @@ class scoped_gil : jubatus::util::lang::noncopyable {
  */
 class pb_object : jubatus::util::lang::noncopyable {
  public:
-  explicit pb_object(PyObject* p) : p_(p) {};
+  explicit pb_object(PyObject* p) : p_(p) {}
 
   ~pb_object() {
     scoped_gil lk;
     if (p_ != NULL) {
       Py_DECREF(p_);
     }
-  };
+  }
 
   operator bool() const {
     return p_ != NULL;
@@ -114,7 +114,7 @@ class pb_object : jubatus::util::lang::noncopyable {
 
   PyObject* get() const {
     return p_;
-  };
+  }
 
  private:
   PyObject* p_;

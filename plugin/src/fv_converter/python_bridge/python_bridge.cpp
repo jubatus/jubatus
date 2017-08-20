@@ -16,15 +16,15 @@
 
 #include "python_bridge.hpp"
 
-#include <string>
-#include <map>
-
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE  // dladdr
 #endif
 #include <dlfcn.h>
 
 #include <Python.h>
+
+#include <string>
+#include <map>
 
 #ifndef JUBATUS_PLUGIN_PYTHON_LIB_DIR
 #define JUBATUS_PLUGIN_PYTHON_LIB_DIR JUBATUS_PLUGIN_DIR "/python"
@@ -47,7 +47,7 @@ void initialize() {
   // the python shared library.  See the following discussion for details:
   // <http://bugs.python.org/issue4434>
   Dl_info info;
-  PB_CHECK(::dladdr((void*)&Py_Initialize, &info) != 0,
+  PB_CHECK(::dladdr(reinterpret_cast<void*>(&Py_Initialize), &info) != 0,
            "failed to find Python shared library path");
   PB_CHECK(info.dli_fname != NULL,
            "failed to get Python shared library path");
@@ -72,7 +72,7 @@ void add_path(const std::string& path) {
   scoped_gil lk;
 
   // Cast string constant (const char *) to (char *) for Python 2.x.
-  PyObject* sys_path = PySys_GetObject((char *)("path"));
+  PyObject* sys_path = PySys_GetObject(reinterpret_cast<char *>("path"));
   PB_CHECK(sys_path, "cannot access sys.path");
 
   pb_object default_dir(pb_unicode_from_string(path));
