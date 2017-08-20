@@ -3,25 +3,27 @@
 from waflib import Options
 
 def options(opt):
-  opt.add_option('--enable-python2',
+  opt.add_option('--enable-python',
                 action='store_true',
                 default=False,
-                help='build python bridge plugin using Python 2.x')
-  opt.add_option('--enable-python3',
+                help='build python bridge plugin')
+  opt.add_option('--use-python3',
                 action='store_true',
                 default=False,
-                help='build python bridge plugin using Python 3.x')
+                help='force python bridge plugin to use Python 3.x')
 
 def configure(conf):
-  if Options.options.enable_python2:
-    result = conf.check_cfg(package = 'python',
+  if Options.options.enable_python:
+    python_found = False
+    if not Options.options.use_python3:
+      python_found = conf.check_cfg(package = 'python',
                    atleast_version = '2.6',
                    args = '--cflags --libs',
                    uselib_store = 'PYTHON',
                    define_name = 'HAVE_PYTHON',
                    mandatory = False)
-  if Options.options.enable_python3:
-    conf.check_cfg(package = 'python3',
+    if not python_found:
+      conf.check_cfg(package = 'python3',
                    args = '--cflags --libs',
                    uselib_store = 'PYTHON',
                    define_name = 'HAVE_PYTHON')
