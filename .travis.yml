@@ -51,7 +51,7 @@ install:
 
 
 script:
-  - ./waf configure --enable-zookeeper --enable-mecab --enable-ux --enable-opencv --enable-python2
+  - ./waf configure --enable-zookeeper --enable-mecab --enable-ux --enable-opencv --enable-python
   - ./waf build --checkall
 
 branches:
