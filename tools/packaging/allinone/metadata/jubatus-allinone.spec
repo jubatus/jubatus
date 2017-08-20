@@ -9,9 +9,11 @@ URL:		http://jubat.us/
 
 BuildRequires:  log4cxx-devel = 0.10.0
 BuildRequires:  opencv-devel >= 2.3
+BuildRequires:  python-devel >= 2.6
 
 Requires:       log4cxx = 0.10.0
 Requires:       opencv >= 2.3
+Requires:       python-libs >= 2.6
 
 %description
 Jubatus is a distributed processing framework and streaming machine learning library.

@@ -1,0 +1,15 @@
+Source: jubatus
+Priority: extra
+Maintainer: PFN & NTT <jubatus-team@googlegroups.com>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev, pkg-config, python (>= 2.6), liblog4cxx10-dev, libopencv-dev, python3-dev
+Standards-Version: 3.9.3
+Section: misc
+Homepage: http://jubat.us/
+
+Package: jubatus
+Section: misc
+Architecture: any
+Depends: libc6 (>= 2.14), liblog4cxx10v5, libopencv-features2d2.4v5, libpython3.5, ${misc:Depends}
+Description: Distributed processing framework and streaming machine learning library
+ Jubatus is a distributed processing framework and streaming machine
+ learning library.
