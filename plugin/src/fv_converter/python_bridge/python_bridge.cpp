@@ -72,14 +72,14 @@ void add_path(const std::string& path) {
   scoped_gil lk;
 
   // Cast string constant (const char *) to (char *) for Python 2.x.
-  PyObject* sys_path = PySys_GetObject(reinterpret_cast<char *>("path"));
+  PyObject* sys_path = PySys_GetObject(const_cast<char *>("path"));
   PB_CHECK(sys_path, "cannot access sys.path");
 
-  pb_object default_dir(pb_unicode_from_string(path));
-  PB_CHECK(default_dir, "cannot convert path to Python object");
+  pb_object dir(pb_unicode_from_string(path));
+  PB_CHECK(dir, "cannot convert path to Python object: " << path);
 
-  PB_CHECK(PyList_Append(sys_path, default_dir.get()) == 0,
-      "failed to append default library directory to sys.path");
+  PB_CHECK(PyList_Append(sys_path, dir.get()) == 0,
+      "failed to append directory to sys.path");
 }
 
 PyObject* setup(const std::map<std::string, std::string>& params) {
