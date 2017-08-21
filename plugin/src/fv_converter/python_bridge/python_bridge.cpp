@@ -42,20 +42,17 @@ void initialize() {
     return;
   }
 
-#if PY_MAJOR_VERSION == 2
-  // To workaround lib-dynload issue in Python 2.x, we explicitly dlopen
-  // the python shared library.  See the following discussion for details:
-  // <http://bugs.python.org/issue4434>
+  // To workaround lib-dynload issue when embedding Python C/API to shared
+  // library, we explicitly dlopen the python shared library.  See the
+  // following discussion for details: <http://bugs.python.org/issue4434>
   Dl_info info;
   PB_CHECK(::dladdr(reinterpret_cast<void*>(&Py_Initialize), &info) != 0,
            "failed to find Python shared library path");
   PB_CHECK(info.dli_fname != NULL,
            "failed to get Python shared library path");
-
   // Intentionally leak the handle returned by dlopen as this runs only once.
   PB_CHECK(::dlopen(info.dli_fname, RTLD_LAZY | RTLD_GLOBAL) != NULL,
            "failed to dlopen Python shared library; " << info.dli_fname);
-#endif
 
   // Initialize the Python interpreter and thread support.
   Py_Initialize();
