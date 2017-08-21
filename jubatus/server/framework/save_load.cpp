@@ -103,9 +103,7 @@ bool fwrite_helper(const char* buffer, size_t size, FILE* fp) {
  */
 bool compare_config(const std::string& left, const std::string& right) {
   using jubatus::util::text::json::json;
-  return
-      lexical_cast<std::string>(lexical_cast<json>(left)) ==
-      lexical_cast<std::string>(lexical_cast<json>(right));
+  return lexical_cast<json>(left) == lexical_cast<json>(right);
 }
 
 }  // namespace
