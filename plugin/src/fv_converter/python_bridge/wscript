@@ -14,6 +14,8 @@ def options(opt):
 
 def configure(conf):
   if Options.options.enable_python:
+    conf.check_cxx(lib='dl', define_name='HAVE_DL', errmsg = 'not found', mandatory = False)
+
     python_found = False
     if not Options.options.use_python3:
       python_found = conf.check_cfg(package = 'python',
@@ -63,7 +65,7 @@ def build(bld):
       source = source,
       target = 'python_bridge',
       install_path = bld.env['JUBATUS_PLUGIN_DIR'],
-      use='JUBATUS_CORE PYTHON',
+      use='JUBATUS_CORE PYTHON DL',
       vnum = bld.env['ABI_VERSION'],
     )
     for t in test_source:
