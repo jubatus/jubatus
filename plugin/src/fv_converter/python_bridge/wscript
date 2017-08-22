@@ -3,21 +3,21 @@
 from waflib import Options
 
 def options(opt):
-  opt.add_option('--enable-python',
+  opt.add_option('--enable-python-bridge',
                 action='store_true',
                 default=False,
                 help='build python bridge plugin')
-  opt.add_option('--use-python3',
+  opt.add_option('--enable-python3-bridge',
                 action='store_true',
                 default=False,
-                help='force python bridge plugin to use Python 3.x')
+                help='build python bridge plugin (force using Python 3.x)')
 
 def configure(conf):
-  if Options.options.enable_python:
+  if Options.options.enable_python_bridge or Options.options.enable_python3_bridge:
     conf.check_cxx(lib='dl', define_name='HAVE_DL', errmsg = 'not found', mandatory = False)
 
     python_found = False
-    if not Options.options.use_python3:
+    if not Options.options.enable_python3_bridge:
       python_found = conf.check_cfg(package = 'python',
                    atleast_version = '2.6',
                    args = '--cflags --libs',
