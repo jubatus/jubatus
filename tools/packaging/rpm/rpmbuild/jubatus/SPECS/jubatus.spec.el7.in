@@ -112,7 +112,7 @@ This package provides headers and libraries needed to develop new engines or plu
 %setup -q -n %{name}
 
 %build
-%{__waf} configure --prefix=%{_prefix} --enable-zookeeper --enable-ux --enable-mecab --enable-opencv --enable-python
+%{__waf} configure --prefix=%{_prefix} --enable-zookeeper --enable-ux --enable-mecab --enable-opencv --enable-python-bridge
 %{__waf} build
 
 %install
